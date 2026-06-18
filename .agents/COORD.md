@@ -97,8 +97,8 @@ A6: done
 A7: done
 A8: done
 B1: done
-B2: pending
-B3: pending
+B2: done
+B3: done
 B4: pending
 C1: DONE
 C2: DONE
