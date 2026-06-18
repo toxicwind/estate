@@ -17,5 +17,3 @@ bin/*.log
 llama.log
 main.log
 .env
-.agents/
-rust_algo_web/

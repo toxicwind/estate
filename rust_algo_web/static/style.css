@@ -1,0 +1,621 @@
+/* ==========================================================================
+   CSS Custom Variables & Design Tokens
+   ========================================================================== */
+:root {
+    --bg-color: #0b0f19;
+    --panel-bg: rgba(17, 24, 39, 0.65);
+    --border-glow: rgba(0, 240, 255, 0.15);
+    --border-light: rgba(255, 255, 255, 0.06);
+    
+    --primary-color: #00f0ff;
+    --primary-glow: rgba(0, 240, 255, 0.35);
+    --secondary-color: #a855f7;
+    --secondary-glow: rgba(168, 85, 247, 0.3);
+    --accent-color: #10b981;
+    --accent-glow: rgba(16, 185, 129, 0.3);
+    --danger-color: #f43f5e;
+    
+    --text-color: #f1f5f9;
+    --text-muted: #94a3b8;
+    --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ==========================================================================
+   Reset & Base Styles
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-main);
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.glass-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(168, 85, 247, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.06) 0%, transparent 40%),
+        #070a13;
+}
+
+.app-container {
+    width: 96vw;
+    height: 94vh;
+    max-width: 1600px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5vh;
+}
+
+/* ==========================================================================
+   Header Section
+   ========================================================================== */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+}
+
+.app-header .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pulse-dot {
+    width: 10px;
+    height: 10px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--primary-color);
+    animation: pulse 2s infinite;
+}
+
+.app-header h1 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--text-color);
+}
+
+.app-header h1 span {
+    font-weight: 300;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-left: 8px;
+    border-left: 1px solid var(--border-light);
+    padding-left: 8px;
+}
+
+.header-vitals {
+    display: flex;
+    gap: 15px;
+}
+
+.vital-item {
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border-light);
+}
+
+.vital-item .label {
+    color: var(--text-muted);
+    margin-right: 4px;
+}
+
+.vital-item .value {
+    font-weight: 600;
+}
+
+.vital-item .value.success { color: var(--accent-color); }
+.vital-item .value.info { color: var(--primary-color); }
+
+/* ==========================================================================
+   Main Workspace Layout
+   ========================================================================== */
+.workspace {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 310px 1fr 340px;
+    gap: 1.5vh;
+    min-height: 0;
+}
+
+.glass-panel {
+    background: var(--panel-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-panel h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    letter-spacing: 0.02em;
+    color: var(--primary-color);
+}
+
+.panel-subtitle {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 10px;
+}
+
+/* ==========================================================================
+   Left Panel: Sliders
+   ========================================================================== */
+.control-panel {
+    overflow-y: auto;
+}
+
+.slider-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.slider-header label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.slider-val {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+.weight-slider {
+    width: 100%;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.05);
+    height: 6px;
+    border-radius: 3px;
+    outline: none;
+}
+
+.slider-desc {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   Center Panel: Ranked List
+   ========================================================================== */
+.results-panel {
+    min-height: 0;
+}
+
+.ranks-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 5px;
+}
+
+.ranks-list::-webkit-scrollbar {
+    width: 4px;
+}
+.ranks-list::-webkit-scrollbar-thumb {
+    background: var(--border-light);
+    border-radius: 2px;
+}
+
+/* Tool Score Card */
+.tool-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tool-card:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(0, 240, 255, 0.25);
+    box-shadow: 0 4px 20px rgba(0, 240, 255, 0.05);
+}
+
+/* Card Header */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tool-identity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rank-badge {
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    color: var(--secondary-color);
+    font-size: 0.8rem;
+    font-weight: 800;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+}
+
+.tool-card:nth-child(1) .rank-badge {
+    background: rgba(0, 240, 255, 0.15);
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.15);
+}
+
+.tool-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.score-badge {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-light);
+    font-size: 0.8rem;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    color: var(--primary-color);
+}
+
+/* Score Progress Bar */
+.score-bar-container {
+    background: rgba(255, 255, 255, 0.03);
+    height: 5px;
+    border-radius: 3px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.score-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border-radius: 3px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tool-desc {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+/* Details and Badges */
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2px;
+}
+
+.criteria-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.criteria-badge {
+    font-size: 0.65rem;
+    padding: 3px 6px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    color: var(--text-muted);
+}
+
+.criteria-badge span {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-left: 2px;
+}
+
+.tool-link {
+    font-size: 0.72rem;
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.tool-link:hover {
+    color: var(--primary-color);
+}
+
+/* ==========================================================================
+   Right Panel: AI DevOps Advisor
+   ========================================================================== */
+.coach-panel {
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.chat-area {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-right: 5px;
+}
+
+.chat-area::-webkit-scrollbar {
+    width: 4px;
+}
+.chat-area::-webkit-scrollbar-thumb {
+    background: var(--border-light);
+    border-radius: 2px;
+}
+
+.chat-message {
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.chat-message p {
+    margin-bottom: 4px;
+}
+.chat-message p:last-child {
+    margin-bottom: 0;
+}
+
+.system-msg {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-light);
+    color: var(--text-muted);
+    border-left: 3px solid var(--secondary-color);
+}
+
+.user-msg {
+    background: rgba(168, 85, 247, 0.08);
+    border: 1px solid rgba(168, 85, 247, 0.15);
+    color: var(--text-color);
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+}
+
+.coach-msg {
+    background: rgba(0, 240, 255, 0.05);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    color: var(--text-color);
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+}
+
+/* AI Recommendation Alert box */
+.suggestion-box {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 10px;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    animation: glowAlert 2s infinite alternate;
+}
+
+.suggestion-box p {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.72rem;
+    width: auto;
+}
+
+/* Chat Input layout */
+.chat-input-wrapper {
+    display: flex;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    padding: 6px;
+}
+
+.chat-input-wrapper textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    color: var(--text-color);
+    font-family: var(--font-main);
+    font-size: 0.8rem;
+    height: 40px;
+    padding-top: 8px;
+}
+
+.send-btn {
+    background: var(--primary-color);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.send-btn:hover {
+    box-shadow: 0 0 10px var(--primary-glow);
+    transform: scale(1.03);
+}
+
+/* Buttons */
+.btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-main);
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-light);
+    color: var(--text-muted);
+}
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-color);
+}
+
+.btn-accent {
+    background: var(--accent-color);
+    color: #000;
+    font-weight: 800;
+}
+.btn-accent:hover {
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ==========================================================================
+   Overlay & Spinners
+   ========================================================================== */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(11, 15, 25, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.spinner-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.circle-border {
+    width: 60px;
+    height: 60px;
+    padding: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: linear-gradient(0deg, rgba(0, 240, 255, 0.1) 33%, rgba(0, 240, 255, 1) 100%);
+    animation: spin .8s linear infinite;
+}
+
+.circle-core {
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-color);
+    border-radius: 50%;
+}
+
+.overlay p {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--primary-color);
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 10px var(--border-glow);
+}
+
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+@keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 240, 255, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes glowAlert {
+    0% { border-color: rgba(16, 185, 129, 0.2); box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
+    100% { border-color: rgba(16, 185, 129, 0.5); box-shadow: 0 0 10px rgba(16, 185, 129, 0.1); }
+}

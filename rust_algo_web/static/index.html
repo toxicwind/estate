@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevEnv & Process Manager Ranker</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="glass-bg"></div>
+    
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <span class="pulse-dot"></span>
+                <h1>DEVSTACK <span>RANKER & ADVISOR</span></h1>
+            </div>
+            <div class="header-vitals">
+                <div class="vital-item">
+                    <span class="label">Engine:</span>
+                    <span class="value success">Rust (Axum)</span>
+                </div>
+                <div class="vital-item">
+                    <span class="label">Advisor:</span>
+                    <span class="value info">Qwen-27B</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <!-- Sidebar Controls: Sliders -->
+            <section class="control-panel glass-panel">
+                <h2>Criteria Weights</h2>
+                <p class="panel-subtitle">Adjust the parameters to re-rank the dev stack setups in real-time.</p>
+                
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <label for="weight-nix">Nix Avoidance</label>
+                        <span class="slider-val" id="val-nix">50%</span>
+                    </div>
+                    <input type="range" id="weight-nix" class="weight-slider" min="0" max="100" value="50">
+                    <span class="slider-desc">Higher = prefer zero Nix dependency</span>
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <label for="weight-tui">TUI / GUI Polish</label>
+                        <span class="slider-val" id="val-tui">50%</span>
+                    </div>
+                    <input type="range" id="weight-tui" class="weight-slider" min="0" max="100" value="50">
+                    <span class="slider-desc">Higher = prefer rich visual dashboards</span>
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <label for="weight-perf">Lightweight / Performance</label>
+                        <span class="slider-val" id="val-perf">50%</span>
+                    </div>
+                    <input type="range" id="weight-perf" class="weight-slider" min="0" max="100" value="50">
+                    <span class="slider-desc">Higher = prefer low RAM / native execution</span>
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <label for="weight-setup">Setup Speed</label>
+                        <span class="slider-val" id="val-setup">50%</span>
+                    </div>
+                    <input type="range" id="weight-setup" class="weight-slider" min="0" max="100" value="50">
+                    <span class="slider-desc">Higher = prefer zero boilerplate configuration</span>
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <label for="weight-orch">Process Orchestration</label>
+                        <span class="slider-val" id="val-orch">50%</span>
+                    </div>
+                    <input type="range" id="weight-orch" class="weight-slider" min="0" max="100" value="50">
+                    <span class="slider-desc">Higher = prefer hot-reloading / watch loops</span>
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <label for="weight-port">Portability</label>
+                        <span class="slider-val" id="val-port">50%</span>
+                    </div>
+                    <input type="range" id="weight-port" class="weight-slider" min="0" max="100" value="50">
+                    <span class="slider-desc">Higher = prefer seamless cross-platform use</span>
+                </div>
+
+                <button id="btn-reset-weights" class="btn btn-secondary">Reset to Equal Weights</button>
+            </section>
+
+            <!-- Center Panel: Ranked List -->
+            <section class="results-panel glass-panel">
+                <h2>Rankings Breakdown</h2>
+                
+                <div id="ranks-container" class="ranks-list">
+                    <!-- Dynamic Tool Cards will go here -->
+                </div>
+            </section>
+
+            <!-- Right Panel: AI DevOps Advisor -->
+            <section class="coach-panel glass-panel">
+                <h2>AI DevOps Advisor</h2>
+                <div class="chat-area" id="chat-box">
+                    <div class="chat-message system-msg">
+                        <p>Tell me about your project stack, your experience level with Nix, and whether you prefer Docker/VMs. I will recommend weights for the sliders and analyze which tool fits you best.</p>
+                    </div>
+                </div>
+
+                <!-- Suggested weights apply block -->
+                <div id="suggested-weights-box" class="suggestion-box hidden">
+                    <p>💡 Suggested Weights Available!</p>
+                    <button id="btn-apply-weights" class="btn btn-accent btn-sm">Apply Suggestion</button>
+                </div>
+
+                <div class="chat-input-wrapper">
+                    <textarea id="chat-input" placeholder="e.g. I want to build a Go web app. I don't want to use Docker, and I hate Nix. I need a simple runner..."></textarea>
+                    <button id="btn-send-chat" class="send-btn">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <path fill="currentColor" d="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
+                        </svg>
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Loading overlay for AI consultation -->
+    <div id="loading-overlay" class="overlay hidden">
+        <div class="spinner-box">
+            <div class="circle-border">
+                <div class="circle-core"></div>
+            </div>
+            <p id="loading-text">Consulting the Qwen DevOps Advisor...</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
