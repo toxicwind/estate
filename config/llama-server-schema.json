@@ -1,0 +1,1875 @@
+{
+  "binary": "/home/toxic/sovereign/bin/llama-server",
+  "sections": [
+    {
+      "name": "general",
+      "options": [
+        {
+          "short": null,
+          "long": "--version",
+          "arg": null,
+          "type": "boolean",
+          "description": "show version and build info",
+          "default": null,
+          "enabled": true,
+          "override_env": "VERSION"
+        },
+        {
+          "short": "-v",
+          "long": "--verbose",
+          "arg": null,
+          "type": "boolean",
+          "description": "print verbose information",
+          "default": null,
+          "enabled": true,
+          "override_env": "VERBOSE"
+        },
+        {
+          "short": null,
+          "long": "--minilog",
+          "arg": null,
+          "type": "boolean",
+          "description": "print important information",
+          "default": null,
+          "enabled": true,
+          "override_env": "MINILOG"
+        },
+        {
+          "short": null,
+          "long": "--verbosity",
+          "arg": "N",
+          "type": "integer",
+          "description": "set specific verbosity level",
+          "default": "0",
+          "enabled": true,
+          "override_env": "VERBOSITY"
+        },
+        {
+          "short": null,
+          "long": "--verbose-prompt",
+          "arg": null,
+          "type": "boolean",
+          "description": "print a verbose prompt before generation",
+          "default": "false",
+          "enabled": true,
+          "override_env": "VERBOSE_PROMPT"
+        },
+        {
+          "short": null,
+          "long": "--no-display-prompt",
+          "arg": null,
+          "type": "boolean",
+          "description": "don't print prompt at generation",
+          "default": "false",
+          "enabled": true,
+          "override_env": "NO_DISPLAY_PROMPT"
+        },
+        {
+          "short": "-s",
+          "long": "--seed",
+          "arg": "SEED",
+          "type": "string",
+          "description": "RNG seed",
+          "default": "-1, use random seed for < 0",
+          "enabled": true,
+          "override_env": "SEED"
+        },
+        {
+          "short": "-t",
+          "long": "--threads",
+          "arg": "N",
+          "type": "integer",
+          "description": "number of threads to use during generation path to static lookup cache to use for lookup decoding (not updated by generation) path to dynamic lookup cache to use for lookup decoding (updated by generation)",
+          "default": "8",
+          "enabled": true,
+          "override_env": "THREADS"
+        },
+        {
+          "short": "-c",
+          "long": "--ctx-size",
+          "arg": "N",
+          "type": "integer",
+          "description": "size of the prompt context",
+          "default": "0, 0 = loaded from model",
+          "enabled": true,
+          "override_env": "CTX_SIZE"
+        },
+        {
+          "short": null,
+          "long": "--ctx-checkpoints",
+          "arg": "N",
+          "type": "integer",
+          "description": "max number of context checkpoints to create per slot",
+          "default": "32",
+          "enabled": true,
+          "override_env": "CTX_CHECKPOINTS"
+        },
+        {
+          "short": null,
+          "long": "--ctx-checkpoints-interval",
+          "arg": "N",
+          "type": "integer",
+          "description": "minimum number of tokens between each context checkpoint.",
+          "default": "512, <=0 disable",
+          "enabled": true,
+          "override_env": "CTX_CHECKPOINTS_INTERVAL"
+        },
+        {
+          "short": null,
+          "long": "--ctx-checkpoints-tolerance",
+          "arg": "N",
+          "type": "integer",
+          "description": "the number of tokens before the full prompt to create the checkpoint. max of similarity of prompt tokens to cache tokens that triggers prompt cache (default: 0.50). minimum number of the cached tokens that triggers prompt cache (default: 0).",
+          "default": "5, <=0 disable",
+          "enabled": true,
+          "override_env": "CTX_CHECKPOINTS_TOLERANCE"
+        },
+        {
+          "short": "-n",
+          "long": "--predict",
+          "arg": "N",
+          "type": "integer",
+          "description": "number of tokens to predict",
+          "default": "-1, -1 = infinity, -2 = until context filled",
+          "enabled": true,
+          "override_env": "PREDICT"
+        },
+        {
+          "short": "-b",
+          "long": "--batch-size",
+          "arg": "N",
+          "type": "integer",
+          "description": "logical maximum batch size",
+          "default": "2048",
+          "enabled": true,
+          "override_env": "BATCH_SIZE"
+        },
+        {
+          "short": null,
+          "long": "--keep",
+          "arg": "N",
+          "type": "integer",
+          "description": "number of tokens to keep from the initial prompt",
+          "default": "0, -1 = all",
+          "enabled": true,
+          "override_env": "KEEP"
+        },
+        {
+          "short": null,
+          "long": "--chunks",
+          "arg": "N",
+          "type": "integer",
+          "description": "max number of chunks to process set Flash Attention (default: on) enable grouped expert routing (default: disabled) disable fused mul-multi_add (default: enabled) experts reduction (default: -1,0) merge ffn_up/gate_exps (default: 0) Force Split Mode Graph Scheduling (default: 0)",
+          "default": "-1, -1 = all",
+          "enabled": true,
+          "override_env": "CHUNKS"
+        },
+        {
+          "short": "-p",
+          "long": "--prompt",
+          "arg": "PROMPT",
+          "type": "string",
+          "description": "prompt to start generation with in conversation mode, this will be used as system prompt (default: '')",
+          "default": null,
+          "enabled": true,
+          "override_env": "PROMPT"
+        },
+        {
+          "short": "-f",
+          "long": "--file",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "a file containing the prompt",
+          "default": "none",
+          "enabled": true,
+          "override_env": "FILE"
+        },
+        {
+          "short": null,
+          "long": "--in-file",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "an input file (repeat to specify multiple files)",
+          "default": null,
+          "enabled": true,
+          "override_env": "IN_FILE"
+        },
+        {
+          "short": "-e",
+          "long": "--escape",
+          "arg": null,
+          "type": "boolean",
+          "description": "process escapes sequences (\\n, \\r, \\t, \\', \\\", \\\\)",
+          "default": "true",
+          "enabled": true,
+          "override_env": "ESCAPE"
+        },
+        {
+          "short": null,
+          "long": "--no-escape",
+          "arg": null,
+          "type": "boolean",
+          "description": "do not process escape sequences",
+          "default": null,
+          "enabled": true,
+          "override_env": "NO_ESCAPE"
+        },
+        {
+          "short": null,
+          "long": "--prompt-cache",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "file to cache prompt state for faster startup",
+          "default": "none",
+          "enabled": true,
+          "override_env": "PROMPT_CACHE"
+        },
+        {
+          "short": null,
+          "long": "--prompt-cache-all",
+          "arg": null,
+          "type": "boolean",
+          "description": "if specified, saves user input and generations to cache as well not supported with --interactive or other interactive options",
+          "default": null,
+          "enabled": true,
+          "override_env": "PROMPT_CACHE_ALL"
+        },
+        {
+          "short": null,
+          "long": "--prompt-cache-ro",
+          "arg": null,
+          "type": "boolean",
+          "description": "if specified, uses the prompt cache but does not update it",
+          "default": null,
+          "enabled": true,
+          "override_env": "PROMPT_CACHE_RO"
+        },
+        {
+          "short": "-r",
+          "long": "--reverse-prompt",
+          "arg": "PROMPT",
+          "type": "string",
+          "description": "halt generation at PROMPT, return control in interactive mode can be specified more than once for multiple prompts if suffix/prefix are not specified, default chat template will be used (default: false)",
+          "default": null,
+          "enabled": true,
+          "override_env": "REVERSE_PROMPT"
+        },
+        {
+          "short": "-i",
+          "long": "--interactive",
+          "arg": null,
+          "type": "boolean",
+          "description": "run in interactive mode",
+          "default": "false",
+          "enabled": true,
+          "override_env": "INTERACTIVE"
+        },
+        {
+          "short": null,
+          "long": "--in-prefix-bos",
+          "arg": null,
+          "type": "boolean",
+          "description": "prefix BOS to user inputs, preceding the `--in-prefix` string",
+          "default": null,
+          "enabled": true,
+          "override_env": "IN_PREFIX_BOS"
+        },
+        {
+          "short": null,
+          "long": "--in-prefix",
+          "arg": "STRING",
+          "type": "string",
+          "description": "string to prefix user inputs with",
+          "default": "empty",
+          "enabled": true,
+          "override_env": "IN_PREFIX"
+        },
+        {
+          "short": null,
+          "long": "--in-suffix",
+          "arg": "STRING",
+          "type": "string",
+          "description": "string to suffix after user inputs with",
+          "default": "empty",
+          "enabled": true,
+          "override_env": "IN_SUFFIX"
+        },
+        {
+          "short": null,
+          "long": "--no-warmup",
+          "arg": null,
+          "type": "boolean",
+          "description": "skip warming up the model with an empty run",
+          "default": null,
+          "enabled": true,
+          "override_env": "NO_WARMUP"
+        },
+        {
+          "short": null,
+          "long": "--spm-infill",
+          "arg": null,
+          "type": "boolean",
+          "description": "use Suffix/Prefix/Middle pattern for infill (instead of Prefix/Suffix/Middle) as some models prefer this.",
+          "default": "disabled",
+          "enabled": true,
+          "override_env": "SPM_INFILL"
+        }
+      ]
+    },
+    {
+      "name": "sampling",
+      "options": [
+        {
+          "short": null,
+          "long": "--samplers",
+          "arg": "SAMPLERS",
+          "type": "string",
+          "description": "samplers that will be used for generation in the order, separated by ';' (default: dry;top_k;tfs_z;typical_p;top_p;min_p;xtc;top_n_sigma;temperature;adaptive_p;)",
+          "default": null,
+          "enabled": true,
+          "override_env": "SAMPLERS"
+        },
+        {
+          "short": null,
+          "long": "--sampling-seq",
+          "arg": "SEQUENCE",
+          "type": "string",
+          "description": "simplified sequence for samplers that will be used",
+          "default": "dkfypmxntws",
+          "enabled": true,
+          "override_env": "SAMPLING_SEQ"
+        },
+        {
+          "short": null,
+          "long": "--ignore-eos",
+          "arg": null,
+          "type": "boolean",
+          "description": "ignore end of stream token and continue generating (implies --logit-bias EOS-inf)",
+          "default": null,
+          "enabled": true,
+          "override_env": "IGNORE_EOS"
+        },
+        {
+          "short": null,
+          "long": "--penalize-nl",
+          "arg": null,
+          "type": "boolean",
+          "description": "penalize newline tokens",
+          "default": "false",
+          "enabled": true,
+          "override_env": "PENALIZE_NL"
+        },
+        {
+          "short": null,
+          "long": "--temp",
+          "arg": "N",
+          "type": "integer",
+          "description": "temperature",
+          "default": "0.8",
+          "enabled": true,
+          "override_env": "TEMP"
+        },
+        {
+          "short": null,
+          "long": "--top-k",
+          "arg": "N",
+          "type": "integer",
+          "description": "top-k sampling",
+          "default": "40, 0 = disabled",
+          "enabled": true,
+          "override_env": "TOP_K"
+        },
+        {
+          "short": null,
+          "long": "--top-p",
+          "arg": "N",
+          "type": "integer",
+          "description": "top-p sampling",
+          "default": "0.9, 1.0 = disabled",
+          "enabled": true,
+          "override_env": "TOP_P"
+        },
+        {
+          "short": null,
+          "long": "--min-p",
+          "arg": "N",
+          "type": "integer",
+          "description": "min-p sampling",
+          "default": "0.1, 0.0 = disabled",
+          "enabled": true,
+          "override_env": "MIN_P"
+        },
+        {
+          "short": null,
+          "long": "--tfs",
+          "arg": "N",
+          "type": "integer",
+          "description": "tail free sampling, parameter z",
+          "default": "1.0, 1.0 = disabled",
+          "enabled": true,
+          "override_env": "TFS"
+        },
+        {
+          "short": null,
+          "long": "--typical",
+          "arg": "N",
+          "type": "integer",
+          "description": "locally typical sampling, parameter p",
+          "default": "1.0, 1.0 = disabled",
+          "enabled": true,
+          "override_env": "TYPICAL"
+        },
+        {
+          "short": null,
+          "long": "--repeat-last-n",
+          "arg": "N",
+          "type": "integer",
+          "description": "last n tokens to consider for penalize",
+          "default": "64, 0 = disabled, -1 = ctx_size",
+          "enabled": true,
+          "override_env": "REPEAT_LAST_N"
+        },
+        {
+          "short": null,
+          "long": "--repeat-penalty",
+          "arg": "N",
+          "type": "integer",
+          "description": "penalize repeat sequence of tokens",
+          "default": "1.0, 1.0 = disabled",
+          "enabled": true,
+          "override_env": "REPEAT_PENALTY"
+        },
+        {
+          "short": null,
+          "long": "--presence-penalty",
+          "arg": "N",
+          "type": "integer",
+          "description": "repeat alpha presence penalty",
+          "default": "0.0, 0.0 = disabled",
+          "enabled": true,
+          "override_env": "PRESENCE_PENALTY"
+        },
+        {
+          "short": null,
+          "long": "--frequency-penalty",
+          "arg": "N",
+          "type": "integer",
+          "description": "repeat alpha frequency penalty",
+          "default": "0.0, 0.0 = disabled",
+          "enabled": true,
+          "override_env": "FREQUENCY_PENALTY"
+        },
+        {
+          "short": null,
+          "long": "--dynatemp-range",
+          "arg": "N",
+          "type": "integer",
+          "description": "dynamic temperature range",
+          "default": "0.0, 0.0 = disabled",
+          "enabled": true,
+          "override_env": "DYNATEMP_RANGE"
+        },
+        {
+          "short": null,
+          "long": "--dynatemp-exp",
+          "arg": "N",
+          "type": "integer",
+          "description": "dynamic temperature exponent",
+          "default": "1.0",
+          "enabled": true,
+          "override_env": "DYNATEMP_EXP"
+        },
+        {
+          "short": null,
+          "long": "--mirostat",
+          "arg": "N",
+          "type": "integer",
+          "description": "use Mirostat sampling. Top K, Nucleus, Tail Free and Locally Typical samplers are ignored if used. (default: 0, 0 = disabled, 1 = Mirostat, 2 = Mirostat 2.0)",
+          "default": null,
+          "enabled": true,
+          "override_env": "MIROSTAT"
+        },
+        {
+          "short": null,
+          "long": "--mirostat-lr",
+          "arg": "N",
+          "type": "integer",
+          "description": "Mirostat learning rate, parameter eta",
+          "default": "0.1",
+          "enabled": true,
+          "override_env": "MIROSTAT_LR"
+        },
+        {
+          "short": null,
+          "long": "--mirostat-ent",
+          "arg": "N",
+          "type": "integer",
+          "description": "Mirostat target entropy, parameter tau",
+          "default": "5.0",
+          "enabled": true,
+          "override_env": "MIROSTAT_ENT"
+        },
+        {
+          "short": null,
+          "long": "--xtc-probability",
+          "arg": null,
+          "type": "boolean",
+          "description": "p      xtc probability",
+          "default": "0.0, 0.0 = disabled",
+          "enabled": true,
+          "override_env": "XTC_PROBABILITY"
+        },
+        {
+          "short": null,
+          "long": "--xtc-threshold",
+          "arg": null,
+          "type": "boolean",
+          "description": "t        xtc threshold",
+          "default": "1.0, >0.5 = disabled",
+          "enabled": true,
+          "override_env": "XTC_THRESHOLD"
+        },
+        {
+          "short": null,
+          "long": "--top-n-sigma",
+          "arg": null,
+          "type": "boolean",
+          "description": "t          top-n-sigma parmeter",
+          "default": "0.0, 0.0 = disabled",
+          "enabled": true,
+          "override_env": "TOP_N_SIGMA"
+        },
+        {
+          "short": null,
+          "long": "--adaptive-target",
+          "arg": null,
+          "type": "boolean",
+          "description": "adaptive-p sampling:",
+          "default": "-1.00, <0.0 = disabled",
+          "enabled": true,
+          "override_env": "ADAPTIVE_TARGET"
+        },
+        {
+          "short": null,
+          "long": "--adaptive-decay",
+          "arg": null,
+          "type": "boolean",
+          "description": "adaptive-p sampling:",
+          "default": "0.90",
+          "enabled": true,
+          "override_env": "ADAPTIVE_DECAY"
+        },
+        {
+          "short": null,
+          "long": "--adaptive-updt-w-cur",
+          "arg": null,
+          "type": "boolean",
+          "description": "adaptive-p sampling:",
+          "default": "false",
+          "enabled": true,
+          "override_env": "ADAPTIVE_UPDT_W_CUR"
+        },
+        {
+          "short": null,
+          "long": "--banned-string-file",
+          "arg": null,
+          "type": "boolean",
+          "description": "file path of the list of banned strings on each line",
+          "default": null,
+          "enabled": true,
+          "override_env": "BANNED_STRING_FILE"
+        },
+        {
+          "short": null,
+          "long": "--banned-n",
+          "arg": null,
+          "type": "boolean",
+          "description": "number of tokens banned in the phrase during rewind. -1 means all tokens: rule for allowlisting unicode script and/or codepoints. disabled without any rule. format: `LOWER..UPPER,SCRIPT:BIAS` if unspecified: LOWER = 0, UPPER = -1(=max), SCRIPT=\"\", BIAS = 0. at least one of LOWER, UPPER, or SCRIPT is required",
+          "default": "1",
+          "enabled": true,
+          "override_env": "BANNED_N"
+        },
+        {
+          "short": null,
+          "long": "--allowlist-pieces",
+          "arg": null,
+          "type": "boolean",
+          "description": "allowlist each token in argument. inherits max BIAS in --allowlist-unicode-rule. overrides --allowlist-unicode-rule",
+          "default": null,
+          "enabled": true,
+          "override_env": "ALLOWLIST_PIECES"
+        },
+        {
+          "short": null,
+          "long": "--allowlist-keyword",
+          "arg": null,
+          "type": "boolean",
+          "description": "keyword to expire earlier allowlist rules if matched during generation. does not affect later rules # tokens to delay matching for the first keyword (default: 80) i.e. `--logit-bias 15043+1` to increase likelihood of token ' Hello', or `--logit-bias 15043-1` to decrease likelihood of token ' Hello' original PR: https://github.com/ikawrakow/ik_llama.cpp/pull/1731",
+          "default": null,
+          "enabled": true,
+          "override_env": "ALLOWLIST_KEYWORD"
+        },
+        {
+          "short": null,
+          "long": "--cfg-negative-prompt",
+          "arg": null,
+          "type": "boolean",
+          "description": "PROMPT negative prompt to use for guidance (default: '')",
+          "default": null,
+          "enabled": true,
+          "override_env": "CFG_NEGATIVE_PROMPT"
+        },
+        {
+          "short": null,
+          "long": "--cfg-negative-prompt-file",
+          "arg": null,
+          "type": "boolean",
+          "description": "FNAME negative prompt file to use for guidance",
+          "default": null,
+          "enabled": true,
+          "override_env": "CFG_NEGATIVE_PROMPT_FILE"
+        },
+        {
+          "short": null,
+          "long": "--cfg-scale",
+          "arg": "N",
+          "type": "integer",
+          "description": "strength of guidance",
+          "default": "1.0, 1.0 = disable",
+          "enabled": true,
+          "override_env": "CFG_SCALE"
+        }
+      ]
+    },
+    {
+      "name": "template",
+      "options": [
+        {
+          "short": null,
+          "long": "--jinja",
+          "arg": null,
+          "type": "boolean",
+          "description": "set custom jinja chat template if suffix/prefix are specified, template will be disabled only commonly used templates are accepted: https://github.com/ggerganov/llama.cpp/wiki/Templates-supported-by-llama_chat_apply_template",
+          "default": "template taken from model's metadata",
+          "enabled": true,
+          "override_env": "JINJA"
+        },
+        {
+          "short": null,
+          "long": "--parallel-tool-calls",
+          "arg": null,
+          "type": "boolean",
+          "description": "enable parallel tool calls",
+          "default": null,
+          "enabled": true,
+          "override_env": "PARALLEL_TOOL_CALLS"
+        },
+        {
+          "short": null,
+          "long": "--chat-template",
+          "arg": null,
+          "type": "boolean",
+          "description": "JINJA_TEMPLATE use jinja template for chat (default: disabled)",
+          "default": null,
+          "enabled": true,
+          "override_env": "CHAT_TEMPLATE"
+        },
+        {
+          "short": null,
+          "long": "--chat-template-file",
+          "arg": null,
+          "type": "boolean",
+          "description": "file_with_JINJA_TEMPLATE load jinja template for chat from the file",
+          "default": null,
+          "enabled": true,
+          "override_env": "CHAT_TEMPLATE_FILE"
+        },
+        {
+          "short": null,
+          "long": "--reasoning-format",
+          "arg": null,
+          "type": "boolean",
+          "description": "FORMAT controls whether thought tags are allowed and/or extracted from the response, and in which format they're returned; one of: (default: none)",
+          "default": null,
+          "enabled": true,
+          "override_env": "REASONING_FORMAT"
+        },
+        {
+          "short": null,
+          "long": "--chat-template-kwargs",
+          "arg": null,
+          "type": "boolean",
+          "description": "JSON sets additional params for the json template parser",
+          "default": null,
+          "enabled": true,
+          "override_env": "CHAT_TEMPLATE_KWARGS"
+        },
+        {
+          "short": null,
+          "long": "--reasoning-budget",
+          "arg": "N",
+          "type": "integer",
+          "description": "token budget for thinking: -1 for unrestricted, 0 for immediate end, N>0 for token budget",
+          "default": "-1",
+          "enabled": true,
+          "override_env": "REASONING_BUDGET"
+        },
+        {
+          "short": null,
+          "long": "--reasoning-tokens",
+          "arg": null,
+          "type": "boolean",
+          "description": "FORMAT exclude reasoning tokens to select the slot more accurately. none: include all tokens auto: exclude all tokens between <think> and </think> Or comma separated start and end tokens such as [THINK],[/THINK] (default: auto) message injected before the end-of-thinking tag when reasoning budget is exhausted (default: none)",
+          "default": null,
+          "enabled": true,
+          "override_env": "REASONING_TOKENS"
+        },
+        {
+          "short": null,
+          "long": "--skip-chat-parsing",
+          "arg": null,
+          "type": "boolean",
+          "description": "force a pure content parser, even if a Jinja template is specified; model will output everything in the content section, including any reasoning and/or tool calls",
+          "default": "disabled",
+          "enabled": true,
+          "override_env": "SKIP_CHAT_PARSING"
+        },
+        {
+          "short": null,
+          "long": "--reasoning-budget",
+          "arg": "N",
+          "type": "integer",
+          "description": "token budget for thinking: -1 for unrestricted, 0 for immediate end, N>0 for token budget",
+          "default": "-1",
+          "enabled": true,
+          "override_env": "REASONING_BUDGET"
+        },
+        {
+          "short": null,
+          "long": "--no-prefill-assistant",
+          "arg": null,
+          "type": "boolean",
+          "description": "whether to prefill the assistant's response if the last message is an assistant message when this flag is set, if the last message is an assistant message then it will be treated as a full message and not prefilled enable parallel tool calls",
+          "default": "prefill enabled",
+          "enabled": true,
+          "override_env": "NO_PREFILL_ASSISTANT"
+        }
+      ]
+    },
+    {
+      "name": "grammar",
+      "options": [
+        {
+          "short": null,
+          "long": "--grammar",
+          "arg": "GRAMMAR",
+          "type": "string",
+          "description": "BNF-like grammar to constrain generations (see samples in grammars/ dir)",
+          "default": "''",
+          "enabled": true,
+          "override_env": "GRAMMAR"
+        },
+        {
+          "short": null,
+          "long": "--grammar-file",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "file to read grammar from",
+          "default": null,
+          "enabled": true,
+          "override_env": "GRAMMAR_FILE"
+        },
+        {
+          "short": "-j",
+          "long": "--json-schema",
+          "arg": "SCHEMA",
+          "type": "string",
+          "description": "JSON schema to constrain generations (https://json-schema.org/), e.g. `{}` for any JSON object For schemas w/ external $refs, use --grammar + example/json_schema_to_grammar.py instead",
+          "default": null,
+          "enabled": true,
+          "override_env": "JSON_SCHEMA"
+        }
+      ]
+    },
+    {
+      "name": "embedding",
+      "options": [
+        {
+          "short": null,
+          "long": "--pooling",
+          "arg": null,
+          "type": "boolean",
+          "description": "{none,mean,cls,last} pooling type for embeddings, use model default if unspecified",
+          "default": null,
+          "enabled": true,
+          "override_env": "POOLING"
+        },
+        {
+          "short": null,
+          "long": "--attention",
+          "arg": null,
+          "type": "boolean",
+          "description": "{causal,non-causal} attention type for embeddings, use model default if unspecified",
+          "default": null,
+          "enabled": true,
+          "override_env": "ATTENTION"
+        }
+      ]
+    },
+    {
+      "name": "context hacking",
+      "options": [
+        {
+          "short": null,
+          "long": "--rope-scaling",
+          "arg": null,
+          "type": "boolean",
+          "description": "{none,linear,yarn} RoPE frequency scaling method, defaults to linear unless specified by the model",
+          "default": null,
+          "enabled": true,
+          "override_env": "ROPE_SCALING"
+        },
+        {
+          "short": null,
+          "long": "--rope-scale",
+          "arg": "N",
+          "type": "integer",
+          "description": "RoPE context scaling factor, expands context by a factor of N",
+          "default": null,
+          "enabled": true,
+          "override_env": "ROPE_SCALE"
+        },
+        {
+          "short": null,
+          "long": "--rope-freq-base",
+          "arg": "N",
+          "type": "integer",
+          "description": "RoPE base frequency, used by NTK-aware scaling",
+          "default": "loaded from model",
+          "enabled": true,
+          "override_env": "ROPE_FREQ_BASE"
+        },
+        {
+          "short": null,
+          "long": "--rope-freq-scale",
+          "arg": "N",
+          "type": "integer",
+          "description": "RoPE frequency scaling factor, expands context by a factor of 1/N",
+          "default": null,
+          "enabled": true,
+          "override_env": "ROPE_FREQ_SCALE"
+        },
+        {
+          "short": null,
+          "long": "--yarn-orig-ctx",
+          "arg": "N",
+          "type": "integer",
+          "description": "YaRN: original context size of model",
+          "default": "0 = model training context size",
+          "enabled": true,
+          "override_env": "YARN_ORIG_CTX"
+        },
+        {
+          "short": null,
+          "long": "--yarn-ext-factor",
+          "arg": "N",
+          "type": "integer",
+          "description": "YaRN: extrapolation mix factor",
+          "default": "-1.0, 0.0 = full interpolation",
+          "enabled": true,
+          "override_env": "YARN_EXT_FACTOR"
+        },
+        {
+          "short": null,
+          "long": "--yarn-attn-factor",
+          "arg": "N",
+          "type": "integer",
+          "description": "YaRN: scale sqrt(t) or attention magnitude",
+          "default": "-1.0",
+          "enabled": true,
+          "override_env": "YARN_ATTN_FACTOR"
+        },
+        {
+          "short": null,
+          "long": "--yarn-beta-slow",
+          "arg": "N",
+          "type": "integer",
+          "description": "YaRN: high correction dim or alpha",
+          "default": "-1.0",
+          "enabled": true,
+          "override_env": "YARN_BETA_SLOW"
+        },
+        {
+          "short": null,
+          "long": "--yarn-beta-fast",
+          "arg": "N",
+          "type": "integer",
+          "description": "YaRN: low correction dim or beta KV cache data type for the first N layers of K (default: f16,-1) KV cache data type for the last N layers of K  (default: f16,-1) KV cache data type for the first N layers of V (default: f16,-1) KV cache data type for the last N layers of V  (default: f16,-1) Use output requantized to type for MTP (default: ) KV cache data type for K for the draft model KV cache data type for V for the draft model",
+          "default": "-1.0",
+          "enabled": true,
+          "override_env": "YARN_BETA_FAST"
+        }
+      ]
+    },
+    {
+      "name": "perplexity",
+      "options": [
+        {
+          "short": null,
+          "long": "--all-logits",
+          "arg": null,
+          "type": "boolean",
+          "description": "return logits for all tokens in the batch",
+          "default": "false",
+          "enabled": true,
+          "override_env": "ALL_LOGITS"
+        },
+        {
+          "short": null,
+          "long": "--hellaswag",
+          "arg": null,
+          "type": "boolean",
+          "description": "compute HellaSwag score over random tasks from datafile supplied with -f",
+          "default": null,
+          "enabled": true,
+          "override_env": "HELLASWAG"
+        },
+        {
+          "short": null,
+          "long": "--hellaswag-tasks",
+          "arg": "N",
+          "type": "integer",
+          "description": "number of tasks to use when computing the HellaSwag score",
+          "default": "400",
+          "enabled": true,
+          "override_env": "HELLASWAG_TASKS"
+        },
+        {
+          "short": null,
+          "long": "--winogrande",
+          "arg": null,
+          "type": "boolean",
+          "description": "compute Winogrande score over random tasks from datafile supplied with -f",
+          "default": null,
+          "enabled": true,
+          "override_env": "WINOGRANDE"
+        },
+        {
+          "short": null,
+          "long": "--winogrande-tasks",
+          "arg": "N",
+          "type": "integer",
+          "description": "number of tasks to use when computing the Winogrande score",
+          "default": "0",
+          "enabled": true,
+          "override_env": "WINOGRANDE_TASKS"
+        },
+        {
+          "short": null,
+          "long": "--multiple-choice",
+          "arg": null,
+          "type": "boolean",
+          "description": "compute multiple choice score over random tasks from datafile supplied with -f",
+          "default": null,
+          "enabled": true,
+          "override_env": "MULTIPLE_CHOICE"
+        },
+        {
+          "short": null,
+          "long": "--multiple-choice-tasks",
+          "arg": null,
+          "type": "boolean",
+          "description": "N number of tasks to use when computing the multiple choice score (default: 0)",
+          "default": null,
+          "enabled": true,
+          "override_env": "MULTIPLE_CHOICE_TASKS"
+        },
+        {
+          "short": null,
+          "long": "--kl-divergence",
+          "arg": null,
+          "type": "boolean",
+          "description": "computes KL-divergence to logits provided via --kl-divergence-base",
+          "default": null,
+          "enabled": true,
+          "override_env": "KL_DIVERGENCE"
+        },
+        {
+          "short": null,
+          "long": "--ppl-stride",
+          "arg": "N",
+          "type": "integer",
+          "description": "stride for perplexity calculation",
+          "default": "0",
+          "enabled": true,
+          "override_env": "PPL_STRIDE"
+        },
+        {
+          "short": null,
+          "long": "--ppl-output-type",
+          "arg": null,
+          "type": "boolean",
+          "description": "{0,1}  output type for perplexity calculation",
+          "default": "0",
+          "enabled": true,
+          "override_env": "PPL_OUTPUT_TYPE"
+        }
+      ]
+    },
+    {
+      "name": "multi-modality",
+      "options": [
+        {
+          "short": null,
+          "long": "--mmproj",
+          "arg": "FILE",
+          "type": "string",
+          "description": "path to a multimodal projector file for LLaVA. see examples/llava/README.md",
+          "default": null,
+          "enabled": true,
+          "override_env": "MMPROJ"
+        },
+        {
+          "short": null,
+          "long": "--image",
+          "arg": "FILE",
+          "type": "string",
+          "description": "path to an image file. use with multimodal models. Specify multiple times for batching",
+          "default": null,
+          "enabled": true,
+          "override_env": "IMAGE"
+        },
+        {
+          "short": null,
+          "long": "--image-min-tokens",
+          "arg": "N",
+          "type": "integer",
+          "description": "minimum number of tokens each image can take, only used by vision models with dynamic resolution",
+          "default": "read from model",
+          "enabled": true,
+          "override_env": "IMAGE_MIN_TOKENS"
+        },
+        {
+          "short": null,
+          "long": "--image-max-tokens",
+          "arg": "N",
+          "type": "integer",
+          "description": "maximum number of tokens each image can take, only used by vision models with dynamic resolution",
+          "default": "read from model",
+          "enabled": true,
+          "override_env": "IMAGE_MAX_TOKENS"
+        },
+        {
+          "short": null,
+          "long": "--mtmd-kq-type",
+          "arg": "TYPE",
+          "type": "string",
+          "description": "data type for multimodality K*Q",
+          "default": "f32",
+          "enabled": true,
+          "override_env": "MTMD_KQ_TYPE"
+        },
+        {
+          "short": null,
+          "long": "--no-context-shift",
+          "arg": null,
+          "type": "boolean",
+          "description": "disable context-shift.",
+          "default": null,
+          "enabled": true,
+          "override_env": "NO_CONTEXT_SHIFT"
+        },
+        {
+          "short": null,
+          "long": "--context-shift",
+          "arg": null,
+          "type": "boolean",
+          "description": "(auto|on|off|0|1) set context-shift (default: on)",
+          "default": null,
+          "enabled": true,
+          "override_env": "CONTEXT_SHIFT"
+        }
+      ]
+    },
+    {
+      "name": "backend",
+      "options": [
+        {
+          "short": null,
+          "long": "--rpc",
+          "arg": "SERVERS",
+          "type": "string",
+          "description": "comma separated list of RPC servers",
+          "default": null,
+          "enabled": true,
+          "override_env": "RPC"
+        },
+        {
+          "short": null,
+          "long": "--mlock",
+          "arg": null,
+          "type": "boolean",
+          "description": "force system to keep model in RAM rather than swapping or compressing",
+          "default": null,
+          "enabled": true,
+          "override_env": "MLOCK"
+        },
+        {
+          "short": null,
+          "long": "--no-mmap",
+          "arg": null,
+          "type": "boolean",
+          "description": "do not memory-map model (slower load but may reduce pageouts if not using mlock)",
+          "default": null,
+          "enabled": true,
+          "override_env": "NO_MMAP"
+        },
+        {
+          "short": null,
+          "long": "--run-time-repack",
+          "arg": null,
+          "type": "boolean",
+          "description": "repack tensors if interleaved variant is available",
+          "default": null,
+          "enabled": true,
+          "override_env": "RUN_TIME_REPACK"
+        },
+        {
+          "short": null,
+          "long": "--cpu-moe",
+          "arg": null,
+          "type": "boolean",
+          "description": "keep all MoE weights in CPU memory",
+          "default": null,
+          "enabled": true,
+          "override_env": "CPU_MOE"
+        },
+        {
+          "short": null,
+          "long": "--n-cpu-moe",
+          "arg": "N",
+          "type": "integer",
+          "description": "keep MoE weights of the first N layers in CPU memory",
+          "default": null,
+          "enabled": true,
+          "override_env": "N_CPU_MOE"
+        },
+        {
+          "short": null,
+          "long": "--defer-experts",
+          "arg": null,
+          "type": "boolean",
+          "description": "defer expert mmap residency on Linux to reduce model load time",
+          "default": null,
+          "enabled": true,
+          "override_env": "DEFER_EXPERTS"
+        },
+        {
+          "short": null,
+          "long": "--fit-margin",
+          "arg": "N",
+          "type": "integer",
+          "description": "safety margin in MiB when auto-fitting model offloading",
+          "default": null,
+          "enabled": true,
+          "override_env": "FIT_MARGIN"
+        },
+        {
+          "short": null,
+          "long": "--fit",
+          "arg": null,
+          "type": "boolean",
+          "description": "automatically determine which tensors to offload to the GPU(s)",
+          "default": null,
+          "enabled": true,
+          "override_env": "FIT"
+        },
+        {
+          "short": null,
+          "long": "--numa",
+          "arg": "TYPE",
+          "type": "string",
+          "description": "attempt optimizations that help on some NUMA systems if run without this previously, it is recommended to drop the system page cache before using this see https://github.com/ggerganov/llama.cpp/issues/1437 Example: CUDA0,CUDA1,RPC[192.168.0.1:8080] comma-separated list of devices to use for offloading for the draft model (none = don't offload) Example: CUDA0,CUDA1,RPC[192.168.0.1:8080] or for intermediate results and KV (with split-mode = row) (default: 0)",
+          "default": null,
+          "enabled": true,
+          "override_env": "NUMA"
+        },
+        {
+          "short": null,
+          "long": "--max-gpu",
+          "arg": null,
+          "type": "boolean",
+          "description": "i                     max. number of GPUs to use at a time with split mode 'graph',",
+          "default": "0",
+          "enabled": true,
+          "override_env": "MAX_GPU"
+        }
+      ]
+    },
+    {
+      "name": "model",
+      "options": [
+        {
+          "short": null,
+          "long": "--check-tensors",
+          "arg": null,
+          "type": "boolean",
+          "description": "check model tensor data for invalid values",
+          "default": "false",
+          "enabled": true,
+          "override_env": "CHECK_TENSORS"
+        },
+        {
+          "short": null,
+          "long": "--override-kv",
+          "arg": null,
+          "type": "boolean",
+          "description": "KEY=TYPE:VALUE advanced option to override model metadata by key. may be specified multiple times. types: int, float, bool, str. example: --override-kv tokenizer.ggml.add_bos_token=bool:false",
+          "default": null,
+          "enabled": true,
+          "override_env": "OVERRIDE_KV"
+        },
+        {
+          "short": null,
+          "long": "--lora",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "apply LoRA adapter (can be repeated to use multiple adapters)",
+          "default": null,
+          "enabled": true,
+          "override_env": "LORA"
+        },
+        {
+          "short": null,
+          "long": "--lora-scaled",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "S    apply LoRA adapter with user defined scaling S (can be repeated to use multiple adapters)",
+          "default": null,
+          "enabled": true,
+          "override_env": "LORA_SCALED"
+        },
+        {
+          "short": null,
+          "long": "--control-vector",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "add a control vector note: this argument can be repeated to add multiple control vectors",
+          "default": null,
+          "enabled": true,
+          "override_env": "CONTROL_VECTOR"
+        },
+        {
+          "short": null,
+          "long": "--control-vector-scaled",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "SCALE add a control vector with user defined scaling SCALE note: this argument can be repeated to add multiple scaled control vectors",
+          "default": null,
+          "enabled": true,
+          "override_env": "CONTROL_VECTOR_SCALED"
+        },
+        {
+          "short": null,
+          "long": "--control-vector-layer-range",
+          "arg": "START",
+          "type": "string",
+          "description": "END layer range to apply the control vector(s) to, start and end inclusive",
+          "default": null,
+          "enabled": true,
+          "override_env": "CONTROL_VECTOR_LAYER_RANGE"
+        },
+        {
+          "short": "-m",
+          "long": "--model",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "model path (default: models/$filename with filename from --hf-file or --model-url if set, otherwise models/7B/ggml-model-f16.gguf)",
+          "default": null,
+          "enabled": true,
+          "override_env": "MODEL"
+        },
+        {
+          "short": null,
+          "long": "--recurrent-ckpt-mode",
+          "arg": "MODE",
+          "type": "string",
+          "description": "checkpoint strategy for recurrent/hybrid speculative decoding auto         auto-select: per-step if CUDA full-GPU, gpu-fallback otherwise (default) per-step     save SSM state per draft step in VRAM; no re-decode on rejection gpu-fallback copy state to GPU buffer; re-decode on rejection cpu          serialise state via llama_state_seq; re-decode on rejection",
+          "default": null,
+          "enabled": true,
+          "override_env": "RECURRENT_CKPT_MODE"
+        },
+        {
+          "short": null,
+          "long": "--spec-type",
+          "arg": null,
+          "type": "boolean",
+          "description": "SPEC[:k=v,...]      canonical speculative stage entry; repeat for a supported two-stage chain. types: none, draft, mtp, ngram-cache, ngram-simple, ngram-map-k, ngram-map-k4v, ngram-mod, suffix canonical keys: n_max,n_min,p_min,ngram_size_n,ngram_size_m,ngram_min_hits,suffix_min_match_len,suffix_max_depth,suffix_corpus for comma-bearing string values, quote the value inside the stage payload for normal shell use if argv is passed directly without shell unescaping, the parser also accepts escaped commas as \\, examples: --spec-type mtp:n_max=1,p_min=0.0",
+          "default": null,
+          "enabled": true,
+          "override_env": "SPEC_TYPE"
+        },
+        {
+          "short": null,
+          "long": "--spec-type",
+          "arg": null,
+          "type": "boolean",
+          "description": "ngram-mod:n_max=64,n_min=2,ngram_size_n=8 --spec-type mtp:n_max=1,p_min=0.0",
+          "default": null,
+          "enabled": true,
+          "override_env": "SPEC_TYPE"
+        },
+        {
+          "short": null,
+          "long": "--spec-type",
+          "arg": null,
+          "type": "boolean",
+          "description": "\"suffix:n_max=16,n_min=2,suffix_min_match_len=5,suffix_max_depth=64,suffix_corpus='/tmp/spec,type-corpus.json'\" legacy --spec-stage, --draft-*, --spec-ngram-*, --suffix-* and -mtp flags are rejected",
+          "default": null,
+          "enabled": true,
+          "override_env": "SPEC_TYPE"
+        },
+        {
+          "short": null,
+          "long": "--spec-autotune",
+          "arg": null,
+          "type": "boolean",
+          "description": "automatically tune speculative params to maximize tokens/sec",
+          "default": null,
+          "enabled": true,
+          "override_env": "SPEC_AUTOTUNE"
+        }
+      ]
+    },
+    {
+      "name": "retrieval",
+      "options": [
+        {
+          "short": null,
+          "long": "--context-file",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "file to load context from (repeat to specify multiple files)",
+          "default": null,
+          "enabled": true,
+          "override_env": "CONTEXT_FILE"
+        },
+        {
+          "short": null,
+          "long": "--chunk-size",
+          "arg": "N",
+          "type": "integer",
+          "description": "minimum length of embedded text chunks",
+          "default": "64",
+          "enabled": true,
+          "override_env": "CHUNK_SIZE"
+        },
+        {
+          "short": null,
+          "long": "--chunk-separator",
+          "arg": null,
+          "type": "boolean",
+          "description": "STRING separator between chunks (default: ' ')",
+          "default": null,
+          "enabled": true,
+          "override_env": "CHUNK_SEPARATOR"
+        }
+      ]
+    },
+    {
+      "name": "passkey",
+      "options": [
+        {
+          "short": null,
+          "long": "--junk",
+          "arg": "N",
+          "type": "integer",
+          "description": "number of times to repeat the junk text",
+          "default": "250",
+          "enabled": true,
+          "override_env": "JUNK"
+        },
+        {
+          "short": null,
+          "long": "--pos",
+          "arg": "N",
+          "type": "integer",
+          "description": "position of the passkey in the junk text",
+          "default": "-1",
+          "enabled": true,
+          "override_env": "POS"
+        }
+      ]
+    },
+    {
+      "name": "imatrix",
+      "options": [
+        {
+          "short": "-o",
+          "long": "--output",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "output file",
+          "default": "'imatrix.dat'",
+          "enabled": true,
+          "override_env": "OUTPUT"
+        },
+        {
+          "short": null,
+          "long": "--output-draft",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "paired draft output file",
+          "default": "derived from --output",
+          "enabled": true,
+          "override_env": "OUTPUT_DRAFT"
+        },
+        {
+          "short": null,
+          "long": "--output-frequency",
+          "arg": "N",
+          "type": "integer",
+          "description": "output the imatrix every N iterations",
+          "default": "10",
+          "enabled": true,
+          "override_env": "OUTPUT_FREQUENCY"
+        },
+        {
+          "short": null,
+          "long": "--save-frequency",
+          "arg": "N",
+          "type": "integer",
+          "description": "save an imatrix copy every N iterations",
+          "default": "0",
+          "enabled": true,
+          "override_env": "SAVE_FREQUENCY"
+        },
+        {
+          "short": null,
+          "long": "--process-output",
+          "arg": null,
+          "type": "boolean",
+          "description": "collect data for the output tensor",
+          "default": "false",
+          "enabled": true,
+          "override_env": "PROCESS_OUTPUT"
+        },
+        {
+          "short": null,
+          "long": "--no-ppl",
+          "arg": null,
+          "type": "boolean",
+          "description": "do not compute perplexity",
+          "default": "true",
+          "enabled": true,
+          "override_env": "NO_PPL"
+        },
+        {
+          "short": null,
+          "long": "--chunk",
+          "arg": "N",
+          "type": "integer",
+          "description": "start processing the input from chunk N",
+          "default": "0",
+          "enabled": true,
+          "override_env": "CHUNK"
+        }
+      ]
+    },
+    {
+      "name": "embedding",
+      "options": [
+        {
+          "short": null,
+          "long": "--embd-normalize",
+          "arg": null,
+          "type": "boolean",
+          "description": "normalisation for embendings",
+          "default": "2",
+          "enabled": true,
+          "override_env": "EMBD_NORMALIZE"
+        },
+        {
+          "short": null,
+          "long": "--embd-output-format",
+          "arg": null,
+          "type": "boolean",
+          "description": "empty = default, \"array\" = [[],[]...], \"json\" = openai style, \"json+\" = same \"json\" + cosine similarity matrix",
+          "default": null,
+          "enabled": true,
+          "override_env": "EMBD_OUTPUT_FORMAT"
+        },
+        {
+          "short": null,
+          "long": "--embd-separator",
+          "arg": null,
+          "type": "boolean",
+          "description": "separator of embendings (default \\n) for example \"<#sep#>\"",
+          "default": null,
+          "enabled": true,
+          "override_env": "EMBD_SEPARATOR"
+        }
+      ]
+    },
+    {
+      "name": "server",
+      "options": [
+        {
+          "short": null,
+          "long": "--host",
+          "arg": "HOST",
+          "type": "string",
+          "description": "ip address to listen",
+          "default": "127.0.0.1",
+          "enabled": true,
+          "override_env": "HOST"
+        },
+        {
+          "short": null,
+          "long": "--port",
+          "arg": "PORT",
+          "type": "integer",
+          "description": "port to listen",
+          "default": "8080",
+          "enabled": true,
+          "override_env": "PORT"
+        },
+        {
+          "short": null,
+          "long": "--path",
+          "arg": "PATH",
+          "type": "string",
+          "description": "path to serve static files from",
+          "default": "",
+          "enabled": true,
+          "override_env": "PATH"
+        },
+        {
+          "short": null,
+          "long": "--webui",
+          "arg": "NAME",
+          "type": "string",
+          "description": "controls which webui to server: (default: auto) experimental: whether to enable MCP CORS proxy - do not enable in untrusted environments (default: disabled)",
+          "default": null,
+          "enabled": true,
+          "override_env": "WEBUI"
+        },
+        {
+          "short": null,
+          "long": "--api-key",
+          "arg": "KEY",
+          "type": "string",
+          "description": "API key to use for authentication",
+          "default": "none",
+          "enabled": true,
+          "override_env": "API_KEY"
+        },
+        {
+          "short": null,
+          "long": "--api-key-file",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "path to file containing API keys",
+          "default": "none",
+          "enabled": true,
+          "override_env": "API_KEY_FILE"
+        },
+        {
+          "short": null,
+          "long": "--ssl-key-file",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "path to file a PEM-encoded SSL private key",
+          "default": null,
+          "enabled": true,
+          "override_env": "SSL_KEY_FILE"
+        },
+        {
+          "short": null,
+          "long": "--ssl-cert-file",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "path to file a PEM-encoded SSL certificate",
+          "default": null,
+          "enabled": true,
+          "override_env": "SSL_CERT_FILE"
+        },
+        {
+          "short": null,
+          "long": "--timeout",
+          "arg": "N",
+          "type": "integer",
+          "description": "server read/write timeout in seconds",
+          "default": "600",
+          "enabled": true,
+          "override_env": "TIMEOUT"
+        },
+        {
+          "short": null,
+          "long": "--threads-http",
+          "arg": "N",
+          "type": "integer",
+          "description": "number of threads used to process HTTP requests",
+          "default": "-1",
+          "enabled": true,
+          "override_env": "THREADS_HTTP"
+        },
+        {
+          "short": null,
+          "long": "--system-prompt-file",
+          "arg": null,
+          "type": "boolean",
+          "description": "FNAME set a file to load a system prompt (initial prompt of all slots), this is useful for chat applications",
+          "default": null,
+          "enabled": true,
+          "override_env": "SYSTEM_PROMPT_FILE"
+        },
+        {
+          "short": null,
+          "long": "--log-format",
+          "arg": null,
+          "type": "boolean",
+          "description": "{text,json} log output format: json or text (default: json)",
+          "default": null,
+          "enabled": true,
+          "override_env": "LOG_FORMAT"
+        },
+        {
+          "short": null,
+          "long": "--metrics",
+          "arg": null,
+          "type": "boolean",
+          "description": "enable prometheus compatible metrics endpoint",
+          "default": "disabled",
+          "enabled": true,
+          "override_env": "METRICS"
+        },
+        {
+          "short": null,
+          "long": "--no-slots",
+          "arg": null,
+          "type": "boolean",
+          "description": "disables slots monitoring endpoint",
+          "default": "enabled",
+          "enabled": true,
+          "override_env": "NO_SLOTS"
+        },
+        {
+          "short": null,
+          "long": "--slot-save-path",
+          "arg": "PATH",
+          "type": "string",
+          "description": "path to save slot kv cache",
+          "default": "disabled",
+          "enabled": true,
+          "override_env": "SLOT_SAVE_PATH"
+        },
+        {
+          "short": null,
+          "long": "--chat-template",
+          "arg": null,
+          "type": "boolean",
+          "description": "JINJA_TEMPLATE set custom jinja chat template (default: template taken from model's metadata) only commonly used templates are accepted: https://github.com/ggerganov/llama.cpp/wiki/Templates-supported-by-llama_chat_apply_template how much the prompt of a request must match the prompt of a slot in order to use that slot (default: 0.10, 0.0 = disabled) load LoRA adapters without applying them (apply later via POST /lora-adapters) (default: disabled)",
+          "default": null,
+          "enabled": true,
+          "override_env": "CHAT_TEMPLATE"
+        }
+      ]
+    },
+    {
+      "name": "logging",
+      "options": [
+        {
+          "short": null,
+          "long": "--simple-io",
+          "arg": null,
+          "type": "boolean",
+          "description": "use basic IO for better compatibility in subprocesses and limited consoles",
+          "default": null,
+          "enabled": true,
+          "override_env": "SIMPLE_IO"
+        },
+        {
+          "short": null,
+          "long": "--log-test",
+          "arg": null,
+          "type": "boolean",
+          "description": "Run simple logging test",
+          "default": null,
+          "enabled": true,
+          "override_env": "LOG_TEST"
+        },
+        {
+          "short": null,
+          "long": "--log-disable",
+          "arg": null,
+          "type": "boolean",
+          "description": "Disable trace logs",
+          "default": null,
+          "enabled": true,
+          "override_env": "LOG_DISABLE"
+        },
+        {
+          "short": null,
+          "long": "--log-enable",
+          "arg": null,
+          "type": "boolean",
+          "description": "Enable trace logs",
+          "default": null,
+          "enabled": true,
+          "override_env": "LOG_ENABLE"
+        },
+        {
+          "short": null,
+          "long": "--log-file",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "Specify a log filename (without extension)",
+          "default": null,
+          "enabled": true,
+          "override_env": "LOG_FILE"
+        },
+        {
+          "short": null,
+          "long": "--log-new",
+          "arg": null,
+          "type": "boolean",
+          "description": "Create a separate new log file on start. Each log file will have unique name: \"<name>.<ID>.log\"",
+          "default": null,
+          "enabled": true,
+          "override_env": "LOG_NEW"
+        },
+        {
+          "short": null,
+          "long": "--log-append",
+          "arg": null,
+          "type": "boolean",
+          "description": "Don't truncate the old log file.",
+          "default": null,
+          "enabled": true,
+          "override_env": "LOG_APPEND"
+        }
+      ]
+    },
+    {
+      "name": "cvector",
+      "options": [
+        {
+          "short": "-o",
+          "long": "--output",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "output file",
+          "default": "'control_vector.gguf'",
+          "enabled": true,
+          "override_env": "OUTPUT"
+        },
+        {
+          "short": null,
+          "long": "--positive-file",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "positive prompts file, one prompt per line",
+          "default": "'examples/cvector-generator/positive.txt'",
+          "enabled": true,
+          "override_env": "POSITIVE_FILE"
+        },
+        {
+          "short": null,
+          "long": "--negative-file",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "negative prompts file, one prompt per line",
+          "default": "'examples/cvector-generator/negative.txt'",
+          "enabled": true,
+          "override_env": "NEGATIVE_FILE"
+        },
+        {
+          "short": null,
+          "long": "--pca-batch",
+          "arg": "N",
+          "type": "integer",
+          "description": "batch size used for PCA. Larger batch runs faster, but uses more memory",
+          "default": "100",
+          "enabled": true,
+          "override_env": "PCA_BATCH"
+        },
+        {
+          "short": null,
+          "long": "--pca-iter",
+          "arg": "N",
+          "type": "integer",
+          "description": "number of iterations used for PCA",
+          "default": "1000",
+          "enabled": true,
+          "override_env": "PCA_ITER"
+        },
+        {
+          "short": null,
+          "long": "--method",
+          "arg": null,
+          "type": "boolean",
+          "description": "{pca,mean}      dimensionality reduction method to be used",
+          "default": "pca",
+          "enabled": true,
+          "override_env": "METHOD"
+        }
+      ]
+    },
+    {
+      "name": "export-lora",
+      "options": [
+        {
+          "short": "-m",
+          "long": "--model",
+          "arg": null,
+          "type": "boolean",
+          "description": "model path from which to load base model (default '')",
+          "default": null,
+          "enabled": true,
+          "override_env": "MODEL"
+        },
+        {
+          "short": null,
+          "long": "--lora",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "path to LoRA adapter  (can be repeated to use multiple adapters)",
+          "default": null,
+          "enabled": true,
+          "override_env": "LORA"
+        },
+        {
+          "short": null,
+          "long": "--lora-scaled",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "S    path to LoRA adapter with user defined scaling S  (can be repeated to use multiple adapters)",
+          "default": null,
+          "enabled": true,
+          "override_env": "LORA_SCALED"
+        },
+        {
+          "short": "-t",
+          "long": "--threads",
+          "arg": "N",
+          "type": "integer",
+          "description": "number of threads to use during computation",
+          "default": "8",
+          "enabled": true,
+          "override_env": "THREADS"
+        },
+        {
+          "short": "-o",
+          "long": "--output",
+          "arg": "FNAME",
+          "type": "string",
+          "description": "output file",
+          "default": "'ggml-lora-merged-f16.gguf'",
+          "enabled": true,
+          "override_env": "OUTPUT"
+        }
+      ]
+    }
+  ]
+}

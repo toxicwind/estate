@@ -1,0 +1,73 @@
+[workspace]
+name = "yote"
+version = "1.0.0"
+description = "Yote · 骁逸 — Autonomous Agent Orchestration for Sovereign Stack"
+authors = ["toxic"]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[system-requirements]
+cuda = "13.3"
+libc = { family = "glibc", version = "2.43" }
+
+# ============================================================
+# INFERENCE FEATURE (GPU-bound, RTX 3090)
+# ============================================================
+[feature.inference.dependencies]
+python = "3.12.*"
+pydantic = ">=2.0"
+requests = ">=2.31"
+httpx = ">=0.27"
+uvicorn = { version = ">=0.30", extras = ["standard"] }
+fastapi = ">=0.115"
+
+[feature.inference.pypi-dependencies]
+transformers = ">=4.51"
+accelerate = ">=1.0.0"
+vllm = { version = ">=0.9.0.dev0", index = "https://wheels.vllm.ai/nightly/cu130" }
+
+[feature.inference.tasks]
+yote-daemon = "python -m yote.daemon --port 25010"
+health-check = "python -m yote.health --json"
+log-stream = "python -m yote.logs --follow"
+process-status = "python -m yote.process --check"
+
+[feature.inference.tasks.pegaflow]
+cmd = "pegaflow-server --http-addr 0.0.0.0:25002 --addr 127.0.0.1:25003 --pool-size 24gb --devices 0"
+
+[feature.inference.tasks.vllm]
+cmd = "vllm serve /home/toxic/.cache/huggingface/hub/models--Lorbus--Qwen3.6-27B-int4-AutoRound/snapshots/latest --host 0.0.0.0 --port 25001 --max-model-len 32768 --gpu-memory-utilization 0.85"
+depends-on = ["pegaflow"]
+
+[feature.inference.tasks.openfang]
+cmd = "/home/toxic/.openfang/bin/openfang start"
+depends-on = ["yote-daemon"]
+
+# ============================================================
+# EDGE FEATURE (CPU-bound, reverse proxy)
+# ============================================================
+[feature.edge.dependencies]
+caddy = ">=2.8"
+
+[feature.edge.tasks]
+caddy = "caddy run --config ./caddy/Caddyfile --adapter caddyfile"
+
+# ============================================================
+# APP FEATURE (CPU-bound, agent orchestration)
+# ============================================================
+[feature.app.dependencies]
+python = "3.12.*"
+
+[feature.app.pypi-dependencies]
+ouroboros = { path = "/home/toxic/sovereign_array/agents/ouroboros", editable = true }
+
+[feature.app.tasks]
+yote-agent = "python -m yote.agent --config ./yote/agent_config.yaml"
+
+# ============================================================
+# ENVIRONMENTS — isolate GPU vs CPU workloads
+# ============================================================
+[environments]
+inference = { features = ["inference"], solve-group = "gpu", no-default-feature = true }
+edge = { features = ["edge"], solve-group = "cpu", no-default-feature = true }
+app = { features = ["app"], solve-group = "cpu", no-default-feature = true }

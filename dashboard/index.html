@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>YOTE · 骁逸 — Sovereign Command Center</title>
+    
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background: radial-gradient(ellipse at top left, #0e0d16, #020204);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            color: #f3f4f6;
+        }
+        
+        /* Glassmorphism Panel style */
+        .glass-panel {
+            background: rgba(14, 13, 22, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .glass-panel:hover {
+            border-color: rgba(6, 182, 212, 0.35);
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.08);
+        }
+        
+        /* Service Cards styling */
+        .service-card {
+            background: rgba(18, 16, 28, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: all 0.25s ease;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(6, 182, 212, 0.4);
+            background: rgba(18, 16, 28, 0.7);
+        }
+
+        /* Pulsing Glow effects */
+        @keyframes neonPulse {
+            0%, 100% { opacity: 0.6; box-shadow: 0 0 10px rgba(6, 182, 212, 0.2); }
+            50% { opacity: 1; box-shadow: 0 0 20px rgba(6, 182, 212, 0.6); }
+        }
+        .pulse-neon {
+            animation: neonPulse 3s infinite;
+        }
+
+        /* Glitch Animation mimic */
+        .glitch-hover:hover {
+            text-shadow: 2px -1px 0px #06b6d4, -2px 1px 0px #f59e0b;
+        }
+
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(14, 13, 22, 0.3);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.3);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(6, 182, 212, 0.6);
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 hidden bg-gradient-to-r from-cyan-600 to-violet-600 text-white px-6 py-3 rounded-full shadow-2xl text-sm font-semibold items-center gap-2 opacity-0 transition-all duration-300">
+        <i class="fa-regular fa-circle-check"></i>
+        <span id="toast-text">Action completed</span>
+    </div>
+    
+    <!-- Log Viewer Modal -->
+    <div id="log-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+        <div class="glass-panel rounded-2xl max-w-4xl w-full max-h-[85vh] flex flex-col border border-cyan-500/20">
+            <div class="flex justify-between items-center p-5 border-b border-white/10">
+                <div class="flex items-center gap-3">
+                    <span id="modal-accent-dot" class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+                    <h3 id="modal-title" class="text-xl font-bold font-display">Service Logs</h3>
+                </div>
+                <button onclick="closeModal()" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 transition flex items-center justify-center text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div id="modal-log-body" class="flex-1 overflow-y-auto p-5 font-mono text-xs text-emerald-400 bg-black/40 h-[50vh] min-h-[300px]">
+                <div class="text-center text-gray-400 py-8"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Loading logs...</div>
+            </div>
+            <div class="p-4 bg-black/20 border-t border-white/10 flex justify-end gap-3">
+                <button onclick="refreshModalLogs()" class="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-semibold flex items-center gap-2">
+                    <i class="fa-solid fa-sync"></i> Refresh
+                </button>
+                <button onclick="closeModal()" class="px-4 py-2 bg-gradient-to-r from-cyan-600 to-violet-600 hover:brightness-110 rounded-lg text-xs font-semibold">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 py-6 md:py-10">
+        
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 border-b border-white/5 pb-8">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 via-violet-500 to-amber-500 p-0.5 shadow-lg shadow-violet-500/10">
+                    <div class="w-full h-full bg-[#0b0a11] rounded-[14px] flex items-center justify-center">
+                        <i class="fa-solid fa-paw text-2xl text-cyan-400"></i>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-extrabold font-display tracking-tight glitch-hover">YOTE <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400">· 骁逸</span></h1>
+                    <p class="text-sm text-gray-400 font-display mt-0.5 tracking-wider uppercase">"Wild Intelligence. Sovereign Control."</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-4">
+                <!-- Mode Toggle -->
+                <div id="mode-toggle" class="flex items-center gap-1.5 text-xs bg-white/5 p-1 rounded-xl border border-white/10">
+                    <button id="btn-mock" onclick="setHealthMode(false)" class="px-3 py-1.5 rounded-lg font-semibold transition-all">Mock</button>
+                    <button id="btn-real" onclick="setHealthMode(true)" class="px-3 py-1.5 rounded-lg font-semibold transition-all">Real (Live)</button>
+                </div>
+                
+                <!-- Refresh Status -->
+                <div class="flex flex-col items-end text-right">
+                    <div class="flex items-center gap-2">
+                        <span id="global-status-dot" class="w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse"></span>
+                        <span id="global-status-text" class="text-sm font-semibold text-gray-300">Checking stack...</span>
+                    </div>
+                    <span id="last-updated" class="text-[10px] text-gray-500 font-mono mt-0.5">Last sync: --:--:--</span>
+                </div>
+                
+                <!-- Refresh Button -->
+                <button onclick="refreshAll()" class="w-10 h-10 rounded-xl bg-violet-600/20 border border-violet-500/30 hover:bg-violet-600/30 transition flex items-center justify-center text-violet-400" title="Refresh health status">
+                    <i id="refresh-icon" class="fa-solid fa-sync"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Grid Layout -->
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left & Middle: Services Grid & Metrics -->
+            <div class="lg:col-span-2 flex flex-col gap-8">
+                
+                <!-- Section Title -->
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold font-display tracking-wide flex items-center gap-2"><i class="fa-solid fa-server text-cyan-400"></i> SOVEREIGN DAEMONS</h2>
+                    <span class="text-xs bg-cyan-500/10 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/20 font-mono" id="healthy-count">0/6 ONLINE</span>
+                </div>
+                
+                <!-- Services Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="services-grid">
+                    <!-- Cards will be populated here by Javascript -->
+                </div>
+                
+                <!-- Performance Metrics (Bar Chart) -->
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3 class="text-lg font-bold font-display tracking-wide mb-4 flex items-center gap-2"><i class="fa-solid fa-chart-bar text-amber-400"></i> LATENCY SPECTRAL ANALYSIS</h3>
+                    <div class="w-full relative h-[220px]">
+                        <canvas id="latency-chart"></canvas>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <!-- Right Panel: Brand, Commands, Logs -->
+            <div class="flex flex-col gap-8">
+                
+                <!-- Mascot & Brand Overview -->
+                <div class="glass-panel rounded-2xl p-6 relative overflow-hidden bg-gradient-to-br from-[#12111d] to-[#08070d]">
+                    <div class="absolute -right-10 -bottom-10 opacity-5 pointer-events-none">
+                        <i class="fa-solid fa-paw text-9xl text-cyan-400"></i>
+                    </div>
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-r from-amber-500 to-red-500 flex items-center justify-center text-black font-extrabold text-sm shadow-lg shadow-amber-500/10">
+                            骁逸
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg font-display">YOTE · 骁逸 (Xiāo Yì)</h3>
+                            <p class="text-xs text-amber-400 font-mono tracking-widest uppercase">Valiant & Untamed</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-400 leading-relaxed font-sans">
+                        Sovereign Agentic Network powered by local RTX 3090 GPU hardware and <strong>ik_llama (Qwen3.6-27B)</strong>. Alternate masking, continuous high-dimensional latent reasoning, zero-shot continuous thoughts.
+                    </p>
+                    <div class="mt-4 flex gap-2">
+                        <span class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-400 font-mono">RTX 3090</span>
+                        <span class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-400 font-mono">CUDA 13.3</span>
+                        <span class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-400 font-mono">NF-CoT</span>
+                    </div>
+                </div>
+                
+                <!-- Loaders & System Health Status -->
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3 class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display mb-4"><i class="fa-solid fa-microchip text-violet-400 mr-2"></i> SYSTEM LOADERS</h3>
+                    <div class="flex flex-col gap-3" id="loaders-container">
+                        <!-- Loaded by JS -->
+                    </div>
+                </div>
+                
+                <!-- Active Orchestration CLI Actions -->
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3 class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display mb-4"><i class="fa-solid fa-code text-emerald-400 mr-2"></i> WORKSPACE CLI SHORTCUTS</h3>
+                    <div class="flex flex-col gap-2.5">
+                        <div class="flex items-center justify-between bg-black/30 p-2.5 rounded-lg border border-white/5 hover:border-cyan-500/20 transition group">
+                            <div class="flex flex-col">
+                                <span class="text-xs font-semibold text-gray-300">Yote Daemon</span>
+                                <span class="text-[9px] text-gray-500 font-mono">pixi run yote-daemon</span>
+                            </div>
+                            <button onclick="copyCommand('inference', 'yote-daemon')" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-xs text-gray-400 group-hover:text-cyan-400 transition" title="Copy command">
+                                <i class="fa-regular fa-clone"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between bg-black/30 p-2.5 rounded-lg border border-white/5 hover:border-cyan-500/20 transition group">
+                            <div class="flex flex-col">
+                                <span class="text-xs font-semibold text-gray-300">Run Supervisor</span>
+                                <span class="text-[9px] text-gray-500 font-mono">pixi run yote-agent</span>
+                            </div>
+                            <button onclick="copyCommand('app', 'yote-agent')" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-xs text-gray-400 group-hover:text-cyan-400 transition" title="Copy command">
+                                <i class="fa-regular fa-clone"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between bg-black/30 p-2.5 rounded-lg border border-white/5 hover:border-cyan-500/20 transition group">
+                            <div class="flex flex-col">
+                                <span class="text-xs font-semibold text-gray-300">Caddy Edge</span>
+                                <span class="text-[9px] text-gray-500 font-mono">pixi run caddy</span>
+                            </div>
+                            <button onclick="copyCommand('edge', 'caddy')" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-xs text-gray-400 group-hover:text-cyan-400 transition" title="Copy command">
+                                <i class="fa-regular fa-clone"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Centralized Log Stream (Activity Log) -->
+                <div class="glass-panel rounded-2xl p-6 flex-1 flex flex-col min-h-[250px]">
+                    <h3 class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display mb-3"><i class="fa-solid fa-list-ul text-sky-400 mr-2"></i> SYSTEM EVENT LOG</h3>
+                    <div id="activity-log-container" class="flex-1 overflow-y-auto max-h-[300px] font-mono text-[10px] text-gray-400 bg-black/20 p-3 rounded-lg border border-white/5">
+                        <div class="log-line text-gray-600">[00:00:00] Waiting for updates...</div>
+                    </div>
+                </div>
+                
+            </div>
+            
+        </main>
+        
+    </div>
+
+    <!-- Script logic -->
+    <script>
+        const YOTE_CONFIG = {
+            host: "127.0.0.1",
+            daemonPort: 25042,
+            autoRefreshInterval: 15000,
+            services: [
+                { id: 'vllm', name: 'LORBUS·VLLM', port: 25001, icon: 'fa-microchip', accent: 'cyan', desc: 'Inference Engine (ik_llama)' },
+                { id: 'pegaflow', name: 'PEGA·KV', port: 25002, icon: 'fa-database', accent: 'amber', desc: 'KV Cache Offload' },
+                { id: 'openfang', name: 'OPEN·FANG', port: 25004, icon: 'fa-brain', accent: 'violet', desc: 'Agent OS Core' },
+                { id: 'ouroboros', name: 'OUROBOROS', port: 25005, icon: 'fa-shuffle', accent: 'sky', desc: 'Proxy Layer (nfcot)' },
+                { id: 'caddy', name: 'CADDY·EDGE', port: 25000, icon: 'fa-network-wired', accent: 'teal', desc: 'Reverse Proxy Service' },
+                { id: 'yote-daemon', name: 'YOTE·DAEMON', port: 25042, icon: 'fa-paw', accent: 'emerald', desc: 'Sovereign Status API' }
+            ],
+            loaders: [
+                { name: 'ENV_LOADER', status: 'synced', icon: 'fa-cloud-arrow-up' },
+                { name: 'STATE_PERSISTENCE', status: 'healthy', icon: 'fa-floppy-disk' },
+                { name: 'HYPERSCAN_ITERATIVE', status: 'active', icon: 'fa-shield-halved' }
+            ]
+        };
+
+        let healthMode = localStorage.getItem('yote_health_mode') === 'real';
+        let serviceStates = {};
+        let activityLog = [];
+        let chart = null;
+        let selectedService = null;
+        let refreshTimer = null;
+
+        function init() {
+            setHealthMode(healthMode);
+            renderServices();
+            renderLoaders();
+            refreshAll();
+            startAutoRefresh();
+        }
+
+        function setHealthMode(isReal) {
+            healthMode = isReal;
+            localStorage.setItem('yote_health_mode', isReal ? 'real' : 'mock');
+            
+            const btnMock = document.getElementById('btn-mock');
+            const btnReal = document.getElementById('btn-real');
+            
+            if (isReal) {
+                btnReal.className = "px-3 py-1.5 rounded-lg font-semibold transition-all bg-gradient-to-r from-cyan-500 to-violet-500 text-black";
+                btnMock.className = "px-3 py-1.5 rounded-lg font-semibold transition-all text-gray-400 hover:text-white";
+            } else {
+                btnMock.className = "px-3 py-1.5 rounded-lg font-semibold transition-all bg-gradient-to-r from-cyan-500 to-violet-500 text-black";
+                btnReal.className = "px-3 py-1.5 rounded-lg font-semibold transition-all text-gray-400 hover:text-white";
+            }
+            
+            addLog(`Health check mode switched to: ${isReal ? 'REAL (live backend endpoints)' : 'MOCK (local simulation)'}`);
+        }
+
+        function startAutoRefresh() {
+            if (refreshTimer) clearInterval(refreshTimer);
+            refreshTimer = setInterval(refreshAll, YOTE_CONFIG.autoRefreshInterval);
+        }
+
+        function addLog(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logLine = `[${timestamp}] ${message}`;
+            activityLog.unshift(logLine);
+            if (activityLog.length > 50) activityLog.pop();
+            
+            const container = document.getElementById('activity-log-container');
+            if (container) {
+                container.innerHTML = activityLog.map(line => `<div class="py-0.5 border-b border-white/5 hover:bg-white/5">${line}</div>`).join('');
+                container.scrollTop = 0;
+            }
+        }
+
+        function renderServices() {
+            const grid = document.getElementById('services-grid');
+            if (!grid) return;
+            
+            grid.innerHTML = YOTE_CONFIG.services.map(svc => {
+                const borderColors = {
+                    cyan: 'border-cyan-500/20 hover:border-cyan-500/40',
+                    amber: 'border-amber-500/20 hover:border-amber-500/40',
+                    violet: 'border-violet-500/20 hover:border-violet-500/40',
+                    sky: 'border-sky-500/20 hover:border-sky-500/40',
+                    teal: 'border-teal-500/20 hover:border-teal-500/40',
+                    emerald: 'border-emerald-500/20 hover:border-emerald-500/40'
+                };
+                
+                const iconColors = {
+                    cyan: 'text-cyan-400',
+                    amber: 'text-amber-400',
+                    violet: 'text-violet-400',
+                    sky: 'text-sky-400',
+                    teal: 'text-teal-400',
+                    emerald: 'text-emerald-400'
+                };
+                
+                return `
+                    <div class="service-card rounded-2xl p-5 border ${borderColors[svc.accent]} flex flex-col justify-between h-[190px]">
+                        <div>
+                            <div class="flex justify-between items-start">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center ${iconColors[svc.accent]}">
+                                        <i class="fa-solid ${svc.icon}"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-sm tracking-wide font-display">${svc.name}</h4>
+                                        <span class="text-[10px] text-gray-500 font-mono">Port ${svc.port}</span>
+                                    </div>
+                                </div>
+                                <span id="dot-${svc.id}" class="w-2.5 h-2.5 rounded-full bg-gray-500"></span>
+                            </div>
+                            <p class="text-[11px] text-gray-400 mt-3 font-sans leading-relaxed">${svc.desc}</p>
+                        </div>
+                        
+                        <div class="flex justify-between items-center border-t border-white/5 pt-3 mt-3">
+                            <span id="status-${svc.id}" class="text-[10px] font-mono text-gray-500 uppercase">Checking...</span>
+                            <div class="flex gap-2">
+                                <button onclick="pingSingle('${svc.id}')" class="px-2 py-1 bg-white/5 hover:bg-white/10 rounded text-[10px] font-semibold text-gray-300 transition" title="Ping service">
+                                    Ping
+                                </button>
+                                <button onclick="openLogs('${svc.id}')" class="px-2 py-1 bg-white/5 hover:bg-white/10 rounded text-[10px] font-semibold text-gray-300 transition">
+                                    Logs
+                                </button>
+                                <button onclick="triggerServiceAction('${svc.id}')" class="px-2 py-1 bg-violet-600/20 hover:bg-violet-600/40 text-violet-300 rounded text-[10px] font-semibold transition">
+                                    Control
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderLoaders() {
+            const container = document.getElementById('loaders-container');
+            if (!container) return;
+            
+            container.innerHTML = YOTE_CONFIG.loaders.map(loader => `
+                <div class="flex items-center justify-between bg-black/20 p-2.5 rounded-lg border border-white/5">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid ${loader.icon} text-violet-400 text-xs"></i>
+                        <span class="text-xs font-semibold text-gray-300">${loader.name}</span>
+                    </div>
+                    <span class="text-[9px] font-mono bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 uppercase tracking-wide">${loader.status}</span>
+                </div>
+            `).join('');
+        }
+
+        async function pingSingle(id) {
+            const svc = YOTE_CONFIG.services.find(s => s.id === id);
+            if (!svc) return;
+            
+            addLog(`Triggered single ping check for ${svc.name}...`);
+            await checkServiceHealth(svc);
+            updateChart();
+        }
+
+        async function checkServiceHealth(svc) {
+            const dot = document.getElementById(`dot-${svc.id}`);
+            const statusLabel = document.getElementById(`status-${svc.id}`);
+            
+            if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse';
+            if (statusLabel) statusLabel.innerText = "Checking...";
+            
+            const start = performance.now();
+            let isHealthy = false;
+            let latency = 0;
+            
+            if (healthMode) {
+                // Real Mode: Query Daemon status or query ports directly
+                try {
+                    let endpoint = `http://${YOTE_CONFIG.host}:${svc.port}/health`;
+                    if (svc.id === 'openfang') endpoint = `http://${YOTE_CONFIG.host}:${svc.port}/api/health`;
+                    else if (svc.id === 'yote-daemon') endpoint = `http://${YOTE_CONFIG.host}:${svc.port}/health`;
+                    
+                    const res = await fetch(endpoint, { mode: 'cors', cache: 'no-store' });
+                    latency = Math.round(performance.now() - start);
+                    isHealthy = res.status >= 200 && res.status < 499;
+                } catch (e) {
+                    isHealthy = false;
+                }
+            } else {
+                // Mock Mode: Realistic latency and uptime simulation
+                await new Promise(resolve => setTimeout(resolve, Math.random() * 200 + 40));
+                latency = Math.round(performance.now() - start);
+                isHealthy = Math.random() > 0.05; // 95% mock uptime
+            }
+            
+            serviceStates[svc.id] = {
+                status: isHealthy ? 'healthy' : 'offline',
+                latency: isHealthy ? latency : 0
+            };
+            
+            if (isHealthy) {
+                if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-md shadow-emerald-500/50';
+                if (statusLabel) statusLabel.innerHTML = `<span class="text-emerald-400 font-semibold">ONLINE (${latency}ms)</span>`;
+            } else {
+                if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-red-500 shadow-md shadow-red-500/50';
+                if (statusLabel) statusLabel.innerHTML = `<span class="text-red-400 font-semibold">OFFLINE</span>`;
+            }
+            
+            return isHealthy;
+        }
+
+        async function refreshAll() {
+            const refreshIcon = document.getElementById('refresh-icon');
+            if (refreshIcon) refreshIcon.classList.add('fa-spin');
+            
+            const globalDot = document.getElementById('global-status-dot');
+            const globalText = document.getElementById('global-status-text');
+            
+            if (globalDot) globalDot.className = 'w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse';
+            if (globalText) globalText.innerText = "Syncing with stack...";
+            
+            addLog("Syncing health checks with Sovereign Agent stack...");
+            
+            let onlineCount = 0;
+            for (const svc of YOTE_CONFIG.services) {
+                const healthy = await checkServiceHealth(svc);
+                if (healthy) onlineCount++;
+            }
+            
+            document.getElementById('healthy-count').innerText = `${onlineCount}/${YOTE_CONFIG.services.length} ONLINE`;
+            document.getElementById('last-updated').innerText = `Last sync: ${new Date().toLocaleTimeString()}`;
+            
+            if (onlineCount === YOTE_CONFIG.services.length) {
+                if (globalDot) globalDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-md shadow-emerald-500/50';
+                if (globalText) globalText.innerText = "All services operational";
+            } else if (onlineCount > 0) {
+                if (globalDot) globalDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-500 shadow-md shadow-amber-500/50';
+                if (globalText) globalText.innerText = "Stack degraded";
+            } else {
+                if (globalDot) globalDot.className = 'w-2.5 h-2.5 rounded-full bg-red-500 shadow-md shadow-red-500/50';
+                if (globalText) globalText.innerText = "Stack offline";
+            }
+            
+            updateChart();
+            addLog("Sync complete.");
+            
+            if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+        }
+
+        function updateChart() {
+            const canvas = document.getElementById('latency-chart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            const labels = YOTE_CONFIG.services.map(s => s.name);
+            const data = YOTE_CONFIG.services.map(s => serviceStates[s.id]?.latency || 0);
+            
+            if (chart) chart.destroy();
+            
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Latency (ms)',
+                        data: data,
+                        backgroundColor: (context) => {
+                            const val = context.raw || 0;
+                            if (val === 0) return '#3f3f46';
+                            if (val < 50) return '#10b981';
+                            if (val < 150) return '#f59e0b';
+                            return '#ef4444';
+                        },
+                        borderRadius: 8,
+                        barPercentage: 0.6,
+                        categoryPercentage: 0.8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: (ctx) => `${ctx.raw} ms` } }
+                    },
+                    scales: {
+                        y: { 
+                            grid: { color: '#27272a' }, 
+                            beginAtZero: true,
+                            ticks: { color: '#71717a' },
+                            title: { display: true, text: 'Response Time (ms)', color: '#a1a1aa', font: { size: 10 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#a1a1aa', font: { size: 9 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function openLogs(id) {
+            const svc = YOTE_CONFIG.services.find(s => s.id === id);
+            if (!svc) return;
+            
+            selectedService = svc;
+            
+            const modal = document.getElementById('log-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalDot = document.getElementById('modal-accent-dot');
+            const modalBody = document.getElementById('modal-log-body');
+            
+            const accentColors = {
+                cyan: 'bg-cyan-400',
+                amber: 'bg-amber-400',
+                violet: 'bg-violet-400',
+                sky: 'bg-sky-400',
+                teal: 'bg-teal-400',
+                emerald: 'bg-emerald-400'
+            };
+            
+            if (modalTitle) modalTitle.innerText = `${svc.name} — LIVE STREAM`;
+            if (modalDot) modalDot.className = `w-2.5 h-2.5 rounded-full ${accentColors[svc.accent]}`;
+            if (modalBody) modalBody.innerHTML = '<div class="text-center py-10 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Streaming from logs...</div>';
+            if (modal) modal.classList.remove('hidden');
+            if (modal) modal.classList.add('flex');
+            
+            addLog(`Requesting logs for ${svc.name}`);
+            
+            // Perform fetch if Real mode, else mock
+            if (healthMode) {
+                try {
+                    const res = await fetch(`http://${YOTE_CONFIG.host}:${YOTE_CONFIG.daemonPort}/logs/${svc.id}`);
+                    const json = await res.json();
+                    if (json.logs && json.logs.length > 0) {
+                        modalBody.innerHTML = json.logs.map(line => `<div class="py-1 border-b border-white/5 hover:bg-cyan-950/20">${escapeHtml(line)}</div>`).join('');
+                    } else if (json.error) {
+                        modalBody.innerHTML = `<div class="text-amber-500 py-10 text-center"><i class="fa-solid fa-triangle-exclamation mr-2"></i> ${json.error}</div>`;
+                    } else {
+                        modalBody.innerHTML = `<div class="text-gray-500 py-10 text-center">Log file empty or unreadable</div>`;
+                    }
+                } catch (e) {
+                    modalBody.innerHTML = `<div class="text-red-400 py-10 text-center"><i class="fa-solid fa-circle-exclamation mr-2"></i> Failed to connect to Yote Daemon at port ${YOTE_CONFIG.daemonPort}</div>`;
+                }
+            } else {
+                // Mock Logs
+                await new Promise(r => setTimeout(r, 600));
+                const timeStr = new Date().toISOString();
+                const mockLines = [
+                    `[${timeStr}] [INFO] YOTE: Initializing ${svc.name}...`,
+                    `[${timeStr}] [DEBUG] YOTE: Using CUDA sm_86 tensor cores.`,
+                    `[${timeStr}] [INFO] YOTE: Listening on interface ${YOTE_CONFIG.host}:${svc.port}`,
+                    `[${timeStr}] [DEBUG] YOTE: Loading model parameters from local checkpoint.`,
+                    `[${timeStr}] [INFO] YOTE: Service successfully registered under Tailscale.`,
+                    `[${timeStr}] [INFO] YOTE: Health status check returned code 200 OK.`,
+                    `[${timeStr}] [DEBUG] YOTE: CPU core affinity optimization complete.`,
+                    `[${timeStr}] [INFO] YOTE: Active connections: 4. Idle: 12.`,
+                    `[${timeStr}] [DEBUG] YOTE: Normalizing Flow injection active.`
+                ];
+                let content = "";
+                for(let i=0; i<4; i++) {
+                    content += mockLines.map(line => `<div class="py-1 border-b border-white/5 hover:bg-cyan-950/20">${line}</div>`).join('');
+                }
+                modalBody.innerHTML = content;
+            }
+            
+            modalBody.scrollTop = modalBody.scrollHeight;
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('log-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+            selectedService = null;
+        }
+
+        function refreshModalLogs() {
+            if (selectedService) {
+                openLogs(selectedService.id);
+            }
+        }
+
+        async function triggerServiceAction(id) {
+            const svc = YOTE_CONFIG.services.find(s => s.id === id);
+            if (!svc) return;
+            
+            const action = confirm(`Do you want to RESTART service: ${svc.name}?`) ? "restart" : null;
+            if (!action) return;
+            
+            addLog(`Sending ${action} command for ${svc.name}...`);
+            showToast(`Triggering ${action} for ${svc.name}`);
+            
+            if (healthMode) {
+                try {
+                    const res = await fetch(`http://${YOTE_CONFIG.host}:${YOTE_CONFIG.daemonPort}/actions/${svc.id}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: action })
+                    });
+                    const json = await res.json();
+                    if (json.success) {
+                        addLog(`Successfully triggered ${action} for ${svc.name}`);
+                        showToast(`${svc.name} restarted successfully!`);
+                    } else {
+                        addLog(`Failed to restart ${svc.name}`);
+                        showToast(`Failed to restart ${svc.name}`);
+                    }
+                } catch(e) {
+                    addLog(`Error contacting daemon to restart ${svc.name}`);
+                    showToast(`Error: Daemon unreachable`);
+                }
+            } else {
+                await new Promise(r => setTimeout(r, 1200));
+                addLog(`Mock action: ${svc.name} restarted successfully.`);
+                showToast(`Mock: ${svc.name} restarted`);
+            }
+            
+            refreshAll();
+        }
+
+        function copyCommand(env, name) {
+            const cmd = `pixi run --environment ${env} ${name}`;
+            navigator.clipboard.writeText(cmd).then(() => {
+                showToast(`Copied shortcut to clipboard`);
+                addLog(`Copied to clipboard: ${cmd}`);
+            });
+        }
+
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toast-text');
+            if (!toast || !toastText) return;
+            
+            toastText.innerText = text;
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+            
+            // Trigger animation
+            setTimeout(() => {
+                toast.classList.remove('opacity-0');
+                toast.classList.add('opacity-100');
+            }, 10);
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0');
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 300);
+            }, 3000);
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        // Initialize on load
+        window.dashboard = {
+            toggleHealthMode: () => setHealthMode(!healthMode)
+        };
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

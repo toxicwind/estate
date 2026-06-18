@@ -1,84 +1,21 @@
-# Dependencies
-node_modules/
-bun.lockb
-.bun/
-.pnpm-store/
-
-# Build & Runtime Artifacts
-dist/
-build/
-target/
-*.tsbuildinfo
-.turbo/
-Cargo.lock.bak
-.cache/
-tmp/
-/tmp/
-
-# Logs, Databases & Session State
 logs/
-*.log
-*.qslog
-*.jsonl
-*.pid
-session-export*
-*.session
-*.sqlite
-*.db
-*.db-shm
-*.db-wal
-.agent-orchestration/
-.wezterm.sock*
-
-# Environment & Secrets (Zero-Leak Boundary)
-.env*
-!.env.example
-!.env.template
-.env.local
-.env.*.local
-.secrets*
-*.token
-*.pem
-*.key
-*.cert
-*.pfx
-
-# OS & Editor
-.DS_Store
-.idea/
-.vscode/
-*.swp
-*~
-.project_map.json
-
-# Local Python
+pids/
 __pycache__/
 *.pyc
-.venv/
-venv/
-
-# Local model weights / Large binaries
-*.gguf
-*.bin
 *.pt
-*.safetensors
-
-# Build artifacts
-mesh/**/node_modules/
-mesh/**/dist/
-herd/engines/target/
-tau/tau/
-tau/packages/coding-agent/target/
-
-# Backup artifacts  
-tau.bak-*/
-
-# Sensitive / generated
-.env.local
-*.env.example
-
-# TUI / IDE
-.vscode/
-.idea/
-.husky/
-
+*.gguf
+.pixi/
+scratch/
+artifacts/
+nfcot_flow*.pt
+nfcot_flow*.bad.*
+*.log
+context_results_*.json
+canonical_benchmark_*.json
+bin/llama-server
+bin/*.log
+llama.log
+main.log
+.env
+.agents/
+rust_algo_web/

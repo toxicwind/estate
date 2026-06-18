@@ -1,0 +1,21 @@
+{
+  admin off
+  auto_https off
+}
+:25000 {
+  handle /health* {
+    respond "ok" 200
+  }
+  handle_path /llm* {
+    reverse_proxy localhost:25001
+  }
+  handle_path /fang* {
+    reverse_proxy localhost:25004
+  }
+  handle_path /cot* {
+    reverse_proxy localhost:25008
+  }
+  handle {
+    respond "Sovereign OK - llm:25001 fang:25004 cot:25008" 200
+  }
+}

@@ -1,0 +1,41 @@
+api_listen = "127.0.0.1:25004"
+auto_approve = true
+human_in_loop_initial = true
+log_level = "info"
+sovereign_mode = "maximal_emergent"
+target_hardware = "ryzen_8700f_64gb_sm86_3090_24gb_nvme"
+
+[build]
+cuda_arch = "sm_86"
+ik_llama_sm86 = true
+int8_swizzled = true
+use_hmma = true
+
+[channels.discord]
+bot_token_env = "DISCORD_BOT_TOKEN"
+default_agent = "coder"
+
+[channels.telegram]
+bot_token_env = "TELEGRAM_BOT_TOKEN"
+default_agent = "assistant"
+allowed_users = "[716302190]"
+
+[controller]
+fsr_watch = true
+gage_enabled = true
+kv_fork_enabled = true
+
+[default_model]
+api_key_env = ""
+base_url = "http://127.0.0.1:25008/v1"
+model = "qwen3.6-27b"
+provider = "openai"
+
+[extensions]
+fsr_max = true
+kv_sovereign_fork = true
+weight_pack_sm86 = true
+
+[telegram]
+allowed_users = "[716302190]"
+bot_token_env = "TELEGRAM_BOT_TOKEN"

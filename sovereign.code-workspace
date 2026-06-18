@@ -1,0 +1,14 @@
+{
+  "folders": [
+	{
+		"path": "."
+	},
+	{
+		"path": "../sovereign_array"
+	},
+	{
+		"path": "../Downloads"
+	}
+],
+  "settings": {}
+}

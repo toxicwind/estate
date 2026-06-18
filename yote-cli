@@ -1,0 +1,325 @@
+#!/bin/bash
+# yote-cli — Yote · 骁逸 Service Orchestrator
+# Unified control for all Sovereign Stack services
+# Usage: yote [check|logs|start|stop|restart|status|tail|supervise]
+# Install: chmod +x yote-cli && sudo ln -s "$(pwd)/yote-cli" /usr/local/bin/yote
+
+set -euo pipefail
+
+VERSION="1.0.0"
+SERVICE_HOST="${YOTE_HOST:-localhost}"
+SERVICES_FILE="${YOTE_CONFIG:-$HOME/.config/yote/services.yaml}"
+LOG_DIR="${YOTE_LOG_DIR:-/home/toxic/sovereign/logs}"
+PID_DIR="${YOTE_PID_DIR:-/home/toxic/sovereign/pids}"
+
+# Color definitions
+RED='\033;0;31m'
+GREEN='\033;0;32m'
+YELLOW='\033;1;33m'
+BLUE='\033;0;34m'
+CYAN='\033;0;36m'
+MAGENTA='\033;0;35m'
+NC='\033[0m'
+
+log_info() { echo -e "${CYAN}[INFO]${NC} $1"; }
+log_ok() { echo -e "${GREEN}[OK]${NC} $1"; }
+log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
+log_debug() { [[ "${YOTE_DEBUG:-0}" == "1" ]] && echo -e "${MAGENTA}[DEBUG]${NC} $1"; }
+
+# Default service definitions — edit to match your stack
+declare -A SERVICE_PORTS=(
+    ["vllm"]=25001
+    ["pegaflow"]=25002
+    ["pegaflow_internal"]=25003
+    ["openfang"]=25004
+    ["ouroboros"]=25005
+    ["caddy"]=25000
+    ["yote-daemon"]=25042
+)
+
+declare -A SERVICE_HEALTH_PATHS=(
+    ["vllm"]="/health"
+    ["pegaflow"]="/health"
+    ["openfang"]="/api/health"
+    ["ouroboros"]="/health"
+    ["caddy"]="/health"
+    ["yote-daemon"]="/health"
+)
+
+declare -A SERVICE_LOG_FILES=(
+    ["vllm"]="${LOG_DIR}/vllm.log"
+    ["pegaflow"]="${LOG_DIR}/pegaflow.log"
+    ["pegaflow_internal"]="${LOG_DIR}/pegaflow_internal.log"
+    ["openfang"]="${LOG_DIR}/openfang.log"
+    ["ouroboros"]="${LOG_DIR}/ouroboros.log"
+    ["caddy"]="${LOG_DIR}/caddy.log"
+    ["yote-daemon"]="${LOG_DIR}/yote-daemon.log"
+)
+
+declare -A SERVICE_PID_FILES=(
+    ["vllm"]="${PID_DIR}/vllm.pid"
+    ["pegaflow"]="${PID_DIR}/pegaflow.pid"
+    ["pegaflow_internal"]="${PID_DIR}/pegaflow_internal.pid"
+    ["openfang"]="${PID_DIR}/openfang.pid"
+    ["ouroboros"]="${PID_DIR}/ouroboros.pid"
+    ["caddy"]="${PID_DIR}/caddy.pid"
+    ["yote-daemon"]="${PID_DIR}/yote-daemon.pid"
+)
+
+init_dirs() {
+    mkdir -p "$LOG_DIR" "$PID_DIR"
+}
+
+check_service_health() {
+    local name="$1"
+    local port="${SERVICE_PORTS[$name]}"
+    local path="${SERVICE_HEALTH_PATHS[$name]:-/health}"
+    local url="http://${SERVICE_HOST}:${port}${path}"
+    
+    if curl -s -o /dev/null -w "%{http_code}" --max-time 3 "$url" 2>/dev/null | grep -qE "200|404|401"; then
+        echo -e "${GREEN}✓${NC} $name (port $port) — healthy"
+        return 0
+    else
+        echo -e "${RED}✗${NC} $name (port $port) — down or unreachable"
+        return 1
+    fi
+}
+
+check_process_running() {
+    local name="$1"
+    local pid_file="${SERVICE_PID_FILES[$name]}"
+    
+    if [[ -f "$pid_file" ]] && kill -0 "$(cat "$pid_file")" 2>/dev/null; then
+        echo -e "${GREEN}✓${NC} $name process running (PID: $(cat "$pid_file"))"
+        return 0
+    elif pgrep -f "$name" > /dev/null; then
+        local pid=$(pgrep -f "$name" | head -1)
+        echo -e "${YELLOW}⚠${NC} $name running but PID file missing (PID: $pid)"
+        return 0
+    else
+        echo -e "${RED}✗${NC} $name process not found"
+        return 1
+    fi
+}
+
+show_status() {
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "  🐺 YOTE · 骁逸 — SERVICE STATUS (${VERSION})"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    echo "➤ HEALTH CHECKS (HTTP/${SERVICE_HOST}):"
+    for name in "${!SERVICE_PORTS[@]}"; do
+        check_service_health "$name" || true
+    done
+    
+    echo ""
+    echo "➤ PROCESS VERIFICATION:"
+    for name in "${!SERVICE_PORTS[@]}"; do
+        check_process_running "$name" || true
+    done
+    
+    echo ""
+    echo "➤ ENVIRONMENT:"
+    echo "  YOTE_HOST: ${SERVICE_HOST}"
+    echo "  LOG_DIR: ${LOG_DIR}"
+    echo "  PID_DIR: ${PID_DIR}"
+    
+    if command -v pixi &> /dev/null; then
+        echo "  PIXI_ENVIRONMENTS: $(pixi info --json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(', '.join([e['name'] for e in d.get('environments',[])]))" 2>/dev/null || echo "unable to parse")"
+    fi
+}
+
+show_logs() {
+    local service="$1"
+    local lines="${2:-50}"
+    
+    if [[ -z "$service" ]]; then
+        log_error "Specify service: vllm, pegaflow, openfang, ouroboros, caddy, yote-daemon"
+        return 1
+    fi
+    
+    local log_file="${SERVICE_LOG_FILES[$service]}"
+    
+    if [[ -f "$log_file" ]]; then
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "  📋 YOTE LOGS — $service (last $lines lines)"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        tail -n "$lines" "$log_file" 2>/dev/null || echo "  (No logs available)"
+    else
+        log_warn "Log file not found: $log_file"
+        echo "Attempting journalctl fallback..."
+        journalctl -u "$service" -n "$lines" --no-pager 2>/dev/null || echo "No logs found for $service"
+    fi
+}
+
+tail_follow() {
+    local service="$1"
+    
+    if [[ -z "$service" ]]; then
+        log_error "Specify service for log streaming"
+        return 1
+    fi
+    
+    local log_file="${SERVICE_LOG_FILES[$service]}"
+    
+    if [[ -f "$log_file" ]]; then
+        echo "🐺 Following $service logs (Ctrl+C to exit)..."
+        tail -f "$log_file" 2>/dev/null
+    else
+        log_error "Log file not found: $log_file"
+        return 1
+    fi
+}
+
+start_service() {
+    local service="$1"
+    log_info "Starting $service..."
+    
+    case "$service" in
+        vllm)
+            pixi run --environment inference vllm &
+            echo $! > "${SERVICE_PID_FILES[$service]}"
+            ;;
+        pegaflow)
+            pixi run --environment inference pegaflow &
+            echo $! > "${SERVICE_PID_FILES[$service]}"
+            ;;
+        openfang)
+            pixi run --environment inference openfang &
+            echo $! > "${SERVICE_PID_FILES[$service]}"
+            ;;
+        ouroboros)
+            pixi run --environment app ouroboros &
+            echo $! > "${SERVICE_PID_FILES[$service]}"
+            ;;
+        caddy)
+            pixi run --environment edge caddy &
+            echo $! > "${SERVICE_PID_FILES[$service]}"
+            ;;
+        yote-daemon)
+            pixi run --environment inference yote-daemon &
+            echo $! > "${SERVICE_PID_FILES[$service]}"
+            ;;
+        all)
+            for s in vllm pegaflow openfang ouroboros caddy yote-daemon; do
+                start_service "$s"
+                sleep 1
+            done
+            ;;
+        *)
+            log_error "Unknown service: $service"
+            return 1
+            ;;
+    esac
+    log_ok "$service started"
+}
+
+stop_service() {
+    local service="$1"
+    log_info "Stopping $service..."
+    
+    local pid_file="${SERVICE_PID_FILES[$service]}"
+    
+    if [[ -f "$pid_file" ]]; then
+        kill -TERM "$(cat "$pid_file")" 2>/dev/null || true
+        rm -f "$pid_file"
+    else
+        pkill -f "$service" 2>/dev/null || true
+    fi
+    
+    log_ok "$service stopped"
+}
+
+supervise_loop() {
+    log_info "Starting Yote supervision loop (interval: 30s, press Ctrl+C to exit)"
+    
+    while true; do
+        clear
+        echo "🐺 YOTE · 骁逸 — SUPERVISOR MODE — $(date '+%Y-%m-%d %H:%M:%S')"
+        echo ""
+        
+        for name in vllm pegaflow openfang ouroboros caddy yote-daemon; do
+            if check_service_health "$name" > /dev/null 2>&1; then
+                echo -e "${GREEN}●${NC} $name: healthy"
+            else
+                echo -e "${RED}○${NC} $name: DOWN — attempting restart..."
+                start_service "$name"
+            fi
+        done
+        
+        echo ""
+        echo "Press Ctrl+C to exit supervision mode"
+        sleep 30
+    done
+}
+
+case "${1:-help}" in
+    check|status)
+        init_dirs
+        show_status
+        ;;
+    logs)
+        init_dirs
+        show_logs "${2:-}" "${3:-50}"
+        ;;
+    tail|follow)
+        init_dirs
+        tail_follow "${2:-}"
+        ;;
+    start)
+        init_dirs
+        start_service "${2:-all}"
+        ;;
+    stop)
+        init_dirs
+        stop_service "${2:-all}"
+        ;;
+    restart)
+        init_dirs
+        stop_service "${2:-all}"
+        sleep 2
+        start_service "${2:-all}"
+        ;;
+    supervise)
+        init_dirs
+        supervise_loop
+        ;;
+    version|-v|--version)
+        echo "yote-cli version ${VERSION}"
+        ;;
+    help|--help|-h)
+        cat << EOF
+🐺 YOTE · 骁逸 — Autonomous Service Orchestrator v${VERSION}
+
+Usage: yote <command> [service] [options]
+
+COMMANDS:
+  check, status     Show health status of all services
+  logs <service>    Show last 50 lines of logs (use -n for custom count)
+  tail <service>    Follow log stream in real time
+  start [service]   Start service(s) (default: all)
+  stop [service]    Stop service(s) (default: all)
+  restart [service] Restart service(s) (default: all)
+  supervise         Run continuous health check and auto-restart loop
+  version, -v       Show version
+
+AVAILABLE SERVICES:
+  vllm, pegaflow, openfang, ouroboros, caddy, yote-daemon, all
+
+ENVIRONMENT VARIABLES:
+  YOTE_HOST         Target host for health checks (default: localhost)
+  YOTE_CONFIG       Path to services.yaml (optional)
+  YOTE_LOG_DIR      Log directory (default: /home/toxic/sovereign/logs)
+  YOTE_PID_DIR      PID directory (default: /home/toxic/sovereign/pids)
+  YOTE_DEBUG        Enable debug output (set to 1)
+
+EXAMPLES:
+  yote check                    # Show all service status
+  yote logs vllm                # Show last 50 lines of vLLM logs
+  yote tail openfang            # Follow OpenFang logs live
+  yote start all                # Start entire stack
+  yote supervise                # Run daemon with auto-recovery
+EOF
+        ;;
+esac

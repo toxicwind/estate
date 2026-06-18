@@ -1,0 +1,320 @@
+{
+  "binary": "/usr/bin/process-compose",
+  "sections": [
+    {
+      "name": "Flags",
+      "options": [
+        {
+          "short": null,
+          "long": "--address",
+          "arg": null,
+          "type": "boolean",
+          "description": "string           address to listen on (env: PC_ADDRESS) (default \"localhost\")",
+          "default": null,
+          "enabled": true,
+          "override_env": "ADDRESS"
+        },
+        {
+          "short": "-f",
+          "long": "--config",
+          "arg": null,
+          "type": "boolean",
+          "description": "stringArray       path to config files to load (env: PC_CONFIG_FILES)",
+          "default": null,
+          "enabled": true,
+          "override_env": "CONFIG"
+        },
+        {
+          "short": null,
+          "long": "--detach-on-success",
+          "arg": null,
+          "type": "boolean",
+          "description": "detach the process-compose TUI after successful startup. Requires --detached-with-tui",
+          "default": null,
+          "enabled": true,
+          "override_env": "DETACH_ON_SUCCESS"
+        },
+        {
+          "short": "-D",
+          "long": "--detached",
+          "arg": null,
+          "type": "boolean",
+          "description": "run process-compose in detached mode",
+          "default": null,
+          "enabled": true,
+          "override_env": "DETACHED"
+        },
+        {
+          "short": null,
+          "long": "--detached-with-tui",
+          "arg": null,
+          "type": "boolean",
+          "description": "run process-compose in detached mode with TUI",
+          "default": null,
+          "enabled": true,
+          "override_env": "DETACHED_WITH_TUI"
+        },
+        {
+          "short": null,
+          "long": "--disable-dotenv",
+          "arg": null,
+          "type": "boolean",
+          "description": "disable .env file loading (env: PC_DISABLE_DOTENV=1)",
+          "default": null,
+          "enabled": true,
+          "override_env": "DISABLE_DOTENV"
+        },
+        {
+          "short": null,
+          "long": "--dry-run",
+          "arg": null,
+          "type": "boolean",
+          "description": "validate the config and exit",
+          "default": null,
+          "enabled": true,
+          "override_env": "DRY_RUN"
+        },
+        {
+          "short": "-e",
+          "long": "--env",
+          "arg": null,
+          "type": "boolean",
+          "description": "stringArray          path to env files to load (default [.env])",
+          "default": null,
+          "enabled": true,
+          "override_env": "ENV"
+        },
+        {
+          "short": "-h",
+          "long": "--help",
+          "arg": null,
+          "type": "boolean",
+          "description": "help for process-compose",
+          "default": null,
+          "enabled": true,
+          "override_env": "HELP"
+        },
+        {
+          "short": "-d",
+          "long": "--hide-disabled",
+          "arg": null,
+          "type": "boolean",
+          "description": "hide disabled processes (env: PC_HIDE_DISABLED_PROC)",
+          "default": null,
+          "enabled": true,
+          "override_env": "HIDE_DISABLED"
+        },
+        {
+          "short": null,
+          "long": "--keep-project",
+          "arg": null,
+          "type": "boolean",
+          "description": "keep the project running even after all processes exit",
+          "default": null,
+          "enabled": true,
+          "override_env": "KEEP_PROJECT"
+        },
+        {
+          "short": "-L",
+          "long": "--log-file",
+          "arg": null,
+          "type": "boolean",
+          "description": "string          Specify the log file path (env: PC_LOG_FILE) (default \"/tmp/process-compose-toxic.log\")",
+          "default": null,
+          "enabled": true,
+          "override_env": "LOG_FILE"
+        },
+        {
+          "short": null,
+          "long": "--log-no-color",
+          "arg": null,
+          "type": "boolean",
+          "description": "disable color output in the log file (env: PC_LOG_NO_COLOR)",
+          "default": null,
+          "enabled": true,
+          "override_env": "LOG_NO_COLOR"
+        },
+        {
+          "short": null,
+          "long": "--logs-truncate",
+          "arg": null,
+          "type": "boolean",
+          "description": "truncate process logs buffer on startup",
+          "default": null,
+          "enabled": true,
+          "override_env": "LOGS_TRUNCATE"
+        },
+        {
+          "short": "-n",
+          "long": "--namespace",
+          "arg": null,
+          "type": "boolean",
+          "description": "stringArray    run only specified namespaces (default all)",
+          "default": null,
+          "enabled": true,
+          "override_env": "NAMESPACE"
+        },
+        {
+          "short": null,
+          "long": "--no-server",
+          "arg": null,
+          "type": "boolean",
+          "description": "disable HTTP server (env: PC_NO_SERVER)",
+          "default": null,
+          "enabled": true,
+          "override_env": "NO_SERVER"
+        },
+        {
+          "short": null,
+          "long": "--ordered-shutdown",
+          "arg": null,
+          "type": "boolean",
+          "description": "shut down processes in reverse dependency order",
+          "default": null,
+          "enabled": true,
+          "override_env": "ORDERED_SHUTDOWN"
+        },
+        {
+          "short": "-p",
+          "long": "--port",
+          "arg": null,
+          "type": "boolean",
+          "description": "int                 port number (env: PC_PORT_NUM) (default 8080)",
+          "default": null,
+          "enabled": true,
+          "override_env": "PORT"
+        },
+        {
+          "short": null,
+          "long": "--read-only",
+          "arg": null,
+          "type": "boolean",
+          "description": "enable read-only mode (env: PC_READ_ONLY)",
+          "default": null,
+          "enabled": true,
+          "override_env": "READ_ONLY"
+        },
+        {
+          "short": null,
+          "long": "--recursive-metrics",
+          "arg": null,
+          "type": "boolean",
+          "description": "collect metrics recursively (env: PC_RECURSIVE_METRICS)",
+          "default": null,
+          "enabled": true,
+          "override_env": "RECURSIVE_METRICS"
+        },
+        {
+          "short": "-r",
+          "long": "--ref-rate",
+          "arg": null,
+          "type": "boolean",
+          "description": "duration        TUI refresh interval in seconds or as a Go duration string (e.g. 1s) (default 1)",
+          "default": null,
+          "enabled": true,
+          "override_env": "REF_RATE"
+        },
+        {
+          "short": "-R",
+          "long": "--reverse",
+          "arg": null,
+          "type": "boolean",
+          "description": "sort in reverse order",
+          "default": null,
+          "enabled": true,
+          "override_env": "REVERSE"
+        },
+        {
+          "short": null,
+          "long": "--shortcuts",
+          "arg": null,
+          "type": "boolean",
+          "description": "stringArray    paths to shortcut config files to load (env: PC_SHORTCUTS_FILES)",
+          "default": null,
+          "enabled": true,
+          "override_env": "SHORTCUTS"
+        },
+        {
+          "short": null,
+          "long": "--slow-ref-rate",
+          "arg": null,
+          "type": "boolean",
+          "description": "duration   Slow(er) refresh interval for resources (CPU, RAM) in seconds or as a Go duration string (e.g. 1s). The value should be higher than --ref-rate (default 1)",
+          "default": null,
+          "enabled": true,
+          "override_env": "SLOW_REF_RATE"
+        },
+        {
+          "short": "-S",
+          "long": "--sort",
+          "arg": null,
+          "type": "boolean",
+          "description": "string              sort column name. legal values (case insensitive): [AGE, CPU, EXIT, HEALTH, MEM, NAME, NAMESPACE, PID, RESTARTS, STATUS] (default \"NAME\")",
+          "default": null,
+          "enabled": true,
+          "override_env": "SORT"
+        },
+        {
+          "short": null,
+          "long": "--theme",
+          "arg": null,
+          "type": "boolean",
+          "description": "string             select process compose theme (default \"Default\")",
+          "default": null,
+          "enabled": true,
+          "override_env": "THEME"
+        },
+        {
+          "short": null,
+          "long": "--token-file",
+          "arg": null,
+          "type": "boolean",
+          "description": "string        path to a file containing the API token (env: PC_API_TOKEN_PATH)",
+          "default": null,
+          "enabled": true,
+          "override_env": "TOKEN_FILE"
+        },
+        {
+          "short": "-t",
+          "long": "--tui",
+          "arg": null,
+          "type": "boolean",
+          "description": "enable TUI (disable with -t=false) (env: PC_DISABLE_TUI) (default true)",
+          "default": null,
+          "enabled": true,
+          "override_env": "TUI"
+        },
+        {
+          "short": null,
+          "long": "--tui-fs",
+          "arg": null,
+          "type": "boolean",
+          "description": "enable TUI full screen (env: PC_TUI_FULL_SCREEN=1)",
+          "default": null,
+          "enabled": true,
+          "override_env": "TUI_FS"
+        },
+        {
+          "short": "-u",
+          "long": "--unix-socket",
+          "arg": null,
+          "type": "boolean",
+          "description": "string       path to unix socket (env: PC_SOCKET_PATH) (default \"/tmp/process-compose-410428.sock\")",
+          "default": null,
+          "enabled": true,
+          "override_env": "UNIX_SOCKET"
+        },
+        {
+          "short": "-U",
+          "long": "--use-uds",
+          "arg": null,
+          "type": "boolean",
+          "description": "use unix domain sockets instead of tcp Use \"process-compose [command] --help\" for more information about a command.",
+          "default": null,
+          "enabled": true,
+          "override_env": "USE_UDS"
+        }
+      ]
+    }
+  ]
+}
