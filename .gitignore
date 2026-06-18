@@ -17,3 +17,8 @@ bin/*.log
 llama.log
 main.log
 .env
+.devenv/
+*.session
+*.session-journal
+
+

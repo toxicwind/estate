@@ -13,12 +13,12 @@ use_hmma = true
 
 [channels.discord]
 bot_token_env = "DISCORD_BOT_TOKEN"
-default_agent = "coder"
+default_agent = "coder-max"
 
 [channels.telegram]
 bot_token_env = "TELEGRAM_BOT_TOKEN"
 default_agent = "assistant"
-allowed_users = "[716302190]"
+allowed_users = [716302190, 13036673831]
 
 [controller]
 fsr_watch = true
@@ -37,5 +37,5 @@ kv_sovereign_fork = true
 weight_pack_sm86 = true
 
 [telegram]
-allowed_users = "[716302190]"
+allowed_users = [716302190, 13036673831]
 bot_token_env = "TELEGRAM_BOT_TOKEN"

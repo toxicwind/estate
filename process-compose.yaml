@@ -1,9 +1,10 @@
-# Sovereign Stack — process-compose.yaml (Final)
-# Orchestrates: llama-server → nfcot_proxy → openfang + watchdog
+# Sovereign Stack — process-compose.yaml
+# Orchestrates: llama-server → nfcot_proxy → openfang + watchdog + MTProto
 # Port map:
 #   25001 — llama-server (ik_llama, CUDA, Qwen3.6-27B)
 #   25004 — openfang (agent OS)
 #   25008 — nfcot_proxy (latent injection proxy)
+#   25042 — yote daemon
 
 version: "0.5"
 
@@ -131,5 +132,14 @@ processes:
       restart: always
       backoff_seconds: 5
     log_location: /home/toxic/sovereign/logs/yote-daemon.log
+
+  telethon_overlord:
+    command: /home/toxic/agents/telethon_overlord/venv/bin/python3 /home/toxic/agents/telethon_overlord/overlord.py
+    working_dir: /home/toxic/agents/telethon_overlord
+    availability:
+      restart: always
+      backoff_seconds: 5
+    log_location: /home/toxic/sovereign/logs/telethon_overlord.log
+
 
 
