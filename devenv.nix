@@ -9,7 +9,7 @@
   # Define environment variables
   env = {
     SOVEREIGN_HOME = "/home/toxic/sovereign";
-    MODEL_PATH = "/home/toxic/models/Qwen3.6-27B-Heretic-UD/heretic-UD-27B-Q5_K_XL.gguf";
+    MODEL_PATH = "/home/toxic/models/gemma-4-12B-it-uncensored-Q4_K_M.gguf";
     PYTHONUNBUFFERED = "1";
     TELEGRAM_BOT_TOKEN = "8932201107:AAEZ7I2NBcGR_CcJvT9IjKwbZ8honLNc_zM";
     OPENFANG_LISTEN = "127.0.0.1:25004";
@@ -19,7 +19,7 @@
 
   # Define processes to run under process-compose
   processes = {
-    llama-server.exec = "/home/toxic/sovereign/bin/llama-server -m /home/toxic/models/Qwen3.6-27B-Heretic-UD/heretic-UD-27B-Q5_K_XL.gguf --mmproj /home/toxic/models/Qwen3.6-27B-Heretic-UD/mmproj-27B-F16.gguf --host 0.0.0.0 --port 25001 --jinja --n-gpu-layers 60 --ctx-size 77824 --cache-type-k q4_0 --cache-type-v q4_0 --flash-attn on --no-context-shift --parallel 4 --cont-batching --defrag-thold 0.1 --slot-prompt-similarity 0.6 --reasoning on --reasoning-format deepseek --parallel-tool-calls --samplers \"top_k;top_p;min_p;temperature\" --temp 0.4 --top-k 40 --top-p 0.9 --min-p 0.05 --repeat-penalty 1.08 --repeat-last-n 1024 --metrics -b 4096 -ub 1024 --webui none";
+    llama-server.exec = "/home/toxic/ik_llama.cpp-main/build/bin/llama-server -m /home/toxic/models/gemma-4-12B-it-uncensored-Q4_K_M.gguf --host 0.0.0.0 --port 25001 -c 32768 --parallel 1 -b 4096 -ub 1024 -ctk q4_0 -ctv q4_0 --flash-attn 1 -ngl 99 -t 8 --context-shift on --jinja --ctx-checkpoints 32 --ctx-checkpoints-interval 512 --graph-reuse --cache-ram 8192 --no-mmap --embeddings --pooling cls";
     
     nfcot_proxy.exec = "python3 /home/toxic/sovereign/modules/nfcot_proxy.py";
     
@@ -27,10 +27,5 @@
     
     sovereign_watchdog.exec = "python3 /home/toxic/sovereign/modules/sovereign_watchdog.py";
     
-    yote_telegram.exec = "python3 /home/toxic/sovereign/modules/yote_telegram.py";
-    
-    yote_daemon.exec = "python3 -m yote.daemon --port 25042";
-    
-    telethon_overlord.exec = "/home/toxic/agents/telethon_overlord/venv/bin/python3 /home/toxic/agents/telethon_overlord/overlord.py";
   };
 }
