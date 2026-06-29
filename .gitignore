@@ -20,11 +20,4 @@ data/
 .idea/
 .vscode/
 GITEOF
-
-echo "✓ requirements.txt, tsconfig.json, .gitignore"
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# CREATE TAR.GZ
-# ═══════════════════════════════════════════════════════════════════════════════
-
-cd /home/toxic
+.devenv

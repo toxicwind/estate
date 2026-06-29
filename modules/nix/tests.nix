@@ -1,7 +1,20 @@
-{ config, pkgs, lib, inputs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 let
-  shared = import ./lib.nix { inherit config pkgs lib inputs; };
-  inherit (shared) PORTS;
+  shared = import ./lib.nix {
+    inherit
+      config
+      pkgs
+      lib
+      inputs
+      ;
+  };
+  inherit (shared._module.args) PORTS;
 in
 {
   # devenv test expects a package (script), not a raw attrset

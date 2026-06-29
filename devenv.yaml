@@ -1,86 +1,11 @@
-# /home/toxic/sovereign/devenv.yaml
 inputs:
-  nixpkgs-python:
-    url: github:cachix/nixpkgs-python
-    follows: nixpkgs
-  nixpkgs:
-    url: github:NixOS/nixpkgs/nixpkgs-unstable
-  devenv:
-    url: github:cachix/devenv
-  flake-compat:
-    url: github:edolstra/flake-compat
-  flake-parts:
-    url: github:hercules-ci/flake-parts
   git-hooks:
     url: github:cachix/git-hooks.nix
     inputs:
       nixpkgs:
         follows: nixpkgs
-  nix2container:
-    url: github:nlewo/nix2container
   treefmt-nix:
     url: github:numtide/treefmt-nix
-  fenix:
-    url: github:nix-community/fenix
-  rust-overlay:
-    url: github:oxalica/rust-overlay
-  crane:
-    url: github:ipetkov/crane
-  nix-vscode-extensions:
-    url: github:nix-community/nix-vscode-extensions
-  home-manager:
-    url: github:nix-community/home-manager
-  nix-direnv:
-    url: github:nix-community/nix-direnv
-  nix-index-database:
-    url: github:nix-community/nix-index-database
-  nixos-hardware:
-    url: github:NixOS/nixos-hardware
-  systems:
-    url: github:nix-systems/default
-  poetry2nix:
-    url: github:nix-community/poetry2nix
-  pypi-deps-db:
-    url: github:DavHau/pypi-deps-db
-  mach-nix:
-    url: github:DavHau/mach-nix
-    flake: false
-  nixpkgs-wayland:
-    url: github:nix-community/nixpkgs-wayland
-  hyprland:
-    url: github:hyprwm/Hyprland
-  agenix:
-    url: github:ryantm/agenix
-  sops-nix:
-    url: github:Mic92/sops-nix
-  deploy-rs:
-    url: github:serokell/deploy-rs
-  colmena:
-    url: github:zhaofengli/colmena
-  nixos-generators:
-    url: github:nix-community/nixos-generators
-  nixos-anywhere:
-    url: github:nix-community/nixos-anywhere
-  disko:
-    url: github:nix-community/disko
-  impermanence:
-    url: github:nix-community/impermanence
-  lanzaboote:
-    url: github:nix-community/lanzaboote
-  nix-ld:
-    url: github:nix-community/nix-ld
-  nixGL:
-    url: github:nix-community/nixGL
-  nix-alien:
-    url: github:thiagokokada/nix-alien
-  nix-index:
-    url: github:bennofs/nix-index
-  comma:
-    url: github:nix-community/comma
-  nurl:
-    url: github:nix-community/nurl
-  nvfetcher:
-    url: github:berberman/nvfetcher
-
-allowUnfree: true
-impure: true
+    inputs:
+      nixpkgs:
+        follows: nixpkgs

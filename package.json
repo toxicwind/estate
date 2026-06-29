@@ -1,34 +1,15 @@
 {
-  "name": "sovereign-projects",
-  "version": "18.1.14",
-  "description": "Sovereign control plane — herd, mesh, llama-swap, sovereign-swap",
-  "workspaces": [
-    "herd",
-    "herd/ui-svelte",
-    "mesh",
-    "mesh/router",
-    "mesh/ast-matrix",
-    "sovereign-swap",
-    "sovereign-skills",
-    "sovereign-scripts",
-    "yote",
-    "openfang",
-    "extensions",
-    "packages/*"
-  ],
-  "scripts": {
-    "install:all": "bun install && cd herd && go mod download && cd ui-svelte && bun install",
-    "dev": "cd herd && go run ./cmd/main.go",
-    "build:all": "cd herd && go build ./... && cd ui-svelte && bun run build",
-    "test": "cd herd && go test ./... && cd ui-svelte && bun run test",
-    "lint": "cd herd && go vet ./... && cd ui-svelte && bun run check",
-    "docker": "docker compose up -d",
-    "health": "curl -s http://127.0.0.1:25100/v1/models | python3 -c 'import sys,json;print(len(json.load(sys.stdin)[\"data\"]),\"models\")'"
+  "name": "sovereign",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
   },
-  "packageManager": "bun@1.4.2",
-  "engines": {
-    "node": ">=22.12.0",
-    "bun": ">=1.4.2",
-    "go": ">=1.23.1"
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+    "scripts": {
+    "ranker": "bun run fleet_ranker.ts"
   }
 }

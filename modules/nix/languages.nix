@@ -1,33 +1,53 @@
-{ config, pkgs, lib, inputs, ... }:
-let
-  shared = import ./lib.nix { inherit config pkgs lib inputs; };
-  inherit (shared) pkgs' SOV SOV_HOME MODELS STATE LOGS PROMETHEUS_DATA MODELS_MANIFEST ACTIVE_MODEL ACTIVE_DRAFT PORTS LLAMA_FLAGS BEELLAMA_BIN IK_LLAMA_BIN QUANT_BIN beellama-cpp sovereign-watchdog-pkg telethon-overlord-pkg configToml secretspecToml prometheusYml caddyConfig llamaServerCmd;
-in
-{
+_: {
   languages = {
-      python = {
+    python = {
+      enable = true;
+      uv.enable = true;
+      venv.enable = true;
+    };
+    rust.enable = true;
+    go.enable = true;
+    javascript = {
+      enable = true;
+      bun = {
         enable = true;
-        # FIXED: removed hardcoded version = "3.12" — let devenv use nixpkgs default
-        # or set via: package = pkgs.python3;
-        uv.enable = true;
-        venv.enable = true;
-      };
-      rust = {
-        enable = true;
-      };
-      go = {
-        enable = true;
-      };
-      javascript = {
-        enable = true;
-        bun = {
-          enable = true;
-          install.enable = true;
-        };
-      };
-      nix = {
-        enable = true;
-        lsp.enable = true;
+        install.enable = true;
       };
     };
+    nix = {
+      enable = true;
+      lsp.enable = true;
+    };
+  };
+
+  # this is the devenv-native treefmt (not perSystem)
+  treefmt = {
+    enable = true;
+    config = {
+      projectRootFile = "flake.nix";
+      programs = {
+        nixfmt.enable = true;
+        statix.enable = true;
+        deadnix.enable = true;
+      };
+      settings = {
+        global.excludes = [
+          ".git/**"
+          "result/**"
+          "**/*.md"
+          "LICENSE"
+          "audit/**"
+          ".devenv/**"
+          ".direnv/**"
+          "node_modules/**"
+          "target/**"
+          "dist/**"
+          "build/**"
+          "*.log"
+          "tmp/**"
+          "temp/**"
+        ];
+      };
+    };
+  };
 }

@@ -1,9 +1,10 @@
+// src/algo.rs
 use serde::{Serialize, Deserialize};
 use std::cmp::Ordering;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Weights {
-    pub nix_overhead: f32, // 10 = zero nix dependency, 0 = pure nix coding
+    pub nix_overhead: f32,
     pub tui_gui_polish: f32,
     pub performance: f32,
     pub setup_speed: f32,
@@ -149,11 +150,14 @@ pub fn get_tools() -> Vec<ToolScore> {
 
 pub fn rank_tools(weights: Weights) -> Vec<ToolScore> {
     let mut tools = get_tools();
-    
-    // Normalize weights to sum to 1.0 (or just run standard weighted sum)
-    let sum = weights.nix_overhead + weights.tui_gui_polish + weights.performance + 
-              weights.setup_speed + weights.orchestration + weights.portability;
-              
+
+    let sum = weights.nix_overhead
+        + weights.tui_gui_polish
+        + weights.performance
+        + weights.setup_speed
+        + weights.orchestration
+        + weights.portability;
+
     let w = if sum > 0.0 {
         Weights {
             nix_overhead: weights.nix_overhead / sum,
@@ -175,19 +179,21 @@ pub fn rank_tools(weights: Weights) -> Vec<ToolScore> {
     };
 
     for tool in &mut tools {
-        let score = (tool.scores.nix_overhead * w.nix_overhead) +
-                    (tool.scores.tui_gui_polish * w.tui_gui_polish) +
-                    (tool.scores.performance * w.performance) +
-                    (tool.scores.setup_speed * w.setup_speed) +
-                    (tool.scores.orchestration * w.orchestration) +
-                    (tool.scores.portability * w.portability);
-                    
-        // Scale to 0-100% for readability
+        let score = (tool.scores.nix_overhead * w.nix_overhead)
+            + (tool.scores.tui_gui_polish * w.tui_gui_polish)
+            + (tool.scores.performance * w.performance)
+            + (tool.scores.setup_speed * w.setup_speed)
+            + (tool.scores.orchestration * w.orchestration)
+            + (tool.scores.portability * w.portability);
+
         tool.weighted_score = (score * 10.0).round();
     }
 
-    // Sort descending by weighted score
-    tools.sort_by(|a, b| b.weighted_score.partial_cmp(&a.weighted_score).unwrap_or(Ordering::Equal));
-    
+    tools.sort_by(|a, b| {
+        b.weighted_score
+            .partial_cmp(&a.weighted_score)
+            .unwrap_or(Ordering::Equal)
+    });
+
     tools
 }

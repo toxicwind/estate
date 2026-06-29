@@ -1,13 +1,79 @@
+<!-- static/index.html -->
 <!DOCTYPE html>
-<html>
-<head><title>Sovereign</title></head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sovereign DevOps Advisor</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
 <body>
-<h1>Sovereign Stack</h1>
-<p>Status: <span id="status">checking...</span></p>
-<script>
-fetch('/health').then(r => r.json()).then(j => {
-    document.getElementById('status').textContent = j.status;
-});
-</script>
+    <h1>Sovereign DevOps Advisor</h1>
+
+    <section id="weights-section">
+        <h2>Criteria Weights</h2>
+
+        <div class="slider-row">
+            <label>Nix Overhead</label>
+            <input id="weight-nix" type="range" min="0" max="100" value="50">
+            <span id="val-nix">50%</span>
+        </div>
+
+        <div class="slider-row">
+            <label>TUI / GUI Polish</label>
+            <input id="weight-tui" type="range" min="0" max="100" value="50">
+            <span id="val-tui">50%</span>
+        </div>
+
+        <div class="slider-row">
+            <label>Performance</label>
+            <input id="weight-perf" type="range" min="0" max="100" value="50">
+            <span id="val-perf">50%</span>
+        </div>
+
+        <div class="slider-row">
+            <label>Setup Speed</label>
+            <input id="weight-setup" type="range" min="0" max="100" value="50">
+            <span id="val-setup">50%</span>
+        </div>
+
+        <div class="slider-row">
+            <label>Orchestration</label>
+            <input id="weight-orch" type="range" min="0" max="100" value="50">
+            <span id="val-orch">50%</span>
+        </div>
+
+        <div class="slider-row">
+            <label>Portability</label>
+            <input id="weight-port" type="range" min="0" max="100" value="50">
+            <span id="val-port">50%</span>
+        </div>
+
+        <button id="btn-reset-weights">Reset to Equal Weights</button>
+    </section>
+
+    <section>
+        <h2>Tool Rankings</h2>
+        <div id="ranks-container"></div>
+    </section>
+
+    <section id="advisor-section">
+        <h2>AI DevOps Advisor</h2>
+
+        <div id="chat-box"></div>
+
+        <textarea id="chat-input" placeholder="Describe your project or preferences..."></textarea>
+        <button id="btn-send-chat">Ask Advisor</button>
+
+        <div id="suggested-weights-box" class="hidden">
+            <p>The Advisor suggested new weights.</p>
+            <button id="btn-apply-weights">Apply Suggested Weights</button>
+        </div>
+    </section>
+
+    <div id="loading-overlay" class="hidden">
+        Consulting Advisor...
+    </div>
+
+    <script src="/app.js"></script>
 </body>
 </html>

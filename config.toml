@@ -1,47 +1,15 @@
-api_listen = "127.0.0.1:25004"
-auto_approve = true
-human_in_loop_initial = true
-log_level = "info"
-sovereign_mode = "maximal_emergent"
-target_hardware = "ryzen_8700f_64gb_sm86_3090_24gb_nvme"
+[logging]
+level = "debug"
 
-[build]
-cuda_arch = "sm_86"
-ik_llama_sm86 = true
-int8_swizzled = true
-use_hmma = true
 
-[controller]
-fsr_watch = true
-make_on = true
-kv_fork_enabled = true
 
-[default_model]
-provider = "openai"
-model = "qwen"
-base_url = "http://127.0.0.1:25001/v1"
-api_key_env = "OPENAI_API_KEY"
 
-[memory]
-embedding_provider = "vllm"
-embedding_model = "qwen"
-embedding_api_key_env = "OPENAI_API_KEY"
 
-[provider_urls]
-vllm = "http://127.0.0.1:25001/v1"
 
-[extensions]
-fsr_max = true
-kv_sovereign_fork = true
-weight_pack_sm86 = true
 
-[channels.telegram]
-bot_token_env = "TELEGRAM_BOT_TOKEN"
-allowed_users = ["puppertrix"]
-default_agent = "coyote"
-poll_interval_secs = 1
 
-[channels.discord]
-bot_token_env = "DISCORD_BOT_TOKEN"
-allowed_guilds = ["795261154150449153"]
-default_agent = "coyote"
+
+
+
+
+

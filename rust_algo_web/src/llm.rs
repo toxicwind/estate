@@ -1,237 +1,251 @@
+// src/llm.rs — final sovereign version (chat + tools with fallback)
 use serde::{Serialize, Deserialize};
 use reqwest::Client;
+use std::collections::HashMap;
+use tokio::sync::RwLock;
+use lazy_static::lazy_static;
+use serde_json::json;
+
 use crate::algo::Weights;
 
-const LLM_PROXY_URL: &str = "http://127.0.0.1:25008/v1/chat/completions";
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct AdvisorRequest {
+    pub prompt: String,
+}
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct AdvisorResponse {
+    pub weights: Weights,
+    pub explanation: String,
+}
+
+#[derive(Deserialize)]
+struct ModelList {
+    data: Vec<ModelInfo>,
+}
+
+#[derive(Deserialize)]
+struct ModelInfo {
+    id: String,
+}
+
+// Tool schema
+#[derive(Serialize)]
+struct Tool {
+    r#type: String,
+    function: FunctionDef,
+}
+
+#[derive(Serialize)]
+struct FunctionDef {
+    name: String,
+    description: String,
+    parameters: serde_json::Value,
+}
+
+#[derive(Serialize)]
 struct ChatMessage {
     role: String,
     content: String,
 }
 
 #[derive(Serialize)]
-struct ChatCompletionRequest {
+struct ChatRequest {
     model: String,
     messages: Vec<ChatMessage>,
-    temperature: f32,
-    max_tokens: usize,
+    tools: Vec<Tool>,
+    tool_choice: serde_json::Value,
+}
+
+#[derive(Deserialize)]
+struct ChatResponse {
+    choices: Vec<ChatChoice>,
 }
 
 #[derive(Deserialize)]
 struct ChatChoice {
-    message: ChatMessage,
+    message: Option<AssistantMessage>,
 }
 
 #[derive(Deserialize)]
-struct ChatCompletionResponse {
-    choices: Vec<ChatChoice>,
+struct AssistantMessage {
+    tool_calls: Option<Vec<ToolCall>>,
+    content: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
-pub struct AdvisorRequest {
-    pub prompt: String,
+#[derive(Deserialize)]
+struct ToolCall {
+    function: FunctionCall,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct AdvisorResponse {
-    pub weights: Weights,
-    #[serde(default)]
-    pub explanation: String,
+#[derive(Deserialize)]
+struct FunctionCall {
+    arguments: String,
+}
+
+lazy_static! {
+    static ref ADVISOR_CACHE: RwLock<HashMap<String, AdvisorResponse>> =
+        RwLock::new(HashMap::new());
 }
 
 pub async fn consult_advisor(req: AdvisorRequest) -> Result<AdvisorResponse, String> {
+    if let Some(cached) = ADVISOR_CACHE.read().await.get(&req.prompt) {
+        return Ok(cached.clone());
+    }
+
+    let model = get_active_model().await?;
+    let intent = extract_intent(&model, &req.prompt).await?;
+    let weights_json = infer_weights(&model, &intent).await?;
+    let advisor_response = format_output_with_tool(&model, &intent, &weights_json).await?;
+
+    ADVISOR_CACHE.write().await.insert(req.prompt.clone(), advisor_response.clone());
+    Ok(advisor_response)
+}
+
+async fn get_active_model() -> Result<String, String> {
+    let base = std::env::var("LLM_PROXY_URL")
+        .unwrap_or_else(|_| "http://127.0.0.1:25008".to_string());
+
     let client = Client::new();
+    let resp = client.get(format!("{}/v1/models", base))
+        .send().await.map_err(|e| format!("Failed to query /v1/models: {}", e))?;
 
-    let system_instructions = 
-        "You are an expert DevOps Advisor. The user is trying to find the perfect developer environment \
-         and process manager manager tool. Your job is to parse their description of their project, preferences, \
-         and constraints, and suggest weights for 6 scoring criteria:\n\
-         - nix_overhead: 1.0 means 'I hate Nix / want zero Nix dependency', 0.0 means 'I am happy with deep Nix Flakes coding'\n\
-         - tui_gui_polish: 1.0 means 'I want a rich web dashboard, terminal multiplexer, or TUI', 0.0 means 'Plain CLI output is fine'\n\
-         - performance: 1.0 means 'Extremely lightweight, native speed, low RAM/resource use', 0.0 means 'Happy with Docker VMs/heavy containers'\n\
-         - setup_speed: 1.0 means 'I want zero configuration/instant init', 0.0 means 'Happy to write long config files/Dockerfiles'\n\
-         - orchestration: 1.0 means 'I need a robust process manager that watches files and restarts servers', 0.0 means 'Only need a basic shell run command'\n\
-         - portability: 1.0 means 'Must work seamlessly across macOS, Linux, Windows without prerequisites', 0.0 means 'Platform-specific is fine'\n\n\
-         You MUST reply in valid JSON format only, matching this structure:\n\
-         {\n\
-           \"weights\": {\n\
-             \"nix_overhead\": 0.8,\n\
-             \"tui_gui_polish\": 0.5,\n\
-             \"performance\": 0.9,\n\
-             \"setup_speed\": 0.7,\n\
-             \"orchestration\": 0.8,\n\
-             \"portability\": 0.6\n\
-           },\n\
-           \"explanation\": \"Based on your request, I recommend...\"\n\
-         }\n\n\
-         Do not include any markup other than JSON in your response. Ensure all weight values are between 0.0 and 1.0.";
+    let parsed = resp.json::<ModelList>().await
+        .map_err(|e| format!("Failed to parse /v1/models: {}", e))?;
 
-    let prompt = format!(
-        "User description of project requirements:\n\n\
-         \"{}\"\n\n\
-         Suggest weights and explain your choices.",
-        req.prompt
+    parsed.data.first().map(|m| m.id.clone())
+        .ok_or_else(|| "No models returned from server".to_string())
+}
+
+async fn extract_intent(model: &str, user_prompt: &str) -> Result<String, String> {
+    let base = std::env::var("LLM_PROXY_URL").unwrap_or_else(|_| "http://127.0.0.1:25008".to_string());
+    let system = "Extract the user's DevOps priorities and constraints. Think step by step. Output ONLY a single valid JSON object. No markdown, no prose outside the JSON.\n{ \"intent\": { ... } }";
+    let prompt = format!("{}\n\nUser:\n{}", system, user_prompt);
+
+    let body = json!({ "model": model, "prompt": prompt });
+    let client = Client::new();
+    let resp = client.post(format!("{}/v1/completions", base)).json(&body)
+        .send().await.map_err(|e| format!("LLM request failed: {}", e))?;
+
+    let parsed: serde_json::Value = resp.json().await.map_err(|e| format!("Failed to parse: {}", e))?;
+    parsed["choices"][0]["text"].as_str().map(|s| s.to_string())
+        .ok_or_else(|| "No text in response".to_string())
+}
+
+async fn infer_weights(model: &str, intent_json: &str) -> Result<String, String> {
+    let base = std::env::var("LLM_PROXY_URL").unwrap_or_else(|_| "http://127.0.0.1:25008".to_string());
+    let system = "Convert the intent JSON into numeric weights between 0.0 and 1.0 for:\nnix_overhead, tui_gui_polish, performance, setup_speed, orchestration, portability.\nThink step by step. Output ONLY a single valid JSON object. No markdown, no prose outside the JSON.\n{ \"weights\": { ... } }";
+    let prompt = format!("{}\n\nIntent:\n{}", system, intent_json);
+
+    let body = json!({ "model": model, "prompt": prompt });
+    let client = Client::new();
+    let resp = client.post(format!("{}/v1/completions", base)).json(&body)
+        .send().await.map_err(|e| format!("LLM request failed: {}", e))?;
+
+    let parsed: serde_json::Value = resp.json().await.map_err(|e| format!("Failed to parse: {}", e))?;
+    parsed["choices"][0]["text"].as_str().map(|s| s.to_string())
+        .ok_or_else(|| "No text in response".to_string())
+}
+
+async fn format_output_with_tool(
+    model: &str,
+    intent_json: &str,
+    weights_json: &str,
+) -> Result<AdvisorResponse, String> {
+    let base = std::env::var("LLM_PROXY_URL").unwrap_or_else(|_| "http://127.0.0.1:25008".to_string());
+
+    let system = "You are a precise DevOps trade-off advisor. Use the provided tool to return the final structured recommendation.";
+
+    let user_content = format!(
+        "Intent JSON:\n{}\n\nWeights JSON:\n{}\n\nCall the return_devops_advice tool with the combined result.",
+        intent_json, weights_json
     );
 
-    let body = ChatCompletionRequest {
-        model: "qwen3.6-27b".to_string(),
-        messages: vec![
-            ChatMessage {
-                role: "system".to_string(),
-                content: system_instructions.to_string(),
-            },
-            ChatMessage {
-                role: "user".to_string(),
-                content: prompt,
-            },
-        ],
-        temperature: 0.3,
-        max_tokens: 1024,
+    let tool = Tool {
+        r#type: "function".to_string(),
+        function: FunctionDef {
+            name: "return_devops_advice".to_string(),
+            description: "Return the final advisor output with numeric weights and concise explanation referencing tradeoffs.".to_string(),
+            parameters: json!({
+                "type": "object",
+                "properties": {
+                    "weights": { "type": "object" },
+                    "explanation": { "type": "string" }
+                },
+                "required": ["weights", "explanation"]
+            }),
+        },
     };
 
-    match client.post(LLM_PROXY_URL).json(&body).send().await {
-        Ok(resp) => {
-            if resp.status().is_success() {
-                match resp.json::<ChatCompletionResponse>().await {
-                    Ok(res) => {
-                        if let Some(choice) = res.choices.first() {
-                            parse_llm_json(&choice.message.content)
-                        } else {
-                            Err("No choices returned from LLM".to_string())
-                        }
-                    }
-                    Err(e) => Err(format!("Failed to parse LLM response: {}", e)),
+    let body = ChatRequest {
+        model: model.to_string(),
+        messages: vec![
+            ChatMessage { role: "system".to_string(), content: system.to_string() },
+            ChatMessage { role: "user".to_string(), content: user_content },
+        ],
+        tools: vec![tool],
+        tool_choice: json!({"type": "function", "function": {"name": "return_devops_advice"}}),
+    };
+
+    let client = Client::new();
+    let resp = client.post(format!("{}/v1/chat/completions", base)).json(&body)
+        .send().await.map_err(|e| format!("Chat tool request failed: {}", e))?;
+
+    let parsed: ChatResponse = resp.json().await
+        .map_err(|e| format!("Failed to parse chat response: {}", e))?;
+
+    if let Some(msg) = parsed.choices.first().and_then(|c| c.message.as_ref()) {
+        // Primary: tool_calls
+        if let Some(tool_calls) = &msg.tool_calls {
+            if let Some(tc) = tool_calls.first() {
+                if let Ok(resp) = serde_json::from_str::<AdvisorResponse>(&tc.function.arguments) {
+                    return Ok(resp);
                 }
-            } else {
-                Err(format!("LLM proxy HTTP error: {}", resp.status()))
             }
         }
-        Err(e) => Err(format!("Failed to connect to LLM proxy: {}", e)),
+
+        // Fallback 1: direct content as JSON
+        if let Some(content) = &msg.content {
+            let trimmed = content.trim();
+            if let Ok(resp) = serde_json::from_str::<AdvisorResponse>(trimmed) {
+                return Ok(resp);
+            }
+            // Fallback 2: legacy brace parser
+            if let Ok(resp) = parse_llm_json(trimmed) {
+                return Ok(resp);
+            }
+        }
     }
+
+    Err("No valid tool call or parsable content in response".to_string())
 }
 
 fn parse_llm_json(content: &str) -> Result<AdvisorResponse, String> {
-    // Extract the first complete JSON object from the content
-    if let Some(json_obj) = extract_json_object(content) {
-        let cleaned_json = clean_json_commas(&json_obj);
-        match serde_json::from_str::<AdvisorResponse>(&cleaned_json) {
-            Ok(parsed) => Ok(parsed),
-            Err(e) => Err(format!(
-                "Failed to parse JSON structure from LLM content: {} (Extracted: {})",
-                e, cleaned_json
-            )),
-        }
-    } else {
-        Err(format!(
-            "Could not find a valid JSON object in the LLM response (Raw: {})",
-            content
-        ))
-    }
-}
+    let Some(start) = content.find('{') else {
+        return Err("No JSON object found".into());
+    };
 
-fn clean_json_commas(input: &str) -> String {
-    let mut result = String::with_capacity(input.len());
-    let mut chars = input.chars().peekable();
-    let mut in_string = false;
-    let mut escape = false;
-
-    while let Some(c) = chars.next() {
-        if escape {
-            result.push(c);
-            escape = false;
-            continue;
-        }
-        if c == '\\' && in_string {
-            result.push(c);
-            escape = true;
-            continue;
-        }
-        if c == '"' {
-            in_string = !in_string;
-        }
-        
-        if c == ',' && !in_string {
-            // Check if the next non-whitespace characters are '}' or ']'
-            let mut temp = chars.clone();
-            let mut is_trailing = false;
-            while let Some(&next_c) = temp.peek() {
-                if next_c.is_whitespace() {
-                    temp.next();
-                } else if next_c == '}' || next_c == ']' {
-                    is_trailing = true;
-                    break;
-                } else {
-                    break;
-                }
-            }
-            if is_trailing {
-                // Skip the comma
-                continue;
-            }
-        }
-        result.push(c);
-    }
-    result
-}
-
-fn extract_json_object(input: &str) -> Option<String> {
-    let clean_input = input.split("<end_of_turn>").next().unwrap_or(input);
-    let clean_input = clean_input.split("<start_of_turn>").next().unwrap_or(clean_input);
-
-    let start_idx = clean_input.find('{')?;
     let mut depth = 0;
     let mut in_string = false;
     let mut escape = false;
-    let mut last_valid_idx = start_idx;
 
-    for (i, c) in clean_input[start_idx..].char_indices() {
-        let current_idx = start_idx + i;
-        if escape {
-            escape = false;
-            continue;
-        }
+    for (i, c) in content[start..].char_indices() {
+        let idx = start + i;
+        if escape { escape = false; continue; }
         match c {
-            '\\' => {
-                if in_string {
-                    escape = true;
-                }
-            }
-            '"' => {
-                in_string = !in_string;
-            }
-            '{' => {
-                if !in_string {
-                    depth += 1;
-                }
-            }
-            '}' => {
-                if !in_string {
-                    depth -= 1;
-                    if depth == 0 {
-                        return Some(clean_input[start_idx..=current_idx].to_string());
-                    }
+            '\\' if in_string => escape = true,
+            '"' => in_string = !in_string,
+            '{' if !in_string => depth += 1,
+            '}' if !in_string => {
+                depth -= 1;
+                if depth == 0 {
+                    let json_str = &content[start..=idx];
+                    return serde_json::from_str::<AdvisorResponse>(json_str)
+                        .map_err(|e| format!("JSON parse error: {}", e));
                 }
             }
             _ => {}
         }
-        if !in_string {
-            last_valid_idx = current_idx;
-        }
     }
-
-    // Recovery if depth > 0
-    if depth > 0 {
-        let mut sub = clean_input[start_idx..=last_valid_idx].trim().to_string();
-        if sub.ends_with(',') {
-            sub.pop();
-        }
-        let sub = sub.trim();
-        let mut closed = sub.to_string();
-        for _ in 0..depth {
-            closed.push('}');
-        }
-        return Some(closed);
-    }
-    None
+    Err("Unclosed JSON object".into())
 }
