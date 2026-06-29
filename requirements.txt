@@ -1,0 +1,15 @@
+flask>=2.3
+requests>=2.31
+pydantic>=2.0
+uvicorn>=0.23
+fastapi>=0.100
+numpy>=1.24
+psutil>=5.9
+torch>=2.0
+transformers>=4.30
+accelerate>=0.20
+bitsandbytes>=0.40
+peft>=0.4
+telethon>=1.28
+aiohttp>=3.8
+httpx>=0.24

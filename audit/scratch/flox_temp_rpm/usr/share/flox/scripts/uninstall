@@ -1,0 +1,93 @@
+#!/bin/sh
+
+set -euo pipefail
+
+if [ -t 1 ]; then
+  read -p "This script must be run as root, and it will completely remove both Nix (including everything in /nix) and Flox. Press [y] to continue: " -n 1 response
+  if [[ $response != "y" ]]
+  then
+      exit 1
+  fi
+  echo
+fi
+
+# If this is a brew uninstall, then downgrade Nix to a root-owned single-user
+if [ -n "${HOMEBREW_VERSION:-}" ] && [ "${1:-}" != "--zap" ] ; then
+	HOME=/var/root /usr/local/bin/nix profile install /usr/local/bin/nix \
+          --profile /nix/var/nix/profiles/default \
+          --experimental-features nix-command || true
+      /bin/rm -rf /nix/var/nix/daemon-socket || true
+      /bin/cp /etc/flox-version /etc/flox-version.update || true
+      /bin/cp -f /usr/local/share/flox/scripts/uninstall{,_zap} || true
+      /usr/bin/sed -i.bak 's#^include flox.conf$##' /etc/nix/nix.conf
+      exit 0
+fi
+
+# Make sure these services are stopped so we can unmount /nix, but don't remove them yet so we don't
+# break Nix with an unsuccessful uninstall
+for i in /Library/LaunchDaemons/org.nixos.{nix-daemon,darwin-store}.plist; do
+  if [ -f "$i" ]; then
+    launchctl unload "$i"
+  fi
+done
+
+# Unmount and destroy the Nix store volume.
+if { diskutil list | grep "Nix Store" ; } then
+  if ! diskutil unmount /nix; then
+	  for i in /Library/LaunchDaemons/org.nixos.{nix-daemon,darwin-store}.plist; do
+	    launchctl load "$i"
+	  done
+	  echo "Could not unmount /nix; make sure no processes using Nix or Flox are running, and then re-run this uninstaller."
+	  exit 1
+  fi
+  diskutil apfs deleteVolume "Nix Store"
+fi
+
+for i in /Library/LaunchDaemons/org.nixos.{nix-daemon,darwin-store}.plist; do
+  rm -f "$i"
+done
+
+# Remove the nixbld group and the _nixbld[1-32] users.
+dscl . delete /Groups/nixbld
+for i in $(seq 1 32); do
+  dscl . -delete "/Users/_nixbld$i"
+done
+
+# Remove nix entry from /etc/synthetic.conf, or if it's the only entry
+# then remove the file altogether.
+sed -i -e "/^nix$/d" /etc/synthetic.conf
+test -s /etc/synthetic.conf || rm /etc/synthetic.conf
+
+# Remove mount entry from /etc/fstab.
+# Technically we aren't supposed to edit fstab directly, but sed is fast enough that we're deciding
+# to avoid the problem of locking it for now
+sed -i -e "/ \/nix apfs rw,noauto,nobrowse,suid,owners$/d" /etc/fstab
+EDITOR=cat vifs > /dev/null
+
+# Back out Nix customizations of /etc/{bashrc,bash.bashrc,zshrc}:
+for i in "/etc/bashrc" "/etc/profile.d/nix.sh" "/etc/zshrc" "/etc/bash.bashrc" "/etc/zsh/zshrc"; do
+  if [ -f "$i.backup-before-nix" ]; then
+    mv "$i" "$i.backup-with-nix.$$"
+    mv "$i".backup-before-nix "$i"
+  fi
+done
+
+# remove all files our install scripts created directly
+rm -f {~root,~}/.nix-{channels,profile}
+rm -rf {~root,~}/.nix-defexpr
+rm -f "/usr/local/share/nix/scripts/flox-install-multi-user.sh"
+
+
+if pkgutil --pkgs | grep com.floxdev.flox ; then
+  # remove all files that were part of the .pkg
+  pkgutil --only-files --files com.floxdev.flox | xargs -I '{}' rm /'{}'
+  # pkgutil --only-files doesn't include symlinks
+  # /etc is a symlink but should be excluded
+  pkgutil --files com.floxdev.flox | xargs -I '{}' sh -c "if [ -L /'{}' -a /'{}' != /etc ]; then rm /'{}'; fi"
+  # rmdir won't remove non-empty directories that we don't want removed, e.g. /usr
+  # sort directories in reverse order so that rmdir is called on parent directories after children
+  # have been removed
+  pkgutil --only-dirs --files com.floxdev.flox | sort -r | xargs -I '{}' sh -c "rmdir /'{}' || true" 2> /dev/null
+
+  pkgutil --forget com.floxdev.flox
+fi

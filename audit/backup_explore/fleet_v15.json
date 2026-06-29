@@ -1,0 +1,82 @@
+[
+  {
+    "model": "Qwen3.5-9B-DeepSeek-V4-Flash-IQ4_XS.gguf",
+    "sizeGB": "4.87",
+    "maxCtx": 262144,
+    "arch": "qwen35",
+    "namedHybridReason": "ssm_hybrid",
+    "empiricalHybrid": true,
+    "hybridIntervalGuess": 4,
+    "fingerprint": "3664.22,    591.25,   4255.47 MiB"
+  },
+  {
+    "model": "Qwen3.6-27B-Heretic-Cerebellum-v1-Q2_K_Mixed.gguf",
+    "sizeGB": "11.98",
+    "maxCtx": 155648,
+    "arch": "qwen35",
+    "namedHybridReason": "ssm_hybrid",
+    "empiricalHybrid": true,
+    "hybridIntervalGuess": 4,
+    "fingerprint": "10867.55,    792.62,  11660.17 MiB"
+  },
+  {
+    "model": "heretic-UD-27B-Q4_K_XL.gguf",
+    "sizeGB": "18.52",
+    "maxCtx": 65536,
+    "arch": "qwen35",
+    "namedHybridReason": "ssm_hybrid",
+    "empiricalHybrid": true,
+    "hybridIntervalGuess": 4,
+    "fingerprint": "16666.44,    792.62,  17459.06 MiB"
+  },
+  {
+    "model": "gemma4-opus48-Q4_K_M.gguf",
+    "sizeGB": "6.87",
+    "maxCtx": 40960,
+    "arch": "gemma4",
+    "namedHybridReason": "sliding_window",
+    "empiricalHybrid": true,
+    "hybridIntervalGuess": 1,
+    "fingerprint": "6236.83,   1773.50,   8010.33 MiB"
+  },
+  {
+    "model": "gemma-4-12B-it-uncensored-Q4_K_M.gguf",
+    "sizeGB": "6.87",
+    "maxCtx": 40960,
+    "arch": "gemma4",
+    "namedHybridReason": "sliding_window",
+    "empiricalHybrid": true,
+    "hybridIntervalGuess": 1,
+    "fingerprint": "6236.83,   1773.50,   8010.33 MiB"
+  },
+  {
+    "model": "ggml-model-iq4_k_s.gguf",
+    "sizeGB": "6.87",
+    "maxCtx": 40960,
+    "arch": "gemma4",
+    "namedHybridReason": "sliding_window",
+    "empiricalHybrid": true,
+    "hybridIntervalGuess": 1,
+    "fingerprint": "6236.83,   1773.50,   8010.33 MiB"
+  },
+  {
+    "model": "heretic-UD-27B-Q5_K_XL.gguf",
+    "sizeGB": "19.95",
+    "maxCtx": 40960,
+    "arch": "qwen35",
+    "namedHybridReason": "ssm_hybrid",
+    "empiricalHybrid": true,
+    "hybridIntervalGuess": 4,
+    "fingerprint": "18139.33,    792.62,  18931.96 MiB"
+  },
+  {
+    "model": "MN-GRAND-23.5B-Gutenberg-UNCENSORED-V2-Q4_K_M.gguf",
+    "sizeGB": "13.37",
+    "maxCtx": 24576,
+    "arch": "llama",
+    "namedHybridReason": "none",
+    "empiricalHybrid": false,
+    "hybridIntervalGuess": null,
+    "fingerprint": "12642.19,   1466.00,  14108.19 MiB"
+  }
+]

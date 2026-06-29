@@ -1,10 +1,11 @@
-# Sovereign Related Git Repos
+# Submodules
 
-## Active Forks (toxicwind)
-- openfang: fork=https://github.com/toxicwind/openfang.git origin=https://github.com/RightNow-AI/openfang.git
-- ouroboros: fork=https://github.com/toxicwind/ouroboros-desktop.git origin=https://github.com/joi-lab/ouroboros-desktop.git  
-- greprip: https://github.com/toxicwind/greprip.git
-- playwright-mcp: https://github.com/microsoft/playwright-mcp.git
+## yote/
+Core Python agent framework.
 
-## Reference Only
-- club-3090 (benchmarks): https://github.com/noonghunna/club-3090.git
+## modules/
+- `nfcot_proxy.py` — Chain-of-thought injection proxy
+- `sovereign_watchdog.py` — Health monitor
+
+## rust_algo_web/
+High-performance Rust API layer.

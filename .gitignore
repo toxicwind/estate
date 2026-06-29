@@ -1,24 +1,27 @@
-logs/
-pids/
+.env.local
+.secrets
+*.key
+*.pem
+target/
+dist/
+node_modules/
 __pycache__/
 *.pyc
-*.pt
-*.gguf
-.pixi/
-scratch/
-artifacts/
-nfcot_flow*.pt
-nfcot_flow*.bad.*
+*.egg-info/
+logs/
 *.log
-context_results_*.json
-canonical_benchmark_*.json
-bin/llama-server
-bin/*.log
-llama.log
-main.log
-.env
-.devenv/
-*.session
-*.session-journal
+.prometheus/
+.state/
+models/hf/
+data/
+.idea/
+.vscode/
+GITEOF
 
+echo "✓ requirements.txt, tsconfig.json, .gitignore"
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# CREATE TAR.GZ
+# ═══════════════════════════════════════════════════════════════════════════════
+
+cd /home/toxic

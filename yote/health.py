@@ -1,30 +1,15 @@
 #!/usr/bin/env python3
-# yote-health — CLI tool to check stack health and return JSON
-import json
-import argparse
-from yote.agent import YoteAgent, SERVICE_PORTS
+"""Health check utilities"""
+import requests
 
-def main():
-    parser = argparse.ArgumentParser(description="Yote Health Check CLI")
-    parser.add_argument("--json", action="store_true", help="Print status in JSON format")
-    args = parser.parse_args()
-    
-    agent = YoteAgent()
-    status_data = {}
-    for name in agent.config["services"]:
-        port = SERVICE_PORTS.get(name)
-        is_healthy = False
-        if port:
-            is_healthy = agent._health_check(name, port)
-        else:
-            is_healthy = agent._process_running(name)
-        status_data[name] = "healthy" if is_healthy else "offline"
-        
-    if args.json:
-        print(json.dumps(status_data, indent=2))
-    else:
-        for name, status in status_data.items():
-            print(f"{name}: {status}")
+def check_llm(url="http://127.0.0.1:25001"):
+    try:
+        return requests.get(f"{url}/health", timeout=5).status_code == 200
+    except:
+        return False
 
-if __name__ == "__main__":
-    main()
+def check_nfcot(url="http://127.0.0.1:25008"):
+    try:
+        return requests.get(f"{url}/v1/models", timeout=5).status_code == 200
+    except:
+        return False

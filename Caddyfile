@@ -2,20 +2,27 @@
   admin off
   auto_https off
 }
-:25000 {
+
+:{$CADDY_PORT} {
+  handle_path /rank* {
+    reverse_proxy localhost:{$RANK_PORT}
+  }
+  handle_path /api/* {
+    reverse_proxy localhost:{$RANK_PORT}
+  }
+  handle_path /llm* {
+    reverse_proxy localhost:{$LLAMA_PORT}
+  }
+  handle_path /fang* {
+    reverse_proxy localhost:{$OPENFANG_PORT}
+  }
+  handle_path /cot* {
+    reverse_proxy localhost:{$NFCOT_PORT}
+  }
   handle /health* {
     respond "ok" 200
   }
-  handle_path /llm* {
-    reverse_proxy localhost:25001
-  }
-  handle_path /fang* {
-    reverse_proxy localhost:25004
-  }
-  handle_path /cot* {
-    reverse_proxy localhost:25008
-  }
   handle {
-    respond "Sovereign OK - llm:25001 fang:25004 cot:25008" 200
+    reverse_proxy localhost:{$RANK_PORT}
   }
 }

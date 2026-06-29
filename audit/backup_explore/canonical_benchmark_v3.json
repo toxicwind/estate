@@ -1,0 +1,58 @@
+{
+  "metadata": {
+    "timestamp": "2026-06-18T07:38:01.549819",
+    "hostname": "awrawr-pc",
+    "gpu": {
+      "name": "NVIDIA GeForce RTX 3090",
+      "vram_mb": 24576.0
+    },
+    "model_path": "/home/toxic/models/Qwen3.6-27B-Heretic-UD/heretic-UD-27B-Q5_K_XL.gguf",
+    "mmproj_path": "/home/toxic/models/Qwen3.6-27B-Heretic-UD/mmproj-27B-F16.gguf",
+    "server_path": "/home/toxic/ik_llama.cpp-main/build/bin/llama-server",
+    "cache_types_tested": [
+      "turbo3",
+      "turbo2",
+      "amx3",
+      "q4_0",
+      "q8_0"
+    ],
+    "use_mtp": false,
+    "use_triattention": false
+  },
+  "results": [
+    {
+      "cache_type": "turbo3",
+      "max_ctx": 0,
+      "error": "Process died early: Log start\nmain: build = 4586 (5f917a64)\nmain: built with gcc-14 (GCC) 14.3.1 20260214 for x86_64-pc-linux-gnu\nmain: seed  = 1781789882\nterminate called after throwing an instance of 'std::runtime_erro"
+    },
+    {
+      "cache_type": "turbo2",
+      "max_ctx": 0,
+      "error": "Process died early: Log start\nmain: build = 4586 (5f917a64)\nmain: built with gcc-14 (GCC) 14.3.1 20260214 for x86_64-pc-linux-gnu\nmain: seed  = 1781789895\nterminate called after throwing an instance of 'std::runtime_erro"
+    },
+    {
+      "cache_type": "amx3",
+      "max_ctx": 0,
+      "error": "Process died early: Log start\nmain: build = 4586 (5f917a64)\nmain: built with gcc-14 (GCC) 14.3.1 20260214 for x86_64-pc-linux-gnu\nmain: seed  = 1781789907\nterminate called after throwing an instance of 'std::runtime_erro"
+    },
+    {
+      "cache_type": "q4_0",
+      "max_ctx": 0,
+      "error": "Process died early: Log start\nmain: build = 4586 (5f917a64)\nmain: built with gcc-14 (GCC) 14.3.1 20260214 for x86_64-pc-linux-gnu\nmain: seed  = 1781789920\nggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no\nggml_cuda_init: GGML_C"
+    },
+    {
+      "cache_type": "q8_0",
+      "max_ctx": 0,
+      "error": "Process died early: Log start\nmain: build = 4586 (5f917a64)\nmain: built with gcc-14 (GCC) 14.3.1 20260214 for x86_64-pc-linux-gnu\nmain: seed  = 1781789932\nggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no\nggml_cuda_init: GGML_C"
+    }
+  ],
+  "best_overall": {
+    "cache_type": "turbo3",
+    "max_ctx": 0,
+    "error": "Process died early: Log start\nmain: build = 4586 (5f917a64)\nmain: built with gcc-14 (GCC) 14.3.1 20260214 for x86_64-pc-linux-gnu\nmain: seed  = 1781789882\nterminate called after throwing an instance of 'std::runtime_erro"
+  },
+  "recommendation": {
+    "cache_type": "turbo3",
+    "context": 0
+  }
+}

@@ -1,0 +1,31 @@
+[
+  {
+    "model": "MN-GRAND-23.5B-Gutenberg-UNCENSORED-V2-Q4_K_M.gguf",
+    "maxCtx": 131072
+  },
+  {
+    "model": "Qwen3.5-9B-DeepSeek-V4-Flash-IQ4_XS.gguf",
+    "maxCtx": 0
+  },
+  {
+    "model": "heretic-UD-27B-Q4_K_XL.gguf",
+    "maxCtx": 0
+  },
+  {
+    "model": "Qwen3.6-27B-Heretic-Cerebellum-v1-Q2_K_Mixed.gguf",
+    "maxCtx": 0
+  },
+  {
+    "model": "heretic-UD-27B-Q5_K_XL.gguf",
+    "maxCtx": 0
+  },
+  {
+    "model": "gemma-4-12B-it-uncensored-Q4_K_M.gguf",
+    "maxCtx": 0,
+    "specialFlags": ""
+  },
+  {
+    "model": "gemma4-opus48-Q4_K_M.gguf",
+    "maxCtx": 0
+  }
+]

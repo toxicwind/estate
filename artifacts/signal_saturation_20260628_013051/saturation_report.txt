@@ -1,0 +1,34 @@
+=== SIGNAL SATURATION AUDIT ===
+Time: 2026-06-28 01:30:51.936612
+Working dir: /home/toxic/sovereign
+
+=== ik_ / llama-server processes (bruteforce) ===
+toxic     169267  0.0  0.0   7988  4312 ?        S<s  01:25   0:00 /nix/store/cgjr3kj3hs7ngznyws5qfg16c8scpys0-bash-interactive-5.3p9/bin/bash /nix/store/vijh71c62s740q8yzc3cpip21k176n9x-devenv-processes-llama-server
+toxic     169279  0.0  0.0   7988  4368 ?        S<   01:25   0:00 bash -c while true; do /home/toxic/beellama.cpp/build/bin/llama-server -m /home/toxic/models/StrangeMerges_19-7B-dare_ties.Q4_K_M.gguf --host 0.0.0.0 --port 25001 -c 131072 --parallel 1 -b 4096 -ub 1024 --flash-attn 1 -ngl 99 -t 2 --no-mmap --embeddings --pooling cls --cache-type-k turbo3_tcq --cache-type-v turbo3_tcq; sleep 2; done
+toxic     169292 76.4  4.3 53070264 2867076 ?    R<l  01:25   4:22 /home/toxic/beellama.cpp/build/bin/llama-server -m /home/toxic/models/StrangeMerges_19-7B-dare_ties.Q4_K_M.gguf --host 0.0.0.0 --port 25001 -c 131072 --parallel 1 -b 4096 -ub 1024 --flash-attn 1 -ngl 99 -t 2 --no-mmap --embeddings --pooling cls --cache-type-k turbo3_tcq --cache-type-v turbo3_tcq
+
+
+=== Binary existence ===
+ls: cannot access '/home/toxic/ik_llama/build/bin/llama-server': No such file or directory
+MISSING
+
+
+=== ik-llama.log (last 60 lines — terminal origin) ===
+tail: cannot open '/home/toxic/sovereign/logs/ik-llama.log' for reading: No such file or directory
+NO LOG
+
+
+=== Listening ports (25001 focus) ===
+LISTEN 0      512                        0.0.0.0:25001      0.0.0.0:*    users:(("llama-server",pid=169292,fd=81))
+LISTEN 0      10                       127.0.0.1:39597      0.0.0.0:*    users:(("python3",pid=174490,fd=70),("MainThread",pid=169456,fd=70),("npm exec exa-mc",pid=169444,fd=70),("MainThread",pid=169436,fd=70),("npm exec @notio",pid=169402,fd=70),("MainThread",pid=169394,fd=70),("npm exec @model",pid=169377,fd=70),("MainThread",pid=169351,fd=70),("npm exec @sentr",pid=169305,fd=70),("python3",pid=169297,fd=70),("llama-server",pid=169292,fd=70),("bash",pid=169279,fd=70),("openfang",pid=169278,fd=70),("python3",pid=169277,fd=70),("g2b7mmhmsvk3yh6",pid=169269,fd=70),("bash",pid=169268,fd=70),("vijh71c62s740q8",pid=169267,fd=70),("zfwshy5s38pyrp2",pid=169266,fd=70),("agkyx1b23pgqarj",pid=169265,fd=70),(".devenv-wrapped",pid=168959,fd=70),("MainThread",pid=152265,fd=70),("MainThread",pid=152229,fd=70),("MainThread",pid=152211,fd=70),("MainThread",pid=152210,fd=70),("MainThread",pid=152202,fd=70),("chrome-devtools",pid=152196,fd=70),("python",pid=152170,fd=70),("npm exec @playw",pid=152057,fd=70),("uv",pid=152056,fd=70),("npm exec @upsta",pid=152055,fd=70),("npm exec chrome",pid=152054,fd=70),("npm exec @model",pid=152053,fd=70),("npm exec mcp-di",pid=152052,fd=70),("bun",pid=152051,fd=70),("serena",pid=152050,fd=70),("language_server",pid=151941,fd=70),("antigravity",pid=151769,fd=70))
+
+
+=== Hugepages + GPU ===
+Hugepages:
+2048
+
+10237 MiB, 13865 MiB, 99 %
+
+
+=== process-compose ===
+NOT RUNNING

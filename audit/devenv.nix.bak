@@ -1,0 +1,1077 @@
+{ config, pkgs, lib, inputs, ... }:
+
+let
+  pkgs' = import inputs.nixpkgs {
+    system = pkgs.system;
+    config = {
+      cudaSupport = true;
+      permittedInsecurePackages = [
+        "minio-2025-10-15T17-29-55Z"
+      ];
+    };
+  };
+  # ═══════════════════════════════════════════════════════════════════
+  # SOVEREIGN ROOT — Centralized paths
+  # ═══════════════════════════════════════════════════════════════════
+  SOV = config.env.DEVENV_ROOT or ".";
+  SOV_HOME = "${SOV}";
+  MODELS = "${SOV_HOME}/models";
+  STATE = "${SOV_HOME}/.state";
+  LOGS = "${SOV_HOME}/logs";
+  PROMETHEUS_DATA = "${SOV_HOME}/.prometheus";
+
+  # ═══════════════════════════════════════════════════════════════════
+  # MODEL MANIFEST — Single source of truth
+  # ═══════════════════════════════════════════════════════════════════
+  MODELS_MANIFEST = {
+    primary = "${MODELS}/StrangeMerges_19-7B-dare_ties.Q4_K_M.gguf";
+    draft = "${MODELS}/Qwen2.5-1.5B-Draft.gguf";
+    flash = "${MODELS}/Qwen3.5-9B-DeepSeek-V4-Flash-IQ4_XS.gguf";
+    heretic = "${MODELS}/Qwen3.6-27B-Heretic-Cerebellum-v1-Q2_K_Mixed.gguf";
+    gemma = "${MODELS}/gemma-4-12B-it-uncensored-Q4_K_M.gguf";
+    grand = "${MODELS}/MN-GRAND-23.5B-Gutenberg-UNCENSORED-V2-Q4_K_M.gguf";
+  };
+
+  ACTIVE_MODEL = MODELS_MANIFEST.primary;
+  ACTIVE_DRAFT = MODELS_MANIFEST.draft;
+
+  # ═══════════════════════════════════════════════════════════════════
+  # PORT REGISTRY — Single source of truth
+  # ═══════════════════════════════════════════════════════════════════
+  PORTS = {
+    llama-server = 25001;
+    openfang = 25004;
+    nfcot = 25008;
+    rust-web = 25010;
+    landing = 25000;
+    hf-downloader = 8080;
+    llama-herder = 8081;
+    prometheus = 9090;
+    caddy-admin = 2019;
+    redis = 6379;
+    postgres = 5432;
+    #minio = 9000;
+    #minio-console = 9001;
+    nats = 4222;
+    nats-monitoring = 8222;
+    mosquitto = 1883;
+    clickhouse = 19000;        # FIXED: was 9000, collided with minio
+    clickhouse-http = 18123;   # FIXED: was 8123, shifted to avoid conflicts
+    elasticsearch = 9200;
+    opensearch = 9201;
+    kafka = 9092;
+    mysql = 3306;
+    mongodb = 27017;
+    trafficserver = 8082;
+    blackfire = 8307;
+  };
+
+  # ═══════════════════════════════════════════════════════════════════
+  # LLAMA FLAGS — Single source of truth
+  # ═══════════════════════════════════════════════════════════════════
+  LLAMA_FLAGS = {
+    ctx-size = 32768;
+    slots = 1;
+    batch = 4096;
+    ubatch = 1024;
+    ngl = 99;
+    threads = 4;
+    cache-type-k = "q4_0";
+    cache-type-v = "q4_0";
+    draft-n-ctx = 4096;
+    draft-n-predict = 16;
+    draft-ngl = 99;
+  };
+
+  # ═══════════════════════════════════════════════════════════════════
+  # AUTO-FETCHED SOURCES — No lib.fakeSha256
+  # ═══════════════════════════════════════════════════════════════════
+  beellama-src = builtins.fetchGit {
+    url = "https://github.com/Anbeeld/beellama.cpp.git";
+    ref = "main";
+    shallow = true;
+  };
+
+  hfhub-src = builtins.fetchGit {
+    url = "https://github.com/huggingface/huggingface_hub.git";
+    ref = "v1.21.0";
+    shallow = true;
+  };
+
+  hfxet-wheel = pkgs.fetchurl {
+    url = "https://files.pythonhosted.org/packages/b0/c1/4f770cc7be79287905e13765d4a7e1949dce3483f90867f532ff56e7126b/hf_xet-1.1.1-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl";
+    hash = "sha256-Xvxs8Vkw2bDO8lwEROAML1XZ4J+FbybtjICf1c0aoEQ=";
+  };
+
+  # ═══════════════════════════════════════════════════════════════════
+  # BEE LLAMA
+  # ═══════════════════════════════════════════════════════════════════
+  beellama-cpp = (pkgs.llama-cpp.override {
+    cudaSupport = true;
+    rocmSupport = false;
+    metalSupport = false;
+    blasSupport = true;
+  }).overrideAttrs (oldAttrs: rec {
+    pname = "beellama-cpp";
+    version = "main";
+    src = beellama-src;
+    cmakeFlags = (oldAttrs.cmakeFlags or []) ++ [
+      "-DGGML_NATIVE=ON"
+      "-DGGML_CUDA_FA_ALL_QUANTS=ON"
+    ];
+    preConfigure = ''
+      export NIX_ENFORCE_NO_NATIVE=0
+      ${oldAttrs.preConfigure or ""}
+    '';
+    npmDepsHash = "sha256-1iM0LGeI9e+gZEHk46lkBe51DxIhiimfAm9o3Z3m9Ik=";
+  });
+
+  # ═══════════════════════════════════════════════════════════════════
+  # CUSTOM PACKAGES
+  # ═══════════════════════════════════════════════════════════════════
+  llama-herder-pkg = pkgs.python3Packages.buildPythonApplication {
+    pname = "llama-herder";
+    version = "0.1.0";
+    src = if builtins.pathExists "${SOV_HOME}/tools/llamaherder/pyproject.toml"
+          then "${SOV_HOME}/tools/llamaherder"
+          else pkgs.writeTextDir "app.py"  ...
+            @app.route("/health")
+            def health(): return "OK"
+            if __name__ == "__main__": app.run(host="0.0.0.0", port=8081)
+          '';
+    format = "pyproject";
+    propagatedBuildInputs = with pkgs.python3Packages; [
+      flask requests pydantic uvicorn
+    ];
+    doCheck = false;
+  };
+
+  sovereign-watchdog-pkg = pkgs.python3Packages.buildPythonApplication {
+    pname = "sovereign-watchdog";
+    version = "0.1.0";
+    src = if builtins.pathExists "${SOV_HOME}/sovereign"
+          then "${SOV_HOME}/sovereign"
+          else pkgs.writeTextDir "watchdog.py" "print('watchdog stub')";
+    format = "pyproject";
+    propagatedBuildInputs = with pkgs.python3Packages; [
+      requests psutil
+    ];
+    doCheck = false;
+  };
+
+  telethon-overlord-pkg = pkgs.python3Packages.buildPythonApplication {
+    pname = "telethon-overlord";
+    version = "0.1.0";
+    src = if builtins.pathExists "${SOV_HOME}/agents/telethon_overlord"
+          then "${SOV_HOME}/agents/telethon_overlord"
+          else pkgs.writeTextDir "overlord.py" "print('overlord stub')";
+    format = "pyproject";
+    propagatedBuildInputs = with pkgs.python3Packages; [
+      telethon requests pydantic
+    ];
+    doCheck = false;
+  };
+
+  # ═══════════════════════════════════════════════════════════════════
+  # INLINE FILE GENERATORS — Creates ALL missing files at build time
+  # ═══════════════════════════════════════════════════════════════════
+
+  # ── config.toml ──
+  configToml = pkgs.writeText "config.toml" ''
+    api_listen = "127.0.0.1:${toString PORTS.nfcot}"
+    auto_approve = true
+    human_in_loop_initial = true
+    log_level = "info"
+    sovereign_mode = "maximal_emergent"
+    target_hardware = "ryzen_8700f_64gb_sm86_3090_24gb_nvme"
+
+    [build]
+    cuda_arch = "sm_86"
+    ik_llama_sm86 = true
+    int8_swizzled = true
+    use_hmma = true
+
+    [controller]
+    fsr_watch = true
+    make_on = true
+    kv_fork_enabled = true
+
+    [default_model]
+    provider = "openai"
+    model = "qwen"
+    base_url = "http://127.0.0.1:${toString PORTS.llama-server}/v1"
+    api_key_env = "OPENAI_API_KEY"
+
+    [memory]
+    embedding_provider = "vllm"
+    embedding_model = "qwen"
+    embedding_api_key_env = "OPENAI_API_KEY"
+
+    [provider_urls]
+    vllm = "http://127.0.0.1:${toString PORTS.llama-server}/v1"
+
+    [extensions]
+    fsr_max = true
+    kv_sovereign_fork = true
+    weight_pack_sm86 = true
+
+    [channels.telegram]
+    bot_token_env = "TELEGRAM_BOT_TOKEN"
+    allowed_users = ["puppertrix"]
+    default_agent = "coyote"
+    poll_interval_secs = 1
+
+    [channels.discord]
+    bot_token_env = "DISCORD_BOT_TOKEN"
+    allowed_guilds = ["795261154150449153"]
+    default_agent = "coyote"
+  '';
+
+  # ── secretspec.toml ──
+  secretspecToml = pkgs.writeText "secretspec.toml" ''
+    [project]
+    name = "sovereign"
+    revision = "1.0"
+    require_reason = "agents"
+
+    [profiles.default]
+    TELEGRAM_BOT_TOKEN = { description = "Telegram Bot API token", required = true }
+    TELEGRAM_ALLOWED_USERS = { description = "Allowed Telegram user IDs", required = true }
+    DISCORD_CLIENT_ID = { description = "Discord Bot Client ID", required = true }
+    DISCORD_CLIENT_SECRET = { description = "Discord Bot Client Secret", required = true }
+    DISCORD_BOT_TOKEN = { description = "Discord Bot Token", required = true }
+    HUGGINGFACE_HUB_TOKEN = { description = "HF Hub token", required = true }
+    HF_TOKEN = { description = "HF token alias", required = true, providers = ["keyring", "env"] }
+    OPENFANG_API_KEY = { description = "OpenFang API key", required = false }
+    DATABASE_URL = { description = "PostgreSQL connection string", required = false }
+    STRIPE_SECRET_KEY = { description = "Stripe API key", required = false }
+    SENTRY_DSN = { description = "Sentry DSN", required = false }
+    SESSION_KEY = { description = "Session signing key", type = "base64", generate = { bytes = 64 }, required = false }
+    API_INTERNAL_TOKEN = { description = "Internal API token", type = "hex", generate = { bytes = 32 }, required = false }
+
+    [profiles.development]
+    DATABASE_URL = { description = "Local SQLite", required = false, default = "sqlite:///home/toxic/sovereign/data/dev.db" }
+    STRIPE_SECRET_KEY = { description = "Stripe test key", required = false }
+    TELEGRAM_BOT_TOKEN = { description = "Telegram Bot API token", required = true, providers = ["keyring", "dotenv", "env"] }
+
+    [profiles.production]
+    TELEGRAM_BOT_TOKEN = { description = "Production Telegram token", required = true, providers = ["onepassword", "vault"] }
+    DATABASE_URL = { description = "Production PostgreSQL", required = true, providers = ["vault", "awssm"] }
+    STRIPE_SECRET_KEY = { description = "Production Stripe key", required = true, providers = ["onepassword", "vault"] }
+    SENTRY_DSN = { description = "Production Sentry DSN", required = true }
+  '';
+
+  # ── prometheus.yml ──
+  prometheusYml = pkgs.writeText "prometheus.yml" ''
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+
+    scrape_configs:
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:${toString PORTS.prometheus}']
+
+      - job_name: 'llama-server'
+        static_configs:
+          - targets: ['localhost:${toString PORTS.llama-server}']
+        metrics_path: /metrics
+
+      - job_name: 'caddy'
+        static_configs:
+          - targets: ['localhost:2019']
+        metrics_path: /metrics
+
+      - job_name: 'node-exporter'
+        static_configs:
+          - targets: ['localhost:9100']
+  '';
+
+  # ── Caddyfile ──
+  caddyConfig = ''
+    {
+      admin 0.0.0.0:${toString PORTS.caddy-admin}
+      auto_https off
+    }
+
+    :80 {
+      handle /health {
+        respond "OK" 200
+      }
+
+      handle_path /rank* {
+        reverse_proxy localhost:${toString PORTS.rust-web}
+      }
+
+      handle_path /api/* {
+        reverse_proxy localhost:${toString PORTS.rust-web}
+      }
+
+      handle_path /llm* {
+        reverse_proxy localhost:${toString PORTS.llama-server}
+      }
+
+      handle_path /fang* {
+        reverse_proxy localhost:${toString PORTS.openfang}
+      }
+
+      handle_path /cot* {
+        reverse_proxy localhost:${toString PORTS.nfcot}
+      }
+
+      handle_path /hf/* {
+        reverse_proxy localhost:${toString PORTS.hf-downloader}
+      }
+
+      handle_path /herder/* {
+        reverse_proxy localhost:${toString PORTS.llama-herder}
+      }
+
+      handle_path /landing/* {
+        reverse_proxy localhost:${toString PORTS.landing}
+      }
+
+      handle {
+        reverse_proxy localhost:${toString PORTS.rust-web}
+      }
+    }
+  '';
+
+  # ── LLAMA SERVER COMMAND ──
+  llamaServerCmd = ''
+    exec ${beellama-cpp}/bin/llama-server \\
+      -m "${"$"}{MODEL_PATH}" \\
+      --host 0.0.0.0 \\
+      --port "${"$"}{LLAMA_SERVER_PORT}" \\
+      -c ${toString LLAMA_FLAGS.ctx-size} \\
+      --slots ${toString LLAMA_FLAGS.slots} \\
+      -b ${toString LLAMA_FLAGS.batch} \\
+      -ub ${toString LLAMA_FLAGS.ubatch} \\
+      --flash-attn auto \\
+      -ngl ${toString LLAMA_FLAGS.ngl} \\
+      -t ${toString LLAMA_FLAGS.threads} \\
+      --no-mmap \\
+      --mlock \\
+      --embeddings \\
+      --pooling cls \\
+      --cache-type-k ${LLAMA_FLAGS.cache-type-k} \\
+      --cache-type-v ${LLAMA_FLAGS.cache-type-v} \\
+      --kv-unified \\
+      --no-host \\
+      --ctx-checkpoints 32 \\
+      --cache-ram 8192 \\
+      --draft "${"$"}{DRAFT_MODEL_PATH}" \\
+      --draft-n-ctx ${toString LLAMA_FLAGS.draft-n-ctx} \\
+      --draft-n-predict ${toString LLAMA_FLAGS.draft-n-predict} \\
+      --draft-n-gpu-layers ${toString LLAMA_FLAGS.draft-ngl} \\
+      --metrics \\
+      --log-format json
+  '';
+
+in
+{
+  # ═══════════════════════════════════════════════════════════════════
+  # PACKAGES — Maximal set
+  # ═══════════════════════════════════════════════════════════════════
+  packages = with pkgs; [
+    # Core tooling
+    git curl jq fd ripgrep eza fzf htop nvtopPackages.nvidia btop tree nixfmt nix-prefetch-git
+    git-lfs gh glab
+
+    # Build tools
+    gnumake cmake ninja ccache pkg-config
+
+    # CUDA stack
+    cudaPackages.cudatoolkit cudaPackages.cuda_cudart cudaPackages.libcublas
+    cudaPackages.libcufft cudaPackages.libcurand cudaPackages.cuda_nvtx
+    cudaPackages.cuda_nvcc
+
+    # Python stack
+    python3 python3Packages.pip python3Packages.uv
+    python3Packages.flask python3Packages.requests python3Packages.uvicorn
+    python3Packages.fastapi python3Packages.pydantic python3Packages.numpy
+    python3Packages.psutil python3Packages.torchWithCuda
+    python3Packages.transformers python3Packages.accelerate
+    python3Packages.bitsandbytes python3Packages.peft python3Packages.telethon
+    python3Packages.jupyterlab python3Packages.ipython
+    python3Packages.pytest python3Packages.black python3Packages.ruff
+    python3Packages.mypy 
+    basedpyright                    # FIXED: was python3Packages.basedpyright — this is a top-level pkg
+
+    # JavaScript/TypeScript
+    bun nodejs_22 pnpm yarn
+
+    # Rust
+    rustc cargo rustfmt clippy rust-analyzer
+
+    # Go
+    go gopls
+
+    # LLM inference
+    beellama-cpp ollama
+
+    # Monitoring & Observability
+    prometheus grafana tempo loki
+    prometheus-node-exporter
+
+    # Databases
+    postgresql redis memcached
+    mongodb                         # FIXED: was mongodb-ce (doesn't exist in nixpkgs)
+    clickhouse
+    elasticsearch7
+    opensearch
+    apacheKafka
+    mysql84
+
+    # Message queues
+    nats-server mosquitto
+
+    # Object storage
+    #minio
+
+    # CDN/Cache
+    trafficserver
+
+    # Security
+    nmap openssl gnupg age
+    bitwarden-cli
+
+    # Network tools
+    wireshark tcpdump ngrep socat
+
+    # Container tools
+    docker-compose podman skopeo
+
+    # Custom
+    llama-herder-pkg sovereign-watchdog-pkg telethon-overlord-pkg
+  ];
+
+  # ═══════════════════════════════════════════════════════════════════
+  # LANGUAGES — Enable LSP and tooling
+  # ═══════════════════════════════════════════════════════════════════
+  languages = {
+    python = {
+      enable = true;
+      # FIXED: removed hardcoded version = "3.12" — let devenv use nixpkgs default
+      # or set via: package = pkgs.python3;
+      uv.enable = true;
+      venv.enable = true;
+    };
+    rust = {
+      enable = true;
+    };
+    go = {
+      enable = true;
+    };
+    javascript = {
+      enable = true;
+      bun = {
+        enable = true;
+        install.enable = true;
+      };
+    };
+    nix = {
+      enable = true;
+      lsp.enable = true;
+    };
+  };
+
+  # ═══════════════════════════════════════════════════════════════════
+  # ENVIRONMENT
+  # ═══════════════════════════════════════════════════════════════════
+  env = {
+    # ── Paths ──
+    SOVEREIGN_HOME = SOV_HOME;
+    MODEL_PATH = ACTIVE_MODEL;
+    DRAFT_MODEL_PATH = ACTIVE_DRAFT;
+    BUN_INSTALL = "${SOV_HOME}/.bun";
+
+    # ── CUDA ──
+    CUDA_VISIBLE_DEVICES = "0";
+    GGML_CUDA = "1";
+    GGML_CUDA_GRAPHS = "1";
+    GGML_CUDA_FA_ALL_QUANTS = "1";
+    GGML_DFLASH_GPU_RING = "1";
+    GGML_DFLASH_MAX_CTX = "4096";
+    NIXPKGS_CONFIG = "{ cudaSupport = true; }";
+
+    # ── Python ──
+    PYTHONUNBUFFERED = "1";
+    PYTHONDONTWRITEBYTECODE = "1";
+    FLASK_APP = "app.py";
+    FLASK_ENV = "development";
+    FLASK_DEBUG = "1";
+    UV_CACHE_DIR = "${SOV_HOME}/.cache/uv";
+
+    # ── HF Hub ──
+    HF_HUB_DISABLE_TELEMETRY = "1";
+    HF_HUB_DISABLE_UPDATE_CHECK = "1";
+
+    # ── Ports ──
+    LLAMA_SERVER_PORT = toString PORTS.llama-server;
+    OPENFANG_PORT = toString PORTS.openfang;
+    NFCOT_PORT = toString PORTS.nfcot;
+    RUST_WEB_PORT = toString PORTS.rust-web;
+    LANDING_PAGE = toString PORTS.landing;
+    HF_DOWNLOADER = toString PORTS.hf-downloader;
+    LLAMA_HERDER = toString PORTS.llama-herder;
+    PROMETHEUS_PORT = toString PORTS.prometheus;
+    CADDY_ADMIN = "0.0.0.0:${toString PORTS.caddy-admin}";
+
+    # ── Legacy aliases ──
+    LLAMA_ARG_MODEL = ACTIVE_MODEL;
+    LLAMA_ARG_CTX_SIZE = toString LLAMA_FLAGS.ctx-size;
+    LLAMA_ARG_N_GPU_LAYERS = toString LLAMA_FLAGS.ngl;
+    LLAMA_ARG_BATCH = toString LLAMA_FLAGS.batch;
+    LLAMA_ARG_UBATCH = toString LLAMA_FLAGS.ubatch;
+    LLAMA_ARG_FLASH_ATTN = "auto";
+    LLAMA_ARG_THREADS = toString LLAMA_FLAGS.threads;
+    LLAMA_ARG_HOST = "0.0.0.0";
+    LLAMA_ARG_PORT = toString PORTS.llama-server;
+    LLAMA_ARG_NO_MMAP = "1";
+    LLAMA_ARG_MLOCK = "1";
+    LLAMA_ARG_EMBEDDINGS = "1";
+    LLAMA_ARG_POOLING = "cls";
+    LLAMA_ARG_CACHE_TYPE_K = LLAMA_FLAGS.cache-type-k;
+    LLAMA_ARG_CACHE_TYPE_V = LLAMA_FLAGS.cache-type-v;
+    LLAMA_ARG_DRAFT = ACTIVE_DRAFT;
+    LLAMA_ARG_DRAFT_N_GPU_LAYERS = toString LLAMA_FLAGS.draft-ngl;
+    LLAMA_ARG_DRAFT_N_PREDICT = toString LLAMA_FLAGS.draft-n-predict;
+  };
+
+  # ═══════════════════════════════════════════════════════════════════
+  # SERVICES — All devenv native services enabled
+  # ═══════════════════════════════════════════════════════════════════
+  services = {
+    # Web server
+    caddy = {
+      enable = true;
+      config = caddyConfig;
+    };
+
+    # Databases
+    postgres = {
+      enable = true;
+      listen_addresses = "127.0.0.1,::1";
+      port = PORTS.postgres;
+      initialDatabases = [{ name = "sovereign"; }];
+      initialScript = ''
+        CREATE USER sovereign WITH PASSWORD 'sovereign' SUPERUSER;
+        GRANT ALL PRIVILEGES ON DATABASE sovereign TO sovereign;
+      '';
+    };
+
+    redis = {
+      enable = true;
+      bind = "127.0.0.1";
+      port = PORTS.redis;
+    };
+
+    mysql = {
+      enable = true;
+      initialDatabases = [{ name = "sovereign"; }];
+    };
+
+    mongodb = {
+      enable = true;
+      additionalArgs = ["--noauth"];
+    };
+
+    clickhouse = {
+      enable = true;
+      port = PORTS.clickhouse;
+      httpPort = PORTS.clickhouse-http;
+    };
+
+    # Search
+    elasticsearch = {
+      enable = true;
+      port = PORTS.elasticsearch;
+      single_node = true;
+    };
+
+    opensearch = {
+      enable = true;
+    };
+
+    # Message queues
+    kafka = {
+      enable = true;
+      defaultMode = "kraft";
+    };
+
+    nats = {
+      enable = true;
+      port = PORTS.nats;
+      host = "127.0.0.1";
+      monitoring = {
+        enable = true;
+        port = PORTS.nats-monitoring;
+      };
+      jetstream = {
+        enable = true;
+        maxMemory = "1G";
+        maxFileStore = "10G";
+      };
+    };
+
+    mosquitto = {
+      enable = true;
+      port = PORTS.mosquitto;
+    };
+
+    # Object storage
+    #minio = {
+    #  enable = true;
+    #  accessKey = "minioadmin";
+    #  secretKey = "minioadmin";
+    #};
+
+    # CDN — REMOVED from services, moved to processes (devenv has no native trafficserver service)
+    # trafficserver = { enable = true; };  # DOES NOT EXIST in devenv
+
+    # Profiling — REMOVED (devenv has no native blackfire service)
+    # blackfire = { enable = true; socket = "tcp://127.0.0.1:${toString PORTS.blackfire}"; }
+  };
+
+  # ═══════════════════════════════════════════════════════════════════
+  # PROCESSES — All custom processes with readiness probes
+  # ═══════════════════════════════════════════════════════════════════
+  processes = {
+    landing = {
+      exec = ''
+        cd "${SOV_HOME}/landing" 2>/dev/null || cd "${SOV_HOME}"
+        exec ${pkgs.bun}/bin/bun run server.ts --port "${"$"}{LANDING_PAGE}"
+      '';
+      process-compose = {
+        readiness_probe = {
+          exec.command = "${pkgs.curl}/bin/curl -f -s http://localhost:${"$"}{LANDING_PAGE}/health || exit 1";
+          initial_delay_seconds = 2;
+          period_seconds = 5;
+          timeout_seconds = 3;
+          failure_threshold = 10;
+        };
+      };
+    };
+
+    llama-server = {
+      exec = llamaServerCmd;
+      process-compose = {
+        readiness_probe = {
+          exec.command = "${pkgs.curl}/bin/curl -f -s http://localhost:${"$"}{LLAMA_SERVER_PORT}/health || exit 1";
+          initial_delay_seconds = 15;
+          period_seconds = 5;
+          timeout_seconds = 5;
+          failure_threshold = 30;
+        };
+        availability = {
+          restart = "on_failure";
+          backoff_seconds = 5;
+          max_restarts = 10;
+        };
+      };
+    };
+
+    hf-downloader = {
+      exec = ''
+        mkdir -p "${"$"}{SOVEREIGN_HOME}/.state"
+        cat > "${"$"}{SOVEREIGN_HOME}/.state/hf_downloader.py" << 'PYEOF'
+import http.server, socketserver, subprocess, os, json, urllib.parse, sys
+PORT = int(os.environ["HF_DOWNLOADER"])
+SOVEREIGN = os.environ.get("SOVEREIGN_HOME", ".")
+class Handler(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        parsed = urllib.parse.urlparse(self.path)
+        if parsed.path == "/health":
+            self.send_response(200); self.end_headers(); self.wfile.write(b"OK"); return
+        if parsed.path.startswith("/hf/"):
+            repo = parsed.path[4:].strip("/")
+            local_dir = os.path.join(SOVEREIGN, "models", "hf", repo.replace("/", "_"))
+            os.makedirs(local_dir, exist_ok=True)
+            try:
+                subprocess.run(
+                    ["python3", "-m", "huggingface_hub.cli", "download", repo, "--local-dir", local_dir, "--local-dir-use-symlinks", "False"],
+                    check=True, capture_output=True
+                )
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "downloaded", "repo": repo, "path": local_dir}).encode())
+            except subprocess.CalledProcessError as e:
+                self.send_response(500)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e), "stderr": e.stderr.decode()}).encode())
+            return
+        self.send_response(404); self.end_headers()
+    def log_message(self, format, *args): pass
+with socketserver.TCPServer(("", PORT), Handler) as httpd:
+    print("HF Downloader listening on :" + str(PORT))
+    httpd.serve_forever()
+PYEOF
+        exec ${pkgs.python3}/bin/python3 "${"$"}{SOVEREIGN_HOME}/.state/hf_downloader.py"
+      '';
+      process-compose = {
+        readiness_probe = {
+          exec.command = "${pkgs.curl}/bin/curl -f -s http://localhost:${"$"}{HF_DOWNLOADER}/health || exit 1";
+          initial_delay_seconds = 1;
+          period_seconds = 3;
+          failure_threshold = 5;
+        };
+      };
+    };
+
+    llama-herder = {
+      exec = ''
+        cd "${SOV_HOME}/tools/llamaherder" 2>/dev/null || cd "${SOV_HOME}"
+        exec ${llama-herder-pkg}/bin/llama-herder
+      '';
+      process-compose = {
+        depends_on.llama-server.condition = "process_healthy";
+        readiness_probe = {
+          exec.command = "${pkgs.curl}/bin/curl -f -s http://localhost:${"$"}{LLAMA_HERDER}/health || exit 1";
+          initial_delay_seconds = 2;
+          period_seconds = 5;
+          failure_threshold = 10;
+        };
+      };
+    };
+
+    openfang = {
+      exec = ''
+        while true; do
+          /home/toxic/.openfang/bin/openfang start || true
+          sleep 4
+        done
+      '';
+      process-compose = {
+        availability.restart = "always";
+      };
+    };
+
+    sovereign_watchdog = {
+      exec = ''
+        exec ${sovereign-watchdog-pkg}/bin/sovereign-watchdog
+      '';
+      process-compose = {
+        availability.restart = "on_failure";
+        max_restarts = 5;
+      };
+    };
+
+    telethon_overlord = {
+      exec = ''
+        exec ${telethon-overlord-pkg}/bin/telethon-overlord
+      '';
+      process-compose = {
+        availability.restart = "on_failure";
+        max_restarts = 3;
+      };
+    };
+
+    prometheus = {
+      exec = ''
+        ${pkgs.prometheus}/bin/prometheus \\
+          --config.file="${SOV_HOME}/prometheus.yml" \\
+          --storage.tsdb.path="${PROMETHEUS_DATA}" \\
+          --web.listen-address=0.0.0.0:${"$"}{PROMETHEUS_PORT}
+      '';
+      process-compose = {
+        readiness_probe = {
+          exec.command = "${pkgs.curl}/bin/curl -f -s http://localhost:${"$"}{PROMETHEUS_PORT}/-/healthy || exit 1";
+          initial_delay_seconds = 3;
+          period_seconds = 5;
+        };
+      };
+    };
+
+    rust-web = {
+      exec = ''
+        cd "${SOV_HOME}/rust_algo_web"
+        exec cargo run --release
+      '';
+      process-compose = {
+        readiness_probe = {
+          exec.command = "${pkgs.curl}/bin/curl -f -s http://localhost:${"$"}{RUST_WEB_PORT}/health || exit 1";
+          initial_delay_seconds = 5;
+          period_seconds = 5;
+          failure_threshold = 10;
+        };
+      };
+    };
+
+    nfcot-proxy = {
+      exec = ''
+        cd "${SOV_HOME}"
+        exec ${pkgs.python3}/bin/python3 -m modules.nfcot_proxy
+      '';
+      process-compose = {
+        readiness_probe = {
+          exec.command = "${pkgs.curl}/bin/curl -f -s http://localhost:${"$"}{NFCOT_PORT}/v1/models || exit 1";
+          initial_delay_seconds = 3;
+          period_seconds = 5;
+          failure_threshold = 10;
+        };
+      };
+    };
+
+    node-exporter = {
+      exec = ''
+        exec ${pkgs.prometheus-node-exporter}/bin/node_exporter \\
+          --web.listen-address=:9100 \\
+          --path.rootfs=/host
+      '';
+      process-compose = {
+        readiness_probe = {
+          exec.command = "${pkgs.curl}/bin/curl -f -s http://localhost:9100/metrics >/dev/null || exit 1";
+          initial_delay_seconds = 1;
+          period_seconds = 5;
+        };
+      };
+    };
+
+    # FIXED: trafficserver moved from services to processes (devenv has no native service)
+    trafficserver = {
+      exec = ''
+        exec ${pkgs.trafficserver}/bin/traffic_server \\
+          --port ${toString PORTS.trafficserver}
+      '';
+      process-compose = {
+        availability.restart = "on_failure";
+      };
+    };
+  };
+
+  # ═══════════════════════════════════════════════════════════════════
+  # TASKS — Automated workflows
+  # ═══════════════════════════════════════════════════════════════════
+  tasks = {
+    "sovereign:setup".exec = ''
+      mkdir -p "${SOV_HOME}/.state" "${SOV_HOME}/models/hf" "${SOV_HOME}/.prometheus" "${SOV_HOME}/logs" "${SOV_HOME}/data"
+      cp -f ${configToml} "${SOV_HOME}/config.toml"
+      cp -f ${secretspecToml} "${SOV_HOME}/secretspec.toml"
+      cp -f ${prometheusYml} "${SOV_HOME}/prometheus.yml"
+      echo "✓ Setup complete"
+    '';
+
+    "sovereign:clean-logs".exec = ''
+      find "${SOV_HOME}/logs" -name "*.log" -mtime +7 -delete 2>/dev/null || true
+      find "${SOV_HOME}/ctx_bruteforce_logs" -name "*.log" -mtime +7 -delete 2>/dev/null || true
+      echo "✓ Old logs cleaned"
+    '';
+
+    "sovereign:health".exec = ''
+      echo "=== Sovereign Stack Health ==="
+      for svc in ${toString PORTS.llama-server} ${toString PORTS.hf-downloader} ${toString PORTS.llama-herder} ${toString PORTS.prometheus} ${toString PORTS.rust-web} ${toString PORTS.nfcot}; do
+        if ${pkgs.curl}/bin/curl -sf "http://localhost:$svc/health" >/dev/null 2>&1 || ${pkgs.curl}/bin/curl -sf "http://localhost:$svc/-/healthy" >/dev/null 2>&1 || ${pkgs.curl}/bin/curl -sf "http://localhost:$svc/v1/models" >/dev/null 2>&1; then
+          echo "  ✓ :$svc"
+        else
+          echo "  ✗ :$svc — DOWN"
+        fi
+      done
+    '';
+
+    "devenv:enterShell".after = [ "sovereign:setup" ];
+  };
+
+  # ═══════════════════════════════════════════════════════════════════
+  # SCRIPTS — All commands use ${pkgs.xxx}/bin/xxx
+  # ═══════════════════════════════════════════════════════════════════
+  scripts = {
+    hf-get.exec = ''
+      if [ -z "$1" ]; then
+        echo "Usage: hf-get <repo_id> [filename]"
+        echo "Example: hf-get unsloth/Qwen3-VL-235B-A22B-Instruct-GGUF"
+        exit 1
+      fi
+      REPO="$1"
+      LOCAL_DIR="${"$"}{SOVEREIGN_HOME}/models/hf/${"$"}{REPO//\\//_}"
+      mkdir -p "${"$"}{LOCAL_DIR}"
+      if [ -n "$2" ]; then
+        ${pkgs.python3}/bin/python3 -m huggingface_hub.cli download "$REPO" "$2" --local-dir "${"$"}{LOCAL_DIR}" --local-dir-use-symlinks False
+      else
+        ${pkgs.python3}/bin/python3 -m huggingface_hub.cli download "$REPO" --local-dir "${"$"}{LOCAL_DIR}" --local-dir-use-symlinks False
+      fi
+    '';
+
+    llama-test.exec = ''
+      ${beellama-cpp}/bin/llama-cli -m "${"$"}{MODEL_PATH}" -p "Hello" -n 16 -ngl ${toString LLAMA_FLAGS.ngl} --flash-attn auto
+    '';
+
+    llama-bench.exec = ''
+      ${beellama-cpp}/bin/llama-bench -m "${"$"}{MODEL_PATH}" \\
+        -fa 1 -d 0,4096,8192,16384,32768 -p 2048 -n 32 -ub 2048 -ngl ${toString LLAMA_FLAGS.ngl} \\
+        --cache-type-k ${LLAMA_FLAGS.cache-type-k} --cache-type-v ${LLAMA_FLAGS.cache-type-v}
+    '';
+
+    gpu-status.exec = ''
+      ${pkgs.nvtopPackages.nvidia}/bin/nvtop --version 2>/dev/null || true
+      ${pkgs.cudaPackages.cuda_nvml_dev}/bin/nvidia-smi --query-gpu=name,temperature.gpu,utilization.gpu,utilization.memory,memory.used,memory.total --format=csv 2>/dev/null || echo "nvidia-smi not available"
+    '';
+
+    spec-toggle.exec = ''
+      echo "=== Speculative Decoding Status ==="
+      echo "Draft model: ${ACTIVE_DRAFT}"
+      echo "For DFlash: hf download Anbeeld/Qwen3.6-27B-DFlash-GGUF"
+      echo "To disable: remove --draft flags from llama-server process"
+    '';
+
+    caddy-reload.exec = ''
+      cat > "${"$"}{SOVEREIGN_HOME}/Caddyfile" <<EOF
+${caddyConfig}
+EOF
+      ${pkgs.caddy}/bin/caddy reload --config "${"$"}{SOVEREIGN_HOME}/Caddyfile"
+    '';
+
+    port-map.exec = ''
+      echo "╔══════════════════════════════════════════════════════════════╗"
+      echo "║           SOVEREIGN PORT REGISTRY                            ║"
+      echo "╠══════════════════════════════════════════════════════════════╣"
+      echo "║  llama-server  :${toString PORTS.llama-server}    (LLM inference)              ║"
+      echo "║  openfang      :${toString PORTS.openfang}    (OpenFang bridge)              ║"
+      echo "║  nfcot         :${toString PORTS.nfcot}    (NFCOT proxy)                     ║"
+      echo "║  rust-web      :${toString PORTS.rust-web}    (Rust algo web)                ║"
+      echo "║  landing       :${toString PORTS.landing}    (Landing page)                  ║"
+      echo "║  hf-downloader :${toString PORTS.hf-downloader}     (HF model download)           ║"
+      echo "║  llama-herder  :${toString PORTS.llama-herder}     (Process herder)              ║"
+      echo "║  prometheus    :${toString PORTS.prometheus}     (Metrics)                    ║"
+      echo "║  caddy-admin   :${toString PORTS.caddy-admin}     (Caddy admin API)              ║"
+      echo "╠══════════════════════════════════════════════════════════════╣"
+      echo "║  postgres      :${toString PORTS.postgres}     (PostgreSQL)                   ║"
+      echo "║  redis         :${toString PORTS.redis}     (Redis cache)                     ║"
+      echo "║  mysql         :${toString PORTS.mysql}     (MySQL)                          ║"
+      echo "║  mongodb       :${toString PORTS.mongodb}     (MongoDB)                       ║"
+      echo "║  clickhouse    :${toString PORTS.clickhouse}     (ClickHouse)                 ║"
+      echo "║  elasticsearch :${toString PORTS.elasticsearch}     (Elasticsearch)              ║"
+      echo "║  opensearch    :${toString PORTS.opensearch}     (OpenSearch)                 ║"
+      echo "║  kafka         :${toString PORTS.kafka}     (Kafka)                          ║"
+      echo "║  nats          :${toString PORTS.nats}     (NATS)                            ║"
+      echo "║  mosquitto     :${toString PORTS.mosquitto}     (Mosquitto MQTT)              ║"
+      echo "║  trafficserver :${toString PORTS.trafficserver}     (Traffic Server CDN)       ║"
+      echo "║  blackfire     :${toString PORTS.blackfire}     (Blackfire profiler)          ║"
+      echo "╚══════════════════════════════════════════════════════════════╝"
+    '';
+
+    health.exec = ''
+      devenv tasks run sovereign:health
+    '';
+
+    boot.exec = ''
+      echo "Starting Sovereign Stack..."
+      devenv up -d
+      echo "Waiting for services..."
+      sleep 10
+      devenv tasks run sovereign:health
+    '';
+
+    shutdown.exec = ''
+      echo "Stopping Sovereign Stack..."
+      devenv processes down
+    '';
+
+    prefetch-beellama.exec = ''
+      echo "beellama-src uses builtins.fetchGit — no hash needed"
+      echo "Current ref: main"
+    '';
+
+    prefetch-hfhub.exec = ''
+      echo "hfhub-src uses builtins.fetchGit — no hash needed"
+      echo "Current ref: v1.21.0"
+    '';
+
+    prefetch-hfxet.exec = ''
+      echo "hfxet-wheel hash: sha256-Xvxs8Vkw2bDO8lwEROAML1XZ4J+FbybtjICf1c0aoEQ="
+    '';
+  };
+
+  # ═══════════════════════════════════════════════════════════════════
+  # ENTER SHELL — Creates all runtime dirs, writes all config files
+  # ═══════════════════════════════════════════════════════════════════
+  enterShell = ''
+    # Run setup task
+    devenv tasks run sovereign:setup
+
+    # GPU detection
+    if command -v ${pkgs.cudaPackages.cuda_nvml_dev}/bin/nvidia-smi &>/dev/null; then
+      echo "  GPU: $(${pkgs.cudaPackages.cuda_nvml_dev}/bin/nvidia-smi --query-gpu=name --format=csv,noheader | head -1)"
+      echo "  VRAM: $(${pkgs.cudaPackages.cuda_nvml_dev}/bin/nvidia-smi --query-gpu=memory.total --format=csv,noheader | head -1)"
+    else
+      echo "  WARNING: nvidia-smi not found — CUDA may not be available"
+    fi
+
+    echo ""
+    echo "╔══════════════════════════════════════════════════════════════╗"
+    echo "║     SOVEREIGN STACK — MAXIMAL MONOLITH EDITION             ║"
+    echo "╠══════════════════════════════════════════════════════════════╣"
+    echo "║  Engine:        BeeLlama.cpp (TurboQuant + Standard Spec)  ║"
+    echo "║  Model:         ${ACTIVE_MODEL}"
+    echo "║  Draft:        ${ACTIVE_DRAFT}"
+    echo "║                                                              ║"
+    echo "║  Caddy:        http://localhost:80 (routes all services)   ║"
+    echo "║  llama-server: http://127.0.0.1:${toString PORTS.llama-server}                        ║"
+    echo "║  rust-web:     http://localhost:${toString PORTS.rust-web}                        ║"
+    echo "║  openfang:     http://localhost:${toString PORTS.openfang}                        ║"
+    echo "║  nfcot:        http://localhost:${toString PORTS.nfcot}                        ║"
+    echo "║  landing:      http://localhost:${toString PORTS.landing}                        ║"
+    echo "║  hf-downloader:http://localhost:${toString PORTS.hf-downloader}                         ║"
+    echo "║  llama-herder:http://localhost:${toString PORTS.llama-herder}                         ║"
+    echo "║  prometheus:   http://localhost:${toString PORTS.prometheus}                        ║"
+    echo "╠══════════════════════════════════════════════════════════════╣"
+    echo "║  Databases:    PostgreSQL :${toString PORTS.postgres}  Redis :${toString PORTS.redis}              ║"
+    echo "║                MySQL :${toString PORTS.mysql}  MongoDB :${toString PORTS.mongodb}              ║"
+    echo "║                ClickHouse :${toString PORTS.clickhouse}  Elastic :${toString PORTS.elasticsearch}           ║"
+    echo "║  Queues:       Kafka :${toString PORTS.kafka}  NATS :${toString PORTS.nats}  MQTT :${toString PORTS.mosquitto}         ║"
+    echo "╠══════════════════════════════════════════════════════════════╣"
+    echo "║  Commands: hf-get, llama-test, llama-bench, gpu-status     ║"
+    echo "║            port-map, health, boot, shutdown                ║"
+    echo "║            caddy-reload, spec-toggle                       ║"
+    echo "╚══════════════════════════════════════════════════════════════╝"
+    echo ""
+    echo "  ⚡ TurboQuant KV: ${LLAMA_FLAGS.cache-type-k}/${LLAMA_FLAGS.cache-type-v}"
+    echo "  🚀 Speculative: enabled (draft-n-predict=${toString LLAMA_FLAGS.draft-n-predict})"
+    echo "  📦 HF CLI: v1.21.0"
+    echo ""
+    echo "  Run 'devenv up' to start all services"
+    echo "  Run 'boot' for one-command stack startup"
+    echo ""
+  '';
+
+  # ═══════════════════════════════════════════════════════════════════
+  # TESTS
+  # ═══════════════════════════════════════════════════════════════════
+  enterTest = ''
+    echo "=== Sovereign Stack Tests ==="
+    ${pkgs.git}/bin/git --version | grep --color=auto "${pkgs.git.version}"
+    ${pkgs.curl}/bin/curl --version | head -1
+    ${pkgs.python3}/bin/python3 --version
+    ${pkgs.bun}/bin/bun --version
+    echo "✓ All core tools present"
+  '';
+
+  # ═══════════════════════════════════════════════════════════════════
+  # GIT HOOKS
+  # ═══════════════════════════════════════════════════════════════════
+  git-hooks = {
+    hooks = {
+      nixfmt.enable = true;
+      statix.enable = true;
+      shellcheck.enable = true;
+    };
+  };
+
+  # ═══════════════════════════════════════════════════════════════════
+  # CONTAINERS — Exportable environments (devenv experimental feature)
+  # ═══════════════════════════════════════════════════════════════════
+  # NOTE: If your devenv version doesn't support containers, remove this block.
+  # Check with: devenv --version (needs >= 1.0)
+  containers = {
+    shell = {
+      name = "sovereign-shell";
+      copyToRoot = [ configToml secretspecToml prometheusYml ];
+    };
+    processes = {
+      name = "sovereign-stack";
+      copyToRoot = [ configToml secretspecToml prometheusYml ];
+    };
+  };
+}
