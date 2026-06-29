@@ -1,5 +1,5 @@
 {
-  admin off
+  admin on
   auto_https off
 }
 

@@ -1,7 +1,7 @@
 { config, pkgs, lib, inputs, ... }:
 let
   shared = import ./lib.nix { inherit config pkgs lib inputs; };
-  inherit (shared) pkgs' SOV SOV_HOME MODELS STATE LOGS PROMETHEUS_DATA MODELS_MANIFEST ACTIVE_MODEL ACTIVE_DRAFT PORTS LLAMA_FLAGS beellama-src hfhub-src hfxet-wheel beellama-cpp llama-herder-pkg sovereign-watchdog-pkg telethon-overlord-pkg configToml secretspecToml prometheusYml caddyConfig llamaServerCmd;
+  inherit (shared) pkgs' SOV SOV_HOME MODELS STATE LOGS PROMETHEUS_DATA MODELS_MANIFEST ACTIVE_MODEL ACTIVE_DRAFT PORTS LLAMA_FLAGS BEELLAMA_BIN IK_LLAMA_BIN QUANT_BIN beellama-cpp sovereign-watchdog-pkg telethon-overlord-pkg configToml secretspecToml prometheusYml caddyConfig llamaServerCmd;
 in
 {
   processes = {
@@ -20,23 +20,7 @@ in
           };
         };
       };
-      llama-server = {
-        exec = llamaServerCmd;
-        process-compose = {
-          readiness_probe = {
-            exec.command = "${pkgs.curl}/bin/curl -f -s http://localhost:${"$"}{LLAMA_SERVER_PORT}/health || exit 1";
-            initial_delay_seconds = 15;
-            period_seconds = 5;
-            timeout_seconds = 5;
-            failure_threshold = 30;
-          };
-          availability = {
-            restart = "on_failure";
-            backoff_seconds = 5;
-            max_restarts = 10;
-          };
-        };
-      };
+
       hf-downloader = {
         exec = ''
           mkdir -p "${"$"}{SOVEREIGN_HOME}/.state"
@@ -87,18 +71,23 @@ in
           };
         };
       };
-      llama-herder = {
+      llama-swap = {
         exec = ''
-          cd "${SOV_HOME}/llamaherd" 2>/dev/null || cd "${SOV_HOME}"
-          exec ${llama-herder-pkg}/bin/llamaherd serve --config "${SOV_HOME}/llamaherd/config.yaml" --port ${toString PORTS.llama-herder}
+          exec ${SOV_HOME}/tools/llama-swap/llama-swap \
+            --config "${SOV_HOME}/tools/llama-swap/config.yaml" \
+            --listen "0.0.0.0:${toString PORTS.llama-herder}"
         '';
         process-compose = {
-          depends_on.llama-server.condition = "process_healthy";
           readiness_probe = {
-            exec.command = "${pkgs.curl}/bin/curl -f -s http://localhost:${"$"}{LLAMA_HERDER}/healthz || exit 1";
+            exec.command = "${pkgs.curl}/bin/curl -f -s http://localhost:${"$"}{LLAMA_HERDER}/health || exit 1";
             initial_delay_seconds = 2;
             period_seconds = 5;
             failure_threshold = 10;
+          };
+          availability = {
+            restart = "on_failure";
+            backoff_seconds = 3;
+            max_restarts = 5;
           };
         };
       };

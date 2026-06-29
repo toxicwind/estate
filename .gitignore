@@ -1,4 +1,7 @@
 .env.local
+.env
+.envrc
+pids/
 .secrets
 *.key
 *.pem

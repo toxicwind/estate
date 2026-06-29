@@ -1,0 +1,205 @@
+# llama-swap config — sovereign
+# https://github.com/mostlygeek/llama-swap
+#
+# Three prebuilt llama-server variants, each with their own LD_LIBRARY_PATH:
+#   beellama   — sm_86 tuned, CUDA FA all quants  (v1)
+#   turboquant — ik-quant ops, turbo              (v9907)
+#   ik_llama   — ik fork symlink via sovereign/bin (uses beellama .so fallback)
+#
+# Model names follow pattern: <variant>/<short-name>
+# Hit any /v1/* endpoint and llama-swap spawns the right server on demand.
+
+# -- Healthcheck --
+healthCheckTimeout: 120
+
+# -- Groups let multiple model-IDs share one running instance --
+# (useful if you want aliases)
+
+models:
+
+  # ── beellama variant ──────────────────────────────────────────────────────
+  # Primary: StrangeMerges 19B Q4 — fast general purpose
+  "beellama/strange":
+    cmd: >
+      env LD_LIBRARY_PATH=/home/toxic/projects/beellama.cpp/build/bin
+      CUDA_VISIBLE_DEVICES=0
+      GGML_CUDA=1
+      GGML_CUDA_GRAPHS=1
+      GGML_CUDA_FA_ALL_QUANTS=1
+      /home/toxic/projects/beellama.cpp/build/bin/llama-server
+      --model /home/toxic/projects/models/StrangeMerges_19-7B-dare_ties.Q4_K_M.gguf
+      --host 127.0.0.1
+      --port 25001
+      --ctx-size 32768
+      --n-gpu-layers 99
+      --flash-attn
+      --slots 1
+      -b 4096
+      -ub 1024
+      --cache-type-k q4_0
+      --cache-type-v q4_0
+      --embeddings
+      --pooling cls
+      --metrics
+      --log-format json
+      --no-mmap
+      --mlock
+      --draft /home/toxic/projects/models/Qwen2.5-1.5B-Draft.gguf
+      --draft-n-ctx 4096
+      --draft-n-predict 16
+      --draft-n-gpu-layers 99
+    proxy: http://127.0.0.1:25001
+    ttl: 300
+
+  # beellama: Qwen3.5 9B DeepSeek Flash — fast reasoning
+  "beellama/qwen-flash":
+    cmd: >
+      env LD_LIBRARY_PATH=/home/toxic/projects/beellama.cpp/build/bin
+      CUDA_VISIBLE_DEVICES=0
+      GGML_CUDA=1
+      GGML_CUDA_GRAPHS=1
+      GGML_CUDA_FA_ALL_QUANTS=1
+      /home/toxic/projects/beellama.cpp/build/bin/llama-server
+      --model /home/toxic/projects/models/Qwen3.5-9B-DeepSeek-V4-Flash-IQ4_XS.gguf
+      --host 127.0.0.1
+      --port 25001
+      --ctx-size 32768
+      --n-gpu-layers 99
+      --flash-attn
+      --slots 1
+      -b 4096
+      -ub 1024
+      --cache-type-k q4_0
+      --cache-type-v q4_0
+      --metrics
+      --log-format json
+      --no-mmap
+      --mlock
+    proxy: http://127.0.0.1:25001
+    ttl: 300
+
+  # beellama: Gemma 4 12B uncensored
+  "beellama/gemma":
+    cmd: >
+      env LD_LIBRARY_PATH=/home/toxic/projects/beellama.cpp/build/bin
+      CUDA_VISIBLE_DEVICES=0
+      GGML_CUDA=1
+      GGML_CUDA_FA_ALL_QUANTS=1
+      /home/toxic/projects/beellama.cpp/build/bin/llama-server
+      --model /home/toxic/projects/models/gemma-4-12B-it-uncensored-Q4_K_M.gguf
+      --host 127.0.0.1
+      --port 25001
+      --ctx-size 16384
+      --n-gpu-layers 99
+      --flash-attn
+      --slots 1
+      -b 2048
+      -ub 512
+      --metrics
+      --log-format json
+      --no-mmap
+    proxy: http://127.0.0.1:25001
+    ttl: 300
+
+  # ── turboquant variant ────────────────────────────────────────────────────
+  # Qwen3.6 27B Heretic — big brain, quantized aggressively
+  "turboquant/heretic-27b":
+    cmd: >
+      env LD_LIBRARY_PATH=/home/toxic/projects/llama-cpp-turboquant/build/bin
+      CUDA_VISIBLE_DEVICES=0
+      GGML_CUDA=1
+      GGML_CUDA_GRAPHS=1
+      GGML_CUDA_FA_ALL_QUANTS=1
+      /home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server
+      --model /home/toxic/projects/models/Qwen3.6-27B-Heretic-Cerebellum-v1-Q2_K_Mixed.gguf
+      --host 127.0.0.1
+      --port 25002
+      --ctx-size 32768
+      --n-gpu-layers 99
+      --flash-attn
+      --slots 1
+      -b 4096
+      -ub 1024
+      --cache-type-k q4_0
+      --cache-type-v q4_0
+      --metrics
+      --log-format json
+      --no-mmap
+      --mlock
+    proxy: http://127.0.0.1:25002
+    ttl: 300
+
+  # turboquant: MN GRAND 23.5B uncensored
+  "turboquant/mn-grand":
+    cmd: >
+      env LD_LIBRARY_PATH=/home/toxic/projects/llama-cpp-turboquant/build/bin
+      CUDA_VISIBLE_DEVICES=0
+      GGML_CUDA=1
+      GGML_CUDA_FA_ALL_QUANTS=1
+      /home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server
+      --model /home/toxic/projects/models/MN-GRAND-23.5B-Gutenberg-UNCENSORED-V2-Q4_K_M.gguf
+      --host 127.0.0.1
+      --port 25002
+      --ctx-size 32768
+      --n-gpu-layers 99
+      --flash-attn
+      --slots 1
+      -b 4096
+      -ub 1024
+      --metrics
+      --log-format json
+      --no-mmap
+      --mlock
+    proxy: http://127.0.0.1:25002
+    ttl: 300
+
+  # turboquant: heretic UD 27B Q4 (higher quality quant)
+  "turboquant/heretic-ud":
+    cmd: >
+      env LD_LIBRARY_PATH=/home/toxic/projects/llama-cpp-turboquant/build/bin
+      CUDA_VISIBLE_DEVICES=0
+      GGML_CUDA=1
+      GGML_CUDA_FA_ALL_QUANTS=1
+      /home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server
+      --model /home/toxic/projects/models/heretic-UD-27B-Q4_K_XL.gguf
+      --host 127.0.0.1
+      --port 25002
+      --ctx-size 16384
+      --n-gpu-layers 99
+      --flash-attn
+      --slots 1
+      -b 2048
+      -ub 512
+      --metrics
+      --log-format json
+      --no-mmap
+    proxy: http://127.0.0.1:25002
+    ttl: 300
+
+  # ── ik_llama variant (sovereign/bin symlink) ──────────────────────────────
+  # Same binary as ik_llama via sovereign/bin, beellama libs as fallback
+  "ik_llama/strange":
+    cmd: >
+      env LD_LIBRARY_PATH=/home/toxic/projects/beellama.cpp/build/bin
+      CUDA_VISIBLE_DEVICES=0
+      GGML_CUDA=1
+      GGML_CUDA_GRAPHS=1
+      GGML_CUDA_FA_ALL_QUANTS=1
+      /home/toxic/sovereign/bin/llama-server
+      --model /home/toxic/projects/models/StrangeMerges_19-7B-dare_ties.Q4_K_M.gguf
+      --host 127.0.0.1
+      --port 25003
+      --ctx-size 32768
+      --n-gpu-layers 99
+      --flash-attn
+      --slots 1
+      -b 4096
+      -ub 1024
+      --cache-type-k q4_0
+      --cache-type-v q4_0
+      --metrics
+      --log-format json
+      --no-mmap
+      --mlock
+    proxy: http://127.0.0.1:25003
+    ttl: 300

@@ -80,61 +80,31 @@ let
   # ═══════════════════════════════════════════════════════════════════
   # AUTO-FETCHED SOURCES — No lib.fakeSha256
   # ═══════════════════════════════════════════════════════════════════
-  beellama-src = builtins.fetchGit {
-    url = "https://github.com/Anbeeld/beellama.cpp.git";
-    ref = "main";
-    shallow = true;
-  };
-  hfhub-src = builtins.fetchGit {
-    url = "https://github.com/huggingface/huggingface_hub.git";
-    ref = "v1.21.0";
-    shallow = true;
-  };
-  hfxet-wheel = pkgs.fetchurl {
-    url = "https://files.pythonhosted.org/packages/b0/c1/4f770cc7be79287905e13765d4a7e1949dce3483f90867f532ff56e7126b/hf_xet-1.1.1-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl";
-    hash = "sha256-Xvxs8Vkw2bDO8lwEROAML1XZ4J+FbybtjICf1c0aoEQ=";
-  };
   # ═══════════════════════════════════════════════════════════════════
-  # BEE LLAMA
+  # PREBUILT LLAMA.CPP BINARIES — already compiled, no Nix build needed
   # ═══════════════════════════════════════════════════════════════════
-  beellama-cpp = (pkgs.llama-cpp.override {
-    cudaSupport = true;
-    rocmSupport = false;
-    metalSupport = false;
-    blasSupport = true;
-  }).overrideAttrs (oldAttrs: rec {
-    pname = "beellama-cpp";
-    version = "main";
-    src = beellama-src;
-    cmakeFlags = (oldAttrs.cmakeFlags or []) ++ [
-      "-DGGML_NATIVE=ON"
-      "-DGGML_CUDA_FA_ALL_QUANTS=ON"
+  BEELLAMA_BIN = "/home/toxic/projects/beellama.cpp/build/bin/llama-server";
+  IK_LLAMA_BIN = "/home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server";
+  QUANT_BIN    = "/home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server";
+
+  # Wrap the prebuilt beellama binary so Nix packages/PATH work normally
+  beellama-cpp = pkgs.symlinkJoin {
+    name = "beellama-cpp";
+    paths = [
+      (pkgs.writeShellScriptBin "llama-server" ''
+        exec /home/toxic/projects/beellama.cpp/build/bin/llama-server "$@"
+      '')
+      (pkgs.writeShellScriptBin "llama-cli" ''
+        exec /home/toxic/projects/beellama.cpp/build/bin/llama-cli "$@"
+      '')
     ];
-    preConfigure = ''
-      export NIX_ENFORCE_NO_NATIVE=0
-      ${oldAttrs.preConfigure or ""}
-    '';
-    npmDepsHash = "sha256-1iM0LGeI9e+gZEHk46lkBe51DxIhiimfAm9o3Z3m9Ik=";
-  });
+  };
   # ═══════════════════════════════════════════════════════════════════
   # CUSTOM PACKAGES
   # ═══════════════════════════════════════════════════════════════════
-  llama-herder-pkg = pkgs.python3Packages.buildPythonApplication {
-    pname = "llamaherd";
-    version = "1.0.0";
-    src = ../llamaherd;
-    format = "pyproject";
-    nativeBuildInputs = [ pkgs.python3Packages.setuptools ];
-    propagatedBuildInputs = with pkgs.python3Packages; [
-      fastapi
-      uvicorn
-      httpx
-      pyyaml
-      cloudscraper
-      beautifulsoup4
-    ];
-    doCheck = false;
-  };
+  # llama-swap is a prebuilt binary — no Nix derivation needed
+  # binary lives at: ${SOV_HOME}/tools/llama-swap/llama-swap
+
   sovereign-watchdog-pkg = pkgs.writers.writePython3Bin "sovereign-watchdog" {
     libraries = with pkgs.python3Packages; [ requests psutil ];
   } ''
@@ -144,7 +114,6 @@ let
   telethon-overlord-pkg = pkgs.writers.writePython3Bin "telethon-overlord" {
     libraries = with pkgs.python3Packages; [ telethon requests pydantic ];
   } ''
-    import sys
     print("overlord stub")
   '';
   # ═══════════════════════════════════════════════════════════════════
@@ -281,16 +250,17 @@ let
       }
     }
   '';
-  # ── LLAMA SERVER COMMAND ──
+  # ── LLAMA SERVER COMMAND — uses prebuilt beellama binary directly ──
   llamaServerCmd = ''
-    exec ${beellama-cpp}/bin/llama-server \\
+    exec /home/toxic/projects/beellama.cpp/build/bin/llama-server \\
       -m "${"$"}{MODEL_PATH}" \\
       --host 0.0.0.0 \\
       --port "${"$"}{LLAMA_SERVER_PORT}" \\
       -c ${toString LLAMA_FLAGS.ctx-size} \\
-      --slots ${toString LLAMA_FLAGS.slots} \\      -b ${toString LLAMA_FLAGS.batch} \\
+      --slots ${toString LLAMA_FLAGS.slots} \\
+      -b ${toString LLAMA_FLAGS.batch} \\
       -ub ${toString LLAMA_FLAGS.ubatch} \\
-      --flash-attn auto \\
+      --flash-attn \\
       -ngl ${toString LLAMA_FLAGS.ngl} \\
       -t ${toString LLAMA_FLAGS.threads} \\
       --no-mmap \\
@@ -299,10 +269,6 @@ let
       --pooling cls \\
       --cache-type-k ${LLAMA_FLAGS.cache-type-k} \\
       --cache-type-v ${LLAMA_FLAGS.cache-type-v} \\
-      --kv-unified \\
-      --no-host \\
-      --ctx-checkpoints 32 \\
-      --cache-ram 8192 \\
       --draft "${"$"}{DRAFT_MODEL_PATH}" \\
       --draft-n-ctx ${toString LLAMA_FLAGS.draft-n-ctx} \\
       --draft-n-predict ${toString LLAMA_FLAGS.draft-n-predict} \\
@@ -313,5 +279,5 @@ let
 
 in
 {
-  inherit pkgs' SOV SOV_HOME MODELS STATE LOGS PROMETHEUS_DATA MODELS_MANIFEST ACTIVE_MODEL ACTIVE_DRAFT PORTS LLAMA_FLAGS beellama-src hfhub-src hfxet-wheel beellama-cpp llama-herder-pkg sovereign-watchdog-pkg telethon-overlord-pkg configToml secretspecToml prometheusYml caddyConfig llamaServerCmd;
+  inherit pkgs' SOV SOV_HOME MODELS STATE LOGS PROMETHEUS_DATA MODELS_MANIFEST ACTIVE_MODEL ACTIVE_DRAFT PORTS LLAMA_FLAGS BEELLAMA_BIN IK_LLAMA_BIN QUANT_BIN beellama-cpp sovereign-watchdog-pkg telethon-overlord-pkg configToml secretspecToml prometheusYml caddyConfig llamaServerCmd;
 }

@@ -1,8 +1,8 @@
 {
   description = "Sovereign Maximal Stack";
   nixConfig = {
-  extra-substituters = "https://nixpkgs-python.cachix.org";
-  extra-trusted-public-keys = "nixpkgs-python.cachix.org-1:hxjI7pFxTyuTHn2NkvWCrAUcNZLNS3ZAvfYNuYifcEU=";
+    extra-substituters = "https://nixpkgs-python.cachix.org https://cuda-maintainers.cachix.org";
+    extra-trusted-public-keys = "nixpkgs-python.cachix.org-1:hxjI7pFxTyuTHn2NkvWCrAUcNZLNS3ZAvfYNuYifcEU= cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E=";
   };
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -23,6 +23,7 @@ outputs = { self, nixpkgs, devenv, ... } @ inputs:
           inherit system;
           config = {
             allowUnfree = true;
+            cudaSupport = true;
             permittedInsecurePackages = [
               "minio-2025-10-15T17-29-55Z"
             ];
