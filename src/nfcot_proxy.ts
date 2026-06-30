@@ -3,9 +3,11 @@ import { existsSync } from "fs";
 const MODEL_URL = process.env.MODEL_URL || "http://127.0.0.1:25001";
 const PROXY_PORT = parseInt(process.env.PROXY_PORT || "25008");
 const TRIGGER_TOKEN = process.env.TRIGGER_TOKEN || "<|im_start|>think";
-const FORCE_TRIGGER = (process.env.FORCE_TRIGGER || "true").toLowerCase() === "true";
+const FORCE_TRIGGER =
+  (process.env.FORCE_TRIGGER || "true").toLowerCase() === "true";
 const ENABLE_SHADOW_LATENT = process.env.ENABLE_SHADOW_LATENT === "1";
-const FLOW_PATH = process.env.FLOW_PATH || "/home/toxic/sovereign/nfcot_flow.pt";
+const FLOW_PATH =
+  process.env.FLOW_PATH || "/home/toxic/sovereign/nfcot_flow.pt";
 
 async function proxyRequest(request: Request, path: string): Promise<Response> {
   const url = new URL(path, MODEL_URL);
@@ -32,7 +34,9 @@ async function handleChat(request: Request): Promise<Response> {
   try {
     req = await request.json();
   } catch (err: any) {
-    return new Response(JSON.stringify({ error: "Invalid JSON body" }), { status: 400 });
+    return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
+      status: 400,
+    });
   }
 
   const messages = req.messages || [];

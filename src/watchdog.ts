@@ -8,7 +8,7 @@ const STATUS_FILE = "/home/toxic/sovereign/logs/watchdog_status.json";
 const PROCESSES = {
   "llama-server": { port: 25001, health: "/health" },
   "nfcot-proxy": { port: 25008, health: "/v1/models" },
-  "openfang": { port: 25004, health: null },
+  openfang: { port: 25004, health: null },
 };
 
 function log(msg: string) {
@@ -44,7 +44,7 @@ async function main() {
     mkdirSync(dirname(LOG_FILE), { recursive: true });
   } catch {}
   log("Watchdog started (Bun TS)");
-  
+
   while (true) {
     const status: Record<string, string> = {};
     for (const [name, cfg] of Object.entries(PROCESSES)) {

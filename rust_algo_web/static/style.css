@@ -1,167 +1,172 @@
 /* static/style.css */
 body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #f7f7f9;
-    margin: 0;
-    padding: 2rem;
-    color: #222;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  background: #f7f7f9;
+  margin: 0;
+  padding: 2rem;
+  color: #222;
 }
 
 h1 {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 section {
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 
 .slider-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .slider-row label {
-    width: 180px;
+  width: 180px;
 }
 
 #ranks-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .tool-card {
-    background: white;
-    border-radius: 10px;
-    padding: 1rem 1.2rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  background: white;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .tool-identity {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .rank-badge {
-    background: #444;
-    color: white;
-    padding: 0.2rem 0.5rem;
-    border-radius: 6px;
-    font-size: 0.9rem;
+  background: #444;
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
 }
 
 .tool-name {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .score-badge {
-    font-weight: bold;
-    color: #0077ff;
+  font-weight: bold;
+  color: #0077ff;
 }
 
 .score-bar-container {
-    background: #e5e5e5;
-    height: 8px;
-    border-radius: 4px;
-    margin: 0.5rem 0;
+  background: #e5e5e5;
+  height: 8px;
+  border-radius: 4px;
+  margin: 0.5rem 0;
 }
 
 .score-bar-fill {
-    background: #0077ff;
-    height: 100%;
-    border-radius: 4px;
+  background: #0077ff;
+  height: 100%;
+  border-radius: 4px;
 }
 
 .tool-desc {
-    margin: 0.5rem 0 1rem;
-    color: #555;
+  margin: 0.5rem 0 1rem;
+  color: #555;
 }
 
 .card-footer {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .criteria-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .criteria-badge {
-    background: #f0f0f0;
-    padding: 0.3rem 0.5rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
+  background: #f0f0f0;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
 }
 
 .tool-link {
-    margin-left: auto;
-    text-decoration: none;
-    color: #0077ff;
-    font-weight: bold;
+  margin-left: auto;
+  text-decoration: none;
+  color: #0077ff;
+  font-weight: bold;
 }
 
 #chat-box {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 0.5rem;
-    min-height: 120px;
-    max-height: 240px;
-    overflow-y: auto;
-    margin-bottom: 0.5rem;
-    background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0.5rem;
+  min-height: 120px;
+  max-height: 240px;
+  overflow-y: auto;
+  margin-bottom: 0.5rem;
+  background: #fff;
 }
 
 #chat-input {
-    width: 100%;
-    min-height: 80px;
-    margin-bottom: 0.5rem;
+  width: 100%;
+  min-height: 80px;
+  margin-bottom: 0.5rem;
 }
 
 .chat-message {
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
-    border-radius: 6px;
-    font-size: 0.9rem;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
 }
 
 .user-msg {
-    background: #d9eaff;
+  background: #d9eaff;
 }
 
 .coach-msg {
-    background: #e8ffe1;
+  background: #e8ffe1;
 }
 
 .system-msg {
-    background: #fff3c4;
+  background: #fff3c4;
 }
 
 #loading-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(255,255,255,0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.4rem;
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.4rem;
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 #error-msg {
-    color: #b00020;
+  color: #b00020;
 }

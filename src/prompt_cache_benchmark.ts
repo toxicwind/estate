@@ -24,11 +24,13 @@ if (res.ok) {
   const data: any = await res.json();
   const completionTokens = data.usage?.completion_tokens || 0;
   const promptTokens = data.usage?.prompt_tokens || 0;
-  const promptMs = data.timings?.prompt_ms || (t1 - t0);
+  const promptMs = data.timings?.prompt_ms || t1 - t0;
   console.log(`Status: OK`);
-  console.log(`Total Time: ${((t1 - t0)/1000).toFixed(3)} seconds`);
+  console.log(`Total Time: ${((t1 - t0) / 1000).toFixed(3)} seconds`);
   console.log(`Tokens: Prompt=${promptTokens}, Completion=${completionTokens}`);
-  console.log(`Server-reported Prompt Eval: ${(promptMs/1000).toFixed(3)} seconds`);
+  console.log(
+    `Server-reported Prompt Eval: ${(promptMs / 1000).toFixed(3)} seconds`,
+  );
   console.log(`Content: ${data.choices?.[0]?.message?.content}`);
 } else {
   console.log(`Error: ${res.status}`);

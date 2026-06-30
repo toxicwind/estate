@@ -13,7 +13,9 @@ serve({
     const url = new URL(req.url);
     if (url.pathname === "/health")
       return Response.json({ status: "ok", port: PORT, app: "yote-stub" });
-    return new Response("yote stub — replace with ghost_unlocked source", { status: 200 });
+    return new Response("yote stub — replace with ghost_unlocked source", {
+      status: 200,
+    });
   },
 });
 console.log(`[yote] :${PORT}`);

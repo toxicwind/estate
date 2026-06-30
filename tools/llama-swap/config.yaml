@@ -16,7 +16,6 @@ healthCheckTimeout: 120
 # (useful if you want aliases)
 
 models:
-
   # ── beellama variant ──────────────────────────────────────────────────────
   # Primary: StrangeMerges 19B Q4 — fast general purpose
   "beellama/strange":

@@ -221,5 +221,6 @@ in
     };
 
     "devenv:enterShell".after = [ "sovereign:setup" ];
+    "devenv:processes:up".exec = "echo 'dummy up process to satisfy missing task error'";
   };
 }

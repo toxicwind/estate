@@ -1,28 +1,42 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <title>Sovereign Dashboard</title>
-  <style>
-    body { font-family: monospace; background: #0a0a0a; color: #0f0; padding: 2em; }
-    .card { border: 1px solid #0f0; padding: 1em; margin: 1em 0; }
-    .up { color: #0f0; } .down { color: #f00; }
-  </style>
-</head>
-<body>
-  <h1>🜏 SOVEREIGN DASHBOARD</h1>
-  <div class="card">
-    <h2>Services</h2>
-    <ul>
-      <li>llama-server :25001 <span class="up">●</span></li>
-      <li>nfcot-proxy :25008 <span class="up">●</span></li>
-      <li>openfang :25004 <span class="up">●</span></li>
-      <li>prometheus :9090 <span class="up">●</span></li>
-    </ul>
-  </div>
-  <div class="card">
-    <h2>GPU</h2>
-    <pre id="gpu">RTX 3090 24GB | Util: --%</pre>
-  </div>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Sovereign Dashboard</title>
+    <style>
+      body {
+        font-family: monospace;
+        background: #0a0a0a;
+        color: #0f0;
+        padding: 2em;
+      }
+      .card {
+        border: 1px solid #0f0;
+        padding: 1em;
+        margin: 1em 0;
+      }
+      .up {
+        color: #0f0;
+      }
+      .down {
+        color: #f00;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🜏 SOVEREIGN DASHBOARD</h1>
+    <div class="card">
+      <h2>Services</h2>
+      <ul>
+        <li>llama-server :25001 <span class="up">●</span></li>
+        <li>nfcot-proxy :25008 <span class="up">●</span></li>
+        <li>openfang :25004 <span class="up">●</span></li>
+        <li>prometheus :9090 <span class="up">●</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>GPU</h2>
+      <pre id="gpu">RTX 3090 24GB | Util: --%</pre>
+    </div>
+  </body>
 </html>

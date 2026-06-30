@@ -9,9 +9,11 @@ Fully consolidated under Nix-based `devenv` modular orchestration, utilizing nat
 The configuration is structured as a declarative multi-process system, maintaining clean boundaries between the reproducible Nix environment definitions and the application layer.
 
 ### Live System Topology Map
+
 ![System Topology](architecture.svg)
 
 ### Process Graph
+
 ```mermaid
 graph TD
   Caddy["Caddy<br/>gateway"] --> landing
@@ -55,6 +57,7 @@ graph TD
 ### Mapped Environment Breakdown
 
 #### Nix Orchestration Layer (`modules/nix/`)
+
 - **[lib.nix](modules/nix/lib.nix)** — Aggregates system paths, prebuilts, model declarations, and override targets.
 - **[ports.nix](modules/nix/ports.nix)** — Single source of truth static port registry preventing service collisions.
 - **[packages.nix](modules/nix/packages.nix)** — Manages specialized package variations and explicit `symlinkJoin` assemblies.
@@ -66,6 +69,7 @@ graph TD
 - **[tests.nix](modules/nix/tests.nix)** — Validates local database connectivity and inference paths during system verification.
 
 #### Core Runtimes (`src/` / `modules/`)
+
 - **[src/watchdog.ts](src/watchdog.ts)** — Background daemon evaluating localized microservice performance vectors and connection health.
 - **[src/yote.ts](src/yote.ts)** — Unified asynchronous entry point managing active bot connections and MTProto routing.
 - **[modules/nfcot_proxy.py](modules/nfcot_proxy.py)** — Direct connection proxy optimizing inference paths with structured parameter layouts.
@@ -76,12 +80,15 @@ graph TD
 ## 🚀 Core Components
 
 ### LlamaHerd Proxy
+
 Custom proxy optimization engine running at server boundaries with explicit metric tracking. Handles raw model inference transformations, stream splitting, and response caching.
 
 ### Yote Telegram & Overlord Service
+
 Unified chat routing daemon executing inside the Bun TypeScript framework. Bypasses traditional bottlenecks by using native streaming pipelines that bind public endpoints directly into internal processing hooks.
 
 ### Sovereign Watchdog
+
 Autonomic background telemetry script validating connection availability across active proxy ports (`llama-server`, `nfcot`, `openfang`), surfacing performance data directly into state metrics endpoints.
 
 ---
@@ -89,25 +96,49 @@ Autonomic background telemetry script validating connection availability across 
 ## 🛠️ Commands & Testing
 
 ### Enter Sandbox Dev Shell
+
 ```bash
 devenv shell
 ```
 
 ### Spin Up Active Architecture
+
+Start all processes in the foreground:
+
 ```bash
 devenv up
 ```
 
+Start all processes in the background (detached mode):
+
+```bash
+devenv up --detach
+```
+
+Manage background processes:
+
+```bash
+devenv processes list       # List all managed processes and their status
+devenv processes status     # Show detailed process statuses
+devenv processes logs [svc] # View logs of a specific service
+devenv processes restart [svc]
+devenv processes stop [svc]
+devenv processes start [svc]
+devenv processes down       # Shut down all background processes (alias: devenv down)
+```
+
 ### Validate Local Sandbox State
+
 ```bash
 devenv test
 ```
 
 ### Regenerate Architecture Diagrams
+
 ```bash
 devenv tasks run sovereign:graph
 ```
 
 ---
 
-*🐺 Sovereign AI Managed — 2026 Emergent Infrastructure*
+_🐺 Sovereign AI Managed — 2026 Emergent Infrastructure_
