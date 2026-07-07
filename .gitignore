@@ -48,11 +48,17 @@ test.zsh
 .idea/
 .vscode/
 
-# legacy devenv
+# legacy devenv / local DB runtime
 .devenv/
+.direnv/
 .postgres
 .agents/
 .mongodb/
+.clickhouse/
+.mysql/
+.redis/
+.mosquitto/
+.trafficserver/
 
 # vendored / nested clones
 llamaherd/
