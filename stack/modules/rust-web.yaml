@@ -1,0 +1,12 @@
+processes:
+  rust-web:
+    command: "bash -lc 'command -v cargo >/dev/null && cargo run --release || echo rust-web skipped: install rust/cargo locally'"
+    working_dir: "/home/toxic/sovereign/rust_algo_web"
+    disabled: true
+    readiness_probe:
+      exec:
+        command: "curl -fs http://127.0.0.1:25005/health"
+      initial_delay_seconds: 10
+      period_seconds: 5
+      failure_threshold: 20
+    log_location: "/home/toxic/sovereign/.state/logs/rust-web.log"

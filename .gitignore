@@ -1,23 +1,65 @@
-.env.local
+# secrets & local env
 .env
+.env.local
 .envrc
-pids/
 .secrets
 *.key
 *.pem
-target/
-dist/
-node_modules/
+
+# runtime state
+.state/
+.prometheus/
+logs/
+*.log
+pids/
+
+# nix / devbox / devenv (retired)
+.devbox/
+devenv-out
+devenv-up
+nixfmt-out
+devenv.lock
+devbox.json.disabled
+devbox.lock.disabled
+
+# python / node / rust
+.venv/
 __pycache__/
 *.pyc
 *.egg-info/
-logs/
-*.log
-.prometheus/
-.state/
-models/hf/
+node_modules/
+target/
+dist/
+build/
+
+# models & heavy data (GGUFs live under ~/projects/models)
+models/
+*.gguf
+*.bin
 data/
+
+# scratch & portable nix junk
+scratch/
+bins/
+nix-tools-centos9.tar.gz.pdf
+test.zsh
+
+# IDE
 .idea/
 .vscode/
+
+# legacy devenv
+.devenv/
+.postgres
+.agents/
+.mongodb/
+
+# vendored / nested clones
+llamaherd/
+
+# clickhouse local config
+.clickhouse/
+
+# misc
 GITEOF
-.devenv
+*.pdf

@@ -1,6 +1,7 @@
 # Orchestrator Progress — Sovereign Consolidation
 
 ## Current Status
+
 Last visited: 2026-06-18T18:12:00Z
 
 - [ ] Phase 1: VERIFY (pre-flight checks)
@@ -11,8 +12,10 @@ Last visited: 2026-06-18T18:12:00Z
 - [ ] Phase 6: FINAL VERIFICATION
 
 ## Iteration Status
+
 Current iteration: 1 / 32
 
 ## Notes
+
 - Worker dispatched at 2026-06-18T18:12:00Z
 - Awaiting completion report

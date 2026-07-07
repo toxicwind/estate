@@ -1,0 +1,9 @@
+direction: down
+style: { fill: "#11111b"; stroke: "#45475a"; border-radius: 6 }
+
+devenv: devenv.nix { style.fill: "#313244"; style.stroke: "#cba6f7" }
+nix_modules: Nix Orchestration Layer { style.fill: "#181825" }
+runtime: TypeScript Runtime { style.fill: "#181825" }
+
+devenv -> nix_modules
+nix_modules -> runtime

@@ -1,0 +1,7 @@
+<clickhouse>
+  <tcp_port>19000</tcp_port>
+  <http_port>18123</http_port>
+  <listen_host>127.0.0.1</listen_host>
+  <path>/home/toxic/sovereign/.clickhouse/</path>
+  <tmp_path>/home/toxic/sovereign/.clickhouse/tmp/</tmp_path>
+</clickhouse>

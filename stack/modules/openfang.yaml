@@ -1,0 +1,17 @@
+processes:
+  openfang:
+    command: "/home/toxic/.bun/bin/bun run src/openfang.ts"
+    working_dir: "/home/toxic/sovereign"
+    environment:
+      - "SOVEREIGN_ROOT=/home/toxic/sovereign"
+      - "OPENFANG_PORT=25004"
+    availability:
+      restart: on_failure
+      max_restarts: 10
+    readiness_probe:
+      exec:
+        command: "curl -fs http://127.0.0.1:25004/api/health"
+      initial_delay_seconds: 5
+      period_seconds: 5
+      failure_threshold: 10
+    log_location: "/home/toxic/sovereign/.state/logs/openfang.log"

@@ -1,19 +1,15 @@
-# Local-only stack — no docker/containers. Binaries: devbox nixpkgs + ~/projects/* + ~/.bun
+# GENERATED — do not edit. Source: stack/modules/*.yaml
+# Regenerate: devbox run build-compose  |  ./stack/build-compose.sh
 version: "0.5"
 
 environment:
   - "SOVEREIGN_ROOT=/home/toxic/sovereign"
 
-# Core subset: sovereign-stack.sh up core → llama-server llama-herder openfang prometheus caddy
+# llama-server is NOT orchestrated here — llama-swap spawns upstream on demand (:25021 ingress)
 
 processes:
-  # llama-server disabled — :25001 owned by llama-swap on demand (ingress :25021)
-  llama-server:
-    command: "echo llama-server direct disabled — use llama-herder :25021"
-    disabled: true
-
   llama-herder:
-    command: "/home/toxic/sovereign/bin/llama-herder.sh"
+    command: "/home/toxic/sovereign/stack/services/llama-herder.sh"
     working_dir: "/home/toxic/sovereign"
     environment:
       - "SOVEREIGN_ROOT=/home/toxic/sovereign"

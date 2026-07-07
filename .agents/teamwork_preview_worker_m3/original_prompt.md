@@ -1,5 +1,7 @@
 ## 2026-06-18T18:01:32Z
+
 Your task is to compile `lucebox-hub` inside `/home/toxic/lucebox-hub`:
+
 1. Initialize submodules: run `git submodule update --init --recursive` in `/home/toxic/lucebox-hub`.
 2. Set up python virtual environment and build the Megakernel python package:
    - Run `uv sync` in `/home/toxic/lucebox-hub`

@@ -1,144 +1,87 @@
-# 🐺 Sovereign Agent Farm
+# sovereign
 
-Fully consolidated under Nix-based `devenv` modular orchestration, utilizing native speculation engines, custom proxies, and real-time observability.
+Private local agent stack: Grok Build, OpenFang, llama-swap on a single workstation (RTX 3090 / sm_86).
 
----
+**Orchestration:** mise + modular process-compose + **pacman system packages**.  
+**Not used:** nix, devbox, devenv, vLLM, docker (core stack).
 
-## 🏗️ Architecture & Modules
-
-The configuration is structured as a declarative multi-process system, maintaining clean boundaries between the reproducible Nix environment definitions and the application layer.
-
-### Live System Topology Map
-
-![System Topology](architecture.svg)
-
-### Process Graph
-
-```mermaid
-graph TD
-  Caddy["Caddy<br/>gateway"] --> landing
-  Caddy --> llama-server
-  Caddy --> openfang
-  Caddy --> nfcot
-  Caddy --> rust-web
-  Caddy --> hf-downloader
-  Caddy --> llama-herder
-  Caddy --> watchdog
-  Caddy --> overlord
-
-  llama-herder --> llama-server
-  overlord --> watchdog
-  watchdog --> llama-server
-  watchdog --> openfang
-  watchdog --> nfcot
-  watchdog --> rust-web
-  watchdog --> hf-downloader
-  watchdog --> llama-herder
-  watchdog --> overlord
-
-  prometheus --> llama-server
-  prometheus --> watchdog
-
-  classDef gateway fill:#7c3aed,stroke:#c4b5fd,stroke-width:3px,color:#fff,rx:12,ry:12;
-  classDef ai fill:#ec4899,stroke:#f9a8d4,stroke-width:2px,color:#fff,rx:10;
-  classDef infra fill:#0ea5e9,stroke:#7dd3fc,stroke-width:2px,color:#fff,rx:10;
-  classDef app fill:#10b981,stroke:#6ee7b7,stroke-width:2px,color:#fff,rx:10;
-
-  class Caddy gateway;
-  class llama-server,llama-herder,openfang,nfcot,hf-downloader ai;
-  class watchdog,overlord,prometheus infra;
-  class landing,rust-web,postgres,redis,mysql,mongodb,kafka,nats,mosquitto,clickhouse,elasticsearch,opensearch,trafficserver,blackfire,node-exporter app;
-```
-
-**Interactive editor** — open `docs/devenv-graph.html` locally for live editing and PNG/SVG export.
-
----
-
-### Mapped Environment Breakdown
-
-#### Nix Orchestration Layer (`modules/nix/`)
-
-- **[lib.nix](modules/nix/lib.nix)** — Aggregates system paths, prebuilts, model declarations, and override targets.
-- **[ports.nix](modules/nix/ports.nix)** — Single source of truth static port registry preventing service collisions.
-- **[packages.nix](modules/nix/packages.nix)** — Manages specialized package variations and explicit `symlinkJoin` assemblies.
-- **[processes.nix](modules/nix/processes.nix)** — Configures task topologies, liveness checks, and watcher loops.
-- **[services.nix](modules/nix/services.nix)** — Manages multi-database service lifecycles (PostgreSQL, ClickHouse, Redis, MongoDB, etc.).
-- **[generators.nix](modules/nix/generators.nix)** — Programmatically writes runtime configurations for Prometheus, Caddy, and server profiles.
-- **[scripts.nix](modules/nix/scripts.nix)** — Exposes diagnostic utility tools into the global development shell context.
-- **[tasks.nix](modules/nix/tasks.nix)** — Sandbox operations, initialization runs, and visual telemetry compilation.
-- **[tests.nix](modules/nix/tests.nix)** — Validates local database connectivity and inference paths during system verification.
-
-#### Core Runtimes (`src/` / `modules/`)
-
-- **[src/watchdog.ts](src/watchdog.ts)** — Background daemon evaluating localized microservice performance vectors and connection health.
-- **[src/yote.ts](src/yote.ts)** — Unified asynchronous entry point managing active bot connections and MTProto routing.
-- **[modules/nfcot_proxy.py](modules/nfcot_proxy.py)** — Direct connection proxy optimizing inference paths with structured parameter layouts.
-- **[src/prompt_cache_benchmark.ts](src/prompt_cache_benchmark.ts)** — Measures memory residency and prompt evaluation metrics under system stress.
-
----
-
-## 🚀 Core Components
-
-### LlamaHerd Proxy
-
-Custom proxy optimization engine running at server boundaries with explicit metric tracking. Handles raw model inference transformations, stream splitting, and response caching.
-
-### Yote Telegram & Overlord Service
-
-Unified chat routing daemon executing inside the Bun TypeScript framework. Bypasses traditional bottlenecks by using native streaming pipelines that bind public endpoints directly into internal processing hooks.
-
-### Sovereign Watchdog
-
-Autonomic background telemetry script validating connection availability across active proxy ports (`llama-server`, `nfcot`, `openfang`), surfacing performance data directly into state metrics endpoints.
-
----
-
-## 🛠️ Commands & Testing
-
-### Enter Sandbox Dev Shell
+## Quick start
 
 ```bash
-devenv shell
+# one-time (Arch/CachyOS)
+sudo pacman -S --needed process-compose-git caddy prometheus curl
+
+cd ~/sovereign
+mise run up-core        # llama-swap, openfang, prometheus, caddy
+mise run health
 ```
 
-### Spin Up Active Architecture
+Stop: `mise run down`
 
-Start all processes in the foreground:
+## LLM routing
+
+| Endpoint | Role |
+|----------|------|
+| `:25021` | **Ingress** — llama-swap (all clients) |
+| `:25001` | Upstream — spawned on demand per model |
+| `:25004` | OpenFang |
+
+Default model: `beellama/qwen-flash` (9B IQ4_XS). Legacy swap id `llama` maps to the same.
 
 ```bash
-devenv up
+curl -s http://127.0.0.1:25021/v1/models | jq '.data[].id'
 ```
 
-Start all processes in the background (detached mode):
+Config: `tools/llama-swap/config.yaml`  
+Builds: beellama, turboquant, ik_llama, ik_turboquant under `~/projects/`.
+
+## Stack layout
+
+```
+sovereign/
+├── mise.toml                 # task aliases
+├── stack/
+│   ├── ports.env             # port SSoT
+│   ├── profiles.sh           # core | full
+│   ├── modules/*.yaml        # one process per file
+│   ├── services/             # service entrypoints
+│   └── up.sh / down.sh / health.sh
+├── bin/                      # thin wrappers
+├── tools/llama-swap/
+├── src/                      # openfang, watchdog, landing, …
+└── process-compose.yaml      # generated compat (stack/modules is canonical)
+```
+
+| Profile | Processes |
+|---------|-----------|
+| `core` | llama-herder, openfang, prometheus, caddy |
+| `full` | core + landing, watchdog, hf-downloader, yote |
 
 ```bash
-devenv up --detach
+./stack/up.sh -D core
+./stack/build-compose.sh      # flatten → process-compose.yaml
 ```
 
-Manage background processes:
+## Ports (`stack/ports.env`)
 
-```bash
-devenv processes list       # List all managed processes and their status
-devenv processes status     # Show detailed process statuses
-devenv processes logs [svc] # View logs of a specific service
-devenv processes restart [svc]
-devenv processes stop [svc]
-devenv processes start [svc]
-devenv processes down       # Shut down all background processes (alias: devenv down)
+| Port | Service |
+|------|---------|
+| 25000 | Caddy |
+| 25004 | OpenFang |
+| 25021 | llama-swap |
+| 25030 | Prometheus |
+
+## Client config
+
+```toml
+# ~/.grok/config.toml
+[model.llama]
+model = "beellama/qwen-flash"
+base_url = "http://localhost:25021/v1"
 ```
 
-### Validate Local Sandbox State
+GGUF models live in `~/projects/models/` (not in this repo).
 
-```bash
-devenv test
-```
+## Repo
 
-### Regenerate Architecture Diagrams
-
-```bash
-devenv tasks run sovereign:graph
-```
-
----
-
-_🐺 Sovereign AI Managed — 2026 Emergent Infrastructure_
+Private: [github.com/toxicwind/sovereign](https://github.com/toxicwind/sovereign)

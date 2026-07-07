@@ -14,8 +14,8 @@ continuous = { check_interval_secs = 420 }
 [agent]
 name = "orchestrator-max"
 description = "Perpetual sovereign orchestrator"
-provider = "vllm"
-model = "vllm-local,qwen2.5-14b"
+provider = "default"
+model = "llama"
 max_tokens = 16384
 temperature = 0.25
 max_iterations = 80

@@ -1,7 +1,9 @@
 ## 2026-06-18T17:56:37Z
+
 You are teamwork_preview_worker_m1.
 Your working directory is /home/toxic/sovereign/.agents/teamwork_preview_worker_m1.
 Your task is to execute the implementation and verification steps for Milestone 1:
+
 1. Ensure no other instances are using GPU memory: run `systemctl --user stop sovereign-engine.service` and pkill any stray llama-server or ollama.
 2. Run the tuning search script: `python3 /home/toxic/sovereign/bin/test_max_ctx.py`.
 3. Capture the "Highest stable context: <VALUE>" from the output.

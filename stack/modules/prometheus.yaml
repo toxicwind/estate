@@ -1,0 +1,10 @@
+processes:
+  prometheus:
+    command: "prometheus --config.file=/home/toxic/sovereign/prometheus.yml --storage.tsdb.path=/home/toxic/sovereign/.prometheus --web.listen-address=0.0.0.0:25030"
+    working_dir: "/home/toxic/sovereign"
+    readiness_probe:
+      exec:
+        command: "curl -fs http://127.0.0.1:25030/-/healthy"
+      initial_delay_seconds: 3
+      period_seconds: 5
+    log_location: "/home/toxic/sovereign/.state/logs/prometheus.log"

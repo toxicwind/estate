@@ -11,6 +11,7 @@ The work product for Milestone 1 is correct, structurally sound, and fully verif
 ## Findings
 
 ### [Minor] Finding 1: Multimodal Warmup VRAM Allocation Warning
+
 - **What**: During initialization, llama-server logged a VRAM allocation warning/failure when attempting to warm up the CLIP vision encoder with a $1472 \times 1472$ image.
 - **Where**: `/home/toxic/sovereign/logs/llama-server.log` (lines 276-278):
   ```
@@ -40,4 +41,4 @@ The work product for Milestone 1 is correct, structurally sound, and fully verif
 
 ## Unverified Items
 
-- *None.* All core tasks and configuration parameters were independently checked and verified.
+- _None._ All core tasks and configuration parameters were independently checked and verified.

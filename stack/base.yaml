@@ -1,0 +1,5 @@
+# Sovereign stack base — merged with stack/modules/*.yaml via process-compose -f
+version: "0.5"
+
+environment:
+  - "SOVEREIGN_ROOT=/home/toxic/sovereign"

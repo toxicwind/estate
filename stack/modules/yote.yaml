@@ -1,0 +1,12 @@
+processes:
+  yote:
+    command: "/home/toxic/.bun/bin/bun run src/index.ts"
+    working_dir: "/home/toxic/sovereign/yote"
+    environment:
+      - "DOTENV_CONFIG_PATH=/home/toxic/sovereign/yote/.env"
+    readiness_probe:
+      exec:
+        command: "curl -fs http://127.0.0.1:25042/health"
+      initial_delay_seconds: 10
+      period_seconds: 3
+    log_location: "/home/toxic/sovereign/.state/logs/yote.log"

@@ -1,0 +1,21 @@
+graph TD
+  Caddy["Caddy<br/>gateway"] --> llama-server
+  Caddy --> openfang
+  Caddy --> rust-web
+  Caddy --> hf-downloader
+  Caddy --> llama-herder
+  Caddy --> watchdog
+  Caddy --> yote
+  llama-herder --> llama-server
+  yote --> watchdog
+  watchdog --> llama-server
+  watchdog --> openfang
+  prometheus --> llama-server
+  prometheus --> watchdog
+
+  classDef gateway fill:#7c3aed,stroke:#c4b5fd,stroke-width:3px,color:#fff;
+  classDef ai      fill:#ec4899,stroke:#f9a8d4,stroke-width:2px,color:#fff;
+  classDef infra   fill:#0ea5e9,stroke:#7dd3fc,stroke-width:2px,color:#fff;
+  class Caddy gateway;
+  class llama-server,llama-herder,openfang,hf-downloader ai;
+  class watchdog,prometheus infra;

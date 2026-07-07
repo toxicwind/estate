@@ -16,6 +16,20 @@ PAIRS=(
   "$HOME/.grok/config.toml|$HOME/.grok/config.toml.bak|grok MCP config"
   "$HOME/sovereign/config.toml|$HOME/sovereign/modules/nix/d/config.toml|openfang sovereign vs stale nix/d copy"
   "$HOME/.openfang/config.toml||openfang runtime (keep; differs from sovereign)"
+  "$HOME/.local/bin/antigravity-install.sh|$HOME/.local/bin/antigravity-install.sh.bak|INSTALL_SCRIPT from antigravity wrappers"
+)
+
+# Wrapper-derived runtime paths (audit only; not auto-archived — managed by wrappers)
+WRAPPER_RUNTIME_PATHS=(
+  "$HOME/.gemini/config/config.json"
+  "$HOME/.gemini/config/config.json.cloud-backup"
+  "$HOME/.local/share/antigravity-wrapper-update.log"
+  "$HOME/.local/share/.antigravity-update-check"
+  "$HOME/.local/share/.antigravity-ide-update-check"
+  "$HOME/.local/share/.antigravity-devenv-version-seen"
+  "$HOME/sovereign/.sovereign-devenv-version"
+  "$HOME/.antigravity-ide/User/settings.json"
+  "$HOME/.local/bin/antigravity-wrapper-common.sh"
 )
 
 archive_stale() {
@@ -49,5 +63,16 @@ done
 if [[ -f "$HOME/data_dumps/audit/devenv.nix.bak" ]]; then
   archive_stale "$HOME/data_dumps/audit/devenv.nix.bak" "devenv retired"
 fi
+if [[ -f "$HOME/devenv.yaml" ]]; then
+  archive_stale "$HOME/devenv.yaml" "stray root devenv config (sovereign uses devenv.yaml.disabled)"
+fi
+
+for p in "${WRAPPER_RUNTIME_PATHS[@]}"; do
+  if [[ -f "$p" ]]; then
+    log "wrapper runtime (keep): $p sha=$(hash_file "$p") mtime=$(mtime_file "$p")"
+  else
+    log "wrapper runtime (absent): $p"
+  fi
+done
 
 log "Archive root: $ARCHIVE"

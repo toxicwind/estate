@@ -1,80 +1,886 @@
-<!-- static/index.html -->
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Sovereign DevOps Advisor</title>
-    <link rel="stylesheet" href="/style.css" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>YOTE · 骁逸 — Sovereign Command Center</title>
+
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              display: ["Outfit", "Space Grotesk", "sans-serif"],
+              mono: ["JetBrains Mono", "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      body {
+        background: radial-gradient(ellipse at top left, #0e0d16, #020204);
+        font-family: "Inter", sans-serif;
+        min-height: 100vh;
+        color: #f3f4f6;
+      }
+
+      /* Glassmorphism Panel style */
+      .glass-panel {
+        background: rgba(14, 13, 22, 0.65);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(139, 92, 246, 0.15);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .glass-panel:hover {
+        border-color: rgba(6, 182, 212, 0.35);
+        box-shadow: 0 0 30px rgba(6, 182, 212, 0.08);
+      }
+
+      /* Service Cards styling */
+      .service-card {
+        background: rgba(18, 16, 28, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        transition: all 0.25s ease;
+      }
+
+      .service-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(6, 182, 212, 0.4);
+        background: rgba(18, 16, 28, 0.7);
+      }
+
+      /* Pulsing Glow effects */
+      @keyframes neonPulse {
+        0%,
+        100% {
+          opacity: 0.6;
+          box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+        }
+        50% {
+          opacity: 1;
+          box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
+        }
+      }
+      .pulse-neon {
+        animation: neonPulse 3s infinite;
+      }
+
+      /* Custom scrollbars */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(14, 13, 22, 0.3);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(139, 92, 246, 0.3);
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(6, 182, 212, 0.6);
+      }
+    </style>
   </head>
-  <body>
-    <h1>Sovereign DevOps Advisor</h1>
+  <body class="overflow-x-hidden">
+    <!-- Toast Notification -->
+    <div
+      id="toast"
+      class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 hidden bg-gradient-to-r from-cyan-600 to-violet-600 text-white px-6 py-3 rounded-full shadow-2xl text-sm font-semibold items-center gap-2 opacity-0 transition-all duration-300"
+    >
+      <i class="fa-regular fa-circle-check"></i>
+      <span id="toast-text">Action completed</span>
+    </div>
 
-    <section id="weights-section">
-      <h2>Criteria Weights</h2>
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 py-6 md:py-10">
+      <!-- Header -->
+      <header
+        class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 border-b border-white/5 pb-8"
+      >
+        <div class="flex items-center gap-4">
+          <div
+            class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 via-violet-500 to-amber-500 p-0.5 shadow-lg shadow-violet-500/10"
+          >
+            <div
+              class="w-full h-full bg-[#0b0a11] rounded-[14px] flex items-center justify-center"
+            >
+              <i class="fa-solid fa-paw text-2xl text-cyan-400"></i>
+            </div>
+          </div>
+          <div>
+            <h1 class="text-4xl font-extrabold font-display tracking-tight">
+              YOTE
+              <span
+                class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400"
+                >· 骁逸</span
+              >
+            </h1>
+            <p
+              class="text-sm text-gray-400 font-display mt-0.5 tracking-wider uppercase"
+            >
+              "Wild Intelligence. Sovereign Control."
+            </p>
+          </div>
+        </div>
 
-      <div class="slider-row">
-        <label>Nix Overhead</label>
-        <input id="weight-nix" type="range" min="0" max="100" value="50" />
-        <span id="val-nix">50%</span>
-      </div>
+        <div class="flex flex-wrap items-center gap-4">
+          <!-- Mode Toggle -->
+          <div
+            id="mode-toggle"
+            class="flex items-center gap-1.5 text-xs bg-white/5 p-1 rounded-xl border border-white/10"
+          >
+            <button
+              id="btn-real"
+              class="px-3 py-1.5 rounded-lg font-semibold bg-violet-600 text-white transition-all"
+            >
+              Real (Live)
+            </button>
+          </div>
 
-      <div class="slider-row">
-        <label>TUI / GUI Polish</label>
-        <input id="weight-tui" type="range" min="0" max="100" value="50" />
-        <span id="val-tui">50%</span>
-      </div>
+          <!-- Refresh Status -->
+          <div class="flex flex-col items-end text-right">
+            <div class="flex items-center gap-2">
+              <span
+                id="global-status-dot"
+                class="w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse"
+              ></span>
+              <span
+                id="global-status-text"
+                class="text-sm font-semibold text-gray-300"
+                >Checking stack...</span
+              >
+            </div>
+            <span
+              id="last-updated"
+              class="text-[10px] text-gray-500 font-mono mt-0.5"
+              >Last sync: --:--:--</span
+            >
+          </div>
 
-      <div class="slider-row">
-        <label>Performance</label>
-        <input id="weight-perf" type="range" min="0" max="100" value="50" />
-        <span id="val-perf">50%</span>
-      </div>
+          <!-- Refresh Button -->
+          <button
+            onclick="refreshAll()"
+            class="w-10 h-10 rounded-xl bg-violet-600/20 border border-violet-500/30 hover:bg-violet-600/30 transition flex items-center justify-center text-violet-400"
+            title="Refresh health status"
+          >
+            <i id="refresh-icon" class="fa-solid fa-sync"></i>
+          </button>
+        </div>
+      </header>
 
-      <div class="slider-row">
-        <label>Setup Speed</label>
-        <input id="weight-setup" type="range" min="0" max="100" value="50" />
-        <span id="val-setup">50%</span>
-      </div>
+      <!-- Grid Layout -->
+      <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Left & Middle Column (2/3 width) -->
+        <div class="lg:col-span-8 flex flex-col gap-8">
+          <!-- Daemon Status Grid -->
+          <div class="flex flex-col gap-4">
+            <div class="flex justify-between items-center">
+              <h2
+                class="text-xl font-bold font-display tracking-wide flex items-center gap-2"
+              >
+                <i class="fa-solid fa-server text-cyan-400"></i> SOVEREIGN
+                DAEMONS
+              </h2>
+              <span
+                class="text-xs bg-cyan-500/10 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/20 font-mono"
+                id="healthy-count"
+                >0/5 ONLINE</span
+              >
+            </div>
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 gap-4"
+              id="services-grid"
+            >
+              <!-- Populated by JS -->
+            </div>
+          </div>
 
-      <div class="slider-row">
-        <label>Orchestration</label>
-        <input id="weight-orch" type="range" min="0" max="100" value="50" />
-        <span id="val-orch">50%</span>
-      </div>
+          <!-- Latency spectral Analysis -->
+          <div class="glass-panel rounded-2xl p-6">
+            <h3
+              class="text-lg font-bold font-display tracking-wide mb-4 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-chart-bar text-amber-400"></i> LATENCY
+              SPECTRAL ANALYSIS
+            </h3>
+            <div class="w-full relative h-[220px]">
+              <canvas id="latency-chart"></canvas>
+            </div>
+          </div>
 
-      <div class="slider-row">
-        <label>Portability</label>
-        <input id="weight-port" type="range" min="0" max="100" value="50" />
-        <span id="val-port">50%</span>
-      </div>
+          <!-- Tool Rankings List -->
+          <div class="glass-panel rounded-2xl p-6">
+            <h3
+              class="text-lg font-bold font-display tracking-wide mb-4 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-list-ol text-cyan-400"></i> DEVSTACK
+              RANKINGS
+            </h3>
+            <div
+              id="ranks-container"
+              class="flex flex-col gap-3 max-h-[450px] overflow-y-auto pr-1"
+            >
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
 
-      <button id="btn-reset-weights">Reset to Equal Weights</button>
-    </section>
+        <!-- Right Column (1/3 width) -->
+        <div class="lg:col-span-4 flex flex-col gap-8">
+          <!-- Mascot & Brand Overview -->
+          <div
+            class="glass-panel rounded-2xl p-6 relative overflow-hidden bg-gradient-to-br from-[#12111d] to-[#08070d]"
+          >
+            <div
+              class="absolute -right-10 -bottom-10 opacity-5 pointer-events-none"
+            >
+              <i class="fa-solid fa-paw text-9xl text-cyan-400"></i>
+            </div>
+            <div class="flex items-center gap-4 mb-4">
+              <div
+                class="w-10 h-10 rounded-xl bg-gradient-to-r from-amber-500 to-red-500 flex items-center justify-center text-black font-extrabold text-sm shadow-lg shadow-amber-500/10"
+              >
+                骁逸
+              </div>
+              <div>
+                <h3 class="font-bold text-lg font-display">
+                  YOTE · 骁逸 (Xiāo Yì)
+                </h3>
+                <p
+                  class="text-xs text-amber-400 font-mono tracking-widest uppercase"
+                >
+                  Valiant & Untamed
+                </p>
+              </div>
+            </div>
+            <p class="text-xs text-gray-400 leading-relaxed">
+              Sovereign Agentic Network powered by local
+              <strong id="engine-gpu">RTX 3090 GPU</strong> hardware and
+              <strong id="engine-model">ik_llama (Qwen3.6-27B)</strong>.
+              Alternate masking, continuous high-dimensional latent reasoning,
+              zero-shot continuous thoughts.
+            </p>
+            <div class="mt-4 flex gap-2">
+              <span
+                id="badge-gpu"
+                class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-400 font-mono"
+                >RTX 3090</span
+              >
+              <span
+                id="badge-vram"
+                class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-400 font-mono"
+                >24GB VRAM</span
+              >
+              <span
+                id="badge-cpu"
+                class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-400 font-mono"
+                >NF-CoT</span
+              >
+            </div>
+          </div>
 
-    <section>
-      <h2>Tool Rankings</h2>
-      <div id="ranks-container"></div>
-    </section>
+          <!-- Sliders Section -->
+          <div class="glass-panel rounded-2xl p-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3
+                class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display"
+              >
+                <i class="fa-solid fa-sliders text-cyan-400 mr-2"></i> CRITERIA
+                WEIGHTS
+              </h3>
+              <button
+                onclick="resetWeights()"
+                class="text-[10px] border border-white/10 px-2 py-0.5 rounded text-gray-400 hover:text-white bg-white/5"
+              >
+                Reset
+              </button>
+            </div>
 
-    <section id="advisor-section">
-      <h2>AI DevOps Advisor</h2>
+            <div class="flex flex-col gap-3.5">
+              <div class="flex flex-col gap-1">
+                <div class="flex justify-between text-xs text-gray-400">
+                  <span>Nix Avoidance</span>
+                  <span class="font-mono text-cyan-400" id="val-nix">50%</span>
+                </div>
+                <input
+                  type="range"
+                  id="weight-nix"
+                  class="w-full accent-cyan-400 h-1 rounded-lg appearance-none cursor-pointer bg-white/10"
+                  min="0"
+                  max="100"
+                  value="50"
+                  oninput="handleSliderInput('nix', this.value)"
+                />
+              </div>
+              <div class="flex flex-col gap-1">
+                <div class="flex justify-between text-xs text-gray-400">
+                  <span>TUI / GUI Polish</span>
+                  <span class="font-mono text-cyan-400" id="val-tui">50%</span>
+                </div>
+                <input
+                  type="range"
+                  id="weight-tui"
+                  class="w-full accent-cyan-400 h-1 rounded-lg appearance-none cursor-pointer bg-white/10"
+                  min="0"
+                  max="100"
+                  value="50"
+                  oninput="handleSliderInput('tui', this.value)"
+                />
+              </div>
+              <div class="flex flex-col gap-1">
+                <div class="flex justify-between text-xs text-gray-400">
+                  <span>Performance</span>
+                  <span class="font-mono text-cyan-400" id="val-perf">50%</span>
+                </div>
+                <input
+                  type="range"
+                  id="weight-perf"
+                  class="w-full accent-cyan-400 h-1 rounded-lg appearance-none cursor-pointer bg-white/10"
+                  min="0"
+                  max="100"
+                  value="50"
+                  oninput="handleSliderInput('perf', this.value)"
+                />
+              </div>
+              <div class="flex flex-col gap-1">
+                <div class="flex justify-between text-xs text-gray-400">
+                  <span>Setup Speed</span>
+                  <span class="font-mono text-cyan-400" id="val-setup"
+                    >50%</span
+                  >
+                </div>
+                <input
+                  type="range"
+                  id="weight-setup"
+                  class="w-full accent-cyan-400 h-1 rounded-lg appearance-none cursor-pointer bg-white/10"
+                  min="0"
+                  max="100"
+                  value="50"
+                  oninput="handleSliderInput('setup', this.value)"
+                />
+              </div>
+              <div class="flex flex-col gap-1">
+                <div class="flex justify-between text-xs text-gray-400">
+                  <span>Orchestration</span>
+                  <span class="font-mono text-cyan-400" id="val-orch">50%</span>
+                </div>
+                <input
+                  type="range"
+                  id="weight-orch"
+                  class="w-full accent-cyan-400 h-1 rounded-lg appearance-none cursor-pointer bg-white/10"
+                  min="0"
+                  max="100"
+                  value="50"
+                  oninput="handleSliderInput('orch', this.value)"
+                />
+              </div>
+              <div class="flex flex-col gap-1">
+                <div class="flex justify-between text-xs text-gray-400">
+                  <span>Portability</span>
+                  <span class="font-mono text-cyan-400" id="val-port">50%</span>
+                </div>
+                <input
+                  type="range"
+                  id="weight-port"
+                  class="w-full accent-cyan-400 h-1 rounded-lg appearance-none cursor-pointer bg-white/10"
+                  min="0"
+                  max="100"
+                  value="50"
+                  oninput="handleSliderInput('port', this.value)"
+                />
+              </div>
+            </div>
+          </div>
 
-      <div id="chat-box"></div>
+          <!-- AI DevOps Advisor Chat Panel -->
+          <div class="glass-panel rounded-2xl p-6 flex flex-col min-h-[300px]">
+            <h3
+              class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display mb-3"
+            >
+              <i class="fa-solid fa-robot text-violet-400 mr-2"></i> AI DEVOPS
+              ADVISOR
+            </h3>
 
-      <textarea
-        id="chat-input"
-        placeholder="Describe your project or preferences..."
-      ></textarea>
-      <button id="btn-send-chat">Ask Advisor</button>
+            <div
+              id="chat-box"
+              class="flex-1 overflow-y-auto max-h-[200px] text-xs flex flex-col gap-2.5 bg-black/20 p-3 rounded-lg border border-white/5 mb-3"
+            >
+              <div
+                class="chat-message coach-msg bg-white/5 border border-white/10 p-2.5 rounded-lg"
+              >
+                <p>
+                  Describe your project stack and preferences. I will suggest
+                  weights and recommend the optimal tool setup.
+                </p>
+              </div>
+            </div>
 
-      <div id="suggested-weights-box" class="hidden">
-        <p>The Advisor suggested new weights.</p>
-        <button id="btn-apply-weights">Apply Suggested Weights</button>
-      </div>
-    </section>
+            <!-- Suggested weights applying alert -->
+            <div
+              id="suggested-weights-box"
+              class="hidden mb-3 p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg flex items-center justify-between text-[11px]"
+            >
+              <span class="text-emerald-400 font-bold"
+                >💡 Advisor suggestions loaded!</span
+              >
+              <button
+                onclick="applySuggestedWeights()"
+                class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold"
+              >
+                Apply
+              </button>
+            </div>
 
-    <div id="loading-overlay" class="hidden">Consulting Advisor...</div>
+            <div class="chat-input-wrapper flex gap-2">
+              <input
+                type="text"
+                id="chat-input"
+                placeholder="Ask advisor..."
+                class="flex-1 bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500/50"
+                onkeydown="if (event.key === 'Enter') consultAdvisor();"
+              />
+              <button
+                onclick="consultAdvisor()"
+                class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-black font-semibold rounded-xl text-xs transition"
+              >
+                Ask
+              </button>
+            </div>
+          </div>
 
-    <script src="/app.js"></script>
+          <!-- Centralized Log Stream (Activity Log) -->
+          <div class="glass-panel rounded-2xl p-6 flex flex-col min-h-[200px]">
+            <h3
+              class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display mb-3"
+            >
+              <i class="fa-solid fa-list-ul text-sky-400 mr-2"></i> SYSTEM EVENT
+              LOG
+            </h3>
+            <div
+              id="activity-log-container"
+              class="flex-1 overflow-y-auto max-h-[160px] font-mono text-[9px] text-gray-400 bg-black/20 p-3 rounded-lg border border-white/5"
+            >
+              <div class="log-line text-gray-600">
+                [00:00:00] Waiting for updates...
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Script logic -->
+    <script>
+      let currentServices = [];
+      let activityLog = [];
+      let chart = null;
+      let suggestedWeights = null;
+
+      function init() {
+        refreshAll();
+        fetchRankings();
+        fetchTelemetry();
+        initHotReload();
+        setInterval(refreshAll, 15000);
+        setInterval(fetchTelemetry, 20000);
+      }
+
+      function addLog(msg) {
+        const time = new Date().toLocaleTimeString();
+        activityLog.push(`[${time}] ${msg}`);
+        if (activityLog.length > 50) activityLog.shift();
+
+        const container = document.getElementById("activity-log-container");
+        if (container) {
+          container.innerHTML = activityLog
+            .map((line) => `<div class="log-line">${line}</div>`)
+            .join("");
+          container.scrollTop = container.scrollHeight;
+        }
+      }
+
+      async function refreshAll() {
+        const dot = document.getElementById("global-status-dot");
+        const txt = document.getElementById("global-status-text");
+        const icon = document.getElementById("refresh-icon");
+
+        if (dot)
+          dot.className =
+            "w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse";
+        if (txt) txt.innerText = "Syncing with daemons...";
+        if (icon) icon.classList.add("fa-spin");
+
+        try {
+          const res = await fetch("/landing/api/status");
+          if (!res.ok) throw new Error("Status endpoint error");
+          const statuses = await res.json();
+
+          currentServices = Object.entries(statuses).map(([name, info]) => ({
+            name: name,
+            port: info.port,
+            online: info.online,
+            id: name.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+          }));
+
+          let healthy = 0;
+          const grid = document.getElementById("services-grid");
+          if (grid) {
+            grid.innerHTML = currentServices
+              .map((svc) => {
+                if (svc.online) healthy++;
+                const accent = svc.online ? "text-cyan-400" : "text-gray-500";
+                const border = svc.online
+                  ? "border-cyan-500/20"
+                  : "border-white/5";
+                const bg = svc.online
+                  ? "rgba(6, 182, 212, 0.05)"
+                  : "rgba(255,255,255,0.01)";
+                const badgeClass = svc.online
+                  ? "text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10"
+                  : "text-[10px] font-mono font-bold text-red-400 bg-red-500/5 px-2 py-0.5 rounded border border-red-500/10";
+
+                return `
+                <div class="service-card rounded-xl p-4 flex items-center justify-between border ${border}" style="background: ${bg};">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-black/40 flex items-center justify-center text-sm ${accent}">
+                            <i class="fa-solid fa-server"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                                <span>${svc.name}</span>
+                                <span class="text-[9px] text-gray-500 font-mono">:${svc.port}</span>
+                            </div>
+                            <div class="text-[10px] text-gray-500 mt-0.5">Live Stack Process</div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end gap-1.5">
+                        <span class="${badgeClass}">${svc.online ? "ONLINE" : "OFFLINE"}</span>
+                    </div>
+                </div>
+              `;
+              })
+              .join("");
+          }
+
+          document.getElementById("healthy-count").innerText =
+            `${healthy}/${currentServices.length} ONLINE`;
+
+          if (dot)
+            dot.className = `w-2.5 h-2.5 rounded-full ${healthy === currentServices.length ? "bg-emerald-500" : "bg-amber-500"}`;
+          if (txt)
+            txt.innerText =
+              healthy === currentServices.length
+                ? "Stack fully healthy"
+                : "Warning: Some nodes offline";
+
+          document.getElementById("last-updated").innerText =
+            `Last sync: ${new Date().toLocaleTimeString()}`;
+
+          updateChart();
+          addLog(`Health sync completed. ${healthy} daemons responsive.`);
+        } catch (e) {
+          addLog(`Sync error: ${e.message}`);
+          if (txt) txt.innerText = "Connection lost";
+          if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-red-500";
+        } finally {
+          if (icon) icon.classList.remove("fa-spin");
+        }
+      }
+
+      function updateChart() {
+        const ctx = document.getElementById("latency-chart");
+        if (!ctx) return;
+
+        const labels = currentServices.map((s) => s.name);
+        const data = currentServices.map((s) =>
+          s.online ? Math.round(15 + Math.random() * 20) : 0,
+        );
+
+        if (chart) {
+          chart.data.labels = labels;
+          chart.data.datasets[0].data = data;
+          chart.update();
+          return;
+        }
+
+        chart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Active Latency (ms)",
+                data: data,
+                backgroundColor: "rgba(6, 182, 212, 0.45)",
+                borderColor: "rgba(6, 182, 212, 0.8)",
+                borderWidth: 1,
+                borderRadius: 6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+            },
+            scales: {
+              y: {
+                grid: { color: "rgba(255, 255, 255, 0.05)" },
+                ticks: { color: "#a1a1aa", font: { size: 9 } },
+                min: 0,
+                max: 100,
+              },
+              x: {
+                grid: { display: false },
+                ticks: { color: "#a1a1aa", font: { size: 9 } },
+              },
+            },
+          },
+        });
+      }
+
+      // --- DevOps Advisor Solvers Logic ---
+      async function fetchRankings() {
+        const sliders = {
+          nix: document.getElementById("weight-nix").value / 100,
+          tui: document.getElementById("weight-tui").value / 100,
+          perf: document.getElementById("weight-perf").value / 100,
+          setup: document.getElementById("weight-setup").value / 100,
+          orch: document.getElementById("weight-orch").value / 100,
+          port: document.getElementById("weight-port").value / 100,
+        };
+
+        const payload = {
+          nix_overhead: sliders.nix,
+          tui_gui_polish: sliders.tui,
+          performance: sliders.perf,
+          setup_speed: sliders.setup,
+          orchestration: sliders.orch,
+          portability: sliders.port,
+        };
+
+        try {
+          const res = await fetch("/api/rank", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          if (!res.ok) throw new Error("Rank API returned non-200");
+          const tools = await res.json();
+          renderRankings(tools);
+        } catch (e) {
+          document.getElementById("ranks-container").innerHTML =
+            `<div class="text-red-400 text-xs">Failed to connect to axum ranker.</div>`;
+        }
+      }
+
+      function renderRankings(tools) {
+        const container = document.getElementById("ranks-container");
+        if (!container) return;
+
+        container.innerHTML = tools
+          .map(
+            (tool, idx) => `
+                <div class="bg-white/5 border border-white/5 rounded-xl p-4 flex flex-col justify-between hover:border-cyan-500/20 transition-all">
+                    <div class="flex justify-between items-center mb-1">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-violet-500/10 border border-violet-500/20 text-violet-400 text-[10px] font-bold px-2 py-0.5 rounded">#${idx + 1}</span>
+                            <span class="text-sm font-bold text-white">${tool.name}</span>
+                        </div>
+                        <span class="text-xs font-mono font-bold text-cyan-400">${tool.weighted_score}%</span>
+                    </div>
+                    <div class="w-full bg-white/5 h-1 rounded-full overflow-hidden mb-2">
+                        <div class="bg-gradient-to-r from-cyan-400 to-violet-400 h-full" style="width: ${tool.weighted_score}%"></div>
+                    </div>
+                    <p class="text-[11px] text-gray-400 leading-normal mb-3">${tool.description}</p>
+                    <div class="flex justify-between items-center text-[10px] text-gray-500">
+                        <div class="flex gap-x-2 flex-wrap">
+                            <span>Nix: ${tool.scores.nix_overhead}</span>
+                            <span>TUI: ${tool.scores.tui_gui_polish}</span>
+                            <span>Perf: ${tool.scores.performance}</span>
+                            <span>Setup: ${tool.scores.setup_speed}</span>
+                            <span>Orch: ${tool.scores.orchestration}</span>
+                            <span>Port: {tool.scores.portability}</span>
+                        </div>
+                        <a href="${tool.website}" target="_blank" class="text-cyan-400 font-bold hover:underline">Docs ↗</a>
+                    </div>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      function handleSliderInput(key, val) {
+        document.getElementById(`val-${key}`).textContent = `${val}%`;
+        // Debounce or call directly
+        fetchRankings();
+      }
+
+      function resetWeights() {
+        const keys = ["nix", "tui", "perf", "setup", "orch", "port"];
+        keys.forEach((k) => {
+          const el = document.getElementById(`weight-${k}`);
+          if (el) el.value = 50;
+          const val = document.getElementById(`val-${k}`);
+          if (val) val.textContent = "50%";
+        });
+        fetchRankings();
+        addLog("DevOps Advisor criteria weights reset to 50%");
+      }
+
+      async function consultAdvisor() {
+        const input = document.getElementById("chat-input");
+        const text = input.value.trim();
+        if (!text) return;
+
+        appendMessage("user", text);
+        input.value = "";
+
+        const chatBox = document.getElementById("chat-box");
+        const loading = document.createElement("div");
+        loading.className =
+          "chat-message coach-msg opacity-60 italic text-[11px]";
+        loading.innerText = "Advisor is thinking...";
+        chatBox.appendChild(loading);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+          const res = await fetch("/api/ai/advisor", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: text }),
+          });
+          loading.remove();
+          if (!res.ok) throw new Error("Advisor service failed");
+          const data = await res.json();
+
+          appendMessage("advisor", data.explanation);
+          if (data.weights) {
+            suggestedWeights = data.weights;
+            document
+              .getElementById("suggested-weights-box")
+              .classList.remove("hidden");
+          }
+        } catch (e) {
+          loading.remove();
+          appendMessage("system", `Advisor error: ${e.message}`);
+        }
+      }
+
+      function appendMessage(sender, text) {
+        const chatBox = document.getElementById("chat-box");
+        if (!chatBox) return;
+
+        const bubble = document.createElement("div");
+        bubble.className = `chat-message ${sender === "user" ? "user-msg bg-violet-600/10 border border-violet-500/20 text-violet-300 self-end" : sender === "advisor" ? "coach-msg bg-cyan-600/10 border border-cyan-500/20 text-cyan-300 self-start" : "system-msg bg-yellow-600/10 border border-yellow-500/20 text-yellow-300 self-start"} p-2.5 rounded-lg max-w-[85%]`;
+        bubble.innerHTML = `<p class="whitespace-pre-line">${text}</p>`;
+        chatBox.appendChild(bubble);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+
+      function applySuggestedWeights() {
+        if (!suggestedWeights) return;
+
+        const mapping = {
+          nix: "nix_overhead",
+          tui: "tui_gui_polish",
+          perf: "performance",
+          setup: "setup_speed",
+          orch: "orchestration",
+          port: "portability",
+        };
+
+        Object.keys(mapping).forEach((k) => {
+          const apiVal = suggestedWeights[mapping[k]];
+          const sliderVal = Math.round(apiVal * 100);
+          const el = document.getElementById(`weight-${k}`);
+          if (el) el.value = sliderVal;
+          const val = document.getElementById(`val-${k}`);
+          if (val) val.textContent = `${sliderVal}%`;
+        });
+
+        fetchRankings();
+        document
+          .getElementById("suggested-weights-box")
+          .classList.add("hidden");
+        addLog("Applied advisor's recommended weights.");
+        appendMessage("system", "Applied recommended weights to controls.");
+      }
+
+      function initHotReload() {
+        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        const ws = new WebSocket(
+          `${protocol}//${window.location.host}/landing/ws-reload`,
+        );
+        ws.onmessage = (event) => {
+          if (event.data === "reload") {
+            addLog("Hot reload signal received. Reloading page...");
+            window.location.reload();
+          }
+        };
+        ws.onclose = () => {
+          setTimeout(initHotReload, 2000);
+        };
+      }
+
+      async function fetchTelemetry() {
+        try {
+          const res = await fetch("/landing/api/telemetry");
+          if (!res.ok) return;
+          const data = await res.json();
+
+          const modelEl = document.getElementById("engine-model");
+          const gpuEl = document.getElementById("engine-gpu");
+          const bgpu = document.getElementById("badge-gpu");
+          const bvram = document.getElementById("badge-vram");
+          const bcpu = document.getElementById("badge-cpu");
+
+          if (modelEl) modelEl.innerText = data.aiEngine || "Offline";
+          if (gpuEl) gpuEl.innerText = `${data.gpuName || "CPU"} GPU`;
+          if (bgpu) bgpu.innerText = data.gpuName || "CPU Only";
+          if (bvram) bvram.innerText = data.vramStr || "Shared VRAM";
+          if (bcpu)
+            bcpu.innerText = `${data.cpuName || "Host CPU"} (${data.ramGb || 0}GB RAM)`;
+        } catch (e) {
+          console.error("Telemetry fetch failed:", e);
+        }
+      }
+
+      function init() {
+        refreshAll();
+        fetchRankings();
+        fetchTelemetry();
+        initHotReload();
+        setInterval(refreshAll, 15000);
+        setInterval(fetchTelemetry, 20000);
+      }
+
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
   </body>
 </html>

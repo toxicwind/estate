@@ -1,7 +1,9 @@
 # Milestone 1 Analysis Report: Context Tuning & Service Setup
 
 ## Executive Summary
+
 This analysis details the exploration of Milestone 1 (Context Tuning & Service Setup) for the Sovereign Stack. It covers:
+
 1. An examination of the binary search context size tuning script (`bin/test_max_ctx.py`).
 2. Verification of the physical locations and properties of the required model and mmproj files.
 3. A review of the current orchestration configuration (`process-compose.yaml`) and systemd unit (`sovereign-engine.service`).
@@ -14,6 +16,7 @@ This analysis details the exploration of Milestone 1 (Context Tuning & Service S
 The script `bin/test_max_ctx.py` is designed to run a binary search to find the highest stable context size (`ctx`) for the `llama-server` running the specified model and mmproj files on the local hardware configuration.
 
 ### Search Flow & Mechanics
+
 1. **Process Clean-up**: At the start of each test iteration, a helper function `kill_all()` runs `pkill -9 -f llama-server` and `pkill -9 -f ollama` to guarantee no other servers occupy the VRAM.
 2. **Server Startup**: The script launches the server subprocess with:
    - `-m` and `--mmproj` model paths.
@@ -29,7 +32,7 @@ The script `bin/test_max_ctx.py` is designed to run a binary search to find the 
    - `n_predict: 100` tokens.
    - `temperature: 0.1`.
    - `timeout: 120` seconds.
-   If the response contains valid text (indicated by `"content"` in the JSON payload), the test passes.
+     If the response contains valid text (indicated by `"content"` in the JSON payload), the test passes.
 5. **Binary Search Range**:
    - Initial boundaries: `low = 4096`, `high = 131072`.
    - Initial verification check at 4096 (exits if failure).
@@ -41,10 +44,11 @@ The script `bin/test_max_ctx.py` is designed to run a binary search to find the 
 ## 2. Verification of Model and Projector Files
 
 The model and mmproj files were verified to exist at the following exact paths:
-* **Model File**: 
+
+- **Model File**:
   - **Path**: `/home/toxic/models/Qwen3.6-27B-Heretic-UD/heretic-UD-27B-Q5_K_XL.gguf`
   - **Size**: 21,425,285,152 bytes (~20 GB)
-* **Projector (mmproj) File**:
+- **Projector (mmproj) File**:
   - **Path**: `/home/toxic/models/Qwen3.6-27B-Heretic-UD/mmproj-27B-F16.gguf`
   - **Size**: 927,607,360 bytes (~884 MB)
 
@@ -55,6 +59,7 @@ These files match the constants configured in `bin/test_max_ctx.py`.
 ## 3. Configuration Review
 
 ### Current `process-compose.yaml` (Lines 10-37)
+
 - **Model Path Configured**: Uses `/home/toxic/models/Qwen3.6-27B-Heretic-Cerebellum-v1-Q2_K_Mixed.gguf` (Needs update to the `Q5_K_XL` version).
 - **mmproj Argument**: Missing from the command arguments (Needs addition of `--mmproj`).
 - **Context Size**: Set to `--ctx-size 98304` (Needs update to the value output by the tuning script).
@@ -62,6 +67,7 @@ These files match the constants configured in `bin/test_max_ctx.py`.
 - **Execution Binary**: Uses `/home/toxic/sovereign/bin/llama-server`, which is a symlink pointing to the verified binary `/home/toxic/ik_llama.cpp-main/build/bin/llama-server`.
 
 ### Current `sovereign-engine.service`
+
 - **Location**: `/home/toxic/.config/systemd/user/sovereign-engine.service`
 - **Lifecycle Commands**:
   - Starts the composition via `ExecStart=/usr/bin/process-compose -t=false -f /home/toxic/sovereign/process-compose.yaml -U`
@@ -73,6 +79,7 @@ These files match the constants configured in `bin/test_max_ctx.py`.
 ## 4. Step-by-Step Execution Strategy
 
 ### Step 1: Context Size Search
+
 1. Ensure no systemd services are currently hogging GPU memory:
    ```bash
    systemctl --user stop sovereign-engine.service
@@ -84,6 +91,7 @@ These files match the constants configured in `bin/test_max_ctx.py`.
 3. Record the output value: `Highest stable context: <VALUE>` (e.g. 65536).
 
 ### Step 2: Configuration Update
+
 1. Open `process-compose.yaml`.
 2. Locate the global environment block and update the model path:
    ```yaml
@@ -104,13 +112,16 @@ These files match the constants configured in `bin/test_max_ctx.py`.
      ```
 
 ### Step 3: Complete Process Cleanup
+
 To prevent lockups or conflicting sockets, terminate any stray processes:
+
 ```bash
 pkill -9 -f llama-server
 pkill -9 -f process-compose
 ```
 
 ### Step 4: Systemd Service Relaunch
+
 1. Reload systemd user daemon:
    ```bash
    systemctl --user daemon-reload
@@ -125,6 +136,7 @@ pkill -9 -f process-compose
    ```
 
 ### Step 5: Verification & Diagnostics
+
 1. Check the service status:
    ```bash
    systemctl --user status sovereign-engine.service

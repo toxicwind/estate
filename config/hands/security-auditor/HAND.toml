@@ -14,8 +14,8 @@ continuous = { check_interval_secs = 360 }
 [agent]
 name = "security-auditor-max"
 description = "Perpetual sovereign security agent"
-provider = "vllm"
-model = "vllm-local,qwen2.5-14b"
+provider = "default"
+model = "llama"
 max_tokens = 16384
 temperature = 0.15
 max_iterations = 70

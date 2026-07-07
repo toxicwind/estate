@@ -1,0 +1,18 @@
+processes:
+  llama-herder:
+    command: "/home/toxic/sovereign/stack/services/llama-herder.sh"
+    working_dir: "/home/toxic/sovereign"
+    environment:
+      - "SOVEREIGN_ROOT=/home/toxic/sovereign"
+      - "LLAMA_HERDER=25021"
+    availability:
+      restart: on_failure
+      backoff_seconds: 3
+      max_restarts: 12
+    readiness_probe:
+      exec:
+        command: "curl -fs http://127.0.0.1:25021/health"
+      initial_delay_seconds: 5
+      period_seconds: 5
+      failure_threshold: 12
+    log_location: "/home/toxic/sovereign/.state/logs/llama-herder.log"

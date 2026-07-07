@@ -18,6 +18,7 @@ healthCheckTimeout: 120
 
 models:
   # Legacy alias — Grok/Antigravity configs that still send model "llama"
+  # Fast default: Qwen3.5-9B DeepSeek-V4 Flash IQ4_XS (not 19.7B strange + spec-draft)
   "llama":
     cmd: >
       env LD_LIBRARY_PATH=/home/toxic/projects/beellama.cpp/build/bin
@@ -26,7 +27,7 @@ models:
       GGML_CUDA_GRAPHS=1
       GGML_CUDA_FA_ALL_QUANTS=1
       /home/toxic/projects/beellama.cpp/build/bin/llama-server
-      --model /home/toxic/projects/models/StrangeMerges_19-7B-dare_ties.Q4_K_M.gguf
+      --model /home/toxic/projects/models/Qwen3.5-9B-DeepSeek-V4-Flash-IQ4_XS.gguf
       --host 127.0.0.1
       --port 25001
       --ctx-size 32768
@@ -37,19 +38,9 @@ models:
       -ub 1024
       --cache-type-k q4_0
       --cache-type-v q4_0
-      --embeddings
-      --pooling cls
       --metrics
       --no-mmap
       --mlock
-      --spec-type draft-simple
-      --spec-draft-model /home/toxic/projects/models/Qwen2.5-1.5B-Draft.gguf
-      --spec-draft-ctx-size 4096
-      --spec-draft-n-max 16
-      --spec-draft-n-min 2
-      --spec-draft-p-split 0.1
-      --spec-draft-p-min 0
-      --spec-draft-backend-sampling
     proxy: http://127.0.0.1:25001
     ttl: 300
 

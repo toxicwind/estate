@@ -1,0 +1,10 @@
+processes:
+  hf-downloader:
+    command: "/home/toxic/.bun/bin/bun run src/hf_downloader.ts"
+    working_dir: "/home/toxic/sovereign"
+    readiness_probe:
+      exec:
+        command: "curl -fs http://127.0.0.1:25020/health"
+      initial_delay_seconds: 1
+      period_seconds: 3
+    log_location: "/home/toxic/sovereign/.state/logs/hf-downloader.log"

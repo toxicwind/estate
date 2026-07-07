@@ -1,0 +1,12 @@
+# bunfig.toml — Yote configuration
+# See https://bun.sh/docs/runtime/bunfig
+
+[install]
+# auto-install peer deps etc. if you add any in future
+
+[test]
+# future test config
+
+[run]
+# You can set env-file here if you prefer explicit control
+env-file = ".env"

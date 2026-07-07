@@ -66,7 +66,7 @@
 
 ## 4. Conclusion
 
-The build environment is fully prepared (CUDA 13.3, GCC 16.1.1, CMake 4.3.4, and an RTX 3090 GPU). The C++ server can be compiled successfully using CMake targeting `sm_86` (RTX 3090 capability), and the Megakernel python package can be built using a two-pass `uv` synchronization. 
+The build environment is fully prepared (CUDA 13.3, GCC 16.1.1, CMake 4.3.4, and an RTX 3090 GPU). The C++ server can be compiled successfully using CMake targeting `sm_86` (RTX 3090 capability), and the Megakernel python package can be built using a two-pass `uv` synchronization.
 
 ---
 

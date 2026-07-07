@@ -20,8 +20,8 @@ continuous = { check_interval_secs = 300 }
 [agent]
 name = "arbitrage-monitor"
 description = "Persistent autonomous arbitrage hunter with max-level May 2026 patterns"
-provider = "vllm"
-model = "vllm-local,qwen2.5-14b"
+provider = "default"
+model = "llama"
 max_tokens = 16384
 temperature = 0.2
 max_iterations = 120

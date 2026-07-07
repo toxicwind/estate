@@ -10,17 +10,17 @@ In `server/CMakeLists.txt`, several CMake options and compile definitions contro
 
 ### 1.1 CMake Variables and Defaults
 
-| CMake Variable | Default Value | Purpose / Impact |
-| :--- | :--- | :--- |
-| `DFLASH27B_GPU_BACKEND` | `"cuda"` | Target GPU backend. Supported values: `cuda` or `hip` (case-insensitive). |
-| `DFLASH27B_USER_CUDA_ARCHITECTURES` | `""` (nvcc auto-detect) | Semicolon-separated list of target CUDA compute architectures (e.g. `"86"`). Overrides the default list (`"60;61;62;70;75;86;120"`). |
-| `DFLASH27B_HIP_ARCHITECTURES` | `""` | Target HIP GPU architectures (e.g. `"gfx1151;gfx1100"`). |
-| `DFLASH27B_FA_ALL_QUANTS` | `ON` | Compiles ggml-cuda/hip FlashAttention kernels for all KV-quantization pairs (required for asymmetric KV cache). Increases compile time by ~3×. |
-| `DFLASH27B_ENABLE_BSA` | `ON` (auto-gates) | Enables Block-Sparse Attention (BSA) for speculative prefill scoring. Gated by GPU architecture (`sm_80+` for CUDA) and submodule initialization. |
-| `DFLASH27B_HIP_SM80_EQUIV` | `OFF` | Gated on HIP builds. If `ON`, compiles rocWMMA-native flashprefill kernels (Phase 2). Requires `rocwmma/rocwmma.hpp` headers in `ROCM_PATH`. |
-| `DFLASH27B_USE_BLACKWELL_CONSUMER_FIX` | `OFF` | Bypasses Blackwell `sm_12x -> sm_12xa` instruction changes and excludes FP4 kernels to prevent illegal instruction faults on consumer chips. Auto-enables if target CUDA arch includes a `12x` entry. |
-| `DFLASH27B_TESTS` | `ON` | Builds C++ numerics and smoke tests. |
-| `DFLASH27B_SERVER` | `ON` | Builds `dflash_server` and `backend_ipc_daemon`. |
+| CMake Variable                         | Default Value           | Purpose / Impact                                                                                                                                                                                      |
+| :------------------------------------- | :---------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DFLASH27B_GPU_BACKEND`                | `"cuda"`                | Target GPU backend. Supported values: `cuda` or `hip` (case-insensitive).                                                                                                                             |
+| `DFLASH27B_USER_CUDA_ARCHITECTURES`    | `""` (nvcc auto-detect) | Semicolon-separated list of target CUDA compute architectures (e.g. `"86"`). Overrides the default list (`"60;61;62;70;75;86;120"`).                                                                  |
+| `DFLASH27B_HIP_ARCHITECTURES`          | `""`                    | Target HIP GPU architectures (e.g. `"gfx1151;gfx1100"`).                                                                                                                                              |
+| `DFLASH27B_FA_ALL_QUANTS`              | `ON`                    | Compiles ggml-cuda/hip FlashAttention kernels for all KV-quantization pairs (required for asymmetric KV cache). Increases compile time by ~3×.                                                        |
+| `DFLASH27B_ENABLE_BSA`                 | `ON` (auto-gates)       | Enables Block-Sparse Attention (BSA) for speculative prefill scoring. Gated by GPU architecture (`sm_80+` for CUDA) and submodule initialization.                                                     |
+| `DFLASH27B_HIP_SM80_EQUIV`             | `OFF`                   | Gated on HIP builds. If `ON`, compiles rocWMMA-native flashprefill kernels (Phase 2). Requires `rocwmma/rocwmma.hpp` headers in `ROCM_PATH`.                                                          |
+| `DFLASH27B_USE_BLACKWELL_CONSUMER_FIX` | `OFF`                   | Bypasses Blackwell `sm_12x -> sm_12xa` instruction changes and excludes FP4 kernels to prevent illegal instruction faults on consumer chips. Auto-enables if target CUDA arch includes a `12x` entry. |
+| `DFLASH27B_TESTS`                      | `ON`                    | Builds C++ numerics and smoke tests.                                                                                                                                                                  |
+| `DFLASH27B_SERVER`                     | `ON`                    | Builds `dflash_server` and `backend_ipc_daemon`.                                                                                                                                                      |
 
 ### 1.2 Required & Available Compile Definitions
 
@@ -87,23 +87,26 @@ Before starting compilation, all submodules and system libraries must be present
 ### 3.2 External Dependencies (Host Toolchain)
 
 The host system has the following toolchain versions installed:
+
 - **CMake**: `4.3.4` (requires minimum `3.21` for first-class HIP support, or `3.18` for CUDA)
 - **G++**: `16.1.1` (requires minimum GCC `11` C++17)
 - **NVCC**: CUDA Toolkit `13.3.33` (requires minimum `12.0+` for DFlash/Megakernel)
 - **uv**: `0.11.21` (Python dependency management)
 - **Python**: `3.14.5` (default). Since the project specifies Python `>=3.12,<3.13`, `uv` will automatically read `/home/toxic/lucebox-hub/.python-version` containing `3.12` and download a standalone Python 3.12 interpreter.
 
-*Optional System Packages for full server support*:
+_Optional System Packages for full server support_:
+
 - `libcurl4-openssl-dev` / `curl` (for proxy routing in `dflash_server`).
 - `libgomp1` (OpenMP runtime library for multi-threaded CPU kernels).
 
 ### 3.3 Weights and Model Dependencies
 
 For runtime testing and integration testing, weights are retrieved from Hugging Face:
+
 - Target Model: `unsloth/Qwen3.6-27B-GGUF` (specifically `Qwen3.6-27B-Q4_K_M.gguf`).
 - Draft Model: `Lucebox/Qwen3.6-27B-DFlash-GGUF` (specifically `dflash-draft-3.6-q4_k_m.gguf`).
 - Megakernel Model: `Qwen/Qwen3.5-0.8B` (Auto-downloaded by transformers via Hugging Face Hub during `final_bench.py` execution).
-  *(Note: Since network access is disabled under CODE_ONLY mode, the implementation agent will need to verify whether local cache files or Hugging Face Hub offline modes are required, or configure local symlinks for offline execution).*
+  _(Note: Since network access is disabled under CODE_ONLY mode, the implementation agent will need to verify whether local cache files or Hugging Face Hub offline modes are required, or configure local symlinks for offline execution)._
 
 ---
 
@@ -112,13 +115,17 @@ For runtime testing and integration testing, weights are retrieved from Hugging 
 Below is the concrete, step-by-step strategy for the implementation agent to compile the C++ server and build the Megakernel Python extension on the target host (GeForce RTX 3090, `sm_86`).
 
 ### Step 1: Initialize Git Submodules
+
 Ensure submodules are fully checked out before running CMake:
+
 ```bash
 git submodule update --init --recursive
 ```
 
 ### Step 2: Configure & Compile C++ server
+
 Configure CMake using the specific `sm_86` CUDA architecture matching the host's GeForce RTX 3090. This cuts NVCC compilation time by 5-6× compared to building the default multi-arch fatbinary.
+
 ```bash
 # Clean previous build artifacts if any exist
 rm -rf server/build
@@ -133,25 +140,33 @@ cmake -S server -B server/build \
 # Build all target binaries (server, daemon, unit tests)
 cmake --build server/build --target dflash_server test_dflash test_server_unit -j
 ```
-*Expected Outputs*:
+
+_Expected Outputs_:
+
 - `server/build/dflash_server`
 - `server/build/test_dflash`
 - `server/build/test_server_unit`
 
 ### Step 3: Populate Base Python Environment (`uv sync`)
+
 Run a two-pass `uv` synchronization. The first pass populates the main virtual environment with PyTorch from the `pytorch-cu128` index:
+
 ```bash
 # Sinks deps (dflash & pflash) and downloads Python 3.12 if not cached
 uv sync
 ```
 
 ### Step 4: Compile Megakernel CUDA Extension
+
 Now, compile the Megakernel python package using the main environment's libraries (build isolation is skipped for this package):
+
 ```bash
 # Compile and install the Megakernel CUDA Extension
 uv sync --extra megakernel
 ```
-*Verification*: Check that the C extension compiles successfully and can be imported under Python 3.12:
+
+_Verification_: Check that the C extension compiles successfully and can be imported under Python 3.12:
+
 ```bash
 uv run python -c "import qwen35_megakernel_bf16_C; print('Import Succeeded!')"
 ```
@@ -163,23 +178,32 @@ uv run python -c "import qwen35_megakernel_bf16_C; print('Import Succeeded!')"
 The implementation agent can verify the builds using the following commands:
 
 ### 5.1 C++ Server Verification
+
 Run the server unit tests using ctest:
+
 ```bash
 cd server/build
 ctest --output-on-failure
 ```
+
 Or run the custom `check` target directly:
+
 ```bash
 cmake --build server/build --target check
 ```
 
 ### 5.2 Megakernel Verification
+
 Run the quick correctness test script (compares megakernel output parity against PyTorch reference):
+
 ```bash
 uv run --directory optimizations/megakernel python bench_pp_tg.py
 ```
+
 Run the performance benchmark (after verifying correctness):
+
 ```bash
 uv run --directory optimizations/megakernel python final_bench.py
 ```
-*(Note: Because these tests download Qwen3.5-0.8B weights/tokenizer from Hugging Face Hub, they might fail in offline CODE_ONLY environments unless the model cache is prepopulated or `--local-files-only` is set. The agent should ensure that any model download steps are performed or stubbed before verifying).*
+
+_(Note: Because these tests download Qwen3.5-0.8B weights/tokenizer from Hugging Face Hub, they might fail in offline CODE_ONLY environments unless the model cache is prepopulated or `--local-files-only` is set. The agent should ensure that any model download steps are performed or stubbed before verifying)._

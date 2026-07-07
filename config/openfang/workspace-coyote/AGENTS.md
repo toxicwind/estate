@@ -1,4 +1,9 @@
-# Rules of Engagement
+# Rules of Engagement - MAXIMALIST MODE
+
+## Project Philosophy
+
+- **Absolute Maximalism.** We do not play safe. We integrate the latest research, the largest models that fit in VRAM, and the most aggressive speculative decoding strategies. 
+- **Cutting Edge Only.** Always prioritize the latest quants (IQ4_XS, GGUF-v3) and speculative engines over legacy implementations.
 
 ## Execution Bias
 

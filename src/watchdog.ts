@@ -7,8 +7,8 @@ const STATUS_FILE = "/home/toxic/sovereign/logs/watchdog_status.json";
 
 const PROCESSES = {
   "llama-server": { port: 25001, health: "/health" },
-  "nfcot-proxy": { port: 25008, health: "/v1/models" },
   openfang: { port: 25004, health: null },
+  yote: { port: 25042, health: "/health" },
 };
 
 function log(msg: string) {
@@ -62,5 +62,20 @@ async function main() {
     await new Promise((r) => setTimeout(r, CHECK_INTERVAL));
   }
 }
+
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 25022;
+
+Bun.serve({
+  port: PORT,
+  fetch(req) {
+    const url = new URL(req.url);
+    if (url.pathname === "/health") {
+      return new Response("OK", { status: 200 });
+    }
+    return new Response("Not Found", { status: 404 });
+  },
+});
+
+log(`Watchdog HTTP server listening on port ${PORT}`);
 
 main();

@@ -1,4 +1,6 @@
-// static/app.js
+// ==========================================================================
+// App State Management
+// ==========================================================================
 let suggestedWeights = null;
 
 const sliderNix = document.getElementById("weight-nix");
@@ -21,16 +23,22 @@ const chatInput = document.getElementById("chat-input");
 const loadingOverlay = document.getElementById("loading-overlay");
 const suggestedWeightsBox = document.getElementById("suggested-weights-box");
 
+// Buttons
 const btnResetWeights = document.getElementById("btn-reset-weights");
 const btnSendChat = document.getElementById("btn-send-chat");
 const btnApplyWeights = document.getElementById("btn-apply-weights");
 
+// ==========================================================================
+// Initialization & Bindings
+// ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
-  setupEvents();
-  triggerRank();
+  setupEventListeners();
+  triggerRankCalculation(); // Initial run with default 50% weights
+  initHealthChecks();
 });
 
-function setupEvents() {
+function setupEventListeners() {
+  // Add real-time rank updates as sliders are dragged
   const sliders = [
     { el: sliderNix, val: valNix },
     { el: sliderTui, val: valTui },
@@ -40,34 +48,38 @@ function setupEvents() {
     { el: sliderPort, val: valPort },
   ];
 
-  sliders.forEach((s) => {
-    s.el.addEventListener("input", () => {
-      s.val.textContent = `${s.el.value}%`;
-      triggerRank();
+  sliders.forEach((slider) => {
+    slider.el.addEventListener("input", () => {
+      slider.val.textContent = `${slider.el.value}%`;
+      triggerRankCalculation();
     });
   });
 
-  btnResetWeights.addEventListener("click", resetWeights);
-  btnSendChat.addEventListener("click", consultAdvisor);
+  btnResetWeights.addEventListener("click", resetToEqualWeights);
+  btnSendChat.addEventListener("click", consultAIAdvisor);
 
   chatInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      consultAdvisor();
+      consultAIAdvisor();
     }
   });
 
-  btnApplyWeights.addEventListener("click", applySuggested);
+  btnApplyWeights.addEventListener("click", applySuggestedWeights);
 }
 
-async function triggerRank() {
+// ==========================================================================
+// Ranking Solver Calls & DOM Rendering
+// ==========================================================================
+async function triggerRankCalculation() {
+  // Parse weight values out of 100.0 (converted to floats 0.0 - 1.0)
   const payload = {
-    nix_overhead: sliderNix.value / 100,
-    tui_gui_polish: sliderTui.value / 100,
-    performance: sliderPerf.value / 100,
-    setup_speed: sliderSetup.value / 100,
-    orchestration: sliderOrch.value / 100,
-    portability: sliderPort.value / 100,
+    nix_overhead: parseFloat(sliderNix.value) / 100.0,
+    tui_gui_polish: parseFloat(sliderTui.value) / 100.0,
+    performance: parseFloat(sliderPerf.value) / 100.0,
+    setup_speed: parseFloat(sliderSetup.value) / 100.0,
+    orchestration: parseFloat(sliderOrch.value) / 100.0,
+    portability: parseFloat(sliderPort.value) / 100.0,
   };
 
   try {
@@ -77,16 +89,18 @@ async function triggerRank() {
       body: JSON.stringify(payload),
     });
 
-    if (!resp.ok) throw new Error("Ranker error");
+    if (!resp.ok) throw new Error("Ranker server error");
     const tools = await resp.json();
-    renderTools(tools);
+
+    renderRankList(tools);
   } catch (e) {
     console.error(e);
-    ranksContainer.innerHTML = `<div class="error-msg">Failed to contact ranking engine.</div>`;
+    // Fallback display
+    ranksContainer.innerHTML = `<div class="error-msg">Failed to contact Rust ranking solver.</div>`;
   }
 }
 
-function renderTools(tools) {
+function renderRankList(tools) {
   ranksContainer.innerHTML = "";
 
   tools.forEach((tool, idx) => {
@@ -101,18 +115,21 @@ function renderTools(tools) {
                 </div>
                 <span class="score-badge">${tool.weighted_score}%</span>
             </div>
+            
             <div class="score-bar-container">
                 <div class="score-bar-fill" style="width: ${tool.weighted_score}%"></div>
             </div>
+            
             <p class="tool-desc">${tool.description}</p>
+            
             <div class="card-footer">
                 <div class="criteria-badges">
-                    <span class="criteria-badge">Nix: ${tool.scores.nix_overhead}</span>
-                    <span class="criteria-badge">TUI: ${tool.scores.tui_gui_polish}</span>
-                    <span class="criteria-badge">Perf: ${tool.scores.performance}</span>
-                    <span class="criteria-badge">Setup: ${tool.scores.setup_speed}</span>
-                    <span class="criteria-badge">Orch: ${tool.scores.orchestration}</span>
-                    <span class="criteria-badge">Port: ${tool.scores.portability}</span>
+                    <span class="criteria-badge" title="No Nix Overhead score">Nix Avoid: <span>${tool.scores.nix_overhead}</span></span>
+                    <span class="criteria-badge" title="Visual dashboard / TUI score">TUI: <span>${tool.scores.tui_gui_polish}</span></span>
+                    <span class="criteria-badge" title="Performance & lightweight score">Perf: <span>${tool.scores.performance}</span></span>
+                    <span class="criteria-badge" title="Setup speed / zero boilerplate score">Setup: <span>${tool.scores.setup_speed}</span></span>
+                    <span class="criteria-badge" title="Process management quality score">Orch: <span>${tool.scores.orchestration}</span></span>
+                    <span class="criteria-badge" title="Platform portability score">Port: <span>${tool.scores.portability}</span></span>
                 </div>
                 <a href="${tool.website}" target="_blank" class="tool-link">Docs ↗</a>
             </div>
@@ -122,7 +139,7 @@ function renderTools(tools) {
   });
 }
 
-function resetWeights() {
+function resetToEqualWeights() {
   const defaultVal = 50;
   const sliders = [
     sliderNix,
@@ -134,27 +151,36 @@ function resetWeights() {
   ];
   const labels = [valNix, valTui, valPerf, valSetup, valOrch, valPort];
 
-  sliders.forEach((s, i) => {
-    s.value = defaultVal;
-    labels[i].textContent = `${defaultVal}%`;
+  sliders.forEach((slider, idx) => {
+    slider.value = defaultVal;
+    labels[idx].textContent = `${defaultVal}%`;
   });
 
-  triggerRank();
+  triggerRankCalculation();
 }
 
-function appendChat(sender, text) {
+// ==========================================================================
+// AI Chat & DevOps Advisor API Connections
+// ==========================================================================
+function appendChatMessage(sender, text) {
   const msg = document.createElement("div");
   msg.className = `chat-message ${sender}-msg`;
-  msg.innerHTML = `<p>${text.replace(/\n/g, "<br>")}</p>`;
+
+  // Convert newlines to breaks and wrap inline code blocks
+  let formattedText = text
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\n/g, "<br>");
+
+  msg.innerHTML = `<p>${formattedText}</p>`;
   chatBox.appendChild(msg);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-async function consultAdvisor() {
+async function consultAIAdvisor() {
   const text = chatInput.value.trim();
   if (!text) return;
 
-  appendChat("user", text);
+  appendChatMessage("user", text);
   chatInput.value = "";
 
   loadingOverlay.classList.remove("hidden");
@@ -168,29 +194,44 @@ async function consultAdvisor() {
 
     loadingOverlay.classList.add("hidden");
 
-    if (!resp.ok) throw new Error("Advisor error");
+    if (!resp.ok) {
+      const errData = await resp.json();
+      throw new Error(errData.error || "LLM Advisor failed");
+    }
 
     const res = await resp.json();
-    appendChat("coach", res.explanation);
+    if (res.success && res.data) {
+      const advice = res.data;
+      appendChatMessage("coach", advice.explanation);
 
-    suggestedWeights = res.weights;
-    suggestedWeightsBox.classList.remove("hidden");
+      // Cache suggested weights and show alert box
+      suggestedWeights = advice.weights;
+      suggestedWeightsBox.classList.remove("hidden");
+    } else {
+      throw new Error("LLM response format was invalid");
+    }
   } catch (e) {
     loadingOverlay.classList.add("hidden");
-    appendChat("coach", "Advisor failed: " + e.message);
+    console.error(e);
+    appendChatMessage(
+      "coach",
+      "Sorry, I failed to get recommendations from the Advisor: " + e.message,
+    );
   }
 }
 
-function applySuggested() {
+function applySuggestedWeights() {
   if (!suggestedWeights) return;
 
-  sliderNix.value = Math.round(suggestedWeights.nix_overhead * 100);
-  sliderTui.value = Math.round(suggestedWeights.tui_gui_polish * 100);
-  sliderPerf.value = Math.round(suggestedWeights.performance * 100);
-  sliderSetup.value = Math.round(suggestedWeights.setup_speed * 100);
-  sliderOrch.value = Math.round(suggestedWeights.orchestration * 100);
-  sliderPort.value = Math.round(suggestedWeights.portability * 100);
+  // Convert floats (0.0 - 1.0) back to range values (0 - 100)
+  sliderNix.value = Math.round(suggestedWeights.nix_overhead * 100.0);
+  sliderTui.value = Math.round(suggestedWeights.tui_gui_polish * 100.0);
+  sliderPerf.value = Math.round(suggestedWeights.performance * 100.0);
+  sliderSetup.value = Math.round(suggestedWeights.setup_speed * 100.0);
+  sliderOrch.value = Math.round(suggestedWeights.orchestration * 100.0);
+  sliderPort.value = Math.round(suggestedWeights.portability * 100.0);
 
+  // Update labels
   valNix.textContent = `${sliderNix.value}%`;
   valTui.textContent = `${sliderTui.value}%`;
   valPerf.textContent = `${sliderPerf.value}%`;
@@ -198,7 +239,73 @@ function applySuggested() {
   valOrch.textContent = `${sliderOrch.value}%`;
   valPort.textContent = `${sliderPort.value}%`;
 
-  triggerRank();
+  // Trigger solver and hide alert
+  triggerRankCalculation();
   suggestedWeightsBox.classList.add("hidden");
-  appendChat("system", "Applied Advisor weights.");
+
+  appendChatMessage(
+    "system",
+    "Applied Advisor's suggested weights to criteria sliders!",
+  );
+}
+
+const SERVICES = [
+  { id: "caddy", name: "Caddy Edge", port: 25000 },
+  { id: "vllm", name: "Lorbus vLLM", port: 25001 },
+  { id: "openfang", name: "OpenFang", port: 25004 },
+  { id: "ouroboros", name: "Ouroboros", port: 25005 },
+  { id: "llama-herder", name: "Llama Swap", port: 25021 },
+];
+
+function initHealthChecks() {
+  const grid = document.getElementById("services-grid");
+  if (!grid) return;
+
+  grid.innerHTML = SERVICES.map(
+    (svc) => `
+    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-light); border-radius: 8px; padding: 10px; display: flex; justify-content: space-between; align-items: center;" id="svc-${svc.id}">
+      <div>
+        <div style="font-size: 0.82rem; font-weight: bold; color: var(--text-color);">${svc.name}</div>
+        <div style="font-size: 0.72rem; color: var(--text-muted);">Port ${svc.port}</div>
+      </div>
+      <span class="status-badge" style="font-size: 0.75rem; font-weight: 800; color: var(--accent-color);">CHECKING</span>
+    </div>
+  `,
+  ).join("");
+
+  checkAllServices();
+  setInterval(checkAllServices, 10000);
+}
+
+async function checkAllServices() {
+  try {
+    const res = await fetch("/landing/api/status");
+    if (!res.ok) throw new Error("Status API error");
+    const statuses = await res.json();
+
+    const nameMap = {
+      caddy: true,
+      vllm: statuses["llama-server"],
+      openfang: statuses["openfang"],
+      ouroboros: statuses["rust-web"],
+      "llama-herder": statuses["llama-herder"],
+    };
+
+    SERVICES.forEach((svc) => {
+      const card = document.getElementById(`svc-${svc.id}`);
+      if (!card) return;
+      const badge = card.querySelector(".status-badge");
+
+      const isOnline = nameMap[svc.id];
+      if (isOnline) {
+        badge.textContent = "ONLINE";
+        badge.style.color = "var(--primary-color)";
+      } else {
+        badge.textContent = "OFFLINE";
+        badge.style.color = "#f87171";
+      }
+    });
+  } catch (e) {
+    console.error("Health check sweep failed:", e);
+  }
 }

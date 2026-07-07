@@ -28,7 +28,7 @@ kv_fork_enabled = true
 [default_model]
 api_key_env = ""
 base_url = "http://127.0.0.1:25021/v1"
-model = "beellama/strange"
+model = "beellama/qwen-flash"
 # OpenFang provider id "vllm" = OpenAI-compat local shim → llama-swap :25021 (NOT Python vLLM)
 provider = "vllm"
 

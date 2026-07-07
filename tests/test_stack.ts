@@ -7,20 +7,15 @@ type Service = [number, string[]] | number;
 
 const SERVICES: Record<string, Service> = {
   "llama-server": [25001, ["/health", "/v1/models"]],
-  nfcot: [25003, ["/health", "/v1/models"]],
-  openfang: [25004, ["/health"]],
+
+  openfang: [25004, ["/api/health"]],
   "rust-web": [25005, ["/health"]],
-  "hf-downloader": [25020, ["/health"]],
-  "llama-herder": [25021, ["/health"]],
-  watchdog: [25022, ["/health"]],
-  overlord: [25023, ["/health"]],
-  landing: [25000, ["/", "/health"]],
-  prometheus: [25030, ["/-/healthy", "/-/ready"]],
   "caddy-admin": [25031, ["/config/"]],
+  yote: [25042, ["/health"]],
 };
 
 const INFRA: Record<string, number> = {
-  postgres: 5432,
+  postgres: 25432,
   redis: 6379,
   nats: 4222,
 };

@@ -62,4 +62,5 @@ curl -s http://127.0.0.1:25001/health
 curl -s http://127.0.0.1:25008/v1/models
 curl -s http://127.0.0.1:25004/api/health
 ```
+
 Invalidation conditions: If any of the curl commands fail or return a non-200 HTTP status, or if the `max_model_len` or `id` in the models response does not match the specifications, the verification fails.

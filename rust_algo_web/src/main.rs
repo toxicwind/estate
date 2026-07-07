@@ -77,7 +77,11 @@ async fn main() {
         .route("/api/ai/advisor", post(advisor))
         .nest_service("/", static_service);
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], 25010));
+    let port: u16 = std::env::var("RUST_WEB_PORT")
+        .ok()
+        .and_then(|p| p.parse().ok())
+        .unwrap_or(25010);
+    let addr = SocketAddr::from(([0, 0, 0, 0], port));
     println!("Sovereign DevOps Advisor on http://{}", addr);
 
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
