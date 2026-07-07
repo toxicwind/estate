@@ -1,0 +1,32 @@
+[env]
+SOVEREIGN_ROOT = "{{ config_root }}"
+_.path = ["{{ config_root }}/bin", "/home/toxic/.bun/bin"]
+_.file = "{{ env.HOME }}/.secrets"
+
+[tasks.up]
+description = "Start full local stack (devbox + process-compose)"
+run = "./bin/sovereign-stack.sh up-d"
+
+[tasks.up-core]
+description = "Core only: llama, herder, openfang, caddy, prometheus"
+run = "./bin/sovereign-stack.sh up-d core"
+
+[tasks.down]
+description = "Stop stack"
+run = "./bin/sovereign-stack.sh down"
+
+[tasks.status]
+description = "Process list"
+run = "./bin/sovereign-stack.sh status"
+
+[tasks.health]
+description = "Port health matrix"
+run = "./bin/sovereign-health.sh"
+
+[tasks.kill-devenv]
+description = "Stop devenv daemons permanently; ensure devbox stack"
+run = "./bin/kill-devenv.sh"
+
+[tasks.consolidate]
+description = "Archive stale whitelist config duplicates (sha256+mtime)"
+run = "./bin/consolidate-known.sh"

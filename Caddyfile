@@ -2,16 +2,38 @@
   admin 0.0.0.0:25031
   auto_https off
 }
-
-:80 {
-  handle /health { respond "OK" 200 }
-
-  handle /llm*  { reverse_proxy localhost:25001 }
-  handle /fang* { reverse_proxy localhost:25004 }
-  handle /cot*  { reverse_proxy localhost:25003 }
-
-  handle /rank* { reverse_proxy localhost:25005 }
-  handle /api/* { reverse_proxy localhost:25005 }
-
-  handle { reverse_proxy localhost:25005 }
+:25000 {
+  handle /health {
+    respond "OK" 200
+  }
+  handle_path /llm* {
+    reverse_proxy localhost:25021
+  }
+  handle_path /fang* {
+    reverse_proxy localhost:25004
+  }
+  handle_path /rank* {
+    reverse_proxy localhost:25005
+  }
+  handle /api/* {
+    reverse_proxy localhost:25005
+  }
+  handle_path /hf/* {
+    reverse_proxy localhost:25020
+  }
+  handle_path /herder/* {
+    reverse_proxy localhost:25021
+  }
+  handle_path /watchdog* {
+    reverse_proxy localhost:25022
+  }
+  handle_path /yote* {
+    reverse_proxy localhost:25042
+  }
+  handle_path /landing/* {
+    reverse_proxy localhost:25080
+  }
+  handle {
+    reverse_proxy localhost:25080
+  }
 }
