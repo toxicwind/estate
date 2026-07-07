@@ -40,13 +40,16 @@ models:
       --embeddings
       --pooling cls
       --metrics
-      --log-format json
       --no-mmap
       --mlock
-      --draft /home/toxic/projects/models/Qwen2.5-1.5B-Draft.gguf
-      --draft-n-ctx 4096
-      --draft-n-predict 16
-      --draft-n-gpu-layers 99
+      --spec-type draft-simple
+      --spec-draft-model /home/toxic/projects/models/Qwen2.5-1.5B-Draft.gguf
+      --spec-draft-ctx-size 4096
+      --spec-draft-n-max 16
+      --spec-draft-n-min 2
+      --spec-draft-p-split 0.1
+      --spec-draft-p-min 0
+      --spec-draft-backend-sampling
     proxy: http://127.0.0.1:25001
     ttl: 300
 
@@ -73,13 +76,16 @@ models:
       --embeddings
       --pooling cls
       --metrics
-      --log-format json
       --no-mmap
       --mlock
-      --draft /home/toxic/projects/models/Qwen2.5-1.5B-Draft.gguf
-      --draft-n-ctx 4096
-      --draft-n-predict 16
-      --draft-n-gpu-layers 99
+      --spec-type draft-simple
+      --spec-draft-model /home/toxic/projects/models/Qwen2.5-1.5B-Draft.gguf
+      --spec-draft-ctx-size 4096
+      --spec-draft-n-max 16
+      --spec-draft-n-min 2
+      --spec-draft-p-split 0.1
+      --spec-draft-p-min 0
+      --spec-draft-backend-sampling
     proxy: http://127.0.0.1:25001
     ttl: 300
 
@@ -103,7 +109,6 @@ models:
       --cache-type-k q4_0
       --cache-type-v q4_0
       --metrics
-      --log-format json
       --no-mmap
       --mlock
     proxy: http://127.0.0.1:25001
@@ -126,7 +131,6 @@ models:
       -b 2048
       -ub 512
       --metrics
-      --log-format json
       --no-mmap
     proxy: http://127.0.0.1:25001
     ttl: 300
