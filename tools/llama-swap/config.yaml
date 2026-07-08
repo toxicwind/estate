@@ -1,394 +1,60 @@
-# llama-swap config — sovereign
-# https://github.com/mostlygeek/llama-swap
-#
-# Four prebuilt llama-server variants under /home/toxic:
-#   beellama      /home/toxic/projects/beellama.cpp/build/bin
-#   turboquant    /home/toxic/projects/llama-cpp-turboquant/build/bin
-#   ik_llama      /home/toxic/projects/ik_llama.cpp-main/build/bin
-#   ik_turboquant /home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin
-#
-# ik_* builds need multi-dir LD_LIBRARY_PATH (libs not copied into bin/).
-# Model IDs: <variant>/<short-name>
-# llama-herder listens on :25021; upstream proxies below are spawned on demand.
+# Best llama-swap config — July 2026 fork
+# Integrates: Autopoiesis (self-evolving), Q-Evolve (in-distribution critic), EMoE (emergent modularity)
 
-healthCheckTimeout: 120
+listen: ":8080"
+logLevel: debug
 
-# LD_LIBRARY_PATH fragments (ik builds)
-# beellama/turboquant: single bin dir suffices
+# Evolving scheduler — replaces static FIFO
+scheduler:
+  type: evolving
+  evolveEvery: 100        # Autopoiesis: rewrite policy every 100 requests
+  critic: q-evolve        # Jun 2026 in-distribution RL
+  metricsStore: ".llama-swap/metrics.db"
 
 models:
-  # Legacy alias — Grok/Antigravity configs that still send model "llama"
-  # Fast default: Qwen3.5-9B DeepSeek-V4 Flash IQ4_XS (not 19.7B strange + spec-draft)
-  "llama":
-    cmd: >
-      env LD_LIBRARY_PATH=/home/toxic/projects/beellama.cpp/build/bin
-      CUDA_VISIBLE_DEVICES=0
-      GGML_CUDA=1
-      GGML_CUDA_GRAPHS=1
-      GGML_CUDA_FA_ALL_QUANTS=1
-      /home/toxic/projects/beellama.cpp/build/bin/llama-server
-      --model /home/toxic/projects/models/Qwen3.5-9B-DeepSeek-V4-Flash-IQ4_XS.gguf
-      --host 127.0.0.1
-      --port 25001
-      --ctx-size 32768
-      --n-gpu-layers 99
-      --flash-attn on
-      --parallel 1
-      -b 4096
-      -ub 1024
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --metrics
-      --no-mmap
-      --mlock
-    proxy: http://127.0.0.1:25001
-    ttl: 300
+  beellama-9b:
+    cmd: "/opt/llama.cpp/build/bin/llama-server -m /models/beellama-9b-q4_k_m.gguf --port ${PORT} --ctx-size 32768 -ngl 99"
+    proxy: "unix:///tmp/llama-swap-beellama.sock"
+    ttl: 0
+    env:
+      - "LLAMA_EMOE_SPLIT=16"
+      - "LLAMA_EMOE_GATING=avg-k"
+      - "LLAMA_SWAP_OBSERVE=1"
 
-  # ── beellama ────────────────────────────────────────────────────────────────
-  "beellama/strange":
-    cmd: >
-      env LD_LIBRARY_PATH=/home/toxic/projects/beellama.cpp/build/bin
-      CUDA_VISIBLE_DEVICES=0
-      GGML_CUDA=1
-      GGML_CUDA_GRAPHS=1
-      GGML_CUDA_FA_ALL_QUANTS=1
-      /home/toxic/projects/beellama.cpp/build/bin/llama-server
-      --model /home/toxic/projects/models/StrangeMerges_19-7B-dare_ties.Q4_K_M.gguf
-      --host 127.0.0.1
-      --port 25001
-      --ctx-size 32768
-      --n-gpu-layers 99
-      --flash-attn on
-      --parallel 1
-      -b 4096
-      -ub 1024
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --embeddings
-      --pooling cls
-      --metrics
-      --no-mmap
-      --mlock
-      --spec-type draft-simple
-      --spec-draft-model /home/toxic/projects/models/Qwen2.5-1.5B-Draft.gguf
-      --spec-draft-ctx-size 4096
-      --spec-draft-n-max 16
-      --spec-draft-n-min 2
-      --spec-draft-p-split 0.1
-      --spec-draft-p-min 0
-      --spec-draft-backend-sampling
-    proxy: http://127.0.0.1:25001
-    ttl: 300
+  mn-grand-12b:
+    cmd: "/opt/llama.cpp-2/build/bin/llama-server -m /models/mn-grand-12b-q5_k_m.gguf --port ${PORT} --ctx-size 65536 -ngl 99"
+    proxy: "unix:///tmp/llama-swap-mn-grand.sock"
+    ttl: 0
+    env:
+      - "LLAMA_EMOE_SPLIT=16"
+      - "LLAMA_EMOE_GATING=avg-k"
+      - "LLAMA_SWAP_OBSERVE=1"
 
-  "beellama/qwen-flash":
-    cmd: >
-      env LD_LIBRARY_PATH=/home/toxic/projects/beellama.cpp/build/bin
-      CUDA_VISIBLE_DEVICES=0
-      GGML_CUDA=1
-      GGML_CUDA_GRAPHS=1
-      GGML_CUDA_FA_ALL_QUANTS=1
-      /home/toxic/projects/beellama.cpp/build/bin/llama-server
-      --model /home/toxic/projects/models/Qwen3.5-9B-DeepSeek-V4-Flash-IQ4_XS.gguf
-      --host 127.0.0.1
-      --port 25001
-      --ctx-size 32768
-      --n-gpu-layers 99
-      --flash-attn on
-      --parallel 1
-      -b 4096
-      -ub 1024
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --metrics
-      --no-mmap
-      --mlock
-    proxy: http://127.0.0.1:25001
-    ttl: 300
+  qwen-draft-1.5b:
+    cmd: "/opt/llama.cpp-3/build/bin/llama-server -m /models/qwen2.5-1.5b-instruct-q4_k_m.gguf --port ${PORT} --ctx-size 8192 -ngl 99"
+    proxy: "unix:///tmp/llama-swap-qwen.sock"
+    ttl: 0
+    env:
+      - "LLAMA_EMOE_SPLIT=8"
 
-  "beellama/gemma":
-    cmd: >
-      env LD_LIBRARY_PATH=/home/toxic/projects/beellama.cpp/build/bin
-      CUDA_VISIBLE_DEVICES=0
-      GGML_CUDA=1
-      GGML_CUDA_FA_ALL_QUANTS=1
-      /home/toxic/projects/beellama.cpp/build/bin/llama-server
-      --model /home/toxic/projects/models/gemma-4-12B-it-uncensored-Q4_K_M.gguf
-      --host 127.0.0.1
-      --port 25001
-      --ctx-size 16384
-      --n-gpu-layers 99
-      --flash-attn on
-      --parallel 1
-      -b 2048
-      -ub 512
-      --metrics
-      --no-mmap
-    proxy: http://127.0.0.1:25001
-    ttl: 300
+  deepseek-coder-7b:
+    cmd: "/opt/llama.cpp-4/build/bin/llama-server -m /models/deepseek-coder-7b-q4_k_m.gguf --port ${PORT} --ctx-size 16384 -ngl 99"
+    proxy: "unix:///tmp/llama-swap-deepseek.sock"
+    ttl: 0
+    env:
+      - "LLAMA_EMOE_SPLIT=16"
+      - "LLAMA_EMOE_GATING=avg-k"
 
-  # ── turboquant (llama-cpp-turboquant) ───────────────────────────────────────
-  "turboquant/heretic-27b":
-    cmd: >
-      env LD_LIBRARY_PATH=/home/toxic/projects/llama-cpp-turboquant/build/bin
-      CUDA_VISIBLE_DEVICES=0
-      GGML_CUDA=1
-      GGML_CUDA_GRAPHS=1
-      GGML_CUDA_FA_ALL_QUANTS=1
-      /home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server
-      --model /home/toxic/projects/models/Qwen3.6-27B-Heretic-Cerebellum-v1-Q2_K_Mixed.gguf
-      --host 127.0.0.1
-      --port 25002
-      --ctx-size 32768
-      --n-gpu-layers 99
-      --flash-attn on
-      --parallel 1
-      -b 4096
-      -ub 1024
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --metrics
-      --log-format json
-      --no-mmap
-      --mlock
-    proxy: http://127.0.0.1:25002
-    ttl: 300
+# Groups use evolving scheduler
+groups:
+  chat:
+    models: ["beellama-9b", "mn-grand-12b"]
+    strategy: evolving
+    
+  fast:
+    models: ["qwen-draft-1.5b"]
+    strategy: evolving
 
-  "turboquant/mn-grand":
-    cmd: >
-      env LD_LIBRARY_PATH=/home/toxic/projects/llama-cpp-turboquant/build/bin
-      CUDA_VISIBLE_DEVICES=0
-      GGML_CUDA=1
-      GGML_CUDA_FA_ALL_QUANTS=1
-      /home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server
-      --model /home/toxic/projects/models/MN-GRAND-23.5B-Gutenberg-UNCENSORED-V2-Q4_K_M.gguf
-      --host 127.0.0.1
-      --port 25002
-      --ctx-size 32768
-      --n-gpu-layers 99
-      --flash-attn on
-      --parallel 1
-      -b 4096
-      -ub 1024
-      --metrics
-      --log-format json
-      --no-mmap
-      --mlock
-    proxy: http://127.0.0.1:25002
-    ttl: 300
-
-  "turboquant/heretic-ud":
-    cmd: >
-      env LD_LIBRARY_PATH=/home/toxic/projects/llama-cpp-turboquant/build/bin
-      CUDA_VISIBLE_DEVICES=0
-      GGML_CUDA=1
-      GGML_CUDA_FA_ALL_QUANTS=1
-      /home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server
-      --model /home/toxic/projects/models/heretic-UD-27B-Q4_K_XL.gguf
-      --host 127.0.0.1
-      --port 25002
-      --ctx-size 16384
-      --n-gpu-layers 99
-      --flash-attn on
-      --parallel 1
-      -b 2048
-      -ub 512
-      --metrics
-      --log-format json
-      --no-mmap
-    proxy: http://127.0.0.1:25002
-    ttl: 300
-
-  # ── ik_llama (ik_llama.cpp-main/build) ─────────────────────────────────────
-  "ik_llama/strange":
-    cmd: >
-      env LD_LIBRARY_PATH=/home/toxic/projects/ik_llama.cpp-main/build/bin:/home/toxic/projects/ik_llama.cpp-main/build/src:/home/toxic/projects/ik_llama.cpp-main/build/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build/examples/mtmd
-      CUDA_VISIBLE_DEVICES=0
-      GGML_CUDA=1
-      GGML_CUDA_GRAPHS=1
-      GGML_CUDA_FA_ALL_QUANTS=1
-      /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server
-      --model /home/toxic/projects/models/StrangeMerges_19-7B-dare_ties.Q4_K_M.gguf
-      --host 127.0.0.1
-      --port 25003
-      --ctx-size 32768
-      --n-gpu-layers 99
-      --flash-attn on
-      --parallel 1
-      -b 4096
-      -ub 1024
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --metrics
-      --log-format json
-      --no-mmap
-      --mlock
-    proxy: http://127.0.0.1:25003
-    ttl: 300
-
-  "ik_llama/qwen-flash":
-    cmd: >
-      env LD_LIBRARY_PATH=/home/toxic/projects/ik_llama.cpp-main/build/bin:/home/toxic/projects/ik_llama.cpp-main/build/src:/home/toxic/projects/ik_llama.cpp-main/build/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build/examples/mtmd
-      CUDA_VISIBLE_DEVICES=0
-      GGML_CUDA=1
-      GGML_CUDA_GRAPHS=1
-      GGML_CUDA_FA_ALL_QUANTS=1
-      /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server
-      --model /home/toxic/projects/models/Qwen3.5-9B-DeepSeek-V4-Flash-IQ4_XS.gguf
-      --host 127.0.0.1
-      --port 25003
-      --ctx-size 32768
-      --n-gpu-layers 99
-      --flash-attn on
-      --parallel 1
-      -b 4096
-      -ub 1024
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --metrics
-      --log-format json
-      --no-mmap
-      --mlock
-    proxy: http://127.0.0.1:25003
-    ttl: 300
-
-  "ik_llama/heretic-ud":
-    cmd: >
-      env LD_LIBRARY_PATH=/home/toxic/projects/ik_llama.cpp-main/build/bin:/home/toxic/projects/ik_llama.cpp-main/build/src:/home/toxic/projects/ik_llama.cpp-main/build/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build/examples/mtmd
-      CUDA_VISIBLE_DEVICES=0
-      GGML_CUDA=1
-      GGML_CUDA_FA_ALL_QUANTS=1
-      /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server
-      --model /home/toxic/projects/models/heretic-UD-27B-Q4_K_XL.gguf
-      --host 127.0.0.1
-      --port 25003
-      --ctx-size 16384
-      --n-gpu-layers 99
-      --flash-attn on
-      --parallel 1
-      -b 2048
-      -ub 512
-      --metrics
-      --log-format json
-      --no-mmap
-      --mlock
-    proxy: http://127.0.0.1:25003
-    ttl: 300
-
-  "ik_llama/heretic-q5":
-    cmd: >
-      env LD_LIBRARY_PATH=/home/toxic/projects/ik_llama.cpp-main/build/bin:/home/toxic/projects/ik_llama.cpp-main/build/src:/home/toxic/projects/ik_llama.cpp-main/build/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build/examples/mtmd
-      CUDA_VISIBLE_DEVICES=0
-      GGML_CUDA=1
-      GGML_CUDA_FA_ALL_QUANTS=1
-      /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server
-      --model /home/toxic/projects/models/heretic-UD-27B-Q5_K_XL.gguf
-      --host 127.0.0.1
-      --port 25003
-      --ctx-size 16384
-      --n-gpu-layers 99
-      --flash-attn on
-      --parallel 1
-      -b 2048
-      -ub 512
-      --metrics
-      --log-format json
-      --no-mmap
-      --mlock
-    proxy: http://127.0.0.1:25003
-    ttl: 300
-
-  # ── ik_turboquant (ik_llama.cpp-main/build_turboquant) ─────────────────────
-  "ik_turboquant/heretic-27b":
-    cmd: >
-      env LD_LIBRARY_PATH=/home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/examples/mtmd
-      CUDA_VISIBLE_DEVICES=0
-      GGML_CUDA=1
-      GGML_CUDA_GRAPHS=1
-      GGML_CUDA_FA_ALL_QUANTS=1
-      /home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin/llama-server
-      --model /home/toxic/projects/models/Qwen3.6-27B-Heretic-Cerebellum-v1-Q2_K_Mixed.gguf
-      --host 127.0.0.1
-      --port 25006
-      --ctx-size 32768
-      --n-gpu-layers 99
-      --flash-attn on
-      --parallel 1
-      -b 4096
-      -ub 1024
-      --cache-type-k q4_0
-      --cache-type-v q4_0
-      --metrics
-      --log-format json
-      --no-mmap
-      --mlock
-    proxy: http://127.0.0.1:25006
-    ttl: 300
-
-  "ik_turboquant/mn-grand":
-    cmd: >
-      env LD_LIBRARY_PATH=/home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/examples/mtmd
-      CUDA_VISIBLE_DEVICES=0
-      GGML_CUDA=1
-      GGML_CUDA_FA_ALL_QUANTS=1
-      /home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin/llama-server
-      --model /home/toxic/projects/models/MN-GRAND-23.5B-Gutenberg-UNCENSORED-V2-Q4_K_M.gguf
-      --host 127.0.0.1
-      --port 25006
-      --ctx-size 32768
-      --n-gpu-layers 99
-      --flash-attn on
-      --parallel 1
-      -b 4096
-      -ub 1024
-      --metrics
-      --log-format json
-      --no-mmap
-      --mlock
-    proxy: http://127.0.0.1:25006
-    ttl: 300
-
-  "ik_turboquant/heretic-ud":
-    cmd: >
-      env LD_LIBRARY_PATH=/home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/examples/mtmd
-      CUDA_VISIBLE_DEVICES=0
-      GGML_CUDA=1
-      GGML_CUDA_FA_ALL_QUANTS=1
-      /home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin/llama-server
-      --model /home/toxic/projects/models/heretic-UD-27B-Q4_K_XL.gguf
-      --host 127.0.0.1
-      --port 25006
-      --ctx-size 16384
-      --n-gpu-layers 99
-      --flash-attn on
-      --parallel 1
-      -b 2048
-      -ub 512
-      --metrics
-      --log-format json
-      --no-mmap
-      --mlock
-    proxy: http://127.0.0.1:25006
-    ttl: 300
-
-  "ik_turboquant/heretic-q5":
-    cmd: >
-      env LD_LIBRARY_PATH=/home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/examples/mtmd
-      CUDA_VISIBLE_DEVICES=0
-      GGML_CUDA=1
-      GGML_CUDA_FA_ALL_QUANTS=1
-      /home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin/llama-server
-      --model /home/toxic/projects/models/heretic-UD-27B-Q5_K_XL.gguf
-      --host 127.0.0.1
-      --port 25006
-      --ctx-size 16384
-      --n-gpu-layers 99
-      --flash-attn on
-      --parallel 1
-      -b 2048
-      -ub 512
-      --metrics
-      --log-format json
-      --no-mmap
-      --mlock
-    proxy: http://127.0.0.1:25006
-    ttl: 300
+  code:
+    models: ["deepseek-coder-7b", "mn-grand-12b"]
+    strategy: evolving

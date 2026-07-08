@@ -249,12 +249,17 @@ function applySuggestedWeights() {
   );
 }
 
+// Services from process-compose.yaml + stack/ports.env (SSoT)
 const SERVICES = [
-  { id: "caddy", name: "Caddy Edge", port: 25000 },
-  { id: "vllm", name: "Lorbus vLLM", port: 25001 },
-  { id: "openfang", name: "OpenFang", port: 25004 },
-  { id: "ouroboros", name: "Ouroboros", port: 25005 },
-  { id: "llama-herder", name: "Llama Swap", port: 25021 },
+  { id: "caddy",         name: "Caddy Edge",    port: 25000 },
+  { id: "llama-herder",  name: "llama-swap",    port: 25021 },
+  { id: "openfang",     name: "OpenFang",      port: 25004 },
+  { id: "rust-web",     name: "Rust Web",      port: 25005 },
+  { id: "prometheus",   name: "Prometheus",    port: 25030 },
+  { id: "hf-downloader",name: "HF Downloader", port: 25020 },
+  { id: "watchdog",     name: "Watchdog",      port: 25022 },
+  { id: "yote",         name: "Yote",          port: 25042 },
+  { id: "landing",      name: "Landing",       port: 25080 },
 ];
 
 function initHealthChecks() {
@@ -283,12 +288,17 @@ async function checkAllServices() {
     if (!res.ok) throw new Error("Status API error");
     const statuses = await res.json();
 
-    const nameMap = {
-      caddy: true,
-      vllm: statuses["llama-server"],
-      openfang: statuses["openfang"],
-      ouroboros: statuses["rust-web"],
-      "llama-herder": statuses["llama-herder"],
+    // Map SERVICES ids to the name keys used in /api/status
+    const onlineMap = {
+      "caddy":          statuses["Caddy Edge"],
+      "llama-herder":   statuses["Llama Swap"],
+      "openfang":       statuses["OpenFang Core"],
+      "rust-web":       statuses["Ouroboros"],
+      "prometheus":     statuses["Prometheus"],
+      "hf-downloader":  statuses["HF Downloader"],
+      "watchdog":       statuses["Watchdog"],
+      "yote":           statuses["Yote Status"],
+      "landing":        statuses["Caddy Edge"], // landing is internal, treat as up when caddy is
     };
 
     SERVICES.forEach((svc) => {
@@ -296,7 +306,8 @@ async function checkAllServices() {
       if (!card) return;
       const badge = card.querySelector(".status-badge");
 
-      const isOnline = nameMap[svc.id];
+      const entry = onlineMap[svc.id];
+      const isOnline = entry && entry.online;
       if (isOnline) {
         badge.textContent = "ONLINE";
         badge.style.color = "var(--primary-color)";

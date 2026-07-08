@@ -25,7 +25,9 @@ merged["environment"] = base.get("environment", [])
 
 for mod in sorted((stack / "modules").glob("*.yaml")):
     doc = yaml.safe_load(mod.read_text()) or {}
-    merged["processes"].update(doc.get("processes", {}))
+    # Use 'or {}' to catch explicit None types from empty yaml blocks
+    procs = doc.get("processes") or {}
+    merged["processes"].update(procs)
 
 header = (
     "# GENERATED — do not edit. Source: stack/modules/*.yaml\n"

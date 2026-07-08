@@ -9,8 +9,10 @@ processes:
       restart: on_failure
       max_restarts: 10
     readiness_probe:
-      exec:
-        command: "curl -fs http://127.0.0.1:25004/api/health"
+      http_get:
+        host: 127.0.0.1
+        port: 25004
+        path: /api/health
       initial_delay_seconds: 5
       period_seconds: 5
       failure_threshold: 10

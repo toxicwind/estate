@@ -1,12 +1,20 @@
 processes:
   rust-web:
-    command: "bash -lc 'command -v cargo >/dev/null && cargo run --release || echo rust-web skipped: install rust/cargo locally'"
+    command: "/home/toxic/sovereign/stack/services/rust-web.sh"
     working_dir: "/home/toxic/sovereign/rust_algo_web"
-    disabled: true
+    environment:
+      - "RUST_WEB_PORT=25005"
+      - "LLM_PROXY_URL=http://127.0.0.1:25021"
+      - "SOVEREIGN_ROOT=/home/toxic/sovereign"
+    availability:
+      restart: on_failure
+      max_restarts: 8
     readiness_probe:
-      exec:
-        command: "curl -fs http://127.0.0.1:25005/health"
-      initial_delay_seconds: 10
+      http_get:
+        host: 127.0.0.1
+        port: 25005
+        path: /health
+      initial_delay_seconds: 5
       period_seconds: 5
-      failure_threshold: 20
+      failure_threshold: 12
     log_location: "/home/toxic/sovereign/.state/logs/rust-web.log"

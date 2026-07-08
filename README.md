@@ -12,9 +12,17 @@ Private local agent stack: Grok Build, OpenFang, llama-swap on a single workstat
 sudo pacman -S --needed process-compose-git caddy prometheus curl
 
 cd ~/sovereign
-mise run up-core        # llama-swap, openfang, prometheus, caddy
+mise run up             # sovereign: core + yote + rust-dash
 mise run health
 ```
+
+Profiles:
+
+| Command | What |
+|---------|------|
+| `mise run up` | **sovereign** — llama-swap, openfang, prometheus, caddy, **yote**, **rust-dash** |
+| `mise run up-core` | core only (no yote/rust) |
+| `mise run up-full` | sovereign + landing, watchdog, hf-downloader |
 
 Stop: `mise run down`
 
@@ -55,21 +63,24 @@ sovereign/
 | Profile | Processes |
 |---------|-----------|
 | `core` | llama-herder, openfang, prometheus, caddy |
-| `full` | core + landing, watchdog, hf-downloader, yote |
+| `sovereign` | core + **yote** (:25042), **rust-dash** (:25005) |
+| `full` | sovereign + landing, watchdog, hf-downloader |
 
 ```bash
-./stack/up.sh -D core
-./stack/build-compose.sh      # flatten → process-compose.yaml
+./stack/up.sh -D sovereign
+./stack/build-compose.sh
 ```
 
 ## Ports (`stack/ports.env`)
 
 | Port | Service |
 |------|---------|
-| 25000 | Caddy |
+| 25000 | Caddy (routes `/rank*`, `/yote*` → backends) |
 | 25004 | OpenFang |
+| 25005 | **rust-dash** — DevOps advisor + ranking UI |
 | 25021 | llama-swap |
 | 25030 | Prometheus |
+| 25042 | **yote** — Telegram bot orchestrator |
 
 ## Client config
 

@@ -8,7 +8,11 @@ checks=(
   "${LLAMA_HERDER}:llama-swap:/health"
   "${OPENFANG_PORT}:openfang:/api/health"
   "${PROMETHEUS_PORT}:prometheus:/-/healthy"
-  "${CADDY_PORT}:caddy:/health"
+  "${YOTE_PORT}:yote:/health"
+  "${RUST_WEB_PORT}:rust-dash:/health"
+  "${HF_DOWNLOADER}:hf-downloader:/health"
+  "${WATCHDOG_PORT}:watchdog:/health"
+  "${LANDING_PORT}:landing:/health"
 )
 
 for spec in "${checks[@]}"; do

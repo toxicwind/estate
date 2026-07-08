@@ -12,8 +12,9 @@ case "$cmd" in
     exec "$SOV/stack/up.sh" "${1:-core}" "$@"
     ;;
   up-d|up-detach)
-    if [[ "${1:-}" == "core" ]]; then shift; fi
-    exec "$SOV/stack/up.sh" -D core "$@"
+    profile="${1:-sovereign}"
+    case "$profile" in core|sovereign|full) shift ;; esac
+    exec "$SOV/stack/up.sh" -D "$profile" "$@"
     ;;
   down)
     exec "$SOV/stack/down.sh" "$@"
@@ -21,7 +22,7 @@ case "$cmd" in
   status|list)
     cd "$SOV"
     if command -v devbox >/dev/null 2>&1; then
-      devbox run -- process-compose process list "$@" 2>/dev/null && exit 0
+      process-compose process list "$@" 2>/dev/null && exit 0
     elif process-compose process list "$@" 2>/dev/null; then
       exit 0
     fi

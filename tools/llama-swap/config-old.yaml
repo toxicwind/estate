@@ -1,0 +1,380 @@
+# llama-swap — maximal, unblinded, single sm_86 GPU
+# Derived from ast-grep analysis of source code v0.x
+# Architecture: llama-swap listens on :8080, spawns llama-server on ${PORT}
+#              auto-assigns ports from startPort, swaps models via group eviction
+#
+# For: local Grok-build / Antigravity-CLI / Copilot / any OpenAI-compatible client
+# The client sends "model": "beellama/qwen-flash" → llama-swap extracts model
+# from JSON body → checks if running → if not, stops current model → starts
+# requested model → proxies the request → returns response
+
+# ── Global Settings ──────────────────────────────────────────────────────────
+healthCheckTimeout: 300    # 5min max; large models need time to load
+logLevel: info
+logToStdout: proxy         # Only proxy traffic; enum: proxy|upstream|both|none
+metricsMaxInMemory: 5000   # More history for Grafana dashboard
+captureBuffer: 10          # Larger log capture ring buffer
+globalTTL: 0               # 0 = NEVER unload (source: process.go skips TTL goroutine)
+startPort: 25001           # Auto-assign ${PORT} from here
+includeAliasesInList: true # Expose aliases in /v1/models for client discovery
+sendLoadingState: false    # Don't inject reasoning loading markers
+
+# ── Store (SQLite request/response logging) ─────────────────────────────────
+store:
+  path: /home/toxic/.local/share/llama-swap/store.db
+
+# ── Performance Monitoring (GPU metrics) ────────────────────────────────────
+performance:
+  disabled: false
+  every: 5s                # Poll GPU every 5s
+
+# ── Hooks ───────────────────────────────────────────────────────────────────
+hooks:
+  on_startup:
+    preload:
+      - beellama/qwen-flash   # Fire GET / at boot to warm daily driver
+
+# ── Macros (LIFO substitution, model-level overrides global) ────────────────
+# Order matters: later macros override earlier ones. Model macros override global.
+# Reserved: ${MODEL_ID} (auto), ${PORT} (auto), ${PID} (runtime, cmdStop only)
+macros:
+  # Binary paths
+  beellama_bin: /home/toxic/projects/beellama.cpp/build/bin/llama-server
+  turbo_bin: /home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server
+  ik_bin: /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server
+  ik_tq_bin: /home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin/llama-server
+
+  # Library paths (ik builds need multi-dir LD_LIBRARY_PATH)
+  beellama_ld: /home/toxic/projects/beellama.cpp/build/bin
+  turbo_ld: /home/toxic/projects/llama-cpp-turboquant/build/bin
+  ik_ld: /home/toxic/projects/ik_llama.cpp-main/build/bin:/home/toxic/projects/ik_llama.cpp-main/build/src:/home/toxic/projects/ik_llama.cpp-main/build/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build/examples/mtmd
+  ik_tq_ld: /home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/examples/mtmd
+
+  # CUDA environment — maximal for sm_86 (RTX 30-series)
+  # GGML_CUDA_GRAPHS=1: up to 1.2x on small batches (sm_86 supports CUDA graphs)
+  # GGML_CUDA_FA_ALL_QUANTS=1: flash-attn works with all quant types
+  cuda_env: "CUDA_VISIBLE_DEVICES=0 GGML_CUDA=1 GGML_CUDA_GRAPHS=1 GGML_CUDA_FA_ALL_QUANTS=1"
+
+  # Base llama-server flags — unblinded, no artificial limits
+  # --mlock: pin to RAM, no swap/page-out
+  # --no-mmap: force full load, no lazy mapping
+  # --flash-attn on: memory-efficient attention (stable on CUDA)
+  # --parallel 1: single sequence (max throughput per request)
+  # --metrics: expose prometheus metrics on llama-server
+  base_flags: "--host 127.0.0.1 --port ${PORT} --n-gpu-layers 99 --flash-attn on --parallel 1 --metrics --mlock --no-mmap"
+
+  # KV cache compression — q4_0 gives ~4.3x compression
+  # Essential for 24GB cards with 32K+ context
+  kv_q4: "--cache-type-k q4_0 --cache-type-v q4_0"
+
+  # Model paths
+  qwen_flash: /home/toxic/projects/models/Qwen3.5-9B-DeepSeek-V4-Flash-IQ4_XS.gguf
+  strange: /home/toxic/projects/models/StrangeMerges_19-7B-dare_ties.Q4_K_M.gguf
+  gemma: /home/toxic/projects/models/gemma-4-12B-it-uncensored-Q4_K_M.gguf
+  heretic_27b: /home/toxic/projects/models/Qwen3.6-27B-Heretic-Cerebellum-v1-Q2_K_Mixed.gguf
+  mn_grand: /home/toxic/projects/models/MN-GRAND-23.5B-Gutenberg-UNCENSORED-V2-Q4_K_M.gguf
+  heretic_ud_q4: /home/toxic/projects/models/heretic-UD-27B-Q4_K_XL.gguf
+  heretic_ud_q5: /home/toxic/projects/models/heretic-UD-27B-Q5_K_XL.gguf
+  draft: /home/toxic/projects/models/Qwen2.5-1.5B-Draft.gguf
+
+# ── Models ──────────────────────────────────────────────────────────────────
+# Each model is a llama-server process that llama-swap starts/stops on demand.
+# The "key" (e.g. "beellama/qwen-flash") is the model ID clients request.
+# proxy defaults to "http://localhost:${PORT}" — omitted here, auto-assigned.
+# ttl defaults to globalTTL (0 = never) — omitted here.
+# checkEndpoint defaults to "/health" — omitted here.
+
+models:
+  # Legacy alias for backward compatibility with old clients
+  "llama":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${qwen_flash}
+      ${base_flags} --ctx-size 32768 -b 4096 -ub 1024 ${kv_q4}
+      --jinja
+    name: "Qwen3.5-9B Flash (legacy alias)"
+    description: "Fast default with DeepSeek reasoning format"
+    metadata:
+      variant: beellama
+      quant: IQ4_XS
+      context: 32768
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 32768
+
+  # ── beellama family ────────────────────────────────────────────────────────
+  "beellama/qwen-flash":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${qwen_flash}
+      ${base_flags} --ctx-size 32768 -b 4096 -ub 1024 ${kv_q4}
+      --jinja
+    name: "Qwen3.5-9B Flash"
+    metadata:
+      variant: beellama
+      context: 32768
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 32768
+
+  "beellama/strange":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${strange}
+      ${base_flags} --ctx-size 32768 -b 4096 -ub 1024 ${kv_q4}
+      --embeddings --pooling cls
+      --spec-type draft-simple --spec-draft-model ${draft}
+      --spec-draft-ctx-size 4096 --spec-draft-n-max 16 --spec-draft-n-min 2
+      --spec-draft-p-split 0.1 --spec-draft-p-min 0
+      --spec-draft-backend-sampling
+    name: "StrangeMerges 19.7B + Speculative"
+    metadata:
+      variant: beellama
+      speculative: true
+      context: 32768
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 32768
+
+  "beellama/gemma":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${gemma}
+      ${base_flags} --ctx-size 77824 -b 2048 -ub 512 ${kv_q4}
+    name: "Gemma 4 12B Uncensored"
+    metadata:
+      variant: beellama
+      context: 77824
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 77824
+
+  # ── turboquant family ──────────────────────────────────────────────────────
+  "turboquant/heretic-27b":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${heretic_27b}
+      ${base_flags} --ctx-size 32768 -b 4096 -ub 1024 ${kv_q4}
+      --log-format json
+    name: "Heretic 27B Q2_K_Mixed (TurboQuant)"
+    metadata:
+      variant: turboquant
+      context: 32768
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 32768
+
+  "turboquant/mn-grand":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${mn_grand}
+      ${base_flags} --ctx-size 32768 -b 4096 -ub 1024
+      --log-format json
+    name: "MN-GRAND 23.5B (TurboQuant)"
+    metadata:
+      variant: turboquant
+      context: 32768
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 32768
+
+  "turboquant/heretic-ud":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${heretic_ud_q4}
+      ${base_flags} --ctx-size 32768 -b 4096 -ub 1024
+      --log-format json
+    name: "Heretic UD 27B Q4_K_XL (TurboQuant)"
+    metadata:
+      variant: turboquant
+      context: 32768
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 32768
+
+  # ── ik_llama family ────────────────────────────────────────────────────────
+  "ik_llama/qwen-flash":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_ld} ${cuda_env}
+      ${ik_bin} --model ${qwen_flash}
+      ${base_flags} --ctx-size 32768 -b 4096 -ub 1024 ${kv_q4}
+      --log-format json
+    name: "Qwen3.5-9B Flash (ik_llama)"
+    metadata:
+      variant: ik_llama
+      context: 32768
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 32768
+
+  "ik_llama/strange":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_ld} ${cuda_env}
+      ${ik_bin} --model ${strange}
+      ${base_flags} --ctx-size 32768 -b 4096 -ub 1024 ${kv_q4}
+      --log-format json
+    name: "StrangeMerges 19.7B (ik_llama)"
+    metadata:
+      variant: ik_llama
+      context: 32768
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 32768
+
+  "ik_llama/heretic-ud":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_ld} ${cuda_env}
+      ${ik_bin} --model ${heretic_ud_q4}
+      ${base_flags} --ctx-size 32768 -b 2048 -ub 512
+      --log-format json
+    name: "Heretic UD 27B Q4_K_XL (ik_llama)"
+    metadata:
+      variant: ik_llama
+      context: 32768
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 32768
+
+  "ik_llama/heretic-q5":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_ld} ${cuda_env}
+      ${ik_bin} --model ${heretic_ud_q5}
+      ${base_flags} --ctx-size 32768 -b 2048 -ub 512
+      --log-format json
+    name: "Heretic UD 27B Q5_K_XL (ik_llama)"
+    metadata:
+      variant: ik_llama
+      context: 32768
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 32768
+
+  # ── ik_turboquant family ───────────────────────────────────────────────────
+  "ik_turboquant/heretic-27b":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_tq_ld} ${cuda_env}
+      ${ik_tq_bin} --model ${heretic_27b}
+      ${base_flags} --ctx-size 32768 -b 4096 -ub 1024 ${kv_q4}
+      --log-format json
+    name: "Heretic 27B Q2_K_Mixed (ik_turboquant)"
+    metadata:
+      variant: ik_turboquant
+      context: 32768
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 32768
+
+  "ik_turboquant/mn-grand":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_tq_ld} ${cuda_env}
+      ${ik_tq_bin} --model ${mn_grand}
+      ${base_flags} --ctx-size 32768 -b 4096 -ub 1024
+      --log-format json
+    name: "MN-GRAND 23.5B (ik_turboquant)"
+    metadata:
+      variant: ik_turboquant
+      context: 32768
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 32768
+
+  "ik_turboquant/heretic-ud":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_tq_ld} ${cuda_env}
+      ${ik_tq_bin} --model ${heretic_ud_q4}
+      ${base_flags} --ctx-size 32768 -b 2048 -ub 512
+      --log-format json
+    name: "Heretic UD 27B Q4_K_XL (ik_turboquant)"
+    metadata:
+      variant: ik_turboquant
+      context: 32768
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 32768
+
+  "ik_turboquant/heretic-q5":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_tq_ld} ${cuda_env}
+      ${ik_tq_bin} --model ${heretic_ud_q5}
+      ${base_flags} --ctx-size 32768 -b 2048 -ub 512
+      --log-format json
+    name: "Heretic UD 27B Q5_K_XL (ik_turboquant)"
+    metadata:
+      variant: ik_turboquant
+      context: 32768
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 32768
+
+# ── Routing: Single GPU, only one model at a time ───────────────────────────
+# Group router: all models in one exclusive group.
+# swap=true: stop same-group siblings when loading new model.
+# exclusive=true: stop ALL other running models when loading new model.
+# persistent=false: allow eviction.
+#
+# FIFO scheduler with priority: higher number = served first when queued.
+# beellama/qwen-flash=10 means if 5 requests queue, qwen-flash requests jump ahead.
+
+routing:
+  scheduler:
+    use: fifo
+    settings:
+      fifo:
+        priority:
+          beellama/qwen-flash: 10
+          beellama/strange: 5
+          beellama/gemma: 3
+  router:
+    use: group
+    settings:
+      groups:
+        default:
+          swap: true
+          exclusive: true
+          persistent: false
+          members:
+            - llama
+            - beellama/qwen-flash
+            - beellama/strange
+            - beellama/gemma
+            - turboquant/heretic-27b
+            - turboquant/mn-grand
+            - turboquant/heretic-ud
+            - ik_llama/qwen-flash
+            - ik_llama/strange
+            - ik_llama/heretic-ud
+            - ik_llama/heretic-q5
+            - ik_turboquant/heretic-27b
+            - ik_turboquant/mn-grand
+            - ik_turboquant/heretic-ud
+            - ik_turboquant/heretic-q5

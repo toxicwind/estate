@@ -27,9 +27,14 @@ Bun.spawnSync(["pkill", "-f", OPENFANG_BIN], {
 await Bun.sleep(300);
 
 // Start daemon in foreground
-console.log("[OpenFang] Starting daemon in foreground...");
+console.log(`[OpenFang] Starting daemon bound to 127.0.0.1:${PORT}...`);
 const proc = Bun.spawn([OPENFANG_BIN, "start"], {
-  env: process.env,
+  env: {
+    ...process.env,
+    HOST: "127.0.0.1", // Force IPv4 for the Rust backend
+    BIND: "127.0.0.1",
+    OPENFANG_PORT: PORT.toString()
+  },
   stdout: "inherit",
   stderr: "inherit",
 });

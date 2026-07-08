@@ -5,8 +5,10 @@ processes:
     environment:
       - "DOTENV_CONFIG_PATH=/home/toxic/sovereign/yote/.env"
     readiness_probe:
-      exec:
-        command: "curl -fs http://127.0.0.1:25042/health"
+      http_get:
+        host: 127.0.0.1
+        port: 25042
+        path: /health
       initial_delay_seconds: 10
       period_seconds: 3
     log_location: "/home/toxic/sovereign/.state/logs/yote.log"

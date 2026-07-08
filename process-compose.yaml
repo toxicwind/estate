@@ -1,118 +1,121 @@
 # GENERATED — do not edit. Source: stack/modules/*.yaml
 # Regenerate: devbox run build-compose  |  ./stack/build-compose.sh
-version: "0.5"
-
+version: '0.5'
 environment:
-  - "SOVEREIGN_ROOT=/home/toxic/sovereign"
-
-# llama-server is NOT orchestrated here — llama-swap spawns upstream on demand (:25021 ingress)
-
+- SOVEREIGN_ROOT=/home/toxic/sovereign
 processes:
+  hf-downloader:
+    command: bash -c '/home/toxic/.bun/bin/bun install && /home/toxic/.bun/bin/bun
+      run src/hf_downloader.ts'
+    working_dir: /home/toxic/sovereign
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 25020
+        path: /health
+      initial_delay_seconds: 5
+      period_seconds: 5
+    log_location: /home/toxic/sovereign/.state/logs/hf-downloader.log
+  landing:
+    command: /home/toxic/.bun/bin/bun run src/landing/server.ts
+    working_dir: /home/toxic/sovereign
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 25080
+        path: /health
+      initial_delay_seconds: 2
+      period_seconds: 5
+    log_location: /home/toxic/sovereign/.state/logs/landing.log
   llama-herder:
-    command: "/home/toxic/sovereign/stack/services/llama-herder.sh"
-    working_dir: "/home/toxic/sovereign"
+    command: /home/toxic/sovereign/stack/services/llama-herder.sh
+    working_dir: /home/toxic/sovereign
     environment:
-      - "SOVEREIGN_ROOT=/home/toxic/sovereign"
-      - "LLAMA_HERDER=25021"
+    - SOVEREIGN_ROOT=/home/toxic/sovereign
+    - LLAMA_HERDER=25021
     availability:
       restart: on_failure
       backoff_seconds: 3
       max_restarts: 12
     readiness_probe:
-      exec:
-        command: "curl -fs http://127.0.0.1:25021/health"
+      http_get:
+        host: 127.0.0.1
+        port: 25021
+        path: /health
       initial_delay_seconds: 5
       period_seconds: 5
       failure_threshold: 12
-    log_location: "/home/toxic/sovereign/.state/logs/llama-herder.log"
-
+    log_location: /home/toxic/sovereign/.state/logs/llama-herder.log
   openfang:
-    command: "/home/toxic/.bun/bin/bun run src/openfang.ts"
-    working_dir: "/home/toxic/sovereign"
+    command: /home/toxic/.bun/bin/bun run src/openfang.ts
+    working_dir: /home/toxic/sovereign
     environment:
-      - "SOVEREIGN_ROOT=/home/toxic/sovereign"
-      - "OPENFANG_PORT=25004"
+    - SOVEREIGN_ROOT=/home/toxic/sovereign
+    - OPENFANG_PORT=25004
     availability:
       restart: on_failure
       max_restarts: 10
     readiness_probe:
-      exec:
-        command: "curl -fs http://127.0.0.1:25004/api/health"
+      http_get:
+        host: 127.0.0.1
+        port: 25004
+        path: /api/health
       initial_delay_seconds: 5
       period_seconds: 5
       failure_threshold: 10
-    log_location: "/home/toxic/sovereign/.state/logs/openfang.log"
-
+    log_location: /home/toxic/sovereign/.state/logs/openfang.log
   prometheus:
-    command: "prometheus --config.file=/home/toxic/sovereign/prometheus.yml --storage.tsdb.path=/home/toxic/sovereign/.prometheus --web.listen-address=0.0.0.0:25030"
-    working_dir: "/home/toxic/sovereign"
+    command: prometheus --config.file=/home/toxic/sovereign/prometheus.yml --storage.tsdb.path=/home/toxic/sovereign/.prometheus
+      --web.listen-address=0.0.0.0:25030
+    working_dir: /home/toxic/sovereign
     readiness_probe:
-      exec:
-        command: "curl -fs http://127.0.0.1:25030/-/healthy"
+      http_get:
+        host: 127.0.0.1
+        port: 25030
+        path: /-/healthy
       initial_delay_seconds: 3
       period_seconds: 5
-    log_location: "/home/toxic/sovereign/.state/logs/prometheus.log"
-
-  caddy:
-    command: "caddy run --config /home/toxic/sovereign/Caddyfile"
-    working_dir: "/home/toxic/sovereign"
-    readiness_probe:
-      exec:
-        command: "curl -fs http://127.0.0.1:25000/health"
-      initial_delay_seconds: 2
-      period_seconds: 5
-    log_location: "/home/toxic/sovereign/.state/logs/caddy.log"
-
-  landing:
-    command: "/home/toxic/.bun/bin/bun run src/landing/server.ts"
-    working_dir: "/home/toxic/sovereign"
-    readiness_probe:
-      exec:
-        command: "curl -fs http://127.0.0.1:25080/health"
-      initial_delay_seconds: 2
-      period_seconds: 5
-    log_location: "/home/toxic/sovereign/.state/logs/landing.log"
-
-  watchdog:
-    command: "/home/toxic/.bun/bin/bun run src/watchdog.ts"
-    working_dir: "/home/toxic/sovereign"
-    readiness_probe:
-      exec:
-        command: "curl -fs http://127.0.0.1:25022/health"
-      initial_delay_seconds: 2
-      period_seconds: 5
-    log_location: "/home/toxic/sovereign/.state/logs/watchdog.log"
-
-  hf-downloader:
-    command: "/home/toxic/.bun/bin/bun run src/hf_downloader.ts"
-    working_dir: "/home/toxic/sovereign"
-    readiness_probe:
-      exec:
-        command: "curl -fs http://127.0.0.1:25020/health"
-      initial_delay_seconds: 1
-      period_seconds: 3
-    log_location: "/home/toxic/sovereign/.state/logs/hf-downloader.log"
-
+    log_location: /home/toxic/sovereign/.state/logs/prometheus.log
   rust-web:
-    command: "bash -lc 'command -v cargo >/dev/null && cargo run --release || echo rust-web skipped: install rust/cargo locally'"
-    working_dir: "/home/toxic/sovereign/rust_algo_web"
-    disabled: true
-    readiness_probe:
-      exec:
-        command: "curl -fs http://127.0.0.1:25005/health"
-      initial_delay_seconds: 10
-      period_seconds: 5
-      failure_threshold: 20
-    log_location: "/home/toxic/sovereign/.state/logs/rust-web.log"
-
-  yote:
-    command: "/home/toxic/.bun/bin/bun run src/index.ts"
-    working_dir: "/home/toxic/sovereign/yote"
+    command: /home/toxic/sovereign/stack/services/rust-web.sh
+    working_dir: /home/toxic/sovereign/rust_algo_web
     environment:
-      - "DOTENV_CONFIG_PATH=/home/toxic/sovereign/yote/.env"
+    - RUST_WEB_PORT=25005
+    - LLM_PROXY_URL=http://127.0.0.1:25021
+    - SOVEREIGN_ROOT=/home/toxic/sovereign
+    availability:
+      restart: on_failure
+      max_restarts: 8
     readiness_probe:
-      exec:
-        command: "curl -fs http://127.0.0.1:25042/health"
+      http_get:
+        host: 127.0.0.1
+        port: 25005
+        path: /health
+      initial_delay_seconds: 5
+      period_seconds: 5
+      failure_threshold: 12
+    log_location: /home/toxic/sovereign/.state/logs/rust-web.log
+  watchdog:
+    command: /home/toxic/.bun/bin/bun run src/watchdog.ts
+    working_dir: /home/toxic/sovereign
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 25022
+        path: /health
+      initial_delay_seconds: 2
+      period_seconds: 5
+    log_location: /home/toxic/sovereign/.state/logs/watchdog.log
+  yote:
+    command: /home/toxic/.bun/bin/bun run src/index.ts
+    working_dir: /home/toxic/sovereign/yote
+    environment:
+    - DOTENV_CONFIG_PATH=/home/toxic/sovereign/yote/.env
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 25042
+        path: /health
       initial_delay_seconds: 10
       period_seconds: 3
-    log_location: "/home/toxic/sovereign/.state/logs/yote.log"
+    log_location: /home/toxic/sovereign/.state/logs/yote.log

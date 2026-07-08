@@ -26,10 +26,11 @@ stack_configs() {
 
 run_pc() {
   command -v process-compose >/dev/null || {
-    echo "process-compose not found — install: sudo pacman -S process-compose-git caddy prometheus" >&2
+    echo "process-compose not found — install: sudo pacman -S process-compose-git prometheus" >&2
     exit 1
   }
-  process-compose "$@"
+  # Force IPv4 loopback globally to prevent Go's ::1 resolution panics on up/down/attach
+  process-compose -a 127.0.0.1 "$@"
 }
 
 pc_config_args() {

@@ -87,23 +87,18 @@ function watchDir(dirPath: string) {
 }
 
 watchDir(STATIC_DIR);
-watchDir(join(import.meta.dir, "../../rust_algo_web/static"));
 
 async function checkAllPorts() {
-  const PORTS = {
-    "Caddy Edge": 25000,
-    "Lorbus vLLM": 25001,
+  const PORTS: Record<string, number> = {
+    "Caddy Edge":    25000,
+    "Llama Swap":    25021,
     "OpenFang Core": 25004,
-    Ouroboros: 25005,
+    "Ouroboros":     25005,
+    "Prometheus":    25030,
     "HF Downloader": 25020,
-    "Llama Swap": 25021,
-    Watchdog: 25022,
-    "Yote Status": 25042,
-    Prometheus: 25030,
-    Postgres: 25432,
-    Redis: 16379,
-    Nats: 4222,
-    Mosquitto: 1883,
+    "Watchdog":      25022,
+    "Yote Status":   25042,
+    "Landing":       25080,
   };
 
   const results: Record<string, { port: number; online: boolean }> = {};
