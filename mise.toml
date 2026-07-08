@@ -42,3 +42,6 @@ run = "{{ config_root }}/bin/kill-devenv.sh"
 [tasks.consolidate]
 description = "Archive stale whitelist config duplicates"
 run = "{{ config_root }}/bin/consolidate-known.sh"
+[settings]
+env_file = ".env.local"
+

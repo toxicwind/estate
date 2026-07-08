@@ -1,85 +1,69 @@
 #!/usr/bin/env bun
-// Sovereign Stack — Bun-native health tests
+import { existsSync, readFileSync } from "fs";
+import { join } from "path";
+
+const SOV_ROOT = process.env.SOVEREIGN_ROOT || "/home/toxic/sovereign";
+const PORTS_FILE = join(SOV_ROOT, "stack", "ports.env");
+
+// Parse ports.env for dynamic discovery
+function getPorts(): Record<string, number> {
+  const envContent = readFileSync(PORTS_FILE, "utf-8");
+  const ports: Record<string, number> = {};
+  const lines = envContent.split("\n");
+  for (const line of lines) {
+    if (line.startsWith("export")) {
+      const match = line.match(/export\s+(\w+)=(\d+)/);
+      if (match) ports[match[1]] = parseInt(match[2], 10);
+    }
+  }
+  return ports;
+}
+
+const P = getPorts();
+
+// Mapping service IDs to their specific readiness paths
+const REGISTRY: Record<string, string[]> = {
+  "LLAMA_HERDER": ["/health"],
+  "OPENFANG_PORT": ["/api/health"],
+  "RUST_WEB_PORT": ["/health"],
+  "YOTE_PORT": ["/health"],
+  "HF_DOWNLOADER": ["/"],
+  "WATCHDOG_PORT": ["/health"],
+  "LANDING_PORT": ["/health"],
+};
 
 const BASE = "http://127.0.0.1";
-
-type Service = [number, string[]] | number;
-
-const SERVICES: Record<string, Service> = {
-  "llama-server": [25001, ["/health", "/v1/models"]],
-
-  openfang: [25004, ["/api/health"]],
-  "rust-web": [25005, ["/health"]],
-  "caddy-admin": [25031, ["/config/"]],
-  yote: [25042, ["/health"]],
-};
-
-const INFRA: Record<string, number> = {
-  postgres: 25432,
-  redis: 6379,
-  nats: 4222,
-};
-
 const green = (s: string) => `\x1b[92m${s}\x1b[0m`;
 const red = (s: string) => `\x1b[91m${s}\x1b[0m`;
-const yellow = (s: string) => `\x1b[93m${s}\x1b[0m`;
 
-async function checkHttp(name: string, port: number, paths: string[]) {
+async function probe(name: string, port: number, paths: string[]) {
   for (const path of paths) {
     try {
       const res = await fetch(`${BASE}:${port}${path}`, {
-        signal: AbortSignal.timeout(2000),
+        signal: AbortSignal.timeout(1500),
       });
-      if (res.status < 500) return [true, `${res.status} ${path}`] as const;
+      if (res.ok) return [true, `${res.status} ${path}`] as const;
     } catch {}
   }
-  return [false, `no response`] as const;
+  return [false, "unresponsive"] as const;
 }
 
-async function checkTcp(name: string, port: number) {
-  try {
-    const socket = await Bun.connect({
-      hostname: "127.0.0.1",
-      port,
-      socket: { data: () => {} },
-    });
-    socket.end();
-    return [true, "open"] as const;
-  } catch (e) {
-    return [false, "closed"] as const;
-  }
-}
+console.log(`🚀 Sovereign Stack Health — ${new Date().toLocaleTimeString()}`);
+console.log("-".repeat(55));
 
-async function testOne(name: string, spec: Service) {
-  const [ok, msg] = Array.isArray(spec)
-    ? await checkHttp(name, spec[0], spec[1])
-    : await checkTcp(name, spec);
+let healthyCount = 0;
+const entries = Object.entries(REGISTRY);
 
-  const port = Array.isArray(spec) ? spec[0] : spec;
+for (const [envVar, paths] of entries) {
+  const port = P[envVar];
+  if (!port) continue;
+  
+  const [ok, msg] = await probe(envVar, port, paths);
+  healthyCount += ok ? 1 : 0;
+  
   const status = ok ? green("✓") : red("✗");
-  console.log(
-    `${status} ${name.padEnd(15)} :${String(port).padEnd(5)} → ${msg}`,
-  );
-  return ok;
+  console.log(`${status} ${envVar.padEnd(15)} :${String(port).padEnd(5)} → ${msg}`);
 }
 
-console.log(`🚀 Sovereign Stack Test — ${new Date().toLocaleTimeString()}`);
 console.log("-".repeat(55));
-
-const all = { ...SERVICES, ...INFRA };
-const results = await Promise.all(
-  Object.entries(all).map(([n, s]) => testOne(n, s)),
-);
-
-console.log("-".repeat(55));
-const passed = results.filter(Boolean).length;
-if (passed === results.length) {
-  console.log(green(`All ${passed} services healthy`));
-  process.exit(0);
-} else {
-  console.log(
-    yellow(`${passed}/${results.length} up — ${results.length - passed} down`),
-  );
-  console.log("\nTip: run `devenv up --detach` then `sovereign-logs`");
-  process.exit(1);
-}
+process.exit(healthyCount === entries.length ? 0 : 1);

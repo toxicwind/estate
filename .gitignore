@@ -5,7 +5,7 @@
 .secrets
 *.key
 *.pem
-
+bin/
 # runtime state
 .state/
 .prometheus/
@@ -68,4 +68,5 @@ llamaherd/
 
 # misc
 GITEOF
-*.pdf
+*.pdf.envrc
+.direnv/
