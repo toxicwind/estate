@@ -70,3 +70,4 @@ llamaherd/
 GITEOF
 *.pdf.envrc
 .direnv/
+tools/llama-swap/
