@@ -12,7 +12,7 @@ source "$SCRIPT_DIR/ports.env" 2>/dev/null || true
 # ─── Configuration ────────────────────────────────────────────────────────────
 
 # Fallback ports if ports.env is not sourced
-LLAMA_HERDER="${LLAMA_HERDER:-25021}"
+LLAMA_HERDER="${LLAMA_HERDER:-28080}"
 OPENFANG_PORT="${OPENFANG_PORT:-25004}"
 PROMETHEUS_PORT="${PROMETHEUS_PORT:-9090}"
 YOTE_PORT="${YOTE_PORT:-25042}"

@@ -1,9 +1,198 @@
 direction: down
-style: { fill: "#11111b"; stroke: "#45475a"; border-radius: 6 }
 
-devenv: devenv.nix { style.fill: "#313244"; style.stroke: "#cba6f7" }
-nix_modules: Nix Orchestration Layer { style.fill: "#181825" }
-runtime: TypeScript Runtime { style.fill: "#181825" }
+# ==================== 1. BOOTSTRAP & CONFIG ====================
+bootstrap: {
+  secrets: ".secrets"
+  ports: ports.env {
+    shape: cylinder
+    style.fill: "#f39c12"
+  }
+  libsh: stack/lib.sh {
+    style.fill: "#e67e22"
+  }
+  mise: mise.toml {
+    shape: hexagon
+    style.fill: "#9b59b6"
+  }
+  dotenv: ".env.local"
+}
 
-devenv -> nix_modules
-nix_modules -> runtime
+# ==================== 2. ORCHESTRATION ====================
+orchestration: {
+  process_compose: process-compose.yaml {
+    style.fill: "#2980b9"
+  }
+  stack: stack/ {
+    up: up.sh
+    down: down.sh
+    modules: stack/modules/
+  }
+}
+
+# ==================== 3. SMART ROUTING (llama-swap) ====================
+llama_swap: tools/llama-swap {
+  shape: hexagon
+  style.fill: "#c0392b"
+  label: "llama-swap\n(Full Router + All Members)"
+}
+
+# All members from your config
+members: {
+  # Qwen
+  beellama_qwen: beellama/qwen-flash
+  turbo_qwen: turboquant/qwen-flash
+  ik_qwen: ik_llama/qwen-flash
+
+  # Strange
+  beellama_strange: beellama/strange
+  turbo_strange: turboquant/strange
+  ik_strange: ik_llama/strange
+
+  # Gemma
+  beellama_gemma: beellama/gemma
+  turbo_gemma: turboquant/gemma
+  ik_gemma: ik_llama/gemma
+
+  # Heretic 27B
+  beellama_heretic: beellama/heretic-27b
+  turbo_heretic: turboquant/heretic-27b
+  ik_heretic: ik_llama/heretic-27b
+  ik_tq_heretic: ik_turboquant/heretic-27b
+
+  # MN-GRAND
+  beellama_mn: beellama/mn-grand
+  turbo_mn: turboquant/mn-grand
+  ik_mn: ik_llama/mn-grand
+  ik_tq_mn: ik_turboquant/mn-grand
+
+  # Heretic UD Q4
+  beellama_ud: beellama/heretic-ud
+  turbo_ud: turboquant/heretic-ud
+  ik_ud: ik_llama/heretic-ud
+  ik_tq_ud: ik_turboquant/heretic-ud
+
+  # Heretic UD Q5
+  beellama_q5: beellama/heretic-q5
+  turbo_q5: turboquant/heretic-q5
+  ik_q5: ik_llama/heretic-q5
+  ik_tq_q5: ik_turboquant/heretic-q5
+}
+
+# ==================== 4. LLM FORKS ====================
+forks: {
+  beellama: beellama.cpp
+  turboquant: llama-cpp-turboquant
+  ik_llama: ik_llama.cpp-main
+  ik_tq: ik_llama build_turboquant
+}
+
+# ==================== 5. CORE SERVICES ====================
+services: {
+  openfang: OpenFang {
+    shape: hexagon
+    style.fill: "#16a085"
+  }
+  yote: Yote
+  prometheus: Prometheus
+  rust_web: Rust Web
+  watchdog: Watchdog
+  hf_downloader: HF Downloader
+  landing: Landing
+}
+
+# ==================== 6. CUSTOM CODE & CONFIG ====================
+code: {
+  src: src/
+  config: config/ {
+    openfang_config: config/openfang/
+    hands: config/hands/
+  }
+  yote_src: yote/src/
+  tools: tools/
+}
+
+# ==================== RELATIONSHIPS ====================
+
+# Bootstrap
+ports -> libsh
+libsh -> process_compose
+dotenv -> process_compose
+mise -> process_compose
+
+# Orchestration
+process_compose -> services.openfang
+process_compose -> services.yote
+process_compose -> services.prometheus
+process_compose -> services.rust_web
+process_compose -> services.watchdog
+process_compose -> llama_swap
+
+# llama-swap routing (all members)
+llama_swap -> members.beellama_qwen
+llama_swap -> members.turbo_qwen
+llama_swap -> members.ik_qwen
+llama_swap -> members.beellama_strange
+llama_swap -> members.turbo_strange
+llama_swap -> members.ik_strange
+llama_swap -> members.beellama_gemma
+llama_swap -> members.turbo_gemma
+llama_swap -> members.ik_gemma
+llama_swap -> members.beellama_heretic
+llama_swap -> members.turbo_heretic
+llama_swap -> members.ik_heretic
+llama_swap -> members.ik_tq_heretic
+llama_swap -> members.beellama_mn
+llama_swap -> members.turbo_mn
+llama_swap -> members.ik_mn
+llama_swap -> members.ik_tq_mn
+llama_swap -> members.beellama_ud
+llama_swap -> members.turbo_ud
+llama_swap -> members.ik_ud
+llama_swap -> members.ik_tq_ud
+llama_swap -> members.beellama_q5
+llama_swap -> members.turbo_q5
+llama_swap -> members.ik_q5
+llama_swap -> members.ik_tq_q5
+
+# Forks
+members.beellama_qwen -> forks.beellama
+members.beellama_strange -> forks.beellama
+members.beellama_gemma -> forks.beellama
+members.beellama_heretic -> forks.beellama
+members.beellama_mn -> forks.beellama
+members.beellama_ud -> forks.beellama
+members.beellama_q5 -> forks.beellama
+
+members.turbo_qwen -> forks.turboquant
+members.turbo_strange -> forks.turboquant
+members.turbo_gemma -> forks.turboquant
+members.turbo_heretic -> forks.turboquant
+members.turbo_mn -> forks.turboquant
+members.turbo_ud -> forks.turboquant
+members.turbo_q5 -> forks.turboquant
+
+members.ik_qwen -> forks.ik_llama
+members.ik_strange -> forks.ik_llama
+members.ik_gemma -> forks.ik_llama
+members.ik_heretic -> forks.ik_llama
+members.ik_mn -> forks.ik_llama
+members.ik_ud -> forks.ik_llama
+members.ik_q5 -> forks.ik_llama
+
+members.ik_tq_heretic -> forks.ik_tq
+members.ik_tq_mn -> forks.ik_tq
+members.ik_tq_ud -> forks.ik_tq
+members.ik_tq_q5 -> forks.ik_tq
+
+# OpenFang as central brain
+services.openfang -> llama_swap: decides model + best fork
+services.openfang -> code.config.openfang
+services.openfang -> code.src
+
+# Observability
+services.prometheus -> services.openfang
+services.prometheus -> services.yote
+code.tools -> services.openfang
+
+# Health
+health: health.sh -> services

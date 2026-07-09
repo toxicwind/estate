@@ -252,7 +252,7 @@ function applySuggestedWeights() {
 // Services from process-compose.yaml + stack/ports.env (SSoT)
 const SERVICES = [
   { id: "caddy",         name: "Caddy Edge",    port: 25000 },
-  { id: "llama-herder",  name: "llama-swap",    port: 25021 },
+  { id: "llama-herder",  name: "llama-swap",    port: 28080 },
   { id: "openfang",     name: "OpenFang",      port: 25004 },
   { id: "rust-web",     name: "Rust Web",      port: 25005 },
   { id: "prometheus",   name: "Prometheus",    port: 25030 },

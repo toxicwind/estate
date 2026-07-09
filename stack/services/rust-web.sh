@@ -3,7 +3,7 @@ set -euo pipefail
 SOV="${SOVEREIGN_ROOT:-/home/toxic/sovereign}"
 cd "$SOV/rust_algo_web"
 export RUST_WEB_PORT="${RUST_WEB_PORT:-25005}"
-export LLM_PROXY_URL="${LLM_PROXY_URL:-http://127.0.0.1:25021}"
+export LLM_PROXY_URL="${LLM_PROXY_URL:-http://127.0.0.1:28080}"
 BIN="./target/release/sovereign_devops_advisor"
 
 # Kill stale instance so we don't get "Address already in use"

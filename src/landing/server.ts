@@ -67,7 +67,7 @@ function watchDir(dirPath: string) {
 watchDir(STATIC_DIR);
 
 const PORTS: Record<string, number> = {
-  "Llama Swap": 25021,
+  "Llama Swap": 28080,
   "OpenFang": 25004,
   "Rust Dash": 25005,
   "Prometheus": 25030,
@@ -95,7 +95,7 @@ function checkPort(port: number): Promise<boolean> {
 async function getSystemTelemetry() {
   let aiEngine = "Offline";
   try {
-    const r = await fetch(`http://127.0.0.1:25021/health`, { signal: AbortSignal.timeout(1000) });
+    const r = await fetch(`http://127.0.0.1:28080/health`, { signal: AbortSignal.timeout(1000) });
     if (r.ok) aiEngine = "Llama Swap Active";
   } catch {}
 

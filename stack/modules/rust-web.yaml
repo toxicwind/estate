@@ -4,7 +4,7 @@ processes:
     working_dir: "/home/toxic/sovereign/rust_algo_web"
     environment:
       - "RUST_WEB_PORT=25005"
-      - "LLM_PROXY_URL=http://127.0.0.1:25021"
+      - "LLM_PROXY_URL=http://127.0.0.1:28080"
       - "SOVEREIGN_ROOT=/home/toxic/sovereign"
     availability:
       restart: on_failure

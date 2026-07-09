@@ -1,31 +1,75 @@
-// fix-overlord.ts
-import { readFileSync, writeFileSync } from "fs";
+#!/usr/bin/env bun
+// capture-helps.ts — Bun version of your bash capture
 
-const path = `/home/toxic/sovereign/yote/src/lib/overlord.ts`;
-let content = readFileSync(path, "utf-8");
+type Build = {
+  name: string;
+  bin: string;
+  ld: string;
+};
 
-// Remove broken catch-all disconnect handler
-content = content.replace(
-  /\/\/ Set up disconnect handler for auto-reconnect[\s\S]*?this\.scheduleReconnect\(\);\s*}\);/,
-  `// GramJS autoReconnect handles disconnects; no manual handler needed`
-);
+const builds: Build[] = [
+  {
+    name: "beellama",
+    bin: "/home/toxic/projects/beellama.cpp/build/bin/llama-server",
+    ld: "/home/toxic/projects/beellama.cpp/build/bin",
+  },
+  {
+    name: "llama-cpp-turboquant",
+    bin: "/home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server",
+    ld: "/home/toxic/projects/llama-cpp-turboquant/build/bin",
+  },
+  {
+    name: "ik_llama",
+    bin: "/home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server",
+    ld: [
+      "/home/toxic/projects/ik_llama.cpp-main/build/bin",
+      "/home/toxic/projects/ik_llama.cpp-main/build/src",
+      "/home/toxic/projects/ik_llama.cpp-main/build/ggml/src",
+      "/home/toxic/projects/ik_llama.cpp-main/build/examples/mtmd", // libmtmd.so lives here
+    ].join(":"),
+  },
+  {
+    name: "ik_turboquant",
+    bin: "/home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin/llama-server",
+    ld: [
+      "/home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin",
+      "/home/toxic/projects/ik_llama.cpp-main/build_turboquant/src",
+      "/home/toxic/projects/ik_llama.cpp-main/build_turboquant/ggml/src",
+      "/home/toxic/projects/ik_llama.cpp-main/build_turboquant/examples/mtmd",
+    ].join(":"),
+  },
+];
 
-// Fix scheduleReconnect to not call start()
-content = content.replace(
-  /this\.start\(\)\.catch\(\(e: any\) => \{\s*this\.log\(`reconnect failed: \$\{e\.message \?\? e\}`\);\s*this\.scheduleReconnect\(\);\s*\}\);/,
-  `this.client.connect().catch((e: any) => {
-        this.log(\`reconnect failed: \${e.message ?? e}\`);
-        this.scheduleReconnect();
-      });`
-);
+const outPath = "/tmp/llama_help_all.json";
+const result: Record<string, string> = {};
 
-// Guard start() against double-connect
-content = content.replace(
-  /async start\(\): Promise<void> \{\s*if \(this\.started\) return;\s*await this\.client\.connect\(\);/,
-  `async start(): Promise<void> {
-    if (this.started) return;
-    if (!this.client.connected) await this.client.connect();`
-);
+for (const b of builds) {
+  console.log(`=== ${b.name} ===`);
+  const proc = Bun.spawnSync({
+    cmd: [b.bin, "--help"],
+    env: { ...process.env, LD_LIBRARY_PATH: b.ld },
+    stdout: "pipe",
+    stderr: "pipe",
+  });
 
-writeFileSync(path, content);
-console.log("Fixed overlord.ts");
+  const stdout = new TextDecoder().decode(proc.stdout);
+  const stderr = new TextDecoder().decode(proc.stderr);
+  // --help writes to stdout, but capture both like `2>&1`
+  result[b.name] = stdout + stderr;
+
+  if (proc.exitCode !== 0) {
+    console.warn(`[${b.name}] exited ${proc.exitCode}`);
+  }
+}
+
+await Bun.write(outPath, JSON.stringify(result, null, 2));
+console.log(`\nWrote ${outPath}`);
+
+// preview like your jq command
+for (const [name, txt] of Object.entries(result)) {
+  console.log({
+    name,
+    len: txt.length,
+    preview: txt.slice(0, 200).replace(/\n/g, "\\n"),
+  });
+}

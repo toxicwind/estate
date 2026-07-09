@@ -1,11 +1,12 @@
 # GENERATED — do not edit. Source: stack/modules/*.yaml
 # Regenerate: devbox run build-compose  |  ./stack/build-compose.sh
-version: '0.5'
+version: "0.5"
 environment:
-- SOVEREIGN_ROOT=/home/toxic/sovereign
+  - SOVEREIGN_ROOT=/home/toxic/sovereign
 processes:
   hf-downloader:
-    command: bash -c '/home/toxic/.bun/bin/bun install && /home/toxic/.bun/bin/bun
+    command:
+      bash -c '/home/toxic/.bun/bin/bun install && /home/toxic/.bun/bin/bun
       run src/hf_downloader.ts'
     working_dir: /home/toxic/sovereign
     readiness_probe:
@@ -31,8 +32,8 @@ processes:
     command: /home/toxic/sovereign/stack/services/llama-herder.sh
     working_dir: /home/toxic/sovereign
     environment:
-    - SOVEREIGN_ROOT=/home/toxic/sovereign
-    - LLAMA_HERDER=25021
+      - SOVEREIGN_ROOT=/home/toxic/sovereign
+      - LLAMA_HERDER=28080
     availability:
       restart: on_failure
       backoff_seconds: 3
@@ -40,7 +41,7 @@ processes:
     readiness_probe:
       http_get:
         host: 127.0.0.1
-        port: 25021
+        port: 28080
         path: /health
       initial_delay_seconds: 5
       period_seconds: 5
@@ -50,10 +51,10 @@ processes:
     command: /home/toxic/.bun/bin/bun run src/openfang.ts
     working_dir: /home/toxic/sovereign
     environment:
-    - SOVEREIGN_ROOT=/home/toxic/sovereign
-    - OPENFANG_PORT=25004
-    - TELEGRAM_BOT_TOKEN=
-    - TELEGRAM_BOT_TOKEN_OVERLORD=
+      - SOVEREIGN_ROOT=/home/toxic/sovereign
+      - OPENFANG_PORT=25004
+      - TELEGRAM_BOT_TOKEN=
+      - TELEGRAM_BOT_TOKEN_OVERLORD=
     availability:
       restart: on_failure
       max_restarts: 10
@@ -67,7 +68,8 @@ processes:
       failure_threshold: 10
     log_location: /home/toxic/sovereign/.state/logs/openfang.log
   prometheus:
-    command: prometheus --config.file=/home/toxic/sovereign/prometheus.yml --storage.tsdb.path=/home/toxic/sovereign/.prometheus
+    command:
+      prometheus --config.file=/home/toxic/sovereign/prometheus.yml --storage.tsdb.path=/home/toxic/sovereign/.prometheus
       --web.listen-address=0.0.0.0:25030
     working_dir: /home/toxic/sovereign
     readiness_probe:
@@ -82,9 +84,9 @@ processes:
     command: /home/toxic/sovereign/stack/services/rust-web.sh
     working_dir: /home/toxic/sovereign/rust_algo_web
     environment:
-    - RUST_WEB_PORT=25005
-    - LLM_PROXY_URL=http://127.0.0.1:25021
-    - SOVEREIGN_ROOT=/home/toxic/sovereign
+      - RUST_WEB_PORT=25005
+      - LLM_PROXY_URL=http://127.0.0.1:28080
+      - SOVEREIGN_ROOT=/home/toxic/sovereign
     availability:
       restart: on_failure
       max_restarts: 8
@@ -112,7 +114,7 @@ processes:
     command: /home/toxic/.bun/bin/bun run src/index.ts
     working_dir: /home/toxic/sovereign/yote
     environment:
-    - DOTENV_CONFIG_PATH=/home/toxic/sovereign/yote/.env
+      - DOTENV_CONFIG_PATH=/home/toxic/sovereign/yote/.env
     readiness_probe:
       http_get:
         host: 127.0.0.1

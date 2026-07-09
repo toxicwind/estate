@@ -7,7 +7,7 @@ const STATUS_FILE = "/home/toxic/sovereign/.state/logs/watchdog_status.json";
 
 // Updated to match the current stack architecture
 const PROCESSES = {
-  "llama-herder": { port: 25021, health: "/health" },
+  "llama-herder": { port: 28080, health: "/health" },
   "openfang": { port: 25004, health: "/api/health" },
   "yote": { port: 25042, health: "/health" },
 };

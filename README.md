@@ -30,14 +30,14 @@ Stop: `mise run down`
 
 | Endpoint | Role |
 |----------|------|
-| `:25021` | **Ingress** — llama-swap (all clients) |
+| `:28080` | **Ingress** — llama-swap (all clients) |
 | `:25001` | Upstream — spawned on demand per model |
 | `:25004` | OpenFang |
 
 Default model: `beellama/qwen-flash` (9B IQ4_XS). Legacy swap id `llama` maps to the same.
 
 ```bash
-curl -s http://127.0.0.1:25021/v1/models | jq '.data[].id'
+curl -s http://127.0.0.1:28080/v1/models | jq '.data[].id'
 ```
 
 Config: `tools/llama-swap/config.yaml`  
@@ -78,7 +78,7 @@ sovereign/
 | 25000 | Caddy (routes `/rank*`, `/yote*` → backends) |
 | 25004 | OpenFang |
 | 25005 | **rust-dash** — DevOps advisor + ranking UI |
-| 25021 | llama-swap |
+| 28080 | llama-swap |
 | 25030 | Prometheus |
 | 25042 | **yote** — Telegram bot orchestrator |
 
@@ -88,7 +88,7 @@ sovereign/
 # ~/.grok/config.toml
 [model.llama]
 model = "beellama/qwen-flash"
-base_url = "http://localhost:25021/v1"
+base_url = "http://localhost:28080/v1"
 ```
 
 GGUF models live in `~/projects/models/` (not in this repo).

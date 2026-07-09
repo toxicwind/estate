@@ -1,0 +1,403 @@
+.
+├── architecture.d2
+├── architecture.mmd
+├── architecture.svg
+├── bin
+│   ├── bruteforce_max_ctx.py
+│   ├── consolidate-known.sh
+│   ├── home-dedup-scan.sh
+│   ├── kill-devenv.sh
+│   ├── launch_llama.py
+│   ├── llama-baby-llama -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-baby-llama
+│   ├── llama-batched -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-batched
+│   ├── llama-batched-bench -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-batched-bench
+│   ├── llama-bench -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-bench
+│   ├── llama-bench-matmult -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-bench-matmult
+│   ├── llama-cli -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-cli
+│   ├── llama-convert-llama2c-to-ggml -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-convert-llama2c-to-ggml
+│   ├── llama-cvector-generator -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-cvector-generator
+│   ├── llama-embedding -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-embedding
+│   ├── llama-eval-callback -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-eval-callback
+│   ├── llama-export-lora -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-export-lora
+│   ├── llama-gbnf-validator -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-gbnf-validator
+│   ├── llama-gemma3-cli -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-gemma3-cli
+│   ├── llama-gguf -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-gguf
+│   ├── llama-gguf-hash -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-gguf-hash
+│   ├── llama-gguf-split -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-gguf-split
+│   ├── llama-gritlm -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-gritlm
+│   ├── llama-herder.sh
+│   ├── llama-imatrix -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-imatrix
+│   ├── llama-infill -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-infill
+│   ├── llama-llava-cli -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-llava-cli
+│   ├── llama.log
+│   ├── llama-lookahead -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-lookahead
+│   ├── llama-lookup -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-lookup
+│   ├── llama-lookup-create -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-lookup-create
+│   ├── llama-lookup-merge -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-lookup-merge
+│   ├── llama-lookup-stats -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-lookup-stats
+│   ├── llama-minicpmv-cli -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-minicpmv-cli
+│   ├── llama-mtmd-cli -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-mtmd-cli
+│   ├── llama-parallel -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-parallel
+│   ├── llama-passkey -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-passkey
+│   ├── llama-perplexity -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-perplexity
+│   ├── llama-q8dot -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-q8dot
+│   ├── llama-quantize -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-quantize
+│   ├── llama-quantize-stats -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-quantize-stats
+│   ├── llama-qwen2vl-cli -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-qwen2vl-cli
+│   ├── llama-retrieval -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-retrieval
+│   ├── llama-save-load-state -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-save-load-state
+│   ├── llama-server -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server
+│   ├── llama-server-primary.sh
+│   ├── llama-simple -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-simple
+│   ├── llama-speculative -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-speculative
+│   ├── llama-sweep-bench -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-sweep-bench
+│   ├── llama-tokenize -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-tokenize
+│   ├── llama-vdot -> /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-vdot
+│   ├── main.log
+│   ├── nvidia-smi
+│   ├── sovereign-health.sh
+│   ├── sovereign-stack.sh
+│   ├── start-llama.sh
+│   ├── sweep_ctx.py
+│   ├── sweep_max_context.py
+│   ├── test_max_ctx.py
+│   ├── ultimate_max_ctx_v3.py
+│   ├── ultimate_max_ctx_v4.py
+│   ├── ultimate_max_ctx_v6_fixed.py
+│   ├── ultimate_max_ctx_v6.py
+│   ├── ultimate_max_ctx_v7.py
+│   └── ultimate_max_ctx_v8.py
+├── builds-dynamic.json
+├── config
+│   ├── hands
+│   │   ├── arbitrage_monitor
+│   │   ├── browser
+│   │   ├── coder
+│   │   ├── diagnostic
+│   │   ├── orchestrator
+│   │   ├── researcher
+│   │   └── security-auditor
+│   ├── llama-server-schema.json
+│   ├── models.ini
+│   ├── openfang
+│   │   ├── agents
+│   │   ├── hands
+│   │   ├── identity
+│   │   ├── sandboxes
+│   │   ├── workspace
+│   │   └── workspace-coyote
+│   └── yote_chats.json
+├── dashboard
+│   └── index.html
+├── data
+├── docs
+├── logs
+├── mise.toml
+├── models -> /home/toxic/models
+├── node_modules
+│   ├── bun.lock.checksum
+│   ├── bun-types
+│   │   ├── bundle.d.ts
+│   │   ├── bun.d.ts
+│   │   ├── bun.ns.d.ts
+│   │   ├── deprecated.d.ts
+│   │   ├── devserver.d.ts
+│   │   ├── docs
+│   │   ├── extensions.d.ts
+│   │   ├── fetch.d.ts
+│   │   ├── ffi.d.ts
+│   │   ├── globals.d.ts
+│   │   ├── html-rewriter.d.ts
+│   │   ├── index.d.ts
+│   │   ├── jsc.d.ts
+│   │   ├── jsx.d.ts
+│   │   ├── overrides.d.ts
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── redis.d.ts
+│   │   ├── s3.d.ts
+│   │   ├── security.d.ts
+│   │   ├── serve.d.ts
+│   │   ├── shell.d.ts
+│   │   ├── sql.d.ts
+│   │   ├── sqlite.d.ts
+│   │   ├── test.d.ts
+│   │   ├── test-globals.d.ts
+│   │   ├── vendor
+│   │   └── wasm.d.ts
+│   ├── @types
+│   │   ├── bun
+│   │   └── node
+│   ├── typescript
+│   │   ├── bin
+│   │   ├── lib
+│   │   ├── LICENSE.txt
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── SECURITY.md
+│   │   └── ThirdPartyNoticeText.txt
+│   └── undici-types
+│       ├── agent.d.ts
+│       ├── api.d.ts
+│       ├── balanced-pool.d.ts
+│       ├── cache.d.ts
+│       ├── cache-interceptor.d.ts
+│       ├── client.d.ts
+│       ├── client-stats.d.ts
+│       ├── connector.d.ts
+│       ├── content-type.d.ts
+│       ├── cookies.d.ts
+│       ├── diagnostics-channel.d.ts
+│       ├── dispatcher1-wrapper.d.ts
+│       ├── dispatcher.d.ts
+│       ├── env-http-proxy-agent.d.ts
+│       ├── errors.d.ts
+│       ├── eventsource.d.ts
+│       ├── fetch.d.ts
+│       ├── formdata.d.ts
+│       ├── global-dispatcher.d.ts
+│       ├── global-origin.d.ts
+│       ├── h2c-client.d.ts
+│       ├── handlers.d.ts
+│       ├── header.d.ts
+│       ├── index.d.ts
+│       ├── interceptors.d.ts
+│       ├── LICENSE
+│       ├── mock-agent.d.ts
+│       ├── mock-call-history.d.ts
+│       ├── mock-client.d.ts
+│       ├── mock-errors.d.ts
+│       ├── mock-interceptor.d.ts
+│       ├── mock-pool.d.ts
+│       ├── package.json
+│       ├── patch.d.ts
+│       ├── pool.d.ts
+│       ├── pool-stats.d.ts
+│       ├── proxy-agent.d.ts
+│       ├── readable.d.ts
+│       ├── README.md
+│       ├── retry-agent.d.ts
+│       ├── retry-handler.d.ts
+│       ├── round-robin-pool.d.ts
+│       ├── snapshot-agent.d.ts
+│       ├── socks5-proxy-agent.d.ts
+│       ├── util.d.ts
+│       ├── utility.d.ts
+│       ├── webidl.d.ts
+│       └── websocket.d.ts
+├── package.json
+├── patch.sh
+├── ports.env
+├── process-compose.yaml
+├── prometheus.yml
+├── README.md
+├── run.sh
+├── run.ts
+├── rust_algo_web
+│   ├── Cargo.lock
+│   ├── Cargo.toml
+│   ├── src
+│   │   ├── algo.rs
+│   │   ├── llm.rs
+│   │   └── main.rs
+│   ├── static
+│   │   ├── app.js
+│   │   ├── index.html
+│   │   └── style.css
+│   └── target
+│       ├── CACHEDIR.TAG
+│       ├── debug
+│       └── release
+├── scratch
+│   ├── conventions.md
+│   ├── coordination.md
+│   ├── ctx-bench-results.md
+│   ├── ctx-bench.sh
+│   ├── downloads_exploration
+│   │   ├── agentic_riddim_5090_final
+│   │   ├── agents-decoder.py
+│   │   ├── ai-ide-stacks-2026-07-01
+│   │   ├── Antigravity
+│   │   ├── create_memory_aware_backup.py
+│   │   ├── dws_forensics_complete
+│   │   ├── enhanced_proxy_forensic_pass.py
+│   │   ├── extract_all.py
+│   │   ├── final_gui_ide_stack_2026-07-01
+│   │   ├── final_sovereign_gui_ide_20260701
+│   │   ├── final_sovereign_llm_stack_2026-07-01
+│   │   ├── Fixing-playbook-and-vLLM.sh
+│   │   ├── frog_pond_enhanced.py
+│   │   ├── FULL-CONSOLIDATION-MAXIMAL
+│   │   ├── ik_llama_emergent_patch
+│   │   ├── KIMI-API-PROBE-CONSOLIDATION
+│   │   ├── kimi_research_wrapper_enhanced.py
+│   │   ├── lilypad_nft_factory.py
+│   │   ├── log_inspector.sh
+│   │   ├── make_repo_json.sh
+│   │   ├── MONOLITH-full-filesystem
+│   │   ├── sovereign-devenv-final-2026-07-01
+│   │   ├── sovereign_final_stacks
+│   │   ├── sovereign-gui-ide-monoliths-2026-07-01
+│   │   ├── sovereign_gui_ide_stacks_2026-07-01
+│   │   ├── sovereign-stack
+│   │   ├── toxic-ai-lab
+│   │   ├── toxic_devenv
+│   │   ├── toxic_sovereign_stack_2026
+│   │   └── Untitled-1.py
+│   └── gemini_brain
+├── skills
+│   ├── fleet-status
+│   │   └── SKILL.md
+│   ├── gguf-rank
+│   │   └── SKILL.md
+│   └── model-switch
+│       └── SKILL.md
+├── src
+│   ├── hf_downloader.ts
+│   ├── landing
+│   │   └── server.ts
+│   ├── openfang.ts
+│   ├── prompt_cache_benchmark.ts
+│   └── watchdog.ts
+├── stack
+│   ├── base.yaml
+│   ├── build-compose.sh
+│   ├── down.sh
+│   ├── health.sh
+│   ├── lib.sh
+│   ├── modules
+│   │   ├── hf-downloader.yaml
+│   │   ├── landing.yaml
+│   │   ├── llama-herder.yaml
+│   │   ├── openfang.yaml
+│   │   ├── prometheus.yaml
+│   │   ├── rust-web.yaml
+│   │   ├── watchdog.yaml
+│   │   └── yote.yaml
+│   ├── ports.env
+│   ├── profiles.sh
+│   ├── services
+│   │   ├── download-models.sh
+│   │   ├── llama-herder.sh
+│   │   └── rust-web.sh
+│   └── up.sh
+├── tests
+│   └── test_stack.ts
+├── tools
+│   ├── llama-swap
+│   │   ├── config copy 2.yaml
+│   │   ├── config copy.yaml
+│   │   ├── config-new-but-changed.yaml
+│   │   ├── config-old.yaml
+│   │   ├── config.yaml
+│   │   ├── LICENSE.md
+│   │   ├── llama-swap -> /home/toxic/projects/llama-swap-main/llama-swap
+│   │   ├── ollama-proxy -> /home/toxic/sovereign/tools/ollama-proxy-rs/target/release/ollama-beellama-proxy
+│   │   └── README.md
+│   └── ollama-proxy-rs
+│       ├── Cargo.lock
+│       ├── Cargo.toml
+│       ├── src
+│       └── target
+├── tree.txt
+└── yote
+    ├── bunfig.toml
+    ├── bun.lock
+    ├── logs
+    │   └── yote.log
+    ├── node_modules
+    │   ├── ansi-escapes
+    │   ├── ansi-regex
+    │   ├── ansi-styles
+    │   ├── async-mutex
+    │   ├── babel-runtime
+    │   ├── base64-js
+    │   ├── big-integer
+    │   ├── buffer
+    │   ├── bufferutil
+    │   ├── bun-types
+    │   ├── chalk
+    │   ├── cli-cursor
+    │   ├── cli-width
+    │   ├── code-point-at
+    │   ├── core-js
+    │   ├── @cryptography
+    │   ├── d
+    │   ├── debug
+    │   ├── domelementtype
+    │   ├── domhandler
+    │   ├── dom-serializer
+    │   ├── domutils
+    │   ├── entities
+    │   ├── es5-ext
+    │   ├── es6-iterator
+    │   ├── es6-symbol
+    │   ├── escape-string-regexp
+    │   ├── esniff
+    │   ├── event-emitter
+    │   ├── exit-hook
+    │   ├── ext
+    │   ├── figures
+    │   ├── graceful-fs
+    │   ├── has-ansi
+    │   ├── htmlparser2
+    │   ├── ieee754
+    │   ├── imurmurhash
+    │   ├── input
+    │   ├── inquirer
+    │   ├── ip-address
+    │   ├── is-fullwidth-code-point
+    │   ├── is-typedarray
+    │   ├── lodash
+    │   ├── mime
+    │   ├── ms
+    │   ├── mute-stream
+    │   ├── next-tick
+    │   ├── node-gyp-build
+    │   ├── node-localstorage
+    │   ├── number-is-nan
+    │   ├── object-assign
+    │   ├── once
+    │   ├── onetime
+    │   ├── pako
+    │   ├── path-browserify
+    │   ├── readline2
+    │   ├── real-cancellable-promise
+    │   ├── regenerator-runtime
+    │   ├── restore-cursor
+    │   ├── run-async
+    │   ├── rx-lite
+    │   ├── slide
+    │   ├── smart-buffer
+    │   ├── socks
+    │   ├── store2
+    │   ├── string-width
+    │   ├── strip-ansi
+    │   ├── supports-color
+    │   ├── telegram
+    │   ├── through
+    │   ├── ts-custom-error
+    │   ├── tslib
+    │   ├── type
+    │   ├── typedarray-to-buffer
+    │   ├── @types
+    │   ├── undici-types
+    │   ├── utf-8-validate
+    │   ├── websocket
+    │   ├── wrappy
+    │   ├── write-file-atomic
+    │   └── yaeti
+    ├── package.json
+    ├── package.json.bak
+    ├── README.md
+    ├── scripts
+    │   ├── generate-invites.ts
+    │   ├── invite-user.ts
+    │   └── overlord-login.ts
+    ├── src
+    │   ├── index.ts
+    │   ├── lib
+    │   └── yote.ts
+    └── tsconfig.json
+
+164 directories, 237 files

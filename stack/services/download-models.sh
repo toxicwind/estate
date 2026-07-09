@@ -13,13 +13,13 @@ echo "=== Sovereign Model Downloader ==="
 echo "Target directory: $MODELS_DIR"
 echo ""
 
-# Check for huggingface-cli
-if ! command -v huggingface-cli &>/dev/null; then
+# Check for hf
+if ! command -v hf &>/dev/null; then
     echo "Installing huggingface-hub..."
     pip install -q huggingface-hub hf-transfer
 fi
 
-export HF_HUB_ENABLE_HF_TRANSFER=1
+export HF_XET_HIGH_PERFORMANCE=1
 
 download_model() {
     local repo="$1"
@@ -32,10 +32,9 @@ download_model() {
     fi
 
     echo "Downloading $repo ($pattern)..."
-    huggingface-cli download "$repo" \
+    hf download "$repo" \
         --local-dir "$MODELS_DIR" \
-        --allow_patterns "$pattern" \
-        --resume-download
+        --include "$pattern"
     echo "✓ $target downloaded"
 }
 

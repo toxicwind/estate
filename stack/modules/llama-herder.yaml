@@ -4,7 +4,12 @@ processes:
     working_dir: "/home/toxic/sovereign"
     environment:
       - "SOVEREIGN_ROOT=/home/toxic/sovereign"
-      - "LLAMA_HERDER=25021"
+      # FIX: was 28080, which collided with the startPort:25001-derived
+      # backend port range once config.yaml grew to 26 model entries.
+      # Must match llama-herder.sh's PORT default AND the readiness_probe
+      # port below -- all three have to agree or the probe checks a port
+      # nothing is listening on.
+      - "LLAMA_HERDER=28080"
     availability:
       restart: on_failure
       backoff_seconds: 3
@@ -12,7 +17,7 @@ processes:
     readiness_probe:
       http_get:
         host: 127.0.0.1
-        port: 25021
+        port: 28080
         path: /health
       initial_delay_seconds: 5
       period_seconds: 5

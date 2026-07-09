@@ -3,7 +3,7 @@
  * Yote — Sovereign Telegram Bot + LLM Orchestrator
  * v0.5.0 — production-hardened, Bun-native, llama-swap stack
  *
- * Stack: llama-swap (25021) → OpenFang (25004) → Yote (25042)
+ * Stack: llama-swap (28080) → OpenFang (25004) → Yote (25042)
  */
 
 import { serve } from "bun";
@@ -159,7 +159,7 @@ async function sendMsg(chatId: number, text: string, opts: { threadId?: number; 
 const agent = {
   async chat(text: string): Promise<string> {
     // TODO: wire to your actual LLM backend via llama-swap
-    // Example: POST to http://127.0.0.1:25021/v1/chat/completions
+    // Example: POST to http://127.0.0.1:28080/v1/chat/completions
     return `Echo: ${text.slice(0, 200)}`;
   },
 };
