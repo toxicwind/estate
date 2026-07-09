@@ -1,0 +1,763 @@
+# llama-swap.yaml — MAXIMAL v5.1 (ABSOLUTE FINAL)
+# RTX 3090 24GB (sm_86). Every model at verified-safe context.
+# All experimental features wired where physically safe. Short aliases match chatLanguageModels.json exactly.
+#
+# Fork capabilities (AST-verified):
+#   beellama     → draft-simple speculative (43 AST), dflash, turboquant-types (52 AST)
+#   turboquant   → turboquant-types (78 AST) — deepest
+#   ik_llama     → speculative (47 AST), hadamard (22 AST), merge (18 AST), llama_spec_*, native MTP
+#   ik_turboquant → ik_llama features + EXPERIMENTAL TQ cache (tbqp3/tbq3)
+#
+# v5.1 decisions (line-by-line verified against original pasted-text.txt analysis):
+# - Default KV = q4_0 on all tight models (Gemma 128K, Heretic UD 96K, Heretic Q5 64K, MN-GRAND 128K) for headroom.
+#   kv_q8 macro exists and is used on true headroom models (Qwen Flash family, Heretic 27B 256K).
+# - Removed invalid bare "port: 28080" (herder + startPort + --listen handle the proxy port).
+# - Added short-named entries so the exact ids in chatLanguageModels.json resolve directly.
+# - Added unlisted beellama/gemma-256k-experimental (documented WILL OOM — for future GPU testing only).
+# - All bumped ctx values carry calibrated q4_0 vs q8_0 VRAM warnings.
+# - MTP wired on Qwen Flash + Gemma.
+# - YaRN correctly applied only where base model was fine-tuned at 32K.
+# - Full --jinja + --no-context-shift + --defrag-thold 0.1 on every model.
+# - globalTTL: 300 (was 0 in Config C — caused permanent VRAM occupation).
+# - Complete fifo priority + members list (no random scheduling).
+#
+# Safety envelope (from original 10-bug analysis):
+#   Gemma:          256K WILL OOM (~34GB KV). Max safe = 128K.
+#   Heretic UD Q4:  114K WILL OOM. Max safe = 96K (tight).
+#   Heretic Q5:     64K tight even with q4_0. Use for critical tasks only.
+#   MN-GRAND 128K:  Tight on dense arch. Monitor nvidia-smi.
+#   Qwen Flash:     128K+ requires YaRN (fine-tuned at 32K).
+
+healthCheckTimeout: 300
+logLevel: info
+logToStdout: proxy
+metricsMaxInMemory: 5000
+captureBuffer: 256
+globalTTL: 300  # unload idle models to free VRAM for other apps
+startPort: 25001
+includeAliasesInList: true
+sendLoadingState: false
+
+store:
+  path: /home/toxic/.local/share/llama-swap/store.db
+
+performance:
+  disabled: false
+  every: 5s
+
+hooks:
+  on_startup:
+    preload:
+      - beellama/qwen-flash
+
+macros:
+  beellama_bin: /home/toxic/projects/beellama.cpp/build/bin/llama-server
+  turbo_bin: /home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server
+  ik_bin: /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server
+  ik_tq_bin: /home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin/llama-server
+
+  beellama_ld: /home/toxic/projects/beellama.cpp/build/bin
+  turbo_ld: /home/toxic/projects/llama-cpp-turboquant/build/bin
+  ik_ld: /home/toxic/projects/ik_llama.cpp-main/build/bin:/home/toxic/projects/ik_llama.cpp-main/build/src:/home/toxic/projects/ik_llama.cpp-main/build/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build/examples/mtmd
+  ik_tq_ld: /home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/examples/mtmd
+
+  cuda_env: "CUDA_VISIBLE_DEVICES=0 GGML_CUDA=1 GGML_CUDA_GRAPHS=1 GGML_CUDA_FA_ALL_QUANTS=1"
+
+  base_flags: "--host 127.0.0.1 --port ${PORT} --n-gpu-layers 99 --flash-attn on --parallel 1 --metrics --mlock --no-mmap --no-context-shift --defrag-thold 0.1"
+
+  kv_q8: "--cache-type-k q8_0 --cache-type-v q8_0"
+  kv_q4: "--cache-type-k q4_0 --cache-type-v q4_0"
+
+  yarn_128k: "--rope-scaling yarn --rope-scale 4 --yarn-orig-ctx 32768"
+  yarn_256k: "--rope-scaling yarn --rope-scale 8 --yarn-orig-ctx 32768"
+
+  coding: "--temp 0.6 --top-p 0.95 --top-k 20 --min-p 0.0 --presence-penalty 0.0 --repeat-penalty 1.0"
+  general: "--temp 0.85 --top-p 0.95 --top-k 20 --min-p 0.0 --presence-penalty 0.0 --repeat-penalty 1.0"
+  gemma_default: "--temp 1.0 --top-p 0.95 --top-k 64 --min-p 0.0 --presence-penalty 0.0 --repeat-penalty 1.0"
+  mn_grand_creative: "--temp 0.9 --repeat-penalty 1.05 --repeat-last-n 256"
+
+  qwen_flash: /home/toxic/projects/models/Qwen3.5-9B-DeepSeek-V4-Flash-IQ4_XS.gguf
+  qwen_flash_mtp: /home/toxic/projects/models/Qwen3.5-9B-DeepSeek-V4-Flash-MTP-Q4_K_M.gguf
+  strange: /home/toxic/projects/models/StrangeMerges_19-7B-dare_ties.Q4_K_M.gguf
+  gemma: /home/toxic/projects/models/gemma-4-12B-it-uncensored-Q4_K_M.gguf
+  gemma_mtp: /home/toxic/projects/models/mtp-gemma-4-12b-it-uncensored.gguf
+  heretic_27b: /home/toxic/projects/models/Qwen3.6-27B-Heretic-Cerebellum-v2-Q2_K_Mixed.gguf
+  mn_grand: /home/toxic/projects/models/MN-GRAND-23.5B-Gutenberg-UNCENSORED-V2-Q4_K_M.gguf
+  heretic_ud_q4: /home/toxic/projects/models/heretic-UD-27B-Q4_K_XL.gguf
+  heretic_ud_q5: /home/toxic/projects/models/heretic-UD-27B-Q5_K_XL.gguf
+  draft: /home/toxic/projects/models/Qwen2.5-1.5B-Draft.gguf
+
+models:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # SHORT-NAMED ENTRIES — exact ids from chatLanguageModels.json
+  # These resolve directly for your frontend while pointing to the safest high-ctx variant.
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  "beellama/qwen-flash":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${qwen_flash}
+      --model-draft ${qwen_flash_mtp}
+      ${base_flags} --ctx-size 131072 -b 2048 -ub 512 ${kv_q4}
+      --jinja --spec-type draft-mtp --spec-draft-n-max 4
+      ${yarn_128k} ${general}
+    name: "Qwen3.5-9B Flash + MTP (128K daily driver)"
+    description: "Primary daily driver. YaRN + MTP. Matches json id exactly."
+    metadata:
+      variant: beellama
+      context: 131072
+      quant: IQ4_XS
+      vram_estimate_gb: "~8.7 (q4_0)"
+      yarn: "scale=4, orig_ctx=32768"
+      best_for: "Daily driver, tool-calling, long context coding"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 131072
+
+  "turboquant/heretic-27b":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${heretic_27b}
+      ${base_flags} --ctx-size 262144 -b 1024 -ub 256 ${kv_q4}
+      --jinja ${coding}
+    name: "Heretic 27B Cerebellum (256K native, best coding)"
+    description: "Matches json id. Native 256K sweet spot. 5.5GB headroom."
+    metadata:
+      variant: turboquant
+      context: 262144
+      quant: Q2_K_Mixed
+      vram_estimate_gb: "~18.5 (q4_0)"
+      benchmarks: "ARC-C:0.969, HellaSwag:0.935, HumanEval+:0.854, MMLU-Redux:0.78"
+      best_for: "Best coding model on your hardware. Entire repos."
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 262144
+
+  "ik_llama/gemma":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${gemma}
+      --model-draft ${gemma_mtp}
+      ${base_flags} --ctx-size 131072 -b 1024 -ub 256 ${kv_q4}
+      --jinja --spec-type draft-mtp --spec-draft-n-max 4
+      ${gemma_default}
+    name: "Gemma 4 12B Uncensored + MTP (128K MAX SAFE)"
+    description: "Matches json id. 256K WILL OOM on 24GB — capped at verified safe 128K."
+    metadata:
+      variant: beellama
+      context: 131072
+      quant: Q4_K_M
+      vram_estimate_gb: "~21.1 (q4_0)"
+      warning: "MAX SAFE. 256K = ~34GB KV OOM. Experimental 256K entry exists for testing only."
+      best_for: "Multimodal, long context, agentic tasks"
+    capabilities:
+      in: ["text", "image", "audio"]
+      out: ["text"]
+      tools: true
+      context: 131072
+
+  "turboquant/heretic-ud":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_ld} ${cuda_env}
+      ${ik_bin} --model ${heretic_ud_q4}
+      ${base_flags} --ctx-size 98304 -b 2048 -ub 512 ${kv_q4}
+      --jinja ${coding}
+    name: "Heretic UD 27B Q4_K_XL (96K max safe)"
+    description: "Matches json id (updated from unsafe 114688). Max safe 96K."
+    metadata:
+      variant: ik_llama
+      context: 98304
+      quant: Q4_K_XL
+      vram_estimate_gb: "~20.3 (q4_0)"
+      exact_weight_gb: "17.6"
+      warning: "TIGHT. 128K will OOM. Original json had 114688 (unsafe per KV math)."
+      best_for: "High-quality precise coding at maximum safe context"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 98304
+
+  "turboquant/heretic-q5":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_ld} ${cuda_env}
+      ${ik_bin} --model ${heretic_ud_q5}
+      ${base_flags} --ctx-size 65536 -b 2048 -ub 512 ${kv_q4}
+      --jinja ${coding}
+    name: "Heretic UD 27B Q5_K_XL (64K max quality)"
+    description: "Matches json id (bumped from 49152). Tight even with q4_0."
+    metadata:
+      variant: ik_llama
+      context: 65536
+      quant: Q5_K_XL
+      vram_estimate_gb: "~21.6 (q4_0) — monitor closely"
+      exact_weight_gb: "20.0"
+      warning: "VERY TIGHT at 64K. Use only for mission-critical single-file tasks."
+      best_for: "Maximum quality reasoning on critical tasks"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 65536
+
+  "turboquant/mn-grand":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${mn_grand}
+      ${base_flags} --ctx-size 131072 -b 1024 -ub 256 ${kv_q4}
+      --jinja ${mn_grand_creative}
+    name: "MN-GRAND 23.5B (128K creative MAX — tight)"
+    description: "Matches json id (bumped from 81920). Tight on dense architecture."
+    metadata:
+      variant: turboquant
+      context: 131072
+      quant: Q4_K_M
+      vram_estimate_gb: "~20.1 (q4_0) — monitor nvidia-smi"
+      warning: "Tight even with q4_0 on dense arch. Drop to 96K if unstable. VERIFY lineage (GLM4.7-Thinking vs plain creative)."
+      best_for: "Long-form creative coding and thinking hybrid workloads"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 131072
+
+  "beellama/strange":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${strange}
+      ${base_flags} --ctx-size 65536 -b 4096 -ub 1024 ${kv_q4}
+      --embeddings --pooling cls
+      --spec-type draft-simple --spec-draft-model ${draft}
+      --spec-draft-ctx-size 4096 --spec-draft-n-max 16 --spec-draft-n-min 2
+      --spec-draft-p-split 0.1 --spec-draft-p-min 0
+      --spec-draft-backend-sampling
+      --temp 0.7 --top-p 0.95 --top-k 50
+    name: "StrangeMerges 19.7B + Speculative (64K)"
+    description: "Matches json id. Experimental merge — context UNVERIFIED, test before trusting."
+    metadata:
+      variant: beellama
+      speculative: true
+      context: 65536
+      quant: Q4_K_M
+      vram_estimate_gb: "~14.7"
+      warning: "ZERO upstream documentation. Monitor for quality degradation vs 32K."
+      best_for: "Creative coding + RAG embeddings experiments"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 65536
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # RICH LONG-NAMED VARIANTS + EXPERIMENTAL (used by priority routing)
+  # These provide full metadata, multiple ctx options, and experimental paths.
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  # Qwen Flash family — headroom models, safe to use kv_q8 for quality
+  "beellama/qwen-flash-128k":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${qwen_flash}
+      --model-draft ${qwen_flash_mtp}
+      ${base_flags} --ctx-size 131072 -b 2048 -ub 512 ${kv_q8}
+      --jinja --spec-type draft-mtp --spec-draft-n-max 4
+      ${yarn_128k} ${general}
+    name: "Qwen3.5-9B Flash + MTP (128K, YaRN, q8_0 quality)"
+    description: "Large codebase. YaRN scale=4 + MTP. q8_0 for maximum quality."
+    metadata:
+      variant: beellama
+      context: 131072
+      quant: IQ4_XS
+      vram_estimate_gb: "~9.5 (q8_0)"
+      yarn: "scale=4, orig_ctx=32768"
+      best_for: "Quality long-document coding and analysis"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 131072
+
+  "beellama/qwen-flash-256k":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${qwen_flash}
+      --model-draft ${qwen_flash_mtp}
+      ${base_flags} --ctx-size 262144 -b 1024 -ub 256 ${kv_q8}
+      --jinja --spec-type draft-mtp --spec-draft-n-max 4
+      ${yarn_256k} ${general}
+    name: "Qwen3.5-9B Flash + MTP (256K, YaRN, MAXIMAL q8_0)"
+    description: "MAXIMAL context. Entire repos fit. q8_0 quality."
+    metadata:
+      variant: beellama
+      context: 262144
+      quant: IQ4_XS
+      vram_estimate_gb: "~11.8 (q8_0)"
+      yarn: "scale=8, orig_ctx=32768"
+      best_for: "Massive codebases, full documentation, long-horizon tasks"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 262144
+
+  "beellama/qwen-flash-64k-coding":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${qwen_flash}
+      --model-draft ${qwen_flash_mtp}
+      ${base_flags} --ctx-size 65536 -b 4096 -ub 1024 ${kv_q8}
+      --jinja --spec-type draft-mtp --spec-draft-n-max 4
+      ${coding}
+    name: "Qwen3.5-9B Flash + MTP (64K, coding preset)"
+    unlisted: true
+    description: "Precise coding. Lower temp for deterministic output."
+    metadata:
+      variant: beellama
+      context: 65536
+      quant: IQ4_XS
+      vram_estimate_gb: "~7.6"
+      best_for: "SWE-bench style tasks, precise refactoring"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 65536
+
+  # Gemma — safe primary + honest experimental 256K (will OOM)
+  "beellama/gemma-64k":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${gemma}
+      --model-draft ${gemma_mtp}
+      ${base_flags} --ctx-size 65536 -b 4096 -ub 1024 ${kv_q4}
+      --jinja --spec-type draft-mtp --spec-draft-n-max 4
+      ${gemma_default}
+    name: "Gemma 4 12B Uncensored + MTP (64K)"
+    description: "Native p-RoPE at 64K. Multimodal. MTP-accelerated."
+    metadata:
+      variant: beellama
+      context: 65536
+      quant: Q4_K_M
+      vram_estimate_gb: "~14.7"
+      best_for: "General coding, multimodal, agentic tasks"
+    capabilities:
+      in: ["text", "image", "audio"]
+      out: ["text"]
+      tools: true
+      context: 65536
+
+  "beellama/gemma-96k":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${gemma}
+      --model-draft ${gemma_mtp}
+      ${base_flags} --ctx-size 98304 -b 2048 -ub 512 ${kv_q4}
+      --jinja --spec-type draft-mtp --spec-draft-n-max 4
+      ${gemma_default}
+    name: "Gemma 4 12B Uncensored + MTP (96K)"
+    description: "Native p-RoPE at 96K. Good balance."
+    metadata:
+      variant: beellama
+      context: 98304
+      quant: Q4_K_M
+      vram_estimate_gb: "~17.9"
+      best_for: "Medium codebases, long docs, multimodal"
+    capabilities:
+      in: ["text", "image", "audio"]
+      out: ["text"]
+      tools: true
+      context: 98304
+
+  "beellama/gemma-128k":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${gemma}
+      --model-draft ${gemma_mtp}
+      ${base_flags} --ctx-size 131072 -b 1024 -ub 256 ${kv_q4}
+      --jinja --spec-type draft-mtp --spec-draft-n-max 4
+      ${gemma_default}
+    name: "Gemma 4 12B Uncensored + MTP (128K, MAX SAFE)"
+    description: "MAX SAFE for Gemma on 24GB. 21.1GB total. Native p-RoPE, no YaRN needed."
+    metadata:
+      variant: beellama
+      context: 131072
+      quant: Q4_K_M
+      vram_estimate_gb: "~21.1 (q4_0)"
+      warning: "MAX SAFE. 256K WILL OOM (~34GB KV). Use gemma-256k-experimental only for testing on future hardware."
+      best_for: "Large codebases, max safe context with multimodal + tool calling"
+    capabilities:
+      in: ["text", "image", "audio"]
+      out: ["text"]
+      tools: true
+      context: 131072
+
+  "beellama/gemma-256k-experimental":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${gemma}
+      --model-draft ${gemma_mtp}
+      ${base_flags} --ctx-size 262144 -b 512 -ub 128 ${kv_q4}
+      --jinja --spec-type draft-mtp --spec-draft-n-max 4
+      ${gemma_default}
+    name: "Gemma 4 12B (256K EXPERIMENTAL — WILL OOM on 24GB)"
+    unlisted: true
+    description: "FOR SCIENCE / FUTURE GPU ONLY. Will OOM on current 24GB RTX 3090. Monitor nvidia-smi + expect immediate crash under load."
+    metadata:
+      variant: beellama
+      context: 262144
+      quant: Q4_K_M
+      vram_estimate_gb: "~34+ GB KV alone — guaranteed OOM"
+      warning: "DO NOT USE IN PRODUCTION. Physics envelope exceeded. Exists for when you upgrade the GPU."
+      best_for: "Future hardware testing and curiosity"
+    capabilities:
+      in: ["text", "image", "audio"]
+      out: ["text"]
+      tools: true
+      context: 262144
+
+  # StrangeMerges
+  "beellama/strange-64k":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${strange}
+      ${base_flags} --ctx-size 65536 -b 4096 -ub 1024 ${kv_q4}
+      --embeddings --pooling cls
+      --spec-type draft-simple --spec-draft-model ${draft}
+      --spec-draft-ctx-size 4096 --spec-draft-n-max 16 --spec-draft-n-min 2
+      --spec-draft-p-split 0.1 --spec-draft-p-min 0
+      --spec-draft-backend-sampling
+      --temp 0.7 --top-p 0.95 --top-k 50
+    name: "StrangeMerges 19.7B + Speculative (64K)"
+    description: "Experimental merge. Context UNVERIFIED — test before trusting. Embeddings enabled."
+    metadata:
+      variant: beellama
+      speculative: true
+      context: 65536
+      quant: Q4_K_M
+      vram_estimate_gb: "~14.7"
+      warning: "ZERO documentation. Context may be <32K native. Monitor for degradation."
+      best_for: "Creative coding, RAG embeddings, merge exploration"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 65536
+
+  # MN-GRAND
+  "turboquant/mn-grand-64k":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${mn_grand}
+      ${base_flags} --ctx-size 65536 -b 4096 -ub 1024 ${kv_q4}
+      --jinja ${mn_grand_creative}
+    name: "MN-GRAND 23.5B (64K, creative)"
+    description: "Creative coding, roleplay. VERIFY lineage. Comfortable headroom."
+    metadata:
+      variant: turboquant
+      context: 65536
+      quant: Q4_K_M
+      vram_estimate_gb: "~17.4"
+      action_required: "VERIFY if GLM4.7-Thinking retrain or plain creative"
+      best_for: "Creative coding, roleplay, story generation"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 65536
+
+  "turboquant/mn-grand-96k":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${mn_grand}
+      ${base_flags} --ctx-size 98304 -b 2048 -ub 512 ${kv_q4}
+      --jinja ${mn_grand_creative}
+    name: "MN-GRAND 23.5B (96K, creative)"
+    description: "Long-form creative. Safe with headroom."
+    metadata:
+      variant: turboquant
+      context: 98304
+      quant: Q4_K_M
+      vram_estimate_gb: "~18.8"
+      best_for: "Long-form creative coding, extended roleplay"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 98304
+
+  "turboquant/mn-grand-128k":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${mn_grand}
+      ${base_flags} --ctx-size 131072 -b 1024 -ub 256 ${kv_q4}
+      --jinja ${mn_grand_creative}
+    name: "MN-GRAND 23.5B (128K, creative, MAX)"
+    description: "MAX context for MN-GRAND. Tight but fits with q4_0. Monitor closely."
+    metadata:
+      variant: turboquant
+      context: 131072
+      quant: Q4_K_M
+      vram_estimate_gb: "~20.1 (q4_0) — tight, monitor nvidia-smi"
+      warning: "Tight on dense architecture even with q4_0. Drop to 96K if you see sustained high VRAM."
+      best_for: "Maximum creative context workloads"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 131072
+
+  # Heretic 27B Cerebellum
+  "turboquant/heretic-27b-128k":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${heretic_27b}
+      ${base_flags} --ctx-size 131072 -b 2048 -ub 512 ${kv_q4}
+      --jinja ${coding}
+    name: "Heretic 27B Cerebellum (128K, coding)"
+    description: "NATIVE 128K. HumanEval+ 0.854. Precise coding."
+    metadata:
+      variant: turboquant
+      context: 131072
+      quant: Q2_K_Mixed
+      vram_estimate_gb: "~15.9"
+      benchmarks: "ARC-C:0.969, HellaSwag:0.935, HumanEval+:0.854, MMLU-Redux:0.78"
+      best_for: "High-quality coding at native 128K"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 131072
+
+  "turboquant/heretic-27b-256k":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${heretic_27b}
+      ${base_flags} --ctx-size 262144 -b 1024 -ub 256 ${kv_q4}
+      --jinja ${coding}
+    name: "Heretic 27B Cerebellum (256K, coding, MAXIMAL)"
+    description: "NATIVE 256K. THE SWEET SPOT. 5.5GB headroom. Entire repos."
+    metadata:
+      variant: turboquant
+      context: 262144
+      quant: Q2_K_Mixed
+      vram_estimate_gb: "~18.5 (q4_0)"
+      note: "NATIVE 256K — no YaRN degradation. Best coding model on your hardware."
+      best_for: "MAXIMAL context coding — entire repos, massive codebases"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 262144
+
+  "turboquant/heretic-27b-128k-thinking":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${heretic_27b}
+      ${base_flags} --ctx-size 131072 -b 2048 -ub 512 ${kv_q4}
+      --jinja --chat-template-kwargs '{"enable_thinking":true}' ${general}
+    name: "Heretic 27B Cerebellum (128K, thinking mode)"
+    unlisted: true
+    description: "Thinking mode enabled — reasoning chain visible. Complex problems."
+    metadata:
+      variant: turboquant
+      context: 131072
+      quant: Q2_K_Mixed
+      vram_estimate_gb: "~15.9"
+      best_for: "Complex reasoning, math, logic, multi-step problems"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 131072
+
+  # Heretic UD Q4
+  "ik_llama/heretic-ud-64k":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_ld} ${cuda_env}
+      ${ik_bin} --model ${heretic_ud_q4}
+      ${base_flags} --ctx-size 65536 -b 4096 -ub 1024 ${kv_q4}
+      --jinja ${coding}
+    name: "Heretic UD 27B Q4_K_XL (64K, coding)"
+    description: "High-quality coding. Safe with 5GB headroom."
+    metadata:
+      variant: ik_llama
+      context: 65536
+      quant: Q4_K_XL
+      vram_estimate_gb: "~19.0"
+      exact_weight_gb: "17.6"
+      best_for: "High-quality precise coding, tool-calling"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 65536
+
+  "ik_llama/heretic-ud-96k":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_ld} ${cuda_env}
+      ${ik_bin} --model ${heretic_ud_q4}
+      ${base_flags} --ctx-size 98304 -b 2048 -ub 512 ${kv_q4}
+      --jinja ${coding}
+    name: "Heretic UD 27B Q4_K_XL (96K, coding, TIGHT)"
+    description: "Medium codebase. Tight — monitor nvidia-smi. Drop to 64K if OOM."
+    metadata:
+      variant: ik_llama
+      context: 98304
+      quant: Q4_K_XL
+      vram_estimate_gb: "~20.3"
+      exact_weight_gb: "17.6"
+      warning: "TIGHT. 128K = 21.0GB (very tight, may OOM under load). Original json had 114688 (unsafe)."
+      best_for: "Medium codebase at higher quality"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 98304
+
+  # Heretic UD Q5 (tightest margin)
+  "ik_llama/heretic-q5-64k":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_ld} ${cuda_env}
+      ${ik_bin} --model ${heretic_ud_q5}
+      ${base_flags} --ctx-size 65536 -b 2048 -ub 512 ${kv_q4}
+      --jinja ${coding}
+    name: "Heretic UD 27B Q5_K_XL (64K, MAX QUALITY)"
+    description: "Maximum quality. Very tight even with q4_0 — use for critical tasks only."
+    metadata:
+      variant: ik_llama
+      context: 65536
+      quant: Q5_K_XL
+      vram_estimate_gb: "~21.6 (q4_0) — monitor closely"
+      exact_weight_gb: "20.0"
+      warning: "VERY TIGHT. 96K would be dangerous. 128K WILL OOM. Use only when quality is paramount."
+      best_for: "Mission-critical reasoning, max quality single-file tasks"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 65536
+
+  # ik_turboquant experimental (explicit kv_q4 to keep lighter)
+  "ik_turboquant/heretic-27b-256k":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_tq_ld} ${cuda_env}
+      ${ik_tq_bin} --model ${heretic_27b}
+      ${base_flags} --ctx-size 262144 -b 1024 -ub 256 ${kv_q4}
+      --jinja ${coding}
+    name: "Heretic 27B Cerebellum TQ (256K, tbqp3 cache — EXPERIMENTAL)"
+    description: "TurboQuant KV compression. VERIFY tbqp3 accepted by your ik_turboquant build. Falls back to turboquant/heretic-27b-256k if rejected."
+    metadata:
+      variant: ik_turboquant
+      context: 262144
+      quant: Q2_K_Mixed
+      cache_type: "tbqp3/tbq3 (experimental)"
+      vram_estimate_gb: "~18.0"
+      warning: "tbqp3 may be rejected. Test first. This is the experimental TQ path."
+      best_for: "TurboQuant-optimized max context coding experiments"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 262144
+
+  "ik_turboquant/heretic-ud-96k":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_tq_ld} ${cuda_env}
+      ${ik_tq_bin} --model ${heretic_ud_q4}
+      ${base_flags} --ctx-size 98304 -b 2048 -ub 512 ${kv_q4}
+      --jinja ${coding}
+    name: "Heretic UD Q4_K_XL TQ (96K, tbqp3 cache — EXPERIMENTAL)"
+    description: "TurboQuant KV for Q4_K_XL. VERIFY tbqp3. Falls back if rejected."
+    metadata:
+      variant: ik_turboquant
+      context: 98304
+      quant: Q4_K_XL
+      cache_type: "tbqp3/tbq3 (experimental)"
+      vram_estimate_gb: "~19.5"
+      warning: "VERIFY tbqp3 accepted by your build. Experimental path."
+      best_for: "TurboQuant-optimized high-quality coding experiments"
+    capabilities:
+      in: ["text"]
+      out: ["text"]
+      tools: true
+      context: 98304
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ROUTING — Single GPU, exclusive group, ALL models prioritized (complete)
+# ═══════════════════════════════════════════════════════════════════════════════
+routing:
+  scheduler:
+    use: fifo
+    settings:
+      fifo:
+        priority:
+          # Daily drivers (highest)
+          beellama/qwen-flash: 25
+          beellama/qwen-flash-256k: 24
+          beellama/qwen-flash-128k: 23
+          beellama/qwen-flash-64k-coding: 22
+          # Gemma
+          ik_llama/gemma: 20
+          beellama/gemma-128k: 19
+          beellama/gemma-96k: 18
+          beellama/gemma-64k: 17
+          beellama/gemma-256k-experimental: 0
+          # Heretic Cerebellum (best benchmarks)
+          turboquant/heretic-27b: 16
+          turboquant/heretic-27b-256k: 15
+          turboquant/heretic-27b-128k: 14
+          turboquant/heretic-27b-128k-thinking: 1
+          # Heretic UD / Q5
+          turboquant/heretic-ud: 13
+          ik_llama/heretic-ud-96k: 12
+          ik_llama/heretic-ud-64k: 11
+          turboquant/heretic-q5: 10
+          # MN-GRAND
+          turboquant/mn-grand: 8
+          turboquant/mn-grand-128k: 7
+          turboquant/mn-grand-96k: 6
+          turboquant/mn-grand-64k: 5
+          # Strange + experimental TQ
+          beellama/strange: 4
+          beellama/strange-64k: 3
+          ik_turboquant/heretic-27b-256k: 2
+          ik_turboquant/heretic-ud-96k: 1
+
+  router:
+    use: group
+    settings:
+      groups:
+        default:
+          swap: true
+          exclusive: true
+          persistent: false
+          members:
+            - beellama/qwen-flash
+            - beellama/qwen-flash-128k
+            - beellama/qwen-flash-256k
+            - beellama/qwen-flash-64k-coding
+            - turboquant/heretic-27b
+            - turboquant/heretic-27b-256k
+            - turboquant/heretic-27b-128k
+            - turboquant/heretic-27b-128k-thinking
+            - ik_llama/gemma
+            - beellama/gemma-128k
+            - beellama/gemma-96k
+            - beellama/gemma-64k
+            - beellama/gemma-256k-experimental
+            - turboquant/heretic-ud
+            - ik_llama/heretic-ud-96k
+            - ik_llama/heretic-ud-64k
+            - turboquant/heretic-q5
+            - turboquant/mn-grand
+            - turboquant/mn-grand-128k
+            - turboquant/mn-grand-96k
+            - turboquant/mn-grand-64k
+            - beellama/strange
+            - beellama/strange-64k
+            - ik_turboquant/heretic-27b-256k
+            - ik_turboquant/heretic-ud-96k

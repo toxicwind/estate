@@ -1,0 +1,95 @@
+[
+  {
+    "name": "Copilot",
+    "vendor": "copilot",
+    "settings": {
+      "gpt-5.4-mini": { "reasoningEffort": "xhigh" },
+      "claude-sonnet-4.6": { "reasoningEffort": "medium" }
+    }
+  },
+  {
+    "name": "Local [llama.cpp]",
+    "vendor": "customendpoint",
+    "apiKey": "sk-local-llama",
+    "apiType": "chat-completions",
+    "models": [
+      {
+        "id": "beellama/qwen-flash",
+        "name": "Qwen3.5-9B Flash + MTP (128K daily driver)",
+        "url": "http://127.0.0.1:28080/v1/chat/completions",
+        "toolCalling": true,
+        "vision": false,
+        "maxInputTokens": 131072,
+        "maxOutputTokens": 8192,
+        "streaming": true,
+        "thinking": true
+      },
+      {
+        "id": "turboquant/heretic-27b",
+        "name": "Heretic 27B (256K native, best coding)",
+        "url": "http://127.0.0.1:28080/v1/chat/completions",
+        "toolCalling": true,
+        "vision": false,
+        "maxInputTokens": 262144,
+        "maxOutputTokens": 16384,
+        "streaming": true,
+        "thinking": true
+      },
+      {
+        "id": "ik_llama/gemma",
+        "name": "Gemma 4 12B + MTP (128K MAX SAFE — 256K OOMs)",
+        "url": "http://127.0.0.1:28080/v1/chat/completions",
+        "toolCalling": true,
+        "vision": false,
+        "maxInputTokens": 131072,
+        "maxOutputTokens": 8192,
+        "streaming": true,
+        "thinking": false
+      },
+      {
+        "id": "turboquant/heretic-ud",
+        "name": "Heretic UD 27B Q4_K_XL (96K max safe)",
+        "url": "http://127.0.0.1:28080/v1/chat/completions",
+        "toolCalling": true,
+        "vision": false,
+        "maxInputTokens": 98304,
+        "maxOutputTokens": 16384,
+        "streaming": true,
+        "thinking": true
+      },
+      {
+        "id": "turboquant/heretic-q5",
+        "name": "Heretic UD 27B Q5_K_XL (64K max quality)",
+        "url": "http://127.0.0.1:28080/v1/chat/completions",
+        "toolCalling": true,
+        "vision": false,
+        "maxInputTokens": 65536,
+        "maxOutputTokens": 16384,
+        "streaming": true,
+        "thinking": true
+      },
+      {
+        "id": "turboquant/mn-grand",
+        "name": "MN-GRAND 23.5B (128K creative MAX — tight)",
+        "url": "http://127.0.0.1:28080/v1/chat/completions",
+        "toolCalling": true,
+        "vision": false,
+        "maxInputTokens": 131072,
+        "maxOutputTokens": 8192,
+        "streaming": true,
+        "thinking": true
+      },
+      {
+        "id": "beellama/strange",
+        "name": "StrangeMerges 19.7B + speculative (64K)",
+        "url": "http://127.0.0.1:28080/v1/chat/completions",
+        "toolCalling": true,
+        "vision": false,
+        "maxInputTokens": 65536,
+        "maxOutputTokens": 4096,
+        "streaming": true,
+        "thinking": false
+      }
+    ]
+  }
+]
