@@ -1,7 +1,7 @@
 {
   "name": "yote",
-  "version": "0.2.0",
-  "description": "Yote — Sovereign Telegram Bot + LLM Orchestrator (Bun + Telethon Overlord)",
+  "version": "0.4.0",
+  "description": "Yote — Sovereign Telegram Gateway + MCP Server + OpenFang Interceptor (pure TS/Bun)",
   "type": "module",
   "private": true,
   "main": "src/index.ts",
@@ -9,29 +9,22 @@
     "start": "bun run src/index.ts",
     "dev": "bun --watch src/index.ts",
     "start:prod": "bun run --bun src/index.ts",
-    "typecheck": "bun tsc --noEmit || echo 'No tsconfig or using Bun defaults'",
-    "lint": "echo 'Add biome/eslint if desired'",
-    "setup:python": "cd scripts/telethon && python3 -m venv .venv && .venv/bin/pip install telethon python-dotenv",
-    "overlord": "cd scripts/telethon && ../.venv/bin/python3 overlord.py",
-    "invite:generate": "cd scripts/telethon && python3 generate_invites.py",
-    "invite:puppertrix": "cd scripts/telethon && python3 invite_puppertrix.py"
+    "typecheck": "bun tsc --noEmit",
+    "overlord:login": "bun run scripts/overlord-login.ts",
+    "invite:generate": "bun run scripts/generate-invites.ts",
+    "invite:user": "bun run scripts/invite-user.ts"
   },
-  "dependencies": {},
+  "dependencies": {
+    "telegram": "^2.26.16",
+    "input": "^1.0.1"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
   "engines": {
     "bun": ">=1.1.0"
   },
-  "keywords": [
-    "telegram",
-    "bot",
-    "llm",
-    "sovereign",
-    "openfang",
-    "telethon",
-    "bun"
-  ],
-  "author": "Effusion Labs / Chris (trixisowned)",
+  "keywords": ["telegram", "bot", "llm", "sovereign", "openfang", "gramjs", "bun", "mcp"],
+  "author": "Effusion Labs",
   "license": "MIT"
 }

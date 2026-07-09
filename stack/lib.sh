@@ -30,7 +30,7 @@ run_pc() {
     exit 1
   }
   # Force IPv4 loopback globally to prevent Go's ::1 resolution panics on up/down/attach
-  process-compose -a 127.0.0.1 "$@"
+  process-compose --address 127.0.0.1 "$@"
 }
 
 pc_config_args() {

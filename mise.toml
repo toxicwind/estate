@@ -1,11 +1,12 @@
 [env]
 SOVEREIGN_ROOT = "{{ config_root }}"
+_.file = [".env.local", "/home/toxic/.secrets", "/home/toxic/.openfang/secrets.env"]
 _.path = [
+    "{{ config_root }}/yote/.venv/bin",
     "{{ config_root }}/bin",
     "{{ config_root }}/stack",
     "/home/toxic/.bun/bin"
 ]
-_.file = "{{ env.HOME }}/.secrets"
 
 [tasks.up]
 description = "Sovereign stack: core + yote + rust-dash"
@@ -42,6 +43,6 @@ run = "{{ config_root }}/bin/kill-devenv.sh"
 [tasks.consolidate]
 description = "Archive stale whitelist config duplicates"
 run = "{{ config_root }}/bin/consolidate-known.sh"
-[settings]
-env_file = ".env.local"
 
+[settings]
+# don't put env_file here anymore, it's deprecated. Use env._.file above

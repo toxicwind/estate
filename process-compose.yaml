@@ -52,6 +52,8 @@ processes:
     environment:
     - SOVEREIGN_ROOT=/home/toxic/sovereign
     - OPENFANG_PORT=25004
+    - TELEGRAM_BOT_TOKEN=
+    - TELEGRAM_BOT_TOKEN_OVERLORD=
     availability:
       restart: on_failure
       max_restarts: 10
