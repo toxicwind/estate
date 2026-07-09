@@ -8,5 +8,4 @@
 # future test config
 
 [run]
-# You can set env-file here if you prefer explicit control
-env-file = ".env"
+env-file = "/home/toxic/sovereign/yote/.env"
