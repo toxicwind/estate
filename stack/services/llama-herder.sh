@@ -1,40 +1,61 @@
 #!/usr/bin/env bash
 set -euo pipefail
+
 SOV="${SOVEREIGN_ROOT:-/home/toxic/sovereign}"
+PORT="${LLAMA_HERDER_PORT:-28080}"
 
-# FIX: this must NEVER fall inside the config.yaml startPort range.
-# startPort:25001 + 26 model entries in config.yaml walks the auto-assigned
-# backend port range up past 28080 (whatever the exact assignment order
-# turns out to be -- confirm with rg "startPort|PORT" internal/config/*.go
-# against your actual checkout, but it doesn't change this fix either way).
-# 28080 is far outside any plausible startPort-derived range.
-PORT="${LLAMA_HERDER:-28080}"
+# Binary resolution (symlink → project build → fallback)
+BIN_CANDIDATES=(
+    "${SOV}/tools/llama-swap/llama-swap"
+    "${HOME}/.local/bin/llama-swap"
+    "/home/toxic/projects/llama-swap-main/llama-swap"
+)
+BIN=""
+for c in "${BIN_CANDIDATES[@]}"; do
+    [[ -x "$c" ]] && { BIN="$(realpath "$c")"; break; }
+done
+[[ -n "$BIN" ]] || { echo "llama-swap binary not found" >&2; exit 1; }
 
-# Safe release in case a previous hard-kill orphaned the port.
-fuser -k "${PORT}/tcp" 2>/dev/null || true
+# Config resolution (must be outside ignored tools/ folder)
+CONF_CANDIDATES=(
+    "${HOME}/.config/llama-swap/config.yaml"
+    "${SOV}/config/llama-swap.yaml"
+    "${SOV}/tools/llama-swap/config.yaml"
+)
+CONF=""
+for c in "${CONF_CANDIDATES[@]}"; do
+    [[ -f "$c" ]] && { CONF="$(realpath "$c")"; break; }
+done
+[[ -n "$CONF" ]] || { echo "config.yaml not found" >&2; exit 1; }
 
-# Run warmup asynchronously so it doesn't block the server startup.
+# Collision guard
+START_PORT="$(grep -E '^\s*startPort:\s*[0-9]+' "$CONF" | grep -oE '[0-9]+' | head -1 || echo 25001)"
+MODEL_COUNT="$(grep -cE '^\s{2}"[^"]+":' "$CONF" 2>/dev/null || grep -cE '^\s{2}[a-z_]+/[a-z0-9_-]+:' "$CONF" || echo 30)"
+END_PORT=$((START_PORT + MODEL_COUNT + 10))
+
+if (( PORT >= START_PORT && PORT <= END_PORT )); then
+    echo "ERROR: PORT $PORT collides with backend range $START_PORT-$END_PORT" >&2
+    exit 1
+fi
+
+# Port cleanup
+if command -v fuser >/dev/null 2>&1; then
+    fuser -k "${PORT}/tcp" 2>/dev/null || true
+else
+    lsof -ti tcp:"$PORT" 2>/dev/null | xargs -r kill -9 || true
+fi
+
+# Warmup (background, self-exiting)
 (
-  echo "[warmup] Waiting for llama-swap health endpoint..."
-  # Poll for readiness instead of relying on a fragile sleep timeout.
-  for _ in {1..60}; do
-    if curl -sf --max-time 1 "http://127.0.0.1:${PORT}/health" >/dev/null; then
-      echo "[warmup] Server ready, executing warmup completion..."
-      curl -sf --max-time 120 "http://127.0.0.1:${PORT}/v1/chat/completions" \
+    for _ in {1..60}; do
+        curl -sf --max-time 1 "http://127.0.0.1:${PORT}/health" >/dev/null && break
+        sleep 1
+    done
+    curl -sf --max-time 120 "http://127.0.0.1:${PORT}/v1/chat/completions" \
         -H 'Content-Type: application/json' \
-        -d '{"model":"beellama/qwen-flash","messages":[{"role":"user","content":"ok"}],"max_tokens":1,"temperature":1.0}' \
+        -d '{"model":"beellama/qwen-flash","messages":[{"role":"user","content":"ok"}],"max_tokens":1}' \
         >/dev/null 2>&1 || true
-      echo "[warmup] Done."
-      exit 0
-    fi
-    sleep 1
-  done
-  echo "[warmup] Failed to reach health endpoint within 60s."
-) &
+) & disown
 
-# Use 'exec' to replace the bash shell process with llama-swap.
-# This guarantees lifecycle signals (SIGTERM/SIGINT) from process-compose
-# route directly to the binary, preventing orphaned background processes.
-exec "${SOV}/tools/llama-swap/llama-swap" \
-  --config "${SOV}/tools/llama-swap/config.yaml" \
-  --listen "127.0.0.1:${PORT}"
+echo "[llama-swap] BIN=$BIN CONF=$CONF PORT=$PORT"
+exec "$BIN" --config "$CONF" --listen "127.0.0.1:${PORT}"

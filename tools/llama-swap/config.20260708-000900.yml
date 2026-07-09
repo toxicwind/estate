@@ -1,0 +1,60 @@
+# Best llama-swap config — July 2026 fork
+# Integrates: Autopoiesis (self-evolving), Q-Evolve (in-distribution critic), EMoE (emergent modularity)
+
+listen: ":8080"
+logLevel: debug
+
+# Evolving scheduler — replaces static FIFO
+scheduler:
+  type: evolving
+  evolveEvery: 100        # Autopoiesis: rewrite policy every 100 requests
+  critic: q-evolve        # Jun 2026 in-distribution RL
+  metricsStore: ".llama-swap/metrics.db"
+
+models:
+  beellama-9b:
+    cmd: "/opt/llama.cpp/build/bin/llama-server -m /models/beellama-9b-q4_k_m.gguf --port ${PORT} --ctx-size 32768 -ngl 99"
+    proxy: "unix:///tmp/llama-swap-beellama.sock"
+    ttl: 0
+    env:
+      - "LLAMA_EMOE_SPLIT=16"
+      - "LLAMA_EMOE_GATING=avg-k"
+      - "LLAMA_SWAP_OBSERVE=1"
+
+  mn-grand-12b:
+    cmd: "/opt/llama.cpp-2/build/bin/llama-server -m /models/mn-grand-12b-q5_k_m.gguf --port ${PORT} --ctx-size 65536 -ngl 99"
+    proxy: "unix:///tmp/llama-swap-mn-grand.sock"
+    ttl: 0
+    env:
+      - "LLAMA_EMOE_SPLIT=16"
+      - "LLAMA_EMOE_GATING=avg-k"
+      - "LLAMA_SWAP_OBSERVE=1"
+
+  qwen-draft-1.5b:
+    cmd: "/opt/llama.cpp-3/build/bin/llama-server -m /models/qwen2.5-1.5b-instruct-q4_k_m.gguf --port ${PORT} --ctx-size 8192 -ngl 99"
+    proxy: "unix:///tmp/llama-swap-qwen.sock"
+    ttl: 0
+    env:
+      - "LLAMA_EMOE_SPLIT=8"
+
+  deepseek-coder-7b:
+    cmd: "/opt/llama.cpp-4/build/bin/llama-server -m /models/deepseek-coder-7b-q4_k_m.gguf --port ${PORT} --ctx-size 16384 -ngl 99"
+    proxy: "unix:///tmp/llama-swap-deepseek.sock"
+    ttl: 0
+    env:
+      - "LLAMA_EMOE_SPLIT=16"
+      - "LLAMA_EMOE_GATING=avg-k"
+
+# Groups use evolving scheduler
+groups:
+  chat:
+    models: ["beellama-9b", "mn-grand-12b"]
+    strategy: evolving
+    
+  fast:
+    models: ["qwen-draft-1.5b"]
+    strategy: evolving
+
+  code:
+    models: ["deepseek-coder-7b", "mn-grand-12b"]
+    strategy: evolving

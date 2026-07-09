@@ -1,0 +1,463 @@
+# llama-swap.yaml — OPTIMIZED: every model on every fork it can run,
+# with fork-specific flags based on AST-verified feature ownership.
+#
+# Fork capabilities (from AST analysis):
+#   beellama    → draft-simple speculative (43 AST), dflash, turboquant-types (52 AST)
+#   turboquant  → turboquant-types (78 AST) — deepest, NO speculative/hadamard/merge
+#   ik_llama    → speculative (47 AST), hadamard (22 AST), merge (18 AST),
+#                 llama_spec_* (58), native MTP for Gemma 4, NO turboquant-types (0 AST)
+#   ik_turboquant → ik_llama features + EXPERIMENTAL TQ cache (tbqp3/tbq3)
+#
+# RULE: Pick fork by FEATURE needed, not by speed guess. Each has mutually exclusive core tech.
+
+healthCheckTimeout: 300
+logLevel: info
+logToStdout: proxy
+metricsMaxInMemory: 5000
+captureBuffer: 256
+globalTTL: 0
+startPort: 25001
+includeAliasesInList: true
+sendLoadingState: false
+
+store:
+  path: /home/toxic/.local/share/llama-swap/store.db
+
+performance:
+  disabled: false
+  every: 5s
+
+hooks:
+  on_startup:
+    preload:
+      - beellama/qwen-flash
+
+macros:
+  beellama_bin: /home/toxic/projects/beellama.cpp/build/bin/llama-server
+  turbo_bin: /home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server
+  ik_bin: /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server
+  ik_tq_bin: /home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin/llama-server
+
+  beellama_ld: /home/toxic/projects/beellama.cpp/build/bin
+  turbo_ld: /home/toxic/projects/llama-cpp-turboquant/build/bin
+  ik_ld: /home/toxic/projects/ik_llama.cpp-main/build/bin:/home/toxic/projects/ik_llama.cpp-main/build/src:/home/toxic/projects/ik_llama.cpp-main/build/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build/examples/mtmd
+  ik_tq_ld: /home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/examples/mtmd
+
+  cuda_env: "CUDA_VISIBLE_DEVICES=0 GGML_CUDA=1 GGML_CUDA_GRAPHS=1 GGML_CUDA_FA_ALL_QUANTS=1"
+  base_flags: "--host 127.0.0.1 --port ${PORT} --n-gpu-layers 99 --flash-attn on --parallel 1 --metrics --mlock --no-mmap"
+  kv_q4: "--cache-type-k q4_0 --cache-type-v q4_0"
+  coding_samplers: "--temp 0.6 --top-p 0.95 --top-k 20 --min-p 0.0 --presence-penalty 0.0 --repeat-penalty 1.0"
+
+  qwen_flash: /home/toxic/projects/models/Qwen3.5-9B-DeepSeek-V4-Flash-IQ4_XS.gguf
+  strange: /home/toxic/projects/models/StrangeMerges_19-7B-dare_ties.Q4_K_M.gguf
+  gemma: /home/toxic/projects/models/gemma-4-12B-it-uncensored-Q4_K_M.gguf
+  heretic_27b: /home/toxic/projects/models/Qwen3.6-27B-Heretic-Cerebellum-v1-Q2_K_Mixed.gguf
+  mn_grand: /home/toxic/projects/models/MN-GRAND-23.5B-Gutenberg-UNCENSORED-V2-Q4_K_M.gguf
+  heretic_ud_q4: /home/toxic/projects/models/heretic-UD-27B-Q4_K_XL.gguf
+  heretic_ud_q5: /home/toxic/projects/models/heretic-UD-27B-Q5_K_XL.gguf
+  draft: /home/toxic/projects/models/Qwen2.5-1.5B-Draft.gguf
+
+models:
+  "llama":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${qwen_flash}
+      ${base_flags} --ctx-size 131072 -b 4096 -ub 1024 ${kv_q4}
+      --jinja --temp 0.85 --top-p 0.95
+    name: "Qwen3.5-9B Flash (legacy alias → beellama)"
+    metadata:
+      variant: beellama
+      context: 131072
+      best_for: "baseline preload"
+      note: "Legacy alias kept for compatibility."
+
+  "beellama/qwen-flash":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${qwen_flash}
+      ${base_flags} --ctx-size 131072 -b 4096 -ub 1024 ${kv_q4}
+      --log-format json --jinja --temp 0.85 --top-p 0.95
+    name: "Qwen3.5-9B Flash (beellama, 131K ctx)"
+    metadata:
+      variant: beellama
+      context: 131072
+      best_for: "baseline"
+      math: "IQ4_XS ~5.6GB weights, ~17GB free. 131072 is trivial."
+
+  "turboquant/qwen-flash":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${qwen_flash}
+      ${base_flags} --ctx-size 131072 -b 4096 -ub 1024 ${kv_q4}
+      --log-format json --jinja --temp 0.85 --top-p 0.95
+    name: "Qwen3.5-9B Flash (turboquant, 131K ctx)"
+    metadata:
+      variant: turboquant
+      context: 131072
+      best_for: "deepest TQ type integration"
+      note: "Turboquant has 78 AST turboquant-types vs beellama's 52. Use when you want maximum TQ engine depth on a small model."
+
+  "ik_llama/qwen-flash":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_ld} ${cuda_env}
+      ${ik_bin} --model ${qwen_flash}
+      ${base_flags} --ctx-size 131072 -b 4096 -ub 1024 ${kv_q4}
+      --log-format json --temp 0.85 --top-p 0.95
+    name: "Qwen3.5-9B Flash (ik_llama, 131K ctx)"
+    metadata:
+      variant: ik_llama
+      context: 131072
+      best_for: "hadamard/merge/speculative features"
+      note: "Use when you need ik_llama-exclusive features (hadamard, merge_qkv, llama_spec_*) on this model."
+
+  "beellama/strange":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${strange}
+      ${base_flags} --ctx-size 32768 -b 4096 -ub 1024 ${kv_q4}
+      --embeddings --pooling cls
+      --spec-type draft-simple --spec-draft-model ${draft}
+      --spec-draft-ctx-size 4096 --spec-draft-n-max 16 --spec-draft-n-min 2
+      --spec-draft-p-split 0.1 --spec-draft-p-min 0
+      --log-format json --temp 0.7 --top-p 0.95 --top-k 50
+    name: "StrangeMerges 19.7B + draft-simple speculative (beellama, 32K)"
+    metadata:
+      variant: beellama
+      context: 32768
+      best_for: "draft-simple speculative decoding"
+      speculative: "draft-simple"
+      math: "Mistral-7B config: 29.5KB/token. At 32768: ~950MB KV. Weights ~10.5GB. Total ~11.5GB of 24GB. 32768 is the model's real ceiling."
+      note: "BEST FORK: beellama owns draft-simple speculative (43 AST). ik_llama has 0 draft-simple support. turboquant has 0 speculative."
+
+  "turboquant/strange":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${strange}
+      ${base_flags} --ctx-size 32768 -b 4096 -ub 1024 ${kv_q4}
+      --embeddings --pooling cls
+      --log-format json --temp 0.7 --top-p 0.95 --top-k 50
+    name: "StrangeMerges 19.7B (turboquant, 32K, no speculative)"
+    metadata:
+      variant: turboquant
+      context: 32768
+      best_for: "baseline speed"
+      note: "No speculative support (0 AST). Use beellama/strange if you want draft-simple speedup."
+
+  "ik_llama/strange":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_ld} ${cuda_env}
+      ${ik_bin} --model ${strange}
+      ${base_flags} --ctx-size 32768 -b 4096 -ub 1024 ${kv_q4}
+      --embeddings --pooling cls
+      --log-format json --temp 0.7 --top-p 0.95 --top-k 50
+    name: "StrangeMerges 19.7B (ik_llama, 32K, native speculative capable)"
+    metadata:
+      variant: ik_llama
+      context: 32768
+      best_for: "hadamard/merge on Mistral arch"
+      note: "ik_llama has native speculative (47 AST) but NOT draft-simple. If you configure a native draft model, use --spec-type native (check ik_llama docs for exact flag)."
+
+  "beellama/gemma":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${gemma}
+      ${base_flags} --ctx-size 262144 -b 2048 -ub 512 ${kv_q4}
+      --log-format json --jinja
+    name: "Gemma 4 12B Uncensored (beellama, 262K ctx)"
+    metadata:
+      variant: beellama
+      context: 262144
+      best_for: "baseline"
+      math: "48 layers: 40 sliding-window (~90MB fixed) + 8 full-attn (~2.3GB at 262K). Weights ~7.5GB. Total ~10GB of 24GB."
+      warning: "VERIFY gemma4.context_length metadata isn't stuck at 131072 upstream bug."
+
+  "turboquant/gemma":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${gemma}
+      ${base_flags} --ctx-size 262144 -b 2048 -ub 512 ${kv_q4}
+      --log-format json --jinja
+    name: "Gemma 4 12B Uncensored (turboquant, 262K ctx)"
+    metadata:
+      variant: turboquant
+      context: 262144
+      best_for: "deepest TQ integration"
+      note: "Turboquant engine (78 AST TQ types) vs beellama (52 AST). Use if you suspect TQ type depth matters for this quant."
+
+  "ik_llama/gemma":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_ld} ${cuda_env}
+      ${ik_bin} --model ${gemma}
+      ${base_flags} --ctx-size 262144 -b 2048 -ub 512 ${kv_q4}
+      --log-format json --jinja
+    name: "Gemma 4 12B Uncensored (ik_llama, 262K ctx, MTP-capable)"
+    metadata:
+      variant: ik_llama
+      context: 262144
+      best_for: "MTP self-speculation"
+      note: "BEST FORK for Gemma 4: ik_llama has native MTP support (PR #1744). Can self-speculate with zaakirio's mtp-gemma-4-12b-it-uncensored.gguf drafter. Confirm exact CLI flag from ik_llama docs before enabling."
+
+  "beellama/heretic-27b":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${heretic_27b}
+      ${base_flags} --ctx-size 262144 -b 1024 -ub 512 ${kv_q4}
+      --log-format json ${coding_samplers}
+    name: "Heretic 27B Q2_K_Mixed (beellama, 262K ctx)"
+    metadata:
+      variant: beellama
+      context: 262144
+      best_for: "baseline"
+      note: "beellama has 52 AST turboquant-types. Works, but turboquant has deeper TQ integration (78 AST)."
+
+  "turboquant/heretic-27b":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${heretic_27b}
+      ${base_flags} --ctx-size 262144 -b 1024 -ub 512 ${kv_q4}
+      --log-format json ${coding_samplers}
+    name: "Heretic 27B Q2_K_Mixed (turboquant, 262K ctx)"
+    metadata:
+      variant: turboquant
+      context: 262144
+      best_for: "deepest TQ engine"
+      math: "Qwen3.6-27B: 64 layers, 16 full-attn + 48 linear-attn. Assuming kv_heads=8, head_dim=256: 36KB/token. At 262144: ~9.4GB KV. Weights ~10.5GB. Total ~20GB of 24GB."
+      note: "BEST STABLE FORK: turboquant has 78 AST turboquant-types — deepest integration. Use this as default."
+
+  "ik_llama/heretic-27b":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_ld} ${cuda_env}
+      ${ik_bin} --model ${heretic_27b}
+      ${base_flags} --ctx-size 262144 -b 1024 -ub 512 ${kv_q4}
+      --log-format json ${coding_samplers}
+    name: "Heretic 27B Q2_K_Mixed (ik_llama, 262K ctx)"
+    metadata:
+      variant: ik_llama
+      context: 262144
+      best_for: "hadamard/merge/speculative on 27B"
+      note: "ik_llama has 0 turboquant-types AST but runs fine with standard q4_0 cache. Use when you need ik-exclusive features (hadamard, merge_qkv, llama_spec_*) on this model."
+
+  "ik_turboquant/heretic-27b":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_tq_ld} ${cuda_env}
+      ${ik_tq_bin} --model ${heretic_27b}
+      ${base_flags} --ctx-size 262144 -b 1024 -ub 512
+      --cache-type-k tbqp3 --cache-type-v tbq3
+      --log-format json ${coding_samplers}
+    name: "Heretic 27B Q2_K_Mixed (ik_turboquant, 262K ctx, TQ cache — EXPERIMENTAL)"
+    metadata:
+      variant: ik_turboquant
+      context: 262144
+      best_for: "ik features + TQ cache compression"
+      note: "EXPERIMENTAL: tbqp3/tbq3 cache types are unverified. If they work, KV memory drops significantly, giving more headroom. Fallback: turboquant/heretic-27b (stable) or ik_llama/heretic-27b (ik features, standard cache)."
+
+  "beellama/mn-grand":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${mn_grand}
+      ${base_flags} --ctx-size 81920 -b 4096 -ub 1024 ${kv_q4}
+      --log-format json --no-context-shift --jinja
+      --temp 0.9 --repeat-penalty 1.05 --repeat-last-n 256
+    name: "MN-GRAND 23.5B (beellama, 82K ctx)"
+    metadata:
+      variant: beellama
+      context: 81920
+      best_for: "baseline"
+      note: "Dense frankenmerge. No fork-exclusive features particularly help here."
+
+  "turboquant/mn-grand":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${mn_grand}
+      ${base_flags} --ctx-size 81920 -b 4096 -ub 1024 ${kv_q4}
+      --log-format json --no-context-shift --jinja
+      --temp 0.9 --repeat-penalty 1.05 --repeat-last-n 256
+    name: "MN-GRAND 23.5B (turboquant, 82K ctx)"
+    metadata:
+      variant: turboquant
+      context: 81920
+      best_for: "stable dense-model performance"
+      math: "81 layers, Mistral-Nemo config: 73KB/token. Weights ~14.5GB, free 8GB. Max theoretical 109K; set to 81920 for margin."
+      note: "BEST STABLE FORK: dense model, no speculative/hadamard/merge needed. turboquant engine is default."
+      warning: "--no-context-shift per DavidAU on this lineage."
+
+  "ik_llama/mn-grand":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_ld} ${cuda_env}
+      ${ik_bin} --model ${mn_grand}
+      ${base_flags} --ctx-size 81920 -b 4096 -ub 1024 ${kv_q4}
+      --log-format json --no-context-shift --jinja
+      --temp 0.9 --repeat-penalty 1.05 --repeat-last-n 256
+    name: "MN-GRAND 23.5B (ik_llama, 82K ctx)"
+    metadata:
+      variant: ik_llama
+      context: 81920
+      best_for: "hadamard/merge on dense arch"
+      note: "Use if you want to test hadamard/merge optimizations on this dense frankenmerge. Otherwise turboquant/mn-grand is default."
+
+  "ik_turboquant/mn-grand":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_tq_ld} ${cuda_env}
+      ${ik_tq_bin} --model ${mn_grand}
+      ${base_flags} --ctx-size 81920 -b 4096 -ub 1024
+      --cache-type-k tbqp3 --cache-type-v tbq3
+      --log-format json --no-context-shift --jinja
+      --temp 0.9 --repeat-penalty 1.05 --repeat-last-n 256
+    name: "MN-GRAND 23.5B (ik_turboquant, 82K ctx, TQ cache — EXPERIMENTAL)"
+    metadata:
+      variant: ik_turboquant
+      context: 81920
+      best_for: "ik features + TQ cache"
+      note: "EXPERIMENTAL. TQ cache on dense model. High risk due to 81 layers. Fallback: turboquant/mn-grand."
+
+  "beellama/heretic-ud":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${heretic_ud_q4}
+      ${base_flags} --ctx-size 114688 -b 2048 -ub 512 ${kv_q4}
+      --log-format json ${coding_samplers}
+    name: "Heretic UD 27B Q4_K_XL (beellama, 114.7K ctx)"
+    metadata:
+      variant: beellama
+      context: 114688
+      best_for: "baseline"
+      math: "unsloth confirms 17.6GB weights. Free 4.9GB / 36KB = 142.8K max. Set to 114688 (80%)."
+
+  "turboquant/heretic-ud":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${heretic_ud_q4}
+      ${base_flags} --ctx-size 114688 -b 2048 -ub 512 ${kv_q4}
+      --log-format json ${coding_samplers}
+    name: "Heretic UD 27B Q4_K_XL (turboquant, 114.7K ctx)"
+    metadata:
+      variant: turboquant
+      context: 114688
+      best_for: "stable max context"
+      note: "BEST STABLE FORK: deepest TQ integration, no feature gaps for this model. Use as default."
+
+  "ik_llama/heretic-ud":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_ld} ${cuda_env}
+      ${ik_bin} --model ${heretic_ud_q4}
+      ${base_flags} --ctx-size 114688 -b 2048 -ub 512 ${kv_q4}
+      --log-format json ${coding_samplers}
+    name: "Heretic UD 27B Q4_K_XL (ik_llama, 114.7K ctx)"
+    metadata:
+      variant: ik_llama
+      context: 114688
+      best_for: "hadamard/merge/speculative features"
+      note: "Use when you need ik_llama-exclusive features on this quant. Otherwise turboquant/heretic-ud is default."
+
+  "ik_turboquant/heretic-ud":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_tq_ld} ${cuda_env}
+      ${ik_tq_bin} --model ${heretic_ud_q4}
+      ${base_flags} --ctx-size 114688 -b 2048 -ub 512
+      --cache-type-k tbqp3 --cache-type-v tbq3
+      --log-format json ${coding_samplers}
+    name: "Heretic UD 27B Q4_K_XL (ik_turboquant, 114.7K ctx, TQ cache — EXPERIMENTAL)"
+    metadata:
+      variant: ik_turboquant
+      context: 114688
+      best_for: "ik features + TQ cache"
+      note: "EXPERIMENTAL. Fallback: turboquant/heretic-ud (stable) or ik_llama/heretic-ud (ik features, standard cache)."
+
+  "beellama/heretic-q5":
+    cmd: >-
+      env LD_LIBRARY_PATH=${beellama_ld} ${cuda_env}
+      ${beellama_bin} --model ${heretic_ud_q5}
+      ${base_flags} --ctx-size 49152 -b 2048 -ub 512 ${kv_q4}
+      --log-format json ${coding_samplers}
+    name: "Heretic UD 27B Q5_K_XL (beellama, 49.1K ctx)"
+    metadata:
+      variant: beellama
+      context: 49152
+      best_for: "baseline Q5"
+      math: "unsloth confirms 20GB weights. Free 2.5GB / 36KB = 72.8K max. Set to 49152 (67%) for tight-margin safety."
+
+  "turboquant/heretic-q5":
+    cmd: >-
+      env LD_LIBRARY_PATH=${turbo_ld} ${cuda_env}
+      ${turbo_bin} --model ${heretic_ud_q5}
+      ${base_flags} --ctx-size 49152 -b 2048 -ub 512 ${kv_q4}
+      --log-format json ${coding_samplers}
+    name: "Heretic UD 27B Q5_K_XL (turboquant, 49.1K ctx)"
+    metadata:
+      variant: turboquant
+      context: 49152
+      best_for: "stable Q5"
+      note: "BEST STABLE FORK for Q5: turboquant engine with standard q4_0 cache. Tightest margin in fleet — 49K is safe."
+
+  "ik_llama/heretic-q5":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_ld} ${cuda_env}
+      ${ik_bin} --model ${heretic_ud_q5}
+      ${base_flags} --ctx-size 49152 -b 2048 -ub 512 ${kv_q4}
+      --log-format json ${coding_samplers}
+    name: "Heretic UD 27B Q5_K_XL (ik_llama, 49.1K ctx)"
+    metadata:
+      variant: ik_llama
+      context: 49152
+      best_for: "ik features on Q5"
+      note: "Use when you need hadamard/merge/speculative on the Q5 quant. Otherwise turboquant/heretic-q5 is default."
+
+  "ik_turboquant/heretic-q5":
+    cmd: >-
+      env LD_LIBRARY_PATH=${ik_tq_ld} ${cuda_env}
+      ${ik_tq_bin} --model ${heretic_ud_q5}
+      ${base_flags} --ctx-size 49152 -b 2048 -ub 512
+      --cache-type-k tbqp3 --cache-type-v tbq3
+      --log-format json ${coding_samplers}
+    name: "Heretic UD 27B Q5_K_XL (ik_turboquant, 49.1K ctx, TQ cache — EXPERIMENTAL)"
+    metadata:
+      variant: ik_turboquant
+      context: 49152
+      best_for: "ik features + TQ cache on Q5"
+      note: "EXPERIMENTAL. Tightest margin + TQ cache = highest failure risk. Fallback: turboquant/heretic-q5 or ik_llama/heretic-q5."
+      warning: "Most likely to OOM or crash. Test thoroughly before relying on this entry."
+
+routing:
+  scheduler:
+    use: fifo
+    settings:
+      fifo:
+        priority:
+          beellama/qwen-flash: 10
+          ik_llama/gemma: 5
+          beellama/strange: 5
+  router:
+    use: group
+    settings:
+      groups:
+        default:
+          swap: true
+          exclusive: true
+          persistent: false
+          members:
+            - llama
+            - beellama/qwen-flash
+            - turboquant/qwen-flash
+            - ik_llama/qwen-flash
+            - beellama/strange
+            - turboquant/strange
+            - ik_llama/strange
+            - beellama/gemma
+            - turboquant/gemma
+            - ik_llama/gemma
+            - beellama/heretic-27b
+            - turboquant/heretic-27b
+            - ik_llama/heretic-27b
+            - ik_turboquant/heretic-27b
+            - beellama/mn-grand
+            - turboquant/mn-grand
+            - ik_llama/mn-grand
+            - ik_turboquant/mn-grand
+            - beellama/heretic-ud
+            - turboquant/heretic-ud
+            - ik_llama/heretic-ud
+            - ik_turboquant/heretic-ud
+            - beellama/heretic-q5
+            - turboquant/heretic-q5
+            - ik_llama/heretic-q5
+            - ik_turboquant/heretic-q5

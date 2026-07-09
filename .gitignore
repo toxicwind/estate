@@ -1,28 +1,19 @@
-# secrets & local env
+# === secrets & local env ===
 .env
 .env.local
-.envrc
+.envrc.local
 .secrets
 *.key
 *.pem
-bin/
-# runtime state
+
+# === runtime / state ===
 .state/
 .prometheus/
 logs/
 *.log
 pids/
 
-# nix / devbox / devenv (retired)
-.devbox/
-devenv-out
-devenv-up
-nixfmt-out
-devenv.lock
-devbox.json.disabled
-devbox.lock.disabled
-
-# python / node / rust
+# === python / node / rust builds ===
 .venv/
 __pycache__/
 *.pyc
@@ -32,42 +23,27 @@ target/
 dist/
 build/
 
-# models & heavy data (GGUFs live under ~/projects/models)
+# === models & heavy data - GGUFs live in ~/projects/models ===
 models/
 *.gguf
-*.bin
 data/
 
-# scratch & portable nix junk
+# === scratch ===
 scratch/
 bins/
-nix-tools-centos9.tar.gz.pdf
 test.zsh
 
-# IDE
+# === IDE ===
 .idea/
 .vscode/
 
-# legacy devenv / local DB runtime
+# === direnv / nix - retired but keep dir to ignore ===
+.direnv/
 .devenv/
-.direnv/
-.postgres
-.agents/
-.mongodb/
-.clickhouse/
-.mysql/
-.redis/
-.mosquitto/
-.trafficserver/
+.devbox/
 
-# vendored / nested clones
-llamaherd/
-
-# clickhouse local config
-.clickhouse/
-
-# misc
-GITEOF
-*.pdf.envrc
-.direnv/
-tools/llama-swap/
+# === llama-swap - keep configs, ignore only binaries and db ===
+tools/llama-swap/llama-swap
+tools/llama-swap/ollama-proxy
+tools/llama-swap/*.db
+tools/llama-swap/*.db-journal
