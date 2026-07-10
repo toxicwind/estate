@@ -6,8 +6,6 @@ PORT="${LLAMA_HERDER_PORT:-28080}"
 
 # Binary resolution (symlink → project build → fallback)
 BIN_CANDIDATES=(
-    "${SOV}/tools/llama-swap/llama-swap"
-    "${HOME}/.local/bin/llama-swap"
     "/home/toxic/projects/llama-swap-main/llama-swap"
 )
 BIN=""
@@ -18,8 +16,6 @@ done
 
 # Config resolution (must be outside ignored tools/ folder)
 CONF_CANDIDATES=(
-    "${HOME}/.config/llama-swap/config.yaml"
-    "${SOV}/config/llama-swap.yaml"
     "${SOV}/tools/llama-swap/config.yaml"
 )
 CONF=""
@@ -53,7 +49,7 @@ fi
     done
     curl -sf --max-time 120 "http://127.0.0.1:${PORT}/v1/chat/completions" \
         -H 'Content-Type: application/json' \
-        -d '{"model":"beellama/qwen-flash","messages":[{"role":"user","content":"ok"}],"max_tokens":1}' \
+        -d '{"model":"beellama/qwen-flash-128k","messages":[{"role":"user","content":"ok"}],"max_tokens":1}' \
         >/dev/null 2>&1 || true
 ) & disown
 
