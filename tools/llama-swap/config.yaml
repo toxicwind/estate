@@ -172,7 +172,7 @@ macros:
   ctx_128k: "--ctx-size 131072 -b 4096 -ub 1024"
   ctx_256k: "--ctx-size 262144 -b 4096 -ub 1024"
 
-  spec_draft: "--spec-type draft --draft-min 2 --draft-max 8 --draft-threshold 0.6"
+  spec_draft: ""
   spec_draft_simple: "--spec-type draft"
   spec_draft_mtp: "--spec-type draft-mtp"
 
@@ -187,7 +187,7 @@ models:
     cmd: >-
       ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
       ${beellama_bin} --model ${qwen_flash_9b_iq4xs}
-      ${srv_base} ${fork_beellama} ${ctx_64k} ${kv_q8} --jinja ${spec_draft} --draft-model ${draft_small}
+      ${srv_base} ${fork_beellama} ${ctx_64k} ${kv_q8} --jinja ${spec_draft}
     env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
     metadata: { fork: beellama, context: 65536, quant: IQ4_XS, vram: "~9GB" }
 
@@ -195,7 +195,7 @@ models:
     cmd: >-
       ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
       ${beellama_bin} --model ${qwen_flash_iq4xs}
-      ${srv_base} ${fork_beellama} ${ctx_96k} ${kv_turbo3} --jinja ${spec_draft} --draft-model ${draft_small}
+      ${srv_base} ${fork_beellama} ${ctx_96k} ${kv_turbo3} --jinja ${spec_draft}
     env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
     metadata:
       {
@@ -210,7 +210,7 @@ models:
     cmd: >-
       ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
       ${beellama_bin} --model ${qwen_flash_iq4xs}
-      ${srv_base} ${fork_beellama} ${ctx_128k} ${kv_turbo3_tcq} --jinja ${spec_draft} --draft-model ${draft_small}
+      ${srv_base} ${fork_beellama} ${ctx_128k} ${kv_turbo3_tcq} --jinja ${spec_draft}
     env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
     metadata: { fork: beellama, context: 131072, quant: IQ4_XS, vram: "~21GB" }
 
@@ -218,7 +218,7 @@ models:
     cmd: >-
       ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
       ${beellama_bin} --model ${qwen_flash_iq4xs}
-      ${srv_base} ${fork_beellama} ${ctx_256k} ${kv_turbo3_tcq} --jinja ${spec_draft} --draft-model ${draft_small}
+      ${srv_base} ${fork_beellama} ${ctx_256k} ${kv_turbo3_tcq} --jinja ${spec_draft}
     env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
     metadata:
       {
@@ -282,7 +282,7 @@ models:
     cmd: >-
       ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
       ${beellama_bin} --model ${strange}
-      ${srv_base} ${fork_beellama} ${ctx_64k} ${kv_q8} --jinja ${spec_draft_simple} --draft-model ${draft_small}
+      ${srv_base} ${fork_beellama} ${ctx_64k} ${kv_q8} --jinja ${spec_draft_simple}
     env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
 
   "turboquant/mn-grand-64k":
@@ -372,7 +372,7 @@ models:
     cmd: >-
       ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
       ${beellama_bin} --model ${qwen_dflash}
-      ${srv_base} ${fork_beellama} ${ctx_96k} ${kv_turbo3} --mla-attn --draft-model ${draft_small}
+      ${srv_base} ${fork_beellama} ${ctx_96k} ${kv_turbo3} --mla-attn
     env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
     metadata:
       {

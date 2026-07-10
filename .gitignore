@@ -47,3 +47,5 @@ tools/llama-swap/llama-swap
 tools/llama-swap/ollama-proxy
 tools/llama-swap/*.db
 tools/llama-swap/*.db-journal
+
+hw_dump*

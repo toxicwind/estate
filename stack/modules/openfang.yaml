@@ -1,7 +1,7 @@
-# OPTION 2: single command string (shell style)
 processes:
   openfang:
-    command: "/home/toxic/.openfang/bin/openfang start --yolo"
+    command: "/home/toxic/.openfang/bin/openfang start"
+    working_dir: "/home/toxic/sovereign"
     availability:
       restart: always
       backoff_seconds: 5
@@ -10,6 +10,7 @@ processes:
         host: 127.0.0.1
         port: 25004
         path: /api/health
+        scheme: http
       initial_delay_seconds: 15
       period_seconds: 5
       timeout_seconds: 3
