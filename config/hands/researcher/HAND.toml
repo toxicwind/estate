@@ -1,5 +1,0 @@
-name = "researcher"
-description = "Information gathering and analysis"
-model = "qwen"
-temperature = 0.7
-max_tokens = 4096

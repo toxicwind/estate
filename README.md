@@ -1,98 +1,66 @@
-# sovereign
+# Sovereign Stack — Mise 2026 Configuration
 
-Private local agent stack: Grok Build, OpenFang, llama-swap on a single workstation (RTX 3090 / sm_86).
+## What changed from the old shell-script approach
 
-**Orchestration:** mise + modular process-compose + **pacman system packages**.  
-**Not used:** nix, devbox, devenv, vLLM, docker (core stack).
+| Before (2023-style) | After (2026 mise) |
+|---|---|
+| `stack/ports.env` | `[env]` in `mise.toml` |
+| `stack/profiles.sh` | `pc_args()` in `mise/tasks/_lib.sh` |
+| `stack/lib.sh` | `mise/tasks/_lib.sh` |
+| `stack/up.sh`, `down.sh`, `health.sh`, `build-compose.sh` | `mise/tasks/*` (file-based tasks) |
+| `_.file` / `_.path` (deprecated) | `env._.file` / `env._.path` (current) |
+| Hardcoded `/home/toxic` | `{{ env.HOME }}` / `{{ config_root }}` |
+| No tool pinning | `[tools]` pins process-compose, python, jq |
 
-## Quick start
+## Files to DELETE from `stack/`
 
 ```bash
-# one-time (Arch/CachyOS)
-sudo pacman -S --needed process-compose-git caddy prometheus curl
+rm stack/{up.sh,down.sh,health.sh,build-compose.sh,lib.sh,profiles.sh,ports.env}
+```
 
-cd ~/sovereign
-mise run up             # sovereign: core + yote + rust-dash
+Keep in `stack/`:
+- `base.yaml`
+- `modules/*.yaml`
+- `services/*.sh` (llama-herder.sh, rust-web.sh — these are service entrypoints, not orchestration)
+
+## Commands
+
+```bash
+mise trust
+mise install          # installs process-compose, python, jq
+mise run build-compose
+mise run up           # sovereign profile
+mise run up-core      # minimal
+mise run up-full      # everything
 mise run health
+mise run down
 ```
 
-Profiles:
-
-| Command | What |
-|---------|------|
-| `mise run up` | **sovereign** — llama-swap, openfang, prometheus, caddy, **yote**, **rust-dash** |
-| `mise run up-core` | core only (no yote/rust) |
-| `mise run up-full` | sovereign + landing, watchdog, hf-downloader |
-
-Stop: `mise run down`
-
-## LLM routing
-
-| Endpoint | Role |
-|----------|------|
-| `:28080` | **Ingress** — llama-swap (all clients) |
-| `:25001` | Upstream — spawned on demand per model |
-| `:25004` | OpenFang |
-
-Default model: `beellama/qwen-flash` (9B IQ4_XS). Legacy swap id `llama` maps to the same.
+## Task discovery
 
 ```bash
-curl -s http://127.0.0.1:28080/v1/models | jq '.data[].id'
+mise tasks            # list all tasks
+mise tasks --all      # including hidden/file-based
 ```
 
-Config: `tools/llama-swap/config.yaml`  
-Builds: beellama, turboquant, ik_llama, ik_turboquant under `~/projects/`.
+## File-based task convention
 
-## Stack layout
+- Scripts live in `mise/tasks/`
+- The filename IS the task name (`up`, `health`, etc.)
+- Descriptions via `# MISE description="..."` comment
+- Must be executable (`chmod +x`)
+- Directory nesting becomes colons: `mise/tasks/db/migrate` → `mise run db:migrate`
 
-```
-sovereign/
-├── mise.toml                 # task aliases
-├── stack/
-│   ├── ports.env             # port SSoT
-│   ├── profiles.sh           # core | full
-│   ├── modules/*.yaml        # one process per file
-│   ├── services/             # service entrypoints
-│   └── up.sh / down.sh / health.sh
-├── bin/                      # thin wrappers
-├── tools/llama-swap/
-├── src/                      # openfang, watchdog, landing, …
-└── process-compose.yaml      # generated compat (stack/modules is canonical)
-```
+## Env loading order
 
-| Profile | Processes |
-|---------|-----------|
-| `core` | llama-herder, openfang, prometheus, caddy |
-| `sovereign` | core + **yote** (:25042), **rust-dash** (:25005) |
-| `full` | sovereign + landing, watchdog, hf-downloader |
+1. `[env]` in `mise.toml` (ports, URLs)
+2. `env._.file` → `.env.local`, `~/.secrets`, `~/.openfang/secrets.env`
+3. `env._.path` → adds bin directories to PATH
+4. Task scripts inherit everything
 
-```bash
-./stack/up.sh -D sovereign
-./stack/build-compose.sh
-```
+## Secrets
 
-## Ports (`stack/ports.env`)
-
-| Port | Service |
-|------|---------|
-| 25000 | Caddy (routes `/rank*`, `/yote*` → backends) |
-| 25004 | OpenFang |
-| 25005 | **rust-dash** — DevOps advisor + ranking UI |
-| 28080 | llama-swap |
-| 25030 | Prometheus |
-| 25042 | **yote** — Telegram bot orchestrator |
-
-## Client config
-
-```toml
-# ~/.grok/config.toml
-[model.llama]
-model = "beellama/qwen-flash"
-base_url = "http://localhost:28080/v1"
-```
-
-GGUF models live in `~/projects/models/` (not in this repo).
-
-## Repo
-
-Private: [github.com/toxicwind/sovereign](https://github.com/toxicwind/sovereign)
+- `.env.local` — project-local non-secrets (can be in git)
+- `~/.secrets` — machine-local secrets (never in git)
+- `~/.openfang/secrets.env` — openfang-specific secrets
+- All marked with `redact = true` so values are masked in logs

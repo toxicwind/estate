@@ -1,5 +1,0 @@
-name = "coder"
-description = "Code generation and review"
-model = "qwen"
-temperature = 0.2
-max_tokens = 8192

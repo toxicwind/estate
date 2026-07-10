@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# MISE description="Full stack: sovereign + landing + watchdog + hf-downloader"
+set -euo pipefail
+source "$(dirname "$0")/_lib.sh"
+
+mapfile -d '' -t cfg < <(pc_args full)
+exec run_pc up "${cfg[@]}" -D "$@"

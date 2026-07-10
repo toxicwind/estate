@@ -1,5 +1,6 @@
-# Sovereign stack base — merged with stack/modules/*.yaml via process-compose -f
 version: "0.5"
 
 environment:
-  - "SOVEREIGN_ROOT=/home/toxic/sovereign"
+  - "SOVEREIGN_ROOT={{ env.SOVEREIGN_ROOT }}"
+  - "LLM_PROXY_URL={{ env.LLM_PROXY_URL }}"
+  - "LLM_BASE_URL={{ env.LLM_BASE_URL }}"

@@ -1,48 +1,90 @@
+min_version = "2025.7.0"
+
+[vars]
+sov = "{{ config_root }}"
+home = "{{ env.HOME }}"
+
+[tools]
+process-compose = "latest"
+python = "3.12"
+jq = "latest"
+
 [env]
-SOVEREIGN_ROOT = "{{ config_root }}"
-_.file = [".env.local", "/home/toxic/.secrets", "/home/toxic/.openfang/secrets.env"]
+SOVEREIGN_ROOT = "{{ vars.sov }}"
+
+LLAMA_SERVER_PORT = "25001"
+LLAMA_HERDER = "28080"
+OPENFANG_PORT = "25004"
+RUST_WEB_PORT = "25005"
+HF_DOWNLOADER = "25020"
+WATCHDOG_PORT = "25022"
+YOTE_PORT = "25042"
+PROMETHEUS_PORT = "25030"
+CADDY_PORT = "25000"
+CADDY_ADMIN_PORT = "25031"
+LANDING_PORT = "25080"
+
+LLM_PROXY_URL = "http://127.0.0.1:{{ env.LLAMA_HERDER }}"
+LLM_BASE_URL = "{{ env.LLM_PROXY_URL }}/v1"
+ADVISOR_CACHE_LIMIT = "24G"
+
 _.path = [
-    "{{ config_root }}/yote/.venv/bin",
-    "{{ config_root }}/bin",
-    "{{ config_root }}/stack",
-    "/home/toxic/.bun/bin"
+  "{{ vars.sov }}/yote/.venv/bin",
+  "{{ vars.sov }}/bin",
+  "{{ vars.sov }}/stack",
+  "{{ vars.home }}/.bun/bin",
 ]
 
-[tasks.up]
-description = "Sovereign stack: core + yote + rust-dash"
-run = "{{ config_root }}/stack/up.sh -D sovereign"
+_.file = [
+  ".env.local",
+  { path = "{{ vars.home }}/.secrets", redact = true },
+  { path = "{{ vars.home }}/.openfang/secrets.env", redact = true },
+]
+
+[settings]
+experimental = true
+idiomatic_version_file_enable_tools = ["python"]
+
+# ── Task definitions ─────────────────────────────────────────────────────────
+# Complex tasks live as executable scripts in mise/tasks/ (mise 2026 convention).
+# Simple one-liners stay here in TOML.  All tasks inherit [env] automatically.
 
 [tasks.up-core]
-description = "Core only: llama-swap, openfang, prometheus, caddy"
-run = "{{ config_root }}/stack/up.sh -D core"
+description = "Core stack: llama-herder + openfang + prometheus"
+run = "./mise/tasks/up-core"
+
+[tasks.up]
+description = "Sovereign stack: core + yote + rust-web"
+depends = ["build-compose"]
+run = "./mise/tasks/up"
 
 [tasks.up-full]
-description = "Everything: sovereign + landing, watchdog, hf-downloader"
-run = "{{ config_root }}/stack/up.sh -D full"
+description = "Full stack: sovereign + landing + watchdog + hf-downloader"
+depends = ["build-compose"]
+run = "./mise/tasks/up-full"
 
 [tasks.down]
-description = "Stop stack"
-run = "{{ config_root }}/stack/down.sh"
-
-[tasks.status]
-description = "Process list or port health"
-run = "{{ config_root }}/bin/sovereign-stack.sh status"
+description = "Stop the entire stack"
+run = "./mise/tasks/down"
 
 [tasks.health]
-description = "Port health matrix"
-run = "{{ config_root }}/stack/health.sh"
+description = "Port health matrix + GPU + llama-swap runtime"
+run = "./mise/tasks/health"
+
+[tasks.status]
+description = "Process list and quick port bindings"
+run = "./mise/tasks/status"
 
 [tasks.build-compose]
-description = "Flatten stack/modules → process-compose.yaml"
-run = "{{ config_root }}/stack/build-compose.sh"
+description = "Flatten stack/modules/*.yaml → process-compose.yaml"
+sources = ["stack/base.yaml", "stack/modules/*.yaml"]
+outputs = ["process-compose.yaml"]
+run = "./mise/tasks/build-compose"
 
 [tasks.kill-devenv]
-description = "Tombstone: kill stale devenv/nix daemons"
-run = "{{ config_root }}/bin/kill-devenv.sh"
+description = "Kill stale devenv / nix daemons"
+run = "{{ vars.sov }}/bin/kill-devenv.sh"
 
 [tasks.consolidate]
 description = "Archive stale whitelist config duplicates"
-run = "{{ config_root }}/bin/consolidate-known.sh"
-
-[settings]
-# don't put env_file here anymore, it's deprecated. Use env._.file above
+run = "{{ vars.sov }}/bin/consolidate-known.sh"

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# MISE description="Stop the entire stack"
+set -euo pipefail
+source "$(dirname "$0")/_lib.sh"
+
+echo "[down] Stopping services..."
+run_pc stop openfang 2>/dev/null || true
+sleep 1
+run_pc down 2>/dev/null || true
+
+if pgrep -x process-compose >/dev/null; then
+  echo "[down] Force-killing process-compose supervisor..."
+  pkill -TERM -x process-compose || true
+  sleep 2
+  pkill -KILL -x process-compose || true
+fi
+
+echo "[down] All done."

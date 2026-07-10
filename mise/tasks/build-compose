@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# MISE description="Flatten stack/modules/*.yaml → process-compose.yaml"
+set -euo pipefail
+
+SOV="${SOVEREIGN_ROOT:-{{ config_root }}}"
+OUT="$SOV/process-compose.yaml"
+
+python3 - "$SOV" "$OUT" <<'PY'
+import sys
+from pathlib import Path
+
+try:
+    import yaml
+except ImportError:
+    sys.stderr.write("pyyaml required: uv pip install pyyaml\n")
+    sys.exit(1)
+
+sov, out = Path(sys.argv[1]), Path(sys.argv[2])
+stack = sov / "stack"
+merged = {"version": "0.5", "environment": [], "processes": {}}
+
+base = yaml.safe_load((stack / "base.yaml").read_text()) or {}
+merged["version"] = base.get("version", merged["version"])
+merged["environment"] = base.get("environment", [])
+
+for mod in sorted((stack / "modules").glob("*.yaml")):
+    doc = yaml.safe_load(mod.read_text()) or {}
+    procs = doc.get("processes") or {}
+    merged["processes"].update(procs)
+
+header = (
+    "# GENERATED — do not edit. Source: stack/modules/*.yaml\n"
+    "# Regenerate: mise run build-compose\n"
+)
+out.write_text(header + yaml.dump(merged, sort_keys=False, default_flow_style=False))
+print(f"wrote {out} ({len(merged['processes'])} processes)")
+PY
