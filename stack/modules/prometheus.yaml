@@ -3,4 +3,15 @@ processes:
     command: prometheus --config.file=./prometheus.yml --storage.tsdb.path=./.prometheus
       --web.listen-address=0.0.0.0:${PROMETHEUS_PORT}
     working_dir: .
-    log_location: .state/logs/prometheus.log
+    log_location: ./.state/logs/prometheus.log
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 25105
+        path: /-/healthy
+      initial_delay_seconds: 3
+      period_seconds: 5
+    availability:
+      restart: on_failure
+      backoff_seconds: 3
+      max_restarts: 8

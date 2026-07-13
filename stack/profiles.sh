@@ -5,20 +5,20 @@ stack_profile_modules() {
   local profile="${1:-sovereign}"
   case "$profile" in
     core)
-      # LLM ingress + mesh API + metrics + edge only
-      printf '%s\n' llama-herder openfang prometheus
+      # LLM ingress + metrics only
+      printf '%s\n' llama-swap openfang prometheus
       ;;
     sovereign)
       # Daily driver — core + telegram bot + rust ranking dashboard
       printf '%s\n' \
-        llama-herder openfang prometheus \
-        yote rust-web
+        llama-swap openfang prometheus \
+        null-g-proxy yote rust-web
       ;;
     full)
       printf '%s\n' \
-        llama-herder openfang prometheus \
-        yote rust-web \
-        landing watchdog hf-downloader
+        llama-swap openfang prometheus \
+        null-g-proxy yote rust-web \
+        hf-downloader
       ;;
     *)
       echo "unknown profile: $profile (core|sovereign|full)" >&2

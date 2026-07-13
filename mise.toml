@@ -4,16 +4,34 @@ process-compose = "latest"
 python = "3.12"
 bun = "latest"
 node = "22"
+jq = "latest"
+
 [env]
-LLAMA_SWAP_PORT = "25100"
-NULL_G_PORT = "8787"
-PC_PORT = "25201"
-PATH = "{{config_root}}/yote/.venv/bin:{{env.HOME}}/.local/bin:{{env.HOME}}/.bun/bin:{{env.PATH}}"
+_.file = [".env.local", "/home/toxic/.secrets", "/home/toxic/.openfang/secrets.env"]
+_.path = ["{{ config_root }}/yote/.venv/bin","{{ config_root }}/bin","{{ env.HOME }}/.local/bin","{{ env.HOME }}/.bun/bin"]
+
+[settings]
+experimental = true
+idiomatic_version_file_enable_tools = ["python"]
+
+[tasks.up-core]
+description = "core: llama-swap + openfang + prometheus + null-g"
+run = "./mise/tasks/up-core"
 [tasks.up]
-run = "process-compose --port $PC_PORT --config process-compose.yaml up --detached -t=false && echo \"up on pc:$PC_PORT llama:$LLAMA_SWAP_PORT nullg:$NULL_G_PORT\""
+description = "sovereign: core + yote + rust-dash"
+depends = ["build-compose"]
+run = "./mise/tasks/up"
+[tasks.up-full]
+description = "full: sovereign + hf-downloader"
+depends = ["build-compose"]
+run = "./mise/tasks/up-full"
 [tasks.down]
-run = "process-compose --port $PC_PORT --config process-compose.yaml down 2>/dev/null; pkill -f process-compose; true"
+run = "./mise/tasks/down"
+[tasks.health]
+run = "./mise/tasks/health"
 [tasks.status]
-run = "process-compose --port $PC_PORT --config process-compose.yaml process list; ss -ltnp | grep -E \"$LLAMA_SWAP_PORT|$NULL_G_PORT|$PC_PORT\""
-[tasks.models]
-run = "curl -sf http://127.0.0.1:$LLAMA_SWAP_PORT/v1/models | jq -r '.data[].id' | sort"
+run = "./mise/tasks/status"
+[tasks.build-compose]
+sources = ["stack/base.yaml","stack/modules/*.yaml"]
+outputs = ["process-compose.yaml"]
+run = "./mise/tasks/build-compose"

@@ -6,6 +6,14 @@ processes:
     - YOTE_PORT=${YOTE_PORT}
     - LLM_PROXY_URL=${LLM_PROXY_URL}
     availability:
-      restart: always
-      backoff_seconds: 5
-    log_location: ../.state/logs/yote.log
+      restart: on_failure
+      backoff_seconds: 3
+      max_restarts: 8
+    log_location: ./.state/logs/yote.log
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 25102
+        path: /health
+      initial_delay_seconds: 3
+      period_seconds: 5

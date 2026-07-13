@@ -54,6 +54,9 @@ rust_algo_web/target/
 bin/sovereign_web
 bin/sovereign_devops_advisor
 
+# === llama-swap binary ===
+bin/llama-swap
+
 # === IDE ===
 .idea/
 .vscode/

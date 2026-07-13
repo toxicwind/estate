@@ -3,18 +3,6 @@
 version: '0.5'
 is_strict: false
 processes:
-  null-g-proxy:
-    command: node /home/toxic/sovereign/tools/null-g-proxy/dist/index.js
-    environment:
-    - PORT=8787
-  caddy:
-    command: caddy run --config ./Caddyfile
-    working_dir: .
-    availability:
-      restart: on_failure
-      backoff_seconds: 3
-      max_restarts: 10
-    log_location: .state/logs/caddy.log
   hf-downloader:
     command: /home/toxic/.bun/bin/bun run /home/toxic/sovereign/src/services/hf_downloader.ts
     working_dir: /home/toxic/sovereign
@@ -37,8 +25,35 @@ processes:
     availability:
       restart: on_failure
       backoff_seconds: 3
-      max_restarts: 12
-    log_location: .state/logs/llama-swap.log
+      max_restarts: 8
+    log_location: ./.state/logs/llama-swap.log
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 25100
+        path: /health
+      initial_delay_seconds: 3
+      period_seconds: 5
+  null-g-proxy:
+    command: bash -c 'bun run src/null-g-proxy.ts || node dist/null-g-proxy.js ||
+      bun run src/null_g_proxy.ts'
+    working_dir: /home/toxic/sovereign
+    environment:
+    - SOVEREIGN_ROOT=/home/toxic/sovereign
+    - NULL_G_PORT=8787
+    - PORT=8787
+    availability:
+      restart: on_failure
+      backoff_seconds: 2
+      max_restarts: 10
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 8787
+        path: /health
+      initial_delay_seconds: 2
+      period_seconds: 5
+    log_location: /home/toxic/sovereign/.state/logs/null-g-proxy.log
   openfang:
     command: /home/toxic/.bun/bin/bun run src/services/openfang.ts
     working_dir: /home/toxic/sovereign
@@ -46,14 +61,32 @@ processes:
     - OPENFANG_PORT=${OPENFANG_PORT}
     availability:
       restart: on_failure
-      max_restarts: 5
-      backoff_seconds: 5
-    log_location: .state/logs/openfang.log
+      backoff_seconds: 3
+      max_restarts: 8
+    log_location: ./.state/logs/openfang.log
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 25103
+        path: /api/health
+      initial_delay_seconds: 3
+      period_seconds: 5
   prometheus:
     command: prometheus --config.file=./prometheus.yml --storage.tsdb.path=./.prometheus
       --web.listen-address=0.0.0.0:${PROMETHEUS_PORT}
     working_dir: .
-    log_location: .state/logs/prometheus.log
+    log_location: ./.state/logs/prometheus.log
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 25105
+        path: /-/healthy
+      initial_delay_seconds: 3
+      period_seconds: 5
+    availability:
+      restart: on_failure
+      backoff_seconds: 3
+      max_restarts: 8
   rust-web:
     command: ../stack/services/rust-web.sh
     working_dir: rust_algo_web
@@ -64,8 +97,16 @@ processes:
     - WATCHDOG_PORT=${WATCHDOG_PORT}
     availability:
       restart: on_failure
+      backoff_seconds: 3
       max_restarts: 8
-    log_location: ../.state/logs/rust-web.log
+    log_location: ./.state/logs/rust-web.log
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 25101
+        path: /health
+      initial_delay_seconds: 3
+      period_seconds: 5
   yote:
     command: /home/toxic/.bun/bin/bun run src/index.ts
     working_dir: yote
@@ -73,6 +114,14 @@ processes:
     - YOTE_PORT=${YOTE_PORT}
     - LLM_PROXY_URL=${LLM_PROXY_URL}
     availability:
-      restart: always
-      backoff_seconds: 5
-    log_location: ../.state/logs/yote.log
+      restart: on_failure
+      backoff_seconds: 3
+      max_restarts: 8
+    log_location: ./.state/logs/yote.log
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 25102
+        path: /health
+      initial_delay_seconds: 3
+      period_seconds: 5

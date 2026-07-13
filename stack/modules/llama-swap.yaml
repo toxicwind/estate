@@ -8,5 +8,12 @@ processes:
     availability:
       restart: on_failure
       backoff_seconds: 3
-      max_restarts: 12
-    log_location: .state/logs/llama-swap.log
+      max_restarts: 8
+    log_location: ./.state/logs/llama-swap.log
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 25100
+        path: /health
+      initial_delay_seconds: 3
+      period_seconds: 5

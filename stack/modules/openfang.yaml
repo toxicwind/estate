@@ -6,6 +6,13 @@ processes:
     - OPENFANG_PORT=${OPENFANG_PORT}
     availability:
       restart: on_failure
-      max_restarts: 5
-      backoff_seconds: 5
-    log_location: .state/logs/openfang.log
+      backoff_seconds: 3
+      max_restarts: 8
+    log_location: ./.state/logs/openfang.log
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 25103
+        path: /api/health
+      initial_delay_seconds: 3
+      period_seconds: 5
