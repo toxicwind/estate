@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
 source "$(dirname "$0")/_lib.sh"
-# Core inference + agents + dashboard (watchdog embedded in rust-web)
-pc_up llama-swap openfang prometheus rust-web landing
+# Core inference + agents + metrics + edge proxy
+pc_up llama-swap openfang prometheus null-g-proxy

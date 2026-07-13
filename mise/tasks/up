@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 source "$(dirname "$0")/_lib.sh"
-# generate fresh process-compose.yaml then use pc_up
+# Daily driver: core + edge proxy + telegram bot + rust dashboard
 "$SOV/stack/build-compose.sh" >/dev/null
-pc_up llama-swap openfang prometheus yote rust-web hf-downloader
+pc_up llama-swap openfang prometheus null-g-proxy yote rust-web

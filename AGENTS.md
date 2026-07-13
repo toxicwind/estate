@@ -4,21 +4,28 @@ Inherits **`~/.grok/AGENTS.md`**. Local deltas only.
 
 ## Stack
 
-| Piece | Path / port |
-|-------|-------------|
-| Orchestration | **mise + process-compose** (not pixi/devenv) |
-| LLM front door | **llama-swap :25100** (Go binary — do **not** rewrite) |
-| LLM **chat UI** | **llama-swap** `http://127.0.0.1:25100/ui/` — not the :25101 dashboard |
-| Hot path web/watchdog | **Rust** `sovereign_web` (:25101 / :25104) |
-| Glue / MCP / IDE deploy | **Bun** under `src/{mcp,deploy,services}` |
-| Weird / legacy | **`backup/` only** — never delete; move junk here, never stage |
+| Piece | Path / port | Runtime |
+|-------|-------------|---------|
+| Orchestration | **mise + process-compose** | Shell |
+| LLM front door | **llama-swap :25100** | Go (upstream — do NOT rewrite) |
+| LLM **chat UI** | **llama-swap** `http://127.0.0.1:25100/ui/` | Go |
+| Web dashboard + watchdog | **rust-web** (:25101 / :25104) | **Rust** |
+| All app code | `src/{mcp,deploy,services}` | **Bun (primary)** |
+| Edge proxy | **null-g-proxy** (:8787) | Bun |
+| Agent kernel | **openfang** (:25103) | Bun |
+| Telegram bot | **yote** (:25102) | Bun |
+| HF downloader | **hf-downloader** (:25106) | Bun |
+| Legacy | **`backup/` only** | — |
 
-### Language policy (no thrash)
+### Language hierarchy (enforced)
 
-- **Keep llama-swap as-is** (upstream Go). Replacing it is pure thrash.
-- **Rust** owns long-lived hot services (already `sovereign_web`).
-- **Bun** owns MCP, settings JSON, IDE wiring, one-shot deploy tools — not the inference path.
-- Do **not** rewrite Bun→Rust or shell→Rust wholesale unless a service is proven hot-path + broken.
+1. **Bun** — PRIMARY application language. All new services, MCP, deploy, glue, IDE wiring, e2e tests go here.
+2. **Rust** — Hot-path long-lived services only (already `sovereign_web`). No new Rust without proven hot-path need.
+3. **Go** — llama-swap is an untouchable upstream binary. Never patch, never fork for config changes.
+4. **Shell** — Demoted to thin wrappers only: mise task scripts, service entry shims (`stack/services/*.sh`).
+   - NO shell scripts for core logic.
+   - NO sh in `bin/` except build artifacts.
+   - All operational commands go through `mise run`.
 
 ## Mandatory tools (emergence)
 

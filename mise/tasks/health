@@ -21,20 +21,16 @@ probe() {
   fi
 }
 
-# Core (up-core): llama-swap, openfang, prometheus, rust-web
-# watchdog is embedded in rust-web (same binary, extra port)
+# Core: llama-swap, openfang, prometheus, rust-web (watchdog embedded)
 probe CORE llama-swap   "${LLAMA_SWAP_PORT:-25100}"  /health
-probe CORE rust-web     "${RUST_WEB_PORT:-25101}"    /health
 probe CORE openfang     "${OPENFANG_PORT:-25103}"    /api/health
 probe CORE prometheus   "${PROMETHEUS_PORT:-25105}"  /-/healthy
-probe CORE watchdog     "${WATCHDOG_PORT:-25104}"    /health
+probe CORE rust-web     "${RUST_WEB_PORT:-25101}"    /health
 
-# Standard `up` extras
+# Optional: yote, null-g-proxy, hf-downloader
 probe OPT  yote         "${YOTE_PORT:-25102}"        /health
+probe OPT  null-g       "${NULL_G_PORT:-8787}"       /health
 probe OPT  hf-downloader "${HF_DOWNLOADER_PORT:-25106}" /api/health
-
-# Edge only in up-full
-probe OPT  caddy-edge   "${CADDY_PORT:-25000}"       /health
 
 echo "---"
 echo "core_fail=${CORE_FAIL} optional_fail=${OPTIONAL_FAIL}"

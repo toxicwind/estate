@@ -1,4 +1,8 @@
-# === secrets & local env ===
+# ============================================================================
+# .gitignore — Sovereign Stack (Bun-primary)
+# ============================================================================
+
+# ─── Secrets ──────────────────────────────────────────────────────────────────
 .env
 .env.local
 .envrc.local
@@ -6,14 +10,14 @@
 *.key
 *.pem
 
-# === runtime / state ===
+# ─── Runtime / State ──────────────────────────────────────────────────────────
 .state/
 .prometheus/
 logs/
 *.log
 pids/
 
-# === python / node / rust builds ===
+# ─── Build Artifacts ──────────────────────────────────────────────────────────
 .venv/
 __pycache__/
 *.pyc
@@ -22,67 +26,49 @@ node_modules/
 target/
 dist/
 build/
+bun.lock
 
-# === models & heavy data (GGUFs live outside this tree) ===
+# ─── Binaries (built/copied, not tracked in git) ─────────────────────────────
+bin/sovereign_web
+bin/llama-swap
+tools/llama-swap/llama-swap
+tools/llama-swap/ollama-proxy
+tools/llama-swap/*.db
+tools/llama-swap/*.db-journal
+
+# ─── Models (GGUFs live outside this tree) ────────────────────────────────────
 models/
 *.gguf
 data/
 
-# === scratch, agent ephemeral, local overrides ===
+# ─── Scratch / Ephemeral ─────────────────────────────────────────────────────
 scratch/
-bins/
-test.zsh
 .agents/
 .grok/
 *.local.md
 *.local.toml
 
-# === backups & reorg dumps (never stage) ===
+# ─── Backup (never stage) ────────────────────────────────────────────────────
 backup/
 **/reorg_*/
 **/cleanup_*/
 hw_dump*
 hardware_audit*
 
-# === non-production trees (live under backup/ if needed) ===
+# ─── Non-production (legacy, kept in backup/) ────────────────────────────────
 yote/
 tools/legacy/
 tools/ollama-proxy-rs/
 
-# === rust_algo_web: track source, never target or fat binaries ===
-rust_algo_web/target/
-bin/sovereign_web
-bin/sovereign_devops_advisor
-
-# === llama-swap binary ===
-bin/llama-swap
-
-# === IDE ===
-.idea/
-.vscode/
-
-# === retired env managers ===
+# ─── Retired env managers ─────────────────────────────────────────────────────
 .direnv/
 .devenv/
 .devbox/
 
-# === llama-swap: keep config.yaml + docs only ===
-tools/llama-swap/llama-swap
-tools/llama-swap/ollama-proxy
-tools/llama-swap/*.db
-tools/llama-swap/*.db-journal
-tools/llama-swap/config.20*.yml
-tools/llama-swap/config.pre.yaml
+# ─── IDE ──────────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
 
-# === random experiment / one-off noise ===
-avx512_test*
-*.bt
-t.txt
-patch.sh
-builds-dynamic.json
-tree.txt
-mise.toml.txt
-rust_algo_web.zip.pdf
+# ─── Misc noise ───────────────────────────────────────────────────────────────
 dashboard/
-llama-swap-maximal*/
 ports.env

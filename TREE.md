@@ -1,65 +1,57 @@
-# Sovereign tree (production surface)
+# Sovereign tree
 
 ```
 sovereign/
 ├── AGENTS.md                 # project rules (inherits ~/.grok)
+├── README.md                 # this file
 ├── TREE.md                   # this file
-├── README.md
-├── package.json / bun.lock   # Bun runtime
 ├── mise.toml + mise/tasks/   # lifecycle (up/down/health/test-llm)
 ├── process-compose.yaml      # GENERATED from stack/modules
-├── Caddyfile / prometheus.yml
-├── config/ports.env
-├── bin/                      # thin operational scripts only
+├── package.json / bun.lock   # Bun runtime
+├── .env.local                # ports, paths, flags
+├── .gitignore
+├── Caddyfile                 # optional edge (not in pc profile)
+├── prometheus.yml
+│
 ├── stack/
 │   ├── modules/*.yaml        # process-compose process defs
-│   └── services/*.sh         # entry shims → bun where possible
-├── src/                      # ALL app TypeScript (Bun)
-│   ├── mcp/llama_swap.ts     # MCP + CLI e2e
+│   │   ├── llama-swap.yaml
+│   │   ├── null-g-proxy.yaml
+│   │   ├── openfang.yaml
+│   │   ├── prometheus.yaml
+│   │   ├── rust-web.yaml
+│   │   ├── yote.yaml
+│   │   └── hf-downloader.yaml
+│   ├── services/*.sh         # entry shims
+│   ├── base.yaml             # version + strict settings
+│   ├── build-compose.sh      # modules → process-compose.yaml
+│   ├── profiles.sh           # core / sovereign / full
+│   ├── lib.sh                # shared helpers
+│   ├── up.sh / down.sh / health.sh
+│   └── ports.env
+│
+├── src/                      # ALL app TypeScript (Bun — primary)
+│   ├── mcp/llama_swap.ts     # MCP server + CLI e2e
 │   ├── deploy/               # Insiders / IDEs / OpenFang providers
-│   ├── services/             # hf-downloader, openfang, …
-│   └── landing/
-├── tools/llama-swap/         # config.yaml + docs (binary ignored)
+│   └── services/             # hf-downloader, openfang, null-g-proxy
+│
+├── rust_algo_web/            # Rust hot-path web + watchdog
+│   ├── src/main.rs
+│   ├── src/watchdog.rs
+│   ├── Cargo.toml
+│   └── static/
+│
+├── tools/llama-swap/         # config.yaml only (binary in bin/)
+│
+├── bin/                      # binary artifacts only
+│   ├── llama-swap            # ELF (Go)
+│   ├── sovereign_web         # ELF (Rust)
+│   ├── llama-gguf-hash       # utility wrapper
+│   └── llama-gguf-hash-run   # utility wrapper
+│
 ├── tests/
 ├── skills/
+├── projects/                 # experimental sub-projects
 ├── models -> ~/models        # GGUF runtime (not in git)
-└── backup/                   # moved junk/history — NEVER stage
+└── backup/                   # moved junk — NEVER stage
 ```
-
-## Not in the live tree
-
-Moved under `backup/clean_2026-07-11_prod/`:
-
-| Was | Why |
-|-----|-----|
-| `rust_algo_web/`, `yote/`, `scratch/` | heavy / non-core |
-| `tools/ollama-proxy-rs`, `tools/legacy` | legacy |
-| most of `bin/llama-*` symlinks + ctx experiments | belong in builds, not repo |
-| `.agents/teamwork_*`, config snaps | ephemeral |
-
-## Commands
-
-| Task | Does |
-|------|------|
-| `mise run up-core` | llama-swap + openfang + prometheus + rust-web + watchdog |
-| `mise run up` | core + optional |
-| `mise run health` | CORE vs OPT (exit 1 if core red) |
-| `mise run test-llm` / `bun run test:llm` | e2e choices≥1 |
-| `bun run deploy:ides` | wire IDEs → :25100 |
-
-## LLM front door
-
-Always `http://127.0.0.1:25100` (llama-swap). **Never vLLM.**
-
-## Runtime split (optimized, no thrash)
-
-| Layer | Runtime | Why |
-|-------|---------|-----|
-| Inference router | llama-swap (Go) | Already production; leave alone |
-| Dashboard / watchdog | Rust `sovereign_web` | Hot long-lived process |
-| MCP + IDE deploy + e2e | Bun `src/` | Fast glue; MCP SDK; not on token path |
-| Lifecycle | bash `mise/tasks` | Thin; shebang `#!/usr/bin/env bash` |
-
-## Agent shell note
-
-`~/.zshrc` agent early-`return 0` only exits the **sourced** zshrc (minimal PATH). It does **not** complete your work script. False “complete” is almost always the harness **timeout → background**, not zsh. Prefer `bash --noprofile --norc` or scripts with bash shebangs for long git/mise work.
