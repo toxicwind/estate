@@ -1,10 +1,8 @@
 version: "0.5"
 is_strict: false
 processes:
-  llama-swap:
-    command: llama-swap --config /home/toxic/.config/llama-swap/config.yaml --listen 127.0.0.1:25100
-    readiness_probe:
-      http_get: { host: 127.0.0.1, port: 25100, path: /v1/models }
   null-g-proxy:
     command: node /home/toxic/sovereign/tools/null-g-proxy/dist/index.js
     environment: ["PORT=8787"]
+    readiness_probe:
+      http_get: { host: 127.0.0.1, port: 8787, path: / }
