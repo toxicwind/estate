@@ -1,0 +1,40 @@
+{
+  "program": "github",
+  "title": "GitHub Security Bug Bounty",
+  "submitHint": "Submit via https://hackerone.com/github — criticals advertised $30k+",
+  "ts": "2026-07-11T21:37:35.350Z",
+  "results": [
+    {
+      "url": "https://hackerone.com/github",
+      "ok": true,
+      "title": "Sign in | HackerOne",
+      "status": 200,
+      "screenshot": "/home/toxic/sovereign/tools/bugbounty/artifacts/github/2026-07-11T21-37-26-472Z_hackerone.com_github.png",
+      "error": null
+    },
+    {
+      "url": "https://bounty.github.com/",
+      "ok": true,
+      "title": "GitHub Security | GitHub Bug Bounty",
+      "status": 200,
+      "screenshot": "/home/toxic/sovereign/tools/bugbounty/artifacts/github/2026-07-11T21-37-29-481Z_bounty.github.com_.png",
+      "error": null
+    },
+    {
+      "url": "https://bounty.github.com/scope.html",
+      "ok": true,
+      "title": "GitHub Bug Bounty",
+      "status": 200,
+      "screenshot": "/home/toxic/sovereign/tools/bugbounty/artifacts/github/2026-07-11T21-37-32-310Z_bounty.github.com_scope.html.png",
+      "error": null
+    },
+    {
+      "url": "https://bounty.github.com/rules.html",
+      "ok": true,
+      "title": "Rules of Engagement | GitHub Bug Bounty",
+      "status": 200,
+      "screenshot": "/home/toxic/sovereign/tools/bugbounty/artifacts/github/2026-07-11T21-37-35-320Z_bounty.github.com_rules.html.png",
+      "error": null
+    }
+  ]
+}

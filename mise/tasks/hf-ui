@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# bodaay/HuggingFaceModelDownloader Web UI — model quant ranking + download
+# https://github.com/bodaay/HuggingFaceModelDownloader
+PORT="${HF_DOWNLOADER_PORT:-25106}"
+if curl -sf --max-time 1 "http://127.0.0.1:${PORT}/api/health" >/dev/null; then
+  echo "hfdownloader already up :${PORT} → http://127.0.0.1:${PORT}/"
+  curl -sS --max-time 2 "http://127.0.0.1:${PORT}/api/health"
+  echo
+  exit 0
+fi
+BIN="${HOME}/.local/bin/hfdownloader"
+if [[ ! -x "$BIN" ]]; then
+  echo "installing bodaay hfdownloader v3…"
+  bash <(curl -sSL https://g.bodaay.io/hfd) install "${HOME}/.local/bin"
+fi
+SOV="${SOVEREIGN_ROOT:-$PWD}"
+export HF_DOWNLOADER_PORT="$PORT" SOVEREIGN_ROOT="$SOV"
+exec /home/toxic/.bun/bin/bun run "$SOV/src/hf_downloader.ts"

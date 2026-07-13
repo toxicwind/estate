@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sovereign • Live Architecture</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  body { background-color: #0f1117; color: #e2e8f0; }
+  .card { background-color: #161b22; border: 1px solid #30363d; }
+  .section-header { font-size: 1.55rem; font-weight: 700; letter-spacing: -.035em; }
+  table { border-collapse: collapse; }
+  th, td { padding: 8px 12px; text-align: center; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-family: ui-monospace, monospace; font-size: 11px;
+    padding: 0.25rem 0.65rem; border-radius: 9999px;
+    border: 1px solid #30363d; background: #0d1117; color: #94a3b8;
+  }
+  .chip.online { border-color: rgba(16,185,129,0.4); color: #34d399; background: rgba(16,185,129,0.08); }
+  .chip.offline { border-color: rgba(239,68,68,0.35); color: #f87171; background: rgba(239,68,68,0.08); }
+  .chip.active { border-color: rgba(6,182,212,0.45); color: #22d3ee; background: rgba(6,182,212,0.1); }
+</style>
+</head>
+<body class="p-8">
+<div class="max-w-[1520px] mx-auto">
+
+  <!-- Header -->
+  <div class="flex justify-between items-end mb-10">
+    <div>
+      <h1 class="text-7xl font-bold tracking-tighter">Sovereign</h1>
+      <p class="text-2xl text-slate-400 mt-1">Live Architecture + Fork Intelligence</p>
+      <p class="text-xs text-slate-500 mt-2 font-mono">
+        Model / quant rankings →
+        <a id="link-hfd" class="text-cyan-400 hover:underline" href="http://127.0.0.1:25106/" target="_blank" rel="noopener">bodaay HF UI :25106</a>
+        · this page = stack live state only
+      </p>
+    </div>
+    <div class="text-right text-sm">
+      <div class="font-mono text-emerald-400" id="hdr-forks">ik_tq • turboquant • beellama</div>
+      <div class="text-xs text-slate-500 mt-1" id="hdr-sync">architecture poll: —</div>
+      <a href="/" class="text-xs text-cyan-400 hover:underline font-mono">← command center</a>
+    </div>
+  </div>
+
+  <!-- Live status strip -->
+  <div class="card rounded-3xl p-6 mb-10">
+    <div class="flex flex-wrap items-center gap-2 mb-4">
+      <span class="chip active" id="chip-active-model">model: …</span>
+      <span class="chip active" id="chip-active-fork">fork: …</span>
+    </div>
+    <div class="flex flex-wrap gap-2 mb-3" id="svc-chips">
+      <span class="chip">loading services…</span>
+    </div>
+    <div class="flex flex-wrap gap-2" id="fork-chips"></div>
+  </div>
+
+  <!-- Architecture -->
+  <div class="mb-14">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-emerald-400">▸</span>
+      <span class="section-header">Sovereign Stack Architecture</span>
+    </div>
+    <div class="card rounded-3xl p-8">
+      <pre class="mermaid" id="arch-mermaid">
+flowchart TD
+    subgraph Environment ["Environment & Bootstrap"]
+        ports[ports.env]
+        lib[stack/lib.sh]
+        mise[mise.toml]
+        dotenv[.env.local]
+    end
+
+    subgraph Orchestration ["Orchestration Layer"]
+        pc[process-compose.yaml]
+        stack[stack/]
+    end
+
+    subgraph Router ["Smart Router"]
+        swap[llama-swap :25100]
+    end
+
+    subgraph LLM ["LLM Execution (4 Forks)"]
+        beellama[beellama.cpp]
+        turboquant[llama-cpp-turboquant]
+        ik_llama[ik_llama.cpp-main]
+        ik_tq[ik_turboquant]
+    end
+
+    subgraph Services ["Core Services"]
+        openfang[OpenFang]
+        yote[Yote]
+        prometheus[Prometheus]
+        rust[Rust Web :25101]
+        watchdog[Watchdog]
+        hf[HF Downloader :25106]
+    end
+
+    ports --> lib --> pc
+    dotenv --> pc
+    mise --> pc
+
+    pc --> openfang
+    pc --> yote
+    pc --> prometheus
+    pc --> rust
+    pc --> watchdog
+    pc --> swap
+    pc --> hf
+
+    openfang --> swap
+    swap --> beellama
+    swap --> turboquant
+    swap --> ik_llama
+    swap --> ik_tq
+      </pre>
+    </div>
+  </div>
+
+  <!-- Fork Overview -->
+  <div class="mb-12">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="text-sky-400">▸</span>
+      <span class="section-header">LLM Fork Specialization</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="card rounded-3xl p-7">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-3 h-3 rounded-full bg-red-500"></div>
+          <span class="text-2xl font-semibold">turboquant</span>
+        </div>
+        <div class="space-y-2.5 text-sm">
+          <div><span class="font-mono text-red-400">78 AST</span> turboquant-types <span class="text-red-400 font-semibold">★★★ EXCLUSIVE</span></div>
+          <div><span class="font-mono text-red-400">127 AST</span> mla <span class="text-red-400 font-semibold">★★★ FULL</span></div>
+          <div class="pt-4 text-xs text-slate-400 border-t border-slate-700">The Quantization Engine. Deepest turboquant integration in the fleet.</div>
+        </div>
+      </div>
+
+      <div class="card rounded-3xl p-7">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-3 h-3 rounded-full bg-teal-400"></div>
+          <span class="text-2xl font-semibold">beellama</span>
+        </div>
+        <div class="space-y-2.5 text-sm">
+          <div><span class="font-mono text-teal-400">80 grep</span> dflash <span class="text-teal-400 font-semibold">★★★ LITERAL DOMINANCE</span></div>
+          <div><span class="font-mono text-teal-400">43 AST</span> speculative <span class="text-teal-400 font-semibold">★★☆ AST-deep</span></div>
+          <div class="pt-4 text-xs text-slate-400 border-t border-slate-700">DFlash + Turbo Hybrid. Strong practical speculative decoding.</div>
+        </div>
+      </div>
+
+      <div class="card rounded-3xl p-7">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-3 h-3 rounded-full bg-sky-400"></div>
+          <span class="text-2xl font-semibold">ik_tq</span>
+        </div>
+        <div class="space-y-2.5 text-sm">
+          <div><span class="font-mono text-sky-400">47 AST</span> speculative <span class="text-sky-400 font-semibold">★★★ EXCLUSIVE</span></div>
+          <div><span class="font-mono text-sky-400">22 AST</span> hadamard <span class="text-sky-400 font-semibold">★★★ EXCLUSIVE</span></div>
+          <div><span class="font-mono text-sky-400">18 AST</span> merge <span class="text-sky-400 font-semibold">★★★ EXCLUSIVE</span></div>
+          <div class="pt-4 text-xs text-slate-400 border-t border-slate-700">"Everything Else" fork. Most architecturally divergent.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grep + AST Tables -->
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-12">
+    <div class="card rounded-3xl p-7">
+      <div class="font-semibold mb-4">Literal Text Matches (grep)</div>
+      <table class="w-full text-xs">
+        <thead class="text-slate-400">
+          <tr><th class="text-left">Fork</th><th>turbo</th><th>hadamard</th><th>merge</th><th>mla</th><th>dflash</th><th>spec</th><th>llama_spec_</th></tr>
+        </thead>
+        <tbody class="font-mono">
+          <tr class="border-t border-slate-700"><td class="py-2 text-red-400">turboquant</td><td>80</td><td>10</td><td>0</td><td>80</td><td>1</td><td>11</td><td>0</td></tr>
+          <tr class="border-t border-slate-700"><td class="py-2 text-teal-400">beellama</td><td>51</td><td>14</td><td>0</td><td>80</td><td>80</td><td>5</td><td>0</td></tr>
+          <tr class="border-t border-slate-700"><td class="py-2 text-sky-400">ik_tq</td><td>0</td><td>80</td><td>45</td><td>80</td><td>80</td><td>80</td><td>58</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card rounded-3xl p-7">
+      <div class="font-semibold mb-4">Semantic Code Patterns (AST)</div>
+      <table class="w-full text-xs">
+        <thead class="text-slate-400">
+          <tr><th class="text-left">Fork</th><th>hadamard</th><th>merge</th><th>mla</th><th>speculative</th><th>turboquant-types</th></tr>
+        </thead>
+        <tbody class="font-mono">
+          <tr class="border-t border-slate-700"><td class="py-2 text-red-400">turboquant</td><td>8</td><td>0</td><td>127</td><td>0</td><td>78</td></tr>
+          <tr class="border-t border-slate-700"><td class="py-2 text-teal-400">beellama</td><td>12</td><td>0</td><td>127</td><td>43</td><td>52</td></tr>
+          <tr class="border-t border-slate-700"><td class="py-2 text-sky-400">ik_tq</td><td>22</td><td>18</td><td>79</td><td>47</td><td>0</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+    <div class="card rounded-3xl p-7">
+      <div class="font-semibold mb-4 text-amber-400">Why These Three Forks Exist</div>
+      <div class="text-sm space-y-4 text-slate-300">
+        <div><span class="font-semibold text-white">1. Architectural Incompatibility</span><br>ik_tq uses a completely different build_*.cpp model-builder pattern (77 unique files).</div>
+        <div><span class="font-semibold text-white">2. Mutually Exclusive Core Features</span><br>turboquant owns turboquant-types; ik_tq owns hadamard + merge + speculative; beellama owns DFlash.</div>
+        <div><span class="font-semibold text-white">3. Depth vs Surface Integration</span><br>grep=80 + AST=0 = name-dropped. Only MLA is truly shared across forks.</div>
+      </div>
+    </div>
+
+    <div class="card rounded-3xl p-7">
+      <div class="font-semibold mb-4">Unique Files (Not Shared)</div>
+      <div class="text-sm space-y-3">
+        <div><span class="font-semibold text-red-400">turboquant:</span> 3 files (cohere2moe.cpp, eagle3.cpp, gemma4-assistant.cpp)</div>
+        <div><span class="font-semibold text-teal-400">beellama:</span> 2 files (dflash_draft.cpp, dflash-profile.h)</div>
+        <div><span class="font-semibold text-sky-400">ik_tq:</span> <span class="font-mono">77 files</span> — massive build-system refactor</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  flowchart: { curve: 'basis', padding: 22 }
+});
+
+async function fetchArchitecture() {
+  try {
+    const res = await fetch('/landing/api/architecture');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    const modelChip = document.getElementById('chip-active-model');
+    const forkChip = document.getElementById('chip-active-fork');
+    if (modelChip) modelChip.textContent = 'model: ' + (data.active_model || 'Offline');
+    if (forkChip) forkChip.textContent = 'fork: ' + (data.active_fork || '—');
+
+    const svcHost = document.getElementById('svc-chips');
+    if (svcHost && data.services) {
+      svcHost.innerHTML = Object.entries(data.services).map(([name, info]) => {
+        const on = info && info.online;
+        const port = info && info.port != null ? ':' + info.port : '';
+        return '<span class="chip ' + (on ? 'online' : 'offline') + '">' +
+          name + port + ' ' + (on ? '●' : '○') + '</span>';
+      }).join('');
+    }
+
+    const forkHost = document.getElementById('fork-chips');
+    if (forkHost && data.models_by_fork) {
+      const forks = Object.entries(data.models_by_fork);
+      forkHost.innerHTML = forks.map(([fork, n]) => {
+        const cls = fork === data.active_fork ? 'chip active' : 'chip';
+        return '<span class="' + cls + '">' + fork + ': ' + n + ' model' + (n === 1 ? '' : 's') + '</span>';
+      }).join('');
+      const hdr = document.getElementById('hdr-forks');
+      if (hdr && forks.length) hdr.textContent = forks.map(([f]) => f).join(' • ');
+    }
+
+    const sync = document.getElementById('hdr-sync');
+    if (sync) sync.textContent = 'architecture poll: ' + new Date().toLocaleTimeString();
+  } catch (e) {
+    const sync = document.getElementById('hdr-sync');
+    if (sync) sync.textContent = 'architecture poll error: ' + e.message;
+  }
+}
+
+function initHotReload() {
+  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  const ws = new WebSocket(
+    `${protocol}//${window.location.hostname}:25080/ws-reload`
+  );
+  ws.onmessage = (event) => {
+    if (event.data === "reload") {
+      console.log("Hot reload signal received. Reloading page...");
+      window.location.reload();
+    }
+  };
+  ws.onclose = () => {
+    setTimeout(initHotReload, 2000);
+  };
+}
+
+initHotReload();
+fetchArchitecture();
+setInterval(fetchArchitecture, 8000);
+</script>
+</body>
+</html>

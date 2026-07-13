@@ -1,90 +1,19 @@
-min_version = "2025.7.0"
-
-[vars]
-sov = "{{ config_root }}"
-home = "{{ env.HOME }}"
-
+min_version = "2026.6.0"
 [tools]
 process-compose = "latest"
 python = "3.12"
-jq = "latest"
-
+bun = "latest"
+node = "22"
 [env]
-SOVEREIGN_ROOT = "{{ vars.sov }}"
-
-LLAMA_SERVER_PORT = "25001"
-LLAMA_HERDER = "28080"
-OPENFANG_PORT = "25004"
-RUST_WEB_PORT = "25005"
-HF_DOWNLOADER = "25020"
-WATCHDOG_PORT = "25022"
-YOTE_PORT = "25042"
-PROMETHEUS_PORT = "25030"
-CADDY_PORT = "25000"
-CADDY_ADMIN_PORT = "25031"
-LANDING_PORT = "25080"
-
-LLM_PROXY_URL = "http://127.0.0.1:{{ env.LLAMA_HERDER }}"
-LLM_BASE_URL = "{{ env.LLM_PROXY_URL }}/v1"
-ADVISOR_CACHE_LIMIT = "24G"
-
-_.path = [
-  "{{ vars.sov }}/yote/.venv/bin",
-  "{{ vars.sov }}/bin",
-  "{{ vars.sov }}/stack",
-  "{{ vars.home }}/.bun/bin",
-]
-
-_.file = [
-  ".env.local",
-  { path = "{{ vars.home }}/.secrets", redact = true },
-  { path = "{{ vars.home }}/.openfang/secrets.env", redact = true },
-]
-
-[settings]
-experimental = true
-idiomatic_version_file_enable_tools = ["python"]
-
-# ── Task definitions ─────────────────────────────────────────────────────────
-# Complex tasks live as executable scripts in mise/tasks/ (mise 2026 convention).
-# Simple one-liners stay here in TOML.  All tasks inherit [env] automatically.
-
-[tasks.up-core]
-description = "Core stack: llama-herder + openfang + prometheus"
-run = "./mise/tasks/up-core"
-
+LLAMA_SWAP_PORT = "25100"
+NULL_G_PORT = "8787"
+PC_PORT = "25201"
+PATH = "{{config_root}}/yote/.venv/bin:{{env.HOME}}/.local/bin:{{env.HOME}}/.bun/bin:{{env.PATH}}"
 [tasks.up]
-description = "Sovereign stack: core + yote + rust-web"
-depends = ["build-compose"]
-run = "./mise/tasks/up"
-
-[tasks.up-full]
-description = "Full stack: sovereign + landing + watchdog + hf-downloader"
-depends = ["build-compose"]
-run = "./mise/tasks/up-full"
-
+run = "process-compose --port $PC_PORT --config process-compose.yaml up --detached -t=false && echo \"up on pc:$PC_PORT llama:$LLAMA_SWAP_PORT nullg:$NULL_G_PORT\""
 [tasks.down]
-description = "Stop the entire stack"
-run = "./mise/tasks/down"
-
-[tasks.health]
-description = "Port health matrix + GPU + llama-swap runtime"
-run = "./mise/tasks/health"
-
+run = "process-compose --port $PC_PORT --config process-compose.yaml down 2>/dev/null; pkill -f process-compose; true"
 [tasks.status]
-description = "Process list and quick port bindings"
-run = "./mise/tasks/status"
-
-[tasks.build-compose]
-description = "Flatten stack/modules/*.yaml → process-compose.yaml"
-sources = ["stack/base.yaml", "stack/modules/*.yaml"]
-outputs = ["process-compose.yaml"]
-run = "./mise/tasks/build-compose"
-
-[tasks.kill-devenv]
-description = "Kill stale devenv / nix daemons"
-run = "{{ vars.sov }}/bin/kill-devenv.sh"
-
-[tasks.consolidate]
-description = "Archive stale whitelist config duplicates"
-run = "{{ vars.sov }}/bin/consolidate-known.sh"
+run = "process-compose --port $PC_PORT --config process-compose.yaml process list; ss -ltnp | grep -E \"$LLAMA_SWAP_PORT|$NULL_G_PORT|$PC_PORT\""
+[tasks.models]
+run = "curl -sf http://127.0.0.1:$LLAMA_SWAP_PORT/v1/models | jq -r '.data[].id' | sort"

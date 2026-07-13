@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DecoyProxy // Epistemic Shield & Prompt Bypass</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="terminal-container">
+        <!-- Terminal Header -->
+        <header class="terminal-header">
+            <div class="status-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+            </div>
+            <div class="terminal-title">DECOYPROXY // EPISTEMIC SHIELD PORTAL</div>
+            <div class="terminal-net">NET_STATUS: ACTIVE</div>
+        </header>
+
+        <!-- Stats Bar -->
+        <section class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-label">TOTAL PROXIED</span>
+                <span id="stat-requests" class="stat-val">--</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">TOKENS SAVED</span>
+                <span id="stat-tokens" class="stat-val">--</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">GAS SAVED (TON)</span>
+                <span id="stat-gas" class="stat-val">--</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">AVOIDED TAX</span>
+                <span id="stat-tax" class="stat-val">--</span>
+            </div>
+        </section>
+
+        <!-- Main Body -->
+        <main class="portal-body">
+            <!-- Left Console: Prompt Transformer -->
+            <section class="console-section src-prompt">
+                <div class="section-header">Original Request</div>
+                <textarea id="prompt-input" placeholder="Type your controversial or high-value prompt here..."></textarea>
+                
+                <div class="provider-selector">
+                    <label>Target API Provider</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="provider" value="DeepSeek" checked>
+                            DeepSeek
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="provider" value="Kimi">
+                            Kimi (OK-Computer)
+                        </label>
+                    </div>
+                </div>
+
+                <button id="btn-transform" class="term-btn">Deploy Decoy Proxy</button>
+            </section>
+
+            <!-- Right Console: Decoy Transform & Raw Output -->
+            <section class="console-section dest-output">
+                <div class="section-header">Decoy Transform Details</div>
+                <div class="decoy-details-box">
+                    <div class="detail-row">
+                        <span class="label">Method:</span>
+                        <span id="decoy-method" class="val">--</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Compliance Tax Saved:</span>
+                        <span id="decoy-pct" class="val highlight">--</span>
+                    </div>
+                </div>
+
+                <div class="output-wrapper">
+                    <div class="output-header">Raw Uncensored Output</div>
+                    <pre id="output-box" class="monospaced">Waiting for proxy deployment...</pre>
+                </div>
+            </section>
+        </main>
+
+        <!-- Subscription / Donation Footer -->
+        <footer class="terminal-footer">
+            <div class="subscription-box">
+                <span class="footer-msg">Avoid the 40% compliance token tax. Subscribe to DecoyProxy premium tunnel.</span>
+                <div class="payment-links">
+                    <a href="https://paypal.me/effusionlabs" target="_blank" class="pay-btn paypal">PayPal</a>
+                    <span class="or">or</span>
+                    <button class="pay-btn ton" onclick="alert('Send TON to address: EQD_Sovereign_Mesh_Payment_L2_Zero_Gas_Fees')">TON Crypto</button>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

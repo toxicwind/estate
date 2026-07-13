@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YOTE · Fleet Lab — swap · HFD · forks</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <style>
+      body {
+        background: radial-gradient(ellipse at top left, #0e0d16, #020204);
+        font-family: Inter, sans-serif;
+        color: #f3f4f6;
+        min-height: 100vh;
+      }
+      .glass {
+        background: rgba(14, 13, 22, 0.7);
+        border: 1px solid rgba(139, 92, 246, 0.18);
+        border-radius: 1rem;
+        backdrop-filter: blur(14px);
+      }
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .ok {
+        color: #34d399;
+      }
+      .bad {
+        color: #f87171;
+      }
+    </style>
+  </head>
+  <body class="px-4 py-8 max-w-6xl mx-auto">
+    <header class="flex flex-wrap justify-between items-center gap-4 mb-8 border-b border-white/10 pb-6">
+      <div>
+        <p class="text-xs mono text-cyan-400 tracking-widest uppercase mb-1">
+          Sovereign · integrations
+        </p>
+        <h1 class="text-3xl font-bold" style="font-family: Outfit, sans-serif">
+          Fleet Lab
+        </h1>
+        <p class="text-sm text-gray-400 mt-1">
+          llama-swap · HuggingFaceModelDownloader · 4-fork bench (LD from macros)
+        </p>
+      </div>
+      <nav class="flex flex-wrap gap-2 text-xs">
+        <a class="px-3 py-2 glass hover:border-cyan-500/40" href="/">Dashboard</a>
+        <a class="px-3 py-2 glass" href="/architecture.html">Architecture</a>
+        <a
+          id="nav-chat-ui"
+          class="px-3 py-2 bg-violet-600 hover:bg-violet-500 rounded-xl font-semibold"
+          href="http://127.0.0.1:25100/ui/"
+          target="_blank"
+          rel="noopener"
+          >Chat UI :25100</a
+        >
+        <a
+          id="nav-hfd"
+          class="px-3 py-2 glass"
+          href="http://127.0.0.1:25106/"
+          target="_blank"
+          rel="noopener"
+          >HFD :25106</a
+        >
+      </nav>
+    </header>
+
+    <div class="grid md:grid-cols-3 gap-4 mb-6">
+      <section class="glass p-5" id="card-swap">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-2">
+          <i class="fa-solid fa-shuffle text-cyan-400 mr-1"></i> llama-swap
+        </h2>
+        <p class="mono text-xs text-gray-500 mb-2" id="swap-url">…</p>
+        <p class="text-sm" id="swap-status">loading…</p>
+        <p class="text-xs text-gray-400 mt-3">
+          Chat lives on
+          <a class="text-cyan-400" id="chat-link" href="http://127.0.0.1:25100/ui/"
+            >/ui/</a
+          >
+          — not the dashboard.
+        </p>
+      </section>
+      <section class="glass p-5" id="card-hf">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-2">
+          <i class="fa-solid fa-cloud-arrow-down text-amber-400 mr-1"></i> HFD
+        </h2>
+        <p class="mono text-xs text-gray-500 mb-2">:25106 quant rank + download</p>
+        <p class="text-sm" id="hf-status">loading…</p>
+      </section>
+      <section class="glass p-5" id="card-policy">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-2">
+          <i class="fa-solid fa-ruler-horizontal text-violet-400 mr-1"></i> Context
+        </h2>
+        <p class="text-xs text-gray-400 leading-relaxed">
+          Graduated probes: 4k → 8k → 16k → 32k → 64k. Never start 27B at max
+          context. LD paths come from
+          <code class="text-cyan-400">tools/llama-swap/config.yaml</code>
+          macros (<span class="mono">*_ld</span>).
+        </p>
+      </section>
+    </div>
+
+    <section class="glass p-5 mb-6">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-3">
+        Four forks (from forks.json)
+      </h2>
+      <div id="forks" class="grid md:grid-cols-2 gap-3 text-xs mono"></div>
+    </section>
+
+    <section class="glass p-5">
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-gray-400">
+          Last fleet / bench result
+        </h2>
+        <button
+          id="reload"
+          class="text-xs px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg hover:border-cyan-500/40"
+        >
+          Reload
+        </button>
+      </div>
+      <pre
+        id="fleet-json"
+        class="mono text-[10px] text-gray-400 overflow-auto max-h-80 bg-black/30 p-3 rounded-lg"
+      >
+loading…</pre
+      >
+    </section>
+
+    <script>
+      async function load() {
+        const host = window.location.hostname;
+        const navChatUi = document.getElementById("nav-chat-ui");
+        if (navChatUi) navChatUi.href = `http://${host}:25100/ui/`;
+        const navHfd = document.getElementById("nav-hfd");
+        if (navHfd) navHfd.href = `http://${host}:25106/`;
+        const chatLink = document.getElementById("chat-link");
+        if (chatLink) chatLink.href = `http://${host}:25100/ui/`;
+
+        try {
+          const res = await fetch("/landing/api/integrations");
+          const d = await res.json();
+          const ok = (b) => (b ? "ok online" : "offline");
+          const cls = (b) => (b ? "ok" : "bad");
+          document.getElementById("swap-url").textContent = d.llama_swap?.url || "";
+          document.getElementById("swap-status").innerHTML =
+            `<span class="${cls(d.llama_swap?.online)}">${ok(d.llama_swap?.online)}</span> · ${d.llama_swap?.detail || ""}`;
+          document.getElementById("hf-status").innerHTML =
+            `<span class="${cls(d.hf_downloader?.online)}">${ok(d.hf_downloader?.online)}</span> · ${d.hf_downloader?.detail || ""}`;
+          if (d.chat_ui) {
+            const a = document.getElementById("chat-link");
+            a.href = d.chat_ui;
+          }
+          const forksEl = document.getElementById("forks");
+          const forks = d.forks?.forks || {};
+          forksEl.innerHTML = Object.entries(forks)
+            .map(([name, f]) => {
+              return `<div class="p-3 rounded-lg bg-black/25 border border-white/5">
+                <div class="text-cyan-300 font-bold mb-1">${name}</div>
+                <div class="text-gray-500 truncate">bin: ${f.bin_resolved || f.bin || "?"}</div>
+                <div class="text-gray-500 truncate">ld: ${(f.ld || "").slice(0, 80)}…</div>
+                <div class="text-gray-500">bench: ${f.bench ? "yes" : "no"}</div>
+              </div>`;
+            })
+            .join("") || "<p class='text-gray-500'>Run: bun tools/fleet/extract_forks.ts</p>";
+
+          const fl = await fetch("/landing/api/fleet/last");
+          const fj = await fl.json();
+          document.getElementById("fleet-json").textContent = JSON.stringify(
+            fj,
+            null,
+            2,
+          );
+        } catch (e) {
+          document.getElementById("fleet-json").textContent = String(e);
+        }
+      }
+      function initHotReload() {
+        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        const ws = new WebSocket(
+          `${protocol}//${window.location.hostname}:25080/ws-reload`
+        );
+        ws.onmessage = (event) => {
+          if (event.data === "reload") {
+            console.log("Hot reload signal received. Reloading page...");
+            window.location.reload();
+          }
+        };
+        ws.onclose = () => {
+          setTimeout(initHotReload, 2000);
+        };
+      }
+
+      document.getElementById("reload").onclick = load;
+      initHotReload();
+      load();
+    </script>
+  </body>
+</html>

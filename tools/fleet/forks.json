@@ -1,0 +1,43 @@
+{
+  "MODEL_DIR": "/home/toxic/sovereign/models",
+  "config": "/home/toxic/sovereign/tools/llama-swap/config.yaml",
+  "extracted_at": "2026-07-11T12:45:29.059Z",
+  "forks": {
+    "beellama": {
+      "bin": "/home/toxic/projects/beellama.cpp/build/bin/llama-server",
+      "ld": "/home/toxic/projects/beellama.cpp/build/bin",
+      "bin_resolved": "/home/toxic/projects/beellama.cpp/build/bin/llama-server",
+      "bench": "/home/toxic/projects/beellama.cpp/build/bin/llama-bench"
+    },
+    "turboquant": {
+      "bin": "/home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server",
+      "ld": "/home/toxic/projects/llama-cpp-turboquant/build/bin",
+      "bin_resolved": "/home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server",
+      "bench": "/home/toxic/projects/llama-cpp-turboquant/build/bin/llama-bench"
+    },
+    "ik_llama": {
+      "bin": "/home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server",
+      "ld": "/home/toxic/projects/ik_llama.cpp-main/build/bin:/home/toxic/projects/ik_llama.cpp-main/build/src:/home/toxic/projects/ik_llama.cpp-main/build/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build/examples/mtmd",
+      "bin_resolved": "/home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server",
+      "bench": "/home/toxic/projects/ik_llama.cpp-main/build/bin/llama-bench"
+    },
+    "ik_turboquant": {
+      "bin": "/home/toxic/projects/ik_turboquant/build/bin/llama-server",
+      "ld": "/home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/examples/mtmd",
+      "bin_resolved": "/home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin/llama-server",
+      "bench": "/home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin/llama-bench"
+    }
+  },
+  "ctx_policy": {
+    "probes": [
+      4096,
+      8192,
+      16384,
+      32768,
+      65536
+    ],
+    "deep_optional": 131072,
+    "never_start_27b_at_max": true,
+    "note": "Use graduated ctx; 27B class stops on first OOM; prefer qwen-flash for gates"
+  }
+}

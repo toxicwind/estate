@@ -1,144 +1,49 @@
-# AGENTS.md — Sovereign Monorepo (`/home/toxic/projects/sovereign-projects`)
+# AGENTS.md — Sovereign stack (`/home/toxic/sovereign`)
 
-**Role**: Monorepo consolidating core Sovereign ecosystem packages, extensions, shell tools, and runtimes.
-**Stack**: Multi-package monorepo (Bun, TypeScript, Go, Rust).
+Inherits **`~/.grok/AGENTS.md`**. Local deltas only.
 
----
+## Stack
 
-## 🎯 Repository Specifics
+| Piece | Path / port |
+|-------|-------------|
+| Orchestration | **mise + process-compose** (not pixi/devenv) |
+| LLM front door | **llama-swap :25100** (Go binary — do **not** rewrite) |
+| LLM **chat UI** | **llama-swap** `http://127.0.0.1:25100/ui/` — not the :25101 dashboard |
+| Hot path web/watchdog | **Rust** `sovereign_web` (:25101 / :25104) |
+| Glue / MCP / IDE deploy | **Bun** under `src/{mcp,deploy,services}` |
+| Weird / legacy | **`backup/` only** — never delete; move junk here, never stage |
 
-- Submodules / monorepo packages: `tau`, `qed`, `herd`, `mesh`, `shell`, `extensions/`, `packages/`.
-- Cross-package development: verify changes across shared utilities before claiming completion.
+### Language policy (no thrash)
 
-## 🔧 Hard Rules (universal)
+- **Keep llama-swap as-is** (upstream Go). Replacing it is pure thrash.
+- **Rust** owns long-lived hot services (already `sovereign_web`).
+- **Bun** owns MCP, settings JSON, IDE wiring, one-shot deploy tools — not the inference path.
+- Do **not** rewrite Bun→Rust or shell→Rust wholesale unless a service is proven hot-path + broken.
 
-1. **Verify live, then claim.** No "done" without `curl` / `lsof` / `nvidia-smi` / `npx tsgo --noEmit`.
-2. **Fail loud.** Never `2>/dev/null`, never `|| true`. Errors are diagnostic.
-3. **No commit without explicit user request.** Fork stays private under `toxicwind`.
-4. **Multi-strategy.** Non-trivial work → 3+ approaches, benchmark, keep runner-up.
-5. **TDD/BDD.** Failing assertion first, then fix. `npx tsgo --noEmit` for type-check.
-6. **Use emergence tools first.** GHAS (`:25113`) → ast-grep (`ast-grep` binary) → Tombi for TOML.
-7. **call_tool_destructive is DEFAULT for state changes.** Write/edit/modify = destructive. Read-only = inspection only.
-8. **No `/dev/null`, no banner `echo`.** Both waste tokens.
-8b. **BANNED/SLOW TOOLS — do NOT use, ever:** `find`, `head`, `tail`, `/dev/null`, and system-wide `lsof`.
-    - `find` over a large/full disk is slow + wasteful -> use `fd` (fast, gitignore-aware)
-      or scope `du`/`fd` to a SPECIFIC directory, never the whole `/home`/`/`.
-    - `head`/`tail` truncation -> read full files with the `read` tool (1M context).
-    - `/dev/null` -> fail loud; never silence errors.
-    - `lsof` (esp. system-wide) is INSANELY SLOW -> use INSTANT `/proc/<pid>/fd` symlink
-      reads (`readlink /proc/$PID/fd/*`) to see what a process has open. Scope to known PIDs.
-9. **Fix bashrc nested quote issue.** The `pi-check` alias had nested double quotes inside single quotes, causing `unexpected EOF while looking for matching '"'` errors. Use functions instead of aliases for complex commands.
-9. **CUDA-aware.** RTX 3090 — validate with `nvidia-smi`. Never assume upstream defaults.
-10. **Stop stacking long commands.** Sub-second probes. Reserve `60|120` for intentional jobs.
-11. **No `head` truncation.** You have 1M context. Read full files. No `| head -20`.
-12. **Timeout/failfast/high-frequency is FIRST-CLASS everywhere** (retry, provider-retry, worker-limits, MCP calls, scripts). NO insane monolithic timeouts — use failfast + high-frequency liveness probes + per-attempt deadlines.
-13. **Dynamic `${ENV_VAR}` interpolation is first-class** in configs/scripts (settings.json, config.yaml, mcpproxy config, launch scripts). Prefer `${...}` over hardcoded values.
-14. **Lint + test after EVERY code change; coverage floor 82%.** Pre-existing type errors in unrelated test files do NOT block the change under review — isolate + report.
-15. **BACKGROUNDING IS FIRST-CLASS.** Any op that can run long (downloads, builds, scans,
-   npm/pip/apt, model fetches) MUST be launched in background (`cmd &`, capture `$!`), tracked
-   by PID, and CANCELLED if it overruns a per-attempt deadline (`timeout`, `kill` on a watchdog
-   loop). Never block on a monolithic synchronous command. Keep a live PID ledger.
-16. **GOAL = ENDLESS TODO.** TODO.md is a CONTINUOUS improvement loop, not a finite list.
-   Re-audit constantly; new findings always append; done items cycle back as deeper waves.
-   No "finished" — only "next wave". Mutate TODO after every meaningful step.
+## Mandatory tools (emergence)
 
----
+1. **GHAS** — pattern/code/repo intel before inventing deploy, health, IDE, or provider wiring.
+2. **ast-grep** — structural code/config search and edit (upgrade CLI if `toml` unsupported; Tombi for TOML format/lint).
 
-## 🛠️ Tool Reference
+## OpenFang
 
-### ✅ INSTALLED (use these)
+- Prefer `provider = "llama"` → `[provider_urls] llama = "http://127.0.0.1:25100/v1"`.
+- Residual `vllm` **id** must map to the same URL — never start vLLM.
 
-| Tool | Binary | Purpose |
-|---|---|---|
-| `fd` | `/usr/bin/fd` | Fast find (respects .gitignore) |
-| `rg` | `/usr/bin/rg` | Fast grep (respects .gitignore) |
-| `ast-grep` | `~/.local/share/mise/shims/ast-grep` | AST structural search/rewrite |
-| `eza` | `/usr/bin/eza` | Modern ls (git-aware) |
-| `mise` | `~/.local/bin/mise` | Runtime manager |
-| `bun` | mise shim | Fast JS runtime |
-| `node` | mise shim | JS runtime |
-| `cargo` | mise shim | Rust build |
-| `jq` | mise shim | JSON processing |
+## IDE clients
 
-### ❌ NOT INSTALLED (don't use, install first if needed)
+`bun run src/deploy/ide_clients.ts` (or `mise run ide-clients`) wires Insiders oaicopilot, Grok, Antigravity env, `projects/ide-test/*` to `:25100`.
 
-| Tool | Install Command | Purpose |
-|---|---|---|
-| `tombi` | `mise use -g tombi` | TOML toolkit |
-| `tsgo` | `npx tsgo` | TypeScript type-check (use via npx) |
-| `vitest` | `npx vitest` | Test runner (use via npx) |
+## Trajectory & Token Optimization
 
-### 🚫 NEVER USE (removed/confusing)
+To prevent loop states, CLI timeouts, and extreme token waste (e.g. 1.7M token database traces):
 
-| Name | Why |
-|---|---|
-| `sg` | That's SGLang, NOT ast-grep. Removed shim. Use `ast-grep`. |
+1. **Strict Search Ignores**: When using grep/find/ast-grep tools, ALWAYS ignore virtual envs and node packages:
+   - Exclude: `venv/`, `.venv/`, `node_modules/`, `dist/`, `.next/`, `build/`, `.git/`, `.cache/`
+   - Example: `rg --glob '!node_modules' --glob '!venv' --glob '!.venv' ...`
+2. **MCP Tool Verification**: Always check schemas before executing MCP/Lazy tools to prevent validation errors:
+   - `find_code` requires `project_folder`.
+   - `convert_to_markdown` requires `uri`.
+   - Do not pass incomplete arguments.
+3. **Clamped Ranges**: Limit file viewing range to 300-500 lines at a time. Truncate command outputs exceeding 50 lines.
 
----
-
-## 📝 AST-Grep Patterns
-
-### Rule YAML
-```yaml
-id: my-rule
-language: typescript
-rule:
-  pattern: 'console.log($MSG)'
-fix: 'logger.info($MSG)'
-```
-
-### Commands
-```bash
-ast-grep scan -p 'pattern' -l ts src/
-ast-grep scan -p 'pattern' --rewrite 'replacement' src/
-ast-grep scan -p 'pattern' --json=stream src/
-ast-grep scan -p 'pattern' --interactive src/
-ast-grep scan --rule rule.yaml src/
-```
-
----
-
-## 📡 Live-verify commands
-
-```bash
-for p in 25100 25109 25112 25115; do
-  fuser -s $p/tcp 2>/dev/null && echo "✅ :$p" || echo "❌ :$p DOWN"
-done
-
-curl -s http://127.0.0.1:25100/v1/models | python3 -c "import sys,json;print(len(json.load(sys.stdin)['data']),'models')"
-
-cd /home/toxic/projects/pi-agent/packages/ai && npx tsgo --noEmit
-
-ast-grep scan -p 'NVIDIA_MODELS' -l ts --json=stream /home/toxic/projects/pi-agent/packages/ai/src/
-```
-
----
-
-## ⏱️ Timeout / Failfast / Dynamic / Env-Var (first-class, 2026-08-13)
-
-- **Failfast + high-frequency**: every retry/timeout path uses per-attempt deadlines, failfast
-  on fatal errors, and high-frequency liveness probes. No `timeout 420` monoliths.
-- **Dynamic `${ENV_VAR}`**: configs and launch scripts interpolate env vars (`${NVIDIA_API_KEY}`,
-  `${HOME}`, etc.). Hardcoded secrets/paths are an anti-pattern — interpolate.
-- **Coverage floor 82%**: `npx vitest run --coverage --bail` after code. Lint (`biome`) + typecheck.
-- See TODO Wave 5 for the worker-limit `/32` redo + timeout/failfast threading.
-
-## 🔌 MCP / mcpproxy (sovereign-owned)
-
-- **mcpproxy** is the single MCP federation gateway: `http://127.0.0.1:25109/mcp`, owned by
-sovereign (`pitchfork start mcpproxy` / `mise run restart-mcpproxy` -> `mcpproxy serve
---config=/home/toxic/.mcpproxy/mcp_config.json`). 43 real upstreams (ghas + 42 others).
-- **pi MUST list ONLY `mcpproxy`** in `~/.pi/agent/mcp.json` (no duplicate direct `ghas`/
-  `nvidia-nim` entries). All MCP tools reach pi through the proxy via `retrieve_tools`.
-- **nvidia-nim is NOT an MCP server.** It is a llama-swap/sovereign-router **completions API**
-  (OpenAI-compatible, on `:25100`). NVIDIA models are first-class via pi-agent's `nvidia`
-  provider (`packages/ai/src/providers/`) -> sovereign-router/llama-swap, not an MCP upstream.
-- **Subagents**: `config.yaml` `can_spawn_subagents:true` + whitelist + `subagents.defaultModel:
-  opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable from a
-  plain assistant context) — fanout only works inside an interactive pi session.
-
-## 🔌 Port SSOT
-
-`/home/toxic/sovereign/config/ports.env` — all 25xxx, never invent.
-
----

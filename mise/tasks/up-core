@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-# MISE description="Core stack: llama-herder + openfang + prometheus"
 set -euo pipefail
 source "$(dirname "$0")/_lib.sh"
-
-mapfile -d '' -t cfg < <(pc_args core)
-exec run_pc up "${cfg[@]}" -D "$@"
+# Core inference + agents + dashboard (watchdog embedded in rust-web)
+pc_up llama-swap openfang prometheus rust-web landing

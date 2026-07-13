@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+PORT="${LLAMA_SWAP_PORT:-25100}"
+echo "restarting llama-swap on :${PORT}"
+pkill -f "llama-swap.*--config" 2>/dev/null || true
+sleep 1
+SOV="${SOVEREIGN_ROOT:-$PWD}"
+export SOVEREIGN_ROOT="$SOV" LLAMA_SWAP_PORT="$PORT"
+nohup "$SOV/stack/services/llama-swap.sh" >>"$SOV/.state/logs/llama-swap.log" 2>&1 &
+for i in $(seq 1 30); do
+  curl -sf --max-time 1 "http://127.0.0.1:${PORT}/health" && { echo " up"; exit 0; }
+  sleep 0.5
+done
+echo "llama-swap health timeout" >&2
+exit 1

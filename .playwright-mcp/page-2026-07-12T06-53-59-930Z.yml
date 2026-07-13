@@ -1,0 +1,274 @@
+- generic [ref=e1]:
+  - generic: "SYS.OP: NORMAL LOC: EFFUSION_LABS"
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "Effusion Labs — home" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img "Effusion Labs logo" [ref=e9]
+        - generic [ref=e10]:
+          - text: Effusion Labs
+          - generic [ref=e11]: Effusion Labs
+      - generic [ref=e13]:
+        - navigation "Primary navigation" [ref=e14]:
+          - list [ref=e15]:
+            - listitem [ref=e16]:
+              - link "SHOWCASE" [ref=e17] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e18]:
+              - link "SPARKS" [ref=e19] [cursor=pointer]:
+                - /url: /sparks/
+            - listitem [ref=e20]:
+              - link "CONCEPTS" [ref=e21] [cursor=pointer]:
+                - /url: /concepts/
+            - listitem [ref=e22]:
+              - link "PROJECTS" [ref=e23] [cursor=pointer]:
+                - /url: /projects/
+            - listitem [ref=e24]:
+              - link "ARCHIVES" [ref=e25] [cursor=pointer]:
+                - /url: /archives/
+            - listitem [ref=e26]:
+              - link "META" [ref=e27] [cursor=pointer]:
+                - /url: /meta/
+            - listitem [ref=e28]:
+              - link "MAP" [ref=e29] [cursor=pointer]:
+                - /url: /map/
+        - generic [ref=e30]:
+          - button "Switch to dark theme" [ref=e31]
+          - generic [ref=e34]:
+            - generic "Open menu" [ref=e35]
+            - list [ref=e37]:
+              - listitem [ref=e38]:
+                - link "SHOWCASE" [ref=e39] [cursor=pointer]:
+                  - /url: /
+              - listitem [ref=e40]:
+                - link "SPARKS" [ref=e41] [cursor=pointer]:
+                  - /url: /sparks/
+              - listitem [ref=e42]:
+                - link "CONCEPTS" [ref=e43] [cursor=pointer]:
+                  - /url: /concepts/
+              - listitem [ref=e44]:
+                - link "PROJECTS" [ref=e45] [cursor=pointer]:
+                  - /url: /projects/
+              - listitem [ref=e46]:
+                - link "ARCHIVES" [ref=e47] [cursor=pointer]:
+                  - /url: /archives/
+              - listitem [ref=e48]:
+                - link "META" [ref=e49] [cursor=pointer]:
+                  - /url: /meta/
+              - listitem [ref=e50]:
+                - link "MAP" [ref=e51] [cursor=pointer]:
+                  - /url: /map/
+  - main [ref=e52]:
+    - generic [ref=e53]:
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - generic [ref=e58]:
+            - text: "Lab Status: Active"
+            - heading "Ideas, prototypes, and tools—shipped straight from the lab." [level=1] [ref=e59]
+          - paragraph [ref=e60]: Effusion Labs explores concepts until they become working systems. Browse projects in progress, sparks of inspiration, and the models that tie them together.
+          - generic [ref=e61]:
+            - link "Open the latest build" [ref=e62] [cursor=pointer]:
+              - /url: /projects/project-dandelion/
+            - link "Browse all work" [ref=e63] [cursor=pointer]:
+              - /url: /work/
+            - link "Knowledge Map" [ref=e64] [cursor=pointer]:
+              - /url: /map/
+        - generic [ref=e66]:
+          - text: Total Garden Entries 1
+          - generic [ref=e67]: Projects Concepts Sparks
+      - generic [ref=e69]:
+        - generic [ref=e70]:
+          - heading "The Core Garden" [level=2] [ref=e71]
+          - paragraph [ref=e72]: Structured Knowledge Lanes
+        - generic [ref=e73]:
+          - generic [ref=e74]:
+            - generic [ref=e75]:
+              - heading "Projects" [level=3] [ref=e79]
+              - text: "1"
+            - paragraph [ref=e80]: Interfaces, prototypes, and builds you can touch.
+            - list [ref=e81]:
+              - listitem [ref=e82]:
+                - link [ref=e83] [cursor=pointer]:
+                  - /url: /projects/project-dandelion/
+                  - text: "Project Dandelion: Structural Emergence in Restricted LLM Systems"
+                  - time [ref=e84]: July 1st, 2025
+            - link "Explore Lane" [ref=e85] [cursor=pointer]:
+              - /url: /projects/
+          - generic [ref=e87]:
+            - generic [ref=e88]:
+              - heading "Concepts" [level=3] [ref=e92]
+              - text: "15"
+            - paragraph [ref=e93]: Frameworks, schemas, and structural thinking.
+            - list [ref=e94]:
+              - listitem [ref=e95]:
+                - link [ref=e96] [cursor=pointer]:
+                  - /url: /concepts/verification-is-an-ecology/
+                  - text: A Field Guide to the Ecology of Doubt
+                  - time [ref=e97]: August 20th, 2025
+              - listitem [ref=e98]:
+                - link [ref=e99] [cursor=pointer]:
+                  - /url: /work/block-ledger/
+                  - text: Block Ledger
+                  - time [ref=e100]: August 13th, 2025
+              - listitem [ref=e101]:
+                - link [ref=e102] [cursor=pointer]:
+                  - /url: /concepts/three-studies-sensory/
+                  - text: Three Studies in Embodied Regulation
+                  - time [ref=e103]: July 30th, 2025
+              - listitem [ref=e104]:
+                - link [ref=e105] [cursor=pointer]:
+                  - /url: /concepts/parroting-mimicry/
+                  - text: On The Sociality Of Stochastic Parrots
+                  - time [ref=e106]: July 17th, 2025
+            - link "Explore Lane" [ref=e107] [cursor=pointer]:
+              - /url: /concepts/
+          - generic [ref=e109]:
+            - generic [ref=e110]:
+              - heading "Sparks" [level=3] [ref=e114]
+              - text: "8"
+            - paragraph [ref=e115]: Quick hits, hunches, and early research glimmers.
+            - list [ref=e116]:
+              - listitem [ref=e117]:
+                - link [ref=e118] [cursor=pointer]:
+                  - /url: /sparks/paulin-paulin-paulin-marketing/
+                  - text: "How to Manufacture a Legacy: The Pierre Paulin Estate Between Preservation and Product"
+                  - time [ref=e119]: August 2nd, 2025
+              - listitem [ref=e120]:
+                - link [ref=e121] [cursor=pointer]:
+                  - /url: /sparks/academic-blindness/
+                  - text: "The Recursive Shadow of Algorithmic Absence: An Archaeological Survey of the Invisible Infrastructure of Contemporary LLM Research"
+                  - time [ref=e122]: July 29th, 2025
+              - listitem [ref=e123]:
+                - link [ref=e124] [cursor=pointer]:
+                  - /url: /sparks/illusion-japan-nicotine/
+                  - text: "The Illusion of Choice: Engineering Adult Agency in Japan’s Nicotine Market"
+                  - time [ref=e125]: July 24th, 2025
+              - listitem [ref=e126]:
+                - link [ref=e127] [cursor=pointer]:
+                  - /url: /sparks/smoker-sysadmin/
+                  - text: "The Smoker as Sysadmin: Managing the Self in Japan's Nicotine Technopoly"
+                  - time [ref=e128]: July 24th, 2025
+            - link "Explore Lane" [ref=e129] [cursor=pointer]:
+              - /url: /sparks/
+          - generic [ref=e131]:
+            - generic [ref=e132]:
+              - heading "Meta" [level=3] [ref=e136]
+              - text: "13"
+            - paragraph [ref=e137]: Methods, protocol, and how the lab keeps score.
+            - list [ref=e138]:
+              - listitem [ref=e139]:
+                - link [ref=e140] [cursor=pointer]:
+                  - /url: /meta/case-study-naming-the-protocol/
+                  - time [ref=e141]: July 11th, 2026
+              - listitem [ref=e142]:
+                - link [ref=e143] [cursor=pointer]:
+                  - /url: /meta/colophon/
+                  - text: Colophon
+                  - time [ref=e144]: September 26th, 2025
+              - listitem [ref=e145]:
+                - link [ref=e146] [cursor=pointer]:
+                  - /url: /meta/content-architecture/
+                  - text: Content Architecture
+                  - time [ref=e147]: September 26th, 2025
+              - listitem [ref=e148]:
+                - link [ref=e149] [cursor=pointer]:
+                  - /url: /meta/core-protocol/
+                  - text: Core Protocol
+                  - time [ref=e150]: September 26th, 2025
+            - link "Explore Lane" [ref=e151] [cursor=pointer]:
+              - /url: /meta/
+      - generic [ref=e153]:
+        - generic [ref=e154]:
+          - generic [ref=e155]:
+            - heading "Freshly Cultivated" [level=2] [ref=e156]
+            - paragraph [ref=e157]: Latest Lab Updates
+          - link "Open Index" [ref=e158] [cursor=pointer]:
+            - /url: /work/
+        - link [ref=e160] [cursor=pointer]:
+          - /url: /work/
+          - generic [ref=e161]:
+            - text: Entry
+            - time [ref=e162]: July 11th, 2026
+          - heading [level=3]
+          - generic [ref=e163]: Open Build
+      - generic [ref=e166]:
+        - heading "Satellite Infrastructure" [level=2] [ref=e167]
+        - generic [ref=e168]:
+          - generic [ref=e169]:
+            - generic [ref=e170]:
+              - heading "Archives" [level=3] [ref=e174]
+              - text: "[4]"
+            - paragraph [ref=e175]: Provenance, collectables, and longitudinal indices.
+            - list [ref=e176]:
+              - listitem [ref=e177]:
+                - link "• Labubu" [ref=e178] [cursor=pointer]:
+                  - /url: /archives/character/labubu/
+              - listitem [ref=e179]:
+                - link "• Market Snapshot — Labubu" [ref=e180] [cursor=pointer]:
+                  - /url: /archives/character/labubu/snapshot/
+              - listitem [ref=e181]:
+                - link "•" [ref=e182] [cursor=pointer]:
+                  - /url: /content/archives/_dynamic/provenance/
+            - link "Surface Layer" [ref=e183] [cursor=pointer]:
+              - /url: /content/archives/collectables/designer-toys/
+          - generic [ref=e185]:
+            - generic [ref=e186]:
+              - heading "Docs" [level=3] [ref=e190]
+              - text: "[0]"
+            - paragraph [ref=e191]: Working documentation, theming notes, and logs.
+            - list
+            - link "Surface Layer" [ref=e192] [cursor=pointer]:
+              - /url: /docs/
+          - generic [ref=e194]:
+            - generic [ref=e195]:
+              - heading "Flower Reports" [level=3] [ref=e199]
+              - text: "[7]"
+            - paragraph [ref=e200]: Retail audits, normalized menus, and data slices.
+            - list [ref=e201]:
+              - listitem [ref=e202]:
+                - link "•" [ref=e203] [cursor=pointer]:
+                  - /url: /content/flower_reports_showcase/reports/nearby_value_cache_status/
+              - listitem [ref=e204]:
+                - link "•" [ref=e205] [cursor=pointer]:
+                  - /url: /content/flower_reports_showcase/reports/nearby_value_leaderboard/
+              - listitem [ref=e206]:
+                - link "•" [ref=e207] [cursor=pointer]:
+                  - /url: /content/flower_reports_showcase/reports/Reefer_Madness_20250825_report/
+            - link "Surface Layer" [ref=e208] [cursor=pointer]:
+              - /url: /flower-reports/
+  - contentinfo [ref=e210]:
+    - generic [ref=e211]:
+      - generic [ref=e212]:
+        - generic [ref=e213]:
+          - generic [ref=e214]:
+            - generic [ref=e215]: EL
+            - text: Effusion Labs
+          - paragraph [ref=e216]: Digital studio and knowledge base dedicated to the art of creative synthesis and technical excellence.
+          - generic [ref=e217]:
+            - text: Current Build
+            - time
+        - generic [ref=e218]:
+          - generic [ref=e219]:
+            - heading "Network" [level=3] [ref=e220]
+            - list [ref=e221]:
+              - listitem [ref=e222]:
+                - link "GitHub" [ref=e223] [cursor=pointer]:
+                  - /url: https://github.com/toxicwind/effusion-labs
+              - listitem [ref=e225]:
+                - link "RSS Feed" [ref=e226] [cursor=pointer]:
+                  - /url: /feed.xml
+          - generic [ref=e228]:
+            - heading "Internal" [level=3] [ref=e229]
+            - list [ref=e230]:
+              - listitem [ref=e231]:
+                - link "About" [ref=e232] [cursor=pointer]:
+                  - /url: /about/
+              - listitem [ref=e233]:
+                - link "Projects" [ref=e234] [cursor=pointer]:
+                  - /url: /projects/
+              - listitem [ref=e235]:
+                - link "Sitemap" [ref=e236] [cursor=pointer]:
+                  - /url: /sitemap.xml
+      - generic [ref=e237]: © 2025 Effusion Labs Crafted with Eleventy & Vite

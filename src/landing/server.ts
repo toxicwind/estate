@@ -67,13 +67,13 @@ function watchDir(dirPath: string) {
 watchDir(STATIC_DIR);
 
 const PORTS: Record<string, number> = {
-  "Llama Swap": 28080,
-  "OpenFang": 25004,
-  "Rust Dash": 25005,
-  "Prometheus": 25030,
-  "Watchdog": 25022,
-  "Yote": 25042,
-  "Landing": 25080,
+  "Llama Swap": parseInt(process.env.LLAMA_SWAP_PORT || "25100"),
+  "OpenFang": parseInt(process.env.OPENFANG_PORT || "25103"),
+  "Rust Dash": parseInt(process.env.RUST_WEB_PORT || "25101"),
+  "Prometheus": parseInt(process.env.PROMETHEUS_PORT || "25105"),
+  "Watchdog": parseInt(process.env.WATCHDOG_PORT || "25104"),
+  "Yote": parseInt(process.env.YOTE_PORT || "25102"),
+  "Landing": parseInt(process.env.PORT || "25080"),
 };
 
 async function checkAllPorts() {
@@ -95,7 +95,8 @@ function checkPort(port: number): Promise<boolean> {
 async function getSystemTelemetry() {
   let aiEngine = "Offline";
   try {
-    const r = await fetch(`http://127.0.0.1:28080/health`, { signal: AbortSignal.timeout(1000) });
+    const swapPort = process.env.LLAMA_SWAP_PORT || "25100";
+    const r = await fetch(`http://127.0.0.1:${swapPort}/health`, { signal: AbortSignal.timeout(1000) });
     if (r.ok) aiEngine = "Llama Swap Active";
   } catch {}
 

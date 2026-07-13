@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-# MISE description="Full stack: sovereign + landing + watchdog + hf-downloader"
 set -euo pipefail
 source "$(dirname "$0")/_lib.sh"
-
-mapfile -d '' -t cfg < <(pc_args full)
-exec run_pc up "${cfg[@]}" -D "$@"
+# All stack/modules including caddy edge on :25000
+pc_up caddy llama-swap openfang prometheus yote rust-web hf-downloader landing

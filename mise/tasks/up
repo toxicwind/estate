@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# MISE description="Sovereign stack: core + yote + rust-web"
 set -euo pipefail
 source "$(dirname "$0")/_lib.sh"
-
-mapfile -d '' -t cfg < <(pc_args sovereign)
-exec run_pc up "${cfg[@]}" -D "$@"
+pc_up llama-swap openfang prometheus yote rust-web hf-downloader landing

@@ -12,12 +12,12 @@ source "$SCRIPT_DIR/ports.env" 2>/dev/null || true
 # ─── Configuration ────────────────────────────────────────────────────────────
 
 # Fallback ports if ports.env is not sourced
-LLAMA_HERDER="${LLAMA_HERDER:-28080}"
+LLAMA_HERDER="${LLAMA_HERDER:-25100}"
 OPENFANG_PORT="${OPENFANG_PORT:-25004}"
 PROMETHEUS_PORT="${PROMETHEUS_PORT:-9090}"
 YOTE_PORT="${YOTE_PORT:-25042}"
 RUST_WEB_PORT="${RUST_WEB_PORT:-8080}"
-HF_DOWNLOADER="${HF_DOWNLOADER:-8081}"
+HF_DOWNLOADER="${HF_DOWNLOADER_PORT:-${HF_DOWNLOADER:-25106}}"
 WATCHDOG_PORT="${WATCHDOG_PORT:-8082}"
 LANDING_PORT="${LANDING_PORT:-8083}"
 
@@ -102,7 +102,7 @@ declare -a CHECKS=(
     "${PROMETHEUS_PORT}:prometheus:/-/healthy"
     "${YOTE_PORT}:yote:/health"
     "${RUST_WEB_PORT}:rust-dash:/health"
-    "${HF_DOWNLOADER}:hf-downloader:/health"
+    "${HF_DOWNLOADER}:hf-downloader:/api/health"
     "${WATCHDOG_PORT}:watchdog:/health"
     "${LANDING_PORT}:landing:/health"
 )

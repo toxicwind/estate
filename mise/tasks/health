@@ -1,131 +1,46 @@
 #!/usr/bin/env bash
-# MISE description="Port health matrix + GPU + llama-swap runtime"
+# Probe 25xxx services. Core required services fail the task; optional are labeled.
 set -euo pipefail
 
-# ── colours ──────────────────────────────────────────────────────────────────
-NC='\033[0m'; GREEN='\033[0;32m'; RED='\033[0;31m'
-YELLOW='\033[0;33m'; BLUE='\033[0;34m'; BOLD='\033[1m'
+CORE_FAIL=0
+OPTIONAL_FAIL=0
 
-UP_COUNT=0; DOWN_COUNT=0
-
-log_header() {
-  echo -e "\n${BOLD}${BLUE}$1${NC}"
-  printf '%.0s─' {1..60}; echo
-}
-
-probe_http() { curl -sf --max-time "${2:-2}" "$1" >/dev/null 2>&1; }
-
-check_tcp_port() {
-  ss -tlnp 2>/dev/null | grep -q ":${1} " ||   netstat -tlnp 2>/dev/null | grep -q ":${1} " ||   lsof -i TCP:"${1}" -s TCP:LISTEN >/dev/null 2>&1
-}
-
-log_status() {
-  local svc="$1" st="$2" port="${3:-}" extra="${4:-}"
-  if [[ "$st" == "UP" ]]; then
-    printf "[${GREEN}✓${NC}] %-20s %-6s ${GREEN}%s${NC} %s\n" "$svc" "$port" "UP" "$extra"
+probe() {
+  local kind="$1" name="$2" port="$3" path="$4"
+  local url="http://127.0.0.1:${port}${path}"
+  printf "%-10s %-16s :%-5s " "$kind" "$name" "$port"
+  if curl -sf --max-time 3 "$url" >/dev/null 2>&1; then
+    echo ok
   else
-    printf "[${RED}✗${NC}] %-20s %-6s ${RED}%s${NC} %s\n" "$svc" "$port" "DOWN" "$extra"
+    echo fail
+    if [[ "$kind" == "CORE" ]]; then
+      CORE_FAIL=$((CORE_FAIL + 1))
+    else
+      OPTIONAL_FAIL=$((OPTIONAL_FAIL + 1))
+    fi
   fi
 }
 
-# ── Compute Layer ────────────────────────────────────────────────────────────
-log_header "Compute Layer"
+# Core (up-core): llama-swap, openfang, prometheus, rust-web
+# watchdog is embedded in rust-web (same binary, extra port)
+probe CORE llama-swap   "${LLAMA_SWAP_PORT:-25100}"  /health
+probe CORE rust-web     "${RUST_WEB_PORT:-25101}"    /health
+probe CORE openfang     "${OPENFANG_PORT:-25103}"    /api/health
+probe CORE prometheus   "${PROMETHEUS_PORT:-25105}"  /-/healthy
+probe CORE watchdog     "${WATCHDOG_PORT:-25104}"    /health
 
-if ! command -v nvidia-smi &>/dev/null; then
-  echo -e "[${RED}✗${NC}] nvidia-smi not found in PATH"
-else
-  GPU_INFO=$(nvidia-smi --query-gpu=name,compute_cap --format=csv,noheader 2>/dev/null || echo "unknown")
-  echo -e "[${GREEN}✓${NC}] GPU: ${GPU_INFO}"
-  GPU_METRICS=$(nvidia-smi --query-gpu=index,name,temperature.gpu,utilization.gpu,memory.used,memory.total,power.draw     --format=csv,noheader,nounits 2>/dev/null || true)
-  if [[ -n "$GPU_METRICS" ]]; then
-    echo "$GPU_METRICS" | while IFS=, read -r idx name temp util mem_used mem_total power; do
-      printf "    GPU%s: %s | %s°C | %s%% | %s/%s MiB | %sW\n"         "$(echo "$idx" | xargs)" "$(echo "$name" | xargs)"         "$(echo "$temp" | xargs)" "$(echo "$util" | xargs)"         "$(echo "$mem_used" | xargs)" "$(echo "$mem_total" | xargs)"         "$(echo "$power" | xargs)"
-    done
-  fi
+# Standard `up` extras
+probe OPT  yote         "${YOTE_PORT:-25102}"        /health
+probe OPT  hf-downloader "${HF_DOWNLOADER_PORT:-25106}" /api/health
+
+# Edge only in up-full
+probe OPT  caddy-edge   "${CADDY_PORT:-25000}"       /health
+
+echo "---"
+echo "core_fail=${CORE_FAIL} optional_fail=${OPTIONAL_FAIL}"
+if [[ "$CORE_FAIL" -gt 0 ]]; then
+  echo "HEALTH: CORE RED"
+  exit 1
 fi
-
-# ── Service Health ───────────────────────────────────────────────────────────
-log_header "Service Health"
-
-declare -a CHECKS=(
-  "${LLAMA_HERDER}:llama-swap:/health"
-  "${OPENFANG_PORT}:openfang:/api/health"
-  "${PROMETHEUS_PORT}:prometheus:/-/healthy"
-  "${YOTE_PORT}:yote:/health"
-  "${RUST_WEB_PORT}:rust-dash:/health"
-  "${HF_DOWNLOADER}:hf-downloader:/health"
-  "${WATCHDOG_PORT}:watchdog:/health"
-  "${LANDING_PORT}:landing:/health"
-)
-
-for spec in "${CHECKS[@]}"; do
-  IFS=: read -r port name path <<<"$spec"
-
-  if probe_http "http://127.0.0.1:${port}${path}"; then
-    log_status "$name" "UP" "$port"
-    ((UP_COUNT++)) || true
-    continue
-  fi
-
-  # fallbacks
-  if [[ "$name" == "llama-swap" ]] && probe_http "http://127.0.0.1:${port}/v1/models"; then
-    log_status "$name" "UP" "$port" "(fallback /v1/models)"
-    ((UP_COUNT++)) || true; continue
-  fi
-  if [[ "$name" == "prometheus" ]] && probe_http "http://127.0.0.1:${port}/metrics"; then
-    log_status "$name" "UP" "$port" "(fallback /metrics)"
-    ((UP_COUNT++)) || true; continue
-  fi
-
-  if check_tcp_port "$port"; then
-    log_status "$name" "DOWN" "$port" "(port bound, endpoint unreachable)"
-  else
-    log_status "$name" "DOWN" "$port" "(port not bound)"
-  fi
-  ((DOWN_COUNT++)) || true
-done
-
-# ── llama-swap Deep Inspection ───────────────────────────────────────────────
-log_header "llama-swap Runtime"
-
-if probe_http "http://127.0.0.1:${LLAMA_HERDER}/v1/models" 3; then
-  MODELS=$(curl -sf --max-time 3 "http://127.0.0.1:${LLAMA_HERDER}/v1/models" 2>/dev/null |     jq -r '.data[].id' 2>/dev/null || echo "(parse error)")
-  if [[ -n "$MODELS" && "$MODELS" != "(parse error)" ]]; then
-    echo "Registered models:"
-    echo "$MODELS" | while read -r model; do echo "  • $model"; done
-  else
-    echo "  (no models registered or parse failed)"
-  fi
-else
-  echo "  (llama-swap API unreachable)"
-fi
-
-if probe_http "http://127.0.0.1:${LLAMA_HERDER}/running" 3; then
-  echo ""
-  echo "Running models:"
-  curl -sf --max-time 3 "http://127.0.0.1:${LLAMA_HERDER}/running" 2>/dev/null |     jq -r '.[] | "  \"\(.id)\" [\(.state)] port=\(.port // \"null\") pid=\(.pid // \"null\")"' 2>/dev/null ||     echo "  (parse error)"
-else
-  echo "  (no models currently running)"
-fi
-
-# ── Yote Metrics ─────────────────────────────────────────────────────────────
-log_header "Yote Orchestrator"
-
-if probe_http "http://127.0.0.1:${YOTE_PORT}/metrics" 3; then
-  echo "Prometheus metrics available at :${YOTE_PORT}/metrics"
-  curl -sf --max-time 3 "http://127.0.0.1:${YOTE_PORT}/metrics" 2>/dev/null | head -20 || true
-else
-  echo "  (metrics endpoint unreachable)"
-fi
-
-# ── Summary ───────────────────────────────────────────────────────────────────
-log_header "Summary"
-
-TOTAL=$((UP_COUNT + DOWN_COUNT))
-if (( DOWN_COUNT == 0 )); then
-  echo -e "${GREEN}All ${TOTAL} services healthy${NC}"; exit 0
-elif (( UP_COUNT == 0 )); then
-  echo -e "${RED}All ${TOTAL} services down${NC}"; exit 2
-else
-  echo -e "${YELLOW}${UP_COUNT}/${TOTAL} services healthy${NC} (${DOWN_COUNT} down)"; exit 1
-fi
+echo "HEALTH: CORE GREEN"
+exit 0

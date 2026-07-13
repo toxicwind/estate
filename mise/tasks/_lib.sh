@@ -1,30 +1,14 @@
-#!/usr/bin/env bash
-# mise/tasks/_lib.sh — shared helpers for sovereign stack tasks
 set -euo pipefail
-
-export SOV="${SOVEREIGN_ROOT:-{{ config_root }}}"
+export SOV="${SOVEREIGN_ROOT:-$PWD}"
 cd "$SOV"
-
-# Ensure directories exist
-mkdir -p "$SOV/.state/logs" "$SOV/.prometheus"
-
-# Build the process-compose -f argument list for a given profile
-pc_args() {
-  local profile="${1:-sovereign}"
-  local -a args=("$SOV/stack/base.yaml")
-  case "$profile" in
-    core)     local mods=(llama-herder openfang prometheus) ;;
-    sovereign) local mods=(llama-herder openfang prometheus yote rust-web) ;;
-    full)     local mods=(llama-herder openfang prometheus yote rust-web landing watchdog hf-downloader) ;;
-    *) echo "unknown profile: $profile (core|sovereign|full)" >&2; exit 1 ;;
-  esac
-  for m in "${mods[@]}"; do
-    args+=("$SOV/stack/modules/${m}.yaml")
-  done
-  printf '%s\0' "${args[@]}"
+pc_args(){
+ local a=("$SOV/stack/base.yaml")
+ for m in "$@";do a+=("$SOV/stack/modules/${m}.yaml");done
+ printf "%s\n" "${a[@]}"
 }
-
-# Wrapper that forces IPv4 loopback (avoids Go ::1 panics)
-run_pc() {
-  process-compose --address 127.0.0.1 "$@"
+pc_up(){
+ local cfgs=()
+ while IFS= read -r l;do cfgs+=(--config "$l");done < <(pc_args "$@")
+ # process-compose inherits env from mise automatically
+ exec process-compose --address 127.0.0.1 up "${cfgs[@]}" -D
 }

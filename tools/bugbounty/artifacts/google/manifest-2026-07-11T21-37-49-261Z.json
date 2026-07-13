@@ -1,0 +1,40 @@
+{
+  "program": "google",
+  "title": "Google Bug Hunters / VRP",
+  "submitHint": "Primary: https://bughunters.google.com/report (VRP rewards in $$)",
+  "ts": "2026-07-11T21:37:49.261Z",
+  "results": [
+    {
+      "url": "https://bughunters.google.com/",
+      "ok": true,
+      "title": "Google Bug Hunters - Google Bug Hunters",
+      "status": 200,
+      "screenshot": "/home/toxic/sovereign/tools/bugbounty/artifacts/google/2026-07-11T21-37-39-214Z_bughunters.google.com_.png",
+      "error": null
+    },
+    {
+      "url": "https://bughunters.google.com/report",
+      "ok": true,
+      "title": "Report Overview | Google Bug Hunters - Google Bug Hunters",
+      "status": 200,
+      "screenshot": "/home/toxic/sovereign/tools/bugbounty/artifacts/google/2026-07-11T21-37-42-497Z_bughunters.google.com_report.png",
+      "error": null
+    },
+    {
+      "url": "https://bughunters.google.com/about/rules",
+      "ok": true,
+      "title": "About This Section - Rules - Rules & Rewards - Google Bug Hunters",
+      "status": 200,
+      "screenshot": "/home/toxic/sovereign/tools/bugbounty/artifacts/google/2026-07-11T21-37-45-669Z_bughunters.google.com_about_rules.png",
+      "error": null
+    },
+    {
+      "url": "https://hackerone.com/opportunities/all?q=google",
+      "ok": true,
+      "title": "Opportunity Discovery Overview | HackerOne",
+      "status": 200,
+      "screenshot": "/home/toxic/sovereign/tools/bugbounty/artifacts/google/2026-07-11T21-37-49-214Z_hackerone.com_opportunities_all_q_google.png",
+      "error": null
+    }
+  ]
+}

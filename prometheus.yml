@@ -1,34 +1,6 @@
 global:
   scrape_interval: 15s
-  evaluation_interval: 15s
-
 scrape_configs:
-  - job_name: "prometheus"
+  - job_name: 'sovereign'
     static_configs:
-      - targets: ["127.0.0.1:25030"]
-
-  - job_name: "llama-herder"
-    metrics_path: "/metrics"
-    static_configs:
-      - targets: ["127.0.0.1:28080"]
-
-  - job_name: "llama-server"
-    metrics_path: "/metrics"
-    scrape_interval: 5s
-    static_configs:
-      - targets: ["127.0.0.1:25001"]
-
-  - job_name: "openfang"
-    metrics_path: "/metrics"
-    static_configs:
-      - targets: ["127.0.0.1:25004"]
-
-  - job_name: "rust-web"
-    metrics_path: "/metrics"
-    static_configs:
-      - targets: ["127.0.0.1:25005"]
-
-  - job_name: "hf-downloader"
-    metrics_path: "/metrics"
-    static_configs:
-      - targets: ["127.0.0.1:25020"]
+      - targets: ['127.0.0.1:25002','127.0.0.1:25003','127.0.0.1:25004','127.0.0.1:25005','127.0.0.1:25008']

@@ -1,0 +1,513 @@
+# llama-swap.yaml — SOVEREIGN FINAL MERGED v11.0
+# RTX 3090 24GB | Source-verified | Fork-aware | VRAM-validated | 23 elected + maximal ctx variants
+# MERGED FROM: v10.4 FINAL (routing.scheduler fifo + routing.router matrix) + elected 23
+# FIXES: No top-level matrix/groups/profiles. Only routing.router.settings.matrix. Macros top-level allowed.
+# Docs: macros allowed top-level【6603946590406685253†L9-L14】, minimum viable models: model1: cmd: llama-server --port ${PORT}【8147906779033768324†L314-L318】
+
+healthCheckTimeout: 300
+logLevel: debug
+logToStdout: both
+metricsMaxInMemory: 5000
+captureBuffer: 15
+globalTTL: 600
+startPort: 25001
+includeAliasesInList: true
+sendLoadingState: true
+
+store:
+  path: /home/toxic/.local/share/llama-swap/store.db
+
+performance:
+  enable: true
+  every: 1m
+
+hooks:
+  on_startup:
+    # 9B flash fits 3090; 27B@96k+ was OOM → empty choices in VS Code
+    preload: [beellama/qwen-flash-64k]
+  on_model_loaded:
+    exec: 'echo "[$(date)] MODEL_LOADED: $MODEL" >> /tmp/llama-swap-events.log'
+  on_model_unloaded:
+    exec: 'echo "[$(date)] MODEL_UNLOADED: $MODEL" >> /tmp/llama-swap-events.log'
+
+routing:
+  scheduler:
+    use: fifo
+    settings:
+      fifo:
+        priority:
+          # === CODE PRIORITY (DeepSeek + Qwen3.6) ===
+          mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m: 30
+          mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_s: 29
+          # === HIGH CONTEXT + DEVTOOLS (Qwen3.6) ===
+          qwen/27b-dflash-iq4xs: 28
+          qwen3.6-27b-dflash-iq4xs-mtp: 27
+          # === FAST BALANCED (Gemma-4-12B) ===
+          gemma-4-12b-unified: 26
+          gemma-4-12b-mtp: 25
+          # === KEEP EXISTING HIGH PRIORITY ===
+          beellama/qwen-flash-96k: 24
+          beellama/qwen-flash-128k: 23
+          beellama/qwen-flash-256k: 22
+          beellama/qwen-flash-mtp-128k: 21
+          beellama/qwen-flash-64k: 20
+          # === MEDIUM PRIORITY ===
+          beellama/gemma-128k: 19
+          beellama/gemma-mtp-128k: 18
+          beellama/gemma-96k: 17
+          beellama/gemma-mtp-64k: 16
+          beellama/gemma-64k: 15
+          qwen/27b-cerebellum: 14
+          turboquant/heretic-27b-256k: 13
+          turboquant/heretic-27b-128k: 12
+          # === LOW PRIORITY ===
+          turboquant/mn-grand-128k: 11
+          turboquant/mn-grand-96k: 10
+          turboquant/mn-grand-64k: 9
+          holo/35b-a3b: 8
+          beellama/strange-64k: 7
+          ik_llama/heretic-ud-96k: 6
+          ik_llama/heretic-ud-64k: 5
+          ik_llama/heretic-q5-64k: 4
+          ik_turboquant/heretic-27b-256k: 3
+          ik_turboquant/heretic-ud-96k: 2
+
+  router:
+    use: matrix
+    settings:
+      matrix:
+        vars:
+          # === NEW CODE MODELS ===
+          df9b: mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m
+          df9bs: mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_s
+          qdf27: qwen/27b-dflash-iq4xs
+          qdf27m: qwen3.6-27b-dflash-iq4xs-mtp
+          gm4u: gemma-4-12b-unified
+          gm4m: gemma-4-12b-mtp
+          # === KEEP EXISTING ===
+          qf64: beellama/qwen-flash-64k
+          qf96: beellama/qwen-flash-96k
+          qf128: beellama/qwen-flash-128k
+          qf256: beellama/qwen-flash-256k
+          qfm64: beellama/qwen-flash-mtp-64k
+          qfm128: beellama/qwen-flash-mtp-128k
+          gm64: beellama/gemma-64k
+          gm96: beellama/gemma-96k
+          gm128: beellama/gemma-128k
+          gmm64: beellama/gemma-mtp-64k
+          gmm128: beellama/gemma-mtp-128k
+          st64: beellama/strange-64k
+          mg64: turboquant/mn-grand-64k
+          mg96: turboquant/mn-grand-96k
+          mg128: turboquant/mn-grand-128k
+          h128: turboquant/heretic-27b-128k
+          h256: turboquant/heretic-27b-256k
+          hu64: ik_llama/heretic-ud-64k
+          hu96: ik_llama/heretic-ud-96k
+          hq5: ik_llama/heretic-q5-64k
+          ht256: ik_turboquant/heretic-27b-256k
+          hut96: ik_turboquant/heretic-ud-96k
+          cb96: qwen/27b-cerebellum
+          df96: qwen/27b-dflash-iq4xs
+          ho64: holo/35b-a3b
+        evict_costs:
+          df9b: 31
+          df9bs: 30
+          qdf27: 29
+          qdf27m: 28
+          gm4u: 27
+          gm4m: 26
+          qf96: 25
+          qf128: 24
+          qf256: 23
+          qfm128: 22
+          qf64: 21
+          qfm64: 20
+          gm128: 19
+          gmm128: 18
+          gm96: 17
+          gmm64: 16
+          gm64: 15
+          st64: 14
+          mg128: 13
+          mg96: 12
+          mg64: 11
+          h256: 10
+          h128: 9
+          hu96: 8
+          hu64: 7
+          ht256: 6
+          hq5: 5
+          hut96: 4
+          cb96: 3
+          df96: 2
+          ho64: 1
+        sets:
+          exclusive: "df9b | df9bs | qdf27 | qdf27m | gm4u | gm4m | qf64 | qf96 | qf128 | qf256 | qfm64 | qfm128 | gm64 | gm96 | gm128 | gmm64 | gmm128 | st64 | mg64 | mg96 | mg128 | h128 | h256 | hu64 | hu96 | hq5 | ht256 | hut96 | cb96 | df96 | ho64"
+
+macros:
+  # Binary paths - define FIRST
+  MODEL_DIR: "/home/toxic/sovereign/models"
+  beellama_bin: "/home/toxic/projects/beellama.cpp/build/bin/llama-server"
+  turbo_bin: "/home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server"
+  ik_bin: "/home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server"
+  ik_tq_bin: "/home/toxic/projects/ik_turboquant/build/bin/llama-server"
+
+  beellama_ld: "/home/toxic/projects/beellama.cpp/build/bin"
+  turbo_ld: "/home/toxic/projects/llama-cpp-turboquant/build/bin"
+  ik_ld: "/home/toxic/projects/ik_llama.cpp-main/build/bin:/home/toxic/projects/ik_llama.cpp-main/build/src:/home/toxic/projects/ik_llama.cpp-main/build/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build/examples/mtmd"
+  ik_tq_ld: "/home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/examples/mtmd"
+
+  # Model files — "qwen-flash-*" slots MUST use 9B flash (27B OOM at 96k+ on 24GB)
+  # 27B DFlash lives only under qwen/27b-dflash-iq4xs with modest ctx
+  qwen_flash_iq4xs: "${MODEL_DIR}/Qwen3.5-9B-DeepSeek-V4-Flash-IQ4_XS.gguf"
+  qwen_flash_mtp: "${MODEL_DIR}/Qwen3.5-9B-DeepSeek-V4-Flash-MTP-Q4_K_M.gguf"
+  qwen_flash_9b_iq4xs: "${MODEL_DIR}/Qwen3.5-9B-DeepSeek-V4-Flash-IQ4_XS.gguf"
+  qwen_27b_dflash: "${MODEL_DIR}/Qwen3.6-27B-DFlash-IQ4_XS.gguf"
+  gemma_12b: "${MODEL_DIR}/gemma-4-12b-it-Q4_K_M.gguf"
+  gemma_uncensored: "${MODEL_DIR}/gemma-4-12B-it-uncensored-Q4_K_M.gguf"
+  gemma_mtp: "${MODEL_DIR}/gemma4-12b-it-mtp-Q4_K_M.gguf"
+  strange: "${MODEL_DIR}/StrangeMerges_19-7B-dare_ties.Q4_K_M.gguf"
+  mn_grand: "${MODEL_DIR}/MN-GRAND-23.5B-Gutenberg-UNCENSORED-V2-Q4_K_M.gguf"
+  # Cerebellum-v4 / heretic-UD-Q4 not on disk (2026-07-11) — map to present weights
+  heretic_27b: "${MODEL_DIR}/heretic-UD-27B-Q5_K_XL.gguf"
+  heretic_ud_q4: "${MODEL_DIR}/heretic-UD-27B-Q5_K_XL.gguf"
+  heretic_ud_q5: "${MODEL_DIR}/heretic-UD-27B-Q5_K_XL.gguf"
+  draft_small: "${MODEL_DIR}/Qwen2.5-1.5B-Draft-Q8_0.gguf"
+  # Q4_K_XL 27B weights present as UD; Cerebellum-v4.gguf never downloaded
+  qwen_cerebellum: "${MODEL_DIR}/Qwen3.6-27B-UD-Q4_K_XL.gguf"
+  qwen_dflash: "${MODEL_DIR}/Qwen3.6-27B-DFlash-IQ4_XS.gguf"
+  # Holo model present as Qwen-3.5-28B-A3B-REAP
+  holo_35b: "${MODEL_DIR}/Qwen-3.5-28B-A3B-REAP-Q4_K_M.gguf"
+  mmproj_27b: "${MODEL_DIR}/mmproj-27B-F16.gguf"
+
+  clean_env: "env -u LLAMA_API_KEY -u LLAMA_ARG_API_KEY -u OPENAI_API_KEY"
+  cuda_env: "CUDA_VISIBLE_DEVICES=0 GGML_CUDA=1 GGML_CUDA_GRAPHS=1"
+
+  srv_host_port: "--host 127.0.0.1 --port ${PORT}"
+  srv_gpu: "--n-gpu-layers 99 --flash-attn on"
+  srv_safety: "--parallel 1 --metrics --mlock --no-mmap --no-context-shift"
+  srv_base: "${srv_host_port} ${srv_gpu} ${srv_safety}"
+
+  fork_beellama: "--kv-unified --no-host"
+  fork_turbo: ""
+  fork_ik: "--fit --fit-margin 512 --no-warmup --defrag-thold 0.1"
+
+  kv_q8: "--cache-type-k q8_0 --cache-type-v q8_0"
+  kv_turbo3: "--cache-type-k turbo3 --cache-type-v turbo3"
+  kv_turbo3_tcq: "--cache-type-k turbo3_tcq --cache-type-v turbo3_tcq"
+
+  ctx_32k: "--ctx-size 32768 -b 4096 -ub 1024"
+  ctx_64k: "--ctx-size 65536 -b 4096 -ub 1024"
+  ctx_96k: "--ctx-size 98304 -b 4096 -ub 1024"
+  ctx_128k: "--ctx-size 131072 -b 4096 -ub 1024"
+  ctx_256k: "--ctx-size 262144 -b 4096 -ub 1024"
+
+  spec_draft: ""
+  spec_draft_simple: "--spec-type draft"
+  spec_draft_mtp: "--spec-type draft-mtp"
+
+  reasoning_off: "--reasoning-format none"
+  reasoning_mainline: "--reasoning-format deepseek"
+  sampling_coding: "--temp 0.2 --top-p 0.95 --top-k 50"
+  sampling_creative: "--temp 0.8 --top-p 0.95"
+  sampling_gemma: "--temp 0.7 --top-p 0.95"
+
+models:
+  "beellama/qwen-flash-64k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${qwen_flash_9b_iq4xs}
+      ${srv_base} ${fork_beellama} ${ctx_64k} ${kv_q8} --jinja ${reasoning_off} ${spec_draft}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+    metadata: { fork: beellama, context: 65536, quant: IQ4_XS, vram: "~9GB" }
+
+  "beellama/qwen-flash-96k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${qwen_flash_9b_iq4xs}
+      ${srv_base} ${fork_beellama} ${ctx_96k} ${kv_q8} --jinja ${reasoning_off} ${spec_draft}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+    metadata:
+      {
+        fork: beellama,
+        context: 98304,
+        quant: IQ4_XS,
+        vram: "~11GB",
+        note: "9B flash — VS Code utility / BYOK safe on 3090",
+      }
+
+  "beellama/qwen-flash-128k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${qwen_flash_9b_iq4xs}
+      ${srv_base} ${fork_beellama} ${ctx_128k} ${kv_q8} --jinja ${reasoning_off} ${spec_draft}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+    metadata:
+      {
+        fork: beellama,
+        context: 131072,
+        quant: IQ4_XS,
+        vram: "~13GB",
+        note: "9B flash",
+      }
+
+  "beellama/qwen-flash-256k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${qwen_flash_9b_iq4xs}
+      ${srv_base} ${fork_beellama} ${ctx_128k} ${kv_q8} --jinja ${reasoning_off} ${spec_draft}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+    metadata:
+      {
+        fork: beellama,
+        context: 131072,
+        quant: IQ4_XS,
+        vram: "~13GB",
+        warning: "capped to 128k ctx (was 256k) — 9B flash VRAM-safe",
+      }
+
+  "beellama/qwen-flash-mtp-64k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${qwen_flash_mtp}
+      ${srv_base} ${fork_beellama} ${ctx_64k} ${kv_q8} --jinja ${spec_draft_mtp}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+
+  "beellama/qwen-flash-mtp-128k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${qwen_flash_mtp}
+      ${srv_base} ${fork_beellama} ${ctx_128k} ${kv_turbo3} --jinja ${spec_draft_mtp}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+
+  "beellama/gemma-64k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${gemma_12b}
+      ${srv_base} ${fork_beellama} ${ctx_64k} ${kv_q8} --jinja
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+
+  "beellama/gemma-96k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${gemma_uncensored}
+      ${srv_base} ${fork_beellama} ${ctx_96k} ${kv_turbo3}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+
+  "beellama/gemma-128k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${gemma_uncensored}
+      ${srv_base} ${fork_beellama} ${ctx_128k} ${kv_turbo3_tcq}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+
+  "beellama/gemma-mtp-64k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${gemma_mtp}
+      ${srv_base} ${fork_beellama} ${ctx_64k} ${kv_q8} --jinja ${spec_draft_mtp}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+
+  "beellama/gemma-mtp-128k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${gemma_mtp}
+      ${srv_base} ${fork_beellama} ${ctx_128k} ${kv_turbo3_tcq} --jinja ${spec_draft_mtp}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+
+  "beellama/strange-64k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${strange}
+      ${srv_base} ${fork_beellama} ${ctx_64k} ${kv_q8} --jinja ${spec_draft_simple}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+
+  "turboquant/mn-grand-64k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${turbo_ld}
+      ${turbo_bin} --model ${mn_grand}
+      ${srv_base} ${fork_turbo} ${ctx_64k} ${kv_q8} --jinja
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+
+  "turboquant/mn-grand-96k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${turbo_ld}
+      ${turbo_bin} --model ${mn_grand}
+      ${srv_base} ${fork_turbo} ${ctx_96k} ${kv_q8}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+
+  "turboquant/mn-grand-128k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${turbo_ld}
+      ${turbo_bin} --model ${mn_grand}
+      ${srv_base} ${fork_turbo} ${ctx_128k} ${kv_q8}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+    metadata: { vram: "~20GB" }
+
+  "turboquant/heretic-27b-128k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${turbo_ld}
+      ${turbo_bin} --model ${heretic_27b}
+      ${srv_base} ${fork_turbo} ${ctx_128k} ${kv_q8} --jinja
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+    metadata: { context: 131072, vram: "~15.9GB" }
+
+  "turboquant/heretic-27b-256k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${turbo_ld}
+      ${turbo_bin} --model ${heretic_27b}
+      ${srv_base} ${fork_turbo} ${ctx_256k} ${kv_q8} --jinja
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+    metadata: { context: 262144, vram: "~18.5GB" }
+
+  "ik_llama/heretic-ud-64k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${ik_ld}
+      ${ik_bin} --model ${heretic_ud_q4}
+      ${srv_base} ${fork_ik} ${ctx_64k} ${kv_q8} --jinja
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+
+  "ik_llama/heretic-ud-96k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${ik_ld}
+      ${ik_bin} --model ${heretic_ud_q4}
+      ${srv_base} ${fork_ik} ${ctx_96k} ${kv_q8}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+    metadata: { vram: "~20.3GB", warning: "TIGHT" }
+
+  "ik_llama/heretic-q5-64k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${ik_ld}
+      ${ik_bin} --model ${heretic_ud_q5}
+      ${srv_base} ${fork_ik} ${ctx_64k} ${kv_q8}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+    metadata: { quant: Q5_K_XL, vram: "~22.2GB" }
+
+  "ik_turboquant/heretic-27b-256k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${ik_tq_ld}
+      ${ik_tq_bin} --model ${heretic_27b}
+      ${srv_base} ${fork_turbo} ${ctx_256k} ${kv_q8} --jinja
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+
+  "ik_turboquant/heretic-ud-96k":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${ik_tq_ld}
+      ${ik_tq_bin} --model ${heretic_ud_q4}
+      ${srv_base} ${fork_turbo} ${ctx_96k} ${kv_q8}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+
+  "qwen/27b-cerebellum":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${qwen_cerebellum}
+      ${srv_base} ${fork_beellama} ${ctx_96k} ${kv_turbo3} --mla-attn
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+    metadata: { fork: beellama, context: 98304, quant: Q4_K_XL, mla: true }
+
+  "qwen/27b-dflash-iq4xs":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${qwen_dflash}
+      ${srv_base} ${fork_beellama} ${ctx_32k} ${kv_q8} --mla-attn
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+    metadata:
+      {
+        fork: beellama,
+        context: 32768,
+        quant: IQ4_XS,
+        dflash: true,
+        vram: "~17GB",
+        warning: "27B — ctx capped 32k on 24GB; not for utility model",
+      }
+
+  "holo/35b-a3b":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${holo_35b} --mmproj ${mmproj_27b}
+      ${srv_base} ${fork_beellama} ${ctx_64k} ${kv_q8} --mla-attn
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+    metadata: { context: 65536, active: 3B, total: 35B, moe: true }
+
+  "mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${qwen_flash_iq4xs}
+      ${srv_base} ${fork_beellama} ${ctx_128k} ${kv_q8} --jinja ${reasoning_mainline} ${spec_draft}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+    metadata:
+      {
+        fork: beellama,
+        context: 131072,
+        quant: IQ4_XS,
+        vram: "~9GB",
+        code: true,
+        deepseek: true,
+      }
+
+  "mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_s":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${qwen_flash_iq4xs}
+      ${srv_base} ${fork_beellama} ${ctx_128k} ${kv_q8} --jinja ${reasoning_mainline} ${spec_draft}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+    metadata:
+      {
+        fork: beellama,
+        context: 131072,
+        quant: IQ4_XS,
+        vram: "~9GB",
+        code: true,
+        deepseek: true,
+        fast: true,
+      }
+
+  "qwen3.6-27b-dflash-iq4xs-mtp":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld}
+      ${beellama_bin} --model ${qwen_27b_dflash}
+      ${srv_base} ${fork_beellama} ${ctx_128k} ${kv_q8} --jinja ${reasoning_off} ${spec_draft_mtp}
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+    metadata:
+      {
+        fork: beellama,
+        context: 131072,
+        quant: IQ4_XS,
+        vram: "~27GB",
+        devtools: true,
+        mtp: true,
+      }
+
+  "gemma-4-12b-unified":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${turbo_ld}
+      ${turbo_bin} --model ${gemma_12b}
+      ${srv_base} ${fork_turbo} ${ctx_256k} ${kv_turbo3} --jinja --no-warmup
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+    metadata:
+      {
+        fork: turbo,
+        context: 262144,
+        quant: Q4_K_M,
+        vram: "~19GB",
+        code: true,
+        balanced: true,
+      }
+
+  "gemma-4-12b-mtp":
+    cmd: >-
+      ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${turbo_ld}
+      ${turbo_bin} --model ${gemma_mtp}
+      ${srv_base} ${fork_turbo} ${ctx_128k} ${kv_turbo3} --jinja --no-warmup
+    env: ["LLAMA_API_KEY=", "LLAMA_ARG_API_KEY="]
+    metadata:
+      {
+        fork: turbo,
+        context: 131072,
+        quant: Q4_K_M,
+        vram: "~16GB",
+        code: true,
+        mtp: true,
+        balanced: true,
+      }

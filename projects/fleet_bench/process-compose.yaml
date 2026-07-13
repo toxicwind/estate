@@ -1,0 +1,11 @@
+# process-compose for Fleet-Bench
+version: "0.5"
+
+processes:
+  fleet-bench-web:
+    command: "bun run src/bench.ts"
+    availability:
+      restart: "always"
+    env:
+      - PORT=25203
+      - LLAMA_SWAP_CONFIG=/home/toxic/sovereign/tools/llama-swap/config.yaml

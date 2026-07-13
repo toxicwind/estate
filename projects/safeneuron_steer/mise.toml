@@ -1,0 +1,24 @@
+# SafeNeuron-Steer container config (July 2026)
+min_version = "2025.7.0"
+
+[tools]
+rust = "1.78"
+process-compose = "latest"
+
+[env]
+RUST_LOG = "info"
+PORT = "25201"
+MODEL_DIR = "/home/toxic/models"
+
+[tasks.build]
+description = "Build Rust backend in release mode"
+run = "cargo build --release"
+
+[tasks.dev]
+description = "Run development watch server"
+run = "cargo run"
+
+[tasks.start]
+description = "Run production release server"
+depends = ["build"]
+run = "cargo run --release"

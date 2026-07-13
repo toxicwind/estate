@@ -1,0 +1,12 @@
+# process-compose for DecoyProxy
+version: "0.5"
+
+processes:
+  decoy-web:
+    command: "bun run src/server.ts"
+    availability:
+      restart: "always"
+    env:
+      - PORT=25202
+      - DEEPSEEK_API_KEY=sk-decoy-api-key-sovereign-proxy
+      - KIMI_API_KEY=sk-kimi-rHmZUSeh...

@@ -10,6 +10,15 @@
     "typescript": "^5"
   },
   "scripts": {
-    "ranker": "bun run fleet_ranker.ts"
+    "mcp:llama-swap": "bun run src/mcp/llama_swap.ts mcp",
+    "test:llm": "bun run src/mcp/llama_swap.ts e2e",
+    "deploy:insiders": "bun run src/deploy/code_insiders.ts",
+    "deploy:ides": "bun run src/deploy/ide_clients.ts",
+    "hf-downloader": "bun run src/services/hf_downloader.ts",
+    "openfang": "bun run src/services/openfang.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.4.3"
   }
 }

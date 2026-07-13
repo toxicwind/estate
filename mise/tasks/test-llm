@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Prove VS Code BYOK path: settings + chat/completions choices≥1 (Bun)
+set -euo pipefail
+export LLAMA_SWAP_BASE="${LLAMA_SWAP_BASE:-http://127.0.0.1:25100}"
+export LLAMA_SWAP_MODEL="${LLAMA_SWAP_MODEL:-beellama/qwen-flash-64k}"
+cd "${SOVEREIGN_ROOT:-$HOME/sovereign}"
+echo "=== vscode_settings_check ==="
+bun run src/mcp/llama_swap.ts settings
+echo "=== llama_swap_health ==="
+bun run src/mcp/llama_swap.ts health
+echo "=== llama_swap_chat ==="
+bun run src/mcp/llama_swap.ts chat
+echo "=== llama_swap_chat_stream ==="
+bun run src/mcp/llama_swap.ts stream
+echo "=== copilot_byok_e2e ==="
+bun run src/mcp/llama_swap.ts e2e

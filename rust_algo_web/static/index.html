@@ -19,8 +19,9 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
 
-    <!-- Chart.js -->
+    <!-- Chart.js + Mermaid -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 
     <script>
       tailwind.config = {
@@ -44,7 +45,6 @@
         color: #f3f4f6;
       }
 
-      /* Glassmorphism Panel style */
       .glass-panel {
         background: rgba(14, 13, 22, 0.65);
         backdrop-filter: blur(16px);
@@ -59,7 +59,6 @@
         box-shadow: 0 0 30px rgba(6, 182, 212, 0.08);
       }
 
-      /* Service Cards styling */
       .service-card {
         background: rgba(18, 16, 28, 0.45);
         border: 1px solid rgba(255, 255, 255, 0.04);
@@ -72,7 +71,6 @@
         background: rgba(18, 16, 28, 0.7);
       }
 
-      /* Pulsing Glow effects */
       @keyframes neonPulse {
         0%,
         100% {
@@ -88,7 +86,6 @@
         animation: neonPulse 3s infinite;
       }
 
-      /* Custom scrollbars */
       ::-webkit-scrollbar {
         width: 6px;
         height: 6px;
@@ -102,6 +99,47 @@
       }
       ::-webkit-scrollbar-thumb:hover {
         background: rgba(6, 182, 212, 0.6);
+      }
+
+      /* Mermaid dark theme overrides inside glass panel */
+      .mermaid-wrap {
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        padding: 1rem;
+        overflow-x: auto;
+      }
+      .mermaid-wrap svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .status-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        padding: 0.25rem 0.6rem;
+        border-radius: 9999px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.04);
+        color: #9ca3af;
+      }
+      .status-chip.online {
+        border-color: rgba(16, 185, 129, 0.35);
+        background: rgba(16, 185, 129, 0.1);
+        color: #34d399;
+      }
+      .status-chip.offline {
+        border-color: rgba(239, 68, 68, 0.3);
+        background: rgba(239, 68, 68, 0.08);
+        color: #f87171;
+      }
+      .status-chip.active {
+        border-color: rgba(6, 182, 212, 0.4);
+        background: rgba(6, 182, 212, 0.12);
+        color: #22d3ee;
       }
     </style>
   </head>
@@ -139,6 +177,34 @@
                 >· 骁逸</span
               >
             </h1>
+            <nav class="flex flex-wrap gap-2 mt-3 text-[11px]">
+              <a
+                href="/fleet.html"
+                class="px-2.5 py-1 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-200 hover:border-violet-400/50"
+                >Fleet Lab</a
+              >
+              <a
+                href="/architecture.html"
+                class="px-2.5 py-1 rounded-full border border-white/10 text-gray-400 hover:text-cyan-300"
+                >Architecture</a
+              >
+              <a
+                id="nav-chat-ui"
+                href="http://127.0.0.1:25100/ui/"
+                target="_blank"
+                rel="noopener"
+                class="px-2.5 py-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300"
+                >Chat UI :25100</a
+              >
+              <a
+                id="nav-hfd"
+                href="http://127.0.0.1:25106/"
+                target="_blank"
+                rel="noopener"
+                class="px-2.5 py-1 rounded-full border border-amber-500/30 text-amber-200/90"
+                >HFD :25106</a
+              >
+            </nav>
             <p
               class="text-sm text-gray-400 font-display mt-0.5 tracking-wider uppercase"
             >
@@ -148,7 +214,6 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-4">
-          <!-- Mode Toggle -->
           <div
             id="mode-toggle"
             class="flex items-center gap-1.5 text-xs bg-white/5 p-1 rounded-xl border border-white/10"
@@ -161,7 +226,6 @@
             </button>
           </div>
 
-          <!-- Refresh Status -->
           <div class="flex flex-col items-end text-right">
             <div class="flex items-center gap-2">
               <span
@@ -181,7 +245,6 @@
             >
           </div>
 
-          <!-- Refresh Button -->
           <button
             onclick="refreshAll()"
             class="w-10 h-10 rounded-xl bg-violet-600/20 border border-violet-500/30 hover:bg-violet-600/30 transition flex items-center justify-center text-violet-400"
@@ -219,6 +282,97 @@
             </div>
           </div>
 
+          <!-- Live Architecture -->
+          <div class="glass-panel rounded-2xl p-6 flex flex-col gap-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <h3
+                class="text-lg font-bold font-display tracking-wide flex items-center gap-2"
+              >
+                <i class="fa-solid fa-diagram-project text-emerald-400"></i>
+                LIVE ARCHITECTURE
+              </h3>
+              <a
+                href="/architecture.html"
+                class="text-[11px] font-mono text-cyan-400 hover:text-cyan-300 border border-cyan-500/20 bg-cyan-500/5 px-3 py-1 rounded-full transition"
+                >Full page →</a
+              >
+            </div>
+
+            <!-- Active model / fork chips -->
+            <div class="flex flex-wrap gap-2" id="arch-model-chips">
+              <span class="status-chip active" id="chip-active-model"
+                >model: …</span
+              >
+              <span class="status-chip active" id="chip-active-fork"
+                >fork: …</span
+              >
+            </div>
+
+            <!-- Service status chips (from /landing/api/architecture) -->
+            <div class="flex flex-wrap gap-2" id="arch-service-chips">
+              <span class="status-chip">loading services…</span>
+            </div>
+
+            <!-- Fork tallies -->
+            <div class="flex flex-wrap gap-2" id="arch-fork-chips"></div>
+
+            <div class="mermaid-wrap" id="arch-mermaid-host">
+              <pre class="mermaid" id="arch-mermaid">
+flowchart TD
+    subgraph Environment ["Environment & Bootstrap"]
+        ports[ports.env]
+        lib[stack/lib.sh]
+        mise[mise.toml]
+        dotenv[.env.local]
+    end
+
+    subgraph Orchestration ["Orchestration Layer"]
+        pc[process-compose.yaml]
+        stack[stack/]
+    end
+
+    subgraph Router ["Smart Router"]
+        swap[llama-swap :25100]
+    end
+
+    subgraph LLM ["LLM Execution (4 Forks)"]
+        beellama[beellama.cpp]
+        turboquant[llama-cpp-turboquant]
+        ik_llama[ik_llama.cpp-main]
+        ik_tq[ik_turboquant]
+    end
+
+    subgraph Services ["Core Services"]
+        openfang[OpenFang]
+        yote[Yote]
+        prometheus[Prometheus]
+        rust[Rust Web]
+        watchdog[Watchdog]
+    end
+
+    ports --> lib --> pc
+    dotenv --> pc
+    mise --> pc
+
+    pc --> openfang
+    pc --> yote
+    pc --> prometheus
+    pc --> rust
+    pc --> watchdog
+    pc --> swap
+
+    openfang --> swap
+    swap --> beellama
+    swap --> turboquant
+    swap --> ik_llama
+    swap --> ik_tq
+              </pre>
+            </div>
+            <p class="text-[10px] text-gray-500 font-mono" id="arch-last-sync">
+              architecture poll: —
+            </p>
+          </div>
+
           <!-- Latency spectral Analysis -->
           <div class="glass-panel rounded-2xl p-6">
             <h3
@@ -229,22 +383,6 @@
             </h3>
             <div class="w-full relative h-[220px]">
               <canvas id="latency-chart"></canvas>
-            </div>
-          </div>
-
-          <!-- Tool Rankings List -->
-          <div class="glass-panel rounded-2xl p-6">
-            <h3
-              class="text-lg font-bold font-display tracking-wide mb-4 flex items-center gap-2"
-            >
-              <i class="fa-solid fa-list-ol text-cyan-400"></i> DEVSTACK
-              RANKINGS
-            </h3>
-            <div
-              id="ranks-container"
-              class="flex flex-col gap-3 max-h-[450px] overflow-y-auto pr-1"
-            >
-              <!-- Populated by JS -->
             </div>
           </div>
         </div>
@@ -280,11 +418,19 @@
             <p class="text-xs text-gray-400 leading-relaxed">
               Sovereign Agentic Network powered by local
               <strong id="engine-gpu">RTX 3090 GPU</strong> hardware and
-              <strong id="engine-model">ik_llama (Qwen3.6-27B)</strong>.
-              Alternate masking, continuous high-dimensional latent reasoning,
-              zero-shot continuous thoughts.
+              <strong id="engine-model">llama-swap</strong>.
+              Four-fork model routing via llama-swap — no vLLM.
             </p>
-            <div class="mt-4 flex gap-2">
+            <div class="mt-4 p-4 rounded-xl bg-black/30 border border-white/5 flex flex-col gap-2.5">
+              <div class="flex justify-between items-center text-xs font-bold text-gray-300">
+                <span>FORK RANKINGS (tg64 speed)</span>
+                <a id="link-hfd-dashboard" href="http://127.0.0.1:25106/" target="_blank" rel="noopener" class="text-[10px] text-cyan-400 hover:underline">HFD Dashboard <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i></a>
+              </div>
+              <div id="rankings-preview-container" class="flex flex-col gap-1.5 text-xs text-gray-400">
+                <div class="text-[10px] italic text-gray-600">Loading rankings...</div>
+              </div>
+            </div>
+            <div class="mt-4 flex gap-2 flex-wrap">
               <span
                 id="badge-gpu"
                 class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-400 font-mono"
@@ -298,187 +444,78 @@
               <span
                 id="badge-cpu"
                 class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-400 font-mono"
-                >NF-CoT</span
+                >Host CPU</span
               >
             </div>
           </div>
 
-          <!-- Sliders Section -->
-          <div class="glass-panel rounded-2xl p-6">
-            <div class="flex justify-between items-center mb-4">
-              <h3
-                class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display"
-              >
-                <i class="fa-solid fa-sliders text-cyan-400 mr-2"></i> CRITERIA
-                WEIGHTS
-              </h3>
-              <button
-                onclick="resetWeights()"
-                class="text-[10px] border border-white/10 px-2 py-0.5 rounded text-gray-400 hover:text-white bg-white/5"
-              >
-                Reset
-              </button>
-            </div>
-
-            <div class="flex flex-col gap-3.5">
-              <div class="flex flex-col gap-1">
-                <div class="flex justify-between text-xs text-gray-400">
-                  <span>Nix Avoidance</span>
-                  <span class="font-mono text-cyan-400" id="val-nix">50%</span>
-                </div>
-                <input
-                  type="range"
-                  id="weight-nix"
-                  class="w-full accent-cyan-400 h-1 rounded-lg appearance-none cursor-pointer bg-white/10"
-                  min="0"
-                  max="100"
-                  value="50"
-                  oninput="handleSliderInput('nix', this.value)"
-                />
-              </div>
-              <div class="flex flex-col gap-1">
-                <div class="flex justify-between text-xs text-gray-400">
-                  <span>TUI / GUI Polish</span>
-                  <span class="font-mono text-cyan-400" id="val-tui">50%</span>
-                </div>
-                <input
-                  type="range"
-                  id="weight-tui"
-                  class="w-full accent-cyan-400 h-1 rounded-lg appearance-none cursor-pointer bg-white/10"
-                  min="0"
-                  max="100"
-                  value="50"
-                  oninput="handleSliderInput('tui', this.value)"
-                />
-              </div>
-              <div class="flex flex-col gap-1">
-                <div class="flex justify-between text-xs text-gray-400">
-                  <span>Performance</span>
-                  <span class="font-mono text-cyan-400" id="val-perf">50%</span>
-                </div>
-                <input
-                  type="range"
-                  id="weight-perf"
-                  class="w-full accent-cyan-400 h-1 rounded-lg appearance-none cursor-pointer bg-white/10"
-                  min="0"
-                  max="100"
-                  value="50"
-                  oninput="handleSliderInput('perf', this.value)"
-                />
-              </div>
-              <div class="flex flex-col gap-1">
-                <div class="flex justify-between text-xs text-gray-400">
-                  <span>Setup Speed</span>
-                  <span class="font-mono text-cyan-400" id="val-setup"
-                    >50%</span
-                  >
-                </div>
-                <input
-                  type="range"
-                  id="weight-setup"
-                  class="w-full accent-cyan-400 h-1 rounded-lg appearance-none cursor-pointer bg-white/10"
-                  min="0"
-                  max="100"
-                  value="50"
-                  oninput="handleSliderInput('setup', this.value)"
-                />
-              </div>
-              <div class="flex flex-col gap-1">
-                <div class="flex justify-between text-xs text-gray-400">
-                  <span>Orchestration</span>
-                  <span class="font-mono text-cyan-400" id="val-orch">50%</span>
-                </div>
-                <input
-                  type="range"
-                  id="weight-orch"
-                  class="w-full accent-cyan-400 h-1 rounded-lg appearance-none cursor-pointer bg-white/10"
-                  min="0"
-                  max="100"
-                  value="50"
-                  oninput="handleSliderInput('orch', this.value)"
-                />
-              </div>
-              <div class="flex flex-col gap-1">
-                <div class="flex justify-between text-xs text-gray-400">
-                  <span>Portability</span>
-                  <span class="font-mono text-cyan-400" id="val-port">50%</span>
-                </div>
-                <input
-                  type="range"
-                  id="weight-port"
-                  class="w-full accent-cyan-400 h-1 rounded-lg appearance-none cursor-pointer bg-white/10"
-                  min="0"
-                  max="100"
-                  value="50"
-                  oninput="handleSliderInput('port', this.value)"
-                />
-              </div>
-            </div>
-          </div>
-
-          <!-- AI DevOps Advisor Chat Panel -->
-          <div class="glass-panel rounded-2xl p-6 flex flex-col min-h-[300px]">
+          <!-- Model Switcher Panel -->
+          <div class="glass-panel rounded-2xl p-6 flex flex-col gap-4">
             <h3
-              class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display mb-3"
+              class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display flex items-center justify-between"
             >
-              <i class="fa-solid fa-robot text-violet-400 mr-2"></i> AI DEVOPS
-              ADVISOR
+              <span
+                ><i class="fa-solid fa-microchip text-cyan-400 mr-2"></i> ACTIVE
+                MODEL SWAPPER</span
+              >
+              <span id="active-model-header" class="text-[9px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">LIVE: None</span>
             </h3>
-
             <div
-              id="chat-box"
-              class="flex-1 overflow-y-auto max-h-[200px] text-xs flex flex-col gap-2.5 bg-black/20 p-3 rounded-lg border border-white/5 mb-3"
+              id="models-list-container"
+              class="flex flex-col gap-2.5 max-h-[360px] overflow-y-auto pr-1"
             >
-              <div
-                class="chat-message coach-msg bg-white/5 border border-white/10 p-2.5 rounded-lg"
-              >
-                <p>
-                  Describe your project stack and preferences. I will suggest
-                  weights and recommend the optimal tool setup.
-                </p>
-              </div>
-            </div>
-
-            <!-- Suggested weights applying alert -->
-            <div
-              id="suggested-weights-box"
-              class="hidden mb-3 p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg flex items-center justify-between text-[11px]"
-            >
-              <span class="text-emerald-400 font-bold"
-                >💡 Advisor suggestions loaded!</span
-              >
-              <button
-                onclick="applySuggestedWeights()"
-                class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold"
-              >
-                Apply
-              </button>
-            </div>
-
-            <div class="chat-input-wrapper flex gap-2">
-              <input
-                type="text"
-                id="chat-input"
-                placeholder="Ask advisor..."
-                class="flex-1 bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500/50"
-                onkeydown="if (event.key === 'Enter') consultAdvisor();"
-              />
-              <button
-                onclick="consultAdvisor()"
-                class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-black font-semibold rounded-xl text-xs transition"
-              >
-                Ask
-              </button>
+              <div class="text-xs text-gray-500 italic">Querying models...</div>
             </div>
           </div>
 
-          <!-- Centralized Log Stream (Activity Log) -->
+          <!-- Chat lives on llama-swap UI (:25100) — not this dashboard -->
+          <div class="glass-panel rounded-2xl p-6 flex flex-col gap-3">
+            <h3
+              class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display"
+            >
+              <i class="fa-solid fa-comments text-violet-400 mr-2"></i>
+              LLM CHAT UI
+            </h3>
+            <p class="text-xs text-gray-400 leading-relaxed">
+              Inference chat is
+              <strong class="text-gray-300">llama-swap</strong>’s built-in
+              playground — not embedded here. Open it on
+              <code class="text-cyan-400">:25100/ui</code>.
+            </p>
+             <div class="flex flex-wrap gap-2">
+              <a
+                id="btn-chat-ui"
+                href="http://127.0.0.1:25100/ui/"
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-2 px-4 py-2.5 bg-violet-600 hover:bg-violet-500 text-white font-semibold rounded-xl text-xs transition shadow-sm shadow-violet-500/20"
+              >
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                Open llama-swap Chat UI
+              </a>
+              <a
+                id="btn-models-api"
+                href="http://127.0.0.1:25100/v1/models"
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-2 px-3 py-2.5 bg-white/5 border border-white/10 hover:border-cyan-500/40 text-gray-300 rounded-xl text-xs font-mono transition"
+              >
+                /v1/models
+              </a>
+            </div>
+            <p id="text-api-door" class="text-[10px] text-gray-500 font-mono">
+              API front door: http://127.0.0.1:25100/v1 · UI:
+              http://127.0.0.1:25100/ui/
+            </p>
+          </div>
+
+          <!-- Centralized Log Stream -->
           <div class="glass-panel rounded-2xl p-6 flex flex-col min-h-[200px]">
             <h3
               class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display mb-3"
             >
-              <i class="fa-solid fa-list-ul text-sky-400 mr-2"></i> SYSTEM EVENT
-              LOG
+              <i class="fa-solid fa-shield-halved text-sky-400 mr-2"></i>
+              WATCHDOG &amp; EVENT LOG
             </h3>
             <div
               id="activity-log-container"
@@ -493,32 +530,124 @@
       </main>
     </div>
 
-    <!-- Script logic -->
     <script>
       let currentServices = [];
-      let activityLog = [];
       let chart = null;
-      let suggestedWeights = null;
+      let mermaidReady = false;
 
-      function init() {
-        refreshAll();
-        fetchRankings();
-        fetchTelemetry();
-        initHotReload();
-        setInterval(refreshAll, 15000);
-        setInterval(fetchTelemetry, 20000);
+      function initMermaid() {
+        if (typeof mermaid === "undefined") return;
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: "dark",
+          securityLevel: "loose",
+          flowchart: { curve: "basis", htmlLabels: true },
+        });
+        mermaidReady = true;
+        renderMermaid();
+      }
+
+      async function renderMermaid() {
+        if (!mermaidReady) return;
+        const el = document.getElementById("arch-mermaid");
+        if (!el) return;
+        try {
+          await mermaid.run({ nodes: [el] });
+        } catch (e) {
+          console.warn("mermaid render:", e);
+        }
+      }
+
+      async function fetchArchitecture() {
+        try {
+          const res = await fetch("/landing/api/architecture");
+          if (!res.ok) throw new Error("Architecture API error");
+          const data = await res.json();
+
+          const modelChip = document.getElementById("chip-active-model");
+          const forkChip = document.getElementById("chip-active-fork");
+          if (modelChip)
+            modelChip.textContent = `model: ${data.active_model || "Offline"}`;
+          if (forkChip)
+            forkChip.textContent = `fork: ${data.active_fork || "—"}`;
+
+          // Service chips
+          const svcHost = document.getElementById("arch-service-chips");
+          if (svcHost && data.services) {
+            const entries = Object.entries(data.services);
+            svcHost.innerHTML = entries
+              .map(([name, info]) => {
+                const on = info && info.online;
+                const port = info && info.port != null ? `:${info.port}` : "";
+                return `<span class="status-chip ${on ? "online" : "offline"}">${name}${port} ${on ? "●" : "○"}</span>`;
+              })
+              .join("");
+          }
+
+          // Fork tallies
+          const forkHost = document.getElementById("arch-fork-chips");
+          if (forkHost && data.models_by_fork) {
+            const forks = Object.entries(data.models_by_fork);
+            if (forks.length === 0) {
+              forkHost.innerHTML = "";
+            } else {
+              forkHost.innerHTML = forks
+                .map(
+                  ([fork, n]) =>
+                    `<span class="status-chip ${fork === data.active_fork ? "active" : ""}">${fork}: ${n} model${n === 1 ? "" : "s"}</span>`,
+                )
+                .join("");
+            }
+          }
+
+          const sync = document.getElementById("arch-last-sync");
+          if (sync)
+            sync.textContent = `architecture poll: ${new Date().toLocaleTimeString()}`;
+        } catch (e) {
+          console.error("Failed to fetch architecture:", e);
+          const sync = document.getElementById("arch-last-sync");
+          if (sync) sync.textContent = `architecture poll error: ${e.message}`;
+        }
+      }
+
+      async function fetchLogs() {
+        try {
+          const res = await fetch("/landing/api/logs");
+          if (!res.ok) throw new Error("Logs API error");
+          const logs = await res.json();
+
+          const container = document.getElementById("activity-log-container");
+          if (container && logs.length > 0) {
+            container.innerHTML = logs
+              .map(
+                (line) =>
+                  `<div class="log-line text-[9px] font-mono leading-relaxed border-b border-white/5 py-1">${escapeHtml(line)}</div>`,
+              )
+              .join("");
+            container.scrollTop = container.scrollHeight;
+          }
+        } catch (e) {
+          console.error("Failed to fetch watchdog logs:", e);
+        }
+      }
+
+      function escapeHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
       }
 
       function addLog(msg) {
         const time = new Date().toLocaleTimeString();
-        activityLog.push(`[${time}] ${msg}`);
-        if (activityLog.length > 50) activityLog.shift();
-
         const container = document.getElementById("activity-log-container");
         if (container) {
-          container.innerHTML = activityLog
-            .map((line) => `<div class="log-line">${line}</div>`)
-            .join("");
+          const div = document.createElement("div");
+          div.className =
+            "log-line text-[9px] font-mono leading-relaxed border-b border-white/5 py-1 text-cyan-400";
+          div.textContent = `[${time}] ${msg}`;
+          container.appendChild(div);
           container.scrollTop = container.scrollHeight;
         }
       }
@@ -586,8 +715,9 @@
               .join("");
           }
 
-          document.getElementById("healthy-count").innerText =
-            `${healthy}/${currentServices.length} ONLINE`;
+          const hc = document.getElementById("healthy-count");
+          if (hc)
+            hc.innerText = `${healthy}/${currentServices.length} ONLINE`;
 
           if (dot)
             dot.className = `w-2.5 h-2.5 rounded-full ${healthy === currentServices.length ? "bg-emerald-500" : "bg-amber-500"}`;
@@ -597,8 +727,9 @@
                 ? "Stack fully healthy"
                 : "Warning: Some nodes offline";
 
-          document.getElementById("last-updated").innerText =
-            `Last sync: ${new Date().toLocaleTimeString()}`;
+          const lu = document.getElementById("last-updated");
+          if (lu)
+            lu.innerText = `Last sync: ${new Date().toLocaleTimeString()}`;
 
           updateChart();
           addLog(`Health sync completed. ${healthy} daemons responsive.`);
@@ -664,188 +795,161 @@
         });
       }
 
-      // --- DevOps Advisor Solvers Logic ---
-      async function fetchRankings() {
-        const sliders = {
-          nix: document.getElementById("weight-nix").value / 100,
-          tui: document.getElementById("weight-tui").value / 100,
-          perf: document.getElementById("weight-perf").value / 100,
-          setup: document.getElementById("weight-setup").value / 100,
-          orch: document.getElementById("weight-orch").value / 100,
-          port: document.getElementById("weight-port").value / 100,
-        };
-
-        const payload = {
-          nix_overhead: sliders.nix,
-          tui_gui_polish: sliders.tui,
-          performance: sliders.perf,
-          setup_speed: sliders.setup,
-          orchestration: sliders.orch,
-          portability: sliders.port,
-        };
-
+      async function fetchModels() {
         try {
-          const res = await fetch("/api/rank", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-          if (!res.ok) throw new Error("Rank API returned non-200");
-          const tools = await res.json();
-          renderRankings(tools);
+          const res = await fetch("/landing/api/models");
+          if (!res.ok) throw new Error("Models API error");
+          const models = await res.json();
+          renderModels(models);
         } catch (e) {
-          document.getElementById("ranks-container").innerHTML =
-            `<div class="text-red-400 text-xs">Failed to connect to axum ranker.</div>`;
+          console.error("Failed to fetch models:", e);
         }
       }
 
-      function renderRankings(tools) {
-        const container = document.getElementById("ranks-container");
+      function renderModels(models) {
+        const container = document.getElementById("models-list-container");
         if (!container) return;
 
-        container.innerHTML = tools
-          .map(
-            (tool, idx) => `
-                <div class="bg-white/5 border border-white/5 rounded-xl p-4 flex flex-col justify-between hover:border-cyan-500/20 transition-all">
-                    <div class="flex justify-between items-center mb-1">
-                        <div class="flex items-center gap-2">
-                            <span class="bg-violet-500/10 border border-violet-500/20 text-violet-400 text-[10px] font-bold px-2 py-0.5 rounded">#${idx + 1}</span>
-                            <span class="text-sm font-bold text-white">${tool.name}</span>
-                        </div>
-                        <span class="text-xs font-mono font-bold text-cyan-400">${tool.weighted_score}%</span>
-                    </div>
-                    <div class="w-full bg-white/5 h-1 rounded-full overflow-hidden mb-2">
-                        <div class="bg-gradient-to-r from-cyan-400 to-violet-400 h-full" style="width: ${tool.weighted_score}%"></div>
-                    </div>
-                    <p class="text-[11px] text-gray-400 leading-normal mb-3">${tool.description}</p>
-                    <div class="flex justify-between items-center text-[10px] text-gray-500">
-                        <div class="flex gap-x-2 flex-wrap">
-                            <span>Nix: ${tool.scores.nix_overhead}</span>
-                            <span>TUI: ${tool.scores.tui_gui_polish}</span>
-                            <span>Perf: ${tool.scores.performance}</span>
-                            <span>Setup: ${tool.scores.setup_speed}</span>
-                            <span>Orch: ${tool.scores.orchestration}</span>
-                            <span>Port: {tool.scores.portability}</span>
-                        </div>
-                        <a href="${tool.website}" target="_blank" class="text-cyan-400 font-bold hover:underline">Docs ↗</a>
-                    </div>
+        if (!models || models.length === 0) {
+          container.innerHTML = `<div class="text-xs text-gray-500 italic">No models available.</div>`;
+          return;
+        }
+
+        // Sort by active state (active first), then priority (descending), then ID (alphabetical)
+        models.sort((a, b) => {
+          if (a.active && !b.active) return -1;
+          if (!a.active && b.active) return 1;
+          if ((b.priority || 0) !== (a.priority || 0)) {
+            return (b.priority || 0) - (a.priority || 0);
+          }
+          return a.id.localeCompare(b.id);
+        });
+
+        const activeModel = models.find(m => m.active);
+        const headerEl = document.getElementById("active-model-header");
+        if (headerEl) {
+          if (activeModel) {
+            headerEl.innerText = `LIVE: ${activeModel.id}`;
+            headerEl.className = "text-[9px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20";
+          } else {
+            headerEl.innerText = "LIVE: None";
+            headerEl.className = "text-[9px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20";
+          }
+        }
+
+        container.innerHTML = models
+          .map((m) => {
+            const border = m.active
+              ? "border-cyan-500/50 bg-cyan-950/20"
+              : "border-white/5 hover:border-white/10";
+            const badgeClass = m.active
+              ? "text-[9px] font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20"
+              : "text-[9px] font-mono font-bold text-gray-500 bg-white/5 px-2 py-0.5 rounded border border-white/5";
+            const swapBtn = m.active
+              ? `<span class="${badgeClass}">ACTIVE</span>`
+              : `<button onclick="swapModel('${escapeHtml(m.id)}')" class="text-[9px] font-bold px-2 py-0.5 bg-violet-600 hover:bg-violet-500 text-white rounded transition shadow-sm shadow-violet-500/10">SWAP</button>`;
+
+            const priorityBadge = m.priority > 0
+              ? `<span class="text-[9px] font-mono text-violet-400 bg-violet-500/10 px-1.5 py-0.5 rounded border border-violet-500/20">Prio: ${m.priority}</span>`
+              : "";
+
+            return `
+              <div class="service-card rounded-xl p-3.5 flex flex-col gap-2 border ${border}">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-bold text-white font-mono truncate max-w-[70%] flex items-center gap-1.5">
+                    ${escapeHtml(m.id)}
+                    ${priorityBadge}
+                  </span>
+                  ${swapBtn}
                 </div>
-            `,
-          )
+                <div class="flex gap-x-2.5 gap-y-1 text-[10px] text-gray-400 flex-wrap">
+                  <span>Fork: <strong class="text-gray-300 font-mono">${escapeHtml(m.fork)}</strong></span>
+                  <span>Context: <strong class="text-gray-300 font-mono">${escapeHtml(m.context)}</strong></span>
+                  <span>Quant: <strong class="text-gray-300 font-mono">${escapeHtml(m.quant)}</strong></span>
+                  <span>VRAM: <strong class="text-gray-300 font-mono">${escapeHtml(m.vram)}</strong></span>
+                </div>
+              </div>
+            `;
+          })
           .join("");
       }
 
-      function handleSliderInput(key, val) {
-        document.getElementById(`val-${key}`).textContent = `${val}%`;
-        // Debounce or call directly
-        fetchRankings();
-      }
-
-      function resetWeights() {
-        const keys = ["nix", "tui", "perf", "setup", "orch", "port"];
-        keys.forEach((k) => {
-          const el = document.getElementById(`weight-${k}`);
-          if (el) el.value = 50;
-          const val = document.getElementById(`val-${k}`);
-          if (val) val.textContent = "50%";
-        });
-        fetchRankings();
-        addLog("DevOps Advisor criteria weights reset to 50%");
-      }
-
-      async function consultAdvisor() {
-        const input = document.getElementById("chat-input");
-        const text = input.value.trim();
-        if (!text) return;
-
-        appendMessage("user", text);
-        input.value = "";
-
-        const chatBox = document.getElementById("chat-box");
-        const loading = document.createElement("div");
-        loading.className =
-          "chat-message coach-msg opacity-60 italic text-[11px]";
-        loading.innerText = "Advisor is thinking...";
-        chatBox.appendChild(loading);
-        chatBox.scrollTop = chatBox.scrollHeight;
-
+      async function swapModel(modelId) {
+        addLog(`Initiating model swap to ${modelId}...`);
         try {
-          const res = await fetch("/api/ai/advisor", {
+          const res = await fetch("http://127.0.0.1:25100/v1/chat/completions", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prompt: text }),
+            body: JSON.stringify({
+              model: modelId,
+              messages: [{ role: "user", content: "hello" }],
+              max_tokens: 1,
+            }),
           });
-          loading.remove();
-          if (!res.ok) throw new Error("Advisor service failed");
-          const data = await res.json();
-
-          appendMessage("advisor", data.explanation);
-          if (data.weights) {
-            suggestedWeights = data.weights;
-            document
-              .getElementById("suggested-weights-box")
-              .classList.remove("hidden");
+          if (res.ok) {
+            addLog(`Swapped to model ${modelId} successfully.`);
+            fetchModels();
+            fetchTelemetry();
+            fetchArchitecture();
+          } else {
+            throw new Error(`Swap request status: ${res.status}`);
           }
         } catch (e) {
-          loading.remove();
-          appendMessage("system", `Advisor error: ${e.message}`);
+          addLog(`Swap error: ${e.message}`);
         }
       }
 
-      function appendMessage(sender, text) {
-        const chatBox = document.getElementById("chat-box");
-        if (!chatBox) return;
-
-        const bubble = document.createElement("div");
-        bubble.className = `chat-message ${sender === "user" ? "user-msg bg-violet-600/10 border border-violet-500/20 text-violet-300 self-end" : sender === "advisor" ? "coach-msg bg-cyan-600/10 border border-cyan-500/20 text-cyan-300 self-start" : "system-msg bg-yellow-600/10 border border-yellow-500/20 text-yellow-300 self-start"} p-2.5 rounded-lg max-w-[85%]`;
-        bubble.innerHTML = `<p class="whitespace-pre-line">${text}</p>`;
-        chatBox.appendChild(bubble);
-        chatBox.scrollTop = chatBox.scrollHeight;
+      async function fetchRankingsPreview() {
+        try {
+          const res = await fetch("/landing/api/fleet/last");
+          if (!res.ok) return;
+          const data = await res.json();
+          renderRankingsPreview(data);
+        } catch (e) {
+          console.error("Failed to fetch rankings preview:", e);
+        }
       }
 
-      function applySuggestedWeights() {
-        if (!suggestedWeights) return;
+      function renderRankingsPreview(data) {
+        const container = document.getElementById("rankings-preview-container");
+        if (!container) return;
+        if (!data || !data.forks || Object.keys(data.forks).length === 0) {
+          container.innerHTML = `<div class="text-[10px] text-gray-500 italic">No rankings available. Run bench-forks.sh</div>`;
+          return;
+        }
 
-        const mapping = {
-          nix: "nix_overhead",
-          tui: "tui_gui_polish",
-          perf: "performance",
-          setup: "setup_speed",
-          orch: "orchestration",
-          port: "portability",
-        };
-
-        Object.keys(mapping).forEach((k) => {
-          const apiVal = suggestedWeights[mapping[k]];
-          const sliderVal = Math.round(apiVal * 100);
-          const el = document.getElementById(`weight-${k}`);
-          if (el) el.value = sliderVal;
-          const val = document.getElementById(`val-${k}`);
-          if (val) val.textContent = `${sliderVal}%`;
-        });
-
-        fetchRankings();
-        document
-          .getElementById("suggested-weights-box")
-          .classList.add("hidden");
-        addLog("Applied advisor's recommended weights.");
-        appendMessage("system", "Applied recommended weights to controls.");
-      }
-
-      function initHotReload() {
-        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-        const ws = new WebSocket(
-          `${protocol}//${window.location.host}/landing/ws-reload`,
-        );
-        ws.onmessage = (event) => {
-          if (event.data === "reload") {
-            addLog("Hot reload signal received. Reloading page...");
-            window.location.reload();
+        const list = [];
+        for (const [name, fork] of Object.entries(data.forks)) {
+          let tg64 = 0;
+          if (fork.ok && fork.bench_stdout_tail) {
+            const lines = fork.bench_stdout_tail.split('\n');
+            for (const line of lines) {
+              if (line.includes("tg64")) {
+                const parts = line.split('|');
+                if (parts.length > 7) {
+                  const valPart = parts[7].trim().split(' ')[0];
+                  const val = parseFloat(valPart);
+                  if (!isNaN(val)) tg64 = val;
+                }
+              }
+            }
           }
-        };
-        ws.onclose = () => {
-          setTimeout(initHotReload, 2000);
-        };
+          list.push({ name, tg64 });
+        }
+
+        list.sort((a, b) => b.tg64 - a.tg64);
+
+        container.innerHTML = list.map((item, idx) => {
+          const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "⚡";
+          const speed = item.tg64 > 0 ? `${item.tg64.toFixed(1)} t/s` : "offline/pending";
+          const color = idx === 0 ? "text-cyan-300" : "text-gray-300";
+          return `
+            <div class="flex justify-between items-center text-[11px] py-0.5 border-b border-white/5 last:border-0">
+              <span class="font-mono flex items-center gap-1"><span class="text-xs">${medal}</span> <span class="${color}">${escapeHtml(item.name)}</span></span>
+              <span class="font-mono font-bold text-gray-300">${speed}</span>
+            </div>
+          `;
+        }).join("");
       }
 
       async function fetchTelemetry() {
@@ -871,13 +975,62 @@
         }
       }
 
+      function initHotReload() {
+        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        const ws = new WebSocket(
+          `${protocol}//${window.location.hostname}:25080/ws-reload`
+        );
+        ws.onmessage = (event) => {
+          if (event.data === "reload") {
+            console.log("Hot reload signal received. Reloading page...");
+            window.location.reload();
+          }
+        };
+        ws.onclose = () => {
+          setTimeout(initHotReload, 2000);
+        };
+      }
+
+      function updateDynamicLinks() {
+        const host = window.location.hostname;
+        
+        const navChatUi = document.getElementById("nav-chat-ui");
+        if (navChatUi) navChatUi.href = `http://${host}:25100/ui/`;
+        
+        const navHfd = document.getElementById("nav-hfd");
+        if (navHfd) navHfd.href = `http://${host}:25106/`;
+        
+        const linkHfdDashboard = document.getElementById("link-hfd-dashboard");
+        if (linkHfdDashboard) linkHfdDashboard.href = `http://${host}:25106/`;
+        
+        const btnChatUi = document.getElementById("btn-chat-ui");
+        if (btnChatUi) btnChatUi.href = `http://${host}:25100/ui/`;
+        
+        const btnModelsApi = document.getElementById("btn-models-api");
+        if (btnModelsApi) btnModelsApi.href = `http://${host}:25100/v1/models`;
+
+        const textApiDoor = document.getElementById("text-api-door");
+        if (textApiDoor) {
+          textApiDoor.innerHTML = `API front door: http://${host}:25100/v1 · UI: http://${host}:25100/ui/`;
+        }
+      }
+
       function init() {
-        refreshAll();
-        fetchRankings();
-        fetchTelemetry();
+        updateDynamicLinks();
         initHotReload();
+        initMermaid();
+        refreshAll();
+        fetchTelemetry();
+        fetchModels();
+        fetchLogs();
+        fetchArchitecture();
+        fetchRankingsPreview();
         setInterval(refreshAll, 15000);
         setInterval(fetchTelemetry, 20000);
+        setInterval(fetchModels, 25000);
+        setInterval(fetchLogs, 4000);
+        setInterval(fetchArchitecture, 8000);
+        setInterval(fetchRankingsPreview, 12000);
       }
 
       document.addEventListener("DOMContentLoaded", init);
