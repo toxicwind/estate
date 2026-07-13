@@ -1,0 +1,1136 @@
+openapi: 3.0.3
+info:
+  title: Antigravity Proxy API
+  description: |
+    OpenAI-compatible HTTP proxy for the Antigravity IDE.
+    Exposes chat completions, Git helpers, a knowledge base, terminal execution,
+    and code intelligence — all from a single local REST API.
+  version: 1.0.0
+  contact:
+    name: null-g-proxy
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:8787
+    description: Local development server
+
+tags:
+  - name: Core
+    description: Server health and model listing
+  - name: Chat
+    description: OpenAI-compatible chat completions with multi-turn support
+  - name: Git
+    description: AI-powered Git helpers
+  - name: Knowledge
+    description: Knowledge base CRUD and search
+  - name: Terminal
+    description: Remote command execution and process listing
+  - name: Code
+    description: Code search and linting
+
+paths:
+
+  # ─── Core ──────────────────────────────────────────────────────────────────
+
+  /health:
+    get:
+      tags: [Core]
+      summary: Server health
+      description: Returns server status, uptime, active sessions, and enabled features.
+      operationId: getHealth
+      responses:
+        '200':
+          description: Server is running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: connected
+                uptime: 120
+                antigravity:
+                  port: 52341
+                  workspace: /Users/user/workspace
+                  pid: 12345
+                error: null
+                sessions:
+                  active: 2
+                  max: 100
+                features:
+                  chat_completions: true
+                  multi_turn: true
+                  streaming: true
+                  agentic_mode: true
+                  git: true
+                  knowledge: true
+                  terminal: true
+                  code_search: true
+                  code_lint: true
+                endpoints:
+                  - GET  /health
+                  - GET  /v1/models
+
+  /v1/models:
+    get:
+      tags: [Core]
+      summary: List available models
+      description: Returns all supported models in OpenAI format.
+      operationId: listModels
+      responses:
+        '200':
+          description: Model list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelListResponse'
+              example:
+                object: list
+                data:
+                  - id: antigravity/gemini-3.1-pro-high
+                    object: model
+                    created: 1700000000
+                    owned_by: antigravity
+                    permission: []
+                    root: antigravity/gemini-3.1-pro-high
+                    parent: null
+
+  # ─── Chat ──────────────────────────────────────────────────────────────────
+
+  /v1/chat/completions:
+    post:
+      tags: [Chat]
+      summary: Chat completion
+      description: |
+        OpenAI-compatible chat completion endpoint. Supports:
+        - **Streaming** via `"stream": true` (Server-Sent Events)
+        - **Non-streaming** (default)
+        - **Multi-turn** via the `cascade_id` extension field (see `system_fingerprint` in the response)
+        - **Agentic mode** via `"agentic": true` or `"mode": "agentic"`
+      operationId: createChatCompletion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatCompletionRequest'
+            examples:
+              basic:
+                summary: Simple non-streaming request
+                value:
+                  model: antigravity/gemini-3-flash
+                  messages:
+                    - role: user
+                      content: What is the capital of France?
+              streaming:
+                summary: Streaming request
+                value:
+                  model: antigravity/gemini-3-flash
+                  stream: true
+                  messages:
+                    - role: user
+                      content: Tell me a joke
+              agentic:
+                summary: Agentic mode
+                value:
+                  model: antigravity/gemini-3.1-pro-high
+                  agentic: true
+                  messages:
+                    - role: user
+                      content: Refactor src/index.ts to use async/await
+              multiturn:
+                summary: Multi-turn (continuing a session)
+                value:
+                  model: antigravity/gemini-3-flash
+                  cascade_id: abc123-cascade-id
+                  messages:
+                    - role: user
+                      content: What did I just say?
+      responses:
+        '200':
+          description: Chat completion response (or SSE stream if stream=true)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatCompletionResponse'
+              example:
+                id: chatcmpl-abc123
+                object: chat.completion
+                created: 1700000000
+                model: antigravity/gemini-3-flash
+                system_fingerprint: cascade-session-abc123
+                choices:
+                  - index: 0
+                    message:
+                      role: assistant
+                      content: Paris is the capital of France.
+                    finish_reason: stop
+                usage:
+                  prompt_tokens: 0
+                  completion_tokens: 0
+                  total_tokens: 0
+            text/event-stream:
+              schema:
+                type: string
+                description: Server-Sent Events stream of chat.completion.chunk objects
+              example: |
+                data: {"id":"chatcmpl-abc","object":"chat.completion.chunk","created":1700000000,"model":"antigravity/gemini-3-flash","choices":[{"index":0,"delta":{"role":"assistant","content":"Paris"},"finish_reason":null}]}
+
+                data: [DONE]
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '502':
+          $ref: '#/components/responses/UpstreamError'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+
+  /v1/chat/sessions/{id}:
+    delete:
+      tags: [Chat]
+      summary: Delete a cascade session
+      description: Cancel and remove an active multi-turn cascade session.
+      operationId: deleteChatSession
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The cascade session ID (from `system_fingerprint` in a prior completion)
+          schema:
+            type: string
+          example: cascade-session-abc123
+      responses:
+        '200':
+          description: Session deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted:
+                    type: boolean
+                    example: true
+                  cascade_id:
+                    type: string
+                    example: cascade-session-abc123
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ─── Git ───────────────────────────────────────────────────────────────────
+
+  /v1/git/commit-message:
+    post:
+      tags: [Git]
+      summary: Generate AI commit message
+      description: |
+        Uses the Antigravity AI to generate a commit message for the given diff.
+        If `diff` is omitted, runs `git diff --staged` in `workingDir`.
+      operationId: generateCommitMessage
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommitMessageRequest'
+            examples:
+              auto:
+                summary: Auto-detect staged diff
+                value:
+                  workingDir: /Users/user/workspace/myproject
+                  style: conventional
+              manual:
+                summary: Provide diff manually
+                value:
+                  style: imperative
+                  diff: |
+                    diff --git a/src/auth.ts b/src/auth.ts
+                    +  const token = jwt.sign(payload, secret, { expiresIn: '15m' });
+      responses:
+        '200':
+          description: Generated commit message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommitMessageResponse'
+              example:
+                message: "feat(auth): add JWT token refresh endpoint"
+                subject: "feat(auth): add JWT token refresh endpoint"
+                body: "Implements /api/auth/refresh that issues new access tokens\nusing a valid refresh token stored in httpOnly cookie."
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '502':
+          $ref: '#/components/responses/UpstreamError'
+
+  /v1/git/repos:
+    get:
+      tags: [Git]
+      summary: List Git repositories
+      description: Scans `~/workspace` and returns all directories containing a `.git` folder.
+      operationId: listRepos
+      responses:
+        '200':
+          description: List of repositories
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepoListResponse'
+              example:
+                repos:
+                  - name: null-g-proxy
+                    path: /Users/user/workspace/null-g-proxy
+                    remotes:
+                      - git@github.com:user/null-g-proxy.git
+                    branch: main
+
+  /v1/git/worktree:
+    post:
+      tags: [Git]
+      summary: Create a Git worktree
+      description: Runs `git worktree add` to create a new worktree for the given branch.
+      operationId: createWorktree
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorktreeRequest'
+            example:
+              repo: myproject
+              branch: feature/new-ui
+      responses:
+        '200':
+          description: Worktree created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    example: /Users/user/workspace/myproject-feature-new-ui
+                  branch:
+                    type: string
+                    example: feature/new-ui
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  # ─── Knowledge ─────────────────────────────────────────────────────────────
+
+  /v1/knowledge/list:
+    get:
+      tags: [Knowledge]
+      summary: List knowledge items
+      description: Returns all knowledge items stored in `~/.gemini/antigravity/knowledge/`.
+      operationId: listKnowledge
+      responses:
+        '200':
+          description: Knowledge item list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgeListResponse'
+              example:
+                items:
+                  - name: auth-notes
+                    filename: auth-notes.md
+                    path: /Users/user/.gemini/antigravity/knowledge/auth-notes.md
+                    size: 512
+                    createdAt: 1700000000
+                    modifiedAt: 1700000100
+                    preview: "# Auth Notes  We use JWT with 15min expiry..."
+                total: 1
+                directory: /Users/user/.gemini/antigravity/knowledge
+
+  /v1/knowledge/search:
+    get:
+      tags: [Knowledge]
+      summary: Search knowledge base
+      description: Full-text search across all knowledge items. Name matches are weighted 5×.
+      operationId: searchKnowledge
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Search query string
+          schema:
+            type: string
+          example: authentication
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgeSearchResponse'
+              example:
+                query: authentication
+                results:
+                  - name: auth-notes
+                    filename: auth-notes.md
+                    path: /Users/user/.gemini/antigravity/knowledge/auth-notes.md
+                    size: 512
+                    createdAt: 1700000000
+                    modifiedAt: 1700000100
+                    preview: "# Auth Notes  We use JWT..."
+                    content: "# Auth Notes\n\nWe use JWT with 15min expiry..."
+                    relevance: 6
+                total: 1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /v1/knowledge/items:
+    post:
+      tags: [Knowledge]
+      summary: Create a knowledge item
+      description: |
+        Creates a new Markdown file in the global knowledge directory
+        (`~/.gemini/antigravity/knowledge/`) or in `<projectDir>/.antigravity/knowledge/`.
+        Returns 409 if an item with the same name already exists.
+      operationId: createKnowledgeItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateKnowledgeRequest'
+            example:
+              name: auth-notes
+              content: "# Auth Notes\n\nWe use JWT with 15min expiry and refresh tokens."
+      responses:
+        '201':
+          description: Knowledge item created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgeItem'
+              example:
+                name: auth-notes
+                filename: auth-notes.md
+                path: /Users/user/.gemini/antigravity/knowledge/auth-notes.md
+                size: 512
+                createdAt: 1700000000
+                modifiedAt: 1700000000
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Knowledge item already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  message: Knowledge item "auth-notes.md" already exists. Use a different name.
+                  type: conflict
+                  code: already_exists
+
+  # ─── Terminal ──────────────────────────────────────────────────────────────
+
+  /v1/terminal/exec:
+    post:
+      tags: [Terminal]
+      summary: Execute a shell command
+      description: |
+        Runs a shell command via `/bin/sh -c` and returns stdout, stderr, and exit code.
+        
+        **Security:** A denylist blocks dangerous commands including `rm -rf`, `sudo`,
+        `eval`, fork bombs, and network attack tools. Blocked commands return HTTP 403.
+        
+        Maximum timeout is capped at **120 seconds**.
+      operationId: execCommand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecRequest'
+            examples:
+              ls:
+                summary: List files
+                value:
+                  command: ls -la
+                  cwd: /Users/user/workspace
+              npm:
+                summary: Run npm script
+                value:
+                  command: npm run build
+                  cwd: /Users/user/workspace/myproject
+                  timeout: 60000
+      responses:
+        '200':
+          description: Command output
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecResult'
+              example:
+                stdout: "total 48\ndrwxr-xr-x  12 user staff  384 Jan 1 00:00 .\n"
+                stderr: ""
+                exitCode: 0
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          description: Command blocked by security policy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  message: "Command rejected by security policy (matched: /\\brm\\s+-[^-]*r/i)"
+                  type: security_policy
+
+  /v1/terminal/processes:
+    get:
+      tags: [Terminal]
+      summary: List workspace processes
+      description: |
+        Runs `ps aux` and filters for workspace-related processes:
+        `node`, `tsx`, `python`, `antigravity`, `language_server`, `cascade`.
+      operationId: listProcesses
+      responses:
+        '200':
+          description: Process list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessListResponse'
+              example:
+                processes:
+                  - pid: 12345
+                    command: node
+                    args: dist/index.js
+                    cpu: "0.5"
+                    mem: "1.2"
+                total: 1
+
+  # ─── Code ──────────────────────────────────────────────────────────────────
+
+  /v1/code/search:
+    get:
+      tags: [Code]
+      summary: Search codebase
+      description: |
+        Searches the codebase using **ripgrep** (if available) or falls back to **grep**.
+        Returns file path, line number, column, and matched text for each result.
+      operationId: searchCode
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Search query / pattern
+          schema:
+            type: string
+          example: resolveInstance
+        - name: workspace
+          in: query
+          required: false
+          description: Directory to search (defaults to `$HOME`)
+          schema:
+            type: string
+          example: /Users/user/workspace/null-g-proxy
+        - name: max
+          in: query
+          required: false
+          description: Maximum number of results (default 50)
+          schema:
+            type: integer
+            default: 50
+          example: 20
+        - name: glob
+          in: query
+          required: false
+          description: File glob filter (e.g. `*.ts`)
+          schema:
+            type: string
+          example: "*.ts"
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CodeSearchResponse'
+              example:
+                query: resolveInstance
+                workspace: /Users/user/workspace/null-g-proxy
+                results:
+                  - file: /Users/user/workspace/null-g-proxy/src/index.ts
+                    line: 22
+                    column: 10
+                    text: "import { resolveInstance, type AntigravityInstance } from './discovery.js';"
+                total: 1
+                engine: ripgrep
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /v1/code/lint:
+    get:
+      tags: [Code]
+      summary: Lint a file
+      description: |
+        Lints the given file using **ESLint** (preferred) or **TypeScript compiler** (`tsc --noEmit`).
+        
+        The project root is auto-detected by walking up the directory tree to find `package.json`.
+        Returns an empty issues array if no linter is found.
+      operationId: lintFile
+      parameters:
+        - name: file
+          in: query
+          required: true
+          description: Absolute path to the file to lint
+          schema:
+            type: string
+          example: /Users/user/workspace/null-g-proxy/src/index.ts
+      responses:
+        '200':
+          description: Lint results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LintResponse'
+              example:
+                file: /Users/user/workspace/null-g-proxy/src/index.ts
+                issues:
+                  - file: /Users/user/workspace/null-g-proxy/src/index.ts
+                    line: 42
+                    column: 5
+                    severity: warning
+                    message: "'x' is defined but never used."
+                    rule: "@typescript-eslint/no-unused-vars"
+                summary:
+                  errors: 0
+                  warnings: 1
+                  total: 1
+                linter: eslint
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+# ─── Components ──────────────────────────────────────────────────────────────
+
+components:
+
+  schemas:
+
+    # Core
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [connected, disconnected, discovering, error]
+        uptime:
+          type: integer
+          description: Seconds since the proxy started
+        antigravity:
+          type: object
+          nullable: true
+          properties:
+            port:
+              type: integer
+            workspace:
+              type: string
+            pid:
+              type: integer
+        error:
+          type: string
+          nullable: true
+        sessions:
+          type: object
+          properties:
+            active:
+              type: integer
+            max:
+              type: integer
+        features:
+          type: object
+          additionalProperties:
+            type: boolean
+        endpoints:
+          type: array
+          items:
+            type: string
+
+    ModelListResponse:
+      type: object
+      properties:
+        object:
+          type: string
+          example: list
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModelObject'
+
+    ModelObject:
+      type: object
+      properties:
+        id:
+          type: string
+          example: antigravity/gemini-3.1-pro-high
+        object:
+          type: string
+          example: model
+        created:
+          type: integer
+        owned_by:
+          type: string
+          example: antigravity
+        permission:
+          type: array
+          items: {}
+        root:
+          type: string
+        parent:
+          type: string
+          nullable: true
+
+    # Chat
+
+    ChatMessage:
+      type: object
+      required: [role, content]
+      properties:
+        role:
+          type: string
+          enum: [system, user, assistant]
+          example: user
+        content:
+          type: string
+          example: What is the capital of France?
+
+    ChatCompletionRequest:
+      type: object
+      required: [messages]
+      properties:
+        model:
+          type: string
+          description: Model ID (defaults to antigravity/gemini-3.1-pro-high)
+          example: antigravity/gemini-3-flash
+        messages:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+        temperature:
+          type: number
+          minimum: 0
+          maximum: 2
+        max_tokens:
+          type: integer
+        stream:
+          type: boolean
+          default: false
+          description: Enable SSE streaming
+        cascade_id:
+          type: string
+          description: Reuse an existing cascade session for multi-turn conversation
+        agentic:
+          type: boolean
+          description: Enable agentic mode (Antigravity extension)
+        mode:
+          type: string
+          enum: [agentic, chat]
+          description: Alternative way to set agentic mode
+
+    ChatCompletionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: chatcmpl-abc123
+        object:
+          type: string
+          example: chat.completion
+        created:
+          type: integer
+        model:
+          type: string
+        system_fingerprint:
+          type: string
+          description: The cascade session ID — pass as `cascade_id` for multi-turn
+        choices:
+          type: array
+          items:
+            type: object
+            properties:
+              index:
+                type: integer
+              message:
+                $ref: '#/components/schemas/ChatMessage'
+              finish_reason:
+                type: string
+        usage:
+          type: object
+          properties:
+            prompt_tokens:
+              type: integer
+            completion_tokens:
+              type: integer
+            total_tokens:
+              type: integer
+
+    # Git
+
+    CommitMessageRequest:
+      type: object
+      properties:
+        diff:
+          type: string
+          description: Raw unified diff. If omitted, `git diff --staged` is run in workingDir.
+        workingDir:
+          type: string
+          description: Working directory for auto-detecting staged diff (defaults to cwd)
+        style:
+          type: string
+          enum: [conventional, imperative, descriptive]
+          default: conventional
+          description: Commit message style
+
+    CommitMessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Full commit message (subject + blank line + body)
+        subject:
+          type: string
+          description: First line / subject (max 72 chars)
+        body:
+          type: string
+          description: Optional body with more detail
+
+    RepoInfo:
+      type: object
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+        remotes:
+          type: array
+          items:
+            type: string
+        branch:
+          type: string
+          nullable: true
+
+    RepoListResponse:
+      type: object
+      properties:
+        repos:
+          type: array
+          items:
+            $ref: '#/components/schemas/RepoInfo'
+
+    WorktreeRequest:
+      type: object
+      required: [repo, branch]
+      properties:
+        repo:
+          type: string
+          description: Repo name (relative to ~/workspace) or absolute path
+          example: myproject
+        branch:
+          type: string
+          description: Branch name to checkout in the new worktree
+          example: feature/new-ui
+        path:
+          type: string
+          description: Explicit path for the worktree (auto-generated if omitted)
+
+    # Knowledge
+
+    KnowledgeItem:
+      type: object
+      properties:
+        name:
+          type: string
+        filename:
+          type: string
+        path:
+          type: string
+        size:
+          type: integer
+          description: File size in bytes
+        createdAt:
+          type: integer
+          description: Unix timestamp
+        modifiedAt:
+          type: integer
+          description: Unix timestamp
+        preview:
+          type: string
+          description: First 200 chars of content
+
+    KnowledgeListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/KnowledgeItem'
+        total:
+          type: integer
+        directory:
+          type: string
+
+    KnowledgeSearchResult:
+      allOf:
+        - $ref: '#/components/schemas/KnowledgeItem'
+        - type: object
+          properties:
+            content:
+              type: string
+              description: Full file content
+            relevance:
+              type: integer
+              description: Match score (name matches weighted 5×)
+
+    KnowledgeSearchResponse:
+      type: object
+      properties:
+        query:
+          type: string
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/KnowledgeSearchResult'
+        total:
+          type: integer
+
+    CreateKnowledgeRequest:
+      type: object
+      required: [name, content]
+      properties:
+        name:
+          type: string
+          description: Item name (used as filename, `.md` appended automatically)
+          example: auth-notes
+        content:
+          type: string
+          description: Markdown content
+          example: "# Auth Notes\n\nWe use JWT with 15min expiry..."
+        projectDir:
+          type: string
+          description: Store in `<projectDir>/.antigravity/knowledge/` instead of global dir
+
+    # Terminal
+
+    ExecRequest:
+      type: object
+      required: [command]
+      properties:
+        command:
+          type: string
+          description: Shell command to execute
+          example: ls -la
+        cwd:
+          type: string
+          description: Working directory (defaults to $HOME)
+          example: /Users/user/workspace
+        timeout:
+          type: integer
+          description: Timeout in milliseconds (max 120000)
+          default: 30000
+          example: 60000
+        env:
+          type: object
+          additionalProperties:
+            type: string
+          description: Additional environment variables
+
+    ExecResult:
+      type: object
+      properties:
+        stdout:
+          type: string
+        stderr:
+          type: string
+        exitCode:
+          type: integer
+
+    ProcessInfo:
+      type: object
+      properties:
+        pid:
+          type: integer
+        command:
+          type: string
+        args:
+          type: string
+        cpu:
+          type: string
+        mem:
+          type: string
+
+    ProcessListResponse:
+      type: object
+      properties:
+        processes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProcessInfo'
+        total:
+          type: integer
+
+    # Code
+
+    SearchMatch:
+      type: object
+      properties:
+        file:
+          type: string
+        line:
+          type: integer
+        column:
+          type: integer
+        text:
+          type: string
+          description: Matched line text
+
+    CodeSearchResponse:
+      type: object
+      properties:
+        query:
+          type: string
+        workspace:
+          type: string
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchMatch'
+        total:
+          type: integer
+        engine:
+          type: string
+          enum: [ripgrep, grep]
+
+    LintIssue:
+      type: object
+      properties:
+        file:
+          type: string
+        line:
+          type: integer
+        column:
+          type: integer
+        severity:
+          type: string
+          enum: [error, warning, info]
+        message:
+          type: string
+        rule:
+          type: string
+          nullable: true
+
+    LintResponse:
+      type: object
+      properties:
+        file:
+          type: string
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/LintIssue'
+        summary:
+          type: object
+          properties:
+            errors:
+              type: integer
+            warnings:
+              type: integer
+            total:
+              type: integer
+        linter:
+          type: string
+          enum: [eslint, tsc, none]
+
+    # Errors
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+            type:
+              type: string
+            code:
+              type: string
+
+  responses:
+
+    BadRequest:
+      description: Bad request — missing or invalid parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              message: "`q` query parameter is required"
+              type: invalid_request_error
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              message: Session not found
+              type: not_found
+
+    ServiceUnavailable:
+      description: Antigravity IDE is not reachable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              message: "Antigravity not available: connection refused"
+              type: service_unavailable
+
+    UpstreamError:
+      description: Upstream cascade error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              message: "StartCascade failed: timeout"
+              type: upstream_error
+
+    GatewayTimeout:
+      description: Response polling timed out
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              message: "Polling failed: timeout after 120000ms"
+              type: upstream_error
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              message: "git worktree add failed: branch already exists"
+              type: command_error
