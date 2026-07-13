@@ -1,4 +1,3 @@
-cat > stack/services/llama-swap.sh <<'SH'
 #!/usr/bin/env bash
 set -euo pipefail
 SOV="${SOVEREIGN_ROOT:-$PWD}"
@@ -35,10 +34,3 @@ fuser -k ${PORT}/tcp 2>/dev/null || true
 
 echo "[llama-swap] $BIN $CONF $PORT startPort=$SP count=$MC range=$SP-$EP"
 exec "$BIN" --config "$CONF" --listen "127.0.0.1:${PORT}"
-SH
-chmod +x stack/services/llama-swap.sh
-
-mise run down; mise run up; sleep 6
-cat .state/logs/llama-swap.log | tail -n 20
-ss -ltnp | grep 25100
-curl -s http://127.0.0.1:25100/v1/models | jq '.data | length'
