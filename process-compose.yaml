@@ -1,15 +1,78 @@
+# GENERATED — do not edit. Source: stack/modules/*.yaml
+# Regenerate: mise run build-compose  |  ./stack/build-compose.sh
 version: '0.5'
 is_strict: false
 processes:
-  llama-swap:
-    command: llama-swap --config /home/toxic/sovereign/tools/llama-swap/config.yaml
-      --listen 127.0.0.1:25100
-    readiness_probe:
-      http_get:
-        host: 127.0.0.1
-        port: 25100
-        path: /v1/models
   null-g-proxy:
     command: node /home/toxic/sovereign/tools/null-g-proxy/dist/index.js
     environment:
     - PORT=8787
+  caddy:
+    command: caddy run --config ./Caddyfile
+    working_dir: .
+    availability:
+      restart: on_failure
+      backoff_seconds: 3
+      max_restarts: 10
+    log_location: .state/logs/caddy.log
+  hf-downloader:
+    command: /home/toxic/.bun/bin/bun run /home/toxic/sovereign/src/services/hf_downloader.ts
+    working_dir: /home/toxic/sovereign
+    environment:
+    - HF_DOWNLOADER_PORT=${HF_DOWNLOADER_PORT}
+    - SOVEREIGN_ROOT=${SOVEREIGN_ROOT}
+    - HF_HOME=${HF_HOME:-/home/toxic/.cache/huggingface}
+    - HF_TOKEN=${HF_TOKEN}
+    availability:
+      restart: on_failure
+      backoff_seconds: 5
+      max_restarts: 8
+    log_location: .state/logs/hf-downloader.log
+  llama-swap:
+    command: ./stack/services/llama-swap.sh
+    working_dir: .
+    environment:
+    - SOVEREIGN_ROOT=${SOVEREIGN_ROOT}
+    - LLAMA_SWAP_PORT=${LLAMA_SWAP_PORT}
+    availability:
+      restart: on_failure
+      backoff_seconds: 3
+      max_restarts: 12
+    log_location: .state/logs/llama-swap.log
+  openfang:
+    command: /home/toxic/.bun/bin/bun run src/services/openfang.ts
+    working_dir: /home/toxic/sovereign
+    environment:
+    - OPENFANG_PORT=${OPENFANG_PORT}
+    availability:
+      restart: on_failure
+      max_restarts: 5
+      backoff_seconds: 5
+    log_location: .state/logs/openfang.log
+  prometheus:
+    command: prometheus --config.file=./prometheus.yml --storage.tsdb.path=./.prometheus
+      --web.listen-address=0.0.0.0:${PROMETHEUS_PORT}
+    working_dir: .
+    log_location: .state/logs/prometheus.log
+  rust-web:
+    command: ../stack/services/rust-web.sh
+    working_dir: rust_algo_web
+    environment:
+    - RUST_WEB_PORT=${RUST_WEB_PORT}
+    - LLM_PROXY_URL=${LLM_PROXY_URL}
+    - SOVEREIGN_ROOT=${SOVEREIGN_ROOT}
+    - WATCHDOG_PORT=${WATCHDOG_PORT}
+    availability:
+      restart: on_failure
+      max_restarts: 8
+    log_location: ../.state/logs/rust-web.log
+  yote:
+    command: /home/toxic/.bun/bin/bun run src/index.ts
+    working_dir: yote
+    environment:
+    - YOTE_PORT=${YOTE_PORT}
+    - LLM_PROXY_URL=${LLM_PROXY_URL}
+    availability:
+      restart: always
+      backoff_seconds: 5
+    log_location: ../.state/logs/yote.log

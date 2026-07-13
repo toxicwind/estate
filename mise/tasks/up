@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 source "$(dirname "$0")/_lib.sh"
+# generate fresh process-compose.yaml then use pc_up
+"$SOV/stack/build-compose.sh" >/dev/null
 pc_up llama-swap openfang prometheus yote rust-web hf-downloader

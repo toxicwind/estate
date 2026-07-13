@@ -1,21 +1,13 @@
 processes:
   rust-web:
-    command: "../stack/services/rust-web.sh"
-    working_dir: "rust_algo_web"
+    command: ../stack/services/rust-web.sh
+    working_dir: rust_algo_web
     environment:
-      - "RUST_WEB_PORT=${RUST_WEB_PORT}"
-      - "LLM_PROXY_URL=${LLM_PROXY_URL}"
-      - "SOVEREIGN_ROOT=${SOVEREIGN_ROOT}"
-      - "WATCHDOG_PORT=${WATCHDOG_PORT}"
+    - RUST_WEB_PORT=${RUST_WEB_PORT}
+    - LLM_PROXY_URL=${LLM_PROXY_URL}
+    - SOVEREIGN_ROOT=${SOVEREIGN_ROOT}
+    - WATCHDOG_PORT=${WATCHDOG_PORT}
     availability:
       restart: on_failure
       max_restarts: 8
-    readiness_probe:
-      http_get:
-        host: 127.0.0.1
-        port: ${RUST_WEB_PORT}
-        path: /health
-      initial_delay_seconds: 5
-      period_seconds: 5
-      failure_threshold: 12
-    log_location: "../.state/logs/rust-web.log"
+    log_location: ../.state/logs/rust-web.log

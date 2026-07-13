@@ -1,12 +1,6 @@
 processes:
   prometheus:
-    command: "prometheus --config.file=./prometheus.yml --storage.tsdb.path=./.prometheus --web.listen-address=0.0.0.0:${PROMETHEUS_PORT}"
-    working_dir: "."
-    readiness_probe:
-      http_get:
-        host: 127.0.0.1
-        port: ${PROMETHEUS_PORT}
-        path: /-/healthy
-      initial_delay_seconds: 3
-      period_seconds: 5
-    log_location: ".state/logs/prometheus.log"
+    command: prometheus --config.file=./prometheus.yml --storage.tsdb.path=./.prometheus
+      --web.listen-address=0.0.0.0:${PROMETHEUS_PORT}
+    working_dir: .
+    log_location: .state/logs/prometheus.log

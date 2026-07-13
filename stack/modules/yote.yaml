@@ -1,20 +1,11 @@
 processes:
   yote:
-    command: "/home/toxic/.bun/bin/bun run src/index.ts"
-    working_dir: "yote"
+    command: /home/toxic/.bun/bin/bun run src/index.ts
+    working_dir: yote
     environment:
-      - "YOTE_PORT=${YOTE_PORT}"
-      - "LLM_PROXY_URL=${LLM_PROXY_URL}"
+    - YOTE_PORT=${YOTE_PORT}
+    - LLM_PROXY_URL=${LLM_PROXY_URL}
     availability:
       restart: always
       backoff_seconds: 5
-    readiness_probe:
-      http_get:
-        host: 127.0.0.1
-        port: ${YOTE_PORT}
-        path: /health
-      initial_delay_seconds: 10
-      period_seconds: 5
-      timeout_seconds: 5
-      failure_threshold: 5
-    log_location: "../.state/logs/yote.log"
+    log_location: ../.state/logs/yote.log

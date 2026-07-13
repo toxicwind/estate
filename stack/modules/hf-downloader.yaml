@@ -1,24 +1,14 @@
-# bodaay/HuggingFaceModelDownloader v3 — Web UI + analyze (GGUF ranking/quant pick)
-# https://github.com/bodaay/HuggingFaceModelDownloader
-# Health: GET /api/health  Dashboard: http://127.0.0.1:${HF_DOWNLOADER_PORT}/
 processes:
   hf-downloader:
-    command: "/home/toxic/.bun/bin/bun run /home/toxic/sovereign/src/services/hf_downloader.ts"
-    working_dir: "/home/toxic/sovereign"
+    command: /home/toxic/.bun/bin/bun run /home/toxic/sovereign/src/services/hf_downloader.ts
+    working_dir: /home/toxic/sovereign
     environment:
-      - "HF_DOWNLOADER_PORT=${HF_DOWNLOADER_PORT}"
-      - "SOVEREIGN_ROOT=${SOVEREIGN_ROOT}"
-      - "HF_HOME=${HF_HOME:-/home/toxic/.cache/huggingface}"
-      - "HF_TOKEN=${HF_TOKEN}"
+    - HF_DOWNLOADER_PORT=${HF_DOWNLOADER_PORT}
+    - SOVEREIGN_ROOT=${SOVEREIGN_ROOT}
+    - HF_HOME=${HF_HOME:-/home/toxic/.cache/huggingface}
+    - HF_TOKEN=${HF_TOKEN}
     availability:
       restart: on_failure
       backoff_seconds: 5
       max_restarts: 8
-    readiness_probe:
-      http_get:
-        host: 127.0.0.1
-        port: ${HF_DOWNLOADER_PORT}
-        path: /api/health
-      initial_delay_seconds: 3
-      period_seconds: 10
-    log_location: ".state/logs/hf-downloader.log"
+    log_location: .state/logs/hf-downloader.log

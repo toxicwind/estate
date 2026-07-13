@@ -1,8 +1,7 @@
-version: "0.5"
+version: '0.5'
 is_strict: false
 processes:
   null-g-proxy:
     command: node /home/toxic/sovereign/tools/null-g-proxy/dist/index.js
-    environment: ["PORT=8787"]
-    readiness_probe:
-      http_get: { host: 127.0.0.1, port: 8787, path: / }
+    environment:
+    - PORT=8787

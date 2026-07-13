@@ -1,16 +1,9 @@
 processes:
   caddy:
-    command: "caddy run --config ./Caddyfile"
-    working_dir: "."
+    command: caddy run --config ./Caddyfile
+    working_dir: .
     availability:
       restart: on_failure
       backoff_seconds: 3
       max_restarts: 10
-    readiness_probe:
-      http_get:
-        host: 127.0.0.1
-        port: 25000
-        path: /health
-      initial_delay_seconds: 2
-      period_seconds: 5
-    log_location: ".state/logs/caddy.log"
+    log_location: .state/logs/caddy.log

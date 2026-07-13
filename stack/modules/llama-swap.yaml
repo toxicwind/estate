@@ -1,20 +1,12 @@
 processes:
   llama-swap:
-    command: "./stack/services/llama-swap.sh"
-    working_dir: "."
+    command: ./stack/services/llama-swap.sh
+    working_dir: .
     environment:
-      - "SOVEREIGN_ROOT=${SOVEREIGN_ROOT}"
-      - "LLAMA_SWAP_PORT=${LLAMA_SWAP_PORT}"
+    - SOVEREIGN_ROOT=${SOVEREIGN_ROOT}
+    - LLAMA_SWAP_PORT=${LLAMA_SWAP_PORT}
     availability:
       restart: on_failure
       backoff_seconds: 3
       max_restarts: 12
-    readiness_probe:
-      http_get:
-        host: 127.0.0.1
-        port: ${LLAMA_SWAP_PORT}
-        path: /health
-      initial_delay_seconds: 5
-      period_seconds: 5
-      failure_threshold: 12
-    log_location: ".state/logs/llama-swap.log"
+    log_location: .state/logs/llama-swap.log
