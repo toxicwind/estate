@@ -1,0 +1,52 @@
+{
+  "poll_interval_hours": 6,
+  "huggingface_token_env": "HF_TOKEN",
+  "model_dir": "/home/toxic/projects/models",
+  "repos_dir": "/home/toxic/projects/models/repos",
+  "llama_swap_config": "/home/toxic/sovereign/tools/llama-swap/config.yaml",
+  "opencode_json": "/home/toxic/.config/opencode/opencode.json",
+  "tracked": [
+    {
+      "repo": "unsloth/Qwen3.6-27B-MTP-GGUF",
+      "patterns": ["IQ4_XS"],
+      "auto_config": true,
+      "priority_base": 25
+    },
+    {
+      "repo": "unsloth/Qwen3.6-27B-GGUF",
+      "patterns": ["Q4_K_M"],
+      "auto_config": true,
+      "priority_base": 10
+    },
+    {
+      "repo": "LGAI-EXAONE/EXAONE-4.0-1.2B-GGUF",
+      "patterns": ["IQ4_XS", "Q4_K_M"],
+      "auto_config": true,
+      "priority_base": 30
+    },
+    {
+      "repo": "unsloth/gemma-4-12b-it-GGUF",
+      "patterns": ["Q4_K_M"],
+      "auto_config": true,
+      "priority_base": 15
+    },
+    {
+      "repo": "Anbeeld/Qwen3.6-27B-DFlash-GGUF",
+      "patterns": ["Q4_K_M", "IQ4_XS"],
+      "auto_config": true,
+      "priority_base": 25
+    },
+    {
+      "repo": "mradermacher/Qwen3.5-9B-DeepSeek-V4-Flash-i1-GGUF",
+      "patterns": ["Q4_K_M", "Q4_K_S"],
+      "auto_config": true,
+      "priority_base": 28
+    },
+    {
+      "repo": "williamliao/gemma-4-12B-it-DFlash-GGUF",
+      "patterns": ["Q4_K_M"],
+      "auto_config": true,
+      "priority_base": 20
+    }
+  ]
+}

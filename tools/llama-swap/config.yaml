@@ -26,6 +26,8 @@ routing:
     settings:
       fifo:
         priority:
+          beellama/exaone-4-0-1-2b-iq4xs: 35
+          beellama/exaone-4-0-1-2b-q4km: 34
           mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m: 30
           mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_s: 29
           qwen/27b-dflash-iq4xs: 28
@@ -91,6 +93,9 @@ routing:
           cb96: qwen/27b-cerebellum
           df96: qwen/27b-dflash-iq4xs
           ho64: holo/35b-a3b
+          exa1: beellama/exaone-4-0-1-2b-iq4xs
+          exa2: beellama/exaone-4-0-1-2b-q4km
+          gm31: beellama/gemma4-31b-it-dflash-Q4_K_M
         evict_costs:
           df9b: 31
           df9bs: 30
@@ -123,11 +128,15 @@ routing:
           cb96: 3
           df96: 2
           ho64: 1
+          exa1: 33
+          exa2: 32
+          gm31: 31
         sets:
           exclusive: df9b | df9bs | qdf27 | qdf27m | gm4u | gm4m | qf64 | qf96 | qf128
             | qf256 | qfm64 | qfm128 | gm64 | gm96 | gm128 | gmm64 | gmm128 | st64
             | mg64 | mg96 | mg128 | h128 | h256 | hu64 | hu96 | hq5 | ht256 | hut96
-            | cb96 | df96 | ho64
+            | cb96 | df96 | ho64 | exa1 | exa2
+
 macros:
   MODEL_DIR: /home/toxic/projects/models
   beellama_bin: /home/toxic/projects/beellama.cpp/build/bin/llama-server
@@ -155,6 +164,9 @@ macros:
   qwen_dflash: ${MODEL_DIR}/Qwen3.6-27B-DFlash-IQ4_XS.gguf
   holo_35b: ${MODEL_DIR}/Qwen-3.5-28B-A3B-REAP-Q4_K_M.gguf
   mmproj_27b: ${MODEL_DIR}/mmproj-27B-F16.gguf
+  exaone_iq4xs: ${MODEL_DIR}/EXAONE-4.0-1.2B-IQ4_XS.gguf
+  exaone_q4km: ${MODEL_DIR}/EXAONE-4.0-1.2B-Q4_K_M.gguf
+  gemma_31b_dflash: ${MODEL_DIR}/gemma4-31b-it-dflash-Q4_K_M.gguf
   clean_env: env -u LLAMA_API_KEY -u LLAMA_ARG_API_KEY -u OPENAI_API_KEY
   cuda_env: CUDA_VISIBLE_DEVICES=0 GGML_CUDA=1 GGML_CUDA_GRAPHS=1
   srv_host_port: --host 127.0.0.1 --port ${PORT}
@@ -173,8 +185,9 @@ macros:
   ctx_128k: --ctx-size 131072 -b 4096 -ub 1024
   ctx_256k: --ctx-size 262144 -b 4096 -ub 1024
   spec_draft: ''
-  spec_draft_simple: --spec-type draft
+  spec_draft_simple: --spec-type draft --model-draft ${draft_small}
   spec_draft_mtp: --spec-type draft-mtp
+  spec_draft_dflash: --spec-type dflash
   reasoning_off: --reasoning-format none
   reasoning_mainline: --reasoning-format deepseek
   sampling_coding: --temp 0.2 --top-p 0.95 --top-k 50
@@ -283,6 +296,12 @@ models:
     cmd: ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld} ${beellama_bin} --model
       ${gemma_mtp} ${srv_base} ${fork_beellama} ${ctx_128k} ${kv_turbo3_tcq} --jinja
       ${spec_draft_mtp}
+    env:
+    - LLAMA_API_KEY=
+    - LLAMA_ARG_API_KEY=
+  beellama/gemma-12b-draft-64k:
+    cmd: ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld} ${beellama_bin} --model
+      ${gemma_12b_mtp} ${srv_base} ${fork_beellama} ${ctx_64k} ${kv_q8} --jinja ${spec_draft_simple}
     env:
     - LLAMA_API_KEY=
     - LLAMA_ARG_API_KEY=
@@ -460,7 +479,7 @@ models:
       balanced: true
   gemma-4-12b-mtp:
     cmd: ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${turbo_ld} ${turbo_bin} --model
-      ${gemma_mtp} ${srv_base} ${fork_turbo} ${ctx_128k} ${kv_turbo3} --jinja --no-warmup
+      ${gemma_mtp} ${srv_base} ${fork_turbo} ${ctx_128k} ${kv_turbo3} --jinja
     env:
     - LLAMA_API_KEY=
     - LLAMA_ARG_API_KEY=
@@ -472,3 +491,46 @@ models:
       code: true
       mtp: true
       balanced: true
+  beellama/exaone-4-0-1-2b-iq4xs:
+    cmd: ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld} ${beellama_bin} --model
+      ${exaone_iq4xs} ${srv_base} ${fork_beellama} ${ctx_32k} ${kv_q8} --jinja
+    env:
+    - LLAMA_API_KEY=
+    - LLAMA_ARG_API_KEY=
+    metadata:
+      fork: beellama
+      context: 32768
+      quant: IQ4_XS
+      vram: ~2GB
+      code: true
+      emergent_score: 74
+    aliases:
+    - exaone-fast
+  beellama/exaone-4-0-1-2b-q4km:
+    cmd: ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld} ${beellama_bin} --model
+      ${exaone_q4km} ${srv_base} ${fork_beellama} ${ctx_32k} ${kv_q8} --jinja
+    env:
+    - LLAMA_API_KEY=
+    - LLAMA_ARG_API_KEY=
+    metadata:
+      fork: beellama
+      context: 32768
+      quant: Q4_K_M
+      vram: ~3GB
+      code: true
+      emergent_score: 66
+    aliases:
+    - exaone-balanced
+  beellama/gemma4-31b-it-dflash-Q4_K_M:
+    cmd: ${clean_env} ${cuda_env} LD_LIBRARY_PATH=${beellama_ld} ${beellama_bin} --model
+      ${gemma_31b_dflash} ${srv_base} ${fork_beellama} ${ctx_128k} ${kv_q8} --jinja ${spec_draft_dflash}
+    env:
+    - LLAMA_API_KEY=
+    - LLAMA_ARG_API_KEY=
+    metadata:
+      fork: beellama
+      context: 131072
+      quant: Q4_K_M
+      vram: ~9GB
+      dflash: true
+      emergent_score: 32
