@@ -42,3 +42,28 @@ Zed: `context_servers` in `~/.config/zed/settings.json` (same commands).
 - **null-g** is Bun-native (`Bun.serve` + Hono).
 - **Yote** talks to OpenFang only via HTTP APIs (not shared OF process env).
 - Orchestration: **mise + pitchfork** (process-compose retired).
+
+## Model catalog SSOT (llama-swap)
+
+| Source | Role |
+|--------|------|
+| `tools/llama-swap/config.yaml` | Master list of what can run |
+| `GET :25100/v1/models` | Live IDs + load status |
+| `GET :25100/models/sse` | Load/unload events (Zed `llama.cpp` auto_discover contract) |
+
+**Do not** maintain hand-written `available_models` inventories for local GGUFs in Zed/VS Code/Grok.
+
+| Client | How it follows SSOT |
+|--------|---------------------|
+| **Zed** | `llama.cpp` + `auto_discover: true` → native `GET /models/sse` (no model list in settings) |
+| **OpenFang** | `provider_urls.llama = http://127.0.0.1:25100/v1` only; agent model ids are request-time |
+| **VS Code oaicopilot** | No native SSE; `code_insiders.ts` mirrors **live** `/v1/models` (optional `--watch` re-syncs on SSE) |
+| **Antigravity / shells** | `.state/client-llm.env` exports `LLAMA_SWAP_MODELS_SSE` + base URLs |
+
+```bash
+bun run sync:ssot          # status JSON + OF + Zed guard
+bun run sync:ssot:ides     # + VS Code / ide-test / antigravity env
+bun run deploy:insiders -- --watch   # SSE→oaicopilot refresh loop
+```
+
+Helpers: `src/lib/llama_swap_ssot.ts`, `src/deploy/sync_clients_from_swap.ts`.
