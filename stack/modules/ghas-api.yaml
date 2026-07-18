@@ -1,0 +1,16 @@
+processes:
+  # toxicwind/github-advanced-search-mcp — owned Bun API (HTTP MCP helper)
+  # Hot reload on apps/ + packages/ changes
+  ghas-api:
+    command: /home/toxic/.bun/bin/bun --watch apps/api/src/server.ts
+    working_dir: /home/toxic/github-advanced-search-mcp
+    environment:
+      - HOME=/home/toxic
+      - "GITHUB_TOKEN=${GITHUB_TOKEN}"
+      - "GH_TOKEN=${GH_TOKEN}"
+      - "PORT=${GHAS_API_PORT:-3001}"
+    availability:
+      restart: on_failure
+      backoff_seconds: 3
+      max_restarts: 8
+    log_location: /home/toxic/sovereign/.state/logs/ghas-api.log

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
 set -euo pipefail
-source "$(dirname "$0")/_lib.sh"
-# All stack/modules: core + telegram bot + rust dashboard + hf-downloader
-pc_up llama-swap openfang prometheus null-g-proxy yote rust-web hf-downloader
+export SOVEREIGN_PROFILE=full
+exec "$(dirname "$0")/up"

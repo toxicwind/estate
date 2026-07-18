@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
 set -euo pipefail
-source "$(dirname "$0")/_lib.sh"
-# Core inference + agents + metrics + edge proxy
-pc_up llama-swap openfang prometheus null-g-proxy
+export SOVEREIGN_PROFILE=core
+exec "$(dirname "$0")/up"
