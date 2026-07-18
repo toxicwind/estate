@@ -3,28 +3,21 @@ min_version = "2026.6.0"
 process-compose = "latest"
 python = "3.12"
 bun = "latest"
-node = "22"
 jq = "latest"
 
 [env]
 _.file = [".env.local", "/home/toxic/.secrets", "/home/toxic/.openfang/secrets.env"]
 _.path = ["{{ config_root }}/yote/.venv/bin","{{ config_root }}/bin","{{ env.HOME }}/.local/bin","{{ env.HOME }}/.bun/bin"]
+AST_GREP_RULES = "{{config_root}}/ast-grep-rules"
 
 [settings]
 experimental = true
 idiomatic_version_file_enable_tools = ["python"]
 
-[tasks.up-core]
-description = "core: llama-swap + openfang + prometheus + null-g"
-run = "./mise/tasks/up-core"
 [tasks.up]
-description = "sovereign: core + yote + rust-dash"
+description = "start full stack"
 depends = ["build-compose"]
 run = "./mise/tasks/up"
-[tasks.up-full]
-description = "full: sovereign + hf-downloader"
-depends = ["build-compose"]
-run = "./mise/tasks/up-full"
 [tasks.down]
 run = "./mise/tasks/down"
 [tasks.health]
@@ -35,3 +28,15 @@ run = "./mise/tasks/status"
 sources = ["stack/base.yaml","stack/modules/*.yaml"]
 outputs = ["process-compose.yaml"]
 run = "./mise/tasks/build-compose"
+
+[tasks.ast-grep-scan]
+description = "Scan sovereign stack with ast-grep rule pack"
+run = "ast-grep scan -c {{config_root}}/ast-grep-rules/sgconfig.yml {{config_root}}/src/"
+
+[tasks.e2e-agent-stack]
+description = "E2E: llama-swap :25100 + ast-matrix :25104 + GHAS + zed settings + ast-grep"
+run = "bun run {{config_root}}/scripts/e2e-agent-stack.ts"
+
+[tasks.ghas-golden]
+description = "GHAS golden overlap vs Blackbird UI index"
+run = "bun run /home/toxic/github-advanced-search-mcp/scripts/compare-to-ui.mjs"

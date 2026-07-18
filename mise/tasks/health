@@ -1,42 +1,38 @@
 #!/usr/bin/env bash
-# Probe 25xxx services. Core required services fail the task; optional are labeled.
-set -euo pipefail
+source "$(dirname "$0")/_lib.sh"
 
-CORE_FAIL=0
-OPTIONAL_FAIL=0
+results=()
 
-probe() {
-  local kind="$1" name="$2" port="$3" path="$4"
-  local url="http://127.0.0.1:${port}${path}"
-  printf "%-10s %-16s :%-5s " "$kind" "$name" "$port"
-  if curl -sf --max-time 3 "$url" >/dev/null 2>&1; then
-    echo ok
-  else
-    echo fail
-    if [[ "$kind" == "CORE" ]]; then
-      CORE_FAIL=$((CORE_FAIL + 1))
+check_service() {
+    local name=$1 url=$2
+    if curl -sf "$url" >/dev/null 2>&1; then
+        results+=('{"name":"'"$name"'","url":"'"$url"'","healthy":true}')
+        return 0
     else
-      OPTIONAL_FAIL=$((OPTIONAL_FAIL + 1))
+        results+=('{"name":"'"$name"'","url":"'"$url"'","healthy":false}')
+        return 1
     fi
-  fi
 }
 
-# Core: llama-swap, openfang, prometheus, rust-web (watchdog embedded)
-probe CORE llama-swap   "${LLAMA_SWAP_PORT:-25100}"  /health
-probe CORE openfang     "${OPENFANG_PORT:-25103}"    /api/health
-probe CORE prometheus   "${PROMETHEUS_PORT:-25105}"  /-/healthy
-probe CORE rust-web     "${RUST_WEB_PORT:-25101}"    /health
+check_service "llama-swap" "http://127.0.0.1:25100/health" || true
+check_service "llama-swap-models" "http://127.0.0.1:25100/v1/models" || true
+check_service "ast-matrix" "http://127.0.0.1:25104/health" || true
+check_service "ast-matrix-models" "http://127.0.0.1:25104/v1/models" || true
+check_service "process-compose" "http://127.0.0.1:25108/" || true
+check_service "rust-web" "http://127.0.0.1:25101/health" || true
+check_service "watchdog" "http://127.0.0.1:25111/health" || true
+check_service "yote" "http://127.0.0.1:25102/health" || true
+check_service "openfang" "http://127.0.0.1:25103/api/health" || true
+check_service "null-g-proxy" "http://127.0.0.1:25107/health" || true
+check_service "hf-downloader" "http://127.0.0.1:25106/health" || true
 
-# Optional: yote, null-g-proxy, hf-downloader
-probe OPT  yote         "${YOTE_PORT:-25102}"        /health
-probe OPT  null-g       "${NULL_G_PORT:-8787}"       /health
-probe OPT  hf-downloader "${HF_DOWNLOADER_PORT:-25106}" /api/health
-
-echo "---"
-echo "core_fail=${CORE_FAIL} optional_fail=${OPTIONAL_FAIL}"
-if [[ "$CORE_FAIL" -gt 0 ]]; then
-  echo "HEALTH: CORE RED"
-  exit 1
-fi
-echo "HEALTH: CORE GREEN"
-exit 0
+# Output as JSON array
+echo "["
+for i in "${!results[@]}"; do
+    if [ $i -eq $((${#results[@]} - 1)) ]; then
+        echo "  ${results[$i]}"
+    else
+        echo "  ${results[$i]},"
+    fi
+done
+echo "]"
