@@ -23,8 +23,10 @@ performance:
 
 hooks:
   on_startup:
+    # Ranked fast path on RTX 3090 (see scripts/model-rank-and-route.ts):
+    # exaone ~3.3GiB / ~70 tok/s idle; exclusive matrix unloads when quality/longctx load.
     preload:
-      - beellama/qwen-flash-64k
+      - beellama/exaone-4-0-1-2b-iq4xs
   on_model_loaded:
     exec: 'echo "[$(date)] MODEL_LOADED: $MODEL" >> /tmp/llama-swap-events.log'
   on_model_unloaded:
@@ -903,7 +905,8 @@ models:
   # MRADERMACHER LINE (strict imatrix quants — beellama)
   # ===========================================================================
   mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m:
-    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_128K} ${KV_Q8} ${REASONING_ON} ${SPEC_NONE}
+    # REASONING_OFF so short chat fills message.content (not only reasoning_content)
+    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_128K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     env:
       - LD_LIBRARY_PATH=${BEELLAMA_LD}
       - ${CUDA_ENV}

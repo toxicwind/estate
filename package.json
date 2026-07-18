@@ -21,7 +21,9 @@
     "sync:ssot": "bun run src/deploy/sync_clients_from_swap.ts",
     "sync:ssot:ides": "bun run src/deploy/sync_clients_from_swap.ts --with-ides",
     "hf-downloader": "bun run src/services/hf_downloader.ts",
-    "openfang": "bun run src/services/openfang.ts"
+    "openfang": "bun run src/services/openfang.ts",
+    "rank:models": "bun run scripts/model-rank-and-route.ts",
+    "test:best-models": "bun test tests/best_models_ssot.test.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",

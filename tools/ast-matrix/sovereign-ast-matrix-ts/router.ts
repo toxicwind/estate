@@ -113,9 +113,53 @@ const PROVIDER_MODELS: Record<string, string[]> = {
 };
 
 /** Friendly alias → [provider, model_id] | null for auto/fcm */
+/** Load ranked local roles from llama-swap SSOT file if present. */
+function loadLocalRoleModels(): {
+  fast: string;
+  quality: string;
+  longctx: string;
+} {
+  const defaults = {
+    fast: "beellama/exaone-4-0-1-2b-iq4xs",
+    quality: "beellama/qwen-flash-64k",
+    longctx: "beellama/qwen-flash-256k",
+  };
+  try {
+    const p = "/home/toxic/sovereign/.state/best-models.json";
+    if (!existsSync(p)) return defaults;
+    const j = JSON.parse(readFileSync(p, "utf8"));
+    return {
+      fast: j?.roles?.fast?.id || j?.recommended?.preload || defaults.fast,
+      quality:
+        j?.roles?.quality?.id ||
+        j?.recommended?.default_chat ||
+        defaults.quality,
+      longctx:
+        j?.roles?.longctx?.id ||
+        j?.recommended?.long_context ||
+        defaults.longctx,
+    };
+  } catch {
+    return defaults;
+  }
+}
+const LOCAL_ROLES = loadLocalRoleModels();
+const LLAMA_SWAP_V1 =
+  process.env.LLM_BASE_URL ||
+  process.env.LLAMA_SWAP_V1 ||
+  "http://127.0.0.1:25100/v1";
+
 const CODING: Record<string, [string, string] | null> = {
   auto: null,
   fcm: null,
+  // Local-first ranked roles (llama-swap exclusive matrix)
+  fast: ["llama-swap", LOCAL_ROLES.fast],
+  "local-fast": ["llama-swap", LOCAL_ROLES.fast],
+  quality: ["llama-swap", LOCAL_ROLES.quality],
+  "local-quality": ["llama-swap", LOCAL_ROLES.quality],
+  longctx: ["llama-swap", LOCAL_ROLES.longctx],
+  "local-longctx": ["llama-swap", LOCAL_ROLES.longctx],
+  "local-auto": ["llama-swap", LOCAL_ROLES.quality],
   hy3: ["openrouter", "tencent/hy3:free"],
   "laguna-m1": ["openrouter", "poolside/laguna-m.1:free"],
   "laguna-xs": ["openrouter", "poolside/laguna-xs-2.1:free"],
@@ -156,8 +200,14 @@ const CODING: Record<string, [string, string] | null> = {
 
 const PROVIDERS: Record<
   string,
-  { base: string; key_env: string; key_env_alt?: string }
+  { base: string; key_env: string; key_env_alt?: string; no_auth?: boolean }
 > = {
+  // Local SSOT — always first-class for sovereign GPU path
+  "llama-swap": {
+    base: LLAMA_SWAP_V1,
+    key_env: "LLAMA_SWAP_API_KEY",
+    no_auth: true,
+  },
   openrouter: {
     base: "https://openrouter.ai/api/v1",
     key_env: "OPENROUTER_API_KEY",
@@ -536,6 +586,7 @@ const state = new Matrix();
 function getKey(p: string): string {
   const conf = PROVIDERS[p];
   if (!conf) return "";
+  if (conf.no_auth) return "not-required-for-local";
   return (
     process.env[conf.key_env] ||
     (conf.key_env_alt ? process.env[conf.key_env_alt] : "") ||
@@ -543,36 +594,50 @@ function getKey(p: string): string {
   );
 }
 function keyOk(p: string): boolean {
-  return Boolean(getKey(p));
+  if (p === "llama-swap" || PROVIDERS[p]?.no_auth) return true;
+  const conf = PROVIDERS[p];
+  if (!conf) return false;
+  return Boolean(
+    process.env[conf.key_env] ||
+      (conf.key_env_alt ? process.env[conf.key_env_alt] : ""),
+  );
 }
 function firstModelFor(p: string): string {
+  if (p === "llama-swap") return LOCAL_ROLES.quality;
   return PROVIDER_MODELS[p]?.[0] || "";
+}
+
+/** Local llama-swap catalog id heuristics (no cloud leak). */
+function isLocalSwapModelId(model: string): boolean {
+  if (!model || model === "auto" || model === "fcm") return false;
+  if (model in CODING && CODING[model]?.[0] === "llama-swap") return true;
+  if (
+    model === LOCAL_ROLES.fast ||
+    model === LOCAL_ROLES.quality ||
+    model === LOCAL_ROLES.longctx
+  ) {
+    return true;
+  }
+  // sovereign naming prefixes / known local ids
+  return /^(beellama|mradermacher|jackrong|turboquant|ik_llama|ik_turboquant|holo|qwen\/|gemma-4|exaone)/i.test(
+    model,
+  );
 }
 
 function resolveModel(model: string): [string, string] {
   if (model in CODING && CODING[model] != null) return CODING[model]!;
+  // Prefer llama-swap for any local GGUF id so hybrid never sends GPU models to Gemini
+  if (isLocalSwapModelId(model)) return ["llama-swap", model];
   if (model === "auto" || model === "fcm") {
-    for (const p of [
-      "openrouter",
-      "nvidia",
-      "groq",
-      "cerebras",
-      "google",
-      "mistral",
-    ]) {
-      if (keyOk(p)) {
-        const mid = firstModelFor(p);
-        if (mid) return [p, mid];
-      }
-    }
-    return ["openrouter", "tencent/hy3:free"];
+    // local-first auto: quality role on swap
+    return ["llama-swap", LOCAL_ROLES.quality];
   }
   for (const [p, models] of Object.entries(PROVIDER_MODELS)) {
     if (models.includes(model)) return [p, model];
   }
   if (keyOk("openrouter")) return ["openrouter", model];
   if (keyOk("nvidia")) return ["nvidia", model];
-  return ["openrouter", "tencent/hy3:free"];
+  return ["llama-swap", LOCAL_ROLES.quality];
 }
 
 function isAst(text: string): boolean {
@@ -580,7 +645,9 @@ function isAst(text: string): boolean {
 }
 
 function isExplicit(model: string): boolean {
-  return model in CODING && CODING[model] != null;
+  return (
+    (model in CODING && CODING[model] != null) || isLocalSwapModelId(model)
+  );
 }
 
 function log(...args: unknown[]) {
@@ -606,12 +673,20 @@ async function callOne(
     };
   }
   const conf = PROVIDERS[provider];
+  if (!conf) {
+    return { ok: false, status: 500, provider, lat: 0, err: "unknown_provider" };
+  }
   const url = conf.base.replace(/\/$/, "") + "/chat/completions";
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${getKey(provider)}`,
     "User-Agent": UA,
+    "Accept-Encoding": "identity",
   };
+  if (!conf.no_auth) {
+    headers.Authorization = `Bearer ${getKey(provider)}`;
+  } else {
+    headers.Authorization = "Bearer not-required-for-local";
+  }
   if (provider === "openrouter") {
     headers["HTTP-Referer"] = "https://zed.dev";
     headers["X-Title"] = "Sovereign-AST-Matrix";
