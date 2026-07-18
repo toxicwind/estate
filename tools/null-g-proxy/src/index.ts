@@ -18,32 +18,45 @@
  *   GET    /v1/code/lint?file=            → lint a file
  */
 
-import { serve } from '@hono/node-server';
-import { Hono } from 'hono';
-import { randomUUID } from 'node:crypto';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { resolveInstance, type AntigravityInstance } from './discovery.js';
-import { buildModelsResponse, resolveModel, DEFAULT_MODEL } from './models.js';
+/**
+ * Runtime: Bun only (no @hono/node-server, no node dist/, no tsx).
+ */
+import { Hono } from "hono";
+import { randomUUID } from "node:crypto";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
+import {
+  resolveInstance,
+  type AntigravityInstance,
+} from "./discovery.ts";
+import {
+  buildModelsResponse,
+  resolveModel,
+  DEFAULT_MODEL,
+} from "./models.ts";
 import {
   startCascade,
   sendUserMessage,
   pollForResponse,
   messagesToPrompt,
-} from './cascade.js';
+} from "./cascade.ts";
 import {
   upsertSession,
   getSession,
   deleteSession,
   sessionCount,
-} from './routes/sessions.js';
-import { gitRoutes } from './routes/git.js';
-import { knowledgeRoutes } from './routes/knowledge.js';
-import { terminalRoutes } from './routes/terminal.js';
-import { codeRoutes } from './routes/code.js';
+} from "./routes/sessions.ts";
+import { gitRoutes } from "./routes/git.ts";
+import { knowledgeRoutes } from "./routes/knowledge.ts";
+import { terminalRoutes } from "./routes/terminal.ts";
+import { codeRoutes } from "./routes/code.ts";
 
-const PORT = parseInt(process.env['PORT'] ?? '8787', 10);
+// Sovereign port SSOT: NULL_G_PORT (25107). Legacy PORT/8787 only as last fallback.
+const PORT = parseInt(
+  process.env["NULL_G_PORT"] ?? process.env["PORT"] ?? "25107",
+  10,
+);
 
 // ─── Connection state ─────────────────────────────────────────────────────────
 
@@ -104,22 +117,25 @@ async function ensureConnected(forceRediscovery = false): Promise<AntigravityIns
   }
 }
 
-/** Quick probe to check if a port is still responding */
-function quickProbe(port: number, csrfToken: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    const httpMod = require('node:http') as typeof import('node:http');
-    const req = httpMod.request(
+/** Quick probe to check if a port is still responding (Bun fetch) */
+async function quickProbe(port: number, csrfToken: string): Promise<boolean> {
+  try {
+    const res = await fetch(
+      `http://127.0.0.1:${port}/exa.language_server_pb.LanguageServerService/Heartbeat`,
       {
-        hostname: '127.0.0.1', port, path: '/exa.language_server_pb.LanguageServerService/Heartbeat', method: 'POST',
-        headers: { 'x-codeium-csrf-token': csrfToken, 'Content-Type': 'application/json', 'Content-Length': 2 },
+        method: "POST",
+        headers: {
+          "x-codeium-csrf-token": csrfToken,
+          "Content-Type": "application/json",
+        },
+        body: "{}",
+        signal: AbortSignal.timeout(2000),
       },
-      (res) => { res.resume(); resolve((res.statusCode ?? 0) < 500); },
     );
-    req.on('error', () => resolve(false));
-    req.setTimeout(2000, () => { req.destroy(); resolve(false); });
-    req.write('{}');
-    req.end();
-  });
+    return res.status < 500;
+  } catch {
+    return false;
+  }
 }
 
 /** Invalidate cached instance to force re-discovery on next request. */
@@ -144,6 +160,28 @@ app.use('*', async (c, next) => {
 
 // ─── GET /health ──────────────────────────────────────────────────────────────
 
+// GHAS mesh (20 features) — proxy to mesh-hub namespace for this service
+app.all('/mesh', async (c) => {
+  const hub = process.env.MESH_HUB_PORT || '25115';
+  const target = `http://127.0.0.1:${hub}/mesh/s/null-g-proxy/features`;
+  const r = await fetch(target);
+  return new Response(await r.text(), {
+    status: r.status,
+    headers: { 'content-type': 'application/json', 'x-sovereign-mesh': 'ghas-20' },
+  });
+});
+app.all('/mesh/*', async (c) => {
+  const hub = process.env.MESH_HUB_PORT || '25115';
+  const feat = c.req.path.replace(/^\/mesh\/?/, '') || 'features';
+  const qs = new URL(c.req.url).search;
+  const target = `http://127.0.0.1:${hub}/mesh/s/null-g-proxy/${feat}${qs}`;
+  const r = await fetch(target, { method: c.req.method });
+  return new Response(await r.text(), {
+    status: r.status,
+    headers: { 'content-type': 'application/json', 'x-sovereign-mesh': 'ghas-20' },
+  });
+});
+
 app.get('/health', (c) => {
   let instanceInfo: object | null = null;
   let status = 'disconnected';
@@ -163,6 +201,9 @@ app.get('/health', (c) => {
 
   return c.json({
     status,
+    runtime: "bun",
+    bun_version: Bun.version,
+    port: PORT,
     uptime: Math.floor((Date.now() - startedAt) / 1000),
     antigravity: instanceInfo,
     error: discoveryError,
@@ -199,6 +240,10 @@ app.get('/health', (c) => {
     ],
   });
 });
+
+// ─── GET / ─────────────────────────────────────────────────────────────────────
+
+app.get('/', (c) => c.redirect('/health'));
 
 // ─── GET /v1/models ───────────────────────────────────────────────────────────
 
@@ -557,36 +602,27 @@ app.notFound((c) =>
   c.json({ error: { message: `Not found: ${c.req.path}`, type: 'not_found' } }, 404),
 );
 
-// ─── Start server ─────────────────────────────────────────────────────────────
+// ─── Start server (Bun.serve — not node / @hono/node-server) ─────────────────
 
-process.stderr.write(`[proxy] Starting null-g-proxy on port ${PORT}...\n`);
+process.stderr.write(
+  `[proxy] Starting null-g-proxy (Bun ${Bun.version}) on port ${PORT}...\n`,
+);
 
 // Kick off initial discovery in the background
 ensureConnected().catch(() => {
   // Error already logged; server still starts
 });
 
-serve(
-  {
-    fetch: app.fetch,
-    port: PORT,
-  },
-  (info) => {
-    process.stderr.write(`[proxy] Listening on http://localhost:${info.port}\n`);
-    process.stderr.write('[proxy] Endpoints:\n');
-    process.stderr.write(`[proxy]   GET    http://localhost:${info.port}/health\n`);
-    process.stderr.write(`[proxy]   GET    http://localhost:${info.port}/v1/models\n`);
-    process.stderr.write(`[proxy]   POST   http://localhost:${info.port}/v1/chat/completions\n`);
-    process.stderr.write(`[proxy]   DELETE http://localhost:${info.port}/v1/chat/sessions/:id\n`);
-    process.stderr.write(`[proxy]   POST   http://localhost:${info.port}/v1/git/commit-message\n`);
-    process.stderr.write(`[proxy]   GET    http://localhost:${info.port}/v1/git/repos\n`);
-    process.stderr.write(`[proxy]   POST   http://localhost:${info.port}/v1/git/worktree\n`);
-    process.stderr.write(`[proxy]   GET    http://localhost:${info.port}/v1/knowledge/list\n`);
-    process.stderr.write(`[proxy]   GET    http://localhost:${info.port}/v1/knowledge/search\n`);
-    process.stderr.write(`[proxy]   POST   http://localhost:${info.port}/v1/knowledge/items\n`);
-    process.stderr.write(`[proxy]   POST   http://localhost:${info.port}/v1/terminal/exec\n`);
-    process.stderr.write(`[proxy]   GET    http://localhost:${info.port}/v1/terminal/processes\n`);
-    process.stderr.write(`[proxy]   GET    http://localhost:${info.port}/v1/code/search\n`);
-    process.stderr.write(`[proxy]   GET    http://localhost:${info.port}/v1/code/lint\n`);
-  },
+const server = Bun.serve({
+  port: PORT,
+  hostname: "0.0.0.0",
+  idleTimeout: 255,
+  fetch: app.fetch,
+});
+
+process.stderr.write(
+  `[proxy] Listening on http://127.0.0.1:${server.port} (runtime=bun)\n`,
 );
+process.stderr.write("[proxy] Endpoints: /health /mesh/* /v1/models /v1/chat/completions …\n");
+
+// hotreload-probe 1784356796798

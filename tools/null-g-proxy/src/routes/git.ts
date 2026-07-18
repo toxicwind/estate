@@ -11,9 +11,13 @@ import { execFileSync, execFile } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
-import { resolveInstance } from '../discovery.js';
-import { startCascade, sendUserMessage, pollForResponse } from '../cascade.js';
-import { resolveModel } from '../models.js';
+import { resolveInstance } from "../discovery.ts";
+import {
+  startCascade,
+  sendUserMessage,
+  pollForResponse,
+} from "../cascade.ts";
+import { resolveModel } from "../models.ts";
 
 // Use flash model for commit messages (faster, reliable PLANNER_RESPONSE)
 const COMMIT_MODEL = resolveModel('antigravity/gemini-3-flash');

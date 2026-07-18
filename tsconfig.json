@@ -6,7 +6,11 @@
     "target": "ESNext",
     "moduleResolution": "bundler",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "skipLibCheck": true
   },
-  "include": ["server/**/*", "src/**/*", "index.ts"]
+  "include": ["server/**/*", "src/**/*", "scripts/**/*", "tools/**/*", "yote/**/*", "index.ts"]
 }
+

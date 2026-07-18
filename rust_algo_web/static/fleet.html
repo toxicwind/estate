@@ -145,7 +145,7 @@ loading…</pre
         if (chatLink) chatLink.href = `http://${host}:25100/ui/`;
 
         try {
-          const res = await fetch("/landing/api/integrations");
+          const res = await fetch("/ops/api/integrations");
           const d = await res.json();
           const ok = (b) => (b ? "ok online" : "offline");
           const cls = (b) => (b ? "ok" : "bad");
@@ -171,7 +171,7 @@ loading…</pre
             })
             .join("") || "<p class='text-gray-500'>Run: bun tools/fleet/extract_forks.ts</p>";
 
-          const fl = await fetch("/landing/api/fleet/last");
+          const fl = await fetch("/ops/api/fleet/last");
           const fj = await fl.json();
           document.getElementById("fleet-json").textContent = JSON.stringify(
             fj,
@@ -182,24 +182,8 @@ loading…</pre
           document.getElementById("fleet-json").textContent = String(e);
         }
       }
-      function initHotReload() {
-        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-        const ws = new WebSocket(
-          `${protocol}//${window.location.hostname}:25080/ws-reload`
-        );
-        ws.onmessage = (event) => {
-          if (event.data === "reload") {
-            console.log("Hot reload signal received. Reloading page...");
-            window.location.reload();
-          }
-        };
-        ws.onclose = () => {
-          setTimeout(initHotReload, 2000);
-        };
-      }
 
       document.getElementById("reload").onclick = load;
-      initHotReload();
       load();
     </script>
   </body>

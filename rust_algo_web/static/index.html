@@ -179,6 +179,11 @@
             </h1>
             <nav class="flex flex-wrap gap-2 mt-3 text-[11px]">
               <a
+                href="/portal.html"
+                class="px-2.5 py-1 rounded-full border border-cyan-500/40 bg-cyan-500/15 text-cyan-200 hover:border-cyan-300/60"
+                >Control Plane</a
+              >
+              <a
                 href="/fleet.html"
                 class="px-2.5 py-1 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-200 hover:border-violet-400/50"
                 >Fleet Lab</a
@@ -197,12 +202,33 @@
                 >Chat UI :25100</a
               >
               <a
+                href="http://127.0.0.1:25103/"
+                target="_blank"
+                rel="noopener"
+                class="px-2.5 py-1 rounded-full border border-fuchsia-500/30 text-fuchsia-200/90"
+                >OpenFang</a
+              >
+              <a
+                href="http://127.0.0.1:25110/"
+                target="_blank"
+                rel="noopener"
+                class="px-2.5 py-1 rounded-full border border-orange-500/30 text-orange-200/90"
+                >Grafana</a
+              >
+              <a
                 id="nav-hfd"
                 href="http://127.0.0.1:25106/"
                 target="_blank"
                 rel="noopener"
                 class="px-2.5 py-1 rounded-full border border-amber-500/30 text-amber-200/90"
                 >HFD :25106</a
+              >
+              <a
+                href="http://127.0.0.1:25115/mesh/chain-health"
+                target="_blank"
+                rel="noopener"
+                class="px-2.5 py-1 rounded-full border border-emerald-500/30 text-emerald-200/90"
+                >Mesh</a
               >
             </nav>
             <p
@@ -308,7 +334,7 @@
               >
             </div>
 
-            <!-- Service status chips (from /landing/api/architecture) -->
+            <!-- Service status chips (from /api/architecture) -->
             <div class="flex flex-wrap gap-2" id="arch-service-chips">
               <span class="status-chip">loading services…</span>
             </div>
@@ -560,7 +586,7 @@ flowchart TD
 
       async function fetchArchitecture() {
         try {
-          const res = await fetch("/landing/api/architecture");
+          const res = await fetch("/ops/api/architecture");
           if (!res.ok) throw new Error("Architecture API error");
           const data = await res.json();
 
@@ -612,7 +638,7 @@ flowchart TD
 
       async function fetchLogs() {
         try {
-          const res = await fetch("/landing/api/logs");
+          const res = await fetch("/ops/api/logs");
           if (!res.ok) throw new Error("Logs API error");
           const logs = await res.json();
 
@@ -664,7 +690,7 @@ flowchart TD
         if (icon) icon.classList.add("fa-spin");
 
         try {
-          const res = await fetch("/landing/api/status");
+          const res = await fetch("/ops/api/status");
           if (!res.ok) throw new Error("Status endpoint error");
           const statuses = await res.json();
 
@@ -797,7 +823,7 @@ flowchart TD
 
       async function fetchModels() {
         try {
-          const res = await fetch("/landing/api/models");
+          const res = await fetch("/ops/api/models");
           if (!res.ok) throw new Error("Models API error");
           const models = await res.json();
           renderModels(models);
@@ -901,7 +927,7 @@ flowchart TD
 
       async function fetchRankingsPreview() {
         try {
-          const res = await fetch("/landing/api/fleet/last");
+          const res = await fetch("/ops/api/fleet/last");
           if (!res.ok) return;
           const data = await res.json();
           renderRankingsPreview(data);
@@ -954,7 +980,7 @@ flowchart TD
 
       async function fetchTelemetry() {
         try {
-          const res = await fetch("/landing/api/telemetry");
+          const res = await fetch("/ops/api/telemetry");
           if (!res.ok) return;
           const data = await res.json();
 
@@ -975,21 +1001,6 @@ flowchart TD
         }
       }
 
-      function initHotReload() {
-        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-        const ws = new WebSocket(
-          `${protocol}//${window.location.hostname}:25080/ws-reload`
-        );
-        ws.onmessage = (event) => {
-          if (event.data === "reload") {
-            console.log("Hot reload signal received. Reloading page...");
-            window.location.reload();
-          }
-        };
-        ws.onclose = () => {
-          setTimeout(initHotReload, 2000);
-        };
-      }
 
       function updateDynamicLinks() {
         const host = window.location.hostname;
@@ -1017,7 +1028,6 @@ flowchart TD
 
       function init() {
         updateDynamicLinks();
-        initHotReload();
         initMermaid();
         refreshAll();
         fetchTelemetry();
@@ -1035,5 +1045,6 @@ flowchart TD
 
       document.addEventListener("DOMContentLoaded", init);
     </script>
-  </body>
+  <!-- hotreload-probe t1784356222710 -->
+</body>
 </html>

@@ -9,11 +9,14 @@ import { z } from "zod";
 import { homedir } from "os";
 import { join } from "path";
 import { readFileSync, existsSync } from "fs";
+import { loadSovereignPorts, requireEnv } from "../lib/ports.ts";
 
-const DEFAULT_BASE = (process.env.LLAMA_SWAP_BASE || "http://127.0.0.1:25100").replace(
-  /\/$/,
-  "",
-);
+loadSovereignPorts();
+const DEFAULT_BASE = (
+  process.env.LLAMA_SWAP_BASE ||
+  (process.env.LLM_BASE_URL || "").replace(/\/v1\/?$/, "") ||
+  `http://127.0.0.1:${requireEnv("LLAMA_SWAP_PORT")}`
+).replace(/\/$/, "");
 const DEFAULT_MODEL = process.env.LLAMA_SWAP_MODEL || "beellama/qwen-flash-64k";
 const SETTINGS =
   process.env.VSCODE_INSIDERS_SETTINGS ||

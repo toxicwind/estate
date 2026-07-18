@@ -1,34 +1,22 @@
 #!/usr/bin/env bash
-# Stop process-compose project on :25108 and free owned service ports.
+# mise run down — stop sovereign pitchfork daemons.
 set -euo pipefail
-source "$(dirname "$0")/_lib.sh"
+export SOV="${SOVEREIGN_ROOT:-$PWD}"
+cd "$SOV"
 
-PORT="${PROCESS_COMPOSE_PORT:-25108}"
-echo "{\"event\":\"down_start\",\"timestamp\":\"$(date -Iseconds)\"}"
-
-if curl -sf "http://127.0.0.1:${PORT}/" >/dev/null 2>&1; then
-  curl -sf -X POST "http://127.0.0.1:${PORT}/project/stop" >/dev/null 2>&1 || true
-  curl -sf -X POST "http://127.0.0.1:${PORT}/processes/stop-all" >/dev/null 2>&1 || true
-  curl -sf -X POST "http://127.0.0.1:${PORT}/shutdown" >/dev/null 2>&1 || true
-  for _ in $(seq 1 15); do
-    curl -sf "http://127.0.0.1:${PORT}/" >/dev/null 2>&1 || break
-    sleep 0.5
-  done
+if ! command -v pitchfork >/dev/null; then
+  echo "pitchfork not on PATH; nothing to stop via pitchfork" >&2
+  exit 0
 fi
 
-# Kill process-compose by exact basename if still listening
-if ss -ltn 2>/dev/null | grep -q ":${PORT} "; then
-  mapfile -t PCPIDS < <(ss -ltnp 2>/dev/null | awk -v p=":${PORT}" '$4 ~ p {print}' | grep -oP 'pid=\K[0-9]+' | sort -u)
-  for pid in "${PCPIDS[@]:-}"; do
-    kill "$pid" 2>/dev/null || true
-  done
-  sleep 0.5
+# Prefer group stop; fall back to all configured sovereign daemons
+if pitchfork stop --group core 2>/dev/null; then
+  :
+else
+  pitchfork stop llama-swap openfang ast-matrix null-g-proxy yote rust-web hf-downloader ghas-api 2>/dev/null || true
 fi
-
-# Free owned ports only (fuser by port — no cmdline self-match)
-for p in 25100 25101 25102 25103 25104 25106 25107 25111 3001; do
-  fuser -k "${p}/tcp" 2>/dev/null || true
-done
-
-rm -f /tmp/process-compose.pid
-echo "{\"event\":\"down_complete\",\"timestamp\":\"$(date -Iseconds)\"}"
+pitchfork stop --group obs 2>/dev/null || true
+pitchfork stop --group net 2>/dev/null || true
+pitchfork clean 2>/dev/null || true
+pitchfork list || true
+echo "{\"event\":\"down_done\",\"backend\":\"pitchfork\",\"timestamp\":\"$(date -Iseconds)\"}"

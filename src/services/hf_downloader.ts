@@ -1,21 +1,18 @@
 /**
- * Sovereign HF downloader — wraps bodaay/HuggingFaceModelDownloader (v3+).
- * Replaces the old "model rankings UI" purpose: analyze GGUF quants + download
- * via Web UI / REST / CLI. Upstream: https://github.com/bodaay/HuggingFaceModelDownloader
+ * HF downloader — bodaay serve on backend port; mesh-front on public HF_DOWNLOADER_PORT.
  */
 import { spawn, spawnSync } from "bun";
-import { join } from "path";
+import { join, resolve } from "path";
 import { existsSync, mkdirSync } from "fs";
+import { requirePort, loadSovereignPorts } from "../lib/ports.ts";
 
-const PORT = parseInt(
-  process.env.HF_DOWNLOADER_PORT || process.env.HF_DOWNLOADER || "25106",
-  10,
-);
+loadSovereignPorts();
+const PUBLIC = requirePort("HF_DOWNLOADER_PORT");
+const BACKEND = Number(process.env.HF_DOWNLOADER_BACKEND_PORT || "26106");
 const HOME = process.env.HOME || "/home/toxic";
 const BIN_DIR = join(HOME, ".local", "bin");
 const BIN_PATH = join(BIN_DIR, "hfdownloader");
 const SOV = process.env.SOVEREIGN_ROOT || join(HOME, "sovereign");
-// Prefer sovereign models tree when set; else HF cache (Python-compatible)
 const LOCAL_DIR =
   process.env.HF_DOWNLOADER_LOCAL_DIR || join(SOV, "models");
 const CACHE_DIR =
@@ -23,17 +20,15 @@ const CACHE_DIR =
 
 function ensureBinary(): void {
   if (existsSync(BIN_PATH)) {
-    const v = spawnSync([BIN_PATH, "version"], { stdout: "pipe", stderr: "pipe" });
+    const v = spawnSync([BIN_PATH, "version"], {
+      stdout: "pipe",
+      stderr: "pipe",
+    });
     const out = `${v.stdout?.toString() || ""}${v.stderr?.toString() || ""}`;
     if (out.includes("3.") || out.includes("version 3")) {
-      console.log(`[HF Downloader] Using ${BIN_PATH} (${out.trim().split("\n")[0]})`);
+      console.log(`[HF] Using ${BIN_PATH}`);
       return;
     }
-    console.warn(
-      `[HF Downloader] Binary present but not v3 (got: ${out.slice(0, 80)}). Reinstalling…`,
-    );
-  } else {
-    console.log(`[HF Downloader] Binary missing at ${BIN_PATH}. Installing bodaay v3…`);
   }
   mkdirSync(BIN_DIR, { recursive: true });
   const install = spawnSync(
@@ -41,48 +36,72 @@ function ensureBinary(): void {
     { stdout: "pipe", stderr: "pipe" },
   );
   if (install.exitCode !== 0) {
-    console.error(
-      `[HF Downloader] Install failed:\n${install.stderr?.toString()}\n${install.stdout?.toString()}`,
-    );
+    console.error(`[HF] Install failed`);
     process.exit(1);
   }
-  console.log(`[HF Downloader] Installed official binary → ${BIN_PATH}`);
 }
 
 ensureBinary();
 
-// CLI helpers still available: hfdownloader analyze -i <repo>  (model ranking / quant pick)
-console.log(
-  `[HF Downloader] Spawning bodaay serve on 0.0.0.0:${PORT} (local-dir=${LOCAL_DIR})`,
-);
-console.log(
-  `[HF Downloader] Web UI + API (analyze/download) — replaces in-dashboard model rankings`,
-);
+console.log(`[HF] backend :${BACKEND} mesh-front :${PUBLIC}`);
 
-const args = [
-  "serve",
-  "--addr",
-  "0.0.0.0",
-  "--port",
-  String(PORT),
-  "--cache-dir",
-  CACHE_DIR,
-  "--local-dir",
-  LOCAL_DIR,
-];
-
-const proc = spawn([BIN_PATH, ...args], {
-  stdout: "inherit",
-  stderr: "inherit",
-  env: {
-    ...process.env,
-    HF_HOME: CACHE_DIR,
-    HF_TOKEN: process.env.HF_TOKEN || process.env.HUGGING_FACE_HUB_TOKEN || "",
+const backend = spawn(
+  [
+    BIN_PATH,
+    "serve",
+    "--addr",
+    "127.0.0.1",
+    "--port",
+    String(BACKEND),
+    "--cache-dir",
+    CACHE_DIR,
+    "--local-dir",
+    LOCAL_DIR,
+  ],
+  {
+    stdout: "inherit",
+    stderr: "inherit",
+    env: {
+      ...process.env,
+      HF_HOME: CACHE_DIR,
+      HF_TOKEN:
+        process.env.HF_TOKEN || process.env.HUGGING_FACE_HUB_TOKEN || "",
+    },
   },
-});
+);
 
-process.on("SIGINT", () => proc.kill("SIGINT"));
-process.on("SIGTERM", () => proc.kill("SIGTERM"));
+for (let i = 0; i < 40; i++) {
+  try {
+    if ((await fetch(`http://127.0.0.1:${BACKEND}/`)).ok) break;
+  } catch {
+    /* */
+  }
+  await Bun.sleep(250);
+}
 
-const code = await proc.exited;
+const front = spawn(
+  [
+    "/home/toxic/.bun/bin/bun",
+    "run",
+    resolve(SOV, "src/services/mesh-front.ts"),
+    "--service",
+    "hf-downloader",
+    "--listen",
+    `0.0.0.0:${PUBLIC}`,
+    "--backend",
+    `127.0.0.1:${BACKEND}`,
+  ],
+  { stdout: "inherit", stderr: "inherit" },
+);
+
+const stop = () => {
+  front.kill();
+  backend.kill();
+  process.exit(0);
+};
+process.on("SIGINT", stop);
+process.on("SIGTERM", stop);
+
+const code = await front.exited;
+backend.kill();
 process.exit(code ?? 0);

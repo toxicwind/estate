@@ -29,7 +29,6 @@ const REGISTRY: Record<string, string[]> = {
   "YOTE_PORT": ["/health"],
   "HF_DOWNLOADER": ["/"],
   "WATCHDOG_PORT": ["/health"],
-  "LANDING_PORT": ["/health"],
 };
 
 const BASE = "http://127.0.0.1";

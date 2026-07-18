@@ -1,9 +1,9 @@
 # null-g-proxy — OpenAI-Compatible AI Proxy for Antigravity IDE
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A518-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Hono](https://img.shields.io/badge/Hono-Framework-E36002?style=flat-square)](https://hono.dev/)
-[![OpenAPI](https://img.shields.io/badge/OpenAPI-3.0-6BA539?style=flat-square&logo=openapiinitiative&logoColor=white)](http://localhost:8787/openapi.yaml)
+[![Bun](https://img.shields.io/badge/Bun-runtime-fbf0df?style=flat-square&logo=bun&logoColor=black)](https://bun.sh/)
+[![Hono](https://img.shields.io/badge/Hono-on%20Bun.serve-E36002?style=flat-square)](https://hono.dev/)
+[![OpenAPI](https://img.shields.io/badge/OpenAPI-3.0-6BA539?style=flat-square&logo=openapiinitiative&logoColor=white)](http://127.0.0.1:25107/openapi.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
 **Self-hosted OpenAI-compatible proxy that exposes every AI capability of the [Antigravity IDE](https://antigravity.dev) — chat completions, Git intelligence, knowledge base, terminal execution, and code intelligence — as a single REST API.**

@@ -1,41 +1,71 @@
 #!/usr/bin/env bash
-source "$(dirname "$0")/_lib.sh"
+# Health probes — ports from config/ports.env (via mise env).
+set -euo pipefail
+source "$(dirname "$0")/_lib.sh" 2>/dev/null || true
+cd "${SOVEREIGN_ROOT:-/home/toxic/sovereign}"
+
+# Load ports if not already in env
+if [ -z "${LLAMA_SWAP_PORT:-}" ] && [ -f config/ports.env ]; then
+  set -a
+  # shellcheck disable=SC1091
+  source config/ports.env
+  set +a
+fi
+
+: "${LLAMA_SWAP_PORT:?set in config/ports.env}"
+: "${AST_MATRIX_PORT:?set in config/ports.env}"
+: "${RUST_WEB_PORT:?set in config/ports.env}"
+: "${WATCHDOG_PORT:?set in config/ports.env}"
+: "${YOTE_PORT:?set in config/ports.env}"
+: "${OPENFANG_PORT:?set in config/ports.env}"
+: "${NULL_G_PORT:?set in config/ports.env}"
+: "${HF_DOWNLOADER_PORT:?set in config/ports.env}"
+: "${GHAS_API_PORT:?set in config/ports.env}"
 
 results=()
+fail=0
 
 check_service() {
-    local name=$1 url=$2
-    if curl -sf "$url" >/dev/null 2>&1; then
-        results+=('{"name":"'"$name"'","url":"'"$url"'","healthy":true}')
-        return 0
-    else
-        results+=('{"name":"'"$name"'","url":"'"$url"'","healthy":false}')
-        return 1
-    fi
+  local name=$1 url=$2
+  if curl -sf --max-time 2 "$url" >/dev/null 2>&1; then
+    results+=("{\"name\":\"${name}\",\"url\":\"${url}\",\"healthy\":true}")
+    printf '✓ %s\n' "$name"
+    return 0
+  else
+    results+=("{\"name\":\"${name}\",\"url\":\"${url}\",\"healthy\":false}")
+    printf '✗ %s\n' "$name"
+    fail=1
+    return 1
+  fi
 }
 
-check_service "llama-swap" "http://127.0.0.1:25100/health" || true
-check_service "llama-swap-models" "http://127.0.0.1:25100/v1/models" || true
-check_service "ast-matrix" "http://127.0.0.1:25104/health" || true
-check_service "ast-matrix-models" "http://127.0.0.1:25104/v1/models" || true
-check_service "process-compose" "http://127.0.0.1:25108/" || true
-check_service "rust-web" "http://127.0.0.1:25101/health" || true
-check_service "watchdog" "http://127.0.0.1:25111/health" || true
-check_service "yote" "http://127.0.0.1:25102/health" || true
-check_service "openfang" "http://127.0.0.1:25103/api/health" || true
-check_service "null-g-proxy" "http://127.0.0.1:25107/health" || true
-check_service "hf-downloader" "http://127.0.0.1:25106/health" || true
-# ghas-api default PORT 3001 (apps/api)
-check_service "ghas-api" "http://127.0.0.1:3001/health" || true
-check_service "ghas-api-root" "http://127.0.0.1:3001/" || true
+echo "=== pitchfork ==="
+if command -v pitchfork >/dev/null; then
+  pitchfork list 2>/dev/null || true
+else
+  echo "(pitchfork not on PATH)"
+fi
+echo
+echo "=== HTTP ==="
+check_service "llama-swap" "http://127.0.0.1:${LLAMA_SWAP_PORT}/health" || true
+check_service "llama-swap-models" "http://127.0.0.1:${LLAMA_SWAP_PORT}/v1/models" || true
+check_service "ast-matrix" "http://127.0.0.1:${AST_MATRIX_PORT}/health" || true
+check_service "rust-web" "http://127.0.0.1:${RUST_WEB_PORT}/health" || true
+check_service "watchdog" "http://127.0.0.1:${WATCHDOG_PORT}/health" || true
+check_service "yote" "http://127.0.0.1:${YOTE_PORT}/health" || true
+check_service "openfang" "http://127.0.0.1:${OPENFANG_PORT}/api/health" || true
+check_service "null-g-proxy" "http://127.0.0.1:${NULL_G_PORT}/health" || true
+check_service "hf-downloader" "http://127.0.0.1:${HF_DOWNLOADER_PORT}/health" || true
+check_service "ghas-api" "http://127.0.0.1:${GHAS_API_PORT}/health" || true
 
-# Output as JSON array
+echo
 echo "["
 for i in "${!results[@]}"; do
-    if [ $i -eq $((${#results[@]} - 1)) ]; then
-        echo "  ${results[$i]}"
-    else
-        echo "  ${results[$i]},"
-    fi
+  if [ "$i" -eq $((${#results[@]} - 1)) ]; then
+    echo "  ${results[$i]}"
+  else
+    echo "  ${results[$i]},"
+  fi
 done
 echo "]"
+exit "$fail"

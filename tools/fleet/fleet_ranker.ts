@@ -16,7 +16,7 @@ import { readdir } from "fs/promises";
 import { join } from "path";
 
 // Sovereign defaults (2026-07): rank via llama-swap front door; graduated ctx only.
-const PORT        = parseInt(Bun.env.RANK_PORT      ?? "25107");
+const PORT        = parseInt(Bun.env.RANK_PORT      ?? "25111");
 const UPSTREAM    = Bun.env.MODEL_URL               ?? "http://127.0.0.1:25100";
 const SCAN_DIR    = Bun.env.MODEL_DIR
                     ?? Bun.env.MODEL_PATH?.split("/").slice(0,-1).join("/")

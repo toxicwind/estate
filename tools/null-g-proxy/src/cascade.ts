@@ -7,13 +7,12 @@
  * Adapted from antigravity-mcp/src/lib/cascade-client.ts.
  */
 
-import * as http from 'node:http';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import * as os from 'node:os';
-import { randomUUID } from 'node:crypto';
-import { execSync } from 'node:child_process';
-import type { AntigravityInstance } from './discovery.js';
+import * as fs from "node:fs";
+import * as path from "node:path";
+import * as os from "node:os";
+import { randomUUID } from "node:crypto";
+import { execSync } from "node:child_process";
+import type { AntigravityInstance } from "./discovery.ts";
 
 const LS_SERVICE = 'exa.language_server_pb.LanguageServerService';
 
@@ -70,40 +69,27 @@ function buildMetadata(): object {
 
 // ─── HTTP helper ─────────────────────────────────────────────────────────────
 
-function httpPost(
+/** Bun-native HTTP POST (no node:http) */
+async function httpPost(
   instance: AntigravityInstance,
   method: string,
   body: string,
   timeoutMs = 30_000,
 ): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    const bodyBuf = Buffer.from(body, 'utf8');
-    const req = http.request(
-      {
-        hostname: '127.0.0.1',
-        port: instance.port,
-        path: `/${LS_SERVICE}/${method}`,
-        method: 'POST',
-        headers: {
-          'x-codeium-csrf-token': instance.csrfToken,
-          'Content-Type': 'application/json',
-          'Content-Length': bodyBuf.length,
-        },
+  const res = await fetch(
+    `http://127.0.0.1:${instance.port}/${LS_SERVICE}/${method}`,
+    {
+      method: "POST",
+      headers: {
+        "x-codeium-csrf-token": instance.csrfToken,
+        "Content-Type": "application/json",
+        "Accept-Encoding": "identity",
       },
-      (res) => {
-        const chunks: Buffer[] = [];
-        res.on('data', (c: Buffer) => chunks.push(c));
-        res.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
-        res.on('error', reject);
-      },
-    );
-    req.on('error', reject);
-    req.setTimeout(timeoutMs, () => {
-      req.destroy(new Error(`httpPost ${method} timeout after ${timeoutMs}ms`));
-    });
-    req.write(bodyBuf);
-    req.end();
-  });
+      body,
+      signal: AbortSignal.timeout(timeoutMs),
+    },
+  );
+  return await res.text();
 }
 
 async function callRpc<T>(

@@ -1,0 +1,15 @@
+id: test-fastify-route
+language: typescript
+rule:
+  kind: call_expression
+  pattern: app.get($$$)
+  filters:
+    - field: function
+      regex: "^get$"
+message: "Test route match"
+severity: info
+test:
+  valid:
+    - 'app.get("/health", handler)'
+  invalid:
+    - 'app.config()'

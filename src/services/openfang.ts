@@ -1,16 +1,18 @@
 #!/usr/bin/env bun
 /**
- * OpenFang process-compose entry — load secrets then start daemon.
- * Port SSOT: OPENFANG_PORT from mise (25103). Never vLLM.
+ * OpenFang entry — secrets, daemon on backend port, mesh-front on public OPENFANG_PORT.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { requirePort, loadSovereignPorts } from "../lib/ports.ts";
 
+loadSovereignPorts();
 const HOME = process.env.HOME || "/home/toxic";
-const PORT = parseInt(process.env.OPENFANG_PORT || "25103", 10);
+const PUBLIC = requirePort("OPENFANG_PORT");
+const BACKEND = Number(process.env.OPENFANG_BACKEND_PORT || "26103");
 const BIN = process.env.OPENFANG_BIN || `${HOME}/.openfang/bin/openfang`;
+const SOV = process.env.SOVEREIGN_ROOT || resolve(HOME, "sovereign");
 
-/** Load KEY=VAL from a secrets file into env if not already set. */
 function loadSecretsFile(path: string) {
   if (!existsSync(path)) return;
   for (const line of readFileSync(path, "utf8").split("\n")) {
@@ -32,45 +34,96 @@ function loadSecretsFile(path: string) {
 loadSecretsFile(resolve(HOME, ".secrets"));
 loadSecretsFile(resolve(HOME, ".openfang/secrets.env"));
 
+// Force OpenFang binary onto backend port (config.toml + daemon.json are SSOT for listen)
+function pinOpenfangBackend(port: number) {
+  const conf = resolve(HOME, ".openfang/config.toml");
+  if (existsSync(conf)) {
+    let t = readFileSync(conf, "utf8");
+    t = t.replace(
+      /api_listen\s*=\s*"[^"]*"/,
+      `api_listen = "127.0.0.1:${port}"`,
+    );
+    if (!t.includes("api_listen")) {
+      t = `api_listen = "127.0.0.1:${port}"\n` + t;
+    }
+    Bun.write(conf, t);
+  }
+  const daemon = resolve(HOME, ".openfang/daemon.json");
+  if (existsSync(daemon)) {
+    try {
+      const j = JSON.parse(readFileSync(daemon, "utf8"));
+      j.listen_addr = `127.0.0.1:${port}`;
+      Bun.write(daemon, JSON.stringify(j, null, 2));
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
+pinOpenfangBackend(BACKEND);
+
 const env = {
   ...process.env,
-  HOST: "0.0.0.0",
-  BIND: "0.0.0.0",
-  OPENFANG_PORT: String(PORT),
+  HOST: "127.0.0.1",
+  BIND: "127.0.0.1",
+  OPENFANG_PORT: String(BACKEND),
 };
 
-// Sub-second discipline: short health waits (500ms × 20 = 10s max)
-const HEALTH_TRIES = 20;
-const HEALTH_MS = 500;
+console.log(`[OpenFang] backend :${BACKEND} mesh-front :${PUBLIC}`);
 
-console.log(`[OpenFang] start --yolo on 0.0.0.0:${PORT}`);
-console.log(
-  `[OpenFang] discord_token=${process.env.DISCORD_BOT_TOKEN ? "set" : "MISSING"} telegram_token=${process.env.TELEGRAM_BOT_TOKEN ? "set" : "MISSING"}`,
-);
+// stop any prior
+Bun.spawnSync({
+  cmd: [BIN, "stop"],
+  env,
+  stdout: "ignore",
+  stderr: "ignore",
+});
 
-const stop = () => {
-  Bun.spawnSync({ cmd: [BIN, "stop"], env, stdout: "ignore", stderr: "ignore" });
-  process.exit(0);
-};
-process.on("SIGTERM", stop);
-process.on("SIGINT", stop);
-
-const r = Bun.spawnSync({
+const start = Bun.spawn({
   cmd: [BIN, "start", "--yolo"],
   env,
   stdout: "inherit",
   stderr: "inherit",
 });
-if (r.exitCode !== 0) process.exit(r.exitCode ?? 1);
 
-for (let i = 0; i < HEALTH_TRIES; i++) {
+for (let i = 0; i < 40; i++) {
   try {
-    if ((await fetch(`http://127.0.0.1:${PORT}/api/health`)).ok) break;
+    if ((await fetch(`http://127.0.0.1:${BACKEND}/api/health`)).ok) break;
   } catch {
     /* retry */
   }
-  await Bun.sleep(HEALTH_MS);
+  await Bun.sleep(250);
 }
 
-console.log(`[OpenFang] daemon up, holding foreground for process-compose`);
-await new Promise(() => {});
+const front = Bun.spawn({
+  cmd: [
+    "/home/toxic/.bun/bin/bun",
+    "run",
+    resolve(SOV, "src/services/mesh-front.ts"),
+    "--service",
+    "openfang",
+    "--listen",
+    `0.0.0.0:${PUBLIC}`,
+    "--backend",
+    `127.0.0.1:${BACKEND}`,
+  ],
+  stdout: "inherit",
+  stderr: "inherit",
+});
+
+const stop = () => {
+  front.kill();
+  Bun.spawnSync({
+    cmd: [BIN, "stop"],
+    env,
+    stdout: "ignore",
+    stderr: "ignore",
+  });
+  start.kill();
+  process.exit(0);
+};
+process.on("SIGTERM", stop);
+process.on("SIGINT", stop);
+
+const code = await front.exited;
+process.exit(code ?? 0);

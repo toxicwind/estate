@@ -1,0 +1,6 @@
+id: provider-url-reference
+language: typescript
+rule:
+  pattern: provider_urls
+message: "Provider URL reference"
+severity: info

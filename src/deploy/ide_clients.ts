@@ -6,7 +6,9 @@ import { homedir } from "os";
 import { join } from "path";
 import { mkdirSync } from "fs";
 
-const PORT = process.env.LLAMA_SWAP_PORT || "25100";
+import { loadSovereignPorts, requireEnv } from "../lib/ports.ts";
+loadSovereignPorts();
+const PORT = requireEnv("LLAMA_SWAP_PORT");
 const BASE = `http://127.0.0.1:${PORT}/v1`;
 const CHAT = `${BASE}/chat/completions`;
 const HOME = homedir();

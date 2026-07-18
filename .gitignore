@@ -73,3 +73,12 @@ tools/ollama-proxy-rs/
 # ─── Misc noise ───────────────────────────────────────────────────────────────
 dashboard/
 ports.env
+
+# Local runtime / plugin noise (do not ship)
+grafana/plugins/
+grafana/data/
+grafana/logs/
+tools/ast-matrix/ultimate_extract/
+tools/ast-matrix/weird_*.json
+*.map
+usr/

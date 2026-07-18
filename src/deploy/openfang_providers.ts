@@ -7,14 +7,16 @@
 import { readdirSync, readFileSync, writeFileSync, statSync, copyFileSync, mkdirSync } from "fs";
 import { join } from "path";
 import { homedir } from "os";
+import { loadSovereignPorts, requireEnv } from "../lib/ports.ts";
 
+loadSovereignPorts();
 const HOME = homedir();
 const OF = join(HOME, ".openfang");
 const BACKUP = join(
   HOME,
   "sovereign/backup/reorg_2026-07-11_bun/openfang_pre_llama_provider",
 );
-const SWAP = "http://127.0.0.1:25100/v1";
+const SWAP = `http://127.0.0.1:${requireEnv("LLAMA_SWAP_PORT")}/v1`;
 
 function walkToml(dir: string, acc: string[] = []): string[] {
   for (const name of readdirSync(dir)) {

@@ -1,6 +1,8 @@
 min_version = "2026.6.0"
+
 [tools]
-process-compose = "latest"
+# jdx ecosystem: pitchfork = daemons; mise = tools/env/tasks (not process-compose)
+pitchfork = "latest"
 python = "3.12"
 bun = "latest"
 jq = "latest"
@@ -8,58 +10,57 @@ jq = "latest"
 ast-grep = "0.44.1"
 
 [env]
-_.file = [".env.local", "/home/toxic/.secrets", "/home/toxic/.openfang/secrets.env"]
-_.path = ["{{ config_root }}/yote/.venv/bin","{{ config_root }}/bin","{{ env.HOME }}/.local/bin","{{ env.HOME }}/.bun/bin"]
+_.file = ["config/ports.env", ".env.local", "yote/.env", "/home/toxic/.secrets", "/home/toxic/.openfang/secrets.env"]
+_.path = [
+  "{{ config_root }}/yote/.venv/bin",
+  "{{ config_root }}/bin",
+  "{{ env.HOME }}/.local/bin",
+  "{{ env.HOME }}/.bun/bin",
+]
 AST_GREP_RULES = "{{config_root}}/ast-grep-rules"
-PROCESS_COMPOSE_PORT = "25108"
+# Ports only in config/ports.env — do not pin numbers here
 
 [settings]
 experimental = true
 idiomatic_version_file_enable_tools = ["python"]
 
-# ONE up: all owned hot-reload services (no core/full profiles)
+# ── Lifecycle (pitchfork) ───────────────────────────────────────────────────
+
 [tasks.up]
-description = "Start all owned services with hot reload (bun --hot / cargo watch)"
+description = "Start core daemons (pitchfork group core)"
 run = "./mise/tasks/up"
 
 [tasks.down]
+description = "Stop sovereign pitchfork daemons"
 run = "./mise/tasks/down"
 
 [tasks.health]
+description = "HTTP health probes for SSOT ports"
 run = "./mise/tasks/health"
 
 [tasks.status]
+description = "pitchfork list + 25xxx listeners"
 run = "./mise/tasks/status"
 
-[tasks.build-compose]
-description = "Flatten modules → process-compose.yaml (human/status dump; up uses multi --config)"
-sources = ["stack/base.yaml", "stack/modules/*.yaml"]
-outputs = ["process-compose.yaml"]
-run = "./mise/tasks/build-compose"
+[tasks.up-obs]
+description = "Start prometheus + grafana"
+run = "pitchfork start --group obs"
+
+[tasks.up-all]
+description = "Start core + obs + funnel groups"
+run = "pitchfork start --group all"
+
+[tasks.tui]
+description = "pitchfork interactive TUI"
+run = "pitchfork tui"
 
 [tasks.ast-grep-scan]
 description = "Scan sovereign src with project ast-grep rule pack"
 run = "ast-grep scan -c {{config_root}}/ast-grep-rules/sgconfig.yml {{config_root}}/src/"
 
 [tasks.doctor]
-description = "Verify process-compose port SSOT + ast-grep pin + key modules exist"
-run = """
-#!/usr/bin/env bash
-set -euo pipefail
-cd {{config_root}}
-expected_sg=0.44.1
-actual_sg=$(ast-grep --version | awk '{print $2}')
-if [ "$actual_sg" != "$expected_sg" ]; then
-  echo "ast-grep mismatch: active=$actual_sg expected=$expected_sg" >&2
-  exit 1
-fi
-for m in llama-swap openfang ast-matrix null-g-proxy yote rust-web hf-downloader ghas-api; do
-  test -f "stack/modules/${m}.yaml" || { echo "missing module $m" >&2; exit 1; }
-done
-grep -q 'bun --hot' stack/modules/ast-matrix.yaml || { echo "ast-matrix missing bun --hot" >&2; exit 1; }
-grep -q 'rust-web-hot' stack/modules/rust-web.yaml || { echo "rust-web must use rust-web-hot.sh" >&2; exit 1; }
-echo "doctor ok: ast-grep=$actual_sg single-up modules + rust-web-hot PC=${PROCESS_COMPOSE_PORT:-25108}"
-"""
+description = "Verify pitchfork + ports + hot-reload core + ast-grep"
+run = "./mise/tasks/doctor"
 
 [tasks.e2e-agent-stack]
 description = "E2E: llama-swap :25100 + ast-matrix :25104 + GHAS + zed settings + ast-grep"
@@ -68,3 +69,15 @@ run = "bun run {{config_root}}/scripts/e2e-agent-stack.ts"
 [tasks.ghas-golden]
 description = "GHAS golden overlap vs Blackbird UI index"
 run = "bun run /home/toxic/github-advanced-search-mcp/scripts/compare-to-ui.mjs"
+
+[tasks.restart-llama]
+description = "Restart llama-swap daemon"
+run = "pitchfork restart llama-swap"
+
+[tasks.restart-rust-web]
+description = "Restart rust-web daemon"
+run = "pitchfork restart rust-web"
+
+[tasks.e2e-full-stack]
+description = "HTTP e2e every core+obs surface (scripts/e2e-full-stack.ts)"
+run = "E2E_OUT={{config_root}}/.state/e2e-http.jsonl bun run {{config_root}}/scripts/e2e-full-stack.ts"

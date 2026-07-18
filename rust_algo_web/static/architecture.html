@@ -226,7 +226,7 @@ mermaid.initialize({
 
 async function fetchArchitecture() {
   try {
-    const res = await fetch('/landing/api/architecture');
+    const res = await fetch('/ops/api/architecture');
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
 
@@ -264,23 +264,6 @@ async function fetchArchitecture() {
   }
 }
 
-function initHotReload() {
-  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-  const ws = new WebSocket(
-    `${protocol}//${window.location.hostname}:25080/ws-reload`
-  );
-  ws.onmessage = (event) => {
-    if (event.data === "reload") {
-      console.log("Hot reload signal received. Reloading page...");
-      window.location.reload();
-    }
-  };
-  ws.onclose = () => {
-    setTimeout(initHotReload, 2000);
-  };
-}
-
-initHotReload();
 fetchArchitecture();
 setInterval(fetchArchitecture, 8000);
 </script>

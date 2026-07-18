@@ -1,0 +1,165 @@
+#:schema https://pitchfork.jdx.dev/schema.json
+# Sovereign stack daemons — pitchfork (jdx) replaces process-compose.
+# mise = tools + env + tasks; pitchfork = long-running processes.
+# Ports SSOT: config/ports.env (loaded by mise _.file → pitchfork via mise=true).
+
+namespace = "sovereign"
+
+# ── Core (mise run up) ──────────────────────────────────────────────────────
+
+[daemons.llama-swap]
+run = "exec ./stack/services/llama-swap.sh"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25100/health"
+port = 25100
+
+[daemons.openfang]
+run = "exec /home/toxic/.bun/bin/bun --hot run src/services/openfang.ts"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25103/api/health"
+port = 25103
+depends = ["llama-swap"]
+
+[daemons.ast-matrix]
+run = "exec /home/toxic/.bun/bin/bun --hot run tools/ast-matrix/sovereign-ast-matrix-ts/router.ts"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25104/health"
+port = 25104
+depends = ["llama-swap"]
+
+[daemons.null-g-proxy]
+run = "exec /home/toxic/.bun/bin/bun --hot run src/index.ts"
+dir = "tools/null-g-proxy"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25107/health"
+port = 25107
+
+[daemons.yote]
+run = "exec /home/toxic/.bun/bin/bun --hot run src/index.ts"
+dir = "yote"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25102/health"
+port = 25102
+depends = ["openfang", "llama-swap"]
+
+[daemons.rust-web]
+# cargo-watch hot (rust-web-hot.sh). First boot after cargo clean can take minutes.
+run = "exec /home/toxic/sovereign/stack/services/rust-web-hot.sh"
+dir = "rust_algo_web"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25101/health"
+ready_delay = 90
+port = 25101
+depends = ["llama-swap"]
+
+[daemons.hf-downloader]
+run = "exec /home/toxic/.bun/bin/bun --hot run src/services/hf_downloader.ts"
+dir = "."
+mise = true
+retry = true
+# bodaay hfdownloader serve has no /health — root HTML is the readiness surface
+ready_http = "http://127.0.0.1:25106/"
+port = 25106
+
+[daemons.ghas-api]
+# Hot reload default (bun --hot). Do not use plain `bun run` for owned services.
+run = "exec /home/toxic/.bun/bin/bun --hot run apps/api/src/server.ts"
+dir = "/home/toxic/github-advanced-search-mcp"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25112/health"
+port = 25112
+
+[daemons.ghas-mcp]
+# HTTP MCP for tools/curl; hot reload on apps/mcp/** edits
+run = "exec /home/toxic/.bun/bin/bun --hot run apps/mcp/src/server.ts --mode http"
+dir = "/home/toxic/github-advanced-search-mcp"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25113/health"
+port = 25113
+depends = ["ghas-api"]
+
+[daemons.mesh-hub]
+# 20 GHAS-inspired features × every service + chain-health / discover
+run = "exec /home/toxic/.bun/bin/bun --hot run src/services/mesh-hub.ts"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25115/health"
+port = 25115
+depends = ["llama-swap", "ghas-api"]
+
+# ── Optional observability ──────────────────────────────────────────────────
+
+[daemons.prometheus]
+run = "exec bash /home/toxic/sovereign/stack/services/prometheus-hot.sh"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25105/-/healthy"
+port = 25105
+
+[daemons.grafana]
+# mesh-front on :25110, grafana backend :26110 (see grafana-mesh.sh)
+run = "exec bash /home/toxic/sovereign/stack/services/grafana-mesh.sh"
+dir = "."
+mise = true
+retry = 3
+ready_http = "http://127.0.0.1:25110/api/health"
+port = 25110
+
+# ── Optional net (Funnel only; no Caddy) ────────────────────────────────────
+
+[daemons.tailscale-funnel]
+run = "exec bash /home/toxic/sovereign/tailscale/funnel.sh up"
+dir = "."
+mise = true
+retry = 3
+ready_cmd = "tailscale funnel status"
+
+# ── Groups ──────────────────────────────────────────────────────────────────
+
+[groups.core]
+daemons = [
+  "llama-swap",
+  "openfang",
+  "ast-matrix",
+  "null-g-proxy",
+  "yote",
+  "rust-web",
+  "hf-downloader",
+  "ghas-api",
+  "ghas-mcp",
+]
+
+[groups.obs]
+daemons = ["prometheus", "grafana"]
+
+[groups.net]
+daemons = ["tailscale-funnel"]
+
+[groups.all]
+daemons = [
+  "llama-swap",
+  "openfang",
+  "ast-matrix",
+  "null-g-proxy",
+  "yote",
+  "rust-web",
+  "hf-downloader",
+  "ghas-api",
+  "ghas-mcp",
+  "prometheus",
+  "grafana",
+  "tailscale-funnel",
+]

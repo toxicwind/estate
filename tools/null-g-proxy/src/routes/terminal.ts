@@ -158,7 +158,14 @@ interface ProcessInfo {
 
 terminalRoutes.get('/processes', (c) => {
   // Get processes related to workspace: node, tsx, python, antigravity, language_server
-  const keywords = ['node', 'tsx', 'python', 'antigravity', 'language_server', 'cascade'];
+  const keywords = [
+    "bun",
+    "node",
+    "python",
+    "antigravity",
+    "language_server",
+    "cascade",
+  ];
 
   let psOutput = '';
   try {

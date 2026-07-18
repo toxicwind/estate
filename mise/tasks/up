@@ -1,25 +1,15 @@
 #!/usr/bin/env bash
-# mise run up — ONE stack: all owned code services with in-process hot reload.
-# (bun --hot / cargo watch). No core/full profiles.
+# mise run up — start core daemons via pitchfork.
 set -euo pipefail
-source "$(dirname "$0")/_lib.sh"
+export SOV="${SOVEREIGN_ROOT:-$PWD}"
+cd "$SOV"
 
-# Owned application surface (order ≈ soft deps: LLM first, then matrix, then apps)
-MODS=(
-  llama-swap      # :25100 binary (restart on fail; config-driven)
-  openfang        # :25103 bun --hot
-  ast-matrix      # :25104 bun --hot  (Zed openai_compatible)
-  null-g-proxy    # :25107 bun --hot
-  yote            # :25102 bun --hot
-  rust-web        # :25101 + watchdog :25111 via cargo watch
-  hf-downloader   # :25106 bun --hot
-  ghas-api        # GHAS HTTP API bun --watch
-)
+command -v pitchfork >/dev/null || {
+  echo "pitchfork missing — run: mise install" >&2
+  exit 1
+}
 
-echo "{\"event\":\"up_start\",\"modules\":\"${MODS[*]}\",\"timestamp\":\"$(date -Iseconds)\"}"
-
-if [[ -x "$SOV/stack/build-compose.sh" ]]; then
-  "$SOV/stack/build-compose.sh" >/dev/null || true
-fi
-
-pc_up "${MODS[@]}"
+mkdir -p "$SOV/.state/logs"
+echo "{\"event\":\"up_start\",\"backend\":\"pitchfork\",\"group\":\"core\",\"timestamp\":\"$(date -Iseconds)\"}"
+pitchfork start --group core
+pitchfork list

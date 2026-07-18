@@ -2,7 +2,8 @@
 set -euo pipefail
 # bodaay/HuggingFaceModelDownloader Web UI — model quant ranking + download
 # https://github.com/bodaay/HuggingFaceModelDownloader
-PORT="${HF_DOWNLOADER_PORT:-25106}"
+source "${SOVEREIGN_ROOT:-$PWD}/stack/lib-ports.sh"
+PORT="${HF_DOWNLOADER_PORT:?}"
 if curl -sf --max-time 1 "http://127.0.0.1:${PORT}/api/health" >/dev/null; then
   echo "hfdownloader already up :${PORT} → http://127.0.0.1:${PORT}/"
   curl -sS --max-time 2 "http://127.0.0.1:${PORT}/api/health"

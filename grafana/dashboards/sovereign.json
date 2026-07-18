@@ -1,0 +1,155 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Service Uptime",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "up",
+          "legendFormat": "{{job}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } }, "type": "value" }
+          ],
+          "thresholds": { "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+        }
+      }
+    },
+    {
+      "title": "GPU Temperature",
+      "type": "gauge",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "targets": [
+        {
+          "expr": "llamaswap_gpu_temperature_celsius",
+          "legendFormat": "GPU Temp"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 70 }, { "color": "red", "value": 85 }] },
+          "min": 0,
+          "max": 100
+        }
+      }
+    },
+    {
+      "title": "GPU Power",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "llamaswap_gpu_power_draw_watts",
+          "legendFormat": "Watts"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "watt", "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 250 }, { "color": "red", "value": 350 }] } }
+      }
+    },
+    {
+      "title": "GPU VRAM Used",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "targets": [
+        {
+          "expr": "llamaswap_gpu_memory_used_bytes / 1073741824",
+          "legendFormat": "GB"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "GB", "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 20 }, { "color": "red", "value": 23 }] } }
+      }
+    },
+    {
+      "title": "GPU Utilization %",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "targets": [
+        {
+          "expr": "llamaswap_gpu_util_percent",
+          "legendFormat": "GPU %"
+        },
+        {
+          "expr": "llamaswap_gpu_memory_util_percent",
+          "legendFormat": "VRAM %"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "percent", "min": 0, "max": 100 }
+      }
+    },
+    {
+      "title": "LLM Request Rate (tokens/s)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "targets": [
+        {
+          "expr": "llamacpp:predicted_tokens_seconds",
+          "legendFormat": "generated tok/s"
+        },
+        {
+          "expr": "llamacpp:prompt_tokens_seconds",
+          "legendFormat": "prompt tok/s"
+        }
+      ]
+    },
+    {
+      "title": "CPU Usage %",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "targets": [
+        {
+          "expr": "llamaswap_cpu_util_percent",
+          "legendFormat": "llama-swap CPU %"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "percent", "min": 0, "max": 100 }
+      }
+    },
+    {
+      "title": "Active LLM Requests",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 12 },
+      "targets": [
+        {
+          "expr": "llamacpp:requests_processing",
+          "legendFormat": "processing"
+        },
+        {
+          "expr": "llamacpp:requests_deferred",
+          "legendFormat": "deferred"
+        }
+      ]
+    },
+    {
+      "title": "System Load",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 12 },
+      "targets": [
+        { "expr": "node_load1", "legendFormat": "1m" },
+        { "expr": "node_load5", "legendFormat": "5m" },
+        { "expr": "node_load15", "legendFormat": "15m" }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["sovereign", "gpu", "llm"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "Sovereign Stack",
+  "uid": "sovereign-main",
+  "version": 1
+}

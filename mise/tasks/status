@@ -1,3 +1,11 @@
 #!/usr/bin/env bash
+# mise run status — pitchfork daemon list + ports
 set -euo pipefail
-process-compose --address 127.0.0.1 process list || process-compose process list
+export SOV="${SOVEREIGN_ROOT:-$PWD}"
+cd "$SOV"
+
+echo "=== pitchfork list ==="
+pitchfork list 2>/dev/null || echo "(pitchfork not running / no daemons)"
+echo
+echo "=== listeners (25xxx) ==="
+ss -ltnp 2>/dev/null | rg '251[0-9]{2}' || true

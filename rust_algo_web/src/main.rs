@@ -1,11 +1,13 @@
+mod fleet;
+mod gpu;
 mod watchdog;
 
-use axum::{routing::get, Router, Json};
-use serde::{Serialize, Deserialize};
+use axum::{response::IntoResponse, routing::get, Json, Router};
+use reqwest::Client;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::net::SocketAddr;
 use tower_http::services::ServeDir;
-use reqwest::Client;
-use std::collections::HashMap;
 
 #[derive(Serialize)]
 struct Health {
@@ -106,7 +108,7 @@ async fn probe_url(name: &str, url: &str, path_hint: &str) -> IntegrationProbe {
 }
 
 fn swap_base_url() -> String {
-    // Prefer explicit swap port. Never treat Caddy edge :25000 as llama-swap.
+    // Prefer explicit swap port (LLAMA_SWAP_PORT / 25100).
     if let Ok(p) = std::env::var("LLAMA_SWAP_PORT") {
         return format!("http://127.0.0.1:{p}");
     }
@@ -163,7 +165,9 @@ async fn get_fleet_last() -> Json<serde_json::Value> {
 }
 
 async fn health() -> Json<Health> {
-    let m = std::env::var("LLM_PROXY_URL").ok().map(|u| format!("via {}", u));
+    let m = std::env::var("LLM_PROXY_URL")
+        .ok()
+        .map(|u| format!("via {}", u));
     Json(Health {
         status: "ok".into(),
         model: m,
@@ -203,7 +207,7 @@ async fn get_logs() -> Json<Vec<String>> {
 async fn get_status() -> Json<HashMap<String, StatusResponse>> {
     let mut map = HashMap::new();
     let cl = Client::new();
-    let pc_res = cl.get("http://127.0.0.1:8080/processes").send().await;
+    let pc_res = cl.get("http://127.0.0.1:25108/processes").send().await;
 
     let mut pc_running = Vec::new();
     if let Ok(resp) = pc_res {
@@ -222,7 +226,6 @@ async fn get_status() -> Json<HashMap<String, StatusResponse>> {
 
     if pc_running.is_empty() {
         let defaults = vec![
-            ("Caddy Edge", "caddy", 25000u16),
             ("Llama Swap", "llama-swap", 25100),
             ("OpenFang Core", "openfang", 25103),
             ("Ouroboros", "rust-web", 25101),
@@ -234,15 +237,11 @@ async fn get_status() -> Json<HashMap<String, StatusResponse>> {
             let online = tokio::net::TcpStream::connect(format!("127.0.0.1:{}", port))
                 .await
                 .is_ok();
-            map.insert(
-                ui_name.to_string(),
-                StatusResponse { online, port },
-            );
+            map.insert(ui_name.to_string(), StatusResponse { online, port });
         }
     } else {
         for (name, is_running) in pc_running {
             let ui_name = match name.as_str() {
-                "caddy" => "Caddy Edge",
                 "llama-swap" => "Llama Swap",
                 "openfang" => "OpenFang Core",
                 "rust-web" => "Ouroboros",
@@ -255,7 +254,6 @@ async fn get_status() -> Json<HashMap<String, StatusResponse>> {
                 _ => &name,
             };
             let port = match name.as_str() {
-                "caddy" => 25000,
                 "llama-swap" => 25100,
                 "openfang" => 25103,
                 "rust-web" => 25101,
@@ -281,7 +279,8 @@ async fn get_status() -> Json<HashMap<String, StatusResponse>> {
         .ok()
         .and_then(|x| x.parse().ok())
         .unwrap_or(25104);
-    let watchdog_online = cl.get(format!("http://127.0.0.1:{}/health", watchdog_port))
+    let watchdog_online = cl
+        .get(format!("http://127.0.0.1:{}/health", watchdog_port))
         .send()
         .await
         .is_ok();
@@ -321,7 +320,9 @@ async fn get_telemetry() -> Json<TelemetryResponse> {
 
 fn get_model_priorities() -> HashMap<String, u32> {
     let mut map = HashMap::new();
-    if let Ok(content) = std::fs::read_to_string("/home/toxic/sovereign/tools/llama-swap/config.yaml") {
+    if let Ok(content) =
+        std::fs::read_to_string("/home/toxic/sovereign/tools/llama-swap/config.yaml")
+    {
         let mut in_priority = false;
         for line in content.lines() {
             let trimmed = line.trim();
@@ -340,7 +341,7 @@ fn get_model_priorities() -> HashMap<String, u32> {
                 }
                 if let Some(pos) = trimmed.find(':') {
                     let key = trimmed[..pos].trim().replace("\"", "");
-                    let val_str = trimmed[pos+1..].trim();
+                    let val_str = trimmed[pos + 1..].trim();
                     if let Ok(val) = val_str.parse::<u32>() {
                         map.insert(key, val);
                     }
@@ -396,6 +397,19 @@ async fn get_models_meta() -> Json<Vec<ModelMetaResponse>> {
 }
 
 /// Live overlay for architecture.html: services + active model/fork tallies
+async fn get_gpu_metrics() -> impl IntoResponse {
+    match gpu::fetch_gpu_metrics().await {
+        Ok(metrics) => {
+            let rendered = gpu::render_prometheus_metrics(&metrics);
+            (axum::http::StatusCode::OK, rendered)
+        }
+        Err(e) => (
+            axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+            format!("Error: {}", e),
+        ),
+    }
+}
+
 async fn get_arch_live() -> Json<ArchLiveResponse> {
     let status = get_status().await.0;
     let models = get_models_meta().await.0;
@@ -433,16 +447,101 @@ async fn main() {
     });
 
     let s = ServeDir::new("static");
+    // GHAS mesh (20 features) — thin native surface; full catalog also on mesh-hub :25115
+    async fn mesh_features() -> impl IntoResponse {
+        Json(serde_json::json!({
+            "feature": "features",
+            "service": "rust-web",
+            "count": 20,
+            "features": [
+                "readyz","livez","startupz","healthz","version","features","status","peers","deps",
+                "mesh-graph","chain-health","discover","capabilities","metrics-lite","config-public",
+                "whoami","ping","ghas-proxy","routes","link-check"
+            ],
+            "ghas_origin": "kubernetes apiserver ready/live + GHAS dual-engine search mesh",
+            "native": true
+        }))
+    }
+    async fn mesh_readyz() -> impl IntoResponse {
+        Json(serde_json::json!({"feature":"readyz","service":"rust-web","ready":true,"ghas":"k8s-readyz"}))
+    }
+    async fn mesh_livez() -> impl IntoResponse {
+        Json(serde_json::json!({"feature":"livez","service":"rust-web","live":true}))
+    }
+    async fn mesh_whoami() -> impl IntoResponse {
+        Json(serde_json::json!({
+            "feature":"whoami","service":"rust-web","role":"ops-dashboard",
+            "ghas_borrow":"k8s-style /ops/api/* status surfaces"
+        }))
+    }
+    async fn mesh_status() -> impl IntoResponse {
+        Json(serde_json::json!({
+            "feature":"status","service":"rust-web","role":"ops-dashboard","local_ok":true
+        }))
+    }
+    async fn mesh_routes() -> impl IntoResponse {
+        Json(serde_json::json!({
+            "feature":"routes","service":"rust-web",
+            "routes":["/mesh/features","/mesh/readyz","/mesh/livez","/mesh/whoami","/mesh/status","/mesh/routes"],
+            "hub":"http://127.0.0.1:25115/mesh/s/rust-web/{feature}"
+        }))
+    }
     let app = Router::new()
         .route("/health", get(health))
+        .route("/mesh", get(mesh_features))
+        .route("/mesh/", get(mesh_features))
+        .route("/mesh/features", get(mesh_features))
+        .route("/mesh/readyz", get(mesh_readyz))
+        .route("/mesh/livez", get(mesh_livez))
+        .route("/mesh/whoami", get(mesh_whoami))
+        .route("/mesh/status", get(mesh_status))
+        .route("/mesh/routes", get(mesh_routes))
         // Chat UI is llama-swap :25100/ui — no proxy chat on this dashboard
-        .route("/landing/api/logs", get(get_logs))
-        .route("/landing/api/status", get(get_status))
-        .route("/landing/api/telemetry", get(get_telemetry))
-        .route("/landing/api/models", get(get_models_meta))
-        .route("/landing/api/architecture", get(get_arch_live))
-        .route("/landing/api/integrations", get(get_integrations))
-        .route("/landing/api/fleet/last", get(get_fleet_last))
+        .route("/ops/api/logs", get(get_logs))
+        .route("/ops/api/status", get(get_status))
+        .route("/ops/api/telemetry", get(get_telemetry))
+        .route("/ops/api/models", get(get_models_meta))
+        .route("/ops/api/architecture", get(get_arch_live))
+        .route("/ops/api/integrations", get(get_integrations))
+        .route("/ops/api/fleet/last", get(get_fleet_last))
+        .route("/ops/api/gpu/metrics", get(get_gpu_metrics))
+        .route(
+            "/ops/api/mesh",
+            get(|| async {
+                // Proxy mesh-hub chain-health for dashboard JS (same-origin)
+                let client = Client::builder()
+                    .timeout(std::time::Duration::from_secs(4))
+                    .build()
+                    .unwrap_or_else(|_| Client::new());
+                match client
+                    .get("http://127.0.0.1:25115/mesh/chain-health")
+                    .header("accept-encoding", "identity")
+                    .send()
+                    .await
+                {
+                    Ok(resp) => {
+                        let status = resp.status();
+                        let body = resp
+                            .text()
+                            .await
+                            .unwrap_or_else(|_| "{}".into());
+                        (
+                            axum::http::StatusCode::from_u16(status.as_u16())
+                                .unwrap_or(axum::http::StatusCode::BAD_GATEWAY),
+                            [(axum::http::header::CONTENT_TYPE, "application/json")],
+                            body,
+                        )
+                            .into_response()
+                    }
+                    Err(e) => (
+                        axum::http::StatusCode::BAD_GATEWAY,
+                        [(axum::http::header::CONTENT_TYPE, "application/json")],
+                        format!(r#"{{"error":"mesh_hub_unreachable","detail":"{e}"}}"#),
+                    )
+                        .into_response(),
+                }
+            }),
+        )
         .nest_service("/", s);
 
     let p: u16 = std::env::var("RUST_WEB_PORT")

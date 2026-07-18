@@ -11,10 +11,9 @@
  * 4. Return first responding port
  */
 
-import { execSync } from 'node:child_process';
-import * as http from 'node:http';
+import { execSync } from "node:child_process";
 
-const LS_SERVICE = 'exa.language_server_pb.LanguageServerService';
+const LS_SERVICE = "exa.language_server_pb.LanguageServerService";
 
 export interface AntigravityInstance {
   pid: number;
@@ -88,39 +87,30 @@ function discoverRawInstances(): Array<Omit<AntigravityInstance, 'port'>> {
 
 // ─── Port probing ─────────────────────────────────────────────────────────────
 
-function probeHttpPort(port: number, csrfToken: string, timeoutMs = 3_000): Promise<boolean> {
-  return new Promise((resolve) => {
-    const bodyBuf = Buffer.from('{}', 'utf8');
-    const req = http.request(
+/** Bun fetch probe — no node:http */
+async function probeHttpPort(
+  port: number,
+  csrfToken: string,
+  timeoutMs = 3_000,
+): Promise<boolean> {
+  try {
+    const res = await fetch(
+      `http://127.0.0.1:${port}/${LS_SERVICE}/Heartbeat`,
       {
-        hostname: '127.0.0.1',
-        port,
-        path: `/${LS_SERVICE}/Heartbeat`,
-        method: 'POST',
+        method: "POST",
         headers: {
-          'x-codeium-csrf-token': csrfToken,
-          'Content-Type': 'application/json',
-          'Content-Length': bodyBuf.length,
+          "x-codeium-csrf-token": csrfToken,
+          "Content-Type": "application/json",
         },
-      },
-      (res) => {
-        const chunks: Buffer[] = [];
-        res.on('data', (c: Buffer) => chunks.push(c));
-        res.on('end', () => {
-          const text = Buffer.concat(chunks).toString('utf8');
-          resolve(text.trim().startsWith('{') || (res.statusCode ?? 0) === 200);
-        });
-        res.on('error', () => resolve(false));
+        body: "{}",
+        signal: AbortSignal.timeout(timeoutMs),
       },
     );
-    req.on('error', () => resolve(false));
-    req.setTimeout(timeoutMs, () => {
-      req.destroy();
-      resolve(false);
-    });
-    req.write(bodyBuf);
-    req.end();
-  });
+    const text = await res.text();
+    return text.trim().startsWith("{") || res.status === 200;
+  } catch {
+    return false;
+  }
 }
 
 function getListeningPortsForPid(pid: number): number[] {

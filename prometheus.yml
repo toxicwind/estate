@@ -1,6 +1,28 @@
 global:
   scrape_interval: 15s
+  scrape_timeout: 10s
+
 scrape_configs:
   - job_name: 'sovereign'
+    metrics_path: /metrics
     static_configs:
-      - targets: ['127.0.0.1:25002','127.0.0.1:25003','127.0.0.1:25004','127.0.0.1:25005','127.0.0.1:25008']
+      - targets:
+        - '127.0.0.1:25100'
+        - '127.0.0.1:25101'
+        - '127.0.0.1:25102'
+        - '127.0.0.1:25103'
+        - '127.0.0.1:25105'
+        - '127.0.0.1:25106'
+        - '127.0.0.1:25107'
+        - '127.0.0.1:25203'
+
+  - job_name: 'fleet_power'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['127.0.0.1:25208']
+
+  - job_name: 'node'
+    static_configs:
+      - targets: ['127.0.0.1:9100']
+
+# hotreload 1784356805503

@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sovereign · Control Plane</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ["Outfit", "system-ui", "sans-serif"],
+              mono: ["JetBrains Mono", "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        min-height: 100vh;
+        color: #e5e7eb;
+        background:
+          radial-gradient(1200px 600px at 10% -10%, rgba(34, 211, 238, 0.12), transparent 50%),
+          radial-gradient(900px 500px at 100% 0%, rgba(167, 139, 250, 0.14), transparent 45%),
+          #07060c;
+        font-family: Outfit, system-ui, sans-serif;
+      }
+      .card {
+        background: rgba(16, 14, 26, 0.72);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 1rem;
+        backdrop-filter: blur(12px);
+        transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      }
+      .card:hover {
+        border-color: rgba(34, 211, 238, 0.35);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+      }
+      .dot {
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 9999px;
+        display: inline-block;
+      }
+      .dot.ok { background: #34d399; box-shadow: 0 0 10px rgba(52, 211, 153, 0.55); }
+      .dot.bad { background: #f87171; box-shadow: 0 0 10px rgba(248, 113, 113, 0.4); }
+      .dot.wait { background: #fbbf24; }
+      .mono { font-family: "JetBrains Mono", monospace; }
+    </style>
+  </head>
+  <body class="px-4 py-8 md:px-8">
+    <div class="max-w-6xl mx-auto">
+      <header class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+        <div>
+          <p class="text-cyan-400/80 text-xs tracking-[0.25em] uppercase mono mb-2">
+            toxicwind · local stack
+          </p>
+          <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight">
+            Sovereign
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400"
+              >Control Plane</span
+            >
+          </h1>
+          <p class="text-gray-400 mt-2 max-w-xl text-sm md:text-base">
+            Live map of dashboards, APIs, and MCP surfaces on the 25xxx port grid.
+            Everything local · llama-swap front door · no vLLM.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2 text-xs">
+          <a href="/" class="px-3 py-1.5 rounded-full border border-white/10 hover:border-cyan-400/40"
+            >Command Center</a
+          >
+          <a
+            href="/fleet.html"
+            class="px-3 py-1.5 rounded-full border border-violet-500/30 text-violet-200"
+            >Fleet</a
+          >
+          <a
+            href="/architecture.html"
+            class="px-3 py-1.5 rounded-full border border-white/10"
+            >Architecture</a
+          >
+          <button
+            id="refresh"
+            class="px-3 py-1.5 rounded-full border border-cyan-500/40 bg-cyan-500/10 text-cyan-200"
+          >
+            Refresh status
+          </button>
+        </div>
+      </header>
+
+      <section class="grid md:grid-cols-3 gap-4 mb-8">
+        <div class="card p-5 md:col-span-2">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="font-semibold text-lg">Service mesh</h2>
+            <span id="mesh-summary" class="mono text-xs text-gray-400">…</span>
+          </div>
+          <div id="mesh-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2"></div>
+        </div>
+        <div class="card p-5">
+          <h2 class="font-semibold text-lg mb-3">MCP (Grok + Zed)</h2>
+          <ul class="space-y-2 text-sm text-gray-300" id="mcp-list">
+            <li class="mono text-xs text-gray-500">Loading…</li>
+          </ul>
+          <p class="text-[11px] text-gray-500 mt-4 leading-relaxed">
+            GHAS stdio + HTTP :25113 · llama-swap MCP · filesystem · prometheus · browserless.
+            Configure in <span class="mono">~/.grok/config.toml</span> and Zed
+            <span class="mono">context_servers</span>.
+          </p>
+        </div>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="font-semibold text-lg mb-3">Dashboards & UIs</h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3" id="dash-grid"></div>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="font-semibold text-lg mb-3">APIs (copy-friendly)</h2>
+        <div class="card p-4 overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="text-gray-500 text-xs uppercase tracking-wider">
+              <tr>
+                <th class="py-2 pr-4">Surface</th>
+                <th class="py-2 pr-4">URL</th>
+                <th class="py-2">Role</th>
+              </tr>
+            </thead>
+            <tbody id="api-rows" class="mono text-xs"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <footer class="text-center text-gray-600 text-xs mono pb-8">
+        pitchfork · mise · llama-swap :25100 · mesh-hub :25115 · openfang external HTTP only for yote
+      </footer>
+    </div>
+
+    <script>
+      const SERVICES = [
+        { id: "llama-swap", port: 25100, path: "/health", ui: "http://127.0.0.1:25100/ui/", label: "LLM + Chat UI" },
+        { id: "rust-web", port: 25101, path: "/health", ui: "http://127.0.0.1:25101/", label: "Ops dashboard" },
+        { id: "yote", port: 25102, path: "/health", ui: "http://127.0.0.1:25102/", label: "Telegram gateway" },
+        { id: "openfang", port: 25103, path: "/api/health", ui: "http://127.0.0.1:25103/", label: "Agent kernel" },
+        { id: "ast-matrix", port: 25104, path: "/health", ui: "http://127.0.0.1:25104/health", label: "Model router" },
+        { id: "prometheus", port: 25105, path: "/-/healthy", ui: "http://127.0.0.1:25105/", label: "Metrics" },
+        { id: "hf-downloader", port: 25106, path: "/", ui: "http://127.0.0.1:25106/", label: "HF models" },
+        { id: "null-g-proxy", port: 25107, path: "/health", ui: "http://127.0.0.1:25107/health", label: "Edge proxy (Bun)" },
+        { id: "grafana", port: 25110, path: "/api/health", ui: "http://127.0.0.1:25110/", label: "Grafana" },
+        { id: "ghas-api", port: 25112, path: "/health", ui: "http://127.0.0.1:25112/health", label: "GHAS API" },
+        { id: "ghas-mcp", port: 25113, path: "/health", ui: "http://127.0.0.1:25113/health", label: "GHAS MCP HTTP" },
+        { id: "mesh-hub", port: 25115, path: "/health", ui: "http://127.0.0.1:25115/mesh/discover", label: "Mesh hub" },
+      ];
+
+      const DASHES = [
+        { title: "Command Center", href: "/", desc: "YOTE ops · GPU · models · status", tone: "from-cyan-500/20 to-violet-500/10" },
+        { title: "Llama-swap Chat", href: "http://127.0.0.1:25100/ui/", desc: "Primary chat UI · multi-model", tone: "from-emerald-500/20 to-cyan-500/10" },
+        { title: "OpenFang", href: "http://127.0.0.1:25103/", desc: "18 agents · Discord · webchat", tone: "from-violet-500/20 to-fuchsia-500/10" },
+        { title: "Grafana", href: "http://127.0.0.1:25110/", desc: "Prom dashboards :25110", tone: "from-orange-500/20 to-amber-500/10" },
+        { title: "HF Downloader", href: "http://127.0.0.1:25106/", desc: "GGUF fetch · analyze", tone: "from-amber-500/15 to-yellow-500/5" },
+        { title: "Prometheus", href: "http://127.0.0.1:25105/", desc: "Raw metrics explorer", tone: "from-rose-500/15 to-red-500/5" },
+        { title: "Mesh discover", href: "http://127.0.0.1:25115/mesh/discover", desc: "20 features × services", tone: "from-sky-500/15 to-blue-500/5" },
+        { title: "Yote status", href: "http://127.0.0.1:25102/", desc: "Telegram + OpenFang HTTP", tone: "from-lime-500/15 to-green-500/5" },
+        { title: "null-g (Bun)", href: "http://127.0.0.1:25107/health", desc: "Antigravity proxy · mesh", tone: "from-pink-500/15 to-rose-500/5" },
+      ];
+
+      const APIS = [
+        ["LLM OpenAI", "http://127.0.0.1:25100/v1", "completions · models · SSE"],
+        ["OpenFang agents", "http://127.0.0.1:26103/api/agents", "agent list (backend)"],
+        ["OpenFang chat", "http://127.0.0.1:26103/v1/chat/completions", "openfang:<agent> models"],
+        ["Ops status", "http://127.0.0.1:25101/ops/api/status", "dashboard JSON"],
+        ["Mesh chain", "http://127.0.0.1:25115/mesh/chain-health", "fan-out health"],
+        ["GHAS search", "http://127.0.0.1:25112/api/search?q=test", "GitHub advanced search"],
+        ["GHAS MCP health", "http://127.0.0.1:25113/health", "MCP HTTP mode"],
+        ["Yote → OF chat", "http://127.0.0.1:25102/api/openfang/chat?msg=hi", "external OF client"],
+        ["null-g models", "http://127.0.0.1:25107/v1/models", "OpenAI-compat edge"],
+      ];
+
+      const MCP = [
+        { name: "ghas", detail: "stdio ghas-mcp-stdio.sh · HTTP :25113" },
+        { name: "llama-swap", detail: "src/mcp/llama_swap.ts · chat/models" },
+        { name: "ast-grep", detail: "structural search MCP" },
+        { name: "filesystem", detail: "project FS tools" },
+        { name: "prometheus", detail: "metrics MCP → :25105" },
+        { name: "browserless", detail: "Playwright CDP / vision" },
+        { name: "markitdown", detail: "doc → markdown" },
+        { name: "context7", detail: "library docs" },
+      ];
+
+      async function probe(port, path) {
+        try {
+          const res = await fetch(`http://127.0.0.1:${port}${path}`, {
+            signal: AbortSignal.timeout(2500),
+            headers: { "Accept-Encoding": "identity" },
+          });
+          return res.ok || res.status === 207;
+        } catch {
+          return false;
+        }
+      }
+
+      async function refresh() {
+        const grid = document.getElementById("mesh-grid");
+        grid.innerHTML = "";
+        let ok = 0;
+        for (const s of SERVICES) {
+          const good = await probe(s.port, s.path);
+          if (good) ok++;
+          const el = document.createElement("a");
+          el.href = s.ui;
+          el.target = "_blank";
+          el.rel = "noopener";
+          el.className =
+            "flex items-center gap-3 rounded-xl px-3 py-2.5 bg-white/[0.03] border border-white/5 hover:border-cyan-500/30";
+          el.innerHTML = `
+            <span class="dot ${good ? "ok" : "bad"}"></span>
+            <span class="min-w-0">
+              <span class="block text-sm font-medium truncate">${s.id}</span>
+              <span class="block mono text-[10px] text-gray-500">:${s.port} · ${s.label}</span>
+            </span>`;
+          grid.appendChild(el);
+        }
+        document.getElementById("mesh-summary").textContent = `${ok}/${SERVICES.length} up`;
+
+        // mesh hub chain if available
+        try {
+          const ch = await fetch("http://127.0.0.1:25115/mesh/chain-health", {
+            signal: AbortSignal.timeout(4000),
+            headers: { "Accept-Encoding": "identity" },
+          });
+          if (ch.ok || ch.status === 207) {
+            const j = await ch.json();
+            document.getElementById("mesh-summary").textContent += j.all_ok
+              ? " · chain ok"
+              : " · chain partial";
+          }
+        } catch {
+          /* hub optional in summary */
+        }
+      }
+
+      function renderStatic() {
+        const dg = document.getElementById("dash-grid");
+        dg.innerHTML = DASHES.map(
+          (d) => `
+          <a href="${d.href}" target="${d.href.startsWith("http") ? "_blank" : "_self"}" rel="noopener"
+             class="card p-4 bg-gradient-to-br ${d.tone}">
+            <div class="font-semibold">${d.title}</div>
+            <div class="text-xs text-gray-400 mt-1">${d.desc}</div>
+          </a>`,
+        ).join("");
+
+        document.getElementById("api-rows").innerHTML = APIS.map(
+          ([n, u, r]) => `
+          <tr class="border-t border-white/5">
+            <td class="py-2 pr-4 text-cyan-200/90">${n}</td>
+            <td class="py-2 pr-4"><a class="text-violet-300 hover:underline" href="${u}" target="_blank" rel="noopener">${u}</a></td>
+            <td class="py-2 text-gray-500 font-sans">${r}</td>
+          </tr>`,
+        ).join("");
+
+        document.getElementById("mcp-list").innerHTML = MCP.map(
+          (m) =>
+            `<li><span class="text-cyan-300 mono text-xs">${m.name}</span>
+             <span class="text-gray-500 text-xs"> — ${m.detail}</span></li>`,
+        ).join("");
+      }
+
+      document.getElementById("refresh").addEventListener("click", refresh);
+      renderStatic();
+      refresh();
+      setInterval(refresh, 15000);
+    </script>
+  </body>
+</html>
