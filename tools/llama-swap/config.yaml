@@ -343,7 +343,9 @@ macros:
   # ---------------------------------------------------------------------------
   # REASONING / SAMPLING
   # ---------------------------------------------------------------------------
-  REASONING_OFF: --reasoning off
+  # none → leave tokens in message.content (deepseek format emptied content into reasoning_content)
+  # budget 0 ends hidden think path immediately when reasoning mode is partially active
+  REASONING_OFF: --reasoning off --reasoning-budget 0 --reasoning-format none
   REASONING_ON: --reasoning on --chat-template-kwargs '{"preserve_thinking":true}'
 
   SAMP_CODING: --temp 0.2 --top-p 0.95 --top-k 50
@@ -415,19 +417,19 @@ models:
       - gemini-2.0-flash
 
   beellama/qwen-flash-256k:
-    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_128K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    # Real 256k ctx (not 128k alias of quality) — exclusive matrix; higher VRAM at load
+    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_256K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     env:
       - LD_LIBRARY_PATH=${BEELLAMA_LD}
       - ${CUDA_ENV}
       - LLAMA_API_KEY=
-    name: "QWEN 3.5 9B Flash · 256K* · IQ4_XS"
-    description: "Extreme context model, capped to 128K for local VRAM safety on sm_86."
+    name: "QWEN 3.5 9B Flash · 256K · IQ4_XS"
+    description: "True 256K context flash path (distinct from 64k/128k quality aliases). Exclusive matrix; may use more KV VRAM."
     metadata:
       fork: beellama
-      context: 131072
+      context: 262144
       quant: IQ4_XS
-      vram: ~13GB
-      warning: "capped to 128k ctx (was 256k) — 9B flash VRAM-safe"
+      vram: "~16GB peak with long KV"
       origin: mradermacher/Qwen3.5-9B-DeepSeek-V4-Flash-i1-GGUF
 
   beellama/qwen-flash-mtp-64k:

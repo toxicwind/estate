@@ -295,10 +295,59 @@ app.post('/v1/chat/completions', async (c) => {
 
   const modelDef = resolveModel(body.model ?? DEFAULT_MODEL.openaiName);
   const agenticMode = body.agentic === true || body.mode === 'agentic';
+  const requestedModel = body.model ?? modelDef.openaiName;
 
   process.stderr.write(
     `[proxy] chat/completions model="${modelDef.openaiName}" stream=${body.stream ?? false} agentic=${agenticMode} cascade_id=${body.cascade_id ?? 'new'}\n`,
   );
+
+  // Local llama-swap fallback when Antigravity is down OR model looks like a sovereign GGUF id
+  const LLAMA_SWAP_V1 =
+    process.env.LLM_BASE_URL ||
+    process.env.LLAMA_SWAP_V1 ||
+    'http://127.0.0.1:25100/v1';
+  const looksLocal =
+    /^(beellama|mradermacher|jackrong|turboquant|ik_llama|ik_turboquant|holo|qwen\/|gemma-4|exaone|fast|quality|longctx|local-)/i.test(
+      String(requestedModel),
+    ) ||
+    String(requestedModel).includes('/');
+
+  const proxyToLlamaSwap = async (): Promise<Response> => {
+    const upstreamModel =
+      requestedModel === 'fast' || requestedModel === 'local-fast'
+        ? process.env.LLAMA_SWAP_FAST_MODEL || 'beellama/exaone-4-0-1-2b-iq4xs'
+        : requestedModel === 'quality' || requestedModel === 'local-quality'
+          ? process.env.LLAMA_SWAP_QUALITY_MODEL ||
+            'beellama/qwen-flash-64k'
+          : requestedModel === 'longctx' || requestedModel === 'local-longctx'
+            ? process.env.LLAMA_SWAP_LONGCTX_MODEL ||
+              'beellama/qwen-flash-256k'
+            : String(requestedModel);
+    process.stderr.write(
+      `[proxy] llama-swap fallback model=${upstreamModel} via ${LLAMA_SWAP_V1}\n`,
+    );
+    const res = await fetch(`${LLAMA_SWAP_V1.replace(/\/$/, '')}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'Accept-Encoding': 'identity',
+      },
+      body: JSON.stringify({
+        ...body,
+        model: upstreamModel,
+      }),
+      signal: AbortSignal.timeout(body.stream ? 300_000 : 180_000),
+    });
+    const text = await res.text();
+    return new Response(text, {
+      status: res.status,
+      headers: {
+        'Content-Type': res.headers.get('Content-Type') || 'application/json',
+        'X-Routed-Via': `llama-swap/${upstreamModel}`,
+      },
+    });
+  };
 
   // Ensure we have a live connection
   let instance: AntigravityInstance;
@@ -306,6 +355,22 @@ app.post('/v1/chat/completions', async (c) => {
     instance = await ensureConnected();
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
+    // Prefer local SSOT over hard 503 so routing/GPU paths stay usable
+    if (looksLocal || process.env.NULL_G_LLAMA_FALLBACK !== '0') {
+      try {
+        return await proxyToLlamaSwap();
+      } catch (fe) {
+        return c.json(
+          {
+            error: {
+              message: `Antigravity not available: ${msg}; llama-swap fallback failed: ${fe}`,
+              type: 'service_unavailable',
+            },
+          },
+          503,
+        );
+      }
+    }
     return c.json(
       { error: { message: `Antigravity not available: ${msg}`, type: 'service_unavailable' } },
       503,

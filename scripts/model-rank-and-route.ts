@@ -106,14 +106,13 @@ async function chat(
       /* */
     }
     const msg = data?.choices?.[0]?.message || {};
-    // Qwen3-flash often fills reasoning_content when thinking is on and leaves content empty
+    // STRICT pass bar: non-empty message.content (not reasoning_content-only)
     const text =
-      (typeof msg.content === "string" && msg.content.trim()
+      typeof msg.content === "string" && msg.content.trim()
         ? msg.content
-        : "") ||
-      (typeof msg.reasoning_content === "string" ? msg.reasoning_content : "") ||
-      data?.choices?.[0]?.text ||
-      "";
+        : typeof data?.choices?.[0]?.text === "string"
+          ? data.choices[0].text
+          : "";
     const usage = data?.usage || {};
     const ok =
       res.ok &&
@@ -170,12 +169,11 @@ async function probeModel(id: string, role: Role, inCatalog: boolean): Promise<P
 const CANDIDATES: { id: string; role: Role }[] = [
   { id: "beellama/exaone-4-0-1-2b-iq4xs", role: "fast" },
   { id: "beellama/qwen25-instruct-15b", role: "fast" },
+  // quality: 64k primary (true short-ctx utility, content-visible under REASONING_OFF none)
   { id: "beellama/qwen-flash-64k", role: "quality" },
   { id: "mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m", role: "quality" },
-  { id: "beellama/qwen-flash-128k", role: "longctx" },
+  // longctx: only true 256k entry (not 128k alias of quality)
   { id: "beellama/qwen-flash-256k", role: "longctx" },
-  // gemma optional — may fail to start; keep last
-  { id: "beellama/gemma-64k", role: "quality" },
 ];
 
 const { ok: listOk, models } = await listSwapModels();
@@ -216,8 +214,19 @@ const best: Record<string, Probe | null> = {
 for (const role of ["fast", "quality", "longctx"] as Role[]) {
   const passed = probes.filter((p) => p.role === role && p.pass);
   if (!passed.length) continue;
-  // prefer lowest latency for fast; for others prefer pass with content
-  passed.sort((a, b) => a.latency_ms - b.latency_ms);
+  if (role === "fast") {
+    passed.sort((a, b) => a.latency_ms - b.latency_ms);
+  } else if (role === "longctx") {
+    // prefer true 256k id over any accidental smaller-ctx longctx candidates
+    passed.sort((a, b) => {
+      const score = (id: string) =>
+        id.includes("256k") ? 0 : id.includes("128k") ? 1 : 2;
+      const s = score(a.id) - score(b.id);
+      return s !== 0 ? s : a.latency_ms - b.latency_ms;
+    });
+  } else {
+    passed.sort((a, b) => a.latency_ms - b.latency_ms);
+  }
   best[role] = passed[0];
 }
 
