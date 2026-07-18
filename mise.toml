@@ -17,18 +17,10 @@ PROCESS_COMPOSE_PORT = "25108"
 experimental = true
 idiomatic_version_file_enable_tools = ["python"]
 
-# Step 0: thin mise → multi-config process-compose (owned hot-reload modules)
+# ONE up: all owned hot-reload services (no core/full profiles)
 [tasks.up]
-description = "Start owned hot-reload stack (profile SOVEREIGN_PROFILE=core|sovereign|full|infra)"
+description = "Start all owned services with hot reload (bun --hot / cargo watch)"
 run = "./mise/tasks/up"
-
-[tasks.up-core]
-description = "llama-swap + openfang + ast-matrix only"
-run = "./mise/tasks/up-core"
-
-[tasks.up-full]
-description = "sovereign + hf-downloader + ghas-api + prometheus"
-run = "./mise/tasks/up-full"
 
 [tasks.down]
 run = "./mise/tasks/down"
@@ -61,11 +53,12 @@ if [ "$actual_sg" != "$expected_sg" ]; then
   echo "ast-grep mismatch: active=$actual_sg expected=$expected_sg" >&2
   exit 1
 fi
-for m in llama-swap openfang ast-matrix null-g-proxy yote rust-web; do
+for m in llama-swap openfang ast-matrix null-g-proxy yote rust-web hf-downloader ghas-api; do
   test -f "stack/modules/${m}.yaml" || { echo "missing module $m" >&2; exit 1; }
 done
 grep -q 'bun --hot' stack/modules/ast-matrix.yaml || { echo "ast-matrix missing bun --hot" >&2; exit 1; }
-echo "doctor ok: ast-grep=$actual_sg modules present PC port=${PROCESS_COMPOSE_PORT:-25108}"
+grep -q 'rust-web-hot' stack/modules/rust-web.yaml || { echo "rust-web must use rust-web-hot.sh" >&2; exit 1; }
+echo "doctor ok: ast-grep=$actual_sg single-up modules + rust-web-hot PC=${PROCESS_COMPOSE_PORT:-25108}"
 """
 
 [tasks.e2e-agent-stack]

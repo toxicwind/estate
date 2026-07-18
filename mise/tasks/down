@@ -1,4 +1,34 @@
 #!/usr/bin/env bash
+# Stop process-compose project on :25108 and free owned service ports.
 set -euo pipefail
-process-compose --address 127.0.0.1 down || true
-pkill -f llama-swap || true
+source "$(dirname "$0")/_lib.sh"
+
+PORT="${PROCESS_COMPOSE_PORT:-25108}"
+echo "{\"event\":\"down_start\",\"timestamp\":\"$(date -Iseconds)\"}"
+
+if curl -sf "http://127.0.0.1:${PORT}/" >/dev/null 2>&1; then
+  curl -sf -X POST "http://127.0.0.1:${PORT}/project/stop" >/dev/null 2>&1 || true
+  curl -sf -X POST "http://127.0.0.1:${PORT}/processes/stop-all" >/dev/null 2>&1 || true
+  curl -sf -X POST "http://127.0.0.1:${PORT}/shutdown" >/dev/null 2>&1 || true
+  for _ in $(seq 1 15); do
+    curl -sf "http://127.0.0.1:${PORT}/" >/dev/null 2>&1 || break
+    sleep 0.5
+  done
+fi
+
+# Kill process-compose by exact basename if still listening
+if ss -ltn 2>/dev/null | grep -q ":${PORT} "; then
+  mapfile -t PCPIDS < <(ss -ltnp 2>/dev/null | awk -v p=":${PORT}" '$4 ~ p {print}' | grep -oP 'pid=\K[0-9]+' | sort -u)
+  for pid in "${PCPIDS[@]:-}"; do
+    kill "$pid" 2>/dev/null || true
+  done
+  sleep 0.5
+fi
+
+# Free owned ports only (fuser by port — no cmdline self-match)
+for p in 25100 25101 25102 25103 25104 25106 25107 25111 3001; do
+  fuser -k "${p}/tcp" 2>/dev/null || true
+done
+
+rm -f /tmp/process-compose.pid
+echo "{\"event\":\"down_complete\",\"timestamp\":\"$(date -Iseconds)\"}"

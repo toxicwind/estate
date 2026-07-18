@@ -1,20 +1,25 @@
 #!/usr/bin/env bash
-# mise run up  |  SOVEREIGN_PROFILE=full mise run up
-# Starts owned hot-reload services (default profile: sovereign).
+# mise run up — ONE stack: all owned code services with in-process hot reload.
+# (bun --hot / cargo watch). No core/full profiles.
 set -euo pipefail
 source "$(dirname "$0")/_lib.sh"
-# shellcheck source=../../stack/profiles.sh
-source "$SOV/stack/profiles.sh"
 
-PROFILE="${SOVEREIGN_PROFILE:-sovereign}"
-mapfile -t MODS < <(stack_profile_modules "$PROFILE")
+# Owned application surface (order ≈ soft deps: LLM first, then matrix, then apps)
+MODS=(
+  llama-swap      # :25100 binary (restart on fail; config-driven)
+  openfang        # :25103 bun --hot
+  ast-matrix      # :25104 bun --hot  (Zed openai_compatible)
+  null-g-proxy    # :25107 bun --hot
+  yote            # :25102 bun --hot
+  rust-web        # :25101 + watchdog :25111 via cargo watch
+  hf-downloader   # :25106 bun --hot
+  ghas-api        # GHAS HTTP API bun --watch
+)
 
-echo "{\"event\":\"up_start\",\"profile\":\"$PROFILE\",\"modules\":\"${MODS[*]}\",\"timestamp\":\"$(date -Iseconds)\"}"
+echo "{\"event\":\"up_start\",\"modules\":\"${MODS[*]}\",\"timestamp\":\"$(date -Iseconds)\"}"
 
-# Optional: regenerate full process-compose.yaml for humans/status (not used by pc_up)
 if [[ -x "$SOV/stack/build-compose.sh" ]]; then
   "$SOV/stack/build-compose.sh" >/dev/null || true
 fi
 
-# Detached process-compose with only selected modules
 pc_up "${MODS[@]}"

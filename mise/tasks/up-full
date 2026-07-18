@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-export SOVEREIGN_PROFILE=full
-exec "$(dirname "$0")/up"

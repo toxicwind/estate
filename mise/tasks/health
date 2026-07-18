@@ -25,6 +25,9 @@ check_service "yote" "http://127.0.0.1:25102/health" || true
 check_service "openfang" "http://127.0.0.1:25103/api/health" || true
 check_service "null-g-proxy" "http://127.0.0.1:25107/health" || true
 check_service "hf-downloader" "http://127.0.0.1:25106/health" || true
+# ghas-api default PORT 3001 (apps/api)
+check_service "ghas-api" "http://127.0.0.1:3001/health" || true
+check_service "ghas-api-root" "http://127.0.0.1:3001/" || true
 
 # Output as JSON array
 echo "["

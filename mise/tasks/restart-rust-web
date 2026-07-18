@@ -1,16 +1,37 @@
 #!/usr/bin/env bash
+# Restart only rust-web via cargo-watch (same as stack hot path).
 set -euo pipefail
 SOV="${SOVEREIGN_ROOT:-$PWD}"
+export PATH="${HOME}/.cargo/bin:/usr/bin:/bin:${PATH}"
 PORT="${RUST_WEB_PORT:-25101}"
-cd "$SOV/rust_algo_web"
-cargo build --release 2>&1 | tail -20
-pkill -f "sovereign_web|sovereign_devops|rust_algo_web" 2>/dev/null || true
+WD="${WATCHDOG_PORT:-25111}"
+export RUST_WEB_PORT="$PORT" WATCHDOG_PORT="$WD"
+export LLM_PROXY_URL="${LLM_PROXY_URL:-http://127.0.0.1:25100}"
+export SOVEREIGN_ROOT="$SOV"
+
 fuser -k "${PORT}/tcp" 2>/dev/null || true
-sleep 0.5
-export RUST_WEB_PORT="$PORT" LLM_PROXY_URL="${LLM_PROXY_URL:-http://127.0.0.1:25100}" WATCHDOG_PORT="${WATCHDOG_PORT:-25104}"
-nohup "$SOV/stack/services/rust-web.sh" >>"$SOV/.state/logs/rust-web.log" 2>&1 &
-for i in $(seq 1 20); do
-  curl -sf --max-time 1 "http://127.0.0.1:${PORT}/health" && { echo " rust-web :${PORT} up"; exit 0; }
+fuser -k "${WD}/tcp" 2>/dev/null || true
+sleep 0.3
+
+# Prefer process-compose restart if project is up
+if curl -sf "http://127.0.0.1:${PROCESS_COMPOSE_PORT:-25108}/" >/dev/null 2>&1; then
+  curl -sf -X POST "http://127.0.0.1:${PROCESS_COMPOSE_PORT:-25108}/process/rust-web/restart" \
+    >/dev/null 2>&1 || true
+  for _ in $(seq 1 40); do
+    curl -sf --max-time 1 "http://127.0.0.1:${PORT}/health" && {
+      echo " rust-web :${PORT} up (via process-compose)"
+      exit 0
+    }
+    sleep 0.5
+  done
+fi
+
+nohup "$SOV/stack/services/rust-web-hot.sh" >>"$SOV/.state/logs/rust-web.log" 2>&1 &
+for _ in $(seq 1 40); do
+  curl -sf --max-time 1 "http://127.0.0.1:${PORT}/health" && {
+    echo " rust-web :${PORT} up (standalone cargo watch)"
+    exit 0
+  }
   sleep 0.5
 done
 echo "rust-web health timeout" >&2

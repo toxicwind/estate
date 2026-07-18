@@ -168,13 +168,15 @@ processes:
       backoff_seconds: 3
       max_restarts: 8
   rust-web:
-    command: ../stack/services/rust-web-hot.sh
-    working_dir: rust_algo_web
+    description: Rust dashboard + watchdog (cargo watch hot reload)
+    command: /home/toxic/sovereign/stack/services/rust-web-hot.sh
+    working_dir: /home/toxic/sovereign/rust_algo_web
     environment:
+    - SOVEREIGN_ROOT=/home/toxic/sovereign
     - "RUST_WEB_PORT=${RUST_WEB_PORT}"
     - "LLM_PROXY_URL=${LLM_PROXY_URL}"
-    - SOVEREIGN_ROOT=/home/toxic/sovereign
     - "WATCHDOG_PORT=${WATCHDOG_PORT}"
+    - "PATH=${HOME}/.cargo/bin:/usr/bin:/bin"
     availability:
       restart: on_failure
       backoff_seconds: 3
@@ -183,9 +185,9 @@ processes:
     readiness_probe:
       http_get:
         host: 127.0.0.1
-        port: 25101
+        port: "${RUST_WEB_PORT}"
         path: /health
-      initial_delay_seconds: 20
+      initial_delay_seconds: 25
       period_seconds: 5
   tailray:
     command: "bash -c 'systemctl --user restart tailray && exec tail -f /dev/null'"
