@@ -2,7 +2,7 @@
 
 Local multi-service stack: one OpenAI-compatible LLM front door, agent kernel, Telegram bot, ops dashboard, metrics, and optional Tailscale exposure.
 
-**Orchestration:** `mise` + `process-compose`  
+**Orchestration:** `mise` + `pitchfork`
 **LLM front door:** llama-swap **:25100** (toxicwind fork — no vLLM)  
 **Ports SSOT:** `config/ports.env` (25xxx)
 
@@ -30,24 +30,25 @@ mise run down
 
 ---
 
-## What’s running (`mise run up`)
+## What's running (`mise run up`)
 
-| Process | Port env | Default | Runtime | Role |
-|---------|----------|---------|---------|------|
-| **llama-swap** | `LLAMA_SWAP_PORT` | **25100** | Go | Inference router + `/ui` + `/v1` |
-| **rust-web** | `RUST_WEB_PORT` | **25101** | Rust | Ops dashboard + embedded watchdog |
-| **yote** | `YOTE_PORT` | 25102 | Bun | Telegram / status |
-| **openfang** | `OPENFANG_PORT` | 25103 | Bun | Agent kernel |
-| **ast-matrix** | `AST_MATRIX_PORT` | 25104 | Bun | Model/matrix tooling |
-| **prometheus** | `PROMETHEUS_PORT` | 25105 | Go | Metrics (module exists; may be started outside `up` set) |
-| **hf-downloader** | `HF_DOWNLOADER_PORT` | 25106 | Bun | GGUF download UI |
-| **null-g-proxy** | `NULL_G_PORT` | 25107 | Bun | Extra LLM proxy |
-| **process-compose** | `PROCESS_COMPOSE_PORT` | 25108 | Go | Orchestrator UI/API |
-| **grafana** | `GRAFANA_PORT` | 25110 | Go | Optional dashboards |
-| **watchdog** | `WATCHDOG_PORT` | 25111 | Rust (in rust-web) | Health side process |
-| **ghas-api** | `GHAS_API_PORT` | 25112 | Bun | GitHub Advanced Search API |
-
-`mise run up` starts: `llama-swap`, `openfang`, `ast-matrix`, `null-g-proxy`, `yote`, `rust-web`, `hf-downloader`, `ghas-api`.
+| Process | Port | Runtime | Role |
+|---------|------|---------|------|
+| **llama-swap** | **25100** | Go (toxicwind fork) | Inference router + AST Matrix Go router + `/ui` + `/v1` |
+| **rust-web** | **25101** | Rust | Ops dashboard + embedded watchdog |
+| **yote** | 25102 | Bun | Telegram / status |
+| **openfang** | 25103 | Bun | Agent kernel |
+| **ast-matrix** | 25104 | Bun | Standalone model/matrix tooling (TS, for external use) |
+| **prometheus** | 25105 | Go | Metrics |
+| **hf-downloader** | 25106 | Bun | GGUF download UI |
+| **null-g-proxy** | 25107 | Bun | Extra LLM proxy |
+| **mcpproxy** | 25109 | Go | MCP federation (43 MCPs → 1 endpoint) |
+| **grafana** | 25110 | Go | Optional dashboards |
+| **ghas-api** | 25112 | Bun | GitHub Advanced Search API |
+| **ghas-mcp** | 25113 | Bun | GHAS MCP (HTTP mode, depends on ghas-api) |
+| **mesh-hub** | 25115 | Bun | 20 GHAS-inspired features × every service |
+| **byte-vision** | 25121 | Go binary | Vision MCP (OCR / screenshot analysis) |
+| **byte-vision-proxy** | 25120 | Python | Transparent fallback proxy for byte-vision |
 
 Backends for swap: `LLAMA_START_PORT`–`LLAMA_END_PORT` = **25001–25099** (llama-server forks).
 
@@ -56,8 +57,22 @@ Backends for swap: `LLAMA_START_PORT`–`LLAMA_END_PORT` = **25001–25099** (ll
 ```text
 clients (Zed / OpenFang / Grok / IDEs)
    └─► llama-swap :25100   (toxicwind fork)
+          │  internal/astmatrix/ — ELO scoring, circuit breakers, 6 strategies
+          │  SQLite WAL health DB (modernc.org/sqlite)
           └─► beellama | turboquant | ik_llama | ik_turboquant  (:25001–25099)
 ```
+
+### AST Matrix Go port (in llama-swap fork)
+
+The TypeScript AST Matrix router (`tools/ast-matrix/sovereign-ast-matrix-ts/router.ts`) has been ported to Go inside the llama-swap fork at `~/projects/llama-swap-main/internal/astmatrix/`. This gives llama-swap native multi-provider routing with:
+
+- **6 strategies:** hybrid, ast_race, sticky_affinity, weighted_elo, circuit_chain, fifo_matrix
+- **ELO scoring** with circuit breaker (closed/open/half)
+- **SQLite WAL** health DB for request history, model health, healing events
+- **7 providers:** llama-swap (local), OpenRouter, NVIDIA NIM, Groq, Cerebras, Google, Mistral
+- **40+ model aliases** mapped to CODING categories
+
+The standalone Bun `ast-matrix` at :25104 remains for external tooling use. The Go port inside llama-swap is the primary router.
 
 ---
 
@@ -75,16 +90,20 @@ Access services **directly** on their ports (LAN or Tailscale MagicDNS). Optiona
 ## Architecture (direct ports)
 
 ```text
-                    ┌─ llama-swap :25100  (/ui, /v1, /models/sse)
- clients ──────────┼─ rust-web  :25101  (/, /ops/api/*, /health)
- (local/tailnet)   ├─ openfang  :25103
-                    ├─ yote      :25102
-                    └─ … rest of config/ports.env
+                    ┌─ llama-swap    :25100  (/ui, /v1, /models/sse + astmatrix Go)
+ clients ──────────┼─ rust-web      :25101  (/, /ops/api/*, /health)
+ (local/tailnet)   ├─ openfang      :25103  (agent kernel)
+                    ├─ yote          :25102  (Telegram)
+                    ├─ mcpproxy      :25109  (43 MCPs federated)
+                    ├─ ghas-api      :25112  (GitHub search)
+                    ├─ mesh-hub      :25115  (service mesh)
+                    ├─ byte-vision   :25121  (vision MCP)
+                    └─ byte-vision-p :25120  (vision proxy fallback)
 
  optional: Tailscale Funnel → rust-web :25101 only (not multipath)
 ```
 
-Orchestration: `stack/modules/*.yaml` → `process-compose.yaml` via `mise run build-compose`.
+Orchestration: `pitchfork.toml` (native config, no generation). `mise run up` starts the `core` group.
 
 ---
 
@@ -97,7 +116,7 @@ Orchestration: `stack/modules/*.yaml` → `process-compose.yaml` via `mise run b
 | prometheus | lifecycle reload wrapper (if enabled) |
 | llama-swap | restart: `mise run restart-llama` (binary, not rewritten in-tree) |
 
-After editing a process module: full `mise run down && mise run up` (process-compose does not re-read modules on process restart alone).
+After editing a process module: full `mise run down && mise run up` (pitchfork reads config on start).
 
 ---
 
@@ -120,15 +139,15 @@ Never invent port numbers in app code — use env / `src/lib/ports.ts` / `stack/
 sovereign/
 ├── README.md
 ├── AGENTS.md                 → global rules (symlink)
+├── bin/llama-swap            → fork binary (symlink → projects/llama-swap-main/)
 ├── config/ports.env          # SSOT ports
 ├── mise.toml + mise/tasks/   # up / down / health / doctor / e2e
-├── process-compose.yaml      # generated
-├── stack/modules/*.yaml      # one process per file
-├── stack/services/*.sh       # entry shims (thin)
+├── pitchfork.toml            # native config (no generation)
+├── stack/services/*.sh       # entry shims (llama-swap.sh, rust-web-hot.sh, ...)
 ├── src/                      # Bun apps (services, deploy, mcp, lib)
 ├── rust_algo_web/            # rust-web dashboard + watchdog
-├── tools/llama-swap/         # runtime binary symlink + config.yaml
-├── tools/ast-matrix/ …
+├── tools/llama-swap/         # runtime binary symlink + config.yaml + MODEL_INVENTORY
+├── tools/ast-matrix/         # TS ast-matrix router (standalone, port 25104)
 ├── grafana/provisioning/
 ├── tailscale/                # optional Funnel (no Caddy)
 └── backup/                   # legacy — do not stage / do not delete casually
@@ -140,8 +159,8 @@ sovereign/
 
 | Project | Path | README focus |
 |---------|------|--------------|
-| **llama-swap** | `/home/toxic/projects/llama-swap-main` | **Fork additions** first (`/models/sse`, `normalize_sse`, IPv4, port reclaim) |
-| **llama-swap runtime** | `tools/llama-swap/README.md` | Sovereign wiring only |
+| **llama-swap** | `/home/toxic/projects/llama-swap-main` | **Fork additions**: AST Matrix Go port (`internal/astmatrix/`), `/models/sse`, `normalize_sse`, IPv4, port reclaim |
+| **llama-swap runtime** | `tools/llama-swap/README.md` | Sovereign wiring only (symlink → fork binary) |
 | **Zed** | `/home/toxic/projects/zed` | **toxicwind fork**: `.ignore` for agent grep, sccache+mold builds |
 
 ---
@@ -157,8 +176,9 @@ sovereign/
 ## Doctor / health
 
 ```bash
-mise run doctor   # modules + ast-grep pin + rust-web-hot
+mise run doctor   # pitchfork + ports + hot-reload core + ast-grep pin
 mise run health   # curl probes for key ports
+mise run status   # pitchfork list + 25xxx listeners
 ```
 
 ---
