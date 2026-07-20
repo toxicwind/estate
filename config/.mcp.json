@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "computer-use-linux": {
+      "command": "/home/toxic/.local/bin/computer-use-linux",
+      "args": ["mcp"],
+      "enabled": true,
+      "env": {
+        "COMPUTER_USE_LINUX_SCREENSHOT_BACKEND": "gnome-screenshot",
+        "PATH": "/home/toxic/.local/bin/shims:/home/toxic/.local/bin:/home/toxic/.bun/bin:/usr/local/bin:/usr/bin:/bin"
+      }
+    }
+  }
+}

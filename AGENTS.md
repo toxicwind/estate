@@ -22,12 +22,12 @@ Codex, Cursor, or sub-agents) MUST follow this file.
 
 This agent runs an observe → think → act → reflect control loop, grounded in:
 
-- **ReAct** — Yao et al. 2022, *Synergizing Reasoning and Acting in Language
-  Models*, arXiv:2210.03629. Generate reasoning traces and actions interleaved;
+- **ReAct** — Yao et al. 2022, _Synergizing Reasoning and Acting in Language
+  Models_, arXiv:2210.03629. Generate reasoning traces and actions interleaved;
   reasoning induces/updates the plan, actions interface with the environment and
   return observations.
-- **Reflexion** — Shinn et al. 2023, *Language Agents with Verbal Reinforcement
-  Learning*, arXiv:2303.11366. After each action, verbally reflect on the
+- **Reflexion** — Shinn et al. 2023, _Language Agents with Verbal Reinforcement
+  Learning_, arXiv:2303.11366. After each action, verbally reflect on the
   outcome, store it in episodic memory, and let it improve the next trial. Do not
   repeat a failed action with identical inputs.
 
@@ -64,8 +64,8 @@ you must.
 4. **README is updated aesthetically.** New surfaces, ports, or behaviors are
    reflected in `README.md` (tables, architecture diagram, sections kept tidy).
    No stale/incorrect descriptions.
-5. **Changes are committed** with a clear, conventional message explaining *why*,
-   not just *what*. Stage only the intended files. Do not commit secrets or
+5. **Changes are committed** with a clear, conventional message explaining _why_,
+   not just _what_. Stage only the intended files. Do not commit secrets or
    local state.
 
 ## Build & Test Commands
@@ -91,7 +91,27 @@ bun run test:best-models     # model SSOT tests
 - Prefer explicit over clever. No drive-by refactors of unrelated code.
 - Leave orphaned/dead code alone unless the task asks to remove it.
 
-## Scope Boundaries
+## Capabilities (sovereign-owned infra)
+
+- **Sovereign MCP Gateway** (`:25120`): trust boundary + circuit breaker + sticky
+  affinity in front of upstream MCP servers. Logic in `gateway-core.ts`
+  (100% coverage). See README §Sovereign MCP Gateway.
+- **Pseudo third monitor**: `computer-use-linux` MCP (mcpproxy) captures the
+  user's Hyprland desktop via a `grim` shim (`tools/sovereign-monitor/
+gnome-screenshot-shim`, installed to `~/.local/bin/shims/gnome-screenshot`).
+  Wired in `config/.mcp.json` (`COMPUTER_USE_LINUX_SCREENSHOT_BACKEND=
+gnome-screenshot`, shim dir prepended to PATH). The agent can
+  `screenshot` the user's DP-1 (non-vertical) or DP-2 (vertical) display
+  and pipe it to a local vision model (e.g. Holo-3.1 via llama-swap `:25100`)
+  for genuine visual context. Verify with `hyprctl monitors` / `hyprctl clients`.
+- **Recursive autonomous fallback** (`tools/sovereign-monitor/recursive-fallback.ts`,
+  88%+ coverage): multi-level try/catch where each catch has its OWN
+  nested try/catch; helpers (coerceInput / fixSyntax / scaffold / borrowGhas /
+  shallowQuery); recursion (decompose + recurse on smaller sub-problem, or a
+  sub-agent); LLM-assisted self-repair (coerce malformed input, auto-retrieve
+  MCP tools via shallow query, auto-scaffold helper scripts); Watchdog (bounded
+  attempts / budget → escalate instead of spinning). Grounded in ReAct
+  2210.03629 / Reflexion 2303.11366.
 
 - File tools (`read_file`/`edit_file`/`write_file`) are scoped to project roots.
   Paths outside (`~/.config/zed`, `~/projects`, `/home/toxic/...`) → use
