@@ -21,7 +21,7 @@ const KEY =
   "sovereign-local-matrix";
 
 const SWAP = requirePort("LLAMA_SWAP_PORT");
-const MATRIX = requirePort("AST_MATRIX_PORT");
+const MATRIX = requirePort("SOVEREIGN_ROUTER_PORT");
 const GHAS = requirePort("GHAS_API_PORT");
 
 type Row = { step: string; ok: boolean; detail: string };
@@ -59,10 +59,10 @@ function add(step: string, ok: boolean, detail: string) {
 
 // D2
 {
-  const h = await curlJson(localUrl("AST_MATRIX_PORT", "/health"));
-  const m = await curlJson(localUrl("AST_MATRIX_PORT", "/v1/models"));
+  const h = await curlJson(localUrl("SOVEREIGN_ROUTER_PORT", "/health"));
+  const m = await curlJson(localUrl("SOVEREIGN_ROUTER_PORT", "/v1/models"));
   add(
-    "D2 ast-matrix",
+    "D2 sovereign-router",
     h.status === 200 && m.status === 200,
     `port=${MATRIX} health=${h.status} models=${m.status}`,
   );
@@ -70,7 +70,7 @@ function add(step: string, ok: boolean, detail: string) {
 
 // D3
 {
-  const r = await curlJson(localUrl("AST_MATRIX_PORT", "/v1/chat/completions"), {
+  const r = await curlJson(localUrl("SOVEREIGN_ROUTER_PORT", "/v1/chat/completions"), {
     method: "POST",
     headers: {
       "content-type": "application/json",
@@ -196,7 +196,7 @@ print("llama", "llama-swap-test" in cs)
     await py.exited;
     const lines = out.trim().split("\n");
     const api = lines[0] || "";
-    const matrixHint = requireEnv("AST_MATRIX_PORT");
+    const matrixHint = requireEnv("SOVEREIGN_ROUTER_PORT");
     add(
       "D10 zed settings",
       api.includes(matrixHint) &&

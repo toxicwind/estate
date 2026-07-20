@@ -140,7 +140,7 @@ describe("best_models SSOT", () => {
   );
 
   test(
-    "ast-matrix local alias fast routes to local llama-swap model not gemini",
+    "sovereign-router local alias fast routes to local llama-swap model not gemini",
     async () => {
       const r = await chatContent("fast", "http://127.0.0.1:25104/v1");
       expect(r.status).toBe(200);

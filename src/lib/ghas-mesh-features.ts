@@ -14,7 +14,7 @@ export type MeshServiceId =
   | "rust-web"
   | "yote"
   | "openfang"
-  | "ast-matrix"
+  | "sovereign-router"
   | "prometheus"
   | "hf-downloader"
   | "null-g-proxy"
@@ -112,8 +112,8 @@ export function serviceCatalog(): ServiceMeta[] {
       ghas_borrow: "multi-provider hand swarm",
     },
     {
-      id: "ast-matrix",
-      portEnv: "AST_MATRIX_PORT",
+      id: "sovereign-router",
+      portEnv: "SOVEREIGN_ROUTER_PORT",
       healthPath: "/health",
       role: "model-router",
       ghas_borrow: "circuit-breaker health DB + sticky sessions",
@@ -325,10 +325,10 @@ export async function runFeature(
         "rust-web": ["llama-swap", "hf-downloader", "prometheus"],
         yote: ["openfang", "llama-swap"],
         openfang: ["llama-swap"],
-        "ast-matrix": ["llama-swap"],
+        "sovereign-router": ["llama-swap"],
         prometheus: [],
         "hf-downloader": [],
-        "null-g-proxy": ["llama-swap", "ast-matrix"],
+        "null-g-proxy": ["llama-swap", "sovereign-router"],
         grafana: ["prometheus"],
         "ghas-api": ["ghas-mcp"],
         "ghas-mcp": [],
@@ -405,7 +405,7 @@ export async function runFeature(
             mesh: true,
             ghas_linked: true,
             hot_reload: true,
-            openai_compat: ["llama-swap", "ast-matrix", "null-g-proxy", "yote", "openfang"].includes(
+            openai_compat: ["llama-swap", "sovereign-router", "null-g-proxy", "yote", "openfang"].includes(
               ctx.service,
             ),
             search: ctx.service.startsWith("ghas"),

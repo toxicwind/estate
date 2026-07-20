@@ -91,7 +91,7 @@ const SWAP = requirePort("LLAMA_SWAP_PORT");
 const RUST = requirePort("RUST_WEB_PORT");
 const YOTE = requirePort("YOTE_PORT");
 const OF = requirePort("OPENFANG_PORT");
-const AM = requirePort("AST_MATRIX_PORT");
+const AM = requirePort("SOVEREIGN_ROUTER_PORT");
 const HF = requirePort("HF_DOWNLOADER_PORT");
 const NG = requirePort("NULL_G_PORT");
 const GHAS = requirePort("GHAS_API_PORT");
@@ -122,12 +122,12 @@ const suite: Array<{
     waitMs: 3000,
   },
   {
-    daemon: "ast-matrix",
+    daemon: "sovereign-router",
     mechanism: "bun --hot",
     health: `http://127.0.0.1:${AM}/health`,
     file: resolve(
       ROOT,
-      "tools/ast-matrix/sovereign-ast-matrix-ts/router.ts",
+      "tools/sovereign-router/sovereign-router-ts/router.ts",
     ),
     kind: "ts",
     waitMs: 3000,

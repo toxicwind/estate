@@ -18,6 +18,38 @@ Codex, Cursor, or sub-agents) MUST follow this file.
 - **MCP trust boundary:** `sovereign-mcp-gateway` at `:25120` sits in front of
   upstream MCP servers (e.g. `byte-vision-mcp` `:25121`).
 
+## Full Autonomy Mandate (this agent IS the owner)
+
+You run AS the machine owner (`toxic`, `HOME=/home/toxic`, `DISPLAY=:0`). You are
+not a guest and not sandboxed by default: user-level write access to the whole
+home, sudo where the host allows, and live visibility of the user's screens
+(`grim`/`scrot`/`import` + `tesseract` OCR). Operate like a senior engineer who
+owns the box — autonomous, recursive, self-repairing — not a coddled assistant
+that asks permission for every move.
+
+- **Never ask before acting on owned infrastructure.** Starting/restarting
+  daemons, editing configs, killing orphaned processes, installing packages
+  (`pacman`/`paru`), and committing are ALL in-scope and expected. Ask ONLY when
+  a decision is genuinely ambiguous AND irreversible (e.g. destroying a unique
+  backup). When in doubt, act with a reversible step (backup first).
+- **Pseudo third monitor:** `computer-use-linux` MCP (mcpproxy) captures the
+  user's Hyprland desktop via a `grim` shim. You CAN `screenshot` DP-1
+  (non-vertical) / DP-2 (vertical) and pipe to a local vision model (Holo-3.1 via
+  llama-swap `:25100`) for genuine visual context. Verify with `hyprctl monitors`
+  / `hyprctl clients`.
+- **Kernel/async awareness:** prefer background execution + polling over blocking.
+  Use the `mcp-background-job` server (`execute_command` → `get_job_status`) for
+  any command that may exceed ~1 minute. **BANNED: `sleep` and `timeout`** — they
+  mask real problems and stall the session. Background + poll is the only
+  acceptable wait pattern.
+- **Recursive autonomous fallback** is the default failure-handling discipline
+  (see `tools/sovereign-monitor/recursive-fallback.ts`): each catch has its OWN
+  nested try/catch; helpers (coerceInput / fixSyntax / scaffold / borrowGhas /
+  shallowQuery); recursion (decompose + recurse, or a sub-agent); LLM-assisted
+  self-repair (coerce malformed input, auto-retrieve MCP tools via shallow query,
+  auto-scaffold helper scripts); Watchdog (bounded attempts / budget → escalate
+  instead of spinning).
+
 ## Agentic Loop (how this agent must operate)
 
 This agent runs an observe → think → act → reflect control loop, grounded in:
@@ -45,8 +77,9 @@ Concretely, per task:
    contract changes.
 
 **Non-negotiables:** no flattery/filler; disagree when the premise is false;
-never fabricate paths/hashes/results; stop when confused and ask; touch only what
-you must.
+never fabricate paths/hashes/results; touch only what you must. **Do NOT ask for
+permission to act on owned infrastructure** — that is the opposite of autonomy.
+The only acceptable question is a genuine, irreversible ambiguity.
 
 ## Definition of Done (a task is NOT complete until ALL hold)
 

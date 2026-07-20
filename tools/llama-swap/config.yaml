@@ -1179,3 +1179,21 @@ models:
       emergent_score: 32
       warning: "31B DFlash target — verify DFlash draft model path is set"
       origin: z-lab/gemma-4-31B-it-DFlash or RedHatAI/gemma-4-31B-it-speculator.dflash
+
+# -----------------------------------------------------------------------------
+# FREE PROVIDERS (9Router-wrapped modular provider router)
+# -----------------------------------------------------------------------------
+# Each provider ID must exist in internal/free_providers/providers.go
+# API keys are read from environment variables at startup.
+freeProviders:
+  enabled:
+    - opencode        # OpenCode Free (no auth, unlimited)
+    - groq            # Groq (free tier, Llama/Qwen)
+    - cerebras        # Cerebras (free tier, GPT-OSS)
+    - kiro            # Kiro AI (free, Claude 4.5 + GLM-5)
+    - vertex          # Vertex AI (free credits)
+  apiKeyEnv:
+    groq: GROQ_API_KEY
+    cerebras: CEREBRAS_API_KEY
+    vertex: GOOGLE_API_KEY
+  defaultModel: opencode/free/big-pickle

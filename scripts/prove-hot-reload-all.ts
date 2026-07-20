@@ -47,9 +47,9 @@ const DAEMONS: Daemon[] = [
     mechanism: "pitchfork-restart",
   },
   {
-    id: "ast-matrix",
+    id: "sovereign-router",
     health: "http://127.0.0.1:25104/health",
-    touch: "/home/toxic/sovereign/tools/ast-matrix/sovereign-ast-matrix-ts/router.ts",
+    touch: "/home/toxic/sovereign/tools/sovereign-router/sovereign-router-ts/router.ts",
     mechanism: "bun-hot",
   },
   {

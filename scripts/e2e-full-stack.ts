@@ -198,7 +198,7 @@ const SWAP = requirePort("LLAMA_SWAP_PORT");
 const RUST = requirePort("RUST_WEB_PORT");
 const YOTE = requirePort("YOTE_PORT");
 const OF = requirePort("OPENFANG_PORT");
-const AM = requirePort("AST_MATRIX_PORT");
+const AM = requirePort("SOVEREIGN_ROUTER_PORT");
 const HF = requirePort("HF_DOWNLOADER_PORT");
 const NG = requirePort("NULL_G_PORT");
 const GHAS = requirePort("GHAS_API_PORT");
@@ -223,7 +223,7 @@ rows.push(
 );
 rows.push(await get("yote-health", `http://127.0.0.1:${YOTE}/health`));
 rows.push(await get("openfang-health", `http://127.0.0.1:${OF}/api/health`));
-rows.push(await get("ast-matrix-health", `http://127.0.0.1:${AM}/health`));
+rows.push(await get("sovereign-router-health", `http://127.0.0.1:${AM}/health`));
 // readiness for hf: root HTML (binary has no /health)
 rows.push(
   await get("hf-downloader-root", `http://127.0.0.1:${HF}/`, {

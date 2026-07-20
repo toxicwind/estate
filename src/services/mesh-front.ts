@@ -47,6 +47,17 @@ const server = Bun.serve({
   idleTimeout: 255,
   async fetch(req) {
     const u = new URL(req.url);
+    // Alias bare /health -> backend /api/health (binary only serves /api/health)
+    if (u.pathname === "/health") {
+      const res = await fetch(`${backendBase}/api/health`, {
+        signal: AbortSignal.timeout(10_000),
+      });
+      const buf = await res.arrayBuffer();
+      return new Response(buf, {
+        status: res.status,
+        headers: { "content-type": "application/json" },
+      });
+    }
     if (u.pathname.startsWith("/mesh")) {
       const m = await handleMeshRequest(req, {
         service,

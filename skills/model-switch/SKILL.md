@@ -16,7 +16,7 @@ Scan /home/toxic/sovereign/models/ and ~/models/ for .gguf files.
 
 1. List available GGUFs
 2. Match user request to closest filename
-3. Restart llama-server with new -m path (via systemd or process-compose)
+3. Restart llama-server with new -m path (via systemd or pitchfork)
 4. Confirm new model is loaded via /health endpoint
 
 ## Constraints
