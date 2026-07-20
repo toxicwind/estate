@@ -65,6 +65,12 @@ tools/ollama-proxy-rs/
 .devenv/
 .devbox/
 
+## ─── Test / Coverage (local-only, never stage) ─────────────────────────────
+coverage/
+coverage.lcov
+*.lcov
+.bun-test/
+
 # ─── IDE / tests ────────────────────────────────────────────────────────────────
 .idea/
 .vscode/

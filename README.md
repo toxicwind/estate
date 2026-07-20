@@ -21,34 +21,34 @@ mise run status
 mise run down
 ```
 
-| Surface | URL |
-|---------|-----|
-| Chat UI | http://127.0.0.1:25100/ui/ |
-| OpenAI API | http://127.0.0.1:25100/v1 |
-| Ops dashboard | http://127.0.0.1:25101/ |
+| Surface        | URL                                   |
+| -------------- | ------------------------------------- |
+| Chat UI        | http://127.0.0.1:25100/ui/            |
+| OpenAI API     | http://127.0.0.1:25100/v1             |
+| Ops dashboard  | http://127.0.0.1:25101/               |
 | Dashboard JSON | http://127.0.0.1:25101/ops/api/status |
 
 ---
 
 ## What's running (`mise run up`)
 
-| Process | Port | Runtime | Role |
-|---------|------|---------|------|
-| **llama-swap** | **25100** | Go (toxicwind fork) | Inference router + AST Matrix Go router + `/ui` + `/v1` |
-| **rust-web** | **25101** | Rust | Ops dashboard + embedded watchdog |
-| **yote** | 25102 | Bun | Telegram / status |
-| **openfang** | 25103 | Bun | Agent kernel |
-| **ast-matrix** | 25104 | Bun | Standalone model/matrix tooling (TS, for external use) |
-| **prometheus** | 25105 | Go | Metrics |
-| **hf-downloader** | 25106 | Bun | GGUF download UI |
-| **null-g-proxy** | 25107 | Bun | Extra LLM proxy |
-| **mcpproxy** | 25109 | Go | MCP federation (43 MCPs → 1 endpoint) |
-| **grafana** | 25110 | Go | Optional dashboards |
-| **ghas-api** | 25112 | Bun | GitHub Advanced Search API |
-| **ghas-mcp** | 25113 | Bun | GHAS MCP (HTTP mode, depends on ghas-api) |
-| **mesh-hub** | 25115 | Bun | 20 GHAS-inspired features × every service |
-| **byte-vision** | 25121 | Go binary | Vision MCP (OCR / screenshot analysis) |
-| **byte-vision-proxy** | 25120 | Python | Transparent fallback proxy for byte-vision |
+| Process               | Port      | Runtime             | Role                                                                                                            |
+| --------------------- | --------- | ------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **llama-swap**        | **25100** | Go (toxicwind fork) | Inference router + AST Matrix Go router + `/ui` + `/v1`                                                         |
+| **rust-web**          | **25101** | Rust                | Ops dashboard + embedded watchdog                                                                               |
+| **yote**              | 25102     | Bun                 | Telegram / status                                                                                               |
+| **openfang**          | 25103     | Bun                 | Agent kernel                                                                                                    |
+| **sovereign-router**  | 25104     | Bun                 | Standalone model/matrix tooling (TS, for external use)                                                          |
+| **prometheus**        | 25105     | Go                  | Metrics                                                                                                         |
+| **hf-downloader**     | 25106     | Bun                 | GGUF download UI                                                                                                |
+| **null-g-proxy**      | 25107     | Bun                 | Extra LLM proxy                                                                                                 |
+| **mcpproxy**          | 25109     | Go                  | MCP federation (43 MCPs → 1 endpoint)                                                                           |
+| **grafana**           | 25110     | Go                  | Optional dashboards                                                                                             |
+| **ghas-api**          | 25112     | Bun                 | GitHub Advanced Search API                                                                                      |
+| **ghas-mcp**          | 25113     | Bun                 | GHAS MCP (HTTP mode, depends on ghas-api)                                                                       |
+| **mesh-hub**          | 25115     | Bun                 | 20 GHAS-inspired features × every service                                                                       |
+| **byte-vision**       | 25121     | Go binary           | Vision MCP (OCR / screenshot analysis)                                                                          |
+| **byte-vision-proxy** | 25120     | Bun                 | **Sovereign MCP Gateway** — trust boundary + circuit breaker + sticky affinity in front of upstream MCP servers |
 
 Backends for swap: `LLAMA_START_PORT`–`LLAMA_END_PORT` = **25001–25099** (llama-server forks).
 
@@ -64,7 +64,7 @@ clients (Zed / OpenFang / Grok / IDEs)
 
 ### AST Matrix Go port (in llama-swap fork)
 
-The TypeScript AST Matrix router (`tools/ast-matrix/sovereign-ast-matrix-ts/router.ts`) has been ported to Go inside the llama-swap fork at `~/projects/llama-swap-main/internal/astmatrix/`. This gives llama-swap native multi-provider routing with:
+The TypeScript AST Matrix router (`tools/sovereign-router/sovereign-router-ts/router.ts`) has been ported to Go inside the llama-swap fork at `~/projects/llama-swap-main/internal/astmatrix/`. This gives llama-swap native multi-provider routing with:
 
 - **6 strategies:** hybrid, ast_race, sticky_affinity, weighted_elo, circuit_chain, fifo_matrix
 - **ELO scoring** with circuit breaker (closed/open/half)
@@ -72,16 +72,27 @@ The TypeScript AST Matrix router (`tools/ast-matrix/sovereign-ast-matrix-ts/rout
 - **7 providers:** llama-swap (local), OpenRouter, NVIDIA NIM, Groq, Cerebras, Google, Mistral
 - **40+ model aliases** mapped to CODING categories
 
-The standalone Bun `ast-matrix` at :25104 remains for external tooling use. The Go port inside llama-swap is the primary router.
+The standalone Bun `sovereign-router` at :25104 remains for external tooling use. The Go port inside llama-swap is the primary router.
+
+### Sovereign MCP Gateway (`:25120`)
+
+`tools/sovereign-router/sovereign-mcp-gateway/` is a trust boundary + resource allocator in front of upstream MCP servers (e.g. `byte-vision-mcp` on `:25121`). It applies the same routing theory as the LLM router:
+
+- **Circuit breaker** per upstream (closed/half/open) — a poisoned or down upstream is quarantined so it can't burn agent turns.
+- **Sticky session affinity** — `notifications/initialized` pins a session to one upstream (commitment game).
+- **Provenance-tagged tool union** — `tools/list` is namespaced `<upstream>__<tool>`; `server/discover` is synthesized locally from cached handshakes.
+- **502 failover** to the next healthy upstream.
+
+Self-serve: `GET /health`, `GET /ui`. Logic is unit-tested at 100% coverage (`bun run test:gateway:cov`).
 
 ---
 
 ## Why no Caddy / no landing
 
-| Removed | Why |
-|---------|-----|
-| **Caddy** | Path routing fought real services (`/api/*` → openfang while rust-web also needs APIs). Port docs were wrong (`:3000` vs `CADDY_PORT=25109`). **`mise run up` never started it.** Multipath proxy not needed when every service has a stable 25xxx port. Artifacts archived under `/home/toxic/data_dumps/caddy-removed-*`. |
-| **landing** (`LANDING_PORT` / Bun `src/landing`) | Duplicate static server for the same files rust-web already serves. False offshoot of rust-web. Deleted; dashboard APIs live on rust-web at **`/ops/api/*`**. |
+| Removed                                          | Why                                                                                                                                                                                                                                                                                                                         |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Caddy**                                        | Path routing fought real services (`/api/*` → openfang while rust-web also needs APIs). Port docs were wrong (`:3000` vs `CADDY_PORT=25109`). **`mise run up` never started it.** Multipath proxy not needed when every service has a stable 25xxx port. Artifacts archived under `/home/toxic/data_dumps/caddy-removed-*`. |
+| **landing** (`LANDING_PORT` / Bun `src/landing`) | Duplicate static server for the same files rust-web already serves. False offshoot of rust-web. Deleted; dashboard APIs live on rust-web at **`/ops/api/*`**.                                                                                                                                                               |
 
 Access services **directly** on their ports (LAN or Tailscale MagicDNS). Optional Funnel points at **rust-web only** — see `tailscale/README.md`.
 
@@ -98,7 +109,7 @@ Access services **directly** on their ports (LAN or Tailscale MagicDNS). Optiona
                     ├─ ghas-api      :25112  (GitHub search)
                     ├─ mesh-hub      :25115  (service mesh)
                     ├─ byte-vision   :25121  (vision MCP)
-                    └─ byte-vision-p :25120  (vision proxy fallback)
+                    └─ byte-vision-p :25120  (Sovereign MCP Gateway: circuit-break + sticky + discover)
 
  optional: Tailscale Funnel → rust-web :25101 only (not multipath)
 ```
@@ -109,12 +120,12 @@ Orchestration: `pitchfork.toml` (native config, no generation). `mise run up` st
 
 ## Hot reload
 
-| Component | Mechanism |
-|-----------|-----------|
-| rust-web | `cargo watch` via `stack/services/rust-web-hot.sh` |
-| Bun services | `bun --hot` in process modules |
-| prometheus | lifecycle reload wrapper (if enabled) |
-| llama-swap | restart: `mise run restart-llama` (binary, not rewritten in-tree) |
+| Component    | Mechanism                                                         |
+| ------------ | ----------------------------------------------------------------- |
+| rust-web     | `cargo watch` via `stack/services/rust-web-hot.sh`                |
+| Bun services | `bun --hot` in process modules                                    |
+| prometheus   | lifecycle reload wrapper (if enabled)                             |
+| llama-swap   | restart: `mise run restart-llama` (binary, not rewritten in-tree) |
 
 After editing a process module: full `mise run down && mise run up` (pitchfork reads config on start).
 
@@ -122,12 +133,12 @@ After editing a process module: full `mise run down && mise run up` (pitchfork r
 
 ## Configuration
 
-| Source | Contents |
-|--------|----------|
-| **`config/ports.env`** | Port SSOT (loaded by mise `_.file`) |
-| **`.env.local`** | Optional overrides / build flags |
-| **`~/.secrets`** | Secrets (not in git) |
-| **`tools/llama-swap/config.yaml`** | Model matrix, macros, backends |
+| Source                             | Contents                            |
+| ---------------------------------- | ----------------------------------- |
+| **`config/ports.env`**             | Port SSOT (loaded by mise `_.file`) |
+| **`.env.local`**                   | Optional overrides / build flags    |
+| **`~/.secrets`**                   | Secrets (not in git)                |
+| **`tools/llama-swap/config.yaml`** | Model matrix, macros, backends      |
 
 Never invent port numbers in app code — use env / `src/lib/ports.ts` / `stack/lib-ports.sh`.
 
@@ -147,7 +158,7 @@ sovereign/
 ├── src/                      # Bun apps (services, deploy, mcp, lib)
 ├── rust_algo_web/            # rust-web dashboard + watchdog
 ├── tools/llama-swap/         # runtime binary symlink + config.yaml + MODEL_INVENTORY
-├── tools/ast-matrix/         # TS ast-matrix router (standalone, port 25104)
+├── tools/sovereign-router/         # TS sovereign-router router (standalone, port 25104)
 ├── grafana/provisioning/
 ├── tailscale/                # optional Funnel (no Caddy)
 └── backup/                   # legacy — do not stage / do not delete casually
@@ -157,11 +168,11 @@ sovereign/
 
 ## Related forks (docs live in those repos)
 
-| Project | Path | README focus |
-|---------|------|--------------|
-| **llama-swap** | `/home/toxic/projects/llama-swap-main` | **Fork additions**: AST Matrix Go port (`internal/astmatrix/`), `/models/sse`, `normalize_sse`, IPv4, port reclaim |
-| **llama-swap runtime** | `tools/llama-swap/README.md` | Sovereign wiring only (symlink → fork binary) |
-| **Zed** | `/home/toxic/projects/zed` | **toxicwind fork**: `.ignore` for agent grep, sccache+mold builds |
+| Project                | Path                                   | README focus                                                                                                       |
+| ---------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **llama-swap**         | `/home/toxic/projects/llama-swap-main` | **Fork additions**: AST Matrix Go port (`internal/astmatrix/`), `/models/sse`, `normalize_sse`, IPv4, port reclaim |
+| **llama-swap runtime** | `tools/llama-swap/README.md`           | Sovereign wiring only (symlink → fork binary)                                                                      |
+| **Zed**                | `/home/toxic/projects/zed`             | **toxicwind fork**: `.ignore` for agent grep, sccache+mold builds                                                  |
 
 ---
 

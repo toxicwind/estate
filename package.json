@@ -23,11 +23,15 @@
     "hf-downloader": "bun run src/services/hf_downloader.ts",
     "openfang": "bun run src/services/openfang.ts",
     "rank:models": "bun run scripts/model-rank-and-route.ts",
-    "test:best-models": "bun test tests/best_models_ssot.test.ts"
+    "test:best-models": "bun test tests/best_models_ssot.test.ts",
+    "test:gateway": "bun test tools/sovereign-router/sovereign-mcp-gateway/gateway-core.test.ts",
+    "test:gateway:cov": "bun test --coverage --coverage-reporter=text --coverage-reporter=lcov tools/sovereign-router/sovereign-mcp-gateway/gateway-core.test.ts",
+    "test:cov": "bun test --coverage --coverage-reporter=text --coverage-reporter=lcov"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "js-yaml": "^5.2.1",
+    "json5": "^2.2.3",
     "zod": "^4.4.3"
   }
 }
