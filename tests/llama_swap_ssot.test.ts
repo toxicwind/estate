@@ -138,10 +138,7 @@ describe("pickDefaultModel", () => {
       ok: true,
       json: () =>
         Promise.resolve({
-          data: [
-            { id: "model-a" },
-            { id: "model-b", status: "loaded" },
-          ],
+          data: [{ id: "model-a" }, { id: "model-b", status: "loaded" }],
         }),
     });
     const result = await pickDefaultModel();
@@ -189,10 +186,7 @@ describe("pickDefaultModel", () => {
       ok: true,
       json: () =>
         Promise.resolve({
-          data: [
-            { id: "MODEL_PLACEHOLDER_1" },
-            { id: "actual-model" },
-          ],
+          data: [{ id: "MODEL_PLACEHOLDER_1" }, { id: "actual-model" }],
         }),
     });
     const result = await pickDefaultModel("nonexistent");
@@ -237,10 +231,7 @@ describe("oaicopilotModelsFromSwap", () => {
   });
 
   test("filters out MODEL_PLACEHOLDER entries", () => {
-    const models = [
-      { id: "MODEL_PLACEHOLDER_1" },
-      { id: "real-model" },
-    ];
+    const models = [{ id: "MODEL_PLACEHOLDER_1" }, { id: "real-model" }];
     const result = oaicopilotModelsFromSwap(models);
     expect(result).toHaveLength(1);
     expect(result[0].id).toBe("real-model");
@@ -320,5 +311,217 @@ describe("watchSwapModelsSseRefresh", () => {
     const h = watchSwapModelsSseRefresh(() => {});
     h.abort();
     h.abort(); // should not throw
+  });
+});
+
+// ── watchSwapModelsSse (SSE reader loop coverage, lines 86-128) ────────────
+
+describe("watchSwapModelsSse — SSE reader loop", () => {
+  test("reads SSE events and calls onEvent (lines 100-117)", async () => {
+    const events = [
+      'data: {"model":"m1","event":"loaded"}',
+      'data: {"model":"m2","event":"unloaded"}',
+      "data: [DONE]",
+    ].join("\n\n");
+
+    // Create a mock ReadableStream
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(events));
+        controller.close();
+      },
+    });
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      body: stream,
+    });
+
+    const received: any[] = [];
+    // Import watchSwapModelsSse directly
+    const { watchSwapModelsSse } =
+      await import("../src/lib/llama_swap_ssot.ts");
+    const h = watchSwapModelsSse((ev) => received.push(ev));
+
+    // Give the async reader time to process
+    await new Promise((r) => setTimeout(r, 100));
+    h.abort();
+
+    expect(received.length).toBeGreaterThanOrEqual(1);
+    expect(received[0].model).toBe("m1");
+  });
+
+  test("calls onError on HTTP non-200 (line 98)", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 503,
+      body: null,
+    });
+    let errorCaught: any = null;
+    const { watchSwapModelsSse } =
+      await import("../src/lib/llama_swap_ssot.ts");
+    watchSwapModelsSse(
+      () => {},
+      (e) => {
+        errorCaught = e;
+      },
+    );
+    await new Promise((r) => setTimeout(r, 50));
+    expect(errorCaught).toBeTruthy();
+    expect(String(errorCaught)).toContain("503");
+  });
+
+  test("calls onError on fetch exception (lines 123-124)", async () => {
+    mockFetch.mockRejectedValueOnce(new Error("network fail"));
+    let errorCaught: any = null;
+    const { watchSwapModelsSse } =
+      await import("../src/lib/llama_swap_ssot.ts");
+    watchSwapModelsSse(
+      () => {},
+      (e) => {
+        errorCaught = e;
+      },
+    );
+    await new Promise((r) => setTimeout(r, 50));
+    expect(errorCaught).toBeTruthy();
+    expect(String(errorCaught)).toContain("network fail");
+  });
+
+  test("skips malformed JSON in SSE data (line 117 catch)", async () => {
+    const events = [
+      "data: not-valid-json{{{",
+      'data: {"model":"ok","event":"loaded"}',
+      "data: [DONE]",
+    ].join("\n\n");
+
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(events));
+        controller.close();
+      },
+    });
+    mockFetch.mockResolvedValueOnce({ ok: true, body: stream });
+
+    const received: any[] = [];
+    const { watchSwapModelsSse } =
+      await import("../src/lib/llama_swap_ssot.ts");
+    const h = watchSwapModelsSse((ev) => received.push(ev));
+    await new Promise((r) => setTimeout(r, 100));
+    h.abort();
+
+    // Only the valid JSON event should be received
+    expect(received.length).toBe(1);
+    expect(received[0].model).toBe("ok");
+  });
+
+  test("skips keep-alive and empty data lines (line 114)", async () => {
+    const events = [": keep-alive", "data: ", "data: [DONE]"].join("\n\n");
+
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(events));
+        controller.close();
+      },
+    });
+    mockFetch.mockResolvedValueOnce({ ok: true, body: stream });
+
+    const received: any[] = [];
+    const { watchSwapModelsSse } =
+      await import("../src/lib/llama_swap_ssot.ts");
+    const h = watchSwapModelsSse((ev) => received.push(ev));
+    await new Promise((r) => setTimeout(r, 100));
+    h.abort();
+
+    expect(received.length).toBe(0);
+  });
+});
+
+// ── watchSwapModelsSseRefresh debounce coverage (lines 135-155) ────────────
+
+describe("watchSwapModelsSseRefresh — debounce", () => {
+  test("calls onRefresh after debounce when SSE fires (lines 141-146)", async () => {
+    const encoder = new TextEncoder();
+    const sseData = 'data: {"model":"m1","event":"loaded"}\n';
+    const stream = new ReadableStream({
+      start(controller) {
+        // Push data immediately — no async delay
+        controller.enqueue(encoder.encode(sseData));
+        // Keep stream open briefly
+        setTimeout(() => controller.close(), 100);
+      },
+    });
+    mockFetch.mockResolvedValue({ ok: true, body: stream });
+
+    let refreshCount = 0;
+    const h = watchSwapModelsSseRefresh(
+      () => {
+        refreshCount++;
+      },
+      { debounceMs: 100 },
+    );
+
+    // Wait for: SSE read + 100ms debounce + margin
+    await new Promise((r) => setTimeout(r, 600));
+    h.abort();
+
+    expect(refreshCount).toBeGreaterThanOrEqual(1);
+  });
+
+  test("debounce coalesces rapid events (line 141-142)", async () => {
+    const encoder = new TextEncoder();
+    let streamController: ReadableStreamDefaultController | null = null;
+    const stream = new ReadableStream({
+      start(controller) {
+        streamController = controller;
+      },
+    });
+    mockFetch.mockResolvedValue({ ok: true, body: stream });
+
+    let refreshCount = 0;
+    const h = watchSwapModelsSseRefresh(
+      () => {
+        refreshCount++;
+      },
+      { debounceMs: 100 },
+    );
+
+    // Give SSE connection time to establish
+    await new Promise((r) => setTimeout(r, 100));
+
+    // Push multiple events rapidly
+    const events = [
+      'data: {"model":"m1","event":"loaded"}',
+      'data: {"model":"m2","event":"loaded"}',
+      'data: {"model":"m3","event":"loaded"}',
+    ].join("\n\n");
+    streamController!.enqueue(encoder.encode(events));
+    streamController!.close();
+
+    // Wait for debounce
+    await new Promise((r) => setTimeout(r, 500));
+    h.abort();
+
+    // Should only fire once due to debounce coalescing
+    expect(refreshCount).toBe(1);
+  });
+
+  test("abort clears pending debounce timer (line 151)", async () => {
+    mockFetch.mockResolvedValue({ ok: false, body: null });
+
+    let refreshCount = 0;
+    const h = watchSwapModelsSseRefresh(
+      () => {
+        refreshCount++;
+      },
+      { debounceMs: 200 },
+    );
+
+    // Abort immediately — timer should be cleared
+    h.abort();
+    await new Promise((r) => setTimeout(r, 300));
+    expect(refreshCount).toBe(0);
   });
 });
