@@ -145,6 +145,12 @@ gnome-screenshot`, shim dir prepended to PATH). The agent can
   MCP tools via shallow query, auto-scaffold helper scripts); Watchdog (bounded
   attempts / budget → escalate instead of spinning). Grounded in ReAct
   2210.03629 / Reflexion 2303.11366.
+- **Repo radar** (`tools/sovereign-monitor/repo-radar.ts`, 100% coverage):
+  autonomous repo discovery via shallow GHAS queries; novelty scoring; autonomy
+  signal detection; pickForAudit for prioritized exploration.
+- **Process watchdog** (`tools/sovereign-monitor/watchdog.ts`, 100% coverage):
+  bounded agentic loop watchdog with escalation pipeline (judge → SIGINT →
+  SIGKILL), audit trail, and exclusion lists for MCP stdio servers.
 
 - File tools (`read_file`/`edit_file`/`write_file`) are scoped to project roots.
   Paths outside (`~/.config/zed`, `~/projects`, `/home/toxic/...`) → use

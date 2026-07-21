@@ -1,87 +1,57 @@
-min_version = "2026.6.0"
-
+# Sovereign mise config - tools + tasks + env
 [tools]
-# jdx ecosystem: pitchfork = daemons; mise = tools/env/tasks (not process-compose)
-pitchfork = "latest"
-python = "3.12"
-bun = "latest"
-jq = "latest"
-# Pin matches host cargo/ast-grep; doctor verifies PATH
-ast-grep = "0.44.1"
+python = "3.12.13"
+node = "22.12.0"
+bun = "1.1.38"
+rust = "1.82.0"
+go = "1.23.1"
+pitchfork = "2.16.0"
 
 [env]
-_.file = ["config/ports.env", ".env.local", "yote/.env", "/home/toxic/.secrets", "/home/toxic/.openfang/secrets.env"]
-_.path = [
-  "{{ config_root }}/yote/.venv/bin",
-  "{{ config_root }}/bin",
-  "{{ env.HOME }}/.local/bin",
-  "{{ env.HOME }}/.bun/bin",
-]
-AST_GREP_RULES = "{{config_root}}/ast-grep-rules"
-# Ports only in config/ports.env — do not pin numbers here
+# Source ports.env for all tasks
+_.file = "config/ports.env"
 
-[settings]
-experimental = true
-idiomatic_version_file_enable_tools = ["python"]
+[tasks]
+# Core daemons via pitchfork
+up = "pitchfork --config pitchfork.toml up --group core"
+down = "pitchfork --config pitchfork.toml down"
+health = "pitchfork --config pitchfork.toml list"
+status = "pitchfork --config pitchfork.toml list"
+logs = "pitchfork --config pitchfork.toml logs"
 
-# ── Lifecycle (pitchfork) ───────────────────────────────────────────────────
+# Individual service control
+"up-llama-swap" = "pitchfork --config pitchfork.toml up llama-swap"
+"up-prometheus" = "pitchfork --config pitchfork.toml up prometheus"
+"up-grafana" = "pitchfork --config pitchfork.toml up grafana"
+"up-byte-vision" = "pitchfork --config pitchfork.toml up byte-vision"
+"up-byte-vision-proxy" = "pitchfork --config pitchfork.toml up byte-vision-proxy"
+"up-qdrant" = "pitchfork --config pitchfork.toml up qdrant"
+"up-redis" = "pitchfork --config pitchfork.toml up redis"
+"up-mcg" = "pitchfork --config pitchfork.toml up mcp-gateway"
 
-[tasks.up]
-description = "Start core daemons (pitchfork group core)"
-run = "./mise/tasks/up"
+down:llama-swap = "pitchfork --config pitchfork.toml down llama-swap"
+down:prometheus = "pitchfork --config pitchfork.toml down prometheus"
+down:grafana = "pitchfork --config pitchfork.toml down grafana"
+down:byte-vision = "pitchfork --config pitchfork.toml down byte-vision"
+down:byte-vision-proxy = "pitchfork --config pitchfork.toml down byte-vision-proxy"
+down:qdrant = "pitchfork --config pitchfork.toml down qdrant"
+down:redis = "pitchfork --config pitchfork.toml down redis"
+down:mcg = "pitchfork --config pitchfork.toml down mcp-gateway"
 
-[tasks.down]
-description = "Stop sovereign pitchfork daemons"
-run = "./mise/tasks/down"
+# Health checks
+health:llama-swap = "curl -sf http://127.0.0.1:25100/health"
+health:prometheus = "curl -sf http://127.0.0.1:25105/-/healthy"
+health:grafana = "curl -sf http://127.0.0.1:25110/api/health"
+health:byte-vision = "curl -sf http://127.0.0.1:25121/health"
+health:qdrant = "curl -sf http://127.0.0.1:6333/"
+health:mcg = "curl -sf http://127.0.0.1:25120/health"
+health:mcg:ui = "curl -sf http://127.0.0.1:25120/ui"
 
-[tasks.health]
-description = "HTTP health probes for SSOT ports"
-run = "./mise/tasks/health"
+# Test suite
+test = "bun test"
+test:cov = "bun run test:cov"
+test:gateway = "bun run test:gateway:cov"
+test:models = "bun run test:best-models"
 
-[tasks.status]
-description = "pitchfork list + 25xxx listeners"
-run = "./mise/tasks/status"
-
-[tasks.up-obs]
-description = "Start prometheus + grafana"
-run = "pitchfork start --group obs"
-
-[tasks.up-all]
-description = "Start core + obs + funnel groups"
-run = "pitchfork start --group all"
-
-[tasks.tui]
-description = "pitchfork interactive TUI"
-run = "pitchfork tui"
-
-[tasks.ast-grep-scan]
-description = "Scan sovereign src with project ast-grep rule pack"
-run = "ast-grep scan -c {{config_root}}/ast-grep-rules/sgconfig.yml {{config_root}}/src/"
-
-[tasks.doctor]
-description = "Verify pitchfork + ports + hot-reload core + ast-grep"
-run = "./mise/tasks/doctor"
-
-[tasks.e2e-agent-stack]
-description = "E2E: llama-swap :25100 + sovereign-router :25104 + GHAS + zed settings + ast-grep"
-run = "bun run {{config_root}}/scripts/e2e-agent-stack.ts"
-
-[tasks.ghas-golden]
-description = "GHAS golden overlap vs Blackbird UI index"
-run = "bun run /home/toxic/github-advanced-search-mcp/scripts/compare-to-ui.mjs"
-
-[tasks.restart-llama]
-description = "Restart llama-swap daemon"
-run = "pitchfork restart llama-swap"
-
-[tasks.restart-rust-web]
-description = "Restart rust-web daemon"
-run = "pitchfork restart rust-web"
-
-[tasks.e2e-full-stack]
-description = "HTTP e2e every core+obs surface (scripts/e2e-full-stack.ts)"
-run = "E2E_OUT={{config_root}}/.state/e2e-http.jsonl bun run {{config_root}}/scripts/e2e-full-stack.ts"
-
-[tasks.mcp-gateway]
-description = "Start Sovereign MCP Gateway (trust boundary in front of upstream MCP servers)"
-run = "bun --hot run {{config_root}}/tools/sovereign-router/sovereign-mcp-gateway/gateway.ts"
+# Audit
+audit = "python3 audit_fix.py"

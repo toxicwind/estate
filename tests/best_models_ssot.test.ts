@@ -2,7 +2,7 @@
  * Drives real shipped helpers + live :25100/:25104/:25107 paths.
  * Asserts non-empty message.content (not reasoning_content-only).
  */
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test, beforeAll } from "bun:test";
 import {
   loadBestModels,
   modelForRole,
@@ -11,6 +11,17 @@ import {
 } from "../src/lib/best_models.ts";
 import { listSwapModels, swapV1Url } from "../src/lib/llama_swap_ssot.ts";
 import { existsSync } from "node:fs";
+
+// Skip integration tests if llama-swap is not running
+let live = false;
+beforeAll(async () => {
+  try {
+    const { ok } = await listSwapModels(3000);
+    live = ok;
+  } catch {
+    live = false;
+  }
+});
 
 async function chatContent(
   model: string,
@@ -56,7 +67,7 @@ async function chatContent(
   };
 }
 
-describe("best_models SSOT", () => {
+describe.skipIf(!live)("best_models SSOT", () => {
   test("listSwapModels hits real :25100 catalog", async () => {
     const { ok, models, error } = await listSwapModels(8000);
     expect(ok).toBe(true);
@@ -114,8 +125,7 @@ describe("best_models SSOT", () => {
     const m = models.find((x) => x.id === "beellama/qwen-flash-256k");
     expect(m).toBeTruthy();
     const ctx =
-      (m?.meta as any)?.llamaswap?.context ??
-      (m?.meta as any)?.context;
+      (m?.meta as any)?.llamaswap?.context ?? (m?.meta as any)?.context;
     if (ctx != null) {
       expect(Number(ctx)).toBeGreaterThanOrEqual(200000);
     }
@@ -147,9 +157,9 @@ describe("best_models SSOT", () => {
       expect(r.content.length).toBeGreaterThan(0);
       const mid = String(r.model || "");
       expect(mid.toLowerCase()).not.toContain("gemini");
-      expect(
-        /exaone|qwen|gguf|beellama/i.test(mid) || mid.length > 0,
-      ).toBe(true);
+      expect(/exaone|qwen|gguf|beellama/i.test(mid) || mid.length > 0).toBe(
+        true,
+      );
     },
     { timeout: 120_000 },
   );
@@ -167,4 +177,3 @@ describe("best_models SSOT", () => {
     { timeout: 120_000 },
   );
 });
-

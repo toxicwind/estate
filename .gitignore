@@ -95,3 +95,16 @@ usr/
 *.db-shm
 *.db-wal
 _probe*.sh
+
+# Audit / scratch scripts
+audit_*.py
+nohup.out
+output/
+MCP_AUDIT.md
+
+# Qdrant local state
+.qdrant-initialized
+.qdrant/
+qdrant-config.yaml
+.scout-cache/
+.project_map.json

@@ -3,7 +3,7 @@
 Local multi-service stack: one OpenAI-compatible LLM front door, agent kernel, Telegram bot, ops dashboard, metrics, and optional Tailscale exposure.
 
 **Orchestration:** `mise` + `pitchfork`
-**LLM front door:** llama-swap **:25100** (toxicwind fork — no vLLM)  
+**LLM front door:** llama-swap **:25100** (toxicwind fork — no vLLM)
 **Ports SSOT:** `config/ports.env` (25xxx)
 
 There is **no Caddy** and **no separate “landing” service**. Ops UI is **rust-web** only.
@@ -27,6 +27,7 @@ mise run down
 | OpenAI API     | http://127.0.0.1:25100/v1             |
 | Ops dashboard  | http://127.0.0.1:25101/               |
 | Dashboard JSON | http://127.0.0.1:25101/ops/api/status |
+| MCP Gateway    | http://127.0.0.1:25120/health         |
 
 ---
 
@@ -84,6 +85,28 @@ The standalone Bun `sovereign-router` at :25104 remains for external tooling use
 - **502 failover** to the next healthy upstream.
 
 Self-serve: `GET /health`, `GET /ui`. Logic is unit-tested at 100% coverage (`bun run test:gateway:cov`).
+
+### Sovereign Monitor — Agentic Runtime Intelligence
+
+`tools/sovereign-monitor/` provides kernel-aware, autonomous failure-recovery primitives used by the agent loop itself:
+
+| Module                  | Coverage | Purpose                                                                                                           |
+| ----------------------- | -------- | ----------------------------------------------------------------------------------------------------------------- |
+| `recursive-fallback.ts` | 88%+     | Multi-level try/catch with helpers, recursive decomposition, and watchdog escalation (ReAct / Reflexion grounded) |
+| `watchdog.ts`           | 100%     | Bounded agentic-loop watchdog: judge → SIGINT → SIGKILL escalation, audit trail, MCP stdio exclusion              |
+| `repo-radar.ts`         | 100%     | Autonomous repo discovery via shallow GHAS queries; novelty scoring; autonomy signal detection                    |
+
+The recursive fallback is the **default failure discipline** for every non-trivial tool call: primary → fix_syntax (coerce input) → scaffold (write helper script) → borrow_ghas (discover pattern) → retrieve_tool (shallow MCP query) → recurse (decompose + retry smaller sub-problem) → escalate (watchdog trips). Each catch block has its own nested try/catch — no single point of failure.
+
+### Quickshell Screenshot Integration
+
+The agent captures the user's Hyprland desktop via quickshell (ii rice) snip tool:
+
+- `~/.config/quickshell/ii/screenshot-region.sh` — socket-free primary capture (slurp+grim), recursive multifallback, AST-aware snip routing (code/text/image via tesseract+magick)
+- `~/.config/quickshell/ii/modules/common/utils/RecursiveFallback.qml` — QML singleton engine for nested fallback
+- `prune-stale-sockets.sh` — cleans crashed-instance IPC dirs
+
+Screenshot actions: `auto` (capture + classify + route to clipboard/file), `copy` (capture + clipboard only). Print Screen key triggers `ScreenSnipToggle.qml` which calls the shell script directly (no dual-instance spawning).
 
 ---
 
@@ -159,10 +182,55 @@ sovereign/
 ├── rust_algo_web/            # rust-web dashboard + watchdog
 ├── tools/llama-swap/         # runtime binary symlink + config.yaml + MODEL_INVENTORY
 ├── tools/sovereign-router/         # TS sovereign-router router (standalone, port 25104)
+├── tools/sovereign-monitor/        # recursive-fallback, watchdog, repo-radar (agentic runtime)
+├── tests/                          # unit + integration tests (≥88% coverage enforced)
 ├── grafana/provisioning/
 ├── tailscale/                # optional Funnel (no Caddy)
 └── backup/                   # legacy — do not stage / do not delete casually
 ```
+
+---
+
+## Zed Provider Integration
+
+Zed is configured to connect directly to Sovereign Stack services. All provider configs live in `~/.config/zed/settings.json`.
+
+### Sovereign Stack providers
+
+| Provider                  | Wire                                | Port     | Why                                                                                                                 |
+| ------------------------- | ----------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
+| **llama-swap**            | `LlamaCppLanguageModelProvider`     | `:25100` | Local GGUF inference via the toxicwind fork. Routes to beellama, turboquant, ik_llama backends on `:25001–25099`.   |
+| **sovereign-router**      | Custom `sovereign-router` provider  | `:25104` | 5-strategy AST Matrix hybrid router (TS standalone). Used for external tooling.                                     |
+| **Sovereign MCP Gateway** | `mcpproxy-sovereign` context server | `:25120` | Trust boundary + circuit breaker + sticky affinity in front of upstream MCP servers (e.g. byte-vision on `:25121`). |
+
+### OpenCode provider
+
+The **OpenCode** provider (`opencode` in settings) connects to a subscription-based API gateway supporting OpenAI, Anthropic, and Google back-end routing. It auto-discovers available models via `/models` and supports `interleaved_reasoning` (thinking blocks) for multi-turn sessions. Configured with `OPENCODE_API_KEY` env var.
+
+### Bounty providers (OpenAI-compatible)
+
+Free/keyless endpoints configured under `language_models.openai_compatible`:
+
+| Name            | Endpoint                         | Model                                    | Auth                 |
+| --------------- | -------------------------------- | ---------------------------------------- | -------------------- |
+| **Groq**        | `api.groq.com/openai/v1`         | `llama-4-scout-17b-16e-instruct`         | `GROQ_API_KEY`       |
+| **OpenRouter**  | `openrouter.ai/api/v1`           | `nvidia/nemotron-3-ultra-550b-a55b:free` | `OPENROUTER_API_KEY` |
+| **GLM**         | `open.bigmodel.cn/api/paas/v4`   | `glm-4.7-flash`                          | `GLM_API_KEY`        |
+| **LLM7**        | `api.llm7.io/v1`                 | `default`                                | Keyless (`any`)      |
+| **LinuxDo**     | `newapi.linuxdo.edu.rs/v1`       | `gpt-5-nano`                             | Pinned key           |
+| **KeylessAI**   | `keylessai.thryx.workers.dev/v1` | `gpt-3.5-turbo`                          | Keyless (`any`)      |
+| **FreeChatGPT** | `free.chatgpt.org/v1`            | `gpt-3.5-turbo`                          | Keyless (`any`)      |
+
+### Custom Zed providers (in-tree)
+
+| Provider                   | File                                                            | Why                                                                                                                                                                                |
+| -------------------------- | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **nvidia**                 | `crates/language_models/src/provider/nvidia.rs`                 | Full JSON Schema for NVIDIA NIM (Inkling). Avoids the `JsonSchemaSubset` → vLLM 500 loop on large MCP tool sets. Supports `interleaved_reasoning` (msg-level `reasoning_content`). |
+| **openai-mcpproxy**        | `crates/language_models/src/provider/openai_mcpproxy.rs`        | OpenAI-compatible endpoint fronted by mcpproxy compact router. Same schema hardening + self-healing event mapper.                                                                  |
+| **openai-mcpproxy-nvidia** | `crates/language_models/src/provider/openai_mcpproxy_nvidia.rs` | Inkling through third-party OpenAI-compatible gateway (e.g. OpenRouter→Inkling). Includes **Proxy Bounty Hunter** alias.                                                           |
+| **opencode**               | `crates/language_models/src/provider/opencode.rs`               | Subscription-based multi-backend gateway with auto-discover and reasoning support.                                                                                                 |
+
+All custom providers share a **non-destructive tool-schema normalizer** (repairs missing root `type`, untyped properties, bare `null` in multi-type arrays) and a **self-healing event mapper** that turns malformed tool-call parse errors into valid `ToolUse` with `{}` input — breaking infinite retry loops on 120+ tool sets.
 
 ---
 
@@ -183,6 +251,15 @@ sovereign/
 - Do not expose `:25100`/`:25101` to the open internet without your own gate.
 
 ---
+
+## Build & Test
+
+```bash
+bun test                     # all tests (131+ tests across 9 files)
+bun run test:cov             # coverage ≥88% enforced (text + lcov)
+bun run test:gateway:cov     # MCP gateway core coverage (100% target)
+bun run test:best-models     # model SSOT tests (live integration)
+```
 
 ## Doctor / health
 

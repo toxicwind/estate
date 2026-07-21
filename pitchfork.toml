@@ -1,22 +1,16 @@
 #:schema https://pitchfork.jdx.dev/schema.json
-# Sovereign stack daemons — pitchfork (jdx) replaces process-compose.
-# mise = tools + env + tasks; pitchfork = long-running processes.
-# Ports SSOT: config/ports.env (loaded by mise _.file → pitchfork via mise=true).
-
 namespace = "sovereign"
-
-# ── Core (mise run up) ──────────────────────────────────────────────────────
 
 [daemons.llama-swap]
 run = "exec ./stack/services/llama-swap.sh"
 dir = "."
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:25100/health"
+ready_http = "http://127.0.0.1:26100/health"
 port = 25100
 
 [daemons.mcpproxy]
-run = "exec /usr/local/bin/mcpproxy serve --log-level=info"
+run = "exec /home/toxic/.local/bin/mcpproxy serve --log-level=info"
 dir = "."
 mise = false
 retry = true
@@ -59,12 +53,11 @@ port = 25102
 depends = ["openfang", "llama-swap"]
 
 [daemons.rust-web]
-# cargo-watch hot (rust-web-hot.sh). First boot after cargo clean can take minutes.
 run = "exec /home/toxic/sovereign/stack/services/rust-web-hot.sh"
 dir = "rust_algo_web"
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:25101/health"
+ready_http = "http://127.0.0.1:26101/health"
 ready_delay = 90
 port = 25101
 depends = ["llama-swap"]
@@ -74,13 +67,11 @@ run = "exec /home/toxic/.bun/bin/bun --hot run src/services/hf_downloader.ts"
 dir = "."
 mise = true
 retry = true
-# bodaay hfdownloader serve has no /health — root HTML is the readiness surface
 ready_http = "http://127.0.0.1:25106/"
 ready_delay = 5
 port = 25106
 
 [daemons.ghas-api]
-# Hot reload default (bun --hot). Do not use plain `bun run` for owned services.
 run = "exec /home/toxic/.bun/bin/bun --hot run apps/api/src/server.ts"
 dir = "/home/toxic/github-advanced-search-mcp"
 mise = true
@@ -89,7 +80,6 @@ ready_http = "http://127.0.0.1:25112/health"
 port = 25112
 
 [daemons.ghas-mcp]
-# HTTP MCP for tools/curl; hot reload on apps/mcp/** edits
 run = "exec /home/toxic/.bun/bin/bun --hot run apps/mcp/src/server.ts --mode http"
 dir = "/home/toxic/github-advanced-search-mcp"
 mise = true
@@ -99,7 +89,6 @@ port = 25113
 depends = ["ghas-api"]
 
 [daemons.mesh-hub]
-# 20 GHAS-inspired features × every service + chain-health / discover
 run = "exec /home/toxic/.bun/bin/bun --hot run src/services/mesh-hub.ts"
 dir = "."
 mise = true
@@ -113,13 +102,10 @@ run = "exec /home/toxic/byte-vision-mcp/byte-vision-mcp"
 dir = "/home/toxic/byte-vision-mcp"
 mise = false
 retry = true
-ready_cmd = "curl -sf -X POST http://127.0.0.1:25121/mcp-completion -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{},\"clientInfo\":{\"name\":\"pf\",\"version\":\"1\"}},\"id\":1}' | grep -q protocolVersion"
+ready_http = "http://127.0.0.1:25121/health"
 port = 25121
 
 [daemons.byte-vision-proxy]
-# Sovereign MCP Gateway: trust boundary + circuit breaker + sticky affinity in
-# front of upstream MCP servers (byte-vision-mcp on :25121). Replaces the old
-# naive TCP forwarder (proxy_fallback.py).
 run = "exec /home/toxic/.bun/bin/bun --hot run tools/sovereign-router/sovereign-mcp-gateway/gateway.ts"
 dir = "."
 mise = true
@@ -127,8 +113,6 @@ retry = true
 ready_http = "http://127.0.0.1:25120/health"
 port = 25120
 depends = ["byte-vision"]
-
-# ── Optional observability ──────────────────────────────────────────────────
 
 [daemons.prometheus]
 run = "exec bash /home/toxic/sovereign/stack/services/prometheus-hot.sh"
@@ -139,7 +123,6 @@ ready_http = "http://127.0.0.1:25105/-/healthy"
 port = 25105
 
 [daemons.grafana]
-# mesh-front on :25110, grafana backend :26110 (see grafana-mesh.sh)
 run = "exec bash /home/toxic/sovereign/stack/services/grafana-mesh.sh"
 dir = "."
 mise = true
@@ -147,16 +130,21 @@ retry = 3
 ready_http = "http://127.0.0.1:25110/api/health"
 port = 25110
 
-# ── Optional net (Funnel only; no Caddy) ────────────────────────────────────
-
-[daemons.tailscale-funnel]
-run = "exec bash /home/toxic/sovereign/tailscale/funnel.sh up"
+[daemons.qdrant]
+run = "exec /home/toxic/.cargo/bin/qdrant --config-path /home/toxic/sovereign/qdrant-config.yaml"
 dir = "."
-mise = true
-retry = 3
-ready_cmd = "tailscale funnel status"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:6333/"
+port = 6333
 
-# ── Groups ──────────────────────────────────────────────────────────────────
+[daemons.redis]
+run = "exec redis-server --port 6379 --bind 127.0.0.1"
+dir = "."
+mise = false
+retry = true
+ready_cmd = "redis-cli -p 6379 ping | grep -q PONG"
+port = 6379
 
 [groups.core]
 daemons = [
@@ -172,13 +160,11 @@ daemons = [
   "ghas-mcp",
   "byte-vision",
   "byte-vision-proxy",
+  "prometheus",
+  "grafana",
+  "qdrant",
+  "redis",
 ]
-
-[groups.obs]
-daemons = ["prometheus", "grafana"]
-
-[groups.net]
-daemons = ["tailscale-funnel"]
 
 [groups.all]
 daemons = [
@@ -196,5 +182,14 @@ daemons = [
   "byte-vision-proxy",
   "prometheus",
   "grafana",
+  "qdrant",
+  "redis",
   "tailscale-funnel",
 ]
+
+[daemons.tailscale-funnel]
+run = "exec bash /home/toxic/sovereign/tailscale/funnel.sh up"
+dir = "."
+mise = true
+retry = 3
+ready_cmd = "tailscale funnel status"
