@@ -88,3 +88,10 @@ tools/ast-matrix/ultimate_extract/
 tools/ast-matrix/weird_*.json
 *.map
 usr/
+
+# Agent orchestration runtime state
+.agent-orchestration/
+*.db
+*.db-shm
+*.db-wal
+_probe*.sh
