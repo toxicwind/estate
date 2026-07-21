@@ -257,4 +257,40 @@ describe("best_models.ts coverage", () => {
     // Double-abort should be safe
     h.abort();
   });
+
+  test("watchBestModelsSse callback writes beat file on SSE event (lines 94-108)", async () => {
+    // Create a real best-models doc for the callback to validate
+    writeTestDoc({ roles: { fast: { id: "fast-model" } } });
+
+    const encoder = new TextEncoder();
+    const sseData = 'data: {"model":"m1","event":"loaded"}\n\n';
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(sseData));
+        setTimeout(() => controller.close(), 100);
+      },
+    });
+    mockFetch.mockResolvedValue({ ok: true, body: stream });
+
+    const h = watchBestModelsSse(REAL_PATH);
+
+    // Wait for: SSE read + 1500ms debounce (default) + margin
+    // Use shorter timeout by watching for beat file creation
+    const beatPath = join(SOV, ".state/best-models-sse-beat.json");
+    let beatWritten = false;
+    for (let i = 0; i < 80; i++) {
+      await new Promise((r) => setTimeout(r, 100));
+      if (existsSync(beatPath)) {
+        beatWritten = true;
+        break;
+      }
+    }
+    h.abort();
+
+    expect(beatWritten).toBe(true);
+    // Verify beat file content
+    const beat = JSON.parse(readFileSync(beatPath, "utf8"));
+    expect(beat.ts).toBeTruthy();
+    expect(typeof beat.ok).toBe("boolean");
+  });
 });

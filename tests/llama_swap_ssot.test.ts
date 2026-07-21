@@ -444,7 +444,7 @@ describe("watchSwapModelsSse — SSE reader loop", () => {
 describe("watchSwapModelsSseRefresh — debounce", () => {
   test("calls onRefresh after debounce when SSE fires (lines 141-146)", async () => {
     const encoder = new TextEncoder();
-    const sseData = 'data: {"model":"m1","event":"loaded"}\n';
+    const sseData = 'data: {"model":"m1","event":"loaded"}\n\n';
     const stream = new ReadableStream({
       start(controller) {
         // Push data immediately — no async delay
