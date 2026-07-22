@@ -47,9 +47,9 @@ const server = Bun.serve({
   idleTimeout: 255,
   async fetch(req) {
     const u = new URL(req.url);
-    // Alias bare /health -> backend /api/health (binary only serves /api/health)
+    // Alias bare /health -> backend /health (binary only serves /health)
     if (u.pathname === "/health") {
-      const res = await fetch(`${backendBase}/api/health`, {
+      const res = await fetch(`${backendBase}/health`, {
         signal: AbortSignal.timeout(10_000),
       });
       const buf = await res.arrayBuffer();

@@ -2,7 +2,7 @@
  * Drives real shipped helpers + live :25100/:25104/:25107 paths.
  * Asserts non-empty message.content (not reasoning_content-only).
  */
-import { describe, expect, test, beforeAll } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import {
   loadBestModels,
   modelForRole,
@@ -12,16 +12,14 @@ import {
 import { listSwapModels, swapV1Url } from "../src/lib/llama_swap_ssot.ts";
 import { existsSync } from "node:fs";
 
-// Skip integration tests if llama-swap is not running
+// Skip integration tests if llama-swap is not running (top-level await)
 let live = false;
-beforeAll(async () => {
-  try {
-    const { ok } = await listSwapModels(3000);
-    live = ok;
-  } catch {
-    live = false;
-  }
-});
+try {
+  const { ok } = await listSwapModels(3000);
+  live = ok;
+} catch {
+  live = false;
+}
 
 async function chatContent(
   model: string,

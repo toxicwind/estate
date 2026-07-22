@@ -1,20 +1,18 @@
-import { describe, test, expect, beforeAll } from "bun:test";
+import { describe, test, expect } from "bun:test";
 import {
   llamaSwapHealth,
   llamaSwapModels,
   llamaSwapChat,
 } from "../src/mcp/llama_swap.ts";
 
-// Skip integration tests if llama-swap is not running
+// Skip integration tests if llama-swap is not running (top-level await)
 let live = false;
-beforeAll(async () => {
-  try {
-    const r = await llamaSwapHealth();
-    live = r.http_status === 200;
-  } catch {
-    live = false;
-  }
-});
+try {
+  const r = await llamaSwapHealth();
+  live = r.http_status === 200;
+} catch {
+  live = false;
+}
 
 describe.skipIf(!live)("llama-swap live front door :25100", () => {
   test("health 200", async () => {

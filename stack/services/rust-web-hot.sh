@@ -3,7 +3,6 @@
 set -euo pipefail
 SOV="${SOVEREIGN_ROOT:-$PWD}"
 export PATH="${HOME}/.cargo/bin:/usr/bin:/bin:${PATH}"
-# shellcheck source=../lib-ports.sh
 source "$SOV/stack/lib-ports.sh"
 require_env RUST_WEB_PORT
 require_env WATCHDOG_PORT
@@ -38,7 +37,7 @@ for i in $(seq 1 120); do
   sleep 0.5
 done
 
-exec /home/toxic/.bun/bin/bun run "$SOV/src/services/mesh-front.ts" \
+exec /home/toxic/.bun/bin/bun --hot run "$SOV/src/services/mesh-front.ts" \
   --service rust-web \
   --listen "0.0.0.0:${PUBLIC}" \
   --backend "127.0.0.1:${BACKEND}"
