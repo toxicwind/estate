@@ -10,7 +10,7 @@ ready_http = "http://127.0.0.1:26100/health"
 port = 25100
 
 [daemons.mcpproxy]
-run = "exec /home/toxic/.local/bin/mcpproxy serve --log-level=info"
+run = "exec /usr/local/bin/mcpproxy serve --log-level=info"
 dir = "."
 mise = false
 retry = true
@@ -144,7 +144,7 @@ dir = "."
 mise = false
 retry = true
 ready_cmd = "redis-cli -p 25199 ping | grep -q PONG"
-port = 6379
+port = 25199
 
 [groups.core]
 daemons = [
@@ -164,6 +164,7 @@ daemons = [
   "grafana",
   "qdrant",
   "redis",
+  "mesh-hub",
 ]
 
 [groups.all]
@@ -184,6 +185,7 @@ daemons = [
   "grafana",
   "qdrant",
   "redis",
+  "mesh-hub",
   "tailscale-funnel",
 ]
 

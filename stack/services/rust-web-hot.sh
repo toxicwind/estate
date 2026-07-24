@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Hot-reload rust dashboard on backend port + mesh-front on public RUST_WEB_PORT
 set -euo pipefail
-SOV="${SOVEREIGN_ROOT:-$PWD}"
+SOV="${SOVEREIGN_ROOT:-$(cd "$(dirname "$0")/../.." && pwd)}"
 export PATH="${HOME}/.cargo/bin:/usr/bin:/bin:${PATH}"
 source "$SOV/stack/lib-ports.sh"
 require_env RUST_WEB_PORT
