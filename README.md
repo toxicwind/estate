@@ -49,7 +49,10 @@ mise run down
 | **ghas-mcp**          | 25113     | Bun                 | GHAS MCP (HTTP mode, depends on ghas-api)                                                                       |
 | **mesh-hub**          | 25115     | Bun                 | 20 GHAS-inspired features × every service                                                                       |
 | **byte-vision**       | 25121     | Go binary           | Vision MCP (OCR / screenshot analysis)                                                                          |
-| **byte-vision-proxy** | 25120     | Bun                 | **Sovereign MCP Gateway** — trust boundary + circuit breaker + sticky affinity in front of upstream MCP servers |
+| **byte-vision-proxy** | 25122     | Bun                 | **Sovereign MCP Gateway** — trust boundary + circuit breaker + sticky affinity in front of upstream MCP servers |
+| **redis**             | 25199     | Redis               | Session cache, telemetry backing store                                                                          |
+| **itvx-telemetry**    | 25198     | Docker              | Telemetry pipeline                                                                                              |
+| **itvx-browserless**  | 25130     | Docker              | Headless browser for scraping                                                                                   |
 
 Backends for swap: `LLAMA_START_PORT`–`LLAMA_END_PORT` = **25001–25099** (llama-server forks).
 
@@ -117,6 +120,8 @@ Screenshot actions: `auto` (capture + classify + route to clipboard/file), `copy
 | **Caddy**                                        | Path routing fought real services (`/api/*` → openfang while rust-web also needs APIs). Port docs were wrong (`:3000` vs `CADDY_PORT=25109`). **`mise run up` never started it.** Multipath proxy not needed when every service has a stable 25xxx port. Artifacts archived under `/home/toxic/data_dumps/caddy-removed-*`. |
 | **landing** (`LANDING_PORT` / Bun `src/landing`) | Duplicate static server for the same files rust-web already serves. False offshoot of rust-web. Deleted; dashboard APIs live on rust-web at **`/ops/api/*`**.                                                                                                                                                               |
 
+All public-facing services bind to `0.0.0.0` (not `127.0.0.1`) for LAN/Tailscale access. Internal mesh-front backends stay on `127.0.0.1:26xxx`. Redis on `:25199`, Qdrant on `:6333` — both `0.0.0.0`.
+
 Access services **directly** on their ports (LAN or Tailscale MagicDNS). Optional Funnel points at **rust-web only** — see `tailscale/README.md`.
 
 ---
@@ -163,7 +168,7 @@ After editing a process module: full `mise run down && mise run up` (pitchfork r
 | **`~/.secrets`**                   | Secrets (not in git)                |
 | **`tools/llama-swap/config.yaml`** | Model matrix, macros, backends      |
 
-Never invent port numbers in app code — use env / `src/lib/ports.ts` / `stack/lib-ports.sh`.
+Never invent port numbers in app code — use env / `src/lib/ports.ts` / `stack/lib-ports.sh`. All bind addresses use `0.0.0.0` for network accessibility (see `pitchfork.toml` for `ready_http` health checks which stay `127.0.0.1`).
 
 ---
 
@@ -184,7 +189,7 @@ sovereign/
 ├── tools/sovereign-router/         # TS sovereign-router router (standalone, port 25104)
 ├── tools/sovereign-monitor/        # recursive-fallback, watchdog, repo-radar (agentic runtime)
 ├── tests/                          # unit + integration tests (≥88% coverage enforced)
-├── grafana/provisioning/
+├── grafana/provisioning/  # plugins/ + alerting/ dirs (empty but required)
 ├── tailscale/                # optional Funnel (no Caddy)
 └── backup/                   # legacy — do not stage / do not delete casually
 ```
@@ -202,6 +207,7 @@ Zed is configured to connect directly to Sovereign Stack services. All provider 
 | **llama-swap**            | `LlamaCppLanguageModelProvider`     | `:25100` | Local GGUF inference via the toxicwind fork. Routes to beellama, turboquant, ik_llama backends on `:25001–25099`.   |
 | **sovereign-router**      | Custom `sovereign-router` provider  | `:25104` | 5-strategy AST Matrix hybrid router (TS standalone). Used for external tooling.                                     |
 | **Sovereign MCP Gateway** | `mcpproxy-sovereign` context server | `:25120` | Trust boundary + circuit breaker + sticky affinity in front of upstream MCP servers (e.g. byte-vision on `:25121`). |
+| **mcpproxy**              | `mcpproxy-sovereign` context server | `:25109` | MCP federation (30+ MCPs → 1 endpoint). Connected via `mcp-remote` HTTP→stdio bridge.                               |
 
 ### OpenCode provider
 
