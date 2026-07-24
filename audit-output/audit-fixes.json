@@ -1,0 +1,96 @@
+{
+  "subagentA": {
+    "name": "Symlink Cleanup - Broken Symlinks",
+    "category": "broken_symlink",
+    "totalPatterns": 10,
+    "totalOccurrences": 949,
+    "repos": [
+      {
+        "repo": "SketchyStunts_Cachy-Hyprland-Tweaked",
+        "count": 844,
+        "examplePath": "/home/toxic/projects/dotfiles_pull/repos/SketchyStunts_Cachy-Hyprland-Tweaked/dotfiles/.config/Kvantum/pywal/pywal.kvconfig",
+        "error": "No such file or directory"
+      },
+      {
+        "repo": "samonide_Cachy-dots",
+        "count": 58,
+        "examplePath": "/home/toxic/projects/dotfiles_pull/repos/samonide_Cachy-dots/.config/hyde/themes/AbyssGreen/wall.set",
+        "error": "No such file or directory"
+      },
+      {
+        "repo": "highercomve_hyprdotfiles",
+        "count": 17,
+        "examplePath": "/home/toxic/projects/dotfiles_pull/repos/highercomve_hyprdotfiles/dotfiles/waypaper/config.ini",
+        "error": "No such file or directory"
+      },
+      {
+        "repo": "unknown",
+        "count": 13,
+        "examplePath": "/home/toxic/projects/ide-test/zed-fang/.devenv/gc/shell",
+        "error": "No such file or directory"
+      },
+      {
+        "repo": "bgibson72_yahr-quickshell",
+        "count": 4,
+        "examplePath": "/home/toxic/projects/dotfiles_pull/repos/bgibson72_yahr-quickshell/fastfetch/current-theme-logo.png",
+        "error": "No such file or directory"
+      },
+      {
+        "repo": "ZanzyTHEbar_dragonarchy",
+        "count": 4,
+        "examplePath": "/home/toxic/projects/dotfiles_pull/repos/ZanzyTHEbar_dragonarchy/packages/kitty/.config/kitty/colors.conf",
+        "error": "No such file or directory"
+      },
+      {
+        "repo": "JaKooLit_Hyprland-Dots",
+        "count": 3,
+        "examplePath": "/home/toxic/projects/dotfiles_pull/repos/JaKooLit_Hyprland-Dots/config/rofi/.current_wallpaper",
+        "error": "No such file or directory"
+      },
+      {
+        "repo": "LinuxBeginnings_Hyprland-Dots",
+        "count": 3,
+        "examplePath": "/home/toxic/projects/dotfiles_pull/repos/LinuxBeginnings_Hyprland-Dots/config/waybar/config",
+        "error": "No such file or directory"
+      },
+      {
+        "repo": "rohankid1_cachy-dotfiles",
+        "count": 2,
+        "examplePath": "/home/toxic/projects/dotfiles_pull/repos/rohankid1_cachy-dotfiles/ags/.config/ags/types",
+        "error": "No such file or directory"
+      },
+      {
+        "repo": "celesrenata_end-4-flakes",
+        "count": 1,
+        "examplePath": "/home/toxic/projects/dotfiles_pull/repos/celesrenata_end-4-flakes/configs/quickshell/ii/modules/settings/transparency-config.json",
+        "error": "No such file or directory"
+      }
+    ]
+  },
+  "subagentB": {
+    "name": "Symlink Loop Resolution",
+    "category": "symlink_loop",
+    "totalPatterns": 3,
+    "totalOccurrences": 6,
+    "repos": [
+      {
+        "repo": "HyDE-Project_hyde",
+        "count": 2,
+        "examplePath": "/home/toxic/projects/dotfiles_pull/repos/HyDE-Project_hyde/Source/assets/hyde.png",
+        "error": "Too many levels of symbolic links"
+      },
+      {
+        "repo": "bryanwills_HyDE-arch",
+        "count": 2,
+        "examplePath": "/home/toxic/projects/dotfiles_pull/repos/bryanwills_HyDE-arch/Source/assets/hyde.png",
+        "error": "Too many levels of symbolic links"
+      },
+      {
+        "repo": "ZanzyTHEbar_dragonarchy",
+        "count": 2,
+        "examplePath": "/home/toxic/projects/dotfiles_pull/repos/ZanzyTHEbar_dragonarchy/packages/hardware/.config/systemd/user/timers.target.wants/fprintd-watchdog.timer",
+        "error": "Too many levels of symbolic links"
+      }
+    ]
+  }
+}

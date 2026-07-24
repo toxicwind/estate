@@ -238,9 +238,9 @@ All custom providers share a **non-destructive tool-schema normalizer** (repairs
 
 | Project                | Path                                   | README focus                                                                                                       |
 | ---------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **llama-swap**         | `/home/toxic/projects/llama-swap-main` | **Fork additions**: AST Matrix Go port (`internal/astmatrix/`), `/models/sse`, `normalize_sse`, IPv4, port reclaim |
+| **llama-swap**         | `https://github.com/toxicwind/llama-swap` | **Fork additions**: AST Matrix Go port (`internal/astmatrix/`), `/models/sse`, `normalize_sse`, IPv4, port reclaim |
 | **llama-swap runtime** | `tools/llama-swap/README.md`           | Sovereign wiring only (symlink → fork binary)                                                                      |
-| **Zed**                | `/home/toxic/projects/zed`             | **toxicwind fork**: `.ignore` for agent grep, sccache+mold builds                                                  |
+| **Zed**                | `https://github.com/toxicwind/zed`             | **toxicwind fork**: `.ignore` for agent grep, sccache+mold builds                                                  |
 
 ---
 

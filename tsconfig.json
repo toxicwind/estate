@@ -9,8 +9,24 @@
     "esModuleInterop": true,
     "allowImportingTsExtensions": true,
     "noEmit": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
   },
-  "include": ["server/**/*", "src/**/*", "scripts/**/*", "tools/**/*", "yote/**/*", "index.ts"]
+  "include": [
+    "server/**/*",
+    "src/**/*",
+    "scripts/**/*",
+    "tools/**/*",
+    "yote/**/*",
+    "index.ts",
+  ],
+  "exclude": [
+    "**/node_modules",
+    "node_modules",
+    "**/dist",
+    "**/coverage",
+    "**/.git",
+    "**/.cc-agent",
+    "**/.state",
+    "**/.scout-cache",
+  ],
 }
-

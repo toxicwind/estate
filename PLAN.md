@@ -1,174 +1,221 @@
-# Sovereign Stack — Audit & Fix Plan (2026-07-19)
+# Sovereign Stack — Master Plan (2026-07-23)
 
-## Session Update (2026-07-19)
+## 🔴 Critical Fixes (Do First)
 
-### ✅ Completed: AGENTS.md update — Section 8: Tool Call Variants — desktop-commander
+### 1. Stray Process Cleanup
 
-Added rule: **ALWAYS use `call_tool_destructive`** for ANY desktop-commander tool call. This applies to: `start_process`, `read_process_output`, `interact_with_process`, `execute_command`, `create_directory`, `move_file`, `read_multiple_files`, `get_file_info`, `set_config_value`, `list_sessions`, `list_processes`, `get_config`, `get_recent_tool_calls`, `list_searches`, `get_more_search_results`, `stop_search`.
+- **Redis on 6379**: A system-level redis is binding to the default port 6379. Pitchfork-configured redis uses 25199. Need to `kill` the stray redis or `fuser -k 6379/tcp`.
+- **Port 25109 conflict**: Something (likely a previous mcpproxy or Docker container) is binding to 25109 with PID 0 (kernel-level). Need to identify and clear it.
+- **Grafana IPC timeout**: Grafana actually starts fine (logs show HTTP on 26110, mesh-front on 25110). Pitchfork's `ready_http` check timed out — likely the mesh-front proxy took >63s to become reachable. Increase `ready_delay` or fix the readiness check.
 
-### ✅ Completed: settings.json tools block
+### 2. Port Conflict Resolution Strategy
 
-All 3 agent profiles (`main`, `sovereign-local-a`, `sovereign-local-b`) now have identical `tools` blocks with 11 native tools disabled:
+Pitchfork uses `port` field to check availability BEFORE starting a daemon. If a non-pitchfork process occupies that port, pitchfork fails the daemon. Fix:
 
-- `copy_path`, `create_directory`, `delete_path`, `edit_file`, `write_file`, `find_path`, `list_directory`, `move_path`, `read_file`, `grep`, `terminal`
+- Kill all stray processes: `fuser -k 6379/tcp 25109/tcp 25110/tcp`
+- Verify no Docker containers are exposing sovereign ports
+- Add `retry = 3` and `ready_delay` to slow-starting daemons
 
-### ✅ Completed: llama-swap fork build
+## 🟡 Config Alignment (mise ↔ pitchfork ↔ ports.env)
 
-- Built new binary at `/home/toxic/projects/llama-swap-main/llama-swap` (21MB)
-- Running via existing mise/process-compose at port 26100 (proxied to 25100)
-- Config at `/home/toxic/sovereign/tools/llama-swap/config.yaml` with 30+ models
+### Current State (All Correct)
 
-### ✅ Completed: AGENTS.md section renumbering
+| Service           | ports.env | pitchfork.toml | mise.toml          | Status |
+| ----------------- | --------- | -------------- | ------------------ | ------ |
+| llama-swap        | 25100     | 25100          | ✅ up/health       | ✅     |
+| rust-web          | 25101     | 25101          | ❌ missing up task | ⚠️     |
+| yote              | 25102     | 25102          | ❌ missing up task | ⚠️     |
+| openfang          | 25103     | 25103          | ❌ missing up task | ⚠️     |
+| sovereign-router  | 25104     | 25104          | ❌ missing up task | ⚠️     |
+| prometheus        | 25105     | 25105          | ✅ up/health       | ✅     |
+| hf-downloader     | 25106     | 25106          | ❌ missing up task | ⚠️     |
+| null-g-proxy      | 25107     | 25107          | ❌ missing up task | ⚠️     |
+| mcpproxy          | 25109     | 25109          | ❌ missing up task | ⚠️     |
+| grafana           | 25110     | 25110          | ✅ up/health       | ✅     |
+| ghas-api          | 25112     | 25112          | ❌ missing up task | ⚠️     |
+| ghas-mcp          | 25113     | 25113          | ❌ missing up task | ⚠️     |
+| mesh-hub          | 25115     | 25115          | ❌ missing up task | ⚠️     |
+| mcp-gateway       | 25120     | 25120          | ✅ up/health       | ✅     |
+| byte-vision       | 25121     | 25121          | ✅ up/health       | ✅     |
+| byte-vision-proxy | 25122     | 25122          | ✅ up/health       | ✅     |
+| qdrant            | 6333      | 6333           | ✅ up/health       | ✅     |
+| redis             | 25199     | 25199          | ✅ up              | ✅     |
+| tailscale-funnel  | —         | —              | ❌ missing         | ⚠️     |
 
-Sections 8-11 now correctly ordered after inserting new section 8.
+### Actions Needed
 
-## Current MCP Inventory (26 servers)
+1. Add missing `up-*` and `down-*` tasks to mise.toml for all daemons
+2. Add missing health checks
+3. Ensure `mise run up` and `mise run down` cover all groups
 
-| MCP                      | Status | Notes                                          |
-| ------------------------ | ------ | ---------------------------------------------- |
-| mcpproxy-sovereign       | ✅     | Single entry at :25109/mcp                     |
-| mcp-server-context7      | ✅     | Docs lookup via npx                            |
-| ast-grep-nnunley         | ✅     | Binary: ~/.cargo/bin/ast-grep-mcp              |
-| ast-grep-xray            | ✅     | Binary: ~/.local/bin/xray-mcp                  |
-| ast-grep-official        | ✅     | uvx from git                                   |
-| tree-sitter              | ✅     | uvx mcp-server-tree-sitter                     |
-| codebase-memory          | ✅     | Binary: ~/.local/bin/codebase-memory-mcp       |
-| project-rag              | ❌     | Missing: cargo install needed                  |
-| memory-keeper            | ✅     | npx mcp-memory-keeper                          |
-| reactive-memory          | ❌     | Missing: dotnet project                        |
-| sqlite-mcp               | ✅     | uvx mcp-server-sqlite                          |
-| qdrant-mcp               | ✅     | uvx qdrant-mcp-server                          |
-| redis-mcp                | ✅     | uvx redis-mcp-server                           |
-| ghas                     | ✅     | Binary: ~/.local/bin/ghas-mcp-stdio.sh         |
-| markitdown               | ✅     | uvx markitdown-mcp@0.0.1a4                     |
-| prometheus               | ✅     | uvx prometheus-mcp-server                      |
-| sovereign-chrome-mcp     | ✅     | bunx @playwright/mcp                           |
-| sovereign-firefox-mcp    | ✅     | bunx @playwright/mcp                           |
-| llama-swap-test          | ✅     | Bun/TS MCP                                     |
-| computer-use-linux       | ✅     | Binary: ~/.local/bin/computer-use-linux        |
-| wcgw                     | ✅     | uvx wcgw_mcp                                   |
-| desktop-commander        | ✅     | npx @wonderwhy-er/desktop-commander            |
-| pty-mcp                  | ✅     | npx @iflow-mcp/so2liu-pty-mcp-server           |
-| arxiv-mcp-advanced       | ✅     | uvx Ray0907/arXiv-mcp                          |
-| arxiv-mcp-localstore     | ✅     | uvx arxiv-mcp-server[pdf]                      |
-| alphaxiv-research-engine | ✅     | npx mcp-remote https://api.alphaxiv.org/mcp/v1 |
+## 🟢 Rust Web Dashboard Update
 
-## Tool Status (post-compact)
+### Current Services (in main.rs)
 
-| Tool                          | Status | Notes                                    |
-| ----------------------------- | ------ | ---------------------------------------- |
-| convert_to_markdown           | ✅     | file: URI works                          |
-| find_code / find_code_by_rule | ✅     | Code search                              |
-| explore_repo                  | ✅     | Directory structure                      |
-| edit_file / write_file        | ❌     | Disabled — use desktop-commander         |
-| ghas_*                        | ✅     | All 25 GitHub tools                      |
-| activate_window               | ❌     | JSON parse error (framework bug)         |
-| click / get_app_state         | ❌     | JSON parse error                         |
-| terminal                      | ❌     | Disabled — use pty-mcp/desktop-commander |
-| grep                          | ❌     | Disabled — use ast-grep/ghas             |
-| read_file                     | ❌     | Disabled — use convert_to_markdown       |
+All 21 services are defined in `get_all_services()`. Need to add:
 
-## Missing Binaries / Services
+- **itvx-telemetry** (25198) — missing from service list
+- **Tailscale Funnel** — missing entirely
+- **Pitchfork Supervisor** — add as meta-service
 
-| Component       | Status | Action                                                             |
-| --------------- | ------ | ------------------------------------------------------------------ |
-| project-rag     | ❌     | `cargo install --git https://github.com/Brainwires/project-rag`    |
-| reactive-memory | ❌     | Clone from github.com/toxicwind/reactive-memory, `dotnet run`      |
-| redis-cli       | ❌     | `sudo pacman -S redis`                                             |
-| qdrant          | ❌     | `docker run -p 6333:6333 qdrant/qdrant` or `sudo pacman -S qdrant` |
-| prometheus      | ❌     | `sudo pacman -S prometheus`                                        |
+### Dashboard Features Needed
 
-## Remaining Work (Priority Order)
+1. **Clickable service cards** — each service card links to its dashboard/health endpoint
+2. **Category grouping** — LLM, Core, Monitoring, MCP, Data, Mesh
+3. **Real-time status** — green/yellow/red indicators with latency
+4. **Model matrix** — display the AST matrix from llama-swap config
+5. **Free providers panel** — show opencode, groq, cerebras, kiro, vertex status
+6. **GPU metrics** — integrate nvidia-smi output
+7. **Fleet benchmarks** — link to fleet results
+8. **Grafana embed** — iframe for Grafana dashboards
+9. **Mesh topology** — visualize service dependencies
+10. **Provider API key status** — show which keys are configured (not the values)
 
-### 1. Install missing services
+### Static HTML Pages
 
-```bash
-# Redis
-sudo pacman -S redis
-systemctl --user start redis
+- `index.html` — Main dashboard with all service cards
+- `architecture.html` — System architecture diagram
+- `fleet.html` — Fleet benchmarks
+- `portal.html` — Service portal with clickable links
 
-# Qdrant (Docker)
-docker run -d -p 6333:6333 qdrant/qdrant
+## 🔵 llama-swap Config Review
 
-# Prometheus
-sudo pacman -S prometheus
-systemctl --user start prometheus
-```
+### Current Models (40+)
 
-### 2. Build project-rag
+| Fork          | Models                       | Context   | Notes             |
+| ------------- | ---------------------------- | --------- | ----------------- |
+| beellama      | qwen-flash-64k/96k/128k/256k | 64K-256K  | IQ4_XS, ~9-13GB   |
+| beellama      | gemma-64k/96k/128k           | 64K-128K  | Q4_K_M, ~9-13GB   |
+| beellama      | exaone-4-0-1-2b (5 quants)   | 32K       | IQ4_XS-Q80, 2-5GB |
+| beellama      | qwen3.5-9b variants          | 64K-256K  | DFlash, MTP       |
+| beellama      | gemma4-31b-dflash            | 128K      | Q4_K_M, ~9GB      |
+| turboquant    | mn-grand-64k/96k/128k        | 64K-128K  | Q4_K_M, ~20GB     |
+| turboquant    | heretic-27b-128k/256k        | 128K-256K | Q5_K_XL, ~16-18GB |
+| turboquant    | gemma-4-12b (4 variants)     | 128K-256K | Q4_K_M, ~16-19GB  |
+| turboquant    | gemma-4-21b-moe-reap         | 128K      | Q4_K_M, ~13GB     |
+| ik_llama      | heretic-ud-64k/96k           | 64K-96K   | Q5_K_XL, ~20-22GB |
+| ik_turboquant | heretic variants             | 96K-256K  | Q5_K_XL           |
+| qwen          | 27b-cerebellum/dflash        | 32K-96K   | Q4_K_XL, ~17-18GB |
+| holo          | 35b-a3b                      | 64K       | MoE, 3B active    |
 
-```bash
-cargo install --git https://github.com/Brainwires/project-rag
-```
+### Free Providers
 
-### 3. Clone & build reactive-memory
+| Provider | API Key Env      | Status     |
+| -------- | ---------------- | ---------- |
+| opencode | (no key)         | ✅ Enabled |
+| groq     | GROQ_API_KEY     | ✅ Enabled |
+| cerebras | CEREBRAS_API_KEY | ✅ Enabled |
+| kiro     | (no key)         | ✅ Enabled |
+| vertex   | GOOGLE_API_KEY   | ✅ Enabled |
 
-```bash
-git clone https://github.com/toxicwind/reactive-memory
-cd reactive-memory
-dotnet run
-```
+### Actions Needed
 
-### 4. Downloads archaeology — find "free" provider code
+1. Verify all model GGUF files exist in `/home/toxic/projects/models/`
+2. Add missing models from the AST matrix
+3. Update evict_costs for all models
+4. Add priority tiers for model selection
+5. Verify free provider endpoints are reachable
 
-Search Downloads for archives from past 5 days containing:
+## 🟣 Provider API Keys
 
-- `llama*` / `nim*` / `opencode*` / `route*` patterns
-- Look for `.zip`, `.tar.gz`, `.pdf` files that might be code archives
-- Extract and explore for modular provider implementations
+### Key Status
 
-### 5. Free provider router modularization
+| Provider    | Env Var                   | How to Get                     | Free Tier       |
+| ----------- | ------------------------- | ------------------------------ | --------------- |
+| NVIDIA NIM  | NVIDIA_API_KEY            | build.nvidia.com → API Keys    | ✅ 1000 credits |
+| OpenRouter  | OPENROUTER_API_KEY        | openrouter.ai/keys             | ✅ Rate-limited |
+| Groq        | GROQ_API_KEY              | console.groq.com               | ✅ 30 req/min   |
+| Cerebras    | CEREBRAS_API_KEY          | cloud.cerebras.ai              | ✅ Free tier    |
+| Google      | GOOGLE_API_KEY            | makersuite.google.com          | ✅ Free tier    |
+| Mistral     | MISTRAL_API_KEY           | docs.mistral.ai                | ✅ Free tier    |
+| DeepSeek    | DEEPSEEK_API_KEY          | platform.deepseek.com          | ✅ Free tier    |
+| GLM/Zhipu   | GLM_API_KEY               | open.bigmodel.cn               | ⚠️ CN phone     |
+| LLM7        | LLM7_API_KEY              | llm7.io                        | ✅ Daily limits |
+| LinuxDo     | LINUXDO_API_KEY           | linux.do                       | ✅ Free         |
+| Context7    | CONTEXT7_API_KEY          | context7.com                   | ✅ Free         |
+| HuggingFace | HF_TOKEN                  | huggingface.co/settings/tokens | ✅ Free         |
+| Cloudflare  | CLOUDFLARE_GLOBAL_API_KEY | dash.cloudflare.com            | ✅ Free         |
+| Sentry      | SENTRY_ACCESS_TOKEN       | sentry.io                      | ✅ Free tier    |
 
-- Port sovereign-router router patterns into llama-swap's Go router core
-- Each provider (OpenRouter, NVIDIA NIM, Groq, Cerebras, Google, Mistral) as modular adapter
-- SSOT ports: LLAMA_SWAP=25100, SOVEREIGN_ROUTER=25104
+### Local/No-Key Services
 
-### 6. NIM Inkling max_tokens verification
+| Service          | Port  | Notes              |
+| ---------------- | ----- | ------------------ |
+| llama-swap       | 25100 | Local, no key      |
+| sovereign-router | 25104 | Local, no key      |
+| KeylessAI        | —     | No signup needed   |
+| FreeChatGPT      | —     | Community-provided |
+| Scout            | 25100 | Local dummy key    |
+| Prometheus       | 25105 | Local metrics      |
+| Qdrant           | 6333  | Local vector DB    |
 
-- Current: `nim-inkling` max_tokens: 8192
-- Verify actual NVIDIA NIM API limits
+## ⚫ Zed Settings
 
-### 7. Cerebras key validation
+### Profiles
 
-- Key in `~/.secrets` — all 403 errors
-- Verify key validity, populate models if working
+| Profile          | Provider   | Model                                  | Use Case  |
+| ---------------- | ---------- | -------------------------------------- | --------- |
+| default          | opencode   | free/big-pickle                        | General   |
+| sovereign-max    | nvidia     | thinkingmachines/inkling               | Reasoning |
+| fast-free        | groq       | llama-4-scout-17b-16e-instruct         | Speed     |
+| max-context-free | openrouter | nvidia/nemotron-3-ultra-550b-a55b:free | Context   |
 
-### 8. Zed restart
+## 📋 Port Convention (SSOT)
 
-- New MCPs require Zed restart
-- LSP settings already applied
+| Service           | Port  | Backend | Category   |
+| ----------------- | ----- | ------- | ---------- |
+| llama-swap        | 25100 | 26100   | LLM        |
+| rust-web          | 25101 | 26101   | Core       |
+| yote              | 25102 | —       | Core       |
+| openfang          | 25103 | 26103   | Core       |
+| sovereign-router  | 25104 | —       | Core       |
+| prometheus        | 25105 | 26105   | Monitoring |
+| hf-downloader     | 25106 | 26106   | LLM        |
+| null-g-proxy      | 25107 | —       | Core       |
+| pitchfork         | 25108 | —       | Meta       |
+| mcpproxy          | 25109 | —       | MCP        |
+| grafana           | 25110 | 26110   | Monitoring |
+| watchdog          | 25111 | —       | Core       |
+| ghas-api          | 25112 | —       | MCP        |
+| ghas-mcp          | 25113 | —       | MCP        |
+| ghas-frontend     | 25114 | —       | MCP        |
+| mesh-hub          | 25115 | —       | Mesh       |
+| mcp-gateway       | 25120 | —       | MCP        |
+| byte-vision       | 25121 | —       | MCP        |
+| byte-vision-proxy | 25122 | —       | MCP        |
+| redis             | 25199 | —       | Data       |
+| itvx-telemetry    | 25198 | —       | Data       |
+| itvx-browserless  | 25130 | —       | MCP        |
+| itvx-morphe       | 25140 | —       | Core       |
+| qdrant            | 6333  | —       | Data       |
 
-## Provider Status
+## 📁 Key Files
 
-| Provider   | Key                | Models  | Status                 |
-| ---------- | ------------------ | ------- | ---------------------- |
-| OpenRouter | OPENROUTER_API_KEY | 10 free | Working                |
-| NVIDIA NIM | NVIDIA_API_KEY     | 12      | Working (credit-based) |
-| Groq       | GROQ_API_KEY       | 6       | Working (UA fix)       |
-| Cerebras   | CEREBRAS_API_KEY   | 0       | 403 — key invalid?     |
-| Google     | GOOGLE_API_KEY     | 4       | Working                |
-| Mistral    | MISTRAL_API_KEY    | 4       | Working                |
-| Opencode   | OPENCODER_API_KEY  | ?       | Free tier, Big Pickle  |
+| File                           | Purpose                       |
+| ------------------------------ | ----------------------------- |
+| `pitchfork.toml`               | Daemon definitions and groups |
+| `mise.toml`                    | Task runner and tool versions |
+| `config/ports.env`             | Port SSOT                     |
+| `tools/llama-swap/config.yaml` | LLM models and routing        |
+| `rust_algo_web/src/main.rs`    | Dashboard backend             |
+| `rust_algo_web/static/*.html`  | Dashboard frontend            |
+| `stack/services/*.sh`          | Service launcher scripts      |
+| `stack/lib-ports.sh`           | Port env loader               |
+| `grafana/provisioning/`        | Grafana config                |
+| `prometheus.yml`               | Prometheus scrape config      |
+| `AGENTS.md`                    | Agent protocol                |
+| `~/.config/zed/settings.json`  | Zed editor config             |
+| `~/.secrets`                   | API keys                      |
 
-## Port Convention (SSOT)
+## ✅ Definition of Done
 
-| Service       | Port  |
-| ------------- | ----- |
-| llama-swap    | 25100 |
-| rust-web      | 25101 |
-| yote          | 25102 |
-| openfang      | 25103 |
-| sovereign-router    | 25104 |
-| prometheus    | 25105 |
-| hf-downloader | 25106 |
-| watchdog      | 25111 |
-
-## Key Files
-
-- Router: `sovereign/tools/sovereign-router/sovereign-router/router.py`
-- Mise: `sovereign/mise.toml`
-- Tasks: `sovereign/mise/tasks/{up,_lib.sh,build-compose,...}`
-- Settings: `~/.config/zed/settings.json`
-- Secrets: `~/.secrets`
-- llama-swap fork: `~/projects/llama-swap-main/`
-- AGENTS.md: `sovereign/AGENTS.md`
+1. All services start clean with `mise run up` (no port conflicts)
+2. All services stop clean with `mise run down`
+3. Rust-web dashboard shows all 23+ services with clickable links
+4. Grafana dashboards are provisioned and accessible
+5. llama-swap models load and respond
+6. Free providers (opencode, groq, cerebras, kiro, vertex) are reachable
+7. AGENTS.md and README.md are updated
+8. PLAN.md reflects current state (this file)
+9. No stray processes on sovereign ports
+10. All mise tasks match pitchfork daemons 1:1

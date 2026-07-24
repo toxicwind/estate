@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
-# Prometheus on backend port + mesh-front on public PROMETHEUS_PORT; yml reload still works via backend.
 set -euo pipefail
 SOV="${SOVEREIGN_ROOT:-/home/toxic/sovereign}"
 cd "$SOV"
-# shellcheck source=../lib-ports.sh
 source "$(dirname "$0")/../lib-ports.sh"
 PORT="${PROMETHEUS_PORT:?}"
 BACKEND="${PROMETHEUS_BACKEND_PORT:-26105}"
@@ -19,9 +17,7 @@ prometheus \
 PROM_PID=$!
 echo "[prom-hot] prometheus backend pid $PROM_PID :${BACKEND}"
 
-cleanup() {
-  kill "$PROM_PID" "$FRONT_PID" 2>/dev/null || true
-}
+cleanup() { kill "$PROM_PID" "$FRONT_PID" 2>/dev/null || true; }
 trap cleanup EXIT
 
 for i in $(seq 1 40); do

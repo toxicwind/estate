@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
+    "danfojs-node": "^1.2.0",
     "js-yaml": "^5.2.1",
     "json5": "^2.2.3",
     "zod": "^4.4.3"

@@ -1,0 +1,84 @@
+scripts/audit_log.ts(302,8): error TS2339: Property 'catch' does not exist on type 'void'.
+scripts/deep_analyze.ts(126,33): error TS7053: Element implicitly has an 'any' type because expression of type '1' can't be used to index type 'string | number | boolean | string[] | number[] | boolean[] | (string | number | boolean)[]'.
+  Property '1' does not exist on type 'string | number | boolean | string[] | number[] | boolean[] | (string | number | boolean)[]'.
+scripts/deep_analyze.ts(139,27): error TS2345: Argument of type 'string' is not assignable to parameter of type 'boolean[] | Series'.
+scripts/deep_analyze.ts(150,8): error TS2339: Property 'nunique' does not exist on type 'Groupby'.
+scripts/deep_analyze.ts(167,12): error TS2345: Argument of type 'string' is not assignable to parameter of type 'boolean[] | Series'.
+scripts/deep_analyze.ts(176,30): error TS2345: Argument of type 'string' is not assignable to parameter of type 'boolean[] | Series'.
+scripts/deep_analyze.ts(178,27): error TS2538: Type 'string[]' cannot be used as an index type.
+scripts/deep_analyze.ts(182,9): error TS2345: Argument of type 'string' is not assignable to parameter of type 'boolean[] | Series'.
+scripts/deep_analyze.ts(199,30): error TS2345: Argument of type 'string' is not assignable to parameter of type 'boolean[] | Series'.
+scripts/deep_analyze.ts(202,5): error TS2345: Argument of type 'string' is not assignable to parameter of type 'boolean[] | Series'.
+scripts/deep_analyze.ts(221,7): error TS18046: 'r' is of type 'unknown'.
+scripts/deep_analyze.ts(222,7): error TS18046: 'r' is of type 'unknown'.
+scripts/deep_analyze.ts(223,7): error TS18046: 'r' is of type 'unknown'.
+scripts/deep_analyze.ts(224,7): error TS18046: 'r' is of type 'unknown'.
+scripts/deep_analyze.ts(225,7): error TS18046: 'r' is of type 'unknown'.
+scripts/deep_analyze.ts(226,7): error TS18046: 'r' is of type 'unknown'.
+scripts/deep_analyze.ts(229,14): error TS18046: 'r' is of type 'unknown'.
+scripts/deep_analyze.ts(229,35): error TS18046: 'r' is of type 'unknown'.
+scripts/deep_analyze.ts(231,7): error TS18046: 'r' is of type 'unknown'.
+scripts/deep_analyze.ts(232,7): error TS18046: 'r' is of type 'unknown'.
+scripts/deep_analyze.ts(233,7): error TS18046: 'r' is of type 'unknown'.
+scripts/deep_analyze.ts(234,7): error TS18046: 'r' is of type 'unknown'.
+scripts/deep_analyze.ts(252,47): error TS2339: Property 'mean' does not exist on type '(options?: { axis?: 0 | 1 | undefined; } | undefined) => Series'.
+scripts/deep_analyze.ts(253,46): error TS2339: Property 'std' does not exist on type '(options?: { axis?: 0 | 1 | undefined; } | undefined) => Series'.
+scripts/deep_analyze.ts(254,40): error TS2345: Argument of type 'string' is not assignable to parameter of type 'boolean[] | Series'.
+scripts/deep_analyze.ts(295,22): error TS7053: Element implicitly has an 'any' type because expression of type '1' can't be used to index type 'string | number | boolean | string[] | number[] | boolean[] | (string | number | boolean)[]'.
+  Property '1' does not exist on type 'string | number | boolean | string[] | number[] | boolean[] | (string | number | boolean)[]'.
+scripts/deep_analyze.ts(305,25): error TS2304: Cannot find name 'sortedRepoErrors'.
+scripts/deep_analyze.ts(310,3): error TS2304: Cannot find name 'multiTypeRepos'.
+scripts/deep_analyze.ts(310,21): error TS2304: Cannot find name 'multiTypeRepos'.
+scripts/deep_analyze.ts(310,51): error TS2304: Cannot find name 'multiTypeRepos'.
+scripts/deep_analyze.ts(315,79): error TS2538: Type 'string[]' cannot be used as an index type.
+scripts/deep_analyze.ts(344,8): error TS2339: Property 'catch' does not exist on type 'void'.
+scripts/e2e-zed-agent-models.ts(58,23): error TS2339: Property 'choices' does not exist on type '{}'.
+scripts/e2e-zed-agent-models.ts(61,13): error TS2339: Property 'choices' does not exist on type '{}'.
+scripts/e2e-zed-agent-models.ts(79,20): error TS2339: Property 'usage' does not exist on type '{}'.
+scripts/e2e-zed-agent-models.ts(80,20): error TS2339: Property 'error' does not exist on type '{}'.
+scripts/prove-zed-mcp-agent.ts(46,5): error TS2532: Object is possibly 'undefined'.
+scripts/prove-zed-mcp-agent.ts(46,21): error TS2339: Property 'write' does not exist on type 'number | FileSink'.
+  Property 'write' does not exist on type 'number'.
+scripts/prove-zed-mcp-agent.ts(51,20): error TS2532: Object is possibly 'undefined'.
+scripts/prove-zed-mcp-agent.ts(51,37): error TS2339: Property 'getReader' does not exist on type 'number | ReadableStream<Uint8Array<ArrayBuffer>>'.
+  Property 'getReader' does not exist on type 'number'.
+scripts/prove-zed-mcp-agent.ts(129,7): error TS2532: Object is possibly 'undefined'.
+scripts/prove-zed-mcp-agent.ts(129,23): error TS2339: Property 'end' does not exist on type 'number | FileSink'.
+  Property 'end' does not exist on type 'number'.
+scripts/prove-zed-mcp-agent.ts(209,21): error TS2339: Property 'choices' does not exist on type '{}'.
+scripts/prove-zed-mcp-agent.ts(219,18): error TS2339: Property 'usage' does not exist on type '{}'.
+tools/fleet/fleet_ranker.ts(64,25): error TS2339: Property 'usage' does not exist on type '{}'.
+tools/fleet/fleet_universal_maximal_corrected.ts(719,7): error TS2322: Type 'string | boolean | undefined' is not assignable to type 'boolean'.
+  Type 'undefined' is not assignable to type 'boolean'.
+tools/fleet/fleet_universal_maximal_corrected.ts(739,9): error TS18048: 'm.layerPattern' is possibly 'undefined'.
+tools/fleet/fleet_universal_maximal_corrected.ts(745,7): error TS18048: 'm.layerPattern' is possibly 'undefined'.
+tools/fleet/fleet_universal_maximal_corrected.ts(1063,18): error TS18046: 'data' is of type 'unknown'.
+tools/hf-model-sync/hf_sync.ts(96,11): error TS2322: Type 'unknown' is not assignable to type 'HFModelInfo'.
+tools/hf-model-sync/hf_sync.ts(100,13): error TS2322: Type 'unknown' is not assignable to type 'HFTreeEntry[]'.
+tools/hf-model-sync/hf_sync.ts(133,24): error TS18048: 'a.size' is possibly 'undefined'.
+tools/hf-model-sync/hf_sync.ts(133,33): error TS18048: 'b.size' is possibly 'undefined'.
+tools/hf-model-sync/hf_sync.ts(531,27): error TS2554: Expected 1 arguments, but got 2.
+tools/hf-model-sync/hf_sync.ts(538,27): error TS2554: Expected 1 arguments, but got 2.
+tools/lib/lock.ts(53,38): error TS2554: Expected 1 arguments, but got 2.
+tools/lib/lock.ts(86,33): error TS2554: Expected 1 arguments, but got 2.
+tools/sovereign-monitor/recursive-fallback.test.ts(36,41): error TS2345: Argument of type '"json"' is not assignable to parameter of type '"ts" | "py" | "sh"'.
+tools/sovereign-monitor/recursive-fallback.test.ts(41,44): error TS2345: Argument of type '"json"' is not assignable to parameter of type '"ts" | "py" | "sh"'.
+tools/sovereign-monitor/recursive-fallback.ts(95,9): error TS2367: This comparison appears to be unintentional because the types '"ts" | "py" | "sh"' and '"json"' have no overlap.
+tools/sovereign-router/sovereign-ast-router/llm_client.ts(19,15): error TS2339: Property 'choices' does not exist on type '{}'.
+tools/sovereign-router/sovereign-ast-router/session.ts(10,39): error TS2339: Property 'messages' does not exist on type '{}'.
+tools/sovereign-router/sovereign-mcp-gateway/gateway-core.test.ts(209,12): error TS2571: Object is of type 'unknown'.
+tools/sovereign-router/sovereign-mcp-gateway/gateway-core.test.ts(210,12): error TS2571: Object is of type 'unknown'.
+tools/sovereign-router/sovereign-mcp-gateway/gateway-core.test.ts(211,12): error TS2571: Object is of type 'unknown'.
+tools/sovereign-router/sovereign-mcp-gateway/gateway.ts(70,51): error TS2304: Cannot find name 'BodyInit'.
+tools/sovereign-router/sovereign-router-ts/router.ts(77,10): error TS2393: Duplicate function implementation.
+tools/sovereign-router/sovereign-router-ts/router.ts(198,10): error TS2393: Duplicate function implementation.
+tools/sovereign-router/sovereign-router-ts/router.ts(1339,39): error TS2304: Cannot find name 'BodyInit'.
+yote/scripts/generate-invites.ts(22,34): error TS2339: Property 'getDialogs' does not exist on type 'Overlord'.
+yote/scripts/generate-invites.ts(33,35): error TS2339: Property 'generateInvite' does not exist on type 'Overlord'.
+yote/scripts/generate-invites.ts(40,22): error TS2339: Property 'sendMessage' does not exist on type 'Overlord'.
+yote/scripts/invite-user.ts(25,34): error TS2339: Property 'getDialogs' does not exist on type 'Overlord'.
+yote/scripts/invite-user.ts(35,35): error TS2339: Property 'inviteUser' does not exist on type 'Overlord'.
+yote/src/lib/overlord.ts(6,519): error TS2307: Cannot find module 'input' or its corresponding type declarations.
+yote/src/yote.ts(517,38): error TS2339: Property 'ok' does not exist on type '{}'.
+yote/src/yote.ts(533,26): error TS2339: Property 'ok' does not exist on type '{}'.
+yote/src/yote.ts(574,37): error TS2339: Property 'ok' does not exist on type '{}'.

@@ -4,12 +4,14 @@ const targetModel = process.env.MODEL_ID || "beellama/qwen-flash";
 
 const baseText = "The quick brown fox jumps over the lazy dog. ".repeat(100);
 const longContext = baseText.repeat(4);
-const prompt = `System: Analyze the following text carefully.\n\n${longContext}\n\nUser: Summarize the main theme of the fox story in one sentence.`;
+const benchmarkPrompt = `System: Analyze the following text carefully.\n\n${longContext}\n\nUser: Summarize the main theme of the fox story in one sentence.`;
 
 console.log("=== PROMPT CACHE BENCHMARK ===");
 console.log(`Endpoint: ${url}`);
 console.log(`Model: ${targetModel}`);
-console.log(`Payload Size: ${prompt.length} characters (~4000 tokens)`);
+console.log(
+  `Payload Size: ${benchmarkPrompt.length} characters (~4000 tokens)`,
+);
 
 console.log("\n--- Turn 1: Sending prompt (Uncached) ---");
 let t0 = performance.now();
@@ -18,7 +20,7 @@ let res = await fetch(url, {
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     model: targetModel,
-    messages: [{ role: "user", content: prompt }],
+    messages: [{ role: "user", content: benchmarkPrompt }],
     temperature: 0.2,
     max_tokens: 50,
   }),
@@ -30,12 +32,16 @@ if (res.ok) {
   const completionTokens = data.usage?.completion_tokens || 0;
   const promptTokens = data.usage?.prompt_tokens || 0;
   const promptMs = data.timings?.prompt_ms || t1 - t0;
-  
+
   console.log(`Status: OK`);
   console.log(`Total Time: ${((t1 - t0) / 1000).toFixed(3)} seconds`);
   console.log(`Tokens: Prompt=${promptTokens}, Completion=${completionTokens}`);
-  console.log(`Server-reported Prompt Eval: ${(promptMs / 1000).toFixed(3)} seconds`);
+  console.log(
+    `Server-reported Prompt Eval: ${(promptMs / 1000).toFixed(3)} seconds`,
+  );
   console.log(`Content: ${data.choices?.[0]?.message?.content}`);
 } else {
   console.log(`Error: ${res.status} - ${await res.text()}`);
 }
+
+export {};

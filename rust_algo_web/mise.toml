@@ -1,0 +1,6 @@
+[tools]
+rust = "1.97.0"
+
+[env]
+CARGO_TERM_COLOR = "always"
+TERM = "xterm-256color"

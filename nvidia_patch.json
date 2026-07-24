@@ -1,0 +1,38 @@
+{
+  "nvidia": {
+    "api_url": "https://integrate.api.nvidia.com/v1",
+    "available_models": [
+      {
+        "name": "thinkingmachines/inkling",
+        "display_name": "NVIDIA NIM • Inkling SUDO MAX",
+        "max_tokens": 1048576,
+        "max_output_tokens": 2383,
+        "reasoning_effort": "max",
+        "capabilities": {
+          "tools": true,
+          "images": false,
+          "parallel_tool_calls": true,
+          "prompt_cache_key": false,
+          "chat_completions": true,
+          "interleaved_reasoning": true,
+          "max_tokens_parameter": true
+        }
+      },
+      {
+        "name": "nvidia/nemotron-3-ultra-550b-a55b",
+        "display_name": "NVIDIA • Nemotron 3 Ultra 550B",
+        "max_tokens": 131072,
+        "max_output_tokens": 16384,
+        "capabilities": {
+          "tools": true,
+          "images": false,
+          "parallel_tool_calls": true,
+          "prompt_cache_key": false,
+          "chat_completions": true,
+          "interleaved_reasoning": false,
+          "max_tokens_parameter": true
+        }
+      }
+    ]
+  }
+}
