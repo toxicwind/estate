@@ -6,11 +6,11 @@ run = "exec ./stack/services/llama-swap.sh"
 dir = "."
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:25100/health"
+ready_http = "http://127.0.0.1:26100/health"
 port = 25100
 
 [daemons.mcpproxy]
-run = "exec bash -c 'source ~/.secrets && exec /usr/local/bin/mcpproxy serve --log-level=info'"
+run = "exec /home/toxic/.local/bin/mcpproxy serve --log-level=info"
 dir = "."
 mise = false
 retry = true
@@ -53,7 +53,7 @@ port = 25102
 depends = ["openfang", "llama-swap"]
 
 [daemons.rust-web]
-run = "exec env SOVEREIGN_ROOT=/home/toxic/sovereign /home/toxic/sovereign/stack/services/rust-web-hot.sh"
+run = "exec /home/toxic/sovereign/stack/services/rust-web-hot.sh"
 dir = "rust_algo_web"
 mise = true
 retry = true
@@ -67,7 +67,7 @@ run = "exec /home/toxic/.bun/bin/bun --hot run src/services/hf_downloader.ts"
 dir = "."
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:25106/health"
+ready_http = "http://127.0.0.1:25106/"
 ready_delay = 5
 port = 25106
 
@@ -88,16 +88,6 @@ ready_http = "http://127.0.0.1:25113/health"
 port = 25113
 depends = ["ghas-api"]
 
-
-[daemons.mcp-gateway]
-run = "exec /home/toxic/.bun/bin/bun --hot run tools/sovereign-router/sovereign-mcp-gateway/gateway.ts"
-dir = "."
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25120/health"
-port = 25120
-depends = ["llama-swap"]
-
 [daemons.mesh-hub]
 run = "exec /home/toxic/.bun/bin/bun --hot run src/services/mesh-hub.ts"
 dir = "."
@@ -112,7 +102,7 @@ run = "exec /home/toxic/byte-vision-mcp/byte-vision-mcp"
 dir = "/home/toxic/byte-vision-mcp"
 mise = false
 retry = true
-ready_cmd = "bash /home/toxic/sovereign/stack/services/byte-vision-health.sh"
+ready_http = "http://127.0.0.1:25121/health"
 port = 25121
 
 [daemons.byte-vision-proxy]
@@ -120,8 +110,8 @@ run = "exec /home/toxic/.bun/bin/bun --hot run tools/sovereign-router/sovereign-
 dir = "."
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:25121/health"
-port = 25122
+ready_http = "http://127.0.0.1:25120/health"
+port = 25120
 depends = ["byte-vision"]
 
 [daemons.prometheus]
@@ -149,37 +139,12 @@ ready_http = "http://127.0.0.1:6333/"
 port = 6333
 
 [daemons.redis]
-run = "exec redis-server --port 25199 --bind 0.0.0.0"
+run = "exec redis-server --port 6379 --bind 127.0.0.1"
 dir = "."
 mise = false
 retry = true
-ready_cmd = "redis-cli -p 25199 ping | grep -q PONG"
-port = 25199
-
-[daemons.itvx-telemetry]
-run = "exec docker compose -f /home/toxic/projects/itvx_morphe_vault/docker-compose.yml up telemetry"
-dir = "/home/toxic/projects/itvx_morphe_vault"
-mise = false
-retry = true
-ready_cmd = "redis-cli -p 25198 ping | grep -q PONG"
-port = 25198
-
-[daemons.itvx-browserless]
-run = "exec docker compose -f /home/toxic/projects/itvx_morphe_vault/docker-compose.yml up browserless"
-dir = "/home/toxic/projects/itvx_morphe_vault"
-mise = false
-retry = true
-ready_http = "http://127.0.0.1:25130/health"
-port = 25130
-
-[daemons.itvx-morphe]
-run = "exec docker compose -f /home/toxic/projects/itvx_morphe_vault/docker-compose.yml up morphe-engine"
-dir = "/home/toxic/projects/itvx_morphe_vault"
-mise = false
-retry = true
-ready_http = "http://127.0.0.1:25140/health"
-port = 25140
-depends = ["itvx-telemetry", "itvx-browserless"]
+ready_cmd = "redis-cli -p 6379 ping | grep -q PONG"
+port = 6379
 
 [groups.core]
 daemons = [
@@ -199,9 +164,6 @@ daemons = [
   "grafana",
   "qdrant",
   "redis",
-  "itvx-telemetry",
-  "itvx-browserless",
-  "itvx-morphe",
 ]
 
 [groups.all]
@@ -222,9 +184,6 @@ daemons = [
   "grafana",
   "qdrant",
   "redis",
-  "itvx-telemetry",
-  "itvx-browserless",
-  "itvx-morphe",
   "tailscale-funnel",
 ]
 

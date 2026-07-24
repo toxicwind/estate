@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
+# Grafana on backend port + mesh-front on public GRAFANA_PORT.
 set -euo pipefail
 SOV="${SOVEREIGN_ROOT:-/home/toxic/sovereign}"
+# shellcheck source=../lib-ports.sh
 source "$SOV/stack/lib-ports.sh"
 PORT="${GRAFANA_PORT:?}"
 BACKEND="${GRAFANA_BACKEND_PORT:-26110}"
@@ -21,18 +23,15 @@ export GF_PATHS_PLUGINS="${GF_PATHS_PLUGINS:-$SOV/grafana/plugins}"
 
 /usr/bin/grafana server --homepath=/usr/share/grafana --config=/etc/grafana.ini &
 GPID=$!
-cleanup() { kill "$GPID" "$FRONT_PID" 2>/dev/null || true; }
+cleanup() { kill "$GPID" 2>/dev/null || true; }
 trap cleanup EXIT
 
 for i in $(seq 1 60); do
   curl -sf -m 0.5 "http://127.0.0.1:${BACKEND}/api/health" >/dev/null 2>&1 && break
-  sleep 0.2
+  sleep 0.3
 done
 
-/home/toxic/.bun/bin/bun run "$SOV/src/services/mesh-front.ts" \
+exec /home/toxic/.bun/bin/bun run "$SOV/src/services/mesh-front.ts" \
   --service grafana \
   --listen "0.0.0.0:${PORT}" \
-  --backend "127.0.0.1:${BACKEND}" &
-FRONT_PID=$!
-
-wait $FRONT_PID
+  --backend "127.0.0.1:${BACKEND}"

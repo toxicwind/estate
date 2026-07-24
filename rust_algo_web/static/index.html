@@ -1,370 +1,349 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0, user-scalable=no"
-        />
-        <title>YOTE · 骁逸 — Sovereign Command Center</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>YOTE · 骁逸 — Sovereign Command Center</title>
 
-        <!-- Tailwind CSS (CDN) -->
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
-            rel="stylesheet"
-        />
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        />
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
 
-        <!-- Chart.js + Mermaid -->
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <!-- Chart.js + Mermaid -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 
-        <script>
-            tailwind.config = {
-                theme: {
-                    extend: {
-                        fontFamily: {
-                            sans: ["Inter", "sans-serif"],
-                            display: ["Outfit", "Space Grotesk", "sans-serif"],
-                            mono: ["JetBrains Mono", "monospace"],
-                        },
-                    },
-                },
-            };
-        </script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              display: ["Outfit", "Space Grotesk", "sans-serif"],
+              mono: ["JetBrains Mono", "monospace"],
+            },
+          },
+        },
+      };
+    </script>
 
-        <style>
-            body {
-                background: radial-gradient(
-                    ellipse at top left,
-                    #0e0d16,
-                    #020204
-                );
-                font-family: "Inter", sans-serif;
-                min-height: 100vh;
-                color: #f3f4f6;
-            }
+    <style>
+      body {
+        background: radial-gradient(ellipse at top left, #0e0d16, #020204);
+        font-family: "Inter", sans-serif;
+        min-height: 100vh;
+        color: #f3f4f6;
+      }
 
-            .glass-panel {
-                background: rgba(14, 13, 22, 0.65);
-                backdrop-filter: blur(16px);
-                -webkit-backdrop-filter: blur(16px);
-                border: 1px solid rgba(139, 92, 246, 0.15);
-                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            }
+      .glass-panel {
+        background: rgba(14, 13, 22, 0.65);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(139, 92, 246, 0.15);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
 
-            .glass-panel:hover {
-                border-color: rgba(6, 182, 212, 0.35);
-                box-shadow: 0 0 30px rgba(6, 182, 212, 0.08);
-            }
+      .glass-panel:hover {
+        border-color: rgba(6, 182, 212, 0.35);
+        box-shadow: 0 0 30px rgba(6, 182, 212, 0.08);
+      }
 
-            .service-card {
-                background: rgba(18, 16, 28, 0.45);
-                border: 1px solid rgba(255, 255, 255, 0.04);
-                transition: all 0.25s ease;
-            }
+      .service-card {
+        background: rgba(18, 16, 28, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        transition: all 0.25s ease;
+      }
 
-            .service-card:hover {
-                transform: translateY(-2px);
-                border-color: rgba(6, 182, 212, 0.4);
-                background: rgba(18, 16, 28, 0.7);
-            }
+      .service-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(6, 182, 212, 0.4);
+        background: rgba(18, 16, 28, 0.7);
+      }
 
-            @keyframes neonPulse {
-                0%,
-                100% {
-                    opacity: 0.6;
-                    box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
-                }
-                50% {
-                    opacity: 1;
-                    box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
-                }
-            }
-            .pulse-neon {
-                animation: neonPulse 3s infinite;
-            }
+      @keyframes neonPulse {
+        0%,
+        100% {
+          opacity: 0.6;
+          box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+        }
+        50% {
+          opacity: 1;
+          box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
+        }
+      }
+      .pulse-neon {
+        animation: neonPulse 3s infinite;
+      }
 
-            ::-webkit-scrollbar {
-                width: 6px;
-                height: 6px;
-            }
-            ::-webkit-scrollbar-track {
-                background: rgba(14, 13, 22, 0.3);
-            }
-            ::-webkit-scrollbar-thumb {
-                background: rgba(139, 92, 246, 0.3);
-                border-radius: 4px;
-            }
-            ::-webkit-scrollbar-thumb:hover {
-                background: rgba(6, 182, 212, 0.6);
-            }
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(14, 13, 22, 0.3);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(139, 92, 246, 0.3);
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(6, 182, 212, 0.6);
+      }
 
-            /* Mermaid dark theme overrides inside glass panel */
-            .mermaid-wrap {
-                background: rgba(0, 0, 0, 0.25);
-                border: 1px solid rgba(255, 255, 255, 0.05);
-                border-radius: 1rem;
-                padding: 1rem;
-                overflow-x: auto;
-            }
-            .mermaid-wrap svg {
-                max-width: 100%;
-                height: auto;
-            }
+      /* Mermaid dark theme overrides inside glass panel */
+      .mermaid-wrap {
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        padding: 1rem;
+        overflow-x: auto;
+      }
+      .mermaid-wrap svg {
+        max-width: 100%;
+        height: auto;
+      }
 
-            .status-chip {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.35rem;
-                font-family: "JetBrains Mono", monospace;
-                font-size: 10px;
-                padding: 0.25rem 0.6rem;
-                border-radius: 9999px;
-                border: 1px solid rgba(255, 255, 255, 0.08);
-                background: rgba(255, 255, 255, 0.04);
-                color: #9ca3af;
-            }
-            .status-chip.online {
-                border-color: rgba(16, 185, 129, 0.35);
-                background: rgba(16, 185, 129, 0.1);
-                color: #34d399;
-            }
-            .status-chip.offline {
-                border-color: rgba(239, 68, 68, 0.3);
-                background: rgba(239, 68, 68, 0.08);
-                color: #f87171;
-            }
-            .status-chip.active {
-                border-color: rgba(6, 182, 212, 0.4);
-                background: rgba(6, 182, 212, 0.12);
-                color: #22d3ee;
-            }
-        </style>
-    </head>
-    <body class="overflow-x-hidden">
-        <!-- Toast Notification -->
-        <div
-            id="toast"
-            class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 hidden bg-gradient-to-r from-cyan-600 to-violet-600 text-white px-6 py-3 rounded-full shadow-2xl text-sm font-semibold items-center gap-2 opacity-0 transition-all duration-300"
-        >
-            <i class="fa-regular fa-circle-check"></i>
-            <span id="toast-text">Action completed</span>
+      .status-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        padding: 0.25rem 0.6rem;
+        border-radius: 9999px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.04);
+        color: #9ca3af;
+      }
+      .status-chip.online {
+        border-color: rgba(16, 185, 129, 0.35);
+        background: rgba(16, 185, 129, 0.1);
+        color: #34d399;
+      }
+      .status-chip.offline {
+        border-color: rgba(239, 68, 68, 0.3);
+        background: rgba(239, 68, 68, 0.08);
+        color: #f87171;
+      }
+      .status-chip.active {
+        border-color: rgba(6, 182, 212, 0.4);
+        background: rgba(6, 182, 212, 0.12);
+        color: #22d3ee;
+      }
+    </style>
+  </head>
+  <body class="overflow-x-hidden">
+    <!-- Toast Notification -->
+    <div
+      id="toast"
+      class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 hidden bg-gradient-to-r from-cyan-600 to-violet-600 text-white px-6 py-3 rounded-full shadow-2xl text-sm font-semibold items-center gap-2 opacity-0 transition-all duration-300"
+    >
+      <i class="fa-regular fa-circle-check"></i>
+      <span id="toast-text">Action completed</span>
+    </div>
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 py-6 md:py-10">
+      <!-- Header -->
+      <header
+        class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 border-b border-white/5 pb-8"
+      >
+        <div class="flex items-center gap-4">
+          <div
+            class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 via-violet-500 to-amber-500 p-0.5 shadow-lg shadow-violet-500/10"
+          >
+            <div
+              class="w-full h-full bg-[#0b0a11] rounded-[14px] flex items-center justify-center"
+            >
+              <i class="fa-solid fa-paw text-2xl text-cyan-400"></i>
+            </div>
+          </div>
+          <div>
+            <h1 class="text-4xl font-extrabold font-display tracking-tight">
+              YOTE
+              <span
+                class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400"
+                >· 骁逸</span
+              >
+            </h1>
+            <nav class="flex flex-wrap gap-2 mt-3 text-[11px]">
+              <a
+                href="/portal.html"
+                class="px-2.5 py-1 rounded-full border border-cyan-500/40 bg-cyan-500/15 text-cyan-200 hover:border-cyan-300/60"
+                >Control Plane</a
+              >
+              <a
+                href="/fleet.html"
+                class="px-2.5 py-1 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-200 hover:border-violet-400/50"
+                >Fleet Lab</a
+              >
+              <a
+                href="/architecture.html"
+                class="px-2.5 py-1 rounded-full border border-white/10 text-gray-400 hover:text-cyan-300"
+                >Architecture</a
+              >
+              <a
+                id="nav-chat-ui"
+                href="http://127.0.0.1:25100/ui/"
+                target="_blank"
+                rel="noopener"
+                class="px-2.5 py-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300"
+                >Chat UI :25100</a
+              >
+              <a
+                href="http://127.0.0.1:25103/"
+                target="_blank"
+                rel="noopener"
+                class="px-2.5 py-1 rounded-full border border-fuchsia-500/30 text-fuchsia-200/90"
+                >OpenFang</a
+              >
+              <a
+                href="http://127.0.0.1:25110/"
+                target="_blank"
+                rel="noopener"
+                class="px-2.5 py-1 rounded-full border border-orange-500/30 text-orange-200/90"
+                >Grafana</a
+              >
+              <a
+                id="nav-hfd"
+                href="http://127.0.0.1:25106/"
+                target="_blank"
+                rel="noopener"
+                class="px-2.5 py-1 rounded-full border border-amber-500/30 text-amber-200/90"
+                >HFD :25106</a
+              >
+              <a
+                href="http://127.0.0.1:25115/mesh/chain-health"
+                target="_blank"
+                rel="noopener"
+                class="px-2.5 py-1 rounded-full border border-emerald-500/30 text-emerald-200/90"
+                >Mesh</a
+              >
+            </nav>
+            <p
+              class="text-sm text-gray-400 font-display mt-0.5 tracking-wider uppercase"
+            >
+              "Wild Intelligence. Sovereign Control."
+            </p>
+          </div>
         </div>
 
-        <!-- Main Container -->
-        <div class="max-w-7xl mx-auto px-4 py-6 md:py-10">
-            <!-- Header -->
-            <header
-                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 border-b border-white/5 pb-8"
+        <div class="flex flex-wrap items-center gap-4">
+          <div
+            id="mode-toggle"
+            class="flex items-center gap-1.5 text-xs bg-white/5 p-1 rounded-xl border border-white/10"
+          >
+            <button
+              id="btn-real"
+              class="px-3 py-1.5 rounded-lg font-semibold bg-violet-600 text-white transition-all"
             >
-                <div class="flex items-center gap-4">
-                    <div
-                        class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 via-violet-500 to-amber-500 p-0.5 shadow-lg shadow-violet-500/10"
-                    >
-                        <div
-                            class="w-full h-full bg-[#0b0a11] rounded-[14px] flex items-center justify-center"
-                        >
-                            <i
-                                class="fa-solid fa-paw text-2xl text-cyan-400"
-                            ></i>
-                        </div>
-                    </div>
-                    <div>
-                        <h1
-                            class="text-4xl font-extrabold font-display tracking-tight"
-                        >
-                            YOTE
-                            <span
-                                class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400"
-                                >· 骁逸</span
-                            >
-                        </h1>
-                        <nav class="flex flex-wrap gap-2 mt-3 text-[11px]">
-                            <a
-                                href="/portal.html"
-                                class="px-2.5 py-1 rounded-full border border-cyan-500/40 bg-cyan-500/15 text-cyan-200 hover:border-cyan-300/60"
-                                >Control Plane</a
-                            >
-                            <a
-                                href="/fleet.html"
-                                class="px-2.5 py-1 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-200 hover:border-violet-400/50"
-                                >Fleet Lab</a
-                            >
-                            <a
-                                href="/architecture.html"
-                                class="px-2.5 py-1 rounded-full border border-white/10 text-gray-400 hover:text-cyan-300"
-                                >Architecture</a
-                            >
-                            <a
-                                id="nav-chat-ui"
-                                href="http://127.0.0.1:25100/ui/"
-                                target="_blank"
-                                rel="noopener"
-                                class="px-2.5 py-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300"
-                                >Chat UI :25100</a
-                            >
-                            <a
-                                href="http://127.0.0.1:25103/"
-                                target="_blank"
-                                rel="noopener"
-                                class="px-2.5 py-1 rounded-full border border-fuchsia-500/30 text-fuchsia-200/90"
-                                >OpenFang</a
-                            >
-                            <a
-                                href="http://127.0.0.1:25110/"
-                                target="_blank"
-                                rel="noopener"
-                                class="px-2.5 py-1 rounded-full border border-orange-500/30 text-orange-200/90"
-                                >Grafana</a
-                            >
-                            <a
-                                id="nav-hfd"
-                                href="http://127.0.0.1:25106/"
-                                target="_blank"
-                                rel="noopener"
-                                class="px-2.5 py-1 rounded-full border border-amber-500/30 text-amber-200/90"
-                                >HFD :25106</a
-                            >
-                            <a
-                                href="http://127.0.0.1:25115/mesh/chain-health"
-                                target="_blank"
-                                rel="noopener"
-                                class="px-2.5 py-1 rounded-full border border-emerald-500/30 text-emerald-200/90"
-                                >Mesh</a
-                            >
-                        </nav>
-                        <p
-                            class="text-sm text-gray-400 font-display mt-0.5 tracking-wider uppercase"
-                        >
-                            "Wild Intelligence. Sovereign Control."
-                        </p>
-                    </div>
-                </div>
+              Real (Live)
+            </button>
+          </div>
 
-                <div class="flex flex-wrap items-center gap-4">
-                    <div
-                        id="mode-toggle"
-                        class="flex items-center gap-1.5 text-xs bg-white/5 p-1 rounded-xl border border-white/10"
-                    >
-                        <button
-                            id="btn-real"
-                            class="px-3 py-1.5 rounded-lg font-semibold bg-violet-600 text-white transition-all"
-                        >
-                            Real (Live)
-                        </button>
-                    </div>
+          <div class="flex flex-col items-end text-right">
+            <div class="flex items-center gap-2">
+              <span
+                id="global-status-dot"
+                class="w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse"
+              ></span>
+              <span
+                id="global-status-text"
+                class="text-sm font-semibold text-gray-300"
+                >Checking stack...</span
+              >
+            </div>
+            <span
+              id="last-updated"
+              class="text-[10px] text-gray-500 font-mono mt-0.5"
+              >Last sync: --:--:--</span
+            >
+          </div>
 
-                    <div class="flex flex-col items-end text-right">
-                        <div class="flex items-center gap-2">
-                            <span
-                                id="global-status-dot"
-                                class="w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse"
-                            ></span>
-                            <span
-                                id="global-status-text"
-                                class="text-sm font-semibold text-gray-300"
-                                >Checking stack...</span
-                            >
-                        </div>
-                        <span
-                            id="last-updated"
-                            class="text-[10px] text-gray-500 font-mono mt-0.5"
-                            >Last sync: --:--:--</span
-                        >
-                    </div>
+          <button
+            onclick="refreshAll()"
+            class="w-10 h-10 rounded-xl bg-violet-600/20 border border-violet-500/30 hover:bg-violet-600/30 transition flex items-center justify-center text-violet-400"
+            title="Refresh health status"
+          >
+            <i id="refresh-icon" class="fa-solid fa-sync"></i>
+          </button>
+        </div>
+      </header>
 
-                    <button
-                        onclick="refreshAll()"
-                        class="w-10 h-10 rounded-xl bg-violet-600/20 border border-violet-500/30 hover:bg-violet-600/30 transition flex items-center justify-center text-violet-400"
-                        title="Refresh health status"
-                    >
-                        <i id="refresh-icon" class="fa-solid fa-sync"></i>
-                    </button>
-                </div>
-            </header>
+      <!-- Grid Layout -->
+      <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Left & Middle Column (2/3 width) -->
+        <div class="lg:col-span-8 flex flex-col gap-8">
+          <!-- Daemon Status Grid -->
+          <div class="flex flex-col gap-4">
+            <div class="flex justify-between items-center">
+              <h2
+                class="text-xl font-bold font-display tracking-wide flex items-center gap-2"
+              >
+                <i class="fa-solid fa-server text-cyan-400"></i> SOVEREIGN
+                DAEMONS
+              </h2>
+              <span
+                class="text-xs bg-cyan-500/10 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/20 font-mono"
+                id="healthy-count"
+                >0/9 ONLINE</span
+              >
+            </div>
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 gap-4"
+              id="services-grid"
+            >
+              <!-- Populated by JS -->
+            </div>
+          </div>
 
-            <!-- Grid Layout -->
-            <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <!-- Left & Middle Column (2/3 width) -->
-                <div class="lg:col-span-8 flex flex-col gap-8">
-                    <!-- Service Fleet Grid (All Services) -->
-                    <div class="flex flex-col gap-4">
-                        <div class="flex justify-between items-center">
-                            <h2
-                                class="text-xl font-bold font-display tracking-wide flex items-center gap-2"
-                            >
-                                <i class="fa-solid fa-server text-cyan-400"></i>
-                                SOVEREIGN FLEET
-                            </h2>
-                            <span
-                                class="text-xs bg-cyan-500/10 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/20 font-mono"
-                                id="healthy-count"
-                                >0/0 ONLINE</span
-                            >
-                        </div>
-                        <div id="fleet-categories" class="flex flex-col gap-6">
-                            <!-- Populated by JS: grouped by category -->
-                        </div>
-                    </div>
+          <!-- Live Architecture -->
+          <div class="glass-panel rounded-2xl p-6 flex flex-col gap-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <h3
+                class="text-lg font-bold font-display tracking-wide flex items-center gap-2"
+              >
+                <i class="fa-solid fa-diagram-project text-emerald-400"></i>
+                LIVE ARCHITECTURE
+              </h3>
+              <a
+                href="/architecture.html"
+                class="text-[11px] font-mono text-cyan-400 hover:text-cyan-300 border border-cyan-500/20 bg-cyan-500/5 px-3 py-1 rounded-full transition"
+                >Full page →</a
+              >
+            </div>
 
-                    <!-- Live Architecture -->
-                    <div
-                        class="glass-panel rounded-2xl p-6 flex flex-col gap-4"
-                    >
-                        <div
-                            class="flex flex-wrap items-center justify-between gap-3"
-                        >
-                            <h3
-                                class="text-lg font-bold font-display tracking-wide flex items-center gap-2"
-                            >
-                                <i
-                                    class="fa-solid fa-diagram-project text-emerald-400"
-                                ></i>
-                                LIVE ARCHITECTURE
-                            </h3>
-                            <a
-                                href="/architecture.html"
-                                class="text-[11px] font-mono text-cyan-400 hover:text-cyan-300 border border-cyan-500/20 bg-cyan-500/5 px-3 py-1 rounded-full transition"
-                                >Full page →</a
-                            >
-                        </div>
+            <!-- Active model / fork chips -->
+            <div class="flex flex-wrap gap-2" id="arch-model-chips">
+              <span class="status-chip active" id="chip-active-model"
+                >model: …</span
+              >
+              <span class="status-chip active" id="chip-active-fork"
+                >fork: …</span
+              >
+            </div>
 
-                        <!-- Active model / fork chips -->
-                        <div class="flex flex-wrap gap-2" id="arch-model-chips">
-                            <span
-                                class="status-chip active"
-                                id="chip-active-model"
-                                >model: …</span
-                            >
-                            <span
-                                class="status-chip active"
-                                id="chip-active-fork"
-                                >fork: …</span
-                            >
-                        </div>
+            <!-- Service status chips (from /api/architecture) -->
+            <div class="flex flex-wrap gap-2" id="arch-service-chips">
+              <span class="status-chip">loading services…</span>
+            </div>
 
-                        <!-- Service status chips (from /api/architecture) -->
-                        <div
-                            class="flex flex-wrap gap-2"
-                            id="arch-service-chips"
-                        >
-                            <span class="status-chip">loading services…</span>
-                        </div>
+            <!-- Fork tallies -->
+            <div class="flex flex-wrap gap-2" id="arch-fork-chips"></div>
 
-                        <!-- Fork tallies -->
-                        <div
-                            class="flex flex-wrap gap-2"
-                            id="arch-fork-chips"
-                        ></div>
-
-                        <div class="mermaid-wrap" id="arch-mermaid-host">
-                            <pre class="mermaid" id="arch-mermaid">
+            <div class="mermaid-wrap" id="arch-mermaid-host">
+              <pre class="mermaid" id="arch-mermaid">
 flowchart TD
     subgraph Environment ["Environment & Bootstrap"]
         ports[ports.env]
@@ -414,665 +393,493 @@ flowchart TD
     swap --> ik_llama
     swap --> ik_tq
               </pre>
-                        </div>
-                        <p
-                            class="text-[10px] text-gray-500 font-mono"
-                            id="arch-last-sync"
-                        >
-                            architecture poll: —
-                        </p>
-                    </div>
+            </div>
+            <p class="text-[10px] text-gray-500 font-mono" id="arch-last-sync">
+              architecture poll: —
+            </p>
+          </div>
 
-                    <!-- Latency spectral Analysis -->
-                    <div class="glass-panel rounded-2xl p-6">
-                        <h3
-                            class="text-lg font-bold font-display tracking-wide mb-4 flex items-center gap-2"
-                        >
-                            <i class="fa-solid fa-chart-bar text-amber-400"></i>
-                            LATENCY SPECTRAL ANALYSIS
-                        </h3>
-                        <div class="w-full relative h-[220px]">
-                            <canvas id="latency-chart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Column (1/3 width) -->
-                <div class="lg:col-span-4 flex flex-col gap-8">
-                    <!-- Mascot & Brand Overview -->
-                    <div
-                        class="glass-panel rounded-2xl p-6 relative overflow-hidden bg-gradient-to-br from-[#12111d] to-[#08070d]"
-                    >
-                        <div
-                            class="absolute -right-10 -bottom-10 opacity-5 pointer-events-none"
-                        >
-                            <i
-                                class="fa-solid fa-paw text-9xl text-cyan-400"
-                            ></i>
-                        </div>
-                        <div class="flex items-center gap-4 mb-4">
-                            <div
-                                class="w-10 h-10 rounded-xl bg-gradient-to-r from-amber-500 to-red-500 flex items-center justify-center text-black font-extrabold text-sm shadow-lg shadow-amber-500/10"
-                            >
-                                骁逸
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-lg font-display">
-                                    YOTE · 骁逸 (Xiāo Yì)
-                                </h3>
-                                <p
-                                    class="text-xs text-amber-400 font-mono tracking-widest uppercase"
-                                >
-                                    Valiant & Untamed
-                                </p>
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-400 leading-relaxed">
-                            Sovereign Agentic Network powered by local
-                            <strong id="engine-gpu">RTX 3090 GPU</strong>
-                            hardware and
-                            <strong id="engine-model">llama-swap</strong>.
-                            Four-fork model routing via llama-swap — no vLLM.
-                        </p>
-                        <div
-                            class="mt-4 p-4 rounded-xl bg-black/30 border border-white/5 flex flex-col gap-2.5"
-                        >
-                            <div
-                                class="flex justify-between items-center text-xs font-bold text-gray-300"
-                            >
-                                <span>FORK RANKINGS (tg64 speed)</span>
-                                <a
-                                    id="link-hfd-dashboard"
-                                    href="http://127.0.0.1:25106/"
-                                    target="_blank"
-                                    rel="noopener"
-                                    class="text-[10px] text-cyan-400 hover:underline"
-                                    >HFD Dashboard
-                                    <i
-                                        class="fa-solid fa-arrow-up-right-from-square text-[8px]"
-                                    ></i
-                                ></a>
-                            </div>
-                            <div
-                                id="rankings-preview-container"
-                                class="flex flex-col gap-1.5 text-xs text-gray-400"
-                            >
-                                <div class="text-[10px] italic text-gray-600">
-                                    Loading rankings...
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-4 flex gap-2 flex-wrap">
-                            <span
-                                id="badge-gpu"
-                                class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-400 font-mono"
-                                >RTX 3090</span
-                            >
-                            <span
-                                id="badge-vram"
-                                class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-400 font-mono"
-                                >24GB VRAM</span
-                            >
-                            <span
-                                id="badge-cpu"
-                                class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-400 font-mono"
-                                >Host CPU</span
-                            >
-                        </div>
-                    </div>
-
-                    <!-- Model Switcher Panel -->
-                    <div
-                        class="glass-panel rounded-2xl p-6 flex flex-col gap-4"
-                    >
-                        <h3
-                            class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display flex items-center justify-between"
-                        >
-                            <span
-                                ><i
-                                    class="fa-solid fa-microchip text-cyan-400 mr-2"
-                                ></i>
-                                ACTIVE MODEL SWAPPER</span
-                            >
-                            <span
-                                id="active-model-header"
-                                class="text-[9px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20"
-                                >LIVE: None</span
-                            >
-                        </h3>
-                        <div
-                            id="models-list-container"
-                            class="flex flex-col gap-2.5 max-h-[360px] overflow-y-auto pr-1"
-                        >
-                            <div class="text-xs text-gray-500 italic">
-                                Querying models...
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Chat lives on llama-swap UI (:25100) — not this dashboard -->
-                    <div
-                        class="glass-panel rounded-2xl p-6 flex flex-col gap-3"
-                    >
-                        <h3
-                            class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display"
-                        >
-                            <i
-                                class="fa-solid fa-comments text-violet-400 mr-2"
-                            ></i>
-                            LLM CHAT UI
-                        </h3>
-                        <p class="text-xs text-gray-400 leading-relaxed">
-                            Inference chat is
-                            <strong class="text-gray-300">llama-swap</strong>’s
-                            built-in playground — not embedded here. Open it on
-                            <code class="text-cyan-400">:25100/ui</code>.
-                        </p>
-                        <div class="flex flex-wrap gap-2">
-                            <a
-                                id="btn-chat-ui"
-                                href="http://127.0.0.1:25100/ui/"
-                                target="_blank"
-                                rel="noopener"
-                                class="inline-flex items-center gap-2 px-4 py-2.5 bg-violet-600 hover:bg-violet-500 text-white font-semibold rounded-xl text-xs transition shadow-sm shadow-violet-500/20"
-                            >
-                                <i
-                                    class="fa-solid fa-arrow-up-right-from-square"
-                                ></i>
-                                Open llama-swap Chat UI
-                            </a>
-                            <a
-                                id="btn-models-api"
-                                href="http://127.0.0.1:25100/v1/models"
-                                target="_blank"
-                                rel="noopener"
-                                class="inline-flex items-center gap-2 px-3 py-2.5 bg-white/5 border border-white/10 hover:border-cyan-500/40 text-gray-300 rounded-xl text-xs font-mono transition"
-                            >
-                                /v1/models
-                            </a>
-                        </div>
-                        <p
-                            id="text-api-door"
-                            class="text-[10px] text-gray-500 font-mono"
-                        >
-                            API front door: http://127.0.0.1:25100/v1 · UI:
-                            http://127.0.0.1:25100/ui/
-                        </p>
-                    </div>
-
-                    <!-- Centralized Log Stream -->
-                    <div
-                        class="glass-panel rounded-2xl p-6 flex flex-col min-h-[200px]"
-                    >
-                        <h3
-                            class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display mb-3"
-                        >
-                            <i
-                                class="fa-solid fa-shield-halved text-sky-400 mr-2"
-                            ></i>
-                            WATCHDOG &amp; EVENT LOG
-                        </h3>
-                        <div
-                            id="activity-log-container"
-                            class="flex-1 overflow-y-auto max-h-[160px] font-mono text-[9px] text-gray-400 bg-black/20 p-3 rounded-lg border border-white/5"
-                        >
-                            <div class="log-line text-gray-600">
-                                [00:00:00] Waiting for updates...
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
+          <!-- Latency spectral Analysis -->
+          <div class="glass-panel rounded-2xl p-6">
+            <h3
+              class="text-lg font-bold font-display tracking-wide mb-4 flex items-center gap-2"
+            >
+              <i class="fa-solid fa-chart-bar text-amber-400"></i> LATENCY
+              SPECTRAL ANALYSIS
+            </h3>
+            <div class="w-full relative h-[220px]">
+              <canvas id="latency-chart"></canvas>
+            </div>
+          </div>
         </div>
 
-        <script>
-            let currentServices = [];
-            let chart = null;
-            let mermaidReady = false;
+        <!-- Right Column (1/3 width) -->
+        <div class="lg:col-span-4 flex flex-col gap-8">
+          <!-- Mascot & Brand Overview -->
+          <div
+            class="glass-panel rounded-2xl p-6 relative overflow-hidden bg-gradient-to-br from-[#12111d] to-[#08070d]"
+          >
+            <div
+              class="absolute -right-10 -bottom-10 opacity-5 pointer-events-none"
+            >
+              <i class="fa-solid fa-paw text-9xl text-cyan-400"></i>
+            </div>
+            <div class="flex items-center gap-4 mb-4">
+              <div
+                class="w-10 h-10 rounded-xl bg-gradient-to-r from-amber-500 to-red-500 flex items-center justify-center text-black font-extrabold text-sm shadow-lg shadow-amber-500/10"
+              >
+                骁逸
+              </div>
+              <div>
+                <h3 class="font-bold text-lg font-display">
+                  YOTE · 骁逸 (Xiāo Yì)
+                </h3>
+                <p
+                  class="text-xs text-amber-400 font-mono tracking-widest uppercase"
+                >
+                  Valiant & Untamed
+                </p>
+              </div>
+            </div>
+            <p class="text-xs text-gray-400 leading-relaxed">
+              Sovereign Agentic Network powered by local
+              <strong id="engine-gpu">RTX 3090 GPU</strong> hardware and
+              <strong id="engine-model">llama-swap</strong>.
+              Four-fork model routing via llama-swap — no vLLM.
+            </p>
+            <div class="mt-4 p-4 rounded-xl bg-black/30 border border-white/5 flex flex-col gap-2.5">
+              <div class="flex justify-between items-center text-xs font-bold text-gray-300">
+                <span>FORK RANKINGS (tg64 speed)</span>
+                <a id="link-hfd-dashboard" href="http://127.0.0.1:25106/" target="_blank" rel="noopener" class="text-[10px] text-cyan-400 hover:underline">HFD Dashboard <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i></a>
+              </div>
+              <div id="rankings-preview-container" class="flex flex-col gap-1.5 text-xs text-gray-400">
+                <div class="text-[10px] italic text-gray-600">Loading rankings...</div>
+              </div>
+            </div>
+            <div class="mt-4 flex gap-2 flex-wrap">
+              <span
+                id="badge-gpu"
+                class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-400 font-mono"
+                >RTX 3090</span
+              >
+              <span
+                id="badge-vram"
+                class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-400 font-mono"
+                >24GB VRAM</span
+              >
+              <span
+                id="badge-cpu"
+                class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-400 font-mono"
+                >Host CPU</span
+              >
+            </div>
+          </div>
 
-            function initMermaid() {
-                if (typeof mermaid === "undefined") return;
-                mermaid.initialize({
-                    startOnLoad: false,
-                    theme: "dark",
-                    securityLevel: "loose",
-                    flowchart: { curve: "basis", htmlLabels: true },
-                });
-                mermaidReady = true;
-                renderMermaid();
-            }
+          <!-- Model Switcher Panel -->
+          <div class="glass-panel rounded-2xl p-6 flex flex-col gap-4">
+            <h3
+              class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display flex items-center justify-between"
+            >
+              <span
+                ><i class="fa-solid fa-microchip text-cyan-400 mr-2"></i> ACTIVE
+                MODEL SWAPPER</span
+              >
+              <span id="active-model-header" class="text-[9px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">LIVE: None</span>
+            </h3>
+            <div
+              id="models-list-container"
+              class="flex flex-col gap-2.5 max-h-[360px] overflow-y-auto pr-1"
+            >
+              <div class="text-xs text-gray-500 italic">Querying models...</div>
+            </div>
+          </div>
 
-            async function renderMermaid() {
-                if (!mermaidReady) return;
-                const el = document.getElementById("arch-mermaid");
-                if (!el) return;
-                try {
-                    await mermaid.run({ nodes: [el] });
-                } catch (e) {
-                    console.warn("mermaid render:", e);
-                }
-            }
+          <!-- Chat lives on llama-swap UI (:25100) — not this dashboard -->
+          <div class="glass-panel rounded-2xl p-6 flex flex-col gap-3">
+            <h3
+              class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display"
+            >
+              <i class="fa-solid fa-comments text-violet-400 mr-2"></i>
+              LLM CHAT UI
+            </h3>
+            <p class="text-xs text-gray-400 leading-relaxed">
+              Inference chat is
+              <strong class="text-gray-300">llama-swap</strong>’s built-in
+              playground — not embedded here. Open it on
+              <code class="text-cyan-400">:25100/ui</code>.
+            </p>
+             <div class="flex flex-wrap gap-2">
+              <a
+                id="btn-chat-ui"
+                href="http://127.0.0.1:25100/ui/"
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-2 px-4 py-2.5 bg-violet-600 hover:bg-violet-500 text-white font-semibold rounded-xl text-xs transition shadow-sm shadow-violet-500/20"
+              >
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                Open llama-swap Chat UI
+              </a>
+              <a
+                id="btn-models-api"
+                href="http://127.0.0.1:25100/v1/models"
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-2 px-3 py-2.5 bg-white/5 border border-white/10 hover:border-cyan-500/40 text-gray-300 rounded-xl text-xs font-mono transition"
+              >
+                /v1/models
+              </a>
+            </div>
+            <p id="text-api-door" class="text-[10px] text-gray-500 font-mono">
+              API front door: http://127.0.0.1:25100/v1 · UI:
+              http://127.0.0.1:25100/ui/
+            </p>
+          </div>
 
-            async function fetchArchitecture() {
-                try {
-                    const res = await fetch("/ops/api/architecture");
-                    if (!res.ok) throw new Error("Architecture API error");
-                    const data = await res.json();
+          <!-- Centralized Log Stream -->
+          <div class="glass-panel rounded-2xl p-6 flex flex-col min-h-[200px]">
+            <h3
+              class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display mb-3"
+            >
+              <i class="fa-solid fa-shield-halved text-sky-400 mr-2"></i>
+              WATCHDOG &amp; EVENT LOG
+            </h3>
+            <div
+              id="activity-log-container"
+              class="flex-1 overflow-y-auto max-h-[160px] font-mono text-[9px] text-gray-400 bg-black/20 p-3 rounded-lg border border-white/5"
+            >
+              <div class="log-line text-gray-600">
+                [00:00:00] Waiting for updates...
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
 
-                    const modelChip =
-                        document.getElementById("chip-active-model");
-                    const forkChip =
-                        document.getElementById("chip-active-fork");
-                    if (modelChip)
-                        modelChip.textContent = `model: ${data.active_model || "Offline"}`;
-                    if (forkChip)
-                        forkChip.textContent = `fork: ${data.active_fork || "—"}`;
+    <script>
+      let currentServices = [];
+      let chart = null;
+      let mermaidReady = false;
 
-                    // Service chips
-                    const svcHost =
-                        document.getElementById("arch-service-chips");
-                    if (svcHost && data.services) {
-                        const entries = Object.entries(data.services);
-                        svcHost.innerHTML = entries
-                            .map(([name, info]) => {
-                                const on = info && info.online;
-                                const port =
-                                    info && info.port != null
-                                        ? `:${info.port}`
-                                        : "";
-                                return `<span class="status-chip ${on ? "online" : "offline"}">${name}${port} ${on ? "●" : "○"}</span>`;
-                            })
-                            .join("");
-                    }
+      function initMermaid() {
+        if (typeof mermaid === "undefined") return;
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: "dark",
+          securityLevel: "loose",
+          flowchart: { curve: "basis", htmlLabels: true },
+        });
+        mermaidReady = true;
+        renderMermaid();
+      }
 
-                    // Fork tallies
-                    const forkHost = document.getElementById("arch-fork-chips");
-                    if (forkHost && data.models_by_fork) {
-                        const forks = Object.entries(data.models_by_fork);
-                        if (forks.length === 0) {
-                            forkHost.innerHTML = "";
-                        } else {
-                            forkHost.innerHTML = forks
-                                .map(
-                                    ([fork, n]) =>
-                                        `<span class="status-chip ${fork === data.active_fork ? "active" : ""}">${fork}: ${n} model${n === 1 ? "" : "s"}</span>`,
-                                )
-                                .join("");
-                        }
-                    }
+      async function renderMermaid() {
+        if (!mermaidReady) return;
+        const el = document.getElementById("arch-mermaid");
+        if (!el) return;
+        try {
+          await mermaid.run({ nodes: [el] });
+        } catch (e) {
+          console.warn("mermaid render:", e);
+        }
+      }
 
-                    const sync = document.getElementById("arch-last-sync");
-                    if (sync)
-                        sync.textContent = `architecture poll: ${new Date().toLocaleTimeString()}`;
-                } catch (e) {
-                    console.error("Failed to fetch architecture:", e);
-                    const sync = document.getElementById("arch-last-sync");
-                    if (sync)
-                        sync.textContent = `architecture poll error: ${e.message}`;
-                }
-            }
+      async function fetchArchitecture() {
+        try {
+          const res = await fetch("/ops/api/architecture");
+          if (!res.ok) throw new Error("Architecture API error");
+          const data = await res.json();
 
-            async function fetchLogs() {
-                try {
-                    const res = await fetch("/ops/api/logs");
-                    if (!res.ok) throw new Error("Logs API error");
-                    const logs = await res.json();
+          const modelChip = document.getElementById("chip-active-model");
+          const forkChip = document.getElementById("chip-active-fork");
+          if (modelChip)
+            modelChip.textContent = `model: ${data.active_model || "Offline"}`;
+          if (forkChip)
+            forkChip.textContent = `fork: ${data.active_fork || "—"}`;
 
-                    const container = document.getElementById(
-                        "activity-log-container",
-                    );
-                    if (container && logs.length > 0) {
-                        container.innerHTML = logs
-                            .map(
-                                (line) =>
-                                    `<div class="log-line text-[9px] font-mono leading-relaxed border-b border-white/5 py-1">${escapeHtml(line)}</div>`,
-                            )
-                            .join("");
-                        container.scrollTop = container.scrollHeight;
-                    }
-                } catch (e) {
-                    console.error("Failed to fetch watchdog logs:", e);
-                }
-            }
+          // Service chips
+          const svcHost = document.getElementById("arch-service-chips");
+          if (svcHost && data.services) {
+            const entries = Object.entries(data.services);
+            svcHost.innerHTML = entries
+              .map(([name, info]) => {
+                const on = info && info.online;
+                const port = info && info.port != null ? `:${info.port}` : "";
+                return `<span class="status-chip ${on ? "online" : "offline"}">${name}${port} ${on ? "●" : "○"}</span>`;
+              })
+              .join("");
+          }
 
-            function escapeHtml(s) {
-                return String(s)
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;");
-            }
-
-            function addLog(msg) {
-                const time = new Date().toLocaleTimeString();
-                const container = document.getElementById(
-                    "activity-log-container",
-                );
-                if (container) {
-                    const div = document.createElement("div");
-                    div.className =
-                        "log-line text-[9px] font-mono leading-relaxed border-b border-white/5 py-1 text-cyan-400";
-                    div.textContent = `[${time}] ${msg}`;
-                    container.appendChild(div);
-                    container.scrollTop = container.scrollHeight;
-                }
-            }
-
-            const CATEGORY_ORDER = [
-                "Core",
-                "LLM",
-                "Monitoring",
-                "MCP",
-                "Mesh",
-                "Data",
-            ];
-
-            const CATEGORY_ICONS = {
-                Core: "fa-microchip",
-                LLM: "fa-brain",
-                Monitoring: "fa-chart-line",
-                MCP: "fa-plug",
-                Mesh: "fa-diagram-project",
-                Data: "fa-database",
-            };
-
-            const CATEGORY_COLORS = {
-                Core: "cyan",
-                LLM: "violet",
-                Monitoring: "amber",
-                MCP: "fuchsia",
-                Mesh: "emerald",
-                Data: "sky",
-            };
-
-            const SERVICE_ICONS = {
-                "LLaMA Swap": "fa-brain",
-                "Rust Web": "fa-globe",
-                Yote: "fa-paw",
-                OpenFang: "fa-dragon",
-                "Sovereign Router": "fa-route",
-                Prometheus: "fa-chart-bar",
-                "HF Downloader": "fa-cloud-arrow-down",
-                "Null-G Proxy": "fa-shield-halved",
-                "MCP Proxy": "fa-plug",
-                Grafana: "fa-chart-pie",
-                "GHAS API": "fa-github",
-                "GHAS MCP": "fa-code-branch",
-                "Mesh Hub": "fa-diagram-project",
-                "MCP Gateway": "fa-server",
-                "Byte Vision": "fa-eye",
-                "Byte Vision Proxy": "fa-eye-slash",
-                Qdrant: "fa-vector-square",
-                "Redis Sovereign": "fa-bolt",
-                "Redis Telemetry": "fa-signal",
-                Browserless: "fa-window-maximize",
-                "Itvx-Morphe": "fa-cube",
-            };
-
-            async function refreshAll() {
-                const dot = document.getElementById("global-status-dot");
-                const txt = document.getElementById("global-status-text");
-                const icon = document.getElementById("refresh-icon");
-
-                if (dot)
-                    dot.className =
-                        "w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse";
-                if (txt) txt.innerText = "Syncing with fleet...";
-                if (icon) icon.classList.add("fa-spin");
-
-                try {
-                    const res = await fetch("/ops/api/services/all");
-                    if (!res.ok) throw new Error("Services endpoint error");
-                    const data = await res.json();
-
-                    currentServices = data.services.map((s) => ({
-                        name: s.name,
-                        port: s.port,
-                        online: s.online,
-                        url: s.url,
-                        category: s.category,
-                        kind: s.kind,
-                        latency_ms: s.latency_ms,
-                        id: s.name.toLowerCase().replace(/[^a-z0-9]/g, "-"),
-                    }));
-
-                    renderFleetCategories(currentServices);
-
-                    const hc = document.getElementById("healthy-count");
-                    if (hc)
-                        hc.innerText = `${data.online_count}/${data.total_count} ONLINE`;
-
-                    if (dot)
-                        dot.className = `w-2.5 h-2.5 rounded-full ${data.online_count === data.total_count ? "bg-emerald-500" : "bg-amber-500"}`;
-                    if (txt)
-                        txt.innerText =
-                            data.online_count === data.total_count
-                                ? "Fleet fully healthy"
-                                : `Warning: ${data.total_count - data.online_count} nodes offline`;
-
-                    const lu = document.getElementById("last-updated");
-                    if (lu)
-                        lu.innerText = `Last sync: ${new Date().toLocaleTimeString()}`;
-
-                    updateChart();
-                    addLog(
-                        `Fleet sync: ${data.online_count}/${data.total_count} services responsive.`,
-                    );
-                } catch (e) {
-                    addLog(`Sync error: ${e.message}`);
-                    if (txt) txt.innerText = "Connection lost";
-                    if (dot)
-                        dot.className = "w-2.5 h-2.5 rounded-full bg-red-500";
-                } finally {
-                    if (icon) icon.classList.remove("fa-spin");
-                }
-            }
-
-            function renderFleetCategories(services) {
-                const container = document.getElementById("fleet-categories");
-                if (!container) return;
-
-                const grouped = {};
-                for (const svc of services) {
-                    if (!grouped[svc.category]) grouped[svc.category] = [];
-                    grouped[svc.category].push(svc);
-                }
-
-                container.innerHTML = CATEGORY_ORDER.filter(
-                    (cat) => grouped[cat],
+          // Fork tallies
+          const forkHost = document.getElementById("arch-fork-chips");
+          if (forkHost && data.models_by_fork) {
+            const forks = Object.entries(data.models_by_fork);
+            if (forks.length === 0) {
+              forkHost.innerHTML = "";
+            } else {
+              forkHost.innerHTML = forks
+                .map(
+                  ([fork, n]) =>
+                    `<span class="status-chip ${fork === data.active_fork ? "active" : ""}">${fork}: ${n} model${n === 1 ? "" : "s"}</span>`,
                 )
-                    .map((cat) => {
-                        const svcs = grouped[cat];
-                        const color = CATEGORY_COLORS[cat] || "cyan";
-                        const icon = CATEGORY_ICONS[cat] || "fa-server";
-                        const onlineInCat = svcs.filter((s) => s.online).length;
-
-                        return `
-                  <div class="flex flex-col gap-3">
-                    <div class="flex items-center gap-2">
-                      <i class="fa-solid ${icon} text-${color}-400 text-sm"></i>
-                      <h3 class="text-sm font-bold tracking-widest uppercase text-${color}-400 font-display">${cat}</h3>
-                      <span class="text-[9px] font-mono text-gray-500 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">${onlineInCat}/${svcs.length}</span>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      ${svcs.map((svc) => renderServiceCard(svc, color)).join("")}
-                    </div>
-                  </div>`;
-                    })
-                    .join("");
+                .join("");
             }
+          }
 
-            function renderServiceCard(svc, catColor) {
-                const icon = SERVICE_ICONS[svc.name] || "fa-server";
-                const isSelf = svc.name === "Rust Web";
-                const hasDashboard = svc.url && !svc.url.endsWith("--");
-                const tag = hasDashboard ? "a" : "div";
-                const tagAttrs = hasDashboard
-                    ? `href="${svc.url}" target="_blank" rel="noopener" class="group"`
-                    : "";
+          const sync = document.getElementById("arch-last-sync");
+          if (sync)
+            sync.textContent = `architecture poll: ${new Date().toLocaleTimeString()}`;
+        } catch (e) {
+          console.error("Failed to fetch architecture:", e);
+          const sync = document.getElementById("arch-last-sync");
+          if (sync) sync.textContent = `architecture poll error: ${e.message}`;
+        }
+      }
 
-                const borderColor = svc.online
-                    ? `border-${catColor}-500/20`
-                    : "border-white/5";
-                const bgColor = svc.online
-                    ? `rgba(${catColor === "cyan" ? "6,182,212" : catColor === "violet" ? "139,92,246" : catColor === "amber" ? "245,158,11" : catColor === "fuchsia" ? "217,70,239" : catColor === "emerald" ? "16,185,129" : "14,165,233"}, 0.04)`
-                    : "rgba(255,255,255,0.01)";
-                const dotColor = svc.online ? "bg-emerald-400" : "bg-red-400";
-                const dotShadow = svc.online
-                    ? "shadow-[0_0_8px_rgba(52,211,153,0.6)]"
-                    : "shadow-[0_0_8px_rgba(248,113,113,0.4)]";
-                const portBadge = hasDashboard
-                    ? `text-[9px] font-mono text-gray-500 bg-white/5 px-1.5 py-0.5 rounded border border-white/5 hover:text-${catColor}-400 hover:border-${catColor}-500/30 transition`
-                    : `text-[9px] font-mono text-gray-600 px-1.5 py-0.5 rounded`;
+      async function fetchLogs() {
+        try {
+          const res = await fetch("/ops/api/logs");
+          if (!res.ok) throw new Error("Logs API error");
+          const logs = await res.json();
+
+          const container = document.getElementById("activity-log-container");
+          if (container && logs.length > 0) {
+            container.innerHTML = logs
+              .map(
+                (line) =>
+                  `<div class="log-line text-[9px] font-mono leading-relaxed border-b border-white/5 py-1">${escapeHtml(line)}</div>`,
+              )
+              .join("");
+            container.scrollTop = container.scrollHeight;
+          }
+        } catch (e) {
+          console.error("Failed to fetch watchdog logs:", e);
+        }
+      }
+
+      function escapeHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function addLog(msg) {
+        const time = new Date().toLocaleTimeString();
+        const container = document.getElementById("activity-log-container");
+        if (container) {
+          const div = document.createElement("div");
+          div.className =
+            "log-line text-[9px] font-mono leading-relaxed border-b border-white/5 py-1 text-cyan-400";
+          div.textContent = `[${time}] ${msg}`;
+          container.appendChild(div);
+          container.scrollTop = container.scrollHeight;
+        }
+      }
+
+      async function refreshAll() {
+        const dot = document.getElementById("global-status-dot");
+        const txt = document.getElementById("global-status-text");
+        const icon = document.getElementById("refresh-icon");
+
+        if (dot)
+          dot.className =
+            "w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse";
+        if (txt) txt.innerText = "Syncing with daemons...";
+        if (icon) icon.classList.add("fa-spin");
+
+        try {
+          const res = await fetch("/ops/api/status");
+          if (!res.ok) throw new Error("Status endpoint error");
+          const statuses = await res.json();
+
+          currentServices = Object.entries(statuses).map(([name, info]) => ({
+            name: name,
+            port: info.port,
+            online: info.online,
+            id: name.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+          }));
+
+          let healthy = 0;
+          const grid = document.getElementById("services-grid");
+          if (grid) {
+            grid.innerHTML = currentServices
+              .map((svc) => {
+                if (svc.online) healthy++;
+                const accent = svc.online ? "text-cyan-400" : "text-gray-500";
+                const border = svc.online
+                  ? "border-cyan-500/20"
+                  : "border-white/5";
+                const bg = svc.online
+                  ? "rgba(6, 182, 212, 0.05)"
+                  : "rgba(255,255,255,0.01)";
+                const badgeClass = svc.online
+                  ? "text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10"
+                  : "text-[10px] font-mono font-bold text-red-400 bg-red-500/5 px-2 py-0.5 rounded border border-red-500/10";
 
                 return `
-                <${tag} ${tagAttrs}>
-                  <div class="service-card rounded-xl p-4 flex items-center justify-between border ${borderColor} transition-all duration-200" style="background: ${bgColor};">
-                    <div class="flex items-center gap-3 min-w-0">
-                      <div class="relative flex-shrink-0">
-                        <div class="w-10 h-10 rounded-lg bg-black/40 flex items-center justify-center text-sm text-gray-400 ${svc.online ? "text-" + catColor + "-400" : ""}">
-                          <i class="fa-solid ${icon}"></i>
+                <div class="service-card rounded-xl p-4 flex items-center justify-between border ${border}" style="background: ${bg};">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-black/40 flex items-center justify-center text-sm ${accent}">
+                            <i class="fa-solid fa-server"></i>
                         </div>
-                        <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#12101c] ${dotColor} ${dotShadow}"></span>
-                      </div>
-                      <div class="min-w-0">
-                        <div class="text-xs font-bold text-white flex items-center gap-1.5">
-                          <span class="truncate">${svc.name}</span>
-                          ${isSelf ? `<span class="text-[8px] text-cyan-400 bg-cyan-500/10 px-1 py-0.5 rounded border border-cyan-500/20">SELF</span>` : ""}
+                        <div>
+                            <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                                <span>${svc.name}</span>
+                                <span class="text-[9px] text-gray-500 font-mono">:${svc.port}</span>
+                            </div>
+                            <div class="text-[10px] text-gray-500 mt-0.5">Live Stack Process</div>
                         </div>
-                        <div class="flex items-center gap-2 mt-0.5">
-                          <span class="text-[9px] text-gray-500">${svc.kind}</span>
-                          <span class="${portBadge}">:${svc.port}</span>
-                        </div>
-                      </div>
                     </div>
-                    <div class="flex flex-col items-end gap-1 flex-shrink-0">
-                      <span class="text-[9px] font-mono font-bold ${svc.online ? "text-emerald-400" : "text-red-400"} ${svc.online ? "bg-emerald-500/5" : "bg-red-500/5"} px-2 py-0.5 rounded border ${svc.online ? "border-emerald-500/10" : "border-red-500/10"}">
-                        ${svc.online ? "ONLINE" : "OFFLINE"}
-                      </span>
-                      ${svc.latency_ms != null && svc.online ? `<span class="text-[8px] font-mono text-gray-600">${svc.latency_ms}ms</span>` : ""}
+                    <div class="flex flex-col items-end gap-1.5">
+                        <span class="${badgeClass}">${svc.online ? "ONLINE" : "OFFLINE"}</span>
                     </div>
-                  </div>
-                </${tag}>`;
-            }
+                </div>
+              `;
+              })
+              .join("");
+          }
 
-            function updateChart() {
-                const ctx = document.getElementById("latency-chart");
-                if (!ctx) return;
+          const hc = document.getElementById("healthy-count");
+          if (hc)
+            hc.innerText = `${healthy}/${currentServices.length} ONLINE`;
 
-                const labels = currentServices.map((s) => s.name);
-                const data = currentServices.map((s) =>
-                    s.online ? Math.round(15 + Math.random() * 20) : 0,
-                );
+          if (dot)
+            dot.className = `w-2.5 h-2.5 rounded-full ${healthy === currentServices.length ? "bg-emerald-500" : "bg-amber-500"}`;
+          if (txt)
+            txt.innerText =
+              healthy === currentServices.length
+                ? "Stack fully healthy"
+                : "Warning: Some nodes offline";
 
-                if (chart) {
-                    chart.data.labels = labels;
-                    chart.data.datasets[0].data = data;
-                    chart.update();
-                    return;
-                }
+          const lu = document.getElementById("last-updated");
+          if (lu)
+            lu.innerText = `Last sync: ${new Date().toLocaleTimeString()}`;
 
-                chart = new Chart(ctx, {
-                    type: "bar",
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: "Active Latency (ms)",
-                                data: data,
-                                backgroundColor: "rgba(6, 182, 212, 0.45)",
-                                borderColor: "rgba(6, 182, 212, 0.8)",
-                                borderWidth: 1,
-                                borderRadius: 6,
-                            },
-                        ],
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                        },
-                        scales: {
-                            y: {
-                                grid: { color: "rgba(255, 255, 255, 0.05)" },
-                                ticks: { color: "#a1a1aa", font: { size: 9 } },
-                                min: 0,
-                                max: 100,
-                            },
-                            x: {
-                                grid: { display: false },
-                                ticks: { color: "#a1a1aa", font: { size: 9 } },
-                            },
-                        },
-                    },
-                });
-            }
+          updateChart();
+          addLog(`Health sync completed. ${healthy} daemons responsive.`);
+        } catch (e) {
+          addLog(`Sync error: ${e.message}`);
+          if (txt) txt.innerText = "Connection lost";
+          if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-red-500";
+        } finally {
+          if (icon) icon.classList.remove("fa-spin");
+        }
+      }
 
-            async function fetchModels() {
-                try {
-                    const res = await fetch("/ops/api/models");
-                    if (!res.ok) throw new Error("Models API error");
-                    const models = await res.json();
-                    renderModels(models);
-                } catch (e) {
-                    console.error("Failed to fetch models:", e);
-                }
-            }
+      function updateChart() {
+        const ctx = document.getElementById("latency-chart");
+        if (!ctx) return;
 
-            function renderModels(models) {
-                const container = document.getElementById(
-                    "models-list-container",
-                );
-                if (!container) return;
+        const labels = currentServices.map((s) => s.name);
+        const data = currentServices.map((s) =>
+          s.online ? Math.round(15 + Math.random() * 20) : 0,
+        );
 
-                if (!models || models.length === 0) {
-                    container.innerHTML = `<div class="text-xs text-gray-500 italic">No models available.</div>`;
-                    return;
-                }
+        if (chart) {
+          chart.data.labels = labels;
+          chart.data.datasets[0].data = data;
+          chart.update();
+          return;
+        }
 
-                // Sort by active state (active first), then priority (descending), then ID (alphabetical)
-                models.sort((a, b) => {
-                    if (a.active && !b.active) return -1;
-                    if (!a.active && b.active) return 1;
-                    if ((b.priority || 0) !== (a.priority || 0)) {
-                        return (b.priority || 0) - (a.priority || 0);
-                    }
-                    return a.id.localeCompare(b.id);
-                });
+        chart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Active Latency (ms)",
+                data: data,
+                backgroundColor: "rgba(6, 182, 212, 0.45)",
+                borderColor: "rgba(6, 182, 212, 0.8)",
+                borderWidth: 1,
+                borderRadius: 6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+            },
+            scales: {
+              y: {
+                grid: { color: "rgba(255, 255, 255, 0.05)" },
+                ticks: { color: "#a1a1aa", font: { size: 9 } },
+                min: 0,
+                max: 100,
+              },
+              x: {
+                grid: { display: false },
+                ticks: { color: "#a1a1aa", font: { size: 9 } },
+              },
+            },
+          },
+        });
+      }
 
-                const activeModel = models.find((m) => m.active);
-                const headerEl = document.getElementById("active-model-header");
-                if (headerEl) {
-                    if (activeModel) {
-                        headerEl.innerText = `LIVE: ${activeModel.id}`;
-                        headerEl.className =
-                            "text-[9px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20";
-                    } else {
-                        headerEl.innerText = "LIVE: None";
-                        headerEl.className =
-                            "text-[9px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20";
-                    }
-                }
+      async function fetchModels() {
+        try {
+          const res = await fetch("/ops/api/models");
+          if (!res.ok) throw new Error("Models API error");
+          const models = await res.json();
+          renderModels(models);
+        } catch (e) {
+          console.error("Failed to fetch models:", e);
+        }
+      }
 
-                container.innerHTML = models
-                    .map((m) => {
-                        const border = m.active
-                            ? "border-cyan-500/50 bg-cyan-950/20"
-                            : "border-white/5 hover:border-white/10";
-                        const badgeClass = m.active
-                            ? "text-[9px] font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20"
-                            : "text-[9px] font-mono font-bold text-gray-500 bg-white/5 px-2 py-0.5 rounded border border-white/5";
-                        const swapBtn = m.active
-                            ? `<span class="${badgeClass}">ACTIVE</span>`
-                            : `<button onclick="swapModel('${escapeHtml(m.id)}')" class="text-[9px] font-bold px-2 py-0.5 bg-violet-600 hover:bg-violet-500 text-white rounded transition shadow-sm shadow-violet-500/10">SWAP</button>`;
+      function renderModels(models) {
+        const container = document.getElementById("models-list-container");
+        if (!container) return;
 
-                        const priorityBadge =
-                            m.priority > 0
-                                ? `<span class="text-[9px] font-mono text-violet-400 bg-violet-500/10 px-1.5 py-0.5 rounded border border-violet-500/20">Prio: ${m.priority}</span>`
-                                : "";
+        if (!models || models.length === 0) {
+          container.innerHTML = `<div class="text-xs text-gray-500 italic">No models available.</div>`;
+          return;
+        }
 
-                        return `
+        // Sort by active state (active first), then priority (descending), then ID (alphabetical)
+        models.sort((a, b) => {
+          if (a.active && !b.active) return -1;
+          if (!a.active && b.active) return 1;
+          if ((b.priority || 0) !== (a.priority || 0)) {
+            return (b.priority || 0) - (a.priority || 0);
+          }
+          return a.id.localeCompare(b.id);
+        });
+
+        const activeModel = models.find(m => m.active);
+        const headerEl = document.getElementById("active-model-header");
+        if (headerEl) {
+          if (activeModel) {
+            headerEl.innerText = `LIVE: ${activeModel.id}`;
+            headerEl.className = "text-[9px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20";
+          } else {
+            headerEl.innerText = "LIVE: None";
+            headerEl.className = "text-[9px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20";
+          }
+        }
+
+        container.innerHTML = models
+          .map((m) => {
+            const border = m.active
+              ? "border-cyan-500/50 bg-cyan-950/20"
+              : "border-white/5 hover:border-white/10";
+            const badgeClass = m.active
+              ? "text-[9px] font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20"
+              : "text-[9px] font-mono font-bold text-gray-500 bg-white/5 px-2 py-0.5 rounded border border-white/5";
+            const swapBtn = m.active
+              ? `<span class="${badgeClass}">ACTIVE</span>`
+              : `<button onclick="swapModel('${escapeHtml(m.id)}')" class="text-[9px] font-bold px-2 py-0.5 bg-violet-600 hover:bg-violet-500 text-white rounded transition shadow-sm shadow-violet-500/10">SWAP</button>`;
+
+            const priorityBadge = m.priority > 0
+              ? `<span class="text-[9px] font-mono text-violet-400 bg-violet-500/10 px-1.5 py-0.5 rounded border border-violet-500/20">Prio: ${m.priority}</span>`
+              : "";
+
+            return `
               <div class="service-card rounded-xl p-3.5 flex flex-col gap-2 border ${border}">
                 <div class="flex justify-between items-center">
                   <span class="text-xs font-bold text-white font-mono truncate max-w-[70%] flex items-center gap-1.5">
@@ -1089,181 +896,155 @@ flowchart TD
                 </div>
               </div>
             `;
-                    })
-                    .join("");
+          })
+          .join("");
+      }
+
+      async function swapModel(modelId) {
+        addLog(`Initiating model swap to ${modelId}...`);
+        try {
+          const res = await fetch("http://127.0.0.1:25100/v1/chat/completions", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model: modelId,
+              messages: [{ role: "user", content: "hello" }],
+              max_tokens: 1,
+            }),
+          });
+          if (res.ok) {
+            addLog(`Swapped to model ${modelId} successfully.`);
+            fetchModels();
+            fetchTelemetry();
+            fetchArchitecture();
+          } else {
+            throw new Error(`Swap request status: ${res.status}`);
+          }
+        } catch (e) {
+          addLog(`Swap error: ${e.message}`);
+        }
+      }
+
+      async function fetchRankingsPreview() {
+        try {
+          const res = await fetch("/ops/api/fleet/last");
+          if (!res.ok) return;
+          const data = await res.json();
+          renderRankingsPreview(data);
+        } catch (e) {
+          console.error("Failed to fetch rankings preview:", e);
+        }
+      }
+
+      function renderRankingsPreview(data) {
+        const container = document.getElementById("rankings-preview-container");
+        if (!container) return;
+        if (!data || !data.forks || Object.keys(data.forks).length === 0) {
+          container.innerHTML = `<div class="text-[10px] text-gray-500 italic">No rankings available. Run bench-forks.sh</div>`;
+          return;
+        }
+
+        const list = [];
+        for (const [name, fork] of Object.entries(data.forks)) {
+          let tg64 = 0;
+          if (fork.ok && fork.bench_stdout_tail) {
+            const lines = fork.bench_stdout_tail.split('\n');
+            for (const line of lines) {
+              if (line.includes("tg64")) {
+                const parts = line.split('|');
+                if (parts.length > 7) {
+                  const valPart = parts[7].trim().split(' ')[0];
+                  const val = parseFloat(valPart);
+                  if (!isNaN(val)) tg64 = val;
+                }
+              }
             }
+          }
+          list.push({ name, tg64 });
+        }
 
-            async function swapModel(modelId) {
-                addLog(`Initiating model swap to ${modelId}...`);
-                try {
-                    const res = await fetch(
-                        "http://127.0.0.1:25100/v1/chat/completions",
-                        {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                model: modelId,
-                                messages: [{ role: "user", content: "hello" }],
-                                max_tokens: 1,
-                            }),
-                        },
-                    );
-                    if (res.ok) {
-                        addLog(`Swapped to model ${modelId} successfully.`);
-                        fetchModels();
-                        fetchTelemetry();
-                        fetchArchitecture();
-                    } else {
-                        throw new Error(`Swap request status: ${res.status}`);
-                    }
-                } catch (e) {
-                    addLog(`Swap error: ${e.message}`);
-                }
-            }
+        list.sort((a, b) => b.tg64 - a.tg64);
 
-            async function fetchRankingsPreview() {
-                try {
-                    const res = await fetch("/ops/api/fleet/last");
-                    if (!res.ok) return;
-                    const data = await res.json();
-                    renderRankingsPreview(data);
-                } catch (e) {
-                    console.error("Failed to fetch rankings preview:", e);
-                }
-            }
-
-            function renderRankingsPreview(data) {
-                const container = document.getElementById(
-                    "rankings-preview-container",
-                );
-                if (!container) return;
-                if (
-                    !data ||
-                    !data.forks ||
-                    Object.keys(data.forks).length === 0
-                ) {
-                    container.innerHTML = `<div class="text-[10px] text-gray-500 italic">No rankings available. Run bench-forks.sh</div>`;
-                    return;
-                }
-
-                const list = [];
-                for (const [name, fork] of Object.entries(data.forks)) {
-                    let tg64 = 0;
-                    if (fork.ok && fork.bench_stdout_tail) {
-                        const lines = fork.bench_stdout_tail.split("\n");
-                        for (const line of lines) {
-                            if (line.includes("tg64")) {
-                                const parts = line.split("|");
-                                if (parts.length > 7) {
-                                    const valPart = parts[7]
-                                        .trim()
-                                        .split(" ")[0];
-                                    const val = parseFloat(valPart);
-                                    if (!isNaN(val)) tg64 = val;
-                                }
-                            }
-                        }
-                    }
-                    list.push({ name, tg64 });
-                }
-
-                list.sort((a, b) => b.tg64 - a.tg64);
-
-                container.innerHTML = list
-                    .map((item, idx) => {
-                        const medal =
-                            idx === 0
-                                ? "🥇"
-                                : idx === 1
-                                  ? "🥈"
-                                  : idx === 2
-                                    ? "🥉"
-                                    : "⚡";
-                        const speed =
-                            item.tg64 > 0
-                                ? `${item.tg64.toFixed(1)} t/s`
-                                : "offline/pending";
-                        const color =
-                            idx === 0 ? "text-cyan-300" : "text-gray-300";
-                        return `
+        container.innerHTML = list.map((item, idx) => {
+          const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "⚡";
+          const speed = item.tg64 > 0 ? `${item.tg64.toFixed(1)} t/s` : "offline/pending";
+          const color = idx === 0 ? "text-cyan-300" : "text-gray-300";
+          return `
             <div class="flex justify-between items-center text-[11px] py-0.5 border-b border-white/5 last:border-0">
               <span class="font-mono flex items-center gap-1"><span class="text-xs">${medal}</span> <span class="${color}">${escapeHtml(item.name)}</span></span>
               <span class="font-mono font-bold text-gray-300">${speed}</span>
             </div>
           `;
-                    })
-                    .join("");
-            }
+        }).join("");
+      }
 
-            async function fetchTelemetry() {
-                try {
-                    const res = await fetch("/ops/api/telemetry");
-                    if (!res.ok) return;
-                    const data = await res.json();
+      async function fetchTelemetry() {
+        try {
+          const res = await fetch("/ops/api/telemetry");
+          if (!res.ok) return;
+          const data = await res.json();
 
-                    const modelEl = document.getElementById("engine-model");
-                    const gpuEl = document.getElementById("engine-gpu");
-                    const bgpu = document.getElementById("badge-gpu");
-                    const bvram = document.getElementById("badge-vram");
-                    const bcpu = document.getElementById("badge-cpu");
+          const modelEl = document.getElementById("engine-model");
+          const gpuEl = document.getElementById("engine-gpu");
+          const bgpu = document.getElementById("badge-gpu");
+          const bvram = document.getElementById("badge-vram");
+          const bcpu = document.getElementById("badge-cpu");
 
-                    if (modelEl) modelEl.innerText = data.aiEngine || "Offline";
-                    if (gpuEl) gpuEl.innerText = `${data.gpuName || "CPU"} GPU`;
-                    if (bgpu) bgpu.innerText = data.gpuName || "CPU Only";
-                    if (bvram) bvram.innerText = data.vramStr || "Shared VRAM";
-                    if (bcpu)
-                        bcpu.innerText = `${data.cpuName || "Host CPU"} (${data.ramGb || 0}GB RAM)`;
-                } catch (e) {
-                    console.error("Telemetry fetch failed:", e);
-                }
-            }
+          if (modelEl) modelEl.innerText = data.aiEngine || "Offline";
+          if (gpuEl) gpuEl.innerText = `${data.gpuName || "CPU"} GPU`;
+          if (bgpu) bgpu.innerText = data.gpuName || "CPU Only";
+          if (bvram) bvram.innerText = data.vramStr || "Shared VRAM";
+          if (bcpu)
+            bcpu.innerText = `${data.cpuName || "Host CPU"} (${data.ramGb || 0}GB RAM)`;
+        } catch (e) {
+          console.error("Telemetry fetch failed:", e);
+        }
+      }
 
-            function updateDynamicLinks() {
-                const host = window.location.hostname;
 
-                const navChatUi = document.getElementById("nav-chat-ui");
-                if (navChatUi) navChatUi.href = `http://${host}:25100/ui/`;
+      function updateDynamicLinks() {
+        const host = window.location.hostname;
+        
+        const navChatUi = document.getElementById("nav-chat-ui");
+        if (navChatUi) navChatUi.href = `http://${host}:25100/ui/`;
+        
+        const navHfd = document.getElementById("nav-hfd");
+        if (navHfd) navHfd.href = `http://${host}:25106/`;
+        
+        const linkHfdDashboard = document.getElementById("link-hfd-dashboard");
+        if (linkHfdDashboard) linkHfdDashboard.href = `http://${host}:25106/`;
+        
+        const btnChatUi = document.getElementById("btn-chat-ui");
+        if (btnChatUi) btnChatUi.href = `http://${host}:25100/ui/`;
+        
+        const btnModelsApi = document.getElementById("btn-models-api");
+        if (btnModelsApi) btnModelsApi.href = `http://${host}:25100/v1/models`;
 
-                const navHfd = document.getElementById("nav-hfd");
-                if (navHfd) navHfd.href = `http://${host}:25106/`;
+        const textApiDoor = document.getElementById("text-api-door");
+        if (textApiDoor) {
+          textApiDoor.innerHTML = `API front door: http://${host}:25100/v1 · UI: http://${host}:25100/ui/`;
+        }
+      }
 
-                const linkHfdDashboard =
-                    document.getElementById("link-hfd-dashboard");
-                if (linkHfdDashboard)
-                    linkHfdDashboard.href = `http://${host}:25106/`;
+      function init() {
+        updateDynamicLinks();
+        initMermaid();
+        refreshAll();
+        fetchTelemetry();
+        fetchModels();
+        fetchLogs();
+        fetchArchitecture();
+        fetchRankingsPreview();
+        setInterval(refreshAll, 15000);
+        setInterval(fetchTelemetry, 20000);
+        setInterval(fetchModels, 25000);
+        setInterval(fetchLogs, 4000);
+        setInterval(fetchArchitecture, 8000);
+        setInterval(fetchRankingsPreview, 12000);
+      }
 
-                const btnChatUi = document.getElementById("btn-chat-ui");
-                if (btnChatUi) btnChatUi.href = `http://${host}:25100/ui/`;
-
-                const btnModelsApi = document.getElementById("btn-models-api");
-                if (btnModelsApi)
-                    btnModelsApi.href = `http://${host}:25100/v1/models`;
-
-                const textApiDoor = document.getElementById("text-api-door");
-                if (textApiDoor) {
-                    textApiDoor.innerHTML = `API front door: http://${host}:25100/v1 · UI: http://${host}:25100/ui/`;
-                }
-            }
-
-            function init() {
-                updateDynamicLinks();
-                initMermaid();
-                refreshAll();
-                fetchTelemetry();
-                fetchModels();
-                fetchLogs();
-                fetchArchitecture();
-                fetchRankingsPreview();
-                setInterval(refreshAll, 15000);
-                setInterval(fetchTelemetry, 20000);
-                setInterval(fetchModels, 25000);
-                setInterval(fetchLogs, 4000);
-                setInterval(fetchArchitecture, 8000);
-                setInterval(fetchRankingsPreview, 12000);
-            }
-
-            document.addEventListener("DOMContentLoaded", init);
-        </script>
-        <!-- hotreload-probe t1784356222710 -->
-    </body>
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+  <!-- hotreload-probe t1784356222710 -->
+</body>
 </html>

@@ -5,12 +5,12 @@ SOV="${SOVEREIGN_ROOT:-$PWD}"
 export PATH="${HOME}/.cargo/bin:/usr/bin:/bin:${PATH}"
 source "$SOV/stack/lib-ports.sh"
 require_env RUST_WEB_PORT
+require_env WATCHDOG_PORT
 require_env LLAMA_SWAP_PORT
 PUBLIC="${RUST_WEB_PORT}"
 BACKEND="${RUST_WEB_BACKEND_PORT:-26101}"
 export RUST_WEB_PORT="${BACKEND}"
-export WATCHDOG_PORT=25111
-export SOVEREIGN_ROOT="$SOV"
+export WATCHDOG_PORT SOVEREIGN_ROOT="$SOV"
 export LLM_PROXY_URL="${LLM_PROXY_URL:-http://127.0.0.1:${LLAMA_SWAP_PORT}}"
 
 cd "$SOV/rust_algo_web"
@@ -19,6 +19,7 @@ if ! command -v cargo-watch >/dev/null 2>&1; then
 fi
 fuser -k "${PUBLIC}/tcp" 2>/dev/null || true
 fuser -k "${BACKEND}/tcp" 2>/dev/null || true
+fuser -k "${WATCHDOG_PORT}/tcp" 2>/dev/null || true
 export TERM="${TERM:-xterm-256color}"
 export CARGO_TERM_COLOR="${CARGO_TERM_COLOR:-always}"
 if command -v sccache >/dev/null 2>&1; then
@@ -26,7 +27,7 @@ if command -v sccache >/dev/null 2>&1; then
 fi
 echo "[rust-web-hot] backend :${BACKEND} mesh-front :${PUBLIC}" >&2
 
-RUST_WEB_PORT="${BACKEND}" WATCHDOG_PORT=25111 cargo watch -q -w src -w Cargo.toml -x 'run --release' &
+cargo watch -q -w src -w Cargo.toml -x 'run --release' &
 CARGO_PID=$!
 cleanup() { kill "$CARGO_PID" 2>/dev/null || true; }
 trap cleanup EXIT

@@ -410,179 +410,6 @@ async fn get_gpu_metrics() -> impl IntoResponse {
     }
 }
 
-#[derive(Serialize)]
-struct ServiceInfo {
-    name: String,
-    port: u16,
-    url: String,
-    category: String,
-    kind: String,
-    online: bool,
-    latency_ms: u128,
-}
-
-#[derive(Serialize)]
-struct AllServicesResponse {
-    services: Vec<ServiceInfo>,
-    online_count: usize,
-    total_count: usize,
-}
-
-async fn get_all_services() -> Json<AllServicesResponse> {
-    let services = vec![
-        (
-            "LLaMA Swap",
-            25100,
-            "http://localhost:25100",
-            "LLM",
-            "LLM Proxy",
-        ),
-        (
-            "Rust Web",
-            25101,
-            "http://localhost:25101",
-            "Core",
-            "Dashboard",
-        ),
-        ("Yote", 25102, "http://localhost:25102", "Core", "Service"),
-        (
-            "OpenFang",
-            25103,
-            "http://localhost:25103",
-            "Core",
-            "Service",
-        ),
-        (
-            "Sovereign Router",
-            25104,
-            "http://localhost:25104/health",
-            "Core",
-            "Router",
-        ),
-        (
-            "Prometheus",
-            25105,
-            "http://localhost:25105",
-            "Monitoring",
-            "Metrics",
-        ),
-        (
-            "HF Downloader",
-            25106,
-            "http://localhost:25106",
-            "LLM",
-            "Model Downloader",
-        ),
-        (
-            "Null-G Proxy",
-            25107,
-            "http://localhost:25107",
-            "Core",
-            "Search",
-        ),
-        (
-            "MCP Proxy",
-            25109,
-            "http://localhost:25109",
-            "MCP",
-            "Gateway",
-        ),
-        (
-            "Grafana",
-            25110,
-            "http://localhost:25110",
-            "Monitoring",
-            "Dashboards",
-        ),
-        (
-            "GHAS API",
-            25112,
-            "http://localhost:25112",
-            "MCP",
-            "GitHub Search",
-        ),
-        (
-            "GHAS MCP",
-            25113,
-            "http://localhost:25113",
-            "MCP",
-            "MCP Server",
-        ),
-        ("Mesh Hub", 25115, "http://localhost:25115", "Mesh", "Mesh"),
-        (
-            "MCP Gateway",
-            25120,
-            "http://localhost:25120",
-            "MCP",
-            "Gateway",
-        ),
-        (
-            "Byte Vision",
-            25121,
-            "http://localhost:25121",
-            "MCP",
-            "Vision MCP",
-        ),
-        (
-            "Byte Vision Proxy",
-            25122,
-            "http://localhost:25122",
-            "MCP",
-            "Proxy",
-        ),
-        (
-            "Qdrant",
-            6333,
-            "http://localhost:6333/dashboard",
-            "Data",
-            "Vector DB",
-        ),
-        ("Redis Sovereign", 25199, "", "Data", "Cache"),
-        ("Redis Telemetry", 25198, "", "Data", "Telemetry"),
-        (
-            "Browserless",
-            25130,
-            "http://localhost:25130",
-            "MCP",
-            "Browser",
-        ),
-        (
-            "Itvx-Morphe",
-            25140,
-            "http://localhost:25140",
-            "Core",
-            "Engine",
-        ),
-    ];
-
-    let mut results = Vec::new();
-    for (name, port, url, category, kind) in services {
-        let start = std::time::Instant::now();
-        let online = tokio::net::TcpStream::connect(format!("127.0.0.1:{}", port))
-            .await
-            .is_ok();
-        let latency_ms = start.elapsed().as_millis();
-        results.push(ServiceInfo {
-            name: name.into(),
-            port,
-            url: url.into(),
-            category: category.into(),
-            kind: kind.into(),
-            online,
-            latency_ms,
-        });
-    }
-
-    let online_count = results.iter().filter(|s| s.online).count();
-    let total_count = results.len();
-
-    Json(AllServicesResponse {
-        services: results,
-        online_count,
-        total_count,
-    })
-}
-
 async fn get_arch_live() -> Json<ArchLiveResponse> {
     let status = get_status().await.0;
     let models = get_models_meta().await.0;
@@ -636,9 +463,7 @@ async fn main() {
         }))
     }
     async fn mesh_readyz() -> impl IntoResponse {
-        Json(
-            serde_json::json!({"feature":"readyz","service":"rust-web","ready":true,"ghas":"k8s-readyz"}),
-        )
+        Json(serde_json::json!({"feature":"readyz","service":"rust-web","ready":true,"ghas":"k8s-readyz"}))
     }
     async fn mesh_livez() -> impl IntoResponse {
         Json(serde_json::json!({"feature":"livez","service":"rust-web","live":true}))
@@ -677,7 +502,6 @@ async fn main() {
         .route("/ops/api/telemetry", get(get_telemetry))
         .route("/ops/api/models", get(get_models_meta))
         .route("/ops/api/architecture", get(get_arch_live))
-        .route("/ops/api/services/all", get(get_all_services))
         .route("/ops/api/integrations", get(get_integrations))
         .route("/ops/api/fleet/last", get(get_fleet_last))
         .route("/ops/api/gpu/metrics", get(get_gpu_metrics))
@@ -697,7 +521,10 @@ async fn main() {
                 {
                     Ok(resp) => {
                         let status = resp.status();
-                        let body = resp.text().await.unwrap_or_else(|_| "{}".into());
+                        let body = resp
+                            .text()
+                            .await
+                            .unwrap_or_else(|_| "{}".into());
                         (
                             axum::http::StatusCode::from_u16(status.as_u16())
                                 .unwrap_or(axum::http::StatusCode::BAD_GATEWAY),
