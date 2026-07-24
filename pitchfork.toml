@@ -139,11 +139,11 @@ ready_http = "http://127.0.0.1:6333/"
 port = 6333
 
 [daemons.redis]
-run = "exec redis-server --port 6379 --bind 127.0.0.1"
+run = "exec redis-server --port 25199 --bind 0.0.0.0"
 dir = "."
 mise = false
 retry = true
-ready_cmd = "redis-cli -p 6379 ping | grep -q PONG"
+ready_cmd = "redis-cli -p 25199 ping | grep -q PONG"
 port = 6379
 
 [groups.core]
