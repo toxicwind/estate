@@ -18,25 +18,15 @@ ready_http = "http://127.0.0.1:25109/health"
 port = 25109
 
 [daemons.openfang]
-run = "exec /home/toxic/.bun/bin/bun --hot run src/services/openfang.ts"
+run = "exec bun --hot run src/services/openfang.ts"
 dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25103/api/health"
 port = 25103
-depends = ["llama-swap"]
-
-[daemons.sovereign-router]
-run = "exec /home/toxic/.bun/bin/bun --hot run tools/sovereign-router/sovereign-router-ts/router.ts"
-dir = "."
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25104/health"
-port = 25104
-depends = ["llama-swap"]
 
 [daemons.null-g-proxy]
-run = "exec /home/toxic/.bun/bin/bun --hot run src/index.ts"
+run = "exec bun --hot run src/index.ts"
 dir = "tools/null-g-proxy"
 mise = true
 retry = true
@@ -44,7 +34,7 @@ ready_http = "http://127.0.0.1:25107/health"
 port = 25107
 
 [daemons.yote]
-run = "exec /home/toxic/.bun/bin/bun --hot run src/index.ts"
+run = "exec bun --hot run src/index.ts"
 dir = "yote"
 mise = true
 retry = true
@@ -53,7 +43,7 @@ port = 25102
 depends = ["openfang", "llama-swap"]
 
 [daemons.rust-web]
-run = "exec /home/toxic/sovereign/stack/services/rust-web-hot.sh"
+run = "exec ./stack/services/rust-web-hot.sh"
 dir = "rust_algo_web"
 mise = true
 retry = true
@@ -63,7 +53,7 @@ port = 25101
 depends = ["llama-swap"]
 
 [daemons.hf-downloader]
-run = "exec /home/toxic/.bun/bin/bun --hot run src/services/hf_downloader.ts"
+run = "exec bun --hot run src/services/hf_downloader.ts"
 dir = "."
 mise = true
 retry = true
@@ -72,16 +62,16 @@ ready_delay = 5
 port = 25106
 
 [daemons.ghas-api]
-run = "exec /home/toxic/.bun/bin/bun --hot run apps/api/src/server.ts"
-dir = "/home/toxic/github-advanced-search-mcp"
+run = "exec bun --hot run apps/api/src/server.ts"
+dir = "../github-advanced-search-mcp"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25112/health"
 port = 25112
 
 [daemons.ghas-mcp]
-run = "exec /home/toxic/.bun/bin/bun --hot run apps/mcp/src/server.ts --mode http"
-dir = "/home/toxic/github-advanced-search-mcp"
+run = "exec bun --hot run apps/mcp/src/server.ts --mode http"
+dir = "../github-advanced-search-mcp"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25113/health"
@@ -89,7 +79,7 @@ port = 25113
 depends = ["ghas-api"]
 
 [daemons.mesh-hub]
-run = "exec /home/toxic/.bun/bin/bun --hot run src/services/mesh-hub.ts"
+run = "exec bun --hot run src/services/mesh-hub.ts"
 dir = "."
 mise = true
 retry = true
@@ -98,15 +88,15 @@ port = 25115
 depends = ["llama-swap", "ghas-api"]
 
 [daemons.byte-vision]
-run = "exec /home/toxic/byte-vision-mcp/byte-vision-mcp"
-dir = "/home/toxic/byte-vision-mcp"
+run = "exec byte-vision-mcp"
+dir = "../byte-vision-mcp"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25121/health"
 port = 25121
 
 [daemons.byte-vision-proxy]
-run = "exec /home/toxic/.bun/bin/bun --hot run tools/sovereign-router/sovereign-mcp-gateway/gateway.ts"
+run = "exec bun --hot run tools/sovereign-router/sovereign-mcp-gateway/gateway.ts"
 dir = "."
 mise = true
 retry = true
@@ -115,7 +105,7 @@ port = 25120
 depends = ["byte-vision"]
 
 [daemons.prometheus]
-run = "exec bash /home/toxic/sovereign/stack/services/prometheus-hot.sh"
+run = "exec bash ./stack/services/prometheus-hot.sh"
 dir = "."
 mise = true
 retry = true
@@ -123,7 +113,7 @@ ready_http = "http://127.0.0.1:25105/-/healthy"
 port = 25105
 
 [daemons.grafana]
-run = "exec bash /home/toxic/sovereign/stack/services/grafana-mesh.sh"
+run = "exec bash ./stack/services/grafana-mesh.sh"
 dir = "."
 mise = true
 retry = 3
@@ -131,7 +121,7 @@ ready_http = "http://127.0.0.1:25110/api/health"
 port = 25110
 
 [daemons.qdrant]
-run = "exec /home/toxic/.cargo/bin/qdrant --config-path /home/toxic/sovereign/qdrant-config.yaml"
+run = "exec qdrant --config-path qdrant-config.yaml"
 dir = "."
 mise = false
 retry = true
@@ -151,7 +141,6 @@ daemons = [
   "llama-swap",
   "mcpproxy",
   "openfang",
-  "sovereign-router",
   "null-g-proxy",
   "yote",
   "rust-web",
@@ -172,7 +161,6 @@ daemons = [
   "llama-swap",
   "mcpproxy",
   "openfang",
-  "sovereign-router",
   "null-g-proxy",
   "yote",
   "rust-web",
@@ -190,7 +178,7 @@ daemons = [
 ]
 
 [daemons.tailscale-funnel]
-run = "exec bash /home/toxic/sovereign/tailscale/funnel.sh up"
+run = "exec bash ./tailscale/funnel.sh up"
 dir = "."
 mise = true
 retry = 3

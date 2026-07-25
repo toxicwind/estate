@@ -1181,19 +1181,38 @@ models:
       origin: z-lab/gemma-4-31B-it-DFlash or RedHatAI/gemma-4-31B-it-speculator.dflash
 
 # -----------------------------------------------------------------------------
-# FREE PROVIDERS (9Router-wrapped modular provider router)
+# AST MATRIX — Unified cloud model router
 # -----------------------------------------------------------------------------
-# Each provider ID must exist in internal/free_providers/providers.go
-# API keys are read from environment variables at startup.
-freeProviders:
-  enabled:
-    - opencode        # OpenCode Free (no auth, unlimited)
-    - groq            # Groq (free tier, Llama/Qwen)
-    - cerebras        # Cerebras (free tier, GPT-OSS)
-    - kiro            # Kiro AI (free, Claude 4.5 + GLM-5)
-    - vertex          # Vertex AI (free credits)
-  apiKeyEnv:
-    groq: GROQ_API_KEY
-    cerebras: CEREBRAS_API_KEY
-    vertex: GOOGLE_API_KEY
-  defaultModel: opencode/free/big-pickle
+# Routes cloud model requests through providers with ELO scoring,
+# circuit breakers, sticky affinity, and parallel racing strategies.
+# Replaces the old freeProviders section and sovereign-router TS daemon.
+astMatrix:
+  enabled: true
+  strategy: hybrid
+  maxParallel: 4
+  dbPath: /home/toxic/sovereign/data/ast_matrix.db
+  stickyTtl: 1800
+  fifoMax: 64
+  providers:
+    opencode:
+      baseUrl: https://opencode.ai
+      noAuth: true
+    openrouter:
+      baseUrl: https://openrouter.ai/api/v1
+      keyEnv: OPENROUTER_API_KEY
+    nvidia:
+      baseUrl: https://integrate.api.nvidia.com/v1
+      keyEnv: NVIDIA_API_KEY
+      keyEnvAlt: NVIDIA_NIM_API_KEY
+    groq:
+      baseUrl: https://api.groq.com/openai/v1
+      keyEnv: GROQ_API_KEY
+    cerebras:
+      baseUrl: https://api.cerebras.ai/v1
+      keyEnv: CEREBRAS_API_KEY
+    google:
+      baseUrl: https://generativelanguage.googleapis.com/v1beta/openai
+      keyEnv: GOOGLE_API_KEY
+    mistral:
+      baseUrl: https://api.mistral.ai/v1
+      keyEnv: MISTRAL_API_KEY

@@ -2,12 +2,6 @@
 /**
  * Mesh front: reverse-proxy a backend while serving /mesh/* (20 GHAS features)
  * on the public service port. Used for binary daemons that cannot mount routes.
- *
- * Usage:
- *   bun run src/services/mesh-front.ts \
- *     --service llama-swap --listen 0.0.0.0:25100 --backend 127.0.0.1:26100
- *
- * Or with --spawn: start backend cmd on --backend port, then front on --listen.
  */
 import {
   handleMeshRequest,
@@ -43,11 +37,9 @@ const backendBase = backend.startsWith("http")
 const server = Bun.serve({
   hostname: listenHost === "0.0.0.0" ? "0.0.0.0" : listenHost,
   port: listenPort,
-  // Long agent chats (OpenFang/llama load) need a high idle timeout
   idleTimeout: 255,
   async fetch(req) {
     const u = new URL(req.url);
-    // Alias bare /health -> backend /health (binary only serves /health)
     if (u.pathname === "/health") {
       const res = await fetch(`${backendBase}/health`, {
         signal: AbortSignal.timeout(10_000),
@@ -66,38 +58,27 @@ const server = Bun.serve({
       if (m) return m;
     }
 
-    // Proxy everything else to backend
     const target = `${backendBase}${u.pathname}${u.search}`;
     try {
       const headers = new Headers(req.headers);
       headers.delete("host");
-      // Avoid brotli double-decode issues through the front
-      headers.set("accept-encoding", "identity");
+
+      const bodyBuf =
+        req.method === "GET" || req.method === "HEAD"
+          ? undefined
+          : await req.arrayBuffer();
+
       const init: RequestInit & { signal?: AbortSignal } = {
         method: req.method,
         headers,
-        body:
-          req.method === "GET" || req.method === "HEAD"
-            ? undefined
-            : await req.arrayBuffer(),
+        body: bodyBuf,
         // @ts-expect-error bun duplex
         duplex: "half",
         signal: AbortSignal.timeout(240_000),
       };
       const res = await fetch(target, init);
-      // Buffer non-stream responses so long chat JSON is not cut mid-proxy
-      const path = u.pathname;
-      if (
-        path.includes("/v1/chat/completions") ||
-        path.includes("/api/")
-      ) {
-        const buf = await res.arrayBuffer();
-        const outHeaders = new Headers(res.headers);
-        outHeaders.delete("content-encoding");
-        outHeaders.delete("transfer-encoding");
-        outHeaders.set("content-length", String(buf.byteLength));
-        return new Response(buf, { status: res.status, headers: outHeaders });
-      }
+
+      // Pipe response body directly — works for both SSE and JSON
       return new Response(res.body, {
         status: res.status,
         headers: res.headers,

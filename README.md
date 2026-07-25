@@ -27,7 +27,12 @@ mise run down
 | OpenAI API     | http://127.0.0.1:25100/v1             |
 | Ops dashboard  | http://127.0.0.1:25101/               |
 | Dashboard JSON | http://127.0.0.1:25101/ops/api/status |
+| OpenFang UI    | http://127.0.0.1:25103/               |
+| OpenFang API   | http://127.0.0.1:26103/               |
+| HF Downloader  | http://127.0.0.1:25106/               |
+| Grafana        | http://127.0.0.1:25110/               |
 | MCP Gateway    | http://127.0.0.1:25120/health         |
+| Mesh Hub       | http://127.0.0.1:25115/mesh/features |
 
 ---
 
@@ -38,8 +43,8 @@ mise run down
 | **llama-swap**        | **25100** | Go (toxicwind fork) | Inference router + AST Matrix Go router + `/ui` + `/v1`                                                         |
 | **rust-web**          | **25101** | Rust                | Ops dashboard + embedded watchdog                                                                               |
 | **yote**              | 25102     | Bun                 | Telegram / status                                                                                               |
-| **openfang**          | 25103     | Bun                 | Agent kernel                                                                                                    |
-| **sovereign-router**  | 25104     | Bun                 | Standalone model/matrix tooling (TS, for external use)                                                          |
+| **openfang**          | **25103** | Rust (binary)      | Agent kernel — OpenFang OS, 206 models, 61 skills, Discord bridge                                                 |
+| **sovereign-router**  | **25104** | Bun (TS)           | 5-strategy AST Matrix hybrid router (fifo_matrix, ast_race, sticky_affinity, weighted_elo, circuit_chain)          |
 | **prometheus**        | 25105     | Go                  | Metrics                                                                                                         |
 | **hf-downloader**     | 25106     | Bun                 | GGUF download UI                                                                                                |
 | **null-g-proxy**      | 25107     | Bun                 | Extra LLM proxy                                                                                                 |
@@ -49,7 +54,8 @@ mise run down
 | **ghas-mcp**          | 25113     | Bun                 | GHAS MCP (HTTP mode, depends on ghas-api)                                                                       |
 | **mesh-hub**          | 25115     | Bun                 | 20 GHAS-inspired features × every service                                                                       |
 | **byte-vision**       | 25121     | Go binary           | Vision MCP (OCR / screenshot analysis)                                                                          |
-| **byte-vision-proxy** | 25122     | Bun                 | **Sovereign MCP Gateway** — trust boundary + circuit breaker + sticky affinity in front of upstream MCP servers |
+| **byte-vision-proxy** | 25120     | Bun                 | **Sovereign MCP Gateway** — trust boundary + circuit breaker + sticky affinity in front of upstream MCP servers |
+| **tailscale-funnel**  | —         | Bash                | Tailscale Funnel exposure (public HTTPS endpoint)                                                               |
 | **redis**             | 25199     | Redis               | Session cache, telemetry backing store                                                                          |
 | **itvx-telemetry**    | 25198     | Docker              | Telemetry pipeline                                                                                              |
 | **itvx-browserless**  | 25130     | Docker              | Headless browser for scraping                                                                                   |
@@ -204,8 +210,9 @@ Zed is configured to connect directly to Sovereign Stack services. All provider 
 
 | Provider                  | Wire                                | Port     | Why                                                                                                                 |
 | ------------------------- | ----------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
+| **nvidia**                | `NvidiaLanguageModelProvider`       | external | Direct NVIDIA NIM access (`integrate.api.nvidia.com/v1`). Inkling SUDO MAX, full JSON Schema, interleaved reasoning. |
 | **llama-swap**            | `LlamaCppLanguageModelProvider`     | `:25100` | Local GGUF inference via the toxicwind fork. Routes to beellama, turboquant, ik_llama backends on `:25001–25099`.   |
-| **sovereign-router**      | Custom `sovereign-router` provider  | `:25104` | 5-strategy AST Matrix hybrid router (TS standalone). Used for external tooling.                                     |
+| **sovereign-router**      | `openai_compatible` provider        | `:25104` | 5-strategy AST Matrix hybrid router (TS standalone). 24 models across 7 providers.                                  |
 | **Sovereign MCP Gateway** | `mcpproxy-sovereign` context server | `:25120` | Trust boundary + circuit breaker + sticky affinity in front of upstream MCP servers (e.g. byte-vision on `:25121`). |
 | **mcpproxy**              | `mcpproxy-sovereign` context server | `:25109` | MCP federation (30+ MCPs → 1 endpoint). Connected via `mcp-remote` HTTP→stdio bridge.                               |
 
@@ -215,17 +222,33 @@ The **OpenCode** provider (`opencode` in settings) connects to a subscription-ba
 
 ### Bounty providers (OpenAI-compatible)
 
-Free/keyless endpoints configured under `language_models.openai_compatible`:
+Free/keyless endpoints configured under `language_models.openai_compatible` (via sovereign-router at `:25104`):
 
-| Name            | Endpoint                         | Model                                    | Auth                 |
-| --------------- | -------------------------------- | ---------------------------------------- | -------------------- |
-| **Groq**        | `api.groq.com/openai/v1`         | `llama-4-scout-17b-16e-instruct`         | `GROQ_API_KEY`       |
-| **OpenRouter**  | `openrouter.ai/api/v1`           | `nvidia/nemotron-3-ultra-550b-a55b:free` | `OPENROUTER_API_KEY` |
-| **GLM**         | `open.bigmodel.cn/api/paas/v4`   | `glm-4.7-flash`                          | `GLM_API_KEY`        |
-| **LLM7**        | `api.llm7.io/v1`                 | `default`                                | Keyless (`any`)      |
-| **LinuxDo**     | `newapi.linuxdo.edu.rs/v1`       | `gpt-5-nano`                             | Pinned key           |
-| **KeylessAI**   | `keylessai.thryx.workers.dev/v1` | `gpt-3.5-turbo`                          | Keyless (`any`)      |
-| **FreeChatGPT** | `free.chatgpt.org/v1`            | `gpt-3.5-turbo`                          | Keyless (`any`)      |
+| Name                  | Model                        | Auth             |
+| --------------------- | ---------------------------- | ---------------- |
+| **Sovereign Hybrid**  | `auto` (5-strategy routing)  | Local (`:25104`) |
+| **Free Coding Model** | `fcm`                        | Local (`:25104`) |
+| **Tencent Hy3**       | `hy3`                        | OpenRouter free  |
+| **Poolside Laguna M.1** | `laguna-m1`                | OpenRouter free  |
+| **Poolside Laguna XS** | `laguna-xs`                 | OpenRouter free  |
+| **Gemma 4 31B**       | `gemma4-31b`                 | OpenRouter free  |
+| **Nemotron 3 Super**  | `nemotron-super`             | OpenRouter free  |
+| **Nemotron 3 Nano**   | `nemotron-nano`              | OpenRouter free  |
+| **Qwen3 Coder**       | `qwen3-coder`                | OpenRouter free  |
+| **Llama 3.3 70B**     | `llama-3.3-70b-free`         | OpenRouter free  |
+| **Hermes 3 405B**     | `hermes-3-405b`              | OpenRouter free  |
+| **GPT-OSS 20B**       | `gpt-oss-20b`                | OpenRouter free  |
+| **NVIDIA NIM Nemotron 3 Super** | `nim-nemotron-super` | NVIDIA NIM      |
+| **NVIDIA NIM Nemotron 3 Nano** | `nim-nemotron-nano`   | NVIDIA NIM      |
+| **NVIDIA NIM Llama 3.1 70B** | `nim-llama-3.1-70b`     | NVIDIA NIM      |
+| **NVIDIA NIM Llama 3.3 70B** | `nim-llama-3.3-70b`     | NVIDIA NIM      |
+| **NVIDIA NIM Qwen3.5 397B** | `nim-qwen3.5-397b`      | NVIDIA NIM      |
+| **NVIDIA NIM Qwen3.5 122B** | `nim-qwen3.5-122b`      | NVIDIA NIM      |
+| **NVIDIA NIM DeepSeek V4 Flash** | `nim-deepseek-v4-flash` | NVIDIA NIM  |
+| **NVIDIA NIM DeepSeek V4 Pro** | `nim-deepseek-v4-pro`   | NVIDIA NIM      |
+| **NVIDIA NIM Mistral Large 3** | `nim-mistral-large-3`   | NVIDIA NIM      |
+| **NVIDIA NIM Gemma 4 31B** | `nim-gemma4-31b`           | NVIDIA NIM      |
+| **NVIDIA NIM GLM 5.2** | `nim-glm5.2`                 | NVIDIA NIM      |
 
 ### Custom Zed providers (in-tree)
 

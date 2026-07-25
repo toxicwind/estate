@@ -1,0 +1,14 @@
+*.sh
+*.toml
+*.yaml
+*.yml
+*.lock
+*.log
+*.env
+*.state
+*.sqlite
+*.db
+coverage/
+.node_modules/
+target/
+.graveyard/
