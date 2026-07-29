@@ -3,7 +3,7 @@ set -euo pipefail
 SOV="${SOVEREIGN_ROOT:-/home/toxic/sovereign}"
 source "$SOV/stack/lib-ports.sh"
 PORT="${HF_DOWNLOADER_PORT:?}"
-BACKEND="${HF_DOWNLOADER_BACKEND_PORT:-26106}"
+BACKEND="${HF_DOWNLOADER_BACKEND_PORT:-25206}"
 
 fuser -k "${PORT}/tcp" 2>/dev/null || true
 fuser -k "${BACKEND}/tcp" 2>/dev/null || true

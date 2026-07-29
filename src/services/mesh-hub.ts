@@ -16,6 +16,7 @@ import { loadSovereignPorts, requirePort } from "../lib/ports.ts";
 loadSovereignPorts();
 
 const PORT = requirePort("MESH_HUB_PORT");
+const HOST = Bun.env.MESH_HUB_HOST ?? "0.0.0.0";
 const CTX = {
   service: "mesh-hub" as MeshServiceId,
   version: "mesh-hub-1.0.0",
@@ -24,7 +25,7 @@ const CTX = {
 
 const server = Bun.serve({
   port: PORT,
-  hostname: "127.0.0.1",
+  hostname: HOST,
   async fetch(req) {
     const u = new URL(req.url);
     if (u.pathname === "/health" || u.pathname === "/") {
@@ -38,7 +39,15 @@ const server = Bun.serve({
     }
     const mesh = await handleMeshRequest(req, CTX);
     if (mesh) return mesh;
-    return json(404, { error: "not found", try: ["/health", "/mesh/features", "/mesh/discover", "/mesh/chain-health"] });
+    return json(404, {
+      error: "not found",
+      try: [
+        "/health",
+        "/mesh/features",
+        "/mesh/discover",
+        "/mesh/chain-health",
+      ],
+    });
   },
 });
 

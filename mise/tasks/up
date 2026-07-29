@@ -1,15 +1,115 @@
 #!/usr/bin/env bash
-# mise run up — start core daemons via pitchfork.
+# mise run up — start core daemons, LLM-friendly output.
+# Fully dynamic: reads daemons from pitchfork.toml, ports from config/ports.env.
 set -euo pipefail
 export SOV="${SOVEREIGN_ROOT:-$PWD}"
 cd "$SOV"
 
-command -v pitchfork >/dev/null || {
-  echo "pitchfork missing — run: mise install" >&2
+if ! command -v pitchfork >/dev/null; then
+  echo '{"error":"pitchfork missing","fix":"mise install"}'
   exit 1
-}
+fi
 
 mkdir -p "$SOV/.state/logs"
-echo "{\"event\":\"up_start\",\"backend\":\"pitchfork\",\"group\":\"core\",\"timestamp\":\"$(date -Iseconds)\"}"
-pitchfork start --group core
-pitchfork list
+
+# Source all port vars
+set -a
+[[ -f "$SOV/config/ports.env" ]] && source "$SOV/config/ports.env"
+set +a
+
+# Start all core daemons quietly
+pitchfork start --group core --quiet 2>/dev/null &
+UP_PID=$!
+wait $UP_PID 2>/dev/null || true
+
+# --- Dynamic health probes from pitchfork.toml ---
+# Parse every [daemons.X] section, extract ready_http or ready_cmd templates,
+# resolve ${VAR:-default} port references, probe each.
+echo "=== health ==="
+
+ok=0; fail=0; total=0
+in_daemon=0; daemon_name=""
+
+while IFS= read -r line; do
+  # Detect daemon section header: [daemons.something]
+  if [[ "$line" =~ ^\[daemons\.([a-zA-Z0-9_-]+)\] ]]; then
+    in_daemon=1
+    daemon_name="${BASH_REMATCH[1]}"
+    ready_http=""; ready_cmd=""; daemon_port=""
+    continue
+  fi
+
+  # Detect next section (non-daemon or new daemon) -> flush previous
+  if [[ "$line" =~ ^\[ ]] && [[ $in_daemon -eq 1 ]]; then
+    # Probe the previous daemon
+    if [[ -n "$ready_http" ]]; then
+      # Resolve ${VAR:-default} in the URL
+      resolved=$(echo "$ready_http" | sed -E 's/\$\{([A-Z_]+):-([^}]+)\}/\2/g')
+      total=$((total+1))
+      if curl -sf --max-time 2 "$resolved" >/dev/null 2>&1; then
+        printf '✓ %-20s %s\n' "$daemon_name" "$resolved"
+        ok=$((ok+1))
+      else
+        printf '✗ %-20s %s\n' "$daemon_name" "$resolved"
+        fail=$((fail+1))
+      fi
+    elif [[ -n "$ready_cmd" ]]; then
+      resolved=$(echo "$ready_cmd" | sed -E 's/\$\{([A-Z_]+):-([^}]+)\}/\2/g')
+      total=$((total+1))
+      if eval "$resolved" >/dev/null 2>&1; then
+        printf '✓ %-20s (cmd)\n' "$daemon_name"
+        ok=$((ok+1))
+      else
+        printf '✗ %-20s (cmd)\n' "$daemon_name"
+        fail=$((fail+1))
+      fi
+    fi
+    # Reset for new daemon
+    in_daemon=1
+    daemon_name="${BASH_REMATCH[1]}"
+    ready_http=""; ready_cmd=""; daemon_port=""
+  fi
+
+  # Extract fields
+  if [[ $in_daemon -eq 1 ]]; then
+    if [[ "$line" =~ ready_http\ =\ \"(.+)\" ]]; then
+      ready_http="${BASH_REMATCH[1]}"
+    elif [[ "$line" =~ ready_cmd\ =\ \"(.+)\" ]]; then
+      ready_cmd="${BASH_REMATCH[1]}"
+    fi
+  fi
+done < "$SOV/pitchfork.toml"
+
+# Flush last daemon
+if [[ $in_daemon -eq 1 ]]; then
+  if [[ -n "$ready_http" ]]; then
+    resolved=$(echo "$ready_http" | sed -E 's/\$\{([A-Z_]+):-([^}]+)\}/\2/g')
+    total=$((total+1))
+    if curl -sf --max-time 2 "$resolved" >/dev/null 2>&1; then
+      printf '✓ %-20s %s\n' "$daemon_name" "$resolved"
+      ok=$((ok+1))
+    else
+      printf '✗ %-20s %s\n' "$daemon_name" "$resolved"
+      fail=$((fail+1))
+    fi
+  elif [[ -n "$ready_cmd" ]]; then
+    resolved=$(echo "$ready_cmd" | sed -E 's/\$\{([A-Z_]+):-([^}]+)\}/\2/g')
+    total=$((total+1))
+    if eval "$resolved" >/dev/null 2>&1; then
+      printf '✓ %-20s (cmd)\n' "$daemon_name"
+      ok=$((ok+1))
+    else
+      printf '✗ %-20s (cmd)\n' "$daemon_name"
+      fail=$((fail+1))
+    fi
+  fi
+fi
+
+echo
+echo "=== status ==="
+echo "up: $ok  down: $fail  total: $total"
+[[ $fail -eq 0 ]] && echo "ALL HEALTHY" || echo "DEGRADED — $fail service(s) down"
+
+echo
+echo "=== pitchfork ==="
+pitchfork list 2>/dev/null | grep -E "running|failed|errored|available" || true

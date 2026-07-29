@@ -1,14 +1,9 @@
-*.sh
-*.toml
-*.yaml
-*.yml
+# Ignore generated/large files
+docs/ARCHITECTURE.md
+docs/SWAP_OPTIMIZATION.md
+docs/SWAP_QUICKREF.md
+*.pdf
+*.zip
 *.lock
-*.log
-*.env
-*.state
-*.sqlite
 *.db
-coverage/
-.node_modules/
-target/
-.graveyard/
+*.sqlite

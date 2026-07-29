@@ -6,7 +6,7 @@ cd "$SOV"
 # shellcheck source=../lib-ports.sh
 source "$(dirname "$0")/../lib-ports.sh"
 PORT="${PROMETHEUS_PORT:?}"
-BACKEND="${PROMETHEUS_BACKEND_PORT:-26105}"
+BACKEND="${PROMETHEUS_BACKEND_PORT:-25205}"
 
 fuser -k "${PORT}/tcp" 2>/dev/null || true
 fuser -k "${BACKEND}/tcp" 2>/dev/null || true

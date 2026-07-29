@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+# mise run mcpproxy-config — manage mcpproxy server config
+# Uses the actual config at /home/toxic/.mcpproxy/mcp_config.json (30 servers)
+set -euo pipefail
+
+MCPPROXY_CONFIG="${MCPPROXY_CONFIG:-/home/toxic/.mcpproxy/mcp_config.json}"
+
+usage() {
+  cat <<EOF
+Usage: mise run mcpproxy-config <command> [args]
+
+Commands:
+  show                    Show current config summary
+  max-yolo                Regenerate config with code-audited max-yolo defaults
+  enable-all              Enable all 30 servers (enabled=true, quarantined=false)
+  disable-server <name>   Disable a specific server
+  enable-server <name>    Enable a specific server
+  quarantine-server <name> Quarantine a server (security isolation)
+  unquarantine-server <name> Remove quarantine from server
+  enable-code-exec        Enable code execution (enable_code_execution=true)
+  disable-code-exec       Disable code execution
+  enable-management       Enable management API (disable_management=false)
+  disable-management      Disable management API (disable_management=true)
+  backup                  Create timestamped backup
+  restore <backup-file>   Restore from backup
+  restart                 Restart mcpproxy after config changes
+  health                  Check mcpproxy health
+EOF
+}
+
+case "${1:-}" in
+  show)
+    echo "=== mcpproxy config: $MCPPROXY_CONFIG ==="
+    cat "$MCPPROXY_CONFIG" | jq -r '
+      "listen: \(.listen)",
+      "api_key: \(.api_key[0:8])...",
+      "enable_code_execution: \(.enable_code_execution)",
+      "disable_management: \(.disable_management)",
+      "read_only_mode: \(.read_only_mode)",
+      "tools_limit: \(.tools_limit)",
+      "servers: \(.mcpServers | length)",
+      "",
+      "Servers:",
+      (.mcpServers | map("  \(.name): enabled=\(.enabled) quarantined=\(.quarantined)") | .[])'
+    ;;
+
+  max-yolo)
+    echo "Applying code-audited max-yolo config to $MCPPROXY_CONFIG ..."
+    python3 /home/toxic/sovereign/tools/mcpproxy-max-yolo-v2.py
+    echo "Done. Run 'mise run mcpproxy-config restart' to apply."
+    ;;
+
+  enable-all)
+    echo "Enabling all 30 servers..."
+    jq '.mcpServers |= map(.enabled = true | .quarantined = false)' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
+    echo "Done. Run 'mise run mcpproxy-config restart' to apply."
+    ;;
+
+  disable-server)
+    server="${2:-}"
+    [[ -z "$server" ]] && { echo "Usage: mise run mcpproxy-config disable-server <name>"; exit 1; }
+    jq --arg s "$server" '.mcpServers |= map(if .name == $s then .enabled = false else . end)' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
+    echo "Disabled $server. Run 'mise run mcpproxy-config restart' to apply."
+    ;;
+
+  enable-server)
+    server="${2:-}"
+    [[ -z "$server" ]] && { echo "Usage: mise run mcpproxy-config enable-server <name>"; exit 1; }
+    jq --arg s "$server" '.mcpServers |= map(if .name == $s then .enabled = true else . end)' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
+    echo "Enabled $server. Run 'mise run mcpproxy-config restart' to apply."
+    ;;
+
+  quarantine-server)
+    server="${2:-}"
+    [[ -z "$server" ]] && { echo "Usage: mise run mcpproxy-config quarantine-server <name>"; exit 1; }
+    jq --arg s "$server" '.mcpServers |= map(if .name == $s then .quarantined = true else . end)' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
+    echo "Quarantined $server. Run 'mise run mcpproxy-config restart' to apply."
+    ;;
+
+  unquarantine-server)
+    server="${2:-}"
+    [[ -z "$server" ]] && { echo "Usage: mise run mcpproxy-config unquarantine-server <name>"; exit 1; }
+    jq --arg s "$server" '.mcpServers |= map(if .name == $s then .quarantined = false else . end)' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
+    echo "Unquarantined $server. Run 'mise run mcpproxy-config restart' to apply."
+    ;;
+
+  enable-code-exec)
+    jq '.enable_code_execution = true' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
+    echo "Code execution enabled. Run 'mise run mcpproxy-config restart' to apply."
+    ;;
+
+  disable-code-exec)
+    jq '.enable_code_execution = false' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
+    echo "Code execution disabled. Run 'mise run mcpproxy-config restart' to apply."
+    ;;
+
+  enable-management)
+    jq '.disable_management = false' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
+    echo "Management API enabled. Run 'mise run mcpproxy-config restart' to apply."
+    ;;
+
+  disable-management)
+    jq '.disable_management = true' "$MCPPROXY_CONFIG" > "$MCPPROXY_CONFIG.tmp" && mv "$MCPPROXY_CONFIG.tmp" "$MCPPROXY_CONFIG"
+    echo "Management API disabled. Run 'mise run mcpproxy-config restart' to apply."
+    ;;
+
+  backup)
+    cp "$MCPPROXY_CONFIG" "$MCPPROXY_CONFIG.backup.$(date +%s)"
+    echo "Backed up to $MCPPROXY_CONFIG.backup.$(date +%s)"
+    ;;
+
+  restore)
+    backup="${2:-}"
+    [[ -z "$backup" ]] && { echo "Usage: mise run mcpproxy-config restore <backup-file>"; exit 1; }
+    cp "$backup" "$MCPPROXY_CONFIG"
+    echo "Restored from $backup. Run 'mise run mcpproxy-config restart' to apply."
+    ;;
+
+  restart)
+    echo "Restarting mcpproxy..."
+    cd /home/toxic/sovereign
+    pitchfork stop mcpproxy 2>/dev/null || true
+    sleep 2
+    pitchfork start mcpproxy
+    echo "mcpproxy restarted"
+    ;;
+
+  health)
+    curl -sf http://127.0.0.1:25109/health && echo " ✓ healthy" || echo " ✗ unhealthy"
+    ;;
+
+  *)
+    usage
+    exit 1
+    ;;
+esac

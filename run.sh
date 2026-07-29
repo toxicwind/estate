@@ -1,45 +1,153 @@
-in#!/bin/bash
+#!/bin/bash
+# build-znver4-llm-kernel.sh
+# One-shot kernel build for Zen4 + Ampere (RTX 3090)
+# Run: bash build-znver4-llm-kernel.sh
 
-KEY=${NVIDIA_API_KEY}
-BASE="https://integrate.api.nvidia.com/v1"
-BIG=$(python3 -c "print('system instruction ' * 300)")
+set -euo pipefail
 
-echo "=== GET /v1/models ==="
-curl -s $BASE/models -H "Authorization: Bearer $KEY" | zq '.data[] |.id' | grep inkling
+echo "🔥 Building linux-cachyos-znver4-llm-cuda86"
+echo "============================================"
 
-echo "=== GET /v1/models/inkling ==="
-curl -s $BASE/models/thinkingmachines/inkling -H "Authorization: Bearer $KEY" | zq
+# ── Clone CachyOS kernel PKGBUILD ──
+if [ ! -d ~/cachyos-kernel ]; then
+    echo "[1/5] Cloning CachyOS kernel repo..."
+    git clone --depth 1 https://github.com/CachyOS/linux-cachyos.git ~/cachyos-kernel
+else
+    echo "[1/5] Updating existing repo..."
+    cd ~/cachyos-kernel
+    git pull --depth 1
+fi
 
-echo "=== POST /v1/chat/completions stream:false no tools ==="
-curl -s $BASE/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $KEY" -d '{"model":"thinkingmachines/inkling","messages":[{"role":"user","content":"hi"}],"max_tokens":20,"stream":false}' | zq .choices[0].finish_reason
+cd ~/cachyos-kernel/linux-cachyos
 
-echo "=== POST /v1/chat/completions stream:true no tools ==="
-curl -s $BASE/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $KEY" -d '{"model":"thinkingmachines/inkling","messages":[{"role":"user","content":"hi"}],"max_tokens":20,"stream":true}' | tail -1
+# ── Export build environment ──
+export CC=clang
+export CXX=clang++
+export LD=ld.lld
+export AR=llvm-ar
+export NM=llvm-nm
+export STRIP=llvm-strip
+export OBJCOPY=llvm-objcopy
+export OBJDUMP=llvm-objdump
+export LLVM=1
+export LTO=full
 
-echo "=== POST stream:false parallel:true 2 tools (you proved works) ==="
-curl -s $BASE/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $KEY" -d '{"model":"thinkingmachines/inkling","messages":[{"role":"user","content":"You MUST call list_files for \".\" AND read_file for \"README.md\" in parallel now."}],"stream":false,"parallel_tool_calls":true,"tools":[{"type":"function","function":{"name":"list_files","description":"list","parameters":{"type":"object","properties":{"path":{"type":"string"}},"required":[]}}},{"type":"function","function":{"name":"read_file","description":"read","parameters":{"type":"object","properties":{"path":{"type":"string"}},"required":["path"]}}}],"tool_choice":"auto"}' | zq '.choices[0].message.tool_calls | length'
+export KBUILD_CFLAGS="-O3 -march=znver4 -mtune=znver4 -fivopts -fmodulo-sched -funswitch-loops -ftree-vectorize -fvect-cost-model=unlimited -fno-semantic-interposition -fomit-frame-pointer"
 
-echo "=== POST stream:true parallel:true 2 tools - THIS IS WHAT ZED ACTUALLY DOES ==="
-curl -s $BASE/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $KEY" -d '{"model":"thinkingmachines/inkling","messages":[{"role":"user","content":"You MUST call list_files for \".\" AND read_file for \"README.md\" in parallel now."}],"stream":true,"parallel_tool_calls":true,"tools":[{"type":"function","function":{"name":"list_files","description":"list","parameters":{"type":"object","properties":{"path":{"type":"string"}},"required":[]}}},{"type":"function","function":{"name":"read_file","description":"read","parameters":{"type":"object","properties":{"path":{"type":"string"}},"required":["path"]}}}],"tool_choice":"auto"}' | grep tool_calls
+# ── Inject kernel config overrides ──
+# These are read by the PKGBUILD if _cachy_config is defined
+_cachy_config=(
+    'CONFIG_TRANSPARENT_HUGEPAGE=y'
+    'CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS=y'
+    'CONFIG_PREEMPT=y'
+    'CONFIG_PREEMPT_DYNAMIC=y'
+    'CONFIG_HZ_1000=y'
+    'CONFIG_HZ=1000'
+    'CONFIG_NO_HZ_FULL=y'
+    'CONFIG_NO_HZ=y'
+    'CONFIG_SCHED_BORE=y'
+    'CONFIG_LRU_GEN=y'
+    'CONFIG_LRU_GEN_ENABLED=y'
+    'CONFIG_DAMON=y'
+    'CONFIG_DAMON_VADDR=y'
+    'CONFIG_DAMON_PADDR=y'
+    'CONFIG_DAMON_SYSFS=y'
+    'CONFIG_DAMON_RECLAIM=y'
+    'CONFIG_DAMON_LRU_SORT=y'
+    'CONFIG_AMD_PSTATE=y'
+    'CONFIG_AMD_PSTATE_DEFAULT_MODE=active'
+    'CONFIG_AMD_PSTATE_PREFERRED_CORE=y'
+    'CONFIG_AMD_CACHE_OPTIMIZER=y'
+    'CONFIG_NUMA=y'
+    'CONFIG_AMD_NUMA=y'
+    'CONFIG_NUMA_BALANCING=y'
+    'CONFIG_HUGETLBFS=y'
+    'CONFIG_HUGETLB_PAGE=y'
+    'CONFIG_CGROUP_DEVICE=y'
+    'CONFIG_USER_NS=y'
+    'CONFIG_PCI_P2PDMA=y'
+    'CONFIG_DMABUF_MOVE_NOTIFY=y'
+    'CONFIG_DRM_AMDGPU=y'
+    'CONFIG_TCP_CONG_BBR=y'
+    'CONFIG_DEFAULT_TCP_CONG="bbr"'
+    'CONFIG_IOSCHED_BFQ=y'
+    'CONFIG_BFQ_GROUP_IOSCHED=y'
+    'CONFIG_DEFAULT_BFQ=y'
+)
+export _cachy_config
 
-echo "=== POST stream:false turn 2 with reasoning_content + tool result - THIS IS CONTINUATION ==="
-curl -s $BASE/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $KEY" -d '{
-  "model":"thinkingmachines/inkling",
-  "messages":[
-    {"role":"user","content":"list files"},
-    {"role":"assistant","content":null,"tool_calls":[{"id":"call_123","type":"function","function":{"name":"list_files","arguments":"{\"path\":\".\"}"}}],"reasoning_content":"need to list"},
-    {"role":"tool","tool_call_id":"call_123","content":"[\"Cargo.toml\",\"README.md\"]"},
-    {"role":"user","content":"now what?"}
-  ],
-  "stream":false,
-  "parallel_tool_calls":true
-}' | zq .
+# ── Modify PKGBUILD for our scheduler + arch ──
+echo "[2/5] Patching PKGBUILD..."
 
-echo "=== POST prompt_cache_key test ==="
-curl -s $BASE/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $KEY" -d "{\"model\":\"thinkingmachines/inkling\",\"messages\":[{\"role\":\"system\",\"content\":\"$BIG\"},{\"role\":\"user\",\"content\":\"hi\"}],\"prompt_cache_key\":\"test123\",\"max_tokens\":10,\"stream\":false}" | zq .usage
+# Set scheduler to BORE
+sed -i 's/^_cpusched=.*/_cpusched=cachy-bore/' PKGBUILD
 
-echo "=== POST /v1/responses ==="
-curl -s -o /dev/null -w "%{http_code}\n" $BASE/responses -H "Content-Type: application/json" -H "Authorization: Bearer $KEY" -d '{"model":"thinkingmachines/inkling","input":"hi"}'
+# Set tick rate to 1000Hz
+sed -i 's/^_HZ_ticks=.*/_HZ_ticks=1000/' PKGBUILD
 
-echo "=== POST /v1/messages ==="
-curl -s -o /dev/null -w "%{http_code}\n" $BASE/messages -H "Content-Type: application/json" -H "Authorization: Bearer $KEY" -d '{"model":"thinkingmachines/inkling","messages":[{"role":"user","content":"hi"}],"max_tokens":10}'
+# Set preemption to full
+sed -i 's/^_preempt=.*/_preempt=full/' PKGBUILD
+
+# Set tickless to full
+sed -i 's/^_tickless=.*/_tickless=full/' PKGBUILD
+
+# Set THP to always
+sed -i 's/^_hugepage=.*/_hugepage=always/' PKGBUILD
+
+# Set LTO to full
+sed -i 's/^_LTO_mode=.*/_LTO_mode=full/' PKGBUILD
+
+# Set compiler to clang
+sed -i 's/^_compiler=.*/_compiler=clang/' PKGBUILD
+
+# Set CPU arch to znver4
+sed -i 's/^_processor_opt=.*/_processor_opt=znver4/' PKGBUILD
+
+# Enable CachyOS config
+sed -i 's/^_cachy_config=.*/_cachy_config=true/' PKGBUILD
+
+# Enable performance governor
+sed -i 's/^_per_gov=.*/_per_gov=true/' PKGBUILD
+
+# Enable BBR3
+sed -i 's/^_tcp_bbr3=.*/_tcp_bbr3=true/' PKGBUILD
+
+# Enable DAMON
+sed -i 's/^_damon=.*/_damon=true/' PKGBUILD
+
+# Enable NUMA
+sed -i 's/^_NUMAdisable=.*/_NUMAdisable=false/' PKGBUILD
+
+# Disable debug
+sed -i 's/^_build_debug=.*/_build_debug=false/' PKGBUILD
+
+# Disable ZFS
+sed -i 's/^_build_zfs=.*/_build_zfs=false/' PKGBUILD
+
+# Use nvidia-open
+sed -i 's/^_nvidia_open=.*/_nvidia_open=true/' PKGBUILD
+
+# Set custom package name
+sed -i 's/^pkgbase=.*/pkgbase=linux-cachyos-znver4-llm-cuda86/' PKGBUILD
+
+echo "[3/5] PKGBUILD patched. Preview:"
+grep -E '^_cpusched=|^_HZ_ticks=|^_preempt=|^_hugepage=|^_LTO_mode=|^_compiler=|^_processor_opt=|^_cachy_config=|^_per_gov=|^_tcp_bbr3=|^_damon=|^pkgbase=' PKGBUILD
+
+echo ""
+echo "[4/5] Starting build (this takes 20-60 minutes)..."
+echo "    Ctrl+C to abort. Resume with: cd ~/cachyos-kernel/linux-cachyos && makepkg -si"
+echo ""
+
+# Build and install
+makepkg -si --noconfirm
+
+echo ""
+echo "✅ [5/5] Build complete!"
+echo ""
+echo "Next steps:"
+echo "  1. Add kernel cmdline to bootloader:"
+echo "     amd_pstate=active amd_pstate_prefcore=1 transparent_hugepage=always amd_iommu=pt iommu=pt nvidia-drm.modeset=1 nvidia.NVreg_UsePageAttributeTable=1 nvidia.NVreg_EnableGpuFirmware=1 nvidia.NVreg_InitializeSystemMemoryAllocations=0 mitigations=off pcie_aspm=off"
+echo ""
+echo "  2. Reboot"
+echo "  3. Verify: uname -r"
+echo "  4. Run: sudo systemctl start llm-tune"

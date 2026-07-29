@@ -4,7 +4,7 @@ SOV="${SOVEREIGN_ROOT:-$HOME/sovereign}"
 source "$SOV/stack/lib-ports.sh"
 require_env LLAMA_SWAP_PORT
 PORT="$LLAMA_SWAP_PORT"
-BACKEND="${LLAMA_SWAP_BACKEND_PORT:-26100}"
+BACKEND="${LLAMA_SWAP_BACKEND_PORT:-25200}"
 BIN_CAND=("$SOV/bin/llama-swap" "/usr/local/bin/llama-swap" "$HOME/projects/llama-swap-main/llama-swap")
 BIN=""
 for c in "${BIN_CAND[@]}"; do

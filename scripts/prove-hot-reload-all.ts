@@ -203,7 +203,7 @@ for (const d of DAEMONS) {
       );
     }
     try {
-      await fetch("http://127.0.0.1:26105/-/reload", { method: "POST", signal: AbortSignal.timeout(3000) });
+      await fetch("http://127.0.0.1:25205/-/reload", { method: "POST", signal: AbortSignal.timeout(3000) });
     } catch {
       try {
         await fetch("http://127.0.0.1:25105/-/reload", { method: "POST", signal: AbortSignal.timeout(3000) });

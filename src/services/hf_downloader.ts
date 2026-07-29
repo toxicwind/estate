@@ -8,7 +8,7 @@ import { requirePort, loadSovereignPorts } from "../lib/ports.ts";
 
 loadSovereignPorts();
 const PUBLIC = requirePort("HF_DOWNLOADER_PORT");
-const BACKEND = Number(process.env.HF_DOWNLOADER_BACKEND_PORT || "26106");
+const BACKEND = Number(process.env.HF_DOWNLOADER_BACKEND_PORT || "25206");
 const HOME = process.env.HOME || "/home/toxic";
 const BIN_DIR = join(HOME, ".local", "bin");
 const BIN_PATH = join(BIN_DIR, "hfdownloader");

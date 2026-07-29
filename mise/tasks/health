@@ -1,41 +1,40 @@
 #!/usr/bin/env bash
-# Health probes — ports from config/ports.env (via mise env).
+# mise run health — LLM-friendly health probes.
+# Fully dynamic: reads ready_http / ready_cmd from pitchfork.toml.
 set -euo pipefail
-source "$(dirname "$0")/_lib.sh" 2>/dev/null || true
-cd "${SOVEREIGN_ROOT:-/home/toxic/sovereign}"
+export SOV="${SOVEREIGN_ROOT:-$PWD}"
+cd "$SOV"
 
-# Load ports if not already in env
-if [ -z "${LLAMA_SWAP_PORT:-}" ] && [ -f config/ports.env ]; then
-  set -a
-  # shellcheck disable=SC1091
-  source config/ports.env
-  set +a
-fi
+# Source ports
+set -a
+[[ -f "$SOV/config/ports.env" ]] && source "$SOV/config/ports.env"
+set +a
 
-: "${LLAMA_SWAP_PORT:?set in config/ports.env}"
-: "${AST_MATRIX_PORT:?set in config/ports.env}"
-: "${RUST_WEB_PORT:?set in config/ports.env}"
-: "${WATCHDOG_PORT:?set in config/ports.env}"
-: "${YOTE_PORT:?set in config/ports.env}"
-: "${OPENFANG_PORT:?set in config/ports.env}"
-: "${NULL_G_PORT:?set in config/ports.env}"
-: "${HF_DOWNLOADER_PORT:?set in config/ports.env}"
-: "${GHAS_API_PORT:?set in config/ports.env}"
-
-results=()
-fail=0
-
-check_service() {
-  local name=$1 url=$2
-  if curl -sf --max-time 2 "$url" >/dev/null 2>&1; then
-    results+=("{\"name\":\"${name}\",\"url\":\"${url}\",\"healthy\":true}")
-    printf '✓ %s\n' "$name"
-    return 0
-  else
-    results+=("{\"name\":\"${name}\",\"url\":\"${url}\",\"healthy\":false}")
-    printf '✗ %s\n' "$name"
-    fail=1
-    return 1
+# --- helper ---
+_probe() {
+  local name=$1 http=$2 cmd=$3
+  if [[ -n "$http" ]]; then
+    local resolved
+    resolved=$(echo "$http" | sed -E 's/\$\{([A-Z_]+):-([^}]+)\}/\2/g')
+    total=$((total+1))
+    if curl -sf --max-time 2 "$resolved" >/dev/null 2>&1; then
+      printf '✓ %-20s %s\n' "$name" "$resolved"
+      ok=$((ok+1))
+    else
+      printf '✗ %-20s %s\n' "$name" "$resolved"
+      fail=$((fail+1))
+    fi
+  elif [[ -n "$cmd" ]]; then
+    local resolved
+    resolved=$(echo "$cmd" | sed -E 's/\$\{([A-Z_]+):-([^}]+)\}/\2/g')
+    total=$((total+1))
+    if eval "$resolved" >/dev/null 2>&1; then
+      printf '✓ %-20s (cmd)\n' "$name"
+      ok=$((ok+1))
+    else
+      printf '✗ %-20s (cmd)\n' "$name"
+      fail=$((fail+1))
+    fi
   fi
 }
 
@@ -45,27 +44,40 @@ if command -v pitchfork >/dev/null; then
 else
   echo "(pitchfork not on PATH)"
 fi
-echo
-echo "=== HTTP ==="
-check_service "llama-swap" "http://127.0.0.1:${LLAMA_SWAP_PORT}/health" || true
-check_service "llama-swap-models" "http://127.0.0.1:${LLAMA_SWAP_PORT}/v1/models" || true
-check_service "ast-matrix" "http://127.0.0.1:${AST_MATRIX_PORT}/health" || true
-check_service "rust-web" "http://127.0.0.1:${RUST_WEB_PORT}/health" || true
-check_service "watchdog" "http://127.0.0.1:${WATCHDOG_PORT}/health" || true
-check_service "yote" "http://127.0.0.1:${YOTE_PORT}/health" || true
-check_service "openfang" "http://127.0.0.1:${OPENFANG_PORT}/api/health" || true
-check_service "null-g-proxy" "http://127.0.0.1:${NULL_G_PORT}/health" || true
-check_service "hf-downloader" "http://127.0.0.1:${HF_DOWNLOADER_PORT}/health" || true
-check_service "ghas-api" "http://127.0.0.1:${GHAS_API_PORT}/health" || true
 
 echo
-echo "["
-for i in "${!results[@]}"; do
-  if [ "$i" -eq $((${#results[@]} - 1)) ]; then
-    echo "  ${results[$i]}"
-  else
-    echo "  ${results[$i]},"
+echo "=== health ==="
+
+ok=0; fail=0; total=0
+daemon_name=""
+ready_http=""; ready_cmd=""
+
+while IFS= read -r line; do
+  if [[ "$line" =~ ^\[daemons\.([a-zA-Z0-9_-]+)\] ]]; then
+    # New daemon section - probe previous one first
+    if [[ -n "$daemon_name" ]]; then
+      _probe "$daemon_name" "$ready_http" "$ready_cmd"
+    fi
+    daemon_name="${BASH_REMATCH[1]}"
+    ready_http=""; ready_cmd=""
+    continue
   fi
-done
-echo "]"
+
+  # Check for ready_http / ready_cmd
+  if [[ "$line" =~ ready_http\ =\ \"(.+)\" ]]; then
+    ready_http="${BASH_REMATCH[1]}"
+  elif [[ "$line" =~ ready_cmd\ =\ \"(.+)\" ]]; then
+    ready_cmd="${BASH_REMATCH[1]}"
+  fi
+done < "$SOV/pitchfork.toml"
+
+# Flush last
+if [[ -n "$daemon_name" ]]; then
+  _probe "$daemon_name" "$ready_http" "$ready_cmd"
+fi
+
+echo
+echo "=== summary ==="
+echo "up: $ok  down: $fail  total: $total"
+[[ $fail -eq 0 ]] && echo "ALL HEALTHY" || echo "DEGRADED — $fail service(s) down"
 exit "$fail"

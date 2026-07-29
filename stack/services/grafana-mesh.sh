@@ -5,7 +5,7 @@ SOV="${SOVEREIGN_ROOT:-/home/toxic/sovereign}"
 # shellcheck source=../lib-ports.sh
 source "$SOV/stack/lib-ports.sh"
 PORT="${GRAFANA_PORT:?}"
-BACKEND="${GRAFANA_BACKEND_PORT:-26110}"
+BACKEND="${GRAFANA_BACKEND_PORT:-25210}"
 
 fuser -k "${PORT}/tcp" 2>/dev/null || true
 fuser -k "${BACKEND}/tcp" 2>/dev/null || true
@@ -19,6 +19,7 @@ export GF_USERS_ALLOW_SIGN_UP="false"
 export GF_PATHS_PROVISIONING="${GF_PATHS_PROVISIONING:-$SOV/grafana/provisioning}"
 export GF_PATHS_DATA="${GF_PATHS_DATA:-$SOV/grafana/data}"
 export GF_PATHS_LOGS="${GF_PATHS_LOGS:-$SOV/grafana/logs}"
+export GF_LOG_LEVEL="warn"
 export GF_PATHS_PLUGINS="${GF_PATHS_PLUGINS:-$SOV/grafana/plugins}"
 
 /usr/bin/grafana server --homepath=/usr/share/grafana --config=/etc/grafana.ini &

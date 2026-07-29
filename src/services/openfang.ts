@@ -9,7 +9,7 @@ import { requirePort, loadSovereignPorts } from "../lib/ports.ts";
 loadSovereignPorts();
 const HOME = process.env.HOME || "/home/toxic";
 const PUBLIC = requirePort("OPENFANG_PORT");
-const BACKEND = Number(process.env.OPENFANG_BACKEND_PORT || "26103");
+const BACKEND = Number(process.env.OPENFANG_BACKEND_PORT || "25203");
 const BIN = process.env.OPENFANG_BIN || `${HOME}/.openfang/bin/openfang`;
 const SOV = process.env.SOVEREIGN_ROOT || resolve(HOME, "sovereign");
 

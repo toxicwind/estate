@@ -193,13 +193,13 @@ macros:
   MODEL_DIR: /home/toxic/projects/models
 
   # --- Fork binaries ---------------------------------------------------------
-  BEELLAMA_BIN: /home/toxic/projects/beellama.cpp/build/bin/llama-server
+  BEELLAMA_BIN: /home/toxic/projects/beellama.cpp/build-cuda86/bin/llama-server
   TURBO_BIN: /home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server
   IK_BIN: /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server
   IK_TQ_BIN: /home/toxic/projects/ik_turboquant/build/bin/llama-server
 
   # --- LD_LIBRARY_PATH for each fork -----------------------------------------
-  BEELLAMA_LD: /home/toxic/projects/beellama.cpp/build/bin
+  BEELLAMA_LD: /home/toxic/projects/beellama.cpp/build-cuda86/bin
   TURBO_LD: /home/toxic/projects/llama-cpp-turboquant/build/bin
   IK_LD: /home/toxic/projects/ik_llama.cpp-main/build/src:/home/toxic/projects/ik_llama.cpp-main/build/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build/examples/mtmd
   IK_TQ_LD: /home/toxic/projects/ik_llama.cpp-main/build_turboquant/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build_turboquant/examples/mtmd
@@ -266,6 +266,7 @@ macros:
   SRV_PORT: --port ${PORT}
   SRV_HOST_PORT: ${SRV_HOST} ${SRV_PORT}
   SRV_GPU_LAYERS: --n-gpu-layers all
+  IK_GPU_LAYERS: -ngl 99
   SRV_FA: --flash-attn on
   SRV_GPU: ${SRV_GPU_LAYERS} ${SRV_FA}
   SRV_PARALLEL: --parallel 1
@@ -287,6 +288,8 @@ macros:
   FORK_BEELLAMA: --kv-unified --no-host --cache-ram 0
   FORK_TURBO: --no-warmup
   FORK_IK: --fit --fit-margin 512 --no-warmup --defrag-thold 0.1
+  SRV_IK_BASE: ${SRV_HOST_PORT} ${IK_GPU_LAYERS} ${SRV_FA} ${SRV_SAFETY}
+  SRV_IKTQ_BASE: ${SRV_HOST_PORT} ${IK_GPU_LAYERS} ${SRV_FA} ${SRV_SAFETY}
 
   # ---------------------------------------------------------------------------
   # KV CACHE TYPES
@@ -338,7 +341,7 @@ macros:
   SPEC_DRAFT_MTP_QWEN36: --spec-type draft-mtp --model-draft ${QWEN36_27B_MTP_UD_Q4XL}
 
   SPEC_DFLASH_QWEN: --spec-type dflash --spec-draft-model ${QWEN36_27B_DFLASH_IQ4XS} --spec-draft-ngl all --spec-dflash-cross-ctx 1024
-  SPEC_DFLASH_GEMMA: --spec-type dflash --spec-draft-model ${GEMMA_31B_DFLASH_Q4KM} --spec-draft-ngl all --spec-dflash-cross-ctx 1024
+  SPEC_DFLASH_GEMMA: --spec-type dflash --spec-draft-model ${QWEN35_9B_DFLASH_Q4KM} --spec-draft-ngl all --spec-dflash-cross-ctx 1024 --spec-draft-ngl all --spec-dflash-cross-ctx 1024
 
   # ---------------------------------------------------------------------------
   # REASONING / SAMPLING
@@ -539,9 +542,9 @@ models:
       origin: zaakirio/gemma-4-12b-it-uncensored-GGUF
 
   beellama/gemma-mtp-64k:
-    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_MTP_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_64K} ${KV_Q8} ${SPEC_DRAFT_MTP_BASE}
+    cmd: ${TURBO_BIN} --model ${GEMMA_12B_MTP_Q4KM} ${SRV_BASE} ${FORK_TURBO} ${CTX_64K} ${KV_Q8} --jinja
     env:
-      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - LD_LIBRARY_PATH=${TURBO_LD}
       - ${CUDA_ENV}
       - LLAMA_API_KEY=
     name: "GEMMA 4 12B MTP · 64K · Q4_K_M"
@@ -554,9 +557,9 @@ models:
       origin: google/gemma-4-12B-it-assistant (MTP drafter)
 
   beellama/gemma-mtp-128k:
-    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_MTP_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_128K} ${KV_TURBO3_TCQ} ${SPEC_DRAFT_MTP_BASE}
+    cmd: ${TURBO_BIN} --model ${GEMMA_12B_MTP_Q4KM} ${SRV_BASE} ${FORK_TURBO} ${CTX_128K} ${KV_TURBO3} --jinja
     env:
-      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - LD_LIBRARY_PATH=${TURBO_LD}
       - ${CUDA_ENV}
       - LLAMA_API_KEY=
     name: "GEMMA 4 12B MTP · 128K · Q4_K_M"
@@ -569,9 +572,9 @@ models:
       origin: google/gemma-4-12B-it-assistant (MTP drafter)
 
   beellama/gemma-12b-draft-64k:
-    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_MTP_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_64K} ${KV_Q8} ${SPEC_DRAFT_MTP_BASE}
+    cmd: ${TURBO_BIN} --model ${GEMMA_12B_MTP_Q4KM} ${SRV_BASE} ${FORK_TURBO} ${CTX_64K} ${KV_Q8} --jinja
     env:
-      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - LD_LIBRARY_PATH=${TURBO_LD}
       - ${CUDA_ENV}
       - LLAMA_API_KEY=
     name: "GEMMA 4 12B Draft · 64K · Q4_K_M"
@@ -584,9 +587,9 @@ models:
 
   # --- Gemma 4 12B MTP/assistant drafters (beellama line) --------------------
   beellama/gemma-mtp-q80-64k:
-    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_MTP_Q80} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_64K} ${KV_Q8} ${SPEC_DRAFT_MTP}
+    cmd: ${TURBO_BIN} --model ${GEMMA_12B_MTP_Q80} ${SRV_BASE} ${FORK_TURBO} ${CTX_64K} ${KV_Q8} --jinja
     env:
-      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - LD_LIBRARY_PATH=${TURBO_LD}
       - ${CUDA_ENV}
       - LLAMA_API_KEY=
     name: "GEMMA 4 12B MTP Q8 · 64K · Q8_0"
@@ -600,9 +603,9 @@ models:
       origin: google/gemma-4-12B-it-MTP-GGUF
 
   beellama/gemma-assist-q80-64k:
-    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_ASSIST_Q80} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_64K} ${KV_Q8} ${SPEC_DRAFT_MTP}
+    cmd: ${TURBO_BIN} --model ${GEMMA_12B_ASSIST_Q80} ${SRV_BASE} ${FORK_TURBO} ${CTX_64K} ${KV_Q8} --jinja
     env:
-      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - LD_LIBRARY_PATH=${TURBO_LD}
       - ${CUDA_ENV}
       - LLAMA_API_KEY=
     name: "GEMMA 4 12B Assistant · 64K · Q8_0"
@@ -665,7 +668,7 @@ models:
   # TURBOQUANT FORK (TheTom lineage) — turbo3 KV cache, no DFlash server path
   # ===========================================================================
   turboquant/mn-grand-64k:
-    cmd: ${TURBO_BIN} --model ${MN_GRAND_23B_Q4KM} ${SRV_BASE} ${FORK_TURBO} ${CTX_64K} ${KV_Q8}
+    cmd: ${TURBO_BIN} --model ${MN_GRAND_23B_Q4KM} ${SRV_BASE} ${FORK_TURBO} ${CTX_64K} ${KV_TURBO3}
     env:
       - LD_LIBRARY_PATH=${TURBO_LD}
       - ${CUDA_ENV}
@@ -679,7 +682,7 @@ models:
       origin: DavidAU/MN-GRAND-23.5B-Gutenberg-UNCENSORED-V2-GLM4.7-Thinking-NEO-Imatrix-GGUF
 
   turboquant/mn-grand-96k:
-    cmd: ${TURBO_BIN} --model ${MN_GRAND_23B_Q4KM} ${SRV_BASE} ${FORK_TURBO} ${CTX_96K} ${KV_Q8}
+    cmd: ${TURBO_BIN} --model ${MN_GRAND_23B_Q4KM} ${SRV_BASE} ${FORK_TURBO} ${CTX_96K} ${KV_TURBO3}
     env:
       - LD_LIBRARY_PATH=${TURBO_LD}
       - ${CUDA_ENV}
@@ -693,7 +696,7 @@ models:
       origin: DavidAU/MN-GRAND-23.5B-Gutenberg-UNCENSORED-V2-GLM4.7-Thinking-NEO-Imatrix-GGUF
 
   turboquant/mn-grand-128k:
-    cmd: ${TURBO_BIN} --model ${MN_GRAND_23B_Q4KM} ${SRV_BASE} ${FORK_TURBO} ${CTX_128K} ${KV_Q8}
+    cmd: ${TURBO_BIN} --model ${MN_GRAND_23B_Q4KM} ${SRV_BASE} ${FORK_TURBO} ${CTX_128K} ${KV_TURBO3}
     env:
       - LD_LIBRARY_PATH=${TURBO_LD}
       - ${CUDA_ENV}
@@ -708,7 +711,7 @@ models:
       origin: DavidAU/MN-GRAND-23.5B-Gutenberg-UNCENSORED-V2-GLM4.7-Thinking-NEO-Imatrix-GGUF
 
   turboquant/heretic-27b-128k:
-    cmd: ${TURBO_BIN} --model ${HERETIC_27B_Q5XL} ${SRV_BASE} ${FORK_TURBO} ${CTX_128K} ${KV_Q8}
+    cmd: ${TURBO_BIN} --model ${HERETIC_27B_Q5XL} ${SRV_BASE} ${FORK_TURBO} ${CTX_128K} ${KV_TURBO3}
     env:
       - LD_LIBRARY_PATH=${TURBO_LD}
       - ${CUDA_ENV}
@@ -723,7 +726,7 @@ models:
       origin: lambsea/Qwen3.6-27B-Abliterated-Heretic-Uncensored-UD-GGUF
 
   turboquant/heretic-27b-256k:
-    cmd: ${TURBO_BIN} --model ${HERETIC_27B_Q5XL} ${SRV_BASE} ${FORK_TURBO} ${CTX_256K} ${KV_Q8}
+    cmd: ${TURBO_BIN} --model ${HERETIC_27B_Q5XL} ${SRV_BASE} ${FORK_TURBO} ${CTX_256K} ${KV_TURBO3}
     env:
       - LD_LIBRARY_PATH=${TURBO_LD}
       - ${CUDA_ENV}
@@ -741,7 +744,7 @@ models:
   # IK_LLAMA FORK (ikawrakow) — --fit auto-offload + --defrag-thold
   # ===========================================================================
   ik_llama/heretic-ud-64k:
-    cmd: ${IK_BIN} --model ${HERETIC_27B_Q5XL} ${SRV_BASE} ${FORK_IK} ${CTX_64K} ${KV_Q8}
+    cmd: ${IK_BIN} --model ${HERETIC_27B_Q5XL} ${SRV_IK_BASE} ${FORK_IK} ${CTX_64K} ${KV_Q8}
     env:
       - LD_LIBRARY_PATH=${IK_LD}
       - ${CUDA_ENV}
@@ -755,7 +758,7 @@ models:
       origin: lambsea/Qwen3.6-27B-Abliterated-Heretic-Uncensored-UD-GGUF
 
   ik_llama/heretic-ud-96k:
-    cmd: ${IK_BIN} --model ${HERETIC_27B_Q5XL} ${SRV_BASE} ${FORK_IK} ${CTX_96K} ${KV_Q8}
+    cmd: ${IK_BIN} --model ${HERETIC_27B_Q5XL} ${SRV_IK_BASE} ${FORK_IK} ${CTX_96K} ${KV_Q8}
     env:
       - LD_LIBRARY_PATH=${IK_LD}
       - ${CUDA_ENV}
@@ -771,7 +774,7 @@ models:
       origin: lambsea/Qwen3.6-27B-Abliterated-Heretic-Uncensored-UD-GGUF
 
   ik_llama/heretic-q5-64k:
-    cmd: ${IK_BIN} --model ${HERETIC_27B_Q5XL} ${SRV_BASE} ${FORK_IK} ${CTX_64K} ${KV_Q8}
+    cmd: ${IK_BIN} --model ${HERETIC_27B_Q5XL} ${SRV_IK_BASE} ${FORK_IK} ${CTX_64K} ${KV_Q8}
     env:
       - LD_LIBRARY_PATH=${IK_LD}
       - ${CUDA_ENV}
@@ -789,7 +792,7 @@ models:
   # IK_TURBOQUANT (ikawrakow + TheTom TCQ cache types)
   # ===========================================================================
   ik_turboquant/heretic-27b-256k:
-    cmd: ${IK_TQ_BIN} --model ${HERETIC_27B_Q5XL} ${SRV_BASE} ${FORK_TURBO} ${CTX_256K} ${KV_Q8}
+    cmd: ${IK_TQ_BIN} --model ${HERETIC_27B_Q5XL} ${SRV_IKTQ_BASE} ${FORK_IK} ${CTX_256K} ${KV_Q8}
     env:
       - LD_LIBRARY_PATH=${IK_TQ_LD}
       - ${CUDA_ENV}
@@ -803,7 +806,7 @@ models:
       origin: lambsea/Qwen3.6-27B-Abliterated-Heretic-Uncensored-UD-GGUF
 
   ik_turboquant/heretic-ud-96k:
-    cmd: ${IK_TQ_BIN} --model ${HERETIC_27B_Q5XL} ${SRV_BASE} ${FORK_TURBO} ${CTX_96K} ${KV_Q8}
+    cmd: ${IK_TQ_BIN} --model ${HERETIC_27B_Q5XL} ${SRV_IKTQ_BASE} ${FORK_IK} ${CTX_96K} ${KV_Q8}
     env:
       - LD_LIBRARY_PATH=${IK_TQ_LD}
       - ${CUDA_ENV}
@@ -820,7 +823,7 @@ models:
   # QWEN 27B DENSE (beellama line — DFlash target + MLA)
   # ===========================================================================
   qwen/27b-cerebellum:
-    cmd: ${BEELLAMA_BIN} --model ${QWEN36_CEREBELLUM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_96K} ${KV_TURBO3} --mla-attn
+    cmd: ${BEELLAMA_BIN} --model ${QWEN36_CEREBELLUM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_96K} ${KV_TURBO3} 
     env:
       - LD_LIBRARY_PATH=${BEELLAMA_LD}
       - ${CUDA_ENV}
@@ -835,7 +838,7 @@ models:
       origin: unsloth/Qwen3.6-27B-GGUF (UD-Q4_K_XL)
 
   qwen/27b-dflash-iq4xs:
-    cmd: ${BEELLAMA_BIN} --model ${QWEN36_27B_DFLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} --mla-attn
+    cmd: ${BEELLAMA_BIN} --model ${QWEN36_27B_DFLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} 
     env:
       - LD_LIBRARY_PATH=${BEELLAMA_LD}
       - ${CUDA_ENV}
@@ -852,7 +855,7 @@ models:
       origin: unsloth/Qwen3.6-27B-GGUF (UD-Q4_K_XL used as DFlash target)
 
   qwen/27b-dflash-q4km:
-    cmd: ${BEELLAMA_BIN} --model ${QWEN36_27B_DFLASH_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} --mla-attn
+    cmd: ${BEELLAMA_BIN} --model ${QWEN36_27B_DFLASH_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} 
     env:
       - LD_LIBRARY_PATH=${BEELLAMA_LD}
       - ${CUDA_ENV}
@@ -869,7 +872,7 @@ models:
 
   # --- Qwen 3.6 27B MTP UD (beellama line) ----------------------------------
   qwen/27b-mtp-ud-q4xl:
-    cmd: ${BEELLAMA_BIN} --model ${QWEN36_27B_MTP_UD_Q4XL} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_96K} ${KV_TURBO3} --mla-attn ${SPEC_DRAFT_MTP_QWEN36}
+    cmd: ${BEELLAMA_BIN} --model ${QWEN36_27B_MTP_UD_Q4XL} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_96K} ${KV_TURBO3}  ${SPEC_DRAFT_MTP_QWEN36}
     env:
       - LD_LIBRARY_PATH=${BEELLAMA_LD}
       - ${CUDA_ENV}
@@ -889,7 +892,7 @@ models:
   # HOLO 35B A3B (MoE — beellama line)
   # ===========================================================================
   holo/35b-a3b:
-    cmd: ${BEELLAMA_BIN} --model ${HOLO_35B} --mmproj ${MMPROJ_F16} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_64K} ${KV_Q8} --mla-attn
+    cmd: ${BEELLAMA_BIN} --model ${HOLO_35B} --mmproj ${MMPROJ_F16} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_64K} ${KV_Q8} 
     env:
       - LD_LIBRARY_PATH=${BEELLAMA_LD}
       - ${CUDA_ENV}
@@ -1163,7 +1166,7 @@ models:
   # GEMMA 4 31B DFLASH (beellama line — DFlash speculative decoding)
   # ===========================================================================
   beellama/gemma4-31b-it-dflash-Q4_K_M:
-    cmd: ${BEELLAMA_BIN} --model ${GEMMA_31B_DFLASH_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_128K} ${KV_Q8} ${SPEC_DFLASH_GEMMA}
+    cmd: ${BEELLAMA_BIN}${BEELLAMA_BIN} --model ${GEMMA_31B_DFLASH_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_128K} ${KV_Q8}
     env:
       - LD_LIBRARY_PATH=${BEELLAMA_LD}
       - ${CUDA_ENV}

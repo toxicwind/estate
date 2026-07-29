@@ -15,7 +15,7 @@ All 3 agent profiles (`main`, `sovereign-local-a`, `sovereign-local-b`) now have
 ### ✅ Completed: llama-swap fork build
 
 - Built new binary at `/home/toxic/projects/llama-swap-main/llama-swap` (21MB)
-- Running via existing mise/process-compose at port 26100 (proxied to 25100)
+- Running via existing mise/process-compose at port 25200 (proxied to 25100)
 - Config at `/home/toxic/sovereign/tools/llama-swap/config.yaml` with 30+ models
 
 ### ✅ Completed: AGENTS.md section renumbering
@@ -75,7 +75,7 @@ Sections 8-11 now correctly ordered after inserting new section 8.
 | project-rag     | ❌     | `cargo install --git https://github.com/Brainwires/project-rag`    |
 | reactive-memory | ❌     | Clone from github.com/toxicwind/reactive-memory, `dotnet run`      |
 | redis-cli       | ❌     | `sudo pacman -S redis`                                             |
-| qdrant          | ❌     | `docker run -p 6333:6333 qdrant/qdrant` or `sudo pacman -S qdrant` |
+| qdrant          | ❌     | `docker run -p 25133:25133 qdrant/qdrant` or `sudo pacman -S qdrant` |
 | prometheus      | ❌     | `sudo pacman -S prometheus`                                        |
 
 ## Remaining Work (Priority Order)
@@ -88,7 +88,7 @@ sudo pacman -S redis
 systemctl --user start redis
 
 # Qdrant (Docker)
-docker run -d -p 6333:6333 qdrant/qdrant
+docker run -d -p 25133:25133 qdrant/qdrant
 
 # Prometheus
 sudo pacman -S prometheus

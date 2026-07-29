@@ -28,7 +28,7 @@ mise run down
 | Ops dashboard  | http://127.0.0.1:25101/               |
 | Dashboard JSON | http://127.0.0.1:25101/ops/api/status |
 | OpenFang UI    | http://127.0.0.1:25103/               |
-| OpenFang API   | http://127.0.0.1:26103/               |
+| OpenFang API   | http://127.0.0.1:25203/               |
 | HF Downloader  | http://127.0.0.1:25106/               |
 | Grafana        | http://127.0.0.1:25110/               |
 | MCP Gateway    | http://127.0.0.1:25120/health         |
@@ -126,7 +126,7 @@ Screenshot actions: `auto` (capture + classify + route to clipboard/file), `copy
 | **Caddy**                                        | Path routing fought real services (`/api/*` → openfang while rust-web also needs APIs). Port docs were wrong (`:3000` vs `CADDY_PORT=25109`). **`mise run up` never started it.** Multipath proxy not needed when every service has a stable 25xxx port. Artifacts archived under `/home/toxic/data_dumps/caddy-removed-*`. |
 | **landing** (`LANDING_PORT` / Bun `src/landing`) | Duplicate static server for the same files rust-web already serves. False offshoot of rust-web. Deleted; dashboard APIs live on rust-web at **`/ops/api/*`**.                                                                                                                                                               |
 
-All public-facing services bind to `0.0.0.0` (not `127.0.0.1`) for LAN/Tailscale access. Internal mesh-front backends stay on `127.0.0.1:26xxx`. Redis on `:25199`, Qdrant on `:6333` — both `0.0.0.0`.
+All public-facing services bind to `0.0.0.0` (not `127.0.0.1`) for LAN/Tailscale access. Internal mesh-front backends stay on `127.0.0.1:252xx`. Redis on `:25199`, Qdrant on `:25133` — both `0.0.0.0`.
 
 Access services **directly** on their ports (LAN or Tailscale MagicDNS). Optional Funnel points at **rust-web only** — see `tailscale/README.md`.
 

@@ -1,16 +1,13 @@
-#:schema https://pitchfork.jdx.dev/schema.json
-namespace = "sovereign"
-
 [daemons.llama-swap]
 run = "exec ./stack/services/llama-swap.sh"
 dir = "."
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:26100/health"
+ready_http = "http://127.0.0.1:25200/health"
 port = 25100
 
 [daemons.mcpproxy]
-run = "exec /usr/local/bin/mcpproxy serve --log-level=info"
+run = "exec mcpproxy serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=info"
 dir = "."
 mise = false
 retry = true
@@ -18,65 +15,70 @@ ready_http = "http://127.0.0.1:25109/health"
 port = 25109
 
 [daemons.openfang]
-run = "exec bun --hot run src/services/openfang.ts"
+run = "exec ./stack/services/openfang.sh"
 dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25103/api/health"
 port = 25103
 
+[daemons.sovereign-router]
+run = "exec ./stack/services/sovereign-router.sh"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25104/health"
+port = 25104
+depends = ["llama-swap"]
+
 [daemons.null-g-proxy]
-run = "exec bun --hot run src/index.ts"
-dir = "tools/null-g-proxy"
+run = "exec bun --hot run tools/null-g-proxy/src/index.ts"
+dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25107/health"
 port = 25107
 
 [daemons.yote]
-run = "exec bun --hot run src/index.ts"
-dir = "yote"
+run = "exec bun --hot run yote/src/index.ts"
+dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25102/health"
 port = 25102
-depends = ["openfang", "llama-swap"]
 
 [daemons.rust-web]
 run = "exec ./stack/services/rust-web-hot.sh"
-dir = "rust_algo_web"
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:26101/health"
-ready_delay = 90
-port = 25101
-depends = ["llama-swap"]
-
-[daemons.hf-downloader]
-run = "exec bun --hot run src/services/hf_downloader.ts"
 dir = "."
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:25106/"
-ready_delay = 5
-port = 25106
+ready_http = "http://127.0.0.1:25201/health"
+port = 25101
 
 [daemons.ghas-api]
 run = "exec bun --hot run apps/api/src/server.ts"
-dir = "../github-advanced-search-mcp"
+dir = "/home/toxic/projects/github-advanced-search-mcp"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25112/health"
 port = 25112
 
-[daemons.ghas-mcp]
-run = "exec bun --hot run apps/mcp/src/server.ts --mode http"
-dir = "../github-advanced-search-mcp"
+[daemons.ghas-frontend]
+run = "exec ./node_modules/.bin/next dev -p 25114"
+dir = "/home/toxic/projects/github-advanced-search-mcp/apps/frontend"
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:25113/health"
-port = 25113
+ready_http = "http://127.0.0.1:25114/"
+port = 25114
 depends = ["ghas-api"]
+
+[daemons.kimi-audit-dash]
+run = "exec bun --hot run dashboard/server.ts"
+dir = "/home/toxic/kimi-token-audit"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25116/health"
+port = 25116
 
 [daemons.mesh-hub]
 run = "exec bun --hot run src/services/mesh-hub.ts"
@@ -85,15 +87,6 @@ mise = true
 retry = true
 ready_http = "http://127.0.0.1:25115/health"
 port = 25115
-depends = ["llama-swap", "ghas-api"]
-
-[daemons.byte-vision]
-run = "exec byte-vision-mcp"
-dir = "../byte-vision-mcp"
-mise = false
-retry = true
-ready_http = "http://127.0.0.1:25121/health"
-port = 25121
 
 [daemons.byte-vision-proxy]
 run = "exec bun --hot run tools/sovereign-router/sovereign-mcp-gateway/gateway.ts"
@@ -102,10 +95,9 @@ mise = true
 retry = true
 ready_http = "http://127.0.0.1:25120/health"
 port = 25120
-depends = ["byte-vision"]
 
 [daemons.prometheus]
-run = "exec bash ./stack/services/prometheus-hot.sh"
+run = "exec ./stack/services/prometheus-hot.sh"
 dir = "."
 mise = true
 retry = true
@@ -113,23 +105,31 @@ ready_http = "http://127.0.0.1:25105/-/healthy"
 port = 25105
 
 [daemons.grafana]
-run = "exec bash ./stack/services/grafana-mesh.sh"
+run = "exec ./stack/services/grafana-mesh.sh"
 dir = "."
 mise = true
-retry = 3
+retry = true
 ready_http = "http://127.0.0.1:25110/api/health"
 port = 25110
 
-[daemons.qdrant]
-run = "exec qdrant --config-path qdrant-config.yaml"
+[daemons.hf-downloader]
+run = "exec ./stack/services/hf-downloader-mesh.sh"
 dir = "."
-mise = false
+mise = true
 retry = true
-ready_http = "http://127.0.0.1:6333/"
-port = 6333
+ready_http = "http://127.0.0.1:25106/"
+port = 25106
+
+[daemons.qdrant]
+run = "exec qdrant --config-path ./qdrant-config.yaml"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25133/"
+port = 25133
 
 [daemons.redis]
-run = "exec redis-server --port 25199 --bind 0.0.0.0"
+run = "exec redis-server --port 25199 --bind 0.0.0.0 --dir ./data --dbfilename redis.rdb"
 dir = "."
 mise = false
 retry = true
@@ -141,19 +141,23 @@ daemons = [
   "llama-swap",
   "mcpproxy",
   "openfang",
+  "sovereign-router",
   "null-g-proxy",
   "yote",
   "rust-web",
-  "hf-downloader",
   "ghas-api",
-  "ghas-mcp",
-  "byte-vision",
+  "ghas-frontend",
+  "kimi-audit-dash",
+  "mesh-hub",
   "byte-vision-proxy",
   "prometheus",
   "grafana",
+  "hf-downloader",
   "qdrant",
   "redis",
-  "mesh-hub",
+  "zellij",
+  "ttyd",
+  "sshx",
 ]
 
 [groups.all]
@@ -161,25 +165,45 @@ daemons = [
   "llama-swap",
   "mcpproxy",
   "openfang",
+  "sovereign-router",
   "null-g-proxy",
   "yote",
   "rust-web",
-  "hf-downloader",
   "ghas-api",
-  "ghas-mcp",
-  "byte-vision",
+  "ghas-frontend",
+  "kimi-audit-dash",
+  "mesh-hub",
   "byte-vision-proxy",
   "prometheus",
   "grafana",
+  "hf-downloader",
   "qdrant",
   "redis",
-  "mesh-hub",
   "tailscale-funnel",
 ]
 
-[daemons.tailscale-funnel]
-run = "exec bash ./tailscale/funnel.sh up"
+[daemons.zellij]
+run = "exec zellij web --start --daemonize --ip 127.0.0.1 --port 25136"
 dir = "."
 mise = true
-retry = 3
-ready_cmd = "tailscale funnel status"
+retry = true
+ready_http = "http://127.0.0.1:25136/"
+port = 25136
+
+[daemons.ttyd]
+run = "exec ttyd -p 25137 -c toxic:toxic -t rendererType=webgl -t fontSize=14 -t theme=\"{\\\"background\\\":\\\"#0c0b11\\\",\\\"foreground\\\":\\\"#e8e8e3\\\"}\" bash"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://toxic:toxic@127.0.0.1:25137/"
+port = 25137
+
+[daemons.sshx]
+run = "exec sshx --quiet"
+dir = "."
+mise = false
+retry = true
+port = 25138
+
+# wezterm is a GUI terminal emulator, not a daemon
+# start manually: wezterm start --always-new-process

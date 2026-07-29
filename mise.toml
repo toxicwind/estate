@@ -3,7 +3,7 @@
 python = "3.12.13"
 node = "22.12.0"
 bun = "1.1.38"
-rust = "1.82.0"
+rust = "nightly"
 go = "1.23.1"
 pitchfork = "2.16.0"
 
@@ -14,7 +14,7 @@ _.file = "config/ports.env"
 [tasks]
 # Core daemons via pitchfork
 up = "pitchfork start --group core"
-down = "pitchfork supervisor stop"
+down = "pitchfork stop --group core"
 health = "pitchfork list"
 status = "pitchfork list"
 logs = "pitchfork logs"
@@ -23,29 +23,45 @@ logs = "pitchfork logs"
 "up-llama-swap" = "pitchfork start llama-swap"
 "up-prometheus" = "pitchfork start prometheus"
 "up-grafana" = "pitchfork start grafana"
-"up-byte-vision" = "pitchfork start byte-vision"
+"up-ghas-api" = "pitchfork start ghas-api"
+"up-ghas-frontend" = "pitchfork start ghas-frontend"
+"up-kimi-audit-dash" = "pitchfork start kimi-audit-dash"
 "up-byte-vision-proxy" = "pitchfork start byte-vision-proxy"
 "up-qdrant" = "pitchfork start qdrant"
 "up-redis" = "pitchfork start redis"
+"up-mcpproxy" = "pitchfork start mcpproxy"
 "up-mcg" = "pitchfork start byte-vision-proxy"
 
 "down-llama-swap" = "pitchfork stop llama-swap"
 "down-prometheus" = "pitchfork stop prometheus"
 "down-grafana" = "pitchfork stop grafana"
-"down-byte-vision" = "pitchfork stop byte-vision"
+"down-ghas-api" = "pitchfork stop ghas-api"
+"down-ghas-frontend" = "pitchfork stop ghas-frontend"
+"down-kimi-audit-dash" = "pitchfork stop kimi-audit-dash"
 "down-byte-vision-proxy" = "pitchfork stop byte-vision-proxy"
 "down-qdrant" = "pitchfork stop qdrant"
 "down-redis" = "pitchfork stop redis"
+"down-mcpproxy" = "pitchfork stop mcpproxy"
 "down-mcg" = "pitchfork stop byte-vision-proxy"
 
 # Health checks
 "health-llama-swap" = "curl -sf http://127.0.0.1:25100/health"
 "health-prometheus" = "curl -sf http://127.0.0.1:25105/-/healthy"
 "health-grafana" = "curl -sf http://127.0.0.1:25110/api/health"
-"health-byte-vision" = "curl -sf http://127.0.0.1:25121/health"
-"health-qdrant" = "curl -sf http://127.0.0.1:6333/"
+"health-ghas-api" = "curl -sf http://127.0.0.1:25112/health"
+"health-ghas-frontend" = "curl -sf http://127.0.0.1:25114/"
+"health-kimi-audit-dash" = "curl -sf http://127.0.0.1:25116/health"
+"health-qdrant" = "curl -sf http://127.0.0.1:25133/"
+"health-mcpproxy" = "curl -sf http://127.0.0.1:25109/health"
 "health-mcg" = "curl -sf http://127.0.0.1:25120/health"
 "health-mcg-ui" = "curl -sf http://127.0.0.1:25120/ui"
+
+# nuvio-platform (webOS app - Nuvio fork)
+"nv-build" = { run = "cd tools/nuvio-platform && npm run build:webos", dir = "tools/nuvio-platform" }
+"nv-test" = { run = "cd tools/nuvio-platform && npm run test:coverage", dir = "tools/nuvio-platform" }
+"nv-package" = { run = "cd tools/nuvio-platform && npm run package:webos", dir = "tools/nuvio-platform", depends = ["nv-build"] }
+"nv-deploy" = { run = "cd tools/nuvio-platform && node scripts/ares-install-webos.mjs", dir = "tools/nuvio-platform", depends = ["nv-package"] }
+"nv-dev" = { run = "cd tools/nuvio-platform && npm run dev", dir = "tools/nuvio-platform" }
 
 # Test suite
 test = "bun test"
@@ -53,5 +69,13 @@ test = "bun test"
 "test-gateway" = "bun run test:gateway:cov"
 "test-models" = "bun run test:best-models"
 
-# Audit
-audit = "python3 audit_fix.py"
+# Interactive terminal tools
+"up-zellij" = "pitchfork start zellij"
+"up-ttyd" = "pitchfork start ttyd"
+"up-sshx" = "pitchfork start sshx"
+"up-wezterm" = "wezterm start --detach"
+
+down-zellij = "pitchfork stop zellij"
+down-ttyd = "pitchfork stop ttyd"
+down-sshx = "pitchfork stop sshx"
+down-wezterm = "pkill wezterm"

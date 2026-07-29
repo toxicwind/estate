@@ -19,7 +19,7 @@ Aesthetic map of live dashboards, APIs, and MCP surfaces (25xxx SSOT).
 | Surface | Base |
 |---------|------|
 | LLM OpenAI-compat | `:25100/v1` |
-| OpenFang agents / chat | `:26103` (backend) or `:25103` (mesh-front) |
+| OpenFang agents / chat | `:25203` (backend) or `:25103` (mesh-front) |
 | Ops JSON | `:25101/ops/api/*` · mesh `:25101/ops/api/mesh` |
 | Yote → OpenFang (HTTP only) | `:25102/api/openfang/*` |
 | GHAS API / MCP HTTP | `:25112` / `:25113` |
