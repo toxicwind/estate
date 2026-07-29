@@ -307,6 +307,7 @@ macros:
   CS_64K: "65536"
   CS_96K: "98304"
   CS_128K: "131072"
+  CS_160K: "163840"
   CS_256K: "262144"
 
   B_4K: "4096"
@@ -341,7 +342,7 @@ macros:
   SPEC_DRAFT_MTP_QWEN36: --spec-type draft-mtp --model-draft ${QWEN36_27B_MTP_UD_Q4XL}
 
   SPEC_DFLASH_QWEN: --spec-type dflash --spec-draft-model ${QWEN36_27B_DFLASH_IQ4XS} --spec-draft-ngl all --spec-dflash-cross-ctx 1024
-  SPEC_DFLASH_GEMMA: --spec-type dflash --spec-draft-model ${QWEN35_9B_DFLASH_Q4KM} --spec-draft-ngl all --spec-dflash-cross-ctx 1024 --spec-draft-ngl all --spec-dflash-cross-ctx 1024
+  SPEC_DFLASH_GEMMA: --spec-type dflash --spec-draft-model ${QWEN35_9B_DFLASH_Q4KM} --spec-draft-ngl all --spec-dflash-cross-ctx 1024
 
   # ---------------------------------------------------------------------------
   # REASONING / SAMPLING
@@ -987,7 +988,7 @@ models:
   # GEMMA 4 12B UNIFIED / MTP (turboquant line — no DFlash server path)
   # ===========================================================================
   gemma-4-12b-unified:
-    cmd: ${TURBO_BIN} --model ${GEMMA_12B_BASE_Q4KM} ${SRV_BASE} ${FORK_TURBO} ${CTX_256K} ${KV_TURBO3} --jinja --no-warmup
+    cmd: ${TURBO_BIN} --model ${GEMMA_12B_BASE_Q4KM} ${SRV_BASE} ${FORK_TURBO} ${CTX_256K} ${KV_TURBO3} --jinja
     env:
       - LD_LIBRARY_PATH=${TURBO_LD}
       - ${CUDA_ENV}
@@ -1166,7 +1167,7 @@ models:
   # GEMMA 4 31B DFLASH (beellama line — DFlash speculative decoding)
   # ===========================================================================
   beellama/gemma4-31b-it-dflash-Q4_K_M:
-    cmd: ${BEELLAMA_BIN}${BEELLAMA_BIN} --model ${GEMMA_31B_DFLASH_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_128K} ${KV_Q8}
+    cmd: ${BEELLAMA_BIN} --model ${GEMMA_31B_DFLASH_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_128K} ${KV_Q8}
     env:
       - LD_LIBRARY_PATH=${BEELLAMA_LD}
       - ${CUDA_ENV}
@@ -1188,7 +1189,7 @@ models:
 # -----------------------------------------------------------------------------
 # Routes cloud model requests through providers with ELO scoring,
 # circuit breakers, sticky affinity, and parallel racing strategies.
-# Replaces the old freeProviders section and sovereign-router TS daemon.
+# Replaces the old freeProviders section. AST Matrix routing now lives in llama-swap:25100/internal/astmatrix/
 astMatrix:
   enabled: true
   strategy: hybrid

@@ -280,7 +280,7 @@ Each catch block has its own nested try/catch — **no single point of failure**
 | **redis**            | 25199       | Redis               | Session cache, telemetry                             |
 | **qdrant**           | 25133       | Qdrant              | Vector DB (0.0.0.0)                                  |
 
-**No Caddy, no landing** — path routing fought real services (`/api/*` → openfang vs rust-web). Every service owns its 25xxx port. Artifacts archived under `/home/toxic/data_dumps/caddy-removed-*`.
+**No Caddy, no landing** — path routing fought real services (`/api/*` → openfang vs rust-web). Every service owns its 25xxx port. Artifacts archived under `/home/toxic/archive/caddy-removed-*`.
 
 ---
 

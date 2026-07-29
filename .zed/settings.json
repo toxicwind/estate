@@ -39,6 +39,13 @@
   "prettier": {
     "allowed": true
   },
+  "languages": {
+    "Markdown": {
+      "prettier": {
+        "allowed": false
+      }
+    }
+  },
   "document_symbols": "on",
   "document_folding_ranges": "on",
   "semantic_tokens": "combined",
@@ -133,7 +140,7 @@
     "**/cr3_forge",
     "**/infisical",
     "**/agent-dashboard",
-    "**/data_dumps",
+    "**/archive",
     "**/home_backup",
     "**/.icons",
     "**/vendor",
@@ -211,7 +218,7 @@
       "auto_discover": true
     },
     "openai_compatible": {
-      "sovereign-router": {
+      "llama-swap:25100": {
         "api_url": "http://127.0.0.1:25104/v1",
         "available_models":                               [
             {
@@ -580,13 +587,9 @@
   },
   "context_servers": {
     "mcpproxy-sovereign": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "mcp-remote",
-        "http://127.0.0.1:25109/mcp"
-      ],
-      "enabled": true
+      "url": "http://127.0.0.1:25109/mcp",
+      "enabled": true,
+      "timeout": 120
     }
   },
   "agent": {
