@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+"""
+Sovereign AST Matrix v3 — Maximal free coding gateway for Zed
+=============================================================
+Merged from:
+  - MrFadiAi/free-llm-gateway (Python OpenAI compat + fallback + rate tracking)
+  - tashfeenahmed/freellmapi (TS routing strategies, sticky sessions, context handoff)
+  - vava-nessa/free-coding-models (coding model focus, daemon endpoint, catalog)
+
+5 routing strategies (research-backed: RouteLLM, agent-router, PORT,
+LLM-Runner-Router, radlab llm-router, circuit-breaker patterns):
+  1. fifo_matrix      — bounded FIFO queue, back-pressure
+  2. ast_race         — parallel race of 4; first AST/code-shaped response wins
+  3. sticky_affinity  — session sticky 30 min for multi-turn coherence
+  4. weighted_elo     — dynamic weight from recent success/latency (RouteLLM-style)
+  5. circuit_chain    — sequential fallback with circuit-breaker open/half-open
+
+Default: hybrid (sticky → ast_race of top-weighted → circuit_chain on failure).
+
+CRITICAL: Full SSE streaming proxy — Zed sends stream:true, we stream chunks back.
+No local GPU provider. Cloud-only (NVIDIA NIM + OpenRouter free tier).
+
+DB: SQLite with WAL mode for model health tracking + healing detection.
+    Tracks per-model-per-provider success rate, latency percent
