@@ -43,6 +43,7 @@ data/
 
 # ─── Scratch / Ephemeral ─────────────────────────────────────────────────────
 scratch/
+~/
 .agents/
 .grok/
 *.local.md

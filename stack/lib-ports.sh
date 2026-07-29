@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Source port SSOT for shell services. No numeric defaults in callers.
-SOV="${SOVEREIGN_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+SOV="$HOME/sovereign"
 # shellcheck disable=SC1091
 set -a
 # shellcheck source=/dev/null

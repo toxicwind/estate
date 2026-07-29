@@ -21,7 +21,7 @@ writeFileSync(OUT, "");
 const hub = requirePort("MESH_HUB_PORT");
 const nativeMesh = new Set([
   "yote",
-  "sovereign-router",
+  "llama-swap",
   "ghas-api",
   "null-g-proxy",
   "mesh-hub",

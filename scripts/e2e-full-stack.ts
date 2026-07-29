@@ -223,7 +223,7 @@ rows.push(
 );
 rows.push(await get("yote-health", `http://127.0.0.1:${YOTE}/health`));
 rows.push(await get("openfang-health", `http://127.0.0.1:${OF}/api/health`));
-rows.push(await get("sovereign-router-health", `http://127.0.0.1:${AM}/health`));
+rows.push(await get("llama-swap-health", `http://127.0.0.1:${AM}/health`));
 // readiness for hf: root HTML (binary has no /health)
 rows.push(
   await get("hf-downloader-root", `http://127.0.0.1:${HF}/`, {

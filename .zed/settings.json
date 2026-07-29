@@ -219,7 +219,7 @@
     },
     "openai_compatible": {
       "llama-swap:25100": {
-        "api_url": "http://127.0.0.1:25104/v1",
+        "api_url": "http://127.0.0.1:25100/v1",
         "available_models":                               [
             {
               "name": "auto",

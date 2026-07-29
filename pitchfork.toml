@@ -26,7 +26,8 @@ port = 25103
 run = "exec ./stack/services/sovereign-router.sh"
 dir = "."
 mise = true
-retry = true
+retry = false
+disabled = true
 ready_http = "http://127.0.0.1:25104/health"
 port = 25104
 depends = ["llama-swap"]
@@ -141,7 +142,6 @@ daemons = [
   "llama-swap",
   "mcpproxy",
   "openfang",
-  "sovereign-router",
   "null-g-proxy",
   "yote",
   "rust-web",
@@ -165,7 +165,6 @@ daemons = [
   "llama-swap",
   "mcpproxy",
   "openfang",
-  "sovereign-router",
   "null-g-proxy",
   "yote",
   "rust-web",

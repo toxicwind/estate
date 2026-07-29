@@ -122,12 +122,12 @@ const suite: Array<{
     waitMs: 3000,
   },
   {
-    daemon: "sovereign-router",
+    daemon: "llama-swap",
     mechanism: "bun --hot",
     health: `http://127.0.0.1:${AM}/health`,
     file: resolve(
       ROOT,
-      "tools/sovereign-router/sovereign-router-ts/router.ts",
+      "tools/llama-swap/llama-swap-ts/router.ts",
     ),
     kind: "ts",
     waitMs: 3000,

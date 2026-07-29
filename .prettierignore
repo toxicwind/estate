@@ -1,7 +1,5 @@
 # Ignore generated/large files
-docs/ARCHITECTURE.md
-docs/SWAP_OPTIMIZATION.md
-docs/SWAP_QUICKREF.md
+docs/
 *.pdf
 *.zip
 *.lock

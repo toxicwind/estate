@@ -101,11 +101,11 @@ llama.cpp (upstream)
 **Definition**: Any OpenAI-compatible server on `http://127.0.0.1:8020/v1` is auto-eligible as `"local"` provider in the AST Matrix router.
 
 ```python
-# sovereign-router/free_zed_gateway/gateway.py
+# llama-swap:25100/free_zed_gateway/gateway.py
 "base": os.getenv("LOCAL_LLM_URL", "http://127.0.0.1:8020/v1"),  # club3090 style
 ```
 
-**In practice**: llama-swap runs on `:25100` (external) and `:25200` (internal). The AST Matrix router at `:25104` treats any `:8020` endpoint as a local fallback tier. This pattern originated from the `club3090` project (local RTX 3090 inference) and was adopted because:
+**In practice**: llama-swap runs on `:25100` (external) and `:25200` (internal). The AST Matrix router at `:25100` treats any `:8020` endpoint as a local fallback tier. This pattern originated from the `club3090` project (local RTX 3090 inference) and was adopted because:
 
 - **No API keys** for local inference
 - **Same OpenAI schema** — drop-in replacement for cloud providers
@@ -194,7 +194,7 @@ Fork backends :25001-25099
 
 ## 6. AST Matrix Router — 6 Strategies (Go Port inside llama-swap)
 
-Ported from TypeScript (`tools/sovereign-router/sovereign-router-ts/router.ts`) to Go (`llama-swap-main/internal/astmatrix/`).
+Ported from TypeScript (`tools/llama-swap:25100/llama-swap:25100-ts/router.ts`) to Go (`llama-swap-main/internal/astmatrix/`).
 
 | Strategy             | Behavior                                                  |
 | -------------------- | --------------------------------------------------------- |
@@ -265,7 +265,7 @@ Each catch block has its own nested try/catch — **no single point of failure**
 | **rust-web**         | 25101       | Rust                | Ops dashboard + embedded watchdog                    |
 | **yote**             | 25102       | Bun                 | Telegram / status                                    |
 | **openfang**         | 25103/25203 | Rust                | Agent kernel — 206 models, 61 skills, Discord bridge |
-| **sovereign-router** | 25104       | Bun (TS)            | 5-strategy AST Matrix (external tooling)             |
+| **llama-swap:25100** | 25100       | Bun (TS)            | 5-strategy AST Matrix (external tooling)             |
 | **prometheus**       | 25105       | Go                  | Metrics                                              |
 | **hf-downloader**    | 25106       | Bun                 | GGUF download UI                                     |
 | **null-g-proxy**     | 25107       | Bun                 | Extra LLM proxy                                      |

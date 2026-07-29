@@ -1,5 +1,5 @@
 /**
- * Drives real shipped helpers + live :25100/:25104/:25107 paths.
+ * Drives real shipped helpers + live :25100/:25100/:25107 paths.
  * Asserts non-empty message.content (not reasoning_content-only).
  */
 import { describe, expect, test } from "bun:test";
@@ -148,9 +148,9 @@ describe.skipIf(!live)("best_models SSOT", () => {
   );
 
   test(
-    "sovereign-router local alias fast routes to local llama-swap model not gemini",
+    "llama-swap local alias fast routes to local llama-swap model not gemini",
     async () => {
-      const r = await chatContent("fast", "http://127.0.0.1:25104/v1");
+      const r = await chatContent("fast", "http://127.0.0.1:25100/v1");
       expect(r.status).toBe(200);
       expect(r.content.length).toBeGreaterThan(0);
       const mid = String(r.model || "");
