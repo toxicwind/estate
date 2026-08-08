@@ -1,0 +1,6 @@
+id: wezterm-mouse-bindings
+language: lua
+rule:
+  pattern: config.mouse_bindings = $BINDINGS
+message: "Mouse bindings configured"
+severity: hint

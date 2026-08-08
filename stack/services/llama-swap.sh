@@ -1,25 +1,31 @@
 #!/usr/bin/env bash
+# llama-swap direct-bind launcher — binds Go binary to 0.0.0.0:LLAMA_SWAP_PORT (25100).
+# No proxy/middleware hop. mesh-hub (25115) serves 20 GHAS /mesh/* features for the mesh.
 set -euo pipefail
 SOV="$HOME/sovereign"
 source "$SOV/stack/lib-ports.sh"
 require_env LLAMA_SWAP_PORT
 PORT="$LLAMA_SWAP_PORT"
-BACKEND="${LLAMA_SWAP_BACKEND_PORT:-25200}"
 BIN="$HOME/projects/llama-swap-main/llama-swap"
 [[ -x "$BIN" ]] || { echo "llama-swap bin not found at $BIN" >&2; exit 1; }
 CONF="$SOV/config/llama-swap.yaml"
 [[ -f "$CONF" ]] || { echo "llama-swap config not found at $CONF" >&2; exit 1; }
+
+# Kill any existing llama-swap on this port
 fuser -k "${PORT}/tcp" 2>/dev/null || true
-fuser -k "${BACKEND}/tcp" 2>/dev/null || true
-"$BIN" --config "$CONF" --listen "127.0.0.1:${BACKEND}" &
+sleep 0.3
+
+# Launch Go binary — direct bind to 0.0.0.0:PORT (no proxy hop)
+"$BIN" --config "$CONF" --listen "0.0.0.0:${PORT}" &
 BPID=$!
 cleanup() { kill "$BPID" 2>/dev/null || true; }
 trap cleanup EXIT TERM INT
+
+# Wait for health endpoint (max 15s)
 for i in $(seq 1 40); do
-  if curl -sf -m 0.3 "http://127.0.0.1:${BACKEND}/health" >/dev/null 2>&1; then break; fi
+  if curl -sf -m 0.3 "http://127.0.0.1:${PORT}/health" >/dev/null 2>&1; then break; fi
   sleep 0.25
 done
-exec /home/toxic/.bun/bin/bun --hot run "$SOV/src/services/mesh-front.ts" \
-  --service llama-swap \
-  --listen "0.0.0.0:${PORT}" \
-  --backend "127.0.0.1:${BACKEND}"
+
+# Keep the script running (waits for the Go binary)
+wait "$BPID"

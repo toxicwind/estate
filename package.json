@@ -4,7 +4,8 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "openapi-typescript-codegen": "^0.31.0"
   },
   "peerDependencies": {
     "typescript": "^5"
@@ -30,8 +31,20 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "js-yaml": "^5.2.1",
     "json5": "^2.2.3",
     "zod": "^4.4.3"
-  }
+  },
+  "version": "1.0.0",
+  "description": "Local multi-service stack: one OpenAI-compatible LLM front door, agent kernel, Telegram bot, ops dashboard, metrics, and optional Tailscale exposure.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

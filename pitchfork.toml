@@ -3,13 +3,40 @@ run = "exec ./stack/services/llama-swap.sh"
 dir = "."
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:25200/health"
+ready_http = "http://127.0.0.1:25100/health"
 port = 25100
+
+[daemons.nim-queue]
+run = "exec bun --hot run src/services/nim-queue.ts"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25189/health"
+port = 25189
+depends = ["llama-swap"]
+
+[daemons.reasoning-router]
+run = "exec bun --hot run src/services/reasoning-router.ts"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25190/health"
+port = 25190
+depends = ["llama-swap", "nim-queue"]
+
+[daemons.nim-validation]
+run = "exec bun --hot run src/services/nim-validation-middleware.ts"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25191/health"
+port = 25191
+depends = ["llama-swap", "nim-queue"]
 
 [daemons.mcpproxy]
 run = "exec mcpproxy serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=info"
 dir = "."
-mise = false
+mise = true
 retry = true
 ready_http = "http://127.0.0.1:25109/health"
 port = 25109
@@ -22,15 +49,6 @@ retry = true
 ready_http = "http://127.0.0.1:25103/api/health"
 port = 25103
 
-[daemons.sovereign-router]
-run = "exec ./stack/services/sovereign-router.sh"
-dir = "."
-mise = true
-retry = false
-disabled = true
-ready_http = "http://127.0.0.1:25104/health"
-port = 25104
-depends = ["llama-swap"]
 
 [daemons.null-g-proxy]
 run = "exec bun --hot run tools/null-g-proxy/src/index.ts"
@@ -64,6 +82,16 @@ retry = true
 ready_http = "http://127.0.0.1:25112/health"
 port = 25112
 
+[daemons.ghas-mcp]
+run = "exec bun --hot run apps/mcp/src/server.ts --mode http"
+dir = "/home/toxic/projects/github-advanced-search-mcp"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25113/health"
+port = 25113
+depends = ["ghas-api"]
+env = { GHAS_MCP_PORT = "25113" }
+
 [daemons.ghas-frontend]
 run = "exec ./node_modules/.bin/next dev -p 25114"
 dir = "/home/toxic/projects/github-advanced-search-mcp/apps/frontend"
@@ -72,6 +100,7 @@ retry = true
 ready_http = "http://127.0.0.1:25114/"
 port = 25114
 depends = ["ghas-api"]
+env = { GHAS_FRONTEND_PORT = "25114" }
 
 [daemons.kimi-audit-dash]
 run = "exec bun --hot run dashboard/server.ts"
@@ -80,6 +109,7 @@ mise = true
 retry = true
 ready_http = "http://127.0.0.1:25116/health"
 port = 25116
+env = { KIMI_AUDIT_DASH_PORT = "25116" }
 
 [daemons.mesh-hub]
 run = "exec bun --hot run src/services/mesh-hub.ts"
@@ -90,12 +120,12 @@ ready_http = "http://127.0.0.1:25115/health"
 port = 25115
 
 [daemons.byte-vision-proxy]
-run = "exec bun --hot run tools/sovereign-router/sovereign-mcp-gateway/gateway.ts"
+run = "exec bash tools/byte-vision-mock.sh"
 dir = "."
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:25120/health"
-port = 25120
+ready_http = "http://127.0.0.1:25121/health"
+port = 25121
 
 [daemons.prometheus]
 run = "exec ./stack/services/prometheus-hot.sh"
@@ -120,6 +150,7 @@ mise = true
 retry = true
 ready_http = "http://127.0.0.1:25106/"
 port = 25106
+env = { HF_DOWNLOADER_PORT = "25106" }
 
 [daemons.qdrant]
 run = "exec qdrant --config-path ./qdrant-config.yaml"
@@ -132,7 +163,7 @@ port = 25133
 [daemons.redis]
 run = "exec redis-server --port 25199 --bind 0.0.0.0 --dir ./data --dbfilename redis.rdb"
 dir = "."
-mise = false
+mise = true
 retry = true
 ready_cmd = "redis-cli -p 25199 ping | grep -q PONG"
 port = 25199
@@ -146,6 +177,7 @@ daemons = [
   "yote",
   "rust-web",
   "ghas-api",
+  "ghas-mcp",
   "ghas-frontend",
   "kimi-audit-dash",
   "mesh-hub",
@@ -158,6 +190,9 @@ daemons = [
   "zellij",
   "ttyd",
   "sshx",
+  "nim-queue",
+  "reasoning-router",
+  "nim-validation",
 ]
 
 [groups.all]
@@ -169,6 +204,7 @@ daemons = [
   "yote",
   "rust-web",
   "ghas-api",
+  "ghas-mcp",
   "ghas-frontend",
   "kimi-audit-dash",
   "mesh-hub",
@@ -200,7 +236,7 @@ port = 25137
 [daemons.sshx]
 run = "exec sshx --quiet"
 dir = "."
-mise = false
+mise = true
 retry = true
 port = 25138
 

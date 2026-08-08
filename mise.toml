@@ -11,6 +11,11 @@ pitchfork = "2.16.0"
 # Source ports.env for all tasks
 _.file = "config/ports.env"
 
+# MCP Scout (smarter-faster-better-mcp) - AST code intelligence
+SCOUT_BASE_URL = "http://127.0.0.1:25100/v1"
+SCOUT_API_KEY = "llama-swap"
+SCOUT_MODEL = "local-fast"
+
 [tasks]
 # Core daemons via pitchfork
 up = "pitchfork start --group core"
@@ -31,6 +36,8 @@ logs = "pitchfork logs"
 "up-redis" = "pitchfork start redis"
 "up-mcpproxy" = "pitchfork start mcpproxy"
 "up-mcg" = "pitchfork start byte-vision-proxy"
+"up-hf-downloader" = "pitchfork start hf-downloader"
+"up-nim-queue" = "pitchfork start nim-queue"
 
 "down-llama-swap" = "pitchfork stop llama-swap"
 "down-prometheus" = "pitchfork stop prometheus"
@@ -43,6 +50,8 @@ logs = "pitchfork logs"
 "down-redis" = "pitchfork stop redis"
 "down-mcpproxy" = "pitchfork stop mcpproxy"
 "down-mcg" = "pitchfork stop byte-vision-proxy"
+"down-hf-downloader" = "pitchfork stop hf-downloader"
+"down-nim-queue" = "pitchfork stop nim-queue"
 
 # Health checks
 "health-llama-swap" = "curl -sf http://127.0.0.1:25100/health"
@@ -53,8 +62,12 @@ logs = "pitchfork logs"
 "health-kimi-audit-dash" = "curl -sf http://127.0.0.1:25116/health"
 "health-qdrant" = "curl -sf http://127.0.0.1:25133/"
 "health-mcpproxy" = "curl -sf http://127.0.0.1:25109/health"
-"health-mcg" = "curl -sf http://127.0.0.1:25120/health"
-"health-mcg-ui" = "curl -sf http://127.0.0.1:25120/ui"
+"health-mcg" = "curl -sf http://127.0.0.1:25121/health"
+"health-mcg-ui" = "curl -sf http://127.0.0.1:25121/ui"
+"health-hf-downloader" = "curl -sf http://127.0.0.1:25106/"
+"health-nim-queue" = "curl -sf http://127.0.0.1:25189/health"
+"health-reasoning-router" = "curl -sf http://127.0.0.1:25190/health"
+"health-nim-validation" = "curl -sf http://127.0.0.1:25191/health"
 
 # nuvio-platform (webOS app - Nuvio fork)
 "nv-build" = { run = "cd tools/nuvio-platform && npm run build:webos", dir = "tools/nuvio-platform" }

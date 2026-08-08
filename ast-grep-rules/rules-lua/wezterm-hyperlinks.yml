@@ -1,0 +1,6 @@
+id: wezterm-hyperlink-rules
+language: lua
+rule:
+  pattern: config.hyperlink_rules = $RULES
+message: "Hyperlink rules configured"
+severity: hint

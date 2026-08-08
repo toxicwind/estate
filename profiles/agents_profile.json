@@ -1,0 +1,55 @@
+{
+  "description": "Subagent profile configuration with LongCat 2.0 as primary model and OpenCode as coding agent",
+  "primary": {
+    "model": "meituan/longcat-2.0",
+    "displayName": "LongCat 2.0 Free",
+    "alias": "longcat-2.0-free",
+    "provider": "openrouter",
+    "contextWindow": 1048756,
+    "maxTokens": 262144,
+    "cost": {
+      "input": 3e-07,
+      "output": 1.2e-06
+    }
+  },
+  "coding": {
+    "agent": "opencode",
+    "command": "opencode",
+    "provider": "opencode",
+    "env": "OPENCODE_API_KEY"
+  },
+  "agents": {
+    "researcher": {
+      "model": "meituan/longcat-2.0",
+      "effort": 0.9,
+      "maxTokens": 16384,
+      "description": "Deep research with maximum reasoning effort"
+    },
+    "analyzer": {
+      "model": "meituan/longcat-2.0",
+      "effort": 0.7,
+      "maxTokens": 8192,
+      "description": "Code analysis with medium effort"
+    },
+    "coder": {
+      "agent": "opencode",
+      "model": "meituan/longcat-2.0",
+      "description": "Code generation via OpenCode agent"
+    },
+    "auditor": {
+      "agent": "opencode",
+      "description": "Audit and fix tasks via OpenCode"
+    }
+  },
+  "features": {
+    "reasoning": true,
+    "multimodal": false,
+    "tool_use": true,
+    "agentic": true,
+    "opencode_integration": true
+  },
+  "source": {
+    "settings": "/home/toxic/.pi/agent/settings.json",
+    "modelsStore": "/home/toxic/.pi/agent/models-store.json"
+  }
+}
