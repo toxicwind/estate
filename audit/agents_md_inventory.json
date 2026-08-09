@@ -1,2511 +1,1252 @@
 {
-  "total": 358,
-  "files": [
+  "totalFiles": 137,
+  "uniqueHashes": 103,
+  "thirdPartyFiles": 0,
+  "userFiles": 137,
+  "duplicates": [
+    {
+      "hash": "d5ee06b8c6fa69687f0071141c2c1131",
+      "count": 2,
+      "paths": [
+        "/home/toxic/tpc-server/AGENTS.md",
+        "/home/toxic/mcp-installs/tpc-server/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "373bec485f9fe1c9e94806822d27a4a7",
+      "count": 2,
+      "paths": [
+        "/home/toxic/projects/github-advanced-search-mcp/AGENTS.md",
+        "/home/toxic/projects/sovereign-github-search/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "c679681f19e38f9442951e5811d5296f",
+      "count": 2,
+      "paths": [
+        "/home/toxic/projects/zedra-tanlethanh/AGENTS.md",
+        "/home/toxic/projects/zedra/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "ab0f75d6c5a08403dca2ddb1e553f0f0",
+      "count": 4,
+      "paths": [
+        "/home/toxic/projects/llama-swap-main/AGENTS.md",
+        "/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-main/llama-swap-main/AGENTS.md",
+        "/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-fork/llama-swap-main/AGENTS.md",
+        "/home/toxic/Downloads/explor-20260718-182237/pdf_sovereign-2026/sovereign/tools/llama-swap/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "e737f6fa0c83b2ce59e623d4bfc2e215",
+      "count": 3,
+      "paths": [
+        "/home/toxic/projects/agents/openfang/AGENTS.md",
+        "/home/toxic/projects/ansible/playbooks/{ farm_dir }/agents/openfang/AGENTS.md",
+        "/home/toxic/projects/\\( HOME/ansible/backups/full_refactor_ \\)(date +%Y%m%d_%H%M%S)/playbooks/{ farm_dir }/agents/openfang/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "f34e313ab52539bbfdcadd3804a89a36",
+      "count": 3,
+      "paths": [
+        "/home/toxic/projects/zedra/crates/zedra-host/AGENTS.md",
+        "/home/toxic/projects/zedra-tanlethanh/crates/zedra-host/AGENTS.md",
+        "/home/toxic/projects/zedra-tieubao/crates/zedra-host/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "700faadb11cd9e6ce78f1576dc88c584",
+      "count": 3,
+      "paths": [
+        "/home/toxic/projects/zedra/crates/zedra-session/AGENTS.md",
+        "/home/toxic/projects/zedra-tanlethanh/crates/zedra-session/AGENTS.md",
+        "/home/toxic/projects/zedra-tieubao/crates/zedra-session/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "b045b62fc04e10f1ad1e4323f6f28a6c",
+      "count": 4,
+      "paths": [
+        "/home/toxic/projects/zedra/crates/zedra-terminal/AGENTS.md",
+        "/home/toxic/projects/zedra-tanlethanh/crates/zedra-terminal/AGENTS.md",
+        "/home/toxic/projects/zedra-virtual0ps/crates/zedra-terminal/AGENTS.md",
+        "/home/toxic/projects/zedra-tieubao/crates/zedra-terminal/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "0a01c261ee14534ae37c7324e36b672d",
+      "count": 2,
+      "paths": [
+        "/home/toxic/projects/zedra/crates/zedra/AGENTS.md",
+        "/home/toxic/projects/zedra-tanlethanh/crates/zedra/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "78f75844b7b19e855dbf5854a3e96ea9",
+      "count": 2,
+      "paths": [
+        "/home/toxic/projects/pi-conversation-aware-audit/packages/pi-tui/AGENTS.md",
+        "/home/toxic/projects/kimi-code-sovereign/packages/pi-tui/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "d8696c3c55ef5b18230f8837cddfac2e",
+      "count": 6,
+      "paths": [
+        "/home/toxic/projects/antigravity-awesome-skills/skills/react-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/react-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/react-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-aas-web-app-builder/skills/react-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-web-wizard/skills/react-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-typescript-javascript/skills/react-best-practices/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "993a58d7697a7eb7760d74aa51af01aa",
+      "count": 6,
+      "paths": [
+        "/home/toxic/projects/antigravity-awesome-skills/skills/postgres-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/postgres-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/postgres-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-aas-data-analytics/skills/postgres-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-aas-data-engineering-platform/skills/postgres-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-data-analytics/skills/postgres-best-practices/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "eb48f84805383aab01be0e927bbdef4f",
+      "count": 3,
+      "paths": [
+        "/home/toxic/projects/antigravity-awesome-skills/skills/dbos-typescript/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/dbos-typescript/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/dbos-typescript/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "1d6d662d8de579b03786ef228106c591",
+      "count": 3,
+      "paths": [
+        "/home/toxic/projects/antigravity-awesome-skills/skills/dbos-python/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/dbos-python/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/dbos-python/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "cbfc40d07de7a2740cecd3346c0717e0",
+      "count": 3,
+      "paths": [
+        "/home/toxic/projects/antigravity-awesome-skills/skills/dbos-golang/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/dbos-golang/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/dbos-golang/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "70dce88932e3931e9b8eb212790c435b",
+      "count": 2,
+      "paths": [
+        "/home/toxic/Downloads/manydifferent/ophel-main_extracted/ophel-main/AGENTS.md",
+        "/home/toxic/projects/organized-lattice/core|active|experiments|utils/ophel-main/ophel-main/AGENTS.md"
+      ]
+    }
+  ],
+  "entries": [
     {
       "path": "/home/toxic/AGENTS.md",
-      "size": 6918,
-      "mtime": 1785622418,
-      "md5": "aa2598117fc509f15b1c21e33ce26c6f",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/AGENTS.md.bak.1784745420",
-      "size": 16721,
-      "mtime": 1784545533,
-      "md5": "22ae6940d34cffd2e7a2e5cf40a035c0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/archive/backups/backup_openclaw_openfang_1779150995/openclaw_backup/workspace/AGENTS.md",
-      "size": 7874,
-      "mtime": 1779150995,
-      "md5": "f579f8765105453dcba4a68a9eec1f3d",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/archive/backups/backup_openclaw_openfang_1779150995/openclaw_backup/workspace-coyote/AGENTS.md",
-      "size": 724,
-      "mtime": 1779150995,
-      "md5": "91c4a32922fed9898ed07e9dfa3911f6",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.codex/.tmp/plugins/plugins/build-web-apps/skills/react-best-practices/AGENTS.md",
-      "size": 94496,
-      "mtime": 1784129021,
-      "md5": "d7783bf645d39790b10c758f69fae2f0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.codex/.tmp/plugins/plugins/build-web-apps/skills/supabase-best-practices/AGENTS.md",
-      "size": 2160,
-      "mtime": 1784129021,
-      "md5": "b367fe2b17042c40a6a85d10bda966a4",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.codex/.tmp/plugins/plugins/zoom/AGENTS.md",
-      "size": 463,
-      "mtime": 1784129021,
-      "md5": "1f8733f0779c68c814f31cabfd604e38",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.config/zed/AGENTS.md",
-      "size": 12882,
-      "mtime": 1785257418,
-      "md5": "df5c64c3967985402f241046d6754f22",
-      "is_symlink": false
+      "size": 4798,
+      "mtime": 1786056800,
+      "md5": "196d58f514f9c8d5a8033db328487d75",
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/Downloads/AGENTS.md",
       "size": 10926,
       "mtime": 1784475619,
       "md5": "4fc03c94e1c5adb72d670a832add58fe",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-fork/llama-swap-main/AGENTS.md",
       "size": 1948,
       "mtime": 1783486726,
       "md5": "ab0f75d6c5a08403dca2ddb1e553f0f0",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/Downloads/explor-20260718-182237/pdf_llama-swap-main/llama-swap-main/AGENTS.md",
       "size": 1948,
       "mtime": 1783482545,
       "md5": "ab0f75d6c5a08403dca2ddb1e553f0f0",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/Downloads/explor-20260718-182237/pdf_sovereign-2026/sovereign/tools/llama-swap/AGENTS.md",
       "size": 1948,
       "mtime": 1783700405,
       "md5": "ab0f75d6c5a08403dca2ddb1e553f0f0",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/Downloads/manydifferent/ophel-main_extracted/ophel-main/AGENTS.md",
       "size": 9512,
       "mtime": 1782631420,
       "md5": "70dce88932e3931e9b8eb212790c435b",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.gemini/antigravity-ide/scratch/club-3090/AGENTS.md",
-      "size": 27484,
-      "mtime": 1782082113,
-      "md5": "4341c4065760fba25073e0cb8bbbc521",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/go/pkg/mod/github.com/alecthomas/chroma/v2@v2.24.1/AGENTS.md",
-      "size": 866,
-      "mtime": 1783991248,
-      "md5": "5883fc20fbdac52336142ab2d6c9e18c",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/go/pkg/mod/github.com/alecthomas/chroma/v2@v2.26.1/AGENTS.md",
-      "size": 874,
-      "mtime": 1783627047,
-      "md5": "bcc52e247fa53d4bd503cf72d22645c0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/go/pkg/mod/github.com/aws/smithy-go@v1.25.1/AGENTS.md",
-      "size": 6682,
-      "mtime": 1783991254,
-      "md5": "5c0d847a6f598c9d2266599347e87bfe",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/go/pkg/mod/github.com/caddyserver/caddy/v2@v2.11.4/AGENTS.md",
-      "size": 7419,
-      "mtime": 1783990806,
-      "md5": "afce16ac545fcfe4a1297e73c8a08c54",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/go/pkg/mod/github.com/clipperhouse/displaywidth@v0.9.0/AGENTS.md",
-      "size": 1561,
-      "mtime": 1783490852,
-      "md5": "a977790a83e2a7edff266010dc6a00aa",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/go/pkg/mod/github.com/clipperhouse/uax29/v2@v2.5.0/AGENTS.md",
-      "size": 568,
-      "mtime": 1783490852,
-      "md5": "d34cf7cb6be784484f22eab1d7b0c518",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/go/pkg/mod/github.com/mark3labs/mcp-go@v0.55.0/AGENTS.md",
-      "size": 1739,
-      "mtime": 1783627047,
-      "md5": "4f2e28c085609217a7bccbd4fec4f592",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/go/pkg/mod/github.com/mark3labs/mcp-go@v0.57.0/AGENTS.md",
-      "size": 1739,
-      "mtime": 1785261566,
-      "md5": "4f2e28c085609217a7bccbd4fec4f592",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/go/pkg/mod/github.com/modelcontextprotocol/go-sdk@v1.4.0/AGENTS.md",
-      "size": 2348,
-      "mtime": 1783485899,
-      "md5": "ca79dee927eca5ac4b4aafe3fa9ea9b0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/go/pkg/mod/github.com/modelcontextprotocol/go-sdk@v1.6.0/AGENTS.md",
-      "size": 2348,
-      "mtime": 1784061703,
-      "md5": "ca79dee927eca5ac4b4aafe3fa9ea9b0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/go/pkg/mod/github.com/odvcencio/gotreesitter@v0.6.1-0.20260306002001-fbe5983c6f41/AGENTS.md",
-      "size": 2861,
-      "mtime": 1784593481,
-      "md5": "70825da78feb9019808bb61b01ffc2d8",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/go/pkg/mod/github.com/pelletier/go-toml/v2@v2.3.1/AGENTS.md",
-      "size": 2253,
-      "mtime": 1783627047,
-      "md5": "101ff1d57b32a9c966738ade74abcf21",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/go/pkg/mod/github.com/weppos/publicsuffix-go@v0.50.3-0.20260104170930-90713dec78f2/AGENTS.md",
-      "size": 1483,
-      "mtime": 1784593458,
-      "md5": "a2012512d3f96c4855c42538b32c13a8",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/go/pkg/mod/github.com/weppos/publicsuffix-go@v0.50.3/AGENTS.md",
-      "size": 1483,
-      "mtime": 1784593471,
-      "md5": "a2012512d3f96c4855c42538b32c13a8",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/go/pkg/mod/go.mongodb.org/mongo-driver/v2@v2.6.1/AGENTS.md",
-      "size": 4974,
-      "mtime": 1783627047,
-      "md5": "ac70016303140aff341dd8b6267b92fb",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/go/pkg/mod/go.opentelemetry.io/otel@v1.44.0/AGENTS.md",
-      "size": 6768,
-      "mtime": 1785261566,
-      "md5": "8c1b832debf23fa9ab0f29a56f728bf5",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/agents/assistant/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/analytics/analyst/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/analytics/main/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/analytics/modeler/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/apitester/debugger/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/apitester/main/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/apitester/scanner/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/apitester/tester/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/browser/extractor/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/browser/main/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/browser/researcher/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/clip/distributor/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/clip/main/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/clip/writer/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/collector/localizer/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/collector/main/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/collector/scholar/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/collector/scout/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/creator/main/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/creator/prompt_writer/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/devops/engineer/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/devops/implementer/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/devops/main/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/devops/monitor/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/devops/reviewer/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/devteam/engineer/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/devteam/pm/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/devteam/qa/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/lead/main/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/lead/messenger/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/lead/outreach/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/lead/recruiter/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/linkedin/content/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/linkedin/main/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/linkedin/researcher/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/predictor/main/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/predictor/modeler/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/predictor/orchestrator/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/predictor/planner/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/reddit/main/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/reddit/moderator/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/reddit/writer/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/researcher/coder/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/researcher/main/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/researcher/scholar/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/researcher/writer/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/strategist/analyst/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/strategist/architect/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/strategist/counsel/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/strategist/main/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/trader/accountant/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/trader/main/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/trader/researcher/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/twitter/main/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/twitter/strategist/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/twitter/writer/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/wiki/analyst/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/wiki/ingestor/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/wiki/linter/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.librefang/workspaces/hands/wiki/main/.identity/AGENTS.md",
-      "size": 986,
-      "mtime": 1780102580,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.local/share/nix/root/nix/store/pb5gsbdbdhdvkrdsh902pid678lz8rzy-devbox-0.17.2-go-modules/github.com/clipperhouse/displaywidth/AGENTS.md",
-      "size": 1561,
-      "mtime": 1,
-      "md5": "a977790a83e2a7edff266010dc6a00aa",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.local/share/Trash/files/AGENTS.md",
-      "size": 0,
-      "mtime": 1784877146,
-      "md5": "d41d8cd98f00b204e9800998ecf8427e",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.local/share/Trash/info/AGENTS.md.trashinfo",
-      "size": 83,
-      "mtime": 1784877154,
-      "md5": "22c2ce97ca2467e436e7009baacd2b56",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/mcp-installs/tpc-server/AGENTS.md",
       "size": 6672,
       "mtime": 1784443898,
       "md5": "d5ee06b8c6fa69687f0071141c2c1131",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/config/workspace-coyote/AGENTS.md",
-      "size": 1076,
-      "mtime": 1782943541,
-      "md5": "0640ed36b3fff74e6f562a3fa694ff4e",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/agent-coordinator/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486768,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/analyst/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/arbitrage-monitor/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/architect/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/aria/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/assistant/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/browser-hand/AGENTS.md",
-      "size": 986,
-      "mtime": 1783460692,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/coder-max/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/coder-max-recovery/AGENTS.md",
-      "size": 986,
-      "mtime": 1785736091,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/coyote/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/dealigner/AGENTS.md",
-      "size": 986,
-      "mtime": 1783838615,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/debugger/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/diagnostic-max/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-architect/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486787,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-boundary/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487833,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-buffer/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487821,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-communicator/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486830,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-composite/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486923,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-concurrency/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487836,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-context/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486863,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-cpu/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487842,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-decompose/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486914,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-distribute/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486905,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-exception/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486897,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-fanin/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487830,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-fault/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486888,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-feedback/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486822,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-lifecycle/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486941,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-manager/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486739,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-merge/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487827,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-metrics/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486814,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-middleware/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487809,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-persistence/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486847,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-pool/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487815,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-prioritizer/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486776,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-priority/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487839,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-reconciler/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486855,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-resolver/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486761,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-resume/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486880,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-router/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487811,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-scheduler/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486838,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-sequence/AGENTS.md",
-      "size": 986,
-      "mtime": 1783490443,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-sequencer/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486798,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-sink/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487818,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-spool/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487824,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-throttle/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486871,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-tracker/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486750,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-validator/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486806,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/goal-workflow/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486932,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/memory-cleaner/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486746,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/memory-maintainer/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486772,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/orchestrator-assistant/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486743,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/orchestrator-max/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/orchestrator-status-37/AGENTS.md",
-      "size": 986,
-      "mtime": 1782845234,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/planner/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/predictor-hand/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/researcher/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/resource-manager/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486795,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/sage/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/security-auditor-max/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/solidity-security-auditor/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/status-checker/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486732,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/system-monitor/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486757,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/system-optimizer/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486783,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-aggregate/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486910,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-allocator/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486791,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-archiver/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486810,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-batch/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486867,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-chain/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486928,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-completer/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486765,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-defer/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486859,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-delegate/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486919,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-delegator/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486780,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-dispatch/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487816,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-escalator/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486802,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-fanout/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487828,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-filter/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487810,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-gateway/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487813,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-interrupt/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486884,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-lambda/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487372,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-logger/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486818,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-organizer/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486754,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-parallel/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486901,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-parallelism/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487834,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-pause/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486876,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-predictor/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486826,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-queue/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486843,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-recovery/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486851,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-retry/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486893,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-reviewer/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486736,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-ring/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487822,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-scheduling/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487838,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-scope/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487831,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-source/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487819,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-split/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487825,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-state/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486937,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-visualizer/AGENTS.md",
-      "size": 986,
-      "mtime": 1783486834,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/task-weight/AGENTS.md",
-      "size": 986,
-      "mtime": 1783487841,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/test-engineer/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/tutor/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/whisper/AGENTS.md",
-      "size": 986,
-      "mtime": 1783838615,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.openfang/workspaces/writer/AGENTS.md",
-      "size": 986,
-      "mtime": 1783722535,
-      "md5": "d4281a6da949d49556eff8da443e28a0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.pi/agent/skills/AGENTS.md",
-      "size": 9455,
-      "mtime": 1785965015,
-      "md5": "87ce4e652f511fd08ca435cd925165d7",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/9router/open-sse/AGENTS.md",
-      "size": 4235,
-      "mtime": 1784454114,
-      "md5": "f1c6075329a8f8cfd322e6162bd9ba7d",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/9router/tests/translator/AGENTS.md",
-      "size": 7743,
-      "mtime": 1784454114,
-      "md5": "9bdb6da072bb99404d4fdd32bb4c0017",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/agent-dashboard/AGENTS.md",
-      "size": 21262,
-      "mtime": 1779774041,
-      "md5": "f1d29172e2f8dbcc8f29b94c86c1e228",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/agent-dashboard/packages/next/AGENTS.md",
-      "size": 311,
-      "mtime": 1779774042,
-      "md5": "91f4c91318fe15e86c1cbe4c325d6ff6",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/agents/openfang/AGENTS.md",
-      "size": 192,
-      "mtime": 1779766905,
-      "md5": "e737f6fa0c83b2ce59e623d4bfc2e215",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/ansible/playbooks/{ farm_dir }/agents/openfang/AGENTS.md",
-      "size": 192,
-      "mtime": 1779779981,
-      "md5": "e737f6fa0c83b2ce59e623d4bfc2e215",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/AGENTS.md",
-      "size": 3000,
-      "mtime": 1782099499,
-      "md5": "a3382c02282d429b3beb7ca3252bf4d1",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/dbos-golang/AGENTS.md",
-      "size": 2641,
-      "mtime": 1782099499,
-      "md5": "cbfc40d07de7a2740cecd3346c0717e0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/dbos-python/AGENTS.md",
-      "size": 2748,
-      "mtime": 1782099499,
-      "md5": "1d6d662d8de579b03786ef228106c591",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/dbos-typescript/AGENTS.md",
-      "size": 2728,
-      "mtime": 1782099499,
-      "md5": "eb48f84805383aab01be0e927bbdef4f",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/postgres-best-practices/AGENTS.md",
-      "size": 44927,
-      "mtime": 1782099499,
-      "md5": "993a58d7697a7eb7760d74aa51af01aa",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/react-best-practices/AGENTS.md",
-      "size": 60535,
-      "mtime": 1782099499,
-      "md5": "d8696c3c55ef5b18230f8837cddfac2e",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/dbos-golang/AGENTS.md",
-      "size": 2641,
-      "mtime": 1782099499,
-      "md5": "cbfc40d07de7a2740cecd3346c0717e0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/dbos-python/AGENTS.md",
-      "size": 2748,
-      "mtime": 1782099499,
-      "md5": "1d6d662d8de579b03786ef228106c591",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/dbos-typescript/AGENTS.md",
-      "size": 2728,
-      "mtime": 1782099499,
-      "md5": "eb48f84805383aab01be0e927bbdef4f",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/postgres-best-practices/AGENTS.md",
-      "size": 44927,
-      "mtime": 1782099500,
-      "md5": "993a58d7697a7eb7760d74aa51af01aa",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/react-best-practices/AGENTS.md",
-      "size": 60535,
-      "mtime": 1782099500,
-      "md5": "d8696c3c55ef5b18230f8837cddfac2e",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-aas-data-analytics/skills/postgres-best-practices/AGENTS.md",
-      "size": 44927,
-      "mtime": 1782099500,
-      "md5": "993a58d7697a7eb7760d74aa51af01aa",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-aas-data-engineering-platform/skills/postgres-best-practices/AGENTS.md",
-      "size": 44927,
-      "mtime": 1782099500,
-      "md5": "993a58d7697a7eb7760d74aa51af01aa",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-aas-web-app-builder/skills/react-best-practices/AGENTS.md",
-      "size": 60535,
-      "mtime": 1782099500,
-      "md5": "d8696c3c55ef5b18230f8837cddfac2e",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-data-analytics/skills/postgres-best-practices/AGENTS.md",
-      "size": 44927,
-      "mtime": 1782099500,
-      "md5": "993a58d7697a7eb7760d74aa51af01aa",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-typescript-javascript/skills/react-best-practices/AGENTS.md",
-      "size": 60535,
-      "mtime": 1782099500,
-      "md5": "d8696c3c55ef5b18230f8837cddfac2e",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-web-wizard/skills/react-best-practices/AGENTS.md",
-      "size": 60535,
-      "mtime": 1782099500,
-      "md5": "d8696c3c55ef5b18230f8837cddfac2e",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/skills/dbos-golang/AGENTS.md",
-      "size": 2641,
-      "mtime": 1782099500,
-      "md5": "cbfc40d07de7a2740cecd3346c0717e0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/skills/dbos-python/AGENTS.md",
-      "size": 2748,
-      "mtime": 1782099500,
-      "md5": "1d6d662d8de579b03786ef228106c591",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/skills/dbos-typescript/AGENTS.md",
-      "size": 2728,
-      "mtime": 1782099500,
-      "md5": "eb48f84805383aab01be0e927bbdef4f",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/skills/postgres-best-practices/AGENTS.md",
-      "size": 44927,
-      "mtime": 1782099500,
-      "md5": "993a58d7697a7eb7760d74aa51af01aa",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-awesome-skills/skills/react-best-practices/AGENTS.md",
-      "size": 60535,
-      "mtime": 1782099500,
-      "md5": "d8696c3c55ef5b18230f8837cddfac2e",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-gateway-master/submodules/antigravity-white/ops/legacy_archive/legacy/vendor/supergateway/AGENTS.md",
-      "size": 1890,
-      "mtime": 1782099626,
-      "md5": "00f5b4c0c746048405d524b8e51b9b13",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-ide-cli/AGENTS.md",
-      "size": 34986,
-      "mtime": 1782099495,
-      "md5": "19532c67e103ee76499e51270269677f",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-white/ops/legacy_archive/legacy/vendor/supergateway/AGENTS.md",
-      "size": 1890,
-      "mtime": 1782099613,
-      "md5": "00f5b4c0c746048405d524b8e51b9b13",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-white/vendor/supergateway/AGENTS.md",
-      "size": 616,
-      "mtime": 1782099785,
-      "md5": "b299774da83a4732bd25eb609d49e4d2",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-workspace-template/AGENTS.md",
-      "size": 823,
-      "mtime": 1782099493,
-      "md5": "291485e2e398c043010c11718d1203f4",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-workspace-template/cli/src/ag_cli/templates/AGENTS.md",
-      "size": 1482,
-      "mtime": 1782099493,
-      "md5": "a54b20a5ada1a808bbef5910ad8af4d1",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/antigravity-workspace-template/openspec/AGENTS.md",
-      "size": 14967,
-      "mtime": 1782099493,
-      "md5": "de4bb26b49a257b46c11303554231ba0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/caddy/AGENTS.md",
-      "size": 8091,
-      "mtime": 1783990663,
-      "md5": "8e88b82a7fabb1de5ea49199e92988ca",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/club-3090/AGENTS.md",
-      "size": 27027,
-      "mtime": 1781328101,
-      "md5": "9a168185f7b4cc894ac7d6f43389c7c3",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/codemod/AGENTS.md",
-      "size": 4221,
-      "mtime": 1785492247,
-      "md5": "1183a8cccbdf8c4830257509a5873537",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/codemod/crates/AGENTS.md",
-      "size": 1604,
-      "mtime": 1785492247,
-      "md5": "bd975d5d93fccf790d6792fa7be2c1c0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/codemod/crates/cli/AGENTS.md",
-      "size": 1756,
-      "mtime": 1785492247,
-      "md5": "06392ca52a194a1b5b822c4014b89a50",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/codemod/crates/codemod-sandbox/AGENTS.md",
-      "size": 1352,
-      "mtime": 1785492247,
-      "md5": "7611311d3441d7715469422e40c9d565",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/codemod/crates/core/AGENTS.md",
-      "size": 1374,
-      "mtime": 1785492247,
-      "md5": "64d227c532103d956bf09b9e80aaa377",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/codemod/crates/language-core/AGENTS.md",
-      "size": 631,
-      "mtime": 1785492247,
-      "md5": "beef1cbf72efe86e5562b16dfe2779ee",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/codemod/crates/language-javascript/AGENTS.md",
-      "size": 524,
-      "mtime": 1785492247,
-      "md5": "dd89d614eb53d1916dadab40059b5c9b",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/codemod/crates/language-python/AGENTS.md",
-      "size": 502,
-      "mtime": 1785492247,
-      "md5": "437c0df774c0a2f1375063caf444f8dd",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/codemod/crates/semantic-factory/AGENTS.md",
-      "size": 514,
-      "mtime": 1785492247,
-      "md5": "80f37e0c48927c7de1ab615ca391a6b6",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/codemod/docs/AGENTS.md",
-      "size": 655,
-      "mtime": 1785492247,
-      "md5": "5e8818534f5964400581b3cae5fc42a1",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/codemod/packages/AGENTS.md",
-      "size": 924,
-      "mtime": 1785492247,
-      "md5": "cd4c001a1fd7dc27b6062bf27abd2d9d",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/CodeWhale/AGENTS.md",
-      "size": 9731,
-      "mtime": 1784549887,
-      "md5": "59cb0a883863ff8fe0d562393fb497bc",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/CodeWhale/crates/tui/AGENTS.md",
-      "size": 4507,
-      "mtime": 1784549887,
-      "md5": "a24bd452dbe9459916cc42d85a503687",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/CodeWhale/crates/tui/locales/AGENTS.md",
-      "size": 2285,
-      "mtime": 1784549887,
-      "md5": "50989cb65e625524e50946d7a4b940c5",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/CodeWhale/docs/SUBAGENTS.md",
-      "size": 23149,
-      "mtime": 1784549887,
-      "md5": "d71548070a473a515934b999eb43aa84",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/CodeWhale/web/AGENTS.md",
-      "size": 974,
-      "mtime": 1784549887,
-      "md5": "315ddb806bed5f4fc8d0568b23d06963",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/cr3_forge/optimized-cr3-repo/AGENTS.md",
-      "size": 1838,
-      "mtime": 1779435551,
-      "md5": "7e6b400f8766aba02c9f0c08c44554bf",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/crux/AGENTS.md",
-      "size": 0,
-      "mtime": 1782432848,
-      "md5": "d41d8cd98f00b204e9800998ecf8427e",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/crypto-workspace/.grok/AGENTS.md",
-      "size": 1007,
-      "mtime": 1780467179,
-      "md5": "9ca4a6fa91537c767cf8482401db32af",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/dotfiles_pull/repos/Villoh_dotfiles/AGENTS.md",
-      "size": 2505,
-      "mtime": 1781641241,
-      "md5": "17721970a0efb8fe2bf8f7d5a0a83870",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/dotfiles_pull/repos/Villoh_dotfiles/dot_config/opencode/AGENTS.md",
-      "size": 2667,
-      "mtime": 1781641241,
-      "md5": "ea7d4698d7d0df0e0c8e15ada054c3b1",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/free-coding-models/AGENTS.md",
-      "size": 15698,
-      "mtime": 1785492159,
-      "md5": "0e3486ead00260a3a76c7c8967686188",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/go/pkg/mod/github.com/alecthomas/chroma/v2@v2.24.1/AGENTS.md",
-      "size": 866,
-      "mtime": 1780962980,
-      "md5": "5883fc20fbdac52336142ab2d6c9e18c",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/go/pkg/mod/github.com/alecthomas/chroma/v2@v2.26.1/AGENTS.md",
-      "size": 874,
-      "mtime": 1781640652,
-      "md5": "bcc52e247fa53d4bd503cf72d22645c0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/go/pkg/mod/github.com/mark3labs/mcp-go@v0.50.0/AGENTS.md",
-      "size": 2285,
-      "mtime": 1780962980,
-      "md5": "9663c4d38ebb369232d5e38c0c0dc8ab",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/go/pkg/mod/github.com/mark3labs/mcp-go@v0.55.0/AGENTS.md",
-      "size": 1739,
-      "mtime": 1781640652,
-      "md5": "4f2e28c085609217a7bccbd4fec4f592",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/go/pkg/mod/github.com/modelcontextprotocol/go-sdk@v1.4.0/AGENTS.md",
-      "size": 2348,
-      "mtime": 1782131623,
-      "md5": "ca79dee927eca5ac4b4aafe3fa9ea9b0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/go/pkg/mod/github.com/pelletier/go-toml/v2@v2.3.0/AGENTS.md",
-      "size": 2253,
-      "mtime": 1780962980,
-      "md5": "101ff1d57b32a9c966738ade74abcf21",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/go/pkg/mod/github.com/pelletier/go-toml/v2@v2.3.1/AGENTS.md",
-      "size": 2253,
-      "mtime": 1781640651,
-      "md5": "101ff1d57b32a9c966738ade74abcf21",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/go/pkg/mod/github.com/weppos/publicsuffix-go@v0.50.3-0.20260104170930-90713dec78f2/AGENTS.md",
-      "size": 1483,
-      "mtime": 1781638303,
-      "md5": "a2012512d3f96c4855c42538b32c13a8",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/go/pkg/mod/go.mongodb.org/mongo-driver/v2@v2.6.1/AGENTS.md",
-      "size": 4974,
-      "mtime": 1781640652,
-      "md5": "ac70016303140aff341dd8b6267b92fb",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/greprip/AGENTS.md",
-      "size": 160,
-      "mtime": 1782693459,
-      "md5": "33fa3e7bff96e72d1ef2282c2b80c514",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/\\( HOME/ansible/backups/full_refactor_ \\)(date +%Y%m%d_%H%M%S)/playbooks/{ farm_dir }/agents/openfang/AGENTS.md",
       "size": 192,
       "mtime": 1779779981,
       "md5": "e737f6fa0c83b2ce59e623d4bfc2e215",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/9router/open-sse/AGENTS.md",
+      "size": 4235,
+      "mtime": 1784454114,
+      "md5": "f1c6075329a8f8cfd322e6162bd9ba7d",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/9router/tests/translator/AGENTS.md",
+      "size": 7743,
+      "mtime": 1784454114,
+      "md5": "9bdb6da072bb99404d4fdd32bb4c0017",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/agent-dashboard/AGENTS.md",
+      "size": 21262,
+      "mtime": 1779774041,
+      "md5": "f1d29172e2f8dbcc8f29b94c86c1e228",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/agent-dashboard/packages/next/AGENTS.md",
+      "size": 311,
+      "mtime": 1779774042,
+      "md5": "91f4c91318fe15e86c1cbe4c325d6ff6",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/agents/openfang/AGENTS.md",
+      "size": 192,
+      "mtime": 1779766905,
+      "md5": "e737f6fa0c83b2ce59e623d4bfc2e215",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/ansible/playbooks/{ farm_dir }/agents/openfang/AGENTS.md",
+      "size": 192,
+      "mtime": 1779779981,
+      "md5": "e737f6fa0c83b2ce59e623d4bfc2e215",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/AGENTS.md",
+      "size": 3000,
+      "mtime": 1782099499,
+      "md5": "a3382c02282d429b3beb7ca3252bf4d1",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/dbos-golang/AGENTS.md",
+      "size": 2641,
+      "mtime": 1782099499,
+      "md5": "cbfc40d07de7a2740cecd3346c0717e0",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/dbos-python/AGENTS.md",
+      "size": 2748,
+      "mtime": 1782099499,
+      "md5": "1d6d662d8de579b03786ef228106c591",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/dbos-typescript/AGENTS.md",
+      "size": 2728,
+      "mtime": 1782099499,
+      "md5": "eb48f84805383aab01be0e927bbdef4f",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/postgres-best-practices/AGENTS.md",
+      "size": 44927,
+      "mtime": 1782099499,
+      "md5": "993a58d7697a7eb7760d74aa51af01aa",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/react-best-practices/AGENTS.md",
+      "size": 60535,
+      "mtime": 1782099499,
+      "md5": "d8696c3c55ef5b18230f8837cddfac2e",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/dbos-golang/AGENTS.md",
+      "size": 2641,
+      "mtime": 1782099499,
+      "md5": "cbfc40d07de7a2740cecd3346c0717e0",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/dbos-python/AGENTS.md",
+      "size": 2748,
+      "mtime": 1782099499,
+      "md5": "1d6d662d8de579b03786ef228106c591",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/dbos-typescript/AGENTS.md",
+      "size": 2728,
+      "mtime": 1782099499,
+      "md5": "eb48f84805383aab01be0e927bbdef4f",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/postgres-best-practices/AGENTS.md",
+      "size": 44927,
+      "mtime": 1782099500,
+      "md5": "993a58d7697a7eb7760d74aa51af01aa",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/react-best-practices/AGENTS.md",
+      "size": 60535,
+      "mtime": 1782099500,
+      "md5": "d8696c3c55ef5b18230f8837cddfac2e",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-aas-data-analytics/skills/postgres-best-practices/AGENTS.md",
+      "size": 44927,
+      "mtime": 1782099500,
+      "md5": "993a58d7697a7eb7760d74aa51af01aa",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-aas-data-engineering-platform/skills/postgres-best-practices/AGENTS.md",
+      "size": 44927,
+      "mtime": 1782099500,
+      "md5": "993a58d7697a7eb7760d74aa51af01aa",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-aas-web-app-builder/skills/react-best-practices/AGENTS.md",
+      "size": 60535,
+      "mtime": 1782099500,
+      "md5": "d8696c3c55ef5b18230f8837cddfac2e",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-data-analytics/skills/postgres-best-practices/AGENTS.md",
+      "size": 44927,
+      "mtime": 1782099500,
+      "md5": "993a58d7697a7eb7760d74aa51af01aa",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-typescript-javascript/skills/react-best-practices/AGENTS.md",
+      "size": 60535,
+      "mtime": 1782099500,
+      "md5": "d8696c3c55ef5b18230f8837cddfac2e",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-web-wizard/skills/react-best-practices/AGENTS.md",
+      "size": 60535,
+      "mtime": 1782099500,
+      "md5": "d8696c3c55ef5b18230f8837cddfac2e",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/skills/dbos-golang/AGENTS.md",
+      "size": 2641,
+      "mtime": 1782099500,
+      "md5": "cbfc40d07de7a2740cecd3346c0717e0",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/skills/dbos-python/AGENTS.md",
+      "size": 2748,
+      "mtime": 1782099500,
+      "md5": "1d6d662d8de579b03786ef228106c591",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/skills/dbos-typescript/AGENTS.md",
+      "size": 2728,
+      "mtime": 1782099500,
+      "md5": "eb48f84805383aab01be0e927bbdef4f",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/skills/postgres-best-practices/AGENTS.md",
+      "size": 44927,
+      "mtime": 1782099500,
+      "md5": "993a58d7697a7eb7760d74aa51af01aa",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-awesome-skills/skills/react-best-practices/AGENTS.md",
+      "size": 60535,
+      "mtime": 1782099500,
+      "md5": "d8696c3c55ef5b18230f8837cddfac2e",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-ide-cli/AGENTS.md",
+      "size": 34986,
+      "mtime": 1782099495,
+      "md5": "19532c67e103ee76499e51270269677f",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-workspace-template/AGENTS.md",
+      "size": 823,
+      "mtime": 1782099493,
+      "md5": "291485e2e398c043010c11718d1203f4",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-workspace-template/cli/src/ag_cli/templates/AGENTS.md",
+      "size": 1482,
+      "mtime": 1782099493,
+      "md5": "a54b20a5ada1a808bbef5910ad8af4d1",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/antigravity-workspace-template/openspec/AGENTS.md",
+      "size": 14967,
+      "mtime": 1782099493,
+      "md5": "de4bb26b49a257b46c11303554231ba0",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/caddy/AGENTS.md",
+      "size": 8091,
+      "mtime": 1783990663,
+      "md5": "8e88b82a7fabb1de5ea49199e92988ca",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/club-3090/AGENTS.md",
+      "size": 27027,
+      "mtime": 1781328101,
+      "md5": "9a168185f7b4cc894ac7d6f43389c7c3",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/codemod/AGENTS.md",
+      "size": 4221,
+      "mtime": 1785492247,
+      "md5": "1183a8cccbdf8c4830257509a5873537",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/codemod/crates/AGENTS.md",
+      "size": 1604,
+      "mtime": 1785492247,
+      "md5": "bd975d5d93fccf790d6792fa7be2c1c0",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/codemod/crates/cli/AGENTS.md",
+      "size": 1756,
+      "mtime": 1785492247,
+      "md5": "06392ca52a194a1b5b822c4014b89a50",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/codemod/crates/codemod-sandbox/AGENTS.md",
+      "size": 1352,
+      "mtime": 1785492247,
+      "md5": "7611311d3441d7715469422e40c9d565",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/codemod/crates/core/AGENTS.md",
+      "size": 1374,
+      "mtime": 1785492247,
+      "md5": "64d227c532103d956bf09b9e80aaa377",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/codemod/crates/language-core/AGENTS.md",
+      "size": 631,
+      "mtime": 1785492247,
+      "md5": "beef1cbf72efe86e5562b16dfe2779ee",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/codemod/crates/language-javascript/AGENTS.md",
+      "size": 524,
+      "mtime": 1785492247,
+      "md5": "dd89d614eb53d1916dadab40059b5c9b",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/codemod/crates/language-python/AGENTS.md",
+      "size": 502,
+      "mtime": 1785492247,
+      "md5": "437c0df774c0a2f1375063caf444f8dd",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/codemod/crates/semantic-factory/AGENTS.md",
+      "size": 514,
+      "mtime": 1785492247,
+      "md5": "80f37e0c48927c7de1ab615ca391a6b6",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/codemod/docs/AGENTS.md",
+      "size": 655,
+      "mtime": 1785492247,
+      "md5": "5e8818534f5964400581b3cae5fc42a1",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/codemod/packages/AGENTS.md",
+      "size": 924,
+      "mtime": 1785492247,
+      "md5": "cd4c001a1fd7dc27b6062bf27abd2d9d",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/CodeWhale/AGENTS.md",
+      "size": 9731,
+      "mtime": 1784549887,
+      "md5": "59cb0a883863ff8fe0d562393fb497bc",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/CodeWhale/crates/tui/AGENTS.md",
+      "size": 4507,
+      "mtime": 1784549887,
+      "md5": "a24bd452dbe9459916cc42d85a503687",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/CodeWhale/crates/tui/locales/AGENTS.md",
+      "size": 2285,
+      "mtime": 1784549887,
+      "md5": "50989cb65e625524e50946d7a4b940c5",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/CodeWhale/web/AGENTS.md",
+      "size": 974,
+      "mtime": 1784549887,
+      "md5": "315ddb806bed5f4fc8d0568b23d06963",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/cr3_forge/optimized-cr3-repo/AGENTS.md",
+      "size": 1838,
+      "mtime": 1779435551,
+      "md5": "7e6b400f8766aba02c9f0c08c44554bf",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/crux/AGENTS.md",
+      "size": 0,
+      "mtime": 1782432848,
+      "md5": "d41d8cd98f00b204e9800998ecf8427e",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/dotfiles_pull/repos/Villoh_dotfiles/AGENTS.md",
+      "size": 2505,
+      "mtime": 1781641241,
+      "md5": "17721970a0efb8fe2bf8f7d5a0a83870",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/dotfiles_pull/repos/Villoh_dotfiles/dot_config/opencode/AGENTS.md",
+      "size": 2667,
+      "mtime": 1781641241,
+      "md5": "ea7d4698d7d0df0e0c8e15ada054c3b1",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/free-coding-models/AGENTS.md",
+      "size": 15698,
+      "mtime": 1785492159,
+      "md5": "0e3486ead00260a3a76c7c8967686188",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/github-advanced-search-mcp/AGENTS.md",
+      "size": 5936,
+      "mtime": 1786052250,
+      "md5": "373bec485f9fe1c9e94806822d27a4a7",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/greprip/AGENTS.md",
+      "size": 160,
+      "mtime": 1782693459,
+      "md5": "33fa3e7bff96e72d1ef2282c2b80c514",
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/kimi-code-sovereign/AGENTS.md",
       "size": 22075,
       "mtime": 1785224451,
       "md5": "82d87e5f78cb86e551ca49feed9a5680",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/kimi-code-sovereign/apps/kimi-code/AGENTS.md",
       "size": 7128,
       "mtime": 1785224451,
       "md5": "e1389c380dd09a1314173235fdaaaf6b",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/kimi-code-sovereign/apps/kimi-web/AGENTS.md",
       "size": 7835,
       "mtime": 1785224451,
       "md5": "6d159863ace5a8f148f1dc533ee13eb0",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/kimi-code-sovereign/docs/AGENTS.md",
       "size": 18062,
       "mtime": 1785224451,
       "md5": "11f05c2bd2da894ad684dfd1d6438978",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/kimi-code-sovereign/packages/agent-core/src/services/AGENTS.md",
-      "size": 10043,
-      "mtime": 1785224451,
-      "md5": "c62e2ae6b71202d93e9d9c1ecb8df7be",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/kimi-code-sovereign/packages/agent-core-v2/AGENTS.md",
       "size": 9041,
       "mtime": 1785224451,
       "md5": "2fafce57b88070729b755d9218ba2643",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/kimi-code-sovereign/packages/agent-core/src/services/AGENTS.md",
+      "size": 10043,
+      "mtime": 1785224451,
+      "md5": "c62e2ae6b71202d93e9d9c1ecb8df7be",
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/kimi-code-sovereign/packages/klient/AGENTS.md",
       "size": 4282,
       "mtime": 1785224451,
       "md5": "b4f973df59cac934423a472545fc814e",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/kimi-code-sovereign/packages/pi-tui/AGENTS.md",
       "size": 4681,
       "mtime": 1785224451,
       "md5": "78f75844b7b19e855dbf5854a3e96ea9",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/llama-cpp-turboquant/AGENTS.md",
       "size": 8092,
       "mtime": 1782103485,
       "md5": "89cd53ea5f9310de997b5127b7bb5232",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/llama-swap-main/AGENTS.md",
       "size": 1948,
       "mtime": 1783632991,
       "md5": "ab0f75d6c5a08403dca2ddb1e553f0f0",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/llm-bench-rig/AGENTS.md",
       "size": 824,
       "mtime": 1781591180,
       "md5": "ab6e41075bc5a632522e9a91951cf0c2",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/lucebox-hub/server/deps/llama.cpp/AGENTS.md",
       "size": 6857,
       "mtime": 1781804904,
       "md5": "0657fc2dcf6dea5a6340a5fc3ee1395a",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/mcpproxy-go/AGENTS.md",
       "size": 3192,
       "mtime": 1785218779,
       "md5": "2851605bd47f43536733c0125169d6d0",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/mcpproxy-go/specs/045-paperclip-cockpit/agent-instructions/backend-engineer/AGENTS.md",
       "size": 3863,
       "mtime": 1785218779,
       "md5": "23538884db27e61755dfb07510c4dfc3",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/mcpproxy-go/specs/045-paperclip-cockpit/agent-instructions/ceo/AGENTS.md",
       "size": 2152,
       "mtime": 1785218779,
       "md5": "512fd5f7d27e37516bb492924490a541",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/mcpproxy-go/specs/045-paperclip-cockpit/agent-instructions/critic/AGENTS.md",
       "size": 3527,
       "mtime": 1785218779,
       "md5": "a20d245f22b776a9367d43cddcc64395",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/mcpproxy-go/specs/045-paperclip-cockpit/agent-instructions/frontend-engineer/AGENTS.md",
       "size": 3556,
       "mtime": 1785218779,
       "md5": "5ed1c60a51055e5026a05fb320a34f1d",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/mcpproxy-go/specs/045-paperclip-cockpit/agent-instructions/macos-engineer/AGENTS.md",
       "size": 3770,
       "mtime": 1785218779,
       "md5": "f5dd3316bdb35d51c74c9e5c7d225e6d",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/mcpproxy-go/specs/045-paperclip-cockpit/agent-instructions/qa-tester/AGENTS.md",
       "size": 5035,
       "mtime": 1785218779,
       "md5": "e3f86f475a7755bc4b84cfb17272f6d7",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/mcpproxy-go/specs/045-paperclip-cockpit/agent-instructions/release-engineer/AGENTS.md",
       "size": 4018,
       "mtime": 1785218779,
       "md5": "8d8e773405236edee92dff05d186befd",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/mcpproxy-go/specs/064-glass-cockpit/agent-instructions/backend-engineer/AGENTS.md",
-      "size": 1098,
-      "mtime": 1785218779,
-      "md5": "5fb894b798cd3d160ae1bd22fcdef15c",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/mcpproxy-go/specs/064-glass-cockpit/agent-instructions/ceo/AGENTS.md",
-      "size": 3260,
-      "mtime": 1785218779,
-      "md5": "b1ffdcf3b208ab40983954472ff26e33",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/mcpproxy-go/specs/064-glass-cockpit/agent-instructions/codex-reviewer/AGENTS.md",
-      "size": 2098,
-      "mtime": 1785218779,
-      "md5": "724ca76e2c2cd1f41d96c40b4365d7cd",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/mcpproxy-go/specs/064-glass-cockpit/agent-instructions/engineer/AGENTS.md",
-      "size": 5078,
-      "mtime": 1785218779,
-      "md5": "a5551c84a6dcfe44aac3f8511a8084e4",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/mcpproxy-go/specs/064-glass-cockpit/agent-instructions/frontend-engineer/AGENTS.md",
-      "size": 1129,
-      "mtime": 1785218779,
-      "md5": "1fd82d555ed55a7045a860f98c6129f1",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/mcpproxy-go/specs/064-glass-cockpit/agent-instructions/kimi-reviewer/AGENTS.md",
-      "size": 2094,
-      "mtime": 1785218779,
-      "md5": "d35639ece25c2acdd723e44a4ca718f8",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/mcpproxy-go/specs/064-glass-cockpit/agent-instructions/macos-engineer/AGENTS.md",
-      "size": 1219,
-      "mtime": 1785218779,
-      "md5": "47703cca920675aa114866ea93ba66f0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/mcpproxy-go/specs/064-glass-cockpit/agent-instructions/qa-tester/AGENTS.md",
-      "size": 2001,
-      "mtime": 1785218779,
-      "md5": "1f1a1b2b77a7e2604a5c18614e3b6f43",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/mcpproxy-go/specs/064-glass-cockpit/agent-instructions/_shared/AGENTS.md",
       "size": 2394,
       "mtime": 1785218779,
       "md5": "d7e9816e7f889653908ffbaf47411fcc",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/mcpproxy-go/specs/064-glass-cockpit/agent-instructions/backend-engineer/AGENTS.md",
+      "size": 1098,
+      "mtime": 1785218779,
+      "md5": "5fb894b798cd3d160ae1bd22fcdef15c",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/mcpproxy-go/specs/064-glass-cockpit/agent-instructions/ceo/AGENTS.md",
+      "size": 3260,
+      "mtime": 1785218779,
+      "md5": "b1ffdcf3b208ab40983954472ff26e33",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/mcpproxy-go/specs/064-glass-cockpit/agent-instructions/codex-reviewer/AGENTS.md",
+      "size": 2098,
+      "mtime": 1785218779,
+      "md5": "724ca76e2c2cd1f41d96c40b4365d7cd",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/mcpproxy-go/specs/064-glass-cockpit/agent-instructions/engineer/AGENTS.md",
+      "size": 5078,
+      "mtime": 1785218779,
+      "md5": "a5551c84a6dcfe44aac3f8511a8084e4",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/mcpproxy-go/specs/064-glass-cockpit/agent-instructions/frontend-engineer/AGENTS.md",
+      "size": 1129,
+      "mtime": 1785218779,
+      "md5": "1fd82d555ed55a7045a860f98c6129f1",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/mcpproxy-go/specs/064-glass-cockpit/agent-instructions/kimi-reviewer/AGENTS.md",
+      "size": 2094,
+      "mtime": 1785218779,
+      "md5": "d35639ece25c2acdd723e44a4ca718f8",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/mcpproxy-go/specs/064-glass-cockpit/agent-instructions/macos-engineer/AGENTS.md",
+      "size": 1219,
+      "mtime": 1785218779,
+      "md5": "47703cca920675aa114866ea93ba66f0",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/mcpproxy-go/specs/064-glass-cockpit/agent-instructions/qa-tester/AGENTS.md",
+      "size": 2001,
+      "mtime": 1785218779,
+      "md5": "1f1a1b2b77a7e2604a5c18614e3b6f43",
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/mise/AGENTS.md",
       "size": 16178,
       "mtime": 1783977681,
       "md5": "2cb70fcad6f9a1db0fcfd19f947ad8a3",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/ohai/AGENTS.md",
       "size": 2369,
       "mtime": 1784421139,
       "md5": "e92b47813b964e78f2bc8dab90740285",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
-      "path": "/home/toxic/projects/oh-my-pi/AGENTS.md",
-      "size": 20045,
-      "mtime": 1785261127,
-      "md5": "c737e962e476fe46e40c4de58d036616",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/oh-my-pi/python/robomp/AGENTS.md",
-      "size": 15122,
-      "mtime": 1785261128,
-      "md5": "6f021f25b2bdc57c8148b615bbc8c311",
-      "is_symlink": false
+      "path": "/home/toxic/projects/openrouter_recon/typescript-sdk/AGENTS.md",
+      "size": 9586,
+      "mtime": 1784721564,
+      "md5": "03c4b8c36005b7caf8ac99c1dde3be98",
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/organized-lattice/core|active|experiments|utils/ophel-main/ophel-main/AGENTS.md",
       "size": 9512,
       "mtime": 1782632854,
       "md5": "70dce88932e3931e9b8eb212790c435b",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/pi-agent/AGENTS.md",
       "size": 10731,
-      "mtime": 1782433000,
+      "mtime": 1786221023,
       "md5": "2ad35cc7a050d2d822a5ce9271231326",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/pi-agent/vendor/kimi-code-sovereign/AGENTS.md",
-      "size": 22075,
-      "mtime": 1785300197,
-      "md5": "82d87e5f78cb86e551ca49feed9a5680",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/pi-agent/vendor/kimi-code-sovereign/apps/kimi-code/AGENTS.md",
-      "size": 7128,
-      "mtime": 1785300197,
-      "md5": "e1389c380dd09a1314173235fdaaaf6b",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/pi-agent/vendor/kimi-code-sovereign/apps/kimi-web/AGENTS.md",
-      "size": 7835,
-      "mtime": 1785300197,
-      "md5": "6d159863ace5a8f148f1dc533ee13eb0",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/pi-agent/vendor/kimi-code-sovereign/docs/AGENTS.md",
-      "size": 18062,
-      "mtime": 1785300197,
-      "md5": "11f05c2bd2da894ad684dfd1d6438978",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/pi-agent/vendor/kimi-code-sovereign/packages/agent-core/src/services/AGENTS.md",
-      "size": 10043,
-      "mtime": 1785300197,
-      "md5": "c62e2ae6b71202d93e9d9c1ecb8df7be",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/pi-agent/vendor/kimi-code-sovereign/packages/agent-core-v2/AGENTS.md",
-      "size": 9041,
-      "mtime": 1785300197,
-      "md5": "2fafce57b88070729b755d9218ba2643",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/pi-agent/vendor/kimi-code-sovereign/packages/klient/AGENTS.md",
-      "size": 4282,
-      "mtime": 1785300197,
-      "md5": "b4f973df59cac934423a472545fc814e",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/pi-agent/vendor/kimi-code-sovereign/packages/pi-tui/AGENTS.md",
-      "size": 4681,
-      "mtime": 1785300197,
-      "md5": "78f75844b7b19e855dbf5854a3e96ea9",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/pi-agent/vendor/pi-upstream/AGENTS.md",
-      "size": 10731,
-      "mtime": 1785300170,
-      "md5": "2ad35cc7a050d2d822a5ce9271231326",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/pi-agent/vendor/tinker-cookbook/AGENTS.md",
-      "size": 7704,
-      "mtime": 1786050555,
-      "md5": "c04612a5ad6a8d96fcf7700ba140b475",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/pi-conversation-aware-audit/AGENTS.md",
       "size": 22163,
       "mtime": 1785965206,
       "md5": "fbc1996ec1909ab07a535119fbdf98e3",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/pi-conversation-aware-audit/apps/kimi-web/AGENTS.md",
       "size": 7851,
       "mtime": 1785965206,
       "md5": "5a60b3cef97c4ce0faecf6d66ddda300",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/pi-conversation-aware-audit/apps/pi-kimi/AGENTS.md",
       "size": 7118,
       "mtime": 1785965189,
       "md5": "a98e598cfc114b3fee06cc3cfb71d2bd",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/pi-conversation-aware-audit/docs/AGENTS.md",
       "size": 18034,
       "mtime": 1785965189,
       "md5": "995f305c5a52d619768f6e48d33fcf3b",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/pi-conversation-aware-audit/packages/agent-core/src/services/AGENTS.md",
-      "size": 10061,
-      "mtime": 1785965206,
-      "md5": "7438ffa4dd79977423c32a2139a43e64",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/pi-conversation-aware-audit/packages/agent-core-v2/AGENTS.md",
       "size": 9095,
       "mtime": 1785965206,
       "md5": "2b0a3807f7e3867345142229e0c87d81",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/pi-conversation-aware-audit/packages/agent-core/src/services/AGENTS.md",
+      "size": 10061,
+      "mtime": 1785965206,
+      "md5": "7438ffa4dd79977423c32a2139a43e64",
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/pi-conversation-aware-audit/packages/klient/AGENTS.md",
       "size": 4300,
       "mtime": 1785965206,
       "md5": "b8442b0e3a810e5d93ca0cb5b36a4c91",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/pi-conversation-aware-audit/packages/pi-tui/AGENTS.md",
       "size": 4681,
       "mtime": 1785965169,
       "md5": "78f75844b7b19e855dbf5854a3e96ea9",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/pi-kimi/AGENTS.md",
       "size": 2151,
       "mtime": 1785965343,
       "md5": "6a89ec84be51e90c74ca98d4c004b434",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/pi-kimi/skills/AGENTS.md",
       "size": 731,
       "mtime": 1785965359,
       "md5": "9757124c25f8ea5fbb3486799efb8c9d",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/sovereign-github-search/AGENTS.md",
       "size": 5936,
       "mtime": 1784343694,
       "md5": "373bec485f9fe1c9e94806822d27a4a7",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/websites/arlockworks-next/AGENTS.md",
       "size": 327,
       "mtime": 1783775053,
       "md5": "9e09241799026ac05be315a2f0b50055",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/websites/effusion-labs/AGENTS.md",
       "size": 1890,
       "mtime": 1783775060,
       "md5": "00f5b4c0c746048405d524b8e51b9b13",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/zed/AGENTS.md",
+      "size": 11621,
+      "mtime": 1783980362,
+      "md5": "ab45d178e6bdf9c729c6bbac23a6b578",
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/zed/docs/AGENTS.md",
       "size": 11735,
       "mtime": 1783980362,
       "md5": "8e79dcf5fab0011def76b4f2be7b14c5",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/zedra/AGENTS.md",
-      "size": 13646,
-      "mtime": 1784571898,
-      "md5": "c679681f19e38f9442951e5811d5296f",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/zedra/crates/zedra/AGENTS.md",
-      "size": 7646,
-      "mtime": 1784571898,
-      "md5": "0a01c261ee14534ae37c7324e36b672d",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/zedra/crates/zedra-host/AGENTS.md",
-      "size": 4278,
-      "mtime": 1784571898,
-      "md5": "f34e313ab52539bbfdcadd3804a89a36",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/zedra/crates/zedra-session/AGENTS.md",
-      "size": 4242,
-      "mtime": 1784571898,
-      "md5": "700faadb11cd9e6ce78f1576dc88c584",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/zedra/crates/zedra-terminal/AGENTS.md",
-      "size": 3912,
-      "mtime": 1784571898,
-      "md5": "b045b62fc04e10f1ad1e4323f6f28a6c",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/zedra/docs/MANAGED_AGENTS.md",
-      "size": 7938,
-      "mtime": 1784571898,
-      "md5": "f2f4f0fa43afe8b09874780b3ab374a3",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/zedra-tanlethanh/AGENTS.md",
       "size": 13646,
       "mtime": 1784583421,
       "md5": "c679681f19e38f9442951e5811d5296f",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/zedra-tanlethanh/crates/zedra/AGENTS.md",
-      "size": 7646,
-      "mtime": 1784583421,
-      "md5": "0a01c261ee14534ae37c7324e36b672d",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/zedra-tanlethanh/crates/zedra-host/AGENTS.md",
       "size": 4278,
       "mtime": 1784583421,
       "md5": "f34e313ab52539bbfdcadd3804a89a36",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/zedra-tanlethanh/crates/zedra-session/AGENTS.md",
       "size": 4242,
       "mtime": 1784583421,
       "md5": "700faadb11cd9e6ce78f1576dc88c584",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/zedra-tanlethanh/crates/zedra-terminal/AGENTS.md",
       "size": 3912,
       "mtime": 1784583421,
       "md5": "b045b62fc04e10f1ad1e4323f6f28a6c",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
-      "path": "/home/toxic/projects/zedra-tanlethanh/docs/MANAGED_AGENTS.md",
-      "size": 7938,
+      "path": "/home/toxic/projects/zedra-tanlethanh/crates/zedra/AGENTS.md",
+      "size": 7646,
       "mtime": 1784583421,
-      "md5": "f2f4f0fa43afe8b09874780b3ab374a3",
-      "is_symlink": false
+      "md5": "0a01c261ee14534ae37c7324e36b672d",
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/zedra-tieubao/AGENTS.md",
       "size": 12731,
       "mtime": 1784583423,
       "md5": "cfa7a21b1111e49d2fb7a51ec42d3479",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/zedra-tieubao/crates/zedra/AGENTS.md",
-      "size": 7120,
-      "mtime": 1784583423,
-      "md5": "09d065b4039b7e455aa432e583a0cc63",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/zedra-tieubao/crates/zedra-host/AGENTS.md",
       "size": 4278,
       "mtime": 1784583423,
       "md5": "f34e313ab52539bbfdcadd3804a89a36",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/zedra-tieubao/crates/zedra-session/AGENTS.md",
       "size": 4242,
       "mtime": 1784583423,
       "md5": "700faadb11cd9e6ce78f1576dc88c584",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/zedra-tieubao/crates/zedra-terminal/AGENTS.md",
       "size": 3912,
       "mtime": 1784583423,
       "md5": "b045b62fc04e10f1ad1e4323f6f28a6c",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
-      "path": "/home/toxic/projects/zedra-tieubao/docs/MANAGED_AGENTS.md",
-      "size": 7938,
-      "mtime": 1784583424,
-      "md5": "f2f4f0fa43afe8b09874780b3ab374a3",
-      "is_symlink": false
+      "path": "/home/toxic/projects/zedra-tieubao/crates/zedra/AGENTS.md",
+      "size": 7120,
+      "mtime": 1784583423,
+      "md5": "09d065b4039b7e455aa432e583a0cc63",
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/zedra-virtual0ps/AGENTS.md",
       "size": 10765,
       "mtime": 1784583422,
       "md5": "57827821cbfedc90ee7ba339005489e2",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/projects/zedra-virtual0ps/crates/zedra/AGENTS.md",
-      "size": 5339,
-      "mtime": 1784583422,
-      "md5": "51dd9aed93bb278bb9bede31c577e6c3",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/zedra-virtual0ps/crates/zedra-host/AGENTS.md",
       "size": 3978,
       "mtime": 1784583422,
       "md5": "00b7155fa58d4e2ec031c6f33451255a",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/zedra-virtual0ps/crates/zedra-session/AGENTS.md",
       "size": 3601,
       "mtime": 1784583422,
       "md5": "b3dab855f02cadacf9e7cf2aee6884e1",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/projects/zedra-virtual0ps/crates/zedra-terminal/AGENTS.md",
       "size": 3912,
       "mtime": 1784583422,
       "md5": "b045b62fc04e10f1ad1e4323f6f28a6c",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
-      "path": "/home/toxic/projects/zedra-virtual0ps/docs/MANAGED_AGENTS.md",
-      "size": 12702,
+      "path": "/home/toxic/projects/zedra-virtual0ps/crates/zedra/AGENTS.md",
+      "size": 5339,
       "mtime": 1784583422,
-      "md5": "fdcac885394dde53a004a42ad66bbc24",
-      "is_symlink": false
+      "md5": "51dd9aed93bb278bb9bede31c577e6c3",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/zedra/AGENTS.md",
+      "size": 13646,
+      "mtime": 1784571898,
+      "md5": "c679681f19e38f9442951e5811d5296f",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/zedra/crates/zedra-host/AGENTS.md",
+      "size": 4278,
+      "mtime": 1784571898,
+      "md5": "f34e313ab52539bbfdcadd3804a89a36",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/zedra/crates/zedra-session/AGENTS.md",
+      "size": 4242,
+      "mtime": 1784571898,
+      "md5": "700faadb11cd9e6ce78f1576dc88c584",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/zedra/crates/zedra-terminal/AGENTS.md",
+      "size": 3912,
+      "mtime": 1784571898,
+      "md5": "b045b62fc04e10f1ad1e4323f6f28a6c",
+      "isSymlink": false,
+      "isThirdParty": false
+    },
+    {
+      "path": "/home/toxic/projects/zedra/crates/zedra/AGENTS.md",
+      "size": 7646,
+      "mtime": 1784571898,
+      "md5": "0a01c261ee14534ae37c7324e36b672d",
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/sovereign/tools/nuvio-platform/submodules/llm-subtrans/AGENTS.md",
       "size": 3681,
       "mtime": 1785214049,
       "md5": "b2de7cb85035dfa9a2d161ce49531073",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/tpc-server/AGENTS.md",
       "size": 6672,
       "mtime": 1784443956,
       "md5": "d5ee06b8c6fa69687f0071141c2c1131",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.vscode-insiders/agent-plugins/github.com/github/awesome-copilot/AGENTS.md",
-      "size": 13749,
-      "mtime": 1775679009,
-      "md5": "89a363cdff834ff2e971f34edad321ca",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.vscode-insiders/extensions/jjjermiah.pixi-vscode-1.0.5/AGENTS.md",
-      "size": 3879,
-      "mtime": 1780946153,
-      "md5": "57b6e617bd9cc413a7929030737e219c",
-      "is_symlink": false
-    },
-    {
-      "path": "/home/toxic/.vscode-insiders/extensions/thinkability.copilot-bridge-1.2.0/AGENTS.md",
-      "size": 8305,
-      "mtime": 1783769202,
-      "md5": "e29dd407f83ea2bcfa1876c75d05f842",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/WiiBox/WiiBridge/AGENTS.md",
       "size": 679,
       "mtime": 1785539504,
       "md5": "80a2d2366c453b577d448d9af7471f89",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     },
     {
       "path": "/home/toxic/Zed-agent/AGENTS.md",
       "size": 42059,
       "mtime": 1784107405,
       "md5": "31cda8bf3854e063331673e9199848f2",
-      "is_symlink": false
+      "isSymlink": false,
+      "isThirdParty": false
     }
   ]
 }

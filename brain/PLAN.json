@@ -1,0 +1,175 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-08-09T17:06:00Z",
+  "active_model": "longcat-2.0-free",
+  "session": "C2-2026-08-09T10:00:00",
+  "phases": {
+    "phase_0": {
+      "name": "Nuvio LG TV Deployment",
+      "priority": "highest",
+      "status": "blocked_on_prerequisites",
+      "tasks": [
+        {
+          "id": "T0.1",
+          "name": "Fork max level",
+          "description": "All forks at max level (streaming, MCP, pitchfork, boot)",
+          "status": "in_progress",
+          "dependencies": [],
+          "check": "cd /home/toxic/sovereign && git log --oneline -1"
+        },
+        {
+          "id": "T0.2",
+          "name": "Review Nuvio UX",
+          "description": "Review current Nuvio UX in tools/nuvio-platform/",
+          "status": "pending",
+          "dependencies": ["T0.1"],
+          "check": "ls tools/nuvio-platform/src/"
+        },
+        {
+          "id": "T0.3",
+          "name": "Install WebOS SDK",
+          "description": "Install ares-cli and WebOS SDK on toxic host",
+          "status": "pending",
+          "dependencies": ["T0.1"],
+          "check": "which ares-cli 2>/dev/null"
+        },
+        {
+          "id": "T0.4",
+          "name": "Pair LG TV",
+          "description": "Put TV in developer mode and pair with toxic host",
+          "status": "pending",
+          "dependencies": ["T0.3"],
+          "check": "ares-device-info 2>/dev/null"
+        },
+        {
+          "id": "T0.5",
+          "name": "Build & Deploy Nuvio",
+          "description": "ares-package → ares-install → ares-launch",
+          "status": "pending",
+          "dependencies": ["T0.2", "T0.4"],
+          "check": "ares-launch com.nuvio.app 2>/dev/null"
+        }
+      ]
+    },
+    "phase_1": {
+      "name": "Critical Bug Fixes",
+      "priority": "high",
+      "status": "in_progress",
+      "tasks": [
+        {
+          "id": "T1.1",
+          "name": "Fix streaming bug",
+          "description": "Stream ended without finish_reason - fall back to inference",
+          "status": "completed",
+          "dependencies": [],
+          "check": "grep -c 'fall back' packages/ai/src/api/openai-completions.ts"
+        },
+        {
+          "id": "T1.2",
+          "name": "Enable debug logging",
+          "description": "PI_DEBUG_STREAM=1 in bashrc for pi-agent profile",
+          "status": "completed",
+          "dependencies": [],
+          "check": "grep PI_DEBUG_STREAM /home/toxic/.bashrc"
+        },
+        {
+          "id": "T1.3",
+          "name": "Fix truncation limits",
+          "description": "DEFAULT_MAX_BYTES adaptive (512KB → 4MB for 1M context)",
+          "status": "completed",
+          "dependencies": [],
+          "check": "grep DEFAULT_MAX_BYTES packages/coding-agent/src/core/tools/truncate.ts"
+        },
+        {
+          "id": "T1.4",
+          "name": "Rebuild pi-agent",
+          "description": "Rebuild pi-agent binary with all fixes",
+          "status": "in_progress",
+          "dependencies": ["T1.1", "T1.2", "T1.3"],
+          "check": "ls -la packages/coding-agent/dist/cli.js"
+        }
+      ]
+    },
+    "phase_2": {
+      "name": "Experimental Crisis MCP",
+      "priority": "high",
+      "status": "in_progress",
+      "tasks": [
+        {
+          "id": "T2.1",
+          "name": "Make skills portable",
+          "description": "Remove /mnt/agents/ paths from SKILL.md files",
+          "status": "in_progress",
+          "dependencies": ["T1.4"],
+          "check": "ls src/mcp/experimental-crisis/"
+        },
+        {
+          "id": "T2.2",
+          "name": "Create profile system",
+          "description": "Profiles: local, kimi, generic",
+          "status": "completed",
+          "dependencies": [],
+          "check": "grep PROFILE src/mcp/experimental-crisis/server.ts"
+        },
+        {
+          "id": "T2.3",
+          "name": "Add to mcpproxy",
+          "description": "Register experimental-crisis in mcp_config.json",
+          "status": "completed",
+          "dependencies": ["T2.2"],
+          "check": "grep experimental-crisis /home/toxic/.mcpproxy/mcp_config.json"
+        }
+      ]
+    },
+    "phase_3": {
+      "name": "Pitchfork Fork",
+      "priority": "normal",
+      "status": "in_progress",
+      "tasks": [
+        {
+          "id": "T3.1",
+          "name": "Add --json to start",
+          "description": "Fork pitchfork, add --json flag to start command",
+          "status": "pending",
+          "dependencies": ["T1.4"],
+          "check": "pitchfork start --json 2>/dev/null"
+        },
+        {
+          "id": "T3.2",
+          "name": "Suppress DEBUG noise",
+          "description": "Remove DEBUG lines from output",
+          "status": "pending",
+          "dependencies": ["T3.1"],
+          "check": "pitchfork list --json 2>/dev/null | grep -c DEBUG"
+        }
+      ]
+    },
+    "phase_4": {
+      "name": "Boot & Integration",
+      "priority": "high",
+      "status": "pending",
+      "tasks": [
+        {
+          "id": "T4.1",
+          "name": "Fix pitchfork.toml",
+          "description": "Remove tailscale-funnel from groups, add SSHX_PORT",
+          "status": "completed",
+          "dependencies": [],
+          "check": "grep -c tailscale-funnel pitchfork.toml"
+        },
+        {
+          "id": "T4.2",
+          "name": "Start all daemons",
+          "description": "Start all core daemons via pitchfork",
+          "status": "pending",
+          "dependencies": ["T4.1"],
+          "check": "pitchfork list --json --status running | python3 -c 'import sys,json;print(len(json.load(sys.stdin)))'"
+        }
+      ]
+    }
+  },
+  "blocked_tasks": [],
+  "completed_tasks": ["T1.1", "T1.2", "T1.3", "T2.2", "T2.3", "T4.1"],
+  "active_tasks": ["T1.4", "T2.1", "T3.1"],
+  "pending_tasks": ["T0.2", "T0.3", "T0.4", "T0.5", "T3.2", "T4.2"]
+}

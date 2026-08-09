@@ -1,0 +1,57 @@
+{
+  "brain_dir": "/home/toxic/sovereign/brain/",
+  "version": "1.0.0",
+  "updated": "2026-08-09T17:06:00Z",
+  "agents": {
+    "pi-agent": {
+      "path": "/home/toxic/sovereign/brain/pi-agent/",
+      "identity": "/home/toxic/sovereign/brain/pi-agent/identity.json",
+      "model": "longcat-2.0-free",
+      "status": "active",
+      "role": "Broadcaster"
+    },
+    "grok": {
+      "path": "/home/toxic/sovereign/brain/grok/",
+      "identity": "/home/toxic/sovereign/brain/grok/identity.json",
+      "model": "pending",
+      "status": "pending_setup",
+      "setup": "grok cli --setup"
+    }
+  },
+  "subagents": {
+    "longcat-2.0-free": {
+      "path": "/home/toxic/sovereign/brain/subagents/longcat-2.0-free/",
+      "provider": "opencode",
+      "context_window": 1000000
+    },
+    "mimo-v2.5": {
+      "path": "/home/toxic/sovereign/brain/subagents/mimo-v2.5/",
+      "provider": "opencode",
+      "context_window": 131072,
+      "status": "available"
+    },
+    "nim-inkling": {
+      "path": "/home/toxic/sovereign/brain/subagents/nim-inkling/",
+      "provider": "nvidia",
+      "context_window": 1048576,
+      "status": "available",
+      "local": true,
+      "via": "llama-swap"
+    }
+  },
+  "shared": {
+    "generator": "/home/toxic/sovereign/brain/generate.sh",
+    "tasks": "/home/toxic/sovereign/TASKS.md",
+    "ports": "/home/toxic/sovereign/config/ports.env",
+    "mcp_config": "/home/toxic/.mcpproxy/mcp_config.json",
+    "coordination_md": "/home/toxic/coordination.md"
+  },
+  "recovery": {
+    "description": "Any agent reads MANIFEST.json to find all agents, subagents, and shared resources",
+    "protocol": "MANIFEST.json → agent/identity.json → full state"
+  },
+  "git": {
+    "sovereign": "https://github.com/toxicwind/sovereign.git",
+    "brain_commits": "brain/ changes tracked in sovereign main"
+  }
+}

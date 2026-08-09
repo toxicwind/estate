@@ -4,7 +4,6 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25100/health"
-port = 25100
 
 [daemons.nim-queue]
 run = "exec bun --hot run src/services/nim-queue.ts"
@@ -12,7 +11,6 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25189/health"
-port = 25189
 depends = ["llama-swap"]
 
 [daemons.reasoning-router]
@@ -21,7 +19,6 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25190/health"
-port = 25190
 depends = ["llama-swap", "nim-queue"]
 
 [daemons.nim-validation]
@@ -30,8 +27,14 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25191/health"
-port = 25191
 depends = ["llama-swap", "nim-queue"]
+
+[daemons.pi-web-dashboard]
+run = "exec node /home/toxic/projects/pi-agent/packages/server/dist/web-server.js"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25192/api/health"
 
 [daemons.mcpproxy]
 run = "exec mcpproxy serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=info"
@@ -39,7 +42,6 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25109/health"
-port = 25109
 
 [daemons.openfang]
 run = "exec ./stack/services/openfang.sh"
@@ -47,7 +49,6 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25103/api/health"
-port = 25103
 
 
 [daemons.null-g-proxy]
@@ -56,7 +57,6 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25107/health"
-port = 25107
 
 [daemons.yote]
 run = "exec bun --hot run yote/src/index.ts"
@@ -64,7 +64,6 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25102/health"
-port = 25102
 
 [daemons.rust-web]
 run = "exec ./stack/services/rust-web-hot.sh"
@@ -72,7 +71,6 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25201/health"
-port = 25101
 
 [daemons.ghas-api]
 run = "exec bun --hot run apps/api/src/server.ts"
@@ -80,7 +78,6 @@ dir = "/home/toxic/projects/github-advanced-search-mcp"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25112/health"
-port = 25112
 
 [daemons.ghas-mcp]
 run = "exec bun --hot run apps/mcp/src/server.ts --mode http"
@@ -88,7 +85,6 @@ dir = "/home/toxic/projects/github-advanced-search-mcp"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25113/health"
-port = 25113
 depends = ["ghas-api"]
 env = { GHAS_MCP_PORT = "25113" }
 
@@ -98,7 +94,6 @@ dir = "/home/toxic/projects/github-advanced-search-mcp/apps/frontend"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25114/"
-port = 25114
 depends = ["ghas-api"]
 env = { GHAS_FRONTEND_PORT = "25114" }
 
@@ -108,7 +103,6 @@ dir = "/home/toxic/kimi-token-audit"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25116/health"
-port = 25116
 env = { KIMI_AUDIT_DASH_PORT = "25116" }
 
 [daemons.mesh-hub]
@@ -117,7 +111,6 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25115/health"
-port = 25115
 
 [daemons.byte-vision-proxy]
 run = "exec bash tools/byte-vision-mock.sh"
@@ -125,7 +118,6 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25121/health"
-port = 25121
 
 [daemons.prometheus]
 run = "exec ./stack/services/prometheus-hot.sh"
@@ -133,7 +125,6 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25105/-/healthy"
-port = 25105
 
 [daemons.grafana]
 run = "exec ./stack/services/grafana-mesh.sh"
@@ -141,7 +132,6 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25110/api/health"
-port = 25110
 
 [daemons.hf-downloader]
 run = "exec ./stack/services/hf-downloader-mesh.sh"
@@ -149,7 +139,6 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25106/"
-port = 25106
 env = { HF_DOWNLOADER_PORT = "25106" }
 
 [daemons.qdrant]
@@ -158,7 +147,6 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25133/"
-port = 25133
 
 [daemons.redis]
 run = "exec redis-server --port 25199 --bind 0.0.0.0 --dir ./data --dbfilename redis.rdb"
@@ -166,7 +154,6 @@ dir = "."
 mise = true
 retry = true
 ready_cmd = "redis-cli -p 25199 ping | grep -q PONG"
-port = 25199
 
 [groups.core]
 daemons = [
@@ -193,6 +180,7 @@ daemons = [
   "nim-queue",
   "reasoning-router",
   "nim-validation",
+  "pi-web-dashboard",
 ]
 
 [groups.all]
@@ -214,7 +202,7 @@ daemons = [
   "hf-downloader",
   "qdrant",
   "redis",
-  "tailscale-funnel",
+  "pi-web-dashboard",
 ]
 
 [daemons.zellij]
@@ -223,7 +211,6 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25136/"
-port = 25136
 
 [daemons.ttyd]
 run = "exec ttyd -p 25137 -c toxic:toxic -t rendererType=webgl -t fontSize=14 -t theme=\"{\\\"background\\\":\\\"#0c0b11\\\",\\\"foreground\\\":\\\"#e8e8e3\\\"}\" bash"
@@ -231,14 +218,12 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://toxic:toxic@127.0.0.1:25137/"
-port = 25137
 
 [daemons.sshx]
 run = "exec sshx --quiet"
 dir = "."
 mise = true
 retry = true
-port = 25138
 
 # wezterm is a GUI terminal emulator, not a daemon
 # start manually: wezterm start --always-new-process
