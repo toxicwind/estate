@@ -1,0 +1,46 @@
+{
+  "profile": "pi-agent-longcat-2.0-free",
+  "agent": "pi-agent",
+  "model": "longcat-2.0-free",
+  "provider": "opencode",
+  "context_window": 1000000,
+  "classification": "pi-longcat-as-c2-fix-while-not-sure",
+  "output": {
+    "debug_stream": true,
+    "never_devnull": true,
+    "adaptive_truncation": {
+      "small_context": "512KB",
+      "medium_context": "1MB",
+      "large_context_1m": "4MB",
+      "xlarge_context_2m": "8MB"
+    }
+  },
+  "git": {
+    "commit_often": true,
+    "push_to": "main",
+    "fork_first": true,
+    "repos": {
+      "sovereign": "toxicwind/sovereign",
+      "pi_agent": "toxicwind/pi-agent",
+      "pitchfork": "toxicwind/pitchfork",
+      "mcpproxy": "toxicwind/mcpproxy-go"
+    }
+  },
+  "coordination": {
+    "brain_dir": "/home/toxic/sovereign/brain/",
+    "manifest": "/home/toxic/sovereign/brain/MANIFEST.json",
+    "plan": "/home/toxic/sovereign/brain/PLAN.json",
+    "tasks": "/home/toxic/sovereign/TASKS.md"
+  },
+  "never": {
+    "devnull": "Use PI_DEBUG_STREAM=1 and proper logging",
+    "truncation": "Read full files unless binary or 10000+ lines",
+    "rollback": "Only forward fixes, never revert",
+    "ask_user": "Autonomous execution, trust the agent"
+  },
+  "task_zero": {
+    "name": "Nuvio LG TV Deployment",
+    "description": "Deploy Nuvio WebOS app to local LG TV",
+    "prerequisites": ["Fork max level", "Review Nuvio UX", "Install WebOS SDK", "Pair LG TV"]
+  }
+}

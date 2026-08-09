@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-08-09T17:10:00Z",
+  "host": {
+    "hostname": "awrawr-pc",
+    "cpu": "AMD Ryzen 7 8700F 8-Core Processor",
+    "ram": "62Gi",
+    "gpu": "NVIDIA GeForce RTX 3090, 24576 MiB"
+  },
+  "model": {
+    "name": "longcat-2.0-free",
+    "provider": "opencode",
+    "context_window": 1000000
+  },
+  "services": {
+    "llama_swap": { "port": 25100, "status": "ok" },
+    "mcpproxy": { "port": 25109, "status": "ok" },
+    "ghas_api": { "port": 25112, "status": "ok" },
+    "ghas_mcp": { "port": 25113, "status": "ok" },
+    "mesh_hub": { "port": 25115, "status": "ok" },
+    "pi_web_dashboard": { "port": 25192, "status": "ok" }
+  },
+  "tools": {
+    "native": ["read", "write", "edit", "bash", "ls", "retrieve_tools", "describe_tool", "call_tool_destructive"],
+    "linters": ["ruff", "black", "isort", "pyupgrade", "autoflake", "cargo-clippy", "cargo-fmt"],
+    "count": 15
+  },
+  "env_vars": {
+    "PI_DEBUG_STREAM": "1",
+    "PI_DEBUG": "1",
+    "PI_MODEL_CONTEXT_WINDOW": "1000000",
+    "PI_BRAIN_HASH": "5efda4bc8aea767f8905966f8d42905f757c5060cabd88f74f71885afbeb4fc7"
+  }
+}
