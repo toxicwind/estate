@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+# pitchfork-llm: LLM-friendly wrapper for pitchfork
+# Strips ANSI, filters DEBUG, adds JSON output, makes start non-blocking
+set -euo pipefail
+
+PITCHFORK="/home/toxic/.local/bin/pitchfork"
+SOVEREIGN="/home/toxic/sovereign"
+
+# Strip ANSI escape sequences
+strip_ansi() {
+    sed -r 's/\x1b\[[0-9;]*[a-zA-Z]//g' | sed -r 's/\x1b\][^\x07]*\x07//g'
+}
+
+# Filter out DEBUG lines
+filter_debug() {
+    grep -v '^DEBUG ' || true
+}
+
+# Get the command
+CMD="${1:-list}"
+shift || true
+
+case "$CMD" in
+    list|ls)
+        "$PITCHFORK" list --json "$@" 2>/dev/null | filter_debug
+        ;;
+    start|s)
+        # Non-blocking start: launch in background, return status
+        DAEMON="${1:-}"
+        if [[ -z "$DAEMON" ]]; then
+            echo '{"error": "daemon name required"}' >&2
+            exit 1
+        fi
+        shift
+        # Start in background with quiet mode
+        "$PITCHFORK" start --quiet "$DAEMON" "$@" &
+        PF_PID=$!
+        # Wait up to 5 seconds for it to start
+        for i in $(seq 1 10); do
+            if ! kill -0 $PF_PID 2>/dev/null; then
+                break
+            fi
+            sleep 0.5
+        done
+        # Return current status
+        "$PITCHFORK" list --json --status running 2>/dev/null | filter_debug | jq -r ".[] | select(.id | endswith(\"$DAEMON\")) | {id, status, pid}"
+        ;;
+    stop|kill)
+        DAEMON="${1:-}"
+        if [[ -z "$DAEMON" ]]; then
+            echo '{"error": "daemon name required"}' >&2
+            exit 1
+        fi
+        "$PITCHFORK" stop "$DAEMON" "$@" 2>/dev/null | filter_debug
+        echo "{\"id\": \"sovereign/$DAEMON\", \"status\": \"stopped\"}"
+        ;;
+    status|stat)
+        DAEMON="${1:-}"
+        if [[ -n "$DAEMON" ]]; then
+            "$PITCHFORK" status "$DAEMON" 2>/dev/null | filter_debug | strip_ansi
+        else
+            "$PITCHFORK" list --json "$@" 2>/dev/null | filter_debug
+        fi
+        ;;
+    logs|log)
+        "$PITCHFORK" logs "$@" 2>/dev/null | filter_debug | tail -20
+        ;;
+    supervisor|sup)
+        SUBCMD="${1:-status}"
+        case "$SUBCMD" in
+            start)
+                "$PITCHFORK" supervisor start 2>/dev/null | filter_debug
+                echo '{"supervisor": "started"}'
+                ;;
+            stop)
+                "$PITCHFORK" supervisor stop 2>/dev/null | filter_debug
+                echo '{"supervisor": "stopped"}'
+                ;;
+            status)
+                "$PITCHFORK" supervisor status 2>/dev/null | filter_debug | strip_ansi
+                ;;
+            *)
+                "$PITCHFORK" supervisor "$@" 2>/dev/null | filter_debug | strip_ansi
+                ;;
+        esac
+        ;;
+    boot)
+        "$PITCHFORK" boot "$@" 2>/dev/null | filter_debug
+        ;;
+    *)
+        "$PITCHFORK" "$CMD" "$@" 2>/dev/null | filter_debug | strip_ansi
+        ;;
+esac
