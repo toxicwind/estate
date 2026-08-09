@@ -1,0 +1,4 @@
+id: find-openrouter
+language: typescript
+rule:
+  pattern: "openrouter"
