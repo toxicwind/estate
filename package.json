@@ -27,7 +27,11 @@
     "test:best-models": "bun test tests/best_models_ssot.test.ts",
     "test:gateway": "bun test tools/sovereign-router/sovereign-mcp-gateway/gateway-core.test.ts",
     "test:gateway:cov": "bun test --coverage --coverage-reporter=text --coverage-reporter=lcov tools/sovereign-router/sovereign-mcp-gateway/gateway-core.test.ts",
-    "test:cov": "bun test --coverage --coverage-reporter=text --coverage-reporter=lcov"
+    "test:cov": "bun test --coverage --coverage-reporter=text --coverage-reporter=lcov",
+    "lang:python": "bun run src/services/language-router.ts python",
+    "lang:rust": "bun run src/services/language-router.ts rust",
+    "lang:go": "bun run src/services/language-router.ts go",
+    "lang:parquet": "bun run src/services/parquet-service.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
@@ -35,16 +39,25 @@
     "ajv-formats": "^3.0.1",
     "js-yaml": "^5.2.1",
     "json5": "^2.2.3",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "apache-arrow": "^15.0.0",
+    "parquet-wasm": "^0.5.0",
+    "duckdb": "^1.0.0",
+    "better-sqlite3": "^11.0.0",
+    "ioredis": "^5.4.0",
+    "postgres": "^3.4.0",
+    "execa": "^9.0.0",
+    "yaml": "^2.5.0",
+    "toml": "^3.0.0"
   },
   "version": "1.0.0",
-  "description": "Local multi-service stack: one OpenAI-compatible LLM front door, agent kernel, Telegram bot, ops dashboard, metrics, and optional Tailscale exposure.",
+  "description": "Sovereign mesh: multi-language runtime, LLM mesh, agent kernel, analytics, ops.",
   "main": "index.js",
   "directories": {
     "doc": "docs",
     "test": "tests"
   },
-  "keywords": [],
+  "keywords": ["sovereign", "bun", "mcp", "llm", "analytics", "parquet", "duckdb"],
   "author": "",
   "license": "ISC"
 }

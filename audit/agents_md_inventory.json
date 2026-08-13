@@ -16,16 +16,16 @@
       "hash": "373bec485f9fe1c9e94806822d27a4a7",
       "count": 2,
       "paths": [
-        "/home/toxic/projects/github-advanced-search-mcp/AGENTS.md",
-        "/home/toxic/projects/sovereign-github-search/AGENTS.md"
+        "/home/toxic/projects/sovereign-github-search/AGENTS.md",
+        "/home/toxic/projects/github-advanced-search-mcp/AGENTS.md"
       ]
     },
     {
       "hash": "c679681f19e38f9442951e5811d5296f",
       "count": 2,
       "paths": [
-        "/home/toxic/projects/zedra-tanlethanh/AGENTS.md",
-        "/home/toxic/projects/zedra/AGENTS.md"
+        "/home/toxic/projects/zedra/AGENTS.md",
+        "/home/toxic/projects/zedra-tanlethanh/AGENTS.md"
       ]
     },
     {
@@ -48,89 +48,11 @@
       ]
     },
     {
-      "hash": "f34e313ab52539bbfdcadd3804a89a36",
-      "count": 3,
-      "paths": [
-        "/home/toxic/projects/zedra/crates/zedra-host/AGENTS.md",
-        "/home/toxic/projects/zedra-tanlethanh/crates/zedra-host/AGENTS.md",
-        "/home/toxic/projects/zedra-tieubao/crates/zedra-host/AGENTS.md"
-      ]
-    },
-    {
-      "hash": "700faadb11cd9e6ce78f1576dc88c584",
-      "count": 3,
-      "paths": [
-        "/home/toxic/projects/zedra/crates/zedra-session/AGENTS.md",
-        "/home/toxic/projects/zedra-tanlethanh/crates/zedra-session/AGENTS.md",
-        "/home/toxic/projects/zedra-tieubao/crates/zedra-session/AGENTS.md"
-      ]
-    },
-    {
-      "hash": "b045b62fc04e10f1ad1e4323f6f28a6c",
-      "count": 4,
-      "paths": [
-        "/home/toxic/projects/zedra/crates/zedra-terminal/AGENTS.md",
-        "/home/toxic/projects/zedra-tanlethanh/crates/zedra-terminal/AGENTS.md",
-        "/home/toxic/projects/zedra-virtual0ps/crates/zedra-terminal/AGENTS.md",
-        "/home/toxic/projects/zedra-tieubao/crates/zedra-terminal/AGENTS.md"
-      ]
-    },
-    {
-      "hash": "0a01c261ee14534ae37c7324e36b672d",
+      "hash": "70dce88932e3931e9b8eb212790c435b",
       "count": 2,
       "paths": [
-        "/home/toxic/projects/zedra/crates/zedra/AGENTS.md",
-        "/home/toxic/projects/zedra-tanlethanh/crates/zedra/AGENTS.md"
-      ]
-    },
-    {
-      "hash": "78f75844b7b19e855dbf5854a3e96ea9",
-      "count": 2,
-      "paths": [
-        "/home/toxic/projects/pi-conversation-aware-audit/packages/pi-tui/AGENTS.md",
-        "/home/toxic/projects/kimi-code-sovereign/packages/pi-tui/AGENTS.md"
-      ]
-    },
-    {
-      "hash": "d8696c3c55ef5b18230f8837cddfac2e",
-      "count": 6,
-      "paths": [
-        "/home/toxic/projects/antigravity-awesome-skills/skills/react-best-practices/AGENTS.md",
-        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/react-best-practices/AGENTS.md",
-        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/react-best-practices/AGENTS.md",
-        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-aas-web-app-builder/skills/react-best-practices/AGENTS.md",
-        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-web-wizard/skills/react-best-practices/AGENTS.md",
-        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-typescript-javascript/skills/react-best-practices/AGENTS.md"
-      ]
-    },
-    {
-      "hash": "993a58d7697a7eb7760d74aa51af01aa",
-      "count": 6,
-      "paths": [
-        "/home/toxic/projects/antigravity-awesome-skills/skills/postgres-best-practices/AGENTS.md",
-        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/postgres-best-practices/AGENTS.md",
-        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/postgres-best-practices/AGENTS.md",
-        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-aas-data-analytics/skills/postgres-best-practices/AGENTS.md",
-        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-aas-data-engineering-platform/skills/postgres-best-practices/AGENTS.md",
-        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-data-analytics/skills/postgres-best-practices/AGENTS.md"
-      ]
-    },
-    {
-      "hash": "eb48f84805383aab01be0e927bbdef4f",
-      "count": 3,
-      "paths": [
-        "/home/toxic/projects/antigravity-awesome-skills/skills/dbos-typescript/AGENTS.md",
-        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/dbos-typescript/AGENTS.md",
-        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/dbos-typescript/AGENTS.md"
-      ]
-    },
-    {
-      "hash": "1d6d662d8de579b03786ef228106c591",
-      "count": 3,
-      "paths": [
-        "/home/toxic/projects/antigravity-awesome-skills/skills/dbos-python/AGENTS.md",
-        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/dbos-python/AGENTS.md",
-        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/dbos-python/AGENTS.md"
+        "/home/toxic/projects/organized-lattice/core|active|experiments|utils/ophel-main/ophel-main/AGENTS.md",
+        "/home/toxic/Downloads/manydifferent/ophel-main_extracted/ophel-main/AGENTS.md"
       ]
     },
     {
@@ -143,11 +65,89 @@
       ]
     },
     {
-      "hash": "70dce88932e3931e9b8eb212790c435b",
+      "hash": "1d6d662d8de579b03786ef228106c591",
+      "count": 3,
+      "paths": [
+        "/home/toxic/projects/antigravity-awesome-skills/skills/dbos-python/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/dbos-python/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/dbos-python/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "eb48f84805383aab01be0e927bbdef4f",
+      "count": 3,
+      "paths": [
+        "/home/toxic/projects/antigravity-awesome-skills/skills/dbos-typescript/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/dbos-typescript/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/dbos-typescript/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "993a58d7697a7eb7760d74aa51af01aa",
+      "count": 6,
+      "paths": [
+        "/home/toxic/projects/antigravity-awesome-skills/skills/postgres-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-data-analytics/skills/postgres-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/postgres-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/postgres-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-aas-data-analytics/skills/postgres-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-aas-data-engineering-platform/skills/postgres-best-practices/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "d8696c3c55ef5b18230f8837cddfac2e",
+      "count": 6,
+      "paths": [
+        "/home/toxic/projects/antigravity-awesome-skills/skills/react-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-aas-web-app-builder/skills/react-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-typescript-javascript/skills/react-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/react-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-awesome-skills/skills/react-best-practices/AGENTS.md",
+        "/home/toxic/projects/antigravity-awesome-skills/plugins/antigravity-bundle-web-wizard/skills/react-best-practices/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "78f75844b7b19e855dbf5854a3e96ea9",
       "count": 2,
       "paths": [
-        "/home/toxic/Downloads/manydifferent/ophel-main_extracted/ophel-main/AGENTS.md",
-        "/home/toxic/projects/organized-lattice/core|active|experiments|utils/ophel-main/ophel-main/AGENTS.md"
+        "/home/toxic/projects/pi-conversation-aware-audit/packages/pi-tui/AGENTS.md",
+        "/home/toxic/projects/kimi-code-sovereign/packages/pi-tui/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "f34e313ab52539bbfdcadd3804a89a36",
+      "count": 3,
+      "paths": [
+        "/home/toxic/projects/zedra-tieubao/crates/zedra-host/AGENTS.md",
+        "/home/toxic/projects/zedra-tanlethanh/crates/zedra-host/AGENTS.md",
+        "/home/toxic/projects/zedra/crates/zedra-host/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "700faadb11cd9e6ce78f1576dc88c584",
+      "count": 3,
+      "paths": [
+        "/home/toxic/projects/zedra-tieubao/crates/zedra-session/AGENTS.md",
+        "/home/toxic/projects/zedra-tanlethanh/crates/zedra-session/AGENTS.md",
+        "/home/toxic/projects/zedra/crates/zedra-session/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "b045b62fc04e10f1ad1e4323f6f28a6c",
+      "count": 4,
+      "paths": [
+        "/home/toxic/projects/zedra-tieubao/crates/zedra-terminal/AGENTS.md",
+        "/home/toxic/projects/zedra-virtual0ps/crates/zedra-terminal/AGENTS.md",
+        "/home/toxic/projects/zedra-tanlethanh/crates/zedra-terminal/AGENTS.md",
+        "/home/toxic/projects/zedra/crates/zedra-terminal/AGENTS.md"
+      ]
+    },
+    {
+      "hash": "0a01c261ee14534ae37c7324e36b672d",
+      "count": 2,
+      "paths": [
+        "/home/toxic/projects/zedra-tanlethanh/crates/zedra/AGENTS.md",
+        "/home/toxic/projects/zedra/crates/zedra/AGENTS.md"
       ]
     }
   ],
