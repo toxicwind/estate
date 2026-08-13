@@ -10,8 +10,8 @@ loadSovereignPorts();
 
 import { z } from "zod";
 
-const PORT = parseInt(process.env.NIM_VALIDATION_PORT ?? "25191", 10);
-const UPSTREAM = process.env.NIM_VALIDATION_UPSTREAM ?? "http://127.0.0.1:25100";
+const PORT = parseInt(process.env.NIM_VALIDATION_PORT ?? process.env.NIM_VALIDATION_PORT ?? "25191", 10);
+const UPSTREAM = process.env.NIM_VALIDATION_UPSTREAM ?? `http://127.0.0.1:${process.env.LLAMA_SWAP_PORT || "25100"}`;
 
 // ──────────────────────────────────────────────────────────────
 // ZOD SCHEMAS (matching NIM API spec)
