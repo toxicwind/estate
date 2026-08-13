@@ -1,40 +1,31 @@
+# ============================================================================
+# SOVEREIGN PITCHFORK CONFIG — GENERATED from config/ports.env + service definitions
+# DO NOT EDIT DIRECTLY — Run: bun run scripts/generate.ts
+# ============================================================================
+
 [daemons.llama-swap]
 run = "exec ./stack/services/llama-swap.sh"
 dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25100/health"
+auto = ["start"]
 
-[daemons.nim-queue]
-run = "exec bun --hot run src/services/nim-queue.ts"
+[daemons.qdrant]
+run = "exec qdrant --config-path ./qdrant-config.yaml"
 dir = "."
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:25189/health"
-depends = ["llama-swap"]
+ready_http = "http://127.0.0.1:25133/"
+auto = ["start"]
 
-[daemons.reasoning-router]
-run = "exec bun --hot run src/services/reasoning-router.ts"
+[daemons.redis]
+run = "exec redis-server --port ${REDIS_PORT} --bind 0.0.0.0 --dir ./data --dbfilename redis.rdb"
 dir = "."
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:25190/health"
-depends = ["llama-swap", "nim-queue"]
-
-[daemons.nim-validation]
-run = "exec bun --hot run src/services/nim-validation-middleware.ts"
-dir = "."
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25191/health"
-depends = ["llama-swap", "nim-queue"]
-
-[daemons.pi-web-dashboard]
-run = "exec node /home/toxic/projects/pi-agent/packages/server/dist/web-server.js"
-dir = "."
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25192/api/health"
+ready_port = 25199
+auto = ["start"]
 
 [daemons.mcpproxy]
 run = "exec mcpproxy serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=info"
@@ -42,35 +33,8 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25109/health"
-
-[daemons.openfang]
-run = "exec ./stack/services/openfang.sh"
-dir = "."
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25103/api/health"
-
-
-[daemons.null-g-proxy]
-run = "exec bun --hot run tools/null-g-proxy/src/index.ts"
-dir = "."
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25107/health"
-
-[daemons.yote]
-run = "exec bun --hot run yote/src/index.ts"
-dir = "."
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25102/health"
-
-[daemons.rust-web]
-run = "exec ./stack/services/rust-web-hot.sh"
-dir = "."
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25201/health"
+depends = ["llama-swap"]
+auto = ["start"]
 
 [daemons.ghas-api]
 run = "exec bun --hot run apps/api/src/server.ts"
@@ -78,6 +42,10 @@ dir = "/home/toxic/projects/github-advanced-search-mcp"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25112/health"
+env = {
+  GHAS_API_PORT = "${GHAS_API_PORT}",
+}
+auto = ["start"]
 
 [daemons.ghas-mcp]
 run = "exec bun --hot run apps/mcp/src/server.ts --mode http"
@@ -86,38 +54,10 @@ mise = true
 retry = true
 ready_http = "http://127.0.0.1:25113/health"
 depends = ["ghas-api"]
-env = { GHAS_MCP_PORT = "25113" }
-
-[daemons.ghas-frontend]
-run = "exec ./node_modules/.bin/next dev -p 25114"
-dir = "/home/toxic/projects/github-advanced-search-mcp/apps/frontend"
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25114/"
-depends = ["ghas-api"]
-env = { GHAS_FRONTEND_PORT = "25114" }
-
-[daemons.kimi-audit-dash]
-run = "exec bun --hot run dashboard/server.ts"
-dir = "/home/toxic/kimi-token-audit"
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25116/health"
-env = { KIMI_AUDIT_DASH_PORT = "25116" }
-
-[daemons.mesh-hub]
-run = "exec bun --hot run src/services/mesh-hub.ts"
-dir = "."
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25115/health"
-
-[daemons.byte-vision-proxy]
-run = "exec bash tools/byte-vision-mock.sh"
-dir = "."
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25121/health"
+env = {
+  GHAS_MCP_PORT = "${GHAS_MCP_PORT}",
+}
+auto = ["start"]
 
 [daemons.prometheus]
 run = "exec ./stack/services/prometheus-hot.sh"
@@ -125,6 +65,7 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25105/-/healthy"
+auto = ["start"]
 
 [daemons.grafana]
 run = "exec ./stack/services/grafana-mesh.sh"
@@ -132,98 +73,183 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25110/api/health"
+auto = ["start"]
+
+[daemons.openfang]
+run = "exec ./stack/services/openfang.sh"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25103/api/health"
+
+[daemons.rust-web]
+run = "exec ./stack/services/rust-web-hot.sh"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25201/health"
 
 [daemons.hf-downloader]
 run = "exec ./stack/services/hf-downloader-mesh.sh"
 dir = "."
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:25106/"
-env = { HF_DOWNLOADER_PORT = "25106" }
+ready_http = "http://127.0.0.1:25106/api/health"
+env = {
+  HF_DOWNLOADER_PORT = "${HF_DOWNLOADER_PORT}",
+}
 
-[daemons.qdrant]
-run = "exec qdrant --config-path ./qdrant-config.yaml"
+[daemons.ghas-frontend]
+run = "exec ./node_modules/.bin/next dev -p ${GHAS_FRONTEND_PORT}"
+dir = "/home/toxic/projects/github-advanced-search-mcp/apps/frontend"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25114/"
+
+[daemons.pi-web-dashboard]
+run = "exec node /home/toxic/projects/pi-agent/packages/server/dist/web-server.js"
 dir = "."
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:25133/"
+ready_http = "http://127.0.0.1:25192/api/health"
 
-[daemons.redis]
-run = "exec redis-server --port 25199 --bind 0.0.0.0 --dir ./data --dbfilename redis.rdb"
-dir = "."
+[daemons.beellama-cpp]
+run = "exec /home/toxic/projects/beellama.cpp/build-cuda86/bin/llama-server --model ${EXAONE_1B_IQ4XS} --host 127.0.0.1 --port ${BEELLAMA_PORT} --n-gpu-layers all --flash-attn on --parallel 1 --metrics --mlock --no-mmap --cache-type-k q8_0 --cache-type-v q8_0 --ctx-size 32768 -b 2048 -ub 512"
+dir = "/home/toxic/projects/beellama.cpp"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25122/health"
+env = {
+  LD_LIBRARY_PATH = "/home/toxic/projects/beellama.cpp/build-cuda86/bin",
+  CUDA_VISIBLE_DEVICES = "0",
+  GGML_CUDA = "1",
+  GGML_CUDA_GRAPHS = "1",
+  GGML_CUDA_FA_ALL_QUANTS = "1",
+}
+
+[daemons.ik-llama-cpp]
+run = "exec /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server --model ${HERETIC_27B_Q5XL} --host 127.0.0.1 --port ${IK_LLAMA_PORT} -ngl 99 --flash-attn on --fit --fit-margin 512 --no-warmup --defrag-thold 0.1 --cache-type-k q8_0 --cache-type-v q8_0 --ctx-size 65536"
+dir = "/home/toxic/projects/ik_llama.cpp-main"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25123/health"
+env = {
+  LD_LIBRARY_PATH = "/home/toxic/projects/ik_llama.cpp-main/build/src:/home/toxic/projects/ik_llama.cpp-main/build/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build/examples/mtmd",
+  CUDA_VISIBLE_DEVICES = "0",
+  GGML_CUDA = "1",
+  GGML_CUDA_GRAPHS = "1",
+  GGML_CUDA_FA_ALL_QUANTS = "1",
+}
+
+[daemons.llama-cpp-turboquant]
+run = "exec /home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server --model ${GEMMA_12B_BASE_Q4KM} --host 127.0.0.1 --port ${TURBO_PORT} --n-gpu-layers all --flash-attn on --parallel 1 --metrics --mlock --no-mmap --cache-type-k turbo3 --cache-type-v turbo3 --ctx-size 98304"
+dir = "/home/toxic/projects/llama-cpp-turboquant"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25124/health"
+env = {
+  LD_LIBRARY_PATH = "/home/toxic/projects/llama-cpp-turboquant/build/bin",
+  CUDA_VISIBLE_DEVICES = "0",
+  GGML_CUDA = "1",
+  GGML_CUDA_GRAPHS = "1",
+  GGML_CUDA_FA_ALL_QUANTS = "1",
+}
+
+[daemons.pi-agent]
+run = "exec /home/toxic/projects/pi-agent/packages/coding-agent/dist/cli.js --session-dir /home/toxic/.pi/agent/sessions"
+dir = "/home/toxic"
 mise = true
 retry = true
-ready_cmd = "redis-cli -p 25199 ping | grep -q PONG"
+ready_cmd = "sleep 3 && echo ready"
+env = {
+  PI_CONFIG_PATH = "/home/toxic/.pi/agent/config.yaml",
+  PI_AGENT_DIR = "/home/toxic/.pi/agent",
+  PI_CODING_AGENT = "true",
+  PI_REASONING_LEVEL = "high",
+}
+
+[daemons.kimi-code]
+run = "exec /home/toxic/projects/kimi-code-sovereign/apps/kimi-code/dist/main.mjs web --no-open --port ${KIMI_CODE_PORT}"
+dir = "/home/toxic/projects/kimi-code-sovereign"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25126/health"
+
+[daemons.mcpproxy-go]
+run = "exec ./mcpproxy-go serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=info"
+dir = "/home/toxic/projects/mcpproxy-go"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25127/health"
+
+[daemons.antigravity-gateway]
+run = "exec bun --hot run src/gateway.ts"
+dir = "/home/toxic/projects/antigravity-gateway-master"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25128/health"
+
+[daemons.zed-editor]
+run = "exec ./target/release/zed --foreground"
+dir = "/home/toxic/projects/zed"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25129/health"
+
+[daemons.zedra-host]
+run = "exec cargo run --bin zedra-host --release"
+dir = "/home/toxic/projects/zedra"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25130/health"
+
+[daemons.sovereign-github-search]
+run = "exec bun --hot run src/server.ts"
+dir = "/home/toxic/projects/sovereign-github-search"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25131/health"
+
+[daemons.system-monitor-mcp]
+run = "exec python3 /home/toxic/projects/system-monitor-mcp-fork/server.patched.py"
+dir = "/home/toxic/projects/system-monitor-mcp-fork"
+mise = false
+retry = true
+ready_cmd = "sleep 2 && echo ready"
+env = {
+  PYTHONPATH = "/home/toxic/projects/system-monitor-mcp-fork/lib/home/toxic/.local/share/pipx/venvs/system-monitor-mcp/lib/python3.14/site-packages",
+}
+
+[daemons.wayland-mcp]
+run = "exec /home/toxic/projects/wayland-mcp/venv/bin/python -m wayland_mcp.server_mcp"
+dir = "/home/toxic/projects/wayland-mcp"
+mise = false
+retry = true
+ready_cmd = "sleep 3 && echo ready"
+
+[daemons.mise]
+run = "exec mise serve"
+dir = "/home/toxic/projects/mise"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25139/health"
+
+[daemons.antigravity-cli]
+run = "exec cargo run --release -- --port ${ANTIGRAVITY_CLI_PORT}"
+dir = "/home/toxic/projects/antigravity-ide-cli"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25140/health"
+
+[daemons.bun-runtime]
+run = "exec /home/toxic/projects/bun/bun --version"
+dir = "/home/toxic/projects/bun"
+mise = false
+retry = true
+ready_cmd = "/home/toxic/projects/bun/bun --version"
 
 [groups.core]
-daemons = [
-  "llama-swap",
-  "mcpproxy",
-  "openfang",
-  "null-g-proxy",
-  "yote",
-  "rust-web",
-  "ghas-api",
-  "ghas-mcp",
-  "ghas-frontend",
-  "kimi-audit-dash",
-  "mesh-hub",
-  "byte-vision-proxy",
-  "prometheus",
-  "grafana",
-  "hf-downloader",
-  "qdrant",
-  "redis",
-  "zellij",
-  "ttyd",
-  "sshx",
-  "nim-queue",
-  "reasoning-router",
-  "nim-validation",
-  "pi-web-dashboard",
-]
+daemons = ["llama-swap", "qdrant", "redis", "mcpproxy", "ghas-api", "ghas-mcp", "prometheus", "grafana", "openfang", "rust-web", "hf-downloader", "ghas-frontend", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "pi-agent", "kimi-code", "mcpproxy-go", "antigravity-gateway", "zed-editor", "zedra-host", "sovereign-github-search", "system-monitor-mcp", "wayland-mcp", "mise", "antigravity-cli", "bun-runtime"]
 
 [groups.all]
-daemons = [
-  "llama-swap",
-  "mcpproxy",
-  "openfang",
-  "null-g-proxy",
-  "yote",
-  "rust-web",
-  "ghas-api",
-  "ghas-mcp",
-  "ghas-frontend",
-  "kimi-audit-dash",
-  "mesh-hub",
-  "byte-vision-proxy",
-  "prometheus",
-  "grafana",
-  "hf-downloader",
-  "qdrant",
-  "redis",
-  "pi-web-dashboard",
-]
-
-[daemons.zellij]
-run = "exec zellij web --start --daemonize --ip 127.0.0.1 --port 25136"
-dir = "."
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25136/"
-
-[daemons.ttyd]
-run = "exec ttyd -p 25137 -c toxic:toxic -t rendererType=webgl -t fontSize=14 -t theme=\"{\\\"background\\\":\\\"#0c0b11\\\",\\\"foreground\\\":\\\"#e8e8e3\\\"}\" bash"
-dir = "."
-mise = true
-retry = true
-ready_http = "http://toxic:toxic@127.0.0.1:25137/"
-
-[daemons.sshx]
-run = "exec sshx --quiet"
-dir = "."
-mise = true
-retry = true
-
-# wezterm is a GUI terminal emulator, not a daemon
-# start manually: wezterm start --always-new-process
+daemons = ["llama-swap", "qdrant", "redis", "mcpproxy", "ghas-api", "ghas-mcp", "prometheus", "grafana", "openfang", "rust-web", "hf-downloader", "ghas-frontend", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "pi-agent", "kimi-code", "mcpproxy-go", "antigravity-gateway", "zed-editor", "zedra-host", "sovereign-github-search", "system-monitor-mcp", "wayland-mcp", "mise", "antigravity-cli", "bun-runtime"]

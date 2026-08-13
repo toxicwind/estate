@@ -1,0 +1,15 @@
+{
+  "task_id": "pi-agent-phase-3-experimental-crisis",
+  "agent": "pi-agent",
+  "model": "longcat-2.0-free",
+  "hash": "sha256:ghi789",
+  "name": "Experimental Crisis MCP",
+  "description": "Make skills portable, create profiles, add to mcpproxy",
+  "status": "in_progress",
+  "priority": "high",
+  "subtasks": [
+    { "id": "crisis-1", "name": "Make skills portable", "status": "in_progress" },
+    { "id": "crisis-2", "name": "Create profile system", "status": "completed" },
+    { "id": "crisis-3", "name": "Add to mcpproxy", "status": "completed" }
+  ]
+}

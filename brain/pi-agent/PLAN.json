@@ -1,0 +1,138 @@
+{
+  "agent": "pi-agent",
+  "model": "longcat-2.0-free",
+  "brain": "/home/toxic/sovereign/brain/pi-agent/",
+  "reactive_mode": {
+    "enabled": true,
+    "on_task_complete": "Find 10 more complex maximal tasks",
+    "never_shrink_scope": true,
+    "fix_forward_only": true
+  },
+  "tasks": {
+    "phase_0_nuvio": {
+      "name": "Nuvio LG TV Deployment",
+      "priority": "highest",
+      "status": "blocked",
+      "items": [
+        { "id": "N0.1", "name": "Fork max level", "status": "completed", "desc": "All forks at max level" },
+        { "id": "N0.2", "name": "Review Nuvio UX", "status": "pending", "desc": "Review tools/nuvio-platform/" },
+        { "id": "N0.3", "name": "Install WebOS SDK", "status": "pending", "desc": "Install ares-cli" },
+        { "id": "N0.4", "name": "Pair LG TV", "status": "pending", "desc": "TV developer mode" },
+        { "id": "N0.5", "name": "Build & Deploy", "status": "pending", "desc": "ares-package → ares-install → ares-launch" }
+      ]
+    },
+    "phase_1_bugfixes": {
+      "name": "Critical Bug Fixes",
+      "priority": "high",
+      "status": "completed",
+      "items": [
+        { "id": "B1.1", "name": "Fix streaming bug", "status": "completed", "desc": "Stream ended without finish_reason → fall back to inference" },
+        { "id": "B1.2", "name": "Enable debug logging", "status": "completed", "desc": "PI_DEBUG_STREAM=1 in bashrc" },
+        { "id": "B1.3", "name": "Fix truncation limits", "status": "completed", "desc": "DEFAULT_MAX_BYTES adaptive 512KB→4MB" },
+        { "id": "B1.4", "name": "Rebuild pi-agent", "status": "completed", "desc": "Rebuild with all fixes" }
+      ]
+    },
+    "phase_2_yote_openfang": {
+      "name": "Yote + OpenFang Integration",
+      "priority": "highest",
+      "status": "in_progress",
+      "desc": "Steal Telegram/Discord subsystems from OpenFang → integrate into Yote",
+      "items": [
+        { "id": "Y2.1", "name": "Audit OpenFang Telegram/Discord", "status": "in_progress", "desc": "Find all Telegram/Discord code in OpenFang" },
+        { "id": "Y2.2", "name": "Extract Telegram gateway", "status": "pending", "desc": "Steal Telegram bot subsystem → Yote" },
+        { "id": "Y2.3", "name": "Extract Discord gateway", "status": "pending", "desc": "Steal Discord bot subsystem → Yote" },
+        { "id": "Y2.4", "name": "Disable Telegram/Discord in OpenFang", "status": "pending", "desc": "OpenFang becomes pure LLM router" },
+        { "id": "Y2.5", "name": "Unify Yote as single gateway", "status": "pending", "desc": "Yote = Telegram + Discord + HTTP" }
+      ]
+    },
+    "phase_3_experimental_crisis": {
+      "name": "Experimental Crisis MCP",
+      "priority": "high",
+      "status": "in_progress",
+      "items": [
+        { "id": "E3.1", "name": "Make skills portable", "status": "in_progress", "desc": "Remove /mnt/agents/ paths" },
+        { "id": "E3.2", "name": "Create profile system", "status": "completed", "desc": "local, kimi, generic profiles" },
+        { "id": "E3.3", "name": "Add to mcpproxy", "status": "completed", "desc": "Register in mcp_config.json" }
+      ]
+    },
+    "phase_4_tiktoken": {
+      "name": "TikToken + Token Optimization",
+      "priority": "high",
+      "status": "in_progress",
+      "items": [
+        { "id": "T4.1", "name": "Install tiktoken", "status": "completed", "desc": "Add tiktoken to pi-agent" },
+        { "id": "T4.2", "name": "Create tiktoken MCP", "status": "completed", "desc": "Dynamic token counting MCP" },
+        { "id": "T4.3", "name": "Add to mcpproxy", "status": "completed", "desc": "Register tiktoken in mcp_config.json" },
+        { "id": "T4.4", "name": "Integrate into pi-agent", "status": "pending", "desc": "Use tiktoken for context management" }
+      ]
+    },
+    "phase_5_pitchfork": {
+      "name": "Pitchfork Fork",
+      "priority": "normal",
+      "status": "in_progress",
+      "items": [
+        { "id": "P5.1", "name": "Add --json to start", "status": "pending", "desc": "Fork pitchfork, add --json flag" },
+        { "id": "P5.2", "name": "Suppress DEBUG noise", "status": "pending", "desc": "Remove DEBUG lines" }
+      ]
+    },
+    "phase_6_boot": {
+      "name": "Boot & Integration",
+      "priority": "high",
+      "status": "completed",
+      "items": [
+        { "id": "BT6.1", "name": "Fix pitchfork.toml", "status": "completed", "desc": "Remove tailscale-funnel, add SSHX_PORT" },
+        { "id": "BT6.2", "name": "Start all daemons", "status": "completed", "desc": "All services healthy" }
+      ]
+    },
+    "phase_7_hot_reload": {
+      "name": "Hot Reload & Linting",
+      "priority": "high",
+      "status": "pending",
+      "items": [
+        { "id": "HR7.1", "name": "Enable hot reload", "status": "pending", "desc": "Hot reload should be on" },
+        { "id": "HR7.2", "name": "Max level linting", "status": "pending", "desc": "ruff, black, isort, pyupgrade, autoflake, cargo-clippy, cargo-fmt" },
+        { "id": "HR7.3", "name": "Biome config", "status": "pending", "desc": "Create/fix biome config" }
+      ]
+    },
+    "phase_8_dediops": {
+      "name": "DediOps Cleanup",
+      "priority": "normal",
+      "status": "pending",
+      "items": [
+        { "id": "D8.1", "name": "Audit dediops duplicative mess", "status": "pending", "desc": "Figure out what's going on" },
+        { "id": "D8.2", "name": "Consolidate or cleanup", "status": "pending", "desc": "No rollback, fix forward" }
+      ]
+    },
+    "phase_9_web_app": {
+      "name": "Pi Web App Sessions",
+      "priority": "high",
+      "status": "pending",
+      "items": [
+        { "id": "W9.1", "name": "Fix sessions view", "status": "pending", "desc": "Show all sessions live" },
+        { "id": "W9.2", "name": "Launch sessions", "status": "pending", "desc": "Allow launching new sessions from web UI" }
+      ]
+    },
+    "phase_10_git": {
+      "name": "Git & Fork Management",
+      "priority": "high",
+      "status": "in_progress",
+      "items": [
+        { "id": "G10.1", "name": "Fix sovereign git", "status": "completed", "desc": "Set correct origin to toxicwind/sovereign" },
+        { "id": "G10.2", "name": "Commit and push often", "status": "in_progress", "desc": "Push to main frequently" },
+        { "id": "G10.3", "name": "Fork mise and pitchfork", "status": "pending", "desc": "Create toxicwind forks" }
+      ]
+    },
+    "phase_11_brain": {
+      "name": "Brain System",
+      "priority": "high",
+      "status": "in_progress",
+      "items": [
+        { "id": "BR11.1", "name": "Create brain folder", "status": "completed", "desc": "/home/toxic/sovereign/brain/" },
+        { "id": "BR11.2", "name": "Agent-embedded tasks", "status": "completed", "desc": "PLAN.json per agent" },
+        { "id": "BR11.3", "name": "Hash and identify", "status": "completed", "desc": "SHA256 brain hash" },
+        { "id": "BR11.4", "name": "Integrate with AGENTS.md", "status": "in_progress", "desc": "Load brain/PLAN.json in resource-loader" },
+        { "id": "BR11.5", "name": "Auto-updating runtime", "status": "completed", "desc": "generate.sh for runtime.json" }
+      ]
+    }
+  }
+}

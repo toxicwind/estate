@@ -18,7 +18,7 @@ function arg(name: string, fallback = ""): string {
 }
 
 const service = (arg("--service") || process.env.MESH_SERVICE || "mesh-hub") as MeshServiceId;
-const listen = arg("--listen") || process.env.MESH_LISTEN || "127.0.0.1:25115";
+const listen = arg("--listen") || process.env.MESH_LISTEN || `127.0.0.1:${process.env.MESH_HUB_PORT || "25115"}`;
 const backend = arg("--backend") || process.env.MESH_BACKEND || "";
 const [listenHost, listenPortStr] = listen.includes(":")
   ? listen.split(":")

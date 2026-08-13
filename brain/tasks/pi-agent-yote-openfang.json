@@ -1,0 +1,17 @@
+{
+  "task_id": "pi-agent-phase-2-yote-openfang",
+  "agent": "pi-agent",
+  "model": "longcat-2.0-free",
+  "hash": "sha256:abc123",
+  "name": "Yote + OpenFang Integration",
+  "description": "Steal Telegram/Discord subsystems from OpenFang → integrate into Yote",
+  "status": "in_progress",
+  "priority": "highest",
+  "subtasks": [
+    { "id": "yote-1", "name": "Audit OpenFang Telegram/Discord", "status": "in_progress" },
+    { "id": "yote-2", "name": "Extract Telegram gateway", "status": "pending" },
+    { "id": "yote-3", "name": "Extract Discord gateway", "status": "pending" },
+    { "id": "yote-4", "name": "Disable Telegram/Discord in OpenFang", "status": "pending" },
+    { "id": "yote-5", "name": "Unify Yote as single gateway", "status": "pending" }
+  ]
+}

@@ -144,7 +144,7 @@ function selectBackend(effort: ReasoningEffort, preferredModel?: string): RouteR
 // ──────────────────────────────────────────────────────────────
 
 const server = Bun.serve({
-  port: 25190,
+  port: parseInt(process.env.REASONING_ROUTER_PORT || "25190", 10),
   hostname: "0.0.0.0",
   async fetch(req) {
     const url = new URL(req.url);
