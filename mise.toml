@@ -29,6 +29,9 @@ health = "pitchfork list"
 status = "pitchfork list"
 logs = "pitchfork logs --follow"
 
+# ─── Pattern borrowing (GitHub-wide ranker) ───
+"pattern:borrow" = "bun run scripts/pattern-borrow.ts"
+
 # ─── Individual service control (auto-generated) ───
 "up-llama-swap" = "pitchfork start llama-swap"
 "up-qdrant" = "pitchfork start qdrant"
