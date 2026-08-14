@@ -24,6 +24,7 @@
     "hf-downloader": "bun run src/services/hf_downloader.ts",
     "openfang": "bun run src/services/openfang.ts",
     "rank:models": "bun run scripts/model-rank-and-route.ts",
+    "pattern:borrow": "bun run scripts/pattern-borrow.ts",
     "test:best-models": "bun test tests/best_models_ssot.test.ts",
     "test:gateway": "bun test tools/sovereign-router/sovereign-mcp-gateway/gateway-core.test.ts",
     "test:gateway:cov": "bun test --coverage --coverage-reporter=text --coverage-reporter=lcov tools/sovereign-router/sovereign-mcp-gateway/gateway-core.test.ts",
