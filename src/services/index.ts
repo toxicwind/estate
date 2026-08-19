@@ -9,6 +9,7 @@ import { MONITORING_SERVICES } from "./monitoring.ts";
 import { PERIPHERAL_SERVICES } from "./peripheral.ts";
 import { FORK_SERVICES } from "./forks.ts";
 import { BUN_RUNTIME_SERVICE } from "./bun-runtime.ts";
+import { HAL_SUBSTRATE_SERVICE } from "./hal-substrate.ts";
 
 export const ALL_SERVICES: ServiceDef[] = [
   ...CORE_SERVICES,
@@ -17,6 +18,7 @@ export const ALL_SERVICES: ServiceDef[] = [
   ...PERIPHERAL_SERVICES,
   ...FORK_SERVICES,
   BUN_RUNTIME_SERVICE,
+  HAL_SUBSTRATE_SERVICE,
 ];
 
 export const ALL_SERVICE_IDS = ALL_SERVICES.map(s => s.id);
