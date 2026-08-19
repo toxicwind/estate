@@ -4,10 +4,7 @@
 
 import type { ServiceDef } from "../types/index.ts";
 
-import { HAL_SUBSTRATE_SERVICE } from "./hal-substrate.ts";
-
 export const CORE_SERVICES: ServiceDef[] = [
-  HAL_SUBSTRATE_SERVICE,
   {
     id: "llama-swap",
     name: "llama-swap",
