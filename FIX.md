@@ -182,3 +182,18 @@ curl -s -X POST http://127.0.0.1:25109/mcp \
 - [x] Test framework: `test/services/test-framework.ts` — reusable, non-destructive service health tests using `curl` (handles compression) and `redis-cli`
 - [x] Pitchfork supervisor restarted; llama-swap started via `PITCHFORK_CONFIG_PATH=/home/toxic/sovereign/pitchfork.toml pitchfork start llama-swap`
 
+
+## Phase 4: HAL Substrate Integration
+
+- [ ] Install HAL substrate
+  - [ ] Extract: `tar -xzf hal-substrate-v3.tar.gz -C ~/projects/`
+  - [ ] Verify: `~/projects/project-name/src/hal-loop.py` exists
+- [ ] Start hal-substrate on :25143
+  - [ ] `mise run up-hal-substrate`
+  - [ ] Health check: `curl -sf http://127.0.0.1:25143/health` (or check logs)
+- [ ] Verify AST matrix routing
+  - [ ] HAL connects to llama-swap on :25100
+  - [ ] Default model: `kimi-auto` (→ kimi/k1.5, weight 2.0)
+  - [ ] Fallback strategy: `free` (7 zero-cost providers)
+- [ ] **VERIFY Phase 4**: HAL healthy, routes through AST matrix
+
