@@ -1,32 +1,28 @@
 #!/usr/bin/env bash
 # HAL Substrate — Autonomous agent inference engine
-# Connects to llama-swap (:25100) via OpenAI-compatible API
-# Does NOT run its own inference — uses sovereign's AST matrix
+# First-class service. Direct-bind Python daemon to 0.0.0.0:HAL_SUBSTRATE_PORT.
+# Connects to llama-swap AST matrix (:25100) via OpenAI-compatible API.
+# Does NOT run its own inference — routes through 14 providers (kimi primary).
 set -euo pipefail
-
 SOV="${SOVEREIGN_ROOT:-$HOME/sovereign}"
 source "$SOV/stack/lib-ports.sh"
 require_env HAL_SUBSTRATE_PORT
 PORT="$HAL_SUBSTRATE_PORT"
 
-# HAL substrate lives in user's projects directory
-HAL_DIR="${HAL_DIR:-$HOME/projects/hal-substrate}"
-HAL_BIN="$HAL_DIR/src/hal-loop.py"
+# Find hal-loop.py in candidate locations
+BIN_CAND=(
+  "$HOME/projects/project-name/src/hal-loop.py"
+  "$HOME/projects/hal-substrate/src/hal-loop.py"
+  "$HOME/projects/hal-substrate-v3/src/hal-loop.py"
+  "$HOME/github/hal-substrate/src/hal-loop.py"
+)
+BIN=""
+for c in "${BIN_CAND[@]}"; do
+  [[ -f "$c" ]] && BIN="$c" && break
+done
 
-# Fallback: check common locations
-if [[ ! -f "$HAL_BIN" ]]; then
-  HAL_CAND=(
-    "$HOME/projects/project-name/src/hal-loop.py"
-    "$HOME/projects/hal-substrate-v3/src/hal-loop.py"
-    "$HOME/github/hal-substrate/src/hal-loop.py"
-  )
-  for c in "${HAL_CAND[@]}"; do
-    [[ -f "$c" ]] && HAL_BIN="$c" && break
-  done
-fi
-
-if [[ ! -f "$HAL_BIN" ]]; then
-  echo "[hal-substrate] hal-loop.py not found. Expected at $HAL_DIR/src/hal-loop.py" >&2
+if [[ -z "$BIN" ]]; then
+  echo "[hal-substrate] hal-loop.py not found. Expected at ~/projects/project-name/src/hal-loop.py" >&2
   echo "[hal-substrate] Install: tar -xzf hal-substrate-v3.tar.gz -C ~/projects/" >&2
   exit 1
 fi
@@ -37,16 +33,17 @@ if ! python3 -c "import requests" 2>/dev/null; then
   python3 -m pip install requests urllib3 --quiet
 fi
 
-# Kill existing
+# Kill any existing hal-substrate on this port
 fuser -k "${PORT}/tcp" 2>/dev/null || true
 sleep 0.3
 
-# Launch HAL loop in daemon mode
-# Connects to llama-swap on :25100 (AST matrix with 14 providers)
-exec python3 "$HAL_BIN" \
+# Launch Python daemon — direct bind to 0.0.0.0:PORT
+# HAL runs its own HTTP server for task ingestion + health checks
+exec python3 "$BIN" \
   --base-url "http://127.0.0.1:25100" \
   --api-key "sk-hal-local" \
   --model "kimi-auto" \
   --session "sovereign-$(date +%s)" \
-  --verbose \
-  --task "[HAL] Sovereign substrate initialized. Waiting for tasks via API."
+  --port "${PORT}" \
+  --host "0.0.0.0" \
+  --verbose
