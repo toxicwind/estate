@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-HAL Loop v3.1 — First-Class Autonomous Agent Orchestrator
+HAL Loop v3.1 — Max Level Autonomous Agent
+First-class sovereign service. OpenFang agent with Yote integration.
 HTTP server for task ingestion + health checks (pitchfork-compatible).
-Connects to llama-swap AST matrix (:25100) via OpenAI-compatible API.
 """
 
 import os, sys, time, json, re, signal, threading
@@ -19,7 +19,7 @@ urllib3.disable_warnings()
 class HalConfig:
     base_url: str = "http://localhost:8080"
     api_key: str = "sk-hal-local"
-    model: str = "local-model"
+    model: str = "kimi-auto"
     max_rounds: int = 50
     limit_step: int = 10
     tick_interval: float = 2.5
@@ -43,6 +43,11 @@ class HalConfig:
     max_context_tokens: int = 120000
     http_port: int = 25143
     http_host: str = "0.0.0.0"
+    # OpenFang integration
+    openfang_api: str = "http://127.0.0.1:25103"
+    yote_api: str = "http://127.0.0.1:25102"
+    mcpproxy_api: str = "http://127.0.0.1:25109"
+    ghas_mcp_api: str = "http://127.0.0.1:25113"
 
 class LoopState:
     IDLE = "IDLE"
@@ -425,24 +430,17 @@ class HalLoop:
             self._met_t = None
     def get_state(self) -> Dict[str, Any]: return asdict(self.state)
 
-# ============================================================================
-# HTTP SERVER — First-class pitchfork integration
-# ============================================================================
-
 class HalHTTPHandler(BaseHTTPRequestHandler):
     hal_loop: Optional[HalLoop] = None
     config: Optional[HalConfig] = None
-
     def log_message(self, fmt, *args):
         if self.config and self.config.verbose:
             print(f"[HAL-HTTP] {fmt % args}")
-
     def _json(self, status: int, data: Dict[str, Any]):
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
         self.wfile.write(json.dumps(data).encode())
-
     def do_GET(self):
         if self.path == "/health":
             state = "healthy"
@@ -458,7 +456,6 @@ class HalHTTPHandler(BaseHTTPRequestHandler):
                 self._json(200, {"status": "idle", "detail": "No active loop"})
         else:
             self._json(404, {"error": "not_found"})
-
     def do_POST(self):
         if self.path == "/task":
             length = int(self.headers.get("Content-Length", 0))
@@ -493,7 +490,7 @@ class HalHTTPHandler(BaseHTTPRequestHandler):
 
 def main():
     import argparse
-    p = argparse.ArgumentParser(description="HAL Loop v3.1 — First-class autonomous agent")
+    p = argparse.ArgumentParser(description="HAL Loop v3.1 — Max Level")
     p.add_argument("--task", "-t")
     p.add_argument("--model", "-m", default="kimi-auto")
     p.add_argument("--session", "-s", default="default")
@@ -506,42 +503,28 @@ def main():
     p.add_argument("--port", type=int, default=25143)
     p.add_argument("--host", default="0.0.0.0")
     a = p.parse_args()
-
-    c = HalConfig(
-        base_url=a.base_url, api_key=a.api_key, model=a.model,
-        session_id=a.session, max_rounds=a.max_rounds, verbose=a.verbose,
-        http_port=a.port, http_host=a.host
-    )
-
+    c = HalConfig(base_url=a.base_url, api_key=a.api_key, model=a.model, session_id=a.session, max_rounds=a.max_rounds, verbose=a.verbose, http_port=a.port, http_host=a.host)
     handler = HalHTTPHandler
     handler.config = c
-
     def sig(signum, frame):
         print("\n[HAL] interrupted, saving...")
-        if handler.hal_loop:
-            handler.hal_loop.stop()
+        if handler.hal_loop: handler.hal_loop.stop()
         sys.exit(0)
     signal.signal(signal.SIGINT, sig)
     signal.signal(signal.SIGTERM, sig)
-
-    # Start HTTP server
     server = HTTPServer((c.http_host, c.http_port), handler)
-    print(f"[HAL] HTTP server listening on {c.http_host}:{c.http_port}")
-    print(f"[HAL] Connected to llama-swap at {c.base_url}")
+    print(f"[HAL] HTTP server on {c.http_host}:{c.http_port}")
+    print(f"[HAL] AST matrix: {c.base_url}")
     print(f"[HAL] Endpoints: GET /health, GET /status, POST /task, POST /stop")
-
-    # Start server in background thread
     server_thread = threading.Thread(target=server.serve_forever, daemon=True)
     server_thread.start()
-
     if a.interactive:
-        print("[HAL] Interactive mode. Commands: start <task>, stop, status, extend, quit")
+        print("[HAL] Interactive. Commands: start <task>, stop, status, extend, quit")
         while True:
             try:
                 cmd = input("> ").strip()
                 if cmd.startswith("start "):
-                    if handler.hal_loop:
-                        handler.hal_loop.destroy()
+                    if handler.hal_loop: handler.hal_loop.destroy()
                     handler.hal_loop = HalLoop(c)
                     handler.hal_loop.start(cmd[6:])
                 elif cmd == "stop":
@@ -571,14 +554,10 @@ def main():
             handler.hal_loop.stop()
         print(f"[HAL] {handler.hal_loop.state.status} | rounds: {handler.hal_loop.state.round} | {handler.hal_loop.state.detail}")
     else:
-        # Daemon mode — wait forever
-        print("[HAL] Daemon mode active. Waiting for tasks via HTTP.")
+        print("[HAL] Daemon mode. Waiting for tasks via HTTP.")
         try:
-            while True:
-                time.sleep(3600)
-        except KeyboardInterrupt:
-            pass
-
+            while True: time.sleep(3600)
+        except KeyboardInterrupt: pass
     server.shutdown()
 
 if __name__ == "__main__":
