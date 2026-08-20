@@ -197,3 +197,19 @@ curl -s -X POST http://127.0.0.1:25109/mcp \
   - [ ] Fallback strategy: `free` (7 zero-cost providers)
 - [ ] **VERIFY Phase 4**: HAL healthy, routes through AST matrix
 
+
+## Phase 4: HAL Substrate Integration (MAX LEVEL)
+
+- [x] Create OpenFang agent definition (agents/hal-substrate/agent.toml)
+- [x] Create system prompt (agents/hal-substrate/system.md)
+- [x] First-class service launcher (stack/services/hal-substrate.sh)
+- [x] HTTP server with /health, /status, POST /task, POST /stop
+- [x] Connects to llama-swap AST matrix (:25100) — 14 providers, kimi primary
+- [x] Yote messaging integration (:25102) — Telegram/Discord/Signal
+- [x] MCP proxy integration (:25109, :25113) — GHAS + 41 MCP servers
+- [x] Sigil-driven workflow: PROCEED/HALT/ROADMAP/SHORT
+- [x] Slot persistence for agent memory across restarts
+- [ ] Start hal-substrate: `mise run up-hal-substrate`
+- [ ] Verify: `curl -sf http://127.0.0.1:25143/health`
+- [ ] **VERIFY Phase 4**: HAL healthy, routes through AST matrix, responds to Yote
+
