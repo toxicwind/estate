@@ -2,7 +2,7 @@
 // SOVEREIGN — Core Types
 // ============================================================================
 
-export type Group = "core";
+export type Group = "core" | "main" | "agent" | "mcp" | "infra" | "monitoring" | "aux";
 
 export interface PortMap extends Map<string, number> {}
 
@@ -16,7 +16,7 @@ export interface ServiceDef {
   readyHttp?: string;
   readyCmd?: string;
   readyPort?: boolean;
-  env?: Record<string, string>;
+  env?: Record<string, string | number>;
   mise?: boolean;
   group: Group;
   autoStart?: boolean;
@@ -31,7 +31,7 @@ export interface ServiceDef {
 export interface TemplateContext {
   ports: Record<string, number>;
   services: ServiceDef[];
-  groups: Record<Group, string[]>;
+  groups: Record<string, string[]>;
   timestamp: string;
   sovRoot: string;
 }

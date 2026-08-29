@@ -77,18 +77,53 @@ export const miseGenerator: Generator = {
     lines.push("");
 
     // Group tasks
-    lines.push("# ─── Group tasks ───");
+    lines.push("# ─── Stack & Group tasks ───");
     lines.push('up-core = "pitchfork start --group core"');
     lines.push('down-core = "pitchfork stop --group core"');
     lines.push('restart-core = "pitchfork restart --group core"');
     lines.push('health-core = "pitchfork list"');
     lines.push("");
+    lines.push('up-main = "pitchfork start --group main"');
+    lines.push('down-main = "pitchfork stop --group main"');
+    lines.push('restart-main = "pitchfork restart --group main"');
+    lines.push('health-main = "pitchfork list"');
+    lines.push("");
+    lines.push('up-agents = "pitchfork start --group agents"');
+    lines.push('down-agents = "pitchfork stop --group agents"');
+    lines.push('restart-agents = "pitchfork restart --group agents"');
+    lines.push("");
+    lines.push('up-search = "pitchfork start --group search"');
+    lines.push('down-search = "pitchfork stop --group search"');
+    lines.push('restart-search = "pitchfork restart --group search"');
+    lines.push("");
+    lines.push('up-mcp = "pitchfork start --group mcp"');
+    lines.push('down-mcp = "pitchfork stop --group mcp"');
+    lines.push('restart-mcp = "pitchfork restart --group mcp"');
+    lines.push("");
+    lines.push('up-monitoring = "pitchfork start --group monitoring"');
+    lines.push('down-monitoring = "pitchfork stop --group monitoring"');
+    lines.push('restart-monitoring = "pitchfork restart --group monitoring"');
+    lines.push("");
+    lines.push('up-all = "pitchfork start --group all"');
+    lines.push('down-all = "pitchfork stop --group all"');
+    lines.push('restart-all = "pitchfork restart --group all"');
+    lines.push('health-all = "pitchfork list"');
+    lines.push("");
+    lines.push('up-sovereign-core = "pitchfork start --group sovereign-core"');
+    lines.push('down-sovereign-core = "pitchfork stop --group sovereign-core"');
+    lines.push('restart-sovereign-core = "pitchfork restart --group sovereign-core"');
+    lines.push('health-sovereign-core = "pitchfork list"');
+    lines.push("");
 
     // Utility tasks
     lines.push("# ─── Utilities ───");
     lines.push('ports = "pitchfork daemons"');
+    const svcPortPairs = ctx.services
+      .filter(svc => svc.portKey && ctx.ports[svc.portKey])
+      .map(svc => `${svc.id}=${ctx.ports[svc.portKey]}`)
+      .join(" ");
     const serviceList = ctx.services.map(s => s.id).join(" ");
-    lines.push(`svc-check = """bash -c 'for svc in ${serviceList}; do port=$(grep "^\${svc}=" config/ports.env | cut -d= -f2); if [ -n "\$port" ]; then curl -sf -m 2 "http://127.0.0.1:\${port}/health" >/dev/null 2>&1 || curl -sf -m 2 "http://127.0.0.1:\${port}/-/healthy" >/dev/null 2>&1 || curl -sf -m 2 "http://127.0.0.1:\${port}/api/health" >/dev/null 2>&1 && echo "✅ :\${port} (\${svc})" || echo "❌ :\${port} (\${svc})"; else echo "⚠️ :\${svc} (no port)"; fi; done' """`);
+    lines.push(`svc-check = """bash -c 'for entry in ${svcPortPairs}; do svc=\${entry%%=*}; port=\${entry##*=}; if [ -n "\${port}" ]; then curl -sf -m 2 "http://127.0.0.1:\${port}/health" >/dev/null 2>&1 || curl -sf -m 2 "http://127.0.0.1:\${port}/-/healthy" >/dev/null 2>&1 || curl -sf -m 2 "http://127.0.0.1:\${port}/api/health" >/dev/null 2>&1 && echo "✅ :\${port} (\${svc})" || echo "❌ :\${port} (\${svc})"; else echo "⚠️ :\${svc} (no port)"; fi; done' """`);
     lines.push("");
 
     // Nuvio platform tasks
@@ -108,19 +143,6 @@ export const miseGenerator: Generator = {
     lines.push('"test-models" = "bun run test:best-models"');
     lines.push("");
 
-    // Interactive terminal tools
-    lines.push("# ─── Interactive terminal tools ───");
-    lines.push('"up-zellij" = "pitchfork start zellij"');
-    lines.push('"up-ttyd" = "pitchfork start ttyd"');
-    lines.push('"up-sshx" = "pitchfork start sshx"');
-    lines.push('"up-wezterm" = "wezterm start --detach"');
-    lines.push('"down-zellij" = "pitchfork stop zellij"');
-    lines.push('"down-ttyd" = "pitchfork stop ttyd"');
-    lines.push('"down-sshx" = "pitchfork stop sshx"');
-    lines.push('"down-wezterm" = "pkill wezterm"');
-    lines.push(`"health-zellij" = "curl -sf http://127.0.0.1:${ctx.ports["ZELLIJ_PORT"] || "25136"}/"`);
-    lines.push(`"health-ttyd" = "curl -sf http://toxic:toxic@127.0.0.1:${ctx.ports["TTYD_PORT"] || "25137"}/"`);
-    lines.push(`"health-sshx" = "curl -sf http://127.0.0.1:${ctx.ports["SSHX_PORT"] || "25138"}/"`);
 
     return lines.join("\n");
   },

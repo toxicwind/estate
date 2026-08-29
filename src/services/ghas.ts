@@ -15,7 +15,7 @@ export const GHAS_SERVICES: ServiceDef[] = [
     group: "core",
     autoStart: true,
     mise: true,
-    env: { GHAS_API_PORT: "${GHAS_API_PORT}" },
+    env: { GHAS_API_PORT: 25112 },
     healthPath: "/health",
   },
   {
@@ -29,8 +29,21 @@ export const GHAS_SERVICES: ServiceDef[] = [
     autoStart: true,
     mise: true,
     depends: ["ghas-api"],
-    env: { GHAS_MCP_PORT: "${GHAS_MCP_PORT}" },
+    env: { GHAS_MCP_PORT: 25113 },
     healthPath: "/health",
+  },
+  {
+    id: "ghas-frontend",
+    name: "ghas-frontend",
+    portKey: "GHAS_FRONTEND_PORT",
+    run: "exec ./node_modules/.bin/next dev -p 25114",
+    dir: "/home/toxic/projects/github-advanced-search-mcp/apps/frontend",
+    readyHttp: "/",
+    group: "core",
+    autoStart: true,
+    mise: true,
+    env: { GHAS_FRONTEND_PORT: "25114" },
+    healthPath: "/",
   },
 
 ];
