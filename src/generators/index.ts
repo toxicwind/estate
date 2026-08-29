@@ -48,7 +48,7 @@ export async function generateAll(root: string = process.cwd()): Promise<void> {
   console.log("\n📊 Summary:");
   console.log(`  Services: ${ALL_SERVICES.length}`);
   console.log(`  Auto-start: ${ALL_SERVICES.filter(s => s.autoStart).length} always-on`);
-  console.log(`  On-demand: ${ALL_SERVICES.filter(s => !s.autoStart).length} triggered`);
+  console.log(`  On-demand: ${ALL_SERVICES.filter(s => !s.autoStart).length} configured`);
   console.log(`  Ports loaded: ${ports.size}`);
   console.log(`  Generators: ${GENERATORS.length}`);
 }

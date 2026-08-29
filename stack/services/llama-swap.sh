@@ -6,7 +6,7 @@ SOV="$HOME/sovereign"
 source "$SOV/stack/lib-ports.sh"
 require_env LLAMA_SWAP_PORT
 PORT="$LLAMA_SWAP_PORT"
-BIN="$HOME/projects/llama-swap-main/llama-swap"
+BIN="$HOME/projects/llama-swap/llama-swap"
 [[ -x "$BIN" ]] || { echo "llama-swap bin not found at $BIN" >&2; exit 1; }
 CONF="$SOV/config/llama-swap.yaml"
 [[ -f "$CONF" ]] || { echo "llama-swap config not found at $CONF" >&2; exit 1; }

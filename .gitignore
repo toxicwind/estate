@@ -79,7 +79,6 @@ coverage.lcov
 
 # ─── Misc noise ───────────────────────────────────────────────────────────────
 dashboard/
-ports.env
 
 # Local runtime / plugin noise (do not ship)
 grafana/plugins/
