@@ -124,12 +124,57 @@ env = {
 }
 auto = ["start"]
 
+[daemons.beellama-cpp]
+run = "exec /home/toxic/projects/beellama.cpp/build-cuda86/bin/llama-server --model ${EXAONE_1B_IQ4XS} --host 127.0.0.1 --port ${BEELLAMA_PORT} --n-gpu-layers all --flash-attn on --parallel 1 --metrics --mlock --no-mmap --cache-type-k q8_0 --cache-type-v q8_0 --ctx-size 32768 -b 2048 -ub 512"
+dir = "/home/toxic/projects/beellama.cpp"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25122/health"
+env = {
+  LD_LIBRARY_PATH = "/home/toxic/projects/beellama.cpp/build-cuda86/bin",
+  CUDA_VISIBLE_DEVICES = "0",
+  GGML_CUDA = "1",
+  GGML_CUDA_GRAPHS = "1",
+  GGML_CUDA_FA_ALL_QUANTS = "1",
+}
+auto = ["start"]
+
+[daemons.ik-llama-cpp]
+run = "exec /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server --model ${HERETIC_27B_Q5XL} --host 127.0.0.1 --port ${IK_LLAMA_PORT} -ngl 99 --flash-attn on --fit --fit-margin 512 --no-warmup --defrag-thold 0.1 --cache-type-k q8_0 --cache-type-v q8_0 --ctx-size 65536"
+dir = "/home/toxic/projects/ik_llama.cpp-main"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25123/health"
+env = {
+  LD_LIBRARY_PATH = "/home/toxic/projects/ik_llama.cpp-main/build/src:/home/toxic/projects/ik_llama.cpp-main/build/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build/examples/mtmd",
+  CUDA_VISIBLE_DEVICES = "0",
+  GGML_CUDA = "1",
+  GGML_CUDA_GRAPHS = "1",
+  GGML_CUDA_FA_ALL_QUANTS = "1",
+}
+auto = ["start"]
+
+[daemons.llama-cpp-turboquant]
+run = "exec /home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server --model ${GEMMA_12B_BASE_Q4KM} --host 127.0.0.1 --port ${TURBO_PORT} --n-gpu-layers all --flash-attn on --parallel 1 --metrics --mlock --no-mmap --cache-type-k turbo3 --cache-type-v turbo3 --ctx-size 98304"
+dir = "/home/toxic/projects/llama-cpp-turboquant"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25124/health"
+env = {
+  LD_LIBRARY_PATH = "/home/toxic/projects/llama-cpp-turboquant/build/bin",
+  CUDA_VISIBLE_DEVICES = "0",
+  GGML_CUDA = "1",
+  GGML_CUDA_GRAPHS = "1",
+  GGML_CUDA_FA_ALL_QUANTS = "1",
+}
+auto = ["start"]
+
 [daemons.pi-agent]
-run = "exec /home/toxic/.bun/bin/bun run /home/toxic/projects/pi-agent/packages/coding-agent/src/cli.ts --session-dir /home/toxic/.pi/agent/sessions"
+run = "exec bun run /home/toxic/projects/pi-agent/packages/coding-agent/src/cli.ts"
 dir = "/home/toxic"
 mise = true
 retry = true
-ready_cmd = "sleep 3 && echo ready"
+ready_cmd = "sleep 2 && echo ready"
 env = {
   PI_CONFIG_PATH = "/home/toxic/.pi/agent/config.yaml",
   PI_AGENT_DIR = "/home/toxic/.pi/agent",
@@ -144,49 +189,80 @@ dir = "/home/toxic/projects/kimi-code-sovereign"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25126/health"
-env = {
-  KIMI_CODE_PORT = "25126",
-}
+auto = ["start"]
+
+[daemons.mcpproxy-go]
+run = "exec /home/toxic/projects/mcpproxy-go/mcpproxy-go serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=info --port=25127"
+dir = "/home/toxic/projects/mcpproxy-go"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25127/health"
 auto = ["start"]
 
 [daemons.antigravity-gateway]
-run = "exec bun --hot run server.ts"
+run = "exec bun --hot run src/gateway.ts"
 dir = "/home/toxic/projects/antigravity-gateway-master"
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:25128/health"
-env = {
-  PORT = "25128",
-}
+ready_http = "http://127.0.0.1:25128/"
+auto = ["start"]
+
+[daemons.zed-editor]
+run = "exec ./target/release/zed --foreground"
+dir = "/home/toxic/projects/zed"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25129/health"
 auto = ["start"]
 
 [daemons.zedra-host]
-run = "exec cargo run -p zedra-host --release"
+run = "exec cargo run --bin zedra-host --release"
 dir = "/home/toxic/projects/zedra-tanlethanh"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25130/health"
+auto = ["start"]
+
+[daemons.sovereign-github-search]
+run = "exec bun --hot run src/server.ts"
+dir = "/home/toxic/projects/sovereign-github-search"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25131/health"
+auto = ["start"]
+
+[daemons.system-monitor-mcp]
+run = "exec python3 /home/toxic/projects/system-monitor-mcp-fork/server.patched.py"
+dir = "/home/toxic/projects/system-monitor-mcp-fork"
+mise = false
+retry = true
+ready_cmd = "sleep 2 && echo ready"
 env = {
-  PORT = "25130",
+  PYTHONPATH = "/home/toxic/projects/system-monitor-mcp-fork/lib/home/toxic/.local/share/pipx/venvs/system-monitor-mcp/lib/python3.14/site-packages",
 }
 auto = ["start"]
 
+[daemons.wayland-mcp]
+run = "exec /home/toxic/projects/wayland-mcp/venv/bin/python -m wayland_mcp.server_mcp"
+dir = "/home/toxic/projects/wayland-mcp"
+mise = false
+retry = true
+ready_cmd = "sleep 3 && echo ready"
+auto = ["start"]
+
 [daemons.antigravity-cli]
-run = "exec bun run src/main.ts"
+run = "exec cargo run --release -- --port ${ANTIGRAVITY_CLI_PORT}"
 dir = "/home/toxic/projects/antigravity-ide-cli"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25140/health"
-env = {
-  PORT = "25140",
-}
 auto = ["start"]
 
 [groups.core]
-daemons = ["llama-swap", "qdrant", "redis", "mcpproxy-go", "ghas-api", "ghas-mcp", "prometheus", "grafana"]
+daemons = ["llama-swap", "qdrant", "redis", "mcpproxy-go", "ghas-api", "ghas-mcp", "prometheus", "grafana", "mcpproxy-go"]
 
 [groups.main]
-daemons = ["llama-swap", "qdrant", "redis", "mcpproxy-go", "ghas-api", "ghas-mcp", "ghas-frontend", "prometheus", "grafana", "openfang", "rust-web", "hf-downloader", "pi-web-dashboard", "pi-agent", "kimi-code", "antigravity-gateway", "zedra-host", "antigravity-cli"]
+daemons = ["llama-swap", "qdrant", "redis", "mcpproxy-go", "ghas-api", "ghas-mcp", "ghas-frontend", "prometheus", "grafana", "openfang", "rust-web", "hf-downloader", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "pi-agent", "kimi-code", "mcpproxy-go", "antigravity-gateway", "zed-editor", "zedra-host", "sovereign-github-search", "system-monitor-mcp", "wayland-mcp", "antigravity-cli"]
 
 [groups.agents]
 daemons = ["openfang", "pi-agent", "kimi-code", "antigravity-gateway", "zedra-host", "antigravity-cli"]
@@ -195,13 +271,13 @@ daemons = ["openfang", "pi-agent", "kimi-code", "antigravity-gateway", "zedra-ho
 daemons = ["ghas-api", "ghas-mcp", "ghas-frontend"]
 
 [groups.mcp]
-daemons = ["mcpproxy-go", "ghas-mcp"]
+daemons = ["mcpproxy-go", "ghas-mcp", "mcpproxy-go"]
 
 [groups.monitoring]
 daemons = ["prometheus", "grafana"]
 
 [groups.all]
-daemons = ["llama-swap", "qdrant", "redis", "mcpproxy-go", "ghas-api", "ghas-mcp", "ghas-frontend", "prometheus", "grafana", "openfang", "rust-web", "hf-downloader", "pi-web-dashboard", "pi-agent", "kimi-code", "antigravity-gateway", "zedra-host", "antigravity-cli"]
+daemons = ["llama-swap", "qdrant", "redis", "mcpproxy-go", "ghas-api", "ghas-mcp", "ghas-frontend", "prometheus", "grafana", "openfang", "rust-web", "hf-downloader", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "pi-agent", "kimi-code", "mcpproxy-go", "antigravity-gateway", "zed-editor", "zedra-host", "sovereign-github-search", "system-monitor-mcp", "wayland-mcp", "antigravity-cli"]
 
 [groups.sovereign-core]
-daemons = ["llama-swap", "qdrant", "redis", "mcpproxy-go", "ghas-api", "ghas-mcp", "ghas-frontend", "prometheus", "grafana", "openfang", "rust-web", "hf-downloader", "pi-web-dashboard", "pi-agent", "kimi-code", "antigravity-gateway", "zedra-host", "antigravity-cli"]
+daemons = ["llama-swap", "qdrant", "redis", "mcpproxy-go", "ghas-api", "ghas-mcp", "ghas-frontend", "prometheus", "grafana", "openfang", "rust-web", "hf-downloader", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "pi-agent", "kimi-code", "mcpproxy-go", "antigravity-gateway", "zed-editor", "zedra-host", "sovereign-github-search", "system-monitor-mcp", "wayland-mcp", "antigravity-cli"]
