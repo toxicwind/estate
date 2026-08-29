@@ -1,6 +1,6 @@
 // ============================================================================
 // SOVEREIGN — Project Fork Services (/home/toxic/projects/)
-// First-class forks with their own build toolchains and configurations
+// All services are first-class and auto-started (no on-demand rollback)
 // ============================================================================
 
 import type { ServiceDef } from "../types/index.ts";
@@ -11,11 +11,11 @@ export const FORK_SERVICES: ServiceDef[] = [
     id: "beellama-cpp",
     name: "beellama.cpp",
     portKey: "BEELLAMA_PORT",
-    run: "exec /home/toxic/projects/beellama.cpp/build-cuda86/bin/llama-server --model ${EXAONE_1B_IQ4XS} --host 127.0.0.1 --port ${BEELLAMA_PORT} --n-gpu-layers all --flash-attn on --parallel 1 --metrics --mlock --no-mmap --cache-type-k q8_0 --cache-type-v q8_0 --ctx-size 32768 -b 2048 -ub 512",
+    run: "exec /home/toxic/projects/beellama.cpp/build-cuda86/bin/llama-server --model ${EXAONE_1B_IQ4XS} --host 127.0.0.1 --port 25001 --n-gpu-layers all --flash-attn on --parallel 1 --metrics --mlock --no-mmap --cache-type-k q8_0 --cache-type-v q8_0 --ctx-size 32768 -b 2048 -ub 512",
     dir: "/home/toxic/projects/beellama.cpp",
     readyHttp: "/health",
     group: "infra",
-    autoStart: false,
+    autoStart: true,
     mise: false,
     env: {
       LD_LIBRARY_PATH: "/home/toxic/projects/beellama.cpp/build-cuda86/bin",
@@ -29,11 +29,11 @@ export const FORK_SERVICES: ServiceDef[] = [
     id: "ik-llama-cpp",
     name: "ik_llama.cpp",
     portKey: "IK_LLAMA_PORT",
-    run: "exec /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server --model ${HERETIC_27B_Q5XL} --host 127.0.0.1 --port ${IK_LLAMA_PORT} -ngl 99 --flash-attn on --fit --fit-margin 512 --no-warmup --defrag-thold 0.1 --cache-type-k q8_0 --cache-type-v q8_0 --ctx-size 65536",
+    run: "exec /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server --model ${HERETIC_27B_Q5XL} --host 127.0.0.1 --port 25002 -ngl 99 --flash-attn on --fit --fit-margin 512 --no-warmup --defrag-thold 0.1 --cache-type-k q8_0 --cache-type-v q8_0 --ctx-size 65536",
     dir: "/home/toxic/projects/ik_llama.cpp-main",
     readyHttp: "/health",
     group: "infra",
-    autoStart: false,
+    autoStart: true,
     mise: false,
     env: {
       LD_LIBRARY_PATH: "/home/toxic/projects/ik_llama.cpp-main/build/src:/home/toxic/projects/ik_llama.cpp-main/build/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build/examples/mtmd",
@@ -47,11 +47,11 @@ export const FORK_SERVICES: ServiceDef[] = [
     id: "llama-cpp-turboquant",
     name: "llama-cpp-turboquant",
     portKey: "TURBO_PORT",
-    run: "exec /home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server --model ${GEMMA_12B_BASE_Q4KM} --host 127.0.0.1 --port ${TURBO_PORT} --n-gpu-layers all --flash-attn on --parallel 1 --metrics --mlock --no-mmap --cache-type-k turbo3 --cache-type-v turbo3 --ctx-size 98304",
+    run: "exec /home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server --model ${GEMMA_12B_BASE_Q4KM} --host 127.0.0.1 --port 25003 --n-gpu-layers all --flash-attn on --parallel 1 --metrics --mlock --no-mmap --cache-type-k turbo3 --cache-type-v turbo3 --ctx-size 98304",
     dir: "/home/toxic/projects/llama-cpp-turboquant",
     readyHttp: "/health",
     group: "infra",
-    autoStart: false,
+    autoStart: true,
     mise: false,
     env: {
       LD_LIBRARY_PATH: "/home/toxic/projects/llama-cpp-turboquant/build/bin",
@@ -71,7 +71,7 @@ export const FORK_SERVICES: ServiceDef[] = [
     dir: "/home/toxic",
     readyCmd: "sleep 2 && echo ready",
     group: "agent",
-    autoStart: false,
+    autoStart: true,
     mise: true,
     env: {
       PI_CONFIG_PATH: "/home/toxic/.pi/agent/config.yaml",
@@ -125,7 +125,7 @@ export const FORK_SERVICES: ServiceDef[] = [
     dir: "/home/toxic/projects/zed",
     readyHttp: "/health",
     group: "aux",
-    autoStart: false,
+    autoStart: true,
     mise: false,
   },
   {
@@ -136,7 +136,7 @@ export const FORK_SERVICES: ServiceDef[] = [
     dir: "/home/toxic/projects/zedra-tanlethanh",
     readyHttp: "/health",
     group: "aux",
-    autoStart: false,
+    autoStart: true,
     mise: false,
   },
 
@@ -149,7 +149,7 @@ export const FORK_SERVICES: ServiceDef[] = [
     dir: "/home/toxic/projects/sovereign-github-search",
     readyHttp: "/health",
     group: "search",
-    autoStart: false,
+    autoStart: true,
     mise: true,
   },
   {
@@ -160,7 +160,7 @@ export const FORK_SERVICES: ServiceDef[] = [
     dir: "/home/toxic/projects/system-monitor-mcp-fork",
     readyCmd: "sleep 2 && echo ready",
     group: "mcp",
-    autoStart: false,
+    autoStart: true,
     mise: false,
     env: {
       PYTHONPATH: "/home/toxic/projects/system-monitor-mcp-fork/lib/home/toxic/.local/share/pipx/venvs/system-monitor-mcp/lib/python3.14/site-packages",
@@ -175,7 +175,7 @@ export const FORK_SERVICES: ServiceDef[] = [
     dir: "/home/toxic/projects/wayland-mcp",
     readyCmd: "sleep 3 && echo ready",
     group: "mcp",
-    autoStart: false,
+    autoStart: true,
     mise: false,
     isMcpStdio: true,
   },
@@ -185,11 +185,11 @@ export const FORK_SERVICES: ServiceDef[] = [
     id: "antigravity-cli",
     name: "antigravity-cli",
     portKey: "ANTIGRAVITY_CLI_PORT",
-    run: "exec cargo run --release -- --port ${ANTIGRAVITY_CLI_PORT}",
+    run: "exec cargo run --release -- --port 25134",
     dir: "/home/toxic/projects/antigravity-ide-cli",
     readyHttp: "/health",
     group: "aux",
-    autoStart: false,
+    autoStart: true,
     mise: false,
   },
 ];
