@@ -40,26 +40,22 @@ mise run down
 
 | Process               | Port      | Runtime             | Role                                                                                                            |
 | --------------------- | --------- | ------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **llama-swap**        | **25100** | Go (toxicwind fork) | Inference router + AST Matrix Go router + `/ui` + `/v1`                                                         |
-| **rust-web**          | **25101** | Rust                | Ops dashboard + embedded watchdog                                                                               |
-| **yote**              | 25102     | Bun                 | Telegram / status                                                                                               |
-| **openfang**          | **25103** | Rust (binary)      | Agent kernel — OpenFang OS, 206 models, 61 skills, Discord bridge                                                 |
-| **sovereign-router**  | **25104** | Bun (TS)           | 5-strategy AST Matrix hybrid router (fifo_matrix, ast_race, sticky_affinity, weighted_elo, circuit_chain)          |
-| **prometheus**        | 25105     | Go                  | Metrics                                                                                                         |
-| **hf-downloader**     | 25106     | Bun                 | GGUF download UI                                                                                                |
-| **null-g-proxy**      | 25107     | Bun                 | Extra LLM proxy                                                                                                 |
-| **mcpproxy**          | 25109     | Go                  | MCP federation (43 MCPs → 1 endpoint)                                                                           |
-| **grafana**           | 25110     | Go                  | Optional dashboards                                                                                             |
-| **ghas-api**          | 25112     | Bun                 | GitHub Advanced Search API                                                                                      |
-| **ghas-mcp**          | 25113     | Bun                 | GHAS MCP (HTTP mode, depends on ghas-api)                                                                       |
-| **mesh-hub**          | 25115     | Bun                 | 20 GHAS-inspired features × every service                                                                       |
-| **byte-vision**       | 25121     | Go binary           | Vision MCP (OCR / screenshot analysis)                                                                          |
-| **byte-vision-proxy** | 25120     | Bun                 | **Sovereign MCP Gateway** — trust boundary + circuit breaker + sticky affinity in front of upstream MCP servers |
-| **tailscale-funnel**  | —         | Bash                | Tailscale Funnel exposure (public HTTPS endpoint)                                                               |
-| **redis**             | 25199     | Redis               | Session cache, telemetry backing store                                                                          |
-| **itvx-telemetry**    | 25198     | Docker              | Telemetry pipeline                                                                                              |
-| **itvx-browserless**  | 25130     | Docker              | Headless browser for scraping                                                                                   |
-
+| **llama-swap (herd)** | **25100** | Go (toxicwind fork) | Inference router + AST Matrix Go router + 75 models + `/ui` + `/v1`                                             |
+| **openfang**          | **25103** | Rust (binary)       | Agent kernel — OpenFang OS, 206 models, 61 skills, WebChat (:25203)                                            |
+| **prometheus**        | 25105     | Go                  | TSDB Metrics collector                                                                                          |
+| **hf-downloader**     | 25106     | Bun                 | HuggingFace GGUF model downloader                                                                               |
+| **grafana**           | 25110     | Go                  | Observability dashboards                                                                                        |
+| **ghas-api**          | **25112** | Bun                 | GitHub Advanced Search API (Blackbird-compatible)                                                               |
+| **ghas-mcp**          | **25113** | Bun                 | GitHub Advanced Search MCP (HTTP mode)                                                                          |
+| **ghas-frontend**     | **25114** | Next.js (Bun)       | GitHub Advanced Search Web UI                                                                                   |
+| **tau (pi-agent)**    | **25125** | Bun (TS / Rust)     | Sovereign agent runtime, 1M context routing, 11-tool advisor suite                                              |
+| **kimi-code**         | **25126** | Bun                 | Kimi Code Web UI & backend server                                                                               |
+| **mcpproxy-go**       | **25127** | Go                  | MCP Federation Gateway (231 approved tools across 18 servers)                                                  |
+| **antigravity-gateway**| **25128** | Next.js (Bun)       | Unified Antigravity Gateway                                                                                     |
+| **zedra-host (qed)**  | **25130** | Rust (binary)       | Zed remote host & LSP daemon                                                                                    |
+| **qdrant**            | **25133** | Rust (binary)       | Vector search engine & embeddings database                                                                      |
+| **redis (valkey)**    | **25199** | C (valkey-server)   | Session cache & state store                                                                                     |
+| **rust-web**          | **25201** | Rust                | Ops dashboard & health watchdog                                                                                 |
 Backends for swap: `LLAMA_START_PORT`–`LLAMA_END_PORT` = **25001–25099** (llama-server forks).
 
 ### Inference chain
