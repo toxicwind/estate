@@ -3,7 +3,7 @@
 // ============================================================================
 
 import type { Generator, TemplateContext } from "../types/index.ts";
-import { ALL_SERVICES } from "../services/index.ts";
+import { loadSovereignPorts, ALL_SERVICES } from "../services/index.ts";
 
 export const pitchforkGenerator: Generator = {
   name: "pitchfork.toml",
@@ -61,11 +61,12 @@ export const pitchforkGenerator: Generator = {
     }
 
     // ── STACK GROUPS ──
-    const coreIds = ctx.services.filter(s => ["llama-swap", "qdrant", "redis", "mcpproxy-go", "ghas-api", "ghas-mcp", "prometheus", "grafana"].includes(s.id)).map(s => `"${s.id}"`);
-    const mainIds = ctx.services.map(s => `"${s.id}"`);
-    const agentIds = ctx.services.filter(s => ["pi-agent", "kimi-code", "antigravity-gateway", "zedra-host", "antigravity-cli", "openfang"].includes(s.id)).map(s => `"${s.id}"`);
-    const searchIds = ctx.services.filter(s => ["ghas-api", "ghas-mcp", "ghas-frontend"].includes(s.id)).map(s => `"${s.id}"`);
-    const mcpIds = ctx.services.filter(s => ["mcpproxy-go", "ghas-mcp"].includes(s.id)).map(s => `"${s.id}"`);
+    const inferenceIds = ["herd", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant"];
+    const coreIds = ctx.services.filter(s => ["herd", "qdrant", "redis", "mesh", "search-api", "prometheus", "grafana"].includes(s.id)).map(s => `"${s.id}"`);
+    const mainIds = ctx.services.filter(s => !inferenceIds.includes(s.id)).map(s => `"${s.id}"`);
+    const agentIds = ctx.services.filter(s => ["tau", "kimi-code", "antigravity-gateway", "zedra-host", "antigravity-cli", "axiom"].includes(s.id)).map(s => `"${s.id}"`);
+    const searchIds = ctx.services.filter(s => ["search-api", "search-ui"].includes(s.id)).map(s => `"${s.id}"`);
+    const mcpIds = ctx.services.filter(s => ["mesh"].includes(s.id)).map(s => `"${s.id}"`);
     const monitoringIds = ctx.services.filter(s => ["prometheus", "grafana"].includes(s.id)).map(s => `"${s.id}"`);
     const allIds = ctx.services.map(s => `"${s.id}"`);
 

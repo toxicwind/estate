@@ -6,8 +6,8 @@ import type { ServiceDef } from "../types/index.ts";
 
 export const PERIPHERAL_SERVICES: ServiceDef[] = [
   {
-    id: "openfang",
-    name: "openfang",
+    id: "axiom",
+    name: "axiom",
     portKey: "OPENFANG_PORT",
     run: "exec ./stack/services/openfang.sh",
     dir: ".",

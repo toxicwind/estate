@@ -1,0 +1,229 @@
+{
+  "id": "kimi-claw",
+  "name": "kimi-claw",
+  "description": "Connector plugin that bridges a remote /gateway server with the local OpenClaw Gateway.",
+  "version": "0.27.1",
+  "activation": {
+    "onStartup": true
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+      "bridge": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          },
+          "kimiapiHost": {
+            "type": "string"
+          },
+          "outboundTransport": {
+            "type": "string",
+            "enum": [
+              "im_rpc",
+              "bridge_ws"
+            ]
+          },
+          "protocol": {
+            "type": "number"
+          },
+          "instanceId": {
+            "type": "string"
+          },
+          "deviceId": {
+            "type": "string"
+          },
+          "forwardThinking": {
+            "type": "boolean",
+            "default": true
+          },
+          "forwardToolCalls": {
+            "type": "boolean",
+            "default": true
+          },
+          "promptTimeoutMs": {
+            "type": "number"
+          },
+          "historyPendingTimeoutMs": {
+            "type": "number"
+          },
+          "cronSessionTarget": {
+            "type": "string",
+            "enum": [
+              "isolated",
+              "main"
+            ]
+          },
+          "kimiCodeAPIKey": {
+            "type": "string"
+          },
+          "kimiCodeBaseURL": {
+            "type": "string"
+          },
+          "shell": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "maxConcurrentSessions": {
+                "type": "number"
+              },
+              "idleTimeoutMs": {
+                "type": "number"
+              },
+              "maxDurationMs": {
+                "type": "number"
+              },
+              "defaultShell": {
+                "type": "string"
+              }
+            }
+          },
+          "terminalWs": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "port": {
+                "type": "number"
+              },
+              "host": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "token": {
+                "type": "string"
+              },
+              "allowedOrigins": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "gateway": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          },
+          "protocol": {
+            "type": "number"
+          },
+          "clientId": {
+            "type": "string"
+          },
+          "clientMode": {
+            "type": "string"
+          },
+          "agentId": {
+            "type": "string"
+          }
+        }
+      },
+      "api": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "baseUrl": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          },
+          "timeoutMs": {
+            "type": "number"
+          }
+        }
+      },
+      "retry": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "baseMs": {
+            "type": "number"
+          },
+          "maxMs": {
+            "type": "number"
+          },
+          "maxAttempts": {
+            "type": "number"
+          }
+        }
+      },
+      "log": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "verbose": {
+            "type": "boolean"
+          },
+          "forwardFile": {
+            "type": "string"
+          },
+          "replyFile": {
+            "type": "string"
+          },
+          "allFile": {
+            "type": "string"
+          },
+          "wsObsFile": {
+            "type": "string"
+          },
+          "requestIdFilter": {
+            "type": "string"
+          },
+          "sessionIdFilter": {
+            "type": "string"
+          }
+        }
+      },
+      "defaultModel": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "modelId": {
+            "type": "string"
+          },
+          "baseUrl": {
+            "type": "string"
+          },
+          "apiKey": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
