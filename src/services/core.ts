@@ -6,8 +6,8 @@ import type { ServiceDef } from "../types/index.ts";
 
 export const CORE_SERVICES: ServiceDef[] = [
   {
-    id: "llama-swap",
-    name: "llama-swap",
+    id: "herd",
+    name: "herd",
     portKey: "LLAMA_SWAP_PORT",
     run: "exec /home/toxic/sovereign/stack/services/llama-swap.sh",
     dir: ".",
@@ -33,7 +33,10 @@ export const CORE_SERVICES: ServiceDef[] = [
     id: "redis",
     name: "redis",
     portKey: "REDIS_PORT",
-    run: "exec valkey-server --port 25199 --bind 0.0.0.0 --protected-mode no --appendonly no",
+    run: "exec valkey-server --port 25199 --bind 0.0.0.0 --protected-mode no --save '' --appendonly no",
+    dir: ".",
+    mise: false,
+    retry: true,
     dir: ".",
     readyPort: true,
     group: "core",
@@ -52,6 +55,18 @@ export const CORE_SERVICES: ServiceDef[] = [
     autoStart: true,
     mise: true,
     depends: ["llama-swap"],
+    healthPath: "/health",
+  },
+  {
+    id: "yote",
+    name: "yote",
+    portKey: "YOTE_PORT",
+    run: "exec bun run src/services/yote.ts",
+    dir: ".",
+    readyHttp: "/health",
+    group: "core",
+    autoStart: true,
+    mise: false,
     healthPath: "/health",
   },
 ];

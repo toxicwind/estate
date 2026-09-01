@@ -33,4 +33,5 @@ fi
   echo "sovereign_web binary missing" >&2
   exit 1
 }
+export TERM=xterm-256color
 exec "$BIN"

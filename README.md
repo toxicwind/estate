@@ -15,7 +15,7 @@ graph TD
     A --> C[Tau :25125 - 1M Agent Runtime]
     A --> D[QED :25130 - Editor & LSP Host]
     A --> E[GHAS :25112-:25114 - Code Search]
-    A --> F[MCP Gateway :25127 - 231 Tools]
+    A --> F[Nexus :25127 - 231 Tools]
     A --> G[HAL Substrate :25143 - Autonomous Engine]
     A --> H[Storage & Vector :25133, :25199]
     
@@ -32,7 +32,7 @@ graph TD
 | **Autonomous Agent** | **Tau** (`pi-agent` / `omp`) | `:25125` | 1,000,000 token context window, 11-tool advisor suite, safe execution interceptor |
 | **AI-Native Editor** | **QED** (`zed` / `zedra`) | `:25130` | High-performance GPUI editor, remote Zed host, LSP server integration |
 | **High-Recall Search** | **GHAS** (`github-advanced-search`) | `:25112`–`:25114` | Blackbird-compatible API, HTTP MCP server, Next.js search UI |
-| **Tool Federation** | **mcpproxy-go** | `:25127` | 231 approved tools across 18 MCP servers with 0 quarantined |
+| **Tool Federation** | **Nexus** (`mcpproxy-go`) | `:25127` | 231 approved tools across 18 MCP servers with 0 quarantined |
 | **Agent Inference OS**| **HAL Substrate** | `:25143` | Autonomous reasoning loop with Yote & AST Matrix integration |
 | **Agent Kernel OS** | **OpenFang** | `:25103` | 206 models, 61 skills, WebChat (:25203) |
 | **C++ Inference Node**| **beellama-cpp** | `:25001` | CUDA 8.6 Flash-Attention LLM server for EXAONE 1.2B |
