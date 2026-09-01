@@ -64,13 +64,13 @@ export const FORK_SERVICES: ServiceDef[] = [
 
   // ── AGENT RUNTIMES ──
   {
-    id: "pi-agent",
-    name: "pi-agent",
+    id: "tau",
+    name: "tau",
     portKey: "PI_AGENT_PORT",
     run: "exec bun run /home/toxic/projects/pi-agent/packages/coding-agent/src/cli.ts",
     dir: "/home/toxic",
     readyCmd: "sleep 2 && echo ready",
-    group: "agent",
+    group: "agents",
     autoStart: true,
     mise: true,
     env: {
@@ -94,32 +94,21 @@ export const FORK_SERVICES: ServiceDef[] = [
 
   // ── GATEWAYS / PROXIES ──
   {
-    id: "mcpproxy-go",
-    name: "mcpproxy-go",
+    id: "mesh",
+    name: "mesh",
     portKey: "MCPPROXY_GO_PORT",
-    run: "exec /home/toxic/projects/mcpproxy-go/mcpproxy-go serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=info --port=25127",
+    run: "exec /home/toxic/projects/mcpproxy-go/mcpproxy-go serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=info --listen=127.0.0.1:25127",
     dir: "/home/toxic/projects/mcpproxy-go",
     readyHttp: "/health",
     group: "core",
     autoStart: true,
     mise: false,
   },
-  {
-    id: "antigravity-gateway",
-    name: "antigravity-gateway",
-    portKey: "ANTIGRAVITY_GATEWAY_PORT",
-    run: "exec bun --hot run src/gateway.ts",
-    dir: "/home/toxic/projects/antigravity-gateway-master",
-    readyHttp: "/",
-    group: "main",
-    autoStart: true,
-    mise: true,
-  },
 
   // ── EDITOR / IDE FORKS ──
   {
-    id: "zed-editor",
-    name: "zed-editor",
+    id: "qed",
+    name: "qed",
     portKey: "ZED_PORT",
     run: "exec ./target/release/zed --foreground",
     dir: "/home/toxic/projects/zed",
@@ -138,46 +127,6 @@ export const FORK_SERVICES: ServiceDef[] = [
     group: "aux",
     autoStart: true,
     mise: false,
-  },
-
-  // ── MCP SERVERS ──
-  {
-    id: "sovereign-github-search",
-    name: "sovereign-github-search",
-    portKey: "SOV_GHAS_PORT",
-    run: "exec bun --hot run src/server.ts",
-    dir: "/home/toxic/projects/sovereign-github-search",
-    readyHttp: "/health",
-    group: "search",
-    autoStart: true,
-    mise: true,
-  },
-  {
-    id: "system-monitor-mcp",
-    name: "system-monitor-mcp-fork",
-    portKey: "SYS_MONITOR_PORT",
-    run: "exec python3 /home/toxic/projects/system-monitor-mcp-fork/server.patched.py",
-    dir: "/home/toxic/projects/system-monitor-mcp-fork",
-    readyCmd: "sleep 2 && echo ready",
-    group: "mcp",
-    autoStart: true,
-    mise: false,
-    env: {
-      PYTHONPATH: "/home/toxic/projects/system-monitor-mcp-fork/lib/home/toxic/.local/share/pipx/venvs/system-monitor-mcp/lib/python3.14/site-packages",
-    },
-    isMcpStdio: true,
-  },
-  {
-    id: "wayland-mcp",
-    name: "wayland-mcp",
-    portKey: "WAYLAND_MCP_PORT",
-    run: "exec /home/toxic/projects/wayland-mcp/venv/bin/python -m wayland_mcp.server_mcp",
-    dir: "/home/toxic/projects/wayland-mcp",
-    readyCmd: "sleep 3 && echo ready",
-    group: "mcp",
-    autoStart: true,
-    mise: false,
-    isMcpStdio: true,
   },
 
   // ── TOOLING ──

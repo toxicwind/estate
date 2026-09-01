@@ -7,7 +7,7 @@ require_env OPENFANG_PORT
 PORT="$OPENFANG_PORT"
 
 # Find the openfang binary
-BIN_CAND=("$SOV/bin/openfang" "/usr/local/bin/openfang" "$HOME/projects/openfang/target/release/openfang")
+BIN_CAND=("$SOV/bin/openfang" "$HOME/.local/bin/openfang" "$HOME/.openfang/bin/openfang" "/usr/local/bin/openfang" "$HOME/projects/openfang/target/release/openfang")
 BIN=""
 for c in "${BIN_CAND[@]}"; do
   [[ -x "$c" ]] && BIN="$(realpath "$c")" && break
