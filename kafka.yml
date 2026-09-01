@@ -1,0 +1,13 @@
+consumers:
+  - name: sovereign-events
+    mode: pull
+    brokers:
+      - 127.0.0.1:9092
+    clientId: sovereign-omp
+    groupId: sovereign-group
+    topics:
+      - sovereign.events
+      - sovereign.alerts
+    fromBeginning: false
+    notify: true
+    maxQueue: 200

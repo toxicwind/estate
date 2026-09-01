@@ -27,6 +27,14 @@ retry = true
 ready_port = 25199
 auto = ["start"]
 
+[daemons.kafka]
+run = "exec ./stack/services/kafka.sh"
+dir = "."
+mise = true
+retry = true
+ready_port = 9092
+auto = ["start"]
+
 [daemons.hal-substrate]
 run = "exec ./stack/services/hal-substrate.sh"
 dir = "."
@@ -186,7 +194,7 @@ auto = ["start"]
 daemons = ["herd", "qdrant", "redis", "search-api", "mesh"]
 
 [groups.main]
-daemons = ["qdrant", "redis", "hal-substrate", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "pi-web-dashboard", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
+daemons = ["qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "pi-web-dashboard", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
 
 [groups.agents]
 daemons = ["axiom", "tau", "kimi-code", "zedra-host", "antigravity-cli"]
@@ -201,7 +209,7 @@ daemons = ["mesh"]
 daemons = []
 
 [groups.all]
-daemons = ["herd", "qdrant", "redis", "hal-substrate", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
+daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
 
 [groups.sovereign-core]
-daemons = ["herd", "qdrant", "redis", "hal-substrate", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
+daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]

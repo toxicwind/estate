@@ -44,6 +44,18 @@ export const ALL_SERVICES: ServiceDef[] = [
     healthPath: "/health",
   },
   {
+    id: "kafka",
+    name: "kafka",
+    portKey: "KAFKA_PORT",
+    run: "exec ./stack/services/kafka.sh",
+    dir: ".",
+    readyPort: true,
+    group: "core",
+    autoStart: true,
+    mise: true,
+    healthPath: "/health",
+  },
+  {
     id: "hal-substrate",
     name: "hal-substrate",
     portKey: "HAL_SUBSTRATE_PORT",
