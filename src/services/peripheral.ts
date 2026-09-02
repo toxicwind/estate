@@ -46,7 +46,7 @@ export const PERIPHERAL_SERVICES: ServiceDef[] = [
     id: "pi-web-dashboard",
     name: "pi-web-dashboard",
     portKey: "PI_WEB_DASHBOARD_PORT",
-    run: "exec /home/toxic/.bun/bin/bun run /home/toxic/projects/pi-agent/packages/server/dist/web-server.js",
+    run: "exec /home/toxic/.bun/bin/bun run /home/toxic/projects/sovereign-projects/tau/engine/packages/server/dist/web-server.js",
     dir: ".",
     readyHttp: "/api/health",
     group: "core",

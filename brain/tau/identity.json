@@ -1,0 +1,58 @@
+{
+  "self": {
+    "name": "tau",
+    "fork": "toxicwind/tau",
+    "upstream": "can1357/oh-my-pi",
+    "version": "0.83.0",
+    "binary": "packages/coding-agent/dist/cli.js",
+    "runtime": "bun",
+    "mode": "non-interactive (-p flag)",
+    "entry": "packages/coding-agent/src/main.ts"
+  },
+  "model": {
+    "active": "longcat-2.0-free",
+    "provider": "opencode",
+    "context_window": 1000000,
+    "alternates": ["xiaomi/mimo-v2.5", "thinkingmachines/inkling"],
+    "classification": "pi-longcat-as-c2-fix-while-not-sure"
+  },
+  "host": {
+    "name": "toxic",
+    "cpu": "AMD Ryzen 7 8700F 8-Core Processor",
+    "ram": "62Gi",
+    "gpu": "NVIDIA GeForce RTX 3090, 24576 MiB",
+    "terminal": "wezterm"
+  },
+  "session": {
+    "id": "C2-2026-08-09T10:00:00",
+    "type": "c2-fix",
+    "classification": "pi-longcat-as-c2-fix-while-not-sure",
+    "description": "Fixing pi-agent, sovereign, and related infrastructure while uncertain about some approaches"
+  },
+  "tools": {
+    "native": ["read", "write", "edit", "bash", "ls", "retrieve_tools", "describe_tool", "call_tool_destructive"],
+    "mcp": "All mcpproxy tools via retrieve_tools → describe_tool → call_tool_destructive",
+    "scripts": {
+      "rf": "/home/toxic/sovereign/tools/rf",
+      "pitchfork-llm": "/home/toxic/sovereign/stack/bin/pitchfork-llm"
+    }
+  },
+  "never_use": {
+    "devnull": "Use PI_DEBUG_STREAM=1 and proper logging",
+    "truncation": "Read full files unless binary or 10000+ lines"
+  },
+  "coordination": {
+    "brain_dir": "/home/toxic/sovereign/brain/",
+    "pi_agent_brain": "/home/toxic/sovereign/brain/tau/",
+    "tau_brain": "/home/toxic/sovereign/brain/tau/",
+    "plan": "/home/toxic/sovereign/brain/PLAN.json",
+    "manifest": "/home/toxic/sovereign/brain/MANIFEST.json",
+    "subagents": "/home/toxic/sovereign/brain/subagents/"
+  },
+  "task_zero": {
+    "name": "Nuvio LG TV Deployment",
+    "description": "Deploy Nuvio WebOS app to local LG TV",
+    "status": "blocked_on_fork_fixes",
+    "classification": "pi-longcat-as-c2-fix-while-not-sure"
+  }
+}

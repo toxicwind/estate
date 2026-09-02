@@ -8,6 +8,8 @@ BACKEND="${HF_DOWNLOADER_BACKEND_PORT:-25206}"
 fuser -k "${PORT}/tcp" 2>/dev/null || true
 fuser -k "${BACKEND}/tcp" 2>/dev/null || true
 
+mkdir -p "$SOV/hf-downloader/data"
+
 # Start HF downloader backend
 /home/toxic/.local/bin/hfdownloader serve \
   --port "${BACKEND}" \

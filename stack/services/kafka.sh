@@ -7,12 +7,15 @@ PORT="${KAFKA_PORT:-9092}"
 
 fuser -k "${PORT}/tcp" 2>/dev/null || true
 
-# If kafka binary exists locally, run it in KRaft mode
-if [[ -x "$HOME/.local/bin/rpk" ]]; then
+export KAFKA_LOG4J_OPTS="-Dkafka.logs.dir=$HOME/.local/state/kafka/logs"
+mkdir -p "$HOME/.local/state/kafka/logs"
+exec sudo -u kafka /usr/share/kafka/bin/kafka-server-start.sh /etc/kafka/server.properties
+
+# If rpk redpanda server binary is available, run Redpanda in KRaft mode
+if [[ -x "$HOME/.local/bin/redpanda" ]]; then
   exec "$HOME/.local/bin/rpk" redpanda start --kafka-addr "0.0.0.0:${PORT}"
-elif [[ -x "$SOV/bin/kafka-server-start.sh" ]]; then
-  exec "$SOV/bin/kafka-server-start.sh" "$SOV/config/kafka.properties"
-else
-  echo "[kafka] Service initialized on port ${PORT}"
-  exec python3 -m http.server "${PORT}"
 fi
+
+# Last resort stub
+echo "[kafka] No broker found, serving stub on port ${PORT}"
+exec python3 -m http.server "${PORT}"
