@@ -31,10 +31,8 @@ for entry in $SERVICES; do
         FAILED=1
     fi
 done
+if [ $FAILED -ne 0 ]; then
+    curl -s -X POST -d "Stack degraded" https://ntfy.sh/sovereign-alerts >/dev/null 2>&1 || true
+fi
 
 exit $FAILED
-
-# Notification logic
-if [ $FAILED -eq 1 ]; then
-    curl -s -X POST -d "Stack degraded" https://ntfy.sh/sovereign-alerts
-fi
