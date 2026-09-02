@@ -58,15 +58,15 @@ macros:
   HF_CACHE_DIR: /home/toxic/.cache/huggingface/hub
 
   # Fork binaries (auto-detected)
-  BEELLAMA_BIN: /home/toxic/projects/beellama.cpp/build-cuda86/bin/llama-server
-  TURBO_BIN: /home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server
-  IK_BIN: /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server
-  IK_TQ_BIN: /home/toxic/projects/ik_turboquant/build/bin/llama-server
+  BEELLAMA_BIN: /home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp/build-cuda86/bin/llama-server
+  TURBO_BIN: /home/toxic/projects/sovereign-projects/herd/engines/llama-cpp-turboquant/build/bin/llama-server
+  IK_BIN: /home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp/build/bin/llama-server
+  IK_TQ_BIN: /home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp/build_turboquant/bin/llama-server
 
   # LD_LIBRARY_PATH for each fork
-  BEELLAMA_LD: /home/toxic/projects/beellama.cpp/build-cuda86/bin
-  TURBO_LD: /home/toxic/projects/llama-cpp-turboquant/build/bin
-  IK_LD: /home/toxic/projects/ik_llama.cpp-main/build/src:/home/toxic/projects/ik_llama.cpp-main/build/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build/examples/mtmd
+  BEELLAMA_LD: /home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp/build-cuda86/bin
+  TURBO_LD: /home/toxic/projects/sovereign-projects/herd/engines/llama-cpp-turboquant/build/bin
+  IK_LD: /home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp/build/src:/home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp/build/ggml/src:/home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp/build/examples/mtmd
   IK_TQ_LD: /home/toxic/projects/ik_turboquant/build/src:/home/toxic/projects/ik_turboquant/ggml/src:/home/toxic/projects/ik_turboquant/examples/mtmd
 
   # CUDA ENV
