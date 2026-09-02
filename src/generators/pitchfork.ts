@@ -23,8 +23,17 @@ export const pitchforkGenerator: Generator = {
       if (!port) continue;
 
       lines.push(`[daemons.${svc.id}]`);
-      lines.push(`run = "${svc.run}"`);
-      lines.push(`dir = "${svc.dir || "."}"`);
+      let run = svc.run;
+      if (run.includes("/home/toxic/sovereign/")) {
+        run = run.replace("/home/toxic/sovereign/", "./");
+      }
+      lines.push(`run = "${run}"`);
+
+      let dir = svc.dir || ".";
+      if (dir.includes("/home/toxic/sovereign/")) {
+        dir = dir.replace("/home/toxic/sovereign/", "./");
+      }
+      lines.push(`dir = "${dir}"`);
       lines.push(`mise = ${svc.mise ? "true" : "false"}`);
       lines.push(`retry = true`);
 
@@ -36,13 +45,17 @@ export const pitchforkGenerator: Generator = {
       if (svc.readyCmd) {
         lines.push(`ready_cmd = "${svc.readyCmd}"`);
       }
-      if (svc.readyPort) {
-        lines.push(`ready_port = ${port}`);
+      // Environment
+      const env = { ...svc.env };
+      if (svc.portKey && ctx.ports[svc.portKey]) {
+        env[svc.portKey] = ctx.ports[svc.portKey].toString();
       }
-
-      // Dependencies
-      if (svc.depends && svc.depends.length > 0) {
-        lines.push(`depends = [${svc.depends.map(d => `"${d}"`).join(", ")}]`);
+      if (Object.keys(env).length > 0) {
+        lines.push(`env = {`);
+        for (const [k, v] of Object.entries(env)) {
+          lines.push(`  ${k} = "${v}",`);
+        }
+        lines.push(`}`);
       }
 
       // Environment

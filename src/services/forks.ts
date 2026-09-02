@@ -63,11 +63,12 @@ export const FORK_SERVICES: ServiceDef[] = [
   },
 
   // ── AGENT RUNTIMES ──
+  // ── AGENT RUNTIMES (TAU) — renamed from pi-agent/omp, project-wide tau ===
   {
     id: "tau",
     name: "tau",
-    portKey: "PI_AGENT_PORT",
-    run: "exec bun run /home/toxic/projects/pi-agent/packages/coding-agent/src/cli.ts",
+    portKey: "TAU_PORT",
+    run: "exec bun run /home/toxic/projects/sovereign-projects/tau/engine/packages/coding-agent/src/cli.ts",
     dir: "/home/toxic",
     readyCmd: "sleep 2 && echo ready",
     group: "agents",
@@ -75,9 +76,13 @@ export const FORK_SERVICES: ServiceDef[] = [
     mise: true,
     env: {
       PI_CONFIG_PATH: "/home/toxic/.pi/agent/config.yaml",
+      TAU_CONFIG_PATH: "/home/toxic/.pi/agent/config.yaml",
       PI_AGENT_DIR: "/home/toxic/.pi/agent",
+      TAU_DIR: "/home/toxic/.pi/agent",
       PI_CODING_AGENT: "true",
+      TAU_CODING_AGENT: "true",
       PI_REASONING_LEVEL: "high",
+      TAU_REASONING_LEVEL: "high",
     },
   },
   {

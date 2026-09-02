@@ -29,11 +29,10 @@ loadSovereignPorts();
 // Configuration
 // ──────────────────────────────────────────────────────────────
 const PORT = parseInt(process.env.NIM_QUEUE_PORT ?? process.env.NIM_QUEUE_PORT ?? "25189", 10);
-const UPSTREAM_BASE = process.env.NIM_QUEUE_UPSTREAM ?? `http://127.0.0.1:${process.env.LLAMA_SWAP_PORT || "25100"}`;
+const UPSTREAM_BASE = process.env.NIM_QUEUE_UPSTREAM ?? `http://127.0.0.1:${process.env.HERD_PORT || process.env.LLAMA_SWAP_PORT || "25100"}`;
 const UPSTREAM_HAS_V1 = UPSTREAM_BASE.endsWith("/v1");
 const UPSTREAM = UPSTREAM_BASE; // alias for compatibility
-const ADMIN = process.env.NIM_QUEUE_LLAMA_ADMIN ?? `http://127.0.0.1:${process.env.LLAMA_SWAP_PORT || "25100"}`;
-const CACHE_URL = process.env.NIM_QUEUE_CACHE_URL ?? `${ADMIN}/admin/cache`;
+const ADMIN = process.env.NIM_QUEUE_LLAMA_ADMIN ?? `http://127.0.0.1:${process.env.HERD_PORT || process.env.LLAMA_SWAP_PORT || "25100"}`;
 const MAX_BACKOFF_MS = parseInt(process.env.NIM_QUEUE_MAX_BACKOFF_MS ?? "120000", 10);
 const API_KEY = process.env.NIM_QUEUE_API_KEY ?? process.env.NVIDIA_API_KEY ?? "";
 
