@@ -7,8 +7,8 @@
 import { loadSovereignPorts } from "../lib/ports.ts";
 loadSovereignPorts();
 
-const LLAMA_SWAP_BASE = `http://127.0.0.1:${process.env.LLAMA_SWAP_PORT || "25100"}`;
-
+const LLAMA_SWAP_BASE = `http://127.0.0.1:${process.env.HERD_PORT || process.env.LLAMA_SWAP_PORT || "25100"}`;
+const HERD_BASE = LLAMA_SWAP_BASE; // alias for project-wide herd naming (tau: any pi/omp -> tau)
 // ──────────────────────────────────────────────────────────────
 // REASONING EFFORT → BACKEND MAPPING
 // Based on llama-swap.yaml routing matrix

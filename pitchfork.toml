@@ -4,11 +4,14 @@
 # ============================================================================
 
 [daemons.herd]
-run = "exec /home/toxic/sovereign/stack/services/llama-swap.sh"
+run = "exec ./stack/services/herd.sh"
 dir = "."
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25100/health"
+env = {
+  HERD_PORT = "25100",
+}
 auto = ["start"]
 
 [daemons.qdrant]
@@ -17,6 +20,9 @@ dir = "."
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25133/"
+env = {
+  QDRANT_PORT = "25133",
+}
 auto = ["start"]
 
 [daemons.redis]
@@ -24,7 +30,9 @@ run = "exec valkey-server --port 25199 --bind 0.0.0.0 --protected-mode no --save
 dir = "."
 mise = false
 retry = true
-ready_port = 25199
+env = {
+  REDIS_PORT = "25199",
+}
 auto = ["start"]
 
 [daemons.kafka]
@@ -32,7 +40,9 @@ run = "exec ./stack/services/kafka.sh"
 dir = "."
 mise = true
 retry = true
-ready_port = 9092
+env = {
+  KAFKA_PORT = "25144",
+}
 auto = ["start"]
 
 [daemons.hal-substrate]
@@ -41,7 +51,9 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25143/health"
-depends = ["herd"]
+env = {
+  HAL_SUBSTRATE_PORT = "25143",
+}
 auto = ["start"]
 
 [daemons.yote]
@@ -50,6 +62,9 @@ dir = "."
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25102/health"
+env = {
+  YOTE_PORT = "25102",
+}
 auto = ["start"]
 
 [daemons.search-api]
@@ -80,6 +95,9 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25103/api/health"
+env = {
+  OPENFANG_PORT = "25103",
+}
 auto = ["start"]
 
 [daemons.rust-web]
@@ -88,6 +106,9 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25201/health"
+env = {
+  RUST_WEB_BACKEND_PORT = "25201",
+}
 auto = ["start"]
 
 [daemons.hf-downloader]
@@ -97,16 +118,64 @@ mise = true
 retry = true
 ready_http = "http://127.0.0.1:25106/api/health"
 env = {
-  HF_DOWNLOADER_PORT = "${HF_DOWNLOADER_PORT}",
+  HF_DOWNLOADER_PORT = "25106",
+}
+auto = ["start"]
+
+[daemons.null-g-proxy]
+run = "exec bun run src/index.ts"
+dir = "./tools/null-g-proxy"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25107/health"
+env = {
+  NULL_G_PROXY_PORT = "25107",
+}
+auto = ["start"]
+
+[daemons.kimi-audit-dash]
+run = "exec bun run /home/toxic/kimi-token-audit/dashboard/server.ts"
+dir = "/home/toxic/kimi-token-audit"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25116/health"
+env = {
+  KIMI_AUDIT_DASH_PORT = "25116",
+}
+auto = ["start"]
+
+[daemons.mcp-gateway]
+run = "exec bun run gateway.ts"
+dir = "./tools/sovereign-router/sovereign-mcp-gateway"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25120/health"
+env = {
+  MCP_GATEWAY_PORT = "25120",
+}
+auto = ["start"]
+
+[daemons.byte-vision]
+run = "exec ./stack/services/byte-vision.sh"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25121/health"
+env = {
+  BYTE_VISION_PORT = "25121",
 }
 auto = ["start"]
 
 [daemons.pi-web-dashboard]
-run = "exec /home/toxic/.bun/bin/bun run /home/toxic/projects/pi-agent/packages/server/dist/web-server.js"
+run = "exec /home/toxic/.bun/bin/bun run /home/toxic/projects/sovereign-projects/tau/engine/packages/server/dist/web-server.js"
 dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25192/api/health"
+env = {
+  PORT = "25192",
+  PI_WEB_DASHBOARD_PORT = "25192",
+}
 env = {
   PORT = "25192",
 }
@@ -118,6 +187,9 @@ dir = "/home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25122/health"
+env = {
+  BEELLAMA_PORT = "25122",
+}
 auto = ["start"]
 
 [daemons.ik-llama-cpp]
@@ -126,6 +198,9 @@ dir = "/home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25123/health"
+env = {
+  IK_LLAMA_PORT = "25123",
+}
 auto = ["start"]
 
 [daemons.llama-cpp-turboquant]
@@ -134,6 +209,9 @@ dir = "/home/toxic/projects/sovereign-projects/herd/engines/llama-cpp-turboquant
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25124/health"
+env = {
+  TURBO_PORT = "25124",
+}
 auto = ["start"]
 
 [daemons.tau]
@@ -142,6 +220,13 @@ dir = "/home/toxic"
 mise = true
 retry = true
 ready_cmd = "sleep 2 && echo ready"
+env = {
+  PI_CONFIG_PATH = "/home/toxic/.pi/agent/config.yaml",
+  PI_AGENT_DIR = "/home/toxic/.pi/agent",
+  PI_CODING_AGENT = "true",
+  PI_REASONING_LEVEL = "high",
+  PI_AGENT_PORT = "25125",
+}
 env = {
   PI_CONFIG_PATH = "/home/toxic/.pi/agent/config.yaml",
   PI_AGENT_DIR = "/home/toxic/.pi/agent",
@@ -156,6 +241,9 @@ dir = "/home/toxic/projects/sovereign-projects/tau/kimi"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25126/health"
+env = {
+  KIMI_CODE_PORT = "25126",
+}
 auto = ["start"]
 
 [daemons.mesh]
@@ -164,6 +252,9 @@ dir = "/home/toxic/projects/sovereign-projects/mesh/gateway"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25127/health"
+env = {
+  MCPPROXY_GO_PORT = "25127",
+}
 auto = ["start"]
 
 [daemons.qed]
@@ -172,6 +263,9 @@ dir = "/home/toxic/projects/sovereign-projects/qed/editor"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25129/health"
+env = {
+  ZED_PORT = "25129",
+}
 auto = ["start"]
 
 [daemons.zedra-host]
@@ -180,6 +274,9 @@ dir = "/home/toxic/projects/sovereign-projects/qed/zedra-host"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25130/health"
+env = {
+  ZEDRA_HOST_PORT = "25130",
+}
 auto = ["start"]
 
 [daemons.antigravity-cli]
@@ -188,13 +285,16 @@ dir = "/home/toxic/projects/sovereign-projects/mesh/tooling"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25140/health"
+env = {
+  ANTIGRAVITY_CLI_PORT = "25140",
+}
 auto = ["start"]
 
 [groups.core]
 daemons = ["herd", "qdrant", "redis", "search-api", "mesh"]
 
 [groups.main]
-daemons = ["qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "pi-web-dashboard", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
+daemons = ["qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "pi-web-dashboard", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
 
 [groups.agents]
 daemons = ["axiom", "tau", "kimi-code", "zedra-host", "antigravity-cli"]
@@ -209,7 +309,7 @@ daemons = ["mesh"]
 daemons = []
 
 [groups.all]
-daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
+daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
 
 [groups.sovereign-core]
-daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
+daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
