@@ -54,7 +54,7 @@ auto = ["start"]
 
 [daemons.search-api]
 run = "exec bun --hot run apps/api/src/server.ts"
-dir = "/home/toxic/projects/github-advanced-search-mcp"
+dir = "/home/toxic/projects/sovereign-projects/mesh/search"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25112/health"
@@ -65,7 +65,7 @@ auto = ["start"]
 
 [daemons.search-ui]
 run = "exec ./node_modules/.bin/next dev -p 25114"
-dir = "/home/toxic/projects/github-advanced-search-mcp/apps/frontend"
+dir = "/home/toxic/projects/sovereign-projects/mesh/search/apps/frontend"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25114/"
@@ -113,31 +113,31 @@ env = {
 auto = ["start"]
 
 [daemons.beellama-cpp]
-run = "exec /home/toxic/projects/beellama.cpp/build-cuda86/bin/llama-server --model /home/toxic/projects/models/EXAONE-4.0-1.2B-Q4_K_M.gguf --host 127.0.0.1 --port 25001 --n-gpu-layers 0 --parallel 1 --log-disable"
-dir = "/home/toxic/projects/beellama.cpp"
+run = "exec /home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp/build-cuda86/bin/llama-server --model /home/toxic/projects/models/EXAONE-4.0-1.2B-Q4_K_M.gguf --host 127.0.0.1 --port 25001 --n-gpu-layers 0 --parallel 1 --log-disable"
+dir = "/home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25122/health"
 auto = ["start"]
 
 [daemons.ik-llama-cpp]
-run = "exec /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server --model /home/toxic/projects/models/heretic-UD-27B-Q5_K_XL.gguf --host 127.0.0.1 --port 25002 -ngl 0 --parallel 1 --log-disable"
-dir = "/home/toxic/projects/ik_llama.cpp-main"
+run = "exec /home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp/build/bin/llama-server --model /home/toxic/projects/models/heretic-UD-27B-Q5_K_XL.gguf --host 127.0.0.1 --port 25002 -ngl 0 --parallel 1 --log-disable"
+dir = "/home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25123/health"
 auto = ["start"]
 
 [daemons.llama-cpp-turboquant]
-run = "exec /home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server --model /home/toxic/projects/models/gemma4-31b-it-dflash-Q4_K_M.gguf --host 127.0.0.1 --port 25003 --n-gpu-layers 0 --parallel 1 --log-disable"
-dir = "/home/toxic/projects/llama-cpp-turboquant"
+run = "exec /home/toxic/projects/sovereign-projects/herd/engines/llama-cpp-turboquant/build/bin/llama-server --model /home/toxic/projects/models/gemma4-31b-it-dflash-Q4_K_M.gguf --host 127.0.0.1 --port 25003 --n-gpu-layers 0 --parallel 1 --log-disable"
+dir = "/home/toxic/projects/sovereign-projects/herd/engines/llama-cpp-turboquant"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25124/health"
 auto = ["start"]
 
 [daemons.tau]
-run = "exec bun run /home/toxic/projects/pi-agent/packages/coding-agent/src/cli.ts"
+run = "exec bun run /home/toxic/projects/sovereign-projects/tau/engine/packages/coding-agent/src/cli.ts"
 dir = "/home/toxic"
 mise = true
 retry = true
@@ -151,16 +151,16 @@ env = {
 auto = ["start"]
 
 [daemons.kimi-code]
-run = "exec /home/toxic/projects/kimi-code-sovereign/apps/kimi-code/dist/main.mjs web --no-open --port 25126"
-dir = "/home/toxic/projects/kimi-code-sovereign"
+run = "exec /home/toxic/projects/sovereign-projects/tau/kimi/apps/kimi-code/dist/main.mjs web --no-open --port 25126"
+dir = "/home/toxic/projects/sovereign-projects/tau/kimi"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25126/health"
 auto = ["start"]
 
 [daemons.mesh]
-run = "exec /home/toxic/projects/mcpproxy-go/mcpproxy-go serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=info --listen=127.0.0.1:25127"
-dir = "/home/toxic/projects/mcpproxy-go"
+run = "exec /home/toxic/projects/sovereign-projects/mesh/gateway/mcpproxy-go serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=info --listen=127.0.0.1:25127"
+dir = "/home/toxic/projects/sovereign-projects/mesh/gateway"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25127/health"
@@ -168,7 +168,7 @@ auto = ["start"]
 
 [daemons.qed]
 run = "exec ./target/release/zed --foreground"
-dir = "/home/toxic/projects/zed"
+dir = "/home/toxic/projects/sovereign-projects/qed/editor"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25129/health"
@@ -176,7 +176,7 @@ auto = ["start"]
 
 [daemons.zedra-host]
 run = "exec cargo run --bin zedra-host --release"
-dir = "/home/toxic/projects/zedra-tanlethanh"
+dir = "/home/toxic/projects/sovereign-projects/qed/zedra-host"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25130/health"
@@ -184,7 +184,7 @@ auto = ["start"]
 
 [daemons.antigravity-cli]
 run = "exec cargo run --release -- --port 25134"
-dir = "/home/toxic/projects/antigravity-ide-cli"
+dir = "/home/toxic/projects/sovereign-projects/mesh/tooling"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25140/health"

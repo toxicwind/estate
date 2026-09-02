@@ -82,12 +82,13 @@ export const ALL_SERVICES: ServiceDef[] = [
   },
 
   // ── GHAS SERVICES ──
+  // ── SEARCH SERVICES (GHAS / SEEKER) ──
   {
     id: "search-api",
     name: "search-api",
     portKey: "GHAS_API_PORT",
     run: "exec bun --hot run apps/api/src/server.ts",
-    dir: "/home/toxic/projects/github-advanced-search-mcp",
+    dir: "/home/toxic/projects/sovereign-projects/mesh/search",
     readyHttp: "/health",
     group: "core",
     autoStart: true,
@@ -100,7 +101,7 @@ export const ALL_SERVICES: ServiceDef[] = [
     name: "search-ui",
     portKey: "GHAS_FRONTEND_PORT",
     run: "exec ./node_modules/.bin/next dev -p 25114",
-    dir: "/home/toxic/projects/github-advanced-search-mcp/apps/frontend",
+    dir: "/home/toxic/projects/sovereign-projects/mesh/search/apps/frontend",
     readyHttp: "/",
     group: "core",
     autoStart: true,
@@ -161,13 +162,13 @@ export const ALL_SERVICES: ServiceDef[] = [
     healthPath: "/api/health",
   },
 
-  // ── PROJECT FORKS ──
+  // ── INFERENCE FLEET ENGINES (HERD) ──
   {
     id: "beellama-cpp",
     name: "beellama.cpp",
     portKey: "BEELLAMA_PORT",
-    run: "exec /home/toxic/projects/beellama.cpp/build-cuda86/bin/llama-server --model /home/toxic/projects/models/EXAONE-4.0-1.2B-Q4_K_M.gguf --host 127.0.0.1 --port 25001 --n-gpu-layers 0 --parallel 1 --log-disable",
-    dir: "/home/toxic/projects/beellama.cpp",
+    run: "exec /home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp/build-cuda86/bin/llama-server --model /home/toxic/projects/models/EXAONE-4.0-1.2B-Q4_K_M.gguf --host 127.0.0.1 --port 25001 --n-gpu-layers 0 --parallel 1 --log-disable",
+    dir: "/home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp",
     readyHttp: "/health",
     group: "infra",
     autoStart: true,
@@ -177,8 +178,8 @@ export const ALL_SERVICES: ServiceDef[] = [
     id: "ik-llama-cpp",
     name: "ik_llama.cpp",
     portKey: "IK_LLAMA_PORT",
-    run: "exec /home/toxic/projects/ik_llama.cpp-main/build/bin/llama-server --model /home/toxic/projects/models/heretic-UD-27B-Q5_K_XL.gguf --host 127.0.0.1 --port 25002 -ngl 0 --parallel 1 --log-disable",
-    dir: "/home/toxic/projects/ik_llama.cpp-main",
+    run: "exec /home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp/build/bin/llama-server --model /home/toxic/projects/models/heretic-UD-27B-Q5_K_XL.gguf --host 127.0.0.1 --port 25002 -ngl 0 --parallel 1 --log-disable",
+    dir: "/home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp",
     readyHttp: "/health",
     group: "infra",
     autoStart: true,
@@ -188,20 +189,20 @@ export const ALL_SERVICES: ServiceDef[] = [
     id: "llama-cpp-turboquant",
     name: "llama-cpp-turboquant",
     portKey: "TURBO_PORT",
-    run: "exec /home/toxic/projects/llama-cpp-turboquant/build/bin/llama-server --model /home/toxic/projects/models/gemma4-31b-it-dflash-Q4_K_M.gguf --host 127.0.0.1 --port 25003 --n-gpu-layers 0 --parallel 1 --log-disable",
-    dir: "/home/toxic/projects/llama-cpp-turboquant",
+    run: "exec /home/toxic/projects/sovereign-projects/herd/engines/llama-cpp-turboquant/build/bin/llama-server --model /home/toxic/projects/models/gemma4-31b-it-dflash-Q4_K_M.gguf --host 127.0.0.1 --port 25003 --n-gpu-layers 0 --parallel 1 --log-disable",
+    dir: "/home/toxic/projects/sovereign-projects/herd/engines/llama-cpp-turboquant",
     readyHttp: "/health",
     group: "infra",
     autoStart: true,
     mise: false,
   },
 
-  // ── AGENT RUNTIMES ──
+  // ── AGENT RUNTIMES (TAU) ──
   {
     id: "tau",
     name: "tau",
     portKey: "PI_AGENT_PORT",
-    run: "exec bun run /home/toxic/projects/pi-agent/packages/coding-agent/src/cli.ts",
+    run: "exec bun run /home/toxic/projects/sovereign-projects/tau/engine/packages/coding-agent/src/cli.ts",
     dir: "/home/toxic",
     readyCmd: "sleep 2 && echo ready",
     group: "agents",
@@ -218,34 +219,34 @@ export const ALL_SERVICES: ServiceDef[] = [
     id: "kimi-code",
     name: "kimi-code-sovereign",
     portKey: "KIMI_CODE_PORT",
-    run: "exec /home/toxic/projects/kimi-code-sovereign/apps/kimi-code/dist/main.mjs web --no-open --port 25126",
-    dir: "/home/toxic/projects/kimi-code-sovereign",
+    run: "exec /home/toxic/projects/sovereign-projects/tau/kimi/apps/kimi-code/dist/main.mjs web --no-open --port 25126",
+    dir: "/home/toxic/projects/sovereign-projects/tau/kimi",
     readyHttp: "/health",
     group: "main",
     autoStart: true,
     mise: true,
   },
 
-  // ── GATEWAYS / PROXIES ──
+  // ── GATEWAYS / PROXIES (MESH) ──
   {
     id: "mesh",
     name: "mesh",
     portKey: "MCPPROXY_GO_PORT",
-    run: "exec /home/toxic/projects/mcpproxy-go/mcpproxy-go serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=info --listen=127.0.0.1:25127",
-    dir: "/home/toxic/projects/mcpproxy-go",
+    run: "exec /home/toxic/projects/sovereign-projects/mesh/gateway/mcpproxy-go serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=info --listen=127.0.0.1:25127",
+    dir: "/home/toxic/projects/sovereign-projects/mesh/gateway",
     readyHttp: "/health",
     group: "core",
     autoStart: true,
     mise: false,
   },
 
-  // ── EDITOR / IDE FORKS ──
+  // ── EDITOR / IDE FORKS (QED) ──
   {
     id: "qed",
     name: "qed",
     portKey: "ZED_PORT",
     run: "exec ./target/release/zed --foreground",
-    dir: "/home/toxic/projects/zed",
+    dir: "/home/toxic/projects/sovereign-projects/qed/editor",
     readyHttp: "/health",
     group: "aux",
     autoStart: true,
@@ -256,7 +257,7 @@ export const ALL_SERVICES: ServiceDef[] = [
     name: "zedra-host",
     portKey: "ZEDRA_HOST_PORT",
     run: "exec cargo run --bin zedra-host --release",
-    dir: "/home/toxic/projects/zedra-tanlethanh",
+    dir: "/home/toxic/projects/sovereign-projects/qed/zedra-host",
     readyHttp: "/health",
     group: "aux",
     autoStart: true,
@@ -269,7 +270,7 @@ export const ALL_SERVICES: ServiceDef[] = [
     name: "antigravity-cli",
     portKey: "ANTIGRAVITY_CLI_PORT",
     run: "exec cargo run --release -- --port 25134",
-    dir: "/home/toxic/projects/antigravity-ide-cli",
+    dir: "/home/toxic/projects/sovereign-projects/mesh/tooling",
     readyHttp: "/health",
     group: "aux",
     autoStart: true,
