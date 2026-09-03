@@ -46,7 +46,7 @@ class HalConfig:
     # OpenFang integration
     openfang_api: str = "http://127.0.0.1:25103"
     yote_api: str = "http://127.0.0.1:25102"
-    mcpproxy_api: str = "http://127.0.0.1:25109"
+    mcpproxy_api: str = os.getenv("MCPPROXY_GO_URL", f"http://127.0.0.1:{os.getenv('MCPPROXY_GO_PORT', '25127')}")
     ghas_mcp_api: str = "http://127.0.0.1:25113"
 
 class LoopState:

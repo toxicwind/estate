@@ -41,9 +41,14 @@ const server = Bun.serve({
   async fetch(req) {
     const u = new URL(req.url);
     if (u.pathname === "/health") {
-      const res = await fetch(`${backendBase}/health`, {
+      let res = await fetch(`${backendBase}/health`, {
         signal: AbortSignal.timeout(10_000),
       });
+      if (res.status === 404) {
+        res = await fetch(`${backendBase}/api/health`, {
+          signal: AbortSignal.timeout(10_000),
+        });
+      }
       const buf = await res.arrayBuffer();
       return new Response(buf, {
         status: res.status,
