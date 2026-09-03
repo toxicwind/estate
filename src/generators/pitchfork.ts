@@ -42,6 +42,9 @@ export const pitchforkGenerator: Generator = {
         const healthPath = svc.healthPath || svc.readyHttp;
         lines.push(`ready_http = "http://127.0.0.1:${port}${healthPath}"`);
       }
+      if (svc.readyPort) {
+        lines.push(`ready_cmd = "ss -ltn 'sport = :${port}' | grep -q LISTEN"`);
+      }
       if (svc.readyCmd) {
         lines.push(`ready_cmd = "${svc.readyCmd}"`);
       }
@@ -50,6 +53,7 @@ export const pitchforkGenerator: Generator = {
       if (svc.portKey && ctx.ports[svc.portKey]) {
         env[svc.portKey] = ctx.ports[svc.portKey].toString();
       }
+      // Combined Environment
       if (Object.keys(env).length > 0) {
         lines.push(`env = {`);
         for (const [k, v] of Object.entries(env)) {
@@ -58,14 +62,6 @@ export const pitchforkGenerator: Generator = {
         lines.push(`}`);
       }
 
-      // Environment
-      if (svc.env && Object.keys(svc.env).length > 0) {
-        lines.push(`env = {`);
-        for (const [k, v] of Object.entries(svc.env)) {
-          lines.push(`  ${k} = "${v}",`);
-        }
-        lines.push(`}`);
-      }
 
       // All services are core & auto-start (no on-demand)
       lines.push(`auto = ["start"]`);

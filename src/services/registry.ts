@@ -80,7 +80,16 @@ export const ALL_SERVICES: ServiceDef[] = [
     mise: false,
     healthPath: "/health",
   },
-
+  {
+    id: "tailscaled",
+    name: "tailscaled",
+    portKey: "TAILSCALED_PORT",
+    run: "exec /home/toxic/sovereign/stack/services/tailscaled.sh",
+    dir: ".",
+    group: "core",
+    autoStart: true,
+    mise: true,
+  },
   // ── GHAS SERVICES ──
   // ── SEARCH SERVICES (GHAS / SEEKER) ──
   {

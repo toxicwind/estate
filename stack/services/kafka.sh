@@ -4,8 +4,10 @@ set -euo pipefail
 SOV="${SOVEREIGN_ROOT:-$HOME/sovereign}"
 source "$SOV/stack/lib-ports.sh" 2>/dev/null || true
 PORT="${KAFKA_PORT:-9092}"
+export JAVA_HOME=/usr/lib/jvm/java-25-graalvm
 
-fuser -k "${PORT}/tcp" 2>/dev/null || true
+
+fuser -k "${PORT}/tcp" 9093/tcp 2>/dev/null || true
 
 export KAFKA_LOG4J_OPTS="-Dkafka.logs.dir=$HOME/.local/state/kafka/logs"
 mkdir -p "$HOME/.local/state/kafka/logs"

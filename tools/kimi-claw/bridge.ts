@@ -6,11 +6,16 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { homedir } from "node:os";
+import { OpenFangClient } from "../../src/lib/openfang_api";
+
+const OPENFANG_URL = process.env.OPENFANG_URL || "http://127.0.0.1:25103";
+const client = new OpenFangClient(OPENFANG_URL, process.env.OPENFANG_API_KEY);
 
 const HOME = homedir();
 const HERD_URL = process.env.HERD_URL || "http://127.0.0.1:25100/v1";
-const OPENFANG_URL = process.env.OPENFANG_URL || "http://127.0.0.1:25103";
 const HAL_URL = process.env.HAL_URL || "http://127.0.0.1:25143";
+
+
 
 export interface KimiBridgeConfig {
   herdUrl: string;
@@ -51,15 +56,7 @@ export function loadKimiConfig(): KimiBridgeConfig {
 
 export async function dispatchToOpenFang(message: string, agent = "coyote"): Promise<string> {
   try {
-    const res = await fetch(`${OPENFANG_URL}/api/agents/${agent}/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message }),
-    });
-    if (res.ok) {
-      const data = await res.json() as { response?: string; content?: string; text?: string };
-      return data.response || data.content || data.text || JSON.stringify(data);
-    }
+    return await client.chat(agent, message);
   } catch (err) {
     console.warn(`[Kimi-Claw] OpenFang dispatch failed, falling back to Herd: ${err}`);
   }

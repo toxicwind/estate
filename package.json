@@ -4,7 +4,10 @@
   "type": "module",
   "private": true,
   "devDependencies": {
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
     "@types/bun": "latest",
+    "husky": "^9.1.7",
     "openapi-typescript-codegen": "^0.31.0"
   },
   "peerDependencies": {
@@ -32,7 +35,8 @@
     "lang:python": "bun run src/services/language-router.ts python",
     "lang:rust": "bun run src/services/language-router.ts rust",
     "lang:go": "bun run src/services/language-router.ts go",
-    "lang:parquet": "bun run src/services/parquet-service.ts"
+    "lang:parquet": "bun run src/services/parquet-service.ts",
+    "prepare": "husky"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
@@ -60,7 +64,15 @@
     "doc": "docs",
     "test": "tests"
   },
-  "keywords": ["sovereign", "bun", "mcp", "llm", "analytics", "parquet", "duckdb"],
+  "keywords": [
+    "sovereign",
+    "bun",
+    "mcp",
+    "llm",
+    "analytics",
+    "parquet",
+    "duckdb"
+  ],
   "author": "",
   "license": "ISC",
   "trustedDependencies": [
