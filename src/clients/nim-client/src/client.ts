@@ -50,7 +50,7 @@ export class NIMClient {
       rateLimitBurst: config.rateLimitBurst ?? 5,
       timeoutMs: config.timeoutMs ?? 120000,
       streamingTimeoutMs: config.streamingTimeoutMs ?? 300000,
-      defaultModel: config.defaultModel ?? "thinkingmachines/inkling",
+      defaultModel: config.defaultModel ?? "meta/llama-3.1-70b-instruct",
       defaultHeaders: config.defaultHeaders ?? {},
       debug: config.debug ?? false,
     };
@@ -77,7 +77,7 @@ export class NIMClient {
     return new NIMClient({
       baseURL,
       apiKey,
-      defaultModel: "thinkingmachines/inkling",
+      defaultModel: "meta/llama-3.1-70b-instruct",
     });
   }
 
@@ -88,7 +88,7 @@ export class NIMClient {
     return new NIMClient({
       baseURL,
       apiKey,
-      defaultModel: "thinkingmachines/inkling",
+      defaultModel: "meta/llama-3.1-70b-instruct",
     });
   }
 

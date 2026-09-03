@@ -29,14 +29,6 @@
       "provider": "opencode",
       "context_window": 131072,
       "status": "available"
-    },
-    "nim-inkling": {
-      "path": "/home/toxic/sovereign/brain/subagents/nim-inkling/",
-      "provider": "nvidia",
-      "context_window": 1048576,
-      "status": "available",
-      "local": true,
-      "via": "llama-swap"
     }
   },
   "shared": {
@@ -48,7 +40,7 @@
   },
   "recovery": {
     "description": "Any agent reads MANIFEST.json to find all agents, subagents, and shared resources",
-    "protocol": "MANIFEST.json → agent/identity.json → full state"
+    "protocol": "MANIFEST.json \u2192 agent/identity.json \u2192 full state"
   },
   "git": {
     "sovereign": "https://github.com/toxicwind/sovereign.git",

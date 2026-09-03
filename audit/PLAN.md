@@ -23,7 +23,7 @@
 ### Model Config
 - **Primary**: LongCat 2.0 Free (`meituan/longcat-2.0`)
 - **Coding agent**: OpenCode (`OPENCODE_API_KEY`)
-- **Fallback**: thinkingmachines/inkling (via NIM queue)
+- **Fallback**: nvidia/llama-3.1-nemotron-nano-8b-v1 (via NIM)
 
 ## Integration Tasks (Priority Order)
 

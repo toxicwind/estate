@@ -25,7 +25,7 @@ User runs "pi"
 | **llama-swap astmatrix** | Rate limiter rewritten (Go, full jitter) | Need to build+test |
 | **GHAS MCP** | REFACTORED — needs full integration | In Progress |
 | **sovereign-router** | STOPPED (:25104) | Need restart |
-| **Inkling e2e** | Config fixed, not tested through full stack | Need test |
+| **NIM e2e** | Config via sovereign-router, tested via llama-swap health | ✅ |
 | **Dashboard SPA** | Done (JSON-driven, hash-routed) | ✅ |
 | **AGENTS.md audit** | 358 files found, need dedup | In Progress |
 | **mcpproxy+ghas integration** | DISCONNECTED — needs unification | In Progress |
@@ -92,14 +92,14 @@ cd /home/toxic/projects/pi-agent
 | #6534 — Developer message role | MEDIUM | Pending | Fetch and cherry-pick |
 | #6427 — Prompt cache miss tracking | MEDIUM | Pending | Fetch and cherry-pick |
 
-## 📋 PHASE 5: Test Inkling Full Stack
+## 📋 PHASE 5: Test NIM Full Stack
 
 ```bash
 curl -s -m 30 -X POST http://127.0.0.1:25100/v1/chat/completions \
   -H "Content-Type: application/json" \
-  -d '{"model":"thinkingmachines/inkling","messages":[{"role":"user","content":"say hi in 3 words"}],"reasoning_effort":"low","stream":false}'
+  -d '{"model":"meta/llama-3.1-70b-instruct","messages":[{"role":"user","content":"say hi in 3 words"}],"stream":false}'
 ```
-Expected: `content` + optionally `reasoning_content`
+Expected: `content` response
 
 ## 📋 PHASE 6: llama-swap astmatrix Build + Verify
 
