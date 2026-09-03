@@ -398,25 +398,6 @@ models:
       vram: ~1GB
       auto_discovered: true
       path: "/home/toxic/projects/models/gemma-4-12B-it-assistant-Q8_0.gguf"
-
-
-  gemma-4-12b-it-mtp-q8_0:
-    cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/MTP/gemma-4-12B-it-MTP-Q8_0.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
-    env:
-      - LD_LIBRARY_PATH=${BEELLAMA_LD}
-      - ${CUDA_ENV}
-      - LLAMA_API_KEY=
-    name: "Gemma 4 12b It Mtp Q8_0 · 32768 · Q8_0"
-    description: "Auto-discovered model from /home/toxic/projects/models/MTP/gemma-4-12B-it-MTP-Q8_0.gguf"
-    metadata:
-      fork: beellama
-      context: 32768
-      quant: Q8_0
-      vram: ~1GB
-      auto_discovered: true
-      path: "/home/toxic/projects/models/MTP/gemma-4-12B-it-MTP-Q8_0.gguf"
-
-
   qwen3.5-9b-dflash-q5_k_m:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/qwen3.5-9b-dflash-Q5_K_M.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     env:
@@ -586,22 +567,6 @@ models:
       auto_discovered: true
       path: "/home/toxic/projects/models/gemma-4-12B-it-MTP-Q8_0.gguf"
 
-
-  qwen3.6-27b-dflash-iq4_xs:
-    cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/Qwen3.6-27B-DFlash-IQ4_XS.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
-    env:
-      - LD_LIBRARY_PATH=${BEELLAMA_LD}
-      - ${CUDA_ENV}
-      - LLAMA_API_KEY=
-    name: "Qwen3 6 27b Dflash Iq4_xs · 32768 · IQ4_XS"
-    description: "Auto-discovered model from /home/toxic/projects/models/Qwen3.6-27B-DFlash-IQ4_XS.gguf"
-    metadata:
-      fork: beellama
-      context: 32768
-      quant: IQ4_XS
-      vram: ~20GB
-      auto_discovered: true
-      path: "/home/toxic/projects/models/Qwen3.6-27B-DFlash-IQ4_XS.gguf"
 
 
   qwen3.6-27b-dflash-iq4_xs:

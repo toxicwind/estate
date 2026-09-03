@@ -30,6 +30,7 @@ run = "exec valkey-server --port 25199 --bind 0.0.0.0 --protected-mode no --save
 dir = "."
 mise = false
 retry = true
+ready_cmd = "ss -ltn 'sport = :25199' | grep -q LISTEN"
 env = {
   REDIS_PORT = "25199",
 }
@@ -40,6 +41,7 @@ run = "exec ./stack/services/kafka.sh"
 dir = "."
 mise = true
 retry = true
+ready_cmd = "ss -ltn 'sport = :25144' | grep -q LISTEN"
 env = {
   KAFKA_PORT = "25144",
 }
@@ -64,6 +66,16 @@ retry = true
 ready_http = "http://127.0.0.1:25102/health"
 env = {
   YOTE_PORT = "25102",
+}
+auto = ["start"]
+
+[daemons.tailscaled]
+run = "exec ./stack/services/tailscaled.sh"
+dir = "."
+mise = true
+retry = true
+env = {
+  TAILSCALED_PORT = "25146",
 }
 auto = ["start"]
 
@@ -176,9 +188,6 @@ env = {
   PORT = "25192",
   PI_WEB_DASHBOARD_PORT = "25192",
 }
-env = {
-  PORT = "25192",
-}
 auto = ["start"]
 
 [daemons.beellama-cpp]
@@ -226,12 +235,6 @@ env = {
   PI_CODING_AGENT = "true",
   PI_REASONING_LEVEL = "high",
   PI_AGENT_PORT = "25125",
-}
-env = {
-  PI_CONFIG_PATH = "/home/toxic/.pi/agent/config.yaml",
-  PI_AGENT_DIR = "/home/toxic/.pi/agent",
-  PI_CODING_AGENT = "true",
-  PI_REASONING_LEVEL = "high",
 }
 auto = ["start"]
 
@@ -294,7 +297,7 @@ auto = ["start"]
 daemons = ["herd", "qdrant", "redis", "search-api", "mesh"]
 
 [groups.main]
-daemons = ["qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "pi-web-dashboard", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
+daemons = ["qdrant", "redis", "kafka", "hal-substrate", "yote", "tailscaled", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "pi-web-dashboard", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
 
 [groups.agents]
 daemons = ["axiom", "tau", "kimi-code", "zedra-host", "antigravity-cli"]
@@ -309,7 +312,7 @@ daemons = ["mesh"]
 daemons = []
 
 [groups.all]
-daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
+daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "tailscaled", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
 
 [groups.sovereign-core]
-daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
+daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "tailscaled", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
