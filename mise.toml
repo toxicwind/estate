@@ -142,6 +142,9 @@ logs = "pitchfork logs --raw -n 100"
 
 # ─── Utilities ───
 svc-check = """bash -c 'FAILED=0; for entry in herd=25100 qdrant=25133 redis=25199 kafka=25144 hal-substrate=25143 yote=25102 tailscaled=25146 search-api=25112 search-ui=25114 axiom=25103 rust-web=25201 hf-downloader=25106 null-g-proxy=25107 kimi-audit-dash=25116 mcp-gateway=25120 byte-vision=25121 pi-web-dashboard=25192 beellama-cpp=25122 ik-llama-cpp=25123 llama-cpp-turboquant=25124 tau=25125 kimi-code=25126 mesh=25127 qed=25129 zedra-host=25130 antigravity-cli=25140; do svc=${entry%%=*}; port=${entry##*=}; if [ -n "${port}" ]; then if ! curl -sf -m 2 "http://127.0.0.1:${port}/health" >/dev/null 2>&1 && ! curl -sf -m 2 "http://127.0.0.1:${port}/-/healthy" >/dev/null 2>&1 && ! curl -sf -m 2 "http://127.0.0.1:${port}/api/health" >/dev/null 2>&1; then echo "❌ :${port} (${svc})"; FAILED=1; else echo "✅ :${port} (${svc})"; fi; else echo "⚠️ :${svc} (no port)"; fi; done; exit $FAILED' """
+open-uis = "bun run scripts/open-web-uis.ts"
+"open-uis-all" = "bun run scripts/open-web-uis.ts --all"
+"list-uis" = "bun run scripts/open-web-uis.ts --list"
 
 # ─── Nuvio Platform (webOS app) ───
 nv-build = { run = "cd tools/nuvio-platform && npm run build:webos", dir = "tools/nuvio-platform" }

@@ -22,6 +22,7 @@ class HealthHandler(http.server.BaseHTTPRequestHandler):
             self.send_response(404)
             self.end_headers()
 
+socketserver.TCPServer.allow_reuse_address = True
 with socketserver.TCPServer(('', $PORT), HealthHandler) as httpd:
     print(f'byte-vision-mock health server on port $PORT')
     httpd.serve_forever()
