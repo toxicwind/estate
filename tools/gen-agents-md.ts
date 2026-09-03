@@ -65,7 +65,7 @@ Route: file I/O -> desktop-commander + safurrier-smart; search -> ast-grep-singl
    python -m json.tool ~/.config/zed/settings.json >/dev/null
 
 ## Provider matrix (verified)
-OpenRouter OPENROUTER_API_KEY (working) | NVIDIA NIM NVIDIA_API_KEY (thinkmachines/inkling, 1M ctx, NOT nvidia-owned) |
+OpenRouter OPENROUTER_API_KEY (working) | NVIDIA NIM NVIDIA_API_KEY (via sovereign-router/llama-swap :25100) |
 Groq GROQ_API_KEY | Google GOOGLE_API_KEY | Mistral MISTRAL_API_KEY | Cerebras 403 | Opencode CreditsError -> use llama-swap.
 
 ## Meta-rule

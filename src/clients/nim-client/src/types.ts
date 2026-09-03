@@ -1,8 +1,7 @@
 /**
  * NIM Client Types - Complete type-safe definitions for all 69+ NIM API parameters
- * Based on NVIDIA NIM API Documentation and Inkling model specifics
+ * Based on NVIDIA NIM API Documentation
  */
-
 // ═══════════════════════════════════════════════════════════════════════════
 // CORE MESSAGE TYPES
 // ═══════════════════════════════════════════════════════════════════════════
@@ -237,10 +236,8 @@ export interface NIMClientConfig {
   // Timeouts
   timeoutMs?: number;               // default: 120000
   streamingTimeoutMs?: number;      // default: 300000
-  
   // Default model
-  defaultModel?: string;            // default: "thinkingmachines/inkling"
-  
+  defaultModel?: string;            // default: "meta/llama-3.1-70b-instruct"
   // Custom headers
   defaultHeaders?: Record<string, string>;
   

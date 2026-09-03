@@ -1,6 +1,6 @@
 {
-  "defaultProvider": "nim-inkling",
-  "defaultModel": "nim-inkling",
+  "defaultProvider": "groq",
+  "defaultModel": "groq/compound",
   "defaultThinkingLevel": "high",
   "hideThinkingBlock": false,
   "showCacheMissNotices": false,

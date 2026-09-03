@@ -12,7 +12,7 @@ This package converts your entire grok-build stack to **pi.dev** (the dominant o
 | Blinded payloads — raw JSON swallowed by 844K LOC Rust wrapper | Full HTTP request/response visible in TUI and logs |
 | `reasoning_effort="high"` → NIM expects float 0.2-0.99 → serde null error | `thinkingLevelMap` maps pi levels to exact provider values |
 | 3x opaque retry loop, generic error at "column 592" | Immediate raw error dump with full response body |
-| No Inkling day-0 parser support (Issue #31359) | `compat.thinkingFormat: "openrouter"` + custom `thinkingLevelMap` |
+| No NIM day-0 parser support | `compat.thinkingFormat: "openrouter"` + custom `thinkingLevelMap` |
 | MCP servers hardcoded in TOML, no dynamic management | MCPProxy federation with quarantine, health checks, BM25 discovery |
 | `permission_mode = "always-approve"` buried in TOML | `defaultProjectTrust: "always"` in settings + `/trust` command |
 
@@ -70,27 +70,25 @@ cd /home/toxic && pi
 
 # 7. Select your model
 /model              # shows ALL your converted models
-/model nim-inkling  # select Inkling
 /model groq         # select Groq Compound
 ```
 
 ---
 
-## The Critical Fix: NIM Inkling `reasoning_effort`
+## The Critical Fix: NIM `reasoning_effort` (Historical — Inkling Removed)
+
+> **Note 2026-09-03**: `thinkingmachines/inkling` (NVIDIA NIM Inkling) is discontinued and removed from this repo. The section below is preserved as historical reference for the `reasoning_effort` plumbing pattern.
 
 Your grok-build config had:
 ```toml
-[model.nim-inkling.extra_body]
-reasoning_effort = 0.8   # grok-build sent this as string or null
-```
+[model.example-nim.extra_body]
 
 NIM expects `reasoning_effort` as a **float string** in the range `0.2` to `0.99`. grok-build's serde layer was blinding the actual payload, retrying 3x, then throwing the generic column-592 error.
 
 In pi.dev, this is solved via `thinkingLevelMap`:
 
-```json
 "thinkingLevelMap": {
-  "off": null,           // Inkling doesn't support off
+  "off": null,
   "minimal": "0.2",
   "low": "0.4",
   "medium": "0.6",
@@ -118,9 +116,7 @@ Also set:
 
 | grok-build Model | pi.dev Provider | pi.dev Model ID | Context | Max Tokens |
 |---|---|---|---|---|
-| `nim-inkling` | `nim-inkling` | `thinkingmachines/inkling` | 128K | 16K |
 | `groq-compound` | `groq` | `groq/compound` | 131K | 16K |
-| `groq-compound-mini` | `groq` | `groq/compound-mini` | 131K | 16K |
 | `groq-120b` | `groq` | `openai/gpt-oss-120b` | 131K | 16K |
 | `groq-20b` | `groq` | `openai/gpt-oss-20b` | 131K | 16K |
 | `groq-qwen` | `groq` | `qwen/qwen3.6-27b` | 131K | 16K |
@@ -203,7 +199,7 @@ MCPProxy benefits over raw `mcp-remote`:
 Your grok-build personas:
 ```toml
 [subagents.personas.principal-confident]
-model = "nim-inkling"
+model = "groq/compound"
 instructions = "You are a principal engineer..."
 
 [subagents.personas.sovereign-local]
@@ -218,7 +214,7 @@ In pi.dev, personas are handled via **extensions** or **steering messages**. The
 # Or use /steering to inject system prompts per-session
 
 # For now, use model selection + custom instructions:
-/model nim-inkling
+/model groq
 # Then paste your principal-confident instructions as the first user message
 # or use /steering to set persistent context
 ```
@@ -252,7 +248,7 @@ Advanced: write a custom extension that registers subagent personas as pi.dev co
 
 ---
 
-## Debugging NIM Inkling
+## Debugging NIM (Generic Example)
 
 If NIM still throws errors:
 
@@ -262,14 +258,13 @@ curl -s https://integrate.api.nvidia.com/v1/chat/completions \
   -H "Authorization: Bearer $NVIDIA_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "thinkingmachines/inkling",
+    "model": "meta/llama-3.1-70b-instruct",
     "messages": [{"role":"user","content":"hello"}],
-    "max_completion_tokens": 1024,
-    "reasoning_effort": "0.8"
+    "max_completion_tokens": 1024
   }' | jq .
 
 # 2. Run pi with raw logging
-PI_LOG_LEVEL=debug pi --model nim-inkling/thinkingmachines/inkling
+PI_LOG_LEVEL=debug pi --model groq/compound
 
 # 3. Check what pi actually sends
 # In the TUI, press Ctrl+L to open the log panel — full request/response visible

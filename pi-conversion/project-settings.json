@@ -1,6 +1,6 @@
 {
-  "defaultProvider": "nim-inkling",
-  "defaultModel": "thinkingmachines/inkling",
+  "defaultProvider": "groq",
+  "defaultModel": "groq/compound",
   "defaultThinkingLevel": "high",
   "compaction": {
     "enabled": true,
