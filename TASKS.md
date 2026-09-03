@@ -131,6 +131,30 @@
 
 ---
 
+---
+
+## Phase 7: Firefox Nightly & First-Class Web UI Launcher (DONE)
+
+### 7.1 Port 9222 & CDP Isolation
+- [x] Analyze port 9222 collision (Chromium CDP vs `firefox-bidi.service`)
+- [x] Keep port 9222 dedicated to Chromium CDP sandbox (`kataware-doki/cdp-node.ts`, `tools/bugbounty/lib/helpers.mjs`)
+- [x] Isolate interactive Firefox Nightly (`g304xzha.default-release`) from background service profile locks
+
+### 7.2 Hyprland & MIME Standardization
+- [x] Override `browser = "firefox-nightly"` in `~/.config/hypr/custom/variables.lua`
+- [x] Set `hl.env("BROWSER", "firefox-nightly")` in `~/.config/hypr/custom/env.lua`
+- [x] Restore MIME associations to `firefox-nightly.desktop` for html/http/https/pdf
+- [x] Set `export BROWSER=firefox-nightly` in `~/.bashrc`
+
+### 7.3 Sovereign Web UI Launcher CLI
+- [x] Create `scripts/open-web-uis.ts` with failfast probe, SSOT port lookup, and Firefox Nightly IPC
+- [x] Create `scripts/open-web-uis.sh` wrapper
+- [x] Add anonymous admin auto-login to `stack/services/grafana-mesh.sh`
+- [x] Add `open-uis`, `open-uis-all`, `list-uis` tasks to `src/generators/mise.ts`
+- [x] Regenerate `mise.toml` via `bun run scripts/generate.ts`
+- [x] Add comprehensive test suite `tests/open_web_uis.test.ts` (4 pass, 67 assertions)
+- [x] Document usage in `README.md`
+
 ## Current Focus
 **Phase 1** - Rebuild pi-agent with streaming fix
 

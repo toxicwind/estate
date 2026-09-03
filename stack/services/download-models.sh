@@ -341,16 +341,16 @@ _draw_status_line "Phase" "3/3  VERIFY" "$C_GREEN"
 _draw_status_line "Free Space" "$(avail_gb) GB" "$C_GREEN"
 _draw_divider
 
-local count=0
+count=0
 while IFS= read -r line; do
-    local f=$(echo "$line" | awk '{print $1}')
-    local s=$(echo "$line" | awk '{print $2}')
+    f=$(echo "$line" | awk '{print $1}')
+    s=$(echo "$line" | awk '{print $2}')
     [[ -z "$f" ]] && continue
     printf "  ${C_OK} %-50s ${C_GREEN}%8s${C_RESET}\n" "$(basename "$f")" "$s"
     ((count++))
 done < <(ls -lh "$MODEL_DIR"/*.gguf 2>/dev/null | awk '{print $9, $5}' | sort -k2 -h)
 
-local used=$(du -sh "$MODEL_DIR" | cut -f1)
+used=$(du -sh "$MODEL_DIR" | cut -f1)
 _draw_divider
 printf "  ${C_BOLD}Total files:${C_RESET} %d    ${C_BOLD}Used:${C_RESET} ${C_CYAN}%s${C_RESET}    ${C_BOLD}Free:${C_RESET} ${C_GREEN}%sGB${C_RESET}\n" "$count" "$used" "$(avail_gb)"
 

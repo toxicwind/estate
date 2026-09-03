@@ -81,6 +81,9 @@ export const miseGenerator: Generator = {
     // Utilities
     lines.push("# ─── Utilities ───");
     lines.push(`svc-check = """bash -c 'FAILED=0; for entry in ${svcPortPairs}; do svc=\${entry%%=*}; port=\${entry##*=}; if [ -n "\${port}" ]; then if ! curl -sf -m 2 "http://127.0.0.1:\${port}/health" >/dev/null 2>&1 && ! curl -sf -m 2 "http://127.0.0.1:\${port}/-/healthy" >/dev/null 2>&1 && ! curl -sf -m 2 "http://127.0.0.1:\${port}/api/health" >/dev/null 2>&1; then echo "❌ :\${port} (\${svc})"; FAILED=1; else echo "✅ :\${port} (\${svc})"; fi; else echo "⚠️ :\${svc} (no port)"; fi; done; exit $FAILED' """`);
+    lines.push('open-uis = "bun run scripts/open-web-uis.ts"');
+    lines.push('"open-uis-all" = "bun run scripts/open-web-uis.ts --all"');
+    lines.push('"list-uis" = "bun run scripts/open-web-uis.ts --list"');
     // health-notify removed, replaced by single canonical version at line 90
     lines.push("");
 
