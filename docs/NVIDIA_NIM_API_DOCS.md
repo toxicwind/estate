@@ -21,7 +21,7 @@ POST /v1/chat/completions
 **Request Body (OpenAI-compatible):**
 ```json
 {
-  "model": "string",                    // Required. Model ID (e.g., "thinkingmachines/inkling")
+  "model": "string",                    // Required. Model ID (e.g., "meta/llama-3.1-70b-instruct")
   "messages": [                         // Required. Array of message objects
     {
       "role": "system|user|assistant|tool",
@@ -59,7 +59,7 @@ POST /v1/chat/completions
   "id": "chatcmpl-...",
   "object": "chat.completion",
   "created": 1677652288,
-  "model": "thinkingmachines/inkling",
+  "model": "meta/llama-3.1-70b-instruct",
   "system_fingerprint": "fp_...",
   "choices": [{
     "index": 0,
@@ -97,7 +97,7 @@ GET /v1/models
   "object": "list",
   "data": [
     {
-      "id": "thinkingmachines/inkling",
+      "id": "meta/llama-3.1-70b-instruct",
       "object": "model",
       "created": 1677652288,
       "owned_by": "thinkingmachines"
@@ -117,9 +117,9 @@ GET /health
 
 ---
 
-## Inkling Model Specifics
+## Example Model Specifics (meta/llama-3.1-70b-instruct)
 
-**Model ID:** `thinkingmachines/inkling`
+**Model ID:** `meta/llama-3.1-70b-instruct`
 
 **Architecture:** Mixture-of-Experts (975B total, 41B active)
 
@@ -194,8 +194,7 @@ GET /health
 
 **Access Methods:**
 1. Running NIM container: `http://localhost:8000/docs` (Swagger UI) → Export as YAML/JSON
-2. NVIDIA API docs: https://docs.api.nvidia.com/nim/reference/thinkingmachines-inkling-infer
-3. Model-specific: https://docs.api.nvidia.com/nim/reference/thinkingmachines-inkling
+2. NVIDIA API docs: https://docs.api.nvidia.com/nim/reference/llm-apis
 
 ---
 
@@ -228,7 +227,7 @@ client = OpenAI(
 )
 
 completion = client.chat.completions.create(
-    model="thinkingmachines/inkling",
+    model="meta/llama-3.1-70b-instruct",
     messages=[{"role": "user", "content": "Hello!"}],
     temperature=0.7,
     max_tokens=1024,
@@ -240,7 +239,7 @@ completion = client.chat.completions.create(
 from langchain_nvidia_ai_endpoints import ChatNVIDIA
 
 llm = ChatNVIDIA(
-    model="thinkingmachines/inkling",
+    model="meta/llama-3.1-70b-instruct",
     api_key="nvapi-...",
     temperature=0.7,
     max_tokens=1024,
@@ -257,7 +256,7 @@ curl https://integrate.api.nvidia.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $NVIDIA_API_KEY" \
   -d '{
-    "model": "thinkingmachines/inkling",
+    "model": "meta/llama-3.1-70b-instruct",
     "messages": [{"role": "user", "content": "Hello!"}],
     "temperature": 0.7,
     "max_tokens": 1024
@@ -270,7 +269,7 @@ curl https://integrate.api.nvidia.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $NVIDIA_API_KEY" \
   -d '{
-    "model": "thinkingmachines/inkling",
+    "model": "meta/llama-3.1-70b-instruct",
     "messages": [{"role": "user", "content": "Solve this step by step: 2+2"}],
     "max_tokens": 2048,
     "chat_template_kwargs": {"reasoning_effort": "high"}
@@ -283,7 +282,7 @@ curl https://integrate.api.nvidia.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $NVIDIA_API_KEY" \
   -d '{
-    "model": "thinkingmachines/inkling",
+    "model": "meta/llama-3.1-70b-instruct",
     "messages": [{"role": "user", "content": "What is the weather in SF?"}],
     "tools": [{
       "type": "function",
@@ -309,7 +308,7 @@ curl https://integrate.api.nvidia.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $NVIDIA_API_KEY" \
   -d '{
-    "model": "thinkingmachines/inkling",
+    "model": "meta/llama-3.1-70b-instruct",
     "messages": [{"role": "user", "content": "Output JSON: {\"name\": \"test\"}"}],
     "response_format": {"type": "json_object"},
     "temperature": 0.1
@@ -339,14 +338,7 @@ curl https://integrate.api.nvidia.com/v1/chat/completions \
 - `nim-queue` :25189 — Cache + rate-limit aware queue
 - Direct NVIDIA: `https://integrate.api.nvidia.com/v1`
 
-**Test File:** `/home/toxic/sovereign/tests/inkling_nim_fuzz_test.ts`
-
-```bash
-cd /home/toxic/sovereign
-bun test tests/inkling_nim_fuzz_test.ts
-```
-
-**Results:** 68/69 parameters supported (streaming=true returns 0 chunks)
+**Note:** Streaming and parameter support varies by model. Test via `curl` against your deployed NIM endpoint.
 
 ---
 
@@ -354,7 +346,4 @@ bun test tests/inkling_nim_fuzz_test.ts
 
 - NVIDIA NIM API Docs: https://docs.nvidia.com/nim/
 - LLM API Reference: https://docs.api.nvidia.com/nim/reference/llm-apis
-- Inkling Model Card: https://huggingface.co/thinkingmachines/Inkling
-- Inkling NVFP4: https://huggingface.co/thinkingmachines/Inkling-NVFP4
-- Tinker Cookbook: https://github.com/thinking-machines-lab/tinker-cookbook
-- Inkling Docs: https://tinker-docs.thinkingmachines.ai/cookbook/inkling/
+- Model listing: https://docs.api.nvidia.com/nim/reference/llm-apis

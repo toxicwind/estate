@@ -30,7 +30,6 @@
     "llm",
     "api",
     "client",
-    "inkling",
     "reasoning"
   ],
   "author": "toxicwind",

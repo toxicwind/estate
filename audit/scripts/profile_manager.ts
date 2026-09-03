@@ -23,24 +23,8 @@ const PROFILE_PATH = resolve(import.meta.dir, "../profiles/profiles.json");
 
 const DEFAULT_PROFILES: ProfileDatabase = {
   version: "0.1.0",
-  activeProfile: "inkling_high",
+  activeProfile: "local_fast",
   profiles: {
-    inkling_high: {
-      name: "Inkling High Effort",
-      model: "thinkingmachines/inkling",
-      effort: 0.9,
-      maxTokens: 16384,
-      tools: ["read", "write", "edit", "bash", "fd", "rg", "astgrep", "eza"],
-      multimodal: ["text", "image", "audio"],
-    },
-    inkling_xhigh: {
-      name: "Inkling XHigh (Max Reasoning)",
-      model: "thinkingmachines/inkling",
-      effort: 0.99,
-      maxTokens: 16384,
-      tools: ["read", "write", "edit", "bash", "fd", "rg", "astgrep", "eza"],
-      multimodal: ["text", "image", "audio"],
-    },
     local_fast: {
       name: "Local Fast (beellama/exaone)",
       model: "beellama/exaone-4-0-1-2b-iq4xs",

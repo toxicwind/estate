@@ -13,7 +13,10 @@
     "active": "longcat-2.0-free",
     "provider": "opencode",
     "context_window": 1000000,
-    "alternates": ["xiaomi/mimo-v2.5", "thinkingmachines/inkling"],
+    "alternates": [
+      "xiaomi/mimo-v2.5",
+      "nvidia/llama-3.1-nemotron-nano-8b-v1"
+    ],
     "classification": "pi-longcat-as-c2-fix-while-not-sure"
   },
   "host": {
@@ -30,8 +33,17 @@
     "description": "Fixing pi-agent, sovereign, and related infrastructure while uncertain about some approaches"
   },
   "tools": {
-    "native": ["read", "write", "edit", "bash", "ls", "retrieve_tools", "describe_tool", "call_tool_destructive"],
-    "mcp": "All mcpproxy tools via retrieve_tools → describe_tool → call_tool_destructive",
+    "native": [
+      "read",
+      "write",
+      "edit",
+      "bash",
+      "ls",
+      "retrieve_tools",
+      "describe_tool",
+      "call_tool_destructive"
+    ],
+    "mcp": "All mcpproxy tools via retrieve_tools \u2192 describe_tool \u2192 call_tool_destructive",
     "scripts": {
       "rf": "/home/toxic/sovereign/tools/rf",
       "pitchfork-llm": "/home/toxic/sovereign/stack/bin/pitchfork-llm"
