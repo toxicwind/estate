@@ -97,3 +97,9 @@ curl -sf "http://127.0.0.1:25133/" >/dev/null && echo "✅ :25133 qdrant"
 valkey-cli -p 25199 ping >/dev/null && echo "✅ :25199 redis"
 ss -ltn 'sport = :25144' | grep -q LISTEN && echo "✅ :25144 kafka"
 ```
+
+## ⚡ Active Emergent Features
+- **Autonomous Continuation Loop (`src/todo_loop.py`)**: Parquet-backed (`data/todos.parquet`) state machine with self-talk JSONL mailbox for non-blocking coordination.
+- **High-Frequency Health Probing**: Sub-second health polling across all 25xxx daemons with failfast circuit breaking.
+- **Dynamic Config Generation**: Real-time synchronization of `ports.env` and service registry into `pitchfork.toml` and `mise.toml`.
+- **Subagent Mesh Routing**: Seamless tool discovery and proxying via Mesh (`:25127`).
