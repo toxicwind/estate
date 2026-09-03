@@ -2,14 +2,44 @@
 # .gitignore — Sovereign Stack (Bun-primary)
 # ============================================================================
 
-# ─── Secrets ──────────────────────────────────────────────────────────────────
+# ─── Secrets & Credentials ──────────────────────────────────────────────────
+# Environment files
 .env
-.env.local
+.env*
+!.env.example
+!.env.template
 .envrc.local
 .secrets
+
+# Certificates and Keys
 *.key
 *.pem
+*.cert
+*.crt
+*.pfx
+*.p12
+*.pkcs12
+*.der
 
+# Credentials, Tokens, Secrets
+*credentials*
+*secret*
+*token*
+auth.json
+tokens.json
+storageState.json
+
+# Session data, cookies, browser profiles
+*cookie*
+*session*
+browser_profile/
+browser_profiles/
+browser-profile/
+browser-profiles/
+.browser-data/
+chrome-profile/
+firefox-profile/
+playwright/.auth/
 # ─── Runtime / State ──────────────────────────────────────────────────────────
 .state/
 .prometheus/
