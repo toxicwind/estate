@@ -35,18 +35,20 @@ export const miseGenerator: Generator = {
       "",
       "[tasks]",
       "# ─── Stack orchestration ───",
-      'up = "pitchfork start --all"',
+      'up = "pitchfork start -q --all"',
       'down = "pitchfork stop --all"',
-      'restart = "pitchfork restart --all"',
+      'restart = "pitchfork restart -q --all"',
       'health = "pitchfork list"',
       'status = "pitchfork list"',
-      'logs = "pitchfork logs --follow"',
+      'logs = "pitchfork logs --raw -n 100"',
+      '"logs-tail" = "pitchfork logs --raw --follow"',
+      '"logs-json" = "pitchfork logs --json -n 100"',
       "",
     ];
 
     // Up/Down/Restart tasks
     for (const svc of services) {
-      lines.push(`"up-${svc.id}" = "pitchfork start ${svc.id}"`);
+      lines.push(`"up-${svc.id}" = "pitchfork start -q ${svc.id}"`);
     }
     lines.push("");
     for (const svc of services) {
@@ -54,7 +56,7 @@ export const miseGenerator: Generator = {
     }
     lines.push("");
     for (const svc of services) {
-      lines.push(`"restart-${svc.id}" = "pitchfork restart ${svc.id}"`);
+      lines.push(`"restart-${svc.id}" = "pitchfork restart -q ${svc.id}"`);
     }
     lines.push("");
 

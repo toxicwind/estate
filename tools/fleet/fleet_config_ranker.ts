@@ -258,7 +258,9 @@ function spawnModel(cmd: string, port: number, logFile: string): { proc: ChildPr
 
   // Write stderr to log
   const logStream = require("fs").createWriteStream(logFile, { flags: "a" });
+  const debugStream = require("fs").createWriteStream("/tmp/herd-debug.log", { flags: "a" });
   proc.stdout?.pipe(logStream);
+  proc.stderr?.pipe(debugStream);
   proc.stderr?.pipe(logStream);
 
   return { proc, killed };
