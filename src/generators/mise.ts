@@ -85,6 +85,12 @@ export const miseGenerator: Generator = {
     lines.push('"open-uis-all" = "bun run scripts/open-web-uis.ts --all"');
     lines.push('"list-uis" = "bun run scripts/open-web-uis.ts --list"');
     // health-notify removed, replaced by single canonical version at line 90
+    // Developer & Terminal Tools
+    lines.push("# ─── Developer & Terminal Tools (on-demand) ───");
+    lines.push('zed = "zed ."');
+    lines.push('zellij = "zellij"');
+    lines.push('ttyd = "ttyd -p 25137 bash"');
+    lines.push('sshx = "sshx"');
     lines.push("");
 
     // Nuvio platform tasks

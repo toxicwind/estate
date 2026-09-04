@@ -81,7 +81,7 @@ auto = ["start"]
 
 [daemons.search-api]
 run = "exec bun --hot run apps/api/src/server.ts"
-dir = "/home/toxic/projects/sovereign-projects/mesh/search"
+dir = "/home/toxic/projects/sovereign-projects/sovereign-github-search"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25112/health"
@@ -90,14 +90,36 @@ env = {
 }
 auto = ["start"]
 
+[daemons.ghas-mcp]
+run = "exec bun run apps/mcp/src/server.ts --mode http"
+dir = "/home/toxic/projects/sovereign-projects/sovereign-github-search"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25113/health"
+env = {
+  GHAS_MCP_PORT = "25113",
+}
+auto = ["start"]
+
 [daemons.search-ui]
 run = "exec ./node_modules/.bin/next dev -p 25114"
-dir = "/home/toxic/projects/sovereign-projects/mesh/search/apps/frontend"
+dir = "/home/toxic/projects/sovereign-projects/sovereign-github-search/apps/frontend"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25114/"
 env = {
   GHAS_FRONTEND_PORT = "25114",
+}
+auto = ["start"]
+
+[daemons.mesh-hub]
+run = "exec bun run src/services/mesh-hub.ts"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25115/health"
+env = {
+  MESH_HUB_PORT = "25115",
 }
 auto = ["start"]
 
@@ -190,41 +212,41 @@ env = {
 }
 auto = ["start"]
 
-[daemons.beellama-cpp]
-run = "exec /home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp/build-cuda86/bin/llama-server --model /home/toxic/projects/models/EXAONE-4.0-1.2B-Q4_K_M.gguf --host 127.0.0.1 --port 25001 --n-gpu-layers 0 --parallel 1 --log-disable"
-dir = "/home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp"
+[daemons.hindsight]
+run = "exec ./stack/services/hindsight.sh"
+dir = "."
 mise = false
 retry = true
-ready_http = "http://127.0.0.1:25122/health"
+ready_http = "http://127.0.0.1:25117/health"
 env = {
-  BEELLAMA_PORT = "25122",
+  HINDSIGHT_API_PORT = "25117",
 }
 auto = ["start"]
 
-[daemons.ik-llama-cpp]
-run = "exec /home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp/build/bin/llama-server --model /home/toxic/projects/models/heretic-UD-27B-Q5_K_XL.gguf --host 127.0.0.1 --port 25002 -ngl 0 --parallel 1 --log-disable"
-dir = "/home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp"
-mise = false
+[daemons.prometheus]
+run = "exec ./stack/services/prometheus-hot.sh"
+dir = "."
+mise = true
 retry = true
-ready_http = "http://127.0.0.1:25123/health"
+ready_http = "http://127.0.0.1:25105/-/healthy"
 env = {
-  IK_LLAMA_PORT = "25123",
+  PROMETHEUS_PORT = "25105",
 }
 auto = ["start"]
 
-[daemons.llama-cpp-turboquant]
-run = "exec /home/toxic/projects/sovereign-projects/herd/engines/llama-cpp-turboquant/build/bin/llama-server --model /home/toxic/projects/models/gemma4-31b-it-dflash-Q4_K_M.gguf --host 127.0.0.1 --port 25003 --n-gpu-layers 0 --parallel 1 --log-disable"
-dir = "/home/toxic/projects/sovereign-projects/herd/engines/llama-cpp-turboquant"
-mise = false
+[daemons.grafana]
+run = "exec ./stack/services/grafana-mesh.sh"
+dir = "."
+mise = true
 retry = true
-ready_http = "http://127.0.0.1:25124/health"
+ready_http = "http://127.0.0.1:25110/api/health"
 env = {
-  TURBO_PORT = "25124",
+  GRAFANA_PORT = "25110",
 }
 auto = ["start"]
 
 [daemons.tau]
-run = "exec bun run /home/toxic/projects/sovereign-projects/tau/engine/packages/coding-agent/src/cli.ts"
+run = "exec bun run /home/toxic/projects/sovereign-projects/tau/packages/coding-agent/src/cli.ts"
 dir = "/home/toxic"
 mise = true
 retry = true
@@ -260,59 +282,26 @@ env = {
 }
 auto = ["start"]
 
-[daemons.qed]
-run = "exec ./target/release/zed --foreground"
-dir = "/home/toxic/projects/sovereign-projects/qed/editor"
-mise = false
-retry = true
-ready_http = "http://127.0.0.1:25129/health"
-env = {
-  ZED_PORT = "25129",
-}
-auto = ["start"]
-
-[daemons.zedra-host]
-run = "exec cargo run --bin zedra-host --release"
-dir = "/home/toxic/projects/sovereign-projects/qed/zedra-host"
-mise = false
-retry = true
-ready_http = "http://127.0.0.1:25130/health"
-env = {
-  ZEDRA_HOST_PORT = "25130",
-}
-auto = ["start"]
-
-[daemons.antigravity-cli]
-run = "exec cargo run --release -- --port 25134"
-dir = "/home/toxic/projects/sovereign-projects/mesh/tooling"
-mise = false
-retry = true
-ready_http = "http://127.0.0.1:25140/health"
-env = {
-  ANTIGRAVITY_CLI_PORT = "25140",
-}
-auto = ["start"]
-
 [groups.core]
-daemons = ["herd", "qdrant", "redis", "search-api", "mesh"]
+daemons = ["herd", "qdrant", "redis", "search-api", "ghas-mcp", "mesh-hub", "prometheus", "grafana", "mesh"]
 
 [groups.main]
-daemons = ["qdrant", "redis", "kafka", "hal-substrate", "yote", "tailscaled", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "pi-web-dashboard", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
+daemons = ["qdrant", "redis", "kafka", "hal-substrate", "yote", "tailscaled", "search-api", "ghas-mcp", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "pi-web-dashboard", "hindsight", "prometheus", "grafana", "tau", "kimi-code", "mesh"]
 
 [groups.agents]
-daemons = ["axiom", "tau", "kimi-code", "zedra-host", "antigravity-cli"]
+daemons = ["axiom", "tau", "kimi-code"]
 
 [groups.search]
-daemons = ["search-api", "search-ui"]
+daemons = ["search-api", "ghas-mcp", "search-ui"]
 
 [groups.mcp]
-daemons = ["mesh"]
+daemons = ["ghas-mcp", "mcp-gateway", "mesh"]
 
 [groups.monitoring]
-daemons = []
+daemons = ["prometheus", "grafana"]
 
 [groups.all]
-daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "tailscaled", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
+daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "tailscaled", "search-api", "ghas-mcp", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "pi-web-dashboard", "hindsight", "prometheus", "grafana", "tau", "kimi-code", "mesh"]
 
 [groups.sovereign-core]
-daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "tailscaled", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "pi-web-dashboard", "beellama-cpp", "ik-llama-cpp", "llama-cpp-turboquant", "tau", "kimi-code", "mesh", "qed", "zedra-host", "antigravity-cli"]
+daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "tailscaled", "search-api", "ghas-mcp", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "pi-web-dashboard", "hindsight", "prometheus", "grafana", "tau", "kimi-code", "mesh"]

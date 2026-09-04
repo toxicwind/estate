@@ -3,15 +3,16 @@
 set -euo pipefail
 SOV="${SOVEREIGN_ROOT:-$HOME/sovereign}"
 source "$SOV/stack/lib-ports.sh" 2>/dev/null || true
-PORT="${KAFKA_PORT:-9092}"
+PORT="${KAFKA_PORT:-25144}"
 export JAVA_HOME=/usr/lib/jvm/java-25-graalvm
 
+sudo fuser -k "${PORT}/tcp" 9093/tcp 2>/dev/null || true
+sleep 1
 
-fuser -k "${PORT}/tcp" 9093/tcp 2>/dev/null || true
-
-export KAFKA_LOG4J_OPTS="-Dkafka.logs.dir=$HOME/.local/state/kafka/logs"
-mkdir -p "$HOME/.local/state/kafka/logs"
-exec sudo -u kafka /usr/share/kafka/bin/kafka-server-start.sh /etc/kafka/server.properties
+export KAFKA_LOG4J_OPTS="-Dkafka.logs.dir=/var/log/kafka"
+sudo mkdir -p /var/log/kafka
+sudo chown -R kafka:kafka /var/log/kafka
+exec sudo -E -u kafka /usr/share/kafka/bin/kafka-server-start.sh /etc/kafka/server.properties
 
 # If rpk redpanda server binary is available, run Redpanda in KRaft mode
 if [[ -x "$HOME/.local/bin/redpanda" ]]; then
