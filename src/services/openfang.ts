@@ -10,8 +10,15 @@ loadSovereignPorts();
 const HOME = process.env.HOME || "/home/toxic";
 const PUBLIC = requirePort("OPENFANG_PORT");
 const BACKEND = Number(process.env.OPENFANG_BACKEND_PORT || "25203");
-const BIN = process.env.OPENFANG_BIN || `${HOME}/.openfang/bin/openfang`;
 const SOV = process.env.SOVEREIGN_ROOT || resolve(HOME, "sovereign");
+const CANDIDATES = [
+  process.env.OPENFANG_BIN,
+  resolve(HOME, ".local/bin/openfang"),
+  resolve(HOME, ".openfang/bin/openfang"),
+  "/usr/local/bin/openfang",
+  resolve(SOV, "bin/openfang"),
+];
+const BIN = CANDIDATES.find(c => c && existsSync(c)) || resolve(HOME, ".local/bin/openfang");
 
 function loadSecretsFile(path: string) {
   if (!existsSync(path)) return;

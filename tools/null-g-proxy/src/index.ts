@@ -52,9 +52,9 @@ import { knowledgeRoutes } from "./routes/knowledge.ts";
 import { terminalRoutes } from "./routes/terminal.ts";
 import { codeRoutes } from "./routes/code.ts";
 
-// Sovereign port SSOT: NULL_G_PORT (25107). Legacy PORT/8787 only as last fallback.
+// Sovereign port SSOT: NULL_G_PROXY_PORT (25107). Legacy PORT/8787 only as last fallback.
 const PORT = parseInt(
-  process.env["NULL_G_PORT"] ?? process.env["PORT"] ?? "25107",
+  process.env["NULL_G_PROXY_PORT"] ?? process.env["NULL_G_PORT"] ?? process.env["PORT"] ?? "25107",
   10,
 );
 
