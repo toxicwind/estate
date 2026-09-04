@@ -37,11 +37,9 @@ export const CORE_SERVICES: ServiceDef[] = [
     dir: ".",
     mise: false,
     retry: true,
-    dir: ".",
     readyPort: true,
     group: "core",
     autoStart: true,
-    mise: false,
     healthPath: "/health",
   },
   {

@@ -3,6 +3,8 @@
 // Run: bun run scripts/generate.ts
 // ============================================================================
 
+import { resolve } from "path";
 import { generateAll } from "../src/generators/index.ts";
 
-await generateAll();
+const root = process.env.SOVEREIGN_ROOT || resolve(import.meta.dir, "..");
+await generateAll(root);
