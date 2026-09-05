@@ -3,6 +3,7 @@
 // ============================================================================
 
 import type { ServiceDef } from "../types/index.ts";
+import { hotfixRegistry } from "../lib/hotfix_registry.ts";
 
 export const ALL_SERVICES: ServiceDef[] = [
   // ── CORE INFRASTRUCTURE ──
@@ -283,7 +284,7 @@ export const ALL_SERVICES: ServiceDef[] = [
   },
 
   // ── AGENT RUNTIMES (TAU) ──
-  {
+  hotfixRegistry.resolve<ServiceDef>("services.tau", {
     id: "tau",
     name: "tau",
     portKey: "PI_AGENT_PORT",
@@ -299,7 +300,7 @@ export const ALL_SERVICES: ServiceDef[] = [
       PI_CODING_AGENT: "true",
       PI_REASONING_LEVEL: "high",
     },
-  },
+  }),
   {
     id: "kimi-code",
     name: "kimi-code-sovereign",
