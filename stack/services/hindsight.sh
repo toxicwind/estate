@@ -14,13 +14,10 @@ CP_PORT="$HINDSIGHT_CP_PORT"
 
 # Resolve LLM credentials — prefer Hindsight-specific, fallback to OpenAI
 # 25+ providers supported via HINDSIGHT_API_LLM_PROVIDER (openai, anthropic, groq, ollama, etc.)
-LLM_KEY="${HINDSIGHT_API_LLM_API_KEY:-${OPENAI_API_KEY:-}}"
-LLM_PROVIDER="${HINDSIGHT_API_LLM_PROVIDER:-litellm}"
-# HERD endpoint (port 25100) - beellama/exaone-4-0-1-2b-iq4xs
-HINDSIGHT_API_LLM_API_URL="${HINDSIGHT_API_LLM_API_URL:-http://127.0.0.1:25100}"
-# Optional model override (defaults inside image: gpt-5-mini or similar)
-LLM_MODEL="${HINDSIGHT_API_LLM_MODEL:-beellama/exaone-4-0-1-2b-iq4xs}"
-
+LLM_KEY="${HINDSIGHT_API_LLM_API_KEY:-${OPENAI_API_KEY:-llama-swap-local-key}}"
+LLM_PROVIDER="${HINDSIGHT_API_LLM_PROVIDER:-openai}"
+HINDSIGHT_API_LLM_BASE_URL="${HINDSIGHT_API_LLM_BASE_URL:-http://127.0.0.1:25100/v1}"
+LLM_MODEL="${HINDSIGHT_API_LLM_MODEL:-beellama/qwen-flash-64k}"
 # Allow empty key for local providers (ollama, lmstudio) or Cloud-bypass;
 # container still starts but retain/reflect requiring LLM will error until key is set.
 if [[ -z "${LLM_KEY}" ]]; then
@@ -39,15 +36,13 @@ docker volume create hindsight-data >/dev/null 2>&1 || true
 
 # Build docker env passthrough
 DOCKER_ENV=(
+  -e "HINDSIGHT_API_PORT=${API_PORT}"
+  -e "HINDSIGHT_CP_PORT=${CP_PORT}"
   -e "HINDSIGHT_API_LLM_PROVIDER=${LLM_PROVIDER}"
-  -e "HINDSIGHT_API_LLM_API_KEY=llama-swap-local-key"
+  -e "HINDSIGHT_API_LLM_BASE_URL=${HINDSIGHT_API_LLM_BASE_URL}"
+  -e "HINDSIGHT_API_LLM_API_KEY=${LLM_KEY}"
+  -e "HINDSIGHT_API_LLM_MODEL=${LLM_MODEL}"
 )
-if [[ -n "${LLM_KEY}" ]]; then
-  DOCKER_ENV+=(-e "HINDSIGHT_API_LLM_API_KEY=${LLM_KEY}")
-fi
-if [[ -n "${LLM_MODEL}" ]]; then
-  DOCKER_ENV+=(-e "HINDSIGHT_API_LLM_MODEL=${LLM_MODEL}")
-fi
 # Pass through any HINDSIGHT_* overrides from host env (cp access key, etc.)
 for v in HINDSIGHT_CP_ACCESS_KEY HINDSIGHT_CP_DATAPLANE_API_URL HINDSIGHT_API_PORT HINDSIGHT_CP_PORT; do
   if [[ -n "${!v:-}" ]]; then
@@ -61,12 +56,11 @@ echo "[hindsight] starting ghcr.io/vectorize-io/hindsight:latest on :${API_PORT}
 # --pull always ensures latest; --rm lets pitchfork restart cleanly; --shm-size=1g required by docs.
 # --name hindsight stable for volume attachment.
 exec docker run --rm \
-  --pull always \
+  --pull missing \
   --name hindsight \
   --restart no \
   --shm-size=1g \
-  -p "127.0.0.1:${API_PORT}:8888" \
-  -p "127.0.0.1:${CP_PORT}:9999" \
+  --network host \
   -v hindsight-data:/home/hindsight/.pg0 \
   "${DOCKER_ENV[@]}" \
   ghcr.io/vectorize-io/hindsight:latest

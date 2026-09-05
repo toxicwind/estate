@@ -220,6 +220,7 @@ retry = true
 ready_http = "http://127.0.0.1:25117/health"
 env = {
   HINDSIGHT_API_PORT = "25117",
+  HINDSIGHT_CP_PORT = "25118",
 }
 auto = ["start"]
 
