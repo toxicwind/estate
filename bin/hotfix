@@ -1,0 +1,70 @@
+#!/usr/bin/env bun
+// ============================================================================
+// SOVEREIGN — Hotfix Registry Management CLI
+// Usage: hotfix [list|status|enable|disable] [target]
+// ============================================================================
+
+import { hotfixRegistry } from "../src/lib/hotfix_registry.ts";
+
+const args = process.argv.slice(2);
+const command = args[0] || "list";
+const target = args[1];
+
+switch (command) {
+  case "list": {
+    await hotfixRegistry.loadAll();
+    const patches = hotfixRegistry.listPatches();
+    console.log("\n⚡ Sovereign Hotfix Registry — Active Patches\n" + "=".repeat(60));
+    if (patches.length === 0) {
+      console.log("No hotfixes registered. All services running on core defaults.");
+    } else {
+      for (const p of patches) {
+        const status = p.enabled ? "\x1b[32m[ACTIVE]\x1b[0m" : "\x1b[31m[DISABLED]\x1b[0m";
+        console.log(`${status} ${p.target} (v${p.version})`);
+        console.log(`         Author: ${p.author || "unknown"}`);
+        console.log(`         Reason: ${p.reason || "N/A"}`);
+      }
+    }
+    console.log("=".repeat(60) + "\n");
+    break;
+  }
+  case "disable": {
+    if (!target) {
+      console.error("Error: specify patch target to disable (e.g. hotfix disable services.tau)");
+      process.exit(1);
+    }
+    await hotfixRegistry.loadAll();
+    const ok = hotfixRegistry.disablePatch(target);
+    if (ok) {
+      console.log(`✔ Disabled patch '${target}'. Core will fall back to default implementation.`);
+    } else {
+      console.error(`✖ Patch '${target}' not found.`);
+      process.exit(1);
+    }
+    break;
+  }
+  case "enable": {
+    if (!target) {
+      console.error("Error: specify patch target to enable (e.g. hotfix enable services.tau)");
+      process.exit(1);
+    }
+    await hotfixRegistry.loadAll();
+    const ok = hotfixRegistry.enablePatch(target);
+    if (ok) {
+      console.log(`✔ Enabled patch '${target}'. Live resolution active.`);
+    } else {
+      console.error(`✖ Patch '${target}' not found or could not be enabled.`);
+      process.exit(1);
+    }
+    break;
+  }
+  case "status": {
+    await hotfixRegistry.loadAll();
+    const count = hotfixRegistry.listPatches().length;
+    console.log(`Hotfix registry operational. Active patches: ${count}`);
+    break;
+  }
+  default:
+    console.log(`Usage: hotfix [list|status|enable|disable] [target]`);
+    break;
+}

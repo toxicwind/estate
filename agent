@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Sovereign Tau Agent Launcher — Single Canonical Profile
+export SOVEREIGN_HOME="/home/toxic/projects/sovereign-projects/tau"
+export PI_CONFIG_DIR="${PI_CONFIG_DIR:-.tau}"
+export PI_SUBAGENT_MODEL="${PI_SUBAGENT_MODEL:-thinkingmachines/inkling}"
+
+# Non-blocking health check to ensure Sovereign memory services are active
+if ! curl -sf -m 0.2 http://127.0.0.1:25100/health >/dev/null 2>&1 || ! curl -sf -m 0.2 http://127.0.0.1:25117/health >/dev/null 2>&1; then
+    (cd /home/toxic/sovereign && pitchfork start herd hindsight >/dev/null 2>&1 &)
+fi
+
+exec bun "${SOVEREIGN_HOME}/packages/coding-agent/src/cli.ts" "$@"
