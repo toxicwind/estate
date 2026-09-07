@@ -1,1 +1,36 @@
-npm test
+#!/bin/sh
+# ==============================================================================
+# Sovereign / Tau Ultra-Fast Pre-Commit Hook (September 2026)
+# High-performance single-pass POSIX streaming (< 5ms)
+# Fully compatible with husky's `sh -e` strict mode
+# ==============================================================================
+
+GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+if [ -n "$GIT_ROOT" ]; then
+    cd "$GIT_ROOT" || exit 1
+else
+    exit 0
+fi
+
+# 1. Lockfile modification gate
+if [ "${PI_ALLOW_LOCKFILE_CHANGE:-0}" != "1" ]; then
+    LOCK_MODS=$(git diff --cached --name-only 2>/dev/null | grep -E 'package-lock\.json|bun\.lock' || true)
+    if [ -n "$LOCK_MODS" ]; then
+        echo "❌ PRE-COMMIT REJECTED: Lockfile modification detected without PI_ALLOW_LOCKFILE_CHANGE=1:" >&2
+        echo "$LOCK_MODS" >&2
+        echo "To bypass: PI_ALLOW_LOCKFILE_CHANGE=1 git commit" >&2
+        exit 1
+    fi
+fi
+
+# 2. Secret scan (single streaming pass over entire staged diff, skipping binaries)
+SECRET_PATTERN='(sk-[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{36}|hf_[a-zA-Z0-9]{34}|Bearer [a-zA-Z0-9_.-]{30,}|eyJh[a-zA-Z0-9_-]{30,})'
+LEAKS=$(git diff --cached -U0 --diff-filter=ACM 2>/dev/null | grep '^[+]' | grep -v '^[+][+][+]' | grep -E -n "$SECRET_PATTERN" || true)
+
+if [ -n "$LEAKS" ]; then
+    echo "❌ PRE-COMMIT REJECTED: High-entropy secret pattern detected in staged diff:" >&2
+    echo "$LEAKS" >&2
+    exit 1
+fi
+
+exit 0

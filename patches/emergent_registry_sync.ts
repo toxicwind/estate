@@ -9,9 +9,9 @@
 import type { ServiceDef } from "../src/types/index.ts";
 
 export const TARGET = "registry.emergent_sync";
-export const VERSION = "1.0.0";
+export const VERSION = "4.0.0";
 export const AUTHOR = "sovereign";
-export const REASON = "Emergent registry sync: health-gated activation linking Hindsight (:25117) and Pitchfork lifecycle (herd/hindsight)";
+export const REASON = "Optimized emergent registry fusion: connects Hindsight (:25117) health-check to Pitchfork daemon lifecycle using resolve<T> pattern; persistent file survives restarts; live reload via fs.watch + unref; rollback via .disabled; health-gated activation prevents partial corruption.";
 export const ENABLED = true;
 
 /**
