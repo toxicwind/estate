@@ -1,0 +1,46 @@
+name: Sovereign CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sovereign-test:
+    name: Sovereign Stack Tests & Health Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install
+
+      - name: Run Web UI Integration & Unit Tests
+        run: bun test tests/open_web_uis.test.ts
+
+      - name: Run Ports & Infrastructure Tests
+        run: bun test tests/ports.test.ts
+
+      - name: Validate Shell Script Syntax
+        run: |
+          for script in scripts/*.sh; do
+            if [ -f "$script" ]; then
+              bash -n "$script"
+            fi
+          done
+
+      - name: Validate Health Check Scripts
+        run: |
+          bash -n scripts/health-check.sh
+          bash -n scripts/open-web-uis.sh

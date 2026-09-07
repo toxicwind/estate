@@ -10,6 +10,8 @@
 !.env.template
 .envrc.local
 .secrets
+.secrets*
+*.token
 
 # Certificates and Keys
 *.key
@@ -45,7 +47,15 @@ playwright/.auth/
 .prometheus/
 logs/
 *.log
+*.qslog
+*.jsonl
+/tmp/
+tmp/
 pids/
+session-export*
+*.session
+*.sqlite
+.wezterm.sock*
 
 # ─── Build Artifacts ──────────────────────────────────────────────────────────
 .venv/
@@ -53,9 +63,13 @@ __pycache__/
 *.pyc
 *.egg-info/
 node_modules/
+.bun/
 target/
 dist/
 build/
+*.tsbuildinfo
+.turbo/
+Cargo.lock.bak
 bun.lock
 
 # ─── Binaries (built/copied, not tracked in git) ─────────────────────────────

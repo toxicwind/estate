@@ -156,3 +156,11 @@ The persistent store mechanism (`persistPatch` in `hotfix_registry.ts`) works as
 4. **Rollback**: `disablePatch()` renames the file to `.disabled` and sets `ENABLED = false`. `enablePatch()` reverses the rename and reloads.
 
 This mechanism enables **Dynamic Software Update (DSU)**: patches apply continuously without restarting Pitchfork or any background daemon. The health-gated activation (`hindsight` port 25117 + `herd` daemon healthy) ensures partial activation never corrupts the registry state.
+
+---
+
+**Provider / Model References (connected to registry health-guard)**:
+- **NVIDIA**: `NVIDIA_API_KEY` (configured via env / vault) → endpoint `https://integrate.api.nvidia.com/v1`.
+- **OpenRouter**: `OPENROUTER_API_KEY` (configured via env / vault) → `openrouter/thinkingmachines/inkling:free` (fast tier).
+- **Herd (local)**: `beellama/qwen-flash-64k` (port 25100, RTX 3090, 64K context, 119 tok/s, CUDA 86). Self-hosted, no external key.
+- **Hindsight API**: `port 25117` (`/health` endpoint), verified by registry health-check guard. Independent from Herd; both must respond healthy for `registry.emergent_sync` activation.
