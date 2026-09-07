@@ -1,10 +1,14 @@
-# Sovereign Control Plane
+# Sovereign Control Plane (`/home/toxic/sovereign`)
 
-The orchestration and control layer for the Sovereign ecosystem.
+> **The primary orchestration, daemon supervisor, and control plane for the Sovereign ecosystem.**
+
+Sovereign coordinates background daemons, port allocations, environment profiles, and developer services across the system. Workspaces in `~/projects/sovereign-projects/` consume these services over standard localhost interfaces.
+
+---
 
 ## 🚀 Quick Launch — Web UIs & Dashboards
 
-Sovereign provides first-class, standard Web UI integration with the running **Firefox Nightly** (`firefox-nightly`) instance on Wayland/Hyprland.
+Sovereign integrates with **Firefox Nightly** (`firefox-nightly`) on Wayland/Hyprland:
 
 ```bash
 # Open all currently active/healthy Web UIs into tabs in running Firefox
@@ -17,89 +21,108 @@ bun run scripts/open-web-uis.ts
 mise run list-uis
 bun run scripts/open-web-uis.ts --list
 
-# Open all configured Web UIs (active and pending)
-bun run scripts/open-web-uis.ts --all
-
 # Open a specific dashboard by service id
 bun run scripts/open-web-uis.ts --service herd
 bun run scripts/open-web-uis.ts --service mesh
 bun run scripts/open-web-uis.ts --service grafana
 ```
 
-### Registered Web UIs & Port SSOT
+---
 
-All ports follow the Sovereign 25xxx SSOT in [`config/ports.env`](./config/ports.env):
+## 🏛️ Live Service Registry & Port SSOT
 
-| Service ID | Service Name | Port | Path | Description |
-|---|---|---|---|---|
-| `herd` | Herd / Llama-Swap | `:25100` | `/ui/` | Model switcher & memory monitor |
-| `mesh` | MCP Mesh Gateway | `:25127` | `/` | MCP federation & active upstreams |
-| `prometheus`| Prometheus | `:25105` / `:9090` | `/` | Metrics & telemetry targets |
-| `grafana` | Grafana Observability | `:25110` | `/` | Anonymous admin metrics dashboard |
-| `search-ui`| Seeker / GHAS Code Search | `:25114` | `/` | Code intelligence & semantic index |
-| `tau-dash` | Tau Web Dashboard | `:25192` | `/` | Agent execution & session dashboard |
-| `kimi-code`| Kimi Code Web IDE | `:25126` | `/` | Kimi Code interactive web workspace |
-| `kimi-audit`| Kimi Token Audit | `:25116` | `/` | Token usage & rate telemetry |
-| `hf-downloader`| HF Downloader | `:25106` | `/` | HuggingFace model downloader mesh |
-| `rust-web` | Rust Web Frontend | `:25101` | `/` | High-performance Rust web frontend |
-| `openfang` | OpenFang / Axiom | `:25103` | `/` | Autonomous agent dashboard |
-| `ttyd` | TTYD Web Terminal | `:25137` | `/` | Web terminal interface |
-| `qdrant` | Qdrant REST API | `:25133` | `/` | Vector engine status |
+All ports strictly adhere to the single source of truth in [`config/ports.env`](./config/ports.env):
 
-## 🌐 Browser Architecture & Port 9222 SSOT
+| Service | Port(s) | Type | Role & Upstream Architecture |
+|---|---|---|---|
+| **`herd`** | `:25100` | HTTP / SSE | Inference router (llama-swap fork), model switcher, UI playground |
+| **`rust-web`** | `:25101` / `:25201` | HTTP | High-performance Rust web frontend service |
+| **`openfang`** | `:25103` / `:25203` | HTTP | Autonomous agent gateway & Axiom dashboard |
+| **`prometheus`**| `:25105` | HTTP | Metrics collection & scrape aggregator |
+| **`hf-downloader`**| `:25106` / `:25206` | HTTP | HuggingFace model downloader mesh |
+| **`null-g-proxy`**| `:25107` | HTTP | Null-gateway proxy |
+| **`watchdog`** | `:25108` | HTTP | Stack health watchdog & daemon recovery monitor |
+| **`mcpproxy`** | `:25109` | HTTP | Local mcpproxy service |
+| **`grafana`** | `:25110` / `:25210` | HTTP | Observability dashboard (anonymous admin auto-login) |
+| **`ghas-api`** | `:25112` | HTTP | GitHub Advanced Security API & code scanning backend |
+| **`ghas-mcp`** | `:25113` | HTTP / MCP | GHAS MCP tool endpoint |
+| **`ghas-ui`** | `:25114` | HTTP | GHAS code intelligence & search frontend |
+| **`mesh-hub`** | `:25115` | HTTP | Multi-feature mesh aggregator & service catalog |
+| **`kimi-audit`**| `:25116` | HTTP | Kimi token audit & telemetry dashboard |
+| **`hindsight`** | `:25117` / `:25118` | HTTP | Agent vector memory API (:25117) & Control Panel (:25118) |
+| **`mcp-gateway`**| `:25120` | HTTP / JSON-RPC | MCP proxy gateway & aggregator router |
+| **`byte-vision`**| `:25121` | HTTP | Vision inference API & mock endpoint |
+| **`beellama`** | `:25122` | HTTP | Local beellama.cpp dedicated inference backend |
+| **`ik-llama`** | `:25123` | HTTP | Ik-llama engine backend |
+| **`kimi-code`** | `:25126` | HTTP | Kimi Code interactive web workspace |
+| **`mesh`** | `:25127` | HTTP / JSON-RPC | **`mcpproxy-go` MCP federation gateway (43 active upstreams)** |
+| **`zedra-host`**| `:25130` | HTTP / TCP | Zedra host daemon & collaboration bridge |
+| **`sov-ghas`** | `:25131` | HTTP | Sovereign GHAS indexer |
+| **`qdrant`** | `:25133` / `:25134` | HTTP / gRPC | Vector database engine for embeddings and semantic search |
+| **`hal-substrate`**| `:25143` | HTTP | Autonomous agent inference engine (`hal-loop.py`) |
+| **`kafka`** | `:25144` | TCP (KRaft) | Distributed event streaming broker (GraalVM / Kafka 3.9) |
+| **`tau-dash`** | `:25192` | HTTP | Tau agent execution & session dashboard |
+| **`redis`** | `:25199` | TCP (RESP) | Valkey in-memory key-value cache and pubsub |
 
-- **Interactive Primary Browser**: `firefox-nightly` (Profile: `g304xzha.default-release`, native Wayland `MOZ_ENABLE_WAYLAND=1`).
-  - Keybind: `SUPER + W` in Hyprland (`~/.config/hypr/custom/variables.lua`).
-  - Default MIME handler: `firefox-nightly.desktop` for `http`, `https`, `html`, `pdf`.
-- **Port 9222 (CDP Sandbox)**: Dedicated strictly to Chromium DevTools Protocol (CDP) for headless/headed WebGPU sandboxing (`sovereign/src/kataware-doki/cdp-node.ts`) and Playwright CDP scrapers (`tools/bugbounty/lib/helpers.mjs`).
-  - `firefox-bidi.service` is disabled: Firefox Remote Agent implements WebDriver BiDi (not Chromium CDP) and binding the user's primary profile to a systemd service causes `parent.lock` collisions.
+---
 
-## 🛠️ Stack Orchestration
+## 👤 Modular Profile Architecture (`profiles/`)
+
+Sovereign decouples developer workstation specifics from repository code:
+
+- **Loader (`profiles/loader.sh`)**: Dynamically resolves `SOVEREIGN_PROFILE="${SOVEREIGN_PROFILE:-toxic}"` and sources the corresponding profile.
+- **Profiles**:
+  - **`profiles/toxic/env.sh`**: Personal workstation tuning for toxic:
+    - CPU architecture: AMD Ryzen 7 8700F (znver4).
+    - GPU acceleration: NVIDIA RTX 3090 (24GB VRAM).
+    - Local inference models: `thinkingmachines/inkling` (subagent), `local-fast` (scout).
+    - Compiler tuning: `CARGO_BUILD_JOBS=12` (throttled to preserve interactive latency).
+  - **`profiles/default/env.sh`**: Modular template for GitHub Actions CI and external contributors without machine hardcodes.
+- **Usage**:
+  ```bash
+  # Loads default workstation profile (toxic)
+  . ~/.profile
+
+  # Explicitly switch to generic CI profile:
+  SOVEREIGN_PROFILE=default . /home/toxic/sovereign/.profile
+  ```
+
+---
+
+## ⚡ Hardware Architecture & Compiler Optimization (Ryzen 7 8700F)
+
+> **Build Concurrency Notice**: Cargo is configured with `jobs = 12` in `.cargo/config.toml` (target-cpu `znver4`).
+
+- **Why 12 jobs?** The AMD Ryzen 7 8700F has 8 physical cores (16 threads) sharing a unified **16 MiB L3 cache**. When unthrottled 16-thread `rustc` bursts run alongside `sccache`, L3 cache line thrashing and memory bus contention cause desktop and shell input lag (loadavg > 24). Setting `jobs = 12` reserves 4 hardware threads for the interactive shell, editor, and system daemons while maintaining >90% compilation throughput.
+- **To UNCAP to 16 threads (dedicated headless builds)**:
+  ```bash
+  cargo build -j 16
+  ```
+- **CPU Scaling Governor**: Workstation defaults to `powersave`. For maximal burst compilation performance:
+  ```bash
+  echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+  ```
+
+---
+
+## 🛡️ Pre-Commit Security & Git Hygiene
+
+- **Fast Single-Pass Pre-Commit Hook**: Installed in `.git/hooks/pre-commit` and `.husky/pre-commit`. Evaluates staged diffs in `< 5ms` via streaming POSIX pipe.
+- **Credential Protection**: Automatically rejects commits containing high-entropy tokens (`sk-`, `ghp_`, `hf_`, `eyJh`).
+- **Lockfile Freezing**: Blocks accidental edits to `bun.lock` or `package-lock.json` unless `PI_ALLOW_LOCKFILE_CHANGE=1` is set.
+- **Zero-Leak Boundary**: Root `.gitignore` strictly ignores `.env*` (except `!.env.example`), `.secrets*`, private keys, and runtime logs.
+
+---
+
+## 📡 Rapid Verification Commands
 
 ```bash
-mise run up          # Start all Sovereign daemons via pitchfork
-mise run down        # Stop all daemons
-mise run status      # Check daemon status
-mise run svc-check   # Health check all 25xxx ports
-bun run scripts/generate.ts  # Re-sync configs from ports.env + registry
+# Test primary services:
+curl -sf http://127.0.0.1:25100/v1/models >/dev/null && echo "✅ :25100 Herd (LLM)"
+curl -sf http://127.0.0.1:25127/health >/dev/null && echo "✅ :25127 Mesh (MCP)"
+curl -sf http://127.0.0.1:25133/ >/dev/null && echo "✅ :25133 Qdrant"
+valkey-cli -p 25199 ping >/dev/null && echo "✅ :25199 Redis"
+
+# Test pre-commit hook:
+/home/toxic/sovereign/.git/hooks/pre-commit
 ```
-
-## 🏛️ Live Sovereign Architecture & Ports Matrix
-
-All services listen in the `25xxx` range as defined in [`config/ports.env`](./config/ports.env).
-All 12 core and active peripheral daemons are supervised by **Pitchfork** (`pitchfork.toml`):
-
-| Service | Port(s) | Type | Health Probe | Status | Role / Architecture |
-|---|---|---|---|---|---|
-| `herd` | `:25100` | HTTP / SSE | `curl -sf http://127.0.0.1:25100/health` | **ONLINE** | Llama-Swap router, model orchestrator, GPU memory manager |
-| `rust-web` | `:25101` (pub)<br>`:25201` (backend) | HTTP | `curl -sf http://127.0.0.1:25101/health` | **ONLINE** | High-performance Rust web frontend + `mesh-front` reverse proxy |
-| `yote` | `:25102` | HTTP | `curl -sf http://127.0.0.1:25102/health` | **ONLINE** | Telegram bridge & OpenFang external service gateway |
-| `hf-downloader` | `:25106` (pub)<br>`:25206` (backend) | HTTP / WS | `curl -sf http://127.0.0.1:25106/health` | **ONLINE** | Resumable Hugging Face model/dataset downloader mesh |
-| `kimi-audit-dash` | `:25116` | HTTP | `curl -sf http://127.0.0.1:25116/health` | **ONLINE** | KTA token usage, quota telemetry & model comparison |
-| `mcp-gateway` | `:25120` | HTTP / JSON-RPC | `curl -sf http://127.0.0.1:25120/health` | **ONLINE** | Sovereign MCP gateway, circuit breaker & sticky session router |
-| `byte-vision` | `:25121` | HTTP | `curl -sf http://127.0.0.1:25121/health` | **ONLINE** | Vision inference API & mock endpoint |
-| `mesh` | `:25127` | HTTP | `curl -sf http://127.0.0.1:25127/health` | **ONLINE** | `mcpproxy-go` MCP federation gateway (43 upstreams) |
-| `qdrant` | `:25133` (HTTP)<br>`:25134` (gRPC) | HTTP / gRPC | `curl -sf http://127.0.0.1:25133/` | **ONLINE** | Vector database engine for semantic embeddings & search |
-| `hal-substrate` | `:25143` | HTTP | `curl -sf http://127.0.0.1:25143/health` | **ONLINE** | Autonomous agent inference engine (`hal-loop.py`) |
-| `kafka` | `:25144` | TCP (KRaft) | `ss -ltn 'sport = :25144'` | **ONLINE** | Distributed event streaming broker (GraalVM / Kafka 3.9) |
-| `redis` | `:25199` | TCP (RESP) | `valkey-cli -p 25199 ping` | **ONLINE** | Valkey in-memory key-value cache and pubsub broker |
-
-### Verification Commands
-
-```bash
-# Rapid probe of all core HTTP health endpoints:
-for p in 25100 25101 25102 25106 25116 25120 25121 25127 25143 25201; do
-  curl -sf "http://127.0.0.1:$p/health" >/dev/null && echo "✅ :$p" || echo "❌ :$p"
-done
-
-# Verify Qdrant, Redis, Kafka:
-curl -sf "http://127.0.0.1:25133/" >/dev/null && echo "✅ :25133 qdrant"
-valkey-cli -p 25199 ping >/dev/null && echo "✅ :25199 redis"
-ss -ltn 'sport = :25144' | grep -q LISTEN && echo "✅ :25144 kafka"
-```
-
-## ⚡ Active Emergent Features
-- **Autonomous Continuation Loop (`src/todo_loop.py`)**: Parquet-backed (`data/todos.parquet`) state machine with self-talk JSONL mailbox for non-blocking coordination.
-- **High-Frequency Health Probing**: Sub-second health polling across all 25xxx daemons with failfast circuit breaking.
-- **Dynamic Config Generation**: Real-time synchronization of `ports.env` and service registry into `pitchfork.toml` and `mise.toml`.
-- **Subagent Mesh Routing**: Seamless tool discovery and proxying via Mesh (`:25127`).
