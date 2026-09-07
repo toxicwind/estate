@@ -3,8 +3,6 @@
 // ============================================================================
 
 import type { ServiceDef } from "../types/index.ts";
-import { hotfixRegistry } from "../lib/hotfix_registry.ts";
-
 export const ALL_SERVICES: ServiceDef[] = [
   // ── CORE INFRASTRUCTURE ──
   {
@@ -81,17 +79,6 @@ export const ALL_SERVICES: ServiceDef[] = [
     mise: false,
     healthPath: "/health",
   },
-  {
-    id: "tailscaled",
-    name: "tailscaled",
-    portKey: "TAILSCALED_PORT",
-    run: "exec /home/toxic/sovereign/stack/services/tailscaled.sh",
-    dir: ".",
-    group: "core",
-    autoStart: true,
-    mise: true,
-  },
-
   // ── GHAS & SEARCH SERVICES ──
   {
     id: "search-api",
@@ -104,19 +91,6 @@ export const ALL_SERVICES: ServiceDef[] = [
     autoStart: true,
     mise: true,
     env: {},
-    healthPath: "/health",
-  },
-  {
-    id: "ghas-mcp",
-    name: "ghas-mcp",
-    portKey: "GHAS_MCP_PORT",
-    run: "exec bun run apps/mcp/src/server.ts --mode http",
-    dir: "/home/toxic/projects/sovereign-projects/sovereign-github-search",
-    readyHttp: "/health",
-    group: "core",
-    autoStart: true,
-    mise: true,
-    env: { GHAS_MCP_PORT: "25113" },
     healthPath: "/health",
   },
   {
@@ -232,19 +206,6 @@ export const ALL_SERVICES: ServiceDef[] = [
     healthPath: "/health",
   },
   {
-    id: "pi-web-dashboard",
-    name: "pi-web-dashboard",
-    portKey: "PI_WEB_DASHBOARD_PORT",
-    run: "exec /home/toxic/.bun/bin/bun run /home/toxic/projects/sovereign-projects/tau/engine/packages/server/dist/web-server.js",
-    dir: ".",
-    readyHttp: "/api/health",
-    group: "core",
-    autoStart: true,
-    mise: true,
-    env: { PORT: "25192" },
-    healthPath: "/api/health",
-  },
-  {
     id: "hindsight",
     name: "hindsight",
     portKey: "HINDSIGHT_API_PORT",
@@ -282,9 +243,8 @@ export const ALL_SERVICES: ServiceDef[] = [
     mise: true,
     healthPath: "/api/health",
   },
-
   // ── AGENT RUNTIMES (TAU) ──
-  hotfixRegistry.resolve<ServiceDef>("services.tau", {
+  {
     id: "tau",
     name: "tau",
     portKey: "PI_AGENT_PORT",
@@ -292,15 +252,16 @@ export const ALL_SERVICES: ServiceDef[] = [
     dir: "/home/toxic",
     readyCmd: "sleep 2 && echo ready",
     group: "agents",
-    autoStart: true,
+    autoStart: false,
     mise: true,
     env: {
-      PI_CONFIG_PATH: "/home/toxic/.pi/agent/config.yaml",
-      PI_AGENT_DIR: "/home/toxic/.pi/agent",
+      PI_CONFIG_DIR: "/home/toxic/.tau",
+      PI_AGENT_DIR: "/home/toxic/.tau/agent",
       PI_CODING_AGENT: "true",
       PI_REASONING_LEVEL: "high",
+      PI_SUBAGENT_MODEL: "thinkingmachines/inkling",
     },
-  }),
+  },
   {
     id: "kimi-code",
     name: "kimi-code-sovereign",

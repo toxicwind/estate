@@ -63,15 +63,18 @@ export const pitchforkGenerator: Generator = {
       }
 
 
-      // All services are core & auto-start (no on-demand)
-      lines.push(`auto = ["start"]`);
+      if (svc.autoStart === false) {
+        lines.push(`auto = ["stop"]`);
+      } else {
+        lines.push(`auto = ["start"]`);
+      }
 
       lines.push("");
     }
 
     // ── STACK GROUPS ──
     const inferenceIds = ["herd"];
-    const coreIds = ctx.services.filter(s => ["herd", "qdrant", "redis", "mesh", "mesh-hub", "search-api", "ghas-mcp", "prometheus", "grafana"].includes(s.id)).map(s => `"${s.id}"`);
+    const coreIds = ctx.services.filter(s => ["herd", "qdrant", "redis", "mesh", "mesh-hub", "search-api", "prometheus", "grafana"].includes(s.id)).map(s => `"${s.id}"`);
     const mainIds = ctx.services.filter(s => !inferenceIds.includes(s.id)).map(s => `"${s.id}"`);
     const agentIds = ctx.services.filter(s => ["tau", "kimi-code", "axiom"].includes(s.id)).map(s => `"${s.id}"`);
     const searchIds = ctx.services.filter(s => ["search-api", "ghas-mcp", "search-ui"].includes(s.id)).map(s => `"${s.id}"`);
