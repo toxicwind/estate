@@ -63,6 +63,7 @@
 | `node` | mise shim | JS runtime |
 | `cargo` | mise shim | Rust build |
 | `jq` | mise shim | JSON processing |
+| `codeshift` | `/home/toxic/projects/codeshift` | Multi-agent codebase migration & test equivalence (local LLM) |
 
 ### ❌ NOT INSTALLED (don't use, install first if needed)
 
