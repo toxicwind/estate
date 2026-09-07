@@ -33,6 +33,7 @@ export const miseGenerator: Generator = {
       'SCOUT_API_KEY = "llama-swap"',
       'SCOUT_MODEL = "local-fast"',
       "",
+      "",
       "[tasks]",
       "# ─── Stack orchestration ───",
       'up = "pitchfork start -q core"',
