@@ -20,6 +20,7 @@ SCOUT_BASE_URL = "http://127.0.0.1:25100/v1"
 SCOUT_API_KEY = "llama-swap"
 SCOUT_MODEL = "local-fast"
 
+
 [tasks]
 # ─── Stack orchestration ───
 up = "pitchfork start -q core"

@@ -279,7 +279,7 @@ export const ALL_SERVICES: ServiceDef[] = [
     id: "mesh",
     name: "mesh",
     portKey: "MCPPROXY_GO_PORT",
-    run: "exec /home/toxic/projects/sovereign-projects/mesh/gateway/mcpproxy-go serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=info --listen=127.0.0.1:25127",
+    run: "exec /home/toxic/projects/sovereign-projects/mesh/gateway/mcpproxy-go serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=warn --log-to-file --listen=127.0.0.1:25127",
     dir: "/home/toxic/projects/sovereign-projects/mesh/gateway",
     readyHttp: "/health",
     group: "core",
