@@ -136,7 +136,7 @@ export const ALL_SERVICES: ServiceDef[] = [
     id: "rust-web",
     name: "rust-web",
     portKey: "RUST_WEB_BACKEND_PORT",
-    run: "exec ./stack/services/rust-web-hot.sh",
+    run: "exec ./stack/services/rust-web.sh",
     dir: ".",
     readyHttp: "/health",
     group: "core",
