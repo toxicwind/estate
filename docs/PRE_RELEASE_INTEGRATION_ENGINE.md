@@ -1,10 +1,8 @@
-# Sovereign Hotfix Resolution Engine
+# Sovereign Pre-Release Integration Engine
 
-> **Architectural Law**: *"Don't patch the object. Patch the resolution."*
-> **Engine**: `/home/toxic/sovereign/src/lib/hotfix_registry.ts`
-> **Patch Store**: `/home/toxic/sovereign/patches/`
-> **CLI Management**: `/home/toxic/sovereign/bin/hotfix` (available in `$PATH`)
-
+> **Architectural Law**: *"Production logic is integrated DIRECTLY in code. Pre-release staging overrides resolve via clean indirection."*
+> **Engine**: `/home/toxic/sovereign/src/lib/pre_release_integration.ts`
+> **Integration Store**: `/home/toxic/sovereign/integrations/`
 ---
 
 ## 1. The Anti-Pattern vs. The Pattern
