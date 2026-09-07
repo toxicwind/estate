@@ -4,6 +4,8 @@ set -euo pipefail
 SOV="${SOVEREIGN_ROOT:-$PWD}"
 # shellcheck source=../lib-ports.sh
 source "$SOV/stack/lib-ports.sh"
+# Backend binary binds the internal backend port; mesh-front proxies 25101→25201
+RUST_WEB_PORT="${RUST_WEB_BACKEND_PORT:-25201}"
 require_env RUST_WEB_PORT
 require_env WATCHDOG_PORT
 require_env LLAMA_SWAP_PORT
