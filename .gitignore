@@ -158,3 +158,4 @@ qdrant-config.yaml
 *.env
 .env.*
 credentials.json
+.bak.
