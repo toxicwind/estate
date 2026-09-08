@@ -5,7 +5,8 @@
 import { $ } from "bun";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { DEFAULT_SECRET_PATTERNS, DEFAULT_GITIGNORE_PATTERNS } from "./types.js";
+import type { GitMutatorConfig, GitStatus, CommitResult, PushResult, SecretViolation, AgenticAuditResult, AgenticViolation } from "./types.js";
+import { DEFAULT_SECRET_PATTERNS, DEFAULT_GITIGNORE_PATTERNS, AGENTIC_ARTIFACT_GLOBS, AGENTIC_ID_PATTERNS, SOVEREIGN_PORT_SSOT } from "./types.js";
 import { GitMutatorError, SecretBoundaryError } from "./errors.js";
 
 export class GitCore {
@@ -110,6 +111,7 @@ export class GitCore {
       throw new GitMutatorError(`git commit failed: ${result.stderr}`, "COMMIT_FAILED", result.stdout, result.stderr);
     }
 
+    // Parse commit stats
     const statResult = await this.runGit(["show", "--stat", "--oneline", "-1"]);
     const statMatch = result.stdout.match(/(\d+) files? changed(?:, (\d+) insertions?\(\+\))?(?:, (\d+) deletions?\(-\)?)?/);
     const hashMatch = result.stdout.match(/^\[([a-f0-9]+)\]/) || statResult.stdout.match(/^([a-f0-9]+)/);
@@ -132,6 +134,7 @@ export class GitCore {
       return { success: true, remote: targetRemote, branch: targetBranch, output: "[dry-run]" };
     }
 
+    // Verify credential helper or SSH is configured
     const credCheck = await this.runGit(["config", "--get", "credential.helper"], { silent: true });
     const hasCredentialHelper = credCheck.exitCode === 0 && credCheck.stdout.trim().length > 0;
     const remoteUrlResult = await this.runGit(["remote", "get-url", targetRemote]);
@@ -179,6 +182,7 @@ export class GitCore {
       }
     }
 
+    // Untrack any already-tracked sensitive files
     for (const pattern of patterns) {
       const tracked = await this.runGit(["ls-files", pattern], { silent: true });
       if (tracked.stdout.trim() && !this.config.dryRun) {
@@ -216,6 +220,7 @@ export class GitCore {
     const original = await $`cat ${absPath}`.quiet().then(r => r.stdout.toString());
     const mutated = mutator(original);
 
+    // Verify no secrets in mutated content
     const violations = await this.scanForSecrets([relativePath]);
     if (violations.length > 0) {
       throw new SecretBoundaryError(
@@ -229,6 +234,90 @@ export class GitCore {
     } else {
       console.log(`[DRY-RUN] Would mutate: ${relativePath}`);
     }
+  }
+
+  getRepoRoot(): string {
+    return this.repoRoot;
+  }
+
+  getConfig(): Required<GitMutatorConfig> {
+    return { ...this.config };
+  }
+
+  /**
+   * Audit agentic completions and secret leaks in staged/unstaged/untracked files.
+   * Excludes SOVEREIGN_PORT_SSOT from secret scanning. Blocks .bak files.
+   */
+  async auditAgenticCompletions(files?: string[]): Promise<AgenticAuditResult> {
+    const s = await this.status();
+    const all = files ?? [...s.staged, ...s.unstaged, ...s.untracked];
+    // Filter: exclude ports.env, include everything else (especially .bak.)
+    const targets = all.filter(f => {
+      // Always include .bak files that are tracked (they need cleanup)
+      // Exclude ports.env from secret scanning specifically
+      if (f.includes("ports.env")) return false;
+      // Include everything else - especially .bak. files that need audit
+      return true;
+    });
+
+    const violations: AgenticViolation[] = [];
+
+    for (const file of targets) {
+      const absPath = `${this.repoRoot}/${file}`;
+      if (!existsSync(absPath)) continue;
+
+      // Check artifact globs first
+      for (const glob of AGENTIC_ARTIFACT_GLOBS) {
+        try {
+          const globResults = await Bun.globScan(glob);
+          if (globResults.toString().includes(file)) {
+            violations.push({
+              file,
+              line: 0,
+              pattern: glob,
+              snippet: `matches artifact glob: ${glob}`,
+              isSecret: false,
+            });
+          }
+        } catch {}
+      }
+
+      // Read file content
+      let content = '';
+      try {
+        content = await Bun.file(absPath).text();
+      } catch {
+        continue;
+      }
+
+      const lines = content.split('\n');
+      lines.forEach((line, idx) => {
+        // Check agentic ID patterns (large completion payloads)
+        if (AGENTIC_ID_PATTERNS.some(r => r.test(line)) && line.length > 500) {
+          violations.push({
+            file,
+            line: idx + 1,
+            pattern: AGENTIC_ID_PATTERNS.find(r => r.test(line)).source,
+            snippet: line.slice(0, 200),
+            isSecret: false,
+          });
+        }
+
+        // Check secret patterns (exclude ports.env)
+        if (DEFAULT_SECRET_PATTERNS.some(r => r.test(line)) && !file.includes(SOVEREIGN_PORT_SSOT)) {
+          violations.push({
+            file,
+            line: idx + 1,
+            pattern: DEFAULT_SECRET_PATTERNS.find(r => r.test(line)).source,
+            snippet: line.slice(0, 200),
+            isSecret: true,
+          });
+        }
+      });
+    }
+
+    const hasLeaks = violations.some(v => v.isSecret);
+    return { filesScanned: targets.length, violations, hasLeaks, clean: !violations.length };
   }
 
   getRepoRoot(): string {

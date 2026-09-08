@@ -1,5 +1,5 @@
 /**
- * Git Mutator Types — Core type definitions
+ * Git Mutator Types — Core type definitions with agentic completion auditing
  */
 
 export interface GitMutatorConfig {
@@ -43,6 +43,8 @@ export interface MutateOptions {
   ensureGitignore?: boolean;
 }
 
+export const SOVEREIGN_PORT_SSOT = "/home/toxic/sovereign/config/ports.env";
+
 export const DEFAULT_GITIGNORE_PATTERNS = [
   ".env",
   "*.env",
@@ -50,21 +52,44 @@ export const DEFAULT_GITIGNORE_PATTERNS = [
   "credentials.json",
   "*.key",
   "*.pem",
+  ".bak.",
 ] as const;
-
-export const SOVEREIGN_PORT_SSOT = "/home/toxic/sovereign/config/ports.env";
-
-export interface PortInfo {
-  name: string;
-  port: number;
-}
 
 export const DEFAULT_SECRET_PATTERNS = [
-  /gh[ps]_[A-Za-z0-9_]{36,}/,
-  /github_pat_[A-Za-z0-9_]{22,}/,
-  /gho_[A-Za-z0-9_]{36,}/,
-  /glpat-[A-Za-z0-9_\-]{20,}/,
-  /sk-[A-Za-z0-9]{48,}/,
-  /xoxb-[A-Za-z0-9-]{10,}/,
-  /AKIA[0-9A-Z]{16}/,
+  /sk-[a-zA-Z0-9]{20,}/g,
+  /ghp_[a-zA-Z0-9]{36}/g,
+  /github_pat_[a-zA-Z0-9_]{22,}/g,
 ] as const;
+
+export const AGENTIC_ARTIFACT_GLOBS = [
+  "**/completions/*.jsonl",
+  "**/*.bak.*",
+  "**/.claude/**/*",
+  "**/.codex/**/*",
+] as const;
+
+export const AGENTIC_ID_PATTERNS = [
+  /completion-[a-f0-9-]{20,}/i,
+  /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/g, // completion UUIDs
+];
+
+export interface PortInfo {
+  service: string;
+  port: number;
+  envKey: string;
+}
+
+export interface AgenticViolation {
+  file: string;
+  line: number;
+  pattern: string;
+  snippet: string;
+  isSecret: boolean;
+}
+
+export interface AgenticAuditResult {
+  filesScanned: number;
+  violations: AgenticViolation[];
+  hasLeaks: boolean;
+  clean: boolean;
+}

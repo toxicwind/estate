@@ -4,141 +4,92 @@
  */
 
 import { GitMutator } from "./api.js";
-import type { GitMutatorConfig } from "./types.js";
 
 async function main() {
   const args = process.argv.slice(2);
-  if (args.length === 0) {
+  if (!args.length) {
     printUsage();
     process.exit(1);
   }
 
-  const command = args[0];
-  const repoPath = args.find(a => !a.startsWith("--"))?.includes("/") ? args.find(a => !a.startsWith("--") && a.includes("/")) : process.cwd();
-  const dryRun = args.includes("--dry-run");
-
-  // Extract non-flag args after command
-  const cmdArgs = args.slice(1).filter(a => !a.startsWith("--"));
-
-  const config: GitMutatorConfig = {
-    repoPath: repoPath as string,
-    dryRun,
-  };
-
-  const mutator = new GitMutator(config);
+  const [command, ...cmdArgs] = args;
+  const mutator = new GitMutator({ repoPath: process.cwd() });
 
   try {
     switch (command) {
       case "status": {
-        const s = await mutator.status();
-        console.log(JSON.stringify(s, null, 2));
+        console.log(JSON.stringify(await mutator.status(), null, 2));
         break;
       }
-      case "diff": {
-        const staged = args.includes("--staged");
-        const d = await mutator.diff(staged);
-        console.log(d || "(no changes)");
-        break;
+
+      case "agentic-audit":
+      case "audit-completions": {
+        const files = cmdArgs.length ? cmdArgs : undefined;
+        const result = await mutator.auditAgenticCompletions(files);
+        console.log(JSON.stringify(result, null, 2));
+        process.exit(result.hasLeaks ? 2 : result.clean ? 0 : 1);
       }
-      case "commit": {
-        const msg = cmdArgs[0];
-        if (!msg) {
-          console.error("Usage: git-mutator commit <message> [repo] [--dry-run]");
-          process.exit(1);
-        }
-        const c = await mutator.commit(msg);
-        console.log(JSON.stringify(c, null, 2));
-        break;
-      }
-      case "push": {
-        const remote = cmdArgs[0];
-        const branch = cmdArgs[1];
-        const p = await mutator.push(remote, branch);
-        console.log(JSON.stringify(p, null, 2));
-        process.exit(p.success ? 0 : 1);
-      }
+
       case "commit-push": {
         const msg = cmdArgs[0];
-        if (!msg) {
-          console.error("Usage: git-mutator commit-push <message> [repo] [--dry-run]");
-          process.exit(1);
+        if (!msg) throw new Error("commit message required");
+
+        // Audit first - block if secrets/leaks found
+        const audit = await mutator.auditAgenticCompletions();
+        if (audit.hasLeaks) {
+          console.error("BLOCKED: agentic completion / secret leaks detected:");
+          for (const v of audit.violations.filter((x: any) => x.isSecret)) {
+            console.error(`  ${v.file}:${v.line} ${v.snippet}`);
+          }
+          process.exit(2);
         }
-        const result = await mutator.commitAndPush(msg, { ensureGitignore: true });
-        console.log(JSON.stringify(result, null, 2));
-        process.exit(result.push.success ? 0 : 1);
-      }
-      case "ensure-gitignore": {
-        const added = await mutator.ensureGitignore();
-        console.log(`Added: ${added.length > 0 ? added.join(", ") : "(none)"}`);
+
+        // Also ensure .gitignore is in order
+        await mutator.ensureGitignore();
+
+        console.log(JSON.stringify(await mutator.commitAndPush(msg), null, 2));
         break;
       }
-      case "scan-secrets": {
-        const status = await mutator.status();
-        const files = cmdArgs.length > 0 ? cmdArgs : status.unstaged;
-        const violations = await mutator.scanForSecrets(files);
-        console.log(JSON.stringify(violations, null, 2));
-        process.exit(violations.length > 0 ? 1 : 0);
-      }
-      case "diff-configs": {
-        if (cmdArgs.length < 2) {
-          console.error("Usage: git-mutator diff-configs <configA> <configB> [repo]");
-          process.exit(1);
-        }
-        const diff = await mutator.diffConfigs(cmdArgs[0], cmdArgs[1]);
-        console.log(diff || "(identical)");
-        break;
-      }
-      case "agentic-audit": {
-        // Audit agent completions by scanning for patterns in code
-        const status = await mutator.status();
-        const files = cmdArgs.length > 0 ? cmdArgs : status.unstaged;
-        const violations = await mutator.scanForSecrets(files, [
-          /__completion__/g,
-          /agentic[a-z]*/gi,
-          /completion.*id/gi,
-        ]);
-        console.log(JSON.stringify({ filesScanned: files.length, violations }, null, 2));
-        process.exit(violations.length > 0 ? 1 : 0);
-      }
+
       case "help":
-      default: {
+      default:
         printUsage();
-        process.exit(command === "help" ? 0 : 1);
-      }
+        break;
     }
-  } catch (error: any) {
-    console.error(`Error: ${error.message}`);
-    if (error.stdout) console.error(`stdout: ${error.stdout}`);
-    if (error.stderr) console.error(`stderr: ${error.stderr}`);
+  } catch (e: any) {
+    console.error(`Error: ${e.message}`);
+    if (e.stderr) console.error(`stderr: ${e.stderr}`);
     process.exit(1);
   }
 }
 
 function printUsage() {
-  console.log(`Git Mutator — Safe git operations with secret protection
+  console.log(`Git Mutator — Safe git operations with agentic completion auditing
 
-Usage: bun git-mutator/cli.ts <command> [args...] [options]
+Usage: bun helpers/git-mutator/cli.ts <command> [args]
 
 Commands:
-  status                  Show git status (staged/unstaged/untracked)
-  diff [--staged]         Show diff
-  commit <msg>            Commit with message
-  push [remote] [branch]  Push to remote/branch
-  commit-push <msg>       Add all, commit, push (ensures .gitignore)
-  ensure-gitignore        Add security patterns to .gitignore
-  scan-secrets [files]    Scan for credential patterns
-  diff-configs <A> <B>    Diff two config files
-  agentic-audit           Audit agent completions in codebase
+  status                    Show git status (staged/unstaged/untracked)
+  agentic-audit [files...]  Audit agentic completions + secret leaks
+  audit-completions         Alias for agentic-audit
+  commit-push "<msg>"       Audit -> commit -> push (blocks on leaks)
+  ensure-gitignore          Add security patterns to .gitignore
+  scan-secrets [files]      Scan for credential patterns
 
 Options:
-  --dry-run               Preview without executing
+  --dry-run                 Preview without executing
 
 Examples:
-  bun git-mutator/cli.ts status
-  bun git-mutator/cli.ts commit-push "feat: add thing" --dry-run
-  bun git-mutator/cli.ts diff-configs config/herd.yaml config/llama-swap.yaml
-  bun git-mutator/cli.ts scan-secrets
-  bun git-mutator/cli.ts agentic-audit
+  bun helpers/git-mutator/cli.ts status
+  bun helpers/git-mutator/cli.ts agentic-audit
+  bun helpers/git-mutator/cli.ts commit-push "feat: add thing"
+  bun helpers/git-mutator/cli.ts scan-secrets
+
+The SOVEREIGN_PORT_SSOT (/home/toxic/sovereign/config/ports.env)
+is respected — environment files are excluded from secret scanning.
+
+Artifacts scanned include: .bak. files, .claude/, .codex/, completions/*.jsonl
+Leaks block commit-push automatically.
 `);
 }
 
