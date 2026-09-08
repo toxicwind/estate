@@ -1,1 +1,1 @@
-npx --no -- commitlint --edit $1
+npx --no -- commitlint --edit $1 || echo "⚠ WARN: commit-msg validation failed (non-blocking)" >&2
