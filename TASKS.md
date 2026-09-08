@@ -162,6 +162,43 @@
 - None currently
 
 ## Notes
+
+# TODO: Improve `mise run up` Output for LLM Clarity
+
+## Description
+Currently, `mise run up` outputs cryptic messages like `Starting core daemon group...` without clear feedback on which services are being started or their status.
+
+## Actions
+1. **Create Scripts for Better Logging**
+   - Create `start_services.sh` in `/home/toxic/sovereign/scripts/` to provide detailed, step-by-step output when starting services.
+   - Create `check_services.sh` in `/home/toxic/sovereign/scripts/` to provide detailed health checks.
+
+2. **Update `mise.toml`**
+   - Modify the `up` task to use `start_services.sh` instead of the default `pitchfork start` command.
+   - Modify the `health-core` task to use `check_services.sh` for better health status reporting.
+
+3. **Make Scripts Executable**
+   - Ensure both scripts are executable with `chmod +x`.
+
+4. **Test Scripts**
+   - Manually run `./scripts/start_services.sh` and `./scripts/check_services.sh` to verify they work as expected.
+
+## Why This Matters
+- **LLM-Friendly Output**: Provides clear, step-by-step feedback that is easier for LLM interactions.
+- **User Experience**: Makes it easier to understand the status of services during startup and health checks.
+
+## Dependencies
+- Ensure `mise` and `pitchfork` are installed and configured correctly.
+
+## Status
+- [ ] Create `start_services.sh`
+- [ ] Create `check_services.sh`
+- [ ] Update `mise.toml`
+- [ ] Make scripts executable
+- [ ] Test scripts
+
+
+---
 - Pitchfork already has --json for list command
 - Need to add --json to start, stop, status
 - Experimental-crisis skills are mostly SKILL.md + references
