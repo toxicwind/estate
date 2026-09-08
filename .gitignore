@@ -153,3 +153,8 @@ MCP_AUDIT.md
 qdrant-config.yaml
 .scout-cache/
 .project_map.json
+
+# Security boundaries (git-mutator)
+*.env
+.env.*
+credentials.json

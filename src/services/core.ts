@@ -1,6 +1,9 @@
 // ============================================================================
 // SOVEREIGN — Core Infrastructure Services
 // ============================================================================
+// ARCHITECTURE NOTE: herd (port 25100, Go binary launcher) launches the llama-swap binary;
+// hal-substrate (port 25143, Python agent loop, depends=[llama-swap]) consumes llama-swap
+// routing/config. They are SEPARATE layers — do NOT merge. Naming overlap (llama-swap = binary + config source) is the confusion source, not architecture overlap.
 
 import type { ServiceDef } from "../types/index.ts";
 
