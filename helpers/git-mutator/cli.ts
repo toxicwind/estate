@@ -88,6 +88,18 @@ async function main() {
         console.log(diff || "(identical)");
         break;
       }
+      case "agentic-audit": {
+        // Audit agent completions by scanning for patterns in code
+        const status = await mutator.status();
+        const files = cmdArgs.length > 0 ? cmdArgs : status.unstaged;
+        const violations = await mutator.scanForSecrets(files, [
+          /__completion__/g,
+          /agentic[a-z]*/gi,
+          /completion.*id/gi,
+        ]);
+        console.log(JSON.stringify({ filesScanned: files.length, violations }, null, 2));
+        process.exit(violations.length > 0 ? 1 : 0);
+      }
       case "help":
       default: {
         printUsage();
@@ -116,7 +128,7 @@ Commands:
   ensure-gitignore        Add security patterns to .gitignore
   scan-secrets [files]    Scan for credential patterns
   diff-configs <A> <B>    Diff two config files
-  help                    Show this help
+  agentic-audit           Audit agent completions in codebase
 
 Options:
   --dry-run               Preview without executing
@@ -126,6 +138,7 @@ Examples:
   bun git-mutator/cli.ts commit-push "feat: add thing" --dry-run
   bun git-mutator/cli.ts diff-configs config/herd.yaml config/llama-swap.yaml
   bun git-mutator/cli.ts scan-secrets
+  bun git-mutator/cli.ts agentic-audit
 `);
 }
 
