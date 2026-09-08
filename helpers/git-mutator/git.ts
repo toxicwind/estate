@@ -4,7 +4,7 @@
 
 import { $ } from "bun";
 import { existsSync } from "node:fs";
-import { resolve } from "node:path";
+import { resolve, basename } from "node:path";
 import type { GitMutatorConfig, GitStatus, CommitResult, PushResult, SecretViolation, AgenticAuditResult, AgenticViolation } from "./types.js";
 import { DEFAULT_SECRET_PATTERNS, DEFAULT_GITIGNORE_PATTERNS, AGENTIC_ARTIFACT_GLOBS, AGENTIC_ID_PATTERNS, SOVEREIGN_PORT_SSOT } from "./types.js";
 import { GitMutatorError, SecretBoundaryError, NothingToCommitError } from "./errors.js";
@@ -284,7 +284,7 @@ export class GitCore {
         }
 
         // Flag 2: secret pattern in non-SSOT files
-        if (!file.includes(SOVEREIGN_PORT_SSOT)) {
+        if (!file.endsWith("config/ports.env") && basename(file) !== "ports.env") {
           const matchedPattern = DEFAULT_SECRET_PATTERNS.find(r => { r.lastIndex = 0; return r.test(line); });
           if (matchedPattern) {
             violations.push({
