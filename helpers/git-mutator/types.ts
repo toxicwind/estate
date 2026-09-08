@@ -52,6 +52,13 @@ export const DEFAULT_GITIGNORE_PATTERNS = [
   "*.pem",
 ] as const;
 
+export const SOVEREIGN_PORT_SSOT = "/home/toxic/sovereign/config/ports.env";
+
+export interface PortInfo {
+  name: string;
+  port: number;
+}
+
 export const DEFAULT_SECRET_PATTERNS = [
   /gh[ps]_[A-Za-z0-9_]{36,}/,
   /github_pat_[A-Za-z0-9_]{22,}/,
