@@ -3,6 +3,7 @@
  * Git Mutator CLI — Entry point
  */
 
+const DEFAULT_TIMEOUT_MS = 30000; // per-attempt deadline (max-mode architecture fix)
 import { GitMutator } from "./api.js";
 import type { AgenticViolation } from "./types.js";
 
