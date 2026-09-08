@@ -7,7 +7,7 @@ import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import type { GitMutatorConfig, GitStatus, CommitResult, PushResult, SecretViolation, AgenticAuditResult, AgenticViolation } from "./types.js";
 import { DEFAULT_SECRET_PATTERNS, DEFAULT_GITIGNORE_PATTERNS, AGENTIC_ARTIFACT_GLOBS, AGENTIC_ID_PATTERNS, SOVEREIGN_PORT_SSOT } from "./types.js";
-import { GitMutatorError, SecretBoundaryError } from "./errors.js";
+import { GitMutatorError, SecretBoundaryError, NothingToCommitError } from "./errors.js";
 
 export class GitCore {
   private config: Required<GitMutatorConfig>;
@@ -40,6 +40,7 @@ export class GitCore {
     if (this.config.credentialHelper) {
       env.GIT_CONFIG_PARAMETERS = `'credential.helper=${this.config.credentialHelper}'`;
     }
+    const deadlineMs = 30000; // per-attempt deadline (max-mode: pairs with cli DEFAULT_TIMEOUT_MS)
 
     try {
       const proc = await $`git -C ${this.repoRoot} ${args}`.env(env).quiet(options.silent ?? true);
@@ -105,8 +106,8 @@ export class GitCore {
 
     const result = await this.runGit(["commit", "-m", message]);
     if (result.exitCode !== 0) {
-      if (result.stderr.includes("nothing to commit")) {
-        throw new GitMutatorError("Working tree clean, nothing to commit", "NOTHING_TO_COMMIT", result.stdout, result.stderr);
+      if ((result.stdout + result.stderr).includes("nothing to commit")) {
+        throw new NothingToCommitError();
       }
       throw new GitMutatorError(`git commit failed: ${result.stderr}`, "COMMIT_FAILED", result.stdout, result.stderr);
     }
@@ -283,14 +284,17 @@ export class GitCore {
         }
 
         // Flag 2: secret pattern in non-SSOT files
-        if (!file.includes(SOVEREIGN_PORT_SSOT) && DEFAULT_SECRET_PATTERNS.some(r => r.test(line))) {
-          violations.push({
-            file,
-            line: idx + 1,
-            pattern: DEFAULT_SECRET_PATTERNS.find(r => r.test(line)).source,
-            snippet: line.slice(0, 200),
-            isSecret: true,
-          });
+        if (!file.includes(SOVEREIGN_PORT_SSOT)) {
+          const matchedPattern = DEFAULT_SECRET_PATTERNS.find(r => { r.lastIndex = 0; return r.test(line); });
+          if (matchedPattern) {
+            violations.push({
+              file,
+              line: idx + 1,
+              pattern: matchedPattern.source,
+              snippet: line.slice(0, 200),
+              isSecret: true,
+            });
+          }
         }
       });
     }
