@@ -12,13 +12,13 @@ CONF="$SOV/config/llama-swap.yaml"
 [[ -f "$CONF" ]] || { echo "llama-swap config not found at $CONF" >&2; exit 1; }
 
 # Kill any existing llama-swap on this port
-fuser -k "${PORT}/tcp" 2>/dev/null || true
+fuser -k "${PORT}/tcp"
 sleep 0.3
 
 # Launch Go binary — direct bind to 0.0.0.0:PORT (no proxy hop)
 "$BIN" --config "$CONF" --listen "0.0.0.0:${PORT}" &
 BPID=$!
-cleanup() { kill "$BPID" 2>/dev/null || true; }
+cleanup() { kill "$BPID"; }
 trap cleanup EXIT TERM INT
 
 # Wait for health endpoint (max 15s)

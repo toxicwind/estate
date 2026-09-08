@@ -113,7 +113,7 @@ export class GitCore {
 
     // Parse commit stats
     const statResult = await this.runGit(["show", "--stat", "--oneline", "-1"]);
-    const statMatch = result.stdout.match(/(\d+) files? changed(?:, (\d+) insertions?\(\+\))?(?:, (\d+) deletions?\(-\)?)?/);
+    const statMatch = statResult.stdout.match(/(\d+) files? changed(?:, (\d+) insertions?\(\+\))?(?:, (\d+) deletions?\(-\)?)?/);
     const hashMatch = result.stdout.match(/^\[([a-f0-9]+)\]/) || statResult.stdout.match(/^([a-f0-9]+)/);
 
     return {
@@ -186,7 +186,7 @@ export class GitCore {
     for (const pattern of patterns) {
       const tracked = await this.runGit(["ls-files", pattern], { silent: true });
       if (tracked.stdout.trim() && !this.config.dryRun) {
-        await this.runGit(["rm", "--cached", pattern], { silent: true });
+        await this.runGit(["rm", "--cached", "--ignore-unmatch", pattern], { silent: true });
       }
     }
 
@@ -200,7 +200,7 @@ export class GitCore {
     for (const file of files) {
       const absPath = `${this.repoRoot}/${file}`;
       if (!existsSync(absPath)) continue;
-      const content = await $`cat ${absPath}`.quiet().then(r => r.stdout.toString());
+      const content = await Bun.file(absPath).text();
       const matches: string[] = [];
       for (const pattern of patterns) {
         const found = content.match(pattern);
@@ -251,36 +251,15 @@ export class GitCore {
   async auditAgenticCompletions(files?: string[]): Promise<AgenticAuditResult> {
     const s = await this.status();
     const all = files ?? [...s.staged, ...s.unstaged, ...s.untracked];
-    // Filter: exclude ports.env, include everything else (especially .bak.)
-    const targets = all.filter(f => {
-      // Always include .bak files that are tracked (they need cleanup)
-      // Exclude ports.env from secret scanning specifically
-      if (f.includes("ports.env")) return false;
-      // Include everything else - especially .bak. files that need audit
-      return true;
-    });
+
+    // Filter: only agent artifact files (not source code)
+    const targets = all.filter(f => this.isAgenticArtifact(f));
 
     const violations: AgenticViolation[] = [];
 
     for (const file of targets) {
       const absPath = `${this.repoRoot}/${file}`;
       if (!existsSync(absPath)) continue;
-
-      // Check artifact globs first
-      for (const glob of AGENTIC_ARTIFACT_GLOBS) {
-        try {
-          const globResults = await Bun.globScan(glob);
-          if (globResults.toString().includes(file)) {
-            violations.push({
-              file,
-              line: 0,
-              pattern: glob,
-              snippet: `matches artifact glob: ${glob}`,
-              isSecret: false,
-            });
-          }
-        } catch {}
-      }
 
       // Read file content
       let content = '';
@@ -292,19 +271,19 @@ export class GitCore {
 
       const lines = content.split('\n');
       lines.forEach((line, idx) => {
-        // Check agentic ID patterns (large completion payloads)
-        if (AGENTIC_ID_PATTERNS.some(r => r.test(line)) && line.length > 500) {
+        // Flag 1: long line with completion UUID (>500 chars + UUID pattern)
+        if (line.length > 500 && AGENTIC_ID_PATTERNS.some(r => { r.lastIndex = 0; return r.test(line); })) {
           violations.push({
             file,
             line: idx + 1,
-            pattern: AGENTIC_ID_PATTERNS.find(r => r.test(line)).source,
+            pattern: 'completion-uuid',
             snippet: line.slice(0, 200),
             isSecret: false,
           });
         }
 
-        // Check secret patterns (exclude ports.env)
-        if (DEFAULT_SECRET_PATTERNS.some(r => r.test(line)) && !file.includes(SOVEREIGN_PORT_SSOT)) {
+        // Flag 2: secret pattern in non-SSOT files
+        if (!file.includes(SOVEREIGN_PORT_SSOT) && DEFAULT_SECRET_PATTERNS.some(r => r.test(line))) {
           violations.push({
             file,
             line: idx + 1,
@@ -318,6 +297,29 @@ export class GitCore {
 
     const hasLeaks = violations.some(v => v.isSecret);
     return { filesScanned: targets.length, violations, hasLeaks, clean: !violations.length };
+  }
+
+  /**
+   * Check if a file path is an agentic artifact (not source code).
+   * Covers: completions/*.jsonl, .claude/*, .codex/*, .tmp/*, *.bak.*, completion-<UUID> files.
+   */
+  private isAgenticArtifact(file: string): boolean {
+    const lower = file.toLowerCase();
+    // Exclude SSOT
+    if (file.includes("ports.env")) return false;
+    // Exclude source code directories
+    if (lower.startsWith("src/") || lower.startsWith("helpers/") || lower.startsWith("config/")) return false;
+    // Artifact extensions/patterns
+    if (lower.endsWith(".jsonl")) return true;
+    if (lower.includes(".claude/")) return true;
+    if (lower.includes(".codex/")) return true;
+    if (lower.includes(".tmp/") || lower.includes(".tmp\\")) return true;
+    if (lower.includes(".bak.")) return true;
+    // completion- + UUID in filename
+    if (lower.includes("completion-")) return true;
+    // Match AGENTIC_ARTIFACT_GLOBS via string patterns
+    if (lower.includes("/completions/") && lower.endsWith(".jsonl")) return true;
+    return false;
   }
 
   getRepoRoot(): string {

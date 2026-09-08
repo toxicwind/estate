@@ -15,7 +15,7 @@ cfg.pop("_max_yolo_applied_at", None)
 cfg.pop("reconnect_on_use", None)  # per-server only, not global
 
 # ---- Network / core ---------------------------------------------------------
-cfg["listen"] = "0.0.0.0:25109"
+cfg["listen"] = "127.0.0.1:25127"
 cfg["require_mcp_auth"] = False
 
 # ---- Discovery / limits ------------------------------------------------------

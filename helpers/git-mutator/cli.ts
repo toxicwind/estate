@@ -4,6 +4,7 @@
  */
 
 import { GitMutator } from "./api.js";
+import type { AgenticViolation } from "./types.js";
 
 async function main() {
   const args = process.argv.slice(2);
@@ -38,7 +39,7 @@ async function main() {
         const audit = await mutator.auditAgenticCompletions();
         if (audit.hasLeaks) {
           console.error("BLOCKED: agentic completion / secret leaks detected:");
-          for (const v of audit.violations.filter((x: any) => x.isSecret)) {
+          for (const v of audit.violations.filter((v: AgenticViolation) => v.isSecret)) {
             console.error(`  ${v.file}:${v.line} ${v.snippet}`);
           }
           process.exit(2);
