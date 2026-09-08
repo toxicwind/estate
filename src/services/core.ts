@@ -1,23 +1,18 @@
 // ============================================================================
 // SOVEREIGN — Core Infrastructure Services
 // ============================================================================
-// ARCHITECTURE NOTE: herd (port 25100, Go binary launcher) launches the llama-swap binary;
-// hal-substrate (port 25143, Python agent loop, depends=[llama-swap]) consumes llama-swap
-// routing/config. They are SEPARATE layers — do NOT merge. Naming overlap (llama-swap = binary + config source) is the confusion source, not architecture overlap.
-
 import type { ServiceDef } from "../types/index.ts";
-
 export const CORE_SERVICES: ServiceDef[] = [
   {
-    id: "herd",
-    name: "herd",
-    portKey: "HERD_PORT",
-    run: "exec ./stack/services/herd.sh",
-    dir: ".",
+    id: "llama-swap",
+    name: "llama-swap",
+    portKey: "LLAMA_SWAP_PORT",
+    run: "exec ./stack/services/llama-swap.sh --host 127.0.0.1 --port ${LLAMA_SWAP_PORT}",
+    dir: "/home/toxic/sovereign",
     readyHttp: "/health",
     group: "core",
     autoStart: true,
-    mise: false,
+    mise: true,
     healthPath: "/health",
   },
   {
@@ -36,38 +31,24 @@ export const CORE_SERVICES: ServiceDef[] = [
     id: "redis",
     name: "redis",
     portKey: "REDIS_PORT",
-    run: "exec valkey-server --port ${REDIS_PORT} --bind 0.0.0.0 --protected-mode no --save '' --appendonly no",
+    run: "exec redis-server --port ${REDIS_PORT} --bind 0.0.0.0 --dir ./data --dbfilename redis.rdb",
     dir: ".",
-    mise: false,
-    retry: true,
     readyPort: true,
     group: "core",
     autoStart: true,
-    healthPath: "/health",
-  },
-  {
-    id: "hal-substrate",
-    name: "hal-substrate",
-    portKey: "HAL_SUBSTRATE_PORT",
-    run: "exec ./stack/services/hal-substrate.sh",
-    dir: ".",
-    readyHttp: "/health",
-    group: "core",
-    autoStart: true,
-    mise: true,
-    depends: ["llama-swap"],
-    healthPath: "/health",
-  },
-  {
-    id: "yote",
-    name: "yote",
-    portKey: "YOTE_PORT",
-    run: "exec bun run src/services/yote.ts",
-    dir: ".",
-    readyHttp: "/health",
-    group: "core",
-    autoStart: true,
     mise: false,
     healthPath: "/health",
   },
+  {
+    id: "pi-agent",
+    name: "pi-agent",
+    portKey: "PI_AGENT_PORT",
+    run: "exec /home/toxic/.bun/bin/bun run /home/toxic/projects/pi-agent/packages/coding-agent/src/cli.ts --session-dir /home/toxic/.pi/agent/sessions",
+    dir: "/home/toxic/sovereign",
+    group: "core",
+    autoStart: false,
+    mise: false,
+    healthPath: "/health",
+  },
+  
 ];
