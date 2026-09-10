@@ -7,7 +7,7 @@ SOV="$HOME/sovereign"
 source "$SOV/stack/lib-ports.sh"
 require_env HERD_PORT
 PORT="$HERD_PORT"
-BIN="$HOME/projects/llama-swap/llama-swap"
+BIN="$HOME/projects/sovereign-projects/sovereign-swap/build/llama-swap"
 [[ -x "$BIN" ]] || { echo "herd (llama-swap) bin not found at $BIN" >&2; exit 1; }
 CONF="$SOV/config/herd.yaml"
 [[ -f "$CONF" ]] || CONF="$SOV/config/llama-swap.yaml"
