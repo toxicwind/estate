@@ -44,17 +44,37 @@ const UNIVERSAL_ROUTE_TIMEOUT_MS = 20_000;
 
 /** Default route chain: try fast local models first, then escalate */
 const DEFAULT_ROUTE_CHAIN: RouteOption[] = [
-  { agent: "coyote", model: "openfang:coyote", max_tokens: 512, temperature: 0.3, timeoutMs: 8000, label: "fast-local" },
-  { agent: "coyote", model: "openfang:coyote", max_tokens: 1024, temperature: 0.4, timeoutMs: 15000, label: "balanced" },
-  { agent: "coyote", model: "openfang:coyote", max_tokens: 2048, temperature: 0.5, timeoutMs: 30000, label: "thorough" },
+  {
+    agent: "coyote",
+    model: "openfang:coyote",
+    max_tokens: 512,
+    temperature: 0.3,
+    timeoutMs: 8000,
+    label: "fast-local",
+  },
+  {
+    agent: "coyote",
+    model: "openfang:coyote",
+    max_tokens: 1024,
+    temperature: 0.4,
+    timeoutMs: 15000,
+    label: "balanced",
+  },
+  {
+    agent: "coyote",
+    model: "openfang:coyote",
+    max_tokens: 2048,
+    temperature: 0.5,
+    timeoutMs: 30000,
+    label: "thorough",
+  },
 ];
 
 export class OpenFangClient {
   constructor(
     public baseUrl = DEFAULT_BASE,
     public apiKey = process.env.OPENFANG_API_KEY || "",
-    public defaultAgent =
-      process.env.YOTE_OPENFANG_AGENT ||
+    public defaultAgent = process.env.YOTE_OPENFANG_AGENT ||
       process.env.DEFAULT_MODEL?.replace(/^openfang:/, "") ||
       "coyote",
     public routeChain: RouteOption[] = DEFAULT_ROUTE_CHAIN,
@@ -92,7 +112,11 @@ export class OpenFangClient {
     }
   }
 
-  async listAgents(): Promise<{ ok: boolean; agents: OfAgent[]; error?: string }> {
+  async listAgents(): Promise<{
+    ok: boolean;
+    agents: OfAgent[];
+    error?: string;
+  }> {
     try {
       const res = await fetch(`${this.baseUrl}/api/agents`, {
         headers: this.headers(false),
@@ -144,7 +168,7 @@ export class OpenFangClient {
     for (let i = 0; i < routeChain.length; i++) {
       const route = routeChain[i];
       const routeT0 = performance.now();
-      
+
       try {
         const res = await fetch(`${this.baseUrl}/v1/chat/completions`, {
           method: "POST",
@@ -159,13 +183,11 @@ export class OpenFangClient {
         });
         const raw: any = await res.json().catch(() => null);
         const content =
-          raw?.choices?.[0]?.message?.content ||
-          raw?.choices?.[0]?.text ||
-          "";
-        
+          raw?.choices?.[0]?.message?.content || raw?.choices?.[0]?.text || "";
+
         const routeMs = Math.round(performance.now() - routeT0);
         const totalMs = Math.round(performance.now() - t0);
-        
+
         if (res.ok && String(content).trim()) {
           return {
             ok: true,
@@ -178,23 +200,22 @@ export class OpenFangClient {
             fallbackUsed: i > 0 ? route.label : undefined,
           };
         }
-        
+
         // If this route failed but we have more routes, continue to next
         if (i < routeChain.length - 1) {
-          console.log(`[openfang-client] Route ${route.label} failed (${routeMs}ms), trying next...`);
+          console.log(
+            `[openfang-client] Route ${route.label} failed (${routeMs}ms), trying next...`,
+          );
           continue;
         }
-        
+
         // Last route failed - return error
         return {
           ok: false,
           agent,
           model: route.model,
           content: "",
-          error:
-            raw?.error?.message ||
-            raw?.error ||
-            `HTTP ${res.status}`,
+          error: raw?.error?.message || raw?.error || `HTTP ${res.status}`,
           raw,
           ms: totalMs,
           fasterRouteAttempted: i > 0,
@@ -203,13 +224,15 @@ export class OpenFangClient {
       } catch (e) {
         const routeMs = Math.round(performance.now() - routeT0);
         const totalMs = Math.round(performance.now() - t0);
-        
+
         // If this route timed out or errored but we have more routes, continue
         if (i < routeChain.length - 1) {
-          console.log(`[openfang-client] Route ${route.label} error (${routeMs}ms): ${String(e)}, trying next...`);
+          console.log(
+            `[openfang-client] Route ${route.label} error (${routeMs}ms): ${String(e)}, trying next...`,
+          );
           continue;
         }
-        
+
         // Last route failed - return error
         return {
           ok: false,
@@ -223,7 +246,7 @@ export class OpenFangClient {
         };
       }
     }
-    
+
     // Should never reach here, but TypeScript needs it
     return {
       ok: false,

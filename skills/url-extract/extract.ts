@@ -54,7 +54,8 @@ const SITE_HANDLERS: SiteHandler[] = [
   {
     // Meta AI share links
     match: (u) => u.hostname === "meta.ai" || u.hostname === "www.meta.ai",
-    waitSelector: "[class*='message'], [class*='artifact'], [class*='content'], [data-testid]",
+    waitSelector:
+      "[class*='message'], [class*='artifact'], [class*='content'], [data-testid]",
     contentSelectors: [
       "[class*='artifact'] pre code",
       "[class*='artifact']",
@@ -63,12 +64,20 @@ const SITE_HANDLERS: SiteHandler[] = [
       "main",
       "#__next",
     ],
-    removeSelectors: ["nav", "header", "footer", "[class*='sidebar']", "[class*='banner']"],
+    removeSelectors: [
+      "nav",
+      "header",
+      "footer",
+      "[class*='sidebar']",
+      "[class*='banner']",
+    ],
     settleMs: 3000,
   },
   {
     // ChatGPT share links
-    match: (u) => u.hostname.includes("chatgpt.com") || u.hostname.includes("chat.openai.com"),
+    match: (u) =>
+      u.hostname.includes("chatgpt.com") ||
+      u.hostname.includes("chat.openai.com"),
     waitSelector: "[class*='markdown'], [data-message-author-role]",
     contentSelectors: [
       "[data-message-author-role='assistant'] .markdown",
@@ -92,15 +101,22 @@ const SITE_HANDLERS: SiteHandler[] = [
   },
   {
     // Google AI Studio / Gemini
-    match: (u) => u.hostname.includes("aistudio.google") || u.hostname.includes("gemini.google"),
+    match: (u) =>
+      u.hostname.includes("aistudio.google") ||
+      u.hostname.includes("gemini.google"),
     waitSelector: "[class*='response'], [class*='message']",
-    contentSelectors: ["[class*='response-content']", "[class*='message']", "main"],
+    contentSelectors: [
+      "[class*='response-content']",
+      "[class*='message']",
+      "main",
+    ],
     removeSelectors: ["nav", "header"],
     settleMs: 2000,
   },
   {
     // GitHub gists, issues, PRs
-    match: (u) => u.hostname === "github.com" || u.hostname === "gist.github.com",
+    match: (u) =>
+      u.hostname === "github.com" || u.hostname === "gist.github.com",
     waitSelector: ".markdown-body, .blob-code",
     contentSelectors: [
       ".markdown-body",
@@ -125,8 +141,23 @@ const SITE_HANDLERS: SiteHandler[] = [
 const DEFAULT_HANDLER: SiteHandler = {
   match: () => true,
   waitSelector: "body",
-  contentSelectors: ["article", "main", "[role='main']", ".content", "#content", "body"],
-  removeSelectors: ["nav", "header", "footer", "script", "style", "noscript", "[class*='cookie']"],
+  contentSelectors: [
+    "article",
+    "main",
+    "[role='main']",
+    ".content",
+    "#content",
+    "body",
+  ],
+  removeSelectors: [
+    "nav",
+    "header",
+    "footer",
+    "script",
+    "style",
+    "noscript",
+    "[class*='cookie']",
+  ],
   settleMs: 1000,
 };
 
@@ -148,8 +179,12 @@ async function extractWithPlaywright(
   try {
     pw = await import("playwright");
   } catch {
-    console.error("[url-extract] playwright not installed, skipping browser extraction");
-    console.error("  Install: bun add -g playwright && bunx playwright install chromium");
+    console.error(
+      "[url-extract] playwright not installed, skipping browser extraction",
+    );
+    console.error(
+      "  Install: bun add -g playwright && bunx playwright install chromium",
+    );
     return null;
   }
 
@@ -224,14 +259,18 @@ async function extractWithPlaywright(
 
     // Fallback: full page text
     if (!content || content.length < 50) {
-      content = await page.evaluate(() => document.body?.innerText?.trim() ?? "");
+      content = await page.evaluate(
+        () => document.body?.innerText?.trim() ?? "",
+      );
     }
 
     // If content is thin (auth-gated), save screenshot + full HTML for manual inspection
     if (!content || content.split(/\s+/).length < 30) {
       const screenshotPath = `/tmp/url-extract-screenshot-${Date.now()}.png`;
       await page.screenshot({ path: screenshotPath, fullPage: true });
-      console.error(`[url-extract] thin content detected (auth-gated?), screenshot saved: ${screenshotPath}`);
+      console.error(
+        `[url-extract] thin content detected (auth-gated?), screenshot saved: ${screenshotPath}`,
+      );
 
       // Also dump full rendered HTML
       const htmlDump = await page.content();
@@ -244,10 +283,14 @@ async function extractWithPlaywright(
       for (const frame of frames) {
         if (frame === page.mainFrame()) continue;
         try {
-          const frameText = await frame.evaluate(() => document.body?.innerText?.trim() ?? "");
+          const frameText = await frame.evaluate(
+            () => document.body?.innerText?.trim() ?? "",
+          );
           if (frameText && frameText.length > (content?.length ?? 0)) {
             content = frameText;
-            console.error(`[url-extract] found richer content in iframe (${frameText.split(/\s+/).length} words)`);
+            console.error(
+              `[url-extract] found richer content in iframe (${frameText.split(/\s+/).length} words)`,
+            );
           }
         } catch {}
       }
@@ -269,7 +312,9 @@ async function extractWithPlaywright(
       });
       if (shadowContent && shadowContent.length > (content?.length ?? 0)) {
         content = shadowContent;
-        console.error(`[url-extract] found content in shadow DOM (${shadowContent.split(/\s+/).length} words)`);
+        console.error(
+          `[url-extract] found content in shadow DOM (${shadowContent.split(/\s+/).length} words)`,
+        );
       }
     }
 
@@ -311,7 +356,9 @@ async function extractWithCurl(url: string): Promise<ExtractResult | null> {
 
     // Extract OG tags
     const og: Record<string, string> = {};
-    const ogMatches = html.matchAll(/property="(og:[^"]+)"\s+content="([^"]*)"/gi);
+    const ogMatches = html.matchAll(
+      /property="(og:[^"]+)"\s+content="([^"]*)"/gi,
+    );
     for (const m of ogMatches) og[m[1]] = m[2].replace(/&amp;/g, "&");
 
     // Strip tags for text content
@@ -331,7 +378,9 @@ async function extractWithCurl(url: string): Promise<ExtractResult | null> {
     // If mostly JS bundle noise, fall through
     if (text.length < 100 || text.includes("__next_f.push")) {
       // Try extracting from JSON-LD
-      const ldMatch = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/i);
+      const ldMatch = html.match(
+        /<script type="application\/ld\+json">([\s\S]*?)<\/script>/i,
+      );
       if (ldMatch) {
         try {
           const ld = JSON.parse(ldMatch[1]);
@@ -374,7 +423,11 @@ async function extractOGMeta(url: string): Promise<ExtractResult | null> {
     }
 
     const title = og["og:title"] || og["twitter:title"] || "";
-    const desc = og["og:description"] || og["description"] || og["twitter:description"] || "";
+    const desc =
+      og["og:description"] ||
+      og["description"] ||
+      og["twitter:description"] ||
+      "";
 
     if (!title && !desc) return null;
 
@@ -424,7 +477,7 @@ function toJSON(r: ExtractResult): string {
 }
 
 function toText(r: ExtractResult): string {
-  return `${r.title || "Extracted Content"}\n${'='.repeat(60)}\nSource: ${r.url}\nMethod: ${r.method} | ${r.timestamp}\n${'='.repeat(60)}\n\n${r.content}`;
+  return `${r.title || "Extracted Content"}\n${"=".repeat(60)}\nSource: ${r.url}\nMethod: ${r.method} | ${r.timestamp}\n${"=".repeat(60)}\n\n${r.content}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -444,8 +497,12 @@ async function main() {
   });
 
   if (values.help || !positionals.length) {
-    console.log(`Usage: bun run extract.ts <url> [--format json|md|text] [--timeout 30000] [--out file]`);
-    console.log(`\nSupported sites: Meta AI, ChatGPT, Claude, Gemini, GitHub, HuggingFace, + any URL`);
+    console.log(
+      `Usage: bun run extract.ts <url> [--format json|md|text] [--timeout 30000] [--out file]`,
+    );
+    console.log(
+      `\nSupported sites: Meta AI, ChatGPT, Claude, Gemini, GitHub, HuggingFace, + any URL`,
+    );
     process.exit(values.help ? 0 : 1);
   }
 
@@ -462,7 +519,9 @@ async function main() {
   }
 
   const handler = getHandler(parsed);
-  console.error(`[url-extract] ${parsed.hostname} → strategy cascade starting...`);
+  console.error(
+    `[url-extract] ${parsed.hostname} → strategy cascade starting...`,
+  );
 
   // Cascade: playwright → curl → og-meta
   let result: ExtractResult | null = null;
@@ -471,7 +530,9 @@ async function main() {
   console.error(`[url-extract] trying playwright...`);
   result = await extractWithPlaywright(rawUrl, handler, timeoutMs);
   if (result && result.wordCount > 10) {
-    console.error(`[url-extract] ✓ playwright extracted ${result.wordCount} words`);
+    console.error(
+      `[url-extract] ✓ playwright extracted ${result.wordCount} words`,
+    );
   } else {
     // Strategy 2: curl + parse
     console.error(`[url-extract] trying curl...`);
@@ -483,7 +544,9 @@ async function main() {
       console.error(`[url-extract] trying og-meta...`);
       result = await extractOGMeta(rawUrl);
       if (result) {
-        console.error(`[url-extract] ✓ og-meta extracted ${result.wordCount} words`);
+        console.error(
+          `[url-extract] ✓ og-meta extracted ${result.wordCount} words`,
+        );
       }
     }
   }
@@ -495,7 +558,11 @@ async function main() {
 
   result.format = format;
   const output =
-    format === "json" ? toJSON(result) : format === "md" ? toMarkdown(result) : toText(result);
+    format === "json"
+      ? toJSON(result)
+      : format === "md"
+        ? toMarkdown(result)
+        : toText(result);
 
   if (values.out) {
     await Bun.write(values.out, output);

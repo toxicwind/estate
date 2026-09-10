@@ -3,20 +3,23 @@
 /* tslint:disable */
 /* eslint-disable */
 export const $Message = {
-    properties: {
-        role: {
-            type: 'Enum',
-            isRequired: true,
-        },
-        content: {
-            type: 'any-of',
-            description: `The contents of the message.`,
-            contains: [{
-                type: 'string',
-            }, {
-                type: 'null',
-            }],
-            isRequired: true,
-        },
+  properties: {
+    role: {
+      type: "Enum",
+      isRequired: true,
     },
+    content: {
+      type: "any-of",
+      description: `The contents of the message.`,
+      contains: [
+        {
+          type: "string",
+        },
+        {
+          type: "null",
+        },
+      ],
+      isRequired: true,
+    },
+  },
 } as const;

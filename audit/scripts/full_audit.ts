@@ -12,12 +12,18 @@ interface AuditStep {
 }
 
 const STEPS: AuditStep[] = [
-  { name: "AGENTS.md Inventory", script: "inventory_agents_md.ts", critical: true },
+  {
+    name: "AGENTS.md Inventory",
+    script: "inventory_agents_md.ts",
+    critical: true,
+  },
   { name: "Service Health Check", script: "audit_services.ts", critical: true },
   { name: "Profile Validation", script: "profile_manager.ts", critical: false },
 ];
 
-async function runScript(script: string): Promise<{ code: number; output: string }> {
+async function runScript(
+  script: string,
+): Promise<{ code: number; output: string }> {
   return new Promise((resolve) => {
     const proc = spawn("bun", ["run", `${SCRIPTS_DIR}/${script}`], {
       stdio: ["ignore", "pipe", "pipe"],

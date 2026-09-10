@@ -38,21 +38,21 @@ rule:
                   not:
                     kind: comment
           - has:
-             kind: call_expression
-             all:
-             - has:
-                kind: selector_expression
-                all:
-                  - has:
-                      kind: identifier
-                      pattern: $GRPC
-                      nthChild: 1
-                  - has:
-                     kind: field_identifier
-                     nthChild: 2
-                     regex: ^WithInsecure$
-             - has:
-                kind: argument_list
+              kind: call_expression
+              all:
+                - has:
+                    kind: selector_expression
+                    all:
+                      - has:
+                          kind: identifier
+                          pattern: $GRPC
+                          nthChild: 1
+                      - has:
+                          kind: field_identifier
+                          nthChild: 2
+                          regex: ^WithInsecure$
+                - has:
+                    kind: argument_list
     - not:
         all:
           - has:

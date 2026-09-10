@@ -38,7 +38,9 @@
     </style>
   </head>
   <body class="px-4 py-8 max-w-6xl mx-auto">
-    <header class="flex flex-wrap justify-between items-center gap-4 mb-8 border-b border-white/10 pb-6">
+    <header
+      class="flex flex-wrap justify-between items-center gap-4 mb-8 border-b border-white/10 pb-6"
+    >
       <div>
         <p class="text-xs mono text-cyan-400 tracking-widest uppercase mb-1">
           Sovereign · integrations
@@ -47,11 +49,14 @@
           Fleet Lab
         </h1>
         <p class="text-sm text-gray-400 mt-1">
-          llama-swap · HuggingFaceModelDownloader · 4-fork bench (LD from macros)
+          llama-swap · HuggingFaceModelDownloader · 4-fork bench (LD from
+          macros)
         </p>
       </div>
       <nav class="flex flex-wrap gap-2 text-xs">
-        <a class="px-3 py-2 glass hover:border-cyan-500/40" href="/">Dashboard</a>
+        <a class="px-3 py-2 glass hover:border-cyan-500/40" href="/"
+          >Dashboard</a
+        >
         <a class="px-3 py-2 glass" href="/architecture.html">Architecture</a>
         <a
           id="nav-chat-ui"
@@ -74,29 +79,41 @@
 
     <div class="grid md:grid-cols-3 gap-4 mb-6">
       <section class="glass p-5" id="card-swap">
-        <h2 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-2">
+        <h2
+          class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-2"
+        >
           <i class="fa-solid fa-shuffle text-cyan-400 mr-1"></i> llama-swap
         </h2>
         <p class="mono text-xs text-gray-500 mb-2" id="swap-url">…</p>
         <p class="text-sm" id="swap-status">loading…</p>
         <p class="text-xs text-gray-400 mt-3">
           Chat lives on
-          <a class="text-cyan-400" id="chat-link" href="http://127.0.0.1:25100/ui/"
+          <a
+            class="text-cyan-400"
+            id="chat-link"
+            href="http://127.0.0.1:25100/ui/"
             >/ui/</a
           >
           — not the dashboard.
         </p>
       </section>
       <section class="glass p-5" id="card-hf">
-        <h2 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-2">
+        <h2
+          class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-2"
+        >
           <i class="fa-solid fa-cloud-arrow-down text-amber-400 mr-1"></i> HFD
         </h2>
-        <p class="mono text-xs text-gray-500 mb-2">:25106 quant rank + download</p>
+        <p class="mono text-xs text-gray-500 mb-2">
+          :25106 quant rank + download
+        </p>
         <p class="text-sm" id="hf-status">loading…</p>
       </section>
       <section class="glass p-5" id="card-policy">
-        <h2 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-2">
-          <i class="fa-solid fa-ruler-horizontal text-violet-400 mr-1"></i> Context
+        <h2
+          class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-2"
+        >
+          <i class="fa-solid fa-ruler-horizontal text-violet-400 mr-1"></i>
+          Context
         </h2>
         <p class="text-xs text-gray-400 leading-relaxed">
           Graduated probes: 4k → 8k → 16k → 32k → 64k. Never start 27B at max
@@ -130,8 +147,7 @@
         id="fleet-json"
         class="mono text-[10px] text-gray-400 overflow-auto max-h-80 bg-black/30 p-3 rounded-lg"
       >
-loading…</pre
-      >
+loading…</pre>
     </section>
 
     <script>
@@ -149,7 +165,8 @@ loading…</pre
           const d = await res.json();
           const ok = (b) => (b ? "ok online" : "offline");
           const cls = (b) => (b ? "ok" : "bad");
-          document.getElementById("swap-url").textContent = d.llama_swap?.url || "";
+          document.getElementById("swap-url").textContent =
+            d.llama_swap?.url || "";
           document.getElementById("swap-status").innerHTML =
             `<span class="${cls(d.llama_swap?.online)}">${ok(d.llama_swap?.online)}</span> · ${d.llama_swap?.detail || ""}`;
           document.getElementById("hf-status").innerHTML =
@@ -160,16 +177,18 @@ loading…</pre
           }
           const forksEl = document.getElementById("forks");
           const forks = d.forks?.forks || {};
-          forksEl.innerHTML = Object.entries(forks)
-            .map(([name, f]) => {
-              return `<div class="p-3 rounded-lg bg-black/25 border border-white/5">
+          forksEl.innerHTML =
+            Object.entries(forks)
+              .map(([name, f]) => {
+                return `<div class="p-3 rounded-lg bg-black/25 border border-white/5">
                 <div class="text-cyan-300 font-bold mb-1">${name}</div>
                 <div class="text-gray-500 truncate">bin: ${f.bin_resolved || f.bin || "?"}</div>
                 <div class="text-gray-500 truncate">ld: ${(f.ld || "").slice(0, 80)}…</div>
                 <div class="text-gray-500">bench: ${f.bench ? "yes" : "no"}</div>
               </div>`;
-            })
-            .join("") || "<p class='text-gray-500'>Run: bun tools/fleet/extract_forks.ts</p>";
+              })
+              .join("") ||
+            "<p class='text-gray-500'>Run: bun tools/fleet/extract_forks.ts</p>";
 
           const fl = await fetch("/ops/api/fleet/last");
           const fj = await fl.json();

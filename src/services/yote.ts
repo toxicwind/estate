@@ -15,7 +15,11 @@ import { fileURLToPath } from "url";
 import { checkHealth, checkHealthLegacy } from "./lib/health";
 import { Overlord } from "./lib/overlord";
 import { handleMeshRequest } from "../../src/lib/ghas-mesh-features.ts";
-import { OpenFangClient, openfang, RouteOption } from "./lib/openfang-client.ts";
+import {
+  OpenFangClient,
+  openfang,
+  RouteOption,
+} from "./lib/openfang-client.ts";
 
 const __f = fileURLToPath(import.meta.url);
 const __d = dirname(__f);
@@ -72,11 +76,37 @@ const DEFAULT_AGENT = (
 ).replace(/^openfang:/, "");
 const PUP_TRIX_ID = Number(process.env.YOTE_TARGET_USER || "716302190");
 
-const ofClient = new OpenFangClient(OF_URL, process.env.OPENFANG_API_KEY || "", DEFAULT_AGENT, [
-  { agent: "coyote", model: "openfang:coyote", max_tokens: 512, temperature: 0.3, timeoutMs: 8000, label: "fast-local" },
-  { agent: "coyote", model: "openfang:coyote", max_tokens: 1024, temperature: 0.4, timeoutMs: 15000, label: "balanced" },
-  { agent: "coyote", model: "openfang:coyote", max_tokens: 2048, temperature: 0.5, timeoutMs: 30000, label: "thorough" },
-]);
+const ofClient = new OpenFangClient(
+  OF_URL,
+  process.env.OPENFANG_API_KEY || "",
+  DEFAULT_AGENT,
+  [
+    {
+      agent: "coyote",
+      model: "openfang:coyote",
+      max_tokens: 512,
+      temperature: 0.3,
+      timeoutMs: 8000,
+      label: "fast-local",
+    },
+    {
+      agent: "coyote",
+      model: "openfang:coyote",
+      max_tokens: 1024,
+      temperature: 0.4,
+      timeoutMs: 15000,
+      label: "balanced",
+    },
+    {
+      agent: "coyote",
+      model: "openfang:coyote",
+      max_tokens: 2048,
+      temperature: 0.5,
+      timeoutMs: 30000,
+      label: "thorough",
+    },
+  ],
+);
 
 /** per-chat agent override (user can /agent coyote) */
 const chatAgent: Record<string, string> = {};

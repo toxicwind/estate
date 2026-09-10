@@ -95,7 +95,8 @@ const EXCLUDED_PATTERNS: Array<string | RegExp> = [
 
 // Pure stdin consumers: usually the tail of a pipeline whose producer is the
 // real work. Give them a much longer grace period.
-const STDIN_CONSUMER_RE = /^(?:\S*\/)?(?:tail|head|less|more|cat|grep|sort|uniq|awk|sed|tr|wc|xargs|jq)(?:\s|$)/;
+const STDIN_CONSUMER_RE =
+  /^(?:\S*\/)?(?:tail|head|less|more|cat|grep|sort|uniq|awk|sed|tr|wc|xargs|jq)(?:\s|$)/;
 
 export class ProcessWatchdog {
   private stuckThresholdMs: number;
@@ -105,12 +106,15 @@ export class ProcessWatchdog {
   private judge: StuckJudge | null;
   private sendSignalImpl: SignalSender;
 
-  private escalation = new Map<number, {
-    level: EscalationLevel;
-    levelEnteredAt: number;
-    command: string;
-    retryCount: number;
-  }>();
+  private escalation = new Map<
+    number,
+    {
+      level: EscalationLevel;
+      levelEnteredAt: number;
+      command: string;
+      retryCount: number;
+    }
+  >();
   private history: InterventionEvent[] = [];
   private temporaryExclusions = new Set<number>();
 
@@ -120,13 +124,15 @@ export class ProcessWatchdog {
     this.maxRetries = opts.maxRetries ?? DEFAULT_MAX_RETRIES;
     this.delays = { ...DEFAULT_DELAYS, ...(opts.escalationDelays ?? {}) };
     this.judge = opts.judge ?? null;
-    this.sendSignalImpl = opts.sendSignal ?? ((pid, sig) => {
-      try {
-        process.kill(pid, sig as NodeJS.Signals);
-      } catch {
-        /* ESRCH expected for dead PIDs */
-      }
-    });
+    this.sendSignalImpl =
+      opts.sendSignal ??
+      ((pid, sig) => {
+        try {
+          process.kill(pid, sig as NodeJS.Signals);
+        } catch {
+          /* ESRCH expected for dead PIDs */
+        }
+      });
   }
 
   /** Evaluate a single child. Returns the escalation level it acted at, or null. */
@@ -167,7 +173,12 @@ export class ProcessWatchdog {
 
   private async advance(
     child: ChildProcessInfo,
-    state: { level: EscalationLevel; levelEnteredAt: number; command: string; retryCount: number },
+    state: {
+      level: EscalationLevel;
+      levelEnteredAt: number;
+      command: string;
+      retryCount: number;
+    },
   ): Promise<EscalationLevel | null> {
     const now = Date.now();
     if (state.level >= EscalationLevel.KillSession) {
@@ -178,7 +189,12 @@ export class ProcessWatchdog {
       state.level = EscalationLevel.CtrlC;
       state.levelEnteredAt = now;
       state.retryCount++;
-      this.dispatch(child.pid, EscalationLevel.CtrlC, child.command, `retry ${state.retryCount}`);
+      this.dispatch(
+        child.pid,
+        EscalationLevel.CtrlC,
+        child.command,
+        `retry ${state.retryCount}`,
+      );
       return EscalationLevel.CtrlC;
     }
     const next = (state.level + 1) as EscalationLevel;
@@ -190,11 +206,20 @@ export class ProcessWatchdog {
     return next;
   }
 
-  private dispatch(pid: number, level: EscalationLevel, command: string, note = ""): void {
-    const sig = level === EscalationLevel.CtrlC ? "SIGINT"
-      : level === EscalationLevel.SigTerm ? "SIGTERM"
-      : level === EscalationLevel.SigKill ? "SIGKILL"
-      : "SIGKILL"; // KillSession: caller decides; we SIGKILL the leaf here.
+  private dispatch(
+    pid: number,
+    level: EscalationLevel,
+    command: string,
+    note = "",
+  ): void {
+    const sig =
+      level === EscalationLevel.CtrlC
+        ? "SIGINT"
+        : level === EscalationLevel.SigTerm
+          ? "SIGTERM"
+          : level === EscalationLevel.SigKill
+            ? "SIGKILL"
+            : "SIGKILL"; // KillSession: caller decides; we SIGKILL the leaf here.
     this.sendSignalImpl(pid, sig);
     this.record(pid, level, `${sig}${note ? " " + note : ""}`, command);
   }
@@ -227,15 +252,28 @@ export class ProcessWatchdog {
     return STDIN_CONSUMER_RE.test(command);
   }
 
-  private record(pid: number, level: EscalationLevel, action: string, command: string): void {
-    const ev: InterventionEvent = { pid, level, action, command, timestamp: Date.now() };
+  private record(
+    pid: number,
+    level: EscalationLevel,
+    action: string,
+    command: string,
+  ): void {
+    const ev: InterventionEvent = {
+      pid,
+      level,
+      action,
+      command,
+      timestamp: Date.now(),
+    };
     this.history.push(ev);
     if (this.history.length > 50) this.history = this.history.slice(-50);
   }
 
   /** Outcome check: 60s after an intervention, did the PID recover or die? */
   outcome(pid: number, alive: boolean): InterventionEvent | null {
-    const ev = this.history.find((e) => e.pid === pid && e.outcome === undefined);
+    const ev = this.history.find(
+      (e) => e.pid === pid && e.outcome === undefined,
+    );
     if (!ev) return null;
     ev.outcome = alive ? "recovered" : "died";
     return ev;

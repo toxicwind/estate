@@ -13,10 +13,8 @@ const HOME = process.env.HOME || "/home/toxic";
 const BIN_DIR = join(HOME, ".local", "bin");
 const BIN_PATH = join(BIN_DIR, "hfdownloader");
 const SOV = process.env.SOVEREIGN_ROOT || join(HOME, "sovereign");
-const LOCAL_DIR =
-  process.env.HF_DOWNLOADER_LOCAL_DIR || join(SOV, "models");
-const CACHE_DIR =
-  process.env.HF_HOME || join(HOME, ".cache", "huggingface");
+const LOCAL_DIR = process.env.HF_DOWNLOADER_LOCAL_DIR || join(SOV, "models");
+const CACHE_DIR = process.env.HF_HOME || join(HOME, ".cache", "huggingface");
 
 function ensureBinary(): void {
   if (existsSync(BIN_PATH)) {
@@ -32,7 +30,11 @@ function ensureBinary(): void {
   }
   mkdirSync(BIN_DIR, { recursive: true });
   const install = spawnSync(
-    ["bash", "-c", `curl -sSL https://g.bodaay.io/hfd | bash -s install ${BIN_DIR}`],
+    [
+      "bash",
+      "-c",
+      `curl -sSL https://g.bodaay.io/hfd | bash -s install ${BIN_DIR}`,
+    ],
     { stdout: "pipe", stderr: "pipe" },
   );
   if (install.exitCode !== 0) {

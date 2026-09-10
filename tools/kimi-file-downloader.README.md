@@ -5,6 +5,7 @@ Fast concurrent file downloader for Kimi API/HAR archives.
 ## Usage
 
 ### 1. List-only mode (see what would be downloaded)
+
 ```bash
 python3 kimi-file-downloader.py \
   --har "www.kimi.com_Archive [26-08-12 18-48-34].har.txt" \
@@ -12,6 +13,7 @@ python3 kimi-file-downloader.py \
 ```
 
 ### 2. Download everything from HAR only
+
 ```bash
 python3 kimi-file-downloader.py \
   --har "www.kimi.com_Archive [26-08-12 18-48-34].har.txt" \
@@ -20,6 +22,7 @@ python3 kimi-file-downloader.py \
 ```
 
 ### 3. HAR + live API (discover files not captured in HAR)
+
 ```bash
 python3 kimi-file-downloader.py \
   --har "www.kimi.com_Archive [26-08-12 18-48-34].har.txt" \
@@ -31,14 +34,14 @@ python3 kimi-file-downloader.py \
 
 ## Options
 
-| Option | Description |
-|--------|-------------|
-| `--har` | Path to HAR archive file |
-| `--jwt` | JWT token (defaults to built-in) |
-| `--output` | Output directory (default: ./kimi_downloads) |
-| `--api` | Also fetch from live API feeds |
-| `--workers` | Concurrent downloads (default: 8) |
-| `--list-only` | Only list URLs, don't download |
+| Option        | Description                                  |
+| ------------- | -------------------------------------------- |
+| `--har`       | Path to HAR archive file                     |
+| `--jwt`       | JWT token (defaults to built-in)             |
+| `--output`    | Output directory (default: ./kimi_downloads) |
+| `--api`       | Also fetch from live API feeds               |
+| `--workers`   | Concurrent downloads (default: 8)            |
+| `--list-only` | Only list URLs, don't download               |
 
 ## Features
 

@@ -17,18 +17,23 @@ import { readFile, writeFile, mkdir } from "fs/promises";
 import { spawn, ChildProcess } from "child_process";
 import { resolve as resolvePath } from "path";
 
-const CONFIG_PATH  = process.env.CONFIG_PATH  ?? resolvePath(__dirname, "../llama-swap/config.yaml");
-const RESULTS_DIR  = process.env.FLEET_RESULTS ?? resolvePath(__dirname, "results");
-const MODEL_DIR    = process.env.MODEL_DIR     ?? "/home/toxic/projects/models";
+const CONFIG_PATH =
+  process.env.CONFIG_PATH ??
+  resolvePath(__dirname, "../llama-swap/config.yaml");
+const RESULTS_DIR =
+  process.env.FLEET_RESULTS ?? resolvePath(__dirname, "results");
+const MODEL_DIR = process.env.MODEL_DIR ?? "/home/toxic/projects/models";
 
-const CTX_PROBES   = (process.env.FLEET_CTX_PROBES ?? "4096,8192,16384,32768")
-  .split(",").map(s => parseInt(s.trim(), 10)).filter(n => n > 0);
+const CTX_PROBES = (process.env.FLEET_CTX_PROBES ?? "4096,8192,16384,32768")
+  .split(",")
+  .map((s) => parseInt(s.trim(), 10))
+  .filter((n) => n > 0);
 
 const PROBE_TOKENS = 32;
 const HEALTH_TIMEOUT_MS = 60_000;
-const PROBE_TIMEOUT_MS  = 120_000;
-const PORT_RANGE_START  = parseInt(process.env.FLEET_PORT_START ?? "25150");
-const PORT_RANGE_END    = PORT_RANGE_START + 50;
+const PROBE_TIMEOUT_MS = 120_000;
+const PORT_RANGE_START = parseInt(process.env.FLEET_PORT_START ?? "25150");
+const PORT_RANGE_END = PORT_RANGE_START + 50;
 
 /** Safety margin — never use more than this fraction of available VRAM */
 const VRAM_SAFETY_FRACTION = 0.85;
@@ -57,7 +62,7 @@ interface RankResult {
 }
 
 function sleep(ms: number): Promise<void> {
-  return new Promise(r => setTimeout(r, ms));
+  return new Promise((r) => setTimeout(r, ms));
 }
 
 /** Kill any stale processes on benchmark ports to prevent VRAM pile-up. */
@@ -66,18 +71,18 @@ function cleanupStaleProcesses(): void {
   try {
     require("child_process").execSync(
       `for port in $(seq ${PORT_RANGE_START} ${PORT_RANGE_END}); do ` +
-      "  pid=$(lsof -ti :$port 2>/dev/null) && " +
-      "  echo \"[cleanup] killing pid=$pid on port=$port\" && " +
-      "  kill -9 $pid 2>/dev/null; " +
-      "done",
-      { encoding: "utf-8", timeout: 10000 }
+        "  pid=$(lsof -ti :$port 2>/dev/null) && " +
+        '  echo "[cleanup] killing pid=$pid on port=$port" && ' +
+        "  kill -9 $pid 2>/dev/null; " +
+        "done",
+      { encoding: "utf-8", timeout: 10000 },
     );
   } catch {}
   // Also kill any leftover llama-server that might be orphaned
   try {
     require("child_process").execSync(
       "pkill -9 -f 'llama-server.*2515[0-9]' 2>/dev/null || true",
-      { encoding: "utf-8", timeout: 5000 }
+      { encoding: "utf-8", timeout: 5000 },
     );
   } catch {}
 }
@@ -85,10 +90,12 @@ function cleanupStaleProcesses(): void {
 /** Query available VRAM via nvidia-smi. Returns MiB or null if no GPU. */
 function getAvailableVRAM(): number | null {
   try {
-    const out = require("child_process").execSync(
-      "nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits 2>/dev/null",
-      { encoding: "utf-8", timeout: 5000 }
-    ).trim();
+    const out = require("child_process")
+      .execSync(
+        "nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits 2>/dev/null",
+        { encoding: "utf-8", timeout: 5000 },
+      )
+      .trim();
     const mb = parseInt(out.split("\n")[0], 10);
     return isNaN(mb) ? null : mb;
   } catch {
@@ -113,13 +120,15 @@ function getFreePort(used: Set<number>): number {
   for (let p = PORT_RANGE_START; p < PORT_RANGE_END; p++) {
     if (!used.has(p)) return p;
   }
-  throw new Error("No free ports in range " + PORT_RANGE_START + "-" + PORT_RANGE_END);
+  throw new Error(
+    "No free ports in range " + PORT_RANGE_START + "-" + PORT_RANGE_END,
+  );
 }
 
 function expandMacros(
   val: string,
   macros: Record<string, string>,
-  visited: Set<string> = new Set()
+  visited: Set<string> = new Set(),
 ): string {
   const pattern = /\$\{(\w+)\}/g;
   let result = val;
@@ -145,7 +154,10 @@ function expandMacros(
   return result;
 }
 
-async function compileConfig(): Promise<{ models: ModelConfig[]; macros: Record<string, string> }> {
+async function compileConfig(): Promise<{
+  models: ModelConfig[];
+  macros: Record<string, string>;
+}> {
   const yaml = await import("js-yaml");
   const raw = await readFile(CONFIG_PATH, "utf-8");
   const doc = yaml.load(raw) as any;
@@ -178,7 +190,11 @@ function resolveModelPath(cmd: string): string {
   return resolvePath(MODEL_DIR, path);
 }
 
-function resolveCmd(cmd: string, macros: Record<string, string>, port: number): string {
+function resolveCmd(
+  cmd: string,
+  macros: Record<string, string>,
+  port: number,
+): string {
   let resolved = expandMacros(cmd, macros);
   // Replace ${PORT} placeholders
   resolved = resolved.replace(/\$\{PORT\}/g, String(port));
@@ -189,7 +205,9 @@ async function waitForHealth(url: string, timeoutMs: number): Promise<boolean> {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     try {
-      const res = await fetch(url + "/health", { signal: AbortSignal.timeout(3000) });
+      const res = await fetch(url + "/health", {
+        signal: AbortSignal.timeout(3000),
+      });
       if (res.ok) return true;
     } catch {}
     await sleep(1000);
@@ -219,13 +237,17 @@ async function probeModel(port: number, ctx: number): Promise<number | null> {
     const data: any = await res.json();
     const ms = performance.now() - t0;
     const toks = data?.usage?.completion_tokens ?? PROBE_TOKENS;
-    return toks / ms * 1000;
+    return (toks / ms) * 1000;
   } catch {
     return null;
   }
 }
 
-function spawnModel(cmd: string, port: number, logFile: string): { proc: ChildProcess; killed: Promise<void> } {
+function spawnModel(
+  cmd: string,
+  port: number,
+  logFile: string,
+): { proc: ChildProcess; killed: Promise<void> } {
   // Parse the resolved cmd string into exec and args
   const tokens: string[] = [];
   let current = "";
@@ -237,7 +259,10 @@ function spawnModel(cmd: string, port: number, logFile: string): { proc: ChildPr
     } else if (ch === "'" || ch === '"') {
       inQuote = ch;
     } else if (ch === " ") {
-      if (current) { tokens.push(current); current = ""; }
+      if (current) {
+        tokens.push(current);
+        current = "";
+      }
     } else {
       current += ch;
     }
@@ -258,7 +283,9 @@ function spawnModel(cmd: string, port: number, logFile: string): { proc: ChildPr
 
   // Write stderr to log
   const logStream = require("fs").createWriteStream(logFile, { flags: "a" });
-  const debugStream = require("fs").createWriteStream("/tmp/herd-debug.log", { flags: "a" });
+  const debugStream = require("fs").createWriteStream("/tmp/herd-debug.log", {
+    flags: "a",
+  });
   proc.stdout?.pipe(logStream);
   proc.stderr?.pipe(debugStream);
   proc.stderr?.pipe(logStream);
@@ -289,7 +316,7 @@ async function benchmarkModel(
   cmd: string,
   macros: Record<string, string>,
   port: number,
-  logDir: string
+  logDir: string,
 ): Promise<RankResult> {
   const resolvedCmd = resolveCmd(cmd, macros, port);
   const modelFile = resolveModelPath(resolvedCmd);
@@ -312,7 +339,10 @@ async function benchmarkModel(
 
   const { proc } = spawnModel(resolvedCmd, port, logFile);
 
-  const healthOk = await waitForHealth(`http://127.0.0.1:${port}`, HEALTH_TIMEOUT_MS);
+  const healthOk = await waitForHealth(
+    `http://127.0.0.1:${port}`,
+    HEALTH_TIMEOUT_MS,
+  );
   result.health_ok = healthOk;
 
   if (!healthOk) {
@@ -333,8 +363,12 @@ async function benchmarkModel(
     result.best_tps = Math.max(result.best_tps, tps);
   }
 
-  result.tier = result.max_stable_ctx >= 65536 ? "deep"
-    : result.max_stable_ctx >= 16384 ? "mid" : "fast";
+  result.tier =
+    result.max_stable_ctx >= 65536
+      ? "deep"
+      : result.max_stable_ctx >= 16384
+        ? "mid"
+        : "fast";
 
   await killProcess(proc);
   return result;
@@ -362,7 +396,9 @@ async function main() {
 
   console.log(`[fleet-config-ranker] ${models.length} models in config`);
   console.log(`[fleet-config-ranker] ctx probes: ${CTX_PROBES.join(", ")}`);
-  console.log(`[fleet-config-ranker] parallel: ${parallelCount} | dry-run: ${dryRun}\n`);
+  console.log(
+    `[fleet-config-ranker] parallel: ${parallelCount} | dry-run: ${dryRun}\n`,
+  );
 
   if (dryRun) {
     for (const m of models) {
@@ -379,27 +415,33 @@ async function main() {
   }
 
   let targets = filterModels.length
-    ? models.filter(m => filterModels.includes(m.name))
+    ? models.filter((m) => filterModels.includes(m.name))
     : models;
 
   // VRAM safety pre-flight
   const vramMb = getAvailableVRAM();
   if (vramMb !== null) {
     const maxSafe = Math.floor(vramMb * VRAM_SAFETY_FRACTION);
-    console.log(`[fleet-config-ranker] GPU VRAM: ${vramMb} MiB available, using max ${maxSafe} MiB (${VRAM_SAFETY_FRACTION*100}%)`);
+    console.log(
+      `[fleet-config-ranker] GPU VRAM: ${vramMb} MiB available, using max ${maxSafe} MiB (${VRAM_SAFETY_FRACTION * 100}%)`,
+    );
 
-    targets = targets.filter(m => {
+    targets = targets.filter((m) => {
       const cmd = resolveCmd(m.cmd, macros, 25150);
       const modelFile = resolveModelPath(cmd);
       const est = estimateVRAM(modelFile, Math.max(...CTX_PROBES));
       if (est > maxSafe) {
-        console.log(`[vram-skip] ${m.name} — est ${est.toFixed(0)} MiB > ${maxSafe} MiB (${modelFile})`);
+        console.log(
+          `[vram-skip] ${m.name} — est ${est.toFixed(0)} MiB > ${maxSafe} MiB (${modelFile})`,
+        );
         return false;
       }
       return true;
     });
   } else {
-    console.log("[fleet-config-ranker] No GPU VRAM info — running without VRAM safety check");
+    console.log(
+      "[fleet-config-ranker] No GPU VRAM info — running without VRAM safety check",
+    );
   }
 
   // Kill any leftover processes before starting
@@ -434,27 +476,32 @@ async function main() {
         } finally {
           usedPorts.delete(port);
         }
-      })
+      }),
     );
     results.push(...batchResults);
   }
 
   results.sort((a, b) => b.best_tps - a.best_tps);
 
-  const outPath = resolvePath(RESULTS_DIR, `config_bench_${new Date().toISOString().slice(0,10)}.json`);
+  const outPath = resolvePath(
+    RESULTS_DIR,
+    `config_bench_${new Date().toISOString().slice(0, 10)}.json`,
+  );
   await writeFile(outPath, JSON.stringify(results, null, 2));
   console.log(`\n[fleet-config-ranker] results written to ${outPath}`);
 
   console.log("\n=== LEADERBOARD (by TPS) ===");
-  console.log(`${"RANK".padEnd(5)} ${"MODEL".padEnd(40)} ${"TPS".padEnd(8)} ${"MAX_CTX".padEnd(8)} ${"TIER".padEnd(6)} ${"HEALTH"}`);
+  console.log(
+    `${"RANK".padEnd(5)} ${"MODEL".padEnd(40)} ${"TPS".padEnd(8)} ${"MAX_CTX".padEnd(8)} ${"TIER".padEnd(6)} ${"HEALTH"}`,
+  );
   results.forEach((r, i) => {
     console.log(
-      `${(i+1).toString().padEnd(5)} ${r.model.padEnd(40)} ${r.best_tps.toFixed(0).padEnd(8)} ${r.max_stable_ctx.toString().padEnd(8)} ${r.tier.padEnd(6)} ${r.health_ok ? "OK" : "FAIL"}`
+      `${(i + 1).toString().padEnd(5)} ${r.model.padEnd(40)} ${r.best_tps.toFixed(0).padEnd(8)} ${r.max_stable_ctx.toString().padEnd(8)} ${r.tier.padEnd(6)} ${r.health_ok ? "OK" : "FAIL"}`,
     );
   });
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error("[fatal]", err);
   process.exit(1);
 });

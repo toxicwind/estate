@@ -13,5 +13,7 @@ export const ALL_SERVICES: ServiceDef[] = [
   ...FORK_SERVICES,
   BUN_RUNTIME_SERVICE,
 ];
-export const ALL_SERVICE_IDS = ALL_SERVICES.map(s => s.id);
-export function getServiceById(id: string) { return ALL_SERVICES.find(s => s.id === id); }
+export const ALL_SERVICE_IDS = ALL_SERVICES.map((s) => s.id);
+export function getServiceById(id: string) {
+  return ALL_SERVICES.find((s) => s.id === id);
+}

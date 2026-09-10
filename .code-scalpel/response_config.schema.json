@@ -41,7 +41,16 @@
                 "description": "Envelope metadata fields to include",
                 "items": {
                   "type": "string",
-                  "enum": ["tier", "tool_version", "tool_id", "request_id", "capabilities", "duration_ms", "error", "upgrade_hints"]
+                  "enum": [
+                    "tier",
+                    "tool_version",
+                    "tool_id",
+                    "request_id",
+                    "capabilities",
+                    "duration_ms",
+                    "error",
+                    "upgrade_hints"
+                  ]
                 }
               }
             }
@@ -86,9 +95,15 @@
                 "type": "object",
                 "description": "Tier-conditional exclusions. Keys are tier names (community, pro, enterprise); values are arrays of field names to exclude at that tier. Useful for suppressing heavy metadata on lower tiers.",
                 "properties": {
-                  "community": { "type": "array", "items": { "type": "string" } },
-                  "pro":       { "type": "array", "items": { "type": "string" } },
-                  "enterprise":{ "type": "array", "items": { "type": "string" } }
+                  "community": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  },
+                  "pro": { "type": "array", "items": { "type": "string" } },
+                  "enterprise": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  }
                 }
               }
             }

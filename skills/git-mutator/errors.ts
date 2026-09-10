@@ -45,7 +45,12 @@ export class NothingToCommitError extends GitMutatorError {
 
 export class GitCommandError extends GitMutatorError {
   constructor(command: string, stdout?: string, stderr?: string) {
-    super(`Git command failed: ${command}`, "GIT_COMMAND_FAILED", stdout, stderr);
+    super(
+      `Git command failed: ${command}`,
+      "GIT_COMMAND_FAILED",
+      stdout,
+      stderr,
+    );
     this.name = "GitCommandError";
   }
 }

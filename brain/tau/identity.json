@@ -13,10 +13,7 @@
     "active": "longcat-2.0-free",
     "provider": "opencode",
     "context_window": 1000000,
-    "alternates": [
-      "xiaomi/mimo-v2.5",
-      "nvidia/llama-3.1-nemotron-nano-8b-v1"
-    ],
+    "alternates": ["xiaomi/mimo-v2.5", "nvidia/llama-3.1-nemotron-nano-8b-v1"],
     "classification": "pi-longcat-as-c2-fix-while-not-sure"
   },
   "host": {

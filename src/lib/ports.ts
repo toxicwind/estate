@@ -7,9 +7,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { resolve } from "node:path";
 
-const SOV =
-  process.env.SOVEREIGN_ROOT ||
-  resolve(homedir(), "sovereign");
+const SOV = process.env.SOVEREIGN_ROOT || resolve(homedir(), "sovereign");
 
 function loadEnvFile(path: string): void {
   if (!existsSync(path)) return;
@@ -20,7 +18,10 @@ function loadEnvFile(path: string): void {
     const eq = line.indexOf("=");
     if (eq < 1) continue;
     const k = line.slice(0, eq).trim();
-    let v = line.slice(eq + 1).trim().replace(/^['"]|['"]$/g, "");
+    let v = line
+      .slice(eq + 1)
+      .trim()
+      .replace(/^['"]|['"]$/g, "");
     if (k && v !== undefined && process.env[k] === undefined) {
       process.env[k] = v;
     }
@@ -48,7 +49,9 @@ export function requireEnv(name: string): string {
 export function requirePort(name: string): number {
   const n = Number(requireEnv(name));
   if (!Number.isFinite(n) || n < 1 || n > 65535) {
-    throw new Error(`${name} must be a valid TCP port, got ${process.env[name]}`);
+    throw new Error(
+      `${name} must be a valid TCP port, got ${process.env[name]}`,
+    );
   }
   return n;
 }

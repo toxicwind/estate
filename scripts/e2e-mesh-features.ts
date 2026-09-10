@@ -4,10 +4,7 @@
  */
 import { writeFileSync, mkdirSync, appendFileSync } from "node:fs";
 import { resolve } from "node:path";
-import {
-  FEATURE_IDS,
-  serviceCatalog,
-} from "../src/lib/ghas-mesh-features.ts";
+import { FEATURE_IDS, serviceCatalog } from "../src/lib/ghas-mesh-features.ts";
 import { loadSovereignPorts, requirePort } from "../src/lib/ports.ts";
 
 loadSovereignPorts();
@@ -41,7 +38,9 @@ function log(r: Row) {
   appendFileSync(OUT, JSON.stringify(r) + "\n");
 }
 
-async function hit(url: string): Promise<{ status: number; ms: number; body: string }> {
+async function hit(
+  url: string,
+): Promise<{ status: number; ms: number; body: string }> {
   const t0 = performance.now();
   try {
     const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
@@ -51,7 +50,11 @@ async function hit(url: string): Promise<{ status: number; ms: number; body: str
       body: (await res.text()).slice(0, 200),
     };
   } catch (e) {
-    return { status: 0, ms: Math.round(performance.now() - t0), body: String(e) };
+    return {
+      status: 0,
+      ms: Math.round(performance.now() - t0),
+      body: String(e),
+    };
   }
 }
 

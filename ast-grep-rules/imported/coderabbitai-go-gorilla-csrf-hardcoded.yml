@@ -35,33 +35,33 @@ utils:
           stopBy: neighbor
           kind: argument_list
           any:
-          - has:
-             stopBy: neighbor
-             nthChild:
-              position: 1
-              ofRule:
-                not:
-                  kind: comment
-             kind: type_conversion_expression
-             all:
-              - has:
-                  stopBy: neighbor
-                  kind: slice_type
-                  has:
-                    stopBy: neighbor
-                    kind: type_identifier
-                    regex: ^byte$
-              - has:
-                  stopBy: neighbor
-                  kind: interpreted_string_literal
-          - has:
-              stopBy: neighbor
-              kind: interpreted_string_literal
-              nthChild:
-               position: 1
-               ofRule:
-                not:
-                  kind: comment
+            - has:
+                stopBy: neighbor
+                nthChild:
+                  position: 1
+                  ofRule:
+                    not:
+                      kind: comment
+                kind: type_conversion_expression
+                all:
+                  - has:
+                      stopBy: neighbor
+                      kind: slice_type
+                      has:
+                        stopBy: neighbor
+                        kind: type_identifier
+                        regex: ^byte$
+                  - has:
+                      stopBy: neighbor
+                      kind: interpreted_string_literal
+            - has:
+                stopBy: neighbor
+                kind: interpreted_string_literal
+                nthChild:
+                  position: 1
+                  ofRule:
+                    not:
+                      kind: comment
       - inside:
           stopBy: end
           follows:

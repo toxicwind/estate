@@ -17,8 +17,13 @@ function arg(name: string, fallback = ""): string {
   return fallback;
 }
 
-const service = (arg("--service") || process.env.MESH_SERVICE || "mesh-hub") as MeshServiceId;
-const listen = arg("--listen") || process.env.MESH_LISTEN || `127.0.0.1:${process.env.MESH_HUB_PORT || "25115"}`;
+const service = (arg("--service") ||
+  process.env.MESH_SERVICE ||
+  "mesh-hub") as MeshServiceId;
+const listen =
+  arg("--listen") ||
+  process.env.MESH_LISTEN ||
+  `127.0.0.1:${process.env.MESH_HUB_PORT || "25115"}`;
 const backend = arg("--backend") || process.env.MESH_BACKEND || "";
 const [listenHost, listenPortStr] = listen.includes(":")
   ? listen.split(":")
@@ -30,9 +35,7 @@ if (!backend) {
   process.exit(2);
 }
 
-const backendBase = backend.startsWith("http")
-  ? backend
-  : `http://${backend}`;
+const backendBase = backend.startsWith("http") ? backend : `http://${backend}`;
 
 const server = Bun.serve({
   hostname: listenHost === "0.0.0.0" ? "0.0.0.0" : listenHost,

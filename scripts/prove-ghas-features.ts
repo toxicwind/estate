@@ -10,8 +10,7 @@ import { loadSovereignPorts } from "../src/lib/ports.ts";
 loadSovereignPorts();
 
 const SCRATCH =
-  process.env.SCRATCH ||
-  "/tmp/grok-goal-c30f990945a1/implementer";
+  process.env.SCRATCH || "/tmp/grok-goal-c30f990945a1/implementer";
 mkdirSync(SCRATCH, { recursive: true });
 const REG = resolve(SCRATCH, "ghas-features.json");
 const LOG = resolve(SCRATCH, "ghas-feature-proofs.log");
@@ -66,7 +65,8 @@ const FEATURES: Feat[] = [
     ghas_source: "MeshSense / meshcore-health-check fan-out",
     services: ["*"],
     path: "/mesh/healthz",
-    proof_cmd: "curl -sf http://127.0.0.1:25101/mesh/healthz || curl -sf http://127.0.0.1:25115/mesh/s/rust-web/healthz",
+    proof_cmd:
+      "curl -sf http://127.0.0.1:25101/mesh/healthz || curl -sf http://127.0.0.1:25115/mesh/s/rust-web/healthz",
     description: "Deep health probing native service health path",
   },
   {
@@ -246,7 +246,9 @@ const NATIVE_PORTS: Record<string, number> = {
   "mesh-hub": 25115,
 };
 
-async function prove(url: string): Promise<{ ok: boolean; status: number; body: string; ms: number }> {
+async function prove(
+  url: string,
+): Promise<{ ok: boolean; status: number; body: string; ms: number }> {
   const t0 = performance.now();
   try {
     const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
@@ -258,7 +260,12 @@ async function prove(url: string): Promise<{ ok: boolean; status: number; body: 
       ms: Math.round(performance.now() - t0),
     };
   } catch (e) {
-    return { ok: false, status: 0, body: String(e), ms: Math.round(performance.now() - t0) };
+    return {
+      ok: false,
+      status: 0,
+      body: String(e),
+      ms: Math.round(performance.now() - t0),
+    };
   }
 }
 
@@ -298,6 +305,15 @@ const registry = {
 };
 
 writeFileSync(REG, JSON.stringify(registry, null, 2));
-appendFileSync(LOG, `\nSUMMARY pass=${results.length - fail} fail=${fail} total=${results.length}\n`);
-console.log(JSON.stringify({ registry: REG, log: LOG, pass: results.length - fail, fail }, null, 2));
+appendFileSync(
+  LOG,
+  `\nSUMMARY pass=${results.length - fail} fail=${fail} total=${results.length}\n`,
+);
+console.log(
+  JSON.stringify(
+    { registry: REG, log: LOG, pass: results.length - fail, fail },
+    null,
+    2,
+  ),
+);
 process.exit(fail > 0 ? 1 : 0);

@@ -9,7 +9,15 @@
  *   bun run tools/hf-model-sync/hf_sync.ts --dry-run # no changes
  */
 
-import { readFile, writeFile, mkdir, symlink, readdir, unlink, rmdir } from "fs/promises";
+import {
+  readFile,
+  writeFile,
+  mkdir,
+  symlink,
+  readdir,
+  unlink,
+  rmdir,
+} from "fs/promises";
 import { resolve, basename, dirname, extname, relative } from "path";
 import { existsSync, statSync } from "fs";
 import { withLock } from "../lib/lock";
@@ -66,7 +74,7 @@ function warn(msg: string) {
 }
 
 function sleep(ms: number): Promise<void> {
-  return new Promise(r => setTimeout(r, ms));
+  return new Promise((r) => setTimeout(r, ms));
 }
 
 async function loadConfig(): Promise<SyncConfig> {
@@ -74,7 +82,10 @@ async function loadConfig(): Promise<SyncConfig> {
   return JSON.parse(raw);
 }
 
-async function fetchHFModels(repo: string, token: string): Promise<HFModelInfo | null> {
+async function fetchHFModels(
+  repo: string,
+  token: string,
+): Promise<HFModelInfo | null> {
   const url = `https://huggingface.co/api/models/${repo}`;
   try {
     const [modelRes, treeRes] = await Promise.all([
@@ -98,7 +109,9 @@ async function fetchHFModels(repo: string, token: string): Promise<HFModelInfo |
     // Add sizes from tree endpoint
     if (treeRes.ok) {
       const tree: HFTreeEntry[] = await treeRes.json();
-      const sizeMap = new Map(tree.filter(e => e.size).map(e => [e.path, e.size]));
+      const sizeMap = new Map(
+        tree.filter((e) => e.size).map((e) => [e.path, e.size]),
+      );
       for (const sib of modelInfo.siblings) {
         sib.size = sizeMap.get(sib.rfilename);
       }
@@ -112,10 +125,14 @@ async function fetchHFModels(repo: string, token: string): Promise<HFModelInfo |
 }
 
 function ggufFiles(siblings: HFModelFile[]): HFModelFile[] {
-  return siblings.filter(s => s.rfilename.endsWith(".gguf"));
+  return siblings.filter((s) => s.rfilename.endsWith(".gguf"));
 }
 
-function findFileToDownload(files: HFModelFile[], patterns: string[], repoName: string): HFModelFile | null {
+function findFileToDownload(
+  files: HFModelFile[],
+  patterns: string[],
+  repoName: string,
+): HFModelFile | null {
   const ggufs = ggufFiles(files);
   if (ggufs.length === 0) {
     warn(`no .gguf files in ${repoName}`);
@@ -125,13 +142,15 @@ function findFileToDownload(files: HFModelFile[], patterns: string[], repoName: 
   // Try matching patterns first
   for (const p of patterns) {
     const lower = p.toLowerCase();
-    const match = ggufs.find(f => f.rfilename.toLowerCase().includes(lower));
+    const match = ggufs.find((f) => f.rfilename.toLowerCase().includes(lower));
     if (match) return match;
   }
 
   // Fallback: use the smallest GGUF (usually the highest quant)
   ggufs.sort((a, b) => a.size - b.size);
-  warn(`no pattern match in ${repoName}, picking smallest: ${ggufs[0].rfilename}`);
+  warn(
+    `no pattern match in ${repoName}, picking smallest: ${ggufs[0].rfilename}`,
+  );
   return ggufs[0];
 }
 
@@ -139,14 +158,16 @@ async function downloadFile(
   url: string,
   dest: string,
   token: string,
-  expectedSize: number
+  expectedSize: number,
 ): Promise<boolean> {
   // Skip if already exists with correct size
   if (existsSync(dest)) {
     try {
       const existing = statSync(dest).size;
       if (existing === expectedSize) {
-        log(`already exists: ${basename(dest)} (${(existing / 1024 / 1024).toFixed(0)} MiB)`);
+        log(
+          `already exists: ${basename(dest)} (${(existing / 1024 / 1024).toFixed(0)} MiB)`,
+        );
         return true;
       }
       log(`size mismatch, re-downloading: ${basename(dest)}`);
@@ -155,7 +176,9 @@ async function downloadFile(
 
   await mkdir(dirname(dest), { recursive: true });
 
-  log(`downloading ${basename(dest)} (${(expectedSize / 1024 / 1024).toFixed(0)} MiB)...`);
+  log(
+    `downloading ${basename(dest)} (${(expectedSize / 1024 / 1024).toFixed(0)} MiB)...`,
+  );
 
   try {
     const res = await fetch(url, {
@@ -178,7 +201,11 @@ async function downloadFile(
   }
 }
 
-async function downloadReadme(repo: string, destDir: string, token: string): Promise<void> {
+async function downloadReadme(
+  repo: string,
+  destDir: string,
+  token: string,
+): Promise<void> {
   const readmeUrl = `https://huggingface.co/${repo}/raw/main/README.md`;
   const readmeDest = resolve(destDir, "README.md");
 
@@ -207,14 +234,16 @@ function repoDirToName(dir: string): string {
 async function setupSymlink(
   ggufPath: string,
   modelDir: string,
-  nameHint: string
+  nameHint: string,
 ): Promise<string> {
   // Create a clean symlink name in the model dir
   const ggufBasename = basename(ggufPath);
   const linkPath = resolve(modelDir, ggufBasename);
 
   // Remove stale symlink if it exists
-  try { await unlink(linkPath); } catch {}
+  try {
+    await unlink(linkPath);
+  } catch {}
 
   // Create symlink
   try {
@@ -236,7 +265,7 @@ function generateConfigEntry(
   ggufPath: string,
   modelDir: string,
   priorityBase: number,
-  apiSizeBytes?: number
+  apiSizeBytes?: number,
 ): { modelName: string; yamlEntry: string; opencodeEntry: any } | null {
   // Derive model properties from filename
   const name = ggufBasename.replace(/\.gguf$/i, "");
@@ -258,8 +287,13 @@ function generateConfigEntry(
   }
   let ctxSize = "ctx_128k";
   let ctxVal = 131072;
-  if (gb > 20) { ctxSize = "ctx_32k"; ctxVal = 32768; }
-  else if (gb > 15) { ctxSize = "ctx_64k"; ctxVal = 65536; }
+  if (gb > 20) {
+    ctxSize = "ctx_32k";
+    ctxVal = 32768;
+  } else if (gb > 15) {
+    ctxSize = "ctx_64k";
+    ctxVal = 65536;
+  }
 
   // Cache type
   const cacheType = lower.includes("turbo") ? "kv_turbo3" : "kv_q8";
@@ -275,7 +309,8 @@ function generateConfigEntry(
   const modelName = `${fork}/${name}`;
 
   // Check for mla-attn
-  const mla = lower.includes("mla") || lower.includes("qwen3") ? "--mla-attn" : "--jinja";
+  const mla =
+    lower.includes("mla") || lower.includes("qwen3") ? "--mla-attn" : "--jinja";
 
   const yamlEntry = `  ${modelName}:
     cmd: \${clean_env} \${cuda_env} LD_LIBRARY_PATH=\${${forkLd}} \${${forkBin}} --model
@@ -307,7 +342,7 @@ async function syncRepo(
   config: SyncConfig,
   token: string,
   result: SyncResult,
-  checkOnly: boolean = false
+  checkOnly: boolean = false,
 ): Promise<void> {
   result.checked.push(repo);
   log(`checking ${repo}...`);
@@ -327,16 +362,26 @@ async function syncRepo(
   const dirName = repoToDirName(repo);
   const destDir = resolve(config.repos_dir, dirName);
   const destPath = resolve(destDir, gguf.rfilename);
-  const exists = require("fs").existsSync(resolve(config.model_dir, gguf.rfilename));
+  const exists = require("fs").existsSync(
+    resolve(config.model_dir, gguf.rfilename),
+  );
   const sizeMb = gguf.size ? (gguf.size / 1024 / 1024).toFixed(0) : "?";
 
   log(`${gguf.rfilename} — ${sizeMb} MiB, exists: ${exists}`);
 
   if (checkOnly) {
     // Just report what we found, don't download or write
-    const entry = generateConfigEntry(repo, gguf.rfilename, destPath, config.model_dir, priorityBase);
+    const entry = generateConfigEntry(
+      repo,
+      gguf.rfilename,
+      destPath,
+      config.model_dir,
+      priorityBase,
+    );
     if (entry) {
-      log(`would add config: ${entry.modelName} (${entry.yamlEntry.split("\n")[0].trim()})`);
+      log(
+        `would add config: ${entry.modelName} (${entry.yamlEntry.split("\n")[0].trim()})`,
+      );
       log(`would add to opencode.json: ${entry.modelName}`);
     } else {
       log(`could not generate config for ${gguf.rfilename}`);
@@ -349,7 +394,7 @@ async function syncRepo(
     `https://huggingface.co/${repo}/resolve/main/${gguf.rfilename}`,
     destPath,
     token,
-    gguf.size ?? 0
+    gguf.size ?? 0,
   );
 
   if (!ok) {
@@ -365,7 +410,14 @@ async function syncRepo(
 
   // Generate config entries
   if (autoConfig) {
-    const entry = generateConfigEntry(repo, gguf.rfilename, destPath, config.model_dir, priorityBase, gguf.size);
+    const entry = generateConfigEntry(
+      repo,
+      gguf.rfilename,
+      destPath,
+      config.model_dir,
+      priorityBase,
+      gguf.size,
+    );
     if (entry) {
       await updateConfigs(config, entry, result);
     }
@@ -378,7 +430,7 @@ async function syncRepo(
 async function updateConfigs(
   config: SyncConfig,
   entry: { modelName: string; yamlEntry: string; opencodeEntry: any },
-  result: SyncResult
+  result: SyncResult,
 ): Promise<void> {
   // Update config.yaml
   if (existsSync(config.llama_swap_config)) {
@@ -409,7 +461,11 @@ async function updateConfigs(
           priority: entry.opencodeEntry.priority,
           source: "hf-sync",
         };
-        await writeFile(config.opencode_json, JSON.stringify(json, null, 2) + "\n", "utf-8");
+        await writeFile(
+          config.opencode_json,
+          JSON.stringify(json, null, 2) + "\n",
+          "utf-8",
+        );
         log(`added ${entry.modelName} to opencode.json`);
       }
     });
@@ -428,7 +484,10 @@ async function updateConfigs(
   }
 }
 
-async function runOnce(dryRun: boolean, checkOnly: boolean = false): Promise<SyncResult> {
+async function runOnce(
+  dryRun: boolean,
+  checkOnly: boolean = false,
+): Promise<SyncResult> {
   const config = await loadConfig();
   const token = process.env[config.huggingface_token_env] ?? "";
 
@@ -455,7 +514,7 @@ async function runOnce(dryRun: boolean, checkOnly: boolean = false): Promise<Syn
       config,
       token,
       result,
-      checkOnly
+      checkOnly,
     );
   }
 
@@ -470,13 +529,19 @@ function printResult(r: SyncResult) {
   console.log(`  Skipped:   ${r.skipped.length}`);
   console.log(`  Errors:    ${r.errors.length}`);
   if (r.downloaded.length) console.log(`  Files: ${r.downloaded.join(", ")}`);
-  if (r.added_configs.length) console.log(`  New models: ${r.added_configs.join(", ")}`);
+  if (r.added_configs.length)
+    console.log(`  New models: ${r.added_configs.join(", ")}`);
   if (r.errors.length) console.log(`  Errors: ${r.errors.join(", ")}`);
 }
 
-async function daemonLoop(dryRun: boolean, checkOnly: boolean = false): Promise<void> {
+async function daemonLoop(
+  dryRun: boolean,
+  checkOnly: boolean = false,
+): Promise<void> {
   const config = await loadConfig();
-  log(`daemon mode: polling every ${config.poll_interval_hours}h (checkOnly: ${checkOnly}, dryRun: ${dryRun})`);
+  log(
+    `daemon mode: polling every ${config.poll_interval_hours}h (checkOnly: ${checkOnly}, dryRun: ${dryRun})`,
+  );
   const intervalMs = config.poll_interval_hours * 60 * 60 * 1000;
   log(`daemon mode: polling every ${config.poll_interval_hours}h`);
 
@@ -507,7 +572,10 @@ async function cleanupFlatDirs(): Promise<void> {
         : null;
       if (target && target.includes("__")) {
         // Fix: replace owner__repo with owner/repo in target path
-        const fixed = target.replace(/repos\/([^/]+)__([^/]+)\//, "repos/$1/$2/");
+        const fixed = target.replace(
+          /repos\/([^/]+)__([^/]+)\//,
+          "repos/$1/$2/",
+        );
         if (fixed !== target) {
           await unlink(linkPath);
           await symlink(fixed, linkPath);
@@ -566,7 +634,7 @@ async function main() {
   }
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error("[hf-sync] fatal:", err);
   process.exit(1);
 });

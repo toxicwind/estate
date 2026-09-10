@@ -23,15 +23,18 @@ Claude Code hooks intercept tool usage before and after execution:
 - **PostToolUse**: Logs all operations to the audit trail
 
 Configuration in `.claude/settings.json`:
+
 ```json
 {
   "hooks": {
-    "PreToolUse": [{
-      "name": "code-scalpel-governance",
-      "match": {"tools": ["Edit", "Write", "Bash", "MultiEdit"]},
-      "command": "code-scalpel hook pre-tool-use",
-      "onFailure": "block"
-    }]
+    "PreToolUse": [
+      {
+        "name": "code-scalpel-governance",
+        "match": { "tools": ["Edit", "Write", "Bash", "MultiEdit"] },
+        "command": "code-scalpel hook pre-tool-use",
+        "onFailure": "block"
+      }
+    ]
   }
 }
 ```
@@ -45,11 +48,11 @@ Git hooks provide commit-time enforcement:
 
 ### Enforcement Modes
 
-| Mode | Behavior |
-|------|----------|
-| `audit-only` | Log all operations without blocking |
-| `warn` | Warn on violations, allow operations |
-| `block` | Block operations that violate policy |
+| Mode         | Behavior                             |
+| ------------ | ------------------------------------ |
+| `audit-only` | Log all operations without blocking  |
+| `warn`       | Warn on violations, allow operations |
+| `block`      | Block operations that violate policy |
 
 ## Commands
 

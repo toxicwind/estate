@@ -3,15 +3,20 @@
  * Direct hot-reload / pitchfork recycle for every owned daemon.
  * Records before/after PIDs and post health in SCRATCH/hot-reload.jsonl
  */
-import { writeFileSync, appendFileSync, mkdirSync, existsSync, readFileSync } from "node:fs";
+import {
+  writeFileSync,
+  appendFileSync,
+  mkdirSync,
+  existsSync,
+  readFileSync,
+} from "node:fs";
 import { resolve } from "node:path";
 import { loadSovereignPorts } from "../src/lib/ports.ts";
 
 loadSovereignPorts();
 
 const SCRATCH =
-  process.env.SCRATCH ||
-  "/tmp/grok-goal-c30f990945a1/implementer";
+  process.env.SCRATCH || "/tmp/grok-goal-c30f990945a1/implementer";
 mkdirSync(SCRATCH, { recursive: true });
 const OUT = resolve(SCRATCH, "hot-reload.jsonl");
 writeFileSync(OUT, "");
@@ -101,7 +106,9 @@ const DAEMONS: Daemon[] = [
 
 function pidOnPort(port: number): number | undefined {
   try {
-    const out = Bun.spawnSync(["ss", "-ltnp"], { stdout: "pipe" }).stdout.toString();
+    const out = Bun.spawnSync(["ss", "-ltnp"], {
+      stdout: "pipe",
+    }).stdout.toString();
     const re = new RegExp(`:${port}\\b.*?pid=(\\d+)`);
     const m = out.match(re);
     return m ? parseInt(m[1], 10) : undefined;
@@ -203,10 +210,16 @@ for (const d of DAEMONS) {
       );
     }
     try {
-      await fetch("http://127.0.0.1:25205/-/reload", { method: "POST", signal: AbortSignal.timeout(3000) });
+      await fetch("http://127.0.0.1:25205/-/reload", {
+        method: "POST",
+        signal: AbortSignal.timeout(3000),
+      });
     } catch {
       try {
-        await fetch("http://127.0.0.1:25105/-/reload", { method: "POST", signal: AbortSignal.timeout(3000) });
+        await fetch("http://127.0.0.1:25105/-/reload", {
+          method: "POST",
+          signal: AbortSignal.timeout(3000),
+        });
       } catch {
         /* */
       }

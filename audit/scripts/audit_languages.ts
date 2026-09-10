@@ -16,10 +16,7 @@ interface ProjectInfo {
   deps: string[];
 }
 
-const SEARCH_DIRS = [
-  "/home/toxic/projects",
-  "/home/toxic/sovereign",
-];
+const SEARCH_DIRS = ["/home/toxic/projects", "/home/toxic/sovereign"];
 
 async function scanProject(dir: string): Promise<ProjectInfo | null> {
   const files = await glob("*", { cwd: dir, nodir: true });
@@ -27,7 +24,8 @@ async function scanProject(dir: string): Promise<ProjectInfo | null> {
   const hasGoMod = files.includes("go.mod");
   const hasPackageJson = files.includes("package.json");
   const hasBunLock = files.includes("bun.lock") || files.includes("bun.lockb");
-  const hasMiseToml = files.includes("mise.toml") || files.includes(".mise.toml");
+  const hasMiseToml =
+    files.includes("mise.toml") || files.includes(".mise.toml");
 
   if (!hasCargoToml && !hasGoMod && !hasPackageJson) return null;
 
@@ -80,7 +78,10 @@ async function main() {
 
   // Output JSON
   const output = { total: results.length, rust, go, bun, node };
-  await Bun.write("/home/toxic/sovereign/audit/language_audit.json", JSON.stringify(output, null, 2));
+  await Bun.write(
+    "/home/toxic/sovereign/audit/language_audit.json",
+    JSON.stringify(output, null, 2),
+  );
 }
 
 main();

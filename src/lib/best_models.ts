@@ -13,9 +13,24 @@ import {
 } from "./llama_swap_ssot.ts";
 
 export type BestRoles = {
-  fast?: { id: string; latency_ms?: number; tok_s?: number | null; gpu_mem_mib?: number | null };
-  quality?: { id: string; latency_ms?: number; tok_s?: number | null; gpu_mem_mib?: number | null };
-  longctx?: { id: string; latency_ms?: number; tok_s?: number | null; gpu_mem_mib?: number | null };
+  fast?: {
+    id: string;
+    latency_ms?: number;
+    tok_s?: number | null;
+    gpu_mem_mib?: number | null;
+  };
+  quality?: {
+    id: string;
+    latency_ms?: number;
+    tok_s?: number | null;
+    gpu_mem_mib?: number | null;
+  };
+  longctx?: {
+    id: string;
+    latency_ms?: number;
+    tok_s?: number | null;
+    gpu_mem_mib?: number | null;
+  };
 };
 
 export type BestModelsDoc = {
@@ -86,9 +101,9 @@ export async function validateBestModelsAgainstCatalog(
  * On SSE model load/unload, re-validate catalog membership of best roles.
  * Writes a small heartbeat JSON next to best-models.
  */
-export function watchBestModelsSse(
-  path = BEST_MODELS_PATH,
-): { abort: () => void } {
+export function watchBestModelsSse(path = BEST_MODELS_PATH): {
+  abort: () => void;
+} {
   const beat = join(SOV, ".state/best-models-sse-beat.json");
   mkdirSync(join(SOV, ".state"), { recursive: true });
   return watchSwapModelsSseRefresh(async () => {

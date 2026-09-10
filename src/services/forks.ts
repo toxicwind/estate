@@ -36,7 +36,8 @@ export const FORK_SERVICES: ServiceDef[] = [
     autoStart: true,
     mise: false,
     env: {
-      LD_LIBRARY_PATH: "/home/toxic/projects/ik_llama.cpp-main/build/src:/home/toxic/projects/ik_llama.cpp-main/build/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build/examples/mtmd",
+      LD_LIBRARY_PATH:
+        "/home/toxic/projects/ik_llama.cpp-main/build/src:/home/toxic/projects/ik_llama.cpp-main/build/ggml/src:/home/toxic/projects/ik_llama.cpp-main/build/examples/mtmd",
       CUDA_VISIBLE_DEVICES: "0",
       GGML_CUDA: "1",
       GGML_CUDA_GRAPHS: "1",

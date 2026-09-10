@@ -7,7 +7,7 @@
 ## 🎯 ULTIMATE GOAL
 
 ```
-User runs "pi" 
+User runs "pi"
     → pi-agent (fork) uses llama-swap :25100 (AST matrix auto-routing)
     → AST matrix understands mcpproxy FIRST CLASS (via our pi-agent fork commits)
     → retrieve_tools shows ALL GitHub Advanced Search MCP endpoints
@@ -19,29 +19,31 @@ User runs "pi"
 
 ## 📊 CURRENT STATE
 
-| Domain | Status | Owner |
-|--------|--------|-------|
-| **Pi fork** (`toxicwind/pi`) | 4/9 critical PRs cherry-picked, 2 blocked on conflicts | Current |
-| **llama-swap astmatrix** | Rate limiter rewritten (Go, full jitter) | Need to build+test |
-| **GHAS MCP** | REFACTORED — needs full integration | In Progress |
-| **sovereign-router** | STOPPED (:25104) | Need restart |
-| **NIM e2e** | Config via sovereign-router, tested via llama-swap health | ✅ |
-| **Dashboard SPA** | Done (JSON-driven, hash-routed) | ✅ |
-| **AGENTS.md audit** | 358 files found, need dedup | In Progress |
-| **mcpproxy+ghas integration** | DISCONNECTED — needs unification | In Progress |
-| **pi-agent fork commits** | AST matrix mcpproxy awareness NOT YET DONE | BLOCKED |
+| Domain                        | Status                                                    | Owner              |
+| ----------------------------- | --------------------------------------------------------- | ------------------ |
+| **Pi fork** (`toxicwind/pi`)  | 4/9 critical PRs cherry-picked, 2 blocked on conflicts    | Current            |
+| **llama-swap astmatrix**      | Rate limiter rewritten (Go, full jitter)                  | Need to build+test |
+| **GHAS MCP**                  | REFACTORED — needs full integration                       | In Progress        |
+| **sovereign-router**          | STOPPED (:25104)                                          | Need restart       |
+| **NIM e2e**                   | Config via sovereign-router, tested via llama-swap health | ✅                 |
+| **Dashboard SPA**             | Done (JSON-driven, hash-routed)                           | ✅                 |
+| **AGENTS.md audit**           | 358 files found, need dedup                               | In Progress        |
+| **mcpproxy+ghas integration** | DISCONNECTED — needs unification                          | In Progress        |
+| **pi-agent fork commits**     | AST matrix mcpproxy awareness NOT YET DONE                | BLOCKED            |
 
 ---
 
 ## 🚨 CRITICAL: GHAS Integration
 
 ### Problem
+
 - README has WRONG ports (35160-35162), actual are 25112-25114
 - mcpproxy `ghas` server ≠ pitchfork `ghas-mcp` daemon (duplicated running)
 - Tool surface reduced from 23+ to just `github_search` + `github_compare`
 - pi-agent fork doesn't yet have AST matrix mcpproxy awareness
 
 ### Fix Plan
+
 1. Fix README ports → 25112/25113/25114
 2. Unify MCP transports (single server.ts handles stdio+HTTP)
 3. Restore full tool surface (all narrow tools from tools.ts)
@@ -85,12 +87,12 @@ cd /home/toxic/projects/pi-agent
 
 ## 📋 PHASE 4: Cherry-Pick Remaining PRs
 
-| PR | Priority | Status | Action |
-|----|----------|--------|--------|
-| #6967 — Session metadata in bash | HIGH | **BLOCKED** (conflicts) | Manual merge: accept theirs, then fix our changes |
-| #6285 — Fail truncated tool calls | HIGH | **BLOCKED** (merge commit) | Manual merge: `-m 1` then accept theirs |
-| #6534 — Developer message role | MEDIUM | Pending | Fetch and cherry-pick |
-| #6427 — Prompt cache miss tracking | MEDIUM | Pending | Fetch and cherry-pick |
+| PR                                 | Priority | Status                     | Action                                            |
+| ---------------------------------- | -------- | -------------------------- | ------------------------------------------------- |
+| #6967 — Session metadata in bash   | HIGH     | **BLOCKED** (conflicts)    | Manual merge: accept theirs, then fix our changes |
+| #6285 — Fail truncated tool calls  | HIGH     | **BLOCKED** (merge commit) | Manual merge: `-m 1` then accept theirs           |
+| #6534 — Developer message role     | MEDIUM   | Pending                    | Fetch and cherry-pick                             |
+| #6427 — Prompt cache miss tracking | MEDIUM   | Pending                    | Fetch and cherry-pick                             |
 
 ## 📋 PHASE 5: Test NIM Full Stack
 
@@ -99,6 +101,7 @@ curl -s -m 30 -X POST http://127.0.0.1:25100/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{"model":"meta/llama-3.1-70b-instruct","messages":[{"role":"user","content":"say hi in 3 words"}],"stream":false}'
 ```
+
 Expected: `content` response
 
 ## 📋 PHASE 6: llama-swap astmatrix Build + Verify

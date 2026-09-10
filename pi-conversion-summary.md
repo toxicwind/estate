@@ -4,7 +4,7 @@
 
 - **Search query**: "npm to bun migration script"
   - **Results**: 0 dedicated conversion scripts found
-  
+
 - **Search query**: "npm bun"
   - **Results**: 753 repositories mentioning both npm and bun
   - **Most relevant**: `oven-sh/bun` (official Bun repo), `immerSIR/bundleclaw` (agent state migration)
@@ -23,10 +23,12 @@
 Since no auto-conversion engine exists, use this practical approach:
 
 ### 1. Bun's Built-in npm Compatibility
+
 - `bun install` - resolves dependencies, creates bun.lockb
 - `bun run` - executes npm scripts natively (Bun handles them)
 
 ### 2. Simple Conversion Helper (jq-based)
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -41,13 +43,16 @@ echo "✅ package.json scripts now use bun."
 ```
 
 ### 3. CI/CD Updates
+
 Update workflows to replace `npm run` with `bun run`:
+
 ```bash
 # Example: sed replacement in GitHub Actions
 sed -i 's/npm run/bun run/g' .github/workflows/*.yml
 ```
 
 ### 4. Migration Checklist
+
 - [ ] Run `bun install` to resolve dependencies
 - [ ] Run conversion helper to rewrite package.json scripts
 - [ ] Test `bun run dev`, `bun run build`, `bun run lint`
@@ -57,6 +62,7 @@ sed -i 's/npm run/bun run/g' .github/workflows/*.yml
 ## GitHub Search Tools Working
 
 Standard GitHub API and GHAS tools are functional:
+
 - `github:search_repositories` - works correctly
 - `github:search_code` - has query parsing issues with complex queries
 - `ghas:search_code` - requires running GHAS server on port 25113

@@ -24,27 +24,27 @@
 6. **Use emergence tools first.** GHAS (`:25113`) → ast-grep (`ast-grep` binary) → Tombi for TOML.
 7. **call_tool_destructive is DEFAULT for state changes.** Write/edit/modify = destructive. Read-only = inspection only.
 8. **No `/dev/null`, no banner `echo`.** Both waste tokens.
-8b. **BANNED/SLOW TOOLS — do NOT use, ever:** `find`, `head`, `tail`, `/dev/null`, and system-wide `lsof`.
-    - `find` over a large/full disk is slow + wasteful -> use `fd` (fast, gitignore-aware)
-      or scope `du`/`fd` to a SPECIFIC directory, never the whole `/home`/`/`.
-    - `head`/`tail` truncation -> read full files with the `read` tool (1M context).
-    - `/dev/null` -> fail loud; never silence errors.
-    - `lsof` (esp. system-wide) is INSANELY SLOW -> use INSTANT `/proc/<pid>/fd` symlink
-      reads (`readlink /proc/$PID/fd/*`) to see what a process has open. Scope to known PIDs.
+   8b. **BANNED/SLOW TOOLS — do NOT use, ever:** `find`, `head`, `tail`, `/dev/null`, and system-wide `lsof`.
+   - `find` over a large/full disk is slow + wasteful -> use `fd` (fast, gitignore-aware)
+     or scope `du`/`fd` to a SPECIFIC directory, never the whole `/home`/`/`.
+   - `head`/`tail` truncation -> read full files with the `read` tool (1M context).
+   - `/dev/null` -> fail loud; never silence errors.
+   - `lsof` (esp. system-wide) is INSANELY SLOW -> use INSTANT `/proc/<pid>/fd` symlink
+     reads (`readlink /proc/$PID/fd/*`) to see what a process has open. Scope to known PIDs.
 9. **Fix bashrc nested quote issue.** The `pi-check` alias had nested double quotes inside single quotes, causing `unexpected EOF while looking for matching '"'` errors. Use functions instead of aliases for complex commands.
-9. **CUDA-aware.** RTX 3090 — validate with `nvidia-smi`. Never assume upstream defaults.
-10. **Stop stacking long commands.** Sub-second probes. Reserve `60|120` for intentional jobs.
-11. **No `head` truncation.** You have 1M context. Read full files. No `| head -20`.
-12. **Timeout/failfast/high-frequency is FIRST-CLASS everywhere** (retry, provider-retry, worker-limits, MCP calls, scripts). NO insane monolithic timeouts — use failfast + high-frequency liveness probes + per-attempt deadlines.
-13. **Dynamic `${ENV_VAR}` interpolation is first-class** in configs/scripts (settings.json, config.yaml, mcpproxy config, launch scripts). Prefer `${...}` over hardcoded values.
-14. **Lint + test after EVERY code change; coverage floor 82%.** Pre-existing type errors in unrelated test files do NOT block the change under review — isolate + report.
-15. **BACKGROUNDING IS FIRST-CLASS.** Any op that can run long (downloads, builds, scans,
-   npm/pip/apt, model fetches) MUST be launched in background (`cmd &`, capture `$!`), tracked
-   by PID, and CANCELLED if it overruns a per-attempt deadline (`timeout`, `kill` on a watchdog
-   loop). Never block on a monolithic synchronous command. Keep a live PID ledger.
-16. **GOAL = ENDLESS TODO.** TODO.md is a CONTINUOUS improvement loop, not a finite list.
-   Re-audit constantly; new findings always append; done items cycle back as deeper waves.
-   No "finished" — only "next wave". Mutate TODO after every meaningful step.
+10. **CUDA-aware.** RTX 3090 — validate with `nvidia-smi`. Never assume upstream defaults.
+11. **Stop stacking long commands.** Sub-second probes. Reserve `60|120` for intentional jobs.
+12. **No `head` truncation.** You have 1M context. Read full files. No `| head -20`.
+13. **Timeout/failfast/high-frequency is FIRST-CLASS everywhere** (retry, provider-retry, worker-limits, MCP calls, scripts). NO insane monolithic timeouts — use failfast + high-frequency liveness probes + per-attempt deadlines.
+14. **Dynamic `${ENV_VAR}` interpolation is first-class** in configs/scripts (settings.json, config.yaml, mcpproxy config, launch scripts). Prefer `${...}` over hardcoded values.
+15. **Lint + test after EVERY code change; coverage floor 82%.** Pre-existing type errors in unrelated test files do NOT block the change under review — isolate + report.
+16. **BACKGROUNDING IS FIRST-CLASS.** Any op that can run long (downloads, builds, scans,
+    npm/pip/apt, model fetches) MUST be launched in background (`cmd &`, capture `$!`), tracked
+    by PID, and CANCELLED if it overruns a per-attempt deadline (`timeout`, `kill` on a watchdog
+    loop). Never block on a monolithic synchronous command. Keep a live PID ledger.
+17. **GOAL = ENDLESS TODO.** TODO.md is a CONTINUOUS improvement loop, not a finite list.
+    Re-audit constantly; new findings always append; done items cycle back as deeper waves.
+    No "finished" — only "next wave". Mutate TODO after every meaningful step.
 
 ---
 
@@ -52,31 +52,31 @@
 
 ### ✅ INSTALLED (use these)
 
-| Tool | Binary | Purpose |
-|---|---|---|
-| `fd` | `/usr/bin/fd` | Fast find (respects .gitignore) |
-| `rg` | `/usr/bin/rg` | Fast grep (respects .gitignore) |
-| `ast-grep` | `~/.local/share/mise/shims/ast-grep` | AST structural search/rewrite |
-| `eza` | `/usr/bin/eza` | Modern ls (git-aware) |
-| `mise` | `~/.local/bin/mise` | Runtime manager |
-| `bun` | mise shim | Fast JS runtime |
-| `node` | mise shim | JS runtime |
-| `cargo` | mise shim | Rust build |
-| `jq` | mise shim | JSON processing |
-| `codeshift` | `/home/toxic/projects/codeshift` | Multi-agent codebase migration & test equivalence (local LLM) |
+| Tool        | Binary                               | Purpose                                                       |
+| ----------- | ------------------------------------ | ------------------------------------------------------------- |
+| `fd`        | `/usr/bin/fd`                        | Fast find (respects .gitignore)                               |
+| `rg`        | `/usr/bin/rg`                        | Fast grep (respects .gitignore)                               |
+| `ast-grep`  | `~/.local/share/mise/shims/ast-grep` | AST structural search/rewrite                                 |
+| `eza`       | `/usr/bin/eza`                       | Modern ls (git-aware)                                         |
+| `mise`      | `~/.local/bin/mise`                  | Runtime manager                                               |
+| `bun`       | mise shim                            | Fast JS runtime                                               |
+| `node`      | mise shim                            | JS runtime                                                    |
+| `cargo`     | mise shim                            | Rust build                                                    |
+| `jq`        | mise shim                            | JSON processing                                               |
+| `codeshift` | `/home/toxic/projects/codeshift`     | Multi-agent codebase migration & test equivalence (local LLM) |
 
 ### ❌ NOT INSTALLED (don't use, install first if needed)
 
-| Tool | Install Command | Purpose |
-|---|---|---|
-| `tombi` | `mise use -g tombi` | TOML toolkit |
-| `tsgo` | `npx tsgo` | TypeScript type-check (use via npx) |
-| `vitest` | `npx vitest` | Test runner (use via npx) |
+| Tool     | Install Command     | Purpose                             |
+| -------- | ------------------- | ----------------------------------- |
+| `tombi`  | `mise use -g tombi` | TOML toolkit                        |
+| `tsgo`   | `npx tsgo`          | TypeScript type-check (use via npx) |
+| `vitest` | `npx vitest`        | Test runner (use via npx)           |
 
 ### 🚫 NEVER USE (removed/confusing)
 
-| Name | Why |
-|---|---|
+| Name | Why                                                        |
+| ---- | ---------------------------------------------------------- |
 | `sg` | That's SGLang, NOT ast-grep. Removed shim. Use `ast-grep`. |
 
 ---
@@ -84,15 +84,17 @@
 ## 📝 AST-Grep Patterns
 
 ### Rule YAML
+
 ```yaml
 id: my-rule
 language: typescript
 rule:
-  pattern: 'console.log($MSG)'
-fix: 'logger.info($MSG)'
+  pattern: "console.log($MSG)"
+fix: "logger.info($MSG)"
 ```
 
 ### Commands
+
 ```bash
 ast-grep scan -p 'pattern' -l ts src/
 ast-grep scan -p 'pattern' --rewrite 'replacement' src/
@@ -131,7 +133,7 @@ ast-grep scan -p 'NVIDIA_MODELS' -l ts --json=stream /home/toxic/projects/pi-age
 ## 🔌 MCP / mcpproxy (sovereign-owned)
 
 - **mcpproxy** is the single MCP federation gateway: `http://127.0.0.1:25109/mcp`, owned by
-sovereign (`pitchfork start mcpproxy` / `mise run restart-mcpproxy` -> `mcpproxy serve
+  sovereign (`pitchfork start mcpproxy` / `mise run restart-mcpproxy` -> `mcpproxy serve
 --config=/home/toxic/.mcpproxy/mcp_config.json`). 43 real upstreams (ghas + 42 others).
 - **pi MUST list ONLY `mcpproxy`** in `~/.pi/agent/mcp.json` (no duplicate direct `ghas`/
   `nvidia-nim` entries). All MCP tools reach pi through the proxy via `retrieve_tools`.
@@ -139,7 +141,7 @@ sovereign (`pitchfork start mcpproxy` / `mise run restart-mcpproxy` -> `mcpproxy
   (OpenAI-compatible, on `:25100`). NVIDIA models are first-class via pi-agent's `nvidia`
   provider (`packages/ai/src/providers/`) -> sovereign-router/llama-swap, not an MCP upstream.
 - **Subagents**: `config.yaml` `can_spawn_subagents:true` + whitelist + `subagents.defaultModel:
-  opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable from a
+opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable from a
   plain assistant context) — fanout only works inside an interactive pi session.
 
 ## 🔌 Port SSOT

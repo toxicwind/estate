@@ -14,53 +14,58 @@ import { randomUUID } from "node:crypto";
 import { execSync } from "node:child_process";
 import type { AntigravityInstance } from "./discovery.ts";
 
-const LS_SERVICE = 'exa.language_server_pb.LanguageServerService';
+const LS_SERVICE = "exa.language_server_pb.LanguageServerService";
 
 // ─── Metadata ────────────────────────────────────────────────────────────────
 
-const FINGERPRINT_PATH = path.join(os.homedir(), '.gemini', 'antigravity', '.proxy-fingerprint');
+const FINGERPRINT_PATH = path.join(
+  os.homedir(),
+  ".gemini",
+  "antigravity",
+  ".proxy-fingerprint",
+);
 
 function getFingerprint(): string {
   try {
     if (fs.existsSync(FINGERPRINT_PATH)) {
-      const fp = fs.readFileSync(FINGERPRINT_PATH, 'utf8').trim();
+      const fp = fs.readFileSync(FINGERPRINT_PATH, "utf8").trim();
       if (fp) return fp;
     }
     const fp = randomUUID();
     fs.mkdirSync(path.dirname(FINGERPRINT_PATH), { recursive: true });
-    fs.writeFileSync(FINGERPRINT_PATH, fp, 'utf8');
+    fs.writeFileSync(FINGERPRINT_PATH, fp, "utf8");
     return fp;
   } catch {
-    return '8a666781-eba7-4c3d-8102-6c01ddf55435';
+    return "8a666781-eba7-4c3d-8102-6c01ddf55435";
   }
 }
 
 function readApiKey(): string {
   const dbPath = path.join(
     os.homedir(),
-    'Library/Application Support/Antigravity/User/globalStorage/state.vscdb',
+    "Library/Application Support/Antigravity/User/globalStorage/state.vscdb",
   );
-  if (!fs.existsSync(dbPath)) return '';
+  if (!fs.existsSync(dbPath)) return "";
   try {
     const out = execSync(
       `sqlite3 "${dbPath}" "SELECT value FROM ItemTable WHERE key='antigravityAuthStatus'"`,
-      { encoding: 'utf8', timeout: 5000 },
+      { encoding: "utf8", timeout: 5000 },
     ).trim();
     const data = JSON.parse(out) as { apiKey?: string };
-    return data.apiKey ?? '';
+    return data.apiKey ?? "";
   } catch {
-    return '';
+    return "";
   }
 }
 
 function buildMetadata(): object {
   return {
-    ideName: 'Antigravity',
-    ideVersion: '1.18.3',
-    extensionName: 'Antigravity',
-    extensionVersion: '1.18.3',
-    locale: 'en',
-    os: 'darwin',
+    ideName: "Antigravity",
+    ideVersion: "1.18.3",
+    extensionName: "Antigravity",
+    extensionVersion: "1.18.3",
+    locale: "en",
+    os: "darwin",
     sessionId: randomUUID(),
     deviceFingerprint: getFingerprint(),
     apiKey: readApiKey(),
@@ -98,23 +103,32 @@ async function callRpc<T>(
   body: unknown,
   timeoutMs?: number,
 ): Promise<T> {
-  const respText = await httpPost(instance, method, JSON.stringify(body), timeoutMs);
+  const respText = await httpPost(
+    instance,
+    method,
+    JSON.stringify(body),
+    timeoutMs,
+  );
 
   let parsed: unknown;
   try {
     parsed = JSON.parse(respText);
   } catch {
-    throw new Error(`callRpc ${method}: invalid JSON: ${respText.slice(0, 200)}`);
+    throw new Error(
+      `callRpc ${method}: invalid JSON: ${respText.slice(0, 200)}`,
+    );
   }
 
   if (
-    typeof parsed === 'object' &&
+    typeof parsed === "object" &&
     parsed !== null &&
-    'code' in parsed &&
-    'message' in parsed
+    "code" in parsed &&
+    "message" in parsed
   ) {
     const err = parsed as { code: unknown; message: unknown };
-    throw new Error(`callRpc ${method} server error ${String(err.code)}: ${String(err.message)}`);
+    throw new Error(
+      `callRpc ${method} server error ${String(err.code)}: ${String(err.message)}`,
+    );
   }
 
   return parsed as T;
@@ -123,12 +137,14 @@ async function callRpc<T>(
 // ─── Cascade API ─────────────────────────────────────────────────────────────
 
 /** Start a new cascade session and return the cascadeId. */
-export async function startCascade(instance: AntigravityInstance): Promise<string> {
+export async function startCascade(
+  instance: AntigravityInstance,
+): Promise<string> {
   const metadata = buildMetadata();
-  const resp = await callRpc<{ cascadeId: string }>(instance, 'StartCascade', {
+  const resp = await callRpc<{ cascadeId: string }>(instance, "StartCascade", {
     metadata,
-    source: 'user',
-    trajectoryType: 'CASCADE',
+    source: "user",
+    trajectoryType: "CASCADE",
   });
   return resp.cascadeId;
 }
@@ -161,7 +177,12 @@ export async function sendUserMessage(
     },
   };
 
-  await httpPost(instance, 'SendUserCascadeMessage', JSON.stringify(body), 30_000);
+  await httpPost(
+    instance,
+    "SendUserCascadeMessage",
+    JSON.stringify(body),
+    30_000,
+  );
 }
 
 export interface PollResult {
@@ -198,7 +219,7 @@ export async function pollForResponse(
     try {
       resp = await callRpc<{ steps?: unknown[] }>(
         instance,
-        'GetCascadeTrajectorySteps',
+        "GetCascadeTrajectorySteps",
         { cascadeId },
         10_000,
       );
@@ -209,28 +230,33 @@ export async function pollForResponse(
 
     const steps = resp.steps ?? [];
     for (const step of steps) {
-      if (typeof step !== 'object' || step === null || !('type' in step)) continue;
+      if (typeof step !== "object" || step === null || !("type" in step))
+        continue;
 
       const s = step as Record<string, unknown>;
 
       // type 4 = CORTEX_STEP_TYPE_PLANNER_RESPONSE
-      if (s['type'] !== 4 && s['type'] !== 'CORTEX_STEP_TYPE_PLANNER_RESPONSE') continue;
+      if (s["type"] !== 4 && s["type"] !== "CORTEX_STEP_TYPE_PLANNER_RESPONSE")
+        continue;
 
-      const pr = s['plannerResponse'] as Record<string, unknown> | undefined;
+      const pr = s["plannerResponse"] as Record<string, unknown> | undefined;
       if (!pr) continue;
 
-      const text = (pr['modifiedResponse'] ?? pr['response']) as string | undefined;
+      const text = (pr["modifiedResponse"] ?? pr["response"]) as
+        string | undefined;
       if (!text || text.trim().length === 0) continue;
 
-      const meta = s['metadata'] as Record<string, unknown> | undefined;
-      const generatorModel = meta?.['generatorModel'] as string | undefined;
-      const messageId = pr['messageId'] as string | undefined;
+      const meta = s["metadata"] as Record<string, unknown> | undefined;
+      const generatorModel = meta?.["generatorModel"] as string | undefined;
+      const messageId = pr["messageId"] as string | undefined;
 
       return { responseText: text.trim(), generatorModel, messageId };
     }
   }
 
-  throw new Error(`pollForResponse: timeout after ${timeoutMs}ms — no PLANNER_RESPONSE found`);
+  throw new Error(
+    `pollForResponse: timeout after ${timeoutMs}ms — no PLANNER_RESPONSE found`,
+  );
 }
 
 /**
@@ -241,14 +267,16 @@ export function messagesToPrompt(
   messages: Array<{ role: string; content: string }>,
 ): string {
   const system = messages
-    .filter((m) => m.role === 'system')
+    .filter((m) => m.role === "system")
     .map((m) => m.content)
-    .join('\n\n');
+    .join("\n\n");
 
   // Get the last user message (most recent turn)
-  const userMessages = messages.filter((m) => m.role === 'user' || m.role === 'assistant');
+  const userMessages = messages.filter(
+    (m) => m.role === "user" || m.role === "assistant",
+  );
 
-  let prompt = '';
+  let prompt = "";
 
   if (system) {
     prompt += `[System Instructions]\n${system}\n\n`;
@@ -256,16 +284,16 @@ export function messagesToPrompt(
 
   // Include conversation history if multi-turn
   for (const msg of userMessages) {
-    if (msg.role === 'user') {
+    if (msg.role === "user") {
       prompt += `User: ${msg.content}\n`;
-    } else if (msg.role === 'assistant') {
+    } else if (msg.role === "assistant") {
       prompt += `Assistant: ${msg.content}\n`;
     }
   }
 
   // Strip the trailing "User: " prefix added in the loop — cascade expects just the prompt text
   // Actually, for a clean cascade experience: just return the last user message with system context
-  const lastUser = messages.filter((m) => m.role === 'user').at(-1);
+  const lastUser = messages.filter((m) => m.role === "user").at(-1);
   if (!lastUser) {
     return prompt.trim();
   }

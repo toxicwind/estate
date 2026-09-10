@@ -29,7 +29,8 @@ const COMMON_RULES: MigrationRule[] = [
     language: "python",
     pattern: "$OBJ.get($KEY, $DEFAULT)",
     rewrite: "$OBJ?.[$KEY] ?? $DEFAULT",
-    description: "Converts Python dict.get to optional chaining with nullish coalescing",
+    description:
+      "Converts Python dict.get to optional chaining with nullish coalescing",
   },
   // TS Modernization (September 2026 standard)
   {
@@ -53,7 +54,9 @@ async function main() {
   const action = process.argv[3] || "scan";
 
   console.log(`[ast-migrate] Target Directory: ${targetDir}`);
-  console.log(`[ast-migrate] Mode: ${action} (${COMMON_RULES.length} built-in structural rules)\n`);
+  console.log(
+    `[ast-migrate] Mode: ${action} (${COMMON_RULES.length} built-in structural rules)\n`,
+  );
 
   for (const rule of COMMON_RULES) {
     try {
@@ -69,7 +72,9 @@ async function main() {
     }
   }
 
-  console.log("\n[ast-migrate] Scan complete. Run with 'rewrite' argument to apply transformations.");
+  console.log(
+    "\n[ast-migrate] Scan complete. Run with 'rewrite' argument to apply transformations.",
+  );
 }
 
 await main();

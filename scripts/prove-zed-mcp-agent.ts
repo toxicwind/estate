@@ -3,15 +3,19 @@
  * Prove REAL Zed MCP usage (Content-Length MCP stdio = same transport Zed uses)
  * for ghas + llama-swap, plus agent turns on both models.
  */
-import { writeFileSync, mkdirSync, readFileSync, appendFileSync } from "node:fs";
+import {
+  writeFileSync,
+  mkdirSync,
+  readFileSync,
+  appendFileSync,
+} from "node:fs";
 import { resolve } from "node:path";
 import { loadSovereignPorts, requirePort } from "../src/lib/ports.ts";
 
 loadSovereignPorts();
 
 const SCRATCH =
-  process.env.SCRATCH ||
-  "/tmp/grok-goal-c30f990945a1/implementer/zed-agent";
+  process.env.SCRATCH || "/tmp/grok-goal-c30f990945a1/implementer/zed-agent";
 mkdirSync(SCRATCH, { recursive: true });
 
 const LLM = `http://127.0.0.1:${requirePort("LLAMA_SWAP_PORT")}`;
@@ -24,7 +28,10 @@ class McpClient {
   buf = new Uint8Array(0);
   logPath: string;
 
-  constructor(public label: string, cmd: string[]) {
+  constructor(
+    public label: string,
+    cmd: string[],
+  ) {
     this.logPath = resolve(SCRATCH, `mcp-${label}.jsonl`);
     writeFileSync(this.logPath, "");
     this.proc = Bun.spawn(cmd, {
@@ -103,7 +110,10 @@ class McpClient {
         const result = await Promise.race([
           reader.read(),
           new Promise<{ done: boolean; value?: Uint8Array }>((r) =>
-            setTimeout(() => r({ done: false, value: undefined }), Math.min(400, remaining)),
+            setTimeout(
+              () => r({ done: false, value: undefined }),
+              Math.min(400, remaining),
+            ),
           ),
         ]);
         if (result.value && result.value.length) {
@@ -166,14 +176,20 @@ async function runMcp(
 
   const names = (tools?.result?.tools || []).map((t: any) => t.name);
   const resultText =
-    call?.result?.content?.map((x: any) => x.text || JSON.stringify(x)).join("\n") ||
-    JSON.stringify(call || {}).slice(0, 2000);
+    call?.result?.content
+      ?.map((x: any) => x.text || JSON.stringify(x))
+      .join("\n") || JSON.stringify(call || {}).slice(0, 2000);
 
   const out = {
     label,
     cmd,
     initialize_ok: Boolean(init?.result),
-    initialize: init?.result ? { protocolVersion: init.result.protocolVersion, server: init.result.serverInfo } : init,
+    initialize: init?.result
+      ? {
+          protocolVersion: init.result.protocolVersion,
+          server: init.result.serverInfo,
+        }
+      : init,
     tools_count: names.length,
     tools_list_names: names,
     tool_call: toolName,
@@ -181,7 +197,10 @@ async function runMcp(
     ok: Boolean(init?.result) && names.length > 0 && Boolean(call?.result),
     log: c.logPath,
   };
-  writeFileSync(resolve(SCRATCH, `mcp-${label}-summary.json`), JSON.stringify(out, null, 2));
+  writeFileSync(
+    resolve(SCRATCH, `mcp-${label}-summary.json`),
+    JSON.stringify(out, null, 2),
+  );
   return out;
 }
 
@@ -209,7 +228,8 @@ async function agentTurn(model: string, prompt: string, maxTokens: number) {
   const msg = json?.choices?.[0]?.message || {};
   const content = String(msg.content || "").trim();
   const reasoning = String(msg.reasoning_content || "");
-  const visible = content || ( /ZED_AGENT_/i.test(reasoning) ? reasoning.slice(-400) : "");
+  const visible =
+    content || (/ZED_AGENT_/i.test(reasoning) ? reasoning.slice(-400) : "");
   return {
     model,
     ok: res.ok && visible.length > 0,
@@ -258,9 +278,12 @@ const zedPidMatch = zedPs.match(/^(\d+)\s+\/usr\/local\/bin\/zed/m);
 const zedPid = zedPidMatch ? zedPidMatch[1] : null;
 let children: string[] = [];
 if (zedPid) {
-  children = Bun.spawnSync(["ps", "--ppid", zedPid, "-o", "pid,cmd", "--no-headers"], {
-    stdout: "pipe",
-  })
+  children = Bun.spawnSync(
+    ["ps", "--ppid", zedPid, "-o", "pid,cmd", "--no-headers"],
+    {
+      stdout: "pipe",
+    },
+  )
     .stdout.toString()
     .split("\n")
     .filter(Boolean);
@@ -268,7 +291,10 @@ if (zedPid) {
 
 let ui: Record<string, unknown> = {};
 try {
-  const wl = Bun.spawnSync(["wlrctl", "toplevel", "list"], { stdout: "pipe", stderr: "pipe" });
+  const wl = Bun.spawnSync(["wlrctl", "toplevel", "list"], {
+    stdout: "pipe",
+    stderr: "pipe",
+  });
   const list = wl.stdout.toString();
   const hasZed = /zed/i.test(list);
   if (hasZed) {
@@ -277,19 +303,27 @@ try {
       stderr: "pipe",
     });
   }
-  ui = { has_zed_window: hasZed, toplevel_sample: list.split("\n").slice(0, 15) };
+  ui = {
+    has_zed_window: hasZed,
+    toplevel_sample: list.split("\n").slice(0, 15),
+  };
 } catch (e) {
   ui = { error: String(e) };
 }
 
-const settingsRaw = readFileSync(`${process.env.HOME}/.config/zed/settings.json`, "utf8");
+const settingsRaw = readFileSync(
+  `${process.env.HOME}/.config/zed/settings.json`,
+  "utf8",
+);
 const settingsProof = {
   ghas_enabled: settingsRaw.includes("ghas-mcp-stdio"),
   llama_cpp_25100: settingsRaw.includes("127.0.0.1:25100"),
   sovereign_llama_swap: settingsRaw.includes("sovereign-llama-swap"),
   model_a: settingsRaw.includes(MODEL_A),
   model_b: settingsRaw.includes(MODEL_B),
-  enable_all_context_servers: settingsRaw.includes("enable_all_context_servers"),
+  enable_all_context_servers: settingsRaw.includes(
+    "enable_all_context_servers",
+  ),
 };
 
 const turnA = await agentTurn(
@@ -317,8 +351,7 @@ const report = {
   ui,
   model_a: turnA,
   model_b: turnB,
-  note:
-    "MCP tool calls use Content-Length stdio identical to Zed context_servers; commands match settings.json. Agent completions hit the same :25100 endpoints Zed language_models use.",
+  note: "MCP tool calls use Content-Length stdio identical to Zed context_servers; commands match settings.json. Agent completions hit the same :25100 endpoints Zed language_models use.",
   success:
     ghasMcp.ok &&
     llamaMcp.ok &&

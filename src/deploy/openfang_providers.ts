@@ -4,7 +4,14 @@
  * provider id "llama" is preferred; "vllm" kept only as alias URL → same swap.
  * Never points at real vLLM :8000.
  */
-import { readdirSync, readFileSync, writeFileSync, statSync, copyFileSync, mkdirSync } from "fs";
+import {
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+  statSync,
+  copyFileSync,
+  mkdirSync,
+} from "fs";
 import { join } from "path";
 import { homedir } from "os";
 import { loadSovereignPorts, requireEnv } from "../lib/ports.ts";
@@ -59,7 +66,9 @@ for (const p of walkToml(join(OF, "agents"))) {
 
 // --- custom_models.json ---
 const cmPath = join(OF, "custom_models.json");
-const cm = JSON.parse(readFileSync(cmPath, "utf8")) as Array<Record<string, unknown>>;
+const cm = JSON.parse(readFileSync(cmPath, "utf8")) as Array<
+  Record<string, unknown>
+>;
 for (const m of cm) {
   // model id "llama" must use provider "llama" (OpenAI-compat id → provider_urls.llama)
   if (m.provider === "vllm" || m.id === "llama") {
@@ -148,7 +157,10 @@ console.log(
       routing: readFileSync(rtPath, "utf8"),
       provider_urls: readFileSync(cfgPath, "utf8")
         .split("\n")
-        .filter((l) => l.includes("provider") || l.includes("25100") || l.startsWith("["))
+        .filter(
+          (l) =>
+            l.includes("provider") || l.includes("25100") || l.startsWith("["),
+        )
         .join("\n"),
       backup: BACKUP,
       swap: SWAP,

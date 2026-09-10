@@ -405,9 +405,13 @@ export async function runFeature(
             mesh: true,
             ghas_linked: true,
             hot_reload: true,
-            openai_compat: ["llama-swap", "llama-swap", "null-g-proxy", "yote", "openfang"].includes(
-              ctx.service,
-            ),
+            openai_compat: [
+              "llama-swap",
+              "llama-swap",
+              "null-g-proxy",
+              "yote",
+              "openfang",
+            ].includes(ctx.service),
             search: ctx.service.startsWith("ghas"),
           },
         },
@@ -559,9 +563,9 @@ export async function handleMeshRequest(
     if (!FEATURE_IDS.includes(feat) && feat !== ("features" as FeatureId)) {
       // features is in list
     }
-    const f = (FEATURE_IDS.includes(feat as FeatureId)
-      ? feat
-      : "features") as FeatureId;
+    const f = (
+      FEATURE_IDS.includes(feat as FeatureId) ? feat : "features"
+    ) as FeatureId;
     const nested: MeshCtx = { ...ctx, service: sid };
     const { status, body } = await runFeature(f, nested, u);
     return json(status, body);

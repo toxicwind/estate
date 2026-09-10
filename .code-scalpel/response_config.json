@@ -27,24 +27,28 @@
       "envelope": {
         "include": ["error", "upgrade_hints"]
       },
-      "common_exclusions": [
-        "server_version",
-        "request_id"
-      ]
+      "common_exclusions": ["server_version", "request_id"]
     },
     "verbose": {
       "description": "Detailed output with full metadata (~500-2000 tokens). Use when debugging tool behaviour or investigating unexpected results.",
       "envelope": {
         "include": ["error", "upgrade_hints", "duration_ms"]
       },
-      "common_exclusions": [
-        "server_version"
-      ]
+      "common_exclusions": ["server_version"]
     },
     "debug": {
       "description": "Full output including all metadata (unlimited tokens). Use for development and integration testing only.",
       "envelope": {
-        "include": ["tier", "tool_version", "tool_id", "request_id", "capabilities", "duration_ms", "error", "upgrade_hints"]
+        "include": [
+          "tier",
+          "tool_version",
+          "tool_id",
+          "request_id",
+          "capabilities",
+          "duration_ms",
+          "error",
+          "upgrade_hints"
+        ]
       },
       "common_exclusions": []
     }
@@ -54,17 +58,33 @@
     "_comment_exclude_when_tier": "Use 'exclude_when_tier' inside any tool override to suppress fields at specific tiers. Keys are community/pro/enterprise; values are arrays of field names. Layered with 'exclude_fields' for fine-grained control.",
     "analyze_code": {
       "exclude_fields": ["raw_ast", "token_positions"],
-      "include_on_error": ["parser_warnings", "sanitization_report", "error_location", "suggested_fix"]
+      "include_on_error": [
+        "parser_warnings",
+        "sanitization_report",
+        "error_location",
+        "suggested_fix"
+      ]
     },
     "security_scan": {
-      "exclude_fields": ["scan_metadata", "parser_warnings", "constraint_dump", "solver_statistics"]
+      "exclude_fields": [
+        "scan_metadata",
+        "parser_warnings",
+        "constraint_dump",
+        "solver_statistics"
+      ]
     },
     "extract_code": {
       "exclude_fields": ["extraction_metadata", "ast_node_ids"],
       "include_on_error": ["parser_warnings", "error_location", "suggested_fix"]
     },
     "symbolic_execute": {
-      "exclude_fields": ["solver_statistics", "constraint_dump", "z3_model_dump", "path_conditions_raw", "concolic_results"]
+      "exclude_fields": [
+        "solver_statistics",
+        "constraint_dump",
+        "z3_model_dump",
+        "path_conditions_raw",
+        "concolic_results"
+      ]
     },
     "generate_unit_tests": {
       "exclude_fields": ["generation_metadata", "symbolic_paths_raw"]

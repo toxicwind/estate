@@ -29,13 +29,7 @@
     }
   },
   "ctx_policy": {
-    "probes": [
-      4096,
-      8192,
-      16384,
-      32768,
-      65536
-    ],
+    "probes": [4096, 8192, 16384, 32768, 65536],
     "deep_optional": 131072,
     "never_start_27b_at_max": true,
     "note": "Use graduated ctx; 27B class stops on first OOM; prefer qwen-flash for gates"

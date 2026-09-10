@@ -34,256 +34,452 @@ interface ArchConfig {
 }
 
 const ARCH_CONFIG: Record<string, ArchConfig> = {
-  "deepseek2": {
+  deepseek2: {
     name: "DeepSeek-V2/V3/R1",
-    isMla: true, isHybrid: false, isRecurrent: false, isMoe: true,
-    mlaDefault: 2, flashAttnRecommended: true,
-    cacheTypeK: "q8_0", cacheTypeV: "q8_0",
-    fusedMoe: true, groupedExpertRouting: false, attnMaxBatch: 512,
+    isMla: true,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: true,
+    mlaDefault: 2,
+    flashAttnRecommended: true,
+    cacheTypeK: "q8_0",
+    cacheTypeV: "q8_0",
+    fusedMoe: true,
+    groupedExpertRouting: false,
+    attnMaxBatch: 512,
     runtimeRepack: true,
     overrideTensors: ["exps=CPU"],
     extraFlags: ["--parallel", "1"],
   },
-  "deepseek": {
+  deepseek: {
     name: "DeepSeek-V1",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: true,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: true, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: true,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: true,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "qwen3next": {
+  qwen3next: {
     name: "Qwen3-Next (hybrid)",
-    isMla: false, isHybrid: true, isRecurrent: false, isMoe: false,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: true,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "qwen35moe": {
+  qwen35moe: {
     name: "Qwen3.5-MoE",
-    isMla: false, isHybrid: true, isRecurrent: false, isMoe: true,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: true, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: true,
+    isRecurrent: false,
+    isMoe: true,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: true,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "qwen35": {
+  qwen35: {
     name: "Qwen3.5",
-    isMla: false, isHybrid: true, isRecurrent: false, isMoe: false,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: true,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "qwen2": {
+  qwen2: {
     name: "Qwen2",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: false,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "qwen2moe": {
+  qwen2moe: {
     name: "Qwen2-MoE",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: true,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: true, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: true,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: true,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "llama": {
+  llama: {
     name: "Llama",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: false,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "llama4": {
+  llama4: {
     name: "Llama 4",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: true,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: true, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: true,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: true,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "mistral3": {
+  mistral3: {
     name: "Mistral 3",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: false,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "mistral4": {
+  mistral4: {
     name: "Mistral 4 (MLA)",
-    isMla: true, isHybrid: false, isRecurrent: false, isMoe: false,
-    mlaDefault: 2, flashAttnRecommended: true,
-    cacheTypeK: "q8_0", cacheTypeV: "q8_0",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 256,
+    isMla: true,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 2,
+    flashAttnRecommended: true,
+    cacheTypeK: "q8_0",
+    cacheTypeV: "q8_0",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 256,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "gemma": {
+  gemma: {
     name: "Gemma",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: false,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "gemma2": {
+  gemma2: {
     name: "Gemma 2",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: false,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "gemma3": {
+  gemma3: {
     name: "Gemma 3",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: false,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "gemma4": {
+  gemma4: {
     name: "Gemma 4",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: false,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "gemma4_mtp": {
+  gemma4_mtp: {
     name: "Gemma 4 MTP",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: false,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: ["--mtp"],
   },
-  "mamba": {
+  mamba: {
     name: "Mamba",
-    isMla: false, isHybrid: false, isRecurrent: true, isMoe: false,
-    mlaDefault: 0, flashAttnRecommended: false,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: true,
+    isMoe: false,
+    mlaDefault: 0,
+    flashAttnRecommended: false,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "phi2": {
+  phi2: {
     name: "Phi-2",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: false,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "phi3": {
+  phi3: {
     name: "Phi-3",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: false,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "glm4": {
+  glm4: {
     name: "GLM-4",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: false,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "glm4_moe": {
+  glm4_moe: {
     name: "GLM-4-MoE",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: true,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: true, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: true,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: true,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "glm_dsa": {
+  glm_dsa: {
     name: "GLM-DSA (MLA)",
-    isMla: true, isHybrid: false, isRecurrent: false, isMoe: false,
-    mlaDefault: 2, flashAttnRecommended: true,
-    cacheTypeK: "q8_0", cacheTypeV: "q8_0",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 256,
+    isMla: true,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 2,
+    flashAttnRecommended: true,
+    cacheTypeK: "q8_0",
+    cacheTypeV: "q8_0",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 256,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "cohere2": {
+  cohere2: {
     name: "Cohere 2",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: false,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "cohere2_moe": {
+  cohere2_moe: {
     name: "Cohere 2 MoE",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: true,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: true, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: true,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: true,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "bailingmoe2": {
+  bailingmoe2: {
     name: "BailingMoE2 (Ling/Ring)",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: true,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: true, groupedExpertRouting: true, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: true,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: true,
+    groupedExpertRouting: true,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "granite": {
+  granite: {
     name: "Granite",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: false,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "granite_moe": {
+  granite_moe: {
     name: "Granite MoE",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: true,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: true, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: true,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: true,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
-  "unknown": {
+  unknown: {
     name: "Unknown",
-    isMla: false, isHybrid: false, isRecurrent: false, isMoe: false,
-    mlaDefault: 0, flashAttnRecommended: true,
-    cacheTypeK: "f16", cacheTypeV: "f16",
-    fusedMoe: false, groupedExpertRouting: false, attnMaxBatch: 0,
+    isMla: false,
+    isHybrid: false,
+    isRecurrent: false,
+    isMoe: false,
+    mlaDefault: 0,
+    flashAttnRecommended: true,
+    cacheTypeK: "f16",
+    cacheTypeV: "f16",
+    fusedMoe: false,
+    groupedExpertRouting: false,
+    attnMaxBatch: 0,
     runtimeRepack: false,
     extraFlags: [],
   },
@@ -313,13 +509,13 @@ interface SsmParams {
 /**
  * Calculate recurrent state size per sequence slot.
  * From llama-hparams.h:282-297
- * 
+ *
  * For Qwen3-Next style hybrid (ssm_n_group > 0):
  *   conv_state_dim = (ssm_d_conv - 1) * (2 * ssm_d_state * ssm_n_group + ssm_d_inner)
  *   head_v_dim = ssm_d_inner / ssm_dt_rank
  *   ssm_state_dim = head_v_dim * head_v_dim * ssm_dt_rank
  *   total = conv_state_dim + ssm_state_dim
- * 
+ *
  * For pure Mamba (ssm_n_group == 0):
  *   total = ssm_d_state * ssm_d_inner
  */
@@ -343,11 +539,15 @@ function calculateSsmStateSize(p: SsmParams): number {
  * From llama-model.cpp:2062-2064
  *   size = n_embd_v_s * state_slots * sizeof(float)
  *   state_slots = min(max(1, n_seq_max), kv_size)
- * 
+ *
  * For our purposes (single sequence): state_slots = min(ctx, 1) effectively = 1
  * But at max ctx: state_slots = ctx (capped by n_seq_max which defaults to ctx)
  */
-function calculateRecurrentCacheSize(ssmStateSize: number, ctx: number, nSeqMax?: number): number {
+function calculateRecurrentCacheSize(
+  ssmStateSize: number,
+  ctx: number,
+  nSeqMax?: number,
+): number {
   const stateSlots = Math.min(Math.max(1, nSeqMax || ctx), ctx);
   return ssmStateSize * stateSlots * 4; // sizeof(float) = 4 bytes
 }
@@ -370,19 +570,19 @@ interface MlaParams {
 /**
  * Calculate MLA KV cache size per layer.
  * From llama-model.cpp cache_size():
- * 
+ *
  * If flash_attn:
  *   size = ggml_row_size(type_k, kv_lora_rank + n_embd_head_qk_rope) * ctx
- * 
+ *
  * If mla_attn == 1:
  *   kv_type = type_k
  *   size = ggml_row_size(kv_type, kv_lora_rank + n_embd_head_qk_rope) * ctx
  *        + ggml_row_size(type_v, kv_lora_rank * ctx)
- * 
+ *
  * If mla_attn == 2 or 3:
  *   kv_type = type_v
  *   size = ggml_row_size(kv_type, kv_lora_rank + n_embd_head_qk_rope) * ctx
- * 
+ *
  * ggml_row_size(type, n) = n * type_size / block_size
  * For F16: type_size=2, block_size=1 -> row_size = n * 2
  * For Q8_0: type_size=34, block_size=32 -> row_size = ceil(n/32) * 34
@@ -390,22 +590,38 @@ interface MlaParams {
  */
 function ggmlRowSize(type: string, n: number): number {
   switch (type.toLowerCase()) {
-    case "f32": return n * 4;
-    case "f16": return n * 2;
-    case "bf16": return n * 2;
-    case "q8_0": return Math.ceil(n / 32) * 34;
-    case "q4_0": return Math.ceil(n / 32) * 18;
-    case "q4_1": return Math.ceil(n / 32) * 20;
-    case "q5_0": return Math.ceil(n / 32) * 22;
-    case "q5_1": return Math.ceil(n / 32) * 24;
-    case "q2_k": return Math.ceil(n / 256) * 96; // approximate
-    case "q3_k": return Math.ceil(n / 256) * 110; // approximate
-    case "q4_k": return Math.ceil(n / 256) * 144;
-    case "q5_k": return Math.ceil(n / 256) * 176;
-    case "q6_k": return Math.ceil(n / 256) * 210;
-    case "q8_k": return Math.ceil(n / 256) * 292;
-    case "iq4_nl": return Math.ceil(n / 32) * 18;
-    default: return n * 2; // default to f16
+    case "f32":
+      return n * 4;
+    case "f16":
+      return n * 2;
+    case "bf16":
+      return n * 2;
+    case "q8_0":
+      return Math.ceil(n / 32) * 34;
+    case "q4_0":
+      return Math.ceil(n / 32) * 18;
+    case "q4_1":
+      return Math.ceil(n / 32) * 20;
+    case "q5_0":
+      return Math.ceil(n / 32) * 22;
+    case "q5_1":
+      return Math.ceil(n / 32) * 24;
+    case "q2_k":
+      return Math.ceil(n / 256) * 96; // approximate
+    case "q3_k":
+      return Math.ceil(n / 256) * 110; // approximate
+    case "q4_k":
+      return Math.ceil(n / 256) * 144;
+    case "q5_k":
+      return Math.ceil(n / 256) * 176;
+    case "q6_k":
+      return Math.ceil(n / 256) * 210;
+    case "q8_k":
+      return Math.ceil(n / 256) * 292;
+    case "iq4_nl":
+      return Math.ceil(n / 32) * 18;
+    default:
+      return n * 2; // default to f16
   }
 }
 
@@ -514,7 +730,8 @@ interface FullMetrics {
 
 function parseLayerTable(log: string): LayerInfo[] {
   const layers: LayerInfo[] = [];
-  const reNormal = /Layer\s+(\d+):\s+([\d.]+),\s+([\d.]+),\s+([\d.]+)\s+([\d.]+)\s+MiB/g;
+  const reNormal =
+    /Layer\s+(\d+):\s+([\d.]+),\s+([\d.]+),\s+([\d.]+)\s+([\d.]+)\s+MiB/g;
   let m;
   while ((m = reNormal.exec(log)) !== null) {
     layers.push({
@@ -526,7 +743,8 @@ function parseLayerTable(log: string): LayerInfo[] {
       output: false,
     });
   }
-  const reOutput = /Layer\s+(\d+):\s+([\d.]+),\s+([\d.]+),\s+([\d.]+)\s+MiB\s+\(output layer\)/;
+  const reOutput =
+    /Layer\s+(\d+):\s+([\d.]+),\s+([\d.]+),\s+([\d.]+)\s+MiB\s+\(output layer\)/;
   const outMatch = log.match(reOutput);
   if (outMatch) {
     layers.push({
@@ -543,7 +761,7 @@ function parseLayerTable(log: string): LayerInfo[] {
 
 function parseFullMetrics(log: string): FullMetrics {
   const m: FullMetrics = {};
-  const get = (re: RegExp, fn: ((s: string) => any) = parseFloat) => {
+  const get = (re: RegExp, fn: (s: string) => any = parseFloat) => {
     const match = log.match(re);
     return match ? fn(match[1]) : undefined;
   };
@@ -604,9 +822,15 @@ function parseFullMetrics(log: string): FullMetrics {
   m.nUbatch = get(/n_ubatch\s+=\s+(\d+)/);
 
   // KV cache — three formats
-  const kvMla = log.match(/KV self size\s+=\s+([\d.]+)\s+MiB,\s+c\^KV\s+\(([^)]+)\):\s+([\d.]+)\s+MiB,\s+kv\^T\s+\(([^)]+)\):\s+([\d.]+)\s+MiB/);
-  const kvMlaNoT = log.match(/KV self size\s+=\s+([\d.]+)\s+MiB,\s+c\^KV\s+\(([^)]+)\):\s+([\d.]+)\s+MiB,\s+kv\^T:\s+not used/);
-  const kvStandard = log.match(/KV self size\s+=\s+([\d.]+)\s+MiB,\s+K\s+\(([^)]+)\):\s+([\d.]+)\s+MiB,\s+V\s+\(([^)]+)\):\s+([\d.]+)\s+MiB/);
+  const kvMla = log.match(
+    /KV self size\s+=\s+([\d.]+)\s+MiB,\s+c\^KV\s+\(([^)]+)\):\s+([\d.]+)\s+MiB,\s+kv\^T\s+\(([^)]+)\):\s+([\d.]+)\s+MiB/,
+  );
+  const kvMlaNoT = log.match(
+    /KV self size\s+=\s+([\d.]+)\s+MiB,\s+c\^KV\s+\(([^)]+)\):\s+([\d.]+)\s+MiB,\s+kv\^T:\s+not used/,
+  );
+  const kvStandard = log.match(
+    /KV self size\s+=\s+([\d.]+)\s+MiB,\s+K\s+\(([^)]+)\):\s+([\d.]+)\s+MiB,\s+V\s+\(([^)]+)\):\s+([\d.]+)\s+MiB/,
+  );
 
   if (kvMla) {
     m.kvSizeMiB = parseFloat(kvMla[1]);
@@ -628,7 +852,9 @@ function parseFullMetrics(log: string): FullMetrics {
   }
 
   // Compute buffer
-  const computeMatch = log.match(/(\S+)\s+compute buffer size\s+=\s+([\d.]+)\s+MiB/);
+  const computeMatch = log.match(
+    /(\S+)\s+compute buffer size\s+=\s+([\d.]+)\s+MiB/,
+  );
   if (computeMatch) {
     m.computeMiB = parseFloat(computeMatch[2]);
   }
@@ -640,8 +866,12 @@ function parseFullMetrics(log: string): FullMetrics {
   }
 
   // Memory
-  m.memRequired = get(/Memory required for model tensors \+ cache:\s+([\d.]+)\s+MiB/);
-  m.memAvailable = get(/Memory available on all devices - compute:\s+([\d.]+)\s+MiB/);
+  m.memRequired = get(
+    /Memory required for model tensors \+ cache:\s+([\d.]+)\s+MiB/,
+  );
+  m.memAvailable = get(
+    /Memory available on all devices - compute:\s+([\d.]+)\s+MiB/,
+  );
 
   // VRAM
   const vramMatch = log.match(/using device\s+(\S+)\s+-\s+(\d+)\s+MiB free/);
@@ -673,7 +903,8 @@ function parseFullMetrics(log: string): FullMetrics {
     };
     m.ssmStateSize = calculateSsmStateSize(ssmParams);
     if (m.nCtx) {
-      m.ssmCacheSizePerLayer = calculateRecurrentCacheSize(m.ssmStateSize, m.nCtx) / (1024 * 1024); // MiB
+      m.ssmCacheSizePerLayer =
+        calculateRecurrentCacheSize(m.ssmStateSize, m.nCtx) / (1024 * 1024); // MiB
     }
   }
 
@@ -694,8 +925,10 @@ function parseFullMetrics(log: string): FullMetrics {
 
   // Layer pattern analysis
   if (m.layers.length > 0) {
-    const nonOutput = m.layers.filter(l => !l.output);
-    const kvSizes = [...new Set(nonOutput.map(l => l.kv.toFixed(2)))].map(Number).sort((a, b) => a - b);
+    const nonOutput = m.layers.filter((l) => !l.output);
+    const kvSizes = [...new Set(nonOutput.map((l) => l.kv.toFixed(2)))]
+      .map(Number)
+      .sort((a, b) => a - b);
 
     // Detect recurrent vs attention layers from KV sizes
     // Recurrent layers have near-zero or very small KV (state is constant)
@@ -716,18 +949,25 @@ function parseFullMetrics(log: string): FullMetrics {
     m.layerPattern = {
       uniqueKvSizes: kvSizes.length,
       kvSizes,
-      isHybrid: kvSizes.length > 1 || !!m.nLayerDenseLead || (m.arch && getArchConfig(m.arch).isHybrid),
+      isHybrid:
+        kvSizes.length > 1 ||
+        !!m.nLayerDenseLead ||
+        (m.arch && getArchConfig(m.arch).isHybrid),
       recurrentLayers: recurrentLayers.length > 0 ? recurrentLayers : undefined,
       attentionLayers: attentionLayers.length > 0 ? attentionLayers : undefined,
     };
 
     if (kvSizes.length === 2) {
       const [small, large] = kvSizes;
-      const largeLayers = nonOutput.filter(l => Math.abs(l.kv - large) < 0.1).map(l => l.index);
+      const largeLayers = nonOutput
+        .filter((l) => Math.abs(l.kv - large) < 0.1)
+        .map((l) => l.index);
       if (largeLayers.length > 1) {
-        const intervals = largeLayers.slice(1).map((v, i) => v - largeLayers[i]);
+        const intervals = largeLayers
+          .slice(1)
+          .map((v, i) => v - largeLayers[i]);
         const counts = new Map<number, number>();
-        intervals.forEach(v => counts.set(v, (counts.get(v) || 0) + 1));
+        intervals.forEach((v) => counts.set(v, (counts.get(v) || 0) + 1));
         let modeInterval = intervals[0];
         let modeCount = 0;
         for (const [val, count] of counts) {
@@ -740,7 +980,9 @@ function parseFullMetrics(log: string): FullMetrics {
       }
     }
 
-    const weightSizes = [...new Set(nonOutput.map(l => l.weights.toFixed(2)))].map(Number);
+    const weightSizes = [
+      ...new Set(nonOutput.map((l) => l.weights.toFixed(2))),
+    ].map(Number);
     if (weightSizes.length > 2) {
       m.layerPattern.weightsPattern = "MoE or variable";
     }
@@ -787,17 +1029,26 @@ function predictMax(m: FullMetrics, archConfig: ArchConfig): PredictionResult {
   const outputBuffer = m.outputBufferMiB || 0;
   const safetyMargin = 512;
 
-  const usableVram = m.vramFree - modelSizeMiB - computeBuffer - outputBuffer - safetyMargin;
+  const usableVram =
+    m.vramFree - modelSizeMiB - computeBuffer - outputBuffer - safetyMargin;
 
-  reasons.push(`Measured: ${m.kvSizeMiB.toFixed(2)} MiB KV @ ${m.nCtx} ctx = ${(kvPerToken * 1024).toFixed(4)} KiB/token`);
-  reasons.push(`VRAM: ${m.vramFree} MiB free - ${modelSizeMiB.toFixed(0)} MiB model - ${computeBuffer.toFixed(0)} MiB compute - ${outputBuffer.toFixed(0)} MiB output - ${safetyMargin} MiB margin = ${usableVram.toFixed(0)} MiB usable`);
+  reasons.push(
+    `Measured: ${m.kvSizeMiB.toFixed(2)} MiB KV @ ${m.nCtx} ctx = ${(kvPerToken * 1024).toFixed(4)} KiB/token`,
+  );
+  reasons.push(
+    `VRAM: ${m.vramFree} MiB free - ${modelSizeMiB.toFixed(0)} MiB model - ${computeBuffer.toFixed(0)} MiB compute - ${outputBuffer.toFixed(0)} MiB output - ${safetyMargin} MiB margin = ${usableVram.toFixed(0)} MiB usable`,
+  );
 
   let predicted = Math.floor(usableVram / kvPerToken);
 
   // ═══ SSM / Recurrent models ═══
   if (m.ssmEnabled || archConfig.isRecurrent) {
-    reasons.push(`SSM/Recurrent: state_size=${m.ssmStateSize}, cache_per_layer=${m.ssmCacheSizePerLayer?.toFixed(4)} MiB`);
-    reasons.push(`SSM memory is CONSTANT (not per-token) — context can scale to training limit`);
+    reasons.push(
+      `SSM/Recurrent: state_size=${m.ssmStateSize}, cache_per_layer=${m.ssmCacheSizePerLayer?.toFixed(4)} MiB`,
+    );
+    reasons.push(
+      `SSM memory is CONSTANT (not per-token) — context can scale to training limit`,
+    );
     // For pure SSM, KV cache is essentially just the state slots
     // The measured kvSizeMiB already includes this, so prediction is accurate
     // But we should cap at training context since state slots = min(ctx, n_seq_max)
@@ -805,34 +1056,52 @@ function predictMax(m: FullMetrics, archConfig: ArchConfig): PredictionResult {
     flags.push("--no-flash-attn");
 
     if (m.ssmNGroup && m.ssmNGroup > 0) {
-      reasons.push(`Hybrid SSM (Qwen3-Next style): conv_state + delta-net state = ${m.ssmStateSize} floats`);
+      reasons.push(
+        `Hybrid SSM (Qwen3-Next style): conv_state + delta-net state = ${m.ssmStateSize} floats`,
+      );
     } else if (m.ssmState && m.ssmInner) {
-      reasons.push(`Pure Mamba: ssm_state = ${m.ssmState} * ${m.ssmInner} = ${m.ssmStateSize} floats`);
+      reasons.push(
+        `Pure Mamba: ssm_state = ${m.ssmState} * ${m.ssmInner} = ${m.ssmStateSize} floats`,
+      );
     }
   }
 
   // ═══ Hybrid models ═══
   if (m.layerPattern?.isHybrid || archConfig.isHybrid) {
-    reasons.push(`Hybrid architecture: ${m.layerPattern?.uniqueKvSizes || 1} distinct layer KV sizes`);
+    reasons.push(
+      `Hybrid architecture: ${m.layerPattern?.uniqueKvSizes || 1} distinct layer KV sizes`,
+    );
     if (m.layerPattern?.recurrentLayers && m.layerPattern?.attentionLayers) {
-      reasons.push(`Recurrent layers: [${m.layerPattern.recurrentLayers.join(",")}] (${m.layerPattern.recurrentLayers.length} layers)`);
-      reasons.push(`Attention layers: [${m.layerPattern.attentionLayers.join(",")}] (${m.layerPattern.attentionLayers.length} layers)`);
+      reasons.push(
+        `Recurrent layers: [${m.layerPattern.recurrentLayers.join(",")}] (${m.layerPattern.recurrentLayers.length} layers)`,
+      );
+      reasons.push(
+        `Attention layers: [${m.layerPattern.attentionLayers.join(",")}] (${m.layerPattern.attentionLayers.length} layers)`,
+      );
     }
     if (m.layerPattern?.interval) {
-      reasons.push(`Pattern: every ${m.layerPattern.interval} layers use full attention`);
+      reasons.push(
+        `Pattern: every ${m.layerPattern.interval} layers use full attention`,
+      );
     }
     if (m.nLayerDenseLead !== undefined) {
-      reasons.push(`n_layer_dense_lead = ${m.nLayerDenseLead} (first N layers are dense attention)`);
+      reasons.push(
+        `n_layer_dense_lead = ${m.nLayerDenseLead} (first N layers are dense attention)`,
+      );
     }
     confidence = "very high";
   }
 
   // ═══ Sliding window ═══
   if (m.slidingWindow && m.slidingWindow > 0) {
-    reasons.push(`Sliding window: n_swa=${m.slidingWindow}, pattern=${m.swaPattern || 1}`);
+    reasons.push(
+      `Sliding window: n_swa=${m.slidingWindow}, pattern=${m.swaPattern || 1}`,
+    );
     const effectiveCap = (m.trainCtx || 131072) * 1.5;
     if (predicted > effectiveCap) {
-      reasons.push(`SWA caps effective context at ~${effectiveCap.toLocaleString()} tokens`);
+      reasons.push(
+        `SWA caps effective context at ~${effectiveCap.toLocaleString()} tokens`,
+      );
       predicted = Math.min(predicted, effectiveCap);
     }
     confidence = "high";
@@ -841,20 +1110,30 @@ function predictMax(m: FullMetrics, archConfig: ArchConfig): PredictionResult {
   // ═══ MLA models ═══
   if (archConfig.isMla || m.mlaMode) {
     const mlaMode = m.mlaMode || archConfig.mlaDefault;
-    reasons.push(`MLA attention: mode=${mlaMode} (0=off, 1=CPU, 2=CPU+GPU, 3=CPU-only)`);
+    reasons.push(
+      `MLA attention: mode=${mlaMode} (0=off, 1=CPU, 2=CPU+GPU, 3=CPU-only)`,
+    );
 
     if (m.kvLoraRank && m.nRot !== undefined) {
-      reasons.push(`MLA params: kv_lora_rank=${m.kvLoraRank}, n_rot=${m.nRot}, latent_dim=${m.kvLoraRank + m.nRot}`);
+      reasons.push(
+        `MLA params: kv_lora_rank=${m.kvLoraRank}, n_rot=${m.nRot}, latent_dim=${m.kvLoraRank + m.nRot}`,
+      );
       if (m.mlaTheoreticalKvPerLayer) {
-        reasons.push(`Theoretical MLA KV per layer @ ${m.nCtx} ctx: ${m.mlaTheoreticalKvPerLayer.toFixed(4)} MiB`);
+        reasons.push(
+          `Theoretical MLA KV per layer @ ${m.nCtx} ctx: ${m.mlaTheoreticalKvPerLayer.toFixed(4)} MiB`,
+        );
         const measuredPerLayer = m.kvSizeMiB / (m.nLayer || 1);
         const ratio = measuredPerLayer / m.mlaTheoreticalKvPerLayer;
-        reasons.push(`Measured/theoretical per layer: ${(ratio * 100).toFixed(1)}%`);
+        reasons.push(
+          `Measured/theoretical per layer: ${(ratio * 100).toFixed(1)}%`,
+        );
       }
     }
 
     if (mlaMode >= 2) {
-      reasons.push(`MLA+FlashAttn dramatically reduces KV cache vs standard attention`);
+      reasons.push(
+        `MLA+FlashAttn dramatically reduces KV cache vs standard attention`,
+      );
       confidence = "very high";
     }
     if (mlaMode === 3) {
@@ -863,7 +1142,10 @@ function predictMax(m: FullMetrics, archConfig: ArchConfig): PredictionResult {
   }
 
   // ═══ MoE models ═══
-  if (archConfig.isMoe || m.layerPattern?.weightsPattern === "MoE or variable") {
+  if (
+    archConfig.isMoe ||
+    m.layerPattern?.weightsPattern === "MoE or variable"
+  ) {
     reasons.push(`MoE architecture — expert layers have variable weight sizes`);
     if (m.nFfExp) {
       reasons.push(`n_ff_exp = ${m.nFfExp} (expert FFN dimension)`);
@@ -890,28 +1172,46 @@ function predictMax(m: FullMetrics, archConfig: ArchConfig): PredictionResult {
   if (m.trainCtx) {
     const capped = Math.min(predicted, m.trainCtx);
     if (capped < predicted) {
-      reasons.push(`Capped at training context: ${m.trainCtx.toLocaleString()}`);
+      reasons.push(
+        `Capped at training context: ${m.trainCtx.toLocaleString()}`,
+      );
     }
     predicted = capped;
   }
 
   // Sanity check: theoretical KV per token vs measured (standard attention only)
-  if (m.nLayer && m.nHeadKv && m.headDim && !archConfig.isMla && !archConfig.isRecurrent) {
-    const theoreticalKvPerToken = (2 * m.nLayer * m.nHeadKv * m.headDim * 2) / (1024 * 1024);
+  if (
+    m.nLayer &&
+    m.nHeadKv &&
+    m.headDim &&
+    !archConfig.isMla &&
+    !archConfig.isRecurrent
+  ) {
+    const theoreticalKvPerToken =
+      (2 * m.nLayer * m.nHeadKv * m.headDim * 2) / (1024 * 1024);
     const ratio = kvPerToken / theoreticalKvPerToken;
-    reasons.push(`Theoretical full-attention KV: ${theoreticalKvPerToken.toFixed(4)} MiB/token`);
+    reasons.push(
+      `Theoretical full-attention KV: ${theoreticalKvPerToken.toFixed(4)} MiB/token`,
+    );
     reasons.push(`Measured/theoretical ratio: ${(ratio * 100).toFixed(1)}%`);
 
     if (ratio < 0.3) {
       reasons.push(`→ Strong evidence of MLA, hybrid, or quantized KV cache`);
     } else if (ratio > 1.5) {
-      reasons.push(`→ KV cache larger than theoretical (check cache types or GQA settings)`);
+      reasons.push(
+        `→ KV cache larger than theoretical (check cache types or GQA settings)`,
+      );
     }
   }
 
   // Estimated VRAM at predicted context
   const estimatedKvAtPredicted = kvPerToken * predicted;
-  const estimatedTotal = modelSizeMiB + estimatedKvAtPredicted + computeBuffer + outputBuffer + safetyMargin;
+  const estimatedTotal =
+    modelSizeMiB +
+    estimatedKvAtPredicted +
+    computeBuffer +
+    outputBuffer +
+    safetyMargin;
 
   // Build recommended flags
   if (archConfig.flashAttnRecommended && !m.flashAttn) {
@@ -926,7 +1226,10 @@ function predictMax(m: FullMetrics, archConfig: ArchConfig): PredictionResult {
   if (archConfig.cacheTypeV !== "f16") {
     flags.push("--cache-type-v", archConfig.cacheTypeV);
   }
-  if (archConfig.attnMaxBatch > 0 && (!m.attnMaxBatch || m.attnMaxBatch === 0)) {
+  if (
+    archConfig.attnMaxBatch > 0 &&
+    (!m.attnMaxBatch || m.attnMaxBatch === 0)
+  ) {
     flags.push("--attention-max-batch", String(archConfig.attnMaxBatch));
   }
   if (archConfig.runtimeRepack) {
@@ -955,14 +1258,24 @@ async function killPort() {
   await Bun.sleep(1200);
 }
 
-function buildServerCmd(modelPath: string, ctx: number, archConfig: ArchConfig, probeMetrics?: FullMetrics): string[] {
+function buildServerCmd(
+  modelPath: string,
+  ctx: number,
+  archConfig: ArchConfig,
+  probeMetrics?: FullMetrics,
+): string[] {
   const cmd = [
     SERVER,
-    "-m", modelPath,
-    "-c", String(ctx),
-    "-ngl", "99",
-    "--host", "127.0.0.1",
-    "--port", String(PORT),
+    "-m",
+    modelPath,
+    "-c",
+    String(ctx),
+    "-ngl",
+    "99",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    String(PORT),
     "--no-warmup",
     "--jinja",
   ];
@@ -1010,13 +1323,20 @@ function buildServerCmd(modelPath: string, ctx: number, archConfig: ArchConfig, 
 // MODEL TESTING
 // ═══════════════════════════════════════════════════════════════════════════════
 
-async function testModel(modelPath: string, ctx: number, archConfig: ArchConfig, probeMetrics?: FullMetrics) {
+async function testModel(
+  modelPath: string,
+  ctx: number,
+  archConfig: ArchConfig,
+  probeMetrics?: FullMetrics,
+) {
   await killPort();
 
   const cmd = buildServerCmd(modelPath, ctx, archConfig, probeMetrics);
 
   console.log(`\n${"=".repeat(80)}`);
-  console.log(`[TEST] ${modelPath.split("/").pop()} @ ctx=${ctx.toLocaleString()}`);
+  console.log(
+    `[TEST] ${modelPath.split("/").pop()} @ ctx=${ctx.toLocaleString()}`,
+  );
   console.log(`[FLAGS] ${cmd.slice(1).join(" ")}`);
   console.log(`${"=".repeat(80)}`);
 
@@ -1026,7 +1346,8 @@ async function testModel(modelPath: string, ctx: number, archConfig: ArchConfig,
   const collect = async (stream: ReadableStream, isErr = false) => {
     for await (const chunk of stream) {
       const text = new TextDecoder().decode(chunk);
-      if (isErr) process.stderr.write(text); else process.stdout.write(text);
+      if (isErr) process.stderr.write(text);
+      else process.stdout.write(text);
       log += text;
     }
   };
@@ -1037,12 +1358,21 @@ async function testModel(modelPath: string, ctx: number, archConfig: ArchConfig,
   let ready = false;
   for (let i = 0; i < 50; i++) {
     await Bun.sleep(400);
-    if (log.includes("unable to load model") || log.includes("out of memory") || log.includes("failed to allocate")) {
+    if (
+      log.includes("unable to load model") ||
+      log.includes("out of memory") ||
+      log.includes("failed to allocate")
+    ) {
       break;
     }
     try {
-      const res = await fetch(`http://127.0.0.1:${PORT}/health`, { signal: AbortSignal.timeout(800) });
-      if (res.ok) { ready = true; break; }
+      const res = await fetch(`http://127.0.0.1:${PORT}/health`, {
+        signal: AbortSignal.timeout(800),
+      });
+      if (res.ok) {
+        ready = true;
+        break;
+      }
     } catch {}
   }
 
@@ -1053,7 +1383,12 @@ async function testModel(modelPath: string, ctx: number, archConfig: ArchConfig,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: [{ role: "user", content: "What is 15% of 240? Show your work step by step." }],
+          messages: [
+            {
+              role: "user",
+              content: "What is 15% of 240? Show your work step by step.",
+            },
+          ],
           max_tokens: 150,
           temperature: 0.1,
         }),
@@ -1076,23 +1411,43 @@ async function testModel(modelPath: string, ctx: number, archConfig: ArchConfig,
   console.log(`\n${"─".repeat(80)}`);
   console.log(`[ANALYSIS]`);
   console.log(` Architecture: ${metrics.arch} (${config.name})`);
-  console.log(` Model: ${metrics.nLayer} layers | ${metrics.nHead} heads | ${metrics.nHeadKv} KV heads | embd=${metrics.nEmbd}`);
-  console.log(` Head dims: k=${metrics.headDim}, v=${metrics.headDimV}, rot=${metrics.nRot}`);
-  console.log(` Model size: ${metrics.modelSizeGiB?.toFixed(3)} GiB (${metrics.bpw?.toFixed(2)} BPW)`);
+  console.log(
+    ` Model: ${metrics.nLayer} layers | ${metrics.nHead} heads | ${metrics.nHeadKv} KV heads | embd=${metrics.nEmbd}`,
+  );
+  console.log(
+    ` Head dims: k=${metrics.headDim}, v=${metrics.headDimV}, rot=${metrics.nRot}`,
+  );
+  console.log(
+    ` Model size: ${metrics.modelSizeGiB?.toFixed(3)} GiB (${metrics.bpw?.toFixed(2)} BPW)`,
+  );
   console.log(` VRAM: ${metrics.vramFree} MiB free`);
-  console.log(` Memory: ${metrics.memRequired?.toFixed(0)} MiB required, ${metrics.memAvailable?.toFixed(0)} MiB available`);
-  console.log(` KV Cache: ${metrics.kvSizeMiB?.toFixed(2)} MiB @ ${metrics.nCtx} ctx (${metrics.kvPerTokenKiB?.toFixed(4)} KiB/token)`);
-  console.log(` KV Types: K=${metrics.kvCacheTypeK || "?"}, V=${metrics.kvCacheTypeV || "?"}`);
-  console.log(` Compute: ${metrics.computeMiB?.toFixed(2)} MiB | Output: ${metrics.outputBufferMiB?.toFixed(2)} MiB`);
-  console.log(` Graph: ${metrics.graphNodes} nodes, ${metrics.graphSplits} splits`);
+  console.log(
+    ` Memory: ${metrics.memRequired?.toFixed(0)} MiB required, ${metrics.memAvailable?.toFixed(0)} MiB available`,
+  );
+  console.log(
+    ` KV Cache: ${metrics.kvSizeMiB?.toFixed(2)} MiB @ ${metrics.nCtx} ctx (${metrics.kvPerTokenKiB?.toFixed(4)} KiB/token)`,
+  );
+  console.log(
+    ` KV Types: K=${metrics.kvCacheTypeK || "?"}, V=${metrics.kvCacheTypeV || "?"}`,
+  );
+  console.log(
+    ` Compute: ${metrics.computeMiB?.toFixed(2)} MiB | Output: ${metrics.outputBufferMiB?.toFixed(2)} MiB`,
+  );
+  console.log(
+    ` Graph: ${metrics.graphNodes} nodes, ${metrics.graphSplits} splits`,
+  );
 
   // SSM info
   if (metrics.ssmEnabled) {
     console.log(`\n SSM State:`);
-    console.log(`  d_conv=${metrics.ssmConv}, d_inner=${metrics.ssmInner}, d_state=${metrics.ssmState}`);
+    console.log(
+      `  d_conv=${metrics.ssmConv}, d_inner=${metrics.ssmInner}, d_state=${metrics.ssmState}`,
+    );
     console.log(`  dt_rank=${metrics.ssmDtRank}, n_group=${metrics.ssmNGroup}`);
     console.log(`  State size: ${metrics.ssmStateSize} floats`);
-    console.log(`  Cache per layer @ ${metrics.nCtx} ctx: ${metrics.ssmCacheSizePerLayer?.toFixed(4)} MiB`);
+    console.log(
+      `  Cache per layer @ ${metrics.nCtx} ctx: ${metrics.ssmCacheSizePerLayer?.toFixed(4)} MiB`,
+    );
     if (metrics.ssmNGroup && metrics.ssmNGroup > 0) {
       console.log(`  Type: Hybrid SSM (Qwen3-Next style)`);
     } else {
@@ -1103,16 +1458,24 @@ async function testModel(modelPath: string, ctx: number, archConfig: ArchConfig,
   // Hybrid info
   if (metrics.layerPattern?.isHybrid) {
     console.log(`\n Hybrid Architecture:`);
-    console.log(`  ${metrics.layerPattern.uniqueKvSizes} distinct layer KV sizes`);
+    console.log(
+      `  ${metrics.layerPattern.uniqueKvSizes} distinct layer KV sizes`,
+    );
     console.log(`  KV sizes: ${metrics.layerPattern.kvSizes.join(", ")} MiB`);
     if (metrics.layerPattern.recurrentLayers) {
-      console.log(`  Recurrent layers: [${metrics.layerPattern.recurrentLayers.join(",")}]`);
+      console.log(
+        `  Recurrent layers: [${metrics.layerPattern.recurrentLayers.join(",")}]`,
+      );
     }
     if (metrics.layerPattern.attentionLayers) {
-      console.log(`  Attention layers: [${metrics.layerPattern.attentionLayers.join(",")}]`);
+      console.log(
+        `  Attention layers: [${metrics.layerPattern.attentionLayers.join(",")}]`,
+      );
     }
     if (metrics.layerPattern.interval) {
-      console.log(`  Pattern: every ${metrics.layerPattern.interval} layers use full attention`);
+      console.log(
+        `  Pattern: every ${metrics.layerPattern.interval} layers use full attention`,
+      );
     }
     if (metrics.nLayerDenseLead !== undefined) {
       console.log(`  n_layer_dense_lead: ${metrics.nLayerDenseLead}`);
@@ -1122,15 +1485,21 @@ async function testModel(modelPath: string, ctx: number, archConfig: ArchConfig,
   // MLA info
   if (metrics.kvLoraRank) {
     console.log(`\n MLA Parameters:`);
-    console.log(`  kv_lora_rank=${metrics.kvLoraRank}, n_lora_q=${metrics.nLoraQ}, n_rot=${metrics.nRot}`);
+    console.log(
+      `  kv_lora_rank=${metrics.kvLoraRank}, n_lora_q=${metrics.nLoraQ}, n_rot=${metrics.nRot}`,
+    );
     console.log(`  latent_dim=${metrics.kvLoraRank + (metrics.nRot || 0)}`);
     if (metrics.mlaTheoreticalKvPerLayer) {
-      console.log(`  Theoretical KV per layer: ${metrics.mlaTheoreticalKvPerLayer.toFixed(4)} MiB`);
+      console.log(
+        `  Theoretical KV per layer: ${metrics.mlaTheoreticalKvPerLayer.toFixed(4)} MiB`,
+      );
     }
   }
 
   if (metrics.slidingWindow) {
-    console.log(`\n Sliding Window: n_swa=${metrics.slidingWindow}, pattern=${metrics.swaPattern}`);
+    console.log(
+      `\n Sliding Window: n_swa=${metrics.slidingWindow}, pattern=${metrics.swaPattern}`,
+    );
   }
 
   if (metrics.mlaMode !== undefined) {
@@ -1141,15 +1510,21 @@ async function testModel(modelPath: string, ctx: number, archConfig: ArchConfig,
     console.log(` Flash Attention: enabled`);
   }
 
-  console.log(`\n[PREDICTION] ${prediction.predicted.toLocaleString()} tokens (confidence: ${prediction.confidence})`);
-  prediction.reasoning.forEach(r => console.log(` • ${r}`));
+  console.log(
+    `\n[PREDICTION] ${prediction.predicted.toLocaleString()} tokens (confidence: ${prediction.confidence})`,
+  );
+  prediction.reasoning.forEach((r) => console.log(` • ${r}`));
 
   if (prediction.recommendedFlags.length > 0) {
-    console.log(`\n[RECOMMENDED FLAGS] ${prediction.recommendedFlags.join(" ")}`);
+    console.log(
+      `\n[RECOMMENDED FLAGS] ${prediction.recommendedFlags.join(" ")}`,
+    );
   }
 
   if (response) {
-    console.log(`\n[RESPONSE] ${response.substring(0, 200)}${response.length > 200 ? "..." : ""}`);
+    console.log(
+      `\n[RESPONSE] ${response.substring(0, 200)}${response.length > 200 ? "..." : ""}`,
+    );
   }
   console.log(`${"─".repeat(80)}\n`);
 
@@ -1174,21 +1549,33 @@ async function profileModel(modelPath: string) {
   // Phase 1: Probe at 4k
   const probe = await testModel(modelPath, 4096, ARCH_CONFIG["unknown"]);
   if (!probe.metrics.kvSizeMiB) {
-    console.log("[ERROR] Failed to parse metrics from probe — retrying with defaults");
+    console.log(
+      "[ERROR] Failed to parse metrics from probe — retrying with defaults",
+    );
     const retry = await testModel(modelPath, 4096, ARCH_CONFIG["unknown"]);
     if (!retry.metrics.kvSizeMiB) {
-      console.log("[ERROR] Complete failure — model may be incompatible or OOM at 4k");
+      console.log(
+        "[ERROR] Complete failure — model may be incompatible or OOM at 4k",
+      );
       return null;
     }
   }
 
   const archConfig = getArchConfig(probe.metrics.arch || "");
-  console.log(`[DETECTED] Architecture: ${probe.metrics.arch} -> ${archConfig.name}`);
-  console.log(`[CONFIG] MLA=${archConfig.mlaDefault}, FA=${archConfig.flashAttnRecommended}, MoE=${archConfig.isMoe}`);
+  console.log(
+    `[DETECTED] Architecture: ${probe.metrics.arch} -> ${archConfig.name}`,
+  );
+  console.log(
+    `[CONFIG] MLA=${archConfig.mlaDefault}, FA=${archConfig.flashAttnRecommended}, MoE=${archConfig.isMoe}`,
+  );
 
   // Phase 1b: Re-probe with architecture-aware flags
   let finalProbe = probe;
-  if (archConfig.mlaDefault > 0 || archConfig.flashAttnRecommended || archConfig.cacheTypeK !== "f16") {
+  if (
+    archConfig.mlaDefault > 0 ||
+    archConfig.flashAttnRecommended ||
+    archConfig.cacheTypeK !== "f16"
+  ) {
     console.log(`\n${"=".repeat(80)}`);
     console.log("[PHASE 1b] Re-probing with architecture-aware flags");
     console.log(`${"=".repeat(80)}`);
@@ -1200,10 +1587,17 @@ async function profileModel(modelPath: string) {
   const testCtx = Math.min(predicted, trainCtx);
 
   console.log(`\n${"=".repeat(80)}`);
-  console.log(`[PHASE 2] Testing predicted maximum: ${testCtx.toLocaleString()} tokens`);
+  console.log(
+    `[PHASE 2] Testing predicted maximum: ${testCtx.toLocaleString()} tokens`,
+  );
   console.log(`${"=".repeat(80)}`);
 
-  const final = await testModel(modelPath, testCtx, archConfig, finalProbe.metrics);
+  const final = await testModel(
+    modelPath,
+    testCtx,
+    archConfig,
+    finalProbe.metrics,
+  );
 
   return {
     model: name,
@@ -1222,7 +1616,8 @@ async function profileModel(modelPath: string) {
       n_rot: finalProbe.metrics.nRot,
       is_hybrid: finalProbe.metrics.layerPattern?.isHybrid || false,
       is_mla: archConfig.isMla,
-      is_recurrent: archConfig.isRecurrent || finalProbe.metrics.ssmEnabled || false,
+      is_recurrent:
+        archConfig.isRecurrent || finalProbe.metrics.ssmEnabled || false,
       is_moe: archConfig.isMoe,
       sliding_window: finalProbe.metrics.slidingWindow || 0,
       swa_pattern: finalProbe.metrics.swaPattern || 0,
@@ -1308,12 +1703,19 @@ results.sort((a, b) => b.context.actual_max - a.context.actual_max);
 console.log("\n" + "=".repeat(80));
 console.log("FINAL RESULTS");
 console.log("=".repeat(80));
-results.forEach(r => {
-  const arch = r.architecture.is_hybrid ? "HYBRID" :
-               r.architecture.is_mla ? "MLA" :
-               r.architecture.is_moe ? "MoE" :
-               r.architecture.is_recurrent ? "SSM" : "standard";
-  console.log(`${r.context.actual_max.toString().padStart(8)} | ${r.model.padEnd(40)} | ${r.architecture.detected?.padEnd(12)} | ${arch}`);
+results.forEach((r) => {
+  const arch = r.architecture.is_hybrid
+    ? "HYBRID"
+    : r.architecture.is_mla
+      ? "MLA"
+      : r.architecture.is_moe
+        ? "MoE"
+        : r.architecture.is_recurrent
+          ? "SSM"
+          : "standard";
+  console.log(
+    `${r.context.actual_max.toString().padStart(8)} | ${r.model.padEnd(40)} | ${r.architecture.detected?.padEnd(12)} | ${arch}`,
+  );
 });
 
 await writeFile(REPORT, JSON.stringify(results, null, 2));

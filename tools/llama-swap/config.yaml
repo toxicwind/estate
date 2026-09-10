@@ -161,7 +161,6 @@ models:
       auto_discovered: true
       path: "/home/toxic/projects/models/Qwen3.5-9B-DeepSeek-V4-Flash-IQ4_XS.gguf"
 
-
   mn-grand-23.5b-gutenberg-uncensored-v2-q4_k_m:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/MN-GRAND-23.5B-Gutenberg-UNCENSORED-V2-Q4_K_M.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     env:
@@ -177,7 +176,6 @@ models:
       vram: ~17GB
       auto_discovered: true
       path: "/home/toxic/projects/models/MN-GRAND-23.5B-Gutenberg-UNCENSORED-V2-Q4_K_M.gguf"
-
 
   qwen3.5-1.5b-draft:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/Qwen3.5-1.5B-Draft.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
@@ -195,7 +193,6 @@ models:
       auto_discovered: true
       path: "/home/toxic/projects/models/Qwen3.5-1.5B-Draft.gguf"
 
-
   heretic-ud-27b-q5_k_xl:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/heretic-UD-27B-Q5_K_XL.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     env:
@@ -211,7 +208,6 @@ models:
       vram: ~24GB
       auto_discovered: true
       path: "/home/toxic/projects/models/heretic-UD-27B-Q5_K_XL.gguf"
-
 
   exaone-4.0-1.2b-q4_k_m:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/EXAONE-4.0-1.2B-GGUF/EXAONE-4.0-1.2B-Q4_K_M.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
@@ -229,7 +225,6 @@ models:
       auto_discovered: true
       path: "/home/toxic/projects/models/EXAONE-4.0-1.2B-GGUF/EXAONE-4.0-1.2B-Q4_K_M.gguf"
 
-
   exaone-4.0-1.2b-q5_k_m:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/EXAONE-4.0-1.2B-GGUF/EXAONE-4.0-1.2B-Q5_K_M.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     env:
@@ -245,7 +240,6 @@ models:
       vram: ~2GB
       auto_discovered: true
       path: "/home/toxic/projects/models/EXAONE-4.0-1.2B-GGUF/EXAONE-4.0-1.2B-Q5_K_M.gguf"
-
 
   exaone-4.0-1.2b-iq4_xs:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/EXAONE-4.0-1.2B-GGUF/EXAONE-4.0-1.2B-IQ4_XS.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
@@ -263,7 +257,6 @@ models:
       auto_discovered: true
       path: "/home/toxic/projects/models/EXAONE-4.0-1.2B-GGUF/EXAONE-4.0-1.2B-IQ4_XS.gguf"
 
-
   exaone-4.0-1.2b-q8_0:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/EXAONE-4.0-1.2B-GGUF/EXAONE-4.0-1.2B-Q8_0.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     env:
@@ -279,7 +272,6 @@ models:
       vram: ~2GB
       auto_discovered: true
       path: "/home/toxic/projects/models/EXAONE-4.0-1.2B-GGUF/EXAONE-4.0-1.2B-Q8_0.gguf"
-
 
   exaone-4.0-1.2b-q6_k:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/EXAONE-4.0-1.2B-GGUF/EXAONE-4.0-1.2B-Q6_K.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
@@ -297,7 +289,6 @@ models:
       auto_discovered: true
       path: "/home/toxic/projects/models/EXAONE-4.0-1.2B-GGUF/EXAONE-4.0-1.2B-Q6_K.gguf"
 
-
   qwen3.6-27b-dflash-q4_k_m:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/Qwen3.6-27B-DFlash-Q4_K_M.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     env:
@@ -313,7 +304,6 @@ models:
       vram: ~2GB
       auto_discovered: true
       path: "/home/toxic/projects/models/Qwen3.6-27B-DFlash-Q4_K_M.gguf"
-
 
   gemma4-31b-it-dflash-q4_k_m:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/gemma4-31b-it-dflash-Q4_K_M.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
@@ -331,7 +321,6 @@ models:
       auto_discovered: true
       path: "/home/toxic/projects/models/gemma4-31b-it-dflash-Q4_K_M.gguf"
 
-
   qwen3.5-9b-dflash-q4_k_m:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/Qwen3.5-9B-DFlash-Q4_K_M.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     env:
@@ -347,7 +336,6 @@ models:
       vram: ~1GB
       auto_discovered: true
       path: "/home/toxic/projects/models/Qwen3.5-9B-DFlash-Q4_K_M.gguf"
-
 
   qwen3.5-9b-deepseek-v4-flash-mtp-q4_k_m:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/Qwen3.5-9B-DeepSeek-V4-Flash-MTP-Q4_K_M.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
@@ -365,7 +353,6 @@ models:
       auto_discovered: true
       path: "/home/toxic/projects/models/Qwen3.5-9B-DeepSeek-V4-Flash-MTP-Q4_K_M.gguf"
 
-
   mtp-gemma-4-12b-it:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/mtp-gemma-4-12b-it.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     env:
@@ -381,7 +368,6 @@ models:
       vram: ~1GB
       auto_discovered: true
       path: "/home/toxic/projects/models/mtp-gemma-4-12b-it.gguf"
-
 
   gemma-4-12b-it-assistant-q8_0:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/gemma-4-12B-it-assistant-Q8_0.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
@@ -414,7 +400,6 @@ models:
       auto_discovered: true
       path: "/home/toxic/projects/models/qwen3.5-9b-dflash-Q5_K_M.gguf"
 
-
   qwen2.5-1.5b-instruct-q8_0:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/Qwen2.5-1.5B-Instruct-Q8_0.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     env:
@@ -430,7 +415,6 @@ models:
       vram: ~2GB
       auto_discovered: true
       path: "/home/toxic/projects/models/Qwen2.5-1.5B-Instruct-Q8_0.gguf"
-
 
   qwen2.5-1.5b-draft-q8_0:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/Qwen2.5-1.5B-Draft-Q8_0.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
@@ -448,7 +432,6 @@ models:
       auto_discovered: true
       path: "/home/toxic/projects/models/Qwen2.5-1.5B-Draft-Q8_0.gguf"
 
-
   q3.5-9b-ds-v4-flash-da-q4_k_m:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/Q3.5-9B-DS-v4-Flash-DA-Q4_K_M.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     env:
@@ -464,7 +447,6 @@ models:
       vram: ~9GB
       auto_discovered: true
       path: "/home/toxic/projects/models/Q3.5-9B-DS-v4-Flash-DA-Q4_K_M.gguf"
-
 
   qwen3.5-9b-deepseek-v4-flash-mtp-bf16:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/Qwen3.5-9B-DeepSeek-V4-Flash-MTP-BF16.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
@@ -482,7 +464,6 @@ models:
       auto_discovered: true
       path: "/home/toxic/projects/models/Qwen3.5-9B-DeepSeek-V4-Flash-MTP-BF16.gguf"
 
-
   qwen3.6-27b-ud-q4_k_xl:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/Qwen3.6-27B-UD-Q4_K_XL.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     env:
@@ -498,7 +479,6 @@ models:
       vram: ~21GB
       auto_discovered: true
       path: "/home/toxic/projects/models/Qwen3.6-27B-UD-Q4_K_XL.gguf"
-
 
   qwen3.6-27b-mtp-ud-q4_k_xl:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/Qwen3.6-27B-MTP-UD-Q4_K_XL.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
@@ -516,7 +496,6 @@ models:
       auto_discovered: true
       path: "/home/toxic/projects/models/Qwen3.6-27B-MTP-UD-Q4_K_XL.gguf"
 
-
   gemma-4-21b-a4b-it-reap-q4_k_m:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/gemma-4-21b-a4b-it-REAP-Q4_K_M.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     env:
@@ -532,7 +511,6 @@ models:
       vram: ~16GB
       auto_discovered: true
       path: "/home/toxic/projects/models/gemma-4-21b-a4b-it-REAP-Q4_K_M.gguf"
-
 
   qwen-3.5-28b-a3b-reap-q4_k_m:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/Qwen-3.5-28B-A3B-REAP-Q4_K_M.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
@@ -550,7 +528,6 @@ models:
       auto_discovered: true
       path: "/home/toxic/projects/models/Qwen-3.5-28B-A3B-REAP-Q4_K_M.gguf"
 
-
   gemma-4-12b-it-mtp-q8_0:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/gemma-4-12B-it-MTP-Q8_0.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     env:
@@ -566,8 +543,6 @@ models:
       vram: ~1GB
       auto_discovered: true
       path: "/home/toxic/projects/models/gemma-4-12B-it-MTP-Q8_0.gguf"
-
-
 
   qwen3.6-27b-dflash-iq4_xs:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/projects/models/repos/Anbeeld/Qwen3.6-27B-DFlash-GGUF/Qwen3.6-27B-DFlash-IQ4_XS.gguf ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
@@ -771,7 +746,6 @@ models:
       vram: ~1GB
       auto_discovered: true
       path: "/home/toxic/projects/models/mtp-gemma-4-12b-it-uncensored.gguf"
-
 
   4d24a3e32a88ed1c4e5b789fc6644e2e767500554e954b27dccf52a8e762cbae:
     cmd: ${BEELLAMA_BIN} --model /home/toxic/.cache/huggingface/hub/models--cardiffnlp--twitter-roberta-base-sentiment-latest/blobs/4d24a3e32a88ed1c4e5b789fc6644e2e767500554e954b27dccf52a8e762cbae ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}

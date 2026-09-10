@@ -30,7 +30,6 @@ tags:
     description: Code search and linting
 
 paths:
-
   # ─── Core ──────────────────────────────────────────────────────────────────
 
   /health:
@@ -40,12 +39,12 @@ paths:
       description: Returns server status, uptime, active sessions, and enabled features.
       operationId: getHealth
       responses:
-        '200':
+        "200":
           description: Server is running
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HealthResponse'
+                $ref: "#/components/schemas/HealthResponse"
               example:
                 status: connected
                 uptime: 120
@@ -78,12 +77,12 @@ paths:
       description: Returns all supported models in OpenAI format.
       operationId: listModels
       responses:
-        '200':
+        "200":
           description: Model list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ModelListResponse'
+                $ref: "#/components/schemas/ModelListResponse"
               example:
                 object: list
                 data:
@@ -113,7 +112,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ChatCompletionRequest'
+              $ref: "#/components/schemas/ChatCompletionRequest"
             examples:
               basic:
                 summary: Simple non-streaming request
@@ -147,12 +146,12 @@ paths:
                     - role: user
                       content: What did I just say?
       responses:
-        '200':
+        "200":
           description: Chat completion response (or SSE stream if stream=true)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ChatCompletionResponse'
+                $ref: "#/components/schemas/ChatCompletionResponse"
               example:
                 id: chatcmpl-abc123
                 object: chat.completion
@@ -177,14 +176,14 @@ paths:
                 data: {"id":"chatcmpl-abc","object":"chat.completion.chunk","created":1700000000,"model":"antigravity/gemini-3-flash","choices":[{"index":0,"delta":{"role":"assistant","content":"Paris"},"finish_reason":null}]}
 
                 data: [DONE]
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-        '502':
-          $ref: '#/components/responses/UpstreamError'
-        '504':
-          $ref: '#/components/responses/GatewayTimeout'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+        "502":
+          $ref: "#/components/responses/UpstreamError"
+        "504":
+          $ref: "#/components/responses/GatewayTimeout"
 
   /v1/chat/sessions/{id}:
     delete:
@@ -201,7 +200,7 @@ paths:
             type: string
           example: cascade-session-abc123
       responses:
-        '200':
+        "200":
           description: Session deleted
           content:
             application/json:
@@ -214,8 +213,8 @@ paths:
                   cascade_id:
                     type: string
                     example: cascade-session-abc123
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "404":
+          $ref: "#/components/responses/NotFound"
 
   # ─── Git ───────────────────────────────────────────────────────────────────
 
@@ -232,7 +231,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CommitMessageRequest'
+              $ref: "#/components/schemas/CommitMessageRequest"
             examples:
               auto:
                 summary: Auto-detect staged diff
@@ -247,22 +246,22 @@ paths:
                     diff --git a/src/auth.ts b/src/auth.ts
                     +  const token = jwt.sign(payload, secret, { expiresIn: '15m' });
       responses:
-        '200':
+        "200":
           description: Generated commit message
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommitMessageResponse'
+                $ref: "#/components/schemas/CommitMessageResponse"
               example:
                 message: "feat(auth): add JWT token refresh endpoint"
                 subject: "feat(auth): add JWT token refresh endpoint"
                 body: "Implements /api/auth/refresh that issues new access tokens\nusing a valid refresh token stored in httpOnly cookie."
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '503':
-          $ref: '#/components/responses/ServiceUnavailable'
-        '502':
-          $ref: '#/components/responses/UpstreamError'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+        "502":
+          $ref: "#/components/responses/UpstreamError"
 
   /v1/git/repos:
     get:
@@ -271,12 +270,12 @@ paths:
       description: Scans `~/workspace` and returns all directories containing a `.git` folder.
       operationId: listRepos
       responses:
-        '200':
+        "200":
           description: List of repositories
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RepoListResponse'
+                $ref: "#/components/schemas/RepoListResponse"
               example:
                 repos:
                   - name: null-g-proxy
@@ -296,12 +295,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WorktreeRequest'
+              $ref: "#/components/schemas/WorktreeRequest"
             example:
               repo: myproject
               branch: feature/new-ui
       responses:
-        '200':
+        "200":
           description: Worktree created
           content:
             application/json:
@@ -314,10 +313,10 @@ paths:
                   branch:
                     type: string
                     example: feature/new-ui
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '500':
-          $ref: '#/components/responses/InternalError'
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
 
   # ─── Knowledge ─────────────────────────────────────────────────────────────
 
@@ -328,12 +327,12 @@ paths:
       description: Returns all knowledge items stored in `~/.gemini/antigravity/knowledge/`.
       operationId: listKnowledge
       responses:
-        '200':
+        "200":
           description: Knowledge item list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/KnowledgeListResponse'
+                $ref: "#/components/schemas/KnowledgeListResponse"
               example:
                 items:
                   - name: auth-notes
@@ -361,12 +360,12 @@ paths:
             type: string
           example: authentication
       responses:
-        '200':
+        "200":
           description: Search results
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/KnowledgeSearchResponse'
+                $ref: "#/components/schemas/KnowledgeSearchResponse"
               example:
                 query: authentication
                 results:
@@ -380,8 +379,8 @@ paths:
                     content: "# Auth Notes\n\nWe use JWT with 15min expiry..."
                     relevance: 6
                 total: 1
-        '400':
-          $ref: '#/components/responses/BadRequest'
+        "400":
+          $ref: "#/components/responses/BadRequest"
 
   /v1/knowledge/items:
     post:
@@ -397,17 +396,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateKnowledgeRequest'
+              $ref: "#/components/schemas/CreateKnowledgeRequest"
             example:
               name: auth-notes
               content: "# Auth Notes\n\nWe use JWT with 15min expiry and refresh tokens."
       responses:
-        '201':
+        "201":
           description: Knowledge item created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/KnowledgeItem'
+                $ref: "#/components/schemas/KnowledgeItem"
               example:
                 name: auth-notes
                 filename: auth-notes.md
@@ -415,14 +414,14 @@ paths:
                 size: 512
                 createdAt: 1700000000
                 modifiedAt: 1700000000
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '409':
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
           description: Knowledge item already exists
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 error:
                   message: Knowledge item "auth-notes.md" already exists. Use a different name.
@@ -437,10 +436,10 @@ paths:
       summary: Execute a shell command
       description: |
         Runs a shell command via `/bin/sh -c` and returns stdout, stderr, and exit code.
-        
+
         **Security:** A denylist blocks dangerous commands including `rm -rf`, `sudo`,
         `eval`, fork bombs, and network attack tools. Blocked commands return HTTP 403.
-        
+
         Maximum timeout is capped at **120 seconds**.
       operationId: execCommand
       requestBody:
@@ -448,7 +447,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ExecRequest'
+              $ref: "#/components/schemas/ExecRequest"
             examples:
               ls:
                 summary: List files
@@ -462,24 +461,24 @@ paths:
                   cwd: /Users/user/workspace/myproject
                   timeout: 60000
       responses:
-        '200':
+        "200":
           description: Command output
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExecResult'
+                $ref: "#/components/schemas/ExecResult"
               example:
                 stdout: "total 48\ndrwxr-xr-x  12 user staff  384 Jan 1 00:00 .\n"
                 stderr: ""
                 exitCode: 0
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '403':
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "403":
           description: Command blocked by security policy
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 error:
                   message: "Command rejected by security policy (matched: /\\brm\\s+-[^-]*r/i)"
@@ -494,12 +493,12 @@ paths:
         `node`, `tsx`, `python`, `antigravity`, `language_server`, `cascade`.
       operationId: listProcesses
       responses:
-        '200':
+        "200":
           description: Process list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProcessListResponse'
+                $ref: "#/components/schemas/ProcessListResponse"
               example:
                 processes:
                   - pid: 12345
@@ -550,12 +549,12 @@ paths:
             type: string
           example: "*.ts"
       responses:
-        '200':
+        "200":
           description: Search results
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CodeSearchResponse'
+                $ref: "#/components/schemas/CodeSearchResponse"
               example:
                 query: resolveInstance
                 workspace: /Users/user/workspace/null-g-proxy
@@ -566,8 +565,8 @@ paths:
                     text: "import { resolveInstance, type AntigravityInstance } from './discovery.js';"
                 total: 1
                 engine: ripgrep
-        '400':
-          $ref: '#/components/responses/BadRequest'
+        "400":
+          $ref: "#/components/responses/BadRequest"
 
   /v1/code/lint:
     get:
@@ -575,7 +574,7 @@ paths:
       summary: Lint a file
       description: |
         Lints the given file using **ESLint** (preferred) or **TypeScript compiler** (`tsc --noEmit`).
-        
+
         The project root is auto-detected by walking up the directory tree to find `package.json`.
         Returns an empty issues array if no linter is found.
       operationId: lintFile
@@ -588,12 +587,12 @@ paths:
             type: string
           example: /Users/user/workspace/null-g-proxy/src/index.ts
       responses:
-        '200':
+        "200":
           description: Lint results
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LintResponse'
+                $ref: "#/components/schemas/LintResponse"
               example:
                 file: /Users/user/workspace/null-g-proxy/src/index.ts
                 issues:
@@ -608,15 +607,13 @@ paths:
                   warnings: 1
                   total: 1
                 linter: eslint
-        '400':
-          $ref: '#/components/responses/BadRequest'
+        "400":
+          $ref: "#/components/responses/BadRequest"
 
 # ─── Components ──────────────────────────────────────────────────────────────
 
 components:
-
   schemas:
-
     # Core
 
     HealthResponse:
@@ -666,7 +663,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/ModelObject'
+            $ref: "#/components/schemas/ModelObject"
 
     ModelObject:
       type: object
@@ -717,7 +714,7 @@ components:
           type: array
           minItems: 1
           items:
-            $ref: '#/components/schemas/ChatMessage'
+            $ref: "#/components/schemas/ChatMessage"
         temperature:
           type: number
           minimum: 0
@@ -763,7 +760,7 @@ components:
               index:
                 type: integer
               message:
-                $ref: '#/components/schemas/ChatMessage'
+                $ref: "#/components/schemas/ChatMessage"
               finish_reason:
                 type: string
         usage:
@@ -827,7 +824,7 @@ components:
         repos:
           type: array
           items:
-            $ref: '#/components/schemas/RepoInfo'
+            $ref: "#/components/schemas/RepoInfo"
 
     WorktreeRequest:
       type: object
@@ -875,7 +872,7 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/KnowledgeItem'
+            $ref: "#/components/schemas/KnowledgeItem"
         total:
           type: integer
         directory:
@@ -883,7 +880,7 @@ components:
 
     KnowledgeSearchResult:
       allOf:
-        - $ref: '#/components/schemas/KnowledgeItem'
+        - $ref: "#/components/schemas/KnowledgeItem"
         - type: object
           properties:
             content:
@@ -901,7 +898,7 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/KnowledgeSearchResult'
+            $ref: "#/components/schemas/KnowledgeSearchResult"
         total:
           type: integer
 
@@ -976,7 +973,7 @@ components:
         processes:
           type: array
           items:
-            $ref: '#/components/schemas/ProcessInfo'
+            $ref: "#/components/schemas/ProcessInfo"
         total:
           type: integer
 
@@ -1005,7 +1002,7 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/SearchMatch'
+            $ref: "#/components/schemas/SearchMatch"
         total:
           type: integer
         engine:
@@ -1038,7 +1035,7 @@ components:
         issues:
           type: array
           items:
-            $ref: '#/components/schemas/LintIssue'
+            $ref: "#/components/schemas/LintIssue"
         summary:
           type: object
           properties:
@@ -1068,13 +1065,12 @@ components:
               type: string
 
   responses:
-
     BadRequest:
       description: Bad request — missing or invalid parameters
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
           example:
             error:
               message: "`q` query parameter is required"
@@ -1085,7 +1081,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
           example:
             error:
               message: Session not found
@@ -1096,7 +1092,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
           example:
             error:
               message: "Antigravity not available: connection refused"
@@ -1107,7 +1103,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
           example:
             error:
               message: "StartCascade failed: timeout"
@@ -1118,7 +1114,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
           example:
             error:
               message: "Polling failed: timeout after 120000ms"
@@ -1129,7 +1125,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
           example:
             error:
               message: "git worktree add failed: branch already exists"

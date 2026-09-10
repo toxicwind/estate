@@ -26,15 +26,16 @@ export interface AntigravityInstance {
 
 // ─── Env override ─────────────────────────────────────────────────────────────
 
-function rawInstanceFromEnv(): (Omit<AntigravityInstance, 'port'> & { portOverride: number }) | null {
-  const port = process.env['ANTIGRAVITY_PORT'];
-  const csrfToken = process.env['ANTIGRAVITY_CSRF_TOKEN'];
+function rawInstanceFromEnv():
+  (Omit<AntigravityInstance, "port"> & { portOverride: number }) | null {
+  const port = process.env["ANTIGRAVITY_PORT"];
+  const csrfToken = process.env["ANTIGRAVITY_CSRF_TOKEN"];
   if (!port || !csrfToken) return null;
 
   return {
     pid: 0,
     csrfToken,
-    workspace: process.env['ANTIGRAVITY_WORKSPACE'] ?? 'manual',
+    workspace: process.env["ANTIGRAVITY_WORKSPACE"] ?? "manual",
     extensionServerPort: parseInt(port, 10) - 1,
     portOverride: parseInt(port, 10),
   };
@@ -42,7 +43,7 @@ function rawInstanceFromEnv(): (Omit<AntigravityInstance, 'port'> & { portOverri
 
 // ─── Process list parsing ─────────────────────────────────────────────────────
 
-function parseLsLine(line: string): Omit<AntigravityInstance, 'port'> | null {
+function parseLsLine(line: string): Omit<AntigravityInstance, "port"> | null {
   const pidMatch = line.match(/^\S+\s+(\d+)/);
   const csrfMatch =
     line.match(/--?csrf_token[=\s]+([\w-]+)/) ??
@@ -60,26 +61,26 @@ function parseLsLine(line: string): Omit<AntigravityInstance, 'port'> | null {
     pid: parseInt(pidMatch[1]!, 10),
     csrfToken: csrfMatch[1]!,
     workspace: workspaceMatch
-      ? (workspaceMatch[1]!.split('/').pop() ?? 'unknown')
-      : 'unknown',
+      ? (workspaceMatch[1]!.split("/").pop() ?? "unknown")
+      : "unknown",
     extensionServerPort: parseInt(portMatch[1]!, 10),
   };
 }
 
-function discoverRawInstances(): Array<Omit<AntigravityInstance, 'port'>> {
+function discoverRawInstances(): Array<Omit<AntigravityInstance, "port">> {
   try {
-    const psOutput = execSync('ps aux', { encoding: 'utf-8', timeout: 5000 });
+    const psOutput = execSync("ps aux", { encoding: "utf-8", timeout: 5000 });
     const lines = psOutput
-      .split('\n')
+      .split("\n")
       .filter(
         (l) =>
           l.match(/language_server(?:_macos_arm|_linux|_windows)?\b/) ||
-          (l.includes('language_server') && l.includes('csrf_token')),
+          (l.includes("language_server") && l.includes("csrf_token")),
       );
 
     return lines
       .map(parseLsLine)
-      .filter((i): i is Omit<AntigravityInstance, 'port'> => i !== null);
+      .filter((i): i is Omit<AntigravityInstance, "port"> => i !== null);
   } catch {
     return [];
   }
@@ -115,9 +116,12 @@ async function probeHttpPort(
 
 function getListeningPortsForPid(pid: number): number[] {
   try {
-    const out = execSync(`lsof -i -P -n -p ${pid}`, { encoding: 'utf-8', timeout: 5000 });
+    const out = execSync(`lsof -i -P -n -p ${pid}`, {
+      encoding: "utf-8",
+      timeout: 5000,
+    });
     const ports: number[] = [];
-    for (const line of out.split('\n')) {
+    for (const line of out.split("\n")) {
       // Match lines like "127.0.0.1:61846 (LISTEN)"
       const m = line.match(/127\.0\.0\.1:(\d+)\s+\(LISTEN\)/);
       if (m) ports.push(parseInt(m[1]!, 10));
@@ -128,14 +132,19 @@ function getListeningPortsForPid(pid: number): number[] {
   }
 }
 
-async function findLsPort(extPort: number, csrfToken: string, pid?: number): Promise<number> {
+async function findLsPort(
+  extPort: number,
+  csrfToken: string,
+  pid?: number,
+): Promise<number> {
   // Strategy 1: probe all TCP LISTEN ports of the PID (most reliable)
   if (pid) {
     const pidPorts = getListeningPortsForPid(pid);
     if (pidPorts.length > 0) {
       const probes = pidPorts.map((port) =>
         probeHttpPort(port, csrfToken).then((ok) => {
-          if (!ok) return Promise.reject(new Error(`port ${port}: no response`));
+          if (!ok)
+            return Promise.reject(new Error(`port ${port}: no response`));
           return port;
         }),
       );
@@ -179,7 +188,9 @@ export async function resolveInstance(): Promise<AntigravityInstance> {
   const envRaw = rawInstanceFromEnv();
   if (envRaw) {
     const { portOverride, ...rest } = envRaw;
-    process.stderr.write(`[discovery] Using manual override: port=${portOverride}\n`);
+    process.stderr.write(
+      `[discovery] Using manual override: port=${portOverride}\n`,
+    );
     return { ...rest, port: portOverride };
   }
 
@@ -187,13 +198,13 @@ export async function resolveInstance(): Promise<AntigravityInstance> {
   const rawInstances = discoverRawInstances();
   if (rawInstances.length === 0) {
     throw new Error(
-      'No running Antigravity language server found. ' +
-      'Start Antigravity IDE or set ANTIGRAVITY_PORT + ANTIGRAVITY_CSRF_TOKEN env vars.',
+      "No running Antigravity language server found. " +
+        "Start Antigravity IDE or set ANTIGRAVITY_PORT + ANTIGRAVITY_CSRF_TOKEN env vars.",
     );
   }
 
-  const targetWorkspace = process.env['ANTIGRAVITY_WORKSPACE'];
-  let raw: Omit<AntigravityInstance, 'port'>;
+  const targetWorkspace = process.env["ANTIGRAVITY_WORKSPACE"];
+  let raw: Omit<AntigravityInstance, "port">;
 
   if (targetWorkspace) {
     const match = rawInstances.find((i) =>
@@ -208,7 +219,11 @@ export async function resolveInstance(): Promise<AntigravityInstance> {
     `[discovery] Found process pid=${raw.pid} workspace="${raw.workspace}" extPort=${raw.extensionServerPort}\n`,
   );
 
-  const lsPort = await findLsPort(raw.extensionServerPort, raw.csrfToken, raw.pid);
+  const lsPort = await findLsPort(
+    raw.extensionServerPort,
+    raw.csrfToken,
+    raw.pid,
+  );
   process.stderr.write(`[discovery] Resolved LS port: ${lsPort}\n`);
 
   return { ...raw, port: lsPort };

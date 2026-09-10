@@ -4,13 +4,13 @@ Optional **Funnel** edge. There is **no Caddy** (removed: wrong ports, path conf
 
 ## Surfaces (use directly)
 
-| Service | Port | URL |
-|---------|------|-----|
-| llama-swap (LLM + chat UI) | 25100 | `http://127.0.0.1:25100/ui/` · `/v1` |
-| rust-web (ops dashboard) | 25101 | `http://127.0.0.1:25101/` |
-| yote | 25102 | … |
-| openfang | 25103 | … |
-| rest | see `config/ports.env` | 25xxx SSOT |
+| Service                    | Port                   | URL                                  |
+| -------------------------- | ---------------------- | ------------------------------------ |
+| llama-swap (LLM + chat UI) | 25100                  | `http://127.0.0.1:25100/ui/` · `/v1` |
+| rust-web (ops dashboard)   | 25101                  | `http://127.0.0.1:25101/`            |
+| yote                       | 25102                  | …                                    |
+| openfang                   | 25103                  | …                                    |
+| rest                       | see `config/ports.env` | 25xxx SSOT                           |
 
 Over Tailscale: `http://<magicdns>:25100` etc. No reverse-proxy path soup.
 

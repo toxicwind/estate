@@ -6,16 +6,21 @@
  */
 
 const MESH_URL = process.env.MESH_URL || "http://127.0.0.1:25127/mcp";
-const HEALTH_URL = process.env.MESH_HEALTH_URL || "http://127.0.0.1:25127/health";
+const HEALTH_URL =
+  process.env.MESH_HEALTH_URL || "http://127.0.0.1:25127/health";
 
 async function probe() {
   console.log(`[mesh-probe] Probing health: ${HEALTH_URL}`);
   const t0 = performance.now();
   try {
-    const healthResp = await fetch(HEALTH_URL, { signal: AbortSignal.timeout(2000) });
+    const healthResp = await fetch(HEALTH_URL, {
+      signal: AbortSignal.timeout(2000),
+    });
     const healthText = await healthResp.text();
     const healthMs = (performance.now() - t0).toFixed(1);
-    console.log(`✅ Health check: ${healthResp.status} (${healthMs}ms) -> ${healthText.trim()}`);
+    console.log(
+      `✅ Health check: ${healthResp.status} (${healthMs}ms) -> ${healthText.trim()}`,
+    );
   } catch (err) {
     console.error(`❌ Health check failed:`, err);
     process.exit(1);
@@ -49,8 +54,12 @@ async function probe() {
     const rpcData = await rpcResp.json();
     console.log(`✅ JSON-RPC initialize: ${rpcResp.status} (${rpcMs}ms)`);
     console.log(`   Protocol Version: ${rpcData?.result?.protocolVersion}`);
-    console.log(`   Server Name: ${rpcData?.result?.serverInfo?.name} (v${rpcData?.result?.serverInfo?.version})`);
-    console.log(`   Capabilities: ${JSON.stringify(rpcData?.result?.capabilities)}`);
+    console.log(
+      `   Server Name: ${rpcData?.result?.serverInfo?.name} (v${rpcData?.result?.serverInfo?.version})`,
+    );
+    console.log(
+      `   Capabilities: ${JSON.stringify(rpcData?.result?.capabilities)}`,
+    );
   } catch (err) {
     console.error(`❌ JSON-RPC initialize failed:`, err);
     process.exit(1);

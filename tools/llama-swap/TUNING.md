@@ -4,12 +4,12 @@ Audit date: 2026-07-28 · Auditor: agent deep-tune pass · Hardware: RTX 3090 24
 
 ## Fixed in this pass (verifiable defects)
 
-| # | Location | Defect | Fix |
-|---|----------|--------|-----|
-| 1 | `models.beellama/gemma4-31b-it-dflash-Q4_K_M.cmd` | `${BEELLAMA_BIN}${BEELLAMA_BIN}` — binary path doubled, command could never exec | Single `${BEELLAMA_BIN}` |
-| 2 | `macros.CTX_160K` | Referenced undefined `${CS_160K}`. Latent: macro values are only expanded into model cmds that use them, so config loaded today, but any future use of `CTX_160K` would fail config load with "unknown macro" | Added `CS_160K: "163840"` to the context-size ladder |
-| 3 | `macros.SPEC_DFLASH_GEMMA` | `--spec-draft-ngl all --spec-dflash-cross-ctx 1024` duplicated back-to-back | Deduplicated |
-| 4 | `models.gemma-4-12b-unified.cmd` | Redundant `--no-warmup` (already in `FORK_TURBO`) | Removed duplicate flag |
+| #   | Location                                          | Defect                                                                                                                                                                                                        | Fix                                                  |
+| --- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| 1   | `models.beellama/gemma4-31b-it-dflash-Q4_K_M.cmd` | `${BEELLAMA_BIN}${BEELLAMA_BIN}` — binary path doubled, command could never exec                                                                                                                              | Single `${BEELLAMA_BIN}`                             |
+| 2   | `macros.CTX_160K`                                 | Referenced undefined `${CS_160K}`. Latent: macro values are only expanded into model cmds that use them, so config loaded today, but any future use of `CTX_160K` would fail config load with "unknown macro" | Added `CS_160K: "163840"` to the context-size ladder |
+| 3   | `macros.SPEC_DFLASH_GEMMA`                        | `--spec-draft-ngl all --spec-dflash-cross-ctx 1024` duplicated back-to-back                                                                                                                                   | Deduplicated                                         |
+| 4   | `models.gemma-4-12b-unified.cmd`                  | Redundant `--no-warmup` (already in `FORK_TURBO`)                                                                                                                                                             | Removed duplicate flag                               |
 
 ## Verified healthy (no change needed)
 
