@@ -1,0 +1,1472 @@
+# Engine Audit — Sovereign Fork vs Upstream
+
+Generated: 2026-09-09T03:02:59.999Z
+Total differences: 1451
+
+## Summary
+
+| Type | Count |
+|------|-------|
+| Only in engine (sovereign) | 196 |
+| Only in vendor (upstream) | 0 |
+| Modified | 1255 |
+
+## Sovereign Additions (only in engine)
+
+- `packages/ai/src/models.ts`
+- `packages/ai/src/providers/data`
+- `packages/ai/src/registry/aiand.ts`
+- `packages/ai/src/registry/aimlapi.ts`
+- `packages/ai/src/registry/alibaba-coding-plan.ts`
+- `packages/ai/src/registry/alibaba-token-plan.ts`
+- `packages/ai/src/registry/anthropic.ts`
+- `packages/ai/src/registry/api-key-login.ts`
+- `packages/ai/src/registry/azure.ts`
+- `packages/ai/src/registry/baseten.ts`
+- `packages/ai/src/registry/cerebras.ts`
+- `packages/ai/src/registry/coreweave.ts`
+- `packages/ai/src/registry/cursor.ts`
+- `packages/ai/src/registry/deepinfra.ts`
+- `packages/ai/src/registry/deepseek.ts`
+- `packages/ai/src/registry/devin.ts`
+- `packages/ai/src/registry/exa.ts`
+- `packages/ai/src/registry/firepass.ts`
+- `packages/ai/src/registry/fireworks.ts`
+- `packages/ai/src/registry/github-copilot.ts`
+- `packages/ai/src/registry/gitlab-duo.ts`
+- `packages/ai/src/registry/gitlab-duo-workflow.ts`
+- `packages/ai/src/registry/gmi-cloud.ts`
+- `packages/ai/src/registry/google-antigravity.ts`
+- `packages/ai/src/registry/google-gemini-cli.ts`
+- `packages/ai/src/registry/google.ts`
+- `packages/ai/src/registry/google-vertex.ts`
+- `packages/ai/src/registry/huggingface.ts`
+- `packages/ai/src/registry/kagi.ts`
+- `packages/ai/src/registry/kilo.ts`
+- `packages/ai/src/registry/kimi-code.ts`
+- `packages/ai/src/registry/litellm.ts`
+- `packages/ai/src/registry/llama-cpp.ts`
+- `packages/ai/src/registry/lm-studio.ts`
+- `packages/ai/src/registry/meta.ts`
+- `packages/ai/src/registry/minimax-code-cn.ts`
+- `packages/ai/src/registry/minimax-code.ts`
+- `packages/ai/src/registry/minimax.ts`
+- `packages/ai/src/registry/mistral.ts`
+- `packages/ai/src/registry/moonshot.ts`
+- `packages/ai/src/registry/nanogpt.ts`
+- `packages/ai/src/registry/novita.ts`
+- `packages/ai/src/registry/nvidia.ts`
+- `packages/ai/src/registry/oauth/devin.ts`
+- `packages/ai/src/registry/oauth/gitlab-duo-workflow.ts`
+- `packages/ai/src/registry/oauth/minimax-code.ts`
+- `packages/ai/src/registry/oauth/opencode.ts`
+- `packages/ai/src/registry/oauth/openrouter.ts`
+- `packages/ai/src/registry/oauth/wafer.ts`
+- `packages/ai/src/registry/ollama-cloud.ts`
+- `packages/ai/src/registry/ollama.ts`
+- `packages/ai/src/registry/openai-codex-device.ts`
+- `packages/ai/src/registry/openai-codex.ts`
+- `packages/ai/src/registry/openai.ts`
+- `packages/ai/src/registry/opencode-go.ts`
+- `packages/ai/src/registry/opencode-zen.ts`
+- `packages/ai/src/registry/openrouter.ts`
+- `packages/ai/src/registry/parallel.ts`
+- `packages/ai/src/registry/perplexity.ts`
+- `packages/ai/src/registry/qianfan.ts`
+- `packages/ai/src/registry/qwen-portal.ts`
+- `packages/ai/src/registry/sakana.ts`
+- `packages/ai/src/registry/siliconflow-cn.ts`
+- `packages/ai/src/registry/siliconflow.ts`
+- `packages/ai/src/registry/synthetic.ts`
+- `packages/ai/src/registry/tavily.ts`
+- `packages/ai/src/registry/together.ts`
+- `packages/ai/src/registry/umans.ts`
+- `packages/ai/src/registry/venice.ts`
+- `packages/ai/src/registry/vercel-ai-gateway.ts`
+- `packages/ai/src/registry/vllm.ts`
+- `packages/ai/src/registry/wafer-serverless.ts`
+- `packages/ai/src/registry/xai-oauth.ts`
+- `packages/ai/src/registry/xai.ts`
+- `packages/ai/src/registry/xiaomi-token-plan-ams.ts`
+- `packages/ai/src/registry/xiaomi-token-plan-cn.ts`
+- `packages/ai/src/registry/xiaomi-token-plan-sgp.ts`
+- `packages/ai/src/registry/xiaomi.ts`
+- `packages/ai/src/registry/yolo-auto.ts`
+- `packages/ai/src/registry/zai.ts`
+- `packages/ai/src/registry/zenmux.ts`
+- `packages/ai/src/registry/zhipu-coding-plan.ts`
+- `packages/ai/src/utils/retry.ts`
+- `packages/ai/test/copilot-retry.test.ts`
+- `packages/ai/test/github-copilot-anthropic-fleet-skew.test.ts`
+- `packages/browser-relay/extension/background.js`
+- `packages/catalog/src/compat/bedrock.ts`
+- `packages/catalog/src/compat/devin.ts`
+- `packages/catalog/src/identity/classify.ts`
+- `packages/catalog/src/identity/family.ts`
+- `packages/catalog/src/identity/markers.ts`
+- `packages/catalog/src/openai-pricing.ts`
+- `packages/catalog/src/variant-collapse.ts`
+- `packages/catalog/test/identity-family.test.ts`
+- `packages/catalog/test/variant-collapse.test.ts`
+- `packages/coding-agent/examples/custom-tools/hello/index.js`
+- `packages/coding-agent/examples/extensions/api-demo.js`
+- `packages/coding-agent/examples/extensions/chalk-logger.js`
+- `packages/coding-agent/examples/extensions/hello.js`
+- `packages/coding-agent/examples/extensions/pirate.js`
+- `packages/coding-agent/examples/extensions/plan-mode.js`
+- `packages/coding-agent/examples/extensions/reload-runtime.js`
+- `packages/coding-agent/examples/extensions/thinking-note.js`
+- `packages/coding-agent/examples/extensions/tools.js`
+- `packages/coding-agent/examples/extensions/with-deps/index.js`
+- `packages/coding-agent/examples/hooks/auto-commit-on-exit.js`
+- `packages/coding-agent/examples/hooks/confirm-destructive.js`
+- `packages/coding-agent/examples/hooks/custom-compaction.js`
+- `packages/coding-agent/examples/hooks/dirty-repo-guard.js`
+- `packages/coding-agent/examples/hooks/file-trigger.js`
+- `packages/coding-agent/examples/hooks/git-checkpoint.js`
+- `packages/coding-agent/examples/hooks/handoff.js`
+- `packages/coding-agent/examples/hooks/permission-gate.js`
+- `packages/coding-agent/examples/hooks/protected-paths.js`
+- `packages/coding-agent/examples/hooks/qna.js`
+- `packages/coding-agent/examples/hooks/status-line.js`
+- `packages/coding-agent/examples/sdk/01-minimal.js`
+- `packages/coding-agent/examples/sdk/02-custom-model.js`
+- `packages/coding-agent/examples/sdk/03-custom-prompt.js`
+- `packages/coding-agent/examples/sdk/04-skills.js`
+- `packages/coding-agent/examples/sdk/06-extensions.js`
+- `packages/coding-agent/examples/sdk/06-hooks.js`
+- `packages/coding-agent/examples/sdk/07-context-files.js`
+- `packages/coding-agent/examples/sdk/08-prompt-templates.js`
+- `packages/coding-agent/examples/sdk/08-slash-commands.js`
+- `packages/coding-agent/examples/sdk/09-api-keys-and-oauth.js`
+- `packages/coding-agent/examples/sdk/11-sessions.js`
+- `packages/coding-agent/examples/sdk/12-redis-sessions.js`
+- `packages/coding-agent/examples/sdk/13-sql-sessions.js`
+- `packages/coding-agent/src/edit/apply-patch`
+- `packages/coding-agent/src/edit/diff.ts`
+- `packages/coding-agent/src/edit/edit-clipboard.ts`
+- `packages/coding-agent/src/edit/file-snapshot-store.ts`
+- `packages/coding-agent/src/edit/hashline`
+- `packages/coding-agent/src/edit/modes`
+- `packages/coding-agent/src/edit/notebook.ts`
+- `packages/coding-agent/src/edit/read-file.ts`
+- `packages/coding-agent/src/edit/result.ts`
+- `packages/coding-agent/src/edit/sloppy.lark`
+- `packages/coding-agent/src/edit/sloppy.md`
+- `packages/coding-agent/src/edit/sloppy.test.ts`
+- `packages/coding-agent/src/edit/sloppy.ts`
+- `packages/coding-agent/src/edit/snapshot-details.ts`
+- `packages/coding-agent/src/edit/streaming.ts`
+- `packages/coding-agent/src/eval/concurrency-bridge.ts`
+- `packages/coding-agent/src/eval/jl`
+- `packages/coding-agent/src/eval/rb`
+- `packages/coding-agent/src/eval/runtime-env.ts`
+- `packages/coding-agent/src/modes/components/user-message-selector.ts`
+- `packages/coding-agent/src/prompts/agents/designer.md`
+- `packages/coding-agent/src/prompts/tools/apply-patch.md`
+- `packages/coding-agent/src/prompts/tools/patch.md`
+- `packages/coding-agent/src/prompts/tools/replace.md`
+- `packages/coding-agent/src/tools/eval-format/julia.ts`
+- `packages/coding-agent/src/tools/eval-format/ruby.ts`
+- `packages/coding-agent/src/utils/git.ts`
+- `packages/coding-agent/src/utils/jj.ts`
+- `packages/coding-agent/test/core/apply-patch-adverserial.test.ts`
+- `packages/coding-agent/test/core/apply-patch-multi-file.test.ts`
+- `packages/coding-agent/test/core/apply-patch-regression.test.ts`
+- `packages/coding-agent/test/core/apply-patch.test.ts`
+- `packages/coding-agent/test/core/block-replace.test.ts`
+- `packages/coding-agent/test/core/hashline-loop-guard.test.ts`
+- `packages/coding-agent/test/core/hashline.test.ts`
+- `packages/coding-agent/test/core/ruby-runner.integration.test.ts`
+- `packages/coding-agent/test/discovery/codex-hooks-discovery.test.ts`
+- `packages/coding-agent/test/discovery/codex-mcp-cwd.test.ts`
+- `packages/coding-agent/test/edit`
+- `packages/coding-agent/test/edit-diff.test.ts`
+- `packages/coding-agent/test/edit-per-file-diff-content.test.ts`
+- `packages/coding-agent/test/edit-snapshot-details.test.ts`
+- `packages/coding-agent/test/edit-streaming-preview.test.ts`
+- `packages/coding-agent/test/eval/julia-prelude.test.ts`
+- `packages/coding-agent/test/fixtures/apply-patch`
+- `packages/coding-agent/test/git-diff-truncation.test.ts`
+- `packages/coding-agent/test/git-missing-binary.test.ts`
+- `packages/coding-agent/test/git-process-config.test.ts`
+- `packages/coding-agent/test/history-storage-drain.test.ts`
+- `packages/coding-agent/test/modes/components/status-line/component.jj-cache.test.ts`
+- `packages/coding-agent/test/modes/components/user-message-selector.test.ts`
+- `packages/coding-agent/test/plan-mode/approved-plan-prompt.test.ts`
+- `packages/coding-agent/test/system-prompt.test.ts`
+- `packages/coding-agent/test/tiny-title-generator.test.ts`
+- `packages/coding-agent/test/tools/edit-diff.test.ts`
+- `packages/coding-agent/test/tools/eval-format-julia.test.ts`
+- `packages/coding-agent/test/tools/eval-format-ruby.test.ts`
+- `packages/hashline`
+- `packages/metaharness/adapters/edit/cli.js`
+- `packages/metaharness/adapters/edit/live-progress.js`
+- `packages/metaharness/adapters/edit/report.js`
+- `packages/metaharness/adapters/edit/runner.js`
+- `packages/metaharness/adapters/edit/runner.test.js`
+- `packages/snapcompact/research/parity_render.js`
+- `packages/snapcompact/research/render_pages.js`
+- `packages/stats/build.js`
+- `packages/tui/test/output-backlog-guard.test.ts`
+
+## Upstream Only (not in engine)
+
+
+## Modified Files
+
+- vendor: `vendor/oh-my-pi/packages/agent/CHANGELOG.md` → engine: `packages/agent/CHANGELOG.md`
+- vendor: `vendor/oh-my-pi/packages/agent/package.json` → engine: `packages/agent/package.json`
+- vendor: `vendor/oh-my-pi/packages/agent/src/agent-loop.ts` → engine: `packages/agent/src/agent-loop.ts`
+- vendor: `vendor/oh-my-pi/packages/agent/src/agent.ts` → engine: `packages/agent/src/agent.ts`
+- vendor: `vendor/oh-my-pi/packages/agent/src/compaction/compaction.ts` → engine: `packages/agent/src/compaction/compaction.ts`
+- vendor: `vendor/oh-my-pi/packages/agent/src/compaction/compaction-v2-streaming.ts` → engine: `packages/agent/src/compaction/compaction-v2-streaming.ts`
+- vendor: `vendor/oh-my-pi/packages/agent/src/compaction/messages.ts` → engine: `packages/agent/src/compaction/messages.ts`
+- vendor: `vendor/oh-my-pi/packages/agent/src/compaction/openai.ts` → engine: `packages/agent/src/compaction/openai.ts`
+- vendor: `vendor/oh-my-pi/packages/agent/src/compaction/pruning.ts` → engine: `packages/agent/src/compaction/pruning.ts`
+- vendor: `vendor/oh-my-pi/packages/agent/src/compaction/shake.ts` → engine: `packages/agent/src/compaction/shake.ts`
+- vendor: `vendor/oh-my-pi/packages/agent/src/tokenizer.ts` → engine: `packages/agent/src/tokenizer.ts`
+- vendor: `vendor/oh-my-pi/packages/agent/src/types.ts` → engine: `packages/agent/src/types.ts`
+- vendor: `vendor/oh-my-pi/packages/agent/test/agent-loop.test.ts` → engine: `packages/agent/test/agent-loop.test.ts`
+- vendor: `vendor/oh-my-pi/packages/agent/test/agent.test.ts` → engine: `packages/agent/test/agent.test.ts`
+- vendor: `vendor/oh-my-pi/packages/agent/test/remote-compaction.test.ts` → engine: `packages/agent/test/remote-compaction.test.ts`
+- vendor: `vendor/oh-my-pi/packages/agent/test/run-summary.test.ts` → engine: `packages/agent/test/run-summary.test.ts`
+- vendor: `vendor/oh-my-pi/packages/agent/test/shake.test.ts` → engine: `packages/agent/test/shake.test.ts`
+- vendor: `vendor/oh-my-pi/packages/agent/test/soft-tool-requirement.test.ts` → engine: `packages/agent/test/soft-tool-requirement.test.ts`
+- vendor: `vendor/oh-my-pi/packages/agent/test/tokenizer.test.ts` → engine: `packages/agent/test/tokenizer.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/CHANGELOG.md` → engine: `packages/ai/CHANGELOG.md`
+- vendor: `vendor/oh-my-pi/packages/ai/package.json` → engine: `packages/ai/package.json`
+- vendor: `vendor/oh-my-pi/packages/ai/README.md` → engine: `packages/ai/README.md`
+- vendor: `vendor/oh-my-pi/packages/ai/src/auth/sqlite-credential-store.ts` → engine: `packages/ai/src/auth/sqlite-credential-store.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/auth-broker/client.ts` → engine: `packages/ai/src/auth-broker/client.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/auth-broker/remote-store.ts` → engine: `packages/ai/src/auth-broker/remote-store.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/auth-broker/server.ts` → engine: `packages/ai/src/auth-broker/server.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/auth-gateway/server.ts` → engine: `packages/ai/src/auth-gateway/server.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/auth-gateway/types.ts` → engine: `packages/ai/src/auth-gateway/types.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/auth-storage.ts` → engine: `packages/ai/src/auth-storage.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/dialect/deepseek.ts` → engine: `packages/ai/src/dialect/deepseek.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/dialect/gemini.ts` → engine: `packages/ai/src/dialect/gemini.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/dialect/gemma.ts` → engine: `packages/ai/src/dialect/gemma.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/dialect/glm.ts` → engine: `packages/ai/src/dialect/glm.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/dialect/harmony.ts` → engine: `packages/ai/src/dialect/harmony.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/dialect/kimi.ts` → engine: `packages/ai/src/dialect/kimi.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/dialect/owned-stream.ts` → engine: `packages/ai/src/dialect/owned-stream.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/dialect/rendering.ts` → engine: `packages/ai/src/dialect/rendering.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/dialect/thinking.ts` → engine: `packages/ai/src/dialect/thinking.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/dialect/types.ts` → engine: `packages/ai/src/dialect/types.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/error/auth-classify.ts` → engine: `packages/ai/src/error/auth-classify.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/error/classes.ts` → engine: `packages/ai/src/error/classes.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/error/flags.ts` → engine: `packages/ai/src/error/flags.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/error/format.ts` → engine: `packages/ai/src/error/format.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/error/rate-limit.ts` → engine: `packages/ai/src/error/rate-limit.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/error/retryable.ts` → engine: `packages/ai/src/error/retryable.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/index.ts` → engine: `packages/ai/src/index.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/amazon-bedrock.ts` → engine: `packages/ai/src/providers/amazon-bedrock.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/anthropic-client.ts` → engine: `packages/ai/src/providers/anthropic-client.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/anthropic-messages-server-schema.ts` → engine: `packages/ai/src/providers/anthropic-messages-server-schema.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/anthropic-messages-server.ts` → engine: `packages/ai/src/providers/anthropic-messages-server.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/anthropic.ts` → engine: `packages/ai/src/providers/anthropic.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/anthropic-wire.ts` → engine: `packages/ai/src/providers/anthropic-wire.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/aws-credentials.ts` → engine: `packages/ai/src/providers/aws-credentials.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/azure-openai-responses.ts` → engine: `packages/ai/src/providers/azure-openai-responses.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/claude-code-fingerprint.ts` → engine: `packages/ai/src/providers/claude-code-fingerprint.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/cowork-fetch.ts` → engine: `packages/ai/src/providers/cowork-fetch.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/cursor.ts` → engine: `packages/ai/src/providers/cursor.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/devin.ts` → engine: `packages/ai/src/providers/devin.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/github-copilot-headers.ts` → engine: `packages/ai/src/providers/github-copilot-headers.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/gitlab-duo.ts` → engine: `packages/ai/src/providers/gitlab-duo.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/gitlab-duo-workflow.ts` → engine: `packages/ai/src/providers/gitlab-duo-workflow.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/google-gemini-cli.ts` → engine: `packages/ai/src/providers/google-gemini-cli.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/google-shared.ts` → engine: `packages/ai/src/providers/google-shared.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/google.ts` → engine: `packages/ai/src/providers/google.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/google-vertex.ts` → engine: `packages/ai/src/providers/google-vertex.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/kimi.ts` → engine: `packages/ai/src/providers/kimi.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/mock.ts` → engine: `packages/ai/src/providers/mock.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/ollama.ts` → engine: `packages/ai/src/providers/ollama.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/openai-anthropic-shim.ts` → engine: `packages/ai/src/providers/openai-anthropic-shim.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/openai-codex/request-transformer.ts` → engine: `packages/ai/src/providers/openai-codex/request-transformer.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/openai-codex-responses.ts` → engine: `packages/ai/src/providers/openai-codex-responses.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/openai-completions.ts` → engine: `packages/ai/src/providers/openai-completions.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/openai-data-uri.ts` → engine: `packages/ai/src/providers/openai-data-uri.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/openai-responses.ts` → engine: `packages/ai/src/providers/openai-responses.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/openai-shared.ts` → engine: `packages/ai/src/providers/openai-shared.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/pi-native-client.ts` → engine: `packages/ai/src/providers/pi-native-client.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/pi-native-server.ts` → engine: `packages/ai/src/providers/pi-native-server.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/transform-messages.ts` → engine: `packages/ai/src/providers/transform-messages.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/providers/vision-guard.ts` → engine: `packages/ai/src/providers/vision-guard.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/amazon-bedrock.ts` → engine: `packages/ai/src/registry/amazon-bedrock.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/api-key-validation.ts` → engine: `packages/ai/src/registry/api-key-validation.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/bedrock-mantle.ts` → engine: `packages/ai/src/registry/bedrock-mantle.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/cloudflare-ai-gateway.ts` → engine: `packages/ai/src/registry/cloudflare-ai-gateway.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/oauth/anthropic.ts` → engine: `packages/ai/src/registry/oauth/anthropic.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/oauth/cursor.ts` → engine: `packages/ai/src/registry/oauth/cursor.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/oauth/device-code.ts` → engine: `packages/ai/src/registry/oauth/device-code.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/oauth/github-copilot.ts` → engine: `packages/ai/src/registry/oauth/github-copilot.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/oauth/gitlab-duo.ts` → engine: `packages/ai/src/registry/oauth/gitlab-duo.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/oauth/google-antigravity.ts` → engine: `packages/ai/src/registry/oauth/google-antigravity.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/oauth/google-gemini-cli.ts` → engine: `packages/ai/src/registry/oauth/google-gemini-cli.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/oauth/google-oauth-shared.ts` → engine: `packages/ai/src/registry/oauth/google-oauth-shared.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/oauth/index.ts` → engine: `packages/ai/src/registry/oauth/index.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/oauth/kimi.ts` → engine: `packages/ai/src/registry/oauth/kimi.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/oauth/oauth.html` → engine: `packages/ai/src/registry/oauth/oauth.html`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/oauth/openai-codex.ts` → engine: `packages/ai/src/registry/oauth/openai-codex.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/oauth/perplexity.ts` → engine: `packages/ai/src/registry/oauth/perplexity.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/oauth/xai-oauth.ts` → engine: `packages/ai/src/registry/oauth/xai-oauth.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/oauth/xiaomi.ts` → engine: `packages/ai/src/registry/oauth/xiaomi.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/oauth/zai.ts` → engine: `packages/ai/src/registry/oauth/zai.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/registry.ts` → engine: `packages/ai/src/registry/registry.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/registry/types.ts` → engine: `packages/ai/src/registry/types.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/stream.ts` → engine: `packages/ai/src/stream.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/types.ts` → engine: `packages/ai/src/types.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/usage/claude.ts` → engine: `packages/ai/src/usage/claude.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/usage/gemini.ts` → engine: `packages/ai/src/usage/gemini.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/usage/github-copilot.ts` → engine: `packages/ai/src/usage/github-copilot.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/usage/google-antigravity.ts` → engine: `packages/ai/src/usage/google-antigravity.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/usage/openai-codex.ts` → engine: `packages/ai/src/usage/openai-codex.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/usage.ts` → engine: `packages/ai/src/usage.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/utils/aws-profile.ts` → engine: `packages/ai/src/utils/aws-profile.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/utils/empty-completion-retry.ts` → engine: `packages/ai/src/utils/empty-completion-retry.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/utils/harmony-leak.ts` → engine: `packages/ai/src/utils/harmony-leak.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/utils/http-inspector.ts` → engine: `packages/ai/src/utils/http-inspector.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/utils/leaked-thinking-stream.ts` → engine: `packages/ai/src/utils/leaked-thinking-stream.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/utils/proxy.ts` → engine: `packages/ai/src/utils/proxy.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/utils/request-debug.ts` → engine: `packages/ai/src/utils/request-debug.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/utils/schema/fields.ts` → engine: `packages/ai/src/utils/schema/fields.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/utils/schema/normalize.ts` → engine: `packages/ai/src/utils/schema/normalize.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/utils/schema/strict-tool-validation.ts` → engine: `packages/ai/src/utils/schema/strict-tool-validation.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/utils/stream-markup-healing.ts` → engine: `packages/ai/src/utils/stream-markup-healing.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/utils/thinking-loop.ts` → engine: `packages/ai/src/utils/thinking-loop.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/utils/tool-call-loop-guard.ts` → engine: `packages/ai/src/utils/tool-call-loop-guard.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/src/utils.ts` → engine: `packages/ai/src/utils.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/alibaba-endpoint-selection.test.ts` → engine: `packages/ai/test/alibaba-endpoint-selection.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/alibaba-token-plan.test.ts` → engine: `packages/ai/test/alibaba-token-plan.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/anthropic-alignment.test.ts` → engine: `packages/ai/test/anthropic-alignment.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/anthropic-fable-request-shaping.test.ts` → engine: `packages/ai/test/anthropic-fable-request-shaping.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/anthropic-many-image-resize.test.ts` → engine: `packages/ai/test/anthropic-many-image-resize.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/anthropic-mid-conversation-system.test.ts` → engine: `packages/ai/test/anthropic-mid-conversation-system.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/anthropic-oauth.test.ts` → engine: `packages/ai/test/anthropic-oauth.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/anthropic-prior-turn-thinking.test.ts` → engine: `packages/ai/test/anthropic-prior-turn-thinking.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/anthropic-retry.test.ts` → engine: `packages/ai/test/anthropic-retry.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/anthropic-server-side-fallback.test.ts` → engine: `packages/ai/test/anthropic-server-side-fallback.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/anthropic-signature-auto-mark.test.ts` → engine: `packages/ai/test/anthropic-signature-auto-mark.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/anthropic-signature-hint.test.ts` → engine: `packages/ai/test/anthropic-signature-hint.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/anthropic-stream-timeout.test.ts` → engine: `packages/ai/test/anthropic-stream-timeout.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/api-key-validation.test.ts` → engine: `packages/ai/test/api-key-validation.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/apply-patch-freeform.test.ts` → engine: `packages/ai/test/apply-patch-freeform.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/auth-broker-wire-schema-contract.test.ts` → engine: `packages/ai/test/auth-broker-wire-schema-contract.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/auth-gateway-anthropic-messages.test.ts` → engine: `packages/ai/test/auth-gateway-anthropic-messages.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/auth-gateway-openai-chat.test.ts` → engine: `packages/ai/test/auth-gateway-openai-chat.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/auth-gateway-pi-native.test.ts` → engine: `packages/ai/test/auth-gateway-pi-native.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/auth-gateway-response-headers.test.ts` → engine: `packages/ai/test/auth-gateway-response-headers.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/auth-retry.test.ts` → engine: `packages/ai/test/auth-retry.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/auth-storage-antigravity-selection.test.ts` → engine: `packages/ai/test/auth-storage-antigravity-selection.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/auth-storage-api-key-login.test.ts` → engine: `packages/ai/test/auth-storage-api-key-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/auth-storage-codex-selection.test.ts` → engine: `packages/ai/test/auth-storage-codex-selection.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/auth-storage-credential-disabled-event.test.ts` → engine: `packages/ai/test/auth-storage-credential-disabled-event.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/auth-storage-email-dedupe.test.ts` → engine: `packages/ai/test/auth-storage-email-dedupe.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/auth-storage-force-refresh-rotate.test.ts` → engine: `packages/ai/test/auth-storage-force-refresh-rotate.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/auth-storage-manual-code-gate.test.ts` → engine: `packages/ai/test/auth-storage-manual-code-gate.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/auth-storage-oauth-refresh-race.test.ts` → engine: `packages/ai/test/auth-storage-oauth-refresh-race.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/auth-storage-zai-api-key-selection.test.ts` → engine: `packages/ai/test/auth-storage-zai-api-key-selection.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/azure-openai-responses-stream.test.ts` → engine: `packages/ai/test/azure-openai-responses-stream.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/bedrock-caller-headers.test.ts` → engine: `packages/ai/test/bedrock-caller-headers.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/bedrock-on-payload.test.ts` → engine: `packages/ai/test/bedrock-on-payload.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/bedrock-openai-reasoning.test.ts` → engine: `packages/ai/test/bedrock-openai-reasoning.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/callback-server-launch-route.test.ts` → engine: `packages/ai/test/callback-server-launch-route.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/coreweave-login.test.ts` → engine: `packages/ai/test/coreweave-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/cursor-exec-modern.test.ts` → engine: `packages/ai/test/cursor-exec-modern.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/cursor-mcp-tool-catalog.test.ts` → engine: `packages/ai/test/cursor-mcp-tool-catalog.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/deepinfra-login.test.ts` → engine: `packages/ai/test/deepinfra-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/deepinfra-reasoning-contract.test.ts` → engine: `packages/ai/test/deepinfra-reasoning-contract.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/devin-login.test.ts` → engine: `packages/ai/test/devin-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/duplicate-tool-results.test.ts` → engine: `packages/ai/test/duplicate-tool-results.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/exa-login.test.ts` → engine: `packages/ai/test/exa-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/fireworks-login.test.ts` → engine: `packages/ai/test/fireworks-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/fixtures/oauth-barrel-import.ts` → engine: `packages/ai/test/fixtures/oauth-barrel-import.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/github-copilot-anthropic-auth.test.ts` → engine: `packages/ai/test/github-copilot-anthropic-auth.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/github-copilot-error.test.ts` → engine: `packages/ai/test/github-copilot-error.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/github-copilot-headers.test.ts` → engine: `packages/ai/test/github-copilot-headers.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/github-copilot-login.test.ts` → engine: `packages/ai/test/github-copilot-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/github-copilot-openai-base-url.test.ts` → engine: `packages/ai/test/github-copilot-openai-base-url.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/gitlab-duo-cache-key.test.ts` → engine: `packages/ai/test/gitlab-duo-cache-key.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/gitlab-duo-workflow-oauth.test.ts` → engine: `packages/ai/test/gitlab-duo-workflow-oauth.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/google-antigravity-oauth.test.ts` → engine: `packages/ai/test/google-antigravity-oauth.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/google-antigravity-usage.test.ts` → engine: `packages/ai/test/google-antigravity-usage.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/google-function-calling-matching.test.ts` → engine: `packages/ai/test/google-function-calling-matching.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/google-gemini-cli-alignment.test.ts` → engine: `packages/ai/test/google-gemini-cli-alignment.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/google-oauth-hostname.test.ts` → engine: `packages/ai/test/google-oauth-hostname.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/google-oauth-validation-url.test.ts` → engine: `packages/ai/test/google-oauth-validation-url.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/harmony-leak.test.ts` → engine: `packages/ai/test/harmony-leak.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/http-inspector.test.ts` → engine: `packages/ai/test/http-inspector.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/image-url-parts.test.ts` → engine: `packages/ai/test/image-url-parts.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/issue-2315-repro.test.ts` → engine: `packages/ai/test/issue-2315-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/issue-2424-repro.test.ts` → engine: `packages/ai/test/issue-2424-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/issue-2883-moonshot-base-url.test.ts` → engine: `packages/ai/test/issue-2883-moonshot-base-url.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/issue-6276-repro.test.ts` → engine: `packages/ai/test/issue-6276-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/issue-6913-harmony-marker-escaping.test.ts` → engine: `packages/ai/test/issue-6913-harmony-marker-escaping.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/issue-8328-repro.test.ts` → engine: `packages/ai/test/issue-8328-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/issue-912-repro.test.ts` → engine: `packages/ai/test/issue-912-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/issue-957-repro.test.ts` → engine: `packages/ai/test/issue-957-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/issue-967-vision-guard.test.ts` → engine: `packages/ai/test/issue-967-vision-guard.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/kagi-login.test.ts` → engine: `packages/ai/test/kagi-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/kilo-login.test.ts` → engine: `packages/ai/test/kilo-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/kimi-multi-account.test.ts` → engine: `packages/ai/test/kimi-multi-account.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/leaked-thinking-stream.test.ts` → engine: `packages/ai/test/leaked-thinking-stream.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/litellm-login.test.ts` → engine: `packages/ai/test/litellm-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/meta-provider.test.ts` → engine: `packages/ai/test/meta-provider.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/minimax-code-login.test.ts` → engine: `packages/ai/test/minimax-code-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/mock-provider.test.ts` → engine: `packages/ai/test/mock-provider.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/models-cost.test.ts` → engine: `packages/ai/test/models-cost.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/nanogpt-login.test.ts` → engine: `packages/ai/test/nanogpt-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/novita-login.test.ts` → engine: `packages/ai/test/novita-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/oauth-deepseek.test.ts` → engine: `packages/ai/test/oauth-deepseek.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/ollama-cloud-login.test.ts` → engine: `packages/ai/test/ollama-cloud-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/ollama-reasoning-effort-backfill.test.ts` → engine: `packages/ai/test/ollama-reasoning-effort-backfill.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/openai-codex-responses-lite.test.ts` → engine: `packages/ai/test/openai-codex-responses-lite.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/openai-codex-stream.test.ts` → engine: `packages/ai/test/openai-codex-stream.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/openai-completions-cache-affinity.test.ts` → engine: `packages/ai/test/openai-completions-cache-affinity.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/openai-completions-compat.test.ts` → engine: `packages/ai/test/openai-completions-compat.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/openai-completions-tool-result-images.test.ts` → engine: `packages/ai/test/openai-completions-tool-result-images.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/openai-responses-cache-affinity.test.ts` → engine: `packages/ai/test/openai-responses-cache-affinity.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/openai-responses-developer-role.test.ts` → engine: `packages/ai/test/openai-responses-developer-role.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/openai-responses-history-payload.test.ts` → engine: `packages/ai/test/openai-responses-history-payload.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/openai-responses-stateful.test.ts` → engine: `packages/ai/test/openai-responses-stateful.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/openai-responses-tool-quarantine.test.ts` → engine: `packages/ai/test/openai-responses-tool-quarantine.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/opencode-login.test.ts` → engine: `packages/ai/test/opencode-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/openrouter-oauth.test.ts` → engine: `packages/ai/test/openrouter-oauth.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/perplexity-login.test.ts` → engine: `packages/ai/test/perplexity-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/pi-native-client.test.ts` → engine: `packages/ai/test/pi-native-client.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/provider-registry.test.ts` → engine: `packages/ai/test/provider-registry.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/providers/kimi-code-thinking.test.ts` → engine: `packages/ai/test/providers/kimi-code-thinking.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/proxy.test.ts` → engine: `packages/ai/test/proxy.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/rate-limit-utils.test.ts` → engine: `packages/ai/test/rate-limit-utils.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/registry/oauth/xai-oauth.test.ts` → engine: `packages/ai/test/registry/oauth/xai-oauth.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/remote-auth-store.test.ts` → engine: `packages/ai/test/remote-auth-store.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/schema-strict-mode.test.ts` → engine: `packages/ai/test/schema-strict-mode.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/service-tier-premium-requests.test.ts` → engine: `packages/ai/test/service-tier-premium-requests.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/stream-auth-retry.test.ts` → engine: `packages/ai/test/stream-auth-retry.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/stream-markup-healing.test.ts` → engine: `packages/ai/test/stream-markup-healing.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/synthetic-login.test.ts` → engine: `packages/ai/test/synthetic-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/thinking-loop.test.ts` → engine: `packages/ai/test/thinking-loop.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/tool-call-loop-guard.test.ts` → engine: `packages/ai/test/tool-call-loop-guard.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/transform-messages-thinking-dialect.test.ts` → engine: `packages/ai/test/transform-messages-thinking-dialect.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/umans-login.test.ts` → engine: `packages/ai/test/umans-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/zai-oauth.test.ts` → engine: `packages/ai/test/zai-oauth.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/zenmux-login.test.ts` → engine: `packages/ai/test/zenmux-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/ai/test/zhipu-coding-plan-login.test.ts` → engine: `packages/ai/test/zhipu-coding-plan-login.test.ts`
+- vendor: `vendor/oh-my-pi/packages/browser-relay/package.json` → engine: `packages/browser-relay/package.json`
+- vendor: `vendor/oh-my-pi/packages/catalog/CHANGELOG.md` → engine: `packages/catalog/CHANGELOG.md`
+- vendor: `vendor/oh-my-pi/packages/catalog/package.json` → engine: `packages/catalog/package.json`
+- vendor: `vendor/oh-my-pi/packages/catalog/README.md` → engine: `packages/catalog/README.md`
+- vendor: `vendor/oh-my-pi/packages/catalog/scripts/equivalence.ts` → engine: `packages/catalog/scripts/equivalence.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/scripts/generated-policies.ts` → engine: `packages/catalog/scripts/generated-policies.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/scripts/generate-models.ts` → engine: `packages/catalog/scripts/generate-models.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/scripts/generate-protocols.ts` → engine: `packages/catalog/scripts/generate-protocols.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/build.ts` → engine: `packages/catalog/src/build.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/compat/anthropic.ts` → engine: `packages/catalog/src/compat/anthropic.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/compat/openai.ts` → engine: `packages/catalog/src/compat/openai.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/discovery/antigravity.ts` → engine: `packages/catalog/src/discovery/antigravity.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/discovery/codex.ts` → engine: `packages/catalog/src/discovery/codex.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/discovery/cursor-proto.ts` → engine: `packages/catalog/src/discovery/cursor-proto.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/discovery/cursor.ts` → engine: `packages/catalog/src/discovery/cursor.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/discovery/devin-proto.ts` → engine: `packages/catalog/src/discovery/devin-proto.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/discovery/devin.ts` → engine: `packages/catalog/src/discovery/devin.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/discovery/gemini-cli.ts` → engine: `packages/catalog/src/discovery/gemini-cli.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/discovery/gemini.ts` → engine: `packages/catalog/src/discovery/gemini.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/identity/dialect.ts` → engine: `packages/catalog/src/identity/dialect.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/identity/id.ts` → engine: `packages/catalog/src/identity/id.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/identity/index.ts` → engine: `packages/catalog/src/identity/index.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/identity/reference.ts` → engine: `packages/catalog/src/identity/reference.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/index.ts` → engine: `packages/catalog/src/index.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/model-manager.ts` → engine: `packages/catalog/src/model-manager.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/models.json` → engine: `packages/catalog/src/models.json`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/models.ts` → engine: `packages/catalog/src/models.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/model-thinking.ts` → engine: `packages/catalog/src/model-thinking.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/model-tokenizer.ts` → engine: `packages/catalog/src/model-tokenizer.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/provider-models/bundled-references.ts` → engine: `packages/catalog/src/provider-models/bundled-references.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/provider-models/descriptors.ts` → engine: `packages/catalog/src/provider-models/descriptors.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/provider-models/google.ts` → engine: `packages/catalog/src/provider-models/google.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/provider-models/models-dev-policies.ts` → engine: `packages/catalog/src/provider-models/models-dev-policies.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/provider-models/ollama.ts` → engine: `packages/catalog/src/provider-models/ollama.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/provider-models/openai-compat.ts` → engine: `packages/catalog/src/provider-models/openai-compat.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/provider-models/special.ts` → engine: `packages/catalog/src/provider-models/special.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/types.ts` → engine: `packages/catalog/src/types.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/src/wire/github-copilot.ts` → engine: `packages/catalog/src/wire/github-copilot.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/alibaba-token-plan.test.ts` → engine: `packages/catalog/test/alibaba-token-plan.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/amazon-bedrock-opus-5.test.ts` → engine: `packages/catalog/test/amazon-bedrock-opus-5.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/anthropic-copilot-signing-compat.test.ts` → engine: `packages/catalog/test/anthropic-copilot-signing-compat.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/anthropic-zenmux-signing-compat.test.ts` → engine: `packages/catalog/test/anthropic-zenmux-signing-compat.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/azure-provider.test.ts` → engine: `packages/catalog/test/azure-provider.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/baseten-provider.test.ts` → engine: `packages/catalog/test/baseten-provider.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/bedrock-prompt-cache.test.ts` → engine: `packages/catalog/test/bedrock-prompt-cache.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/build.test.ts` → engine: `packages/catalog/test/build.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/codex-discovery.test.ts` → engine: `packages/catalog/test/codex-discovery.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/coreweave-provider.test.ts` → engine: `packages/catalog/test/coreweave-provider.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/cursor-discovery.test.ts` → engine: `packages/catalog/test/cursor-discovery.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/gateway-reference.test.ts` → engine: `packages/catalog/test/gateway-reference.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/generated-policies.test.ts` → engine: `packages/catalog/test/generated-policies.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/github-copilot-model-limits.test.ts` → engine: `packages/catalog/test/github-copilot-model-limits.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/google-aistudio-compat.test.ts` → engine: `packages/catalog/test/google-aistudio-compat.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/google-vertex-discovery.test.ts` → engine: `packages/catalog/test/google-vertex-discovery.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/issue-2299-repro.test.ts` → engine: `packages/catalog/test/issue-2299-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/issue-4297-repro.test.ts` → engine: `packages/catalog/test/issue-4297-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/issue-5598-repro.test.ts` → engine: `packages/catalog/test/issue-5598-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/issue-5756-repro.test.ts` → engine: `packages/catalog/test/issue-5756-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/issue-6664-repro.test.ts` → engine: `packages/catalog/test/issue-6664-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/issue-9345-repro.test.ts` → engine: `packages/catalog/test/issue-9345-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/kimi-code-provider.test.ts` → engine: `packages/catalog/test/kimi-code-provider.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/long-context-pricing.test.ts` → engine: `packages/catalog/test/long-context-pricing.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/meta-provider.test.ts` → engine: `packages/catalog/test/meta-provider.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/model-thinking.test.ts` → engine: `packages/catalog/test/model-thinking.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/ollama-cloud-output-caps.test.ts` → engine: `packages/catalog/test/ollama-cloud-output-caps.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/ollama-provider.test.ts` → engine: `packages/catalog/test/ollama-provider.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/openai-daybreak.test.ts` → engine: `packages/catalog/test/openai-daybreak.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/opencode-provider.test.ts` → engine: `packages/catalog/test/opencode-provider.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/xai-api-key-responses.test.ts` → engine: `packages/catalog/test/xai-api-key-responses.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/zai-bundled-catalog.test.ts` → engine: `packages/catalog/test/zai-bundled-catalog.test.ts`
+- vendor: `vendor/oh-my-pi/packages/catalog/test/zhipu-compat.test.ts` → engine: `packages/catalog/test/zhipu-compat.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/CHANGELOG.md` → engine: `packages/coding-agent/CHANGELOG.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/package.json` → engine: `packages/coding-agent/package.json`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/scripts/bench-title-models.ts` → engine: `packages/coding-agent/scripts/bench-title-models.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/scripts/build-binary.ts` → engine: `packages/coding-agent/scripts/build-binary.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/scripts/compile-binary.ts` → engine: `packages/coding-agent/scripts/compile-binary.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/advisor/advise-tool.ts` → engine: `packages/coding-agent/src/advisor/advise-tool.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/advisor/config.ts` → engine: `packages/coding-agent/src/advisor/config.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/advisor/delta-split.ts` → engine: `packages/coding-agent/src/advisor/delta-split.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/advisor/emission-guard.ts` → engine: `packages/coding-agent/src/advisor/emission-guard.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/advisor/runtime.ts` → engine: `packages/coding-agent/src/advisor/runtime.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/advisor/transcript-recorder.ts` → engine: `packages/coding-agent/src/advisor/transcript-recorder.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/advisor/watchdog.ts` → engine: `packages/coding-agent/src/advisor/watchdog.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/autoresearch/git.ts` → engine: `packages/coding-agent/src/autoresearch/git.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/autoresearch/helpers.ts` → engine: `packages/coding-agent/src/autoresearch/helpers.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/autoresearch/index.ts` → engine: `packages/coding-agent/src/autoresearch/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/autoresearch/storage.ts` → engine: `packages/coding-agent/src/autoresearch/storage.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/autoresearch/tools/init-experiment.ts` → engine: `packages/coding-agent/src/autoresearch/tools/init-experiment.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/autoresearch/tools/log-experiment.ts` → engine: `packages/coding-agent/src/autoresearch/tools/log-experiment.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/autoresearch/tools/run-experiment.ts` → engine: `packages/coding-agent/src/autoresearch/tools/run-experiment.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/autoresearch/tools/update-notes.ts` → engine: `packages/coding-agent/src/autoresearch/tools/update-notes.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/auto-thinking/classifier.ts` → engine: `packages/coding-agent/src/auto-thinking/classifier.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/blob-broker/provider-file-types.ts` → engine: `packages/coding-agent/src/blob-broker/provider-file-types.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/blob-broker/service.ts` → engine: `packages/coding-agent/src/blob-broker/service.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/blob-broker/store.ts` → engine: `packages/coding-agent/src/blob-broker/store.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/blob-broker/uploaders-self-hosted.ts` → engine: `packages/coding-agent/src/blob-broker/uploaders-self-hosted.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/capability/index.ts` → engine: `packages/coding-agent/src/capability/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/capability/mcp.ts` → engine: `packages/coding-agent/src/capability/mcp.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/capability/rule-buckets.ts` → engine: `packages/coding-agent/src/capability/rule-buckets.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/capability/rule.ts` → engine: `packages/coding-agent/src/capability/rule.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/capability/types.ts` → engine: `packages/coding-agent/src/capability/types.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cleanse/checkers.ts` → engine: `packages/coding-agent/src/cleanse/checkers.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/bench-cli.ts` → engine: `packages/coding-agent/src/cli/bench-cli.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/claude-trace-cli.ts` → engine: `packages/coding-agent/src/cli/claude-trace-cli.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/command-help.ts` → engine: `packages/coding-agent/src/cli/command-help.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/dry-balance-cli.ts` → engine: `packages/coding-agent/src/cli/dry-balance-cli.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/file-processor.ts` → engine: `packages/coding-agent/src/cli/file-processor.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/flag-tables.ts` → engine: `packages/coding-agent/src/cli/flag-tables.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/gallery-cli.ts` → engine: `packages/coding-agent/src/cli/gallery-cli.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/gallery-fixtures/agentic.ts` → engine: `packages/coding-agent/src/cli/gallery-fixtures/agentic.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/gallery-fixtures/fs.ts` → engine: `packages/coding-agent/src/cli/gallery-fixtures/fs.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/gallery-fixtures/index.ts` → engine: `packages/coding-agent/src/cli/gallery-fixtures/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/gallery-fixtures/interaction.ts` → engine: `packages/coding-agent/src/cli/gallery-fixtures/interaction.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/gallery-fixtures/types.ts` → engine: `packages/coding-agent/src/cli/gallery-fixtures/types.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/git-tui/avatar.ts` → engine: `packages/coding-agent/src/cli/git-tui/avatar.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/git-tui/diff-pane.ts` → engine: `packages/coding-agent/src/cli/git-tui/diff-pane.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/git-tui/index.ts` → engine: `packages/coding-agent/src/cli/git-tui/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/git-tui/sidebar.ts` → engine: `packages/coding-agent/src/cli/git-tui/sidebar.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/git-tui/state.ts` → engine: `packages/coding-agent/src/cli/git-tui/state.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/help-extra.ts` → engine: `packages/coding-agent/src/cli/help-extra.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/plugin-cli.ts` → engine: `packages/coding-agent/src/cli/plugin-cli.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/startup-cwd.ts` → engine: `packages/coding-agent/src/cli/startup-cwd.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/tiny-models-cli.ts` → engine: `packages/coding-agent/src/cli/tiny-models-cli.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/ttsr-cli.ts` → engine: `packages/coding-agent/src/cli/ttsr-cli.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/update-cli.ts` → engine: `packages/coding-agent/src/cli/update-cli.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/usage-cli.ts` → engine: `packages/coding-agent/src/cli/usage-cli.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli/worktree-cli.ts` → engine: `packages/coding-agent/src/cli/worktree-cli.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/cli.ts` → engine: `packages/coding-agent/src/cli.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/collab/guest.ts` → engine: `packages/coding-agent/src/collab/guest.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/collab/host.ts` → engine: `packages/coding-agent/src/collab/host.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/collab/replication-shrink.ts` → engine: `packages/coding-agent/src/collab/replication-shrink.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commands/gallery.ts` → engine: `packages/coding-agent/src/commands/gallery.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commands/token.ts` → engine: `packages/coding-agent/src/commands/token.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commands/ttsr.ts` → engine: `packages/coding-agent/src/commands/ttsr.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commands/worktree.ts` → engine: `packages/coding-agent/src/commands/worktree.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/agentic/agent.ts` → engine: `packages/coding-agent/src/commit/agentic/agent.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/agentic/index.ts` → engine: `packages/coding-agent/src/commit/agentic/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/agentic/lock-files.ts` → engine: `packages/coding-agent/src/commit/agentic/lock-files.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/agentic/state.ts` → engine: `packages/coding-agent/src/commit/agentic/state.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/agentic/tools/git-file-diff.ts` → engine: `packages/coding-agent/src/commit/agentic/tools/git-file-diff.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/agentic/tools/git-hunk.ts` → engine: `packages/coding-agent/src/commit/agentic/tools/git-hunk.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/agentic/tools/git-overview.ts` → engine: `packages/coding-agent/src/commit/agentic/tools/git-overview.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/agentic/tools/propose-commit.ts` → engine: `packages/coding-agent/src/commit/agentic/tools/propose-commit.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/agentic/tools/recent-commits.ts` → engine: `packages/coding-agent/src/commit/agentic/tools/recent-commits.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/agentic/tools/split-commit.ts` → engine: `packages/coding-agent/src/commit/agentic/tools/split-commit.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/agentic/topo-sort.ts` → engine: `packages/coding-agent/src/commit/agentic/topo-sort.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/changelog/generate.ts` → engine: `packages/coding-agent/src/commit/changelog/generate.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/changelog/index.ts` → engine: `packages/coding-agent/src/commit/changelog/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/conventional/inference.ts` → engine: `packages/coding-agent/src/commit/conventional/inference.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/conventional/map-reduce.ts` → engine: `packages/coding-agent/src/commit/conventional/map-reduce.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/conventional/service.ts` → engine: `packages/coding-agent/src/commit/conventional/service.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/conventional/text.ts` → engine: `packages/coding-agent/src/commit/conventional/text.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/execute.ts` → engine: `packages/coding-agent/src/commit/execute.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/commit/pipeline.ts` → engine: `packages/coding-agent/src/commit/pipeline.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/config.ts` → engine: `packages/coding-agent/src/config.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/dap/client.ts` → engine: `packages/coding-agent/src/dap/client.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/dap/session.ts` → engine: `packages/coding-agent/src/dap/session.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/debug/index.ts` → engine: `packages/coding-agent/src/debug/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/debug/raw-sse-buffer.ts` → engine: `packages/coding-agent/src/debug/raw-sse-buffer.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/debug/terminal-info.ts` → engine: `packages/coding-agent/src/debug/terminal-info.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/discovery/agents-md.ts` → engine: `packages/coding-agent/src/discovery/agents-md.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/discovery/agents.ts` → engine: `packages/coding-agent/src/discovery/agents.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/discovery/claude-plugins.ts` → engine: `packages/coding-agent/src/discovery/claude-plugins.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/discovery/claude.ts` → engine: `packages/coding-agent/src/discovery/claude.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/discovery/codex.ts` → engine: `packages/coding-agent/src/discovery/codex.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/discovery/github.ts` → engine: `packages/coding-agent/src/discovery/github.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/discovery/helpers.ts` → engine: `packages/coding-agent/src/discovery/helpers.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/discovery/index.ts` → engine: `packages/coding-agent/src/discovery/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/discovery/omp-extension-roots.ts` → engine: `packages/coding-agent/src/discovery/omp-extension-roots.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/discovery/opencode.ts` → engine: `packages/coding-agent/src/discovery/opencode.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/discovery/plugin-dir-roots.ts` → engine: `packages/coding-agent/src/discovery/plugin-dir-roots.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/edit/auto-repair.test.ts` → engine: `packages/coding-agent/src/edit/auto-repair.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/edit/auto-repair.ts` → engine: `packages/coding-agent/src/edit/auto-repair.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/edit/blackbox.ts` → engine: `packages/coding-agent/src/edit/blackbox.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/edit/index.ts` → engine: `packages/coding-agent/src/edit/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/edit/normalize.ts` → engine: `packages/coding-agent/src/edit/normalize.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/edit/renderer.ts` → engine: `packages/coding-agent/src/edit/renderer.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/agent-bridge.ts` → engine: `packages/coding-agent/src/eval/agent-bridge.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/backend-helpers.ts` → engine: `packages/coding-agent/src/eval/backend-helpers.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/bridge-timeout.ts` → engine: `packages/coding-agent/src/eval/bridge-timeout.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/completion-bridge.ts` → engine: `packages/coding-agent/src/eval/completion-bridge.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/executor-base.ts` → engine: `packages/coding-agent/src/eval/executor-base.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/idle-timeout.ts` → engine: `packages/coding-agent/src/eval/idle-timeout.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/index.ts` → engine: `packages/coding-agent/src/eval/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/js/context-manager.ts` → engine: `packages/coding-agent/src/eval/js/context-manager.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/js/index.ts` → engine: `packages/coding-agent/src/eval/js/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/js/shared/indirect-eval.ts` → engine: `packages/coding-agent/src/eval/js/shared/indirect-eval.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/js/shared/prelude.txt` → engine: `packages/coding-agent/src/eval/js/shared/prelude.txt`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/js/shared/runtime.ts` → engine: `packages/coding-agent/src/eval/js/shared/runtime.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/js/tool-bridge.ts` → engine: `packages/coding-agent/src/eval/js/tool-bridge.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/js/worker-core.ts` → engine: `packages/coding-agent/src/eval/js/worker-core.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/js/worker-protocol.ts` → engine: `packages/coding-agent/src/eval/js/worker-protocol.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/kernel-base.ts` → engine: `packages/coding-agent/src/eval/kernel-base.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/kernel-session-registry.ts` → engine: `packages/coding-agent/src/eval/kernel-session-registry.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/probe.ts` → engine: `packages/coding-agent/src/eval/probe.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/py/executor.ts` → engine: `packages/coding-agent/src/eval/py/executor.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/py/index.ts` → engine: `packages/coding-agent/src/eval/py/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/py/kernel.ts` → engine: `packages/coding-agent/src/eval/py/kernel.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/py/prelude.py` → engine: `packages/coding-agent/src/eval/py/prelude.py`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/py/runner.py` → engine: `packages/coding-agent/src/eval/py/runner.py`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/py/tool-bridge.ts` → engine: `packages/coding-agent/src/eval/py/tool-bridge.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/runner-cache.ts` → engine: `packages/coding-agent/src/eval/runner-cache.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/eval/types.ts` → engine: `packages/coding-agent/src/eval/types.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/exec/bash-executor.ts` → engine: `packages/coding-agent/src/exec/bash-executor.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/export/html/template.js` → engine: `packages/coding-agent/src/export/html/template.js`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/custom-commands/bundled/ci-green/index.ts` → engine: `packages/coding-agent/src/extensibility/custom-commands/bundled/ci-green/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/custom-commands/bundled/review/index.ts` → engine: `packages/coding-agent/src/extensibility/custom-commands/bundled/review/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/custom-tools/wrapper.ts` → engine: `packages/coding-agent/src/extensibility/custom-tools/wrapper.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/extensions/loader.ts` → engine: `packages/coding-agent/src/extensibility/extensions/loader.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/extensions/model-api.ts` → engine: `packages/coding-agent/src/extensibility/extensions/model-api.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/extensions/runner.ts` → engine: `packages/coding-agent/src/extensibility/extensions/runner.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/extensions/types.ts` → engine: `packages/coding-agent/src/extensibility/extensions/types.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/extensions/wrapper.ts` → engine: `packages/coding-agent/src/extensibility/extensions/wrapper.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/hooks/tool-wrapper.ts` → engine: `packages/coding-agent/src/extensibility/hooks/tool-wrapper.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/hooks/types.ts` → engine: `packages/coding-agent/src/extensibility/hooks/types.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/legacy-pi-coding-agent-shim.ts` → engine: `packages/coding-agent/src/extensibility/legacy-pi-coding-agent-shim.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/legacy-pi-tui-shim.ts` → engine: `packages/coding-agent/src/extensibility/legacy-pi-tui-shim.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/plugins/legacy-pi-compat.ts` → engine: `packages/coding-agent/src/extensibility/plugins/legacy-pi-compat.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/plugins/loader.ts` → engine: `packages/coding-agent/src/extensibility/plugins/loader.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/plugins/manager.ts` → engine: `packages/coding-agent/src/extensibility/plugins/manager.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/plugins/marketplace/fetcher.ts` → engine: `packages/coding-agent/src/extensibility/plugins/marketplace/fetcher.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/plugins/marketplace/source-resolver.ts` → engine: `packages/coding-agent/src/extensibility/plugins/marketplace/source-resolver.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/skills.ts` → engine: `packages/coding-agent/src/extensibility/skills.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/extensibility/tool-event-input.ts` → engine: `packages/coding-agent/src/extensibility/tool-event-input.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/hindsight/bank.ts` → engine: `packages/coding-agent/src/hindsight/bank.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/hindsight/mental-models.ts` → engine: `packages/coding-agent/src/hindsight/mental-models.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/if-bench/runner.ts` → engine: `packages/coding-agent/src/if-bench/runner.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/index.ts` → engine: `packages/coding-agent/src/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/internal-urls/agent-protocol.ts` → engine: `packages/coding-agent/src/internal-urls/agent-protocol.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/internal-urls/issue-pr-protocol.ts` → engine: `packages/coding-agent/src/internal-urls/issue-pr-protocol.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/internal-urls/rule-protocol.ts` → engine: `packages/coding-agent/src/internal-urls/rule-protocol.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/internal-urls/types.ts` → engine: `packages/coding-agent/src/internal-urls/types.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/internal-urls/vault-protocol.ts` → engine: `packages/coding-agent/src/internal-urls/vault-protocol.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/internal-urls/xd-protocol.ts` → engine: `packages/coding-agent/src/internal-urls/xd-protocol.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/irc/bus.ts` → engine: `packages/coding-agent/src/irc/bus.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/launch/broker.ts` → engine: `packages/coding-agent/src/launch/broker.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/live/protocol.ts` → engine: `packages/coding-agent/src/live/protocol.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/lsp/client.ts` → engine: `packages/coding-agent/src/lsp/client.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/lsp/config.ts` → engine: `packages/coding-agent/src/lsp/config.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/lsp/defaults.json` → engine: `packages/coding-agent/src/lsp/defaults.json`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/lsp/diagnostics.ts` → engine: `packages/coding-agent/src/lsp/diagnostics.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/lsp/edits.ts` → engine: `packages/coding-agent/src/lsp/edits.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/lsp/index.ts` → engine: `packages/coding-agent/src/lsp/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/lsp/mux/server.ts` → engine: `packages/coding-agent/src/lsp/mux/server.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/lsp/tool.ts` → engine: `packages/coding-agent/src/lsp/tool.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/lsp/workspace-diagnostics.ts` → engine: `packages/coding-agent/src/lsp/workspace-diagnostics.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/main.ts` → engine: `packages/coding-agent/src/main.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/mcp/client.ts` → engine: `packages/coding-agent/src/mcp/client.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/mcp/config.ts` → engine: `packages/coding-agent/src/mcp/config.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/mcp/manager.ts` → engine: `packages/coding-agent/src/mcp/manager.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/mcp/oauth-credentials.ts` → engine: `packages/coding-agent/src/mcp/oauth-credentials.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/mcp/oauth-discovery.ts` → engine: `packages/coding-agent/src/mcp/oauth-discovery.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/mcp/oauth-flow.ts` → engine: `packages/coding-agent/src/mcp/oauth-flow.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/mcp/render.ts` → engine: `packages/coding-agent/src/mcp/render.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/mcp/startup-events.ts` → engine: `packages/coding-agent/src/mcp/startup-events.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/mcp/tool-bridge.ts` → engine: `packages/coding-agent/src/mcp/tool-bridge.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/mcp/transports/http.ts` → engine: `packages/coding-agent/src/mcp/transports/http.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/mcp/transports/sse.ts` → engine: `packages/coding-agent/src/mcp/transports/sse.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/mcp/transports/stdio.ts` → engine: `packages/coding-agent/src/mcp/transports/stdio.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/mcp/types.ts` → engine: `packages/coding-agent/src/mcp/types.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/memories/index.ts` → engine: `packages/coding-agent/src/memories/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/memory-backend/index.ts` → engine: `packages/coding-agent/src/memory-backend/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/memory-backend/resolve.ts` → engine: `packages/coding-agent/src/memory-backend/resolve.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/memory-backend/types.ts` → engine: `packages/coding-agent/src/memory-backend/types.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/mnemopi/backend.ts` → engine: `packages/coding-agent/src/mnemopi/backend.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/mnemopi/config.ts` → engine: `packages/coding-agent/src/mnemopi/config.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/mnemopi/state.ts` → engine: `packages/coding-agent/src/mnemopi/state.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/acp/acp-agent.ts` → engine: `packages/coding-agent/src/modes/acp/acp-agent.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/acp/acp-event-mapper.ts` → engine: `packages/coding-agent/src/modes/acp/acp-event-mapper.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/agent-hub-renderer.ts` → engine: `packages/coding-agent/src/modes/components/agent-hub-renderer.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/agent-hub.ts` → engine: `packages/coding-agent/src/modes/components/agent-hub.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/agent-transcript-viewer.ts` → engine: `packages/coding-agent/src/modes/components/agent-transcript-viewer.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/assistant-message.ts` → engine: `packages/coding-agent/src/modes/components/assistant-message.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/attachment-chips.ts` → engine: `packages/coding-agent/src/modes/components/attachment-chips.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/chat-transcript-builder.ts` → engine: `packages/coding-agent/src/modes/components/chat-transcript-builder.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/codex-reset-fireworks.ts` → engine: `packages/coding-agent/src/modes/components/codex-reset-fireworks.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/collab-prompt-message.ts` → engine: `packages/coding-agent/src/modes/components/collab-prompt-message.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/composer-shape-preview.ts` → engine: `packages/coding-agent/src/modes/components/composer-shape-preview.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/copy-selector.ts` → engine: `packages/coding-agent/src/modes/components/copy-selector.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/custom-editor.ts` → engine: `packages/coding-agent/src/modes/components/custom-editor.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/error-banner.ts` → engine: `packages/coding-agent/src/modes/components/error-banner.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/extensions/extension-dashboard.ts` → engine: `packages/coding-agent/src/modes/components/extensions/extension-dashboard.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/extensions/extension-list.ts` → engine: `packages/coding-agent/src/modes/components/extensions/extension-list.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/extensions/inspector-model.ts` → engine: `packages/coding-agent/src/modes/components/extensions/inspector-model.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/extensions/inspector-panel.ts` → engine: `packages/coding-agent/src/modes/components/extensions/inspector-panel.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/extensions/state-manager.ts` → engine: `packages/coding-agent/src/modes/components/extensions/state-manager.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/extensions/types.ts` → engine: `packages/coding-agent/src/modes/components/extensions/types.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/footer.ts` → engine: `packages/coding-agent/src/modes/components/footer.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/index.ts` → engine: `packages/coding-agent/src/modes/components/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/mcp-add-wizard.ts` → engine: `packages/coding-agent/src/modes/components/mcp-add-wizard.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/model-browser.ts` → engine: `packages/coding-agent/src/modes/components/model-browser.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/model-picker.ts` → engine: `packages/coding-agent/src/modes/components/model-picker.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/overlay-box.ts` → engine: `packages/coding-agent/src/modes/components/overlay-box.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/pause-screen.ts` → engine: `packages/coding-agent/src/modes/components/pause-screen.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/plan-review-overlay.ts` → engine: `packages/coding-agent/src/modes/components/plan-review-overlay.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/plan-toc.ts` → engine: `packages/coding-agent/src/modes/components/plan-toc.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/plugin-settings.ts` → engine: `packages/coding-agent/src/modes/components/plugin-settings.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/settings-selector.ts` → engine: `packages/coding-agent/src/modes/components/settings-selector.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/status-line/component.ts` → engine: `packages/coding-agent/src/modes/components/status-line/component.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/status-line/segments.ts` → engine: `packages/coding-agent/src/modes/components/status-line/segments.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/status-line/types.ts` → engine: `packages/coding-agent/src/modes/components/status-line/types.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/tool-execution.ts` → engine: `packages/coding-agent/src/modes/components/tool-execution.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/transcript-container.ts` → engine: `packages/coding-agent/src/modes/components/transcript-container.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/tree-selector.ts` → engine: `packages/coding-agent/src/modes/components/tree-selector.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/usage-row.ts` → engine: `packages/coding-agent/src/modes/components/usage-row.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/user-message.ts` → engine: `packages/coding-agent/src/modes/components/user-message.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/components/welcome.ts` → engine: `packages/coding-agent/src/modes/components/welcome.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/composer-attachments.ts` → engine: `packages/coding-agent/src/modes/composer-attachments.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/composer-cache.ts` → engine: `packages/coding-agent/src/modes/composer-cache.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/composer.ts` → engine: `packages/coding-agent/src/modes/composer.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/controllers/command-controller.ts` → engine: `packages/coding-agent/src/modes/controllers/command-controller.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/controllers/event-controller.ts` → engine: `packages/coding-agent/src/modes/controllers/event-controller.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/controllers/extension-ui-controller.ts` → engine: `packages/coding-agent/src/modes/controllers/extension-ui-controller.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/controllers/input-controller.ts` → engine: `packages/coding-agent/src/modes/controllers/input-controller.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/controllers/live-command-controller.ts` → engine: `packages/coding-agent/src/modes/controllers/live-command-controller.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/controllers/mcp-command-controller.ts` → engine: `packages/coding-agent/src/modes/controllers/mcp-command-controller.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/controllers/selector-controller.ts` → engine: `packages/coding-agent/src/modes/controllers/selector-controller.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/controllers/session-focus-controller.ts` → engine: `packages/coding-agent/src/modes/controllers/session-focus-controller.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/controllers/streaming-reveal.ts` → engine: `packages/coding-agent/src/modes/controllers/streaming-reveal.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/controllers/tan-command-controller.ts` → engine: `packages/coding-agent/src/modes/controllers/tan-command-controller.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/interactive-mode.ts` → engine: `packages/coding-agent/src/modes/interactive-mode.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/macos-spelling.ts` → engine: `packages/coding-agent/src/modes/macos-spelling.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/print-mode.ts` → engine: `packages/coding-agent/src/modes/print-mode.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/prompt-action-autocomplete.ts` → engine: `packages/coding-agent/src/modes/prompt-action-autocomplete.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/rpc/host-tools.ts` → engine: `packages/coding-agent/src/modes/rpc/host-tools.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/rpc/rpc-client.ts` → engine: `packages/coding-agent/src/modes/rpc/rpc-client.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/rpc/rpc-frame.ts` → engine: `packages/coding-agent/src/modes/rpc/rpc-frame.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/rpc/rpc-mode.ts` → engine: `packages/coding-agent/src/modes/rpc/rpc-mode.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/rpc/rpc-subagents.ts` → engine: `packages/coding-agent/src/modes/rpc/rpc-subagents.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/running-subagent-badge.ts` → engine: `packages/coding-agent/src/modes/running-subagent-badge.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/runtime-init.ts` → engine: `packages/coding-agent/src/modes/runtime-init.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/session-observer-registry.ts` → engine: `packages/coding-agent/src/modes/session-observer-registry.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/setup-wizard/scenes/composer.ts` → engine: `packages/coding-agent/src/modes/setup-wizard/scenes/composer.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/setup-wizard/scenes/splash.ts` → engine: `packages/coding-agent/src/modes/setup-wizard/scenes/splash.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/shared.ts` → engine: `packages/coding-agent/src/modes/shared.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/startup-composer.ts` → engine: `packages/coding-agent/src/modes/startup-composer.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/theme/defaults/dark-poimandres.json` → engine: `packages/coding-agent/src/modes/theme/defaults/dark-poimandres.json`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/theme/defaults/light-poimandres.json` → engine: `packages/coding-agent/src/modes/theme/defaults/light-poimandres.json`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/theme/symbols.ts` → engine: `packages/coding-agent/src/modes/theme/symbols.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/theme/theme-class.ts` → engine: `packages/coding-agent/src/modes/theme/theme-class.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/theme/tui-adapters.ts` → engine: `packages/coding-agent/src/modes/theme/tui-adapters.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/types.ts` → engine: `packages/coding-agent/src/modes/types.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/utils/context-usage.ts` → engine: `packages/coding-agent/src/modes/utils/context-usage.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/utils/copy-targets.ts` → engine: `packages/coding-agent/src/modes/utils/copy-targets.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/utils/transcript-render-helpers.ts` → engine: `packages/coding-agent/src/modes/utils/transcript-render-helpers.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/utils/ui-helpers.ts` → engine: `packages/coding-agent/src/modes/utils/ui-helpers.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/modes/workflow.ts` → engine: `packages/coding-agent/src/modes/workflow.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/priority.json` → engine: `packages/coding-agent/src/priority.json`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/advisor/system.md` → engine: `packages/coding-agent/src/prompts/advisor/system.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/agents/scout.md` → engine: `packages/coding-agent/src/prompts/agents/scout.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/system/irc-incoming.md` → engine: `packages/coding-agent/src/prompts/system/irc-incoming.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/system/plan-mode-approved.md` → engine: `packages/coding-agent/src/prompts/system/plan-mode-approved.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/system/plan-mode-compact-instructions.md` → engine: `packages/coding-agent/src/prompts/system/plan-mode-compact-instructions.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/system/plan-mode-reference.md` → engine: `packages/coding-agent/src/prompts/system/plan-mode-reference.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/system/snapcompact-toolresult-note.md` → engine: `packages/coding-agent/src/prompts/system/snapcompact-toolresult-note.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/system/subagent-system-prompt.md` → engine: `packages/coding-agent/src/prompts/system/subagent-system-prompt.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/system/system-prompt.md` → engine: `packages/coding-agent/src/prompts/system/system-prompt.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/system/title-system.md` → engine: `packages/coding-agent/src/prompts/system/title-system.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/system/unexpected-stop-retry.md` → engine: `packages/coding-agent/src/prompts/system/unexpected-stop-retry.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/system/workflow-notice.md` → engine: `packages/coding-agent/src/prompts/system/workflow-notice.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/tools/eval-code-mode.md` → engine: `packages/coding-agent/src/prompts/tools/eval-code-mode.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/tools/eval.md` → engine: `packages/coding-agent/src/prompts/tools/eval.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/tools/hub.md` → engine: `packages/coding-agent/src/prompts/tools/hub.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/tools/read.md` → engine: `packages/coding-agent/src/prompts/tools/read.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/tools/task.md` → engine: `packages/coding-agent/src/prompts/tools/task.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/prompts/tools/yield.md` → engine: `packages/coding-agent/src/prompts/tools/yield.md`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/registry/agent-lifecycle.ts` → engine: `packages/coding-agent/src/registry/agent-lifecycle.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/sdk.ts` → engine: `packages/coding-agent/src/sdk.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/security/cloud.ts` → engine: `packages/coding-agent/src/security/cloud.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/security/coordinator.ts` → engine: `packages/coding-agent/src/security/coordinator.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/security/preflight.ts` → engine: `packages/coding-agent/src/security/preflight.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/security/store.ts` → engine: `packages/coding-agent/src/security/store.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/acp-permission-gate.ts` → engine: `packages/coding-agent/src/session/acp-permission-gate.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/agent-session-events.ts` → engine: `packages/coding-agent/src/session/agent-session-events.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/agent-session.ts` → engine: `packages/coding-agent/src/session/agent-session.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/agent-session-types.ts` → engine: `packages/coding-agent/src/session/agent-session-types.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/agent-storage.ts` → engine: `packages/coding-agent/src/session/agent-storage.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/checkpoint-entries.ts` → engine: `packages/coding-agent/src/session/checkpoint-entries.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/code-mode.ts` → engine: `packages/coding-agent/src/session/code-mode.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/date-cwd-reminder.ts` → engine: `packages/coding-agent/src/session/date-cwd-reminder.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/eval-runner.ts` → engine: `packages/coding-agent/src/session/eval-runner.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/history-storage.ts` → engine: `packages/coding-agent/src/session/history-storage.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/irc-bridge.ts` → engine: `packages/coding-agent/src/session/irc-bridge.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/messages.ts` → engine: `packages/coding-agent/src/session/messages.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/model-controls.ts` → engine: `packages/coding-agent/src/session/model-controls.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/prewalk.ts` → engine: `packages/coding-agent/src/session/prewalk.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/provider-image-budget.ts` → engine: `packages/coding-agent/src/session/provider-image-budget.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/retry-fallback-chains.ts` → engine: `packages/coding-agent/src/session/retry-fallback-chains.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/session-advisors.ts` → engine: `packages/coding-agent/src/session/session-advisors.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/session-context.ts` → engine: `packages/coding-agent/src/session/session-context.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/session-entries.ts` → engine: `packages/coding-agent/src/session/session-entries.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/session-history-format.ts` → engine: `packages/coding-agent/src/session/session-history-format.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/session-listing.ts` → engine: `packages/coding-agent/src/session/session-listing.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/session-maintenance.ts` → engine: `packages/coding-agent/src/session/session-maintenance.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/session-manager.ts` → engine: `packages/coding-agent/src/session/session-manager.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/session-memory.ts` → engine: `packages/coding-agent/src/session/session-memory.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/session-paths.ts` → engine: `packages/coding-agent/src/session/session-paths.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/session-persistence.ts` → engine: `packages/coding-agent/src/session/session-persistence.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/session-stats.ts` → engine: `packages/coding-agent/src/session/session-stats.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/session-tools.ts` → engine: `packages/coding-agent/src/session/session-tools.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/settings-stream-fn.ts` → engine: `packages/coding-agent/src/session/settings-stream-fn.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/snapcompact-inline.ts` → engine: `packages/coding-agent/src/session/snapcompact-inline.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/stream-guards.ts` → engine: `packages/coding-agent/src/session/stream-guards.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/streaming-output.ts` → engine: `packages/coding-agent/src/session/streaming-output.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/todo-tracker.ts` → engine: `packages/coding-agent/src/session/todo-tracker.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/ttsr-coordinator.ts` → engine: `packages/coding-agent/src/session/ttsr-coordinator.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/turn-recovery.ts` → engine: `packages/coding-agent/src/session/turn-recovery.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/session/unexpected-stop-classifier.ts` → engine: `packages/coding-agent/src/session/unexpected-stop-classifier.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/slash-commands/builtin-collaboration.ts` → engine: `packages/coding-agent/src/slash-commands/builtin-collaboration.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/slash-commands/builtin-lifecycle.ts` → engine: `packages/coding-agent/src/slash-commands/builtin-lifecycle.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/slash-commands/builtin-modes.ts` → engine: `packages/coding-agent/src/slash-commands/builtin-modes.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/slash-commands/builtin-session.ts` → engine: `packages/coding-agent/src/slash-commands/builtin-session.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/slash-commands/helpers/format.ts` → engine: `packages/coding-agent/src/slash-commands/helpers/format.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/slash-commands/helpers/usage-report.ts` → engine: `packages/coding-agent/src/slash-commands/helpers/usage-report.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/stt/asr-client.ts` → engine: `packages/coding-agent/src/stt/asr-client.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/subprocess/worker-client.ts` → engine: `packages/coding-agent/src/subprocess/worker-client.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/system-prompt.ts` → engine: `packages/coding-agent/src/system-prompt.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/task/agents.ts` → engine: `packages/coding-agent/src/task/agents.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/task/discovery.ts` → engine: `packages/coding-agent/src/task/discovery.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/task/executor.ts` → engine: `packages/coding-agent/src/task/executor.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/task/index.ts` → engine: `packages/coding-agent/src/task/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/task/isolation-runner.ts` → engine: `packages/coding-agent/src/task/isolation-runner.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/task/parallel.ts` → engine: `packages/coding-agent/src/task/parallel.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/task/persisted-revive.ts` → engine: `packages/coding-agent/src/task/persisted-revive.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/task/prompt-policy.ts` → engine: `packages/coding-agent/src/task/prompt-policy.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/task/read-only-policy.ts` → engine: `packages/coding-agent/src/task/read-only-policy.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/task/structured-subagent.ts` → engine: `packages/coding-agent/src/task/structured-subagent.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/task/types.ts` → engine: `packages/coding-agent/src/task/types.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/task/worktree.ts` → engine: `packages/coding-agent/src/task/worktree.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tiny/completion-prompt.ts` → engine: `packages/coding-agent/src/tiny/completion-prompt.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tiny/device.ts` → engine: `packages/coding-agent/src/tiny/device.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tiny/models.ts` → engine: `packages/coding-agent/src/tiny/models.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tiny/title-client.ts` → engine: `packages/coding-agent/src/tiny/title-client.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tiny/title-protocol.ts` → engine: `packages/coding-agent/src/tiny/title-protocol.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tiny/worker.ts` → engine: `packages/coding-agent/src/tiny/worker.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/ast-edit.ts` → engine: `packages/coding-agent/src/tools/ast-edit.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/ast-grep.ts` → engine: `packages/coding-agent/src/tools/ast-grep.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/auto-generated-guard.ts` → engine: `packages/coding-agent/src/tools/auto-generated-guard.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/bash-skill-urls.ts` → engine: `packages/coding-agent/src/tools/bash-skill-urls.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/bash.ts` → engine: `packages/coding-agent/src/tools/bash.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/browser/attach.ts` → engine: `packages/coding-agent/src/tools/browser/attach.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/browser/cmux/socket-client.ts` → engine: `packages/coding-agent/src/tools/browser/cmux/socket-client.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/browser/registry.ts` → engine: `packages/coding-agent/src/tools/browser/registry.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/browser/relay/bridge.ts` → engine: `packages/coding-agent/src/tools/browser/relay/bridge.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/browser/tab-protocol.ts` → engine: `packages/coding-agent/src/tools/browser/tab-protocol.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/browser/tab-supervisor.ts` → engine: `packages/coding-agent/src/tools/browser/tab-supervisor.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/browser/tab-worker.ts` → engine: `packages/coding-agent/src/tools/browser/tab-worker.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/browser.ts` → engine: `packages/coding-agent/src/tools/browser.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/computer/worker.ts` → engine: `packages/coding-agent/src/tools/computer/worker.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/computer.ts` → engine: `packages/coding-agent/src/tools/computer.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/eval-backends.ts` → engine: `packages/coding-agent/src/tools/eval-backends.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/eval-format/index.ts` → engine: `packages/coding-agent/src/tools/eval-format/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/eval-format/javascript.ts` → engine: `packages/coding-agent/src/tools/eval-format/javascript.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/eval-render.ts` → engine: `packages/coding-agent/src/tools/eval-render.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/eval.ts` → engine: `packages/coding-agent/src/tools/eval.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/fetch.ts` → engine: `packages/coding-agent/src/tools/fetch.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/file-write-fallback.ts` → engine: `packages/coding-agent/src/tools/file-write-fallback.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/gh-common.ts` → engine: `packages/coding-agent/src/tools/gh-common.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/gh-pr-checkout.ts` → engine: `packages/coding-agent/src/tools/gh-pr-checkout.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/gh-pr-diff.ts` → engine: `packages/coding-agent/src/tools/gh-pr-diff.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/gh-run-watch.ts` → engine: `packages/coding-agent/src/tools/gh-run-watch.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/gh-search.ts` → engine: `packages/coding-agent/src/tools/gh-search.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/gh.ts` → engine: `packages/coding-agent/src/tools/gh.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/gh-view.ts` → engine: `packages/coding-agent/src/tools/gh-view.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/glob.ts` → engine: `packages/coding-agent/src/tools/glob.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/grep.ts` → engine: `packages/coding-agent/src/tools/grep.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/hub/launch.ts` → engine: `packages/coding-agent/src/tools/hub/launch.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/hub/messaging.ts` → engine: `packages/coding-agent/src/tools/hub/messaging.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/image-gen.ts` → engine: `packages/coding-agent/src/tools/image-gen.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/index.ts` → engine: `packages/coding-agent/src/tools/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/inspect-image.ts` → engine: `packages/coding-agent/src/tools/inspect-image.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/output-meta.ts` → engine: `packages/coding-agent/src/tools/output-meta.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/path-utils.ts` → engine: `packages/coding-agent/src/tools/path-utils.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/plan-mode-guard.ts` → engine: `packages/coding-agent/src/tools/plan-mode-guard.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/read-archive.ts` → engine: `packages/coding-agent/src/tools/read-archive.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/read-format.ts` → engine: `packages/coding-agent/src/tools/read-format.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/read-selector.ts` → engine: `packages/coding-agent/src/tools/read-selector.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/read.ts` → engine: `packages/coding-agent/src/tools/read.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/run-scope.ts` → engine: `packages/coding-agent/src/tools/run-scope.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/terminal-output.ts` → engine: `packages/coding-agent/src/tools/terminal-output.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/write.ts` → engine: `packages/coding-agent/src/tools/write.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/xdev.ts` → engine: `packages/coding-agent/src/tools/xdev.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tools/yield.ts` → engine: `packages/coding-agent/src/tools/yield.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tts/speech-enhancer.ts` → engine: `packages/coding-agent/src/tts/speech-enhancer.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/tui/hyperlink.ts` → engine: `packages/coding-agent/src/tui/hyperlink.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/utils/active-repo-context.ts` → engine: `packages/coding-agent/src/utils/active-repo-context.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/utils/clipboard.ts` → engine: `packages/coding-agent/src/utils/clipboard.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/utils/commit-message-generator.ts` → engine: `packages/coding-agent/src/utils/commit-message-generator.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/utils/edit-mode.ts` → engine: `packages/coding-agent/src/utils/edit-mode.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/utils/event-bus.ts` → engine: `packages/coding-agent/src/utils/event-bus.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/utils/file-mentions.ts` → engine: `packages/coding-agent/src/utils/file-mentions.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/utils/image-loading.ts` → engine: `packages/coding-agent/src/utils/image-loading.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/utils/late-cleanup.ts` → engine: `packages/coding-agent/src/utils/late-cleanup.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/utils/open.ts` → engine: `packages/coding-agent/src/utils/open.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/utils/qrcode.ts` → engine: `packages/coding-agent/src/utils/qrcode.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/utils/session-color.ts` → engine: `packages/coding-agent/src/utils/session-color.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/utils/title-generator.ts` → engine: `packages/coding-agent/src/utils/title-generator.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/vibe/runtime.ts` → engine: `packages/coding-agent/src/vibe/runtime.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/web/search/index.ts` → engine: `packages/coding-agent/src/web/search/index.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/web/search/providers/anthropic.ts` → engine: `packages/coding-agent/src/web/search/providers/anthropic.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/web/search/providers/codex.ts` → engine: `packages/coding-agent/src/web/search/providers/codex.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/web/search/providers/firecrawl.ts` → engine: `packages/coding-agent/src/web/search/providers/firecrawl.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/web/search/providers/gemini.ts` → engine: `packages/coding-agent/src/web/search/providers/gemini.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/src/web/search/providers/public.ts` → engine: `packages/coding-agent/src/web/search/providers/public.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/acp-agent.test.ts` → engine: `packages/coding-agent/test/acp-agent.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/acp-builtins.test.ts` → engine: `packages/coding-agent/test/acp-builtins.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/acp-event-mapper.test.ts` → engine: `packages/coding-agent/test/acp-event-mapper.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/acp-lazy-startup.test.ts` → engine: `packages/coding-agent/test/acp-lazy-startup.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/advisor/advisor.test.ts` → engine: `packages/coding-agent/test/advisor/advisor.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/advisor/delta-split.test.ts` → engine: `packages/coding-agent/test/advisor/delta-split.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/advisor/transcript-recorder.test.ts` → engine: `packages/coding-agent/test/advisor/transcript-recorder.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/advisor-toggle.test.ts` → engine: `packages/coding-agent/test/advisor-toggle.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-hub-activate.test.ts` → engine: `packages/coding-agent/test/agent-hub-activate.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-hub-ordering.test.ts` → engine: `packages/coding-agent/test/agent-hub-ordering.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-auto-compaction-progress-guard.test.ts` → engine: `packages/coding-agent/test/agent-session-auto-compaction-progress-guard.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-branching.test.ts` → engine: `packages/coding-agent/test/agent-session-branching.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-checkpoint-rewind-branch.test.ts` → engine: `packages/coding-agent/test/agent-session-checkpoint-rewind-branch.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-eager-compaction.test.ts` → engine: `packages/coding-agent/test/agent-session-eager-compaction.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-eager-task.test.ts` → engine: `packages/coding-agent/test/agent-session-eager-task.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-eager-todo.test.ts` → engine: `packages/coding-agent/test/agent-session-eager-todo.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-empty-stop-guard.test.ts` → engine: `packages/coding-agent/test/agent-session-empty-stop-guard.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-magic-keywords.test.ts` → engine: `packages/coding-agent/test/agent-session-magic-keywords.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-manual-retry.test.ts` → engine: `packages/coding-agent/test/agent-session-manual-retry.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-message-pipeline.test.ts` → engine: `packages/coding-agent/test/agent-session-message-pipeline.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-plan-compact-hook-instructions.test.ts` → engine: `packages/coding-agent/test/agent-session-plan-compact-hook-instructions.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-plan-mode-convergence.test.ts` → engine: `packages/coding-agent/test/agent-session-plan-mode-convergence.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-plan-reference-compaction.test.ts` → engine: `packages/coding-agent/test/agent-session-plan-reference-compaction.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-plan-reference-setup-bail.test.ts` → engine: `packages/coding-agent/test/agent-session-plan-reference-setup-bail.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-python-cleanup.test.ts` → engine: `packages/coding-agent/test/agent-session-python-cleanup.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-queued-steer-delivery.test.ts` → engine: `packages/coding-agent/test/agent-session-queued-steer-delivery.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-retry-cap.test.ts` → engine: `packages/coding-agent/test/agent-session-retry-cap.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-retry-fallback.test.ts` → engine: `packages/coding-agent/test/agent-session-retry-fallback.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-retry-recovery.test.ts` → engine: `packages/coding-agent/test/agent-session-retry-recovery.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-role-thinking.test.ts` → engine: `packages/coding-agent/test/agent-session-role-thinking.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-stats.test.ts` → engine: `packages/coding-agent/test/agent-session-stats.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-title-generation-dispose.test.ts` → engine: `packages/coding-agent/test/agent-session-title-generation-dispose.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-tool-rebuild-skip.test.ts` → engine: `packages/coding-agent/test/agent-session-tool-rebuild-skip.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-tree-ask-reanswer.test.ts` → engine: `packages/coding-agent/test/agent-session-tree-ask-reanswer.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-session-unexpected-stop-guard.test.ts` → engine: `packages/coding-agent/test/agent-session-unexpected-stop-guard.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-storage-command-usage.test.ts` → engine: `packages/coding-agent/test/agent-storage-command-usage.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-storage-model-perf.test.ts` → engine: `packages/coding-agent/test/agent-storage-model-perf.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/agent-storage-sqlite-compat.test.ts` → engine: `packages/coding-agent/test/agent-storage-sqlite-compat.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/apply-patch-preview-renderer.test.ts` → engine: `packages/coding-agent/test/apply-patch-preview-renderer.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/async-yield-queue.test.ts` → engine: `packages/coding-agent/test/async-yield-queue.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/auth-storage-rotation.test.ts` → engine: `packages/coding-agent/test/auth-storage-rotation.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/autocomplete-max-visible.test.ts` → engine: `packages/coding-agent/test/autocomplete-max-visible.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/autolearn-controller.test.ts` → engine: `packages/coding-agent/test/autolearn-controller.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/autolearn-discovery.test.ts` → engine: `packages/coding-agent/test/autolearn-discovery.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/autoresearch-before-agent-start.test.ts` → engine: `packages/coding-agent/test/autoresearch-before-agent-start.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/autoresearch-git.test.ts` → engine: `packages/coding-agent/test/autoresearch-git.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/autoresearch-state.test.ts` → engine: `packages/coding-agent/test/autoresearch-state.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/autoresearch-tools.test.ts` → engine: `packages/coding-agent/test/autoresearch-tools.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/auto-thinking-classifier.test.ts` → engine: `packages/coding-agent/test/auto-thinking-classifier.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/bash-acp-terminal.test.ts` → engine: `packages/coding-agent/test/bash-acp-terminal.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/bash-executor.test.ts` → engine: `packages/coding-agent/test/bash-executor.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/bench-auth-fallback.test.ts` → engine: `packages/coding-agent/test/bench-auth-fallback.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/bench-profiles.test.ts` → engine: `packages/coding-agent/test/bench-profiles.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/biome-client.test.ts` → engine: `packages/coding-agent/test/biome-client.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/blob-broker.test.ts` → engine: `packages/coding-agent/test/blob-broker.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/bundled-agent-parsing.test.ts` → engine: `packages/coding-agent/test/bundled-agent-parsing.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/capability/rule-buckets.test.ts` → engine: `packages/coding-agent/test/capability/rule-buckets.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/cli/ttsr-cli.test.ts` → engine: `packages/coding-agent/test/cli/ttsr-cli.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/collab/guest-subagent-badge.test.ts` → engine: `packages/coding-agent/test/collab/guest-subagent-badge.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/commit-execute.test.ts` → engine: `packages/coding-agent/test/commit-execute.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/commit-fallback-exit.test.ts` → engine: `packages/coding-agent/test/commit-fallback-exit.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/commit-split-hunk-validation.test.ts` → engine: `packages/coding-agent/test/commit-split-hunk-validation.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/commit-split-lock-file-pairing.test.ts` → engine: `packages/coding-agent/test/commit-split-lock-file-pairing.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/compaction-lifecycle.test.ts` → engine: `packages/coding-agent/test/compaction-lifecycle.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/compaction-thinking-model.test.ts` → engine: `packages/coding-agent/test/compaction-thinking-model.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/composer-cache.test.ts` → engine: `packages/coding-agent/test/composer-cache.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/config-cli-credentials.test.ts` → engine: `packages/coding-agent/test/config-cli-credentials.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/config-cli.test.ts` → engine: `packages/coding-agent/test/config-cli.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/config-value-fd-inheritance.test.ts` → engine: `packages/coding-agent/test/config-value-fd-inheritance.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/core/eval-workflow-helpers.integration.test.ts` → engine: `packages/coding-agent/test/core/eval-workflow-helpers.integration.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/core/js-executor.test.ts` → engine: `packages/coding-agent/test/core/js-executor.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/core/python-executor-owner-cleanup.test.ts` → engine: `packages/coding-agent/test/core/python-executor-owner-cleanup.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/core/python-runner.integration.test.ts` → engine: `packages/coding-agent/test/core/python-runner.integration.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/core/python-tool-bridge.test.ts` → engine: `packages/coding-agent/test/core/python-tool-bridge.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/cursor-exec.test.ts` → engine: `packages/coding-agent/test/cursor-exec.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/date-cwd-reminder.test.ts` → engine: `packages/coding-agent/test/date-cwd-reminder.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/debug/dap-launch-failures.test.ts` → engine: `packages/coding-agent/test/debug/dap-launch-failures.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/debug/terminal-info.test.ts` → engine: `packages/coding-agent/test/debug/terminal-info.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/discovery/agent-discovery-disabled-providers.test.ts` → engine: `packages/coding-agent/test/discovery/agent-discovery-disabled-providers.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/discovery/agent-fields.test.ts` → engine: `packages/coding-agent/test/discovery/agent-fields.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/discovery/agent-plugins.test.ts` → engine: `packages/coding-agent/test/discovery/agent-plugins.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/discovery/claude-plugins.test.ts` → engine: `packages/coding-agent/test/discovery/claude-plugins.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/discovery/disabled-extensions.test.ts` → engine: `packages/coding-agent/test/discovery/disabled-extensions.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/discovery/opencode.test.ts` → engine: `packages/coding-agent/test/discovery/opencode.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/edit-acp-bridge.test.ts` → engine: `packages/coding-agent/test/edit-acp-bridge.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/edit-auto-generated-regressions.test.ts` → engine: `packages/coding-agent/test/edit-auto-generated-regressions.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/edit-blackbox.test.ts` → engine: `packages/coding-agent/test/edit-blackbox.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/edit-mode.test.ts` → engine: `packages/coding-agent/test/edit-mode.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/edit-patch-unchanged-error.test.ts` → engine: `packages/coding-agent/test/edit-patch-unchanged-error.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/eval/agent-bridge-policy.test.ts` → engine: `packages/coding-agent/test/eval/agent-bridge-policy.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/eval/agent-bridge.test.ts` → engine: `packages/coding-agent/test/eval/agent-bridge.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/eval/bridge-timeout.test.ts` → engine: `packages/coding-agent/test/eval/bridge-timeout.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/eval/completion-bridge.test.ts` → engine: `packages/coding-agent/test/eval/completion-bridge.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/eval/kernel-owner-scoping.test.ts` → engine: `packages/coding-agent/test/eval/kernel-owner-scoping.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/eval/prelude-agent.test.ts` → engine: `packages/coding-agent/test/eval/prelude-agent.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/eval/py/prelude.test.ts` → engine: `packages/coding-agent/test/eval/py/prelude.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/event-controller-error-banner.test.ts` → engine: `packages/coding-agent/test/event-controller-error-banner.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/event-controller-mixed-assistant-render.test.ts` → engine: `packages/coding-agent/test/event-controller-mixed-assistant-render.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/export-html-template.test.ts` → engine: `packages/coding-agent/test/export-html-template.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/extensibility/custom-commands/ci-green.test.ts` → engine: `packages/coding-agent/test/extensibility/custom-commands/ci-green.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/extensibility/custom-commands/review.test.ts` → engine: `packages/coding-agent/test/extensibility/custom-commands/review.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/extensibility/legacy-pi-compaction-helpers.test.ts` → engine: `packages/coding-agent/test/extensibility/legacy-pi-compaction-helpers.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/extensibility/legacy-pi-inplace-load.test.ts` → engine: `packages/coding-agent/test/extensibility/legacy-pi-inplace-load.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/extension-inspector.test.ts` → engine: `packages/coding-agent/test/extension-inspector.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/extensions-runner.test.ts` → engine: `packages/coding-agent/test/extensions-runner.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/fixtures/delayed-tool-mcp.ts` → engine: `packages/coding-agent/test/fixtures/delayed-tool-mcp.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/flag-tables.test.ts` → engine: `packages/coding-agent/test/flag-tables.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/gallery-cli.test.ts` → engine: `packages/coding-agent/test/gallery-cli.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/git-linked-worktree.test.ts` → engine: `packages/coding-agent/test/git-linked-worktree.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/git-reftable.test.ts` → engine: `packages/coding-agent/test/git-reftable.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/git-tui-sidebar.test.ts` → engine: `packages/coding-agent/test/git-tui-sidebar.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/helpers/terminal-multiplexer.ts` → engine: `packages/coding-agent/test/helpers/terminal-multiplexer.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/hindsight-backend.test.ts` → engine: `packages/coding-agent/test/hindsight-backend.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/history-storage-search.test.ts` → engine: `packages/coding-agent/test/history-storage-search.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/history-storage-session.test.ts` → engine: `packages/coding-agent/test/history-storage-session.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/history-storage-sqlite-compat.test.ts` → engine: `packages/coding-agent/test/history-storage-sqlite-compat.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/image-input.test.ts` → engine: `packages/coding-agent/test/image-input.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/input-controller-escape.test.ts` → engine: `packages/coding-agent/test/input-controller-escape.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/input-controller-large-paste.test.ts` → engine: `packages/coding-agent/test/input-controller-large-paste.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/input-controller-thinking-visibility.test.ts` → engine: `packages/coding-agent/test/input-controller-thinking-visibility.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/interactive-mode-default-plan-mode.test.ts` → engine: `packages/coding-agent/test/interactive-mode-default-plan-mode.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/interactive-mode-mcp-connecting.test.ts` → engine: `packages/coding-agent/test/interactive-mode-mcp-connecting.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/interactive-mode-status.test.ts` → engine: `packages/coding-agent/test/interactive-mode-status.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/interactive-mode-title-prewarm.test.ts` → engine: `packages/coding-agent/test/interactive-mode-title-prewarm.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/interactive-mode-todo-clear.test.ts` → engine: `packages/coding-agent/test/interactive-mode-todo-clear.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/interactive-mode-vibe-toggle.test.ts` → engine: `packages/coding-agent/test/interactive-mode-vibe-toggle.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/interactive-mode-working-accent.test.ts` → engine: `packages/coding-agent/test/interactive-mode-working-accent.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/internal-urls/issue-pr-protocol.test.ts` → engine: `packages/coding-agent/test/internal-urls/issue-pr-protocol.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/issue-1606-repro.test.ts` → engine: `packages/coding-agent/test/issue-1606-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/issue-1940-repro.test.ts` → engine: `packages/coding-agent/test/issue-1940-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/issue-2375-repro.test.ts` → engine: `packages/coding-agent/test/issue-2375-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/issue-2510-repro.test.ts` → engine: `packages/coding-agent/test/issue-2510-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/issue-3656-shake-during-stream.test.ts` → engine: `packages/coding-agent/test/issue-3656-shake-during-stream.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/issue-4324-repro.test.ts` → engine: `packages/coding-agent/test/issue-4324-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/issue-4348-repro.test.ts` → engine: `packages/coding-agent/test/issue-4348-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/issue-4806-command-output.test.ts` → engine: `packages/coding-agent/test/issue-4806-command-output.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/issue-6767-usage-command-streaming.test.ts` → engine: `packages/coding-agent/test/issue-6767-usage-command-streaming.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/issue-8137-repro.test.ts` → engine: `packages/coding-agent/test/issue-8137-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/issue-816-repro.test.ts` → engine: `packages/coding-agent/test/issue-816-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/issue-851-repro.test.ts` → engine: `packages/coding-agent/test/issue-851-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/issue-899-repro.test.ts` → engine: `packages/coding-agent/test/issue-899-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/issue-927-repro.test.ts` → engine: `packages/coding-agent/test/issue-927-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/issue-956-repro.test.ts` → engine: `packages/coding-agent/test/issue-956-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/issue-966-repro.test.ts` → engine: `packages/coding-agent/test/issue-966-repro.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/issue-9816-hub-inflight-focus-rebuild.test.ts` → engine: `packages/coding-agent/test/issue-9816-hub-inflight-focus-rebuild.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/job-poll-displacement.test.ts` → engine: `packages/coding-agent/test/job-poll-displacement.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/join-patch.test.ts` → engine: `packages/coding-agent/test/join-patch.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/keybindings-display.test.ts` → engine: `packages/coding-agent/test/keybindings-display.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/keybindings-selector-navigation.test.ts` → engine: `packages/coding-agent/test/keybindings-selector-navigation.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/launch/broker-output-snapshot.test.ts` → engine: `packages/coding-agent/test/launch/broker-output-snapshot.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/macos-spelling.test.ts` → engine: `packages/coding-agent/test/macos-spelling.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/main-interactive-input.test.ts` → engine: `packages/coding-agent/test/main-interactive-input.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/main-rebuild-scoped-models.test.ts` → engine: `packages/coding-agent/test/main-rebuild-scoped-models.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/marketplace/fetcher.test.ts` → engine: `packages/coding-agent/test/marketplace/fetcher.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/mcp-broker-oauth-refresh.test.ts` → engine: `packages/coding-agent/test/mcp-broker-oauth-refresh.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/mcp-command-reauth.test.ts` → engine: `packages/coding-agent/test/mcp-command-reauth.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/mcp-http-transport.test.ts` → engine: `packages/coding-agent/test/mcp-http-transport.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/mcp-incremental-connect.test.ts` → engine: `packages/coding-agent/test/mcp-incremental-connect.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/mcp-legacy-sse-transport.test.ts` → engine: `packages/coding-agent/test/mcp-legacy-sse-transport.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/mcp-manager-initial-connection-cleanup.test.ts` → engine: `packages/coding-agent/test/mcp-manager-initial-connection-cleanup.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/mcp-manager-oauth-refresh.test.ts` → engine: `packages/coding-agent/test/mcp-manager-oauth-refresh.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/mcp-reconnect.test.ts` → engine: `packages/coding-agent/test/mcp-reconnect.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/mcp-startup-events.test.ts` → engine: `packages/coding-agent/test/mcp-startup-events.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/mcp-stdio-transport.test.ts` → engine: `packages/coding-agent/test/mcp-stdio-transport.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/memories-runtime.test.ts` → engine: `packages/coding-agent/test/memories-runtime.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/memory-tools.test.ts` → engine: `packages/coding-agent/test/memory-tools.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/mid-turn-rebuild-pending-tool.test.ts` → engine: `packages/coding-agent/test/mid-turn-rebuild-pending-tool.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/model-browser.test.ts` → engine: `packages/coding-agent/test/model-browser.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/model-discovery.test.ts` → engine: `packages/coding-agent/test/model-discovery.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/model-picker.test.ts` → engine: `packages/coding-agent/test/model-picker.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/model-registry-runtime-provider.test.ts` → engine: `packages/coding-agent/test/model-registry-runtime-provider.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/model-registry.test.ts` → engine: `packages/coding-agent/test/model-registry.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/model-resolver.test.ts` → engine: `packages/coding-agent/test/model-resolver.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/components/assistant-message-error.test.ts` → engine: `packages/coding-agent/test/modes/components/assistant-message-error.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/components/attachment-chips.test.ts` → engine: `packages/coding-agent/test/modes/components/attachment-chips.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/components/composer-shape-preview.test.ts` → engine: `packages/coding-agent/test/modes/components/composer-shape-preview.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/components/copy-selector.test.ts` → engine: `packages/coding-agent/test/modes/components/copy-selector.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/components/custom-editor.test.ts` → engine: `packages/coding-agent/test/modes/components/custom-editor.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/components/status-line/component.test.ts` → engine: `packages/coding-agent/test/modes/components/status-line/component.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/components/transcript-container.test.ts` → engine: `packages/coding-agent/test/modes/components/transcript-container.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/components/tree-selector-entry-labels.test.ts` → engine: `packages/coding-agent/test/modes/components/tree-selector-entry-labels.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/components/user-message-keywords.test.ts` → engine: `packages/coding-agent/test/modes/components/user-message-keywords.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/controllers/event-controller-abort-guard.test.ts` → engine: `packages/coding-agent/test/modes/controllers/event-controller-abort-guard.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/controllers/event-controller-args-reveal.test.ts` → engine: `packages/coding-agent/test/modes/controllers/event-controller-args-reveal.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/controllers/event-controller-idle-compaction.test.ts` → engine: `packages/coding-agent/test/modes/controllers/event-controller-idle-compaction.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/controllers/event-controller-loader-recovery.test.ts` → engine: `packages/coding-agent/test/modes/controllers/event-controller-loader-recovery.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/controllers/event-controller-superseded-agent-end.test.ts` → engine: `packages/coding-agent/test/modes/controllers/event-controller-superseded-agent-end.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/controllers/event-controller-toolcall-finalize.test.ts` → engine: `packages/coding-agent/test/modes/controllers/event-controller-toolcall-finalize.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/controllers/input-controller-tool-expansion.test.ts` → engine: `packages/coding-agent/test/modes/controllers/input-controller-tool-expansion.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/controllers/tan-command-controller.test.ts` → engine: `packages/coding-agent/test/modes/controllers/tan-command-controller.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/controllers/usage-command.test.ts` → engine: `packages/coding-agent/test/modes/controllers/usage-command.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/utils/copy-targets.test.ts` → engine: `packages/coding-agent/test/modes/utils/copy-targets.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/utils/render-initial-messages.test.ts` → engine: `packages/coding-agent/test/modes/utils/render-initial-messages.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/modes/workflow.test.ts` → engine: `packages/coding-agent/test/modes/workflow.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/oauth-discovery.test.ts` → engine: `packages/coding-agent/test/oauth-discovery.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/oauth-flow.test.ts` → engine: `packages/coding-agent/test/oauth-flow.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/otel-signals-probe.ts` → engine: `packages/coding-agent/test/otel-signals-probe.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/plugin-config.test.ts` → engine: `packages/coding-agent/test/plugin-config.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/prompt-action-autocomplete.test.ts` → engine: `packages/coding-agent/test/prompt-action-autocomplete.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/provider-error-expand.test.ts` → engine: `packages/coding-agent/test/provider-error-expand.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/read-column-truncation-snapshot.test.ts` → engine: `packages/coding-agent/test/read-column-truncation-snapshot.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/read-edit-out-of-cwd.test.ts` → engine: `packages/coding-agent/test/read-edit-out-of-cwd.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/read-multi-range.test.ts` → engine: `packages/coding-agent/test/read-multi-range.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/read-single-pass.test.ts` → engine: `packages/coding-agent/test/read-single-pass.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/registry/agent-lifecycle.test.ts` → engine: `packages/coding-agent/test/registry/agent-lifecycle.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/repro-issue-1955-sendmessage-double-render.test.ts` → engine: `packages/coding-agent/test/repro-issue-1955-sendmessage-double-render.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/rpc-input-frame.test.ts` → engine: `packages/coding-agent/test/rpc-input-frame.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/rpc-prompt-result.test.ts` → engine: `packages/coding-agent/test/rpc-prompt-result.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/rpc-skill-command.test.ts` → engine: `packages/coding-agent/test/rpc-skill-command.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/rpc-subagents.test.ts` → engine: `packages/coding-agent/test/rpc-subagents.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/sdk-async-job-manager-singleton.test.ts` → engine: `packages/coding-agent/test/sdk-async-job-manager-singleton.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/sdk-model-selection.test.ts` → engine: `packages/coding-agent/test/sdk-model-selection.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/sdk-restricted-extension-provider.test.ts` → engine: `packages/coding-agent/test/sdk-restricted-extension-provider.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/sdk-tool-activation.test.ts` → engine: `packages/coding-agent/test/sdk-tool-activation.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/secrets-obfuscator.test.ts` → engine: `packages/coding-agent/test/secrets-obfuscator.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/selector-settings-side-effects.test.ts` → engine: `packages/coding-agent/test/selector-settings-side-effects.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/service-tier-migration.test.ts` → engine: `packages/coding-agent/test/service-tier-migration.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/session/session-manager-fork.test.ts` → engine: `packages/coding-agent/test/session/session-manager-fork.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/session/thinking-display.test.ts` → engine: `packages/coding-agent/test/session/thinking-display.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/session-code-mode.test.ts` → engine: `packages/coding-agent/test/session-code-mode.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/session-color.test.ts` → engine: `packages/coding-agent/test/session-color.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/session-focus-controller.test.ts` → engine: `packages/coding-agent/test/session-focus-controller.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/session-manager/file-operations.test.ts` → engine: `packages/coding-agent/test/session-manager/file-operations.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/session-manager/new-session-boundary.test.ts` → engine: `packages/coding-agent/test/session-manager/new-session-boundary.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/session-manager/usage-statistics.test.ts` → engine: `packages/coding-agent/test/session-manager/usage-statistics.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/session-persistence-images.test.ts` → engine: `packages/coding-agent/test/session-persistence-images.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/settings-manager.test.ts` → engine: `packages/coding-agent/test/settings-manager.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/shake.test.ts` → engine: `packages/coding-agent/test/shake.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/shell-snapshot.test.ts` → engine: `packages/coding-agent/test/shell-snapshot.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/skill-protocol-customdirs.test.ts` → engine: `packages/coding-agent/test/skill-protocol-customdirs.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/skills.test.ts` → engine: `packages/coding-agent/test/skills.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/slash-commands/branch.test.ts` → engine: `packages/coding-agent/test/slash-commands/branch.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/slash-commands/copy.test.ts` → engine: `packages/coding-agent/test/slash-commands/copy.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/slash-commands/rename.test.ts` → engine: `packages/coding-agent/test/slash-commands/rename.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/slash-commands/resume.test.ts` → engine: `packages/coding-agent/test/slash-commands/resume.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/snapcompact-inline.test.ts` → engine: `packages/coding-agent/test/snapcompact-inline.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/startup-composer.test.ts` → engine: `packages/coding-agent/test/startup-composer.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/status-line-context-cache.test.ts` → engine: `packages/coding-agent/test/status-line-context-cache.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/status-line-dispose-async-leak.test.ts` → engine: `packages/coding-agent/test/status-line-dispose-async-leak.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/status-line-loop.test.ts` → engine: `packages/coding-agent/test/status-line-loop.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/status-line-model.test.ts` → engine: `packages/coding-agent/test/status-line-model.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/status-line-overflow.test.ts` → engine: `packages/coding-agent/test/status-line-overflow.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/status-line-path.test.ts` → engine: `packages/coding-agent/test/status-line-path.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/status-line-pr-lookup-timeout.test.ts` → engine: `packages/coding-agent/test/status-line-pr-lookup-timeout.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/status-line-settings-cache.test.ts` → engine: `packages/coding-agent/test/status-line-settings-cache.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/status-line-time-spent.test.ts` → engine: `packages/coding-agent/test/status-line-time-spent.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/status-line-usage.test.ts` → engine: `packages/coding-agent/test/status-line-usage.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/status-line-vcs-refresh.test.ts` → engine: `packages/coding-agent/test/status-line-vcs-refresh.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/streaming-edit-abort.test.ts` → engine: `packages/coding-agent/test/streaming-edit-abort.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/streaming-output.test.ts` → engine: `packages/coding-agent/test/streaming-output.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/streaming-preview-height.test.ts` → engine: `packages/coding-agent/test/streaming-preview-height.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/streaming-reveal.test.ts` → engine: `packages/coding-agent/test/streaming-reveal.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/subagent-hud-render.test.ts` → engine: `packages/coding-agent/test/subagent-hud-render.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/system-prompt-inventory.test.ts` → engine: `packages/coding-agent/test/system-prompt-inventory.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/executor-async-quiescence.test.ts` → engine: `packages/coding-agent/test/task/executor-async-quiescence.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/executor-deferred-cleanup.test.ts` → engine: `packages/coding-agent/test/task/executor-deferred-cleanup.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/executor-prewalk.test.ts` → engine: `packages/coding-agent/test/task/executor-prewalk.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/executor-recent-output.test.ts` → engine: `packages/coding-agent/test/task/executor-recent-output.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/executor-soft-budget.test.ts` → engine: `packages/coding-agent/test/task/executor-soft-budget.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/isolation-runner.test.ts` → engine: `packages/coding-agent/test/task/isolation-runner.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/parallel.test.ts` → engine: `packages/coding-agent/test/task/parallel.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/persisted-revive.test.ts` → engine: `packages/coding-agent/test/task/persisted-revive.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/render.test.ts` → engine: `packages/coding-agent/test/task/render.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/spawn-advisory.test.ts` → engine: `packages/coding-agent/test/task/spawn-advisory.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/spawn-policy.test.ts` → engine: `packages/coding-agent/test/task/spawn-policy.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/structured-subagent.test.ts` → engine: `packages/coding-agent/test/task/structured-subagent.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/subagent-lsp.test.ts` → engine: `packages/coding-agent/test/task/subagent-lsp.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/task-batch.test.ts` → engine: `packages/coding-agent/test/task/task-batch.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/task-guards.test.ts` → engine: `packages/coding-agent/test/task/task-guards.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/task-schema.test.ts` → engine: `packages/coding-agent/test/task/task-schema.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/wire-schema.test.ts` → engine: `packages/coding-agent/test/task/wire-schema.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/task/worktree.test.ts` → engine: `packages/coding-agent/test/task/worktree.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/terminal-title-state.test.ts` → engine: `packages/coding-agent/test/terminal-title-state.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/theme-islight.test.ts` → engine: `packages/coding-agent/test/theme-islight.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/theme-nerd-symbols.test.ts` → engine: `packages/coding-agent/test/theme-nerd-symbols.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tiny-device.test.ts` → engine: `packages/coding-agent/test/tiny-device.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tiny-models-cli.test.ts` → engine: `packages/coding-agent/test/tiny-models-cli.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tiny-worker-env.test.ts` → engine: `packages/coding-agent/test/tiny-worker-env.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tool-execution-preview-coalesce.test.ts` → engine: `packages/coding-agent/test/tool-execution-preview-coalesce.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/apply-patch-renderer.test.ts` → engine: `packages/coding-agent/test/tools/apply-patch-renderer.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/approval.test.ts` → engine: `packages/coding-agent/test/tools/approval.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/auto-generated-guard.test.ts` → engine: `packages/coding-agent/test/tools/auto-generated-guard.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/bash-interceptor.test.ts` → engine: `packages/coding-agent/test/tools/bash-interceptor.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/bash-skill-urls.test.ts` → engine: `packages/coding-agent/test/tools/bash-skill-urls.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/browser-attach.test.ts` → engine: `packages/coding-agent/test/tools/browser-attach.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/browser-cmux-release-mid-run.test.ts` → engine: `packages/coding-agent/test/tools/browser-cmux-release-mid-run.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/browser-lifecycle-leak.test.ts` → engine: `packages/coding-agent/test/tools/browser-lifecycle-leak.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/browser-open-lease.test.ts` → engine: `packages/coding-agent/test/tools/browser-open-lease.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/browser-relay-daemon.test.ts` → engine: `packages/coding-agent/test/tools/browser-relay-daemon.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/browser-run-cancellation.test.ts` → engine: `packages/coding-agent/test/tools/browser-run-cancellation.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/browser-tab-worker-startup.test.ts` → engine: `packages/coding-agent/test/tools/browser-tab-worker-startup.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/chromium-probe.ts` → engine: `packages/coding-agent/test/tools/chromium-probe.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/edit-renderer.test.ts` → engine: `packages/coding-agent/test/tools/edit-renderer.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/eval-description.test.ts` → engine: `packages/coding-agent/test/tools/eval-description.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/eval-fallback.test.ts` → engine: `packages/coding-agent/test/tools/eval-fallback.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/eval-format-javascript.test.ts` → engine: `packages/coding-agent/test/tools/eval-format-javascript.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/fetch-jina-stall.test.ts` → engine: `packages/coding-agent/test/tools/fetch-jina-stall.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/fetch-kagi-toggle.test.ts` → engine: `packages/coding-agent/test/tools/fetch-kagi-toggle.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/fetch-url-selectors.test.ts` → engine: `packages/coding-agent/test/tools/fetch-url-selectors.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/file-write-fallback.test.ts` → engine: `packages/coding-agent/test/tools/file-write-fallback.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/gh.test.ts` → engine: `packages/coding-agent/test/tools/gh.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/github-cache.test.ts` → engine: `packages/coding-agent/test/tools/github-cache.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/grep-internal-urls.test.ts` → engine: `packages/coding-agent/test/tools/grep-internal-urls.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/grep-path-lists.test.ts` → engine: `packages/coding-agent/test/tools/grep-path-lists.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/image-gen.test.ts` → engine: `packages/coding-agent/test/tools/image-gen.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/index.test.ts` → engine: `packages/coding-agent/test/tools/index.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/inspect-image.test.ts` → engine: `packages/coding-agent/test/tools/inspect-image.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/irc.test.ts` → engine: `packages/coding-agent/test/tools/irc.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/lsp-regressions.test.ts` → engine: `packages/coding-agent/test/tools/lsp-regressions.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/read-artifact-large.test.ts` → engine: `packages/coding-agent/test/tools/read-artifact-large.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/read-directory-range.test.ts` → engine: `packages/coding-agent/test/tools/read-directory-range.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/read-local-image.test.ts` → engine: `packages/coding-agent/test/tools/read-local-image.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/strip-output-notice.test.ts` → engine: `packages/coding-agent/test/tools/strip-output-notice.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/task-agent-capabilities.test.ts` → engine: `packages/coding-agent/test/tools/task-agent-capabilities.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/todo.test.ts` → engine: `packages/coding-agent/test/tools/todo.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/web-search-firecrawl.test.ts` → engine: `packages/coding-agent/test/tools/web-search-firecrawl.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/web-search-gemini.test.ts` → engine: `packages/coding-agent/test/tools/web-search-gemini.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/windows-drive-alias.test.ts` → engine: `packages/coding-agent/test/tools/windows-drive-alias.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/yield-extraction.test.ts` → engine: `packages/coding-agent/test/tools/yield-extraction.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools/yield.test.ts` → engine: `packages/coding-agent/test/tools/yield.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tools.test.ts` → engine: `packages/coding-agent/test/tools.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/tui/hyperlink.test.ts` → engine: `packages/coding-agent/test/tui/hyperlink.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/turn-recovery-replay-unsafe.test.ts` → engine: `packages/coding-agent/test/turn-recovery-replay-unsafe.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/update-cli.test.ts` → engine: `packages/coding-agent/test/update-cli.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/usage-cli.test.ts` → engine: `packages/coding-agent/test/usage-cli.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/usage-row-placement.test.ts` → engine: `packages/coding-agent/test/usage-row-placement.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/usage-row-turn-time.test.ts` → engine: `packages/coding-agent/test/usage-row-turn-time.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/utils/changelog.test.ts` → engine: `packages/coding-agent/test/utils/changelog.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/utils/git-clone.test.ts` → engine: `packages/coding-agent/test/utils/git-clone.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/utils/git-eisdir-fallback.test.ts` → engine: `packages/coding-agent/test/utils/git-eisdir-fallback.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/utils/git-show-stream.test.ts` → engine: `packages/coding-agent/test/utils/git-show-stream.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/utils/jj.test.ts` → engine: `packages/coding-agent/test/utils/jj.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/web/search/abort-and-timeout.test.ts` → engine: `packages/coding-agent/test/web/search/abort-and-timeout.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/welcome-history-resize.test.ts` → engine: `packages/coding-agent/test/welcome-history-resize.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/welcome-tip.test.ts` → engine: `packages/coding-agent/test/welcome-tip.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/write-acp-fs.test.ts` → engine: `packages/coding-agent/test/write-acp-fs.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/write-hashline-header.test.ts` → engine: `packages/coding-agent/test/write-hashline-header.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/write-xdev-dispatch.test.ts` → engine: `packages/coding-agent/test/write-xdev-dispatch.test.ts`
+- vendor: `vendor/oh-my-pi/packages/coding-agent/test/xiaomi-tp-discovery-merge.test.ts` → engine: `packages/coding-agent/test/xiaomi-tp-discovery-merge.test.ts`
+- vendor: `vendor/oh-my-pi/packages/collab-web/CHANGELOG.md` → engine: `packages/collab-web/CHANGELOG.md`
+- vendor: `vendor/oh-my-pi/packages/collab-web/package.json` → engine: `packages/collab-web/package.json`
+- vendor: `vendor/oh-my-pi/packages/collab-web/src/app.tsx` → engine: `packages/collab-web/src/app.tsx`
+- vendor: `vendor/oh-my-pi/packages/collab-web/src/components/transcript/Markdown.tsx` → engine: `packages/collab-web/src/components/transcript/Markdown.tsx`
+- vendor: `vendor/oh-my-pi/packages/collab-web/src/components/transcript/Transcript.tsx` → engine: `packages/collab-web/src/components/transcript/Transcript.tsx`
+- vendor: `vendor/oh-my-pi/packages/collab-web/test/transcript.test.tsx` → engine: `packages/collab-web/test/transcript.test.tsx`
+- vendor: `vendor/oh-my-pi/packages/metaharness/adapters/edit/runner.ts` → engine: `packages/metaharness/adapters/edit/runner.ts`
+- vendor: `vendor/oh-my-pi/packages/metaharness/package.json` → engine: `packages/metaharness/package.json`
+- vendor: `vendor/oh-my-pi/packages/metaharness/README.md` → engine: `packages/metaharness/README.md`
+- vendor: `vendor/oh-my-pi/packages/metaharness/scripts/trace-report.ts` → engine: `packages/metaharness/scripts/trace-report.ts`
+- vendor: `vendor/oh-my-pi/packages/metaharness/src/benchmarks.ts` → engine: `packages/metaharness/src/benchmarks.ts`
+- vendor: `vendor/oh-my-pi/packages/metaharness/src/web/app.tsx` → engine: `packages/metaharness/src/web/app.tsx`
+- vendor: `vendor/oh-my-pi/packages/metaharness/tsconfig.json` → engine: `packages/metaharness/tsconfig.json`
+- vendor: `vendor/oh-my-pi/packages/mnemopi/CHANGELOG.md` → engine: `packages/mnemopi/CHANGELOG.md`
+- vendor: `vendor/oh-my-pi/packages/mnemopi/package.json` → engine: `packages/mnemopi/package.json`
+- vendor: `vendor/oh-my-pi/packages/mnemopi/src/core/beam/helpers.ts` → engine: `packages/mnemopi/src/core/beam/helpers.ts`
+- vendor: `vendor/oh-my-pi/packages/mnemopi/src/core/beam/index.ts` → engine: `packages/mnemopi/src/core/beam/index.ts`
+- vendor: `vendor/oh-my-pi/packages/mnemopi/src/core/beam/recall.ts` → engine: `packages/mnemopi/src/core/beam/recall.ts`
+- vendor: `vendor/oh-my-pi/packages/mnemopi/src/core/entities.ts` → engine: `packages/mnemopi/src/core/entities.ts`
+- vendor: `vendor/oh-my-pi/packages/mnemopi/src/core/memory.ts` → engine: `packages/mnemopi/src/core/memory.ts`
+- vendor: `vendor/oh-my-pi/packages/mnemopi/src/core/orchestrator.ts` → engine: `packages/mnemopi/src/core/orchestrator.ts`
+- vendor: `vendor/oh-my-pi/packages/mnemopi/src/core/patterns.ts` → engine: `packages/mnemopi/src/core/patterns.ts`
+- vendor: `vendor/oh-my-pi/packages/mnemopi/src/mcp-tools.ts` → engine: `packages/mnemopi/src/mcp-tools.ts`
+- vendor: `vendor/oh-my-pi/packages/natives/bench/text.ts` → engine: `packages/natives/bench/text.ts`
+- vendor: `vendor/oh-my-pi/packages/natives/CHANGELOG.md` → engine: `packages/natives/CHANGELOG.md`
+- vendor: `vendor/oh-my-pi/packages/natives/native/index.d.ts` → engine: `packages/natives/native/index.d.ts`
+- vendor: `vendor/oh-my-pi/packages/natives/native/index.js` → engine: `packages/natives/native/index.js`
+- vendor: `vendor/oh-my-pi/packages/natives/native/loader-state.js` → engine: `packages/natives/native/loader-state.js`
+- vendor: `vendor/oh-my-pi/packages/natives/package.json` → engine: `packages/natives/package.json`
+- vendor: `vendor/oh-my-pi/packages/natives/scripts/build-bindings.ts` → engine: `packages/natives/scripts/build-bindings.ts`
+- vendor: `vendor/oh-my-pi/packages/natives/scripts/gen-npm-packages.ts` → engine: `packages/natives/scripts/gen-npm-packages.ts`
+- vendor: `vendor/oh-my-pi/packages/natives/test/native.test.ts` → engine: `packages/natives/test/native.test.ts`
+- vendor: `vendor/oh-my-pi/packages/natives/test/npm-packages.test.ts` → engine: `packages/natives/test/npm-packages.test.ts`
+- vendor: `vendor/oh-my-pi/packages/omptype/package.json` → engine: `packages/omptype/package.json`
+- vendor: `vendor/oh-my-pi/packages/omptype/src/compile.ts` → engine: `packages/omptype/src/compile.ts`
+- vendor: `vendor/oh-my-pi/packages/omptype/src/infer.ts` → engine: `packages/omptype/src/infer.ts`
+- vendor: `vendor/oh-my-pi/packages/omptype/src/interp.ts` → engine: `packages/omptype/src/interp.ts`
+- vendor: `vendor/oh-my-pi/packages/omptype/src/keywords.ts` → engine: `packages/omptype/src/keywords.ts`
+- vendor: `vendor/oh-my-pi/packages/omptype/src/type.ts` → engine: `packages/omptype/src/type.ts`
+- vendor: `vendor/oh-my-pi/packages/omptype/test/ark/discrimination.test.ts` → engine: `packages/omptype/test/ark/discrimination.test.ts`
+- vendor: `vendor/oh-my-pi/packages/omptype/test/ark/enclosed.test.ts` → engine: `packages/omptype/test/ark/enclosed.test.ts`
+- vendor: `vendor/oh-my-pi/packages/omptype/test/ark/keywords/object.test.ts` → engine: `packages/omptype/test/ark/keywords/object.test.ts`
+- vendor: `vendor/oh-my-pi/packages/omptype/test/ark/nary.test.ts` → engine: `packages/omptype/test/ark/nary.test.ts`
+- vendor: `vendor/oh-my-pi/packages/omptype/test/ark/objects/defaults.test.ts` → engine: `packages/omptype/test/ark/objects/defaults.test.ts`
+- vendor: `vendor/oh-my-pi/packages/omptype/test/ark/objects/mapped.test.ts` → engine: `packages/omptype/test/ark/objects/mapped.test.ts`
+- vendor: `vendor/oh-my-pi/packages/omptype/test/ark/objects/onUndeclaredKey.test.ts` → engine: `packages/omptype/test/ark/objects/onUndeclaredKey.test.ts`
+- vendor: `vendor/oh-my-pi/packages/omptype/test/ark/objects/props.test.ts` → engine: `packages/omptype/test/ark/objects/props.test.ts`
+- vendor: `vendor/oh-my-pi/packages/omptype/test/ark/pipe.test.ts` → engine: `packages/omptype/test/ark/pipe.test.ts`
+- vendor: `vendor/oh-my-pi/packages/omptype/test/ark/range.test.ts` → engine: `packages/omptype/test/ark/range.test.ts`
+- vendor: `vendor/oh-my-pi/packages/omptype/test/ark/realWorld.test.ts` → engine: `packages/omptype/test/ark/realWorld.test.ts`
+- vendor: `vendor/oh-my-pi/packages/omptype/test/ark/scope.test.ts` → engine: `packages/omptype/test/ark/scope.test.ts`
+- vendor: `vendor/oh-my-pi/packages/snapcompact/CHANGELOG.md` → engine: `packages/snapcompact/CHANGELOG.md`
+- vendor: `vendor/oh-my-pi/packages/snapcompact/package.json` → engine: `packages/snapcompact/package.json`
+- vendor: `vendor/oh-my-pi/packages/snapcompact/src/snapcompact.ts` → engine: `packages/snapcompact/src/snapcompact.ts`
+- vendor: `vendor/oh-my-pi/packages/stats/CHANGELOG.md` → engine: `packages/stats/CHANGELOG.md`
+- vendor: `vendor/oh-my-pi/packages/stats/package.json` → engine: `packages/stats/package.json`
+- vendor: `vendor/oh-my-pi/packages/stats/scripts/generate-client-bundle.ts` → engine: `packages/stats/scripts/generate-client-bundle.ts`
+- vendor: `vendor/oh-my-pi/packages/stats/src/client/api.ts` → engine: `packages/stats/src/client/api.ts`
+- vendor: `vendor/oh-my-pi/packages/stats/src/client/app/routes.ts` → engine: `packages/stats/src/client/app/routes.ts`
+- vendor: `vendor/oh-my-pi/packages/stats/src/client/App.tsx` → engine: `packages/stats/src/client/App.tsx`
+- vendor: `vendor/oh-my-pi/packages/stats/src/client/components/chart-shared.tsx` → engine: `packages/stats/src/client/components/chart-shared.tsx`
+- vendor: `vendor/oh-my-pi/packages/stats/src/client/data/useHashRoute.ts` → engine: `packages/stats/src/client/data/useHashRoute.ts`
+- vendor: `vendor/oh-my-pi/packages/stats/src/client/routes/index.ts` → engine: `packages/stats/src/client/routes/index.ts`
+- vendor: `vendor/oh-my-pi/packages/stats/src/client/routes/ModelsRoute.tsx` → engine: `packages/stats/src/client/routes/ModelsRoute.tsx`
+- vendor: `vendor/oh-my-pi/packages/stats/src/client/routes/ProvidersRoute.tsx` → engine: `packages/stats/src/client/routes/ProvidersRoute.tsx`
+- vendor: `vendor/oh-my-pi/packages/stats/src/client/styles.css` → engine: `packages/stats/src/client/styles.css`
+- vendor: `vendor/oh-my-pi/packages/stats/src/db.ts` → engine: `packages/stats/src/db.ts`
+- vendor: `vendor/oh-my-pi/packages/stats/src/index.ts` → engine: `packages/stats/src/index.ts`
+- vendor: `vendor/oh-my-pi/packages/stats/src/parser.ts` → engine: `packages/stats/src/parser.ts`
+- vendor: `vendor/oh-my-pi/packages/stats/src/server.ts` → engine: `packages/stats/src/server.ts`
+- vendor: `vendor/oh-my-pi/packages/stats/src/shared-types.ts` → engine: `packages/stats/src/shared-types.ts`
+- vendor: `vendor/oh-my-pi/packages/stats/src/types.ts` → engine: `packages/stats/src/types.ts`
+- vendor: `vendor/oh-my-pi/packages/stats/test/embedded-client-archive.test.ts` → engine: `packages/stats/test/embedded-client-archive.test.ts`
+- vendor: `vendor/oh-my-pi/packages/stats/test/server-port-conflict.test.ts` → engine: `packages/stats/test/server-port-conflict.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tsconfig.workspace.json` → engine: `packages/tsconfig.workspace.json`
+- vendor: `vendor/oh-my-pi/packages/tui/bench/sanitize.ts` → engine: `packages/tui/bench/sanitize.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/CHANGELOG.md` → engine: `packages/tui/CHANGELOG.md`
+- vendor: `vendor/oh-my-pi/packages/tui/package.json` → engine: `packages/tui/package.json`
+- vendor: `vendor/oh-my-pi/packages/tui/src/autocomplete.ts` → engine: `packages/tui/src/autocomplete.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/box.ts` → engine: `packages/tui/src/components/box.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/cancellable-loader.ts` → engine: `packages/tui/src/components/cancellable-loader.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/composer/field.ts` → engine: `packages/tui/src/components/composer/field.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/composer/index.ts` → engine: `packages/tui/src/components/composer/index.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/composer/rail.ts` → engine: `packages/tui/src/components/composer/rail.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/composer/registry.ts` → engine: `packages/tui/src/components/composer/registry.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/composer/types.ts` → engine: `packages/tui/src/components/composer/types.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/editor.ts` → engine: `packages/tui/src/components/editor.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/image.ts` → engine: `packages/tui/src/components/image.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/input.ts` → engine: `packages/tui/src/components/input.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/loader.ts` → engine: `packages/tui/src/components/loader.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/markdown.ts` → engine: `packages/tui/src/components/markdown.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/scroll-view.ts` → engine: `packages/tui/src/components/scroll-view.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/select-list.ts` → engine: `packages/tui/src/components/select-list.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/settings-list.ts` → engine: `packages/tui/src/components/settings-list.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/spacer.ts` → engine: `packages/tui/src/components/spacer.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/tab-bar.ts` → engine: `packages/tui/src/components/tab-bar.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/text.ts` → engine: `packages/tui/src/components/text.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/components/truncated-text.ts` → engine: `packages/tui/src/components/truncated-text.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/deccara.ts` → engine: `packages/tui/src/deccara.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/index.ts` → engine: `packages/tui/src/index.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/kitty-graphics.ts` → engine: `packages/tui/src/kitty-graphics.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/latex-block.ts` → engine: `packages/tui/src/latex-block.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/latex-to-unicode.ts` → engine: `packages/tui/src/latex-to-unicode.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/stdin-buffer.ts` → engine: `packages/tui/src/stdin-buffer.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/terminal-capabilities.ts` → engine: `packages/tui/src/terminal-capabilities.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/terminal.ts` → engine: `packages/tui/src/terminal.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/tui.ts` → engine: `packages/tui/src/tui.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/src/utils.ts` → engine: `packages/tui/src/utils.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/editor-autocomplete-actions.test.ts` → engine: `packages/tui/test/editor-autocomplete-actions.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/editor.test.ts` → engine: `packages/tui/test/editor.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/editor-text-assist.test.ts` → engine: `packages/tui/test/editor-text-assist.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/emergency-restore-altscreen.test.ts` → engine: `packages/tui/test/emergency-restore-altscreen.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/helpers/terminal-multiplexer.ts` → engine: `packages/tui/test/helpers/terminal-multiplexer.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/history-frame-plan.test.ts` → engine: `packages/tui/test/history-frame-plan.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/image-budget.test.ts` → engine: `packages/tui/test/image-budget.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/keys.test.ts` → engine: `packages/tui/test/keys.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/kitty-graphics.test.ts` → engine: `packages/tui/test/kitty-graphics.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/latex-block.test.ts` → engine: `packages/tui/test/latex-block.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/latex-to-unicode.test.ts` → engine: `packages/tui/test/latex-to-unicode.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/markdown.test.ts` → engine: `packages/tui/test/markdown.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/notifications.test.ts` → engine: `packages/tui/test/notifications.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/overlay-scroll.test.ts` → engine: `packages/tui/test/overlay-scroll.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/process-terminal-headless.test.ts` → engine: `packages/tui/test/process-terminal-headless.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/resize-multiplexer-anchor.test.ts` → engine: `packages/tui/test/resize-multiplexer-anchor.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/stdin-buffer.test.ts` → engine: `packages/tui/test/stdin-buffer.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/terminal-appearance.test.ts` → engine: `packages/tui/test/terminal-appearance.test.ts`
+- vendor: `vendor/oh-my-pi/packages/tui/test/terminal-capabilities.test.ts` → engine: `packages/tui/test/terminal-capabilities.test.ts`
+- vendor: `vendor/oh-my-pi/packages/typescript-edit-benchmark/package.json` → engine: `packages/typescript-edit-benchmark/package.json`
+- vendor: `vendor/oh-my-pi/packages/typescript-edit-benchmark/src/edit-shape-stats.ts` → engine: `packages/typescript-edit-benchmark/src/edit-shape-stats.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/CHANGELOG.md` → engine: `packages/utils/CHANGELOG.md`
+- vendor: `vendor/oh-my-pi/packages/utils/package.json` → engine: `packages/utils/package.json`
+- vendor: `vendor/oh-my-pi/packages/utils/src/acp/connection.ts` → engine: `packages/utils/src/acp/connection.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/ar/entries.ts` → engine: `packages/utils/src/ar/entries.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/ar/iso.ts` → engine: `packages/utils/src/ar/iso.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/ar/rar/rar4-decoder.ts` → engine: `packages/utils/src/ar/rar/rar4-decoder.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/ar/rar/rar5-decoder.ts` → engine: `packages/utils/src/ar/rar/rar5-decoder.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/ar/sevenzip.ts` → engine: `packages/utils/src/ar/sevenzip.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/ar/unix-ar.ts` → engine: `packages/utils/src/ar/unix-ar.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/async.ts` → engine: `packages/utils/src/async.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/browsers.ts` → engine: `packages/utils/src/browsers.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/color.ts` → engine: `packages/utils/src/color.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/dates.ts` → engine: `packages/utils/src/dates.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/dirs.ts` → engine: `packages/utils/src/dirs.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/docx/converter.ts` → engine: `packages/utils/src/docx/converter.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/dom/core.ts` → engine: `packages/utils/src/dom/core.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/env.ts` → engine: `packages/utils/src/env.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/fetch-retry.ts` → engine: `packages/utils/src/fetch-retry.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/format.ts` → engine: `packages/utils/src/format.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/frontmatter.ts` → engine: `packages/utils/src/frontmatter.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/index.ts` → engine: `packages/utils/src/index.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/json-parse.ts` → engine: `packages/utils/src/json-parse.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/marked/core.ts` → engine: `packages/utils/src/marked/core.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/path.ts` → engine: `packages/utils/src/path.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/postmortem.ts` → engine: `packages/utils/src/postmortem.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/prompt.ts` → engine: `packages/utils/src/prompt.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/ring.ts` → engine: `packages/utils/src/ring.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/runtime-install.ts` → engine: `packages/utils/src/runtime-install.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/sqlite.ts` → engine: `packages/utils/src/sqlite.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/template.ts` → engine: `packages/utils/src/template.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/tls-fetch.ts` → engine: `packages/utils/src/tls-fetch.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/turndown/html.ts` → engine: `packages/utils/src/turndown/html.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/src/vterm.ts` → engine: `packages/utils/src/vterm.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/test/acp.test.ts` → engine: `packages/utils/test/acp.test.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/test/ar/xz.test.ts` → engine: `packages/utils/test/ar/xz.test.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/test/browsers.test.ts` → engine: `packages/utils/test/browsers.test.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/test/color.test.ts` → engine: `packages/utils/test/color.test.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/test/fetch-retry.test.ts` → engine: `packages/utils/test/fetch-retry.test.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/test/format.test.ts` → engine: `packages/utils/test/format.test.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/test/marked.test.ts` → engine: `packages/utils/test/marked.test.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/test/path.test.ts` → engine: `packages/utils/test/path.test.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/test/postmortem-cleanup-error.test.ts` → engine: `packages/utils/test/postmortem-cleanup-error.test.ts`
+- vendor: `vendor/oh-my-pi/packages/utils/test/runtime-install.test.ts` → engine: `packages/utils/test/runtime-install.test.ts`
+- vendor: `vendor/oh-my-pi/packages/wire/package.json` → engine: `packages/wire/package.json`
