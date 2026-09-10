@@ -230,14 +230,14 @@ env = {
 }
 auto = ["stop"]
 
-[daemons.kimi-code]
-run = "exec /home/toxic/projects/sovereign-projects/tau/kimi/apps/kimi-code/dist/main.mjs web --no-open --port 25126"
-dir = "/home/toxic/projects/sovereign-projects/tau/kimi"
+[daemons.tau-code]
+run = "exec bun run src/server.ts --port 25126"
+dir = "/home/toxic/projects/sovereign-projects/tau/engine/packages/metaharness"
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:25126/health"
+ready_http = "http://127.0.0.1:25126/"
 env = {
-  KIMI_CODE_PORT = "25126",
+  TAU_CODE_PORT = "25126",
 }
 auto = ["start"]
 
@@ -256,10 +256,10 @@ auto = ["start"]
 daemons = ["herd", "qdrant", "redis", "search-api", "mesh-hub", "prometheus", "grafana", "mesh"]
 
 [groups.main]
-daemons = ["qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "kimi-code", "mesh"]
+daemons = ["qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "mesh"]
 
 [groups.agents]
-daemons = ["axiom", "tau", "kimi-code"]
+daemons = ["axiom", "tau", "tau-code"]
 
 [groups.search]
 daemons = ["search-api", "search-ui"]
@@ -271,15 +271,9 @@ daemons = ["mcp-gateway", "mesh"]
 daemons = ["prometheus", "grafana"]
 
 [groups.all]
-daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "kimi-code", "mesh", "build-server"]
+daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "mesh", "build-server"]
 
 [groups.sovereign-core]
-daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "kimi-code", "mesh", "build-server"]
+daemons = ["herd", "qdrant", "redis", "kafka", "hal-substrate", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "mesh", "build-server"]
 
-[daemons.build-server]
-run = "exec /home/toxic/.cargo/bin/forgewatch serve --port 7878"
-dir = "/home/toxic"
-mise = false
-retry = true
-ready_http = "http://127.0.0.1:7878"
-auto = ["start"]
+
