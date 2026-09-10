@@ -10,8 +10,8 @@ rustup show || true
 rustc --version; cargo --version; bun --version
 ss -tlnp | grep 9090 || true
 ps aux | grep -E "collab|omp" | grep -v grep || true
-cat ~/.omp/agent/mcp.json 2>/dev/null | head -n 100 || echo no mcp.json
-ls -l ~/.omp/agent/extensions/ 2>/dev/null | head -n 100
+cat ~/.tau/agent/mcp.json 2>/dev/null | head -n 100 || echo no mcp.json
+ls -l ~/.tau/agent/extensions/ 2>/dev/null | head -n 100
 ls -l /tmp/agent-trigger.txt 2>/dev/null || echo missing trigger
 which qemu-img || echo missing qemu-img
 
@@ -58,8 +58,8 @@ cat packages/ai/src/providers/data/groq.models.ts | head -n 40
 
 RUSTUP_TOOLCHAIN=nightly bun --cwd packages/coding-agent run build --verbose 2>&1 | tee /tmp/coding-agent.log
 ls -lh packages/coding-agent/dist/
-cp packages/coding-agent/dist/omp ~/.local/bin/omp 2>/dev/null || cp packages/coding-agent/dist/omp-* ~/.local/bin/omp 2>/dev/null || true
-~/.local/bin/omp --version || true
+cp packages/coding-agent/dist/tau ~/.local/bin/tau 2>/dev/null || cp packages/coding-agent/dist/tau-* ~/.local/bin/tau 2>/dev/null || true
+~/.local/bin/tau --version || true
 
 ln -sfn ~/projects/pi-vault-mind packages/pi-vault-mind
 cat ~/projects/pi-vault-mind/src/extension-packages.ts
@@ -78,6 +78,6 @@ RUSTUP_TOOLCHAIN=nightly bun --cwd packages/collab run dev --host 0.0.0.0 --port
 sleep 5
 ss -tlnp | grep 9090 || true
 curl -sk https://awrawr-pc:9090/ | head -n 20 || true
-~/.local/bin/omp --version || true
+~/.local/bin/tau --version || true
 echo MESH_SEPT_2026_FIX_EXPERIMENTAL DONE UNBLINDED
 echo logs: /tmp/natives.log /tmp/coding-agent.log /tmp/tau.log
