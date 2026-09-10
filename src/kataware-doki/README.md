@@ -9,15 +9,15 @@ route to the next available node. No single point of failure.
 
 ## Endpoints Used
 
-| Endpoint | Purpose |
-|---|---|
-| `/completion` | Raw text generation (prompt -> content) |
+| Endpoint               | Purpose                                     |
+| ---------------------- | ------------------------------------------- |
+| `/completion`          | Raw text generation (prompt -> content)     |
 | `/v1/chat/completions` | OpenAI-compatible chat (if --chat-template) |
-| `/tokenize` | Token counting |
-| `/detokenize` | Token -> text |
-| `/embedding` | Vector embeddings |
-| `/props` | Server metadata (model, n_ctx, n_parallel) |
-| `/health` | Health check |
+| `/tokenize`            | Token counting                              |
+| `/detokenize`          | Token -> text                               |
+| `/embedding`           | Vector embeddings                           |
+| `/props`               | Server metadata (model, n_ctx, n_parallel)  |
+| `/health`              | Health check                                |
 
 ## Mesh Lifecycle
 
@@ -31,6 +31,7 @@ route to the next available node. No single point of failure.
 ## Model Registry
 
 Pre-configured for RTX 3090 24GB:
+
 - Qwen 3.6 27B Q5_K_S (14GB) + DFlash drafter Q4_K_M (4GB) = 18GB total
 - Llama 4 Maverick 17B 128E Q4_K_M (12GB)
 - Llama 3.2 3B Q8_0 (3.5GB) — edge/CDP nodes

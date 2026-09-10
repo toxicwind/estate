@@ -3,11 +3,11 @@
 // Core primitive: llama swap (distributed node failover)
 
 export interface LlamaServerConfig {
-  baseUrl: string;      // e.g., http://awrawr-pc:8080
-  model: string;         // Model ID (must match --model loaded on server)
-  slots?: number;      // Parallel slots (-np)
-  apiKey?: string;      // Optional --api-key
-  timeout?: number;     // ms
+  baseUrl: string; // e.g., http://awrawr-pc:8080
+  model: string; // Model ID (must match --model loaded on server)
+  slots?: number; // Parallel slots (-np)
+  apiKey?: string; // Optional --api-key
+  timeout?: number; // ms
 }
 
 export interface LlamaNode {
@@ -34,7 +34,10 @@ export class LlamaMesh {
 
   heartbeat(id: string): void {
     const n = this.nodes.get(id);
-    if (n) { n.lastSeen = Date.now(); n.status = "idle"; }
+    if (n) {
+      n.lastSeen = Date.now();
+      n.status = "idle";
+    }
   }
 
   evict(): void {
@@ -54,7 +57,7 @@ export class LlamaMesh {
   // llama swap: pick best node for inference
   swap(model?: string): LlamaNode | undefined {
     const candidates = Array.from(this.nodes.values())
-      .filter(n => n.status === "idle" && (!model || n.model === model))
+      .filter((n) => n.status === "idle" && (!model || n.model === model))
       .sort((a, b) => a.latency - b.latency);
     return candidates[0];
   }
@@ -69,7 +72,9 @@ export class LlamaMesh {
     if (n) n.status = "idle";
   }
 
-  all(): LlamaNode[] { return Array.from(this.nodes.values()); }
+  all(): LlamaNode[] {
+    return Array.from(this.nodes.values());
+  }
 }
 
 export const mesh = new LlamaMesh();
@@ -78,7 +83,12 @@ export const mesh = new LlamaMesh();
 export async function llamaComplete(
   cfg: LlamaServerConfig,
   prompt: string,
-  opts: { maxTokens?: number; temperature?: number; topP?: number; stop?: string[] } = {}
+  opts: {
+    maxTokens?: number;
+    temperature?: number;
+    topP?: number;
+    stop?: string[];
+  } = {},
 ): Promise<string> {
   const url = `${cfg.baseUrl}/completion`;
   const body = {
@@ -90,7 +100,9 @@ export async function llamaComplete(
     stream: false,
   };
 
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
   if (cfg.apiKey) headers["Authorization"] = `Bearer ${cfg.apiKey}`;
 
   const ctrl = new AbortController();
@@ -104,12 +116,14 @@ export async function llamaComplete(
       signal: ctrl.signal,
     });
     clearTimeout(t);
-    if (!res.ok) throw new Error(`llama-server ${res.status}: ${await res.text()}`);
+    if (!res.ok)
+      throw new Error(`llama-server ${res.status}: ${await res.text()}`);
     const data = await res.json();
     return data.content ?? "";
   } catch (e: any) {
     clearTimeout(t);
-    if (e.name === "AbortError") throw new Error("llama-server timeout — node dead");
+    if (e.name === "AbortError")
+      throw new Error("llama-server timeout — node dead");
     throw e;
   }
 }
@@ -118,7 +132,7 @@ export async function llamaComplete(
 export async function llamaChat(
   cfg: LlamaServerConfig,
   messages: { role: string; content: string }[],
-  opts: { maxTokens?: number; temperature?: number; topP?: number } = {}
+  opts: { maxTokens?: number; temperature?: number; topP?: number } = {},
 ): Promise<string> {
   const url = `${cfg.baseUrl}/v1/chat/completions`;
   const body = {
@@ -130,7 +144,9 @@ export async function llamaChat(
     stream: false,
   };
 
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
   if (cfg.apiKey) headers["Authorization"] = `Bearer ${cfg.apiKey}`;
 
   const ctrl = new AbortController();
@@ -144,12 +160,14 @@ export async function llamaChat(
       signal: ctrl.signal,
     });
     clearTimeout(t);
-    if (!res.ok) throw new Error(`llama-server ${res.status}: ${await res.text()}`);
+    if (!res.ok)
+      throw new Error(`llama-server ${res.status}: ${await res.text()}`);
     const data = await res.json();
     return data.choices?.[0]?.message?.content ?? "";
   } catch (e: any) {
     clearTimeout(t);
-    if (e.name === "AbortError") throw new Error("llama-server timeout — node dead");
+    if (e.name === "AbortError")
+      throw new Error("llama-server timeout — node dead");
     throw e;
   }
 }
@@ -158,7 +176,7 @@ export async function llamaChat(
 export async function llamaSwap(
   configs: LlamaServerConfig[],
   prompt: string,
-  opts?: { maxTokens?: number; temperature?: number }
+  opts?: { maxTokens?: number; temperature?: number },
 ): Promise<{ content: string; node: LlamaServerConfig }> {
   for (const cfg of configs) {
     try {
@@ -177,7 +195,9 @@ export async function llamaHealth(baseUrl: string): Promise<boolean> {
   try {
     const res = await fetch(`${baseUrl}/health`, { method: "GET" });
     return res.ok;
-  } catch { return false; }
+  } catch {
+    return false;
+  }
 }
 
 // Props: get server metadata (model, n_ctx, etc)
@@ -188,7 +208,10 @@ export async function llamaProps(baseUrl: string): Promise<any> {
 }
 
 // Tokenize: /tokenize
-export async function llamaTokenize(baseUrl: string, content: string): Promise<number[]> {
+export async function llamaTokenize(
+  baseUrl: string,
+  content: string,
+): Promise<number[]> {
   const res = await fetch(`${baseUrl}/tokenize`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -200,7 +223,10 @@ export async function llamaTokenize(baseUrl: string, content: string): Promise<n
 }
 
 // Detokenize: /detokenize
-export async function llamaDetokenize(baseUrl: string, tokens: number[]): Promise<string> {
+export async function llamaDetokenize(
+  baseUrl: string,
+  tokens: number[],
+): Promise<string> {
   const res = await fetch(`${baseUrl}/detokenize`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -212,7 +238,10 @@ export async function llamaDetokenize(baseUrl: string, tokens: number[]): Promis
 }
 
 // Embedding: /embedding
-export async function llamaEmbedding(baseUrl: string, content: string): Promise<number[]> {
+export async function llamaEmbedding(
+  baseUrl: string,
+  content: string,
+): Promise<number[]> {
   const res = await fetch(`${baseUrl}/embedding`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

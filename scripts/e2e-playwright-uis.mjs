@@ -35,12 +35,17 @@ try {
   report.mode = "playwright-launch-failed";
   report.ok = false;
   report.launch_error = String(e);
-  writeFileSync(resolve(outDir, "report.json"), JSON.stringify(report, null, 2));
+  writeFileSync(
+    resolve(outDir, "report.json"),
+    JSON.stringify(report, null, 2),
+  );
   console.error("PLAYWRIGHT_LAUNCH_FAIL", e);
   process.exit(2);
 }
 
-const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+const context = await browser.newContext({
+  viewport: { width: 1280, height: 800 },
+});
 const page = await context.newPage();
 
 for (const spec of pagesSpec) {
@@ -65,18 +70,23 @@ for (const spec of pagesSpec) {
   };
 
   try {
-    await page.goto(spec.url, { waitUntil: "domcontentloaded", timeout: 30000 });
+    await page.goto(spec.url, {
+      waitUntil: "domcontentloaded",
+      timeout: 30000,
+    });
     await page.waitForTimeout(2000);
     entry.title = await page.title();
-    const body = await page.locator("body").innerText({ timeout: 5000 }).catch(() => "");
+    const body = await page
+      .locator("body")
+      .innerText({ timeout: 5000 })
+      .catch(() => "");
     entry.body_len = body.length;
     const shot = resolve(outDir, `${spec.name}.png`);
     await page.screenshot({ path: shot, fullPage: false });
     entry.screenshot = shot;
     entry.page_errors = [...pageErrors];
     entry.console_errors = consoleErrors.filter(
-      (t) =>
-        !/favicon|Download the React DevTools|sourcemap/i.test(t),
+      (t) => !/favicon|Download the React DevTools|sourcemap/i.test(t),
     );
     // Real shell chrome: non-empty title or substantial body, no pageerror
     entry.ok =
@@ -99,5 +109,7 @@ for (const spec of pagesSpec) {
 
 await browser.close();
 writeFileSync(resolve(outDir, "report.json"), JSON.stringify(report, null, 2));
-console.log(JSON.stringify({ ok: report.ok, mode: report.mode, outDir }, null, 2));
+console.log(
+  JSON.stringify({ ok: report.ok, mode: report.mode, outDir }, null, 2),
+);
 process.exit(report.ok ? 0 : 1);

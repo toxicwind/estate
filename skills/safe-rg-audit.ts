@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Safe RG Audit Scaffold (`safe-rg-audit.ts`)
- * 
+ *
  * Prevents catastrophic self-referential log loops and runaway disk bloat
  * by enforcing:
  * 1. Hard exclusions for session transcripts (*.log, *.jsonl, .git, cache, node_modules)
@@ -19,10 +19,18 @@ export interface SafeSearchOptions {
   timeoutMs?: number;
 }
 
-export function safeSearch(options: SafeSearchOptions): { stdout: string; stderr: string; exitCode: number } {
+export function safeSearch(options: SafeSearchOptions): {
+  stdout: string;
+  stderr: string;
+  exitCode: number;
+} {
   const {
     pattern,
-    paths = ["/home/toxic/.tau", "/home/toxic/.config", "/home/toxic/sovereign"],
+    paths = [
+      "/home/toxic/.tau",
+      "/home/toxic/.config",
+      "/home/toxic/sovereign",
+    ],
     maxLines = 100,
     timeoutMs = 5000,
   } = options;
@@ -41,9 +49,12 @@ export function safeSearch(options: SafeSearchOptions): { stdout: string; stderr
   ];
 
   const args: string[] = [
-    "--max-filesize", "2M",
-    "--max-columns", "500",
-    "--color", "never",
+    "--max-filesize",
+    "2M",
+    "--max-columns",
+    "500",
+    "--color",
+    "never",
     "-n",
   ];
 

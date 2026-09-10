@@ -38,10 +38,7 @@ export class PreReleaseIntegrationRegistry extends EventEmitter {
     super();
     this.integrationDir =
       integrationDir ||
-      path.resolve(
-        process.env.SOVEREIGN_ROOT || process.cwd(),
-        "integrations"
-      );
+      path.resolve(process.env.SOVEREIGN_ROOT || process.cwd(), "integrations");
   }
 
   /**
@@ -64,7 +61,7 @@ export class PreReleaseIntegrationRegistry extends EventEmitter {
   public async persistIntegration(
     targetPath: string,
     sourceCode: string,
-    meta?: IntegrationMetadata
+    meta?: IntegrationMetadata,
   ): Promise<string> {
     if (!fs.existsSync(this.integrationDir)) {
       fs.mkdirSync(this.integrationDir, { recursive: true });
@@ -104,7 +101,9 @@ export class PreReleaseIntegrationRegistry extends EventEmitter {
       const impl = mod.impl;
 
       if (!target || impl === undefined) {
-        console.warn(`[integration] Skipping ${filePath}: missing TARGET or impl export`);
+        console.warn(
+          `[integration] Skipping ${filePath}: missing TARGET or impl export`,
+        );
         return false;
       }
 
@@ -121,7 +120,10 @@ export class PreReleaseIntegrationRegistry extends EventEmitter {
       this.emit("integration:loaded", { target, filePath });
       return true;
     } catch (err) {
-      console.error(`[integration] Failed to load module from ${filePath}:`, err);
+      console.error(
+        `[integration] Failed to load module from ${filePath}:`,
+        err,
+      );
       return false;
     }
   }
@@ -137,7 +139,10 @@ export class PreReleaseIntegrationRegistry extends EventEmitter {
 
     const files = fs.readdirSync(this.integrationDir);
     for (const file of files) {
-      if ((file.endsWith(".ts") || file.endsWith(".js")) && !file.endsWith(".disabled")) {
+      if (
+        (file.endsWith(".ts") || file.endsWith(".js")) &&
+        !file.endsWith(".disabled")
+      ) {
         await this.loadIntegration(path.join(this.integrationDir, file));
       }
     }
@@ -157,11 +162,16 @@ export class PreReleaseIntegrationRegistry extends EventEmitter {
     try {
       const files = fs.readdirSync(this.integrationDir);
       for (const file of files) {
-        if ((file.endsWith(".ts") || file.endsWith(".js")) && !file.endsWith(".disabled")) {
+        if (
+          (file.endsWith(".ts") || file.endsWith(".js")) &&
+          !file.endsWith(".disabled")
+        ) {
           const filePath = path.join(this.integrationDir, file);
           try {
             const content = fs.readFileSync(filePath, "utf-8");
-            const targetMatch = content.match(/export\s+const\s+TARGET\s*=\s*["']([^"']+)["']/);
+            const targetMatch = content.match(
+              /export\s+const\s+TARGET\s*=\s*["']([^"']+)["']/,
+            );
             if (targetMatch && targetMatch[1]) {
               const target = targetMatch[1];
               this.overrides.set(target, {
@@ -191,17 +201,25 @@ export class PreReleaseIntegrationRegistry extends EventEmitter {
       fs.mkdirSync(this.integrationDir, { recursive: true });
     }
 
-    this.watcher = fs.watch(this.integrationDir, { persistent: false }, async (event, filename) => {
-      if (!filename) return;
-      if (filename.endsWith(".ts") || filename.endsWith(".js")) {
-        const fullPath = path.join(this.integrationDir, filename);
-        if (fs.existsSync(fullPath)) {
-          await this.loadIntegration(fullPath);
+    this.watcher = fs.watch(
+      this.integrationDir,
+      { persistent: false },
+      async (event, filename) => {
+        if (!filename) return;
+        if (filename.endsWith(".ts") || filename.endsWith(".js")) {
+          const fullPath = path.join(this.integrationDir, filename);
+          if (fs.existsSync(fullPath)) {
+            await this.loadIntegration(fullPath);
+          }
         }
-      }
-    });
+      },
+    );
 
-    if (this.watcher && typeof (this.watcher as unknown as { unref: () => void }).unref === "function") {
+    if (
+      this.watcher &&
+      typeof (this.watcher as unknown as { unref: () => void }).unref ===
+        "function"
+    ) {
       (this.watcher as unknown as { unref: () => void }).unref();
     }
 

@@ -21,10 +21,7 @@
       "get_file_context",
       "get_symbol_references"
     ],
-    "denied_operations": [
-      "delete_file",
-      "bulk_replace"
-    ]
+    "denied_operations": ["delete_file", "bulk_replace"]
   },
   "enforcement": {
     "mode": "warn",

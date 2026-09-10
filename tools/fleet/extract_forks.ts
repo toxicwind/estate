@@ -37,7 +37,9 @@ for (const [name, f] of Object.entries(forks)) {
   f.bin_resolved = resolved;
   const bench = resolved.replace(/llama-server$/, "llama-bench");
   f.bench = (await Bun.file(bench).exists()) ? bench : null;
-  console.log(`${name}: bin=${resolved} ld_parts=${(f.ld || "").split(":").length} bench=${f.bench ? "yes" : "no"}`);
+  console.log(
+    `${name}: bin=${resolved} ld_parts=${(f.ld || "").split(":").length} bench=${f.bench ? "yes" : "no"}`,
+  );
 }
 
 const payload = {

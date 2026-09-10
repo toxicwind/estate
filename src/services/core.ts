@@ -50,5 +50,4 @@ export const CORE_SERVICES: ServiceDef[] = [
     mise: false,
     healthPath: "/health",
   },
-  
 ];

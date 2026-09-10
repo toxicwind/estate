@@ -70,18 +70,21 @@ function add(step: string, ok: boolean, detail: string) {
 
 // D3
 {
-  const r = await curlJson(localUrl("SOVEREIGN_ROUTER_PORT", "/v1/chat/completions"), {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${KEY}`,
+  const r = await curlJson(
+    localUrl("SOVEREIGN_ROUTER_PORT", "/v1/chat/completions"),
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${KEY}`,
+      },
+      body: JSON.stringify({
+        model: "auto",
+        messages: [{ role: "user", content: "Reply with exactly: pong" }],
+        max_tokens: 32,
+      }),
     },
-    body: JSON.stringify({
-      model: "auto",
-      messages: [{ role: "user", content: "Reply with exactly: pong" }],
-      max_tokens: 32,
-    }),
-  });
+  );
   const content =
     (r.body as any)?.choices?.[0]?.message?.content ||
     (r.body as any)?.choices?.[0]?.text ||
@@ -97,15 +100,18 @@ function add(step: string, ok: boolean, detail: string) {
 {
   const models = await curlJson(localUrl("LLAMA_SWAP_PORT", "/v1/models"));
   const id = (models.body as any)?.data?.[0]?.id || "default";
-  const r = await curlJson(localUrl("LLAMA_SWAP_PORT", "/v1/chat/completions"), {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      model: id,
-      messages: [{ role: "user", content: "hi" }],
-      max_tokens: 16,
-    }),
-  });
+  const r = await curlJson(
+    localUrl("LLAMA_SWAP_PORT", "/v1/chat/completions"),
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        model: id,
+        messages: [{ role: "user", content: "hi" }],
+        max_tokens: 16,
+      }),
+    },
+  );
   const msg = (r.body as any)?.choices?.[0];
   add(
     "D4 llama-swap chat",
@@ -132,7 +138,11 @@ function add(step: string, ok: boolean, detail: string) {
       per_page: 5,
       strict: true,
     });
-    add("D6 ghas_search_code", (search.results || []).length > 0, `n=${(search.results||[]).length}`);
+    add(
+      "D6 ghas_search_code",
+      (search.results || []).length > 0,
+      `n=${(search.results || []).length}`,
+    );
     const debug = await dispatchTool("ghas_rank_debug", {
       query: "ast-grep ripgrep",
       per_page: 5,
@@ -213,11 +223,7 @@ print("llama", "llama-swap-test" in cs)
 // D11 ghas api
 {
   const r = await curlJson(localUrl("GHAS_API_PORT", "/health"));
-  add(
-    "D11 ghas-api",
-    r.status === 200,
-    `port=${GHAS} status=${r.status}`,
-  );
+  add("D11 ghas-api", r.status === 200, `port=${GHAS} status=${r.status}`);
 }
 
 const pass = rows.filter((r) => r.ok).length;

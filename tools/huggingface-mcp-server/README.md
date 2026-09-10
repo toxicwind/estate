@@ -82,22 +82,22 @@ On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
 <details>
   <summary>Development/Unpublished Servers Configuration</summary>
 
-  ```json
-  "mcpServers": {
-    "huggingface": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "/absolute/path/to/huggingface-mcp-server",
-        "run",
-        "huggingface_mcp_server.py"
-      ],
-      "env": {
-        "HF_TOKEN": "your_token_here"  // Optional
-      }
+```json
+"mcpServers": {
+  "huggingface": {
+    "command": "uv",
+    "args": [
+      "--directory",
+      "/absolute/path/to/huggingface-mcp-server",
+      "run",
+      "huggingface_mcp_server.py"
+    ],
+    "env": {
+      "HF_TOKEN": "your_token_here"  // Optional
     }
   }
-  ```
+}
+```
 
 </details>
 

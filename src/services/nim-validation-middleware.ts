@@ -10,8 +10,13 @@ loadSovereignPorts();
 
 import { z } from "zod";
 
-const PORT = parseInt(process.env.NIM_VALIDATION_PORT ?? process.env.NIM_VALIDATION_PORT ?? "25191", 10);
-const UPSTREAM = process.env.NIM_VALIDATION_UPSTREAM ?? `http://127.0.0.1:${process.env.HERD_PORT || "25100"}`;
+const PORT = parseInt(
+  process.env.NIM_VALIDATION_PORT ?? process.env.NIM_VALIDATION_PORT ?? "25191",
+  10,
+);
+const UPSTREAM =
+  process.env.NIM_VALIDATION_UPSTREAM ??
+  `http://127.0.0.1:${process.env.HERD_PORT || "25100"}`;
 
 // ──────────────────────────────────────────────────────────────
 // ZOD SCHEMAS (matching NIM API spec)
@@ -23,14 +28,18 @@ const ChatMessage = z.object({
   role: MessageRole,
   content: z.union([z.string(), z.null()]),
   name: z.string().optional(),
-  tool_calls: z.array(z.object({
-    id: z.string(),
-    type: z.literal("function"),
-    function: z.object({
-      name: z.string(),
-      arguments: z.string(),
-    }),
-  })).optional(),
+  tool_calls: z
+    .array(
+      z.object({
+        id: z.string(),
+        type: z.literal("function"),
+        function: z.object({
+          name: z.string(),
+          arguments: z.string(),
+        }),
+      }),
+    )
+    .optional(),
   tool_call_id: z.string().optional(),
 });
 
@@ -65,26 +74,34 @@ const ToolChoice = z.union([
 
 const ResponseFormat = z.object({
   type: z.enum(["text", "json_object", "json_schema"]),
-  json_schema: z.object({
-    name: z.string(),
-    schema: z.record(z.unknown()),
-    strict: z.boolean().optional(),
-  }).optional(),
+  json_schema: z
+    .object({
+      name: z.string(),
+      schema: z.record(z.unknown()),
+      strict: z.boolean().optional(),
+    })
+    .optional(),
 });
 
 const StreamOptions = z.object({
   include_usage: z.boolean().optional(),
 });
 
-const ChatTemplateKwargs = z.object({
-  reasoning_effort: z.enum(["none", "low", "medium", "high", "max", "xhigh"]).optional(),
-  thinking: z.boolean().optional(),
-  continuous_thinking: z.boolean().optional(),
-}).passthrough();
+const ChatTemplateKwargs = z
+  .object({
+    reasoning_effort: z
+      .enum(["none", "low", "medium", "high", "max", "xhigh"])
+      .optional(),
+    thinking: z.boolean().optional(),
+    continuous_thinking: z.boolean().optional(),
+  })
+  .passthrough();
 
-const ExtraBody = z.object({
-  chat_template_kwargs: ChatTemplateKwargs.optional(),
-}).passthrough();
+const ExtraBody = z
+  .object({
+    chat_template_kwargs: ChatTemplateKwargs.optional(),
+  })
+  .passthrough();
 
 const ChatRequest = z.object({
   model: z.string(),
@@ -128,18 +145,22 @@ const stats = {
 // VALIDATION FUNCTIONS
 // ──────────────────────────────────────────────────────────────
 
-function validateChatRequest(body: unknown): { valid: boolean; errors: string[] } {
+function validateChatRequest(body: unknown): {
+  valid: boolean;
+  errors: string[];
+} {
   const result = ChatRequest.safeParse(body);
   if (result.success) {
     return { valid: true, errors: [] };
   }
-  
+
   if (!result.error || !result.error.errors) {
     return { valid: false, errors: ["Unknown validation error"] };
   }
-  
-  const errors = result.error.errors.map(e => 
-    `${e.path.join(".")}: ${e.message}`);
+
+  const errors = result.error.errors.map(
+    (e) => `${e.path.join(".")}: ${e.message}`,
+  );
   return { valid: false, errors };
 }
 
@@ -152,22 +173,25 @@ const server = Bun.serve({
   hostname: "0.0.0.0",
   async fetch(req) {
     const url = new URL(req.url);
-    
+
     // Health check
     if (url.pathname === "/health") {
       return new Response("OK");
     }
-    
+
     // Stats endpoint
     if (url.pathname === "/admin/stats") {
-      return new Response(JSON.stringify({
-        ...stats,
-        uptimeS: Math.floor((Date.now() - stats.startedAt) / 1000),
-      }), {
-        headers: { "content-type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({
+          ...stats,
+          uptimeS: Math.floor((Date.now() - stats.startedAt) / 1000),
+        }),
+        {
+          headers: { "content-type": "application/json" },
+        },
+      );
     }
-    
+
     // Validation endpoint (standalone validation)
     if (url.pathname === "/v1/validate" && req.method === "POST") {
       try {
@@ -184,66 +208,81 @@ const server = Bun.serve({
         });
       } catch (e) {
         stats.errors++;
-        return new Response(JSON.stringify({ error: String(e) }), { status: 500 });
+        return new Response(JSON.stringify({ error: String(e) }), {
+          status: 500,
+        });
       }
     }
-    
+
     // Proxy with validation
     if (url.pathname === "/v1/chat/completions" && req.method === "POST") {
       stats.requests++;
       try {
         const body = await req.json();
-        
+
         // Validate request
         const validation = validateChatRequest(body);
         if (!validation.valid) {
           stats.invalid++;
-          return new Response(JSON.stringify({
-            error: "Validation failed",
-            details: validation.errors,
-          }), {
-            status: 422,
-            headers: { "content-type": "application/json" },
-          });
+          return new Response(
+            JSON.stringify({
+              error: "Validation failed",
+              details: validation.errors,
+            }),
+            {
+              status: 422,
+              headers: { "content-type": "application/json" },
+            },
+          );
         }
-        
+
         stats.valid++;
-        
+
         // Forward to upstream
-        const response = await fetch(`${UPSTREAM}${url.pathname}${url.search}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": req.headers.get("Authorization") || "",
+        const response = await fetch(
+          `${UPSTREAM}${url.pathname}${url.search}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: req.headers.get("Authorization") || "",
+            },
+            body: JSON.stringify(body),
+            signal: AbortSignal.timeout(180_000),
           },
-          body: JSON.stringify(body),
-          signal: AbortSignal.timeout(180_000),
-        });
-        
+        );
+
         return new Response(response.body, {
           status: response.status,
           headers: response.headers,
         });
       } catch (e) {
         stats.errors++;
-        return new Response(JSON.stringify({ error: String(e) }), { status: 500 });
+        return new Response(JSON.stringify({ error: String(e) }), {
+          status: 500,
+        });
       }
     }
-    
+
     // Pass through other endpoints
     if (url.pathname.startsWith("/v1/")) {
       const response = await fetch(`${UPSTREAM}${url.pathname}${url.search}`, {
         method: req.method,
         headers: req.headers,
-        body: req.method !== "GET" && req.method !== "HEAD" ? await req.text() : undefined,
+        body:
+          req.method !== "GET" && req.method !== "HEAD"
+            ? await req.text()
+            : undefined,
         signal: AbortSignal.timeout(60_000),
       });
       return response;
     }
-    
+
     return new Response("Not Found", { status: 404 });
   },
 });
 
-console.log(`[nim-validation] listening :${server.port} → upstream=${UPSTREAM}`);
+console.log(
+  `[nim-validation] listening :${server.port} → upstream=${UPSTREAM}`,
+);
 console.log(`[nim-validation] Zod schemas loaded for validation`);

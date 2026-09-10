@@ -41,7 +41,8 @@ export const PROGRAMS = {
       "https://bounty.github.com/scope.html",
       "https://bounty.github.com/rules.html",
     ],
-    submitHint: "Submit via https://hackerone.com/github — criticals advertised $30k+",
+    submitHint:
+      "Submit via https://hackerone.com/github — criticals advertised $30k+",
   },
   google: {
     id: "google",
@@ -53,7 +54,8 @@ export const PROGRAMS = {
       // HackerOne is not Google's primary VRP intake; still useful for cross-ref
       "https://hackerone.com/opportunities/all?q=google",
     ],
-    submitHint: "Primary: https://bughunters.google.com/report (VRP rewards in $$)",
+    submitHint:
+      "Primary: https://bughunters.google.com/report (VRP rewards in $$)",
   },
 };
 
@@ -80,7 +82,8 @@ export async function openBrowser(opts = {}) {
     try {
       const browser = await chromium.connectOverCDP(cdp);
       const context =
-        browser.contexts()[0] || (await browser.newContext({ acceptDownloads: true }));
+        browser.contexts()[0] ||
+        (await browser.newContext({ acceptDownloads: true }));
       return { browser, context, mode: "cdp", engine: "chromium-cdp" };
     } catch (e) {
       console.error("[bb] CDP connect failed:", e.message);
@@ -131,7 +134,11 @@ export async function openBrowser(opts = {}) {
 /**
  * Open each URL in its own tab, wait for network idle-ish, screenshot.
  */
-export async function openProgramTabs(context, program, { keepOpen = true } = {}) {
+export async function openProgramTabs(
+  context,
+  program,
+  { keepOpen = true } = {},
+) {
   const outDir = ensureArtifacts(program.id);
   const results = [];
   let first = true;
@@ -139,7 +146,14 @@ export async function openProgramTabs(context, program, { keepOpen = true } = {}
   for (const url of program.urls) {
     const page = first ? await context.newPage() : await context.newPage();
     first = false;
-    const row = { url, ok: false, title: "", status: null, screenshot: null, error: null };
+    const row = {
+      url,
+      ok: false,
+      title: "",
+      status: null,
+      screenshot: null,
+      error: null,
+    };
     try {
       console.log(`[bb:${program.id}] → ${url}`);
       const resp = await page.goto(url, {
@@ -153,7 +167,9 @@ export async function openProgramTabs(context, program, { keepOpen = true } = {}
       await page.screenshot({ path: shot, fullPage: false });
       row.screenshot = shot;
       row.ok = true;
-      console.log(`[bb:${program.id}] OK ${row.status} «${row.title}» → ${shot}`);
+      console.log(
+        `[bb:${program.id}] OK ${row.status} «${row.title}» → ${shot}`,
+      );
     } catch (e) {
       row.error = String(e.message || e);
       console.error(`[bb:${program.id}] FAIL ${url}: ${row.error}`);
@@ -183,7 +199,10 @@ export async function openProgramTabs(context, program, { keepOpen = true } = {}
 }
 
 function sanitize(url) {
-  return url.replace(/^https?:\/\//, "").replace(/[^\w.-]+/g, "_").slice(0, 80);
+  return url
+    .replace(/^https?:\/\//, "")
+    .replace(/[^\w.-]+/g, "_")
+    .slice(0, 80);
 }
 
 export async function runProgram(programKey, opts = {}) {

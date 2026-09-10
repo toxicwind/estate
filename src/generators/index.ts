@@ -8,17 +8,16 @@ import { pitchforkGenerator } from "./pitchfork.ts";
 import { miseGenerator } from "./mise.ts";
 import { join } from "path";
 
-const GENERATORS: Generator[] = [
-  pitchforkGenerator,
-  miseGenerator,
-];
+const GENERATORS: Generator[] = [pitchforkGenerator, miseGenerator];
 
 export async function generateAll(root: string = process.cwd()): Promise<void> {
-  console.log("🔧 Generating sovereign configs from ports.env + service definitions...");
+  console.log(
+    "🔧 Generating sovereign configs from ports.env + service definitions...",
+  );
 
   // Deduplicate services by id (keep the first occurrence)
   const seen = new Set<string>();
-  const uniqueServices = ALL_SERVICES.filter(s => {
+  const uniqueServices = ALL_SERVICES.filter((s) => {
     if (seen.has(s.id)) return false;
     seen.add(s.id);
     return true;
@@ -30,8 +29,8 @@ export async function generateAll(root: string = process.cwd()): Promise<void> {
   for (const [k, v] of ports) portsRecord[k] = v;
 
   // Validate all required ports exist
-  const requiredKeys = uniqueServices.map(s => s.portKey);
-  const missing = requiredKeys.filter(k => !ports.has(k));
+  const requiredKeys = uniqueServices.map((s) => s.portKey);
+  const missing = requiredKeys.filter((k) => !ports.has(k));
   if (missing.length > 0) {
     console.error("❌  Missing port keys:", missing.join(", "));
     process.exit(1);
@@ -39,8 +38,8 @@ export async function generateAll(root: string = process.cwd()): Promise<void> {
 
   const ctx: TemplateContext = {
     ports: portsRecord,
-    services: uniqueServices,   // use deduplicated list
-    groups: { core: uniqueServices.map(s => s.id) },
+    services: uniqueServices, // use deduplicated list
+    groups: { core: uniqueServices.map((s) => s.id) },
     timestamp: new Date().toISOString(),
     sovRoot: root,
   };
@@ -55,8 +54,12 @@ export async function generateAll(root: string = process.cwd()): Promise<void> {
 
   console.log("\n📊 Summary:");
   console.log(`  Services: ${uniqueServices.length}`);
-  console.log(`  Auto-start: ${uniqueServices.filter(s => s.autoStart).length} always-on`);
-  console.log(`  On-demand: ${uniqueServices.filter(s => !s.autoStart).length} triggered`);
+  console.log(
+    `  Auto-start: ${uniqueServices.filter((s) => s.autoStart).length} always-on`,
+  );
+  console.log(
+    `  On-demand: ${uniqueServices.filter((s) => !s.autoStart).length} triggered`,
+  );
   console.log(`  Ports loaded: ${ports.size}`);
   console.log(`  Generators: ${GENERATORS.length}`);
 }

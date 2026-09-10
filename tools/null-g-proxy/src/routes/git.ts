@@ -6,21 +6,17 @@
  * POST /v1/git/worktree        → create a git worktree
  */
 
-import { Hono } from 'hono';
-import { execFileSync, execFile } from 'node:child_process';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import * as os from 'node:os';
+import { Hono } from "hono";
+import { execFileSync, execFile } from "node:child_process";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import * as os from "node:os";
 import { resolveInstance } from "../discovery.ts";
-import {
-  startCascade,
-  sendUserMessage,
-  pollForResponse,
-} from "../cascade.ts";
+import { startCascade, sendUserMessage, pollForResponse } from "../cascade.ts";
 import { resolveModel } from "../models.ts";
 
 // Use flash model for commit messages (faster, reliable PLANNER_RESPONSE)
-const COMMIT_MODEL = resolveModel('antigravity/gemini-3-flash');
+const COMMIT_MODEL = resolveModel("antigravity/gemini-3-flash");
 
 const log = (msg: string) => process.stderr.write(`[git] ${msg}\n`);
 
@@ -31,30 +27,32 @@ export const gitRoutes = new Hono();
 interface CommitMessageRequest {
   diff?: string;
   workingDir?: string;
-  style?: 'conventional' | 'imperative' | 'descriptive';
+  style?: "conventional" | "imperative" | "descriptive";
 }
 
-gitRoutes.post('/commit-message', async (c) => {
+gitRoutes.post("/commit-message", async (c) => {
   let body: CommitMessageRequest;
   try {
     body = await c.req.json<CommitMessageRequest>();
   } catch {
     return c.json(
-      { error: { message: 'Invalid JSON body', type: 'invalid_request_error' } },
+      {
+        error: { message: "Invalid JSON body", type: "invalid_request_error" },
+      },
       400,
     );
   }
 
   const workingDir = body.workingDir ?? process.cwd();
-  const style = body.style ?? 'conventional';
+  const style = body.style ?? "conventional";
 
   // If no diff provided, run `git diff --staged`
   let diff = body.diff;
   if (!diff) {
     try {
-      diff = execFileSync('git', ['diff', '--staged'], {
+      diff = execFileSync("git", ["diff", "--staged"], {
         cwd: workingDir,
-        encoding: 'utf8',
+        encoding: "utf8",
         timeout: 10_000,
       }).trim();
     } catch (e) {
@@ -62,7 +60,7 @@ gitRoutes.post('/commit-message', async (c) => {
         {
           error: {
             message: `Failed to get staged diff: ${e instanceof Error ? e.message : String(e)}`,
-            type: 'invalid_request_error',
+            type: "invalid_request_error",
           },
         },
         400,
@@ -73,8 +71,9 @@ gitRoutes.post('/commit-message', async (c) => {
       return c.json(
         {
           error: {
-            message: 'No staged changes found. Stage files first or provide a diff.',
-            type: 'invalid_request_error',
+            message:
+              "No staged changes found. Stage files first or provide a diff.",
+            type: "invalid_request_error",
           },
         },
         400,
@@ -87,11 +86,11 @@ gitRoutes.post('/commit-message', async (c) => {
   // Build style-specific instructions
   const styleInstructions: Record<string, string> = {
     conventional:
-      'Use Conventional Commits format: type(scope): description. Types: feat, fix, docs, style, refactor, test, chore.',
+      "Use Conventional Commits format: type(scope): description. Types: feat, fix, docs, style, refactor, test, chore.",
     imperative:
       'Use imperative mood: "Add feature", "Fix bug", "Update config". Start with a capital verb.',
     descriptive:
-      'Write a clear, descriptive message explaining what changed and why.',
+      "Write a clear, descriptive message explaining what changed and why.",
   };
 
   const prompt = `Generate a git commit message for the following diff.
@@ -120,7 +119,7 @@ Respond ONLY with valid JSON, no markdown code blocks.`;
       {
         error: {
           message: `Antigravity not available: ${e instanceof Error ? e.message : String(e)}`,
-          type: 'service_unavailable',
+          type: "service_unavailable",
         },
       },
       503,
@@ -131,21 +130,28 @@ Respond ONLY with valid JSON, no markdown code blocks.`;
     const cascadeId = await startCascade(instance);
     await sendUserMessage(instance, cascadeId, prompt, COMMIT_MODEL.internalId);
     // Commit messages can take 2-3 min; use a generous timeout regardless of model
-    const result = await pollForResponse(instance, cascadeId, { timeoutMs: 180_000 });
+    const result = await pollForResponse(instance, cascadeId, {
+      timeoutMs: 180_000,
+    });
 
     // Try to parse the JSON response — extract the first {...} block robustly
     let parsed: { subject?: string; body?: string; message?: string };
     try {
-      const start = result.responseText.indexOf('{');
-      const end = result.responseText.lastIndexOf('}');
-      if (start === -1 || end === -1 || end <= start) throw new Error('no JSON object found');
+      const start = result.responseText.indexOf("{");
+      const end = result.responseText.lastIndexOf("}");
+      if (start === -1 || end === -1 || end <= start)
+        throw new Error("no JSON object found");
       const jsonSlice = result.responseText.slice(start, end + 1);
-      parsed = JSON.parse(jsonSlice) as { subject?: string; body?: string; message?: string };
+      parsed = JSON.parse(jsonSlice) as {
+        subject?: string;
+        body?: string;
+        message?: string;
+      };
     } catch {
       // Fallback: treat first line as subject, rest as body
-      const lines = result.responseText.trim().split('\n');
-      const subject = (lines[0] ?? '').slice(0, 72);
-      const body = lines.slice(2).join('\n').trim();
+      const lines = result.responseText.trim().split("\n");
+      const subject = (lines[0] ?? "").slice(0, 72);
+      const body = lines.slice(2).join("\n").trim();
       parsed = {
         subject,
         body,
@@ -153,8 +159,8 @@ Respond ONLY with valid JSON, no markdown code blocks.`;
       };
     }
 
-    const subject = parsed.subject ?? result.responseText.split('\n')[0] ?? '';
-    const body = parsed.body ?? '';
+    const subject = parsed.subject ?? result.responseText.split("\n")[0] ?? "";
+    const body = parsed.body ?? "";
     return c.json({
       message: parsed.message ?? (body ? `${subject}\n\n${body}` : subject),
       subject,
@@ -166,7 +172,7 @@ Respond ONLY with valid JSON, no markdown code blocks.`;
       {
         error: {
           message: `Cascade error: ${e instanceof Error ? e.message : String(e)}`,
-          type: 'upstream_error',
+          type: "upstream_error",
         },
       },
       502,
@@ -183,8 +189,8 @@ interface RepoInfo {
   branch: string | null;
 }
 
-gitRoutes.get('/repos', async (c) => {
-  const workspaceDir = path.join(os.homedir(), 'workspace');
+gitRoutes.get("/repos", async (c) => {
+  const workspaceDir = path.join(os.homedir(), "workspace");
 
   let entries: fs.Dirent[];
   try {
@@ -198,7 +204,7 @@ gitRoutes.get('/repos', async (c) => {
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
     const repoPath = path.join(workspaceDir, entry.name);
-    const gitDir = path.join(repoPath, '.git');
+    const gitDir = path.join(repoPath, ".git");
 
     if (!fs.existsSync(gitDir)) continue;
 
@@ -206,14 +212,14 @@ gitRoutes.get('/repos', async (c) => {
     let branch: string | null = null;
 
     try {
-      const remoteOut = execFileSync('git', ['remote', '-v'], {
+      const remoteOut = execFileSync("git", ["remote", "-v"], {
         cwd: repoPath,
-        encoding: 'utf8',
+        encoding: "utf8",
         timeout: 5_000,
       }).trim();
       // Deduplicate remote URLs
       const seen = new Set<string>();
-      for (const line of remoteOut.split('\n')) {
+      for (const line of remoteOut.split("\n")) {
         const match = line.match(/\S+\s+(\S+)\s+\(fetch\)/);
         if (match?.[1] && !seen.has(match[1])) {
           seen.add(match[1]);
@@ -225,9 +231,9 @@ gitRoutes.get('/repos', async (c) => {
     }
 
     try {
-      branch = execFileSync('git', ['rev-parse', '--abbrev-ref', 'HEAD'], {
+      branch = execFileSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
         cwd: repoPath,
-        encoding: 'utf8',
+        encoding: "utf8",
         timeout: 3_000,
       }).trim();
     } catch {
@@ -249,29 +255,43 @@ interface WorktreeRequest {
   path?: string;
 }
 
-gitRoutes.post('/worktree', async (c) => {
+gitRoutes.post("/worktree", async (c) => {
   let body: WorktreeRequest;
   try {
     body = await c.req.json<WorktreeRequest>();
   } catch {
     return c.json(
-      { error: { message: 'Invalid JSON body', type: 'invalid_request_error' } },
+      {
+        error: { message: "Invalid JSON body", type: "invalid_request_error" },
+      },
       400,
     );
   }
 
   if (!body.repo || !body.branch) {
     return c.json(
-      { error: { message: '`repo` and `branch` are required', type: 'invalid_request_error' } },
+      {
+        error: {
+          message: "`repo` and `branch` are required",
+          type: "invalid_request_error",
+        },
+      },
       400,
     );
   }
 
   // Validate repo path exists and has .git
-  const repoPath = body.repo.startsWith('/') ? body.repo : path.join(os.homedir(), 'workspace', body.repo);
-  if (!fs.existsSync(path.join(repoPath, '.git'))) {
+  const repoPath = body.repo.startsWith("/")
+    ? body.repo
+    : path.join(os.homedir(), "workspace", body.repo);
+  if (!fs.existsSync(path.join(repoPath, ".git"))) {
     return c.json(
-      { error: { message: `Not a git repository: ${repoPath}`, type: 'invalid_request_error' } },
+      {
+        error: {
+          message: `Not a git repository: ${repoPath}`,
+          type: "invalid_request_error",
+        },
+      },
       400,
     );
   }
@@ -279,7 +299,12 @@ gitRoutes.post('/worktree', async (c) => {
   // Sanitize branch name
   if (!/^[a-zA-Z0-9_./\-]+$/.test(body.branch)) {
     return c.json(
-      { error: { message: 'Invalid branch name', type: 'invalid_request_error' } },
+      {
+        error: {
+          message: "Invalid branch name",
+          type: "invalid_request_error",
+        },
+      },
       400,
     );
   }
@@ -287,14 +312,20 @@ gitRoutes.post('/worktree', async (c) => {
   // Determine worktree path
   const worktreePath =
     body.path ??
-    path.join(repoPath, '..', `${path.basename(repoPath)}-${body.branch.replace(/\//g, '-')}`);
+    path.join(
+      repoPath,
+      "..",
+      `${path.basename(repoPath)}-${body.branch.replace(/\//g, "-")}`,
+    );
 
-  log(`worktree add repo=${repoPath} branch=${body.branch} path=${worktreePath}`);
+  log(
+    `worktree add repo=${repoPath} branch=${body.branch} path=${worktreePath}`,
+  );
 
   return new Promise<Response>((resolve) => {
     execFile(
-      'git',
-      ['worktree', 'add', worktreePath, body.branch],
+      "git",
+      ["worktree", "add", worktreePath, body.branch],
       { cwd: repoPath, timeout: 30_000 },
       (err, _stdout, stderr) => {
         if (err) {
@@ -303,7 +334,7 @@ gitRoutes.post('/worktree', async (c) => {
               {
                 error: {
                   message: `git worktree add failed: ${stderr.trim() || err.message}`,
-                  type: 'command_error',
+                  type: "command_error",
                 },
               },
               500,

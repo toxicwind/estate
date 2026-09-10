@@ -33,6 +33,9 @@ export function getPort(ports: PortMap, key: string): number {
   return port;
 }
 
-export function validatePorts(ports: PortMap, requiredKeys: string[]): string[] {
-  return requiredKeys.filter(key => !ports.has(key));
+export function validatePorts(
+  ports: PortMap,
+  requiredKeys: string[],
+): string[] {
+  return requiredKeys.filter((key) => !ports.has(key));
 }

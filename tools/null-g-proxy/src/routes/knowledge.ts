@@ -6,14 +6,19 @@
  * POST /v1/knowledge/items       → create new knowledge item
  */
 
-import { Hono } from 'hono';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import * as os from 'node:os';
+import { Hono } from "hono";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import * as os from "node:os";
 
 const log = (msg: string) => process.stderr.write(`[knowledge] ${msg}\n`);
 
-const KNOWLEDGE_DIR = path.join(os.homedir(), '.gemini', 'antigravity', 'knowledge');
+const KNOWLEDGE_DIR = path.join(
+  os.homedir(),
+  ".gemini",
+  "antigravity",
+  "knowledge",
+);
 
 export const knowledgeRoutes = new Hono();
 
@@ -58,10 +63,10 @@ function readKnowledgeItems(): KnowledgeItem[] {
       continue;
     }
 
-    let preview = '';
+    let preview = "";
     try {
-      const content = fs.readFileSync(filePath, 'utf8');
-      preview = content.slice(0, 200).replace(/\n/g, ' ').trim();
+      const content = fs.readFileSync(filePath, "utf8");
+      preview = content.slice(0, 200).replace(/\n/g, " ").trim();
     } catch {
       // skip unreadable
     }
@@ -82,7 +87,7 @@ function readKnowledgeItems(): KnowledgeItem[] {
 
 // ─── GET /v1/knowledge/list ───────────────────────────────────────────────────
 
-knowledgeRoutes.get('/list', (c) => {
+knowledgeRoutes.get("/list", (c) => {
   const items = readKnowledgeItems();
   log(`list returning ${items.length} items from ${KNOWLEDGE_DIR}`);
   return c.json({
@@ -94,11 +99,16 @@ knowledgeRoutes.get('/list', (c) => {
 
 // ─── GET /v1/knowledge/search ─────────────────────────────────────────────────
 
-knowledgeRoutes.get('/search', (c) => {
-  const query = c.req.query('q')?.trim();
+knowledgeRoutes.get("/search", (c) => {
+  const query = c.req.query("q")?.trim();
   if (!query) {
     return c.json(
-      { error: { message: '`q` query parameter is required', type: 'invalid_request_error' } },
+      {
+        error: {
+          message: "`q` query parameter is required",
+          type: "invalid_request_error",
+        },
+      },
       400,
     );
   }
@@ -106,12 +116,13 @@ knowledgeRoutes.get('/search', (c) => {
   const items = readKnowledgeItems();
   const queryLower = query.toLowerCase();
 
-  const results: Array<KnowledgeItem & { content: string; matches: number }> = [];
+  const results: Array<KnowledgeItem & { content: string; matches: number }> =
+    [];
 
   for (const item of items) {
-    let content = '';
+    let content = "";
     try {
-      content = fs.readFileSync(item.path, 'utf8');
+      content = fs.readFileSync(item.path, "utf8");
     } catch {
       continue;
     }
@@ -152,29 +163,41 @@ interface CreateKnowledgeRequest {
   projectDir?: string;
 }
 
-knowledgeRoutes.post('/items', async (c) => {
+knowledgeRoutes.post("/items", async (c) => {
   let body: CreateKnowledgeRequest;
   try {
     body = await c.req.json<CreateKnowledgeRequest>();
   } catch {
     return c.json(
-      { error: { message: 'Invalid JSON body', type: 'invalid_request_error' } },
+      {
+        error: { message: "Invalid JSON body", type: "invalid_request_error" },
+      },
       400,
     );
   }
 
   if (!body.name || !body.content) {
     return c.json(
-      { error: { message: '`name` and `content` are required', type: 'invalid_request_error' } },
+      {
+        error: {
+          message: "`name` and `content` are required",
+          type: "invalid_request_error",
+        },
+      },
       400,
     );
   }
 
   // Sanitize filename: allow alphanumeric, dash, underscore, space, dot
-  const safeName = body.name.replace(/[^a-zA-Z0-9\-_ .]/g, '_').trim();
+  const safeName = body.name.replace(/[^a-zA-Z0-9\-_ .]/g, "_").trim();
   if (!safeName) {
     return c.json(
-      { error: { message: 'Invalid knowledge item name', type: 'invalid_request_error' } },
+      {
+        error: {
+          message: "Invalid knowledge item name",
+          type: "invalid_request_error",
+        },
+      },
       400,
     );
   }
@@ -182,7 +205,11 @@ knowledgeRoutes.post('/items', async (c) => {
   // Determine target directory (project-local or global)
   let targetDir = KNOWLEDGE_DIR;
   if (body.projectDir) {
-    const projectKnowledge = path.join(body.projectDir, '.antigravity', 'knowledge');
+    const projectKnowledge = path.join(
+      body.projectDir,
+      ".antigravity",
+      "knowledge",
+    );
     targetDir = projectKnowledge;
   }
 
@@ -197,14 +224,14 @@ knowledgeRoutes.post('/items', async (c) => {
       {
         error: {
           message: `Failed to create knowledge directory: ${e instanceof Error ? e.message : String(e)}`,
-          type: 'server_error',
+          type: "server_error",
         },
       },
       500,
     );
   }
 
-  const filename = safeName.endsWith('.md') ? safeName : `${safeName}.md`;
+  const filename = safeName.endsWith(".md") ? safeName : `${safeName}.md`;
   const filePath = path.join(targetDir, filename);
 
   // Prevent overwrite without explicit flag
@@ -213,8 +240,8 @@ knowledgeRoutes.post('/items', async (c) => {
       {
         error: {
           message: `Knowledge item "${filename}" already exists. Use a different name.`,
-          type: 'conflict',
-          code: 'already_exists',
+          type: "conflict",
+          code: "already_exists",
         },
       },
       409,
@@ -222,13 +249,13 @@ knowledgeRoutes.post('/items', async (c) => {
   }
 
   try {
-    fs.writeFileSync(filePath, body.content, 'utf8');
+    fs.writeFileSync(filePath, body.content, "utf8");
   } catch (e) {
     return c.json(
       {
         error: {
           message: `Failed to write knowledge item: ${e instanceof Error ? e.message : String(e)}`,
-          type: 'server_error',
+          type: "server_error",
         },
       },
       500,

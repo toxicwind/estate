@@ -5,10 +5,10 @@
  * GET  /v1/terminal/processes  → list workspace-related processes
  */
 
-import { Hono } from 'hono';
-import { spawn } from 'node:child_process';
-import { execSync } from 'node:child_process';
-import * as os from 'node:os';
+import { Hono } from "hono";
+import { spawn } from "node:child_process";
+import { execSync } from "node:child_process";
+import * as os from "node:os";
 
 const log = (msg: string) => process.stderr.write(`[terminal] ${msg}\n`);
 
@@ -22,10 +22,10 @@ export const terminalRoutes = new Hono();
  */
 const DENIED_PATTERNS: RegExp[] = [
   // Destructive filesystem ops
-  /\brm\s+-[^-]*r/i,          // rm -r, rm -rf, rm -Rf, etc.
+  /\brm\s+-[^-]*r/i, // rm -r, rm -rf, rm -Rf, etc.
   /\brmdir\s/i,
   /\bshred\b/i,
-  /\bdd\s+.*of=/i,            // dd if=... of=/dev/sda
+  /\bdd\s+.*of=/i, // dd if=... of=/dev/sda
   /\bmkfs\b/i,
   // Privilege escalation
   /\bsudo\b/i,
@@ -45,7 +45,7 @@ const DENIED_PATTERNS: RegExp[] = [
   // Process killers (allow pkill only for own processes via explicit endpoint)
   /\bkillall\b/i,
   // System config mutation
-  /\bchmod\s+[0-7]*7[0-9]*\s+\/\s*$/i,  // chmod 777 /
+  /\bchmod\s+[0-7]*7[0-9]*\s+\/\s*$/i, // chmod 777 /
   /\bchown\s+.*\/\s*$/i,
 ];
 
@@ -73,20 +73,27 @@ interface ExecResult {
   exitCode: number;
 }
 
-terminalRoutes.post('/exec', async (c) => {
+terminalRoutes.post("/exec", async (c) => {
   let body: ExecRequest;
   try {
     body = await c.req.json<ExecRequest>();
   } catch {
     return c.json(
-      { error: { message: 'Invalid JSON body', type: 'invalid_request_error' } },
+      {
+        error: { message: "Invalid JSON body", type: "invalid_request_error" },
+      },
       400,
     );
   }
 
-  if (!body.command || typeof body.command !== 'string') {
+  if (!body.command || typeof body.command !== "string") {
     return c.json(
-      { error: { message: '`command` is required', type: 'invalid_request_error' } },
+      {
+        error: {
+          message: "`command` is required",
+          type: "invalid_request_error",
+        },
+      },
       400,
     );
   }
@@ -96,12 +103,12 @@ terminalRoutes.post('/exec', async (c) => {
   if (deniedReason) {
     log(`BLOCKED command="${command}" reason="${deniedReason}"`);
     return c.json(
-      { error: { message: deniedReason, type: 'security_policy' } },
+      { error: { message: deniedReason, type: "security_policy" } },
       403,
     );
   }
 
-  const cwd = body.cwd ?? process.env['WORKSPACE_ROOT'] ?? os.homedir();
+  const cwd = body.cwd ?? process.env["WORKSPACE_ROOT"] ?? os.homedir();
   const timeoutMs = Math.min(body.timeout ?? 30_000, 120_000); // cap at 2 min
 
   log(`exec command="${command}" cwd=${cwd} timeout=${timeoutMs}ms`);
@@ -111,31 +118,31 @@ terminalRoutes.post('/exec', async (c) => {
     const stderrChunks: Buffer[] = [];
 
     // Use sh -c so the command is interpreted by the shell (pipes, redirects, etc.)
-    const child = spawn('/bin/sh', ['-c', command], {
+    const child = spawn("/bin/sh", ["-c", command], {
       cwd,
       env: {
         ...process.env,
         ...body.env,
         // Ensure basic PATH is set
-        PATH: process.env['PATH'] ?? '/usr/local/bin:/usr/bin:/bin',
+        PATH: process.env["PATH"] ?? "/usr/local/bin:/usr/bin:/bin",
       },
       timeout: timeoutMs,
     });
 
-    child.stdout.on('data', (chunk: Buffer) => stdoutChunks.push(chunk));
-    child.stderr.on('data', (chunk: Buffer) => stderrChunks.push(chunk));
+    child.stdout.on("data", (chunk: Buffer) => stdoutChunks.push(chunk));
+    child.stderr.on("data", (chunk: Buffer) => stderrChunks.push(chunk));
 
-    child.on('close', (code, signal) => {
+    child.on("close", (code, signal) => {
       resolve({
-        stdout: Buffer.concat(stdoutChunks).toString('utf8'),
-        stderr: Buffer.concat(stderrChunks).toString('utf8'),
+        stdout: Buffer.concat(stdoutChunks).toString("utf8"),
+        stderr: Buffer.concat(stderrChunks).toString("utf8"),
         exitCode: code ?? (signal ? 128 : 1),
       });
     });
 
-    child.on('error', (err) => {
+    child.on("error", (err) => {
       resolve({
-        stdout: '',
+        stdout: "",
         stderr: err.message,
         exitCode: 1,
       });
@@ -156,7 +163,7 @@ interface ProcessInfo {
   mem: string;
 }
 
-terminalRoutes.get('/processes', (c) => {
+terminalRoutes.get("/processes", (c) => {
   // Get processes related to workspace: node, tsx, python, antigravity, language_server
   const keywords = [
     "bun",
@@ -167,17 +174,18 @@ terminalRoutes.get('/processes', (c) => {
     "cascade",
   ];
 
-  let psOutput = '';
+  let psOutput = "";
   try {
-    psOutput = execSync('ps aux', { encoding: 'utf8', timeout: 5_000 });
+    psOutput = execSync("ps aux", { encoding: "utf8", timeout: 5_000 });
   } catch {
     return c.json({ processes: [] });
   }
 
-  const lines = psOutput.trim().split('\n');
+  const lines = psOutput.trim().split("\n");
   const processes: ProcessInfo[] = [];
 
-  for (const line of lines.slice(1)) { // skip header
+  for (const line of lines.slice(1)) {
+    // skip header
     const lower = line.toLowerCase();
     if (!keywords.some((k) => lower.includes(k))) continue;
 
@@ -185,11 +193,11 @@ terminalRoutes.get('/processes', (c) => {
     const parts = line.trim().split(/\s+/);
     if (parts.length < 11) continue;
 
-    const pid = parseInt(parts[1] ?? '0', 10);
-    const cpu = parts[2] ?? '0';
-    const mem = parts[3] ?? '0';
-    const command = parts[10] ?? '';
-    const args = parts.slice(11).join(' ');
+    const pid = parseInt(parts[1] ?? "0", 10);
+    const cpu = parts[2] ?? "0";
+    const mem = parts[3] ?? "0";
+    const command = parts[10] ?? "";
+    const args = parts.slice(11).join(" ");
 
     if (isNaN(pid) || pid === 0) continue;
 

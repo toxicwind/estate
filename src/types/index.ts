@@ -2,7 +2,8 @@
 // SOVEREIGN — Core Types
 // ============================================================================
 
-export type Group = "core" | "main" | "agent" | "agents" | "mcp" | "infra" | "monitoring" | "aux";
+export type Group =
+  "core" | "main" | "agent" | "agents" | "mcp" | "infra" | "monitoring" | "aux";
 
 export interface PortMap extends Map<string, number> {}
 

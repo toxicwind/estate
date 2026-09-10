@@ -17,7 +17,9 @@ async function cdpTargets() {
 }
 
 async function newTab() {
-  const r = await fetch(`http://${CDP_HOST}:${CDP_PORT}/json/new?about:blank`, { method: "PUT" });
+  const r = await fetch(`http://${CDP_HOST}:${CDP_PORT}/json/new?about:blank`, {
+    method: "PUT",
+  });
   return r.json();
 }
 
@@ -41,7 +43,13 @@ async function inject(target: any, modelUrl: string) {
         }
         init();
       `;
-      ws.send(JSON.stringify({ id: 3, method: "Runtime.evaluate", params: { expression: script, awaitPromise: true } }));
+      ws.send(
+        JSON.stringify({
+          id: 3,
+          method: "Runtime.evaluate",
+          params: { expression: script, awaitPromise: true },
+        }),
+      );
     }
     if (msg.id === 3 && msg.result) {
       console.log(`[CDP] Injected into ${target.id}`);

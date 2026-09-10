@@ -8,10 +8,22 @@
   "status": "in_progress",
   "priority": "highest",
   "subtasks": [
-    { "id": "yote-1", "name": "Audit OpenFang Telegram/Discord", "status": "in_progress" },
+    {
+      "id": "yote-1",
+      "name": "Audit OpenFang Telegram/Discord",
+      "status": "in_progress"
+    },
     { "id": "yote-2", "name": "Extract Telegram gateway", "status": "pending" },
     { "id": "yote-3", "name": "Extract Discord gateway", "status": "pending" },
-    { "id": "yote-4", "name": "Disable Telegram/Discord in OpenFang", "status": "pending" },
-    { "id": "yote-5", "name": "Unify Yote as single gateway", "status": "pending" }
+    {
+      "id": "yote-4",
+      "name": "Disable Telegram/Discord in OpenFang",
+      "status": "pending"
+    },
+    {
+      "id": "yote-5",
+      "name": "Unify Yote as single gateway",
+      "status": "pending"
+    }
   ]
 }

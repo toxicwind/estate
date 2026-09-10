@@ -86,7 +86,11 @@ async function main() {
     userFiles: entries.filter((e) => !e.isThirdParty).length,
     duplicates: [...byHash.entries()]
       .filter(([_, v]) => v.length > 1)
-      .map(([hash, files]) => ({ hash, count: files.length, paths: files.map((f) => f.path) })),
+      .map(([hash, files]) => ({
+        hash,
+        count: files.length,
+        paths: files.map((f) => f.path),
+      })),
     entries: entries.sort((a, b) => a.path.localeCompare(b.path)),
   };
 

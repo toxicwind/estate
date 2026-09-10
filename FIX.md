@@ -108,27 +108,28 @@
 
 ## Current State Snapshot
 
-| Service | Port | Target | Actual | Fixed |
-|---------|------|--------|--------|-------|
-| redis | 25199 | 25199 | 25199 | ✅ |
-| qdrant | 25133 | 25133 | 25133 | ✅ |
-| llama-swap | 25100 | 25100 | 25100 | ✅ |
-| mcpproxy | 25109 | 25109 | 25109 | ✅ |
-| ghas-api | 25112 | 25112 | 25112 | ✅ |
-| ghas-mcp | 25113 | 25113 | 25113 | ✅ |
-| ghas-frontend | 25114 | 25114 | 25114 | ✅ |
-| prometheus | 25105 | 25105 | 25105 | ✅ |
-| grafana | 25110 | 25110 | 25110 | ✅ |
-| pi-web-dashboard | 25192 | 25192 | DOWN | ☐ |
-| openfang | 25103 | 25103 | DOWN | ☐ |
-| rust-web | 25101 | 25101 | DOWN | ☐ |
-| hf-downloader | 25106 | 25106 | DOWN | ☐ |
+| Service          | Port  | Target | Actual | Fixed |
+| ---------------- | ----- | ------ | ------ | ----- |
+| redis            | 25199 | 25199  | 25199  | ✅    |
+| qdrant           | 25133 | 25133  | 25133  | ✅    |
+| llama-swap       | 25100 | 25100  | 25100  | ✅    |
+| mcpproxy         | 25109 | 25109  | 25109  | ✅    |
+| ghas-api         | 25112 | 25112  | 25112  | ✅    |
+| ghas-mcp         | 25113 | 25113  | 25113  | ✅    |
+| ghas-frontend    | 25114 | 25114  | 25114  | ✅    |
+| prometheus       | 25105 | 25105  | 25105  | ✅    |
+| grafana          | 25110 | 25110  | 25110  | ✅    |
+| pi-web-dashboard | 25192 | 25192  | DOWN   | ☐     |
+| openfang         | 25103 | 25103  | DOWN   | ☐     |
+| rust-web         | 25101 | 25101  | DOWN   | ☐     |
+| hf-downloader    | 25106 | 25106  | DOWN   | ☐     |
 
 ---
 
 ## Verified Functionality (Complex Audit)
 
 ### llama-swap (toxicwind fork)
+
 - ✅ Binary: `/home/toxic/projects/llama-swap-main/llama-swap` (Go, built)
 - ✅ Config: `/home/toxic/sovereign/config/llama-swap.yaml` (matrix router, 29 models)
 - ✅ UI: `http://localhost:25100/ui/` — React + Tailwind, all assets load
@@ -138,20 +139,24 @@
 - ✅ GPU: CUDA 8.6 (RTX 3090), flash-attn, q8 KV cache
 
 ### mcpproxy
+
 - ✅ 41 MCP servers configured (stdio + streamable-http)
 - ✅ GHAS at `http://127.0.0.1:25113/mcp` registered
 - ✅ Health endpoint returns `{"status":"ok"}`
 
 ### GHAS Stack
+
 - ✅ ghas-api: 25112 — Bun, REST API with Blackbird rate limiter
 - ✅ ghas-mcp: 25113 — 25 tools (search_code, search_repos, search_issues, compare, etc.)
 - ✅ ghas-frontend: 25114 — Next.js 16, command palette, cyberpunk theme
 
 ### Monitoring
+
 - ✅ Prometheus: 25105 — scraping targets
 - ✅ Grafana: 25110 — SQLite DB, v13.1.0
 
 ### pitchfork.toml
+
 - ✅ Cleaned: 13 core daemons (removed 11 broken)
 - ✅ Redis port: 25199 (correct)
 - ✅ Ready checks: HTTP for all, cmd for redis
@@ -182,7 +187,6 @@ curl -s -X POST http://127.0.0.1:25109/mcp \
 - [x] Test framework: `test/services/test-framework.ts` — reusable, non-destructive service health tests using `curl` (handles compression) and `redis-cli`
 - [x] Pitchfork supervisor restarted; llama-swap started via `PITCHFORK_CONFIG_PATH=/home/toxic/sovereign/pitchfork.toml pitchfork start llama-swap`
 
-
 ## Phase 4: HAL Substrate Integration
 
 - [ ] Install HAL substrate
@@ -196,7 +200,6 @@ curl -s -X POST http://127.0.0.1:25109/mcp \
   - [ ] Default model: `kimi-auto` (→ kimi/k1.5, weight 2.0)
   - [ ] Fallback strategy: `free` (7 zero-cost providers)
 - [ ] **VERIFY Phase 4**: HAL healthy, routes through AST matrix
-
 
 ## Phase 4: HAL Substrate Integration (MAX LEVEL)
 
@@ -212,4 +215,3 @@ curl -s -X POST http://127.0.0.1:25109/mcp \
 - [ ] Start hal-substrate: `mise run up-hal-substrate`
 - [ ] Verify: `curl -sf http://127.0.0.1:25143/health`
 - [ ] **VERIFY Phase 4**: HAL healthy, routes through AST matrix, responds to Yote
-

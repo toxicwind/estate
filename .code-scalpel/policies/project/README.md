@@ -5,6 +5,7 @@ This directory contains policies that enforce consistent code organization and d
 ## Overview
 
 The project structure policy ensures:
+
 - **Consistent file placement** - Similar code in similar directories
 - **Complete documentation** - README.md in every meaningful directory
 - **Clean architecture** - Core analysis isolated from integrations
@@ -34,4 +35,4 @@ policies:
 
 ---
 
-*Part of Code Scalpel v3.1+ Policy Engine*
+_Part of Code Scalpel v3.1+ Policy Engine_

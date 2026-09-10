@@ -24,32 +24,32 @@ The Antigravity IDE runs Gemini, Claude, and GPT models with deep code awareness
 
 ## Features
 
-| Capability | Description |
-|---|---|
-| **Chat Completions** | OpenAI-compatible `POST /v1/chat/completions` with streaming and multi-turn support |
-| **Multi-model** | Switch between Gemini, Claude, and GPT models per request |
-| **Streaming** | Server-Sent Events (SSE) for real-time response streaming |
-| **Multi-turn sessions** | Persistent cascade sessions for stateful conversations |
-| **Agentic mode** | Antigravity autonomously plans and executes complex multi-step tasks |
-| **Git intelligence** | AI-generated commit messages, repo listing, worktree management |
-| **Knowledge base** | CRUD and full-text search over a personal Markdown knowledge base |
-| **Terminal execution** | Sandboxed shell execution with a security denylist (HTTP 403 on blocked commands) |
-| **Code search** | ripgrep-powered codebase search with file glob and result limit filters |
-| **Code lint** | ESLint / TypeScript compiler lint via HTTP |
-| **Swagger UI** | Interactive API docs at `GET /docs` |
-| **Zero-config** | Auto-discovers the running Antigravity IDE — no manual port configuration needed |
+| Capability              | Description                                                                         |
+| ----------------------- | ----------------------------------------------------------------------------------- |
+| **Chat Completions**    | OpenAI-compatible `POST /v1/chat/completions` with streaming and multi-turn support |
+| **Multi-model**         | Switch between Gemini, Claude, and GPT models per request                           |
+| **Streaming**           | Server-Sent Events (SSE) for real-time response streaming                           |
+| **Multi-turn sessions** | Persistent cascade sessions for stateful conversations                              |
+| **Agentic mode**        | Antigravity autonomously plans and executes complex multi-step tasks                |
+| **Git intelligence**    | AI-generated commit messages, repo listing, worktree management                     |
+| **Knowledge base**      | CRUD and full-text search over a personal Markdown knowledge base                   |
+| **Terminal execution**  | Sandboxed shell execution with a security denylist (HTTP 403 on blocked commands)   |
+| **Code search**         | ripgrep-powered codebase search with file glob and result limit filters             |
+| **Code lint**           | ESLint / TypeScript compiler lint via HTTP                                          |
+| **Swagger UI**          | Interactive API docs at `GET /docs`                                                 |
+| **Zero-config**         | Auto-discovers the running Antigravity IDE — no manual port configuration needed    |
 
 ---
 
 ## Requirements
 
-| Requirement | Version | Notes |
-|---|---|---|
-| **Antigravity IDE** | Any | Must be running locally |
-| **Node.js** | >= 18 | |
-| **npm** | >= 9 | |
-| **ripgrep** (`rg`) | Any | Optional — code search falls back to `grep` |
-| **pm2** | >= 5 | Optional — for persistent process management |
+| Requirement         | Version | Notes                                        |
+| ------------------- | ------- | -------------------------------------------- |
+| **Antigravity IDE** | Any     | Must be running locally                      |
+| **Node.js**         | >= 18   |                                              |
+| **npm**             | >= 9    |                                              |
+| **ripgrep** (`rg`)  | Any     | Optional — code search falls back to `grep`  |
+| **pm2**             | >= 5    | Optional — for persistent process management |
 
 ---
 
@@ -102,12 +102,12 @@ The server starts on **port 8787** by default:
 
 ## Configuration
 
-| Environment Variable | Default | Description |
-|---|---|---|
-| `PORT` | `8787` | HTTP port to listen on |
-| `ANTIGRAVITY_PORT` | *(auto)* | Override language server port (disables auto-discovery) |
-| `ANTIGRAVITY_CSRF_TOKEN` | *(auto)* | Override CSRF token (required when `ANTIGRAVITY_PORT` is set) |
-| `ANTIGRAVITY_WORKSPACE` | *(auto)* | Filter discovery by workspace name (for multi-project setups) |
+| Environment Variable     | Default  | Description                                                   |
+| ------------------------ | -------- | ------------------------------------------------------------- |
+| `PORT`                   | `8787`   | HTTP port to listen on                                        |
+| `ANTIGRAVITY_PORT`       | _(auto)_ | Override language server port (disables auto-discovery)       |
+| `ANTIGRAVITY_CSRF_TOKEN` | _(auto)_ | Override CSRF token (required when `ANTIGRAVITY_PORT` is set) |
+| `ANTIGRAVITY_WORKSPACE`  | _(auto)_ | Filter discovery by workspace name (for multi-project setups) |
 
 **Manual override example:**
 
@@ -252,7 +252,7 @@ curl -X POST http://localhost:8787/v1/terminal/exec \
 ```
 
 ```json
-{"stdout": "total 48\n...", "stderr": "", "exitCode": 0}
+{ "stdout": "total 48\n...", "stderr": "", "exitCode": 0 }
 ```
 
 Blocked commands (recursive deletion, privilege escalation, shell injection, fork bombs, network attacks) return **HTTP 403**.
@@ -275,14 +275,14 @@ curl "http://localhost:8787/v1/code/lint?file=/path/to/project/src/index.ts"
 
 ## Available Models
 
-| Model ID | Provider | Best for | Timeout |
-|---|---|---|---|
-| `antigravity/gemini-3.1-pro-high` | Google | Complex reasoning, best quality | 120 s |
-| `antigravity/gemini-3.1-pro-low` | Google | Balanced quality/speed | 90 s |
-| `antigravity/gemini-3-flash` | Google | Fast, simple tasks | 60 s |
-| `antigravity/claude-sonnet-4.6-thinking` | Anthropic | Extended thinking, analysis | 180 s |
-| `antigravity/claude-opus-4.6-thinking` | Anthropic | Highest reasoning quality | 300 s |
-| `antigravity/gpt-oss-120b` | OpenAI | Large capacity, versatile | 120 s |
+| Model ID                                 | Provider  | Best for                        | Timeout |
+| ---------------------------------------- | --------- | ------------------------------- | ------- |
+| `antigravity/gemini-3.1-pro-high`        | Google    | Complex reasoning, best quality | 120 s   |
+| `antigravity/gemini-3.1-pro-low`         | Google    | Balanced quality/speed          | 90 s    |
+| `antigravity/gemini-3-flash`             | Google    | Fast, simple tasks              | 60 s    |
+| `antigravity/claude-sonnet-4.6-thinking` | Anthropic | Extended thinking, analysis     | 180 s   |
+| `antigravity/claude-opus-4.6-thinking`   | Anthropic | Highest reasoning quality       | 300 s   |
+| `antigravity/gpt-oss-120b`               | OpenAI    | Large capacity, versatile       | 120 s   |
 
 Default: `antigravity/gemini-3.1-pro-high`
 

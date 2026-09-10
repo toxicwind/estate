@@ -80,13 +80,16 @@ describe("llamaSwapHealth", () => {
 // ═══════════════════════════════════════════════════════════════════════════════
 describe("llamaSwapModels", () => {
   test("parses models with status.value unwrapping (line 69-71)", async () => {
-    mockFetchJson({
-      data: [
-        { id: "model-a", status: { value: "loaded" } },
-        { id: "model-b", status: "unloaded" },
-        { id: "model-c" },
-      ],
-    }, 200);
+    mockFetchJson(
+      {
+        data: [
+          { id: "model-a", status: { value: "loaded" } },
+          { id: "model-b", status: "unloaded" },
+          { id: "model-c" },
+        ],
+      },
+      200,
+    );
     const r = await llamaSwapModels();
     expect(r.http_status).toBe(200);
     expect((r as any).count).toBe(3);
@@ -125,10 +128,13 @@ describe("llamaSwapModels", () => {
 // ═══════════════════════════════════════════════════════════════════════════════
 describe("llamaSwapChat", () => {
   test("successful chat with message.content (lines 99-112)", async () => {
-    mockFetchJson({
-      choices: [{ message: { content: "Hello!" } }],
-      model: "test-model",
-    }, 200);
+    mockFetchJson(
+      {
+        choices: [{ message: { content: "Hello!" } }],
+        model: "test-model",
+      },
+      200,
+    );
     const r = await llamaSwapChat({ prompt: "Hi" });
     expect(r.ok).toBe(true);
     expect((r as any).choices_count).toBe(1);
@@ -137,10 +143,13 @@ describe("llamaSwapChat", () => {
   });
 
   test("successful chat with delta.content (line 101)", async () => {
-    mockFetchJson({
-      choices: [{ delta: { content: "Chunked reply" } }],
-      model: "test-model",
-    }, 200);
+    mockFetchJson(
+      {
+        choices: [{ delta: { content: "Chunked reply" } }],
+        model: "test-model",
+      },
+      200,
+    );
     const r = await llamaSwapChat({ prompt: "Hi" });
     expect(r.ok).toBe(true);
     expect((r as any).content_preview).toBe("Chunked reply");
@@ -168,10 +177,13 @@ describe("llamaSwapChat", () => {
   });
 
   test("defaults when no opts provided", async () => {
-    mockFetchJson({
-      choices: [{ message: { content: "OK" } }],
-      model: "default",
-    }, 200);
+    mockFetchJson(
+      {
+        choices: [{ message: { content: "OK" } }],
+        model: "default",
+      },
+      200,
+    );
     const r = await llamaSwapChat({});
     expect(r.ok).toBe(true);
     // Verify default model was used in the request
@@ -227,9 +239,11 @@ describe("llamaSwapChatStream", () => {
   });
 
   test("caps samples at 3 (line 142)", async () => {
-    const sseData = Array.from({ length: 5 }, (_, i) =>
-      `data: {"choices":[{"delta":{"content":"chunk${i}"}}]}`
-    ).join("\n") + "\ndata: [DONE]";
+    const sseData =
+      Array.from(
+        { length: 5 },
+        (_, i) => `data: {"choices":[{"delta":{"content":"chunk${i}"}}]}`,
+      ).join("\n") + "\ndata: [DONE]";
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
@@ -256,9 +270,12 @@ describe("upstreamServers", () => {
   });
 
   test("get operation finds a model (lines 157-161)", async () => {
-    mockFetchJson({
-      data: [{ id: "target-model", status: "loaded" }, { id: "other" }],
-    }, 200);
+    mockFetchJson(
+      {
+        data: [{ id: "target-model", status: "loaded" }, { id: "other" }],
+      },
+      200,
+    );
     const r = await upstreamServers({ operation: "get", name: "target-model" });
     expect((r as any).found).toBeTruthy();
     expect((r as any).found.id).toBe("target-model");

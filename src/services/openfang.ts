@@ -18,7 +18,9 @@ const CANDIDATES = [
   "/usr/local/bin/openfang",
   resolve(SOV, "bin/openfang"),
 ];
-const BIN = CANDIDATES.find(c => c && existsSync(c)) || resolve(HOME, ".local/bin/openfang");
+const BIN =
+  CANDIDATES.find((c) => c && existsSync(c)) ||
+  resolve(HOME, ".local/bin/openfang");
 
 function loadSecretsFile(path: string) {
   if (!existsSync(path)) return;

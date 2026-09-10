@@ -41,9 +41,18 @@ export class ServiceTester {
         for (const endpoint of config.healthEndpoints) {
           try {
             const result = await this.curlHealthCheck(config.port, endpoint);
-            details[endpoint] = { status: result.status, bodyLength: result.body.length, headers: result.headers };
+            details[endpoint] = {
+              status: result.status,
+              bodyLength: result.body.length,
+              headers: result.headers,
+            };
 
-            if (result.status === 200 && (config.expectedResponse ? config.expectedResponse(result.body) : true)) {
+            if (
+              result.status === 200 &&
+              (config.expectedResponse
+                ? config.expectedResponse(result.body)
+                : true)
+            ) {
               httpOk = true;
               break;
             }
@@ -72,7 +81,6 @@ export class ServiceTester {
           if (errors.length > 0) errors.push("TCP check failed");
         }
       }
-
     } catch (e) {
       errors.push(String(e));
     }
@@ -92,9 +100,28 @@ export class ServiceTester {
     return result;
   }
 
-  private async curlHealthCheck(port: number, endpoint: string): Promise<{ status: number; body: string; headers: Record<string, string> }> {
+  private async curlHealthCheck(
+    port: number,
+    endpoint: string,
+  ): Promise<{
+    status: number;
+    body: string;
+    headers: Record<string, string>;
+  }> {
     const proc = Bun.spawn({
-      cmd: ["curl", "-sf", "-m", "5", "-H", "Accept: application/json, text/html, */*", "-H", "Accept-Encoding: gzip, deflate", "-D", "-", `${this.baseUrl}:${port}${endpoint}`],
+      cmd: [
+        "curl",
+        "-sf",
+        "-m",
+        "5",
+        "-H",
+        "Accept: application/json, text/html, */*",
+        "-H",
+        "Accept-Encoding: gzip, deflate",
+        "-D",
+        "-",
+        `${this.baseUrl}:${port}${endpoint}`,
+      ],
       stdout: "pipe",
       stderr: "pipe",
     });
@@ -118,7 +145,9 @@ export class ServiceTester {
       }
       const colonIdx = line.indexOf(":");
       if (colonIdx > 0) {
-        headers[line.slice(0, colonIdx).toLowerCase()] = line.slice(colonIdx + 1).trim();
+        headers[line.slice(0, colonIdx).toLowerCase()] = line
+          .slice(colonIdx + 1)
+          .trim();
       }
     }
 
@@ -134,7 +163,11 @@ export class ServiceTester {
 
   private async checkTcp(port: number): Promise<boolean> {
     try {
-      const conn = await Bun.connect({ hostname: "127.0.0.1", port, timeout: 2000 });
+      const conn = await Bun.connect({
+        hostname: "127.0.0.1",
+        port,
+        timeout: 2000,
+      });
       conn.end();
       return true;
     } catch {
@@ -176,9 +209,11 @@ export class ServiceTester {
     console.log("\n=== TEST SUMMARY ===");
     for (const r of this.results) {
       const status = r.passed ? "✅ PASS" : "❌ FAIL";
-      console.log(`${status} ${r.service} (${r.latencyMs}ms)${r.error ? " - " + r.error : ""}`);
+      console.log(
+        `${status} ${r.service} (${r.latencyMs}ms)${r.error ? " - " + r.error : ""}`,
+      );
     }
-    const passed = this.results.filter(r => r.passed).length;
+    const passed = this.results.filter((r) => r.passed).length;
     console.log(`\n${passed}/${this.results.length} tests passed`);
   }
 
@@ -201,9 +236,13 @@ export function getServiceTests(): ServiceTestConfig[] {
     PROMETHEUS_PORT: parseInt(process.env.PROMETHEUS_PORT || "25105"),
     GRAFANA_PORT: parseInt(process.env.GRAFANA_PORT || "25110"),
     OPENFANG_PORT: parseInt(process.env.OPENFANG_PORT || "25103"),
-    RUST_WEB_BACKEND_PORT: parseInt(process.env.RUST_WEB_BACKEND_PORT || "25101"),
+    RUST_WEB_BACKEND_PORT: parseInt(
+      process.env.RUST_WEB_BACKEND_PORT || "25101",
+    ),
     HF_DOWNLOADER_PORT: parseInt(process.env.HF_DOWNLOADER_PORT || "25106"),
-    PI_WEB_DASHBOARD_PORT: parseInt(process.env.PI_WEB_DASHBOARD_PORT || "25192"),
+    PI_WEB_DASHBOARD_PORT: parseInt(
+      process.env.PI_WEB_DASHBOARD_PORT || "25192",
+    ),
     QDRANT_PORT: parseInt(process.env.QDRANT_PORT || "25133"),
     REDIS_PORT: parseInt(process.env.REDIS_PORT || "25199"),
     PI_AGENT_PORT: parseInt(process.env.PI_AGENT_PORT || "25125"),
@@ -215,7 +254,8 @@ export function getServiceTests(): ServiceTestConfig[] {
       name: "llama-swap",
       port: ports.LLAMA_SWAP_PORT,
       healthEndpoints: ["/health", "/v1/models"],
-      expectedResponse: (body) => body.includes("OK") || body.includes("models"),
+      expectedResponse: (body) =>
+        body.includes("OK") || body.includes("models"),
     },
     {
       name: "mcpproxy",
@@ -301,16 +341,22 @@ export async function runAllTests(): Promise<TestResult[]> {
     if (test.name === "redis") {
       const result = await tester.testRedis(test.port);
       tester.results.push(result);
-      console.log(`${result.passed ? "✅" : "❌"} ${result.service} (${result.latencyMs}ms)${result.error ? " - " + result.error : ""}`);
+      console.log(
+        `${result.passed ? "✅" : "❌"} ${result.service} (${result.latencyMs}ms)${result.error ? " - " + result.error : ""}`,
+      );
     } else {
       const result = await tester.testService(test);
-      console.log(`${result.passed ? "✅" : "❌"} ${result.service} (${result.latencyMs}ms)${result.error ? " - " + result.error : ""}`);
+      console.log(
+        `${result.passed ? "✅" : "❌"} ${result.service} (${result.latencyMs}ms)${result.error ? " - " + result.error : ""}`,
+      );
     }
   }
 
   // Test Redis separately
-  if (!tests.find(t => t.name === "redis")) {
-    const redisResult = await tester.testRedis(parseInt(process.env.REDIS_PORT || "25199"));
+  if (!tests.find((t) => t.name === "redis")) {
+    const redisResult = await tester.testRedis(
+      parseInt(process.env.REDIS_PORT || "25199"),
+    );
     tester.results.push(redisResult);
   }
 
@@ -324,7 +370,7 @@ if (import.meta.main) {
   tester.results = results;
   tester.printSummary();
 
-  const failed = results.filter(r => !r.passed);
+  const failed = results.filter((r) => !r.passed);
   if (failed.length > 0) {
     console.error(`\n${failed.length} test(s) failed`);
     process.exit(1);

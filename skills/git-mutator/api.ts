@@ -5,8 +5,21 @@
 import { $ } from "bun";
 import { existsSync } from "node:fs";
 import { GitCore } from "./git.js";
-import type { GitMutatorConfig, CommitResult, PushResult, MutateOptions, AgenticAuditResult, AgenticViolation } from "./types.js";
-import { DEFAULT_SECRET_PATTERNS, DEFAULT_GITIGNORE_PATTERNS, SOVEREIGN_PORT_SSOT, AGENTIC_ARTIFACT_GLOBS, AGENTIC_ID_PATTERNS } from "./types.js";
+import type {
+  GitMutatorConfig,
+  CommitResult,
+  PushResult,
+  MutateOptions,
+  AgenticAuditResult,
+  AgenticViolation,
+} from "./types.js";
+import {
+  DEFAULT_SECRET_PATTERNS,
+  DEFAULT_GITIGNORE_PATTERNS,
+  SOVEREIGN_PORT_SSOT,
+  AGENTIC_ARTIFACT_GLOBS,
+  AGENTIC_ID_PATTERNS,
+} from "./types.js";
 
 export class GitMutator {
   private core: GitCore;
@@ -47,7 +60,10 @@ export class GitMutator {
     return this.core.mutateFile(relativePath, mutator);
   }
 
-  async commitAndPush(message: string, options: MutateOptions = {}): Promise<{ commit: CommitResult; push: PushResult }> {
+  async commitAndPush(
+    message: string,
+    options: MutateOptions = {},
+  ): Promise<{ commit: CommitResult; push: PushResult }> {
     if (options.ensureGitignore) {
       await this.ensureGitignore();
     }

@@ -35,14 +35,18 @@ async function httpJson(
     const res = await fetch(url, {
       method,
       headers: body
-       ? { Accept: "application/json", "Content-Type": "application/json" }
+        ? { Accept: "application/json", "Content-Type": "application/json" }
         : { Accept: "application/json" },
-      body: body!== undefined? JSON.stringify(body) : undefined,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
       signal: ctrl.signal,
     });
     const raw = await res.text();
     let parsed: unknown = null;
-    try { parsed = raw? JSON.parse(raw) : null; } catch { parsed = null; }
+    try {
+      parsed = raw ? JSON.parse(raw) : null;
+    } catch {
+      parsed = null;
+    }
     return { code: res.status, parsed, raw };
   } catch (e) {
     return { code: 0, parsed: null, raw: `request_failed: ${e}` };
@@ -53,20 +57,30 @@ async function httpJson(
 
 export async function llamaSwapHealth(baseUrl = DEFAULT_BASE) {
   const base = baseUrl.replace(/\/$/, "");
-  const { code, parsed, raw } = await httpJson("GET", `${base}/health`, undefined, 5000);
-  return { http_status: code, body: parsed?? raw.slice(0, 500) };
+  const { code, parsed, raw } = await httpJson(
+    "GET",
+    `${base}/health`,
+    undefined,
+    5000,
+  );
+  return { http_status: code, body: parsed ?? raw.slice(0, 500) };
 }
 
 export async function llamaSwapModels(baseUrl = DEFAULT_BASE) {
   const base = baseUrl.replace(/\/$/, "");
-  const { code, parsed, raw } = await httpJson("GET", `${base}/v1/models`, undefined, 10_000);
-  if (!parsed || typeof parsed!== "object") {
+  const { code, parsed, raw } = await httpJson(
+    "GET",
+    `${base}/v1/models`,
+    undefined,
+    10_000,
+  );
+  if (!parsed || typeof parsed !== "object") {
     return { http_status: code, error: raw.slice(0, 800) };
   }
   const data = (parsed as { data?: Array<Record<string, unknown>> }).data || [];
   const models = data.map((m) => {
     let st: unknown = m.status;
-    if (st && typeof st === "object" && st!== null && "value" in st) {
+    if (st && typeof st === "object" && st !== null && "value" in st) {
       st = (st as { value: unknown }).value;
     }
     return { id: m.id, status: st };
@@ -85,17 +99,36 @@ export async function llamaSwapChat(opts: {
   const model = opts.model || DEFAULT_MODEL;
   const body = {
     model,
-    messages: [{ role: "user", content: opts.prompt?? "Reply with exactly: OK" }],
-    max_tokens: opts.max_tokens?? 16,
-    stream: opts.stream?? false,
+    messages: [
+      { role: "user", content: opts.prompt ?? "Reply with exactly: OK" },
+    ],
+    max_tokens: opts.max_tokens ?? 16,
+    stream: opts.stream ?? false,
   };
-  const { code, parsed, raw } = await httpJson("POST", `${base}/v1/chat/completions`, body, 120_000);
-  if (!parsed || typeof parsed!== "object") {
-    return { http_status: code, ok: false, reason: "non_json_or_empty", raw_prefix: raw.slice(0, 600) };
+  const { code, parsed, raw } = await httpJson(
+    "POST",
+    `${base}/v1/chat/completions`,
+    body,
+    120_000,
+  );
+  if (!parsed || typeof parsed !== "object") {
+    return {
+      http_status: code,
+      ok: false,
+      reason: "non_json_or_empty",
+      raw_prefix: raw.slice(0, 600),
+    };
   }
-  const p = parsed as { choices?: Array<{ message?: { content?: string }; delta?: { content?: string } }>; model?: string; error?: unknown; };
+  const p = parsed as {
+    choices?: Array<{
+      message?: { content?: string };
+      delta?: { content?: string };
+    }>;
+    model?: string;
+    error?: unknown;
+  };
   const choices = p.choices;
-  const n = Array.isArray(choices)? choices.length : 0;
+  const n = Array.isArray(choices) ? choices.length : 0;
   let content: string | undefined;
   if (n && choices![0]) {
     const msg = choices![0].message || choices![0].delta || {};
@@ -112,18 +145,26 @@ export async function llamaSwapChat(opts: {
   };
 }
 
-export async function llamaSwapChatStream(opts: { prompt?: string; model?: string; base_url?: string; max_tokens?: number; }) {
+export async function llamaSwapChatStream(opts: {
+  prompt?: string;
+  model?: string;
+  base_url?: string;
+  max_tokens?: number;
+}) {
   const base = (opts.base_url || DEFAULT_BASE).replace(/\/$/, "");
   const body = {
     model: opts.model || DEFAULT_MODEL,
-    messages: [{ role: "user", content: opts.prompt?? "Say OK" }],
-    max_tokens: opts.max_tokens?? 8,
+    messages: [{ role: "user", content: opts.prompt ?? "Say OK" }],
+    max_tokens: opts.max_tokens ?? 8,
     stream: true,
   };
   try {
     const res = await fetch(`${base}/v1/chat/completions`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "text/event-stream",
+      },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(90_000),
     });
@@ -150,53 +191,116 @@ export async function llamaSwapChatStream(opts: { prompt?: string; model?: strin
 }
 
 // NEW: this is what was failing - now requires operation
-export async function upstreamServers(opts: { operation: "list" | "get" | "health"; name?: string; base_url?: string; }) {
+export async function upstreamServers(opts: {
+  operation: "list" | "get" | "health";
+  name?: string;
+  base_url?: string;
+}) {
   const base = (opts.base_url || DEFAULT_BASE).replace(/\/$/, "");
   if (opts.operation === "health") return await llamaSwapHealth(base);
   if (opts.operation === "list") return await llamaSwapModels(base);
   if (opts.operation === "get") {
     const all = await llamaSwapModels(base);
     const found = (all as any).models?.find((m: any) => m.id === opts.name);
-    return found? { found } : { error: `not found: ${opts.name}`, available: (all as any).models };
+    return found
+      ? { found }
+      : { error: `not found: ${opts.name}`, available: (all as any).models };
   }
   return { error: "invalid operation" };
 }
 
 async function mcpMain() {
-  const server = new McpServer({ name: "llama-swap-test", version: "2.0.0-env-only" });
+  const server = new McpServer({
+    name: "llama-swap-test",
+    version: "2.0.0-env-only",
+  });
 
-  server.tool("llama_swap_health", "GET {base}/health", { base_url: z.string().optional() },
-    async ({ base_url }) => ({ content: [{ type: "text", text: j(await llamaSwapHealth(base_url || DEFAULT_BASE)) }] }));
+  server.tool(
+    "llama_swap_health",
+    "GET {base}/health",
+    { base_url: z.string().optional() },
+    async ({ base_url }) => ({
+      content: [
+        {
+          type: "text",
+          text: j(await llamaSwapHealth(base_url || DEFAULT_BASE)),
+        },
+      ],
+    }),
+  );
 
-  server.tool("llama_swap_models", "GET {base}/v1/models", { base_url: z.string().optional() },
-    async ({ base_url }) => ({ content: [{ type: "text", text: j(await llamaSwapModels(base_url || DEFAULT_BASE)) }] }));
+  server.tool(
+    "llama_swap_models",
+    "GET {base}/v1/models",
+    { base_url: z.string().optional() },
+    async ({ base_url }) => ({
+      content: [
+        {
+          type: "text",
+          text: j(await llamaSwapModels(base_url || DEFAULT_BASE)),
+        },
+      ],
+    }),
+  );
 
-  server.tool("llama_swap_chat", "POST chat/completions", {
-    prompt: z.string().optional(), model: z.string().optional(), base_url: z.string().optional(),
-    max_tokens: z.number().optional(), stream: z.boolean().optional(),
-  }, async (args) => ({ content: [{ type: "text", text: j(await llamaSwapChat(args)) }] }));
+  server.tool(
+    "llama_swap_chat",
+    "POST chat/completions",
+    {
+      prompt: z.string().optional(),
+      model: z.string().optional(),
+      base_url: z.string().optional(),
+      max_tokens: z.number().optional(),
+      stream: z.boolean().optional(),
+    },
+    async (args) => ({
+      content: [{ type: "text", text: j(await llamaSwapChat(args)) }],
+    }),
+  );
 
-  server.tool("llama_swap_chat_stream", "POST streaming", {
-    prompt: z.string().optional(), model: z.string().optional(), base_url: z.string().optional(), max_tokens: z.number().optional(),
-  }, async (args) => ({ content: [{ type: "text", text: j(await llamaSwapChatStream(args)) }] }));
+  server.tool(
+    "llama_swap_chat_stream",
+    "POST streaming",
+    {
+      prompt: z.string().optional(),
+      model: z.string().optional(),
+      base_url: z.string().optional(),
+      max_tokens: z.number().optional(),
+    },
+    async (args) => ({
+      content: [{ type: "text", text: j(await llamaSwapChatStream(args)) }],
+    }),
+  );
 
-  server.tool("upstream_servers", "List/check llama-swap upstreams. REQUIRES operation param.", {
-    operation: z.enum(["list", "get", "health"]).describe("Required: list, get, or health"),
-    name: z.string().optional().describe("Required when operation=get"),
-    base_url: z.string().optional(),
-  }, async (args) => ({ content: [{ type: "text", text: j(await upstreamServers(args as any)) }] }));
+  server.tool(
+    "upstream_servers",
+    "List/check llama-swap upstreams. REQUIRES operation param.",
+    {
+      operation: z
+        .enum(["list", "get", "health"])
+        .describe("Required: list, get, or health"),
+      name: z.string().optional().describe("Required when operation=get"),
+      base_url: z.string().optional(),
+    },
+    async (args) => ({
+      content: [{ type: "text", text: j(await upstreamServers(args as any)) }],
+    }),
+  );
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
 }
 
 const mode = process.argv[2];
-if (mode === "mcp" ||!process.argv[2] && process.stdin.isTTY === false) {
+if (mode === "mcp" || (!process.argv[2] && process.stdin.isTTY === false)) {
   await mcpMain();
 } else {
   const cmd = process.argv[2] || "mcp";
   if (cmd === "health") console.log(j(await llamaSwapHealth()));
   else if (cmd === "models") console.log(j(await llamaSwapModels()));
-  else if (cmd === "e2e") console.log(j({ models: await llamaSwapModels(), health: await llamaSwapHealth() }));
+  else if (cmd === "e2e")
+    console.log(
+      j({ models: await llamaSwapModels(), health: await llamaSwapHealth() }),
+    );
   else await mcpMain();
 }

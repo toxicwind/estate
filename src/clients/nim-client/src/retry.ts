@@ -29,22 +29,25 @@ const DEFAULT_MAX_DELAY_MS = 30000;
 /**
  * Check if an error is retryable
  */
-export function isRetryableError(error: unknown, retryableCodes: number[] = DEFAULT_RETRYABLE_CODES): boolean {
+export function isRetryableError(
+  error: unknown,
+  retryableCodes: number[] = DEFAULT_RETRYABLE_CODES,
+): boolean {
   // Network errors (fetch failures, timeouts, etc.)
   if (error instanceof TypeError && error.message.includes("fetch")) {
     return true;
   }
-  
+
   if (error instanceof DOMException && error.name === "TimeoutError") {
     return true;
   }
-  
+
   // HTTP errors with status codes
   if (error && typeof error === "object" && "status" in error) {
     const status = (error as { status: number }).status;
     return retryableCodes.includes(status);
   }
-  
+
   // Response objects with status
   if (error && typeof error === "object" && "response" in error) {
     const response = (error as { response: { status: number } }).response;
@@ -52,7 +55,7 @@ export function isRetryableError(error: unknown, retryableCodes: number[] = DEFA
       return retryableCodes.includes(response.status);
     }
   }
-  
+
   // Check for Retry-After header in error
   if (error && typeof error === "object" && "headers" in error) {
     const headers = (error as { headers: Headers }).headers;
@@ -60,7 +63,7 @@ export function isRetryableError(error: unknown, retryableCodes: number[] = DEFA
       return true;
     }
   }
-  
+
   return false;
 }
 
@@ -80,7 +83,7 @@ export function getRetryAfterDelay(error: unknown): number | null {
       }
     }
   }
-  
+
   if (error && typeof error === "object" && "response" in error) {
     const response = (error as { response: { headers: Headers } }).response;
     if (response && response.headers instanceof Headers) {
@@ -93,7 +96,7 @@ export function getRetryAfterDelay(error: unknown): number | null {
       }
     }
   }
-  
+
   return null;
 }
 
@@ -104,19 +107,19 @@ export function calculateBackoffDelay(
   attempt: number,
   baseDelayMs: number,
   maxDelayMs: number,
-  retryAfterMs: number | null = null
+  retryAfterMs: number | null = null,
 ): number {
   // If server provided Retry-After, use that (with small jitter)
   if (retryAfterMs !== null) {
     const jitter = Math.random() * 1000; // 0-1s jitter
     return Math.min(retryAfterMs + jitter, maxDelayMs);
   }
-  
+
   // Exponential backoff: baseDelay * 2^attempt + jitter
   const exponentialDelay = baseDelayMs * Math.pow(2, attempt);
   const jitter = Math.random() * baseDelayMs; // 0 to baseDelay jitter
   const delay = exponentialDelay + jitter;
-  
+
   return Math.min(delay, maxDelayMs);
 }
 
@@ -125,7 +128,7 @@ export function calculateBackoffDelay(
  */
 export async function withRetry<T>(
   fn: () => Promise<T>,
-  options: Partial<RetryOptions> = {}
+  options: Partial<RetryOptions> = {},
 ): Promise<RetryResult<T>> {
   const {
     maxRetries = DEFAULT_MAX_RETRIES,
@@ -134,10 +137,10 @@ export async function withRetry<T>(
     retryableStatusCodes = DEFAULT_RETRYABLE_CODES,
     onRetry,
   } = options;
-  
+
   let lastError: Error | null = null;
   let totalDelayMs = 0;
-  
+
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       const data = await fn();
@@ -149,33 +152,38 @@ export async function withRetry<T>(
       };
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
-      
+
       // Don't retry on last attempt
       if (attempt === maxRetries) {
         break;
       }
-      
+
       // Check if error is retryable
       if (!isRetryableError(error, retryableStatusCodes)) {
         break;
       }
-      
+
       // Calculate delay
       const retryAfterMs = getRetryAfterDelay(error);
-      const delayMs = calculateBackoffDelay(attempt, baseDelayMs, maxDelayMs, retryAfterMs);
-      
+      const delayMs = calculateBackoffDelay(
+        attempt,
+        baseDelayMs,
+        maxDelayMs,
+        retryAfterMs,
+      );
+
       totalDelayMs += delayMs;
-      
+
       // Call retry callback if provided
       if (onRetry) {
         onRetry(attempt + 1, lastError, delayMs);
       }
-      
+
       // Wait before retrying
       await sleep(delayMs);
     }
   }
-  
+
   return {
     success: false,
     error: lastError ?? new Error("Unknown error"),
@@ -197,5 +205,5 @@ export function createRetryOptions(config: NIMClientConfig): RetryOptions {
 }
 
 function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

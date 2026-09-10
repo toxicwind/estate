@@ -172,7 +172,10 @@ function ctxFromId(name: string): number {
 }
 
 /** oaicopilot-shaped models from live catalog (never a static inventory file). */
-export function oaicopilotModelsFromSwap(models: SwapModel[], base = swapV1Url()) {
+export function oaicopilotModelsFromSwap(
+  models: SwapModel[],
+  base = swapV1Url(),
+) {
   return models
     .filter((m) => m.id && !m.id.startsWith("MODEL_PLACEHOLDER"))
     .map((m) => ({

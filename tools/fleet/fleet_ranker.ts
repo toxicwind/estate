@@ -16,14 +16,15 @@ import { readdir } from "fs/promises";
 import { join } from "path";
 
 // Sovereign defaults (2026-07): rank via llama-swap front door; graduated ctx only.
-const PORT        = parseInt(Bun.env.RANK_PORT      ?? "25111");
-const UPSTREAM    = Bun.env.MODEL_URL               ?? "http://127.0.0.1:25100";
-const SCAN_DIR    = Bun.env.MODEL_DIR
-                    ?? Bun.env.MODEL_PATH?.split("/").slice(0,-1).join("/")
-                    ?? "/home/toxic/sovereign/models";
+const PORT = parseInt(Bun.env.RANK_PORT ?? "25111");
+const UPSTREAM = Bun.env.MODEL_URL ?? "http://127.0.0.1:25100";
+const SCAN_DIR =
+  Bun.env.MODEL_DIR ??
+  Bun.env.MODEL_PATH?.split("/").slice(0, -1).join("/") ??
+  "/home/toxic/sovereign/models";
 
 // Context size is critical — never jump to 128k/max first (27B OOM → empty choices).
-const CTX_PROBES  = (Bun.env.FLEET_CTX_PROBES ?? "4096,8192,16384,32768,65536")
+const CTX_PROBES = (Bun.env.FLEET_CTX_PROBES ?? "4096,8192,16384,32768,65536")
   .split(",")
   .map((s) => parseInt(s.trim(), 10))
   .filter((n) => n > 0);
@@ -33,14 +34,17 @@ const RESULTS_DIR =
   `${Bun.env.HOME ?? "/home/toxic"}/sovereign/tools/fleet/results`;
 
 interface RankResult {
-  file:      string;
-  max_ctx:   number;
-  tps:       number;
-  tier:      "fast" | "mid" | "deep";
+  file: string;
+  max_ctx: number;
+  tps: number;
+  tier: "fast" | "mid" | "deep";
   timestamp: string;
 }
 
-async function probeModel(modelPath: string, ctx: number): Promise<number | null> {
+async function probeModel(
+  modelPath: string,
+  ctx: number,
+): Promise<number | null> {
   // Returns TPS if stable at this context, null if OOM/error
   const prompt = "The quick brown fox " + " and ".repeat(Math.floor(ctx / 20));
   const body = JSON.stringify({
@@ -51,17 +55,20 @@ async function probeModel(modelPath: string, ctx: number): Promise<number | null
     stream: false,
   });
   try {
-    const t0  = performance.now();
+    const t0 = performance.now();
     const res = await fetch(`${UPSTREAM}/v1/chat/completions`, {
-      method:  "POST",
-      headers: { "Content-Type": "application/json", "X-Model-Path": modelPath },
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Model-Path": modelPath,
+      },
       body,
       signal: AbortSignal.timeout(60_000),
     });
     if (!res.ok) return null;
-    const data  = await res.json();
-    const ms    = performance.now() - t0;
-    const toks  = data?.usage?.completion_tokens ?? PROBE_TOKENS;
+    const data = await res.json();
+    const ms = performance.now() - t0;
+    const toks = data?.usage?.completion_tokens ?? PROBE_TOKENS;
     return (toks / ms) * 1000;
   } catch {
     return null;
@@ -70,7 +77,8 @@ async function probeModel(modelPath: string, ctx: number): Promise<number | null
 
 async function rankModel(file: string): Promise<RankResult> {
   const path = join(SCAN_DIR, file);
-  let maxCtx = 0, bestTps = 0;
+  let maxCtx = 0,
+    bestTps = 0;
   for (const ctx of CTX_PROBES) {
     const tps = await probeModel(path, ctx);
     if (tps === null) break;
@@ -79,13 +87,18 @@ async function rankModel(file: string): Promise<RankResult> {
   }
   const tier: RankResult["tier"] =
     maxCtx >= 65536 ? "deep" : maxCtx >= 16384 ? "mid" : "fast";
-  return { file, max_ctx: maxCtx, tps: Math.round(bestTps), tier,
-           timestamp: new Date().toISOString() };
+  return {
+    file,
+    max_ctx: maxCtx,
+    tps: Math.round(bestTps),
+    tier,
+    timestamp: new Date().toISOString(),
+  };
 }
 
 async function scanAndRank(): Promise<RankResult[]> {
   const entries = await readdir(SCAN_DIR);
-  const ggufs   = entries.filter(f => f.endsWith(".gguf"));
+  const ggufs = entries.filter((f) => f.endsWith(".gguf"));
   const results: RankResult[] = [];
   for (const g of ggufs) {
     console.log(`[rank] probing ${g}...`);
@@ -103,21 +116,27 @@ serve({
     const url = new URL(req.url);
 
     if (url.pathname === "/health")
-      return Response.json({ status: "ok", upstream: UPSTREAM, scan_dir: SCAN_DIR });
+      return Response.json({
+        status: "ok",
+        upstream: UPSTREAM,
+        scan_dir: SCAN_DIR,
+      });
 
     if (url.pathname === "/metrics")
-      return new Response("fleet_ranker_up 1\n", { headers: { "Content-Type": "text/plain" } });
+      return new Response("fleet_ranker_up 1\n", {
+        headers: { "Content-Type": "text/plain" },
+      });
 
     if (url.pathname === "/rank") {
       // Async scan — returns immediately with job ID, results via /results
       const jobId = Date.now().toString();
-      scanAndRank().then(r => results.set(jobId, r));
+      scanAndRank().then((r) => results.set(jobId, r));
       return Response.json({ job_id: jobId, status: "running" });
     }
 
     if (url.pathname.startsWith("/results/")) {
       const id = url.pathname.split("/")[2];
-      const r  = results.get(id);
+      const r = results.get(id);
       if (!r) return Response.json({ status: "pending" }, { status: 202 });
       return Response.json({ status: "done", results: r });
     }
@@ -131,4 +150,6 @@ serve({
   },
 });
 
-console.log(`[fleet-ranker] :${PORT} | upstream: ${UPSTREAM} | scan: ${SCAN_DIR}`);
+console.log(
+  `[fleet-ranker] :${PORT} | upstream: ${UPSTREAM} | scan: ${SCAN_DIR}`,
+);

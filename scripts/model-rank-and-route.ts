@@ -7,7 +7,11 @@
  */
 import { mkdirSync, writeFileSync, appendFileSync } from "node:fs";
 import { join } from "node:path";
-import { listSwapModels, swapV1Url, swapBaseUrl } from "../src/lib/llama_swap_ssot.ts";
+import {
+  listSwapModels,
+  swapV1Url,
+  swapBaseUrl,
+} from "../src/lib/llama_swap_ssot.ts";
 
 const SCRATCH =
   process.env.SCRATCH ||
@@ -84,7 +88,8 @@ async function chat(
         messages: [
           {
             role: "system",
-            content: "Answer briefly. Do not use chain-of-thought. Visible content only.",
+            content:
+              "Answer briefly. Do not use chain-of-thought. Visible content only.",
           },
           { role: "user", content: prompt },
         ],
@@ -114,10 +119,7 @@ async function chat(
           ? data.choices[0].text
           : "";
     const usage = data?.usage || {};
-    const ok =
-      res.ok &&
-      typeof text === "string" &&
-      text.trim().length > 0;
+    const ok = res.ok && typeof text === "string" && text.trim().length > 0;
     return {
       ok,
       latency_ms,
@@ -141,7 +143,11 @@ async function chat(
   }
 }
 
-async function probeModel(id: string, role: Role, inCatalog: boolean): Promise<Probe> {
+async function probeModel(
+  id: string,
+  role: Role,
+  inCatalog: boolean,
+): Promise<Probe> {
   const before = gpuSnap();
   const r = await chat(id, "Reply with exactly: OK. No other text.", 16);
   const after = gpuSnap();
@@ -171,7 +177,10 @@ const CANDIDATES: { id: string; role: Role }[] = [
   { id: "beellama/qwen25-instruct-15b", role: "fast" },
   // quality: 64k primary (true short-ctx utility, content-visible under REASONING_OFF none)
   { id: "beellama/qwen-flash-64k", role: "quality" },
-  { id: "mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m", role: "quality" },
+  {
+    id: "mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m",
+    role: "quality",
+  },
   // longctx: only true 256k entry (not 128k alias of quality)
   { id: "beellama/qwen-flash-256k", role: "longctx" },
 ];
@@ -239,7 +248,12 @@ const rank = {
   probes,
   best: {
     fast: best.fast
-      ? { id: best.fast.id, latency_ms: best.fast.latency_ms, tok_s: best.fast.tok_s, gpu_mem_mib: best.fast.gpu_mem_mib }
+      ? {
+          id: best.fast.id,
+          latency_ms: best.fast.latency_ms,
+          tok_s: best.fast.tok_s,
+          gpu_mem_mib: best.fast.gpu_mem_mib,
+        }
       : { skip_reason: "no passing fast probe" },
     quality: best.quality
       ? {
@@ -262,8 +276,17 @@ const rank = {
   note: "routing.matrix exclusive set — only one GGUF resident; TTL globalTTL=600",
 };
 
-writeFileSync(join(SCRATCH, "model-rank.json"), JSON.stringify(rank, null, 2) + "\n");
-console.log(JSON.stringify({ wrote: join(SCRATCH, "model-rank.json"), best: rank.best }, null, 2));
+writeFileSync(
+  join(SCRATCH, "model-rank.json"),
+  JSON.stringify(rank, null, 2) + "\n",
+);
+console.log(
+  JSON.stringify(
+    { wrote: join(SCRATCH, "model-rank.json"), best: rank.best },
+    null,
+    2,
+  ),
+);
 
 // --- routing e2e: different classes → different model ids ---
 const routeFile = join(SCRATCH, "routing-e2e.jsonl");
@@ -447,7 +470,11 @@ async function ofAgent(name: string, message: string) {
 const routeResults: any[] = [];
 
 for (const rc of routeCases) {
-  const r = await chat(rc.model, `Class=${rc.class}. Reply OK and the model name if you know it.`, 24);
+  const r = await chat(
+    rc.model,
+    `Class=${rc.class}. Reply OK and the model name if you know it.`,
+    24,
+  );
   const line = {
     ts: new Date().toISOString(),
     class: rc.class,
@@ -494,8 +521,7 @@ const routingSummary = {
   success: routeResults.filter((x) => x.ok).length,
   total: routeResults.length,
   pass:
-    routeResults.filter((x) => x.ok).length >= 3 &&
-    distinctModels.size >= 2,
+    routeResults.filter((x) => x.ok).length >= 3 && distinctModels.size >= 2,
 };
 writeFileSync(
   join(SCRATCH, "routing-summary.json"),
@@ -541,10 +567,16 @@ log(
   `post_stress_fast: ok=${post.ok} lat=${post.latency_ms} snippet=${post.text} mem=${gpuSnap().mem}`,
 );
 const oom = Bun.spawnSync({
-  cmd: ["bash", "-c", "dmesg 2>/dev/null | tail -50 | rg -i 'oom|killed process|out of memory' || true"],
+  cmd: [
+    "bash",
+    "-c",
+    "dmesg 2>/dev/null | tail -50 | rg -i 'oom|killed process|out of memory' || true",
+  ],
   stdout: "pipe",
 });
-log(`dmesg_oom_tail: ${new TextDecoder().decode(oom.stdout).slice(0, 300) || "(none)"}`);
+log(
+  `dmesg_oom_tail: ${new TextDecoder().decode(oom.stdout).slice(0, 300) || "(none)"}`,
+);
 
 const gpuPass =
   post.ok &&

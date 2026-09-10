@@ -66,20 +66,21 @@ export function rankRepos(
       const stars = r.stars || 0;
       const forks = r.forks || 0;
       // Novelty: stars-per-fork ratio high → people clone it to study, not just fork.
-      const novelty = forks > 0 ? Math.min(1, stars / (forks * 8)) : stars > 0 ? 0.5 : 0;
-      const text = `${r.full_name} ${r.description ?? ""} ${(r.topics ?? []).join(" ")}`.toLowerCase();
+      const novelty =
+        forks > 0 ? Math.min(1, stars / (forks * 8)) : stars > 0 ? 0.5 : 0;
+      const text =
+        `${r.full_name} ${r.description ?? ""} ${(r.topics ?? []).join(" ")}`.toLowerCase();
       const signals = AUTONOMY_SIGNALS.filter((s) => text.includes(s));
       const autonomy = Math.min(1, signals.length / 3); // 3+ signals → max
 
-      const score =
-        0.4 * recency +
-        0.25 * novelty +
-        0.35 * autonomy;
+      const score = 0.4 * recency + 0.25 * novelty + 0.35 * autonomy;
 
       const reasons: string[] = [];
       if (recency > 0.8) reasons.push(`pushed ${Math.round(age)}d ago`);
-      if (novelty > 0.5) reasons.push(`high stars/fork ratio (${stars}/${forks})`);
-      if (signals.length) reasons.push(`autonomy signals: ${signals.join(",")}`);
+      if (novelty > 0.5)
+        reasons.push(`high stars/fork ratio (${stars}/${forks})`);
+      if (signals.length)
+        reasons.push(`autonomy signals: ${signals.join(",")}`);
 
       return { full_name: r.full_name, score, reasons };
     })
@@ -91,7 +92,12 @@ export function rankRepos(
 /** Pick the top N repos that clear a minimum autonomy+recency bar. */
 export function pickForAudit(
   repos: RepoRecord[],
-  opts: { now?: number; maxAgeDays?: number; topN?: number; minScore?: number } = {},
+  opts: {
+    now?: number;
+    maxAgeDays?: number;
+    topN?: number;
+    minScore?: number;
+  } = {},
 ): RankedRepo[] {
   const topN = opts.topN ?? 5;
   const minScore = opts.minScore ?? 0.35;

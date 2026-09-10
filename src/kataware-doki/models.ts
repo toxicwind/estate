@@ -4,15 +4,15 @@
 export interface LlamaModel {
   id: string;
   name: string;
-  ggufPath: string;          // Absolute path on server filesystem
+  ggufPath: string; // Absolute path on server filesystem
   contextWindow: number;
-  quantization: string;      // Q4_K_M, Q5_K_S, etc
-  vramGB: number;            // Estimated VRAM at full context
+  quantization: string; // Q4_K_M, Q5_K_S, etc
+  vramGB: number; // Estimated VRAM at full context
   description: string;
-  chatTemplate?: string;     // --chat-template name
-  draftModel?: string;       // DFlash speculative decoding model path
-  cacheTypeK?: string;       // --cache-type-k (e.g., "f16", "q4_0", "q8_0")
-  flashAttn?: boolean;      // --flash-attn
+  chatTemplate?: string; // --chat-template name
+  draftModel?: string; // DFlash speculative decoding model path
+  cacheTypeK?: string; // --cache-type-k (e.g., "f16", "q4_0", "q8_0")
+  flashAttn?: boolean; // --flash-attn
 }
 
 export const llamaModels: LlamaModel[] = [
@@ -24,7 +24,8 @@ export const llamaModels: LlamaModel[] = [
     contextWindow: 262144,
     quantization: "Q5_K_S",
     vramGB: 14,
-    description: "DeltaNet hybrid, 262K context, polyglot. Primary model for 24GB VRAM.",
+    description:
+      "DeltaNet hybrid, 262K context, polyglot. Primary model for 24GB VRAM.",
     chatTemplate: "qwen",
     cacheTypeK: "f16",
     flashAttn: true,
@@ -35,8 +36,9 @@ export const llamaModels: LlamaModel[] = [
     ggufPath: "~/models/Qwen3.6-27B-Q5_K_S.gguf",
     contextWindow: 262144,
     quantization: "Q5_K_S + Q4_K_M drafter",
-    vramGB: 18,              // 14GB main + 4GB drafter
-    description: "Speculative decoding with DFlash. Up to 4.4x speedup, 67-89% acceptance.",
+    vramGB: 18, // 14GB main + 4GB drafter
+    description:
+      "Speculative decoding with DFlash. Up to 4.4x speedup, 67-89% acceptance.",
     chatTemplate: "qwen",
     draftModel: "~/models/Qwen3.6-27B-DFlash-Q4_K_M.gguf",
     cacheTypeK: "turbo3_tcq", // Reduces KV cache by ~50%
@@ -49,8 +51,9 @@ export const llamaModels: LlamaModel[] = [
     ggufPath: "~/models/Llama-3.1-70B-Q4_K_M.gguf",
     contextWindow: 128000,
     quantization: "Q4_K_M",
-    vramGB: 40,              // Too big for single 24GB, needs split
-    description: "Meta Llama 3.1 70B. Requires tensor split across 2x GPUs or CPU offload.",
+    vramGB: 40, // Too big for single 24GB, needs split
+    description:
+      "Meta Llama 3.1 70B. Requires tensor split across 2x GPUs or CPU offload.",
     chatTemplate: "llama3",
     flashAttn: true,
   },
@@ -72,7 +75,8 @@ export const llamaModels: LlamaModel[] = [
     contextWindow: 262000,
     quantization: "Q4_K_M",
     vramGB: 12,
-    description: "MoE architecture. 17B active params, 128E total. Best quality/VRAM ratio.",
+    description:
+      "MoE architecture. 17B active params, 128E total. Best quality/VRAM ratio.",
     chatTemplate: "llama4",
     flashAttn: true,
   },
@@ -94,7 +98,8 @@ export const llamaModels: LlamaModel[] = [
     contextWindow: 8192,
     quantization: "Q4_K_M",
     vramGB: 1.5,
-    description: "Google Gemma 2B. Tiny, fast. WebGPU inference in Chrome tabs.",
+    description:
+      "Google Gemma 2B. Tiny, fast. WebGPU inference in Chrome tabs.",
     chatTemplate: "gemma",
   },
   // StrangeMerges — custom merged model
@@ -112,9 +117,11 @@ export const llamaModels: LlamaModel[] = [
 ];
 
 export function findModel(id: string): LlamaModel | undefined {
-  return llamaModels.find(m => m.id === id);
+  return llamaModels.find((m) => m.id === id);
 }
 
 export function modelsForVRAM(vramGB: number): LlamaModel[] {
-  return llamaModels.filter(m => m.vramGB <= vramGB).sort((a, b) => b.vramGB - a.vramGB);
+  return llamaModels
+    .filter((m) => m.vramGB <= vramGB)
+    .sort((a, b) => b.vramGB - a.vramGB);
 }

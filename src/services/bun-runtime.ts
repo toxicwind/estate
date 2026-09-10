@@ -15,7 +15,10 @@ export const BUN_RUNTIME_SERVICE: ServiceDef = {
   autoStart: false,
   mise: false,
   healthPath: "/health",
-  watch: ["/home/toxic/projects/bun/src/**/*.ts", "/home/toxic/projects/bun/src/**/*.zig"],
+  watch: [
+    "/home/toxic/projects/bun/src/**/*.ts",
+    "/home/toxic/projects/bun/src/**/*.zig",
+  ],
 };
 
 export const BUN_DEV_SERVICE: ServiceDef = {
