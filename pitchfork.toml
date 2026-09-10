@@ -225,6 +225,8 @@ env = {
   PI_REASONING_LEVEL = "high",
   PI_SUBAGENT_MODEL = "thinkingmachines/inkling",
   PI_AGENT_PORT = "25125",
+  DAEMON_PROJECT_DIR = "/home/toxic",
+  DAEMON_RUNTIME_DIR = "/home/toxic/.tau/run/daemons/00a0a40d4f605f26",
 }
 auto = ["stop"]
 
