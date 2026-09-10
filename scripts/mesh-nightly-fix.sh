@@ -78,14 +78,14 @@ bun --cwd packages/coding-agent run build 2>&1 | tee /tmp/coding-agent-nightly.l
 ls -lh packages/coding-agent/dist/ 2>/dev/null || echo "no dist"
 
 # install binary
-if [ -f packages/coding-agent/dist/omp ]; then
-  cp packages/coding-agent/dist/omp ~/.local/bin/omp
+if [ -f packages/coding-agent/dist/tau ]; then
+  cp packages/coding-agent/dist/tau ~/.local/bin/tau
   echo "installed omp binary"
-elif ls packages/coding-agent/dist/omp-* 2>/dev/null; then
-  cp packages/coding-agent/dist/omp-* ~/.local/bin/omp
+elif ls packages/coding-agent/dist/tau-* 2>/dev/null; then
+  cp packages/coding-agent/dist/tau-* ~/.local/bin/tau
   echo "installed omp binary (glob)"
 fi
-~/.local/bin/omp --version 2>/dev/null || true
+~/.local/bin/tau --version 2>/dev/null || true
 
 echo "=== [7/8] VAULT-MIND + FULL MONOREPO ==="
 ln -sfn ~/projects/pi-vault-mind packages/pi-vault-mind
