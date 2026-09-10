@@ -20,19 +20,21 @@ tmux send-keys -t tau "tau -p 'your prompt'" C-m
 
 ## Available Commands
 
-| Command | Description |
-|---------|-------------|
-| `tau --help` | Show tau/omp help |
-| `tau --profile <name>` | Run with isolated profile |
-| `tau -p <prompt>` | Non-interactive mode with prompt |
-| `tau --skill <name>` | Load a skill (if supported) |
+| Command                | Description                      |
+| ---------------------- | -------------------------------- |
+| `tau --help`           | Show tau/omp help                |
+| `tau --profile <name>` | Run with isolated profile        |
+| `tau -p <prompt>`      | Non-interactive mode with prompt |
+| `tau --skill <name>`   | Load a skill (if supported)      |
 
 ## Helper Tools
 
 ### `helper/audit.ts`
+
 Modular Bun helper with argv support:
+
 - `--check nvidia` - Check nvidia.json config
-- `--check cascade` - Check cascade.json config  
+- `--check cascade` - Check cascade.json config
 - `--check env` - Check .env vars
 - `--all` - Run all checks
 - `-v` / `--verbose` - Detailed output

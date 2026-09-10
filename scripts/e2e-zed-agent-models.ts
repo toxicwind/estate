@@ -56,17 +56,13 @@ async function chat(
     });
     const json = await res.json();
     const msg = json?.choices?.[0]?.message || {};
-    const text =
-      msg.content ||
-      json?.choices?.[0]?.text ||
-      "";
+    const text = msg.content || json?.choices?.[0]?.text || "";
     const reasoning = msg.reasoning_content || "";
     // Visible content preferred; if model only emits reasoning, require marker substring there
     const visible = String(text).trim();
     const ok =
       res.ok &&
-      (visible.length > 0 ||
-        /ZED_AGENT_|FLASH64|OK/i.test(String(reasoning)));
+      (visible.length > 0 || /ZED_AGENT_|FLASH64|OK/i.test(String(reasoning)));
     return {
       ok,
       status: res.status,
@@ -149,8 +145,9 @@ const mcpChildren = Bun.spawnSync(["pgrep", "-af", "ghas|apps/mcp"], {
 const logPath = `${process.env.HOME}/.local/share/zed/logs/Zed.log`;
 let logHits: string[] = [];
 if (existsSync(logPath)) {
-  const tail = Bun.spawnSync(["tail", "-n", "400", logPath], { stdout: "pipe" })
-    .stdout.toString();
+  const tail = Bun.spawnSync(["tail", "-n", "400", logPath], {
+    stdout: "pipe",
+  }).stdout.toString();
   logHits = tail
     .split("\n")
     .filter((l) => /ghas|context_server|mcp|llama\.cpp|agent/i.test(l))
@@ -191,14 +188,8 @@ const report = {
 };
 
 writeFileSync(resolve(SCRATCH, "report.json"), JSON.stringify(report, null, 2));
-writeFileSync(
-  resolve(SCRATCH, "model-a.json"),
-  JSON.stringify(turnA, null, 2),
-);
-writeFileSync(
-  resolve(SCRATCH, "model-b.json"),
-  JSON.stringify(turnB, null, 2),
-);
+writeFileSync(resolve(SCRATCH, "model-a.json"), JSON.stringify(turnA, null, 2));
+writeFileSync(resolve(SCRATCH, "model-b.json"), JSON.stringify(turnB, null, 2));
 writeFileSync(
   resolve(SCRATCH, "mcp-evidence.json"),
   JSON.stringify(
@@ -215,5 +206,17 @@ writeFileSync(
   ),
 );
 
-console.log(JSON.stringify({ success: report.success, turnA: turnA.content, turnB: turnB.content, ghas: ghasHealth.ok, zed: zedCtx.ok }, null, 2));
+console.log(
+  JSON.stringify(
+    {
+      success: report.success,
+      turnA: turnA.content,
+      turnB: turnB.content,
+      ghas: ghasHealth.ok,
+      zed: zedCtx.ok,
+    },
+    null,
+    2,
+  ),
+);
 process.exit(report.success ? 0 : 1);

@@ -154,7 +154,9 @@ log(`wrote ${join(SOV, ".state/client-llm.env")}`);
 mkdirSync(SCRATCH, { recursive: true });
 const { ok, models } = await listSwapModels();
 const settings = JSON.parse(
-  await Bun.file(join(HOME, ".config/Code - Insiders/User/settings.json")).text(),
+  await Bun.file(
+    join(HOME, ".config/Code - Insiders/User/settings.json"),
+  ).text(),
 );
 const out = {
   port: Number(PORT),

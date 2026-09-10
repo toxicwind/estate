@@ -169,7 +169,9 @@ describe.skipIf(!live)("best_models SSOT", () => {
       const nullGBase = `http://127.0.0.1:${nullGPort}`;
       let nullGLive = false;
       try {
-        const res = await fetch(`${nullGBase}/health`, { signal: AbortSignal.timeout(2000) });
+        const res = await fetch(`${nullGBase}/health`, {
+          signal: AbortSignal.timeout(2000),
+        });
         nullGLive = res.ok;
       } catch {
         nullGLive = false;

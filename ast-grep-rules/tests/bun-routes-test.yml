@@ -12,4 +12,4 @@ test:
   valid:
     - 'app.get("/health", handler)'
   invalid:
-    - 'app.config()'
+    - "app.config()"

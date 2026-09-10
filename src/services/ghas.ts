@@ -31,5 +31,4 @@ export const GHAS_SERVICES: ServiceDef[] = [
     env: { GHAS_FRONTEND_PORT: "25114" },
     healthPath: "/",
   },
-
 ];

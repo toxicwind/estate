@@ -32,7 +32,7 @@ mise run down
 | HF Downloader  | http://127.0.0.1:25106/               |
 | Grafana        | http://127.0.0.1:25110/               |
 | MCP Gateway    | http://127.0.0.1:25120/health         |
-| Mesh Hub       | http://127.0.0.1:25115/mesh/features |
+| Mesh Hub       | http://127.0.0.1:25115/mesh/features  |
 
 ---
 
@@ -43,8 +43,8 @@ mise run down
 | **llama-swap**        | **25100** | Go (toxicwind fork) | Inference router + AST Matrix Go router + `/ui` + `/v1`                                                         |
 | **rust-web**          | **25101** | Rust                | Ops dashboard + embedded watchdog                                                                               |
 | **yote**              | 25102     | Bun                 | Telegram / status                                                                                               |
-| **openfang**          | **25103** | Rust (binary)      | Agent kernel — OpenFang OS, 206 models, 61 skills, Discord bridge                                                 |
-| **sovereign-router**  | **25104** | Bun (TS)           | 5-strategy AST Matrix hybrid router (fifo_matrix, ast_race, sticky_affinity, weighted_elo, circuit_chain)          |
+| **openfang**          | **25103** | Rust (binary)       | Agent kernel — OpenFang OS, 206 models, 61 skills, Discord bridge                                               |
+| **sovereign-router**  | **25104** | Bun (TS)            | 5-strategy AST Matrix hybrid router (fifo_matrix, ast_race, sticky_affinity, weighted_elo, circuit_chain)       |
 | **prometheus**        | 25105     | Go                  | Metrics                                                                                                         |
 | **hf-downloader**     | 25106     | Bun                 | GGUF download UI                                                                                                |
 | **null-g-proxy**      | 25107     | Bun                 | Extra LLM proxy                                                                                                 |
@@ -64,10 +64,10 @@ Backends for swap: `LLAMA_START_PORT`–`LLAMA_END_PORT` = **25001–25099** (ll
 
 ### Llama-swap interfaces (both coexist — you pick)
 
-| Interface             | File                              | What it is                                                                                                      |
-| --------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| **Binary launcher**   | `stack/services/llama-swap.ts`     | TypeScript launcher (Bun) — launches Go binary, health loop, fail loud. No `|| true`. |
-| **MCP stdio wrapper** | `src/mcp/llama_swap.ts`            | Bun MCP server (`StdioServerTransport`). Env-only config (no file reads). Used by MCP federation / gateway.     |
+| Interface             | File                           | What it is                                                                                                  |
+| --------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| **Binary launcher**   | `stack/services/llama-swap.ts` | TypeScript launcher (Bun) — launches Go binary, health loop, fail loud. No `                                |     | true`. |
+| **MCP stdio wrapper** | `src/mcp/llama_swap.ts`        | Bun MCP server (`StdioServerTransport`). Env-only config (no file reads). Used by MCP federation / gateway. |
 
 The launcher (`llama-swap.sh`) is the primary service entry. The MCP wrapper (`llama_swap.ts`) is an additional stdio interface for agent/MCP use. They share the same port (`LLAMA_SWAP_PORT=25100`) but serve different clients. Do not confuse them: the script launches a binary; the wrapper is a Bun process.
 
@@ -132,10 +132,10 @@ Screenshot actions: `auto` (capture + classify + route to clipboard/file), `copy
 
 ## Why no Caddy / no landing
 
-| Removed                                          | Why                                                                                                                                                                                                                                                                                                                         |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Removed                                          | Why                                                                                                                                                                                                                                                                                                                      |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Caddy**                                        | Path routing fought real services (`/api/*` → openfang while rust-web also needs APIs). Port docs were wrong (`:3000` vs `CADDY_PORT=25109`). **`mise run up` never started it.** Multipath proxy not needed when every service has a stable 25xxx port. Artifacts archived under `/home/toxic/archive/caddy-removed-*`. |
-| **landing** (`LANDING_PORT` / Bun `src/landing`) | Duplicate static server for the same files rust-web already serves. False offshoot of rust-web. Deleted; dashboard APIs live on rust-web at **`/ops/api/*`**.                                                                                                                                                               |
+| **landing** (`LANDING_PORT` / Bun `src/landing`) | Duplicate static server for the same files rust-web already serves. False offshoot of rust-web. Deleted; dashboard APIs live on rust-web at **`/ops/api/*`**.                                                                                                                                                            |
 
 All public-facing services bind to `0.0.0.0` (not `127.0.0.1`) for LAN/Tailscale access. Internal mesh-front backends stay on `127.0.0.1:252xx`. Redis on `:25199`, Qdrant on `:25133` — both `0.0.0.0`.
 
@@ -219,13 +219,13 @@ Zed is configured to connect directly to Sovereign Stack services. All provider 
 
 ### Sovereign Stack providers
 
-| Provider                  | Wire                                | Port     | Why                                                                                                                 |
-| ------------------------- | ----------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
+| Provider                  | Wire                                | Port     | Why                                                                                                                  |
+| ------------------------- | ----------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------- |
 | **nvidia**                | `NvidiaLanguageModelProvider`       | external | Direct NVIDIA NIM access (`integrate.api.nvidia.com/v1`). Inkling SUDO MAX, full JSON Schema, interleaved reasoning. |
-| **llama-swap**            | `LlamaCppLanguageModelProvider`     | `:25100` | Local GGUF inference via the toxicwind fork. Routes to beellama, turboquant, ik_llama backends on `:25001–25099`.   |
-| **sovereign-router**      | `openai_compatible` provider        | `:25104` | 5-strategy AST Matrix hybrid router (TS standalone). 24 models across 7 providers.                                  |
-| **Sovereign MCP Gateway** | `mcpproxy-sovereign` context server | `:25120` | Trust boundary + circuit breaker + sticky affinity in front of upstream MCP servers (e.g. byte-vision on `:25121`). |
-| **mcpproxy**              | `mcpproxy-sovereign` context server | `:25109` | MCP federation (30+ MCPs → 1 endpoint). Connected via `mcp-remote` HTTP→stdio bridge.                               |
+| **llama-swap**            | `LlamaCppLanguageModelProvider`     | `:25100` | Local GGUF inference via the toxicwind fork. Routes to beellama, turboquant, ik_llama backends on `:25001–25099`.    |
+| **sovereign-router**      | `openai_compatible` provider        | `:25104` | 5-strategy AST Matrix hybrid router (TS standalone). 24 models across 7 providers.                                   |
+| **Sovereign MCP Gateway** | `mcpproxy-sovereign` context server | `:25120` | Trust boundary + circuit breaker + sticky affinity in front of upstream MCP servers (e.g. byte-vision on `:25121`).  |
+| **mcpproxy**              | `mcpproxy-sovereign` context server | `:25109` | MCP federation (30+ MCPs → 1 endpoint). Connected via `mcp-remote` HTTP→stdio bridge.                                |
 
 ### OpenCode provider
 
@@ -235,31 +235,31 @@ The **OpenCode** provider (`opencode` in settings) connects to a subscription-ba
 
 Free/keyless endpoints configured under `language_models.openai_compatible` (via sovereign-router at `:25104`):
 
-| Name                  | Model                        | Auth             |
-| --------------------- | ---------------------------- | ---------------- |
-| **Sovereign Hybrid**  | `auto` (5-strategy routing)  | Local (`:25104`) |
-| **Free Coding Model** | `fcm`                        | Local (`:25104`) |
-| **Tencent Hy3**       | `hy3`                        | OpenRouter free  |
-| **Poolside Laguna M.1** | `laguna-m1`                | OpenRouter free  |
-| **Poolside Laguna XS** | `laguna-xs`                 | OpenRouter free  |
-| **Gemma 4 31B**       | `gemma4-31b`                 | OpenRouter free  |
-| **Nemotron 3 Super**  | `nemotron-super`             | OpenRouter free  |
-| **Nemotron 3 Nano**   | `nemotron-nano`              | OpenRouter free  |
-| **Qwen3 Coder**       | `qwen3-coder`                | OpenRouter free  |
-| **Llama 3.3 70B**     | `llama-3.3-70b-free`         | OpenRouter free  |
-| **Hermes 3 405B**     | `hermes-3-405b`              | OpenRouter free  |
-| **GPT-OSS 20B**       | `gpt-oss-20b`                | OpenRouter free  |
-| **NVIDIA NIM Nemotron 3 Super** | `nim-nemotron-super` | NVIDIA NIM      |
-| **NVIDIA NIM Nemotron 3 Nano** | `nim-nemotron-nano`   | NVIDIA NIM      |
-| **NVIDIA NIM Llama 3.1 70B** | `nim-llama-3.1-70b`     | NVIDIA NIM      |
-| **NVIDIA NIM Llama 3.3 70B** | `nim-llama-3.3-70b`     | NVIDIA NIM      |
-| **NVIDIA NIM Qwen3.5 397B** | `nim-qwen3.5-397b`      | NVIDIA NIM      |
-| **NVIDIA NIM Qwen3.5 122B** | `nim-qwen3.5-122b`      | NVIDIA NIM      |
-| **NVIDIA NIM DeepSeek V4 Flash** | `nim-deepseek-v4-flash` | NVIDIA NIM  |
-| **NVIDIA NIM DeepSeek V4 Pro** | `nim-deepseek-v4-pro`   | NVIDIA NIM      |
-| **NVIDIA NIM Mistral Large 3** | `nim-mistral-large-3`   | NVIDIA NIM      |
-| **NVIDIA NIM Gemma 4 31B** | `nim-gemma4-31b`           | NVIDIA NIM      |
-| **NVIDIA NIM GLM 5.2** | `nim-glm5.2`                 | NVIDIA NIM      |
+| Name                             | Model                       | Auth             |
+| -------------------------------- | --------------------------- | ---------------- |
+| **Sovereign Hybrid**             | `auto` (5-strategy routing) | Local (`:25104`) |
+| **Free Coding Model**            | `fcm`                       | Local (`:25104`) |
+| **Tencent Hy3**                  | `hy3`                       | OpenRouter free  |
+| **Poolside Laguna M.1**          | `laguna-m1`                 | OpenRouter free  |
+| **Poolside Laguna XS**           | `laguna-xs`                 | OpenRouter free  |
+| **Gemma 4 31B**                  | `gemma4-31b`                | OpenRouter free  |
+| **Nemotron 3 Super**             | `nemotron-super`            | OpenRouter free  |
+| **Nemotron 3 Nano**              | `nemotron-nano`             | OpenRouter free  |
+| **Qwen3 Coder**                  | `qwen3-coder`               | OpenRouter free  |
+| **Llama 3.3 70B**                | `llama-3.3-70b-free`        | OpenRouter free  |
+| **Hermes 3 405B**                | `hermes-3-405b`             | OpenRouter free  |
+| **GPT-OSS 20B**                  | `gpt-oss-20b`               | OpenRouter free  |
+| **NVIDIA NIM Nemotron 3 Super**  | `nim-nemotron-super`        | NVIDIA NIM       |
+| **NVIDIA NIM Nemotron 3 Nano**   | `nim-nemotron-nano`         | NVIDIA NIM       |
+| **NVIDIA NIM Llama 3.1 70B**     | `nim-llama-3.1-70b`         | NVIDIA NIM       |
+| **NVIDIA NIM Llama 3.3 70B**     | `nim-llama-3.3-70b`         | NVIDIA NIM       |
+| **NVIDIA NIM Qwen3.5 397B**      | `nim-qwen3.5-397b`          | NVIDIA NIM       |
+| **NVIDIA NIM Qwen3.5 122B**      | `nim-qwen3.5-122b`          | NVIDIA NIM       |
+| **NVIDIA NIM DeepSeek V4 Flash** | `nim-deepseek-v4-flash`     | NVIDIA NIM       |
+| **NVIDIA NIM DeepSeek V4 Pro**   | `nim-deepseek-v4-pro`       | NVIDIA NIM       |
+| **NVIDIA NIM Mistral Large 3**   | `nim-mistral-large-3`       | NVIDIA NIM       |
+| **NVIDIA NIM Gemma 4 31B**       | `nim-gemma4-31b`            | NVIDIA NIM       |
+| **NVIDIA NIM GLM 5.2**           | `nim-glm5.2`                | NVIDIA NIM       |
 
 ### Custom Zed providers (in-tree)
 

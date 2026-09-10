@@ -8,8 +8,16 @@
   "status": "in_progress",
   "priority": "high",
   "subtasks": [
-    { "id": "crisis-1", "name": "Make skills portable", "status": "in_progress" },
-    { "id": "crisis-2", "name": "Create profile system", "status": "completed" },
+    {
+      "id": "crisis-1",
+      "name": "Make skills portable",
+      "status": "in_progress"
+    },
+    {
+      "id": "crisis-2",
+      "name": "Create profile system",
+      "status": "completed"
+    },
     { "id": "crisis-3", "name": "Add to mcpproxy", "status": "completed" }
   ]
 }

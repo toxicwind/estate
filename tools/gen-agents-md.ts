@@ -10,12 +10,16 @@ const MCP = "/home/toxic/.mcpproxy/mcp_config.json";
 const ZED = "/home/toxic/.config/zed/settings.json";
 
 function load(p: string) {
-  try { return JSON.parse(readFileSync(p, "utf8")); }
-  catch { return null; }
+  try {
+    return JSON.parse(readFileSync(p, "utf8"));
+  } catch {
+    return null;
+  }
 }
 
 const cfg = load(MCP);
-const servers = (cfg?.mcpServers ?? cfg?.servers ?? cfg) as Record<string, any> || {};
+const servers =
+  ((cfg?.mcpServers ?? cfg?.servers ?? cfg) as Record<string, any>) || {};
 const keys = Object.keys(servers);
 const enabled = keys.filter((k) => servers[k].enabled !== false);
 const disabled = keys.filter((k) => servers[k].enabled === false);

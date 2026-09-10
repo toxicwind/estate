@@ -20,7 +20,9 @@ for (const key of ["xai", "github", "google"]) {
 }
 
 if (keepOpen) {
-  console.log("\n[bb:all] All tabs open. Log in and submit manually. Ctrl-C to exit.");
+  console.log(
+    "\n[bb:all] All tabs open. Log in and submit manually. Ctrl-C to exit.",
+  );
   await new Promise(() => {});
 } else {
   await browser.close();

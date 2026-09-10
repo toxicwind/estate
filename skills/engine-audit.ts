@@ -36,7 +36,9 @@ function parseDiff(output: string): DiffRow[] {
         const loc = trimmed.slice(8, colonIdx);
         const file = trimmed.slice(colonIdx + 2);
         records.push({
-          type: loc.includes("engine/packages") ? "only_in_engine" : "only_in_vendor",
+          type: loc.includes("engine/packages")
+            ? "only_in_engine"
+            : "only_in_vendor",
           location: loc.replace(`${ENGINE_DIR}/`, ""),
           file,
         });
@@ -131,8 +133,12 @@ function main() {
   console.log("");
   console.log("=== Summary ===");
   console.log(`Total: ${df.length}`);
-  console.log(`Only in engine: ${df.filter((r) => r.type === "only_in_engine").length}`);
-  console.log(`Only in vendor: ${df.filter((r) => r.type === "only_in_vendor").length}`);
+  console.log(
+    `Only in engine: ${df.filter((r) => r.type === "only_in_engine").length}`,
+  );
+  console.log(
+    `Only in vendor: ${df.filter((r) => r.type === "only_in_vendor").length}`,
+  );
   console.log(`Modified: ${df.filter((r) => r.type === "modified").length}`);
 }
 

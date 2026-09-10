@@ -26,15 +26,8 @@ import { randomUUID } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-  resolveInstance,
-  type AntigravityInstance,
-} from "./discovery.ts";
-import {
-  buildModelsResponse,
-  resolveModel,
-  DEFAULT_MODEL,
-} from "./models.ts";
+import { resolveInstance, type AntigravityInstance } from "./discovery.ts";
+import { buildModelsResponse, resolveModel, DEFAULT_MODEL } from "./models.ts";
 import {
   startCascade,
   sendUserMessage,
@@ -54,7 +47,10 @@ import { codeRoutes } from "./routes/code.ts";
 
 // Sovereign port SSOT: NULL_G_PROXY_PORT (25107). Legacy PORT/8787 only as last fallback.
 const PORT = parseInt(
-  process.env["NULL_G_PROXY_PORT"] ?? process.env["NULL_G_PORT"] ?? process.env["PORT"] ?? "25107",
+  process.env["NULL_G_PROXY_PORT"] ??
+    process.env["NULL_G_PORT"] ??
+    process.env["PORT"] ??
+    "25107",
   10,
 );
 
@@ -67,15 +63,23 @@ let lastDiscoveryAt = 0;
 const REDISCOVERY_INTERVAL_MS = 60_000; // Re-discover every 60s to catch port changes
 const startedAt = Date.now();
 
-async function ensureConnected(forceRediscovery = false): Promise<AntigravityInstance> {
+async function ensureConnected(
+  forceRediscovery = false,
+): Promise<AntigravityInstance> {
   // Auto-refresh: re-discover if cached instance is older than REDISCOVERY_INTERVAL_MS
-  const stale = currentInstance && (Date.now() - lastDiscoveryAt > REDISCOVERY_INTERVAL_MS);
+  const stale =
+    currentInstance && Date.now() - lastDiscoveryAt > REDISCOVERY_INTERVAL_MS;
   if (stale && !forceRediscovery) {
     // Validate cached instance is still alive with a quick probe
     try {
-      const ok = await quickProbe(currentInstance!.port, currentInstance!.csrfToken);
+      const ok = await quickProbe(
+        currentInstance!.port,
+        currentInstance!.csrfToken,
+      );
       if (!ok) {
-        process.stderr.write('[proxy] Cached instance stale (probe failed), re-discovering...\n');
+        process.stderr.write(
+          "[proxy] Cached instance stale (probe failed), re-discovering...\n",
+        );
         currentInstance = null;
       } else {
         lastDiscoveryAt = Date.now(); // refresh timer
@@ -95,7 +99,7 @@ async function ensureConnected(forceRediscovery = false): Promise<AntigravityIns
       await new Promise<void>((r) => setTimeout(r, 200));
     }
     if (currentInstance) return currentInstance;
-    throw new Error(discoveryError ?? 'Discovery in progress, please retry');
+    throw new Error(discoveryError ?? "Discovery in progress, please retry");
   }
 
   // Kick off discovery
@@ -140,7 +144,9 @@ async function quickProbe(port: number, csrfToken: string): Promise<boolean> {
 
 /** Invalidate cached instance to force re-discovery on next request. */
 function resetInstance(): void {
-  process.stderr.write('[proxy] Connection lost, will re-discover on next request\n');
+  process.stderr.write(
+    "[proxy] Connection lost, will re-discover on next request\n",
+  );
   currentInstance = null;
 }
 
@@ -149,7 +155,7 @@ function resetInstance(): void {
 const app = new Hono();
 
 // Request logging middleware
-app.use('*', async (c, next) => {
+app.use("*", async (c, next) => {
   const start = Date.now();
   process.stderr.write(`[proxy] → ${c.req.method} ${c.req.path}\n`);
   await next();
@@ -161,30 +167,36 @@ app.use('*', async (c, next) => {
 // ─── GET /health ──────────────────────────────────────────────────────────────
 
 // GHAS mesh (20 features) — proxy to mesh-hub namespace for this service
-app.all('/mesh', async (c) => {
-  const hub = process.env.MESH_HUB_PORT || '25115';
+app.all("/mesh", async (c) => {
+  const hub = process.env.MESH_HUB_PORT || "25115";
   const target = `http://127.0.0.1:${hub}/mesh/s/null-g-proxy/features`;
   const r = await fetch(target);
   return new Response(await r.text(), {
     status: r.status,
-    headers: { 'content-type': 'application/json', 'x-sovereign-mesh': 'ghas-20' },
+    headers: {
+      "content-type": "application/json",
+      "x-sovereign-mesh": "ghas-20",
+    },
   });
 });
-app.all('/mesh/*', async (c) => {
-  const hub = process.env.MESH_HUB_PORT || '25115';
-  const feat = c.req.path.replace(/^\/mesh\/?/, '') || 'features';
+app.all("/mesh/*", async (c) => {
+  const hub = process.env.MESH_HUB_PORT || "25115";
+  const feat = c.req.path.replace(/^\/mesh\/?/, "") || "features";
   const qs = new URL(c.req.url).search;
   const target = `http://127.0.0.1:${hub}/mesh/s/null-g-proxy/${feat}${qs}`;
   const r = await fetch(target, { method: c.req.method });
   return new Response(await r.text(), {
     status: r.status,
-    headers: { 'content-type': 'application/json', 'x-sovereign-mesh': 'ghas-20' },
+    headers: {
+      "content-type": "application/json",
+      "x-sovereign-mesh": "ghas-20",
+    },
   });
 });
 
-app.get('/health', (c) => {
+app.get("/health", (c) => {
   let instanceInfo: object | null = null;
-  let status = 'disconnected';
+  let status = "disconnected";
 
   if (currentInstance) {
     instanceInfo = {
@@ -192,11 +204,11 @@ app.get('/health', (c) => {
       workspace: currentInstance.workspace,
       pid: currentInstance.pid,
     };
-    status = 'connected';
+    status = "connected";
   } else if (discovering) {
-    status = 'discovering';
+    status = "discovering";
   } else if (discoveryError) {
-    status = 'error';
+    status = "error";
   }
 
   return c.json({
@@ -223,31 +235,31 @@ app.get('/health', (c) => {
       code_lint: true,
     },
     endpoints: [
-      'GET  /health',
-      'GET  /v1/models',
-      'POST /v1/chat/completions',
-      'DELETE /v1/chat/sessions/:id',
-      'POST /v1/git/commit-message',
-      'GET  /v1/git/repos',
-      'POST /v1/git/worktree',
-      'GET  /v1/knowledge/list',
-      'GET  /v1/knowledge/search?q=',
-      'POST /v1/knowledge/items',
-      'POST /v1/terminal/exec',
-      'GET  /v1/terminal/processes',
-      'GET  /v1/code/search?q=',
-      'GET  /v1/code/lint?file=',
+      "GET  /health",
+      "GET  /v1/models",
+      "POST /v1/chat/completions",
+      "DELETE /v1/chat/sessions/:id",
+      "POST /v1/git/commit-message",
+      "GET  /v1/git/repos",
+      "POST /v1/git/worktree",
+      "GET  /v1/knowledge/list",
+      "GET  /v1/knowledge/search?q=",
+      "POST /v1/knowledge/items",
+      "POST /v1/terminal/exec",
+      "GET  /v1/terminal/processes",
+      "GET  /v1/code/search?q=",
+      "GET  /v1/code/lint?file=",
     ],
   });
 });
 
 // ─── GET / ─────────────────────────────────────────────────────────────────────
 
-app.get('/', (c) => c.redirect('/health'));
+app.get("/", (c) => c.redirect("/health"));
 
 // ─── GET /v1/models ───────────────────────────────────────────────────────────
 
-app.get('/v1/models', (c) => {
+app.get("/v1/models", (c) => {
   return c.json(buildModelsResponse());
 });
 
@@ -265,28 +277,34 @@ interface ChatCompletionRequest {
   max_tokens?: number;
   stream?: boolean;
   // Antigravity extensions (non-breaking, OpenAI clients ignore these)
-  cascade_id?: string;       // reuse existing session for multi-turn
-  agentic?: boolean;         // enable agentic mode
-  mode?: 'agentic' | 'chat'; // alternative agentic flag
+  cascade_id?: string; // reuse existing session for multi-turn
+  agentic?: boolean; // enable agentic mode
+  mode?: "agentic" | "chat"; // alternative agentic flag
 }
 
-app.post('/v1/chat/completions', async (c) => {
+app.post("/v1/chat/completions", async (c) => {
   let body: ChatCompletionRequest;
   try {
     body = await c.req.json<ChatCompletionRequest>();
   } catch {
     return c.json(
-      { error: { message: 'Invalid JSON body', type: 'invalid_request_error' } },
+      {
+        error: { message: "Invalid JSON body", type: "invalid_request_error" },
+      },
       400,
     );
   }
 
-  if (!body.messages || !Array.isArray(body.messages) || body.messages.length === 0) {
+  if (
+    !body.messages ||
+    !Array.isArray(body.messages) ||
+    body.messages.length === 0
+  ) {
     return c.json(
       {
         error: {
-          message: 'messages is required and must be a non-empty array',
-          type: 'invalid_request_error',
+          message: "messages is required and must be a non-empty array",
+          type: "invalid_request_error",
         },
       },
       400,
@@ -294,57 +312,57 @@ app.post('/v1/chat/completions', async (c) => {
   }
 
   const modelDef = resolveModel(body.model ?? DEFAULT_MODEL.openaiName);
-  const agenticMode = body.agentic === true || body.mode === 'agentic';
+  const agenticMode = body.agentic === true || body.mode === "agentic";
   const requestedModel = body.model ?? modelDef.openaiName;
 
   process.stderr.write(
-    `[proxy] chat/completions model="${modelDef.openaiName}" stream=${body.stream ?? false} agentic=${agenticMode} cascade_id=${body.cascade_id ?? 'new'}\n`,
+    `[proxy] chat/completions model="${modelDef.openaiName}" stream=${body.stream ?? false} agentic=${agenticMode} cascade_id=${body.cascade_id ?? "new"}\n`,
   );
 
   // Local llama-swap fallback when Antigravity is down OR model looks like a sovereign GGUF id
   const LLAMA_SWAP_V1 =
     process.env.LLM_BASE_URL ||
     process.env.LLAMA_SWAP_V1 ||
-    'http://127.0.0.1:25100/v1';
+    "http://127.0.0.1:25100/v1";
   const looksLocal =
     /^(beellama|mradermacher|jackrong|turboquant|ik_llama|ik_turboquant|holo|qwen\/|gemma-4|exaone|fast|quality|longctx|local-)/i.test(
       String(requestedModel),
-    ) ||
-    String(requestedModel).includes('/');
+    ) || String(requestedModel).includes("/");
 
   const proxyToLlamaSwap = async (): Promise<Response> => {
     const upstreamModel =
-      requestedModel === 'fast' || requestedModel === 'local-fast'
-        ? process.env.LLAMA_SWAP_FAST_MODEL || 'beellama/exaone-4-0-1-2b-iq4xs'
-        : requestedModel === 'quality' || requestedModel === 'local-quality'
-          ? process.env.LLAMA_SWAP_QUALITY_MODEL ||
-            'beellama/qwen-flash-64k'
-          : requestedModel === 'longctx' || requestedModel === 'local-longctx'
-            ? process.env.LLAMA_SWAP_LONGCTX_MODEL ||
-              'beellama/qwen-flash-256k'
+      requestedModel === "fast" || requestedModel === "local-fast"
+        ? process.env.LLAMA_SWAP_FAST_MODEL || "beellama/exaone-4-0-1-2b-iq4xs"
+        : requestedModel === "quality" || requestedModel === "local-quality"
+          ? process.env.LLAMA_SWAP_QUALITY_MODEL || "beellama/qwen-flash-64k"
+          : requestedModel === "longctx" || requestedModel === "local-longctx"
+            ? process.env.LLAMA_SWAP_LONGCTX_MODEL || "beellama/qwen-flash-256k"
             : String(requestedModel);
     process.stderr.write(
       `[proxy] llama-swap fallback model=${upstreamModel} via ${LLAMA_SWAP_V1}\n`,
     );
-    const res = await fetch(`${LLAMA_SWAP_V1.replace(/\/$/, '')}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'Accept-Encoding': 'identity',
+    const res = await fetch(
+      `${LLAMA_SWAP_V1.replace(/\/$/, "")}/chat/completions`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Accept-Encoding": "identity",
+        },
+        body: JSON.stringify({
+          ...body,
+          model: upstreamModel,
+        }),
+        signal: AbortSignal.timeout(body.stream ? 300_000 : 180_000),
       },
-      body: JSON.stringify({
-        ...body,
-        model: upstreamModel,
-      }),
-      signal: AbortSignal.timeout(body.stream ? 300_000 : 180_000),
-    });
+    );
     const text = await res.text();
     return new Response(text, {
       status: res.status,
       headers: {
-        'Content-Type': res.headers.get('Content-Type') || 'application/json',
-        'X-Routed-Via': `llama-swap/${upstreamModel}`,
+        "Content-Type": res.headers.get("Content-Type") || "application/json",
+        "X-Routed-Via": `llama-swap/${upstreamModel}`,
       },
     });
   };
@@ -356,7 +374,7 @@ app.post('/v1/chat/completions', async (c) => {
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     // Prefer local SSOT over hard 503 so routing/GPU paths stay usable
-    if (looksLocal || process.env.NULL_G_LLAMA_FALLBACK !== '0') {
+    if (looksLocal || process.env.NULL_G_LLAMA_FALLBACK !== "0") {
       try {
         return await proxyToLlamaSwap();
       } catch (fe) {
@@ -364,7 +382,7 @@ app.post('/v1/chat/completions', async (c) => {
           {
             error: {
               message: `Antigravity not available: ${msg}; llama-swap fallback failed: ${fe}`,
-              type: 'service_unavailable',
+              type: "service_unavailable",
             },
           },
           503,
@@ -372,7 +390,12 @@ app.post('/v1/chat/completions', async (c) => {
       }
     }
     return c.json(
-      { error: { message: `Antigravity not available: ${msg}`, type: 'service_unavailable' } },
+      {
+        error: {
+          message: `Antigravity not available: ${msg}`,
+          type: "service_unavailable",
+        },
+      },
       503,
     );
   }
@@ -389,7 +412,9 @@ app.post('/v1/chat/completions', async (c) => {
   if (existingSession) {
     // Reuse existing cascade session
     cascadeId = existingSession.cascadeId;
-    process.stderr.write(`[proxy] reusing cascadeId=${cascadeId} (turn ${existingSession.turnCount + 1})\n`);
+    process.stderr.write(
+      `[proxy] reusing cascadeId=${cascadeId} (turn ${existingSession.turnCount + 1})\n`,
+    );
   } else {
     // Start a new cascade session
     try {
@@ -398,25 +423,44 @@ app.post('/v1/chat/completions', async (c) => {
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       // If connection refused, retry with fresh discovery
-      if (msg.includes('ECONNREFUSED') || msg.includes('ECONNRESET') || msg.includes('EPIPE')) {
-        process.stderr.write(`[proxy] Connection lost (${msg}), re-discovering...\n`);
+      if (
+        msg.includes("ECONNREFUSED") ||
+        msg.includes("ECONNRESET") ||
+        msg.includes("EPIPE")
+      ) {
+        process.stderr.write(
+          `[proxy] Connection lost (${msg}), re-discovering...\n`,
+        );
         resetInstance();
         try {
           instance = await ensureConnected(true);
           cascadeId = await startCascade(instance);
-          process.stderr.write(`[proxy] Reconnected! new cascadeId=${cascadeId}\n`);
+          process.stderr.write(
+            `[proxy] Reconnected! new cascadeId=${cascadeId}\n`,
+          );
         } catch (retryErr) {
           resetInstance();
-          const retryMsg = retryErr instanceof Error ? retryErr.message : String(retryErr);
+          const retryMsg =
+            retryErr instanceof Error ? retryErr.message : String(retryErr);
           return c.json(
-            { error: { message: `StartCascade failed after retry: ${retryMsg}`, type: 'upstream_error' } },
+            {
+              error: {
+                message: `StartCascade failed after retry: ${retryMsg}`,
+                type: "upstream_error",
+              },
+            },
             502,
           );
         }
       } else {
         resetInstance();
         return c.json(
-          { error: { message: `StartCascade failed: ${msg}`, type: 'upstream_error' } },
+          {
+            error: {
+              message: `StartCascade failed: ${msg}`,
+              type: "upstream_error",
+            },
+          },
           502,
         );
       }
@@ -429,12 +473,23 @@ app.post('/v1/chat/completions', async (c) => {
   // ── Send user message ──────────────────────────────────────────────────────
 
   try {
-    await sendUserMessage(instance, cascadeId, prompt, modelDef.internalId, agenticMode);
+    await sendUserMessage(
+      instance,
+      cascadeId,
+      prompt,
+      modelDef.internalId,
+      agenticMode,
+    );
   } catch (e) {
     resetInstance();
     const msg = e instanceof Error ? e.message : String(e);
     return c.json(
-      { error: { message: `SendUserCascadeMessage failed: ${msg}`, type: 'upstream_error' } },
+      {
+        error: {
+          message: `SendUserCascadeMessage failed: ${msg}`,
+          type: "upstream_error",
+        },
+      },
       502,
     );
   }
@@ -442,22 +497,31 @@ app.post('/v1/chat/completions', async (c) => {
   // ── Streaming response ────────────────────────────────────────────────────
 
   if (body.stream) {
-    return buildStreamingResponse(instance, cascadeId, modelDef.openaiName, modelDef.timeoutMs);
+    return buildStreamingResponse(
+      instance,
+      cascadeId,
+      modelDef.openaiName,
+      modelDef.timeoutMs,
+    );
   }
 
   // ── Non-streaming response ────────────────────────────────────────────────
 
   try {
-    const result = await pollForResponse(instance, cascadeId, { timeoutMs: modelDef.timeoutMs });
-    process.stderr.write(`[proxy] response ready, length=${result.responseText.length}\n`);
+    const result = await pollForResponse(instance, cascadeId, {
+      timeoutMs: modelDef.timeoutMs,
+    });
+    process.stderr.write(
+      `[proxy] response ready, length=${result.responseText.length}\n`,
+    );
 
     // Update session turn count after successful response
     upsertSession(cascadeId, modelDef.openaiName);
 
-    const completionId = `chatcmpl-${randomUUID().replace(/-/g, '').slice(0, 24)}`;
+    const completionId = `chatcmpl-${randomUUID().replace(/-/g, "").slice(0, 24)}`;
     return c.json({
       id: completionId,
-      object: 'chat.completion',
+      object: "chat.completion",
       created: Math.floor(Date.now() / 1000),
       model: modelDef.openaiName,
       // cascade_id returned here so clients can reuse the session for multi-turn
@@ -466,10 +530,10 @@ app.post('/v1/chat/completions', async (c) => {
         {
           index: 0,
           message: {
-            role: 'assistant',
+            role: "assistant",
             content: result.responseText,
           },
-          finish_reason: 'stop',
+          finish_reason: "stop",
         },
       ],
       usage: {
@@ -482,7 +546,7 @@ app.post('/v1/chat/completions', async (c) => {
     resetInstance();
     const msg = e instanceof Error ? e.message : String(e);
     return c.json(
-      { error: { message: `Polling failed: ${msg}`, type: 'upstream_error' } },
+      { error: { message: `Polling failed: ${msg}`, type: "upstream_error" } },
       504,
     );
   }
@@ -490,13 +554,13 @@ app.post('/v1/chat/completions', async (c) => {
 
 // ─── DELETE /v1/chat/sessions/:id ─────────────────────────────────────────────
 
-app.delete('/v1/chat/sessions/:id', (c) => {
-  const id = c.req.param('id');
+app.delete("/v1/chat/sessions/:id", (c) => {
+  const id = c.req.param("id");
   const deleted = deleteSession(id);
 
   if (!deleted) {
     return c.json(
-      { error: { message: `Session not found: ${id}`, type: 'not_found' } },
+      { error: { message: `Session not found: ${id}`, type: "not_found" } },
       404,
     );
   }
@@ -513,14 +577,17 @@ function buildStreamingResponse(
   modelName: string,
   timeoutMs: number,
 ): Response {
-  const completionId = `chatcmpl-${randomUUID().replace(/-/g, '').slice(0, 24)}`;
+  const completionId = `chatcmpl-${randomUUID().replace(/-/g, "").slice(0, 24)}`;
   const created = Math.floor(Date.now() / 1000);
   const encoder = new TextEncoder();
 
-  function sseChunk(delta: string, finishReason: string | null = null): Uint8Array {
+  function sseChunk(
+    delta: string,
+    finishReason: string | null = null,
+  ): Uint8Array {
     const chunk = {
       id: completionId,
-      object: 'chat.completion.chunk',
+      object: "chat.completion.chunk",
       created,
       model: modelName,
       // Include cascade_id in system_fingerprint for streaming too
@@ -528,7 +595,7 @@ function buildStreamingResponse(
       choices: [
         {
           index: 0,
-          delta: finishReason ? {} : { role: 'assistant', content: delta },
+          delta: finishReason ? {} : { role: "assistant", content: delta },
           finish_reason: finishReason,
         },
       ],
@@ -539,7 +606,9 @@ function buildStreamingResponse(
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        const result = await pollForResponse(instance, cascadeId, { timeoutMs });
+        const result = await pollForResponse(instance, cascadeId, {
+          timeoutMs,
+        });
 
         // Emit response in chunks (streaming effect)
         const text = result.responseText;
@@ -550,25 +619,27 @@ function buildStreamingResponse(
         }
 
         // Final stop chunk
-        controller.enqueue(sseChunk('', 'stop'));
-        controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+        controller.enqueue(sseChunk("", "stop"));
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
         const errChunk = {
           id: completionId,
-          object: 'chat.completion.chunk',
+          object: "chat.completion.chunk",
           created,
           model: modelName,
           choices: [
             {
               index: 0,
               delta: { content: `\n[ERROR: ${msg}]` },
-              finish_reason: 'stop',
+              finish_reason: "stop",
             },
           ],
         };
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify(errChunk)}\n\n`));
-        controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+        controller.enqueue(
+          encoder.encode(`data: ${JSON.stringify(errChunk)}\n\n`),
+        );
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
       } finally {
         controller.close();
       }
@@ -578,17 +649,17 @@ function buildStreamingResponse(
   return new Response(stream, {
     status: 200,
     headers: {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      Connection: 'keep-alive',
-      'X-Accel-Buffering': 'no',
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+      "X-Accel-Buffering": "no",
     },
   });
 }
 
 // ─── GET /docs ────────────────────────────────────────────────────────────────
 
-app.get('/docs', (c) => {
+app.get("/docs", (c) => {
   const html = `<!DOCTYPE html>
 <html>
 <head>
@@ -618,25 +689,34 @@ app.get('/docs', (c) => {
 </html>`;
   return new Response(html, {
     status: 200,
-    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    headers: { "Content-Type": "text/html; charset=utf-8" },
   });
 });
 
 // ─── GET /openapi.yaml ────────────────────────────────────────────────────────
 
-app.get('/openapi.yaml', (c) => {
+app.get("/openapi.yaml", (c) => {
   // Resolve path relative to project root (two levels up from dist/ or src/)
   const candidates = [
-    path.join(process.cwd(), 'openapi.yaml'),
-    path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'openapi.yaml'),
-    path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'openapi.yaml'),
+    path.join(process.cwd(), "openapi.yaml"),
+    path.join(
+      path.dirname(fileURLToPath(import.meta.url)),
+      "..",
+      "openapi.yaml",
+    ),
+    path.join(
+      path.dirname(fileURLToPath(import.meta.url)),
+      "..",
+      "..",
+      "openapi.yaml",
+    ),
   ];
 
   let yamlContent: string | null = null;
   for (const candidate of candidates) {
     try {
       if (fs.existsSync(candidate)) {
-        yamlContent = fs.readFileSync(candidate, 'utf8');
+        yamlContent = fs.readFileSync(candidate, "utf8");
         break;
       }
     } catch {
@@ -645,26 +725,32 @@ app.get('/openapi.yaml', (c) => {
   }
 
   if (!yamlContent) {
-    return c.json({ error: { message: 'openapi.yaml not found', type: 'not_found' } }, 404);
+    return c.json(
+      { error: { message: "openapi.yaml not found", type: "not_found" } },
+      404,
+    );
   }
 
   return new Response(yamlContent, {
     status: 200,
-    headers: { 'Content-Type': 'application/yaml; charset=utf-8' },
+    headers: { "Content-Type": "application/yaml; charset=utf-8" },
   });
 });
 
 // ─── Route groups ─────────────────────────────────────────────────────────────
 
-app.route('/v1/git', gitRoutes);
-app.route('/v1/knowledge', knowledgeRoutes);
-app.route('/v1/terminal', terminalRoutes);
-app.route('/v1/code', codeRoutes);
+app.route("/v1/git", gitRoutes);
+app.route("/v1/knowledge", knowledgeRoutes);
+app.route("/v1/terminal", terminalRoutes);
+app.route("/v1/code", codeRoutes);
 
 // ─── 404 fallback ─────────────────────────────────────────────────────────────
 
 app.notFound((c) =>
-  c.json({ error: { message: `Not found: ${c.req.path}`, type: 'not_found' } }, 404),
+  c.json(
+    { error: { message: `Not found: ${c.req.path}`, type: "not_found" } },
+    404,
+  ),
 );
 
 // ─── Start server (Bun.serve — not node / @hono/node-server) ─────────────────
@@ -688,6 +774,8 @@ const server = Bun.serve({
 process.stderr.write(
   `[proxy] Listening on http://127.0.0.1:${server.port} (runtime=bun)\n`,
 );
-process.stderr.write("[proxy] Endpoints: /health /mesh/* /v1/models /v1/chat/completions …\n");
+process.stderr.write(
+  "[proxy] Endpoints: /health /mesh/* /v1/models /v1/chat/completions …\n",
+);
 
 // hotreload-probe 1784356796798

@@ -5,11 +5,11 @@ Total differences: 1451
 
 ## Summary
 
-| Type | Count |
-|------|-------|
-| Only in engine (sovereign) | 196 |
-| Only in vendor (upstream) | 0 |
-| Modified | 1255 |
+| Type                       | Count |
+| -------------------------- | ----- |
+| Only in engine (sovereign) | 196   |
+| Only in vendor (upstream)  | 0     |
+| Modified                   | 1255  |
 
 ## Sovereign Additions (only in engine)
 
@@ -211,7 +211,6 @@ Total differences: 1451
 - `packages/tui/test/output-backlog-guard.test.ts`
 
 ## Upstream Only (not in engine)
-
 
 ## Modified Files
 

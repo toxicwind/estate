@@ -1,9 +1,11 @@
 # tau-tmux Skill: Audit NVIDIA Unlock Configuration
 
 ## Purpose
+
 Audit the maximal NVIDIA unlock configuration for the Tau agent. Verifies all patches are correctly applied and reports status.
 
 ## When to Use
+
 - After applying NVIDIA config patches to confirm they took effect
 - Before running Tau with NVIDIA model to ensure correct setup
 - As part of routine Sovereign ecosystem health check
@@ -26,6 +28,7 @@ tmux send-keys -t tau "tau --profile audit" C-m
 The skill checks the following and reports PASS/FAIL:
 
 ### 1. nvidia.json
+
 - `contextWindow == 1048576` (1M context)
 - `maxTokens == 32768` (32k output)
 - `cost all zeros` (free tier)
@@ -34,16 +37,19 @@ The skill checks the following and reports PASS/FAIL:
 - `supportsReasoningEffort == 1`
 
 ### 2. nvidia.ts
+
 - `const DEFAULT_MODEL = "nvidia/nemotron-3-ultra-550b-a55b"` exists
 - `defaultModel: DEFAULT_MODEL` present in nvidiaProvider object
 
 ### 3. cascade.json
+
 - `models == 9` (9 models total)
 - `effective_rpm == 360` (free tier limit)
 - `tier3_heavy contains nvidia/nemotron-3-ultra-550b-a55b`
 - `fallback == "meta/llama-3.1-70b-instruct"`
 
 ### 4. .env
+
 - `PI_NVIDIA_DEFAULT_MODEL == "nvidia/nemotron-3-ultra-550b-a55b"`
 - `PI_NVIDIA_CONTEXT_WINDOW == 1048576`
 - `PI_NVIDIA_MAX_TOKENS == 32768`
@@ -56,6 +62,7 @@ The skill checks the following and reports PASS/FAIL:
 - No duplicate lines
 
 ## Exit Codes
+
 - `0` - All checks PASS
 - `1` - Any check FAIL (report which ones)
 

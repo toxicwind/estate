@@ -5,16 +5,18 @@
  */
 import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import {
-  loadSovereignPorts,
-  requirePort,
-} from "../src/lib/ports.ts";
+import { loadSovereignPorts, requirePort } from "../src/lib/ports.ts";
 
 loadSovereignPorts();
 
 const OUT =
   process.env.E2E_OUT ||
-  resolve(process.env.HOME || "/home/toxic", "sovereign", ".state", "e2e-http.jsonl");
+  resolve(
+    process.env.HOME || "/home/toxic",
+    "sovereign",
+    ".state",
+    "e2e-http.jsonl",
+  );
 mkdirSync(resolve(OUT, ".."), { recursive: true });
 // truncate
 writeFileSync(OUT, "");
@@ -35,7 +37,10 @@ function writeRow(r: Row) {
 async function get(
   name: string,
   url: string,
-  opts?: { expectOkBody?: (t: string, status: number) => boolean; timeoutMs?: number },
+  opts?: {
+    expectOkBody?: (t: string, status: number) => boolean;
+    timeoutMs?: number;
+  },
 ): Promise<Row> {
   const timeoutMs = opts?.timeoutMs ?? 8000;
   const ctrl = new AbortController();
@@ -75,7 +80,12 @@ async function chatVisible(): Promise<Row> {
   const url = `http://127.0.0.1:${port}/v1/chat/completions`;
   const body = {
     model: process.env.E2E_CHAT_MODEL || "beellama/qwen-flash-64k",
-    messages: [{ role: "user", content: "Reply with exactly the four characters: ZED_OK" }],
+    messages: [
+      {
+        role: "user",
+        content: "Reply with exactly the four characters: ZED_OK",
+      },
+    ],
     max_tokens: 128,
     temperature: 0,
     // Qwen flash often puts tokens in reasoning; disable thinking for visible content
@@ -106,7 +116,8 @@ async function chatVisible(): Promise<Row> {
     } catch {
       /* keep */
     }
-    const ok = res.ok && typeof content === "string" && content.trim().length > 0;
+    const ok =
+      res.ok && typeof content === "string" && content.trim().length > 0;
     const row: Row = {
       name: "llama-swap-chat-visible",
       url,
@@ -238,7 +249,9 @@ rows.push(
 );
 rows.push(await get("ghas-api-health", `http://127.0.0.1:${GHAS}/health`));
 rows.push(await get("ghas-mcp-health", `http://127.0.0.1:${GHASM}/health`));
-rows.push(await get("prometheus-healthy", `http://127.0.0.1:${PROM}/-/healthy`));
+rows.push(
+  await get("prometheus-healthy", `http://127.0.0.1:${PROM}/-/healthy`),
+);
 rows.push(await get("grafana-health", `http://127.0.0.1:${GRAF}/api/health`));
 
 const failed = rows.filter((r) => !r.ok);

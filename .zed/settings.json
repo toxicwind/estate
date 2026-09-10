@@ -220,368 +220,368 @@
     "openai_compatible": {
       "llama-swap:25100": {
         "api_url": "http://127.0.0.1:25100/v1",
-        "available_models":                               [
-            {
-              "name": "auto",
-              "max_tokens": 262144,
-              "display_name": "Sovereign Hybrid (5-strategy matrix)",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "fcm",
-              "max_tokens": 262144,
-              "display_name": "Free Coding Models virtual",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "hy3",
-              "max_tokens": 262144,
-              "display_name": "Tencent Hy3 free (OpenRouter)",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "laguna-m1",
-              "max_tokens": 262144,
-              "display_name": "Poolside Laguna M.1 free (OpenRouter)",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "laguna-xs",
-              "max_tokens": 262144,
-              "display_name": "Poolside Laguna XS free (OpenRouter)",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "gemma4-31b",
-              "max_tokens": 262144,
-              "display_name": "Gemma 4 31B free (OpenRouter)",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "nemotron-super",
-              "max_tokens": 262144,
-              "display_name": "Nemotron 3 Super free (OpenRouter)",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "nemotron-nano",
-              "max_tokens": 131072,
-              "display_name": "Nemotron 3 Nano free (OpenRouter)",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "qwen3-coder",
-              "max_tokens": 1048576,
-              "display_name": "Qwen3 Coder free (OpenRouter)",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "llama-3.3-70b-free",
-              "max_tokens": 131072,
-              "display_name": "Llama 3.3 70B free (OpenRouter)",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "hermes-3-405b",
-              "max_tokens": 131072,
-              "display_name": "Hermes 3 405B free (OpenRouter)",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "gpt-oss-20b",
-              "max_tokens": 131072,
-              "display_name": "GPT-OSS 20B free (OpenRouter)",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "nim-nemotron-super",
-              "max_tokens": 262144,
-              "display_name": "NVIDIA NIM Nemotron 3 Super",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "nim-nemotron-nano",
-              "max_tokens": 131072,
-              "display_name": "NVIDIA NIM Nemotron 3 Nano",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "nim-llama-3.1-70b",
-              "max_tokens": 131072,
-              "display_name": "NVIDIA NIM Llama 3.1 70B",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "nim-llama-3.3-70b",
-              "max_tokens": 131072,
-              "display_name": "NVIDIA NIM Llama 3.3 70B",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "nim-qwen3.5-397b",
-              "max_tokens": 262144,
-              "display_name": "NVIDIA NIM Qwen3.5 397B MoE",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "nim-qwen3.5-122b",
-              "max_tokens": 262144,
-              "display_name": "NVIDIA NIM Qwen3.5 122B MoE",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "nim-deepseek-v4-flash",
-              "max_tokens": 131072,
-              "display_name": "NVIDIA NIM DeepSeek V4 Flash",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "nim-deepseek-v4-pro",
-              "max_tokens": 131072,
-              "display_name": "NVIDIA NIM DeepSeek V4 Pro",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "nim-mistral-large-3",
-              "max_tokens": 131072,
-              "display_name": "NVIDIA NIM Mistral Large 3 675B",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "nim-gemma4-31b",
-              "max_tokens": 262144,
-              "display_name": "NVIDIA NIM Gemma 4 31B",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "nim-glm5.2",
-              "max_tokens": 131072,
-              "display_name": "NVIDIA NIM GLM 5.2",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
-            },
-            {
-              "name": "hy3-readonly",
-              "max_tokens": 262144,
-              "display_name": "Tencent Hy3 free - READ ONLY (autonomous_edits=false)",
-              "capabilities": {
-                "tools": true,
-                "images": false,
-                "parallel_tool_calls": true,
-                "prompt_cache_key": false,
-                "chat_completions": true,
-                "interleaved_reasoning": false,
-                "max_tokens_parameter": false,
-                "autonomous_edits": false
-              }
+        "available_models": [
+          {
+            "name": "auto",
+            "max_tokens": 262144,
+            "display_name": "Sovereign Hybrid (5-strategy matrix)",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
             }
-          ]
+          },
+          {
+            "name": "fcm",
+            "max_tokens": 262144,
+            "display_name": "Free Coding Models virtual",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "hy3",
+            "max_tokens": 262144,
+            "display_name": "Tencent Hy3 free (OpenRouter)",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "laguna-m1",
+            "max_tokens": 262144,
+            "display_name": "Poolside Laguna M.1 free (OpenRouter)",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "laguna-xs",
+            "max_tokens": 262144,
+            "display_name": "Poolside Laguna XS free (OpenRouter)",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "gemma4-31b",
+            "max_tokens": 262144,
+            "display_name": "Gemma 4 31B free (OpenRouter)",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "nemotron-super",
+            "max_tokens": 262144,
+            "display_name": "Nemotron 3 Super free (OpenRouter)",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "nemotron-nano",
+            "max_tokens": 131072,
+            "display_name": "Nemotron 3 Nano free (OpenRouter)",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "qwen3-coder",
+            "max_tokens": 1048576,
+            "display_name": "Qwen3 Coder free (OpenRouter)",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "llama-3.3-70b-free",
+            "max_tokens": 131072,
+            "display_name": "Llama 3.3 70B free (OpenRouter)",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "hermes-3-405b",
+            "max_tokens": 131072,
+            "display_name": "Hermes 3 405B free (OpenRouter)",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "gpt-oss-20b",
+            "max_tokens": 131072,
+            "display_name": "GPT-OSS 20B free (OpenRouter)",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "nim-nemotron-super",
+            "max_tokens": 262144,
+            "display_name": "NVIDIA NIM Nemotron 3 Super",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "nim-nemotron-nano",
+            "max_tokens": 131072,
+            "display_name": "NVIDIA NIM Nemotron 3 Nano",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "nim-llama-3.1-70b",
+            "max_tokens": 131072,
+            "display_name": "NVIDIA NIM Llama 3.1 70B",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "nim-llama-3.3-70b",
+            "max_tokens": 131072,
+            "display_name": "NVIDIA NIM Llama 3.3 70B",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "nim-qwen3.5-397b",
+            "max_tokens": 262144,
+            "display_name": "NVIDIA NIM Qwen3.5 397B MoE",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "nim-qwen3.5-122b",
+            "max_tokens": 262144,
+            "display_name": "NVIDIA NIM Qwen3.5 122B MoE",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "nim-deepseek-v4-flash",
+            "max_tokens": 131072,
+            "display_name": "NVIDIA NIM DeepSeek V4 Flash",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "nim-deepseek-v4-pro",
+            "max_tokens": 131072,
+            "display_name": "NVIDIA NIM DeepSeek V4 Pro",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "nim-mistral-large-3",
+            "max_tokens": 131072,
+            "display_name": "NVIDIA NIM Mistral Large 3 675B",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "nim-gemma4-31b",
+            "max_tokens": 262144,
+            "display_name": "NVIDIA NIM Gemma 4 31B",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "nim-glm5.2",
+            "max_tokens": 131072,
+            "display_name": "NVIDIA NIM GLM 5.2",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          },
+          {
+            "name": "hy3-readonly",
+            "max_tokens": 262144,
+            "display_name": "Tencent Hy3 free - READ ONLY (autonomous_edits=false)",
+            "capabilities": {
+              "tools": true,
+              "images": false,
+              "parallel_tool_calls": true,
+              "prompt_cache_key": false,
+              "chat_completions": true,
+              "interleaved_reasoning": false,
+              "max_tokens_parameter": false,
+              "autonomous_edits": false
+            }
+          }
+        ]
       }
     }
   },
@@ -605,9 +605,7 @@
       "main": {
         "name": "Main",
         "enable_all_context_servers": true,
-        "context_servers": [
-          "mcpproxy-sovereign"
-        ]
+        "context_servers": ["mcpproxy-sovereign"]
       }
     },
     "tools": {

@@ -4,7 +4,7 @@
 version: "1.0.0"
 
 # Policy enforcement mode
-enforcement: "warn"  # Options: "warn", "block", "disabled"
+enforcement: "warn" # Options: "warn", "block", "disabled"
 
 # Security rules
 security:

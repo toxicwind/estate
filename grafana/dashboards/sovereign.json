@@ -19,9 +19,20 @@
       "fieldConfig": {
         "defaults": {
           "mappings": [
-            { "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } }, "type": "value" }
+            {
+              "options": {
+                "0": { "text": "DOWN", "color": "red" },
+                "1": { "text": "UP", "color": "green" }
+              },
+              "type": "value"
+            }
           ],
-          "thresholds": { "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+          "thresholds": {
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
         }
       }
     },
@@ -38,7 +49,13 @@
       "fieldConfig": {
         "defaults": {
           "unit": "celsius",
-          "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 70 }, { "color": "red", "value": 85 }] },
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 70 },
+              { "color": "red", "value": 85 }
+            ]
+          },
           "min": 0,
           "max": 100
         }
@@ -55,7 +72,16 @@
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "watt", "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 250 }, { "color": "red", "value": 350 }] } }
+        "defaults": {
+          "unit": "watt",
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 250 },
+              { "color": "red", "value": 350 }
+            ]
+          }
+        }
       }
     },
     {
@@ -69,7 +95,16 @@
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "GB", "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 20 }, { "color": "red", "value": 23 }] } }
+        "defaults": {
+          "unit": "GB",
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 20 },
+              { "color": "red", "value": 23 }
+            ]
+          }
+        }
       }
     },
     {

@@ -444,16 +444,35 @@ flowchart TD
             <p class="text-xs text-gray-400 leading-relaxed">
               Sovereign Agentic Network powered by local
               <strong id="engine-gpu">RTX 3090 GPU</strong> hardware and
-              <strong id="engine-model">llama-swap</strong>.
-              Four-fork model routing via llama-swap — no vLLM.
+              <strong id="engine-model">llama-swap</strong>. Four-fork model
+              routing via llama-swap — no vLLM.
             </p>
-            <div class="mt-4 p-4 rounded-xl bg-black/30 border border-white/5 flex flex-col gap-2.5">
-              <div class="flex justify-between items-center text-xs font-bold text-gray-300">
+            <div
+              class="mt-4 p-4 rounded-xl bg-black/30 border border-white/5 flex flex-col gap-2.5"
+            >
+              <div
+                class="flex justify-between items-center text-xs font-bold text-gray-300"
+              >
                 <span>FORK RANKINGS (tg64 speed)</span>
-                <a id="link-hfd-dashboard" href="http://127.0.0.1:25106/" target="_blank" rel="noopener" class="text-[10px] text-cyan-400 hover:underline">HFD Dashboard <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i></a>
+                <a
+                  id="link-hfd-dashboard"
+                  href="http://127.0.0.1:25106/"
+                  target="_blank"
+                  rel="noopener"
+                  class="text-[10px] text-cyan-400 hover:underline"
+                  >HFD Dashboard
+                  <i
+                    class="fa-solid fa-arrow-up-right-from-square text-[8px]"
+                  ></i
+                ></a>
               </div>
-              <div id="rankings-preview-container" class="flex flex-col gap-1.5 text-xs text-gray-400">
-                <div class="text-[10px] italic text-gray-600">Loading rankings...</div>
+              <div
+                id="rankings-preview-container"
+                class="flex flex-col gap-1.5 text-xs text-gray-400"
+              >
+                <div class="text-[10px] italic text-gray-600">
+                  Loading rankings...
+                </div>
               </div>
             </div>
             <div class="mt-4 flex gap-2 flex-wrap">
@@ -484,7 +503,11 @@ flowchart TD
                 ><i class="fa-solid fa-microchip text-cyan-400 mr-2"></i> ACTIVE
                 MODEL SWAPPER</span
               >
-              <span id="active-model-header" class="text-[9px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">LIVE: None</span>
+              <span
+                id="active-model-header"
+                class="text-[9px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20"
+                >LIVE: None</span
+              >
             </h3>
             <div
               id="models-list-container"
@@ -508,7 +531,7 @@ flowchart TD
               playground — not embedded here. Open it on
               <code class="text-cyan-400">:25100/ui</code>.
             </p>
-             <div class="flex flex-wrap gap-2">
+            <div class="flex flex-wrap gap-2">
               <a
                 id="btn-chat-ui"
                 href="http://127.0.0.1:25100/ui/"
@@ -742,8 +765,7 @@ flowchart TD
           }
 
           const hc = document.getElementById("healthy-count");
-          if (hc)
-            hc.innerText = `${healthy}/${currentServices.length} ONLINE`;
+          if (hc) hc.innerText = `${healthy}/${currentServices.length} ONLINE`;
 
           if (dot)
             dot.className = `w-2.5 h-2.5 rounded-full ${healthy === currentServices.length ? "bg-emerald-500" : "bg-amber-500"}`;
@@ -851,15 +873,17 @@ flowchart TD
           return a.id.localeCompare(b.id);
         });
 
-        const activeModel = models.find(m => m.active);
+        const activeModel = models.find((m) => m.active);
         const headerEl = document.getElementById("active-model-header");
         if (headerEl) {
           if (activeModel) {
             headerEl.innerText = `LIVE: ${activeModel.id}`;
-            headerEl.className = "text-[9px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20";
+            headerEl.className =
+              "text-[9px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20";
           } else {
             headerEl.innerText = "LIVE: None";
-            headerEl.className = "text-[9px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20";
+            headerEl.className =
+              "text-[9px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20";
           }
         }
 
@@ -875,9 +899,10 @@ flowchart TD
               ? `<span class="${badgeClass}">ACTIVE</span>`
               : `<button onclick="swapModel('${escapeHtml(m.id)}')" class="text-[9px] font-bold px-2 py-0.5 bg-violet-600 hover:bg-violet-500 text-white rounded transition shadow-sm shadow-violet-500/10">SWAP</button>`;
 
-            const priorityBadge = m.priority > 0
-              ? `<span class="text-[9px] font-mono text-violet-400 bg-violet-500/10 px-1.5 py-0.5 rounded border border-violet-500/20">Prio: ${m.priority}</span>`
-              : "";
+            const priorityBadge =
+              m.priority > 0
+                ? `<span class="text-[9px] font-mono text-violet-400 bg-violet-500/10 px-1.5 py-0.5 rounded border border-violet-500/20">Prio: ${m.priority}</span>`
+                : "";
 
             return `
               <div class="service-card rounded-xl p-3.5 flex flex-col gap-2 border ${border}">
@@ -903,15 +928,18 @@ flowchart TD
       async function swapModel(modelId) {
         addLog(`Initiating model swap to ${modelId}...`);
         try {
-          const res = await fetch("http://127.0.0.1:25100/v1/chat/completions", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              model: modelId,
-              messages: [{ role: "user", content: "hello" }],
-              max_tokens: 1,
-            }),
-          });
+          const res = await fetch(
+            "http://127.0.0.1:25100/v1/chat/completions",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                model: modelId,
+                messages: [{ role: "user", content: "hello" }],
+                max_tokens: 1,
+              }),
+            },
+          );
           if (res.ok) {
             addLog(`Swapped to model ${modelId} successfully.`);
             fetchModels();
@@ -948,12 +976,12 @@ flowchart TD
         for (const [name, fork] of Object.entries(data.forks)) {
           let tg64 = 0;
           if (fork.ok && fork.bench_stdout_tail) {
-            const lines = fork.bench_stdout_tail.split('\n');
+            const lines = fork.bench_stdout_tail.split("\n");
             for (const line of lines) {
               if (line.includes("tg64")) {
-                const parts = line.split('|');
+                const parts = line.split("|");
                 if (parts.length > 7) {
-                  const valPart = parts[7].trim().split(' ')[0];
+                  const valPart = parts[7].trim().split(" ")[0];
                   const val = parseFloat(valPart);
                   if (!isNaN(val)) tg64 = val;
                 }
@@ -965,17 +993,21 @@ flowchart TD
 
         list.sort((a, b) => b.tg64 - a.tg64);
 
-        container.innerHTML = list.map((item, idx) => {
-          const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "⚡";
-          const speed = item.tg64 > 0 ? `${item.tg64.toFixed(1)} t/s` : "offline/pending";
-          const color = idx === 0 ? "text-cyan-300" : "text-gray-300";
-          return `
+        container.innerHTML = list
+          .map((item, idx) => {
+            const medal =
+              idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "⚡";
+            const speed =
+              item.tg64 > 0 ? `${item.tg64.toFixed(1)} t/s` : "offline/pending";
+            const color = idx === 0 ? "text-cyan-300" : "text-gray-300";
+            return `
             <div class="flex justify-between items-center text-[11px] py-0.5 border-b border-white/5 last:border-0">
               <span class="font-mono flex items-center gap-1"><span class="text-xs">${medal}</span> <span class="${color}">${escapeHtml(item.name)}</span></span>
               <span class="font-mono font-bold text-gray-300">${speed}</span>
             </div>
           `;
-        }).join("");
+          })
+          .join("");
       }
 
       async function fetchTelemetry() {
@@ -1001,22 +1033,21 @@ flowchart TD
         }
       }
 
-
       function updateDynamicLinks() {
         const host = window.location.hostname;
-        
+
         const navChatUi = document.getElementById("nav-chat-ui");
         if (navChatUi) navChatUi.href = `http://${host}:25100/ui/`;
-        
+
         const navHfd = document.getElementById("nav-hfd");
         if (navHfd) navHfd.href = `http://${host}:25106/`;
-        
+
         const linkHfdDashboard = document.getElementById("link-hfd-dashboard");
         if (linkHfdDashboard) linkHfdDashboard.href = `http://${host}:25106/`;
-        
+
         const btnChatUi = document.getElementById("btn-chat-ui");
         if (btnChatUi) btnChatUi.href = `http://${host}:25100/ui/`;
-        
+
         const btnModelsApi = document.getElementById("btn-models-api");
         if (btnModelsApi) btnModelsApi.href = `http://${host}:25100/v1/models`;
 
@@ -1045,6 +1076,6 @@ flowchart TD
 
       document.addEventListener("DOMContentLoaded", init);
     </script>
-  <!-- hotreload-probe t1784356222710 -->
-</body>
+    <!-- hotreload-probe t1784356222710 -->
+  </body>
 </html>

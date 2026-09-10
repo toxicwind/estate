@@ -26,7 +26,9 @@ function lockPath(name: string): string {
 }
 
 async function ensureLockDir(): Promise<void> {
-  try { await mkdir(LOCK_DIR, { recursive: true }); } catch {}
+  try {
+    await mkdir(LOCK_DIR, { recursive: true });
+  } catch {}
 }
 
 /**
@@ -50,7 +52,9 @@ async function tryAcquire(lockDir: string, pid: number): Promise<boolean> {
           return false; // still alive
         } catch {
           // Stale — clean up and retry
-          try { await rmdir(lockDir, { recursive: true }); } catch {}
+          try {
+            await rmdir(lockDir, { recursive: true });
+          } catch {}
           try {
             await mkdir(lockDir, { recursive: false });
             await writeFile(join(lockDir, "pid"), String(pid), "utf-8");
@@ -71,7 +75,7 @@ async function tryAcquire(lockDir: string, pid: number): Promise<boolean> {
  */
 export async function acquireLock(
   resourceName: string,
-  options?: { timeoutMs?: number; pollMs?: number }
+  options?: { timeoutMs?: number; pollMs?: number },
 ): Promise<() => Promise<void>> {
   await ensureLockDir();
   const ldir = lockPath(resourceName);
@@ -83,13 +87,17 @@ export async function acquireLock(
   while (Date.now() < deadline) {
     if (await tryAcquire(ldir, pid)) {
       return async () => {
-        try { await rmdir(ldir, { recursive: true }); } catch {}
+        try {
+          await rmdir(ldir, { recursive: true });
+        } catch {}
       };
     }
-    await new Promise(r => setTimeout(r, pollMs));
+    await new Promise((r) => setTimeout(r, pollMs));
   }
 
-  throw new Error(`lock timeout ${timeout}ms: ${resourceName} (held by pid from ${ldir}/pid)`);
+  throw new Error(
+    `lock timeout ${timeout}ms: ${resourceName} (held by pid from ${ldir}/pid)`,
+  );
 }
 
 /**
@@ -98,7 +106,7 @@ export async function acquireLock(
 export async function withLock<T>(
   resourceName: string,
   fn: () => Promise<T>,
-  options?: { timeoutMs?: number; pollMs?: number }
+  options?: { timeoutMs?: number; pollMs?: number },
 ): Promise<T> {
   const release = await acquireLock(resourceName, options);
   try {

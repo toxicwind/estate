@@ -1,13 +1,13 @@
 #!/usr/bin/env bun
 /**
  * Experimental Crisis MCP Server - Profile Modular
- * 
+ *
  * Loads skills from experimental-crisis repo as MCP tools.
  * Profiles control which skills are available:
  *   - local: Full access, all skills (toxic machine)
  *   - kimi: Container-specific paths (/mnt/agents/output/)
  *   - generic: Portable paths, no container deps
- * 
+ *
  * Skills:
  *   - sdk-auditor: Python package security auditing
  *   - infra-recon-forensics: OSINT, seed hunting, semantic analysis
@@ -53,8 +53,12 @@ const PROFILES: Record<string, Profile> = {
   },
   generic: {
     name: "generic",
-    skillRoot: process.env.EXPERIMENTAL_CRISIS_SKILLS || "/home/toxic/experimental-crisis/skills",
-    scriptRoot: process.env.EXPERIMENTAL_CRISIS_SCRIPTS || "/home/toxic/experimental-crisis/tools",
+    skillRoot:
+      process.env.EXPERIMENTAL_CRISIS_SKILLS ||
+      "/home/toxic/experimental-crisis/skills",
+    scriptRoot:
+      process.env.EXPERIMENTAL_CRISIS_SCRIPTS ||
+      "/home/toxic/experimental-crisis/tools",
     pythonBin: "python3",
     extraEnv: {},
   },
@@ -94,7 +98,7 @@ function loadSkills(): SkillDef[] {
     if (!existsSync(skillFile)) continue;
 
     const content = readFileSync(skillFile, "utf-8");
-    
+
     // Parse frontmatter
     const descMatch = content.match(/description:\s*(.+?)(?:\n|$)/);
     const description = descMatch?.[1]?.trim() || `Skill from ${dir}`;
@@ -121,16 +125,25 @@ function getToolsForSkill(skillName: string): ToolDef[] {
       return [
         {
           name: "audit_package",
-          description: "Audit a Python package for security issues, obfuscation, and API mapping",
+          description:
+            "Audit a Python package for security issues, obfuscation, and API mapping",
           command: PROFILE.pythonBin,
-          args: [join(scriptRoot, "audit_engine.py"), "{source_dir}", "{report_dir}"],
+          args: [
+            join(scriptRoot, "audit_engine.py"),
+            "{source_dir}",
+            "{report_dir}",
+          ],
           timeout: 120000,
         },
         {
           name: "fetch_package",
           description: "Fetch a package from PyPI or custom index",
           command: PROFILE.pythonBin,
-          args: [join(scriptRoot, "fetch_pkgs.py"), "{output_dir}", "{package_names}"],
+          args: [
+            join(scriptRoot, "fetch_pkgs.py"),
+            "{output_dir}",
+            "{package_names}",
+          ],
           timeout: 60000,
         },
       ];
@@ -138,16 +151,28 @@ function getToolsForSkill(skillName: string): ToolDef[] {
       return [
         {
           name: "seed_hunt",
-          description: "Mine corpus for rare-but-recurrent tokens (codenames, credentials, endpoints)",
+          description:
+            "Mine corpus for rare-but-recurrent tokens (codenames, credentials, endpoints)",
           command: PROFILE.pythonBin,
-          args: [join(scriptRoot, "seed_hunter.py"), "{corpus_dir}", "--out", "{output_dir}"],
+          args: [
+            join(scriptRoot, "seed_hunter.py"),
+            "{corpus_dir}",
+            "--out",
+            "{output_dir}",
+          ],
           timeout: 180000,
         },
         {
           name: "semantic_weirdness",
-          description: "NLTK-based semantic analysis for jargon and credential-shaped tokens",
+          description:
+            "NLTK-based semantic analysis for jargon and credential-shaped tokens",
           command: PROFILE.pythonBin,
-          args: [join(scriptRoot, "semantic_weirdness.py"), "{corpus_dir}", "--out", "{output_dir}"],
+          args: [
+            join(scriptRoot, "semantic_weirdness.py"),
+            "{corpus_dir}",
+            "--out",
+            "{output_dir}",
+          ],
           timeout: 120000,
         },
       ];
@@ -155,9 +180,15 @@ function getToolsForSkill(skillName: string): ToolDef[] {
       return [
         {
           name: "mine_seeds",
-          description: "Multi-version seed mining with rarity x recurrence scoring",
+          description:
+            "Multi-version seed mining with rarity x recurrence scoring",
           command: PROFILE.pythonBin,
-          args: [join(scriptRoot, "seed_hunter.py"), "{corpus_dirs}", "--out", "{output_dir}"],
+          args: [
+            join(scriptRoot, "seed_hunter.py"),
+            "{corpus_dirs}",
+            "--out",
+            "{output_dir}",
+          ],
           timeout: 180000,
         },
       ];
@@ -193,7 +224,7 @@ function getToolsForSkill(skillName: string): ToolDef[] {
 // Execute a tool
 async function executeTool(
   tool: ToolDef,
-  args: Record<string, string>
+  args: Record<string, string>,
 ): Promise<{ content: { type: string; text: string }[] }> {
   // Build command with args
   const cmdArgs = tool.args.map((arg) => {
@@ -260,7 +291,7 @@ const server = new Server(
     capabilities: {
       tools: {},
     },
-  }
+  },
 );
 
 // List tools
@@ -275,7 +306,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         properties: getPropertiesForTool(tool.name),
         required: getRequiredForTool(tool.name),
       },
-    }))
+    })),
   );
 
   return { tools };
@@ -286,29 +317,57 @@ function getPropertiesForTool(toolName: string): Record<string, any> {
   switch (toolName) {
     case "audit_package":
       return {
-        source_dir: { type: "string", description: "Path to package source directory" },
-        report_dir: { type: "string", description: "Path to write audit report" },
+        source_dir: {
+          type: "string",
+          description: "Path to package source directory",
+        },
+        report_dir: {
+          type: "string",
+          description: "Path to write audit report",
+        },
       };
     case "fetch_package":
       return {
-        output_dir: { type: "string", description: "Directory to save fetched packages" },
-        package_names: { type: "string", description: "Comma-separated package names" },
+        output_dir: {
+          type: "string",
+          description: "Directory to save fetched packages",
+        },
+        package_names: {
+          type: "string",
+          description: "Comma-separated package names",
+        },
       };
     case "seed_hunt":
     case "mine_seeds":
       return {
-        corpus_dir: { type: "string", description: "Directory containing corpus to mine" },
-        output_dir: { type: "string", description: "Directory to write seed results" },
+        corpus_dir: {
+          type: "string",
+          description: "Directory containing corpus to mine",
+        },
+        output_dir: {
+          type: "string",
+          description: "Directory to write seed results",
+        },
       };
     case "semantic_weirdness":
       return {
-        corpus_dir: { type: "string", description: "Directory containing corpus to analyze" },
-        output_dir: { type: "string", description: "Directory to write analysis results" },
+        corpus_dir: {
+          type: "string",
+          description: "Directory containing corpus to analyze",
+        },
+        output_dir: {
+          type: "string",
+          description: "Directory to write analysis results",
+        },
       };
     case "separate_stems":
       return {
         audio_file: { type: "string", description: "Path to audio file" },
-        model: { type: "string", description: "Model to use (htdemucs, htdemucs_ft)", default: "htdemucs" },
+        model: {
+          type: "string",
+          description: "Model to use (htdemucs, htdemucs_ft)",
+          default: "htdemucs",
+        },
       };
     case "analyze_audio":
     case "measure_loudness":
@@ -345,7 +404,7 @@ function getRequiredForTool(toolName: string): string[] {
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
   const skills = loadSkills();
-  
+
   for (const skill of skills) {
     for (const tool of skill.tools) {
       if (tool.name === name) {
@@ -368,4 +427,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 // Start server
 const transport = new StdioServerTransport();
 await server.connect(transport);
-console.error(`[experimental-crisis] MCP server started (profile: ${PROFILE.name})`);
+console.error(
+  `[experimental-crisis] MCP server started (profile: ${PROFILE.name})`,
+);

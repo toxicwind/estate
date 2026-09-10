@@ -15,8 +15,6 @@ const HOME = homedir();
 const HERD_URL = process.env.HERD_URL || "http://127.0.0.1:25100/v1";
 const HAL_URL = process.env.HAL_URL || "http://127.0.0.1:25143";
 
-
-
 export interface KimiBridgeConfig {
   herdUrl: string;
   openfangUrl: string;
@@ -34,13 +32,22 @@ export function loadKimiConfig(): KimiBridgeConfig {
     const lines = readFileSync(secretsPath, "utf8").split("\n");
     for (const line of lines) {
       if (line.startsWith("KIMI_API_KEY=") && !token) {
-        token = line.slice("KIMI_API_KEY=".length).trim().replace(/^['"]|['"]$/g, "");
+        token = line
+          .slice("KIMI_API_KEY=".length)
+          .trim()
+          .replace(/^['"]|['"]$/g, "");
       }
       if (line.startsWith("KIMI_BRIDGE_TOKEN=") && !token) {
-        token = line.slice("KIMI_BRIDGE_TOKEN=".length).trim().replace(/^['"]|['"]$/g, "");
+        token = line
+          .slice("KIMI_BRIDGE_TOKEN=".length)
+          .trim()
+          .replace(/^['"]|['"]$/g, "");
       }
       if (line.startsWith("KIMI_USER_ID=") && !userId) {
-        userId = line.slice("KIMI_USER_ID=".length).trim().replace(/^['"]|['"]$/g, "");
+        userId = line
+          .slice("KIMI_USER_ID=".length)
+          .trim()
+          .replace(/^['"]|['"]$/g, "");
       }
     }
   }
@@ -54,18 +61,26 @@ export function loadKimiConfig(): KimiBridgeConfig {
   };
 }
 
-export async function dispatchToOpenFang(message: string, agent = "coyote"): Promise<string> {
+export async function dispatchToOpenFang(
+  message: string,
+  agent = "coyote",
+): Promise<string> {
   try {
     return await client.chat(agent, message);
   } catch (err) {
-    console.warn(`[Kimi-Claw] OpenFang dispatch failed, falling back to Herd: ${err}`);
+    console.warn(
+      `[Kimi-Claw] OpenFang dispatch failed, falling back to Herd: ${err}`,
+    );
   }
 
   // Fallback to Herd
   return dispatchToHerd(message);
 }
 
-export async function dispatchToHerd(prompt: string, model = "beellama/qwen-flash-128k"): Promise<string> {
+export async function dispatchToHerd(
+  prompt: string,
+  model = "beellama/qwen-flash-128k",
+): Promise<string> {
   try {
     const res = await fetch(`${HERD_URL}/chat/completions`, {
       method: "POST",
@@ -77,7 +92,9 @@ export async function dispatchToHerd(prompt: string, model = "beellama/qwen-flas
       }),
     });
     if (res.ok) {
-      const data = await res.json() as { choices?: Array<{ message?: { content?: string } }> };
+      const data = (await res.json()) as {
+        choices?: Array<{ message?: { content?: string } }>;
+      };
       return data.choices?.[0]?.message?.content || "[No output from Herd]";
     }
     return `[Herd Error: ${res.statusText}]`;
@@ -88,5 +105,7 @@ export async function dispatchToHerd(prompt: string, model = "beellama/qwen-flas
 
 if (import.meta.main) {
   const config = loadKimiConfig();
-  console.log(`[Kimi-Claw Bridge] Initialized. Herd: ${config.herdUrl}, OpenFang: ${config.openfangUrl}, HAL: ${config.halUrl}`);
+  console.log(
+    `[Kimi-Claw Bridge] Initialized. Herd: ${config.herdUrl}, OpenFang: ${config.openfangUrl}, HAL: ${config.halUrl}`,
+  );
 }

@@ -164,7 +164,10 @@ export interface ProbedUI {
   statusText: string;
 }
 
-export async function probeUI(spec: WebUISpec, timeoutMs = 250): Promise<ProbedUI> {
+export async function probeUI(
+  spec: WebUISpec,
+  timeoutMs = 250,
+): Promise<ProbedUI> {
   const port = ports.get(spec.portKey) ?? spec.defaultPort;
   const primaryUrl = `http://127.0.0.1:${port}${spec.path}`;
 
@@ -204,7 +207,10 @@ export async function probeUI(spec: WebUISpec, timeoutMs = 250): Promise<ProbedU
   }
 }
 
-export async function openInFirefox(urls: string[], browserBin = "firefox-nightly") {
+export async function openInFirefox(
+  urls: string[],
+  browserBin = "firefox-nightly",
+) {
   if (urls.length === 0) {
     console.log("ℹ️ No URLs to open.");
     return;
@@ -235,10 +241,12 @@ async function main() {
   const isAll = args.includes("--all") || args.includes("-a");
   const isDryRun = args.includes("--dry-run");
   const serviceIndex = args.indexOf("--service");
-  const targetService = serviceIndex !== -1 ? args[serviceIndex + 1]?.toLowerCase() : null;
+  const targetService =
+    serviceIndex !== -1 ? args[serviceIndex + 1]?.toLowerCase() : null;
 
   const browserIndex = args.indexOf("--browser");
-  const browserBin = browserIndex !== -1 ? args[browserIndex + 1] : "firefox-nightly";
+  const browserBin =
+    browserIndex !== -1 ? args[browserIndex + 1] : "firefox-nightly";
 
   if (args.includes("--help") || args.includes("-h")) {
     console.log(`
@@ -264,20 +272,22 @@ Registered UIs:
   }
 
   console.log("🔍 Probing Sovereign Web UIs...");
-  const probed = await Promise.all(SOVEREIGN_WEB_UIS.map((spec) => probeUI(spec)));
+  const probed = await Promise.all(
+    SOVEREIGN_WEB_UIS.map((spec) => probeUI(spec)),
+  );
 
   if (isList) {
     console.log("\n📊 Sovereign Web UI Status:");
     console.log("─".repeat(88));
     console.log(
-      `${"ID".padEnd(14)} ${"NAME".padEnd(26)} ${"PORT".padEnd(8)} ${"STATUS".padEnd(16)} ${"URL"}`
+      `${"ID".padEnd(14)} ${"NAME".padEnd(26)} ${"PORT".padEnd(8)} ${"STATUS".padEnd(16)} ${"URL"}`,
     );
     console.log("─".repeat(88));
     for (const p of probed) {
       const statusIcon = p.active ? "🟢" : "⚪";
       const statusDisplay = `${statusIcon} ${p.statusText}`.padEnd(16);
       console.log(
-        `${p.spec.id.padEnd(14)} ${p.spec.name.padEnd(26)} ${String(p.port).padEnd(8)} ${statusDisplay} ${p.url}`
+        `${p.spec.id.padEnd(14)} ${p.spec.name.padEnd(26)} ${String(p.port).padEnd(8)} ${statusDisplay} ${p.url}`,
       );
       if (p.spec.notes) {
         console.log(`   └─ 💡 ${p.spec.notes}`);
@@ -293,10 +303,14 @@ Registered UIs:
 
   if (targetService) {
     const match = probed.find(
-      (p) => p.spec.id.toLowerCase() === targetService || p.spec.name.toLowerCase().includes(targetService)
+      (p) =>
+        p.spec.id.toLowerCase() === targetService ||
+        p.spec.name.toLowerCase().includes(targetService),
     );
     if (!match) {
-      console.error(`❌ Unknown service: "${targetService}". Available services:`);
+      console.error(
+        `❌ Unknown service: "${targetService}". Available services:`,
+      );
       console.error(SOVEREIGN_WEB_UIS.map((s) => `  - ${s.id}`).join("\n"));
       process.exit(1);
     }
@@ -309,14 +323,18 @@ Registered UIs:
 
   if (targets.length === 0) {
     console.log("⚠️ No matching active Web UIs found to open.");
-    console.log("Run with --all to open all configured URLs, or start services with: pitchfork start -q --all");
+    console.log(
+      "Run with --all to open all configured URLs, or start services with: pitchfork start -q --all",
+    );
     return;
   }
 
   console.log(`\n🎯 Selected ${targets.length} Web UI(s):`);
   for (const t of targets) {
     const mark = t.active ? "🟢" : "⚪";
-    console.log(`  ${mark} [${t.spec.id}] ${t.spec.name} -> ${t.url} (${t.statusText})`);
+    console.log(
+      `  ${mark} [${t.spec.id}] ${t.spec.name} -> ${t.url} (${t.statusText})`,
+    );
   }
 
   if (isDryRun) {
@@ -329,7 +347,7 @@ Registered UIs:
 
   await openInFirefox(
     targets.map((t) => t.url),
-    browserBin
+    browserBin,
   );
 }
 

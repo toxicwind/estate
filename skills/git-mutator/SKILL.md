@@ -16,18 +16,18 @@ agentic completion auditing and secret boundary verification.
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `status` | Show git status (staged/unstaged/untracked) |
-| `diff [--staged]` | Show diff (working tree or staged) |
-| `commit <msg>` | Commit with conventional commit message |
-| `push [remote] [branch]` | Push to remote via credential helper/SSH |
-| `commit-push <msg>` | Audit → commit → push (blocks on leaks) |
-| `ensure-gitignore` | Add security patterns to .gitignore |
-| `scan-secrets [files]` | Scan for credential patterns |
-| `agentic-audit [files]` | Audit completion UUIDs, agent artifacts, secret leaks |
-| `diff-configs <A> <B>` | Diff two config files |
-| `help` | Show usage |
+| Command                  | Description                                           |
+| ------------------------ | ----------------------------------------------------- |
+| `status`                 | Show git status (staged/unstaged/untracked)           |
+| `diff [--staged]`        | Show diff (working tree or staged)                    |
+| `commit <msg>`           | Commit with conventional commit message               |
+| `push [remote] [branch]` | Push to remote via credential helper/SSH              |
+| `commit-push <msg>`      | Audit → commit → push (blocks on leaks)               |
+| `ensure-gitignore`       | Add security patterns to .gitignore                   |
+| `scan-secrets [files]`   | Scan for credential patterns                          |
+| `agentic-audit [files]`  | Audit completion UUIDs, agent artifacts, secret leaks |
+| `diff-configs <A> <B>`   | Diff two config files                                 |
+| `help`                   | Show usage                                            |
 
 ## Tool calls
 

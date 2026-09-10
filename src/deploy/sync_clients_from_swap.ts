@@ -45,9 +45,7 @@ const report = {
   list_ok: ok,
   error,
   model_count: models.length,
-  loaded: models
-    .filter((m) => m.status === "loaded")
-    .map((m) => m.id),
+  loaded: models.filter((m) => m.status === "loaded").map((m) => m.id),
   default_model: defaultModel,
   client: cfg,
   zed: {
@@ -151,7 +149,11 @@ else:
   const err = new TextDecoder().decode(res.stderr).trim();
   if (out.includes("PATCHED")) {
     zedPatched = true;
-    console.log("[ssot] zed llama.cpp auto_discover ensured @", swapBaseUrl(), out);
+    console.log(
+      "[ssot] zed llama.cpp auto_discover ensured @",
+      swapBaseUrl(),
+      out,
+    );
   } else if (out === "OK") {
     console.log("[ssot] zed already auto_discover-only");
   } else {

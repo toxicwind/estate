@@ -156,6 +156,12 @@ qdrant-config.yaml
 
 # Security boundaries (git-mutator)
 *.env
+!config/ports.env
 .env.*
 credentials.json
 .bak.
+skills/402md/
+skills/microsoft/
+skills/openai/
+skills/skillmdcreator/
+skills/somasays/

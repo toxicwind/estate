@@ -15,7 +15,7 @@ export class NIMRateLimiter {
     this.rpm = config.rateLimitRPM ?? 20;
     this.burst = config.rateLimitBurst ?? 5;
     this.refillRatePerMs = this.rpm / 60000; // tokens per millisecond
-    
+
     this.state = {
       tokens: this.burst,
       lastRefill: Date.now(),
@@ -28,16 +28,16 @@ export class NIMRateLimiter {
   async acquire(): Promise<void> {
     while (true) {
       this.refill();
-      
+
       if (this.state.tokens >= 1) {
         this.state.tokens -= 1;
         return;
       }
-      
+
       // Calculate time until next token
       const tokensNeeded = 1 - this.state.tokens;
       const waitMs = tokensNeeded / this.refillRatePerMs;
-      
+
       // Wait with a small buffer
       await this.sleep(Math.ceil(waitMs) + 10);
     }
@@ -49,12 +49,12 @@ export class NIMRateLimiter {
    */
   tryAcquire(): boolean {
     this.refill();
-    
+
     if (this.state.tokens >= 1) {
       this.state.tokens -= 1;
       return true;
     }
-    
+
     return false;
   }
 
@@ -71,11 +71,11 @@ export class NIMRateLimiter {
    */
   getWaitTimeMs(): number {
     this.refill();
-    
+
     if (this.state.tokens >= 1) {
       return 0;
     }
-    
+
     const tokensNeeded = 1 - this.state.tokens;
     return Math.ceil(tokensNeeded / this.refillRatePerMs);
   }
@@ -93,7 +93,7 @@ export class NIMRateLimiter {
   private refill(): void {
     const now = Date.now();
     const elapsed = now - this.state.lastRefill;
-    
+
     if (elapsed > 0) {
       const newTokens = elapsed * this.refillRatePerMs;
       this.state.tokens = Math.min(this.burst, this.state.tokens + newTokens);
@@ -102,7 +102,7 @@ export class NIMRateLimiter {
   }
 
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
 

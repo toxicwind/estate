@@ -23,12 +23,12 @@ const P = getPorts();
 
 // Mapping service IDs to their specific readiness paths
 const REGISTRY: Record<string, string[]> = {
-  "LLAMA_HERDER": ["/health"],
-  "OPENFANG_PORT": ["/api/health"],
-  "RUST_WEB_PORT": ["/health"],
-  "YOTE_PORT": ["/health"],
-  "HF_DOWNLOADER": ["/"],
-  "WATCHDOG_PORT": ["/health"],
+  LLAMA_HERDER: ["/health"],
+  OPENFANG_PORT: ["/api/health"],
+  RUST_WEB_PORT: ["/health"],
+  YOTE_PORT: ["/health"],
+  HF_DOWNLOADER: ["/"],
+  WATCHDOG_PORT: ["/health"],
 };
 
 const BASE = "http://127.0.0.1";
@@ -56,12 +56,14 @@ const entries = Object.entries(REGISTRY);
 for (const [envVar, paths] of entries) {
   const port = P[envVar];
   if (!port) continue;
-  
+
   const [ok, msg] = await probe(envVar, port, paths);
   healthyCount += ok ? 1 : 0;
-  
+
   const status = ok ? green("✓") : red("✗");
-  console.log(`${status} ${envVar.padEnd(15)} :${String(port).padEnd(5)} → ${msg}`);
+  console.log(
+    `${status} ${envVar.padEnd(15)} :${String(port).padEnd(5)} → ${msg}`,
+  );
 }
 
 console.log("-".repeat(55));

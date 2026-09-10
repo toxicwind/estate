@@ -39,13 +39,13 @@ policies:
       file: policies/architecture/layered_architecture.rego
       severity: HIGH
       action: DENY
-  
+
   devops:
     - name: docker-security
       file: policies/devops/docker_security.rego
       severity: HIGH
       action: DENY
-  
+
   devsecops:
     - name: secret-detection
       file: policies/devsecops/secret_detection.rego
@@ -66,4 +66,4 @@ Copy template .rego files and modify rules to match your project requirements.
 
 ---
 
-*Part of Code Scalpel v3.1+ Policy Engine*
+_Part of Code Scalpel v3.1+ Policy Engine_

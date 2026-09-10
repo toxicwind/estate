@@ -40,7 +40,9 @@ async function main() {
         const audit = await mutator.auditAgenticCompletions();
         if (audit.hasLeaks) {
           console.error("BLOCKED: agentic completion / secret leaks detected:");
-          for (const v of audit.violations.filter((v: AgenticViolation) => v.isSecret)) {
+          for (const v of audit.violations.filter(
+            (v: AgenticViolation) => v.isSecret,
+          )) {
             console.error(`  ${v.file}:${v.line} ${v.snippet}`);
           }
           process.exit(2);

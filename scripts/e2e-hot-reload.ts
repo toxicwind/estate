@@ -3,7 +3,13 @@
  * Direct hot-reload proof for every owned pitchfork core daemon that supports it.
  * Touches source, waits for reload window, asserts health still ok (and body may flip marker where we inject).
  */
-import { appendFileSync, readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import {
+  appendFileSync,
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  existsSync,
+} from "node:fs";
 import { resolve } from "node:path";
 import { loadSovereignPorts, requirePort } from "../src/lib/ports.ts";
 
@@ -12,8 +18,7 @@ loadSovereignPorts();
 const HOME = process.env.HOME || "/home/toxic";
 const ROOT = resolve(HOME, "sovereign");
 const OUT =
-  process.env.HOTRELOAD_OUT ||
-  resolve(ROOT, ".state", "hot-reload.jsonl");
+  process.env.HOTRELOAD_OUT || resolve(ROOT, ".state", "hot-reload.jsonl");
 mkdirSync(resolve(OUT, ".."), { recursive: true });
 writeFileSync(OUT, "");
 
@@ -34,7 +39,9 @@ function log(r: Row) {
   console.log(`${r.ok ? "PASS" : "FAIL"} ${r.daemon}: ${r.detail}`);
 }
 
-async function httpCode(url: string): Promise<{ status: number; body: string }> {
+async function httpCode(
+  url: string,
+): Promise<{ status: number; body: string }> {
   try {
     const res = await fetch(url, { signal: AbortSignal.timeout(4000) });
     return { status: res.status, body: (await res.text()).slice(0, 200) };
@@ -45,7 +52,9 @@ async function httpCode(url: string): Promise<{ status: number; body: string }> 
 
 function pidOnPort(port: number): number | undefined {
   try {
-    const out = Bun.spawnSync(["ss", "-ltnp"], { stdout: "pipe" }).stdout.toString();
+    const out = Bun.spawnSync(["ss", "-ltnp"], {
+      stdout: "pipe",
+    }).stdout.toString();
     const re = new RegExp(`:${port}\\b.*?pid=(\\d+)`);
     const m = out.match(re);
     return m ? parseInt(m[1], 10) : undefined;
@@ -59,7 +68,10 @@ async function sleep(ms: number) {
 }
 
 /** Touch file by appending/removing a no-op comment marker */
-function touchSource(path: string, marker: string): { ok: boolean; detail: string } {
+function touchSource(
+  path: string,
+  marker: string,
+): { ok: boolean; detail: string } {
   if (!existsSync(path)) return { ok: false, detail: `missing ${path}` };
   let t = readFileSync(path, "utf8");
   const line = `\n// hotreload-probe ${marker}\n`;
@@ -125,10 +137,7 @@ const suite: Array<{
     daemon: "llama-swap",
     mechanism: "bun --hot",
     health: `http://127.0.0.1:${AM}/health`,
-    file: resolve(
-      ROOT,
-      "tools/llama-swap/llama-swap-ts/router.ts",
-    ),
+    file: resolve(ROOT, "tools/llama-swap/llama-swap-ts/router.ts"),
     kind: "ts",
     waitMs: 3000,
   },
@@ -186,9 +195,7 @@ const rows: Row[] = [];
 
 for (const s of suite) {
   const before = await httpCode(s.health);
-  const pidBefore = pidOnPort(
-    parseInt(new URL(s.health).port || "0", 10),
-  );
+  const pidBefore = pidOnPort(parseInt(new URL(s.health).port || "0", 10));
   let touchDetail = "skip";
   if (s.kind === "ts") {
     const t = touchSource(s.file, MARKER);
@@ -221,9 +228,13 @@ for (const s of suite) {
   let detail = `${touchDetail}; health ${before.status}->${after.status}`;
   if (s.kind === "html" && ok) {
     const page = await httpCode(`http://127.0.0.1:${RUST}/`);
-    const has = page.body.includes(`hotreload-probe ${MARKER}`) || page.body.includes("hotreload-probe");
+    const has =
+      page.body.includes(`hotreload-probe ${MARKER}`) ||
+      page.body.includes("hotreload-probe");
     // ServeDir may cache? cargo-watch doesn't rebuild for static - static is live from disk
-    const full = await fetch(`http://127.0.0.1:${RUST}/index.html`).then((r) => r.text());
+    const full = await fetch(`http://127.0.0.1:${RUST}/index.html`).then((r) =>
+      r.text(),
+    );
     const hasFull = full.includes(`hotreload-probe ${MARKER}`);
     ok = hasFull;
     detail += hasFull ? "; static marker live" : "; static marker MISSING";

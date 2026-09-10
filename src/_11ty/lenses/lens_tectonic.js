@@ -3,8 +3,8 @@
  * @version 2.0.0
  */
 module.exports = {
-  name: 'tectonic',
-  description: 'Repository health scoring and drift detection',
+  name: "tectonic",
+  description: "Repository health scoring and drift detection",
   analyze(data, meta = {}) {
     const now = new Date();
     const lastPush = meta.lastPush ? new Date(meta.lastPush) : now;
@@ -12,13 +12,13 @@ module.exports = {
     const healthScore = Math.max(0, 100 - daysSincePush * 2);
     const ciThreshold = meta.ciMode ? 50 : 70;
     return {
-      lens: 'tectonic',
+      lens: "tectonic",
       healthScore,
       driftCount: daysSincePush,
       ciThreshold,
-      staleRepos: daysSincePush > 30 ? [meta.repo || 'unknown'] : [],
+      staleRepos: daysSincePush > 30 ? [meta.repo || "unknown"] : [],
       confidence: 0.75,
-      source: meta.path || 'unknown'
+      source: meta.path || "unknown",
     };
-  }
+  },
 };

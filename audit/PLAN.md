@@ -3,6 +3,7 @@
 ## Active Architecture
 
 ### Core Stack
+
 - **Pi-agent fork** (toxicwind) — coding agent with full MCP stack
 - **llama-swap** (:25100) — LLM frontend with AST matrix auto-routing
 - **mcpproxy** (:25109) — MCP federation layer (41 servers including GHAS)
@@ -11,6 +12,7 @@
 - **OpenCode** — coding agent for audit/fix tasks
 
 ### Port SSOT (ports.env)
+
 ```
 25100 llama-swap (AST matrix)
 25109 mcpproxy (federation)
@@ -21,6 +23,7 @@
 ```
 
 ### Model Config
+
 - **Primary**: LongCat 2.0 Free (`meituan/longcat-2.0`)
 - **Coding agent**: OpenCode (`OPENCODE_API_KEY`)
 - **Fallback**: nvidia/llama-3.1-nemotron-nano-8b-v1 (via NIM)
@@ -28,38 +31,42 @@
 ## Integration Tasks (Priority Order)
 
 ### 1. Fix GHAS Integration
+
 - [ ] Fix README ports (3516x → 2511x)
 - [ ] Unify MCP transports (single server.ts handles stdio+HTTP)
 - [ ] Restore full tool surface (23+ narrow tools)
 - [ ] Connect API server to MCP server
 
 ### 2. Fix Pitchfork/Mise Integration
+
 - [ ] Add missing daemons to mise.toml tasks (17 missing)
 - [ ] Fix external dir references (4 daemons)
 - [ ] Add dependency ordering to tasks
 - [ ] Single source of truth for ports
 
 ### 3. Pi-Agent Fork Commits
+
 - [ ] AST matrix mcpproxy awareness
 - [ ] retrieve_tools shows ALL ghas narrow tools
 - [ ] LongCat 2.0 as default model
 - [ ] OpenCode integration
 
 ### 4. Audit & Cleanup
+
 - [ ] Dedup 358 AGENTS.md files
 - [ ] Symlink copies to canonical
 - [ ] Document project-specific exceptions
 
 ## Tools Built
 
-| Tool | Path | Purpose |
-|------|------|---------|
-| audit-runner | `audit/` | Bun project for audit scripts |
-| inventory_agents_md.ts | `audit/scripts/` | AGENTS.md file inventory |
-| audit_services.ts | `audit/scripts/` | Service health checks |
-| repo_discovery.ts | `audit/scripts/` | Adaptive GitHub repo search |
-| profile_manager.ts | `audit/scripts/` | Agent profile management |
-| full_audit.ts | `audit/scripts/` | Orchestrate all audits |
+| Tool                   | Path             | Purpose                       |
+| ---------------------- | ---------------- | ----------------------------- |
+| audit-runner           | `audit/`         | Bun project for audit scripts |
+| inventory_agents_md.ts | `audit/scripts/` | AGENTS.md file inventory      |
+| audit_services.ts      | `audit/scripts/` | Service health checks         |
+| repo_discovery.ts      | `audit/scripts/` | Adaptive GitHub repo search   |
+| profile_manager.ts     | `audit/scripts/` | Agent profile management      |
+| full_audit.ts          | `audit/scripts/` | Orchestrate all audits        |
 
 ## Files Generated
 
