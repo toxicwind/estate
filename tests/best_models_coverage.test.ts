@@ -7,16 +7,16 @@
  * to intercept listSwapModels HTTP calls. No vi.mock needed — avoids Bun's
  * cross-module mock path resolution issues.
  */
-import { describe, test, expect, beforeEach, afterEach, vi } from "bun:test";
-import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, test, vi } from "bun:test";
 import {
   existsSync,
-  writeFileSync,
   mkdirSync,
-  rmSync,
   readFileSync,
+  rmSync,
+  writeFileSync,
 } from "node:fs";
 import { homedir } from "node:os";
+import { join } from "node:path";
 
 // ── Real BEST_MODELS_PATH (const inside best_models.ts, evaluated at import) ─
 const SOV = join(homedir(), "sovereign");

@@ -5,12 +5,12 @@
  *
  * Does NOT hardcode expected latency — probes real chat completions.
  */
-import { mkdirSync, writeFileSync, appendFileSync } from "node:fs";
+import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   listSwapModels,
-  swapV1Url,
   swapBaseUrl,
+  swapV1Url,
 } from "../src/lib/llama_swap_ssot.ts";
 
 const SCRATCH =
@@ -278,7 +278,7 @@ const rank = {
 
 writeFileSync(
   join(SCRATCH, "model-rank.json"),
-  JSON.stringify(rank, null, 2) + "\n",
+  `${JSON.stringify(rank, null, 2)}\n`,
 );
 console.log(
   JSON.stringify(
@@ -488,7 +488,7 @@ for (const rc of routeCases) {
     error: r.error,
   };
   routeResults.push(line);
-  appendFileSync(routeFile, JSON.stringify(line) + "\n");
+  appendFileSync(routeFile, `${JSON.stringify(line)}\n`);
   console.error(`[route] ${rc.class} → ${line.chosen_model} ok=${r.ok}`);
 }
 
@@ -508,7 +508,7 @@ for (const name of ["dealigner", "coder-max", "coyote"]) {
     error: r.error,
   };
   routeResults.push(line);
-  appendFileSync(routeFile, JSON.stringify(line) + "\n");
+  appendFileSync(routeFile, `${JSON.stringify(line)}\n`);
   console.error(`[of] ${name} model=${r.chosen_model} ok=${r.ok}`);
 }
 
@@ -525,13 +525,13 @@ const routingSummary = {
 };
 writeFileSync(
   join(SCRATCH, "routing-summary.json"),
-  JSON.stringify(routingSummary, null, 2) + "\n",
+  `${JSON.stringify(routingSummary, null, 2)}\n`,
 );
 
 // --- GPU budget stress: sequential two models + fast path after ---
 const gpuLog = join(SCRATCH, "gpu-budget.log");
 const log = (s: string) => {
-  appendFileSync(gpuLog, s + "\n");
+  appendFileSync(gpuLog, `${s}\n`);
   console.error(s);
 };
 writeFileSync(gpuLog, `=== GPU budget ${new Date().toISOString()} ===\n`);
@@ -585,7 +585,7 @@ const gpuPass =
 
 writeFileSync(
   join(SCRATCH, "gpu-budget-summary.json"),
-  JSON.stringify(
+  `${JSON.stringify(
     {
       pass: gpuPass,
       post_stress_ok: post.ok,
@@ -594,7 +594,7 @@ writeFileSync(
     },
     null,
     2,
-  ) + "\n",
+  )}\n`,
 );
 
 const allPass =

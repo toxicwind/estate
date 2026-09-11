@@ -7,8 +7,8 @@
  * so we mirror the live catalog into oaicopilot.models. Optional --watch
  * re-syncs on llama-swap SSE load/unload events.
  */
-import { homedir } from "os";
-import { join } from "path";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import {
   listSwapModels,
   oaicopilotModelsFromSwap,
@@ -60,7 +60,7 @@ async function syncOnce(): Promise<{
   );
   delete settings["oai-compatible-copilot.providers"];
 
-  await Bun.write(settingsPath, JSON.stringify(settings, null, 2) + "\n");
+  await Bun.write(settingsPath, `${JSON.stringify(settings, null, 2)}\n`);
   await Bun.write(clmPath, "[]\n");
 
   return {

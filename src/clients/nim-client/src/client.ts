@@ -4,25 +4,16 @@
  */
 
 import OpenAI from "openai";
+import { createRateLimiter, type NIMRateLimiter } from "./rate-limiter.js";
+import { createRetryOptions, withRetry } from "./retry.js";
 import type {
-  NIMClientConfig,
+  NIMChatCompletionChunk,
   NIMChatCompletionRequest,
   NIMChatCompletionResponse,
-  NIMChatCompletionChunk,
-  NIMModelsResponse,
+  NIMClientConfig,
   NIMModel,
-  ChatMessage,
-  ToolCall,
-  FunctionDefinition,
-  ToolChoice,
-  ResponseFormat,
-  StreamOptions,
-  ChatTemplateKwargs,
-  ExtraBody,
-  ReasoningEffort,
+  NIMModelsResponse,
 } from "./types.js";
-import { NIMRateLimiter, createRateLimiter } from "./rate-limiter.js";
-import { withRetry, createRetryOptions, RetryResult } from "./retry.js";
 
 export class NIMClient {
   private client: OpenAI;

@@ -1,6 +1,6 @@
 import { TelegramClient } from "telegram";
-import { StringSession, StoreSession } from "telegram/sessions/index.js";
 import { NewMessage } from "telegram/events/index.js";
+import { StoreSession, StringSession } from "telegram/sessions/index.js";
 export interface Msg {
   chatId: string;
   chatTitle: string | null;

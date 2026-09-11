@@ -2,24 +2,21 @@
  * Yote — Telegram gateway that uses OpenFang as an *external* HTTP service.
  * No OpenFang process env sharing; only OPENFANG_URL + optional OPENFANG_API_KEY.
  */
-import { serve } from "bun";
+
 import {
-  mkdirSync,
-  writeFileSync,
-  existsSync,
-  readFileSync,
   appendFileSync,
-} from "fs";
-import { join, dirname, resolve } from "path";
-import { fileURLToPath } from "url";
-import { checkHealth, checkHealthLegacy } from "./lib/health";
-import { Overlord } from "./lib/overlord";
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { serve } from "bun";
 import { handleMeshRequest } from "../../src/lib/ghas-mesh-features.ts";
-import {
-  OpenFangClient,
-  openfang,
-  RouteOption,
-} from "./lib/openfang-client.ts";
+import { checkHealth, checkHealthLegacy } from "./lib/health";
+import { OpenFangClient, openfang } from "./lib/openfang-client.ts";
+import { Overlord } from "./lib/overlord";
 
 const __f = fileURLToPath(import.meta.url);
 const __d = dirname(__f);
@@ -61,7 +58,7 @@ const ALW = new Set(
   (process.env.YOTE_TELEGRAM_ALLOWED_USERS ?? "")
     .split(",")
     .map((s) => Number(s.trim()))
-    .filter((n) => !isNaN(n) && n > 0),
+    .filter((n) => !Number.isNaN(n) && n > 0),
 );
 const CHS = (process.env.YOTE_TELEGRAM_CHANNELS ?? "")
   .split(",")
@@ -113,7 +110,7 @@ const chatAgent: Record<string, string> = {};
 
 let chats: Record<string, any> = {};
 let last = 0;
-let shut = false;
+const shut = false;
 
 const overlord = new Overlord({
   apiId: Number(process.env.YOTE_TELEGRAM_API_ID),
@@ -135,7 +132,7 @@ function log(m: string) {
   console.log(l);
   try {
     mkdirSync(dirname(LG), { recursive: true });
-    appendFileSync(LG, l + "\n");
+    appendFileSync(LG, `${l}\n`);
   } catch {
     /* */
   }

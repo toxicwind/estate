@@ -4,8 +4,7 @@
  *
  * Strategy: mock globalThis.fetch to intercept all HTTP calls.
  */
-import { describe, test, expect, beforeEach, afterEach, vi } from "bun:test";
-import { loadSovereignPorts } from "../src/lib/ports.ts";
+import { afterEach, beforeEach, describe, expect, test, vi } from "bun:test";
 
 const originalFetch = globalThis.fetch;
 const mockFetch = vi.fn();
@@ -21,10 +20,10 @@ afterEach(() => {
 
 // Import AFTER mock setup
 import {
-  llamaSwapHealth,
-  llamaSwapModels,
   llamaSwapChat,
   llamaSwapChatStream,
+  llamaSwapHealth,
+  llamaSwapModels,
   upstreamServers,
 } from "../src/mcp/llama_swap.ts";
 
@@ -51,7 +50,7 @@ function mockFetchError(msg = "ECONNREFUSED") {
   mockFetch.mockRejectedValueOnce(new Error(msg));
 }
 
-function mockFetchTimeout() {
+function _mockFetchTimeout() {
   mockFetch.mockRejectedValueOnce(new Error("Aborted"));
 }
 
@@ -239,11 +238,10 @@ describe("llamaSwapChatStream", () => {
   });
 
   test("caps samples at 3 (line 142)", async () => {
-    const sseData =
-      Array.from(
-        { length: 5 },
-        (_, i) => `data: {"choices":[{"delta":{"content":"chunk${i}"}}]}`,
-      ).join("\n") + "\ndata: [DONE]";
+    const sseData = `${Array.from(
+      { length: 5 },
+      (_, i) => `data: {"choices":[{"delta":{"content":"chunk${i}"}}]}`,
+    ).join("\n")}\ndata: [DONE]`;
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,

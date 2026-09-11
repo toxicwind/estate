@@ -3,7 +3,7 @@
  * Handles 429 (rate limit), 5xx (server errors), and network failures
  */
 
-import type { NIMClientConfig, RetryState } from "./types.js";
+import type { NIMClientConfig } from "./types.js";
 
 export interface RetryOptions {
   maxRetries: number;
@@ -77,7 +77,7 @@ export function getRetryAfterDelay(error: unknown): number | null {
       const retryAfter = headers.get("retry-after");
       if (retryAfter) {
         const seconds = parseInt(retryAfter, 10);
-        if (!isNaN(seconds)) {
+        if (!Number.isNaN(seconds)) {
           return seconds * 1000;
         }
       }
@@ -90,7 +90,7 @@ export function getRetryAfterDelay(error: unknown): number | null {
       const retryAfter = response.headers.get("retry-after");
       if (retryAfter) {
         const seconds = parseInt(retryAfter, 10);
-        if (!isNaN(seconds)) {
+        if (!Number.isNaN(seconds)) {
           return seconds * 1000;
         }
       }
@@ -116,7 +116,7 @@ export function calculateBackoffDelay(
   }
 
   // Exponential backoff: baseDelay * 2^attempt + jitter
-  const exponentialDelay = baseDelayMs * Math.pow(2, attempt);
+  const exponentialDelay = baseDelayMs * 2 ** attempt;
   const jitter = Math.random() * baseDelayMs; // 0 to baseDelay jitter
   const delay = exponentialDelay + jitter;
 

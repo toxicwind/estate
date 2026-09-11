@@ -321,7 +321,6 @@ export async function runFeature(
     case "deps": {
       // Link graph edges used by this service
       const edges: Record<MeshServiceId, MeshServiceId[]> = {
-        "llama-swap": [],
         "rust-web": ["llama-swap", "hf-downloader", "prometheus"],
         yote: ["openfang", "llama-swap"],
         openfang: ["llama-swap"],
@@ -539,7 +538,7 @@ export async function handleMeshRequest(
   ctx: MeshCtx,
 ): Promise<Response | null> {
   const u = new URL(req.url);
-  let path = u.pathname;
+  const path = u.pathname;
   // strip optional service prefix /mesh/s/{id}/...
   if (!path.startsWith("/mesh")) return null;
 

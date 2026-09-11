@@ -6,9 +6,9 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import {
   loadSovereignPorts,
+  localUrl,
   requireEnv,
   requirePort,
-  localUrl,
 } from "../src/lib/ports.ts";
 
 loadSovereignPorts();

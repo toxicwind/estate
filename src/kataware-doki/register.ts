@@ -1,16 +1,17 @@
 // Register llama-server provider in pi-agent
-import { registerProvider } from "./registry.js";
-import { llamaModels } from "./models.js";
+
 import {
   llamaChat,
   llamaComplete,
-  llamaSwap,
+  llamaEmbedding,
   llamaHealth,
   llamaProps,
+  llamaSwap,
   llamaTokenize,
-  llamaEmbedding,
   mesh,
 } from "./llama-server.js";
+import { llamaModels } from "./models.js";
+import { registerProvider } from "./registry.js";
 
 registerProvider({
   id: "llama-server",

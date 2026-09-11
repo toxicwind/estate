@@ -103,7 +103,7 @@ export async function llamaComplete(
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
-  if (cfg.apiKey) headers["Authorization"] = `Bearer ${cfg.apiKey}`;
+  if (cfg.apiKey) headers.Authorization = `Bearer ${cfg.apiKey}`;
 
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), cfg.timeout ?? 120000);
@@ -147,7 +147,7 @@ export async function llamaChat(
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
-  if (cfg.apiKey) headers["Authorization"] = `Bearer ${cfg.apiKey}`;
+  if (cfg.apiKey) headers.Authorization = `Bearer ${cfg.apiKey}`;
 
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), cfg.timeout ?? 120000);
@@ -182,9 +182,8 @@ export async function llamaSwap(
     try {
       const content = await llamaComplete(cfg, prompt, opts);
       return { content, node: cfg };
-    } catch (err) {
+    } catch (_err) {
       console.log(`[Swap] ${cfg.baseUrl} failed, next...`);
-      continue;
     }
   }
   throw new Error("All llama-server nodes dead — thread severed");

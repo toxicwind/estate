@@ -12,9 +12,9 @@
  *   bun run src/deploy/sync_clients_from_swap.ts
  *   bun run src/deploy/sync_clients_from_swap.ts --with-ides   # also code_insiders + ide_clients
  */
-import { writeFileSync, existsSync, readFileSync, mkdirSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
+import { join } from "node:path";
 import {
   clientEnvExports,
   listSwapModels,
@@ -61,7 +61,7 @@ const report = {
 
 writeFileSync(
   join(outDir, "llama-swap-ssot.json"),
-  JSON.stringify(report, null, 2) + "\n",
+  `${JSON.stringify(report, null, 2)}\n`,
 );
 writeFileSync(join(outDir, "client-llm.env"), clientEnvExports(defaultModel));
 

@@ -18,7 +18,7 @@ function loadEnvFile(path: string): void {
     const eq = line.indexOf("=");
     if (eq < 1) continue;
     const k = line.slice(0, eq).trim();
-    let v = line
+    const v = line
       .slice(eq + 1)
       .trim()
       .replace(/^['"]|['"]$/g, "");

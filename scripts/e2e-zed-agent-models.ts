@@ -5,7 +5,7 @@
  *   B) beellama/exaone-4-0-1-2b-iq4xs
  * Writes captures under SCRATCH/zed-agent/
  */
-import { writeFileSync, mkdirSync, readFileSync, existsSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadSovereignPorts, requirePort } from "../src/lib/ports.ts";
 

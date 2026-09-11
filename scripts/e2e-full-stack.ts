@@ -30,7 +30,7 @@ type Row = {
 };
 
 function writeRow(r: Row) {
-  appendFileSync(OUT, JSON.stringify(r) + "\n");
+  appendFileSync(OUT, `${JSON.stringify(r)}\n`);
   console.log(`${r.ok ? "PASS" : "FAIL"} ${r.name}: ${r.detail.slice(0, 140)}`);
 }
 

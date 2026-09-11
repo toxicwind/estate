@@ -1,12 +1,13 @@
 #!/usr/bin/env bun
+
 // ============================================================================
 // SOVEREIGN — Standard Web UI & Dashboard Browser Launcher
 // Opens Sovereign Web UIs into tabs in the running Firefox Nightly instance.
 // ============================================================================
 
-import { parsePortsEnv } from "../src/utils/ports.ts";
 import { spawn } from "node:child_process";
 import { resolve } from "node:path";
+import { parsePortsEnv } from "../src/utils/ports.ts";
 
 export interface WebUISpec {
   id: string;

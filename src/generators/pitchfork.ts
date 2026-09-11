@@ -1,4 +1,5 @@
 import type { Generator, TemplateContext } from "../types/index.ts";
+
 function expand(str: string, ports: Record<string, number>): string {
   return str.replace(/\$\{([A-Z0-9_]+)\}/g, (_, k) =>
     ports[k] !== undefined ? String(ports[k]) : (process.env[k] ?? `\${${k}}`),
