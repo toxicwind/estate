@@ -1,593 +1,605 @@
 #!/usr/bin/env python3
 """
-repo-audit — Maximal GitHub Repository Visibility Auditor
+Repo Audit Skill: Analyze GitHub repositories and recommend privacy settings.
 
-Uses gh API to fetch repos, pandas + pyarrow for analysis, and
-naming-pattern scoring to recommend which repos should stay private
-based on sensitive keywords, topics, and descriptions.
-
-Features:
-  - Multi-user / multi-repo support
-  - Naming pattern scoring (private indicators weighted)
-  - Topic-based anomaly detection
-  - Description + language analysis
-  - Parquet + CSV + JSON export via pyarrow
-  - Agentic completion prompt generation
-  - Bun version detection via gh API
+Uses gh CLI to fetch repository data, then analyzes names, descriptions, and topics
+to recommend which repositories should be private based on naming patterns.
+Outputs recommendations as CSV or Parquet.
 """
 
-import subprocess
-import json
-import re
-import sys
-import time
-from typing import List, Dict
-from dataclasses import dataclass, field
-
-
-import pandas as pd
-import pyarrow as pa
-import pyarrow.parquet as pq
 import argparse
+import json
+import os
+import subprocess
+import sys
+from typing import List, Dict, Any, Optional, Tuple
+try:
+    import pandas as pd
+    HAS_PANDAS = True
+except ImportError:
+    HAS_PANDAS = False
+    print("Warning: pandas not installed, will output CSV only", file=sys.stderr)
 
+try:
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+    HAS_PYARROW = True
+except ImportError:
+    HAS_PYARROW = False
+    print("Warning: pyarrow not installed, Parquet output disabled", file=sys.stderr)
 
-# ============================================================================
-# Env Map Loader
-# ============================================================================
-
-def load_env_map(path: str = '/home/toxic/projects.env') -> dict:
-    """Load the projects.env file and return project-to-path mapping."""
-    env_map = {}
-    try:
-        with open(path) as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith('#'):
-                    continue
-                if '=' not in line:
-                    continue
-                name, rest = line.split('=', 1)
-                parts = rest.split(':')
-                env_map[name] = {
-                    'path': parts[0] if len(parts) > 0 else '',
-                    'area': parts[1] if len(parts) > 1 else 'unknown',
-                    'last_local_push': parts[2] if len(parts) > 2 else '',
-                    'gh_private': parts[3] if len(parts) > 3 else 'None',
-                    'gh_private_score': float(parts[4]) if len(parts) > 4 and parts[4] else 0,
-                    'gh_recommendation': parts[5] if len(parts) > 5 else 'NEUTRAL',
-                }
-    except FileNotFoundError:
-        pass
-    return env_map
-
-
-# ============================================================================
-# Constants
-# ============================================================================
-
-PRIVATE_INDICATORS: Dict[str, int] = {
-    # High-weight: clearly sensitive
-    "private": 10, "secret": 10, "credential": 10, "password": 10,
-    "token": 10, "key": 8, "keys": 8, "keyserver": 8,
-    # Medium-weight: likely internal
-    "internal": 7, "infra": 7, "infrastructure": 7,
-    "config": 6, "configuration": 6, "secrets": 9,
-    "deploy": 5, "deployer": 5, "pipeline": 5,
-    "cicd": 5, "workflow": 5, "runner": 5,
-    "backend": 4, "server": 4, "api-key": 8, "apikey": 8,
-    # Lower-weight: could be either
-    "db": 3, "database": 3, "cache": 3, "redis": 3,
-    "monitor": 2, "monitoring": 2, "metrics": 2,
-    "logs": 2, "logger": 2, "debug": 2,
-    "env": 2, "environment": 2, "dotenv": 2,
-    "ssl": 3, "tls": 3, "cert": 3, "certificate": 3,
-    "ssh": 3, "gpg": 3, "encryption": 4,
-    "auth": 4, "authentication": 4, "oauth": 4,
-    "saml": 5, "ldap": 5, "iam": 4,
-    "backup": 3, "archive": 3, "snapshot": 3,
-}
-
-PUBLIC_INDICATORS: Dict[str, int] = {
-    # High-weight: clearly public
-    "public": 10, "open": 8, "opensource": 10, "oss": 10,
-    "library": 7, "sdk": 7, "demo": 7,
-    "example": 7, "tutorial": 7, "docs": 7, "website": 7,
-    "blog": 6, "template": 7, "boilerplate": 7,
-    "skill": 6, "skills": 6, "plugin": 6, "extension": 5,
-    # Medium-weight
-    "tool": 4, "tools": 4, "cli": 4, "ui": 3, "frontend": 4,
-    "react": 3, "vue": 3, "svelte": 3, "next": 3,
-    "package": 4, "module": 4, "library": 7,
-    "config": 3, "setup": 3, "starter": 5, "seed": 4,
-}
-
-SENSITIVE_TOPICS: List[str] = [
-    "security", "infrastructure", "internal", "private",
-    "secrets", "credentials", "authentication", "iam",
-    "ci-cd", "deployment", "monitoring", "observability",
-    "backup", "disaster-recovery", "network", "firewall",
-    "vpn", "ssh", "encryption", "ssl", "tls",
-    "database", "db", "redis", "kafka", "rabbitmq",
-    "kubernetes", "docker", "container", "orchestration",
-    "terraform", "ansible", "puppet", "chef",
-]
-
-SENSITIVE_LANGUAGES: List[str] = [
-    "bash", "shell", "powershell", "dockerfile", "terraform",
-    "hcl", "yaml", "toml", "ini", "env",
-    "c", "cpp", "rust", "go", "asm",
-]
-
-
-@dataclass
-class RepoAnalysis:
-    name: str
-    full_name: str
-    private: bool
-    visibility: str
-    fork: bool
-    stargazers: int
-    language: str
-    description: str
-    topics: List[str]
-    private_score: float = 0.0
-    public_score: float = 0.0
-    recommendation: str = "NEUTRAL"
-    reasons: List[str] = field(default_factory=list)
-    bun_version: str | None = None
-    has_ci: bool = False
-    has_readme: bool = False
-
-
-# ============================================================================
-# gh API Integration
-# ============================================================================
 
 def run_gh(args: List[str], timeout: int = 30) -> str:
     """Execute gh CLI with execFile-style args (no shell)."""
     cmd = ["gh"] + args
-    try:
-        result = subprocess.run(
-            cmd, capture_output=True, text=True, check=True, timeout=timeout
-        )
-        return result.stdout.strip()
-    except subprocess.CalledProcessError as e:
-        print(f"[ERROR] gh api failed: {e.stderr.strip()}", file=sys.stderr)
-        return ""
-    except subprocess.TimeoutExpired:
-        print(f"[ERROR] gh api timed out after {timeout}s", file=sys.stderr)
-        return ""
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        timeout=timeout,
+        check=False
+    )
+    if result.returncode != 0:
+        raise subprocess.CalledProcessError(result.returncode, cmd, result.stdout, result.stderr)
+    return result.stdout
 
 
 def fetch_repos_for_user(username: str) -> List[Dict]:
     """Fetch all repositories for a single user/org via gh API (paginated)."""
-    import subprocess
-    cmd = f"gh api users/{username}/repos --paginate | jq -s 'map(.[] | {{name, full_name, private, visibility, fork, stargazers_count, language, description, topics, html_url, pushed_at, created_at}})'"
-    proc = subprocess.run(
-        ["bash", "-c", cmd],
-        capture_output=True, text=True, timeout=60
-    )
-    if proc.returncode != 0:
-        print(f"[ERROR] gh api failed: {proc.stderr.strip()}", file=sys.stderr)
-        return []
-    try:
-        return json.loads(proc.stdout.strip())
-    except json.JSONDecodeError:
-        return []
+    print(f"[FETCH] Fetching repos for {username}...")
+    all_repos = []
+    page = 1
+    per_page = 100
+    
+    while True:
+        # Use gh api with paginate and jq to get array of objects
+        output = run_gh([
+            "api",
+            f"/users/{username}/repos",
+            "--paginate",
+            f"--per_page={per_page}",
+            "-q", ".[]"
+        ])
+        
+        if not output.strip():
+            break
+            
+        # Each line is a JSON object, combine into array
+        lines = output.strip().split('\n')
+        page_data = [json.loads(line) for line in lines if line.strip()]
+        
+        if not page_data:
+            break
+            
+        all_repos.extend(page_data)
+        print(f"[FETCH] Page {page}: got {len(page_data)} repos (total: {len(all_repos)})")
+        
+        if len(page_data) < per_page:
+            break
+        page += 1
+    
+    print(f"[FETCH] Total repos fetched for {username}: {len(all_repos)}")
+    return all_repos
 
 
 def fetch_repo_detail(owner: str, repo: str) -> Dict:
     """Fetch detailed repo info including topics and bun version."""
-    out = run_gh(["api", f"repos/{owner}/{repo}", "--jq", json.dumps({
-        "name": ".name", "private": ".private", "visibility": ".visibility",
-        "fork": ".fork", "stargazers_count": ".stargazers_count",
-        "language": ".language", "description": ".description",
-        "topics": ".topics", "html_url": ".html_url"
-    }), "--include-topics"])
-    if out:
+    try:
+        # Get repo details
+        repo_output = run_gh([
+            "api",
+            f"/repos/{owner}/{repo}",
+            "-q", "{name, description, stargazers_count, fork, private, visibility, html_url, created_at, updated_at, pushed_at, size, language}"
+        ])
+        
+        repo_data = json.loads(repo_output)
+        
+        # Get topics
         try:
-            return json.loads(out)
-        except json.JSONDecodeError:
-            pass
-    return {}
+            topics_output = run_gh([
+                "api",
+                f"/repos/{owner}/{repo}/topics",
+                "-H", "Accept: application/json+git",
+                "-q", ".names"
+            ])
+            topics_data = json.loads(topics_output)
+            repo_data["topics"] = topics_data if isinstance(topics_data, list) else []
+        except Exception:
+            repo_data["topics"] = []
+            
+        return repo_data
+    except subprocess.CalledProcessError:
+        return {}
 
 
-def detect_bun_version(owner: str, repo: str) -> str | None:
+def detect_bun_version(owner: str, repo: str) -> Optional[str]:
     """Detect bun version by checking package.json or bunfig.toml."""
-    for path in ["package.json", "bunfig.toml", ".tool-versions"]:
-        out = run_gh(["api", f"repos/{owner}/{repo}/contents/{path}", "--jq", ".content"])
-        if out:
-            try:
-                import base64
-                decoded = base64.b64decode(out).decode("utf-8")
-                if path == "package.json":
-                    data = json.loads(decoded)
-                    if "bun" in data.get("packageManager", ""):
-                        return data["packageManager"].split("@")[-1]
-                    if "engines" in data and "bun" in data["engines"]:
-                        return data["engines"]["bun"]
-                elif path == "bunfig.toml":
-                    for line in decoded.split("\n"):
-                        if "version" in line:
-                            match = re.search(r'"([^"]+)"', line)
-                            if match:
-                                return match.group(1)
-            except Exception:
-                pass
+    files_to_check = [
+        ("package.json", ".bun.version"),
+        ("bunfig.toml", "bun.version"),
+        (".tool-versions", "bun")
+    ]
+    
+    for filename, key in files_to_check:
+        try:
+            output = run_gh([
+                "api",
+                f"/repos/{owner}/{repo}/contents/{filename}",
+                "-q", ".content"
+            ])
+            import base64
+            content = base64.b64decode(output).decode('utf-8')
+            
+            if filename.endswith('.json'):
+                data = json.loads(content)
+                if key in data:
+                    return str(data[key])
+            elif filename.endswith('.toml'):
+                # Simple TOML parsing for bun.version
+                for line in content.split('\n'):
+                    if line.strip().startswith(key + '='):
+                        return line.split('=', 1)[1].strip().strip('"')
+            else:  # .tool-versions
+                for line in content.split('\n'):
+                    if line.startswith(key + ' '):
+                        return line.split()[1]
+        except Exception:
+            continue
+    
     return None
 
 
 # ============================================================================
-# Naming Pattern Analysis
+# Scoring Constants
 # ============================================================================
 
-def analyze_name_pattern(name: str, description: str, topics: List[str]) -> tuple:
+# Private indicators (higher score = more likely should be private)
+PRIVATE_INDICATORS: Dict[str, int] = {
+    "secret": 10,
+    "token": 10,
+    "key": 10,
+    "credential": 10,
+    "password": 10,
+    "passwd": 10,
+    "private": 8,
+    "internal": 8,
+    "confidential": 8,
+    "proprietary": 8,
+    "cert": 7,
+    "certificate": 7,
+    "ssh": 7,
+    "gpg": 7,
+    "pem": 6,
+    "p12": 6,
+    "pfx": 6,
+    "config": 5,
+    "settings": 5,
+    "env": 5,
+    ".env": 5,
+    "dotenv": 5,
+    "cred": 4,
+    "auth": 4,
+    "oauth": 4,
+    "ssl": 3,
+    "tls": 3
+}
+
+# Public indicators (higher score = more likely should be public)
+PUBLIC_INDICATORS: Dict[str, int] = {
+    "public": 5,
+    "open": 4,
+    "source": 4,
+    "community": 3,
+    "demo": 3,
+    "example": 3,
+    "template": 3,
+    "tutorial": 3,
+    "guide": 3,
+    "docs": 3,
+    "documentation": 3,
+    "website": 2,
+    "blog": 2,
+    "portfolio": 2
+}
+
+# Sensitive topics that increase privacy score
+SENSITIVE_TOPICS: List[str] = [
+    "security", "authentication", "authorization", "crypto", "encryption",
+    "keys", "tokens", "secrets", "credentials", "private", "internal",
+    "config", "settings", "infrastructure", "deploy", "devops"
+]
+
+# Sensitive languages
+SENSITIVE_LANGUAGES: List[str] = [
+    "Shell", "Bash", "PowerShell", "Dockerfile", "Makefile", "YAML", "TOML"
+]
+
+
+def analyze_name_pattern(name: str, description: str, topics: List[str]) -> Tuple[int, int, str, List[str]]:
     """Score a repo based on naming patterns, description, and topics."""
     name_lower = name.lower()
     desc_lower = (description or "").lower()
     topics_lower = [t.lower() for t in topics]
-    combined = f"{name_lower} {desc_lower} {' '.join(topics_lower)}"
-
-    private_score = 0.0
-    public_score = 0.0
-    reasons: List[str] = []
-
-    # Check private indicators
-    for term, weight in PRIVATE_INDICATORS.items():
-        if re.search(r'\b' + re.escape(term) + r'\w*', combined):
+    
+    private_score = 0
+    public_score = 0
+    reasons = []
+    
+    # Check name for indicators
+    for indicator, weight in PRIVATE_INDICATORS.items():
+        if indicator in name_lower:
             private_score += weight
-            reasons.append(f"contains '{term}' (weight {weight})")
-
-    # Check public indicators
-    for term, weight in PUBLIC_INDICATORS.items():
-        if re.search(r'\b' + re.escape(term) + r'\w*', combined):
+            reasons.append(f"name contains '{indicator}' (+{weight})")
+    
+    # Check description for indicators
+    for indicator, weight in PRIVATE_INDICATORS.items():
+        if indicator in desc_lower:
+            private_score += weight
+            reasons.append(f"description contains '{indicator}' (+{weight})")
+    
+    # Check topics for indicators
+    for topic in topics_lower:
+        for indicator, weight in PRIVATE_INDICATORS.items():
+            if indicator in topic:
+                private_score += weight
+                reasons.append(f"topic '{topic}' contains '{indicator}' (+{weight})")
+                break
+    
+    # Check for public indicators
+    for indicator, weight in PUBLIC_INDICATORS.items():
+        if indicator in name_lower:
             public_score += weight
-            reasons.append(f"contains '{term}' (weight {weight})")
-
-    # Topic-based scoring
+            reasons.append(f"name contains '{indicator}' (+{weight}) [public]")
+        if indicator in desc_lower:
+            public_score += weight
+            reasons.append(f"description contains '{indicator}' (+{weight}) [public]")
+    
+    # Check sensitive topics
     for topic in topics_lower:
         if topic in SENSITIVE_TOPICS:
-            private_score += 5
-            reasons.append(f"topic '{topic}' is sensitive")
-        if topic in ["open-source", "opensource", "public"]:
-            public_score += 8
-            reasons.append(f"topic '{topic}' suggests public")
+            private_score += 3
+            reasons.append(f"sensitive topic '{topic}' (+3)")
+    
+    return private_score, public_score, "; ".join(reasons), reasons
 
-    # Language-based hints
-    # (included in combined text check above)
 
+def analyze_repo(repo: Dict[str, Any]) -> Dict[str, Any]:
+    """Analyze a single repo and determine if it should be private."""
+    name = repo["name"]
+    description = repo.get("description", "")
+    topics = repo.get("topics", [])
+    
+    # Get detailed info
+    try:
+        detail = fetch_repo_detail(repo["owner"]["login"], name)
+        # Merge detail into repo
+        for key, value in detail.items():
+            if key not in repo:
+                repo[key] = value
+    except Exception:
+        pass
+    
+    # Check for bun version
+    bun_version = detect_bun_version(
+        repo["owner"]["login"], 
+        name
+    ) if detail else None
+    
+    # Analyze naming patterns
+    private_score, public_score, reasons, reason_list = analyze_name_pattern(
+        name, description, topics
+    )
+    
     # Determine recommendation
-    recommendation = "NEUTRAL"
-    if private_score > public_score and private_score >= 8:
+    if private_score > public_score and private_score >= 5:
         recommendation = "PRIVATE"
-    elif public_score > private_score and public_score >= 8:
+    elif public_score > private_score and public_score >= 5:
         recommendation = "PUBLIC"
-    elif private_score > public_score and private_score >= 4:
-        recommendation = "CONSIDER_PRIVATE"
-    elif public_score > private_score and public_score >= 4:
-        recommendation = "CONSIDER_PUBLIC"
-
-    # Override: forks are almost always public
-    # (handled in caller)
-
-    return private_score, public_score, recommendation, reasons
-
-
-# ============================================================================
-# Analysis Engine
-# ============================================================================
-
-def analyze_repos(repos: List[Dict], include_bun: bool = False) -> List[RepoAnalysis]:
-    """Analyze all repos and return structured analysis."""
-    results = []
-
-    for repo in repos:
-        name = repo.get("name", "unknown")
-        full_name = repo.get("full_name", name)
-        owner, _, repo_name = full_name.partition("/")
-
-        # Get detailed info including topics
-        detail = fetch_repo_detail(owner, repo_name) if include_bun else repo
-        topics = detail.get("topics", repo.get("topics", []))
-        description = repo.get("description", "")
-
-        # Analyze naming patterns
-        private_score, public_score, recommendation, reasons = analyze_name_pattern(
-            name, description, topics
-        )
-
-        # Fork override
-        if repo.get("fork"):
-            public_score += 10
-            recommendation = "PUBLIC"
-            reasons.append("fork (should be public)")
-
-        # Bun version detection
-        bun_version = None
-        if include_bun:
-            bun_version = detect_bun_version(owner, repo_name)
-
-        # Check CI indicators
-        has_ci = any(t in topics_lower for t in ["github-actions", "ci", "cicd", "github"]) if (topics_lower := [t.lower() for t in topics]) else False
-
-        analysis = RepoAnalysis(
-            name=name,
-            full_name=full_name,
-            private=repo.get("private", True),
-            visibility=repo.get("visibility", "unknown"),
-            fork=repo.get("fork", False),
-            stargazers=repo.get("stargazers_count", 0),
-            language=repo.get("language", "unknown"),
-            description=description,
-            topics=topics,
-            private_score=private_score,
-            public_score=public_score,
-            recommendation=recommendation,
-            reasons=reasons,
-            bun_version=bun_version,
-            has_ci=has_ci,
-        )
-        results.append(analysis)
-
-    return results
+    elif private_score > 0 or public_score > 0:
+        recommendation = "CONSIDER_" + ("PRIVATE" if private_score > public_score else "PUBLIC")
+    else:
+        recommendation = "NEUTRAL"
+    
+    return {
+        "name": repo["name"],
+        "owner": repo["owner"]["login"],
+        "visibility": repo["visibility"],  # public or private
+        "html_url": repo["html_url"],
+        "description": repo.get("description", ""),
+        "topics": ", ".join(topics),
+        "stars": repo["stargazers_count"],
+        "fork": repo["fork"],
+        "private": repo["private"],
+        "bun_version": bun_version,
+        "private_score": private_score,
+        "public_score": public_score,
+        "recommendation": recommendation,
+        "reasons": reasons
+    }
 
 
-# ============================================================================
-# DataFrame Conversion & Export
-# ============================================================================
+def load_env_map() -> Dict[str, Dict]:
+    """Load environment mapping of projects to their locations."""
+    env_map = {}
+    
+    # Check for local projects
+    base_paths = [
+        "/home/toxic/projects",
+        "/home/toxic/sovereign",
+        "/home/toxic/sovereign/src",
+        "/home/toxic/sovereign/skills"
+    ]
+    
+    for base_path in base_paths:
+        if not os.path.exists(base_path):
+            continue
+            
+        try:
+            for item in os.listdir(base_path):
+                item_path = os.path.join(base_path, item)
+                if os.path.isdir(item_path) and os.path.exists(os.path.join(item_path, ".git")):
+                    # Get git info
+                    try:
+                        # Get last commit date
+                        date_output = subprocess.run(
+                            ["git", "-C", item_path, "log", "-1", "--format=%ci"],
+                            capture_output=True, text=True, check=True
+                        )
+                        last_push = date_output.stdout.strip() if date_output.returncode == 0 else "unknown"
+                        
+                        # Get remote origin URL
+                        remote_output = subprocess.run(
+                            ["git", "-C", item_path, "remote", "get-url", "origin"],
+                            capture_output=True, text=True, check=False
+                        )
+                        remote_url = remote_output.stdout.strip() if remote_output.returncode == 0 else ""
+                        
+                        env_map[item] = {
+                            "path": item_path,
+                            "last_push": last_push,
+                            "remote_url": remote_url,
+                            "type": "local"
+                        }
+                    except Exception:
+                        env_map[item] = {
+                            "path": item_path,
+                            "last_push": "unknown",
+                            "remote_url": "",
+                            "type": "local"
+                        }
+        except (PermissionError, OSError):
+            continue
+    
+    return env_map
 
-def to_dataframe(analyses: List[RepoAnalysis]) -> pd.DataFrame:
-    """Convert analysis results to pandas DataFrame."""
-    rows = []
-    for a in analyses:
-        rows.append({
-            "name": a.name,
-            "full_name": a.full_name,
-            "private": a.private,
-            "visibility": a.visibility,
-            "fork": a.fork,
-            "stargazers": a.stargazers,
-            "language": a.language,
-            "description": a.description,
-            "topics": ", ".join(a.topics),
-            "private_score": round(a.private_score, 2),
-            "public_score": round(a.public_score, 2),
-            "recommendation": a.recommendation,
-            "reasons": "; ".join(a.reasons),
-            "bun_version": a.bun_version or "",
-            "has_ci": a.has_ci,
-        })
-    df = pd.DataFrame(rows)
-    if not df.empty:
-        df = df.sort_values("private_score", ascending=False)
-    return df
-
-
-def export_parquet(df: pd.DataFrame, path: str) -> None:
-    """Export DataFrame to Parquet using pyarrow."""
-    table = pa.Table.from_pandas(df)
-    pq.write_table(table, path)
-    print("[EXPORT] Parquet written to " + path + " (" + str(len(df)) + " rows)")
-
-
-def export_csv(df: pd.DataFrame, path: str) -> None:
-    """Export DataFrame to CSV."""
-    df.to_csv(path, index=False)
-    print("[EXPORT] CSV written to " + path + " (" + str(len(df)) + " rows)")
-
-
-def export_json(df: pd.DataFrame, path: str) -> None:
-    """Export DataFrame to JSON."""
-    df.to_json(path, orient="records", indent=2)
-    print("[EXPORT] JSON written to " + path + " (" + str(len(df)) + " rows)")
-
-
-# ============================================================================
-# Report Generation
-# ============================================================================
-
-def print_report(df: pd.DataFrame) -> None:
-    """Print comprehensive audit report."""
-    if df.empty:
-        print("No repositories found.")
-        return
-
-    total = len(df)
-    public_count = len(df[~df["private"]])
-    private_count = len(df[df["private"]])
-    forks = len(df[df["fork"]])
-
-    print(f"\n{'=' * 70}")
-    print(f"  MAXIMAL REPO VISIBILITY AUDIT")
-    print(f"{'=' * 70}")
-    print(f"  Total repos: {total} | Public: {public_count} | Private: {private_count} | Forks: {forks}")
-    print(f"{'=' * 70}")
-
-    # Recommendations
-    to_private = df[(df["recommendation"] == "PRIVATE") & (~df["private"])]
-    to_public = df[(df["recommendation"] == "PUBLIC") & (df["private"])]
-    consider_private = df[(df["recommendation"] == "CONSIDER_PRIVATE")]
-    consider_public = df[(df["recommendation"] == "CONSIDER_PUBLIC")]
-
-    if len(to_private) > 0:
-        print(f"\n🔒 MAKE PRIVATE ({len(to_private)} repos):")
-        for _, row in to_private.iterrows():
-            print(f"   {row['full_name']} — {row['reasons']}")
-            print(f"     gh api --method PATCH repos/{row['full_name']} -f private=true")
-
-    if len(to_public) > 0:
-        print(f"\n🌐 MAKE PUBLIC ({len(to_public)} repos):")
-        for _, row in to_public.iterrows():
-            print(f"   {row['full_name']} — {row['reasons']}")
-            print(f"     gh api --method PATCH repos/{row['full_name']} -f private=false")
-
-    if len(consider_private) > 0:
-        print(f"\n⚠️  CONSIDER PRIVATE ({len(consider_private)} repos):")
-        for _, row in consider_private.iterrows():
-            print(f"   {row['full_name']} — score: private={row['private_score']}, public={row['public_score']}")
-
-    if len(consider_public) > 0:
-        print(f"\n⚠️  CONSIDER PUBLIC ({len(consider_public)} repos):")
-        for _, row in consider_public.iterrows():
-            print(f"   {row['full_name']} — score: private={row['private_score']}, public={row['public_score']}")
-
-    # Topic heatmap
-    topic_counts = {}
-    for topics_str in df["topics"]:
-        if pd.notna(topics_str) and topics_str:
-            for t in topics_str.split(", "):
-                t = t.strip()
-                if t in SENSITIVE_TOPICS:
-                    topic_counts[t] = topic_counts.get(t, 0) + 1
-
-    if topic_counts:
-        print(f"\n🔍 SENSITIVE TOPIC HEATMAP:")
-        for topic, count in sorted(topic_counts.items(), key=lambda x: -x[1]):
-            bar = "█" * min(count, 20)
-            print(f"   {topic:25s} {count:3d} {bar}")
-
-    # Bun detection summary
-    bun_repos = df[df["bun_version"].notna() & (df["bun_version"] != "")]
-    if len(bun_repos) > 0:
-        print(f"\n🔥 BUN-ENABLED REPOS ({len(bun_repos)}):")
-        for _, row in bun_repos.iterrows():
-            print(f"   {row['full_name']} — bun {row['bun_version']}")
-
-    print(f"\n{'=' * 70}")
-    print(f"  Audit complete.")
-    print(f"{'=' * 70}\n")
-
-
-def generate_agentic_prompts(df: pd.DataFrame) -> List[str]:
-    """Generate completion prompts for agentic mode."""
-    prompts = []
-    to_private = df[(df["recommendation"] == "PRIVATE") & (~df["private"])]
-    to_public = df[(df["recommendation"] == "PUBLIC") & (df["private"])]
-
-    for _, row in to_private.iterrows():
-        prompts.append(
-            f"Make repo {row['full_name']} private via: "
-            f"gh api --method PATCH repos/{row['full_name']} -f private=true"
-        )
-
-    for _, row in to_public.iterrows():
-        prompts.append(
-            f"Make repo {row['full_name']} public via: "
-            f"gh api --method PATCH repos/{row['full_name']} -f private=false"
-        )
-
-    return prompts
-
-
-# ============================================================================
-# Main
-# ============================================================================
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="repo-audit",
-        description="Maximal GitHub Repository Visibility Auditor",
-        epilog="Examples:\n"
-               "  python repo_audit.py --user toxicwind\n"
-               "  python repo_audit.py --users toxicwind,sovereign --parquet out.parquet\n"
-               "  python repo_audit.py --repos toxicwind/pi,toxicwind/tau --bun --json\n",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="Audit GitHub repositories and recommend privacy settings with local context"
     )
-    parser.add_argument("--user", default="", help="GitHub username/org")
-    parser.add_argument("--users", default="", help="Comma-separated users")
-    parser.add_argument("--repos", default="", help="Comma-separated owner/repo pairs")
-    parser.add_argument("--format", choices=["table", "csv", "json", "parquet"], default="table")
-    parser.add_argument("--parquet", default="repo-audit.parquet", help="Parquet output path")
-    parser.add_argument("--csv", default="repo-audit.csv", help="CSV output path")
-    parser.add_argument("--json", default="repo-audit.json", help="JSON output path")
-    parser.add_argument("--bun", action="store_true", help="Detect bun versions")
-    parser.add_argument("--all", action="store_true", help="Include all analysis details")
-    parser.add_argument("--stream", action="store_true", help="Enable streaming output")
-    args = parser.parse_args()
-
-    # Collect users and repos
-    users = [u.strip() for u in args.users.split(",") if u.strip()] if args.users else []
-    if args.user:
-        users.append(args.user)
-    if not users:
-        users = ["toxicwind"]  # default
-
-    repo_specs = [r.strip() for r in args.repos.split(",") if r.strip()] if args.repos else []
-
-    # Fetch all repos
-    all_repos = []
-    if repo_specs:
-        for spec in repo_specs:
-            parts = spec.split("/")
-            if len(parts) == 2:
-                detail = fetch_repo_detail(parts[0], parts[1])
-                if detail:
-                    all_repos.append(detail)
-    else:
-        for user in users:
-            print("[FETCH] Fetching repos for " + user + "...")
-            repos = fetch_repos_for_user(user)
-            all_repos.extend(repos)
-            print(f"[FETCH] {len(repos)} repos from {user}")
-
-    if not all_repos:
-        print("[ERROR] No repositories found.", file=sys.stderr)
-        sys.exit(1)
-
-    print(f"[FETCH] Total repos: {len(all_repos)}")
-
-    # Load env map for cross-referencing
-    env_map = load_env_map()
-    print(f"[MAP] Env map loaded: {len(env_map)} projects")
+    parser.add_argument(
+        "--user", "-u",
+        default=os.environ.get("GH_USER", "toxicwind"),
+        help="GitHub username or organization (default: toxicwind or GH_USER)"
+    )
+    parser.add_argument(
+        "--users", "-U",
+        help="Comma-separated list of GitHub users/orgs to audit"
+    )
+    parser.add_argument(
+        "--repos", "-r",
+        help="Comma-separated list of specific repos to audit (format: owner/repo)"
+    )
+    parser.add_argument(
+        "--output", "-o",
+        default="repo-audit",
+        help="Output file basename (default: repo-audit)"
+    )
+    parser.add_argument(
+        "--format", "-f",
+        choices=["csv", "parquet", "json", "both"],
+        default="both",
+        help="Output format (default: both)"
+    )
+    parser.add_argument(
+        "--threshold", "-t",
+        type=int,
+        default=0,
+        help="Minimum stars to consider (default: 0)"
+    )
+    parser.add_argument(
+        "--local-only",
+        action="store_true",
+        help="Only analyze repos that exist locally"
+    )
+    parser.add_argument(
+        "--github-only",
+        action="store_true",
+        help="Only analyze repos that exist on GitHub (not local)"
+    )
+    parser.add_argument(
+        "--show-env",
+        action="store_true",
+        help="Show environment mapping and exit"
+    )
     
-    # Cross-reference: identify duplication
-    local_names = set(env_map.keys())
-    gh_names = set(r['name'] for r in all_repos)
-    duplicated = local_names & gh_names
-    local_only = local_names - gh_names
-    gh_only = gh_names - local_names
-    print(f"[MAP] Duplicated: {len(duplicated)}, Local-only: {len(local_only)}, GH-only: {len(gh_only)}")
-
-    # Analyze
-    print("[ANALYZE] Running naming pattern scoring...")
-    t0 = time.perf_counter()
-    analyses = analyze_repos(all_repos, include_bun=args.bun)
-    elapsed = (time.perf_counter() - t0) * 1000
-    print("[ANALYZE] Done in " + str(round(elapsed, 1)) + "ms")
-
-    # Convert to DataFrame
-    df = to_dataframe(analyses)
-
-    # Print report
-    print_report(df)
-
-    # Export
-    output_format = args.format
-    if output_format == "parquet":
-        export_parquet(df, args.parquet)
-    elif output_format == "csv":
-        export_csv(df, args.csv)
-    elif output_format == "json":
-        export_json(df, args.json)
-
-    # Also export to parquet if --parquet specified
-    if args.parquet and output_format != "parquet":
-        export_parquet(df, args.parquet)
-    if args.csv and output_format != "csv":
-        export_csv(df, args.csv)
-    if args.json and output_format != "json":
-        export_json(df, args.json)
-
-    # Agentic prompts
-    prompts = generate_agentic_prompts(df)
-    if prompts:
-        print(f"\n🤖 AGENTIC PROMPTS ({len(prompts)}):")
-        for p in prompts[:5]:
-            print(f"   {p}")
-        if len(prompts) > 5:
-            print(f"   ... and {len(prompts) - 5} more")
-
-    return df
+    args = parser.parse_args()
+    
+    # Show env map if requested
+    if args.show_env:
+        env_map = load_env_map()
+        print("Environment Mapping:")
+        for project, info in env_map.items():
+            print(f"  {project}:")
+            print(f"    Path: {info['path']}")
+            print(f"    Last Push: {info['last_push']}")
+            print(f"    Remote: {info['remote_url']}")
+            print(f"    Type: {info['type']}")
+        return
+    
+    # Determine what to audit
+    target_users = []
+    target_repos = []
+    
+    if args.users:
+        target_users = [u.strip() for u in args.users.split(",")]
+    elif args.repos:
+        # Parse owner/repo format
+        for repo_spec in args.repos.split(","):
+            repo_spec = repo_spec.strip()
+            if "/" in repo_spec:
+                owner, repo = repo_spec.split("/", 1)
+                target_repos.append((owner, repo))
+            else:
+                # Assume it's a repo under the default user
+                target_repos.append((args.user, repo_spec))
+    else:
+        target_users = [args.user]
+    
+    # Fetch repos based on target
+    all_repos = []
+    
+    if target_repos:
+        # Fetch specific repos
+        for owner, repo_name in target_repos:
+            try:
+                repo_data = fetch_repo_detail(owner, repo_name)
+                if repo_data:
+                    all_repos.append(repo_data)
+            except Exception as e:
+                print(f"[WARN] Could not fetch {owner}/{repo_name}: {e}", file=sys.stderr)
+    else:
+        # Fetch repos for users
+        for user in target_users:
+            try:
+                repos = fetch_repos_for_user(user)
+                all_repos.extend(repos)
+            except Exception as e:
+                print(f"[ERROR] Failed to fetch repos for {user}: {e}", file=sys.stderr)
+                continue
+    
+    print(f"[INFO] Total repositories to analyze: {len(all_repos)}")
+    
+    # Filter by stars
+    if args.threshold > 0:
+        all_repos = [r for r in all_repos if r["stargazers_count"] >= args.threshold]
+        print(f"[INFO] After star threshold (>={args.threshold}): {len(all_repos)} repos")
+    
+    # Load environment map for local context
+    env_map = load_env_map()
+    print(f"[INFO] Loaded environment map for {len(env_map)} local projects")
+    
+    # Analyze each repo
+    print("[ANALYZING] Analyzing repositories...")
+    results = []
+    for i, repo in enumerate(all_repos, 1):
+        if i % 10 == 0 or i == len(all_repos):
+            print(f"  Progress: {i}/{len(all_repos)}")
+        results.append(analyze_repo(repo))
+    
+    # Convert to DataFrame if pandas available
+    if HAS_PANDAS:
+        df = pd.DataFrame(results)
+        # Reorder columns for readability
+        cols = [
+            "owner", "name", "visibility", "private", "bun_version",
+            "private_score", "public_score", "recommendation", "reasons",
+            "stars", "fork", "description", "topics", "html_url"
+        ]
+        # Only select columns that exist
+        existing_cols = [col for col in cols if col in df.columns]
+        df = df[existing_cols]
+    else:
+        df = None
+    
+    # Output
+    basename = args.output
+    if args.format in ["csv", "both"]:
+        csv_path = f"{basename}.csv"
+        if HAS_PANDAS:
+            df.to_csv(csv_path, index=False)
+        else:
+            # Write CSV manually
+            import csv
+            if results:
+                with open(csv_path, 'w', newline='') as f:
+                    writer = csv.DictWriter(f, fieldnames=results[0].keys())
+                    writer.writeheader()
+                    writer.writerows(results)
+        print(f"[EXPORT] CSV written to: {csv_path}")
+    
+    if args.format in ["parquet", "both"] and HAS_PYARROW and HAS_PANDAS:
+        parquet_path = f"{basename}.parquet"
+        df.to_parquet(parquet_path, index=False)
+        print(f"[EXPORT] Parquet written to: {parquet_path}")
+    elif args.format in ["parquet", "both"]:
+        print("[EXPORT] Parquet output skipped (missing pandas or pyarrow)", file=sys.stderr)
+    
+    if args.format in ["json", "both"]:
+        json_path = f"{basename}.json"
+        if HAS_PANDAS:
+            df.to_json(json_path, orient="records", indent=2)
+        else:
+            with open(json_path, 'w') as f:
+                json.dump(results, f, indent=2)
+        print(f"[EXPORT] JSON written to: {json_path}")
+    
+    # Print summary
+    if HAS_PANDAS and len(df) > 0:
+        private_count = df[df["recommendation"] == "PRIVATE"].shape[0]
+        public_count = df[df["recommendation"] == "PUBLIC"].shape[0]
+        consider_private = df[df["recommendation"] == "CONSIDER_PRIVATE"].shape[0]
+        consider_public = df[df["recommendation"] == "CONSIDER_PUBLIC"].shape[0]
+        neutral_count = df[df["recommendation"] == "NEUTRAL"].shape[0]
+        
+        print("\n" + "="*60)
+        print("REPO AUDIT SUMMARY")
+        print("="*60)
+        print(f"Total repositories analyzed: {len(df)}")
+        print(f"🔒 Recommend PRIVATE: {private_count}")
+        print(f"🟢 Recommend PUBLIC: {public_count}")
+        print(f"⚠️  Consider PRIVATE: {consider_private}")
+        print(f"⚠️  Consider PUBLIC: {consider_public}")
+        print(f"⚪ Neutral: {neutral_count}")
+        
+        if private_count > 0:
+            print(f"\n🔒 TOP {min(10, private_count)} REPOS TO MAKE PRIVATE:")
+            top_private = df[df["recommendation"] == "PRIVATE"].nlargest(10, "private_score")
+            for _, row in top_private.iterrows():
+                print(f"  {row['owner']}/{row['name']} (score: {row['private_score']}) - {row['reasons'][:80]}...")
+        
+        if consider_private > 0:
+            print(f"\n⚠️  TOP {min(10, consider_private)} REPOS TO CONSIDER MAKING PRIVATE:")
+            top_consider = df[df["recommendation"] == "CONSIDER_PRIVATE"].nlargest(10, "private_score")
+            for _, row in top_consider.iterrows():
+                print(f"  {row['owner']}/{row['name']} (score: {row['private_score']}) - {row['reasons'][:80]}...")
+    else:
+        # Manual summary
+        private_count = sum(1 for r in results if r["recommendation"] == "PRIVATE")
+        public_count = sum(1 for r in results if r["recommendation"] == "PUBLIC")
+        consider_private = sum(1 for r in results if r["recommendation"] == "CONSIDER_PRIVATE")
+        consider_public = sum(1 for r in results if r["recommendation"] == "CONSIDER_PUBLIC")
+        neutral_count = sum(1 for r in results if r["recommendation"] == "NEUTRAL")
+        
+        print("\n" + "="*60)
+        print("REPO AUDIT SUMMARY")
+        print("="*60)
+        print(f"Total repositories analyzed: {len(results)}")
+        print(f"🔒 Recommend PRIVATE: {private_count}")
+        print(f"🟢 Recommend PUBLIC: {public_count}")
+        print(f"⚠️  Consider PRIVATE: {consider_private}")
+        print(f"⚠️  Consider PUBLIC: {consider_public}")
+        print(f"⚪ Neutral: {neutral_count}")
+        
+        if private_count > 0:
+            print(f"\n🔒 TOP {min(10, private_count)} REPOS TO MAKE PRIVATE:")
+            sorted_results = sorted(
+                [r for r in results if r["recommendation"] == "PRIVATE"],
+                key=lambda x: x["private_score"],
+                reverse=True
+            )
+            for repo in sorted_results[:10]:
+                print(f"  {repo['owner']}/{repo['name']} (score: {repo['private_score']}) - {repo['reasons'][:80]}...")
 
 
 if __name__ == "__main__":
