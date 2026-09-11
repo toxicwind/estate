@@ -36,7 +36,7 @@
 11. **Stop stacking long commands.** Sub-second probes. Reserve `60|120` for intentional jobs.
 12. **No `head` truncation.** You have 1M context. Read full files. No `| head -20`.
 13. **Timeout/failfast/high-frequency is FIRST-CLASS everywhere** (retry, provider-retry, worker-limits, MCP calls, scripts). NO insane monolithic timeouts — use failfast + high-frequency liveness probes + per-attempt deadlines.
-14. **Dynamic `${ENV_VAR}` interpolation is first-class** in configs/scripts (settings.json, config.yaml, mcpproxy config, launch scripts). Prefer `${...}` over hardcoded values.
+14. **Dynamic `${ENV_VAR}` interpolation is first-class** in configs/scripts (settings.json, config.yml, mcpproxy config, launch scripts). Prefer `${...}` over hardcoded values.
 15. **Lint + test after EVERY code change; coverage floor 82%.** Pre-existing type errors in unrelated test files do NOT block the change under review — isolate + report.
 16. **BACKGROUNDING IS FIRST-CLASS.** Any op that can run long (downloads, builds, scans,
     npm/pip/apt, model fetches) MUST be launched in background (`cmd &`, capture `$!`), tracked
@@ -140,7 +140,7 @@ ast-grep scan -p 'NVIDIA_MODELS' -l ts --json=stream /home/toxic/projects/pi-age
 - **nvidia-nim is NOT an MCP server.** It is a llama-swap/sovereign-router **completions API**
   (OpenAI-compatible, on `:25100`). NVIDIA models are first-class via pi-agent's `nvidia`
   provider (`packages/ai/src/providers/`) -> sovereign-router/llama-swap, not an MCP upstream.
-- **Subagents**: `config.yaml` `can_spawn_subagents:true` + whitelist + `subagents.defaultModel:
+- **Subagents**: `config.yml` `can_spawn_subagents:true` + whitelist + `subagents.defaultModel:
 opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable from a
   plain assistant context) — fanout only works inside an interactive pi session.
 
