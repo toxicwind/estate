@@ -1,101 +1,147 @@
-name: repo-audit
-description: >
-  Audit GitHub repositories and recommend privacy settings based on naming patterns,
-  descriptions, and topics. Uses gh CLI to fetch repository data, then analyzes with
-  pandas/pyarrow to output recommendations as CSV or Parquet.
+# repo-audit — Maximal Repository Auditor
+
+Local-first repository visibility auditor. Scans all local git repos, builds a pandas DataFrame with tree hierarchy, identifies duplicates/symlinks/orphans, and recommends privacy settings.
 
 ## Concept
 
-This skill helps identify repositories that might accidentally expose sensitive information
-by analyzing repository names, descriptions, and topics for patterns indicating they
-should be private (e.g., containing words like "secret", "token", "credential", etc.).
+**Local-first**: All data comes from local disk. No GitHub API calls needed. Uses `git log` to read commit metadata, pandas for analysis, pyarrow for parquet export.
 
-Outputs a analysis report showing which public repos should be made private and vice versa.
+Two scripts:
+- `local_audit.py` — Local-first auditor (no gh CLI needed)
+- `repo_audit.py` — GitHub API auditor (for upstream analysis)
 
-## Dynamic argv
+## Architecture
+
+```
+Local Disk (.git scan) → pandas DataFrame → Tree Hierarchy → Recommendations
+                                    ↓
+                          Parquet + CSV + JSON Export
+                                    ↓
+                          Duplicate/Symlink/Orphan Detection
+```
+
+## Local-First Audit
 
 ```bash
-python3 sovereign/skills/repo-audit/audit.py \
-  --user toxicwind \
-  --output repo-audit-analysis \
-  --format both \
-  --threshold 0 \
-  --public-only
+# Scan all local repos (projects + sovereign)
+python local_audit.py --all
+
+# Scan specific path
+python local_audit.py --path /home/toxic/projects
+
+# With parquet export
+python local_audit.py --all --parquet out.parquet
+
+# Show duplicates and stale repos
+python local_audit.py --all --duplicates --orphans
 ```
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--user`, `-u` | `toxicwind` (or `$GH_USER`) | GitHub username or organization to audit |
-| `--output`, `-o` | `repo-audit` | Output file basename (without extension) |
-| `--format`, `-f` | `both` | Output format: csv, parquet, or both |
-| `--threshold`, `-t` | `0` | Minimum stars to consider for analysis |
-| `--private-only` | `false` | Only analyze currently private repositories |
-| `--public-only` | `false` | Only analyze currently public repositories |
+### CLI Flags
 
-## Procedure
+| Flag | Description |
+|------|-------------|
+| `--path <dir>` | Path to scan (default: /home/toxic/projects) |
+| `--all` | Scan both projects and sovereign |
+| `--duplicates` | Show repos with duplicate names |
+| `--orphans` | Show repos with no activity (>90d) |
+| `--format {table,csv,json,parquet}` | Output format |
+| `--parquet <path>` | Parquet export path |
+| `--csv <path>` | CSV export path |
+| `--json <path>` | JSON export path |
 
-1. **Fetch**: Uses `gh api` to paginate through all repositories for the specified user/org
-2. **Filter**: Optionally filters by star count and current visibility (public/private)
-3. **Analyze**: For each repository:
-   - Fetches topics via GitHub API
-   - Checks name, description, and topics for private-indicating patterns
-   - Determines if repo should be private based on patterns
-4. **Output**: Results written as CSV and/or Parquet with columns:
-   - owner, name, visibility (public/private), private (bool), should_be_private (bool)
-   - reasons (why it should be private), stars, fork, description, topics, html_url
+### DataFrame Schema
 
-## Pattern Detection
+| Column | Type | Description |
+|--------|------|-------------|
+| `name` | str | Repo name |
+| `path` | str | Absolute path on disk |
+| `area` | str | `projects`, `sovereign`, or `other` |
+| `last_commit` | str | ISO date of last commit |
+| `message` | str | Commit message |
+| `commit` | str | Short commit hash (8 chars) |
+| `author` | str | Commit author |
 
-The analysis looks for these case-insensitive patterns in repo names, descriptions, and topics:
-- secret, token, key, credential, password, passwd
-- private, internal, confidential, proprietary
-- cert, certificate, ssh, gpg, pem, p12, pfx
-- config, settings, env, .env, dotenv
-- cred, auth, oauth, ssl, tls
-
-If any pattern is found, the repo is flagged as "should be private".
-
-## Output Examples
-
-### CSV Output (first few rows):
-```
-owner,name,visibility,private,should_be_private,reasons,stars,fork,description,topics,html_url
-toxicwind,pi-agent,public,false,true,name contains 'agent',154,false,Agentic AI coding agent,,https://github.com/toxicwind/pi-agent
-toxicwind,tau,public,false,true,name contains 'tau',420,false,The Tau language and ecosystem,,https://github.com/toxicwind/tau
-```
-
-### Parquet Output:
-Same data as CSV but in efficient columnar format with compression.
-
-## Examples
+## GitHub API Audit
 
 ```bash
-# Basic audit of your repos
-python3 sovereign/skills/repo-audit/audit.py --user toxicwind
+# Full GitHub audit with privacy recommendations
+python repo_audit.py --user toxicwind --format parquet --parquet audit.parquet
 
-# Audit with minimum 10 stars, output both formats
-python3 sovereign/skills/repo-audit/audit.py --user toxicwind --threshold 10 --format both
+# Multi-user audit
+python repo_audit.py --users toxicwind,sovereign --bun
 
-# Only check public repos that might need to be private
-python3 sovereign/skills/repo-audit/audit.py --user toxicwind --public-only
+# Specific repos
+python repo_audit.py --repos toxicwind/pi,toxicwind/tau --bun --json
+```
 
-# Only check private repos that might be safe to make public
-python3 sovereign/skills/repo-audit/audit.py --user toxicwind --private-only
+### repo_audit.py Features
 
-# Specify custom output name
-python3 sovereign/skills/repo-audit/audit.py --output my-repo-analysis --format parquet
+- **Naming pattern scoring**: weighted private/public indicators
+- **Topic-based anomaly detection**: sensitive topic heatmap
+- **Bun version detection**: via gh API
+- **Agentic prompts**: auto-generated gh commands
+- **Parquet/CSV/JSON export**: via pyarrow/pandas
+
+## Tree Hierarchy
+
+The local audit produces a tree view by area:
+
+```
+🌿 PROJECTS (291 repos)
+────────────────────────────────────────────────────────────────
+  📁 sovereign-projects  2026-09-10 22:24:45  trigger CI after making repo
+  📁 pi-vault-mind       2026-09-09 05:45:28  maximal: full config keys
+  📁 codeshift           2026-09-07 13:40:06  feat(config): maximal herd
+  ...
+
+🌿 SOVEREIGN (control plane)
+────────────────────────────────────────────────────────────────
+  📁 maximal-sovereign-agentic-audit  ...
+  📁 repo-visibility-audit            ...
+  ...
+```
+
+## Symlink Map
+
+First-class symlinks in the monorepo:
+
+| Symlink | Target | Purpose |
+|---------|--------|---------|
+| `.shared` | `/home/toxic/.sovereign-shared` | Shared resources |
+| `.shared-helpers` | `/home/toxic/sovereign/helpers` | Operational helpers |
+
+Duplicate symlinks removed: `tau`, `tau-extensions`, `pi-agent`, `qed`, `effusion-labs`, `arlockworks-*`
+
+## Env Map
+
+`projects.env` contains 327 project mappings:
+
+```
+PROJECT_NAME=PATH:AREA:LAST_LOCAL_PUSH:GH_PRIVATE:GH_PRIVATE_SCORE:GH_RECOMMENDATION
+```
+
+Example:
+```
+sovereign-scripts=/home/toxic/projects/sovereign-projects/sovereign-scripts:projects:2026-08-24 06:08:00:False:21.0:PRIVATE
+infra-recon=/home/toxic/projects/infra-recon:projects:2026-08-24 06:08:00:False:14.0:PRIVATE
 ```
 
 ## Dependencies
 
-- `gh` CLI (GitHub CLI) - must be authenticated
-- Python 3.7+
-- `pandas` (optional, for DataFrame handling)
-- `pyarrow` (optional, for Parquet output)
+- Python 3.12+
+- `pandas` (≥3.0.0)
+- `pyarrow` (≥25.0.0)
+- `gh` CLI (optional, for GitHub API audit)
 
-Install Python dependencies with:
+## Examples
+
 ```bash
-pip install pandas pyarrow
-```
+# Local-first audit (no network needed)
+python local_audit.py --all --parquet local-repos.parquet
 
-The script will work without pandas/pyarrow but will only output CSV format.
+# GitHub privacy audit
+python repo_audit.py --user toxicwind --format parquet
+
+# Full audit: local tree + GitHub privacy analysis
+python local_audit.py --all && python repo_audit.py --user toxicwind
+```
