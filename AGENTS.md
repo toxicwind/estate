@@ -159,3 +159,11 @@ opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable
 - `mise.toml` — Task runner and tool versions
 - `src/` — Sovereign backend, mesh frontend, HAL substrate
 - `agents/` — Subagent profiles and identities
+
+## maximal-sovereign-agentic-audit
+- **Location**: `src/maximal-sovereign-agentic-audit/`
+- **Skill**: `skills/maximal-sovereign-agentic-audit/`
+- **Features**: Multi-tier chained execution, ast-grep, eza, gh api code search, pattern borrowing, Bun.nanoseconds() timing, mitata benchmarks, streaming, agentic completions, multi-repo support (--repos, --users)
+- **Run**: `cd src/maximal-sovereign-agentic-audit && bun run src/index.ts --user toxicwind --check-bun --timing`
+- **Build**: `cd src/maximal-sovereign-agentic-audit && bun run check`
+- **Tests**: `cd src/maximal-sovereign-agentic-audit && bun test --coverage`
