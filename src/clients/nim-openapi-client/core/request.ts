@@ -103,7 +103,7 @@ const getUrl = (config: OpenAPIConfig, options: ApiRequestOptions): string => {
   const path = options.url
     .replace("{api-version}", config.VERSION)
     .replace(/{(.*?)}/g, (substring: string, group: string) => {
-      if (options.path?.hasOwnProperty(group)) {
+      if (Object.hasOwn(options.path, group)) {
         return encoder(String(options.path[group]));
       }
       return substring;
@@ -134,7 +134,9 @@ export const getFormData = (
       .filter(([_, value]) => isDefined(value))
       .forEach(([key, value]) => {
         if (Array.isArray(value)) {
-          value.forEach((v) => process(key, v));
+          for (const v of value) {
+            process(key, v);
+          }
         } else {
           process(key, value);
         }

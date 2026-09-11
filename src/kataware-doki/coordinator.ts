@@ -134,7 +134,7 @@ const _server = serve({
 
 async function handleChat(req: Request): Promise<Response> {
   const body = await req.json();
-  const { model, messages } = body;
+  const { model, messages: _messages } = body;
   const node = mesh.swap(model);
   if (!node) {
     return new Response(
