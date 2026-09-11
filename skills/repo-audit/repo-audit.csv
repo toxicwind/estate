@@ -1,0 +1,31 @@
+owner,name,visibility,private,should_be_private,reasons,stars,fork,description,topics,html_url
+toxicwind,a-person-mask-generator,public,False,False,,0,True,Extension for Automatic1111 and ComfyUI to automatically create masks for Background/Hair/Body/Face/Clothes in Img2Img,,https://github.com/toxicwind/a-person-mask-generator
+toxicwind,additional-lens-profiles,public,False,False,,0,False,Additional lens profiles for multi-perspective analysis and OSINT tooling,,https://github.com/toxicwind/additional-lens-profiles
+toxicwind,agent-chat-ui,public,False,False,,0,True,🦜💬 Web app for interacting with any LangGraph agent (PY & TS) via a chat interface.,,https://github.com/toxicwind/agent-chat-ui
+toxicwind,agentgateway,public,False,False,,0,True,Next Generation Agentic Proxy for AI Agents and MCP servers,,https://github.com/toxicwind/agentgateway
+toxicwind,agentic-moment-2026,public,False,True,description contains 'env',0,False,"The Agentic Moment — an extended, source-verified field report on the intellectual environment around autonomous AI structures, July 2026",,https://github.com/toxicwind/agentic-moment-2026
+toxicwind,AnimeBoya,public,False,False,,0,True,Anime streaming and downloading android application developed by Tu2l by using Jsoup and other open source libraries,,https://github.com/toxicwind/AnimeBoya
+toxicwind,antigravity-linux,public,False,False,,0,True, Shell script to install Google Antigravity to Arch-based distros.,,https://github.com/toxicwind/antigravity-linux
+toxicwind,aquamarine,public,False,False,,0,True,Aquamarine is a very light linux rendering backend library,,https://github.com/toxicwind/aquamarine
+toxicwind,arxiv-code,public,False,False,,0,False,,,https://github.com/toxicwind/arxiv-code
+toxicwind,awesome-agent-gateway-2026,public,False,False,,0,False,"A curated list of agent gateway frameworks, SDKs, and tools for 2026",,https://github.com/toxicwind/awesome-agent-gateway-2026
+toxicwind,awesome-api-shape-explorer,public,False,False,,0,False,Awesome Api Shape Explorer — Python 3.8+ toolkit,,https://github.com/toxicwind/awesome-api-shape-explorer
+toxicwind,bashrc-quote-fix,public,False,False,,0,False,Auto-fix nested quote errors in bash shell,,https://github.com/toxicwind/bashrc-quote-fix
+toxicwind,blibla-comfyui-extensions,public,False,False,,0,True,Extensions for ComfyUI,,https://github.com/toxicwind/blibla-comfyui-extensions
+toxicwind,Boundless,public,False,False,,0,False,,,https://github.com/toxicwind/Boundless
+toxicwind,bsz-cui-extras,public,False,False,,0,True,"Addons for ComfyUI: Principled nodes, colored latents,  demo workflows, etc",,https://github.com/toxicwind/bsz-cui-extras
+toxicwind,byte-vision-mcp,public,False,False,,0,True,A Model Context Protocol (MCP) server written in GO that provides text completion capabilities using local LLama.cpp models. This server exposes a single MCP tool that accepts text prompts and returns AI-generated completions using locally hosted language models.,,https://github.com/toxicwind/byte-vision-mcp
+toxicwind,caddy,public,False,False,,0,True,Fast and extensible multi-platform HTTP/1-2-3 web server with automatic HTTPS,,https://github.com/toxicwind/caddy
+toxicwind,catcoin,public,False,False,,0,True,,,https://github.com/toxicwind/catcoin
+toxicwind,cd-tuner_negpip-ComfyUI,public,False,False,,0,True,cd-tunerとnegpipのComfyUI拡張,,https://github.com/toxicwind/cd-tuner_negpip-ComfyUI
+toxicwind,cg-image-picker,public,False,False,,0,True,,,https://github.com/toxicwind/cg-image-picker
+toxicwind,cg-noise,public,False,False,,0,True,,,https://github.com/toxicwind/cg-noise
+toxicwind,cg-use-everywhere,public,False,False,,0,True,,,https://github.com/toxicwind/cg-use-everywhere
+toxicwind,CodeShift,public,False,False,,0,True,"Multi-agent system that migrates a codebase between languages while preserving behavior, verifying each module by running the original and the translation on identical generated inputs. Python to TypeScript, on a local LLM.",,https://github.com/toxicwind/CodeShift
+toxicwind,codex,public,False,False,,0,True,Lightweight coding agent that runs in your terminal,,https://github.com/toxicwind/codex
+toxicwind,codex-patcher-updater,public,False,False,,0,False,,,https://github.com/toxicwind/codex-patcher-updater
+toxicwind,Comfy-Topaz,public,False,False,,0,True,Topaz Photo AI integration for ComfyUI,,https://github.com/toxicwind/Comfy-Topaz
+toxicwind,ComfyUI,public,False,False,,0,True,"The most powerful and modular stable diffusion GUI, api and backend with a graph/nodes interface.",,https://github.com/toxicwind/ComfyUI
+toxicwind,ComfyUI-Advanced-ControlNet,public,False,False,,0,True,ControlNet scheduling and masking nodes with sliding context support,,https://github.com/toxicwind/ComfyUI-Advanced-ControlNet
+toxicwind,comfyui-animatediff,public,False,False,,0,True,AnimateDiff for ComfyUI,,https://github.com/toxicwind/comfyui-animatediff
+toxicwind,comfyui-art-venture,public,False,False,,1,True,,,https://github.com/toxicwind/comfyui-art-venture
