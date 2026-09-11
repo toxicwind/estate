@@ -19,7 +19,7 @@ python3 sovereign/skills/repo-audit/audit.py \
   --user toxicwind \
   --output repo-audit-analysis \
   --format both \
-  --threshold 10 \
+  --threshold 0 \
   --public-only
 ```
 
