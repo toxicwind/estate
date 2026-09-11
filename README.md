@@ -159,6 +159,32 @@ Access services **directly** on their ports (LAN or Tailscale MagicDNS). Optiona
  optional: Tailscale Funnel → rust-web :25101 only (not multipath)
 ```
 
+---
+
+## Workspaces (`toxicwind/sovereign-projects`)
+
+The **Sovereign Workspaces** repo is the unified workspace layer that operates in tandem with this control plane.
+
+- **GitHub**: [toxicwind/sovereign-projects](https://github.com/toxicwind/sovereign-projects)
+- **Local**: `/home/toxic/projects/sovereign-projects/`
+- **Subfolders**: `herd`, `mesh`, `tau`, `yote`, `openfang`, `qed`, `shell`, `boundless`, `packages`
+
+| Workspace | Directory | Role | Port |
+|-----------|-----------|------|------|
+| **Herd** | `herd/` | Inference router & llama-swap | `:25100` |
+| **Mesh** | `mesh/` | MCP federation gateway | `:25127` |
+| **Tau** | `tau/` | Canonical AI coding agent engine | `:25192` |
+| **Yote** | `yote/` | Minimal embeddable agent runtime | `:25102` |
+| **OpenFang** | `openfang/` | C++ inference engine fork | `:25103` |
+| **QED** | `qed/` | AI-native editor (Zed fork) | `:25130` |
+| **Shell** | `shell/` | Desktop environment | Wayland |
+| **Boundless** | `boundless/` | Document ingestion & chunking | `:10200` |
+
+```bash
+# Clone the workspaces
+git clone https://github.com/toxicwind/sovereign-projects.git /home/toxic/projects/sovereign-projects
+```
+
 Orchestration: `pitchfork.toml` (native config, no generation). `mise run up` starts the `core` group.
 
 ---
