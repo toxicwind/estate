@@ -167,3 +167,38 @@ opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable
 - **Run**: `cd src/maximal-sovereign-agentic-audit && bun run src/index.ts --user toxicwind --check-bun --timing`
 - **Build**: `cd src/maximal-sovereign-agentic-audit && bun run check`
 - **Tests**: `cd src/maximal-sovereign-agentic-audit && bun test --coverage`
+
+## Maximal Sovereign Agentic Audit
+
+**Location**: `src/maximal-sovereign-agentic-audit/`
+**Architecture**: Fully modular with 10 separate module files
+
+### Modules
+- `src/modules/types.ts` — RepoRecord, LocalAuditResult, SymlinkRecord, AuditMode
+- `src/modules/constants.ts` — All file paths and URLs
+- `src/modules/parser.ts` — `parseProjectsEnvSync()` parses 327 projects from projects.env
+- `src/modules/git-scanner.ts` — `scanDirSync()`, `scanSymlinksSync()`, `runGit()` (execFile)
+- `src/modules/secrets-scanner.ts` — `scanSecrets()`, `getSecretsRecord()` (.secrets first-class)
+- `src/modules/completions.ts` — `analyzeWithCompletions()` via 25100 API
+- `src/modules/autofix.ts` — `autoFix()` for broken symlinks
+- `src/modules/precheck.ts` — `preCheck()` validation
+- `src/modules/dataframe.ts` — `toDataFrame()` export
+- `src/modules/parquet.ts` — `exportParquet()` using ParquetWriter.openFile
+
+### Key Facts
+- `localAudit()` ALWAYS scans all 327 projects from projects.env (expand-to-all-projects rule)
+- `.secrets` at `/home/toxic/.secrets` is a first-class credential record
+- `Bun.nanometers()` does not exist — use `performance.now()` for timing
+- `ParquetWriter.openFile(schema, path)` is the correct API (not `openParquetWriter`)
+- `runGit()` uses `execFile("git", args, ...)` with array args
+- `scanDirSync()` adds ONE record per project directory
+- All 29 tests pass across 7 test files
+- Test coverage target: 86%+
+- Parquet export works: `local-repos.parquet` (53KB)
+
+### Commands
+```bash
+bun run start --all --precheck --parquet output/audit.parquet
+bun test tests/ --coverage
+bun run local --all --precheck
+```
