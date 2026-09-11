@@ -32,6 +32,36 @@ import argparse
 
 
 # ============================================================================
+# Env Map Loader
+# ============================================================================
+
+def load_env_map(path: str = '/home/toxic/projects.env') -> dict:
+    """Load the projects.env file and return project-to-path mapping."""
+    env_map = {}
+    try:
+        with open(path) as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                if '=' not in line:
+                    continue
+                name, rest = line.split('=', 1)
+                parts = rest.split(':')
+                env_map[name] = {
+                    'path': parts[0] if len(parts) > 0 else '',
+                    'area': parts[1] if len(parts) > 1 else 'unknown',
+                    'last_local_push': parts[2] if len(parts) > 2 else '',
+                    'gh_private': parts[3] if len(parts) > 3 else 'None',
+                    'gh_private_score': float(parts[4]) if len(parts) > 4 and parts[4] else 0,
+                    'gh_recommendation': parts[5] if len(parts) > 5 else 'NEUTRAL',
+                }
+    except FileNotFoundError:
+        pass
+    return env_map
+
+
+# ============================================================================
 # Constants
 # ============================================================================
 
@@ -505,6 +535,18 @@ def main():
         sys.exit(1)
 
     print(f"[FETCH] Total repos: {len(all_repos)}")
+
+    # Load env map for cross-referencing
+    env_map = load_env_map()
+    print(f"[MAP] Env map loaded: {len(env_map)} projects")
+    
+    # Cross-reference: identify duplication
+    local_names = set(env_map.keys())
+    gh_names = set(r['name'] for r in all_repos)
+    duplicated = local_names & gh_names
+    local_only = local_names - gh_names
+    gh_only = gh_names - local_names
+    print(f"[MAP] Duplicated: {len(duplicated)}, Local-only: {len(local_only)}, GH-only: {len(gh_only)}")
 
     # Analyze
     print("[ANALYZE] Running naming pattern scoring...")
