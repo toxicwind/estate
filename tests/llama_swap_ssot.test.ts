@@ -340,8 +340,9 @@ describe("watchSwapModelsSse — SSE reader loop", () => {
 
     const received: any[] = [];
     // Import watchSwapModelsSse directly
-    const { watchSwapModelsSse } =
-      await import("../src/lib/llama_swap_ssot.ts");
+    const { watchSwapModelsSse } = await import(
+      "../src/lib/llama_swap_ssot.ts"
+    );
     const h = watchSwapModelsSse((ev) => received.push(ev));
 
     // Give the async reader time to process
@@ -359,8 +360,9 @@ describe("watchSwapModelsSse — SSE reader loop", () => {
       body: null,
     });
     let errorCaught: any = null;
-    const { watchSwapModelsSse } =
-      await import("../src/lib/llama_swap_ssot.ts");
+    const { watchSwapModelsSse } = await import(
+      "../src/lib/llama_swap_ssot.ts"
+    );
     watchSwapModelsSse(
       () => {},
       (e) => {
@@ -375,8 +377,9 @@ describe("watchSwapModelsSse — SSE reader loop", () => {
   test("calls onError on fetch exception (lines 123-124)", async () => {
     mockFetch.mockRejectedValueOnce(new Error("network fail"));
     let errorCaught: any = null;
-    const { watchSwapModelsSse } =
-      await import("../src/lib/llama_swap_ssot.ts");
+    const { watchSwapModelsSse } = await import(
+      "../src/lib/llama_swap_ssot.ts"
+    );
     watchSwapModelsSse(
       () => {},
       (e) => {
@@ -405,8 +408,9 @@ describe("watchSwapModelsSse — SSE reader loop", () => {
     mockFetch.mockResolvedValueOnce({ ok: true, body: stream });
 
     const received: any[] = [];
-    const { watchSwapModelsSse } =
-      await import("../src/lib/llama_swap_ssot.ts");
+    const { watchSwapModelsSse } = await import(
+      "../src/lib/llama_swap_ssot.ts"
+    );
     const h = watchSwapModelsSse((ev) => received.push(ev));
     await new Promise((r) => setTimeout(r, 100));
     h.abort();
@@ -429,8 +433,9 @@ describe("watchSwapModelsSse — SSE reader loop", () => {
     mockFetch.mockResolvedValueOnce({ ok: true, body: stream });
 
     const received: any[] = [];
-    const { watchSwapModelsSse } =
-      await import("../src/lib/llama_swap_ssot.ts");
+    const { watchSwapModelsSse } = await import(
+      "../src/lib/llama_swap_ssot.ts"
+    );
     const h = watchSwapModelsSse((ev) => received.push(ev));
     await new Promise((r) => setTimeout(r, 100));
     h.abort();

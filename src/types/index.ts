@@ -3,7 +3,14 @@
 // ============================================================================
 
 export type Group =
-  "core" | "main" | "agent" | "agents" | "mcp" | "infra" | "monitoring" | "aux";
+  | "core"
+  | "main"
+  | "agent"
+  | "agents"
+  | "mcp"
+  | "infra"
+  | "monitoring"
+  | "aux";
 
 export interface PortMap extends Map<string, number> {}
 
