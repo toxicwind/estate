@@ -1,29 +1,18 @@
 import { describe, expect, test } from "bun:test";
-import { execFile } from "child_process";
+import { localAudit, exportParquet } from "../src/local-audit";
+import { join } from "path";
 
-describe("parquet output", () => {
-  test("generates parquet file", async () => {
-    const result = await new Promise<string>((resolve, reject) => {
-      execFile("gh", ["api", "users/toxicwind/repos?per_page=1", "--jq", "."], { timeout: 10000 }, (err, stdout) => {
-        if (err) reject(err);
-        else resolve(stdout.trim());
-      });
-    });
-    const repos = JSON.parse(result);
-    expect(Array.isArray(repos)).toBe(true);
-    expect(repos.length).toBe(1);
-    expect(repos[0].name).toBeDefined();
+describe("parquet", () => {
+  test("exportParquet writes valid file", async () => {
+    const result = await localAudit(["/home/toxic/projects"]);
+    const tmpPath = join("/tmp", `local-audit-test-${Date.now()}.parquet`);
+    await exportParquet(result, tmpPath);
+    const exists = await Bun.file(tmpPath).exists();
+    expect(exists).toBe(true);
   });
 
-  test("parquet record structure", () => {
-    const record = {
-      name: "test-repo",
-      private: false,
-      classification: "PUBLIC_ECOSYSTEM",
-      bun_version: ">=1.3",
-    };
-    expect(record.name).toBe("test-repo");
-    expect(record.private).toBe(false);
-    expect(record.classification).toBe("PUBLIC_ECOSYSTEM");
+  test("exportParquet includes .secrets record", async () => {
+    const result = await localAudit(["/home/toxic/projects"]);
+    expect(result.records.some(r => r.name === ".secrets")).toBe(true);
   });
 });
