@@ -7,4 +7,4 @@ export PI_CODING_AGENT_DIR="$PI_CONFIG_DIR/agent"
 export DAEMON_PROJECT_DIR="$HOME"
 export DAEMON_RUNTIME_DIR="$HOME/.tau/run/daemons/00a0a40d4f605f26"
 
-exec /home/toxic/.bun/bin/bun run "${SOVEREIGN_HOME}/packages/coding-agent/src/cli.ts" -- "$@"
+exec /home/toxic/.bun/bin/bun run "${SOVEREIGN_HOME}/engine/packages/coding-agent/src/cli.ts" -- "$@"
