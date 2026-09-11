@@ -13,6 +13,8 @@ import os
 import subprocess
 import sys
 from typing import List, Dict, Any, Optional, Tuple
+from datetime import datetime
+
 try:
     import pandas as pd
     HAS_PANDAS = True
@@ -47,39 +49,27 @@ def run_gh(args: List[str], timeout: int = 30) -> str:
 def fetch_repos_for_user(username: str) -> List[Dict]:
     """Fetch all repositories for a single user/org via gh API (paginated)."""
     print(f"[FETCH] Fetching repos for {username}...")
-    all_repos = []
-    page = 1
-    per_page = 100
-    
-    while True:
-        # Use gh api with paginate and jq to get array of objects
+    try:
+        # Use gh api with paginate and slurp to get all repos as a single JSON array
         output = run_gh([
             "api",
             f"/users/{username}/repos",
             "--paginate",
-            f"--per_page={per_page}",
-            "-q", ".[]"
+            "--slurp"
         ])
         
         if not output.strip():
-            break
-            
-        # Each line is a JSON object, combine into array
-        lines = output.strip().split('\n')
-        page_data = [json.loads(line) for line in lines if line.strip()]
+            print("[FETCH] No repos found")
+            return []
         
-        if not page_data:
-            break
-            
-        all_repos.extend(page_data)
-        print(f"[FETCH] Page {page}: got {len(page_data)} repos (total: {len(all_repos)})")
+        # Parse the JSON array
+        repos = json.loads(output)
+        print(f"[FETCH] Total repos fetched for {username}: {len(repos)}")
+        return repos if isinstance(repos, list) else []
         
-        if len(page_data) < per_page:
-            break
-        page += 1
-    
-    print(f"[FETCH] Total repos fetched for {username}: {len(all_repos)}")
-    return all_repos
+    except (subprocess.CalledProcessError, json.JSONDecodeError) as e:
+        print(f"[FETCH] Error fetching repos for {username}: {e}", file=sys.stderr)
+        return []
 
 
 def fetch_repo_detail(owner: str, repo: str) -> Dict:
@@ -88,8 +78,7 @@ def fetch_repo_detail(owner: str, repo: str) -> Dict:
         # Get repo details
         repo_output = run_gh([
             "api",
-            f"/repos/{owner}/{repo}",
-            "-q", "{name, description, stargazers_count, fork, private, visibility, html_url, created_at, updated_at, pushed_at, size, language}"
+            f"/repos/{owner}/{repo}"
         ])
         
         repo_data = json.loads(repo_output)
@@ -99,12 +88,11 @@ def fetch_repo_detail(owner: str, repo: str) -> Dict:
             topics_output = run_gh([
                 "api",
                 f"/repos/{owner}/{repo}/topics",
-                "-H", "Accept: application/json+git",
-                "-q", ".names"
+                "-H", "Accept: application/json+git"
             ])
             topics_data = json.loads(topics_output)
-            repo_data["topics"] = topics_data if isinstance(topics_data, list) else []
-        except Exception:
+            repo_data["topics"] = topics_data.get("names", []) if isinstance(topics_data, dict) else []
+        except:
             repo_data["topics"] = []
             
         return repo_data
@@ -124,11 +112,10 @@ def detect_bun_version(owner: str, repo: str) -> Optional[str]:
         try:
             output = run_gh([
                 "api",
-                f"/repos/{owner}/{repo}/contents/{filename}",
-                "-q", ".content"
+                f"/repos/{owner}/{repo}/contents/{filename}"
             ])
             import base64
-            content = base64.b64decode(output).decode('utf-8')
+            content = base64.b64decode(output['content']).decode('utf-8')
             
             if filename.endswith('.json'):
                 data = json.loads(content)
@@ -143,7 +130,7 @@ def detect_bun_version(owner: str, repo: str) -> Optional[str]:
                 for line in content.split('\n'):
                     if line.startswith(key + ' '):
                         return line.split()[1]
-        except Exception:
+        except (KeyError, subprocess.CalledProcessError):
             continue
     
     return None
@@ -276,7 +263,7 @@ def analyze_repo(repo: Dict[str, Any]) -> Dict[str, Any]:
         for key, value in detail.items():
             if key not in repo:
                 repo[key] = value
-    except Exception:
+    except:
         pass
     
     # Check for bun version
@@ -360,7 +347,7 @@ def load_env_map() -> Dict[str, Dict]:
                             "remote_url": remote_url,
                             "type": "local"
                         }
-                    except Exception:
+                    except:
                         env_map[item] = {
                             "path": item_path,
                             "last_push": "unknown",
