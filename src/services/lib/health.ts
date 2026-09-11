@@ -39,7 +39,7 @@ const LP = Number(
 const OP = Number(process.env.OPENFANG_PORT ?? "25103");
 function env(n: string, f: string) {
   return typeof process !== "undefined" && process.env?.[n]
-    ? process.env[n]!
+    ? (process.env[n] ?? f)
     : f;
 }
 function u(p: number, pa: string) {

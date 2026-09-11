@@ -121,7 +121,7 @@ function add(step: string, ok: boolean, detail: string) {
 }
 
 // D5–D7 GHAS
-{
+/* scope */ {
   try {
     const { dispatchTool } = await import(
       resolve(HOME, "github-advanced-search-mcp/apps/mcp/src/handlers.ts")
@@ -183,7 +183,7 @@ function add(step: string, ok: boolean, detail: string) {
 }
 
 // D10 zed
-{
+/* scope */ {
   try {
     const py = Bun.spawn(
       [
