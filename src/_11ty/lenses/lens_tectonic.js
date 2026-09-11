@@ -5,7 +5,7 @@
 module.exports = {
   name: "tectonic",
   description: "Repository health scoring and drift detection",
-  analyze(data, meta = {}) {
+  analyze(_data, meta = {}) {
     const now = new Date();
     const lastPush = meta.lastPush ? new Date(meta.lastPush) : now;
     const daysSincePush = Math.floor((now - lastPush) / (1000 * 60 * 60 * 24));

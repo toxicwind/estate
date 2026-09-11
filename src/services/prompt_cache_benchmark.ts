@@ -12,8 +12,8 @@ console.log(`Model: ${targetModel}`);
 console.log(`Payload Size: ${prompt.length} characters (~4000 tokens)`);
 
 console.log("\n--- Turn 1: Sending prompt (Uncached) ---");
-let t0 = performance.now();
-let res = await fetch(url, {
+const t0 = performance.now();
+const res = await fetch(url, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
@@ -23,7 +23,7 @@ let res = await fetch(url, {
     max_tokens: 50,
   }),
 });
-let t1 = performance.now();
+const t1 = performance.now();
 
 if (res.ok) {
   const data: any = await res.json();

@@ -2,10 +2,10 @@
 // SOVEREIGN — Web UI Launcher Unit & Integration Tests
 // ============================================================================
 
-import { describe, test, expect } from "bun:test";
-import { SOVEREIGN_WEB_UIS, probeUI } from "../scripts/open-web-uis.ts";
-import { parsePortsEnv } from "../src/utils/ports.ts";
+import { describe, expect, test } from "bun:test";
 import { resolve } from "node:path";
+import { probeUI, SOVEREIGN_WEB_UIS } from "../scripts/open-web-uis.ts";
+import { parsePortsEnv } from "../src/utils/ports.ts";
 
 const ROOT = resolve(import.meta.dir, "..");
 const ports = parsePortsEnv(ROOT);

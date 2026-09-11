@@ -2,9 +2,7 @@
  * llama_swap_ssot.ts unit tests — covers utility functions, URL builders,
  * pickDefaultModel logic, and oaicopilotModelsFromSwap without live service.
  */
-import { describe, test, expect, beforeEach, afterEach, vi } from "bun:test";
-import { homedir } from "node:os";
-import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, test, vi } from "bun:test";
 
 const originalFetch = globalThis.fetch;
 const mockFetch = vi.fn();
@@ -19,15 +17,15 @@ afterEach(() => {
 });
 
 import {
-  swapBaseUrl,
-  swapV1Url,
-  swapModelsSseUrl,
+  clientEnvExports,
   listSwapModels,
-  pickDefaultModel,
-  watchSwapModelsSseRefresh,
   oaicopilotModelsFromSwap,
   openaiCompatClientConfig,
-  clientEnvExports,
+  pickDefaultModel,
+  swapBaseUrl,
+  swapModelsSseUrl,
+  swapV1Url,
+  watchSwapModelsSseRefresh,
 } from "../src/lib/llama_swap_ssot.ts";
 
 // ── URL builders ─────────────────────────────────────────────────────────────
@@ -502,8 +500,8 @@ describe("watchSwapModelsSseRefresh — debounce", () => {
       'data: {"model":"m2","event":"loaded"}',
       'data: {"model":"m3","event":"loaded"}',
     ].join("\n\n");
-    streamController!.enqueue(encoder.encode(events));
-    streamController!.close();
+    streamController?.enqueue(encoder.encode(events));
+    streamController?.close();
 
     // Wait for debounce
     await new Promise((r) => setTimeout(r, 500));

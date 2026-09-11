@@ -2,7 +2,7 @@
  * ports.ts unit tests — covers loadSovereignPorts, requireEnv, requirePort,
  * localUrl edge cases.
  */
-import { describe, test, expect, beforeEach, afterEach } from "bun:test";
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
@@ -30,9 +30,9 @@ process.env.SOVEREIGN_ROOT = join(homedir(), "sovereign");
 
 import {
   loadSovereignPorts,
+  localUrl,
   requireEnv,
   requirePort,
-  localUrl,
 } from "../src/lib/ports.ts";
 
 describe("ports.ts", () => {
@@ -42,72 +42,72 @@ describe("ports.ts", () => {
   });
 
   test("requireEnv throws for missing key", () => {
-    delete process.env["NONEXISTENT_KEY_12345"];
+    delete process.env.NONEXISTENT_KEY_12345;
     expect(() => requireEnv("NONEXISTENT_KEY_12345")).toThrow(
       "NONEXISTENT_KEY_12345 required",
     );
   });
 
   test("requireEnv returns existing env value (line 39)", () => {
-    process.env["TEST_PORT_KEY"] = "25100";
+    process.env.TEST_PORT_KEY = "25100";
     const v = requireEnv("TEST_PORT_KEY");
     expect(v).toBe("25100");
-    delete process.env["TEST_PORT_KEY"];
+    delete process.env.TEST_PORT_KEY;
   });
 
   test("requireEnv throws for empty string (line 41)", () => {
-    process.env["EMPTY_KEY"] = "";
+    process.env.EMPTY_KEY = "";
     expect(() => requireEnv("EMPTY_KEY")).toThrow("EMPTY_KEY required");
-    delete process.env["EMPTY_KEY"];
+    delete process.env.EMPTY_KEY;
   });
 
   test("requirePort returns valid number (line 48-53)", () => {
-    process.env["LLAMA_SWAP_PORT"] = "25100";
+    process.env.LLAMA_SWAP_PORT = "25100";
     const port = requirePort("LLAMA_SWAP_PORT");
     expect(port).toBe(25100);
     expect(typeof port).toBe("number");
   });
 
   test("requirePort throws for non-numeric (line 50)", () => {
-    process.env["LLAMA_SWAP_PORT"] = "not-a-number";
+    process.env.LLAMA_SWAP_PORT = "not-a-number";
     expect(() => requirePort("LLAMA_SWAP_PORT")).toThrow("valid TCP port");
   });
 
   test("requirePort throws for zero (line 50)", () => {
-    process.env["LLAMA_SWAP_PORT"] = "0";
+    process.env.LLAMA_SWAP_PORT = "0";
     expect(() => requirePort("LLAMA_SWAP_PORT")).toThrow("valid TCP port");
   });
 
   test("requirePort throws for >65535 (line 50)", () => {
-    process.env["LLAMA_SWAP_PORT"] = "99999";
+    process.env.LLAMA_SWAP_PORT = "99999";
     expect(() => requirePort("LLAMA_SWAP_PORT")).toThrow("valid TCP port");
   });
 
   test("requirePort throws for negative (line 50)", () => {
-    process.env["LLAMA_SWAP_PORT"] = "-1";
+    process.env.LLAMA_SWAP_PORT = "-1";
     expect(() => requirePort("LLAMA_SWAP_PORT")).toThrow("valid TCP port");
   });
 
   test("localUrl builds correct URL (line 57-61)", () => {
-    process.env["LLAMA_SWAP_PORT"] = "25100";
+    process.env.LLAMA_SWAP_PORT = "25100";
     const url = localUrl("LLAMA_SWAP_PORT");
     expect(url).toBe("http://127.0.0.1:25100");
   });
 
   test("localUrl appends path with leading slash", () => {
-    process.env["LLAMA_SWAP_PORT"] = "25100";
+    process.env.LLAMA_SWAP_PORT = "25100";
     const url = localUrl("LLAMA_SWAP_PORT", "/v1/models");
     expect(url).toBe("http://127.0.0.1:25100/v1/models");
   });
 
   test("localUrl adds slash before non-empty path", () => {
-    process.env["LLAMA_SWAP_PORT"] = "25100";
+    process.env.LLAMA_SWAP_PORT = "25100";
     const url = localUrl("LLAMA_SWAP_PORT", "v1/models");
     expect(url).toBe("http://127.0.0.1:25100/v1/models");
   });
 
   test("localUrl with empty path", () => {
-    process.env["LLAMA_SWAP_PORT"] = "25100";
+    process.env.LLAMA_SWAP_PORT = "25100";
     const url = localUrl("LLAMA_SWAP_PORT", "");
     expect(url).toBe("http://127.0.0.1:25100");
   });

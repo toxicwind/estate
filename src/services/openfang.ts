@@ -4,7 +4,7 @@
  */
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { requirePort, loadSovereignPorts } from "../lib/ports.ts";
+import { loadSovereignPorts, requirePort } from "../lib/ports.ts";
 
 loadSovereignPorts();
 const HOME = process.env.HOME || "/home/toxic";
@@ -53,7 +53,7 @@ function pinOpenfangBackend(port: number) {
       `api_listen = "127.0.0.1:${port}"`,
     );
     if (!t.includes("api_listen")) {
-      t = `api_listen = "127.0.0.1:${port}"\n` + t;
+      t = `api_listen = "127.0.0.1:${port}"\n${t}`;
     }
     Bun.write(conf, t);
   }

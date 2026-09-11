@@ -1,8 +1,8 @@
-import { describe, test, expect } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import {
+  llamaSwapChat,
   llamaSwapHealth,
   llamaSwapModels,
-  llamaSwapChat,
 } from "../src/mcp/llama_swap.ts";
 
 // Skip integration tests if llama-swap is not running (top-level await)

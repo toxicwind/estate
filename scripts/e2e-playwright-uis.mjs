@@ -2,9 +2,10 @@
  * Real Playwright UI smoke for sovereign dashboards.
  * Writes {SCRATCH}/playwright/report.json + screenshots when E2E_PW_OUT is set.
  */
-import { chromium } from "playwright";
+
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { chromium } from "playwright";
 
 const outDir =
   process.env.E2E_PW_OUT ||

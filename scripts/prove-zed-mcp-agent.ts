@@ -4,10 +4,10 @@
  * for ghas + llama-swap, plus agent turns on both models.
  */
 import {
-  writeFileSync,
+  appendFileSync,
   mkdirSync,
   readFileSync,
-  appendFileSync,
+  writeFileSync,
 } from "node:fs";
 import { resolve } from "node:path";
 import { loadSovereignPorts, requirePort } from "../src/lib/ports.ts";
@@ -66,8 +66,8 @@ class McpClient {
           const m = header.match(/Content-Length:\s*(\d+)/i);
           if (m) {
             const len = parseInt(m[1], 10);
-            const start = headerEnd + 4;
-            const bytes = new TextEncoder().encode(text);
+            const _start = headerEnd + 4;
+            const _bytes = new TextEncoder().encode(text);
             // re-decode carefully with byte offsets
             const full = this.buf;
             // find \r\n\r\n in bytes
@@ -116,7 +116,7 @@ class McpClient {
             ),
           ),
         ]);
-        if (result.value && result.value.length) {
+        if (result.value?.length) {
           const next = new Uint8Array(this.buf.length + result.value.length);
           next.set(this.buf);
           next.set(result.value, this.buf.length);

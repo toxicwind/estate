@@ -1,10 +1,11 @@
 /**
  * HF downloader — bodaay serve on backend port; mesh-front on public HF_DOWNLOADER_PORT.
  */
+
+import { existsSync, mkdirSync } from "node:fs";
+import { join, resolve } from "node:path";
 import { spawn, spawnSync } from "bun";
-import { join, resolve } from "path";
-import { existsSync, mkdirSync } from "fs";
-import { requirePort, loadSovereignPorts } from "../lib/ports.ts";
+import { loadSovereignPorts, requirePort } from "../lib/ports.ts";
 
 loadSovereignPorts();
 const PUBLIC = requirePort("HF_DOWNLOADER_PORT");

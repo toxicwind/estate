@@ -3,7 +3,6 @@
 // ============================================================================
 
 import type { Generator, TemplateContext } from "../types/index.ts";
-import { ALL_SERVICES } from "../services/index.ts";
 
 export const miseGenerator: Generator = {
   name: "mise.toml",

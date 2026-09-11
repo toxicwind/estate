@@ -3,14 +3,14 @@
  * Asserts non-empty message.content (not reasoning_content-only).
  */
 import { describe, expect, test } from "bun:test";
+import { existsSync } from "node:fs";
 import {
+  BEST_MODELS_PATH,
   loadBestModels,
   modelForRole,
   validateBestModelsAgainstCatalog,
-  BEST_MODELS_PATH,
 } from "../src/lib/best_models.ts";
 import { listSwapModels, swapV1Url } from "../src/lib/llama_swap_ssot.ts";
-import { existsSync } from "node:fs";
 
 // Skip integration tests if llama-swap is not running (top-level await)
 let live = false;

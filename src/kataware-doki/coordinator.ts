@@ -1,12 +1,13 @@
 #!/usr/bin/env bun
+
 // Kataware-Doki Coordinator — llama-server first class
 // Port: 9223. Manages distributed llama-server mesh.
 
-import { serve } from "bun";
-import { mkdirSync, writeFileSync, readFileSync, existsSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { LlamaMesh, LlamaNode } from "./llama-server.js";
-import { llamaModels, findModel } from "./models.js";
+import { serve } from "bun";
+import { LlamaMesh, type LlamaNode } from "./llama-server.js";
+import { findModel, llamaModels } from "./models.js";
 
 const HOME = process.env.HOME ?? "/home/toxic";
 const DATA_DIR = join(HOME, ".kataware-doki");
@@ -20,7 +21,7 @@ function loadTable() {
   const p = join(DATA_DIR, "table.json");
   if (existsSync(p)) {
     const d = JSON.parse(readFileSync(p, "utf-8"));
-    for (const [k, v] of Object.entries(d)) {
+    for (const [k, _v] of Object.entries(d)) {
       // register known models
       const m = findModel(k);
       if (m) console.log(`[Table] Loaded ${k}: ${m.vramGB}GB VRAM`);
@@ -28,7 +29,7 @@ function loadTable() {
   }
 }
 
-function saveTable() {
+function _saveTable() {
   const obj: Record<string, any> = {};
   for (const m of llamaModels)
     obj[m.id] = { vram: m.vramGB, ctx: m.contextWindow };
@@ -37,7 +38,7 @@ function saveTable() {
 
 mesh.startEvictionLoop();
 
-const server = serve({
+const _server = serve({
   port: 9223,
   fetch(req, server) {
     const url = new URL(req.url);
@@ -88,7 +89,7 @@ const server = serve({
   },
 
   websocket: {
-    open(ws) {
+    open(_ws) {
       console.log("[C2] node connected");
     },
     message(ws, msg) {
@@ -125,7 +126,7 @@ const server = serve({
         console.log("[C2] raw:", msg);
       }
     },
-    close(ws, c, r) {
+    close(_ws, c, _r) {
       console.log(`[C2] disconnected: ${c}`);
     },
   },
@@ -200,5 +201,5 @@ loadTable();
 console.log(`\nKataware-Doki llama-server coordinator on port 9223`);
 console.log(`Models: ${llamaModels.length} registered`);
 console.log(
-  `Mesh eviction: ${mesh["evictionMs"]}ms timeout, ${mesh["heartbeatMs"]}ms heartbeat`,
+  `Mesh eviction: ${mesh.evictionMs}ms timeout, ${mesh.heartbeatMs}ms heartbeat`,
 );

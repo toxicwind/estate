@@ -2,11 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { ChatCompletion } from "../models/ChatCompletion";
-import type { ChatRequest } from "../models/ChatRequest";
+
 import type { CancelablePromise } from "../core/CancelablePromise";
 import { OpenAPI } from "../core/OpenAPI";
 import { request as __request } from "../core/request";
+import type { ChatCompletion } from "../models/ChatCompletion";
+import type { ChatRequest } from "../models/ChatRequest";
 export class ChatService {
   /**
    * Creates a model response for the given chat conversation.

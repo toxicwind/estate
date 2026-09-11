@@ -1,10 +1,10 @@
 import type { ServiceDef } from "../types/index.ts";
+import { BUN_RUNTIME_SERVICE } from "./bun-runtime.ts";
 import { CORE_SERVICES } from "./core.ts";
+import { FORK_SERVICES } from "./forks.ts";
 import { GHAS_SERVICES } from "./ghas.ts";
 import { MONITORING_SERVICES } from "./monitoring.ts";
 import { PERIPHERAL_SERVICES } from "./peripheral.ts";
-import { FORK_SERVICES } from "./forks.ts";
-import { BUN_RUNTIME_SERVICE } from "./bun-runtime.ts";
 export const ALL_SERVICES: ServiceDef[] = [
   ...CORE_SERVICES,
   ...GHAS_SERVICES,

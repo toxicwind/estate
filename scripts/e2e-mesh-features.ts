@@ -2,7 +2,7 @@
 /**
  * Prove 20 GHAS mesh features × every service (hub namespaces + native mounts).
  */
-import { writeFileSync, mkdirSync, appendFileSync } from "node:fs";
+import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { FEATURE_IDS, serviceCatalog } from "../src/lib/ghas-mesh-features.ts";
 import { loadSovereignPorts, requirePort } from "../src/lib/ports.ts";
@@ -35,7 +35,7 @@ type Row = {
 };
 
 function log(r: Row) {
-  appendFileSync(OUT, JSON.stringify(r) + "\n");
+  appendFileSync(OUT, `${JSON.stringify(r)}\n`);
 }
 
 async function hit(

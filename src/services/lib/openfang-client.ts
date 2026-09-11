@@ -40,7 +40,7 @@ const DEFAULT_BASE =
   process.env.OPENFANG_URL?.replace(/\/$/, "") || "http://127.0.0.1:25103";
 
 /** Universal 20s timeout for "find faster route" — first-class operation */
-const UNIVERSAL_ROUTE_TIMEOUT_MS = 20_000;
+const _UNIVERSAL_ROUTE_TIMEOUT_MS = 20_000;
 
 /** Default route chain: try fast local models first, then escalate */
 const DEFAULT_ROUTE_CHAIN: RouteOption[] = [

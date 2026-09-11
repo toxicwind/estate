@@ -2,8 +2,8 @@
 // SOVEREIGN — Ports Parser (config/ports.env)
 // ============================================================================
 
-import { readFileSync } from "fs";
-import { join } from "path";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import type { PortMap } from "../types/index.ts";
 
 export function parsePortsEnv(root: string = process.cwd()): PortMap {
@@ -18,7 +18,7 @@ export function parsePortsEnv(root: string = process.cwd()): PortMap {
     const key = trimmed.slice(0, eqIdx).trim();
     const val = trimmed.slice(eqIdx + 1).trim();
     const port = parseInt(val, 10);
-    if (!isNaN(port)) {
+    if (!Number.isNaN(port)) {
       ports.set(key, port);
     }
   }

@@ -5,9 +5,9 @@
 // This module manages temporary pre-release staging overrides without monkey patching.
 // ============================================================================
 
+import { EventEmitter } from "node:events";
 import fs from "node:fs";
 import path from "node:path";
-import { EventEmitter } from "node:events";
 
 export interface IntegrationMetadata {
   target: string;
@@ -172,7 +172,7 @@ export class PreReleaseIntegrationRegistry extends EventEmitter {
             const targetMatch = content.match(
               /export\s+const\s+TARGET\s*=\s*["']([^"']+)["']/,
             );
-            if (targetMatch && targetMatch[1]) {
+            if (targetMatch?.[1]) {
               const target = targetMatch[1];
               this.overrides.set(target, {
                 TARGET: target,
@@ -204,7 +204,7 @@ export class PreReleaseIntegrationRegistry extends EventEmitter {
     this.watcher = fs.watch(
       this.integrationDir,
       { persistent: false },
-      async (event, filename) => {
+      async (_event, filename) => {
         if (!filename) return;
         if (filename.endsWith(".ts") || filename.endsWith(".js")) {
           const fullPath = path.join(this.integrationDir, filename);

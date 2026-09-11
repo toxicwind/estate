@@ -130,8 +130,8 @@ export async function llamaSwapChat(opts: {
   const choices = p.choices;
   const n = Array.isArray(choices) ? choices.length : 0;
   let content: string | undefined;
-  if (n && choices![0]) {
-    const msg = choices![0].message || choices![0].delta || {};
+  if (n && choices?.[0]) {
+    const msg = choices?.[0].message || choices?.[0].delta || {};
     content = msg.content;
   }
   return {
