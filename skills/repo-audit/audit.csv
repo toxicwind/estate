@@ -1,0 +1,246 @@
+name,full_name,private,visibility,fork,stargazers,language,description,topics,private_score,public_score,recommendation,reasons,bun_version,has_ci
+sovereign-scripts,toxicwind/sovereign-scripts,False,public,False,0,Python,"Reusable automation scripts for sovereign infrastructure. GitHub API wrappers, async batch processors, and env-aware deployment helpers.",,21.0,0.0,PRIVATE,contains 'infra' (weight 7); contains 'infrastructure' (weight 7); contains 'deploy' (weight 5); contains 'env' (weight 2),,False
+infra-recon,toxicwind/infra-recon,False,public,False,0,,Infrastructure reconnaissance and digital forensics toolkit.,,14.0,4.0,PRIVATE,contains 'infra' (weight 7); contains 'infrastructure' (weight 7); contains 'tool' (weight 4),,False
+wllama-forge,toxicwind/wllama-forge,False,public,False,0,TypeScript,"wllama + cutting-edge CPU fork tech (BeeLlama DFlash/KVarN, ik_llama row-interleaved packing) for on-device browser inference — private R&D",,10.0,0.0,PRIVATE,contains 'private' (weight 10),,False
+youtube-403-bypass,toxicwind/youtube-403-bypass,False,public,False,0,Shell,Cross-platform yt-dlp wrapper that bypasses YouTube 403 errors via browser cookie extraction and PO token generation,,10.0,0.0,PRIVATE,contains 'token' (weight 10),,False
+yt-dlp-universal-wrapper,toxicwind/yt-dlp-universal-wrapper,False,public,False,0,,Cross-platform yt-dlp wrapper that bypasses YouTube 403 errors via browser cookie extraction and PO token generation,,10.0,0.0,PRIVATE,contains 'token' (weight 10),,False
+effusion-labs,toxicwind/effusion-labs,False,public,False,0,HTML,"Effusion Labs — Digital studio and knowledge base. Eleventy + Vite + Tailwind v4, bun-powered, modular config.","11ty, bun, digital-studio, eleventy, knowledge-base, static-site, tailwindcss, vite, web-development",6.0,3.0,CONSIDER_PRIVATE,contains 'config' (weight 6); contains 'config' (weight 3),,False
+free-ai-models,toxicwind/free-ai-models,False,public,False,0,Python,Fork of ClawLabsAI/free-ai-models with grok-build config generator,,6.0,3.0,CONSIDER_PRIVATE,contains 'config' (weight 6); contains 'config' (weight 3),,False
+ComfyUI-VideoHelperSuite,toxicwind/ComfyUI-VideoHelperSuite,False,public,True,0,,Nodes related to video workflows,,5.0,10.0,PUBLIC,contains 'workflow' (weight 5); fork (should be public),,False
+bsz-cui-extras,toxicwind/bsz-cui-extras,False,public,True,0,Python,"Addons for ComfyUI: Principled nodes, colored latents,  demo workflows, etc",,5.0,17.0,PUBLIC,contains 'workflow' (weight 5); contains 'demo' (weight 7); fork (should be public),,False
+comfyui-auto-nodes-layout,toxicwind/comfyui-auto-nodes-layout,False,public,True,0,,apply better nodes layout algorithm to ComfyUI workflow,,5.0,10.0,PUBLIC,contains 'workflow' (weight 5); fork (should be public),,False
+comfyui-workspace-manager,toxicwind/comfyui-workspace-manager,False,public,True,0,TypeScript,"A ComfyUI workflows and models management extension to organize and manage all your workflows, models in one place. Seamlessly switch between workflows, as well as import, export workflows, reuse subworkflows, install models, browse your models in a single workspace",,5.0,15.0,PUBLIC,contains 'workflow' (weight 5); contains 'extension' (weight 5); fork (should be public),,False
+ComfyUI-Saveaswebp,toxicwind/ComfyUI-Saveaswebp,False,public,True,0,,Save a picture as Webp file in Comfy + Workflow loading,,5.0,10.0,PUBLIC,contains 'workflow' (weight 5); fork (should be public),,False
+comfyui-mixlab-nodes,toxicwind/comfyui-mixlab-nodes,False,public,True,0,,Workflow-to-APP、ScreenShare&FloatingVideo、GPT & 3D、SpeechRecognition&TTS,,5.0,10.0,PUBLIC,contains 'workflow' (weight 5); fork (should be public),,False
+ophel,toxicwind/ophel,False,public,True,0,TypeScript,"Turn AI conversations into organized, reusable workflows — across major AI platforms. | 把 AI 对话转化为可组织、可复用的工作流，适用于主流 AI 平台",,5.0,10.0,PUBLIC,contains 'workflow' (weight 5); fork (should be public),,False
+agentic-moment-2026,toxicwind/agentic-moment-2026,False,public,False,0,,"The Agentic Moment — an extended, source-verified field report on the intellectual environment around autonomous AI structures, July 2026",,4.0,0.0,CONSIDER_PRIVATE,contains 'env' (weight 2); contains 'environment' (weight 2),,False
+ComfyUI,toxicwind/ComfyUI,False,public,True,0,Python,"The most powerful and modular stable diffusion GUI, api and backend with a graph/nodes interface.",,4.0,10.0,PUBLIC,contains 'backend' (weight 4); fork (should be public),,False
+comfyui-tooling-nodes,toxicwind/comfyui-tooling-nodes,False,public,True,0,,Nodes for using ComfyUI as a backend for external tools. Send and receive images directly without filesystem upload/download.,,4.0,18.0,PUBLIC,contains 'backend' (weight 4); contains 'tool' (weight 4); contains 'tools' (weight 4); fork (should be public),,False
+caddy,toxicwind/caddy,False,public,True,0,,Fast and extensible multi-platform HTTP/1-2-3 web server with automatic HTTPS,,4.0,10.0,PUBLIC,contains 'server' (weight 4); fork (should be public),,False
+agentgateway,toxicwind/agentgateway,False,public,True,0,Rust,Next Generation Agentic Proxy for AI Agents and MCP servers,,4.0,13.0,PUBLIC,contains 'server' (weight 4); contains 'next' (weight 3); fork (should be public),,False
+aquamarine,toxicwind/aquamarine,False,public,True,0,C++,Aquamarine is a very light linux rendering backend library,,4.0,17.0,PUBLIC,contains 'backend' (weight 4); contains 'library' (weight 7); fork (should be public),,False
+byte-vision-mcp,toxicwind/byte-vision-mcp,False,public,True,0,,A Model Context Protocol (MCP) server written in GO that provides text completion capabilities using local LLama.cpp models. This server exposes a single MCP tool that accepts text prompts and returns AI-generated completions using locally hosted language models.,,4.0,14.0,PUBLIC,contains 'server' (weight 4); contains 'tool' (weight 4); fork (should be public),,False
+supergateway,toxicwind/supergateway,False,public,True,0,TypeScript,Run MCP stdio servers over SSE and SSE over stdio. AI gateway.,,4.0,10.0,PUBLIC,contains 'server' (weight 4); fork (should be public),,False
+pastemon,toxicwind/pastemon,False,public,True,0,Perl,pastebin.com Content Monitoring Tool,,4.0,14.0,PUBLIC,contains 'monitor' (weight 2); contains 'monitoring' (weight 2); contains 'tool' (weight 4); fork (should be public),,False
+sovereign-swap,toxicwind/sovereign-swap,False,public,True,0,Go,"Reliable model swapping for any local OpenAI/Anthropic compatible server - llama.cpp, vllm, etc",,4.0,18.0,PUBLIC,contains 'server' (weight 4); contains 'open' (weight 8); fork (should be public),,False
+strudel-sampler-server-vite,toxicwind/strudel-sampler-server-vite,False,public,False,0,Python,Strudel Sampler - Production Microservice,,4.0,0.0,CONSIDER_PRIVATE,contains 'server' (weight 4),,False
+wii-meta-client,toxicwind/wii-meta-client,False,public,False,0,C++,"Unified Wii game/homebrew browser — Vimm's Lair, OSC, Archive.org, GameTDB",,3.0,4.0,CONSIDER_PUBLIC,contains 'archive' (weight 3); contains 'cli' (weight 4),,False
+curl_cffi-toxicwind,toxicwind/curl_cffi-toxicwind,False,public,True,0,,Python binding for curl-impersonate fork via cffi. A http client that can impersonate browser tls/ja3/http2 fingerprints.,,3.0,14.0,PUBLIC,contains 'tls' (weight 3); contains 'cli' (weight 4); fork (should be public),,False
+http-bench-toxicwind,toxicwind/http-bench-toxicwind,False,public,True,0,,"Performance benchmarks comparing Python HTTP libraries (aiohttp, httpx, pycurl, requests, urllib3). Metrics include throughput, total duration, and connection latency.",,2.0,10.0,PUBLIC,contains 'metrics' (weight 2); fork (should be public),,False
+cg-noise,toxicwind/cg-noise,False,public,True,0,Python,,,0.0,10.0,PUBLIC,fork (should be public),,False
+comfyui-animatediff,toxicwind/comfyui-animatediff,False,public,True,0,,AnimateDiff for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+comfyui-art-venture,toxicwind/comfyui-art-venture,False,public,True,1,Python,,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-ArtGallery,toxicwind/ComfyUI-ArtGallery,False,public,True,0,,Prompt Visualization | Art Gallery,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-AutomaticCFG,toxicwind/ComfyUI-AutomaticCFG,False,public,True,0,,If your image was a pizza and the CFG the temperature of your oven: this is a thermostat that ensures it is always cooked like you want. Also adds a 30% speed increase. For ComfyUI / StableDiffusion,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-BRIA_AI-RMBG,toxicwind/ComfyUI-BRIA_AI-RMBG,False,public,True,0,,Unofficial implementation of BRIA RMBG Model for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-CCSR,toxicwind/ComfyUI-CCSR,False,public,True,0,,ComfyUI wrapper node for CCSR ,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-Custom-Nodes,toxicwind/ComfyUI-Custom-Nodes,False,public,True,0,,Custom nodes for ComfyUI.,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-Custom-Scripts,toxicwind/ComfyUI-Custom-Scripts,False,public,True,0,,"Enhancements & experiments for ComfyUI, mostly focusing on UI features",,0.0,13.0,PUBLIC,contains 'ui' (weight 3); fork (should be public),,False
+ComfyUI-DARE-LoRA-Merge,toxicwind/ComfyUI-DARE-LoRA-Merge,False,public,True,0,,Uses DARE to merge LoRA stacks as a ComfyUI node,,0.0,10.0,PUBLIC,fork (should be public),,False
+cg-image-picker,toxicwind/cg-image-picker,False,public,True,0,JavaScript,,,0.0,10.0,PUBLIC,fork (should be public),,False
+codex,toxicwind/codex,False,public,True,0,Rust,Lightweight coding agent that runs in your terminal,,0.0,10.0,PUBLIC,fork (should be public),,False
+cg-use-everywhere,toxicwind/cg-use-everywhere,False,public,True,0,JavaScript,,,0.0,10.0,PUBLIC,fork (should be public),,False
+codex-patcher-updater,toxicwind/codex-patcher-updater,False,public,False,0,Rust,,,0.0,0.0,NEUTRAL,,,False
+Comfy-Topaz,toxicwind/Comfy-Topaz,False,public,True,0,Python,Topaz Photo AI integration for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-Advanced-ControlNet,toxicwind/ComfyUI-Advanced-ControlNet,False,public,True,0,,ControlNet scheduling and masking nodes with sliding context support,,0.0,10.0,PUBLIC,fork (should be public),,False
+CodeShift,toxicwind/CodeShift,False,public,True,0,Python,"Multi-agent system that migrates a codebase between languages while preserving behavior, verifying each module by running the original and the translation on identical generated inputs. Python to TypeScript, on a local LLM.",,0.0,14.0,PUBLIC,contains 'module' (weight 4); fork (should be public),,False
+blibla-comfyui-extensions,toxicwind/blibla-comfyui-extensions,False,public,True,0,,Extensions for ComfyUI,,0.0,15.0,PUBLIC,contains 'extension' (weight 5); fork (should be public),,False
+bashrc-quote-fix,toxicwind/bashrc-quote-fix,False,public,False,0,,Auto-fix nested quote errors in bash shell,,0.0,0.0,NEUTRAL,,,False
+awesome-api-shape-explorer,toxicwind/awesome-api-shape-explorer,False,public,False,0,Python,Awesome Api Shape Explorer — Python 3.8+ toolkit,,0.0,4.0,CONSIDER_PUBLIC,contains 'tool' (weight 4),,False
+additional-lens-profiles,toxicwind/additional-lens-profiles,False,public,False,0,Python,Additional lens profiles for multi-perspective analysis and OSINT tooling,,0.0,4.0,CONSIDER_PUBLIC,contains 'tool' (weight 4),,False
+awesome-agent-gateway-2026,toxicwind/awesome-agent-gateway-2026,False,public,False,0,,"A curated list of agent gateway frameworks, SDKs, and tools for 2026",,0.0,15.0,PUBLIC,contains 'sdk' (weight 7); contains 'tool' (weight 4); contains 'tools' (weight 4),,False
+AnimeBoya,toxicwind/AnimeBoya,False,public,True,0,,Anime streaming and downloading android application developed by Tu2l by using Jsoup and other open source libraries,,0.0,18.0,PUBLIC,contains 'open' (weight 8); fork (should be public),,False
+a-person-mask-generator,toxicwind/a-person-mask-generator,False,public,True,0,Python,Extension for Automatic1111 and ComfyUI to automatically create masks for Background/Hair/Body/Face/Clothes in Img2Img,,0.0,15.0,PUBLIC,contains 'extension' (weight 5); fork (should be public),,False
+agent-chat-ui,toxicwind/agent-chat-ui,False,public,True,0,,🦜💬 Web app for interacting with any LangGraph agent (PY & TS) via a chat interface.,,0.0,13.0,PUBLIC,contains 'ui' (weight 3); fork (should be public),,False
+ComfyUI-Impact-Pack,toxicwind/ComfyUI-Impact-Pack,False,public,True,0,Python,,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-ImageReward,toxicwind/ComfyUI-ImageReward,False,public,True,0,,ImageReward nodes for ComfyUI.,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-Image-Selector,toxicwind/ComfyUI-Image-Selector,False,public,True,0,,Select one or some of images from a batch,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-Image-Saver,toxicwind/ComfyUI-Image-Saver,False,public,True,0,Python,"Allows you to save images with their generation metadata in ComfyUI. Compatible with Civitai. Works with png, jpeg and webp.",,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-Hangover-Nodes,toxicwind/ComfyUI-Hangover-Nodes,False,public,True,0,,Various nodes for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-KJNodes,toxicwind/ComfyUI-KJNodes,False,public,True,0,,Various custom nodes for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-JNodes,toxicwind/ComfyUI-JNodes,False,public,True,0,JavaScript,python and web UX improvements for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-Impact-Subpack,toxicwind/ComfyUI-Impact-Subpack,False,public,True,0,,"This extension serves as a complement to the Impact Pack, offering features that are not deemed suitable for inclusion by default in the ComfyUI Impact Pack",,0.0,15.0,PUBLIC,contains 'extension' (weight 5); fork (should be public),,False
+ComfyUI-Llama,toxicwind/ComfyUI-Llama,False,public,True,0,,Bridging wrapper for llama-cpp-python within ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-Manager,toxicwind/ComfyUI-Manager,False,public,True,0,JavaScript,,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-Model-Manager,toxicwind/ComfyUI-Model-Manager,False,public,True,0,JavaScript,"Manage models: browsing, donwload and delete.",,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-Moore-AnimateAnyone,toxicwind/ComfyUI-Moore-AnimateAnyone,False,public,True,0,Python,,,0.0,10.0,PUBLIC,fork (should be public),,False
+comfyui-nodes-docs,toxicwind/comfyui-nodes-docs,False,public,True,0,JavaScript,"comfyui节点文档插件,enjoy~~",,0.0,17.0,PUBLIC,contains 'docs' (weight 7); fork (should be public),,False
+ComfyUI-paint-by-example,toxicwind/ComfyUI-paint-by-example,False,public,True,0,,,,0.0,17.0,PUBLIC,contains 'example' (weight 7); fork (should be public),,False
+ComfyUI-Inspire-Pack,toxicwind/ComfyUI-Inspire-Pack,False,public,True,0,,This repository offers various extension nodes for ComfyUI. Nodes here have different characteristics compared to those in the ComfyUI Impact Pack. The Impact Pack has become too large now...,,0.0,15.0,PUBLIC,contains 'extension' (weight 5); fork (should be public),,False
+comfyui-inpaint-nodes,toxicwind/comfyui-inpaint-nodes,False,public,True,0,Python,"Nodes for better inpainting with ComfyUI: Fooocus inpaint model for SDXL, LaMa, MAT, and various other tools for pre-filling inpaint & outpaint areas.",,0.0,18.0,PUBLIC,contains 'tool' (weight 4); contains 'tools' (weight 4); fork (should be public),,False
+comfyui-portrait-master,toxicwind/comfyui-portrait-master,False,public,True,0,,This node was designed to help AI image creators to generate prompts for human portraits.,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-PickScore-Nodes,toxicwind/ComfyUI-PickScore-Nodes,False,public,True,0,,PickScore nodes for ComfyUI.,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-post-processing-nodes,toxicwind/ComfyUI-post-processing-nodes,False,public,True,0,,"A collection of Post Processing Nodes for ComfyUI, which enable a variety of cool image effects",,0.0,10.0,PUBLIC,fork (should be public),,False
+comfyui-previewlatent,toxicwind/comfyui-previewlatent,False,public,True,0,,ComfyUI plugin for previewing latents without vae decoding,,0.0,16.0,PUBLIC,contains 'plugin' (weight 6); fork (should be public),,False
+comfyui-PromptAttention,toxicwind/comfyui-PromptAttention,False,public,True,0,Python,Directional Prompt Attention for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-QualityOfLifeSuit_Omar92,toxicwind/ComfyUI-QualityOfLifeSuit_Omar92,False,public,True,0,,extra nodes to be used in comfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+comfyui-prompt-control,toxicwind/comfyui-prompt-control,False,public,True,0,,ComfyUI nodes for prompt editing and LoRA control,,0.0,10.0,PUBLIC,fork (should be public),,False
+comfyui-prompt-reader-node,toxicwind/comfyui-prompt-reader-node,False,public,True,0,,The ultimate solution for managing image metadata and multi-tool compatibility. ComfyUI node version of the SD Prompt Reader,,0.0,14.0,PUBLIC,contains 'tool' (weight 4); fork (should be public),,False
+comfyui-reactor-node,toxicwind/comfyui-reactor-node,False,public,True,0,Python,Fast and Simple Face Swap Extension Node for ComfyUI,,0.0,18.0,PUBLIC,contains 'extension' (weight 5); contains 'react' (weight 3); fork (should be public),,False
+ComfyUI-RAVE,toxicwind/ComfyUI-RAVE,False,public,True,0,,ComfyUI implementation of RAVE https://rave-video.github.io/,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-SaveImageWithMetaData,toxicwind/ComfyUI-SaveImageWithMetaData,False,public,True,0,,Custom node for ComfyUI. Add a node to save images with metadata (PNGInfo) extracted from the input values of each node.,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-sampler-lcm-alternative,toxicwind/ComfyUI-sampler-lcm-alternative,False,public,True,0,,ComfyUI Custom Sampler nodes that adds a new improved LCM sampler function,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-SegMoE,toxicwind/ComfyUI-SegMoE,False,public,True,0,,Unofficial implementation of SegMoE for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-SeqImageLoader,toxicwind/ComfyUI-SeqImageLoader,False,public,True,0,,Extension for Sequential Image Inpainting Available in ComfyUI,,0.0,15.0,PUBLIC,contains 'extension' (weight 5); fork (should be public),,False
+ComfyUI-LCM,toxicwind/ComfyUI-LCM,False,public,True,0,,Latent Consistency Model for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-IPAnimate,toxicwind/ComfyUI-IPAnimate,False,public,True,0,,,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-TTools,toxicwind/ComfyUI-TTools,False,public,False,1,Python,,,0.0,0.0,NEUTRAL,,,False
+ComfyUI-TeaNodes,toxicwind/ComfyUI-TeaNodes,False,public,True,0,,,,0.0,10.0,PUBLIC,fork (should be public),,False
+comfyui-ultralytics-yolo,toxicwind/comfyui-ultralytics-yolo,False,public,True,0,,,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-WD14-Tagger,toxicwind/ComfyUI-WD14-Tagger,False,public,True,0,,A ComfyUI extension allowing for the interrogation of booru tags from images.,,0.0,15.0,PUBLIC,contains 'extension' (weight 5); fork (should be public),,False
+ComfyUI-YoloWorld-EfficientSAM,toxicwind/ComfyUI-YoloWorld-EfficientSAM,False,public,True,0,,Unofficial implementation of  YOLO-World + EfficientSAM for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_3dPoseEditor,toxicwind/ComfyUI_3dPoseEditor,False,public,True,0,JavaScript,,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_ADV_CLIP_emb,toxicwind/ComfyUI_ADV_CLIP_emb,False,public,True,0,Python,ComfyUI node that let you pick the way in which prompt weights are interpreted,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_Comfyroll_CustomNodes,toxicwind/ComfyUI_Comfyroll_CustomNodes,False,public,True,0,Python,"Custom nodes for SDXL and SD1.5 including Multi-ControlNet, LoRA, Aspect Ratio, Process Switches, and many more nodes.",,0.0,10.0,PUBLIC,fork (should be public),,False
+comfyui_controlnet_aux,toxicwind/comfyui_controlnet_aux,False,public,True,0,Python,ComfyUI's ControlNet Auxiliary Preprocessors,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_Custom_Nodes_AlekPet,toxicwind/ComfyUI_Custom_Nodes_AlekPet,False,public,True,0,JavaScript,Custom nodes that extend the capabilities of Comfyui,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_Cutoff,toxicwind/ComfyUI_Cutoff,False,public,True,0,Python,cutoff implementation for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_Dave_CustomNode,toxicwind/ComfyUI_Dave_CustomNode,False,public,True,0,JavaScript,,,0.0,10.0,PUBLIC,fork (should be public),,False
+comfyui_easy_padding,toxicwind/comfyui_easy_padding,False,public,True,0,Python,,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_essentials,toxicwind/ComfyUI_essentials,False,public,True,0,Python,,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_experiments,toxicwind/ComfyUI_experiments,False,public,True,0,Python,Some experimental custom nodes.,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_fabric,toxicwind/ComfyUI_fabric,False,public,True,0,Jupyter Notebook,"ComfyUI nodes based on the paper ""FABRIC: Personalizing Diffusion Models with Iterative Feedback"" (Feedback via Attention-Based Reference Image Conditioning)",,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_FizzNodes,toxicwind/ComfyUI_FizzNodes,False,public,True,0,Python,Custom Nodes for Comfyui,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-DDColor,toxicwind/ComfyUI-DDColor,False,public,True,0,,ComfyUI node for DDColor ,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-deepcache,toxicwind/ComfyUI-deepcache,False,public,True,0,,,,0.0,10.0,PUBLIC,fork (should be public),,False
+comfyui-dynamicprompts,toxicwind/comfyui-dynamicprompts,False,public,True,0,Python,ComfyUI custom nodes for Dynamic Prompts,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-Embedding_Picker,toxicwind/ComfyUI-Embedding_Picker,False,public,True,0,,Embedding handling node for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-FBCNN,toxicwind/ComfyUI-FBCNN,False,public,True,0,,JPEG artifacts removal using FBCNN model ported to ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+comfyui-fitsize,toxicwind/comfyui-fitsize,False,public,True,0,,A simple set of nodes for making an image fit within a bounding box in comfyui,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-Flowty-LDSR,toxicwind/ComfyUI-Flowty-LDSR,False,public,True,0,,LDSR custom node for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-Gemini,toxicwind/ComfyUI-Gemini,False,public,True,0,,Using Gemini in ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI-GlifNodes,toxicwind/ComfyUI-GlifNodes,False,public,True,0,,custom plugins for comfyUI,,0.0,16.0,PUBLIC,contains 'plugin' (weight 6); fork (should be public),,False
+ComfyUI-Hangover-Moondream,toxicwind/ComfyUI-Hangover-Moondream,False,public,True,0,,Moondream is a lightweight multimodal large language model,,0.0,10.0,PUBLIC,fork (should be public),,False
+Boundless,toxicwind/Boundless,False,public,False,0,Python,,,0.0,0.0,NEUTRAL,,,False
+catcoin,toxicwind/catcoin,False,public,True,0,TypeScript,,,0.0,10.0,PUBLIC,fork (should be public),,False
+cd-tuner_negpip-ComfyUI,toxicwind/cd-tuner_negpip-ComfyUI,False,public,True,0,Python,cd-tunerとnegpipのComfyUI拡張,,0.0,10.0,PUBLIC,fork (should be public),,False
+antigravity-linux,toxicwind/antigravity-linux,False,public,True,0,Shell, Shell script to install Google Antigravity to Arch-based distros.,,0.0,10.0,PUBLIC,fork (should be public),,False
+arxiv-code,toxicwind/arxiv-code,False,public,False,0,Python,,,0.0,0.0,NEUTRAL,,,False
+ComfyUI_UltimateSDUpscale,toxicwind/ComfyUI_UltimateSDUpscale,False,public,True,0,,ComfyUI nodes for the Ultimate Stable Diffusion Upscale script by Coyote-A.,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_tinyterraNodes,toxicwind/ComfyUI_tinyterraNodes,False,public,True,0,Python,A selection of nodes for Stable Diffusion ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_TiledKSampler,toxicwind/ComfyUI_TiledKSampler,False,public,True,0,,Tiled samplers for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_StreamDiffusion,toxicwind/ComfyUI_StreamDiffusion,False,public,True,0,Python,This is a simple implemention StreamDiffusion for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_Seg_VITON,toxicwind/ComfyUI_Seg_VITON,False,public,True,0,,comfyui-模特换装(Model dress up),,0.0,10.0,PUBLIC,fork (should be public),,False
+Comfyui_segformer_b2_clothes,toxicwind/Comfyui_segformer_b2_clothes,False,public,True,0,Python,SegFormer model fine-tuned on ATR dataset for clothes segmentation but can also be used for human segmentation,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_SeeCoder,toxicwind/ComfyUI_SeeCoder,False,public,True,0,Python,,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_ResolutionSelector,toxicwind/ComfyUI_ResolutionSelector,False,public,True,0,Python,A custom node for Stable Diffusion ComfyUI to enable easy selection of image resolutions for SDXL SD15 SD21,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_PerpWeight,toxicwind/ComfyUI_PerpWeight,False,public,True,0,Python,,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_Noise,toxicwind/ComfyUI_Noise,False,public,True,0,Python,"6 nodes for ComfyUI that allows for more control and flexibility over noise to do e.g. variations or ""un-sampling""",,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUi_NNLatentUpscale,toxicwind/ComfyUi_NNLatentUpscale,False,public,True,0,Python,,,0.0,10.0,PUBLIC,fork (should be public),,False
+Comfyui_joytag,toxicwind/Comfyui_joytag,False,public,True,0,Python,"JoyTag is a state of the art AI vision model for tagging images, with a focus on sex positivity and inclusivity. It uses the Danbooru tagging schema, but works across a wide range of images, from hand drawn to photographic.",,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_Jags_VectorMagic,toxicwind/ComfyUI_Jags_VectorMagic,False,public,True,0,Python,a collection of nodes to explore Vector and image manipulation,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_IPAdapter_plus,toxicwind/ComfyUI_IPAdapter_plus,False,public,True,0,,,,0.0,10.0,PUBLIC,fork (should be public),,False
+ComfyUI_InstantID,toxicwind/ComfyUI_InstantID,False,public,True,0,Python,,,0.0,10.0,PUBLIC,fork (should be public),,False
+comfy_PoP,toxicwind/comfy_PoP,False,public,True,0,Python,"input aspect ratio, output dimensions",,0.0,10.0,PUBLIC,fork (should be public),,False
+entropy-gpu,toxicwind/entropy-gpu,False,public,False,0,,,,0.0,0.0,NEUTRAL,,,False
+ethereum-powerball,toxicwind/ethereum-powerball,False,public,True,0,Python,"""Powerball""-style lottery written in Serpent, for prophetx's bounty.",,0.0,10.0,PUBLIC,fork (should be public),,False
+facerestore_cf,toxicwind/facerestore_cf,False,public,True,0,Python,ComfyUI Custom node that supports face restore models and supports CodeFormer Fidelity parameter,,0.0,10.0,PUBLIC,fork (should be public),,False
+EtherRoulette,toxicwind/EtherRoulette,False,public,True,0,JavaScript,Chance game on Ethereum network,,0.0,10.0,PUBLIC,fork (should be public),,False
+feedie,toxicwind/feedie,False,public,True,0,Python,IRC Bot to announce RSS FEEDS,,0.0,10.0,PUBLIC,fork (should be public),,False
+flashinfer,toxicwind/flashinfer,False,public,True,0,Cuda,FlashInfer: Kernel Library for LLM Serving,,0.0,17.0,PUBLIC,contains 'library' (weight 7); fork (should be public),,False
+frame-interpolation,toxicwind/frame-interpolation,False,public,True,0,,"FILM: Frame Interpolation for Large Motion, In ECCV 2022.",,0.0,10.0,PUBLIC,fork (should be public),,False
+comfy_mtb,toxicwind/comfy_mtb,False,public,True,0,Python,Animation oriented nodes pack for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+DankMaterialShell,toxicwind/DankMaterialShell,False,public,True,0,,"Desktop shell for wayland compositors built with Quickshell & GO, optimized for niri, hyprland, sway, MangoWC, labwc, and MiracleWM.",,0.0,10.0,PUBLIC,fork (should be public),,False
+demofusion-comfyui,toxicwind/demofusion-comfyui,False,public,True,0,,An experimental implementation of a node that implements Demofusion technique in Comfyui,,0.0,17.0,PUBLIC,contains 'demo' (weight 7); fork (should be public),,False
+dk-xbmc-repaddon-rep,toxicwind/dk-xbmc-repaddon-rep,False,public,True,0,Python,Automatically exported from code.google.com/p/dk-xbmc-repaddon-rep,,0.0,10.0,PUBLIC,fork (should be public),,False
+Derfuu_ComfyUI_ModdedNodes,toxicwind/Derfuu_ComfyUI_ModdedNodes,False,public,True,0,Python,,,0.0,10.0,PUBLIC,fork (should be public),,False
+DZ-FaceDetailer,toxicwind/DZ-FaceDetailer,False,public,True,0,,a node for comfyui for restore/edit/enchance faces utilizing face recognition,,0.0,10.0,PUBLIC,fork (should be public),,False
+ControlNet-LLLite-ComfyUI,toxicwind/ControlNet-LLLite-ComfyUI,False,public,True,0,,,,0.0,10.0,PUBLIC,fork (should be public),,False
+crawlee-python-toxicwind,toxicwind/crawlee-python-toxicwind,False,public,True,0,,"Crawlee—A web scraping and browser automation library for Python to build reliable crawlers. Extract data for AI, LLMs, RAG, or GPTs. Download HTML, PDF, JPG, PNG, and other files from websites. Works with Parsel, BeautifulSoup, Playwright, and raw HTTP. Both headful and headless mode. With proxy rotation.",,0.0,24.0,PUBLIC,contains 'library' (weight 7); contains 'website' (weight 7); fork (should be public),,False
+ComfyUI_VLM_nodes,toxicwind/ComfyUI_VLM_nodes,False,public,True,0,,"Custom ComfyUI nodes for Vision Language Models, Large Language Models, Image to Music, Text to Music, Consistent and Random Creative Prompt Generation",,0.0,10.0,PUBLIC,fork (should be public),,False
+hls-proxy-aggregator,toxicwind/hls-proxy-aggregator,False,public,False,0,Python,,,0.0,0.0,NEUTRAL,,,False
+grok-prompts,toxicwind/grok-prompts,False,public,True,0,,Prompts for our Grok chat assistant and the `@grok` bot on X.,,0.0,10.0,PUBLIC,fork (should be public),,False
+grok-build-plugin-cc,toxicwind/grok-build-plugin-cc,False,public,True,0,,"Claude Code plugin that delegates reviews, rescue tasks, and session transfer to the Grok Build CLI",,0.0,20.0,PUBLIC,contains 'plugin' (weight 6); contains 'cli' (weight 4); fork (should be public),,False
+Hybooru,toxicwind/Hybooru,False,public,True,0,,Hydrus-based booru-styled imageboard in React,,0.0,13.0,PUBLIC,contains 'react' (weight 3); fork (should be public),,False
+ik_llama.cpp,toxicwind/ik_llama.cpp,False,public,True,0,,llama.cpp fork with additional SOTA quants and improved performance,,0.0,10.0,PUBLIC,fork (should be public),,False
+images-grid-comfy-plugin,toxicwind/images-grid-comfy-plugin,False,public,True,0,,A simple comfyUI plugin for images grid (X/Y Plot),,0.0,16.0,PUBLIC,contains 'plugin' (weight 6); fork (should be public),,False
+LCM_Inpaint_Outpaint_Comfy,toxicwind/LCM_Inpaint_Outpaint_Comfy,False,public,True,0,,ComfyUI custom nodes for inpainting/outpainting using the new latent consistency model (LCM),,0.0,10.0,PUBLIC,fork (should be public),,False
+huh,toxicwind/huh,False,public,False,0,Python,Kimi + Mintlify MCP integration project,,0.0,0.0,NEUTRAL,,,False
+llm-prompt-templates,toxicwind/llm-prompt-templates,False,public,True,0,Jinja,Prompt Jinja2 templates for LLMs,,0.0,17.0,PUBLIC,contains 'template' (weight 7); fork (should be public),,False
+lora-info,toxicwind/lora-info,False,public,True,0,,,,0.0,10.0,PUBLIC,fork (should be public),,False
+MagiskOnWSA,toxicwind/MagiskOnWSA,False,public,True,0,,Integrate Magisk root and Google Apps (OpenGApps) into WSA (Windows Subsystem for Android),,0.0,18.0,PUBLIC,contains 'open' (weight 8); fork (should be public),,False
+masquerade-nodes-comfyui,toxicwind/masquerade-nodes-comfyui,False,public,True,0,,A powerful set of mask-related nodes for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+mcpproxy-go,toxicwind/mcpproxy-go,False,public,False,0,Go,"Supercharge AI Agents, Safely",,0.0,0.0,NEUTRAL,,,False
+MergeBlockWeighted_fo_ComfyUI,toxicwind/MergeBlockWeighted_fo_ComfyUI,False,public,True,0,,The MergeBlockWeighted fo ComfyUI.,,0.0,10.0,PUBLIC,fork (should be public),,False
+mikey_nodes,toxicwind/mikey_nodes,False,public,True,0,Python,comfy nodes from mikey,,0.0,10.0,PUBLIC,fork (should be public),,False
+llama-cpp-turboquant,toxicwind/llama-cpp-turboquant,False,public,True,0,C++,LLM inference in C/C++,,0.0,10.0,PUBLIC,fork (should be public),,False
+mintlify-docs,toxicwind/mintlify-docs,False,public,False,0,MDX,,,0.0,7.0,CONSIDER_PUBLIC,contains 'docs' (weight 7),,False
+modelbeats,toxicwind/modelbeats,False,public,True,0,TypeScript,LLM Rankings and Evals Hub,,0.0,10.0,PUBLIC,fork (should be public),,False
+mpos_ufc,toxicwind/mpos_ufc,False,public,True,0,PHP,mpos for UFC Pool,,0.0,10.0,PUBLIC,fork (should be public),,False
+moneypot,toxicwind/moneypot,False,public,True,0,,The social gambling game,,0.0,10.0,PUBLIC,fork (should be public),,False
+neo-osint,toxicwind/neo-osint,False,public,False,0,,OSINT deep dive: neo Brilliant Berry FUKUOKA STRAWBERRY - Gatekeeper Protocol,,0.0,0.0,NEUTRAL,,,False
+nim-inkling-api-research,toxicwind/nim-inkling-api-research,False,public,False,0,Go,"Research-grade tooling for evaluating NVIDIA NIM API compatibility, parameter discovery, and inference latency characterization for thinkingmachines/inkling",,0.0,4.0,CONSIDER_PUBLIC,contains 'tool' (weight 4),,False
+niri,toxicwind/niri,False,public,True,0,Rust,A scrollable-tiling Wayland compositor.,,0.0,10.0,PUBLIC,fork (should be public),,False
+freecoins,toxicwind/freecoins,False,public,True,0,JavaScript,The source code for the FreeCoins bitcoin faucet,,0.0,10.0,PUBLIC,fork (should be public),,False
+FreeU_Advanced,toxicwind/FreeU_Advanced,False,public,True,0,,"FreeU - Free Lunch, and Dinner. ",,0.0,10.0,PUBLIC,fork (should be public),,False
+GFPGAN,toxicwind/GFPGAN,False,public,True,0,,GFPGAN aims at developing Practical Algorithms for Real-world Face Restoration.,,0.0,10.0,PUBLIC,fork (should be public),,False
+greprip,toxicwind/greprip,False,public,True,1,Python,Transparent grep/find → rg/fd translators for LLM coding agents,,0.0,10.0,PUBLIC,fork (should be public),,False
+grok-1,toxicwind/grok-1,False,public,True,0,,Grok open release,,0.0,18.0,PUBLIC,contains 'open' (weight 8); fork (should be public),,False
+grok-build,toxicwind/grok-build,False,public,True,0,Rust,"SpaceXAI's coding agent harness and TUI. Fullscreen, mouse interactive, extensible.",,0.0,10.0,PUBLIC,fork (should be public),,False
+efficiency-nodes-comfyui-updates,toxicwind/efficiency-nodes-comfyui-updates,False,public,True,2,Python,A collection of ComfyUI custom nodes. ⚠️ WARNING: This repo is no longer maintained.,,0.0,10.0,PUBLIC,fork (should be public),,False
+electrum-cracker,toxicwind/electrum-cracker,False,public,True,1,Python,bruteforcer for the 12 word brainwallet system of the electrum wallet,,0.0,10.0,PUBLIC,fork (should be public),,False
+Comfy_KepMatteAnything,toxicwind/Comfy_KepMatteAnything,False,public,True,0,Python,WIP implementation of hustvl/Matte-Anything in ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+paintball-field,toxicwind/paintball-field,False,public,False,0,Python,,,0.0,0.0,NEUTRAL,,,False
+p2pool-rav,toxicwind/p2pool-rav,False,public,True,0,Python,Peer-to-peer Bitcoin mining pool,,0.0,10.0,PUBLIC,fork (should be public),,False
+optimized-cr3-repo,toxicwind/optimized-cr3-repo,False,public,False,0,Java,,,0.0,0.0,NEUTRAL,,,False
+openclaw,toxicwind/openclaw,False,public,True,0,TypeScript,Your own personal AI assistant. Any OS. Any Platform. The lobster way. 🦞 ,,0.0,18.0,PUBLIC,contains 'open' (weight 8); fork (should be public),,False
+NodeGPT,toxicwind/NodeGPT,False,public,True,0,,ComfyUI Extension Nodes for Automated Text Generation.,,0.0,15.0,PUBLIC,contains 'extension' (weight 5); fork (should be public),,False
+omp-extensions,toxicwind/omp-extensions,False,public,True,0,TypeScript,Monorepo of oh-my-pi (omp) extensions by RekunDzmitry,,0.0,15.0,PUBLIC,contains 'extension' (weight 5); fork (should be public),,False
+nitrado_api_lib,toxicwind/nitrado_api_lib,False,public,False,0,Python,Nitrado API Python client fork used by dayz_discord_ops,,0.0,4.0,CONSIDER_PUBLIC,contains 'cli' (weight 4),,False
+nitrado_api,toxicwind/nitrado_api,False,public,True,0,Python,Python module to interact with Nitrado API endpoints,,0.0,14.0,PUBLIC,contains 'module' (weight 4); fork (should be public),,False
+musepool,toxicwind/musepool,False,public,False,0,,"Async-aware process pool with mutative scheduling, CDN-aware package resolution, and sovereign-pi integration hooks.",,0.0,4.0,CONSIDER_PUBLIC,contains 'package' (weight 4),,False
+py-agent-gateway,toxicwind/py-agent-gateway,False,public,False,0,,"🚀 Python SDK for building multi-agent gateways — async, pluggable, production-ready",,0.0,7.0,CONSIDER_PUBLIC,contains 'sdk' (weight 7),,False
+public-research,toxicwind/public-research,False,public,True,0,Python,DDoS botnet research and indicators of compromise from Nokia Deepfield ERT,,0.0,20.0,PUBLIC,contains 'public' (weight 10); fork (should be public),,False
+PeercoinBlockExplorer,toxicwind/PeercoinBlockExplorer,False,public,True,0,PHP,Peercoin Block Chain Viewer - written in php and used JSON RPC calls,,0.0,10.0,PUBLIC,fork (should be public),,False
+pitchfork,toxicwind/pitchfork,False,public,True,0,,Daemons with DX,,0.0,10.0,PUBLIC,fork (should be public),,False
+plugin-marketplace,toxicwind/plugin-marketplace,False,public,True,0,,Official xAI plugin marketplace,,0.0,16.0,PUBLIC,contains 'plugin' (weight 6); fork (should be public),,False
+php-mpos,toxicwind/php-mpos,False,public,True,0,PHP,MPOS stands for Mining Portal Open Source. A unified mining interface for various Scrypt and SHA256d Crypto-currencies!,,0.0,18.0,PUBLIC,contains 'open' (weight 8); fork (should be public),,False
+pi-subagents,toxicwind/pi-subagents,False,public,True,0,,"Pi extension for async subagent delegation with truncation, artifacts, and session sharing",,0.0,15.0,PUBLIC,contains 'extension' (weight 5); fork (should be public),,False
+Scrapling-toxicwind,toxicwind/Scrapling-toxicwind,False,public,True,0,,🕷️ An adaptive Web Scraping framework that handles everything from a single request to a full-scale crawl!,,0.0,10.0,PUBLIC,fork (should be public),,False
+RSSLive,toxicwind/RSSLive,False,public,False,0,Java,,,0.0,0.0,NEUTRAL,,,False
+sd-dynamic-thresholding,toxicwind/sd-dynamic-thresholding,False,public,True,0,,"Dynamic Thresholding (CFG Scale Fix) for Stable Diffusion (StableSwarmUI, ComfyUI, and Auto WebUI)",,0.0,10.0,PUBLIC,fork (should be public),,False
+SD-Latent-Interposer,toxicwind/SD-Latent-Interposer,False,public,True,0,,A small neural network to provide interoperability between the latents generated by the different Stable Diffusion models.,,0.0,10.0,PUBLIC,fork (should be public),,False
+sdxl_prompt_styler,toxicwind/sdxl_prompt_styler,False,public,True,0,,Custom prompt styler node for SDXL in ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+segment-anything,toxicwind/segment-anything,False,public,True,0,,"The repository provides code for running inference with the SegmentAnything Model (SAM), links for downloading the trained model checkpoints, and example notebooks that show how to use the model.",,0.0,17.0,PUBLIC,contains 'example' (weight 7); fork (should be public),,False
+SD-Latent-Upscaler,toxicwind/SD-Latent-Upscaler,False,public,True,0,,Upscaling stable diffusion latents using a small neural network.,,0.0,10.0,PUBLIC,fork (should be public),,False
+sd-model-manager,toxicwind/sd-model-manager,False,public,True,0,Python,,,0.0,10.0,PUBLIC,fork (should be public),,False
+skillforge,toxicwind/skillforge,False,public,False,0,,Universal skill packaging for AI agents,,0.0,6.0,CONSIDER_PUBLIC,contains 'skill' (weight 6),,False
+SimpleLTC,toxicwind/SimpleLTC,False,public,True,0,PHP,simplecoin pushpool frontend - tweaked for LTC mining,,0.0,14.0,PUBLIC,contains 'frontend' (weight 4); fork (should be public),,False
+py-compat-scan,toxicwind/py-compat-scan,False,public,False,0,Python,Python 3.12+ to 3.11/3.8 AST compatibility scanner. Detects syntax that requires 3.12+ and suggests fallbacks.,,0.0,0.0,NEUTRAL,,,False
+python-script-collection,toxicwind/python-script-collection,False,public,False,0,,,,0.0,0.0,NEUTRAL,,,False
+python-sdk-auditor,toxicwind/python-sdk-auditor,False,public,False,0,Python,"Deep-audit any Python package: full API maps, comment/TODO harvest, obfuscation scan — AST with py2/3.8-3.11 regex fallback",,0.0,11.0,PUBLIC,contains 'sdk' (weight 7); contains 'package' (weight 4),,False
+rgthree-comfy,toxicwind/rgthree-comfy,False,public,True,0,,Making ComfyUI more comfortable!,,0.0,10.0,PUBLIC,fork (should be public),,False
+PowerNoiseSuite,toxicwind/PowerNoiseSuite,False,public,True,0,,Power Noise Suite for ComfyUI is a latent noise oriented custom_node for variation in your generations,,0.0,10.0,PUBLIC,fork (should be public),,False
+process-compose,toxicwind/process-compose,False,public,True,0,,Process Compose is a simple and flexible scheduler and orchestrator to manage non-containerized applications.,,0.0,10.0,PUBLIC,fork (should be public),,False
+srl-nodes,toxicwind/srl-nodes,False,public,True,0,Python,A collection of nodes for ComfyUI,,0.0,10.0,PUBLIC,fork (should be public),,False
+sovereign-zed,toxicwind/sovereign-zed,False,public,True,0,Rust,"Code at the speed of thought – Zed is a high-performance, multiplayer code editor from the creators of Atom and Tree-sitter.",,0.0,10.0,PUBLIC,fork (should be public),,False
+sovereign-skills,toxicwind/sovereign-skills,False,public,False,0,JavaScript,Kimi-style skill definitions and agent orchestration patterns. Extensible skill framework for LLM agent swarms.,,0.0,12.0,PUBLIC,contains 'skill' (weight 6); contains 'skills' (weight 6),,False
+sovereign-projects,toxicwind/sovereign-projects,False,public,False,0,TypeScript,Maximal sovereign workspace layer and monorepo,,0.0,0.0,NEUTRAL,,,False
+sleth,toxicwind/sleth,False,public,True,0,JavaScript,sleth: Ethereum Slot Machine DApp,,0.0,10.0,PUBLIC,fork (should be public),,False
+sovereign,toxicwind/sovereign,False,public,False,0,TypeScript,,,0.0,0.0,NEUTRAL,,,False
+stability-ComfyUI-nodes,toxicwind/stability-ComfyUI-nodes,False,public,True,0,,,,0.0,10.0,PUBLIC,fork (should be public),,False
+stable-diffusion-prompt-reader,toxicwind/stable-diffusion-prompt-reader,False,public,True,0,,A simple standalone viewer for reading prompts from Stable Diffusion generated image outside the webui.,,0.0,10.0,PUBLIC,fork (should be public),,False
+tau,toxicwind/tau,False,public,False,0,TypeScript,"τ (tau) — The sovereign agent framework. Multi-language, multi-model, fully autonomous.",,0.0,0.0,NEUTRAL,,,False
+tinker-cookbook,toxicwind/tinker-cookbook,False,public,True,0,,Post-training with Tinker,,0.0,10.0,PUBLIC,fork (should be public),,False
+toxic-vault-mind,toxicwind/toxic-vault-mind,False,public,False,0,JavaScript,Fork of pi-vault-mind - Passive Obsidian vault extension for pi agent ecosystem,,0.0,5.0,CONSIDER_PUBLIC,contains 'extension' (weight 5),,False
+tribeca,toxicwind/tribeca,False,public,True,0,TypeScript,A very low latency cryptocurrency market making trading bot built using node.js,,0.0,10.0,PUBLIC,fork (should be public),,False
+strudel-dev-vite,toxicwind/strudel-dev-vite,False,public,False,0,TypeScript,,,0.0,0.0,NEUTRAL,,,False
+stratum-mining-maxcoin,toxicwind/stratum-mining-maxcoin,False,public,True,0,Python,,,0.0,10.0,PUBLIC,fork (should be public),,False
+style_aligned_comfy,toxicwind/style_aligned_comfy,False,public,True,0,,,,0.0,10.0,PUBLIC,fork (should be public),,False
+tabbyAPI,toxicwind/tabbyAPI,False,public,True,0,,An OAI compatible exllamav2 API that's both lightweight and fast,,0.0,10.0,PUBLIC,fork (should be public),,False
+was-node-suite-comfyui,toxicwind/was-node-suite-comfyui,False,public,True,0,Jupyter Notebook,An extensive node suite for ComfyUI with over 190 new nodes,,0.0,10.0,PUBLIC,fork (should be public),,False
+vllm,toxicwind/vllm,False,public,True,0,Python,A high-throughput and memory-efficient inference and serving engine for LLMs,,0.0,10.0,PUBLIC,fork (should be public),,False
+universal-search-fuzzer,toxicwind/universal-search-fuzzer,False,public,False,0,,Multi-source search router with smart fallback,,0.0,0.0,NEUTRAL,,,False
+ultimate-upscale-for-automatic1111,toxicwind/ultimate-upscale-for-automatic1111,False,public,True,0,Python,,,0.0,10.0,PUBLIC,fork (should be public),,False
+WhiteSur-gtk-theme,toxicwind/WhiteSur-gtk-theme,False,public,True,0,SCSS,MacOS like theme for all gtk based desktops,,0.0,10.0,PUBLIC,fork (should be public),,False
+wii-stream-pack,toxicwind/wii-stream-pack,False,public,False,0,,Wii-esque game streaming and management system. WiiBridge + Wii Menu-styled dashboard.,,0.0,0.0,NEUTRAL,,,False
+WhiteSur-firefox-theme,toxicwind/WhiteSur-firefox-theme,False,public,True,0,,Mac OS Safari theme for Firefox on Linux,,0.0,10.0,PUBLIC,fork (should be public),,False
+WAS_Extras,toxicwind/WAS_Extras,False,public,True,0,,"Experimental nodes, or other random extra helper nodes.",,0.0,10.0,PUBLIC,fork (should be public),,False
+wlsh_nodes,toxicwind/wlsh_nodes,False,public,True,0,Python,WLSH ComfyUI Nodes,,0.0,10.0,PUBLIC,fork (should be public),,False
+wllama,toxicwind/wllama,False,public,True,0,,WebAssembly binding for llama.cpp - Enabling on-browser LLM inference,,0.0,10.0,PUBLIC,fork (should be public),,False
+x-algorithm,toxicwind/x-algorithm,False,public,True,0,,Algorithm powering the For You feed on X,,0.0,10.0,PUBLIC,fork (should be public),,False
+xai-cookbook,toxicwind/xai-cookbook,False,public,True,0,,"A collection of pragmatic, real-world examples guiding you from basic to advanced use of xAI's Grok APIs.",,0.0,17.0,PUBLIC,contains 'example' (weight 7); fork (should be public),,False
+xai-sdk-python,toxicwind/xai-sdk-python,False,public,True,0,,The official Python SDK for the xAI API,,0.0,17.0,PUBLIC,contains 'sdk' (weight 7); fork (should be public),,False
+xai-proto,toxicwind/xai-proto,False,public,True,0,,Public protobuf definitions for xAI's gRPC APIs,,0.0,20.0,PUBLIC,contains 'public' (weight 10); fork (should be public),,False
+yk-node-suite-comfyui,toxicwind/yk-node-suite-comfyui,False,public,True,0,,y.k.'s comfyui node suite,,0.0,10.0,PUBLIC,fork (should be public),,False
+zedra,toxicwind/zedra,False,public,True,0,Rust,Remote control for AI coding agents. Rust + GPUI + QUIC/UDP. Available on iOS/Android,,0.0,10.0,PUBLIC,fork (should be public),,False
