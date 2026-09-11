@@ -46,7 +46,12 @@ export type ToolChoice =
 // ═══════════════════════════════════════════════════════════════════════════
 
 export type ReasoningEffort =
-  "none" | "low" | "medium" | "high" | "max" | "xhigh";
+  | "none"
+  | "low"
+  | "medium"
+  | "high"
+  | "max"
+  | "xhigh";
 
 export interface ChatTemplateKwargs {
   reasoning_effort?: ReasoningEffort;

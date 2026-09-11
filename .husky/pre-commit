@@ -6,8 +6,15 @@ else
     exit 0
 fi
 
-# Max-optimized autofixes (parallel, minimal overhead)
-(biome check --write --linter-enabled=true --formatter-enabled=true --organize-imports-enabled=true --no-errors-on-unmatched --files-ignore-unknown=true . 2>/dev/null || npx prettier --write --log-level=warn --ignore-unknown . 2>/dev/null || bun run format 2>/dev/null || echo "⚠ No autofix formatter configured") >&2 || true
+# Max-optimized autofixes via Bun & Biome (parallel, minimal overhead)
+if command -v biome >/dev/null 2>&1; then
+    biome format --write --no-errors-on-unmatched src/ tests/ scripts/ 2>/dev/null || true
+elif command -v bunx >/dev/null 2>&1; then
+    bunx @biomejs/biome format --write --no-errors-on-unmatched src/ tests/ scripts/ 2>/dev/null || true
+else
+    echo "⚠ No autofix formatter configured" >&2
+fi
+
 git add -A 2>/dev/null || true
 
 if [ "${PI_ALLOW_LOCKFILE_CHANGE:-0}" != "1" ]; then
