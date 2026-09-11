@@ -1,14 +1,12 @@
 #!/usr/bin/env bun
+import { mkdirSync } from "node:fs";
 /**
  * Wire VS Code Insiders, Grok, Antigravity, ide-test → llama-swap :25100 (Bun).
  * Defaults come from live catalog; no hand-maintained GGUF inventories.
  * SSE URL is exported for clients that can auto-discover (Zed already does).
  */
-import { homedir } from "os";
-import { join } from "path";
-import { mkdirSync } from "fs";
-
-import { loadSovereignPorts, requireEnv } from "../lib/ports.ts";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import {
   clientEnvExports,
   listSwapModels,
@@ -17,11 +15,12 @@ import {
   swapModelsSseUrl,
   swapV1Url,
 } from "../lib/llama_swap_ssot.ts";
+import { loadSovereignPorts, requireEnv } from "../lib/ports.ts";
 
 loadSovereignPorts();
 const PORT = requireEnv("LLAMA_SWAP_PORT");
 const BASE = swapV1Url();
-const CHAT = `${BASE}/chat/completions`;
+const _CHAT = `${BASE}/chat/completions`;
 const SSE = swapModelsSseUrl();
 const ROOT = swapBaseUrl();
 const HOME = homedir();
@@ -49,7 +48,7 @@ const ideTest = join(HOME, "projects/ide-test");
 if (await Bun.file(join(ideTest, "README.md")).exists()) {
   await Bun.write(
     join(ideTest, "void-fang/settings.json"),
-    JSON.stringify(
+    `${JSON.stringify(
       {
         "openai.base_url": BASE,
         "openai.api_key": "not-required-for-local",
@@ -58,12 +57,12 @@ if (await Bun.file(join(ideTest, "README.md")).exists()) {
       },
       null,
       2,
-    ) + "\n",
+    )}\n`,
   );
   // Zed-fang: same contract as real Zed — llama.cpp + auto_discover, no available_models
   await Bun.write(
     join(ideTest, "zed-fang/settings.json"),
-    JSON.stringify(
+    `${JSON.stringify(
       {
         language_models: {
           "llama.cpp": {
@@ -80,7 +79,7 @@ if (await Bun.file(join(ideTest, "README.md")).exists()) {
       },
       null,
       2,
-    ) + "\n",
+    )}\n`,
   );
   await Bun.write(
     join(ideTest, "lapce-sovereign/settings.toml"),
@@ -107,7 +106,7 @@ model = "${defaultModel}"
   ]) {
     const p = join(ideTest, rel);
     try {
-      let t = await Bun.file(p).text();
+      const t = await Bun.file(p).text();
       const n = t.replaceAll("127.0.0.1:25001", `127.0.0.1:${PORT}`);
       if (n !== t) await Bun.write(p, n);
     } catch {
@@ -120,7 +119,7 @@ model = "${defaultModel}"
 // 3) Grok config.toml — only patch legacy local ports
 const grokCfg = join(HOME, ".grok/config.toml");
 try {
-  let t = await Bun.file(grokCfg).text();
+  const t = await Bun.file(grokCfg).text();
   const n = t
     .replaceAll("127.0.0.1:28080", `127.0.0.1:${PORT}`)
     .replaceAll("127.0.0.1:25001", `127.0.0.1:${PORT}`);
@@ -174,7 +173,7 @@ const out = {
   ssot: "llama-swap live /v1/models + /models/sse",
 };
 const evidence = join(SCRATCH, "ide-clients.json");
-await Bun.write(evidence, JSON.stringify(out, null, 2) + "\n");
+await Bun.write(evidence, `${JSON.stringify(out, null, 2)}\n`);
 console.log(JSON.stringify(out, null, 2));
 log(`wrote ${evidence}`);
 log("done");

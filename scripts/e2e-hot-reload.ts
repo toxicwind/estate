@@ -5,10 +5,10 @@
  */
 import {
   appendFileSync,
+  existsSync,
+  mkdirSync,
   readFileSync,
   writeFileSync,
-  mkdirSync,
-  existsSync,
 } from "node:fs";
 import { resolve } from "node:path";
 import { loadSovereignPorts, requirePort } from "../src/lib/ports.ts";
@@ -35,7 +35,7 @@ type Row = {
 };
 
 function log(r: Row) {
-  appendFileSync(OUT, JSON.stringify(r) + "\n");
+  appendFileSync(OUT, `${JSON.stringify(r)}\n`);
   console.log(`${r.ok ? "PASS" : "FAIL"} ${r.daemon}: ${r.detail}`);
 }
 
@@ -228,7 +228,7 @@ for (const s of suite) {
   let detail = `${touchDetail}; health ${before.status}->${after.status}`;
   if (s.kind === "html" && ok) {
     const page = await httpCode(`http://127.0.0.1:${RUST}/`);
-    const has =
+    const _has =
       page.body.includes(`hotreload-probe ${MARKER}`) ||
       page.body.includes("hotreload-probe");
     // ServeDir may cache? cargo-watch doesn't rebuild for static - static is live from disk

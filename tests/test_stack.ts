@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
-import { existsSync, readFileSync } from "fs";
-import { join } from "path";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 const SOV_ROOT = process.env.SOVEREIGN_ROOT || "/home/toxic/sovereign";
 const PORTS_FILE = join(SOV_ROOT, "stack", "ports.env");
@@ -35,7 +35,7 @@ const BASE = "http://127.0.0.1";
 const green = (s: string) => `\x1b[92m${s}\x1b[0m`;
 const red = (s: string) => `\x1b[91m${s}\x1b[0m`;
 
-async function probe(name: string, port: number, paths: string[]) {
+async function probe(_name: string, port: number, paths: string[]) {
   for (const path of paths) {
     try {
       const res = await fetch(`${BASE}:${port}${path}`, {

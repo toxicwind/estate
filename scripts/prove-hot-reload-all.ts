@@ -4,11 +4,11 @@
  * Records before/after PIDs and post health in SCRATCH/hot-reload.jsonl
  */
 import {
-  writeFileSync,
   appendFileSync,
-  mkdirSync,
   existsSync,
+  mkdirSync,
   readFileSync,
+  writeFileSync,
 } from "node:fs";
 import { resolve } from "node:path";
 import { loadSovereignPorts } from "../src/lib/ports.ts";
@@ -136,7 +136,7 @@ async function httpOk(url: string): Promise<{ ok: boolean; status: number }> {
 }
 
 function log(row: Record<string, unknown>) {
-  appendFileSync(OUT, JSON.stringify(row) + "\n");
+  appendFileSync(OUT, `${JSON.stringify(row)}\n`);
   console.log(
     `${row.ok ? "PASS" : row.skip ? "SKIP" : "FAIL"} ${row.daemon} ${row.mechanism} pid ${row.pid_before}->${row.pid_after}`,
   );
@@ -149,7 +149,7 @@ function touchFile(path: string) {
   if (t.includes("hotreload-probe")) {
     t = t.replace(/\/\/ hotreload-probe [^\n]+\n/g, marker);
   } else {
-    t = t + "\n" + marker;
+    t = `${t}\n${marker}`;
   }
   writeFileSync(path, t);
   return true;
@@ -206,7 +206,7 @@ for (const d of DAEMONS) {
         yml,
         t.includes("# hotreload")
           ? t.replace(/# hotreload.*/g, `# hotreload ${Date.now()}`)
-          : t + `\n# hotreload ${Date.now()}\n`,
+          : `${t}\n# hotreload ${Date.now()}\n`,
       );
     }
     try {
@@ -261,7 +261,7 @@ for (const d of DAEMONS) {
     await Bun.sleep(500);
   }
   const pidAfter = port ? pidOnPort(port) : undefined;
-  const ok = after.ok && (pidAfter !== pidBefore || pidBefore === undefined);
+  const _ok = after.ok && (pidAfter !== pidBefore || pidBefore === undefined);
   if (!after.ok) fails++;
   log({
     daemon: d.id,

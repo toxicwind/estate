@@ -6,6 +6,7 @@
  */
 
 import { loadSovereignPorts } from "../lib/ports.ts";
+
 loadSovereignPorts();
 
 import { z } from "zod";
@@ -43,7 +44,7 @@ const ChatMessage = z.object({
   tool_call_id: z.string().optional(),
 });
 
-const ToolCall = z.object({
+const _ToolCall = z.object({
   id: z.string(),
   type: z.literal("function"),
   function: z.object({
@@ -154,7 +155,7 @@ function validateChatRequest(body: unknown): {
     return { valid: true, errors: [] };
   }
 
-  if (!result.error || !result.error.errors) {
+  if (!result.error?.errors) {
     return { valid: false, errors: ["Unknown validation error"] };
   }
 

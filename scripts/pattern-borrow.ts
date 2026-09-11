@@ -118,7 +118,7 @@ if (values.weights) {
 
 async function gh(path: string, params?: Record<string, string>): Promise<any> {
   let url = `${API}${path}`;
-  if (params) url += "?" + new URLSearchParams(params).toString();
+  if (params) url += `?${new URLSearchParams(params).toString()}`;
   for (let attempt = 0; attempt < 6; attempt++) {
     const res = await fetch(url, { headers: HEAD });
     if (

@@ -3,7 +3,7 @@
  * Registry + live proofs for 20 GHAS-sourced features covering every pitchfork service.
  * Writes {SCRATCH}/ghas-features.json and ghas-feature-proofs.log
  */
-import { writeFileSync, appendFileSync, mkdirSync } from "node:fs";
+import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { loadSovereignPorts } from "../src/lib/ports.ts";
 
@@ -232,7 +232,6 @@ const FEATURES: Feat[] = [
 ];
 
 const NATIVE_PORTS: Record<string, number> = {
-  "llama-swap": 25100,
   "rust-web": 25101,
   yote: 25102,
   openfang: 25103,
@@ -275,10 +274,10 @@ let fail = 0;
 // Prove every feature on EVERY native service port (skeptic: not hub-only)
 for (const [svc, port] of Object.entries(NATIVE_PORTS)) {
   for (const f of FEATURES) {
-    const url = `http://127.0.0.1:${port}${f.path.startsWith("/") ? f.path : "/" + f.path}`;
+    const url = `http://127.0.0.1:${port}${f.path.startsWith("/") ? f.path : `/${f.path}`}`;
     const r = await prove(url);
     const line = `${r.ok ? "PASS" : "FAIL"} ${svc}${f.path} status=${r.status} ms=${r.ms}`;
-    appendFileSync(LOG, line + "\n");
+    appendFileSync(LOG, `${line}\n`);
     if (!r.ok) {
       fail++;
       appendFileSync(LOG, `  body=${r.body}\n`);

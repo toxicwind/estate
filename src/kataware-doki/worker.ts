@@ -2,7 +2,7 @@
 // Mitsuha Worker — llama-server first class
 // Registers with coordinator, serves inference directly.
 
-import { LlamaNode } from "./llama-server.js";
+import type { LlamaNode } from "./llama-server.js";
 
 const COORD = process.env.KATAWARE_COORDINATOR ?? "ws://127.0.0.1:9223/ws";
 const NODE_ID =
@@ -27,7 +27,7 @@ async function getInfo(): Promise<LlamaNode> {
       "--format=csv,noheader,nounits",
     ]);
     const out = await new Response(proc.stdout).text();
-    vram = Math.round(parseInt(out.trim()) / 1024) || 0;
+    vram = Math.round(parseInt(out.trim(), 10) / 1024) || 0;
   } catch {}
   return {
     id: NODE_ID,

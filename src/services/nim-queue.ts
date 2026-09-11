@@ -161,7 +161,7 @@ async function storeCache(
 async function forwardUpstream(
   req: Request,
   bodyText: string | undefined,
-  model: string,
+  _model: string,
 ): Promise<Response> {
   const init: RequestInit = {
     method: req.method,
@@ -301,8 +301,8 @@ const server = Bun.serve({
         // Echo 429 telemetry back so llama-swap records it via Record429
         if (status === 429) {
           stats.rateLimited++;
-          let retryAfterRaw = upRes.headers.get("retry-after") ?? "5";
-          let retryAfterMs = Math.min(
+          const retryAfterRaw = upRes.headers.get("retry-after") ?? "5";
+          const retryAfterMs = Math.min(
             parseInt(retryAfterRaw, 10) * 1000 || 5000,
             120000,
           );
@@ -313,11 +313,10 @@ const server = Bun.serve({
           newHeaders.set("x-nim-queue-capped", "true");
           try {
             const bodyText = await upRes.clone().text();
-            let bodyData = JSON.parse(bodyText);
+            const bodyData = JSON.parse(bodyText);
             if (bodyData.retry_after_ms && bodyData.retry_after_ms > 120000) {
               bodyData.retry_after_ms = 120000;
-              bodyData.note =
-                (bodyData.note || "") + " [CAPPED at 120s max by nim-queue]";
+              bodyData.note = `${bodyData.note || ""} [CAPPED at 120s max by nim-queue]`;
             }
             return new Response(JSON.stringify(bodyData), {
               status,

@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+
 /**
  * Experimental Crisis MCP Server - Profile Modular
  *
@@ -15,15 +16,14 @@
  *   - stemforge: Audio forensics, stem separation
  */
 
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { readFileSync, existsSync, readdirSync } from "fs";
-import { join, basename } from "path";
-import { $ } from "bun";
 
 // Profile configuration
 interface Profile {

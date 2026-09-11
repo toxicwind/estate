@@ -5,11 +5,11 @@
  * namespaces: /mesh/s/{service}/{feature}
  */
 import {
+  FEATURE_IDS,
   handleMeshRequest,
   json,
-  serviceCatalog,
-  FEATURE_IDS,
   type MeshServiceId,
+  serviceCatalog,
 } from "../lib/ghas-mesh-features.ts";
 import { loadSovereignPorts, requirePort } from "../lib/ports.ts";
 

@@ -2,14 +2,14 @@
  * Consume ranked best-models SSOT produced by scripts/model-rank-and-route.ts
  * and optionally refresh via llama-swap /models/sse (no hand inventories).
  */
-import { readFileSync, existsSync, writeFileSync, mkdirSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
+import { join } from "node:path";
 import {
   listSwapModels,
   pickDefaultModel,
-  watchSwapModelsSseRefresh,
   swapBaseUrl,
+  watchSwapModelsSseRefresh,
 } from "./llama_swap_ssot.ts";
 
 export type BestRoles = {
@@ -110,7 +110,7 @@ export function watchBestModelsSse(path = BEST_MODELS_PATH): {
     const v = await validateBestModelsAgainstCatalog(path);
     writeFileSync(
       beat,
-      JSON.stringify(
+      `${JSON.stringify(
         {
           ts: new Date().toISOString(),
           base: swapBaseUrl(),
@@ -119,7 +119,7 @@ export function watchBestModelsSse(path = BEST_MODELS_PATH): {
         },
         null,
         2,
-      ) + "\n",
+      )}\n`,
     );
   });
 }

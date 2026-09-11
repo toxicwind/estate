@@ -5,15 +5,15 @@
  * Never points at real vLLM :8000.
  */
 import {
-  readdirSync,
-  readFileSync,
-  writeFileSync,
-  statSync,
   copyFileSync,
   mkdirSync,
-} from "fs";
-import { join } from "path";
-import { homedir } from "os";
+  readdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import { loadSovereignPorts, requireEnv } from "../lib/ports.ts";
 
 loadSovereignPorts();
@@ -75,7 +75,7 @@ for (const m of cm) {
     m.provider = "llama";
   }
 }
-writeFileSync(cmPath, JSON.stringify(cm, null, 2) + "\n");
+writeFileSync(cmPath, `${JSON.stringify(cm, null, 2)}\n`);
 
 // --- routing.toml ---
 const rtPath = join(OF, "routing.toml");

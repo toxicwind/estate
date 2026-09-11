@@ -1,12 +1,13 @@
 // ============================================================================
 // SOVEREIGN — Generator Index
 // ============================================================================
-import type { Generator, TemplateContext } from "../types/index.ts";
+
+import { join } from "node:path";
 import { ALL_SERVICES } from "../services/index.ts";
+import type { Generator, TemplateContext } from "../types/index.ts";
 import { parsePortsEnv } from "../utils/ports.ts";
-import { pitchforkGenerator } from "./pitchfork.ts";
 import { miseGenerator } from "./mise.ts";
-import { join } from "path";
+import { pitchforkGenerator } from "./pitchfork.ts";
 
 const GENERATORS: Generator[] = [pitchforkGenerator, miseGenerator];
 

@@ -32,8 +32,6 @@ export interface RouteOption {
 }
 
 export class OpenFangClient {
-  private interceptor: OpenFangInterceptor;
-
   constructor(
     private baseUrl: string,
     private apiKey: string = process.env.OPENFANG_API_KEY || "",
@@ -230,7 +228,7 @@ export class OpenFangClient {
           }
         }
 
-        const routeMs = Math.round(performance.now() - routeT0);
+        const _routeMs = Math.round(performance.now() - routeT0);
         const totalMs = Math.round(performance.now() - t0);
 
         if (res.ok && String(content).trim()) {
