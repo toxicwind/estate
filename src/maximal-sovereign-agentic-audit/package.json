@@ -1,0 +1,40 @@
+{
+  "name": "maximal-sovereign-agentic-audit",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun run src/index.ts --verbose",
+    "test": "bun test --coverage",
+    "test:stream": "bun test tests/stream.test.ts",
+    "test:timing": "bun test tests/timing.test.ts",
+    "test:classify": "bun test tests/classify.test.ts",
+    "test:parquet": "bun test tests/parquet.test.ts",
+    "test:all": "bun test --coverage tests/",
+    "coverage": "bun test --coverage --coverage-report=text --coverage-report=html",
+    "lint": "bunx biome check src/ tests/",
+    "lint:fix": "bunx biome check --write src/ tests/",
+    "build": "bun build src/index.ts --outdir=dist --minify",
+    "build:dev": "bun build src/index.ts --outdir=dist",
+    "build:benchmark": "bun build src/benchmark.ts --outdir=dist",
+    "check": "bun run lint && bun run build && bun test --coverage",
+    "audit": "bun run src/index.ts --user toxicwind --check-bun --output-parquet output/repo-audit.parquet",
+    "audit:agentic": "bun run src/index.ts --user toxicwind --agentic --completion-prompt --stream --timing",
+    "audit:stream": "bun run src/index.ts --user toxicwind --stream --stream-batch-size 50 --timing",
+    "audit:timing": "bun run src/index.ts --user toxicwind --timing --latency",
+    "bench": "bun run src/benchmark.ts",
+    "clean": "rm -rf dist output coverage *.parquet *.csv"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^22.20.2",
+    "typescript": "^7"
+  },
+  "dependencies": {
+    "apache-arrow": "^21.2.0",
+    "parquetjs-lite": "^0.8.7",
+    "biome": "^1.9.0",
+    "mitata": "^1.0.34"
+  }
+}
