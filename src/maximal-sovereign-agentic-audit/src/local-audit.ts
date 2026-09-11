@@ -10,8 +10,7 @@ import { execFile } from "child_process";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { readdirSync, statSync } from "fs";
-import { mkdir, writeFile, rm } from "fs/promises";
-import { Table } from "apache-arrow";
+import { mkdir, writeFile } from "fs/promises";
 import { ParquetWriter, ParquetSchema } from "parquetjs-lite";
 
 // ============================================================================
@@ -64,35 +63,39 @@ const COMPLETIONS_URL = "http://127.0.0.1:25100/v1/chat/completions";
 // ============================================================================
 
 function runGit(dir: string, args: string[]): Promise<string> {
-  return new Promise((resolve, reject) => {
-    execFile("git", ["-C", dir, ...args], { timeout: 5000 }, (err, stdout, stderr) => {
-      if (err) { reject(err); return; }
-      resolve(stdout.trim());
+  return new Promise((resolve) => {
+    execFile("git", ["-C", dir, ...args], { timeout: 5000 }, (err, stdout) => {
+      if (err) { resolve(""); return; }
+      resolve(typeof stdout === "string" ? stdout.trim() : String(stdout).trim());
     });
   });
 }
 
-export function scanDir(dir: string): RepoRecord[] {
+async function scanDir(dir: string, area: string): Promise<RepoRecord[]> {
+  const rows: RepoRecord[] = [];
   try {
-    // Find all .git directories under dir, then get their parent (the repo root)
-    const output = Bun.$`find ${dir} -type d -name .git`.text();
-    const gitDirs = output.trim().split('\n').filter(Boolean);
-    const repos: RepoRecord[] = [];
-    const seen = new Set<string>();
-    for (const gitDir of gitDirs) {
-      const repoDir = path.dirname(gitDir);
-      // Normalize path to avoid duplicates due to symlinks or different traversals
-      const normDir = path.resolve(repoDir);
-      if (!seen.has(normDir)) {
-        seen.add(normDir);
-        repos.push(scanRepo(repoDir));
-      }
+    const entries = readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      const repoPath = join(dir, entry.name);
+      const gitPath = join(repoPath, ".git");
+      try { statSync(gitPath); } catch { continue; }
+      try {
+        const log = await runGit(repoPath, ["log", "-1", "--format=%ci|%s|%H|%an"]);
+        const parts = log.split("|");
+        rows.push({
+          name: entry.name,
+          path: repoPath,
+          area,
+          lastCommit: parts[0] || "",
+          message: parts[1] || "",
+          commit: (parts[2] || "").slice(0, 8),
+          author: parts[3] || "",
+        });
+      } catch { /* skip */ }
     }
-    return repos;
-  } catch (err) {
-    console.error(`Error scanning ${dir}:`, err);
-    return [];
-  }
+  } catch { /* skip */ }
+  return rows;
 }
 
 // ============================================================================
@@ -105,16 +108,14 @@ function scanSymlinks(dir: string): SymlinkRecord[] {
     const entries = readdirSync(dir, { withFileTypes: true });
     for (const e of entries) {
       if (!e.isSymbolicLink()) continue;
-      const target = e.name;
       try {
-        const resolved = join(dir, e.name);
-        statSync(resolved);
-        records.push({ name: e.name, path: resolved, target, status: "ok" });
+        statSync(join(dir, e.name));
+        records.push({ name: e.name, path: join(dir, e.name), target: "ok", status: "ok" });
       } catch {
         records.push({ name: e.name, path: join(dir, e.name), target: "BROKEN", status: "broken" });
       }
     }
-  } catch {}
+  } catch { /* skip */ }
   return records;
 }
 
@@ -122,24 +123,17 @@ function scanSymlinks(dir: string): SymlinkRecord[] {
 // Completions API
 // ============================================================================
 
-async function analyzeWithCompletions(data: string, prompt: string): Promise<string> {
+async function analyzeWithCompletions(prompt: string): Promise<string> {
   try {
-    const body = JSON.stringify({
-      model: "sovereign/audit-agent",
-      messages: [{ role: "user", content: `${prompt}\n\nData:\n${data}` }],
-      max_tokens: 4000,
-      stream: false,
-    });
     const resp = await fetch(COMPLETIONS_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body,
+      body: JSON.stringify({ model: "beellama/qwen-flash-64k", messages: [{ role: "user", content: prompt }], max_tokens: 4000 }),
+      signal: AbortSignal.timeout(10000),
     });
-    const json = await resp.json();
-    return json.choices?.[0]?.message?.content || "";
-  } catch {
-    return "";
-  }
+    const data = await resp.json();
+    return data.choices?.[0]?.message?.content || "";
+  } catch { return ""; }
 }
 
 // ============================================================================
@@ -148,18 +142,10 @@ async function analyzeWithCompletions(data: string, prompt: string): Promise<str
 
 async function autoFix(result: LocalAuditResult): Promise<string[]> {
   const fixes: string[] = [];
-  const stale = result.repos.filter(r => {
-    if (!r.lastCommit) return true;
-    const d = new Date(r.lastCommit);
-    return d < new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
-  });
-  for (const repo of stale) {
-    fixes.push(`archive:${repo.path} (stale >90d)`);
-  }
-  const symlinksBroken = result.symlinks.filter(s => s.status === "broken");
-  for (const s of symlinksBroken) {
-    fixes.push(`remove:${s.path} (broken symlink)`);
-  }
+  const stale = result.repos.filter(r => !r.lastCommit || new Date(r.lastCommit) < new Date(Date.now() - 90 * 24 * 60 * 60 * 1000));
+  for (const repo of stale) fixes.push(`archive:${repo.path}`);
+  const broken = result.symlinks.filter(s => s.status === "broken");
+  for (const s of broken) fixes.push(`remove:${s.path}`);
   return fixes;
 }
 
@@ -169,9 +155,8 @@ async function autoFix(result: LocalAuditResult): Promise<string[]> {
 
 async function preCheck(): Promise<string[]> {
   const checks: string[] = [];
-  const { existsSync } = await import("fs");
-  if (!existsSync(PROJECTS_DIR)) checks.push("MISSING:projects_dir");
-  if (!existsSync(SOVEREIGN_DIR)) checks.push("MISSING:sovereign_dir");
+  try { statSync(PROJECTS_DIR); } catch { checks.push("MISSING:projects_dir"); }
+  try { statSync(SOVEREIGN_DIR); } catch { checks.push("MISSING:sovereign_dir"); }
   return checks;
 }
 
@@ -183,24 +168,16 @@ export async function localAudit(
   paths: string[] = [PROJECTS_DIR, SOVEREIGN_DIR],
   mode: AuditMode = { type: "full", autoFix: false, preCheck: true, completions: false }
 ): Promise<LocalAuditResult> {
-  const start = Bun.nanoseconds();
-
-  // Pre-check
   if (mode.preCheck) {
     const checks = await preCheck();
-    if (checks.length > 0) {
-      console.log(`[WARN] Pre-check issues: ${checks.join(", ")}`);
-    }
+    if (checks.length > 0) console.log(`[WARN] Pre-check issues: ${checks.join(", ")}`);
   }
 
-  // Scan
   const allRepos: RepoRecord[] = [];
-  for (const path of paths) {
-    const area = path === PROJECTS_DIR ? "projects" : path === SOVEREIGN_DIR ? "sovereign" : "other";
-    const repos = await scanDir(path, area);
-    allRepos.push(...repos);
+  for (const p of paths) {
+    const area = p === PROJECTS_DIR ? "projects" : p === SOVEREIGN_DIR ? "sovereign" : "other";
+    allRepos.push(...await scanDir(p, area));
   }
-
   allRepos.sort((a, b) => b.lastCommit.localeCompare(a.lastCommit));
 
   const byArea: Record<string, number> = {};
@@ -212,20 +189,16 @@ export async function localAudit(
   const stale = allRepos.filter(r => !r.lastCommit || new Date(r.lastCommit) < ninetyDaysAgo).length;
   const symlinks = scanSymlinks(PROJECTS_DIR);
 
-  // Auto-fix if requested
   if (mode.autoFix) {
-    const fixes = await autoFix({ repos: allRepos, total: allRepos.length, byArea, recent, stale, symlinks });
-    for (const fix of fixes) console.log(`[AUTO-FIX] ${fix}`);
+    for (const fix of await autoFix({ repos: allRepos, total: allRepos.length, byArea, recent, stale, symlinks })) {
+      console.log(`[AUTO-FIX] ${fix}`);
+    }
   }
 
-  // Completions analysis if requested
   if (mode.completions) {
-    const df = toDataFrame({ repos: allRepos, total: allRepos.length, byArea, recent, stale, symlinks });
-    const analysis = await analyzeWithCompletions(JSON.stringify(df), "Analyze this repo data and identify stale/duplicate/archivable repos");
-    if (analysis) console.log(`[COMPLETIONS] Analysis: ${analysis.slice(0, 200)}`);
+    const analysis = await analyzeWithCompletions(JSON.stringify(allRepos.slice(0, 50)));
+    if (analysis) console.log(`[COMPLETIONS] ${analysis.slice(0, 200)}`);
   }
-
-  const elapsed = Number(Bun.nanoseconds() - start) / 1_000_000;
 
   return { repos: allRepos, total: allRepos.length, byArea, recent, stale, symlinks };
 }
@@ -279,7 +252,7 @@ const ALL = hasFlag("all");
 const PARALLEL = hasFlag("parallel");
 const AUTOFIX = hasFlag("autofix");
 const PRECHECK = hasFlag("precheck");
-const COMPLETIONS = hasFlag("completions");
+const COMPLETIONSF = hasFlag("completions");
 const PARQUET_PATH = getArg("parquet", join(dirname(fileURLToPath(import.meta.url)), "..", "local-repos.parquet"));
 const JSON_OUT = getArg("json", "");
 
@@ -290,7 +263,7 @@ async function main(): Promise<void> {
     type: PARALLEL ? "parallel" : "full",
     autoFix: AUTOFIX,
     preCheck: PRECHECK !== false,
-    completions: COMPLETIONS,
+    completions: COMPLETIONSF,
   };
 
   const start = Bun.nanoseconds();
@@ -317,8 +290,8 @@ async function main(): Promise<void> {
     }
   }
 
+  const broken = result.symlinks.filter(s => s.status === "broken");
   if (result.symlinks.length > 0) {
-    const broken = result.symlinks.filter(s => s.status === "broken");
     console.log(`\n🔗 SYMLINKS (${result.symlinks.length} total, ${broken.length} broken)`);
     for (const s of broken) console.log(`   ❌ ${s.name} -> ${s.target}`);
   }
