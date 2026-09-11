@@ -7,7 +7,9 @@ function trigrams(text) {
   const tri = [];
   for (let i = 0; i < chars.length - 2; i++) tri.push(chars.slice(i, i + 3));
   const freq = {};
-  tri.forEach((t) => (freq[t] = (freq[t] || 0) + 1));
+  for (const t of tri) {
+    freq[t] = (freq[t] || 0) + 1;
+  }
   return Object.entries(freq)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5)
@@ -26,7 +28,9 @@ module.exports = {
     const text = typeof data === "string" ? data : JSON.stringify(data);
     const words = text.toLowerCase().match(/\b\w+\b/g) || [];
     const freqs = {};
-    words.forEach((w) => (freqs[w] = (freqs[w] || 0) + 1));
+    for (const w of words) {
+      freqs[w] = (freqs[w] || 0) + 1;
+    }
     const total = words.length;
     return {
       lens: "stylometric",
