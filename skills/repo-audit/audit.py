@@ -231,6 +231,31 @@ def main():
         repos = [r for r in repos if not r["private"]]
         print(f"After public-only filter: {len(repos)} repos")
     
+    # Handle empty results
+    if not repos:
+        print("No repositories to analyze after filtering.")
+        # Create empty output files
+        basename = args.output
+        if args.format in ["csv", "both"]:
+            csv_path = f"{basename}.csv"
+            with open(csv_path, 'w') as f:
+                f.write("owner,name,visibility,private,should_be_private,reasons,stars,fork,description,topics,html_url\n")
+            print(f"Empty CSV output written to: {csv_path}")
+        if args.format in ["parquet", "both"] and HAS_PANDAS and HAS_PYARROW:
+            parquet_path = f"{basename}.parquet"
+            # Create empty DataFrame with correct columns
+            df = pd.DataFrame(columns=["owner", "name", "visibility", "private", "should_be_private",
+                                      "reasons", "stars", "fork", "description", "topics", "html_url"])
+            df.to_parquet(parquet_path, index=False)
+            print(f"Empty Parquet output written to: {parquet_path}")
+        elif args.format in ["parquet", "both"]:
+            print("Parquet output skipped (missing pandas or pyarrow)", file=sys.stderr)
+        print("\n=== Summary ===")
+        print("Total repositories analyzed: 0")
+        print("Public repos that should be private: 0")
+        print("Private repos that could be public: 0")
+        return
+    
     # Analyze each repo
     print("Analyzing repositories...")
     results = []
@@ -243,9 +268,11 @@ def main():
     if HAS_PANDAS:
         df = pd.DataFrame(results)
         # Reorder columns for readability
-        cols = ["owner", "name", "visibility", "private", "should_be_private",
-                "reasons", "stars", "fork", "description", "topics", "html_url"]
-        df = df[cols]
+        expected_cols = ["owner", "name", "visibility", "private", "should_be_private",
+                        "reasons", "stars", "fork", "description", "topics", "html_url"]
+        # Only select columns that exist
+        existing_cols = [col for col in expected_cols if col in df.columns]
+        df = df[existing_cols]
     else:
         df = None
     
@@ -263,6 +290,12 @@ def main():
                     writer = csv.DictWriter(f, fieldnames=results[0].keys())
                     writer.writeheader()
                     writer.writerows(results)
+            else:
+                # Write header only
+                with open(csv_path, 'w', newline='') as f:
+                    writer = csv.DictWriter(f, fieldnames=["owner", "name", "visibility", "private", "should_be_private",
+                                                          "reasons", "stars", "fork", "description", "topics", "html_url"])
+                    writer.writeheader()
         print(f"CSV output written to: {csv_path}")
     
     if args.format in ["parquet", "both"] and HAS_PANDAS and HAS_PYARROW:
@@ -273,17 +306,17 @@ def main():
         print("Parquet output skipped (missing pandas or pyarrow)", file=sys.stderr)
     
     # Print summary
-    if HAS_PANDAS:
-        to_private = df[df["should_be_private"] & (~df["private"])].shape[0]
-        should_public = df[~df["should_be_private"] & df["private"]].shape[0]
+    if HAS_PANDAS and len(df) > 0:
+        to_private = df[df["should_be_private"] & (~df["private"])].shape[0] if "should_be_private" in df.columns and "private" in df.columns else 0
+        should_public = df[~df["should_be_private"] & df["private"]].shape[0] if "should_be_private" in df.columns and "private" in df.columns else 0
         print("\n=== Summary ===")
         print(f"Total repositories analyzed: {len(df)}")
         print(f"Public repos that should be private: {to_private}")
         print(f"Private repos that could be public: {should_public}")
-        if to_private > 0:
+        if to_private > 0 and "should_be_private" in df.columns and "private" in df.columns:
             print("\nRepos recommended to be made private:")
             for _, row in df[df["should_be_private"] & (~df["private"])].iterrows():
-                print(f"  {row['owner']}/{row['name']} - {row['reasons']}")
+                print(f"  {row['owner']}/{row['name']} - {row.get('reasons', '')}")
     else:
         # Manual summary
         to_private = sum(1 for r in results if r["should_be_private"] and not r["private"])
