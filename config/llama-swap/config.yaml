@@ -1,0 +1,28 @@
+healthCheckTimeout: 60
+logRequests: true
+models:
+  beellama/qwen-flash-64k:
+    proxy: http://127.0.0.1:8999
+    cmd:
+      llama-server --port 8999 -hf beellama/qwen-flash-64k:Q4_K_M --ctx-size 65536
+      -ngl 99
+    aliases:
+      - qwen-flash
+      - local-fast
+    ttl: 300
+  nvidia/nemotron-3.5-lightning-30b-a3b:
+    proxy: http://127.0.0.1:9001
+    cmd:
+      llama-server --port 9001 --model /mnt/8TB/models/nemotron-3-nano-30b-a3b-Q4_K_M.gguf
+      --ctx-size 32768 --jinja --no-mmap
+    env:
+      - CUDA_VISIBLE_DEVICES=0
+    aliases:
+      - nemotron-lightning
+    checkEndpoint: /health
+  nvidia/nemotron-3-ultra-550b-a55b:
+    proxy: http://127.0.0.1:9002
+    cmd:
+      /home/toxic/sovereign/tools/sovereign-router/bin/sovereign-router --port
+      9002 --model nvidia/nemotron-3-ultra-550b-a55b
+    ttl: 0

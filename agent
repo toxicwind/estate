@@ -1,10 +1,92 @@
 #!/usr/bin/env bash
+# tau — unified launcher. Launcher flags MUST come before the first agent arg.
+#
+#   tau [launcher-flags] [--] <agent-args...>
+#
+# Launcher flags (consumed only at the front):
+#   --dev            force source (src/cli.ts via bun --preserve-symlinks)
+#   --prod           force dist  (auto-build if missing; fall back to source)
+#   --rebuild        bun build then run dist
+#   --where          print engine path, chosen mode/entry, bun path
+#   --tau-help       this help  (agent's own help is: tau --help)
+#   --               stop launcher parsing; everything after is agent argv
+#
+# Auto mode (default): dist if built, else source.
+# Env: TAU_MODE=dev|prod  TAU_FORCE_SRC=1  TAU_NO_AUTOBUILD=1
 set -euo pipefail
+trap '' HUP
 
 export SOVEREIGN_HOME="/home/toxic/projects/sovereign-projects/tau"
-export PI_CONFIG_DIR="$HOME/.tau"
-export PI_CODING_AGENT_DIR="$PI_CONFIG_DIR/agent"
+export PI_CONFIG_DIR=".tau"
+export PI_CODING_AGENT_DIR="$HOME/.tau/agent"
 export DAEMON_PROJECT_DIR="$HOME"
 export DAEMON_RUNTIME_DIR="$HOME/.tau/run/daemons/00a0a40d4f605f26"
+export BUN_INSTALL_CACHE_DIR="$HOME/.cache/bun"
 
-exec /home/toxic/.bun/bin/bun run "${SOVEREIGN_HOME}/engine/packages/coding-agent/src/cli.ts" -- "$@"
+ENGINE="$SOVEREIGN_HOME/engine"
+DEV_ENTRY="$ENGINE/packages/coding-agent/src/cli.ts"
+PROD_ENTRY="$ENGINE/packages/coding-agent/dist/cli.js"
+
+die(){ printf '[tau] %s\n' "$*" >&2; exit 1; }
+need_bun(){ command -v bun >/dev/null 2>&1 || die "bun not on PATH"; }
+
+build_dist(){
+  need_bun
+  printf '[tau] building packages/coding-agent ...\n' >&2
+  ( cd "$ENGINE" && bun run --cwd packages/coding-agent build >&2 )
+}
+
+show_where(){
+  local mode entry
+  if [ "${TAU_FORCE_SRC:-0}" = "1" ]; then mode=dev; entry="$DEV_ENTRY"
+  elif [ -f "$PROD_ENTRY" ]; then mode=prod; entry="$PROD_ENTRY"
+  else mode=dev; entry="$DEV_ENTRY"; fi
+  printf 'engine : %s\n' "$ENGINE"
+  printf 'mode   : %s\n' "$mode"
+  printf 'entry  : %s\n' "$entry"
+  printf 'dev    : %s [%s]\n'  "$DEV_ENTRY"  "$( [ -f "$DEV_ENTRY" ] && echo ok || echo MISSING )"
+  printf 'prod   : %s [%s]\n'  "$PROD_ENTRY" "$( [ -f "$PROD_ENTRY" ] && echo ok || echo not-built )"
+  printf 'bun    : %s\n' "$(command -v bun || echo '<not on PATH>')"
+}
+
+run_dev(){
+  [ -f "$DEV_ENTRY" ] || die "dev entry missing: $DEV_ENTRY"
+  need_bun
+  exec bun --preserve-symlinks "$DEV_ENTRY" -- "$@"
+}
+run_prod(){
+  if [ ! -f "$PROD_ENTRY" ]; then
+    [ "${TAU_NO_AUTOBUILD:-0}" = "1" ] && die "prod entry missing (TAU_NO_AUTOBUILD=1): $PROD_ENTRY"
+    printf '[tau] dist missing — auto-building ...\n' >&2
+    build_dist || { printf '[tau] build failed; falling back to source\n' >&2; run_dev "$@"; }
+  fi
+  need_bun
+  exec bun "$PROD_ENTRY" -- "$@"
+}
+
+# ---- consume launcher flags ONLY from the front ----
+mode="${TAU_MODE:-auto}"
+args=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --dev)       mode=dev;        shift ;;
+    --prod)      mode=prod;       shift ;;
+    --rebuild)   need_bun; build_dist; mode=prod; shift ;;
+    --where)     show_where; exit 0 ;;
+    --tau-help)  sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --)          shift; args+=("$@"); break ;;   # everything after -- goes to agent
+    *)           args+=("$@"); break ;;          # first non-launcher arg: forward from here on
+  esac
+done
+
+case "$mode" in
+  dev)  run_dev  "${args[@]+"${args[@]}"}" ;;
+  prod) run_prod "${args[@]+"${args[@]}"}" ;;
+  auto)
+    if [ "${TAU_FORCE_SRC:-0}" = "1" ] || [ ! -f "$PROD_ENTRY" ]; then
+      run_dev  "${args[@]+"${args[@]}"}"
+    else
+      run_prod "${args[@]+"${args[@]}"}"
+    fi ;;
+  *) die "unknown TAU_MODE=$mode (want dev|prod)" ;;
+esac
