@@ -32,11 +32,11 @@ class HalConfig:
     sigil_roadmap: str = "[[OPHEL::ROADMAP]]"
     sigil_short: str = "[[OPHEL::SHORT]]"
     slot_id: int = 0
-    slot_save_path: str = "/home/toxic/projects/project-name/cache/slots"
+    slot_save_path: str = "/home/toxic/sovereign/.cache/coyote/slots"
     session_id: str = "default"
     tab_lock_ttl: int = 10
     tab_heartbeat_interval: float = 3.0
-    log_dir: str = "/home/toxic/projects/project-name/logs"
+    log_dir: str = "/home/toxic/sovereign/logs/coyote"
     verbose: bool = True
     metrics_enabled: bool = True
     metrics_interval: float = 10.0
@@ -79,7 +79,7 @@ class HalState:
 class TabLock:
     def __init__(self, config: HalConfig):
         self.config = config
-        self.lock_file = Path(config.slot_save_path) / ".hal-tab-lock"
+        self.lock_file = Path(config.slot_save_path) / ".coyote-tab-lock"
         self.tab_id = f"{os.getpid()}-{int(time.time()*1000)}"
         self._timer: Optional[threading.Timer] = None
         self._held = False
