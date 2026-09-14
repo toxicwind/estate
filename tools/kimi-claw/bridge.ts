@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Sovereign Kimi-Claw Bridge
- * Connects Kimi IM / Bridge events to OpenFang (:25103), Herd (:25100), and HAL Substrate (:25143).
+ * Connects Kimi IM / Bridge events to OpenFang (:25103), Herd (:25100), and Coyote (:25143).
  */
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -13,12 +13,12 @@ const client = new OpenFangClient(OPENFANG_URL, process.env.OPENFANG_API_KEY);
 
 const HOME = homedir();
 const HERD_URL = process.env.HERD_URL || "http://127.0.0.1:25100/v1";
-const HAL_URL = process.env.HAL_URL || "http://127.0.0.1:25143";
+const COYOTE_URL = process.env.COYOTE_URL || process.env.HAL_URL || "http://127.0.0.1:25143";
 
 export interface KimiBridgeConfig {
   herdUrl: string;
   openfangUrl: string;
-  halUrl: string;
+  coyoteUrl: string;
   kimiToken?: string;
   userId?: string;
 }
@@ -55,7 +55,7 @@ export function loadKimiConfig(): KimiBridgeConfig {
   return {
     herdUrl: HERD_URL,
     openfangUrl: OPENFANG_URL,
-    halUrl: HAL_URL,
+    coyoteUrl: COYOTE_URL,
     kimiToken: token,
     userId,
   };
@@ -66,7 +66,7 @@ export async function dispatchToOpenFang(
   agent = "coyote",
 ): Promise<string> {
   try {
-    return await client.chat(agent, message);
+    return await client.chat(message, { agent });
   } catch (err) {
     console.warn(
       `[Kimi-Claw] OpenFang dispatch failed, falling back to Herd: ${err}`,
@@ -106,6 +106,6 @@ export async function dispatchToHerd(
 if (import.meta.main) {
   const config = loadKimiConfig();
   console.log(
-    `[Kimi-Claw Bridge] Initialized. Herd: ${config.herdUrl}, OpenFang: ${config.openfangUrl}, HAL: ${config.halUrl}`,
+    `[Kimi-Claw Bridge] Initialized. Herd: ${config.herdUrl}, OpenFang: ${config.openfangUrl}, HAL: ${config.coyoteUrl}`,
   );
 }

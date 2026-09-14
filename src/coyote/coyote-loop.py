@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-HAL Loop v3.1 — Max Level Autonomous Agent
+Coyote Loop v3.1 — Max Level Autonomous Agent
 First-class sovereign service. OpenFang agent with Yote integration.
 HTTP server for task ingestion + health checks (pitchfork-compatible).
 """
@@ -222,7 +222,7 @@ class HalLoop:
         entry = {"timestamp": datetime.now().isoformat(), "event": event, "state": self.state.status, "round": self.state.round, "detail": self.state.detail}
         if data: entry.update(data)
         with open(self.log_file, "a") as f: f.write(json.dumps(entry) + "\n")
-        if self.c.verbose: print(f"[HAL] {event}: {json.dumps(data) if data else ''}")
+        if self.c.verbose: print(f"[coyote] {event}: {json.dumps(data) if data else ''}")
     def start(self, task: str = ""):
         if self._dead: raise RuntimeError("destroyed")
         if not self.client.health(): raise RuntimeError("server not responding")
@@ -364,12 +364,12 @@ class HalLoop:
     def _send_rm_step(self):
         i, n = self.state.roadmap_index, len(self.state.roadmap_steps)
         self.state.detail = f"🗺 step {i+1}/{n}"
-        self._send(f"Continue.\n\n[HAL roadmap — step {i+1} of {n}]\n{self.state.roadmap_steps[i]}\n\nComplete this step. End with {self.c.sigil_proceed} if more remain, or {self.c.sigil_halt} if finished.")
+        self._send(f"Continue.\n\n[coyote roadmap — step {i+1} of {n}]\n{self.state.roadmap_steps[i]}\n\nComplete this step. End with {self.c.sigil_proceed} if more remain, or {self.c.sigil_halt} if finished.")
         self.state.roadmap_index += 1
     def _send_rm_synth(self):
         self.state.roadmap_synth_sent = True
         self.state.detail = "🗺 final synthesis"
-        self._send(f"Continue.\n\n[HAL roadmap — final synthesis]\nAll steps complete. Compile final deliverable. No recap, no fluff. End with {self.c.sigil_halt}.")
+        self._send(f"Continue.\n\n[coyote roadmap — final synthesis]\nAll steps complete. Compile final deliverable. No recap, no fluff. End with {self.c.sigil_halt}.")
     def _reset_rm(self):
         self.state.roadmap_captured = False
         self.state.roadmap_steps = []
@@ -435,7 +435,7 @@ class HalHTTPHandler(BaseHTTPRequestHandler):
     config: Optional[HalConfig] = None
     def log_message(self, fmt, *args):
         if self.config and self.config.verbose:
-            print(f"[HAL-HTTP] {fmt % args}")
+            print(f"[coyote-http] {fmt % args}")
     def _json(self, status: int, data: Dict[str, Any]):
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
@@ -448,7 +448,7 @@ class HalHTTPHandler(BaseHTTPRequestHandler):
             if self.hal_loop:
                 detail = self.hal_loop.state.status
                 state = "healthy" if detail != "ERROR" else "unhealthy"
-            self._json(200, {"status": state, "state": detail, "service": "hal-substrate"})
+            self._json(200, {"status": state, "state": detail, "service": "coyote"})
         elif self.path == "/status":
             if self.hal_loop:
                 self._json(200, self.hal_loop.get_state())
@@ -490,7 +490,7 @@ class HalHTTPHandler(BaseHTTPRequestHandler):
 
 def main():
     import argparse
-    p = argparse.ArgumentParser(description="HAL Loop v3.1 — Max Level")
+    p = argparse.ArgumentParser(description="Coyote Loop v3.1 — Max Level")
     p.add_argument("--task", "-t")
     p.add_argument("--model", "-m", default="kimi-auto")
     p.add_argument("--session", "-s", default="default")
@@ -507,19 +507,19 @@ def main():
     handler = HalHTTPHandler
     handler.config = c
     def sig(signum, frame):
-        print("\n[HAL] interrupted, saving...")
+        print("\n[coyote] interrupted, saving...")
         if handler.hal_loop: handler.hal_loop.stop()
         sys.exit(0)
     signal.signal(signal.SIGINT, sig)
     signal.signal(signal.SIGTERM, sig)
     server = HTTPServer((c.http_host, c.http_port), handler)
-    print(f"[HAL] HTTP server on {c.http_host}:{c.http_port}")
-    print(f"[HAL] AST matrix: {c.base_url}")
-    print(f"[HAL] Endpoints: GET /health, GET /status, POST /task, POST /stop")
+    print(f"[coyote] HTTP server on {c.http_host}:{c.http_port}")
+    print(f"[coyote] AST matrix: {c.base_url}")
+    print(f"[coyote] Endpoints: GET /health, GET /status, POST /task, POST /stop")
     server_thread = threading.Thread(target=server.serve_forever, daemon=True)
     server_thread.start()
     if a.interactive:
-        print("[HAL] Interactive. Commands: start <task>, stop, status, extend, quit")
+        print("[coyote] Interactive. Commands: start <task>, stop, status, extend, quit")
         while True:
             try:
                 cmd = input("> ").strip()
@@ -545,16 +545,16 @@ def main():
             while handler.hal_loop.state.status in (LoopState.RUNNING, LoopState.LIMIT):
                 time.sleep(1)
                 if handler.hal_loop.state.status == LoopState.LIMIT:
-                    print(f"[HAL] limit {handler.hal_loop.state.round}. extend? (y/n)")
+                    print(f"[coyote] limit {handler.hal_loop.state.round}. extend? (y/n)")
                     if input().strip().lower() != "y":
                         handler.hal_loop.stop()
                         break
                     handler.hal_loop.extend()
         except KeyboardInterrupt:
             handler.hal_loop.stop()
-        print(f"[HAL] {handler.hal_loop.state.status} | rounds: {handler.hal_loop.state.round} | {handler.hal_loop.state.detail}")
+        print(f"[coyote] {handler.hal_loop.state.status} | rounds: {handler.hal_loop.state.round} | {handler.hal_loop.state.detail}")
     else:
-        print("[HAL] Daemon mode. Waiting for tasks via HTTP.")
+        print("[coyote] Daemon mode. Waiting for tasks via HTTP.")
         try:
             while True: time.sleep(3600)
         except KeyboardInterrupt: pass

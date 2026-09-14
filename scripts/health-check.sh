@@ -9,7 +9,7 @@ FAILED=0
 # I'll create a list of services to check.
 
 # For simplicity, let's just use the logic from svc-check but make it return exit code.
-SERVICES="llama-swap=25100 qdrant=25133 redis=25199 hal-substrate=25143 yote=25102 ghas-api=25112 ghas-frontend=25114 prometheus=25105 grafana=25110 openfang=25103 rust-web=25201 hf-downloader=25106 pi-web-dashboard=25192 beellama-cpp=25122 ik-llama-cpp=25123 llama-cpp-turboquant=25124 tau=25125 kimi-code=25126 nexus=25127 zed-editor=25129 zedra-host=25130 antigravity-cli=25140"
+SERVICES="llama-swap=25100 qdrant=25133 redis=25199 coyote=25143 yote=25102 ghas-api=25112 ghas-frontend=25114 prometheus=25105 grafana=25110 openfang=25103 rust-web=25201 hf-downloader=25106 pi-web-dashboard=25192 beellama-cpp=25122 ik-llama-cpp=25123 llama-cpp-turboquant=25124 tau=25125 kimi-code=25126 nexus=25127 zed-editor=25129 zedra-host=25130 antigravity-cli=25140"
 
 for entry in $SERVICES; do
     svc=${entry%%=*}
