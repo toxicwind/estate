@@ -1,16 +1,19 @@
-// ============================================================================
-// SOVEREIGN — Service Index (canonical registry re-export)
-// ============================================================================
-// The unified registry (registry.ts) is the single source of truth for the
-// pitchfork/mise generators. The legacy per-area files (core.ts, ghas.ts,
-// monitoring.ts, peripheral.ts, forks.ts, bun-runtime.ts) are retained for
-// reference only and are NOT consumed by the generators.
-
 import type { ServiceDef } from "../types/index.ts";
-import { ALL_SERVICES } from "./registry.ts";
-
-export { ALL_SERVICES };
+import { BUN_RUNTIME_SERVICE } from "./bun-runtime.ts";
+import { CORE_SERVICES } from "./core.ts";
+import { FORK_SERVICES } from "./forks.ts";
+import { GHAS_SERVICES } from "./ghas.ts";
+import { MONITORING_SERVICES } from "./monitoring.ts";
+import { PERIPHERAL_SERVICES } from "./peripheral.ts";
+export const ALL_SERVICES: ServiceDef[] = [
+  ...CORE_SERVICES,
+  ...GHAS_SERVICES,
+  ...MONITORING_SERVICES,
+  ...PERIPHERAL_SERVICES,
+  ...FORK_SERVICES,
+  BUN_RUNTIME_SERVICE,
+];
 export const ALL_SERVICE_IDS = ALL_SERVICES.map((s) => s.id);
-export function getServiceById(id: string): ServiceDef | undefined {
+export function getServiceById(id: string) {
   return ALL_SERVICES.find((s) => s.id === id);
 }

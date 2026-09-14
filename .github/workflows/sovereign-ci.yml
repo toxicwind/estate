@@ -44,3 +44,8 @@ jobs:
         run: |
           bash -n scripts/health-check.sh
           bash -n scripts/open-web-uis.sh
+
+      - name: Build-check Sovereign Router TS (:25104)
+        run: |
+          cd tools/sovereign-router/sovereign-router-ts
+          bun build router.ts --outdir=/tmp/sovereign-router-ts-check --target=bun

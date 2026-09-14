@@ -27,8 +27,10 @@ function loadSecretsFile(path: string) {
   for (const line of readFileSync(path, "utf8").split("\n")) {
     if (!line || line.startsWith("#") || !line.includes("=")) continue;
     const eq = line.indexOf("=");
-    const key = line.slice(0, eq).trim();
-    if (!key || process.env[key]) continue;
+    const key = line.slice(0, eq).trim().replace(/^export\s+/, "");
+    // Canonical file wins: overwrite any value inherited from the
+    // supervisor environment (stale/rotated keys must not survive).
+    if (!key) continue;
     let val = line.slice(eq + 1).trim();
     if (
       (val.startsWith('"') && val.endsWith('"')) ||
@@ -39,6 +41,11 @@ function loadSecretsFile(path: string) {
     process.env[key] = val;
   }
 }
+
+// No real Anthropic key exists - Anthropic-compat goes through nim-proxy.
+// Drop any stale/bogus key inherited from the supervisor environment
+// before the canonical file loads (it stays the source of truth).
+delete process.env.ANTHROPIC_API_KEY;
 
 loadSecretsFile(resolve(HOME, ".secrets"));
 loadSecretsFile(resolve(HOME, ".openfang/secrets.env"));

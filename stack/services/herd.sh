@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-# herd (llama-swap) direct-bind launcher — binds Go binary to 0.0.0.0:HERD_PORT (25100).
+# herd (llama-swap) loopback launcher — binds Go binary to 127.0.0.1:HERD_PORT (25100).
 # Renamed from llama-swap.sh — project-wide herd naming, llama-swap binary kept for compatibility.
 # No proxy/middleware hop. mesh-hub (25115) serves 20 GHAS /mesh/* features.
+# Lifecycle is owned by pitchfork (supervisor); this script does NOT kill or
+# steal the port — if the bind fails, pitchfork sees the failure and retries.
 set -euo pipefail
 SOV="$HOME/sovereign"
 source "$SOV/stack/lib-ports.sh"
@@ -12,12 +14,9 @@ BIN="$HOME/projects/sovereign-projects/sovereign-swap/build/llama-swap"
 CONF="$SOV/config/herd.yaml"
 [[ -f "$CONF" ]] || CONF="$SOV/config/llama-swap.yaml"
 [[ -f "$CONF" ]] || { echo "herd config not found at $CONF" >&2; exit 1; }
-# Kill any existing llama-swap on this port
-fuser -k "${PORT}/tcp" 2>/dev/null || true
-sleep 0.3
 
-# Launch Go binary — direct bind to 0.0.0.0:PORT (no proxy hop)
-"$BIN" --config "$CONF" --listen "0.0.0.0:${PORT}" &
+# Launch Go binary — loopback bind only (no 0.0.0.0 exposure)
+"$BIN" --config "$CONF" --listen "127.0.0.1:${PORT}" &
 BPID=$!
 cleanup() { kill "$BPID" 2>/dev/null || true; }
 trap cleanup EXIT TERM INT

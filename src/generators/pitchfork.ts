@@ -2,7 +2,7 @@ import type { Generator, TemplateContext } from "../types/index.ts";
 
 function expand(str: string, ports: Record<string, number>): string {
   return str.replace(/\$\{([A-Z0-9_]+)\}/g, (_, k) =>
-    ports[k] !== undefined ? String(ports[k]) : (process.env[k] ?? `$\{${k}}`),
+    ports[k] !== undefined ? String(ports[k]) : (process.env[k] ?? `\${${k}}`),
   );
 }
 export const pitchforkGenerator: Generator = {
@@ -15,9 +15,6 @@ export const pitchforkGenerator: Generator = {
       'env_file = "config/ports.env"',
       "",
     ];
-    const emittedIds: string[] = [];
-    const emittedGroups = new Map<string, string[]>();
-    const groupOrder: string[] = [];
     for (const svc of ctx.services) {
       const port = ctx.ports[svc.portKey];
       if (!port) continue;
@@ -42,23 +39,13 @@ export const pitchforkGenerator: Generator = {
       }
       if (svc.autoStart) lines.push(`auto = ["start"]`);
       lines.push("");
-      // Track for group emission (mesh = parent layer).
-      emittedIds.push(`"${svc.id}"`);
-      const g = (svc.group as string) || "core";
-      if (!emittedGroups.has(g)) {
-        emittedGroups.set(g, []);
-        groupOrder.push(g);
-      }
-      emittedGroups.get(g)!.push(`"${svc.id}"`);
     }
-    // One [groups.<name>] per distinct service group, then [groups.all].
-    for (const g of groupOrder) {
-      lines.push(`[groups.${g}]`);
-      lines.push(`daemons = [${emittedGroups.get(g)!.join(", ")}]`);
-      lines.push("");
-    }
-    lines.push(`[groups.all]`);
-    lines.push(`daemons = [${emittedIds.join(", ")}]`);
+    const allIds = ctx.services.map((s) => `"${s.id}"`);
+    lines.push("[groups.core]");
+    lines.push(`daemons = [${allIds.join(", ")}]`);
+    lines.push("");
+    lines.push("[groups.sovereign]");
+    lines.push(`daemons = [${allIds.join(", ")}]`);
     lines.push("");
     return lines.join("\n");
   },

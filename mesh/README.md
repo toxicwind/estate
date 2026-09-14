@@ -9,7 +9,7 @@
 
 ```
 mesh/
-├── gateway/          ← MCPProxy Go gateway (mcpproxy-go) connecting 43+ upstream servers
+├── gateway/          ← shep — MCPProxy Go gateway (mcpproxy-go) connecting 43+ upstream servers
 │                       Port: :25127 | MCP client aggregation
 ├── router/           ← Sovereign Router — multi-provider LLM routing gateway
 │   ├── sovereign-router-ts/      # LIVE ROUTER (Bun/TS, port :25104)
@@ -31,7 +31,7 @@ mesh/
 
 | Port | Service | Description |
 |------|---------|-------------|
-| `:25127` | MCPProxy (Go) | MCP client aggregation gateway, 43+ upstream servers |
+| `:25127` | shep — MCPProxy (Go) | MCP client aggregation gateway, 43+ upstream servers |
 | `:25115` | Mesh Hub | Mesh service discovery and health |
 | `:25100` | llama-swap | Local model inference (herd.yaml config) |
 | `:25104` | Sovereign Router TS | Multi-provider LLM routing (Bun/TS + `/ui` dashboard) |
