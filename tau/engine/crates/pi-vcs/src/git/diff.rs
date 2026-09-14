@@ -612,10 +612,11 @@ fn render_change(
 				prepared.new.intern_source(),
 			);
 			let old_data = prepared.old.data.as_slice().unwrap_or_default();
+			let new_data = prepared.new.data.as_slice().unwrap_or_default();
 			let mut hunks = String::new();
 			let unified = gix::diff::blob::UnifiedDiff::new(
 				&input,
-				GitHunks { out: &mut hunks, old_data, added: 0, removed: 0 },
+				GitHunks { out: &mut hunks, old_data, new_data, added: 0, removed: 0 },
 				gix::diff::blob::unified_diff::NewlineSeparator::AfterHeaderAndWhenNeeded("\n"),
 				gix::diff::blob::unified_diff::ContextSize::symmetrical(context),
 			);
@@ -717,8 +718,18 @@ fn compute_similarity(
 struct GitHunks<'a> {
 	out:      &'a mut String,
 	old_data: &'a [u8],
+	new_data: &'a [u8],
 	added:    u32,
 	removed:  u32,
+}
+
+/// Number of lines in `data`, counting a trailing unterminated chunk as a line.
+fn line_count(data: &[u8]) -> u32 {
+	let mut count = data.iter().filter(|byte| **byte == b'\n').count() as u32;
+	if !data.is_empty() && !data.ends_with(b"\n") {
+		count += 1;
+	}
+	count
 }
 
 impl gix::diff::blob::unified_diff::ConsumeHunk for GitHunks<'_> {
@@ -733,12 +744,17 @@ impl gix::diff::blob::unified_diff::ConsumeHunk for GitHunks<'_> {
 		_header: &str,
 		hunk: &[u8],
 	) -> std::io::Result<()> {
-		// Reconstruct the header with git's convention: gix emits
-		// "@@ -1,0 +1,1 @@" for empty/new hunks, but git renders
-		// "@@ -0,0 +1 @@". When len==0 start is 0; when len==1 the
-		// ",1" is omitted.
+		// Reconstruct the header with git's convention: gix reports the
+		// 1-based position one past a zero-length range, but git renders
+		// the position of the line before the change: "@@ -5,0 +6 @@"
+		// for an insertion after old line 5, "@@ -0,0 +1 @@" for a new
+		// file. When len==1 the ",1" is omitted.
 		fn fmt_range(start: u32, len: u32) -> String {
-			let start = if len == 0 { 0 } else { start };
+			let start = if len == 0 {
+				start.saturating_sub(1)
+			} else {
+				start
+			};
 			if len == 1 {
 				format!("{start}")
 			} else {
@@ -756,16 +772,50 @@ impl gix::diff::blob::unified_diff::ConsumeHunk for GitHunks<'_> {
 			self.out.push_str(&String::from_utf8_lossy(function));
 		}
 		self.out.push('\n');
+		// gix normalizes hunk lines with a trailing '\n', hiding whether the
+		// source line had a terminator. Correlate each printed line with its
+		// side's original data: git marks a final line without a terminator
+		// with `\ No newline at end of file`.
+		let old_total = line_count(self.old_data);
+		let new_total = line_count(self.new_data);
+		let old_missing_nl = !self.old_data.is_empty() && !self.old_data.ends_with(b"\n");
+		let new_missing_nl = !self.new_data.is_empty() && !self.new_data.ends_with(b"\n");
+		let mut old_line = before_hunk_start;
+		let mut new_line = after_hunk_start;
 		// Every hunk line is prefixed with ' ', '+', or '-' by UnifiedDiff,
 		// so the first byte is always the kind marker.
-		for line in hunk.split(|byte| *byte == b'\n') {
-			match line.first() {
-				Some(b'+') => self.added += 1,
-				Some(b'-') => self.removed += 1,
-				_ => {},
+		for piece in hunk.split_inclusive(|byte| *byte == b'\n') {
+			// A context line is byte-identical on both sides (xdiff compares
+			// lines with their terminators), so checking the old side covers
+			// both.
+			let missing_newline = match piece.first() {
+				Some(b'+') => {
+					self.added += 1;
+					let line = new_line;
+					new_line += 1;
+					line == new_total && new_missing_nl
+				},
+				Some(b'-') => {
+					self.removed += 1;
+					let line = old_line;
+					old_line += 1;
+					line == old_total && old_missing_nl
+				},
+				_ => {
+					let line = old_line;
+					old_line += 1;
+					new_line += 1;
+					line == old_total && old_missing_nl
+				},
+			};
+			self.out.push_str(&String::from_utf8_lossy(piece));
+			if missing_newline {
+				if !piece.ends_with(b"\n") {
+					self.out.push('\n');
+				}
+				self.out.push_str("\\ No newline at end of file\n");
 			}
 		}
-		self.out.push_str(&String::from_utf8_lossy(hunk));
 		Ok(())
 	}
 
@@ -1510,6 +1560,43 @@ mod tests {
 		assert_eq!(
 			repo.diff_text(&cached_binary).expect("cached binary diff"),
 			git(dir.path(), &["diff", "--cached", "--binary"])
+		);
+	}
+
+	#[test]
+	fn insertion_and_deletion_hunk_ranges_match_git() {
+		let dir = fixture();
+		let no_context = DiffOptions { context: Some(0), ..DiffOptions::default() };
+		// file.txt starts as seven lines: one..seven.
+		// Pure insertion after line 3: git renders the zero-length old range
+		// with the position of the line before the change, `@@ -3,0 +4,2 @@`.
+		fs::write(
+			dir.path().join("file.txt"),
+			"one\ntwo\nthree\nINSERTED-A\nINSERTED-B\nfour\nfive\nsix\nseven\n",
+		)
+		.expect("insert lines");
+		let repo = GitRepo::discover(dir.path())
+			.expect("discover")
+			.expect("repository");
+		let diff = repo.diff_text(&no_context).expect("diff");
+		assert!(diff.contains("@@ -3,0 +4,2 @@"), "insertion header:\n{diff}");
+		assert_eq!(diff, git(dir.path(), &["diff", "-U0"]));
+		git(dir.path(), &["add", "."]);
+		git(dir.path(), &["commit", "-qm", "insert"]);
+
+		// Pure deletion of lines 7-8 ("five","six"): `@@ -7,2 +6,0 @@`.
+		fs::write(
+			dir.path().join("file.txt"),
+			"one\ntwo\nthree\nINSERTED-A\nINSERTED-B\nfour\nseven\n",
+		)
+		.expect("delete lines");
+		let diff = repo.diff_text(&no_context).expect("diff");
+		assert!(diff.contains("@@ -7,2 +6,0 @@"), "deletion header:\n{diff}");
+		assert_eq!(diff, git(dir.path(), &["diff", "-U0"]));
+		// And with default context the merged hunks still match byte for byte.
+		assert_eq!(
+			repo.diff_text(&DiffOptions::default()).expect("diff"),
+			git(dir.path(), &["diff"])
 		);
 	}
 
