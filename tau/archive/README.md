@@ -33,3 +33,18 @@ Verification: every archived file's blob SHA was matched against the
 full `sovereign-projects` tree before archiving; the manifest above is
 the complete orphan set. Original repositories were deleted only after
 this commit landed.
+
+- `from-sovereign-pi/` — files unique to `toxicwind/sovereign-pi` main
+  (private repo, archived 2026-09-14 as `toxicwind/sovereign-pi-archive`).
+  96 files, mostly `packages/ai/src/providers/data/*.json` provider data,
+  `packages/ai/src/models.ts`, tokenizer tools and caches under
+  `crates/pi-natives/tools/`. (264 other sovereign-pi orphans were already
+  covered by the from-tau/from-oh-my-pi archives above.)
+
+What was NOT archived (deliberately):
+- `.pi/sessions/*.jsonl` (3 files): private agent session logs.
+  `sovereign-projects` is public; session logs stay in the private
+  `sovereign-pi-archive` repo.
+- sovereign-pi's 28 branches + 30 tags: stale upstream oh-my-pi PR
+  branches (v0.0.3-era lineage) and upstream release tags, preserved in
+  `sovereign-pi-archive`, not merged as files.
