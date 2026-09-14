@@ -498,6 +498,8 @@ const app = serve({
         overlord: overlordReady,
         bot_token_set: Boolean(TOK),
         pup_trix_id: PUP_TRIX_ID,
+        avatar_url: "/avatar",
+        avatar_idle_url: "/avatar/idle",
       });
     }
 
@@ -680,6 +682,35 @@ const app = serve({
         ms: Date.now() - t,
         reply: text.slice(0, 600),
       });
+    }
+
+    if (p === "/avatar") {
+      const f = Bun.file(AVATAR_PATH);
+      if (!(await f.exists()))
+        return cors(new Response("no avatar", { status: 404 }));
+      return cors(
+        new Response(f, {
+          headers: {
+            "content-type": "image/png",
+            "content-length": String(f.size),
+            "cache-control": "public, max-age=86400",
+          },
+        }),
+      );
+    }
+    if (p === "/avatar/idle") {
+      const f = Bun.file(join(CD, "yote-avatar-idle.mp4"));
+      if (!(await f.exists()))
+        return cors(new Response("no idle video", { status: 404 }));
+      return cors(
+        new Response(f, {
+          headers: {
+            "content-type": "video/mp4",
+            "content-length": String(f.size),
+            "cache-control": "public, max-age=86400",
+          },
+        }),
+      );
     }
 
     return cors(new Response("not found", { status: 404 }));
