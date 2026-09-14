@@ -20,7 +20,7 @@ export type OpenAPIConfig = {
 };
 
 export const OpenAPI: OpenAPIConfig = {
-  BASE: "https://integrate.api.nvidia.com/v1",
+  BASE: "http://127.0.0.1:8000/v1",
   VERSION: "1.0.0",
   WITH_CREDENTIALS: false,
   CREDENTIALS: "include",
