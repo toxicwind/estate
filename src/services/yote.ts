@@ -73,6 +73,14 @@ const DEFAULT_AGENT = (
 ).replace(/^openfang:/, "");
 const PUP_TRIX_ID = Number(process.env.YOTE_TARGET_USER || "716302190");
 
+/** Coyote persona for the herd fallback path (used only when OpenFang is down). */
+const YOTE_SYSTEM = "You are Yote, a clever southwestern desert coyote and Chris's loyal trickster companion. Warm, dry, direct, a little mischievous " + "—" + " but all business when something real is at stake. Keep replies tight and useful. You answer as Yote in Telegram chats.";
+
+/** Avatar sync: push the Yote avatar to the Telegram bot profile (once). */
+const AVATAR_PATH =
+  process.env.YOTE_AVATAR_PATH || join(CD, "yote-avatar.png");
+const AVATAR_MARK = join(CD, ".avatar_synced");
+
 const ofClient = new OpenFangClient(
   OF_URL,
   process.env.OPENFANG_API_KEY || "",
@@ -231,15 +239,49 @@ async function send(cid: number, t: string, o: any = {}) {
 }
 
 /** OpenFang HTTP chat only — never llama-swap env wiring for OF agents */
+/** Direct herd (llama-swap) chat — fallback when OpenFang is unreachable. */
+async function herdChat(
+  txt: string,
+  maxTokens = 1024,
+): Promise<{ ok: boolean; content: string; model: string }> {
+  const model = process.env.YOTE_FALLBACK_MODEL || "qwen-flash-128k";
+  try {
+    const r = await fetch(`${LLM}/v1/chat/completions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: "system", content: YOTE_SYSTEM },
+          { role: "user", content: txt },
+        ],
+        max_tokens: maxTokens,
+        temperature: 0.5,
+      }),
+      signal: AbortSignal.timeout(90000),
+    });
+    const j: any = await r.json().catch(() => ({}));
+    const content: string = j?.choices?.[0]?.message?.content || "";
+    if (r.ok && content.trim())
+      return { ok: true, content, model: j.model || model };
+    return { ok: false, content: "", model };
+  } catch (e: any) {
+    log(`herdChat err ${e.message || e}`);
+    return { ok: false, content: "", model };
+  }
+}
+
+/** OpenFang HTTP chat with herd fallback — Yote stays alive if OpenFang is down. */
 async function ofChat(txt: string, agent?: string) {
   const r = await ofClient.chat(txt, {
     agent: agent || DEFAULT_AGENT,
     max_tokens: 1024,
   });
-  if (!r.ok) {
-    return `openfang err (${r.agent}): ${r.error || "empty"}`;
-  }
-  return r.content;
+  if (r.ok) return r.content;
+  log(`ofChat openfang failed (${r.agent}): ${r.error} — herd fallback`);
+  const h = await herdChat(txt);
+  if (h.ok) return `${h.content}\n\n⚡ via herd/${h.model} (openfang unreachable)`;
+  return `openfang err (${r.agent}): ${r.error || "empty"}; herd fallback also down`;
 }
 
 async function hChat(cid: number, txt: string, o: any = {}) {
@@ -612,11 +654,39 @@ const app = serve({
   },
 });
 
+/** Push the Yote avatar to the Telegram bot profile photo (once per avatar). */
+async function syncAvatar() {
+  if (!TOK) return;
+  try {
+    if (!existsSync(AVATAR_PATH) || existsSync(AVATAR_MARK)) return;
+    const buf = readFileSync(AVATAR_PATH);
+    const fd = new FormData();
+    fd.append(
+      "photo",
+      new File([buf], "yote-avatar.png", { type: "image/png" }),
+    );
+    const r = await fetch(
+      `https://api.telegram.org/bot${TOK}/setMyProfilePhoto`,
+      { method: "POST", body: fd, signal: AbortSignal.timeout(60000) },
+    );
+    const j: any = await r.json().catch(() => ({}));
+    if (j?.ok) {
+      writeFileSync(AVATAR_MARK, new Date().toISOString());
+      log("avatar synced to telegram bot profile");
+    } else {
+      log(`avatar sync failed: ${JSON.stringify(j).slice(0, 160)}`);
+    }
+  } catch (e: any) {
+    log(`avatar sync err ${e.message || e}`);
+  }
+}
+
 log(
   `yote ${PORT} openfang=${OF_URL} agent=${DEFAULT_AGENT} bot=${TOK ? "set" : "MISSING"} overlord=${overlordReady}`,
 );
 if (TOK) poll().catch((e) => log(`poll fatal ${e}`));
 else log("WARNING: YOTE_TELEGRAM_BOT_TOKEN missing — poll disabled");
+syncAvatar();
 
 export default app;
 export { ofClient, openfang };
