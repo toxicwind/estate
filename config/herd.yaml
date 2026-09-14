@@ -901,6 +901,25 @@ peers:
       tlsHandshake: 10
       idleConn: 90
 
+
+  # --- openrouter-ling: FREE Ling 3.0 Flash via OpenRouter (additive 2026-09-14) ---
+  # Live-verified 2026-09-14: all three return HTTP 200, cost 0 (served by Novita).
+  # Ling-3.0-Flash = Ant Group/InclusionAI, 124B total / 5.1B active, hybrid KDA+MLA.
+  # -vl answers directly (best head candidate); -fin/-sante are reasoning-first.
+  openrouter-ling:
+    proxy: https://openrouter.ai/api
+    apiKey: ${env.OPENROUTER_API_KEY}
+    models:
+      - inclusionai/ling-3.0-flash-vl:free
+      - inclusionai/ling-3.0-flash-fin:free
+      - inclusionai/ling-3.0-flash-sante:free
+    timeouts:
+      connect: 30
+      keepalive: 30
+      responseHeader: 120
+      tlsHandshake: 10
+      idleConn: 90
+
   # Track C — Cloudflare AI Gateway Custom Provider (optional, not blocking v1)
   # When you create the Custom Provider at https://api.cloudflare.com/.../custom-providers
   # with slug pollinations-free, enable, base_url https://gen.pollinations.ai/v1,
