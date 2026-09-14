@@ -18,7 +18,7 @@
 
 1. **Verify live, then claim.** No "done" without `curl` / `lsof` / `nvidia-smi` / `npx tsgo --noEmit`.
 2. **Fail loud.** Never `2>/dev/null`, never `|| true`. Errors are diagnostic.
-3. **No commit without explicit user request.** Fork stays private under `toxicwind`.
+3. **Push everything, forward-only.** Commit + push after every unit of work, including WIP - no local-only work. No review gates, no PR ceremony; report ambiguities, never stop for approval.
 4. **Multi-strategy.** Non-trivial work → 3+ approaches, benchmark, keep runner-up.
 5. **TDD/BDD.** Failing assertion first, then fix. `npx tsgo --noEmit` for type-check.
 6. **Use emergence tools first.** GHAS (`:25113`) → ast-grep (`ast-grep` binary) → Tombi for TOML.
@@ -202,3 +202,12 @@ bun run start --all --precheck --parquet output/audit.parquet
 bun test tests/ --coverage
 bun run local --all --precheck
 ```
+
+## Standing rules (2026-09-14)
+
+- **generate.ts is RETIRED.** `pitchfork.toml`/`mise.toml` are hand-edited and git-tracked as the source of truth. NEVER run `bun run scripts/generate.ts` - it would destroy live daemons and resurrect superseded ones.
+- **One worktree per worker per repo.** Never share checkouts between workers.
+- **Unique scratch dirs.** Never `rm -rf` a shared hardcoded `/tmp` path; stage anything precious under `/home/toxic/`, not `/tmp`.
+- **Never touch `awrawr-mcp.service` from inside a bridge call** - it kills the caller and the response is lost.
+- **kimi-auto is Kimi-only.** Honest 503 when no Kimi route is healthy; never a silent `gpt-oss-20b` fallback.
+- **Infrastructure is in scope.** Fix it, don't defer it. Don't remove things willy nilly: additive only unless Chris explicitly orders removal.
