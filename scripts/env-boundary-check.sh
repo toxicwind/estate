@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ── PROTOTYPE ─────────────────────────────────────────────────────────────
+# ── FINAL (2026-09-14) ─────────────────────────────────────────────────────────────
 # mise/direnv boundary check: fail loudly when a .envrc manages a runtime
 # that mise also manages in the same scope (the unsupported combo per
 # mise.jdx.dev/direnv, e.g. direnv `layout python` alongside mise python;
@@ -9,8 +9,8 @@
 # additions that do not overlap mise shims.
 # mise lane: tool versions, shims, tasks, [daemons], [vars], sovereign [env].
 #
-# NOT FINAL: boundary rules are held pending the direnv/mise investigator's
-# findings. Prototype for local verification only — not wired into CI/doctor.
+# FINAL per ENV_OWNERSHIP.md (2026-09-14): boundary rules are authoritative.
+# Wire into mise doctor project named checks at cutover; until then run directly.
 # ─────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
