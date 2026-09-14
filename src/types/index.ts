@@ -10,7 +10,8 @@ export type Group =
   | "mcp"
   | "infra"
   | "monitoring"
-  | "aux";
+  | "aux"
+  | "mesh";
 
 export interface PortMap extends Map<string, number> {}
 
