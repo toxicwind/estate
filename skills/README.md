@@ -1,37 +1,37 @@
-# Sovereign Universal Helpers (`/home/toxic/sovereign/helpers/`)
+# Skills — Sovereign Helpers Toolkit
 
-> **First-class reusable automation, health-check, telemetry, and migration tools for the Sovereign ecosystem.**
-> All tools are built for high performance, zero data loss, and native Bun / POSIX standards.
+First-class reusable automation for the Sovereign ecosystem: health checks,
+telemetry, migration tools, and fleet utilities. Built for Bun / POSIX, zero
+data loss. (Symlinked as `helpers/` at the repo root.)
 
----
+## Tool catalog
 
-## 🛠️ Tool Catalog
+| Script                 | Runtime      | Purpose                                                                        | Usage                                              |
+| ---------------------- | ------------ | ------------------------------------------------------------------------------ | -------------------------------------------------- |
+| **`health-audit.ts`**       | Bun / TypeScript | Parallel live probe across all service endpoints, full untruncated JSON      | `bun run skills/health-audit.ts [--json]`          |
+| **`clean-orphans.sh`**      | POSIX bash   | Terminates orphan compiler loops (`cargo-watch`) and rogue agent workers       | `./skills/clean-orphans.sh`                        |
+| **`mesh-probe.ts`**         | Bun / TypeScript | JSON-RPC 2.0 initialize handshake probe for the MCP gateway (`:25127`)     | `bun run skills/mesh-probe.ts`                     |
+| **`hardware-telemetry.sh`** | POSIX bash   | CPU, L3 cache, frequency governor, swap, and RTX 3090 GPU metrics              | `./skills/hardware-telemetry.sh`                   |
+| **`ast-migrate.ts`**        | Bun / TypeScript | AST structural pattern matching and codemods via `ast-grep`                | `bun run skills/ast-migrate.ts [dir] [scan\|rewrite]` |
 
-| Helper Script               | Runtime          | Purpose                                                                                    | Usage                                                  |
-| --------------------------- | ---------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------ |
-| **`health-audit.ts`**       | Bun / TypeScript | Universal, parallel live probe across all 19 service endpoints with full untruncated JSON. | `bun run helpers/health-audit.ts [--json]`             |
-| **`clean-orphans.sh`**      | POSIX Bash       | Detects and safely terminates orphan compiler loops (`cargo-watch`), rogue agent workers.  | `./helpers/clean-orphans.sh`                           |
-| **`mesh-probe.ts`**         | Bun / TypeScript | High-performance JSON-RPC 2.0 initialize handshake probe for `mcpproxy-go` (`:25127`).     | `bun run helpers/mesh-probe.ts`                        |
-| **`hardware-telemetry.sh`** | POSIX Bash       | Gathers complete CPU, L3 cache, frequency governor, swap, and RTX 3090 GPU metrics.        | `./helpers/hardware-telemetry.sh`                      |
-| **`ast-migrate.ts`**        | Bun / TypeScript | Universal AST structural pattern matching and codemod tool leveraging `ast-grep`.          | `bun run helpers/ast-migrate.ts [dir] [scan\|rewrite]` |
+More tools live in the directory (`engine-audit.ts`, `fleet-status`, `gguf-rank`,
+`model-switch`, `repo-audit`, `tau-tmux`, …) — the table above is the core set.
 
----
-
-## 🚀 Quick Execution Examples
+## Quick examples
 
 ```bash
-# 1. Full parallel health audit across all 19 ports (< 50ms)
-bun run helpers/health-audit.ts
+# Full parallel health audit across all ports
+bun run skills/health-audit.ts
 
-# 2. Get complete untruncated JSON health data for LLMs/tooling
-bun run helpers/health-audit.ts --json
+# Untruncated JSON health data for LLMs/tooling
+bun run skills/health-audit.ts --json
 
-# 3. Clean any runaway cargo-watch watchers causing CPU spikes
-./helpers/clean-orphans.sh
+# Clean runaway cargo-watch watchers causing CPU spikes
+./skills/clean-orphans.sh
 
-# 4. Probe Mesh JSON-RPC protocol handshake
-bun run helpers/mesh-probe.ts
+# Probe the Mesh JSON-RPC handshake
+bun run skills/mesh-probe.ts
 
-# 5. Check hardware scaling and memory metrics
-./helpers/hardware-telemetry.sh
+# Hardware scaling and memory metrics
+./skills/hardware-telemetry.sh
 ```
