@@ -27,8 +27,8 @@ mise run down
 | OpenAI API     | http://127.0.0.1:25100/v1             |
 | Ops dashboard  | http://127.0.0.1:25101/               |
 | Dashboard JSON | http://127.0.0.1:25101/ops/api/status |
-| OpenFang UI    | http://127.0.0.1:25103/               |
-| OpenFang API   | http://127.0.0.1:25203/               |
+| Rig UI         | http://127.0.0.1:25103/               |
+| Rig API        | http://127.0.0.1:25203/               |
 | HF Downloader  | http://127.0.0.1:25106/               |
 | Grafana        | http://127.0.0.1:25110/               |
 | MCP Gateway    | http://127.0.0.1:25120/health         |
@@ -43,12 +43,12 @@ mise run down
 | **llama-swap**        | **25100** | Go (toxicwind fork) | Inference router + AST Matrix Go router + `/ui` + `/v1`                                                         |
 | **rust-web**          | **25101** | Rust                | Ops dashboard + embedded watchdog                                                                               |
 | **yote**              | 25102     | Bun                 | Telegram / status                                                                                               |
-| **openfang**          | **25103** | Rust (binary)       | Agent kernel — OpenFang OS, 206 models, 61 skills, Discord bridge                                               |
+| **rig**               | **25103** | Rust (binary)       | Agent kernel — Rig (toxicwind/rig), 206 models, 61 skills, Discord bridge                                               |
 | **sovereign-router**  | **25104** | Bun (TS)            | 5-strategy AST Matrix hybrid router (fifo_matrix, ast_race, sticky_affinity, weighted_elo, circuit_chain)       |
 | **prometheus**        | 25105     | Go                  | Metrics                                                                                                         |
 | **hf-downloader**     | 25106     | Bun                 | GGUF download UI                                                                                                |
 | **null-g-proxy**      | 25107     | Bun                 | Extra LLM proxy                                                                                                 |
-| **mcpproxy**          | 25109     | Go                  | MCP federation (43 MCPs → 1 endpoint)                                                                           |
+| **mcpproxy**          | 25127     | Go                  | MCP federation (43 MCPs → 1 endpoint)                                                                           |
 | **grafana**           | 25110     | Go                  | Optional dashboards                                                                                             |
 | **ghas-api**          | 25112     | Bun                 | GitHub Advanced Search API                                                                                      |
 | **ghas-mcp**          | 25113     | Bun                 | GHAS MCP (HTTP mode, depends on ghas-api)                                                                       |
@@ -76,7 +76,7 @@ The launcher (`llama-swap.sh`) is the primary service entry. The MCP wrapper (`l
 ### Inference chain
 
 ```text
-clients (Zed / OpenFang / Grok / IDEs)
+clients (Zed / Rig / Grok / IDEs)
    └─► llama-swap :25100   (toxicwind fork)
           │  internal/astmatrix/ — ELO scoring, circuit breakers, 6 strategies
           │  SQLite WAL health DB (modernc.org/sqlite)
@@ -134,7 +134,7 @@ Screenshot actions: `auto` (capture + classify + route to clipboard/file), `copy
 
 | Removed                                          | Why                                                                                                                                                                                                                                                                                                                      |
 | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Caddy**                                        | Path routing fought real services (`/api/*` → openfang while rust-web also needs APIs). Port docs were wrong (`:3000` vs `CADDY_PORT=25109`). **`mise run up` never started it.** Multipath proxy not needed when every service has a stable 25xxx port. Artifacts archived under `/home/toxic/archive/caddy-removed-*`. |
+| **Caddy**                                        | Path routing fought real services (`/api/*` → rig while rust-web also needs APIs). Port docs were wrong (`:3000` vs `CADDY_PORT=25109`). **`mise run up` never started it.** Multipath proxy not needed when every service has a stable 25xxx port. Artifacts archived under `/home/toxic/archive/caddy-removed-*`. |
 | **landing** (`LANDING_PORT` / Bun `src/landing`) | Duplicate static server for the same files rust-web already serves. False offshoot of rust-web. Deleted; dashboard APIs live on rust-web at **`/ops/api/*`**.                                                                                                                                                            |
 
 All public-facing services bind to `0.0.0.0` (not `127.0.0.1`) for LAN/Tailscale access. Internal mesh-front backends stay on `127.0.0.1:252xx`. Redis on `:25199`, Qdrant on `:25133` — both `0.0.0.0`.
@@ -148,9 +148,9 @@ Access services **directly** on their ports (LAN or Tailscale MagicDNS). Optiona
 ```text
                     ┌─ llama-swap    :25100  (/ui, /v1, /models/sse + astmatrix Go)
  clients ──────────┼─ rust-web      :25101  (/, /ops/api/*, /health)
- (local/tailnet)   ├─ openfang      :25103  (agent kernel)
+ (local/tailnet)   ├─ rig           :25103  (agent kernel)
                     ├─ yote          :25102  (Telegram)
-                    ├─ mcpproxy      :25109  (43 MCPs federated)
+                    ├─ mcpproxy      :25127  (43 MCPs federated)
                     ├─ ghas-api      :25112  (GitHub search)
                     ├─ mesh-hub      :25115  (service mesh)
                     ├─ byte-vision   :25121  (vision MCP)
@@ -167,7 +167,7 @@ The **Sovereign Workspaces** repo is the unified workspace layer that operates i
 
 - **GitHub**: [toxicwind/sovereign-projects](https://github.com/toxicwind/sovereign-projects)
 - **Local**: `/home/toxic/projects/sovereign-projects/`
-- **Subfolders**: `herd`, `mesh`, `tau`, `yote`, `openfang`, `qed`, `shell`, `boundless`, `packages`
+- **Subfolders**: `herd`, `mesh`, `tau`, `yote`, `rig`, `qed`, `shell`, `boundless`, `packages`
 
 | Workspace | Directory | Role | Port |
 |-----------|-----------|------|------|
@@ -175,7 +175,7 @@ The **Sovereign Workspaces** repo is the unified workspace layer that operates i
 | **Mesh** | `mesh/` | MCP federation gateway | `:25127` |
 | **Tau** | `tau/` | Canonical AI coding agent engine | `:25192` |
 | **Yote** | `yote/` | Minimal embeddable agent runtime | `:25102` |
-| **OpenFang** | `openfang/` | C++ inference engine fork | `:25103` |
+| **Rig** | `openfang/` | Rust Agent OS — fleet/swarm chat system (toxicwind/rig) | `:25103` |
 | **QED** | `qed/` | AI-native editor (Zed fork) | `:25130` |
 | **Shell** | `shell/` | Desktop environment | Wayland |
 | **Boundless** | `boundless/` | Document ingestion & chunking | `:10200` |
