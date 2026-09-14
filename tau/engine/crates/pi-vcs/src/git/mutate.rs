@@ -17,9 +17,6 @@ use super::{
 	write_commit,
 };
 use crate::{
-
-
-
 	error::{Error, Result},
 	types::{
 		CleanOptions, CommitOptions, DetachGitDirResult, ResetMode, RestoreOptions,
@@ -32,40 +29,65 @@ use crate::{
 /// minimal RFC 3339 parser (`YYYY-MM-DDTHH:MM:SSZ`) for ISO 8601 inputs
 /// like `"2020-01-02T03:04:05Z"`.
 fn parse_commit_date(input: &str) -> Result<gix::date::Time, gix::date::parse::Error> {
-    if let Ok(time) = gix::date::parse(input, None) {
-        return Ok(time);
-    }
-    // Minimal RFC 3339: YYYY-MM-DDTHH:MM:SSZ (UTC only)
-    let input = input.trim();
-    if let Some(stripped) = input.strip_suffix('Z') {
-        let parts: Vec<&str> = stripped.split('T').collect();
-        if parts.len() == 2 {
-            let date_parts: Vec<&str> = parts[0].split('-').collect();
-            let time_parts: Vec<&str> = parts[1].split(':').collect();
-            if date_parts.len() == 3 && time_parts.len() == 3 {
-                if let (Ok(y), Ok(m), Ok(d), Ok(h), Ok(min), Ok(s)) = (
-                    date_parts[0].parse::<i32>(),
-                    date_parts[1].parse::<u32>(),
-                    date_parts[2].parse::<u32>(),
-                    time_parts[0].parse::<u32>(),
-                    time_parts[1].parse::<u32>(),
-                    time_parts[2].parse::<u32>(),
-                ) {
-                    // Days from civil date (Howard Hinnant's algorithm)
-                    let y = if m <= 2 { y - 1 } else { y };
-                    let era = y.div_euclid(400);
-                    let yoe = y.rem_euclid(400) as u32;
-                    let mp = (m + 9).rem_euclid(12);
-                    let doy = (153 * mp + 2) / 5 + d - 1;
-                    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
-                    let days = era * 146097 + doe as i32 - 719468;
-                    let secs = days as i64 * 86400 + h as i64 * 3600 + min as i64 * 60 + s as i64;
-                    return Ok(gix::date::Time::new(secs, 0));
-                }
-            }
-        }
-    }
-    Err(gix::date::parse::Error::InvalidDateString { input: input.into() })
+	if let Ok(time) = gix::date::parse(input, None) {
+		return Ok(time);
+	}
+	let invalid = || gix::date::parse::Error::InvalidDateString { input: input.trim().into() };
+	// Minimal RFC 3339: YYYY-MM-DDTHH:MM:SSZ (UTC only). Every field is
+	// range-checked so syntactically numeric but impossible dates (month 13,
+	// February 30, hour 25, ...) are rejected instead of silently wrapping
+	// into unrelated timestamps.
+	fn digits(part: &str, len: usize) -> Option<u32> {
+		if part.len() == len && part.bytes().all(|b| b.is_ascii_digit()) {
+			part.parse().ok()
+		} else {
+			None
+		}
+	}
+	let stripped = input.trim().strip_suffix('Z').ok_or_else(invalid)?;
+	let (date, clock) = stripped.split_once('T').ok_or_else(invalid)?;
+	let mut dparts = date.split('-');
+	let (year, month, day) = match (dparts.next(), dparts.next(), dparts.next(), dparts.next()) {
+		(Some(y), Some(m), Some(d), None) => (
+			digits(y, 4).ok_or_else(invalid)?,
+			digits(m, 2).ok_or_else(invalid)?,
+			digits(d, 2).ok_or_else(invalid)?,
+		),
+		_ => return Err(invalid()),
+	};
+	let mut tparts = clock.split(':');
+	let (hour, minute, second) = match (tparts.next(), tparts.next(), tparts.next(), tparts.next()) {
+		(Some(h), Some(mi), Some(s), None) => (
+			digits(h, 2).ok_or_else(invalid)?,
+			digits(mi, 2).ok_or_else(invalid)?,
+			digits(s, 2).ok_or_else(invalid)?,
+		),
+		_ => return Err(invalid()),
+	};
+	if !(1..=12).contains(&month) || hour > 23 || minute > 59 || second > 59 {
+		return Err(invalid());
+	}
+	let leap = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+	let max_day = match month {
+		2 if leap => 29,
+		2 => 28,
+		4 | 6 | 9 | 11 => 30,
+		_ => 31,
+	};
+	if day == 0 || day > max_day {
+		return Err(invalid());
+	}
+	// Days from civil date (Howard Hinnant's algorithm). Inputs are
+	// validated above, so this cannot wrap or overflow.
+	let y = i64::from(year) - i64::from(month <= 2);
+	let era = y.div_euclid(400);
+	let yoe = y.rem_euclid(400) as u32;
+	let mp = (i64::from(month) + 9).rem_euclid(12) as u32;
+	let doy = (153 * mp + 2) / 5 + day - 1;
+	let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+	let days = era * 146097 + i64::from(doe) - 719468;
+	let secs = days * 86400 + i64::from(hour) * 3600 + i64::from(minute) * 60 + i64::from(second);
+	Ok(gix::date::Time::new(secs, 0))
 }
 
 const INDEX_WRITE: gix::index::write::Options = gix::index::write::Options {
@@ -245,8 +267,9 @@ impl GitRepo {
 		let mut author_time = gix::date::parse::TimeBuf::default();
 		let author = if let Some(author) = &options.author {
 			let time = match &author.date {
-				Some(date) => parse_commit_date(date)
-					.map_err(|err| Error::backend("git commit", err))?,
+				Some(date) => {
+					parse_commit_date(date).map_err(|err| Error::backend("git commit", err))?
+				},
 				None => gix::date::Time::now_local_or_utc(),
 			};
 			override_author = gix::actor::Signature {
@@ -1837,6 +1860,37 @@ mod tests {
 		git(temp.path(), &["commit", "-qm", "base"]);
 		let repo = GitRepo::require(temp.path()).unwrap();
 		(temp, repo)
+	}
+
+	#[test]
+	fn parse_commit_date_validates_rfc3339_fields() {
+		// Sanity: a well-formed timestamp parses (2020-01-02T03:04:05Z).
+		assert_eq!(parse_commit_date("2020-01-02T03:04:05Z").unwrap().seconds, 1577934245);
+		// February 29 is valid on leap years ...
+		assert_eq!(parse_commit_date("2024-02-29T12:00:00Z").unwrap().seconds, 1709208000);
+		assert_eq!(parse_commit_date("2000-02-29T00:00:00Z").unwrap().seconds, 951782400);
+		// ... but not otherwise.
+		for bad in [
+			"2021-02-29T00:00:00Z", // non-leap Feb 29
+			"1900-02-29T00:00:00Z", // century non-leap Feb 29
+			"2020-02-30T00:00:00Z", // Feb 30 never exists
+			"2020-13-01T00:00:00Z", // month 13
+			"2020-00-10T00:00:00Z", // month 0
+			"2020-01-00T00:00:00Z", // day 0
+			"2020-01-32T00:00:00Z", // day 32
+			"2020-04-31T00:00:00Z", // April 31
+			"2020-06-31T00:00:00Z", // June 31
+			"2020-01-01T24:00:00Z", // hour 24
+			"2020-01-01T23:60:00Z", // minute 60
+			"2020-01-01T23:59:60Z", // second 60
+			"2020-1-2T03:04:05Z",   // non-zero-padded date
+			"2020-01-02T3:04:05Z",  // non-zero-padded hour
+			"2020-01-02 03:04:05Z", // missing T separator
+			"2020-01-02T03:04:05",  // missing Z suffix
+			"not-a-date",
+		] {
+			assert!(parse_commit_date(bad).is_err(), "{bad} should be rejected");
+		}
 	}
 
 	#[test]
