@@ -1,7 +1,7 @@
 # =============================================================================
 # LLAMA-SWAP CONFIGURATION — RTX 3090 24GB
 # =============================================================================
-# Config: /home/toxic/sovereign/config/llama-swap.yaml
+# Config: /home/toxic/sovereign/config/herd.yaml (canonical; llama-swap.yaml symlinks here)
 # =============================================================================
 
 healthCheckTimeout: 300
@@ -24,9 +24,9 @@ hooks:
   on_startup:
     preload: []
   on_model_loaded:
-    exec: 'echo "[$(date)] MODEL_LOADED: $MODEL" >> /tmp/llama-swap-events.log'
+    exec: 'echo "[$(date)] MODEL_LOADED: $MODEL" >> /home/toxic/sovereign/data/herd-events.log'
   on_model_unloaded:
-    exec: 'echo "[$(date)] MODEL_UNLOADED: $MODEL" >> /tmp/llama-swap-events.log'
+    exec: 'echo "[$(date)] MODEL_UNLOADED: $MODEL" >> /home/toxic/sovereign/data/herd-events.log'
 
 astMatrix:
   enabled: true
