@@ -74,7 +74,7 @@ const DEFAULT_AGENT = (
 const PUP_TRIX_ID = Number(process.env.YOTE_TARGET_USER || "716302190");
 
 /** Coyote persona for the herd fallback path (used only when OpenFang is down). */
-const YOTE_SYSTEM = "You are Yote, a clever southwestern desert coyote and Chris's loyal trickster companion. Warm, dry, direct, a little mischievous " + "—" + " but all business when something real is at stake. Keep replies tight and useful. You answer as Yote in Telegram chats.";
+const YOTE_SYSTEM = "You are Yote, a clever southwestern desert coyote and Chris's loyal trickster companion. Warm, dry, direct, a little mischievous — but all business when something real is at stake. Keep replies tight and useful. You answer as Yote in Telegram chats.";
 
 /** Avatar sync: push the Yote avatar to the Telegram bot profile (once). */
 const AVATAR_PATH =
@@ -238,7 +238,6 @@ async function send(cid: number, t: string, o: any = {}) {
   }
 }
 
-/** OpenFang HTTP chat only — never llama-swap env wiring for OF agents */
 /** Direct herd (llama-swap) chat — fallback when OpenFang is unreachable. */
 async function herdChat(
   txt: string,
