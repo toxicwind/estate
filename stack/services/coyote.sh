@@ -7,6 +7,9 @@ SOV="${SOVEREIGN_ROOT:-$HOME/sovereign}"
 source "$SOV/stack/lib-ports.sh"
 require_env COYOTE_PORT
 PORT="$COYOTE_PORT"
+# Secret hygiene: key travels via env, never argv (invisible to ps).
+export COYOTE_API_KEY="${COYOTE_API_KEY:-sk-hal-local}"
+export COYOTE_MODEL="${COYOTE_MODEL:-gpt-oss}"
 
 # Find hal-loop.py — sovereign src/ is canonical
 BIN_CAND=(
@@ -36,8 +39,7 @@ sleep 0.3
 # Connects to llama-swap AST matrix, integrates with Yote messaging
 exec python3 "$BIN" \
   --base-url "http://127.0.0.1:25100" \
-  --api-key "sk-hal-local" \
-  --model "kimi-auto" \
+  --model "${COYOTE_MODEL}" \
   --session "sovereign-$(date +%s)" \
   --port "${PORT}" \
   --host "0.0.0.0" \

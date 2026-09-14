@@ -73,6 +73,14 @@ const DEFAULT_AGENT = (
 ).replace(/^openfang:/, "");
 const PUP_TRIX_ID = Number(process.env.YOTE_TARGET_USER || "716302190");
 
+/** Coyote persona for the herd fallback path (used only when OpenFang is down). */
+const YOTE_SYSTEM = "You are Yote, a clever southwestern desert coyote and Chris's loyal trickster companion. Warm, dry, direct, a little mischievous — but all business when something real is at stake. Keep replies tight and useful. You answer as Yote in Telegram chats.";
+
+/** Avatar sync: push the Yote avatar to the Telegram bot profile (once). */
+const AVATAR_PATH =
+  process.env.YOTE_AVATAR_PATH || join(CD, "yote-avatar.png");
+const AVATAR_MARK = join(CD, ".avatar_synced");
+
 const ofClient = new OpenFangClient(
   OF_URL,
   process.env.OPENFANG_API_KEY || "",
@@ -230,16 +238,61 @@ async function send(cid: number, t: string, o: any = {}) {
   }
 }
 
-/** OpenFang HTTP chat only — never llama-swap env wiring for OF agents */
+/** Direct herd (llama-swap) chat — fallback when OpenFang is unreachable. */
+async function herdChat(
+  txt: string,
+  maxTokens = 1024,
+): Promise<{ ok: boolean; content: string; model: string }> {
+  // Priority list: first model that answers wins. Env override:
+  // YOTE_FALLBACK_MODELS="model-a,model-b". Defaults cover the herd catalog.
+  const models = (process.env.YOTE_FALLBACK_MODELS ||
+    "beellama/qwen-flash-128k,qwen-flash-128k,fast,code,gpt-oss")
+    .split(",")
+    .map((m) => m.trim())
+    .filter(Boolean);
+  let lastErr = "";
+  for (const model of models) {
+    try {
+      const r = await fetch(`${LLM}/v1/chat/completions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: YOTE_SYSTEM },
+            { role: "user", content: txt },
+          ],
+          max_tokens: maxTokens,
+          temperature: 0.5,
+        }),
+        signal: AbortSignal.timeout(90000),
+      });
+      const j: any = await r.json().catch(() => ({}));
+      const content: string = j?.choices?.[0]?.message?.content || "";
+      if (r.ok && content.trim()) {
+        log(`herdChat ok via ${model}`);
+        return { ok: true, content, model: j.model || model };
+      }
+      lastErr = `${model}: ${j?.error || r.status || "empty"}`.slice(0, 120);
+    } catch (e: any) {
+      lastErr = `${model}: ${e.message || e}`.slice(0, 120);
+    }
+  }
+  log(`herdChat all models failed: ${lastErr}`);
+  return { ok: false, content: "", model: models[0] || "none" };
+}
+
+/** OpenFang HTTP chat with herd fallback — Yote stays alive if OpenFang is down. */
 async function ofChat(txt: string, agent?: string) {
   const r = await ofClient.chat(txt, {
     agent: agent || DEFAULT_AGENT,
     max_tokens: 1024,
   });
-  if (!r.ok) {
-    return `openfang err (${r.agent}): ${r.error || "empty"}`;
-  }
-  return r.content;
+  if (r.ok) return r.content;
+  log(`ofChat openfang failed (${r.agent}): ${r.error} — herd fallback`);
+  const h = await herdChat(txt);
+  if (h.ok) return `${h.content}\n\n⚡ via herd/${h.model} (openfang unreachable)`;
+  return `openfang err (${r.agent}): ${r.error || "empty"}; herd fallback also down`;
 }
 
 async function hChat(cid: number, txt: string, o: any = {}) {
@@ -444,6 +497,8 @@ const app = serve({
         overlord: overlordReady,
         bot_token_set: Boolean(TOK),
         pup_trix_id: PUP_TRIX_ID,
+        avatar_url: "/avatar",
+        avatar_idle_url: "/avatar/idle",
       });
     }
 
@@ -608,15 +663,99 @@ const app = serve({
       });
     }
 
+    if (p === "/test/fallback") {
+      // Exercise the full ofChat path (OpenFang -> herd fallback) without
+      // touching Telegram. Returns which tier answered.
+      const msg = u.searchParams.get("msg") || "Reply with the single word: yip";
+      const agent = u.searchParams.get("agent") || DEFAULT_AGENT;
+      const t = Date.now();
+      const text = await ofChat(msg, agent);
+      const via = text.includes("(openfang unreachable)")
+        ? "herd-fallback"
+        : text.startsWith("openfang err")
+          ? "none"
+          : "openfang";
+      return jres({
+        ok: via !== "none",
+        via,
+        ms: Date.now() - t,
+        reply: text.slice(0, 600),
+      });
+    }
+
+    if (p === "/avatar") {
+      const f = Bun.file(AVATAR_PATH);
+      if (!(await f.exists()))
+        return cors(new Response("no avatar", { status: 404 }));
+      return cors(
+        new Response(f, {
+          headers: {
+            "content-type": "image/png",
+            "content-length": String(f.size),
+            "cache-control": "public, max-age=86400",
+          },
+        }),
+      );
+    }
+    if (p === "/avatar/idle") {
+      const f = Bun.file(join(CD, "yote-avatar-idle.mp4"));
+      if (!(await f.exists()))
+        return cors(new Response("no idle video", { status: 404 }));
+      return cors(
+        new Response(f, {
+          headers: {
+            "content-type": "video/mp4",
+            "content-length": String(f.size),
+            "cache-control": "public, max-age=86400",
+          },
+        }),
+      );
+    }
+
     return cors(new Response("not found", { status: 404 }));
   },
 });
 
-log(
-  `yote ${PORT} openfang=${OF_URL} agent=${DEFAULT_AGENT} bot=${TOK ? "set" : "MISSING"} overlord=${overlordReady}`,
-);
+/** Push the Yote avatar to the Telegram bot profile photo (once per avatar). */
+async function syncAvatar() {
+  // Push the Yote avatar to the Telegram bot profile once. Bot API
+  // setMyProfilePhoto takes an InputProfilePhoto object:
+  //   photo = JSON {type:"static", photo:"attach://<name>"}
+  // with the PNG bytes attached under that name. Guarded by a marker file.
+  try {
+    if (!TOK || existsSync(AVATAR_MARK)) return;
+    if (!existsSync(AVATAR_PATH)) return;
+    const buf = readFileSync(AVATAR_PATH);
+    const fd = new FormData();
+    fd.append(
+      "photo",
+      JSON.stringify({ type: "static", photo: "attach://yote-avatar.png" }),
+    );
+    fd.append(
+      "yote-avatar.png",
+      new Blob([buf], { type: "image/png" }),
+      "yote-avatar.png",
+    );
+    const r = await fetch(`https://api.telegram.org/bot${TOK}/setMyProfilePhoto`, {
+      method: "POST",
+      body: fd,
+      signal: AbortSignal.timeout(60000),
+    });
+    const j: any = await r.json().catch(() => ({}));
+    if (j?.ok) {
+      writeFileSync(AVATAR_MARK, new Date().toISOString());
+      log("avatar synced to telegram bot profile");
+    } else {
+      log(`avatar sync failed: ${JSON.stringify(j).slice(0, 160)}`);
+    }
+  } catch (e: any) {
+    log(`avatar sync err ${(e && e.message) || e}`);
+  }
+}
+
 if (TOK) poll().catch((e) => log(`poll fatal ${e}`));
 else log("WARNING: YOTE_TELEGRAM_BOT_TOKEN missing — poll disabled");
+syncAvatar();
 
 export default app;
 export { ofClient, openfang };
