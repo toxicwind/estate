@@ -693,7 +693,7 @@ async function syncAvatar() {
   //   photo = JSON {type:"static", photo:"attach://<name>"}
   // with the PNG bytes attached under that name. Guarded by a marker file.
   try {
-    if (!TOK || existsSync(AVATAR_MARKER)) return;
+    if (!TOK || existsSync(AVATAR_MARK)) return;
     if (!existsSync(AVATAR_PATH)) return;
     const buf = readFileSync(AVATAR_PATH);
     const fd = new FormData();
@@ -713,7 +713,7 @@ async function syncAvatar() {
     });
     const j: any = await r.json().catch(() => ({}));
     if (j?.ok) {
-      writeFileSync(AVATAR_MARKER, new Date().toISOString());
+      writeFileSync(AVATAR_MARK, new Date().toISOString());
       log("avatar synced to telegram bot profile");
     } else {
       log(`avatar sync failed: ${JSON.stringify(j).slice(0, 160)}`);
