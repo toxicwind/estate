@@ -361,7 +361,7 @@ export const CATALOG_PROVIDERS = [
 	},
 	{
 		id: "nvidia",
-		defaultModel: "nvidia/llama-3.1-nemotron-70b-instruct",
+		defaultModel: "openai/gpt-oss-20b",
 		envVars: ["NVIDIA_API_KEY"],
 		createModelManagerOptions: (config: ModelManagerConfig) => nvidiaModelManagerOptions(config),
 		catalogDiscovery: { label: "NVIDIA" },
