@@ -1,0 +1,88 @@
+# Tau — Sovereign layout + pi-natives + pi-vcs symbol fix
+
+## Goal
+Ralph understands the sovereign/projects duplication and cleans/merges, and fixes pi-natives ld and pi-vcs symbol resolution. Ralph does the work, not manual bash.
+
+## Context — filesystem recon
+You have:
+- ~/sovereign (190GB GIT)
+- ~/projects (200GB dir)
+- ~/projects/sovereign-projects/tau (0.08GB dir)
+Overlap detected:
+  ~/sovereign ∩ ~/projects → agents, models, node_modules, mise, bin, yote, scripts, skills
+  ~/sovereign ∩ ~/projects/sovereign-projects/tau → bin, config, docs, scripts, .agent-orchestration, .husky, .github
+  ~/projects ∩ ~/projects/sovereign-projects/tau → bin, scripts, kimi
+
+Task 1 — understand and clean:
+- Build a fs map (like /home/toxic/.config/sovereign-fs-map.json did) but don't delete blindly.
+- Identify which root is canonical (~/sovereign is GIT, ~/projects is working tree with uncommitted changes)
+- Deduplicate node_modules, bin, scripts that are duplicated via symlinks/binds
+- Ensure ENGINE = ~/projects/sovereign-projects/tau/engine is the only place Ralph runs
+
+## Failure — pi-natives native loader
+  at loadNative (/home/toxic/projects/sovereign-projects/tau/engine/node_modules/@oh-my-pi/pi-natives/native/loader-state.js:894:12)
+  at .../native/index.js:17:24
+
+Root cause: `bun --cwd=packages/natives run build` requires an already built native and crashes if missing.
+
+Fix:
+  DO NOT use that command first. Use explicit targets:
+    bun scripts/bazel-natives.ts --help
+    bun scripts/bazel-natives.ts pi-iso --dest packages/natives/native
+    bun scripts/bazel-natives.ts pi-vcs --dest packages/natives/native
+    bun scripts/bazel-natives.ts pi-natives --dest packages/natives/native
+
+Then verify:
+  ls -lh packages/natives/native/
+  ldd packages/natives/native/*.node | grep -i "not found" || echo "ld ok"
+  bun --cwd=packages/natives run build
+
+## Failure — pi-vcs -> pi-iso symbols
+  error[E0425]: cannot find function `clone_candidates` in crate `pi_iso`
+  error[E0599]: no method named `clone_tree` found for reference `&dyn IsolationBackend`
+
+Established facts - do NOT re-verify:
+- crates/pi-iso/src/lib.rs:255 has fn clone_tree(
+- crates/pi-iso/src/lib.rs:360 has pub fn clone_candidates(
+- cargo build --release -p pi-iso succeeds standalone
+- diff -rq crates/pi-iso ../vendor/oh-my-pi/crates/pi-iso is silent (byte-identical)
+- diff -rq crates/pi-vcs ../vendor/oh-my-pi/crates/pi-vcs is silent
+- Both engine and vendor trees are at v18.1.18
+This is NOT a source problem.
+
+Diagnose first:
+  cargo tree -p pi-vcs -e features -i pi-iso
+- Two or more pi-iso lines -> resolution bug. Fix crates/pi-vcs/Cargo.toml so only workspace member resolves (likely path dep with version hint pulling registry copy).
+- Exactly one pi-iso line -> feature-gating bug. Enable that feature on pi-iso dependency line in pi-vcs/Cargo.toml.
+
+Scope:
+- Minimal change. Prefer manifest edits over source edits.
+- Make backups before editing manifests: cp Cargo.toml Cargo.toml.bak-$(date +%s)
+- After fix, run full verification block below.
+
+Do NOT:
+- Touch anything under ../vendor/ - read-only mirror
+- Delete or rename crates/pi-iso or crates/pi-vcs
+- Add new external dependencies
+- Change public API
+- git checkout -- anything
+
+Acceptance:
+1. cargo tree -p pi-vcs -i pi-iso shows exactly ONE pi-iso entry
+2. cargo build --release -p pi-vcs exits 0
+3. cargo build --release -p pi-natives exits 0
+4. bun --cwd=packages/natives run build exits 0
+5. nm -C target/**/libpi_iso*.rlib | grep -E 'clone_candidates|clone_tree' finds both
+6. cargo check --profile dev --workspace --all-targets exits 0
+
+Verification block (paste output in final report):
+```
+cargo tree -p pi-vcs -e features -i pi-iso
+cargo build --release -p pi-vcs
+cargo build --release -p pi-natives
+find target -name 'libpi_iso*.rlib' -exec nm -C {} \; | grep -E 'clone_candidates|clone_tree'
+cargo check --profile dev --workspace --all-targets
+ls -lh packages/natives/native/
+```
+
+Done = all commands succeed, vendor mirror untouched, sovereign/projects dedup understood.

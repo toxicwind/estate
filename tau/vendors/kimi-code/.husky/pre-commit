@@ -1,0 +1,4 @@
+set -e
+
+bun run scripts/check-no-comments.mjs
+bunx lint-staged

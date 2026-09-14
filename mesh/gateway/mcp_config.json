@@ -14,7 +14,6 @@
       "oauth": null,
       "enabled": true,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152085-06:00",
       "updated": "2026-09-07T13:20:29.008264491-06:00",
       "isolation": {
@@ -36,7 +35,6 @@
       "oauth": null,
       "enabled": true,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152165-06:00",
       "updated": "2026-09-07T13:20:29.014708073-06:00",
       "isolation": {
@@ -56,7 +54,6 @@
       "oauth": null,
       "enabled": true,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-20T00:00:00-06:00",
       "updated": "2026-09-07T13:20:29.158663643-06:00",
       "isolation": {
@@ -78,7 +75,6 @@
       "oauth": null,
       "enabled": true,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152195-06:00",
       "updated": "2026-09-07T13:20:29.024048475-06:00",
       "isolation": {
@@ -100,7 +96,6 @@
       "enabled": true,
       "quarantined": false,
       "auto_approve_tool_changes": true,
-      "trust_mode": "auto",
       "created": "2026-07-19T02:33:58.727152235-06:00",
       "updated": "2026-09-07T13:20:29.029453994-06:00",
       "isolation": {
@@ -118,7 +113,6 @@
       "enabled": true,
       "quarantined": false,
       "auto_approve_tool_changes": true,
-      "trust_mode": "auto",
       "created": "2026-07-20T00:00:00-06:00",
       "updated": "2026-09-07T13:20:29.153648178-06:00",
       "isolation": {
@@ -140,7 +134,6 @@
       "oauth": null,
       "enabled": false,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152275-06:00",
       "updated": "2026-09-07T13:20:29.03325601-06:00",
       "isolation": {
@@ -158,7 +151,6 @@
       "enabled": true,
       "quarantined": false,
       "auto_approve_tool_changes": true,
-      "trust_mode": "auto",
       "created": "2026-07-19T02:33:58.727152305-06:00",
       "updated": "2026-09-07T13:20:29.038276755-06:00",
       "isolation": {
@@ -179,7 +171,6 @@
       "enabled": true,
       "quarantined": false,
       "auto_approve_tool_changes": true,
-      "trust_mode": "auto",
       "created": "2026-07-20T00:00:00-06:00",
       "updated": "2026-09-07T13:20:29.163640259-06:00",
       "isolation": {
@@ -203,7 +194,6 @@
       "oauth": null,
       "enabled": true,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152345-06:00",
       "updated": "2026-09-07T13:20:29.049109662-06:00",
       "isolation": {
@@ -224,7 +214,6 @@
       "oauth": null,
       "enabled": true,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152375-06:00",
       "updated": "2026-09-07T13:20:29.052535064-06:00",
       "isolation": {
@@ -242,7 +231,6 @@
       "enabled": true,
       "quarantined": false,
       "auto_approve_tool_changes": true,
-      "trust_mode": "auto",
       "created": "2026-07-19T02:33:58.727152415-06:00",
       "updated": "2026-09-07T13:20:29.0569335-06:00",
       "isolation": {
@@ -259,7 +247,6 @@
       "oauth": null,
       "enabled": false,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152455-06:00",
       "updated": "2026-09-07T13:20:29.061149489-06:00",
       "isolation": {
@@ -284,7 +271,6 @@
       "oauth": null,
       "enabled": false,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152485-06:00",
       "updated": "2026-09-07T13:20:29.06520501-06:00",
       "isolation": {
@@ -306,7 +292,6 @@
       "enabled": true,
       "quarantined": false,
       "auto_approve_tool_changes": true,
-      "trust_mode": "auto",
       "created": "2026-07-19T02:33:58.727152525-06:00",
       "updated": "2026-09-07T13:20:29.075468097-06:00",
       "isolation": {
@@ -326,7 +311,6 @@
       "oauth": null,
       "enabled": true,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152555-06:00",
       "updated": "2026-09-07T13:20:29.078930599-06:00",
       "isolation": {
@@ -346,7 +330,6 @@
       "oauth": null,
       "enabled": true,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152595-06:00",
       "updated": "2026-09-07T13:20:29.082032557-06:00",
       "isolation": {
@@ -374,7 +357,6 @@
       "oauth": null,
       "enabled": false,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152625-06:00",
       "updated": "2026-09-07T13:20:29.085650555-06:00",
       "isolation": {
@@ -395,7 +377,6 @@
       "oauth": null,
       "enabled": true,
       "quarantined": false,
-      "trust_mode": "auto",
       "created": "2026-09-07T16:34:53.690485472-06:00",
       "updated": "2026-09-07T16:36:19.247432108-06:00"
     },
@@ -412,7 +393,6 @@
       "oauth": null,
       "enabled": true,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152665-06:00",
       "updated": "2026-09-07T13:20:29.089088797-06:00",
       "isolation": {
@@ -435,7 +415,6 @@
       "oauth": null,
       "enabled": true,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152695-06:00",
       "updated": "2026-09-07T13:20:29.095046457-06:00",
       "isolation": {
@@ -457,7 +436,6 @@
       "oauth": null,
       "enabled": true,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152735-06:00",
       "updated": "2026-09-07T13:20:29.098512498-06:00",
       "isolation": {
@@ -482,7 +460,6 @@
       "enabled": true,
       "quarantined": false,
       "auto_approve_tool_changes": true,
-      "trust_mode": "auto",
       "created": "2026-07-19T02:33:58.727152765-06:00",
       "updated": "2026-09-07T13:20:29.109620841-06:00",
       "isolation": {
@@ -503,7 +480,6 @@
       "oauth": null,
       "enabled": true,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152805-06:00",
       "updated": "2026-09-07T13:20:29.119008933-06:00",
       "isolation": {
@@ -529,7 +505,6 @@
       "oauth": null,
       "enabled": true,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152835-06:00",
       "updated": "2026-09-07T13:20:29.123969279-06:00",
       "isolation": {
@@ -552,7 +527,6 @@
       "enabled": true,
       "quarantined": false,
       "auto_approve_tool_changes": true,
-      "trust_mode": "auto",
       "created": "2026-07-19T02:33:58.727152875-06:00",
       "updated": "2026-09-07T13:20:29.134855855-06:00",
       "isolation": {
@@ -573,7 +547,6 @@
       "enabled": true,
       "quarantined": false,
       "auto_approve_tool_changes": true,
-      "trust_mode": "auto",
       "created": "2026-07-19T02:33:58.727152915-06:00",
       "updated": "2026-09-07T13:20:29.14344309-06:00",
       "isolation": {
@@ -593,7 +566,6 @@
       "oauth": null,
       "enabled": false,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152945-06:00",
       "updated": "2026-09-07T13:20:29.146286782-06:00",
       "isolation": {
@@ -614,7 +586,6 @@
       "oauth": null,
       "enabled": true,
       "quarantined": false,
-      "trust_mode": "scan",
       "created": "2026-07-19T02:33:58.727152985-06:00",
       "updated": "2026-09-07T13:20:29.14933534-06:00",
       "isolation": {
@@ -630,7 +601,12 @@
       "args": [
         "run",
         "/home/toxic/sovereign/tools/tmux-mcp/server.ts"
-      ]
+      ],
+      "oauth": null,
+      "enabled": false,
+      "quarantined": false,
+      "created": "2026-09-14T14:51:04.584222675-06:00",
+      "updated": "0001-01-01T00:00:00Z"
     }
   ],
   "tools_limit": 100,
