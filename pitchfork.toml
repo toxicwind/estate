@@ -330,3 +330,12 @@ retry = true
 boot_start = true
 env = { PORT = "10200", HOST = "127.0.0.1" }
 auto = ["start"]
+# awrawr-ws-exec websocket bridge (2026-09-14): persistent stdlib-asyncio WS
+# exec server; handshake/framing borrowed from squawk-ws. Same token, command
+# policy and audit as the HTTPS bridge (awrawr_mcp.py). Funnel: /exec-ws -> :8379.
+[daemons.awrawr-ws-exec]
+run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/awrawr_ws_exec.py"
+dir = "/home/toxic"
+mise = false
+retry = true
+auto = ["start"]
