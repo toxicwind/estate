@@ -80,7 +80,7 @@ export class NIMClient {
    */
   static forNVIDIA(
     apiKey: string,
-    baseURL = "https://integrate.api.nvidia.com",
+    baseURL = "http://127.0.0.1:8000",
   ): NIMClient {
     return new NIMClient({
       baseURL,

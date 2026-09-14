@@ -10,7 +10,7 @@ export PI_SUBAGENT_MODEL="thinkingmachines/inkling"
 export SCOUT_MODEL="local-fast"
 export SCOUT_BASE_URL="http://127.0.0.1:25100/v1"
 export SCOUT_API_KEY="llama-swap"
-export NIM_QUEUE_BASE_URL="https://integrate.api.nvidia.com/v1"
+export NIM_QUEUE_BASE_URL="http://127.0.0.1:8000/v1"
 export LLAMA_SWAP_MODEL="beellama/qwen-flash-64k"
 
 # 2. Local Mesh & Gateway Ports (Aligned with sovereign/config/ports.env)
