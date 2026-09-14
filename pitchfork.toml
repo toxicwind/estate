@@ -144,7 +144,7 @@ retry = true
 ready_http = "http://127.0.0.1:25145/"
 depends = ["shep"]
 env = {
- TAU_CODE_PORT = "25145",
+ TAU_CODE_PORT = "25145"
 }
 auto = ["start"]
 

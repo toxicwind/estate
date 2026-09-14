@@ -110,12 +110,12 @@ case "${1:-}" in
     ;;
 
   restart)
-    echo "Restarting mesh daemon..."
+    echo "Restarting shep daemon..."
     cd /home/toxic/sovereign
-    pitchfork stop mesh 2>/dev/null || true
+    pitchfork stop shep 2>/dev/null || true
     sleep 2
-    pitchfork start mesh
-    echo "mesh restarted"
+    pitchfork start shep
+    echo "shep restarted"
     ;;
 
   health)

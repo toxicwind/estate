@@ -48,7 +48,7 @@ mise run down
 | **prometheus**        | 25105     | Go                  | Metrics                                                                                                         |
 | **hf-downloader**     | 25106     | Bun                 | GGUF download UI                                                                                                |
 | **null-g-proxy**      | 25107     | Bun                 | Extra LLM proxy                                                                                                 |
-| **mcpproxy**          | 25127     | Go                  | MCP federation (43 MCPs → 1 endpoint)                                                                           |
+| **shep**              | 25127     | Go                  | MCP federation (43 MCPs → 1 endpoint)                                                                           |
 | **grafana**           | 25110     | Go                  | Optional dashboards                                                                                             |
 | **ghas-api**          | 25112     | Bun                 | GitHub Advanced Search API                                                                                      |
 | **ghas-mcp**          | 25113     | Bun                 | GHAS MCP (HTTP mode, depends on ghas-api)                                                                       |
@@ -150,7 +150,7 @@ Access services **directly** on their ports (LAN or Tailscale MagicDNS). Optiona
  clients ──────────┼─ rust-web      :25101  (/, /ops/api/*, /health)
  (local/tailnet)   ├─ rig           :25103  (agent kernel)
                     ├─ yote          :25102  (Telegram)
-                    ├─ mcpproxy      :25127  (43 MCPs federated)
+                    ├─ shep          :25127  (43 MCPs federated)
                     ├─ ghas-api      :25112  (GitHub search)
                     ├─ mesh-hub      :25115  (service mesh)
                     ├─ byte-vision   :25121  (vision MCP)
@@ -251,7 +251,7 @@ Zed is configured to connect directly to Sovereign Stack services. All provider 
 | **llama-swap**            | `LlamaCppLanguageModelProvider`     | `:25100` | Local GGUF inference via the toxicwind fork. Routes to beellama, turboquant, ik_llama backends on `:25001–25099`.    |
 | **sovereign-router**      | `openai_compatible` provider        | `:25104` | 5-strategy AST Matrix hybrid router (TS standalone). 24 models across 7 providers.                                   |
 | **Sovereign MCP Gateway** | `mcpproxy-sovereign` context server | `:25120` | Trust boundary + circuit breaker + sticky affinity in front of upstream MCP servers (e.g. byte-vision on `:25121`).  |
-| **mcpproxy**              | `mcpproxy-sovereign` context server | `:25109` | MCP federation (30+ MCPs → 1 endpoint). Connected via `mcp-remote` HTTP→stdio bridge.                                |
+| **shep**                  | `mcpproxy-sovereign` context server | `:25127` | MCP federation (30+ MCPs → 1 endpoint). Connected via `mcp-remote` HTTP→stdio bridge.                                |
 
 ### OpenCode provider
 
