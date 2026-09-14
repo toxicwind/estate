@@ -223,7 +223,7 @@ env = {
 auto = ["start"]
 
 [daemons.tau]
-run = "exec bun run /home/toxic/projects/sovereign-projects/tau/packages/coding-agent/src/cli.ts"
+run = "exec bun run /home/toxic/sovereign/tau/engine/packages/coding-agent/src/cli.ts"
 dir = "/home/toxic"
 mise = true
 retry = true
@@ -242,7 +242,7 @@ auto = ["stop"]
 
 [daemons.tau-code]
 run = "exec bun run src/server.ts --port 25145"
-dir = "/home/toxic/projects/sovereign-projects/tau/engine/packages/metaharness"
+dir = "/home/toxic/sovereign/tau/engine/packages/metaharness"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25145/"
