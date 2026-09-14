@@ -2,6 +2,8 @@
 # herd (llama-swap) loopback launcher — binds Go binary to 127.0.0.1:HERD_PORT (25100).
 # Renamed from llama-swap.sh — project-wide herd naming, llama-swap binary kept for compatibility.
 # No proxy/middleware hop. mesh-hub (25115) serves 20 GHAS /mesh/* features.
+# Config: --config <main> plus --config-dir /home/toxic/kimi-auto/herd.d
+# (additive, watch-config hot-reload) for the kimi-auto virtual model.
 # Lifecycle is owned by pitchfork (supervisor); this script does NOT kill or
 # steal the port — if the bind fails, pitchfork sees the failure and retries.
 set -euo pipefail
@@ -22,7 +24,7 @@ CONF="$SOV/config/herd.yaml"
 [[ -f "$CONF" ]] || { echo "herd config not found at $CONF" >&2; exit 1; }
 
 # Launch Go binary — loopback bind only (no 0.0.0.0 exposure)
-"$BIN" --config "$CONF" --listen "127.0.0.1:${PORT}" &
+"$BIN" --config "$CONF" --config-dir /home/toxic/kimi-auto/herd.d --watch-config --listen "127.0.0.1:${PORT}" &
 BPID=$!
 cleanup() { kill "$BPID" 2>/dev/null || true; }
 trap cleanup EXIT TERM INT
