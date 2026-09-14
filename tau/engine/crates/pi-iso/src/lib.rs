@@ -362,7 +362,17 @@ fn clone_tree_recursive(src: &Path, dst: &Path, exclude_names: &[&OsStr]) -> Iso
 			#[cfg(unix)]
 			std::os::unix::fs::symlink(&target, &to).map_err(io_err)?;
 			#[cfg(windows)]
-			let _ = std::os::windows::fs::symlink_file(&target, &to);
+			{
+				// Windows needs the dir/file symlink variant up front;
+			// propagate failures instead of reporting a successful
+			// clone with the entry silently missing.
+				use std::os::windows::fs::FileTypeExt as _;
+				if ft.is_symlink_dir() {
+					std::os::windows::fs::symlink_dir(&target, &to).map_err(io_err)?;
+				} else {
+					std::os::windows::fs::symlink_file(&target, &to).map_err(io_err)?;
+				}
+			}
 		} else {
 			std::fs::copy(&from, &to).map_err(io_err)?;
 		}

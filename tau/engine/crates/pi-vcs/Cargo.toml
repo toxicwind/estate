@@ -12,6 +12,7 @@ workspace = true
 [dependencies]
 gix.workspace = true
 gix-utils = { version = "0.3.6", default-features = false }
+futures.workspace = true
 jj-lib.workspace = true
 pi-iso.workspace = true
 thiserror.workspace = true
