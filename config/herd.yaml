@@ -42,6 +42,9 @@ astMatrix:
     nvidia:
       baseUrl: http://127.0.0.1:8000/v1
       keyEnv: NIM_PROXY_API_KEY
+      modelMap:
+        kimi-k2: moonshotai/kimi-k2.6
+        kimi-k3-nim: moonshotai/kimi-k3
 
 routing:
   scheduler:
