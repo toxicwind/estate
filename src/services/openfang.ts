@@ -27,7 +27,7 @@ function loadSecretsFile(path: string) {
   for (const line of readFileSync(path, "utf8").split("\n")) {
     if (!line || line.startsWith("#") || !line.includes("=")) continue;
     const eq = line.indexOf("=");
-    const key = line.slice(0, eq).trim();
+    const key = line.slice(0, eq).trim().replace(/^export\s+/, "");
     if (!key || process.env[key]) continue;
     let val = line.slice(eq + 1).trim();
     if (
