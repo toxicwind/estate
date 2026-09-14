@@ -1,34 +1,25 @@
-# pi.dev Conversion Kit (from grok-build)
+# pi-conversion — grok-build → pi.dev migration (archived)
 
-Migration kit that converted the grok-build agent stack to **pi.dev** — the
-open-source agent framework with fully transparent request/response (no blinded
-payloads, no opaque retry loops). Generated July 2026 from the live
-grok-build `config.toml`, pi-mono source, and mcpproxy-go source.
+One-shot migration package from **July 2026** that converted the grok-build stack to [pi.dev](https://pi.dev) (open-source agent framework, MIT). The migration is complete — this directory is kept as a reference for the config mapping.
 
-> **Status: historical.** The conversion is done; this directory is kept as a
-> reference for the config mapping and the model table below.
-
-## File map
+## Contents
 
 ```text
 pi-conversion/
-├── models.json              →  ~/.pi/agent/models.json
-├── settings.json            →  ~/.pi/agent/settings.json
-├── project-settings.json    →  /home/toxic/.pi/settings.json
-├── mcpproxy-config.json     →  ~/.mcpproxy/mcp_config.json
-├── install.sh               →  One-shot installer
-└── README.md                →  This file
+├── models.json            →  ~/.pi/agent/models.json
+├── settings.json          →  ~/.pi/agent/settings.json
+├── project-settings.json  →  /home/toxic/.pi/settings.json
+├── mcpproxy-config.json   →  ~/.mcpproxy/mcp_config.json
+└── install.sh             →  one-shot installer
 ```
 
-## Quick start
+## Quick start (reference)
 
 ```bash
 # 1. Install pi
 curl -fsSL https://pi.dev/install.sh | sh
 
-# 2. Install MCPProxy (Linux)
-curl -fsSL https://apt.mcpproxy.app/install.sh | sudo bash
-
+# 2. Install MCPProxy (now the shep service on :25127 — prefer that over a local mcpproxy)
 # 3. Copy configs
 mkdir -p ~/.pi/agent ~/.mcpproxy /home/toxic/.pi
 cp models.json ~/.pi/agent/models.json
@@ -37,100 +28,65 @@ cp project-settings.json /home/toxic/.pi/settings.json
 cp mcpproxy-config.json ~/.mcpproxy/mcp_config.json
 
 # 4. Export keys (or use /login in pi)
-export NVIDIA_API_KEY=<redacted> GROQ_API_KEY=<redacted> OPENROUTER_API_KEY=<redacted>
+export NVIDIA_API_KEY="…" OPENROUTER_API_KEY="…" GROQ_API_KEY="…"
 
-# 5. Start MCPProxy (one terminal), then pi (another)
-mcpproxy
+# 5. Run
 cd /home/toxic && pi
+/model              # list converted models
+/model groq         # select Groq
 ```
 
-## What it fixed
+## Model reference
 
-| grok-build problem | pi.dev fix |
-| ------------------ | ---------- |
-| Blinded payloads — raw JSON swallowed by the Rust wrapper | Full HTTP request/response visible in TUI and logs |
-| `reasoning_effort="high"` → NIM expects float 0.2–0.99 → serde null error | `thinkingLevelMap` maps pi levels to exact provider values |
-| 3x opaque retry loop, generic error at "column 592" | Immediate raw error dump with full response body |
-| No NIM day-0 parser support | `compat.thinkingFormat: "openrouter"` + custom `thinkingLevelMap` |
-| MCP servers hardcoded in TOML, no dynamic management | MCPProxy federation with quarantine, health checks, BM25 discovery |
-| `permission_mode = "always-approve"` buried in TOML | `defaultProjectTrust: "always"` in settings + `/trust` command |
+grok-build model → pi.dev provider / model ID:
 
-## NIM `reasoning_effort` (historical)
+| grok-build | pi.dev provider | Model ID | Context |
+| ---------- | --------------- | -------- | ------- |
+| `groq-compound` | groq | `groq/compound` | 131K |
+| `groq-120b` / `groq-70b` | groq | `openai/gpt-oss-120b` | 131K |
+| `groq-20b` / `groq-scout` | groq | `openai/gpt-oss-20b` | 131K |
+| `groq-qwen` | groq | `qwen/qwen3.6-27b` | 131K |
+| `openrouter-nemotron-ultra` | openrouter | `nvidia/nemotron-3-ultra-550b-a55b:free` | 1M |
+| `openrouter-nemotron-super` | openrouter | `nvidia/nemotron-3-super-120b-a12b:free` | 1M |
+| `openrouter-nemotron-nano` | openrouter | `nvidia/nemotron-3-nano-30b-a3b:free` | 256K |
+| `openrouter-laguna-m1` | openrouter | `poolside/laguna-m.1:free` | 262K |
+| `openrouter-hy3` | openrouter | `tencent/hy3:free` | 262K |
+| `openrouter-gemma-31b` | openrouter | `google/gemma-4-31b-it:free` | 262K |
+| `openrouter-llama-33-70b` | openrouter | `meta-llama/llama-3.3-70b-instruct:free` | 131K |
+| `openrouter-gpt-oss-120b` | openrouter | `openai/gpt-oss-120b:free` | 131K |
+| `openrouter-hermes-405b` | openrouter | `nousresearch/hermes-3-llama-3.1-405b:free` | 131K |
+| `mistral` | mistral | `mistral-large-latest` | 131K |
+| `glm-flash` | glm | `glm-4.7-flash` | 200K |
+| `cerebras` | cerebras | `gpt-oss-120b` | 128K |
+| `google-gemini` | google | `gemini-2.5-flash` | 1M |
+| `sov-25100` / `local-llama` | sov-25100 | `beellama/qwen-flash-64k` | 64K |
 
-grok-build sent `reasoning_effort` as a serde-typed value; NIM expects a float
-string in `0.2`–`0.99`, so high-effort calls died with a generic serialization
-error after 3 blind retries. pi.dev solves it with an explicit map:
+## grok-build → pi.dev differences
 
-```json
-"thinkingLevelMap": {
-  "off": null, "minimal": "0.2", "low": "0.4", "medium": "0.6",
-  "high": "0.8", "xhigh": "0.9", "max": "0.99"
-}
-```
+| | grok-build | pi.dev |
+|---|---|---|
+| Config format | TOML | JSON (`models.json`, `settings.json`) |
+| Config locations | `~/.grok/config.toml` | `~/.pi/agent/`, `.pi/settings.json` (project) |
+| API keys | inline `env_key` | `auth.json` (encrypted), env vars, or `/login` |
+| MCP servers | TOML `mcp_servers` block | external MCPProxy / shep, or `mcp-remote` |
+| Permission mode | `permission_mode = "always-approve"` | `defaultProjectTrust: "always"` + `/trust` |
+| Raw visibility | none — payloads blinded | full — every request/response in the TUI |
+| Thinking levels | not supported | `/thinking off/minimal/low/medium/high/xhigh/max` |
 
-> Note 2026-09-03: `thinkingmachines/inkling` (NVIDIA NIM Inkling) was
-> discontinued and removed. Kept here as the plumbing reference pattern.
+## MCPProxy
 
-## Model conversion reference
+grok-build's hardcoded `mcp_servers` TOML block is replaced by a federated gateway (today: the **shep** service on :25127):
 
-| grok-build model | pi.dev provider | pi.dev model ID | Context | Max tokens |
-| ---------------- | --------------- | --------------- | ------- | ---------- |
-| `groq-compound` | `groq` | `groq/compound` | 131K | 16K |
-| `groq-120b` | `groq` | `openai/gpt-oss-120b` | 131K | 16K |
-| `groq-20b` | `groq` | `openai/gpt-oss-20b` | 131K | 16K |
-| `groq-qwen` | `groq` | `qwen/qwen3.6-27b` | 131K | 16K |
-| `groq-allam` | `groq` | `allam-2-7b` | 4K | 4K |
-| `openrouter-nemotron-ultra` | `openrouter` | `nvidia/nemotron-3-ultra-550b-a55b:free` | 1M | 65K |
-| `openrouter-nemotron-super` | `openrouter` | `nvidia/nemotron-3-super-120b-a12b:free` | 1M | 32K |
-| `openrouter-nemotron-nano` | `openrouter` | `nvidia/nemotron-3-nano-30b-a3b:free` | 256K | 32K |
-| `openrouter-nemotron-nano-omni` | `openrouter` | `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free` | 256K | 32K |
-| `openrouter-laguna-m1` | `openrouter` | `poolside/laguna-m.1:free` | 262K | 32K |
-| `openrouter-laguna-xs` | `openrouter` | `poolside/laguna-xs-2.1:free` | 262K | 32K |
-| `openrouter-north-mini` | `openrouter` | `cohere/north-mini-code:free` | 256K | 32K |
-| `openrouter-qwen-coder` | `openrouter` | `qwen/qwen3-coder:free` | 1M | 32K |
-| `openrouter-hy3` | `openrouter` | `tencent/hy3:free` | 262K | 32K |
-| `openrouter-gemma-31b` | `openrouter` | `google/gemma-4-31b-it:free` | 262K | 32K |
-| `openrouter-gemma-26b` | `openrouter` | `google/gemma-4-26b-a4b-it:free` | 262K | 32K |
-| `openrouter-llama-33-70b` | `openrouter` | `meta-llama/llama-3.3-70b-instruct:free` | 131K | 32K |
-| `openrouter-gpt-oss-120b` | `openrouter` | `openai/gpt-oss-120b:free` | 131K | 32K |
-| `openrouter-hermes-405b` | `openrouter` | `nousresearch/hermes-3-llama-3.1-405b:free` | 131K | 32K |
-| `openrouter-dolphin-24b` | `openrouter` | `cognitivecomputations/dolphin-mistral-24b-venice-edition:free` | 32K | 16K |
-| `mistral` | `mistral` | `mistral-large-latest` | 131K | 16K |
-| `glm-flash` | `glm` | `glm-4.7-flash` | 200K | 16K |
-| `cerebras` | `cerebras` | `gpt-oss-120b` | 128K | 16K |
-| `google-gemini` | `google` | `gemini-2.5-flash` | 1M | 8K |
-| `fireworks` | `fireworks` | `accounts/fireworks/models/llama-v3p3-70b-instruct` | 131K | 16K |
-| `huggingface` | `huggingface` | `meta-llama/Llama-3.3-70B-Instruct` | 131K | 4K |
-| `sov-25100` / `local-llama` | `sov-25100` | `beellama/qwen-flash-64k` | 64K | 16K |
-| `groq-scout` | `groq` | `openai/gpt-oss-20b` | 131K | 16K |
-| `groq-70b` | `groq` | `openai/gpt-oss-120b` | 131K | 16K |
-
-## MCPProxy integration
-
-pi.dev connects to MCPProxy (the federated, secured, observable MCP gateway) at
-the same endpoint grok-build used:
-
-- **Quarantine** — new servers are quarantined until manually approved (blocks tool-poisoning attacks)
+- **Quarantine** — new servers held until manually approved
 - **BM25 tool discovery** — agents load one `retrieve_tools` function instead of hundreds of schemas
 - **Health checks** — automatic liveness probes
-- **Crosses the 128-function OpenAI limit** — federates hundreds of MCP servers
+- pi.dev connects via the same endpoint; `/mcp` in the TUI lists federated tools
 
-In interactive pi, `/mcp` shows all federated tools.
+## Historical notes
 
-## Key differences: grok-build → pi.dev
-
-| Feature | grok-build | pi.dev |
-| ------- | ---------- | ------ |
-| Config format | TOML | JSON (`models.json`, `settings.json`) |
-| Config locations | `~/.grok/config.toml` | `~/.pi/agent/models.json`, `~/.pi/agent/settings.json`, `.pi/settings.json` (project) |
-| API key storage | Inline `env_key` | `auth.json` (encrypted), env vars, or `/login` |
-| MCP servers | TOML `mcp_servers` block | External MCPProxy or `mcp-remote` via extension |
-| Permission mode | `permission_mode = "always-approve"` | `defaultProjectTrust: "always"` |
-| Raw visibility | None — blinded | Full — every request/response in TUI |
-| Error handling | 3x retry, generic serde error | Immediate raw dump, configurable retry |
-| Thinking levels | Not supported | `/thinking off/minimal/low/medium/high/xhigh/max` |
+- **NIM `reasoning_effort`**: grok-build's serde layer sent the wrong type and blinded the error; pi.dev's `thinkingLevelMap` maps levels to exact provider values (`off/minimal/low/medium/high/xhigh/max` → `"0.2"`–`"0.99"`), with full raw error dumps. `thinkingmachines/inkling` was discontinued 2026-09-03, so the NIM-specific section is reference only.
+- Debug any provider directly: `curl` the provider endpoint, then `PI_LOG_LEVEL=debug pi`, then Ctrl+L in the TUI for the full request/response log.
 
 ## License
 
-All configs here are derived from the grok-build `config.toml` and mapped to
-pi.dev's documented schema. MIT (same as pi.dev and MCPProxy).
+Configs derived from the July 2026 grok-build `config.toml`, mapped to pi.dev's documented schema. MIT.
