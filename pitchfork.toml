@@ -233,8 +233,10 @@ env = {
 }
 auto = ["start"]
 
+# NOTE: tau cli.ts is an interactive coding-agent CLI, not a persistent server.
+# Kept auto-stop until a real daemon entrypoint exists; do not auto-start blindly.
 [daemons.tau]
-run = "exec bun run /home/toxic/projects/sovereign-projects/tau/packages/coding-agent/src/cli.ts"
+run = "exec bun run /home/toxic/projects/sovereign-projects/tau/engine/packages/coding-agent/src/cli.ts"
 dir = "/home/toxic"
 mise = true
 retry = true
@@ -343,3 +345,16 @@ daemons = ["herd", "qdrant", "redis", "kafka", "coyote", "yote", "search-api", "
 daemons = ["herd", "qdrant", "redis", "kafka", "coyote", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "kimi-code", "mesh", "dnsmasq", "nginx", "nim-proxy", "matter-server"]
 
 
+
+[daemons.free-zed-gateway]
+run = "exec python3 /home/toxic/projects/sovereign-projects/herd/mesh/router/free_zed_gateway/gateway.py"
+dir = "."
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:19280/v1/models"
+env = {
+  FREE_GATEWAY_PORT = "19280",
+  FREE_GATEWAY_DB = "/home/toxic/sovereign/data/free_zed_gateway.db",
+}
+auto = ["start"]
