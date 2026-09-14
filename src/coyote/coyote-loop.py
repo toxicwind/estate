@@ -492,7 +492,7 @@ def main():
     import argparse
     p = argparse.ArgumentParser(description="Coyote Loop v3.1 — Max Level")
     p.add_argument("--task", "-t")
-    p.add_argument("--model", "-m", default=os.environ.get("COYOTE_MODEL", "kimi-k3"))
+    p.add_argument("--model", "-m", default=os.environ.get("COYOTE_MODEL", "gpt-oss"))
     p.add_argument("--session", "-s", default="default")
     p.add_argument("--max-rounds", type=int, default=50)
     p.add_argument("--ctx-size", type=int, default=131072)

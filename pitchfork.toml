@@ -72,6 +72,7 @@ boot_start = true
 ready_http = "http://127.0.0.1:25143/health"
 env = {
   COYOTE_PORT = "25143",
+  COYOTE_MODEL = "gpt-oss",
 }
 auto = ["start"]
 
