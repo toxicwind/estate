@@ -79,3 +79,14 @@ All packages typecheck and test cleanly. `node_modules/` stays minimal — only 
 ## License
 
 MIT — see [LICENSE](./LICENSE).
+
+## Branch snapshots (2026-09-14)
+
+Before the repo was scrapped per owner approval, full trees of the three
+non-main branches were preserved under `branches/`:
+
+- `branches/feat/initial-omp-kafka/` (18 files)
+- `branches/feat/omp-edit-committer/` (29 files)
+- `branches/fix/add-kafkajs-dep/` (31 files)
+
+Secret scan over all 78 files: clean.
