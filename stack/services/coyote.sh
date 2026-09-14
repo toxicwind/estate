@@ -9,7 +9,7 @@ require_env COYOTE_PORT
 PORT="$COYOTE_PORT"
 # Secret hygiene: key travels via env, never argv (invisible to ps).
 export COYOTE_API_KEY="${COYOTE_API_KEY:-sk-hal-local}"
-export COYOTE_MODEL="${COYOTE_MODEL:-kimi-k3}"
+export COYOTE_MODEL="${COYOTE_MODEL:-gpt-oss}"
 
 # Find hal-loop.py — sovereign src/ is canonical
 BIN_CAND=(
