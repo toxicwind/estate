@@ -55,4 +55,15 @@ export const PERIPHERAL_SERVICES: ServiceDef[] = [
     env: { PORT: "25192" },
     healthPath: "/api/health",
   },
+  {
+    id: "nginx",
+    name: "nginx",
+    portKey: "NGINX_PORT",
+    run: "exec /usr/bin/nginx -c /etc/nginx/nginx.conf -g 'daemon off; pid /tmp/nginx-pitchfork.pid;'",
+    dir: ".",
+    readyCmd: "ss -ltn 'sport = :62200' | grep -q LISTEN",
+    group: "aux",
+    autoStart: true,
+    mise: false,
+  },
 ];
