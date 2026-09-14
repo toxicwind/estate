@@ -1,66 +1,31 @@
-# ============================================================================
-# SOVEREIGN PITCHFORK CONFIG — MISE-NATIVE (cutover 2026-09-14)
-# Owned directly: edit this file. scripts/generate.ts is retired for
-# service definitions; do not regenerate from it.
-# ============================================================================
+# SOVEREIGN PITCHFORK CONFIG — GENERATED from config/ports.env + service definitions
+# DO NOT EDIT DIRECTLY — Run: bun run scripts/generate.ts
+env_file = "config/ports.env"
 
-[daemons.herd]
-run = "exec ./stack/services/herd.sh"
-dir = "."
+[daemons.mesh]
+run = "exec /usr/local/bin/mcpproxy.system serve --config=/home/toxic/projects/sovereign-projects/mesh/gateway/mcp_config.json --log-level=warn --log-to-file --listen=127.0.0.1:25127"
+dir = "/home/toxic/projects/sovereign-projects/mesh/gateway"
 mise = false
 retry = true
-boot_start = true
-ready_http = "http://127.0.0.1:25100/health"
-env = {
-  HERD_PORT = "25100",
-}
+ready_http = "http://127.0.0.1:25127/health"
 auto = ["start"]
 
-[daemons.qdrant]
-run = "exec /home/toxic/.cargo/bin/qdrant-server --config-path ./qdrant-config.yaml"
-dir = "."
-mise = false
-retry = true
-boot_start = true
-ready_http = "http://127.0.0.1:25133/"
-env = {
-  QDRANT_PORT = "25133",
-}
-auto = ["start"]
-
-[daemons.redis]
-run = "exec valkey-server --port 25199 --bind 0.0.0.0 --protected-mode no --save '' --appendonly no"
-dir = "."
-mise = false
-retry = true
-boot_start = true
-ready_cmd = "ss -ltn 'sport = :25199' | grep -q LISTEN"
-env = {
-  REDIS_PORT = "25199",
-}
-auto = ["start"]
-
-[daemons.kafka]
-run = "exec ./stack/services/kafka.sh"
+[daemons.mesh-hub]
+run = "exec bun run src/services/mesh-hub.ts"
 dir = "."
 mise = true
 retry = true
-boot_start = true
-ready_cmd = "ss -ltn 'sport = :25144' | grep -q LISTEN"
-env = {
-  KAFKA_PORT = "25144",
-}
+ready_http = "http://127.0.0.1:25115/health"
+depends = ["mesh"]
 auto = ["start"]
 
-[daemons.dnsmasq]
-run = "exec ./stack/services/dnsmasq.sh"
+[daemons.herd]
+run = "exec /home/toxic/sovereign/stack/services/herd.sh"
 dir = "."
 mise = false
 retry = true
-boot_start = true
-ready_cmd = "ss -ltn 'sport = :53' | grep -q LISTEN"
-env = {
-}
+ready_http = "http://127.0.0.1:25100/health"
+depends = ["mesh"]
 auto = ["start"]
 
 [daemons.coyote]
@@ -68,12 +33,8 @@ run = "exec ./stack/services/coyote.sh"
 dir = "."
 mise = true
 retry = true
-boot_start = true
 ready_http = "http://127.0.0.1:25143/health"
-env = {
-  COYOTE_PORT = "25143",
-  COYOTE_MODEL = "gpt-oss",
-}
+depends = ["mesh", "herd"]
 auto = ["start"]
 
 [daemons.yote]
@@ -82,9 +43,7 @@ dir = "."
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25102/health"
-env = {
-  YOTE_PORT = "25102",
-}
+depends = ["mesh"]
 auto = ["start"]
 
 [daemons.search-api]
@@ -93,9 +52,7 @@ dir = "/home/toxic/projects/sovereign-projects/sovereign-github-search"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25112/health"
-env = {
-  GHAS_API_PORT = "25112",
-}
+depends = ["mesh"]
 auto = ["start"]
 
 [daemons.search-ui]
@@ -104,21 +61,7 @@ dir = "/home/toxic/projects/sovereign-projects/sovereign-github-search/apps/fron
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25114/"
-env = {
-  GHAS_FRONTEND_PORT = "25114",
-}
-auto = ["start"]
-
-[daemons.mesh-hub]
-run = "exec bun run src/services/mesh-hub.ts"
-dir = "."
-mise = true
-retry = true
-boot_start = true
-ready_http = "http://127.0.0.1:25115/health"
-env = {
-  MESH_HUB_PORT = "25115",
-}
+depends = ["mesh"]
 auto = ["start"]
 
 [daemons.axiom]
@@ -127,20 +70,16 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25103/api/health"
-env = {
-  OPENFANG_PORT = "25103",
-}
+depends = ["mesh"]
 auto = ["start"]
 
 [daemons.rust-web]
-run = "exec ./stack/services/rust-web-hot.sh"
+run = "exec ./stack/services/rust-web.sh"
 dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25201/health"
-env = {
-  RUST_WEB_BACKEND_PORT = "25201",
-}
+depends = ["mesh"]
 auto = ["start"]
 
 [daemons.hf-downloader]
@@ -149,20 +88,16 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25106/api/health"
-env = {
-  HF_DOWNLOADER_PORT = "25106",
-}
+depends = ["mesh"]
 auto = ["start"]
 
 [daemons.null-g-proxy]
 run = "exec bun run src/index.ts"
-dir = "./tools/null-g-proxy"
+dir = "/home/toxic/sovereign/tools/null-g-proxy"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25107/health"
-env = {
-  NULL_G_PROXY_PORT = "25107",
-}
+depends = ["mesh"]
 auto = ["start"]
 
 [daemons.kimi-audit-dash]
@@ -171,20 +106,16 @@ dir = "/home/toxic/kimi-token-audit"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25116/health"
-env = {
-  KIMI_AUDIT_DASH_PORT = "25116",
-}
+depends = ["mesh"]
 auto = ["start"]
 
 [daemons.mcp-gateway]
 run = "exec bun run gateway.ts"
-dir = "./tools/sovereign-router/sovereign-mcp-gateway"
+dir = "/home/toxic/sovereign/tools/sovereign-router/sovereign-mcp-gateway"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25120/health"
-env = {
-  MCP_GATEWAY_PORT = "25120",
-}
+depends = ["mesh"]
 auto = ["start"]
 
 [daemons.byte-vision]
@@ -193,9 +124,7 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25121/health"
-env = {
-  BYTE_VISION_PORT = "25121",
-}
+depends = ["mesh"]
 auto = ["start"]
 
 [daemons.hindsight]
@@ -204,87 +133,28 @@ dir = "."
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25117/health"
-env = {
-  HINDSIGHT_API_PORT = "25117",
-}
+depends = ["mesh"]
 auto = ["start"]
-
-[daemons.prometheus]
-run = "exec ./stack/services/prometheus-hot.sh"
-dir = "."
-mise = true
-retry = true
-boot_start = true
-ready_http = "http://127.0.0.1:25105/-/healthy"
-env = {
-  PROMETHEUS_PORT = "25105",
-}
-auto = ["start"]
-
-[daemons.grafana]
-run = "exec ./stack/services/grafana-mesh.sh"
-dir = "."
-mise = true
-retry = true
-boot_start = true
-ready_http = "http://127.0.0.1:25110/api/health"
-env = {
-  GRAFANA_PORT = "25110",
-}
-auto = ["start"]
-
-# NOTE: tau cli.ts is an interactive coding-agent CLI, not a persistent server.
-# Kept auto-stop until a real daemon entrypoint exists; do not auto-start blindly.
-[daemons.tau]
-run = "exec bun run /home/toxic/projects/sovereign-projects/tau/engine/packages/coding-agent/src/cli.ts"
-dir = "/home/toxic"
-mise = true
-retry = true
-ready_cmd = "sleep 2 && echo ready"
-env = {
-  PI_CONFIG_DIR = "/home/toxic/.tau",
-  PI_AGENT_DIR = "/home/toxic/.tau/agent",
-  PI_CODING_AGENT = "true",
-  PI_REASONING_LEVEL = "high",
-  PI_SUBAGENT_MODEL = "thinkingmachines/inkling",
-  PI_AGENT_PORT = "25125",
-  DAEMON_PROJECT_DIR = "/home/toxic",
-  DAEMON_RUNTIME_DIR = "/home/toxic/.tau/run/daemons/00a0a40d4f605f26",
-}
-auto = ["stop"]
 
 [daemons.tau-code]
 run = "exec bun run src/server.ts --port 25145"
 dir = "/home/toxic/projects/sovereign-projects/tau/engine/packages/metaharness"
 mise = true
 retry = true
-boot_start = true
 ready_http = "http://127.0.0.1:25145/"
+depends = ["mesh"]
 env = {
-  TAU_CODE_PORT = "25145",
+ TAU_CODE_PORT = "25145",
 }
 auto = ["start"]
 
 [daemons.kimi-code]
-run = "exec bun run dist/main.mjs web --port 25126 --no-open"
-dir = "/home/toxic/sovereign/tau/vendors/kimi-code/apps/kimi-code"
+run = "exec /home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126"
+dir = "/home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code"
 mise = true
 retry = true
-ready_http = "http://127.0.0.1:25126/api/v1/healthz"
-env = {
-  KIMI_CODE_PORT = "25126",
-}
-auto = ["start"]
-
-[daemons.mesh]
-run = "exec /home/toxic/projects/sovereign-projects/mesh/gateway/mcpproxy-go serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=warn --log-to-file --listen=127.0.0.1:25127"
-dir = "/home/toxic/projects/sovereign-projects/mesh/gateway"
-mise = false
-retry = true
-ready_http = "http://127.0.0.1:25127/health"
-env = {
-  MCPPROXY_GO_PORT = "25127",
-}
+ready_http = "http://127.0.0.1:25126/health"
+depends = ["mesh"]
 auto = ["start"]
 
 [daemons.nginx]
@@ -292,19 +162,66 @@ run = "exec /usr/bin/nginx -c /etc/nginx/nginx.conf -g 'daemon off; pid /tmp/ngi
 dir = "."
 mise = false
 retry = true
-boot_start = true
 ready_cmd = "ss -ltn 'sport = :62200' | grep -q LISTEN"
+depends = ["mesh"]
+auto = ["start"]
+
+[daemons.qdrant]
+run = "exec /home/toxic/.cargo/bin/qdrant-server --config-path ./qdrant-config.yaml"
+dir = "."
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25133/"
+auto = ["start"]
+
+[daemons.redis]
+run = "exec valkey-server --port 25199 --bind 0.0.0.0 --protected-mode no --save '' --appendonly no"
+dir = "."
+mise = false
+retry = true
+ready_port = 25199
+auto = ["start"]
+
+[daemons.kafka]
+run = "exec ./stack/services/kafka.sh"
+dir = "."
+mise = true
+retry = true
+ready_port = 25144
+auto = ["start"]
+
+[daemons.dnsmasq]
+run = "exec ./stack/services/dnsmasq.sh"
+dir = "."
+mise = false
+retry = true
+ready_cmd = "ss -ltn 'sport = :53' | grep -q LISTEN"
+auto = ["start"]
+
+[daemons.prometheus]
+run = "exec ./stack/services/prometheus-hot.sh"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25105/-/healthy"
+auto = ["start"]
+
+[daemons.grafana]
+run = "exec ./stack/services/grafana-mesh.sh"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25110/api/health"
 auto = ["start"]
 
 [daemons.nim-proxy]
-run = "exec docker run --rm --name nim-proxy -p 127.0.0.1:8000:8000 -v nim-proxy-data:/data -e DATA_DIR=/data ghcr.io/miztertea/nim-proxy:latest"
+run = "exec env HOST=127.0.0.1 PORT=8000 DATA_DIR=/home/toxic/.nim-proxy-data /home/toxic/.nim-proxy/nim-proxy"
 dir = "."
 mise = false
 retry = true
 ready_cmd = "ss -ltn 'sport = :8000' | grep -q LISTEN"
-boot_start = true
 env = {
-  NIM_PROXY_PORT = "8000",
+ NIM_PROXY_PORT = "8000",
 }
 auto = ["start"]
 
@@ -314,47 +231,46 @@ dir = "."
 mise = false
 retry = true
 ready_cmd = "ss -ltn 'sport = :5580' | grep -q LISTEN"
-boot_start = true
 env = {
-  MATTER_SERVER_PORT = "5580",
+ MATTER_SERVER_PORT = "5580",
 }
 auto = ["start"]
 
-[groups.core]
-daemons = ["herd", "qdrant", "redis", "dnsmasq", "search-api", "mesh-hub", "prometheus", "grafana", "mesh"]
+[daemons.tau]
+run = "exec bun run /home/toxic/projects/sovereign-projects/tau/packages/coding-agent/src/cli.ts"
+dir = "/home/toxic"
+mise = true
+retry = true
+ready_cmd = "sleep 2 && echo ready"
+depends = ["mesh"]
+env = {
+ PI_CONFIG_DIR = "/home/toxic/.tau",
+ PI_AGENT_DIR = "/home/toxic/.tau/agent",
+ PI_CODING_AGENT = "true",
+ PI_REASONING_LEVEL = "high",
+ PI_SUBAGENT_MODEL = "thinkingmachines/inkling",
+}
 
-[groups.main]
-daemons = ["qdrant", "redis", "kafka", "coyote", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "kimi-code", "mesh", "dnsmasq"]
+[groups.mesh]
+daemons = ["mesh", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx"]
+
+[groups.core]
+daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "nim-proxy", "matter-server"]
 
 [groups.agents]
-daemons = ["axiom", "tau", "tau-code", "kimi-code"]
-
-[groups.search]
-daemons = ["search-api", "search-ui"]
-
-[groups.mcp]
-daemons = ["mcp-gateway", "mesh"]
-
-[groups.monitoring]
-daemons = ["prometheus", "grafana"]
+daemons = ["tau"]
 
 [groups.all]
-daemons = ["herd", "qdrant", "redis", "kafka", "coyote", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "kimi-code", "mesh", "dnsmasq", "nginx", "nim-proxy", "matter-server"]
+daemons = ["mesh", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "nim-proxy", "matter-server", "tau", "kimi-auto-resolver"]
 
-[groups.sovereign-core]
-daemons = ["herd", "qdrant", "redis", "kafka", "coyote", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "kimi-code", "mesh", "dnsmasq", "nginx", "nim-proxy", "matter-server"]
-
-
-
-[daemons.free-zed-gateway]
-run = "exec python3 /home/toxic/projects/sovereign-projects/herd/mesh/router/free_zed_gateway/gateway.py"
-dir = "."
+[daemons.kimi-auto-resolver]
+run = "exec /home/toxic/kimi-auto/loop.sh"
+dir = "/home/toxic/kimi-auto"
 mise = false
 retry = true
 boot_start = true
-ready_http = "http://127.0.0.1:19280/v1/models"
 env = {
-  FREE_GATEWAY_PORT = "19280",
-  FREE_GATEWAY_DB = "/home/toxic/sovereign/data/free_zed_gateway.db",
+  KIMI_AUTO_HERD = "http://127.0.0.1:25100",
+  KIMI_AUTO_INTERVAL = "900",
 }
 auto = ["start"]
