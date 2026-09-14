@@ -557,7 +557,9 @@ export class CombinedAutocompleteProvider implements AutocompleteProvider {
 
 			if (spaceIndex === -1) {
 				// No space yet - complete command names
-				const prefix = commandText.slice(1); // Remove the "/"
+				// Collapse duplicate leading slashes: typing "/" while the slash menu is
+				// already open yields "//model" — query it as "model", not "/model".
+				const prefix = commandText.replace(/^\/+/, "");
 				const lowerPrefix = prefix.toLowerCase();
 
 				const matches = isMidPromptSkillLookup
@@ -1200,7 +1202,8 @@ export class CombinedAutocompleteProvider implements AutocompleteProvider {
 		if (commandText.length <= 1) return null; // Bare "/" alone, don't auto-complete
 		if (commandText.includes(" ")) return null; // Only complete command name, not args
 
-		const prefix = commandText.slice(1);
+		// Collapse duplicate leading slashes (see getSuggestions above).
+		const prefix = commandText.replace(/^\/+/, "");
 		const lowerPrefix = prefix.toLowerCase();
 
 		// The `/skill:` namespace row is excluded here: the sync path submits
