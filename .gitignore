@@ -1,28 +1,86 @@
-# ============================================================================
-# .gitignore — Sovereign Stack (Bun-primary)
-# ============================================================================
+# Dependencies
+node_modules/
+bun.lockb
+.bun/
+.pnpm-store/
 
-# ─── Secrets & Credentials ──────────────────────────────────────────────────
-# Environment files
-.env
+# Build & Runtime Artifacts
+dist/
+build/
+target/
+*.tsbuildinfo
+.turbo/
+Cargo.lock.bak
+.cache/
+tmp/
+/tmp/
+# Logs, Databases & Session State
+logs/
+*.log
+*.qslog
+*.jsonl
+*.pid
+session-export*
+*.session
+*.sqlite
+*.db
+*.db-shm
+*.db-wal
+.agent-orchestration/
+.wezterm.sock*
+# Environment & Secrets (Zero-Leak Boundary)
 .env*
 !.env.example
 !.env.template
-.envrc.local
-.secrets
+.env.local
+.env.*.local
 .secrets*
 *.token
-
-# Certificates and Keys
-*.key
 *.pem
+*.key
 *.cert
-*.crt
 *.pfx
+# OS & Editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+.project_map.json
+# Local Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+# Local model weights / Large binaries
+*.gguf
+*.bin
+*.pt
+*.safetensors
+# Build artifacts
+mesh/**/node_modules/
+mesh/**/dist/
+herd/engines/target/
+tau/tau/
+tau/packages/coding-agent/target/
+# Backup artifacts  
+tau.bak-*/
+# Sensitive / generated
+*.env.example
+# TUI / IDE
+.husky/
+# ============================================================================
+# .gitignore — Sovereign Stack (Bun-primary)
+# ─── Secrets & Credentials ──────────────────────────────────────────────────
+# Environment files
+.env
+.envrc.local
+.secrets
+# Certificates and Keys
+*.crt
 *.p12
 *.pkcs12
 *.der
-
 # Credentials, Tokens, Secrets
 *credentials*
 *secret*
@@ -30,7 +88,6 @@
 auth.json
 tokens.json
 storageState.json
-
 # Session data, cookies, browser profiles
 *cookie*
 *session*
@@ -45,33 +102,10 @@ playwright/.auth/
 # ─── Runtime / State ──────────────────────────────────────────────────────────
 .state/
 .prometheus/
-logs/
-*.log
-*.qslog
-*.jsonl
-/tmp/
-tmp/
 pids/
-session-export*
-*.session
-*.sqlite
-.wezterm.sock*
-
 # ─── Build Artifacts ──────────────────────────────────────────────────────────
-.venv/
-__pycache__/
-*.pyc
 *.egg-info/
-node_modules/
-.bun/
-target/
-dist/
-build/
-*.tsbuildinfo
-.turbo/
-Cargo.lock.bak
 bun.lock
-
 # ─── Binaries (built/copied, not tracked in git) ─────────────────────────────
 bin/sovereign_web
 bin/llama-swap
@@ -79,12 +113,9 @@ tools/llama-swap/llama-swap
 tools/llama-swap/ollama-proxy
 tools/llama-swap/*.db
 tools/llama-swap/*.db-journal
-
 # ─── Models (GGUFs live outside this tree) ────────────────────────────────────
 models/
-*.gguf
 data/
-
 # ─── Scratch / Ephemeral ─────────────────────────────────────────────────────
 scratch/
 ~/
@@ -92,39 +123,30 @@ scratch/
 .grok/
 *.local.md
 *.local.toml
-
 # ─── Backup (never stage) ────────────────────────────────────────────────────
 backup/
 **/reorg_*/
 **/cleanup_*/
 hw_dump*
 hardware_audit*
-
 # ─── Non-production (legacy, kept in backup/) ────────────────────────────────
 yote/
 tools/legacy/
 tools/ollama-proxy-rs/
-
 # ─── Retired env managers ─────────────────────────────────────────────────────
 .direnv/
 .devenv/
 .devbox/
-
 ## ─── Test / Coverage (local-only, never stage) ─────────────────────────────
 coverage/
 coverage.lcov
 *.lcov
 .bun-test/
-
 # ─── IDE / tests ────────────────────────────────────────────────────────────────
-.idea/
-.vscode/
 .playwright-mcp/
-
 # ─── Misc noise ───────────────────────────────────────────────────────────────
 dashboard/
 ports.env
-
 # Local runtime / plugin noise (do not ship)
 grafana/plugins/
 grafana/data/
@@ -133,27 +155,18 @@ tools/ast-matrix/ultimate_extract/
 tools/ast-matrix/weird_*.json
 *.map
 usr/
-
 # Agent orchestration runtime state
-.agent-orchestration/
-*.db
-*.db-shm
-*.db-wal
 _probe*.sh
-
 # Audit / scratch scripts
 audit_*.py
 nohup.out
 output/
 MCP_AUDIT.md
-
 # Qdrant local state
 .qdrant-initialized
 .qdrant/
 qdrant-config.yaml
 .scout-cache/
-.project_map.json
-
 # Security boundaries (git-mutator)
 *.env
 !config/ports.env
@@ -172,7 +185,6 @@ wt-*/
 /checkpoint.json
 *.py[codz]
 *$py.class
-venv/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -189,9 +201,6 @@ pip-wheel-metadata/
 .next/
 .nuxt/
 .parcel-cache/
-.cache/
-.env.local
-.env.*.local
 target/*
 !target/.gitkeep
 **/*.rs.bk
@@ -253,9 +262,7 @@ crash.*.log
 .windsurf/
 .idea_modules/
 *.iml
-*.swp
 *.swo
-.DS_Store
 Thumbs.db
 Desktop.ini
 ehthumbs.db
