@@ -243,6 +243,45 @@ fn read_optional(path: &Path) -> Option<String> {
 
 /// Lexically normalize `.`/`..` segments without touching the filesystem, so
 /// relative `gitdir`/`commondir` pointers resolve the same way git does.
+/// Write a commit object without updating any reference.
+///
+/// Newer `gix` removed the ad-hoc `Repository::new_commit*` helpers; the
+/// supported path is [`gix::Repository::write_object`] plus an explicit
+/// reference transaction, which callers already perform themselves.
+pub(crate) fn write_commit(
+	repo: &gix::Repository,
+	committer: impl Into<gix::actor::Signature>,
+	author: impl Into<gix::actor::Signature>,
+	message: &str,
+	tree: gix::hash::ObjectId,
+	parents: &[gix::hash::ObjectId],
+) -> Result<gix::hash::ObjectId, gix::object::write::Error> {
+	let commit = gix::objs::Commit {
+		message: message.into(),
+		tree,
+		author: author.into(),
+		committer: committer.into(),
+		encoding: None,
+		parents: parents.iter().copied().collect(),
+		extra_headers: Vec::new(),
+	};
+	repo.write_object(&commit).map(|id| id.detach())
+}
+
+/// Peel `HEAD` to the commit id it resolves to, or `None` if unborn.
+///
+/// Newer `gix` removed `Head::try_peel_to_id`; a symbolic `HEAD` is peeled
+/// via its referent reference, a detached `HEAD` yields its id directly.
+pub(crate) fn head_peel_to_id(
+	head: gix::Head<'_>,
+) -> Result<Option<gix::hash::ObjectId>, gix::reference::peel::Error> {
+	let direct = head.id().map(|id| id.detach());
+	match head.try_into_referent() {
+		Some(mut reference) => reference.peel_to_id_in_place().map(|id| Some(id.detach())),
+		None => Ok(direct),
+	}
+}
+
 pub(crate) fn normalize_path(path: &Path) -> PathBuf {
 	let mut out = PathBuf::new();
 	for component in path.components() {
