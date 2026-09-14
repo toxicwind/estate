@@ -190,10 +190,10 @@ curl -s -X POST http://127.0.0.1:25109/mcp \
 ## Phase 4: HAL Substrate Integration
 
 - [ ] Install HAL substrate
-  - [ ] Extract: `tar -xzf hal-substrate-v3.tar.gz -C ~/projects/`
+  - [ ] Extract: `tar -xzf coyote-v3.tar.gz -C ~/projects/`
   - [ ] Verify: `~/projects/project-name/src/hal-loop.py` exists
-- [ ] Start hal-substrate on :25143
-  - [ ] `mise run up-hal-substrate`
+- [ ] Start coyote on :25143
+  - [ ] `mise run up-coyote`
   - [ ] Health check: `curl -sf http://127.0.0.1:25143/health` (or check logs)
 - [ ] Verify AST matrix routing
   - [ ] HAL connects to llama-swap on :25100
@@ -203,15 +203,15 @@ curl -s -X POST http://127.0.0.1:25109/mcp \
 
 ## Phase 4: HAL Substrate Integration (MAX LEVEL)
 
-- [x] Create OpenFang agent definition (agents/hal-substrate/agent.toml)
-- [x] Create system prompt (agents/hal-substrate/system.md)
-- [x] First-class service launcher (stack/services/hal-substrate.sh)
+- [x] Create OpenFang agent definition (agents/coyote/agent.toml)
+- [x] Create system prompt (agents/coyote/system.md)
+- [x] First-class service launcher (stack/services/coyote.sh)
 - [x] HTTP server with /health, /status, POST /task, POST /stop
 - [x] Connects to llama-swap AST matrix (:25100) — 14 providers, kimi primary
 - [x] Yote messaging integration (:25102) — Telegram/Discord/Signal
 - [x] MCP proxy integration (:25109, :25113) — GHAS + 41 MCP servers
 - [x] Sigil-driven workflow: PROCEED/HALT/ROADMAP/SHORT
 - [x] Slot persistence for agent memory across restarts
-- [ ] Start hal-substrate: `mise run up-hal-substrate`
+- [ ] Start hal-substrate: `mise run up-coyote`
 - [ ] Verify: `curl -sf http://127.0.0.1:25143/health`
 - [ ] **VERIFY Phase 4**: HAL healthy, routes through AST matrix, responds to Yote

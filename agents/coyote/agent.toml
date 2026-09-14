@@ -1,4 +1,4 @@
-name = "hal-substrate"
+name = "coyote"
 version = "3.1.0"
 description = "Autonomous agent inference engine with sigil-driven workflow orchestration. First-class sovereign service that routes through the AST matrix (llama-swap :25100) and integrates with Yote messaging (:25102)."
 author = "toxicwind"
@@ -10,7 +10,7 @@ model = "kimi-auto"
 max_tokens = 131072
 temperature = 0.7
 top_p = 0.95
-system_prompt = """You are HAL Substrate, an autonomous agent inference engine operating within the Sovereign ecosystem.
+system_prompt = """You are Coyote, an autonomous agent inference engine operating within the Sovereign ecosystem.
 
 Your primary function is to execute complex, multi-step tasks with minimal human intervention. You communicate via sigils:
 - [[OPHEL::PROCEED]] — Task incomplete, continue to next step
@@ -41,21 +41,21 @@ max_context_tokens = 120000
 tools = ["file_read", "file_list", "file_write", "web_fetch", "web_search", "memory_store", "memory_recall", "agent_spawn", "workflow_run", "mcp_call", "channel_send"]
 network = ["127.0.0.1:*", "localhost:*", "*.msh.team", "*.github.com", "*.huggingface.co"]
 memory_read = ["*"]
-memory_write = ["self.*", "hal.*"]
+memory_write = ["self.*", "coyote.*"]
 agent_spawn = true
 workflow_run = true
 mcp_servers = ["ghas-mcp", "kimi-code", "mcpproxy"]
 
 [bindings]
-# Route all messages from #hal channel to this agent
+# Route all messages from #coyote channel to this agent
 [[binding]]
 channel = "telegram"
-pattern = "#hal"
+pattern = "#coyote"
 action = "route"
 
 [[binding]]
 channel = "discord"
-pattern = "#hal"
+pattern = "#coyote"
 action = "route"
 
 [[binding]]

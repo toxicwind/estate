@@ -58,7 +58,7 @@ const HTTP_SERVICES: ServiceEndpoint[] = [
     port: 25127,
   },
   { name: "qdrant", url: "http://127.0.0.1:25133/", port: 25133 },
-  { name: "hal-substrate", url: "http://127.0.0.1:25143/health", port: 25143 },
+  { name: "coyote", url: "http://127.0.0.1:25143/health", port: 25143 },
 ];
 
 const TCP_SERVICES: TcpEndpoint[] = [
