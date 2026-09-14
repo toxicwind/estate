@@ -12183,51 +12183,7 @@
 				"models": [
 					{
 						"kind": "exact",
-						"value": "qwen/qwen3-next-80b-a3b-thinking"
-					}
-				],
-				"wire": {
-					"thinkingFormat": "qwen-chat-template"
-				}
-			},
-			{
-				"source": "providers/nvidia.kdl:20",
-				"providers": [
-					"nvidia"
-				],
-				"models": [
-					{
-						"kind": "exact",
-						"value": "z-ai/glm-5.1"
-					},
-					{
-						"kind": "exact",
-						"value": "z-ai/glm4.7"
-					},
-					{
-						"kind": "exact",
-						"value": "z-ai/glm5"
-					}
-				],
-				"thinking": {
-					"efforts": [
-						"minimal",
-						"low",
-						"medium",
-						"high",
-						"xhigh"
-					]
-				}
-			},
-			{
-				"source": "providers/nvidia.kdl:24",
-				"providers": [
-					"nvidia"
-				],
-				"models": [
-					{
-						"kind": "exact",
-						"value": "z-ai/glm-5.2"
+						"value": "z-ai/glm-5.3-flash"
 					}
 				],
 				"thinking": {
@@ -18522,7 +18478,7 @@
 						"label": "nvidia",
 						"optional": true,
 						"baseUrl": "https://integrate.api.nvidia.com/v1",
-						"model": "nvidia/llama-3.1-nemotron-70b-instruct"
+						"model": "openai/gpt-oss-20b"
 					}
 				}
 			},
