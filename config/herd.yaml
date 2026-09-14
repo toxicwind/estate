@@ -847,6 +847,24 @@ peers:
       tlsHandshake: 10
       idleConn: 90
 
+  # --- hf-free: free Kimi via HuggingFace Inference Providers (additive 2026-09-14) ---
+  # Matrix-verified: moonshotai/Kimi-K3 -> HTTP 200 + real completion on our
+  # HF_TOKEN (no billing attached; HF free-served set). Other Kimi IDs 402.
+  # The kimi-auto resolver auto-discovers this ID from herd /v1/models.
+  hf-free:
+    proxy: https://router.huggingface.co
+    apiKey: ${env.HF_TOKEN}
+    models:
+      - moonshotai/Kimi-K3
+    options:
+      validateModel: true
+
+
+
+
+
+
+
   # Track K -- OpenRouter Kimi/Moonshot models (kimi-auto routing).
   # Updated 2026-09-14: Pollinations free tier changed shape -- openai now
   # 401s, but moonshotai/kimi-k3, kimi-k2.6, kimi-k2.7-code serve FREE
