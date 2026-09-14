@@ -123,9 +123,9 @@ const PROVIDERS: Record<
     key_env: "OPENROUTER_API_KEY",
   },
   nvidia: {
-    base: "https://integrate.api.nvidia.com/v1",
-    key_env: "NVIDIA_API_KEY",
-    key_env_alt: "NVIDIA_NIM_API_KEY",
+    base: "http://127.0.0.1:8000/v1",
+    key_env: "NIM_PROXY_API_KEY",
+    key_env_alt: "NVIDIA_API_KEY",
   },
   groq: { base: "https://api.groq.com/openai/v1", key_env: "GROQ_API_KEY" },
   cerebras: {

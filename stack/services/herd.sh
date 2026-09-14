@@ -8,6 +8,12 @@ set -euo pipefail
 SOV="$HOME/sovereign"
 source "$SOV/stack/lib-ports.sh"
 require_env HERD_PORT
+# Canonical secrets for provider keyEnvs. Sourced, never copied.
+if [[ -f /home/toxic/.secrets ]]; then
+  set -a; set +u
+  source /home/toxic/.secrets
+  set -u; set +a
+fi
 PORT="$HERD_PORT"
 BIN="$HOME/projects/sovereign-projects/sovereign-swap/build/llama-swap"
 [[ -x "$BIN" ]] || { echo "herd (llama-swap) bin not found at $BIN" >&2; exit 1; }
