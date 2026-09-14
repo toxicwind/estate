@@ -3,9 +3,10 @@
 Tau extension registering the `kimi-auto` virtual model.
 
 `kimi-auto` is a herd-side alias (see `toxicwind/kimi-auto`): the herd shim
-resolves it to the best available Kimi model each request, falling back to
-the `gpt-oss` interim when no Kimi candidate is healthy. This extension makes
-the alias selectable as a first-class model inside Tau/omp sessions.
+resolves it to the best available Kimi model each request. It is Kimi-only by
+design - when no Kimi candidate is healthy the shim answers 503 instead of
+silently routing to a non-Kimi model. This extension makes the alias
+selectable as a first-class model inside Tau/omp sessions.
 
 ## How it works
 
