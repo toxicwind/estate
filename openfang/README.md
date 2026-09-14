@@ -1,19 +1,18 @@
 # OpenFang — Agent Operating System
 
-**OpenFang** is an open-source **Agent Operating System**, written in Rust by
-[RightNow-AI](https://github.com/RightNow-AI/openfang). Not a chatbot framework
-or a Python wrapper around an LLM — a full OS for autonomous agents that work on
-schedules, 24/7: building knowledge graphs, monitoring targets, generating
-leads, managing social media, and reporting to a dashboard.
+**OpenFang** is an open-source **Agent Operating System** written in Rust by [RightNow-AI](https://github.com/RightNow-AI/openfang) — a full OS for autonomous agents that work on schedules, 24/7: building knowledge graphs, monitoring targets, generating leads, managing social media, and reporting to a dashboard. Not a chatbot framework, not a Python wrapper around an LLM.
 
-- **Language:** Rust (14 crates, ~137K LOC, zero clippy warnings)
-- **Ships as:** a single ~32MB binary — one install, one command
-- **Dashboard:** `http://localhost:4200` after `openfang start`
-- **Stack port:** `:25103` (`OPENFANG_PORT`)
-- **License:** MIT
 - **Upstream:** <https://github.com/RightNow-AI/openfang>
 - **Our mirror:** <https://github.com/toxicwind/openfang> (private)
 - **Docs:** <https://openfang.sh/docs>
+
+## This directory
+
+`sovereign/openfang/` is a **placeholder** — no OpenFang source is checked in here. The live work is:
+
+- `sovereign-projects/openfang/` — workspace checkout
+- pitchfork **`axiom`** daemon → `stack/services/openfang.sh` → `src/services/openfang.ts` on **:25103**
+- pitchfork **`coyote`** daemon — autonomous agent inference engine on **:25143**, an OpenFang agent with Yote integration, routing through herd (`:25100`) across 14 providers
 
 ## Quick start (upstream)
 
@@ -24,13 +23,4 @@ openfang start
 # Dashboard live at http://localhost:4200
 ```
 
-## This directory
-
-`openfang/` is currently a **placeholder** — no OpenFang source is checked in
-here. The live integration work (detached launchers, service ownership) is
-tracked under the tau/mise-native cutover.
-
-> Historical note: an earlier version of this README described OpenFang as a C++
-> inference-engine fork behind Herd. That was wrong — those claims described a
-> different component entirely and have been removed. OpenFang is the Rust Agent
-> OS described above.
+> **Correction (2026-09-14):** an earlier version of this README described OpenFang as a C++ inference-engine fork behind herd with beellama.cpp / llama-cpp-turboquant / ik_llama.cpp. That was wrong — those are llama.cpp engine builds used by herd's backends. OpenFang is the Rust Agent OS described above.
