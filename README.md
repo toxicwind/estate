@@ -58,7 +58,7 @@ mise run down
 | **tailscale-funnel**  | —         | Bash                | Tailscale Funnel exposure (public HTTPS endpoint)                                                               |
 | **redis**             | 25199     | Redis               | Session cache, telemetry backing store                                                                          |
 | **itvx-telemetry**    | 25198     | Docker              | Telemetry pipeline                                                                                              |
-| **itvx-browserless**  | 25130     | Docker              | Headless browser for scraping                                                                                   |
+| **itvx-browserless**  | 25130     | Native (pitchfork)  | Headless browser for scraping                                                                                   |
 
 Backends for swap: `LLAMA_START_PORT`–`LLAMA_END_PORT` = **25001–25099** (llama-server forks).
 
