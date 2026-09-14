@@ -7,6 +7,7 @@ module = "builtin:chat"
 [model]
 provider = "llama-swap"
 model = "kimi-auto"
+base_url = "http://127.0.0.1:25100/v1"
 max_tokens = 131072
 temperature = 0.7
 top_p = 0.95
