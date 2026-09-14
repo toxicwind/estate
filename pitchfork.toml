@@ -251,6 +251,17 @@ env = {
 }
 auto = ["start"]
 
+[daemons.kimi-code]
+run = "exec bun run dist/main.mjs web --port 25126 --no-open"
+dir = "/home/toxic/sovereign/tau/vendors/kimi-code/apps/kimi-code"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25126/api/v1/healthz"
+env = {
+  KIMI_CODE_PORT = "25126",
+}
+auto = ["start"]
+
 [daemons.mesh]
 run = "exec /home/toxic/projects/sovereign-projects/mesh/gateway/mcpproxy-go serve --config=/home/toxic/.mcpproxy/mcp_config.json --log-level=warn --log-to-file --listen=127.0.0.1:25127"
 dir = "/home/toxic/projects/sovereign-projects/mesh/gateway"
@@ -274,10 +285,10 @@ auto = ["start"]
 daemons = ["herd", "qdrant", "redis", "dnsmasq", "search-api", "mesh-hub", "prometheus", "grafana", "mesh"]
 
 [groups.main]
-daemons = ["qdrant", "redis", "kafka", "coyote", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "mesh", "dnsmasq"]
+daemons = ["qdrant", "redis", "kafka", "coyote", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "kimi-code", "mesh", "dnsmasq"]
 
 [groups.agents]
-daemons = ["axiom", "tau", "tau-code"]
+daemons = ["axiom", "tau", "tau-code", "kimi-code"]
 
 [groups.search]
 daemons = ["search-api", "search-ui"]
@@ -289,9 +300,9 @@ daemons = ["mcp-gateway", "mesh"]
 daemons = ["prometheus", "grafana"]
 
 [groups.all]
-daemons = ["herd", "qdrant", "redis", "kafka", "coyote", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "mesh", "dnsmasq", "build-server"]
+daemons = ["herd", "qdrant", "redis", "kafka", "coyote", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "kimi-code", "mesh", "dnsmasq", "build-server"]
 
 [groups.sovereign-core]
-daemons = ["herd", "qdrant", "redis", "kafka", "coyote", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "mesh", "dnsmasq", "build-server"]
+daemons = ["herd", "qdrant", "redis", "kafka", "coyote", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "kimi-code", "mesh", "dnsmasq", "build-server"]
 
 
