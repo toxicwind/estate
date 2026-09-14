@@ -6,6 +6,7 @@ A curated set of `omp` extensions that plug directly into your oh-my-pi agent se
 
 - **omp-kafka** — subscribe to Apache Kafka topics and surface messages in the session (auto push or on-demand pull).
 - **omp-edit-committer** — auto-commit every Edit/Write with a descriptive Conventional-Commits message and surface the SHA under the tool result.
+- **omp-kimi** — drive the Moonshot kimi-code CLI from inside a Tau session (`/kimi`, `/kimi-models`, `/kimi-web` integrated web UI, `kimi_ask` tool) with `KIMI_API_KEY` support.
 
 ```mermaid
 flowchart LR
@@ -26,6 +27,7 @@ end
 |---|---|---|
 | [`omp-kafka`](packages/omp-kafka) | Integration | Consume Kafka topics into an `omp` session; supports auto (push) and pull modes with `/kafka-*` slash commands and a `kafka_consume` LLM tool. |
 | [`omp-edit-committer`](packages/omp-edit-committer) | Workflow | Auto-commit every Edit/Write with intent, trade-offs, and an ASCII diagram; renders a commit badge next to the tool result for use with `modem-dev/hunk`. |
+| [`omp-kimi`](kimi) | Integration | Kimi-code web UI + CLI inside Tau: `/kimi`, `/kimi-models`, `/kimi-web` (integrated tau+kimi gateway), `kimi_ask` tool; `KIMI_API_KEY` support. |
 
 ## Install
 
