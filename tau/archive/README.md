@@ -48,3 +48,41 @@ What was NOT archived (deliberately):
 - sovereign-pi's 28 branches + 30 tags: stale upstream oh-my-pi PR
   branches (v0.0.3-era lineage) and upstream release tags, preserved in
   `sovereign-pi-archive`, not merged as files.
+
+## Wave 2 — sovereign-family + omp-extensions (2026-09-14)
+
+Same method as wave 1: every file of each source repo's main branch was
+compared by blob SHA against the full `sovereign-projects` tree (including
+the wave-1 archives above); only blobs appearing nowhere were archived.
+All five source repos were left untouched — nothing deleted, no branches
+or tags modified.
+
+- `from-sovereign-swap/` — 311 files unique to `toxicwind/sovereign-swap`
+  main (public Go service). `internal/` (150), `ui/` (69), `evals/` (25),
+  `docs/` (24), `docker/` (19), plus `cmd/`, `.github/`, `patches/`.
+- `from-omp-extensions/` — 17 files unique to `toxicwind/omp-extensions`
+  main (public oh-my-pi plugin repo): `packages/` (omp-kafka and others),
+  `AGENTS.md`, `README.md`, root `package.json`.
+- `from-sovereign-zed/` — 1,059 files unique to `toxicwind/sovereign-zed`
+  main (public Zed editor fork). `crates/` (906), `docs/` (39),
+  `.github/` (33), `tooling/` (20), `assets/` (16); includes 264 symlinks
+  (mode 120000, targets preserved as blobs) and dev-only
+  `crates/collab/.env.toml`, which holds placeholder values only
+  (`"the-blob-store-access-key"`, `"devkey"`, localhost URLs) — no real
+  secrets.
+- `sovereign-scripts` (24 files) and `sovereign-skills` (10 files): fully
+  redundant — every blob already present in `sovereign-projects`; nothing
+  archived.
+
+What was NOT archived (deliberately):
+- Branch-unique content (blobs on non-main branches absent from both that
+  repo's main and `sovereign-projects`): `sovereign-swap` has 8 non-main
+  branches (`astmatrix-v2-preserved`, `claude/ui-svelte-build-bundle-optimize-0bms50`,
+  `coderabbitai/chat/2dcab2b`, `coderabbitai/utg/{6cf1317,25b27cb,799eedb}`,
+  `inflight-enhancements-912`, `plan-001-sse-bridge`) with 26–109 unique
+  blobs each, plus 184 tags (`v0.0.1`–`v239`); `sovereign-zed` branch
+  `toxic-fix-grep-ignore` has 396 unique blobs; `omp-extensions` has 3
+  branches (`feat/initial-omp-kafka`, `feat/omp-edit-committer`,
+  `fix/add-kafkajs-dep`) with 1–12 unique blobs each. All preserved in
+  their source repos, not merged as files.
+- `sovereign-scripts` / `sovereign-skills`: no orphans, nothing to merge.
