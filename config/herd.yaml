@@ -856,6 +856,17 @@ peers:
       - moonshotai/kimi-k2-thinking
       - moonshotai/kimi-k2.7-code
       - moonshotai/kimi-k2
+      # :free variants (OpenRouter convention). Added 2026-09-14.
+      # Currently 404 "unavailable for free" (free-tier rotation); the
+      # resolver marks them unhealthy until OpenRouter re-enables them.
+      # Paid IDs above stay so routing resumes the moment credits land.
+      - moonshotai/kimi-k3:free
+      - moonshotai/kimi-k2.5:free
+      - moonshotai/kimi-k2-0905:free
+      - moonshotai/kimi-k2.6:free
+      - moonshotai/kimi-k2-thinking:free
+      - moonshotai/kimi-k2.7-code:free
+      - moonshotai/kimi-k2:free
     timeouts:
       connect: 30
       keepalive: 30
