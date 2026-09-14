@@ -832,13 +832,14 @@ peers:
       - muse-spark-1.2
       - kimi-k3
       - nemotron-3.5-lightning
-      # Free Kimi via Pollinations (verified 2026-09-14 free-tier fuzz):
-      # moonshotai/kimi-k3, kimi-k2.6, kimi-k2.7-code all HTTP 200 no-auth
-      # AND with the injected dummy bearer (peer.go P1) -- 500-700ms.
-      # The old openai id now 401s (needs key); kimi ids route via Fireworks.
-      - moonshotai/kimi-k3
-      - moonshotai/kimi-k2.6
-      - moonshotai/kimi-k2.7-code
+      # Free Kimi note (verified 2026-09-14 free-tier fuzz):
+      # moonshotai/kimi-k3, kimi-k2.6, kimi-k2.7-code all serve HTTP 200
+      # free on Pollinations (no-auth and with the injected dummy bearer,
+      # peer.go P1, 500-700ms) -- but they are NOT listed here: the
+      # openrouter-kimi peer claims the same IDs and sorts first
+      # (peer.go sorts peer IDs; first claim wins), so listing them would
+      # be shadowed. The unprefixed kimi-k3 above is pollinations-unique
+      # and is the live free-Kimi route (resolves via Fireworks backend).
     timeouts:
       connect: 30
       keepalive: 30
