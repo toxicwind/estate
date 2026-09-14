@@ -832,6 +832,14 @@ peers:
       - muse-spark-1.2
       - kimi-k3
       - nemotron-3.5-lightning
+      # Free Kimi note (verified 2026-09-14 free-tier fuzz):
+      # moonshotai/kimi-k3, kimi-k2.6, kimi-k2.7-code all serve HTTP 200
+      # free on Pollinations (no-auth and with the injected dummy bearer,
+      # peer.go P1, 500-700ms) -- but they are NOT listed here: the
+      # openrouter-kimi peer claims the same IDs and sorts first
+      # (peer.go sorts peer IDs; first claim wins), so listing them would
+      # be shadowed. The unprefixed kimi-k3 above is pollinations-unique
+      # and is the live free-Kimi route (resolves via Fireworks backend).
     timeouts:
       connect: 30
       keepalive: 30
@@ -839,10 +847,11 @@ peers:
       tlsHandshake: 10
       idleConn: 90
 
-  # Track K — OpenRouter Kimi/Moonshot models (kimi-auto routing).
-  # Added 2026-09-14: Pollinations began requiring a real API key
-  # (their free tier now 401s), so the pollinations-free kimi-k3 id is
-  # dead. OpenRouter serves the real Kimi models with OPENROUTER_API_KEY.
+  # Track K -- OpenRouter Kimi/Moonshot models (kimi-auto routing).
+  # Updated 2026-09-14: Pollinations free tier changed shape -- openai now
+  # 401s, but moonshotai/kimi-k3, kimi-k2.6, kimi-k2.7-code serve FREE
+  # no-auth (verified live this date, see pollinations-free peer above).
+  # OpenRouter serves the same models paid with OPENROUTER_API_KEY.
   # NOTE: proxy is https://openrouter.ai/api (no /v1): the router joins
   # the proxy path with the request path (/v1/chat/completions).
   openrouter-kimi:
