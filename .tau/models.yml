@@ -11,7 +11,7 @@ models:
     reasoning_effort: high
     max_tokens: 32768
     context_window: 128000
-  - id: nvidia/nemotron-3-super-120b-a12b
+  - id: openai/gpt-oss-20b
     provider: nvidia
     baseUrl: https://integrate.api.nvidia.com/v1
     reasoning_effort: high
@@ -23,7 +23,7 @@ models:
     reasoning_effort: xhigh
     max_tokens: 32768
     context_window: 128000
-  - id: nvidia/nemotron-3-ultra-550b-a55b
+  - id: z-ai/glm-5.3-flash
     provider: nvidia
     baseUrl: https://integrate.api.nvidia.com/v1
     reasoning_effort: xhigh
