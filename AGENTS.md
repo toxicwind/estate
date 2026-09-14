@@ -8,7 +8,7 @@
 
 ## 🎯 Repository Specifics
 
-- **Primary Entrypoints**: `src/` (generators, hal-substrate, services, mesh-front).
+- **Primary Entrypoints**: `src/` (generators, coyote, services, mesh-front).
 - **Pitchfork Daemons**: `pitchfork.toml` orchestrates services across `25xxx` ports.
 - **Mise Tasks**: `mise.toml` defines local task runners and environment configurations.
 - **Port SSOT**: `config/ports.env` is the single source of truth for all allocated ports.

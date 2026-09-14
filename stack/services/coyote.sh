@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-# HAL Substrate v3.1 — Autonomous Agent Inference Engine
+# Coyote v3.1 — Autonomous Agent Inference Engine
 # First-class sovereign service. OpenFang agent with Yote integration.
 # Routes through AST matrix (llama-swap :25100) with 14 providers.
 set -euo pipefail
 SOV="${SOVEREIGN_ROOT:-$HOME/sovereign}"
 source "$SOV/stack/lib-ports.sh"
-require_env HAL_SUBSTRATE_PORT
-PORT="$HAL_SUBSTRATE_PORT"
+require_env COYOTE_PORT
+PORT="$COYOTE_PORT"
 
 # Find hal-loop.py — sovereign src/ is canonical
 BIN_CAND=(
-  "$SOV/src/hal-substrate/hal-loop.py"
-  "$HOME/projects/project-name/src/hal-loop.py"
+  "$SOV/src/coyote/coyote-loop.py"
+  "$HOME/projects/project-name/src/coyote-loop.py"
 )
 BIN=""
 for c in "${BIN_CAND[@]}"; do
@@ -19,7 +19,7 @@ for c in "${BIN_CAND[@]}"; do
 done
 
 if [[ -z "$BIN" ]]; then
-  echo "[hal-substrate] hal-loop.py not found" >&2
+  echo "[coyote] coyote-loop.py not found" >&2
   exit 1
 fi
 
