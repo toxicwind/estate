@@ -280,3 +280,35 @@ env = {
   BROWSERLESS_PORT = "25130",
 }
 auto = ["start"]
+
+[daemons.gemini-mcp]
+run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/gemini-mcp/server.py"
+dir = "/home/toxic/gemini-mcp"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:8378/health"
+auto = ["start"]
+
+[daemons.sovereign-router]
+run = "exec bun run router.ts"
+dir = "/home/toxic/sovereign/tools/sovereign-router/sovereign-router-ts"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25104/health"
+depends = ["shep"]
+env = { SOVEREIGN_ROUTER_PORT = "25104" }
+auto = ["start"]
+
+# WhatsApp Cloud API MCP server + inbound webhook (2026-09-14).
+# Secrets live ONLY in this env block — never in the whatsapp-mcp git repo.
+# Chris: paste WHATSAPP_API_TOKEN + WHATSAPP_PHONE_NUMBER_ID here, then
+# reload pitchfork. WHATSAPP_VERIFY_TOKEN is entered in the Meta app dashboard
+# (WhatsApp > Configuration > Webhook) alongside the callback URL.
+[daemons.whatsapp-mcp]
+run = "exec /home/toxic/.whatsapp-mcp-venv/bin/python /home/toxic/whatsapp-mcp/server.py"
+dir = "/home/toxic/whatsapp-mcp"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25146/health"
+auto = ["start"]
+env = { WHATSAPP_API_TOKEN = "", WHATSAPP_PHONE_NUMBER_ID = "", WHATSAPP_VERIFY_TOKEN = "SmnBWsUKlY5TeUQ6D3ITUMIP7_rUumP6fOI6KTzxYIA", WHATSAPP_MCP_PORT = "25146" }
