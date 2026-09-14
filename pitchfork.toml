@@ -1,6 +1,7 @@
 # ============================================================================
-# SOVEREIGN PITCHFORK CONFIG — GENERATED from config/ports.env + service definitions
-# DO NOT EDIT DIRECTLY — Run: bun run scripts/generate.ts
+# SOVEREIGN PITCHFORK CONFIG — MISE-NATIVE (cutover 2026-09-14)
+# Owned directly: edit this file. scripts/generate.ts is retired for
+# service definitions; do not regenerate from it.
 # ============================================================================
 
 [daemons.herd]
@@ -8,6 +9,7 @@ run = "exec ./stack/services/herd.sh"
 dir = "."
 mise = false
 retry = true
+boot_start = true
 ready_http = "http://127.0.0.1:25100/health"
 env = {
   HERD_PORT = "25100",
@@ -19,6 +21,7 @@ run = "exec /home/toxic/.cargo/bin/qdrant-server --config-path ./qdrant-config.y
 dir = "."
 mise = false
 retry = true
+boot_start = true
 ready_http = "http://127.0.0.1:25133/"
 env = {
   QDRANT_PORT = "25133",
@@ -30,6 +33,7 @@ run = "exec valkey-server --port 25199 --bind 0.0.0.0 --protected-mode no --save
 dir = "."
 mise = false
 retry = true
+boot_start = true
 ready_cmd = "ss -ltn 'sport = :25199' | grep -q LISTEN"
 env = {
   REDIS_PORT = "25199",
@@ -41,6 +45,7 @@ run = "exec ./stack/services/kafka.sh"
 dir = "."
 mise = true
 retry = true
+boot_start = true
 ready_cmd = "ss -ltn 'sport = :25144' | grep -q LISTEN"
 env = {
   KAFKA_PORT = "25144",
@@ -52,6 +57,7 @@ run = "exec ./stack/services/dnsmasq.sh"
 dir = "."
 mise = false
 retry = true
+boot_start = true
 ready_cmd = "ss -ltn 'sport = :53' | grep -q LISTEN"
 env = {
 }
@@ -62,6 +68,7 @@ run = "exec ./stack/services/coyote.sh"
 dir = "."
 mise = true
 retry = true
+boot_start = true
 ready_http = "http://127.0.0.1:25143/health"
 env = {
   COYOTE_PORT = "25143",
@@ -106,6 +113,7 @@ run = "exec bun run src/services/mesh-hub.ts"
 dir = "."
 mise = true
 retry = true
+boot_start = true
 ready_http = "http://127.0.0.1:25115/health"
 env = {
   MESH_HUB_PORT = "25115",
@@ -205,6 +213,7 @@ run = "exec ./stack/services/prometheus-hot.sh"
 dir = "."
 mise = true
 retry = true
+boot_start = true
 ready_http = "http://127.0.0.1:25105/-/healthy"
 env = {
   PROMETHEUS_PORT = "25105",
@@ -216,6 +225,7 @@ run = "exec ./stack/services/grafana-mesh.sh"
 dir = "."
 mise = true
 retry = true
+boot_start = true
 ready_http = "http://127.0.0.1:25110/api/health"
 env = {
   GRAFANA_PORT = "25110",
@@ -245,9 +255,21 @@ run = "exec bun run src/server.ts --port 25145"
 dir = "/home/toxic/projects/sovereign-projects/tau/engine/packages/metaharness"
 mise = true
 retry = true
+boot_start = true
 ready_http = "http://127.0.0.1:25145/"
 env = {
   TAU_CODE_PORT = "25145",
+}
+auto = ["start"]
+
+[daemons.kimi-code]
+run = "exec bun run dist/main.mjs web --port 25126 --no-open"
+dir = "/home/toxic/sovereign/tau/vendors/kimi-code/apps/kimi-code"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25126/api/v1/healthz"
+env = {
+  KIMI_CODE_PORT = "25126",
 }
 auto = ["start"]
 
@@ -267,17 +289,42 @@ run = "exec /usr/bin/nginx -c /etc/nginx/nginx.conf -g 'daemon off; pid /tmp/ngi
 dir = "."
 mise = false
 retry = true
+boot_start = true
 ready_cmd = "ss -ltn 'sport = :62200' | grep -q LISTEN"
+auto = ["start"]
+
+[daemons.nim-proxy]
+run = "exec docker run --rm --name nim-proxy -p 127.0.0.1:8000:8000 -v nim-proxy-data:/data -e DATA_DIR=/data ghcr.io/miztertea/nim-proxy:latest"
+dir = "."
+mise = false
+retry = true
+ready_cmd = "ss -ltn 'sport = :8000' | grep -q LISTEN"
+boot_start = true
+env = {
+  NIM_PROXY_PORT = "8000",
+}
+auto = ["start"]
+
+[daemons.matter-server]
+run = "exec docker run --rm --name matter-server --net host -v /home/toxic/.matter_data:/data -v /run/dbus:/run/dbus:ro -e BLUETOOTH_ADAPTER=0 -e STORAGE_PATH=/data -e LOG_LEVEL=info ghcr.io/matter-js/matterjs-server:stable --storage-path /data --bluetooth-adapter 0"
+dir = "."
+mise = false
+retry = true
+ready_cmd = "ss -ltn 'sport = :5580' | grep -q LISTEN"
+boot_start = true
+env = {
+  MATTER_SERVER_PORT = "5580",
+}
 auto = ["start"]
 
 [groups.core]
 daemons = ["herd", "qdrant", "redis", "dnsmasq", "search-api", "mesh-hub", "prometheus", "grafana", "mesh"]
 
 [groups.main]
-daemons = ["qdrant", "redis", "kafka", "coyote", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "mesh", "dnsmasq"]
+daemons = ["qdrant", "redis", "kafka", "coyote", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "kimi-code", "mesh", "dnsmasq"]
 
 [groups.agents]
-daemons = ["axiom", "tau", "tau-code"]
+daemons = ["axiom", "tau", "tau-code", "kimi-code"]
 
 [groups.search]
 daemons = ["search-api", "search-ui"]
@@ -289,9 +336,9 @@ daemons = ["mcp-gateway", "mesh"]
 daemons = ["prometheus", "grafana"]
 
 [groups.all]
-daemons = ["herd", "qdrant", "redis", "kafka", "coyote", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "mesh", "dnsmasq", "build-server"]
+daemons = ["herd", "qdrant", "redis", "kafka", "coyote", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "kimi-code", "mesh", "dnsmasq", "nginx", "nim-proxy", "matter-server"]
 
 [groups.sovereign-core]
-daemons = ["herd", "qdrant", "redis", "kafka", "coyote", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "mesh", "dnsmasq", "build-server"]
+daemons = ["herd", "qdrant", "redis", "kafka", "coyote", "yote", "search-api", "search-ui", "mesh-hub", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "prometheus", "grafana", "tau", "tau-code", "kimi-code", "mesh", "dnsmasq", "nginx", "nim-proxy", "matter-server"]
 
 
