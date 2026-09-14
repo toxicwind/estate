@@ -23,7 +23,7 @@
 	allow(unused_imports, dead_code, reason = "platform without an isolation backend")
 )]
 
-use std::{fmt, path::Path};
+use std::{ffi::OsStr, fmt, path::Path};
 
 use async_trait::async_trait;
 
@@ -245,6 +245,16 @@ pub trait IsolationBackend: Send + Sync {
 
 	fn stop(&self, merged: &Path) -> IsoResult<()>;
 
+	/// Clone a directory tree from `src` to `dst`, skipping entries whose
+	/// file name matches one of `exclude_names`.
+	///
+	/// Used to seed fast worktree checkouts. The default implementation is a
+	/// plain recursive copy; backends with copy-on-write support may override
+	/// it for speed. `dst` is created when missing.
+	fn clone_tree(&self, src: &Path, dst: &Path, exclude_names: &[&OsStr]) -> IsoResult<()> {
+		clone_tree_recursive(src, dst, exclude_names)
+	}
+
 	/// Capture the changes between `lower` and the current state of
 	/// `merged`. The default implementation delegates to `git diff` when
 	/// `merged` is a git working tree, otherwise walks both trees using
@@ -317,6 +327,47 @@ pub const fn auto_order() -> &'static [BackendKind] {
 	{
 		FALLBACK_AUTO_ORDER
 	}
+}
+
+/// Backend candidates for tree cloning, with an optional preferred backend
+/// first.
+///
+/// Yields `preferred` (when given), then [`auto_order`] with duplicates
+/// removed, so callers can try each candidate in turn until one succeeds.
+pub fn clone_candidates(preferred: Option<BackendKind>) -> Vec<BackendKind> {
+	let mut seen = std::collections::HashSet::new();
+	preferred
+		.into_iter()
+		.chain(auto_order().iter().copied())
+		.filter(|kind| seen.insert(*kind))
+		.collect()
+}
+
+fn clone_tree_recursive(src: &Path, dst: &Path, exclude_names: &[&OsStr]) -> IsoResult<()> {
+	let io_err = |err: std::io::Error| IsoError::other(err.to_string());
+	std::fs::create_dir_all(dst).map_err(io_err)?;
+	for entry in std::fs::read_dir(src).map_err(io_err)? {
+		let entry = entry.map_err(io_err)?;
+		let name = entry.file_name();
+		if exclude_names.iter().any(|ex| *ex == name.as_os_str()) {
+			continue;
+		}
+		let from = entry.path();
+		let to = dst.join(&name);
+		let ft = entry.file_type().map_err(io_err)?;
+		if ft.is_dir() {
+			clone_tree_recursive(&from, &to, exclude_names)?;
+		} else if ft.is_symlink() {
+			let target = std::fs::read_link(&from).map_err(io_err)?;
+			#[cfg(unix)]
+			std::os::unix::fs::symlink(&target, &to).map_err(io_err)?;
+			#[cfg(windows)]
+			let _ = std::os::windows::fs::symlink_file(&target, &to);
+		} else {
+			std::fs::copy(&from, &to).map_err(io_err)?;
+		}
+	}
+	Ok(())
 }
 
 /// Outcome of [`resolve`].

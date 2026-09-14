@@ -11,17 +11,62 @@ use std::{
 use gix::bstr::{BString, ByteSlice};
 
 use super::{
-	GitRepo, normalize_path,
+	GitRepo, head_peel_to_id, normalize_path,
 	open::{load_index_or_empty, load_index_or_head, status_with_fresh_index, status_with_index},
 	read::literal_pathspec,
+	write_commit,
 };
 use crate::{
+
+
+
 	error::{Error, Result},
 	types::{
 		CleanOptions, CommitOptions, DetachGitDirResult, ResetMode, RestoreOptions,
 		WorktreeAddOptions, WorktreeAddResult, WorktreeClone,
 	},
 };
+/// Parse a commit author date string.
+///
+/// Tries `gix::date::parse` first (git formats), then falls back to a
+/// minimal RFC 3339 parser (`YYYY-MM-DDTHH:MM:SSZ`) for ISO 8601 inputs
+/// like `"2020-01-02T03:04:05Z"`.
+fn parse_commit_date(input: &str) -> Result<gix::date::Time, gix::date::parse::Error> {
+    if let Ok(time) = gix::date::parse(input, None) {
+        return Ok(time);
+    }
+    // Minimal RFC 3339: YYYY-MM-DDTHH:MM:SSZ (UTC only)
+    let input = input.trim();
+    if let Some(stripped) = input.strip_suffix('Z') {
+        let parts: Vec<&str> = stripped.split('T').collect();
+        if parts.len() == 2 {
+            let date_parts: Vec<&str> = parts[0].split('-').collect();
+            let time_parts: Vec<&str> = parts[1].split(':').collect();
+            if date_parts.len() == 3 && time_parts.len() == 3 {
+                if let (Ok(y), Ok(m), Ok(d), Ok(h), Ok(min), Ok(s)) = (
+                    date_parts[0].parse::<i32>(),
+                    date_parts[1].parse::<u32>(),
+                    date_parts[2].parse::<u32>(),
+                    time_parts[0].parse::<u32>(),
+                    time_parts[1].parse::<u32>(),
+                    time_parts[2].parse::<u32>(),
+                ) {
+                    // Days from civil date (Howard Hinnant's algorithm)
+                    let y = if m <= 2 { y - 1 } else { y };
+                    let era = y.div_euclid(400);
+                    let yoe = y.rem_euclid(400) as u32;
+                    let mp = (m + 9).rem_euclid(12);
+                    let doy = (153 * mp + 2) / 5 + d - 1;
+                    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+                    let days = era * 146097 + doe as i32 - 719468;
+                    let secs = days as i64 * 86400 + h as i64 * 3600 + min as i64 * 60 + s as i64;
+                    return Ok(gix::date::Time::new(secs, 0));
+                }
+            }
+        }
+    }
+    Err(gix::date::parse::Error::InvalidDateString { input: input.into() })
+}
 
 const INDEX_WRITE: gix::index::write::Options = gix::index::write::Options {
 	extensions: gix::index::write::Extensions::None,
@@ -146,13 +191,10 @@ impl GitRepo {
 	pub fn commit_create(&self, message: &str, options: &CommitOptions) -> Result<String> {
 		let repo = self.gix()?;
 		run_commit_hook(self, &repo, "pre-commit", &[])?;
-		let mut head = repo
+		let head = repo
 			.head()
 			.map_err(|err| Error::backend("git commit", err))?;
-		let old_commit = head
-			.try_peel_to_id()
-			.map_err(|err| Error::backend("git commit", err))?
-			.map(|id| id.detach());
+		let old_commit = head_peel_to_id(head).map_err(|err| Error::backend("git commit", err))?;
 		let index = load_index_or_head(&repo, "git commit")?;
 		let tree = if options.files.is_empty() {
 			write_index_tree(&repo, &index)?
@@ -203,9 +245,8 @@ impl GitRepo {
 		let mut author_time = gix::date::parse::TimeBuf::default();
 		let author = if let Some(author) = &options.author {
 			let time = match &author.date {
-				Some(date) => {
-					gix::date::parse(date, None).map_err(|err| Error::backend("git commit", err))?
-				},
+				Some(date) => parse_commit_date(date)
+					.map_err(|err| Error::backend("git commit", err))?,
 				None => gix::date::Time::now_local_or_utc(),
 			};
 			override_author = gix::actor::Signature {
@@ -227,10 +268,8 @@ impl GitRepo {
 		run_commit_hook(self, &repo, "commit-msg", &[message_path.as_os_str()])?;
 		let message = fs::read_to_string(&message_path)
 			.map_err(|err| Error::backend("git commit read commit-msg result", err))?;
-		let commit = repo
-			.new_commit_as(committer, author, message, tree, parents)
+		let id = write_commit(&repo, committer, author, &message, tree, &parents)
 			.map_err(|err| Error::backend("git commit", err))?;
-		let id = commit.id;
 		let expected = old_commit
 			.map_or(gix::refs::transaction::PreviousValue::MustNotExist, |old| {
 				gix::refs::transaction::PreviousValue::MustExistAndMatch(old.into())
@@ -311,7 +350,7 @@ impl GitRepo {
 		let Ok(mut reference) = repo.find_reference(&full) else {
 			return Ok(false);
 		};
-		let id = match reference.peel_to_id() {
+		let id = match reference.peel_to_id_in_place() {
 			Ok(id) => id.detach(),
 			Err(_) => return Ok(false),
 		};
@@ -1052,14 +1091,12 @@ fn commit_tree(repo: &gix::Repository, id: &gix::hash::ObjectId) -> Result<gix::
 }
 
 fn head_tree(repo: &gix::Repository) -> Result<Option<gix::hash::ObjectId>> {
-	match repo
-		.head()
-		.map_err(|e| Error::backend("git reset", e))?
-		.try_peel_to_id()
+	match head_peel_to_id(repo.head().map_err(|e| Error::backend("git reset", e))?)
 		.map_err(|e| Error::backend("git reset", e))?
 	{
 		Some(id) => Ok(Some(
-			id.object()
+			repo
+				.find_object(id)
 				.map_err(|e| Error::backend("git reset", e))?
 				.peel_to_commit()
 				.map_err(|e| Error::backend("git reset", e))?
@@ -1511,18 +1548,20 @@ fn path_matches(path: &str, wanted: &str) -> bool {
 }
 
 fn set_config_file(path: &Path, key: &str, value: &str) -> Result<()> {
-	let mut config = if path.exists() {
-		gix::config::File::from_path_no_includes(path.to_owned(), gix::config::Source::Local)
-			.map_err(|e| Error::backend("git config", e))?
-	} else {
-		gix::config::File::default()
-	};
-	config
-		.set_raw_value(key, value)
+	// gix-config 0.46 ties `set_raw_value`'s key lifetime to the `File`'s
+	// event lifetime, which the borrow checker insists must be `'static`.
+	// Shell out to `git config -f`, which is equivalent and always available
+	// wherever pi-vcs runs.
+	let output = std::process::Command::new("git")
+		.args(["config", "-f", &path.to_string_lossy(), key, value])
+		.output()
 		.map_err(|e| Error::backend("git config", e))?;
-	let mut bytes = Vec::new();
-	config.write_to(&mut bytes)?;
-	fs::write(path, bytes)?;
+	if !output.status.success() {
+		return Err(Error::backend(
+			"git config",
+			String::from_utf8_lossy(&output.stderr).into_owned(),
+		));
+	}
 	Ok(())
 }
 
@@ -1716,7 +1755,7 @@ fn snapshot_refs(repo: &gix::Repository) -> Result<Vec<(String, gix::hash::Objec
 	for reference in iter {
 		let mut reference = reference.map_err(|e| Error::backend("git detach", e))?;
 		let name = reference.name().as_bstr().to_str_lossy().into_owned();
-		if let Ok(id) = reference.peel_to_id() {
+		if let Ok(id) = reference.peel_to_id_in_place() {
 			out.push((name, id.detach()));
 		}
 	}

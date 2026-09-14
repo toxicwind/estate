@@ -20,7 +20,7 @@ use gix::{
 	refs::transaction::PreviousValue,
 };
 
-use super::{GitRepo, mutate::update_reference, open::load_index_or_head};
+use super::{GitRepo, mutate::update_reference, open::load_index_or_head, write_commit};
 use crate::{
 	error::{Error, Result},
 	types::{ApplyOptions, DiffOptions, HunkSelection, HunkSelectionError, HunkSpec},
@@ -316,26 +316,39 @@ impl GitRepo {
 		let worktree_tree = write_tree_map(&repo, &tracked_worktree)?;
 		let untracked_tree = write_tree_map(&repo, &untracked)?;
 		let label = message.unwrap_or("WIP");
-		let index_commit = repo
-			.new_commit(format!("index on HEAD: {label}"), index_tree, [head_id])
-			.map_err(|err| Error::backend("git stash index commit", err))?;
-		let untracked_commit = repo
-			.new_commit("untracked files on HEAD", untracked_tree, std::iter::empty::<gix::ObjectId>())
-			.map_err(|err| Error::backend("git stash untracked commit", err))?;
-		let stash_commit = repo
-			.new_commit(label, worktree_tree, [
-				head_id,
-				index_commit.id().detach(),
-				untracked_commit.id().detach(),
-			])
-			.map_err(|err| Error::backend("git stash commit", err))?;
-		update_stash_ref(
+		let committer = repo
+			.committer()
+			.ok_or_else(|| Error::backend("git stash", "committer identity is not configured"))?
+			.map_err(|err| Error::backend("git stash", err))?;
+		let author = repo
+			.author()
+			.ok_or_else(|| Error::backend("git stash", "author identity is not configured"))?
+			.map_err(|err| Error::backend("git stash", err))?;
+		let index_commit = write_commit(
 			&repo,
-			stash_commit.id().detach(),
-			PreviousValue::Any,
-			format!("On HEAD: {label}"),
-			true,
-		)?;
+			committer.clone(),
+			author.clone(),
+			&format!("index on HEAD: {label}"),
+			index_tree,
+			&[head_id],
+		)
+		.map_err(|err| Error::backend("git stash index commit", err))?;
+		let untracked_commit = write_commit(
+			&repo,
+			committer.clone(),
+			author.clone(),
+			"untracked files on HEAD",
+			untracked_tree,
+			&[],
+		)
+		.map_err(|err| Error::backend("git stash untracked commit", err))?;
+		let stash_commit = write_commit(&repo, committer, author, label, worktree_tree, &[
+			head_id,
+			index_commit,
+			untracked_commit,
+		])
+		.map_err(|err| Error::backend("git stash commit", err))?;
+		update_stash_ref(&repo, stash_commit, PreviousValue::Any, format!("On HEAD: {label}"), true)?;
 		write_worktree_map(self, &tracked_worktree, &head_map)?;
 		write_index_map(&repo, &head_map)?;
 		for path in untracked.keys() {

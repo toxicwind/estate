@@ -222,7 +222,7 @@ pi-vcs = { path = "crates/pi-vcs" }
 # ──────────────────────────────────────────────────────────────────────────────
 # tinyvec pinned: 1.13.0 is broken upstream (see pi-natives/Cargo.toml).
 tinyvec = "=1.10.0"
-gix = { version = "0.73" }
+gix = { version = "0.73", features = ["merge"] }
 jj-lib = { version = "0.35" }
 
 # Async Runtime & Concurrency
