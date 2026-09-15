@@ -672,6 +672,38 @@ interface SessionWithRepeatReadTracker extends ToolSession {
 	[kRepeatReadTracker]?: Map<string, { hash: bigint; count: number }>;
 }
 
+/** Consecutive aborted reads of one selector tolerated before the abort hint fires. */
+const REPEAT_ABORT_HINT_THRESHOLD = 2;
+
+const kAbortReadTracker = Symbol("read.abortTracker");
+
+interface SessionWithAbortReadTracker extends ToolSession {
+	[kAbortReadTracker]?: Map<string, number>;
+}
+
+/**
+ * Record an aborted read of `path`. Returns a loop-breaking hint once the
+ * same selector aborts repeatedly in a row (observed: 8 identical aborted
+ * re-reads of one 354KB file, each burning a full result cycle). A later
+ * successful read of the same path resets the streak. Returns undefined
+ * until the threshold is reached so the first abort stays a bare abort.
+ */
+function recordAbortedRead(session: ToolSession, path: string): string | undefined {
+	const holder = session as SessionWithAbortReadTracker;
+	holder[kAbortReadTracker] ??= new Map();
+	const tracker = holder[kAbortReadTracker];
+	if (tracker.size > REPEAT_READ_TRACKER_CAP) tracker.clear();
+	const count = (tracker.get(path) ?? 0) + 1;
+	tracker.set(path, count);
+	if (count < REPEAT_ABORT_HINT_THRESHOLD) return undefined;
+	return "This read of '" + path + "' was aborted " + count + " times in a row. " + "Re-issuing the identical read will keep aborting - read a smaller range " + "with 'path:START-END', or investigate why the read is being aborted instead of retrying it unchanged.";
+}
+
+/** Clear the abort streak for `path` after a successful read. */
+function clearAbortedRead(session: ToolSession, path: string): void {
+	(session as SessionWithAbortReadTracker)[kAbortReadTracker]?.delete(path);
+}
+
 /**
  * Append a loop-breaking hint when the same read selector returns
  * byte-identical output repeatedly. Weak models re-issue an unchanged read
@@ -1258,9 +1290,18 @@ export class ReadTool implements AgentTool<typeof readSchema, ReadToolDetails> {
 		onUpdate?: AgentToolUpdateCallback<ReadToolDetails>,
 		toolContext?: AgentToolContext,
 	): Promise<AgentToolResult<ReadToolDetails>> {
-		const result = await this.#executeInner(toolCallId, params, signal, onUpdate, toolContext);
-		appendRepeatReadHint(this.session, params.path, result);
-		return result;
+		try {
+			const result = await this.#executeInner(toolCallId, params, signal, onUpdate, toolContext);
+			clearAbortedRead(this.session, params.path);
+			appendRepeatReadHint(this.session, params.path, result);
+			return result;
+		} catch (error) {
+			if (error instanceof ToolAbortError || signal?.aborted) {
+				const hint = recordAbortedRead(this.session, params.path);
+				if (hint !== undefined) throw new ToolAbortError(hint);
+			}
+			throw error;
+		}
 	}
 
 	async #executeInner(
