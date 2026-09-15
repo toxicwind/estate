@@ -167,15 +167,27 @@ async def send_binary(writer, send_lock, data):
 
 # --- transfer path policy ---------------------------------------------------
 def _xfer_path(path):
-    """Resolve a transfer path; must stay inside XFER_ROOTS."""
+    """Resolve a transfer path; must stay inside XFER_ROOTS.
+
+    realpath (not abspath): a symlink planted under /home/toxic that
+    points outside must not escape the permitted roots.
+    """
     p = os.path.expanduser(path or "")
     if not p:
         return None, "empty path"
     ap = os.path.abspath(p)
+    # resolve symlinks; for a not-yet-existing put destination, resolve
+    # the parent dir and re-append the leaf name
+    if os.path.lexists(ap):
+        rp = os.path.realpath(ap)
+    else:
+        parent = os.path.dirname(ap) or os.sep
+        rp = os.path.join(os.path.realpath(parent), os.path.basename(ap))
     for r in XFER_ROOTS:
-        if ap == r or ap.startswith(r + os.sep):
-            return ap, None
-    return None, "path outside /home/toxic and /tmp: %s" % ap
+        rr = os.path.realpath(r)
+        if rp == rr or rp.startswith(rr + os.sep):
+            return rp, None
+    return None, "path escapes /home/toxic and /tmp: %s" % rp
 
 
 # --- command execution ------------------------------------------------------
