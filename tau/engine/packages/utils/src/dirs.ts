@@ -1,12 +1,12 @@
 /**
- * Centralized path helpers for omp config directories.
+ * Centralized path helpers for tau config directories.
  *
- * Uses PI_CONFIG_DIR (default ".omp") for the config root and
+ * Uses PI_CONFIG_DIR (default ".tau") for the config root and
  * PI_CODING_AGENT_DIR to override the agent directory.
  *
  * On Linux, if XDG_DATA_HOME / XDG_STATE_HOME / XDG_CACHE_HOME environment
  * variables are set, paths are redirected to XDG-compliant locations under
- * $XDG_*_HOME/omp/. This requires running `omp config migrate` first to
+ * $XDG_*_HOME/tau/. This requires running `tau config migrate` first to
  * move data to the new locations. No filesystem existence checks are performed
  * — if the env var is set, omp trusts that the migration has been done.
  */
@@ -17,11 +17,11 @@ import * as path from "node:path";
 import { engines, version } from "../package.json" with { type: "json" };
 import { isEnoent, isEnotdir } from "./fs-error";
 
-/** App name (e.g. "omp") */
-export const APP_NAME: string = "omp";
+/** App name (e.g. "tau") */
+export const APP_NAME: string = "tau";
 
-/** Config directory name (e.g. ".omp") */
-export const CONFIG_DIR_NAME: string = ".omp";
+/** Config directory name (e.g. ".tau") */
+export const CONFIG_DIR_NAME: string = ".tau";
 
 /** Ordered main settings filenames: canonical write target first, legacy-compatible YAML fallback second. */
 export const MAIN_CONFIG_FILENAMES = ["config.yml", "config.yaml"] as const;
@@ -277,7 +277,7 @@ export function getSafeProjectCwd(): string {
 	return os.homedir();
 }
 
-/** Get the config directory name relative to home (e.g. ".omp" or PI_CONFIG_DIR override). */
+/** Get the config directory name relative to home (e.g. ".tau" or PI_CONFIG_DIR override). */
 export function getConfigDirName(): string {
 	return process.env.PI_CONFIG_DIR || CONFIG_DIR_NAME;
 }
@@ -296,7 +296,7 @@ type XdgCategory = "data" | "state" | "cache";
 
 /**
  * Resolves and caches all omp directory paths. On Linux, when XDG environment
- * variables are set, paths are redirected under $XDG_*_HOME/omp/. A new
+ * variables are set, paths are redirected under $XDG_*_HOME/tau/. A new
  * instance is created whenever the agent directory changes, which naturally
  * invalidates all cached paths.
  */
@@ -305,7 +305,7 @@ class DirResolver {
 	readonly agentDir: string;
 
 	// Per-category base dirs. Without XDG, all three equal configRoot / agentDir.
-	// With XDG on Linux, they point to $XDG_*_HOME/omp/.
+	// With XDG on Linux, they point to $XDG_*_HOME/tau/.
 	readonly #rootDirs: Record<XdgCategory, string>;
 	readonly #agentDirs: Record<XdgCategory, string>;
 
@@ -322,14 +322,14 @@ class DirResolver {
 		const isDefault = this.agentDir === defaultAgent;
 
 		// XDG is a Linux convention. On supported platforms, default profile state
-		// resolves under $XDG_*_HOME/omp once `omp config init-xdg` has migrated
+		// resolves under $XDG_*_HOME/tau once `tau config init-xdg` has migrated
 		// the user's data. Named profiles follow a stricter rule: the XDG choice
 		// is keyed on the profile-specific XDG path, never the base app root.
 		//
 		// Why: if we consulted the base app root for named profiles too, the same
-		// profile could resolve to `~/.omp/profiles/<name>` on first activation
-		// (when no $XDG_*_HOME/omp exists yet) and then silently move to
-		// `$XDG_*_HOME/omp/profiles/<name>` the moment the base appeared, orphaning
+		// profile could resolve to `~/.tau/profiles/<name>` on first activation
+		// (when no $XDG_*_HOME/tau exists yet) and then silently move to
+		// `$XDG_*_HOME/tau/profiles/<name>` the moment the base appeared, orphaning
 		// the earlier state. Pinning on the profile path means a profile's location
 		// is decided at first activation and stays put until the user explicitly
 		// migrates it (e.g. by mkdir'ing the XDG profile dir).
@@ -365,7 +365,7 @@ class DirResolver {
 			state: xdgState ?? this.configRoot,
 			cache: xdgCache ?? this.configRoot,
 		};
-		// XDG flattens the agent/ prefix: ~/.omp/agent/sessions → $XDG_DATA_HOME/omp/sessions
+		// XDG flattens the agent/ prefix: ~/.tau/agent/sessions → $XDG_DATA_HOME/tau/sessions
 		this.#agentDirs = {
 			data: xdgData ?? this.agentDir,
 			state: xdgState ?? this.agentDir,
@@ -405,7 +405,7 @@ class DirResolver {
  * agent dir. The profile source can be the active profile or a lower-priority
  * `PI_PROFILE` that was bypassed because `OMP_PROFILE` explicitly selected the
  * default profile. Returns `undefined` in those cases so reset falls back to the
- * standard `~/.omp/agent`.
+ * standard `~/.tau/agent`.
  */
 function resolvePreProfileAgentDir(
 	profile: string | undefined,
@@ -440,7 +440,7 @@ let dirs = new DirResolver({
  * unconditionally deleting the env var. Without the snapshot, a process started
  * with `PI_CODING_AGENT_DIR=/custom` then `setProfile("work")` then
  * `setProfile(undefined)` would silently lose `/custom` and fall back to
- * `~/.omp/agent`. Captured at module load — ignoring a profile-derived value
+ * `~/.tau/agent`. Captured at module load — ignoring a profile-derived value
  * inherited from a parent's `setProfile` (see {@link resolvePreProfileAgentDir})
  * — and refreshed on `setAgentDir`, since that call is the user explicitly
  * redefining the baseline.
@@ -477,7 +477,7 @@ export function refreshDirsFromEnv(): void {
 // Root directories
 // =============================================================================
 
-/** Get the config root directory (~/.omp). */
+/** Get the config root directory (~/.tau). */
 export function getConfigRootDir(): string {
 	return dirs.configRoot;
 }
@@ -564,37 +564,37 @@ export function getActiveProfile(): string | undefined {
 export function getProfileRootDir(profile: string | undefined): string {
 	return getProfileConfigRoot(normalizeProfileName(profile));
 }
-/** Get the agent config directory (~/.omp/agent). */
+/** Get the agent config directory (~/.tau/agent). */
 export function getAgentDir(): string {
 	return dirs.agentDir;
 }
 
-/** Get the project-local config directory (.omp). */
+/** Get the project-local config directory (.tau). */
 export function getProjectAgentDir(cwd: string = getProjectDir()): string {
-	return path.join(cwd, CONFIG_DIR_NAME);
+	return path.join(cwd, getConfigDirName());
 }
 
 // =============================================================================
-// Config-root subdirectories (~/.omp/*)
+// Config-root subdirectories (~/.tau/*)
 // =============================================================================
 
-/** Get the reports directory (~/.omp/reports). */
+/** Get the reports directory (~/.tau/reports). */
 export function getReportsDir(): string {
 	return dirs.rootSubdir("reports", "state");
 }
 
-/** Get the logs directory (~/.omp/logs). */
+/** Get the logs directory (~/.tau/logs). */
 export function getLogsDir(): string {
 	return dirs.rootSubdir("logs", "state");
 }
 
-/** Get this process's dated log path (~/.omp/logs/omp.YYYY-MM-DD.PID.log). */
+/** Get this process's dated log path (~/.tau/logs/tau.YYYY-MM-DD.PID.log). */
 export function getLogPath(date = new Date(), pid = process.pid): string {
 	return path.join(getLogsDir(), `${APP_NAME}.${date.toISOString().slice(0, 10)}.${pid}.log`);
 }
 
 /**
- * Get the plugins directory (~/.omp/plugins or its XDG equivalent).
+ * Get the plugins directory (~/.tau/plugins or its XDG equivalent).
  *
  * No-arg form (production callers) goes through the XDG-aware DirResolver so
  * reads and writes always agree. The optional `home` parameter is for test
@@ -610,22 +610,22 @@ export function getPluginsDir(home?: string): string {
 	return dirs.rootSubdir("plugins", "data");
 }
 
-/** Where npm installs packages (~/.omp/plugins/node_modules). */
+/** Where npm installs packages (~/.tau/plugins/node_modules). */
 export function getPluginsNodeModules(home?: string): string {
 	return path.join(getPluginsDir(home), "node_modules");
 }
 
-/** Plugin manifest (~/.omp/plugins/package.json). */
+/** Plugin manifest (~/.tau/plugins/package.json). */
 export function getPluginsPackageJson(home?: string): string {
 	return path.join(getPluginsDir(home), "package.json");
 }
 
-/** Plugin lock file (~/.omp/plugins/omp-plugins.lock.json). */
+/** Plugin lock file (~/.tau/plugins/tau-plugins.lock.json). */
 export function getPluginsLockfile(home?: string): string {
-	return path.join(getPluginsDir(home), "omp-plugins.lock.json");
+	return path.join(getPluginsDir(home), "tau-plugins.lock.json");
 }
 
-/** Get the remote mount directory (~/.omp/remote). */
+/** Get the remote mount directory (~/.tau/remote). */
 export function getRemoteDir(): string {
 	return dirs.rootSubdir("remote", "data");
 }

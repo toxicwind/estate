@@ -3639,7 +3639,7 @@ describe("AgentSession retry delay cap", () => {
 		expect(last.stopReason).toBe("aborted");
 	});
 
-	async function expectThinkingStreamCloseRetryCap(options: {
+	async function expectThinkingStreamCloseFullRetryBudget(options: {
 		model: Model;
 		errorMessage: string;
 		prompt: string;
@@ -3735,33 +3735,37 @@ describe("AgentSession retry delay cap", () => {
 		await session.prompt(options.prompt);
 		await session.waitForIdle();
 
-		expect(calls).toBe(2);
-		expect(retryStartEvents).toHaveLength(1);
-		expect(retryStartEvents[0]).toMatchObject({ attempt: 1, maxAttempts: 1 });
+		// Bounded thinking-stream closes now get the full configured retry
+		// budget: the mock fails twice (thinking then close), the third call
+		// succeeds.
+		expect(calls).toBe(3);
+		expect(retryStartEvents).toHaveLength(2);
+		expect(retryStartEvents[0]).toMatchObject({ attempt: 1, maxAttempts: 10 });
+		expect(retryStartEvents[1]).toMatchObject({ attempt: 2, maxAttempts: 10 });
 		expect(retryEndEvents).toHaveLength(1);
-		expect(retryEndEvents[0]).toMatchObject({ success: false, attempt: 1 });
-		expect(lastAssistant(session).errorMessage).toBe(`Retry budget exhausted after 1 retry: ${options.errorMessage}`);
+		expect(retryEndEvents[0]).toMatchObject({ success: true, attempt: 2 });
+		expect(lastAssistant(session).errorMessage).toBeUndefined();
 		expect(session.isRetrying).toBe(false);
 	}
 
-	it("caps repeated OpenRouter stream closes after streamed thinking at one retry", async () => {
+	it("retries OpenRouter stream closes after streamed thinking with the full retry budget", async () => {
 		const model = getBundledModel("openrouter", "~google/gemini-flash-latest");
 		if (!model) {
 			throw new Error("Expected bundled OpenRouter Gemini test model to exist");
 		}
-		await expectThinkingStreamCloseRetryCap({
+		await expectThinkingStreamCloseFullRetryBudget({
 			model,
 			errorMessage: "server_error: stream closed with reason: error",
 			prompt: "Trigger OpenRouter reasoning transition failure",
 		});
 	});
 
-	it("caps repeated Copilot Grok Responses closes after streamed thinking at one retry", async () => {
+	it("retries Copilot Grok Responses closes after streamed thinking with the full retry budget", async () => {
 		const model = getBundledModel("github-copilot", "grok-4.6");
 		if (!model) {
 			throw new Error("Expected bundled Copilot Grok 4.6 test model to exist");
 		}
-		await expectThinkingStreamCloseRetryCap({
+		await expectThinkingStreamCloseFullRetryBudget({
 			model,
 			errorMessage: "OpenAI responses stream closed before a terminal response event was received",
 			prompt: "Trigger Copilot Grok Responses incomplete stream",
