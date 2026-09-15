@@ -249,7 +249,7 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "nim-
 daemons = ["tau"]
 
 [groups.all]
-daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "nim-proxy", "matter-server", "tau", "kimi-auto-resolver", "squawk-feed", "squawk-ws", "buildsrv"]
+daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "nim-proxy", "matter-server", "tau", "kimi-auto-resolver", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog"]
 
 [daemons.kimi-auto-resolver]
 run = "exec /home/toxic/kimi-auto/loop.sh"
@@ -354,11 +354,16 @@ ready_http = "http://127.0.0.1:25148/health"
 env = { BUILDSRV_ROOT = "/home/toxic/buildsrv", BUILDSRV_PORT = "25148", BUILDSRV_WORKERS = "2" }
 auto = ["start"]
 
-# HFT canary (2026-09-14): transient kill -9 restart test daemon. REMOVE after test.
-[daemons.hft-canary]
-run = "exec /usr/bin/python3 /home/toxic/hft-audit-7f3a/canary.py"
-dir = "/home/toxic/hft-audit-7f3a"
+# buildsrv-watchdog - external liveness guard for buildsrv (2026-09-14):
+# polls /health every 20s; `pitchfork restart buildsrv` after 3 consecutive
+# failures. Covers the wedged-but-alive case pitchfork retry=true cannot
+# see (2026-09-14 18:03 lock deadlock: process "running", health dead).
+# Scoped to buildsrv only; sibling lanes own their watchdogs.
+[daemons.buildsrv-watchdog]
+run = "exec /usr/bin/python3 /home/toxic/sovereign/tools/buildsrv/buildsrv-watchdog.py"
+dir = "/home/toxic/sovereign/tools/buildsrv"
 mise = false
 retry = true
-ready_cmd = "ss -ltn | grep -q :25999"
-auto = []
+boot_start = true
+env = { BUILDSRV_PORT = "25148", WATCHDOG_INTERVAL_S = "20", WATCHDOG_MAX_FAILS = "3" }
+auto = ["start"]
