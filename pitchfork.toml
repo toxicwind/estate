@@ -336,7 +336,9 @@ auto = ["start"]
 # exec server; handshake/framing borrowed from squawk-ws. Same token, command
 # policy and audit as the HTTPS bridge (awrawr_mcp.py). Funnel: /exec-ws -> :8379.
 [daemons.awrawr-ws-exec]
-run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/awrawr_ws_exec.py"
+# NOTE: runs the TRACKED source; /home/toxic/awrawr_ws_exec.py is kept
+# as a synced fallback copy (do not delete).
+run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/sovereign/shingle-workspace/awrawr_ws_exec.py"
 dir = "/home/toxic"
 mise = false
 retry = true
