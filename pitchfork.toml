@@ -297,18 +297,20 @@ env = { SOVEREIGN_ROUTER_PORT = "25104" }
 auto = ["start"]
 
 # WhatsApp Cloud API MCP server + inbound webhook (2026-09-14).
-# Secrets live ONLY in this env block — never in the whatsapp-mcp git repo.
-# Chris: paste WHATSAPP_API_TOKEN + WHATSAPP_PHONE_NUMBER_ID here, then
-# reload pitchfork. WHATSAPP_VERIFY_TOKEN is entered in the Meta app dashboard
-# (WhatsApp > Configuration > Webhook) alongside the callback URL.
+# Secrets live ONLY in /home/toxic/.config/pitchfork-secrets/whatsapp-mcp.env
+# (0600, untracked) — never in this file or the whatsapp-mcp git repo.
+# WHATSAPP_VERIFY_TOKEN is self-generated; it must ALSO be entered in the Meta
+# app dashboard (WhatsApp > Configuration > Webhook) alongside the callback URL.
+# To rotate: generate a new token into the secrets file, update the dashboard,
+# then: pitchfork restart whatsapp-mcp
 [daemons.whatsapp-mcp]
-run = "exec /home/toxic/.whatsapp-mcp-venv/bin/python /home/toxic/whatsapp-mcp/server.py"
+run = "bash -c 'set -a; source /home/toxic/.config/pitchfork-secrets/whatsapp-mcp.env; set +a; exec /home/toxic/.whatsapp-mcp-venv/bin/python /home/toxic/whatsapp-mcp/server.py'"
 dir = "/home/toxic/whatsapp-mcp"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25146/health"
 auto = ["start"]
-env = { WHATSAPP_API_TOKEN = "", WHATSAPP_PHONE_NUMBER_ID = "", WHATSAPP_VERIFY_TOKEN = "SmnBWsUKlY5TeUQ6D3ITUMIP7_rUumP6fOI6KTzxYIA", WHATSAPP_MCP_PORT = "25146" }
+env = { WHATSAPP_MCP_PORT = "25146" }
 
 # Squawk websocket push feed (2026-09-14): stdlib asyncio ws server, inotify on
 # channel files + zipfs-vault, bearer-token auth. Replaces polling.
