@@ -1,0 +1,45 @@
+{
+  "tool": "completion-audit",
+  "schema_v": 1,
+  "generated_at": "2026-09-15T00:28:31.526561+00:00",
+  "ledger": "/home/hatch/.cache/shingle/completion_audit.jsonl",
+  "rows_covered": 3,
+  "clock_probe": {
+    "samples": 200000,
+    "min_nonzero_delta_ns": 150,
+    "p50_delta_ns": 180.0
+  },
+  "per_tag": {
+    "code-race-proof": {
+      "n": 3,
+      "n_valid": 3,
+      "n_ceiling_breached": 0,
+      "elapsed_us": {
+        "n": 3,
+        "min": 19070204,
+        "p50": 39120443.0,
+        "p95": 40763312.9,
+        "p99": 40909345.78,
+        "max": 40945854
+      },
+      "ttfb_us": {
+        "n": 3,
+        "min": 19022337,
+        "p50": 39097350.0,
+        "p95": 40760754.3,
+        "p99": 40908612.46,
+        "max": 40945577
+      },
+      "winners_by_race": {
+        "cr1": {
+          "winner": "WsDaemon",
+          "winner_us": 19070204,
+          "losers": [
+            "RelayManager",
+            "seal_envelope"
+          ]
+        }
+      }
+    }
+  }
+}
