@@ -400,3 +400,16 @@ env = { WATCHDOG_PORT = "25150", WATCHDOG_INTERVAL = "30" }
 # old dir /home/toxic/squawk, old ready_http http://127.0.0.1:25147/ping.
 # Live process runs the /home/toxic/squawk-ws/ path on :25147; this block reflects that.
 auto = ["start"]
+
+# ws-exec-tunnel (2026-09-14): TCP forwarder 127.0.0.1:25379 -> 127.0.0.1:8379.
+# Chris's rule: 8379 is the ws-exec default - leave it in place, tunnel to it
+# instead of moving it. Transparent to the WS protocol (handshake+frames pass
+# through untouched). NOTE: running supervisor (2.16.0) has no reload mechanism
+# and was not restarted (forbidden) - this section takes effect on the next
+# supervisor start; the tunnel is currently supervised via `pitchfork run`.
+[daemons.ws-exec-tunnel]
+run = "exec /usr/bin/python3 /home/toxic/ws-exec-tunnel.py"
+dir = "/home/toxic"
+mise = false
+retry = true
+auto = ["start"]
