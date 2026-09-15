@@ -367,6 +367,7 @@ retry = true
 boot_start = true
 env = { BUILDSRV_PORT = "25148", WATCHDOG_INTERVAL_S = "20", WATCHDOG_MAX_FAILS = "3" }
 auto = ["start"]
+<<<<<<< HEAD
 
 
 # paper-poller — PAPER-TASK/PAPER-RESULT poller daemon (2026-09-14, lane 7):
@@ -396,3 +397,5 @@ boot_start = true
 ready_http = "http://127.0.0.1:25150/health"
 env = { WATCHDOG_PORT = "25150", WATCHDOG_INTERVAL = "30" }
 auto = ["start"]
+=======
+>>>>>>> origin/main
