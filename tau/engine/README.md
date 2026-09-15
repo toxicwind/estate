@@ -1,63 +1,44 @@
-# τ (tau) — Oh My Pi (omp)
+# Tau: The Sovereign AI Agent Engine
 
-> **The sovereign AI coding agent with the full IDE wired in. 1M context, 11-tool advisor suite, and hardware-accelerated execution.**  
-> Canonical Lineage: **[toxicwind/tau](https://github.com/toxicwind/tau)** & **[toxicwind/pi](https://github.com/toxicwind/pi)** (Upstream: [can1357/oh-my-pi](https://github.com/can1357/oh-my-pi) & [badlogic/pi-mono](https://github.com/badlogic/pi-mono))
+> **Name note:** `.omp` == `.tau` — renamed monorepo. `alias omp` is leftover from install; real CLI is `tau` (`opencode`).
+Tau (formerly OMP) is the AI-native agent engine for the Sovereign ecosystem, designed for 1M+ context reasoning and multi-tool orchestration.
 
-[![CI](https://github.com/toxicwind/tau/actions/workflows/ci.yml/badge.svg)](https://github.com/toxicwind/tau/actions)
-[![Test](https://github.com/toxicwind/tau/actions/workflows/test.yml/badge.svg)](https://github.com/toxicwind/tau/actions)
-[![License: SOL / MIT](https://img.shields.io/badge/License-SOL%20v1.0%20%2F%20MIT-blue.svg)](./LICENSE)
+## Architecture
+- **Engine Core:** Located in `packages/coding-agent/` and `packages/agent/`.
+- **Orchestration:** Built for federated tool use via MCP and high-performance inference through the Herd inference router.
+- **Monorepo Integration:** Part of the Sovereign workspace architecture (see `/README.md` in the monorepo root).
 
----
+## Upstream & Vendor Policy
+> ⚠️ **CRITICAL: `vendor/` is strictly for upstream tracking and reference only.**
+- Never edit or commit working code directly inside `vendor/` or `engine/vendor/`.
+- `vendor/oh-my-pi/` mirrors canonical upstream to diff schemas, track dependency changes, and pull updates.
+- Active monorepo development, workspace packages, and custom enhancements live exclusively in `packages/`, `crates/`, and `extensions/`.
 
-## 🔱 Why τ (tau)?
+## Getting Started
+1. **Setup:** Ensure you are running from the monorepo root.
+2. **Development:** Use the standard Tau CLI, aliased in your `.bashrc`:
+   `alias tau='/home/toxic/.local/bin/tau --cwd="$PWD"'`
 
-π (pi) is half a circle. **τ (tau) is the complete circle.**
+## ⚡ Hardware Architecture & Build Concurrency (Ryzen 7 8700F)
+> **Build Throttle Notice**: Rust builds are configured with `jobs = 12` in `.cargo/config.toml` (target-cpu `znver4`).
+- **Why throttled to 12?** The AMD Ryzen 7 8700F has 8 cores / 16 threads sharing a unified **16 MiB L3 cache**. Unbounded 16-thread `rustc` bursts saturate L3 cache lines and memory bus bandwidth simultaneously alongside `sccache`, causing desktop/shell input lag (loadavg > 24). Clamping to 12 jobs leaves 4 hardware threads dedicated to shell, editor, and system daemons while maintaining >90% compilation throughput.
+- **To UNCAP to 100% (16 threads)**:
+  ```bash
+  cargo build -j 16
+  # Or remove `jobs = 12` in .cargo/config.toml
+  ```
+- **CPU Scaling Governor**: Workstation uses `powersave` governor by default. For maximal burst performance during compilation:
+  ```bash
+  echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+  ```
 
-Where standard agents stop at single-file operations or lose context across turns, τ provides:
-- **1,000,000 token context window** with zero-degradation memory retention
-- **11-tool advisor suite** active across every generation
-- **Zen 4 AVX-512 & NVIDIA CUDA 8.6 RTX 3090** native acceleration
-- **Federated MCP Gateway integration** (:25127) with 231 approved tools
-- **Preserved caller working directory** across all CLI entrypoints (`pi`, `omp`, `tau`)
-
----
-
-## 🏛️ Architecture
-
-```mermaid
-graph TD
-    A[User CLI / TUI / Web :25125] --> B[τ Kernel Engine]
-    B --> C[Advisor Suite - 11 Tools]
-    B --> D[MCP Federation Gateway :25127]
-    B --> E[Herd Inference Router :25100]
-    E --> F[AST Matrix 75-Model Fleet]
-    C --> G[Safe Execution Interceptor]
-    D --> G
-    G --> H[AST Edit / LSP / Debug / Diff]
-```
-
----
-
-## ⚡ Quick Start
-
-```bash
-# Clone and install with Bun
-git clone https://github.com/toxicwind/tau.git
-cd tau
-bun install
-bun run dev
-
-# Global launcher commands
-pi --version    # -> omp/18.0.8 (runs in active $PWD)
-tau --version   # -> omp/18.0.8
-omp --version   # -> omp/18.0.8
-```
+## Documentation Index
+- [Architecture Guide](/docs/ARCHITECTURE.md)
+- [Setup Guide](/docs/SETUP.md)
+- [Contributor Guide](/CONTRIBUTING.md)
+- [Packages Overview](/docs/packages/)
 
 ---
-
-## 📊 Features & Toolchain
-
-- **Multi-Model Orchestration**: Seamless routing between Google Gemini 3.7 Flash Tiered, NVIDIA NIM 1M models, and local quantized GGUF fleets.
-- **Language Intelligence**: Native LSP integration supporting 14 language server operations, symbol renames, diagnostics, and code actions.
-- **Dynamic Caching**: Multi-tiered sccache + ccache + mold build cache integration for instantaneous compilation and sub-second startup.
-- **Sovereign Daemon Integration**: Managed via Pitchfork-LLM on port `:25125` with full health watchdog telemetry.
+- **Harness state:** See `.tau/harness-ref.json` (mesh URL `25127` mcpproxy-go, subagent `inkling-small:free`, env deconfused, `.pi`/`.omp` symlinks verified, temp `1.0`, effort mapped).
+- **Commit reference:** `fa7f8ad` in sovereign-projects root.
+*(Managed by the Sovereign infrastructure pipeline.)*
