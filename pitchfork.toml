@@ -413,3 +413,18 @@ dir = "/home/toxic"
 mise = false
 retry = true
 auto = ["start"]
+
+# squawk-ws-client (2026-09-14, cell-proof pilot): push client ON awrawr-pc,
+# connecting directly to 127.0.0.1:25147. The cell-side client
+# (~/workspace/squawk-ws-client.py) dies with the cell; this one cannot.
+# Spool: /home/toxic/squawk-ws/client-spool.jsonl (durable, cell-independent).
+# Additive pilot — cell-side client + watchdog stay as fallback until 24h proven.
+[daemons.squawk-ws-client]
+run = "exec python3 /home/toxic/squawk-ws/squawk_ws_client_local.py"
+dir = "/home/toxic/squawk-ws"
+mise = false
+retry = true
+boot_start = true
+ready_cmd = "find /home/toxic/squawk-ws/client-heartbeat -mmin -2 | grep -q ."
+depends = ["squawk-ws"]
+auto = ["start"]
