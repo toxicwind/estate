@@ -1,3 +1,21 @@
+# pitchfork.toml.example — structure reference for the sovereign pitchfork config.
+# Copy to pitchfork.toml and adjust host-specific paths/ports as needed.
+#
+# SECRETS: this file contains NO secret values. The only secret-bearing daemon
+# is whatsapp-mcp, and its secrets live in the UNTRACKED file
+#   /home/toxic/.config/pitchfork-secrets/whatsapp-mcp.env   (mode 0600)
+# with this content (replace placeholders with real values):
+#
+#   WHATSAPP_VERIFY_TOKEN=<self-generated random string, e.g. secrets.token_urlsafe(32)>
+#   # ^ must ALSO be entered in the Meta app dashboard:
+#   #   WhatsApp > Configuration > Webhook, alongside the callback URL.
+#   WHATSAPP_API_TOKEN=<Meta System User access token, whatsapp_business_messaging scope>
+#   WHATSAPP_PHONE_NUMBER_ID=<from Meta API Setup / Getting Started>
+#
+# The daemon's run command sources that file before exec'ing the server, so the
+# tracked pitchfork.toml only carries the non-secret WHATSAPP_MCP_PORT.
+# =============================================================================
+
 # SOVEREIGN PITCHFORK CONFIG — GENERATED from config/ports.env + service definitions
 # DO NOT EDIT DIRECTLY — Run: bun run scripts/generate.ts
 env_file = "config/ports.env"
