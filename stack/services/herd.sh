@@ -10,11 +10,14 @@ set -euo pipefail
 SOV="$HOME/sovereign"
 source "$SOV/stack/lib-ports.sh"
 require_env HERD_PORT
-# Canonical secrets for provider keyEnvs. Sourced, never copied.
+# Canonical secrets for provider keyEnvs (NIM_PROXY_API_KEY, OPENROUTER_API_KEY, ...).
+# Sourced, never copied — keys stay in /home/toxic/.secrets.
 if [[ -f /home/toxic/.secrets ]]; then
-  set -a; set +u
+  set -a
+  set +u  # .secrets has forward refs (e.g. ${NVIDIA_API_KEY}); don't crash
   source /home/toxic/.secrets
-  set -u; set +a
+  set -u
+  set +a
 fi
 PORT="$HERD_PORT"
 BIN="$HOME/projects/sovereign-projects/sovereign-swap/build/llama-swap"

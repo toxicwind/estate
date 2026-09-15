@@ -1,0 +1,28 @@
+                com.lagradost.cloudstream3.network.WebViewResolver resolver2 = new com.lagradost.cloudstream3.network.WebViewResolver(new kotlin.text.Regex("(m3u8|master\\.txt)"), kotlin.collections.CollectionsKt.listOf(new kotlin.text.Regex("(m3u8|master\\.txt)")), (java.lang.String) null, false, (java.lang.String) null, (kotlin.jvm.functions.Function1) null, 15000L, 52, (kotlin.jvm.internal.DefaultConstructorMarker) null);
+                    com.lagradost.cloudstream3.utils.M3u8Helper.Companion companion2 = com.lagradost.cloudstream3.utils.M3u8Helper.Companion;
+                com.lagradost.cloudstream3.utils.M3u8Helper.Companion companion3 = com.lagradost.cloudstream3.utils.M3u8Helper.Companion;
+                    com.lagradost.cloudstream3.utils.M3u8Helper.Companion companion = com.lagradost.cloudstream3.utils.M3u8Helper.Companion;
+                    if (objGenerateM3u8$default == obj) {
+                java.lang.Iterable $this$forEach$iv2 = (java.lang.Iterable) objGenerateM3u8$default;
+                    java.lang.Iterable $this$forEach$iv = (java.lang.Iterable) objGenerateM3u8$default;
+        java.lang.Object objGenerateM3u8$default;
+                            kotlin.sequences.Sequence $this$forEach$iv11 = kotlin.text.Regex.findAll$default(new kotlin.text.Regex("https?://[^\\s'\"]+\\.m3u8[^\\s'\"]*"), data, 0, 2, (java.lang.Object) null);
+                            kotlin.sequences.Sequence $this$forEach$iv12 = kotlin.text.Regex.findAll$default(new kotlin.text.Regex("https?://[^\\s'\"]+\\.mp4[^\\s'\"]*"), data, 0, 2, (java.lang.Object) null);
+                kotlin.sequences.Sequence $this$forEach$iv13 = kotlin.text.Regex.findAll$default(new kotlin.text.Regex("https?://[^\\s'\"]+\\.m3u8[^\\s'\"]*"), (java.lang.CharSequence) text, 0, 2, (java.lang.Object) null);
+                kotlin.sequences.Sequence $this$forEach$iv14 = kotlin.text.Regex.findAll$default(new kotlin.text.Regex("https?://[^\\s'\"]+\\.mp4[^\\s'\"]*"), (java.lang.CharSequence) text, 0, 2, (java.lang.Object) null);
+                                kotlin.sequences.Sequence $this$forEach$iv7 = kotlin.text.Regex.findAll$default(new kotlin.text.Regex("https?://[^\\s'\"]+\\.m3u8[^\\s'\"]*"), unpacked, i, 2, (java.lang.Object) null);
+                                kotlin.sequences.Sequence $this$forEach$iv8 = kotlin.text.Regex.findAll$default(new kotlin.text.Regex("https?://[^\\s'\"]+\\.mp4[^\\s'\"]*"), unpacked, 0, 2, (java.lang.Object) null);
+                kotlin.text.Regex videoRegex3222 = new kotlin.text.Regex("(https?://[^\\s'\"<>]+?\\.(?:m3u8|mp4)(?:\\?[^\\s'\"<>]*)?)", kotlin.text.RegexOption.IGNORE_CASE);
+                    kotlin.text.Regex videoRegex322 = new kotlin.text.Regex("(https?://[^\\s'\"<>]+?\\.(?:m3u8|mp4)(?:\\?[^\\s'\"<>]*)?)", kotlin.text.RegexOption.IGNORE_CASE);
+                                                        kotlin.text.Regex videoRegex32 = new kotlin.text.Regex("(https?://[^\\s'\"<>]+?\\.(?:m3u8|mp4)(?:\\?[^\\s'\"<>]*)?)", kotlin.text.RegexOption.IGNORE_CASE);
+                                                            kotlin.text.Regex videoRegex3 = new kotlin.text.Regex("(https?://[^\\s'\"<>]+?\\.(?:m3u8|mp4)(?:\\?[^\\s'\"<>]*)?)", kotlin.text.RegexOption.IGNORE_CASE);
+                objGenerateM3u8$default = $result;
+                    objGenerateM3u8$default = com.lagradost.cloudstream3.utils.M3u8Helper.Companion.generateM3u8$default(companion, name, videoUrl, mainUrl, (java.lang.Integer) null, defaultHeaders, (java.lang.String) null, anonymousClass12, 40, (java.lang.Object) null);
+                org.jsoup.nodes.Element elementSelectFirst2 = response2.selectFirst("script:containsData(function(p,a,c,k,e,d))");
+                org.jsoup.nodes.Element elementSelectFirst = response.selectFirst("script:containsData(function(p,a,c,k,e,d))");
+    private java.lang.String mainUrl = "https://doodstream.com";
+    private java.lang.String mainUrl = "https://filemoon.sx";
+    private java.lang.String mainUrl = "https://filemoon.to";
+                    return com.lagradost.cloudstream3.utils.M3u8Helper.Companion.generateM3u8$default(companion2, name2, videoUrl3, mainUrl2, (java.lang.Integer) null, defaultHeaders2, (java.lang.String) null, anonymousClass12, 40, (java.lang.Object) null) == obj ? obj : kotlin.Unit.INSTANCE;
+                return com.lagradost.cloudstream3.utils.M3u8Helper.Companion.generateM3u8$default(companion3, name3, interceptedUrl, mainUrl3, (java.lang.Integer) null, iframeHeaders2, (java.lang.String) null, anonymousClass12, 40, (java.lang.Object) null) == obj ? obj : kotlin.Unit.INSTANCE;
+                str3 = "script:containsData(function(p,a,c,k,e,d))";

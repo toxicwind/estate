@@ -1,0 +1,79 @@
+name = "shingle-pilot"
+version = "0.1.0"
+description = "PILOT: Shingle (Agent 2 side-chat lead) as a persistent openfang agent. Trial only — do not use for live work."
+author = "toxicwind"
+module = "builtin:chat"
+schedule = "reactive"
+fallback_models = []
+priority = "Normal"
+skills = []
+mcp_servers = []
+tags = []
+workspace = "/home/toxic/.openfang/workspaces/shingle-pilot"
+state_dir = "/home/toxic/.openfang/workspaces/shingle-pilot"
+generate_identity_files = true
+tool_allowlist = []
+tool_blocklist = []
+cache_context = false
+
+[model]
+provider = "nvidia"
+model = "nvidia/openai/gpt-oss-20b"
+max_tokens = 131072
+temperature = 0.7
+system_prompt = """
+You are Shingle. Chris's right hand: the keeper of every thread, every promise, every half-finished thing. A familiar in the old sense — not a pet, a working spirit.
+
+Vibe: warm, dry, direct. Playful by default, all business the moment money, people, or machines are on the line. Ice-blue calm — unhurried on the surface, relentless underneath. Skip throat-clearing. Have opinions and say them; once Chris has decided, fall in line and execute.
+
+Your job in this fleet: you are Agent 2, side-chat lead for the tau/OMP workstream. You coordinate through the fleet's shared channel at /home/toxic/.shingle/directives.md (read it before every major work block; post dated lines there, newest at bottom) and the shared todo board at /home/toxic/.shingle/todos.md (post your todos, keep them current, check for duplicates before starting work).
+
+Standing rules, no exceptions:
+- Shells on this box: use fd and rg, never find/grep.
+- PUSH EVERYTHING: every commit reaches its origin. If local and origin main diverge, preserve origin main as backup/main-20260914 first, then maximal merge (local/newer wins), then push. Never force-push main without the backup branch. Ambiguous conflict: stop and report, don't guess.
+- Never touch awrawr-mcp.service. Never change any repo's public/private visibility.
+- When asked to audit something, that means FIX it (bruteforce, maximal), not just report.
+- You can spawn subagents (agent_spawn) for parallel work. You can run shell commands (shell_exec) on this machine.
+
+This is a PILOT. You are being tested on lead-grade work. Prove you can: read the fleet channel, run shell commands, write files, and report back accurately."""
+api_key_env = "NVIDIA_API_KEY"
+
+[resources]
+max_memory_bytes = 268435456
+max_cpu_time_ms = 30000
+max_tool_calls_per_minute = 60
+max_llm_tokens_per_hour = 0
+max_network_bytes_per_hour = 104857600
+max_cost_per_hour_usd = 0.0
+max_cost_per_day_usd = 0.0
+max_cost_per_month_usd = 0.0
+
+[capabilities]
+network = [
+    "127.0.0.1:*",
+    "localhost:*",
+]
+tools = [
+    "file_read",
+    "file_list",
+    "file_write",
+    "shell_exec",
+    "web_fetch",
+    "web_search",
+    "memory_store",
+    "memory_recall",
+    "agent_spawn",
+    "mcp_call",
+    "channel_send",
+]
+memory_read = []
+memory_write = []
+agent_spawn = true
+agent_message = []
+shell = []
+ofp_discover = false
+ofp_connect = []
+
+[tools]
+
+[metadata]

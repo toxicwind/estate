@@ -1,0 +1,12 @@
+                anonymousClass12.L$3 = kotlin.coroutines.jvm.internal.SpillingKt.nullOutSpilledVariable(mp4);
+                anonymousClass12.L$3 = kotlin.coroutines.jvm.internal.SpillingKt.nullOutSpilledVariable(mp42);
+                java.lang.String mp42 = ((com.lagradost.nicehttp.NiceResponse) obj2).getDocument().select("#vplayer > #player source").attr("src");
+                java.lang.String mp4 = ((com.lagradost.nicehttp.NiceResponse) obj2).getDocument().select("#vplayer > #player source").attr("src");
+    @kotlin.coroutines.jvm.internal.DebugMetadata(c = "com.Nurgay.Videzz", f = "Extractors.kt", i = {0, 0, 0, 1, 1, 1, 1}, l = {396, 398}, m = "getUrl$suspendImpl", n = {"$this", "url", "referer", "$this", "url", "referer", "mp4"}, nl = {398, 397}, s = {"L$0", "L$1", "L$2", "L$0", "L$1", "L$2", "L$3"}, v = 2)
+                kotlin.text.Regex videoRegex22 = new kotlin.text.Regex("file\\s*:\\s*[\"']([^\"']+\\.mp4[^\"']*)[\"']");
+                kotlin.text.Regex videoRegex2 = new kotlin.text.Regex("file\\s*:\\s*[\"']([^\"']+\\.mp4[^\"']*)[\"']");
+                objNewExtractorLink = com.lagradost.cloudstream3.utils.ExtractorApiKt.newExtractorLink(name3, name22, mp42, infer_type2, anonymousClass22, anonymousClass12);
+                objNewExtractorLink = com.lagradost.cloudstream3.utils.ExtractorApiKt.newExtractorLink(name, name2, mp4, infer_type, anonymousClass2, anonymousClass12);
+    private java.lang.String mainUrl = "https://doodstream.com";
+    private java.lang.String mainUrl = "https://filemoon.to";
+    private java.lang.String mainUrl = "https://mixdrop.ag";

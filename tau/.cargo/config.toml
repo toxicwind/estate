@@ -1,0 +1,23 @@
+# ==============================================================================
+# Sovereign / Tau Rust Build Concurrency & Architecture Optimization
+# Workstation: AMD Ryzen 7 8700F (8-Core / 16-Thread, Zen 4 / znver4)
+# L3 Cache: 16 MiB unified across all 8 cores. RAM: 62 GiB DDR5.
+# ==============================================================================
+# NOTE ON THROTTLING:
+# Default rustc codegen spawns 16+ parallel workers. With a 16MB L3 cache,
+# 16 concurrent rustc instances thrash cache lines and trigger memory bus stalls,
+# causing severe desktop/shell input latency (loadavg > 24).
+# Clamping to `jobs = 12` leaves 4 hardware threads headroom for interactive
+# shell/editor tasks while delivering >90% compilation throughput.
+#
+# TO UNCAP / FULL MAXIMAL (run on bare dedicated tty without desktop):
+#   cargo build -j 16
+# Or comment out `jobs = 12` below.
+# ==============================================================================
+
+[build]
+jobs = 12
+rustflags = [
+    "-C", "target-cpu=znver4",
+    "-C", "codegen-units=16"
+]

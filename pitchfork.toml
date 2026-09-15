@@ -395,4 +395,8 @@ retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25150/health"
 env = { WATCHDOG_PORT = "25150", WATCHDOG_INTERVAL = "30" }
+# NOTE (merged 2026-09-14, stash wip-kimi-audit): superseded squawk-ws
+# variant kept for reference — old path /home/toxic/squawk/relay/squawk_ws_server.py,
+# old dir /home/toxic/squawk, old ready_http http://127.0.0.1:25147/ping.
+# Live process runs the /home/toxic/squawk-ws/ path on :25147; this block reflects that.
 auto = ["start"]

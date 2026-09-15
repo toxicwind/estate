@@ -1,0 +1,10 @@
+name: nim-ops
+description: NIMStats-driven model selection, live latency probing, and Exa research for planning.
+version: 1.0.0
+author: toxic
+subscribe:
+  - kind: schedule.cron
+    target: command:nim-refresh
+    cron: "0 * * * *"
+tools_visibility:
+  default: scoped

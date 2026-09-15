@@ -1,0 +1,7 @@
+{
+  "comment": "Crates that must be synced together from the same vendor revision.",
+  "pairs": [
+    ["pi-vcs", "pi-iso"],
+    ["pi-vcs", "pi-edit"]
+  ]
+}

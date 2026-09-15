@@ -1,0 +1,8 @@
+{
+  "name": "GayXXX Ultimate Fix Repository",
+  "description": "All CS3 plugins repacked from validated DEX (ZIP with classes.dex).",
+  "manifestVersion": 1,
+  "pluginLists": [
+    "https://raw.githubusercontent.com/toxicwind/gayxxx-sovereign/main/plugins.json"
+  ]
+}
