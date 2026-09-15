@@ -70,6 +70,8 @@ XFER_TOTAL_S = 3600
 XFER_CHUNK = 262144
 XFER_MAX_FRAME = 4 * 1024 * 1024
 XFER_ROOTS = ("/home/toxic", "/tmp")
+_ACTIVE_PUTS = set()  # paths with a live put op; second put -> clean "busy"
+_ACTIVE_PUTS_LOCK = asyncio.Lock()
 
 
 def log(*a):
@@ -294,6 +296,23 @@ async def _handle_put(reader, writer, send_lock, msg_id, doc):
     if not isinstance(size, int) or size < 0 or len(sha256) != 64:
         await fail("bad size/sha256")
         return
+    # one live put per path: a second concurrent put gets a clean "busy"
+    # instead of two writers interleaving into the same .part file
+    async with _ACTIVE_PUTS_LOCK:
+        if path in _ACTIVE_PUTS:
+            await fail("transfer busy: another put to this path is active")
+            return
+        _ACTIVE_PUTS.add(path)
+    try:
+        await _put_body(reader, writer, send_lock, msg_id, doc, path,
+                        size, sha256, mode, base, t0, fail)
+    finally:
+        async with _ACTIVE_PUTS_LOCK:
+            _ACTIVE_PUTS.discard(path)
+
+
+async def _put_body(reader, writer, send_lock, msg_id, doc, path,
+                    size, sha256, mode, base, t0, fail):
     part = path + ".part"
     try:
         os.makedirs(os.path.dirname(path) or "/", exist_ok=True)
