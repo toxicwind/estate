@@ -1,0 +1,44 @@
+{
+  "tool": "completion-audit",
+  "schema_v": 1,
+  "generated_at": "2026-09-15T00:29:03.834982+00:00",
+  "ledger": "/home/toxic/.cache/shingle/completion_audit.jsonl",
+  "rows_covered": 3,
+  "clock_probe": {
+    "samples": 200000,
+    "min_nonzero_delta_ns": 79,
+    "p50_delta_ns": 100.0
+  },
+  "per_tag": {
+    "awrawr-net": {
+      "n": 3,
+      "n_valid": 3,
+      "n_ceiling_breached": 0,
+      "elapsed_us": {
+        "n": 3,
+        "min": 63838,
+        "p50": 214022.0,
+        "p95": 214036.4,
+        "p99": 214037.68,
+        "max": 214038
+      },
+      "ttfb_us": {
+        "n": 3,
+        "min": 62608,
+        "p50": 190726.0,
+        "p95": 192403.6,
+        "p99": 192552.72,
+        "max": 192590
+      },
+      "winners_by_race": {
+        "net1": {
+          "winner": "example-com",
+          "winner_us": 63838,
+          "losers": [
+            "github-api"
+          ]
+        }
+      }
+    }
+  }
+}
