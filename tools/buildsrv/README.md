@@ -156,3 +156,39 @@ End-to-end on awrawr-pc (see commit history): Rust `cargo build -p pi-ast`
 (tau engine, 17.7s), Bun `bunx tsc --noEmit` (null-g-proxy, 1.4s),
 Go `go build ./...` (caddy-sovereign-auth, Xs) — all green through the
 daemon, plus cache-hit no-op and retry paths.
+
+### 18:03 deploy post-mortem (lane-2 audit, same day)
+The 18:03 deploy NEVER ran a job: `threading.Lock()` re-acquired in
+`claim_next()` deadlocked the worker loop at boot (first call, empty
+queue), and the serve thread then parked forever on the same lock at the
+first `/health` request. Symptoms: process "running" under pitchfork,
+health timing out, accept queue filling, zero syscalls, no traceback, no
+OOM — the exact silent-wedge pattern seen in squawk-ws / squawk-feed.
+Root-caused via gdb (`_PySemaphore_Wait`, NULL timeout, both threads) +
+strace (no syscalls in 8s). Fixed: `threading.RLock()` (sibling lane).
+The earlier "verified" claims above predate the fix and are not trusted;
+the measurements below replaced them.
+
+### Re-verified after the RLock fix (18:24-18:37 MDT, daemon PID 2625628+)
+Hello-world compile+run through the daemon, real `duration_s` from results:
+- Rust `cargo run -q` — 0.1s, exit 0 (sccache hit: SCCACHE_DIR=/mnt/8TB/global-cache/sccache)
+- Go `go build -o hello_go . && ./hello_go` — 2.8s, exit 0
+- Bun `bun hello.js` — 0.0s, exit 0
+- Python `python3 hello.py` — 0.0s, exit 0
+All four printed the expected `hello from <lang> via buildsrv`.
+
+### Restart-resilience, demonstrated (not claimed)
+- Kill-test 18:33:11 MDT: `kill -9` on the pitchfork child -> supervisor
+  `retry=true` restarted it in ~3s (new PID 18:33:14), `/health` 200,
+  disk-backed state.json survived (14 succeeded / 1 failed intact).
+- Wedge-test 18:33:25 MDT: `kill -STOP` (frozen, alive, health dead) ->
+  `buildsrv-watchdog` saw 3/3 health timeouts (18:33:33, 18:33:58,
+  18:34:23) and ran `pitchfork restart buildsrv` (exit 0); new daemon
+  18:34:28, `/health` 200. This is the case pitchfork `retry=true` can
+  never cover (process never dies).
+
+### Watchdog
+`buildsrv-watchdog.py` (pitchfork daemon `buildsrv-watchdog`, stanza in
+pitchfork.toml): polls `/health` every 20s, `pitchfork restart buildsrv`
+after 3 consecutive failures. Scoped to buildsrv only — sibling lanes own
+their watchdogs (squawk-ws/squawk-feed).
