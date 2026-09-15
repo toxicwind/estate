@@ -1,0 +1,48 @@
+{
+  "schema": "buildfix.report.v1",
+  "tool": {
+    "name": "buildfix",
+    "version": "0.2.0"
+  },
+  "run": {
+    "started_at": "2026-09-12T08:46:31.063690016+00:00",
+    "ended_at": "2026-09-12T08:46:31.063692275+00:00",
+    "duration_ms": 0,
+    "git_head_sha": "8f4a92c3107400f6e84d5757eaeb5f635ec5ad18"
+  },
+  "verdict": {
+    "status": "pass",
+    "counts": {
+      "info": 0,
+      "warn": 0,
+      "error": 0
+    }
+  },
+  "findings": [],
+  "capabilities": {
+    "partial": false
+  },
+  "artifacts": {
+    "plan": "plan.json",
+    "patch": "patch.diff",
+    "comment": "comment.md"
+  },
+  "data": {
+    "buildfix": {
+      "plan": {
+        "files_touched": 0,
+        "fix_available": false,
+        "ops_applicable": 0,
+        "ops_blocked": 0,
+        "ops_total": 0,
+        "patch_bytes": 0,
+        "plan_available": false,
+        "safety_counts": {
+          "guarded": 0,
+          "safe": 0,
+          "unsafe": 0
+        }
+      }
+    }
+  }
+}

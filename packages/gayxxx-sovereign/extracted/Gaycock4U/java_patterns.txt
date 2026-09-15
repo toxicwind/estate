@@ -1,0 +1,2 @@
+                            com.lagradost.cloudstream3.utils.ExtractorLinkType extractorLinkType = com.lagradost.cloudstream3.utils.ExtractorLinkType.M3U8;
+    private java.lang.String mainUrl = "https://doodstream.com";

@@ -1,0 +1,41 @@
+# ---- fast incremental dev --------------------------------------------
+# Shared target dir keeps sccache hits across rebuilds. Override with
+# CARGO_TARGET_DIR if you want a per-checkout target.
+[build]
+rustc-wrapper = "sccache"
+
+[target.x86_64-unknown-linux-gnu]
+linker = "clang"
+rustflags = ["-C", "link-arg=-fuse-ld=mold"]
+
+[profile.dev]
+opt-level     = 1        # deps optimized, our code debuggable
+debug         = "line-tables-only"
+incremental   = true
+codegen-units = 256      # max parallelism for dev
+split-debuginfo = "unpacked"   # dwarf in .dwp, faster link
+
+[profile.dev.package."*"]
+opt-level = 2            # deps fully opt, they never change
+
+# pi-natives is a cdylib; we want it optimized but link-fast
+[profile.dev.package.pi-natives]
+opt-level = 2
+codegen-units = 16
+
+# release profile optimized for link speed
+[profile.release]
+lto           = false
+codegen-units = 16
+debug         = false
+split-debuginfo = "unpacked"
+
+[net]
+git-fetch-with-cli = true
+
+[alias]
+b     = "build --profile dev"
+br    = "build --release"
+c     = "check --profile dev"
+cr    = "check --release"
+w     = "watch -w crates -s 'cargo build --profile dev -p pi-natives'"

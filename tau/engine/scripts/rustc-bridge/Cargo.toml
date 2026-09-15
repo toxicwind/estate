@@ -1,0 +1,41 @@
+[package]
+name = "bffi-rustc-bridge"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[package.metadata.rust-analyzer]
+rustc_private = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+bffi = "0.1"
+
+[dependencies.rustc_driver]
+version = "*"
+
+[dependencies.rustc_interface]
+version = "*"
+
+[dependencies.rustc_session]
+version = "*"
+
+[dependencies.rustc_errors]
+version = "*"
+
+[dependencies.rustc_span]
+version = "*"
+
+[dependencies.rustc_hir]
+version = "*"
+
+[dependencies.rustc_middle]
+version = "*"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+
+[workspace]

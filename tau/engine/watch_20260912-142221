@@ -1,0 +1,15 @@
+=== shim procs ===                                                                                         
+=== network ===                                                                                            
+ESTAB             0             0                                                  10.0.0.218:60196        
+                             128.14.165.174:443          users:(("firefox-bin",pid=334741,fd=345))         
+ESTAB             0             0                                                  10.0.0.218:37424        
+                              140.82.113.25:443          users:(("firefox-bin",pid=334741,fd=58))          
+ESTAB             0             0                                                  10.0.0.218:48618        
+                              13.66.138.105:443          users:(("code-insiders",pid=2571195,fd=24))       
+=== log ===                                                                                                
+{"ts":"2026-09-12T20:19:04.203Z","model":"meta/llama-3.1-70b-instruct","elapsed_ms":39,"success":false,"err
+or":"NIM 410 meta/llama-3.1-70b-instruct: {\"type\":\"about:blank\",\"title\":\"Gone\",\"status\":410,\"det
+ail\":\"The model 'meta/llama-3.1-70b-instruct' has reached its end of life on 2026-08-26T09:00:00Z and is 
+no longer available.\"}\n"}                                                                                
+{"ts":"2026-09-12T20:19:04.236Z","model":"nvidia/nemotron-3-nano-30b-a3b","elapsed_ms":33,"success":false,"
+error":"NIM 410 nvidia/nemotron-3-nano-30b-a3b: {\"type\":\"about:blank\",\"title\":\"Gone\",\"status\":410

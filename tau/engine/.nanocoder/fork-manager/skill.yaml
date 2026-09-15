@@ -1,0 +1,6 @@
+name: fork-manager
+description: Fork a GitHub repo into the user's account if the fork doesn't already exist, then clone it locally with proper remotes.
+version: 1.0.0
+author: toxic
+tools_visibility:
+  default: scoped
