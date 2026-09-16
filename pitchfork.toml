@@ -231,7 +231,7 @@ env = { MATTER_SERVER_PORT = "5580" }
 auto = ["start"]
 
 [daemons.tau]
-run = "exec /home/toxic/sovereign/tau/engine/packages/coding-agent/dist/omp"
+run = "exec /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/dist/omp"
 dir = "/home/toxic"
 mise = true
 retry = true
