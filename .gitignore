@@ -265,5 +265,14 @@ $RECYCLE.BIN/
 *.pat
 github_*_pat.json
 
+<<<<<<< HEAD
+
+# token-scrub 2026-09-14: never commit secret-shaped files
+*.pat
+github_*_pat.json
+*secret*
+*token*
+=======
 # branch-merge inspection scratch (branch-integration worker 2026-09-14)
 /branch-merge/
+>>>>>>> origin/main
