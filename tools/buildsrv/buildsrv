@@ -1,0 +1,274 @@
+#!/usr/bin/env python3
+"""buildsrv — CLI for the buildsrv build daemon.
+
+Submits jobs as JSON files into the daemon's queue dir and reads
+status/logs/results straight off disk (the daemon and the CLI share
+only the filesystem — no RPC to break).
+
+    buildsrv submit --name NAME --repo DIR --toolchain bun \
+        --cmd "bunx tsc --noEmit" [--workdir DIR] [--timeout 600] \
+        [--artifact dist/] [--env KEY=VAL]
+    buildsrv submit --name pi-ast --repo /home/toxic/sovereign/tau/engine \
+        --toolchain rust --cmd "cargo build -p pi-ast"
+    buildsrv status [ID]        # one job, or a table of recent jobs
+    buildsrv logs ID [-f] [-n N]
+    buildsrv list [-n N]
+    buildsrv retry ID           # re-queue a finished/failed job
+    buildsrv artifacts ID       # list cached artifacts for a job
+    buildsrv health             # daemon health endpoint
+
+Re-submitting an identical job is a no-op: submit detects a previous
+successful build of the same spec and returns the cached result.
+"""
+import argparse
+import json
+import os
+import subprocess
+import sys
+import time
+import urllib.request
+from datetime import datetime, timezone
+from pathlib import Path
+
+ROOT = Path(os.environ.get("BUILDSRV_ROOT", "/home/toxic/buildsrv"))
+QUEUE = ROOT / "queue"
+LOGS = ROOT / "logs"
+RESULTS = ROOT / "results"
+ARTIFACTS = ROOT / "artifacts"
+STATE_FILE = ROOT / "state.json"
+PORT = int(os.environ.get("BUILDSRV_PORT", "25148"))
+
+KNOWN_TOOLCHAINS = ["rust", "cargo", "go", "bun", "node", "python", "python3", "tsc"]
+
+
+def die(msg, code=1):
+    print(f"buildsrv: error: {msg}", file=sys.stderr)
+    sys.exit(code)
+
+
+def load_state():
+    try:
+        return json.loads(STATE_FILE.read_text())
+    except Exception:
+        return {"jobs": {}}
+
+
+def save_state(s):
+    tmp = STATE_FILE.with_suffix(".tmp")
+    tmp.write_text(json.dumps(s, indent=1, sort_keys=True))
+    tmp.replace(STATE_FILE)
+
+
+def load_job(jid):
+    for d in (QUEUE, ROOT / "active"):
+        p = d / f"{jid}.json"
+        if p.exists():
+            return json.loads(p.read_text())
+    die(f"no queued job {jid}")
+
+
+def job_hash(job):
+    import hashlib
+    canon = {
+        "repo": job.get("repo"), "workdir": job.get("workdir"),
+        "toolchain": job.get("toolchain"), "cmd": job.get("cmd"),
+        "env": job.get("env") or {}, "artifacts": job.get("artifacts") or [],
+    }
+    return hashlib.sha256(json.dumps(canon, sort_keys=True).encode()).hexdigest()
+
+
+def cmd_submit(a):
+    repo = str(Path(a.repo).expanduser().resolve())
+    if not Path(repo).is_dir():
+        die(f"repo dir does not exist: {repo}")
+    tc = (a.toolchain or "").lower()
+    if tc not in KNOWN_TOOLCHAINS:
+        die(f"unknown toolchain {tc!r}; known: {KNOWN_TOOLCHAINS}")
+    workdir = str(Path(a.workdir or repo).expanduser().resolve())
+    env = {}
+    for kv in a.env or []:
+        if "=" not in kv:
+            die(f"--env needs KEY=VAL, got {kv!r}")
+        k, v = kv.split("=", 1)
+        env[k] = v
+    ts = datetime.now().strftime("%y%m%d-%H%M%S")
+    rand = os.urandom(4).hex()
+    jid = f"b{ts}-{rand}"
+    job = {
+        "id": jid,
+        "name": a.name,
+        "repo": repo,
+        "workdir": workdir,
+        "toolchain": tc,
+        "cmd": a.cmd,
+        "env": env,
+        "artifacts": a.artifact or [],
+        "timeout_s": a.timeout,
+        "submitted_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "submitted_by": os.environ.get("USER", "?"),
+    }
+    # idempotent resubmit: identical spec already succeeded -> no-op
+    h = job_hash(job)
+    st = load_state()
+    for oid, rec in st["jobs"].items():
+        if rec.get("job_hash") == h and rec.get("status") == "succeeded":
+            print(f"CACHED  identical job already succeeded as {oid}")
+            print(f"        result: exit={rec.get('exit_code')} "
+                  f"duration={rec.get('duration_s')}s "
+                  f"finished={rec.get('finished_at')}")
+            if rec.get("artifact_dir"):
+                print(f"        artifacts: {rec['artifact_dir']}")
+            print(f"        logs: {ROOT}/logs/{oid}.log")
+            return
+    QUEUE.mkdir(parents=True, exist_ok=True)
+    (QUEUE / f"{jid}.json").write_text(json.dumps(job, indent=1))
+    with st_lock(st):
+        st["jobs"][jid] = {"status": "pending", "job_hash": h,
+                           "submitted_at": job["submitted_at"], "name": a.name}
+        save_state(st)
+    print(f"QUEUED  {jid}  ({a.name})")
+    print(f"        toolchain={tc} workdir={workdir}")
+    print(f"        cmd: {a.cmd}")
+    print(f"        watch: buildsrv logs {jid} -f")
+
+
+def st_lock(st):
+    # tiny context manager so submit's state write is exception-safe
+    class _C:
+        def __enter__(self): return st
+        def __exit__(self, *e): return False
+    return _C()
+
+
+def fmt_status(rec):
+    s = rec.get("status", "?")
+    extra = ""
+    if rec.get("exit_code") is not None:
+        extra += f" exit={rec['exit_code']}"
+    if rec.get("duration_s") is not None:
+        extra += f" {rec['duration_s']}s"
+    if rec.get("finished_at"):
+        extra += f" @{rec['finished_at']}"
+    return s + extra
+
+
+def cmd_status(a):
+    st = load_state()
+    if a.id:
+        rec = st["jobs"].get(a.id)
+        if not rec:
+            die(f"unknown job {a.id}")
+        print(f"{a.id}  ({rec.get('name')})")
+        print(f"  status: {fmt_status(rec)}")
+        for k in ("job_hash", "artifact_dir", "submitted_at", "started_at", "attempt"):
+            if rec.get(k) is not None:
+                print(f"  {k}: {rec[k]}")
+        print(f"  logs: {ROOT}/logs/{a.id}.log")
+        return
+    jobs = sorted(st["jobs"].items(),
+                  key=lambda kv: kv[1].get("submitted_at", ""), reverse=True)[: (a.n or 15)]
+    if not jobs:
+        print("(no jobs on record)")
+        return
+    for jid, rec in jobs:
+        print(f"{jid}  {rec.get('name','?'):28.28} {fmt_status(rec)}")
+
+
+def cmd_logs(a):
+    p = LOGS / f"{a.id}.log"
+    if not p.exists():
+        die(f"no log yet for {a.id}")
+    if a.follow:
+        subprocess.run(["tail", "-n", str(a.n or 50), "-f", str(p)])
+    else:
+        subprocess.run(["tail", "-n", str(a.n or 200), str(p)])
+
+
+def cmd_retry(a):
+    st = load_state()
+    rec = st["jobs"].get(a.id)
+    if not rec:
+        die(f"unknown job {a.id}")
+    job = load_job(a.id) if (QUEUE / f"{a.id}.json").exists() else None
+    if job is None:
+        die(f"job spec for {a.id} not found in queue/ (already consumed?)")
+    rec.update(status="pending", exit_code=None, duration_s=None,
+               finished_at=None, artifact_dir=None,
+               attempt=rec.get("attempt", 0))
+    save_state(st)
+    print(f"REQUEUED {a.id}")
+
+
+def cmd_artifacts(a):
+    st = load_state()
+    rec = st["jobs"].get(a.id)
+    if not rec:
+        die(f"unknown job {a.id}")
+    ad = rec.get("artifact_dir")
+    if not ad or not Path(ad).is_dir():
+        print(f"(no cached artifacts for {a.id})")
+        return
+    man = Path(ad) / "manifest.json"
+    files = json.loads(man.read_text())["files"] if man.exists() else ["(no manifest)"]
+    print(f"artifacts for {a.id} -> {ad}")
+    for f in files:
+        print(f"  {f}")
+
+
+def cmd_health(a):
+    try:
+        with urllib.request.urlopen(f"http://127.0.0.1:{PORT}/health", timeout=5) as r:
+            print(json.dumps(json.loads(r.read()), indent=1))
+    except Exception as e:
+        die(f"daemon not reachable on 127.0.0.1:{PORT}: {e}")
+
+
+def main():
+    ap = argparse.ArgumentParser(prog="buildsrv")
+    sub = ap.add_subparsers(dest="cmd", required=True)
+
+    s = sub.add_parser("submit", help="queue a build job")
+    s.add_argument("--name", required=True)
+    s.add_argument("--repo", required=True, help="repo root (absolute path)")
+    s.add_argument("--toolchain", required=True, choices=KNOWN_TOOLCHAINS)
+    s.add_argument("--cmd", required=True, help="shell command, run via bash -lc")
+    s.add_argument("--workdir", default=None, help="defaults to --repo")
+    s.add_argument("--timeout", type=int, default=1200, help="seconds (default 1200)")
+    s.add_argument("--artifact", action="append", default=[],
+                   help="relative path to cache on success (repeatable)")
+    s.add_argument("--env", action="append", default=[],
+                   help="KEY=VAL extra env (repeatable)")
+    s.set_defaults(fn=cmd_submit)
+
+    s = sub.add_parser("status", help="job status")
+    s.add_argument("id", nargs="?")
+    s.add_argument("-n", type=int, default=15)
+    s.set_defaults(fn=cmd_status)
+
+    s = sub.add_parser("logs", help="job logs")
+    s.add_argument("id")
+    s.add_argument("-f", "--follow", action="store_true")
+    s.add_argument("-n", type=int, default=200)
+    s.set_defaults(fn=cmd_logs)
+
+    s = sub.add_parser("list", help="recent jobs")
+    s.add_argument("-n", type=int, default=15)
+    s.set_defaults(fn=lambda a: cmd_status(argparse.Namespace(id=None, n=a.n)))
+
+    s = sub.add_parser("retry", help="re-queue a job")
+    s.add_argument("id")
+    s.set_defaults(fn=cmd_retry)
+
+    s = sub.add_parser("artifacts", help="list cached artifacts")
+    s.add_argument("id")
+    s.set_defaults(fn=cmd_artifacts)
+
+    s = sub.add_parser("health", help="daemon health")
+    s.set_defaults(fn=cmd_health)
+
+    a = ap.parse_args()
+    a.fn(a)
+
+
+if __name__ == "__main__":
+    main()

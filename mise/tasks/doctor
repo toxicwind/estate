@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Verify pitchfork stack + hot-reload defaults for owned services.
+set -euo pipefail
+cd "${SOVEREIGN_ROOT:-$(cd "$(dirname "$0")/../.." && pwd)}"
+
+expected_sg=0.44.1
+actual_sg=$(ast-grep --version | awk '{print $2}')
+if [ "$actual_sg" != "$expected_sg" ]; then
+  echo "ast-grep mismatch: active=$actual_sg expected=$expected_sg" >&2
+  exit 1
+fi
+command -v pitchfork >/dev/null || { echo "pitchfork not on PATH" >&2; exit 1; }
+test -f pitchfork.toml || { echo "missing pitchfork.toml" >&2; exit 1; }
+test -f config/ports.env || { echo "missing config/ports.env" >&2; exit 1; }
+test -x stack/services/llama-swap.sh || { echo "missing llama-swap.sh" >&2; exit 1; }
+test -x stack/services/rust-web-hot.sh || { echo "missing rust-web-hot.sh" >&2; exit 1; }
+
+if grep -q 'process-compose' mise/tasks/up 2>/dev/null; then
+  echo "mise/tasks/up still references process-compose" >&2
+  exit 1
+fi
+
+# Hot-reload is the only default for owned Bun/TS services
+for hot in openfang yote hf-downloader null-g-proxy ast-matrix ghas-api ghas-mcp; do
+  # extract stanza until next [daemons. or end
+  stanza=$(sed -n "/^\[daemons\.${hot}\]/,/^\[daemons\./p" pitchfork.toml | head -n -1)
+  if [ -z "$stanza" ]; then
+    stanza=$(sed -n "/^\[daemons\.${hot}\]/,\$p" pitchfork.toml)
+  fi
+  if ! printf '%s
+' "$stanza" | grep -qE 'bun --(hot|watch)'; then
+    echo "daemon $hot missing bun --hot/--watch in pitchfork.toml" >&2
+    exit 1
+  fi
+done
+
+grep -q 'rust-web-hot' pitchfork.toml || {
+  echo "rust-web must use rust-web-hot.sh (cargo watch)" >&2
+  exit 1
+}
+
+# Non-hot plain `bun run` without --hot/--watch on core group is a fail
+if grep -E '^\s*run\s*=' pitchfork.toml | grep -E 'bun run' | grep -vE 'bun --(hot|watch)' | grep -q .; then
+  echo "plain bun run without --hot/--watch found in pitchfork.toml:" >&2
+  grep -E '^\s*run\s*=' pitchfork.toml | grep -E 'bun run' | grep -vE 'bun --(hot|watch)' >&2 || true
+  exit 1
+fi
+
+echo "doctor ok: pitchfork=$(pitchfork --version | head -1) ast-grep=$actual_sg hot-reload-core"

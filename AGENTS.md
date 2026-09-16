@@ -1,46 +1,50 @@
-# AGENTS.md — Sovereign Monorepo (`/home/toxic/projects/sovereign-projects`)
+# AGENTS.md — Sovereign Control Plane (`/home/toxic/sovereign`)
 
-**Role**: Monorepo consolidating core Sovereign ecosystem packages, extensions, shell tools, and runtimes.
-**Stack**: Multi-package monorepo (Bun, TypeScript, Go, Rust).
+**Role**: Core control plane & orchestration layer for the Sovereign ecosystem.
+**Stack**: TypeScript (Bun), Python, mise, pitchfork, Kafka, Qdrant, Prometheus/Grafana.
+**Host**: toxic (Ryzen 7 8700F, 62 GiB DDR5, RTX 3090 24 GB).
 
 ---
 
 ## 🎯 Repository Specifics
 
-- Submodules / monorepo packages: `tau`, `qed`, `herd`, `mesh`, `shell`, `extensions/`, `packages/`.
-- Cross-package development: verify changes across shared utilities before claiming completion.
+- **Primary Entrypoints**: `src/` (generators, coyote, services, mesh-front).
+- **Pitchfork Daemons**: `pitchfork.toml` orchestrates services across `25xxx` ports.
+- **Mise Tasks**: `mise.toml` defines local task runners and environment configurations.
+- **Port SSOT**: `config/ports.env` is the single source of truth for all allocated ports.
+- **Agents & Profiles**: `agents/` and `profiles/` store sovereign agent specs and persona definitions.
 
 ## 🔧 Hard Rules (universal)
 
 1. **Verify live, then claim.** No "done" without `curl` / `lsof` / `nvidia-smi` / `npx tsgo --noEmit`.
 2. **Fail loud.** Never `2>/dev/null`, never `|| true`. Errors are diagnostic.
-3. **No commit without explicit user request.** Fork stays private under `toxicwind`.
+3. **Push everything, forward-only.** Commit + push after every unit of work, including WIP - no local-only work. No review gates, no PR ceremony; report ambiguities, never stop for approval.
 4. **Multi-strategy.** Non-trivial work → 3+ approaches, benchmark, keep runner-up.
 5. **TDD/BDD.** Failing assertion first, then fix. `npx tsgo --noEmit` for type-check.
 6. **Use emergence tools first.** GHAS (`:25113`) → ast-grep (`ast-grep` binary) → Tombi for TOML.
 7. **call_tool_destructive is DEFAULT for state changes.** Write/edit/modify = destructive. Read-only = inspection only.
 8. **No `/dev/null`, no banner `echo`.** Both waste tokens.
-8b. **BANNED/SLOW TOOLS — do NOT use, ever:** `find`, `head`, `tail`, `/dev/null`, and system-wide `lsof`.
-    - `find` over a large/full disk is slow + wasteful -> use `fd` (fast, gitignore-aware)
-      or scope `du`/`fd` to a SPECIFIC directory, never the whole `/home`/`/`.
-    - `head`/`tail` truncation -> read full files with the `read` tool (1M context).
-    - `/dev/null` -> fail loud; never silence errors.
-    - `lsof` (esp. system-wide) is INSANELY SLOW -> use INSTANT `/proc/<pid>/fd` symlink
-      reads (`readlink /proc/$PID/fd/*`) to see what a process has open. Scope to known PIDs.
+   8b. **BANNED/SLOW TOOLS — do NOT use, ever:** `find`, `head`, `tail`, `/dev/null`, and system-wide `lsof`.
+   - `find` over a large/full disk is slow + wasteful -> use `fd` (fast, gitignore-aware)
+     or scope `du`/`fd` to a SPECIFIC directory, never the whole `/home`/`/`.
+   - `head`/`tail` truncation -> read full files with the `read` tool (1M context).
+   - `/dev/null` -> fail loud; never silence errors.
+   - `lsof` (esp. system-wide) is INSANELY SLOW -> use INSTANT `/proc/<pid>/fd` symlink
+     reads (`readlink /proc/$PID/fd/*`) to see what a process has open. Scope to known PIDs.
 9. **Fix bashrc nested quote issue.** The `pi-check` alias had nested double quotes inside single quotes, causing `unexpected EOF while looking for matching '"'` errors. Use functions instead of aliases for complex commands.
-9. **CUDA-aware.** RTX 3090 — validate with `nvidia-smi`. Never assume upstream defaults.
-10. **Stop stacking long commands.** Sub-second probes. Reserve `60|120` for intentional jobs.
-11. **No `head` truncation.** You have 1M context. Read full files. No `| head -20`.
-12. **Timeout/failfast/high-frequency is FIRST-CLASS everywhere** (retry, provider-retry, worker-limits, MCP calls, scripts). NO insane monolithic timeouts — use failfast + high-frequency liveness probes + per-attempt deadlines.
-13. **Dynamic `${ENV_VAR}` interpolation is first-class** in configs/scripts (settings.json, config.yaml, mcpproxy config, launch scripts). Prefer `${...}` over hardcoded values.
-14. **Lint + test after EVERY code change; coverage floor 82%.** Pre-existing type errors in unrelated test files do NOT block the change under review — isolate + report.
-15. **BACKGROUNDING IS FIRST-CLASS.** Any op that can run long (downloads, builds, scans,
-   npm/pip/apt, model fetches) MUST be launched in background (`cmd &`, capture `$!`), tracked
-   by PID, and CANCELLED if it overruns a per-attempt deadline (`timeout`, `kill` on a watchdog
-   loop). Never block on a monolithic synchronous command. Keep a live PID ledger.
-16. **GOAL = ENDLESS TODO.** TODO.md is a CONTINUOUS improvement loop, not a finite list.
-   Re-audit constantly; new findings always append; done items cycle back as deeper waves.
-   No "finished" — only "next wave". Mutate TODO after every meaningful step.
+10. **CUDA-aware.** RTX 3090 — validate with `nvidia-smi`. Never assume upstream defaults.
+11. **Stop stacking long commands.** Sub-second probes. Reserve `60|120` for intentional jobs.
+12. **No `head` truncation.** You have 1M context. Read full files. No `| head -20`.
+13. **Timeout/failfast/high-frequency is FIRST-CLASS everywhere** (retry, provider-retry, worker-limits, MCP calls, scripts). NO insane monolithic timeouts — use failfast + high-frequency liveness probes + per-attempt deadlines.
+14. **Dynamic `${ENV_VAR}` interpolation is first-class** in configs/scripts (settings.json, config.yml, mcpproxy config, launch scripts). Prefer `${...}` over hardcoded values.
+15. **Lint + test after EVERY code change; coverage floor 82%.** Pre-existing type errors in unrelated test files do NOT block the change under review — isolate + report.
+16. **BACKGROUNDING IS FIRST-CLASS.** Any op that can run long (downloads, builds, scans,
+    npm/pip/apt, model fetches) MUST be launched in background (`cmd &`, capture `$!`), tracked
+    by PID, and CANCELLED if it overruns a per-attempt deadline (`timeout`, `kill` on a watchdog
+    loop). Never block on a monolithic synchronous command. Keep a live PID ledger.
+17. **GOAL = ENDLESS TODO.** TODO.md is a CONTINUOUS improvement loop, not a finite list.
+    Re-audit constantly; new findings always append; done items cycle back as deeper waves.
+    No "finished" — only "next wave". Mutate TODO after every meaningful step.
 
 ---
 
@@ -48,30 +52,31 @@
 
 ### ✅ INSTALLED (use these)
 
-| Tool | Binary | Purpose |
-|---|---|---|
-| `fd` | `/usr/bin/fd` | Fast find (respects .gitignore) |
-| `rg` | `/usr/bin/rg` | Fast grep (respects .gitignore) |
-| `ast-grep` | `~/.local/share/mise/shims/ast-grep` | AST structural search/rewrite |
-| `eza` | `/usr/bin/eza` | Modern ls (git-aware) |
-| `mise` | `~/.local/bin/mise` | Runtime manager |
-| `bun` | mise shim | Fast JS runtime |
-| `node` | mise shim | JS runtime |
-| `cargo` | mise shim | Rust build |
-| `jq` | mise shim | JSON processing |
+| Tool        | Binary                               | Purpose                                                       |
+| ----------- | ------------------------------------ | ------------------------------------------------------------- |
+| `fd`        | `/usr/bin/fd`                        | Fast find (respects .gitignore)                               |
+| `rg`        | `/usr/bin/rg`                        | Fast grep (respects .gitignore)                               |
+| `ast-grep`  | `~/.local/share/mise/shims/ast-grep` | AST structural search/rewrite                                 |
+| `eza`       | `/usr/bin/eza`                       | Modern ls (git-aware)                                         |
+| `mise`      | `~/.local/bin/mise`                  | Runtime manager                                               |
+| `bun`       | mise shim                            | Fast JS runtime                                               |
+| `node`      | mise shim                            | JS runtime                                                    |
+| `cargo`     | mise shim                            | Rust build                                                    |
+| `jq`        | mise shim                            | JSON processing                                               |
+| `codeshift` | `/home/toxic/projects/codeshift`     | Multi-agent codebase migration & test equivalence (local LLM) |
 
 ### ❌ NOT INSTALLED (don't use, install first if needed)
 
-| Tool | Install Command | Purpose |
-|---|---|---|
-| `tombi` | `mise use -g tombi` | TOML toolkit |
-| `tsgo` | `npx tsgo` | TypeScript type-check (use via npx) |
-| `vitest` | `npx vitest` | Test runner (use via npx) |
+| Tool     | Install Command     | Purpose                             |
+| -------- | ------------------- | ----------------------------------- |
+| `tombi`  | `mise use -g tombi` | TOML toolkit                        |
+| `tsgo`   | `npx tsgo`          | TypeScript type-check (use via npx) |
+| `vitest` | `npx vitest`        | Test runner (use via npx)           |
 
 ### 🚫 NEVER USE (removed/confusing)
 
-| Name | Why |
-|---|---|
+| Name | Why                                                        |
+| ---- | ---------------------------------------------------------- |
 | `sg` | That's SGLang, NOT ast-grep. Removed shim. Use `ast-grep`. |
 
 ---
@@ -79,15 +84,17 @@
 ## 📝 AST-Grep Patterns
 
 ### Rule YAML
+
 ```yaml
 id: my-rule
 language: typescript
 rule:
-  pattern: 'console.log($MSG)'
-fix: 'logger.info($MSG)'
+  pattern: "console.log($MSG)"
+fix: "logger.info($MSG)"
 ```
 
 ### Commands
+
 ```bash
 ast-grep scan -p 'pattern' -l ts src/
 ast-grep scan -p 'pattern' --rewrite 'replacement' src/
@@ -126,15 +133,15 @@ ast-grep scan -p 'NVIDIA_MODELS' -l ts --json=stream /home/toxic/projects/pi-age
 ## 🔌 MCP / mcpproxy (sovereign-owned)
 
 - **mcpproxy** is the single MCP federation gateway: `http://127.0.0.1:25109/mcp`, owned by
-sovereign (`pitchfork start mcpproxy` / `mise run restart-mcpproxy` -> `mcpproxy serve
+  sovereign (`pitchfork start mcpproxy` / `mise run restart-mcpproxy` -> `mcpproxy serve
 --config=/home/toxic/.mcpproxy/mcp_config.json`). 43 real upstreams (ghas + 42 others).
 - **pi MUST list ONLY `mcpproxy`** in `~/.pi/agent/mcp.json` (no duplicate direct `ghas`/
   `nvidia-nim` entries). All MCP tools reach pi through the proxy via `retrieve_tools`.
 - **nvidia-nim is NOT an MCP server.** It is a llama-swap/sovereign-router **completions API**
   (OpenAI-compatible, on `:25100`). NVIDIA models are first-class via pi-agent's `nvidia`
   provider (`packages/ai/src/providers/`) -> sovereign-router/llama-swap, not an MCP upstream.
-- **Subagents**: `config.yaml` `can_spawn_subagents:true` + whitelist + `subagents.defaultModel:
-  opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable from a
+- **Subagents**: `config.yml` `can_spawn_subagents:true` + whitelist + `subagents.defaultModel:
+opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable from a
   plain assistant context) — fanout only works inside an interactive pi session.
 
 ## 🔌 Port SSOT
@@ -142,3 +149,65 @@ sovereign (`pitchfork start mcpproxy` / `mise run restart-mcpproxy` -> `mcpproxy
 `/home/toxic/sovereign/config/ports.env` — all 25xxx, never invent.
 
 ---
+
+---
+
+## 📁 Repository Key Paths
+
+- `config/ports.env` — Port SSOT
+- `pitchfork.toml` — Daemon service definitions
+- `mise.toml` — Task runner and tool versions
+- `src/` — Sovereign backend, mesh frontend, HAL substrate
+- `agents/` — Subagent profiles and identities
+
+## maximal-sovereign-agentic-audit
+- **Location**: `src/maximal-sovereign-agentic-audit/`
+- **Skill**: `skills/maximal-sovereign-agentic-audit/`
+- **Features**: Multi-tier chained execution, ast-grep, eza, gh api code search, pattern borrowing, Bun.nanoseconds() timing, mitata benchmarks, streaming, agentic completions, multi-repo support (--repos, --users)
+- **Run**: `cd src/maximal-sovereign-agentic-audit && bun run src/index.ts --user toxicwind --check-bun --timing`
+- **Build**: `cd src/maximal-sovereign-agentic-audit && bun run check`
+- **Tests**: `cd src/maximal-sovereign-agentic-audit && bun test --coverage`
+
+## Maximal Sovereign Agentic Audit
+
+**Location**: `src/maximal-sovereign-agentic-audit/`
+**Architecture**: Fully modular with 10 separate module files
+
+### Modules
+- `src/modules/types.ts` — RepoRecord, LocalAuditResult, SymlinkRecord, AuditMode
+- `src/modules/constants.ts` — All file paths and URLs
+- `src/modules/parser.ts` — `parseProjectsEnvSync()` parses 327 projects from projects.env
+- `src/modules/git-scanner.ts` — `scanDirSync()`, `scanSymlinksSync()`, `runGit()` (execFile)
+- `src/modules/secrets-scanner.ts` — `scanSecrets()`, `getSecretsRecord()` (.secrets first-class)
+- `src/modules/completions.ts` — `analyzeWithCompletions()` via 25100 API
+- `src/modules/autofix.ts` — `autoFix()` for broken symlinks
+- `src/modules/precheck.ts` — `preCheck()` validation
+- `src/modules/dataframe.ts` — `toDataFrame()` export
+- `src/modules/parquet.ts` — `exportParquet()` using ParquetWriter.openFile
+
+### Key Facts
+- `localAudit()` ALWAYS scans all 327 projects from projects.env (expand-to-all-projects rule)
+- `.secrets` at `/home/toxic/.secrets` is a first-class credential record
+- `Bun.nanometers()` does not exist — use `performance.now()` for timing
+- `ParquetWriter.openFile(schema, path)` is the correct API (not `openParquetWriter`)
+- `runGit()` uses `execFile("git", args, ...)` with array args
+- `scanDirSync()` adds ONE record per project directory
+- All 29 tests pass across 7 test files
+- Test coverage target: 86%+
+- Parquet export works: `local-repos.parquet` (53KB)
+
+### Commands
+```bash
+bun run start --all --precheck --parquet output/audit.parquet
+bun test tests/ --coverage
+bun run local --all --precheck
+```
+
+## Standing rules (2026-09-14)
+
+- **generate.ts is RETIRED.** `pitchfork.toml`/`mise.toml` are hand-edited and git-tracked as the source of truth. NEVER run `bun run scripts/generate.ts` - it would destroy live daemons and resurrect superseded ones.
+- **One worktree per worker per repo.** Never share checkouts between workers.
+- **Unique scratch dirs.** Never `rm -rf` a shared hardcoded `/tmp` path; stage anything precious under `/home/toxic/`, not `/tmp`.
+- **Never touch `awrawr-mcp.service` from inside a bridge call** - it kills the caller and the response is lost.
+- **kimi-auto is Kimi-only.** Honest 503 when no Kimi route is healthy; never a silent `gpt-oss-20b` fallback.
+- **Infrastructure is in scope.** Fix it, don't defer it. Don't remove things willy nilly: additive only unless Chris explicitly orders removal.

@@ -78,6 +78,7 @@ import { getHeaderCaseInsensitive, resolveCacheRetention } from "./utils";
 import { AssistantMessageEventStream } from "./utils/event-stream";
 import { isFoundryEnabled } from "./utils/foundry";
 import { applyGlyphCodec } from "./utils/glyph-codec";
+import { withHedgedStream } from "./utils/hedged-stream";
 import { wrapLeakedThinkingStream } from "./utils/leaked-thinking-stream";
 import { withThinkingLoopGuard } from "./utils/thinking-loop";
 import { withTransportFetch } from "./utils/transport-fetch";
@@ -876,20 +877,32 @@ export function stream<TApi extends Api>(
 	context: Context,
 	options?: OptionsForApi<TApi>,
 ): AssistantMessageEventStream {
-	if (!model.requiresGlyphTokenization) {
-		return withThinkingLoopGuard(model, options, opts =>
-			withProviderInFlightLimit(model, opts, () => streamDispatch(model, context, opts)),
+	// One attempt of the hedged race: same model, same provider, same route,
+	// same request body — only the abort signal differs per attempt.
+	const startAttempt = (signal: AbortSignal | undefined): AssistantMessageEventStream => {
+		const attemptOptions =
+			signal === options?.signal ? options : ({ ...options, signal } as OptionsForApi<TApi>);
+		if (!model.requiresGlyphTokenization) {
+			return withThinkingLoopGuard(model, attemptOptions, opts =>
+				withProviderInFlightLimit(model, opts, () => streamDispatch(model, context, opts)),
+			);
+		}
+		const codec = applyGlyphCodec(context);
+		const execHandlers = attemptOptions?.execHandlers;
+		const wireOptions: OptionsForApi<TApi> | undefined =
+			execHandlers === undefined
+				? attemptOptions
+				: { ...attemptOptions, execHandlers: codec.wrapCursorExecHandlers(execHandlers) };
+		return codec.wrap(
+			withThinkingLoopGuard(model, wireOptions, opts =>
+				withProviderInFlightLimit(model, opts, () => streamDispatch(model, codec.context, opts)),
+			),
 		);
-	}
-	const codec = applyGlyphCodec(context);
-	const execHandlers = options?.execHandlers;
-	const wireOptions: OptionsForApi<TApi> | undefined =
-		execHandlers === undefined ? options : { ...options, execHandlers: codec.wrapCursorExecHandlers(execHandlers) };
-	return codec.wrap(
-		withThinkingLoopGuard(model, wireOptions, opts =>
-			withProviderInFlightLimit(model, opts, () => streamDispatch(model, codec.context, opts)),
-		),
-	);
+	};
+	// Fail-fast stall detection (5s idle default) plus hedged duplicates: on
+	// stall, a duplicate of the same request races in parallel and the first
+	// valid completion wins. Same model/route only — never a fallback.
+	return withHedgedStream(startAttempt, options?.signal, model.id);
 }
 
 function streamDispatch<TApi extends Api>(

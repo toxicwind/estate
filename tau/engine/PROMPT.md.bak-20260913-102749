@@ -1,0 +1,31 @@
+# MASTER DIRECTIVE: Global Home Defragmentation & Canonical Convergence - MAXIMAL INTEGRATED v2
+
+## 1. Scope - FULL /home/toxic ROOT (fixes inode jail)
+- Execution Root: /home/toxic - Ralph MCP allowed_roots=[/home/toxic] sandbox_mode=disabled
+- Why engine jail fails: Ralph MCP server init root jail strictly to tau/engine, mcp__ralph__list_allowed_roots rejects /home/toxic/Downloads mesh etc -> zero files -> deliberation collapse
+- Canonical: /home/toxic/sovereign tau/ mesh/ui/ mesh/herd/ (llama-swap AST Matrix)
+- Link: /home/toxic/projects/sovereign-projects -> /home/toxic/sovereign immutable
+
+## 2. Best Ralph Master - RESEARCHED DECISION
+- NIM Proxy 127.0.0.1:8000 is CORRECT: docker -p, 40 RPM/key, retry 429/5xx, SSE heartbeat, X-NIM-Routed-Model nemotron-3-super-120b-a12b for agentic tool use
+- Claude Code Bun SEA binary: bun build --compile static trace, dynamic import(variable) fails, import.meta.url -> /$bunfs/root virtual not real FS -> ENOENT - FIXED via ~/.local/nimstats/client.ts shim + $bunfs normalization
+- opencode ENOENT: libuv uv_spawn cannot resolve .cmd shims, needs Bun.which() full path - FIXED via claude-wrapper.sh + PATH before guard in .bashrc
+- nanocoder UnsupportedMcpTransportError: DefaultRuntimeResolver only GENERIC, needs builtin_agents() + transport-inference map - FIXED via mcp_servers transport=http declarations
+- DECISION: Maximal chains claude,opencode,nanocoder/nim_plan/smart/fast/all_82 with 4-tier fallback: Tier1 claude wrapper 10s CB, Tier2 transport CB, Tier3 headless python direct NIM, Tier4 deterministic AST
+
+## 3. Anti-Drift (LivePlan TACT PROBE RSTD HiveMind)
+- Never repeat broad scans: fd -t f "tau|mesh|herd" ~ -E .cache -E node_modules -E target -E .git -E .bun
+- AST diffs via sg not regex
+- Fail fast on missing binary, no scratch file workarounds
+- Deterministic monitor: GRAPHECTORY back-edge Repeated Action, self-loop Oscillation, Long Stagnation >7, cooldown 5
+- Recovery routing: reflect=nimstats trace, replan=zero bytes/no_output/ENOENT/UnsupportedMcp/bifurcation, escalate=39 policy poison
+- Control-flow decouple: LLM as judgment operator only, retry only failed subtask 436 tokens vs monolithic 904 vs static 1632 +80.5%
+- Circuit breaker: N=20 τ=0.50 open->503 Retry-After Tcool=10s half-open probe, retry 429/502/503/529/ECONNRESET exp backoff 1-30s jitter, SSE_DRAIN 5000 KILL_ESCALATION 5000 vs Ralph 300s, admission C=2 Ollama/5 Anthropic stagger 5s FIFO, token budget 85% warn 100% save&stop
+- Search-first: require_search_before_planning/development true via exa primary searxng fallback ddgs/tavily/brave to prevent context poisoning
+
+## 4. Tasks
+- Task A Tau VCS: cargo tree -p pi-vcs -i pi-iso, bun scripts/bazel-natives.ts linux-x64 --dest packages/natives/native, bun check
+- Task B Mesh UI: inspect /home/toxic/sovereign/mesh/ui/src/routes/+layout.svelte verify /herd /ast-matrix /ralph render
+- Task C Stash Audit: scan ~ for tau|mesh|herd stashes excluding .cache node_modules target .git .bun, ast-grep semantic distance, merge unique logic, rm -rf source
+
+Emit RALPH_DONE only when all gates exit 0.

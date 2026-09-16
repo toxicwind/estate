@@ -1,0 +1,15 @@
+{
+  "listen": "0.0.0.0:25109",
+  "data_dir": "~/.mcpproxy",
+  "api_key": "cda2ed6f488aa8efaed1cd76b80ddff1b8d60530e7e9829d6ad19a960109d8a6",
+  "enable_socket": true,
+  "health_check_interval": "30s",
+  "tool_discovery_interval": "5m",
+  "tools_limit": 50,
+  "tool_response_limit": 50000,
+  "enable_code_execution": false,
+  "features": {
+    "enable_web_ui": true
+  },
+  "mcpServers": []
+}

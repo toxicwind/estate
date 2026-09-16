@@ -34,5 +34,8 @@
     "@oh-my-pi/pi-coding-agent": "^18.0.11",
     "@types/bun": "latest",
     "typescript": "^5.6.0"
+  },
+  "dependencies": {
+    "zod": "^3.23.0"
   }
 }

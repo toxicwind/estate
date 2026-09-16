@@ -1,0 +1,32 @@
+{
+  "self": {
+    "name": "grok",
+    "cli": "grok-cli",
+    "provider": "xai",
+    "base_url": "https://api.xai/v1",
+    "status": "pending_setup",
+    "setup_command": "grok --setup or grok-cli --identity"
+  },
+  "model": {
+    "active": "pending",
+    "context_window": "pending",
+    "alternates": ["pending"]
+  },
+  "host": {
+    "name": "toxic",
+    "terminal": "wezterm"
+  },
+  "tools": {
+    "native": ["pending - grok will fill this in"],
+    "mcp": "via mcpproxy at :25109"
+  },
+  "never_use": {
+    "devnull": "Use proper logging",
+    "truncation": "Read full files"
+  },
+  "coordination": {
+    "brain_dir": "/home/toxic/sovereign/brain/grok/",
+    "manifest": "/home/toxic/sovereign/brain/MANIFEST.json"
+  },
+  "setup_instructions": "Run grok cli to fill in this file. Grok should detect the brain folder and update its identity.json automatically."
+}

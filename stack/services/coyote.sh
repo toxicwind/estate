@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Coyote v3.1 — Autonomous Agent Inference Engine
+# First-class sovereign service. OpenFang agent with Yote integration.
+# Routes through AST matrix (llama-swap :25100) with 14 providers.
+set -euo pipefail
+SOV="${SOVEREIGN_ROOT:-$HOME/sovereign}"
+source "$SOV/stack/lib-ports.sh"
+require_env COYOTE_PORT
+PORT="$COYOTE_PORT"
+# Secret hygiene: key travels via env, never argv (invisible to ps).
+export COYOTE_API_KEY="${COYOTE_API_KEY:-sk-hal-local}"
+export COYOTE_MODEL="${COYOTE_MODEL:-gpt-oss}"
+
+# Find hal-loop.py — sovereign src/ is canonical
+BIN_CAND=(
+  "$SOV/src/coyote/coyote-loop.py"
+  "$HOME/projects/project-name/src/coyote-loop.py"
+)
+BIN=""
+for c in "${BIN_CAND[@]}"; do
+  [[ -f "$c" ]] && BIN="$c" && break
+done
+
+if [[ -z "$BIN" ]]; then
+  echo "[coyote] coyote-loop.py not found" >&2
+  exit 1
+fi
+
+# Verify deps
+if ! python3 -c "import requests" 2>/dev/null; then
+  python3 -m pip install requests urllib3 --quiet
+fi
+
+# Kill existing
+fuser -k "${PORT}/tcp" 2>/dev/null || true
+sleep 0.3
+
+# Launch: HTTP server on 0.0.0.0:PORT
+# Connects to llama-swap AST matrix, integrates with Yote messaging
+exec python3 "$BIN" \
+  --base-url "http://127.0.0.1:25100" \
+  --model "${COYOTE_MODEL}" \
+  --session "sovereign-$(date +%s)" \
+  --port "${PORT}" \
+  --host "0.0.0.0" \
+  --verbose

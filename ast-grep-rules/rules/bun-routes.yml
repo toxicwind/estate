@@ -1,0 +1,10 @@
+id: bun-route-handler
+language: typescript
+rule:
+  any:
+    - pattern: app.get($$$)
+    - pattern: app.post($$$)
+    - pattern: app.put($$$)
+    - pattern: app.delete($$$)
+message: "Found route handler"
+severity: info

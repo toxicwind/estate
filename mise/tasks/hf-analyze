@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# Usage: mise run hf-analyze -- org/model  OR  mise run hf-analyze -- -i org/model
+BIN="${HOME}/.local/bin/hfdownloader"
+[[ -x "$BIN" ]] || bash <(curl -sSL https://g.bodaay.io/hfd) install "${HOME}/.local/bin"
+if [[ $# -eq 0 ]]; then
+  echo "usage: mise run hf-analyze -- <org/repo>   # or -i for interactive GGUF picker" >&2
+  exit 1
+fi
+exec "$BIN" analyze "$@"

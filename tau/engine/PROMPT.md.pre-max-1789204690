@@ -1,0 +1,145 @@
+# Task
+
+Fix the `pi-vcs` → `pi-iso` symbol resolution so that
+`cargo build --release -p pi-vcs` and `cargo build --release -p pi-natives` both succeed.
+
+# Filesystem briefing — READ FIRST
+
+The user's home contains overlapping workspace trees. This is intentional and
+you must understand it before touching anything.
+
+```
+- root: /home/toxic/sovereign  (1.64 GB)
+- root: /home/toxic/projects  (328.04 GB)
+- root: /home/toxic/projects/sovereign-projects  (1.20 GB)
+- root: /home/toxic/projects/sovereign-projects/tau  (0.97 GB)
+- DUPLICATE: /home/toxic/sovereign ↔ /home/toxic/projects   shared top-dirs: .shared, agents, bin, mise, models, node_modules, scripts, skills, yote
+- DUPLICATE: /home/toxic/sovereign ↔ /home/toxic/projects/sovereign-projects   shared top-dirs: .git, .github, yote
+- DUPLICATE: /home/toxic/sovereign ↔ /home/toxic/projects/sovereign-projects/tau   shared top-dirs: .agent-orchestration, .github, .husky, bin, config, docs, scripts
+- DUPLICATE: /home/toxic/projects ↔ /home/toxic/projects/sovereign-projects   shared top-dirs: herd, openfang, yote
+- DUPLICATE: /home/toxic/projects ↔ /home/toxic/projects/sovereign-projects/tau   shared top-dirs: bin, kimi, scripts
+- DUPLICATE: /home/toxic/projects/sovereign-projects ↔ /home/toxic/projects/sovereign-projects/tau   shared top-dirs: .github, extensions
+- git repo: /home/toxic/sovereign/tools/nuvio-platform/submodules/NuvioWeb
+- git repo: /home/toxic/sovereign/tools/nuvio-platform/submodules/NuvioTVWebOS
+- git repo: /home/toxic/sovereign/tools/nuvio-platform/submodules/NuvioWebTVInstaller
+- git repo: /home/toxic/sovereign/tools/nuvio-platform/submodules/comet
+- git repo: /home/toxic/sovereign/tools/nuvio-platform/submodules/p2p-media-loader
+- git repo: /home/toxic/sovereign/tools/nuvio-platform/submodules/hlsjs-p2p-engine
+- git repo: /home/toxic/sovereign/tools/nuvio-platform/submodules/subtitle-translator
+- git repo: /home/toxic/sovereign/tools/nuvio-platform/submodules/llm-subtrans
+- git repo: /home/toxic/sovereign/tools/nuvio-platform/submodules/xiu
+- git repo: /home/toxic/sovereign/tools/nuvio-platform/submodules/webos-homebrew
+- git repo: /home/toxic/sovereign/tools/nuvio-platform/submodules/docchi-addon
+- git repo: /home/toxic/sovereign/projects/shell/ii/dots/.config/quickshell/ii/modules/common/widgets/shapes
+- git repo: /home/toxic/projects/antigravity-gateway-master/submodules/antigravity-white
+- git repo: /home/toxic/projects/antigravity-white/observatory/themes/monterey_src/src
+- git repo: /home/toxic/projects/antigravity-white/vendor/re-stack
+- git repo: /home/toxic/projects/antigravity-white/vendor/supergateway
+- git repo: /home/toxic/projects/organized-lattice-v3/archives/ii-original-dots-backup/.config/quickshell/ii/modules/common/widgets/shapes
+- git repo: /home/toxic/projects/organized-lattice-v3/anomalies/cache.symlinked-8tb/uv/sdists-v9
+- git repo: /home/toxic/projects/organized-lattice-v3/media-vaults/WiiBox/TitleBox
+- git repo: /home/toxic/projects/organized-lattice-v3/media-vaults/WiiBox/source/usbloadergx
+- git repo: /home/toxic/projects/organized-lattice-v3/media-vaults/WiiBox/source/nintendont
+- git repo: /home/toxic/projects/organized-lattice-v3/media-vaults/WiiBox/source/wiiflow
+- git repo: /home/toxic/projects/cr3_forge/optimized-cr3-repo/upstream/cloudstream_repo
+- git repo: /home/toxic/projects/cr3_forge/optimized-cr3-repo/browserless
+- git repo: /home/toxic/projects/web3-sec-workspace/tools/krait
+- git repo: /home/toxic/projects/web3-sec-workspace/tools/RugProof
+- git repo: /home/toxic/projects/web3-sec-workspace/tools/honeypotscan
+- git repo: /home/toxic/projects/web3-sec-workspace/workspace/damn-vulnerable-defi
+- git repo: /home/toxic/projects/lucebox-hub/server/deps/Block-Sparse-Attention
+- git repo: /home/toxic/projects/lucebox-hub/server/deps/llama.cpp
+- git repo: /home/toxic/projects/github/end4-mac-launcher/vendor/dots-hyprland
+- git repo: /home/toxic/projects/github/end4-mac-launcher/vendor/omarchy-quickapps
+- git repo: /home/toxic/projects/github/end4-mac-launcher/vendor/doannc-quickshell
+- git repo: /home/toxic/projects/github/end4-mac-launcher/vendor/nandoroid-shell
+- git repo: /home/toxic/projects/github/end4-mac-launcher/vendor/tripathiji-quickshell
+- git repo: /home/toxic/projects/github/end4-mac-launcher/vendor/nwg-drawer
+- git repo: /home/toxic/projects/github/end4-mac-launcher/vendor/quickshell-overview
+- git repo: /home/toxic/projects/sovereign-projects/shell/ii/dots/.config/quickshell/ii/modules/common/widgets/shapes
+- git repo: /home/toxic/projects/sovereign-projects/shell/ii/dots/.config/quickshell/ii/modules/common/widgets/shapes
+```
+
+Canonical-workspace rules:
+
+1. The canonical workspace is the one whose `tau/engine/Cargo.toml` has a `[workspace]` table
+   AND contains `crates/pi-iso` + `crates/pi-vcs`.
+2. If two roots share top-level directory names, the one with a `.git` and a git log is
+   canonical; the other is a duplicate, a symlink farm, or a bind mount.
+3. `SAME INODE` entries prove two paths are the same file — do NOT deduplicate them.
+4. `bind:` entries are the same; treat the mount target as canonical.
+5. Never delete. Report duplicates. The user resolves them.
+
+Current engine (canonical): `/home/toxic/projects/sovereign-projects/tau/engine`
+
+# Build failure
+
+    error[E0425]: cannot find function `clone_candidates` in crate `pi_iso`
+      --> crates/pi-vcs/src/git/mutate.rs:578:24
+    error[E0599]: no method named `clone_tree` found for reference `&dyn IsolationBackend`
+      --> crates/pi-vcs/src/git/mutate.rs:665:5
+
+Both symbols exist in source:
+
+    crates/pi-iso/src/lib.rs:255:    fn clone_tree(          # inside a trait
+    crates/pi-iso/src/lib.rs:360:pub fn clone_candidates(      # free function
+
+`cargo build --release -p pi-iso` succeeds standalone. `diff -rq` between
+`crates/pi-iso` and the vendor copy is silent. This is NOT a source problem.
+
+Two classes:
+
+1. **Resolution bug** — `pi-vcs/Cargo.toml` declares `pi-iso` such that a second
+   `pi_iso` (registry copy or duplicate workspace member) ends up on the link line.
+2. **CFG-gating bug** — `clone_tree`/`clone_candidates` sit behind a feature that
+   isn't enabled for the `pi-vcs` dependency edge.
+
+# Fork doctrine — when the fix requires upstream changes
+
+If the fix requires a change in a repo you do NOT own, you MUST first create
+or verify a fork before editing. Use these Nanocoder tools in this order:
+
+1. `gh_fork_state({repo:"owner/name"})` — check if a fork exists.
+2. `gh_fork_ensure({repo:"owner/name", clone_to:"<path>"})` — create it if missing.
+3. `gh_fork_sync({path:"<path>"})` — fast-forward the fork from upstream.
+
+Never push to an upstream you don't own. Never force-push. Never delete branches.
+If `gh` is not authenticated, stop and report — do not attempt a manual workaround.
+
+# Scope
+
+- Diagnose first: `cargo tree -p pi-vcs -e features -i pi-iso`. More than one
+  `pi-iso` line means class 1.
+- Class 1 → fix the manifest so only the workspace member resolves.
+- Class 2 → identify the gating feature and enable it.
+- Minimal change. Prefer manifest edits over source edits.
+
+# Do not change
+
+- Anything under the vendor mirror
+- Delete or rename `crates/pi-iso` or `crates/pi-vcs`
+- Add new external dependencies
+- Change public API of `pi-iso` or `pi-vcs`
+- `git checkout --` anything to reset — every change must be reasoned
+
+# Acceptance criteria
+
+1. `cargo tree -p pi-vcs -i pi-iso` shows exactly ONE `pi-iso` entry
+2. `cargo build --release -p pi-vcs` exits 0
+3. `cargo build --release -p pi-natives` exits 0
+4. `nm -C` on the produced `libpi_iso*.rlib` contains both `clone_candidates` and `clone_tree`
+5. `cargo check --profile dev --workspace --all-targets` exits 0
+
+# Verify
+
+```
+cargo tree -p pi-vcs -e features -i pi-iso
+cargo build --release -p pi-vcs
+cargo build --release -p pi-natives
+cargo check --profile dev --workspace --all-targets
+find target -name 'libpi_iso*.rlib' -exec nm -C {} \; | grep -E 'clone_candidates|clone_tree'
+```
+
+# Done means
+
+All five commands succeed. Nothing in the vendor mirror was modified.

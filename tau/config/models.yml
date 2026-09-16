@@ -1,0 +1,15 @@
+discovery:
+  type: openai-models-list
+  ollama: true
+  lm-studio: true
+  llama.cpp: true
+providers:
+  herd:
+    baseUrl: ${HERD_BASE_URL:-http://127.0.0.1:25100/v1}
+    api: openai-completions
+    auth: none
+    discovery:
+      type: openai-models-list
+modelOverrides:
+  disable:
+    - gemini-3.7-flash-tiered

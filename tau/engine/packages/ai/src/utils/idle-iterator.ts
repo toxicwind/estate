@@ -1,7 +1,7 @@
 import { $env } from "@oh-my-pi/pi-utils";
 import * as AIError from "../error";
 
-const DEFAULT_STREAM_IDLE_TIMEOUT_MS = 300_000;
+const DEFAULT_STREAM_IDLE_TIMEOUT_MS = 5_000;
 const DEFAULT_STREAM_FIRST_EVENT_TIMEOUT_MS = 300_000;
 /** Re-mint persistent race promises every N iterations (see hoisted-racer comment). */
 const RACER_REMINT_INTERVAL = 1024;
@@ -19,6 +19,11 @@ function normalizeIdleTimeoutMs(value: string | undefined, fallback: number): nu
  *
  * `PI_OPENAI_STREAM_IDLE_TIMEOUT_MS` is accepted as a backward-compatible alias.
  * Set `PI_STREAM_IDLE_TIMEOUT_MS=0` to disable the watchdog.
+ *
+ * The default is a fail-fast 5s: a stream that goes quiet mid-response is
+ * treated as stalled and aborted so a hedged duplicate (or a retry) can
+ * re-issue immediately instead of burning the provider's full kill window.
+ * Raise the env var for legitimately slow providers.
  *
  * Providers that legitimately stream much slower than the global default can pass
  * `fallbackMs` to widen the floor used when neither env var nor caller option is set.

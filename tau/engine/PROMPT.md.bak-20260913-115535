@@ -1,0 +1,23 @@
+# MASTER DIRECTIVE: Maximal Verified - /home/toxic root + all backends + search-first
+
+## 1. Scope - FULL /home/toxic ROOT - maximal per PyPI docs
+- workspace_root="/home/toxic" allowed_roots=["/home/toxic"] sandbox_mode=disabled no_output_deadline=10
+- Override precedence: CLI flags -> project-local (.agent/) -> user-global (~/.config/) -> bundled defaults
+- 7 configs: ~/.config/ralph-workflow.toml, ~/.config/ralph-workflow-mcp.toml, ~/.config/ralph-workflow-agents.toml, ~/.config/ralph-workflow-pipeline.toml, ~/.config/ralph-workflow-artifacts.toml + .agent/ mirrors
+
+## 2. Maximal Chains + Fallbacks
+- Chains: claude (NIM 8000 nemotron-3-super-120b-a12b), opencode (Bun.which hardened), nanocoder/nim_plan/smart/fast/all_82, pi, cursor, qwen, droid
+- Drains: planning, development, analysis, commit, fixer, reviewer - 8 of 10 drains granted by default
+- Fallbacks: planning->[nim_plan,nim_smart,pi], development->[nim_smart,nim_fast,pi,cursor]
+
+## 3. Maximal Search - 5 backends
+- web_search fallback chain (ddgs, Tavily, Brave, Exa, SearXNG) - Configure via [web_search] in mcp.toml
+- MCP servers: exa https://mcp.exa.ai/mcp, searxng http://127.0.0.1:8080/mcp - transport="http" supports streamable + SSE
+
+## 4. Maximal Pipeline - parallel + recovery
+- entry_block="developer_iteration"
+- Parallel: dispatch_mode="agent_subagents" mode="same_workspace" max_parallel_workers=8 max_work_units=50 - bundled default
+- Search-first enforced here (removed unknown search_policy field that caused warning)
+
+Tasks: cargo tree -p pi-vcs -i pi-iso, bun scripts/bazel-natives.ts linux-x64 --dest packages/natives/native, bun check, mesh/ui routes
+Emit RALPH_DONE only when all gates 0

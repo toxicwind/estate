@@ -1,0 +1,9 @@
+id: matrix-config-struct
+language: go
+rule:
+  pattern: $TYPE $IDENT {$$$}
+  any:
+    - pattern: MatrixConfig
+      inside:
+        kind: type_declaration
+message: "Find MatrixConfig struct definition — router settings schema"

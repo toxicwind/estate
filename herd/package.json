@@ -1,7 +1,7 @@
 {
   "name": "herd-llama-swap",
   "version": "18.1.14",
-  "description": "Maximal sovereign herd — llama-swap engine with mesh orchestration",
+  "description": "Maximal sovereign herd \u2014 llama-swap engine with mesh orchestration",
   "main": "llama-swap.go",
   "scripts": {
     "build": "cd ui-svelte && bun run build",
@@ -15,10 +15,7 @@
     "docker-build": "docker build -t llama-swap ./docker/unified",
     "benchmark": "go test -bench=. ./internal/bench/..."
   },
-  "dependencies": {
-    "go": "^1.23.1",
-    "bun": "^1.4.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "typescript": "^5.9.3",
     "svelte": "^5.0.0",
@@ -38,7 +35,13 @@
     "type": "git",
     "url": "https://github.com/toxicwind/herd.git"
   },
-  "keywords": ["llama-swap", "herd", "mesh", "sovereign", "inference"],
+  "keywords": [
+    "llama-swap",
+    "herd",
+    "mesh",
+    "sovereign",
+    "inference"
+  ],
   "author": "toxicwind",
   "license": "MIT"
 }

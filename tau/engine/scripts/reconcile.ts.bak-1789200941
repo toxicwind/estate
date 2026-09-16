@@ -1,0 +1,207 @@
+#!/usr/bin/env bun
+// Permanent workspace reconciler.
+// Location: engine/scripts/reconcile.ts
+// Deps:     none (uses Bun.TOML, Bun.$, node:path)
+// cwd:      any
+//
+//   ./scripts/reconcile            # full loop: recover → merge → verify → build → embed → probe
+//   ./scripts/reconcile merge      # recover + merge + verify
+//   ./scripts/reconcile build      # cargo/bun build only
+//   ./scripts/reconcile embed      # embed native addon only
+//   ./scripts/reconcile probe      # runtime export probe only
+//   ./scripts/reconcile verify     # cargo metadata only
+
+import { $, TOML } from "bun";
+import { dirname, relative, resolve } from "node:path";
+
+const HERE       = dirname(new URL(import.meta.url).pathname);
+const ENGINE     = resolve(HERE, "..");
+const ENGINE_TOML = resolve(ENGINE, "Cargo.toml");
+const VENDOR_TOML = resolve(ENGINE, "..", "vendor", "oh-my-pi", "Cargo.toml");
+const STAMP      = new Date().toISOString().replace(/[:.]/g, "-");
+
+const log  = (...a: unknown[]) => console.log("[reconcile]",  ...a);
+const warn = (...a: unknown[]) => console.warn ("[reconcile]",  ...a);
+const fail = (...a: unknown[]) => { console.error("[reconcile]", ...a); process.exit(1); };
+
+// ---------------------------------------------------------------- git helpers
+
+async function enclosingRepo(of: string): Promise<string | null> {
+  const r = await $`git -C ${of} rev-parse --show-toplevel`.nothrow().quiet();
+  if (r.exitCode !== 0) return null;
+  const top = r.stdout.toString().trim();
+  return top.length ? top : null;
+}
+
+async function recoverFromGit(path: string, label: string) {
+  const repo = await enclosingRepo(path);
+  if (!repo) fail(`${label}: no enclosing git repo to recover from`);
+  const rel = relative(repo, path);
+  log(`${label}: attempting recovery from ${repo} :: ${rel}`);
+
+  // 1. classic checkout
+  let r = await $`git -C ${repo} checkout HEAD -- ${rel}`.nothrow().quiet();
+  if (r.exitCode === 0) {
+    const t = await Bun.file(path).text();
+    try { return { text: t, parsed: TOML.parse(t) }; } catch {}
+  }
+
+  // 2. show HEAD:rel  (works even if worktree file was destroyed)
+  r = await $`git -C ${repo} show HEAD:${rel}`.nothrow().quiet();
+  if (r.exitCode === 0) {
+    const content = r.stdout.toString();
+    try {
+      const parsed = TOML.parse(content);
+      await Bun.write(path, content);
+      log(`${label}: wrote ${content.length} bytes from git`);
+      return { text: content, parsed };
+    } catch (e) {
+      warn(`${label}: git HEAD:${rel} unparseable: ${(e as Error).message}`);
+    }
+  }
+
+  // 3. what commits touched this file?
+  r = await $`git -C ${repo} log --oneline -8 -- ${rel}`.nothrow().quiet();
+  warn(`${label}: recovery failed. recent commits touching ${rel}:`);
+  console.warn(r.stdout.toString());
+
+  fail(`${label}: unrecoverable from git. Inspect manually:\n  git -C ${repo} log -p -- ${rel} | head -200`);
+}
+
+async function loadToml(path: string, label: string) {
+  const text = await Bun.file(path).text();
+  try {
+    return { text, parsed: TOML.parse(text) as any };
+  } catch (e) {
+    warn(`${label} Cargo.toml does not parse: ${(e as Error).message}`);
+    return recoverFromGit(path, label);
+  }
+}
+
+// ---------------------------------------------------------------- merge
+
+async function merge() {
+  const eng = await loadToml(ENGINE_TOML, "engine");
+  const ven = await loadToml(VENDOR_TOML, "vendor");
+
+  if (!eng.parsed.workspace)   fail("engine Cargo.toml has no [workspace]");
+  if (!ven.parsed.workspace)   fail("vendor Cargo.toml has no [workspace]");
+
+  const e = eng.parsed;
+  const v = ven.parsed;
+
+  // members
+  const em = new Set<string>((e.workspace.members ?? []) as string[]);
+  const addedMembers: string[] = [];
+  for (const m of ((v.workspace.members ?? []) as string[])) {
+    if (!em.has(m)) { em.add(m); addedMembers.push(m); }
+  }
+  e.workspace.members = [...em].sort();
+
+  // workspace.dependencies
+  const ed = (e.workspace.dependencies ?? {}) as Record<string, unknown>;
+  const vd = (v.workspace.dependencies ?? {}) as Record<string, unknown>;
+  const addedDeps: string[] = [];
+  for (const [k, val] of Object.entries(vd)) {
+    if (!(k in ed)) { ed[k] = val; addedDeps.push(k); }
+  }
+  e.workspace.dependencies = ed;
+
+  if (addedMembers.length === 0 && addedDeps.length === 0) {
+    log("workspace already in sync — no changes written");
+    return;
+  }
+
+  // backup, then write
+  const bak = `${ENGINE_TOML}.reconcile-bak-${STAMP}`;
+  await Bun.write(bak, eng.text);
+  log(`backup: ${bak}`);
+
+  const out = TOML.stringify(e);
+  await Bun.write(ENGINE_TOML, out.endsWith("\n") ? out : out + "\n");
+  log(`merged -> members +${addedMembers.length} [${addedMembers.join(", ") || "-"}]`);
+  log(`merged -> deps    +${addedDeps.length} [${addedDeps.join(", ") || "-"}]`);
+}
+
+// ---------------------------------------------------------------- verify
+
+async function verify() {
+  log("verifying via cargo metadata");
+  const r = await $`cargo metadata --no-deps --format-version 1`.cwd(ENGINE).nothrow().quiet();
+  if (r.exitCode !== 0) {
+    const err = r.stderr.toString().split("\n").slice(0, 20).join("\n");
+    fail("cargo metadata failed:\n" + err);
+  }
+  log("cargo metadata OK");
+}
+
+// ---------------------------------------------------------------- build
+
+async function build() {
+  log("building pi-natives");
+  const r = await $`bun run --cwd packages/natives build`.cwd(ENGINE).nothrow();
+  if (r.exitCode !== 0) fail("native build failed (see output above)");
+  log("build OK");
+}
+
+// ---------------------------------------------------------------- embed
+
+async function embed() {
+  const p = resolve(ENGINE, "packages/natives/scripts/embed-native.ts");
+  if (!(await Bun.file(p).exists())) { log("no embed script; skipping"); return; }
+  log("embedding native addon");
+  const r = await $`bun ${p}`.cwd(ENGINE).nothrow();
+  if (r.exitCode !== 0) fail("embed failed");
+}
+
+// ---------------------------------------------------------------- probe
+
+const PROBE = `
+  const { loadNative } = require("./packages/natives/native/loader-state.js");
+  const b = loadNative();
+  const s = Object.keys(b).find(k => k.startsWith("__piNativesV"));
+  const need = ["NativeOAuthCallback","EditSession","EditStore","VcsRepo","VcsGitRepo","VcsJjWorkspace"];
+  const missing = need.filter(k => !(k in b));
+  console.log("SENTINEL=" + s);
+  console.log("MISSING=" + JSON.stringify(missing));
+`;
+
+async function probe(): Promise<boolean> {
+  log("probing runtime exports");
+  const r = await $`bun -e ${PROBE}`.cwd(ENGINE).nothrow();
+  const out = r.stdout.toString() + r.stderr.toString();
+  const sentinel = out.match(/SENTINEL=(\S+)/)?.[1] ?? "(none)";
+  const missing  = out.match(/MISSING=(\[[^\]]*\])/)?.[1] ?? "(unknown)";
+  log(`sentinel : ${sentinel}`);
+  log(`missing  : ${missing}`);
+  const ok = missing === "[]" && sentinel !== "(none)";
+  log(ok ? "probe OK" : "probe FAILED");
+  return ok;
+}
+
+// ---------------------------------------------------------------- dispatch
+
+const cmd = (process.argv[2] ?? "all").toLowerCase();
+log(`engine: ${ENGINE}`);
+log(`cmd   : ${cmd}`);
+
+try {
+  switch (cmd) {
+    case "merge":  await merge(); await verify(); break;
+    case "verify": await verify(); break;
+    case "build":  await build(); break;
+    case "embed":  await embed(); break;
+    case "probe":  if (!(await probe())) process.exit(1); break;
+    case "all":
+      await merge();
+      await verify();
+      await build();
+      await embed();
+      if (!(await probe())) process.exit(1);
+      break;
+    default:
+      fail(`unknown subcommand: ${cmd}`);
+  }
+} catch (e) {
+  fail((e as Error).message);
+}

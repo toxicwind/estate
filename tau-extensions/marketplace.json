@@ -41,6 +41,22 @@
       ],
       "homepage": "https://github.com/RekunDzmitry/omp-extensions/tree/main/packages/omp-edit-committer",
       "license": "MIT"
+    },
+    {
+      "name": "tau-kimi-auto",
+      "description": "kimi-auto virtual model: dynamically resolves to the best available Kimi model via the kimi-auto resolver, with gpt-oss interim fallback.",
+      "version": "1.0.0",
+      "source": "./tau-kimi-auto",
+      "category": "model-provider",
+      "keywords": [
+        "kimi",
+        "kimi-auto",
+        "model",
+        "provider",
+        "herd"
+      ],
+      "homepage": "https://github.com/toxicwind/tau-extensions/tree/main/packages/tau-kimi-auto",
+      "license": "MIT"
     }
   ]
 }

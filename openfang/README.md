@@ -1,32 +1,26 @@
-# OpenFang — Sovereign C++ Inference Engine Fork
+# OpenFang — Agent Operating System
 
-**OpenFang** is a C++ inference engine fork maintained as part of the Sovereign Herd architecture.
+**OpenFang** is an open-source **Agent Operating System** written in Rust by [RightNow-AI](https://github.com/RightNow-AI/openfang) — a full OS for autonomous agents that work on schedules, 24/7: building knowledge graphs, monitoring targets, generating leads, managing social media, and reporting to a dashboard. Not a chatbot framework, not a Python wrapper around an LLM.
 
-- **Engine**: `beellama.cpp` / `llama-cpp-turboquant` forks
-- **Port**: Integrated into Herd (`:25100`) 
-- **AstMatrix**: Circuit breaker, token bucket rate limiting, 5-strike failfast
-- **Purpose**: High-performance inference for the Sovereign router
+- **Upstream:** <https://github.com/RightNow-AI/openfang>
+- **Our mirror:** <https://github.com/toxicwind/openfang> (private)
+- **Docs:** <https://openfang.sh/docs>
 
-## Architecture
+## This directory
 
-OpenFang operates as one of three inference engine forks behind Herd:
+`sovereign/openfang/` is a **placeholder** — no OpenFang source is checked in here. The live work is:
 
+- `sovereign-projects/openfang/` — workspace checkout
+- pitchfork **`axiom`** daemon → `stack/services/openfang.sh` → `src/services/openfang.ts` on **:25103**
+- pitchfork **`coyote`** daemon — autonomous agent inference engine on **:25143**, an OpenFang agent with Yote integration, routing through herd (`:25100`) across 14 providers
+
+## Quick start (upstream)
+
+```bash
+curl -fsSL https://openfang.sh/install | sh
+openfang init
+openfang start
+# Dashboard live at http://localhost:4200
 ```
-┌─────────────────────────────────────────────┐
-│            Herd (:25100)                     │
-│  Go Router + AstMatrix Core                 │
-│  └─ beellama.cpp        │  Fast quantized   │
-│  ├─ llama-cpp-turboquant │ Low VRAM fallback │
-│  └─ ik_llama.cpp      │ Experimental      │
-└─────────────────────────────────────────────┘
-```
 
-## Configuration
-
-Configured via `~/sovereign/config/herd.yaml` ASTMatrix block with priority assignments. See the [Herd README](https://github.com/toxicwind/llama-swap) for the full model priority schedule.
-
-## Status
-
-OpenFang is a core engine component of the Herd inference router, actively maintained as part of the Sovereign production stack.
-
-*Added as part of sovereign/tau/herd consolidation.*
+> **Correction (2026-09-14):** an earlier version of this README described OpenFang as a C++ inference-engine fork behind herd with beellama.cpp / llama-cpp-turboquant / ik_llama.cpp. That was wrong — those are llama.cpp engine builds used by herd's backends. OpenFang is the Rust Agent OS described above.

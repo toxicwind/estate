@@ -126,7 +126,7 @@ impl GitRepo {
 		for reference in iter {
 			let mut reference = reference.map_err(|err| Error::backend("git tags", err))?;
 			let id = reference
-				.peel_to_id()
+				.peel_to_id_in_place()
 				.map_err(|err| Error::backend("git tags", err))?;
 			if id.to_string() == target
 				&& let Some(name) = reference
@@ -679,8 +679,7 @@ impl GitRepo {
 		let date = author
 			.time()
 			.map_err(|err| Error::backend("git show", err))?
-			.format(gix::date::time::format::ISO8601_STRICT)
-			.map_err(|err| Error::backend("git show", err))?;
+			.format(gix::date::time::format::ISO8601_STRICT);
 		let raw_message = commit
 			.message_raw()
 			.map_err(|err| Error::backend("git show", err))?

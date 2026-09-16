@@ -2,7 +2,8 @@
   "name": "@toxicwind/tau-extensions",
   "version": "0.2.0",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "kimi"
   ],
   "devDependencies": {
     "@biomejs/biome": "^1.9.0",

@@ -1,0 +1,35 @@
+#!/bin/sh
+GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+if [ -n "$GIT_ROOT" ]; then
+    cd "$GIT_ROOT" || exit 1
+else
+    exit 0
+fi
+
+# Max-optimized autofixes via Bun & Biome (parallel, minimal overhead)
+if command -v biome >/dev/null 2>&1; then
+    biome format --write --no-errors-on-unmatched src/ tests/ scripts/ 2>/dev/null || true
+elif command -v bunx >/dev/null 2>&1; then
+    bunx @biomejs/biome format --write --no-errors-on-unmatched src/ tests/ scripts/ 2>/dev/null || true
+else
+    echo "⚠ No autofix formatter configured" >&2
+fi
+
+git add -A 2>/dev/null || true
+
+if [ "${PI_ALLOW_LOCKFILE_CHANGE:-0}" != "1" ]; then
+    LOCK_MODS=$(git diff --cached --name-only 2>/dev/null | grep -E 'package-lock\.json|bun\.lock' || true)
+    if [ -n "$LOCK_MODS" ]; then
+        echo "⚠ WARN: Lockfile change detected (non-blocking):" >&2
+        echo "$LOCK_MODS" >&2
+    fi
+fi
+
+SECRET_PATTERN='(sk-[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{36}|hf_[a-zA-Z0-9]{34}|Bearer [a-zA-Z0-9_.-]{30,}|eyJh[a-zA-Z0-9_-]{30,})'
+LEAKS=$(git diff --cached -U0 --diff-filter=ACM 2>/dev/null | grep '^[+]' | grep -v '^[+][+][+]' | grep -E -n "$SECRET_PATTERN" || true)
+if [ -n "$LEAKS" ]; then
+    echo "⚠ WARN: Secret pattern detected in staged diff (non-blocking):" >&2
+    echo "$LEAKS" >&2
+fi
+
+exit 0

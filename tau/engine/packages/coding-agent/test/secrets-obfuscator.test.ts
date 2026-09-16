@@ -468,7 +468,11 @@ describe("SecretObfuscator friendlyName placeholders", () => {
 		// un-truncated sanitized label before the 32-char cap is applied for
 		// display, so secrets longer than the cap are still fully compared
 		// and caught.
+<<<<<<< HEAD
 		const longSecret = "obfuscator_test_long_secret_fixture_value_abcdefghijklmnopqrstuvwxyz0123456789";
+=======
+		const longSecret = "github_pat_****************************************";
+>>>>>>> origin/main
 		const obfuscator = new SecretObfuscator([{ type: "plain", content: longSecret, friendlyName: longSecret }]);
 		const obfuscated = obfuscator.obfuscate(longSecret);
 
@@ -487,8 +491,13 @@ describe("SecretObfuscator friendlyName placeholders", () => {
 		// characters are accepted and baked into the placeholder verbatim as a
 		// visible, secret-derived prefix (e.g.
 		// "#GITHUBPATABCDEFGHIJKLMNOPQRSTUVW_<hash>:L#").
+<<<<<<< HEAD
 		const longSecret = "obfuscator_test_long_secret_fixture_value_abcdefghijklmnopqrstuvwxyz0123456789";
 		const leakedPrefix = "OBFUSCATORTESTLONGSECRETFIXTUREV"; // first 32 sanitized chars of longSecret
+=======
+		const longSecret = "github_pat_****************************************";
+		const leakedPrefix = "GITHUBPATABCDEFGHIJKLMNOPQRSTUVW"; // first 32 sanitized chars of longSecret
+>>>>>>> origin/main
 		const obfuscator = new SecretObfuscator([{ type: "plain", content: longSecret, friendlyName: leakedPrefix }]);
 		const obfuscated = obfuscator.obfuscate(longSecret);
 
@@ -2150,7 +2159,11 @@ describe("SecretObfuscator friendlyName placeholders", () => {
 	});
 
 	it("ignores obfuscate entries shadowed by a same-content replace entry when deciding key need", () => {
+<<<<<<< HEAD
 		const secret = "ghp_test_fixture";
+=======
+		const secret = "ghp_****************************************";
+>>>>>>> origin/main
 		// A same-content plain replace entry runs before the plain obfuscate entry in
 		// obfuscate(), so the value is one-way replaced and the obfuscate entry never
 		// emits a reversible placeholder. The set must therefore not require the key.

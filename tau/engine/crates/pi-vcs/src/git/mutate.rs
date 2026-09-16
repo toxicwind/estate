@@ -11,9 +11,10 @@ use std::{
 use gix::bstr::{BString, ByteSlice};
 
 use super::{
-	GitRepo, normalize_path,
+	GitRepo, head_peel_to_id, normalize_path,
 	open::{load_index_or_empty, load_index_or_head, status_with_fresh_index, status_with_index},
 	read::literal_pathspec,
+	write_commit,
 };
 use crate::{
 	error::{Error, Result},
@@ -22,6 +23,72 @@ use crate::{
 		WorktreeAddOptions, WorktreeAddResult, WorktreeClone,
 	},
 };
+/// Parse a commit author date string.
+///
+/// Tries `gix::date::parse` first (git formats), then falls back to a
+/// minimal RFC 3339 parser (`YYYY-MM-DDTHH:MM:SSZ`) for ISO 8601 inputs
+/// like `"2020-01-02T03:04:05Z"`.
+fn parse_commit_date(input: &str) -> Result<gix::date::Time, gix::date::parse::Error> {
+	if let Ok(time) = gix::date::parse(input, None) {
+		return Ok(time);
+	}
+	let invalid = || gix::date::parse::Error::InvalidDateString { input: input.trim().into() };
+	// Minimal RFC 3339: YYYY-MM-DDTHH:MM:SSZ (UTC only). Every field is
+	// range-checked so syntactically numeric but impossible dates (month 13,
+	// February 30, hour 25, ...) are rejected instead of silently wrapping
+	// into unrelated timestamps.
+	fn digits(part: &str, len: usize) -> Option<u32> {
+		if part.len() == len && part.bytes().all(|b| b.is_ascii_digit()) {
+			part.parse().ok()
+		} else {
+			None
+		}
+	}
+	let stripped = input.trim().strip_suffix('Z').ok_or_else(invalid)?;
+	let (date, clock) = stripped.split_once('T').ok_or_else(invalid)?;
+	let mut dparts = date.split('-');
+	let (year, month, day) = match (dparts.next(), dparts.next(), dparts.next(), dparts.next()) {
+		(Some(y), Some(m), Some(d), None) => (
+			digits(y, 4).ok_or_else(invalid)?,
+			digits(m, 2).ok_or_else(invalid)?,
+			digits(d, 2).ok_or_else(invalid)?,
+		),
+		_ => return Err(invalid()),
+	};
+	let mut tparts = clock.split(':');
+	let (hour, minute, second) = match (tparts.next(), tparts.next(), tparts.next(), tparts.next()) {
+		(Some(h), Some(mi), Some(s), None) => (
+			digits(h, 2).ok_or_else(invalid)?,
+			digits(mi, 2).ok_or_else(invalid)?,
+			digits(s, 2).ok_or_else(invalid)?,
+		),
+		_ => return Err(invalid()),
+	};
+	if !(1..=12).contains(&month) || hour > 23 || minute > 59 || second > 59 {
+		return Err(invalid());
+	}
+	let leap = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+	let max_day = match month {
+		2 if leap => 29,
+		2 => 28,
+		4 | 6 | 9 | 11 => 30,
+		_ => 31,
+	};
+	if day == 0 || day > max_day {
+		return Err(invalid());
+	}
+	// Days from civil date (Howard Hinnant's algorithm). Inputs are
+	// validated above, so this cannot wrap or overflow.
+	let y = i64::from(year) - i64::from(month <= 2);
+	let era = y.div_euclid(400);
+	let yoe = y.rem_euclid(400) as u32;
+	let mp = (i64::from(month) + 9).rem_euclid(12) as u32;
+	let doy = (153 * mp + 2) / 5 + day - 1;
+	let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+	let days = era * 146097 + i64::from(doe) - 719468;
+	let secs = days * 86400 + i64::from(hour) * 3600 + i64::from(minute) * 60 + i64::from(second);
+	Ok(gix::date::Time::new(secs, 0))
+}
 
 const INDEX_WRITE: gix::index::write::Options = gix::index::write::Options {
 	extensions: gix::index::write::Extensions::None,
@@ -146,13 +213,10 @@ impl GitRepo {
 	pub fn commit_create(&self, message: &str, options: &CommitOptions) -> Result<String> {
 		let repo = self.gix()?;
 		run_commit_hook(self, &repo, "pre-commit", &[])?;
-		let mut head = repo
+		let head = repo
 			.head()
 			.map_err(|err| Error::backend("git commit", err))?;
-		let old_commit = head
-			.try_peel_to_id()
-			.map_err(|err| Error::backend("git commit", err))?
-			.map(|id| id.detach());
+		let old_commit = head_peel_to_id(head).map_err(|err| Error::backend("git commit", err))?;
 		let index = load_index_or_head(&repo, "git commit")?;
 		let tree = if options.files.is_empty() {
 			write_index_tree(&repo, &index)?
@@ -204,7 +268,7 @@ impl GitRepo {
 		let author = if let Some(author) = &options.author {
 			let time = match &author.date {
 				Some(date) => {
-					gix::date::parse(date, None).map_err(|err| Error::backend("git commit", err))?
+					parse_commit_date(date).map_err(|err| Error::backend("git commit", err))?
 				},
 				None => gix::date::Time::now_local_or_utc(),
 			};
@@ -227,10 +291,8 @@ impl GitRepo {
 		run_commit_hook(self, &repo, "commit-msg", &[message_path.as_os_str()])?;
 		let message = fs::read_to_string(&message_path)
 			.map_err(|err| Error::backend("git commit read commit-msg result", err))?;
-		let commit = repo
-			.new_commit_as(committer, author, message, tree, parents)
+		let id = write_commit(&repo, committer, author, &message, tree, &parents)
 			.map_err(|err| Error::backend("git commit", err))?;
-		let id = commit.id;
 		let expected = old_commit
 			.map_or(gix::refs::transaction::PreviousValue::MustNotExist, |old| {
 				gix::refs::transaction::PreviousValue::MustExistAndMatch(old.into())
@@ -311,7 +373,7 @@ impl GitRepo {
 		let Ok(mut reference) = repo.find_reference(&full) else {
 			return Ok(false);
 		};
-		let id = match reference.peel_to_id() {
+		let id = match reference.peel_to_id_in_place() {
 			Ok(id) => id.detach(),
 			Err(_) => return Ok(false),
 		};
@@ -1052,14 +1114,12 @@ fn commit_tree(repo: &gix::Repository, id: &gix::hash::ObjectId) -> Result<gix::
 }
 
 fn head_tree(repo: &gix::Repository) -> Result<Option<gix::hash::ObjectId>> {
-	match repo
-		.head()
-		.map_err(|e| Error::backend("git reset", e))?
-		.try_peel_to_id()
+	match head_peel_to_id(repo.head().map_err(|e| Error::backend("git reset", e))?)
 		.map_err(|e| Error::backend("git reset", e))?
 	{
 		Some(id) => Ok(Some(
-			id.object()
+			repo
+				.find_object(id)
 				.map_err(|e| Error::backend("git reset", e))?
 				.peel_to_commit()
 				.map_err(|e| Error::backend("git reset", e))?
@@ -1511,18 +1571,20 @@ fn path_matches(path: &str, wanted: &str) -> bool {
 }
 
 fn set_config_file(path: &Path, key: &str, value: &str) -> Result<()> {
-	let mut config = if path.exists() {
-		gix::config::File::from_path_no_includes(path.to_owned(), gix::config::Source::Local)
-			.map_err(|e| Error::backend("git config", e))?
-	} else {
-		gix::config::File::default()
-	};
-	config
-		.set_raw_value(key, value)
+	// gix-config 0.46 ties `set_raw_value`'s key lifetime to the `File`'s
+	// event lifetime, which the borrow checker insists must be `'static`.
+	// Shell out to `git config -f`, which is equivalent and always available
+	// wherever pi-vcs runs.
+	let output = std::process::Command::new("git")
+		.args(["config", "-f", &path.to_string_lossy(), key, value])
+		.output()
 		.map_err(|e| Error::backend("git config", e))?;
-	let mut bytes = Vec::new();
-	config.write_to(&mut bytes)?;
-	fs::write(path, bytes)?;
+	if !output.status.success() {
+		return Err(Error::backend(
+			"git config",
+			String::from_utf8_lossy(&output.stderr).into_owned(),
+		));
+	}
 	Ok(())
 }
 
@@ -1716,7 +1778,7 @@ fn snapshot_refs(repo: &gix::Repository) -> Result<Vec<(String, gix::hash::Objec
 	for reference in iter {
 		let mut reference = reference.map_err(|e| Error::backend("git detach", e))?;
 		let name = reference.name().as_bstr().to_str_lossy().into_owned();
-		if let Ok(id) = reference.peel_to_id() {
+		if let Ok(id) = reference.peel_to_id_in_place() {
 			out.push((name, id.detach()));
 		}
 	}
@@ -1798,6 +1860,37 @@ mod tests {
 		git(temp.path(), &["commit", "-qm", "base"]);
 		let repo = GitRepo::require(temp.path()).unwrap();
 		(temp, repo)
+	}
+
+	#[test]
+	fn parse_commit_date_validates_rfc3339_fields() {
+		// Sanity: a well-formed timestamp parses (2020-01-02T03:04:05Z).
+		assert_eq!(parse_commit_date("2020-01-02T03:04:05Z").unwrap().seconds, 1577934245);
+		// February 29 is valid on leap years ...
+		assert_eq!(parse_commit_date("2024-02-29T12:00:00Z").unwrap().seconds, 1709208000);
+		assert_eq!(parse_commit_date("2000-02-29T00:00:00Z").unwrap().seconds, 951782400);
+		// ... but not otherwise.
+		for bad in [
+			"2021-02-29T00:00:00Z", // non-leap Feb 29
+			"1900-02-29T00:00:00Z", // century non-leap Feb 29
+			"2020-02-30T00:00:00Z", // Feb 30 never exists
+			"2020-13-01T00:00:00Z", // month 13
+			"2020-00-10T00:00:00Z", // month 0
+			"2020-01-00T00:00:00Z", // day 0
+			"2020-01-32T00:00:00Z", // day 32
+			"2020-04-31T00:00:00Z", // April 31
+			"2020-06-31T00:00:00Z", // June 31
+			"2020-01-01T24:00:00Z", // hour 24
+			"2020-01-01T23:60:00Z", // minute 60
+			"2020-01-01T23:59:60Z", // second 60
+			"2020-1-2T03:04:05Z",   // non-zero-padded date
+			"2020-01-02T3:04:05Z",  // non-zero-padded hour
+			"2020-01-02 03:04:05Z", // missing T separator
+			"2020-01-02T03:04:05",  // missing Z suffix
+			"not-a-date",
+		] {
+			assert!(parse_commit_date(bad).is_err(), "{bad} should be rejected");
+		}
 	}
 
 	#[test]

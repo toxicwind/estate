@@ -1,0 +1,48 @@
+{
+  "version": "3.0.0",
+  "last_updated": "2026-08-09T17:30:00Z",
+  "session": "C2-2026-08-09T10:00:00",
+  "session_collection": {
+    "pi_sessions_dir": "/home/toxic/.pi/agent/sessions",
+    "grok_sessions_dir": "/home/toxic/.grok",
+    "description": "Collected all .pi and .grok session data for analysis"
+  },
+  "classification": "pi-longcat-as-c2-fix-while-not-sure",
+  "agents": {
+    "self": {
+      "id": "broadcaster",
+      "role": "Broadcaster",
+      "description": "Current assistant managing configuration and plan updates"
+    },
+    "pi-agent": {
+      "brain": "/home/toxic/sovereign/brain/pi-agent/PLAN.json",
+      "model": "longcat-2.0-free",
+      "status": "active"
+    },
+    "grok": {
+      "brain": "/home/toxic/sovereign/brain/grok/PLAN.json",
+      "model": "pending",
+      "status": "pending_setup"
+    },
+    "subagents": {
+      "longcat-2.0-free": {
+        "brain": "/home/toxic/sovereign/brain/subagents/longcat-2.0-free/PLAN.json",
+        "status": "active"
+      }
+    }
+  },
+  "shared": {
+    "generator": "/home/toxic/sovereign/brain/generate.sh",
+    "tasks_dir": "/home/toxic/sovereign/brain/tasks/",
+    "coordination": "/home/toxic/sovereign/brain/MANIFEST.json"
+  },
+  "global_rules": {
+    "reactive_mode": true,
+    "never_devnull": true,
+    "commit_often": true,
+    "maximal_scope": true,
+    "fix_forward": true,
+    "steal_subsystems": true,
+    "own_all_forks": true
+  }
+}

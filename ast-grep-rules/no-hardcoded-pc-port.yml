@@ -1,0 +1,6 @@
+id: no-hardcoded-pc-port
+language: rust
+rule:
+  pattern: 8080
+message: "PROCESS-COMPOSE IS ON 25108. NEVER USE 8080."
+severity: error

@@ -1,0 +1,2 @@
+                kotlin.text.Regex videoHlsRegex22 = new kotlin.text.Regex("['\"]https?://[^\\s'\"]+\\.(mp4|mkv|m3u8)[^'\"]*['\"]");
+                kotlin.text.Regex videoHlsRegex2 = new kotlin.text.Regex("['\"]https?://[^\\s'\"]+\\.(mp4|mkv|m3u8)[^'\"]*['\"]");
