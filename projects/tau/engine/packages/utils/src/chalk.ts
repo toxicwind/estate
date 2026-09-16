@@ -190,14 +190,6 @@ export function detectColorLevel(environment: NodeJS.ProcessEnv, isTTY: boolean)
 	if ("NO_COLOR" in environment || environment.TERM === "dumb") return 0;
 	if (!isTTY) return 0;
 	if (environment.COLORTERM === "truecolor" || environment.COLORTERM === "24bit") return 3;
-	// WezTerm speaks truecolor natively; COLORTERM=truecolor is exported by
-	// default but can be stripped anywhere in the chain (sudo, ssh, sanitizing
-	// launchers), so treat the WezTerm markers as level 3 outright — ahead of
-	// the `-256color` TERM heuristic, since WezTerm's default TERM is
-	// `xterm-256color` and would otherwise shadow this branch. The TERM_PROGRAM
-	// check is case-insensitive (WezTerm sets `WezTerm`) to match
-	// detectTerminalId's caseEq handling.
-	if (environment.TERM_PROGRAM?.toLowerCase() === "wezterm" || environment.WEZTERM_PANE) return 3;
 	if (environment.TERM?.endsWith("-256color")) return 2;
 	if (environment.CI) {
 		if (environment.GITHUB_ACTIONS || environment.GITEA_ACTIONS) return 3;

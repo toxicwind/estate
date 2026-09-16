@@ -58,7 +58,7 @@ export function hasLinuxDesktopSession(
  * terminal. Returns true only when (1) the chosen `notifyProtocol` is BEL,
  * which cannot carry arbitrary toast text, (2) the host exposes a Linux desktop
  * session, and (3) the user has not opted out via `PI_NO_DESKTOP_NOTIFY=1`.
- * Terminals that genuinely speak OSC 9 / OSC 99 / OSC 777 pass
+ * Terminals that genuinely speak OSC 9 / OSC 99 pass
  * `notifyProtocolIsBell=false` and are filtered before the D-Bus fallback can
  * run. Pure helper for tests and the singleton path.
  */
