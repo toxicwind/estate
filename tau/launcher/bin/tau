@@ -4,7 +4,7 @@
 # Collapse chain (first hit wins):
 #   1. $TAU_BIN (explicit override)
 #   2. Installed `tau` on PATH (not this script — avoids recursion)
-#   3. ./tau in current directory (local project override)
+#   3. ./tau in current directory (local project override; regular file only)
 #   4. Source mode: bun run <engine>/packages/coding-agent/src/cli.ts
 #   5. Dist binary: <engine>/packages/coding-agent/dist/omp
 #
@@ -147,8 +147,8 @@ launch() {
         fi
     fi
 
-    # 3. Local ./tau override
-    if [ -x "./tau" ] && [ "$(realpath ./tau 2>/dev/null)" != "$(realpath "$0" 2>/dev/null)" ]; then
+    # 3. Local ./tau override (regular file only — a ./tau directory must not match -x)
+    if [ -f "./tau" ] && [ -x "./tau" ] && [ "$(realpath ./tau 2>/dev/null)" != "$(realpath "$0" 2>/dev/null)" ]; then
         exec ./tau "$@"
     fi
 

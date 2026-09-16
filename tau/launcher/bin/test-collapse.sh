@@ -76,10 +76,25 @@ assert_output "--profile flag sets backend" "BACKEND=kimi" \
 rm -f "$FAKE_BIN2"
 rm -rf "$TEST_HOME" "$TEST_HOME2" "$TEST_HOME3"
 
-# Test 6: No target → clean error (not a crash)
+# Test 6: No target → clean error (not a crash). Hermetic HOME (with .tau so
+# resolve_home honors it) keeps the real dist/omp build artifact from
+# satisfying level 5 — the test means "no launch target anywhere".
+TEST_HOME6="$(mktemp -d)"
+mkdir -p "$TEST_HOME6/.tau"
 assert_output "missing everything gives clean error" "no launch target found" \
-    env -u TAU_BIN HOME=/nonexistent-xyz TAU_PROFILE=nonexistent \
-    bash -c 'PATH=/usr/bin:/bin "$0"' "$LAUNCHER"
+    env -u TAU_BIN HOME="$TEST_HOME6" TAU_PROFILE=nonexistent \
+    bash -c 'cd "$1" && PATH=/usr/bin:/bin "$0"' "$LAUNCHER" "$TEST_HOME6"
+rm -rf "$TEST_HOME6"
+
+# Test 7: ./tau directory is NOT treated as an executable override (regression).
+# [ -x ./tau ] matches directories; the level-3 override must be a regular file.
+# Same hermetic HOME as test 6 so only the ./tau-dir behavior is under test.
+TEST_HOME7="$(mktemp -d)"
+mkdir -p "$TEST_HOME7/.tau" "$TEST_HOME7/work/tau"  # a directory named tau, not a file
+assert_output "./tau directory is not exec'd as override" "no launch target found" \
+    env -u TAU_BIN HOME="$TEST_HOME7" TAU_PROFILE=nonexistent \
+    bash -c 'cd "$1" && PATH=/usr/bin:/bin "$0"' "$LAUNCHER" "$TEST_HOME7/work"
+rm -rf "$TEST_HOME7"
 
 echo
 echo "=== $PASS passed, $FAIL failed ==="
