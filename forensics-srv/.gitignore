@@ -1,0 +1,6 @@
+venv/
+store/
+tiktoken-cache/
+.token
+__pycache__/
+*.pyc
