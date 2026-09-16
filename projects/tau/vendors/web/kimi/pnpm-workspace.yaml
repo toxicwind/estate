@@ -1,0 +1,31 @@
+packages:
+  - packages/*
+  - apps/*
+  - apps/vis/server
+  - apps/vis/web
+  - docs
+  # Tau engine (oh-my-pi) - external workspace
+  - ../../tau/packages/*
+  - ../../tau/extensions/*
+  - ../../tau/extensions/packages/*
+
+catalog:
+  zod: 4.3.6
+  # Tau engine packages (oh-my-pi)
+  "@oh-my-pi/pi-ai": "workspace:*"
+  "@oh-my-pi/pi-tui": "workspace:*"
+  "@oh-my-pi/pi-coding-agent": "workspace:*"
+  "@oh-my-pi/pi-utils": "workspace:*"
+  "@oh-my-pi/pi-wire": "workspace:*"
+  "@oh-my-pi/pi-natives": "workspace:*"
+  "@oh-my-pi/pi-agent-core": "workspace:*"
+  "@oh-my-pi/pi-mnemopi": "workspace:*"
+  "@oh-my-pi/pi-catalog": "workspace:*"
+  "@oh-my-pi/omp-stats": "workspace:*"
+  "@oh-my-pi/omptype": "workspace:*"
+  "@oh-my-pi/hashline": "workspace:*"
+  "@oh-my-pi/snapcompact": "workspace:*"
+  "kimi-code>@tailwindcss/vite": "4.1.18"
+  "ssh2@1.17.0>cpu-features": "-"
+  "ssh2@1.17.0>nan": "-"
+  "kimi-code>tailwindcss": "4.1.18"
