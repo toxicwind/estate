@@ -1,19 +1,10 @@
 {
   "name": "sovereign-projects",
   "version": "18.1.14",
-  "description": "Sovereign control plane — herd, mesh, llama-swap, sovereign-swap",
+  "description": "Sovereign control plane \u2014 herd, mesh, llama-swap, sovereign-swap",
   "workspaces": [
     "herd",
     "herd/ui-svelte",
-    "mesh",
-    "mesh/router",
-    "mesh/ast-matrix",
-    "sovereign-swap",
-    "sovereign-skills",
-    "sovereign-scripts",
-    "yote",
-    "openfang",
-    "extensions",
     "packages/*"
   ],
   "scripts": {

@@ -31,8 +31,6 @@ yarn-error.log*
 .kafka.local.yml
 
 # Stale cache artifacts (removed)
-src/
-__tests__/
 
 # Unpacked extensions / local test builds
 engram/

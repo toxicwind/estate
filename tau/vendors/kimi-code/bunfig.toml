@@ -1,0 +1,6 @@
+[install]
+packages = ["node_modules"]
+
+[module]
+# Exclude native modules from bundling
+external = ["@oh-my-pi/pi-natives", "@oh-my-pi/pi-natives-linux-x64"]

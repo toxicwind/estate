@@ -1,0 +1,7 @@
+# Ignore generated/large files
+docs/
+*.pdf
+*.zip
+*.lock
+*.db
+*.sqlite

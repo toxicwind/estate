@@ -1,0 +1,6 @@
+id: command-new-timeout
+language: rust
+rule:
+  pattern: Command::new($CMD)
+message: "Always wrap Commands in tokio::time::timeout to prevent hangs."
+severity: warning

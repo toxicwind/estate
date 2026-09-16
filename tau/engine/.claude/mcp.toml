@@ -1,0 +1,28 @@
+[mcp_servers.exa]
+transport = "stdio"
+command = "npx"
+args = ["-y", "exa-mcp-server"]
+[mcp_servers.exa.env]
+EXA_API_KEY = "$EXA_API_KEY"
+
+[mcp_servers.exa_stdio]
+transport = "stdio"
+command = "bunx"
+args = ["-b", "mcp-remote", "https://mcp.exa.ai/mcp", "--header", "Accept: application/json, text/event-stream"]
+
+[web_search]
+enabled = true
+backend = "exa"
+fallback = ["ddgs"]
+[web_search.backends.exa]
+backend = "exa"
+api_key_env = "EXA_API_KEY"
+[web_search.backends.ddgs]
+backend = "ddgs"
+[web_visit]
+enabled = true
+timeout_ms = 15000
+max_bytes = 2097152
+allow_private_networks = false
+[media]
+enabled = true

@@ -1,34 +1,29 @@
-# QED — Definitive AI-Native Code Editor & Remote Substrate
+# QED — AI-Native Editor Workspace
 
-**Port**: `:25130` (Host & Collaboration)  
-**Role**: The unified editor layer for the Sovereign autonomous agent ecosystem.
+`qed/` holds the editor layer of the stack: the **zed** fork and **zedra**, the remote/mobile substrate.
 
----
+## Layout
 
-## 🏛️ Workspace Topology
-
-QED unifies the desktop editor engine and the remote mobile/P2P substrate under a single cohesive workspace:
-
-```
+```text
 qed/
-├── zed/     ← Definitive AI-native editor engine (our toxicwind/zed fork)
-│               - 240+ Rust crates, GPUI accelerated rendering
-│               - First-class NVIDIA NIM, Inkling, and MCP tool normalizers
-│               - Port: :25130 (Livekit collaboration & server)
-└── zedra/   ← Remote daemon & mobile client substrate (Zedra host)
-                - P2P tunnel over QUIC/UDP (Iroh)
-                - Mobile agent hooks, e2e encryption
-                - Remote headless daemon
+├── zed/     # toxicwind/zed fork — 241 Rust crates, GPUI rendering
+│            # custom providers: NVIDIA NIM (direct), MCP-proxy-hardened
+│            # OpenAI-compatible providers, tool-schema normalizers
+└── zedra/   # remote substrate — mobile editor + desktop daemon with
+             # P2P connectivity (see qed/zedra/README.md for its own docs)
 ```
 
----
-
-## 🚀 Quick Verification
+## Verify
 
 ```bash
-# Verify Zed workspace builds
+# Zed fork builds
 cargo check --manifest-path qed/zed/Cargo.toml --package zed
 
-# Verify Zedra daemon builds
+# Zedra
 bun --cwd qed/zedra test
 ```
+
+## Notes
+
+- The zed fork carries the sovereign provider set (llama-swap on :25100, sovereign-router on :25104, NVIDIA NIM direct) — editor settings live in `~/.config/zed/settings.json`, not here.
+- zedra is the upstream zedra project (mobile + daemon); this tree vendors it for the remote-editing path.

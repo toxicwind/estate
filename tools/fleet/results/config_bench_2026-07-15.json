@@ -1,0 +1,31 @@
+[
+  {
+    "model": "beellama/exaone-4-0-1-2b-iq4xs",
+    "fork": "",
+    "model_file": "/home/toxic/projects/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+    "resolved_cmd": "env -u LLAMA_API_KEY -u LLAMA_ARG_API_KEY -u OPENAI_API_KEY CUDA_VISIBLE_DEVICES=0 GGML_CUDA=1 GGML_CUDA_GRAPHS=1 LD_LIBRARY_PATH=/home/toxic/projects/beellama.cpp/build/bin /home/toxic/projects/beellama.cpp/build/bin/llama-server --model /home/toxic/projects/models/EXAONE-4.0-1.2B-IQ4_XS.gguf --host 127.0.0.1 --port 25150 --n-gpu-layers 99 --flash-attn on --parallel 1 --metrics --mlock --no-mmap --no-context-shift --kv-unified --no-host --ctx-size 32768 -b 4096 -ub 1024 --cache-type-k q8_0 --cache-type-v q8_0 --jinja",
+    "ctx_probes": [
+      {
+        "ctx": 4096,
+        "tps": 203.57552028034263
+      },
+      {
+        "ctx": 8192,
+        "tps": 232.3937732964324
+      },
+      {
+        "ctx": 16384,
+        "tps": 208.24381967321602
+      },
+      {
+        "ctx": 32768,
+        "tps": 143.1274985616471
+      }
+    ],
+    "max_stable_ctx": 32768,
+    "best_tps": 232.3937732964324,
+    "tier": "mid",
+    "health_ok": true,
+    "timestamp": "2026-07-15T06:51:17.255Z"
+  }
+]

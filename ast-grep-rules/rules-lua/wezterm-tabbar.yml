@@ -1,0 +1,6 @@
+id: wezterm-tab-bar
+language: lua
+rule:
+  pattern: config.use_fancy_tab_bar = $VAL
+message: "Tab bar: fancy_tab_bar = {{VAL}}"
+severity: hint

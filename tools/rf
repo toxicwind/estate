@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# rf — Read Full file helper (maximal experimental)
+# Intelligent file reader for 1M+ context environments
+# Usage: rf <file> [file2 ...] | rf --binary <file> | rf --hex <file>
+set -euo pipefail
+
+mode="text"
+files=()
+
+for arg in "$@"; do
+	case "$arg" in
+		--binary|-b) mode="binary" ;;
+		--hex|-x) mode="hex" ;;
+		--head) mode="head" ;;
+		--tail) mode="tail" ;;
+		--*) echo "rf: unknown flag: $arg" >&2; exit 1 ;;
+		*) files+=("$arg") ;;
+	esac
+done
+
+if [[ ${#files[@]} -eq 0 ]]; then
+	echo "rf: no files specified" >&2
+	echo "Usage: rf [--binary|--hex|--head|--tail] <file> [file2 ...]" >&2
+	exit 1
+fi
+
+for f in "${files[@]}"; do
+	if [[ ! -e "$f" ]]; then
+		echo "rf: file not found: $f" >&2
+		continue
+	fi
+
+	if [[ -d "$f" ]]; then
+		echo "=== $f/ (directory) ==="
+		ls -la "$f" 2>/dev/null || true
+		echo
+		continue
+	fi
+
+	size=$(stat -c %s "$f" 2>/dev/null || echo 0)
+	lines=$(wc -l < "$f" 2>/dev/null || echo 0)
+
+	echo "=== $f (${size}B, ${lines} lines) ==="
+
+	case "$mode" in
+		binary)
+			file "$f" 2>/dev/null || true
+			echo "---"
+			xxd "$f" 2>/dev/null | head -100 || od -A x -t x1z "$f" | head -100
+			;;
+		hex)
+			xxd "$f" 2>/dev/null | head -200 || od -A x -t x1z "$f" | head -200
+			;;
+			head)
+			# Read first 500 lines or 50KB, whichever is larger
+			head -500 "$f" 2>/dev/null
+			;;
+		tail)
+			# Read last 500 lines or 50KB, whichever is larger
+			tail -500 "$f" 2>/dev/null
+			;;
+		text)
+			# For text files, read the full thing unless it's truly massive
+			if [[ $size -gt 1048576 ]]; then
+				# > 1MB: show first and last 200 lines with a marker
+				echo "--- [first 200 lines of $size bytes] ---"
+				head -200 "$f"
+				echo
+				echo "--- [skipped $((size - 100000)) bytes] ---"
+				echo
+				echo "--- [last 200 lines] ---"
+				tail -200 "$f"
+			elif [[ $lines -gt 5000 ]]; then
+				# > 5000 lines: show first and last 200 lines
+				echo "--- [first 200 lines of $lines total] ---"
+				head -200 "$f"
+				echo
+				echo "--- [skipped $((lines - 400)) lines] ---"
+				echo
+				echo "--- [last 200 lines] ---"
+				tail -200 "$f"
+			else
+				# Small enough: read full
+				cat "$f"
+			fi
+			;;
+	esac
+
+	echo
+done

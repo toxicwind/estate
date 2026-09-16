@@ -9,26 +9,27 @@ use std::{
 	sync::Arc,
 };
 
+use futures::StreamExt as _;
 use jj_lib::{
-	backend::{CommitId, CopyId, TreeValue},
+	backend::CommitId,
 	commit::Commit,
 	config::{ConfigSource, StackedConfig},
 	conflicts::{ConflictMarkerStyle, ConflictMaterializeOptions, materialize_tree_value},
-	default_backend_factories::{default_backend_factories, default_working_copy_factories},
+	copies::CopyRecords,
 	diff_presentation::{
 		LineCompareMode,
 		unified::{DiffLineType, GitDiffPart, git_diff_part, unified_diff_hunks},
 	},
 	gitignore::GitIgnoreFile,
-	matchers::{EverythingMatcher, NothingMatcher},
-	merge::{Diff, MergedTreeValue},
+	matchers::EverythingMatcher,
+	merge::MergedTreeValue,
 	merged_tree::MergedTree,
 	object_id::{HexPrefix, ObjectId as _, PrefixResolution},
-	repo::{ReadonlyRepo, Repo},
+	repo::{ReadonlyRepo, Repo, StoreFactories},
 	repo_path::{RepoPath, RepoPathBuf},
 	settings::UserSettings,
 	working_copy::{SnapshotOptions, WorkingCopyFreshness},
-	workspace::Workspace,
+	workspace::{Workspace, default_working_copy_factories},
 };
 
 use super::JjWorkspace;
@@ -63,8 +64,7 @@ impl JjWorkspace {
 				};
 				let wc_commit = repo
 					.store()
-					.get_commit_async(&wc_id)
-					.await
+					.get_commit(&wc_id)
 					.map_err(|err| Error::backend("jj log", err))?;
 
 				let wc_bookmarks = local_bookmarks_for_commit(repo.as_ref(), &wc_id);
@@ -78,7 +78,6 @@ impl JjWorkspace {
 						if repo
 							.index()
 							.is_ancestor(id, &wc_id)
-							.await
 							.map_err(|err| Error::backend("jj log", err))?
 						{
 							candidates.insert(id.clone());
@@ -89,7 +88,6 @@ impl JjWorkspace {
 				let heads = repo
 					.index()
 					.heads(&mut candidate_iter)
-					.await
 					.map_err(|err| Error::backend("jj log", err))?;
 				let bookmark_group = heads
 					.iter()
@@ -126,12 +124,14 @@ impl JjWorkspace {
 	pub fn status_summary(&self) -> Result<StatusSummary> {
 		self.with_current_repo("jj status", |workspace, repo| {
 			Box::pin(async move {
-				let Some((before, after)) =
+				let Some((before, after, wc_commit)) =
 					working_copy_trees(workspace, repo.as_ref(), "jj status").await?
 				else {
 					return Ok(StatusSummary::default());
 				};
-				let changes = collect_changes(&before, &after, &[], "jj status")?;
+				let copy_records =
+					working_copy_copy_records(repo.as_ref(), &wc_commit, &[], "jj status").await?;
+				let changes = collect_changes(&before, &after, &copy_records, &[], "jj status")?;
 				let mut summary = StatusSummary::default();
 				for change in changes {
 					if change.before.is_absent() {
@@ -151,12 +151,15 @@ impl JjWorkspace {
 		let nul_terminated = options.nul_terminated;
 		self.with_current_repo("jj status", move |workspace, repo| {
 			Box::pin(async move {
-				let Some((before, after)) =
+				let Some((before, after, wc_commit)) =
 					working_copy_trees(workspace, repo.as_ref(), "jj status").await?
 				else {
 					return Ok(String::new());
 				};
-				let changes = collect_changes(&before, &after, &pathspecs, "jj status")?;
+				let copy_records =
+					working_copy_copy_records(repo.as_ref(), &wc_commit, &pathspecs, "jj status")
+						.await?;
+				let changes = collect_changes(&before, &after, &copy_records, &pathspecs, "jj status")?;
 				Ok(render_status_porcelain(&changes, nul_terminated))
 			})
 		})
@@ -167,13 +170,15 @@ impl JjWorkspace {
 		let files = files.to_vec();
 		self.with_repo(snapshot, "jj diff", move |workspace, repo| {
 			Box::pin(async move {
-				let Some((before, after)) =
+				let Some((before, after, wc_commit)) =
 					working_copy_trees(workspace, repo.as_ref(), "jj diff").await?
 				else {
 					return Ok(String::new());
 				};
-				let changes = collect_changes(&before, &after, &files, "jj diff")?;
-				render_git_diff(repo.as_ref(), &before, &after, changes).await
+				let copy_records =
+					working_copy_copy_records(repo.as_ref(), &wc_commit, &files, "jj diff").await?;
+				let changes = collect_changes(&before, &after, &copy_records, &files, "jj diff")?;
+				render_git_diff(repo.as_ref(), changes).await
 			})
 		})
 	}
@@ -183,12 +188,14 @@ impl JjWorkspace {
 		let files = files.to_vec();
 		self.with_repo(snapshot, "jj diff", move |workspace, repo| {
 			Box::pin(async move {
-				let Some((before, after)) =
+				let Some((before, after, wc_commit)) =
 					working_copy_trees(workspace, repo.as_ref(), "jj diff").await?
 				else {
 					return Ok(Vec::new());
 				};
-				Ok(collect_changes(&before, &after, &files, "jj diff")?
+				let copy_records =
+					working_copy_copy_records(repo.as_ref(), &wc_commit, &files, "jj diff").await?;
+				Ok(collect_changes(&before, &after, &copy_records, &files, "jj diff")?
 					.into_iter()
 					.map(|change| change.after_path.as_internal_file_string().to_owned())
 					.collect())
@@ -201,13 +208,15 @@ impl JjWorkspace {
 		let files = files.to_vec();
 		self.with_repo(true, "jj diff", move |workspace, repo| {
 			Box::pin(async move {
-				let Some((before, after)) =
+				let Some((before, after, wc_commit)) =
 					working_copy_trees(workspace, repo.as_ref(), "jj diff").await?
 				else {
 					return Ok(Vec::new());
 				};
-				let changes = collect_changes(&before, &after, &files, "jj diff")?;
-				render_numstat(repo.as_ref(), &before, &after, changes).await
+				let copy_records =
+					working_copy_copy_records(repo.as_ref(), &wc_commit, &files, "jj diff").await?;
+				let changes = collect_changes(&before, &after, &copy_records, &files, "jj diff")?;
+				render_numstat(repo.as_ref(), changes).await
 			})
 		})
 	}
@@ -254,8 +263,7 @@ impl JjWorkspace {
 					.ok_or_else(|| Error::ObjectNotFound { spec: rev.clone() })?;
 				let commit = repo
 					.store()
-					.get_commit_async(&commit_id)
-					.await
+					.get_commit(&commit_id)
 					.map_err(|err| Error::backend("jj show", err))?;
 				let root_id = repo.store().root_commit_id();
 				let author = commit.author();
@@ -303,10 +311,12 @@ impl JjWorkspace {
 				};
 				let commit = repo
 					.store()
-					.get_commit_async(wc_id)
-					.await
+					.get_commit(wc_id)
 					.map_err(|err| Error::backend("jj files", err))?;
-				Ok(tree_entries(&commit.tree(), "jj files")?
+				let tree = commit
+					.tree()
+					.map_err(|err| Error::backend("jj files", err))?;
+				Ok(tree_entries(&tree, "jj files")?
 					.into_keys()
 					.map(|path| path.as_internal_file_string().to_owned())
 					.collect())
@@ -332,7 +342,7 @@ impl JjWorkspace {
 		) -> Pin<Box<dyn Future<Output = Result<T>> + 'a>>,
 	{
 		let settings = user_settings().map_err(|err| Error::backend(context, err))?;
-		let store_factories = default_backend_factories();
+		let store_factories = StoreFactories::default();
 		let working_copy_factories = default_working_copy_factories();
 		let mut workspace =
 			Workspace::load(&settings, &self.root, &store_factories, &working_copy_factories)
@@ -345,7 +355,6 @@ impl JjWorkspace {
 			let mut repo = workspace
 				.repo_loader()
 				.load_at_head()
-				.await
 				.map_err(|err| Error::backend(context, err))?;
 			if snapshot {
 				repo = snapshot_working_copy(&mut workspace, repo).await?;
@@ -380,18 +389,14 @@ async fn walk_commits(
 	}
 	let wc_commit = repo
 		.store()
-		.get_commit_async(&wc_id)
-		.await
+		.get_commit(&wc_id)
 		.map_err(|err| Error::backend(context, err))?;
 	let mut queued = BTreeSet::from([wc_id]);
 	let mut heap = BinaryHeap::from([(wc_commit.committer().timestamp, wc_commit)]);
 	let mut commits = Vec::with_capacity(count);
 	while let Some((_, commit)) = heap.pop() {
-		for parent in commit
-			.parents()
-			.await
-			.map_err(|err| Error::backend(context, err))?
-		{
+		for parent in commit.parents() {
+			let parent = parent.map_err(|err| Error::backend(context, err))?;
 			if parent.id() != root_id && queued.insert(parent.id().clone()) {
 				heap.push((parent.committer().timestamp, parent));
 			}
@@ -429,7 +434,14 @@ fn resolve_commit_id(
 			.resolve_change_id_prefix(&prefix)
 			.map_err(|err| Error::backend("jj show", err))?;
 		if let PrefixResolution::SingleMatch(targets) = resolution {
-			let mut visible = targets.visible_with_offsets().map(|(_, id)| id.clone());
+			let index = repo.index();
+			let heads = repo.view().heads();
+			let mut visible = targets.into_iter().filter(|id| {
+				heads.contains(id)
+					|| heads
+						.iter()
+						.any(|head| index.is_ancestor(id, head).unwrap_or(false))
+			});
 			let first = visible.next();
 			if first.is_some() && visible.next().is_none() {
 				return Ok(first);
@@ -492,19 +504,16 @@ async fn snapshot_working_copy(
 	};
 	let initial_wc_commit = repo
 		.store()
-		.get_commit_async(&initial_wc_id)
-		.await
+		.get_commit(&initial_wc_id)
 		.map_err(|err| Error::backend("jj snapshot", err))?;
 	let mut locked_workspace = workspace
 		.start_working_copy_mutation()
-		.await
 		.map_err(|err| Error::backend("jj snapshot", err))?;
 	let (repo, wc_commit) = match WorkingCopyFreshness::check_stale(
 		locked_workspace.locked_wc(),
 		&initial_wc_commit,
 		&repo,
 	)
-	.await
 	.map_err(|err| Error::backend("jj snapshot", err))?
 	{
 		WorkingCopyFreshness::Fresh => (repo, initial_wc_commit),
@@ -512,15 +521,13 @@ async fn snapshot_working_copy(
 			let repo = repo
 				.loader()
 				.load_at(&operation)
-				.await
 				.map_err(|err| Error::backend("jj snapshot", err))?;
 			let Some(wc_id) = repo.view().get_wc_commit_id(&workspace_name) else {
 				return Ok(repo);
 			};
 			let wc_commit = repo
 				.store()
-				.get_commit_async(wc_id)
-				.await
+				.get_commit(wc_id)
 				.map_err(|err| Error::backend("jj snapshot", err))?;
 			(repo, wc_commit)
 		},
@@ -538,31 +545,27 @@ async fn snapshot_working_copy(
 		},
 	};
 	let everything = EverythingMatcher;
-	let nothing = NothingMatcher;
 	let options = SnapshotOptions {
 		base_ignores:           GitIgnoreFile::empty(),
 		progress:               None,
 		start_tracking_matcher: &everything,
-		force_tracking_matcher: &nothing,
 		max_new_file_size:      1024 * 1024,
 	};
-	let (new_tree, _) = locked_workspace
+	let (new_tree_id, _stats) = locked_workspace
 		.locked_wc()
 		.snapshot(&options)
 		.await
 		.map_err(|err| Error::backend("jj snapshot", err))?;
-	let repo = if new_tree.tree_ids_and_labels() == wc_commit.tree().tree_ids_and_labels() {
+	let repo = if new_tree_id == *wc_commit.tree_id() {
 		repo
 	} else {
 		let mut transaction = repo.start_transaction();
-		transaction.set_workspace_name(&workspace_name);
 		transaction.set_is_snapshot(true);
 		let new_commit = transaction
 			.repo_mut()
 			.rewrite_commit(&wc_commit)
-			.set_tree(new_tree)
+			.set_tree_id(new_tree_id)
 			.write()
-			.await
 			.map_err(|err| Error::backend("jj snapshot", err))?;
 		transaction
 			.repo_mut()
@@ -571,16 +574,13 @@ async fn snapshot_working_copy(
 		transaction
 			.repo_mut()
 			.rebase_descendants()
-			.await
 			.map_err(|err| Error::backend("jj snapshot", err))?;
 		transaction
 			.commit("snapshot working copy")
-			.await
 			.map_err(|err| Error::backend("jj snapshot", err))?
 	};
 	locked_workspace
 		.finish(repo.op_id().clone())
-		.await
 		.map_err(|err| Error::backend("jj snapshot", err))?;
 	Ok(repo)
 }
@@ -593,20 +593,53 @@ async fn working_copy_trees(
 	workspace: &Workspace,
 	repo: &dyn Repo,
 	context: &'static str,
-) -> Result<Option<(MergedTree, MergedTree)>> {
+) -> Result<Option<(MergedTree, MergedTree, Commit)>> {
 	let Some(wc_id) = repo.view().get_wc_commit_id(workspace.workspace_name()) else {
 		return Ok(None);
 	};
 	let commit = repo
 		.store()
-		.get_commit_async(wc_id)
-		.await
+		.get_commit(wc_id)
 		.map_err(|err| Error::backend(context, err))?;
 	let parent_tree = commit
 		.parent_tree(repo)
-		.await
 		.map_err(|err| Error::backend(context, err))?;
-	Ok(Some((parent_tree, commit.tree())))
+	let tree = commit.tree().map_err(|err| Error::backend(context, err))?;
+	Ok(Some((parent_tree, tree, commit)))
+}
+
+/// Backend copy records between each parent of the working-copy commit and the
+/// working-copy commit itself, mirroring `jj st`/`jj diff` rename detection.
+/// The git backend derives these from content-similarity rewrite tracking;
+/// copy ids are placeholders in this jj-lib version and carry no signal.
+#[allow(
+	clippy::future_not_send,
+	reason = "driven on a per-call current-thread runtime; `&dyn Repo` is !Send"
+)]
+async fn working_copy_copy_records(
+	repo: &dyn Repo,
+	wc_commit: &Commit,
+	files: &[String],
+	context: &'static str,
+) -> Result<CopyRecords> {
+	let mut copy_records = CopyRecords::default();
+	for parent_id in wc_commit.parent_ids() {
+		let mut records = repo
+			.store()
+			.get_copy_records(None, parent_id, wc_commit.id())
+			.map_err(|err| Error::backend(context, err))?;
+		while let Some(record) = records.next().await {
+			let record = record.map_err(|err| Error::backend(context, err))?;
+			// Keep only records whose target is selected, so a rename can
+			// never hide a delete the caller asked about.
+			if path_selected(&record.target, &record.target, files) {
+				copy_records
+					.add_records([Ok(record)])
+					.map_err(|err| Error::backend(context, err))?;
+			}
+		}
+	}
+	Ok(copy_records)
 }
 
 fn tree_entries(
@@ -626,6 +659,7 @@ fn tree_entries(
 fn collect_changes(
 	before_tree: &MergedTree,
 	after_tree: &MergedTree,
+	copy_records: &CopyRecords,
 	files: &[String],
 	context: &'static str,
 ) -> Result<Vec<TreeChange>> {
@@ -652,22 +686,24 @@ fn collect_changes(
 			continue;
 		}
 
-		let source = non_placeholder_copy_id(after_value).and_then(|copy_id| {
-			before.iter().find_map(|(source_path, source_value)| {
-				(non_placeholder_copy_id(source_value) == Some(copy_id)).then_some(source_path)
-			})
-		});
+		// Rename/copy detection from the backend's copy records, mirroring
+		// `jj st`: a target whose source was deleted is a rename, otherwise
+		// it is a copy.
+		let source = copy_records
+			.for_target(path)
+			.map(|record| record.source.clone())
+			.filter(|source_path| before.contains_key(source_path));
 		if let Some(source_path) = source {
-			let operation = if removed.remove(source_path) {
+			let operation = if removed.remove(&source_path) {
 				"rename"
 			} else {
 				"copy"
 			};
-			if path_selected(source_path, path, files) {
+			if path_selected(&source_path, path, files) {
 				changes.push(TreeChange {
 					before_path:    source_path.clone(),
 					after_path:     path.clone(),
-					before:         before[source_path].clone(),
+					before:         before[&source_path].clone(),
 					after:          after_value.clone(),
 					copy_operation: Some(operation),
 				});
@@ -684,6 +720,10 @@ fn collect_changes(
 	}
 
 	for path in removed {
+		// The source side of a rename is covered by the rename entry above.
+		if copy_records.has_source(&path) {
+			continue;
+		}
 		if path_selected(&path, &path, files) {
 			changes.push(TreeChange {
 				before_path:    path.clone(),
@@ -736,13 +776,6 @@ fn status_code(change: &TreeChange) -> &'static str {
 	}
 }
 
-fn non_placeholder_copy_id(value: &MergedTreeValue) -> Option<&CopyId> {
-	match value.as_resolved()? {
-		Some(TreeValue::File { copy_id, .. }) if !copy_id.as_bytes().is_empty() => Some(copy_id),
-		_ => None,
-	}
-}
-
 fn path_selected(before: &RepoPath, after: &RepoPath, files: &[String]) -> bool {
 	files.is_empty()
 		|| files.iter().any(|file| {
@@ -763,24 +796,18 @@ fn matches_path(path: &str, prefix: &str) -> bool {
 	clippy::future_not_send,
 	reason = "driven on a per-call current-thread runtime; `&dyn Repo` is !Send"
 )]
-async fn render_numstat(
-	repo: &dyn Repo,
-	before_tree: &MergedTree,
-	after_tree: &MergedTree,
-	changes: Vec<TreeChange>,
-) -> Result<Vec<NumstatEntry>> {
+async fn render_numstat(repo: &dyn Repo, changes: Vec<TreeChange>) -> Result<Vec<NumstatEntry>> {
 	let options = conflict_materialize_options(repo);
 	let mut entries = Vec::with_capacity(changes.len());
 	for change in changes {
-		let (before_part, after_part) =
-			materialize_diff_parts(repo, before_tree, after_tree, &change, &options).await?;
+		let (before_part, after_part) = materialize_diff_parts(repo, &change, &options).await?;
 		let (added, removed) = if before_part.content.is_binary || after_part.content.is_binary {
 			(None, None)
 		} else {
 			let mut added = 0u32;
 			let mut removed = 0u32;
 			for hunk in unified_diff_hunks(
-				Diff::new(before_part.content.contents.as_ref(), after_part.content.contents.as_ref()),
+				[before_part.content.contents.as_ref(), after_part.content.contents.as_ref()],
 				0,
 				LineCompareMode::Exact,
 			) {
@@ -817,32 +844,19 @@ fn conflict_materialize_options(repo: &dyn Repo) -> ConflictMaterializeOptions {
 )]
 async fn materialize_diff_parts(
 	repo: &dyn Repo,
-	before_tree: &MergedTree,
-	after_tree: &MergedTree,
 	change: &TreeChange,
 	options: &ConflictMaterializeOptions,
 ) -> Result<(GitDiffPart, GitDiffPart)> {
-	let before_value = materialize_tree_value(
-		repo.store(),
-		&change.before_path,
-		change.before.clone(),
-		before_tree.labels(),
-	)
-	.await
-	.map_err(|err| Error::backend("jj diff", err))?;
-	let after_value = materialize_tree_value(
-		repo.store(),
-		&change.after_path,
-		change.after.clone(),
-		after_tree.labels(),
-	)
-	.await
-	.map_err(|err| Error::backend("jj diff", err))?;
-	let before_part = git_diff_part(&change.before_path, before_value, options)
+	let before_value =
+		materialize_tree_value(repo.store(), &change.before_path, change.before.clone())
+			.await
+			.map_err(|err| Error::backend("jj diff", err))?;
+	let after_value = materialize_tree_value(repo.store(), &change.after_path, change.after.clone())
 		.await
 		.map_err(|err| Error::backend("jj diff", err))?;
+	let before_part = git_diff_part(&change.before_path, before_value, options)
+		.map_err(|err| Error::backend("jj diff", err))?;
 	let after_part = git_diff_part(&change.after_path, after_value, options)
-		.await
 		.map_err(|err| Error::backend("jj diff", err))?;
 	Ok((before_part, after_part))
 }
@@ -851,18 +865,12 @@ async fn materialize_diff_parts(
 	clippy::future_not_send,
 	reason = "driven on a per-call current-thread runtime; `&dyn Repo` is !Send"
 )]
-async fn render_git_diff(
-	repo: &dyn Repo,
-	before_tree: &MergedTree,
-	after_tree: &MergedTree,
-	changes: Vec<TreeChange>,
-) -> Result<String> {
+async fn render_git_diff(repo: &dyn Repo, changes: Vec<TreeChange>) -> Result<String> {
 	let materialize_options = conflict_materialize_options(repo);
 	let mut output = Vec::new();
 	for change in changes {
 		let (before_part, after_part) =
-			materialize_diff_parts(repo, before_tree, after_tree, &change, &materialize_options)
-				.await?;
+			materialize_diff_parts(repo, &change, &materialize_options).await?;
 		let before_path = change.before_path.as_internal_file_string();
 		let after_path = change.after_path.as_internal_file_string();
 		output.extend_from_slice(format!("diff --git a/{before_path} b/{after_path}\n").as_bytes());
@@ -922,7 +930,7 @@ async fn render_git_diff(
 		}
 		output.extend_from_slice(format!("--- {before_header}\n+++ {after_header}\n").as_bytes());
 		for hunk in unified_diff_hunks(
-			Diff::new(before_part.content.contents.as_ref(), after_part.content.contents.as_ref()),
+			[before_part.content.contents.as_ref(), after_part.content.contents.as_ref()],
 			DIFF_CONTEXT,
 			LineCompareMode::Exact,
 		) {
@@ -983,13 +991,7 @@ mod tests {
 
 	fn init_internal_jj(root: &Path) {
 		let settings = user_settings().unwrap();
-		let runtime = tokio::runtime::Builder::new_current_thread()
-			.enable_all()
-			.build()
-			.unwrap();
-		runtime
-			.block_on(Workspace::init_internal_git(&settings, root, gix::hash::Kind::Sha1))
-			.unwrap();
+		Workspace::init_internal_git(&settings, root).unwrap();
 	}
 
 	fn jj_available() -> bool {

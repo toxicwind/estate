@@ -1,0 +1,14 @@
+name: sovereign
+description: Filesystem layout awareness — roots, duplicates, bind mounts, inode overlaps.
+version: 1.0.0
+author: toxic
+subscribe:
+  - kind: file.changed
+    target: agent:sovereign-fs-mapper
+    paths:
+      - ".config/sovereign-fs-map.json"
+      - "projects/**/Cargo.toml"
+      - "sovereign/**/Cargo.toml"
+    eventKinds: [add, change]
+tools_visibility:
+  default: scoped

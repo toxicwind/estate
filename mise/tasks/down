@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# mise run down — stop core daemons via pitchfork with robust checks.
+set -euo pipefail
+export SOV="${SOVEREIGN_ROOT:-$PWD}"
+cd "$SOV"
+
+echo "--- Mise Run Down: Stopping Core Daemons ---"
+echo "Timestamp: $(date -Iseconds)"
+
+# Check if pitchfork is available
+if ! command -v pitchfork >/dev/null; then
+  echo "INFO: pitchfork not on PATH; nothing to stop via pitchfork" >&2
+  exit 0
+fi
+
+echo "INFO: Stopping pitchfork core group..."
+pitchfork stop --group core
+
+echo "INFO: Pitchfork stop command initiated. Verifying service termination..."
+
+echo "--- Mise Run Down: Final Pitchfork Status ---"
+pitchfork list
+
+echo "--- Mise Run Down: Port Check ---"
+# Check for any remaining open ports in the sovereign range
+if ss -tlnp | grep -E '25100|25101|25102|25103|25104|25105|25106|25107|25109|25110|25112|25113|25115|25120|25121|25199|25133'; then
+  echo "WARNING: Some sovereign service ports are still open. Manual intervention may be required." >&2
+  exit 1
+else
+  echo "INFO: All sovereign service ports appear to be closed."
+fi
+
+echo "--- Mise Run Down: Completed ---"

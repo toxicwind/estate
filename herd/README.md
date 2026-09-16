@@ -1,66 +1,54 @@
-# llama-swap (sovereign runtime)
+# herd — Inference Front Door
 
-This directory is the **runtime home** for the inference front door — not a second source tree.
+`herd/` is the **toxicwind fork of llama-swap** (Go, module `github.com/mostlygeek/llama-swap`) with the **AST Matrix** cloud-provider router compiled in. It serves the stack's single OpenAI-compatible endpoint.
 
-| Path                 | Role                                                                                    |
-| -------------------- | --------------------------------------------------------------------------------------- |
-| `llama-swap`         | Symlink → `/home/toxic/projects/llama-swap-main/llama-swap` (**toxicwind fork** binary) |
-| `config.yaml`        | Live config (RTX 3090 / sm_86, routing matrix, macros for 4 llama.cpp forks)            |
-| `MODEL_INVENTORY.md` | Local GGUF / model-id audit for this host                                               |
-| `ollama-proxy`       | Optional sibling symlink (legacy)                                                       |
+- **Upstream:** <https://github.com/mostlygeek/llama-swap>
+- **Fork:** <https://github.com/toxicwind/llama-swap>
+- **Live service:** pitchfork `herd` → `http://127.0.0.1:25100` (`/v1`, `/ui`, `/health`), launched by `stack/services/herd.sh` with `config/herd.yaml`
 
-## Source of truth for code
+## What's in here
 
-|               |                                                            |
-| ------------- | ---------------------------------------------------------- |
-| **Fork repo** | https://github.com/toxicwind/llama-swap                    |
-| **Upstream**  | https://github.com/mostlygeek/llama-swap                   |
-| **Checkout**  | `/home/toxic/projects/llama-swap-main`                     |
-| **Fork docs** | Read **“Fork additions”** in that repo’s `README.md` first |
+| Path | Role |
+| ---- | ---- |
+| `llama-swap.go`, `internal/` | Fork source (upstream + our additions) |
+| `internal/astmatrix/` | AST Matrix Go router — 8 strategies, 13 cloud providers, SQLite health DB (see `README_ASTMATRIX_V2.md`) |
+| `config.yaml` | Vendored routing matrix + backend config reference |
+| `MODEL_INVENTORY.md` | Local GGUF / model-id audit for this host |
+| `TUNING.md` | Performance tuning notes |
+| `model-profiles.json` | Model profiles |
 
-Do **not** treat this README as upstream documentation. Upstream feature list + install lives in the fork checkout README (with our additions called out at the top).
+The supervised service builds from `sovereign-projects/sovereign-swap`; this tree is the vendored fork source. Don't treat this README as upstream docs — upstream usage lives in the fork repo.
 
 ## Why a fork
 
-Sovereign clients (Zed llama.cpp provider, OpenFang `provider = "llama"`, Grok, IDE oaicopilot) need:
+Sovereign clients (Zed's llama.cpp provider, OpenFang, IDE copilots) need:
 
-1. Stable **OpenAI-compatible streaming** even when backends differ → `normalize_sse`
+1. Stable **OpenAI-compatible streaming** across differing backends → `normalize_sse`
 2. **Model discovery events** for Zed → `GET /models/sse`
-3. Reliable restarts when orphan `llama-server` holds ports → pre-spawn `fuser -k`
-4. **IPv4 loopback** defaults (`127.0.0.1`) so dual-stack `localhost` does not break dial
+3. Port reclaim when an orphan `llama-server` holds a slot → pre-spawn `fuser -k`
+4. **IPv4 loopback** defaults (`127.0.0.1`) so dual-stack `localhost` doesn't break dials
 
-## Ports (SSOT: `config/ports.env`)
+## Backends
 
-| Env                                 | Port        | Surface                     |
-| ----------------------------------- | ----------- | --------------------------- |
-| `LLAMA_SWAP_PORT`                   | **25100**   | Proxy + `/ui` + `/v1`       |
-| `LLAMA_START_PORT`–`LLAMA_END_PORT` | 25001–25099 | Backend slots owned by swap |
-
-Health: `curl -sS http://127.0.0.1:25100/health` → `OK`
+`config/herd.yaml` maps model aliases to four llama.cpp engine builds on `:25001–:25099`: beellama.cpp, llama-cpp-turboquant, ik_llama.cpp, and ik_llama.cpp's turboquant build.
 
 ## Operate
 
-```text
-# via sovereign stack
-cd /home/toxic/sovereign && mise run up     # includes llama-swap module
-mise run restart-llama
-mise run health
-
-# binary only
-/home/toxic/sovereign/tools/llama-swap/llama-swap \
-  -config /home/toxic/sovereign/tools/llama-swap/config.yaml \
-  -listen 127.0.0.1:25100
+```bash
+curl -sS http://127.0.0.1:25100/health          # → OK
+curl -sS http://127.0.0.1:25100/astmatrix/status # router status
+pitchfork restart herd                           # restart the service
 ```
 
-## Rebuild fork binary
+Rebuild the fork binary:
 
-```text
-cd /home/toxic/projects/llama-swap-main
+```bash
+cd /home/toxic/sovereign/herd
 go build -o llama-swap .
-# symlink already points here
 ```
 
 ## Related
 
-- Stack rules: `/home/toxic/sovereign/AGENTS.md` (via `~/.grok/AGENTS.md`) — **no vLLM**
-- Ops dashboard (rust-web): `http://127.0.0.1:25101/` — APIs under `/ops/api/*`
+- Router module docs: `herd/README_ASTMATRIX_V2.md`
+- Stack rules: `AGENTS.md` (repo root)
+- Ops dashboard: `http://127.0.0.1:25101/` — APIs under `/ops/api/*`

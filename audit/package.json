@@ -1,0 +1,19 @@
+{
+  "name": "audit-runner",
+  "version": "0.1.0",
+  "description": "Extreme complex audit tooling for sovereign ecosystem",
+  "type": "module",
+  "scripts": {
+    "inventory": "bun run scripts/inventory_agents_md.ts",
+    "audit": "bun run scripts/full_audit.ts",
+    "services": "bun run scripts/audit_services.ts",
+    "profiles": "bun run scripts/profile_manager.ts",
+    "fix": "bun run scripts/auto_fix.ts"
+  },
+  "dependencies": {
+    "glob": "^11.0.0"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  }
+}

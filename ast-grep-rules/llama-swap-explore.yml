@@ -1,0 +1,7 @@
+id: go-func-calls-in-config
+language: go
+rule:
+  pattern:
+    context: "func _() { config.ValidateMatrix($A, $B) }"
+    selector: call_expression
+message: "Track all ValidateMatrix call sites to understand config validation flow"

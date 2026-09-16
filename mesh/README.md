@@ -1,100 +1,64 @@
-# Sovereign Mesh — Tool Federation Gateway & AST Matrix
+# Mesh — Tool Federation & Routing Layer
 
-**Ports**: `:25127` (MCP Proxy Gateway) | `:25115` (Mesh Hub) | `:25100` (Router/llama-swap) | `:25104` (Sovereign Router TS)  
-**Role**: Federated tool routing, AST matrix code navigation, MCP client aggregation, and multi-provider LLM routing.
+`mesh/` holds the tool-federation and routing components: the MCP gateway source, the sovereign-router variants, AST code-navigation packages, and the unified mesh config.
 
----
+## Layout
 
-## 🏛️ Topology
-
-```
+```text
 mesh/
-├── gateway/          ← MCPProxy Go gateway (mcpproxy-go) connecting 43+ upstream servers
-│                       Port: :25127 | MCP client aggregation
-├── router/           ← Sovereign Router — multi-provider LLM routing gateway
-│   ├── sovereign-router-ts/      # LIVE ROUTER (Bun/TS, port :25104)
-│   ├── sovereign-ast-matrix-py/  # v2 Python router (FastAPI)
-│   ├── sovereign-ast-router/     # v3 TS variant
-│   ├── sovereign-mcp-gateway/    # MCP gateway service
-│   ├── free_zed_gateway/         # free-LLM-gateway concept
-│   └── bin/                      # compiled binaries
-├── ast-matrix/       ← AST Matrix code extraction and semantic matrix packages
-├── ui-svelte/        ← Svelte dashboard for router/llama-swap UI
-├── config.yml        ← Unified mesh configuration, model roles, and port mappings
-├── research/         ← Research artifacts (provider discovery scripts, agent-infra dumps)
-└── data/             ← JSON data dumps (model catalogs, package tables, scaffolds)
+├── gateway/                    # vendored mcpproxy-go source — the engine behind shep
+├── router/
+│   ├── sovereign-router-ts/    # live TS router (Bun, :25104, /ui) — 7 providers
+│   ├── sovereign-mcp-gateway/  # Sovereign MCP gateway source (trust boundary + circuit breaker + sticky affinity)
+│   ├── sovereign-ast-matrix-py/# Python FastAPI router (v2)
+│   ├── sovereign-ast-router/   # TS router variant (v3)
+│   └── free_zed_gateway/       # free-LLM gateway concept
+├── ast-matrix/                 # AST code extraction / semantic matrix packages
+├── ui-svelte/                  # Svelte dashboard for the router
+├── config.yml                  # unified mesh config — model roles, port mappings
+└── research/ data/              # provider discovery scripts, model catalog dumps
 ```
 
----
+## shep — MCP federation (:25127)
 
-## 🔌 Ports & Services
+**shep** (renamed from mcpproxy) serves one endpoint in front of **30 upstream MCP servers**: quarantine for new servers, BM25 tool discovery, health checks, and security scanning. Live config: `sovereign-projects/mesh/gateway/mcp_config.json` (pitchfork `shep` daemon). Gateway source is vendored here at `gateway/` (upstream: smart-mcp-proxy/mcpproxy-go).
 
-| Port | Service | Description |
-|------|---------|-------------|
-| `:25127` | MCPProxy (Go) | MCP client aggregation gateway, 43+ upstream servers |
-| `:25115` | Mesh Hub | Mesh service discovery and health |
-| `:25100` | llama-swap | Local model inference (herd.yaml config) |
-| `:25104` | Sovereign Router TS | Multi-provider LLM routing (Bun/TS + `/ui` dashboard) |
-| `:25103` | OpenFang | External LLM service proxy |
-| `:25105` | Prometheus | Metrics scraping |
-| `:25106` | hf-downloader | HuggingFace model downloader |
-| `:25110` | Grafana | Dashboard |
-| `:25114` | next-server | sovereign-github-search frontend |
+## sovereign-router (:25104)
 
----
+The TypeScript router is the live multi-provider gateway: 7 providers (llama-swap, openrouter, nvidia, groq, cerebras, google, mistral), 5-strategy hybrid routing, built-in `/ui` dashboard. Override per request:
 
-## 🎯 Model Roles
-
-Mesh configures model routing via `config.yml`:
-
-| Role | Model | Purpose |
-|------|-------|---------|
-| `default` | `openrouter/inclusionai/ling-3.0-flash-fin:free:high` | Default routing model |
-| `task` | `qwen/qwen3.6-35b-a3b:high` | Task-oriented routing |
-| `slow` | `qwen/qwen3.6-35b-a3b:high` | Slow/fallback routing |
-| `plan` | `qwen/qwen3.6-35b-a3b:high` | Planning mode |
-| `smol` | `qwen/qwen3.6-27b:high` | Small/smol routing |
-| `tiny` | `qwen/qwen3.6-27b:high` | Tiny model routing |
-
-The `free` strategy races local llama-swap + every `:free` cloud model.
-
----
-
-## 📦 Router Strategies
-
-Set strategy per-request: `X-Sovereign-Strategy: free`
+```bash
+curl -H "X-Sovereign-Strategy: free" http://127.0.0.1:25104/v1/chat/completions
+```
 
 | Strategy | Behavior |
-|----------|----------|
+| -------- | -------- |
 | `hybrid` (default) | sticky → ast_race → circuit_chain |
-| `free` | Races local llama-swap + every `:free` cloud model (zero-cost) |
-| `ast_race` | Parallel N providers, first AST/code-shaped response wins |
-| `sticky_affinity` | 30-min session pinning for multi-turn |
-| `weighted_elo` | Dynamic Elo from success/latency |
-| `circuit_chain` | Sequential with open/half-open circuit breakers |
-| `fifo_matrix` | Bounded FIFO queue (back-pressure) |
+| `free` | races local llama-swap + every `:free` cloud model (zero-cost) |
+| `ast_race` | parallel fan-out, first valid response wins |
+| `sticky_affinity` | session-pinned routing for multi-turn |
+| `weighted_elo` | ELO-weighted selection from success/latency history |
+| `circuit_chain` | sequential with open/half-open circuit breakers |
+| `fifo_matrix` | bounded FIFO queue (back-pressure) |
 
----
+## Sovereign MCP gateway (:25120)
 
-## 🔗 Relationship to Herd
+`router/sovereign-mcp-gateway/` is a trust boundary in front of upstream MCP servers: per-upstream circuit breakers quarantine poisoned servers, `notifications/initialized` pins sticky sessions, and `tools/list` is served as a provenance-namespaced union (`<upstream>__<tool>`) with 502 failover. Supervisor wiring is in progress — the code lives here, not yet under pitchfork.
 
-Herd owns the local inference layer (`llama-swap`, port `:25100`). Mesh owns the routing and gateway layer. Config connects them:
+## Relationship to herd
+
+Herd owns local inference (`:25100`). Mesh owns routing and federation, and points at herd as the local leg:
 
 ```yaml
 openai-compatible:
-    baseUrl: http://127.0.0.1:25100/v1
-    apiKey: llama-swap
+  baseUrl: http://127.0.0.1:25100/v1
 ```
 
-The `ui-svelte/` dashboard is served by the router's built-in `/ui` page.
-
----
-
-## 🚀 Quick Verification
+## Verify
 
 ```bash
-curl -sf http://127.0.0.1:25115/health    # mesh-hub
-curl -sf http://127.0.0.1:25127/health    # MCP gateway
-curl -sf http://127.0.0.1:25104/health    # sovereign router
-curl -sf http://127.0.0.1:25100/v1/models  # llama-swap
+curl -sf http://127.0.0.1:25127/health    # shep (MCP federation)
+curl -sf http://127.0.0.1:25115/health    # mesh-hub (discovery)
+curl -sf http://127.0.0.1:25104/health    # sovereign-router
+curl -sf http://127.0.0.1:25100/v1/models  # herd (local inference)
 ```

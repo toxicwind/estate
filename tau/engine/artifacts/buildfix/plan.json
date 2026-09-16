@@ -1,0 +1,36 @@
+{
+  "schema": "buildfix.plan.v1",
+  "tool": {
+    "name": "buildfix",
+    "version": "0.2.0"
+  },
+  "repo": {
+    "root": ".",
+    "head_sha": "8f4a92c3107400f6e84d5757eaeb5f635ec5ad18",
+    "dirty": true
+  },
+  "inputs": [],
+  "policy": {
+    "allow": [],
+    "deny": [],
+    "allow_guarded": false,
+    "allow_unsafe": false,
+    "allow_dirty": false
+  },
+  "preconditions": {
+    "files": [],
+    "dirty": true
+  },
+  "ops": [],
+  "summary": {
+    "ops_total": 0,
+    "ops_blocked": 0,
+    "files_touched": 0,
+    "patch_bytes": 0,
+    "safety_counts": {
+      "safe": 0,
+      "guarded": 0,
+      "unsafe": 0
+    }
+  }
+}

@@ -1,2 +1,1 @@
 *.node filter=lfs diff=lfs merge=lfs -text
-packages/natives/native/pi_natives.linux-x64-modern.node filter=lfs diff=lfs merge=lfs -text

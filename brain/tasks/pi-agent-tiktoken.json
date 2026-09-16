@@ -1,0 +1,15 @@
+{
+  "task_id": "pi-agent-phase-4-tiktoken",
+  "agent": "pi-agent",
+  "model": "longcat-2.0-free",
+  "hash": "sha256:jkl012",
+  "name": "TikToken + Token Optimization",
+  "description": "Dynamic token counting MCP for pi-agent",
+  "status": "completed",
+  "priority": "high",
+  "subtasks": [
+    { "id": "tik-1", "name": "Install tiktoken", "status": "completed" },
+    { "id": "tik-2", "name": "Create tiktoken MCP", "status": "completed" },
+    { "id": "tik-3", "name": "Add to mcpproxy", "status": "completed" }
+  ]
+}

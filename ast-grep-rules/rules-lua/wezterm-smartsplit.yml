@@ -1,0 +1,6 @@
+id: wezterm-smart-split
+language: lua
+rule:
+  pattern: wezterm.on('smart-split', function($X, $Y) $BODY end)
+message: "Smart split (Villoh BSP) configured"
+severity: hint

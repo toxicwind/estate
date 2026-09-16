@@ -1,0 +1,7 @@
+id: yaml-port-misconfig
+language: yaml
+rule:
+  pattern: |
+    port: $PORT
+message: "Check port $PORT — should be in 25xxx sovereign range"
+severity: warning

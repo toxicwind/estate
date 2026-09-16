@@ -1,0 +1,26 @@
+# Tau — fix pi-natives native loader + pi-vcs symbol
+
+## Failure 1 - natives loader
+  at loadNative (.../pi-natives/native/loader-state.js:894:12)
+  Explicit targets: bun scripts/bazel-natives.ts <target> --dest packages/natives/native
+Fix:
+  bun scripts/bazel-natives.ts --help
+  bun scripts/bazel-natives.ts linux-x64 --dest packages/natives/native
+  bun scripts/bazel-natives.ts pi-iso --dest packages/natives/native
+  bun scripts/bazel-natives.ts pi-vcs --dest packages/natives/native
+  bun scripts/bazel-natives.ts pi-natives --dest packages/natives/native
+  ls -lh packages/natives/native/
+  ldd packages/natives/native/*.node | grep "not found" || echo "ld ok"
+  bun --cwd=packages/natives run build
+
+## Failure 2 - pi-vcs -> pi-iso
+  error[E0425]: cannot find function `clone_candidates` in crate `pi_iso`
+  cargo tree -p pi-vcs -e features -i pi-iso -> ONE line = feature gate, TWO lines = resolution bug
+
+## Acceptance
+1. cargo tree -p pi-vcs -i pi-iso ONE
+2. cargo build --release -p pi-vcs 0
+3. cargo build --release -p pi-natives 0
+4. bun scripts/bazel-natives.ts linux-x64 --dest packages/natives/native 0
+5. bun --cwd=packages/natives run build 0
+6. cargo check --workspace --all-targets 0

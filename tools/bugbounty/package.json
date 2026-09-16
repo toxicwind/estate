@@ -1,0 +1,16 @@
+{
+  "name": "sovereign-bugbounty-openers",
+  "private": true,
+  "type": "module",
+  "description": "Headed Playwright openers for X/xAI, GitHub, Google bounty portals",
+  "scripts": {
+    "xai": "node open-xai.mjs",
+    "github": "node open-github.mjs",
+    "google": "node open-google.mjs",
+    "all": "node run-all.mjs",
+    "all:shot": "BB_CLOSE=1 node run-all.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.61.0"
+  }
+}

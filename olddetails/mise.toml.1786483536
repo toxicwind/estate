@@ -1,0 +1,121 @@
+# Sovereign mise config - tools + tasks + env
+[tools]
+python = "3.12.13"
+node = "22.12.0"
+bun = "1.1.38"
+rust = "nightly"
+go = "1.23.1"
+pitchfork = "2.16.0"
+
+[env]
+# Source ports.env for all tasks
+_.file = "config/ports.env"
+
+# MCP Scout (smarter-faster-better-mcp) - AST code intelligence
+SCOUT_BASE_URL = "http://127.0.0.1:25100/v1"
+SCOUT_API_KEY = "llama-swap"
+SCOUT_MODEL = "local-fast"
+
+[tasks]
+# Core daemons via pitchfork
+up = "pitchfork start --group core"
+down = "pitchfork stop --group core"
+health = "pitchfork list"
+status = "pitchfork list"
+logs = "pitchfork logs"
+
+# Individual service control
+"up-llama-swap" = "pitchfork start llama-swap"
+"up-mcpproxy" = "pitchfork start mcpproxy"
+"up-openfang" = "pitchfork start openfang"
+"up-null-g-proxy" = "pitchfork start null-g-proxy"
+"up-yote" = "pitchfork start yote"
+"up-rust-web" = "pitchfork start rust-web"
+"up-ghas-api" = "pitchfork start ghas-api"
+"up-ghas-mcp" = "pitchfork start ghas-mcp"
+"up-ghas-frontend" = "pitchfork start ghas-frontend"
+"up-kimi-audit-dash" = "pitchfork start kimi-audit-dash"
+"up-mesh-hub" = "pitchfork start mesh-hub"
+"up-byte-vision-proxy" = "pitchfork start byte-vision-proxy"
+"up-prometheus" = "pitchfork start prometheus"
+"up-grafana" = "pitchfork start grafana"
+"up-hf-downloader" = "pitchfork start hf-downloader"
+"up-qdrant" = "pitchfork start qdrant"
+"up-redis" = "pitchfork start redis"
+"up-nim-queue" = "pitchfork start nim-queue"
+"up-reasoning-router" = "pitchfork start reasoning-router"
+"up-nim-validation" = "pitchfork start nim-validation"
+"up-pi-web-dashboard" = "pitchfork start pi-web-dashboard"
+
+"down-llama-swap" = "pitchfork stop llama-swap"
+"down-mcpproxy" = "pitchfork stop mcpproxy"
+"down-openfang" = "pitchfork stop openfang"
+"down-null-g-proxy" = "pitchfork stop null-g-proxy"
+"down-yote" = "pitchfork stop yote"
+"down-rust-web" = "pitchfork stop rust-web"
+"down-ghas-api" = "pitchfork stop ghas-api"
+"down-ghas-mcp" = "pitchfork stop ghas-mcp"
+"down-ghas-frontend" = "pitchfork stop ghas-frontend"
+"down-kimi-audit-dash" = "pitchfork stop kimi-audit-dash"
+"down-mesh-hub" = "pitchfork stop mesh-hub"
+"down-byte-vision-proxy" = "pitchfork stop byte-vision-proxy"
+"down-prometheus" = "pitchfork stop prometheus"
+"down-grafana" = "pitchfork stop grafana"
+"down-hf-downloader" = "pitchfork stop hf-downloader"
+"down-qdrant" = "pitchfork stop qdrant"
+"down-redis" = "pitchfork stop redis"
+"down-nim-queue" = "pitchfork stop nim-queue"
+"down-reasoning-router" = "pitchfork stop reasoning-router"
+"down-nim-validation" = "pitchfork stop nim-validation"
+"down-pi-web-dashboard" = "pitchfork stop pi-web-dashboard"
+
+# Health checks
+"health-llama-swap" = "curl -sf http://127.0.0.1:25100/health"
+"health-mcpproxy" = "curl -sf http://127.0.0.1:25109/health"
+"health-openfang" = "curl -sf http://127.0.0.1:25103/api/health"
+"health-null-g-proxy" = "curl -sf http://127.0.0.1:25107/health"
+"health-yote" = "curl -sf http://127.0.0.1:25102/health"
+"health-rust-web" = "curl -sf http://127.0.0.1:25101/health"
+"health-ghas-api" = "curl -sf http://127.0.0.1:25112/health"
+"health-ghas-mcp" = "curl -sf http://127.0.0.1:25113/health"
+"health-ghas-frontend" = "curl -sf http://127.0.0.1:25114/"
+"health-kimi-audit-dash" = "curl -sf http://127.0.0.1:25116/health"
+"health-mesh-hub" = "curl -sf http://127.0.0.1:25115/health"
+"health-byte-vision-proxy" = "curl -sf http://127.0.0.1:25121/health"
+"health-prometheus" = "curl -sf http://127.0.0.1:25105/-/healthy"
+"health-grafana" = "curl -sf http://127.0.0.1:25110/api/health"
+"health-hf-downloader" = "curl -sf http://127.0.0.1:25106/"
+"health-qdrant" = "curl -sf http://127.0.0.1:25133/"
+"health-redis" = "redis-cli -p 25199 ping | grep -q PONG"
+"health-nim-queue" = "curl -sf http://127.0.0.1:25189/health"
+"health-reasoning-router" = "curl -sf http://127.0.0.1:25190/health"
+"health-nim-validation" = "curl -sf http://127.0.0.1:25191/health"
+"health-pi-web-dashboard" = "curl -sf http://127.0.0.1:25192/api/health"
+
+# nuvio-platform (webOS app - Nuvio fork)
+"nv-build" = { run = "cd tools/nuvio-platform && npm run build:webos", dir = "tools/nuvio-platform" }
+"nv-test" = { run = "cd tools/nuvio-platform && npm run test:coverage", dir = "tools/nuvio-platform" }
+"nv-package" = { run = "cd tools/nuvio-platform && npm run package:webos", dir = "tools/nuvio-platform", depends = ["nv-build"] }
+"nv-deploy" = { run = "cd tools/nuvio-platform && node scripts/ares-install-webos.mjs", dir = "tools/nuvio-platform", depends = ["nv-package"] }
+"nv-dev" = { run = "cd tools/nuvio-platform && npm run dev", dir = "tools/nuvio-platform" }
+
+# Test suite
+test = "bun test"
+"test-cov" = "bun run test:cov"
+"test-gateway" = "bun run test:gateway:cov"
+"test-models" = "bun run test:best-models"
+
+# Interactive terminal tools
+"up-zellij" = "pitchfork start zellij"
+"up-ttyd" = "pitchfork start ttyd"
+"up-sshx" = "pitchfork start sshx"
+"up-wezterm" = "wezterm start --detach"
+
+"down-zellij" = "pitchfork stop zellij"
+"down-ttyd" = "pitchfork stop ttyd"
+"down-sshx" = "pitchfork stop sshx"
+"down-wezterm" = "pkill wezterm"
+
+"health-zellij" = "curl -sf http://127.0.0.1:25136/"
+"health-ttyd" = "curl -sf http://toxic:toxic@127.0.0.1:25137/"
+"health-sshx" = "curl -sf http://127.0.0.1:25138/"

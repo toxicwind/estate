@@ -1,0 +1,6 @@
+id: env-var-access
+language: typescript
+rule:
+  pattern: process.env.$VAR
+message: "Environment variable access: {{VAR}}"
+severity: hint

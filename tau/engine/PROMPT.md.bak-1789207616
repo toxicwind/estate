@@ -1,0 +1,40 @@
+# Task 1 — pi-vcs → pi-iso symbol resolution
+
+The build fails with:
+
+    error[E0425]: cannot find function `clone_candidates` in crate `pi_iso`
+      --> crates/pi-vcs/src/git/mutate.rs:578:24
+    error[E0599]: no method named `clone_tree` found for reference `&dyn IsolationBackend`
+      --> crates/pi-vcs/src/git/mutate.rs:665:5
+
+Both symbols exist: `crates/pi-iso/src/lib.rs:255` has `fn clone_tree(` and `:360`
+has `pub fn clone_candidates(`. `cargo build --release -p pi-iso` succeeds
+standalone. `diff -rq` against the vendor copy is silent.
+
+Diagnose first with `cargo tree -p pi-vcs -e features -i pi-iso`. Two `pi-iso`
+lines = resolution bug, fix `crates/pi-vcs/Cargo.toml`. One line = feature-gating
+bug, enable the gating feature on the pi-iso dep.
+
+Acceptance:
+1. `cargo tree -p pi-vcs -i pi-iso` shows exactly ONE pi-iso entry
+2. `cargo build --release -p pi-vcs` exits 0
+3. `cargo build --release -p pi-natives` exits 0
+4. `cargo check --profile dev --workspace --all-targets` exits 0
+
+# Task 2 — Sovereign filesystem audit (read-only report)
+
+Report (do not act on) the overlapping trees:
+
+    /home/toxic/sovereign                        (190.62 GB, git)
+    /home/toxic/projects                         (200.70 GB, dir)
+    /home/toxic/projects/sovereign-projects/tau  (0.08 GB, dir)
+
+Overlaps observed:
+- sovereign ∩ projects: agents, models, node_modules, mise, bin, yote, scripts, skills
+- sovereign ∩ tau: bin, config, docs, scripts, .agent-orchestration, .husky, .github
+- projects ∩ tau: bin, scripts, kimi
+
+Determine the canonical workspace (the tree containing `tau/engine/Cargo.toml`
+with `[workspace]` and `crates/pi-iso` + `crates/pi-vcs`). Report every bind
+mount and symlink that aliases across roots. Write the report to
+`.agent/fs-audit.md`. Never delete. Never move.

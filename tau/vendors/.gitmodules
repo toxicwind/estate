@@ -1,0 +1,24 @@
+[submodule "kimi-cli"]
+    path = kimi-cli
+    url = https://github.com/MoonshotAI/kimi-cli.git
+[submodule "Relay-AI"]
+    path = Relay-AI
+    url = https://github.com/Hussain-7/Relay-AI.git
+[submodule "coder-web-project"]
+    path = coder-web-project
+    url = https://github.com/agentuity/coder-web-project.git
+[submodule "kanna"]
+    path = kanna
+    url = https://github.com/jakemor/kanna.git
+[submodule "kimi-code"]
+    path = kimi-code
+    url = https://github.com/MoonshotAI/kimi-code.git
+[submodule "omp-web-rick"]
+    path = omp-web-rick
+    url = https://github.com/RickLinPrime/omp-web.git
+[submodule "omp-web-theruan"]
+    path = omp-web-theruan
+    url = https://github.com/theruansilva/omp-web.git
+[submodule "web"]
+    path = web
+    url = https://github.com/noosmedia/kimi-work-linux.git

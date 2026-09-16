@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Sovereign monitor shim: computer-use-linux (mcpproxy) expects a
+# `gnome-screenshot` binary. On Hyprland (Wayland) there is no GNOME,
+# so we route to `grim`. Honors -o/--output to target a specific
+# monitor (e.g. DP-1, the user's non-vertical display).
+#
+# Install: copy to a dir on PATH *before* /usr/bin, e.g.
+#   cp gnome-screenshot-shim ~/.local/bin/shims/gnome-screenshot
+#   chmod +x ~/.local/bin/shims/gnome-screenshot
+# and ensure that dir precedes system paths in the computer-use-linux
+# server's PATH env (see config/.mcp.json -> computer-use-linux.env.PATH).
+
+out=""
+output=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --file=*) out="${1#--file=}" ;;
+    -f) shift; out="$1" ;;
+    -o) shift; output="$1" ;;
+    --output=*) output="${1#--output=}" ;;
+    --file|-*) ;;
+    *) out="$1" ;;
+  esac
+  shift
+done
+
+[ -z "$out" ] && out="/tmp/cu-screenshot.png"
+
+if [ -n "$output" ]; then
+  exec grim -o "$output" "$out"
+else
+  exec grim "$out"
+fi

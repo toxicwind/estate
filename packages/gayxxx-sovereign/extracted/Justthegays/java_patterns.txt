@@ -1,0 +1,2 @@
+                kotlin.text.Regex urlRegex42 = new kotlin.text.Regex("https?://[^\\s'\"]+?\\.(?:mp4|m3u8|webm)(\\?[^'\"\\s<>]*)?", kotlin.text.RegexOption.IGNORE_CASE);
+                kotlin.text.Regex urlRegex4 = new kotlin.text.Regex("https?://[^\\s'\"]+?\\.(?:mp4|m3u8|webm)(\\?[^'\"\\s<>]*)?", kotlin.text.RegexOption.IGNORE_CASE);

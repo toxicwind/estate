@@ -23,6 +23,7 @@ import type {
 import { importRoomKey } from "./codec";
 import { COLLAB_PROTO, encodeBase64Url, parseCollabLink } from "./link";
 import { CollabSocket } from "./socket";
+import type { CollabTransport } from "../transports/types";
 
 export type ConnectionPhase = "connecting" | "waiting" | "live" | "reconnecting" | "ended";
 
@@ -89,7 +90,7 @@ interface PendingTranscript {
 }
 
 export class GuestClient {
-	readonly #socket: CollabSocket;
+	readonly #socket: CollabTransport;
 	readonly #name: string;
 	/** base64url write token from a full link; absent when joined via a view link. */
 	readonly #writeToken: string | undefined;
@@ -120,13 +121,17 @@ export class GuestClient {
 	#notices: readonly Notice[] = [];
 	#snapshot: GuestSnapshot;
 
-	/** @throws Error when the link does not parse. */
-	constructor(link: string, displayName: string) {
+	/**
+	 * @throws Error when the link does not parse.
+	 * Pass transport to drive this client from a non-relay backend such as
+	 * the kimi transport; defaults to the encrypted collab relay socket.
+	 */
+	constructor(link: string, displayName: string, transport?: CollabTransport) {
 		const parsed = parseCollabLink(link);
 		if ("error" in parsed) throw new Error(parsed.error);
 		this.#name = displayName;
 		this.#writeToken = parsed.writeToken ? encodeBase64Url(parsed.writeToken) : undefined;
-		this.#socket = new CollabSocket({ wsUrl: parsed.wsUrl, role: "guest", key: importRoomKey(parsed.key) });
+		this.#socket = transport ?? new CollabSocket({ wsUrl: parsed.wsUrl, role: "guest", key: importRoomKey(parsed.key) });
 		this.#socket.onOpen = () => this.#handleOpen();
 		this.#socket.onFrame = frame => this.#applyFrameSafe(frame);
 		this.#socket.onControl = msg => {

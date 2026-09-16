@@ -183,7 +183,7 @@ async function collectPluginsAtRoot(
  * Get list of enabled plugins with their resolved configurations.
  *
  * Enumerates two plugin roots in order: the user root
- * (`getPluginsDir(home)`) and, when a project anchor (`.omp/` or `.git/`)
+ * (`getPluginsDir(home)`) and, when a project anchor (`.tau/` or `.git/`)
  * exists at or above `cwd`, the project root
  * (`<projectAnchor>/.omp/plugins`). Each root contributes the union of its
  * `package.json#dependencies` and `omp-plugins.lock.json#plugins`. Project
