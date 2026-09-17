@@ -425,6 +425,21 @@ export function freeCandidates(): [string, string][] {
     out.push(["llama-swap", LOCAL_ROLES.quality]);
     out.push(["llama-swap", LOCAL_ROLES.longctx]);
   }
+  // Ling-first default (Chris 2026-09-17): Ling leads the free pool so the
+  // `free` race prefers it. A flap-banned Ling still sits out above; the
+  // substance guard still skips empty completions, falling through to the
+  // next healthy candidate.
+  const LING_DEFAULT: [string, string] = [
+    "openrouter",
+    "inclusionai/ling-3.0-flash-fin:free",
+  ];
+  const lingIdx = out.findIndex(
+    ([p, m]) => p === LING_DEFAULT[0] && m === LING_DEFAULT[1],
+  );
+  if (lingIdx > 0) {
+    out.splice(lingIdx, 1);
+    out.unshift(LING_DEFAULT);
+  }
   return out;
 }
 
