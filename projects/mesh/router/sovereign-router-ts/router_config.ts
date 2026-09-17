@@ -56,7 +56,7 @@ export const FIFO_MAX = 64;
 
 export const STRATEGY = process.env.SOVEREIGN_STRATEGY || "hybrid";
 
-export const UA = "Mozilla/5.0 (compatible; SovereignASTMatrix/3.1)";
+export const UA = "Mozilla/5.0 (compatible; SovereignFlock/1.0)";
 
 // ---------------------------------------------------------------------------
 // LLAMA_SWAP_V1 (must come before PROVIDERS that uses it)

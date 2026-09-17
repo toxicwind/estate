@@ -22,7 +22,7 @@
 
 ```typescript
 // TypeScript: spawn Go binary with structured JSON over stdin/stdout
-// Use for: llama-swap, astmatrix, sovereign-router
+// Use for: llama-swap, flock, sovereign-router
 import { $ } from "bun";
 
 const result = await $`/home/toxic/bin/llama-swap --json`.json();
@@ -79,7 +79,7 @@ pub extern "C" fn encode(ptr: *const u8, len: i32) -> *mut u8 { ... }
 /home/toxic/sovereign/
 ├── config/                 # TOML configs (ports.env, mise.toml, pitchfork.toml)
 ├── src/
-│   ├── go/                 # Go services (llama-swap, astmatrix, router)
+│   ├── go/                 # Go services (llama-swap, flock, router)
 │   │   ├── cmd/            # Main packages
 │   │   ├── internal/       # Private packages
 │   │   └── go.mod
@@ -178,7 +178,7 @@ Every service (Go/Rust/TS) exposes:
 
 **Metrics naming**: `sovereign_<service>_<operation>_<unit>`
 - `sovereign_llama_swap_requests_total`
-- `sovereign_astmatrix_latency_seconds`
+- `flock_request_latency_seconds`
 - `sovereign_mcp_tool_calls_total`
 
 ---
