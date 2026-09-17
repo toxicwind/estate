@@ -1,41 +1,80 @@
-# Router vs AstMatrix — comparison (2026-09-17)
+# Router comparison — all forms (2026-09-17)
 
-## The naming confusion, cleared up
+Live router: `tools/sovereign-router/sovereign-router-ts/` on `:25104`.
 
-"AstMatrix" is the name of the **Go** cloud-provider routing module
-(`projects/herd/internal/astmatrix/`) built for llama-swap. The **TypeScript**
-router (`tools/sovereign-router/sovereign-router-ts/`, the live one on
-`:25104`) borrowed the name in its User-Agent (`SovereignASTMatrix/3.1`) and
-`[matrix]` log prefix. They are **separate implementations**, not two versions
-of one thing. There are also stale copies of the TS router tree at
-`projects/mesh/router/`, `projects/herd/mesh/router/`, and a nested duplicate
+## The forms
+
+Three separate implementations have carried similar routing DNA:
+
+1. **sovereign-router-ts** (Bun/TypeScript) — the **live production router**,
+   pitchfork daemon on `:25104`. Live provider `/models` discovery, 7
+   strategies, streaming, sticky sessions, ELO, circuits, HealthDB, free
+   racing, `/ui` dashboard.
+2. **Go cloud-router module** (`projects/herd/internal/astmatrix/`) — a
+   llama-swap library module, not a version of #1. 13 providers,
+   per-provider rate limits, request coalescing, least-latency and
+   round-robin strategies, richer status surface. No live discovery, no
+   streaming-first design.
+3. **Mesh gateway cloud-router** (`projects/mesh/gateway/astmatrix.go`) —
+   routes tool-call/MCP traffic, a different domain entirely (not model
+   inference).
+
+Stale copies of the TS tree exist at `projects/mesh/router/`,
+`projects/herd/mesh/router/`, and a nested duplicate
 `sovereign-router-ts/sovereign-router-ts/` — the live daemon runs from
-`tools/sovereign-router/sovereign-router-ts/` only.
+`tools/sovereign-router/sovereign-router-ts/` only. The old TS User-Agent
+and `[matrix]` log prefix were renamed to `Sovereign-Router/3.1` /
+`[router]`; nothing of the old branding carries into the consolidated
+router.
 
 ## Side by side
 
-| | sovereign-router-ts (LIVE) | AstMatrix (Go module) |
+| | sovereign-router-ts (LIVE) | Go module |
 |---|---|---|
-| Language/runtime | Bun/TypeScript | Go (llama-swap module) |
 | Location | `tools/sovereign-router/sovereign-router-ts/` | `projects/herd/internal/astmatrix/` |
 | Status | **Production** — pitchfork daemon `:25104` | Library, compiled into herd llama-swap builds |
-| Providers | 7: llama-swap, openrouter, nvidia (via local flock `:8000`), groq, cerebras, google, mistral | 13: llama-swap, openrouter, nvidia, groq, together, cerebras, fireworks, hyperbolic, github, mistral, openai, perplexity, siliconflow |
-| Strategies | 7: fifo_matrix, ast_race, sticky_affinity, weighted_elo, circuit_chain, hybrid, free | 8: hybrid, ast_race, sticky_affinity, weighted_elo, least_latency, round_robin, free, circuit_chain |
-| Model discovery | **Live** — `GET {base}/models` per key at startup + every 30 min (`router_live_models.ts`); curated list ∪ live | YAML-configured static lists |
-| Health | SQLite WAL HealthDB, EMA latency, ELO scores, circuit breakers, sticky sessions | SQLite health DB, EMA latency, circuit breakers w/ half-open probes, sticky sessions |
-| Extra features | FIFO depth cap (64), SSE streaming, `/ui` dashboard | Request coalescing, per-provider token-bucket rate limits, latency histograms, `/astmatrix/status` + `/metrics` |
-| Config | `router_config.ts` + env (`~/.secrets`, `ports.env`) | `astmatrix_config.yaml` |
+| Providers | 7: llama-swap (herd main port `:25100`), openrouter, nvidia (direct multi-key), groq, cerebras, google, mistral | 13: llama-swap, openrouter, nvidia, groq, together, cerebras, fireworks, hyperbolic, github, mistral, openai, perplexity, siliconflow |
+| Strategies | 7: fifo, free, sticky, weighted, circuit_chain, hybrid, race | 8: hybrid, race, sticky, weighted, least_latency, round_robin, free, circuit_chain |
+| Model discovery | **Live** — `GET {base}/models` per key at startup + every 30 min; union with curated | YAML-configured static lists |
+| Health | SQLite WAL HealthDB, EMA latency, ELO, circuit breakers, sticky sessions | SQLite health DB, EMA latency, circuit breakers w/ half-open probes, sticky sessions |
+| Rate limiting | NVIDIA multi-key token buckets (40 rpm/key, round-robin) | Per-provider token buckets (all providers) |
+| Extra | SSE streaming, `/ui` dashboard, flap tracker, Prometheus `/metrics`, optional client-key auth | Request coalescing, latency histograms, richer status/metrics |
 
-## Gaps worth knowing
+## Consolidation changes (this tree, 2026-09-17)
 
-- TS router is missing 6 AstMatrix providers: together, fireworks, hyperbolic,
-  github, openai, perplexity, siliconflow. AstMatrix is missing google (Gemini).
-- TS router has no per-provider rate limiting or request coalescing; AstMatrix
-  has no live model discovery and no streaming-first design.
-- `cerebras` was hardcoded to **zero** models in the TS router until the live
-  discovery change — it now serves its 2 live models.
+- **Live discovery authoritative**: `/v1/models` returns 779 unique servable
+  IDs (was ~50 aliases); every provider-keyed model is directly addressable —
+  no more curated-alias-only routing.
+- **NVIDIA direct multi-key**: 4 keys, round-robin, 40-rpm token buckets per
+  key. The old `flock` daemon (`:8000`, still running) is bypassed for NVIDIA
+  by the router; other consumers unaudited so far.
+- **Flap tracker**: 3 empty completions in 10 min benches a model from the
+  free pool; strikes decay and re-probe. Visible at `/metrics`
+  (`sovereign_router_model_empty_strikes`). Already striking flapping Ling
+  variants on openrouter and llama-swap paths.
+- **Substance guard on every path**: HTTP 200 with empty content (and no
+  tool_calls) is a failure at every routing layer — never served, never
+  sticky-pinned. Closed the circuit-chain/free fallback hole that served
+  blank 200s.
+- **`/v1/models` metadata**: provider, source (curated/live), free flag, ELO,
+  circuit state, empty-strike count, plus raw provider objects where live.
+- **Operational**: Prometheus `/metrics`, optional `SOVEREIGN_CLIENT_KEYS`
+  auth, neutral naming (UA `Sovereign-Router/3.1`, `[router]` logs).
+- **Local path preserved**: llama-swap provider routes through the herd main
+  port `:25100`; the router has not bypassed it.
 
-## Live discovery numbers (2026-09-17, first refresh)
+## Remaining gaps (honest)
+
+- TS router lacks 6 Go-module providers: together, fireworks, hyperbolic,
+  github, openai, perplexity, siliconflow. Go module lacks google (Gemini).
+- TS router has no request coalescing and no least-latency / round-robin
+  strategies; per-provider rate limits exist only for NVIDIA.
+- Flap strikes are in-memory (lost on restart); no echo/junk scoring yet.
+- NVIDIA bucket exhaustion falls back to the default key instead of
+  queueing; `/models` discovery uses only the first key.
+- `/v1/models` deduplicates by model id, hiding multi-provider routes.
+
+## Live discovery numbers (2026-09-17)
 
 | Provider | Curated | Live | Union served |
 |---|---|---|---|
@@ -47,5 +86,4 @@ of one thing. There are also stale copies of the TS router tree at
 | google | 4 | 59 | 60 |
 | mistral | 4 | 46 | 47 |
 
-`/v1/models` on `:25104` now returns **779** unique servable IDs (was ~50
-aliases). `/health` reports per-provider `live_models` + `live_status`.
+`cerebras` was hardcoded to **zero** models before live discovery.
