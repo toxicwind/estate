@@ -187,6 +187,28 @@ export const PROVIDER_MODELS: Record<string, string[]> = {
   ],
 };
 
+// ---------------------------------------------------------------------------
+// Live model catalog (populated at runtime by router_live_models.ts)
+// ---------------------------------------------------------------------------
+// Curated PROVIDER_MODELS above is the stable base (aliases, :free suffix
+// conventions). LIVE_MODELS is filled from each provider's GET /models
+// endpoint using that provider's own API key, so the router serves every
+// model each key is entitled to - not just the hardcoded subset.
+// catalogModelsFor() = curated union live, curated first.
+export const LIVE_MODELS: Record<string, string[]> = {};
+
+export function catalogModelsFor(p: string): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const m of [...(PROVIDER_MODELS[p] || []), ...(LIVE_MODELS[p] || [])]) {
+    if (typeof m === "string" && m && !seen.has(m)) {
+      seen.add(m);
+      out.push(m);
+    }
+  }
+  return out;
+}
+
 export const CODING: Record<string, [string, string] | null> = {
   auto: null,
   fcm: null,
@@ -300,8 +322,8 @@ export function resolveModel(model: string): [string, string] {
     // local-first auto: quality role on swap
     return ["llama-swap", LOCAL_ROLES.quality];
   }
-  for (const [p, models] of Object.entries(PROVIDER_MODELS)) {
-    if (models.includes(model)) return [p, model];
+  for (const p of Object.keys(PROVIDERS)) {
+    if (catalogModelsFor(p).includes(model)) return [p, model];
   }
   if (keyOk("openrouter")) return ["openrouter", model];
   if (keyOk("nvidia")) return ["nvidia", model];

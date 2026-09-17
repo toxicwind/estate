@@ -1,6 +1,6 @@
 import type { ChatBody, RouteResult } from "./router_types.ts";
 import { state } from "./router_matrix.ts";
-import { PROVIDERS, PROVIDER_MODELS, LOCAL_ROLES, CODING, MAX_PARALLEL, FIFO_MAX, STRATEGY, UA, AST_RE, getKey, keyOk, firstModelFor, resolveModel, isLocalSwapModelId, isAst, isExplicit, json } from "./router_config.ts";
+import { PROVIDERS, PROVIDER_MODELS, catalogModelsFor, LOCAL_ROLES, CODING, MAX_PARALLEL, FIFO_MAX, STRATEGY, UA, AST_RE, getKey, keyOk, firstModelFor, resolveModel, isLocalSwapModelId, isAst, isExplicit, json } from "./router_config.ts";
 
 // ---------------------------------------------------------------------------
 // Provider call
@@ -325,7 +325,7 @@ export function freeCandidates(): [string, string][] {
   const out: [string, string][] = [];
   for (const [name, conf] of Object.entries(PROVIDERS)) {
     if (!keyOk(name) || !state.circuitOk(name)) continue;
-    for (const mid of PROVIDER_MODELS[name] || []) {
+    for (const mid of catalogModelsFor(name)) {
       if (mid.includes(":free")) out.push([name, mid]);
     }
   }
