@@ -71,8 +71,11 @@ curl -sf http://127.0.0.1:25100/v1/models  # herd (local inference)
   kill it or start a second instance.
 - config.yml line 65 declares default: openrouter/inclusionai/ling-3.0-flash-fin:free:high,
   but nothing consumes it -- declared intent, not active routing. The live free pool is
-  freeCandidates() in router/sovereign-router-ts/router_config.ts. Ling stays out of it
-  until it passes the gate in docs/free-tier-models.md (currently 4/5 empty completions).
+  freeCandidates() in router/sovereign-router-ts/router_config.ts. Ling PASSED the gate
+  2026-09-17 (corrected 8/8 benchmark, warm TTFT < 2 s; earlier 0/8 was a probe bug using
+  the invalid double-prefixed model ID) and is now IN the pool: 14 candidates verified
+  live, router restarted via pitchfork 04:25 MDT, /health 200.
+  See docs/free-tier-models.md for the full record.
 
 ## Gemini API Tool Retrieval EAP
 
@@ -83,7 +86,10 @@ curl -sf http://127.0.0.1:25100/v1/models  # herd (local inference)
   https://ai.google.dev/gemini-api/docs/tool-retrieval
 - Platform fixes confirmed by Google (2026-09-07): HTTP 400 on deferred tools with parameters
   fixed fleet-wide; token-accounting fix for uncalled deferred tools rolling out.
-- Integration target: route Gemini tool-heavy traffic through the native google provider
-  (generativelanguage.googleapis.com/v1beta/openai, already live in sovereign-router-ts)
-  with deferred loading when the served catalog is large. Full integration needs the doc
-  details -- not yet done.
+- Integration target: NATIVE Gemini path -- POST /v1beta/interactions on
+  gemini-flash-tool-retrieval with the EAP key (GEMINI_API_KEY_2), server-side mode with
+  shep's 30-server union as mcp_server entries + defer_loading: true. NOT the
+  OpenAI-compat /v1beta/openai path (no EAP semantics there), and NOT nim-proxy.
+  Full spec in docs/gemini-tool-retrieval.md; LLM-friendly API reference in
+  docs/gemini-tool-retrieval-reference.md. BLOCKED on depleted prepay credits --
+  Chris tops up at ai.studio/projects.

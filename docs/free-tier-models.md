@@ -66,3 +66,27 @@ OpenRouter's current 19 `:free` IDs: `cohere/north-mini-code:free`, `dots-studio
   an empty-completion route would poison the `free` strategy (first "valid" response wins).
 - Acceptance gate for wiring: free + zero-cost + **5/5 non-empty correct** over the
   correctness battery (17*23, YES/NO, hatch-42, cat->tac) + TTFT < 2 s warm.
+
+## 2026-09-17 Ling benchmark correction + wired into live free pool (~04:30 MDT)
+
+- The earlier 0/8 benchmark was a BUG IN THE PROBE: it used the invalid model ID
+  `openrouter/inclusionai/ling-3.0-flash-fin:free` (double prefix). OpenRouter returns
+  HTTP 400 on that ID. Correct ID: `inclusionai/ling-3.0-flash-fin:free`.
+- Corrected streaming benchmark: 2 rounds x 4 fixtures (17*23, YES/NO, hatch-42,
+  reverse-tac) = **8/8 non-empty and correct**, all via Novita at zero cost.
+  TTFT: 830/1812/969/913 ms (round 1), 1927/1273/1283/810 ms (round 2). Warm TTFT < 2 s.
+  Evidence: `tools/ling_bench_20260917.json`.
+- Acceptance gate met (free + 5/5 non-empty correct + warm TTFT < 2 s), so Ling was
+  wired into the live pool: `inclusionai/ling-3.0-flash-fin:free` added to the
+  `openrouter` array in `projects/mesh/router/sovereign-router-ts/router_config.ts`
+  (it is enumerated by `freeCandidates()` in `router_strategy.ts`, which picks up
+  every configured ID containing `:free`).
+- Router restarted via pitchfork 04:25 MDT; `/health` 200. `freeCandidates()` verified
+  live: **14 candidates, Ling present** (`["openrouter","inclusionai/ling-3.0-flash-fin:free"]`).
+- Historical note: earlier probes the same day showed 4/5 empty completions on the
+  Novita route — severely intermittent. The empty-response hazard remains: if Ling
+  flakes again, `routeAstRace()` prefers AST-shaped content and otherwise keeps the
+  first successful result, so an empty response should not win as valid — but watch it.
+- mesh `config.yml` `default: openrouter/inclusionai/ling-3.0-flash-fin:free:high`
+  is still declared intent only (no `:high` parser) — the live policy is
+  `freeCandidates()`, which now includes Ling.
