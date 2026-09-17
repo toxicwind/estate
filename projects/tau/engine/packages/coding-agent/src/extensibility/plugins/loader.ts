@@ -95,13 +95,23 @@ async function collectPluginsAtRoot(
 		if (!isEnoent(err)) throw err;
 	}
 
-	const lockPath = path.join(root, "omp-plugins.lock.json");
-	let runtimeConfig: PluginRuntimeConfig;
-	try {
-		runtimeConfig = normalizePluginRuntimeConfig(await Bun.file(lockPath).json());
-	} catch (err) {
-		if (!isEnoent(err)) throw err;
-		runtimeConfig = normalizePluginRuntimeConfig({});
+	// The linker writes `tau-plugins.lock.json` (post omp->tau rename) while
+	// older installs carry `omp-plugins.lock.json`. Read both; union entries
+	// so linked plugins are never invisible to discovery (2026-09-17).
+	let runtimeConfig: PluginRuntimeConfig = normalizePluginRuntimeConfig({});
+	for (const lockName of ["omp-plugins.lock.json", "tau-plugins.lock.json"]) {
+		const lockPath = path.join(root, lockName);
+		try {
+			const parsed = normalizePluginRuntimeConfig(await Bun.file(lockPath).json());
+			runtimeConfig = {
+				...runtimeConfig,
+				...parsed,
+				plugins: { ...(runtimeConfig.plugins ?? {}), ...(parsed.plugins ?? {}) },
+				settings: { ...(runtimeConfig.settings ?? {}), ...(parsed.settings ?? {}) },
+			};
+		} catch (err) {
+			if (!isEnoent(err)) throw err;
+		}
 	}
 
 	// Union: dependencies (npm/marketplace installs) ∪ runtime-config plugins
