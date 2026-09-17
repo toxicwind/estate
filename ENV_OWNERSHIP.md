@@ -115,7 +115,8 @@ canonical repo home still to be decided.
 | Interactive login shell | yes, via `.bashrc` -> `.bashrc.env` | 151 vars |
 | Noninteractive bash -c / bridge exec | yes, via `BASH_ENV` -> `.bashrc.env` | 151 vars after bridge restart |
 | systemd user services (new) | yes, via `environment.d` | needs `systemctl --user daemon-reload` |
-| Already-running daemons (pitchfork, bridge) | no, env is a snapshot at spawn | restart required to pick up new vars |
+| Fleet job workers (agent submit / job CLI) | yes, wrapper sources the canonical shell env file | fleet _jobwrap.py 2026-09-17; spec-provided env wins |
+| Already-running daemons (pitchfork, bridge exec) | no, env is a snapshot at spawn | restart required to pick up new vars |
 | Gradle builds | yes, via env `GITHUB_ACTOR`/`GITHUB_TOKEN` | upstream settings reads `gpr.user`/`gpr.key` with env fallback; no tokens in files |
 | Daemon/service env (rule 1) | mise / per-service config | shell loader is for shells, not daemons |
 
