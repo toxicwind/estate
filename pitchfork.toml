@@ -38,8 +38,8 @@ depends = ["shep", "herd"]
 auto = ["start"]
 
 [daemons.yote]
-run = "exec bun run src/services/yote.ts"
-dir = "."
+run = "exec bun run src/yote.ts"
+dir = "projects/yote"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25102/health"
