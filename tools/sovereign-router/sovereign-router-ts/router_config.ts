@@ -56,7 +56,7 @@ export const FIFO_MAX = 64;
 
 export const STRATEGY = process.env.SOVEREIGN_STRATEGY || "hybrid";
 
-export const UA = "Mozilla/5.0 (compatible; SovereignASTMatrix/3.1)";
+export const UA = "Mozilla/5.0 (compatible; Sovereign-Router/3.1)";
 
 // ---------------------------------------------------------------------------
 // LLAMA_SWAP_V1 (must come before PROVIDERS that uses it)
@@ -115,10 +115,12 @@ export const PROVIDERS: Record<
     base: "https://openrouter.ai/api/v1",
     key_env: "OPENROUTER_API_KEY",
   },
+  // NVIDIA direct (the :8000 key-proxy is retired — multi-key rotation and
+  // per-key rate limiting now live in the router itself, see router_matrix).
   nvidia: {
-    base: "http://127.0.0.1:8000/v1",
-    key_env: "NIM_PROXY_API_KEY",
-    key_env_alt: "NVIDIA_API_KEY",
+    base: "https://integrate.api.nvidia.com/v1",
+    key_env: "NVIDIA_API_KEY",
+    key_env_alt: "NVIDIA_API_KEYS",
   },
   groq: { base: "https://api.groq.com/openai/v1", key_env: "GROQ_API_KEY" },
   cerebras: {
@@ -186,6 +188,26 @@ export const PROVIDER_MODELS: Record<string, string[]> = {
     "mistral-medium-latest",
   ],
 };
+
+// ---------------------------------------------------------------------------
+// Live per-model metadata (populated at runtime by router_live_models.ts):
+// provider -> model id -> raw provider /models object (pricing, context
+// length, architecture...). IDs stay in LIVE_MODELS for routing; metadata
+// enriches /v1/models so clients see live data, not just id strings.
+export const LIVE_MODEL_META: Record<string, Record<string, unknown>> = {};
+
+// NVIDIA multi-key pool (absorbed from the retired :8000 key-proxy):
+// comma-separated nvapi-* keys, each with its own 40rpm token bucket
+// (see Matrix.nextNvidiaKey in router_matrix.ts).
+export function nvidiaKeys(): string[] {
+  const pool = (process.env.NVIDIA_API_KEYS || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (pool.length) return pool;
+  const single = process.env.NVIDIA_API_KEY || "";
+  return single ? [single] : [];
+}
 
 // ---------------------------------------------------------------------------
 // Live model catalog (populated at runtime by router_live_models.ts)
@@ -273,6 +295,8 @@ export const AST_RE =
 // Helpers
 // ---------------------------------------------------------------------------
 export function getKey(p: string): string {
+  // NVIDIA serves from the multi-key pool; first key is the default.
+  if (p === "nvidia") return nvidiaKeys()[0] || "";
   const conf = PROVIDERS[p];
   if (!conf) return "";
   if (conf.no_auth) return "not-required-for-local";
@@ -285,6 +309,7 @@ export function getKey(p: string): string {
 
 export function keyOk(p: string): boolean {
   if (p === "llama-swap" || PROVIDERS[p]?.no_auth) return true;
+  if (p === "nvidia") return nvidiaKeys().length > 0;
   const conf = PROVIDERS[p];
   if (!conf) return false;
   return Boolean(
@@ -343,7 +368,7 @@ export function isExplicit(model: string): boolean {
 }
 
 export function log(...args: unknown[]) {
-  console.error("[matrix]", ...args);
+  console.error("[router]", ...args);
 }
 
 export function json(
