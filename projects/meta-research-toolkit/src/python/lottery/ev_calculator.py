@@ -17,14 +17,16 @@ class Game:
     top_prizes_remaining: int
     payout_pct: float
     overall_odds: float
+    # Remaining unsold tickets when known (audit snapshot). None = unknown,
+    # conservative fallback to the full print run (no assumed sell-through).
+    tickets_remaining: int | None = None
 
     def top_equity_per_ticket(self) -> float:
         """Current top-prize equity in the remaining pool."""
         if self.top_prizes_remaining <= 0:
             return 0.0
-        # Assume uniform distribution; remaining pool proportional to remaining tops
-        implied_remaining = self.total_tickets * (self.top_prizes_remaining / self.top_prizes_total)
-        return (self.top_prizes_remaining * self.top_prize) / implied_remaining
+        remaining = self.tickets_remaining if self.tickets_remaining else self.total_tickets
+        return (self.top_prizes_remaining * self.top_prize) / remaining
 
     def baseline_ev(self) -> float:
         """Statutory EV before top-prize lag adjustment."""
@@ -52,6 +54,7 @@ CASINO_CASH_CHIPS = Game(
     top_prizes_remaining=2,
     payout_pct=0.745,
     overall_odds=1 / 3.29,
+    tickets_remaining=300_000,  # jackpot lag anomaly: both M tops alive deep into the run
 )
 
 JUMBO_BUCKS_CROSSWORD = Game(
@@ -64,6 +67,7 @@ JUMBO_BUCKS_CROSSWORD = Game(
     top_prizes_remaining=7,
     payout_pct=0.71,
     overall_odds=1 / 3.29,
+    tickets_remaining=3_546_667,  # ~proportional sell-through: neutral lag
 )
 
 ROCKY_MTN_CUBE_BINGO = Game(
