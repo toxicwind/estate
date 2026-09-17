@@ -82,7 +82,7 @@ clients (Zed / OpenFang / IDEs)
 
 Two implementations, one theory:
 
-- **Go** (`herd/internal/astmatrix/`) — compiled into the front door. 8 strategies, 13 providers, SQLite-backed health DB with ELO scoring and circuit breakers. See `herd/README_ASTMATRIX_V2.md`.
+- **Go** (`herd/internal/flock/`) — compiled into the front door. 8 strategies, 13 providers, SQLite-backed health DB with ELO scoring and circuit breakers. See `herd/README_ASTMATRIX_V2.md`.
 - **TypeScript** (`tools/sovereign-router/sovereign-router-ts/router.ts`) — standalone Bun service on :25104 for external tooling. 7 providers: llama-swap, openrouter, nvidia, groq, cerebras, google, mistral.
 
 Per-request strategy override: `X-Sovereign-Strategy: free` races local + free-tier cloud models.

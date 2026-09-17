@@ -39,6 +39,55 @@ from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
+# Crash forensics (2026-09-17): the daemon died 3x with no traceback and
+# no OOM mark. Make the next death observable: faulthandler dumps C-level
+# crashes to stderr, excepthooks log uncaught Python exceptions from any
+# thread, and SIGHUP is logged instead of silently killing (default HUP
+# action terminates with no trace).
+import faulthandler
+import traceback as _tb
+
+faulthandler.enable()
+
+
+def _log_uncaught(exc_type, exc_value, exc_traceback, where="main"):
+    try:
+        sys.stderr.write(
+            f"[buildsrvd {time.strftime('%H:%M:%S')}] UNCAUGHT {where}: "
+            + "".join(_tb.format_exception(exc_type, exc_value, exc_traceback))
+        )
+        sys.stderr.flush()
+    except Exception:
+        pass
+
+
+def _excepthook(exc_type, exc_value, exc_traceback):
+    _log_uncaught(exc_type, exc_value, exc_traceback, "main")
+    sys.__excepthook__(exc_type, exc_value, exc_traceback)
+
+
+def _thread_excepthook(args):
+    _log_uncaught(args.exc_type, args.exc_value, args.exc_traceback,
+                  f"thread={args.thread.name if args.thread else '?'}")
+    sys.stderr.write(
+        f"[buildsrvd {time.strftime('%H:%M:%S')}] thread {args.thread.name if args.thread else '?'} died\n")
+    sys.stderr.flush()
+
+
+sys.excepthook = _excepthook
+threading.excepthook = _thread_excepthook
+
+
+def _on_hup(signum, frame):
+    # Log-and-survive: a silent HUP death leaves zero evidence.
+    log(f"got SIGHUP ({signum}) — ignoring (daemon must not die quietly)")
+
+
+try:
+    signal.signal(signal.SIGHUP, _on_hup)
+except Exception:
+    pass
+
 ROOT = Path(os.environ.get("BUILDSRV_ROOT", "/home/toxic/buildsrv"))
 QUEUE = ROOT / "queue"
 ACTIVE = ROOT / "active"
@@ -61,6 +110,7 @@ TOOLCHAIN_BINS = {
     "node": "node",
     "python": "python3", "python3": "python3",
     "tsc": "bun",
+    "java": "java", "gradle": "gradle",
 }
 
 TERMINAL = {"succeeded", "failed", "cached"}

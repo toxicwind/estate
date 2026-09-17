@@ -142,7 +142,7 @@ logs = "pitchfork logs --raw -n 100"
 "health-dnsmasq" = "ss -ltn 'sport = :53' | grep -q LISTEN"
 "health-prometheus" = "curl -sf --max-time 5 http://127.0.0.1:25105/-/healthy"
 "health-grafana" = "curl -sf --max-time 5 http://127.0.0.1:25110/api/health"
-"health-nim-proxy" = "ss -ltn 'sport = :8000' | grep -q LISTEN"
+"health-flock" = "ss -ltn 'sport = :8000' | grep -q LISTEN"
 "health-matter-server" = "ss -ltn 'sport = :5580' | grep -q LISTEN"
 "health-tau" = "sleep 2 && echo ready"
 

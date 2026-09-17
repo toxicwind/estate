@@ -1,4 +1,4 @@
-# Sovereign Mesh — Tool Federation Gateway & AST Matrix
+# Sovereign Mesh — Tool Federation Gateway (flock)
 
 **Ports**: `:25127` (MCP Proxy Gateway) | `:25115` (Mesh Hub) | `:25100` (Router/llama-swap) | `:25104` (Sovereign Router TS)  
 **Role**: Federated tool routing, AST matrix code navigation, MCP client aggregation, and multi-provider LLM routing.
@@ -13,12 +13,12 @@ mesh/
 │                       Port: :25127 | MCP client aggregation
 ├── router/           ← Sovereign Router — multi-provider LLM routing gateway
 │   ├── sovereign-router-ts/      # LIVE ROUTER (Bun/TS, port :25104)
-│   ├── sovereign-ast-matrix-py/  # v2 Python router (FastAPI)
+│   ├── flock-py/  # v2 Python router (FastAPI)
 │   ├── sovereign-ast-router/     # v3 TS variant
 │   ├── sovereign-mcp-gateway/    # MCP gateway service
 │   ├── free_zed_gateway/         # free-LLM-gateway concept
 │   └── bin/                      # compiled binaries
-├── ast-matrix/       ← AST Matrix code extraction and semantic matrix packages
+├── flock-pkg/        <- flock extraction snapshot (frozen, was ast-matrix/)
 ├── ui-svelte/        ← Svelte dashboard for router/llama-swap UI
 ├── config.yml        ← Unified mesh configuration, model roles, and port mappings
 ├── research/         ← Research artifacts (provider discovery scripts, agent-infra dumps)

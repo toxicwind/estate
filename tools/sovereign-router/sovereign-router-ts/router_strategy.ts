@@ -1,6 +1,48 @@
 import type { ChatBody, RouteResult } from "./router_types.ts";
-import { state } from "./router_matrix.ts";
-import { PROVIDERS, PROVIDER_MODELS, LOCAL_ROLES, CODING, MAX_PARALLEL, FIFO_MAX, STRATEGY, UA, AST_RE, getKey, keyOk, firstModelFor, resolveModel, isLocalSwapModelId, isAst, isExplicit, json } from "./router_config.ts";
+import { state, isWorkerExhausted } from "./router_matrix.ts";
+import { PROVIDERS, PROVIDER_MODELS, catalogModelsFor, modelFree, LOCAL_ROLES, CODING, MAX_PARALLEL, FIFO_MAX, STRATEGY, UA, AST_RE, getKey, keyOk, firstModelFor, resolveModel, isLocalSwapModelId, isAst, isExplicit, json } from "./router_config.ts";
+
+// ---------------------------------------------------------------------------
+// Substance guard: a completion is servable only if it carries non-empty
+// content (or tool_calls). HTTP 200 with an empty message is a failure at
+// every routing layer — never served, never sticky-pinned, always struck.
+// ---------------------------------------------------------------------------
+function messageOf(r: RouteResult): any {
+  try {
+    const raw =
+      typeof r.data === "string"
+        ? r.data
+        : new TextDecoder().decode(r.data as Uint8Array);
+    return JSON.parse(raw)?.choices?.[0]?.message;
+  } catch {
+    return undefined;
+  }
+}
+
+export function substantive(r: RouteResult): boolean {
+  if (!r.ok) return false;
+  const m = messageOf(r);
+  if (!m) return false;
+  if (typeof m.content === "string" && m.content.trim() !== "") return true;
+  return Array.isArray(m.tool_calls) && m.tool_calls.length > 0;
+}
+
+function contentText(r: RouteResult): string {
+  const m = messageOf(r);
+  const c = m?.content;
+  return typeof c === "string" ? c : "";
+}
+
+// Any model id the router can directly address: explicit alias, local id,
+// or any curated/live catalog id on any keyed provider. Unknown ids keep
+// the old race-everything behavior.
+function isRoutableModelId(model: string): boolean {
+  if (isExplicit(model)) return true;
+  for (const p of Object.keys(PROVIDERS)) {
+    if (catalogModelsFor(p).includes(model)) return true;
+  }
+  return false;
+}
 
 // ---------------------------------------------------------------------------
 // Provider call
@@ -37,13 +79,39 @@ export async function callOne(
     "Accept-Encoding": "identity",
   };
   if (!conf.no_auth) {
-    headers.Authorization = `Bearer ${getKey(provider)}`;
+    // NVIDIA rotates across the multi-key pool (40 rpm token bucket per
+    // key). All buckets dry is an honest 429 — falling back to the default
+    // key would just burn a rate-limited key.
+    const rk = provider === "nvidia" ? state.nextNvidiaKey() : null;
+    if (provider === "nvidia" && !rk) {
+      return {
+        ok: false,
+        status: 429,
+        provider,
+        lat: 0,
+        err: "nvidia_buckets_exhausted",
+      };
+    }
+    headers.Authorization = `Bearer ${rk || getKey(provider)}`;
   } else {
     headers.Authorization = "Bearer not-required-for-local";
   }
   if (provider === "openrouter") {
     headers["HTTP-Referer"] = "https://zed.dev";
     headers["X-Title"] = "Sovereign-Router";
+  }
+  // Model-pressure governor (flock governor.rs AIMD, per provider/model):
+  // refused fast with 429 when the model is at its worker cap or draining.
+  const govKey = `${provider}/${model}`;
+  const permit = state.governor.admit(govKey);
+  if (!permit) {
+    return {
+      ok: false,
+      status: 429,
+      provider,
+      lat: 0,
+      err: "governor_limited",
+    };
   }
   const payload = { ...body, model, stream };
   const start = performance.now();
@@ -57,6 +125,11 @@ export async function callOne(
     const lat = (performance.now() - start) / 1000;
     if (!resp.ok) {
       const errText = (await resp.text()).slice(0, 500);
+      // Worker-exhaustion signature is checked BEFORE generic failure
+      // handling: it is model-scoped, never a reason to cool the lane.
+      // The permit is still held, so the observed in-flight count
+      // includes this request when the governor engages at half of it.
+      if (isWorkerExhausted(errText)) state.governor.noteExhausted(govKey);
       state.record(model, provider, resp.status, lat, 0, STRATEGY);
       return {
         ok: false,
@@ -101,6 +174,8 @@ export async function callOne(
       lat,
       err: String(e),
     };
+  } finally {
+    permit.release();
   }
 }
 
@@ -136,20 +211,33 @@ export async function routeAstRace(
   candsOverride?: [string, string][],
 ): Promise<RouteResult> {
   const model = String(body.model || "auto");
-  if (isExplicit(model) && !candsOverride) {
-    const [p, mid] = CODING[model]!;
+  if (isRoutableModelId(model) && !candsOverride) {
+    // Direct-addressable id (alias, local id, or any curated/live catalog
+    // id): go straight to its provider instead of racing.
+    const [p, mid] = resolveModel(model);
     const r = await callOne(p, mid, body);
-    if (r.ok) {
+    if (substantive(r)) {
       state.stickySet(session, p, mid);
       state.record(mid, p, 200, r.lat || 0, 1, "ast_race");
+      return r;
     }
-    return r;
+    if (r.ok) state.recordEmpty(p, mid);
+    return {
+      ok: false,
+      status: r.ok ? 502 : r.status || 502,
+      provider: p,
+      lat: r.lat,
+      err: r.ok ? "empty_completion" : r.err,
+    };
   }
   const cands = candsOverride || pickWeighted(MAX_PARALLEL);
   if (!cands.length)
     return { ok: false, status: 503, err: "ast_race_exhausted" };
   const futs = cands.map(([p, mid]) => callOne(p, mid, body));
   let best: RouteResult | null = null;
+  // Non-substantive (empty/whitespace-only, no tool_calls) completions are
+  // failures, never winners: a 200 with no content must not be served or
+  // sticky-pinned.
   try {
     const results = await Promise.race([
       Promise.allSettled(futs).then((all) => all),
@@ -159,32 +247,28 @@ export async function routeAstRace(
       for (const settled of results) {
         if (settled.status !== "fulfilled" || !settled.value.ok) continue;
         const r = settled.value;
-        let content = "";
-        try {
-          const j = JSON.parse(
-            typeof r.data === "string"
-              ? r.data
-              : new TextDecoder().decode(r.data as Uint8Array),
-          );
-          content = j?.choices?.[0]?.message?.content || "";
-        } catch {
-          content = "";
-        }
+        const content = contentText(r);
         if (isAst(content)) {
           state.stickySet(session, r.provider!, r.model!);
           state.record(r.model!, r.provider!, 200, r.lat || 0, 1, "ast_race");
           return r;
         }
-        if (!best) best = r;
+        if (!substantive(r)) {
+          // Non-substantive completion: never a winner — strike the model
+          // (flap tracker benches it after FLAP_STRIKES within the window).
+          state.recordEmpty(r.provider!, r.model!);
+        } else if (!best) {
+          best = r;
+        }
       }
     } else {
-      // timeout: take first completed ok if any
+      // timeout: take first completed substantive result, if any
       for (const f of futs) {
         const settled = await Promise.race([
           f.then((v) => v),
           Promise.resolve(null as RouteResult | null),
         ]);
-        if (settled?.ok) {
+        if (settled && substantive(settled)) {
           best = settled;
           break;
         }
@@ -205,11 +289,12 @@ export async function routeSticky(
   session: string,
 ): Promise<RouteResult> {
   const model = String(body.model || "auto");
-  if (isExplicit(model)) return routeAstRace(body, session);
+  if (isRoutableModelId(model)) return routeAstRace(body, session);
   const [p, m] = state.stickyGet(session);
   if (p && keyOk(p) && state.circuitOk(p)) {
     const r = await callOne(p, m || model, body);
-    if (r.ok) return r;
+    if (substantive(r)) return r;
+    if (r.ok) state.recordEmpty(p, m || model);
   }
   return routeAstRace(body, session);
 }
@@ -222,8 +307,18 @@ export async function routeWeighted(
   if (!cands.length) return { ok: false, status: 503, err: "no_providers" };
   const [p, mid] = cands[0];
   const r = await callOne(p, mid, body);
-  if (r.ok) state.stickySet(session, p, mid);
-  return r;
+  if (substantive(r)) {
+    state.stickySet(session, p, mid);
+    return r;
+  }
+  if (r.ok) state.recordEmpty(p, mid);
+  return {
+    ok: false,
+    status: r.ok ? 502 : r.status || 502,
+    provider: p,
+    lat: r.lat,
+    err: r.ok ? "empty_completion" : r.err,
+  };
 }
 
 export async function routeCircuitChain(
@@ -231,14 +326,22 @@ export async function routeCircuitChain(
   session: string,
 ): Promise<RouteResult> {
   const model = String(body.model || "auto");
-  if (isExplicit(model)) {
-    const [p, mid] = CODING[model]!;
+  if (isRoutableModelId(model)) {
+    const [p, mid] = resolveModel(model);
     if (keyOk(p) && state.circuitOk(p)) {
       const r = await callOne(p, mid, body);
-      if (r.ok) {
+      if (substantive(r)) {
         state.stickySet(session, p, mid);
         return r;
       }
+      if (r.ok) state.recordEmpty(p, mid);
+      return {
+        ok: false,
+        status: r.ok ? 502 : r.status || 502,
+        provider: p,
+        lat: r.lat,
+        err: r.ok ? "empty_completion" : r.err,
+      };
     }
     return {
       ok: false,
@@ -254,10 +357,11 @@ export async function routeCircuitChain(
     const mid = firstModelFor(p);
     if (!mid) continue;
     const r = await callOne(p, mid, body);
-    if (r.ok) {
+    if (substantive(r)) {
       state.stickySet(session, p, mid);
       return r;
     }
+    if (r.ok) state.recordEmpty(p, mid);
   }
   return { ok: false, status: 503, err: "circuit_chain_exhausted" };
 }
@@ -282,19 +386,28 @@ export async function routeHybrid(
   session: string,
 ): Promise<RouteResult> {
   const model = String(body.model || "auto");
-  if (isExplicit(model)) {
+  if (isRoutableModelId(model)) {
     const [p, mid] = resolveModel(model);
     const r = await callOne(p, mid, body);
-    if (r.ok) {
+    if (substantive(r)) {
       state.stickySet(session, p, mid);
       state.record(mid, p, 200, r.lat || 0, 1, "hybrid_direct");
+      return r;
     }
-    return r;
+    if (r.ok) state.recordEmpty(p, mid);
+    return {
+      ok: false,
+      status: r.ok ? 502 : r.status || 502,
+      provider: p,
+      lat: r.lat,
+      err: r.ok ? "empty_completion" : r.err,
+    };
   }
   const [p, m] = state.stickyGet(session);
   if (p && keyOk(p) && state.circuitOk(p)) {
     const r = await callOne(p, m || model, body);
-    if (r.ok) return r;
+    if (substantive(r)) return r;
+    if (r.ok) state.recordEmpty(p, m || model);
   }
   const r2 = await routeAstRace(body, session);
   if (r2.ok) return r2;
@@ -306,7 +419,9 @@ export const ROUTERS: Record<
   (body: ChatBody, session: string) => Promise<RouteResult>
 > = {
   fifo_matrix: routeFifo,
+  fifo_flock: routeFifo,
   ast_race: routeAstRace,
+  flock_race: routeAstRace,
   sticky_affinity: routeSticky,
   weighted_elo: routeWeighted,
   circuit_chain: routeCircuitChain,
@@ -314,20 +429,46 @@ export const ROUTERS: Record<
   free: routeFree,
 };
 
-// freeCandidates: every ":free" model across keyed providers, plus the local
-// llama-swap (always zero-cost). This is the pool the `free` strategy races.
+// freeCandidates: the free pool is derived from LIVE catalog metadata, not a
+// divergent static list (Chris 2026-09-17). For every keyed provider with a
+// healthy circuit, every catalog id (curated ∪ live discovery) whose live
+// metadata marks it free (modelFree) joins the pool — including
+// live-discovered free models the static ":free"-suffix convention misses
+// (e.g. stealth/union-alpha, openrouter/free). When a provider has no live
+// metadata at all, modelFree falls back deterministically to the ":free"
+// suffix convention, so a failed discovery refresh never empties the pool.
+// Filters: circuit state, flap strikes (empty-output substance failures feed
+// the strike counter, so substance-ineligible models sit out), and the local
+// llama-swap roles are always zero-cost and always join.
 export function freeCandidates(): [string, string][] {
   const out: [string, string][] = [];
-  for (const [name, conf] of Object.entries(PROVIDERS)) {
+  for (const [name] of Object.entries(PROVIDERS)) {
     if (!keyOk(name) || !state.circuitOk(name)) continue;
-    for (const mid of PROVIDER_MODELS[name] || []) {
-      if (mid.includes(":free")) out.push([name, mid]);
+    for (const mid of catalogModelsFor(name)) {
+      // Flap-benched models sit out until their empty-strikes decay.
+      if (state.flapBanned(name, mid)) continue;
+      if (modelFree(name, mid)) out.push([name, mid]);
     }
   }
   if (keyOk("llama-swap")) {
     out.push(["llama-swap", LOCAL_ROLES.fast]);
     out.push(["llama-swap", LOCAL_ROLES.quality]);
     out.push(["llama-swap", LOCAL_ROLES.longctx]);
+  }
+  // Ling-first default (Chris 2026-09-17): Ling leads the free pool so the
+  // `free` race prefers it. A flap-banned Ling still sits out above; the
+  // substance guard still skips empty completions, falling through to the
+  // next healthy candidate.
+  const LING_DEFAULT: [string, string] = [
+    "openrouter",
+    "inclusionai/ling-3.0-flash-fin:free",
+  ];
+  const lingIdx = out.findIndex(
+    ([p, m]) => p === LING_DEFAULT[0] && m === LING_DEFAULT[1],
+  );
+  if (lingIdx > 0) {
+    out.splice(lingIdx, 1);
+    out.unshift(LING_DEFAULT);
   }
   return out;
 }

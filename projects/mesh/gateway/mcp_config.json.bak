@@ -15,7 +15,7 @@
       "enabled": true,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152085-06:00",
-      "updated": "2026-09-07T13:20:29.008264491-06:00",
+      "updated": "2026-09-16T11:33:13.949295597-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -36,7 +36,7 @@
       "enabled": true,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152165-06:00",
-      "updated": "2026-09-07T13:20:29.014708073-06:00",
+      "updated": "2026-09-16T11:33:13.954637281-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -55,7 +55,7 @@
       "enabled": true,
       "quarantined": false,
       "created": "2026-07-20T00:00:00-06:00",
-      "updated": "2026-09-07T13:20:29.158663643-06:00",
+      "updated": "2026-09-16T11:33:13.957161986-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -76,7 +76,7 @@
       "enabled": true,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152195-06:00",
-      "updated": "2026-09-07T13:20:29.024048475-06:00",
+      "updated": "2026-09-16T11:33:13.965453699-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -97,7 +97,7 @@
       "quarantined": false,
       "auto_approve_tool_changes": true,
       "created": "2026-07-19T02:33:58.727152235-06:00",
-      "updated": "2026-09-07T13:20:29.029453994-06:00",
+      "updated": "2026-09-16T11:33:13.967675469-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -114,7 +114,7 @@
       "quarantined": false,
       "auto_approve_tool_changes": true,
       "created": "2026-07-20T00:00:00-06:00",
-      "updated": "2026-09-07T13:20:29.153648178-06:00",
+      "updated": "2026-09-16T11:33:13.97438927-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -135,7 +135,7 @@
       "enabled": false,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152275-06:00",
-      "updated": "2026-09-07T13:20:29.03325601-06:00",
+      "updated": "2026-09-16T11:33:13.976731258-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -152,7 +152,7 @@
       "quarantined": false,
       "auto_approve_tool_changes": true,
       "created": "2026-07-19T02:33:58.727152305-06:00",
-      "updated": "2026-09-07T13:20:29.038276755-06:00",
+      "updated": "2026-09-16T11:33:13.99063879-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -172,7 +172,7 @@
       "quarantined": false,
       "auto_approve_tool_changes": true,
       "created": "2026-07-20T00:00:00-06:00",
-      "updated": "2026-09-07T13:20:29.163640259-06:00",
+      "updated": "2026-09-16T11:33:13.993834643-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -195,7 +195,7 @@
       "enabled": true,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152345-06:00",
-      "updated": "2026-09-07T13:20:29.049109662-06:00",
+      "updated": "2026-09-16T11:33:14.003302154-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -215,13 +215,30 @@
       "enabled": true,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152375-06:00",
-      "updated": "2026-09-07T13:20:29.052535064-06:00",
+      "updated": "2026-09-16T11:33:14.011309712-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
       },
       "health_check_interval": "15s",
       "tool_discovery_interval": "2m0s"
+    },
+    {
+      "name": "exa",
+      "protocol": "stdio",
+      "command": "/home/toxic/.local/bin/exa-mcp-server",
+      "args": [
+        "--env",
+        "EXA_API_KEY=3acfc1d8-dd01-41c6-88be-a494e5ad363e"
+      ],
+      "env": {
+        "EXA_API_KEY": "3acfc1d8-dd01-41c6-88be-a494e5ad363e"
+      },
+      "oauth": null,
+      "enabled": true,
+      "quarantined": false,
+      "created": "2026-09-17T03:30:41.838542569-06:00",
+      "updated": "2026-09-17T03:31:44.396124679-06:00"
     },
     {
       "name": "ghas",
@@ -232,7 +249,7 @@
       "quarantined": false,
       "auto_approve_tool_changes": true,
       "created": "2026-07-19T02:33:58.727152415-06:00",
-      "updated": "2026-09-07T13:20:29.0569335-06:00",
+      "updated": "2026-09-16T11:33:14.018764859-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -248,7 +265,7 @@
       "enabled": false,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152455-06:00",
-      "updated": "2026-09-07T13:20:29.061149489-06:00",
+      "updated": "2026-09-16T11:33:14.025886492-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -272,7 +289,7 @@
       "enabled": false,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152485-06:00",
-      "updated": "2026-09-07T13:20:29.06520501-06:00",
+      "updated": "2026-09-16T11:33:14.032952026-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -293,7 +310,7 @@
       "quarantined": false,
       "auto_approve_tool_changes": true,
       "created": "2026-07-19T02:33:58.727152525-06:00",
-      "updated": "2026-09-07T13:20:29.075468097-06:00",
+      "updated": "2026-09-16T11:33:14.039916222-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -312,7 +329,7 @@
       "enabled": true,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152555-06:00",
-      "updated": "2026-09-07T13:20:29.078930599-06:00",
+      "updated": "2026-09-16T11:33:14.048623937-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -331,7 +348,7 @@
       "enabled": true,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152595-06:00",
-      "updated": "2026-09-07T13:20:29.082032557-06:00",
+      "updated": "2026-09-16T11:33:14.056456197-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -358,7 +375,7 @@
       "enabled": false,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152625-06:00",
-      "updated": "2026-09-07T13:20:29.085650555-06:00",
+      "updated": "2026-09-16T11:33:14.064122001-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -378,7 +395,7 @@
       "enabled": true,
       "quarantined": false,
       "created": "2026-09-07T16:34:53.690485472-06:00",
-      "updated": "2026-09-07T16:36:19.247432108-06:00"
+      "updated": "2026-09-16T11:33:14.071220924-06:00"
     },
     {
       "name": "prometheus",
@@ -394,7 +411,7 @@
       "enabled": true,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152665-06:00",
-      "updated": "2026-09-07T13:20:29.089088797-06:00",
+      "updated": "2026-09-16T11:33:14.078296678-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -416,7 +433,7 @@
       "enabled": true,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152695-06:00",
-      "updated": "2026-09-07T13:20:29.095046457-06:00",
+      "updated": "2026-09-16T11:33:14.085690847-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -437,7 +454,7 @@
       "enabled": true,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152735-06:00",
-      "updated": "2026-09-07T13:20:29.098512498-06:00",
+      "updated": "2026-09-16T11:33:14.09279178-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -461,7 +478,7 @@
       "quarantined": false,
       "auto_approve_tool_changes": true,
       "created": "2026-07-19T02:33:58.727152765-06:00",
-      "updated": "2026-09-07T13:20:29.109620841-06:00",
+      "updated": "2026-09-16T11:33:14.099825175-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -481,7 +498,7 @@
       "enabled": true,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152805-06:00",
-      "updated": "2026-09-07T13:20:29.119008933-06:00",
+      "updated": "2026-09-16T11:33:14.106902688-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -506,7 +523,7 @@
       "enabled": true,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152835-06:00",
-      "updated": "2026-09-07T13:20:29.123969279-06:00",
+      "updated": "2026-09-16T11:33:14.114455183-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -528,13 +545,26 @@
       "quarantined": false,
       "auto_approve_tool_changes": true,
       "created": "2026-07-19T02:33:58.727152875-06:00",
-      "updated": "2026-09-07T13:20:29.134855855-06:00",
+      "updated": "2026-09-16T11:33:14.117079517-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
       },
       "health_check_interval": "15s",
       "tool_discovery_interval": "2m0s"
+    },
+    {
+      "name": "tmux",
+      "command": "/home/toxic/.local/share/mise/installs/bun/1.4.2/bin/bun",
+      "args": [
+        "run",
+        "/home/toxic/sovereign/tools/tmux-mcp/server.ts"
+      ],
+      "oauth": null,
+      "enabled": false,
+      "quarantined": false,
+      "created": "2026-09-14T14:51:04.584222675-06:00",
+      "updated": "2026-09-16T11:33:14.132676309-06:00"
     },
     {
       "name": "tpc-thought-ledger",
@@ -548,7 +578,7 @@
       "quarantined": false,
       "auto_approve_tool_changes": true,
       "created": "2026-07-19T02:33:58.727152915-06:00",
-      "updated": "2026-09-07T13:20:29.14344309-06:00",
+      "updated": "2026-09-16T11:33:14.125827631-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -567,7 +597,7 @@
       "enabled": false,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152945-06:00",
-      "updated": "2026-09-07T13:20:29.146286782-06:00",
+      "updated": "2026-09-16T11:33:14.12813618-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
@@ -587,26 +617,13 @@
       "enabled": true,
       "quarantined": false,
       "created": "2026-07-19T02:33:58.727152985-06:00",
-      "updated": "2026-09-07T13:20:29.14933534-06:00",
+      "updated": "2026-09-16T11:33:14.13037567-06:00",
       "isolation": {
         "enabled": false,
         "mode": "none"
       },
       "health_check_interval": "15s",
       "tool_discovery_interval": "2m0s"
-    },
-    {
-      "name": "tmux",
-      "command": "/home/toxic/.local/share/mise/installs/bun/1.4.2/bin/bun",
-      "args": [
-        "run",
-        "/home/toxic/sovereign/tools/tmux-mcp/server.ts"
-      ],
-      "oauth": null,
-      "enabled": false,
-      "quarantined": false,
-      "created": "2026-09-14T14:51:04.584222675-06:00",
-      "updated": "0001-01-01T00:00:00Z"
     }
   ],
   "tools_limit": 100,
@@ -897,8 +914,8 @@
   "telemetry": {
     "anonymous_id": "1c78bf6b-a719-4cef-ad6b-ab7161615d40",
     "anonymous_id_created_at": "2026-07-19T07:16:38Z",
-    "last_reported_version": "v0.52.1",
-    "last_startup_outcome": "db_locked",
+    "last_reported_version": "v0.51.0",
+    "last_startup_outcome": "success",
     "notice_shown": true
   },
   "observability": {

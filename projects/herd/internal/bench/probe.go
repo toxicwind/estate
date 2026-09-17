@@ -1,6 +1,6 @@
 // Package bench: probe.go — model liveness probing with full-grade
 // latency tracking. Uses a shared *http.Client with connection pooling
-// (matches internal/astmatrix/router.go and internal/shared/http.go
+// (matches internal/flock/router.go and internal/shared/http.go
 // conventions) instead of allocating a new client per request.
 package bench
 
@@ -33,7 +33,7 @@ type ModelsResponse struct {
 
 // sharedClient returns a *http.Client tuned for short, parallel probes
 // against a single herd instance. The Transport is the same shape used
-// by internal/astmatrix/router.go so the herd proxy is exercised the
+// by internal/flock/router.go so the herd proxy is exercised the
 // same way end-to-end.
 func sharedClient(timeout time.Duration) *http.Client {
 	return &http.Client{

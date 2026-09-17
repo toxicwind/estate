@@ -20,6 +20,13 @@ import { Database } from "bun:sqlite";
  *   bun scripts/bench-title-models.ts --local-examples
  *   bun scripts/bench-title-models.ts --ollama-url http://spark.internal:11434 --ollama-models llama3.2:3b,lfm2.5:2.6b
  *   bun scripts/bench-title-models.ts --db ~/.omp/agent/history.db --out bench.json
+ *   bun scripts/bench-title-models.ts --count 6 --seed 20260917 --no-ollama --deadline-s 600
+ *
+ * Nightly integration: emits one parseable `TITLE_MODEL <id> ...` line per
+ * lane after the summary table, so `rg '^TITLE_MODEL ' bench-run.log` gives
+ * the model-benchmark history. A global --deadline-s (default 600) bounds the
+ * run: on expiry pending lanes are reported `TITLE_MODEL <id> SKIP ...` and
+ * the process exits 0.
  */
 import * as os from "node:os";
 import * as path from "node:path";
@@ -74,6 +81,7 @@ interface BenchConfig {
 	ollamaUrl: string | null;
 	ollamaModels: string[];
 	outPath: string;
+	deadlineS: number;
 }
 
 const DEFAULT_LOCAL_MODELS = ["lfm2.5-230m", "lfm2.5-350m", "falcon-h1-90m"];
@@ -241,11 +249,21 @@ function parseArgs(argv: string[]): BenchConfig {
 					.filter(Boolean)
 			: DEFAULT_OLLAMA_MODELS,
 		outPath: get("--out") ?? path.join(os.tmpdir(), `title-bench-${stamp}.json`),
+		deadlineS: Number(get("--deadline-s") ?? 600),
 	};
 }
 
 async function main(): Promise<void> {
 	const config = parseArgs(Bun.argv.slice(2));
+	// Nightly bound: never hang the harness. On expiry, in-flight lanes are
+	// reported as SKIP and the process exits 0 (graceful degradation).
+	const deadline = setTimeout(() => {
+		console.info(`TITLE_MODELS DEADLINE_EXCEEDED after ${config.deadlineS}s`);
+		for (const m of config.localModels) console.info(`TITLE_MODEL ${m} SKIP deadline-exceeded`);
+		if (config.ollamaUrl)
+			for (const m of config.ollamaModels) console.info(`TITLE_MODEL ${m}@ollama SKIP deadline-exceeded`);
+		process.exit(0);
+	}, config.deadlineS * 1000);
 	const rng = createRng(config.seed);
 	const rows = sampleHistoryPrompts(config.dbPath, config.count, rng);
 	if (rows.length === 0) throw new Error(`No history prompts found in ${config.dbPath}`);
@@ -330,6 +348,14 @@ async function main(): Promise<void> {
 		),
 	);
 	console.info(`\nWrote ${config.outPath}`);
+	// Parseable per-lane lines for the nightly log (survive `tail -40`).
+	for (const lane of lanes) {
+		const s = lane.summary;
+		console.info(
+			`TITLE_MODEL ${lane.model} count=${s.count} nulls=${s.nulls} coldMs=${s.coldMs} warmMeanMs=${s.warmMeanMs} warmP95Ms=${s.warmP95Ms} len3to7=${s.lengthCompliant} punctFree=${s.punctuationFree}`,
+		);
+	}
+	clearTimeout(deadline);
 }
 
 await main();

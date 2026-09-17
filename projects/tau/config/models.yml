@@ -10,6 +10,31 @@ providers:
     auth: none
     discovery:
       type: openai-models-list
+  # Sovereign free pool: live router on :25104. `free` races all free-tier
+  # models and serves the first non-empty completion (substance-guarded).
+  sovereign:
+    baseUrl: ${SOVEREIGN_ROUTER_URL:-http://127.0.0.1:25104/v1}
+    api: openai-completions
+    auth: none
+    discovery:
+      type: openai-models-list
+    models:
+      - id: free
+        name: Sovereign free pool
+        api: openai-completions
+        reasoning: false
+        input: [text]
+        cost:
+          input: 0
+          output: 0
+      - id: ling
+        name: Ling 3.0 Flash (Sovereign default free model)
+        api: openai-completions
+        reasoning: false
+        input: [text]
+        cost:
+          input: 0
+          output: 0
 modelOverrides:
   disable:
     - gemini-3.7-flash-tiered

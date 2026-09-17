@@ -1,6 +1,6 @@
 # herd — Inference Front Door
 
-`herd/` is the **toxicwind fork of llama-swap** (Go, module `github.com/mostlygeek/llama-swap`) with the **AST Matrix** cloud-provider router compiled in. It serves the stack's single OpenAI-compatible endpoint.
+`herd/` is the **toxicwind fork of llama-swap** (Go, module `github.com/mostlygeek/llama-swap`) with the **flock** cloud-provider router compiled in. It serves the stack's single OpenAI-compatible endpoint.
 
 - **Upstream:** <https://github.com/mostlygeek/llama-swap>
 - **Fork:** <https://github.com/toxicwind/llama-swap>
@@ -11,7 +11,7 @@
 | Path | Role |
 | ---- | ---- |
 | `llama-swap.go`, `internal/` | Fork source (upstream + our additions) |
-| `internal/astmatrix/` | AST Matrix Go router — 8 strategies, 13 cloud providers, SQLite health DB (see `README_ASTMATRIX_V2.md`) |
+| `internal/flock/` | flock Go router — 8 strategies, 13 cloud providers, SQLite health DB (see `README_FLOCK_V2.md`) |
 | `config.yaml` | Vendored routing matrix + backend config reference |
 | `MODEL_INVENTORY.md` | Local GGUF / model-id audit for this host |
 | `TUNING.md` | Performance tuning notes |
@@ -36,7 +36,7 @@ Sovereign clients (Zed's llama.cpp provider, OpenFang, IDE copilots) need:
 
 ```bash
 curl -sS http://127.0.0.1:25100/health          # → OK
-curl -sS http://127.0.0.1:25100/astmatrix/status # router status
+curl -sS http://127.0.0.1:25100/flock/status # router status
 pitchfork restart herd                           # restart the service
 ```
 
@@ -49,6 +49,6 @@ go build -o llama-swap .
 
 ## Related
 
-- Router module docs: `herd/README_ASTMATRIX_V2.md`
+- Router module docs: `herd/README_FLOCK_V2.md`
 - Stack rules: `AGENTS.md` (repo root)
 - Ops dashboard: `http://127.0.0.1:25101/` — APIs under `/ops/api/*`

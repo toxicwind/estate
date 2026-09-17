@@ -10,10 +10,10 @@ mesh/
 ├── router/
 │   ├── sovereign-router-ts/    # live TS router (Bun, :25104, /ui) — 7 providers
 │   ├── sovereign-mcp-gateway/  # Sovereign MCP gateway source (trust boundary + circuit breaker + sticky affinity)
-│   ├── sovereign-ast-matrix-py/# Python FastAPI router (v2)
+│   ├── flock-py/# Python FastAPI router (v2)
 │   ├── sovereign-ast-router/   # TS router variant (v3)
 │   └── free_zed_gateway/       # free-LLM gateway concept
-├── ast-matrix/                 # AST code extraction / semantic matrix packages
+├── flock-pkg/                  # flock extraction snapshot (frozen, was ast-matrix/)
 ├── ui-svelte/                  # Svelte dashboard for the router
 ├── config.yml                  # unified mesh config — model roles, port mappings
 └── research/ data/              # provider discovery scripts, model catalog dumps
@@ -62,3 +62,34 @@ curl -sf http://127.0.0.1:25115/health    # mesh-hub (discovery)
 curl -sf http://127.0.0.1:25104/health    # sovereign-router
 curl -sf http://127.0.0.1:25100/v1/models  # herd (local inference)
 ```
+
+## Ops notes (2026-09-17)
+
+- mesh-hub (:25115) was down and was brought back up via pitchfork (pitchfork start mesh-hub).
+  /health returns 200. If pitchfork shows herd as errored while :25100 serves 200,
+  that is stale supervisor ownership -- the healthy detached daemon holds the port; do not
+  kill it or start a second instance.
+- config.yml line 65 declares default: openrouter/inclusionai/ling-3.0-flash-fin:free:high,
+  but nothing consumes it -- declared intent, not active routing. The live free pool is
+  freeCandidates() in router/sovereign-router-ts/router_config.ts. Ling PASSED the gate
+  2026-09-17 (corrected 8/8 benchmark, warm TTFT < 2 s; earlier 0/8 was a probe bug using
+  the invalid double-prefixed model ID) and is now IN the pool: 14 candidates verified
+  live, router restarted via pitchfork 04:25 MDT, /health 200.
+  See docs/free-tier-models.md for the full record.
+
+## Gemini API Tool Retrieval EAP
+
+- The Gemini API Early Access Program for Tool Retrieval (Guillaume Vernade, giom@google.com)
+  is directly relevant to shep: defer_loading: true offloads tool schemas server-side and a
+  retrieval meta-tool lets the model search a large tool catalog dynamically -- designed for
+  30+ tool catalogs, exactly the shape of shep (30 upstream MCP servers). Docs:
+  https://ai.google.dev/gemini-api/docs/tool-retrieval
+- Platform fixes confirmed by Google (2026-09-07): HTTP 400 on deferred tools with parameters
+  fixed fleet-wide; token-accounting fix for uncalled deferred tools rolling out.
+- Integration target: NATIVE Gemini path -- POST /v1beta/interactions on
+  gemini-flash-tool-retrieval with the EAP key (GEMINI_API_KEY_2), server-side mode with
+  shep's 30-server union as mcp_server entries + defer_loading: true. NOT the
+  OpenAI-compat /v1beta/openai path (no EAP semantics there), and NOT nim-proxy.
+  Full spec in docs/gemini-tool-retrieval.md; LLM-friendly API reference in
+  docs/gemini-tool-retrieval-reference.md. BLOCKED on depleted prepay credits --
+  Chris tops up at ai.studio/projects.

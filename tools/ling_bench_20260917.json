@@ -1,0 +1,90 @@
+[
+  {
+    "round": 1,
+    "fixture": "17*23",
+    "nonempty": true,
+    "correct": true,
+    "ttft_ms": 830,
+    "total_ms": 866,
+    "provider": "Novita",
+    "err": null,
+    "text_head": "391"
+  },
+  {
+    "round": 1,
+    "fixture": "yesno",
+    "nonempty": true,
+    "correct": true,
+    "ttft_ms": 1812,
+    "total_ms": 1829,
+    "provider": "Novita",
+    "err": null,
+    "text_head": "YES"
+  },
+  {
+    "round": 1,
+    "fixture": "hatch42",
+    "nonempty": true,
+    "correct": true,
+    "ttft_ms": 969,
+    "total_ms": 1025,
+    "provider": "Novita",
+    "err": null,
+    "text_head": "Hatch-42."
+  },
+  {
+    "round": 1,
+    "fixture": "cattac",
+    "nonempty": true,
+    "correct": true,
+    "ttft_ms": 913,
+    "total_ms": 919,
+    "provider": "Novita",
+    "err": null,
+    "text_head": "cat"
+  },
+  {
+    "round": 2,
+    "fixture": "17*23",
+    "nonempty": true,
+    "correct": true,
+    "ttft_ms": 1927,
+    "total_ms": 1956,
+    "provider": "Novita",
+    "err": null,
+    "text_head": "391"
+  },
+  {
+    "round": 2,
+    "fixture": "yesno",
+    "nonempty": true,
+    "correct": true,
+    "ttft_ms": 1273,
+    "total_ms": 1285,
+    "provider": "Novita",
+    "err": null,
+    "text_head": "YES"
+  },
+  {
+    "round": 2,
+    "fixture": "hatch42",
+    "nonempty": true,
+    "correct": true,
+    "ttft_ms": 1283,
+    "total_ms": 1310,
+    "provider": "Novita",
+    "err": null,
+    "text_head": "Hatch-42."
+  },
+  {
+    "round": 2,
+    "fixture": "cattac",
+    "nonempty": true,
+    "correct": true,
+    "ttft_ms": 810,
+    "total_ms": 829,
+    "provider": "Novita",
+    "err": null,
+    "text_head": "cat"
+  }
+]

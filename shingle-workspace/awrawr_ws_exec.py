@@ -51,6 +51,7 @@ import hmac
 import json
 import os
 import shlex
+import shutil
 import sys
 import time
 from datetime import datetime, timezone
@@ -62,7 +63,7 @@ WS_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 WS_PATH = "/exec-ws"
 PORT = int(os.environ.get("WS_EXEC_PORT", "8379"))
 TOKEN_FILE = os.path.expanduser("~/.awrawr_mcp_token")
-MAX_OUT = 20000
+MAX_OUT = 200000
 TIMEOUT_S = 90
 MAX_TIMEOUT_S = 1800
 XFER_IDLE_S = 120
@@ -191,9 +192,43 @@ def _xfer_path(path):
 
 
 # --- command execution ------------------------------------------------------
+# The daemon is usually started by a supervisor (pitchfork) whose inherited
+# PATH can contain unexpanded shell placeholders (e.g. fish's literal
+# "%h/.local/bin") — a bare argv[0] then fails lookup with
+# "[Errno 2] No such file or directory: 'git'". _spawn_env() rebuilds a
+# sane PATH once per spawn: drop unexpanded placeholders, expand "~",
+# keep the core dirs, dedupe. argv[0] is resolved up front with
+# shutil.which so a missing executable fails with a clear message
+# instead of an opaque -2.
+_CORE_PATH_DIRS = ("/usr/local/sbin", "/usr/local/bin", "/usr/sbin",
+                   "/usr/bin", "/sbin", "/bin")
+
+
+def _spawn_env():
+    raw = os.environ.get("PATH", "") or ""
+    seen, parts = set(), []
+    for seg in raw.split(os.pathsep):
+        seg = seg.strip()
+        if not seg or "%" in seg:  # unexpanded placeholder, unusable
+            continue
+        seg = os.path.expanduser(seg)
+        if seg and seg not in seen:
+            seen.add(seg)
+            parts.append(seg)
+    for d in _CORE_PATH_DIRS:
+        if d not in seen:
+            seen.add(d)
+            parts.append(d)
+    env = dict(os.environ)
+    env["PATH"] = os.pathsep.join(parts)
+    return env
+
+
 async def run_command(writer, send_lock, msg_id, cmd, workdir,
                       argv=None, timeout=TIMEOUT_S):
     t0 = time.monotonic()
+    env = _spawn_env()
+    exe = None
     if argv is not None:
         # shell-free exec: no quoting, no substitution, ever
         display = shlex.join([str(a) for a in argv])[:500]
@@ -201,6 +236,20 @@ async def run_command(writer, send_lock, msg_id, cmd, workdir,
         yolo = False
         denied = _policy_check(display)
         use_shell = False
+        base = {"cmd": orig_cmd[:500], "workdir": workdir, "yolo": yolo,
+                "transport": "ws", "msg_id": msg_id}
+        first = str(argv[0]) if argv else ""
+        if "/" not in first:
+            exe = shutil.which(first, path=env["PATH"])
+            if exe is None:
+                reason = ("executable not found: %r (PATH=%s)"
+                          % (first, env["PATH"]))
+                _audit(**base, status="error", reason=reason[:200],
+                       elapsed_ms=int((time.monotonic() - t0) * 1000))
+                await send_json(writer, send_lock,
+                                {"id": msg_id, "type": "exit", "code": -2,
+                                 "error": reason[:200]})
+                return
     else:
         orig_cmd = cmd
         yolo = cmd.startswith("#yolo ")
@@ -208,8 +257,8 @@ async def run_command(writer, send_lock, msg_id, cmd, workdir,
             cmd = cmd[len("#yolo "):].lstrip()
         denied = None if yolo else _policy_check(cmd)
         use_shell = True
-    base = {"cmd": orig_cmd[:500], "workdir": workdir, "yolo": yolo,
-            "transport": "ws", "msg_id": msg_id}
+        base = {"cmd": orig_cmd[:500], "workdir": workdir, "yolo": yolo,
+                "transport": "ws", "msg_id": msg_id}
 
     if denied:
         _audit(**base, status="denied", reason=denied,
@@ -243,13 +292,17 @@ async def run_command(writer, send_lock, msg_id, cmd, workdir,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
                 cwd=workdir or "/home/toxic",
+                env=env,
             )
         else:
+            resolved = [exe] + [str(a) for a in argv[1:]] \
+                if exe else [str(a) for a in argv]
             proc = await asyncio.create_subprocess_exec(
-                *[str(a) for a in argv],
+                *resolved,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
                 cwd=workdir or "/home/toxic",
+                env=env,
             )
         state = {"total": 0, "truncated": False}
         try:
