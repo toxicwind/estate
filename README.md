@@ -63,7 +63,7 @@ Service definitions are the source of truth in `pitchfork.toml` (edited directly
 | :25133 | qdrant | Vector store |
 | :25144 | kafka | Event bus |
 | :25199 | redis | Session cache / telemetry store |
-| :8000 | nim-proxy | NVIDIA NIM proxy (keyed) |
+| :8000 | flock | Unified multi-provider remote-API/completions subsystem |
 | :62200 | nginx | Local reverse proxy |
 | :53 | dnsmasq | Local DNS |
 | :5580 | matter-server | Matter smart-home bridge |
@@ -73,16 +73,20 @@ Service definitions are the source of truth in `pitchfork.toml` (edited directly
 
 ```text
 clients (Zed / OpenFang / IDEs)
-  └─► herd :25100  (llama-swap fork + AST Matrix Go router)
+  └─► herd :25100  (llama-swap fork + Flock cloud delegation)
         ├─► local backends :25001–:25099  (llama-server forks: beellama, turboquant, ik_llama, ik_llama-turboquant)
-        └─► cloud providers via AST Matrix (openrouter, nvidia, groq, …)
+        └─► cloud providers via Flock :8000 (openrouter, nvidia, groq, …)
 ```
 
-## AST Matrix routing
+## Flock cloud delegation
 
-Two implementations, one theory:
+Herd :25100 stays the front door. Cloud model IDs are discovered from
+authenticated Flock `GET /v1/models` and reverse-proxied to Flock :8000
+with herd's own `FLOCK_API_KEY` (see `flock:` in `config/herd.yaml`).
+Flock owns providers, health, circuits, key lanes, retry/failover and
+SQLite state — the in-process AST Matrix router was retired 2026-09-17
+(`herd/internal/astmatrix/` kept on disk for provenance, unwired).
 
-- **Go** (`herd/internal/flock/`) — compiled into the front door. 8 strategies, 13 providers, SQLite-backed health DB with ELO scoring and circuit breakers. See `herd/README_ASTMATRIX_V2.md`.
 - **TypeScript** (`tools/sovereign-router/sovereign-router-ts/router.ts`) — standalone Bun service on :25104 for external tooling. 7 providers: llama-swap, openrouter, nvidia, groq, cerebras, google, mistral.
 
 Per-request strategy override: `X-Sovereign-Strategy: free` races local + free-tier cloud models.
