@@ -1,8 +1,10 @@
-# AstMatrix V2 — Production-Grade Cloud Provider Router
+# flock router V2 — Production-Grade Cloud Provider Router
+
+> Renamed 2026-09-17: `astmatrix` -> `flock`. Package `internal/flock`; legacy `/astmatrix/*` HTTP paths and `astMatrix:` YAML key still accepted.
 
 ## Overview
 
-AstMatrix is a first-class routing module for llama-swap that provides intelligent dispatch to cloud LLM providers with production-grade reliability features.
+flock is a first-class routing module for llama-swap that provides intelligent dispatch to cloud LLM providers with production-grade reliability features.
 
 ## Architecture (Modular)
 
@@ -88,6 +90,6 @@ go build ./...
 ## Status Endpoint
 
 ```bash
-curl http://localhost:25100/astmatrix/status
-curl http://localhost:25100/astmatrix/metrics
+curl http://localhost:25100/flock/status
+curl http://localhost:25100/flock/metrics
 ```

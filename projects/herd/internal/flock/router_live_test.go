@@ -1,4 +1,4 @@
-package astmatrix
+package flock
 
 import (
 	"bytes"
@@ -21,7 +21,7 @@ func TestLiveKimi(t *testing.T) {
 		t.Skip("Set LIVE_TEST=1 to run live tests")
 	}
 
-	logger := logmon.NewMonitor("astmatrix-live")
+	logger := logmon.NewMonitor("flock-live")
 	cfg := loadLiveConfig(t)
 	router, err := NewRouter(cfg, logger)
 	if err != nil {
@@ -124,7 +124,7 @@ func TestLiveKimi(t *testing.T) {
 
 	// Test 5: Status endpoint
 	t.Run("StatusEndpoint", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "/astmatrix/status", nil)
+		req := httptest.NewRequest("GET", "/flock/status", nil)
 		w := httptest.NewRecorder()
 		ui := NewUIHandler(router)
 		ui.ServeHTTP(w, req)
@@ -146,7 +146,7 @@ func TestLiveKimi(t *testing.T) {
 
 	// Test 6: Metrics endpoint
 	t.Run("MetricsEndpoint", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "/astmatrix/metrics", nil)
+		req := httptest.NewRequest("GET", "/flock/metrics", nil)
 		w := httptest.NewRecorder()
 		ui := NewUIHandler(router)
 		ui.ServeHTTP(w, req)
@@ -159,9 +159,9 @@ func TestLiveKimi(t *testing.T) {
 	})
 }
 
-func loadLiveConfig(t *testing.T) *AstMatrixConfig {
+func loadLiveConfig(t *testing.T) *FlockConfig {
 	// Load from environment or use defaults
-	cfg := &AstMatrixConfig{
+	cfg := &FlockConfig{
 		Enabled:             true,
 		Strategy:            "hybrid",
 		ASTStrategy:         "ast_race",

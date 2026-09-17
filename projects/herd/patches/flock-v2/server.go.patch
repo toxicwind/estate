@@ -4,7 +4,7 @@
  
  	local router.LocalRouter
  	peer  router.Router
-+	cloud *astmatrix.Router // cloud provider routing via AST Matrix
++	cloud *flock.Router // cloud provider routing via flock
  
  	mux     *http.ServeMux
  	handler http.Handler

@@ -10,7 +10,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/mostlygeek/llama-swap/internal/astmatrix"
+	"github.com/mostlygeek/llama-swap/internal/flock"
 	"github.com/mostlygeek/llama-swap/internal/chain"
 	"github.com/mostlygeek/llama-swap/internal/config"
 	"github.com/mostlygeek/llama-swap/internal/event"
@@ -43,7 +43,7 @@ type Server struct {
 
 	local router.LocalRouter
 	peer  router.Router
-	cloud *astmatrix.Router // cloud model routing via AST Matrix
+	cloud *flock.Router // cloud model routing via flock
 
 	// modelEvents broadcasts the /models/sse feed Zed's llama.cpp
 	// provider subscribes to. The proxy owns model lifecycle truth,
@@ -184,10 +184,10 @@ func New(cfg config.Config, muxlog *logmon.Monitor, proxylog *logmon.Monitor, up
 		return nil, fmt.Errorf("creating peer router: %w", err)
 	}
 
-	// Initialize cloud router (AST Matrix) if configured.
-	var cloud *astmatrix.Router
+	// Initialize cloud router (flock) if configured.
+	var cloud *flock.Router
 	if cfg.AstMatrix != nil && cfg.AstMatrix.Enabled {
-		amCfg := &astmatrix.AstMatrixConfig{
+		amCfg := &flock.FlockConfig{
 			Enabled:     cfg.AstMatrix.Enabled,
 			Strategy:    cfg.AstMatrix.Strategy,
 			MaxParallel: cfg.AstMatrix.MaxParallel,
@@ -195,20 +195,20 @@ func New(cfg config.Config, muxlog *logmon.Monitor, proxylog *logmon.Monitor, up
 			StickyTTL:   cfg.AstMatrix.StickyTTL,
 			FifoMax:     cfg.AstMatrix.FifoMax,
 		}
-		amCfg.Providers = make(map[string]astmatrix.ProviderCfg)
+		amCfg.Providers = make(map[string]flock.ProviderCfg)
 		for name, pcfg := range cfg.AstMatrix.Providers {
-			amCfg.Providers[name] = astmatrix.ProviderCfg{
+			amCfg.Providers[name] = flock.ProviderCfg{
 				BaseURL:  pcfg.BaseURL,
 				KeyEnv:   pcfg.KeyEnv,
 				KeyEnvAlt: pcfg.KeyEnvAlt,
 				NoAuth:   pcfg.NoAuth,
 			}
 		}
-		cloud, err = astmatrix.NewRouter(amCfg, proxylog)
+		cloud, err = flock.NewRouter(amCfg, proxylog)
 		if err != nil {
-			return nil, fmt.Errorf("creating astmatrix router: %w", err)
+			return nil, fmt.Errorf("creating flock router: %w", err)
 		}
-		proxylog.Infof("astmatrix cloud router enabled: strategy=%s providers=%d", cfg.AstMatrix.Strategy, len(cloud.Matrix().Providers()))
+		proxylog.Infof("flock cloud router enabled: strategy=%s providers=%d", cfg.AstMatrix.Strategy, len(cloud.Matrix().Providers()))
 	}
 
 	if st == nil {

@@ -1,7 +1,7 @@
-package astmatrix
+package flock
 
-// AstMatrixConfig configures cloud provider routing with production-grade defaults.
-type AstMatrixConfig struct {
+// FlockConfig configures cloud provider routing with production-grade defaults.
+type FlockConfig struct {
 	Enabled     bool                   `yaml:"enabled"`
 	Strategy    string                 `yaml:"strategy"`
 	ASTStrategy string                 `yaml:"astStrategy"`
@@ -32,14 +32,53 @@ type ProviderCfg struct {
 	ELO       int               `yaml:"elo"`
 }
 
-func (a *AstMatrixConfig) Defaults() {
-	if a.Strategy == ""       { a.Strategy = "hybrid" }
-	if a.ASTStrategy == ""   { a.ASTStrategy = "ast_race" }
-	if a.MaxParallel <= 0     { a.MaxParallel = 4 }
-	if a.DbPath == ""         { a.DbPath = "/tmp/ast_matrix.db" }
-	if a.StickyTTL <= 0       { a.StickyTTL = 1800 }
-	if a.FifoMax <= 0         { a.FifoMax = 64 }
-	if a.RequestTimeout <= 0  { a.RequestTimeout = 95 }
-	if a.MaxRetries <= 0      { a.MaxRetries = 3 }
-	if a.HealthProbeInterval <= 0 { a.HealthProbeInterval = 30 }
+// AstMatrixConfig is the legacy name for FlockConfig (renamed 2026-09-17:
+// astmatrix -> flock). Kept as a type alias for additive compatibility.
+type AstMatrixConfig = FlockConfig
+
+func (a *FlockConfig) Defaults() {
+	if a.Strategy == "" {
+		a.Strategy = "hybrid"
+	}
+	if a.ASTStrategy == "" {
+		a.ASTStrategy = "flock_race"
+	}
+	if a.MaxParallel <= 0 {
+		a.MaxParallel = 4
+	}
+	if a.DbPath == "" {
+		a.DbPath = "/tmp/ast_matrix.db"
+	}
+	if a.StickyTTL <= 0 {
+		a.StickyTTL = 1800
+	}
+	if a.FifoMax <= 0 {
+		a.FifoMax = 64
+	}
+	if a.RequestTimeout <= 0 {
+		a.RequestTimeout = 95
+	}
+	if a.MaxRetries <= 0 {
+		a.MaxRetries = 3
+	}
+	if a.HealthProbeInterval <= 0 {
+		a.HealthProbeInterval = 30
+	}
+}
+
+// UnmarshalYAML accepts both the canonical "flockStrategy" key and the
+// legacy "astStrategy" key (kept so existing configs keep working).
+func (a *FlockConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	type plain FlockConfig // avoid recursion
+	var raw map[string]interface{}
+	if err := unmarshal(&raw); err != nil {
+		return err
+	}
+	if v, ok := raw["flockStrategy"]; ok && v != nil {
+		raw["astStrategy"] = v
+	}
+	if err := unmarshal((*plain)(a)); err != nil {
+		return err
+	}
+	return nil
 }

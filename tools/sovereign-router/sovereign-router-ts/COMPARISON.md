@@ -10,12 +10,12 @@ Three separate implementations have carried similar routing DNA:
    pitchfork daemon on `:25104`. Live provider `/models` discovery, 7
    strategies, streaming, sticky sessions, ELO, circuits, HealthDB, free
    racing, `/ui` dashboard.
-2. **Go cloud-router module** (`projects/herd/internal/astmatrix/`) — a
+2. **Go cloud-router module** (`projects/herd/internal/flock/`) — a
    llama-swap library module, not a version of #1. 13 providers,
    per-provider rate limits, request coalescing, least-latency and
    round-robin strategies, richer status surface. No live discovery, no
    streaming-first design.
-3. **Mesh gateway cloud-router** (`projects/mesh/gateway/astmatrix.go`) —
+3. **Mesh gateway cloud-router** (`projects/mesh/gateway/flock.go`) —
    routes tool-call/MCP traffic, a different domain entirely (not model
    inference).
 
@@ -31,14 +31,38 @@ router.
 
 | | sovereign-router-ts (LIVE) | Go module |
 |---|---|---|
-| Location | `tools/sovereign-router/sovereign-router-ts/` | `projects/herd/internal/astmatrix/` |
+| Location | `tools/sovereign-router/sovereign-router-ts/` | `projects/herd/internal/flock/` |
 | Status | **Production** — pitchfork daemon `:25104` | Library, compiled into herd llama-swap builds |
 | Providers | 7: llama-swap (herd main port `:25100`), openrouter, nvidia (direct multi-key), groq, cerebras, google, mistral | 13: llama-swap, openrouter, nvidia, groq, together, cerebras, fireworks, hyperbolic, github, mistral, openai, perplexity, siliconflow |
-| Strategies | 7: fifo, free, sticky, weighted, circuit_chain, hybrid, race | 8: hybrid, race, sticky, weighted, least_latency, round_robin, free, circuit_chain |
+| Strategies | 7 canonical: fifo_matrix, free, sticky_affinity, weighted_elo, circuit_chain, hybrid, flock_race (`fifo_flock` / `flock_race` aliases live; legacy `ast_race` / `fifo_matrix` still accepted) | 8: hybrid, flock_race (alias `ast_race`), sticky_affinity, weighted_elo, least_latency, round_robin, free, circuit_chain |
 | Model discovery | **Live** — `GET {base}/models` per key at startup + every 30 min; union with curated | YAML-configured static lists |
 | Health | SQLite WAL HealthDB, EMA latency, ELO, circuit breakers, sticky sessions | SQLite health DB, EMA latency, circuit breakers w/ half-open probes, sticky sessions |
 | Rate limiting | NVIDIA multi-key token buckets (40 rpm/key, round-robin) | Per-provider token buckets (all providers) |
 | Extra | SSE streaming, `/ui` dashboard, flap tracker, Prometheus `/metrics`, optional client-key auth | Request coalescing, latency histograms, richer status/metrics |
+
+## Full form inventory (all flock/astmatrix forms, 2026-09-17)
+
+Everything that has ever carried the astmatrix/flock routing DNA, with its
+canonical status. The old name "astmatrix" no longer makes sense: the thing
+is a *flock* of providers raced/managed together, so every active surface is
+renamed. Archives and frozen snapshots are documented, not renamed.
+
+| # | Form | Location | Kind | Status |
+|---|---|---|---|---|
+| 1 | sovereign-router-ts | `tools/sovereign-router/sovereign-router-ts/` | Bun/TS multi-provider model router | **LIVE** - pitchfork daemon `sovereign-router` on `:25104` |
+| 2 | flock (proxy) | `/home/toxic/projects/flock`, daemon `/home/toxic/.flock/flock` on `:8000` | Rust NVIDIA NIM OpenAI-compatible proxy | **LIVE** - separate repo; NIM-side consolidation owned by main chat |
+| 3 | Go flock module | `projects/herd/internal/flock/` | llama-swap library module (13 providers) | Active source; NOT the running `:25100` binary (built 2026-09-12 from an incomplete tree) |
+| 4 | mesh gateway router | `projects/mesh/gateway/flock.go`, `projects/herd/mesh/gateway/flock.go` | Go MCP/tool-call router | Reference copies; live `:25115` is the Bun mesh-hub |
+| 5 | flock-py | `projects/mesh/router/flock-py/`, `projects/herd/mesh/router/flock-py/` | Python reference router | Frozen reference |
+| 6 | flock-router | `projects/mesh/router/flock-router/` | TS reference router | Frozen reference |
+| 7 | flock-pkg | `projects/mesh/flock-pkg/`, `projects/herd/mesh/flock-pkg/` | Semantic/AST extraction snapshots | Frozen snapshots (not request routers) |
+| 8 | tau archive | `projects/tau/archive/from-sovereign-swap/internal/astmatrix` | Old Go copy | **Frozen archive - do not edit** |
+| 9 | tau-flock extension | `projects/tau/extensions/flock/` (`@toxicwind/tau-flock`) | Tau extension: flock client + slash commands + LLM tools | **LIVE-registered** - linked in `~/.tau/plugins`, `plugin list` shows it |
+| 10 | stray NIM implementations | various | NVIDIA NIM clients | Owned by main chat - out of this lane |
+
+Canonicality: exactly two live daemons (form 1 on `:25104`, form 2 on `:8000`).
+One active library source (form 3). One live-registered Tau extension (form 9).
+Everything else is reference, snapshot, or frozen archive.
 
 ## Consolidation changes (this tree, 2026-09-17)
 
@@ -62,6 +86,14 @@ router.
   auth, neutral naming (UA `Sovereign-Router/3.1`, `[router]` logs).
 - **Local path preserved**: llama-swap provider routes through the herd main
   port `:25100`; the router has not bypassed it.
+
+- **Strategy names flock-aligned** (2026-09-17): `ast_race` -> `flock_race`,
+  `fifo_matrix` keeps working with new alias `fifo_flock`. Additive only:
+  legacy names still accepted (switch cases match both, ROUTERS map holds
+  both keys). Proven live: `X-Sovereign-Strategy: flock_race` returned a
+  non-empty completion through the restarted `:25104` daemon. Go module
+  default strategy is now `flock_race`; yaml accepts `flockStrategy` with
+  legacy `astStrategy` still honored via custom UnmarshalYAML.
 
 - **Free pool is live-metadata derived** (2026-09-17, Chris): `freeCandidates()`
   no longer enumerates a static `:free`-suffix list. Eligibility is

@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+# mise run up — start core daemons via pitchfork
+set -euo pipefail
+export SOV="${SOVEREIGN_ROOT:-$PWD}"
+cd "$SOV"
+
+if ! command -v pitchfork >/dev/null; then
+  echo '{"error":"pitchfork missing","fix":"mise install"}'
+  exit 1
+fi
+
+# Source ports
+set -a
+[[ -f "$SOV/config/ports.env" ]] && source "$SOV/config/ports.env"
+set +a
+
+# ── START SUPERVISOR IF DEAD ──
+if ! pitchfork list >/dev/null 2>&1; then
+  echo "Supervisor not running — starting it..."
+  nohup pitchfork supervisor start > /tmp/pitchfork-supervisor.log 2>&1 &
+  sleep 3
+  if ! pitchfork list >/dev/null 2>&1; then
+    echo "ERROR: supervisor failed to start. Check /tmp/pitchfork-supervisor.log"
+    exit 1
+  fi
+  echo "Supervisor started."
+fi
+
+# ── START CORE ──
+echo "Starting core daemon group..."
+pitchfork start --group core
+
+# ── HEALTH PROBES ──
+echo "=== health ==="
+ok=0; fail=0; total=0
+
+_probe() {
+  local name=$1 url=$2
+  total=$((total+1))
+  if curl -sf --max-time 2 "$url" >/dev/null 2>&1; then
+    printf '✓ %-22s %s\n' "$name" "$url"
+    ok=$((ok+1))
+  else
+    printf '✗ %-22s %s\n' "$name" "$url"
+    fail=$((fail+1))
+  fi
+}
+
+# Probe the critical ones (add more as needed)
+_probe "llama-swap"        "http://127.0.0.1:25100/health"
+_probe "qdrant"            "http://127.0.0.1:25133/"
+_probe "ghas-api"          "http://127.0.0.1:25112/health"
+_probe "ghas-mcp"          "http://127.0.0.1:25113/health"
+_probe "prometheus"        "http://127.0.0.1:25105/-/healthy"
+_probe "mcpproxy-go"       "http://127.0.0.1:25127/health"
+_probe "antigravity-gw"    "http://127.0.0.1:25128/health"
+_probe "kimi-code"         "http://127.0.0.1:25126/health"
+
+echo
+echo "=== summary ==="
+echo "up: $ok  down: $fail  total: $total"
+[[ $fail -eq 0 ]] && echo "ALL HEALTHY" || echo "DEGRADED — $fail service(s) down"
+EOF
+
+# Fixed by toxic/toxic-agent - sovereign stack recovery
+# Applied: ast-grep installed, pitchfork.toml fixed (no zed-editor ghost),
+# supervisor restarted, core services started.
+# See AGENTS.md / sovereign docs for details.

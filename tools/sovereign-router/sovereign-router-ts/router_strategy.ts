@@ -389,7 +389,9 @@ export const ROUTERS: Record<
   (body: ChatBody, session: string) => Promise<RouteResult>
 > = {
   fifo_matrix: routeFifo,
+  fifo_flock: routeFifo,
   ast_race: routeAstRace,
+  flock_race: routeAstRace,
   sticky_affinity: routeSticky,
   weighted_elo: routeWeighted,
   circuit_chain: routeCircuitChain,

@@ -3,7 +3,7 @@
  * Sovereign Router v3.1 (Bun/TypeScript)
  * Port of sovereign-router/router.py — same strategies, HealthDB WAL, circuit breakers.
  *
- * Strategies: fifo_matrix | ast_race | sticky_affinity | weighted_elo | circuit_chain | hybrid
+ * Strategies: fifo_matrix (alias fifo_flock) | ast_race (alias flock_race) | sticky_affinity | weighted_elo | circuit_chain | hybrid
  * Default hybrid: sticky → ast_race → circuit_chain; explicit CODING aliases go direct.
  *
  * Env SSOT: sovereign/config/ports.env (mise _.file) + ~/.secrets

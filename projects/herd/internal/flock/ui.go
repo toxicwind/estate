@@ -1,11 +1,11 @@
-package astmatrix
+package flock
 
 import (
 	"encoding/json"
 	"net/http"
 )
 
-// UIHandler serves astmatrix status and metrics.
+// UIHandler serves flock status and metrics.
 type UIHandler struct {
 	router *Router
 }
@@ -15,12 +15,13 @@ func NewUIHandler(router *Router) *UIHandler {
 	return &UIHandler{router: router}
 }
 
-// ServeHTTP handles /astmatrix/status and /astmatrix/metrics.
+// ServeHTTP handles /flock/status and /flock/metrics.
+// Legacy /astmatrix/* paths are still served (additive compat).
 func (h *UIHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	switch req.URL.Path {
-	case "/astmatrix/status":
+	case "/flock/status", "/astmatrix/status":
 		h.handleStatus(w, req)
-	case "/astmatrix/metrics":
+	case "/flock/metrics", "/astmatrix/metrics":
 		h.handleMetrics(w, req)
 	default:
 		http.NotFound(w, req)

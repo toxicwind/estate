@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # =============================================================================
-# ASTMATRIX V2 — PRODUCTION-GRADE CLOUD ROUTER FOR LLAMA-SWAP
+# FLOCK V2 — PRODUCTION-GRADE CLOUD ROUTER FOR LLAMA-SWAP
 # Apply this patch set to upstream llama-swap
 # =============================================================================
 
@@ -24,9 +24,9 @@ fi
 
 cd "$TARGET_REPO"
 
-# Verify upstream (no astmatrix yet)
-if [ -d "internal/astmatrix" ]; then
-    echo "WARNING: internal/astmatrix already exists — this may be a fork, not upstream"
+# Verify upstream (no flock module yet)
+if [ -d "internal/flock" ]; then
+    echo "WARNING: internal/flock already exists — this may be a fork, not upstream"
     echo "Continuing anyway..."
 fi
 
@@ -35,26 +35,26 @@ cp internal/config/config.go internal/config/config.go.bak.$(date +%s)
 cp internal/server/server.go internal/server/server.go.bak.$(date +%s)
 
 echo ""
-echo "=== [2/4] COPY ASTMATRIX MODULE ==="
-mkdir -p internal/astmatrix
-cp "$SCRIPT_DIR/internal/astmatrix/"*.go internal/astmatrix/
-ls -la internal/astmatrix/
+echo "=== [2/4] COPY FLOCK MODULE ==="
+mkdir -p internal/flock
+cp "$SCRIPT_DIR/internal/flock/"*.go internal/flock/
+ls -la internal/flock/
 
 echo ""
 echo "=== [3/4] APPLY PATCHES ==="
 # Apply config.go patch
-if [ -f "$SCRIPT_DIR/patches/config.go.patch" ]; then
-    patch -p1 < "$SCRIPT_DIR/patches/config.go.patch" || {
+if [ -f "$SCRIPT_DIR/patches/flock-v2/config.go.patch" ]; then
+    patch -p1 < "$SCRIPT_DIR/patches/flock-v2/config.go.patch" || {
         echo "config.go patch failed, applying manually..."
-        cp "$SCRIPT_DIR/patches/config.go.new" internal/config/config.go
+        cp "$SCRIPT_DIR/patches/flock-v2/config.go.new" internal/config/config.go
     }
 fi
 
 # Apply server.go patch
-if [ -f "$SCRIPT_DIR/patches/server.go.patch" ]; then
-    patch -p1 < "$SCRIPT_DIR/patches/server.go.patch" || {
+if [ -f "$SCRIPT_DIR/patches/flock-v2/server.go.patch" ]; then
+    patch -p1 < "$SCRIPT_DIR/patches/flock-v2/server.go.patch" || {
         echo "server.go patch failed, applying manually..."
-        cp "$SCRIPT_DIR/patches/server.go.new" internal/server/server.go
+        cp "$SCRIPT_DIR/patches/flock-v2/server.go.new" internal/server/server.go
     }
 fi
 
@@ -71,9 +71,9 @@ go build ./... && echo "BUILD OK" || echo "BUILD FAILED — check errors above"
 
 echo ""
 echo "=== DONE ==="
-echo "AstMatrix V2 applied to $TARGET_REPO"
+echo "Flock V2 applied to $TARGET_REPO"
 echo ""
 echo "Next steps:"
-echo "  1. Edit config.yaml to add astMatrix section"
-echo "  2. Run: go test ./internal/astmatrix/..."
-echo "  3. Commit: git add internal/astmatrix && git commit -m 'feat: astmatrix v2 production router'"
+echo "  1. Edit config.yaml to add flock section"
+echo "  2. Run: go test ./internal/flock/..."
+echo "  3. Commit: git add internal/flock && git commit -m 'feat: flock v2 production router'"

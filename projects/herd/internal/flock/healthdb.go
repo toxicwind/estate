@@ -1,4 +1,4 @@
-package astmatrix
+package flock
 
 import (
 	"database/sql"
