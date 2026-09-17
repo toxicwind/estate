@@ -3,8 +3,8 @@
 env_file = "config/ports.env"
 
 [daemons.shep]
-run = "exec /usr/local/bin/shep serve --config=/home/toxic/projects/sovereign-projects/mesh/gateway/mcp_config.json --log-level=warn --log-to-file --listen=127.0.0.1:25127"
-dir = "/home/toxic/projects/sovereign-projects/mesh/gateway"
+run = "exec /home/toxic/sovereign/mesh/bin/shep serve --config=/home/toxic/sovereign/mesh/gateway/mcp_config.json --log-level=warn --log-to-file --listen=127.0.0.1:25127"
+dir = "/home/toxic/sovereign/mesh/gateway"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25127/health"
@@ -462,4 +462,14 @@ mise = false
 retry = true
 boot_start = true
 ready_cmd = "curl -sf http://127.0.0.1:25160/health >/dev/null"
+auto = ["start"]
+
+# pixel-adb-keepalive (2026-09-17): holds Pixel adb over Tailscale.
+# One-time: phone on USB once, run adb tcpip 5555, unplug. From then on
+# this reconnects 100.123.57.58:5555 every 60s. Additive only.
+[daemons.pixel-adb-keepalive]
+run = "exec /home/toxic/bin/pixel-adb-keepalive.sh"
+dir = "/home/toxic"
+mise = false
+retry = true
 auto = ["start"]
