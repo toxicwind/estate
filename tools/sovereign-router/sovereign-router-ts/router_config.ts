@@ -56,7 +56,7 @@ export const FIFO_MAX = 64;
 
 export const STRATEGY = process.env.SOVEREIGN_STRATEGY || "hybrid";
 
-export const UA = "Mozilla/5.0 (compatible; Sovereign-Router/3.1)";
+export const UA = "Mozilla/5.0 (compatible; Sovereign-Flock/3.1)";
 
 // ---------------------------------------------------------------------------
 // LLAMA_SWAP_V1 (must come before PROVIDERS that uses it)
