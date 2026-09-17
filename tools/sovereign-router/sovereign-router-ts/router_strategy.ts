@@ -37,7 +37,10 @@ export async function callOne(
     "Accept-Encoding": "identity",
   };
   if (!conf.no_auth) {
-    headers.Authorization = `Bearer ${getKey(provider)}`;
+    // NVIDIA rotates across the multi-key pool (40 rpm token bucket per key);
+    // null (all buckets dry) falls back to the default key.
+    const rk = provider === "nvidia" ? state.nextNvidiaKey() : null;
+    headers.Authorization = `Bearer ${rk || getKey(provider)}`;
   } else {
     headers.Authorization = "Bearer not-required-for-local";
   }
@@ -180,7 +183,13 @@ export async function routeAstRace(
           state.record(r.model!, r.provider!, 200, r.lat || 0, 1, "ast_race");
           return r;
         }
-        if (!best && content.trim() !== "") best = r;
+        if (content.trim() === "") {
+          // Non-substantive completion: never a winner — strike the model
+          // (flap tracker benches it after FLAP_STRIKES within the window).
+          state.recordEmpty(r.provider!, r.model!);
+        } else if (!best) {
+          best = r;
+        }
       }
     } else {
       // timeout: take first completed ok with non-empty content, if any
@@ -326,7 +335,10 @@ export function freeCandidates(): [string, string][] {
   for (const [name, conf] of Object.entries(PROVIDERS)) {
     if (!keyOk(name) || !state.circuitOk(name)) continue;
     for (const mid of catalogModelsFor(name)) {
-      if (mid.includes(":free")) out.push([name, mid]);
+      if (!mid.includes(":free")) continue;
+      // Flap-benched models sit out until their empty-strikes decay.
+      if (state.flapBanned(name, mid)) continue;
+      out.push([name, mid]);
     }
   }
   if (keyOk("llama-swap")) {

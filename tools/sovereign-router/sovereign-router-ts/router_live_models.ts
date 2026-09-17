@@ -19,6 +19,7 @@ import { dirname } from "node:path";
 import {
   PROVIDERS,
   LIVE_MODELS,
+  LIVE_MODEL_META,
   getKey,
   keyOk,
   log,
@@ -41,7 +42,11 @@ function persist(): void {
     writeFileSync(
       STATE_PATH,
       JSON.stringify(
-        { fetchedAt: new Date().toISOString(), models: LIVE_MODELS },
+        {
+          fetchedAt: new Date().toISOString(),
+          models: LIVE_MODELS,
+          meta: LIVE_MODEL_META,
+        },
         null,
         1,
       ),
@@ -61,6 +66,12 @@ function loadPersisted(): void {
       }
       log(`live-models loaded ${Object.keys(LIVE_MODELS).length} providers from disk`);
     }
+    if (j && typeof j.meta === "object") {
+      for (const [p, meta] of Object.entries(j.meta)) {
+        if (meta && typeof meta === "object")
+          LIVE_MODEL_META[p] = meta as Record<string, unknown>;
+      }
+    }
   } catch (e) {
     log("live-models load failed:", e);
   }
@@ -69,7 +80,19 @@ function loadPersisted(): void {
 // ---------------------------------------------------------------------------
 // Refresh
 // ---------------------------------------------------------------------------
-async function fetchProviderModels(p: string): Promise<string[]> {
+type RawModel = { id?: string; description?: string } & Record<string, unknown>;
+
+// Drop the long prose description — it bloats the persisted state and the
+// /v1/models payload without helping routing. Everything else (pricing,
+// context_length, architecture, limits...) is live metadata worth keeping.
+function slimMeta(raw: RawModel): Record<string, unknown> {
+  const { description, ...rest } = raw;
+  return rest;
+}
+
+async function fetchProviderModels(
+  p: string,
+): Promise<{ ids: string[]; meta: Record<string, Record<string, unknown>> }> {
   const conf = PROVIDERS[p];
   const headers: Record<string, string> = {
     Accept: "application/json",
@@ -86,11 +109,18 @@ async function fetchProviderModels(p: string): Promise<string[]> {
     signal: AbortSignal.timeout(15000),
   });
   if (!r.ok) throw new Error(`http_${r.status}`);
-  const j = (await r.json()) as { data?: { id?: string }[] };
-  const ids = Array.isArray(j?.data)
-    ? j.data.map((d) => d?.id).filter((x): x is string => typeof x === "string" && !!x)
-    : [];
-  return ids;
+  const j = (await r.json()) as { data?: RawModel[] };
+  const ids: string[] = [];
+  const meta: Record<string, Record<string, unknown>> = {};
+  if (Array.isArray(j?.data)) {
+    for (const d of j.data) {
+      if (typeof d?.id === "string" && d.id) {
+        ids.push(d.id);
+        meta[d.id] = slimMeta(d);
+      }
+    }
+  }
+  return { ids, meta };
 }
 
 export async function refreshLiveModels(): Promise<void> {
@@ -105,8 +135,9 @@ export async function refreshLiveModels(): Promise<void> {
       continue;
     }
     try {
-      const ids = await fetchProviderModels(p);
+      const { ids, meta } = await fetchProviderModels(p);
       LIVE_MODELS[p] = ids;
+      LIVE_MODEL_META[p] = meta;
       LIVE_STATUS[p] = {
         ok: true,
         count: ids.length,
