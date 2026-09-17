@@ -1,0 +1,19 @@
+{
+  "name": "meta-research-toolkit",
+  "version": "0.1.0",
+  "module": "src/typescript/index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "bun build src/typescript/index.ts --outdir dist",
+    "test": "bun test --coverage",
+    "lint": "bunx tsc --noEmit",
+    "dev": "bun run src/typescript/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.5.0"
+  },
+  "dependencies": {
+    "zod": "^3.23.0"
+  }
+}

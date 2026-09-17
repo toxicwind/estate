@@ -1,5 +1,5 @@
 [submodule "shell/sovereign-end4"]
-	path = shell/ii
+	path = projects/shell/ii
 	url = https://github.com/toxicwind/sovereign-end4.git
 [submodule "tau/vendors"]
 	path = tau/vendors
