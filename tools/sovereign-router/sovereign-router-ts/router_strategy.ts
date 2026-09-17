@@ -3,6 +3,48 @@ import { state } from "./router_matrix.ts";
 import { PROVIDERS, PROVIDER_MODELS, catalogModelsFor, LOCAL_ROLES, CODING, MAX_PARALLEL, FIFO_MAX, STRATEGY, UA, AST_RE, getKey, keyOk, firstModelFor, resolveModel, isLocalSwapModelId, isAst, isExplicit, json } from "./router_config.ts";
 
 // ---------------------------------------------------------------------------
+// Substance guard: a completion is servable only if it carries non-empty
+// content (or tool_calls). HTTP 200 with an empty message is a failure at
+// every routing layer — never served, never sticky-pinned, always struck.
+// ---------------------------------------------------------------------------
+function messageOf(r: RouteResult): any {
+  try {
+    const raw =
+      typeof r.data === "string"
+        ? r.data
+        : new TextDecoder().decode(r.data as Uint8Array);
+    return JSON.parse(raw)?.choices?.[0]?.message;
+  } catch {
+    return undefined;
+  }
+}
+
+export function substantive(r: RouteResult): boolean {
+  if (!r.ok) return false;
+  const m = messageOf(r);
+  if (!m) return false;
+  if (typeof m.content === "string" && m.content.trim() !== "") return true;
+  return Array.isArray(m.tool_calls) && m.tool_calls.length > 0;
+}
+
+function contentText(r: RouteResult): string {
+  const m = messageOf(r);
+  const c = m?.content;
+  return typeof c === "string" ? c : "";
+}
+
+// Any model id the router can directly address: explicit alias, local id,
+// or any curated/live catalog id on any keyed provider. Unknown ids keep
+// the old race-everything behavior.
+function isRoutableModelId(model: string): boolean {
+  if (isExplicit(model)) return true;
+  for (const p of Object.keys(PROVIDERS)) {
+    if (catalogModelsFor(p).includes(model)) return true;
+  }
+  return false;
+}
+
+// ---------------------------------------------------------------------------
 // Provider call
 // ---------------------------------------------------------------------------
 export async function callOne(
@@ -139,35 +181,33 @@ export async function routeAstRace(
   candsOverride?: [string, string][],
 ): Promise<RouteResult> {
   const model = String(body.model || "auto");
-  if (isExplicit(model) && !candsOverride) {
-    const [p, mid] = CODING[model]!;
+  if (isRoutableModelId(model) && !candsOverride) {
+    // Direct-addressable id (alias, local id, or any curated/live catalog
+    // id): go straight to its provider instead of racing.
+    const [p, mid] = resolveModel(model);
     const r = await callOne(p, mid, body);
-    if (r.ok) {
+    if (substantive(r)) {
       state.stickySet(session, p, mid);
       state.record(mid, p, 200, r.lat || 0, 1, "ast_race");
+      return r;
     }
-    return r;
+    if (r.ok) state.recordEmpty(p, mid);
+    return {
+      ok: false,
+      status: r.ok ? 502 : r.status || 502,
+      provider: p,
+      lat: r.lat,
+      err: r.ok ? "empty_completion" : r.err,
+    };
   }
   const cands = candsOverride || pickWeighted(MAX_PARALLEL);
   if (!cands.length)
     return { ok: false, status: 503, err: "ast_race_exhausted" };
   const futs = cands.map(([p, mid]) => callOne(p, mid, body));
   let best: RouteResult | null = null;
-  // Non-substantive (empty/whitespace-only) completions are failures, never
-  // winners: a 200 with no content must not be served or sticky-pinned.
-  const textOf = (r: RouteResult): string => {
-    try {
-      const j = JSON.parse(
-        typeof r.data === "string"
-          ? r.data
-          : new TextDecoder().decode(r.data as Uint8Array),
-      );
-      const c = j?.choices?.[0]?.message?.content;
-      return typeof c === "string" ? c : "";
-    } catch {
-      return "";
-    }
-  };
+  // Non-substantive (empty/whitespace-only, no tool_calls) completions are
+  // failures, never winners: a 200 with no content must not be served or
+  // sticky-pinned.
   try {
     const results = await Promise.race([
       Promise.allSettled(futs).then((all) => all),
@@ -177,13 +217,13 @@ export async function routeAstRace(
       for (const settled of results) {
         if (settled.status !== "fulfilled" || !settled.value.ok) continue;
         const r = settled.value;
-        const content = textOf(r);
+        const content = contentText(r);
         if (isAst(content)) {
           state.stickySet(session, r.provider!, r.model!);
           state.record(r.model!, r.provider!, 200, r.lat || 0, 1, "ast_race");
           return r;
         }
-        if (content.trim() === "") {
+        if (!substantive(r)) {
           // Non-substantive completion: never a winner — strike the model
           // (flap tracker benches it after FLAP_STRIKES within the window).
           state.recordEmpty(r.provider!, r.model!);
@@ -192,13 +232,13 @@ export async function routeAstRace(
         }
       }
     } else {
-      // timeout: take first completed ok with non-empty content, if any
+      // timeout: take first completed substantive result, if any
       for (const f of futs) {
         const settled = await Promise.race([
           f.then((v) => v),
           Promise.resolve(null as RouteResult | null),
         ]);
-        if (settled?.ok && textOf(settled).trim() !== "") {
+        if (settled && substantive(settled)) {
           best = settled;
           break;
         }
@@ -219,11 +259,12 @@ export async function routeSticky(
   session: string,
 ): Promise<RouteResult> {
   const model = String(body.model || "auto");
-  if (isExplicit(model)) return routeAstRace(body, session);
+  if (isRoutableModelId(model)) return routeAstRace(body, session);
   const [p, m] = state.stickyGet(session);
   if (p && keyOk(p) && state.circuitOk(p)) {
     const r = await callOne(p, m || model, body);
-    if (r.ok) return r;
+    if (substantive(r)) return r;
+    if (r.ok) state.recordEmpty(p, m || model);
   }
   return routeAstRace(body, session);
 }
@@ -236,8 +277,18 @@ export async function routeWeighted(
   if (!cands.length) return { ok: false, status: 503, err: "no_providers" };
   const [p, mid] = cands[0];
   const r = await callOne(p, mid, body);
-  if (r.ok) state.stickySet(session, p, mid);
-  return r;
+  if (substantive(r)) {
+    state.stickySet(session, p, mid);
+    return r;
+  }
+  if (r.ok) state.recordEmpty(p, mid);
+  return {
+    ok: false,
+    status: r.ok ? 502 : r.status || 502,
+    provider: p,
+    lat: r.lat,
+    err: r.ok ? "empty_completion" : r.err,
+  };
 }
 
 export async function routeCircuitChain(
@@ -245,14 +296,22 @@ export async function routeCircuitChain(
   session: string,
 ): Promise<RouteResult> {
   const model = String(body.model || "auto");
-  if (isExplicit(model)) {
-    const [p, mid] = CODING[model]!;
+  if (isRoutableModelId(model)) {
+    const [p, mid] = resolveModel(model);
     if (keyOk(p) && state.circuitOk(p)) {
       const r = await callOne(p, mid, body);
-      if (r.ok) {
+      if (substantive(r)) {
         state.stickySet(session, p, mid);
         return r;
       }
+      if (r.ok) state.recordEmpty(p, mid);
+      return {
+        ok: false,
+        status: r.ok ? 502 : r.status || 502,
+        provider: p,
+        lat: r.lat,
+        err: r.ok ? "empty_completion" : r.err,
+      };
     }
     return {
       ok: false,
@@ -268,10 +327,11 @@ export async function routeCircuitChain(
     const mid = firstModelFor(p);
     if (!mid) continue;
     const r = await callOne(p, mid, body);
-    if (r.ok) {
+    if (substantive(r)) {
       state.stickySet(session, p, mid);
       return r;
     }
+    if (r.ok) state.recordEmpty(p, mid);
   }
   return { ok: false, status: 503, err: "circuit_chain_exhausted" };
 }
@@ -296,19 +356,28 @@ export async function routeHybrid(
   session: string,
 ): Promise<RouteResult> {
   const model = String(body.model || "auto");
-  if (isExplicit(model)) {
+  if (isRoutableModelId(model)) {
     const [p, mid] = resolveModel(model);
     const r = await callOne(p, mid, body);
-    if (r.ok) {
+    if (substantive(r)) {
       state.stickySet(session, p, mid);
       state.record(mid, p, 200, r.lat || 0, 1, "hybrid_direct");
+      return r;
     }
-    return r;
+    if (r.ok) state.recordEmpty(p, mid);
+    return {
+      ok: false,
+      status: r.ok ? 502 : r.status || 502,
+      provider: p,
+      lat: r.lat,
+      err: r.ok ? "empty_completion" : r.err,
+    };
   }
   const [p, m] = state.stickyGet(session);
   if (p && keyOk(p) && state.circuitOk(p)) {
     const r = await callOne(p, m || model, body);
-    if (r.ok) return r;
+    if (substantive(r)) return r;
+    if (r.ok) state.recordEmpty(p, m || model);
   }
   const r2 = await routeAstRace(body, session);
   if (r2.ok) return r2;
