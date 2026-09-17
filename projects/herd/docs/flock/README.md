@@ -8,5 +8,5 @@ nim-bench-dashboard, nvidia-nim-tools, nvidia-free-endpoints, nim-inkling-api-re
 and the moonbox benchmark trees; renamed in full from `nim-proxy`).
 
 - [architecture.md](architecture.md) — components and data flow
-- [herd-integration.md](herd-integration.md) — how herd and AstMatrix use flock
+- [herd-integration.md](herd-integration.md) — how herd uses flock
 - [runbook.md](runbook.md) — operate the daemon

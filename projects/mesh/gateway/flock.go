@@ -1,4 +1,4 @@
-package astmatrix
+package flock
 
 // CloudRouter routes tool calls across upstream MCP servers using health,
 // latency, and ELO-based provider selection. Neither mcpproxy-go nor llama-swap
@@ -65,7 +65,7 @@ func (cr *CloudRouter) Route(ctx context.Context, toolName string) (string, erro
 	defer cr.mu.RUnlock()
 	providers := cr.registry.All()
 	if len(providers) == 0 {
-		return "", fmt.Errorf("astmatrix: no providers registered")
+		return "", fmt.Errorf("flock: no providers registered")
 	}
 	var candidates []*Provider
 	for _, p := range providers {
@@ -75,7 +75,7 @@ func (cr *CloudRouter) Route(ctx context.Context, toolName string) (string, erro
 		candidates = append(candidates, p)
 	}
 	if len(candidates) == 0 {
-		return "", fmt.Errorf("astmatrix: no healthy providers for %s", toolName)
+		return "", fmt.Errorf("flock: no healthy providers for %s", toolName)
 	}
 	return cr.selectProvider(candidates, toolName).Name, nil
 }

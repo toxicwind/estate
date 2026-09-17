@@ -1,0 +1,331 @@
+# Sovereign
+
+Local multi-service stack: one OpenAI-compatible LLM front door, agent kernel, Telegram bot, ops dashboard, metrics, and optional Tailscale exposure.
+
+**Orchestration:** `mise` + `pitchfork`
+**LLM front door:** llama-swap **:25100** (toxicwind fork — no vLLM)
+**Ports SSOT:** `config/ports.env` (25xxx)
+
+There is **no Caddy** and **no separate “landing” service**. Ops UI is **rust-web** only.
+
+---
+
+## Quick start
+
+```bash
+cd /home/toxic/sovereign
+mise install
+mise run up       # owned hot-reload modules
+mise run health
+mise run status
+mise run down
+```
+
+| Surface        | URL                                   |
+| -------------- | ------------------------------------- |
+| Chat UI        | http://127.0.0.1:25100/ui/            |
+| OpenAI API     | http://127.0.0.1:25100/v1             |
+| Ops dashboard  | http://127.0.0.1:25101/               |
+| Dashboard JSON | http://127.0.0.1:25101/ops/api/status |
+| OpenFang UI    | http://127.0.0.1:25103/               |
+| OpenFang API   | http://127.0.0.1:25203/               |
+| HF Downloader  | http://127.0.0.1:25106/               |
+| Grafana        | http://127.0.0.1:25110/               |
+| MCP Gateway    | http://127.0.0.1:25120/health         |
+| Mesh Hub       | http://127.0.0.1:25115/mesh/features  |
+
+---
+
+## What's running (`mise run up`)
+
+| Process               | Port      | Runtime             | Role                                                                                                            |
+| --------------------- | --------- | ------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **llama-swap**        | **25100** | Go (toxicwind fork) | Inference router + flock Go router + `/ui` + `/v1`                                                         |
+| **rust-web**          | **25101** | Rust                | Ops dashboard + embedded watchdog                                                                               |
+| **yote**              | 25102     | Bun                 | Telegram / status                                                                                               |
+| **openfang**          | **25103** | Rust (binary)       | Agent kernel — OpenFang OS, 206 models, 61 skills, Discord bridge                                               |
+| **prometheus**        | 25105     | Go                  | Metrics                                                                                                         |
+| **hf-downloader**     | 25106     | Bun                 | GGUF download UI                                                                                                |
+| **null-g-proxy**      | 25107     | Bun                 | Extra LLM proxy                                                                                                 |
+| **mcpproxy**          | 25127     | Go                  | MCP federation (43 MCPs → 1 endpoint)                                                                           |
+| **grafana**           | 25110     | Go                  | Optional dashboards                                                                                             |
+| **ghas-api**          | 25112     | Bun                 | GitHub Advanced Search API                                                                                      |
+| **ghas-mcp**          | 25113     | Bun                 | GHAS MCP (HTTP mode, depends on ghas-api)                                                                       |
+| **mesh-hub**          | 25115     | Bun                 | 20 GHAS-inspired features × every service                                                                       |
+| **byte-vision**       | 25121     | Go binary           | Vision MCP (OCR / screenshot analysis)                                                                          |
+| **tailscale-funnel**  | —         | Bash                | Tailscale Funnel exposure (public HTTPS endpoint)                                                               |
+| **redis**             | 25199     | Redis               | Session cache, telemetry backing store                                                                          |
+
+Backends for swap: `BEELLAMA_PORT`=**25122**, `IK_LLAMA_PORT`=**25123**, `TURBO_PORT`=**25124** (llama-server forks).
+
+### Llama-swap interfaces (both coexist — you pick)
+
+| Interface             | File                           | What it is                                                                                                  |
+| --------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| **Binary launcher**   | `stack/services/llama-swap.sh` | Shell launcher — launches the Go binary, health loop, fail loud.                                            |
+| **MCP stdio wrapper** | `src/mcp/llama_swap.ts`        | Bun MCP server (`StdioServerTransport`). Env-only config (no file reads). Used by MCP federation / gateway. |
+
+The launcher (`llama-swap.sh`) is the primary service entry. The MCP wrapper (`llama_swap.ts`) is an additional stdio interface for agent/MCP use. They share the same port (`LLAMA_SWAP_PORT=25100`) but serve different clients. Do not confuse them: the script launches a binary; the wrapper is a Bun process.
+
+---
+
+### Inference chain
+
+```text
+clients (Zed / OpenFang / Grok / IDEs)
+   └─► llama-swap :25100   (toxicwind fork)
+          │  internal/flock/ — ELO scoring, circuit breakers, 6 strategies
+          │  SQLite WAL health DB (modernc.org/sqlite)
+          └─► beellama :25122 | ik_llama :25123 | turboquant :25124
+```
+
+### flock Go port (in llama-swap fork)
+
+The TypeScript flock router (`tools/sovereign-router/sovereign-router-ts/router.ts`) has been ported to Go inside the llama-swap fork at `~/projects/llama-swap-main/internal/flock/`. This gives llama-swap native multi-provider routing with:
+
+- **6 strategies:** hybrid, ast_race, sticky_affinity, weighted_elo, circuit_chain, fifo_matrix
+- **ELO scoring** with circuit breaker (closed/open/half)
+- **SQLite WAL** health DB for request history, model health, healing events
+- **7 providers:** llama-swap (local), OpenRouter, NVIDIA NIM, Groq, Cerebras, Google, Mistral
+- **40+ model aliases** mapped to CODING categories
+
+The standalone Bun `sovereign-router` (`tools/sovereign-router/sovereign-router-ts/`) remains in-tree for external tooling use — no port assigned in `config/ports.env`, not started by `mise run up`. The Go port inside llama-swap is the primary router.
+
+### Sovereign Monitor — Agentic Runtime Intelligence
+
+`tools/sovereign-monitor/` provides kernel-aware, autonomous failure-recovery primitives used by the agent loop itself:
+
+| Module                  | Coverage | Purpose                                                                                                           |
+| ----------------------- | -------- | ----------------------------------------------------------------------------------------------------------------- |
+| `recursive-fallback.ts` | 88%+     | Multi-level try/catch with helpers, recursive decomposition, and watchdog escalation (ReAct / Reflexion grounded) |
+| `watchdog.ts`           | 100%     | Bounded agentic-loop watchdog: judge → SIGINT → SIGKILL escalation, audit trail, MCP stdio exclusion              |
+| `repo-radar.ts`         | 100%     | Autonomous repo discovery via shallow GHAS queries; novelty scoring; autonomy signal detection                    |
+
+The recursive fallback is the **default failure discipline** for every non-trivial tool call: primary → fix_syntax (coerce input) → scaffold (write helper script) → borrow_ghas (discover pattern) → retrieve_tool (shallow MCP query) → recurse (decompose + retry smaller sub-problem) → escalate (watchdog trips). Each catch block has its own nested try/catch — no single point of failure.
+
+### Repo audit & maximal audit framework
+
+Two complementary audit systems live in this repo:
+
+**`skills/repo-audit/`** — repo-audit skill (see `SKILL.md`):
+
+- `repo_audit.py` — remote GitHub repo analysis via `gh` CLI (privacy/naming/topic signals)
+- `local_audit.py` — scans `/home/toxic/projects` for git repos, builds a tree-structure DataFrame, flags duplicates/symlinks
+- `projects.map` — benign path map of known projects (renamed from `projects.env` — the `.env` suffix was misleading)
+- Outputs: CSV, Parquet, JSON (`repo-audit.csv`, `repo-audit.parquet`, `repo-audit.json`)
+
+**`src/maximal-sovereign-agentic-audit/`** — maximal modular audit framework (`local-audit.ts` entry):
+
+- `modules/precheck.ts` — pre-flight checks; `modules/autofix.ts` — `--fix` auto-remediation
+- `modules/git-scanner.ts` + `modules/parser.ts` + `modules/dataframe.ts` — repo discovery and shaping
+- `modules/parquet.ts` — Parquet export; `modules/completions.ts` — LLM-assisted analysis (`--completions`)
+- `benchmark.ts` — audit benchmarking harness
+
+```bash
+bun src/maximal-sovereign-agentic-audit/src/index.ts -- [--json] [--parquet] [--fix] [--completions]
+```
+
+### Quickshell Screenshot Integration
+
+The agent captures the user's Hyprland desktop via quickshell (ii rice) snip tool:
+
+- `~/.config/quickshell/ii/screenshot-region.sh` — socket-free primary capture (slurp+grim), recursive multifallback, AST-aware snip routing (code/text/image via tesseract+magick)
+- `~/.config/quickshell/ii/modules/common/utils/RecursiveFallback.qml` — QML singleton engine for nested fallback
+- `prune-stale-sockets.sh` — cleans crashed-instance IPC dirs
+
+Screenshot actions: `auto` (capture + classify + route to clipboard/file), `copy` (capture + clipboard only). Print Screen key triggers `ScreenSnipToggle.qml` which calls the shell script directly (no dual-instance spawning).
+
+---
+
+## Why no Caddy / no landing
+
+| Removed                                          | Why                                                                                                                                                                                                                                                                                                                      |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Caddy**                                        | Path routing fought real services (`/api/*` → openfang while rust-web also needs APIs). Port docs were wrong (`:3000` vs `CADDY_PORT=25109`). **`mise run up` never started it.** Multipath proxy not needed when every service has a stable 25xxx port. Artifacts archived under `/home/toxic/archive/caddy-removed-*`. |
+| **landing** (`LANDING_PORT` / Bun `src/landing`) | Duplicate static server for the same files rust-web already serves. False offshoot of rust-web. Deleted; dashboard APIs live on rust-web at **`/ops/api/*`**.                                                                                                                                                            |
+
+All public-facing services bind to `0.0.0.0` (not `127.0.0.1`) for LAN/Tailscale access. Internal mesh-front backends stay on `127.0.0.1:252xx`. Redis on `:25199`, Qdrant on `:25133` — both `0.0.0.0`.
+
+Access services **directly** on their ports (LAN or Tailscale MagicDNS). Optional Funnel points at **rust-web only** — see `tailscale/README.md`.
+
+---
+
+## Architecture (direct ports)
+
+```text
+                    ┌─ llama-swap    :25100  (/ui, /v1, /models/sse + flock Go)
+ clients ──────────┼─ rust-web      :25101  (/, /ops/api/*, /health)
+ (local/tailnet)   ├─ openfang      :25103  (agent kernel)
+                    ├─ yote          :25102  (Telegram)
+                    ├─ mcpproxy      :25127  (43 MCPs federated)
+                    ├─ ghas-api      :25112  (GitHub search)
+                    ├─ mesh-hub      :25115  (service mesh)
+                    └─ byte-vision   :25121  (vision MCP)
+
+ optional: Tailscale Funnel → rust-web :25101 only (not multipath)
+```
+
+---
+
+## Workspaces (`toxicwind/sovereign-projects`)
+
+The **Sovereign Workspaces** repo is the unified workspace layer that operates in tandem with this control plane.
+
+- **GitHub**: [toxicwind/sovereign-projects](https://github.com/toxicwind/sovereign-projects)
+- **Local**: `/home/toxic/projects/sovereign-projects/`
+- **Subfolders**: `herd`, `mesh`, `tau`, `yote`, `openfang`, `qed`, `shell`, `boundless`, `packages`
+
+| Workspace | Directory | Role | Port |
+|-----------|-----------|------|------|
+| **Herd** | `herd/` | Inference router & llama-swap | `:25100` |
+| **Mesh** | `mesh/` | MCP federation gateway | `:25127` |
+| **Tau** | `tau/` | Canonical AI coding agent engine | `:25192` |
+| **Yote** | `yote/` | Minimal embeddable agent runtime | `:25102` |
+| **OpenFang** | `openfang/` | Rust Agent OS (agent kernel) | `:25103` |
+| **QED** | `qed/` | AI-native editor (Zed fork) | — |
+| **Shell** | `shell/` | Desktop environment | Wayland |
+| **Boundless** | `boundless/` | Document ingestion & chunking | `:10200` |
+
+```bash
+# Clone the workspaces
+git clone https://github.com/toxicwind/sovereign-projects.git /home/toxic/projects/sovereign-projects
+```
+
+Orchestration: `pitchfork.toml` (native config, no generation). `mise run up` starts the `core` group.
+
+---
+
+## Hot reload
+
+| Component    | Mechanism                                                         |
+| ------------ | ----------------------------------------------------------------- |
+| rust-web     | `cargo watch` via `stack/services/rust-web-hot.sh`                |
+| Bun services | `bun --hot` in process modules                                    |
+| prometheus   | lifecycle reload wrapper (if enabled)                             |
+| llama-swap   | restart: `mise run restart-llama` (binary, not rewritten in-tree) |
+
+After editing a process module: full `mise run down && mise run up` (pitchfork reads config on start).
+
+---
+
+## Configuration
+
+| Source                 | Contents                            |
+| ---------------------- | ----------------------------------- |
+| **`config/ports.env`** | Port SSOT (loaded by mise `_.file`) |
+| **`.env.local`**       | Optional overrides / build flags    |
+| **`~/.secrets`**       | Secrets (not in git)                |
+
+Never invent port numbers in app code — use env / `src/lib/ports.ts` / `stack/lib-ports.sh`. All bind addresses use `0.0.0.0` for network accessibility (see `pitchfork.toml` for `ready_http` health checks which stay `127.0.0.1`).
+
+---
+
+## Project layout
+
+```text
+sovereign/
+├── README.md
+├── AGENTS.md                 → global rules (symlink)
+├── config/ports.env          # SSOT ports
+├── mise.toml + mise/tasks/   # up / down / health / doctor / e2e
+├── pitchfork.toml            # native config (no generation)
+├── stack/services/*.sh       # entry shims (llama-swap.sh, rust-web-hot.sh, ...)
+├── src/                      # Bun apps (services, deploy, mcp, lib)
+├── src/maximal-sovereign-agentic-audit/  # maximal modular audit framework (local-audit.ts)
+├── skills/repo-audit/        # repo-audit skill (repo_audit.py, local_audit.py, projects.map)
+├── rust_algo_web/            # rust-web dashboard + watchdog
+├── tools/sovereign-router/   # TS sovereign-router (standalone; no SSOT port)
+├── tools/sovereign-monitor/  # recursive-fallback, watchdog, repo-radar (agentic runtime)
+├── tests/                    # unit + integration tests (≥88% coverage enforced)
+├── grafana/provisioning/     # plugins/ + alerting/ dirs (empty but required)
+└── tailscale/                # optional Funnel (no Caddy)
+```
+
+---
+
+## Zed Provider Integration
+
+Zed is configured to connect directly to Sovereign Stack services. All provider configs live in `.zed/settings.json` (in-repo).
+
+### Sovereign Stack providers
+
+| Provider          | Wire                            | Port     | Why                                                                                                               |
+| ----------------- | ------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------- |
+| **nvidia**        | `NvidiaLanguageModelProvider`   | external | Direct NVIDIA NIM access (`integrate.api.nvidia.com/v1`). Inkling SUDO MAX, full JSON Schema, interleaved reasoning. |
+| **llama-swap**    | `LlamaCppLanguageModelProvider` | `:25100` | Local GGUF inference via the toxicwind fork. Routes to beellama (`:25122`), ik_llama (`:25123`), turboquant (`:25124`) backends. |
+| **mcpproxy**      | `mcpproxy-sovereign` context server | `:25127` | MCP federation (30+ MCPs → 1 endpoint). Connected via `mcp-remote` HTTP→stdio bridge.                          |
+
+### OpenCode provider
+
+The **OpenCode** provider (`opencode` in settings) connects to a subscription-based API gateway supporting OpenAI, Anthropic, and Google back-end routing. It auto-discovers available models via `/models` and supports `interleaved_reasoning` (thinking blocks) for multi-turn sessions. Configured with `OPENCODE_API_KEY` env var.
+
+### Bounty providers (OpenAI-compatible)
+
+Free/keyless endpoints configured under `language_models.openai_compatible` (via the standalone sovereign-router — no SSOT port assigned):
+
+| Name                             | Model                       | Auth             |
+| -------------------------------- | --------------------------- | ---------------- |
+| **Sovereign Hybrid**             | `auto` (6-strategy routing) | Local (standalone router) |
+| **Free Coding Model**            | `fcm`                       | Local (standalone router) |
+| **Tencent Hy3**                  | `hy3`                       | OpenRouter free  |
+| **Poolside Laguna M.1**          | `laguna-m1`                 | OpenRouter free  |
+| **Poolside Laguna XS**           | `laguna-xs`                 | OpenRouter free  |
+| **Gemma 4 31B**                  | `gemma4-31b`                | OpenRouter free  |
+| **Nemotron 3 Super**             | `nemotron-super`            | OpenRouter free  |
+| **Nemotron 3 Nano**              | `nemotron-nano`             | OpenRouter free  |
+| **Qwen3 Coder**                  | `qwen3-coder`               | OpenRouter free  |
+| **Llama 3.3 70B**                | `llama-3.3-70b-free`        | OpenRouter free  |
+| **Hermes 3 405B**                | `hermes-3-405b-free`        | OpenRouter free  |
+| **GPT-OSS 20B**                  | `gpt-oss-20b`               | OpenRouter free  |
+| **NVIDIA NIM Nemotron 3 Super**  | `nim-nemotron-super`        | NVIDIA NIM       |
+| **NVIDIA NIM Nemotron 3 Nano**   | `nim-nemotron-nano`         | NVIDIA NIM       |
+| **NVIDIA NIM Llama 3.1 70B**     | `nim-llama-3.1-70b`         | NVIDIA NIM       |
+| **NVIDIA NIM Llama 3.3 70B**     | `nim-llama-3.3-70b`         | NVIDIA NIM       |
+| **NVIDIA NIM Qwen3.5 397B**      | `nim-qwen3.5-397b`          | NVIDIA NIM       |
+| **NVIDIA NIM Qwen3.5 122B**      | `nim-qwen3.5-122b`          | NVIDIA NIM       |
+| **NVIDIA NIM DeepSeek V4 Flash** | `nim-deepseek-v4-flash`     | NVIDIA NIM       |
+| **NVIDIA NIM DeepSeek V4 Pro**   | `nim-deepseek-v4-pro`       | NVIDIA NIM       |
+| **NVIDIA NIM Mistral Large 3**   | `nim-mistral-large-3`       | NVIDIA NIM       |
+| **NVIDIA NIM Gemma 4 31B**       | `nim-gemma4-31b`            | NVIDIA NIM       |
+| **NVIDIA NIM GLM 5.2**           | `nim-glm5.2`                | NVIDIA NIM       |
+
+---
+
+## Related forks (docs live in those repos)
+
+| Project        | Path                                   | README focus                                                                                                       |
+| -------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **llama-swap** | `/home/toxic/projects/llama-swap-main` | **Fork additions**: flock Go port (`internal/flock/`), `/models/sse`, `normalize_sse`, IPv4, port reclaim |
+
+---
+
+## Security
+
+- No app auth. Treat as **localhost + Tailscale** only.
+- Host firewall should drop public input; open only LAN/tailnet as you choose.
+- Do not expose `:25100`/`:25101` to the open internet without your own gate.
+
+---
+
+## Build & Test
+
+```bash
+bun test                     # all tests (131+ tests across 9 files)
+bun run test:cov             # coverage ≥88% enforced (text + lcov)
+bun run test:gateway:cov     # MCP gateway core coverage (100% target)
+bun run test:best-models     # model SSOT tests (live integration)
+```
+
+## Doctor / health
+
+```bash
+mise run doctor   # pitchfork + ports + hot-reload core + ast-grep pin
+mise run health   # curl probes for key ports
+mise run status   # pitchfork list + 25xxx listeners
+```
+
+---
+
+## License
+
+Stack glue: MIT where marked. Upstream binaries retain their licenses (llama-swap, Zed, Grafana, etc.).

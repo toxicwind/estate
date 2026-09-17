@@ -5,8 +5,8 @@
  	// upstream controls behaviour of the /upstream passthrough endpoint
  	Upstream UpstreamConfig `yaml:"upstream"`
 +
-+	// AstMatrix configures cloud provider routing (astmatrix v2).
-+	AstMatrix AstMatrixConfig `yaml:"astMatrix"`
++	// Flock configures cloud provider routing (flock router; legacy yaml key astMatrix still accepted).
++	Flock FlockConfig `yaml:"flock"`
  }
  
  // RoutingConfig is the canonical, normalized routing/scheduling configuration.

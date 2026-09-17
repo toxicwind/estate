@@ -1,4 +1,4 @@
-package astmatrix
+package flock
 
 import (
 	"sync"
@@ -11,12 +11,12 @@ type Matrix struct {
 	registry *ProviderRegistry
 	health   *HealthDB
 	limiter  *RateLimiter
-	config   *AstMatrixConfig
+	config   *FlockConfig
 	router   *Router
 }
 
 // NewMatrix creates a Matrix from config.
-func NewMatrix(cfg *AstMatrixConfig, reg *ProviderRegistry, health *HealthDB, limiter *RateLimiter) (*Matrix, error) {
+func NewMatrix(cfg *FlockConfig, reg *ProviderRegistry, health *HealthDB, limiter *RateLimiter) (*Matrix, error) {
 	return &Matrix{
 		registry: reg, health: health,
 		limiter: limiter, config: cfg,

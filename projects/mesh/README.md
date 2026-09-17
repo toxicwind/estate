@@ -10,10 +10,10 @@ mesh/
 ├── router/
 │   ├── sovereign-router-ts/    # live TS router (Bun, :25104, /ui) — 7 providers
 │   ├── sovereign-mcp-gateway/  # Sovereign MCP gateway source (trust boundary + circuit breaker + sticky affinity)
-│   ├── sovereign-ast-matrix-py/# Python FastAPI router (v2)
+│   ├── flock-py/# Python FastAPI router (v2)
 │   ├── sovereign-ast-router/   # TS router variant (v3)
 │   └── free_zed_gateway/       # free-LLM gateway concept
-├── ast-matrix/                 # AST code extraction / semantic matrix packages
+├── flock-pkg/                  # flock extraction snapshot (frozen, was ast-matrix/)
 ├── ui-svelte/                  # Svelte dashboard for the router
 ├── config.yml                  # unified mesh config — model roles, port mappings
 └── research/ data/              # provider discovery scripts, model catalog dumps

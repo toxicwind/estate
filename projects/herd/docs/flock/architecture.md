@@ -21,7 +21,7 @@
 | `benchmarks/` | moonbox trees | Benchmark snapshots + live runs |
 
 flock never serves local models. Local inference is herd/llama-swap's job.
-flock is the API-side counterpart to AstMatrix: AstMatrix **owns the canonical
-provider definitions** (see `internal/astmatrix/providers.go` — nvidia →
-`https://integrate.api.nvidia.com/v1`); flock is the local enforcement point
-the routers actually dial.
+flock is the whole API/routing surface. The Go router package `projects/herd/internal/flock`
+**owns the canonical provider definitions** (see `providers.go` — nvidia →
+`https://integrate.api.nvidia.com/v1`); the flock proxy daemon (:8000) is the local
+enforcement point the routers actually dial.
