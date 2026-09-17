@@ -72,6 +72,29 @@ const DEFAULT_AGENT = (
 ).replace(/^openfang:/, "");
 const PUP_TRIX_ID = Number(process.env.YOTE_TARGET_USER || "716302190");
 
+/** Audit 2026-09-17: auth-gate debug/quota endpoints. Set YOTE_API_KEY in yote/.env. */
+const API_KEY = process.env.YOTE_API_KEY ?? "";
+const WEBHOOK_SECRET = process.env.YOTE_WEBHOOK_SECRET ?? "";
+const LOCKED = Boolean(API_KEY || WEBHOOK_SECRET);
+function authorized(req: Request): boolean {
+  const u = new URL(req.url);
+  if (API_KEY) {
+    const got =
+      req.headers.get("x-yote-key") ?? u.searchParams.get("key") ?? "";
+    if (got === API_KEY) return true;
+  }
+  if (WEBHOOK_SECRET) {
+    const hs = req.headers.get("x-telegram-bot-api-secret-token") ?? "";
+    if (hs === WEBHOOK_SECRET) return true;
+  }
+  return false;
+}
+function needAuth(req: Request): Response | null {
+  if (!LOCKED) return null;
+  if (authorized(req)) return null;
+  return jres({ ok: false, error: "unauthorized" }, 401);
+}
+
 const ofClient = new OpenFangClient(OF_URL, process.env.OPENFANG_API_KEY || "", DEFAULT_AGENT);
 const openfang = ofClient;
 
@@ -81,6 +104,8 @@ const chatAgent: Record<string, string> = {};
 let chats: Record<string, any> = {};
 let last = 0;
 let shut = false;
+process.on("SIGTERM", () => { shut = true; });
+process.on("SIGINT", () => { shut = true; });
 
 const overlord = new Overlord({
   apiId: Number(process.env.YOTE_TELEGRAM_API_ID),
@@ -227,8 +252,10 @@ async function hChat(cid: number, txt: string, o: any = {}) {
 
 async function proc(up: any) {
   if (!up || typeof up !== "object") return;
-  last = up.update_id as number;
-  saveLast();
+  if (typeof up.update_id === "number" && Number.isFinite(up.update_id)) {
+    last = up.update_id;
+    saveLast();
+  }
   if (up.callback_query) {
     const cb = up.callback_query;
     log(`cb ${cb.from?.username}:${cb.data}`);
@@ -419,6 +446,8 @@ const app = serve({
 
     // Proxy pure LLM path still available for debugging (not OpenFang)
     if (p === "/v1/chat/completions" && req.method === "POST") {
+      const na0 = needAuth(req);
+      if (na0) return na0;
       const b = await req.json().catch(() => ({}));
       // Prefer OpenFang OpenAI surface when model is openfang:*
       const model = String((b as any).model || "");
@@ -461,6 +490,8 @@ const app = serve({
     }
 
     if (p === "/api/telegram/webhook" && req.method === "POST") {
+      const na0 = needAuth(req);
+      if (na0) return na0;
       const up = await req.json().catch(() => null);
       if (up) await proc(up);
       return jres({ ok: true });
@@ -471,16 +502,24 @@ const app = serve({
       return jres(await ofClient.health());
     }
     if (p === "/api/openfang/agents") {
+      const na0 = needAuth(req);
+      if (na0) return na0;
       return jres(await ofClient.listAgents());
     }
     if (p === "/api/openfang/models") {
+      const na0 = needAuth(req);
+      if (na0) return na0;
       return jres({ models: await ofClient.listOpenAiModels() });
     }
     if (p === "/api/openfang/probe" || p === "/api/openfang/probe-all") {
+      const na0 = needAuth(req);
+      if (na0) return na0;
       const report = await ofClient.probeAllAgents();
       return jres(report, report.fail ? 207 : 200);
     }
     if (p === "/api/openfang/chat" && req.method === "POST") {
+      const na0 = needAuth(req);
+      if (na0) return na0;
       const b: any = await req.json().catch(() => ({}));
       const r = await ofClient.chat(String(b.message || b.text || "hi"), {
         agent: b.agent,
@@ -489,6 +528,8 @@ const app = serve({
       return jres(r, r.ok ? 200 : 502);
     }
     if (p === "/api/openfang/chat") {
+      const na0 = needAuth(req);
+      if (na0) return na0;
       const msg = u.searchParams.get("msg") || "Reply with: YOTE_OF_OK";
       const agent = u.searchParams.get("agent") || DEFAULT_AGENT;
       const r = await ofClient.chat(msg, { agent, max_tokens: 64 });
@@ -496,6 +537,8 @@ const app = serve({
     }
 
     if (p === "/test/llm") {
+      const na0 = needAuth(req);
+      if (na0) return na0;
       const msg = u.searchParams.get("msg") || "say hi";
       const agent = u.searchParams.get("agent") || DEFAULT_AGENT;
       const r = await ofClient.chat(msg, { agent });
@@ -513,6 +556,8 @@ const app = serve({
     }
 
     if (p === "/test/send" && req.method === "POST") {
+      const na0 = needAuth(req);
+      if (na0) return na0;
       const b: any = await req.json().catch(() => ({}));
       const cid = b.chat_id || PUP_TRIX_ID;
       const txt = b.text || "test from yote api (openfang-external)";
@@ -520,6 +565,8 @@ const app = serve({
       return jres({ ok: Boolean(res?.ok), sent: txt, chatId: cid, tg: res });
     }
     if (p === "/test/send") {
+      const na0 = needAuth(req);
+      if (na0) return na0;
       // GET: overlord MTProto send (optional) OR bot API to Pup Trix
       const mode = u.searchParams.get("mode") || "bot";
       const txt =
@@ -543,6 +590,8 @@ const app = serve({
     }
 
     if (p === "/test/e2e" && req.method === "POST") {
+      const na0 = needAuth(req);
+      if (na0) return na0;
       const b: any = await req.json().catch(() => ({}));
       const cid = b.chat_id || PUP_TRIX_ID;
       const txt = b.text || "hello from yote e2e openfang";
@@ -550,6 +599,8 @@ const app = serve({
       return jres(r);
     }
     if (p === "/test/e2e") {
+      const na0 = needAuth(req);
+      if (na0) return na0;
       const cid = Number(u.searchParams.get("chat_id") || PUP_TRIX_ID);
       const txt = u.searchParams.get("msg") || "hello from yote e2e openfang";
       const r = await testE2E(cid, txt);
@@ -557,6 +608,8 @@ const app = serve({
     }
 
     if (p === "/test/pup-trix") {
+      const na0 = needAuth(req);
+      if (na0) return na0;
       // Full path: OpenFang chat + bot message to real id
       const msg =
         u.searchParams.get("msg") ||
@@ -583,7 +636,7 @@ const app = serve({
 });
 
 log(
-  `yote ${PORT} openfang=${OF_URL} agent=${DEFAULT_AGENT} bot=${TOK ? "set" : "MISSING"} overlord=${overlordReady}`,
+  `yote ${PORT} openfang=${OF_URL} agent=${DEFAULT_AGENT} bot=${TOK ? "set" : "MISSING"} overlord=${overlordReady} locked=${LOCKED}`,
 );
 if (TOK) poll().catch((e) => log(`poll fatal ${e}`));
 else log("WARNING: YOTE_TELEGRAM_BOT_TOKEN missing — poll disabled");
