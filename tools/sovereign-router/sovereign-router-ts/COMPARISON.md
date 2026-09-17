@@ -19,7 +19,7 @@ of one thing. There are also stale copies of the TS router tree at
 | Language/runtime | Bun/TypeScript | Go (llama-swap module) |
 | Location | `tools/sovereign-router/sovereign-router-ts/` | `projects/herd/internal/astmatrix/` |
 | Status | **Production** — pitchfork daemon `:25104` | Library, compiled into herd llama-swap builds |
-| Providers | 7: llama-swap, openrouter, nvidia (via local nim-proxy `:8000`), groq, cerebras, google, mistral | 13: llama-swap, openrouter, nvidia, groq, together, cerebras, fireworks, hyperbolic, github, mistral, openai, perplexity, siliconflow |
+| Providers | 7: llama-swap, openrouter, nvidia (via local flock `:8000`), groq, cerebras, google, mistral | 13: llama-swap, openrouter, nvidia, groq, together, cerebras, fireworks, hyperbolic, github, mistral, openai, perplexity, siliconflow |
 | Strategies | 7: fifo_matrix, ast_race, sticky_affinity, weighted_elo, circuit_chain, hybrid, free | 8: hybrid, ast_race, sticky_affinity, weighted_elo, least_latency, round_robin, free, circuit_chain |
 | Model discovery | **Live** — `GET {base}/models` per key at startup + every 30 min (`router_live_models.ts`); curated list ∪ live | YAML-configured static lists |
 | Health | SQLite WAL HealthDB, EMA latency, ELO scores, circuit breakers, sticky sessions | SQLite health DB, EMA latency, circuit breakers w/ half-open probes, sticky sessions |
