@@ -14,7 +14,7 @@ import { createHash } from "node:crypto";
 import { handleMeshRequest } from "../../../src/lib/ghas-mesh-features.ts";
 import type { ChatBody } from "./router_types.ts";
 import { CODING, PROVIDERS, PROVIDER_MODELS, keyOk, STRATEGY, MAX_PARALLEL, PORT, json, log, DB_PATH, isExplicit } from "./router_config.ts";
-import { catalogModelsFor, LIVE_MODELS, LIVE_MODEL_META } from "./router_config.ts";
+import { catalogModelsFor, LIVE_MODELS, LIVE_MODEL_META, modelFree } from "./router_config.ts";
 import { startLiveDiscovery, LIVE_STATUS } from "./router_live_models.ts";
 import { state } from "./router_matrix.ts";
 import { ROUTERS, routeHybrid, callOne, pickWeighted } from "./router_strategy.ts";
@@ -116,13 +116,15 @@ const server = Bun.serve({
       // Union of every model every configured key can serve (curated + live
       // discovery), plus the CODING aliases. Each entry carries the provider's
       // live metadata (pricing, context_length, architecture...) plus the
-      // router's own routing metadata under "x-sovereign".
+      // router's own routing metadata under "x-sovereign". The free flag is
+      // the same live-derived eligibility routing consumes (modelFree), not a
+      // static suffix guess.
       const seen = new Set<string>();
       const data: Record<string, unknown>[] = [];
       const sovMeta = (p: string, id: string, source: string) => ({
         provider: p,
         source,
-        free: id.includes(":free"),
+        free: modelFree(p, id),
         elo: Math.round((state.elo.get(p) || 1000) * 10) / 10,
         circuit: state.circuit.get(p) || "unknown",
         empty_strikes: state.emptyStrikeCount(p, id),

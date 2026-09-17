@@ -1,6 +1,6 @@
 import type { ChatBody, RouteResult } from "./router_types.ts";
 import { state } from "./router_matrix.ts";
-import { PROVIDERS, PROVIDER_MODELS, catalogModelsFor, LOCAL_ROLES, CODING, MAX_PARALLEL, FIFO_MAX, STRATEGY, UA, AST_RE, getKey, keyOk, firstModelFor, resolveModel, isLocalSwapModelId, isAst, isExplicit, json } from "./router_config.ts";
+import { PROVIDERS, PROVIDER_MODELS, catalogModelsFor, modelFree, LOCAL_ROLES, CODING, MAX_PARALLEL, FIFO_MAX, STRATEGY, UA, AST_RE, getKey, keyOk, firstModelFor, resolveModel, isLocalSwapModelId, isAst, isExplicit, json } from "./router_config.ts";
 
 // ---------------------------------------------------------------------------
 // Substance guard: a completion is servable only if it carries non-empty
@@ -397,17 +397,25 @@ export const ROUTERS: Record<
   free: routeFree,
 };
 
-// freeCandidates: every ":free" model across keyed providers, plus the local
-// llama-swap (always zero-cost). This is the pool the `free` strategy races.
+// freeCandidates: the free pool is derived from LIVE catalog metadata, not a
+// divergent static list (Chris 2026-09-17). For every keyed provider with a
+// healthy circuit, every catalog id (curated ∪ live discovery) whose live
+// metadata marks it free (modelFree) joins the pool — including
+// live-discovered free models the static ":free"-suffix convention misses
+// (e.g. stealth/union-alpha, openrouter/free). When a provider has no live
+// metadata at all, modelFree falls back deterministically to the ":free"
+// suffix convention, so a failed discovery refresh never empties the pool.
+// Filters: circuit state, flap strikes (empty-output substance failures feed
+// the strike counter, so substance-ineligible models sit out), and the local
+// llama-swap roles are always zero-cost and always join.
 export function freeCandidates(): [string, string][] {
   const out: [string, string][] = [];
-  for (const [name, conf] of Object.entries(PROVIDERS)) {
+  for (const [name] of Object.entries(PROVIDERS)) {
     if (!keyOk(name) || !state.circuitOk(name)) continue;
     for (const mid of catalogModelsFor(name)) {
-      if (!mid.includes(":free")) continue;
       // Flap-benched models sit out until their empty-strikes decay.
       if (state.flapBanned(name, mid)) continue;
-      out.push([name, mid]);
+      if (modelFree(name, mid)) out.push([name, mid]);
     }
   }
   if (keyOk("llama-swap")) {

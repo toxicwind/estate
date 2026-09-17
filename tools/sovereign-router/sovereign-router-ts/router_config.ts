@@ -231,6 +231,33 @@ export function catalogModelsFor(p: string): string[] {
   return out;
 }
 
+// ---------------------------------------------------------------------------
+// Live-metadata free eligibility (Chris 2026-09-17: routing must consume the
+// live /models metadata, not a divergent static list).
+//
+// modelFree(p, mid) is the single source of truth for "this model costs us
+// nothing on this key":
+//   1. Live metadata wins: OpenRouter-style /models carries pricing; prompt +
+//      completion priced "0" means zero-cost on our key. A provider-set
+//      boolean "free" flag in the live object is honored too.
+//   2. Deterministic fallback: providers whose /models carry no pricing
+//      metadata (nvidia/groq/google/mistral) keep the ":free" suffix
+//      convention, exactly as before. Curated ":free" ids with no live
+//      metadata entry at all (delisted, fetch failure) also keep the suffix
+//      rule, so the pool never silently empties on a bad refresh.
+export function modelFree(p: string, mid: string): boolean {
+  const meta = (LIVE_MODEL_META[p] || {})[mid] as
+    | Record<string, unknown>
+    | undefined;
+  const pricing = meta?.["pricing"] as Record<string, unknown> | undefined;
+  if (pricing && typeof pricing === "object") {
+    const zero = (v: unknown) => v === "0" || v === 0;
+    return zero(pricing["prompt"]) && zero(pricing["completion"]);
+  }
+  if (typeof meta?.["free"] === "boolean") return meta["free"] as boolean;
+  return mid.includes(":free");
+}
+
 export const CODING: Record<string, [string, string] | null> = {
   auto: null,
   fcm: null,

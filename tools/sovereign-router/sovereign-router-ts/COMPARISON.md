@@ -63,6 +63,32 @@ router.
 - **Local path preserved**: llama-swap provider routes through the herd main
   port `:25100`; the router has not bypassed it.
 
+- **Free pool is live-metadata derived** (2026-09-17, Chris): `freeCandidates()`
+  no longer enumerates a static `:free`-suffix list. Eligibility is
+  `modelFree(p, mid)` — live `/models` pricing wins (OpenRouter prompt +
+  completion priced `"0"` = free), with deterministic fallback to the `:free`
+  suffix convention only when a provider exposes no pricing metadata at all.
+  Filters: circuit state, flap strikes (substance-guard failures feed the
+  strike counter), local llama-swap roles always join. `/v1/models`
+  `x-sovereign.free` is the same function, so the catalog and the router
+  agree. 4 live-free models the static list missed (`stealth/union-alpha`,
+  `google/lyria-3-pro-preview`, `google/lyria-3-clip-preview`,
+  `openrouter/free`) now race in the free pool.
+
+## Spec limits (live tree, 2026-09-17)
+
+| Limit | Value | Where |
+|---|---|---|
+| Free-pool race width | `MAX_PARALLEL = 4` | `router_config.ts` |
+| Flap bench | 3 empty strikes in 600 s (`FLAP_STRIKES`/`FLAP_WINDOW_S`) | `router_matrix.ts` |
+| Live discovery refresh | every 30 min + non-blocking at startup; 15 s fetch timeout | `router_live_models.ts` |
+| Race timeout | 95 s gather-then-pick | `router_strategy.ts` |
+| Provider call timeout | 120 s non-stream, 180 s stream | `router_strategy.ts` |
+| NVIDIA direct | 4 keys round-robin, 40 rpm token bucket per key | `router_matrix.ts` |
+| FIFO queue depth | `FIFO_MAX = 64` | `router_config.ts` |
+| Sticky TTL | `STICKY_TTL = 1800` s | `router_config.ts` |
+| Circuit open hold | 60 s, then half-open probe | `router_matrix.ts` |
+
 ## Remaining gaps (honest)
 
 - TS router lacks 6 Go-module providers: together, fireworks, hyperbolic,
