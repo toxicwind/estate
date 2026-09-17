@@ -101,7 +101,7 @@ hw_dump*
 hardware_audit*
 
 # ─── Non-production (legacy, kept in backup/) ────────────────────────────────
-yote/
+# yote/ removed 2026-09-17: projects/yote is the production location (pitchfork runs it); version it
 tools/legacy/
 tools/ollama-proxy-rs/
 
@@ -265,14 +265,5 @@ $RECYCLE.BIN/
 *.pat
 github_*_pat.json
 
-<<<<<<< HEAD
-
-# token-scrub 2026-09-14: never commit secret-shaped files
-*.pat
-github_*_pat.json
-*secret*
-*token*
-=======
 # branch-merge inspection scratch (branch-integration worker 2026-09-14)
 /branch-merge/
->>>>>>> origin/main
