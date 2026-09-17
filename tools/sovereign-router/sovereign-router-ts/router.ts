@@ -14,6 +14,8 @@ import { createHash } from "node:crypto";
 import { handleMeshRequest } from "../../../src/lib/ghas-mesh-features.ts";
 import type { ChatBody } from "./router_types.ts";
 import { CODING, PROVIDERS, PROVIDER_MODELS, keyOk, STRATEGY, MAX_PARALLEL, PORT, json, log, DB_PATH, isExplicit } from "./router_config.ts";
+import { catalogModelsFor, LIVE_MODELS } from "./router_config.ts";
+import { startLiveDiscovery, LIVE_STATUS } from "./router_live_models.ts";
 import { state } from "./router_matrix.ts";
 import { ROUTERS, routeHybrid, callOne, pickWeighted } from "./router_strategy.ts";
 import { uiData, ROUTER_UI_HTML } from "./router_ui.ts";
@@ -87,8 +89,22 @@ const server = Bun.serve({
     }
 
     if (req.method === "GET" && (path === "/v1/models" || path === "/models")) {
-      const data = Object.keys(CODING).map((id) => ({ id, object: "model" }));
-      return json({ object: "list", data });
+      // Union of every model every configured key can serve (curated + live
+      // discovery), plus the CODING aliases. This is the router's full API.
+      const seen = new Set<string>();
+      const data: { id: string; object: string; owned_by?: string }[] = [];
+      const push = (id: string, owned_by?: string) => {
+        if (!seen.has(id)) {
+          seen.add(id);
+          data.push({ id, object: "model", ...(owned_by ? { owned_by } : {}) });
+        }
+      };
+      for (const p of Object.keys(PROVIDERS)) {
+        if (!keyOk(p)) continue;
+        for (const m of catalogModelsFor(p)) push(m, p);
+      }
+      for (const id of Object.keys(CODING)) push(id, "alias");
+      return json({ object: "list", data, live: LIVE_STATUS });
     }
 
     if (req.method === "GET" && (path === "/ui" || path === "/ui/")) {
@@ -108,7 +124,9 @@ const server = Bun.serve({
           keys: keyOk(p) ? "configured" : "no_key",
           elo: Math.round((state.elo.get(p) || 1000) * 10) / 10,
           circuit: state.circuit.get(p) || "unknown",
-          models: (PROVIDER_MODELS[p] || []).length,
+          models: catalogModelsFor(p).length,
+          live_models: (LIVE_MODELS[p] || []).length,
+          live_status: LIVE_STATUS[p] || null,
           health: dbSummary[p] || null,
         };
       }
@@ -182,6 +200,9 @@ const server = Bun.serve({
     return new Response("Not Found", { status: 404 });
   },
 });
+
+// Live model discovery: curated list + every model each key can serve.
+startLiveDiscovery();
 
 const keyed = Object.keys(PROVIDERS).filter(keyOk);
 
