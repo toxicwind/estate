@@ -56,7 +56,7 @@ export const FIFO_MAX = 64;
 
 export const STRATEGY = process.env.SOVEREIGN_STRATEGY || "hybrid";
 
-export const UA = "Mozilla/5.0 (compatible; SovereignASTMatrix/3.1)";
+export const UA = "Mozilla/5.0 (compatible; Sovereign-Flock/3.1)";
 
 // ---------------------------------------------------------------------------
 // LLAMA_SWAP_V1 (must come before PROVIDERS that uses it)
@@ -115,10 +115,12 @@ export const PROVIDERS: Record<
     base: "https://openrouter.ai/api/v1",
     key_env: "OPENROUTER_API_KEY",
   },
+  // NVIDIA direct (the :8000 key-proxy is retired — multi-key rotation and
+  // per-key rate limiting now live in the router itself, see router_matrix).
   nvidia: {
-    base: "http://127.0.0.1:8000/v1",
-    key_env: "NIM_PROXY_API_KEY",
-    key_env_alt: "NVIDIA_API_KEY",
+    base: "https://integrate.api.nvidia.com/v1",
+    key_env: "NVIDIA_API_KEY",
+    key_env_alt: "NVIDIA_API_KEYS",
   },
   groq: { base: "https://api.groq.com/openai/v1", key_env: "GROQ_API_KEY" },
   cerebras: {
@@ -148,6 +150,7 @@ export const PROVIDER_MODELS: Record<string, string[]> = {
     "meta-llama/llama-3.3-70b-instruct:free",
     "nousresearch/hermes-3-llama-3.1-405b:free",
     "openai/gpt-oss-20b:free",
+    "inclusionai/ling-3.0-flash-fin:free",
   ],
   nvidia: [
     "nvidia/nemotron-3-super-120b-a12b",
@@ -186,6 +189,75 @@ export const PROVIDER_MODELS: Record<string, string[]> = {
   ],
 };
 
+// ---------------------------------------------------------------------------
+// Live per-model metadata (populated at runtime by router_live_models.ts):
+// provider -> model id -> raw provider /models object (pricing, context
+// length, architecture...). IDs stay in LIVE_MODELS for routing; metadata
+// enriches /v1/models so clients see live data, not just id strings.
+export const LIVE_MODEL_META: Record<string, Record<string, unknown>> = {};
+
+// NVIDIA multi-key pool (absorbed from the retired :8000 key-proxy):
+// comma-separated nvapi-* keys, each with its own 40rpm token bucket
+// (see Matrix.nextNvidiaKey in router_matrix.ts).
+export function nvidiaKeys(): string[] {
+  const pool = (process.env.NVIDIA_API_KEYS || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (pool.length) return pool;
+  const single = process.env.NVIDIA_API_KEY || "";
+  return single ? [single] : [];
+}
+
+// ---------------------------------------------------------------------------
+// Live model catalog (populated at runtime by router_live_models.ts)
+// ---------------------------------------------------------------------------
+// Curated PROVIDER_MODELS above is the stable base (aliases, :free suffix
+// conventions). LIVE_MODELS is filled from each provider's GET /models
+// endpoint using that provider's own API key, so the router serves every
+// model each key is entitled to - not just the hardcoded subset.
+// catalogModelsFor() = curated union live, curated first.
+export const LIVE_MODELS: Record<string, string[]> = {};
+
+export function catalogModelsFor(p: string): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const m of [...(PROVIDER_MODELS[p] || []), ...(LIVE_MODELS[p] || [])]) {
+    if (typeof m === "string" && m && !seen.has(m)) {
+      seen.add(m);
+      out.push(m);
+    }
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+// Live-metadata free eligibility (Chris 2026-09-17: routing must consume the
+// live /models metadata, not a divergent static list).
+//
+// modelFree(p, mid) is the single source of truth for "this model costs us
+// nothing on this key":
+//   1. Live metadata wins: OpenRouter-style /models carries pricing; prompt +
+//      completion priced "0" means zero-cost on our key. A provider-set
+//      boolean "free" flag in the live object is honored too.
+//   2. Deterministic fallback: providers whose /models carry no pricing
+//      metadata (nvidia/groq/google/mistral) keep the ":free" suffix
+//      convention, exactly as before. Curated ":free" ids with no live
+//      metadata entry at all (delisted, fetch failure) also keep the suffix
+//      rule, so the pool never silently empties on a bad refresh.
+export function modelFree(p: string, mid: string): boolean {
+  const meta = (LIVE_MODEL_META[p] || {})[mid] as
+    | Record<string, unknown>
+    | undefined;
+  const pricing = meta?.["pricing"] as Record<string, unknown> | undefined;
+  if (pricing && typeof pricing === "object") {
+    const zero = (v: unknown) => v === "0" || v === 0;
+    return zero(pricing["prompt"]) && zero(pricing["completion"]);
+  }
+  if (typeof meta?.["free"] === "boolean") return meta["free"] as boolean;
+  return mid.includes(":free");
+}
+
 export const CODING: Record<string, [string, string] | null> = {
   auto: null,
   fcm: null,
@@ -200,6 +272,7 @@ export const CODING: Record<string, [string, string] | null> = {
   "local-longctx": ["llama-swap", LOCAL_ROLES.longctx],
   "local-auto": ["llama-swap", LOCAL_ROLES.quality],
   hy3: ["openrouter", "tencent/hy3:free"],
+  ling: ["openrouter", "inclusionai/ling-3.0-flash-fin:free"],
   "laguna-m1": ["openrouter", "poolside/laguna-m.1:free"],
   "laguna-xs": ["openrouter", "poolside/laguna-xs-2.1:free"],
   "gemma4-31b": ["openrouter", "google/gemma-4-31b-it:free"],
@@ -250,6 +323,8 @@ export const AST_RE =
 // Helpers
 // ---------------------------------------------------------------------------
 export function getKey(p: string): string {
+  // NVIDIA serves from the multi-key pool; first key is the default.
+  if (p === "nvidia") return nvidiaKeys()[0] || "";
   const conf = PROVIDERS[p];
   if (!conf) return "";
   if (conf.no_auth) return "not-required-for-local";
@@ -262,6 +337,7 @@ export function getKey(p: string): string {
 
 export function keyOk(p: string): boolean {
   if (p === "llama-swap" || PROVIDERS[p]?.no_auth) return true;
+  if (p === "nvidia") return nvidiaKeys().length > 0;
   const conf = PROVIDERS[p];
   if (!conf) return false;
   return Boolean(
@@ -299,8 +375,8 @@ export function resolveModel(model: string): [string, string] {
     // local-first auto: quality role on swap
     return ["llama-swap", LOCAL_ROLES.quality];
   }
-  for (const [p, models] of Object.entries(PROVIDER_MODELS)) {
-    if (models.includes(model)) return [p, model];
+  for (const p of Object.keys(PROVIDERS)) {
+    if (catalogModelsFor(p).includes(model)) return [p, model];
   }
   if (keyOk("openrouter")) return ["openrouter", model];
   if (keyOk("nvidia")) return ["nvidia", model];
@@ -320,7 +396,7 @@ export function isExplicit(model: string): boolean {
 }
 
 export function log(...args: unknown[]) {
-  console.error("[matrix]", ...args);
+  console.error("[router]", ...args);
 }
 
 export function json(

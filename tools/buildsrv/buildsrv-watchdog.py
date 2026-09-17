@@ -3,8 +3,11 @@
 
 Polls http://127.0.0.1:$BUILDSRV_PORT/health every INTERVAL_S (default 20).
 After MAX_FAILS (default 3) consecutive failures (timeout, connection
-refused, non-200, ok!=true) it runs `pitchfork restart buildsrv` and keeps
-watching.
+refused, non-200, ok!=true) it restarts the daemon: first via
+`pitchfork restart buildsrv`, and if the daemon is still unhealthy, via a
+direct kill + detached start (2026-09-17: the pitchfork supervisor no
+longer manages buildsrv -- it reports the daemon as stopped/unavailable,
+so the pitchfork route is a no-op).
 
 Why this exists (2026-09-14): pitchfork `retry = true` only fires when the
 daemon PROCESS dies. A wedged-but-alive daemon -- e.g. the 18:03 deploy
@@ -63,6 +66,14 @@ def healthy():
 
 
 def restart_daemon():
+    if _pitchfork_restart():
+        return True
+    log("pitchfork route did not restore health; falling back to direct restart")
+    return _direct_restart()
+
+
+def _pitchfork_restart():
+    """Try the supervisor route. Returns True if the daemon is healthy after."""
     log("restarting buildsrv via pitchfork")
     try:
         r = subprocess.run(
@@ -71,10 +82,51 @@ def restart_daemon():
         )
         out = (r.stdout or "") + (r.stderr or "")
         log(f"pitchfork restart exit={r.returncode}: {out.strip()[:300]}")
-        return r.returncode == 0
     except Exception as e:
         log(f"pitchfork restart failed to run: {type(e).__name__}: {e}")
+    time.sleep(8)
+    ok, detail = healthy()
+    log(f"post-pitchfork health: {ok} ({detail})")
+    return ok
+
+
+DAEMON_PY = "/home/toxic/sovereign/tools/buildsrv/buildsrvd.py"
+DAEMON_LOG = "/home/toxic/sovereign/logs/buildsrv-watchdog-restarts.log"
+
+
+def _direct_restart():
+    """Supervisor route is a no-op for buildsrv (2026-09-17: pitchfork
+    reports it stopped/unavailable, `pitchfork start` says not found).
+    Kill any stray buildsrvd.py and start the daemon directly, detached,
+    with the same env the pitchfork stanza would have given it."""
+    log("direct restart: killing stray buildsrvd.py processes")
+    try:
+        subprocess.run(["pkill", "-f", r"buildsrvd\.py"], timeout=10,
+                       capture_output=True)
+    except Exception as e:
+        log(f"pkill: {type(e).__name__}: {e}")
+    time.sleep(2)
+    env = dict(os.environ)
+    env.update({
+        "BUILDSRV_ROOT": "/home/toxic/buildsrv",
+        "BUILDSRV_PORT": str(PORT),
+        "BUILDSRV_WORKERS": "2",
+    })
+    log(f"direct restart: launching {DAEMON_PY}")
+    try:
+        fh = open(DAEMON_LOG, "a")
+        subprocess.Popen(
+            [sys.executable, DAEMON_PY],
+            stdin=subprocess.DEVNULL, stdout=fh, stderr=subprocess.STDOUT,
+            start_new_session=True, env=env,
+        )
+    except Exception as e:
+        log(f"direct start failed: {type(e).__name__}: {e}")
         return False
+    time.sleep(8)
+    ok, detail = healthy()
+    log(f"post-direct-start health: {ok} ({detail})")
+    return ok
 
 
 def main():

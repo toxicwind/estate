@@ -101,3 +101,26 @@ direnv.** Rationale:
 dedupe) on 2026-09-14 and verified. The file is git-ignored (`*.env`) and
 there is no local sovereign-end4 checkout — the fix is live but uncommitted;
 canonical repo home still to be decided.
+
+## Implementation status (2026-09-17)
+
+### What shipped
+- `dots/.bashrc.env` (sovereign-end4) auto-loads `~/.secrets` at shell startup: 89 vars, nounset-safe, exported, never overwrites existing vars.
+- `~/.config/environment.d/10-shell.conf` fixed to absolute paths so systemd user services receive `BASH_ENV` (literal `%h` was broken).
+- Verified: clean noninteractive shell 4 -> 151 env vars; clean interactive shell 151 vars.
+
+### Coverage matrix (specifications)
+| Surface | Credential env | Notes |
+|---|---|---|
+| Interactive login shell | yes, via `.bashrc` -> `.bashrc.env` | 151 vars |
+| Noninteractive bash -c / bridge exec | yes, via `BASH_ENV` -> `.bashrc.env` | 151 vars after bridge restart |
+| systemd user services (new) | yes, via `environment.d` | needs `systemctl --user daemon-reload` |
+| Fleet job workers (agent submit / job CLI) | yes, wrapper sources the canonical shell env file | fleet _jobwrap.py 2026-09-17; spec-provided env wins |
+| Already-running daemons (pitchfork, bridge exec) | no, env is a snapshot at spawn | restart required to pick up new vars |
+| Gradle builds | yes, via env `GITHUB_ACTOR`/`GITHUB_TOKEN` | upstream settings reads `gpr.user`/`gpr.key` with env fallback; no tokens in files |
+| Daemon/service env (rule 1) | mise / per-service config | shell loader is for shells, not daemons |
+
+### Hard limits
+- `~/.secrets` is mode 0600 and never committed (`.gitignore` token-scrub block: `*.pat`, `github_*_pat.json`, `.env*`, `*secret*`, `*token*`).
+- Secret values never land in shell history, logs, or chat-visible configs; always passed ephemerally (e.g. `gh auth token`).
+- Env vars are process snapshots: credential rotation requires restarting consumers.

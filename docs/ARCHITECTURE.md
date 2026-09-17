@@ -98,14 +98,14 @@ llama.cpp (upstream)
 
 ## 3. club3090 Pattern — Local LLM as Tier-3 Provider
 
-**Definition**: Any OpenAI-compatible server on `http://127.0.0.1:8020/v1` is auto-eligible as `"local"` provider in the AST Matrix router.
+**Definition**: Any OpenAI-compatible server on `http://127.0.0.1:8020/v1` is auto-eligible as `"local"` provider in the flock router.
 
 ```python
 # llama-swap:25100/free_zed_gateway/gateway.py
 "base": os.getenv("LOCAL_LLM_URL", "http://127.0.0.1:8020/v1"),  # club3090 style
 ```
 
-**In practice**: llama-swap runs on `:25100` (external) and `:25200` (internal). The AST Matrix router at `:25100` treats any `:8020` endpoint as a local fallback tier. This pattern originated from the `club3090` project (local RTX 3090 inference) and was adopted because:
+**In practice**: llama-swap runs on `:25100` (external) and `:25200` (internal). The flock router at `:25100` treats any `:8020` endpoint as a local fallback tier. This pattern originated from the `club3090` project (local RTX 3090 inference) and was adopted because:
 
 - **No API keys** for local inference
 - **Same OpenAI schema** — drop-in replacement for cloud providers
@@ -180,7 +180,7 @@ Clients (Zed, OpenFang, IDEs, Grok)
          │
          ▼
 llama-swap :25100 (toxicwind Go fork)
-  │  internal/astmatrix/  — 6 strategies, ELO, circuit breakers
+  │  internal/flock/  — 6 strategies, ELO, circuit breakers
   │  SQLite WAL health DB — request history, model health, healing events
   ▼
 Fork backends :25001-25099
@@ -192,9 +192,9 @@ Fork backends :25001-25099
 
 ---
 
-## 6. AST Matrix Router — 6 Strategies (Go Port inside llama-swap)
+## 6. flock Router — 6 Strategies (Go Port inside llama-swap)
 
-Ported from TypeScript (`tools/llama-swap:25100/llama-swap:25100-ts/router.ts`) to Go (`llama-swap-main/internal/astmatrix/`).
+Ported from TypeScript (`tools/llama-swap:25100/llama-swap:25100-ts/router.ts`) to Go (`llama-swap-main/internal/flock/`).
 
 | Strategy             | Behavior                                                  |
 | -------------------- | --------------------------------------------------------- |
@@ -261,11 +261,11 @@ Each catch block has its own nested try/catch — **no single point of failure**
 
 | Service              | Port        | Runtime             | Role                                                 |
 | -------------------- | ----------- | ------------------- | ---------------------------------------------------- |
-| **llama-swap**       | 25100/25200 | Go (toxicwind fork) | LLM front door + AST Matrix router                   |
+| **llama-swap**       | 25100/25200 | Go (toxicwind fork) | LLM front door + flock router                   |
 | **rust-web**         | 25101       | Rust                | Ops dashboard + embedded watchdog                    |
 | **yote**             | 25102       | Bun                 | Telegram / status                                    |
 | **openfang**         | 25103/25203 | Rust                | Agent kernel — 206 models, 61 skills, Discord bridge |
-| **llama-swap:25100** | 25100       | Bun (TS)            | 5-strategy AST Matrix (external tooling)             |
+| **llama-swap:25100** | 25100       | Bun (TS)            | 5-strategy flock (external tooling)             |
 | **prometheus**       | 25105       | Go                  | Metrics                                              |
 | **hf-downloader**    | 25106       | Bun                 | GGUF download UI                                     |
 | **null-g-proxy**     | 25107       | Bun                 | Extra LLM proxy                                      |

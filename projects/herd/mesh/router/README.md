@@ -32,7 +32,7 @@ Set strategy per-request: `X-Sovereign-Strategy: free`.
 tools/sovereign-router/
 ├── sovereign-router-ts/   # ← THE LIVE ROUTER (run by pitchfork :25104)
 │   └── router.ts          # Bun/TS, self-contained + /ui dashboard
-├── sovereign-ast-matrix-py/  # v2 Python router (reference / source-of-truth)
+├── flock-py/  # v2 Python router (reference / source-of-truth)
 ├── sovereign-ast-router/    # v3 TS variant (reference)
 ├── free_zed_gateway/       # free-LLM-gateway concept (folded into `free` strategy)
 ├── ultimate_extract/       # agent-infra research dump (NOT router code)
@@ -41,7 +41,7 @@ tools/sovereign-router/
 ```
 
 The **canonical/primary** implementation is the Go port inside llama-swap:
-`~/projects/llama-swap-main/internal/astmatrix/` (mirrors this router; the
+`~/projects/llama-swap-main/internal/flock/` (mirrors this router; the
 `free` strategy + `/ui` page were added there too).
 
 ## Free providers (maximal integration)

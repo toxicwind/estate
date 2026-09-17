@@ -148,6 +148,7 @@ export const PROVIDER_MODELS: Record<string, string[]> = {
     "meta-llama/llama-3.3-70b-instruct:free",
     "nousresearch/hermes-3-llama-3.1-405b:free",
     "openai/gpt-oss-20b:free",
+    "inclusionai/ling-3.0-flash-fin:free",
   ],
   nvidia: [
     "nvidia/nemotron-3-super-120b-a12b",

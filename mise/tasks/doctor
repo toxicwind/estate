@@ -21,7 +21,7 @@ if grep -q 'process-compose' mise/tasks/up 2>/dev/null; then
 fi
 
 # Hot-reload is the only default for owned Bun/TS services
-for hot in openfang yote hf-downloader null-g-proxy ast-matrix ghas-api ghas-mcp; do
+for hot in openfang yote hf-downloader null-g-proxy ghas-api ghas-mcp; do
   # extract stanza until next [daemons. or end
   stanza=$(sed -n "/^\[daemons\.${hot}\]/,/^\[daemons\./p" pitchfork.toml | head -n -1)
   if [ -z "$stanza" ]; then

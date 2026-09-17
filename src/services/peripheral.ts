@@ -67,10 +67,10 @@ export const PERIPHERAL_SERVICES: ServiceDef[] = [
     mise: false,
   },
   {
-    id: "nim-proxy",
-    name: "nim-proxy",
-    portKey: "NIM_PROXY_PORT",
-    run: "exec env HOST=127.0.0.1 PORT=8000 DATA_DIR=/home/toxic/.nim-proxy-data /home/toxic/.nim-proxy/nim-proxy",
+    id: "flock",
+    name: "flock",
+    portKey: "FLOCK_PORT",
+    run: "exec env HOST=127.0.0.1 PORT=8000 DATA_DIR=/home/toxic/.flock-data /home/toxic/.flock/flock", // nim-proxy absorbed by flock 2026-09-17
     dir: ".",
     readyCmd: "ss -ltn 'sport = :8000' | grep -q LISTEN",
     group: "aux",
