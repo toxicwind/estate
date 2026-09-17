@@ -10,7 +10,7 @@ set -euo pipefail
 SOV="$HOME/sovereign"
 source "$SOV/stack/lib-ports.sh"
 require_env HERD_PORT
-# Canonical secrets for provider keyEnvs (NIM_PROXY_API_KEY, OPENROUTER_API_KEY, ...).
+# Canonical secrets for provider keyEnvs (FLOCK_API_KEY, OPENROUTER_API_KEY, ...).
 # Sourced, never copied — keys stay in /home/toxic/.secrets.
 if [[ -f /home/toxic/.secrets ]]; then
   set -a
