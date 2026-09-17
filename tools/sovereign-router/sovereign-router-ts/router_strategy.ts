@@ -150,6 +150,21 @@ export async function routeAstRace(
     return { ok: false, status: 503, err: "ast_race_exhausted" };
   const futs = cands.map(([p, mid]) => callOne(p, mid, body));
   let best: RouteResult | null = null;
+  // Non-substantive (empty/whitespace-only) completions are failures, never
+  // winners: a 200 with no content must not be served or sticky-pinned.
+  const textOf = (r: RouteResult): string => {
+    try {
+      const j = JSON.parse(
+        typeof r.data === "string"
+          ? r.data
+          : new TextDecoder().decode(r.data as Uint8Array),
+      );
+      const c = j?.choices?.[0]?.message?.content;
+      return typeof c === "string" ? c : "";
+    } catch {
+      return "";
+    }
+  };
   try {
     const results = await Promise.race([
       Promise.allSettled(futs).then((all) => all),
@@ -159,32 +174,22 @@ export async function routeAstRace(
       for (const settled of results) {
         if (settled.status !== "fulfilled" || !settled.value.ok) continue;
         const r = settled.value;
-        let content = "";
-        try {
-          const j = JSON.parse(
-            typeof r.data === "string"
-              ? r.data
-              : new TextDecoder().decode(r.data as Uint8Array),
-          );
-          content = j?.choices?.[0]?.message?.content || "";
-        } catch {
-          content = "";
-        }
+        const content = textOf(r);
         if (isAst(content)) {
           state.stickySet(session, r.provider!, r.model!);
           state.record(r.model!, r.provider!, 200, r.lat || 0, 1, "ast_race");
           return r;
         }
-        if (!best) best = r;
+        if (!best && content.trim() !== "") best = r;
       }
     } else {
-      // timeout: take first completed ok if any
+      // timeout: take first completed ok with non-empty content, if any
       for (const f of futs) {
         const settled = await Promise.race([
           f.then((v) => v),
           Promise.resolve(null as RouteResult | null),
         ]);
-        if (settled?.ok) {
+        if (settled?.ok && textOf(settled).trim() !== "") {
           best = settled;
           break;
         }
