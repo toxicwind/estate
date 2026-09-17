@@ -27,6 +27,14 @@ providers:
         cost:
           input: 0
           output: 0
+      - id: ling
+        name: Ling 3.0 Flash (Sovereign default free model)
+        api: openai-completions
+        reasoning: false
+        input: [text]
+        cost:
+          input: 0
+          output: 0
 modelOverrides:
   disable:
     - gemini-3.7-flash-tiered

@@ -272,6 +272,7 @@ export const CODING: Record<string, [string, string] | null> = {
   "local-longctx": ["llama-swap", LOCAL_ROLES.longctx],
   "local-auto": ["llama-swap", LOCAL_ROLES.quality],
   hy3: ["openrouter", "tencent/hy3:free"],
+  ling: ["openrouter", "inclusionai/ling-3.0-flash-fin:free"],
   "laguna-m1": ["openrouter", "poolside/laguna-m.1:free"],
   "laguna-xs": ["openrouter", "poolside/laguna-xs-2.1:free"],
   "gemma4-31b": ["openrouter", "google/gemma-4-31b-it:free"],
