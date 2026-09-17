@@ -211,6 +211,18 @@ const server = Bun.serve({
           `sovereign_router_model_empty_strikes{provider="${p}",model="${rest.join("/").replace(/"/g, "")}"} ${v.n}`,
         );
       }
+      // Model-pressure governor (flock governor.rs AIMD port). Only models
+      // that have engaged the governor appear — bounded label cardinality.
+      for (const [k, s] of state.governor.entries()) {
+        if (s.limit <= 0 && s.exhaustedTotal <= 0) continue;
+        const [p, ...rest] = k.split("/");
+        const m = rest.join("/").replace(/"/g, "");
+        L.push(
+          `sovereign_governor_model_limit{provider="${p}",model="${m}"} ${s.limit}`,
+          `sovereign_governor_model_inflight{provider="${p}",model="${m}"} ${s.inflight}`,
+          `sovereign_governor_worker_exhausted_total{provider="${p}",model="${m}"} ${s.exhaustedTotal}`,
+        );
+      }
       return new Response(
         "# HELP sovereign_router_requests_total Total chat completion requests per provider\n" +
           "# TYPE sovereign_router_requests_total counter\n" +

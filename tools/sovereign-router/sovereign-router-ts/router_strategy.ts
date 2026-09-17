@@ -1,5 +1,5 @@
 import type { ChatBody, RouteResult } from "./router_types.ts";
-import { state } from "./router_matrix.ts";
+import { state, isWorkerExhausted } from "./router_matrix.ts";
 import { PROVIDERS, PROVIDER_MODELS, catalogModelsFor, modelFree, LOCAL_ROLES, CODING, MAX_PARALLEL, FIFO_MAX, STRATEGY, UA, AST_RE, getKey, keyOk, firstModelFor, resolveModel, isLocalSwapModelId, isAst, isExplicit, json } from "./router_config.ts";
 
 // ---------------------------------------------------------------------------
@@ -79,9 +79,19 @@ export async function callOne(
     "Accept-Encoding": "identity",
   };
   if (!conf.no_auth) {
-    // NVIDIA rotates across the multi-key pool (40 rpm token bucket per key);
-    // null (all buckets dry) falls back to the default key.
+    // NVIDIA rotates across the multi-key pool (40 rpm token bucket per
+    // key). All buckets dry is an honest 429 — falling back to the default
+    // key would just burn a rate-limited key.
     const rk = provider === "nvidia" ? state.nextNvidiaKey() : null;
+    if (provider === "nvidia" && !rk) {
+      return {
+        ok: false,
+        status: 429,
+        provider,
+        lat: 0,
+        err: "nvidia_buckets_exhausted",
+      };
+    }
     headers.Authorization = `Bearer ${rk || getKey(provider)}`;
   } else {
     headers.Authorization = "Bearer not-required-for-local";
@@ -89,6 +99,19 @@ export async function callOne(
   if (provider === "openrouter") {
     headers["HTTP-Referer"] = "https://zed.dev";
     headers["X-Title"] = "Sovereign-Router";
+  }
+  // Model-pressure governor (flock governor.rs AIMD, per provider/model):
+  // refused fast with 429 when the model is at its worker cap or draining.
+  const govKey = `${provider}/${model}`;
+  const permit = state.governor.admit(govKey);
+  if (!permit) {
+    return {
+      ok: false,
+      status: 429,
+      provider,
+      lat: 0,
+      err: "governor_limited",
+    };
   }
   const payload = { ...body, model, stream };
   const start = performance.now();
@@ -102,6 +125,11 @@ export async function callOne(
     const lat = (performance.now() - start) / 1000;
     if (!resp.ok) {
       const errText = (await resp.text()).slice(0, 500);
+      // Worker-exhaustion signature is checked BEFORE generic failure
+      // handling: it is model-scoped, never a reason to cool the lane.
+      // The permit is still held, so the observed in-flight count
+      // includes this request when the governor engages at half of it.
+      if (isWorkerExhausted(errText)) state.governor.noteExhausted(govKey);
       state.record(model, provider, resp.status, lat, 0, STRATEGY);
       return {
         ok: false,
@@ -146,6 +174,8 @@ export async function callOne(
       lat,
       err: String(e),
     };
+  } finally {
+    permit.release();
   }
 }
 
