@@ -62,3 +62,28 @@ curl -sf http://127.0.0.1:25115/health    # mesh-hub (discovery)
 curl -sf http://127.0.0.1:25104/health    # sovereign-router
 curl -sf http://127.0.0.1:25100/v1/models  # herd (local inference)
 ```
+
+## Ops notes (2026-09-17)
+
+- mesh-hub (:25115) was down and was brought back up via pitchfork (pitchfork start mesh-hub).
+  /health returns 200. If pitchfork shows herd as errored while :25100 serves 200,
+  that is stale supervisor ownership -- the healthy detached daemon holds the port; do not
+  kill it or start a second instance.
+- config.yml line 65 declares default: openrouter/inclusionai/ling-3.0-flash-fin:free:high,
+  but nothing consumes it -- declared intent, not active routing. The live free pool is
+  freeCandidates() in router/sovereign-router-ts/router_config.ts. Ling stays out of it
+  until it passes the gate in docs/free-tier-models.md (currently 4/5 empty completions).
+
+## Gemini API Tool Retrieval EAP
+
+- The Gemini API Early Access Program for Tool Retrieval (Guillaume Vernade, giom@google.com)
+  is directly relevant to shep: defer_loading: true offloads tool schemas server-side and a
+  retrieval meta-tool lets the model search a large tool catalog dynamically -- designed for
+  30+ tool catalogs, exactly the shape of shep (30 upstream MCP servers). Docs:
+  https://ai.google.dev/gemini-api/docs/tool-retrieval
+- Platform fixes confirmed by Google (2026-09-07): HTTP 400 on deferred tools with parameters
+  fixed fleet-wide; token-accounting fix for uncalled deferred tools rolling out.
+- Integration target: route Gemini tool-heavy traffic through the native google provider
+  (generativelanguage.googleapis.com/v1beta/openai, already live in sovereign-router-ts)
+  with deferred loading when the served catalog is large. Full integration needs the doc
+  details -- not yet done.

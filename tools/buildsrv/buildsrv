@@ -38,7 +38,7 @@ ARTIFACTS = ROOT / "artifacts"
 STATE_FILE = ROOT / "state.json"
 PORT = int(os.environ.get("BUILDSRV_PORT", "25148"))
 
-KNOWN_TOOLCHAINS = ["rust", "cargo", "go", "bun", "node", "python", "python3", "tsc"]
+KNOWN_TOOLCHAINS = ["rust", "cargo", "go", "bun", "node", "python", "python3", "tsc", "java", "gradle"]
 
 
 def die(msg, code=1):
