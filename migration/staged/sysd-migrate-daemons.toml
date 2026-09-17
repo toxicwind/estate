@@ -40,14 +40,15 @@ ready_cmd = "ss -ltn 'sport = :{{ vars.NGINX_PORT }}' | grep -q LISTEN"
 auto = ["start"]
 env = { NGINX_PORT = "{{ vars.NGINX_PORT }}" }
 
-[daemons.nim-proxy]
-run = "exec docker run --rm --name nim-proxy -p 127.0.0.1:{{ vars.NIM_PROXY_PORT }}:8000 -v nim-proxy-data:/data -e DATA_DIR=/data ghcr.io/miztertea/nim-proxy:latest"
-dir = "/home/toxic/sovereign"
-mise = false
-retry = true
-ready_cmd = "ss -ltn 'sport = :{{ vars.NIM_PROXY_PORT }}' | grep -q LISTEN"
-auto = ["start"]
-env = { NIM_PROXY_PORT = "{{ vars.NIM_PROXY_PORT }}" }
+# 2026-09-17: retired — nim-proxy absorbed by flock (pitchfork sovereign/flock, :8000). Docker-era def kept for provenance.
+# [daemons.nim-proxy]
+# run = "exec docker run --rm --name nim-proxy -p 127.0.0.1:{{ vars.NIM_PROXY_PORT }}:8000 -v nim-proxy-data:/data -e DATA_DIR=/data ghcr.io/miztertea/nim-proxy:latest"
+# dir = "/home/toxic/sovereign"
+# mise = false
+# retry = true
+# ready_cmd = "ss -ltn 'sport = :{{ vars.NIM_PROXY_PORT }}' | grep -q LISTEN"
+# auto = ["start"]
+# env = { NIM_PROXY_PORT = "{{ vars.NIM_PROXY_PORT }}" }
 # NOTE: key material lives in the nim-proxy-data volume, not env — no secrets here.
 
 [daemons.matter-server]
