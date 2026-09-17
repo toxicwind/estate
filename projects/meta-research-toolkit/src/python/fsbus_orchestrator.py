@@ -62,7 +62,7 @@ def claim(worker: str) -> tuple[str, dict] | None:
         try: os.rename(f, dest)
         except OSError: continue                 # lost race or lease-valid claim
         fsync_dir(INBOX); fsync_dir(CLAIMED)
-        return dest.stem, json.loads(dest.read_text())
+        return f.stem, json.loads(dest.read_text())
     return None
 
 def finish(tid: str, worker: str, ok: bool, result: dict, error=None):
