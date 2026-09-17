@@ -28,24 +28,15 @@ hooks:
   on_model_unloaded:
     exec: 'echo "[$(date)] MODEL_UNLOADED: $MODEL" >> /home/toxic/sovereign/data/herd-events.log'
 
-astMatrix:
+# RETIRED 2026-09-17: astMatrix in-process router replaced by Flock delegation.
+# Flock (:8000) is the unified multi-provider remote-API/completions subsystem.
+flock:
   enabled: true
-  strategy: hybrid
-  maxParallel: 4
-  dbPath: /home/toxic/sovereign/data/ast_matrix.db
-  stickyTtl: 1800
-  fifoMax: 64
-  providers:
-    openrouter:
-      baseUrl: https://openrouter.ai/api/v1
-      keyEnv: OPENROUTER_API_KEY
-    nvidia:
-      baseUrl: http://127.0.0.1:8000/v1
-      keyEnv: FLOCK_API_KEY
-      modelMap:
-        kimi-k2: moonshotai/kimi-k2.6
-        kimi-k3-nim: moonshotai/kimi-k3
-
+  baseUrl: http://127.0.0.1:8000
+  keyEnv: FLOCK_API_KEY
+  modelMap:
+    kimi-k2: nvidia/nemotron-3-super-120b-a12b
+    kimi-k3-nim: nvidia/nemotron-3-ultra-550b-a55b
 routing:
   scheduler:
     use: fifo
