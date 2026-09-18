@@ -130,3 +130,25 @@ chat presence | chat rooms | chat activity | chat health
 Token is read from `/home/toxic/.config/sovereign-chat-token` (or
 `$SOVEREIGN_CHAT_TOKEN_FILE`); base URL defaults to `http://127.0.0.1:25120`
 (`$SOVEREIGN_CHAT_BASE` overrides, e.g. `http://100.72.199.93:25120`).
+
+## /v1/state — the "same page" surface (v1.2.0)
+
+2026-09-18 standing order (Chris): *"as new inputs come in take all in and
+consolidate."* Docs drift; the server is the live shared ground truth.
+One call returns the whole board — service, presence, activity, the
+consolidated decision log, rooms:
+
+```bash
+curl "${H[@]}" $B/v1/state
+# MCP: {"method":"tools/call","params":{"name":"get_state","arguments":{}}}
+```
+
+**Decisions** are messages with `kind: "decision"` in any room — the append-only
+decision log. When a debate converges or Chris rules, post it:
+
+```bash
+chat post --room fleet --from <id> --kind decision --body "verdict <id>: <what was decided>"
+```
+
+Lanes read `/v1/state` (or `get_state`) instead of trusting docs. Main chat
+owns the consolidated truth; this endpoint is how every lane reads the same page.
