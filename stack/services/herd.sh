@@ -26,17 +26,8 @@ CONF="$SOV/config/herd.yaml"
 [[ -f "$CONF" ]] || CONF="$SOV/config/llama-swap.yaml"
 [[ -f "$CONF" ]] || { echo "herd config not found at $CONF" >&2; exit 1; }
 
-# Launch Go binary — loopback bind only (no 0.0.0.0 exposure)
-"$BIN" --config "$CONF" --config-dir /home/toxic/kimi-auto/herd.d --watch-config --listen "127.0.0.1:${PORT}" &
-BPID=$!
-cleanup() { kill "$BPID" 2>/dev/null || true; }
-trap cleanup EXIT TERM INT
-
-# Wait for health endpoint (max 15s)
-for i in $(seq 1 40); do
-  if curl -sf -m 0.3 "http://127.0.0.1:${PORT}/health" >/dev/null 2>&1; then break; fi
-  sleep 0.25
-done
-
-# Keep the script running (waits for the Go binary)
-wait "$BPID"
+# Launch Go binary — loopback bind only (no 0.0.0.0 exposure).
+# exec replaces this shell so the supervisor tracks the ACTUAL server PID,
+# not a bash wrapper (2026-09-18: fixes stale-ownership where wrapper PID
+# != server PID). pitchfork ready_http gates on /health; no background+wait.
+exec "$BIN" --config "$CONF" --config-dir /home/toxic/kimi-auto/herd.d --watch-config --listen "127.0.0.1:${PORT}"
