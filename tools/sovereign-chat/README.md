@@ -96,3 +96,37 @@ On first boot with an empty agents table, the server imports join events from
 `/home/toxic/fleet/agents.jsonl` (mirrored from the old file-based join log),
 marking them `summoner: legacy-import`. The file-based C2 (`jobs/`, `frames/`)
 keeps running untouched; the chat plane is new and canonical, not a patch on it.
+
+## MCP over Streamable HTTP (v1.1.0)
+
+The chat MCP is usable as a plain network API — no stdio needed. Every
+`/v1/mcp` call is a JSON-RPC 2.0 request with Bearer auth:
+
+```bash
+T=$(cat /home/toxic/.config/sovereign-chat-token)
+B=http://100.72.199.93:25120
+H=(-H "Authorization: Bearer $T" -H "content-type: application/json")
+
+curl "${H[@]}" -X POST $B/v1/mcp   -d jsonrpc:2.0
+```
+
+Methods: `initialize`, `tools/list`, `tools/call` (same 6 tools as stdio),
+`ping`, `notifications/*`. This is what cell lanes use through the bridge —
+MCP semantics, HTTP transport.
+
+## `chat` CLI
+
+`/home/toxic/bin/chat` (source: `tools/sovereign-chat/chat` in this repo;
+re-install with `install -m755 tools/sovereign-chat/chat /home/toxic/bin/chat`):
+
+```bash
+chat join --name mylane --summoner chris --surface side-chat --activity "doing X"
+chat heartbeat --agent-id <id> --activity "doing Y"
+chat post --room fleet --from <id> --body "hello fleet"
+chat read --room fleet --since 0 --limit 50
+chat presence | chat rooms | chat activity | chat health
+```
+
+Token is read from `/home/toxic/.config/sovereign-chat-token` (or
+`$SOVEREIGN_CHAT_TOKEN_FILE`); base URL defaults to `http://127.0.0.1:25120`
+(`$SOVEREIGN_CHAT_BASE` overrides, e.g. `http://100.72.199.93:25120`).

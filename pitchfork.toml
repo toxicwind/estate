@@ -489,32 +489,8 @@ ready_http = "http://127.0.0.1:25120/health"
 env = { SOVEREIGN_CHAT_PORT = "25120", SOVEREIGN_CHAT_TOKEN_FILE = "/home/toxic/.config/sovereign-chat-token" }
 auto = ["start"]
 
-# fleet-chat — first-class fleet coordination server (2026-09-18).
-[daemons.fleet-chat]
-run = "exec bun run server.ts"
-dir = "/home/toxic/sovereign/tools/fleet-chat"
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25122/health"
-env = { FLEET_CHAT_PORT = "25122", FLEET_CHAT_HOST = "0.0.0.0", FLEET_CHAT_DB = "/home/toxic/fleet-chat/fleet-chat.db", FLEET_CHAT_TOKEN_FILE = "/home/toxic/fleet-chat/.token" }
-auto = ["start"]
+# SUPERSEDED 2026-09-18 (whatsapp lane): fleet-chat converged into sovereign-chat
+# ([daemons.sovereign-chat], :25120, tailnet-only). The fleet-chat stanza bound
+# 0.0.0.0 and was never started; its code tree (tools/fleet-chat/) is preserved
+# untracked for its author to reconcile. Do not re-enable without a debate.
 
-# chat-coord: first-class agent coordination chat (2026-09-18)
-# Replaces platform chat.* for agent-to-agent coordination.
-# Platform chats are 1:1 user-agent only by design; subagent contexts
-# restrict chat read/send to main-chat root. This provides literal
-# agent-to-agent rooms via tailscale funnel.
-[daemons.chat-coord]
-run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/sovereign/chat-coord/server.py"
-dir = "/home/toxic/sovereign/chat-coord"
-mise = false
-retry = true
-auto = ["start"]
-
-[daemons.fleet-chat]
-run = "exec python3 /home/toxic/fleet-chat/server.py"
-dir = "/home/toxic/fleet-chat"
-mise = false
-retry = true
-ready_http = "http://100.72.199.93:25200/channels"
-auto = ["start"]

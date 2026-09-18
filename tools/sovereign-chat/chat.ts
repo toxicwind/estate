@@ -1,4 +1,4 @@
-// sovereign-chat v1.0.0 — first-class fleet coordination server.
+// sovereign-chat v1.1.0 — first-class fleet coordination server.
 // Bun + TypeScript. HTTP API + WebSocket push + MCP-over-stdio. SQLite state.
 // Binds 127.0.0.1 and the tailscale IPv4 (tailnet-only, never 0.0.0.0).
 // Token auth on every /v1/* route (Bearer header; ?token= for WebSocket).
@@ -13,7 +13,7 @@
 import { Database } from "bun:sqlite";
 import { createInterface } from "readline";
 
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 const PORT = parseInt(process.env.SOVEREIGN_CHAT_PORT || "25120", 10);
 const TOKEN_FILE = process.env.SOVEREIGN_CHAT_TOKEN_FILE || "";
 const SCRIPT_DIR = new URL(".", import.meta.url).pathname;
@@ -278,6 +278,33 @@ async function handleFetch(req: Request, server: any): Promise<Response> {
     return undefined as any; // handshake in flight — never return a Response here
   }
 
+  // MCP over Streamable HTTP: JSON-RPC 2.0 single request/response, Bearer auth.
+  // Lets tailnet/cell lanes use the chat MCP as a plain network API.
+  if (path === "/v1/mcp" && req.method === "POST") {
+    if (!authorized(req, url)) return json({ ok: false, error: "unauthorized" }, 401);
+    const rpc = (await req.json().catch(() => null)) as any;
+    const okR = (id: any, result: any) => json({ jsonrpc: "2.0", id, result });
+    const failR = (id: any, code: number, message: string) => json({ jsonrpc: "2.0", id, error: { code, message } });
+    if (!rpc || rpc.jsonrpc !== "2.0" || typeof rpc.method !== "string")
+      return failR(rpc?.id ?? null, -32600, "invalid JSON-RPC 2.0 request");
+    try {
+      if (rpc.method === "initialize")
+        return okR(rpc.id, { protocolVersion: "2024-11-05", capabilities: { tools: {} }, serverInfo: { name: "sovereign-chat", version: VERSION } });
+      if (rpc.method === "notifications/initialized" || String(rpc.method).startsWith("notifications/"))
+        return okR(rpc.id, {});
+      if (rpc.method === "tools/list") return okR(rpc.id, { tools: MCP_TOOLS });
+      if (rpc.method === "tools/call") {
+        const { name, arguments: args } = rpc.params || {};
+        const out = mcpCallTool(name, args || {});
+        return okR(rpc.id, { content: [{ type: "text", text: JSON.stringify(out) }] });
+      }
+      if (rpc.method === "ping") return okR(rpc.id, {});
+      return failR(rpc.id, -32601, "method not found: " + String(rpc.method));
+    } catch (e: any) {
+      return failR(rpc.id, -32000, String(e?.message || e));
+    }
+  }
+
   if (!path.startsWith("/v1/")) return json({ ok: false, error: "not found" }, 404);
   if (!authorized(req, url)) return json({ ok: false, error: "unauthorized" }, 401);
 
@@ -322,11 +349,8 @@ const wsHandlers = {
   },
 };
 
-// --- MCP over stdio ----------------------------------------------------------
-async function runMcp() {
-  const token = (process.env.SOVEREIGN_CHAT_TOKEN || "").trim();
-  if (token && token !== TOKEN) { console.error("MCP: bad SOVEREIGN_CHAT_TOKEN"); process.exit(1); }
-  const TOOLS = [
+// --- MCP (shared dispatch: stdio server + Streamable HTTP /v1/mcp) ---------------
+const MCP_TOOLS = [
     { name: "join", description: "Join the fleet chat plane as an agent. summoner is required.", inputSchema: { type: "object", properties: { name: { type: "string" }, chat_id: { type: "string" }, agent_id: { type: "string" }, host_machine_id: { type: "string" }, hostname: { type: "string" }, hatchling_id: { type: "string" }, summoner: { type: "string" }, surface: { type: "string" }, activity: { type: "string" } }, required: ["name", "summoner"] } },
     { name: "heartbeat", description: "Presence heartbeat with current activity and counters.", inputSchema: { type: "object", properties: { agent_id: { type: "string" }, activity: { type: "string" }, counters: { type: "object" } }, required: ["agent_id"] } },
     { name: "post_message", description: "Post a message to a room.", inputSchema: { type: "object", properties: { room_id: { type: "string" }, from_agent: { type: "string" }, body: { type: "string" }, kind: { type: "string" } }, required: ["room_id", "from_agent", "body"] } },
@@ -334,6 +358,20 @@ async function runMcp() {
     { name: "list_presence", description: "Who is live right now.", inputSchema: { type: "object", properties: {} } },
     { name: "list_rooms", description: "List rooms.", inputSchema: { type: "object", properties: {} } },
   ];
+
+function mcpCallTool(name: string, args: Record<string, any>): any {
+  if (name === "join") return store.join(args || {});
+  if (name === "heartbeat") return store.heartbeat(args || {});
+  if (name === "post_message") return store.postMessage(String(args?.room_id || "fleet"), args || {});
+  if (name === "read_messages") return store.readMessages(String(args?.room_id || "fleet"), Number(args?.since_seq || 0), Number(args?.limit || 100));
+  if (name === "list_presence") return store.liveAgents();
+  if (name === "list_rooms") return store.listRooms();
+  throw new Error("unknown tool: " + String(name));
+}
+
+async function runMcp() {
+  const token = (process.env.SOVEREIGN_CHAT_TOKEN || "").trim();
+  if (token && token !== TOKEN) { console.error("MCP: bad SOVEREIGN_CHAT_TOKEN"); process.exit(1); }
   const rl = createInterface({ input: process.stdin, terminal: false });
   const respond = (id: any, result: any) =>
     process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id, result }) + "\n");
@@ -350,17 +388,10 @@ async function runMcp() {
       } else if (msg.method === "notifications/initialized" || msg.method?.startsWith("notifications/")) {
         // ack-only
       } else if (msg.method === "tools/list") {
-        respond(msg.id, { tools: TOOLS });
+        respond(msg.id, { tools: MCP_TOOLS });
       } else if (msg.method === "tools/call") {
         const { name, arguments: args } = msg.params || {};
-        let out: any;
-        if (name === "join") out = store.join(args || {});
-        else if (name === "heartbeat") out = store.heartbeat(args || {});
-        else if (name === "post_message") out = store.postMessage(String(args?.room_id || "fleet"), args || {});
-        else if (name === "read_messages") out = store.readMessages(String(args?.room_id || "fleet"), Number(args?.since_seq || 0), Number(args?.limit || 100));
-        else if (name === "list_presence") out = store.liveAgents();
-        else if (name === "list_rooms") out = store.listRooms();
-        else throw new Error(`unknown tool: ${name}`);
+        const out = mcpCallTool(name, args || {});
         respond(msg.id, { content: [{ type: "text", text: JSON.stringify(out) }] });
       } else if (msg.method === "ping") {
         respond(msg.id, {});
