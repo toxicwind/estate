@@ -1,0 +1,1 @@
+{"description":"First-class fleet coordination plane: presence, activity, rooms, WebSocket push, MCP.","devDependencies":{"@types/bun":"latest"},"name":"sovereign-chat","scripts":{"check":"bun build chat.ts --outdir=/tmp/sovereign-chat-check --target=bun","mcp":"bun run chat.ts mcp","start":"bun run chat.ts"},"type":"module","version":"1.0.0"}
