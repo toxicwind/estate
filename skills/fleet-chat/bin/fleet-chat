@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# fleet-chat CLI wrapper.
+# On awrawr-pc: runs `bun run cli.ts` directly (zero-config).
+# Elsewhere: set FLEET_CHAT_URL and FLEET_CHAT_TOKEN, or use the HTTP API.
+set -euo pipefail
+CLI_DIR="/home/toxic/sovereign/tools/fleet-chat"
+if [[ -f "$CLI_DIR/cli.ts" ]]; then
+    exec bun run "$CLI_DIR/cli.ts" "$@"
+else
+    echo "fleet-chat: not on awrawr-pc." >&2
+    echo "Set FLEET_CHAT_URL=http://100.72.199.93:25122 and FLEET_CHAT_TOKEN, then use the HTTP API:" >&2
+    echo '  curl -H "Authorization: Bearer $FLEET_CHAT_TOKEN" $FLEET_CHAT_URL/v1/rooms' >&2
+    exit 1
+fi
