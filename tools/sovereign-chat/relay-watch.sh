@@ -4,8 +4,13 @@
 # durable watermark and prints them for the relay agent. Prints QUIET when
 # there is nothing new (the relay agent then stays silent).
 #
-# Loop guard: skips messages from the relay agent itself and kind='relay'
-# inbound posts — WhatsApp->fleet relays never bounce back to WhatsApp.
+# Loop guard: skips messages from the relay agent itself — inbound
+# WhatsApp->fleet relays never bounce back to WhatsApp.
+#
+# Watermark discipline: this script NEVER advances the watermark. It reports
+# CANDIDATE=<max seq seen>. The relay agent advances the watermark file only
+# AFTER the WhatsApp message is actually delivered. Duplicate-on-failure beats
+# loss-on-failure: a re-report is visible (seq numbers), a lost decision is not.
 #
 # Watermark lives in the server state dir (durable on awrawr-pc, not the cell).
 # Edge: decisions list is capped at 50; a >50-decision burst inside one poll
@@ -44,5 +49,5 @@ for m in d.get('decisions', []):
 if [ -z "$new" ]; then echo "QUIET"; exit 0; fi
 printf '%s\n' "$new"
 max="$(printf '%s\n' "$new" | python3 -c "import json,sys; print(max(json.loads(l)['seq'] for l in sys.stdin))")"
-printf '%s\n' "$max" > "$WM"
-echo "WATERMARK=$max"
+echo "CANDIDATE=$max"
+echo "NOTE: advance watermark to $max only after the WhatsApp relay is delivered."
