@@ -19,6 +19,12 @@ import { startLiveDiscovery, LIVE_STATUS } from "./router_live_models.ts";
 import { state } from "./router_matrix.ts";
 import { ROUTERS, routeHybrid, callOne, pickWeighted } from "./router_strategy.ts";
 import { uiData, ROUTER_UI_HTML } from "./router_ui.ts";
+import {
+  loadAuthFromEnv,
+  identifyRequest,
+  handleLogin,
+  handleLogout,
+} from "./router_auth.ts";
 
 // ---------------------------------------------------------------------------
 // Optional client auth (absorbed from the retired :8000 key-proxy).
@@ -36,6 +42,32 @@ function clientAuthorized(req: Request): boolean {
   const bearer = h.startsWith("Bearer ") ? h.slice(7).trim() : "";
   const key = bearer || req.headers.get("x-api-key") || "";
   return key !== "" && CLIENT_KEYS.includes(key);
+}
+
+// ---------------------------------------------------------------------------
+// Optional operator auth (flock auth.rs role/session semantics port).
+// Active only when users are configured via SOVEREIGN_AUTH_USERS_FILE or
+// SOVEREIGN_AUTH_USERS. /v1/* keeps the client-key gate above untouched;
+// /health stays open. Operator surface (/ui, /metrics, /debug/*) then
+// requires a signed session cookie, Bearer user:pass, or HTTP Basic auth.
+// ---------------------------------------------------------------------------
+const AUTH = loadAuthFromEnv();
+if (AUTH) {
+  log(
+    `operator auth on: ${AUTH.store.userCount()} user(s), trustProxy=${AUTH.admin.trustProxy}`,
+  );
+} else {
+  log("operator auth off: no users configured (SOVEREIGN_AUTH_USERS_FILE)");
+}
+
+function isOperatorPath(path: string): boolean {
+  return (
+    path === "/ui" ||
+    path === "/ui/" ||
+    path === "/ui/data" ||
+    path === "/metrics" ||
+    path.startsWith("/debug/")
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -110,6 +142,25 @@ const server = Bun.serve({
     // open for liveness probes; everything else requires a key.
     if (path !== "/health" && !clientAuthorized(req)) {
       return json({ error: "unauthorized" }, 401);
+    }
+
+    // Auth endpoints (only reachable when users are configured).
+    if (AUTH && req.method === "POST" && path === "/auth/login") {
+      return handleLogin(req, AUTH.admin, AUTH.store);
+    }
+    if (AUTH && req.method === "POST" && path === "/auth/logout") {
+      return handleLogout(AUTH.admin, req);
+    }
+
+    // Operator-surface gate (flock auth.rs port). /v1/* keeps the client-key
+    // gate above untouched; /health stays open.
+    if (AUTH && isOperatorPath(path)) {
+      const id = await identifyRequest(req, AUTH.admin, AUTH.store);
+      if (!id) {
+        return json({ error: "unauthorized" }, 401, {
+          "WWW-Authenticate": "Bearer",
+        });
+      }
     }
 
     if (req.method === "GET" && (path === "/v1/models" || path === "/models")) {
