@@ -1,4 +1,4 @@
-// sovereign-chat v1.1.0 — first-class fleet coordination server.
+// sovereign-chat v1.2.0 — first-class fleet coordination server.
 // Bun + TypeScript. HTTP API + WebSocket push + MCP-over-stdio. SQLite state.
 // Binds 127.0.0.1 and the tailscale IPv4 (tailnet-only, never 0.0.0.0).
 // Token auth on every /v1/* route (Bearer header; ?token= for WebSocket).
@@ -13,7 +13,7 @@
 import { Database } from "bun:sqlite";
 import { createInterface } from "readline";
 
-const VERSION = "1.1.0";
+const VERSION = "1.2.0";
 const PORT = parseInt(process.env.SOVEREIGN_CHAT_PORT || "25120", 10);
 const TOKEN_FILE = process.env.SOVEREIGN_CHAT_TOKEN_FILE || "";
 const SCRIPT_DIR = new URL(".", import.meta.url).pathname;
@@ -190,6 +190,29 @@ const store = {
     return { agents: rows, message_counts: perAgentMsg, ts: nowISO() };
   },
 
+  // The "same page" surface (2026-09-18 standing consolidation order):
+  // decisions are messages with kind='decision' in any room — the decision log.
+  // Lanes read current state from the server, not from docs.
+  recentDecisions(limit = 50) {
+    limit = Math.min(Math.max(1, limit), 200);
+    return db.query(`SELECT seq, room_id, ts, from_agent, body FROM messages
+      WHERE kind = 'decision' ORDER BY seq DESC LIMIT ?`).all(limit);
+  },
+
+  // One call = the whole board: who is live, what they are doing,
+  // the consolidated decision log, rooms. Main chat owns the truth;
+  // this endpoint is how every lane reads the same page.
+  consolidatedState() {
+    return {
+      service: { name: "sovereign-chat", version: VERSION, uptime_s: Math.floor((Date.now() - BOOT_AT) / 1000) },
+      presence: this.liveAgents(),
+      activity: this.activity(),
+      decisions: this.recentDecisions(50),
+      rooms: this.listRooms(),
+      ts: nowISO(),
+    };
+  },
+
   createRoom(p: Record<string, any>) {
     const room_id = p.room_id ? String(p.room_id) : `room-${rnd(8)}`;
     const ts = nowISO();
@@ -315,6 +338,7 @@ async function handleFetch(req: Request, server: any): Promise<Response> {
     if (path === "/v1/presence" && req.method === "POST") return json(store.heartbeat(body));
     if (path === "/v1/presence" && req.method === "GET") return json({ ok: true, ...store.liveAgents() });
     if (path === "/v1/activity" && req.method === "GET") return json({ ok: true, ...store.activity() });
+    if (path === "/v1/state" && req.method === "GET") return json({ ok: true, state: store.consolidatedState() });
     if (path === "/v1/rooms" && req.method === "GET") return json({ ok: true, rooms: store.listRooms() });
     if (path === "/v1/rooms" && req.method === "POST") return json({ ok: true, room: store.createRoom(body) });
 
@@ -357,6 +381,7 @@ const MCP_TOOLS = [
     { name: "read_messages", description: "Replay room history.", inputSchema: { type: "object", properties: { room_id: { type: "string" }, since_seq: { type: "number" }, limit: { type: "number" } }, required: ["room_id"] } },
     { name: "list_presence", description: "Who is live right now.", inputSchema: { type: "object", properties: {} } },
     { name: "list_rooms", description: "List rooms.", inputSchema: { type: "object", properties: {} } },
+    { name: "get_state", description: "Consolidated live picture: presence, activity, decision log, rooms. Read this instead of docs.", inputSchema: { type: "object", properties: {} } },
   ];
 
 function mcpCallTool(name: string, args: Record<string, any>): any {
@@ -366,6 +391,7 @@ function mcpCallTool(name: string, args: Record<string, any>): any {
   if (name === "read_messages") return store.readMessages(String(args?.room_id || "fleet"), Number(args?.since_seq || 0), Number(args?.limit || 100));
   if (name === "list_presence") return store.liveAgents();
   if (name === "list_rooms") return store.listRooms();
+  if (name === "get_state") return store.consolidatedState();
   throw new Error("unknown tool: " + String(name));
 }
 
