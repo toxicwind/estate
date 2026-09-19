@@ -55,8 +55,33 @@ def log(ev):
         pass
 
 
-def page(action, pid, cmd, detail=None):
-    """Page the lane: durable page record for the fleet-watchdog relay."""
+PAGE_COOLDOWN_S = 600  # re-page the same (pid,action,cmd) at most every 10 min
+_page_last = {}     # (pid, action, cmd_head) -> epoch of last emitted page
+
+
+def _page_key(pid, action, cmd):
+    return (str(pid), action, (cmd or "?")[:80])
+
+
+def page(action, pid, cmd, detail=None, force=False):
+    """Page the lane: durable page record for the fleet-watchdog relay.
+
+    Transition-deduplicated: emits a page only when (pid, action, cmd) is new,
+    the action changed for that pid, or PAGE_COOLDOWN_S expired since the last
+    page for that key. Prevents paging the same stalled offender every 10s loop.
+    force=True bypasses the cooldown (one-shot callers).
+    """
+    key = _page_key(pid, action, cmd)
+    now = time.time()
+    last = _page_last.get(key)
+    if not force and last is not None and (now - last) < PAGE_COOLDOWN_S:
+        return False  # duplicate within cooldown: stay quiet
+    _page_last[key] = now
+    # bounded memory: prune keys older than the cooldown when the map grows
+    if len(_page_last) > 500:
+        cutoff = now - PAGE_COOLDOWN_S
+        for k in [k for k, v in _page_last.items() if v < cutoff]:
+            del _page_last[k]
     rec = {
         "ts": datetime.now(timezone.utc).isoformat(),
         "kind": "stall_page",
