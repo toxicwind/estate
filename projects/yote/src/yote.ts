@@ -415,7 +415,57 @@ async function testE2E(chatId: number, text: string) {
   };
 }
 
-const app = serve({
+/** bedf89a9: pre-start port ownership guard.
+ * The 2026-09-17 EADDRINUSE crash came from a duplicate yote binding 25102
+ * while a live instance held it. Never crash blind on EADDRINUSE again:
+ * probe-bind the port first; if occupied, identify the holder via its HTTP
+ * identity and refuse to start a duplicate. Exit code 3 = "port refused"
+ * (distinct from crash=1). serve() is also wrapped: if EADDRINUSE slips
+ * through the probe race, the same refusal path fires. */
+async function refuseDuplicate(port: number): Promise<never> {
+  let owner = "unknown listener";
+  try {
+    const r = await fetch(`http://127.0.0.1:${port}/`, {
+      signal: AbortSignal.timeout(3000),
+    });
+    if (r.ok) {
+      const j = (await r.json().catch(() => null)) as any;
+      owner =
+        j && j.svc === "yote"
+          ? `live yote instance (version=${j.version ?? "?"}, port=${j.port ?? "?"})`
+          : `http responder (not yote)`;
+    } else {
+      owner = `http responder status=${r.status}`;
+    }
+  } catch {
+    owner = "non-http listener";
+  }
+  log(
+    `FATAL port-ownership: ${port} already held by ${owner} — refusing duplicate instance (bedf89a9 guard, exit 3)`
+  );
+  process.exit(3);
+}
+
+function portOccupied(port: number): boolean {
+  try {
+    const l = Bun.listen({
+      hostname: "0.0.0.0",
+      port,
+      socket: { data() {} },
+    });
+    l.stop(true);
+    return false;
+  } catch {
+    return true;
+  }
+}
+
+if (portOccupied(PORT)) await refuseDuplicate(PORT);
+
+let app: ReturnType<typeof serve>;
+try {
+  app = serve({
+
   port: PORT,
   async fetch(req) {
     const u = new URL(req.url);
@@ -634,6 +684,11 @@ const app = serve({
     return cors(new Response("not found", { status: 404 }));
   },
 });
+} catch (e: any) {
+  const msg = String(e?.message ?? e);
+  if (/EADDRINUSE|address already in use/i.test(msg)) await refuseDuplicate(PORT);
+  throw e;
+}
 
 log(
   `yote ${PORT} openfang=${OF_URL} agent=${DEFAULT_AGENT} bot=${TOK ? "set" : "MISSING"} overlord=${overlordReady} locked=${LOCKED}`,
