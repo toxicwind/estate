@@ -60,6 +60,8 @@ logs = "pitchfork logs --raw -n 100"
 "up-nim-proxy" = "pitchfork start -q nim-proxy"
 "up-matter-server" = "pitchfork start -q matter-server"
 "up-tau" = "pitchfork start -q tau"
+"up-squawk-ws" = "pitchfork start -q squawk-ws"
+"up-squawk-feed" = "pitchfork start -q squawk-feed"
 
 "down-mesh" = "pitchfork stop mesh"
 "down-mesh-hub" = "pitchfork stop mesh-hub"
@@ -88,6 +90,8 @@ logs = "pitchfork logs --raw -n 100"
 "down-nim-proxy" = "pitchfork stop nim-proxy"
 "down-matter-server" = "pitchfork stop matter-server"
 "down-tau" = "pitchfork stop tau"
+"down-squawk-ws" = "pitchfork stop squawk-ws"
+"down-squawk-feed" = "pitchfork stop squawk-feed"
 
 "restart-mesh" = "pitchfork restart -q mesh"
 "restart-mesh-hub" = "pitchfork restart -q mesh-hub"
@@ -116,8 +120,13 @@ logs = "pitchfork logs --raw -n 100"
 "restart-nim-proxy" = "pitchfork restart -q nim-proxy"
 "restart-matter-server" = "pitchfork restart -q matter-server"
 "restart-tau" = "pitchfork restart -q tau"
+"restart-squawk-ws" = "pitchfork restart -q squawk-ws"
+"restart-squawk-feed" = "pitchfork restart -q squawk-feed"
+
 
 # ─── Health checks ───
+"health-squawk-ws" = "python3 -c \"import socket;socket.create_connection(('127.0.0.1',25147),5).close()\""
+"health-squawk-feed" = "python3 -c \"import socket;socket.create_connection(('127.0.0.1',25135),5).close()\""
 "health-mesh" = "curl -sf --max-time 5 http://127.0.0.1:25127/health"
 "health-mesh-hub" = "curl -sf --max-time 5 http://127.0.0.1:25115/health"
 "health-herd" = "curl -sf --max-time 5 http://127.0.0.1:25100/health"
@@ -169,3 +178,12 @@ test = "bun test"
 "test-cov" = "bun run test:cov"
 "test-gateway" = "bun run test:gateway:cov"
 "test-models" = "bun run test:best-models"
+
+
+[tasks."up-squawk"]
+description = "Start squawk-ws and squawk-feed (fleet messaging, now under mesh)"
+depends = ["up-squawk-ws", "up-squawk-feed"]
+
+[tasks."down-squawk"]
+description = "Stop squawk-ws and squawk-feed"
+depends = ["down-squawk-ws", "down-squawk-feed"]
