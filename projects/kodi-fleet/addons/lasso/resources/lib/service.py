@@ -365,6 +365,30 @@ class AddonXMLCheck:
 		except Exception as e: kodi_utils.logger('AddonXMLCheck', str(e))
 		return kodi_utils.logger('Red Light', 'AddonXMLCheck Service Finished')
 
+def _meta_account_active(provider):
+	"""Fail-open gate: True unless we can prove no account is configured."""
+	try:
+		from modules.settings import (
+			trakt_user_active, simkl_user_active,
+			mdblist_user_active, punchplay_user_active,
+		)
+		checks = {
+			"trakt": trakt_user_active,
+			"simkl": simkl_user_active,
+			"mdblist": mdblist_user_active,
+			"punchplay": punchplay_user_active,
+		}
+		return bool(checks[provider]())
+	except Exception:
+		return True
+
+def _start_meta_monitor(provider, monitor_cls, monitor):
+	if _meta_account_active(provider):
+		_start_daemon(lambda: monitor_cls().run(monitor))
+	else:
+		kodi_utils.logger("Red Light", "%s Service Skipped - no account configured" % monitor_cls.__name__)
+
+
 class RedLightMonitor(Monitor):
 	def __init__ (self):
 		Monitor.__init__(self)
@@ -386,10 +410,10 @@ class RedLightMonitor(Monitor):
 		except Exception as e: kodi_utils.logger('BootstrapSettings', str(e))
 		start_custom_windows_prepare(self)
 		_start_daemon(lambda: PlaybackRemoteMonitor().run(self))
-		_start_daemon(lambda: TraktMonitor().run(self))
-		_start_daemon(lambda: SimklMonitor().run(self))
-		_start_daemon(lambda: MdblistMonitor().run(self))
-		_start_daemon(lambda: PunchPlayMonitor().run(self))
+		_start_meta_monitor("trakt", TraktMonitor, self)
+		_start_meta_monitor("simkl", SimklMonitor, self)
+		_start_meta_monitor("mdblist", MdblistMonitor, self)
+		_start_meta_monitor("punchplay", PunchPlayMonitor, self)
 		_start_daemon(lambda: WidgetRefresher().run(self))
 		try: AutoStart().run(self)
 		except Exception as e: kodi_utils.logger('AutoStart', str(e))
