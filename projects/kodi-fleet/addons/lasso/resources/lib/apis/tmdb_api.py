@@ -685,7 +685,13 @@ def get_reviews_data(media_type, tmdb_id):
 def get_data(url):
 	return get_tmdb(url).json()
 
+# Fail-fast timeouts: TMDB answers in ~0.2s from a healthy box (measured
+# 2026-09-19: 0.23s full detail payload). A hung connect used to burn the
+# full 20s silently (every exception -> None). 5s connect / 15s read keeps
+# slow networks working but never stalls a directory build.
+_TMDB_TIMEOUT = (5.0, 15.0)
+
 def get_tmdb(url):
-	try: response = session.get(url, timeout=20.0)
+	try: response = session.get(url, timeout=_TMDB_TIMEOUT)
 	except: response = None
 	return response

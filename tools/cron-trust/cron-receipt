@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+"""
+cron-receipt: honest-run receipt protocol for the cron trust layer.
+
+The platform scheduler's status badge lies (vetoed/overlap-skipped runs badge
+"succeeded"). The receipt protocol makes the lie irrelevant: every worker ends
+its final report with a machine-readable HONEST-RECEIPT footer, and the
+classifier (cron-trust-monitor) treats a present receipt as ground truth.
+
+Footer format (single line, at the very end of the final report):
+  HONEST-RECEIPT job=<job-id> verdict=genuine|no-op|failed duration_s=<secs> work="<one line>" evidence="<path|none>"
+
+Usage:
+  cron-receipt emit --job <id> --verdict genuine --duration-s 42 --work "checked X" --evidence /path
+      Print the footer line (worker pastes it as the last line of its report).
+  cron-receipt parse
+      Read result_summary text on stdin, print parsed receipt JSON (or {}).
+  cron-receipt verify --evidence <path>
+      Check the evidence path exists; exit 0/1.
+"""
+
+import argparse
+import json
+import os
+import re
+import sys
+
+# Lenient: quoted or bare values, any order after the marker.
+RECEIPT_RE = re.compile(
+    r"HONEST-RECEIPT\s+"
+    r"job=(?P<job>\S+)\s+"
+    r"verdict=(?P<verdict>genuine|no-op|failed)\s+"
+    r"duration_s=(?P<duration_s>\d+)\s+"
+    r"work=(?P<work>\"[^\"]*\"|\S+)\s+"
+    r"evidence=(?P<evidence>\"[^\"]*\"|\S+)"
+)
+
+VALID_VERDICTS = {"genuine", "no-op", "failed"}
+
+
+def unquote(s):
+    s = s.strip()
+    if len(s) >= 2 and s[0] == '"' and s[-1] == '"':
+        return s[1:-1]
+    return s
+
+
+def parse_receipt(text):
+    """Return dict with receipt fields, or {} if no footer present."""
+    m = RECEIPT_RE.search(text or "")
+    if not m:
+        return {}
+    d = m.groupdict()
+    return {
+        "job": d["job"],
+        "verdict": d["verdict"],
+        "duration_s": int(d["duration_s"]),
+        "work": unquote(d["work"]),
+        "evidence": unquote(d["evidence"]),
+    }
+
+
+def emit_footer(job, verdict, duration_s, work, evidence):
+    if verdict not in VALID_VERDICTS:
+        raise ValueError(f"verdict must be one of {sorted(VALID_VERDICTS)}")
+    # Quote work/evidence so spaces survive the single-line format.
+    work_q = '"%s"' % work.replace('"', "'")
+    ev_q = '"%s"' % evidence.replace('"', "'")
+    return (f"HONEST-RECEIPT job={job} verdict={verdict} "
+            f"duration_s={int(duration_s)} work={work_q} evidence={ev_q}")
+
+
+def main():
+    ap = argparse.ArgumentParser(description="honest-run receipt protocol")
+    sub = ap.add_subparsers(dest="cmd", required=True)
+
+    e = sub.add_parser("emit", help="print a HONEST-RECEIPT footer line")
+    e.add_argument("--job", required=True)
+    e.add_argument("--verdict", required=True, choices=sorted(VALID_VERDICTS))
+    e.add_argument("--duration-s", required=True, type=int)
+    e.add_argument("--work", required=True)
+    e.add_argument("--evidence", required=True)
+
+    sub.add_parser("parse", help="parse receipt from stdin text -> JSON")
+
+    v = sub.add_parser("verify", help="check evidence path exists")
+    v.add_argument("--evidence", required=True)
+
+    args = ap.parse_args()
+    if args.cmd == "emit":
+        print(emit_footer(args.job, args.verdict, args.duration_s,
+                          args.work, args.evidence))
+    elif args.cmd == "parse":
+        print(json.dumps(parse_receipt(sys.stdin.read())))
+    elif args.cmd == "verify":
+        if args.evidence == "none":
+            print(json.dumps({"evidence": "none", "exists": None}))
+            sys.exit(0)
+        p = os.path.expanduser(args.evidence)
+        ok = os.path.exists(p)
+        print(json.dumps({"evidence": args.evidence, "exists": ok}))
+        sys.exit(0 if ok else 1)
+
+
+if __name__ == "__main__":
+    main()

@@ -5,6 +5,8 @@ from modules.kodi_utils import make_session
 _BASE = 'https://webservice.fanart.tv/v3'
 _EMPTY_IDS = (None, '', 'None', 'empty_setting', 0, '0', '0000000')
 session = make_session('https://webservice.fanart.tv')
+# Fail-fast: a hung fanart.tv request used to stall metadata builds 15s silently.
+_FANARTTV_TIMEOUT = (5.0, 10.0)
 
 def _headers(api_key):
 	return {'api-key': api_key, 'client-key': api_key, 'User-Agent': 'plugin.video.redlight'}
@@ -34,7 +36,7 @@ def _best(images):
 
 def _get(path, api_key):
 	try:
-		response = session.get('%s/%s' % (_BASE, path), headers=_headers(api_key), timeout=15)
+		response = session.get('%s/%s' % (_BASE, path), headers=_headers(api_key), timeout=_FANARTTV_TIMEOUT)
 		if response.status_code != 200: return None
 		data = response.json()
 		if not isinstance(data, dict) or data.get('status') == 'error': return None
@@ -45,7 +47,7 @@ def test_key(api_key):
 	"""Return (ok, message) for Settings → Test API Key. Fight Club is always on Fanart.tv."""
 	if api_key in _EMPTY_IDS: return False, 'Enter a Fanart.tv API key first.'
 	try:
-		response = session.get('%s/movies/550' % _BASE, headers=_headers(api_key), timeout=15)
+		response = session.get('%s/movies/550' % _BASE, headers=_headers(api_key), timeout=_FANARTTV_TIMEOUT)
 		if response.status_code == 200:
 			data = response.json()
 			if isinstance(data, dict) and data.get('name'):
