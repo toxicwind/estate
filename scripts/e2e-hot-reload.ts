@@ -105,7 +105,7 @@ const YOTE = requirePort("YOTE_PORT");
 const OF = requirePort("OPENFANG_PORT");
 const AM = requirePort("SOVEREIGN_ROUTER_PORT");
 const HF = requirePort("HF_DOWNLOADER_PORT");
-const NG = requirePort("NULL_G_PORT");
+const NG = requirePort("NULL_G_PROXY_PORT");
 const GHAS = requirePort("GHAS_API_PORT");
 const GHASM = requirePort("GHAS_MCP_PORT");
 
