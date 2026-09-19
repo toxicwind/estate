@@ -15,20 +15,37 @@ Never in memory files.
 Usage (run by the cron worker via `taskhook run --`):
   sidechat-watch.py --watch-id <id> --print-aid
   sidechat-watch.py --watch-id <id> --seed <aid> <last_seq>
+  sidechat-watch.py --watch-id <id> --seed <aid> -1   (bootstrap_failed sentinel; never scanned)
   sidechat-watch.py --watch-id <id> --query          (legacy DB path; kept as fallback)
   sidechat-watch.py --watch-id <id> --read-jsonl     (preferred: local transcript forward read)
   sidechat-watch.py --aid <aid> --read-jsonl --tail-jsonl 20
   sidechat-watch.py --aid <aid> --tip-jsonl          (max seq of local transcript)
   sidechat-watch.py --watch-id <id> --rows <json-file>
 
-Read-path note (2026-09-19): agent.context_items is served through a
-security-barrier view that cannot use the base table's (agent_id, seq)
-unique index — every agent_id-filtered read degrades to a full sequential
-scan of a multi-million-row TOAST-heavy table and blows the 3s statement
-timeout under cell load. The runtime also appends every context item to
-/home/hatch/agents/agent-<aid>/sessions/*.jsonl with the same seq
-numbering, so --read-jsonl/--tip-jsonl serve the hot path from local disk
-in milliseconds with zero DB load. The DB --query path remains as fallback.
+Read-path note (2026-09-19, measured — supersedes the earlier blanket claim
+that every agent_id-filtered read is a full table scan):
+- Forward range scan (WHERE agent_id=X AND seq > watermark ORDER BY seq ASC
+  LIMIT 100) is index-served on UNIQUE (agent_id, seq): O(new rows), immune
+  to transcript growth. Live-verified on all five watches (watermarks
+  advancing every tick; a direct probe returned in budget).
+- The pathological query is the BACKWARD tip/tail scan (ORDER BY seq DESC
+  LIMIT 1/20): on transcripts with long tool-call tails it dies on the 3s DB
+  statement timeout (limits.statement_timeout_ms=3000, NOT 5s — agent2 logged
+  39 statement timeouts in 3h; even count(*)/max(seq) died), and the
+  fleet-wide DB pool itself intermittently exhausts ("pool timed out while
+  waiting for an open connection"). Bootstrap therefore avoids the tip scan.
+- The runtime mirrors every context item to
+  /home/hatch/agents/agent-<aid>/sessions/*.jsonl with IDENTICAL seq
+  numbering — verified 2026-09-19: --tip-jsonl equals the DB watermark for
+  agent1/madeon/safety/whatsapp, and agent2's JSONL tip runs ahead of its DB
+  watermark by exactly the rows written since its last tick (monotonic).
+  Local reads take milliseconds with zero DB-pool load, so --read-jsonl /
+  --tip-jsonl are the primary path; the DB --query path is the fallback.
+Bootstrap sentinel: --seed <aid> -1 writes last_seq=-1 with status
+"bootstrap_failed". A negative last_seq is NEVER scanned: --query,
+--read-jsonl and --rows all refuse with WATCH-FAIL until the cold path
+re-seeds successfully. Seeding 0 would replay the whole transcript as "new"
+and page on ancient messages — never do it.
 
 Rows JSON: [{"s": seq, "r": role, "txt": text<=400, "ca": created_at_epoch,
              "is_canned": bool}, ...]  or  {"error": "<verbatim error text>"}
@@ -140,9 +157,13 @@ def utc_ts(v):
 
 
 def cmd_print_aid(watch_id, wm_dir):
-    aid, _, _ = load_watermark(watch_id, wm_dir)
-    # Empty line = cold path needed. Never print anything else.
-    print(aid or "")
+    aid, last_seq, _ = load_watermark(watch_id, wm_dir)
+    # Empty line = cold path needed: no cached aid, invalid aid, or the
+    # bootstrap_failed sentinel (last_seq < 0). Never print anything else.
+    if aid and last_seq is not None and last_seq >= 0:
+        print(aid)
+    else:
+        print("")
 
 
 def cmd_seed(watch_id, wm_dir, aid, last_seq):
@@ -157,14 +178,32 @@ def cmd_seed(watch_id, wm_dir, aid, last_seq):
     except (TypeError, ValueError):
         print(f"WATCH-FAIL {watch_id} | seed | last_seq not an int | wm=unchanged")
         return 2
+    if seq < 0:
+        # Bootstrap sentinel: the tip is unavailable from both the local
+        # transcript and the DB. A negative last_seq is never scanned (see
+        # the guards in cmd_query/cmd_read_jsonl/cmd_rows); the next cold
+        # path retries the tip instead of replaying the transcript from 0.
+        save_watermark(watch_id, wm_dir, aid, -1, "bootstrap_failed")
+        print(f"WATCH-FAIL {watch_id} | bootstrap | tip unavailable (jsonl + 3x DB attempts) | wm=-1 bootstrap_failed")
+        return 2
     save_watermark(watch_id, wm_dir, aid, seq, "seeded")
     print(f"WATCH-OK {watch_id} | wm={seq} | new=0 unhandled=0 | seeded")
+
+
+def _sentinel_msg(watch_id):
+    return (f"bootstrap_failed sentinel: the transcript tip was unavailable; "
+            f"re-run the cold path for {watch_id} instead of scanning")
 
 
 def cmd_query(watch_id, wm_dir):
     aid, last_seq, _ = load_watermark(watch_id, wm_dir)
     if not aid:
         print(f"WATCH-FAIL {watch_id} | query | no watermark: run --seed first | wm=unchanged")
+        return 2
+    if last_seq is not None and last_seq < 0:
+        # Sentinel: refuse to scan. The worker writes stdout to the rows
+        # file, so emit the error as JSON for cmd_rows to classify.
+        print(json.dumps({"error": _sentinel_msg(watch_id)}))
         return 2
     print(READ_SQL.format(aid=aid, last_seq=last_seq))
     return 0
@@ -260,6 +299,9 @@ def cmd_read_jsonl(watch_id, wm_dir, aid=None, tail_n=None, limit=500):
         if not aid:
             print(json.dumps({"error": "no watermark: run --seed first"}))
             return 2
+        if last_seq is not None and last_seq < 0:
+            print(json.dumps({"error": _sentinel_msg(watch_id)}))
+            return 2
     else:
         if not AID_RE.match(aid or ""):
             print(json.dumps({"error": "aid failed UUID validation"}))
@@ -308,6 +350,12 @@ def cmd_rows(watch_id, wm_dir, rows_file):
     aid, last_seq, _ = load_watermark(watch_id, wm_dir)
     if not aid:
         print(f"WATCH-FAIL {watch_id} | rows | no watermark: run --seed first | wm=unchanged")
+        return 2
+    if last_seq is not None and last_seq < 0:
+        entry = {"watch_id": watch_id, "ts": utc_ts(time.time()), "ok": False,
+                 "step": "rows", "error": _sentinel_msg(watch_id), "wm": -1}
+        append_ledger(wm_dir, entry)
+        print(f"WATCH-FAIL {watch_id} | rows | {_sentinel_msg(watch_id)} | wm=-1 unchanged")
         return 2
     try:
         with open(rows_file) as f:
