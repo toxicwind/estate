@@ -1,2 +1,5 @@
 state.json
 __pycache__/
+sweep.lock
+supervisor.log
+gap_test.out

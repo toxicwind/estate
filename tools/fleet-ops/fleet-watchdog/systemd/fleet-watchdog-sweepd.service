@@ -1,0 +1,19 @@
+[Unit]
+Description=Fleet presence + rollover watchdog direct sweeper (60s, lane-7)
+Documentation=https://github.com/toxicwind/sovereign-projects/tree/main/tools/fleet-ops/fleet-watchdog
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /home/toxic/sovereign/tools/fleet-ops/fleet-watchdog/sweepd.sh
+Restart=always
+RestartSec=10
+# sweepd.sh loops sweep.py every 60s (sovereign-chat presence TTL is 120s,
+# so this keeps the lane-7 heartbeat alive with 60s margin) and is
+# single-instance via flock. Supervised additionally by the 2m platform cron
+# (supervise.sh) and restarts here in ~10s on crash; user lingering makes it
+# reboot-resilient. Logs: /home/toxic/var/fleet-watchdog/sweepd.log
+
+[Install]
+WantedBy=default.target
