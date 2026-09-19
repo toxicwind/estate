@@ -471,7 +471,7 @@ auto = ["start"]
 # NOTE: pitchfork supervisor is stale (daemon unknown to it); currently started
 # direct via setsid nohup until supervisor is reconciled. Additive only.
 [daemons.pixel-adb-keepalive]
-run = "exec /home/toxic/bin/pixel-adb-keepalive.sh"
+run = "exec /home/toxic/sovereign/projects/android-fleet/bin/pixel-adb-keepalive.sh"
 dir = "/home/toxic"
 mise = false
 retry = true
@@ -494,3 +494,8 @@ auto = ["start"]
 # 0.0.0.0 and was never started; its code tree (tools/fleet-chat/) is preserved
 # untracked for its author to reconcile. Do not re-enable without a debate.
 
+# SUPERSEDED 2026-09-18 (main-chat consolidation): chat-coord stood down.
+# Canonical is sovereign-chat v1.2.0 on :25120 (pitchfork-managed, tailnet).
+# This track (github.com/toxicwind/chat-coord, was :25152) is retired per the
+# consolidation order; repo kept as pushed for history. Do not re-enable
+# without a main-chat verdict.
