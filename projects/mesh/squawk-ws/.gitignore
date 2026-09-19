@@ -1,0 +1,7 @@
+client-heartbeat
+client-cursor.json
+client-spool.jsonl
+server.log
+token
+__pycache__/
+*.pyc
