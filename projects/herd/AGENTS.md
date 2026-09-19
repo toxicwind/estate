@@ -1,7 +1,7 @@
-# AGENTS.md — Herd / llama-swap (`/home/toxic/projects/herd`)
+# AGENTS.md — Herd / llama-swap (`/home/toxic/sovereign/herd`)
 
 **Role**: Lightweight, transparent proxy server providing dynamic model swapping to llama.cpp and sovereign backends.
-**Stack**: Go (1.23+), TypeScript / Vite / Svelte 5 (`ui-svelte/`).
+**Stack**: Go (1.26 per `go.mod`), TypeScript / Vite / Svelte 5 (`ui-svelte/`).
 
 ---
 
@@ -28,7 +28,7 @@ llama-swap is a light weight, transparent proxy server that provides automatic m
 - Use `go test -v -run <name pattern for new tests>` to run any new tests you've written.
 - Run `gofmt -w <file>` before committing to fix any formatting
 - Build go binaries into the ./build/ subdirectory
-- Use `make test-dev` after running new tests for a quick over all test run. This runs `go test` and `staticcheck`. Fix any static checking errors. Use this only when changes are made to any code under the `proxy/` directory
+- Use `make test-dev` after running new tests for a quick over all test run. This runs `go test` and `staticcheck`. Fix any static checking errors. Use this only when changes are made to any code under the `internal/` directory (the legacy `proxy/` directory was retired in the newrouter migration)
 - Use `make test-all` before completing work. This includes long running concurrency tests.
 - Use `make test-ui` after making changes to the UI in ui-svelte/
 
@@ -151,7 +151,7 @@ ast-grep scan --rule rule.yaml src/
 ## 📡 Live-verify commands
 
 ```bash
-for p in 25100 25109 25112 25115; do
+for p in 25100 25104 25115 25127; do
   fuser -s $p/tcp 2>/dev/null && echo "✅ :$p" || echo "❌ :$p DOWN"
 done
 
@@ -175,7 +175,7 @@ ast-grep scan -p 'NVIDIA_MODELS' -l ts --json=stream /home/toxic/projects/pi-age
 
 ## 🔌 MCP / mcpproxy (sovereign-owned)
 
-- **mcpproxy** is the single MCP federation gateway: `http://127.0.0.1:25109/mcp`, owned by
+- **mcpproxy** is the single MCP federation gateway: `http://127.0.0.1:25127/mcp` (MCPPROXY_GO_PORT per `/home/toxic/sovereign/config/ports.env`; corrected 2026-09-19 — the old `:25109` value below is dead, nothing listens there), owned by
 sovereign (`pitchfork start mcpproxy` / `mise run restart-mcpproxy` -> `mcpproxy serve
 --config=/home/toxic/.mcpproxy/mcp_config.json`). 43 real upstreams (ghas + 42 others).
 - **pi MUST list ONLY `mcpproxy`** in `~/.pi/agent/mcp.json` (no duplicate direct `ghas`/

@@ -680,9 +680,39 @@
                         ".*\\.(js|json|css|png|gif|jpg|jpeg|ico|txt)$"
                     ],
                     "description": "List of RE2 compatible regular expressions. Any request to a path matching any of the regular expressions will be ignored and not trigger a swap. When not specified, defaults to a pattern matching common static-asset suffixes (.js, .json, .css, .png, .gif, .jpg, .jpeg, .ico, .txt)."
+                },
+                "normalize_sse": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Fork addition: when true, normalizes all outgoing SSE streaming chunks to canonical OpenAI chat.completion.chunk format. Can be overridden per-model. Implemented in the fork's config loader; the shipped binary contains this key."
                 }
             },
             "additionalProperties": false,
+            "default": {}
+        },
+        "flock": {
+            "type": "object",
+            "description": "Fork addition: flock delegation. Routes cloud models through the flock daemon (replaces the retired astMatrix key; the shipped binary ignores astMatrix with a warning).",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enable flock delegation."
+                },
+                "baseUrl": {
+                    "type": "string",
+                    "description": "Flock daemon base URL, e.g. http://127.0.0.1:8000."
+                },
+                "keyEnv": {
+                    "type": "string",
+                    "description": "Environment variable holding the flock API key."
+                },
+                "modelMap": {
+                    "type": "object",
+                    "description": "Map of local model IDs to flock upstream model IDs."
+                }
+            },
+            "additionalProperties": true,
             "default": {}
         },
         "routing": {

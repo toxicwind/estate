@@ -1,5 +1,13 @@
 # flock architecture
 
+> **NOTE 2026-09-19.** The in-process Go router (`projects/herd/internal/flock`,
+> `astMatrix:` config key) was retired from the shipped herd binary 2026-09-17:
+> the binary ignores `astMatrix:` with a warning and 404s on `/flock/status`,
+> `/flock/metrics`, `/astmatrix/*`. Live cloud routing is the `flock:`
+> delegation key in `config/herd.yaml` pointing at the `:8000` flock daemon
+> below. `internal/flock/providers.go` remains the tree's canonical provider
+> definitions, but it is not compiled into the shipped binary.
+
 ```
                 ┌─────────────────────────────────────────┐
                 │  flock proxy (Rust)  127.0.0.1:8000      │

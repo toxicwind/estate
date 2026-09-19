@@ -1,6 +1,10 @@
 # New Router Migration TODO
 
-This document tracks the work needed for [cmd/newrouter/main.go](../cmd/newrouter/main.go) and [internal/router/](../internal/router/) to reach feature parity with the legacy entrypoint at [llama-swap.go](../llama-swap.go) plus [proxy/proxymanager.go](../proxy/proxymanager.go).
+This document tracks the work needed for [cmd/newrouter/main.go](../cmd/newrouter/main.go [dead — scaffold removed]) [dead — migration scaffold removed] and [internal/router/](../internal/router/) to reach feature parity with the legacy entrypoint at [llama-swap.go](../llama-swap.go) plus [proxy/proxymanager.go](../proxy/proxymanager.go [dead — package removed]) [dead — package retired and removed].
+
+> **NOTE 2026-09-19.** The migration this document tracked is complete:
+> `proxy/` was retired and removed, `internal/server` is the live mux, and the
+> entrypoint remains `llama-swap.go`. The phase history below is kept as a record.
 
 The work is split into phases so each can land and be tested independently. Earlier phases unblock later ones.
 
@@ -40,7 +44,7 @@ API: `chain.New(mws...).Then(final)` for ServeMux registration; `Append` returns
 
 ## Phase 4 — `internal/server` package scaffolding (ProxyManager replacement) -- Completed.
 
-Goal: build the [internal/server](../internal/server/) package so it can stand in for [proxy.ProxyManager](../proxy/proxymanager.go#L67) — the mux, lifecycle, model dispatch, custom endpoints, request filters, auth/CORS, and upstream passthrough. After this phase, `cmd/newrouter/main.go` constructs a `server.Server` instead of a bare `router.Server`.
+Goal: build the [internal/server](../internal/server/) package so it can stand in for [proxy.ProxyManager](../proxy/proxymanager.go [dead — package removed]#L67) — the mux, lifecycle, model dispatch, custom endpoints, request filters, auth/CORS, and upstream passthrough. After this phase, `cmd/newrouter/main.go` constructs a `server.Server` instead of a bare `router.Server`.
 
 The legacy `ProxyManager` collapses three concerns into one struct: the HTTP mux, the model→process router, and the cross-cutting services (loggers, metrics, perf, inflight counter, version). The new layout keeps the `router.Router` implementations focused on model dispatch and lets `internal/server.Server` own the mux and all cross-cutting middleware. `server.Server` builds the `local` and `peer` routers directly and dispatches between them itself, so it fully **supersedes `internal/router.Server`** — see the cleanup item below.
 
@@ -106,7 +110,7 @@ resolved model with multi-segment name resolution, canonical-form redirect
 A new `router.LocalRouter` interface embeds `Router` and adds `RunningModels()`
 and `Unload(timeout, models...)`, both implemented once on `baseRouter` so
 `Group` and `Matrix` share them — the legacy matrix/group divergence at
-[proxymanager.go:1167](../proxy/proxymanager.go#L1167) collapses since
+[proxymanager.go:1167](../proxy/proxymanager.go [dead — package removed]#L1167) collapses since
 `baseRouter` already unifies process storage. `Peer` does not implement it;
 `Server.local` is typed `LocalRouter`, `Server.peer` stays `Router`.
 
@@ -212,8 +216,8 @@ The functions previously at 0 % (`handleListModels`, `handleMetrics`,
 
 ## Phase 8c - Review Part II (entrypoint comparison)
 
-A second pass comparing [cmd/newrouter/main.go](../cmd/newrouter/main.go) against
-the legacy [llama-swap.go](../llama-swap.go) + [proxy.New](../proxy/proxymanager.go#L104)
+A second pass comparing [cmd/newrouter/main.go](../cmd/newrouter/main.go [dead — scaffold removed]) against
+the legacy [llama-swap.go](../llama-swap.go) + [proxy.New](../proxy/proxymanager.go [dead — package removed]#L104)
 surfaced four more gaps, all in logger setup.
 
 **Gap 4 — `LogToStdout` config ignored -- Resolved.**
@@ -235,7 +239,7 @@ upstream monitors in `applyLogSettings`, re-applied on config reload.
 
 **Gap 6 — `LogRequests` deprecation warning missing.**
 
-The legacy [proxymanager.go:127](../proxy/proxymanager.go#L127) warns when the
+The legacy [proxymanager.go:127](../proxy/proxymanager.go [dead — package removed]#L127) warns when the
 deprecated `logRequests` config key is set. `cmd/newrouter` does not. Low
 priority — left open.
 
@@ -246,19 +250,19 @@ matching [llama-swap.go:71](../llama-swap.go#L71).
 
 ---
 
-## Phase X (tbd) — Cutover
+## Phase X (tbd) — Cutover [OBSOLETE 2026-09-19: migration complete, `cmd/newrouter` scaffold removed, entrypoint remains `llama-swap.go`]
 
-- [ ] Swap `llama-swap.go` to delegate to `cmd/newrouter` (or rename newrouter to be the primary entrypoint)
-- [ ] Update `Makefile` build targets
-- [ ] Update docs / README references to the legacy binary
-- [ ] Remove `proxy/proxymanager*.go` and `gin-gonic` dependency once nothing imports them
+- [x] ~~Swap `llama-swap.go` to delegate to `cmd/newrouter` (or rename newrouter to be the primary entrypoint)~~ — not needed; `proxy/` retired directly into `internal/server`
+- [x] ~~Update `Makefile` build targets~~
+- [x] ~~Update docs / README references to the legacy binary~~
+- [x] ~~Remove `proxy/proxymanager*.go` and `gin-gonic` dependency once nothing imports them~~ — `proxy/` no longer exists in the tree
 - [ ] Run `make test-all` and confirm concurrency suite still passes against the new entrypoint
 
 ---
 
 ## Cross-cutting concerns to keep in mind
 
-- **Single body read**: legacy and newrouter both buffer the request body once. When adding filters (Phase 4c), make sure the buffered bytes flow through `Content-Length` / `transfer-encoding` cleanup as in [proxymanager.go:872](../proxy/proxymanager.go#L872).
+- **Single body read**: legacy and newrouter both buffer the request body once. When adding filters (Phase 4c), make sure the buffered bytes flow through `Content-Length` / `transfer-encoding` cleanup as in [proxymanager.go:872](../proxy/proxymanager.go [dead — package removed]#L872).
 - **Streaming flag in context**: legacy stashes `streaming` and `model` under `proxyCtxKey`. The new router uses `ModelKey` / `ModelIDKey` — pick one set of keys and use them consistently for metrics + log handlers.
 - **Matrix vs Group divergence**: any handler that calls `swapProcessGroup` or `findGroupByModelName` in the legacy needs a matrix branch too. The new router's `Router` interface already abstracts this — preserve that abstraction rather than reintroducing the branch in every handler.
-- **Shutdown ordering**: `httpServer.Shutdown` must drain inflight requests _before_ `Server.Shutdown` tears down processes, otherwise inflight requests 502. Current newrouter ordering at [main.go:87](../cmd/newrouter/main.go#L87) is correct — keep it.
+- **Shutdown ordering**: `httpServer.Shutdown` must drain inflight requests _before_ `Server.Shutdown` tears down processes, otherwise inflight requests 502. Current newrouter ordering at [main.go:87](../cmd/newrouter/main.go [dead — scaffold removed]#L87) is correct — keep it.
