@@ -55,7 +55,7 @@ set +u
 [ -f "$TAU_HOME/.config/claude/env" ] && { set -a; . "$TAU_HOME/.config/claude/env" >/dev/null 2>&1; set +a; }
 set -u
 
-export PI_CONFIG_DIR=".tau"
+export PI_CONFIG_DIR="$TAU_DIR"
 
 # ── Profile loading + migration ───────────────────────────────────────
 TAU_PROFILE="${TAU_PROFILE:-default}"
@@ -126,12 +126,61 @@ load_profile
 # ── Engine resolution ─────────────────────────────────────────────────
 # Sovereign checkout location (also HOME-aware)
 SOVEREIGN_DIR="$TAU_HOME/sovereign"
-ENGINE_DIR="$SOVEREIGN_DIR/tau/engine"
+# Primary: projects/tau (first-class), fallback: tau/engine (compat symlink)
+if [ -d "$SOVEREIGN_DIR/projects/tau/engine" ]; then
+    ENGINE_DIR="$SOVEREIGN_DIR/projects/tau/engine"
+else
+    ENGINE_DIR="$SOVEREIGN_DIR/tau/engine"
+fi
 ENGINE_ENTRY="$ENGINE_DIR/packages/coding-agent/src/cli.ts"
 DIST_BIN="$ENGINE_DIR/packages/coding-agent/dist/omp"
 
+# Vendor update commands (run before engine launch)
+vendor_cmd() {
+    local subcmd="${1:-}"
+    local ROOT="$SOVEREIGN_DIR/projects/tau"
+    local UPSTREAM_DIR="$ROOT/upstream-changes"
+    local SCRIPTS_DIR="$UPSTREAM_DIR/scripts"
+
+    case "$subcmd" in
+        update|fetch|ingest)
+            echo "Fetching upstream changes..."
+            "$SCRIPTS_DIR/ingest.sh"
+            ;;
+        status)
+            "$SCRIPTS_DIR/status.sh"
+            ;;
+        promote)
+            local patch="${2:-}"
+            if [ -z "$patch" ]; then
+                echo "Usage: tau vendor promote <patches/*.patch>"
+                exit 1
+            fi
+            "$SCRIPTS_DIR/promote.sh" "$patch"
+            ;;
+        build)
+            echo "Building coding-agent binary..."
+            cd "$ROOT/engine/packages/coding-agent" && bun run scripts/build-binary.ts
+            ;;
+        *)
+            echo "Usage: tau vendor {update|status|promote|build}"
+            echo "  update   - Fetch upstream changes and generate patches"
+            echo "  status   - Show pending patches and upstream status"
+            echo "  promote  - Apply a patch (tau vendor promote <patch>)"
+            echo "  build    - Build the coding-agent binary"
+            exit 1
+            ;;
+    esac
+}
+
 # Collapse chain
 launch() {
+    # Handle vendor subcommand first
+    if [ "${1:-}" = "vendor" ]; then
+        vendor_cmd "${2:-}"
+        return
+    fi
+
     # 1. Explicit override
     if [ -n "${TAU_BIN:-}" ] && [ -x "$TAU_BIN" ]; then
         exec "$TAU_BIN" "$@"
