@@ -1,0 +1,38 @@
+{
+ "generated_ts": "2026-09-19T05:37:47Z",
+ "generated_from": "fleet-rollover.md",
+ "lanes": {
+  "91880196": {
+   "lane": 8,
+   "chat_id": "91880196-7497-4a47-b939-891fdfdfd5e9"
+  },
+  "50df01bc": {
+   "lane": 6,
+   "chat_id": "50df01bc-e55a-4b39-9202-e610f40437fc"
+  },
+  "177c8cb1": {
+   "lane": 3,
+   "chat_id": "177c8cb1-8cc3-4c70-a416-6b3795d428cf"
+  },
+  "f7ef50c8": {
+   "lane": 5,
+   "chat_id": "f7ef50c8-df84-4f9a-bb0d-1229d63e5b58"
+  },
+  "768ad4c4": {
+   "lane": 7,
+   "chat_id": "768ad4c4-dac1-489c-8f94-bc2a27adbb74"
+  },
+  "d5c06065": {
+   "lane": 2,
+   "chat_id": "d5c06065-f0b5-4e0b-8026-44a2482806d7"
+  },
+  "0fcb5f23": {
+   "lane": 4,
+   "chat_id": "0fcb5f23-25d7-44de-9a7d-76342c7b4dd8"
+  },
+  "173376ce": {
+   "lane": 1,
+   "chat_id": "173376ce-0b6d-4bb7-b796-d44bfb201edc"
+  }
+ }
+}
