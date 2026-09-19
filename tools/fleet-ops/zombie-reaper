@@ -37,7 +37,7 @@ RULES (hard):
 Exit codes: 0 = clean (no actionable zombies), 2 = actionable zombies found,
 1 = usage/input error.
 """
-import json, sys, time
+import json, os, sys, time
 
 SCAN_SQL_PATH = "/home/hatch/workspace/helpers/muse-db/queries/stuck_completion_audit.sql"
 
@@ -46,11 +46,24 @@ SCAN_SQL_PATH = "/home/hatch/workspace/helpers/muse-db/queries/stuck_completion_
 # until its owning lane reaps it, but the fleet has already been told.
 # Shape: {"sids": {"<sid>": {"child": "<prefix8>", "by": "<lane>",
 #                             "at": "<iso-utc>", "note": "<evidence>"}}}
-# Durable mirror on awrawr-pc (cell workspace is disposable scratch; the
-# authoritative copy lives at the fleet-ops path below). The old cell-local
-# path /home/hatch/workspace/cron-honest/zombie-verified.json was a dead
-# pointer: edits there never reached the durable store. Never point back.
-VERIFIED_PATH = "/home/toxic/sovereign/tools/fleet-ops/zombie-verified.json"
+#
+# Two copies, one logical store (topology fix 2026-09-19):
+#   DURABLE: /home/toxic/sovereign/tools/fleet-ops/zombie-verified.json
+#            (awrawr-pc; the backup of record; reachable from the cell ONLY
+#            via the awrawr-mcp bridge, never by a direct filesystem path)
+#   CELL:    ~/workspace/cron-honest/zombie-verified.json
+#            (cell-local hot store; always readable/writable by the worker)
+# Reads UNION both copies (durable wins on conflict) so a sid verified on
+# either machine suppresses re-flagging on both. --mark-verified writes the
+# primary store atomically (durable when directly reachable, else the cell
+# file) and, when running on the cell, best-effort mirrors to the durable
+# path via xfer so the backup of record converges.
+# A naive single-path swap to the durable path BREAKS the cell worker
+# (/home/toxic does not exist on the cell: reads would silently return {}
+# and re-flag already-verified sids) -- never do that.
+VERIFIED_DURABLE = "/home/toxic/sovereign/tools/fleet-ops/zombie-verified.json"
+VERIFIED_CELL = os.path.expanduser("~/workspace/cron-honest/zombie-verified.json")
+XFER_BIN = os.path.expanduser("~/workspace/skills/awrawr-mcp/bin/xfer.py")
 
 COMPLETION_MARKERS = ("done", "complete", "final report", "pushed", "verified",
                       "all phases", "writing the final handoff")
@@ -79,14 +92,66 @@ def load_rows(path):
     return rows
 
 
-def load_verified():
-    """Sids a lane already verified stale (flag on fleet channel). Never re-flag."""
+def _atomic_write_json(path, obj):
+    """Atomic temp+rename write (fsync before rename). Never a torn file."""
+    import tempfile
+    d = os.path.dirname(path)
+    os.makedirs(d, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=d, prefix=".tmp-")
     try:
-        doc = json.load(open(VERIFIED_PATH))
+        with os.fdopen(fd, "w") as f:
+            json.dump(obj, f, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
+
+
+def _load_verified_file(path):
+    try:
+        doc = json.load(open(path))
         sids = doc.get("sids", {}) if isinstance(doc, dict) else {}
         return {str(k): v for k, v in sids.items()}
-    except (FileNotFoundError, ValueError):
+    except (FileNotFoundError, ValueError, OSError):
         return {}
+
+
+def _durable_reachable():
+    return os.path.isdir(os.path.dirname(VERIFIED_DURABLE))
+
+
+def load_verified():
+    """Union of the durable and cell verified-sid stores (durable wins on
+    conflict). A sid verified on either machine suppresses re-flagging."""
+    merged = _load_verified_file(VERIFIED_CELL)
+    merged.update(_load_verified_file(VERIFIED_DURABLE))
+    return merged
+
+
+def _mirror_to_durable():
+    """Best-effort: copy the cell store to the durable path via the bridge.
+    Runs only on the cell (where the durable path is not directly reachable).
+    Never raises: the cell write already succeeded; the durable copy converges
+    on the next successful mark."""
+    import subprocess
+    try:
+        r = subprocess.run([XFER_BIN, "put", VERIFIED_CELL, VERIFIED_DURABLE],
+                           capture_output=True, text=True, timeout=60)
+        if r.returncode != 0:
+            print("zombie-reaper: durable mirror failed: %s"
+                  % ((r.stderr or r.stdout or "xfer error")[:160]),
+                  file=sys.stderr)
+            return False
+        return True
+    except Exception as e:
+        print("zombie-reaper: durable mirror failed: %s" % str(e)[:160],
+              file=sys.stderr)
+        return False
 
 
 def classify(rows):
@@ -148,17 +213,20 @@ def main(argv):
         return 2 if actionable else 0
     if len(argv) >= 5 and argv[1] == "--mark-verified":
         sid, lane, note = argv[2], argv[3], " ".join(argv[4:])
-        try:
-            doc = json.load(open(VERIFIED_PATH))
-        except (FileNotFoundError, ValueError):
-            doc = {"sids": {}}
-        doc.setdefault("sids", {})[str(sid)] = {
+        # Primary store: durable when directly reachable (awrawr-pc run),
+        # else the cell file (cell run). Atomic write, never torn.
+        primary = VERIFIED_DURABLE if _durable_reachable() else VERIFIED_CELL
+        doc = {"sids": _load_verified_file(primary)}
+        doc["sids"][str(sid)] = {
             "by": lane, "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "note": note,
         }
-        with open(VERIFIED_PATH, "w") as f:
-            json.dump(doc, f, indent=2)
-        print("marked sid=%s verified by %s" % (sid, lane))
+        _atomic_write_json(primary, doc)
+        print("marked sid=%s verified by %s (%s)" % (sid, lane, primary))
+        if primary == VERIFIED_CELL:
+            # Cell run: converge the durable backup of record via the bridge.
+            if _mirror_to_durable():
+                print("mirrored to durable store")
         return 0
     sys.exit("usage: zombie-reaper --scan | --classify <muse.db-json-file|-> | --mark-verified <sid> <lane> <note...>")
 
