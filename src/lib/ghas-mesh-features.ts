@@ -21,7 +21,8 @@ export type MeshServiceId =
   | "grafana"
   | "ghas-api"
   | "ghas-mcp"
-  | "mesh-hub";
+  | "mesh-hub"
+  | "buildsrv";
 
 export type FeatureId =
   | "readyz"
@@ -166,6 +167,13 @@ export function serviceCatalog(): ServiceMeta[] {
       healthPath: "/health",
       role: "mesh-orchestrator",
       ghas_borrow: "service-discovery hub + chain-health",
+    },
+    {
+      id: "buildsrv",
+      portEnv: "BUILDSRV_PORT",
+      healthPath: "/health",
+      role: "build-server",
+      ghas_borrow: "disk-backed build queue + worker pool",
     },
   ];
 }
@@ -332,6 +340,7 @@ export async function runFeature(
         "ghas-api": ["ghas-mcp"],
         "ghas-mcp": [],
         "mesh-hub": cat.map((c) => c.id).filter((id) => id !== "mesh-hub"),
+        "buildsrv": [],
       };
       return {
         status: 200,
