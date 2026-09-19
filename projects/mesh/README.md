@@ -93,3 +93,16 @@ curl -sf http://127.0.0.1:25100/v1/models  # herd (local inference)
   Full spec in docs/gemini-tool-retrieval.md; LLM-friendly API reference in
   docs/gemini-tool-retrieval-reference.md. BLOCKED on depleted prepay credits --
   Chris tops up at ai.studio/projects.
+
+## squawk — fleet messaging (moved here 2026-09-19)
+
+Squawk source used to live scattered at home root (`~/squawk`, `~/squawk-ws`);
+it now lives here as `squawk/` (fleet WhatsApp relay, :25135) and `squawk-ws/`
+(fleet WS push server, :25147). `~/squawk` and `~/squawk-ws` remain as
+compatibility symlinks. pitchfork daemons `squawk-ws`, `squawk-feed` and
+`squawk-ws-client` point at these paths; the systemd `squawk-watchdog.timer`
+keeps the pitchfork supervisor alive.
+
+mise tasks (sovereign `mise.toml`): `up-squawk`, `down-squawk`,
+`up/down/restart-squawk-ws`, `up/down/restart-squawk-feed`,
+`health-squawk-ws`, `health-squawk-feed`.

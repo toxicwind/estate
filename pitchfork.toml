@@ -262,7 +262,7 @@ auto = ["start"]
 
 [daemons.squawk-feed]
 run = "exec /home/toxic/.shingle/squawk-relay/run-feed.sh"
-dir = "/home/toxic/squawk"
+dir = "/home/toxic/sovereign/projects/mesh/squawk"
 mise = false
 retry = true
 boot_start = true
@@ -315,8 +315,8 @@ env = { WHATSAPP_MCP_PORT = "25146" }
 # Squawk websocket push feed (2026-09-14): stdlib asyncio ws server, inotify on
 # channel files + zipfs-vault, bearer-token auth. Replaces polling.
 [daemons.squawk-ws]
-run = "exec python3 /home/toxic/squawk-ws/squawk_ws_server.py"
-dir = "/home/toxic/squawk-ws"
+run = "exec python3 /home/toxic/sovereign/projects/mesh/squawk-ws/squawk_ws_server.py"
+dir = "/home/toxic/sovereign/projects/mesh/squawk-ws"
 mise = false
 retry = true
 boot_start = true
@@ -402,7 +402,7 @@ env = { WATCHDOG_PORT = "25150", WATCHDOG_INTERVAL = "30" }
 # NOTE (merged 2026-09-14, stash wip-kimi-audit): superseded squawk-ws
 # variant kept for reference — old path /home/toxic/squawk/relay/squawk_ws_server.py,
 # old dir /home/toxic/squawk, old ready_http http://127.0.0.1:25147/ping.
-# Live process runs the /home/toxic/squawk-ws/ path on :25147; this block reflects that.
+# Live process runs the sovereign/projects/mesh/squawk-ws/ path on :25147; this block reflects that.
 auto = ["start"]
 
 # ws-exec-tunnel (2026-09-14): TCP forwarder 127.0.0.1:25379 -> 127.0.0.1:8379.
@@ -421,16 +421,16 @@ auto = ["start"]
 # squawk-ws-client (2026-09-14, cell-proof pilot): push client ON awrawr-pc,
 # connecting directly to 127.0.0.1:25147. The cell-side client
 # (~/workspace/squawk-ws-client.py) dies with the cell; this one cannot.
-# Spool: /home/toxic/squawk-ws/client-spool.jsonl (durable, cell-independent).
+# Spool: sovereign/projects/mesh/squawk-ws/client-spool.jsonl (durable, cell-independent).
 # Additive pilot — cell-side client + watchdog stay as fallback until 24h proven.
 [daemons.squawk-ws-client]
-run = "exec python3 /home/toxic/squawk-ws/squawk_ws_client_local.py"
-dir = "/home/toxic/squawk-ws"
+run = "exec python3 /home/toxic/sovereign/projects/mesh/squawk-ws/squawk_ws_client_local.py"
+dir = "/home/toxic/sovereign/projects/mesh/squawk-ws"
 mise = false
 retry = true
 boot_start = true
 env = { SQUAWK_WS_TOKEN_FILE = "/home/toxic/.squawk-ws-token" }
-ready_cmd = "find /home/toxic/squawk-ws/client-heartbeat -mmin -2 | grep -q ."
+ready_cmd = "find /home/toxic/sovereign/projects/mesh/squawk-ws/client-heartbeat -mmin -2 | grep -q ."
 depends = ["squawk-ws"]
 auto = ["start"]
 
