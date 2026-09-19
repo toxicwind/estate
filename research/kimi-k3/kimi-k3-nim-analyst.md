@@ -85,10 +85,19 @@ Even with the request shape correct, K3-on-NIM is a capacity-constrained endpoin
 
 ## 8. What tau's live usage proves (and what it does not)
 
-Tau driving `kimi-k3-nim` proves three things. First, the endpoint exists and answers — the strongest possible refutation of "not available," now with measured throughput (25.5 TPS) rather than a binary alive/dead claim. Second, tau's request path satisfies the strict contract (`top_p: 0.95`, valid effort levels, thinking-toggle transport), whether by explicit configuration or by not injecting the defaults that break it. Third, tau's workload tolerates the capacity asterisks: burst 429s and multi-second latency swings are part of the deal.
+Tau driving `kimi-k3-nim` proves three things. First, the endpoint exists and answers — the strongest possible refutation of "not available," now with measured throughput (25.5 TPS) rather than a binary alive/dead claim. Second, tau's request path satisfies the strict contract (`top_p: 0.95`, valid effort levels, thinking-toggle transport), whether by explicit configuration or by not injecting the defaults that break it. Third, tau's workload tolerates the capacity asterisks: burst 429s and minute-scale latency (60–155 s time-to-first-token, measured 2026-09-19) are part of the deal.
 
 It does not prove the endpoint is stable, well-provisioned, or suitable for latency-sensitive paths. It does not prove the trial terms permit the workload. It does not prove which precision the hosted endpoint serves (the NVFP4-build inference is strong but unconfirmed). And it does not invalidate anyone's August failure — those clients failed against a genuinely absent or unlisted endpoint, then failed again against the strict contract. The point of interest Chris flagged is precisely this: **the mainstream "doesn't work" verdict is a compound of a stale fact, a Potemkin catalog, and a strict interface**, and live measured usage cuts through all three.
 
 ## 9. Practical takeaways
 
-For anyone integrating K3 on NIM: pin `top_p: 0.95` and never let client defaults override it; restrict `reasoning_effort` to `low`/`high`/`max`; drive thinking via `chat_template_kwargs.thinking`; budget output tokens for always-on reasoning; paste only the base URL (`integrate.api.nvidia.com/v1`), never the full invoke path; expect 429 bursts and 1–46 s latency (worse, at the tail); and re-probe `integrate.api.nvidia.com/v1/models` before assuming an outage is yours — NIM retires endpoints with 410s at short notice. For catalog consumers: treat any "K3 not on NIM" claim dated before 2026-08-28 as expired, and treat the exclusion test in open-free-router as self-retired (the maintainer's own epitaph: correct then, stale now). For privacy: don't send sensitive data through the free tier — treat it as trainable. The model is there. It is picky, rate-limited, trial-gated, and probably double-quantized — but it answers.
+For anyone integrating K3 on NIM: pin `top_p: 0.95` and never let client defaults override it; restrict `reasoning_effort` to `low`/`high`/`max`; drive thinking via `chat_template_kwargs.thinking`; budget output tokens for always-on reasoning; paste only the base URL (`integrate.api.nvidia.com/v1`), never the full invoke path; expect 429 bursts and 60–155 s time-to-first-token (~100 s for a short completion measured 2026-09-19; worse at the tail); and read deprecation signals from chat-response headers (GET /v1/models carries no deprecation headers — verified 2026-09-19) before assuming an outage is yours — NIM retires endpoints with 410s at short notice. For catalog consumers: treat any "K3 not on NIM" claim dated before 2026-08-28 as expired, and treat the exclusion test in open-free-router as self-retired (the maintainer's own epitaph: correct then, stale now). For privacy: don't send sensitive data through the free tier — treat it as trainable. The model is there. It is picky, rate-limited, trial-gated, and probably double-quantized — but it answers.
+
+
+---
+
+## Corrections (2026-09-19, lane-3)
+
+- Latency wording reconciled with live measurements: 60–155 s TTFT, ~100 s short completions (was: "1–46 s" / "multi-second swings").
+- Outage-triage advice corrected: deprecation signals come from chat-response headers, not GET /v1/models (verified it carries none).
+- All cited URLs re-verified live (HTTP 200) on 2026-09-19.
