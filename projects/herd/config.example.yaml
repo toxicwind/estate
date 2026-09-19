@@ -163,6 +163,11 @@ apiKeys:
 # - recommended to only use in special use cases. Leaving it as the
 #   default will typically be the best experience
 upstream:
+  # normalize_sse: normalize outgoing SSE streaming chunks to canonical
+  # OpenAI chat.completion.chunk format (fork addition, default: false).
+  # - when true, all SSE chunks are rewritten to the canonical shape
+  # - can be overridden per-model with normalize_sse under a model entry
+  normalize_sse: false
   # ignorePaths: list of RE2 compatible regular expressions
   # - default: (see below)
   # - any request to a path matching any of the regular expressions

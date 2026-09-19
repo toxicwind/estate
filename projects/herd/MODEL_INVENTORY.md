@@ -1,4 +1,17 @@
-# Llama-Swap Model Inventory — Complete Audit from `/home/toxic/projects/models`
+# Llama-Swap Model Inventory — Complete Audit from `/home/toxic/models`
+
+> **CORRECTIONS 2026-09-19 (verified on the box).** The original audit below is
+> dated 2026-07-15 and several of its claims are now stale:
+> - Model files live in **`/home/toxic/models`** (21 `.gguf` files), **not**
+>   `/home/toxic/projects/models` — that directory does not exist.
+> - `heretic-UD-27B-Q5_K_XL.gguf` is **missing** from `/home/toxic/models`
+>   (the "CRITICAL ISSUES" section claims only the Q5 file exists — it does not).
+> - The deployment matrix below uses the pre-autoscan model-ID scheme
+>   (`beellama/qwen-flash-64k`, …); the current `config.yaml` (autoscan-regenerated)
+>   uses file-derived IDs (e.g. `gemma-4-12b-it-q4_k_m`) and none of the old IDs exist.
+> - Step 3's `go run ./llama-swap.go --config config.yaml` does not work: this
+>   vendored tree is missing `internal/config` and does not build standalone.
+> The original audit body is kept below as history.
 
 **Generated:** 2026-07-15  
 **Source:** All README.md files in `repos/` subdirectories + local `.gguf` files  

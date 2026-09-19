@@ -70,6 +70,7 @@ func main() {
 	flagKeyFile := flag.String("tls-key-file", "", "TLS key file")
 	flagVersion := flag.Bool("version", false, "show version and exit")
 	flagWatchConfig := flag.Bool("watch-config", false, "reload config on file change")
+	flagValidate := flag.Bool("validate", false, "validate the config file and exit (without starting the server)")
 	flag.Parse()
 
 	if *flagVersion {
@@ -101,6 +102,11 @@ func main() {
 	if err != nil {
 		slog.Error("failed to load config", "config", *flagConfig, "config-dir", *flagConfigDir, "error", err)
 		os.Exit(1)
+	}
+
+	if *flagValidate {
+		fmt.Printf("config is valid: %d model(s), %d peer(s)\n", len(cfg.Models), len(cfg.Peers))
+		os.Exit(0)
 	}
 
 	// Loggers are wired per cfg.LogToStdout: proxy/upstream feed muxLog, which

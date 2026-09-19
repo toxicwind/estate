@@ -1,6 +1,14 @@
 # flock router V2 — Production-Grade Cloud Provider Router
 
-> Renamed 2026-09-17: `astmatrix` -> `flock`. Package `internal/flock`; legacy `/astmatrix/*` HTTP paths and `astMatrix:` YAML key still accepted.
+> **RETIRED 2026-09-17 — READ THIS FIRST.** The in-process Go router described
+> below (`internal/flock`, `astMatrix:` config key) is **not compiled into the
+> shipped binary**. The binary logs `[WARN] astMatrix config block is retired
+> and ignored; configure flock: instead`, serves **404** on `/flock/status`,
+> `/flock/metrics`, `/astmatrix/status`, and `/astmatrix/metrics`. Live cloud
+> routing is **delegation**: the `flock:` config key points herd at the flock
+> daemon on `127.0.0.1:8000`, whose models appear in `/v1/models` with the
+> `flock:` prefix (e.g. `flock: 01-ai/yi-large`). What follows documents the
+> tree-only `internal/flock` package for reference.
 
 ## Overview
 
@@ -43,10 +51,9 @@ flock is a first-class routing module for llama-swap that provides intelligent d
 ## Production Features
 
 - **Circuit Breakers**: Closed -> Open -> Half-Open with probe recovery
-- **Health Probes**: Background 5s probes every 30s
+- **Health Probes**: Background probes every `healthProbeInterval` (default 30s)
 - **Request Coalescing**: Deduplicates identical concurrent requests
-- **Streaming SSE**: Proper flush every 32KB for real-time responses
-- **Retry with Backoff**: 3 attempts per provider with exponential backoff
+- **Retry with Backoff**: 3 attempts per provider (`maxRetries` default 3) with exponential backoff
 - **Rate Limiting**: Token bucket per provider (60/min paid, 10/min free)
 - **Latency Tracking**: Exponential moving average per provider
 - **Sticky Sessions**: Session affinity via Authorization header
@@ -54,7 +61,27 @@ flock is a first-class routing module for llama-swap that provides intelligent d
 
 ## Configuration
 
+The live configuration is the **`flock:` delegation key** (see the retired
+`astMatrix:` block below for what NOT to use). From the live
+`/home/toxic/sovereign/config/herd.yaml`:
+
 ```yaml
+# RETIRED 2026-09-17: astMatrix in-process router replaced by Flock delegation.
+# Flock (:8000) is the unified multi-provider remote-API/completions subsystem.
+flock:
+  enabled: true
+  baseUrl: http://127.0.0.1:8000
+  keyEnv: FLOCK_API_KEY
+  modelMap:
+    kimi-k2: nvidia/nemotron-3-super-120b-a12b
+    kimi-k3-nim: nvidia/nemotron-3-ultra-550b-a55b
+```
+
+The in-process router's old `astMatrix:` block (RETIRED — ignored by the binary
+with a warning; kept here for reference only):
+
+```yaml
+# DO NOT USE — retired 2026-09-17, ignored by the shipped binary.
 astMatrix:
   enabled: true
   strategy: hybrid
@@ -78,7 +105,10 @@ astMatrix:
 
 ## Integration
 
-Upstream `server.go` already dispatches to `s.cloud.ServeHTTP(w, r)` when `s.cloud.Handles(data.ModelID)` returns true. This router implements the `router.Router` interface and is a drop-in replacement.
+The in-process router implemented the `router.Router` interface as a drop-in
+replacement dispatched from `server.go` when the requested model was handled by
+the cloud matrix. This integration path is retired along with the `astMatrix:`
+key; herd now reaches cloud models through the flock daemon (`flock:` key).
 
 ## Build
 
@@ -89,7 +119,10 @@ go build ./...
 
 ## Status Endpoint
 
+The in-process `/flock/status` and `/flock/metrics` endpoints (plus the legacy
+`/astmatrix/*` paths) are **retired — they 404 on the shipped binary**.
+Cloud-model visibility now comes from the model listing:
+
 ```bash
-curl http://localhost:25100/flock/status
-curl http://localhost:25100/flock/metrics
+curl -s http://127.0.0.1:25100/v1/models | python3 -c "import sys,json;print([m['id'] for m in json.load(sys.stdin)['data'] if 'flock' in str(m.get('meta',{}))][:5])"
 ```
