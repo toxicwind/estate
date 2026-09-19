@@ -5,6 +5,14 @@ from apis.tmdb_api import movie_details, tvshow_details, season_episodes_details
 								episode_groups_data, episode_group_details
 from modules.utils import jsondate_to_datetime, subtract_dates
 # from modules.kodi_utils import logger
+from time import monotonic as _monotonic
+
+def _timing_log(message):
+	"""Verbose timing for metadata fetches (standing requirement). Never raises."""
+	try:
+		from modules.kodi_utils import logger
+		logger('LassoTiming', message)
+	except: pass
 
 _ID_EMPTY = (None, '', 'None', 'empty_setting', 0, '0')
 
@@ -248,6 +256,7 @@ def tvshow_meta(id_type, media_id, api_key, mpaa_region, current_date, current_t
 	elif _alt_ids is None:
 		_alt_ids = []
 	if media_id == None: return None
+	_meta_t0 = _monotonic()
 	meta = meta_cache.get(_meta_cache_type('tvshow'), id_type, media_id, current_time, dbcon=dbcon)
 	if meta and meta.get('meta_language') and meta.get('meta_language') != _meta_lang():
 		meta = None
@@ -255,18 +264,22 @@ def tvshow_meta(id_type, media_id, api_key, mpaa_region, current_date, current_t
 		if meta.get('blank_entry') and _alt_ids:
 			nxt_type, nxt_id = _alt_ids[0]
 			return tvshow_meta(nxt_type, nxt_id, api_key, mpaa_region, current_date, current_time, is_anime_list, dbcon, _alt_ids=_alt_ids[1:])
+		_timing_log('tvshow_meta HIT id_type=%s media_id=%s %.3fs' % (id_type, media_id, _monotonic() - _meta_t0))
 		return meta_valid_check(meta, is_anime_list)
 	try:
+		_fetch_t0 = _monotonic()
 		if id_type == 'tmdb_id': data = tvshow_details(media_id, api_key)
 		else:
 			external_result = tvshow_external_id(id_type, media_id, api_key)
 			if not external_result: data = None
 			else: data = tvshow_details(external_result['id'], api_key)
+		_fetch_dt = _monotonic() - _fetch_t0
 		if not data or data.get('status_code', '') in (6, 34, 37):
 			if id_type == 'tmdb_id': meta = {'tmdb_id': media_id, 'imdb_id': 'tt0000000', 'tvdb_id': '0000000', 'blank_entry': True}
 			elif id_type == 'imdb_id': meta = {'tmdb_id': '0000000', 'imdb_id': media_id, 'tvdb_id': '0000000', 'blank_entry': True}
 			else: meta = {'tmdb_id': '0000000', 'imdb_id': 'tt0000000', 'tvdb_id': media_id, 'blank_entry': True}
 			meta_cache.set(_meta_cache_type('tvshow'), id_type, meta, 24, current_time, dbcon=dbcon)
+			_timing_log('tvshow_meta BLANK id_type=%s media_id=%s fetch=%.3fs total=%.3fs' % (id_type, media_id, _fetch_dt, _monotonic() - _meta_t0))
 			if _alt_ids:
 				nxt_type, nxt_id = _alt_ids[0]
 				return tvshow_meta(nxt_type, nxt_id, api_key, mpaa_region, current_date, current_time, is_anime_list, dbcon, _alt_ids=_alt_ids[1:])
@@ -397,6 +410,7 @@ def tvshow_meta(id_type, media_id, api_key, mpaa_region, current_date, current_t
 				'total_aired_eps': total_aired_eps, 'mediatype': 'tvshow', 'total_seasons': total_seasons, 'tvshowtitle': title, 'status': status, 'clearlogo': clearlogo,
 				'landscape': landscape, 'keywords': keywords, 'rpdb_poster': rpdb_poster, 'short_cast': short_cast, 'meta_language': _meta_lang()}
 		meta_cache.set(_meta_cache_type('tvshow'), id_type, meta, tvshow_expiry(current_date, meta), current_time, dbcon=dbcon)
+		_timing_log('tvshow_meta MISS id_type=%s media_id=%s fetch=%.3fs total=%.3fs' % (id_type, media_id, _fetch_dt, _monotonic() - _meta_t0))
 	except: pass
 	return meta_valid_check(meta, is_anime_list)
 
