@@ -4,37 +4,37 @@
 
 ```
 tau/
-├── package.json          ← root wrapper, workspaces → engine/packages/*
-├── vendor/               ← upstream repos (oh-my-pi, kimi-code-sovereign, etc.) — READ-ONLY REFERENCE ONLY
-│   └── oh-my-pi/         ← upstream oh-my-pi source (canonical tracking mirror, never edited directly)
+├── package.json          ← REMOVED 2026-09-19: no root package.json exists (only package.json.bak); engine/packages/*/package.json are standalone
+├── vendor/               ← upstream mirror (oh-my-pi only; a full sovereign-projects checkout, NOT a read-only upstream mirror)
+│   └── oh-my-pi/         ← sovereign-projects checkout (origin = github.com/toxicwind/sovereign-projects), NOT an upstream oh-my-pi mirror
 ├── engine/               ← main working tree (fork of oh-my-pi with sovereign changes)
 │   ├── packages/         ← canonical packages — ALL code lives here
-│   ├── crates/           ← Rust crates (pi-ast, pi-builtins, pi-iso, pi-natives, pi-shell, pi-voice, pi-walker)
-│   ├── vendor/           ← empty placeholder (submodules defined but not cloned)
+│   ├── crates/           ← REMOVED 2026-09-19: no crates/ under engine/; Rust crates live at tau/crates/ (pi-ast, pi-builtins, pi-iso, pi-natives, pi-shell, pi-voice, pi-walker)
+│   ├── vendor/           ← upstream mirror: engine/vendor/oh-my-pi (full sovereign-projects checkout, not a placeholder)
 │   ├── package.json      ← primary workspace definition
 │   ├── Cargo.toml        ← Rust workspace
 │   └── .gitmodules       ← upstream submodule references
-├── packages/             ← compatibility mirror synced from engine/packages/
+├── packages/             ← REMOVED 2026-09-19: this compatibility mirror does not exist; the root CLI resolves via dist/omp
 ├── scripts/              ← build, CI, release scripts
-├── .tau/                 ← harness state (sessions, stats, config)
+├── .tau/                 ← REMOVED 2026-09-19: no .tau/ at repo root; the tau launcher keeps session state at ~/.tau (user home)
 └── README-FORK.md        ← this file
 ```
 
 ## How It Works
 
 - **engine/** is the fork of upstream oh-my-pi. All code changes go here.
-- **vendor/** holds upstream reference repos that track real remotes (pullable via git submodule). It is strictly read-only reference material: do not make direct changes or development edits here.
-- **packages/** is a compatibility mirror synced from engine/ — root package.json workspaces point here.
-- **crates/** contains the Rust native layer (pi-natives, pi-ast, etc.).
+- **vendor/** holds a full sovereign-projects checkout (`vendor/oh-my-pi`, `engine/vendor/oh-my-pi`; origin = github.com/toxicwind/sovereign-projects) — it is the fork's own monorepo state, not a read-only upstream mirror. (Corrected 2026-09-19.)
+- ~~**packages/** compatibility mirror~~ — removed 2026-09-19: `tau/packages/` does not exist; the root CLI (`dist/omp` via the `tau` launcher) resolves packages from `engine/packages/` directly.
+- **crates/** (`tau/crates/`, at repo root — not under `engine/`) contains the Rust native layer (pi-natives, pi-ast, etc.). (Corrected 2026-09-19.)
 
 ## Upstream Sync
 
 ```bash
-cd tau/engine/vendor/oh-my-pi && git pull origin main
+cd tau/engine/vendor/oh-my-pi && git pull origin main   # NOTE 2026-09-19: origin here is github.com/toxicwind/sovereign-projects (the fork's own monorepo), NOT upstream oh-my-pi; this advances the fork, it does not track upstream oh-my-pi
 cd tau/engine && git submodule update --init --recursive
 ```
 
-Then re-sync: `rsync -av engine/packages/ packages/`
+~~Then re-sync: `rsync -av engine/packages/ packages/`~~ — removed 2026-09-19: `tau/packages/` does not exist, so this target is bogus.
 
 ## Session Audit — Diff Dataframes
 
@@ -88,93 +88,19 @@ Saved: `.tau/agent/sessions/-projects-sovereign-projects-tau/2026-09-08T06-07-13
 17. **GOAL = ENDLESS TODO.** TODO.md is continuous improvement, not finite list.
 
 ## Provider Registry Map
+## Provider Registry Map (corrected 2026-09-19)
 
-All provider files live in `engine/packages/ai/src/registry/`:
+There is no per-vendor file map under `engine/packages/ai/src/registry/` — that directory holds
+auth/build machinery (`oauth/`, `hooks/`, `engine/`, `registry.ts`), not per-vendor files. The
+85-file map that used to be here was stale and has been removed. Provider wiring is split:
 
-```
-registry/
-├── aiand.ts           ← AI And provider
-├── aimlapi.ts         ← AIML API
-├── alibaba-coding-plan.ts
-├── alibaba-token-plan.ts
-├── anthropic.ts
-├── api-key-login.ts
-├── api-key-validation.ts
-├── aws.ts
-├── azure.ts
-├── baseten.ts
-├── bedrock-mantle.ts
-├── cerebras.ts
-├── cloudflare-ai-gateway.ts
-├── coreweave.ts
-├── cursor.ts
-├── deepinfra.ts
-├── deepseek.ts
-├── devin.ts
-├── exa.ts
-├── firepass.ts
-├── fireworks.ts
-├── github-copilot.ts
-├── gitlab-duo.ts
-├── gitlab-duo-workflow.ts
-├── gmi-cloud.ts
-├── google.ts
-├── google-antigravity.ts
-├── google-gemini-cli.ts
-├── google-vertex.ts
-├── huggingface.ts
-├── kagi.ts
-├── kilo.ts
-├── kimi-code.ts
-├── litellm.ts
-├── llama-cpp.ts
-├── lm-studio.ts
-├── meta.ts
-├── minimax.ts
-├── mistral.ts
-├── moonshot.ts
-├── nanogpt.ts
-├── novita.ts
-├── nvidia.ts
-├── ollama.ts
-├── ollama-cloud.ts
-├── openai.ts
-├── openai-codex.ts
-├── openai-codex-device.ts
-├── opencode-go.ts
-├── opencode-zen.ts
-├── openrouter.ts
-├── parallel.ts
-├── perplexity.ts
-├── qianfan.ts
-├── qwen-portal.ts
-├── sakana.ts
-├── siliconflow.ts
-├── siliconflow-cn.ts
-├── synthetic.ts
-├── tavily.ts
-├── together.ts
-├── umans.ts
-├── venice.ts
-├── vercel-ai-gateway.ts
-├── vllm.ts
-├── wafer-serverless.ts
-├── wafer.ts
-├── xai.ts
-├── xai-oauth.ts
-├── xiaomi.ts
-├── xiaomi-token-plan-ams.ts
-├── xiaomi-token-plan-cn.ts
-├── xiaomi-token-plan-sgp.ts
-├── yolo-auto.ts
-├── zai.ts
-├── zenmux.ts
-├── zhipu-coding-plan.ts
-└── oauth/
-    ├── devin.ts
-    ├── gitlab-duo-workflow.ts
-    ├── minimax-code.ts
-    ├── opencode.ts
-    ├── openrouter.ts
-    └── wafer.ts
-```
+- **Per-vendor descriptors**: `engine/packages/catalog/src/provider-models/descriptors.ts`
+  (compiled model catalog in `src/models.json`: 69 providers; identity/classification rules in
+  `engine/packages/catalog/src/compat/rules/providers/*.kdl`, generated into `src/compat/rules.json`).
+- **Auth providers**: `engine/packages/catalog/src/compat/auth-ids.ts`, generated from
+  `engine/packages/catalog/src/compat/rules/auth/*.kdl` (82 auth providers as of 2026-09-19).
+- **Wire adapters**: `engine/packages/ai/src/providers/` — ~12 lazy wire families
+  (`anthropic*.ts`, `openai-*.ts`, `google*.ts`, `ollama.ts`, `azure-openai-responses.ts`,
+  `bedrock-mantle.ts`, `cursor/`, `devin/`, `github-copilot-headers.ts`, `gitlab-duo*.ts`,
+  `kimi.ts`, `synthetic.ts`). Most OpenAI-compatible vendors ride the shared OpenAI wire via
+  their catalog descriptor; they do not have dedicated files.

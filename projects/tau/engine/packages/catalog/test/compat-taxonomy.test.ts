@@ -106,3 +106,44 @@ describe("collapse and variant vocabulary", () => {
 		expect(collapsed).toEqual({ logicalId: "gpt-5.2-codex", effort: Effort.XHigh, thinkingVariant: false });
 	});
 });
+
+describe("llama-family alias maximalization (2026-09-19)", () => {
+	test("codellama lineage resolves to meta/llama", () => {
+		// Live-verified misses pre-patch: bare ids lead with "codellama", never "llama".
+		for (const id of [
+			"codellama:7b",
+			"codellama:13b",
+			"codellama:70b",
+			"codellama:7b-instruct",
+			"codellama/CodeLlama-7b-hf",
+			"bartowski/CodeLlama-7B-Instruct-GGUF",
+			"TheBloke/CodeLlama-7B-Instruct-GGUF",
+			"unsloth/codellama-7b-bnb-4bit",
+		]) {
+			expect(classifyModel("openrouter", id, { lenient: true })).toMatchObject({
+				class: "meta",
+				family: "llama",
+			});
+		}
+	});
+
+	test("bare Meta-Llama org ids and bedrock dotted forms resolve", () => {
+		expect(
+			classifyModel("openrouter", "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4", { lenient: true }),
+		).toMatchObject({ class: "meta", family: "llama" });
+		expect(
+			classifyModel("openrouter", "Meta-Llama-3.1-8B-Instruct", { lenient: true }),
+		).toMatchObject({ class: "meta", family: "llama" });
+		// AWS Bedrock: namespace "llama" with bounded=true splits on . and :
+		expect(
+			classifyModel("openrouter", "meta.llama3-70b-instruct-v1:0", { lenient: true }),
+		).toMatchObject({ class: "meta", family: "llama" });
+	});
+
+	test("distinct non-Meta llama lineages stay unknown", () => {
+		// open_llama (openlm-research) and TinyLlama are not Meta Llama; absorbing
+		// them would misclassify. They must remain class=unknown.
+		expect(classifyModel("openrouter", "openlm-research/open_llama_3b", { lenient: true }).class).toBe("unknown");
+		expect(classifyModel("openrouter", "TinyLlama/TinyLlama-1.1B-Chat-v1.0", { lenient: true }).class).toBe("unknown");
+	});
+});

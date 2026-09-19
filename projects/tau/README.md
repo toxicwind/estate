@@ -33,8 +33,8 @@ Tau (formerly OMP) is the AI-native agent engine for the Sovereign ecosystem, de
   ```
 
 ## Documentation Index
-- [Architecture Guide](/docs/ARCHITECTURE.md)
-- [Setup Guide](/docs/SETUP.md)
+- ~~[Architecture Guide](/docs/ARCHITECTURE.md)~~ — removed 2026-09-19: `docs/ARCHITECTURE.md` does not exist
+- ~~[Setup Guide](/docs/SETUP.md)~~ — removed 2026-09-19: `docs/SETUP.md` does not exist
 - [Contributor Guide](/CONTRIBUTING.md)
 - [Packages Overview](/docs/packages/)
 

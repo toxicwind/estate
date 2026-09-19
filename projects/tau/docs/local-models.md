@@ -24,8 +24,10 @@ fallback is used when that role is unset.
   explicit accelerated provider cannot initialize.
   - Pick a provider persistently with the `providers.tinyModelDevice` setting (`default` keeps CPU),
     or per-run with the `PI_TINY_DEVICE` env var (which overrides the setting).
-  - Accepted values are `cpu`, `gpu`, `metal`/`webgpu`, `auto`, `cuda`, `dml`, `coreml`, `wasm`,
-    `webnn`, `webnn-gpu`, `webnn-cpu`, and `webnn-npu`.
+  - Accepted values are `default` (keeps CPU), `cpu`, `gpu`, `mlx`, `metal`/`webgpu`, `auto`, `cuda`, `dml`,
+    `coreml`, `wasm`, `webnn`, `webnn-gpu`, `webnn-cpu`, and `webnn-npu` (see `TINY_MODEL_DEVICE_SETTING_VALUES`
+    in `engine/packages/coding-agent/src/tiny/device.ts`). `mlx` selects the MLX worker (Apple Silicon) and is
+    required for models the ONNX backend refuses (e.g. `qwen3-1.7b`).
   - Direct `coreml` remains opt-in via `PI_TINY_DEVICE=coreml`; it is not part of the default because
     cached decoder-LLM ONNX loads can fail during session initialization.
   - WebGPU/Metal works for the single-process eval harness, but the production worker forces
@@ -49,8 +51,8 @@ fallback is used when that role is unset.
   - Qwen3-1.7B q4: ~1.6s
   - gemma-3-1b q4: ~1.1s
   - Conclusion: **1B–1.7B models are viable on CPU.**
-- **`session_options.graphOptimizationLevel`** trades load vs inference speed: `disabled` = fastest
-  load, slightly slower inference; `all` = default.
+- ~~**`session_options.graphOptimizationLevel`**~~ — no such option exists in the codebase (verified 2026-09-19:
+  zero matches under `engine/packages/coding-agent/src`); the load-vs-inference tradeoff claim is stale and has been removed.
 - **First run** downloads weights from the HF Hub to a cache dir (q4 weights ~200MB–1.1GB depending
   on model); subsequent **warm** loads are sub-second to ~3s. Inference is async and
   background-friendly for memory tasks; titles are semi-interactive.
@@ -82,8 +84,11 @@ fallback is used when that role is unset.
 | SmolLM2-135M  | Too small                           |
 | flan-t5-small | Rejected — just echoes the input    |
 
-**Shipped local options**: `lfm2-350m`, `qwen3-0.6b`, `gemma-270m`, `qwen2.5-0.5b`, `lfm2-700m`.
-**Default setting**: `online`. The default local download for `omp tiny-models` is `lfm2-700m`.
+**Shipped local options**: `lfm2.5-230m`, `lfm2.5-350m`, `falcon-h1-90m` (see `TINY_TITLE_LOCAL_MODELS` in
+`engine/packages/coding-agent/src/tiny/models.ts`; the older `lfm2-350m`/`qwen3-0.6b`/`gemma-270m`/`qwen2.5-0.5b`/`lfm2-700m`
+lineup was replaced and no longer exists in the registry).
+**Default setting**: `online`. The default local download for `omp tiny-models` is `lfm2.5-230m`
+(`DEFAULT_TINY_TITLE_LOCAL_MODEL_KEY`).
 
 ## Task 2: Mnemopi memory (`providers.memoryModel`)
 
@@ -138,14 +143,17 @@ runtime rejects this choice before loading the model rather than failing during 
 Of the runnable options, the registry marks `lfm2-1.2b` as the recommended local memory model.
 `gemma-3-1b` favors consolidation quality, while `qwen2.5-1.5b` favors fine-grained extraction.
 
-**Configured local options**: `llama3.2:3b`, `qwen3-1.7b` (currently disabled as described above),
+**Configured local options**: `llama3.2:3b`, `qwen3-1.7b` (MLX-only: `onnxUnsupportedReason` is set because
+onnxruntime-node cannot run its RotaryEmbedding cache updates; usable with `providers.tinyModelDevice=mlx`),
 `gemma-3-1b`, `qwen2.5-1.5b`, `lfm2-1.2b`.
 **Default setting**: `online`.
 
 ### Known Mnemopi parser bugs (surfaced by these experiments)
 
-- `String(item)` produces `[object Object]` on object array items.
-- The line-fallback drops items `<=10` chars, so a correct short fact like `Name: Can` is discarded.
+- ~~`String(item)` produces `[object Object]` on object array items.~~ — no `String(item)` coercion of extraction
+  items exists in current `engine/packages/mnemopi/src` (verified 2026-09-19); this bug is fixed or never landed.
+- The line-fallback drops items `<=10` chars, so a correct short fact like `Name: Can` is discarded (verified:
+  `fact.length > 10` gates at `engine/packages/mnemopi/src/core/extraction.ts:257,279`).
 
 ## Integration notes
 
