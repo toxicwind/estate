@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+from time import monotonic as _monotonic
 from modules import kodi_utils, settings
 from modules.metadata import tvshow_meta
 from modules.utils import get_datetime, adjust_premiered_date, TaskPool
@@ -7,6 +8,7 @@ from modules.watched_status import get_database, watched_info_season, get_watche
 # logger = kodi_utils.logger
 
 def build_season_list(params):
+	_sl_t0 = _monotonic()
 	def _process():
 		total_aired_eps, episode_count = meta_get('total_aired_eps'), 0
 		for item in season_data:
@@ -133,6 +135,8 @@ def build_season_list(params):
 	kodi_utils.set_category(handle, show_title)
 	kodi_utils.end_directory(handle, cacheToDisc=False)
 	kodi_utils.set_view_mode('view.seasons', 'seasons', is_external)
+	try: kodi_utils.logger('LassoTiming', 'build_season_list tmdb_id=%s total=%.3fs' % (params.get('tmdb_id'), _monotonic() - _sl_t0))
+	except: pass
 
 def single_seasons(seasons_list):
 	season_results = []
