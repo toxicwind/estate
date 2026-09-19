@@ -38,46 +38,53 @@ from datetime import datetime, timezone, timedelta
 TERMINAL = {"succeeded", "failed", "cancelled", "timeout"}
 ACTIVE = {"running", "queued"}
 
-VETO_PATTERNS = [
-    "did not pass the scheduled-task safety review",
-    "safety review",
-    "vetoed",
-]
-SKIP_PATTERNS = [
-    "already running and concurrency.overlap=skip",
-    "another occurrence already running",
-    "another run was active",
-]
-COALESCE_PATTERNS = ["scheduled_occurrence_coalesced"]
+# Classifier: single source of truth is cron-trust-monitor.classify_run.
+# cron-backfill used to carry its own VETO/SKIP/COALESCE substring patterns,
+# which diverged from the canonical classifier and false-positived on any
+# audit job that merely MENTIONS vetoes (e.g. cron-veto-repair's own sweep
+# report), paging 4x/day for a run that genuinely completed. Never diverge
+# again: import the canonical classifier, map its verdicts to backfill classes.
+from importlib.machinery import SourceFileLoader as _SFL
+
+_BIN_DIR = os.path.dirname(os.path.abspath(__file__))
+_TRUST_MONITOR = os.path.join(_BIN_DIR, "cron-trust-monitor")
 
 DEFAULT_POLICY_PATH = os.path.expanduser("~/workspace/cron-honest/backfill-policy.json")
 DEFAULT_STATE_PATH = os.path.expanduser("~/workspace/cron-honest/backfill-state.json")
 
 
+def _load_canonical_classifier():
+    try:
+        mod = _SFL("cron_trust_monitor", _TRUST_MONITOR).load_module()
+        return mod.classify_run
+    except Exception as e:
+        print("BACKFILL: cannot load canonical classifier (%s)" % e,
+              file=sys.stderr)
+        return None
+
+
+_CANONICAL_CLASSIFY = _load_canonical_classifier()
+
+
 def classify(run):
+    """Canonical classification mapped to backfill classes.
+
+    Maps: vetoed/failed/timeout/overlap-skip/coalesced/ambiguous/genuine are
+    passed through; no-op and quota-deferred are runs that executed by
+    design (not missed work) -> genuine; non-terminal records are excluded
+    from trust math -> "active" only for running/queued (never backfill while
+    active), else "unknown".
+    """
     status = (run.get("status") or "").strip()
-    summary = run.get("result_summary") or ""
-    error = run.get("error_text") or ""
-    s_low = summary.lower()
-    if status in ACTIVE:
-        return "active"
-    if status == "failed":
-        return "failed"
-    if status == "timeout":
-        return "timeout"
-    if status == "cancelled":
-        if any(p in error.lower() or p in s_low for p in COALESCE_PATTERNS):
-            return "coalesced"
-        return "cancelled-other"
-    if status == "succeeded":
-        if any(p in s_low for p in VETO_PATTERNS):
-            return "vetoed"
-        if any(p in s_low for p in SKIP_PATTERNS):
-            return "overlap-skip"
-        if not summary.strip():
-            return "ambiguous"
+    if _CANONICAL_CLASSIFY is None:
+        return "unknown"
+    honest, _reason = _CANONICAL_CLASSIFY(run)
+    if honest is None:
+        # Non-terminal record: not evidence of anything.
+        return "active" if status in ACTIVE else "unknown"
+    if honest in ("no-op", "quota-deferred"):
         return "genuine"
-    return "unknown"
+    return honest
 
 
 def run_ts(run):

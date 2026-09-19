@@ -41,6 +41,13 @@ import json, sys, time
 
 SCAN_SQL_PATH = "/home/hatch/workspace/helpers/muse-db/queries/stuck_completion_audit.sql"
 
+# Sids already verified stale by a lane (flag posted to the fleet channel).
+# classify() suppresses re-flagging for these -- the row stays 'running'
+# until its owning lane reaps it, but the fleet has already been told.
+# Shape: {"sids": {"<sid>": {"child": "<prefix8>", "by": "<lane>",
+#                             "at": "<iso-utc>", "note": "<evidence>"}}}
+VERIFIED_PATH = "/home/hatch/workspace/cron-honest/zombie-verified.json"
+
 COMPLETION_MARKERS = ("done", "complete", "final report", "pushed", "verified",
                       "all phases", "writing the final handoff")
 PROGRESS_MARKERS = ("initializing", "waiting on", "interim", "in progress",
@@ -68,8 +75,19 @@ def load_rows(path):
     return rows
 
 
+def load_verified():
+    """Sids a lane already verified stale (flag on fleet channel). Never re-flag."""
+    try:
+        doc = json.load(open(VERIFIED_PATH))
+        sids = doc.get("sids", {}) if isinstance(doc, dict) else {}
+        return {str(k): v for k, v in sids.items()}
+    except (FileNotFoundError, ValueError):
+        return {}
+
+
 def classify(rows):
     now = int(time.time())
+    verified = load_verified()
     out = []
     for r in rows:
         v = (r.get("verdict") or "").upper()
@@ -91,6 +109,12 @@ def classify(rows):
                 action, why = "LEAVE", "ambiguous; re-scan later"
         elif v == "COORDINATOR_LIVE":
             action, why = "LEAVE", "has %d running children" % kids
+        sid = str(r.get("sid"))
+        if action == "FLAG_OWNER_LANE" and sid in verified:
+            vi = verified[sid] or {}
+            action = "LEAVE"
+            why = ("already verified stale by %s at %s; flag on fleet channel, "
+                   "not re-flagging" % (vi.get("by", "?"), vi.get("at", "?")))
         out.append({
             "sid": r.get("sid"), "child": (r.get("child") or "")[:8],
             "parent": (r.get("parent") or "")[:8],
@@ -118,7 +142,21 @@ def main(argv):
             print("FLAG: zombie sid=%s child=%s parent=%s -- %s"
                   % (x["sid"], x["child"], x["parent"], x["why"]))
         return 2 if actionable else 0
-    sys.exit("usage: zombie-reaper --scan | --classify <muse.db-json-file|->")
+    if len(argv) >= 5 and argv[1] == "--mark-verified":
+        sid, lane, note = argv[2], argv[3], " ".join(argv[4:])
+        try:
+            doc = json.load(open(VERIFIED_PATH))
+        except (FileNotFoundError, ValueError):
+            doc = {"sids": {}}
+        doc.setdefault("sids", {})[str(sid)] = {
+            "by": lane, "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "note": note,
+        }
+        with open(VERIFIED_PATH, "w") as f:
+            json.dump(doc, f, indent=2)
+        print("marked sid=%s verified by %s" % (sid, lane))
+        return 0
+    sys.exit("usage: zombie-reaper --scan | --classify <muse.db-json-file|-> | --mark-verified <sid> <lane> <note...>")
 
 
 if __name__ == "__main__":
