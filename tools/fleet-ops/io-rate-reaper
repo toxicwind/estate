@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
-# io-rate-reaper: kill disk-thrashers by measured read rate, not just orphan status.
+# io-rate-reaper: deprioritize disk-thrashers by measured read rate, not just orphan status.
 # Companion to orphan-reaper (which only catches PPID-1 orphans).
 # Patch for 2c7ca733: the 2026-09-19 crash was 50-80% iowait from recursive
 # workspace greps. Killer profile = high read_bytes/s + low CPU, whatever the PPID.
 #
 # Samples /proc/PID/io read_bytes twice (2s apart) for candidate processes
 # (rg, grep, find, python forensics). Flags sustained read rate above threshold.
-# Dry-run by default; --kill to act. Never touches PID 1, self, or the daemon.
+#
+# 2026-09-19 forward-deprecation: --kill NO LONGER TERMINATES. The 2c7ca733
+# verdict retired all kill escalation from the saturation path ("NEVER kills").
+# --kill now maps to the safe action: ionice idle-class (best effort) + page.
+# The root io-governor daemon owns real stall-time triage.
+#
+# Dry-run by default; --kill to act (safe action). Never touches PID 1, self, or the daemon.
 #
 # Usage: io-rate-reaper [--kill] [--rate-mb MB] [--sample-secs S]
 #   Defaults: 100 MB/s sustained over a 2s sample.
@@ -19,7 +25,9 @@ SAMPLE=2
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --kill) KILL=1; shift ;;
+    --kill) KILL=1
+      echo "io-rate-reaper: WARNING --kill no longer terminates (2c7ca733 verdict); maps to ionice-idle + page" >&2
+      shift ;;
     --rate-mb) RATE_MB="$2"; shift 2 ;;
     --sample-secs) SAMPLE="$2"; shift 2 ;;
     *) echo "usage: io-rate-reaper [--kill] [--rate-mb MB] [--sample-secs S]" >&2; exit 1 ;;
@@ -71,8 +79,14 @@ for pid in "${!R1[@]}"; do
     cmd=$(ps -p "$pid" -o args= 2>/dev/null | head -c 120)
     mb=$(( rate / 1024 / 1024 ))
     if [[ $KILL -eq 1 ]]; then
-      kill -TERM "$pid" 2>/dev/null && echo "io-rate-reaper: TERM pid=$pid ${mb}MB/s :: $cmd" \
-        || echo "io-rate-reaper: FAILED to signal pid=$pid" >&2
+      # --kill is retired: safe action = ionice idle-class (best effort) + page.
+      # Never TERM. (2c7ca733 verdict: no kill escalation in the saturation path.)
+      if ionice -c3 -p "$pid" 2>/dev/null; then
+        echo "io-rate-reaper: IDLE-CLASS pid=$pid ${mb}MB/s :: $cmd"
+      else
+        echo "io-rate-reaper: FLAG pid=$pid ${mb}MB/s (ionice denied; root io-governor will triage on stall) :: $cmd"
+      fi
+      echo "io-rate-reaper: PAGE disk-thrasher pid=$pid ${mb}MB/s :: $cmd" >&2
     else
       echo "io-rate-reaper: FLAG pid=$pid ${mb}MB/s (dry-run) :: $cmd"
     fi
@@ -80,5 +94,5 @@ for pid in "${!R1[@]}"; do
   fi
 done
 
-[[ $KILL -eq 0 ]] && echo "io-rate-reaper: dry-run complete, $FLAGGED flagged (pass --kill to act)"
+[[ $KILL -eq 0 ]] && echo "io-rate-reaper: dry-run complete, $FLAGGED flagged (pass --kill for safe action: ionice-idle + page, never TERM)"
 exit 0
