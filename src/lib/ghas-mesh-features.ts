@@ -135,7 +135,7 @@ export function serviceCatalog(): ServiceMeta[] {
     },
     {
       id: "null-g-proxy",
-      portEnv: "NULL_G_PORT",
+      portEnv: "NULL_G_PROXY_PORT",
       healthPath: "/health",
       role: "edge-proxy",
       ghas_borrow: "feature-flag health banner",
