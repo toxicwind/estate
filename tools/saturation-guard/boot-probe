@@ -1,0 +1,135 @@
+#!/usr/bin/env python3
+"""boot-probe: cell reboot detection + attribution ledger.
+
+The cell (sandbox/container) restarts without warning — 3 inferred restarts
+on 2026-09-19 alone (03:19, 04:29, 08:09 MDT) — and nothing authoritative
+records them. This probe closes that gap: every run snapshots /proc/stat
+btime and the kernel boot_id; on change it appends a REBOOT event to a
+JSONL ledger carrying the last pre-reboot telemetry, so the next "huh, did
+it reboot again?" is answered by data, not archaeology.
+
+Pure /proc reads + two small state files. Never kills, never writes outside
+~/workspace/state/.
+
+Output contract (the supervisor job copies these as its final message):
+  BOOT-OK boot-probe | btime=<btime> uptime_s=<n> load1=<x>
+  BOOT-REBOOT boot-probe | prev_btime=<n> new_btime=<n> | last_load1=<x> last_wa=<n>% last_dstate=<n>
+"""
+import json
+import os
+import sys
+import time
+
+STATE_DIR = os.path.expanduser("~/workspace/state")
+STATE_PATH = os.path.join(STATE_DIR, "boot-probe.json")
+LEDGER_PATH = os.path.join(STATE_DIR, "boot-events.jsonl")
+
+
+def read_btime():
+    with open("/proc/stat") as f:
+        for line in f:
+            if line.startswith("btime "):
+                return int(line.split()[1])
+    raise RuntimeError("btime not found in /proc/stat")
+
+
+def read_boot_id():
+    try:
+        with open("/proc/sys/kernel/random/boot_id") as f:
+            return f.read().strip()
+    except OSError:
+        return "unknown"
+
+
+def read_load1():
+    with open("/proc/loadavg") as f:
+        return float(f.read().split()[0])
+
+
+def read_cpu_wa():
+    # one quick /proc/stat sample pair, ~0.5s apart, for iowait %
+    def snap():
+        with open("/proc/stat") as f:
+            p = f.readline().split()
+        vals = list(map(int, p[1:]))
+        total = sum(vals)
+        wa = vals[4] if len(vals) > 4 else 0
+        return total, wa
+    t0, w0 = snap()
+    time.sleep(0.5)
+    t1, w1 = snap()
+    dt = t1 - t0
+    return round(100.0 * (w1 - w0) / dt, 1) if dt > 0 else 0.0
+
+
+def read_dstate():
+    n = 0
+    for pid in os.listdir("/proc"):
+        if not pid.isdigit():
+            continue
+        try:
+            with open("/proc/%s/stat" % pid) as f:
+                if f.read().rsplit(")", 1)[1].split()[0] == "D":
+                    n += 1
+        except (OSError, IndexError):
+            pass
+    return n
+
+
+def main():
+    os.makedirs(STATE_DIR, exist_ok=True)
+    btime = read_btime()
+    boot_id = read_boot_id()
+    load1 = read_load1()
+    wa = read_cpu_wa()
+    dstate = read_dstate()
+    try:
+        with open("/proc/uptime") as f:
+            uptime_s = int(float(f.read().split()[0]))
+    except OSError:
+        uptime_s = -1
+
+    prev = {}
+    try:
+        with open(STATE_PATH) as f:
+            prev = json.load(f)
+    except (OSError, ValueError):
+        pass
+
+    rebooted = bool(prev) and (prev.get("btime") != btime or
+                               (prev.get("boot_id") not in (None, "unknown") and
+                                prev.get("boot_id") != boot_id))
+
+    state = {"btime": btime, "boot_id": boot_id, "load1": load1, "wa": wa,
+             "dstate": dstate, "uptime_s": uptime_s,
+             "checked_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+
+    if rebooted:
+        ev = {"event": "reboot",
+              "detected_at": state["checked_at"],
+              "prev_btime": prev.get("btime"), "new_btime": btime,
+              "prev_boot_id": prev.get("boot_id"), "new_boot_id": boot_id,
+              # last telemetry captured BEFORE the reboot (previous run)
+              "pre_reboot": {"load1": prev.get("load1"), "wa": prev.get("wa"),
+                             "dstate": prev.get("dstate"),
+                             "checked_at": prev.get("checked_at")}}
+        with open(LEDGER_PATH, "a") as f:
+            f.write(json.dumps(ev) + "\n")
+        pre = ev["pre_reboot"]
+        print("BOOT-REBOOT boot-probe | prev_btime=%s new_btime=%s | "
+              "last_load1=%s last_wa=%s%% last_dstate=%s" %
+              (prev.get("btime"), btime, pre["load1"], pre["wa"],
+               pre["dstate"]))
+    else:
+        print("BOOT-OK boot-probe | btime=%d uptime_s=%d load1=%.2f" %
+              (btime, uptime_s, load1))
+
+    tmp = STATE_PATH + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(state, f, indent=1)
+    os.replace(tmp, STATE_PATH)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
