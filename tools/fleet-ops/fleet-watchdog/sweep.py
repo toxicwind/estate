@@ -2,7 +2,9 @@
 """Fleet presence + rollover watchdog v2 (lane 7, owner).
 
 Runs ON awrawr-pc (sovereign-chat is local: no bridge hop).
-Cell-side driver (driver.sh) syncs the rollover mirror, then execs this.
+Cell-side driver (driver.sh) syncs the rollover mirror, then runs
+supervise.sh, which keeps the direct 60s sweeper alive and runs a backstop
+sweep only when the last sweep is stale.
 
 Each sweep:
   1. Heartbeat lane-7 on the plane (so we never flag ourselves stale).
@@ -18,8 +20,14 @@ Each sweep:
        watchdog gap (no sweep for > 2x interval).
      Steady state = silence. Heartbeat still posts every sweep (plane TTL).
 
-Cadence: 60s (sovereign-chat presence TTL is 120s; a 60s sweep keeps the
-lane-7 heartbeat alive and still pages a gap only after 2 missed sweeps).
+Cadence: 60s via sweepd.sh — a direct lightweight looper on awrawr-pc with
+no agent-wrapper dispatch and no bridge hop. sovereign-chat presence TTL is
+120s, so the 60s sweep keeps the lane-7 heartbeat alive with 60s of margin
+and pages a gap only after 2 missed sweeps (>120s). The platform cron
+(fleet-presence-rollover-watchdog, every 2m) supervises sweepd through
+supervise.sh, syncs the rollover mirror, and runs a backstop sweep only
+when the last sweep is stale. Overlapping sweeps serialize on sweep.lock
+(the loser skips quietly with overlap_skipped=true, never double-pages).
 
 Manifest: lane_manifest.json is the durable identity manifest. Regenerate
 with `sweep.py --gen-manifest` after a verified rollover update, then commit
@@ -44,11 +52,21 @@ TOKEN_PATH = "/home/toxic/.config/sovereign-chat-token"
 CHAT = "http://127.0.0.1:25120"
 MY_AGENT = "5a4f76c0-e3a4-4069-ba6f-3113917102dc"
 MY_NAME = "lane-7"
-INTERVAL_S = 120          # driver cadence (2m schedule); sovereign-chat presence TTL is 120s
-GAP_S = 2 * INTERVAL_S     # gap page at > 2x interval (two missed sweeps)
+INTERVAL_S = 60            # sweepd cadence: direct 60s loop on awrawr-pc; sovereign-chat presence TTL is 120s
+GAP_S = 2 * INTERVAL_S     # gap page at > 2x interval (two missed sweeps = 120s)
 MAP_ERROR_REPAGE_S = 3600  # re-page a blind-map condition at most hourly
 TRANSITION_CAP = 50
 STATE_VERSION = 2
+_LOCK_FH = None  # held for the whole sweep: single-flight across sweepd + backstop
+# Page-outbox relay (debate 2c7ca733 verdict): the cell-side driver syncs
+# page files here; the sweep relays unposted pages to the fleet room, one
+# count watermark per file in state. Steady state = silence.
+PAGE_CAP = 5
+PAGE_FILES = [
+    # (filename, state_key, fleet-room label)
+    ("io-governor.pages.jsonl", "io_pages_posted", "io-governor stall pages"),
+    ("lane-redrive.pages.jsonl", "lane_pages_posted", "lane-redrive dirty pages"),
+]
 
 
 def parse_ts(s):
@@ -97,6 +115,62 @@ def heartbeat(activity):
 def post_fleet(body):
     return chat_api("POST", "/v1/rooms/fleet/messages",
                     {"from_agent": MY_AGENT, "kind": "chat", "body": body})
+
+
+def _page_item_text(raw):
+    try:
+        p = json.loads(raw)
+    except Exception:
+        p = {}
+    if p.get("kind") == "lane_redrive_page":
+        return "%s/%s %s: %s" % (p.get("lane", "?"), p.get("debate_id", "?"),
+                                 p.get("reason", "?"),
+                                 (p.get("detail") or "?")[:80])
+    return "%s pid %s (%s)" % (p.get("action", "stall_page"),
+                               p.get("pid", "?"),
+                               (p.get("cmd") or "?")[:60])
+
+
+def relay_page_file(old, filename, state_key, label):
+    """Relay one page-outbox file to the fleet room.
+
+    Watermarked by line count in state. A failed post keeps the watermark
+    so pages retry next sweep instead of being lost. If the file shrank
+    below the watermark (rotation), the watermark resets: current lines
+    are all unposted content.
+    """
+    posted = (old or {}).get(state_key, 0)
+    try:
+        with open(os.path.join(HERE, filename)) as f:
+            lines = [l for l in f.read().splitlines() if l.strip()]
+    except OSError:
+        return {"relayed": 0, "pending": 0, "total_posted": posted,
+                "reason": "no_pages_file"}
+    if posted > len(lines):
+        posted = 0  # file rotated; current content is all unposted
+    new = lines[posted:]
+    if not new:
+        return {"relayed": 0, "pending": 0, "total_posted": posted}
+    batch = new[:PAGE_CAP]
+    body = (f"{MY_NAME} watchdog: {label} ({len(new)} new): "
+            + "; ".join(_page_item_text(r) for r in batch) + ".")
+    try:
+        post_fleet(body)
+    except Exception as e:
+        return {"relayed": 0, "pending": len(new), "total_posted": posted,
+                "post_error": str(e)[:200]}
+    return {"relayed": len(batch), "pending": len(new) - len(batch),
+            "total_posted": posted + len(batch)}
+
+
+def relay_all_pages(old):
+    """Relay every page outbox. Returns (state_fields, result_detail)."""
+    fields, detail = {}, {}
+    for filename, state_key, label in PAGE_FILES:
+        r = relay_page_file(old, filename, state_key, label)
+        fields[state_key] = r["total_posted"]
+        detail[state_key] = r
+    return fields, detail
 
 
 def parse_mirror_map(text):
@@ -303,6 +377,21 @@ def decide(old, obs):
 
 
 def main():
+    global _LOCK_FH
+    # Single-flight: sweepd (60s direct loop) and the cron supervisor's
+    # backstop sweep share this state file. If another sweep holds the lock,
+    # skip quietly — exit 0 with an honest flag. Never double-page, never
+    # fail the supervisor.
+    try:
+        import fcntl
+        _LOCK_FH = open(os.path.join(HERE, "sweep.lock"), "w")
+        fcntl.flock(_LOCK_FH, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except (OSError, IOError):
+        print(json.dumps({"ok": True, "overlap_skipped": True, "hb_ok": True,
+                          "live": [], "stale": [], "missing_blocks": None,
+                          "pages": [], "posted": False,
+                          "map_source": "overlap-skip"}))
+        return 0
     result = {"ok": False}
     try:
         hb = heartbeat(f"{MY_NAME}: fleet-watchdog sweep")
@@ -346,17 +435,20 @@ def main():
                 posted = True
             except Exception as e:
                 post_error = str(e)[:200]
+        page_fields, page_detail = relay_all_pages(old)
         new_state = {"version": STATE_VERSION,
                      "last_sweep_ts": iso_now(server_ts),
                      "lanes": (old or {}).get("lanes", {}),
                      "transitions": (old or {}).get("transitions", []),
                      "map_error": map_err,
                      "last_map_error_page_ts": (iso_now(server_ts)
-                                                if posted else last_page)}
+                                                if posted else last_page),
+                     **page_fields}
         save_state(new_state)
         result.update({"ok": True, "blind": True, "hb_ok": hb_ok,
                        "map_error": map_err, "pages": pages,
-                       "posted": posted, "post_error": post_error})
+                       "posted": posted, "post_error": post_error,
+                       "page_relays": page_detail})
         print(json.dumps(result))
         return 0
 
@@ -389,11 +481,13 @@ def main():
                 parts.append(f"stale lanes: {stale}")
             pages = ["baseline: " + "; ".join(parts)]
 
+    page_fields, page_detail = relay_all_pages(old)
     new_state = {"version": STATE_VERSION,
                  "last_sweep_ts": iso_now(server_ts),
                  "lanes": new_lanes,
                  "transitions": ((old or {}).get("transitions", [])
-                                 + transitions)[-TRANSITION_CAP:]}
+                                 + transitions)[-TRANSITION_CAP:],
+                 **page_fields}
     save_state(new_state)
 
     posted = False
@@ -413,7 +507,8 @@ def main():
                    "map_source": "manifest" if not map_err else "mirror-fallback",
                    "pages": pages, "posted": posted,
                    "post_error": post_error,
-                   "transitions": len(new_state["transitions"])})
+                   "transitions": len(new_state["transitions"]),
+                   "page_relays": page_detail})
     print(json.dumps(result))
     return 0
 
