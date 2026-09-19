@@ -35,8 +35,9 @@ DUR_S=$(( $(date +%s) - START_S ))
 # python's stdin (a pipe into `python3 -` would be swallowed by the program
 # text itself).
 ENVELOPE_IN="$ENVELOPE" python3 - "$DUR_S" <<'PYEOF'
-import json, os, sys
+import json, os, sys, time
 dur = sys.argv[1]
+LEDGER = os.path.expanduser("~/workspace/fleet-watchdog/driver-runs.jsonl")
 try:
     env = json.loads(os.environ.get("ENVELOPE_IN", ""))
     out = (env.get("stdout") or "").strip().splitlines()
@@ -63,6 +64,15 @@ except Exception:
     ok = False
 verdict = "failed" if not ok else ("genuine" if (posted or restarted or backstop) else "no-op")
 safe = finding.replace('"', "'")
+row = {"ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+       "verdict": verdict, "duration_s": int(dur), "posted": posted,
+       "sweepd_restarted": restarted, "backstop_sweep": backstop,
+       "last_sweep_age_s": age, "work": safe}
+try:
+    with open(LEDGER, "a") as f:
+        f.write(json.dumps(row) + "\n")
+except OSError:
+    pass
 print(sup)
 print("WATCH-OK fleet-presence-rollover-watchdog | posted=%s | %s" % (str(posted).lower(), safe))
 print('HONEST-RECEIPT job=fleet-presence-rollover-watchdog verdict=%s duration_s=%s work="%s" evidence="none"' % (verdict, dur, safe))
