@@ -148,6 +148,22 @@ CASES = [
       "result_summary": ("Side-chat watchdog run agent2 at Sat 2026-09-19 04:25:00 MDT completed: "
                          "WATCH-OK agent2 | wm=16036 | new=0 unhandled=0 | clean"),
       "error_text": ""}, "genuine"),
+    # --- WATCH-FAIL lines: honest execution, failed check -> failed ---
+    ("WATCH-FAIL read timeout is failed not genuine",
+     {"status": "succeeded",
+      "result_summary": ("WATCH-FAIL madeon | read | muse.db failed: muse.db exceeded its 5000ms "
+                         "total time limit | wm=1723 unchanged"),
+      "error_text": ""}, "failed"),
+    ("WATCH-FAIL bootstrap sentinel is failed",
+     {"status": "succeeded",
+      "result_summary": ("WATCH-FAIL agent1 | rows | bootstrap_failed: aid 8a756bd0 has no usable "
+                         "transcript tip | wm=-1 unchanged"),
+      "error_text": ""}, "failed"),
+    ("WATCH-FAIL embedded in prose with counts stays failed",
+     {"status": "succeeded",
+      "result_summary": ("checks performed: 61s elapsed, 3 attempts, 0 rows. "
+                         "WATCH-FAIL whatsapp | query | db pool timed out | wm=2522 unchanged"),
+      "error_text": ""}, "failed"),
 ]
 
 
