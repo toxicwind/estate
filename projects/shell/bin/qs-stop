@@ -1,0 +1,30 @@
+#!/bin/bash
+# qs-stop — stop quickshell: SIGTERM, wait, SIGKILL fallback.
+# Systemd-aware: if the quickshell-ii unit is active, stop via systemctl.
+set -u
+QS_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+. "$QS_HOME/lib/qs-common.sh"
+
+if qs_unit_active; then
+  echo "stopping via systemd unit $QS_UNIT"
+  systemctl --user stop "$QS_UNIT"
+  exit 0
+fi
+
+PIDS="$(qs_pids)"
+if [ -z "$PIDS" ]; then
+  echo "quickshell not running"
+  exit 0
+fi
+echo "stopping quickshell (pids: $(echo "$PIDS" | tr '\n' ' '))"
+kill $PIDS 2>/dev/null
+for _ in $(seq 1 20); do
+  [ -z "$(qs_pids)" ] && break
+  sleep 0.5
+done
+if [ -n "$(qs_pids)" ]; then
+  echo "graceful stop timed out; SIGKILLing"
+  kill -9 $(qs_pids) 2>/dev/null
+  sleep 1
+fi
+[ -z "$(qs_pids)" ] && echo "stopped" || { echo "FAILED to stop"; exit 1; }

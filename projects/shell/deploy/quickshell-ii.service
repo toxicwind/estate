@@ -1,0 +1,18 @@
+[Unit]
+Description=quickshell ii shell (sovereign/projects/shell)
+Documentation=file:///home/toxic/sovereign/projects/shell/README.md
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+# qs-launch --systemd runs quickshell in the foreground (no setsid, no pgrep
+# guard — systemd IS the guard). Env (WAYLAND_DISPLAY, HYPRLAND_INSTANCE_SIGNATURE)
+# is auto-detected by qs-launch at each (re)start.
+ExecStart=/home/toxic/sovereign/projects/shell/bin/qs-launch --systemd -c ii
+Restart=always
+RestartSec=2
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+
+[Install]
+WantedBy=graphical-session.target

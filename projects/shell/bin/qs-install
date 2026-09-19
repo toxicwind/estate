@@ -1,0 +1,77 @@
+#!/bin/bash
+# qs-install — idempotent first-class install of the ii quickshell home.
+#   1. config symlink: ~/.config/quickshell -> <repo>/ii/dots/.config/quickshell
+#      (backs up a real dir to ~/.config/quickshell.bak-<ts> first; never deletes)
+#   2. systemd user unit quickshell-ii.service: install, daemon-reload, enable
+#   3. hyprland execs.lua: replace the one-shot `qs -c $qsConfig` with
+#      `systemctl --user start quickshell-ii.service` (idempotent, no-op safe)
+#   4. hyprland keybinds.lua CTRL+SUPER+R: route through qs-restart
+# Every destructive-adjacent step backs up first. Safe to re-run.
+set -u
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+QS_HOME="$(cd "$HERE/.." && pwd)"
+. "$QS_HOME/lib/qs-common.sh"
+
+TS="$(date +%Y%m%dT%H%M%S)"
+step() { echo "== $1"; }
+
+step "1. config symlink"
+SRC="$QS_HOME/ii/dots/.config/quickshell"
+DST="$HOME/.config/quickshell"
+if [ -L "$DST" ] && [ "$(readlink -f "$DST")" = "$(readlink -f "$SRC")" ]; then
+  echo "   already: $DST -> $(readlink "$DST")"
+elif [ -e "$DST" ]; then
+  BAK="$DST.bak-$TS"
+  echo "   moving existing $DST to $BAK"
+  mv "$DST" "$BAK"
+  ln -s "$SRC" "$DST"
+  echo "   linked: $DST -> $SRC"
+else
+  ln -s "$SRC" "$DST"
+  echo "   linked: $DST -> $SRC"
+fi
+
+step "2. systemd user unit"
+UDIR="$HOME/.config/systemd/user"
+mkdir -p "$UDIR"
+install -m 644 "$QS_HOME/deploy/quickshell-ii.service" "$UDIR/$QS_UNIT"
+systemctl --user daemon-reload
+systemctl --user enable "$QS_UNIT" >/dev/null 2>&1
+echo "   installed + enabled: $UDIR/$QS_UNIT"
+
+step "3. hyprland execs.lua (one-shot -> unit start)"
+EXECS="$HOME/.config/hypr/hyprland/execs.lua"
+if [ -f "$EXECS" ]; then
+  cp "$EXECS" "$EXECS.bak-$TS"
+  if grep -q 'hl.exec_cmd("qs -c \$qsConfig")' "$EXECS"; then
+    sed -i 's|hl.exec_cmd("qs -c \$qsConfig")|hl.exec_cmd("systemctl --user start quickshell-ii.service")  -- qs: supervised, no-op when already running|' "$EXECS"
+    echo "   patched (backup $EXECS.bak-$TS)"
+  else
+    echo "   already patched or entry absent (backup kept at $EXECS.bak-$TS)"
+  fi
+else
+  echo "   SKIP: $EXECS not found"
+fi
+
+step "4. hyprland keybinds.lua CTRL+SUPER+R (killall & -> qs-restart)"
+KEYS="$HOME/.config/hypr/hyprland/keybinds.lua"
+if [ -f "$KEYS" ]; then
+  cp "$KEYS" "$KEYS.bak-$TS"
+  if grep -q 'killall ydotool qs quickshell; qs -c \$qsConfig &' "$KEYS"; then
+    sed -i 's|killall ydotool qs quickshell; qs -c \$qsConfig &|qs-restart -c $qsConfig  -- canonical guarded bounce|' "$KEYS"
+    echo "   patched (backup $KEYS.bak-$TS)"
+  else
+    echo "   already patched or entry absent (backup kept at $KEYS.bak-$TS)"
+  fi
+else
+  echo "   SKIP: $KEYS not found"
+fi
+
+step "5. /usr/local/bin/qs delegation"
+if [ -x /usr/local/bin/qs ] && grep -q "sovereign/projects/shell/bin/qs-launch" /usr/local/bin/qs 2>/dev/null; then
+  echo "   already delegates to qs-launch"
+else
+  echo "   NOTE: /usr/local/bin/qs not delegating (needs root to change)"
+fi
+
+echo "== done. Start with: systemctl --user start $QS_UNIT"
