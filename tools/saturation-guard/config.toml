@@ -1,0 +1,50 @@
+# saturation-guard production config
+# Tuned for the hatch cell: 2 CPUs, single disk. The 2026-09-19 crash was
+# 50-80% iowait from runaway recursive greps -- NOT compute. Actions are
+# therefore GATED on sustained system iowait, not on CPU load.
+# (Debate 2c7ca733: lane-1 pro seq 2, lane-3 pro seq 4, lane-6/lane-7 synthesis.)
+
+[daemon]
+tick_secs = 5
+pidfile = "saturation-guard.pid"
+log_dir = "logs"
+lease_dir = "leases"
+metrics_file = "metrics.json"
+max_log_mb = 10
+
+[iowait]
+gate_enabled = true
+window_secs = 60        # rolling average window for wa%
+threshold_pct = 30.0    # act only when avg wa% over the window exceeds this
+                        # (lane-6 acceptance: wa% > 30% sustained = iowait)
+
+[io]
+read_mbps = 50.0        # sustained per-process read rate -> violation
+write_mbps = 20.0       # sustained per-process write rate -> violation
+sustain_secs = 60       # must violate this long before first action
+dstate_ticks = 12       # consecutive D-state ticks (5s each ~= 60s) -> violation
+
+[actions]
+# Oracle verdict 2c7ca733 (winner seq 7, 2026-09-19): ionice + attribution +
+# paging, NEVER killing. The SIGTERM/SIGKILL ladder is default-OFF.
+# kill_enabled=true is an explicit operator opt-in that contradicts the
+# standing verdict -- never the default, never committed as true.
+throttle_first = true   # ionice idle-class + nice 19 before any escalation
+kill_enabled = false    # verdict-conformant: escalate to paging, not signals
+kill_grace_secs = 120   # still violating after throttle -> re-page (or SIGTERM if kill_enabled)
+term_grace_secs = 15    # still alive after SIGTERM -> SIGKILL (kill_enabled only)
+
+[protect]
+# Two-tier protection. never_touch_comm matches the process NAME only;
+# never_touch_cmdline matches distinctive daemon script/binary names only.
+# NEVER a bare path substring like "hatch" -- /home/hatch appears in nearly
+# every cmdline and would protect everything (the reaper would go blind).
+# The killer class (grep/rg/find/python workers) is on NEITHER list --
+# actions are driven by measured I/O, not names. Declared forensics work
+# uses leases (below), not the protect list.
+never_touch_comm = ["^hatch(-execd)?$", "^sshd$", "^systemd$"]
+never_touch_cmdline = ["squawk-ws-client", "squawk-push", "ws_daemon",
+                       "pitchfork", "saturation-guard"]
+# forensics leases (lane-4 con): declared work gets this I/O headroom
+# multiplier and throttle-only treatment -- never SIGTERM/SIGKILL.
+lease_io_multiplier = 4.0

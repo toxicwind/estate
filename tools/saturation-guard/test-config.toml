@@ -1,0 +1,32 @@
+# TEST config -- aggressive timings for verification runs only.
+# NOT production. Production is config.toml.
+[daemon]
+tick_secs = 2
+pidfile = "test-guard.pid"
+log_dir = "logs"
+lease_dir = "leases"
+metrics_file = "test-metrics.json"
+max_log_mb = 10
+
+[iowait]
+gate_enabled = true
+window_secs = 20
+threshold_pct = 0.0   # gate always open in test
+
+[io]
+read_mbps = 200.0
+write_mbps = 2.0      # test hog sustains ~10 MB/s; leased threshold 8 MB/s
+sustain_secs = 10
+dstate_ticks = 6
+
+[actions]
+throttle_first = true
+kill_enabled = false   # verdict-conformant test: ladder must end at page
+kill_grace_secs = 10
+term_grace_secs = 5
+
+[protect]
+never_touch_comm = ["^hatch(-execd)?$", "^sshd$", "^systemd$"]
+never_touch_cmdline = ["squawk-ws-client", "squawk-push", "ws_daemon",
+                       "pitchfork", "saturation-guard"]
+lease_io_multiplier = 4.0
