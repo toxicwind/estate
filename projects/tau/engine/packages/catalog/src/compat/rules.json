@@ -777,8 +777,25 @@
 						"token": "llama"
 					},
 					{
+						"kind": "bounded",
+						"token": "meta-llama"
+					},
+					{
+						"kind": "bounded",
+						"token": "codellama"
+					},
+					{
 						"kind": "namespace",
 						"token": "meta-llama"
+					},
+					{
+						"kind": "namespace",
+						"token": "codellama"
+					},
+					{
+						"kind": "namespace",
+						"token": "llama",
+						"bounded": true
 					}
 				],
 				"families": [

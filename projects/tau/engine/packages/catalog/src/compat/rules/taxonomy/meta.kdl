@@ -1,7 +1,20 @@
 class "meta" {
 	bounded "muse-spark"
 	bounded "llama"
+	// Bare ids that lead with the HF org token instead of the model name
+	// (e.g. "Meta-Llama-3.1-8B-Instruct", hugging-quants/*-AWQ-INT4,
+	// lmstudio-community/*-GGUF). Live-verified miss pre-patch.
+	bounded "meta-llama"
+	// CodeLlama lineage: bare ids start with "codellama", never "llama"
+	// (Ollama "codellama:7b", "codellama/CodeLlama-7b-hf",
+	// bartowski/TheBloke "CodeLlama-*-GGUF", unsloth "codellama-*-bnb-4bit").
+	bounded "codellama"
 	namespace "meta-llama"
+	// Legacy HF org for CodeLlama ("codellama/CodeLlama-7b-hf").
+	namespace "codellama"
+	// Dotted/colon-separated segments, e.g. AWS Bedrock
+	// "meta.llama3-70b-instruct-v1:0": split on /, . and : then bounded-match.
+	namespace "llama" bounded=#true
 
 	family "llama" glob="*llama*"
 	family "muse-spark" glob="*muse-spark*"

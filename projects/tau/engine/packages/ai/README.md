@@ -79,7 +79,8 @@ Unified LLM API with automatic model discovery, provider configuration, token an
 - **Cloudflare AI Gateway** (supports `/login cloudflare-ai-gateway`, or `CLOUDFLARE_AI_GATEWAY_API_KEY` with `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_GATEWAY_ID`)
 - **Ollama** (local OpenAI-compatible runtime; optional `OLLAMA_API_KEY`)
 - **Ollama Cloud** (hosted native Ollama API; requires `OLLAMA_CLOUD_API_KEY`)
-- **llama.cpp** (local OpenAI and Anthropic compatible inference server)
+- **llama.cpp** (local OpenAI-compatible inference server; auth + compat entries exist, no provider-models
+  descriptor as of 2026-09-19 — the "Anthropic compatible" clause was removed as unverified in code)
 - **vLLM** (OpenAI-compatible server; `VLLM_API_KEY` for secured deployments)
 - **GitHub Copilot** (requires OAuth, see below)
 - **Google Gemini CLI** (requires OAuth, see below)
