@@ -1,0 +1,200 @@
+#!/usr/bin/env python3
+"""kodi-audit: latency, addon, settings, and log-error audit for the Kodi fleet.
+
+Runs on awrawr-pc (has LAN route to both boxes + sshpass for 246).
+
+Boxes:
+  246 = 10.0.0.246  CoreELEC box, SSH root:coreelec, JSON-RPC :8080 (no auth)
+  225 = 10.0.0.225  Android/Google TV, JSON-RPC :8080 only (no SSH)
+
+Usage:
+  kodi-audit latency [246|225|all]
+  kodi-audit addons [--diff]                 # inventory + 246/225 diff
+  kodi-audit settings [--diff]               # settings diff (246 vs 225)
+  kodi-audit settings --dupe                 # copy 246 -> 225 (safe allowlist only)
+  kodi-audit logerrors 246                   # scan 246's kodi.log for errors
+  kodi-audit stalls 246                      # timestamp-gap stall analysis on 246's log
+
+Notes:
+  - Settings dupe uses an explicit allowlist (user prefs only). tv/audio,
+    platform, perf-tuning, and network settings are never auto-duped.
+  - Addon sync is report-only by design: 225's extras include PVR/live-TV
+    plugins that may be in active bedroom use. Nothing is disabled/uninstalled
+    without an explicit decision.
+"""
+import json
+import subprocess
+import sys
+import urllib.request
+
+HOSTS = {"246": "10.0.0.246", "225": "10.0.0.225"}
+SSH_246 = ["sshpass", "-p", "coreelec", "ssh", "-o", "StrictHostKeyChecking=no",
+           "-o", "ConnectTimeout=8", "root@10.0.0.246"]
+
+# Settings safe to dupe 246 -> 225 (pure user prefs, no platform/perf risk).
+DUPE_ALLOWLIST = [
+    "epg.preventupdateswhileplayingtv",
+    "eventlog.enablednotifications",
+    "gamesgeneral.enablerewind",
+    "locale.subtitlelanguage",
+    "lookandfeel.enablerssfeeds",
+    "lookandfeel.soundskin",
+    "screensaver.mode",
+    "screensaver.time",
+    "screensaver.usedimonpause",
+    "services.airplay",
+    "subtitles.align",
+    "subtitles.downloadfirst",
+    "subtitles.fontsize",
+    "weather.addon",
+]
+
+
+def rpc(host, method, params=None):
+    req = {"jsonrpc": "2.0", "id": 1, "method": method}
+    if params:
+        req["params"] = params
+    r = urllib.request.Request(
+        f"http://{host}:8080/jsonrpc", data=json.dumps(req).encode(),
+        headers={"Content-Type": "application/json"})
+    out = json.loads(urllib.request.urlopen(r, timeout=15).read())
+    if "error" in out:
+        raise RuntimeError(f"{method}: {out['error']}")
+    return out["result"]
+
+
+def ssh246(cmd):
+    p = subprocess.run(SSH_246 + [cmd], capture_output=True, text=True, timeout=60)
+    if p.returncode != 0:
+        raise RuntimeError(f"ssh: {p.stderr[:200]}")
+    return p.stdout
+
+
+def cmd_latency(which="all"):
+    import time
+    targets = [which] if which in HOSTS else ["246", "225"]
+    for w in targets:
+        host = HOSTS[w]
+        ts = []
+        for _ in range(10):
+            t0 = time.monotonic()
+            rpc(host, "JSONRPC.Ping")
+            ts.append((time.monotonic() - t0) * 1000)
+        ts.sort()
+        print(f"{w} ({host}): min={ts[0]:.1f}ms p50={ts[5]:.1f}ms "
+              f"max={ts[-1]:.1f}ms avg={sum(ts)/10:.1f}ms")
+
+
+def get_addons(w):
+    d = rpc(HOSTS[w], "Addons.GetAddons",
+            {"type": "unknown", "properties": ["version", "enabled"]})
+    return {a["addonid"]: (a["version"], a["enabled"]) for a in d["addons"]}
+
+
+def cmd_addons(diff=False):
+    inv = {w: get_addons(w) for w in ("246", "225")}
+    for w in ("246", "225"):
+        print(f"== {w}: {len(inv[w])} addons")
+        if not diff:
+            for k in sorted(inv[w]):
+                print(f"  {k} {inv[w][k][0]} {'on' if inv[w][k][1] else 'off'}")
+    if diff:
+        a, b = inv["246"], inv["225"]
+        print("-- only on 246 (missing on 225):")
+        for k in sorted(set(a) - set(b)):
+            print(f"   {k} {a[k][0]}")
+        print("-- only on 225 (extra vs 246):")
+        for k in sorted(set(b) - set(a)):
+            print(f"   {k} {b[k][0]}")
+        print("-- version diffs:")
+        for k in sorted(set(a) & set(b)):
+            if a[k][0] != b[k][0]:
+                print(f"   {k}: 246={a[k][0]} 225={b[k][0]}")
+
+
+def get_settings(w):
+    d = rpc(HOSTS[w], "Settings.GetSettings", {"level": "expert"})
+    return {s["id"]: s.get("value") for s in d["settings"]}
+
+
+def cmd_settings(diff=False, dupe=False):
+    if dupe:
+        src, dst = get_settings("246"), get_settings("225")
+        changed, skipped = 0, []
+        for k in DUPE_ALLOWLIST:
+            if k in src and k in dst and src[k] != dst[k]:
+                rpc(HOSTS["225"], "Settings.SetSettingValue",
+                    {"setting": k, "value": src[k]})
+                print(f"  {k}: {dst[k]!r} -> {src[k]!r}")
+                changed += 1
+            elif k not in dst:
+                skipped.append(k)
+        print(f"duped {changed} settings 246->225; not present on 225: {skipped}")
+        return
+    a, b = get_settings("246"), get_settings("225")
+    ka, kb = set(a), set(b)
+    print(f"-- only on 246 ({len(ka-kb)}), only on 225 ({len(kb-ka)})")
+    if not diff:
+        for k in sorted(ka - kb):
+            print(f"   246+ {k}={a[k]!r}"[:90])
+        for k in sorted(kb - ka):
+            print(f"   225+ {k}={b[k]!r}"[:90])
+    n = 0
+    for k in sorted(ka & kb):
+        if a[k] != b[k]:
+            n += 1
+            if not diff or n <= 60:
+                print(f"   {k}: 246={a[k]!r} 225={b[k]!r}"[:110])
+    print(f"-- {n} differing values")
+
+
+def cmd_logerrors():
+    out = ssh246("grep -aiE 'error' /storage/.kodi/temp/kodi.log "
+                 "| grep -av 'ERROR: SQL' | tail -30")
+    print(out)
+
+
+def cmd_stalls():
+    out = ssh246("""python3 - << 'PYEOF'
+import re
+from datetime import datetime
+lines = open('/storage/.kodi/temp/kodi.log', errors='replace').read().splitlines()
+pat = re.compile(r'^(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})')
+prev, stalls = None, []
+for ln in lines[-4000:]:
+    m = pat.match(ln)
+    if not m:
+        continue
+    t = datetime.strptime(m.group(1), '%Y-%m-%d %H:%M:%S.%f')
+    if prev and (t - prev).total_seconds() > 3:
+        stalls.append(((t - prev).total_seconds(), ln[:130]))
+    prev = t
+print('stalls >3s:', len(stalls))
+for s, ln in sorted(stalls, reverse=True)[:15]:
+    print(f'  {s:7.1f}s  {ln}')
+PYEOF""")
+    print(out)
+
+
+def main():
+    if len(sys.argv) < 2:
+        print(__doc__)
+        sys.exit(2)
+    c = sys.argv[1]
+    if c == "latency":
+        cmd_latency(sys.argv[2] if len(sys.argv) > 2 else "all")
+    elif c == "addons":
+        cmd_addons(diff="--diff" in sys.argv)
+    elif c == "settings":
+        cmd_settings(diff="--diff" in sys.argv, dupe="--dupe" in sys.argv)
+    elif c == "logerrors":
+        cmd_logerrors()
+    elif c == "stalls":
+        cmd_stalls()
+    else:
+        print(__doc__)
+        sys.exit(2)
+
+
+if __name__ == "__main__":
+    main()
