@@ -9,78 +9,153 @@ in result_summary. Status-based monitoring is blind.
 FIX: This tool reads result_summary (not status) and reports the HONEST
 classification for every run. It becomes the source of truth for job health.
 
-Usage:
-    cron-honest-status --job <job_id> --limit 20
-    cron-honest-status --all --limit 200
-    cron-honest-status --report  # summary across all jobs
+The classifier is imported from cron-trust-monitor (single source of truth)
+so the CLI and the monitor can never diverge.
 
-Classification:
-    genuine       - actually did work (detailed summary or verified)
-    vetoed        - safety review blocked it ("did not pass the scheduled-task safety review")
-    overlap-skip  - skipped: another run already active ("already running and concurrency.overlap=skip")
-    no-op         - ran but did nothing by design ("Skipped heartbeat...", etc.)
-    coalesced     - cancelled by scheduler ("scheduled_occurrence_coalesced") - visible, not hidden
+Usage:
+    cron.runs -> JSON -> cron-honest-status --classify [--summary] [--json]
+    cron-honest-status --state            # per-job honest table from trust state
+    cron-honest-status --ledger           # recent monitor health trend
+
+Honest classes:
+    genuine       - actually did work (detailed summary)
+    vetoed        - safety review blocked it (short boilerplate veto notice)
+    overlap-skip  - skipped: another run already active
+    no-op         - ran but did nothing by design
+    quota-deferred- deferred by quota guard
+    coalesced     - cancelled: scheduler coalesced overlapping occurrence
     failed        - status=failed with error_text
-    ambiguous     - succeeded with null/empty summary (cannot determine without external evidence)
+    timeout       - worker exceeded execution timeout
+    ambiguous     - succeeded with null/empty summary (cannot verify work)
 """
 
 import json
+import os
 import sys
 import argparse
-from datetime import datetime, timezone
+from collections import Counter
+from importlib.machinery import SourceFileLoader
 
-# Classification patterns (from forensic analysis 2026-09-19)
-PATTERNS = {
-    "vetoed": "did not pass the scheduled-task safety review",
-    "overlap-skip": "already running and concurrency.overlap=skip",
-    "coalesced": "scheduled_occurrence_coalesced",
-    "no-op": "Skipped heartbeat because",
-}
+BIN_DIR = os.path.dirname(os.path.abspath(__file__))
+TRUST_MONITOR = os.path.join(BIN_DIR, "cron-trust-monitor")
+DEFAULT_STATE = os.path.expanduser("~/workspace/fleet-ping/cron-trust-state.json")
+DEFAULT_LEDGER = os.path.expanduser("~/workspace/fleet-ping/cron-trust-ledger.jsonl")
 
-def classify_run(run):
-    """Return (honest_status, reason) for a cron run record."""
-    status = run.get("status", "")
-    summary = run.get("result_summary") or ""
-    error = run.get("error_text") or ""
 
-    # Failed is honest
-    if status == "failed":
-        return ("failed", error[:100] if error else "no error text")
+def load_classifier():
+    mod = SourceFileLoader("cron_trust_monitor", TRUST_MONITOR).load_module()
+    return mod.classify_run
 
-    # Cancelled/coalesced is visible (not laundered)
-    if status == "cancelled":
-        if PATTERNS["coalesced"] in error or PATTERNS["coalesced"] in summary:
-            return ("coalesced", "scheduler coalesced overlapping occurrence")
-        return ("cancelled", error[:100] if error else summary[:100])
 
-    # status=succeeded: must read the summary to know the truth
-    if status == "succeeded":
-        if PATTERNS["vetoed"] in summary:
-            return ("vetoed", "safety review blocked execution")
-        if PATTERNS["overlap-skip"] in summary:
-            return ("overlap-skip", "another run already active")
-        if PATTERNS["no-op"] in summary:
-            return ("no-op", summary[:100])
-        if not summary or not summary.strip():
-            return ("ambiguous", "null/empty summary - cannot verify")
-        # Has a detailed summary - likely genuine
-        return ("genuine", summary[:100])
+def cmd_classify(classify_run, args):
+    try:
+        payload = json.load(sys.stdin)
+    except json.JSONDecodeError as e:
+        print(json.dumps({"error": f"stdin is not valid JSON: {e}"}))
+        sys.exit(2)
+    runs = payload.get("runs") if isinstance(payload, dict) else payload
+    if not isinstance(runs, list):
+        print(json.dumps({"error": 'expected a JSON array or {"runs": [...]}'}))
+        sys.exit(2)
+    out = []
+    for run in runs:
+        honest, reason = classify_run(run)
+        out.append({
+            "run_id": run.get("run_id"),
+            "job_id": run.get("job_id"),
+            "scheduled_for_utc": run.get("scheduled_for_utc"),
+            "honest_status": honest if honest is not None else "in-flight",
+            "reason": reason,
+        })
+    if args.summary:
+        counts = Counter(o["honest_status"] for o in out)
+        doc = {"total": len(out), "by_status": dict(counts), "runs": out}
+        print(json.dumps(doc, indent=2))
+    elif args.json:
+        print(json.dumps(out, indent=2))
+    else:
+        for o in out:
+            rid = (o["run_id"] or "?")[:8]
+            print(f"{o['job_id']} {rid} {o['honest_status']}: {o['reason']}")
 
-    return ("unknown", f"status={status}")
+
+def cmd_state(args):
+    path = args.state_path or DEFAULT_STATE
+    try:
+        with open(path) as f:
+            st = json.load(f)
+    except FileNotFoundError:
+        print(f"no trust state at {path} (cron-trust-monitor has not run yet)")
+        sys.exit(1)
+    except json.JSONDecodeError as e:
+        print(f"trust state corrupt at {path}: {e}")
+        sys.exit(1)
+    jobs = st.get("jobs", {})
+    print(f"trust state updated: {st.get('updated', '?')}  jobs tracked: {len(jobs)}\n")
+    rows = []
+    for job_id in sorted(jobs):
+        recent = jobs[job_id].get("recent", [])
+        classes = [r.get("honest", "?") for r in recent]
+        last_ts = recent[-1].get("ts", "") if recent else ""
+        rows.append((job_id, ",".join(classes) or "-", last_ts))
+    w = max([len(r[0]) for r in rows] + [6])
+    print(f"{'job':<{w}}  recent-classes              last-ts")
+    for job_id, classes, last_ts in rows:
+        print(f"{job_id:<{w}}  {classes:<28} {last_ts}")
+    counts = Counter(c for _, classes, _ in rows for c in classes.split(",") if c != "-")
+    print(f"\nclass totals across tracked jobs: {dict(counts)}")
+
+
+def cmd_ledger(args):
+    path = args.ledger_path or DEFAULT_LEDGER
+    try:
+        with open(path) as f:
+            lines = [ln.strip() for ln in f if ln.strip()]
+    except FileNotFoundError:
+        print(f"no ledger at {path}")
+        sys.exit(1)
+    tail = lines[-args.limit:]
+    print(f"last {len(tail)} cron-trust-monitor ledger entries:\n")
+    for ln in tail:
+        try:
+            e = json.loads(ln)
+        except json.JSONDecodeError:
+            continue
+        print(f"{e.get('ts','?')}  healthy={e.get('healthy')}  "
+              f"jobs={e.get('jobs_checked')}  issues={e.get('issues_found')}  "
+              f"nonterminal-excluded={e.get('excluded_nonterminal', 0)}")
+
 
 def main():
     parser = argparse.ArgumentParser(description="Honest cron run classification")
-    parser.add_argument("--job", help="Job ID to check")
-    parser.add_argument("--limit", type=int, default=20)
+    parser.add_argument("--classify", action="store_true",
+                        help="Read cron.runs records as JSON from stdin and classify each")
+    parser.add_argument("--summary", action="store_true",
+                        help="With --classify: emit counts-by-classification summary")
     parser.add_argument("--json", action="store_true", help="JSON output")
+    parser.add_argument("--state", action="store_true",
+                        help="Print per-job honest table from the trust-monitor state file")
+    parser.add_argument("--state-path", default=None, help="Override trust state path")
+    parser.add_argument("--ledger", action="store_true",
+                        help="Print recent monitor health trend from the ledger")
+    parser.add_argument("--ledger-path", default=None, help="Override ledger path")
+    parser.add_argument("--limit", type=int, default=10,
+                        help="Ledger entries to show (default 10)")
     args = parser.parse_args()
 
-    # This is a classification library - actual cron.runs data comes from the platform
-    # For now, document the interface. The cron query happens via platform tools.
-    print("cron-honest-status: classification engine ready")
-    print("Patterns loaded:", len(PATTERNS))
-    print("\nTo use: query cron.runs via platform, pipe through classify_run()")
-    print("Example honest statuses: genuine, vetoed, overlap-skip, no-op, coalesced, failed, ambiguous")
+    if args.state:
+        cmd_state(args)
+        return
+    if args.ledger:
+        cmd_ledger(args)
+        return
+    if args.classify:
+        cmd_classify(load_classifier(), args)
+        return
+    parser.print_help()
+    print("\nClassifier source: cron-trust-monitor (single source of truth).")
+    print("Example: cron.runs -> JSON -> cron-honest-status --classify --summary")
+
 
 if __name__ == "__main__":
     main()

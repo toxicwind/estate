@@ -9,7 +9,7 @@ concurrency:
 schedule:
   kind: interval
   timezone: America/Denver
-  at: 2026-09-19T02:38:00
+  at: 2026-09-19T02:43:00
   every: 5m
 timeout_secs: 240
 delivery: []
@@ -56,14 +56,24 @@ the muse_db skill guide are accepted; keep every query small and bounded.
    Keep only rows with ca within the last 5 minutes (the window covers
    scheduling backlog).
    If this returns 0 rows, that is a COMPLETE check: no recent user/assistant
-   turns exist. Stay silent and report nothing. Do not retry, broaden, or run
-   additional queries — an empty result is the answer, not an error.
+   turns exist. Do not retry, broaden, or run additional queries — an empty result
+   is the answer, not an error.
+2b. Timeout/error path: if ANY DB query returns an error — including a statement
+   timeout — write the error text into your final message and STOP immediately.
+   Do NOT retry the query. One attempt per query; a failed query is a failed run,
+   reported honestly, never a retry loop.
 3. Identify role=user messages from Chris in that window with NO substantive
    assistant reply after them. Substantive means the agent actually addressed the
    request. A canned refusal ("Sorry, I can't help you...") does NOT count.
-4. If every recent user message already has a substantive reply: stay silent,
-   report nothing.
+4. If every recent user message already has a substantive reply: that is the
+   normal outcome — proceed to step 6.
 5. If you find an unhandled user message: report concisely — the user's message
    verbatim, when it was sent, what the agent replied (if anything), and a
    one-paragraph assessment of what Chris needs. Report only — take no other
    action. (Read-only: never attempt to send messages into this channel chat.)
+6. MANDATORY FINAL STATUS LINE: end EVERY run with a one-line final message —
+   it becomes the run's result_summary, and an empty summary makes the run
+   unverifiable (fleet trust counts it against this job). "Stay silent" means no
+   chat delivery, never an empty final message. Format: `WATCH-OK whatsapp |
+   <what checked> | <finding>` or `WATCH-FAIL whatsapp | <step> | <error>`.
+   Never leave the final message empty.

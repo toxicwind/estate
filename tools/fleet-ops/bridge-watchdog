@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+"""bridge-watchdog: probe the awrawr-pc exec bridge, record health, page on degradation.
+
+Usage:
+  bridge-watchdog                  # probe once, append to ledger, print one line
+  bridge-watchdog --report [hours]  # summarize the ledger (default 24h)
+
+Each probe runs exec.py --json --timeout 15 --argv echo ok and records:
+  ts (UTC epoch), ok, wall_ms, inner_ms, transport, fallback, error.
+
+Ledger: /home/hatch/workspace/logs/bridge-health.jsonl
+Degradation rules (checked in --report):
+  - 3+ consecutive failures -> DOWN window
+  - transport='fallback' or error containing 502 -> degraded leg
+  - p95 wall_ms > 8000 over the window -> slow leg
+Report prints one-line verdict: HEALTHY / DEGRADED / DOWN.
+Exit codes: 0 healthy, 2 degraded/down, 1 probe error (single-run mode).
+"""
+import json, os, subprocess, sys, time
+
+BRIDGE = "/home/hatch/workspace/skills/awrawr-mcp/bin/exec.py"
+LEDGER = "/home/hatch/workspace/logs/bridge-health.jsonl"
+PROBE_TIMEOUT = 15
+FAIL_STREAK_DOWN = 3
+P95_SLOW_MS = 8000
+
+
+def probe():
+    t0 = time.monotonic()
+    try:
+        p = subprocess.run(
+            [BRIDGE, "--json", "--timeout", str(PROBE_TIMEOUT), "--argv", "echo", "ok"],
+            capture_output=True, text=True, timeout=PROBE_TIMEOUT + 10)
+        wall_ms = int((time.monotonic() - t0) * 1000)
+        try:
+            doc = json.loads(p.stdout)
+        except (json.JSONDecodeError, ValueError):
+            doc = {}
+        rec = {
+            "ts": int(time.time()),
+            "ok": bool(doc.get("ok")),
+            "wall_ms": wall_ms,
+            "inner_ms": doc.get("duration_ms"),
+            "transport": doc.get("transport"),
+            "fallback": doc.get("fallback", False),
+            "code": doc.get("code"),
+            "error": (doc.get("error") or "")[:200] or None,
+        }
+    except subprocess.TimeoutExpired:
+        rec = {"ts": int(time.time()), "ok": False, "wall_ms": (PROBE_TIMEOUT + 10) * 1000,
+               "inner_ms": None, "transport": None, "fallback": False,
+               "code": None, "error": "probe shell timed out"}
+    except FileNotFoundError:
+        rec = {"ts": int(time.time()), "ok": False, "wall_ms": 0,
+               "inner_ms": None, "transport": None, "fallback": False,
+               "code": None, "error": "exec.py missing"}
+    return rec
+
+
+def append(rec):
+    os.makedirs(os.path.dirname(LEDGER), exist_ok=True)
+    with open(LEDGER, "a") as f:
+        f.write(json.dumps(rec) + "\n")
+
+
+def load(since):
+    rows = []
+    if not os.path.exists(LEDGER):
+        return rows
+    with open(LEDGER) as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                r = json.loads(line)
+            except (json.JSONDecodeError, ValueError):
+                continue
+            if r.get("ts", 0) >= since:
+                rows.append(r)
+    return rows
+
+
+def report(hours=24):
+    rows = load(int(time.time()) - hours * 3600)
+    if not rows:
+        print("BRIDGE-NODATA no probes in last %dh" % hours)
+        return 0
+    n = len(rows)
+    fails = [r for r in rows if not r.get("ok")]
+    fallbacks = [r for r in rows if r.get("fallback")]
+    f502 = [r for r in rows if r.get("code") == 502 or "502" in str(r.get("error") or "")]
+    walls = sorted(r["wall_ms"] for r in rows if r.get("wall_ms"))
+    p50 = walls[len(walls) // 2] if walls else 0
+    p95 = walls[int(len(walls) * 0.95)] if walls else 0
+    # down windows: runs of >=3 consecutive failures
+    streak = maxstreak = 0
+    for r in rows:
+        streak = streak + 1 if not r.get("ok") else 0
+        maxstreak = max(maxstreak, streak)
+    verdict = "HEALTHY"
+    if maxstreak >= FAIL_STREAK_DOWN:
+        verdict = "DOWN"
+    elif fails or fallbacks or f502 or p95 > P95_SLOW_MS:
+        verdict = "DEGRADED"
+    print("BRIDGE-%s probes=%d fails=%d fallbacks=%d 502s=%d p50=%dms p95=%dms max_fail_streak=%d window=%dh"
+          % (verdict, n, len(fails), len(fallbacks), len(f502), p50, p95, maxstreak, hours))
+    return 2 if verdict in ("DEGRADED", "DOWN") else 0
+
+
+def main(argv):
+    if len(argv) >= 2 and argv[1] == "--report":
+        hours = int(argv[2]) if len(argv) > 2 else 24
+        return report(hours)
+    rec = probe()
+    append(rec)
+    err = " err=%s" % rec["error"] if rec.get("error") else ""
+    print("probe ok=%s wall=%dms transport=%s fallback=%s%s"
+          % (rec["ok"], rec["wall_ms"], rec.get("transport"), rec.get("fallback"), err))
+    return 0 if rec["ok"] else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))
