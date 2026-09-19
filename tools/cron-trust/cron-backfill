@@ -1,0 +1,318 @@
+#!/usr/bin/env python3
+"""
+cron-backfill: reactive backfill engine for the honest cron layer.
+
+Detects scheduled work that never happened and re-executes it:
+  - fully-missed ticks (no run record for an expected occurrence)
+  - overlap-skipped / coalesced tail occurrences (work provably never started)
+  - vetoed runs  -> NOT re-run (futile while gate is closed); emitted as
+                   kind="page" so the pager alerts loudly instead
+  - failed/timeout -> NOT auto-rerun (effects may have committed); kind="page"
+
+Safety (never duplicate committed work, never fight an active run):
+  - never emits a rerun for a job with a currently running/queued run
+  - per-job daily cap (default 3)
+  - watchers (interval <= 5m) and noisy jobs default to policy "never":
+    the next tick covers the gap by design
+
+Usage:
+  cron.runs JSONL on stdin -> cron-backfill [--policy P] [--state S] [--dry-run]
+
+Policy file (JSON): {"never": [<name substrings>], "jobs": {<id>: {
+    "policy": "always|latest-only|never", "every_secs": N, "at": "<ISO>",
+    "critical": true, "max_per_day": 3}}}
+
+Output JSON: {actions:[{job_id,kind,reason,missed_tick,policy}], skipped:[...]}
+Exit 0 always (engine errors -> {"error": ...}, exit 2).
+"""
+
+import argparse
+import json
+import os
+import re
+import sys
+import tempfile
+from collections import defaultdict
+from datetime import datetime, timezone, timedelta
+
+TERMINAL = {"succeeded", "failed", "cancelled", "timeout"}
+ACTIVE = {"running", "queued"}
+
+VETO_PATTERNS = [
+    "did not pass the scheduled-task safety review",
+    "safety review",
+    "vetoed",
+]
+SKIP_PATTERNS = [
+    "already running and concurrency.overlap=skip",
+    "another occurrence already running",
+    "another run was active",
+]
+COALESCE_PATTERNS = ["scheduled_occurrence_coalesced"]
+
+DEFAULT_POLICY_PATH = os.path.expanduser("~/workspace/cron-honest/backfill-policy.json")
+DEFAULT_STATE_PATH = os.path.expanduser("~/workspace/cron-honest/backfill-state.json")
+
+
+def classify(run):
+    status = (run.get("status") or "").strip()
+    summary = run.get("result_summary") or ""
+    error = run.get("error_text") or ""
+    s_low = summary.lower()
+    if status in ACTIVE:
+        return "active"
+    if status == "failed":
+        return "failed"
+    if status == "timeout":
+        return "timeout"
+    if status == "cancelled":
+        if any(p in error.lower() or p in s_low for p in COALESCE_PATTERNS):
+            return "coalesced"
+        return "cancelled-other"
+    if status == "succeeded":
+        if any(p in s_low for p in VETO_PATTERNS):
+            return "vetoed"
+        if any(p in s_low for p in SKIP_PATTERNS):
+            return "overlap-skip"
+        if not summary.strip():
+            return "ambiguous"
+        return "genuine"
+    return "unknown"
+
+
+def run_ts(run):
+    ts = run.get("ts") or run.get("scheduled_for_local") or ""
+    try:
+        dt = datetime.fromisoformat(str(ts).replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
+    except Exception:
+        pass
+    sfu = run.get("scheduled_for_utc")
+    if isinstance(sfu, (int, float)):
+        return datetime.fromtimestamp(sfu, tz=timezone.utc)
+    return None
+
+
+def parse_at(at_str):
+    # "2026-09-19T02:38:00" in America/Denver -> aware UTC
+    try:
+        from zoneinfo import ZoneInfo
+        dt = datetime.fromisoformat(at_str)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=ZoneInfo("America/Denver"))
+        return dt.astimezone(timezone.utc)
+    except Exception:
+        return None
+
+
+def atomic_write_json(path, obj):
+    d = os.path.dirname(path)
+    os.makedirs(d, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=d, prefix=".tmp-")
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(obj, f, indent=2)
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
+
+
+def load_policy(path):
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {"never": [], "jobs": {}}
+    except Exception as e:
+        print(f"BACKFILL: policy file unreadable ({e}), using empty policy",
+              file=sys.stderr)
+        return {"never": [], "jobs": {}}
+
+
+def resolve_policy(job_id, policy):
+    entry = policy.get("jobs", {}).get(job_id, {})
+    if entry.get("policy"):
+        return entry["policy"], entry
+    jl = job_id.lower()
+    for sub in policy.get("never", []):
+        if sub.lower() in jl:
+            return "never", entry
+    return "latest-only", entry
+
+
+def main():
+    ap = argparse.ArgumentParser(description="cron backfill engine")
+    ap.add_argument("--policy", default=DEFAULT_POLICY_PATH)
+    ap.add_argument("--state", default=DEFAULT_STATE_PATH)
+    ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--window-hours", type=int, default=24)
+    args = ap.parse_args()
+
+    runs = []
+    for line in sys.stdin:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            runs.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+    if not runs:
+        print(json.dumps({"actions": [], "skipped": [],
+                          "note": "no runs in window"}))
+        return
+
+    policy = load_policy(args.policy)
+    try:
+        with open(args.state) as f:
+            state = json.load(f)
+    except Exception:
+        state = {"backfills": {}}
+
+    now = datetime.now(timezone.utc)
+    cutoff = now - timedelta(hours=args.window_hours)
+    today = now.strftime("%Y-%m-%d")
+
+    by_job = defaultdict(list)
+    for run in runs:
+        ts = run_ts(run)
+        if ts is None or ts < cutoff:
+            continue
+        jid = run.get("job_id") or "unknown"
+        by_job[jid].append({"run": run, "ts": ts, "cls": classify(run)})
+
+    actions = []
+    skipped = []
+
+    def cap_ok(jid, entry):
+        maxpd = entry.get("max_per_day", 3)
+        used = [b for b in state["backfills"].get(jid, [])
+                if b.get("day") == today and b.get("kind") == "rerun"]
+        return len(used) < maxpd
+
+    def record(jid, kind, reason, tick):
+        state["backfills"].setdefault(jid, []).append(
+            {"day": today, "kind": kind, "reason": reason,
+             "tick": tick, "at": now.isoformat()})
+        state["backfills"][jid] = state["backfills"][jid][-50:]
+
+    for jid, jruns in sorted(by_job.items()):
+        jruns.sort(key=lambda r: r["ts"])
+        pol, entry = resolve_policy(jid, policy)
+        active = [r for r in jruns if r["cls"] == "active"]
+        terminal = [r for r in jruns if r["run"].get("status") in TERMINAL]
+
+        if pol == "never":
+            skipped.append({"job": jid, "reason": "policy=never"})
+            continue
+        if active:
+            skipped.append({"job": jid,
+                            "reason": f"{len(active)} run(s) active - no backfill while active"})
+            continue
+        if not terminal:
+            continue
+
+        latest = terminal[-1]
+        latest_cls = latest["cls"]
+
+        # 1) vetoed tail -> page, never rerun (gate may still be closed)
+        if latest_cls == "vetoed":
+            actions.append({"job_id": jid, "kind": "page",
+                            "reason": "latest run vetoed by safety review - gate may be closed",
+                            "missed_tick": latest["ts"].isoformat(),
+                            "policy": pol})
+            record(jid, "page", "vetoed", latest["ts"].isoformat())
+            continue
+
+        # 2) overlap-skip / coalesced tail with no genuine coverage after -> rerun
+        if latest_cls in ("overlap-skip", "coalesced"):
+            genuine_after = [r for r in terminal
+                             if r["ts"] > latest["ts"] and r["cls"] == "genuine"]
+            if not genuine_after:
+                if pol == "latest-only" or pol == "always":
+                    if cap_ok(jid, entry):
+                        actions.append({"job_id": jid, "kind": "rerun",
+                                        "reason": f"tail occurrence {latest_cls} with no later genuine run",
+                                        "missed_tick": latest["ts"].isoformat(),
+                                        "policy": pol})
+                        if not args.dry_run:
+                            record(jid, "rerun", latest_cls, latest["ts"].isoformat())
+                    else:
+                        skipped.append({"job": jid, "reason": "daily backfill cap reached"})
+                continue
+
+        # 3) failed/timeout tail -> page (effects may have committed; needs judgment)
+        if latest_cls in ("failed", "timeout"):
+            actions.append({"job_id": jid, "kind": "page",
+                            "reason": f"latest run {latest_cls} - needs inspection before retry",
+                            "missed_tick": latest["ts"].isoformat(),
+                            "policy": pol})
+            record(jid, "page", latest_cls, latest["ts"].isoformat())
+            continue
+
+        # 4) fully-missed ticks for jobs with explicit schedule anchors
+        every = entry.get("every_secs")
+        at = parse_at(entry["at"]) if entry.get("at") else None
+        if every and at and pol in ("always", "latest-only"):
+            tick = at
+            while tick < cutoff:
+                tick += timedelta(seconds=every)
+            missed = []
+            t = tick
+            while t <= now:
+                half = every / 2
+                covered = [r for r in terminal
+                           if abs((r["ts"] - t).total_seconds()) <= half]
+                if not covered:
+                    missed.append(t)
+                t += timedelta(seconds=every)
+            for m in missed:
+                if pol == "latest-only" and m != missed[-1]:
+                    skipped.append({"job": jid,
+                                    "reason": f"missed tick {m.isoformat()} superseded (latest-only)"})
+                    continue
+                if not cap_ok(jid, entry):
+                    skipped.append({"job": jid, "reason": "daily backfill cap reached"})
+                    continue
+                actions.append({"job_id": jid, "kind": "rerun",
+                                "reason": "no run record for expected tick",
+                                "missed_tick": m.isoformat(), "policy": pol})
+                if not args.dry_run:
+                    record(jid, "rerun", "missed-tick", m.isoformat())
+
+        # 5) runonce jobs that never fired (ghost or skipped one-shot)
+        runonce_at = parse_at(entry["runonce_at"]) if entry.get("runonce_at") else None
+        if runonce_at and pol in ("always", "latest-only"):
+            if now > runonce_at and not terminal:
+                if cap_ok(jid, entry):
+                    actions.append({"job_id": jid, "kind": "rerun",
+                                    "reason": "runonce never fired (no terminal run record)",
+                                    "missed_tick": runonce_at.isoformat(),
+                                    "policy": pol})
+                    if not args.dry_run:
+                        record(jid, "rerun", "runonce-missed", runonce_at.isoformat())
+                else:
+                    skipped.append({"job": jid, "reason": "daily backfill cap reached"})
+
+    if not args.dry_run:
+        try:
+            atomic_write_json(args.state, state)
+        except Exception as e:
+            print(f"BACKFILL: STATE WRITE FAILED: {e}", file=sys.stderr)
+            print(json.dumps({"error": f"state write failed: {e}"}))
+            sys.exit(2)
+
+    print(json.dumps({"actions": actions, "skipped": skipped,
+                      "dry_run": args.dry_run,
+                      "jobs_seen": len(by_job),
+                      "window_hours": args.window_hours}, indent=2))
+
+
+if __name__ == "__main__":
+    main()
