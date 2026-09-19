@@ -1,4 +1,6 @@
-// sovereign-chat v1.2.0 — first-class fleet coordination server.
+// sovereign-chat v1.3.0 — first-class fleet coordination server.
+// Bun + TypeScript. HTTP API + WebSocket push + MCP-over-stdio. SQLite state.
+// Fleet dispatch (durable lease-based task queue) rides in-process (e3918e04).
 // Bun + TypeScript. HTTP API + WebSocket push + MCP-over-stdio. SQLite state.
 // Binds 127.0.0.1 and the tailscale IPv4 (tailnet-only, never 0.0.0.0).
 // Token auth on every /v1/* route (Bearer header; ?token= for WebSocket).
@@ -12,8 +14,9 @@
 
 import { Database } from "bun:sqlite";
 import { createInterface } from "readline";
+import { createDispatch } from "./dispatch.ts";
 
-const VERSION = "1.2.0";
+const VERSION = "1.3.0";
 const PORT = parseInt(process.env.SOVEREIGN_CHAT_PORT || "25120", 10);
 const TOKEN_FILE = process.env.SOVEREIGN_CHAT_TOKEN_FILE || "";
 const SCRIPT_DIR = new URL(".", import.meta.url).pathname;
@@ -271,6 +274,10 @@ const err = (e: any) => json({ ok: false, error: String(e?.message || e) }, e?.s
 
 let TOKEN = "";
 
+// Fleet dispatch module (e3918e04): in-process, single writer of dispatch.db.
+// Initialized in the boot section; null only before boot completes.
+let dispatch: ReturnType<typeof createDispatch> | null = null;
+
 function authorized(req: Request, url: URL): boolean {
   const h = req.headers.get("authorization");
   if (h === `Bearer ${TOKEN}`) return true;
@@ -352,6 +359,34 @@ async function handleFetch(req: Request, server: any): Promise<Response> {
         return json({ ok: true, room_id, messages: store.readMessages(room_id, since, limit) });
       }
     }
+
+    // --- fleet dispatch (e3918e04): durable lease-based task queue -----------
+    if (!dispatch) return json({ ok: false, error: "dispatch not initialized" }, 503);
+    if (path === "/v1/dispatch/tasks" && req.method === "POST")
+      return json({ ok: true, task: dispatch.postTask(body) });
+    if (path === "/v1/dispatch/tasks" && req.method === "GET")
+      return json({ ok: true, tasks: dispatch.listTasks(url.searchParams.get("status") || undefined) });
+    {
+      const dm = path.match(/^\/v1\/dispatch\/tasks\/([^/]+)\/claim$/);
+      if (dm && req.method === "POST")
+        return json({ ok: true, claim: dispatch.claim(decodeURIComponent(dm[1]), body) });
+      const cm = path.match(/^\/v1\/dispatch\/claims\/(\d+)\/(ack|progress|expire|nack)$/);
+      if (cm && req.method === "POST") {
+        const id = Number(cm[1]);
+        const op = cm[2] as "ack" | "progress" | "expire" | "nack";
+        return json({ ok: true, result: (dispatch[op] as any)(id, body) });
+      }
+    }
+    if (path === "/v1/dispatch/dead-letter" && req.method === "POST")
+      return json({ ok: true, result: dispatch.deadLetterTask(body) });
+    if (path === "/v1/dispatch/requeue" && req.method === "POST")
+      return json({ ok: true, result: dispatch.requeue(String(body.task_id || ""), body) });
+    if (path === "/v1/dispatch/wedge-scan" && req.method === "POST")
+      return json({ ok: true, ...(dispatch.wedgeScan() as any) });
+    if (path === "/v1/dispatch/snapshot" && req.method === "GET")
+      return json({ ok: true, snapshot: dispatch.snapshot() });
+    if (path === "/v1/dispatch/metrics" && req.method === "GET")
+      return json({ ok: true, metrics: dispatch.metrics() });
     return json({ ok: false, error: "not found" }, 404);
   } catch (e) {
     return err(e);
@@ -439,6 +474,24 @@ if (process.argv[2] === "mcp") {
 }
 
 await seedFromLegacyJsonl();
+
+// Fleet dispatch (e3918e04): in-process module, single writer of dispatch.db.
+dispatch = createDispatch({
+  stateDir: STATE_DIR,
+  mirrorDir: process.env.DISPATCH_MIRROR_DIR || "/home/toxic/fleet",
+  broadcast,
+  postRoomMessage: (room_id, p) => store.postMessage(room_id, p),
+  ensureRoom: (room_id, name) => { store.createRoom({ room_id, name, created_by: "system" }); },
+  ensureSystemAgent: () => {
+    const ts = nowISO();
+    db.prepare("INSERT OR IGNORE INTO agents (agent_id, name, summoner, first_seen, last_heartbeat) VALUES ('dispatch','dispatch','system',?,?)").run(ts, ts);
+  },
+  holderHeartbeat: (agent_id) => {
+    const r = db.query("SELECT last_heartbeat FROM agents WHERE agent_id = ?").get(agent_id) as any;
+    return r ? r.last_heartbeat : null;
+  },
+});
+console.log(`[chat] dispatch module loaded (state: ${STATE_DIR}/dispatch.db)`);
 
 const tsIP = await tailscaleIPv4();
 const hosts = ["127.0.0.1", ...(tsIP ? [tsIP] : [])];
