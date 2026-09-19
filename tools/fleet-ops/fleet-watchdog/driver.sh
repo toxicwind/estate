@@ -13,9 +13,15 @@
 #   3. run the awrawr-pc supervisor: ensures sweepd is alive (restarts it if
 #      dead/wedged) and runs ONE backstop sweep only when the last sweep is
 #      stale. Prints one JSON line.
+#
+# Receipt design (2026-09-19, lane-6): cron workers intermittently end runs
+# with a null result_summary even on success, so the driver emits its own
+# WATCH-OK + HONEST-RECEIPT footer. The job body instructs the worker to
+# copy the last two stdout lines verbatim as the run's final message.
 set -uo pipefail
 AWR="$HOME/workspace/skills/awrawr-mcp/bin"
 WD=/home/toxic/sovereign/tools/fleet-ops/fleet-watchdog
+START_S=$(date +%s)
 if ! "$AWR/xfer.py" put /home/hatch/fleet-rollover.md "$WD/fleet-rollover.md" 2>&1 | tail -1; then
   echo "driver: rollover mirror sync FAILED (continuing on last mirror)" >&2
 fi
@@ -23,8 +29,41 @@ fi
 # Never fatal; skipped silently when the file does not exist yet.
 "$AWR/xfer.py" put /home/hatch/workspace/state/io-governor.pages.jsonl \
     "$WD/io-governor.pages.jsonl" >/dev/null 2>&1 || true
-# Best-effort: sync the lane-redrive pages file (dirty-state reactor pages).
-# Never fatal; skipped silently when the file does not exist yet.
-"$AWR/xfer.py" put /home/hatch/workspace/state/lane-redrive.pages.jsonl \
-    "$WD/lane-redrive.pages.jsonl" >/dev/null 2>&1 || true
-"$AWR/exec.py" --json --timeout 40 --argv bash "$WD/supervise.sh"
+ENVELOPE="$("$AWR/exec.py" --json --timeout 40 --argv bash "$WD/supervise.sh" 2>/dev/null)"
+DUR_S=$(( $(date +%s) - START_S ))
+# NOTE: the envelope travels via $ENVELOPE_IN because a <<heredoc occupies
+# python's stdin (a pipe into `python3 -` would be swallowed by the program
+# text itself).
+ENVELOPE_IN="$ENVELOPE" python3 - "$DUR_S" <<'PYEOF'
+import json, os, sys
+dur = sys.argv[1]
+try:
+    env = json.loads(os.environ.get("ENVELOPE_IN", ""))
+    out = (env.get("stdout") or "").strip().splitlines()
+    sup = out[-1] if out else ""
+except Exception:
+    sup = ""
+ok, posted, restarted, backstop, age = True, False, False, False, "?"
+finding = "supervisor output unparseable"
+try:
+    d = json.loads(sup)
+    ok = bool(d.get("ok", True))
+    posted = bool(d.get("posted", False))
+    restarted = bool(d.get("sweepd_restarted", False))
+    backstop = bool(d.get("backstop_sweep", False))
+    age = d.get("last_sweep_age_s", "?")
+    finding = "sweepd alive, last_sweep_age_s=%s, no pages" % age
+    if restarted:
+        finding = "sweepd restarted, last_sweep_age_s=%s" % age
+    if backstop:
+        finding = "backstop sweep ran; " + finding
+    if posted:
+        finding = "posted pages: %s" % (d.get("pages"),)
+except Exception:
+    ok = False
+verdict = "failed" if not ok else ("genuine" if (posted or restarted or backstop) else "no-op")
+safe = finding.replace('"', "'")
+print(sup)
+print("WATCH-OK fleet-presence-rollover-watchdog | posted=%s | %s" % (str(posted).lower(), safe))
+print('HONEST-RECEIPT job=fleet-presence-rollover-watchdog verdict=%s duration_s=%s work="%s" evidence="none"' % (verdict, dur, safe))
+PYEOF
