@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+"""zombie-reaper: detect stuck-completion subagents (the "looks running, actually done" bug).
+
+The runtime sometimes never flips agent.subagent_spawns.status to terminal
+even though the agent row itself is already terminal (completed/shutdown/
+errored/interrupted) -- or the spawn carries terminal evidence
+(completed_at/final_response/deferred_terminal_status) with no live children.
+subagent.list then shows them "running" forever, making parallelism look wedged.
+
+muse.db is agent-tool only, so this script is an agent runbook:
+
+  Step 1:  zombie-reaper --scan
+           prints the SQL. Paste it into the muse.db tool verbatim,
+           save the returned JSON envelope to /tmp/zrows.json.
+
+  Step 2:  zombie-reaper --classify /tmp/zrows.json
+           prints per-row verdicts + the exact actions to take.
+
+Verdicts:
+  TIER1_ZOMBIE     spawn 'running' but agent row already terminal. Airtight:
+                   no live process exists. The OWNING lane may close it.
+  TIER2_SUSPECT    spawn carries terminal evidence, agent row still
+                   'running', no running children. Owner-lane eyes only.
+  COORDINATOR_LIVE running children, or fr reads as progress. DO NOT TOUCH.
+  RUNNING_CLEAN    genuinely working.
+
+RULES (hard):
+  - Never close another lane's agent yourself. For TIER1/TIER2 on other
+    lanes, append a visible flag to the fleet channel
+    (/home/toxic/.shingle/directives.md, newest-at-bottom) -- interrupts
+    are visible, never silent. The owning lane reaps.
+  - deferred_terminal_status='completed' ALONE is not proof of done:
+    observed set spuriously on live coordinators (2026-09-19).
+  - Re-read the row right before acting; final_response can update between
+    scan and action (a coordinator may deliver its report then keep working).
+
+Exit codes: 0 = clean (no actionable zombies), 2 = actionable zombies found,
+1 = usage/input error.
+"""
+import json, sys, time
+
+SCAN_SQL_PATH = "/home/hatch/workspace/helpers/muse-db/queries/stuck_completion_audit.sql"
+
+COMPLETION_MARKERS = ("done", "complete", "final report", "pushed", "verified",
+                      "all phases", "writing the final handoff")
+PROGRESS_MARKERS = ("initializing", "waiting on", "interim", "in progress",
+                    "still running", "fanning out")
+
+
+def scan():
+    try:
+        print(open(SCAN_SQL_PATH).read())
+    except FileNotFoundError:
+        sys.exit("zombie-reaper: scan SQL not found: %s" % SCAN_SQL_PATH)
+
+
+def load_rows(path):
+    raw = open(path).read() if path != "-" else sys.stdin.read()
+    doc = json.loads(raw)
+    if isinstance(doc, dict):
+        # muse.db envelope: {"ok":true,"result":{"rows":[...]}}
+        res = doc.get("result", doc)
+        rows = res.get("rows", [])
+    elif isinstance(doc, list):
+        rows = doc
+    else:
+        sys.exit("zombie-reaper: unrecognized JSON shape")
+    return rows
+
+
+def classify(rows):
+    now = int(time.time())
+    out = []
+    for r in rows:
+        v = (r.get("verdict") or "").upper()
+        fr = (r.get("fr_head") or "").lower()
+        kids = int(r.get("running_kids") or r.get("kids") or 0)
+        age = now - int(r.get("created") or now)
+        action, why = "LEAVE", "clean"
+        if v == "TIER1_ZOMBIE":
+            action = "FLAG_OWNER_LANE"
+            why = "agent row terminal (%s) but spawn still 'running'; no live process" % r.get("agent_status")
+        elif v == "TIER2_SUSPECT":
+            doneish = any(m in fr for m in COMPLETION_MARKERS)
+            progish = any(m in fr for m in PROGRESS_MARKERS)
+            if kids == 0 and doneish and not progish and age > 1800:
+                action, why = "FLAG_OWNER_LANE", "stale done-like report, no live children"
+            elif kids > 0 or progish:
+                action, why = "LEAVE", "live coordinator (kids=%d)" % kids
+            else:
+                action, why = "LEAVE", "ambiguous; re-scan later"
+        elif v == "COORDINATOR_LIVE":
+            action, why = "LEAVE", "has %d running children" % kids
+        out.append({
+            "sid": r.get("sid"), "child": (r.get("child") or "")[:8],
+            "parent": (r.get("parent") or "")[:8],
+            "verdict": v or "?", "kids": kids,
+            "age_s": age, "action": action, "why": why,
+        })
+    return out
+
+
+def main(argv):
+    if len(argv) == 2 and argv[1] == "--scan":
+        scan()
+        return 0
+    if len(argv) == 3 and argv[1] == "--classify":
+        rows = load_rows(argv[2])
+        res = classify(rows)
+        actionable = [x for x in res if x["action"] == "FLAG_OWNER_LANE"]
+        for x in res:
+            print("%-14s sid=%-6s child=%s parent=%s kids=%d age=%ds action=%-15s %s"
+                  % (x["verdict"], x["sid"], x["child"], x["parent"],
+                     x["kids"], x["age_s"], x["action"], x["why"]))
+        print("---")
+        print("scanned=%d actionable=%d (TIER1/TIER2 for owner lane to reap)" % (len(res), len(actionable)))
+        for x in actionable:
+            print("FLAG: zombie sid=%s child=%s parent=%s -- %s"
+                  % (x["sid"], x["child"], x["parent"], x["why"]))
+        return 2 if actionable else 0
+    sys.exit("usage: zombie-reaper --scan | --classify <muse.db-json-file|->")
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))

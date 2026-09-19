@@ -45,7 +45,21 @@ rm -rf target/ crates/pi-natives/target crates/pi-natives/index.node
 rm -rf node_modules/.cache.turbo dist packages/*/dist packages/natives/*.node
 cargo update --aggressive
 cargo tree -p pi-natives 2>&1 | head -n 80 || true
-cargo build -p pi-natives --verbose 2>&1 | tee /tmp/natives-cargo.log | tail -n 60
+echo "--- cargo build -p pi-natives via buildsrv ---"
+natives_out=$(/home/toxic/bin/buildsrv submit --name pi-natives-nightly \
+  --repo "$TAU" --toolchain cargo \
+  --cmd "cargo build -p pi-natives --verbose" \
+  --env RUSTUP_TOOLCHAIN=nightly --env RUST_BACKTRACE=1 --env HUSKY=0 \
+  --timeout 3600)
+if printf '%s' "$natives_out" | grep -q '^CACHED'; then
+  printf '%s\n' "$natives_out" | head -2
+  natives_jid=$(printf '%s' "$natives_out" | sed -n 's/^CACHED  identical job already succeeded as \\([A-Za-z0-9-]*\\)/\\1/p')
+else
+  natives_jid=$(printf '%s' "$natives_out" | sed -n 's/^QUEUED  \\([A-Za-z0-9-]*\\).*/\\1/p')
+  [ -n "$natives_jid" ] || { echo "buildsrv submit failed: $natives_out" >&2; exit 1; }
+  /home/toxic/sovereign/tools/buildsrv/build-await.sh "$natives_jid" 3600
+fi
+tail -n 60 "/home/toxic/buildsrv/logs/${natives_jid}.log"
 grep -n "alloc_error_hook" crates/pi-natives/src/lib.rs || echo "feature line not present"
 
 echo "=== [4/8] JS/BUN DEPS ==="

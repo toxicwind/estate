@@ -35,15 +35,26 @@ export function loadSovereignPorts(): void {
   loadEnvFile(resolve(homedir(), ".secrets"));
 }
 
+/**
+ * Canonical port-env names with their legacy aliases.
+ * Forward-only migration: legacy names keep resolving, new code uses the
+ * canonical name. Add entries here — never rename in place.
+ */
+const PORT_ENV_ALIASES: Record<string, string[]> = {
+  NULL_G_PROXY_PORT: ["NULL_G_PORT"],
+};
+
 export function requireEnv(name: string): string {
   loadSovereignPorts();
   const v = process.env[name];
-  if (v === undefined || v === "") {
-    throw new Error(
-      `${name} required — set in ${SOV}/config/ports.env (25xxx SSOT)`,
-    );
+  if (v !== undefined && v !== "") return v;
+  for (const alt of PORT_ENV_ALIASES[name] ?? []) {
+    const av = process.env[alt];
+    if (av !== undefined && av !== "") return av;
   }
-  return v;
+  throw new Error(
+    `${name} required — set in ${SOV}/config/ports.env (25xxx SSOT)`,
+  );
 }
 
 export function requirePort(name: string): number {

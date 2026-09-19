@@ -268,3 +268,13 @@ github_*_pat.json
 # branch-merge inspection scratch (branch-integration worker 2026-09-14)
 /branch-merge/
 .super-ralph/
+
+# --- secret hygiene (2026-09-19): never commit credentials ---
+credentials*
+*api_key*
+*apikey*
+id_rsa*
+id_ed25519*
+.aws/
+.gnupg/
+**/secrets/**
