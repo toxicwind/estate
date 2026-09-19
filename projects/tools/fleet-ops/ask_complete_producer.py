@@ -1,10 +1,20 @@
 #!/usr/bin/env python3
 """Deterministic ask-complete watchdog producer — fail-closed ledger pipeline.
 
-Replaces the LLM-transcription path that corrupted 11 UUIDs into the ledger
-(2026-09-19). The cron worker (an LLM) still runs the muse.db queries — only
-agents can call muse.db — but it NEVER transcribes identifiers. It saves two
-verbatim dumps:
+Replaces the LLM-transcription path that corrupted 17 identifiers into the
+ledger (2026-09-19). The cron worker (an LLM) still runs the muse.db queries —
+only agents can call muse.db — so IDs still transit the worker's transcription
+path. This script makes that fail-closed rather than trusting it: it validates
+every ID structurally and against the canonical set from the SAME database, and
+quarantines anything off. NEVER claim token-free transport; claim structural +
+lineage validation with loud quarantine on defects.
+
+Reactive mode (--reactive): after appending new ASK/REFUSAL rows, this script
+also emits a FORWARD correction into the acfix overlay ledger
+(~/workspace/askcomplete-fix/lib/ledger.py) marking field=status
+old_value=completed new_value=blocked for each appended row. It never re-drives
+the underlying work (re-driving would duplicate side effects). The acfix append
+dedupes on (lane, source, record_id), so retries are idempotent.
 
   1. --canonical : SELECT id FROM agent.agents ... UNION spawn_ids (48h window)
   2. --audit     : the ask_complete_audit.sql result rows
@@ -92,6 +102,9 @@ def main():
     ap.add_argument("--audit", required=True)
     ap.add_argument("--source", required=True, choices=list(FIELD_MAP))
     ap.add_argument("--run-id", required=True)
+    ap.add_argument("--reactive", action="store_true",
+                    help="emit forward status=blocked corrections into the acfix "
+                         "overlay ledger for every appended row (no re-drive)")
     args = ap.parse_args()
     fm = FIELD_MAP[args.source]
 
@@ -206,6 +219,48 @@ def main():
             fail("post-write verification failed: appended IDs missing from ledger",
                  missing=missing, run_id=args.run_id)
 
+    # --- 8. REACTIVE forward correction (never re-drive, never rollback) ---
+    # For every row appended in this run, emit a forward correction overlay:
+    # status completed -> blocked. Uses the IDs the producer itself classified,
+    # so no worker transcription is involved. acfix ledger dedupes on
+    # (lane, source, record_id), making retries idempotent.
+    reactive_appended = 0
+    reactive_dupes = 0
+    reactive_errors = []
+    if args.reactive and to_append:
+        try:
+            sys.path.insert(0, os.path.expanduser("~/workspace/askcomplete-fix/lib"))
+            from ledger import append as acfix_append
+        except Exception as e:
+            reactive_errors.append("ledger import failed: %s" % e)
+            acfix_append = None
+        if acfix_append is not None:
+            for e in to_append:
+                try:
+                    r = acfix_append({
+                        "lane": "ask-complete-watchdog",
+                        "source": e["source"],
+                        "record_id": e["id"],
+                        "field": "status",
+                        "old_value": "completed",
+                        "new_value": "blocked",
+                        "reason": ("ask-complete watchdog run %s: turn ended asking the user; "
+                                   "standing rule blocks completion; forward correction only, "
+                                   "work was NOT re-driven") % args.run_id,
+                        "digest_ref": e.get("md5") or "",
+                        "reversible": "yes",
+                        "rollback_action": "none - additive overlay only",
+                    })
+                    if r.get("appended"):
+                        reactive_appended += 1
+                    else:
+                        reactive_dupes += 1
+                except Exception as e2:
+                    reactive_errors.append("record %s: %s" % (e["id"], e2))
+        if reactive_errors:
+            sys.stderr.write("REACTIVE WARNING: acfix correction failures: %s\n" %
+                             json.dumps(reactive_errors))
+
     report = {
         "ok": True,
         "run_id": args.run_id,
@@ -219,6 +274,10 @@ def main():
         "skipped_dupe": skipped_dupe,
         "skipped_other_verdict": skipped_other,
         "evidence_dir": ev_dir,
+        "reactive": args.reactive,
+        "reactive_corrections_appended": reactive_appended,
+        "reactive_corrections_dupes": reactive_dupes,
+        "reactive_errors": reactive_errors,
     }
     print(json.dumps(report))
 
