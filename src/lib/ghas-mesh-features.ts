@@ -22,7 +22,8 @@ export type MeshServiceId =
   | "ghas-api"
   | "ghas-mcp"
   | "mesh-hub"
-  | "buildsrv";
+  | "buildsrv"
+  | "bench-radar";
 
 export type FeatureId =
   | "readyz"
@@ -174,6 +175,13 @@ export function serviceCatalog(): ServiceMeta[] {
       healthPath: "/health",
       role: "build-server",
       ghas_borrow: "disk-backed build queue + worker pool",
+    },
+    {
+      id: "bench-radar",
+      portEnv: "BENCH_RADAR_PORT",
+      healthPath: "/health",
+      role: "benchmark-regression-radar",
+      ghas_borrow: "rolling median/MAD change-point detection + reactive WS push",
     },
   ];
 }
@@ -341,6 +349,7 @@ export async function runFeature(
         "ghas-mcp": [],
         "mesh-hub": cat.map((c) => c.id).filter((id) => id !== "mesh-hub"),
         "buildsrv": [],
+        "bench-radar": [],
       };
       return {
         status: 200,
