@@ -276,6 +276,9 @@ def routing(sys):
 		if mode == 'torbox.tb_cloud':
 			from indexers.torbox import tb_cloud
 			return tb_cloud()
+		elif mode == 'torbox.tb_cloud_cosmic':
+			from indexers.torbox import tb_cloud_cosmic
+			return tb_cloud_cosmic()
 		elif mode == 'torbox.tb_history':
 			from indexers.torbox import tb_history
 			return tb_history()

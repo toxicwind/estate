@@ -7,6 +7,7 @@ class NavigatorCache:
 	root_list = [
 	{'name': 'Movies', 'mode': 'navigator.main', 'action': 'MovieList', 'iconImage': 'movies'},
 	{'name': 'TV Shows', 'mode': 'navigator.main', 'action': 'TVShowList', 'iconImage': 'tv'},
+	{'name': 'TorBox Library', 'mode': 'torbox.tb_cloud', 'iconImage': 'torbox'},
 	{'name': 'Anime', 'mode': 'navigator.main', 'action': 'AnimeList', 'iconImage': 'anime'},
 	{'name': 'People', 'mode': 'navigator.people', 'iconImage': 'empty_person'},
 	{'name': 'Search', 'mode': 'navigator.search', 'iconImage': 'search'},

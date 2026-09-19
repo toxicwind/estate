@@ -14,7 +14,7 @@ def _api_error_text(result, fallback='Error'):
 	return str(err)
 
 
-def tb_cloud():
+def tb_cloud(name_filter=None):
 	def _builder():
 		for count, item in enumerate(folders, 1):
 			try:
@@ -55,7 +55,17 @@ def tb_cloud():
 				msg += ' (partial list)'
 			kodi_utils.notification(msg, 4000)
 		folders.sort(key=lambda k: str(k.get('updated_at') or ''), reverse=True)
-		kodi_utils.add_items(handle, list(_builder()))
+		if name_filter:
+			nf = str(name_filter).lower()
+			folders = [f for f in folders if nf in str(f.get('name') or '').lower()]
+		items = list(_builder())
+		if not name_filter:
+			cl = kodi_utils.make_listitem()
+			cl.setLabel('[B]COSMIC[/B]')
+			kodi_utils.set_list_item_art(cl, icon, fanart=fanart)
+			cl.getVideoInfoTag().setPlot(' ')
+			items.insert(0, (kodi_utils.build_url({'mode': 'torbox.tb_cloud_cosmic'}), cl, True))
+		kodi_utils.add_items(handle, items)
 		kodi_utils.set_content(handle, kodi_utils.PREMIUM_FILES_CONTENT)
 		kodi_utils.end_directory(handle, cacheToDisc=False)
 		kodi_utils.set_view_mode('view.premium', kodi_utils.PREMIUM_FILES_CONTENT)
@@ -64,6 +74,11 @@ def tb_cloud():
 		kodi_utils.end_directory(handle)
 	finally:
 		kodi_utils.hide_busy_dialog()
+
+
+def tb_cloud_cosmic():
+	"""Widget-friendly TorBox view: only *cosmic* named folders."""
+	return tb_cloud(name_filter='cosmic')
 
 
 def tb_history():
