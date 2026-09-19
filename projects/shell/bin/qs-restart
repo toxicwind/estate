@@ -1,0 +1,20 @@
+#!/bin/bash
+# qs-restart — graceful bounce of quickshell, then relaunch via qs-launch.
+set -u
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if pgrep -x quickshell >/dev/null 2>&1; then
+  echo "stopping quickshell (pids: $(pgrep -x quickshell | tr "\n" " "))"
+  pkill -x quickshell
+  for i in $(seq 1 20); do
+    pgrep -x quickshell >/dev/null 2>&1 || break
+    sleep 0.5
+  done
+  if pgrep -x quickshell >/dev/null 2>&1; then
+    echo "graceful stop timed out; SIGKILLing"
+    pkill -9 -x quickshell
+    sleep 1
+  fi
+else
+  echo "quickshell not running; launching fresh"
+fi
+exec "$HERE/qs-launch" "$@"
