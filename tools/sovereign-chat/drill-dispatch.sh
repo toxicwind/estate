@@ -7,7 +7,8 @@ B="http://127.0.0.1:$PORT"
 T=$(cat /home/toxic/.config/sovereign-chat-token)
 D=${DISPATCH_DIRECTIVES:-/home/toxic/dispatch-test/directives.md}
 WT=${WT:-/home/toxic/wt/dispatch-e3918e04}
-STATE=/home/toxic/dispatch-test/state
+STATE=${STATE:-/home/toxic/dispatch-test/state}
+MIRROR=${MIRROR:-/home/toxic/dispatch-test/mirror}
 pass=0; fail=0
 ok()  { echo "PASS: $1"; pass=$((pass+1)); }
 bad() { echo "FAIL: $1"; fail=$((fail+1)); }
@@ -137,8 +138,8 @@ echo "$RP" | grep -q '"replayed": 1' && ok "replay delivered 1 queued frame" || 
 api GET "/v1/dispatch/tasks?status=pending" | grep -q drill-fb-1 && ok "replayed task drill-fb-1 live on server" || bad "replayed task missing"
 python3 $WT/fleet/dispatch_fallback.py latencies --directives "$D" | grep -q '"p50"' && ok "push latency p50/p99 reported" || bad "latency report missing"
 # mirrors
-[ -s /home/toxic/dispatch-test/mirror/lease-ledger.jsonl ] && ok "lease-ledger.jsonl mirror has $(wc -l < /home/toxic/dispatch-test/mirror/lease-ledger.jsonl) lines" || bad "mirror empty"
-grep -q wedge_signal /home/toxic/dispatch-test/mirror/lease-ledger.jsonl && ok "wedge signals mirrored to JSONL" || bad "no wedge signals in mirror"
+[ -s $MIRROR/lease-ledger.jsonl ] && ok "lease-ledger.jsonl mirror has $(wc -l < $MIRROR/lease-ledger.jsonl) lines" || bad "mirror empty"
+grep -q wedge_signal $MIRROR/lease-ledger.jsonl && ok "wedge signals mirrored to JSONL" || bad "no wedge signals in mirror"
 
 echo
 echo "=== RESULT: $pass passed, $fail failed ==="
