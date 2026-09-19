@@ -38,14 +38,25 @@ from datetime import datetime, timezone, timedelta
 # --- worker self-report receipts (HONEST-RECEIPT footer) ---
 # A present receipt is ground truth from the worker itself: it proves the
 # worker executed and reported honestly, making the platform badge irrelevant.
+# Lenient: every value may be quoted or bare (production cron bodies emit
+# unquoted fields; test fixtures and cron-receipt emit quoted work/evidence).
 RECEIPT_RE = re.compile(
     r"HONEST-RECEIPT\s+"
-    r"job=(?P<job>\S+)\s+"
-    r"verdict=(?P<verdict>genuine|no-op|failed)\s+"
-    r"duration_s=(?P<duration_s>\d+)\s+"
+    r"job=(?P<job>\"[^\"]*\"|\S+)\s+"
+    r"verdict=(?P<verdict>\"[^\"]*\"|\S+)\s+"
+    r"duration_s=(?P<duration_s>\"?\d+\"?)\s+"
     r"work=(?P<work>\"[^\"]*\"|\S+)\s+"
     r"evidence=(?P<evidence>\"[^\"]*\"|\S+)"
 )
+
+RECEIPT_VERDICTS = {"genuine", "no-op", "failed"}
+
+
+def _receipt_unquote(s):
+    s = (s or "").strip()
+    if len(s) >= 2 and s[0] == '"' and s[-1] == '"':
+        return s[1:-1]
+    return s
 
 
 def parse_receipt(summary):
@@ -53,10 +64,16 @@ def parse_receipt(summary):
     if not m:
         return None
     d = m.groupdict()
-    work = d["work"].strip('"')
-    return {"job": d["job"], "verdict": d["verdict"],
-            "duration_s": int(d["duration_s"]), "work": work,
-            "evidence": d["evidence"].strip('"')}
+    verdict = _receipt_unquote(d["verdict"])
+    if verdict not in RECEIPT_VERDICTS:
+        return None
+    try:
+        duration_s = int(_receipt_unquote(d["duration_s"]))
+    except ValueError:
+        return None
+    return {"job": _receipt_unquote(d["job"]), "verdict": verdict,
+            "duration_s": duration_s, "work": _receipt_unquote(d["work"]),
+            "evidence": _receipt_unquote(d["evidence"])}
 
 # --- classification patterns (forensic ground truth, 2026-09-19; positive-evidence rule 2026-09-19) ---
 # VETO: the platform's true veto summary is SHORT boilerplate whose entire
