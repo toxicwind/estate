@@ -1,12 +1,20 @@
 #!/bin/bash
-# qs-logs — tail the launcher log and the newest quickshell qslog.
+# qs-logs — tail the launcher log, the quickshell qslog, and the systemd unit journal.
 set -u
-echo "===== ~/.local/state/quickshell/launch.log ====="
-tail -n "${1:-40}" "$HOME/.local/state/quickshell/launch.log" 2>/dev/null || echo "(no launch log yet)"
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+QS_HOME="$(cd "$HERE/.." && pwd)"
+. "$QS_HOME/lib/qs-common.sh"
+
+echo "===== $QS_LAUNCH_LOG ====="
+tail -n "${1:-40}" "$QS_LAUNCH_LOG" 2>/dev/null || echo "(no launch log yet)"
 LATEST="$(ls -t /run/user/1000/quickshell/by-id/*/log.qslog 2>/dev/null | head -1)"
 if [ -n "$LATEST" ]; then
   echo "===== $LATEST ====="
   tail -n "${1:-40}" "$LATEST"
 else
-  echo "(no quickshell qslog found)"
+  echo "(no quickshell qslog found — by-id/ may be empty; see qs-doctor)"
+fi
+if [ -f "$HOME/.config/systemd/user/$QS_UNIT" ]; then
+  echo "===== journalctl --user -u $QS_UNIT ====="
+  journalctl --user -u "$QS_UNIT" -n "${1:-40}" --no-pager 2>/dev/null || echo "(no journal entries)"
 fi

@@ -1,0 +1,15 @@
+#!/bin/bash
+# qs-version — identify the running quickshell stack: binary, config, repo pins.
+set -u
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+QS_HOME="$(cd "$HERE/.." && pwd)"
+. "$QS_HOME/lib/qs-common.sh"
+
+echo "quickshell: $(/usr/bin/quickshell --version 2>/dev/null | head -1)"
+CFG="$(qs_config_target "$QS_CONFIG_NAME")"
+echo "config:    $CFG"
+echo "realpath:  $(readlink -f "$CFG" 2>/dev/null)"
+echo "sha256:    $(sha256sum "$CFG" 2>/dev/null | cut -d' ' -f1)"
+echo "ii repo:   $(git -C "$QS_HOME/ii" rev-parse --short HEAD 2>/dev/null || echo n/a) $(git -C "$QS_HOME/ii" status --short 2>/dev/null | head -3 | tr '\n' ' ')"
+echo "live pid:  $(qs_pids | tr '\n' ' ' || echo none)"
+echo "unit:      $(systemctl --user is-active "$QS_UNIT" 2>/dev/null || echo not-installed)"

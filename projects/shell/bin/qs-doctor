@@ -1,42 +1,76 @@
 #!/bin/bash
-# qs-doctor — diagnose the ii quickshell shell. Checks binary, config,
-# wayland socket, hyprland instance, process liveness, and per-display
-# (DP-1/DP-2) layer surfaces via hyprctl. Pass --repair to relaunch when dead.
-# Exit 0 = healthy, 1 = problems found (or repaired).
+# qs-doctor — diagnose the ii quickshell shell.
+# Checks: binary, config resolution (symlink + hash vs canonical repo),
+# wayland socket, hyprland instance, process liveness, IPC reachability,
+# systemd unit state, per-display (DP-1/DP-2) layer surfaces.
+# Pass --repair to fix (restart via systemd unit when installed, else bounce).
+# Exit 0 = healthy, 1 = problems found.
 set -u
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+QS_HOME="$(cd "$HERE/.." && pwd)"
+. "$QS_HOME/lib/qs-common.sh"
+qs_detect_env
+
 REPAIR=0
 [ "${1:-}" = "--repair" ] && REPAIR=1
 FAIL=0
-ok()   { echo "  [ok] $1"; }
-bad()  { echo "  [FAIL] $1"; FAIL=1; }
-export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/1000}"
-[ -z "${HYPRLAND_INSTANCE_SIGNATURE:-}" ] && [ -d "$XDG_RUNTIME_DIR/hypr" ] && \
-  HYPRLAND_INSTANCE_SIGNATURE="$(ls -t "$XDG_RUNTIME_DIR/hypr" 2>/dev/null | head -1)" && \
-  export HYPRLAND_INSTANCE_SIGNATURE
+ok()  { echo "  [ok] $1"; }
+bad() { echo "  [FAIL] $1"; FAIL=1; }
+
 echo "== quickshell doctor =="
-command -v /usr/bin/quickshell >/dev/null 2>&1 && ok "binary /usr/bin/quickshell ($(/usr/bin/quickshell --version 2>/dev/null | head -1))" || bad "quickshell binary missing"
-[ -f "$HOME/.config/quickshell/ii/shell.qml" ] && ok "config ~/.config/quickshell/ii/shell.qml present" || bad "config ii/shell.qml missing"
-[ -S "$XDG_RUNTIME_DIR/${WAYLAND_DISPLAY:-wayland-1}" ] && ok "wayland socket $XDG_RUNTIME_DIR/${WAYLAND_DISPLAY:-wayland-1}" || bad "wayland socket missing"
-[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ] && ok "HYPRLAND_INSTANCE_SIGNATURE set" || bad "no hyprland instance signature"
-PID="$(pgrep -x quickshell | head -1)"
+command -v /usr/bin/quickshell >/dev/null 2>&1 \
+  && ok "binary /usr/bin/quickshell ($(/usr/bin/quickshell --version 2>/dev/null | head -1))" \
+  || bad "quickshell binary missing"
+
+CFG="$(qs_config_target "$QS_CONFIG_NAME")"
+if [ -f "$CFG" ]; then
+  REAL="$(readlink -f "$CFG")"
+  ok "config $CFG present -> $REAL"
+  CANON_HASH="$(sha256sum "$QS_CANON_CONFIG/shell.qml" 2>/dev/null | cut -d' ' -f1)"
+  LIVE_HASH="$(sha256sum "$REAL" 2>/dev/null | cut -d' ' -f1)"
+  if [ -n "$CANON_HASH" ] && [ "$CANON_HASH" = "$LIVE_HASH" ]; then
+    ok "config matches canonical repo (sha256 ${LIVE_HASH:0:12}…)"
+  else
+    bad "config DIVERGES from canonical repo (live ${LIVE_HASH:0:12}… vs repo ${CANON_HASH:0:12}…)"
+  fi
+else
+  bad "config $CFG missing"
+fi
+
+[ -S "$XDG_RUNTIME_DIR/${WAYLAND_DISPLAY:-wayland-1}" ] \
+  && ok "wayland socket $XDG_RUNTIME_DIR/${WAYLAND_DISPLAY:-wayland-1}" \
+  || bad "wayland socket missing"
+[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ] \
+  && ok "HYPRLAND_INSTANCE_SIGNATURE set" \
+  || bad "no hyprland instance signature"
+
+PID="$(qs_pids | head -1)"
 if [ -n "$PID" ]; then
   ok "quickshell running (pid $PID)"
+  IPC_OUT="$(qs_ipc_instances "$QS_CONFIG_NAME")"
+  if echo "$IPC_OUT" | grep -qi "no running instances"; then
+    bad "IPC: $IPC_OUT  (instance registered but unreachable — see by-id/)"
+  else
+    ok "IPC reachable: $(echo "$IPC_OUT" | head -1)"
+  fi
 else
   bad "quickshell not running"
-  if [ "$REPAIR" = "1" ]; then
-    echo "  --repair: relaunching via qs-launch"
-    "$HERE/qs-launch" -c ii
-    sleep 5
-    PID="$(pgrep -x quickshell | head -1)"
-    [ -n "$PID" ] && { ok "repaired: quickshell now pid $PID"; FAIL=0; } || bad "repair failed: still not running"
-  fi
 fi
+
+if qs_unit_active; then
+  ok "systemd unit $QS_UNIT active"
+elif [ -f "$HOME/.config/systemd/user/$QS_UNIT" ]; then
+  bad "systemd unit $QS_UNIT installed but not active"
+else
+  echo "  [..] systemd unit $QS_UNIT not installed (manual launch mode)"
+fi
+
 if command -v hyprctl >/dev/null 2>&1 && [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
   for m in DP-1 DP-2; do
     if hyprctl monitors 2>/dev/null | grep -q "^Monitor $m ("; then
       LAYERS="$(hyprctl layers 2>/dev/null | awk "/^Monitor $m:/,/^$/" | grep -c "namespace: quickshell")"
-      if [ "$LAYERS" -gt 0 ]; then ok "$m active, $LAYERS quickshell layer surfaces"; else bad "$m active but NO quickshell layers"; fi
+      [ "$LAYERS" -gt 0 ] && ok "$m active, $LAYERS quickshell layer surfaces" \
+                           || bad "$m active but NO quickshell layers"
     else
       bad "$m not reported by hyprctl monitors"
     fi
@@ -44,5 +78,15 @@ if command -v hyprctl >/dev/null 2>&1 && [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}"
 else
   bad "hyprctl unavailable; skipping per-display checks"
 fi
+
+if [ "$REPAIR" = "1" ] && [ "$FAIL" = "1" ]; then
+  echo "  --repair: restarting"
+  "$HERE/qs-restart" -c "$QS_CONFIG_NAME"
+  sleep 3
+  FAIL=0
+  [ -n "$(qs_pids)" ] && ok "repaired: quickshell now pid $(qs_pids | head -1)" \
+                      || bad "repair failed: still not running"
+fi
+
 echo "== result: $([ "$FAIL" = "0" ] && echo HEALTHY || echo PROBLEMS) =="
 exit "$FAIL"

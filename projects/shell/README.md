@@ -1,40 +1,45 @@
-# shell — the ii quickshell shell (first-class home)
+# Quickshell home — `ii`
 
-This directory is the canonical home of Chris's quickshell setup on awrawr-pc.
-"ii" = **Iterative Instinct**, his rebrand/fork of end-4's illogical-impulse
-Hyprland shell, rendered by quickshell on **DP-1** (landscape) and **DP-2**
-(portrait, 90° transform).
+Canonical home for Chris's `ii` quickshell setup: the `ii` fork of end-4's illogical-impulse
+(`ii/`, submodule, remote `toxicwind/sovereign-end4`) plus the first-class operations layer
+around it (`bin/`, `lib/`, `deploy/`).
 
 ## Layout
 
-| Path | What |
-|---|---|
-| `ii/` | The fork checkout (git submodule `shell/sovereign-end4` → `toxicwind/sovereign-end4`). Upstream base: end-4 illogical-impulse. Live config deployed from `ii/dots/.config/quickshell/ii` → `~/.config/quickshell/ii` via `ii/install.conf.yaml`. Do not restructure inside `ii/` — it tracks the fork. |
-| `bin/qs-launch` | Canonical launcher. Same CLI as quickshell (`-c ii`). Auto-detects `WAYLAND_DISPLAY` + `HYPRLAND_INSTANCE_SIGNATURE`, guards single instance, sanity-checks DP-1/DP-2, detaches via setsid, logs to `~/.local/state/quickshell/launch.log`. |
-| `bin/qs-restart` | Graceful stop (SIGTERM, escalates to SIGKILL) then `qs-launch`. |
-| `bin/qs-doctor` | Health check: binary, config, wayland socket, hyprland instance, process liveness, **per-display quickshell layers on DP-1/DP-2**. `--repair` relaunches when dead. Exit 0 = healthy. |
-| `bin/qs-logs` | Tail launcher log + newest quickshell qslog. |
-| `quarantine/` | Holding pen for bizarre/unsure items. Nothing deleted, only parked. See `quarantine/README.md`. |
+- `bin/` — user entrypoints. All quickshell operations go through these:
+  - `qs-launch [-c ii] [--systemd]` — canonical launcher (env auto-detect, single-instance
+    guard, detached; `--systemd` = foreground mode for the unit)
+  - `qs-restart`, `qs-stop` — bounce/stop, systemd-aware
+  - `qs-doctor [--repair]` — health: binary, config resolution + sha256 vs canonical repo,
+    wayland socket, hyprland instance, process, **IPC reachability**, unit state,
+    DP-1/DP-2 layer surfaces
+  - `qs-logs [n]` — launcher log + quickshell qslog + unit journal
+  - `qs-install` — idempotent install: config symlink, systemd unit, hyprland entries
+  - `qs-version` — binary + config + repo pins
+- `lib/qs-common.sh` — shared env/pid/unit helpers (sourced by `bin/*`)
+- `deploy/quickshell-ii.service` — systemd `--user` unit (`Restart=always`, `RestartSec=2`);
+  installed by `qs-install` to `~/.config/systemd/user/`
+- `quarantine/` — legacy material, parked never deleted (see `quarantine/MANIFEST.md`)
+- `evidence/` — grim DP-1/DP-2 captures per verification run
+- `AUDIT.md` — structural inventory + IPC anomaly root cause (2026-09-19)
+- `ii/` — the fork. QML/config work lives here; this redo does not touch its content.
 
-## Provenance
+`/usr/local/bin/qs` delegates to `bin/qs-launch` (old hand-rolled version in quarantine).
 
-- Fork repo: `toxicwind/sovereign-end4` (fresh repo, not a GitHub fork; no upstream remote configured). HEAD `204890dbaafee5e9797ca4ef1c29ca70ac3fdddf` (main).
-- Local deltas vs upstream illogical-impulse: "ii / Iterative Instinct" rebrand, `AGENTS.md`, `install.conf.yaml` (dotbot manifest), `diagnose` scripts, `system-tuning/` (limine kernel profiles, sysctl, udev), `dots-extra/`, pinned quickshell build.
-- quickshell binary: built from upstream `https://git.outfoxxed.me/quickshell/quickshell` pinned at `7511545ee20664e3b8b8d3322c0ffe7567c56f7a` via `ii/sdata/dist-arch/illogical-impulse-quickshell-git/PKGBUILD` (extra Qt deps for ii widgets).
-- Hyprland autostart (`~/.config/hypr/hyprland/execs.lua`) runs `qs -c ii`; `/usr/local/bin/qs` now delegates to `bin/qs-launch` (backup at `/usr/local/bin/qs.bak-20260919`).
-- Displays: DP-1 `2560x1440@59.95` at `0x0` scale 1; DP-2 `2560x1440@59.95` at `2560x0` scale 1, transform 1 (portrait) — see `~/.config/hypr/monitors.lua`.
+## Live config
 
-## Operations
+`~/.config/quickshell` → `ii/dots/.config/quickshell` (dotbot symlink, `ii/install.conf.yaml:18`).
+Edits in the repo reach the live shell immediately.
 
-```sh
-~/sovereign/projects/shell/bin/qs-doctor            # health check
-~/sovereign/projects/shell/bin/qs-doctor --repair   # fix when dead
-~/sovereign/projects/shell/bin/qs-restart -c ii     # bounce
-~/sovereign/projects/shell/bin/qs-logs              # recent logs
-```
+## Supervision
 
-Known gap (2026-09-19): quickshell has no supervisor — if it dies, nothing
-restarts it until next Hyprland start (this caused the 2026-09-18 19:32
-outage). `qs-doctor --repair` is the manual path; a watchdog is future work.
-Also: submodule name `shell/sovereign-end4` ≠ path `projects/shell/ii`
-(cosmetic mismatch in `.gitmodules`; harmless, rename is a follow-up).
+Hyprland (`~/.config/hypr/hyprland/execs.lua`) starts the `quickshell-ii.service` unit on session
+start — idempotent, no-op when already running. The unit restarts quickshell on crash
+(`Restart=always`). Manual `qs -c ii` launches are single-instance guarded and converge on the
+same path.
+
+## IPC
+
+Instance registration lives at `/run/user/1000/quickshell/by-id/<id>/`. If `qs-doctor` reports
+"IPC: No running instances" while the bar renders, the registration dir was lost — restart via
+`qs-restart` (recreates it). `qs-doctor` checks this on every run.
