@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# io-lease: declare a forensics I/O lease so the reapers don't fratricide you.
+# Debate 2c7ca733, lane-4's con (seq 6) point 2: the /proc/PID/io reaper
+# cannot distinguish "runaway" from "thorough" — a declared long scan and
+# the killer grep have the same I/O signature. Leases fix that: declare
+# the work, the reaper exempts it.
+#
+# Usage: io-lease --ttl SECONDS --reason "why" [--pid PID]
+#   Defaults: pid=$$ (caller), ttl=600.
+#   Writes ~/workspace/bin/.io-leases/<pid>: "<expiry_epoch> <reason>"
+#   Expiry is checked at read time; stale leases are ignored (no sweeper).
+set -u
+LEASE_DIR=~/workspace/bin/.io-leases
+PID=$$
+TTL=600
+REASON=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --ttl) TTL="$2"; shift 2 ;;
+    --reason) REASON="$2"; shift 2 ;;
+    --pid) PID="$2"; shift 2 ;;
+    *) echo "usage: io-lease --ttl SECONDS --reason TEXT [--pid PID]" >&2; exit 1 ;;
+  esac
+done
+mkdir -p "$LEASE_DIR"
+EXPIRY=$(( $(date +%s) + TTL ))
+echo "$EXPIRY ${REASON:-unspecified}" > "$LEASE_DIR/$PID"
+echo "io-lease: pid=$PID expires in ${TTL}s :: $REASON"
