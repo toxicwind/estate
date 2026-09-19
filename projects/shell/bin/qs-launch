@@ -1,0 +1,42 @@
+#!/bin/bash
+# qs-launch — canonical quickshell launcher for the ii shell (sovereign/projects/shell)
+# Accepts the same args as quickshell (e.g. -c ii). Single-instance guard,
+# auto-detects WAYLAND_DISPLAY + HYPRLAND_INSTANCE_SIGNATURE, detaches via
+# setsid, logs to ~/.local/state/quickshell/launch.log, sanity-checks DP-1/DP-2.
+set -u
+CONFIG="ii"
+ARGS=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -c) CONFIG="${2:-ii}"; ARGS+=("$1" "$2"); shift 2 ;;
+    *)  ARGS+=("$1"); shift ;;
+  esac
+done
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/1000}"
+if [ -z "${WAYLAND_DISPLAY:-}" ]; then
+  for s in "$XDG_RUNTIME_DIR"/wayland-*; do
+    case "$s" in *.lock) continue ;; *) WAYLAND_DISPLAY="$(basename "$s")"; break ;; esac
+  done
+fi
+export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-1}"
+if [ -z "${HYPRLAND_INSTANCE_SIGNATURE:-}" ] && [ -d "$XDG_RUNTIME_DIR/hypr" ]; then
+  HYPRLAND_INSTANCE_SIGNATURE="$(ls -t "$XDG_RUNTIME_DIR/hypr" 2>/dev/null | head -1)"
+  export HYPRLAND_INSTANCE_SIGNATURE
+fi
+if pgrep -x quickshell >/dev/null 2>&1; then
+  echo "quickshell already running (pid $(pgrep -x quickshell | head -1)); use qs-restart to bounce it"
+  exit 0
+fi
+LOG="$HOME/.local/state/quickshell/launch.log"
+mkdir -p "$(dirname "$LOG")"
+if command -v hyprctl >/dev/null 2>&1 && [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+  MONS="$(hyprctl monitors 2>/dev/null)"
+  MISSING=""
+  for m in DP-1 DP-2; do
+    echo "$MONS" | grep -q "^Monitor $m (" || MISSING="$MISSING $m"
+  done
+  if [ -n "$MISSING" ]; then echo "WARN: expected monitors not active:$MISSING (launching anyway)"; fi
+fi
+echo "=== launch $(date -u +%FT%TZ) config=$CONFIG display=$WAYLAND_DISPLAY his=${HYPRLAND_INSTANCE_SIGNATURE:-unset} ===" >>"$LOG"
+setsid nohup /usr/bin/quickshell "${ARGS[@]}" >>"$LOG" 2>&1 < /dev/null &
+echo "launched quickshell pid $! (config=$CONFIG)"

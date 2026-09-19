@@ -1,0 +1,12 @@
+#!/bin/bash
+# qs-logs — tail the launcher log and the newest quickshell qslog.
+set -u
+echo "===== ~/.local/state/quickshell/launch.log ====="
+tail -n "${1:-40}" "$HOME/.local/state/quickshell/launch.log" 2>/dev/null || echo "(no launch log yet)"
+LATEST="$(ls -t /run/user/1000/quickshell/by-id/*/log.qslog 2>/dev/null | head -1)"
+if [ -n "$LATEST" ]; then
+  echo "===== $LATEST ====="
+  tail -n "${1:-40}" "$LATEST"
+else
+  echo "(no quickshell qslog found)"
+fi
