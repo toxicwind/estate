@@ -249,7 +249,7 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "floc
 daemons = ["tau"]
 
 [groups.all]
-daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-resolver", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve"]
+daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-resolver", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard"]
 
 [daemons.kimi-auto-resolver]
 run = "exec /home/toxic/kimi-auto/loop.sh"
@@ -508,4 +508,12 @@ retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25180/health"
 env = { ML_SERVE_PORT = "25180" }
+auto = ["start"]
+
+[daemons.stash-guard]
+run = "exec python3 /home/toxic/sovereign/tools/stash-guard/stash-guard.py --repo /home/toxic/sovereign --deep --interval 90"
+dir = "/home/toxic/sovereign"
+mise = false
+retry = true
+boot_start = true
 auto = ["start"]
