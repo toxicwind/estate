@@ -33,9 +33,19 @@ instead of letting anomalies sit unnoticed for days.
 
 `state/` holds `events.jsonl` (durable, append-only), `evaluated.json`
 (already-scored run|suite pairs), `pending.json` (armed 1-night watches),
-`alerts.log` (notify.sh output). Backfill runs on boot record historical
+`alerts.log` (notify.sh output), plus deterministic time-series exports
+rewritten on every scan: `nights.jsonl` (one row per run: night,
+run_start, per-suite exit + series count) and `series.jsonl` (one row per
+run/suite/series/metric value). Backfill runs on boot record historical
 events with `"backfill": true` and never fire the notify hook — no first-boot
 spam, but history is visible in `/status`.
+
+## Reactivity
+
+The log is watched with `fs.watch` (500ms debounce → immediate scan);
+the 10s mtime/size poll remains as fallback. Detections push over the
+`/live` WebSocket the moment they are evaluated — no polling downstream.
+`POST /scan` forces an immediate rescan.
 
 ## Alerting
 
