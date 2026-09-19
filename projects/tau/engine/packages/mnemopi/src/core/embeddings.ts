@@ -13,7 +13,7 @@ import {
 	logger,
 } from "@oh-my-pi/pi-utils";
 import { LRUCache } from "@oh-my-pi/pi-utils/lru";
-import type { EmbeddingModel } from "fastembed";
+import { ExecutionProvider, type EmbeddingModel } from "fastembed";
 import { ensureFastembedModelSidecars } from "./fastembed-model-cache";
 import { loadFastembed } from "./fastembed-runtime";
 import {
@@ -45,6 +45,13 @@ export type LocalModelInitOptions = {
 	model: StandardEmbeddingModel;
 	cacheDir?: string;
 	showDownloadProgress?: boolean;
+	/**
+	 * ORT execution providers, attempted in order. Defaults to CUDA-then-CPU.
+	 * onnxruntime-node throws (no graceful degradation) when a requested EP
+	 * is absent from its binary, so a CUDA-first attempt that fails is
+	 * retried once as CPU-only (see defaultLocalModelInitializer).
+	 */
+	executionProviders?: ExecutionProvider[];
 };
 export type LocalModelInitializer = (options: LocalModelInitOptions) => Promise<LocalEmbeddingModel>;
 
@@ -137,12 +144,20 @@ const SIDECAR_ERROR_RE =
  * retries THROUGH the sidecar heal, so a cache that is broken in both ways
  * still recovers in one pass. Also the initializer the embed worker uses in
  * its subprocess; the in-process seam stays {@link setLocalModelInitializer}.
+ *
+ * Providers default to CUDA-then-CPU. onnxruntime-node throws (it does not
+ * degrade gracefully) when a requested EP is absent from its binary, so a
+ * CUDA-first attempt that fails with a provider error is retried once as
+ * CPU-only — GPU-less boxes keep working with zero config.
  */
 export async function defaultLocalModelInitializer(options: LocalModelInitOptions): Promise<LocalEmbeddingModel> {
 	const cacheDir = options.cacheDir ?? getFastembedCacheDir();
-	const initOptions = options.cacheDir === undefined ? { ...options, cacheDir } : options;
+	const baseOptions = options.cacheDir === undefined ? { ...options, cacheDir } : options;
 	const { FlagEmbedding } = await loadFastembed();
-	const initWithSidecarHeal = async (): Promise<LocalEmbeddingModel> => {
+	const initWithSidecarHeal = async (
+		executionProviders: readonly ExecutionProvider[],
+	): Promise<LocalEmbeddingModel> => {
+		const initOptions = { ...baseOptions, executionProviders: [...executionProviders] };
 		try {
 			return await FlagEmbedding.init(initOptions);
 		} catch (error) {
@@ -152,15 +167,36 @@ export async function defaultLocalModelInitializer(options: LocalModelInitOption
 			return FlagEmbedding.init(initOptions);
 		}
 	};
-	try {
-		return await initWithSidecarHeal();
-	} catch (error) {
-		const message = error instanceof Error ? error.message : "";
-		if (/Protobuf parsing failed/i.test(message) && (await quarantineCorruptModelFile(message, cacheDir))) {
-			return initWithSidecarHeal();
+	const initWithHeals = async (
+		executionProviders: readonly ExecutionProvider[],
+	): Promise<LocalEmbeddingModel> => {
+		try {
+			return await initWithSidecarHeal(executionProviders);
+		} catch (error) {
+			const message = error instanceof Error ? error.message : "";
+			if (/Protobuf parsing failed/i.test(message) && (await quarantineCorruptModelFile(message, cacheDir))) {
+				return initWithSidecarHeal(executionProviders);
+			}
+			if (await clearIncompleteModelCache(message, cacheDir)) {
+				return initWithSidecarHeal(executionProviders);
+			}
+			throw error;
 		}
-		if (await clearIncompleteModelCache(message, cacheDir)) {
-			return initWithSidecarHeal();
+	};
+	const requested = options.executionProviders ?? [ExecutionProvider.CUDA, ExecutionProvider.CPU];
+	try {
+		return await initWithHeals(requested);
+	} catch (error) {
+		// Only degrade on provider errors (e.g.
+		// "OrtSessionOptionsAppendExecutionProvider_Cuda: Failed to load shared library").
+		// Model/cache errors must surface after the heal budget above — retrying
+		// them as CPU-only would double init attempts and break the no-loop guarantee.
+		const message = error instanceof Error ? error.message : "";
+		if (requested.some(provider => provider !== ExecutionProvider.CPU) && /cuda/i.test(message)) {
+			logger.debug("mnemopi: CUDA execution provider unavailable, falling back to CPU", {
+				model: options.model,
+			});
+			return initWithHeals([ExecutionProvider.CPU]);
 		}
 		throw error;
 	}
