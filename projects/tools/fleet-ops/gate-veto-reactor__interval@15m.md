@@ -34,9 +34,9 @@ The reactive half of the gate defense. The ACFix lanes (fix01–fix04) only appe
    SELECT r.job_id AS job_id, r.status AS status, r.result_summary AS result_summary, r.scheduled_for_utc AS sched_utc
    FROM scheduler.job_runs r
    WHERE r.scheduled_for_utc > (extract(epoch from now())::bigint - 7200)
-     AND r.job_id IN ('sidechat-watch-safety','sidechat-watch-squawk','sidechat-watch-whatsapp','sidechat-watch-agent1','sidechat-watch-agent2','sidechat-watch-madeon','squawk-ws-client-watchdog','service-restart-watchdog','whatsapp-fleet-digest','fleet-snapshot-5m','sorry-completed-audit','gate-clear-watch','lane-poller-watchdog')
+     AND r.job_id IN ('sidechat-watch-safety','sidechat-watch-squawk','sidechat-watch-whatsapp','sidechat-watch-agent1','sidechat-watch-agent2','sidechat-watch-madeon','squawk-ws-client-watchdog','service-restart-watchdog','fleet-snapshot-5m','sorry-completed-audit','gate-clear-watch','lane-poller-watchdog')
    ORDER BY r.scheduled_for_utc DESC LIMIT 200;
-   These 13 job_ids are the REDRIVE ALLOWLIST — idempotent watchers only, safe to re-run by construction. NEVER add ask-complete-watchdog, heartbeat, whatsapp-relay-chatfeed, or any mutating / chat-facing / memory-writing job.
+   These 12 job_ids are the REDRIVE ALLOWLIST — idempotent watchers only, safe to re-run by construction. NEVER add ask-complete-watchdog, heartbeat, whatsapp-relay-chatfeed, whatsapp-fleet-digest (quarantined 2026-09-19: chat-facing poster, redrive could double-post to Chris's phone), or any mutating / chat-facing / memory-writing job.
 3. Write the returned rows VERBATIM as a JSON array to /tmp/gvr_rows_<unixts>.json. Copy character-for-character from the tool output; never retype identifiers from memory. Fields per row: job_id, status, result_summary, sched_utc.
 4. Run the deterministic engine — it does ALL classification; you do not classify by judgment:
    ~/workspace/bin/taskhook run -- python3 ~/workspace/bin/gate-veto-reactor.py < /tmp/gvr_rows_<unixts>.json
@@ -44,8 +44,11 @@ The reactive half of the gate defense. The ACFix lanes (fix01–fix04) only appe
    - ~/workspace/goals/safety-review-gate-investigation/hidden_files/gate-veto-reactor-manifest.json
    - ~/workspace/goals/safety-review-gate-investigation/hidden_files/gate-veto-reactor-state.json
    Read its stdout summary for the classification counts.
-5. For each manifest entry, issue a cron.run for the job_id copied VERBATIM from the manifest file, reason: "gate-veto-reactor catch-up: safety-review-vetoed run scheduled_for_utc=<vetoed_sched_utc> redriven while gate open". SECOND CHECK: refuse to cron.run any job_id not in the 13-id allowlist above, even if it somehow appears in the manifest. The engine enforces this too — you are belt and suspenders.
-6. For each redrive issued, append a fix05 ledger row (first lane whose repairs are real re-executions, not overlay verdicts):
+5. For each manifest entry (dispatch="planned"), issue a cron.run for the job_id copied VERBATIM from the manifest file, reason: "gate-veto-reactor catch-up: safety-review-vetoed run scheduled_for_utc=<vetoed_sched_utc> redriven while gate open". SECOND CHECK: refuse to cron.run any job_id not in the 12-id allowlist above, even if it somehow appears in the manifest. The engine enforces this too — you are belt and suspenders.
+   PLAN/ACK PROTOCOL (watermark-timing fix 2026-09-19): the plan phase NEVER advances watermarks. After EACH successful cron.run, IMMEDIATELY run:
+   ~/workspace/bin/taskhook run -- python3 ~/workspace/bin/gate-veto-reactor.py --ack "<job_id>@<vetoed_sched_utc>"
+   copying both values verbatim from the manifest entry. The ack byte-verifies the planned entry, removes it from the manifest, and advances the committed watermark. If a cron.run FAILS, do NOT ack — the entry stays planned and retryable on the next run. Never ack an entry you did not successfully dispatch.
+6. For each acked redrive, append a fix05 ledger row (first lane whose repairs are real re-executions, not overlay verdicts):
    ~/workspace/bin/taskhook run -- ~/workspace/venvs/forensics/bin/python ~/workspace/askcomplete-fix/lib/ledger.py append --json '{"lane":"fix05","source":"cron_run","record_id":"<job_id>@<vetoed_sched_utc>","field":"status","old_value":"succeeded","new_value":"redriven","reason":"safety-review veto catch-up redrive issued while gate open","digest_ref":"","reversible":"yes","rollback_action":"cron.remove gate-veto-reactor"}'
    Copy job_id and vetoed_sched_utc verbatim from the manifest. record_id format is exactly "<job_id>@<vetoed_sched_utc>".
 7. Final message: engine classification counts, manifest size, redrives issued, ledger rows appended. Clean run (empty manifest): stay silent to the user, no tracking entry.
