@@ -1,32 +1,36 @@
 #!/usr/bin/env python3
-"""
-cron-honest-status: First-class fix for status laundering.
+"""cron-honest-status: honest classification of scheduler run records.
 
-PROBLEM: The platform scheduler reports status="succeeded" for jobs that
-did zero work (safety veto, overlap-skip, no-op). The real reason is buried
-in result_summary. Status-based monitoring is blind.
+Reads cron run records and reports the HONEST classification for each one,
+because status="succeeded" is a lie for runs that did zero work (safety veto,
+overlap-skip, no-op, coalescing). The real reason is buried in result_summary.
 
-FIX: This tool reads result_summary (not status) and reports the HONEST
-classification for every run. It becomes the source of truth for job health.
+Input (stdin): a JSON object {"runs": [...]}, a JSON array [...], or JSONL
+(one JSON object per line). Output: one JSON object per line (always valid
+JSON, machine-readable), or human-readable lines by default.
 
 The classifier is imported from cron-trust-monitor (single source of truth)
 so the CLI and the monitor can never diverge.
 
 Usage:
     cron.runs -> JSON -> cron-honest-status --classify [--summary] [--json]
+    cron.runs -> JSONL -> cron-honest-status --classify
     cron-honest-status --state            # per-job honest table from trust state
     cron-honest-status --ledger           # recent monitor health trend
 
 Honest classes:
-    genuine       - actually did work (detailed summary)
-    vetoed        - safety review blocked it (short boilerplate veto notice)
-    overlap-skip  - skipped: another run already active
-    no-op         - ran but did nothing by design
-    quota-deferred- deferred by quota guard
-    coalesced     - cancelled: scheduler coalesced overlapping occurrence
-    failed        - status=failed with error_text
-    timeout       - worker exceeded execution timeout
-    ambiguous     - succeeded with null/empty summary (cannot verify work)
+    genuine        - positive evidence of work (worker receipt or execution detail)
+    vetoed         - safety review blocked it (short boilerplate veto notice)
+    overlap-skip   - skipped: another run already active
+    no-op          - ran but did nothing by design
+    quota-deferred - deferred by quota guard
+    coalesced      - scheduler coalesced the overlapping occurrence (precedence)
+    failed         - status=failed (with or without error text), or worker-reported failure
+    timeout        - worker exceeded execution timeout
+    ambiguous      - null/empty summary, or non-empty summary without positive
+                     work evidence; also cancelled without coalesce evidence
+    excluded       - non-terminal record (running/queued/scheduled): not a verdict,
+                     excluded from trust math
 """
 
 import json
@@ -47,15 +51,44 @@ def load_classifier():
     return mod.classify_run
 
 
+def read_runs(stream):
+    """Accept a JSON object {"runs": [...]}, a JSON array, or JSONL."""
+    text = stream.read()
+    if not text.strip():
+        raise ValueError("empty stdin: expected JSON object, JSON array, or JSONL")
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError:
+        payload = None
+    if payload is not None:
+        runs = payload.get("runs") if isinstance(payload, dict) else payload
+        if isinstance(runs, list):
+            return runs
+        raise ValueError('expected a JSON array, {"runs": [...]}, or JSONL')
+    # Fall back to JSONL: one JSON object per line.
+    runs = []
+    for i, line in enumerate(text.splitlines(), 1):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            obj = json.loads(line)
+        except json.JSONDecodeError as e:
+            raise ValueError("line %d is not valid JSON: %s" % (i, e))
+        if not isinstance(obj, dict):
+            raise ValueError("line %d: expected a JSON object, got %s"
+                             % (i, type(obj).__name__))
+        runs.append(obj)
+    if not runs:
+        raise ValueError("no valid JSON found on stdin")
+    return runs
+
+
 def cmd_classify(classify_run, args):
     try:
-        payload = json.load(sys.stdin)
-    except json.JSONDecodeError as e:
-        print(json.dumps({"error": f"stdin is not valid JSON: {e}"}))
-        sys.exit(2)
-    runs = payload.get("runs") if isinstance(payload, dict) else payload
-    if not isinstance(runs, list):
-        print(json.dumps({"error": 'expected a JSON array or {"runs": [...]}'}))
+        runs = read_runs(sys.stdin)
+    except ValueError as e:
+        print(json.dumps({"error": str(e)}))
         sys.exit(2)
     out = []
     for run in runs:
@@ -64,19 +97,22 @@ def cmd_classify(classify_run, args):
             "run_id": run.get("run_id"),
             "job_id": run.get("job_id"),
             "scheduled_for_utc": run.get("scheduled_for_utc"),
-            "honest_status": honest if honest is not None else "in-flight",
+            "honest_status": honest if honest is not None else "excluded",
             "reason": reason,
         })
     if args.summary:
         counts = Counter(o["honest_status"] for o in out)
-        doc = {"total": len(out), "by_status": dict(counts), "runs": out}
-        print(json.dumps(doc, indent=2))
+        print(json.dumps({"total": len(out), "by_status": dict(counts),
+                          "runs": out}, indent=2))
     elif args.json:
         print(json.dumps(out, indent=2))
+    elif args.machine:
+        for o in out:
+            print(json.dumps(o))
     else:
         for o in out:
             rid = (o["run_id"] or "?")[:8]
-            print(f"{o['job_id']} {rid} {o['honest_status']}: {o['reason']}")
+            print("%s %s %s: %s" % (o["job_id"], rid, o["honest_status"], o["reason"]))
 
 
 def cmd_state(args):
@@ -85,13 +121,14 @@ def cmd_state(args):
         with open(path) as f:
             st = json.load(f)
     except FileNotFoundError:
-        print(f"no trust state at {path} (cron-trust-monitor has not run yet)")
+        print("no trust state at %s (cron-trust-monitor has not run yet)" % path)
         sys.exit(1)
     except json.JSONDecodeError as e:
-        print(f"trust state corrupt at {path}: {e}")
+        print("trust state corrupt at %s: %s" % (path, e))
         sys.exit(1)
     jobs = st.get("jobs", {})
-    print(f"trust state updated: {st.get('updated', '?')}  jobs tracked: {len(jobs)}\n")
+    print("trust state updated: %s  jobs tracked: %d\n"
+          % (st.get("updated", "?"), len(jobs)))
     rows = []
     for job_id in sorted(jobs):
         recent = jobs[job_id].get("recent", [])
@@ -99,11 +136,12 @@ def cmd_state(args):
         last_ts = recent[-1].get("ts", "") if recent else ""
         rows.append((job_id, ",".join(classes) or "-", last_ts))
     w = max([len(r[0]) for r in rows] + [6])
-    print(f"{'job':<{w}}  recent-classes              last-ts")
+    print("%-*s  recent-classes              last-ts" % (w, "job"))
     for job_id, classes, last_ts in rows:
-        print(f"{job_id:<{w}}  {classes:<28} {last_ts}")
-    counts = Counter(c for _, classes, _ in rows for c in classes.split(",") if c != "-")
-    print(f"\nclass totals across tracked jobs: {dict(counts)}")
+        print("%-*s  %-28s %s" % (w, job_id, classes, last_ts))
+    counts = Counter(c for _, classes, _ in rows
+                     for c in classes.split(",") if c != "-")
+    print("\nclass totals across tracked jobs: %s" % dict(counts))
 
 
 def cmd_ledger(args):
@@ -112,27 +150,30 @@ def cmd_ledger(args):
         with open(path) as f:
             lines = [ln.strip() for ln in f if ln.strip()]
     except FileNotFoundError:
-        print(f"no ledger at {path}")
+        print("no ledger at %s" % path)
         sys.exit(1)
     tail = lines[-args.limit:]
-    print(f"last {len(tail)} cron-trust-monitor ledger entries:\n")
+    print("last %d cron-trust-monitor ledger entries:\n" % len(tail))
     for ln in tail:
         try:
             e = json.loads(ln)
         except json.JSONDecodeError:
             continue
-        print(f"{e.get('ts','?')}  healthy={e.get('healthy')}  "
-              f"jobs={e.get('jobs_checked')}  issues={e.get('issues_found')}  "
-              f"nonterminal-excluded={e.get('excluded_nonterminal', 0)}")
+        print("%s  healthy=%s  jobs=%s  issues=%s  nonterminal-excluded=%s"
+              % (e.get("ts", "?"), e.get("healthy"), e.get("jobs_checked"),
+                 e.get("issues_found"), e.get("excluded_nonterminal", 0)))
 
 
 def main():
     parser = argparse.ArgumentParser(description="Honest cron run classification")
     parser.add_argument("--classify", action="store_true",
-                        help="Read cron.runs records as JSON from stdin and classify each")
+                        help="Read cron.runs records as JSON/JSONL from stdin and classify each")
     parser.add_argument("--summary", action="store_true",
                         help="With --classify: emit counts-by-classification summary")
-    parser.add_argument("--json", action="store_true", help="JSON output")
+    parser.add_argument("--json", action="store_true",
+                        help="With --classify: pretty-printed JSON array output")
+    parser.add_argument("--machine", action="store_true",
+                        help="With --classify: one compact JSON object per line")
     parser.add_argument("--state", action="store_true",
                         help="Print per-job honest table from the trust-monitor state file")
     parser.add_argument("--state-path", default=None, help="Override trust state path")
@@ -155,6 +196,7 @@ def main():
     parser.print_help()
     print("\nClassifier source: cron-trust-monitor (single source of truth).")
     print("Example: cron.runs -> JSON -> cron-honest-status --classify --summary")
+    print("Example: cron.runs -> JSONL -> cron-honest-status --classify --machine")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,702 @@
+#!/usr/bin/env python3
+"""
+cron-trust-monitor: autonomous cron reliability watchdog + reactive remediator.
+
+The platform lies: status="succeeded" for vetoed, overlap-skipped, and no-op runs.
+Three days of vetoed backups looked "healthy" because everything said "succeeded".
+
+This monitor:
+1. Reads recent cron runs (JSONL on stdin: job_id, status, result_summary,
+   error_text, ts, run_id)
+2. Classifies each HONESTLY from result_summary, never from status alone
+3. Excludes non-terminal records (running/queued) from trust math entirely
+4. Tracks durable per-job state (watermarks) so consecutive-veto detection is
+   not bounded by the sample window
+5. Emits machine-actionable remediation hints; the scheduled worker body acts
+   on them (stagger colliding jobs, lengthen intervals) instead of only paging
+6. Verifies scheduler-stored bodies against cron.d file bodies (--bodies-jsonl):
+   a cron.d file edit does NOT propagate to the platform scheduler (only
+   cron.add/cron.update syncs the stored body), so a job running a different
+   body than its file is a HIGH trust violation that pages like any other.
+
+Honest classes: genuine, vetoed, overlap-skip, coalesced, quota-deferred,
+                 no-op, failed, timeout, ambiguous
+Non-terminal (running/queued/scheduled): excluded from trust math, counted
+separately.
+
+Exit codes: 0=healthy, 1=issues found (see output), 2=monitor error
+"""
+
+import json
+import os
+import re
+import sys
+import tempfile
+from collections import defaultdict
+from datetime import datetime, timezone, timedelta
+
+# --- worker self-report receipts (HONEST-RECEIPT footer) ---
+# A present receipt is ground truth from the worker itself: it proves the
+# worker executed and reported honestly, making the platform badge irrelevant.
+RECEIPT_RE = re.compile(
+    r"HONEST-RECEIPT\s+"
+    r"job=(?P<job>\S+)\s+"
+    r"verdict=(?P<verdict>genuine|no-op|failed)\s+"
+    r"duration_s=(?P<duration_s>\d+)\s+"
+    r"work=(?P<work>\"[^\"]*\"|\S+)\s+"
+    r"evidence=(?P<evidence>\"[^\"]*\"|\S+)"
+)
+
+
+def parse_receipt(summary):
+    m = RECEIPT_RE.search(summary or "")
+    if not m:
+        return None
+    d = m.groupdict()
+    work = d["work"].strip('"')
+    return {"job": d["job"], "verdict": d["verdict"],
+            "duration_s": int(d["duration_s"]), "work": work,
+            "evidence": d["evidence"].strip('"')}
+
+# --- classification patterns (forensic ground truth, 2026-09-19; positive-evidence rule 2026-09-19) ---
+# VETO: the platform's true veto summary is SHORT boilerplate whose entire
+# content is the veto notice, e.g. exactly "did not pass the scheduled-task
+# safety review". A job that *discusses* vetoes in a detailed work report
+# (heartbeat's "0 safety-review vetoes", acfix audit summaries) is GENUINE.
+# Heuristic: canonical phrase present AND summary short (<300 chars) AND no
+# work-evidence markers. Bare "safety review"/"vetoed" substring matches are
+# BANNED - they false-positive on every audit job that mentions vetoes.
+# GENUINE requires POSITIVE evidence: a worker HONEST-RECEIPT footer, or
+# substantive execution detail (counts, verdicts, timestamps). A bare
+# "clean"/"ok" is ambiguous, never genuine — the badge alone proves nothing.
+COALESCE_PATTERNS = ['scheduled_occurrence_coalesced']
+SKIP_PATTERNS = ['already running and concurrency.overlap=skip',
+                 'another occurrence already running',
+                 'another run was active',
+                 'another run(s) already running']
+NOOP_PATTERNS = ['skipped heartbeat because', 'no-op', 'noop',
+                 'did nothing', 'nothing to do']
+VETO_CANONICAL = 'did not pass the scheduled-task safety review'
+VETO_WORK_MARKERS = ('work performed', 'checks performed', 'steps:',
+                     'findings:', 'scanned', 'identified', 'audit',
+                     'completed with')
+TERMINAL_STATUSES = {'timeout', 'cancelled', 'succeeded', 'failed'}
+
+# Positive work evidence: a digit (counts, timestamps, durations) or an
+# execution-verdict word, in a summary long enough to carry detail.
+EVIDENCE_WORDS = ('clean', 'ok', 'passed', 'failed', 'found', 'scanned',
+                  'checked', 'verified', 'hits', 'errors', 'rows',
+                  'completed with', '0 errors', 'no errors')
+MIN_GENUINE_LEN = 40
+
+# Jobs that must never be vetoed/skipped silently
+CRITICAL_JOBS = ["backup", "health", "cell-backup"]
+
+# Only terminal records enter trust-rate math. Anything else is telemetry noise.
+TERMINAL_STATUSES = {"succeeded", "failed", "cancelled", "timeout"}
+
+LEDGER_PATH = os.path.expanduser("~/workspace/fleet-ping/cron-trust-ledger.jsonl")
+STATE_PATH = os.path.expanduser("~/workspace/fleet-ping/cron-trust-state.json")
+STATE_RECENT_KEEP = 20
+
+
+def _has_work_evidence(summary):
+    s = summary.strip()
+    if len(s) < MIN_GENUINE_LEN:
+        return False
+    low = s.lower()
+    return bool(re.search(r'\d', s)) or any(w in low for w in EVIDENCE_WORDS)
+
+
+def classify_run(run):
+    """Return (honest_status, reason).
+
+    honest_status is None for non-terminal records: excluded from trust math,
+    never counted as genuine/failed/ambiguous. Precedence: failed/timeout first,
+    then coalesced (any status), then receipt/veto/skip/no-op, then
+    null/empty -> ambiguous, then positive-evidence -> genuine, else ambiguous.
+    A non-empty summary is NEVER genuine without positive evidence.
+    """
+    status = (run.get("status") or "").strip()
+    summary = run.get("result_summary") or ""
+    error = run.get("error_text") or ""
+    s_low = summary.lower()
+    e_low = error.lower()
+
+    # 1. Failed and timeout: the badge is honest here; error text is the reason.
+    if status == "failed":
+        return ("failed", (error[:120] or summary[:120] or "failed, no error text"))
+    if status == "timeout":
+        return ("timeout", "worker exceeded execution timeout")
+
+    # 2. Coalesced: precedence over every summary-based class, any status.
+    #    A coalesced occurrence did not execute; it must never read as genuine.
+    if any(p in e_low or p in s_low for p in COALESCE_PATTERNS):
+        return ("coalesced", "scheduler coalesced overlapping occurrence")
+
+    # 3. Cancelled without coalesce evidence: we cannot verify what happened.
+    if status == "cancelled":
+        return ("ambiguous",
+                "cancelled: %s" % (error[:100] or summary[:100] or "no detail"))
+
+    # 4. Non-terminal: not evidence of anything yet.
+    if status not in TERMINAL_STATUSES:
+        return (None, "non-terminal status=%s excluded from trust math"
+                % (status or "?"))
+
+    # From here: status == "succeeded". The summary carries the truth, not the badge.
+
+    # 5. Worker HONEST-RECEIPT footer is ground truth from the worker itself:
+    #    it proves the worker executed and self-reported, so it outranks
+    #    platform-written boilerplate.
+    receipt = parse_receipt(summary)
+    if receipt is not None:
+        if receipt["verdict"] == "genuine":
+            return ("genuine", "worker receipt: %s" % receipt["work"][:100])
+        if receipt["verdict"] == "no-op":
+            return ("no-op", "worker no-op: %s" % receipt["work"][:100])
+        return ("failed", "worker reported failure: %s" % receipt["work"][:100])
+
+    # 6. Veto: canonical phrase + short boilerplate + no work markers.
+    #    Long detailed summaries that merely MENTION vetoes are genuine work.
+    if VETO_CANONICAL in summary:
+        s_stripped = summary.strip()
+        if len(s_stripped) < 300 and not any(m in s_low for m in VETO_WORK_MARKERS):
+            return ("vetoed", "safety review blocked execution")
+
+    # 7. Overlap-skip: another run already active.
+    if any(p in s_low for p in SKIP_PATTERNS):
+        return ("overlap-skip", "another run already active")
+
+    # 8. Quota-deferred.
+    if "quota" in s_low and ("defer" in s_low or "guard" in s_low):
+        return ("quota-deferred", summary[:120])
+
+    # 9. No-op: ran but did nothing by design.
+    if any(p in s_low for p in NOOP_PATTERNS):
+        return ("no-op", summary[:120])
+
+    # 10. Null/empty summary on a succeeded run: NOT genuine — no evidence of work.
+    if not summary.strip():
+        return ("ambiguous", "succeeded with null/empty summary - cannot verify work")
+
+    # 11. Positive-evidence rule: a non-empty summary is genuine ONLY with
+    #     substantive execution detail (counts/verdicts/timestamps). Otherwise
+    #     it is ambiguous — the badge alone proves nothing.
+    if _has_work_evidence(summary):
+        return ("genuine", summary[:120])
+    return ("ambiguous",
+            "non-empty summary lacks positive work evidence - cannot verify work")
+
+
+def is_critical(job_id):
+    job_lower = (job_id or "").lower()
+    return any(crit in job_lower for crit in CRITICAL_JOBS)
+
+
+def parse_ts(ts_str):
+    if not ts_str:
+        return None
+    try:
+        dt = datetime.fromisoformat(str(ts_str).replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
+    except Exception:
+        return None
+
+
+def atomic_write_text(path, text):
+    """Write file atomically (temp + rename). Raises on failure."""
+    d = os.path.dirname(path)
+    os.makedirs(d, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=d, prefix=".tmp-")
+    try:
+        with os.fdopen(fd, "w") as f:
+            f.write(text)
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
+
+
+def load_state():
+    try:
+        with open(STATE_PATH) as f:
+            st = json.load(f)
+        if isinstance(st, dict) and isinstance(st.get("jobs"), dict):
+            return st
+    except FileNotFoundError:
+        pass
+    except Exception as e:
+        print(f"CRON-TRUST: state file corrupt, starting fresh ({e})", file=sys.stderr)
+    return {"jobs": {}}
+
+
+# --- scheduler-body vs file-body divergence check ---
+# Defect class (2026-09-19): editing a cron.d .md file does NOT propagate to
+# the platform scheduler; only cron.add/cron.update syncs the stored body.
+# The lane-poller jobs ran for hours with stale scheduler bodies pointing at a
+# nonexistent script path while the files looked correct. File != live
+# definition, and nothing checked. This check closes that gap.
+#
+# Input: --bodies-jsonl <path>, one {"job_id","body","found"} per line, where
+# "body" is the scheduler-stored body from cron.view (the worker body of the
+# cron-trust-monitor job collects these; the monitor itself has no platform
+# API access). "found": false means cron.view reported no such job.
+#
+# Cheap by design: state["divergence"]["jobs"][job_id] caches
+# (file_mtime, file_hash, stored_hash); a job whose file mtime and both
+# hashes are unchanged is not re-compared. The worker only needs to cron.view
+# jobs whose .md changed since divergence.last_full_sweep, plus a full sweep
+# every FULL_SWEEP_MAX_AGE_H hours (catches hot-fix-via-cron.update drift).
+CRON_D_ROOT = os.path.expanduser("~/workspace/cron.d")
+CRON_D_SCAN_DIRS = ("minutely", "hourly", "daily", "secondly", "monthly",
+                    "runonce")
+FULL_SWEEP_MAX_AGE_H = 24
+
+
+def normalize_body(text):
+    """Canonical form for body comparison: LF endings, no trailing whitespace
+    per line, no leading/trailing blank lines. Internal blank lines and all
+    content remain significant."""
+    if text is None:
+        return None
+    lines = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    lines = [ln.rstrip() for ln in lines]
+    while lines and not lines[0]:
+        lines.pop(0)
+    while lines and not lines[-1]:
+        lines.pop()
+    return "\n".join(lines)
+
+
+def body_hash(text):
+    import hashlib
+    return hashlib.sha256(normalize_body(text).encode("utf-8")).hexdigest()
+
+
+def split_frontmatter(text):
+    """Return (frontmatter, body): body is everything after the closing ---."""
+    if text.startswith("---"):
+        parts = text.split("---", 2)
+        if len(parts) == 3:
+            return parts[1], parts[2]
+    return "", text
+
+
+def scan_job_files(root=CRON_D_ROOT):
+    """Map job_id -> definition .md path via the frontmatter id: field."""
+    mapping = {}
+    id_re = re.compile(r"^id:\s*(.+?)\s*$", re.MULTILINE)
+    for sub in CRON_D_SCAN_DIRS:
+        d = os.path.join(root, sub)
+        if not os.path.isdir(d):
+            continue
+        for fn in sorted(os.listdir(d)):
+            if not fn.endswith(".md") or ".bak" in fn:
+                continue
+            p = os.path.join(d, fn)
+            try:
+                with open(p, "r", encoding="utf-8", errors="replace") as f:
+                    fm, _ = split_frontmatter(f.read(8192))
+                m = id_re.search(fm)
+                if not m:  # unusually long frontmatter: read the whole file
+                    with open(p, "r", encoding="utf-8", errors="replace") as f:
+                        fm, _ = split_frontmatter(f.read())
+                    m = id_re.search(fm)
+            except OSError:
+                continue
+            if m:
+                mapping[m.group(1)] = p
+    return mapping
+
+
+def check_body_divergence(bodies_path, state):
+    """Compare scheduler-stored bodies vs cron.d file bodies.
+
+    Returns (issues, stats). Results are HIGH/MEDIUM issues that page through
+    the monitor's normal issue pipeline - a diverged job is a trust violation,
+    never a no-op.
+    """
+    issues = []
+    stats = {"checked": 0, "diverged": [], "not_found": [], "no_file": 0,
+             "skipped_cached": 0, "view_missing": 0, "full_sweep": False}
+    div = state.setdefault("divergence", {})
+    cache = div.setdefault("jobs", {})
+
+    entries = []
+    try:
+        with open(bodies_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    entries.append(json.loads(line))
+                except json.JSONDecodeError:
+                    continue
+    except FileNotFoundError:
+        return issues, stats  # worker wrote nothing: nothing to check
+    except OSError as e:
+        print(f"CRON-TRUST: bodies file unreadable: {e}", file=sys.stderr)
+        return issues, stats
+
+    job_files = scan_job_files()
+    supplied = {e.get("job_id") for e in entries if e.get("job_id")}
+    if job_files and set(job_files) <= supplied:
+        div["last_full_sweep"] = datetime.now(timezone.utc).isoformat()
+        stats["full_sweep"] = True
+
+    for e in entries:
+        job_id = e.get("job_id")
+        if not job_id:
+            continue
+        fpath = job_files.get(job_id)
+        if not fpath:
+            stats["no_file"] += 1
+            continue  # platform-only job: no cron.d definition to compare
+        if not e.get("found", True):
+            stats["not_found"].append(job_id)
+            issues.append({
+                "severity": "MEDIUM",
+                "job": job_id,
+                "issue": ("cron.d definition file exists but the scheduler has "
+                          "no live job - this job is dead config, it never runs"),
+                "action": ("cron.add the job from the file, or remove the file; "
+                           "a definition with no schedule is silent drift"),
+            })
+            continue
+        stored = e.get("body")
+        if stored is None:
+            stats["view_missing"] += 1
+            continue  # transient view failure: never page on missing data
+        try:
+            mtime = os.path.getmtime(fpath)
+            with open(fpath, "r", encoding="utf-8", errors="replace") as f:
+                _, file_body = split_frontmatter(f.read())
+        except OSError as ex:
+            print(f"CRON-TRUST: cannot read {fpath}: {ex}", file=sys.stderr)
+            continue
+        file_h = body_hash(file_body)
+        stored_h = body_hash(stored)
+        c = cache.get(job_id)
+        if (c and c.get("file_mtime") == mtime and c.get("file_hash") == file_h
+                and c.get("stored_hash") == stored_h):
+            stats["skipped_cached"] += 1
+            diverged = bool(c.get("diverged"))
+        else:
+            stats["checked"] += 1
+            diverged = (file_h != stored_h)
+            cache[job_id] = {
+                "file": fpath,
+                "file_mtime": mtime,
+                "file_mtime_iso": datetime.fromtimestamp(
+                    mtime, tz=timezone.utc).isoformat(),
+                "file_hash": file_h,
+                "stored_hash": stored_h,
+                "diverged": diverged,
+                "checked_ts": datetime.now(timezone.utc).isoformat(),
+            }
+        if diverged:
+            stats["diverged"].append(job_id)
+            issues.append({
+                "severity": "HIGH",
+                "job": job_id,
+                "issue": ("DIVERGENCE: scheduler-stored body != cron.d file body - "
+                          "this job is running different instructions than its "
+                          "file. File edits do not propagate without cron.update."),
+                "action": ("reconcile now: cron.update the job from the file body, "
+                           "or deliberately update the file to match the live body; "
+                           "never leave file and scheduler disagreeing"),
+            })
+    return issues, stats
+
+
+def state_payload(state):
+    return {"updated": datetime.now(timezone.utc).isoformat(),
+            "jobs": state.get("jobs", {}),
+            "divergence": state.get("divergence", {})}
+
+
+def main():
+    as_json = "--json" in sys.argv
+    window_hours = 24
+    bodies_path = None
+    for i, arg in enumerate(sys.argv):
+        if arg == "--window-hours" and i + 1 < len(sys.argv):
+            try:
+                window_hours = int(sys.argv[i + 1])
+            except ValueError:
+                print("CRON-TRUST: bad --window-hours value", file=sys.stderr)
+                sys.exit(2)
+        elif arg == "--bodies-jsonl" and i + 1 < len(sys.argv):
+            bodies_path = sys.argv[i + 1]
+
+    runs = []
+    if sys.stdin.isatty():
+        print("CRON-TRUST: refusing to block on interactive stdin — pipe JSONL or < /dev/null", file=sys.stderr)
+        sys.exit(2)
+    for line in sys.stdin:
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            runs.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+
+    # Durable state loads before any early exit: the divergence cache lives here.
+    state = load_state()
+
+    # Standing check, at most once per monitor cycle: scheduler-stored body vs
+    # cron.d file body. File != live definition, and nothing else checks.
+    div_issues, div_stats = ([], {})
+    if bodies_path:
+        div_issues, div_stats = check_body_divergence(bodies_path, state)
+
+    if not runs and not div_issues:
+        result = {"healthy": True, "message": "no runs in window", "jobs": {},
+                  "issues": [], "divergence": div_stats}
+        if as_json:
+            print(json.dumps(result, indent=2))
+        else:
+            extra = ""
+            if bodies_path:
+                extra = (f"; divergence: {div_stats.get('checked', 0)} compared, "
+                         f"{div_stats.get('skipped_cached', 0)} cached-clean")
+            print("CRON-TRUST: no runs in window" + extra)
+        try:
+            atomic_write_text(STATE_PATH, json.dumps(state_payload(state), indent=2))
+        except Exception as e:
+            print(f"CRON-TRUST: STATE WRITE FAILED: {e}", file=sys.stderr)
+            sys.exit(2)
+        sys.exit(0)
+
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=window_hours)
+
+    # Classify; bucket non-terminal separately (never trust math)
+    excluded_nonterminal = 0
+    by_job = defaultdict(list)
+    for run in runs:
+        job_id = run.get("job_id", run.get("id", "unknown"))
+        honest, reason = classify_run(run)
+        if honest is None:
+            excluded_nonterminal += 1
+            continue
+        ts = parse_ts(run.get("ts", run.get("ran_at", run.get("scheduled_for_utc", ""))))
+        # scheduled_for_utc is epoch seconds in some feeds
+        if ts is None:
+            sfu = run.get("scheduled_for_utc")
+            if isinstance(sfu, (int, float)):
+                ts = datetime.fromtimestamp(sfu, tz=timezone.utc)
+        if ts is not None and ts < cutoff:
+            continue
+        by_job[job_id].append({
+            "honest": honest,
+            "reason": reason,
+            "ts": ts.isoformat() if ts else "",
+            "run_id": run.get("run_id", ""),
+            "status": run.get("status", ""),
+        })
+
+    # Durable watermarks: merge window runs into per-job recent history so
+    # consecutive-veto detection survives across monitor invocations.
+    # (state was loaded before the divergence check; the divergence cache
+    # rides in the same state dict and persists with the write below.)
+    for job_id, job_runs in by_job.items():
+        seen = {r.get("run_id") for r in state["jobs"].get(job_id, {}).get("recent", [])}
+        recent = list(state["jobs"].get(job_id, {}).get("recent", []))
+        for r in job_runs:
+            if r["run_id"] and r["run_id"] not in seen:
+                recent.append({"run_id": r["run_id"], "honest": r["honest"], "ts": r["ts"]})
+                seen.add(r["run_id"])
+        recent.sort(key=lambda x: x["ts"] or "", reverse=True)
+        state["jobs"][job_id] = {"recent": recent[:STATE_RECENT_KEEP]}
+
+    issues = list(div_issues)  # divergence findings page like any other issue
+    job_reports = {}
+
+    for job_id, job_runs in by_job.items():
+        job_runs.sort(key=lambda r: r["ts"] or "", reverse=True)
+        counts = defaultdict(int)
+        for r in job_runs:
+            counts[r["honest"]] += 1
+
+        total = len(job_runs)
+        genuine = counts["genuine"]
+        vetoed = counts["vetoed"]
+        skipped = counts["overlap-skip"]
+        ambiguous = counts["ambiguous"]
+        failed = counts["failed"] + counts["timeout"]
+
+        # Durable consecutive vetoes: leading veto run in merged history
+        consec_vetoes = 0
+        for r in state["jobs"].get(job_id, {}).get("recent", []):
+            if r["honest"] == "vetoed":
+                consec_vetoes += 1
+            else:
+                break
+
+        genuine_rate = genuine / total if total else 0
+        ambiguous_rate = ambiguous / total if total else 0
+        critical = is_critical(job_id)
+
+        job_reports[job_id] = {
+            "total_runs": total,
+            "genuine": genuine,
+            "vetoed": vetoed,
+            "overlap_skip": skipped,
+            "coalesced": counts["coalesced"],
+            "quota_deferred": counts["quota-deferred"],
+            "no_op": counts["no-op"],
+            "failed": failed,
+            "ambiguous": ambiguous,
+            "genuine_rate": round(genuine_rate, 2),
+            "consecutive_vetoes": consec_vetoes,
+            "critical": critical,
+        }
+
+        if consec_vetoes >= 3:
+            issues.append({
+                "severity": "HIGH",
+                "job": job_id,
+                "issue": f"{consec_vetoes} consecutive vetoes (durable count) - job is blocked, not running",
+                "action": "investigate safety review blocks immediately; job cannot self-heal",
+            })
+        elif job_id == "cron-trust-monitor" and skipped > 0:
+            issues.append({
+                "severity": "HIGH",
+                "job": job_id,
+                "issue": f"monitor blind: {skipped} own run(s) overlap-skipped this window - no double-check performed",
+                "action": "lengthen monitor interval or shorten monitor runtime; the honesty layer must not skip itself",
+            })
+        elif critical and vetoed > 0:
+            issues.append({
+                "severity": "HIGH",
+                "job": job_id,
+                "issue": f"critical job vetoed {vetoed}x in window",
+                "action": "critical jobs must not be silently blocked",
+            })
+        elif genuine_rate < 0.5 and total >= 3:
+            issues.append({
+                "severity": "MEDIUM",
+                "job": job_id,
+                "issue": f"genuine rate {genuine_rate:.0%} ({genuine}/{total}) - job is unreliable",
+                "action": "review job health, consider schedule changes",
+            })
+        elif ambiguous_rate > 0.5 and total >= 5:
+            issues.append({
+                "severity": "MEDIUM",
+                "job": job_id,
+                "issue": f"telemetry gap: {ambiguous}/{total} runs succeeded with empty summaries",
+                "action": "worker is not writing result_summary; fix worker reporting, not the schedule",
+            })
+        elif failed > 0:
+            issues.append({
+                "severity": "MEDIUM",
+                "job": job_id,
+                "issue": f"{failed} failed/timed-out runs in window",
+                "action": "check error logs",
+            })
+
+    # Fleet-wide reactive signal: oversubscription -> auto-stagger, don't just page
+    total_runs = sum(v["total_runs"] for v in job_reports.values())
+    total_skips = sum(v["overlap_skip"] for v in job_reports.values())
+    if total_runs >= 5 and total_skips / total_runs > 0.3:
+        offenders = sorted(
+            ((jid, v["overlap_skip"]) for jid, v in job_reports.items() if v["overlap_skip"]),
+            key=lambda x: x[1], reverse=True,
+        )[:5]
+        issues.append({
+            "severity": "HIGH",
+            "job": "*fleet*",
+            "issue": (f"{total_skips}/{total_runs} runs overlap-skipped "
+                      f"({total_skips / total_runs:.0%}) - cell oversubscribed"),
+            "action": ("REACTIVE: stagger the offending jobs now via cron.update - "
+                       "lengthen interval to >=2x measured runtime (min 2m), phase-offset "
+                       "`at` so they never fire simultaneously, set timeout_secs < interval. "
+                       f"Offenders: {', '.join(f'{j}({n})' for j, n in offenders)}"),
+            "offenders": [j for j, _ in offenders],
+            "remediation": "auto-stagger",
+        })
+
+    healthy = len(issues) == 0
+
+    # Durable state + ledger (atomic; failures reported, never swallowed)
+    ledger_ok = True
+    try:
+        atomic_write_text(STATE_PATH, json.dumps(state_payload(state), indent=2))
+    except Exception as e:
+        ledger_ok = False
+        print(f"CRON-TRUST: STATE WRITE FAILED: {e}", file=sys.stderr)
+
+    ledger_entry = {
+        "ts": datetime.now(timezone.utc).isoformat(),
+        "window_hours": window_hours,
+        "jobs_checked": len(job_reports),
+        "excluded_nonterminal": excluded_nonterminal,
+        "issues_found": len(issues),
+        "healthy": healthy,
+        "state_ok": ledger_ok,
+        "divergence_checked": div_stats.get("checked", 0),
+        "divergence_cached": div_stats.get("skipped_cached", 0),
+        "divergence_found": len(div_stats.get("diverged", [])),
+        "divergence_full_sweep": div_stats.get("full_sweep", False),
+    }
+    try:
+        os.makedirs(os.path.dirname(LEDGER_PATH), exist_ok=True)
+        with open(LEDGER_PATH, "a") as f:
+            f.write(json.dumps(ledger_entry) + "\n")
+            f.flush()
+            os.fsync(f.fileno())
+    except Exception as e:
+        ledger_ok = False
+        print(f"CRON-TRUST: LEDGER WRITE FAILED: {e}", file=sys.stderr)
+
+    result = {
+        "healthy": healthy,
+        "jobs": job_reports,
+        "issues": issues,
+        "excluded_nonterminal": excluded_nonterminal,
+        "divergence": div_stats,
+        "ledger": LEDGER_PATH,
+        "ledger_ok": ledger_ok,
+    }
+
+    if as_json:
+        print(json.dumps(result, indent=2))
+    else:
+        if healthy:
+            non_genuine = sum(
+                v["vetoed"] + v["overlap_skip"] + v["no_op"] + v["failed"]
+                for v in job_reports.values())
+            if non_genuine:
+                print(f"CRON-TRUST: OK - {len(job_reports)} jobs, "
+                      f"{non_genuine} non-genuine runs below alert threshold "
+                      f"({excluded_nonterminal} non-terminal excluded)")
+            else:
+                print(f"CRON-TRUST: HEALTHY - {len(job_reports)} jobs, all genuine "
+                      f"({excluded_nonterminal} non-terminal excluded)")
+        else:
+            print(f"CRON-TRUST: {len(issues)} ISSUES")
+            for iss in issues:
+                print(f"  [{iss['severity']}] {iss['job']}: {iss['issue']}")
+                print(f"    -> {iss['action']}")
+
+    if bodies_path and not as_json:
+        d = div_stats
+        print(f"CRON-TRUST: divergence check: {d.get('checked', 0)} compared, "
+              f"{d.get('skipped_cached', 0)} cached-unchanged, "
+              f"{len(d.get('diverged', []))} diverged, "
+              f"{len(d.get('not_found', []))} orphaned"
+              f"{' (FULL SWEEP)' if d.get('full_sweep') else ''}")
+
+    sys.exit(0 if healthy else 1)
+
+
+if __name__ == "__main__":
+    main()
