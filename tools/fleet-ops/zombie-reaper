@@ -46,7 +46,11 @@ SCAN_SQL_PATH = "/home/hatch/workspace/helpers/muse-db/queries/stuck_completion_
 # until its owning lane reaps it, but the fleet has already been told.
 # Shape: {"sids": {"<sid>": {"child": "<prefix8>", "by": "<lane>",
 #                             "at": "<iso-utc>", "note": "<evidence>"}}}
-VERIFIED_PATH = "/home/hatch/workspace/cron-honest/zombie-verified.json"
+# Durable mirror on awrawr-pc (cell workspace is disposable scratch; the
+# authoritative copy lives at the fleet-ops path below). The old cell-local
+# path /home/hatch/workspace/cron-honest/zombie-verified.json was a dead
+# pointer: edits there never reached the durable store. Never point back.
+VERIFIED_PATH = "/home/toxic/sovereign/tools/fleet-ops/zombie-verified.json"
 
 COMPLETION_MARKERS = ("done", "complete", "final report", "pushed", "verified",
                       "all phases", "writing the final handoff")
