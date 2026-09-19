@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+"""shep-mcp: use the local mcpproxy (shep) MCP aggregator via a single command.
+Usage:
+  shep-mcp tools                      # list proxy meta-tools
+  shep-mcp retrieve "<query>"         # find upstream tools
+  shep-mcp describe "<tool-id>"       # full schema for a tool
+  shep-mcp call-read "<tool>" "<json-args>"    # call a read-only upstream tool
+  shep-mcp call-write "<tool>" "<json-args>"  # call a write upstream tool
+The API key is read from the shep config file, never from argv.
+Tool ids are in server:tool form, e.g. patchwork:patchwork_list_patchflows.
+"""
+import json, sys, urllib.request
+
+CONFIG = "/home/toxic/projects/sovereign-projects/mesh/gateway/mcp_config.json"
+BASE = "http://127.0.0.1:25127"
+
+
+def session():
+    key = json.load(open(CONFIG))["api_key"]
+    body = json.dumps({"jsonrpc": "2.0", "id": 1, "method": "initialize",
+        "params": {"protocolVersion": "2024-11-05", "capabilities": {},
+                  "clientInfo": {"name": "shep-mcp", "version": "1.1"}}}).encode()
+    req = urllib.request.Request(BASE + "/mcp", data=body, headers={
+        "Content-Type": "application/json", "Accept": "application/json, text/event-stream",
+        "Authorization": "Bearer " + key})
+    resp = urllib.request.urlopen(req, timeout=20)
+    sid = resp.headers.get("Mcp-Session-Id")
+    body = json.dumps({"jsonrpc": "2.0", "method": "notifications/initialized"}).encode()
+    req = urllib.request.Request(BASE + "/mcp", data=body, headers={
+        "Content-Type": "application/json", "Authorization": "Bearer " + key,
+        "Mcp-Session-Id": sid})
+    urllib.request.urlopen(req, timeout=20).read()
+    return key, sid
+
+
+def call(key, sid, method, params):
+    body = json.dumps({"jsonrpc": "2.0", "id": 2, "method": method, "params": params}).encode()
+    req = urllib.request.Request(BASE + "/mcp", data=body, headers={
+        "Content-Type": "application/json", "Accept": "application/json, text/event-stream",
+        "Authorization": "Bearer " + key, "Mcp-Session-Id": sid})
+    raw = urllib.request.urlopen(req, timeout=120).read().decode()
+    return json.loads(raw.split("\n")[0])
+
+
+def main():
+    if len(sys.argv) < 2:
+        print(__doc__)
+        sys.exit(1)
+    key, sid = session()
+    cmd = sys.argv[1]
+    if cmd == "tools":
+        d = call(key, sid, "tools/list", {})
+        for t in d["result"]["tools"]:
+            print("-", t["name"], "::", (t.get("description") or "")[:80])
+    elif cmd == "retrieve":
+        d = call(key, sid, "tools/call", {"name": "retrieve_tools",
+            "arguments": {"query": sys.argv[2], "limit": 10}})
+        for c in d["result"].get("content", []):
+            print(c.get("text", "")[:2000])
+    elif cmd == "describe":
+        d = call(key, sid, "tools/call", {"name": "describe_tool",
+            "arguments": {"tool_id": sys.argv[2]}})
+        for c in d["result"].get("content", []):
+            print(c.get("text", "")[:3000])
+    elif cmd in ("call-read", "call-write"):
+        if len(sys.argv) < 4:
+            print("usage: shep-mcp %s \"<server:tool>\" '<json-args>'" % cmd)
+            sys.exit(2)
+        variant = "call_tool_read" if cmd == "call-read" else "call_tool_write"
+        op = "read" if cmd == "call-read" else "write"
+        inner = {"name": sys.argv[2],
+                 "args_json": json.dumps(json.loads(sys.argv[3])),
+                 "intent": {"operation_type": op}}
+        d = call(key, sid, "tools/call", {"name": variant, "arguments": inner})
+        if "error" in d:
+            print(json.dumps(d["error"], indent=1))
+            sys.exit(3)
+        out = d.get("result", d)
+        print(json.dumps(out, indent=1)[:4000])
+    else:
+        print(__doc__)
+        sys.exit(1)
+
+
+main()
