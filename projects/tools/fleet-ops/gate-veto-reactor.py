@@ -32,13 +32,23 @@ Behavior:
   2. For vetoed rows: job_id must be in REDRIVE_ALLOWLIST (idempotent
      watchers only), sched_utc inside LOOKBACK_SECS, and newer than the
      per-job watermark in the state file. One manifest entry per job
-     (newest veto covers the episode). Watermark advances so each veto is
-     redriven at most once, ever.
-  3. FAIL-CLOSED: a manifest job_id must be an allowlist member AND must
+     (newest veto covers the episode). Entries are written with
+     dispatch="planned".
+  3. PLAN/ACK PROTOCOL (watermark-timing fix, 2026-09-19): the plan phase
+     NEVER advances watermarks. The worker dispatches each planned entry
+     with cron.run, and only on success runs
+         gate-veto-reactor.py --ack "<job_id>@<vetoed_sched_utc>"
+     which byte-verifies the planned entry, removes it from the manifest,
+     and advances the committed watermark. A failed dispatch stays
+     planned and retryable on the next run; a planned entry whose veto
+     ages out of the lookback is dropped without advancing the watermark.
+     --ack on a non-allowlisted job_id or unknown entry exits 2,
+     fail-closed.
+  4. FAIL-CLOSED: a manifest job_id must be an allowlist member AND must
      have appeared verbatim in the input rows. The cron worker must
      cron.run only job_ids copied verbatim from the manifest file and
      cross-checked against the allowlist printed in the cron body.
-  4. Cap MAX_REDRIVES entries per run.
+  5. Cap MAX_REDRIVES entries per run.
 
 Outputs:
   - hidden_files/gate-veto-reactor-manifest.json (atomic rewrite): the
@@ -70,8 +80,11 @@ CANONICAL_NOTICES = (
 
 # Idempotent watchers ONLY: read-mostly scans / heartbeats whose re-run is
 # safe by construction. NEVER: mutating jobs (ask-complete-watchdog),
-# chat-facing senders (whatsapp-relay-*), memory writers (heartbeat),
-# or anything with external side effects.
+# chat-facing senders (whatsapp-relay-*, whatsapp-fleet-digest), memory
+# writers (heartbeat), or anything with external side effects.
+# NOTE 2026-09-19: whatsapp-fleet-digest was in the original allowlist and
+# is now QUARANTINED — it posts to Chris's phone, so a redrive could
+# double-post. Redrives must be side-effect-free, not merely idempotent.
 REDRIVE_ALLOWLIST = (
     "sidechat-watch-safety",
     "sidechat-watch-squawk",
@@ -81,7 +94,6 @@ REDRIVE_ALLOWLIST = (
     "sidechat-watch-madeon",
     "squawk-ws-client-watchdog",
     "service-restart-watchdog",
-    "whatsapp-fleet-digest",
     "fleet-snapshot-5m",
     "sorry-completed-audit",
     "gate-clear-watch",
@@ -141,17 +153,56 @@ def load_state():
         return {}
 
 
-def main():
+def load_manifest():
     try:
-        raw = sys.stdin.read()
-        rows = json.loads(raw)
-    except (json.JSONDecodeError, UnicodeDecodeError) as e:
-        print(f"gate-veto-reactor: malformed input JSON: {e}", file=sys.stderr)
-        return 2
-    if not isinstance(rows, list):
-        print("gate-veto-reactor: input must be a JSON array", file=sys.stderr)
-        return 2
+        with open(MANIFEST_FILE) as f:
+            m = json.load(f)
+        return m if isinstance(m, list) else []
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
 
+
+def ack(record_id):
+    """Advance the committed watermark for one successfully dispatched
+    redrive. record_id format: "<job_id>@<vetoed_sched_utc>".
+    Fail-closed: the record must match a planned manifest entry
+    byte-identically AND the job_id must be an allowlist member."""
+    try:
+        jid, _, sched_s = record_id.partition("@")
+        sched = int(sched_s)
+    except (ValueError, AttributeError):
+        print(f"gate-veto-reactor --ack: malformed record_id: {record_id!r}",
+              file=sys.stderr)
+        return 2
+    if not jid or jid not in REDRIVE_ALLOWLIST:
+        print(f"gate-veto-reactor --ack: job_id not allowlisted: {jid!r}",
+              file=sys.stderr)
+        return 2
+    manifest = load_manifest()
+    hit = None
+    for m in manifest:
+        if (isinstance(m, dict) and m.get("job_id") == jid
+                and m.get("vetoed_sched_utc") == sched
+                and m.get("dispatch") == "planned"):
+            hit = m
+            break
+    if hit is None:
+        print(f"gate-veto-reactor --ack: no planned entry for {record_id!r}",
+              file=sys.stderr)
+        return 2
+    manifest = [m for m in manifest if m is not hit]
+    state = load_state()
+    state[jid] = {
+        "last_veto_redriven_utc": sched,
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    atomic_write_json(MANIFEST_FILE, manifest)
+    atomic_write_json(STATE_FILE, state)
+    print(f"gate-veto-reactor --ack: watermark advanced for {jid}@{sched}")
+    return 0
+
+
+def plan(rows):
     now = int(time.time())
     cutoff = now - LOOKBACK_SECS
     counts = {}
@@ -184,6 +235,11 @@ def main():
             newest_veto[jid] = sched
 
     state = load_state()
+    # Rebuild the dispatch queue from scratch each run (plan/ack protocol):
+    # watermarks advance ONLY via --ack after a successful cron.run, so a
+    # failed dispatch stays retryable instead of being silently suppressed.
+    prev_manifest = load_manifest()
+    still_qualifies = set()
     manifest = []
     for jid in sorted(newest_veto):
         veto_utc = newest_veto[jid]
@@ -204,15 +260,20 @@ def main():
         # FAIL-CLOSED belt and suspenders: allowlist + verbatim input presence.
         if jid not in REDRIVE_ALLOWLIST or jid not in input_job_ids:
             continue
+        still_qualifies.add((jid, veto_utc))
         manifest.append({
             "job_id": jid,
             "vetoed_sched_utc": veto_utc,
+            "dispatch": "planned",
             "reason": "safety-review veto catch-up redrive; gate open (reactor executed)",
         })
-        state[jid] = {
-            "last_veto_redriven_utc": veto_utc,
-            "updated_at": datetime.now(timezone.utc).isoformat(),
-        }
+    # Drop planned entries whose veto aged out of the lookback (episode over,
+    # never dispatched) rather than redriving stale work.
+    for m in prev_manifest:
+        if (isinstance(m, dict) and m.get("dispatch") == "planned"
+                and (m.get("job_id"), m.get("vetoed_sched_utc"))
+                not in still_qualifies):
+            counts["planned-expired"] = counts.get("planned-expired", 0) + 1
 
     atomic_write_json(MANIFEST_FILE, manifest)
     atomic_write_json(STATE_FILE, state)
@@ -231,5 +292,25 @@ def main():
     return 0
 
 
+def main(argv):
+    if len(argv) == 3 and argv[1] == "--ack":
+        return ack(argv[2])
+    if len(argv) != 1:
+        print("gate-veto-reactor: usage: gate-veto-reactor.py [--ack "
+              "<job_id>@<vetoed_sched_utc>] < rows.json",
+              file=sys.stderr)
+        return 2
+    try:
+        raw = sys.stdin.read()
+        rows = json.loads(raw)
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        print(f"gate-veto-reactor: malformed input JSON: {e}", file=sys.stderr)
+        return 2
+    if not isinstance(rows, list):
+        print("gate-veto-reactor: input must be a JSON array", file=sys.stderr)
+        return 2
+    return plan(rows)
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv))
