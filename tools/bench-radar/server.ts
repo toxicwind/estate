@@ -22,7 +22,7 @@
  *   BENCH_RADAR_BACKFILL=1  evaluate historical runs and page on them (default: record only)
  */
 import { join } from "path";
-import { mkdirSync, existsSync, statSync, readFileSync, appendFileSync, writeFileSync } from "fs";
+import { mkdirSync, existsSync, statSync, readFileSync, appendFileSync, writeFileSync, watch } from "fs";
 
 const PORT = Number(process.env.BENCH_RADAR_PORT ?? 25181);
 const LOG = process.env.BENCH_RADAR_LOG ?? "/home/toxic/bench-run.log";
@@ -409,6 +409,32 @@ function persist() {
   writeFileSync(join(STATE, "pending.json"), JSON.stringify(pending));
 }
 
+/** Deterministic time-series export: one row per run (nights) and one row
+ *  per run/suite/series/metric (series). Rewritten fully on every scan. */
+function exportTimeSeries(runs: BenchRun[]) {
+  const nights = runs.map((r) => ({
+    night: r.night,
+    run_start: r.start,
+    done: r.done,
+    complete: r.complete,
+    suites: Object.fromEntries(
+      Object.entries(r.suites).map(([n, s]) => [n, { exit: s.exit, series_count: Object.keys(s.series).length }]),
+    ),
+  }));
+  const series: any[] = [];
+  for (const r of runs) {
+    for (const [sname, s] of Object.entries(r.suites)) {
+      for (const [sk, v] of Object.entries(s.series)) {
+        const [seriesName, metric] = sk.split("|");
+        series.push({ night: r.night, run_start: r.start, suite: sname,
+          series: seriesName, metric, value: v });
+      }
+    }
+  }
+  writeFileSync(join(STATE, "nights.jsonl"), nights.map((n) => JSON.stringify(n)).join("\n") + "\n");
+  writeFileSync(join(STATE, "series.jsonl"), series.map((s) => JSON.stringify(s)).join("\n") + "\n");
+}
+
 function scan(backfill: boolean) {
   let text: string;
   try { text = readFileSync(LOG, "utf8"); } catch { return; }
@@ -426,6 +452,7 @@ function scan(backfill: boolean) {
   pending = res.pending;
   for (const k of res.newEvals) evaluated.add(k);
   persist();
+  exportTimeSeries(runs);
 }
 
 function suiteVerdicts() {
@@ -494,9 +521,29 @@ const server = Bun.serve({
   },
 });
 
-// initial backfill scan, then poll the log
+// initial backfill scan, then reactive fs.watch + poll fallback
 scan(true);
 let lastStat = "";
+let watchTimer: any = null;
+function reactiveScan() {
+  if (watchTimer) clearTimeout(watchTimer);
+  watchTimer = setTimeout(() => {
+    try {
+      const st = statSync(LOG);
+      const sig = `${st.mtimeMs}:${st.size}`;
+      if (sig !== lastStat) {
+        lastStat = sig;
+        scan(false);
+      }
+    } catch { /* log missing */ }
+  }, 500);
+}
+try {
+  watch(LOG, reactiveScan);
+  console.log(`bench-radar: fs.watch armed on ${LOG}`);
+} catch (e) {
+  console.log(`bench-radar: fs.watch unavailable (${e}), poll only`);
+}
 setInterval(() => {
   try {
     const st = statSync(LOG);
