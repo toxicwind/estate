@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<addon id="plugin.video.redlight" name="Manifold" version="2.6.5" provider-name="kodi-fleet">
+<addon id="plugin.video.redlight" name="Lasso" version="2.6.6" provider-name="kodi-fleet">
     <requires>
         <import addon="xbmc.python" version="3.0.0"/>
         <import addon="script.module.pil" version="1.1.7"/>
@@ -12,7 +12,7 @@
     <extension point="xbmc.python.module" library="resources/lib/"/>
     <extension point="xbmc.addon.metadata">
         <reuselanguageinvoker>true</reuselanguageinvoker>
-        <summary lang="en">Manifold</summary>
+        <summary lang="en">Lasso</summary>
         <description lang="en">* AllDebrid, Offcloud, Premiumize, Real Debrid and TorBox
 * AIOStreams
 * EasyNews, NZB Indexers and Local Folders
