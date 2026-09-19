@@ -1,0 +1,292 @@
+#!/usr/bin/env python3
+"""io-governor: reactive I/O stall fixer (root).
+
+Watches /proc/pressure/io. On STALLED:
+  - ionice BE0 (prio 0) critical PIDs (hatch daemon, hatch-execd) so their
+    I/O jumps the host's queue
+  - ionice idle-class (c3) background writers so they stop adding to storms
+  - NEW (debate 2c7ca733 verdict, lane-5 synthesis + lane-4 con point 2):
+    lease-aware triage of the top disk writers:
+      * leased (active forensics lease on the PID or an ancestor) -> PAGE ONLY,
+        no ionice change. Declared work is never punished.
+      * unleased, non-critical heavy writer -> ionice -c3 (deprioritize) + page
+      * critical -> keep BE0 (existing behavior)
+  - captures per-process write attribution for the ledger
+  - PAGES every action to the pages file (fleet-watchdog sweep relays pages
+    to the fleet room); leased work is paged but otherwise untouched.
+
+INVARIANTS (Chris's standing orders):
+  - NEVER kills. No kill code path exists in this file. Forward-only:
+    re-applies classes each stall, never rolls back.
+  - Additive: lease check is best-effort; a missing/unreadable lease dir
+    means "no leases" (fail-open toward deprioritize+page, never toward kill).
+
+Paths are ABSOLUTE: the daemon runs under sudo where ~ != /home/hatch.
+"""
+import json, os, subprocess, sys, time
+from datetime import datetime, timezone
+
+HOME = "/home/hatch"
+BASE = os.path.join(HOME, "workspace/psi-monitor")
+LEDGER = os.path.join(BASE, "governor.jsonl")
+PAGES_FILE = os.path.join(HOME, "workspace/state/io-governor.pages.jsonl")
+PIDFILE = os.path.join(HOME, "workspace/state/io-governor.pid")
+LEASE_DIR = os.path.join(HOME, "workspace/bin/.io-leases")
+STALL_FULL10 = 2.0
+# Unleased writers above this per-loop write volume get idle-classed.
+DEPRIORITIZE_MB = 1.0
+
+# matchers: (substring in cmdline, (class, prio)); BE0=max possible here (RT blocked)
+CRITICAL = ["hatch daemon", "hatch-execd"]
+CRIT_CLS, CRIT_PRIO = 2, 0
+BACKGROUND = ["squawk-", "ws_daemon.py", "ws-client.py", "psi-stall-monitor", "exec.py --json"]
+BG_CLS, BG_PRIO = 3, None
+
+# Never touch these, whatever they are doing.
+PROTECTED_SUBSTR = ["io-governor"]
+
+
+def log(ev):
+    ev["ts"] = datetime.now(timezone.utc).isoformat()
+    try:
+        with open(LEDGER, "a") as f:
+            f.write(json.dumps(ev) + "\n")
+    except OSError:
+        pass
+
+
+def page(action, pid, cmd, detail=None):
+    """Page the lane: durable page record for the fleet-watchdog relay."""
+    rec = {
+        "ts": datetime.now(timezone.utc).isoformat(),
+        "kind": "stall_page",
+        "action": action,          # deprioritized_idle | page_only_leased | critical_kept_be0
+        "pid": str(pid),
+        "cmd": (cmd or "?")[:160],
+    }
+    if detail:
+        rec["detail"] = detail
+    try:
+        os.makedirs(os.path.dirname(PAGES_FILE), exist_ok=True)
+        with open(PAGES_FILE, "a") as f:
+            f.write(json.dumps(rec) + "\n")
+    except OSError:
+        pass
+    log({"event": "page", **rec})
+
+
+def lease_active(pid):
+    """True if pid (or an ancestor up to 3 levels) holds a live io-lease.
+
+    Lease files: $LEASE_DIR/<pid> containing "<expiry_epoch> <reason>".
+    Expiry is checked at read time; stale leases are ignored (no sweeper).
+    Returns (active, reason_or_None).
+    """
+    seen = set()
+    cur = str(pid)
+    for _ in range(4):  # self + 3 ancestors
+        if cur in seen or not cur.isdigit():
+            break
+        seen.add(cur)
+        f = os.path.join(LEASE_DIR, cur)
+        try:
+            with open(f) as fh:
+                parts = fh.read().strip().split(" ", 1)
+            expiry = int(float(parts[0]))  # tolerate float epochs
+            if expiry > int(time.time()):
+                return True, (parts[1] if len(parts) > 1 else "unspecified")
+        except (OSError, ValueError, IndexError):
+            pass
+        cur = ppid_of(cur)
+        if cur is None:
+            break
+    return False, None
+
+
+def ppid_of(pid):
+    try:
+        with open(f"/proc/{pid}/stat") as fh:
+            st = fh.read()
+        # strip "pid (comm) ": comm may contain spaces/parens
+        rest = st.split(") ", 1)[1]
+        return rest.split()[1]
+    except (OSError, IndexError):
+        return None
+
+
+def cmd_of(pid):
+    try:
+        return open(f"/proc/{pid}/cmdline").read().replace("\x00", " ").strip()
+    except OSError:
+        return ""
+
+
+def psi_io():
+    d = {}
+    for line in open("/proc/pressure/io"):
+        k, rest = line.split(" ", 1)
+        for kv in rest.split():
+            name, val = kv.split("=")
+            d[f"{k}_{name}"] = float(val)
+    return d
+
+
+def classify(p):
+    return "STALLED" if p["full_avg10"] > STALL_FULL10 else (
+        "STRAINED" if p["some_avg10"] > 30 else "OK")
+
+
+def procs():
+    out = []
+    for pid in os.listdir("/proc"):
+        if not pid.isdigit():
+            continue
+        cmd = cmd_of(pid)
+        if not cmd:
+            continue  # kernel thread
+        out.append((pid, cmd))
+    return out
+
+
+def is_protected(cmd):
+    return any(s in cmd for s in PROTECTED_SUBSTR)
+
+
+def ionice(pid, cls, prio=None):
+    cmd = ["ionice", "-c", str(cls)]
+    if prio is not None:
+        cmd += ["-n", str(prio)]
+    cmd += ["-p", pid]
+    try:
+        r = subprocess.run(cmd, capture_output=True, timeout=5)
+        return r.returncode == 0
+    except Exception:
+        return False
+
+
+def io_snap():
+    d = {}
+    for pid in os.listdir("/proc"):
+        if not pid.isdigit():
+            continue
+        try:
+            v = {}
+            for l in open(f"/proc/{pid}/io"):
+                k, val = l.split(":")
+                v[k] = int(val)
+            d[pid] = v["write_bytes"]
+        except Exception:
+            pass
+    return d
+
+
+def apply_classes():
+    """Existing static policy: critical -> BE0, known background -> idle."""
+    changed = []
+    for pid, cmd in procs():
+        if is_protected(cmd):
+            continue
+        target = None
+        for m in CRITICAL:
+            if m in cmd:
+                target = (CRIT_CLS, CRIT_PRIO)
+                break
+        if target is None:
+            for m in BACKGROUND:
+                if m in cmd:
+                    target = (BG_CLS, BG_PRIO)
+                    break
+        if target is not None and ionice(pid, *target):
+            changed.append({"pid": pid, "class": target[0], "prio": target[1],
+                            "cmd": cmd[:80]})
+    return changed
+
+
+def triage_writers(writers, io_full10, io_some10):
+    """Lease-aware triage of the top disk writers (debate 2c7ca733 verdict).
+
+    writers: [(bytes_written, pid)] sorted desc.
+    - leased -> page only, no ionice change
+    - critical -> keep BE0 (handled by apply_classes; page a note)
+    - unleased heavy writer -> ionice -c3 (deprioritize) + page
+    NEVER kills. Returns the action list for the ledger.
+    """
+    actions = []
+    for dw, pid in writers:
+        if dw < DEPRIORITIZE_MB * 1048576:
+            continue
+        cmd = cmd_of(pid)
+        if not cmd or is_protected(cmd):
+            continue
+        mb = round(dw / 1048576, 1)
+        leased, reason = lease_active(pid)
+        if leased:
+            page("page_only_leased", pid, cmd,
+                 {"wrote_mb": mb, "lease_reason": reason,
+                  "io_full10": io_full10, "io_some10": io_some10})
+            actions.append({"pid": pid, "action": "page_only_leased",
+                            "wrote_mb": mb, "lease_reason": reason,
+                            "cmd": cmd[:80]})
+            continue
+        if any(m in cmd for m in CRITICAL):
+            page("critical_kept_be0", pid, cmd, {"wrote_mb": mb})
+            actions.append({"pid": pid, "action": "critical_kept_be0",
+                            "wrote_mb": mb, "cmd": cmd[:80]})
+            continue
+        ok = ionice(pid, 3)
+        page("deprioritized_idle", pid, cmd,
+             {"wrote_mb": mb, "ionice_ok": ok,
+              "io_full10": io_full10, "io_some10": io_some10})
+        actions.append({"pid": pid, "action": "deprioritized_idle",
+                        "ionice_ok": ok, "wrote_mb": mb, "cmd": cmd[:80]})
+    return actions
+
+
+def main():
+    os.makedirs(BASE, exist_ok=True)
+    os.makedirs(os.path.dirname(PAGES_FILE), exist_ok=True)
+    try:
+        with open(PIDFILE, "w") as f:
+            f.write(str(os.getpid()))
+    except OSError:
+        pass
+    log({"event": "governor_start", "pid": os.getpid(),
+         "version": "v2-lease-aware",
+         "invariants": ["never_kill", "leased_page_only",
+                        "unleased_deprioritize_and_page"]})
+    prev = None
+    last_snap = io_snap()
+    while True:
+        try:
+            p = psi_io()
+            cls = classify(p)
+            if cls != prev:
+                log({"event": "transition", "from": prev, "to": cls,
+                     "io_some10": p["some_avg10"], "io_full10": p["full_avg10"]})
+                prev = cls
+            if cls == "STALLED":
+                changed = apply_classes()
+                snap = io_snap()
+                top = sorted(
+                    ((snap[k] - last_snap.get(k, 0), k) for k in snap
+                     if snap[k] - last_snap.get(k, 0) > 0),
+                    reverse=True)[:8]
+                writers = []
+                for dw, pid in top:
+                    writers.append({"pid": pid,
+                                    "wrote_mb": round(dw / 1048576, 1),
+                                    "cmd": cmd_of(pid)[:80]})
+                triaged = triage_writers(top, p["full_avg10"], p["some_avg10"])
+                log({"event": "stall_react", "io_full10": p["full_avg10"],
+                     "io_some10": p["some_avg10"], "ionice_applied": changed,
+                     "top_writers": writers, "triage": triaged})
+                last_snap = snap
+            else:
+                last_snap = io_snap()
+        except Exception as e:
+            log({"event": "error", "err": str(e)[:200]})
+        time.sleep(10)
+
+
+if __name__ == "__main__":
+    main()
