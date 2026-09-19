@@ -26,6 +26,22 @@ tv/audio settings, which stay per-box.
   - `settings [--diff]` — settings dump diff
   - `settings --dupe` — copy 246 -> 225 for the safe allowlist only
   - `logerrors 246` / `stalls 246` — 246's kodi.log via SSH
+- **kodi-resume** — cross-box playback resume ("continue in the other room").
+  Kodi only keeps resume bookmarks for library items, but both fleet boxes
+  stream mostly via addons (empty video libraries), so resume dies at the
+  door. `kodi-resume` keeps a tiny state file on awrawr-pc instead:
+  - `record` — snapshot active players on 246+225 (read-only; 30s minimum,
+    dedupes same stream within 60s)
+  - `status` — list saved sessions (box, title, position, age)
+  - `continue <246|225> [--apply] [--play]` — open the newest session from
+    the *other* box at the exact saved position; defaults to `--dry-run`
+    (prints the RPCs). Refuses if the target is already playing anything.
+  - `prune [--keep N]` — keep newest N sessions (default 20)
+  - `--selftest <ip>` — read-only RPC path check
+  - 18 unit tests: `python3 -m unittest discover -s tests` (0.07s)
+  Live note: `--apply` was validated via dry-run + mocked-RPC tests only —
+  a real open+seek was deliberately not fired at 04:35 (sleeping house).
+  State: `~/.local/share/kodi-fleet/resume.json` (outside the repo).
 
 Deployed copies: `/home/toxic/bin/kodi-handoff` (symlink or copy of `bin/` source).
 Keep the repo source canonical; re-deploy after edits.
