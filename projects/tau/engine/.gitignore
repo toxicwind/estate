@@ -96,5 +96,29 @@ packages/coding-agent/bench/boot-baseline.json
 *.pat
 github_*_pat.json
 .env*
-*secret*
-*token*
+# TASK H 2026-09-19: *secret*/*token* removed here — fully redundant with the
+# root rules of the same name (root still protects real secrets). The negations
+# below re-include legitimate tau sources swallowed by the broad root rules
+# *session* / *token* / *secret* / *credentials*. Every re-included path was
+# verified source (ts/tsx/rs/py/kdl/css/md/json/sh); no *.session,
+# session-export*, tokens.json, auth.json, .token, or key material among them.
+# Real session state and secrets stay ignored via the root rules.
+!**/session/
+!**/session-*/
+!**/secrets/
+!**/*session*.ts
+!**/*session*.tsx
+!**/*session*.rs
+!**/*session*.md
+!**/*session*.json
+!**/*token*.ts
+!**/*token*.tsx
+!**/*token*.rs
+!**/*token*.py
+!**/*token*.kdl
+!**/*token*.css
+!**/tokenizer_pb/
+!**/*credentials*.ts
+!**/*secret*.ts
+!**/*secret*.sh
+!**/*secret*.md
