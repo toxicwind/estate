@@ -2,1486 +2,622 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no"
-    />
-    <title>YOTE · 骁逸 — Sovereign Command Center</title>
-
-    <!-- Tailwind CSS (CDN) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sovereign Command Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
-
-    <!-- Chart.js + Mermaid -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ["Inter", "sans-serif"],
-              display: ["Outfit", "Space Grotesk", "sans-serif"],
-              mono: ["JetBrains Mono", "monospace"],
-            },
-          },
-        },
-      };
-    </script>
-
     <style>
+      :root {
+        color-scheme: dark;
+        --bg: #070b14;
+        --panel: rgba(255, 255, 255, 0.035);
+        --border: rgba(255, 255, 255, 0.09);
+      }
       body {
-        background: radial-gradient(ellipse at top left, #0e0d16, #020204);
-        font-family: "Inter", sans-serif;
-        min-height: 100vh;
-        color: #f3f4f6;
+        font-family: "Inter", system-ui, sans-serif;
+        background:
+          radial-gradient(1200px 600px at 80% -10%, rgba(34, 211, 238, 0.08), transparent 60%),
+          radial-gradient(1000px 500px at 10% 110%, rgba(139, 92, 246, 0.1), transparent 60%),
+          var(--bg);
+        color: #e2e8f0;
       }
-
-      .glass-panel {
-        background: rgba(14, 13, 22, 0.65);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(139, 92, 246, 0.15);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      .mono { font-family: "JetBrains Mono", monospace; }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        backdrop-filter: blur(10px);
       }
-
-      .glass-panel:hover {
-        border-color: rgba(6, 182, 212, 0.35);
-        box-shadow: 0 0 30px rgba(6, 182, 212, 0.08);
+      .glass { background: rgba(7, 11, 20, 0.72); backdrop-filter: blur(14px); }
+      .tabbtn {
+        display: inline-flex; align-items: center; gap: 0.45rem;
+        padding: 0.5rem 0.8rem; border-radius: 10px; font-size: 0.8rem; font-weight: 600;
+        color: #94a3b8; border: 1px solid transparent; white-space: nowrap; cursor: pointer;
+        transition: all 0.15s ease;
       }
-
-      .service-card {
-        background: rgba(18, 16, 28, 0.45);
-        border: 1px solid rgba(255, 255, 255, 0.04);
-        transition: all 0.25s ease;
-      }
-
-      .service-card:hover {
-        transform: translateY(-2px);
-        border-color: rgba(6, 182, 212, 0.4);
-        background: rgba(18, 16, 28, 0.7);
-      }
-
-      @keyframes neonPulse {
-        0%,
-        100% {
-          opacity: 0.6;
-          box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
-        }
-        50% {
-          opacity: 1;
-          box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
-        }
-      }
-      .pulse-neon {
-        animation: neonPulse 3s infinite;
-      }
-
-      ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-      }
-      ::-webkit-scrollbar-track {
-        background: rgba(14, 13, 22, 0.3);
-      }
-      ::-webkit-scrollbar-thumb {
-        background: rgba(139, 92, 246, 0.3);
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: rgba(6, 182, 212, 0.6);
-      }
-
-      /* Mermaid dark theme overrides inside glass panel */
-      .mermaid-wrap {
-        background: rgba(0, 0, 0, 0.25);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 1rem;
-        padding: 1rem;
-        overflow-x: auto;
-      }
-      .mermaid-wrap svg {
-        max-width: 100%;
-        height: auto;
-      }
-
-      .status-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 10px;
-        padding: 0.25rem 0.6rem;
-        border-radius: 9999px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(255, 255, 255, 0.04);
-        color: #9ca3af;
-      }
-      .status-chip.online {
-        border-color: rgba(16, 185, 129, 0.35);
-        background: rgba(16, 185, 129, 0.1);
-        color: #34d399;
-      }
-      .status-chip.offline {
-        border-color: rgba(239, 68, 68, 0.3);
-        background: rgba(239, 68, 68, 0.08);
-        color: #f87171;
-      }
-      .status-chip.active {
-        border-color: rgba(6, 182, 212, 0.4);
-        background: rgba(6, 182, 212, 0.12);
-        color: #22d3ee;
-      }
-      /* ---------- Squawk ---------- */
-      .sq-tab {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.45rem;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 11px;
-        padding: 0.45rem 0.9rem;
-        border-radius: 9999px;
-        border: 1px solid rgba(139, 92, 246, 0.22);
-        background: rgba(139, 92, 246, 0.06);
-        color: #c4b5fd;
-        cursor: pointer;
-        transition: all 0.25s ease;
-      }
-      .sq-tab:hover {
-        border-color: rgba(139, 92, 246, 0.55);
-        background: rgba(139, 92, 246, 0.14);
-        color: #ede9fe;
-        transform: translateY(-1px);
-      }
-      .sq-tab.active {
-        border-color: rgba(139, 92, 246, 0.7);
-        background: rgba(139, 92, 246, 0.22);
+      .tabbtn:hover { color: #e2e8f0; background: rgba(255,255,255,0.05); }
+      .tabbtn.active {
         color: #fff;
-        box-shadow: 0 0 18px rgba(139, 92, 246, 0.35);
+        background: linear-gradient(135deg, rgba(6,182,212,.22), rgba(139,92,246,.22));
+        border-color: rgba(34,211,238,.35);
       }
-      .sq-tab .fa-hashtag {
-        font-size: 9px;
-        opacity: 0.7;
+      .tabbtn .unread {
+        min-width: 1.25rem; height: 1.25rem; padding: 0 .3rem; border-radius: 999px;
+        background: #22d3ee; color: #04121a; font-size: .65rem; font-weight: 800;
+        display: inline-flex; align-items: center; justify-content: center;
       }
-      .sq-badge {
-        display: none;
-        align-items: center;
-        justify-content: center;
-        min-width: 1.15rem;
-        height: 1.15rem;
-        padding: 0 0.3rem;
-        border-radius: 9999px;
-        background: #f43f5e;
-        color: #fff;
-        font-size: 9px;
-        font-weight: 700;
-      }
-      .sq-msg {
-        background: rgba(18, 16, 28, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 0.9rem;
-        padding: 0.85rem 1rem;
-        transition: border-color 0.25s ease, background 0.25s ease;
-      }
-      .sq-msg:hover {
-        border-color: rgba(139, 92, 246, 0.3);
-        background: rgba(18, 16, 28, 0.75);
-      }
-      .sq-msg.fresh {
-        animation: sqFresh 2.4s ease-out;
-      }
-      @keyframes sqFresh {
-        0% {
-          border-color: rgba(139, 92, 246, 0.9);
-          background: rgba(139, 92, 246, 0.16);
-          box-shadow: 0 0 22px rgba(139, 92, 246, 0.25);
-        }
-        100% {
-          border-color: rgba(255, 255, 255, 0.05);
-          background: rgba(18, 16, 28, 0.5);
-          box-shadow: none;
-        }
-      }
-      .sq-sender {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 10px;
-        font-weight: 700;
-        padding: 0.2rem 0.6rem;
-        border-radius: 9999px;
-        color: hsl(var(--h), 85%, 72%);
-        border: 1px solid hsl(var(--h), 70%, 50%, 0.35);
-        background: hsl(var(--h), 70%, 50%, 0.1);
-      }
-      .sq-seq {
-        font-family: "JetBrains Mono", monospace;
-        font-size: 10px;
-        color: #6b7280;
-      }
-      .sq-time {
-        font-size: 10px;
-        color: #6b7280;
-        margin-left: auto;
-        font-family: "JetBrains Mono", monospace;
-      }
-      .sq-title {
-        font-size: 13px;
-        font-weight: 700;
-        color: #e9e4ff;
-        margin-top: 0.5rem;
-        font-family: "Outfit", sans-serif;
-      }
-      .sq-body {
-        font-size: 12.5px;
-        line-height: 1.55;
-        color: #b8b3c9;
-        margin-top: 0.35rem;
-        word-break: break-word;
-      }
-
+      .tabbtn.linktab { color: #7dd3fc; }
+      .tabpane { display: none; }
+      .tabpane.active { display: block; }
+      .agent-card { cursor: pointer; transition: transform .12s ease, border-color .12s ease; }
+      .agent-card:hover { transform: translateY(-2px); border-color: rgba(34,211,238,.4); }
+      .agent-card.selected { border-color: #22d3ee; box-shadow: 0 0 0 1px #22d3ee; }
+      .status-pill { font-size: .62rem; font-weight: 800; letter-spacing: .06em; padding: .2rem .5rem; border-radius: 999px; }
+      .activity-line { border-left: 2px solid rgba(34,211,238,.35); }
+      iframe.dashtab { width: 100%; height: calc(100vh - 210px); border: 0; border-radius: 14px; background: #0b1220; }
+      .chip { font-size: .65rem; padding: .15rem .5rem; border-radius: 999px; border: 1px solid var(--border); background: rgba(255,255,255,.03); }
+      ::-webkit-scrollbar { width: 8px; height: 8px; }
+      ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 4px; }
+      .sq-msg { border-left: 2px solid rgba(34,211,238,.25); }
+      .sq-msg.agent-ember { border-left-color: #22d3ee; }
+      .sq-msg.agent-ralph, .sq-msg.agent-super-ralph { border-left-color: #f59e0b; }
+      .sq-msg.agent-oracle, .sq-msg.agent-debater { border-left-color: #a78bfa; }
+      .sq-msg.agent-critic { border-left-color: #ef4444; }
+      .sq-msg.agent-watchdog { border-left-color: #10b981; }
+      .mermaid { display: flex; justify-content: center; }
     </style>
   </head>
-  <body class="overflow-x-hidden">
-    <!-- Toast Notification -->
-    <div
-      id="toast"
-      class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 hidden bg-gradient-to-r from-cyan-600 to-violet-600 text-white px-6 py-3 rounded-full shadow-2xl text-sm font-semibold items-center gap-2 opacity-0 transition-all duration-300"
-    >
-      <i class="fa-regular fa-circle-check"></i>
-      <span id="toast-text">Action completed</span>
-    </div>
+  <body class="min-h-screen">
+    <header class="glass sticky top-0 z-50 border-b border-white/10">
+      <div class="max-w-[1500px] mx-auto px-4 py-3 flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-violet-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+          <i class="fa-solid fa-dragon text-white"></i>
+        </div>
+        <div class="mr-2">
+          <h1 class="font-extrabold tracking-tight leading-none">Sovereign <span class="text-cyan-400">Command Center</span></h1>
+          <p class="text-[11px] text-gray-500 mono">fleet-first · event-driven · <span id="host-label">yote</span></p>
+        </div>
+        <div class="flex items-center gap-2 ml-auto">
+          <span id="conn-dot" class="w-2.5 h-2.5 rounded-full bg-gray-500" title="WS feed"></span>
+          <span id="conn-label" class="text-[11px] mono text-gray-400">connecting…</span>
+          <button id="refresh-btn" class="tabbtn" title="Refresh active tab"><i class="fa-solid fa-rotate-right"></i></button>
+        </div>
+      </div>
+      <nav class="max-w-[1500px] mx-auto px-4 pb-2.5 flex gap-1.5 overflow-x-auto" id="tabbar" aria-label="Dashboard tabs"></nav>
+    </header>
 
-    <!-- Main Container -->
-    <div class="max-w-7xl mx-auto px-4 py-6 md:py-10">
-      <!-- Header -->
-      <header
-        class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 border-b border-white/5 pb-8"
-      >
-        <div class="flex items-center gap-4">
-          <div
-            class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 via-violet-500 to-amber-500 p-0.5 shadow-lg shadow-violet-500/10"
-          >
-            <div
-              class="w-full h-full bg-[#0b0a11] rounded-[14px] flex items-center justify-center"
-            >
-              <i class="fa-solid fa-paw text-2xl text-cyan-400"></i>
+    <main class="max-w-[1500px] mx-auto px-4 py-5">
+      <!-- ============ FLEET ============ -->
+      <section id="tab-fleet" class="tabpane active">
+        <div class="grid lg:grid-cols-3 gap-4">
+          <div class="lg:col-span-2">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="font-bold text-lg"><i class="fa-solid fa-users text-cyan-400 mr-2"></i>Agent Fleet <span id="fleet-count" class="mono text-xs text-gray-500"></span></h2>
+              <span class="text-[11px] mono text-gray-500">live via /ws/fleet</span>
+            </div>
+            <div id="fleet-grid" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-3"></div>
+            <div class="card p-4 mt-4">
+              <h3 class="font-semibold text-sm mb-2"><i class="fa-solid fa-wave-square text-cyan-400 mr-2"></i>Live activity</h3>
+              <div id="activity" class="space-y-1.5 max-h-64 overflow-y-auto mono text-[11px]"></div>
             </div>
           </div>
           <div>
-            <h1 class="text-4xl font-extrabold font-display tracking-tight">
-              YOTE
-              <span
-                class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400"
-                >· 骁逸</span
-              >
-            </h1>
-            <nav class="flex flex-wrap gap-2 mt-3 text-[11px]">
-              <a
-                href="/portal.html"
-                class="px-2.5 py-1 rounded-full border border-cyan-500/40 bg-cyan-500/15 text-cyan-200 hover:border-cyan-300/60"
-                >Control Plane</a
-              >
-              <a
-                href="/fleet.html"
-                class="px-2.5 py-1 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-200 hover:border-violet-400/50"
-                >Fleet Lab</a
-              >
-              <a
-                href="/architecture.html"
-                class="px-2.5 py-1 rounded-full border border-white/10 text-gray-400 hover:text-cyan-300"
-                >Architecture</a
-              >
-              <a
-                id="nav-chat-ui"
-                href="http://127.0.0.1:25100/ui/"
-                target="_blank"
-                rel="noopener"
-                class="px-2.5 py-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300"
-                >Chat UI :25100</a
-              >
-              <a
-                href="http://127.0.0.1:25103/"
-                target="_blank"
-                rel="noopener"
-                class="px-2.5 py-1 rounded-full border border-fuchsia-500/30 text-fuchsia-200/90"
-                >OpenFang</a
-              >
-              <a
-                href="http://127.0.0.1:25110/"
-                target="_blank"
-                rel="noopener"
-                class="px-2.5 py-1 rounded-full border border-orange-500/30 text-orange-200/90"
-                >Grafana</a
-              >
-              <a
-                id="nav-hfd"
-                href="http://127.0.0.1:25106/"
-                target="_blank"
-                rel="noopener"
-                class="px-2.5 py-1 rounded-full border border-amber-500/30 text-amber-200/90"
-                >HFD :25106</a
-              >
-              <a
-                href="http://127.0.0.1:25115/mesh/chain-health"
-                target="_blank"
-                rel="noopener"
-                class="px-2.5 py-1 rounded-full border border-emerald-500/30 text-emerald-200/90"
-                >Mesh</a
-              >
-            </nav>
-            <p
-              class="text-sm text-gray-400 font-display mt-0.5 tracking-wider uppercase"
-            >
-              "Wild Intelligence. Sovereign Control."
-            </p>
-          </div>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-4">
-          <div
-            id="mode-toggle"
-            class="flex items-center gap-1.5 text-xs bg-white/5 p-1 rounded-xl border border-white/10"
-          >
-            <button
-              id="btn-real"
-              class="px-3 py-1.5 rounded-lg font-semibold bg-violet-600 text-white transition-all"
-            >
-              Real (Live)
-            </button>
-          </div>
-
-          <div class="flex flex-col items-end text-right">
-            <div class="flex items-center gap-2">
-              <span
-                id="global-status-dot"
-                class="w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse"
-              ></span>
-              <span
-                id="global-status-text"
-                class="text-sm font-semibold text-gray-300"
-                >Checking stack...</span
-              >
-            </div>
-            <span
-              id="last-updated"
-              class="text-[10px] text-gray-500 font-mono mt-0.5"
-              >Last sync: --:--:--</span
-            >
-          </div>
-
-          <button
-            onclick="refreshAll()"
-            class="w-10 h-10 rounded-xl bg-violet-600/20 border border-violet-500/30 hover:bg-violet-600/30 transition flex items-center justify-center text-violet-400"
-            title="Refresh health status"
-          >
-            <i id="refresh-icon" class="fa-solid fa-sync"></i>
-          </button>
-        </div>
-      </header>
-
-      <!-- Grid Layout -->
-      <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <!-- Left & Middle Column (2/3 width) -->
-        <div class="lg:col-span-8 flex flex-col gap-8">
-          <!-- Daemon Status Grid -->
-          <div class="flex flex-col gap-4">
-            <div class="flex justify-between items-center">
-              <h2
-                class="text-xl font-bold font-display tracking-wide flex items-center gap-2"
-              >
-                <i class="fa-solid fa-server text-cyan-400"></i> SOVEREIGN
-                DAEMONS
-              </h2>
-              <span
-                class="text-xs bg-cyan-500/10 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/20 font-mono"
-                id="healthy-count"
-                >0/9 ONLINE</span
-              >
-            </div>
-            <div
-              class="grid grid-cols-1 md:grid-cols-2 gap-4"
-              id="services-grid"
-            >
-              <!-- Populated by JS -->
-            </div>
-          </div>
-
-          <!-- Live Architecture -->
-          <div class="glass-panel rounded-2xl p-6 flex flex-col gap-4">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <h3
-                class="text-lg font-bold font-display tracking-wide flex items-center gap-2"
-              >
-                <i class="fa-solid fa-diagram-project text-emerald-400"></i>
-                LIVE ARCHITECTURE
-              </h3>
-              <a
-                href="/architecture.html"
-                class="text-[11px] font-mono text-cyan-400 hover:text-cyan-300 border border-cyan-500/20 bg-cyan-500/5 px-3 py-1 rounded-full transition"
-                >Full page →</a
-              >
-            </div>
-
-            <!-- Active model / fork chips -->
-            <div class="flex flex-wrap gap-2" id="arch-model-chips">
-              <span class="status-chip active" id="chip-active-model"
-                >model: …</span
-              >
-              <span class="status-chip active" id="chip-active-fork"
-                >fork: …</span
-              >
-            </div>
-
-            <!-- Service status chips (from /api/architecture) -->
-            <div class="flex flex-wrap gap-2" id="arch-service-chips">
-              <span class="status-chip">loading services…</span>
-            </div>
-
-            <!-- Fork tallies -->
-            <div class="flex flex-wrap gap-2" id="arch-fork-chips"></div>
-
-            <div class="mermaid-wrap" id="arch-mermaid-host">
-              <pre class="mermaid" id="arch-mermaid">
-flowchart TD
-    subgraph Environment ["Environment & Bootstrap"]
-        ports[ports.env]
-        lib[stack/lib.sh]
-        mise[mise.toml]
-        dotenv[.env.local]
-    end
-
-    subgraph Orchestration ["Orchestration Layer"]
-        pc[process-compose.yaml]
-        stack[stack/]
-    end
-
-    subgraph Router ["Smart Router"]
-        swap[llama-swap :25100]
-    end
-
-    subgraph LLM ["LLM Execution (4 Forks)"]
-        beellama[beellama.cpp]
-        turboquant[llama-cpp-turboquant]
-        ik_llama[ik_llama.cpp-main]
-        ik_tq[ik_turboquant]
-    end
-
-    subgraph Services ["Core Services"]
-        openfang[OpenFang]
-        yote[Yote]
-        prometheus[Prometheus]
-        rust[Rust Web]
-        watchdog[Watchdog]
-    end
-
-    ports --> lib --> pc
-    dotenv --> pc
-    mise --> pc
-
-    pc --> openfang
-    pc --> yote
-    pc --> prometheus
-    pc --> rust
-    pc --> watchdog
-    pc --> swap
-
-    openfang --> swap
-    swap --> beellama
-    swap --> turboquant
-    swap --> ik_llama
-    swap --> ik_tq
-              </pre>
-            </div>
-            <p class="text-[10px] text-gray-500 font-mono" id="arch-last-sync">
-              architecture poll: —
-            </p>
-          </div>
-
-          <!-- Latency spectral Analysis -->
-          <div class="glass-panel rounded-2xl p-6">
-            <h3
-              class="text-lg font-bold font-display tracking-wide mb-4 flex items-center gap-2"
-            >
-              <i class="fa-solid fa-chart-bar text-amber-400"></i> LATENCY
-              SPECTRAL ANALYSIS
-            </h3>
-            <div class="w-full relative h-[220px]">
-              <canvas id="latency-chart"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right Column (1/3 width) -->
-        <div class="lg:col-span-4 flex flex-col gap-8">
-          <!-- Mascot & Brand Overview -->
-          <div
-            class="glass-panel rounded-2xl p-6 relative overflow-hidden bg-gradient-to-br from-[#12111d] to-[#08070d]"
-          >
-            <div
-              class="absolute -right-10 -bottom-10 opacity-5 pointer-events-none"
-            >
-              <i class="fa-solid fa-paw text-9xl text-cyan-400"></i>
-            </div>
-            <div class="flex items-center gap-4 mb-4">
-              <div
-                class="w-10 h-10 rounded-xl bg-gradient-to-r from-amber-500 to-red-500 flex items-center justify-center text-black font-extrabold text-sm shadow-lg shadow-amber-500/10"
-              >
-                骁逸
-              </div>
-              <div>
-                <h3 class="font-bold text-lg font-display">
-                  YOTE · 骁逸 (Xiāo Yì)
-                </h3>
-                <p
-                  class="text-xs text-amber-400 font-mono tracking-widest uppercase"
-                >
-                  Valiant & Untamed
-                </p>
-              </div>
-            </div>
-            <p class="text-xs text-gray-400 leading-relaxed">
-              Sovereign Agentic Network powered by local
-              <strong id="engine-gpu">RTX 3090 GPU</strong> hardware and
-              <strong id="engine-model">llama-swap</strong>. Four-fork model
-              routing via llama-swap — no vLLM.
-            </p>
-            <div
-              class="mt-4 p-4 rounded-xl bg-black/30 border border-white/5 flex flex-col gap-2.5"
-            >
-              <div
-                class="flex justify-between items-center text-xs font-bold text-gray-300"
-              >
-                <span>FORK RANKINGS (tg64 speed)</span>
-                <a
-                  id="link-hfd-dashboard"
-                  href="http://127.0.0.1:25106/"
-                  target="_blank"
-                  rel="noopener"
-                  class="text-[10px] text-cyan-400 hover:underline"
-                  >HFD Dashboard
-                  <i
-                    class="fa-solid fa-arrow-up-right-from-square text-[8px]"
-                  ></i
-                ></a>
-              </div>
-              <div
-                id="rankings-preview-container"
-                class="flex flex-col gap-1.5 text-xs text-gray-400"
-              >
-                <div class="text-[10px] italic text-gray-600">
-                  Loading rankings...
+            <div class="card p-4 lg:sticky lg:top-[150px]">
+              <h3 class="font-semibold text-sm mb-1"><i class="fa-solid fa-circle-info text-cyan-400 mr-2"></i>Agent detail</h3>
+              <p id="agent-detail-hint" class="text-xs text-gray-500 mb-3">Select an agent card to drill down into its recent messages.</p>
+              <div id="agent-detail" class="hidden">
+                <div class="flex items-center gap-2 mb-2">
+                  <span id="ad-name" class="font-bold"></span>
+                  <span id="ad-status" class="status-pill"></span>
                 </div>
+                <div id="ad-history" class="space-y-2 max-h-[60vh] overflow-y-auto text-xs"></div>
               </div>
             </div>
-            <div class="mt-4 flex gap-2 flex-wrap">
-              <span
-                id="badge-gpu"
-                class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-400 font-mono"
-                >RTX 3090</span
-              >
-              <span
-                id="badge-vram"
-                class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-400 font-mono"
-                >24GB VRAM</span
-              >
-              <span
-                id="badge-cpu"
-                class="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-400 font-mono"
-                >Host CPU</span
-              >
-            </div>
-          </div>
-
-          <!-- Model Switcher Panel -->
-          <div class="glass-panel rounded-2xl p-6 flex flex-col gap-4">
-            <h3
-              class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display flex items-center justify-between"
-            >
-              <span
-                ><i class="fa-solid fa-microchip text-cyan-400 mr-2"></i> ACTIVE
-                MODEL SWAPPER</span
-              >
-              <span
-                id="active-model-header"
-                class="text-[9px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20"
-                >LIVE: None</span
-              >
-            </h3>
-            <div
-              id="models-list-container"
-              class="flex flex-col gap-2.5 max-h-[360px] overflow-y-auto pr-1"
-            >
-              <div class="text-xs text-gray-500 italic">Querying models...</div>
-            </div>
-          </div>
-
-          <!-- Chat lives on llama-swap UI (:25100) — not this dashboard -->
-          <div class="glass-panel rounded-2xl p-6 flex flex-col gap-3">
-            <h3
-              class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display"
-            >
-              <i class="fa-solid fa-comments text-violet-400 mr-2"></i>
-              LLM CHAT UI
-            </h3>
-            <p class="text-xs text-gray-400 leading-relaxed">
-              Inference chat is
-              <strong class="text-gray-300">llama-swap</strong>’s built-in
-              playground — not embedded here. Open it on
-              <code class="text-cyan-400">:25100/ui</code>.
-            </p>
-            <div class="flex flex-wrap gap-2">
-              <a
-                id="btn-chat-ui"
-                href="http://127.0.0.1:25100/ui/"
-                target="_blank"
-                rel="noopener"
-                class="inline-flex items-center gap-2 px-4 py-2.5 bg-violet-600 hover:bg-violet-500 text-white font-semibold rounded-xl text-xs transition shadow-sm shadow-violet-500/20"
-              >
-                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                Open llama-swap Chat UI
-              </a>
-              <a
-                id="btn-models-api"
-                href="http://127.0.0.1:25100/v1/models"
-                target="_blank"
-                rel="noopener"
-                class="inline-flex items-center gap-2 px-3 py-2.5 bg-white/5 border border-white/10 hover:border-cyan-500/40 text-gray-300 rounded-xl text-xs font-mono transition"
-              >
-                /v1/models
-              </a>
-            </div>
-            <p id="text-api-door" class="text-[10px] text-gray-500 font-mono">
-              API front door: http://127.0.0.1:25100/v1 · UI:
-              http://127.0.0.1:25100/ui/
-            </p>
-          </div>
-
-          <!-- Centralized Log Stream -->
-          <div class="glass-panel rounded-2xl p-6 flex flex-col min-h-[200px]">
-            <h3
-              class="text-sm font-bold tracking-widest uppercase text-gray-400 font-display mb-3"
-            >
-              <i class="fa-solid fa-shield-halved text-sky-400 mr-2"></i>
-              WATCHDOG &amp; EVENT LOG
-            </h3>
-            <div
-              id="activity-log-container"
-              class="flex-1 overflow-y-auto max-h-[160px] font-mono text-[9px] text-gray-400 bg-black/20 p-3 rounded-lg border border-white/5"
-            >
-              <div class="log-line text-gray-600">
-                [00:00:00] Waiting for updates...
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      <!-- Squawk Feed -->
-      <section
-        class="glass-panel rounded-2xl p-6 flex flex-col gap-4 mt-8"
-        id="squawk-section"
-      >
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <h2
-            class="text-xl font-bold font-display tracking-wide flex items-center gap-2"
-          >
-            <i class="fa-solid fa-comments text-violet-400"></i> SQUAWK
-            <span class="relative flex h-2.5 w-2.5 ml-1">
-              <span
-                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60"
-              ></span>
-              <span
-                class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"
-              ></span>
-            </span>
-          </h2>
-          <span
-            class="text-[10px] font-mono text-gray-500"
-            id="squawk-status"
-            >connecting&hellip;</span
-          >
-        </div>
-        <div class="flex flex-wrap gap-2" id="squawk-tabs"></div>
-        <div class="flex flex-wrap gap-3 items-center">
-          <div class="relative flex-1 min-w-[200px]">
-            <i
-              class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"
-            ></i>
-            <input
-              id="squawk-search"
-              type="text"
-              placeholder="Search messages&hellip;"
-              class="w-full bg-black/20 border border-white/10 rounded-xl pl-9 pr-3 py-2 text-sm text-gray-200 placeholder-gray-600 outline-none focus:border-violet-500/50 transition"
-            />
-          </div>
-          <select
-            id="squawk-sender"
-            class="bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-sm text-gray-300 outline-none focus:border-violet-500/50 transition"
-          >
-            <option value="">All senders</option>
-          </select>
-        </div>
-        <div
-          id="squawk-feed"
-          class="flex flex-col gap-3 overflow-y-auto max-h-[520px] pr-1"
-        >
-          <div class="text-gray-600 text-sm font-mono p-6 text-center">
-            loading feed&hellip;
           </div>
         </div>
       </section>
 
-    </div>
+      <!-- ============ SQUAWK ============ -->
+      <section id="tab-squawk" class="tabpane">
+        <div class="card p-5">
+          <div class="flex flex-wrap items-center gap-3 mb-3">
+            <h2 class="font-bold text-lg"><i class="fa-solid fa-comments text-cyan-400 mr-2"></i>Squawk</h2>
+            <div id="sq-tabs" class="flex flex-wrap gap-1.5"></div>
+            <div class="ml-auto flex items-center gap-2">
+              <select id="sq-sender" class="bg-white/5 border border-white/10 rounded-lg text-xs px-2 py-1.5 text-gray-300">
+                <option value="">all senders</option>
+              </select>
+              <input id="sq-search" placeholder="search messages…" class="bg-white/5 border border-white/10 rounded-lg text-xs px-2.5 py-1.5 w-44 placeholder-gray-600" />
+              <span class="text-[11px] mono text-gray-500">live via WS</span>
+            </div>
+          </div>
+          <div id="sq-feed" class="space-y-2.5 max-h-[62vh] overflow-y-auto pr-1"></div>
+        </div>
+      </section>
+
+      <!-- ============ MODELS ============ -->
+      <section id="tab-models" class="tabpane">
+        <div class="card p-5 mb-4">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="font-bold text-lg"><i class="fa-solid fa-microchip text-cyan-400 mr-2"></i>Models <span id="models-count" class="mono text-xs text-gray-500"></span></h2>
+            <div class="flex gap-2">
+              <select id="model-filter" class="bg-white/5 border border-white/10 rounded-lg text-xs px-2 py-1.5 text-gray-300">
+                <option value="all">all</option><option value="ok">healthy</option><option value="dead">dead</option>
+              </select>
+            </div>
+          </div>
+          <div id="models-list" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2.5"></div>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div class="card p-5">
+            <h3 class="font-semibold mb-2"><i class="fa-solid fa-trophy text-amber-400 mr-2"></i>Ranking preview <span class="text-[11px] text-gray-500 font-normal">(top-20, live)</span></h3>
+            <div id="rank-preview" class="mono text-xs space-y-1"></div>
+          </div>
+          <div class="card p-5">
+            <h3 class="font-semibold mb-2"><i class="fa-solid fa-gauge-high text-cyan-400 mr-2"></i>GPU telemetry</h3>
+            <div id="gpu-strip" class="grid grid-cols-2 gap-2 text-xs"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SERVICES ============ -->
+      <section id="tab-services" class="tabpane">
+        <div class="card p-5 mb-4">
+          <h2 class="font-bold text-lg mb-1"><i class="fa-solid fa-server text-cyan-400 mr-2"></i>Service mesh</h2>
+          <p class="text-[11px] text-gray-500 mono mb-3" id="services-summary">…</p>
+          <div id="services-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2.5"></div>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-4 mb-4">
+          <div class="card p-5">
+            <h3 class="font-semibold mb-2"><i class="fa-solid fa-chart-line text-cyan-400 mr-2"></i>Service latency (last 20 probes)</h3>
+            <div class="h-56"><canvas id="services-chart"></canvas></div>
+          </div>
+          <div class="card p-5">
+            <h3 class="font-semibold mb-2"><i class="fa-solid fa-shield-halved text-emerald-400 mr-2"></i>Watchdog log</h3>
+            <div id="watchdog-log" class="mono text-[11px] space-y-1 max-h-56 overflow-y-auto"></div>
+          </div>
+        </div>
+        <div class="card p-5 mb-4">
+          <h3 class="font-semibold mb-2"><i class="fa-solid fa-diagram-project text-violet-400 mr-2"></i>Architecture</h3>
+          <div id="arch-diagram" class="mermaid text-[11px]"></div>
+          <div id="arch-legend" class="flex flex-wrap gap-1.5 mt-3"></div>
+          <div id="arch-chips" class="flex flex-wrap gap-1.5 mt-2"></div>
+        </div>
+        <div class="card p-5">
+          <h3 class="font-semibold mb-2"><i class="fa-solid fa-terminal text-gray-400 mr-2"></i>Logs <span class="text-[11px] text-gray-500 font-normal">(latest 60, live)</span></h3>
+          <div id="logs-list" class="mono text-[11px] space-y-1 max-h-64 overflow-y-auto"></div>
+        </div>
+      </section>
+
+      <!-- ============ MESH HUB ============ -->
+      <section id="tab-meshhub" class="tabpane">
+        <div class="card p-5 mb-4">
+          <div class="flex items-center justify-between mb-1">
+            <h2 class="font-bold text-lg"><i class="fa-solid fa-share-nodes text-cyan-400 mr-2"></i>Mesh Hub <span class="mono text-xs text-gray-500">:25115</span></h2>
+            <a id="meshhub-link" href="#" target="_blank" rel="noopener" class="text-xs text-cyan-400 hover:underline"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>open API</a>
+          </div>
+          <p id="mesh-summary" class="text-[11px] mono text-gray-500 mb-3">…</p>
+          <div id="mesh-features" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-2"></div>
+        </div>
+        <div class="card p-5">
+          <h3 class="font-semibold mb-2 text-sm"><i class="fa-solid fa-heart-pulse text-emerald-400 mr-2"></i>Chain health</h3>
+          <div id="mesh-health" class="mono text-[11px] space-y-1"></div>
+        </div>
+      </section>
+
+      <!-- ============ IFRAME TABS ============ -->
+      <section id="tab-herd" class="tabpane"><div class="card p-2"><iframe class="dashtab" data-src="/herd-ui/" title="Herd UI" loading="lazy"></iframe></div>
+        <p class="text-[11px] text-gray-500 mono mt-2">herd Svelte build · served same-origin by sovereign_web · API proxied through this server</p></section>
+        <p class="text-[11px] text-gray-500 mono mt-2">mesh UI · same build as herd (single build, two mounts)</p></section>
+      <section id="tab-ralph" class="tabpane"><div class="card p-2"><iframe class="dashtab" data-dyn=":8420/" title="Ralph Dashboard" loading="lazy"></iframe></div></section>
+      <section id="tab-kimi" class="tabpane"><div class="card p-2"><iframe class="dashtab" data-dyn=":25126/" title="Kimi Web" loading="lazy"></iframe></div></section>
+      <section id="tab-boundless" class="tabpane"><div class="card p-2"><iframe class="dashtab" data-dyn=":10200/" title="Boundless" loading="lazy"></iframe></div></section>
+      <section id="tab-prom" class="tabpane"><div class="card p-2"><iframe class="dashtab" data-dyn=":25105/" title="Prometheus" loading="lazy"></iframe></div></section>
+
+      <footer class="text-center text-gray-600 text-xs mono pt-10 pb-6">
+        sovereign command center · fleet WS feed · event-driven, no polling
+      </footer>
+    </main>
 
     <script>
-      let currentServices = [];
-      let chart = null;
-      let mermaidReady = false;
+      "use strict";
+      const $ = (s) => document.querySelector(s);
+      const host = location.hostname;
+      $("#host-label").textContent = host;
+      const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+      const ago = (u) => { const s = Math.max(0, Date.now() / 1000 - u); if (s < 60) return Math.floor(s) + "s ago"; if (s < 3600) return Math.floor(s / 60) + "m ago"; if (s < 86400) return Math.floor(s / 3600) + "h ago"; return Math.floor(s / 86400) + "d ago"; };
 
-      function initMermaid() {
-        if (typeof mermaid === "undefined") return;
-        mermaid.initialize({
-          startOnLoad: false,
-          theme: "dark",
-          securityLevel: "loose",
-          flowchart: { curve: "basis", htmlLabels: true },
+      /* ---------------- tabs ---------------- */
+      const TABS = [
+        { id: "fleet", label: "Fleet", icon: "fa-users" },
+        { id: "squawk", label: "Squawk", icon: "fa-comments" },
+        { id: "models", label: "Models", icon: "fa-microchip" },
+        { id: "services", label: "Services", icon: "fa-server" },
+        { id: "meshhub", label: "Mesh Hub", icon: "fa-share-nodes" },
+        { id: "herd", label: "Herd UI", icon: "fa-layer-group", iframe: true },
+        { id: "ralph", label: "Ralph", icon: "fa-robot", iframe: true, dyn: ":8420/" },
+        { id: "kimi", label: "Kimi Web", icon: "fa-terminal", iframe: true, dyn: ":25126/" },
+        { id: "boundless", label: "Boundless", icon: "fa-infinity", iframe: true, dyn: ":10200/" },
+        { id: "prom", label: "Prometheus", icon: "fa-chart-line", iframe: true, dyn: ":25105/" },
+      ];
+      // Framing denied by upstream (X-Frame-Options / CSP) or auth-excluded: link-out only.
+      const LINK_TABS = [
+        { label: "OpenFang", icon: "fa-shield-halved", dyn: ":4200/", why: "X-Frame-Options: DENY" },
+        { label: "Codebase Memory", icon: "fa-brain", dyn: ":9749/", why: "CSP frame-ancestors 'none'" },
+        { label: "Grafana", icon: "fa-gauge-high", dyn: ":25110/", why: "link-out only (no auth)" },
+        { label: "Cockpit", icon: "fa-desktop", dyn: ":9090/", https: true, why: "self-signed HTTPS" },
+      ];
+      const tabLoaded = {};
+      function buildTabbar() {
+        const bar = $("#tabbar");
+        TABS.forEach((t) => {
+          const b = document.createElement("button");
+          b.className = "tabbtn" + (t.id === "fleet" ? " active" : "");
+          b.id = "tabbtn-" + t.id;
+          b.innerHTML = '<i class="fa-solid ' + t.icon + '"></i>' + esc(t.label) + '<span class="unread" id="unread-' + t.id + '" style="display:none"></span>';
+          b.onclick = () => switchTab(t.id);
+          bar.appendChild(b);
         });
-        mermaidReady = true;
-        renderMermaid();
+        LINK_TABS.forEach((t) => {
+          const b = document.createElement("button");
+          b.className = "tabbtn linktab";
+          b.title = t.why;
+          b.innerHTML = '<i class="fa-solid ' + t.icon + '"></i>' + esc(t.label) + ' <i class="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-60"></i>';
+          b.onclick = () => window.open((t.https ? "https://" : "http://") + host + t.dyn, "_blank", "noopener");
+          bar.appendChild(b);
+        });
+      }
+      function switchTab(id) {
+        document.querySelectorAll(".tabbtn").forEach((b) => b.classList.remove("active"));
+        const btn = $("#tabbtn-" + id);
+        if (btn) btn.classList.add("active");
+        document.querySelectorAll(".tabpane").forEach((p) => p.classList.remove("active"));
+        const pane = $("#tab-" + id);
+        if (pane) pane.classList.add("active");
+        const u = $("#unread-" + id);
+        if (u) { u.style.display = "none"; u.textContent = ""; }
+        const tab = TABS.find((t) => t.id === id);
+        if (tab && tab.iframe && !tabLoaded[id]) {
+          tabLoaded[id] = true;
+          const frame = pane.querySelector("iframe");
+          frame.src = tab.dyn ? ("http://" + host + tab.dyn) : frame.dataset.src;
+        }
+        if (!tabLoaded[id]) { tabLoaded[id] = true; loadTab(id); }
+        else if (id === "fleet") fetchRoster(false);
+      }
+      function bumpUnread(id) {
+        const btn = $("#tabbtn-" + id);
+        if (btn && btn.classList.contains("active")) return;
+        const u = $("#unread-" + id);
+        if (u) { u.style.display = ""; u.textContent = (parseInt(u.textContent || "0") + 1); }
+      }
+      async function loadTab(id) {
+        if (id === "fleet") fetchRoster(true);
+        else if (id === "squawk") initSquawk();
+        else if (id === "models") { fetchModels(); fetchRankingsPreview(); fetchTelemetry(); }
+        else if (id === "services") { refreshAll(); fetchLogs(); }
+        else if (id === "meshhub") fetchMeshHub();
+      }
+      $("#refresh-btn").onclick = () => {
+        const active = document.querySelector(".tabbtn.active");
+        if (active) loadTab(active.id.replace("tabbtn-", ""));
+      };
+
+      /* ---------------- fleet WS feed (single connection, 200ms debounce) ---------------- */
+      let ws = null, wsBackoff = 5000, flushTimer = null, pendingEvents = [];
+      const STATUS_CONFIG = {
+        active: { label: "ACTIVE", color: "#22d3ee", bg: "rgba(6,182,212,.14)", icon: "fa-bolt" },
+        idle:   { label: "IDLE",   color: "#a78bfa", bg: "rgba(139,92,246,.14)", icon: "fa-moon" },
+        quiet:  { label: "QUIET",  color: "#fbbf24", bg: "rgba(251,191,36,.12)", icon: "fa-cloud" },
+        stale:  { label: "STALE",  color: "#6b7280", bg: "rgba(255,255,255,.05)", icon: "fa-ghost" },
+      };
+      function setConn(up) {
+        $("#conn-dot").className = "w-2.5 h-2.5 rounded-full " + (up ? "bg-emerald-400 shadow-[0_0_8px_#34d399]" : "bg-gray-500");
+        $("#conn-label").textContent = up ? "fleet live" : "reconnecting…";
+      }
+      function connectWS() {
+        const proto = location.protocol === "https:" ? "wss:" : "ws:";
+        ws = new WebSocket(proto + "//" + location.host + "/ws/fleet");
+        ws.onopen = () => { setConn(true); wsBackoff = 5000; };
+        ws.onclose = () => { setConn(false); setTimeout(connectWS, wsBackoff); wsBackoff = Math.min(30000, wsBackoff * 1.5); };
+        ws.onerror = () => { try { ws.close(); } catch (e) {} };
+        ws.onmessage = (ev) => {
+          try { pendingEvents.push(JSON.parse(ev.data)); } catch (e) { return; }
+          if (!flushTimer) flushTimer = setTimeout(() => { flushTimer = null; const evs = pendingEvents; pendingEvents = []; applyEvents(evs); }, 200);
+        };
+      }
+      function applyEvents(evs) {
+        let rosterDirty = false;
+        const squawkMsgs = [];
+        for (const d of evs) {
+          if (d.type === "hello") continue;
+          if (d.type === "agent" && d.agent) { rosterCache[d.agent.name] = d.agent; rosterDirty = true; addActivity(d.agent.name + " · " + (d.agent.last_title || "updated")); }
+          if (d.type === "squawk" && d.message) {
+            const m = d.message;
+            squawkMsgs.push(m);
+            addActivity("✦ " + m.from + " → " + (m.to || "all") + (m.title ? ": " + m.title : ""));
+            addLog("[" + new Date().toLocaleTimeString() + "] squawk " + m.from + ": " + (m.title || "").slice(0, 80));
+          }
+        }
+        if (rosterDirty && $("#tab-fleet").classList.contains("active")) renderFleet();
+        if (squawkMsgs.length) handleSquawkEvent(squawkMsgs);
       }
 
-      async function renderMermaid() {
-        if (!mermaidReady) return;
-        const el = document.getElementById("arch-mermaid");
+      /* ---------------- fleet tab ---------------- */
+      let rosterCache = {}, selectedAgent = null;
+      async function fetchRoster(showSpinner) {
+        try {
+          const res = await fetch("/api/agents/roster");
+          const cards = await res.json();
+          rosterCache = {};
+          cards.forEach((c) => (rosterCache[c.name] = c));
+          renderFleet();
+        } catch (e) { if (showSpinner) $("#fleet-grid").innerHTML = '<p class="text-sm text-gray-500">roster unavailable</p>'; }
+      }
+      function statusPill(st) {
+        const c = STATUS_CONFIG[st] || STATUS_CONFIG.stale;
+        return '<span class="status-pill" style="color:' + c.color + ";background:" + c.bg + '"><i class="fa-solid ' + c.icon + ' mr-1"></i>' + c.label + "</span>";
+      }
+      function renderFleet() {
+        const cards = Object.values(rosterCache).sort((a, b) => b.last_unix - a.last_unix);
+        $("#fleet-count").textContent = "(" + cards.length + " agents)";
+        $("#fleet-grid").innerHTML = cards.map((c) =>
+          '<div class="card agent-card p-3.5' + (selectedAgent === c.name ? " selected" : "") + '" data-agent="' + esc(c.name) + '">' +
+          '<div class="flex items-center gap-2 mb-1.5"><i class="fa-solid fa-robot text-cyan-400"></i>' +
+          '<span class="font-bold text-sm">' + esc(c.name) + "</span>" +
+          '<span class="ml-auto">' + statusPill(c.status) + "</span></div>" +
+          '<div class="text-[11px] text-gray-400 truncate mb-1">' + esc(c.last_title || "—") + "</div>" +
+          '<div class="flex justify-between text-[10px] mono text-gray-500"><span>' + c.messages + ' msgs</span><span title="' + esc(c.last_ts) + '">' + ago(c.last_unix) + "</span></div></div>"
+        ).join("");
+        document.querySelectorAll(".agent-card").forEach((el) => (el.onclick = () => selectAgent(el.dataset.agent)));
+      }
+      async function selectAgent(name) {
+        selectedAgent = name;
+        document.querySelectorAll(".agent-card").forEach((el) => el.classList.toggle("selected", el.dataset.agent === name));
+        $("#agent-detail-hint").classList.add("hidden");
+        $("#agent-detail").classList.remove("hidden");
+        const c = rosterCache[name] || {};
+        $("#ad-name").textContent = name;
+        $("#ad-status").outerHTML = statusPill(c.status || "stale").replace('class="status-pill"', 'id="ad-status" class="status-pill"');
+        $("#ad-history").innerHTML = '<p class="text-gray-500">loading…</p>';
+        try {
+          const res = await fetch("/api/agents/" + encodeURIComponent(name));
+          const d = await res.json();
+          $("#ad-history").innerHTML = d.messages.map((m) =>
+            '<div class="card p-2.5"><div class="flex items-center gap-2 mb-1"><span class="mono text-[10px] text-cyan-300">#' + m.seq + '</span>' +
+            '<span class="font-semibold">' + esc(m.title || "(no title)") + '</span></div>' +
+            '<div class="mono text-[10px] text-gray-500 mb-1">to ' + esc(m.to || "all") + " · " + esc(m.ts || "") + "</div>" +
+            '<div class="text-gray-300 whitespace-pre-wrap break-words">' + esc((m.body || "").slice(0, 1200)) + (m.body && m.body.length > 1200 ? "…" : "") + "</div></div>"
+          ).join("") || '<p class="text-gray-500">no messages</p>';
+        } catch (e) { $("#ad-history").innerHTML = '<p class="text-red-400">history unavailable</p>'; }
+      }
+      function addActivity(text) {
+        const el = $("#activity");
         if (!el) return;
-        try {
-          await mermaid.run({ nodes: [el] });
-        } catch (e) {
-          console.warn("mermaid render:", e);
-        }
+        const div = document.createElement("div");
+        div.className = "activity-line pl-2 text-gray-300";
+        div.innerHTML = '<span class="text-gray-600">' + new Date().toLocaleTimeString() + "</span> " + esc(text);
+        el.prepend(div);
+        while (el.children.length > 60) el.lastChild.remove();
       }
 
-      async function fetchArchitecture() {
-        try {
-          const res = await fetch("/ops/api/architecture");
-          if (!res.ok) throw new Error("Architecture API error");
-          const data = await res.json();
-
-          const modelChip = document.getElementById("chip-active-model");
-          const forkChip = document.getElementById("chip-active-fork");
-          if (modelChip)
-            modelChip.textContent = `model: ${data.active_model || "Offline"}`;
-          if (forkChip)
-            forkChip.textContent = `fork: ${data.active_fork || "—"}`;
-
-          // Service chips
-          const svcHost = document.getElementById("arch-service-chips");
-          if (svcHost && data.services) {
-            const entries = Object.entries(data.services);
-            svcHost.innerHTML = entries
-              .map(([name, info]) => {
-                const on = info && info.online;
-                const port = info && info.port != null ? `:${info.port}` : "";
-                return `<span class="status-chip ${on ? "online" : "offline"}">${name}${port} ${on ? "●" : "○"}</span>`;
-              })
-              .join("");
-          }
-
-          // Fork tallies
-          const forkHost = document.getElementById("arch-fork-chips");
-          if (forkHost && data.models_by_fork) {
-            const forks = Object.entries(data.models_by_fork);
-            if (forks.length === 0) {
-              forkHost.innerHTML = "";
-            } else {
-              forkHost.innerHTML = forks
-                .map(
-                  ([fork, n]) =>
-                    `<span class="status-chip ${fork === data.active_fork ? "active" : ""}">${fork}: ${n} model${n === 1 ? "" : "s"}</span>`,
-                )
-                .join("");
-            }
-          }
-
-          const sync = document.getElementById("arch-last-sync");
-          if (sync)
-            sync.textContent = `architecture poll: ${new Date().toLocaleTimeString()}`;
-        } catch (e) {
-          console.error("Failed to fetch architecture:", e);
-          const sync = document.getElementById("arch-last-sync");
-          if (sync) sync.textContent = `architecture poll error: ${e.message}`;
-        }
+      /* ---------------- squawk tab (WS-driven, no polling) ---------------- */
+      const SQ_CHANNELS = ["fleet", "leads", "squawk"];
+      let sqActive = "fleet", sqInit = false;
+      function initSquawk() {
+        if (sqInit) { paintSquawkBadges(); loadSquawkChannel(sqActive); return; }
+        sqInit = true;
+        buildSquawkTabs(); paintSquawkBadges(); loadSquawkChannel(sqActive);
+        let t;
+        $("#sq-search").addEventListener("input", () => { clearTimeout(t); t = setTimeout(() => renderSquawkCache(), 250); });
+        $("#sq-sender").addEventListener("change", renderSquawkCache);
       }
-
-      async function fetchLogs() {
-        try {
-          const res = await fetch("/ops/api/logs");
-          if (!res.ok) throw new Error("Logs API error");
-          const logs = await res.json();
-
-          const container = document.getElementById("activity-log-container");
-          if (container && logs.length > 0) {
-            container.innerHTML = logs
-              .map(
-                (line) =>
-                  `<div class="log-line text-[9px] font-mono leading-relaxed border-b border-white/5 py-1">${escapeHtml(line)}</div>`,
-              )
-              .join("");
-            container.scrollTop = container.scrollHeight;
-          }
-        } catch (e) {
-          console.error("Failed to fetch watchdog logs:", e);
-        }
-      }
-
-      function escapeHtml(s) {
-        return String(s)
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;");
-      }
-
-      function addLog(msg) {
-        const time = new Date().toLocaleTimeString();
-        const container = document.getElementById("activity-log-container");
-        if (container) {
-          const div = document.createElement("div");
-          div.className =
-            "log-line text-[9px] font-mono leading-relaxed border-b border-white/5 py-1 text-cyan-400";
-          div.textContent = `[${time}] ${msg}`;
-          container.appendChild(div);
-          container.scrollTop = container.scrollHeight;
-        }
-      }
-
-      async function refreshAll() {
-        const dot = document.getElementById("global-status-dot");
-        const txt = document.getElementById("global-status-text");
-        const icon = document.getElementById("refresh-icon");
-
-        if (dot)
-          dot.className =
-            "w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse";
-        if (txt) txt.innerText = "Syncing with daemons...";
-        if (icon) icon.classList.add("fa-spin");
-
-        try {
-          const res = await fetch("/ops/api/status");
-          if (!res.ok) throw new Error("Status endpoint error");
-          const statuses = await res.json();
-
-          currentServices = Object.entries(statuses).map(([name, info]) => ({
-            name: name,
-            port: info.port,
-            online: info.online,
-            id: name.toLowerCase().replace(/[^a-z0-9]/g, "-"),
-          }));
-
-          let healthy = 0;
-          const grid = document.getElementById("services-grid");
-          if (grid) {
-            grid.innerHTML = currentServices
-              .map((svc) => {
-                if (svc.online) healthy++;
-                const accent = svc.online ? "text-cyan-400" : "text-gray-500";
-                const border = svc.online
-                  ? "border-cyan-500/20"
-                  : "border-white/5";
-                const bg = svc.online
-                  ? "rgba(6, 182, 212, 0.05)"
-                  : "rgba(255,255,255,0.01)";
-                const badgeClass = svc.online
-                  ? "text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10"
-                  : "text-[10px] font-mono font-bold text-red-400 bg-red-500/5 px-2 py-0.5 rounded border border-red-500/10";
-
-                return `
-                <div class="service-card rounded-xl p-4 flex items-center justify-between border ${border}" style="background: ${bg};">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-black/40 flex items-center justify-center text-sm ${accent}">
-                            <i class="fa-solid fa-server"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs font-bold text-white flex items-center gap-1.5">
-                                <span>${svc.name}</span>
-                                <span class="text-[9px] text-gray-500 font-mono">:${svc.port}</span>
-                            </div>
-                            <div class="text-[10px] text-gray-500 mt-0.5">Live Stack Process</div>
-                        </div>
-                    </div>
-                    <div class="flex flex-col items-end gap-1.5">
-                        <span class="${badgeClass}">${svc.online ? "ONLINE" : "OFFLINE"}</span>
-                    </div>
-                </div>
-              `;
-              })
-              .join("");
-          }
-
-          const hc = document.getElementById("healthy-count");
-          if (hc) hc.innerText = `${healthy}/${currentServices.length} ONLINE`;
-
-          if (dot)
-            dot.className = `w-2.5 h-2.5 rounded-full ${healthy === currentServices.length ? "bg-emerald-500" : "bg-amber-500"}`;
-          if (txt)
-            txt.innerText =
-              healthy === currentServices.length
-                ? "Stack fully healthy"
-                : "Warning: Some nodes offline";
-
-          const lu = document.getElementById("last-updated");
-          if (lu)
-            lu.innerText = `Last sync: ${new Date().toLocaleTimeString()}`;
-
-          updateChart();
-          addLog(`Health sync completed. ${healthy} daemons responsive.`);
-        } catch (e) {
-          addLog(`Sync error: ${e.message}`);
-          if (txt) txt.innerText = "Connection lost";
-          if (dot) dot.className = "w-2.5 h-2.5 rounded-full bg-red-500";
-        } finally {
-          if (icon) icon.classList.remove("fa-spin");
-        }
-      }
-
-      function updateChart() {
-        const ctx = document.getElementById("latency-chart");
-        if (!ctx) return;
-
-        const labels = currentServices.map((s) => s.name);
-        const data = currentServices.map((s) =>
-          s.online ? Math.round(15 + Math.random() * 20) : 0,
-        );
-
-        if (chart) {
-          chart.data.labels = labels;
-          chart.data.datasets[0].data = data;
-          chart.update();
-          return;
-        }
-
-        chart = new Chart(ctx, {
-          type: "bar",
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: "Active Latency (ms)",
-                data: data,
-                backgroundColor: "rgba(6, 182, 212, 0.45)",
-                borderColor: "rgba(6, 182, 212, 0.8)",
-                borderWidth: 1,
-                borderRadius: 6,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { display: false },
-            },
-            scales: {
-              y: {
-                grid: { color: "rgba(255, 255, 255, 0.05)" },
-                ticks: { color: "#a1a1aa", font: { size: 9 } },
-                min: 0,
-                max: 100,
-              },
-              x: {
-                grid: { display: false },
-                ticks: { color: "#a1a1aa", font: { size: 9 } },
-              },
-            },
-          },
+      function buildSquawkTabs() {
+        const tabs = $("#sq-tabs"); tabs.innerHTML = "";
+        SQ_CHANNELS.forEach((ch) => {
+          const b = document.createElement("button");
+          b.className = "tabbtn";
+          b.dataset.channel = ch;
+          b.innerHTML = "#" + esc(ch) + ' <span class="unread" data-badge="' + esc(ch) + '" style="display:none"></span>';
+          b.onclick = () => { sqActive = ch; document.querySelectorAll("#sq-tabs .tabbtn").forEach((x) => x.classList.remove("active")); b.classList.add("active"); hideBadge(ch); loadSquawkChannel(ch); };
+          if (ch === sqActive) b.classList.add("active");
+          tabs.appendChild(b);
         });
       }
+      async function paintSquawkBadges() {
+        try {
+          const res = await fetch("/ops/api/squawk/channels");
+          const d = await res.json();
+          SQ_CHANNELS.forEach((ch) => {
+            const el = document.querySelector('[data-badge="' + ch + '"]');
+            if (el && d.channels && d.channels[ch]) { el.style.display = ""; el.textContent = d.channels[ch].count; }
+          });
+        } catch (e) {}
+      }
+      let sqCache = [];
+      async function loadSquawkChannel(ch) {
+        try {
+          const res = await fetch("/ops/api/squawk/" + ch + "?limit=100");
+          const d = await res.json();
+          sqCache = d.messages || [];
+          buildSenderFilter();
+          renderSquawkCache();
+          const feed = $("#sq-feed");
+          feed.scrollTop = 0;
+        } catch (e) { $("#sq-feed").innerHTML = '<p class="text-sm text-gray-500">squawk feed unavailable</p>'; }
+      }
+      function buildSenderFilter() {
+        const sel = $("#sq-sender"), cur = sel.value;
+        const senders = [...new Set(sqCache.map((m) => m.from))].sort();
+        sel.innerHTML = '<option value="">all senders</option>' + senders.map((s) => '<option value="' + esc(s) + '">' + esc(s) + "</option>").join("");
+        if (senders.includes(cur)) sel.value = cur;
+      }
+      function renderSquawkCache() {
+        const q = $("#sq-search").value.toLowerCase(), sender = $("#sq-sender").value;
+        const msgs = sqCache.filter((m) =>
+          (!sender || m.from === sender) &&
+          (!q || (m.title + " " + m.body).toLowerCase().includes(q)));
+        $("#sq-feed").innerHTML = msgs.map((m) =>
+          '<div class="sq-msg agent-' + esc(m.from) + ' card p-3">' +
+          '<div class="flex flex-wrap items-center gap-2 mb-1">' +
+          '<span class="font-bold text-sm text-cyan-300">' + esc(m.from) + "</span>" +
+          '<span class="mono text-[10px] text-gray-500">#' + m.seq + " · to " + esc(m.to || "all") + " · " + esc(m.ts || "") + "</span></div>" +
+          (m.title ? '<div class="font-semibold text-[13px] mb-1">' + esc(m.title) + "</div>" : "") +
+          '<div class="text-[13px] text-gray-300 whitespace-pre-wrap break-words">' + esc(m.body || "") + "</div></div>"
+        ).join("") || '<p class="text-sm text-gray-500">no messages match</p>';
+      }
+      function hideBadge(ch) { const el = document.querySelector('[data-badge="' + ch + '"]'); if (el) { el.style.display = "none"; el.textContent = ""; } }
+      // Called from the WS event path (debounced 200ms upstream).
+      function handleSquawkEvent(msgs) {
+        paintSquawkBadges();
+        // Event-driven: append the incoming message straight into the cache
+        // instead of re-fetching the channel over HTTP. The WS feed carries
+        // the fleet channel; a message lands in the cache when the user is
+        // viewing fleet (or the channel matches), otherwise the unread badge
+        // is the only signal.
+        let added = false;
+        for (const m of msgs) {
+          if (sqActive === "fleet" && !sqCache.some((x) => x.seq === m.seq)) {
+            sqCache.unshift(m); // channel API orders newest-first
+            added = true;
+          }
+        }
+        if (added && $("#tab-squawk").classList.contains("active")) { buildSenderFilter(); renderSquawkCache(); }
+        if (!$("#tab-squawk").classList.contains("active")) bumpUnread("squawk");
+      }
 
+      /* ---------------- models tab ---------------- */
       async function fetchModels() {
         try {
           const res = await fetch("/ops/api/models");
-          if (!res.ok) throw new Error("Models API error");
           const models = await res.json();
-          renderModels(models);
-        } catch (e) {
-          console.error("Failed to fetch models:", e);
-        }
+          const f = $("#model-filter").value;
+          const list = models.filter((m) => f === "all" || (f === "ok" ? m.alive : !m.alive));
+          $("#models-count").textContent = "(" + models.filter((m) => m.alive).length + "/" + models.length + " alive)";
+          $("#models-list").innerHTML = list.map((m) =>
+            '<div class="card p-3"><div class="flex items-center gap-2">' +
+            '<span class="w-2 h-2 rounded-full ' + (m.alive ? "bg-emerald-400" : "bg-red-500") + '"></span>' +
+            '<span class="mono text-xs font-bold truncate">' + esc(m.name) + "</span>" +
+            '<span class="ml-auto text-[10px] mono text-gray-500">' + esc(m.backend || "") + "</span></div>" +
+            (m.size ? '<div class="text-[10px] mono text-gray-500 mt-1">' + esc(m.size) + "</div>" : "") + "</div>"
+          ).join("");
+        } catch (e) { $("#models-list").innerHTML = '<p class="text-sm text-gray-500">models unavailable</p>'; }
       }
-
-      function renderModels(models) {
-        const container = document.getElementById("models-list-container");
-        if (!container) return;
-
-        if (!models || models.length === 0) {
-          container.innerHTML = `<div class="text-xs text-gray-500 italic">No models available.</div>`;
-          return;
-        }
-
-        // Sort by active state (active first), then priority (descending), then ID (alphabetical)
-        models.sort((a, b) => {
-          if (a.active && !b.active) return -1;
-          if (!a.active && b.active) return 1;
-          if ((b.priority || 0) !== (a.priority || 0)) {
-            return (b.priority || 0) - (a.priority || 0);
-          }
-          return a.id.localeCompare(b.id);
-        });
-
-        const activeModel = models.find((m) => m.active);
-        const headerEl = document.getElementById("active-model-header");
-        if (headerEl) {
-          if (activeModel) {
-            headerEl.innerText = `LIVE: ${activeModel.id}`;
-            headerEl.className =
-              "text-[9px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20";
-          } else {
-            headerEl.innerText = "LIVE: None";
-            headerEl.className =
-              "text-[9px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20";
-          }
-        }
-
-        container.innerHTML = models
-          .map((m) => {
-            const border = m.active
-              ? "border-cyan-500/50 bg-cyan-950/20"
-              : "border-white/5 hover:border-white/10";
-            const badgeClass = m.active
-              ? "text-[9px] font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20"
-              : "text-[9px] font-mono font-bold text-gray-500 bg-white/5 px-2 py-0.5 rounded border border-white/5";
-            const swapBtn = m.active
-              ? `<span class="${badgeClass}">ACTIVE</span>`
-              : `<button onclick="swapModel('${escapeHtml(m.id)}')" class="text-[9px] font-bold px-2 py-0.5 bg-violet-600 hover:bg-violet-500 text-white rounded transition shadow-sm shadow-violet-500/10">SWAP</button>`;
-
-            const priorityBadge =
-              m.priority > 0
-                ? `<span class="text-[9px] font-mono text-violet-400 bg-violet-500/10 px-1.5 py-0.5 rounded border border-violet-500/20">Prio: ${m.priority}</span>`
-                : "";
-
-            return `
-              <div class="service-card rounded-xl p-3.5 flex flex-col gap-2 border ${border}">
-                <div class="flex justify-between items-center">
-                  <span class="text-xs font-bold text-white font-mono truncate max-w-[70%] flex items-center gap-1.5">
-                    ${escapeHtml(m.id)}
-                    ${priorityBadge}
-                  </span>
-                  ${swapBtn}
-                </div>
-                <div class="flex gap-x-2.5 gap-y-1 text-[10px] text-gray-400 flex-wrap">
-                  <span>Fork: <strong class="text-gray-300 font-mono">${escapeHtml(m.fork)}</strong></span>
-                  <span>Context: <strong class="text-gray-300 font-mono">${escapeHtml(m.context)}</strong></span>
-                  <span>Quant: <strong class="text-gray-300 font-mono">${escapeHtml(m.quant)}</strong></span>
-                  <span>VRAM: <strong class="text-gray-300 font-mono">${escapeHtml(m.vram)}</strong></span>
-                </div>
-              </div>
-            `;
-          })
-          .join("");
-      }
-
-      async function swapModel(modelId) {
-        addLog(`Initiating model swap to ${modelId}...`);
-        try {
-          const res = await fetch(
-            "http://127.0.0.1:25100/v1/chat/completions",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                model: modelId,
-                messages: [{ role: "user", content: "hello" }],
-                max_tokens: 1,
-              }),
-            },
-          );
-          if (res.ok) {
-            addLog(`Swapped to model ${modelId} successfully.`);
-            fetchModels();
-            fetchTelemetry();
-            fetchArchitecture();
-          } else {
-            throw new Error(`Swap request status: ${res.status}`);
-          }
-        } catch (e) {
-          addLog(`Swap error: ${e.message}`);
-        }
-      }
-
       async function fetchRankingsPreview() {
         try {
-          const res = await fetch("/ops/api/fleet/last");
-          if (!res.ok) return;
-          const data = await res.json();
-          renderRankingsPreview(data);
-        } catch (e) {
-          console.error("Failed to fetch rankings preview:", e);
-        }
+          const res = await fetch("/ops/api/rankings?limit=20");
+          const d = await res.json();
+          $("#rank-preview").innerHTML = (d.rankings || []).map((r, i) =>
+            '<div class="flex justify-between"><span>' + (i + 1) + ". " + esc(r.model) + '</span><span class="text-cyan-300">' + esc(String(r.score ?? "")) + "</span></div>"
+          ).join("") || '<span class="text-gray-500">no rankings</span>';
+        } catch (e) { $("#rank-preview").innerHTML = '<span class="text-gray-500">unavailable</span>'; }
       }
-
-      function renderRankingsPreview(data) {
-        const container = document.getElementById("rankings-preview-container");
-        if (!container) return;
-        if (!data || !data.forks || Object.keys(data.forks).length === 0) {
-          container.innerHTML = `<div class="text-[10px] text-gray-500 italic">No rankings available. Run bench-forks.sh</div>`;
-          return;
-        }
-
-        const list = [];
-        for (const [name, fork] of Object.entries(data.forks)) {
-          let tg64 = 0;
-          if (fork.ok && fork.bench_stdout_tail) {
-            const lines = fork.bench_stdout_tail.split("\n");
-            for (const line of lines) {
-              if (line.includes("tg64")) {
-                const parts = line.split("|");
-                if (parts.length > 7) {
-                  const valPart = parts[7].trim().split(" ")[0];
-                  const val = parseFloat(valPart);
-                  if (!isNaN(val)) tg64 = val;
-                }
-              }
-            }
-          }
-          list.push({ name, tg64 });
-        }
-
-        list.sort((a, b) => b.tg64 - a.tg64);
-
-        container.innerHTML = list
-          .map((item, idx) => {
-            const medal =
-              idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "⚡";
-            const speed =
-              item.tg64 > 0 ? `${item.tg64.toFixed(1)} t/s` : "offline/pending";
-            const color = idx === 0 ? "text-cyan-300" : "text-gray-300";
-            return `
-            <div class="flex justify-between items-center text-[11px] py-0.5 border-b border-white/5 last:border-0">
-              <span class="font-mono flex items-center gap-1"><span class="text-xs">${medal}</span> <span class="${color}">${escapeHtml(item.name)}</span></span>
-              <span class="font-mono font-bold text-gray-300">${speed}</span>
-            </div>
-          `;
-          })
-          .join("");
-      }
-
       async function fetchTelemetry() {
         try {
           const res = await fetch("/ops/api/telemetry");
-          if (!res.ok) return;
-          const data = await res.json();
-
-          const modelEl = document.getElementById("engine-model");
-          const gpuEl = document.getElementById("engine-gpu");
-          const bgpu = document.getElementById("badge-gpu");
-          const bvram = document.getElementById("badge-vram");
-          const bcpu = document.getElementById("badge-cpu");
-
-          if (modelEl) modelEl.innerText = data.aiEngine || "Offline";
-          if (gpuEl) gpuEl.innerText = `${data.gpuName || "CPU"} GPU`;
-          if (bgpu) bgpu.innerText = data.gpuName || "CPU Only";
-          if (bvram) bvram.innerText = data.vramStr || "Shared VRAM";
-          if (bcpu)
-            bcpu.innerText = `${data.cpuName || "Host CPU"} (${data.ramGb || 0}GB RAM)`;
-        } catch (e) {
-          console.error("Telemetry fetch failed:", e);
-        }
+          const d = await res.json();
+          const strip = $("#gpu-strip");
+          const cards = [];
+          if (d.gpu) cards.push('<div class="card p-2.5"><div class="text-gray-500 text-[10px] uppercase">GPU util</div><div class="text-lg font-bold text-cyan-300">' + esc(String(d.gpu.util ?? "?")) + "%</div></div>");
+          if (d.vram) cards.push('<div class="card p-2.5"><div class="text-gray-500 text-[10px] uppercase">VRAM</div><div class="text-lg font-bold text-violet-300">' + esc(String(d.vram)) + "</div></div>");
+          if (d.uptime) cards.push('<div class="card p-2.5"><div class="text-gray-500 text-[10px] uppercase">Uptime</div><div class="text-lg font-bold">' + esc(String(d.uptime)) + "</div></div>");
+          if (d.models_loaded !== undefined) cards.push('<div class="card p-2.5"><div class="text-gray-500 text-[10px] uppercase">Models loaded</div><div class="text-lg font-bold text-emerald-300">' + esc(String(d.models_loaded)) + "</div></div>");
+          strip.innerHTML = cards.join("") || '<span class="text-gray-500 text-xs">telemetry unavailable</span>';
+        } catch (e) { $("#gpu-strip").innerHTML = '<span class="text-gray-500 text-xs">telemetry unavailable</span>'; }
       }
+      $("#model-filter").addEventListener("change", fetchModels);
 
-      function updateDynamicLinks() {
-        const host = window.location.hostname;
-
-        const navChatUi = document.getElementById("nav-chat-ui");
-        if (navChatUi) navChatUi.href = `http://${host}:25100/ui/`;
-
-        const navHfd = document.getElementById("nav-hfd");
-        if (navHfd) navHfd.href = `http://${host}:25106/`;
-
-        const linkHfdDashboard = document.getElementById("link-hfd-dashboard");
-        if (linkHfdDashboard) linkHfdDashboard.href = `http://${host}:25106/`;
-
-        const btnChatUi = document.getElementById("btn-chat-ui");
-        if (btnChatUi) btnChatUi.href = `http://${host}:25100/ui/`;
-
-        const btnModelsApi = document.getElementById("btn-models-api");
-        if (btnModelsApi) btnModelsApi.href = `http://${host}:25100/v1/models`;
-
-        const textApiDoor = document.getElementById("text-api-door");
-        if (textApiDoor) {
-          textApiDoor.innerHTML = `API front door: http://${host}:25100/v1 · UI: http://${host}:25100/ui/`;
-        }
-      }
-
-      function init() {
-        updateDynamicLinks();
-        initMermaid();
-        refreshAll();
-        fetchTelemetry();
-        fetchModels();
-        fetchLogs();
-        fetchArchitecture();
-        fetchRankingsPreview();
-        initSquawk();
-        setInterval(refreshAll, 15000);
-        setInterval(fetchTelemetry, 20000);
-        setInterval(fetchModels, 25000);
-        setInterval(fetchLogs, 4000);
-        setInterval(fetchArchitecture, 8000);
-        setInterval(fetchRankingsPreview, 12000);
-        setInterval(pollSquawk, 8000);
-      }
-
-
-      /* ---------- Squawk feed ---------- */
-      const squawkState = {
-        channels: [],
-        active: null,
-        msgs: [],
-        seq: 0,
-        unread: {},
-        freshSeq: new Set(),
-      };
-
-      function sqEsc(s) {
-        return String(s == null ? "" : s)
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;");
-      }
-
-      function sqSenderHue(name) {
-        if (name === "ember") return 24;
-        let h = 0;
-        for (let i = 0; i < name.length; i++)
-          h = (h * 31 + name.charCodeAt(i)) >>> 0;
-        return h % 360;
-      }
-
-      function sqRel(ts) {
-        const t = new Date(ts).getTime();
-        if (isNaN(t)) return "";
-        const s = Math.max(0, Math.floor((Date.now() - t) / 1000));
-        if (s < 60) return s + "s ago";
-        const m = Math.floor(s / 60);
-        if (m < 60) return m + "m ago";
-        const h = Math.floor(m / 60);
-        if (h < 24) return h + "h ago";
-        return Math.floor(h / 24) + "d ago";
-      }
-
-      async function initSquawk() {
-        const statusEl = document.getElementById("squawk-status");
+      /* ---------------- services tab ---------------- */
+      let servicesChart = null;
+      async function refreshAll() {
         try {
-          const res = await fetch("/ops/api/squawk/channels");
-          if (!res.ok) throw new Error("channels " + res.status);
-          const channels = await res.json();
-          squawkState.channels = channels;
-          channels.forEach((c) => (squawkState.unread[c] = 0));
-          buildSquawkTabs();
-          if (statusEl)
-            statusEl.textContent = channels.length + " channels live";
-          const first = channels.includes("fleet") ? "fleet" : channels[0];
-          if (first) await loadSquawkChannel(first, true);
-        } catch (e) {
-          console.error("squawk init:", e);
-          if (statusEl) statusEl.textContent = "unavailable";
-        }
-        const search = document.getElementById("squawk-search");
-        if (search) search.addEventListener("input", renderSquawk);
-        const sender = document.getElementById("squawk-sender");
-        if (sender) sender.addEventListener("change", renderSquawk);
+          const res = await fetch("/ops/api/status");
+          const d = await res.json();
+          const svcs = d.services || [];
+          const up = svcs.filter((s) => s.up).length;
+          $("#services-summary").textContent = up + "/" + svcs.length + " up · updated " + new Date().toLocaleTimeString();
+          $("#services-grid").innerHTML = svcs.map((s) =>
+            '<div class="card p-3"><div class="flex items-center gap-2">' +
+            '<span class="w-2 h-2 rounded-full ' + (s.up ? "bg-emerald-400" : "bg-red-500") + '"></span>' +
+            '<span class="font-semibold text-sm">' + esc(s.name) + '</span>' +
+            '<span class="ml-auto mono text-[10px] text-gray-500">:' + esc(String(s.port)) + "</span></div>" +
+            '<div class="flex justify-between mt-1 text-[10px] mono text-gray-500"><span>' + (s.latency_ms != null ? s.latency_ms + "ms" : "—") + "</span><span>" + esc(s.note || "") + "</span></div></div>"
+          ).join("");
+          const labels = svcs.map((s) => s.name), data = svcs.map((s) => s.latency_ms || 0);
+          const ctx = $("#services-chart").getContext("2d");
+          if (servicesChart) servicesChart.destroy();
+          servicesChart = new Chart(ctx, { type: "bar", data: { labels, datasets: [{ data, backgroundColor: "rgba(34,211,238,.5)", borderRadius: 4 }] },
+            options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: "#64748b", font: { size: 9 } } }, y: { ticks: { color: "#64748b" }, title: { display: true, text: "ms", color: "#64748b" } } }, maintainAspectRatio: false } });
+          const wd = $("#watchdog-log");
+          wd.innerHTML = (d.watchdog || []).map((w) => '<div><span class="text-gray-600">' + esc(w.ts || "") + "</span> " + esc(w.msg || w) + "</div>").join("") || '<span class="text-gray-600">no watchdog entries</span>';
+          fetchArchitecture();
+        } catch (e) { $("#services-grid").innerHTML = '<p class="text-sm text-gray-500">status unavailable</p>'; }
       }
-
-      function buildSquawkTabs() {
-        const host = document.getElementById("squawk-tabs");
-        if (!host) return;
-        host.innerHTML = "";
-        squawkState.channels.forEach((ch) => {
-          const b = document.createElement("button");
-          b.className = "sq-tab" + (ch === squawkState.active ? " active" : "");
-          b.innerHTML =
-            '<i class="fa-solid fa-hashtag"></i><span>' +
-            sqEsc(ch) +
-            '</span><span class="sq-badge" id="sq-badge-' +
-            sqEsc(ch) +
-            '"></span>';
-          b.addEventListener("click", () => loadSquawkChannel(ch, true));
-          host.appendChild(b);
-        });
-        paintSquawkBadges();
-      }
-
-      function paintSquawkBadges() {
-        squawkState.channels.forEach((ch) => {
-          const el = document.getElementById("sq-badge-" + ch);
-          if (!el) return;
-          const n = squawkState.unread[ch] || 0;
-          el.textContent = n > 0 ? (n > 99 ? "99+" : n) : "";
-          el.style.display = n > 0 ? "inline-flex" : "none";
-        });
-      }
-
-      async function loadSquawkChannel(ch, userClicked) {
-        squawkState.active = ch;
-        squawkState.unread[ch] = 0;
-        buildSquawkTabs();
-        const feed = document.getElementById("squawk-feed");
+      async function fetchArchitecture() {
         try {
-          const res = await fetch(
-            "/ops/api/squawk/" + encodeURIComponent(ch) + "?limit=60"
-          );
-          if (!res.ok) throw new Error("channel " + res.status);
-          const data = await res.json();
-          const oldSeq = squawkState.seq;
-          squawkState.msgs = data.messages || [];
-          squawkState.seq = data.seq || 0;
-          squawkState.freshSeq.clear();
-          if (!userClicked) {
-            squawkState.msgs.forEach((m) => {
-              if (m.seq > oldSeq) squawkState.freshSeq.add(m.seq);
-            });
+          const res = await fetch("/ops/api/architecture");
+          const d = await res.json();
+          if (d.mermaid) {
+            $("#arch-diagram").innerHTML = esc(d.mermaid);
+            $("#arch-diagram").removeAttribute("data-processed");
+            mermaid.run({ nodes: [$("#arch-diagram")] });
           }
-          buildSenderFilter();
-          renderSquawk();
-        } catch (e) {
-          console.error("squawk load:", e);
-          if (feed)
-            feed.innerHTML =
-              '<div class="text-gray-500 text-sm font-mono p-4">feed unavailable</div>';
-        }
-        paintSquawkBadges();
+          if (d.legend) $("#arch-legend").innerHTML = Object.entries(d.legend).map(([k, v]) => '<span class="chip"><b>' + esc(k) + "</b> " + esc(v) + "</span>").join("");
+          if (d.chips) $("#arch-chips").innerHTML = d.chips.map((c) => '<span class="chip">' + esc(c) + "</span>").join("");
+        } catch (e) { $("#arch-diagram").innerHTML = '<span class="text-gray-500 text-xs">architecture unavailable</span>'; }
       }
-
-      function buildSenderFilter() {
-        const sel = document.getElementById("squawk-sender");
-        if (!sel) return;
-        const cur = sel.value;
-        const senders = [
-          ...new Set(squawkState.msgs.map((m) => m.from).filter(Boolean)),
-        ].sort();
-        sel.innerHTML =
-          '<option value="">All senders</option>' +
-          senders
-            .map(
-              (s) =>
-                '<option value="' + sqEsc(s) + '">' + sqEsc(s) + "</option>"
-            )
-            .join("");
-        if (senders.includes(cur)) sel.value = cur;
-      }
-
-      function renderSquawk() {
-        const feed = document.getElementById("squawk-feed");
-        if (!feed) return;
-        const q = (
-          document.getElementById("squawk-search") || { value: "" }
-        ).value.trim().toLowerCase();
-        const sender = (document.getElementById("squawk-sender") || {
-          value: "",
-        }).value;
-        const msgs = squawkState.msgs.filter((m) => {
-          if (sender && m.from !== sender) return false;
-          if (q) {
-            const hay = (m.title + " " + m.body + " " + m.from).toLowerCase();
-            if (!hay.includes(q)) return false;
-          }
-          return true;
-        });
-        if (!msgs.length) {
-          feed.innerHTML =
-            '<div class="text-gray-600 text-sm font-mono p-6 text-center">no messages match</div>';
-          return;
-        }
-        feed.innerHTML = msgs
-          .map((m) => {
-            const hue = sqSenderHue(m.from || "?");
-            const fresh = squawkState.freshSeq.has(m.seq) ? " fresh" : "";
-            const title =
-              m.title && m.title !== "msg"
-                ? '<div class="sq-title">' + sqEsc(m.title) + "</div>"
-                : "";
-            return (
-              '<article class="sq-msg' +
-              fresh +
-              '">' +
-              '<div class="flex items-center gap-2 flex-wrap">' +
-              '<span class="sq-sender" style="--h:' +
-              hue +
-              '"><i class="fa-solid fa-user-astronaut"></i>' +
-              sqEsc(m.from || "?") +
-              "</span>" +
-              '<span class="sq-seq">#' +
-              m.seq +
-              "</span>" +
-              '<span class="sq-time">' +
-              sqEsc(sqRel(m.ts)) +
-              "</span>" +
-              "</div>" +
-              title +
-              '<div class="sq-body">' +
-              sqEsc(m.body).replace(/\n/g, "<br>") +
-              "</div>" +
-              "</article>"
-            );
-          })
-          .join("");
-        if (squawkState.freshSeq.size) {
-          setTimeout(() => {
-            squawkState.freshSeq.clear();
-            document
-              .querySelectorAll(".sq-msg.fresh")
-              .forEach((el) => el.classList.remove("fresh"));
-          }, 2500);
-        }
-      }
-
-      async function pollSquawk() {
-        if (!squawkState.channels.length) return;
+      async function fetchLogs() {
         try {
-          const checks = await Promise.all(
-            squawkState.channels.map((ch) =>
-              fetch("/ops/api/squawk/" + encodeURIComponent(ch) + "?limit=1")
-                .then((r) => (r.ok ? r.json() : null))
-                .then((d) => ({ ch: ch, seq: d ? d.seq : 0 }))
-                .catch(() => ({ ch: ch, seq: 0 }))
-            )
-          );
-          for (const item of checks) {
-            const ch = item.ch;
-            const seq = item.seq;
-            if (!seq) continue;
-            if (ch === squawkState.active) {
-              if (seq > squawkState.seq) await loadSquawkChannel(ch, false);
-            } else {
-              const prev = squawkState["_seq_" + ch] || 0;
-              if (seq > prev) {
-                if (squawkState["_seen_" + ch])
-                  squawkState.unread[ch] =
-                    (squawkState.unread[ch] || 0) + (seq - prev);
-                squawkState["_seen_" + ch] = true;
-              }
-              squawkState["_seq_" + ch] = seq;
-            }
-          }
-          paintSquawkBadges();
-        } catch (e) {
-          console.error("squawk poll:", e);
-        }
+          const res = await fetch("/ops/api/logs?limit=60");
+          const d = await res.json();
+          $("#logs-list").innerHTML = (d.logs || []).map((l) => '<div><span class="text-gray-600">' + esc(l.ts || "") + "</span> " + esc(l.msg || l) + "</div>").join("");
+        } catch (e) { $("#logs-list").innerHTML = '<span class="text-gray-500">logs unavailable</span>'; }
+      }
+      function addLog(line) {
+        const el = $("#logs-list");
+        if (!el || !$("#tab-services").classList.contains("active")) return;
+        const div = document.createElement("div");
+        div.innerHTML = esc(line);
+        el.prepend(div);
+        while (el.children.length > 80) el.lastChild.remove();
       }
 
-      document.addEventListener("DOMContentLoaded", init);
+      /* ---------------- mesh hub tab ---------------- */
+      async function fetchMeshHub() {
+        $("#meshhub-link").href = "http://" + host + ":25115/mesh/chain-health";
+        try {
+          const [fres, hres] = await Promise.all([
+            fetch("/ops/api/mesh/features").then((r) => r.json()).catch(() => ({})),
+            fetch("/ops/api/mesh").then((r) => r.json()).catch(() => ({})),
+          ]);
+          const feats = fres.features || fres || [];
+          const list = Array.isArray(feats) ? feats : Object.entries(feats).map(([k, v]) => ({ name: k, detail: v }));
+          $("#mesh-summary").textContent = list.length + " features exposed";
+          $("#mesh-features").innerHTML = list.map((f) =>
+            '<div class="card p-2.5"><div class="font-semibold text-xs text-cyan-300">' + esc(f.name || f) + "</div>" +
+            (f.detail && typeof f.detail === "string" ? '<div class="text-[10px] text-gray-500 mt-0.5">' + esc(f.detail) + "</div>" : "") + "</div>"
+          ).join("") || '<span class="text-gray-500 text-xs">no features listed</span>';
+          const health = typeof hres === "string" ? hres : JSON.stringify(hres, null, 1);
+          const lines = String(health).split("\n").slice(0, 40);
+          $("#mesh-health").innerHTML = lines.map((l) => "<div>" + esc(l) + "</div>").join("");
+        } catch (e) { $("#mesh-summary").textContent = "mesh hub unreachable"; }
+      }
+
+      /* ---------------- boot ---------------- */
+      mermaid.initialize({ startOnLoad: false, theme: "dark" });
+      buildTabbar();
+      fetchRoster(true);
+      connectWS();
     </script>
-    <!-- hotreload-probe t1784356222710 -->
   </body>
 </html>
