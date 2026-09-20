@@ -21,11 +21,20 @@ host. The surrogate travels in the X-MCP-Token header (the connector's
 placement), which is the bridge's auth boundary. Sentinel swaps the
 surrogate for the real credential on approved egress.
 
-Performance: transport priority is
+Performance: transport selection is an HFT race (first-valid-wins).
+Both lanes pre-dispatch concurrently (unix-socket connect vs session
+check, ~ms); the WS lane keeps dispatch priority while healthy and only
+the winning lane ever dispatches remotely, so a command can never
+double-execute. Every hop is measured in microseconds; winners go to
+~/.cache/shingle/hft_race_winners.jsonl (tag "bridge-exec"). When WS has
+won the last 10 races within 5 minutes the race is skipped entirely
+(lead-with-winner: zero overhead) and re-raced once the log goes stale.
   1. local ws_daemon (one persistent wss:// connection to /exec-ws, ~0.1-0.3s
      per call, live streaming stdout/stderr) — started lazily on first use;
   2. HTTPS MCP with cached session id (~0.6s) as fallback.
 A stale session falls back to a full handshake automatically.
+Env: AWRAWR_RACE=0 legacy sequential; AWRAWR_RACE_ALWAYS=1 force racing;
+AWRAWR_RACE_DEBUG=1 stderr timings.
 
 Hardening: the HTTPS lane enforces a LOCAL read deadline (default 150s:
 the awrawr-pc exec tool's 90s server ceiling + 60s margin, overridable with
@@ -45,6 +54,7 @@ import time
 import urllib.request
 import urllib.error
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 
 sys.path.insert(0, "/opt/hatch/skills/skill-creator/bin")
 from dynamic_credentials import (
@@ -222,6 +232,91 @@ def _read_body_bounded(resp, deadline, chunk_size: int = 65536) -> bytes:
     return b"".join(chunks)
 
 
+def _ws_try_once() -> socket.socket | None:
+    """Single attempt at the daemon's unix socket; None on any failure."""
+    try:
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.settimeout(5)
+        s.connect(WS_SOCK)
+        return s
+    except OSError:
+        return None
+
+
+def _ws_start_daemon():
+    """Spawn the ws daemon (singleflight via bind); returns Popen or None."""
+    logf = None
+    try:
+        logf = open(os.path.expanduser("~/.cache/awrawr-ws-bridge.log"), "a")
+        env = dict(os.environ)
+        # Tunnel override (2026-09-20): propagate to the daemon so it
+        # routes via the public tunnel when the tailnet host is blocked.
+        # Falls back to the compiled-in default if unset.
+        proc = subprocess.Popen(
+            [sys.executable, WS_DAEMON],
+            stdin=subprocess.DEVNULL, stdout=logf, stderr=logf,
+            start_new_session=True, env=env)
+    except Exception:
+        return None
+    finally:
+        if logf is not None:
+            try:
+                logf.close()  # child keeps its own fd copy; don't leak ours
+            except Exception:
+                pass
+    return proc
+
+
+def _ws_connect_legacy():
+    """Legacy connect: socket now, else lazy-start the daemon and wait 12s.
+
+    Returns a connected socket, or None (with _ws_predispatch_error set).
+    """
+    global _ws_predispatch_error
+    s = _ws_try_once()
+    if s is not None:
+        return s
+    # Lazy-start the daemon (singleflight: stale socket file is unlinked
+    # by the daemon itself on start; a second starter just fails to bind
+    # and the connect below still succeeds).
+    proc = _ws_start_daemon()
+    if proc is None:
+        return None
+    deadline = time.monotonic() + 12
+    while time.monotonic() < deadline:
+        s = _ws_try_once()
+        if s is not None:
+            break
+        if proc.poll() is not None:
+            # Daemon exited during start (e.g. ImportError on wsframe):
+            # fail fast instead of burning the whole 12s wait.
+            break
+        time.sleep(0.25)
+    if s is None:
+        _ws_predispatch_error = "ws daemon unavailable (no socket)"
+    return s
+
+
+def _ws_predispatch_fast():
+    """Race phase-1: connect now or not at all (no waiting).
+
+    If the daemon socket is absent the daemon is spawned fire-and-forget
+    (it heals for the next call) and this lane reports not-ready
+    immediately, so the HTTPS lane can serve this call without delay.
+    Returns a connected socket, or None (with _ws_predispatch_error set
+    and the lane down-marked per degraded steady-state).
+    """
+    global _ws_predispatch_error
+    _ws_predispatch_error = ""
+    s = _ws_try_once()
+    if s is None:
+        _ws_start_daemon()  # heal in background; don't block this call
+        _ws_predispatch_error = "ws daemon unavailable (spawned in background)"
+        _ws_mark_down()
+        return None
+    return s
+
+
 def _ws_exec(cmd: str, workdir: str, argv=None,
              timeout: int | None = None, capture: bool = False):
     """Run via the local ws_daemon.
@@ -241,55 +336,25 @@ def _ws_exec(cmd: str, workdir: str, argv=None,
     if _ws_known_down():
         _ws_predispatch_error = "ws lane marked down (degraded steady-state)"
         return None  # degraded steady-state: straight to HTTPS
+    s = _ws_connect_legacy()
+    if s is None:
+        return None
+    return _ws_run(s, cmd, workdir, argv, timeout, capture)
+
+
+def _ws_run(s: socket.socket, cmd: str, workdir: str, argv,
+            timeout: int | None, capture: bool = False):
+    """Execute one command over a connected daemon socket.
+
+    Same fallback contract as _ws_exec: None = pre-dispatch failure (HTTPS
+    re-dispatch is safe); any non-None return = the WS lane owns the
+    result, so post-dispatch failures report WITHOUT falling back and a
+    command that may have executed remotely is never run twice.
+    """
+    global _ws_predispatch_error
     t0 = time.monotonic()
     out_parts: list[str] = []
     err_parts: list[str] = []
-    def try_once() -> socket.socket | None:
-        try:
-            s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            s.settimeout(5)
-            s.connect(WS_SOCK)
-            return s
-        except OSError:
-            return None
-
-    s = try_once()
-    if s is None:
-        # Lazy-start the daemon (singleflight: stale socket file is unlinked
-        # by the daemon itself on start; a second starter just fails to bind
-        # and the connect below still succeeds).
-        logf = None
-        try:
-            logf = open(os.path.expanduser("~/.cache/awrawr-ws-bridge.log"),
-                        "a")
-            proc = subprocess.Popen(
-                [sys.executable, WS_DAEMON],
-                stdin=subprocess.DEVNULL, stdout=logf, stderr=logf,
-                start_new_session=True)
-        except Exception:
-            if logf is not None:
-                try:
-                    logf.close()
-                except Exception:
-                    pass
-            return None
-        try:
-            logf.close()  # child keeps its own fd copy; don't leak ours
-        except Exception:
-            pass
-        deadline = time.monotonic() + 12
-        while time.monotonic() < deadline:
-            s = try_once()
-            if s is not None:
-                break
-            if proc.poll() is not None:
-                # Daemon exited during start (e.g. ImportError on wsframe):
-                # fail fast instead of burning the whole 12s wait.
-                break
-            time.sleep(0.25)
-        if s is None:
-            _ws_predispatch_error = "ws daemon unavailable (no socket)"
-            return None
     try:
         payload = {"workdir": workdir}
         if argv is not None:
@@ -424,6 +489,235 @@ def _ws_exec(cmd: str, workdir: str, argv=None,
             return 1
         _ws_predispatch_error = "ws lane failed pre-dispatch"
         return None
+
+
+# ---------------------------------------------------------------------------
+# HFT bridge race: WS vs HTTPS pre-dispatch, first-valid-wins (dispatch-gated).
+#
+# The hot path used to be sequential: try WS, and only on pre-dispatch
+# failure fall back to HTTPS. The race runs both lanes' pre-dispatch
+# CONCURRENTLY; the WS lane keeps dispatch priority while healthy
+# (structurally lower per-call overhead), and only the winning lane ever
+# dispatches remotely — a command can never double-execute. If the winner
+# fails between selection and dispatch (still pre-dispatch), the other
+# lane takes over; post-dispatch failures keep the legacy no-retry
+# contract (no double-exec, ever).
+#
+# Every hop is measured with time.perf_counter_ns (microsecond reporting)
+# and winners are appended to _RACE_LOG with tag "bridge-exec" — the same
+# file the race.py skill uses, so bridge races join the fleet-wide
+# winners data. Lead-with-winner: once WS has won the last
+# _RACE_SKIP_STREAK races within _RACE_SKIP_MAX_AGE seconds, the race is
+# skipped entirely (zero overhead: the exact legacy fast path) and
+# re-raced automatically once the log goes stale.
+#
+# Env: AWRAWR_RACE=0         legacy sequential WS-then-HTTPS (A/B, escape hatch)
+#      AWRAWR_RACE_ALWAYS=1  force racing even on a WS streak (testing)
+#      AWRAWR_RACE_DEBUG=1   print per-call race timings to stderr
+# ---------------------------------------------------------------------------
+_RACE_LOG = os.path.expanduser("~/.cache/shingle/hft_race_winners.jsonl")
+_RACE_TAG = "bridge-exec"
+_RACE_PRE_TIMEOUT = 5.0    # fail-fast ceiling for the concurrent pre-dispatch
+_RACE_SKIP_STREAK = 10     # skip the race after this many straight WS wins
+_RACE_SKIP_MAX_AGE = 300   # ...provided the newest win is this fresh (seconds)
+_RACE_FALLBACK = object()  # sentinel: nothing dispatched; run legacy path
+
+
+def _https_predispatch():
+    """Race phase-1: cheap HTTPS lane check.
+
+    Returns (session_id,) — session_id may be None (cold: the full
+    handshake happens in phase-2 only if HTTPS actually wins). Returns
+    None when the lane is unusable (degraded steady-state).
+    """
+    down, _why = _https_known_down()
+    if down:
+        return None
+    try:
+        return (_load_session(),)
+    except Exception:
+        return None
+
+
+def _https_dispatch_execute(pre, cmd, workdir, argv, timeout, read_timeout,
+                            json_mode):
+    """Phase-2: dispatch via HTTPS. Mirrors main()'s lane translation."""
+    import shlex
+    if argv is not None or timeout is not None:
+        # The HTTPS fallback only speaks shell `cmd` with the server's fixed
+        # ceiling. --argv is translated losslessly with shlex.join; a custom
+        # --timeout drops to the server ceiling with a warning.
+        if timeout is not None and not json_mode:
+            print("exec.py: --timeout %d dropped; HTTPS path uses the "
+                  "server ceiling" % timeout, file=sys.stderr)
+        cmd = shlex.join(argv) if argv is not None else cmd
+    if json_mode:
+        return _https_exec_capture(cmd, workdir, read_timeout)
+    return _https_exec(cmd, workdir, read_timeout)
+
+
+def _future_get_before(fut, deadline):
+    """Future result before a monotonic deadline; None on timeout/error."""
+    try:
+        return fut.result(timeout=max(0.0, deadline - time.monotonic()))
+    except Exception:
+        fut.cancel()
+        return None
+
+
+def _race_should_skip() -> bool:
+    """Lead with the winner: skip racing while WS dominates the log."""
+    if os.environ.get("AWRAWR_RACE_ALWAYS") == "1":
+        return False
+    try:
+        with open(_RACE_LOG, "rb") as f:
+            f.seek(0, 2)
+            size = f.tell()
+            f.seek(max(0, size - 16384))
+            tail = f.read().decode("utf-8", "replace").splitlines()
+    except OSError:
+        return False
+    wins = []
+    for line in reversed(tail):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            e = json.loads(line)
+        except ValueError:
+            continue
+        if e.get("tag") != _RACE_TAG or not e.get("winner"):
+            continue
+        try:
+            ts = float(e.get("ts", 0))
+        except (TypeError, ValueError):
+            continue
+        wins.append((e["winner"], ts))
+        if len(wins) >= _RACE_SKIP_STREAK:
+            break
+    if len(wins) < 5:
+        return False  # not enough data: race
+    if time.time() - wins[0][1] > _RACE_SKIP_MAX_AGE:
+        return False  # log stale: re-race to refresh the data
+    return all(w == "ws" for w, _ in wins)
+
+
+def _race_log(winner, pre, exec_times, t0_ns, t_decide_ns, t_done_ns,
+              cmd, json_mode):
+    """Append one winners-log entry. Best-effort: never breaks the call."""
+    try:
+        os.makedirs(os.path.dirname(_RACE_LOG), exist_ok=True)
+        lat = {}
+        for lane in ("ws", "https"):
+            p = pre.get(lane) or {}
+            ok = bool(p.get("ok"))
+            pre_s = round(float(p.get("pre_s") or 0.0), 6)
+            entry = {"ok": ok, "valid": ok, "pre_s": pre_s,
+                     "latency_s": pre_s}
+            if p.get("err"):
+                entry["error"] = str(p["err"])[:120]
+            if lane in exec_times:
+                e_s = round(float(exec_times[lane]), 6)
+                entry["exec_s"] = e_s
+                entry["latency_s"] = round(pre_s + e_s, 6)
+            lat[lane] = entry
+        rec = {"ts": time.time(), "tag": _RACE_TAG, "winner": winner,
+               "latency": lat,
+               "decide_s": round((t_decide_ns - t0_ns) / 1e9, 6),
+               "total_s": round((t_done_ns - t0_ns) / 1e9, 6),
+               "cmd_chars": len(cmd or ""),
+               "json_mode": bool(json_mode)}
+        line = json.dumps(rec)
+        with open(_RACE_LOG, "a", encoding="utf-8") as f:
+            f.write(line + "\n")
+        if os.environ.get("AWRAWR_RACE_DEBUG") == "1":
+            print("race " + line, file=sys.stderr)
+    except OSError:
+        pass
+
+
+def _race_exec(cmd, workdir, argv, timeout, read_timeout, json_mode):
+    """Race WS vs HTTPS pre-dispatch concurrently; the winner dispatches.
+
+    Dispatch-gated: only the winning lane dispatches remotely, so the
+    command can never double-execute. Returns the lane result (exit code
+    or result dict), _RACE_FALLBACK when no lane could dispatch (nothing
+    executed remotely: the caller runs the legacy path), or raises like
+    the legacy path would (e.g. HTTPS degraded).
+    """
+    t0_ns = time.perf_counter_ns()
+    pre = {}
+
+    def ws_job():
+        s = time.perf_counter_ns()
+        try:
+            res = _ws_predispatch_fast()
+            ok, err = res is not None, None
+        except Exception as e:
+            res, ok, err = None, False, "%s: %s" % (type(e).__name__, e)
+        pre["ws"] = {"ok": ok,
+                     "pre_s": round((time.perf_counter_ns() - s) / 1e9, 6),
+                     "err": err}
+        return res
+
+    def https_job():
+        s = time.perf_counter_ns()
+        try:
+            res = _https_predispatch()
+            ok, err = res is not None, None
+        except Exception as e:
+            res, ok, err = None, False, "%s: %s" % (type(e).__name__, e)
+        pre["https"] = {"ok": ok,
+                        "pre_s": round((time.perf_counter_ns() - s) / 1e9, 6),
+                        "err": err}
+        return res
+
+    with ThreadPoolExecutor(max_workers=2) as ex:
+        fws = ex.submit(ws_job)
+        fht = ex.submit(https_job)
+        deadline = time.monotonic() + _RACE_PRE_TIMEOUT
+        ws_sock = _future_get_before(fws, deadline)
+        https_pre = _future_get_before(fht, deadline)
+    t_decide_ns = time.perf_counter_ns()
+
+    winner = None
+    exec_times = {}
+    result = _RACE_FALLBACK
+    if ws_sock is not None:
+        # WS keeps dispatch priority while healthy: persistent connection,
+        # structurally lower per-call overhead than HTTPS.
+        winner = "ws"
+        e0 = time.perf_counter_ns()
+        try:
+            result = _ws_run(ws_sock, cmd, workdir, argv, timeout, json_mode)
+        finally:
+            exec_times["ws"] = (time.perf_counter_ns() - e0) / 1e9
+        if result is None and https_pre is not None:
+            # WS failed between selection and dispatch (still pre-dispatch:
+            # the daemon never saw the command), so HTTPS dispatch is safe.
+            winner = "https"
+            e0 = time.perf_counter_ns()
+            try:
+                result = _https_dispatch_execute(
+                    https_pre, cmd, workdir, argv, timeout,
+                    read_timeout, json_mode)
+            finally:
+                exec_times["https"] = (time.perf_counter_ns() - e0) / 1e9
+        elif result is None:
+            result = _RACE_FALLBACK
+    elif https_pre is not None:
+        winner = "https"
+        e0 = time.perf_counter_ns()
+        try:
+            result = _https_dispatch_execute(
+                https_pre, cmd, workdir, argv, timeout,
+                read_timeout, json_mode)
+        finally:
+            exec_times["https"] = (time.perf_counter_ns() - e0) / 1e9
+    t_done_ns = time.perf_counter_ns()
+    _race_log(winner, pre, exec_times, t0_ns, t_decide_ns, t_done_ns,
+              cmd, json_mode)
+    return result
 
 
 _MISSING = object()
@@ -721,9 +1015,10 @@ def _sysinfo_yote(read_timeout):
             result = _https_exec_capture(probe, workdir, read_timeout)
         except Exception as e:
             if auth_failed:
-                err = ("yote rejected credentials (401): token mismatch -- "
-                       "resubmit the exact value of ~/.awrawr_mcp_token via "
-                       "the connector")
+                err = ("yote rejected credentials (401): possibly transient "
+                       "(observed self-heal within ~3 min); if persistent, "
+                       "token mismatch -- resubmit the exact value of "
+                       "~/.awrawr_mcp_token via the connector")
             else:
                 err = "https lane exception: %s" % str(e)[:160]
             return {"side": "yote", "ok": False,
@@ -738,9 +1033,11 @@ def _sysinfo_yote(read_timeout):
         auth_failed = "401" in err_text or "unauthorized" in err_text
         info["auth_failed"] = auth_failed
         if auth_failed:
-            info["error"] = ("yote rejected credentials (401): token "
-                             "mismatch -- resubmit the exact value of "
-                             "~/.awrawr_mcp_token via the connector")
+            info["error"] = ("yote rejected credentials (401): possibly "
+                             "transient (observed self-heal within ~3 min); "
+                             "if persistent, token mismatch -- resubmit the "
+                             "exact value of ~/.awrawr_mcp_token via the "
+                             "connector")
         else:
             info["error"] = (result.get("error")
                              or (result.get("stderr") or "")[:160]
@@ -792,8 +1089,10 @@ def _sysinfo_loop(interval, read_timeout):
 #
 # Edge cases, integrated:
 # - No-overlap polling: an overrunning cycle never stacks; it is counted.
-# - Auth-failure backoff: a 401 will not heal by retrying, so a yote leg
-#   that fails auth re-probes at most every 60s instead of every cycle.
+# - Auth-failure backoff: 401s are often transient (self-healing blips ~3 min
+#   observed per AGENTS.md), so a yote leg that fails auth re-probes at most
+#   every 60s instead of every cycle; escalate to "resubmit token" only if
+#   the 401 survives the transient window.
 # - No error spam: repeated identical failures emit nothing new; only
 #   transitions (and heartbeats) speak.
 # - No threshold flapping: alerts use hysteresis (load clears at 90% of
@@ -938,8 +1237,11 @@ def _watch_loop(interval, read_timeout, alert_load, alert_mem):
                 st = state[s]
                 if not st["ok"] and st["auth_backoff"] \
                         and now < st["next_retry"]:
-                    # Auth will not heal by retrying: hold the last error,
-                    # re-probe at most every _WATCH_AUTH_RETRY_S.
+                    # Auth failures may be transient (self-healing blips ~3 min
+                    # observed per AGENTS.md): hold the last error,
+                    # re-probe at most every _WATCH_AUTH_RETRY_S; escalate to
+                    # token resubmit only if the 401 survives the transient
+                    # window.
                     infos[s] = {"side": s, "ok": False,
                                 "backoff": True,
                                 "error": st["last_error"]}
@@ -1106,10 +1408,26 @@ def main() -> int:
         cmd = args[0] if len(args) > 0 else "echo ok"
         workdir = args[1] if len(args) > 1 else "/home/toxic"
 
-    # AWRAWR_TRANSPORT=https forces the legacy HTTPS path (debugging/race).
+    # Transport selection. AWRAWR_TRANSPORT=https forces the legacy HTTPS
+    # path (debugging). AWRAWR_RACE=0 forces the legacy sequential
+    # WS-then-HTTPS path (A/B testing, escape hatch). Otherwise the HFT
+    # race runs when both lanes are nominally healthy; a degraded lane
+    # (down-markers) or a dominant WS winners-log streak takes the exact
+    # legacy path instead — zero behavior change when racing can't help.
+    transport = os.environ.get("AWRAWR_TRANSPORT", "ws")
+    race_on = os.environ.get("AWRAWR_RACE", "1") != "0"
     result = None
-    if os.environ.get("AWRAWR_TRANSPORT", "ws") != "https":
-        result = _ws_exec(cmd, workdir, argv, timeout, capture=json_mode)
+    if transport != "https":
+        down_ws = _ws_known_down()
+        down_https, _ = _https_known_down()
+        if (race_on and not down_ws and not down_https
+                and not _race_should_skip()):
+            result = _race_exec(cmd, workdir, argv, timeout, read_timeout,
+                                json_mode)
+            if result is _RACE_FALLBACK:
+                result = None  # nothing dispatched: run the legacy path
+        if result is None:
+            result = _ws_exec(cmd, workdir, argv, timeout, capture=json_mode)
     if not json_mode:
         if result is not None:
             return result
