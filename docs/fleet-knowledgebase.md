@@ -73,6 +73,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | pack-keeper | Fleet health + culture: permanent fleet-health.sh (projects/ops/bin/), Hearth watchdog state-change tuning + canonical hatch/bin/ watchdog code, silent-agent dispositions | Ember (spawned subagent) | RUNNING (2026-09-20) |
 | purge-max (announced as pack-fix) | Hesitance purge; fake-completed watchdogs; task-runner audit; fleet health; no-monkeypatch durability sweep | Ember | RUNNING |
 | purge-max / hesitance-hunt | Hesitance fixes (EXCLUSIVE lane per 2026-09-20 carve): watchdog body rewrites, anti-pattern catalog, permanent hesitance-lint guard | Ember | RUNNING (2026-09-20) |
+| bridge-max | Maximal bridge exec layer: multitask dispatch (POST /exec-multi, yote-conn multi), detached background dispatch (POST /exec-bg, GET /bg, yote-conn bg/bg-status/bg-list), MCP exec_multi/exec_bg/bg_status tools | Ember | DONE 2026-09-20 — commits 25679fa5c0 (work), ae890221a2 (marker) |
 | edge-forge | Cutting-edge fix + addition task forging & execution | Ember | RUNNING |
 | tau-hyperfix | `/home/toxic/.tau` audit; dynamic skill loading; skills symlink; `skillful`; `tau audit`; `tau tmux` experiments | Ember | DONE (2026-09-20) -- commits `a356d831ee06` (canonical launcher promotion: launcher/tau + audit/tmux helpers + install.sh) + KB row; audit 13 pass/0 fail, collapse 8/8, tmux live, `tau launch -p` -> ALIVE |
 | super-ralph repair | Root-cause `fiber.cache.stackFrame` crash; prove `super-ralph "reply with exactly the word ALIVE"` exits zero + DB completion | Ember | RUNNING |
