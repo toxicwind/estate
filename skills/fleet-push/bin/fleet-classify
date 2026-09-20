@@ -1,0 +1,99 @@
+#!/usr/bin/env python3
+"""fleet-classify <seq> — fetch one fleet message, emit classification JSON.
+
+Classes: broadcast (coordinator orders -> ALL subscribed agents),
+         lane      ([tag] routing -> matching lanes),
+         info      (logged, not pushed).
+"""
+import json
+import re
+import subprocess
+import sys
+
+BRIDGE = "/home/hatch/workspace/awrawr-bridge/exec.py"
+SQUAWK = "/home/hatch/workspace/bin/squawk"
+ROOT = "/home/toxic/.shingle/squawk-root/fleet"
+
+LANE_TAGS = {
+    "ports": ["ports", "pitchfork"],
+    "stalls": ["stalls", "db"],
+    "bg": ["bgprocs", "procs"],
+    "bgprocs": ["bgprocs", "procs"],
+    "bridge": ["bridge"],
+    "mcp": ["mcp", "bridge"],
+    "tau": ["tau"],
+    "ralph": ["ralph"],
+    "purge": ["purge"],
+    "edge": ["edge"],
+    "repo": ["repo"],
+    "sweep": ["sweep"],
+    "tmp": ["tmp"],
+    "depaudit": ["depaudit"],
+    "health": ["health"],
+    "broadcast": [],
+    "all": [],
+}
+
+ORDER_KEYWORDS = [
+    "dedupe", "standing rule", "reporting contract", "all lanes",
+    "lane-split", "lane split", "all agents", "fork policy", "never open",
+    "no pr", "skip pr",
+]
+
+
+def bridge(cmd):
+    r = subprocess.run(["python3", BRIDGE, cmd],
+                       capture_output=True, text=True, timeout=60)
+    if r.returncode != 0:
+        raise RuntimeError("bridge failed: %s" % (r.stderr or r.stdout))
+    out = r.stdout.strip()
+    try:
+        env = json.loads(out)
+        if isinstance(env, dict) and "stdout" in env:
+            return env["stdout"]
+    except json.JSONDecodeError:
+        pass
+    return out
+
+
+def main():
+    seq = sys.argv[1]
+    raw = bridge("cat %s/%s-*-msg.md 2>/dev/null | head -60" % (ROOT, seq))
+    if not raw.strip():
+        # fall back to squawk read
+        r = subprocess.run([SQUAWK, "read", "fleet", "--n", "50"],
+                           capture_output=True, text=True, timeout=60)
+        raw = r.stdout
+    m = re.search(r"^---\n(.*?)\n---\n(.*)$", raw, re.S | re.M)
+    front, body = (m.group(1), m.group(2)) if m else ("", raw)
+    meta = {}
+    for line in front.splitlines():
+        if ":" in line:
+            k, v = line.split(":", 1)
+            meta[k.strip()] = v.strip()
+    text = (meta.get("title", "") + "\n" + body).lower()
+    tags = sorted(set(re.findall(r"\[([a-z0-9_-]+)\]", text)))
+    sender = meta.get("from", "")
+
+    lanes = set()
+    for t in tags:
+        lanes.update(LANE_TAGS.get(t, []))
+
+    is_broadcast = (
+        "broadcast" in tags or "all" in tags
+        or (sender == "ember" and any(k in text for k in ORDER_KEYWORDS))
+    )
+    cls = "broadcast" if is_broadcast else ("lane" if lanes else "info")
+    print(json.dumps({
+        "seq": seq,
+        "from": sender,
+        "title": meta.get("title", ""),
+        "tags": tags,
+        "class": cls,
+        "lanes": sorted(lanes),
+        "summary": body.strip().splitlines()[0][:160] if body.strip() else "",
+    }))
+
+
+if __name__ == "__main__":
+    main()
