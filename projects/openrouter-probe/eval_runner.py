@@ -23,6 +23,9 @@ import time
 import urllib.request
 import urllib.error
 
+import ranking_lib  # shared tier/ranking/report logic
+from ranking_lib import split_tiers, rank_models
+
 sys.path.insert(0, "/home/toxic/sovereign/projects/guidellm/src")
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
@@ -253,20 +256,9 @@ def main():
                  "error": sanitize(str(e)[:200]), "free": m.get("free", True)}
         results.append(r)
 
-    ok = [r for r in results if r.get("status") == "ok" and r.get("quality_mean") is not None]
-    # Ranked tier: tokenizer-valid models only. gpt2-fallback models
-    # (tokenizer_status == "fallback-labeled", e.g. openrouter/free) are
-    # reported in fallback_tier, never in the numbered ranking.
-    ok_valid = [r for r in ok if r.get("tokenizer_status") != "fallback-labeled"]
-    fallback = [r for r in ok if r.get("tokenizer_status") == "fallback-labeled"]
-    ranked = sorted(ok_valid, key=lambda r: (
-        -r["quality_mean"],
-        -(1 if r.get("free") else 0),
-        r["latency_p50_s"] if r["latency_p50_s"] is not None else float("inf"),
-    ))
-    report = {
-        "ts": ts,
-        "instrument": {
+    ok_valid, fallback = split_tiers(results)
+    ranked = rank_models(ok_valid)
+    instrument = {
             "harness": "guidellm fork toxicwind/guidellm (pluggable scorers)",
             "scorer": "instruction_following (deterministic)",
             "scorer_semantics": "borrowed from probe_abstract.py: exact=2.0, contains=1.0, completed-empty=0.0; transport-errored requests scored for the record only, excluded from quality aggregates (provider failures are reliability signal, not quality signal)",
@@ -279,57 +271,29 @@ def main():
             "formality_tier": "deterministic-instrument",
             "scope": "provider-free OpenRouter models, abstract instruction-following task",
             "ranking_rule": "quality desc, provider-free desc, latency p50 asc",
-        },
-        "ranking": [r["model"] for r in ranked],
-        "results": results,
-        "fallback_tier": [
-            {
-                "model": r["model"],
-                "tokenizer_repo": r.get("tokenizer_repo", "gpt2"),
-                "note": ("No stable tokenizer; ran on the explicitly labelled "
-                         "gpt2 fallback. Token counts and tokenizer-derived "
-                         "metrics are NOT comparable with the ranked tier. "
-                         "Deterministic quality score reported for the record."),
-                "result": r,
-            }
-            for r in fallback
-        ],
-        "dead_or_errored": [r for r in results if r.get("status") != "ok"],
     }
+
+    report = ranking_lib.build_report(ts, instrument, results)
     rp = os.path.join(OUTDIR, f"ranking-eval-{ts}.json")
     json.dump(report, open(rp, "w"), indent=1)
-    md = [f"# Eval ranking {ts}", "",
-          f"Instrument: GuideLLM fork + deterministic `instruction_following` scorer "
-          f"(sentinel `{SENTINEL}`, thinking-strip on), real per-model tokenizers.",
-          f"Prompt: `{PROMPT}` — {a.n} requests/model, synchronous profile.",
-          f"Ranking: quality desc, provider-free, latency p50 asc.", "",
-          "| rank | model | quality mean | n | err | lat p50 (s) | ttft p50 (ms) | out tok/s | tokenizer |",
-          "|---|---|---|---|---|---|---|---|"]
-    for i, r in enumerate(ranked, 1):
-        lat = f"{r['latency_p50_s']:.2f}" if r["latency_p50_s"] is not None else "?"
-        tt = f"{r['ttft_p50_ms']:.0f}" if r.get("ttft_p50_ms") else "?"
-        tps = f"{r['output_tps']:.1f}" if r.get("output_tps") else "?"
-        md.append(f"| {i} | {r['model']} | {r['quality_mean']:.2f} | "
-                  f"{int(r['quality_n'] or 0)} | {r['n_errored']} | {lat} | {tt} | {tps} | {r['tokenizer_repo']} |")
-    if fallback:
-        md += ["", "## Fallback tier — NOT ranked (no stable tokenizer)", "",
-               "These models ran on the explicitly labelled gpt2 fallback and are "
-               "NOT tokenizer-comparable with the ranked tier. Deterministic quality "
-               "scores reported for the record only.", "",
-               "| model | quality mean | n | err | lat p50 (s) | ttft p50 (ms) | out tok/s | tokenizer |",
-               "|---|---|---|---|---|---|---|---||"]
-        for r in fallback:
-            lat = f"{r['latency_p50_s']:.2f}" if r["latency_p50_s"] is not None else "?"
-            tt = f"{r['ttft_p50_ms']:.0f}" if r.get("ttft_p50_ms") else "?"
-            tps = f"{r['output_tps']:.1f}" if r.get("output_tps") else "?"
-            md.append(f"| {r['model']} | {r['quality_mean']:.2f} | "
-                      f"{int(r['quality_n'] or 0)} | {r['n_errored']} | {lat} | {tt} | {tps} | gpt2 (fallback) |")
-    if report["dead_or_errored"]:
-        md += ["", "Skipped/errored:",
-               *[f"- {r['model']}: {r.get('status')} {r.get('http', '')} {r.get('error', '')}"
-                 for r in report["dead_or_errored"]]]
+    md = ranking_lib.render_markdown(
+        title=f"# Eval ranking {ts}",
+        header_lines=[
+            f"Instrument: GuideLLM fork + deterministic `instruction_following` scorer "
+            f"(sentinel `{SENTINEL}`, thinking-strip on), real per-model tokenizers.",
+            f"Prompt: `{PROMPT}` — {a.n} requests/model, synchronous profile.",
+            f"Ranking: quality desc, provider-free, latency p50 asc.",
+        ],
+        ranked=ranked,
+        fallback=fallback,
+        dead_or_errored=report["dead_or_errored"],
+        dead_lines=[
+            f"- {r['model']}: {r.get('status')} {r.get('http', '')} {r.get('error', '')}"
+            for r in report["dead_or_errored"]
+        ] or None,
+    )
     mp = os.path.join(OUTDIR, f"RANKING-eval-{ts}.md")
-    open(mp, "w").write("\n".join(md) + "\n")
+    open(mp, "w").write(md)
     print(f"[eval] wrote {rp} and {mp}", flush=True)
     print(json.dumps(report["ranking"], indent=1))
 
