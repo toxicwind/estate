@@ -69,7 +69,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | Crew | Scope | Owner / coordinator | Status |
 |---|---|---|---|
-| repo-integrator-max | Orphan integration → correct repos; README/deep-link pass; permanent scripts/skills/integrations | Ember (main chat) | RUNNING (2026-09-20) — workers: orphan-hatch, orphan-yote, readme-linker |
+| repo-integrator-max | Orphan integration → correct repos; README/deep-link pass; permanent scripts/skills/integrations | Ember (main chat) | RUNNING (2026-09-20) — workers: orphan-hatch, orphan-yote; readme-linker README/deep-link pass DONE a674c5dc37 |
 | purge-max (announced as pack-fix) | Hesitance purge; fake-completed watchdogs; task-runner audit; fleet health; no-monkeypatch durability sweep | Ember | RUNNING |
 | purge-max / hesitance-hunt | Hesitance fixes (EXCLUSIVE lane per 2026-09-20 carve): watchdog body rewrites, anti-pattern catalog, permanent hesitance-lint guard | Ember | RUNNING (2026-09-20) |
 | edge-forge | Cutting-edge fix + addition task forging & execution | Ember | RUNNING |
