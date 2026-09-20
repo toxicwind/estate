@@ -1,5 +1,7 @@
 # herd/race — universal code racer as a first-class Herd model
 
+> **STATUS (2026-09-20):** this service is planned, not yet built — `main.go`, the `herd-race` binary, the pitchfork entry (`sovereign/herd-race`), the `herd.yaml` peer block, and `config/herd-race.json` do not exist yet. Treat this README as a design doc until the service lands.
+
 `herd/race` is the universal code racer ported into Herd natively. It is a
 selectable model like any other: send `{"model": "herd-race/herd/race"}` to
 `http://127.0.0.1:25100/v1/chat/completions` and the racer fans the request out
