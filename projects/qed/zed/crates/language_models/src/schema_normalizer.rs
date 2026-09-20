@@ -28,7 +28,9 @@ use language_model::{LanguageModelRequestTool, LanguageModelRequestToolInput};
 
 /// Normalize every tool's input schema so Outlines can compile it.
 /// Returns every tool unchanged otherwise.
-pub fn normalize_tool_schemas(tools: Vec<LanguageModelRequestTool>) -> Vec<LanguageModelRequestTool> {
+pub fn normalize_tool_schemas(
+    tools: Vec<LanguageModelRequestTool>,
+) -> Vec<LanguageModelRequestTool> {
     tools
         .into_iter()
         .map(|mut tool| {
@@ -60,9 +62,7 @@ fn normalize_schema(mut schema: serde_json::Value) -> serde_json::Value {
         Some(serde_json::Value::Array(a)) => {
             let cleaned: Vec<serde_json::Value> = a
                 .iter()
-                .filter(|v| {
-                    !matches!(v, serde_json::Value::String(s) if s == "null")
-                })
+                .filter(|v| !matches!(v, serde_json::Value::String(s) if s == "null"))
                 .cloned()
                 .collect();
             let has_object = cleaned
@@ -80,10 +80,7 @@ fn normalize_schema(mut schema: serde_json::Value) -> serde_json::Value {
     }
 
     // Recurse into properties, giving each an explicit type when missing.
-    if let Some(props) = schema
-        .get_mut("properties")
-        .and_then(|p| p.as_object_mut())
-    {
+    if let Some(props) = schema.get_mut("properties").and_then(|p| p.as_object_mut()) {
         for (_name, prop) in props.iter_mut() {
             if prop.is_object() {
                 normalize_property(prop);
@@ -273,10 +270,7 @@ mod tests {
 
         let normalized = normalize_tool_schemas(tools);
         let schema = input_schema_of(&normalized[0]);
-        assert_eq!(
-            schema["properties"]["tags"]["items"]["type"],
-            "string"
-        );
+        assert_eq!(schema["properties"]["tags"]["items"]["type"], "string");
     }
 
     #[test]
