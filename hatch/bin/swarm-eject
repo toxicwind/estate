@@ -1,0 +1,190 @@
+#!/usr/bin/env python3
+"""swarm-eject — the big red button. Sudo-esque emergency load-shed.
+
+When the boxes are at risk of crashing, this ACTS with authority on BOTH:
+  hatch: force-freeze (SIGSTOP) the entire agent tool-call tree,
+         or SIGKILL it with --kill.
+  yote:  via the exec bridge, SIGSTOP (or SIGKILL) runaway processes
+         above a CPU threshold, never touching protected services.
+
+Protected on yote (never signaled): the bridge itself, squawk, tailscaled,
+sshd, systemd, the herd model server, pitchfork. On hatch: the runtime
+(hatch daemon, hatch-execd), the bridge ws_daemon, and our own chain.
+
+Usage:
+    swarm-eject            # STOP everything non-essential, both boxes (reversible)
+    swarm-eject --kill     # KILL instead of STOP (destructive, last resort)
+    swarm-eject --hatch-only / --yote-only
+
+Resume with: swarm-resume   (also CONTs yote processes stopped by eject)
+"""
+import json
+import os
+import re
+import signal
+import subprocess
+import sys
+import time
+
+STATE = os.path.expanduser("~/.cache/shingle/swarm-paused.json")
+EXEC = os.path.expanduser("~/workspace/awrawr-bridge/exec.py")
+SQUAWK = os.path.expanduser("~/workspace/bin/squawk")
+
+KILL = "--kill" in sys.argv
+HATCH_ONLY = "--hatch-only" in sys.argv
+YOTE_ONLY = "--yote-only" in sys.argv
+SIG = signal.SIGKILL if KILL else signal.SIGSTOP
+SIGNAME = "SIGKILL" if KILL else "SIGSTOP"
+
+YOTE_PROTECTED = re.compile(
+    r"squawk|awrawr|tailscale|sshd|systemd|dbus|llama|herd|pitchfork|"
+    r"kthreadd|migration|kworker|NetworkManager|containerd|dockerd|"
+    r"nvidia|irq|watchdog|cockpit", re.I)
+YOTE_CPU_PCT = 90.0   # ps %CPU is percent of ONE core; >90 = a core burned
+YOTE_LOAD_TRIG = 32.0  # 2x the 16 cores
+
+
+def exacd_pid():
+    out = subprocess.run(["pgrep", "-f", "hatch-execd --runtime-cell-leader"],
+                         capture_output=True, text=True)
+    pids = [int(p) for p in out.stdout.split()]
+    return pids[0] if pids else None
+
+
+def ppid_map():
+    m = {}
+    for pid in os.listdir("/proc"):
+        if not pid.isdigit():
+            continue
+        try:
+            with open(f"/proc/{pid}/stat") as f:
+                parts = f.read().rsplit(")", 1)[1].split()
+            m[int(pid)] = int(parts[1])
+        except (FileNotFoundError, IndexError, ValueError):
+            pass
+    return m
+
+
+def ancestors(pid, pm):
+    seen = set()
+    while pid in pm and pid not in seen:
+        seen.add(pid)
+        pid = pm[pid]
+    return seen
+
+
+def hatch_eject():
+    root = exacd_pid()
+    if not root:
+        return {"ok": False, "why": "hatch-execd not found"}
+    pm = ppid_map()
+    me = os.getpid()
+    my_chain = ancestors(me, pm) | {me}
+    try:
+        my_pgid = os.getpgid(me)
+    except OSError:
+        my_pgid = None
+    hit = []
+    for pid in pm:
+        if pid in my_chain or pid == root:
+            continue
+        if my_pgid is not None:
+            try:
+                if os.getpgid(pid) == my_pgid:
+                    continue
+            except OSError:
+                pass
+        if root in ancestors(pid, pm):
+            try:
+                os.kill(pid, SIG)
+                hit.append(pid)
+            except (ProcessLookupError, PermissionError):
+                pass
+    st = {"ts": time.time(), "pids": hit, "mode": SIGNAME}
+    if os.path.exists(STATE):
+        try:
+            old = json.load(open(STATE))
+            st["pids"] = sorted(set(old.get("pids", [])) | set(hit))
+        except Exception:
+            pass
+    os.makedirs(os.path.dirname(STATE), exist_ok=True)
+    json.dump(st, open(STATE, "w"))
+    return {"ok": True, "signal": SIGNAME, "pids": hit}
+
+
+YOTE_SNIPPET = r'''
+import json, os, re, signal, subprocess
+SIG = signal.SIGKILL if __KILL__ else signal.SIGSTOP
+PROT = re.compile(r"squawk|awrawr|tailscale|sshd|systemd|dbus|llama|herd|pitchfork|kthreadd|migration|kworker|NetworkManager|containerd|dockerd|nvidia|irq|watchdog|cockpit", re.I)
+load1 = float(open("/proc/loadavg").read().split()[0])
+out = subprocess.run(["ps","-eo","pid,pcpu,etime,args","--sort=-pcpu"], capture_output=True, text=True).stdout.splitlines()
+hit, top, skipped = [], [], []
+for line in out[1:12]:
+    p = line.split(None, 3)
+    if len(p) < 4: continue
+    pid, pcpu = int(p[0]), float(p[1])
+    top.append({"pid": pid, "cpu": pcpu, "cmd": p[3][:80]})
+    if pid == 1 or pcpu < __THRESH__ or PROT.search(p[3]): continue
+    try:
+        os.kill(pid, SIG); hit.append(pid)
+    except PermissionError:
+        r = subprocess.run(["sudo","-n","kill","-%d"%SIG,pid], capture_output=True)
+        if r.returncode == 0: hit.append(pid)
+        else: skipped.append(pid)
+    except ProcessLookupError:
+        pass
+print(json.dumps({"load1": load1, "signal": "SIGKILL" if __KILL__ else "SIGSTOP", "hit": hit, "skipped": skipped, "top": top}))
+'''.replace("__KILL__", "True" if KILL else "False").replace("__THRESH__", str(YOTE_CPU_PCT))
+
+
+def yote_eject():
+    try:
+        r = subprocess.run(["python3", EXEC, "python3 - <<'EOF'\n" + YOTE_SNIPPET + "\nEOF"],
+                           capture_output=True, text=True, timeout=60)
+        txt = r.stdout.strip().splitlines()
+        # exec.py echoes the command; the JSON is the last line starting with {
+        for line in reversed(txt):
+            if line.startswith("{"):
+                d = json.loads(line)
+                st = {"ts": time.time(), "yote_pids": d.get("hit", []), "mode": d.get("signal")}
+                if os.path.exists(STATE):
+                    try:
+                        old = json.load(open(STATE))
+                        old["yote_pids"] = sorted(set(old.get("yote_pids", [])) | set(st["yote_pids"]))
+                        json.dump(old, open(STATE, "w"))
+                    except Exception:
+                        pass
+                return {"ok": True, **d}
+        return {"ok": False, "why": "no JSON from yote", "out": r.stdout[-500:], "err": r.stderr[-500:]}
+    except subprocess.TimeoutExpired:
+        return {"ok": False, "why": "bridge timeout"}
+    except Exception as e:
+        return {"ok": False, "why": str(e)}
+
+
+def broadcast(msg):
+    try:
+        subprocess.run([SQUAWK, "send", "fleet", msg], capture_output=True, timeout=15)
+    except Exception:
+        pass
+
+
+def main():
+    res = {}
+    if not YOTE_ONLY:
+        res["hatch"] = hatch_eject()
+    if not HATCH_ONLY:
+        res["yote"] = yote_eject()
+    h = res.get("hatch", {})
+    y = res.get("yote", {})
+    msg = (f"SWARM EJECT (ember) — {SIGNAME} on hatch ({len(h.get('pids', []))} procs) "
+           f"+ yote load {y.get('load1', '?')} ({len(y.get('hit', []))} runaways {SIGNAME}). "
+           f"Resume: swarm-resume.")
+    broadcast(msg)
+    print(json.dumps(res, indent=1)[:2000], flush=True)
+    print(msg, flush=True)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
