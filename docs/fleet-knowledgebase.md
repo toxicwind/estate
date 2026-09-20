@@ -72,7 +72,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 |---|---|---|---|
 | repo-integrator-max | Orphan integration → correct repos; README/deep-link pass; permanent scripts/skills/integrations | Ember (main chat) | RUNNING (2026-09-20) — workers: orphan-hatch, orphan-yote, readme-linker |
 | pack-keeper | Fleet health + culture: permanent fleet-health.sh (projects/ops/bin/), Hearth watchdog state-change tuning + canonical hatch/bin/ watchdog code, silent-agent dispositions | Ember (spawned subagent) | RUNNING (2026-09-20) |
-| purge-max (announced as pack-fix) | Hesitance purge; fake-completed watchdogs; task-runner audit; fleet health; no-monkeypatch durability sweep | Ember | RUNNING |
+| purge-max (announced as pack-fix) | Hesitance purge; fake-completed watchdogs; task-runner audit; fleet health; no-monkeypatch durability sweep | Ember | runner-watch audit DONE 2026-09-20 — commit `c42b87095d17bd4a38a764d6c8b8481a2049f259` (projects/pack-fix: runner-inventory.sh + runner-audit.md + README; canary-judge burn killed, audit-bridge-watch retired, progress-watchdog 3m→5m) |
 | purge-max / hesitance-hunt | Hesitance fixes (EXCLUSIVE lane per 2026-09-20 carve): watchdog body rewrites, anti-pattern catalog, permanent hesitance-lint guard | Ember | RUNNING (2026-09-20) |
 | bridge-max | Maximal bridge exec layer: multitask dispatch (POST /exec-multi, yote-conn multi), detached background dispatch (POST /exec-bg, GET /bg, yote-conn bg/bg-status/bg-list), MCP exec_multi/exec_bg/bg_status tools | Ember | DONE 2026-09-20 — commits 25679fa5c0 (work), ae890221a2 (marker) |
 | edge-forge | Cutting-edge fix + addition task forging & execution | Ember | RUNNING |
@@ -93,7 +93,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | dep-quartermaster | Toolchain/dependency gaps on yote+hatch: missing CLIs installed, permanent ensure-script committed | Ember | DONE — commit 2953f49f07 (toolchain.sh + KB row) |
 | port-syscall-integrator | PORTS proven by live syscalls (strace bind/listen) + MCPs/connectors/endpoints/integrations estate-wide; SSOT ports.env reconciliation; pitchfork pre-launch guard; port-audit.py hardening | Ember (port-syscall-integrator) | RUNNING (2026-09-20) |
 | perm-surgeon | Permissions/identity/execution-context audit + live repair (sudoers, unshare, capabilities, setuid, systemd users, interactive-toxic path) | Ember | DONE (2026-09-20) — perm-audit.sh committed to projects/yote/ops/ |
-| bg-tracker | Detached/backgrounded process audit (hatch+yote); permanent background-task registry (bg-launch/register/heartbeat/audit/kill) under projects/ops/bg-tracker | Ember | DONE (2026-09-20) -- commit c32fe3a49af5 (bg-tracker suite + kill-policy; hatch+yote audits green) |
+| bg-tracker | Detached/backgrounded process audit (hatch+yote); permanent background-task registry (bg-launch/register/heartbeat/audit/kill) under projects/ops/bg-tracker | Ember | RUNNING (2026-09-20) |
 | sudo-smith | Sudo posture hardening (passwordless scope, key paths, shared-tree ownership) + missing-file forging (systemd/config/doc references) + permanent ops scripts | Ember | DONE (2026-09-20) -- commit 628bccc435 (projects/ops/bin/{sudo-audit.sh,missing-files.sh} + projects/yote/ops/hw-audit/{hw-audit.sh,hw-watchdog.py}; hw-audit.service/.timer referrers restored; live copies deployed to /home/toxic/) |
 
 | kindling | Fleet-culture implementation (Bedrock): spawn-protocol skill, welcome hooks, identity reconciliation, fleet-onboard step-zero script | Bedrock (parent orchestrator) | RUNNING (2026-09-20) |
