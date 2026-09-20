@@ -85,8 +85,15 @@ if [ -d /tmp ]; then
   # stale backups of live configs sitting in /tmp = the fix happened, the evidence didn't land
   while IFS= read -r f; do
     [ -e "$f" ] || continue
-    emit "tmp-config-backup" ".bak of a live config left in /tmp (the change may not be committed)" "$f" \
-      "diff against the live file; commit the live change in its repo; delete the /tmp backup"
+    base=$(basename "$f")
+    case "$base" in
+      *secret*|*credential*|*.pem|*.key)
+        emit "tmp-secrets-backup" "backup of a secrets/credential file in /tmp (must never be committed)" "$f" \
+          "verify the live file is good, then shred it: shred -u '$f'. Never git-add." ;;
+      *)
+        emit "tmp-config-backup" ".bak of a live config left in /tmp (the change may not be committed)" "$f" \
+          "diff against the live file; commit the live change in its repo; delete the /tmp backup" ;;
+    esac
   done < <(find /tmp -maxdepth 1 \( -name '*.bak' -o -name '*.bak-*' -o -name '*.orig' \) -type f 2>/dev/null)
 fi
 
@@ -115,12 +122,14 @@ done
 # ---------------------------------------------------------------- 3. hand-started daemons
 section "hand-started daemons (no unit)"
 # Long-running processes that look like services but are not supervised.
-# Ground truth sources: pitchfork daemon list, systemd user units, crontabs.
-PF_LIST=""
-if command -v pitchfork >/dev/null 2>&1 && [ -f "$SOV/pitchfork.toml" ]; then
-  PF_LIST=$(cd "$SOV" && pitchfork list 2>/dev/null | awk '{print $1}' | grep -E '^sovereign/' || true)
+# Ground truth: the pitchfork supervisor's own child PIDs, plus basenames
+# extracted from pitchfork.toml run lines (definitions can be stale, so
+# the live supervisor tree wins over the toml text).
+SUP_PIDS=$(pgrep -f "pitchfork supervisor" 2>/dev/null | tr '\n' ' ' || true)
+PF_BINS=""
+if [ -f "$SOV/pitchfork.toml" ]; then
+  PF_BINS=$(grep -E '^\s*run\s*=' "$SOV/pitchfork.toml" | grep -oE '[^"'"'"' ]+\.(py|js|ts|sh)\b' | xargs -n1 basename 2>/dev/null | sort -u | tr '\n' ' ' || true)
 fi
-SYS_UNITS=$(systemctl --user list-units --type=service --state=running --no-legend 2>/dev/null | awk '{print $1}' || true)
 # allowlist: platform plumbing, shells, the detector's own toolchain
 ALLOW_RE='^(tailscaled|sshd|systemd|dbus|pipewire|pulseaudio|at-spi|gpg-agent|ssh-agent|tmux|screen|bash|zsh|fish|sh|sudo|su|crond|cron|node|bun|deno|python3?|perl|awk|find|grep|sleep|tail|less|vim?|nvim|emacs|git|ssh|scp|rsync|curl|wget|tar|make|cc1|ld|as|nvidia|hypr|sway|waybar|wofi|kitty|alacritty|foot|wezterm|xdg|gvfs|udisks|polkit|rtkit|upower|boltd|fwupd|ModemManager|NetworkManager|wpa_supplicant|bluetoothd|avahi|cupsd|colord|accounts-daemon|geoclue|power-profiles|snapd|docker|containerd|runc|kubelet|prometheus|grafana|node_exporter)(\s|$)'
 while IFS= read -r line; do
@@ -133,12 +142,13 @@ while IFS= read -r line; do
   # skip short-lived and allowlisted
   case "$etime" in *-*|*:*:*) : ;; *) continue ;; esac   # need >= ~1h (HH:MM:SS or D-..)
   printf '%s' "$comm" | grep -Eq "$ALLOW_RE" && continue
-  # skip anything supervised: child of pitchfork-supervised tree is hard to see
-  # from ps, so match by binary/script path against pitchfork run lines
+  # skip anything supervised: child of the live pitchfork supervisor, or
+  # basename-matches a script/binary named in pitchfork.toml run lines
   supervised=0
-  if [ -f "$SOV/pitchfork.toml" ]; then
-    for tok in $args; do
-      case "$tok" in /*) grep -qF "$tok" "$SOV/pitchfork.toml" 2>/dev/null && supervised=1 && break ;; esac
+  case " $SUP_PIDS " in *" $ppid "*) supervised=1 ;; esac
+  if (( ! supervised )) && [ -n "$PF_BINS" ]; then
+    for b in $PF_BINS; do
+      case "$args" in *"$b"*) supervised=1; break ;; esac
     done
   fi
   (( supervised )) && continue
