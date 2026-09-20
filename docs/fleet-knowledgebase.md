@@ -78,7 +78,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | edge-max | Estate-wide cutting-edge coordinator | Ember (other chat) | RUNNING |
 | oracle-max | Oracle decision-engine maximal upgrade | Ember (other chat) | RUNNING |
 | openfang | Agents autonomous + OpenFang-enabled | Ember | workers in, 8 kernel agents Running |
-| plumbline | Hesitance rollback root-cause hunt → canonical spawn-brief template (this commit) | Ember | RUNNING (2026-09-20) |
+| plumbline | Hesitance rollback root-cause hunt → canonical spawn-brief template | Ember | DONE — commits `f9095c2665` (template + registration) |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 
