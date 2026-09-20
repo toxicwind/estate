@@ -46,7 +46,7 @@ explicit — never silent).
 
 | Default | Value | Proven by |
 |---|---|---|
-| Judge panel (3) | `openrouter-free/nex-agi/nex-n2.5-mini:free`, `.../nex-n2.5-pro:free`, `openrouter-free/poolside/laguna-s-2.1:free` | 2026-09-20 herd census: fastest exact-output free models (489ms / 799ms / 2161ms), three distinct model families |
+| Judge panel (3+1) | router aliases `oracle-judge-a`, `oracle-judge-b`, `oracle-judge-c` (+ `oracle-judge-local` fallback) | 2026-09-20 herd census picked the fastest exact-output free models (489ms / 799ms / 2161ms) across three families -- but model selection lives in `config/herd.yaml` ("Oracle judge panel"), never in Oracle code. Oracle code names only routing roles; `--models` accepts aliases and refuses concrete model IDs |
 | LLR clamp | ±2.0 nats/claim | Raven-Agent (arXiv:2607.03015) |
 | Probability bounds | [0.01, 0.99] | Raven-Agent; prevents certainty theater |
 | Unverified-claim soft clamp | 0.2 nats | Raven fabrication guard |
@@ -56,6 +56,10 @@ explicit — never silent).
 | Calibration wins | ΔNLL ≈ −0.04 to −0.05 per judge vs raw | `bench/exp_calibration.py`, synthetic miscalibrated judges, held-out labels |
 | Pooling vs majority | Brier 0.2303 vs 0.2345 (accuracy within noise) | `bench/exp_pooled_vs_majority.py`, n=500, seeded |
 | Abstention bar | CP lower bound ≥ 0.80 on accepted history | `bench/exp_abstention.py`: 19/20 escalates (lo=0.751), 38/40 emits (lo=0.832); cold start = unanimity bar only |
+| Calibration ownership | `engine.build_verdict` applies the calibration loop exactly once per posterior; the ask path never touches posteriors | `bench/test_core.py`: ask-path scan has no CalibrationLoop, engine aggregation deterministic |
+| Framing vagueness guard | questions with no resolvable referent (no date/deadline, number, proper noun, or quoted span) are refused -- e.g. "Will this work?" | `bin/framing.py` anchor rule + `bench/test_core.py` regression |
+| Cold-start bar | structural confidence >= 0.90 AND posterior >= 0.85 (or <= 0.15) | `bench/exp_abstention.py` section 5 sweep: the unique candidate satisfying emit-canonical / refuse-near-miss / refuse-below-AUTO whose posterior bar equals AUTO_P (tier-ladder consistency); confidence bar matches unanimity confidence in `escalation.route` |
+| Judge return floor | old implementation: __BASELINE_FLOOR__; hardened: __HARDENED_FLOOR__ (95% CP lower bounds; same 5 questions, 60s timeout, no retry loops) | `bench/judge_return.py`, `proof-runs/judge_return_*.jsonl` |
 | Debate budget | k=2 advocates/side, ≤3 rounds, stop at max Δ<0.03 | D3 MORE pattern (arXiv:2410.04663); debate is a cost center |
 | Wang λ | 0.183 global; hierarchical covariate form | oracle3, calibrated on 291,309 resolved contracts; verified: true 0.50 → 0.5726 (≈ the paper's ~57c) |
 | Kelly | quarter-Kelly, 10% bankroll cap, 2pp min edge | Raven lesson: calibrated p ≠ trading result |
@@ -107,5 +111,4 @@ curl -s 127.0.0.1:25151/health
   gate (cross-fitted NLL must beat raw) passes.
 - The drift outer loop reports `NOT_CHECKED` until fresh labels arrive;
   verdicts carry this in their limitations line.
-- Debate advocates currently run on the judge panel itself (anonymized);
-  role-diversified advocate models are future work.
+- Debate advocates run in parallel on distinct judge aliases (`oracle-judge-a/b/c/local`), one bounded retry on the next alias, fail-open to the vote prior. Advocate finals re-enter `engine.build_verdict` as half-weight judges -- probability, confidence, gate, tier, contributions, and the verdict hash are all recomputed on the final number; nothing is overwritten in place.

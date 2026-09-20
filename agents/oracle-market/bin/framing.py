@@ -43,6 +43,50 @@ SOURCE_HINTS = [
     (re.compile(r"\b(rain|temperature|hurricane|weather)\b", re.I), "weather-service"),
 ]
 
+# Anchor patterns for the vagueness guard: a resolvable question must name
+# something concrete -- a date/deadline, a number, a proper noun, or a
+# quoted span. Bare demonstratives ("Will this work?") name nothing.
+_ANCHOR_RES = [
+    re.compile(r"\b(today|tomorrow|tonight|this\s+(week|month|year)|"
+               r"next\s+(week|month|year))\b", re.I),
+    re.compile(r"\d"),
+    # proper noun, not sentence-initial:
+    re.compile(r"(?<=[a-z]\s)[A-Z][a-z]+"),
+    re.compile(r"[\"\u201c\u2018]([^\"\u201c\u2018]{2,})[\"\u201c\u2018]"),
+]
+
+_DIGIT_RES = re.compile(r"\d")
+
+# Future-oriented questions must be resolvable as framed: they need a
+# DEADLINE (when the world gets checked) and a RESOLUTION anchor (what
+# counts as YES -- a numeric threshold, a quoted proposition, or an
+# inherently binary observable event). Without both, the question is
+# refused rather than answered with false precision. Historical/present
+# questions keep the single-anchor rule -- "Did Apollo 11 land humans on
+# the Moon in 1969?" is already fully specified by its anchors.
+_FUTURE_RES = [
+    re.compile(r"\bwill\b", re.I),
+    re.compile(r"\bgoing\s+to\b", re.I),
+]
+_PAST_LED_RES = re.compile(r"^\s*(did|was|were|has|have|had)\b", re.I)
+_DEADLINE_RES = [
+    re.compile(r"\b(today|tomorrow|tonight|this\s+(week|month|year)|"
+               r"next\s+(week|month|year))\b", re.I),
+    re.compile(r"\bby\s+\d{4}-\d{2}-\d{2}\b"),
+    re.compile(r"\bby\s+[A-Z][a-z]+\s+\d{1,2},?\s+\d{4}\b"),
+    re.compile(r"\bbefore\s+[A-Z][a-z]+\s+\d{1,2},?\s+\d{4}\b"),
+    re.compile(r"\bin\s+Q[1-4]\s+\d{4}\b", re.I),
+    re.compile(r"\bby\s+end\s+of\s+\d{4}\b", re.I),
+    re.compile(r"\b(19|20)\d{2}\b"),  # explicit year as deadline
+]
+# Inherently binary, observable event verbs. Intentionally narrow: an
+# unknown verb fails closed (refused with a clarification request).
+_BINARY_EVENT_RES = re.compile(
+    r"\b(rise|set|occur|happen|take\s+place|launch|land|win|lose|"
+    r"pass|fail|rain|snow|erupt|collapse|default|resign|die|"
+    r"eclipse)\b", re.I)
+
+
 REFUSE_PATTERNS = [
     (re.compile(r"^\s*(hi|hello|hey|yo)\b", re.I), "greeting, not a question"),
     (re.compile(r"^\s*$"), "empty question"),
@@ -114,6 +158,41 @@ def frame_question(text, now=None):
         return {"status": "refused", "refusal_reason": "not a resolvable question",
                 "clarification_request":
                 "I resolve yes/no questions. Please rephrase as one, e.g. "
+                "'Will <event> happen by <date>?'",
+                "raw": raw}
+
+    # Vague/unresolvable guard (fail-closed, 2026-09-20; future rule
+    # hardened 2026-09-20): a question with no resolvable referent is
+    # refused, never answered with false precision.
+    is_future = (any(rx.search(raw) for rx in _FUTURE_RES)
+                 and not _PAST_LED_RES.search(raw))
+    if is_future:
+        # Future questions are bets on the world: they need a deadline
+        # (when the world gets checked) AND a resolution anchor (what
+        # counts as YES). A bare proper noun is not a resolution --
+        # "Will Bitcoin go up?" names a thing but no checkable outcome.
+        has_deadline = any(rx.search(raw) for rx in _DEADLINE_RES)
+        has_resolution = (_DIGIT_RES.search(raw)
+                          or _ANCHOR_RES[3].search(raw)
+                          or _BINARY_EVENT_RES.search(raw))
+        if not (has_deadline and has_resolution):
+            missing = " and ".join(
+                name for name, ok in
+                (("a resolution date", has_deadline),
+                 ("a resolvable event or threshold", has_resolution))
+                if not ok)
+            return {"status": "refused",
+                    "refusal_reason": "future question missing " + missing,
+                    "clarification_request":
+                    "I can't resolve that as a yes/no bet yet -- it's "
+                    "missing %s. Please state what should happen and by "
+                    "when, e.g. 'Will <event> happen by <date>?'." % missing,
+                    "raw": raw}
+    elif not any(rx.search(raw) for rx in _ANCHOR_RES):
+        return {"status": "refused", "refusal_reason": "too vague to resolve",
+                "clarification_request":
+                "That names nothing concrete to resolve. Please state what "
+                "should happen, to what or whom, and by when -- e.g. "
                 "'Will <event> happen by <date>?'",
                 "raw": raw}
 
