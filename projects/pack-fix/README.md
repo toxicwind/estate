@@ -13,8 +13,10 @@ cadence/failure-escalation on that watchdog stays with `runner-watch`.
 
 - [hesitance-patterns.md](hesitance-patterns.md) — the anti-pattern catalog:
   each pattern, where it lived, how it was fixed.
-- [bin/hesitance-lint](bin/hesitance-lint) — the permanent guard. CI-style:
-  exit 1 when hesitance phrases reappear in agent instruction files.
+- [../ops/bin/hesitance-scan.sh](../ops/bin/hesitance-scan.sh) — the permanent
+  guard (per Chris's purge-max order, fleet seq 11264: every workstream ships
+  its runnable in `projects/ops/bin`). Classifies every hit as
+  ROT / LEGITIMATE / QUOTE / ANTI; exit 1 only on genuine ROT.
   The script is the deliverable; running it once was just proof.
 
 ## Run the guard
@@ -22,26 +24,26 @@ cadence/failure-escalation on that watchdog stays with `runner-watch`.
 On yote (sovereign repo skills, cron prompt files, goal crons):
 
 ```bash
-/home/toxic/sovereign/projects/pack-fix/bin/hesitance-lint
+/home/toxic/sovereign/projects/ops/bin/hesitance-scan.sh
 ```
 
 On hatch (cron bodies, goal crons, skills):
 
 ```bash
-~/workspace/bin/yote-get projects/pack-fix/bin/hesitance-lint /tmp/hesitance-lint
-bash /tmp/hesitance-lint ~/workspace/cron.d ~/workspace/goals/*/crons ~/workspace/skills
+~/workspace/bin/yote-get projects/ops/bin/hesitance-scan.sh /tmp/hesitance-scan.sh
+bash /tmp/hesitance-scan.sh ~/workspace/cron.d ~/workspace/goals/*/crons ~/workspace/skills
 ```
 
-Explicit paths and extra substring excludes:
+Also scan recent fleet traffic for hesitance rot:
 
 ```bash
-bin/hesitance-lint [PATH ...] [-x|--exclude SUBSTRING]...
+projects/ops/bin/hesitance-scan.sh --fleet -n 50
 ```
 
 Allowlist a single line only, narrowly, with a reason:
 
 ```md
-<!-- hesitance-lint-allow: fail-fast here because the data source is genuinely unreadable during outages -->
+<!-- hesitance-allow: fail-fast here because the data source is genuinely unreadable during outages -->
 ```
 
 ## What it enforces
@@ -53,8 +55,18 @@ allowlist exceptions for legitimate fail-fast/security phrasing):
 |---|---|
 | P1-investigate-refusal | "Do not investigate further, do not retry, do not run anything else" — the designed-in dead end |
 | P1-blanket-inaction | blanket "do not retry / do not run anything else" with no path to a durable fix |
-| P3-approval-gate | "awaiting approval", "waiting for approval", "ask Chris" — operational decisions Chris never needs to make |
+| P3-approval-gate | "awaiting approval", "wait for approval", "ask Chris" — operational decisions Chris never needs to make |
 | P4-deferral | "defer to Chris", "nothing invented without him" — avoidable judgment-call hesitance |
+
+Hits are classified, not just flagged:
+
+- **ROT** — genuine hesitance rot. Fix at the root (rewrite the brief/doc).
+- **LEGITIMATE** — genuinely needs Chris: money, credentials, irreversible
+  external sends, or "only Chris can do X" stated once, plainly.
+- **QUOTE** — historical quote of the old bad brief (scar documentation in
+  SOUL.md/IDENTITY.md/memory), not a live instruction.
+- **ANTI** — the line explicitly prohibits the pattern ("asking Chris is a
+  bug"). Anti-hesitance doctrine, not rot.
 
 Legitimate narrow human gates stay: provider funding/authorization only Chris
 can grant, one-probe/no-loop fail-fast against hammering, skipping a check when

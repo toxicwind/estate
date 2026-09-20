@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 # hesitance-scan.sh — estate hesitance-rot detector (permanent).
 #
+# The canonical hesitance guard for Chris's fleet (ordered: sovereign
+# projects/ops/bin, filename claimed fleet seq 11264). Consolidated 2026-09-20
+# from the pack-fix hunt's hesitance-lint: one tool, one home, no duplication.
+#
 # Scans briefs, docs, cron bodies, and skill docs for designed-in hesitance:
-#   "ask Chris", "awaiting approval", "skip long builds", "do not investigate",
-#   and other patterns where the default was surrender instead of action.
+#   "ask Chris", "awaiting approval", "wait for approval", "defer to Chris",
+#   "skip long builds", "do not investigate further",
+#   "do not retry, do not run anything else",
+# and other patterns where the default was surrender instead of action.
 #
 # Every hit is classified:
 #   ROT        — genuine hesitance rot. Fix at the root (rewrite the brief/doc).
@@ -11,14 +17,20 @@
 #                external sends, or "only Chris can do X" stated once, plainly.
 #   QUOTE      — historical quote of the old bad brief (scar documentation in
 #                SOUL.md/IDENTITY.md/memory), not a live instruction.
+#   ANTI       — the line explicitly PROHIBITS the pattern (anti-hesitance
+#                doctrine, e.g. "asking Chris is a bug"). Not rot.
 #
-# Exit: 0 = no rot (LEGITIMATE/QUOTE hits only), 1 = rot found, 2 = usage error.
+# Allowlist a single line only, narrowly, with a reason:
+#   # hesitance-allow: <reason>
+#
+# Exit: 0 = no rot (LEGITIMATE/QUOTE/ANTI hits only), 1 = rot found, 2 = usage error.
 #
 # Usage:
 #   hesitance-scan.sh [path ...]        # scan given files/dirs (default: box roots)
 #   hesitance-scan.sh --fleet [N]       # also scan last N fleet messages (needs squawk CLI)
 #   hesitance-scan.sh --quiet           # only summary + exit code
 #
+# Hunt catalog: sovereign projects/pack-fix/hesitance-patterns.md
 # Standing rule (Chris, 2026-09-20): default is autonomous action —
 # "do it, report done; only surface what genuinely needs Chris:
 # money, credentials, irreversible external sends."
@@ -28,10 +40,11 @@ set -u
 QUIET=0
 FLEET=0
 FLEET_N=20
+ALLOW_TAG='hesitance-allow:'
 
 # ---- pattern lists (case-insensitive) ---------------------------------------
 # ROT: hesitance baked into an instruction or brief.
-ROT_PAT='ask chris|awaiting approval|defer to chris|flag for review|flag for chris|skip long builds?|no further investigation|do not investigate|pending (chris|user) approval|wait for chris|run it by chris|check with chris|escalate to chris|approval before (proceeding|acting|doing)'
+ROT_PAT='ask chris|awaiting approval|wait for .*approval|defer to chris|flag for review|flag for chris|skip long builds?|no further investigation|do not investigate|do not retry,? do not run anything else|pending (chris|user) approval|wait for chris|run it by chris|check with chris|escalate to chris|approval before (proceeding|acting|doing)'
 # LEGIT: the hit is fine because the line names something only Chris can do.
 LEGIT_CTX='vault page|via vault|only (chris|the user) can|money|spend|billing|purchase|top-?up|irreversible|credential rotat|mint|secret|client key|api key|delete (the )?repo|transfer ownership|force-?push|public publish'
 # QUOTE: the hit is a historical quote of the old bad brief, not an instruction.
@@ -58,15 +71,15 @@ file_is_scar_doc() { # $1 = path; true if file documents the hesitance scar
   [ "${scar_file_cache[$f]}" -eq 1 ]
 }
 
-# Paths never scanned (vendored code, history, toolchains).
-# `**` globs: rg's single `*` does not cross `/`, so `*/x/*` misses deep paths.
-EXCLUDE_GLOBS=('**/.git/**' '**/node_modules/**' '**/site-packages/**'
-               '**/venvs/**' '**/vendor/**' '**/vendors/**' '**/archive/**'
-               '**/_archive/**' '*~' '*.pyc')
+# Paths never scanned (vendored code, history, toolchains, and the hunt's own
+# documentation — the catalog quotes the patterns it documents, which is not
+# a live instruction).
+EXCLUDE_DIRS=(.git node_modules site-packages venvs vendor vendors archive _archive pack-fix)
+EXCLUDE_FILES=('hesitance-scan.sh' 'hesitance-patterns.md' '*~' '*.pyc')
 # Note: _archive/ holds superseded bodies as historical evidence, not live
-# instructions. The 2026-09-20 purge classified its two hesitance hits there
-# (old swarm-watchdog "do not investigate further", old squawk-monitor relay
-# body) as dormant-archived; they stay in history, unedited, by design.
+# instructions. The archived swarm-watchdog copy there was rewritten 2026-09-20
+# to the fixed act-then-report behavior (enabled: false) so it is
+# resurrection-safe; it stays excluded from scans as non-live.
 
 rot_n=0; legit_n=0; quote_n=0; anti_n=0
 
@@ -88,6 +101,8 @@ classify() { # $1 = path, $2 = matched line text
 scan_stream() { # reads "path:lineno:text" lines on stdin
   while IFS= read -r hit; do
     local f="${hit%%:*}" rest="${hit#*:}"
+    # Allowlisted lines are explicitly exempted.
+    case "$hit" in *"$ALLOW_TAG"*) continue ;; esac
     # Never flag the scanner's own pattern catalog (explicit-path safe).
     [[ "$f" == */hesitance-scan.sh || "$f" == "hesitance-scan.sh" ]] && continue
     local text="${rest#*:}"   # strip path:lineno:
@@ -101,11 +116,6 @@ scan_stream() { # reads "path:lineno:text" lines on stdin
     esac
   done
 }
-
-rg_args=(-n -i -H --hidden --no-heading)
-for g in "${EXCLUDE_GLOBS[@]}"; do rg_args+=(-g "!$g"); done
-# Never flag the scanner's own pattern catalog (any copy, anywhere).
-rg_args+=(-g '!hesitance-scan.sh')
 
 TARGETS=()
 while [ $# -gt 0 ]; do
@@ -142,11 +152,30 @@ if [ ${#EXISTING[@]} -eq 0 ]; then
   printf 'no scan targets exist\n' >&2; exit 2
 fi
 
-scan_stream < <(rg "${rg_args[@]}" -e "$ROT_PAT" "${EXISTING[@]}" 2>/dev/null)
+run_scan() { # $1 = name of array with targets; ripgrep preferred, grep fallback
+  if command -v rg >/dev/null 2>&1; then
+    local -a args=(-n -i -H --hidden --no-heading -e "$ROT_PAT")
+    local d
+    for d in "${EXCLUDE_DIRS[@]}"; do args+=(-g "!**/$d/**"); done
+    local pat
+    for pat in "${EXCLUDE_FILES[@]}"; do args+=(-g "!$pat"); done
+    rg "${args[@]}" "${EXISTING[@]}" 2>/dev/null
+  else
+    local -a args=(-rnEi --hidden -e "$ROT_PAT")
+    local d
+    for d in "${EXCLUDE_DIRS[@]}"; do args+=("--exclude-dir=$d"); done
+    local pat
+    for pat in "${EXCLUDE_FILES[@]}"; do args+=("--exclude=$pat"); done
+    grep "${args[@]}" "${EXISTING[@]}" 2>/dev/null
+  fi
+}
+
+scan_stream < <(run_scan)
 
 if [ "$FLEET" -eq 1 ]; then
   if command -v squawk >/dev/null 2>&1; then
     while IFS= read -r hit; do
+      case "$hit" in *"$ALLOW_TAG"*) continue ;; esac
       text="${hit#*:}"
       cls=$(classify "fleet" "$text")
       case "$cls" in
