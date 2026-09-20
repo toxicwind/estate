@@ -1,0 +1,177 @@
+#!/usr/bin/env python3
+"""swarm-watchdog — crash-prevention interlock (NOT a work daemon).
+
+A minimal safety check, run every 2 min via cron:
+  hatch load1 > 10 (5x the 2 cores) -> swarm-pause + squawk alert
+  yote  load1 > 40 (2.5x the 16 cores) -> yote-side STOP of runaways + alert
+
+This overrides the no-polling rule the way a circuit breaker overrides
+"don't add parts": it's an interlock, not a scheduler. Silent when fine.
+
+Pause claims are VERIFIED against live /proc state (watchdog_lib.
+verify_pause): the alert says "paused" only when processes are actually
+observed SIGSTOP-frozen. If the pause produced zero frozen processes,
+the alert says PAUSE FAILED instead of lying about a pause. Never
+claims pause state from the state file alone.
+
+Canonical: hatch/bin/swarm-watchdog in toxicwind/sovereign-projects.
+Deployed: ~/workspace/bin/swarm-watchdog (copy of canonical).
+"""
+import json
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import watchdog_lib as wl
+
+HATCH_TRIG = 10.0
+YOTE_TRIG = 40.0
+BIN = "/home/hatch/workspace/bin"
+RUN_LEDGER = Path.home() / "workspace" / "watchdog" / "swarm_runs.jsonl"
+RUN_LEDGER.parent.mkdir(parents=True, exist_ok=True)
+# Storm-episode state: tracks consecutive over-threshold runs so a leaky
+# pause (agents on other cells keep spawning faster than the freeze stops
+# them) escalates instead of silently re-firing every 2 min.
+EPISODE = Path.home() / ".cache" / "shingle" / "swarm-watchdog-episode.json"
+EPISODE_TTL = 1800          # an episode older than this is stale
+LEAKY_ESCALATE_AT = 2       # consecutive over-threshold runs before escalating
+
+
+def load_episode():
+    try:
+        d = json.loads(EPISODE.read_text())
+        if time.time() - d.get("start", 0) < EPISODE_TTL:
+            return d
+    except Exception:
+        pass
+    return None
+
+
+def save_episode(d):
+    try:
+        EPISODE.parent.mkdir(parents=True, exist_ok=True)
+        EPISODE.write_text(json.dumps(d))
+    except Exception:
+        pass
+
+
+def close_episode():
+    try:
+        EPISODE.unlink()
+    except FileNotFoundError:
+        pass
+    except Exception:
+        pass
+
+
+def hatch_load():
+    return float(open("/proc/loadavg").read().split()[0])
+
+
+def yote_load():
+    try:
+        r = subprocess.run(["python3", f"{BIN}/../awrawr-bridge/exec.py",
+                            "cat /proc/loadavg"],
+                           capture_output=True, text=True, timeout=45)
+        for line in r.stdout.splitlines():
+            p = line.strip().split()
+            if p and p[0].replace(".", "", 1).isdigit():
+                return float(p[0])
+    except Exception:
+        pass
+    return 0.0
+
+
+def alert(msg):
+    subprocess.run([f"{BIN}/squawk", "send", "fleet", msg],
+                   capture_output=True, timeout=15)
+
+
+def main():
+    run_id = wl.ledger_run_start(str(RUN_LEDGER), "swarm-watchdog")
+    verdict, extra = "ok", {}
+    try:
+        verdict, extra = tick()
+    except Exception as e:  # noqa: BLE001
+        verdict = f"exception: {type(e).__name__}: {e}"
+        raise
+    finally:
+        try:
+            wl.ledger_run_complete(str(RUN_LEDGER), run_id,
+                                   "swarm-watchdog", verdict, extra)
+        except Exception:
+            pass
+
+
+def tick():
+    hl = hatch_load()
+    actions = []
+    ep = load_episode()
+    if hl > HATCH_TRIG:
+        r = subprocess.run([f"{BIN}/swarm-pause"], capture_output=True,
+                           text=True, timeout=60)
+        pause_out = (r.stdout or "").strip().splitlines()
+        # VERIFY against live /proc — never trust the exit code or a
+        # state file for "paused". swarm-pause exits 0 even when it
+        # froze nothing ("hatch-execd not found; nothing to pause").
+        v = wl.verify_pause()
+        if v["frozen"] > 0:
+            alert(f"WATCHDOG (ember): hatch load {hl:.1f} > {HATCH_TRIG} — "
+                  f"swarm auto-paused ({v['frozen']} tool processes "
+                  f"SIGSTOP-frozen, verified live). Resume: swarm-resume.")
+            print(f"hatch {hl:.1f}: PAUSED ({v['frozen']} frozen)",
+                  flush=True)
+        else:
+            said = pause_out[-1][:160] if pause_out else "(no output)"
+            alert(f"WATCHDOG (ember): hatch load {hl:.1f} > {HATCH_TRIG} — "
+                  f"PAUSE FAILED: 0 processes observed frozen "
+                  f"({v['why']}). swarm-pause said: {said}. NOT paused; "
+                  f"manual check needed.")
+            print(f"hatch {hl:.1f}: PAUSE-FAILED ({v['why']})", flush=True)
+        actions.append(f"hatch-pause frozen={v['frozen']}")
+        # Storm-episode tracking: if load is STILL over threshold on the
+        # next cycle(s), the freeze is leaky — new tool-call storms keep
+        # arriving from agents running elsewhere. Re-firing the pause is
+        # automatic; the escalation below says so once per episode so the
+        # pack sees the storm is persistent, not just a single spike.
+        if ep is None:
+            ep = {"start": time.time(), "fires": 1, "leaky": 0,
+                  "escalated": False,
+                  "load_at_first_pause": round(hl, 2),
+                  "frozen_first": v["frozen"]}
+        else:
+            ep["fires"] = ep.get("fires", 0) + 1
+            ep["leaky"] = ep.get("leaky", 0) + 1
+        if ep["leaky"] >= LEAKY_ESCALATE_AT and not ep.get("escalated"):
+            mins = int((time.time() - ep["start"]) / 60)
+            alert(f"WATCHDOG (ember): storm PERSISTENT — {ep['fires']} pauses "
+                  f"in {mins}m and hatch load still {hl:.1f} > {HATCH_TRIG}. "
+                  f"The freeze is leaky: agents on other cells keep spawning "
+                  f"fresh tool-call storms faster than the freeze stops them. "
+                  f"Hold swarm-resume until load settles; throttle at the "
+                  f"spawn side (fewer parallel bridge execs, no sleep-poll "
+                  f"loops, batch bridge calls).")
+            ep["escalated"] = True
+            actions.append("storm-escalated")
+        save_episode(ep)
+    yl = yote_load()
+    if yl > YOTE_TRIG:
+        subprocess.run([f"{BIN}/swarm-eject", "--yote-only"],
+                       capture_output=True, timeout=120)
+        alert(f"WATCHDOG (ember): yote load {yl:.1f} > {YOTE_TRIG} — "
+              f"runaways STOPped via eject.")
+        print(f"yote {yl:.1f}: EJECTED", flush=True)
+        actions.append("yote-eject")
+    if hl <= HATCH_TRIG and yl <= YOTE_TRIG:
+        if ep:
+            close_episode()
+            actions.append("storm-episode-closed")
+        print(f"ok hatch={hl:.1f} yote={yl:.1f}", flush=True)
+    return ("ok", {"actions": actions,
+                   "hatch_load": hl, "yote_load": yl})
+
+
+if __name__ == "__main__":
+    main()
