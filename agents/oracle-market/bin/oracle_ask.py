@@ -110,10 +110,11 @@ def herd_chat(model, prompt, timeout_s=90, max_tokens=1500):
         with urllib.request.urlopen(req, timeout=timeout_s) as r:
             data = json.load(r)
         text = data["choices"][0]["message"]["content"]
-        return {"ok": True, "text": text, "latency_s": time.time() - t0}
+        return {"ok": True, "text": text, "latency_s": time.time() - t0,
+                "usage": data.get("usage") or {}}
     except Exception as e:
         return {"ok": False, "error": "%s: %s" % (type(e).__name__, e),
-                "latency_s": time.time() - t0}
+                "latency_s": time.time() - t0, "usage": {}}
 
 
 def extract_json(text):
@@ -155,6 +156,7 @@ def judge_once(model, prompt, timeout_s):
     jp.raw_response = (res.get("text") or "")[:2000]
     jp.latency_s = res.get("latency_s", 0)
     jp.error = res.get("error")
+    jp.usage = res.get("usage") or {}
     if not res["ok"]:
         return jp
     data = extract_json(res["text"] or "")
@@ -218,7 +220,9 @@ def run_ask(question, models=None, timeout_s=90, evidence_items=None,
     receipt and the engine (double application was removed 2026-09-20).
     """
     t0 = time.time()
+    t_f0 = time.time()
     framed = framing.frame_question(question)
+    t_frame = time.time() - t_f0
     if framed.get("status") == "refused":
         return engine.build_verdict(framed, [])
     models = models or _env_models()
@@ -244,6 +248,8 @@ def run_ask(question, models=None, timeout_s=90, evidence_items=None,
     judges = []
     latencies = {}
     slots = []
+    usages = []
+    t_j0 = time.time()
     with cf.ThreadPoolExecutor(max_workers=len(models)) as ex:
         futs = {ex.submit(_resilient_judge, m, prompt_for(i), timeout_s): (m, i)
                 for i, m in enumerate(models)}
@@ -267,12 +273,19 @@ def run_ask(question, models=None, timeout_s=90, evidence_items=None,
             judges.append(jp)
             slots.append(slot)
             latencies[m] = getattr(jp, "latency_s", 0)
+            usages.append(getattr(jp, "usage", None) or {})
+    t_judge = time.time() - t_j0
     judges.sort(key=lambda j: models.index(j.judge_id)
                 if j.judge_id in models else 99)
 
     # NOTE: no calibration here. engine.build_verdict applies the
     # calibration loop exactly once, deterministically, then aggregates.
+    t_e0 = time.time()
     verdict = engine.build_verdict(framed, judges)
+    t_engine = time.time() - t_e0
+    verdict["timing"] = {"frame_s": round(t_frame, 3),
+                         "judge_s": round(t_judge, 3),
+                         "engine_s": round(t_engine, 3)}
     verdict["latency_s"] = time.time() - t0
     verdict["judge_latencies"] = latencies
     verdict["judge_slots"] = slots
@@ -291,11 +304,15 @@ def run_ask(question, models=None, timeout_s=90, evidence_items=None,
         ev_text = "\n".join(
             "- " + (c.get("text", "") or "") for j in judges for c in j.claims[:4])
 
+        debate_usages = []
+
         def _debate_chat(model, prompt, t):
             res = herd_chat(model, prompt, t, max_tokens=400)
+            debate_usages.append(res.get("usage") or {})
             return {"content": res.get("text") or ""}
 
         budget_left = max(10.0, budget_s - (time.time() - t0))
+        t_d0 = time.time()
         debate = escalation.debate_tier(
             framed["binary_question"], framed["resolution_criteria"], ev_text,
             judges=models,  # router aliases; distinct per advocate
@@ -335,7 +352,12 @@ def run_ask(question, models=None, timeout_s=90, evidence_items=None,
         final["judge_latencies"] = latencies
         final["models"] = models
         final["latency_s"] = time.time() - t0
+        final["timing"] = dict(verdict.get("timing") or {},
+                               debate_s=round(time.time() - t_d0, 3))
         final["cost_usd"] = round(calls * 0.002, 6)
+        final["llm_calls"] = calls
+        final["usage_cost_usd"] = round(
+            sum(_usage_cost(u) for u in usages + debate_usages), 6)
         engine.record_verdict(final)
         return final
     elif tier == "HUMAN":
@@ -346,8 +368,24 @@ def run_ask(question, models=None, timeout_s=90, evidence_items=None,
         # gate withheld but no disagreement: escalate path stays, engine honest
         verdict["tier"] = "VOTE"
     verdict["cost_usd"] = round(calls * 0.002, 6)
+    verdict["llm_calls"] = calls
+    verdict["usage_cost_usd"] = round(sum(_usage_cost(u) for u in usages), 6)
     engine.record_verdict(verdict)
     return verdict
+
+
+def _usage_cost(u):
+    """Measured upstream cost of one herd call from its usage block.
+    Free-tier judges report cost 0; missing usage -> 0.0 (honest, not
+    imputed). Kept separate from cost_usd, which is the code's flat
+    per-request accounting estimate."""
+    if not isinstance(u, dict):
+        return 0.0
+    c = u.get("cost")
+    try:
+        return float(c) if c else 0.0
+    except (TypeError, ValueError):
+        return 0.0
 
 
 def run_canaries(models=None, timeout_s=90):

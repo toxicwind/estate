@@ -166,3 +166,4 @@ Every spawn brief MUST be generated from `docs/spawn-brief-template.md` and MUST
 
 Staleness is a bug: if you find this file wrong, fix it and push — same commit rules as §3.
 | stale-hunter | Process staleness + speed audit across hatch+yote: 12h+ silence/idle hunt, CPU-vs-wall profiling, faster paths/libs, paru/pacman installs; repair live, durable, event-driven | Ember (main chat) | RUNNING (2026-09-20) |
+| oracle-experiments | Oracle deep proving suite: labeled eval vs outcomes (KalshiBench N=100), escalation analysis, latency/cost per tier, default tuning with rationale, co-failure certificate | oracle-experiments (Ember's crew, under oracle-max) | RUNNING (2026-09-20) |
