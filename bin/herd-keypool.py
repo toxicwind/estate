@@ -22,11 +22,26 @@ Health model (Chris 2026-09-20):
     pool's health endpoint (fast, no spend) before it carries traffic.
   - Fail-fast: probes and failover attempts use short timeouts; the first
     valid key wins per call.
+  - Racing (KEYPOOL_RACE_KEYS=N, default 1): with N>1 the top-N eligible
+    keys are attempted CONCURRENTLY and the first valid (2xx) wins — the
+    hedged-request answer to a degraded-but-not-dead first key serializing
+    the tail. Losers are abandoned and their connections closed best-effort
+    (urllib blocking calls can't be force-cancelled; in-flight losers
+    self-close on completion once the race is decided). A 401/402/429
+    on any contestant still parks just that key (routing signal, as above);
+    a non-routing error is forwarded immediately, exactly as in sequential
+    mode; a lone timeout just loses the race (no state change). N=1 keeps
+    the historical sequential pick-then-failover loop unchanged.
+
+Env:
+  KEYPOOL_RACE_KEYS   keys raced per call (default 1 = sequential)
+  KEYPOOL_PORT        listen port (default 25109; set to e.g. 25110 for a
+                      sidecar test instance without touching the live daemon)
 
 Endpoints:
   /health  -> 200 {"ok": true}
   /status  -> per-pool key states (names, states, latency_ms, fingerprint,
-              last_error_class, recover_in_s). NO key values, ever.
+              last_error_class, recover_in_s) plus race_keys. NO key values, ever.
 
 Audit: every select/failover/recovery appends one JSON line to
   /home/toxic/sovereign/data/keypool-audit.jsonl
@@ -44,6 +59,8 @@ import threading
 import time
 import urllib.request
 import urllib.error
+import queue
+from concurrent import futures
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 LISTEN = (
@@ -60,6 +77,12 @@ AUDIT_PATH = os.environ.get(
     "/home/toxic/sovereign/data/keypool-audit.jsonl",
 )
 AUDIT_MAX_BYTES = int(os.environ.get("KEYPOOL_AUDIT_MAX_BYTES", 10_000_000))
+# RACING (edge-additions 2026-09-20): how many top eligible keys to race
+# concurrently per call. "1" (default) = today's sequential pick-then-failover,
+# bit-for-bit. "2"+ = first-valid-wins across the top-N keys (hedged-request
+# lineage: Dean & Barroso; TailSieve tail-isolation). Roll out by setting
+# KEYPOOL_RACE_KEYS=2 in the pitchfork unit env; the default changes nothing.
+RACE_KEYS = max(1, int(os.environ.get("KEYPOOL_RACE_KEYS", "1")))
 
 HOP_HEADERS = {
     "connection", "keep-alive", "proxy-authenticate", "proxy-authorization",
@@ -372,6 +395,9 @@ class Pool:
             else:
                 log(f"pool {name}: key {kname} not in secrets — skipped (names only)")
         self.lock = threading.Lock()
+        # Racing telemetry for the KEYPOOL_RACE_KEYS>1 path. Updated only via
+        # _race_record() under self.lock; surfaced read-only in /status.
+        self.race_stats = {"races": 0, "wins": 0, "failed": 0}
 
     # ------------------------------------------------------------ probing
 
@@ -448,26 +474,36 @@ class Pool:
             return (st, ks.latency_ms if ks.latency_ms is not None else 1e9)
         return sorted(cands, key=rank)
 
+    def _select_one(self, ks, model_id, now, via=None):
+        """Probe-or-select a single candidate. Returns True when ks may
+        carry traffic. Shared by pick() and race_candidates() so both paths
+        apply identical probing, parking, free_only gating and audits."""
+        if ks.state == "unknown" or not ks.last_probe_ok:
+            if self._probe_and_update(ks):
+                detail = {"latency_ms": ks.latency_ms, "model": model_id}
+                if via:
+                    detail["via"] = via
+                self._audit("select", ks, detail)
+                return True
+            # probe failed -> park it briefly, keep going
+            with self.lock:
+                ks.state = "down"
+                ks.down_until = now + self.cooldown_default
+            self._audit("probe_fail", ks, {"error": ks.last_error})
+            return False
+        detail = {"latency_ms": ks.latency_ms, "model": model_id}
+        if via:
+            detail["via"] = via
+        self._audit("select", ks, detail)
+        return True
+
     def pick(self, model_id=None):
         """First-valid-wins. Returns a KeyState or None (all down).
         model_id gates free_only keys: they serve only free models."""
         now = time.time()
-        cands = self._order(self._eligible(now, model_id))
-        for ks in cands:
-            if ks.state == "unknown" or not ks.last_probe_ok:
-                if self._probe_and_update(ks):
-                    self._audit("select", ks, {"latency_ms": ks.latency_ms,
-                                              "model": model_id})
-                    return ks
-                # probe failed -> park it briefly, keep going
-                with self.lock:
-                    ks.state = "down"
-                    ks.down_until = now + self.cooldown_default
-                self._audit("probe_fail", ks, {"error": ks.last_error})
-                continue
-            self._audit("select", ks, {"latency_ms": ks.latency_ms,
-                                              "model": model_id})
-            return ks
+        for ks in self._order(self._eligible(now, model_id)):
+            if self._select_one(ks, model_id, now):
+                return ks
         # Nothing eligible: on-demand revalidation sweep (recovery path).
         # Respect cooldown: never re-probe a key that was just marked down
         # (its health probe may pass while a specific model still 429s --
@@ -477,14 +513,38 @@ class Pool:
                 continue
             if ks.free_only and not _is_free_model(model_id):
                 continue
-            if self._probe_and_update(ks):
-                self._audit("select", ks, {"latency_ms": ks.latency_ms,
-                                           "via": "recovery_sweep"})
+            if self._select_one(ks, model_id, time.time(),
+                                via="recovery_sweep"):
                 return ks
-            with self.lock:
-                ks.state = "down"
-                ks.down_until = time.time() + self.cooldown_default
         return None
+
+    def race_candidates(self, model_id, n):
+        """Top-n race candidates for KEYPOOL_RACE_KEYS>1. Applies exactly
+        pick()'s selection semantics (cheap probes, parking, free_only
+        gating, recovery sweep) but returns up to n usable keys instead of
+        one, so the race never spends a contestant slot on a key pick()
+        would have rejected."""
+        now = time.time()
+        out = []
+        for ks in self._order(self._eligible(now, model_id)):
+            if len(out) >= n:
+                break
+            if self._select_one(ks, model_id, now):
+                out.append(ks)
+        if len(out) < n:
+            for ks in self._order(self.keys):
+                if len(out) >= n:
+                    break
+                if ks in out:
+                    continue
+                if ks.state == "down" and time.time() < ks.down_until:
+                    continue
+                if ks.free_only and not _is_free_model(model_id):
+                    continue
+                if self._select_one(ks, model_id, time.time(),
+                                    via="recovery_sweep"):
+                    out.append(ks)
+        return out
 
     def mark_down(self, ks, status):
         cd = self.cooldown.get(status, self.cooldown_default)
@@ -495,6 +555,12 @@ class Pool:
         log(f"pool {self.name}: {ks.name} http:{status} -> down {cd:.0f}s (routing signal)")
         self._audit("failover", ks, {"http_status": status,
                                      "cooldown_s": cd})
+
+    def _race_record(self, won):
+        """Account one finished race (KEYPOOL_RACE_KEYS>1 path)."""
+        with self.lock:
+            self.race_stats["races"] += 1
+            self.race_stats["wins" if won else "failed"] += 1
 
 
 POOLS = {}
@@ -524,6 +590,115 @@ def load_pools():
 def reload_all(signum=None, frame=None):
     log("reloading pools config + secrets")
     load_pools()
+
+
+def race_first_valid(pool, forward, candidates):
+    """Concurrent first-valid-wins across candidates (KEYPOOL_RACE_KEYS>1).
+
+    forward(ks) -> response object on 2xx, or raises urllib.error.HTTPError
+    / Exception. Each contestant runs on its own daemon thread; results are
+    collected event-driven on a queue (no sleeps, no polling, no
+    ThreadPoolExecutor-as-context-manager which would serialize the tail).
+
+    Returns (kind, ks, payload, ms):
+      ("winner", ks, resp, ms)   first 2xx — serve resp, losers are closed
+      ("error", None, code, ms)  first non-routing HTTPError — forward it now,
+                                 exactly as the sequential path would
+      ("failed", None, None, 0)  every contestant lost — 502 with tried list
+
+    A 401/402/429 parks just that key (pool.mark_down: routing signal, same
+    as sequential) and that contestant drops out. A timeout / network error
+    just loses the race (no key state change). Loser responses are closed
+    best-effort: urllib blocking calls cannot be force-cancelled, so the
+    live-response registry + stop flag guarantee every loser connection is
+    closed either by the settler or by the still-flying thread itself.
+    """
+    q = queue.Queue()
+    stop = threading.Event()
+    pending = len(candidates)
+    live = {}               # key name -> response arrived but race undecided
+    live_lock = threading.Lock()
+
+    def close_resp(resp):
+        try:
+            resp.close()
+        except Exception:
+            pass
+
+    def attempt(ks):
+        t0 = time.monotonic()
+        try:
+            resp = forward(ks)
+        except urllib.error.HTTPError as e:
+            q.put(("httperr", ks, e, (time.monotonic() - t0) * 1000))
+            return
+        except Exception as e:  # timeout / DNS / reset: just loses the race
+            q.put(("err", ks, e, (time.monotonic() - t0) * 1000))
+            pool._audit("race_loss", ks, {"error": str(e)[:160]})
+            return
+        ms = (time.monotonic() - t0) * 1000
+        with live_lock:
+            if stop.is_set():
+                closed = True
+            else:
+                live[ks.name] = resp
+                closed = False
+        if closed:
+            close_resp(resp)          # race already decided: self-close
+            q.put(("late", ks, None, ms))
+        else:
+            q.put(("ok", ks, resp, ms))
+
+    def settle(winner_resp=None):
+        """Decide the race: no new winners; close every loser connection."""
+        stop.set()
+        with live_lock:
+            for resp in live.values():
+                if resp is not winner_resp:
+                    close_resp(resp)
+            live.clear()
+        while True:
+            try:
+                kind, ks, payload, _ms = q.get_nowait()
+            except queue.Empty:
+                return
+            if kind == "ok" and payload is not None \
+                    and payload is not winner_resp:
+                close_resp(payload)
+
+    for ks in candidates:
+        threading.Thread(target=attempt, args=(ks,), daemon=True,
+                         name=f"keypool-race-{pool.name}-{ks.name}").start()
+
+    # Every attempt carries pool.request_timeout; the deadline is slack for
+    # thread teardown only — winners arrive event-driven through the queue.
+    deadline = time.monotonic() + pool.request_timeout + 5
+    while pending > 0:
+        try:
+            kind, ks, payload, ms = q.get(
+                timeout=max(0.05, deadline - time.monotonic()))
+        except queue.Empty:
+            break  # hung attempt; daemon threads self-close on completion
+        pending -= 1
+        if kind == "ok":
+            pool._audit("race_win", ks, {
+                "latency_ms": round(ms, 1),
+                "contestants": [c.name for c in candidates],
+            })
+            settle(payload)
+            return ("winner", ks, payload, ms)
+        if kind == "httperr":
+            e = payload
+            if e.code in pool.fail_status:
+                # Routing signal: park just this key, keep waiting.
+                pool.mark_down(ks, e.code)
+                continue
+            # Non-routing error: forward immediately, like sequential mode.
+            settle()
+            return ("error", None, e.code, ms)
+        # "err" / "late": contestant lost, keep waiting for the rest.
+    settle()
+    return ("failed", None, None, 0.0)
 
 
 # ------------------------------------------------------------------- proxy
@@ -583,7 +758,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def _serve_status(self):
         now = time.time()
-        out = {"ts": now, "pools": {}}
+        out = {"ts": now, "race_keys": RACE_KEYS, "pools": {}}
         with POOLS_LOCK:
             pools = dict(POOLS)
         for pname, pool in pools.items():
@@ -600,7 +775,10 @@ class Handler(BaseHTTPRequestHandler):
                         "recover_in_s": round(max(0.0, ks.down_until - now), 1)
                         if ks.state == "down" else 0.0,
                     })
-            out["pools"][pname] = {"upstream": pool.upstream, "keys": keys}
+            with pool.lock:
+                race = dict(pool.race_stats)
+            out["pools"][pname] = {"upstream": pool.upstream, "keys": keys,
+                                   "race": race}
         self._send_json(200, out)
 
     def _forward(self, pool, rest, raw, ks):
@@ -620,6 +798,45 @@ class Handler(BaseHTTPRequestHandler):
         req.add_header("Authorization", "Bearer " + ks.value)
         return urllib.request.urlopen(req, timeout=pool.request_timeout)
 
+    def _serve_response(self, resp):
+        """Stream an upstream response back to the caller. Shared by the
+        sequential path and the race winner."""
+        rctype = resp.headers.get("Content-Type", "")
+        no_length = resp.headers.get("Content-Length") is None
+        self.send_response(resp.status)
+        for k, v in resp.headers.items():
+            if k.lower() not in HOP_HEADERS:
+                self.send_header(k, v)
+        if no_length:
+            self.send_header("Connection", "close")
+        self.end_headers()
+        streaming = ("text/event-stream" in rctype) or (
+            no_length and "chunked" in resp.headers.get("Transfer-Encoding", "").lower()
+        )
+        try:
+            if streaming:
+                while True:
+                    b = resp.read(1)
+                    if not b:
+                        break
+                    self.wfile.write(b)
+                    self.wfile.flush()
+            else:
+                while True:
+                    chunk = resp.read(65536)
+                    if not chunk:
+                        break
+                    self.wfile.write(chunk)
+        except (BrokenPipeError, ConnectionResetError):
+            pass
+        finally:
+            try:
+                self.wfile.flush()
+            except (BrokenPipeError, ConnectionResetError):
+                pass
+        if no_length:
+            self.close_connection = True
+
     def _proxy(self):
         pool, rest = self._route()
         if pool is None:
@@ -631,6 +848,14 @@ class Handler(BaseHTTPRequestHandler):
         # rules (reasoning-first token floor, sampling-strip for o1/o3/gpt-5+).
         raw = _apply_openai_compat(pool.name, model_id, raw)
 
+        if RACE_KEYS > 1:
+            self._proxy_race(pool, rest, raw, model_id)
+        else:
+            self._proxy_sequential(pool, rest, raw, model_id)
+
+    def _proxy_sequential(self, pool, rest, raw, model_id):
+        """Historical path: pick one key, fail over serially. Bit-for-bit
+        the pre-racing behavior; RACE_KEYS=1 lands here."""
         tried = []
         while True:
             ks = pool.pick(model_id)
@@ -661,42 +886,36 @@ class Handler(BaseHTTPRequestHandler):
                 self._send_json(502, {"error": f"keypool upstream: {e}"})
                 return
 
-            rctype = resp.headers.get("Content-Type", "")
-            no_length = resp.headers.get("Content-Length") is None
-            self.send_response(resp.status)
-            for k, v in resp.headers.items():
-                if k.lower() not in HOP_HEADERS:
-                    self.send_header(k, v)
-            if no_length:
-                self.send_header("Connection", "close")
-            self.end_headers()
-            streaming = ("text/event-stream" in rctype) or (
-                no_length and "chunked" in resp.headers.get("Transfer-Encoding", "").lower()
-            )
-            try:
-                if streaming:
-                    while True:
-                        b = resp.read(1)
-                        if not b:
-                            break
-                        self.wfile.write(b)
-                        self.wfile.flush()
-                else:
-                    while True:
-                        chunk = resp.read(65536)
-                        if not chunk:
-                            break
-                        self.wfile.write(chunk)
-            except (BrokenPipeError, ConnectionResetError):
-                pass
-            finally:
-                try:
-                    self.wfile.flush()
-                except (BrokenPipeError, ConnectionResetError):
-                    pass
-            if no_length:
-                self.close_connection = True
+            self._serve_response(resp)
             return
+
+    def _proxy_race(self, pool, rest, raw, model_id):
+        """KEYPOOL_RACE_KEYS>1: first-valid-wins across the top-N eligible
+        keys. A degraded-but-not-dead first key no longer serializes the
+        tail; losers are abandoned and their connections closed."""
+        candidates = pool.race_candidates(model_id, RACE_KEYS)
+        if not candidates:
+            self._send_json(502, {
+                "error": f"keypool '{pool.name}': no healthy key",
+                "tried": [],
+                "hint": "see /status for per-key states; keys revalidate on demand",
+            })
+            return
+        tried = [ks.name for ks in candidates]
+        kind, ks, payload, ms = race_first_valid(
+            pool, lambda k: self._forward(pool, rest, raw, k), candidates)
+        pool._race_record(kind == "winner")
+        if kind == "winner":
+            self._serve_response(payload)
+        elif kind == "error":
+            self._send_json(payload,
+                            {"error": f"keypool upstream: HTTP {payload}"})
+        else:
+            self._send_json(502, {
+                "error": f"keypool '{pool.name}': no healthy key",
+                "tried": tried,
+                "hint": "see /status for per-key states; keys revalidate on demand",
+            })
 
     # HTTP verb aliases — bound AFTER _proxy is defined (class-body order).
     do_POST = _proxy
@@ -750,6 +969,7 @@ def selftest():
         p.cooldown_default = 120
         p.keys = [KeyState(n, v) for n, v in keys]
         p.lock = threading.Lock()
+        p.race_stats = {"races": 0, "wins": 0, "failed": 0}
         p._health_map = health_map
         orig = p._health_probe
         def fake(ks):
@@ -850,6 +1070,144 @@ def selftest():
     got = pool.pick()
     if got is None:
         print("FAIL case8d: legacy pick()"); fails += 1
+
+    # ---- racing: race_first_valid + race_candidates (KEYPOOL_RACE_KEYS>1)
+    import urllib.error as _ue
+
+    class FakeResp:
+        def __init__(self):
+            self.closed = False
+        def close(self):
+            self.closed = True
+
+    def http_err(code):
+        return _ue.HTTPError("http://127.0.0.1/x", code, f"HTTP {code}",
+                             {}, None)
+
+    def wait_closed(resp, timeout=2.0):
+        end = time.monotonic() + timeout
+        while not resp.closed and time.monotonic() < end:
+            time.sleep(0.01)
+        return resp.closed
+
+    # case 9: slow A (0.4s) vs fast B (0.01s) — B wins well before A finishes,
+    # and the loser's connection is closed.
+    seen = {}
+    def fwd_ab(ks):
+        if ks.name == "A":
+            time.sleep(0.4)
+        else:
+            time.sleep(0.01)
+        r = FakeResp()
+        seen[ks.name] = r
+        return r
+    pool = mkpool([("A", "KA"), ("B", "KB")],
+                  {"A": (True, 5.0, 200), "B": (True, 6.0, 200)})
+    cands = pool.race_candidates(None, 2)
+    t0 = time.monotonic()
+    kind, ks, payload, ms = race_first_valid(pool, fwd_ab, cands)
+    dt = time.monotonic() - t0
+    if kind != "winner" or ks.name != "B":
+        print(f"FAIL case9: race -> {kind} {ks and ks.name}"); fails += 1
+    if dt >= 0.35:
+        print(f"FAIL case9: winner took {dt:.2f}s (fast key ~0.01s)"); fails += 1
+    end = time.monotonic() + 2.0
+    while "A" not in seen and time.monotonic() < end:
+        time.sleep(0.01)
+    if "A" not in seen or not wait_closed(seen["A"]):
+        print("FAIL case9: loser connection not closed"); fails += 1
+
+    # case 10: fast 401 on A, healthy B — B wins, A parked (routing signal)
+    def fwd_401(ks):
+        if ks.name == "A":
+            raise http_err(401)
+        return FakeResp()
+    pool = mkpool([("A", "KA"), ("B", "KB")],
+                  {"A": (True, 5.0, 200), "B": (True, 6.0, 200)})
+    cands = pool.race_candidates(None, 2)
+    kind, ks, payload, ms = race_first_valid(pool, fwd_401, cands)
+    if kind != "winner" or ks.name != "B":
+        print(f"FAIL case10: -> {kind} {ks and ks.name}"); fails += 1
+    if pool.keys[0].state != "down":
+        print("FAIL case10: 401 contestant not parked"); fails += 1
+
+    # case 11: all contestants 401 — race fails, every key parked
+    def fwd_all401(ks):
+        raise http_err(401)
+    pool = mkpool([("A", "KA"), ("B", "KB")],
+                  {"A": (True, 5.0, 200), "B": (True, 6.0, 200)})
+    cands = pool.race_candidates(None, 2)
+    kind, ks, payload, ms = race_first_valid(pool, fwd_all401, cands)
+    if kind != "failed":
+        print(f"FAIL case11: -> {kind}"); fails += 1
+    if any(k.state != "down" for k in pool.keys):
+        print("FAIL case11: not all contestants parked"); fails += 1
+
+    # case 12: fast 500 on A, slow B — non-routing error forwarded
+    # immediately (same as sequential mode), not after B's 0.4s
+    def fwd_500(ks):
+        if ks.name == "A":
+            raise http_err(500)
+        time.sleep(0.4)
+        return FakeResp()
+    pool = mkpool([("A", "KA"), ("B", "KB")],
+                  {"A": (True, 5.0, 200), "B": (True, 6.0, 200)})
+    cands = pool.race_candidates(None, 2)
+    t0 = time.monotonic()
+    kind, ks, payload, ms = race_first_valid(pool, fwd_500, cands)
+    dt = time.monotonic() - t0
+    if kind != "error" or payload != 500:
+        print(f"FAIL case12: -> {kind} {payload}"); fails += 1
+    if dt >= 0.35:
+        print(f"FAIL case12: non-routing error not immediate ({dt:.2f}s)"); fails += 1
+
+    # case 13: timeout on A, healthy B — B wins, A NOT parked (no state
+    # change for a lone timeout, per the racing contract)
+    def fwd_timeout(ks):
+        if ks.name == "A":
+            raise TimeoutError("upstream timed out")
+        return FakeResp()
+    pool = mkpool([("A", "KA"), ("B", "KB")],
+                  {"A": (True, 5.0, 200), "B": (True, 6.0, 200)})
+    cands = pool.race_candidates(None, 2)
+    kind, ks, payload, ms = race_first_valid(pool, fwd_timeout, cands)
+    if kind != "winner" or ks.name != "B":
+        print(f"FAIL case13: -> {kind} {ks and ks.name}"); fails += 1
+    if pool.keys[0].state == "down":
+        print("FAIL case13: timeout wrongly parked the key"); fails += 1
+
+    # case 14: race_candidates honors free_only gating and the N cap.
+    # (healthy keys rank before unknown ones, exactly like pick().)
+    pool = mkpool([("F", "KF"), ("P1", "KP1"), ("P2", "KP2")],
+                  {"F": (True, 1.0, 200), "P1": (True, 2.0, 200),
+                   "P2": (True, 3.0, 200)})
+    pool.keys[0].free_only = True
+    cands = pool.race_candidates("x/y", 3)
+    if [k.name for k in cands] != ["P1", "P2"]:
+        print(f"FAIL case14a: paid -> {[k.name for k in cands]}"); fails += 1
+    pool = mkpool([("F", "KF"), ("P1", "KP1"), ("P2", "KP2")],
+                  {"F": (True, 1.0, 200), "P1": (True, 2.0, 200),
+                   "P2": (True, 3.0, 200)})
+    pool.keys[0].free_only = True
+    cands = pool.race_candidates("x/y:free", 2)
+    if [k.name for k in cands] != ["F", "P1"]:
+        print(f"FAIL case14b: free n=2 -> {[k.name for k in cands]}"); fails += 1
+    cands = pool.race_candidates("x/y:free", 3)
+    if [k.name for k in cands] != ["F", "P1", "P2"]:
+        print(f"FAIL case14c: free n=3 -> {[k.name for k in cands]}"); fails += 1
+    if pool.keys[0].state != "healthy":
+        print("FAIL case14d: free_only key not probed healthy"); fails += 1
+
+    # case 15: race telemetry init/record; RACE_KEYS default stays 1
+    pool = mkpool([("A", "KA")], {"A": (True, 5.0, 200)})
+    if pool.race_stats != {"races": 0, "wins": 0, "failed": 0}:
+        print("FAIL case15a: race_stats init"); fails += 1
+    pool._race_record(True)
+    pool._race_record(False)
+    if pool.race_stats != {"races": 2, "wins": 1, "failed": 1}:
+        print(f"FAIL case15b: {pool.race_stats}"); fails += 1
+    if RACE_KEYS != 1:
+        print("FAIL case15c: default RACE_KEYS should be 1"); fails += 1
 
     srv.shutdown()
     print("keypool selftest: " + ("ALL PASS" if not fails else f"{fails} FAILURES"))
