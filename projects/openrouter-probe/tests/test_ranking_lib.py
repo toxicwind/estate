@@ -91,8 +91,10 @@ def test_build_report_nine_ranked_plus_fallback():
     assert len(report["ranking"]) == 9
     assert len(report["fallback_tier"]) == 1
     assert report["fallback_tier"][0]["model"] == "openrouter/free"
-    # full results array preserved (11 entries: 9 + fallback + dead)
-    assert len(report["results"]) == 11
+    # results carries the ranked tier only (9); fallback lives in
+    # fallback_tier, dead in dead_or_errored
+    assert len(report["results"]) == 9
+    assert all(r["model"] != "openrouter/free" for r in report["results"])
     assert len(report["dead_or_errored"]) == 1
 
 
@@ -150,7 +152,5 @@ def test_report_json_serializable_and_idempotent():
     s1 = json.dumps(r1, sort_keys=True)
     s2 = json.dumps(r2, sort_keys=True)
     assert s1 == s2  # idempotent across runs
-    # ranking names match the ranked results 1:1
-    by_model = {r["model"]: r for r in r1["results"]}
-    assert [by_model[m]["quality_mean"] for m in r1["ranking"]] == \
-           [r["quality_mean"] for r in rank_models(split_tiers(results)[0])]
+    # ranking names match results 1:1 and in order
+    assert [r["model"] for r in r1["results"]] == r1["ranking"]
