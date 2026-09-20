@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+# fleet-lock — workstream ownership lock for Ember's pack.
+#
+# Prevents two coordinators from spawning workers for the same workstream.
+# A coordinator MUST acquire the lock before fanning out. If the lock is
+# held, coordinate with the owner in fleet instead of spawning.
+#
+# Usage:
+#   fleet-lock acquire <workstream> --owner <name> [--task "desc"]
+#   fleet-lock release <workstream> --owner <name>
+#   fleet-lock check <workstream>
+#   fleet-lock list
+#
+# Workstream names: lowercase, hyphens, e.g. "dashboard", "oracle-market", "tau-fix"
+# Locks are files in ~/workspace/fleet-locks/. Structural, not doctrinal:
+# the file either exists or it doesn't.
+
+set -euo pipefail
+
+LOCK_DIR="${FLEET_LOCK_DIR:-$HOME/workspace/fleet-locks}"
+mkdir -p "$LOCK_DIR"
+
+usage() {
+  cat <<'EOF'
+usage: fleet-lock acquire <workstream> --owner <name> [--task "desc"]
+       fleet-lock release <workstream> --owner <name>
+       fleet-lock check <workstream>
+       fleet-lock list
+EOF
+}
+
+cmd="${1:-}"; shift 2>/dev/null || { usage >&2; exit 2; }
+
+case "$cmd" in
+  acquire)
+    ws="${1:-}"; shift 2>/dev/null || { usage >&2; exit 2; }
+    owner=""; task=""
+    while [ $# -gt 0 ]; do
+      case "$1" in
+        --owner) owner="$2"; shift 2;;
+        --task) task="$2"; shift 2;;
+        *) echo "unknown arg: $1" >&2; exit 2;;
+      esac
+    done
+    [ -n "$ws" ] || { echo "workstream required" >&2; exit 2; }
+    [ -n "$owner" ] || { echo "--owner required" >&2; exit 2; }
+    lockfile="$LOCK_DIR/$ws.lock"
+    if [ -f "$lockfile" ]; then
+      holder="$(head -1 "$lockfile" 2>/dev/null | cut -d: -f2)"
+      since="$(stat -c %y "$lockfile" 2>/dev/null | cut -d. -f1)"
+      echo "LOCK HELD: workstream '$ws' is owned by '$holder' (since $since)" >&2
+      echo "Do NOT spawn. Coordinate with '$holder' in fleet first." >&2
+      cat "$lockfile" >&2
+      exit 3
+    fi
+    {
+      echo "owner:$owner"
+      echo "task:${task:-<none>}"
+      echo "acquired:$(date -u +%FT%TZ)"
+      echo "host:$(hostname)"
+    } > "$lockfile"
+    echo "LOCK ACQUIRED: '$ws' -> '$owner'"
+    ;;
+  release)
+    ws="${1:-}"; shift 2>/dev/null || { usage >&2; exit 2; }
+    owner=""
+    while [ $# -gt 0 ]; do
+      case "$1" in
+        --owner) owner="$2"; shift 2;;
+        *) echo "unknown arg: $1" >&2; exit 2;;
+      esac
+    done
+    [ -n "$ws" ] || { echo "workstream required" >&2; exit 2; }
+    [ -n "$owner" ] || { echo "--owner required" >&2; exit 2; }
+    lockfile="$LOCK_DIR/$ws.lock"
+    if [ ! -f "$lockfile" ]; then
+      echo "No lock held for '$ws' — nothing to release."
+      exit 0
+    fi
+    holder="$(head -1 "$lockfile" 2>/dev/null | cut -d: -f2)"
+    if [ "$holder" != "$owner" ]; then
+      echo "Cannot release: '$ws' is owned by '$holder', not '$owner'" >&2
+      exit 4
+    fi
+    rm -f "$lockfile"
+    echo "LOCK RELEASED: '$ws' (was '$owner')"
+    ;;
+  check)
+    ws="${1:-}"; shift 2>/dev/null || { usage >&2; exit 2; }
+    lockfile="$LOCK_DIR/$ws.lock"
+    if [ -f "$lockfile" ]; then
+      echo "HELD:"
+      cat "$lockfile"
+      exit 3
+    else
+      echo "FREE: '$ws'"
+      exit 0
+    fi
+    ;;
+  list)
+    shopt -s nullglob
+    locks=("$LOCK_DIR"/*.lock)
+    if [ ${#locks[@]} -eq 0 ]; then
+      echo "(no locks held)"
+    else
+      for f in "${locks[@]}"; do
+        ws="$(basename "$f" .lock)"
+        holder="$(head -1 "$f" 2>/dev/null | cut -d: -f2)"
+        echo "$ws -> $holder"
+      done
+    fi
+    ;;
+  *)
+    usage >&2; exit 2;;
+esac
