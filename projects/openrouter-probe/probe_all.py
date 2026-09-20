@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """probe_all.py -- probe EVERY model on OpenRouter's /v1/models endpoint.
 
-Reads OPENROUTER_API_KEY_1 from /home/toxic/.secrets IN-PROCESS.
+Reads OPENROUTER_API_KEY_FREE from /home/toxic/.secrets IN-PROCESS.
 The key NEVER leaves this box and is NEVER printed or logged.
 Rank on quality/latency/availability only -- cost is NOT a factor (Chris directive).
 
@@ -21,7 +21,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 SECRETS = "/home/toxic/.secrets"
 OUTDIR = "/home/toxic/sovereign/projects/openrouter-probe"
 BASE = "https://openrouter.ai/api/v1"
-KEY_NAME = "OPENROUTER_API_KEY_1"
+KEY_NAME = "OPENROUTER_API_KEY_FREE"
 WORKERS = 8
 PER_MODEL_TIMEOUT = 25
 
