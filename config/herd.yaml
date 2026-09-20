@@ -121,11 +121,7 @@ routing:
 macros:
   MODEL_DIR: /home/toxic/models
   BEELLAMA_BIN: /home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp/build-cuda86/bin/llama-server
-  TURBO_BIN: /home/toxic/projects/sovereign-projects/herd/engines/llama-cpp-turboquant/build/bin/llama-server
-  IK_BIN: /home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp/build/bin/llama-server
   BEELLAMA_LD: /home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp/build-cuda86/bin
-  TURBO_LD: /home/toxic/projects/sovereign-projects/herd/engines/llama-cpp-turboquant/build/bin
-  IK_LD: /home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp/build/src:/home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp/build/ggml/src
 
   EXAONE_1B_IQ4XS: ${MODEL_DIR}/EXAONE-4.0-1.2B-IQ4_XS.gguf
   EXAONE_1B_Q4KM: ${MODEL_DIR}/EXAONE-4.0-1.2B-Q4_K_M.gguf
@@ -133,28 +129,16 @@ macros:
   EXAONE_1B_Q6K: ${MODEL_DIR}/EXAONE-4.0-1.2B-Q6_K.gguf
   EXAONE_1B_Q80: ${MODEL_DIR}/EXAONE-4.0-1.2B-Q8_0.gguf
 
-  QWEN36_27B_MTP: ${MODEL_DIR}/Qwen3.6-27B-MTP-UD-Q4_K_XL.gguf
-  QWEN36_27B_UD: ${MODEL_DIR}/Qwen3.6-27B-UD-Q4_K_XL.gguf
-  QWEN36_27B_DFLASH_IQ4XS: ${MODEL_DIR}/Qwen3.6-27B-DFlash-IQ4_XS.gguf
-  QWEN36_27B_DFLASH_DRAFTER: ${MODEL_DIR}/Qwen3.6-27B-DFlash-Q4_K_M.gguf
 
-  GEMMA_21B_REAP: ${MODEL_DIR}/gemma-4-21b-a4b-it-REAP-Q4_K_M.gguf
   GEMMA_12B_BASE_Q4KM: ${MODEL_DIR}/gemma-4-12b-it-Q4_K_M.gguf
-  GEMMA_12B_MTP_Q4KM: ${MODEL_DIR}/gemma4-12b-it-mtp-Q4_K_M.gguf
   GEMMA_12B_UNCENS_Q4KM: ${MODEL_DIR}/gemma-4-12B-it-uncensored-Q4_K_M.gguf
-  GEMMA_31B_DFLASH_DRAFTER: ${MODEL_DIR}/gemma4-31b-it-dflash-Q4_K_M.gguf
 
-  HERETIC_27B_Q5XL: ${MODEL_DIR}/heretic-UD-27B-Q5_K_XL.gguf
 
   QWEN35_9B_FLASH_MTP: ${MODEL_DIR}/Qwen3.5-9B-DeepSeek-V4-Flash-MTP-Q4_K_M.gguf
   QWEN35_9B_FLASH_IQ4XS: ${MODEL_DIR}/Qwen3.5-9B-DeepSeek-V4-Flash-IQ4_XS.gguf
   QWEN35_9B_FLASH_DA_Q4KM: ${MODEL_DIR}/Q3.5-9B-DS-v4-Flash-DA-Q4_K_M.gguf
-  QWEN35_9B_DFLASH_Q5KM: ${MODEL_DIR}/qwen3.5-9b-dflash-Q5_K_M.gguf
 
   STRANGE_7B_Q4KM: ${MODEL_DIR}/StrangeMerges_19-7B-dare_ties.Q4_K_M.gguf
-  MN_GRAND_23B: ${MODEL_DIR}/MN-GRAND-23.5B-Gutenberg-UNCENSORED-V2-Q4_K_M.gguf
-  QWEN_28B_REAP: ${MODEL_DIR}/Qwen-3.5-28B-A3B-REAP-Q4_K_M.gguf
-  DRAFT_SMALL: ${MODEL_DIR}/Qwen2.5-1.5B-Draft-Q8_0.gguf
 
   CUDA_ENV: CUDA_VISIBLE_DEVICES=0 GGML_CUDA=1 GGML_CUDA_GRAPHS=1 GGML_CUDA_FA_ALL_QUANTS=1
 
@@ -162,7 +146,6 @@ macros:
   SRV_PORT: --port ${PORT}
   SRV_HOST_PORT: ${SRV_HOST} ${SRV_PORT}
   SRV_GPU_LAYERS: --n-gpu-layers all
-  IK_GPU_LAYERS: -ngl 99
   SRV_FA: --flash-attn on
   SRV_GPU: ${SRV_GPU_LAYERS} ${SRV_FA}
   SRV_PARALLEL: --parallel 1
@@ -171,15 +154,10 @@ macros:
   SRV_NOMMAP: --no-mmap
   SRV_SAFETY: ${SRV_PARALLEL} ${SRV_METRICS} ${SRV_MLOCK} ${SRV_NOMMAP}
   SRV_BASE: ${SRV_HOST_PORT} ${SRV_GPU} ${SRV_SAFETY}
-  SRV_IK_BASE: ${SRV_HOST_PORT} ${IK_GPU_LAYERS} ${SRV_FA} ${SRV_SAFETY}
 
   FORK_BEELLAMA: --kv-unified --no-host --cache-ram 0
-  FORK_TURBO: --no-warmup
-  FORK_IK: --fit --fit-margin 512 --no-warmup --defrag-thold 0.1
 
   KV_Q8: --cache-type-k q8_0 --cache-type-v q8_0
-  KV_TURBO3: --cache-type-k turbo3 --cache-type-v turbo3
-  KV_PRECISE: --cache-type-k q5_0 --cache-type-v q4_1
 
   CS_32K: "32768"
   CS_64K: "65536"
@@ -200,12 +178,31 @@ macros:
   SPEC_NONE: ""
 
 models:
+  # --- Kimi short aliases (added 2026-09-20) ---
+  # Fixed-target forwarders via config/herd.d/alias-shim.py. No fallback,
+  # no substitution: each alias IS its target. Targets verified live today.
+  kimi:
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
+    description: "Kimi (alias -> moonshot/kimi-k2.6)"
+    metadata:
+      alias_of: moonshot/kimi-k2.6
+  kimi-k2:
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
+    description: "Kimi K2 (alias -> moonshot/kimi-k2.6)"
+    metadata:
+      alias_of: moonshot/kimi-k2.6
+  kimi-code:
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.7-code
+    description: "Kimi code specialist (alias -> moonshot/kimi-k2.7-code)"
+    metadata:
+      alias_of: moonshot/kimi-k2.7-code
   beellama/exaone-4-0-1-2b-iq4xs:
     cmd: ${BEELLAMA_BIN} --model ${EXAONE_1B_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     aliases:
       - fast
       - tiny
       - exaone-iq4xs
+      - exaone-1.2b-iq4xs-32k
     env:
       - LD_LIBRARY_PATH=${BEELLAMA_LD}
       - ${CUDA_ENV}
@@ -292,6 +289,7 @@ models:
     aliases:
       - small
       - qwen-flash-64k-i1
+      - qwen3.5-9b-i1-q4km-64k
     env:
       - LD_LIBRARY_PATH=${BEELLAMA_LD}
       - ${CUDA_ENV}
@@ -725,17 +723,17 @@ peers:
   # Exact ID for NIM: moonshotai/kimi-k3 (lowercase). HF uses moonshotai/Kimi-K3.
   # NEEDS: NVIDIA_API_KEY in .secrets (build.nvidia.com -> API keys).
   # Currently DISABLED - uncomment when key is available.
-  # nim-kimi:
-  #   proxy: https://integrate.api.nvidia.com/v1
-  #   apiKey: ${env.NVIDIA_API_KEY}
-  #   models:
-  #     - moonshotai/kimi-k3
-  #   timeouts:
-  #     connect: 30
-  #     keepalive: 30
-  #     responseHeader: 120
-  #     tlsHandshake: 10
-  #     idleConn: 90
+  nim-kimi:
+    proxy: https://integrate.api.nvidia.com/v1
+    apiKey: ${env.NVIDIA_API_KEY}
+    models:
+      - moonshotai/kimi-k3
+    timeouts:
+      connect: 30
+      keepalive: 30
+      responseHeader: 60
+      tlsHandshake: 10
+      idleConn: 90
 
   # DISABLED 2026-09-20 ~02:45 MDT (provider-surgeon): DEEPSEEK_API_KEY returns HTTP 402
   # "Insufficient Balance" on both deepseek-chat and deepseek-reasoner (direct probe).
