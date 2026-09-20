@@ -12,7 +12,7 @@
 | ---- | ---- |
 | `llama-swap.go`, `internal/` | Fork source (upstream + our additions) |
 | `internal/flock/` | flock Go router — RETIRED from the shipped binary 2026-09-17 (tree-only; live cloud routing is the `:8000` flock daemon via the `flock:` key). Kept: 8 strategies, 13 cloud providers, SQLite health DB (see `README_FLOCK_V2.md`) |
-| `config.yaml` | Vendored routing matrix + backend config reference |
+| `config.yaml` | Symlink -> ../../config/herd.yaml (canonical; was a stale autoscan copy) |
 | `MODEL_INVENTORY.md` | Local GGUF / model-id audit for this host |
 | `TUNING.md` | Performance tuning notes |
 | `model-profiles.json` | Model profiles |
