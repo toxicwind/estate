@@ -14,3 +14,6 @@ on 2 cores, caused by orphaned recursive greps over ~/workspace).
 
 Also mirrored to `/home/toxic/.local/bin/` (on PATH). Runtime state
 (`safe-rg.log`, `.io-leases/`) is NOT committed.
+
+---
+*Up: [master README](../../README.md) · [fleet knowledgebase](../../docs/fleet-knowledgebase.md)*
