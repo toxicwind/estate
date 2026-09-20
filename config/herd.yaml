@@ -50,7 +50,7 @@ flock:
     flock-deepseek-v4-flash: deepseek-ai/deepseek-v4-flash-0731
     flock-nemotron-35-lightning: nvidia/nemotron-3.5-lightning-30b-a3b
     flock-glm-53-flash: z-ai/glm-5.3-flash
-    kimi-k2: moonshotai/kimi-k2.6
+    kimi-k2: moonshot/kimi-k2.6
     kimi-k3-nim: moonshotai/kimi-k3
 routing:
   scheduler:
@@ -183,23 +183,24 @@ models:
   # --- Kimi short aliases (added 2026-09-20) ---
   # Fixed-target forwarders via config/herd.d/alias-shim.py. No fallback,
   # no substitution: each alias IS its target. Retargeted 2026-09-20
-  # (herd-deployer) from moonshot/* to openrouter-pool/* — the moonshot
-  # peer is parked; Kimi routes via the OpenRouter key-pool sidecar.
+  # (moonshot-parked-audit) from openrouter-pool/* back to moonshot/* --
+  # the direct peer is restored; openrouter-pool Kimi is 402
+  # "Insufficient credits" until the account is topped up.
   kimi:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-pool/moonshotai/kimi-k2.6
-    description: "Kimi (alias -> openrouter-pool/moonshotai/kimi-k2.6)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
+    description: "Kimi (alias -> moonshot/kimi-k2.6)"
     metadata:
-      alias_of: openrouter-pool/moonshotai/kimi-k2.6
+      alias_of: moonshot/kimi-k2.6
   kimi-k2:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-pool/moonshotai/kimi-k2.6
-    description: "Kimi K2 (alias -> openrouter-pool/moonshotai/kimi-k2.6)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
+    description: "Kimi K2 (alias -> moonshot/kimi-k2.6)"
     metadata:
-      alias_of: openrouter-pool/moonshotai/kimi-k2.6
+      alias_of: moonshot/kimi-k2.6
   kimi-code:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-pool/moonshotai/kimi-k2.7-code
-    description: "Kimi code specialist (alias -> openrouter-pool/moonshotai/kimi-k2.7-code)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.7-code
+    description: "Kimi code specialist (alias -> moonshot/kimi-k2.7-code)"
     metadata:
-      alias_of: openrouter-pool/moonshotai/kimi-k2.7-code
+      alias_of: moonshot/kimi-k2.7-code
   beellama/exaone-4-0-1-2b-iq4xs:
     cmd: ${BEELLAMA_BIN} --model ${EXAONE_1B_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     aliases:
@@ -746,28 +747,28 @@ peers:
       tlsHandshake: 10
       idleConn: 90
 
-  # --- moonshot: Moonshot AI direct (PARKED 2026-09-20) ---
-  # MOONSHOT_API_KEY is live (verified HTTP 200 on /v1/models 2026-09-20 ~09:00)
-  # but chat returned 429 on the ~09:00 probe. Per doctrine a 429 is TRANSIENT,
-  # so this peer is PARKED as a documented standby -- NOT deleted. Kimi currently
-  # routes via openrouter-pool (key-pool sidecar :25109). If 429s persist for hours,
-  # suspect balance exhaustion and top up. RESTORE: uncomment the block below and
-  # re-probe chat completions to HTTP 200 before relying on it.
+  # --- moonshot: Moonshot AI direct (RESTORED 2026-09-20, moonshot-parked-audit) ---
+  # Key verified live 2026-09-20 ~15:00 MDT (HTTP 200 on /v1/models; serves
+  # kimi-k2.6 + kimi-k2.7-code, no kimi-k3 on this key). Chat was 429 at probe
+  # time -- TRANSIENT per doctrine; herd peer failover + cooldown apply. If 429s
+  # persist for hours, suspect balance exhaustion, re-park, and top up.
+  # OpenRouter Kimi is 402 "Insufficient credits" (E4) -- this peer is the
+  # working K2-line route until credits land or HF-free revives. k3 has no
+  # direct route: kimi-k3-nim stays on openrouter-pool (honest 402).
   # Model IDs verbatim from api.moonshot.ai/v1/models.
-  # kimi-k2.6 = main Kimi; kimi-k2.7-code = code specialist. No kimi-k3 on this key.
   # NOTE: proxy has no /v1 suffix -- the router joins proxy + /v1/chat/completions.
-  # moonshot:
-  #   proxy: https://api.moonshot.ai
-  #   apiKey: ${env.MOONSHOT_API_KEY}
-  #   models:
-  #     - kimi-k2.6
-  #     - kimi-k2.7-code
-  #   timeouts:
-  #     connect: 30
-  #     keepalive: 30
-  #     responseHeader: 120
-  #     tlsHandshake: 10
-  #     idleConn: 90
+  moonshot:
+    proxy: https://api.moonshot.ai
+    apiKey: ${env.MOONSHOT_API_KEY}
+    models:
+      - kimi-k2.6
+      - kimi-k2.7-code
+    timeouts:
+      connect: 30
+      keepalive: 30
+      responseHeader: 120
+      tlsHandshake: 10
+      idleConn: 90
   # nim-kimi peer DELETED 2026-09-20 (herd-deployer). Debate verdict:
   # NIM is DELETED, not demoted — 24h 429 soft-locks poison fail-fast
   # routing, so NIM never returns as primary. Kimi K3 serves via the

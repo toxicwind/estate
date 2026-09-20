@@ -178,3 +178,31 @@ Deployment (only on Chris's approval — shared tree, shared daemon):
 - Prior research: `~/workspace/audits/kimi-k3/kimi-k3-provider-research.md` (OpenRouter/Pollinations/NIM/Moonshot catalog 2026-09-20); `projects/openrouter-probe/RANKING.md` + `probe_reliability.py` (v3: 446 IDs, 10 winners).
 - Web (via `~/workspace/skills/exa/SKILL.md`): https://ai-api-hub.com/providers/moonshot/ (pub. 2026-09-12, verified 2026-09-13); https://www.kimi.com/en/help/kimi-api/api-rate-limits (official rate-limit docs); Moonshot status https://status.moonshot.cn/ (per provider-research).
 - Standing rules applied: `~/AGENTS.md` (model-family tooling never hardcodes model IDs — this audit proposes router-config changes only); 429/402 = transient routing signals (cooldown + auto-recovery); verify-before-claiming (every status above was probed live this session).
+
+## 8. Restoration executed — 2026-09-20 ~15:30 MDT (Chris approved "restore the moonshot peer")
+
+- Applied the §5 diff to live `config/herd.yaml`: `moonshot` peer restored
+  (`kimi-k2.6` + `kimi-k2.7-code` via `https://api.moonshot.ai`,
+  `apiKey: ${env.MOONSHOT_API_KEY}`); Kimi alias shims (`kimi`, `kimi-k2`,
+  `kimi-code`) retargeted from `openrouter-pool/moonshotai/*` back to
+  `moonshot/*`; modelMap `kimi-k2` → `moonshot/kimi-k2.6`
+  (`kimi-k3-nim` stays on `openrouter-pool`, honest 402).
+- `config/model_constraints.yaml`: corrected the stale "kimi-k3 REVIVED via
+  the OpenRouter key-pool" note — OpenRouter Kimi is 402
+  "Insufficient credits" as of 15:02 MDT (billing state, `_1` key).
+- Herd restarted via `bin/pitchfork-restart sovereign/herd`
+  (pid 1607234 → 1695100, `:25100` health 200). `moonshot/kimi-k2.6` and
+  `moonshot/kimi-k2.7-code` now appear in herd `/v1/models` (93 total, was
+  91); Kimi aliases resolve.
+- **Post-restore exact-token probe (`moonshot/kimi-k2.6`, `ABSTRACT-7X3Q`):
+  HTTP 429, body `exceeded_current_quota_error` — "account suspended due to
+  insufficient balance, please recharge your account".** This is a
+  billing-state 429, not a rate-limit transient: the peer is correctly wired
+  and will serve the moment the Moonshot account is topped up (Chris's money
+  call). Herd's cooldown/failover absorbs the 429s meanwhile; nothing else
+  regressed (Kimi was fully dark before — 402/404/parked/deleted routes).
+- The 429 body also contained a canary-shaped token string appended to the
+  org id — treated as honeytoken per standing policy: noted, not acted on,
+  not reproduced here.
+- Follow-ups still open (§6): HF-first re-probe with the refreshed token,
+  OpenRouter credit top-up (Chris), Moonshot balance top-up (Chris).
