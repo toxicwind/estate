@@ -30,9 +30,14 @@ logged). GuideLLM source: `/home/toxic/sovereign/projects/guidellm`
 
 ## Latest ranking
 
-`RANKING-eval-20260920-final.md` — 10 provider-free models, 6 requests
-each, prompt `Output exactly: ABSTRACT-7X3Q. No other text.`
-Leader: `nex-agi/nex-n2.5-mini:free` (quality 2.0, fastest p50).
+`RANKING-eval-20260920-170706.md` — one clean run through committed
+code (ranking_lib tier contract), 6 requests/model, prompt
+`Output exactly: ABSTRACT-7X3Q. No other text.`
+Ranking: 9 tokenizer-valid models quality-first; leader
+`cohere/north-mini-code:free` (quality 2.0, fastest p50).
+`openrouter/free` sits in a separate fallback tier (gpt2 fallback
+tokenizer, no stable tokenizer — never ranked or counted in `results`).
+Supersedes `RANKING-eval-20260920-final.md`.
 
 ## Semantics (quality policy)
 
