@@ -1,0 +1,117 @@
+#!/usr/bin/env python3
+"""bin/debate -- task-dir/candidate-file frontend for debate-run.
+
+Usage:
+  bin/debate --task <task-dir> --candidates <files> [--rounds N]
+             [--lane-budget S] [--budget S] [--lanes "url|model,..."]
+             [--router URL] [--out DIR]
+
+<task-dir> layout (all optional except spec.md):
+  spec.md                task specification text (required)
+  hard_constraints.md    one constraint per line (optional)
+  measured_failure.md    measured failure mode text (optional)
+  e2e_failure_notes.md   hard constraints from e2e failure logs (optional)
+  task.json              full debate-task.json override (optional; merged)
+
+<candidates>: comma-separated code/patch files. Each becomes one candidate;
+candidate id = file stem (e.g. "c1-fix.py" -> "c1-fix"). .diff/.patch files
+are stored as "patch", everything else as files {basename: content}.
+
+Assembles a debate-task.json, then execs bin/debate-run with the same
+interpreter. --lane-budget maps to debate-run's --turn-timeout.
+"""
+import argparse
+import json
+import os
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+DEBATE_RUN = os.path.join(HERE, "debate-run")
+
+
+def read_opt(path):
+    return open(path).read().strip() if os.path.isfile(path) else None
+
+
+def build_task(task_dir, cand_files):
+    spec = read_opt(os.path.join(task_dir, "spec.md"))
+    if not spec:
+        # maybe task.json carries everything
+        tj = os.path.join(task_dir, "task.json")
+        if os.path.isfile(tj):
+            with open(tj) as f:
+                return json.load(f)
+        raise SystemExit(f"FATAL: {task_dir}/spec.md (or task.json) required")
+    hc_raw = read_opt(os.path.join(task_dir, "hard_constraints.md")) or ""
+    task_id = os.path.basename(os.path.abspath(task_dir)).replace("_", "-")
+    task = {
+        "task_id": task_id,
+        "spec": spec,
+        "hard_constraints": [l.strip("- ").strip() for l in hc_raw.splitlines()
+                              if l.strip()],
+        "measured_failure": read_opt(os.path.join(task_dir, "measured_failure.md")),
+        "e2e_failure_notes": read_opt(os.path.join(task_dir, "e2e_failure_notes.md")),
+    }
+    cands = []
+    for i, cf in enumerate(cand_files):
+        if not os.path.isfile(cf):
+            raise SystemExit(f"FATAL: candidate file not found: {cf}")
+        with open(cf) as f:
+            content = f.read()
+        stem = os.path.splitext(os.path.basename(cf))[0]
+        cand = {"id": stem or f"cand{i+1}", "files": {os.path.basename(cf): content}}
+        if cf.endswith((".diff", ".patch")):
+            cand["patch"] = content
+        cands.append(cand)
+    task["candidates"] = cands
+    # optional full override merge
+    tj = os.path.join(task_dir, "task.json")
+    if os.path.isfile(tj):
+        with open(tj) as f:
+            base = json.load(f)
+        base.update(task)
+        task = base
+    return task
+
+
+def main():
+    ap = argparse.ArgumentParser(description="debate CLI (task-dir frontend)")
+    ap.add_argument("--task", required=True, help="task directory")
+    ap.add_argument("--candidates", required=True,
+                    help="comma-separated candidate code/patch files")
+    ap.add_argument("--rounds", type=int, default=None)
+    ap.add_argument("--lane-budget", type=int, default=None, dest="lane_budget",
+                    help="per-turn lane budget in seconds")
+    ap.add_argument("--budget", type=int, default=None,
+                    help="end-to-end debate ceiling in seconds")
+    ap.add_argument("--lanes", default=None)
+    ap.add_argument("--router", default=None)
+    ap.add_argument("--max-tokens", type=int, default=None)
+    ap.add_argument("--temperature", type=float, default=None)
+    ap.add_argument("--out", default=None)
+    args = ap.parse_args()
+
+    cand_files = [c.strip() for c in args.candidates.split(",") if c.strip()]
+    if not (2 <= len(cand_files) <= 4):
+        raise SystemExit(f"FATAL: need 2..4 candidate files, got {len(cand_files)}")
+    task = build_task(args.task, cand_files)
+    task_path = os.path.join(args.task, "debate-task.json")
+    with open(task_path, "w") as f:
+        json.dump(task, f, indent=1)
+    print(f"[debate] task assembled: {task_path} "
+          f"({len(cand_files)} candidates)", file=sys.stderr)
+
+    cmd = [sys.executable, DEBATE_RUN, "--task", task_path]
+    if args.rounds: cmd += ["--rounds", str(args.rounds)]
+    if args.lane_budget: cmd += ["--turn-timeout", str(args.lane_budget)]
+    if args.budget: cmd += ["--budget", str(args.budget)]
+    if args.lanes: cmd += ["--lanes", args.lanes]
+    if args.router: cmd += ["--router", args.router]
+    if args.max_tokens: cmd += ["--max-tokens", str(args.max_tokens)]
+    if args.temperature is not None: cmd += ["--temperature", str(args.temperature)]
+    if args.out: cmd += ["--out", args.out]
+    os.execv(sys.executable, cmd)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

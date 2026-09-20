@@ -1,0 +1,256 @@
+{
+ "strategies": [
+  {
+   "name": "demo-fast",
+   "cmd": [
+    "/usr/bin/python3",
+    "/home/toxic/sovereign/killer-features/code-racer/run_candidate.py",
+    "--strategy",
+    "demo-fast",
+    "--task",
+    "/home/toxic/sovereign/killer-features/code-racer/tasks/task-3-wordfreq-cli",
+    "--registry",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/registry.json",
+    "--solve-timeout",
+    "120.0",
+    "--test-timeout",
+    "60.0"
+   ],
+   "match": "RACE-PASS"
+  },
+  {
+   "name": "demo-slow",
+   "cmd": [
+    "/usr/bin/python3",
+    "/home/toxic/sovereign/killer-features/code-racer/run_candidate.py",
+    "--strategy",
+    "demo-slow",
+    "--task",
+    "/home/toxic/sovereign/killer-features/code-racer/tasks/task-3-wordfreq-cli",
+    "--registry",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/registry.json",
+    "--solve-timeout",
+    "120.0",
+    "--test-timeout",
+    "60.0"
+   ],
+   "match": "RACE-PASS"
+  },
+  {
+   "name": "demo-broken",
+   "cmd": [
+    "/usr/bin/python3",
+    "/home/toxic/sovereign/killer-features/code-racer/run_candidate.py",
+    "--strategy",
+    "demo-broken",
+    "--task",
+    "/home/toxic/sovereign/killer-features/code-racer/tasks/task-3-wordfreq-cli",
+    "--registry",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/registry.json",
+    "--solve-timeout",
+    "120.0",
+    "--test-timeout",
+    "60.0"
+   ],
+   "match": "RACE-PASS"
+  },
+  {
+   "name": "direct-fast",
+   "cmd": [
+    "/usr/bin/python3",
+    "/home/toxic/sovereign/killer-features/code-racer/run_candidate.py",
+    "--strategy",
+    "direct-fast",
+    "--task",
+    "/home/toxic/sovereign/killer-features/code-racer/tasks/task-3-wordfreq-cli",
+    "--registry",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/registry.json",
+    "--solve-timeout",
+    "120.0",
+    "--test-timeout",
+    "60.0"
+   ],
+   "match": "RACE-PASS"
+  },
+  {
+   "name": "direct-tool",
+   "cmd": [
+    "/usr/bin/python3",
+    "/home/toxic/sovereign/killer-features/code-racer/run_candidate.py",
+    "--strategy",
+    "direct-tool",
+    "--task",
+    "/home/toxic/sovereign/killer-features/code-racer/tasks/task-3-wordfreq-cli",
+    "--registry",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/registry.json",
+    "--solve-timeout",
+    "120.0",
+    "--test-timeout",
+    "60.0"
+   ],
+   "match": "RACE-PASS"
+  },
+  {
+   "name": "kimi-auto",
+   "cmd": [
+    "/usr/bin/python3",
+    "/home/toxic/sovereign/killer-features/code-racer/run_candidate.py",
+    "--strategy",
+    "kimi-auto",
+    "--task",
+    "/home/toxic/sovereign/killer-features/code-racer/tasks/task-3-wordfreq-cli",
+    "--registry",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/registry.json",
+    "--solve-timeout",
+    "120.0",
+    "--test-timeout",
+    "60.0"
+   ],
+   "match": "RACE-PASS"
+  },
+  {
+   "name": "router-hedged",
+   "cmd": [
+    "/usr/bin/python3",
+    "/home/toxic/sovereign/killer-features/code-racer/run_candidate.py",
+    "--strategy",
+    "router-hedged",
+    "--task",
+    "/home/toxic/sovereign/killer-features/code-racer/tasks/task-3-wordfreq-cli",
+    "--registry",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/registry.json",
+    "--solve-timeout",
+    "120.0",
+    "--test-timeout",
+    "60.0"
+   ],
+   "match": "RACE-PASS"
+  },
+  {
+   "name": "plan-then-code",
+   "cmd": [
+    "/usr/bin/python3",
+    "/home/toxic/sovereign/killer-features/code-racer/run_candidate.py",
+    "--strategy",
+    "plan-then-code",
+    "--task",
+    "/home/toxic/sovereign/killer-features/code-racer/tasks/task-3-wordfreq-cli",
+    "--registry",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/registry.json",
+    "--solve-timeout",
+    "120.0",
+    "--test-timeout",
+    "60.0"
+   ],
+   "match": "RACE-PASS"
+  },
+  {
+   "name": "test-first",
+   "cmd": [
+    "/usr/bin/python3",
+    "/home/toxic/sovereign/killer-features/code-racer/run_candidate.py",
+    "--strategy",
+    "test-first",
+    "--task",
+    "/home/toxic/sovereign/killer-features/code-racer/tasks/task-3-wordfreq-cli",
+    "--registry",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/registry.json",
+    "--solve-timeout",
+    "120.0",
+    "--test-timeout",
+    "60.0"
+   ],
+   "match": "RACE-PASS"
+  },
+  {
+   "name": "oracle-consensus",
+   "cmd": [
+    "/usr/bin/python3",
+    "/home/toxic/sovereign/killer-features/code-racer/run_candidate.py",
+    "--strategy",
+    "oracle-consensus",
+    "--task",
+    "/home/toxic/sovereign/killer-features/code-racer/tasks/task-3-wordfreq-cli",
+    "--registry",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/registry.json",
+    "--solve-timeout",
+    "120.0",
+    "--test-timeout",
+    "60.0"
+   ],
+   "match": "RACE-PASS"
+  },
+  {
+   "name": "evolve",
+   "cmd": [
+    "/usr/bin/python3",
+    "/home/toxic/sovereign/killer-features/code-racer/run_candidate.py",
+    "--strategy",
+    "evolve",
+    "--task",
+    "/home/toxic/sovereign/killer-features/code-racer/tasks/task-3-wordfreq-cli",
+    "--registry",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/registry.json",
+    "--solve-timeout",
+    "120.0",
+    "--test-timeout",
+    "60.0"
+   ],
+   "match": "RACE-PASS"
+  },
+  {
+   "name": "reviewer-rank",
+   "cmd": [
+    "/usr/bin/python3",
+    "/home/toxic/sovereign/killer-features/code-racer/run_candidate.py",
+    "--strategy",
+    "reviewer-rank",
+    "--task",
+    "/home/toxic/sovereign/killer-features/code-racer/tasks/task-3-wordfreq-cli",
+    "--registry",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/registry.json",
+    "--solve-timeout",
+    "120.0",
+    "--test-timeout",
+    "60.0"
+   ],
+   "match": "RACE-PASS"
+  },
+  {
+   "name": "showdown",
+   "cmd": [
+    "/usr/bin/python3",
+    "/home/toxic/sovereign/killer-features/code-racer/run_candidate.py",
+    "--strategy",
+    "showdown",
+    "--task",
+    "/home/toxic/sovereign/killer-features/code-racer/tasks/task-3-wordfreq-cli",
+    "--registry",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/registry.json",
+    "--solve-timeout",
+    "120.0",
+    "--test-timeout",
+    "60.0"
+   ],
+   "match": "RACE-PASS"
+  },
+  {
+   "name": "efficiency-duel",
+   "cmd": [
+    "/usr/bin/python3",
+    "/home/toxic/sovereign/killer-features/code-racer/run_candidate.py",
+    "--strategy",
+    "efficiency-duel",
+    "--task",
+    "/home/toxic/sovereign/killer-features/code-racer/tasks/task-3-wordfreq-cli",
+    "--registry",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/registry.json",
+    "--solve-timeout",
+    "120.0",
+    "--test-timeout",
+    "60.0"
+   ],
+   "match": "RACE-PASS"
+  }
+ ]
+}
