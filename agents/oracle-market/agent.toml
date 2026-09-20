@@ -1,0 +1,26 @@
+name = "oracle-market"
+version = "1.0.0"
+description = "Persistent event-driven auctioneer/judge/settler for the Squawk bid-market. Watches the bid-market channel via inotify, validates and ranks signed bids, assigns winners, runs fallback execution on winner timeout, verifies results and settles auctions."
+author = "toxicwind"
+module = "external:daemon"
+
+[model]
+provider = "llama-swap"
+model = "kimi-auto"
+base_url = "http://127.0.0.1:25100/v1"
+max_tokens = 32000
+temperature = 0.2
+
+[resources]
+max_llm_tokens_per_hour = 100000
+max_context_tokens = 32000
+
+[capabilities]
+tools = ["file_read", "file_list", "file_write", "exec"]
+network = []
+agent_spawn = false
+workflow_run = false
+
+[runtime]
+command = "bin/run.sh"
+restart = "always"
