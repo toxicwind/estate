@@ -35,10 +35,8 @@ Tau (formerly OMP) is the AI-native agent engine for the Sovereign ecosystem, de
   ```
 
 ## Documentation Index
-- ~~[Architecture Guide](/docs/ARCHITECTURE.md)~~ — removed 2026-09-19: `docs/ARCHITECTURE.md` does not exist
-- ~~[Setup Guide](/docs/SETUP.md)~~ — removed 2026-09-19: `docs/SETUP.md` does not exist
-- [Contributor Guide](/CONTRIBUTING.md)
-- [Packages Overview](/docs/packages/)
+- [Contributor Guide](CONTRIBUTING.md)
+- [Packages Overview](../docs/packages/)
 
 ## Upstream v18.2.6 snapshot (oh-my-pi)
 
@@ -53,3 +51,13 @@ Factual highlights from the merged upstream release that apply to Tau (read `.om
 - **Collab/share:** new `collab.autoStart` (`off`/`view`/`control`) auto-hosts interactive sessions; `/share` obfuscates secrets before upload — see [docs/collab.md](docs/collab.md).
 - **Extensions:** runtime model discovery (`fetchDynamicModels`, 15s hard-bounded fetch), masked secret login prompts, `deliverAs: "aside"` injection at step boundaries, explicit `session_stop` block-vs-advisory semantics — see [docs/extensions.md](docs/extensions.md).
 - **Docs added upstream in this merge:** [Agent Hub](docs/agent-hub.md), [LSP config](docs/lsp-config.md), [Magic keywords](docs/magic-keywords.md), [Vibe mode](docs/vibe-mode.md), [Session operations](docs/session-operations-export-share-fork-resume.md), [SDK](https://omp.sh/docs/sdk), [tools reference](https://omp.sh/docs/tools).
+
+---
+## Estate docs
+
+- **Fleet knowledgebase** — the canonical estate map, active crews, repo index,
+  standing rules, and docs index (source of truth; this README does not
+  duplicate it):
+  <https://github.com/toxicwind/sovereign-projects/blob/main/docs/fleet-knowledgebase.md>
+- **Master README** — the doc-graph root:
+  <https://github.com/toxicwind/sovereign-projects/blob/main/README.md>
