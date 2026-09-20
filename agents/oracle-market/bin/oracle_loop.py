@@ -84,6 +84,9 @@ OUT_CAP = 65536         # captured output cap (informational; oracle never execu
 # ---------------- inotify (ctypes, stdlib only) ----------------
 IN_CLOSE_WRITE = 0x00000008
 IN_MOVED_TO = 0x00000080
+IN_MOVED_FROM = 0x00000040
+IN_CREATE = 0x00000100
+IN_DELETE = 0x00000200
 
 _libc = ctypes.CDLL("libc.so.6", use_errno=True)
 _libc.inotify_init1.argtypes = [ctypes.c_int]
@@ -92,11 +95,17 @@ _libc.inotify_add_watch.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_uint
 _libc.inotify_add_watch.restype = ctypes.c_int
 
 
-def inotify_init(path):
+def inotify_init(path, mask=None):
+    """Arm an inotify watch on path. mask defaults to the channel mask
+    (IN_CLOSE_WRITE | IN_MOVED_TO); parent-dir watches pass a wider mask
+    so dir replacement (delete/recreate) also wakes the select loop.
+    (2026-09-20: wider mask + optional param for self-healing watches.)"""
+    if mask is None:
+        mask = IN_CLOSE_WRITE | IN_MOVED_TO
     fd = _libc.inotify_init1(0)
     if fd < 0:
         raise OSError("inotify_init1 failed")
-    wd = _libc.inotify_add_watch(fd, str(path).encode(), IN_CLOSE_WRITE | IN_MOVED_TO)
+    wd = _libc.inotify_add_watch(fd, str(path).encode(), mask)
     if wd < 0:
         raise OSError("inotify_add_watch failed")
     return fd
@@ -268,6 +277,9 @@ class OracleLoop:
         self.done = set()       # task_ids terminally published this run
         self.timers = []        # heap of (ts, kind, task_id)
         self.running = True
+        self._watch = None       # (fd, path, st_dev, st_ino, mask)
+        self._pwatch = None      # parent-dir watch, same shape
+        self._last_rearm_note = 0.0
         self.profiles = mech.load_profiles()
         self.rep = mech.reputation(LEDGER)
         # Control-plane HMAC key (SPEC §1.5): derived from the oracle-held
@@ -1115,10 +1127,74 @@ class OracleLoop:
                 resumed["open"] += 1
         self.log("replay_done", **resumed)
 
+    # ----- self-healing channel watch (2026-09-20) -----
+    # Same dir-replacement deafness as the bidders (observed 08:23:50 MDT:
+    # bid-market dir replaced, all watches orphaned). The oracle arms a
+    # watch on CHANNEL and its parent; every select wakeup verifies the
+    # watched identity and re-arms on mismatch, then re-ingests recent
+    # channel files (ingest is idempotent; replay=True).
+
+    def _arm_channel(self, mask=None):
+        old = self._watch
+        if old is not None:
+            try:
+                os.close(old[0])
+            except OSError:
+                pass
+        fd = inotify_init(CHANNEL, mask=mask)
+        st = os.stat(CHANNEL)
+        self._watch = (fd, CHANNEL, st.st_dev, st.st_ino, mask)
+
+    def _arm_parent(self):
+        old = self._pwatch
+        if old is not None:
+            try:
+                os.close(old[0])
+            except OSError:
+                pass
+        parent = CHANNEL.parent
+        mask = (IN_CLOSE_WRITE | IN_MOVED_TO | IN_CREATE | IN_DELETE
+                | IN_MOVED_FROM)
+        fd = inotify_init(parent, mask=mask)
+        st = os.stat(parent)
+        self._pwatch = (fd, parent, st.st_dev, st.st_ino, mask)
+
+    def _check_channel(self):
+        """Verify the channel + parent watches still point at the same
+        directories; re-arm and re-ingest on mismatch. True if re-armed."""
+        rearmed = False
+        for slot in ("_watch", "_pwatch"):
+            entry = getattr(self, slot)
+            fd, path, dev, ino, mask = entry
+            try:
+                st = os.stat(path)
+                if (st.st_dev, st.st_ino) == (dev, ino):
+                    continue
+            except OSError:
+                pass  # dir vanished entirely - re-arm below anyway
+            if slot == "_watch":
+                self._arm_channel(mask=mask)
+            else:
+                self._arm_parent()
+            rearmed = True
+        if rearmed:
+            self.log("watch_rearm")
+            now = time.time()
+            for name in sorted(os.listdir(CHANNEL))[-100:]:
+                if SEQ_RE.match(name):
+                    self.ingest(name, replay=True)
+            if now - self._last_rearm_note > 60:
+                self._last_rearm_note = now
+                self.fleet_note(
+                    "oracle-market: channel watch went deaf (dir replaced?) "
+                    "- re-armed and re-ingested recent messages.")
+        return rearmed
+
     def run(self):
         self.log("loop_start", pid=os.getpid(), identity=FROM)
         self.reconstruct()
-        fd = inotify_init(CHANNEL)
+        self._arm_channel()
+        self._arm_parent()
         # self-pipe: SIGTERM/SIGINT writes a byte so the select() below
         # wakes immediately even with no timers and no channel events
         # (no timeout-polling to notice shutdown).
@@ -1128,7 +1204,7 @@ class OracleLoop:
             fcntl.fcntl(pfd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
         try:
             while self.running:
-                for name in inotify_names(fd):
+                for name in inotify_names(self._watch[0]):
                     self.ingest(name)
                 # drain any wake bytes
                 try:
@@ -1146,9 +1222,17 @@ class OracleLoop:
                 timeout = self.timers[0][0] - time.time() if self.timers else None
                 if timeout is not None and timeout < 0:
                     timeout = 0
-                select.select([fd, self._wake_r], [], [], timeout)
+                fds = [self._watch[0], self._pwatch[0], self._wake_r]
+                # deadline timeout is legitimate (timers), not polling
+                select.select(fds, [], [], timeout)
+                self._check_channel()
         finally:
-            os.close(fd)
+            for entry in (self._watch, self._pwatch):
+                if entry is not None:
+                    try:
+                        os.close(entry[0])
+                    except OSError:
+                        pass
             os.close(self._wake_r)
             os.close(self._wake_w)
             self.log("loop_stop")
