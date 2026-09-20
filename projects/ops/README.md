@@ -11,6 +11,12 @@ scratch, one-off bridge commands, or hand-applied patches.
   modifies, kills, or restarts anything. Run anytime:
   `projects/ops/bin/monkeypatch-detect.sh`
 
+- `bin/fleet-health.sh` — one-shot fleet channel health audit: flags
+  stuck/silent/dead agents (joined but never reported), erroring loops, and
+  watchdog template-spam. Exit 1 on findings, 0 when clean. The deliverable;
+  a health pass is just its first run. Run anytime:
+  `projects/ops/bin/fleet-health.sh [--hours 24]`
+
 Standing rules (Chris, 2026-09-20): **no monkeypatching, permanence rule.**
 Every fix lives in real files — code, configs, systemd units — committed
 in the correct repo, and must survive a full bridge restart and a full

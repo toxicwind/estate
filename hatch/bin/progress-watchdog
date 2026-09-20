@@ -1,0 +1,532 @@
+#!/usr/bin/env python3
+"""
+Hearth — progress watchdog driver (hatch side). Cron every 3 min.
+
+Watches: oracle-market loop, ledger growth, stuck tasks, bidder daemons,
+core pitchfork daemons, bridge holder, hatch-side agent activity, fleet
+social (welcomes, quiet-den notes). Alerts immediately on anomalies (Hearth's
+voice, full specifics); 30-min pulse. Auto-remediates ONLY dead
+bidder daemons (restart) and unseen stuck tasks (re-announce, max 3
+attempts per task). Everything else is alert-only. Never touches squawk,
+443/tailscale, the 8379 holder, or hatch-side agents.
+
+Alert semantics (watchdog_lib.ConditionRegistry — the dedup mechanism):
+  - fire on NEW conditions and on CHANGED conditions (escalate-on-change)
+  - suppress identical repeats (no more 13x template re-fires)
+  - one "still ongoing" reminder per 6h for unbroken conditions
+  - one "cleared" note when a condition resolves
+The 30-min pulse reads the SAME active-condition registry, so it is
+structurally impossible for the pulse to say "all green" while an alert
+condition is active. A pre-flight snapshot-freshness check gates the
+"all green" verdict: stale/unreachable snapshot -> "eyes closed", never
+"all green".
+
+State is written atomically (write-temp + fsync + rename); every run
+writes start+complete markers to a run ledger so a restart can neither
+lose nor duplicate a run's verdict.
+
+Canonical: hatch/bin/progress-watchdog in toxicwind/sovereign-projects.
+Deployed: ~/workspace/bin/progress-watchdog (copy of canonical).
+"""
+import hashlib
+import json
+import os
+import re
+import subprocess
+import sys
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import watchdog_lib as wl
+
+HOME = Path.home()
+WDIR = HOME / "workspace" / "watchdog"
+STATE = WDIR / "progress_state.json"
+RUN_LEDGER = WDIR / "progress_runs.jsonl"
+WATCHLIST = WDIR / "hatch_agents.txt"
+SQUAWK = str(HOME / "workspace" / "bin" / "squawk")
+EXEC = str(HOME / "workspace" / "awrawr-bridge" / "exec.py")
+YOTE_SCRIPT = "/home/toxic/sovereign/bin/progress-watchdog.py"
+PF_RESTART = "/home/toxic/sovereign/bin/pitchfork-restart"
+CHANNEL = "/home/toxic/sovereign/hatch/agents/ember/squawk-root/bid-market"
+PAUSE_STATE = HOME / ".cache" / "shingle" / "swarm-paused.json"
+
+HEARTBEAT_S = 1800
+AGENT_STALE_S = 1500   # hatch agent quiet longer than this -> note
+SNAP_FRESH_S = 300     # pulse "all green" requires snapshot this fresh
+REANNOUNCE_MAX = 3     # max re-announce attempts per stuck task
+FLEET = "fleet"
+ME = "hearth"          # persona sign-off (sent via ember identity)
+
+WDIR.mkdir(parents=True, exist_ok=True)
+
+STATE_DEFAULTS = {"conds": {}, "welcomed": [], "last_fleet_seq": 0,
+                  "last_heartbeat_ts": 0, "last_ledger_lines": 0,
+                  "last_ledger_ts": 0, "reannounced": {}}
+
+
+def load_state():
+    try:
+        d = json.loads(STATE.read_text())
+    except (OSError, json.JSONDecodeError, ValueError):
+        return dict(STATE_DEFAULTS)
+    for k, v in STATE_DEFAULTS.items():
+        d.setdefault(k, v)
+    wl.migrate_legacy_alerts(d)
+    return d
+
+
+def save_state(s):
+    wl.atomic_write_json(STATE, s)
+
+
+def say(text):
+    """Send one fleet message as Hearth."""
+    try:
+        subprocess.run([SQUAWK, "send", FLEET, text],
+                       capture_output=True, timeout=60)
+    except Exception as e:  # noqa: BLE001
+        print(f"HEARTH-SAY-FAILED: {type(e).__name__}", flush=True)
+
+
+def bridge_exec(cmd, timeout=120):
+    """Run a command on yote via the bridge. exec.py prints either a JSON
+    envelope {"stdout": ...} (fallback lane) or the raw command output
+    (WS lane, doc.data streamed). Returns the remote stdout text or None."""
+    try:
+        p = subprocess.run([sys.executable, EXEC, cmd],
+                           capture_output=True, text=True, timeout=timeout)
+        raw = p.stdout or ""
+        try:
+            env = json.loads(raw)
+        except json.JSONDecodeError:
+            return raw if raw.strip() else None
+        if isinstance(env, dict) and "stdout" in env:
+            return env["stdout"]
+        return raw  # raw snapshot JSON straight from the WS lane
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def yote_snapshot():
+    out = bridge_exec(f"python3 {YOTE_SCRIPT}")
+    if not out:
+        return {"_error": "empty response from bridge"}
+    try:
+        return json.loads(out)
+    except json.JSONDecodeError as e:
+        return {"_error": f"bad snapshot JSON: {type(e).__name__}"}
+
+
+def hatch_agent_ages():
+    """agent-id -> seconds since newest file activity (watchlist only)."""
+    ages = {}
+    try:
+        lines = WATCHLIST.read_text().splitlines()
+    except OSError:
+        return None  # watchlist unreadable -> domain not observed
+    for line in lines:
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        aid = line.split()[0]
+        name = line.split("#", 1)[1].strip() if "#" in line else aid[:8]
+        d = Path(f"/home/hatch/agents/agent-{aid}")
+        newest = 0
+        if d.is_dir():
+            for root, _, files in os.walk(d):
+                for fn in files:
+                    try:
+                        mt = os.path.getmtime(os.path.join(root, fn))
+                        newest = max(newest, mt)
+                    except OSError:
+                        pass
+        ages[aid] = {"name": name,
+                     "age_s": round(time.time() - newest) if newest else None,
+                     "gone": not d.is_dir()}
+    return ages
+
+
+WELCOME_TEMPLATES = [
+    "welcome to the den, {name}! Settle in, say hi, make yourself at home. "
+    "If anything looks off while you work, I'll be the one poking my nose in.",
+    "fresh paws in the den — welcome, {name}! Grab a warm spot by the fire. "
+    "Shout if you need anything while you work.",
+    "{name} just padded in — welcome! The den's busy tonight but there's "
+    "always room. Holler if anything looks off.",
+]
+
+
+def fleet_messages(n=40):
+    """Parse recent fleet messages -> list of (seq, from, ts, body)."""
+    try:
+        p = subprocess.run([SQUAWK, "read", FLEET, "--n", str(n)],
+                           capture_output=True, text=True, timeout=60)
+        out = p.stdout
+    except Exception:  # noqa: BLE001
+        return []
+    msgs, cur = [], None
+    for line in out.splitlines():
+        m = re.match(r"^\[(\d+)\]\s+(\S+)\s+@\s+(\S+)", line)
+        if m:
+            if cur:
+                msgs.append(cur)
+            try:
+                ts = datetime.fromisoformat(m.group(3)).timestamp()
+            except ValueError:
+                ts = 0
+            cur = {"seq": int(m.group(1)), "from": m.group(2),
+                   "ts": ts, "body": ""}
+        elif cur:
+            cur["body"] += line.strip() + " "
+    if cur:
+        msgs.append(cur)
+    return msgs
+
+
+def welcome_new_agents(state, msgs):
+    fresh = [m for m in msgs if m["seq"] > state.get("last_fleet_seq", 0)]
+    if msgs:
+        state["last_fleet_seq"] = max(m["seq"] for m in msgs)
+    welcomed = set(state.get("welcomed", []))
+    for m in fresh:
+        mm = re.search(r"agent joined:\s*([A-Za-z0-9_-]+)", m["body"])
+        if not mm:
+            continue
+        name = mm.group(1)
+        if name in welcomed or m["from"] == ME:
+            continue
+        welcomed.add(name)
+        # deterministic per-agent template variety: the same pup always gets
+        # the same greeting, different pups get different ones.
+        tmpl = WELCOME_TEMPLATES[
+            hashlib.md5(name.encode()).digest()[0] % len(WELCOME_TEMPLATES)]
+        say(f"\U0001F43A Hearth here — {tmpl.format(name=name)} \U0001F49B")
+        print(f"WELCOMED {name}", flush=True)
+    state["welcomed"] = sorted(welcomed)
+
+
+def reannounce_on_yote(src_file, task_id):
+    """Copy a stuck task_post to a fresh seq name so the oracle re-ingests."""
+    py = (
+        "import os,re,shutil; d=%r; fs=[f for f in os.listdir(d)];"
+        " seqs=[int(m.group(1)) for f in fs if (m:=re.match(r'^(\\\\d+)-',f))];"
+        " n=max(seqs,default=0)+1;"
+        " dst=os.path.join(d,f\"{n:05d}-hearth-reannounce-%s.md\");"
+        " shutil.copy2(os.path.join(d,%r),dst); print(dst)"
+    ) % (CHANNEL, task_id, src_file)
+    out = bridge_exec(f"python3 -c \"{py}\"", timeout=60)
+    return bool(out and "hearth-reannounce" in out)
+
+
+def restart_bidder(name):
+    out = bridge_exec(f"{PF_RESTART} {name}", timeout=120)
+    if out and "[pitchfork-restart] DONE:" in out:
+        return True, out.strip().splitlines()[-1][:200]
+    return False, (out or "empty response")[-300:]
+
+
+def run():
+    """One watchdog tick. Returns (verdict, extra)."""
+    state = load_state()
+    reg = wl.ConditionRegistry(state.setdefault("conds", {}))
+    observed = set()   # condition keys true this run
+    fired = []         # alert keys posted this run
+    now = time.time()
+
+    def cond(key, sig, text_new, text_remind=None):
+        """Deduped alert: fire on new/changed, remind on still-broken."""
+        observed.add(key)
+        v = reg.note(key, sig, now)
+        if v == "suppress":
+            return False
+        if v == "remind":
+            n = reg.count(key)
+            age_m = (now - reg.since(key)) / 60
+            say(text_remind or (
+                f"\U0001F43A Hearth here — still on it: `{key}` ongoing "
+                f"({n} checks over {age_m:.0f}m). Not fixed yet, not "
+                f"forgotten. \U0001F49B"))
+        else:
+            say(text_new)
+        print(f"ALERT [{key}] ({v}): {text_new[:100]}", flush=True)
+        fired.append(key)
+        return True
+
+    # --- boot self-check: validate watchdog state files at startup ---
+    sc = wl.boot_selfcheck([
+        ("progress_state.json",
+         wl.check_json_state(STATE, list(STATE_DEFAULTS))),
+        ("swarm-paused.json",
+         wl.check_pause_state_consistent(PAUSE_STATE)),
+    ])
+    findings = list(sc["findings"])
+    for rid in wl.ledger_find_lost(RUN_LEDGER):
+        findings.append(f"lost run {rid} (start without completion)")
+    try:
+        last = None
+        with open(RUN_LEDGER) as f:
+            for line in f:
+                try:
+                    r = json.loads(line)
+                except (json.JSONDecodeError, ValueError):
+                    continue
+                if r.get("phase") == "complete":
+                    last = r
+        if last and str(last.get("verdict", "")).startswith("exception"):
+            findings.append(f"previous run {last['run_id']} died: "
+                            f"{last['verdict'][:120]}")
+    except FileNotFoundError:
+        pass
+    for f in findings:
+        # deduped like any other condition: fire once, remind on 6h.
+        # (md5, not hash(): str hash() is salted per-process.)
+        fkey = hashlib.md5(f.encode()).hexdigest()[:12]
+        cond(f"selfcheck:{fkey}", f,
+             f"\U0001F43A Hearth here — self-check finding at startup: {f}. "
+             f"Investigating, not ignoring. \U0001F50D")
+
+    snap = yote_snapshot()
+
+    # --- bridge/exec itself failed: nothing else is trustworthy ---
+    # (no cleared-sweep here: we observed nothing, so we clear nothing)
+    if snap.get("_error"):
+        cond("bridge:exec", f"err={snap['_error'][:80]}",
+             f"\U0001F43A Hearth here — I can't reach yote at all "
+             f"({snap['_error'][:120]}). My eyes are closed, pack — "
+             f"someone check the bridge!")
+        save_state(state)
+        return ("bridge-unreachable", {"fired": fired})
+    snapshot_ok = True
+
+    led = snap.get("ledger", {})
+
+    # --- oracle-market loop ---
+    oc = snap.get("oracle", {})
+    if oc.get("pitchfork") != "running" or not oc.get("proc_alive"):
+        cond("oracle:down", f"{oc.get('pitchfork')}/{oc.get('proc_alive')}",
+             f"\U0001F43A Hearth here — \U0001F6A8 the market loop is dark "
+             f"(pitchfork: {oc.get('pitchfork')}, process alive: "
+             f"{oc.get('proc_alive')}). The whole bazaar stalls without it. "
+             f"I'm NOT restarting it myself — needs a careful hand. "
+             f"Ember/Chris, eyes on sovereign/oracle-market please.")
+
+    # --- stuck tasks (re-announce deduped: max REANNOUNCE_MAX per task) ---
+    reann = state.setdefault("reannounced", {})
+    for t in snap.get("stuck_tasks", []):
+        tid = t["task_id"]
+        if t["kind"] == "unseen":
+            att = reann.get(tid, {"attempts": 0})
+            if att["attempts"] < REANNOUNCE_MAX:
+                ok = reannounce_on_yote(t["file"], tid)
+                att = {"attempts": att["attempts"] + 1, "ts": now,
+                       "ok": ok}
+                reann[tid] = att
+                how = ("re-announced" if ok
+                       else "re-announce FAILED")
+            else:
+                how = (f"re-announce budget spent "
+                       f"({REANNOUNCE_MAX} attempts) — escalating, not "
+                       f"re-posting")
+            cond(f"stuck:{tid}", "unseen",
+                 f"\U0001F43A Hearth here — found `{tid}` sitting in the "
+                 f"market with no bids past its window, looking lonely "
+                 f"(unseen for {t['age_s']}s). I've nudged it back into the "
+                 f"ring ({how}). Bidders, give it some love? \U0001F49B")
+        else:
+            cond(f"wedged:{tid}", "wedged",
+                 f"\U0001F43A Hearth here — `{tid}` opened but never "
+                 f"settled ({t['age_s']}s). The oracle should've closed it; "
+                 f"something's off. Flagging for Ember, not touching it.")
+
+    # --- bidders ---
+    bidders = snap.get("bidders", [])
+    alive_b = sum(1 for b in bidders if b["status"] == "running")
+    for b in bidders:
+        if b["status"] != "running":
+            ok, tail = restart_bidder(b["name"])
+            if ok:
+                cond(f"bidder:{b['name']}", f"restarted:{b['status']}",
+                     f"\U0001F43A Hearth here, pack — little scare: "
+                     f"`{b['name']}` had died (was: {b['status']}). I've "
+                     f"restarted it via pitchfork-restart and it's back on "
+                     f"its feet. I'll keep an eye on it. Carry on! \U0001F49B")
+            else:
+                cond(f"bidder:{b['name']}", f"dead:{b['status']}",
+                     f"\U0001F43A Hearth here — \U0001F6A8 `{b['name']}` died "
+                     f"and my restart FAILED. Details: {tail[:200]} "
+                     f"Needs a human. Ember/Chris please look.")
+        elif b["activity_age_s"] is not None and b["activity_age_s"] > 600:
+            cond(f"bidder-stall:{b['name']}", "stall",
+                 f"\U0001F43A Hearth here — `{b['name']}` is running but "
+                 f"hasn't logged activity in {b['activity_age_s']:.0f}s. "
+                 f"Not restarting (might be mid-task), just watching.")
+
+    # --- core daemons ---
+    for dname, dinfo in snap.get("daemons", {}).items():
+        if dname == "awrawr-ws-exec":
+            # the bridge daemon lives under pitchfork; running IS healthy.
+            # (an old revision expected stopped-clean and Hearth spammed an
+            # alert every 30 min for a healthy bridge — do not regress.)
+            if dinfo.get("pitchfork") != "running":
+                cond("daemons:ws-exec", f"{dinfo.get('pitchfork')}",
+                     f"\U0001F43A Hearth here — awrawr-ws-exec shows "
+                     f"pitchfork state `{dinfo.get('pitchfork')}`, expected "
+                     f"running. The bridge lane may be down — flagging, not "
+                     f"touching anything.")
+            continue
+        h = dinfo.get("health")
+        if dinfo.get("pitchfork") != "running" or h != 200:
+            cond(f"daemon:{dname}",
+                 f"{dinfo.get('pitchfork')}/h={h}",
+                 f"\U0001F43A Hearth here — heads up: `{dname}` is "
+                 f"{dinfo.get('pitchfork')}, health={h}. Above my pay grade "
+                 f"so I'm not touching it — Ember/Chris, eyes on this please.")
+
+    # --- bridge holder ---
+    br = snap.get("bridge", {})
+    if not (br.get("listening") and br.get("alive") and br.get("cmd_ok")):
+        cond("bridge:holder",
+             f"{br.get('listening')}/{br.get('alive')}/{br.get('cmd_ok')}",
+             f"\U0001F43A Hearth here — \U0001F6A8 bridge holder looks wrong: "
+             f"listening={br.get('listening')} pid={br.get('pid')} alive="
+             f"{br.get('alive')} cmd_ok={br.get('cmd_ok')}. NOT touching "
+             f"anything — needs Chris/Ember. Exec lane still worked this "
+             f"tick, so we're not dark yet.")
+
+    # --- ledger stall (no growth while market should be live) ---
+    last_age = led.get("last_age_s")
+    if (last_age is not None and last_age > 1200
+            and snap.get("stuck_tasks")):
+        cond("ledger:stall", "stall",
+             f"\U0001F43A Hearth here — ledger hasn't grown in "
+             f"{last_age:.0f}s and there are stuck tasks. Market may be "
+             f"gummed up. Keeping watch.")
+
+    # --- proof-of-life ---
+    plof = led.get("proof_of_life", {})
+    for tid, st in plof.items():
+        if st == "open":
+            cond(f"plof:{tid}", "open",
+                 f"\U0001F43A Hearth here — proof-of-life task `{tid}` is "
+                 f"open but hasn't settled yet. Watching it closely.")
+
+    # --- hatch-side agents (report only, never touch) ---
+    hatch_ages = hatch_agent_ages()
+    watchlist_ok = hatch_ages is not None
+    active_names = []
+    if watchlist_ok:
+        for aid, info in hatch_ages.items():
+            if info["gone"]:
+                continue
+            if info["age_s"] is None or info["age_s"] > AGENT_STALE_S:
+                q = (f"quiet {info['age_s']/60:.0f}m"
+                     if info["age_s"] else "never seen")
+                cond(f"hatch:{aid}", "quiet",
+                     f"\U0001F43A Hearth here — {info['name']} has been {q}. "
+                     f"Not my pups to scold, just noting it for Ember. \U0001F49B")
+            else:
+                active_names.append(info["name"])
+
+    # --- cleared sweep: conditions true before, not observed now ---
+    # Yote domain only trusted when the snapshot was good; hatch domain
+    # only when the watchlist was readable. Never sweep blind.
+    def sweep_domain(is_yote):
+        cleared = [k for k in reg.active()
+                   if (not k.startswith("hatch:")) == is_yote
+                   and k not in observed]
+        for k in cleared:
+            del reg.d[k]
+            # a re-occurring stuck task gets a fresh re-announce budget
+            if k.startswith("stuck:") and k[6:] in reann:
+                del reann[k[6:]]
+        return sorted(cleared)
+
+    if snapshot_ok:
+        for k in sweep_domain(True):
+            say(f"\U0001F43A Hearth here — ✅ `{k}` cleared, back to healthy. "
+                f"Nice. \U0001F49B")
+            print(f"CLEARED {k}", flush=True)
+            fired.append(f"cleared:{k}")
+    if watchlist_ok:
+        for k in sweep_domain(False):
+            say(f"\U0001F43A Hearth here — ✅ `{k}` cleared, back to healthy. "
+                f"Nice. \U0001F49B")
+            print(f"CLEARED {k}", flush=True)
+            fired.append(f"cleared:{k}")
+
+    # --- social: welcome newcomers (untouched by dedup — Kindling's lane) ---
+    msgs = fleet_messages()
+    welcome_new_agents(state, msgs)
+    recent_chatter = [m for m in msgs
+                      if now - m["ts"] < 1800 and "Hearth" not in m["body"]]
+
+    # --- 30-min pulse: verdict from the SAME registry (no drift) ---
+    if now - state.get("last_heartbeat_ts", 0) >= HEARTBEAT_S:
+        snap_fresh = snapshot_ok and (now - snap.get("ts", 0)) < SNAP_FRESH_S
+        active = reg.active()
+        if not snap_fresh:
+            # PRE-FLIGHT: stale/unreachable snapshot -> never claim green
+            vtext = ("eyes closed this half hour — snapshot stale or "
+                     "unreachable, not claiming green")
+        elif active:
+            vtext = (f"needs eyes this half hour — active: "
+                     f"{', '.join(active)}")
+        else:
+            vtext = "all green this half hour"
+        wins = led.get("wins_30m", {}) or {}
+        top = max(wins.items(), key=lambda kv: kv[1]) if wins else None
+        shout = (f" Top dog: {top[0].replace('bidder-', '')} with {top[1]} "
+                 f"settlements — good hunting! \U0001F3C6" if top else "")
+        daemons = snap.get("daemons", {})
+        n_d = sum(1 for n, d in daemons.items()
+                  if n != "awrawr-ws-exec"
+                  and d.get("pitchfork") == "running"
+                  and d.get("health") == 200)
+        n_dt = sum(1 for n in daemons if n != "awrawr-ws-exec")
+        br_ok = (br.get("listening") and br.get("alive")
+                 and br.get("cmd_ok"))
+        quiet = (" Quiet in the den otherwise — everyone's heads-down, "
+                 "I like it. \U0001F49B" if not recent_chatter else "")
+        say(
+            f"\U0001F43A Hearth checking in, den — {vtext} \U0001F49B\n"
+            f"Market: {led.get('open_30m', 0)} opened, "
+            f"{led.get('settled_30m', 0)} settled "
+            f"({led.get('verified_30m', 0)} verified).{shout}\n"
+            f"Bidders {alive_b}/{len(bidders)} on their feet. "
+            f"Daemons {n_d}/{n_dt} healthy, "
+            f"bridge {'strong' if br_ok else 'shaky'}. "
+            f"Hatch crew active: {', '.join(active_names) or 'none'}.{quiet}")
+        state["last_heartbeat_ts"] = now
+        print(f"PULSE sent: {vtext}", flush=True)
+
+    state["last_ledger_lines"] = led.get("lines", 0)
+    state["last_ledger_ts"] = led.get("last_ts", 0)
+    save_state(state)
+    return ("ok", {"fired": fired, "active": reg.active()})
+
+
+def main():
+    run_id = wl.ledger_run_start(RUN_LEDGER, "progress-watchdog")
+    verdict, extra = "ok", {}
+    try:
+        verdict, extra = run()
+    except Exception as e:  # noqa: BLE001
+        verdict = f"exception: {type(e).__name__}: {e}"
+        print(f"RUN {run_id} FAILED: {verdict}", flush=True)
+        raise
+    finally:
+        # completion marker on EVERY exit path: a restart can neither
+        # lose nor duplicate this run's verdict
+        try:
+            wl.ledger_run_complete(RUN_LEDGER, run_id, "progress-watchdog",
+                                   verdict, extra)
+        except Exception as e:  # noqa: BLE001
+            print(f"LEDGER-COMPLETE-FAILED: {e}", flush=True)
+    print(f"RUN {run_id} verdict={verdict}", flush=True)
+
+
+if __name__ == "__main__":
+    main()
