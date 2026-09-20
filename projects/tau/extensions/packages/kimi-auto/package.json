@@ -1,0 +1,41 @@
+{
+  "name": "@toxicwind/omp-kimi-auto",
+  "version": "0.1.0",
+  "description": "oh-my-pi (omp) extension: zero-config kimi-auto alias — best live Kimi endpoint via the shared 15-min resolver state",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/toxicwind/omp-extensions.git",
+    "directory": "packages/kimi-auto"
+  },
+  "homepage": "https://github.com/toxicwind/omp-extensions/tree/main/packages/kimi-auto#readme",
+  "bugs": {
+    "url": "https://github.com/toxicwind/omp-extensions/issues"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "omp": {
+    "extensions": [
+      "./src/extension.ts"
+    ]
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
+  },
+  "peerDependencies": {
+    "@oh-my-pi/pi-coding-agent": "^18.0.11"
+  },
+  "devDependencies": {
+    "@oh-my-pi/pi-coding-agent": "^18.0.11",
+    "@types/bun": "latest",
+    "typescript": "^5.6.0"
+  },
+  "dependencies": {
+    "zod": "^3.23.0"
+  }
+}
