@@ -1,22 +1,57 @@
 name = "kimiclaw-2"
 version = "1.0.0"
-description = "KimiClaw worker: claw agent routed to the flock nemotron-3.5-lightning model (shared healthy route; glm-5.3-flash upstream 502 as of 2026-09-20). Executes assigned tasks via tools and reports results."
+description = "KimiClaw worker: claw agent routed through herd (openrouter-free peer). Executes assigned tasks via tools and reports results."
 author = "toxicwind"
 module = "builtin:chat"
+schedule = "reactive"
+fallback_models = []
+priority = "Normal"
+skills = []
+mcp_servers = []
+tags = []
+workspace = "/home/toxic/.openfang/workspaces/kimiclaw-2"
+state_dir = "/home/toxic/.openfang/workspaces/kimiclaw-2"
+generate_identity_files = true
+tool_allowlist = []
+tool_blocklist = []
+cache_context = false
 
 [model]
 provider = "llama-swap"
-model = "flock-direct/nvidia/nemotron-3.5-lightning-30b-a3b"
-base_url = "http://127.0.0.1:25100/v1"
+model = "openrouter-free/nex-agi/nex-n2.5-mini:free"
 max_tokens = 32000
 temperature = 0.3
+system_prompt = "You are a helpful AI agent."
+base_url = "http://127.0.0.1:25100/v1"
 
 [resources]
+max_memory_bytes = 268435456
+max_cpu_time_ms = 30000
+max_tool_calls_per_minute = 60
 max_llm_tokens_per_hour = 200000
-max_context_tokens = 32000
+max_network_bytes_per_hour = 104857600
+max_cost_per_hour_usd = 0.0
+max_cost_per_day_usd = 0.0
+max_cost_per_month_usd = 0.0
 
 [capabilities]
-tools = ["file_read", "file_list", "file_write", "exec"]
 network = []
+tools = [
+    "file_read",
+    "file_list",
+    "file_write",
+    "exec",
+]
+memory_read = []
+memory_write = []
 agent_spawn = false
-workflow_run = false
+agent_message = []
+shell = []
+ofp_discover = false
+ofp_connect = []
+
+[tools]
+
+[metadata]
+
+[persona]
