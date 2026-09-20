@@ -1,0 +1,18 @@
+3584c3584,3598
+<     return fail({ code: "RUN_FAILED", message: err?.message ?? String(err), exitCode: 1 });
+---
+>     try {
+>       const seen = new Set();
+>       const dump = JSON.stringify(err, (k, v) => {
+>         if (v instanceof Error) {
+>           const o = { __error__: v.constructor.name, message: v.message,
+>                       stack: (v.stack || "").split("\n").slice(0, 15).join("\n") };
+>           for (const kk of Object.getOwnPropertyNames(v)) { if (!(kk in o)) { try { o[kk] = v[kk]; } catch (e) {} } }
+>           return o;
+>         }
+>         if (typeof v === "object" && v !== null) { if (seen.has(v)) return "[Circular]"; seen.add(v); }
+>         return v;
+>       }, 2);
+>       console.error("RS_DEBUG_DUMP:" + String(dump).slice(0, 6000));
+>     } catch (e2) { console.error("RS_DEBUG_STRINGIFY_FAILED:" + String(e2)); }
+>     return fail({ code: "RUN_FAILED", message: (err && err.stack) ? err.stack.split("\n").slice(0,12).join("\n") : (err?.message ?? String(err)), exitCode: 1 });
