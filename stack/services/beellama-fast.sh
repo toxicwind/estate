@@ -6,7 +6,7 @@
 set -euo pipefail
 SOV="$HOME/sovereign"
 source "$SOV/stack/lib-ports.sh"
-require_env BEELLAMA_PORT
+require_port BEELLAMA_PORT
 ENGINE="$HOME/projects/sovereign-projects/herd/engines/beellama.cpp/build-cuda86/bin"
 BIN="$ENGINE/llama-server"
 [[ -x "$BIN" ]] || { echo "beellama-fast: bin not found at $BIN" >&2; exit 1; }

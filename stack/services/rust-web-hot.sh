@@ -4,11 +4,12 @@ set -euo pipefail
 SOV="${SOVEREIGN_ROOT:-$(cd "$(dirname "$0")/../.." && pwd)}"
 export PATH="${HOME}/.cargo/bin:/usr/bin:/bin:${PATH}"
 source "$SOV/stack/lib-ports.sh"
-require_env RUST_WEB_PORT
-require_env WATCHDOG_PORT
-require_env LLAMA_SWAP_PORT
+require_port RUST_WEB_PORT
+require_port WATCHDOG_PORT
+require_port LLAMA_SWAP_PORT
 PUBLIC="${RUST_WEB_PORT}"
 BACKEND="${RUST_WEB_BACKEND_PORT:-25201}"
+require_port BACKEND
 export RUST_WEB_PORT="${BACKEND}"
 export WATCHDOG_PORT SOVEREIGN_ROOT="$SOV"
 export LLM_PROXY_URL="${LLM_PROXY_URL:-http://127.0.0.1:${LLAMA_SWAP_PORT}}"
