@@ -925,3 +925,18 @@ peers:
   #     connect: 30
   #     keepalive: 30
   #     responseHeader: 60
+
+  # ── LOCAL TOOL-CAPABLE LLM (2026-09-20) ──
+  # Qwen3.5-9B tool-calling endpoint (pitchfork daemon toolcall-llm, :25152).
+  # Purpose: unblock openfang Agent 2 (Shingle) pilot — local model that emits
+  # real OpenAI-format tool_calls. Endpoint: http://127.0.0.1:25152
+  toolcall-local:
+    proxy: http://127.0.0.1:25152
+    models:
+      - qwen3.5-9b-tool
+    timeouts:
+      connect: 10
+      keepalive: 30
+      responseHeader: 120
+      tlsHandshake: 5
+      idleConn: 90

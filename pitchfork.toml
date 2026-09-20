@@ -249,7 +249,7 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "floc
 daemons = ["tau"]
 
 [groups.all]
-daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-resolver", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar"]
+daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "kimi-audit-dash", "mcp-gateway", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-resolver", "kimi-auto-shim", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar"]
 
 [daemons.kimi-auto-resolver]
 run = "exec /home/toxic/kimi-auto/loop.sh"
@@ -258,6 +258,16 @@ mise = false
 retry = true
 boot_start = true
 env = { KIMI_AUTO_HERD = "http://127.0.0.1:25100", KIMI_AUTO_INTERVAL = "900" }
+auto = ["start"]
+
+[daemons.kimi-auto-shim]
+run = "exec python3 /home/toxic/kimi-auto/shim.py --port ${KIMI_AUTO_SHIM_PORT}"
+dir = "/home/toxic/kimi-auto"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:${KIMI_AUTO_SHIM_PORT}/health"
+env = { KIMI_AUTO_SHIM_PORT = "25105" }
 auto = ["start"]
 
 [daemons.squawk-feed]
@@ -527,3 +537,28 @@ mise = false
 retry = true
 boot_start = true
 auto = ["start"]
+
+[daemons.toolcall-llm]
+run = "exec /home/toxic/sovereign/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/models/qwen3.5-9b-dflash-Q5_K_M.gguf --host 127.0.0.1 --port ${TOOLCALL_PORT} -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
+env = { TOOLCALL_PORT = "25152" }
+dir = "/home/toxic/sovereign/engines/llama.cpp-b11059/llama-b11059"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25152/health"
+auto = ["start"]
+
+# beellama-fast — exaone-4.0-1.2b-iq4xs ("fast" alias) via beellama.cpp fork
+# v0.4.6 CUDA sm_86 build. Permanent supervised OpenAI-compatible endpoint
+# for the fastest local default. Added 2026-09-20 (herd-config-worker track 7).
+# Bench (RTX 3090, 1650-word prompt): pp 15.6k tok/s, gen 311-335 tok/s.
+# Runner-up config: -b 4096 -ub 1024 (pp 10.2k, gen 312.7). threads=16 and
+# flash-attn off both slower. Port from config/ports.env SSOT (BEELLAMA_PORT).
+[daemons.beellama-fast]
+run = "exec /home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp/build-cuda86/bin/llama-server --model /home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf --host 127.0.0.1 --port ${BEELLAMA_PORT} --n-gpu-layers all --flash-attn on --parallel 1 --metrics --mlock --no-mmap --kv-unified --no-host --cache-ram 0 --ctx-size 32768 -b 2048 -ub 512 --cache-type-k q8_0 --cache-type-v q8_0 --alias fast"
+dir = "/home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:${BEELLAMA_PORT}/health"
+auto = ["start"]
+env = { LD_LIBRARY_PATH = "/home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp/build-cuda86/bin", CUDA_VISIBLE_DEVICES = "0" }
