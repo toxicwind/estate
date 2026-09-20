@@ -33,12 +33,20 @@ Tau (formerly OMP) is the AI-native agent engine for the Sovereign ecosystem, de
   ```
 
 ## Documentation Index
-- ~~[Architecture Guide](/docs/ARCHITECTURE.md)~~ — removed 2026-09-19: `docs/ARCHITECTURE.md` does not exist
-- ~~[Setup Guide](/docs/SETUP.md)~~ — removed 2026-09-19: `docs/SETUP.md` does not exist
-- [Contributor Guide](/CONTRIBUTING.md)
-- [Packages Overview](/docs/packages/)
+- [Contributor Guide](CONTRIBUTING.md)
+- [Packages Overview](docs/packages/)
 
 ---
 - **Harness state:** See `.tau/harness-ref.json` (mesh URL `25127` mcpproxy-go, subagent `inkling-small:free`, env deconfused, `.pi`/`.omp` symlinks verified, temp `1.0`, effort mapped).
 - **Commit reference:** `fa7f8ad` in sovereign-projects root.
 *(Managed by the Sovereign infrastructure pipeline.)*
+
+---
+## Estate docs
+
+- **Fleet knowledgebase** — the canonical estate map, active crews, repo index,
+  standing rules, and docs index (source of truth; this README does not
+  duplicate it):
+  <https://github.com/toxicwind/sovereign-projects/blob/main/docs/fleet-knowledgebase.md>
+- **Master README** — the doc-graph root:
+  <https://github.com/toxicwind/sovereign-projects/blob/main/README.md>

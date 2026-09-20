@@ -5,9 +5,10 @@ Usage:
   yote-conn health
   yote-conn exec "<cmd>" [workdir] [timeout_s]
   yote-conn multi <cmds.json | ->     # JSON array of {cmd, workdir?, timeout?, tag?}
-  yote-conn bg "<cmd>" [workdir]      # detached background dispatch -> handle
+  yote-conn bg "long-cmd" [workdir]      # detached background dispatch -> handle
   yote-conn bg-status <handle>        # live status + log tails
   yote-conn bg-list                   # known handles
+  yote-conn bg-kill <handle>          # SIGTERM the job's process group
   yote-conn herd <METHOD> <path> [body.json | -]
   yote-conn flock <METHOD> <path> [body.json | -]
 
@@ -130,6 +131,20 @@ def main():
         for h in d.get("handles", []):
             print("%s  %s" % (h.get("handle"), (h.get("cmd") or "")[:80]))
         return 0
+    if cmd == "bg-kill":
+        if len(sys.argv) < 3:
+            print("usage: yote-conn bg-kill <handle>", file=sys.stderr)
+            return 2
+        code, body = req("POST", "/bg/%s/kill" % sys.argv[2])
+        d = json.loads(body.decode())
+        print("handle   : %s" % d.get("handle"))
+        print("state    : %s" % (d.get("state") or
+                                 ("signaled pid %s" % d.get("signaled"))))
+        if d.get("note"):
+            print("note     : %s" % d.get("note"))
+        if d.get("error"):
+            print("error    : %s" % d.get("error"), file=sys.stderr)
+        return 0 if d.get("signaled") else 1
     if cmd in ("herd", "flock"):
         if len(sys.argv) < 4:
             print("usage: yote-conn %s <METHOD> <path> [body]" % cmd,

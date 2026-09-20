@@ -31,6 +31,8 @@ import subprocess
 import sys
 import threading
 import time
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 # ---- oracle_loop import (channel paths, message parsing, inotify) ----
@@ -50,6 +52,91 @@ SEQ_RE = ol.SEQ_RE
 PAYLOAD_CAP_S = 590  # hard ceiling per task execution
 OUT_CAP = 8000
 ERR_CAP = 2000
+
+
+# ---- knowledgebase attestation (fleet rule, enforced by the oracle) ----
+# Every bid must attest the bidder read Active Crews
+# (docs/fleet-knowledgebase.md §2, canonical main) and checked for
+# overlapping work. The oracle rejects unattested bids
+# (bid_rejected{reason:no-attestation}, SPEC §10) — so a bidder
+# that cannot attest must skip the bid loudly, never bid blind.
+KB_COMMITS_API = ("https://api.github.com/repos/toxicwind/sovereign-projects"
+                  "/commits?path=docs/fleet-knowledgebase.md&per_page=1")
+KB_RAW_URL = ("https://raw.githubusercontent.com/toxicwind/"
+              "sovereign-projects/main/docs/fleet-knowledgebase.md")
+KB_CACHE = BIN.parent / "work" / "kb-attestation-cache.json"  # runtime cache: regenerable, untracked
+KB_HTTP_TIMEOUT = 10
+
+
+def _parse_kb_crews(md_text):
+    """Extract crew names from the §2 Active Crews table."""
+    crews = []
+    in_sec = False
+    for line in md_text.splitlines():
+        if line.startswith("## 2."):
+            in_sec = True
+            continue
+        if in_sec and line.startswith("## "):
+            break
+        if in_sec and line.startswith("|"):
+            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            name = cells[0] if cells else ""
+            if (name and name.lower() not in ("crew", "---")
+                    and not set(name) <= set("-: ")):
+                crews.append(name)
+    return crews
+
+
+def _fetch_kb_attestation():
+    """Fresh (kb_sha, crews) from canonical main. None on any failure."""
+    try:
+        req = urllib.request.Request(
+            KB_COMMITS_API, headers={"User-Agent": "oracle-market-bidder",
+                                     "Accept": "application/vnd.github+json"})
+        with urllib.request.urlopen(req, timeout=KB_HTTP_TIMEOUT) as r:
+            commits = json.loads(r.read().decode("utf-8", "replace"))
+        sha = (commits or [{}])[0].get("sha", "")
+        if not re.fullmatch(r"[0-9a-f]{40}", sha or ""):
+            return None
+        req = urllib.request.Request(
+            KB_RAW_URL, headers={"User-Agent": "oracle-market-bidder"})
+        with urllib.request.urlopen(req, timeout=KB_HTTP_TIMEOUT) as r:
+            md = r.read().decode("utf-8", "replace")
+        crews = _parse_kb_crews(md)
+        if not crews:
+            return None
+        try:
+            KB_CACHE.write_text(json.dumps({"kb_sha": sha, "crews": crews,
+                                            "fetched_ts": time.time()}),
+                                encoding="utf-8")
+        except OSError:
+            pass
+        return sha, crews
+    except Exception:
+        return None
+
+
+def kb_attestation():
+    """Attestation dict for the bid body, or None when the knowledgebase
+    is unreachable and no cache exists (caller must skip bidding)."""
+    fresh = _fetch_kb_attestation()
+    sha, crews = fresh if fresh else (None, None)
+    if not fresh:
+        try:
+            cached = json.loads(KB_CACHE.read_text(encoding="utf-8"))
+            sha, crews = cached.get("kb_sha"), cached.get("crews")
+        except (OSError, ValueError):
+            pass
+    if not sha or not crews:
+        return None
+    return {
+        "kb_sha": sha,
+        "checked_crews": crews,
+        "no_overlap": (
+            "read Active Crews (docs/fleet-knowledgebase.md §2) at kb %s; "
+            "crews checked: %s; to my knowledge this bid does not duplicate "
+            "claimed crew work." % (sha[:12], ", ".join(crews))),
+    }
 
 
 class SeqPoster:
@@ -296,9 +383,18 @@ class Bidder:
         extra_fm = {"bidder": self.frm, "key_id": self.key_id,
                     "task_id": tid, "nonce": nonce, "bid_ts": bid_ts,
                     "sealed": sealed, "bid_sig": sig}
+        att = kb_attestation()
+        if not att:
+            # Knowledgebase unreachable and no cache: bidding blind would
+            # be rejected by the oracle anyway (no-attestation). Skip the
+            # bid and say so loudly instead of silently starving.
+            self.say(f"{self.emoji} {self.name}: knowledgebase unreachable "
+                     f"(no cache) \u2014 skipping bid on {tid} rather than "
+                     "bidding without attestation.")
+            return
         body = {"tags_matched": sorted(matched), "cost_ms": 60000,
                 "eta_ms": 120000, "task_class": task.get("task_class", "standard"),
-                "posted_ts": now}
+                "posted_ts": now, "kb_attestation": att}
         try:
             self.market.post("bid", f"bid-{self.id}-{tid}", body, task_id=tid,
                              note=f"{self.name} sealed bid on {tid}.",

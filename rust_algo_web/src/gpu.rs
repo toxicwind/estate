@@ -145,9 +145,11 @@ mod tests {
         std::fs::create_dir_all(&temp_dir).unwrap();
         let mock_script_path = temp_dir.join("nvidia-smi");
 
-        let mut f = File::create(&mock_script_path).unwrap();
-        writeln!(f, "#!/bin/sh").unwrap();
-        writeln!(f, "echo '45, 120.5, 30, 4096, 24576, 50'").unwrap();
+        {
+            let mut f = File::create(&mock_script_path).unwrap();
+            writeln!(f, "#!/bin/sh").unwrap();
+            writeln!(f, "echo '45, 120.5, 30, 4096, 24576, 50'").unwrap();
+        } // closed before exec: an open-for-write handle fails exec with ETXTBSY
 
         let mut perms = std::fs::metadata(&mock_script_path).unwrap().permissions();
         perms.set_mode(0o755);
@@ -184,9 +186,11 @@ mod tests {
         std::fs::create_dir_all(&temp_dir).unwrap();
         let mock_script_path = temp_dir.join("nvidia-smi");
 
-        let mut f = File::create(&mock_script_path).unwrap();
-        writeln!(f, "#!/bin/sh").unwrap();
-        writeln!(f, "exit 1").unwrap();
+        {
+            let mut f = File::create(&mock_script_path).unwrap();
+            writeln!(f, "#!/bin/sh").unwrap();
+            writeln!(f, "exit 1").unwrap();
+        } // closed before exec: an open-for-write handle fails exec with ETXTBSY
 
         let mut perms = std::fs::metadata(&mock_script_path).unwrap().permissions();
         perms.set_mode(0o755);
@@ -221,9 +225,11 @@ mod tests {
         std::fs::create_dir_all(&temp_dir).unwrap();
         let mock_script_path = temp_dir.join("nvidia-smi");
 
-        let mut f = File::create(&mock_script_path).unwrap();
-        writeln!(f, "#!/bin/sh").unwrap();
-        writeln!(f, "sleep 10").unwrap();
+        {
+            let mut f = File::create(&mock_script_path).unwrap();
+            writeln!(f, "#!/bin/sh").unwrap();
+            writeln!(f, "sleep 10").unwrap();
+        } // closed before exec: an open-for-write handle fails exec with ETXTBSY
 
         let mut perms = std::fs::metadata(&mock_script_path).unwrap().permissions();
         perms.set_mode(0o755);

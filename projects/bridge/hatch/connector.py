@@ -18,6 +18,10 @@ Persistent cell-side daemon (runs as root), listening on a local TCP port
                          yote (setsid, own session, PPID 1). Returns immediately.
   GET  /bg              list known background handles + cached status
   GET  /bg/<handle>     live status: state, exit code, log tails
+                       (reaps stale runners on read: dead pid -> "stale")
+  POST /bg/<handle>/kill
+                       SIGTERM the job's process group (pid verified via
+                       /proc cmdline; a reused pid is never signaled)
   /herd/*              proxied to yote 127.0.0.1:25100 (prefix stripped)
   /flock/*             proxied to yote 127.0.0.1:8000 (prefix stripped)
 
@@ -48,9 +52,10 @@ MAX_BODY = 10 * 1024 * 1024
 # --- bridge-max: background dispatch ---------------------------------------
 BG_BASE_YOTE = "/home/toxic/.cache/bridge-bg"
 BG_RUN_PY = "/home/toxic/sovereign/projects/bridge/bin/bg-run.py"
+BG_STATUS_PY = "/home/toxic/sovereign/projects/bridge/bin/bg-status.py"
+BG_KILL_PY = "/home/toxic/sovereign/projects/bridge/bin/bg-kill.py"
 REGISTRY = os.path.expanduser("~/.cache/bridge-bg-registry.json")
 HANDLE_RX = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
-BG_TAIL_BYTES = 4000
 
 _spec = importlib.util.spec_from_file_location("bridge_exec", BRIDGE_EXEC)
 bridge = importlib.util.module_from_spec(_spec)
@@ -137,42 +142,55 @@ def _bg_launch(cmd, workdir="/home/toxic"):
 
 
 def _bg_status(handle):
-    """Live status of a background handle. One exec call; poll-free truth
-    is the yote-side status.json written atomically by bg-run.py."""
+    """Live status of a background handle. One exec call, no polling.
+
+    Truth is the yote-side bg-status.py: it reads status.json, reaps a
+    stale runner atomically (pid dead or reused by another process —
+    verified via /proc/<pid>/cmdline), and returns status + log tails
+    as one JSON doc. A job whose runner died without writing its final
+    status comes back as state "stale", never stuck "running".
+    """
     if not HANDLE_RX.match(handle or ""):
         return {"handle": handle, "state": "bad-handle"}
     reg = _reg_load()
     info = reg.get(handle, {})
-    rd = "%s/%s" % (BG_BASE_YOTE, handle)
-    res = yote_exec(
-        "cat %s/status.json 2>/dev/null; "
-        "echo '---STDOUT_TAIL---'; tail -c %d %s/stdout.log 2>/dev/null; "
-        "echo '---STDERR_TAIL---'; tail -c %d %s/stderr.log 2>/dev/null"
-        % (rd, BG_TAIL_BYTES, rd, BG_TAIL_BYTES, rd),
-        "/home/toxic", 30)
+    res = yote_exec("python3 %s %s" % (BG_STATUS_PY, handle),
+                    "/home/toxic", 30)
     out = {"handle": handle, "cmd": info.get("cmd"),
            "launched_at": info.get("launched_at")}
     if res.get("code") != 0 or res.get("error"):
         out.update({"state": "unknown",
                     "error": res.get("error") or res.get("stderr")})
         return out
-    stdout = res.get("stdout", "")
-    parts = stdout.split("---STDOUT_TAIL---", 1)
-    status_raw = parts[0].strip()
-    rest = parts[1] if len(parts) > 1 else ""
-    logs = rest.split("---STDERR_TAIL---", 1)
     try:
-        st = json.loads(status_raw) if status_raw else None
-    except Exception:
-        st = None
-    if st:
-        out.update(st)
-        out["stdout_tail"] = logs[0] if len(logs) > 0 else ""
-        out["stderr_tail"] = logs[1] if len(logs) > 1 else ""
-    else:
-        out.update({"state": "dispatched",
-                    "note": "launcher accepted; bg-run.py not yet reporting"})
+        doc = json.loads(res.get("stdout", "").strip())
+    except ValueError:
+        out.update({"state": "unknown", "error": "bad bg-status frame",
+                    "raw": res.get("stdout", "")[:200]})
+        return out
+    out.update(doc)
     return out
+
+
+def _bg_kill(handle):
+    """SIGTERM a background job's whole process group (setsid'd runner).
+
+    yote-side bg-kill.py verifies /proc/<pid>/cmdline is still our
+    bg-run.py for this handle before signaling — a reused pid is never
+    touched. The next status query reaps the job as "stale".
+    """
+    if not HANDLE_RX.match(handle or ""):
+        return {"handle": handle, "state": "bad-handle"}
+    res = yote_exec("python3 %s %s" % (BG_KILL_PY, handle),
+                    "/home/toxic", 30)
+    if res.get("code") != 0 or res.get("error"):
+        return {"handle": handle, "state": "error",
+                "error": res.get("error") or res.get("stderr")}
+    try:
+        return json.loads(res.get("stdout", "").strip())
+    except ValueError:
+        return {"handle": handle, "state": "error",
+                "error": "bad bg-kill frame"}
 
 
 def svc_proxy(svc, method, path, headers, body):
@@ -203,7 +221,7 @@ HOP_HEADERS = {"connection", "transfer-encoding", "keep-alive",
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "yote-connector/2.0"
+    server_version = "yote-connector/2.1"
 
     def _json(self, code, obj):
         data = json.dumps(obj).encode()
@@ -367,6 +385,11 @@ class Handler(BaseHTTPRequestHandler):
             self._json(200, {"handle": handle, "state": "dispatched",
                              "status_url": "/bg/%s" % handle})
             return
+        if self.path.startswith("/bg/") and self.path.endswith("/kill"):
+            # bridge-max: SIGTERM a background job's process group.
+            handle = self.path[len("/bg/"):-len("/kill")].split("/")[0]
+            self._json(200, _bg_kill(handle))
+            return
         self._proxy()
 
     # PUT/PATCH/DELETE etc. also proxy to services.
@@ -387,6 +410,7 @@ class Handler(BaseHTTPRequestHandler):
             self._json(404, {"error": "unknown route",
                              "routes": ["/health", "/exec", "/exec-multi",
                                         "/exec-bg", "/bg", "/bg/<handle>",
+                                        "/bg/<handle>/kill",
                                         "/herd/*", "/flock/*"]})
             return
         body = self._read_body()
@@ -418,6 +442,14 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main():
+    # Self-maintained pidfile: launcher $! capture is unreliable across
+    # subshell/setsid boundaries (goes stale, watchdogs then kill the wrong
+    # pid or none). The daemon always knows its own pid.
+    try:
+        with open(os.path.join(HERE, "connector.pid"), "w") as f:
+            f.write(str(os.getpid()))
+    except OSError:
+        pass
     srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
     srv.daemon_threads = True
     log("listening on 127.0.0.1:%d (pid %d)" % (PORT, os.getpid()))

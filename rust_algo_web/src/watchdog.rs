@@ -1,6 +1,6 @@
-use std::net::SocketAddr;
-use axum::{routing::get, Router, Json};
+use axum::{routing::get, Json, Router};
 use serde_json::json;
+use std::net::SocketAddr;
 
 pub async fn run(port: u16) {
     let app = Router::new()

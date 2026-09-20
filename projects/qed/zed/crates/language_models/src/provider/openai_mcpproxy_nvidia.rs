@@ -20,8 +20,9 @@ use language_model::{
     AuthenticateError, IconOrSvg, LanguageModel, LanguageModelCompletionError,
     LanguageModelCompletionEvent, LanguageModelEffortLevel, LanguageModelId, LanguageModelName,
     LanguageModelProvider, LanguageModelProviderId, LanguageModelProviderName,
-    LanguageModelProviderState, LanguageModelRequest, LanguageModelToolChoice, LanguageModelToolUse, LanguageModelToolUseInput,
-    LanguageModelToolSchemaFormat, ProviderSettingsView, RateLimiter, SubPageProviderSettings,
+    LanguageModelProviderState, LanguageModelRequest, LanguageModelToolChoice,
+    LanguageModelToolSchemaFormat, LanguageModelToolUse, LanguageModelToolUseInput,
+    ProviderSettingsView, RateLimiter, SubPageProviderSettings,
 };
 use open_ai::{
     ResponseStreamEvent,
@@ -37,8 +38,10 @@ use crate::provider::api_compatible::{
     ApiCompatibleProviderState,
 };
 use crate::provider::open_ai::{
-    ChatCompletionMaxTokensParameter, OpenAiEventMapper, OpenAiResponseEventMapper, into_open_ai, into_open_ai_response,
+    ChatCompletionMaxTokensParameter, OpenAiEventMapper, OpenAiResponseEventMapper, into_open_ai,
+    into_open_ai_response,
 };
+use crate::schema_normalizer::normalize_tool_schemas;
 pub use settings::OpenAiCompatibleAvailableModel as AvailableModel;
 pub use settings::OpenAiCompatibleModelCapabilities as ModelCapabilities;
 
@@ -50,7 +53,6 @@ pub struct OpenAiMcpProxyNvidiaSettings {
     pub available_models: Vec<AvailableModel>,
     pub custom_headers: CustomHeaders,
 }
-
 
 impl ApiCompatibleProviderSettings for OpenAiMcpProxyNvidiaSettings {
     fn api_url(&self) -> &str {
@@ -239,8 +241,8 @@ impl OpenAiMcpProxyNvidiaLanguageModel {
         &self,
         request: ResponseRequest,
         cx: &AsyncApp,
-    ) -> BoxFuture<'static, Result<futures::stream::BoxStream<'static, Result<ResponsesStreamEvent>>>
-    > {
+    ) -> BoxFuture<'static, Result<futures::stream::BoxStream<'static, Result<ResponsesStreamEvent>>>>
+    {
         let http_client = self.http_client.clone();
 
         let (api_key, api_url, extra_headers) = self.state.read_with(cx, |state, _cx| {
@@ -284,11 +286,31 @@ fn supported_thinking_effort_levels(model: &AvailableModel) -> Vec<LanguageModel
         return Vec::new();
     };
     let mut levels = vec![
-        LanguageModelEffortLevel { name: "low".into(), value: "low".into(), is_default: false },
-        LanguageModelEffortLevel { name: "medium".into(), value: "medium".into(), is_default: false },
-        LanguageModelEffortLevel { name: "high".into(), value: "high".into(), is_default: false },
-        LanguageModelEffortLevel { name: "xhigh".into(), value: "xhigh".into(), is_default: false },
-        LanguageModelEffortLevel { name: "max".into(), value: "max".into(), is_default: false },
+        LanguageModelEffortLevel {
+            name: "low".into(),
+            value: "low".into(),
+            is_default: false,
+        },
+        LanguageModelEffortLevel {
+            name: "medium".into(),
+            value: "medium".into(),
+            is_default: false,
+        },
+        LanguageModelEffortLevel {
+            name: "high".into(),
+            value: "high".into(),
+            is_default: false,
+        },
+        LanguageModelEffortLevel {
+            name: "xhigh".into(),
+            value: "xhigh".into(),
+            is_default: false,
+        },
+        LanguageModelEffortLevel {
+            name: "max".into(),
+            value: "max".into(),
+            is_default: false,
+        },
     ];
     for level in levels.iter_mut() {
         if level.value == default_effort.value().as_ref() {
@@ -298,7 +320,9 @@ fn supported_thinking_effort_levels(model: &AvailableModel) -> Vec<LanguageModel
     levels
 }
 
-fn chat_completion_max_tokens_parameter(model: &AvailableModel) -> ChatCompletionMaxTokensParameter {
+fn chat_completion_max_tokens_parameter(
+    model: &AvailableModel,
+) -> ChatCompletionMaxTokensParameter {
     if model.capabilities.max_tokens_parameter {
         ChatCompletionMaxTokensParameter::MaxTokens
     } else {
@@ -477,61 +501,6 @@ impl LanguageModel for OpenAiMcpProxyNvidiaLanguageModel {
     }
 }
 
-fn normalize_tool_schemas(
-    tools: Vec<language_model::LanguageModelRequestTool>,
-) -> Vec<language_model::LanguageModelRequestTool> {
-    tools
-        .into_iter()
-        .map(|mut tool| {
-            if let language_model::LanguageModelRequestToolInput::Function { input_schema, .. } =
-                &mut tool.input
-            {
-                *input_schema = normalize_schema(input_schema.clone());
-            }
-            tool
-        })
-        .collect()
-}
-
-fn normalize_schema(mut schema: serde_json::Value) -> serde_json::Value {
-    if !schema.is_object() {
-        return serde_json::json!({ "type": "object" });
-    }
-    let root_type = schema.get("type").cloned();
-    let is_explicit_object = matches!(root_type, Some(serde_json::Value::String(s)) if s == "object");
-    if !is_explicit_object {
-        schema["type"] = serde_json::json!("object");
-    }
-    if let Some(props) = schema.get_mut("properties").and_then(|p| p.as_object_mut()) {
-        for (_name, prop) in props.iter_mut() {
-            if prop.is_object() {
-                let t = prop.get("type").cloned();
-                let has_type = match &t {
-                    Some(serde_json::Value::String(s)) => !s.is_empty() && s != "null",
-                    Some(serde_json::Value::Array(a)) => {
-                        let cleaned: Vec<_> = a
-                            .iter()
-                            .filter(|v| !matches!(v, serde_json::Value::String(s) if s == "null"))
-                            .cloned()
-                            .collect();
-                        let non_empty = !cleaned.is_empty();
-                        prop["type"] = serde_json::Value::Array(cleaned);
-                        non_empty
-                    }
-                    _ => false,
-                };
-                if !has_type {
-                    prop["type"] = serde_json::json!("string");
-                }
-                if matches!(prop.get("type"), Some(serde_json::Value::String(s)) if s == "object") {
-                    *prop = normalize_schema(prop.clone());
-                }
-            }
-        }
-    }
-    schema
-}
-
 /// Self-healing event mapper: converts a malformed tool-call argument parse
 /// error into a valid ToolUse with empty `{}` input, preventing the infinite
 /// retry loop when a model forgets to emit tool arguments.
@@ -541,14 +510,18 @@ struct McpProxyEventMapper {
 
 impl McpProxyEventMapper {
     fn new() -> Self {
-        Self { inner: OpenAiEventMapper::new() }
+        Self {
+            inner: OpenAiEventMapper::new(),
+        }
     }
 
     fn map_stream(
         self,
         events: futures::stream::BoxStream<'static, Result<ResponseStreamEvent>>,
-    ) -> futures::stream::BoxStream<'static, Result<LanguageModelCompletionEvent, LanguageModelCompletionError>>
-    {
+    ) -> futures::stream::BoxStream<
+        'static,
+        Result<LanguageModelCompletionEvent, LanguageModelCompletionError>,
+    > {
         self.inner
             .map_stream(events)
             .map(|event| match event {
@@ -562,16 +535,18 @@ impl McpProxyEventMapper {
                         "openai-mcpproxy-nvidia: auto-recovering malformed tool call `{tool_name}` \
                          (arguments did not parse) as empty input instead of retrying"
                     );
-                    Ok(LanguageModelCompletionEvent::ToolUse(LanguageModelToolUse {
-                                            id,
-                                            name: tool_name,
-                                            is_input_complete: true,
-                                            input: LanguageModelToolUseInput::Json(serde_json::Value::Object(
-                                                serde_json::Map::new(),
-                                            )),
-                                            raw_input: raw_input.to_string(),
-                                            thought_signature: None,
-                                        }))
+                    Ok(LanguageModelCompletionEvent::ToolUse(
+                        LanguageModelToolUse {
+                            id,
+                            name: tool_name,
+                            is_input_complete: true,
+                            input: LanguageModelToolUseInput::Json(serde_json::Value::Object(
+                                serde_json::Map::new(),
+                            )),
+                            raw_input: raw_input.to_string(),
+                            thought_signature: None,
+                        },
+                    ))
                 }
                 other => other,
             })

@@ -118,41 +118,24 @@ export const extendedTests: ExtendedServiceTest[] = [
     ],
   },
   {
-    service: "astmatrix",
-    portKey: "ASTMATRIX_PORT",
+    service: "flock",
+    portKey: "FLOCK_PORT",
     tests: [
       {
-        name: "astmatrix-api",
-        port: 25115,
-        healthEndpoints: ["/", "/api/health", "/mesh/"],
+        name: "flock-api",
+        port: 8000,
+        healthEndpoints: ["/health", "/v1/models"],
         skipHttpCheck: false,
       },
     ],
     specialChecks: [
       async () => {
-        // Check astmatrix source/config presence
-        const proc = Bun.spawn({
-          cmd: [
-            "ls",
-            "/home/toxic/projects/llama-swap-main/internal/astmatrix/",
-          ],
-          stdout: "pipe",
-        });
-        const stdout = await new Response(proc.stdout).text();
-        await proc.exited;
-        return {
-          name: "astmatrix-source-dir",
-          passed: stdout.trim().includes("router"),
-          details: { stdout: stdout.trim() },
-        };
-      },
-      async () => {
-        // Check astmatrix config in llama-swap config
+        // Check flock binary presence
         const proc = Bun.spawn({
           cmd: [
             "bash",
             "-c",
-            "grep -q astmatrix /home/toxic/sovereign/config/llama-swap.yaml && echo FOUND || echo MISSING",
+            "test -x /home/toxic/.flock/flock && echo FOUND || echo MISSING",
           ],
           stdout: "pipe",
           stderr: "pipe",
@@ -160,20 +143,38 @@ export const extendedTests: ExtendedServiceTest[] = [
         const stdout = await new Response(proc.stdout).text();
         await proc.exited;
         return {
-          name: "astmatrix-config-present",
-          passed:
-            stdout.trim() === "FOUND" || stdout.trim().includes("astmatrix"),
+          name: "flock-binary-present",
+          passed: stdout.trim() === "FOUND",
           details: { stdout: stdout.trim(), exitCode: proc.exitCode ?? null },
         };
       },
       async () => {
-        // Check astmatrix router initialization in source
+        // Check flock delegation config in herd config
+        const proc = Bun.spawn({
+          cmd: [
+            "bash",
+            "-c",
+            "grep -q '^flock:' /home/toxic/sovereign/config/herd.yaml && echo FOUND || echo MISSING",
+          ],
+          stdout: "pipe",
+          stderr: "pipe",
+        });
+        const stdout = await new Response(proc.stdout).text();
+        await proc.exited;
+        return {
+          name: "flock-config-present",
+          passed: stdout.trim() === "FOUND",
+          details: { stdout: stdout.trim(), exitCode: proc.exitCode ?? null },
+        };
+      },
+      async () => {
+        // Check herd delegates cloud models to flock (flockCloud in source)
         const proc = Bun.spawn({
           cmd: [
             "grep",
             "-r",
-            "astmatrix.NewRouter",
-            "/home/toxic/projects/llama-swap-main/internal/",
+            "flockCloud",
+            "/home/toxic/herd-phase3-retire/internal/",
             "--include=*.go",
           ],
           stdout: "pipe",
@@ -182,9 +183,9 @@ export const extendedTests: ExtendedServiceTest[] = [
         const stdout = await new Response(proc.stdout).text();
         await proc.exited;
         return {
-          name: "astmatrix-router-code",
-          passed: stdout.trim().includes("astmatrix"),
-          details: { stdout: stdout.trim(), exitCode: proc.exitCode ?? null },
+          name: "flock-delegation-code",
+          passed: stdout.trim().includes("flockCloud"),
+          details: { stdout: stdout.trim() },
         };
       },
     ],
