@@ -9,6 +9,8 @@ running against the hatch runtime cell (2 vCPUs — saturates fast).
 | `swarm-pause` | SIGSTOP-freezes the whole agent tool-call tree on the cell (excludes own chain + process group). Proven: 18 procs in one shot, 50 on a storm day. State → `~/.cache/shingle/swarm-paused.json`. |
 | `swarm-resume` | Thaws everything frozen by swarm-pause (SIGCONT). |
 | `swarm-eject` | The big red button: STOPs (default, reversible) or KILLs (`--kill`) the agent tool tree on hatch AND runaway processes on yote via the bridge (CPU >90% of one core; protected: bridge, squawk, tailscaled, sshd, systemd, herd serving, pitchfork). Yote PIDs recorded for resume. |
+| `progress-watchdog` | Hearth watchdog (cron, 30-min pulse). One ConditionRegistry drives alerts AND pulse: identical alerts fire once (never re-fire); pulse says "all green" only on a fresh snapshot with zero active conditions, "eyes closed" on stale snapshot. Stuck-task re-announce capped at 3. Oracle alerts are process/per-request facts (loop-dead, intake backlog), never ledger-age guesses. |
+| `tests/test_watchdog.py` | Unit tests (40 pass): registry dedup, domain sweeps, atomic writes, run ledger, pause verification, pulse honesty, re-announce cap, per-request intake backlog. |
 | `watchdog_lib.py` | Shared helpers: pause verification against live /proc, run ledger. |
 
 ## Deploy
