@@ -30,3 +30,5 @@ project home under `projects/`.
 ## Do-not-touch
 
 - [`guidellm/`](guidellm/) — another agent's live workspace. Hands off.
+
+Back to the [master README](../README.md).

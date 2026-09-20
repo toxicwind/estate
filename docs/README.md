@@ -49,3 +49,5 @@ grouped by what it actually is. New docs go in `docs/plans/` (proposals) or
 Note: some older docs predate the 2026-09-20 reorg and may reference moved paths
 (`hatch/`, `bridge/`, `scratch/`). When in doubt, `pitchfork.toml`, `mise.toml`,
 and `config/ports.env` are the live sources of truth.
+
+Back to the [master README](../README.md).
