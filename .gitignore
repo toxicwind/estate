@@ -299,3 +299,16 @@ projects/tau-occupied-*/
 projects/nim-repos/
 projects/guidellm/
 worktrees/
+
+# Committer 2026-09-20: deliberately untracked (foreign forks, nested repos, runtime state)
+sovereign-github-search/
+bench-wt-tau/
+killer-features/*/vendor/
+agents/oracle-market/ledger/
+agents/**/*.lock
+projects/outlier-toolkit/
+projects/wezterm/
+merge-main-20260914/
+kimi-audit-scratch-20260914/
+codeflux/
+projects/mesh/bin/shep-v0.51.0
