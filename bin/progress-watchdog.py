@@ -322,9 +322,10 @@ def snapshot(chan_dir, ledger_events):
     snap["daemons"] = daemons
 
     # --- bridge holder ---
+    # 2026-09-20: bridge moved 8379 -> 25204 (tailscale serve /exec-ws backend);
     holder = {"listening": False, "pid": None, "alive": False,
               "cmd_ok": False}
-    m = re.search(r"pid=(\d+)", sh(["ss", "-ltnp", "sport = :8379"]))
+    m = re.search(r"pid=(\d+)", sh(["ss", "-ltnp", "sport = :25204"]))
     if m:
         holder["listening"] = True
         pid = m.group(1)
