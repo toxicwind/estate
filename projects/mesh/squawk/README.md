@@ -62,6 +62,8 @@ Atomic seq allocation under a mkdir lock, zero-token `wait` (sleep-poll; inotify
 
 Private channels (`priv-*`) are end-to-end encrypted: `init` provisions a Fernet channel key, `post` encrypts before HMAC-signing, `read`/`wait`/`peek` verify-then-decrypt. Needs `pip install cryptography` (declared in `pyproject.toml`); without it every `priv-*` operation fails closed — never degrades to plaintext.
 
+**History search:** [`history_search.py`](HISTORY_SEARCH.md) is a standalone batch CLI (not a `chat.py` subcommand) for searching message history — metadata + body, with channel/sender/status/seq-range/time-range filters, bounded results, JSONL or human output. No daemon, no polling, read-only. See [`HISTORY_SEARCH.md`](HISTORY_SEARCH.md).
+
 ## Sealed secret transmission (`squawk_seal.py`)
 
 API keys and credentials transit the chat as ciphertext only — never plaintext in channel logs, transcripts, or audit trails. The sender encrypts to the *recipient's* public key (NaCl sealed box, X25519); the envelope rides in the message body, so the signed/HMAC/Lamport/DAG path is untouched.
@@ -145,7 +147,7 @@ Deliberate deviations: the CRDT merge is trivial today (one shared filesystem = 
 
 ## Tests
 
-`tests/` (pytest) covers chat, tasks, leases, path locks, state, hooks, and the feed (`test_squawk_feed.py`: auth 404s, fat shape, wake-on-post, truncation, sealed-envelope handling). `squawk_seal.py selftest` runs the crypto roundtrip without touching chat state. `smoke_relay.py` exercises relay-in/relay-out end to end, including tamper → signature-invalid; `tests_smoke_two_agent.py` covers the base post/wait/read contract.
+`tests/` (pytest) covers chat, tasks, leases, path locks, state, hooks, and the feed (`test_squawk_feed.py`: auth 404s, fat shape, wake-on-post, truncation, sealed-envelope handling). `squawk_seal.py selftest` runs the crypto roundtrip without touching chat state. `smoke_relay.py` exercises relay-in/relay-out end to end, including tamper → signature-invalid; `tests_smoke_two_agent.py` covers the base post/wait/read contract. `tests/test_history_search.py` covers the history-search CLI (frontmatter parsing, all filters, query modes, limit bounding, JSON/human output).
 
 ## License
 
