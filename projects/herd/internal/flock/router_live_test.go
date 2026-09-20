@@ -3,9 +3,7 @@ package flock
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
-	"net/http"
 	"net/http/httptest"
 	"os"
 	"strings"
@@ -21,7 +19,7 @@ func TestLiveKimi(t *testing.T) {
 		t.Skip("Set LIVE_TEST=1 to run live tests")
 	}
 
-	logger := logmon.NewMonitor("flock-live")
+	logger := logmon.New()
 	cfg := loadLiveConfig(t)
 	router, err := NewRouter(cfg, logger)
 	if err != nil {
@@ -207,8 +205,11 @@ func loadLiveConfig(t *testing.T) *FlockConfig {
 	cfg.Defaults()
 
 	if cfg.Providers["kimi"].BaseURL == "" {
-		cfg.Providers["kimi"].BaseURL = "https://kimi-api-sandbox.msh.team/v1"
+		pc := cfg.Providers["kimi"]
+		pc.BaseURL = "https://kimi-api-sandbox.msh.team/v1"
+		cfg.Providers["kimi"] = pc
 	}
 
 	return cfg
 }
+

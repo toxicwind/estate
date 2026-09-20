@@ -281,3 +281,6 @@ id_ed25519*
 
 # --- stale-dir archive (herd triage 2026-09-20) ---
 .archive-*/
+
+# --- engine build trees (herd triage 2026-09-20: 3G, never commit) ---
+/engines/
