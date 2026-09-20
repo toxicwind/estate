@@ -1,4 +1,4 @@
-# Eval ranking 20260920-final — final, 10 models (2026-09-20)
+# Eval ranking 20260920-final — 9 ranked models + 1 fallback (2026-09-20)
 
 Instrument: GuideLLM fork (`toxicwind/guidellm`) + deterministic `instruction_following` scorer (sentinel `ABSTRACT-7X3Q`, thinking-strip on), real per-model HF tokenizers.
 Prompt: `Output exactly: ABSTRACT-7X3Q. No other text.` — 6 requests/model, synchronous profile, max_tokens=300.
@@ -17,10 +17,16 @@ Free status verified live against the OpenRouter catalogue (446 models, 24 provi
 | 7 | nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free | 2.00 | 5 | 1 | 1.18 | 258 | 37.2 | nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning-BF16 |
 | 8 | nvidia/nemotron-3-ultra-550b-a55b:free | 2.00 | 6 | 0 | 3.44 | 447 | 10.7 | nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4 |
 | 9 | nvidia/nemotron-3.5-lightning:free | 1.83 | 6 | 0 | 32.25 | 15936 | 4.7 | nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4 |
-| 10 | openrouter/free | 1.67 | 6 | 0 | 1.69 | 432 | 54.6 | gpt2 |
+
+## Fallback tier — NOT ranked (no stable tokenizer)
+
+`openrouter/free` has no stable tokenizer; it ran on the explicitly labelled `gpt2` fallback and is NOT tokenizer-comparable with the ranked tier. Its deterministic quality score is reported for the record only.
+
+| model | quality mean | n | err | lat p50 (s) | ttft p50 (ms) | out tok/s | tokenizer |
+|---|---|---|---|---|---|---|---|
+| openrouter/free | 1.67 | 6 | 0 | 1.69 | 432 | 54.6 | gpt2 (fallback) |
 
 ## Notes
-- `openrouter/free` has no stable tokenizer; it ran on the explicitly labelled `gpt2` fallback and is NOT tokenizer-comparable with the rest.
 - `nvidia/nemotron-3-super-120b-a12b:free`: 3/6 requests errored at the provider (excluded from the quality mean); quality 2.0 over 3 completed.
 - `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free`: 1/6 errored; quality 2.0 over 5 completed.
 - 14 live-free models lack tokenizer mappings and were not probed (see run logs).
