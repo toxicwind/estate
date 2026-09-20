@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# fleet-watch — event stream of new fleet messages. One line per message file:
+#   FILE <seq>-<from>-msg.md
+# Runs inotifywait -m on yote over the bridge; output streams live (WS lane).
+# This command never exits on its own: background it via exec, then
+# process.poll the session — the poll wakes ONLY when a message lands.
+# Zero polling, zero timers.
+set -u
+CHANNEL="${1:-fleet}"
+if [[ "${1:-}" == "--channel" ]]; then CHANNEL="${2:-fleet}"; fi
+DIR="/home/toxic/.shingle/squawk-root/${CHANNEL}"
+exec /home/hatch/workspace/bin/yote-conn exec \
+  "inotifywait -m -e close_write,moved_to --format 'FILE %f' ${DIR}/"
