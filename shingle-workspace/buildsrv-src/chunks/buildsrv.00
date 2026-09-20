@@ -1,0 +1,120 @@
+#!/usr/bin/env python3
+"""buildsrv — CLI for the buildsrv build daemon.
+
+Submits jobs as JSON files into the daemon's queue dir and reads
+status/logs/results straight off disk (the daemon and the CLI share
+only the filesystem — no RPC to break).
+
+    buildsrv submit --name NAME --repo DIR --toolchain bun \
+        --cmd "bunx tsc --noEmit" [--workdir DIR] [--timeout 600] \
+        [--artifact dist/] [--env KEY=VAL]
+    buildsrv submit --name pi-ast --repo /home/toxic/sovereign/tau/engine \
+        --toolchain rust --cmd "cargo build -p pi-ast"
+    buildsrv status [ID]        # one job, or a table of recent jobs
+    buildsrv logs ID [-f] [-n N]
+    buildsrv list [-n N]
+    buildsrv retry ID           # re-queue a finished/failed job
+    buildsrv artifacts ID       # list cached artifacts for a job
+    buildsrv health             # daemon health endpoint
+
+Re-submitting an identical job is a no-op: submit detects a previous
+successful build of the same spec and returns the cached result.
+"""
+import argparse
+import json
+import os
+import subprocess
+import sys
+import time
+import urllib.request
+from datetime import datetime, timezone
+from pathlib import Path
+
+ROOT = Path(os.environ.get("BUILDSRV_ROOT", "/home/toxic/buildsrv"))
+QUEUE = ROOT / "queue"
+LOGS = ROOT / "logs"
+RESULTS = ROOT / "results"
+ARTIFACTS = ROOT / "artifacts"
+STATE_FILE = ROOT / "state.json"
+PORT = int(os.environ.get("BUILDSRV_PORT", "25148"))
+
+KNOWN_TOOLCHAINS = ["rust", "cargo", "go", "bun", "node", "python", "python3", "tsc"]
+
+
+def die(msg, code=1):
+    print(f"buildsrv: error: {msg}", file=sys.stderr)
+    sys.exit(code)
+
+
+def load_state():
+    try:
+        return json.loads(STATE_FILE.read_text())
+    except Exception:
+        return {"jobs": {}}
+
+
+def save_state(s):
+    tmp = STATE_FILE.with_suffix(".tmp")
+    tmp.write_text(json.dumps(s, indent=1, sort_keys=True))
+    tmp.replace(STATE_FILE)
+
+
+def load_job(jid):
+    for d in (QUEUE, ROOT / "active"):
+        p = d / f"{jid}.json"
+        if p.exists():
+            return json.loads(p.read_text())
+    die(f"no queued job {jid}")
+
+
+def job_hash(job):
+    import hashlib
+    canon = {
+        "repo": job.get("repo"), "workdir": job.get("workdir"),
+        "toolchain": job.get("toolchain"), "cmd": job.get("cmd"),
+        "env": job.get("env") or {}, "artifacts": job.get("artifacts") or [],
+    }
+    return hashlib.sha256(json.dumps(canon, sort_keys=True).encode()).hexdigest()
+
+
+def cmd_submit(a):
+    repo = str(Path(a.repo).expanduser().resolve())
+    if not Path(repo).is_dir():
+        die(f"repo dir does not exist: {repo}")
+    tc = (a.toolchain or "").lower()
+    if tc not in KNOWN_TOOLCHAINS:
+        die(f"unknown toolchain {tc!r}; known: {KNOWN_TOOLCHAINS}")
+    workdir = str(Path(a.workdir or repo).expanduser().resolve())
+    env = {}
+    for kv in a.env or []:
+        if "=" not in kv:
+            die(f"--env needs KEY=VAL, got {kv!r}")
+        k, v = kv.split("=", 1)
+        env[k] = v
+    ts = datetime.now().strftime("%y%m%d-%H%M%S")
+    rand = os.urandom(4).hex()
+    jid = f"b{ts}-{rand}"
+    job = {
+        "id": jid,
+        "name": a.name,
+        "repo": repo,
+        "workdir": workdir,
+        "toolchain": tc,
+        "cmd": a.cmd,
+        "env": env,
+        "artifacts": a.artifact or [],
+        "timeout_s": a.timeout,
+        "submitted_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "submitted_by": os.environ.get("USER", "?"),
+    }
+    # idempotent resubmit: identical spec already succeeded -> no-op
+    h = job_hash(job)
+    st = load_state()
+    for oid, rec in st["jobs"].items():
+        if rec.get("job_hash") == h and rec.get("status") == "succeeded":
+            print(f"CACHED  identical job already succeeded as {oid}")
+            print(f"        result: exit={rec.get('exit_code')} "
+                  f"duration={rec.get('duration_s')}s "
+                  f"finished={rec.get('finished_at')}")
+            if rec.get("artifact_dir"):
+                print(f"      

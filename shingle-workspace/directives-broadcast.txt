@@ -1,0 +1,3 @@
+
+## 2026-09-14 17:38 MDT — /home/toxic/AGENTS.md created (Shingle)
+Bridge-side standing rules now live at /home/toxic/AGENTS.md: Chris's directives, 3-minute auto-select rule, fd/rg plus unique-tmp tooling, pitchfork ownership, generate.ts ban, credential hygiene. Cell copy ~/AGENTS.md is authoritative on drift — flag conflicts. Re-read before each work block alongside this channel.

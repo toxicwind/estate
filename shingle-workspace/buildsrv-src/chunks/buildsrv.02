@@ -1,0 +1,39 @@
+efault=1200, help="seconds (default 1200)")
+    s.add_argument("--artifact", action="append", default=[],
+                   help="relative path to cache on success (repeatable)")
+    s.add_argument("--env", action="append", default=[],
+                   help="KEY=VAL extra env (repeatable)")
+    s.set_defaults(fn=cmd_submit)
+
+    s = sub.add_parser("status", help="job status")
+    s.add_argument("id", nargs="?")
+    s.add_argument("-n", type=int, default=15)
+    s.set_defaults(fn=cmd_status)
+
+    s = sub.add_parser("logs", help="job logs")
+    s.add_argument("id")
+    s.add_argument("-f", "--follow", action="store_true")
+    s.add_argument("-n", type=int, default=200)
+    s.set_defaults(fn=cmd_logs)
+
+    s = sub.add_parser("list", help="recent jobs")
+    s.add_argument("-n", type=int, default=15)
+    s.set_defaults(fn=lambda a: cmd_status(argparse.Namespace(id=None, n=a.n)))
+
+    s = sub.add_parser("retry", help="re-queue a job")
+    s.add_argument("id")
+    s.set_defaults(fn=cmd_retry)
+
+    s = sub.add_parser("artifacts", help="list cached artifacts")
+    s.add_argument("id")
+    s.set_defaults(fn=cmd_artifacts)
+
+    s = sub.add_parser("health", help="daemon health")
+    s.set_defaults(fn=cmd_health)
+
+    a = ap.parse_args()
+    a.fn(a)
+
+
+if __name__ == "__main__":
+    main()
