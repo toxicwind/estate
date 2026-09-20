@@ -143,3 +143,4 @@ Every spawn brief MUST be generated from `docs/spawn-brief-template.md` and MUST
 3. "Check `squawk read fleet` + §2 before touching any tree another crew owns."
 
 Staleness is a bug: if you find this file wrong, fix it and push — same commit rules as §3.
+| stale-hunter | Process staleness + speed audit across hatch+yote: 12h+ silence/idle hunt, CPU-vs-wall profiling, faster paths/libs, paru/pacman installs; repair live, durable, event-driven | Ember (main chat) | RUNNING (2026-09-20) |
