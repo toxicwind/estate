@@ -1,0 +1,22 @@
+name = "kimiclaw-1"
+version = "1.0.0"
+description = "KimiClaw worker: claw agent routed to the flock nemotron-3.5-lightning model. Executes assigned tasks via tools and reports results."
+author = "toxicwind"
+module = "builtin:chat"
+
+[model]
+provider = "llama-swap"
+model = "flock-direct/nvidia/nemotron-3.5-lightning-30b-a3b"
+base_url = "http://127.0.0.1:25100/v1"
+max_tokens = 32000
+temperature = 0.3
+
+[resources]
+max_llm_tokens_per_hour = 200000
+max_context_tokens = 32000
+
+[capabilities]
+tools = ["file_read", "file_list", "file_write", "exec"]
+network = []
+agent_spawn = false
+workflow_run = false

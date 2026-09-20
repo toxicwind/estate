@@ -1,0 +1,5 @@
+set -e
+node scripts/check-no-comments.mjs
+bunx --bun lint-staged
+bun run typecheck
+EOF

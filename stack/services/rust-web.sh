@@ -36,4 +36,4 @@ fi
   exit 1
 }
 export TERM=xterm-256color
-exec "$BIN"
+cd "$SOV/rust_algo_web" && exec "$BIN"

@@ -1,0 +1,1 @@
+{"max_memory_mb": 256, "max_solution_seconds": 120, "max_test_seconds": 60, "python": "python3", "solution_files": ["solution.py"], "test_command": ["python3", "-m", "pytest", "tests/", "-q"]}

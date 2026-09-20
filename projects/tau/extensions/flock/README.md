@@ -36,7 +36,7 @@ tau plugin link .
 
 - `FLOCK_BASE_URL` — proxy base URL (default `http://127.0.0.1:8000`)
 - `FLOCK_API_KEY` — proxy client key (`Authorization: Bearer`). Optional;
-  falls back to `NVIDIA_API_KEY`, then `NIM_PROXY_API_KEY`. Required for
+  falls back to `NVIDIA_API_KEY` (flock accepts both as client keys). Required for
   `/v1/models` and `/v1/chat/completions`.
 - `FLOCK_TIMEOUT_MS` — per-request timeout (default 60000, clamp 1000..600000)
 - `FLOCK_DISABLED=1` — skip the extension
@@ -54,7 +54,7 @@ completion is surfaced as an error, never a silent blank result.
 ```
 == flock smoke test ==
 base: http://127.0.0.1:8000
-proxy API key: ABSENT from env (checked FLOCK_API_KEY, NVIDIA_API_KEY, NIM_PROXY_API_KEY)
+proxy API key: ABSENT from env (checked FLOCK_API_KEY, NVIDIA_API_KEY)
 key-store check: /home/toxic/.secrets not present
 
 -- GET /health
