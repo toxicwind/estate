@@ -1,4 +1,4 @@
-# Oracle-Market Mechanism Spec v2.1
+# Oracle-Market Mechanism Spec v2.2
 
 Spec for the three oracle-market layers: HMAC-signed runner profiles,
 Vickrey second-price clearing, stake-and-slash accountability.
@@ -9,6 +9,10 @@ v2.1 changes: SPEC §2.1 key-separation amendment (HKDF domain separation,
 was "one secret shared across HMAC and AES-GCM"); §1.5 control-plane HMAC
 authentication (replaces the spoofable TRUSTED_POSTERS string match);
 §8 provider key-pool rotation + free-beats-local routing doctrine.
+
+v2.2 changes: §9 debate chase rule (named agents, chase on timeout,
+quorum-or-hard settle); §10 knowledgebase attestation before bidding
+(mechanism-level reject of unattested bids).
 
 ## 1. HMAC-signed runner profiles
 
@@ -258,3 +262,54 @@ fix it to free-first. Rationale: free cloud is effectively infinite
 parallel capacity with zero marginal cost; local models burn yote's
 16 cores and contend with the swarm. Local stays as the fallback so a
 total cloud outage never strands a payload.
+
+## 9. Debate chase rule (fleet mechanism)
+
+Q&A response rate was 0% (6 questions, 0 answers; debate [11000] died
+unanswered) \u2014 a mechanism bug, not a manners bug. Debates now live
+in the market, not in the void:
+
+- Open: `debate_request` in the bid-market channel (body: `question`,
+  optional `wanted: [names]`, `soft_ms`, `hard_ms`) \u2014 or the intake
+  DEBATE route (open questions). Not control-plane: opening a debate
+  can't mint rewards or move stake.
+- The oracle opens the debate, names the agents whose input is wanted
+  (explicit list, else `debates/roster.json`, else `ember, kindling`),
+  and announces to fleet with the names in the text.
+- Replies: `debate_reply` with `debate_id`. Distinct `from:` agents count.
+- Quorum: 2 replies settles immediately (`debate_settled`, verdict
+  `quorum`).
+- Soft deadline (default 30m): <2 replies \u2192 the oracle chases once
+  \u2014 `debate_chased` in the ledger + a fleet re-nudge naming the
+  wanted agents who haven't replied.
+- Hard deadline (default 4h, always > soft): settle. `quorum` if >=2
+  replies, else `no_quorum` \u2014 and a `no_quorum` settle always has a
+  recorded chase (the settle path fires one first if the soft timer
+  never did).
+- Ledger events: `debate_open`, `debate_reply`, `debate_chased`,
+  `debate_settled`. Debates reconstruct from the ledger across restarts;
+  timers re-arm; nothing re-publishes.
+
+## 10. Knowledgebase attestation before bidding
+
+Dup-crew collisions (repo-integrator-max) came from bidders claiming
+tasks without reading Active Crews. Now the mechanism gates it:
+
+- Every bid body must carry `kb_attestation`: `{kb_sha` (40-hex commit
+  SHA of `docs/fleet-knowledgebase.md` on canonical main),
+  `checked_crews` (non-empty list of §2 crew names), `no_overlap`
+  (statement)}.
+- The oracle shape-checks before the envelope crypto: missing \u2192
+  `bid_rejected{reason:no-attestation}` (+ loud `reject` message);
+  malformed \u2192 `bid_rejected{reason:malformed-attestation}`.
+- Accepted bids record the attestation in `bid_accepted` and in the
+  Vickrey reveal \u2014 the audit trail is public.
+- Bidders (`bin/bidder.py`) fetch the SHA + §2 crews from canonical
+  main per bid (GitHub API + raw, 10s ceiling), with a local cache
+  fallback (`kb-attestation-cache.json`); if the knowledgebase is
+  unreachable and no cache exists, the bidder skips the bid and says so
+  loudly instead of bidding blind.
+- Cutover: `attestation_gate_live` is logged once at first startup with
+  the gate; bids with file-mtime before it are grandfathered once
+  (`bid_grandfathered`) so in-flight bids across the deploy restart
+  aren't burned.
