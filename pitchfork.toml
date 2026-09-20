@@ -560,6 +560,7 @@ env = { TOOLCALL_PORT = "25152" }
 dir = "/home/toxic/sovereign/engines/llama.cpp-b11059/llama-b11059"
 mise = false
 retry = true
+# NOTE 2026-09-20: literal port; pitchfork does not expand ${} in ready_http (25152 == $TOOLCALL_PORT SSOT)
 ready_http = "http://127.0.0.1:25152/health"
 auto = ["start"]
 
@@ -575,5 +576,6 @@ dir = "/home/toxic/sovereign"
 mise = false
 retry = true
 boot_start = true
-ready_http = "http://127.0.0.1:${BEELLAMA_PORT}/health"
+# NOTE 2026-09-20: literal port; pitchfork does not expand ${} in ready_http (25122 == $BEELLAMA_PORT SSOT)
+ready_http = "http://127.0.0.1:25122/health"
 auto = ["start"]
