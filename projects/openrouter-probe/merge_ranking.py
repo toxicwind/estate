@@ -6,6 +6,7 @@ GuideLLM JSONs using the SAME extraction logic as eval_runner.run_model.
 The 2-model remainder report (152756) is loaded as-is.
 """
 import json, glob, os
+import ranking_lib
 
 D = "/home/toxic/sovereign-eval-wt/projects/openrouter-probe/"
 bench = json.load(open(D + "models-bench.json"))
@@ -67,12 +68,8 @@ for x in b["results"]:
           "lat=", round(lat, 2) if lat else None)
 results += b["results"]
 
-ok = [r for r in results if r.get("status") == "ok" and r.get("quality_mean") is not None]
-ranked = sorted(ok, key=lambda r: (
-    -r["quality_mean"],
-    -(1 if r.get("free") else 0),
-    r["latency_p50_s"] if r["latency_p50_s"] is not None else float("inf"),
-))
+ok_valid, fallback = ranking_lib.split_tiers(results)
+ranked = ranking_lib.rank_models(ok_valid)
 
 ts = "20260920-final"
 instrument = {
@@ -96,52 +93,43 @@ instrument = {
               "catalogue (446 models, 24 provider-free)"),
     "ranking_rule": "quality desc, provider-free desc, latency p50 asc",
 }
-report = {
-    "ts": ts,
-    "instrument": instrument,
-    "ranking": [r["model"] for r in ranked],
-    "results": results,
-    "dead_or_errored": [r for r in results if r.get("status") != "ok"],
-}
+report = ranking_lib.build_report(ts, instrument, results)
 rp = D + "ranking-eval-%s.json" % ts
 json.dump(report, open(rp, "w"), indent=1)
 
-md = ["# Eval ranking %s — final, 10 models (2026-09-20)" % ts, "",
-      "Instrument: GuideLLM fork (`toxicwind/guidellm`) + deterministic "
-      "`instruction_following` scorer (sentinel `ABSTRACT-7X3Q`, thinking-strip "
-      "on), real per-model HF tokenizers.",
-      "Prompt: `Output exactly: ABSTRACT-7X3Q. No other text.` — 6 requests/model, "
-      "synchronous profile, max_tokens=300.",
-      "Ranking: quality mean desc, provider-free desc, latency p50 asc.",
-      "Quality aggregates cover COMPLETED requests only; transport-errored "
-      "requests are scored for the record and excluded from quality means "
-      "(provider failures are reliability signal, not quality signal).",
-      "Free status verified live against the OpenRouter catalogue (446 models, "
-      "24 provider-free at run time).",
-      "",
-      "| rank | model | quality mean | n | err | lat p50 (s) | ttft p50 (ms) | out tok/s | tokenizer |",
-      "|---|---|---|---|---|---|---|---|---|"]
-for i, r in enumerate(ranked, 1):
-    lat = "%.2f" % r["latency_p50_s"] if r["latency_p50_s"] is not None else "?"
-    tt = "%.0f" % r["ttft_p50_ms"] if r.get("ttft_p50_ms") else "?"
-    tps = "%.1f" % r["output_tps"] if r.get("output_tps") else "?"
-    md.append("| %d | %s | %.2f | %d | %d | %s | %s | %s | %s |" % (
-        i, r["model"], r["quality_mean"], int(r["quality_n"] or 0),
-        r["n_errored"], lat, tt, tps, r["tokenizer_repo"]))
-md += ["",
-       "## Notes",
-       "- `openrouter/free` has no stable tokenizer; it ran on the explicitly "
-       "labelled `gpt2` fallback and is NOT tokenizer-comparable with the rest.",
-       "- `nvidia/nemotron-3-super-120b-a12b:free`: 3/6 requests errored at the "
-       "provider (excluded from the quality mean); quality 2.0 over 3 completed.",
-       "- `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free`: 1/6 errored; "
-       "quality 2.0 over 5 completed.",
-       "- 14 live-free models lack tokenizer mappings and were not probed "
-       "(see run logs).",
-       "- Raw per-model GuideLLM JSON: `eval-<ts>-<model>.json` in this directory.",
-       "- Preliminary sweep `20260920-150006` (pre-fix fork code) is superseded "
-       "by this ranking and not committed."]
+md = ranking_lib.render_markdown(
+    title="# Eval ranking %s — final, 10 models (2026-09-20)" % ts,
+    header_lines=[
+        "Instrument: GuideLLM fork (`toxicwind/guidellm`) + deterministic "
+        "`instruction_following` scorer (sentinel `ABSTRACT-7X3Q`, thinking-strip "
+        "on), real per-model HF tokenizers.",
+        "Prompt: `Output exactly: ABSTRACT-7X3Q. No other text.` — 6 requests/model, "
+        "synchronous profile, max_tokens=300.",
+        "Ranking: quality mean desc, provider-free desc, latency p50 asc.",
+        "Quality aggregates cover COMPLETED requests only; transport-errored "
+        "requests are scored for the record and excluded from quality means "
+        "(provider failures are reliability signal, not quality signal).",
+        "Free status verified live against the OpenRouter catalogue (446 models, "
+        "24 provider-free at run time).",
+    ],
+    ranked=ranked,
+    fallback=fallback,
+    dead_or_errored=report["dead_or_errored"],
+    notes=[
+        "`openrouter/free` has no stable tokenizer; it ran on the explicitly "
+        "labelled `gpt2` fallback and is NOT tokenizer-comparable with the rest.",
+        "`nvidia/nemotron-3-super-120b-a12b:free`: 3/6 requests errored at the "
+        "provider (excluded from the quality mean); quality 2.0 over 3 completed.",
+        "`nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free`: 1/6 errored; "
+        "quality 2.0 over 5 completed.",
+        "14 live-free models lack tokenizer mappings and were not probed "
+        "(see run logs).",
+        "Raw per-model GuideLLM JSON: `eval-<ts>-<model>.json` in this directory.",
+        "Preliminary sweep `20260920-150006` (pre-fix fork code) is superseded "
+        "by this ranking and not committed.",
+    ],
+)
 mp = D + "RANKING-eval-%s.md" % ts
-open(mp, "w").write("\n".join(md) + "\n")
+open(mp, "w").write(md)
 print("wrote", rp, "and", mp)
 print(json.dumps(report["ranking"], indent=1))
