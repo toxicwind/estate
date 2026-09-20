@@ -1,0 +1,106 @@
+name: CD
+
+# Release + PyPI publish. No GH_PAT: PSR runs under a GitHub App token
+# (n24q02m-ci) so it can push the version commit/tag past the main branch ruleset;
+# PyPI publish uses Trusted Publishing (OIDC), no token secret.
+# Requires: repo variable CI_APP_ID, repo secret CI_APP_KEY, and the n24q02m-ci
+# App installed on this repo.
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: "Release type"
+        required: true
+        type: choice
+        options: [beta, stable]
+
+env:
+# Release lane: merge to main auto-publishes stable; beta only via manual dispatch (release_type=beta).
+  # workflow_dispatch keeps release_type as an explicit override.
+  RELEASE_TYPE: ${{ github.event_name == 'push' && 'stable' || inputs.release_type }}
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    outputs:
+      released: ${{ steps.release.outputs.released }}
+      tag: ${{ steps.release.outputs.tag }}
+    steps:
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ vars.CI_APP_ID }}
+          private-key: ${{ secrets.CI_APP_KEY }}
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          fetch-depth: 0
+      - uses: n24q02m/better-semantic-release@988ab15eed114d3943a43d60d9fdc5fbf071fea3 # v1.6.2
+        id: release
+        with:
+          github_token: ${{ steps.app-token.outputs.token }}
+          prerelease: ${{ env.RELEASE_TYPE == 'beta' }}
+          prerelease_token: beta
+      - uses: python-semantic-release/publish-action@6d89e2de8d40ecb3717316ecbbf15a6fa8ea9039 # v10.6.2
+        if: steps.release.outputs.released == 'true'
+        with:
+          github_token: ${{ steps.app-token.outputs.token }}
+          tag: ${{ steps.release.outputs.tag }}
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: release
+    if: needs.release.outputs.released == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.release.outputs.tag }}
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+      - run: uv build
+      - name: Publish to PyPI (Trusted Publishing / OIDC)
+        run: uv publish --trusted-publishing always
+
+  sync-marketplace:
+    name: Sync to Marketplace
+    # Stable only: claude-plugins mirrors this repo's marketplace listing
+    # (plugin.json/skills/hooks/commands/chat.py), same as the other 8 MCP
+    # plugins -- betas are not published there. release_type is checked
+    # directly (not is_prerelease) since this repo's release job outputs
+    # only released/tag.
+    needs: [release, publish-pypi]
+    if: needs.release.outputs.released == 'true' && (github.event_name == 'workflow_dispatch' && inputs.release_type == 'stable' || github.event_name == 'push' && github.ref_name == 'main')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ vars.CI_APP_ID }}
+          private-key: ${{ secrets.CI_APP_KEY }}
+          repositories: claude-plugins
+
+      - name: Dispatch plugin sync
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          gh api repos/n24q02m/claude-plugins/dispatches \
+            -f event_type=plugin-sync \
+            -f 'client_payload[repo]=agent-chat-plugin' \
+            -f 'client_payload[tag]=${{ needs.release.outputs.tag }}'

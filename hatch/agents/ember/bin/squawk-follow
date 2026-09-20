@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+"""squawk-follow — HFT multi-channel push race for squawk runner profiles.
+
+Spawns one inotify-backed `chat.py wait` (push, not poll) per channel and
+races them: the first VALID wake wins, losers are killed immediately.
+Fail-fast: the timeout is the per-race ceiling, never a retry loop.
+
+Env (set by the squawk wrapper):
+  SQUAWK_W_ROOT    squawk root dir
+  SQUAWK_W_ME      profile identity (passed as --as)
+  SQUAWK_W_CHAT    path to chat.py
+Usage: squawk-follow <channel...> [--timeout SECONDS]   (default 30)
+"""
+import os
+import subprocess
+import sys
+import time
+
+ROOT = os.environ["SQUAWK_W_ROOT"]
+ME = os.environ["SQUAWK_W_ME"]
+CHAT = os.environ["SQUAWK_W_CHAT"]
+
+
+def main():
+    args = sys.argv[1:]
+    timeout = 30.0
+    if "--timeout" in args:
+        i = args.index("--timeout")
+        timeout = float(args[i + 1])
+        del args[i:i + 2]
+    channels = args or ["fleet"]
+    t0 = time.monotonic_ns()
+    procs = {}
+    for c in channels:
+        procs[c] = subprocess.Popen(
+            [sys.executable, CHAT, "--root", ROOT, "wait", c,
+             "--as", ME, "--timeout", str(timeout), "--all"],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    winner = None
+    winner_out = ""
+    deadline = t0 + (timeout + 5) * 1e9
+    try:
+        while time.monotonic_ns() < deadline and winner is None and procs:
+            for c, p in list(procs.items()):
+                if p.poll() is not None:
+                    if p.returncode == 0:
+                        winner = c
+                        winner_out = p.stdout.read()
+                    del procs[c]
+            if winner is None:
+                time.sleep(0.02)
+    finally:
+        for p in procs.values():
+            p.kill()
+    ms = round((time.monotonic_ns() - t0) / 1e6, 1)
+    if winner is None:
+        sys.exit("follow: no wake within %ss on: %s" % (timeout, ", ".join(channels)))
+    print("follow: WINNER channel=%s after %sms (raced: %s)"
+          % (winner, ms, ", ".join(channels)))
+    print(winner_out, end="")
+
+
+if __name__ == "__main__":
+    sys.exit(main())

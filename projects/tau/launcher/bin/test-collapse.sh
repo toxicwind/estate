@@ -3,7 +3,7 @@
 # Tests each level of the fallback chain in isolation.
 set -euo pipefail
 
-LAUNCHER="${1:-$HOME/workspace/tau-launcher-build/tau}"
+LAUNCHER="${1:-/home/toxic/sovereign/projects/tau/launcher/bin/tau}"
 PASS=0
 FAIL=0
 

@@ -1,0 +1,30 @@
+[
+ {
+  "feature": "body_len == 96 AND body_md5 == 582bcbd0...",
+  "class": "-1",
+  "support": 877,
+  "confidence": "high",
+  "note": "zero length variance across 877 rows; byte-identical body; median inter-arrival 5.5s, p10 1.2s; sources ['chat', 'runtime.messages']; span 2026-09-15 10:46:04.321000+00:00 -> 2026-09-16 17:45:22.934000+00:00"
+ },
+ {
+  "feature": "body_len == 384 AND body_md5 == b4aefd29...",
+  "class": "-1",
+  "support": 81,
+  "confidence": "high",
+  "note": "zero length variance across 81 rows; byte-identical body; median inter-arrival 1.5s, p10 0.0s; sources ['runtime.messages', 'spawn']; span 2026-09-16 03:01:31+00:00 -> 2026-09-16 10:55:55+00:00"
+ },
+ {
+  "feature": "spawn-sourced storm rows carry status 'completed'",
+  "class": "-1",
+  "support": 79,
+  "confidence": "high",
+  "note": "Completed-bug: ledger healthy, zero work ran"
+ },
+ {
+  "feature": "exact trigger tokens of the serving classifier",
+  "class": "n/a",
+  "support": 0,
+  "confidence": "unavailable",
+  "note": "not evidenced by digest-level data; NOT invented per instruction"
+ }
+]
