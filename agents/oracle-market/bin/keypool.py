@@ -48,8 +48,8 @@ PROVIDERS = {
     "openrouter": {
         "tier": "free",
         "env": "OPENROUTER_API_KEY",
-        "probe": ("GET", "https://openrouter.ai/v1/auth/key",
-                  "Authorization: Bearer {key}"),
+        "probe": ("GET", "https://openrouter.ai/api/v1/auth/key",
+                  "Bearer {key}"),
     },
     "pollinations": {
         "tier": "free",
@@ -69,31 +69,31 @@ PROVIDERS = {
         "tier": "free",
         "env": "CEREBRAS_API_KEY",
         "probe": ("GET", "https://api.cerebras.ai/v1/models",
-                  "Authorization: Bearer {key}"),
+                  "Bearer {key}"),
     },
     "groq": {
         "tier": "paid",
         "env": "GROQ_API_KEY",
         "probe": ("GET", "https://api.groq.com/openai/v1/models",
-                  "Authorization: Bearer {key}"),
+                  "Bearer {key}"),
     },
     "deepseek": {
         "tier": "paid",
         "env": "DEEPSEEK_API_KEY",
         "probe": ("GET", "https://api.deepseek.com/models",
-                  "Authorization: Bearer {key}"),
+                  "Bearer {key}"),
     },
     "mistral": {
         "tier": "paid",
         "env": "MISTRAL_API_KEY",
         "probe": ("GET", "https://api.mistral.ai/v1/models",
-                  "Authorization: Bearer {key}"),
+                  "Bearer {key}"),
     },
     "moonshot": {
         "tier": "paid",
         "env": "MOONSHOT_API_KEY",
         "probe": ("GET", "https://api.moonshot.ai/v1/models",
-                  "Authorization: Bearer {key}"),
+                  "Bearer {key}"),
     },
     "llama-swap": {
         "tier": "local",
