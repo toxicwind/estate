@@ -13,6 +13,10 @@
 #   4. Flags: DUPLICATE live claims, DEAD config claims (no listener),
 #      ROGUE listeners (no config source), DANGLING tailscale backends,
 #      DUP-CLAIM in the SSOT itself, and hardcoded ports missing from the SSOT.
+#   5. Enforces the estate port policy (Chris 2026-09-20): EVERY service port
+#      must live in 25000-35000. Violations are flagged, never auto-fixed.
+#      Known system/infra ports outside the range are flagged separately as
+#      POLICY-VIOLATION-SYSTEM so they are decided, not silently exempted.
 #
 # Usage: port-audit.sh [--json] [--quiet]
 #   --json   emit a machine-readable summary after the human report
@@ -42,6 +46,12 @@ done
 
 say() { (( QUIET )) || printf '%s\n' "$*"; }
 warn_missing() { say "[warn] $*"; }
+
+# ---------------------------------------------------------------- policy ------
+# Estate port policy (Chris 2026-09-20): EVERY service port lives in 25000-35000.
+POLICY_MIN=25000
+POLICY_MAX=35000
+in_policy() { (( $1 >= POLICY_MIN && $1 <= POLICY_MAX )); }
 
 # ---------------------------------------------------------------- snapshot ---
 SS_CMD=(ss -tlnp)
@@ -98,14 +108,24 @@ fi
 
 # ------------------------------------------------------------- pitchfork -----
 declare -A CLAIM_PF=()     # port -> "daemon daemon"
+# Two claim sources inside each stanza: the canonical `port = N` declaration
+# (single source of truth since the 2026-09-20 port-policy pass) and the
+# legacy ready_http URL. Multi-port stanzas (port = [a, b]) claim each port.
 if [[ -f "$PITCHFORK" ]]; then
-  cur=""
+  cur=""; in_target=0
   while IFS= read -r line; do
     if [[ "$line" =~ ^\[daemons\.([A-Za-z0-9_.-]+)\] ]]; then cur="${BASH_REMATCH[1]}"; fi
     # skip comments: stale ready_http notes in comments must not become claims
     [[ "$line" =~ ^[[:space:]]*# ]] && continue
-    if [[ -n "$cur" && "$line" =~ ^[[:space:]]*ready_http[[:space:]]*=[^:]*://[^:/]+:([0-9]+) ]]; then
-      CLAIM_PF[${BASH_REMATCH[1]}]="${CLAIM_PF[${BASH_REMATCH[1]}]:-}${cur} "
+    if [[ -n "$cur" ]]; then
+      if [[ "$line" =~ ^[[:space:]]*port[[:space:]]*=[[:space:]]*\[?([0-9,\ ]+)\]? ]]; then
+        for p in $(tr ',' ' ' <<<"${BASH_REMATCH[1]}"); do
+          [[ "$p" =~ ^[0-9]+$ ]] || continue
+          CLAIM_PF[$p]="${CLAIM_PF[$p]:-}${cur} "
+        done
+      elif [[ "$line" =~ ^[[:space:]]*ready_http[[:space:]]*=[^:]*://[^:/]+:([0-9]+) ]]; then
+        CLAIM_PF[${BASH_REMATCH[1]}]="${CLAIM_PF[${BASH_REMATCH[1]}]:-}${cur} "
+      fi
     fi
   done < "$PITCHFORK"
 else
@@ -145,6 +165,10 @@ declare -A SYSTEM=(
   [9090]="cockpit" [41641]="tailscaled-udp" [59818]="tailscaled"
   [60955]="tailscaled" [42445]="containerd" [57889]="bpftune"
   [5037]="adb" [20241]="cloudflared"
+  # sccache :4226 — upstream-hardcoded localhost build-cache port (no flag/env in
+  # this sccache version); not an estate service. Documented decision, still
+  # flagged POLICY-VIOLATION-SYSTEM every run (decided, never silently exempted).
+  [4226]="sccache-build-cache"
   [58050]="bubbleupnp-server" [58051]="bubbleupnp-server"
   [35393]="bubbleupnp-server" [37497]="bubbleupnp-server" [43161]="bubbleupnp-server"
 )
@@ -195,6 +219,26 @@ for port in $(printf '%s\n' "${!CLAIM_SSOT[@]}" | sort -n); do
   (( n > 1 )) && find "INFO" "DUP-CLAIM" "SSOT assigns :$port to $n names: ${CLAIM_SSOT[$port]}"
 done
 
+# --- 3b. port-policy violations: EVERY service port must be 25000-35000 -------
+for port in $(printf '%s\n' "${!CLAIM_SSOT[@]}" | sort -n); do
+  in_policy "$port" || find "CRIT" "POLICY-VIOLATION" "SSOT claims :$port (${CLAIM_SSOT[$port]}) outside $POLICY_MIN-$POLICY_MAX"
+done
+for port in $(printf '%s\n' "${!CLAIM_PF[@]}" | sort -n); do
+  in_policy "$port" || find "CRIT" "POLICY-VIOLATION" "pitchfork claims :$port (daemon ${CLAIM_PF[$port]}) outside $POLICY_MIN-$POLICY_MAX"
+done
+for port in $(printf '%s\n' "${!PORT_PROCS[@]}" | sort -n); do
+  in_policy "$port" && continue
+  [[ -n "${HERD_DYN[$port]:-}" ]] && continue   # herd workers float above the range by design
+  names="$(tr ';' '\n' <<<"${PORT_PROCS[$port]}" | cut -d: -f2- | grep -v '^$' | sort -u | tr '\n' ' ')"
+  if [[ -n "${SYSTEM[$port]:-}" ]]; then
+    # Known infra, still flagged: Chris's order covers every service port;
+    # these need an explicit relocation decision, not a silent exemption.
+    find "WARN" "POLICY-VIOLATION-SYSTEM" "system port :$port (${SYSTEM[$port]}) outside $POLICY_MIN-$POLICY_MAX — needs relocation decision"
+  else
+    find "CRIT" "POLICY-VIOLATION" "live listener :$port (${names:-unknown}) outside $POLICY_MIN-$POLICY_MAX with no system entry"
+  fi
+done
+
 # --- 4. EADDRINUSE / bind-failure scan -----------------------------------------
 declare -a EAINUSE_HITS=()
 for d in "${LOG_DIRS[@]}"; do
@@ -238,8 +282,9 @@ else
 fi
 
 ncrit=$(printf '%s\n' "${FINDINGS[@]}" | grep -c '^CRIT|' || true)
+npol=$(printf '%s\n' "${FINDINGS[@]}" | grep -c 'POLICY-VIOLATION' || true)
 say ""
-say "summary: ${#FINDINGS[@]} findings (${ncrit} critical)"
+say "summary: ${#FINDINGS[@]} findings (${ncrit} critical, ${npol} port-policy violations)"
 
 if (( JSON )); then
   python3 - "$nports" "${#CLAIM_SSOT[@]}" "${#CLAIM_PF[@]}" "${#CLAIM_TS[@]}" <<'PYEOF'
