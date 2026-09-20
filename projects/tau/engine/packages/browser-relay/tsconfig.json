@@ -2,8 +2,15 @@
   "extends": "../tsconfig.workspace.json",
   "include": [
     "extension",
-    "scripts"
+    "scripts",
+    "../coding-agent/src/tools/browser/relay/protocol.ts"
   ],
+  // NOTE (sovereign): extension/background.ts imports relay protocol *types*
+  // via a relative cross-package source path (upstream style). Our composite
+  // monorepo config (composite:true) requires every file in a project's
+  // program to be listed; declaring the real dependency here keeps
+  // check:types green without touching upstream's import or the build
+  // (build-extension.ts bundles via bun; this tsconfig is typecheck-only).
   "compilerOptions": {
     "composite": true,
     "declaration": true,

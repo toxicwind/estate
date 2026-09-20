@@ -268,6 +268,9 @@ function registerDebugApi(): void {
 				body: JSON.stringify({ ok: true }),
 			});
 			await response.text();
+			// The hedged stream wrapper requires an explicit terminal event;
+			// end() alone only closes the iterator. Every real provider pushes
+			// { type: "done" } before ending.
 			const message: AssistantMessage = {
 				role: "assistant",
 				content: [{ type: "text", text: "done" }],
@@ -285,6 +288,10 @@ function registerDebugApi(): void {
 				stopReason: "stop",
 				timestamp: Date.now(),
 			};
+			// The hedged stream wrapper requires an explicit terminal event;
+			// end() alone only closes the iterator. Every real provider pushes
+			// { type: "done" } before ending.
+			events.push({ type: "done", reason: "stop", message });
 			events.end(message);
 		})().catch(error => events.fail(error));
 		return events;
