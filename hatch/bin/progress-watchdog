@@ -5,21 +5,19 @@ Hearth — progress watchdog driver (hatch side). Cron every 3 min.
 Watches: oracle-market loop, ledger growth, stuck tasks, bidder daemons,
 core pitchfork daemons, bridge holder, hatch-side agent activity, fleet
 social (welcomes, quiet-den notes). Alerts immediately on anomalies (Hearth's
-voice, full specifics); 30-min pulse. Auto-remediates ONLY dead
+voice, full specifics). Auto-remediates ONLY dead
 bidder daemons (restart) and unseen stuck tasks (re-announce, max 3
 attempts per task). Everything else is alert-only. Never touches squawk,
 443/tailscale, the 8379 holder, or hatch-side agents.
 
-Alert semantics (watchdog_lib.ConditionRegistry — the dedup mechanism):
+Alert semantics (watchdog_lib.ConditionRegistry — the dedup mechanism),
+event-driven only (Chris 2026-09-20 — no timers, no repeated templates,
+no "still ongoing" reminders):
   - fire on NEW conditions and on CHANGED conditions (escalate-on-change)
-  - suppress identical repeats (no more 13x template re-fires)
-  - one "still ongoing" reminder per 6h for unbroken conditions
+  - suppress identical repeats indefinitely — an unchanged condition
+    posts exactly once, however long it lasts
   - one "cleared" note when a condition resolves
-The 30-min pulse reads the SAME active-condition registry, so it is
-structurally impossible for the pulse to say "all green" while an alert
-condition is active. A pre-flight snapshot-freshness check gates the
-"all green" verdict: stale/unreachable snapshot -> "eyes closed", never
-"all green".
+Healthy state is silence. Hearth speaks only when something changed.
 
 State is written atomically (write-temp + fsync + rename); every run
 writes start+complete markers to a run ledger so a restart can neither
@@ -47,15 +45,13 @@ STATE = WDIR / "progress_state.json"
 RUN_LEDGER = WDIR / "progress_runs.jsonl"
 WATCHLIST = WDIR / "hatch_agents.txt"
 SQUAWK = str(HOME / "workspace" / "bin" / "squawk")
-EXEC = str(HOME / "workspace" / "awrawr-bridge" / "exec.py")
+YOTE_CONN = str(HOME / "workspace" / "bin" / "yote-conn")
 YOTE_SCRIPT = "/home/toxic/sovereign/bin/progress-watchdog.py"
 PF_RESTART = "/home/toxic/sovereign/bin/pitchfork-restart"
 CHANNEL = "/home/toxic/sovereign/hatch/agents/ember/squawk-root/bid-market"
 PAUSE_STATE = HOME / ".cache" / "shingle" / "swarm-paused.json"
 
-HEARTBEAT_S = 1800
 AGENT_STALE_S = 1500   # hatch agent quiet longer than this -> note
-SNAP_FRESH_S = 300     # pulse "all green" requires snapshot this fresh
 REANNOUNCE_MAX = 3     # max re-announce attempts per stuck task
 FLEET = "fleet"
 ME = "hearth"          # persona sign-off (sent via ember identity)
@@ -63,7 +59,7 @@ ME = "hearth"          # persona sign-off (sent via ember identity)
 WDIR.mkdir(parents=True, exist_ok=True)
 
 STATE_DEFAULTS = {"conds": {}, "welcomed": [], "last_fleet_seq": 0,
-                  "last_heartbeat_ts": 0, "last_ledger_lines": 0,
+                  "last_ledger_lines": 0,
                   "last_ledger_ts": 0, "reannounced": {}}
 
 
@@ -92,12 +88,14 @@ def say(text):
 
 
 def bridge_exec(cmd, timeout=120):
-    """Run a command on yote via the bridge. exec.py prints either a JSON
-    envelope {"stdout": ...} (fallback lane) or the raw command output
-    (WS lane, doc.data streamed). Returns the remote stdout text or None."""
+    """Run a command on yote via the yote-connector CLI. The connector
+    POSTs to 127.0.0.1:18301/exec, passes remote stdout through verbatim,
+    and returns the remote exit code. Returns the remote stdout text or
+    None. (Migrated 2026-09-20 from the retired awrawr-bridge/exec.py.)"""
     try:
-        p = subprocess.run([sys.executable, EXEC, cmd],
-                           capture_output=True, text=True, timeout=timeout)
+        p = subprocess.run([YOTE_CONN, "exec", cmd, "/home/toxic", str(timeout)],
+                           capture_output=True, text=True,
+                           timeout=timeout + 60)
         raw = p.stdout or ""
         try:
             env = json.loads(raw)
@@ -228,21 +226,6 @@ def restart_bidder(name):
     return False, (out or "empty response")[-300:]
 
 
-def pulse_verdict(snap_fresh, active):
-    """Pure pulse-verdict rule (kept separate so tests can pin it):
-    "all green" only when the snapshot is fresh AND the condition
-    registry is empty. Any active condition — daemon, bridge, stuck,
-    oracle — forces "needs eyes". Stale snapshot forces "eyes closed".
-    The pulse can never contradict the alert state."""
-    if not snap_fresh:
-        return ("eyes closed this half hour — snapshot stale or "
-                "unreachable, not claiming green")
-    if active:
-        return ("needs eyes this half hour — active: "
-                + ", ".join(active))
-    return "all green this half hour"
-
-
 def sweep_domain_keys(active_keys, observed, is_yote):
     """Pure domain-sweep key selection (kept separate so tests can pin
     it): the yote sweep only clears non-`hatch:` keys, the hatch sweep
@@ -269,21 +252,14 @@ def run():
     fired = []         # alert keys posted this run
     now = time.time()
 
-    def cond(key, sig, text_new, text_remind=None):
-        """Deduped alert: fire on new/changed, remind on still-broken."""
+    def cond(key, sig, text_new):
+        """Deduped alert: fire on new/changed, suppress identical repeats
+        indefinitely. No reminders — healthy state is silence."""
         observed.add(key)
         v = reg.note(key, sig, now)
         if v == "suppress":
             return False
-        if v == "remind":
-            n = reg.count(key)
-            age_m = (now - reg.since(key)) / 60
-            say(text_remind or (
-                f"\U0001F43A Hearth here — still on it: `{key}` ongoing "
-                f"({n} checks over {age_m:.0f}m). Not fixed yet, not "
-                f"forgotten. \U0001F49B"))
-        else:
-            say(text_new)
+        say(text_new)
         print(f"ALERT [{key}] ({v}): {text_new[:100]}", flush=True)
         fired.append(key)
         return True
@@ -314,7 +290,7 @@ def run():
     except FileNotFoundError:
         pass
     for f in findings:
-        # deduped like any other condition: fire once, remind on 6h.
+        # deduped like any other condition: fire once, silent until change.
         # (md5, not hash(): str hash() is salted per-process.)
         fkey = hashlib.md5(f.encode()).hexdigest()[:12]
         cond(f"selfcheck:{fkey}", f,
@@ -343,7 +319,15 @@ def run():
     # files present — healthy quiet, not a wedge).
     oc = snap.get("oracle", {})
     oproc = oc.get("proc") or {}
-    if oc.get("pitchfork") != "running" or not oproc.get("running"):
+    # pgrep is process ground truth. A failed pitchfork lookup
+    # (pf_ok=False -> "unknown") must not alert while the process lives.
+    opf = oc.get("pitchfork")
+    proc_alive = bool(oproc.get("running"))
+    oracle_dark = ((not proc_alive)
+                   or opf == "errored"
+                   or (snap.get("pf_ok") and opf != "running"
+                       and opf != "unknown"))
+    if oracle_dark:
         pid_txt = (f"pid {oproc['pid']}" if oproc.get("pid") else "no pid")
         cond("oracle:loop-dead", "dead",
              f"\U0001F43A Hearth here — \U0001F6A8 the market loop is dark "
@@ -410,22 +394,26 @@ def run():
                  f"Not restarting (might be mid-task), just watching.")
 
     # --- core daemons ---
+    # Ground truth is the health endpoint (h=200 = serving). Pitchfork
+    # "missing"/"unknown" with h=200 is a lookup gap, not an outage —
+    # stay silent. Alert only on h!=200 or explicit pitchfork "errored".
     for dname, dinfo in snap.get("daemons", {}).items():
         if dname == "awrawr-ws-exec":
-            # the bridge daemon lives under pitchfork; running IS healthy.
-            # (an old revision expected stopped-clean and Hearth spammed an
-            # alert every 30 min for a healthy bridge — do not regress.)
-            if dinfo.get("pitchfork") != "running":
+            # the bridge daemon lives under pitchfork; the bridge-holder
+            # checks below are ground truth. Alert only on explicit
+            # "errored" — "missing"/"unknown" is a lookup gap.
+            if dinfo.get("pitchfork") == "errored":
                 cond("daemons:ws-exec", f"{dinfo.get('pitchfork')}",
                      f"\U0001F43A Hearth here — awrawr-ws-exec shows "
-                     f"pitchfork state `{dinfo.get('pitchfork')}`, expected "
-                     f"running. The bridge lane may be down — flagging, not "
+                     f"pitchfork state `errored`. "
+                     f"The bridge lane may be down — flagging, not "
                      f"touching anything.")
             continue
         h = dinfo.get("health")
-        if dinfo.get("pitchfork") != "running" or h != 200:
+        pf = dinfo.get("pitchfork")
+        if h != 200 or pf == "errored":
             cond(f"daemon:{dname}",
-                 f"{dinfo.get('pitchfork')}/h={h}",
+                 f"{pf}/h={h}",
                  f"\U0001F43A Hearth here — heads up: `{dname}` is "
                  f"{dinfo.get('pitchfork')}, health={h}. Above my pay grade "
                  f"so I'm not touching it — Ember/Chris, eyes on this please.")
@@ -503,36 +491,6 @@ def run():
     welcome_new_agents(state, msgs)
     recent_chatter = [m for m in msgs
                       if now - m["ts"] < 1800 and "Hearth" not in m["body"]]
-
-    # --- 30-min pulse: verdict from the SAME registry (no drift) ---
-    if now - state.get("last_heartbeat_ts", 0) >= HEARTBEAT_S:
-        snap_fresh = snapshot_ok and (now - snap.get("ts", 0)) < SNAP_FRESH_S
-        vtext = pulse_verdict(snap_fresh, reg.active())
-        wins = led.get("wins_30m", {}) or {}
-        top = max(wins.items(), key=lambda kv: kv[1]) if wins else None
-        shout = (f" Top dog: {top[0].replace('bidder-', '')} with {top[1]} "
-                 f"settlements — good hunting! \U0001F3C6" if top else "")
-        daemons = snap.get("daemons", {})
-        n_d = sum(1 for n, d in daemons.items()
-                  if n != "awrawr-ws-exec"
-                  and d.get("pitchfork") == "running"
-                  and d.get("health") == 200)
-        n_dt = sum(1 for n in daemons if n != "awrawr-ws-exec")
-        br_ok = (br.get("listening") and br.get("alive")
-                 and br.get("cmd_ok"))
-        quiet = (" Quiet in the den otherwise — everyone's heads-down, "
-                 "I like it. \U0001F49B" if not recent_chatter else "")
-        say(
-            f"\U0001F43A Hearth checking in, den — {vtext} \U0001F49B\n"
-            f"Market: {led.get('open_30m', 0)} opened, "
-            f"{led.get('settled_30m', 0)} settled "
-            f"({led.get('verified_30m', 0)} verified).{shout}\n"
-            f"Bidders {alive_b}/{len(bidders)} on their feet. "
-            f"Daemons {n_d}/{n_dt} healthy, "
-            f"bridge {'strong' if br_ok else 'shaky'}. "
-            f"Hatch crew active: {', '.join(active_names) or 'none'}.{quiet}")
-        state["last_heartbeat_ts"] = now
-        print(f"PULSE sent: {vtext}", flush=True)
 
     state["last_ledger_lines"] = led.get("lines", 0)
     state["last_ledger_ts"] = led.get("last_ts", 0)
