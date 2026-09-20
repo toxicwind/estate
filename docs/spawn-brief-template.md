@@ -39,6 +39,7 @@ every brief, from this template, so no brief can be written without it.
 - **No monkeypatching.** Every fix lives in real files — code, configs, systemd
   units — committed in the correct repo, pushed to canonical main, and survives
   a full bridge restart AND a yote reboot. "Works until restart" is not a fix.
+- **"Impossible" is a bug in the agent, not a fact about the box.** We run yolo sudo on both boxes. A package conflict, a locked file, a held port, a running process -- none of these are "impossible"; they are decisions. Resolve directly when the resolution is obvious, or take genuine judgment calls to the oracle decider via a decision-request in fleet. Never report "impossible" and walk away.
 
 ---
 
