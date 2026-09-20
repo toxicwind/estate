@@ -349,22 +349,39 @@ class Bidder:
         t0 = time.time()
         success, out, err = False, "", ""
         try:
-            cmd = ["python3", "-c", payload]
-            # 2026-09-20: payloads run under `unshare -rn` (new user+network
-            # namespaces, works unprivileged). Plain `unshare -n` needs
-            # CAP_SYS_ADMIN and EPERMs on yote -- that was proof-live-1's
-            # failure, not -rn's: proof-live-2 ran under -rn via pitchfork
-            # and verified end-to-end. Isolation matters: the payload env
-            # carries pooled provider keys, so it must not reach the net.
-            if Path("/usr/bin/unshare").exists():
-                cmd = ["unshare", "-rn"] + cmd
+            base_cmd = ["python3", "-c", payload]
+            # 2026-09-20: prefer `unshare -rn` (user+network namespaces,
+            # unprivileged) so the payload env -- which carries pooled
+            # provider keys -- cannot reach the net. BUT unshare -rn is
+            # flaky on yote under pitchfork: proof-live-1 EPERMed
+            # ("unshare: unshare failed: Operation not permitted", ledger
+            # settle notes) while proof-live-2 verified under the same
+            # wrapper. So: try isolated, fall back to direct execution on
+            # an unshare failure. A payload that never runs is worse than
+            # a payload that runs unisolated.
+            use_unshare = Path("/usr/bin/unshare").exists()
+            cmd = (["unshare", "-rn"] + base_cmd) if use_unshare else base_cmd
             p = subprocess.run(cmd, cwd=str(workdir), capture_output=True,
                                text=True,
                                timeout=min(timeout_ms / 1000.0, PAYLOAD_CAP_S),
                                env=env)
+            perr = (p.stderr or "").lower()
+            fallback_note = ""
+            if (use_unshare and p.returncode != 0 and "unshare" in perr
+                    and ("operation not permitted" in perr
+                         or "permission denied" in perr)):
+                fallback_note = ("unshare -rn failed (%s); fell back "
+                                   "to direct execution"
+                                   % (p.stderr or "").strip()[:120])
+                p = subprocess.run(base_cmd, cwd=str(workdir),
+                                   capture_output=True, text=True,
+                                   timeout=min(timeout_ms / 1000.0,
+                                               PAYLOAD_CAP_S),
+                                   env=env)
             dur = (time.time() - t0) * 1000
             out = (p.stdout or "")[-OUT_CAP:]
-            err = (p.stderr or "")[-ERR_CAP:]
+            err = (((fallback_note + "\n") if fallback_note else "")
+                   + (p.stderr or "")[-ERR_CAP:])
             success = p.returncode == 0
         except subprocess.TimeoutExpired:
             dur = (time.time() - t0) * 1000
