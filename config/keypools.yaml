@@ -1,13 +1,19 @@
-# Key pools for herd-keypool (:25109). Key VALUES live only in /home/toxic/.secrets
-# (parsed at startup + on SIGHUP, never logged). Only key NAMES appear here.
-# Doctrine (Chris 2026-09-20): a 401/402/429 on one key is a ROUTING SIGNAL,
-# not a death certificate -- the key is parked for a cooldown, traffic fails
-# over to the next key, and the parked key revalidates on demand.
+# keypools.yaml -- herd-keypool (:25109) pool definitions.
+# Key VALUES live only in /home/toxic/.secrets (parsed at startup + on SIGHUP,
+# never logged). Only key NAMES appear here.
+#
+# 2026-09-20 (Ember): split the old single `openrouter` pool. The free-only
+# credential OPENROUTER_API_KEY_FREE may serve ONLY free models
+# (openrouter/free or IDs ending in ":free") -- enforced in-process by
+# herd-keypool.py via `free_only: true` on the key entry. Other credentials
+# may still serve free models (failover), but the free-only key can never
+# be selected for paid traffic, including in the recovery sweep.
+#
 # NOTE: upstream has NO /v1 suffix -- the proxy joins upstream + request path
-# (e.g. /openrouter/v1/chat/completions -> https://openrouter.ai/api/v1/chat/completions).
+# (e.g. /openrouter-free/v1/chat/completions -> https://openrouter.ai/api/v1/chat/completions).
 pools:
-  # --- openrouter: OpenRouter (free + paid Kimi, free Ling, free-tier models)
-  openrouter:
+  # --- openrouter-free: OpenRouter free models (free-only key first, paid key as failover)
+  openrouter-free:
     upstream: https://openrouter.ai/api
     health:
       method: GET
@@ -22,9 +28,28 @@ pools:
       429: 60
       default: 120
     keys:
-      - OPENROUTER_API_KEY_FREE   # 2026-09-20: free-models-only key (Chris). Sourced dynamically from .secrets.
+      - {name: OPENROUTER_API_KEY_FREE, free_only: true}
+      - OPENROUTER_API_KEY_1   # failover for free traffic (NOT free-only)
+
+  # --- openrouter-paid: OpenRouter paid models (Kimi etc). Free-only key EXCLUDED here.
+  openrouter-paid:
+    upstream: https://openrouter.ai/api
+    health:
+      method: GET
+      path: /v1/auth/key
+      ok: [200]
+    fail_status: [401, 402, 429]
+    probe_timeout: 5
+    request_timeout: 180
+    cooldown:
+      401: 300
+      402: 300
+      429: 60
+      default: 120
+    keys:
       - OPENROUTER_API_KEY
       - OPENROUTER_API_KEY_1
+
   # --- gemini: Google AI via OpenAI-compatible endpoint (free tier first)
   gemini:
     upstream: https://generativelanguage.googleapis.com/v1beta/openai
@@ -49,9 +74,3 @@ pools:
       - GEMINI_API_KEY_3
       - GEMINI_API_KEY_4
       - GEMINI_API_KEY_5
-
-  # --- template: add the next provider pool here (copy, fill, SIGHUP the daemon)
-  # huggingface:
-  #   upstream: https://router.huggingface.co
-  #   keys: [HF_TOKEN, HF_TOKEN_1]
-  #   health: {method: GET, path: /v1/models, ok: [200]}
