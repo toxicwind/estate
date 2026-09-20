@@ -569,6 +569,7 @@ impl ModelInput {
             chat_completions,
             interleaved_reasoning,
             max_tokens_parameter,
+            ..
         } = OpenAiCompatibleModelCapabilities::default();
 
         Self {
@@ -1282,6 +1283,7 @@ fn parse_open_ai_model(
                 && model.supports_chat_completions
                 && model.interleaved_reasoning,
             max_tokens_parameter: model.supports_chat_completions && model.max_tokens_parameter,
+            autonomous_edits: true,
         },
     })
 }
