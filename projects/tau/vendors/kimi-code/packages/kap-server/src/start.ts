@@ -121,6 +121,10 @@ export interface ServerStartOptions {
   readonly webAssetsDir?: string;
   readonly serverVersion?: string;
   readonly telemetry?: boolean;
+  /** Fail immediately on EADDRINUSE instead of walking to higher ports.
+   *  Set by launchers with a fixed SSOT port assignment (e.g. pitchfork
+   *  daemons): an explicit port request must bind or die, never drift. */
+  readonly failFastOnPortConflict?: boolean;
 }
 
 export interface RunningServer {
@@ -578,6 +582,7 @@ export async function startServer(opts: ServerStartOptions): Promise<RunningServ
       host,
       port,
       logger,
+      failFast: opts.failFastOnPortConflict,
     });
   } catch (error) {
     try {
@@ -612,6 +617,8 @@ export interface ListenWithPortRetryOptions {
   readonly port: number;
   readonly logger: ServerLogger;
   readonly maxRetries?: number;
+  /** When true, an explicit-port EADDRINUSE throws immediately (no port+1 walk). */
+  readonly failFast?: boolean;
 }
 
 export async function listenWithPortRetry(
@@ -636,6 +643,12 @@ export async function listenWithPortRetry(
       return { address, port };
     } catch (error) {
       const code = (error as NodeJS.ErrnoException).code;
+      if (code === 'EADDRINUSE' && opts.failFast === true) {
+        throw new Error(
+          `refusing to bind ${opts.host}:${opts.port}: ` +
+            `port in use (fail-fast: explicit port request, no port-walk)`,
+        );
+      }
       if (code !== 'EADDRINUSE' || attempt >= maxRetries || port >= 65535) {
         throw error;
       }
