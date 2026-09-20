@@ -165,6 +165,36 @@ def tick():
         print(f"yote {yl:.1f}: EJECTED", flush=True)
         actions.append("yote-eject")
     if hl <= HATCH_TRIG and yl <= YOTE_TRIG:
+        # Auto-resume: a SIGSTOP-frozen tool tree left in place after load
+        # settles is a silent completion killer (proven 2026-09-20: 39
+        # T-state tool processes, workers' remote cognition alive but their
+        # local tool calls frozen indefinitely). Only resume when BOTH
+        # hold: load is safely under the resume trigger AND live /proc
+        # shows frozen hatch-execd descendants. Never resume from a state
+        # file alone.
+        try:
+            v = wl.verify_pause()
+        except Exception:
+            v = {"frozen": 0, "why": "verify-error"}
+        if v["frozen"] > 0 and hl < HATCH_RESUME_TRIG:
+            r = subprocess.run([f"{BIN}/swarm-resume"], capture_output=True,
+                               text=True, timeout=120)
+            v2 = wl.verify_pause()
+            if v2["frozen"] == 0:
+                alert(f"WATCHDOG (ember): hatch load {hl:.1f} < "
+                      f"{HATCH_RESUME_TRIG} — auto-resumed frozen tool tree "
+                      f"({v['frozen']} processes SIGCONTed, verified live).")
+                actions.append(f"auto-resume frozen={v['frozen']}")
+            else:
+                alert(f"WATCHDOG (ember): auto-resume PARTIAL — load "
+                      f"{hl:.1f} but {v2['frozen']} processes still frozen "
+                      f"({v2['why']}). Manual swarm-resume needed.")
+                actions.append(f"resume-partial frozen={v2['frozen']}")
+            print(f"hatch {hl:.1f}: AUTO-RESUME ({v['frozen']}->{v2['frozen']})",
+                  flush=True)
+        elif v["frozen"] > 0:
+            print(f"hatch {hl:.1f}: frozen={v['frozen']} held "
+                  f"(load >= {HATCH_RESUME_TRIG})", flush=True)
         if ep:
             close_episode()
             actions.append("storm-episode-closed")
