@@ -16,7 +16,7 @@ no-telemetry = []
 debug-telemetry = []
 # Set log level to Debug (default is Info). Enables verbose iroh/quinn logs and tracing subscriber.
 debug-logs = ["tracing-subscriber"]
-devtool = ["gpui_android/devtool", "gpui_ios/devtool"]
+# devtool = ["gpui_android/devtool", "gpui_ios/devtool"]  # see NOTE above: needs mobile-capable zed vendor tree
 
 [dependencies]
 gpui = { path = "../../../zed/crates/gpui", default-features = false }
@@ -68,15 +68,21 @@ base64 = "0.22"
 chrono.workspace = true
 
 [target.'cfg(target_os = "android")'.dependencies]
-gpui_android = { path = "../../vendor/zed/crates/gpui_android" }
-gpui_wgpu = { path = "../../vendor/zed/crates/gpui_wgpu" }
+# NOTE (zed-qed 2026-09-20): the mobile gpui crates below (gpui_android,
+# gpui_wgpu, gpui_ios) exist in no zed tree on this estate -- neither the
+# canonical projects/qed/zed (1.13.0) nor toxicwind/sovereign-zed (1.17.0)
+# carries them. They are commented out so host (linux/macos) builds resolve.
+# Re-enable with a vendor/zed checkout of a mobile-capable zed when doing
+# Android/iOS builds.
+# gpui_android = { path = "../../vendor/zed/crates/gpui_android" }
+# gpui_wgpu = { path = "../../vendor/zed/crates/gpui_wgpu" }
 android_logger = "0.15.1"
 jni = "0.21.1"
 ndk = "0.9"
 ndk-context = "0.1"
 
 [target.'cfg(target_os = "ios")'.dependencies]
-gpui_ios = { path = "../../vendor/zed/crates/gpui_ios", features = ["font-kit"] }
+# gpui_ios = { path = "../../vendor/zed/crates/gpui_ios", features = ["font-kit"] }
 metal = "0.33"
 
 [build-dependencies]
@@ -84,4 +90,4 @@ cbindgen = "0.29"
 cc = "1"
 
 [dev-dependencies]
-gpui = { path = "../../vendor/zed/crates/gpui", default-features = false, features = ["test-support"] }
+gpui = { path = "../../../zed/crates/gpui", default-features = false, features = ["test-support"] }

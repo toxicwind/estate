@@ -32,6 +32,7 @@ use settings::Settings;
 use std::sync::Arc;
 use ui::IconName;
 
+use crate::schema_normalizer::normalize_tool_schemas;
 use crate::provider::api_compatible::{
     ApiCompatibleProviderConfigurationView, ApiCompatibleProviderSettings,
     ApiCompatibleProviderState,
@@ -475,61 +476,6 @@ impl LanguageModel for OpenAiMcpProxyNvidiaLanguageModel {
             .boxed()
         }
     }
-}
-
-fn normalize_tool_schemas(
-    tools: Vec<language_model::LanguageModelRequestTool>,
-) -> Vec<language_model::LanguageModelRequestTool> {
-    tools
-        .into_iter()
-        .map(|mut tool| {
-            if let language_model::LanguageModelRequestToolInput::Function { input_schema, .. } =
-                &mut tool.input
-            {
-                *input_schema = normalize_schema(input_schema.clone());
-            }
-            tool
-        })
-        .collect()
-}
-
-fn normalize_schema(mut schema: serde_json::Value) -> serde_json::Value {
-    if !schema.is_object() {
-        return serde_json::json!({ "type": "object" });
-    }
-    let root_type = schema.get("type").cloned();
-    let is_explicit_object = matches!(root_type, Some(serde_json::Value::String(s)) if s == "object");
-    if !is_explicit_object {
-        schema["type"] = serde_json::json!("object");
-    }
-    if let Some(props) = schema.get_mut("properties").and_then(|p| p.as_object_mut()) {
-        for (_name, prop) in props.iter_mut() {
-            if prop.is_object() {
-                let t = prop.get("type").cloned();
-                let has_type = match &t {
-                    Some(serde_json::Value::String(s)) => !s.is_empty() && s != "null",
-                    Some(serde_json::Value::Array(a)) => {
-                        let cleaned: Vec<_> = a
-                            .iter()
-                            .filter(|v| !matches!(v, serde_json::Value::String(s) if s == "null"))
-                            .cloned()
-                            .collect();
-                        let non_empty = !cleaned.is_empty();
-                        prop["type"] = serde_json::Value::Array(cleaned);
-                        non_empty
-                    }
-                    _ => false,
-                };
-                if !has_type {
-                    prop["type"] = serde_json::json!("string");
-                }
-                if matches!(prop.get("type"), Some(serde_json::Value::String(s)) if s == "object") {
-                    *prop = normalize_schema(prop.clone());
-                }
-            }
-        }
-    }
-    schema
 }
 
 /// Self-healing event mapper: converts a malformed tool-call argument parse
