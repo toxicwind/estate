@@ -81,9 +81,13 @@ correct fail-fast, not hedging.
 
 
 ## Enforcement — the permanent guard
-The script is the deliverable: `projects/pack-fix/bin/hesitance-lint` fails
-(exit 1) when any P1/P3/P4 phrase reappears in cron bodies, SKILL.md files,
-or prompt/brief templates. Run it against hatch instruction dirs and the
-sovereign repo; see `projects/pack-fix/README.md`. Narrowly documented
-allowlist exceptions (`# hesitance-lint-allow: <reason>`) cover legitimate
-fail-fast/security phrasing (P2 shapes), not hesitance.
+The script is the deliverable: `projects/ops/bin/hesitance-scan.sh`
+(canonical location per Chris's purge-max order, fleet seq 11264 — one
+runnable per workstream in `projects/ops/bin`). It classifies every hit as
+ROT / LEGITIMATE / QUOTE / ANTI and exits 1 only on genuine ROT. Run it
+against hatch instruction dirs and the sovereign repo; see
+`projects/pack-fix/README.md`. Narrowly documented allowlist exceptions
+(`<!-- hesitance-allow: <reason> -->`) cover legitimate fail-fast/security
+phrasing (P2 shapes), not hesitance.
+(Consolidated 2026-09-20 from an earlier `projects/pack-fix/bin/hesitance-lint`
+prototype — one tool, one home, no duplication.)
