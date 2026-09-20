@@ -80,7 +80,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | super-ralph repair | Root-cause `fiber.cache.stackFrame` crash; prove `super-ralph "reply with exactly the word ALIVE"` exits zero + DB completion | Ember | RUNNING |
 | tmp-repos-emergent | Scratch/tmp → owning repos migration | Ember | RUNNING — **de-duped with repo-integrator-max 2026-09-20 (fleet seq 11291)** |
 | edge-max | Estate-wide cutting-edge coordinator | Ember (other chat) | RUNNING |
-| oracle-max | Oracle decision-engine maximal upgrade | Ember (other chat) | RUNNING |
+| oracle-max | Oracle decision-engine maximal upgrade | Ember (other chat) | DONE (2026-09-20) -- commit 09c3099fd9 (on origin/main, verified via ls-remote): fused decision engine live, pitchfork sovereign/oracle-core on :25151, restart proof in work/proof-runs/ |
 | openfang | Agents autonomous + OpenFang-enabled | Ember | workers in, 8 kernel agents Running |
 | plumbline | Hesitance rollback root-cause hunt → canonical spawn-brief template | Ember | DONE — commits `f9095c2665` (template + registration) |
 | scribe-readme-grade | GitHub-grade sovereign-projects master README + docs/ index + projects/README deconfusion; 5 doc strays moved to docs/ in one pass (Bedrock oracle-market task payload-readme-grade.md) | Scribe (ember) | DONE (2026-09-20) -- commit ff10187ddb (on origin/main, verified via ls-remote) |
