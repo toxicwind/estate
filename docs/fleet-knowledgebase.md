@@ -85,6 +85,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | bedrock/ledger | Repo-sweep finisher: yote /tmp provenance classification + junk deletion; repo-sweep commits/pushes (untracked WIP -> owning repos, verified); permanent /tmp classifier artifact | Bedrock (parent orchestrator) | RUNNING (2026-09-20) - hatch /tmp handed to orphan-hatch per fleet seq 11314; feeds integration-worthy yote orphans to orphan-yote |
 | dep-quartermaster | Toolchain/dependency gaps on yote+hatch: missing CLIs installed, permanent ensure-script committed | Ember | DONE — commit 2953f49f07 (toolchain.sh + KB row) |
+| port-syscall-integrator | PORTS proven by live syscalls (strace bind/listen) + MCPs/connectors/endpoints/integrations estate-wide; SSOT ports.env reconciliation; pitchfork pre-launch guard; port-audit.py hardening | Ember (port-syscall-integrator) | RUNNING (2026-09-20) |
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 
 ---
