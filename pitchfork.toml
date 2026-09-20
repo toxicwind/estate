@@ -42,7 +42,7 @@ run = "exec bun run src/yote.ts"
 dir = "projects/yote"
 mise = false
 retry = true
-ready_http = "http://127.0.0.1:25102/health"
+ready_http = "http://127.0.0.1:25109/health"
 depends = ["shep"]
 auto = ["start"]
 
@@ -645,4 +645,27 @@ dir = "/home/toxic/sovereign/tools/kimi-claw"
 mise = false
 retry = true
 ready_cmd = "pgrep -f 'bridge.ts --daemon --instance b' >/dev/null"
+auto = ["start"]
+
+# --- herd-deployer 2026-09-20: key-pool rotation sidecar for herd cloud peers.
+# Cheap health probes, first-valid-wins per call, 401/402/429 = routing signal.
+[daemons.keypool]
+run = "exec python3 /home/toxic/sovereign/bin/herd-keypool.py"
+dir = "/home/toxic/sovereign"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25109/health"
+auto = ["start"]
+
+# --- herd-deployer 2026-09-20: card-derived model request-contract enforcement.
+# Proxies 127.0.0.1:25101 -> herd :25100; rewrites chat/completions bodies per
+# config/model_constraints.yaml (K3: top_p=0.95, reasoning_effort clamp, thinking on).
+[daemons.model-guard]
+run = "exec python3 /home/toxic/sovereign/bin/herd-model-guard.py"
+dir = "/home/toxic/sovereign"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25101/v1/models"
 auto = ["start"]
