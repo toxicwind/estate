@@ -25,6 +25,14 @@ What this script does (no DB access, no credentials, filesystem only):
                       reported, never directed. Directives are tracked in
                       ~/workspace/watchdog/reaper_directives.json so the loop
                       is closed, not fire-and-forget.
+  --classify-errors <candidates.json|->  classify harvested error claims
+                      (Q8/Q9/Q10 harvest from the cron task's muse.db query
+                      pack) against the shared ERROR_CLAIM_CATALOG
+                      (hatch/bin/error_claims.py) and print an executable
+                      cause->verify->action report. With --fleet-notes,
+                      publishes CLAIM-CHECK notes for high-confidence
+                      'mislead' claims (deduped; fail-soft). Never escalates,
+                      never closes, never diagnoses unknown text.
 
 TERMINALIZATION PATH (why phantoms exist, 2026-09-20 autopsy):
   subagent.spawn -> runtime inserts agent.agents row (status='running') ->
@@ -72,16 +80,24 @@ calls — they are unreaped rows. This reaper is the missing piece.
 """
 
 import argparse
+import hashlib
 import json
 import os
 import subprocess
 import sys
 import time
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    import error_claims as ec
+except Exception:
+    ec = None
+
 AGENTS_ROOT = "/home/hatch/agents"
 WATCHLIST = os.path.expanduser("~/workspace/watchdog/hatch_agents.txt")
 DEFAULT_STALE_S = 21600  # 6h
 DIRECTIVES = os.path.expanduser("~/workspace/watchdog/reaper_directives.json")
+NOTES = os.path.expanduser("~/workspace/watchdog/error_claim_notes.json")
 SQUAWK = os.path.expanduser("~/workspace/bin/squawk")
 PHANTOM_MIN_AGE_S = 3600  # never direct a close on a phantom younger than this
 
@@ -213,6 +229,98 @@ def emit_close_directive(c, evidence):
         return False
 
 
+def _load_notes():
+    try:
+        with open(NOTES) as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
+def _save_notes(d):
+    try:
+        os.makedirs(os.path.dirname(NOTES), exist_ok=True)
+        with open(NOTES, "w") as f:
+            json.dump(d, f, indent=1)
+    except OSError:
+        pass
+
+
+def publish_claim_note(candidate, claim):
+    """Publish a CLAIM-CHECK note to fleet via squawk.
+
+    For high-confidence 'mislead' claims only: the error string is known to
+    lie (see error_claims.ERROR_CLAIM_CATALOG), so the note tells the fleet
+    what to verify BEFORE acting on it. Fail-soft like emit_close_directive:
+    if squawk is unreachable the note is still recorded locally (deduped by
+    md5 of the error text) so the next run does not re-fire.
+    """
+    text = candidate.get("error_text") or ""
+    msg = ("CLAIM-CHECK (ember): %s '%s' matches known mislead pattern '%s' "
+           "(%s, conf %.2f). Usual reality: %s Verify BEFORE acting: %s" % (
+               candidate.get("source", "?"), candidate.get("id", "?"),
+               claim["claim_id"], claim["name"], claim["confidence"],
+               claim["usual_reality"][:220], claim["verify"][:220]))
+    try:
+        r = subprocess.run([SQUAWK, "send", "fleet", msg],
+                           capture_output=True, text=True, timeout=90)
+        return r.returncode == 0
+    except Exception:
+        return False
+
+
+def classify_errors(candidates, fleet_notes=False, dry_run=False):
+    """Classify harvested error claims against the shared catalog.
+
+    Input (from the cron task that owns the muse.db harvest — this script
+    never touches the DB):
+      [{id, source, error_text}]   # source: 'agent-final' | 'tool-events' |
+                                   # 'tool-outputs'; error_text: the raw claim
+
+    Output: list of {id, source, error_text (truncated), claims:[...]} where
+    claims are best-confidence-first from error_claims.classify_error_claim.
+    Unknown text yields claims=[] — investigate raw, never auto-diagnose.
+
+    With fleet_notes=True: for claims with severity=='mislead' and
+    confidence>=0.8, publish a CLAIM-CHECK note to fleet naming the required
+    verification (deduped by md5 of the error text; fail-soft). This is the
+    anti-false-diagnosis loop: the note fires BEFORE anyone acts on the
+    string. Never escalates, never closes anything, never diagnoses unknown
+    text.
+    """
+    if ec is None:
+        return {"error": "error_claims module not found next to agent-reaper"}
+    notes = _load_notes()
+    result = {"classified": [], "notes_sent": [], "notes_failed": []}
+    for c in candidates:
+        text = c.get("error_text") or ""
+        claims = ec.classify_error_claim(text)
+        result["classified"].append({
+            "id": c.get("id"),
+            "source": c.get("source"),
+            "error_text": text[:500],
+            "claims": claims,
+        })
+        if not (fleet_notes and claims):
+            continue
+        top = claims[0]
+        if not (top["severity"] == "mislead" and top["confidence"] >= 0.8):
+            continue
+        key = hashlib.md5(text.encode("utf-8", "replace")).hexdigest()
+        if key in notes and notes[key].get("sent") and not dry_run:
+            continue  # note already live; don't re-fire
+        if dry_run:
+            result["notes_sent"].append(c.get("id") + " (dry-run)")
+            continue
+        ok = publish_claim_note(c, top)
+        notes[key] = {"sent": ok, "at": time.time(),
+                      "claim_id": top["claim_id"], "id": c.get("id")}
+        (result["notes_sent"] if ok
+         else result["notes_failed"]).append(c.get("id"))
+    _save_notes(notes)
+    return result
+
+
 def verify_phantoms(candidates, dry_run=False):
     """Cross-check DB phantom candidates against the filesystem.
 
@@ -282,6 +390,15 @@ def main():
                     "close-directives for true phantoms. DB query pack "
                     "runs in the owning cron task; this script never "
                     "touches the DB.")
+    ap.add_argument("--classify-errors", metavar="CANDIDATES_JSON",
+                    help="classify harvested error claims (JSON array of "
+                    "{id, source, error_text} on file/stdin) against the "
+                    "shared error-claim catalog; print an executable "
+                    "cause->verify->action report.")
+    ap.add_argument("--fleet-notes", action="store_true",
+                    help="with --classify-errors, publish CLAIM-CHECK notes "
+                    "to fleet for high-confidence 'mislead' claims "
+                    "(deduped; fail-soft).")
     a = ap.parse_args()
 
     result = {}
@@ -290,6 +407,12 @@ def main():
         raw = sys.stdin.read() if src == "-" else open(src).read()
         result["phantoms"] = verify_phantoms(json.loads(raw),
                                              dry_run=a.dry_run)
+    elif a.classify_errors:
+        src = a.classify_errors
+        raw = sys.stdin.read() if src == "-" else open(src).read()
+        result["errors"] = classify_errors(json.loads(raw),
+                                           fleet_notes=a.fleet_notes,
+                                           dry_run=a.dry_run)
     elif a.prune_watchlist:
         result["prune"] = prune_watchlist(dry_run=a.dry_run)
     else:
@@ -320,6 +443,33 @@ def main():
                 p["remaining"]))
             for aid in p["pruned"]:
                 print("  dead: %s" % aid)
+        if "errors" in result:
+            e = result["errors"]
+            if "error" in e:
+                print("agent-reaper: %s" % e["error"], file=sys.stderr)
+                return 1
+            print("agent-reaper: %d error claims classified%s" % (
+                len(e["classified"]),
+                " (%d CLAIM-CHECK notes sent, %d failed)" % (
+                    len(e["notes_sent"]), len(e["notes_failed"]))
+                if a.fleet_notes else ""))
+            for c in e["classified"]:
+                if not c["claims"]:
+                    print("  ? %s [%s] unclassified — investigate raw" % (
+                        c["id"], c["source"]))
+                    continue
+                top = c["claims"][0]
+                print("  %s %s [%s] -> %s (%s, conf %.2f)" % (
+                    top["claim_id"], c["id"], c["source"], top["name"],
+                    top["severity"], top["confidence"]))
+                print("      verify: %s" % top["verify"])
+                print("      action: %s" % top["action"])
+                for extra in c["claims"][1:]:
+                    print("      also: %s (%s)" % (extra["claim_id"], extra["severity"]))
+            for nid in e["notes_sent"]:
+                print("  note sent: %s" % nid)
+            for nid in e["notes_failed"]:
+                print("  note FAILED: %s" % nid)
     return 0
 
 

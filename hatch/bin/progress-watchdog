@@ -17,6 +17,10 @@ no "still ongoing" reminders):
   - suppress identical repeats indefinitely — an unchanged condition
     posts exactly once, however long it lasts
   - one "cleared" note when a condition resolves
+  - alert text is annotated with the shared error-claim catalog
+    (hatch/bin/error_claims.py claim_annotation): known-mislead error
+    strings gain their executable verify step so responders verify
+    BEFORE acting. Unknown text is left alone.
 Healthy state is silence. Hearth speaks only when something changed.
 
 State is written atomically (write-temp + fsync + rename); every run
@@ -38,6 +42,26 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import watchdog_lib as wl
+try:
+    import error_claims as _ec  # shared ERROR_CLAIM_CATALOG (hatch/bin/error_claims.py)
+except Exception:
+    _ec = None
+
+
+def claim_annotation(text):
+    """One-line error-claim probe for alert text.
+
+    An error string is a CLAIM, not a fact (unreliable-narrator doctrine):
+    this appends the catalog's classification + the executable verify step
+    so the responding agent verifies BEFORE acting on the string. The
+    dedup sig is untouched — only the message text gains the probe. Only
+    fires for catalog matches at confidence >= 0.8; unknown text is left
+    alone (never auto-diagnosed).
+    """
+    if _ec is None:
+        return ""
+    note = _ec.annotate(text, min_confidence=0.8)
+    return ("\n" + note) if note else ""
 
 HOME = Path.home()
 WDIR = HOME / "workspace" / "watchdog"
@@ -254,11 +278,14 @@ def run():
 
     def cond(key, sig, text_new):
         """Deduped alert: fire on new/changed, suppress identical repeats
-        indefinitely. No reminders — healthy state is silence."""
+        indefinitely. No reminders — healthy state is silence. Alert text
+        gains a claim_annotation() probe (error-claim classification +
+        verify step) so responders verify the string before acting."""
         observed.add(key)
         v = reg.note(key, sig, now)
         if v == "suppress":
             return False
+        text_new = text_new + claim_annotation(text_new)
         say(text_new)
         print(f"ALERT [{key}] ({v}): {text_new[:100]}", flush=True)
         fired.append(key)
