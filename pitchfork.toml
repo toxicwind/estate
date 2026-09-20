@@ -579,3 +579,12 @@ boot_start = true
 # NOTE 2026-09-20: literal port; pitchfork does not expand ${} in ready_http (25122 == $BEELLAMA_PORT SSOT)
 ready_http = "http://127.0.0.1:25122/health"
 auto = ["start"]
+
+# openfang-health — 5-min OpenFang/coyote health loop -> JSON/HTML + squawk on transitions.
+# Added 2026-09-20 (openfang recon track).
+[daemons.openfang-health]
+run = "/home/toxic/sovereign/ops/openfang-health/loop.sh"
+dir = "/home/toxic/sovereign/ops/openfang-health"
+mise = false
+retry = true
+auto = ["start"]
