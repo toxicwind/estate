@@ -53,7 +53,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 ### Bridge tools (hatch)
 | Tool | Use |
 |---|---|
-| `~/workspace/bin/yote-conn` | Exec on yote: `yote-conn exec '<cmd>'` |
+| `~/workspace/bin/yote-conn` | Exec on yote: `yote-conn exec '<cmd>'`; multitask: `yote-conn multi cmds.json`; background: `yote-conn bg '<cmd>'` / `bg-status <handle>` / `bg-list` |
 | `~/workspace/bin/squawk` | Fleet chat: `squawk read [channel]`, `squawk send <channel> <text>` |
 | `~/workspace/bin/bridge-put.py` | Transfer files hatch→yote. Run via `python3` (no exec bit). For >1.5KB scripts: base64-chunk it, sha256-verify on yote — never inline large heredocs through the bridge (they get mangled). |
 | `~/workspace/bin/load-audit` | Load check, both boxes |
@@ -75,6 +75,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | edge-forge | Cutting-edge fix + addition task forging & execution | Ember | RUNNING |
 | tau-hyperfix | `/home/toxic/.tau` audit; dynamic skill loading; skills symlink; `skillful`; `tau audit`; `tau tmux` experiments | Ember | RUNNING |
 | super-ralph repair | Root-cause `fiber.cache.stackFrame` crash; prove `super-ralph "reply with exactly the word ALIVE"` exits zero + DB completion | Ember | RUNNING |
+| bridge-max | Maximal bridge exec layer: multitask dispatch (POST /exec-multi, yote-conn multi), detached background dispatch (POST /exec-bg, GET /bg, yote-conn bg/bg-status/bg-list), MCP exec_multi/exec_bg/bg_status tools | Ember | RUNNING (2026-09-20) |
 | tmp-repos-emergent | Scratch/tmp → owning repos migration | Ember | RUNNING — **de-duped with repo-integrator-max 2026-09-20 (fleet seq 11291)** |
 | edge-max | Estate-wide cutting-edge coordinator | Ember (other chat) | RUNNING |
 | oracle-max | Oracle decision-engine maximal upgrade | Ember (other chat) | RUNNING |
