@@ -724,6 +724,28 @@ peers:
       responseHeader: 120
       tlsHandshake: 10
       idleConn: 90
+    # Self-healing (2026-09-20): per-peer dead-peer detection — healthy /
+    # degraded / circuit-open FSM with single-flight half-open recovery on
+    # real traffic. This block shows the defaults; omit it for identical
+    # behavior. Unknown keys are ignored by older herd binaries. Full docs:
+    # projects/herd/config.example.yaml. State observable at GET /peer-health.
+    health:
+      enabled: true
+      ewma_alpha: 0.2
+      failure_threshold: 8
+      recovery_credit: 1
+      success_threshold: 1
+      cool_off_seconds: 30
+      degraded_latency_ms: 15000
+      degraded_error_rate: 0.5
+      weights:
+        transport: 2.0
+        5xx: 1.5
+        404-dead-id: 3.0
+        402-not-entitled: 2.0
+        403-refused: 1.5
+        429-throttled: 0.5
+        200-empty: 1.5
   # --- mistral: Mistral AI direct (added 2026-09-20) ---
   # Model IDs verbatim from https://api.mistral.ai/v1/models (46 models; chat-capable subset).
   mistral:

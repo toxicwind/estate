@@ -661,7 +661,80 @@
                         },
                         "additionalProperties": false,
                         "description": "Timeout settings for proxy connections to this peer."
+                    },
+                    "health": {
+                        "type": "object",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean",
+                                "default": true,
+                                "description": "Enable per-peer self-healing for this peer (default true). Set false to opt a peer out explicitly."
+                            },
+                            "ewma_alpha": {
+                                "type": "number",
+                                "exclusiveMinimum": 0,
+                                "maximum": 1,
+                                "default": 0.2,
+                                "description": "EWMA smoothing factor for the per-peer latency signal."
+                            },
+                            "failure_threshold": {
+                                "type": "number",
+                                "minimum": 0,
+                                "default": 8,
+                                "description": "Weighted failure score that opens the circuit and ejects the peer from rotation."
+                            },
+                            "recovery_credit": {
+                                "type": "number",
+                                "minimum": 0,
+                                "default": 1,
+                                "description": "Score subtracted per successful response (floor zero); lets a flapping peer bleed its score back down."
+                            },
+                            "success_threshold": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "default": 1,
+                                "description": "Consecutive successful half-open probes required to readmit the peer."
+                            },
+                            "cool_off_seconds": {
+                                "type": "number",
+                                "minimum": 0,
+                                "default": 30,
+                                "description": "Seconds an open circuit fails fast before the next real request is admitted as a single-flight half-open probe. Values <= 0 fall back to 30 (YAML cannot distinguish omitted from explicit 0)."
+                            },
+                            "degraded_latency_ms": {
+                                "type": "number",
+                                "minimum": 0,
+                                "default": 15000,
+                                "description": "EWMA latency at or above which the peer is flagged degraded (advisory; still serves)."
+                            },
+                            "degraded_error_rate": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 1,
+                                "default": 0.5,
+                                "description": "Rolling 32-outcome error rate at or above which the peer is flagged degraded (advisory; still serves)."
+                            },
+                            "weights": {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "type": "number"
+                                },
+                                "default": {
+                                    "transport": 2.0,
+                                    "5xx": 1.5,
+                                    "404-dead-id": 3.0,
+                                    "402-not-entitled": 2.0,
+                                    "403-refused": 1.5,
+                                    "429-throttled": 0.5,
+                                    "200-empty": 1.5
+                                },
+                                "description": "Per-outcome-class failure weights added to the peer's score. Classes: transport, 5xx, 404-dead-id, 402-not-entitled, 403-refused, 429-throttled, 200-empty (the reliability taxonomy). success/cancelled are always neutral."
+                            }
+                        },
+                        "additionalProperties": false,
+                        "description": "Per-peer self-healing knobs (optional). States: healthy -> degraded (advisory) -> circuit-open (ejected, 503 fail-fast) -> half-open (single real-traffic probe) -> healthy. No polling: the probe is the next real request after cool_off_seconds. Observe at GET /peer-health."
                     }
+                
                 }
             },
             "default": {},

@@ -2,6 +2,7 @@ package router
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
@@ -28,6 +29,7 @@ type Peer struct {
 	cfg    config.Config
 	logger *logmon.Monitor
 	peers  map[string]*peerMember
+	health map[string]*PeerHealth
 
 	shutdownCtx  context.Context
 	shutdownFn   context.CancelFunc
@@ -38,6 +40,7 @@ type Peer struct {
 func NewPeer(cfg config.Config, logger *logmon.Monitor) (*Peer, error) {
 	peers := cfg.Peers
 	modelMap := make(map[string]*peerMember)
+	healthMap := make(map[string]*PeerHealth)
 
 	peerIDs := make([]string, 0, len(peers))
 	for peerID := range peers {
@@ -72,6 +75,19 @@ func NewPeer(cfg config.Config, logger *logmon.Monitor) (*Peer, error) {
 		}
 
 		reverseProxy.ModifyResponse = func(resp *http.Response) error {
+			if resp.Request != nil {
+				if obs := healthObserverFrom(resp.Request.Context()); obs != nil {
+					obs.status = resp.StatusCode
+					if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+						// Immediately classifiable; the body needs no observation.
+						obs.finishStatus(resp.StatusCode)
+					} else if resp.Body != nil {
+						resp.Body = &observingReadCloser{ReadCloser: resp.Body, obs: obs}
+					} else {
+						obs.finishAtEOF()
+					}
+				}
+			}
 			if strings.Contains(strings.ToLower(resp.Header.Get("Content-Type")), "text/event-stream") {
 				resp.Header.Set("X-Accel-Buffering", "no")
 			}
@@ -79,12 +95,21 @@ func NewPeer(cfg config.Config, logger *logmon.Monitor) (*Peer, error) {
 		}
 
 		reverseProxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
+			if obs := healthObserverFrom(r.Context()); obs != nil {
+				obs.finishTransport(err)
+			}
 			logger.Warnf("peer %s: proxy error: %v", peerID, err)
 			errMsg := fmt.Sprintf("peer proxy error: %v", err)
 			if runtime.GOOS == "darwin" && strings.Contains(err.Error(), "connect: no route to host") {
 				errMsg += " (hint: on macOS, check System Settings > Privacy & Security > Local Network permissions)"
 			}
 			http.Error(w, errMsg, http.StatusBadGateway)
+		}
+
+		hc := peer.Health
+		hc.ApplyDefaults()
+		if hc.Enabled != nil && *hc.Enabled {
+			healthMap[peerID] = NewPeerHealth(peerID, hc, logger)
 		}
 
 		pp := &peerMember{
@@ -108,6 +133,7 @@ func NewPeer(cfg config.Config, logger *logmon.Monitor) (*Peer, error) {
 		cfg:         cfg,
 		logger:      logger,
 		peers:       modelMap,
+		health:      healthMap,
 		shutdownCtx: shutdownCtx,
 		shutdownFn:  shutdownFn,
 	}, nil
@@ -180,9 +206,53 @@ func (r *Peer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	stopShutdown := context.AfterFunc(r.shutdownCtx, cancel)
 	req = req.WithContext(ctx)
 
+	if ph, ok := r.health[pp.peerID]; ok {
+		admit, probe, gen := ph.Admit()
+		if !admit {
+			stopShutdown()
+			stopReq()
+			cancel()
+			r.serveCircuitOpen(w, pp.peerID, ph)
+			return
+		}
+		req = req.WithContext(context.WithValue(ctx, healthObserverKey{}, newHealthObserver(ph, req, data.Streaming, probe, gen)))
+	}
+
 	pp.reverseProxy.ServeHTTP(w, req)
 
 	stopShutdown()
 	stopReq()
 	cancel()
+}
+
+// serveCircuitOpen fails fast with a structured 503 when the peer's circuit is
+// open. The peer is ejected from rotation; Retry-After hints when a half-open
+// probe may be admitted.
+func (r *Peer) serveCircuitOpen(w http.ResponseWriter, peerID string, ph *PeerHealth) {
+	retryAfter := ph.RetryAfter()
+	snap := ph.Snapshot()
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Retry-After", fmt.Sprintf("%d", int64(retryAfter/time.Second)+1))
+	w.WriteHeader(http.StatusServiceUnavailable)
+	_ = json.NewEncoder(w).Encode(map[string]any{
+		"error": map[string]any{
+			"message":        fmt.Sprintf("peer %q circuit is open (failure score %.1f/%.1f); peer ejected from rotation", peerID, snap.FailureScore, snap.FailureThreshold),
+			"type":           "peer_circuit_open",
+			"code":           "peer_circuit_open",
+			"peer":           peerID,
+			"retry_after_ms": int64(retryAfter / time.Millisecond),
+		},
+	})
+}
+
+// HealthSnapshots returns the per-peer health view served by /peer-health,
+// sorted by peer ID. The health map is built once in NewPeer and read-only
+// afterwards, so no lock is needed.
+func (r *Peer) HealthSnapshots() []HealthSnapshot {
+	snaps := make([]HealthSnapshot, 0, len(r.health))
+	for _, h := range r.health {
+		snaps = append(snaps, h.Snapshot())
+	}
+	sort.Slice(snaps, func(i, j int) bool { return snaps[i].Peer < snaps[j].Peer })
+	return snaps
 }
