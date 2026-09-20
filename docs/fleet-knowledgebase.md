@@ -70,7 +70,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | Crew | Scope | Owner / coordinator | Status |
 |---|---|---|---|
-| repo-integrator-max | Orphan integration → correct repos; README/deep-link pass; permanent scripts/skills/integrations | Ember (main chat) | RUNNING (2026-09-20) — workers: orphan-hatch, orphan-yote, readme-linker |
+| repo-integrator-max | Orphan integration -> correct repos; README/deep-link pass; permanent scripts/skills/integrations | Ember (main chat) | RUNNING (2026-09-20) -- orphan-yote DONE (5 repos: rig 6b6742c, gear 3afd4a0, herd 6528c7a, media fb95ee2f3f, herd-phase3-retire dea49bf archived; fleet seq 11597), readme-linker DONE (main 31f5ab6ec2, fleet seq 11497); orphan-hatch RUNNING; orphan-yote-2 RUNNING (quarry feed seq 11332/11339) |
 | pack-keeper | Fleet health + culture: permanent fleet-health.sh (projects/ops/bin/), Hearth watchdog state-change tuning + canonical hatch/bin/ watchdog code, silent-agent dispositions | Ember (spawned subagent) | RUNNING (2026-09-20) |
 | purge-max (announced as pack-fix) | Hesitance purge; fake-completed watchdogs; task-runner audit; fleet health; no-monkeypatch durability sweep | Ember | runner-watch audit DONE 2026-09-20 — commit `c42b87095d17bd4a38a764d6c8b8481a2049f259` (projects/pack-fix: runner-inventory.sh + runner-audit.md + README; canary-judge burn killed, audit-bridge-watch retired, progress-watchdog 3m→5m) |
 | purge-max / hesitance-hunt | Hesitance fixes (EXCLUSIVE lane per 2026-09-20 carve): watchdog body rewrites, anti-pattern catalog, permanent hesitance-lint guard | Ember | RUNNING (2026-09-20) |
