@@ -30,13 +30,26 @@ hooks:
 
 # RETIRED 2026-09-17: astMatrix in-process router replaced by Flock delegation.
 # Flock (:8000) is the unified multi-provider remote-API/completions subsystem.
+# DISABLED 2026-09-20 (provider-surgeon): flock :8000 cloud upstream is dead -
+# NVIDIA account returns 404/410/502 on every probed chat model; the flock daemon
+# itself runs with zero upstream env keys. Re-enable when flock upstream is healthy.
+# (flock daemon keeps running under pitchfork for the TAU flock extension.)
+# RE-ENABLED 2026-09-20 ~03:10 MDT (provider-surgeon): flock upstream completions
+# verified live via 127.0.0.1:8000 with FLOCK_API_KEY. Only the 3 model IDs
+# below returned real completions in the probe; the other 100 flock-advertised
+# IDs 404 upstream (stale) and are deliberately NOT mapped. Re-probe before adding more.
+# DISABLED 2026-09-20 ~03:20 MDT (provider-surgeon): the flock delegation advertises
+# ALL 103 upstream model IDs (discovery cannot be restricted to modelMap), and ~100
+# of them 404 upstream (stale). Use the flock-direct peer below instead, which
+# exposes only the 3 probe-verified live models.
 flock:
-  enabled: true
+  enabled: false
   baseUrl: http://127.0.0.1:8000
   keyEnv: FLOCK_API_KEY
   modelMap:
-    kimi-k2: nvidia/nemotron-3-super-120b-a12b
-    kimi-k3-nim: nvidia/nemotron-3-ultra-550b-a55b
+    flock-deepseek-v4-flash: deepseek-ai/deepseek-v4-flash-0731
+    flock-nemotron-35-lightning: nvidia/nemotron-3.5-lightning-30b-a3b
+    flock-glm-53-flash: z-ai/glm-5.3-flash
 routing:
   scheduler:
     use: fifo
@@ -52,7 +65,6 @@ routing:
           mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_s: 29
           jackrong/qwen3.5-9b-deepseek-v4-flash-da-q4km: 28
           gemma-4-12b-unified: 24
-          gemma-4-12b-mtp: 23
           gemma-4-12b-uncensored: 22
           beellama/qwen-flash-64k: 16
           beellama/qwen-flash-96k: 15
@@ -62,16 +74,6 @@ routing:
           beellama/gemma-96k: 11
           beellama/gemma-128k: 10
           beellama/strange-64k: 9
-          qwen/27b-dflash-iq4xs: 8
-          qwen/27b-dflash-q4km: 7
-          qwen/36-27b-mtp-ud: 6
-          qwen/36-27b-ud: 6
-          ik_llama/heretic-ud-64k: 5
-          ik_llama/heretic-ud-96k: 4
-          ik_llama/heretic-q5-64k: 3
-          gemma/4-21b-reap: 2
-          mn/grand-23b: 1
-          qwen/28b-reap: 1
 
   router:
     use: matrix
@@ -83,7 +85,6 @@ routing:
           df9b: mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m
           df9bs: mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_s
           gm4u: gemma-4-12b-unified
-          gm4m: gemma-4-12b-mtp
           gm4un: gemma-4-12b-uncensored
           qf64: beellama/qwen-flash-64k
           qf96: beellama/qwen-flash-96k
@@ -93,23 +94,12 @@ routing:
           gm96: beellama/gemma-96k
           gm128: beellama/gemma-128k
           st64: beellama/strange-64k
-          q27i: qwen/27b-dflash-iq4xs
-          q27q: qwen/27b-dflash-q4km
-          q36m: qwen/36-27b-mtp-ud
-          q36u: qwen/36-27b-ud
-          gm21: gemma/4-21b-reap
-          hu64: ik_llama/heretic-ud-64k
-          hu96: ik_llama/heretic-ud-96k
-          hq5: ik_llama/heretic-q5-64k
-          mng: mn/grand-23b
-          qw28: qwen/28b-reap
         evict_costs:
           exa1: 35
           exa2: 34
           df9b: 30
           df9bs: 29
           gm4u: 24
-          gm4m: 23
           gm4un: 22
           qf256: 13
           qf128: 14
@@ -119,30 +109,14 @@ routing:
           gm96: 11
           gm64: 12
           st64: 9
-          q27i: 8
-          q27q: 7
-          q36m: 6
-          q36u: 6
-          hu96: 4
-          hu64: 5
-          hq5: 3
-          gm21: 2
-          mng: 1
-          qw28: 1
         sets:
           exclusive: >-
             exa1 | exa2 |
             df9b | df9bs |
-            gm4u | gm4m | gm4un |
+            gm4u | gm4un |
             qf64 | qf96 | qf128 | qf256 |
             gm64 | gm96 | gm128 |
-            st64 |
-            q27i | q27q |
-            q36m | q36u |
-            gm21 |
-            hu64 | hu96 | hq5 |
-            mng |
-            qw28
+            st64
 
 macros:
   MODEL_DIR: /home/toxic/models
@@ -384,24 +358,6 @@ models:
       vram: ~9GB
       code: true
 
-  gemma-4-12b-mtp:
-    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_MTP_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_96K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
-    aliases:
-      - gemma-4-12b-mtp-96k
-    env:
-      - LD_LIBRARY_PATH=${BEELLAMA_LD}
-      - ${CUDA_ENV}
-      - LLAMA_API_KEY=
-    name: "Gemma 4 12B MTP · 96K · Q4_K_M"
-    description: "MTP speculative decoding variant."
-    metadata:
-      fork: beellama
-      context: 98304
-      quant: Q4_K_M
-      vram: ~9GB
-      code: true
-      mtp: true
-
   gemma-4-12b-uncensored:
     cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_UNCENS_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_96K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     aliases:
@@ -577,42 +533,6 @@ models:
       vram: ~10GB
       code: true
 
-  beellama/gemma-mtp-64k:
-    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_MTP_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_64K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
-    aliases:
-      - gemma-mtp-64k
-    env:
-      - LD_LIBRARY_PATH=${BEELLAMA_LD}
-      - ${CUDA_ENV}
-      - LLAMA_API_KEY=
-    name: "Gemma 4 12B MTP · 64K"
-    description: "MTP variant, 64K context."
-    metadata:
-      fork: beellama
-      context: 65536
-      quant: Q4_K_M
-      vram: ~8GB
-      code: true
-      mtp: true
-
-  beellama/gemma-mtp-128k:
-    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_MTP_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_128K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
-    aliases:
-      - gemma-mtp-128k
-    env:
-      - LD_LIBRARY_PATH=${BEELLAMA_LD}
-      - ${CUDA_ENV}
-      - LLAMA_API_KEY=
-    name: "Gemma 4 12B MTP · 128K"
-    description: "MTP variant, 128K context."
-    metadata:
-      fork: beellama
-      context: 131072
-      quant: Q4_K_M
-      vram: ~10GB
-      code: true
-      mtp: true
-
   beellama/strange-64k:
     cmd: ${BEELLAMA_BIN} --model ${STRANGE_7B_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_64K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     aliases:
@@ -630,261 +550,146 @@ models:
       vram: ~5GB
       experimental: true
 
-  qwen/27b-dflash-iq4xs:
-    cmd: ${BEELLAMA_BIN} --model ${QWEN36_27B_DFLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
-    aliases:
-      - large
-      - qwen-27b-dflash-iq4xs
-    env:
-      - LD_LIBRARY_PATH=${BEELLAMA_LD}
-      - ${CUDA_ENV}
-      - LLAMA_API_KEY=
-    name: "Qwen 27B DenseFlash · 32K · IQ4_XS"
-    description: "Heavy worker, reduced context for VRAM fit."
-    metadata:
-      fork: beellama
-      context: 32768
-      quant: IQ4_XS
-      vram: ~17GB
-      code: true
-      quality: high
-
-  qwen/27b-dflash-q4km:
-    cmd: ${BEELLAMA_BIN} --model ${QWEN36_27B_DFLASH_DRAFTER} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_64K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
-    aliases:
-      - quality
-      - qwen-27b-dflash-q4km
-    env:
-      - LD_LIBRARY_PATH=${BEELLAMA_LD}
-      - ${CUDA_ENV}
-      - LLAMA_API_KEY=
-    name: "Qwen 27B DenseFlash · 64K · Q4_K_M"
-    description: "Heavy worker, standard precision."
-    metadata:
-      fork: beellama
-      context: 65536
-      quant: Q4_K_M
-      vram: ~17GB
-      code: true
-
-  qwen/36-27b-mtp-ud:
-    cmd: ${BEELLAMA_BIN} --model ${QWEN36_27B_MTP} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
-    aliases:
-      - qwen-36-27b-mtp-ud
-    env:
-      - LD_LIBRARY_PATH=${BEELLAMA_LD}
-      - ${CUDA_ENV}
-      - LLAMA_API_KEY=
-    name: "Qwen 3.6 27B MTP UD · 32K · Q4_K_XL"
-    description: "Qwen 3.6 27B MTP UD model."
-    metadata:
-      fork: beellama
-      context: 32768
-      quant: Q4_K_XL
-      vram: ~19GB
-      code: true
-      mtp: true
-
-  qwen/36-27b-ud:
-    cmd: ${BEELLAMA_BIN} --model ${QWEN36_27B_UD} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
-    aliases:
-      - qwen-36-27b-ud
-    env:
-      - LD_LIBRARY_PATH=${BEELLAMA_LD}
-      - ${CUDA_ENV}
-      - LLAMA_API_KEY=
-    name: "Qwen 3.6 27B UD · 32K · Q4_K_XL"
-    description: "Qwen 3.6 27B UD model."
-    metadata:
-      fork: beellama
-      context: 32768
-      quant: Q4_K_XL
-      vram: ~17GB
-      code: true
-
-  gemma/4-21b-reap:
-    cmd: ${BEELLAMA_BIN} --model ${GEMMA_21B_REAP} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
-    aliases:
-      - gemma-21b-reap
-    env:
-      - LD_LIBRARY_PATH=${BEELLAMA_LD}
-      - ${CUDA_ENV}
-      - LLAMA_API_KEY=
-    name: "Gemma 4 21B REAP · 32K · Q4_K_M"
-    description: "Gemma 4 21B REAP MoE model."
-    metadata:
-      fork: beellama
-      context: 32768
-      quant: Q4_K_M
-      vram: ~14GB
-      code: true
-
-  ik_llama/heretic-ud-64k:
-    cmd: ${IK_BIN} --model ${HERETIC_27B_Q5XL} ${SRV_IK_BASE} ${FORK_IK} ${CTX_64K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
-    aliases:
-      - heretic-ud-64k
-    env:
-      - LD_LIBRARY_PATH=${IK_LD}
-      - ${CUDA_ENV}
-      - LLAMA_API_KEY=
-    name: "Heretic 27B · 64K · ik_llama"
-    description: "ik_llama with auto-fit and defrag."
-    metadata:
-      fork: ik_llama
-      context: 65536
-      quant: Q5_K_XL
-      vram: ~14GB
-      uncensored: true
-
-  ik_llama/heretic-ud-96k:
-    cmd: ${IK_BIN} --model ${HERETIC_27B_Q5XL} ${SRV_IK_BASE} ${FORK_IK} ${CTX_96K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
-    aliases:
-      - heretic-ud-96k
-    env:
-      - LD_LIBRARY_PATH=${IK_LD}
-      - ${CUDA_ENV}
-      - LLAMA_API_KEY=
-    name: "Heretic 27B · 96K · ik_llama"
-    description: "ik_llama with auto-fit, 96K context."
-    metadata:
-      fork: ik_llama
-      context: 98304
-      quant: Q5_K_XL
-      vram: ~16GB
-      uncensored: true
-
-  ik_llama/heretic-q5-64k:
-    cmd: ${IK_BIN} --model ${HERETIC_27B_Q5XL} ${SRV_IK_BASE} ${FORK_IK} ${CTX_64K} ${KV_PRECISE} ${REASONING_OFF} ${SPEC_NONE}
-    aliases:
-      - heretic-q5-64k
-    env:
-      - LD_LIBRARY_PATH=${IK_LD}
-      - ${CUDA_ENV}
-      - LLAMA_API_KEY=
-    name: "Heretic 27B · 64K · ik_llama Precise"
-    description: "ik_llama with precise KV cache."
-    metadata:
-      fork: ik_llama
-      context: 65536
-      quant: Q5_K_XL
-      vram: ~14GB
-      uncensored: true
-      kv_precise: true
-
-  mn/grand-23b:
-    cmd: ${BEELLAMA_BIN} --model ${MN_GRAND_23B} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
-    aliases:
-      - mn-grand-23b
-    env:
-      - LD_LIBRARY_PATH=${BEELLAMA_LD}
-      - ${CUDA_ENV}
-      - LLAMA_API_KEY=
-    name: "MN GRAND 23.5B · 32K · Q4_K_M"
-    description: "Uncensored literary merge model."
-    metadata:
-      fork: beellama
-      context: 32768
-      quant: Q4_K_M
-      vram: ~15GB
-      uncensored: true
-
-  qwen/28b-reap:
-    cmd: ${BEELLAMA_BIN} --model ${QWEN_28B_REAP} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
-    aliases:
-      - qwen-28b-reap
-    env:
-      - LD_LIBRARY_PATH=${BEELLAMA_LD}
-      - ${CUDA_ENV}
-      - LLAMA_API_KEY=
-    name: "Qwen 3.5 28B REAP · 32K · Q4_K_M"
-    description: "MoE model with 3B active parameters."
-    metadata:
-      fork: beellama
-      context: 32768
-      quant: Q4_K_M
-      vram: ~12GB
-      moe: true
-
-# ── FREE BACKENDS — Pollinations (workaround for not-anonymous gate) ──
-# Latch: this file is NOT generated (no generator owns it) — direct edits compliant.
-# We ignore anonymous distinction entirely: herd injects dummy Bearer "pollinations-free-workaround"
-# via patched peer.go when apiKey is empty, so Pollinations always sees a Bearer and returns 200.
-# Track C (CF gateway) variant below is parked — switch proxy to gateway URL + set apiKey if you want CF caching.
 peers:
-  pollinations-free:
-    proxy: https://gen.pollinations.ai
-    # apiKey omitted → router injects pollinations-free-workaround (see internal/router/peer.go P1)
+  # RE-ENABLED 2026-09-20 ~01:50 MDT (ember): surgeon 401 claim re-probed live --
+  # no-auth and dummy-bearer both return HTTP 200 with real completions
+  # (kimi-k3 @ 0.24-0.53s, openai @ 0.28s). Free-Kimi route is live;
+  # re-probe before disabling. (openrouter-kimi/hf-free/flock disables verified dead.)
+  # DISABLED 2026-09-20 ~02:35 MDT (provider-surgeon): re-probed per the 01:50 re-enable note.
+  # Through-herd requests now return HTTP 401 'A valid API key is required'; direct no-auth
+  # to gen.pollinations.ai returns HTTP 200 with real completions (verified this run).
+  # Root cause: the Sep-18 herd binary bakes in the P1 dummy-bearer workaround
+  # (Authorization: Bearer <redacted> + x-api-key, from herd-origmain-test/internal/router/peer.go);
+  # Pollinations now rejects the dummy bearer while accepting no-auth. The peer config omits
+  # apiKey, so the binary always injects the dummy -> 401. Proper fix: rebuild herd from
+  # projects/herd (which does NOT contain the P1 patch) so empty apiKey sends no auth headers,
+  # then pitchfork-restart sovereign/herd. Until then this peer stays parked.
+  #pollinations-free:
+  #  proxy: https://gen.pollinations.ai
+  #  # apiKey omitted → router injects pollinations-free-workaround (see internal/router/peer.go P1)
+  #  models:
+  #    - openai
+  #    - gemma-4-31b
+  #    - gpt-oss
+  #    - qwen3.8-27b
+  #    - muse-glimmer
+  #    - muse-spark-1.2
+  #    - kimi-k3
+  #    - nemotron-3.5-lightning
+  #    # Free Kimi note (verified 2026-09-14 free-tier fuzz):
+  #    # moonshotai/kimi-k3, kimi-k2.6, kimi-k2.7-code all serve HTTP 200
+  #    # free on Pollinations (no-auth and with the injected dummy bearer,
+  #    # peer.go P1, 500-700ms) -- but they are NOT listed here: the
+  #    # openrouter-kimi peer claims the same IDs and sorts first
+  #    # (peer.go sorts peer IDs; first claim wins), so listing them would
+  #    # be shadowed. The unprefixed kimi-k3 above is pollinations-unique
+  #    # and is the live free-Kimi route (resolves via Fireworks backend).
+  #  timeouts:
+  #    connect: 30
+  #    keepalive: 30
+  #    responseHeader: 60
+  #    tlsHandshake: 10
+  #    idleConn: 90
+  # 
+  # DISABLED 2026-09-20 (provider-surgeon): HF_TOKEN and all 3 backup HF keys are
+  # dead (HTTP 401); no working HuggingFace key exists. Remove entirely if a new
+  # HF key never materializes. Original block below:
+  #   # --- hf-free: free Kimi via HuggingFace Inference Providers (additive 2026-09-14) ---
+  #   # Matrix-verified: moonshotai/Kimi-K3 -> HTTP 200 + real completion on our
+  #   # HF_TOKEN (no billing attached; HF free-served set). Other Kimi IDs 402.
+  #   # The kimi-auto resolver auto-discovers this ID from herd /v1/models.
+  #   hf-free:
+  #     proxy: https://router.huggingface.co
+  #     apiKey: ${env.HF_TOKEN}
+  #     models:
+  #       - moonshotai/Kimi-K3
+  #     options:
+  #       validateModel: true
+  #
+  #
+  #
+  #
+  #
+  #
+  #
+  #   # Track K -- OpenRouter Kimi/Moonshot models (kimi-auto routing).
+  # DISABLED 2026-09-20 (provider-surgeon): OPENROUTER_API_KEY_1 is valid but the
+  # account has INSUFFICIENT CREDITS (HTTP 402 on all paid kimi IDs) and OpenRouter
+  # no longer serves the :free kimi variants (HTTP 404 'unavailable for free').
+  # Re-enable the moment credits land or free tier returns. Original block below:
+  #   # Updated 2026-09-14: Pollinations free tier changed shape -- openai now
+  #   # 401s, but moonshotai/kimi-k3, kimi-k2.6, kimi-k2.7-code serve FREE
+  #   # no-auth (verified live this date, see pollinations-free peer above).
+  #   # OpenRouter serves the same models paid with OPENROUTER_API_KEY.
+  #   # NOTE: proxy is https://openrouter.ai/api (no /v1): the router joins
+  #   # the proxy path with the request path (/v1/chat/completions).
+  #   openrouter-kimi:
+  #     proxy: https://openrouter.ai/api
+  #     apiKey: ${env.OPENROUTER_API_KEY_1}
+  #     models:
+  #       - moonshotai/kimi-k3
+  #       - moonshotai/kimi-k2.5
+  #       - moonshotai/kimi-k2-0905
+  #       - moonshotai/kimi-k2.6
+  #       - moonshotai/kimi-k2-thinking
+  #       - moonshotai/kimi-k2.7-code
+  #       - moonshotai/kimi-k2
+  #       # :free variants (OpenRouter convention). Added 2026-09-14.
+  #       # Currently 404 "unavailable for free" (free-tier rotation); the
+  #       # resolver marks them unhealthy until OpenRouter re-enables them.
+  #       # Paid IDs above stay so routing resumes the moment credits land.
+  #       - moonshotai/kimi-k3:free
+  #       - moonshotai/kimi-k2.5:free
+  #       - moonshotai/kimi-k2-0905:free
+  #       - moonshotai/kimi-k2.6:free
+  #       - moonshotai/kimi-k2-thinking:free
+  #       - moonshotai/kimi-k2.7-code:free
+  #       - moonshotai/kimi-k2:free
+  #     timeouts:
+  #       connect: 30
+  #       keepalive: 30
+  #       responseHeader: 120
+  #       tlsHandshake: 10
+  #       idleConn: 90
+  #
+  #
+  # --- openrouter-ling: FREE Ling 3.0 Flash via OpenRouter (additive 2026-09-14) ---
+  # Live-verified 2026-09-14: all three return HTTP 200, cost 0 (served by Novita).
+  # Ling-3.0-Flash = Ant Group/InclusionAI, 124B total / 5.1B active, hybrid KDA+MLA.
+  # -vl answers directly (best head candidate); -fin/-sante are reasoning-first.
+  # LING TRUTH 2026-09-20: Reasoning-first models (output lands in `reasoning`
+  # before `content`). They need adequate max_tokens; tiny probes (max_tokens=5)
+  # falsely looked "empty". Verified live: LING-LIVE in 0.885s. Do NOT park on
+  # small-token probes.
+  openrouter-ling:
+    proxy: https://openrouter.ai/api
+    apiKey: ${env.OPENROUTER_API_KEY_1}
     models:
-      - openai
-      - gemma-4-31b
-      - gpt-oss
-      - qwen3.8-27b
-      - muse-glimmer
-      - muse-spark-1.2
-      - kimi-k3
-      - nemotron-3.5-lightning
-      # Free Kimi note (verified 2026-09-14 free-tier fuzz):
-      # moonshotai/kimi-k3, kimi-k2.6, kimi-k2.7-code all serve HTTP 200
-      # free on Pollinations (no-auth and with the injected dummy bearer,
-      # peer.go P1, 500-700ms) -- but they are NOT listed here: the
-      # openrouter-kimi peer claims the same IDs and sorts first
-      # (peer.go sorts peer IDs; first claim wins), so listing them would
-      # be shadowed. The unprefixed kimi-k3 above is pollinations-unique
-      # and is the live free-Kimi route (resolves via Fireworks backend).
+      - inclusionai/ling-3.0-flash-vl:free
+      - inclusionai/ling-3.0-flash-fin:free
+      - inclusionai/ling-3.0-flash-sante:free
     timeouts:
       connect: 30
       keepalive: 30
-      responseHeader: 60
+      responseHeader: 120
       tlsHandshake: 10
       idleConn: 90
-
-  # --- hf-free: free Kimi via HuggingFace Inference Providers (additive 2026-09-14) ---
-  # Matrix-verified: moonshotai/Kimi-K3 -> HTTP 200 + real completion on our
-  # HF_TOKEN (no billing attached; HF free-served set). Other Kimi IDs 402.
-  # The kimi-auto resolver auto-discovers this ID from herd /v1/models.
-  hf-free:
-    proxy: https://router.huggingface.co
-    apiKey: ${env.HF_TOKEN}
+  # --- mistral: Mistral AI direct (added 2026-09-20) ---
+  # Model IDs verbatim from https://api.mistral.ai/v1/models (46 models; chat-capable subset).
+  mistral:
+    # NOTE: proxy has no /v1 suffix -- the router joins the proxy with the
+    # request path (/v1/chat/completions); a /v1 suffix would double it.
+    proxy: https://api.mistral.ai
+    apiKey: ${env.MISTRAL_API_KEY}
     models:
-      - moonshotai/Kimi-K3
-    options:
-      validateModel: true
-
-
-
-
-
-
-
-  # Track K -- OpenRouter Kimi/Moonshot models (kimi-auto routing).
-  # Updated 2026-09-14: Pollinations free tier changed shape -- openai now
-  # 401s, but moonshotai/kimi-k3, kimi-k2.6, kimi-k2.7-code serve FREE
-  # no-auth (verified live this date, see pollinations-free peer above).
-  # OpenRouter serves the same models paid with OPENROUTER_API_KEY.
-  # NOTE: proxy is https://openrouter.ai/api (no /v1): the router joins
-  # the proxy path with the request path (/v1/chat/completions).
-  openrouter-kimi:
-    proxy: https://openrouter.ai/api
-    apiKey: ${env.OPENROUTER_API_KEY}
-    models:
-      - moonshotai/kimi-k3
-      - moonshotai/kimi-k2.5
-      - moonshotai/kimi-k2-0905
-      - moonshotai/kimi-k2.6
-      - moonshotai/kimi-k2-thinking
-      - moonshotai/kimi-k2.7-code
-      - moonshotai/kimi-k2
-      # :free variants (OpenRouter convention). Added 2026-09-14.
-      # Currently 404 "unavailable for free" (free-tier rotation); the
-      # resolver marks them unhealthy until OpenRouter re-enables them.
-      # Paid IDs above stay so routing resumes the moment credits land.
-      - moonshotai/kimi-k3:free
-      - moonshotai/kimi-k2.5:free
-      - moonshotai/kimi-k2-0905:free
-      - moonshotai/kimi-k2.6:free
-      - moonshotai/kimi-k2-thinking:free
-      - moonshotai/kimi-k2.7-code:free
-      - moonshotai/kimi-k2:free
+      - mistral-medium-3.5
+      - magistral-medium-latest
+      - mistral-medium-latest
+      - mistral-small-latest
+      - codestral-latest
+      - ministral-14b-latest
+      - ministral-8b-latest
+      - ministral-3b-latest
     timeouts:
       connect: 30
       keepalive: 30
@@ -892,18 +697,120 @@ peers:
       tlsHandshake: 10
       idleConn: 90
 
-
-  # --- openrouter-ling: FREE Ling 3.0 Flash via OpenRouter (additive 2026-09-14) ---
-  # Live-verified 2026-09-14: all three return HTTP 200, cost 0 (served by Novita).
-  # Ling-3.0-Flash = Ant Group/InclusionAI, 124B total / 5.1B active, hybrid KDA+MLA.
-  # -vl answers directly (best head candidate); -fin/-sante are reasoning-first.
-  openrouter-ling:
-    proxy: https://openrouter.ai/api
-    apiKey: ${env.OPENROUTER_API_KEY}
+  # --- moonshot: Moonshot AI direct (added 2026-09-20) ---
+  # CURRENT KIMI TRUTH: MOONSHOT_API_KEY is live (verified HTTP 200 on /v1/models).
+  # This is the MAIN Kimi route. Model IDs verbatim from api.moonshot.ai/v1/models.
+  # kimi-k2.6 = main Kimi; kimi-k2.7-code = code specialist. No kimi-k3 on this key.
+  # NOTE: proxy has no /v1 suffix -- the router joins proxy + /v1/chat/completions.
+  moonshot:
+    proxy: https://api.moonshot.ai
+    apiKey: ${env.MOONSHOT_API_KEY}
     models:
-      - inclusionai/ling-3.0-flash-vl:free
-      - inclusionai/ling-3.0-flash-fin:free
-      - inclusionai/ling-3.0-flash-sante:free
+      - kimi-k2.6
+      - kimi-k2.7-code
+    timeouts:
+      connect: 30
+      keepalive: 30
+      responseHeader: 120
+      tlsHandshake: 10
+      idleConn: 90
+
+  # --- nim-kimi: Kimi K3 via NVIDIA NIM (added 2026-09-20) ---
+  # VERIFIED 2026-09-20: moonshotai/kimi-k3 is a REAL NIM model card
+  # (https://build.nvidia.com/moonshotai/kimi-k3, released 08/20/2026).
+  # NIM API model list includes it TODAY. HF: moonshotai/Kimi-K3.
+  # WARNING: NIM hosted endpoint is FLAKY (documented 404s, 429 soft-locks,
+  # degraded responses Aug-Sep 2026). Treat 404/429 as TRANSIENT infra issues,
+  # NOT as "model broken". Retry with backoff. Never repoint-on-4xx.
+  # Exact ID for NIM: moonshotai/kimi-k3 (lowercase). HF uses moonshotai/Kimi-K3.
+  # NEEDS: NVIDIA_API_KEY in .secrets (build.nvidia.com -> API keys).
+  # Currently DISABLED - uncomment when key is available.
+  # nim-kimi:
+  #   proxy: https://integrate.api.nvidia.com/v1
+  #   apiKey: ${env.NVIDIA_API_KEY}
+  #   models:
+  #     - moonshotai/kimi-k3
+  #   timeouts:
+  #     connect: 30
+  #     keepalive: 30
+  #     responseHeader: 120
+  #     tlsHandshake: 10
+  #     idleConn: 90
+
+  # DISABLED 2026-09-20 ~02:45 MDT (provider-surgeon): DEEPSEEK_API_KEY returns HTTP 402
+  # "Insufficient Balance" on both deepseek-chat and deepseek-reasoner (direct probe).
+  # No working DeepSeek backup key exists. Re-enable when balance is topped up.
+  # --- deepseek: DeepSeek direct (added 2026-09-20) ---
+  # Model IDs verbatim from https://api.deepseek.com/v1/models.
+  # deepseek:
+  #   proxy: https://api.deepseek.com/v1
+  #   apiKey: ${env.DEEPSEEK_API_KEY}
+  #   models:
+  #     - deepseek-chat
+  #     - deepseek-reasoner
+  #   timeouts:
+  #     connect: 30
+  #     keepalive: 30
+  #     responseHeader: 120
+  #     tlsHandshake: 10
+  #     idleConn: 90
+
+  # --- gemini: Google AI direct via OpenAI-compatible endpoint (added 2026-09-20) ---
+  # Model IDs verbatim from https://generativelanguage.googleapis.com/v1beta/models
+  # (the 'models/' prefix is stripped for the OpenAI-compatible path).
+  gemini:
+    proxy: https://generativelanguage.googleapis.com/v1beta/openai
+    apiKey: ${env.GEMINI_API_KEY_4}
+    models:
+      - gemini-3.1-pro-preview
+      - gemini-3.5-flash
+      - gemini-3.6-flash
+      - gemini-3.7-flash
+      - gemini-3.8-flash
+      - gemini-3-flash-preview
+    timeouts:
+      connect: 30
+      keepalive: 30
+      responseHeader: 120
+      tlsHandshake: 10
+      idleConn: 90
+
+  # --- openrouter-free: probed-working OpenRouter :free models (added 2026-09-20) ---
+  # Only models that returned real completions in the 2026-09-20 direct probe are listed.
+  # Excluded as HTTP 429 in probe: z-ai/glm-5.2:free, qwen/qwen3.8-27b:free,
+  # google/gemma-4-26b-a4b-it:free (free-tier rate limits; re-probe before adding).
+  openrouter-free:
+    proxy: https://openrouter.ai/api
+    apiKey: ${env.OPENROUTER_API_KEY_1}
+    models:
+      - google/gemma-4-31b-it:free
+      - nvidia/nemotron-3.5-lightning:free
+      - nvidia/nemotron-3-super-120b-a12b:free
+      - nex-agi/nex-n2.5-pro:free
+    timeouts:
+      connect: 30
+      keepalive: 30
+      responseHeader: 120
+      tlsHandshake: 10
+      idleConn: 90
+  # DISABLED 2026-09-20 ~03:55 MDT (provider-surgeon): the 3 models probed UP at ~03:30
+  # (deepseek-v4-flash-0731, nemotron-3.5-lightning-30b-a3b, glm-5.3-flash) began timing out
+  # upstream (~40-60s, empty/502) at ~03:50. Flock's upstream is unstable; the daemon itself
+  # responds (auth errors are fast) but inference hangs. Re-probe before re-enabling.
+  # --- flock-direct: Flock daemon via plain peer (added 2026-09-20) ---
+  # PROBE-GATED 2026-09-20 ~02:00 MDT (kimiclaw-builder): only the model IDs
+  # below returned real completions in live probes against 127.0.0.1:8000
+  # (nemotron HTTP 200 ~13s; glm-5.3-flash real completion). The flock:
+  # delegation stays disabled (it advertises all 103 upstream IDs, ~100 404).
+  # deepseek-ai/deepseek-v4-flash-0731 EXCLUDED: hangs, 60s timeout, no
+  # response as of 2026-09-20. Auth: FLOCK_API_KEY as Bearer.
+  # Re-probe before adding more models.
+  flock-direct:
+    proxy: http://127.0.0.1:8000
+    apiKey: ${env.FLOCK_API_KEY}
+    models:
+      - nvidia/nemotron-3.5-lightning-30b-a3b
+      - z-ai/glm-5.3-flash
     timeouts:
       connect: 30
       keepalive: 30
@@ -917,7 +824,7 @@ peers:
   # then uncomment this peer and comment out the direct one above to get CF caching.
   # pollinations-cf:
   #   proxy: https://gateway.ai.cloudflare.com/v1/2d5e60dbc717af626a1eb04177aa2225/default/custom-pollinations-free/v1
-  #   apiKey: ${env.CLOUDFLARE_API_TOKEN}
+  #   apiKey: <CLOUDFLARE_API_TOKEN-via-env>
   #   models:
   #     - openai
   #     - gemma-4-31b
