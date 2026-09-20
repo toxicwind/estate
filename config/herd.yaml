@@ -872,6 +872,123 @@ peers:
       tlsHandshake: 10
       idleConn: 90
 
+  # --- RESURRECTED 404s (2026-09-20, dead-model-resurrector) ---
+  # 5 IDs from the 78-dead census still 404 on the free key after stripping :batch.
+  # Archaeology verdict: 4 are LIVE (gated/unroutable, not dead), 1 is TRULY-DEAD.
+  # None have verified 200s, so NO live entries. Details:
+  # LIVE (account-gated): meta/muse-spark-1.3-contributor, meta/muse-spark-1.2-contributor
+  #   - 404 "0 endpoints available" is an OpenRouter guardrail artifact, not a delisting.
+  #   - Models are live (100% uptime); filtered unless account opts into 18+ attestation
+  #   - + paid-model-training consent at openrouter.ai/settings/privacy.
+  # LIVE (temporarily unroutable): openai/gpt-5.2-chat, sakana/sakana-namazu
+  #   - gpt-5.2-chat: catalog-listed, Azure endpoint registered but currently down.
+  #   - sakana-namazu: real model, endpoint exists (100% 1d uptime) but 0 available now;
+  #     regional/policy restrictions documented. Re-probe later.
+  # TRULY-DEAD: mistralai/mistral-large-2512
+  #   - Real model (Mistral Large 3, Dec 2025); was routable 2026-09-01; now endpoints=[]
+  #   - on OpenRouter (de-routed). Only the :batch catalog stub remains. Do not use.
+  #   - Closest real equivalent: mistralai/mistral-medium-3-5 (live, paid).
+
+  # --- RESURRECTED PAID TIER (2026-09-20, dead-model-resurrector) ---
+  # 72 models from the 78-dead census were MISCLASSIFIED. The census probed
+  # batch-suffixed IDs (404 on chat/completions); stripping the suffix reveals
+  # the base IDs are REAL and catalog-listed, returning HTTP 402 (paid) on the
+  # free key. They are NOT free-tier: no verified 200, so NO live entries.
+  # Verified 2026-09-20 via live probe (16 workers, free key, exact-OK prompt).
+  # TO ACTIVATE: add a paid key to config/keypools.yaml openrouter-paid pool,
+  # then uncomment this peer block. (moonshotai/kimi-k3 already live above.)
+#   openrouter-resurrected-paid:
+#     proxy: http://127.0.0.1:25109/openrouter-paid
+#     models:
+#       # anthropic (12)
+#       - anthropic/claude-fable-5
+#       - anthropic/claude-fable-5.1
+#       - anthropic/claude-haiku-4.5
+#       - anthropic/claude-opus-4.1
+#       - anthropic/claude-opus-4.5
+#       - anthropic/claude-opus-4.6
+#       - anthropic/claude-opus-4.7
+#       - anthropic/claude-opus-4.8
+#       - anthropic/claude-opus-5
+#       - anthropic/claude-sonnet-4.5
+#       - anthropic/claude-sonnet-4.6
+#       - anthropic/claude-sonnet-5
+#       # deepseek (3)
+#       - deepseek/deepseek-v4-flash-0731
+#       - deepseek/deepseek-v4-flash-vision-exp
+#       - deepseek/deepseek-v4-pro-0813
+#       # google (11)
+#       - google/gemini-2.5-flash
+#       - google/gemini-2.5-flash-lite
+#       - google/gemini-2.5-pro
+#       - google/gemini-3-flash-preview
+#       - google/gemini-3.1-flash-lite
+#       - google/gemini-3.1-pro-preview
+#       - google/gemini-3.5-flash
+#       - google/gemini-3.5-flash-lite
+#       - google/gemini-3.6-flash
+#       - google/gemini-3.7-flash
+#       - google/gemini-3.8-flash
+#       # meta (1)
+#       - meta/muse-glimmer-30b
+#       # minimax (1)
+#       - minimax/minimax-m3
+#       # mistralai (5)
+#       - mistralai/codestral-2508
+#       - mistralai/ministral-8b-2512
+#       - mistralai/mistral-medium-3-5
+#       - mistralai/mistral-medium-3.1
+#       - mistralai/mistral-small-2603
+#       # openai (32)
+#       - openai/gpt-3.5-turbo
+#       - openai/gpt-4-turbo
+#       - openai/gpt-4.1
+#       - openai/gpt-4.1-mini
+#       - openai/gpt-4.1-nano
+#       - openai/gpt-4o
+#       - openai/gpt-4o-mini
+#       - openai/gpt-5
+#       - openai/gpt-5-mini
+#       - openai/gpt-5-nano
+#       - openai/gpt-5-pro
+#       - openai/gpt-5.1
+#       - openai/gpt-5.2
+#       - openai/gpt-5.2-pro
+#       - openai/gpt-5.4
+#       - openai/gpt-5.4-mini
+#       - openai/gpt-5.4-nano
+#       - openai/gpt-5.4-pro
+#       - openai/gpt-5.5
+#       - openai/gpt-5.5-pro
+#       - openai/gpt-5.6-luna
+#       - openai/gpt-5.6-luna-pro
+#       - openai/gpt-5.6-sol
+#       - openai/gpt-5.6-sol-pro
+#       - openai/gpt-5.6-terra
+#       - openai/gpt-5.6-terra-pro
+#       - openai/gpt-6-astra
+#       - openai/gpt-6-astra-pro
+#       - openai/gpt-oss-120b
+#       - openai/o3
+#       - openai/o3-mini
+#       - openai/o4-mini
+#       # qwen (2)
+#       - qwen/qwen3.5-9b
+#       - qwen/qwen3.8-2.4t-a95b
+#       # thinkingmachines (1)
+#       - thinkingmachines/inkling
+#       # x-ai (1)
+#       - x-ai/grok-4.3
+#       # z-ai (3)
+#       - z-ai/glm-5.2
+#       - z-ai/glm-5.3
+#       - z-ai/glm-5.3-flash
+#     timeouts:
+#       connect: 30
+#       keepalive: 30
+#       responseHeader: 180
+#       tlsHandshake: 10
+#       idleConn: 90
   # DISABLED 2026-09-20 ~03:55 MDT (provider-surgeon): the 3 models probed UP at ~03:30
   # (deepseek-v4-flash-0731, nemotron-3.5-lightning-30b-a3b, glm-5.3-flash) began timing out
   # upstream (~40-60s, empty/502) at ~03:50. Flock's upstream is unstable; the daemon itself
