@@ -23,9 +23,8 @@ pools:
       default: 120
     keys:
       - OPENROUTER_API_KEY_FREE   # 2026-09-20: free-models-only key (Chris). Sourced dynamically from .secrets.
-      # TEMP-PROBE 2026-09-20: other keys commented for free-key model sweep; restore after.
-      # - OPENROUTER_API_KEY
-      # - OPENROUTER_API_KEY_1
+      - OPENROUTER_API_KEY
+      - OPENROUTER_API_KEY_1
   # --- gemini: Google AI via OpenAI-compatible endpoint (free tier first)
   gemini:
     upstream: https://generativelanguage.googleapis.com/v1beta/openai
