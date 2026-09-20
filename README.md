@@ -172,6 +172,8 @@ active crews, repo index, standing rules, docs index.
 ## Conventions
 
 - **Never invent port numbers in app code** — read them from env, `config/ports.env`, or `src/lib/ports.ts`.
+
+Run `bin/port-audit` on yote any time ports look wrong: it diffs the live `ss -tlnp` listener table against `config/ports.env` and reports bind conflicts, unregistered listeners, and stale entries. `herd-keypool` listens on 25109 (override: `KEYPOOL_HOST`/`KEYPOOL_PORT`); `herd-model-guard` on 25101 (override: `MODEL_GUARD_HOST`/`MODEL_GUARD_PORT`) — a second instance on a taken port exits 98 with a clear message instead of a traceback.
 - **`git add` specific paths only** — this is a shared tree with multiple workers and live WIP; never `git add -A`.
 - **Fetch-first, rebase, never force-push.** Verify with `git ls-remote origin refs/heads/main` after every push.
 - **`projects/guidellm` is another agent's live workspace** — don't touch it.
