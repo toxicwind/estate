@@ -22,8 +22,11 @@ curl-like header layout (Pollinations bot-filter workaround), browser
 User-Agent, Authorization passthrough, verbatim SSE streaming, fail-fast
 8s herd connect ceiling, self-loop rejection (508).
 
-Health is honest: /health reports the configured target/standby; request
-failures surface as the upstream status, never a masked 200.
+Health is honest: /health does one bounded catalog GET to the router's
+/v1/models on every call (event-driven -- no timers, no probes, no
+completions) and returns 200 only when the configured target is
+advertised; otherwise 503. Request failures surface as the upstream
+status, never a masked 200.
 
 Router-config ownership: to change what an alias serves, edit the --target
 / --standby flags in the herd config (config/herd.yaml or the --config-dir
@@ -75,12 +78,15 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == "/health" or self.path.startswith("/health?"):
-            self._send_json(200, {
-                "status": "ok",
+            ok, detail = self._route_check()
+            self._send_json(200 if ok else 503, {
+                "status": "ok" if ok else "unroutable",
                 "target": args.target,
                 "standby": args.standby,
                 "alias": args.name,
                 "selection": "router-config",
+                "routable": ok,
+                "detail": detail,
             })
         elif self.path == "/v1/models" or self.path.startswith("/v1/models?"):
             data = []
@@ -94,6 +100,35 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json(200, {"object": "list", "data": data})
         else:
             self._send_json(404, {"error": "not found"})
+
+    def _route_check(self):
+        """One bounded catalog GET to the router, only when /health is hit.
+
+        No timers, no probing, no selection: verifies exactly the configured
+        target is advertised by the router. Returns (ok, detail).
+        """
+        conn = None
+        try:
+            conn = http.client.HTTPConnection(HERD.hostname, HERD.port or 80,
+                                              timeout=5)
+            conn.request("GET", "/v1/models")
+            resp = conn.getresponse()
+            if resp.status != 200:
+                return False, "router /v1/models -> %d" % resp.status
+            data = json.loads(resp.read().decode("utf-8", "replace"))
+            ids = {m.get("id") for m in data.get("data", [])
+                   if isinstance(m, dict)}
+            if args.target in ids:
+                return True, "target advertised by router"
+            return False, "target %r not advertised by router" % args.target
+        except Exception as exc:
+            return False, "router unreachable: %s" % exc
+        finally:
+            if conn is not None:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
 
     def _forward(self, model_id, payload, auth):
         """Forward one attempt to herd with model_id. Returns (conn, resp) or (None, None, err)."""
