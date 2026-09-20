@@ -85,7 +85,15 @@ def _advocate_round(chat_fn, model, prompt, prior, timeout_s):
         resp = chat_fn(model, prompt, timeout_s)
     except Exception:
         return prior, model, False
-    return _extract_number(resp.get("content", ""), prior), model, True
+    try:
+        content = (resp or {}).get("content") or ""
+        if not content:
+            # empty/null content is a failed round, not a fabricated one:
+            # ok=False triggers the one bounded retry on the next alias.
+            return prior, model, False
+        return _extract_number(content, prior), model, True
+    except Exception:
+        return prior, model, False
 
 
 def _prompt_for(side, question, criteria, evidence_text, other_posts, rnd):

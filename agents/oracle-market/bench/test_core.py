@@ -159,6 +159,16 @@ import time
 import framing
 import oracle_ask
 
+
+#!/usr/bin/env python3
+"""Rebuilt hardening test sections for bench/test_core.py (appended before the
+final print). Deterministic: no model calls, no network."""
+import threading
+import time
+
+import framing
+import oracle_ask
+
 # ---- framing: fail-closed question intake ----
 _framing_cases = [
     ("Will this work?", "refused"),
@@ -384,6 +394,30 @@ check("debate final rebuilt by engine",
       _dv["status"] in ("verdict", "escalate")
       and _dv["verdict_sha256"] and len(_dv["judge_contributions"]) == 4,
       "%s %s" % (_dv["status"], _dv["verdict_sha256"]))
+
+# ---- none-content robustness: free-tier nulls never crash ----
+_orig_herd = oracle_ask.herd_chat
+oracle_ask.herd_chat = (
+    lambda model, prompt, timeout_s=90, max_tokens=1500:
+    {"ok": True, "text": None, "latency_s": 0.1})
+try:
+    _njp = oracle_ask.judge_once("oracle-judge-a", "Q?", 30)
+finally:
+    oracle_ask.herd_chat = _orig_herd
+check("judge_once null content -> refused not crash",
+      _njp.refused and _njp.posterior == 0.5,
+      "%s %s" % (_njp.refused, _njp.posterior))
+
+_ok_ar = escalation._advocate_round(
+    lambda m, p, t: {"content": None}, "oracle-judge-a", "Q?", 0.7, 30)
+check("advocate_round null content -> ok=False not raise",
+      _ok_ar == (0.7, "oracle-judge-a", False), str(_ok_ar))
+
+_ok_ar2 = escalation._advocate_round(
+    lambda m, p, t: {"content": "garbage no number"},
+    "oracle-judge-a", "Q?", 0.7, 30)
+check("advocate_round unparseable -> prior nudge ok=True",
+      _ok_ar2[2] is True and abs(_ok_ar2[0] - 0.72) < 1e-9, str(_ok_ar2))
 
 # ---- budget exhaustion: verdict, never a crash ----
 def _slow_slot(model, prompt, timeout_s):
