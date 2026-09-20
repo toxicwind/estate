@@ -1,6 +1,15 @@
 # SOVEREIGN PITCHFORK CONFIG — HAND-EDITED (generator retired 2026-09-14 per sovereign/AGENTS.md;
 # never run bun run scripts/generate.ts — it would destroy live daemons). Port SSOT: config/ports.env.
 env_file = "config/ports.env"
+# CONFIG RELOAD RULE (2026-09-20, incident: beellama-fast errored 12h):
+# pitchfork does NOT hot-reload this file. Editing a [daemons.*] section
+# changes nothing for the running daemon - it keeps serving its stale
+# persisted definition until re-registered. After ANY daemon edit run:
+#   bin/pitchfork-restart sovereign/<name>
+# which re-runs pitchfork start from this dir, reaps desynced port holders,
+# and verifies /health. Stale-definition symptom: pitchfork shows "errored"
+# while the old orphaned binary still answers /health 200 (Hearth then
+# reports pitchfork=errored, health=200 for the same daemon).
 
 [daemons.shep]
 run = "exec /home/toxic/sovereign/mesh/bin/shep serve --config=/home/toxic/sovereign/mesh/gateway/mcp_config.json --log-level=warn --log-to-file --listen=127.0.0.1:25127"
@@ -231,7 +240,7 @@ env = { MATTER_SERVER_PORT = "5580" }
 auto = ["start"]
 
 [daemons.openfang]
-run = "exec env HOME=/home/toxic /home/toxic/projects/rig-work/target/debug/openfang start --config /home/toxic/sovereign/config/openfang-4200.toml"
+run = "exec /home/toxic/sovereign/ops/openfang-run.sh"
 dir = "/home/toxic/projects/rig-work"
 mise = false
 retry = true
@@ -243,6 +252,7 @@ run = "exec /home/toxic/sovereign/agents/oracle-market/bin/run.sh"
 dir = "/home/toxic/sovereign/agents/oracle-market"
 mise = false
 retry = true
+env = { ORACLE_INTAKE = "1" }
 auto = ["start"]
 
 [daemons.tau]
