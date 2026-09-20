@@ -254,7 +254,12 @@ def main():
         results.append(r)
 
     ok = [r for r in results if r.get("status") == "ok" and r.get("quality_mean") is not None]
-    ranked = sorted(ok, key=lambda r: (
+    # Ranked tier: tokenizer-valid models only. gpt2-fallback models
+    # (tokenizer_status == "fallback-labeled", e.g. openrouter/free) are
+    # reported in fallback_tier, never in the numbered ranking.
+    ok_valid = [r for r in ok if r.get("tokenizer_status") != "fallback-labeled"]
+    fallback = [r for r in ok if r.get("tokenizer_status") == "fallback-labeled"]
+    ranked = sorted(ok_valid, key=lambda r: (
         -r["quality_mean"],
         -(1 if r.get("free") else 0),
         r["latency_p50_s"] if r["latency_p50_s"] is not None else float("inf"),
@@ -277,6 +282,18 @@ def main():
         },
         "ranking": [r["model"] for r in ranked],
         "results": results,
+        "fallback_tier": [
+            {
+                "model": r["model"],
+                "tokenizer_repo": r.get("tokenizer_repo", "gpt2"),
+                "note": ("No stable tokenizer; ran on the explicitly labelled "
+                         "gpt2 fallback. Token counts and tokenizer-derived "
+                         "metrics are NOT comparable with the ranked tier. "
+                         "Deterministic quality score reported for the record."),
+                "result": r,
+            }
+            for r in fallback
+        ],
         "dead_or_errored": [r for r in results if r.get("status") != "ok"],
     }
     rp = os.path.join(OUTDIR, f"ranking-eval-{ts}.json")
@@ -294,6 +311,19 @@ def main():
         tps = f"{r['output_tps']:.1f}" if r.get("output_tps") else "?"
         md.append(f"| {i} | {r['model']} | {r['quality_mean']:.2f} | "
                   f"{int(r['quality_n'] or 0)} | {r['n_errored']} | {lat} | {tt} | {tps} | {r['tokenizer_repo']} |")
+    if fallback:
+        md += ["", "## Fallback tier — NOT ranked (no stable tokenizer)", "",
+               "These models ran on the explicitly labelled gpt2 fallback and are "
+               "NOT tokenizer-comparable with the ranked tier. Deterministic quality "
+               "scores reported for the record only.", "",
+               "| model | quality mean | n | err | lat p50 (s) | ttft p50 (ms) | out tok/s | tokenizer |",
+               "|---|---|---|---|---|---|---|---||"]
+        for r in fallback:
+            lat = f"{r['latency_p50_s']:.2f}" if r["latency_p50_s"] is not None else "?"
+            tt = f"{r['ttft_p50_ms']:.0f}" if r.get("ttft_p50_ms") else "?"
+            tps = f"{r['output_tps']:.1f}" if r.get("output_tps") else "?"
+            md.append(f"| {r['model']} | {r['quality_mean']:.2f} | "
+                      f"{int(r['quality_n'] or 0)} | {r['n_errored']} | {lat} | {tt} | {tps} | gpt2 (fallback) |")
     if report["dead_or_errored"]:
         md += ["", "Skipped/errored:",
                *[f"- {r['model']}: {r.get('status')} {r.get('http', '')} {r.get('error', '')}"
