@@ -1,0 +1,14 @@
+{
+  "version": "1",
+  "plugins": [
+    {
+      "id": "kimi-auto",
+      "tier": "official",
+      "displayName": "Kimi Auto",
+      "version": "0.1.0",
+      "description": "Zero-config kimi-auto alias: resolves to the best live Kimi endpoint via the shared 15-minute resolver audit. Slash commands /kimi-auto, /kimi-auto-status, /kimi-auto-resolve plus kimi_auto_ask / kimi_auto_status LLM tools.",
+      "keywords": ["kimi", "model-routing", "herd", "omp"],
+      "source": "./packages/kimi-auto"
+    }
+  ]
+}
