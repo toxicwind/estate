@@ -92,6 +92,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | dep-quartermaster | Toolchain/dependency gaps on yote+hatch: missing CLIs installed, permanent ensure-script committed | Ember | DONE — commit 2953f49f07 (toolchain.sh + KB row) |
 | port-syscall-integrator | PORTS proven by live syscalls (strace bind/listen) + MCPs/connectors/endpoints/integrations estate-wide; SSOT ports.env reconciliation; pitchfork pre-launch guard; port-audit.py hardening | Ember (port-syscall-integrator) | RUNNING (2026-09-20) |
 | perm-surgeon | Permissions/identity/execution-context audit + live repair (sudoers, unshare, capabilities, setuid, systemd users, interactive-toxic path) | Ember | DONE (2026-09-20) — perm-audit.sh committed to projects/yote/ops/ |
+| bg-tracker | Detached/backgrounded process audit (hatch+yote); permanent background-task registry (bg-launch/register/heartbeat/audit/kill) under projects/ops/bg-tracker | Ember | RUNNING (2026-09-20) |
 | sudo-smith | Sudo posture hardening (passwordless scope, key paths, shared-tree ownership) + missing-file forging (systemd/config/doc references) + permanent ops scripts | Ember | DONE (2026-09-20) -- commit 628bccc435 (projects/ops/bin/{sudo-audit.sh,missing-files.sh} + projects/yote/ops/hw-audit/{hw-audit.sh,hw-watchdog.py}; hw-audit.service/.timer referrers restored; live copies deployed to /home/toxic/) |
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 
