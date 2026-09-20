@@ -56,6 +56,10 @@ DAEMONS = {
 }
 STUCK_UNSEEN_S = 180      # task_post with no ledger trace older than this
 STUCK_WEDGED_S = 1800     # task_open but no terminal event older than this
+TRIAGE_WINDOW_S = 900     # an intake_request must get its own
+                          # intake-decision within this window of its mtime;
+                          # validated 2026-09-20: 6/6 historical intakes
+                          # triaged in ~1s, none older than 900s was pending
 
 out = {"ts": time.time(), "errors": []}
 channel = Path(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1] != "--selftest" \
@@ -124,15 +128,98 @@ def health(port):
         return f"ERR:{type(e).__name__}"
 
 
+def _intake_tokens(path):
+    toks = set(re.findall(r"intake-\d{10,13}", path.name))
+    toks.update(re.findall(r"\b\d{10,13}\b", path.name))
+    meta = parse_frontmatter(path)
+    for key in ("task_id", "title"):
+        v = (meta.get(key) or "").strip().strip('"')
+        if v:
+            toks.add(v)
+    return toks, (meta.get("from") or "").strip()
+
+
+def intake_backlog(chan_dir, ledger_events, now):
+    """Per-request intake backlog (kept separate so tests can pin it).
+
+    A file is handled only if an intake-decision for THAT request lands
+    within TRIAGE_WINDOW_S of the file's mtime — a later unrelated
+    decision must not mask a stale intake. Each decision is consumed by
+    at most one file (earliest mtime first). Files younger than 120s
+    get inotify grace; files within the triage window are still owed
+    time. Returns [{"file", "age_s"}] for files older than
+    TRIAGE_WINDOW_S with no matching decision.
+    """
+    backlog = []
+    if not chan_dir.is_dir():
+        return backlog
+    decisions = sorted(
+        (e for e in ledger_events if e.get("event") == "intake-decision"),
+        key=lambda e: e.get("ts", 0))
+    used = set()
+    intakes = []
+    for name in sorted(os.listdir(chan_dir)):
+        if not name.endswith(".md"):
+            continue
+        p = chan_dir / name
+        if parse_frontmatter(p).get("msg_type") != "intake_request":
+            continue
+        try:
+            mtime = p.stat().st_mtime
+        except OSError:
+            continue
+        intakes.append((mtime, name, p))
+    for mtime, name, p in sorted(intakes):
+        age = now - mtime
+        if age < 120:
+            continue  # grace for inotify latency
+        toks, frm = _intake_tokens(p)
+        handled = False
+        for i, d in enumerate(decisions):
+            if i in used:
+                continue
+            dts = d.get("ts", 0)
+            if not (mtime - 5 < dts <= mtime + TRIAGE_WINDOW_S):
+                continue
+            if (frm and d.get("from") == frm) or \
+                    any(t in json.dumps(d) for t in toks):
+                handled = True
+                used.add(i)
+                break
+        if not handled and age > TRIAGE_WINDOW_S:
+            backlog.append({"file": name, "age_s": round(age)})
+    return backlog
+
+
 def snapshot(chan_dir, ledger_events):
     now = time.time()
     snap = {}
     pf = pf_statuses()
 
-    # --- oracle-market loop ---
+    # --- oracle loop liveness + per-request intake backlog ---
+    # A quiet market is healthy: ledger age alone cannot tell "loop
+    # dead/wedged" from "no demand" (2026-09-20: a 21,050s gap was a
+    # loop_stop/loop_start boundary with zero intake files present, not a
+    # wedge — and the earlier "stalled 24,206s" read was ledger age, not a
+    # validated outage). So report the process AND correlate each
+    # intake_request file individually against its own intake-decision.
+    # A file is handled only if a decision for THAT request lands within
+    # TRIAGE_WINDOW_S of the file's mtime (validated 2026-09-20: 6/6
+    # intakes triaged in ~1s with matching `from`). Each decision is
+    # consumed by at most one file (earliest mtime first).
     ostat = pf.get("sovereign/oracle-market", "missing")
-    oproc = bool(sh(["pgrep", "-f", "oracle_loop.py"]).strip())
-    snap["oracle"] = {"pitchfork": ostat, "proc_alive": oproc}
+    oracle_proc = {"running": False, "pid": None, "uptime_s": None}
+    for line in sh(["pgrep", "-f",
+                    "[o]racle-market/bin/oracle_loop.py"]).splitlines():
+        line = line.strip()
+        if line.isdigit():
+            pid = int(line)
+            el = sh(["ps", "-o", "etimes=", "-p", str(pid)]).strip()
+            oracle_proc = {"running": True, "pid": pid,
+                           "uptime_s": int(el) if el.isdigit() else None}
+            break
+    snap["oracle"] = {"pitchfork": ostat, "proc_alive": oracle_proc["running"],
+                      "proc": oracle_proc}
 
     # --- ledger ---
     by_tid = {}
@@ -174,6 +261,7 @@ def snapshot(chan_dir, ledger_events):
         "settled_1h": sum(1 for e in w1h if e.get("event") == "settled"),
         "wins_30m": wins,
         "proof_of_life": plof,
+        "intake_backlog": intake_backlog(chan_dir, ledger_events, now),
     }
 
     # --- stuck tasks ---
