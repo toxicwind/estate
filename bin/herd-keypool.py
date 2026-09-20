@@ -77,6 +77,26 @@ def fingerprint(value):
     return hashlib.sha256(value.encode()).hexdigest()[:12]
 
 
+def _is_free_model(model_id):
+    """True only for OpenRouter free-model IDs. This gates a free-ONLY key
+    (what the key may serve), never what any key must serve."""
+    return bool(model_id) and (
+        model_id == "openrouter/free" or model_id.endswith(":free"))
+
+
+def _extract_model(raw):
+    """Best-effort model ID from a proxied JSON body. None when absent."""
+    try:
+        if raw:
+            doc = json.loads(raw)
+            m = doc.get("model") if isinstance(doc, dict) else None
+            if isinstance(m, str) and m:
+                return m
+    except Exception:
+        pass
+    return None
+
+
 # ------------------------------------------------------------------ config
 
 def _strip_comment(raw):
@@ -227,11 +247,12 @@ def load_secrets(path):
 
 class KeyState:
     __slots__ = ("name", "value", "fp", "state", "latency_ms",
-                 "last_error", "down_until", "last_probe_ok")
+                 "last_error", "down_until", "last_probe_ok", "free_only")
 
-    def __init__(self, name, value):
+    def __init__(self, name, value, free_only=False):
         self.name = name
         self.value = value
+        self.free_only = bool(free_only)
         self.fp = fingerprint(value)
         self.state = "unknown"   # unknown | healthy | down
         self.latency_ms = None
@@ -258,10 +279,16 @@ class Pool:
         }
         self.cooldown_default = float(cd.get("default", 120))
         self.keys = []
-        for kname in cfg.get("keys") or []:
-            val = secrets.get(kname)
+        for kspec in cfg.get("keys") or []:
+            # entry: plain name, or {name: ..., free_only: true}.
+            # A free_only key may serve ONLY free-model requests.
+            if isinstance(kspec, dict):
+                kname, free_only = kspec.get("name"), bool(kspec.get("free_only"))
+            else:
+                kname, free_only = kspec, False
+            val = secrets.get(kname) if isinstance(kname, str) else None
             if val:
-                self.keys.append(KeyState(kname, val))
+                self.keys.append(KeyState(kname, val, free_only))
             else:
                 log(f"pool {name}: key {kname} not in secrets — skipped (names only)")
         self.lock = threading.Lock()
@@ -322,11 +349,14 @@ class Pool:
 
     # ------------------------------------------------------------ selection
 
-    def _eligible(self, now):
-        """Keys usable right now (not in cooldown)."""
+    def _eligible(self, now, model_id=None):
+        """Keys usable right now (not in cooldown). A free_only key is
+        eligible only for free-model requests -- never for paid traffic."""
         out = []
         for ks in self.keys:
             if ks.state == "down" and now < ks.down_until:
+                continue
+            if ks.free_only and not _is_free_model(model_id):
                 continue
             out.append(ks)
         return out
@@ -338,14 +368,16 @@ class Pool:
             return (st, ks.latency_ms if ks.latency_ms is not None else 1e9)
         return sorted(cands, key=rank)
 
-    def pick(self):
-        """First-valid-wins. Returns a KeyState or None (all down)."""
+    def pick(self, model_id=None):
+        """First-valid-wins. Returns a KeyState or None (all down).
+        model_id gates free_only keys: they serve only free models."""
         now = time.time()
-        cands = self._order(self._eligible(now))
+        cands = self._order(self._eligible(now, model_id))
         for ks in cands:
             if ks.state == "unknown" or not ks.last_probe_ok:
                 if self._probe_and_update(ks):
-                    self._audit("select", ks, {"latency_ms": ks.latency_ms})
+                    self._audit("select", ks, {"latency_ms": ks.latency_ms,
+                                              "model": model_id})
                     return ks
                 # probe failed -> park it briefly, keep going
                 with self.lock:
@@ -353,7 +385,8 @@ class Pool:
                     ks.down_until = now + self.cooldown_default
                 self._audit("probe_fail", ks, {"error": ks.last_error})
                 continue
-            self._audit("select", ks, {"latency_ms": ks.latency_ms})
+            self._audit("select", ks, {"latency_ms": ks.latency_ms,
+                                              "model": model_id})
             return ks
         # Nothing eligible: on-demand revalidation sweep (recovery path).
         # Respect cooldown: never re-probe a key that was just marked down
@@ -361,6 +394,8 @@ class Pool:
         # re-selecting it causes the "keys exhausted" repeat-pick bug).
         for ks in self._order(self.keys):
             if ks.state == "down" and time.time() < ks.down_until:
+                continue
+            if ks.free_only and not _is_free_model(model_id):
                 continue
             if self._probe_and_update(ks):
                 self._audit("select", ks, {"latency_ms": ks.latency_ms,
@@ -477,6 +512,7 @@ class Handler(BaseHTTPRequestHandler):
                 with pool.lock:
                     keys.append({
                         "name": ks.name,
+                        "free_only": ks.free_only,
                         "fingerprint": ks.fp,
                         "state": ks.state,
                         "latency_ms": ks.latency_ms,
@@ -510,10 +546,11 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json(404, {"error": "unknown keypool route"})
             return
         raw = _read_body(self)
+        model_id = _extract_model(raw)
 
         tried = []
         while True:
-            ks = pool.pick()
+            ks = pool.pick(model_id)
             if ks is None:
                 self._send_json(502, {
                     "error": f"keypool '{pool.name}': no healthy key",
@@ -689,6 +726,47 @@ def selftest():
     got = pool.pick()
     if got is not None:
         print(f"FAIL case5: expected None, got {got.name}"); fails += 1
+
+    # case 6: free_only key IS selected for a :free model
+    pool = mkpool([("FREENAME", "KF"), ("PAIDNAME", "KP")],
+                  {"FREENAME": (True, 5.0, 200), "PAIDNAME": (True, 6.0, 200)})
+    pool.keys[0].free_only = True
+    got = pool.pick("x/y:free")
+    if got is None or got.name != "FREENAME":
+        print(f"FAIL case6: free model -> {got and got.name}"); fails += 1
+
+    # case 7: free_only key is NEVER selected for a paid model;
+    # only-free_only pool + paid model -> None (no silent fallback)
+    got = pool.pick("x/y")
+    if got is None or got.name != "PAIDNAME":
+        print(f"FAIL case7a: paid model -> {got and got.name}"); fails += 1
+    pool2 = mkpool([("FREENAME", "KF")], {"FREENAME": (True, 5.0, 200)})
+    pool2.keys[0].free_only = True
+    got = pool2.pick("x/y")
+    if got is not None:
+        print(f"FAIL case7b: paid model on free-only pool -> {got.name}"); fails += 1
+    got = pool2.pick("openrouter/free")
+    if got is None or got.name != "FREENAME":
+        print(f"FAIL case7c: openrouter/free -> {got and got.name}"); fails += 1
+
+    # case 8: dict key entries via real Pool.__init__ + _is_free_model/_extract_model
+    cfg = {"upstream": f"http://127.0.0.1:{port}",
+           "health": {"method": "GET", "path": "/auth", "ok": [200]},
+           "keys": [{"name": "D1", "free_only": True}, "D2"]}
+    pool3 = Pool("cfgtest", cfg, {"D1": "VD1", "D2": "VD2"})
+    if len(pool3.keys) != 2 or not pool3.keys[0].free_only or pool3.keys[1].free_only:
+        print("FAIL case8a: dict key entries"); fails += 1
+    if not (_is_free_model("a/b:free") and _is_free_model("openrouter/free")
+            and not _is_free_model("a/b") and not _is_free_model(None)
+            and not _is_free_model("")):
+        print("FAIL case8b: _is_free_model"); fails += 1
+    if _extract_model(b'{"model":"a/b:free"}') != "a/b:free" or \
+       _extract_model(b"") is not None or _extract_model(b"not json") is not None:
+        print("FAIL case8c: _extract_model"); fails += 1
+    # legacy pick() with no args still works
+    got = pool.pick()
+    if got is None:
+        print("FAIL case8d: legacy pick()"); fails += 1
 
     srv.shutdown()
     print("keypool selftest: " + ("ALL PASS" if not fails else f"{fails} FAILURES"))
