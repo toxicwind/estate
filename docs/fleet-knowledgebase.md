@@ -124,6 +124,9 @@ Retired/completed crews stay listed here with status DONE and their final commit
 11. **Routers ≠ model code.** Model-family tooling never hardcodes model IDs; model selection lives in herd router config alone.
 12. **Fleet protocol.** Every spawn announces: `agent joined: <name> — <task> (ember)`. Squawk fleet is a live chat: greet, collaborate, ask questions, celebrate, banter, develop personas. A pack, not a pipeline.
 
+13. **The "impossible" rule (Chris, 2026-09-20).** Nothing is impossible on our own boxes -- we are yolo sudo: we install what we want and fix what breaks. An agent that writes "currently impossible" about a package conflict, a permission wall, or any fixable breakage has failed. Fix it, or get a decider verdict -- never narrate the impossibility and walk away. Caution ("it is your desktop environment") is context for the decision, not a veto.
+14. **Deciders via oracle (Chris, 2026-09-20).** Genuine judgment calls go to a decider, not to unilateral punting. Protocol: post a decision-request to the fleet channel -- the options, the evidence, what is at stake, a deadline. Until the debate-oracle grows an ops-decision mode, Ember renders the verdict from the thread; verdicts are recorded in the fleet log. Punting without a verdict is the bug.
+
 ---
 
 ## 5. Docs index (deep links)
