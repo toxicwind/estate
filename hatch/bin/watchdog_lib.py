@@ -14,8 +14,8 @@ bug gets fixed ONCE here instead of per-watchdog:
     claim "paused" without it.
   - ConditionRegistry: seen-set + condition-hash dedup with
     escalate-on-change and cleared notifications. Replaces "re-fire the
-    same alert every N minutes" with "fire on new/changed, remind on
-    still-broken after REMIND_AFTER_S, announce when cleared".
+    same alert every N minutes" with "fire on new/changed, announce
+    when cleared" — no reminders, ever.
   - boot_selfcheck(): validates watchdog state files at startup
     (schema, staleness, lost runs). Runs at the top of every watchdog
     tick — no separate @reboot hook needed, so it survives restarts
@@ -29,10 +29,6 @@ import json
 import os
 import time
 import uuid
-
-# Still-broken reminder ceiling: re-fire an unchanged condition at most
-# this often (escalation), instead of every dedup window.
-REMIND_AFTER_S = 6 * 3600
 
 # A run with no completion marker older than this is a lost run.
 LOST_RUN_AFTER_S = 900
@@ -176,12 +172,14 @@ class ConditionRegistry:
     State shape (persisted inside the watchdog's state file under "conds"):
         {key: {"sig": str, "first": ts, "last": ts, "n": int}}
 
-    note(key, sig, now) -> "fire" | "suppress" | "remind"
+    note(key, sig, now) -> "fire" | "suppress"
       fire:     new condition, or the signature CHANGED (new error detail,
                 worsened, different shape) -> post the alert.
       suppress: identical condition already reported -> stay silent.
-      remind:   identical condition, but REMIND_AFTER_S has passed since
-                the last post -> one "still ongoing" reminder.
+
+    Event-driven by doctrine (Chris 2026-09-20): no time-based re-fires,
+    no "still ongoing" reminders. An unchanged condition posts exactly
+    once, however long it lasts.
 
     sweep(observed_keys) -> [cleared keys]: conditions in the registry
       that were NOT observed this run have cleared. The caller posts one
@@ -190,9 +188,8 @@ class ConditionRegistry:
       watchlist) — never on the blind early-return path.
     """
 
-    def __init__(self, conds_dict, remind_after_s=REMIND_AFTER_S):
+    def __init__(self, conds_dict):
         self.d = conds_dict
-        self.remind_after_s = remind_after_s
 
     def note(self, key, sig, now):
         e = self.d.get(key)
@@ -204,10 +201,6 @@ class ConditionRegistry:
             # signature silently so the upgrade itself doesn't re-fire
             # every known condition at once.
             e["sig"] = sig
-            if now - e.get("last", 0) >= self.remind_after_s:
-                e["last"] = now
-                e["n"] = e.get("n", 0) + 1
-                return "remind"
             return "suppress"
         if e.get("sig") != sig:
             e["sig"] = sig
@@ -215,15 +208,11 @@ class ConditionRegistry:
             e["last"] = now
             e["n"] = e.get("n", 0) + 1
             return "fire"  # state CHANGED -> escalate
-        if now - e.get("last", 0) >= self.remind_after_s:
-            e["last"] = now
-            e["n"] = e.get("n", 0) + 1
-            return "remind"
         return "suppress"
 
     def active(self):
         """Keys with a currently-true condition (single source of truth
-        for pulse verdicts — no separate issues list to drift)."""
+        for condition verdicts — no separate issues list to drift)."""
         return sorted(self.d.keys())
 
     def count(self, key):

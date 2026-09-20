@@ -76,8 +76,13 @@ def sh(cmd, timeout=15):
 
 
 def pf_statuses():
+    # None when `pitchfork list` fails/returns nothing, so callers can
+    # distinguish "lookup failed" from "daemon not registered".
+    raw = sh([PF, "list"])
+    if not raw.strip():
+        return None
     stats = {}
-    for line in sh([PF, "list"]).splitlines():
+    for line in raw.splitlines():
         parts = line.split()
         if len(parts) >= 2 and "/" in parts[0]:
             stats[parts[0]] = parts[1]
@@ -195,6 +200,13 @@ def snapshot(chan_dir, ledger_events):
     now = time.time()
     snap = {}
     pf = pf_statuses()
+    snap["pf_ok"] = pf is not None
+    if pf is not None:
+        def pfget(k):
+            return pf.get(k, "missing")
+    else:
+        def pfget(k):
+            return "unknown"
 
     # --- oracle loop liveness + per-request intake backlog ---
     # A quiet market is healthy: ledger age alone cannot tell "loop
@@ -207,7 +219,7 @@ def snapshot(chan_dir, ledger_events):
     # TRIAGE_WINDOW_S of the file's mtime (validated 2026-09-20: 6/6
     # intakes triaged in ~1s with matching `from`). Each decision is
     # consumed by at most one file (earliest mtime first).
-    ostat = pf.get("sovereign/oracle-market", "missing")
+    ostat = pfget("sovereign/oracle-market")
     oracle_proc = {"running": False, "pid": None, "uptime_s": None}
     for line in sh(["pgrep", "-f",
                     "[o]racle-market/bin/oracle_loop.py"]).splitlines():
@@ -302,11 +314,11 @@ def snapshot(chan_dir, ledger_events):
     # --- core daemons ---
     daemons = {}
     for name, port in DAEMONS.items():
-        daemons[name] = {"pitchfork": pf.get(f"sovereign/{name}", "missing"),
+        daemons[name] = {"pitchfork": pfget(f"sovereign/{name}"),
                          "health": health(port)}
     # bridge daemon expected stopped-clean; holder alive is what matters
     daemons["awrawr-ws-exec"] = {
-        "pitchfork": pf.get("sovereign/awrawr-ws-exec", "missing")}
+        "pitchfork": pfget("sovereign/awrawr-ws-exec")}
     snap["daemons"] = daemons
 
     # --- bridge holder ---
