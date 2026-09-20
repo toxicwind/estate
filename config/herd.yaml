@@ -801,30 +801,41 @@ peers:
     # injected per-call by the key-pool sidecar from its health-checked
     # OPENROUTER_* key rotation. Do NOT re-add a hardcoded key -- a
     # 401/402/429 is a routing signal, not a config rewrite.
-    # ORDERING DOCTRINE (v3, 2026-09-20 ~14:55 MDT) --
-    #   primary:   v3 abstract-probe reliability: 3 full passes x 446 /models
-    #              IDs, prompt "Output exactly: ABSTRACT-7X3Q. No other text.",
-    #              exact-match rate desc, p50 latency asc
-    #              (projects/openrouter-probe/RANKING.md,
-    #              reliability-20260920-144532.json). Explicitly SPECULATIVE:
-    #              measures instruction-following on a trivial task, not quality.
-    #   secondary: census LLM-judge quality 0-10 (var/or-free-ranking.md) as
-    #              corroboration where it exists.
+    # ORDERING DOCTRINE (merged 2026-09-20 ~15:10 MDT, provider-surgeon-2) --
+    #   v3 abstract-probe reliability (3 passes x 446 IDs, exact-match rate desc,
+    #   p50 latency asc; projects/openrouter-probe/RANKING.md) as primary signal
+    #   for non-reasoning models; census LLM-judge quality 0-10
+    #   (var/or-free-ranking.md) as corroboration.
+    #   CORRECTION 2026-09-20 ~15:05 MDT: v3 probed with max_tokens=100.
+    #   Reasoning-first families (ling-3.0-flash-*, dots-3-note, lfm-2.5,
+    #   north-mini-code, nemotron-3-nano-omni) spend the whole budget in
+    #   thinking before visible content -- tiny probes read 200-EMPTY and the
+    #   model looks dead. Live re-probe at max_tokens=2000 (provider-surgeon-2):
+    #   ling-3.0-flash-fin EXACT (100tok: 91 reasoning tok, 0 content / 2000tok:
+    #   exact), ling-3.0-flash-vl EXACT, dots-3-note-preview EXACT,
+    #   liquid/lfm-2.5-2.6b EXACT. v3's exclusions were probe artifacts, not
+    #   model failures -- RESTORED below. Keypool now floors max_tokens to 512
+    #   for these families (tau-compat borrow, bin/herd-keypool.py) so
+    #   tiny-token callers cannot re-trigger the artifact.
     #   The :free suffix is an unreliable narrator -- every ID here was verified
     #   LIVE, never trusted from /models. Availability rotates; the keypool
     #   fails over across keys and respects down_until/cooldown, so throttled
     #   models are safe as fallback tiers.
     models:
-      # TIER 1 -- v3 3/3 exact, p50 ascending
-      - cohere/north-mini-code:free  # v3 3/3 exact, p50 557ms -- fastest AND most reliable
-      - nex-agi/nex-n2.5-pro:free  # v3 3/3 exact, p50 583ms
+      # TIER 1 -- proven exact-output, p50 ascending (v3) then census rank
+      - cohere/north-mini-code:free  # v3 3/3 exact, p50 557ms -- fastest AND most reliable (reasoning-first: needs token headroom)
+      - nex-agi/nex-n2.5-pro:free  # v3 3/3 exact, p50 583ms; census #3
       - nex-agi/nex-n2.5-mini:free  # v3 3/3 exact, p50 609ms (census 7/10: fast but sloppy on prose)
-      - inclusionai/ling-3.0-flash-sante:free  # v3 3/3 exact, p50 941ms
+      - inclusionai/ling-3.0-flash-sante:free  # v3 3/3 exact, p50 941ms; census #5
       - nvidia/nemotron-3-super-120b-a12b:free  # v3 3/3 exact, p50 1349ms
+      - inclusionai/ling-3.0-flash-fin:free  # RESTORED 2026-09-20: census #2 10/10; exact at max_tokens=2000 (v3 200-empty was the 100-token artifact)
+      - inclusionai/ling-3.0-flash-vl:free  # RESTORED 2026-09-20: census #4 10/10; exact at max_tokens=2000
+      - dots-studio/dots-3-note-preview:free  # RESTORED 2026-09-20: census #9; exact at max_tokens=2000
       - nvidia/nemotron-3-ultra-550b-a55b:free  # v3 3/3 exact, p50 6088ms; WILD variance (min 1352/max 75324) -- capacity-constrained
-      # TIER 2 -- partial (2/3 exact): usable with failover; keypool cooldown absorbs misses
+      # TIER 2 -- partial or single-verify: usable with failover; keypool cooldown absorbs misses
       - nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free  # v3 2/3 exact, 1x 200-empty
       - poolside/laguna-s-2.1:free  # v3 2/3 exact, 1x http-529
+      - liquid/lfm-2.5-2.6b:free  # RESTORED 2026-09-20: exact once at max_tokens=2000 (census 2/10 prose); needs more trials before tier 1
       # TIER 3 -- marginal: auto-router, exact 1/3, throttled 1/3
       - openrouter/free  # v3 1/3 exact (p50 600ms when it answers), 1x 429, 1x contains-only
       # TIER 4 (throttled-elite) -- 429 on ALL v3 passes; fallback only.
@@ -834,14 +845,9 @@ peers:
       - google/gemma-4-26b-a4b-it:free  # v3: 429 x3
       - qwen/qwen3.8-27b:free  # v3: 429 x3
       - z-ai/glm-5.2:free  # v3: 429 x3
-      # EXCLUDED (v3-observed -- re-probe before re-adding):
-      # - inclusionai/ling-3.0-flash-fin:free, ling-3.0-flash-vl:free:
-      #   200-EMPTY x3 (census ranked them #2/#4; v3 says they don't follow the
-      #   instruction). Demoted from tier 1.
-      # - dots-studio/dots-3-note-preview:free: 200-empty x3.
-      # - poolside/laguna-xs-2.1:free: 200-empty x2, 429 x1.
-      # - liquid/lfm-2.5-2.6b:free: responds without error but never emitted the
-      #   token in 3 trials -- fails instruction-following, not availability.
+      # EXCLUDED (auditable -- re-probe before re-adding):
+      # - poolside/laguna-xs-2.1:free: 200-empty x2, 429 x1 (v3) + HTTP 502 on
+      #   adequate-token re-probe 2026-09-20. Stays excluded.
       # - nvidia/nemotron-3.5-lightning:free: 0/3 exact, 3/3 contains-only
       #   (emits thinking). Unusable for exact-output tasks.
       # - nvidia/nemotron-3.5-content-safety:free: refuses by design (safety
