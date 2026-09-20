@@ -152,7 +152,7 @@ def judge_once(model, prompt, timeout_s):
     are marked refused and contribute nothing (never fabricated)."""
     res = herd_chat(model, prompt, timeout_s)
     jp = engine.JudgePosterior(judge_id=model, posterior=0.5, refused=True)
-    jp.raw_response = res.get("text", "")[:2000]
+    jp.raw_response = (res.get("text") or "")[:2000]
     jp.latency_s = res.get("latency_s", 0)
     jp.error = res.get("error")
     if not res["ok"]:
@@ -293,7 +293,7 @@ def run_ask(question, models=None, timeout_s=90, evidence_items=None,
 
         def _debate_chat(model, prompt, t):
             res = herd_chat(model, prompt, t, max_tokens=400)
-            return {"content": res.get("text", "")}
+            return {"content": res.get("text") or ""}
 
         budget_left = max(10.0, budget_s - (time.time() - t0))
         debate = escalation.debate_tier(
