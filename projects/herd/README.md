@@ -53,6 +53,9 @@ Rebuild the fork binary:
 
 ## Related
 
-- Router module docs: `herd/README_FLOCK_V2.md`
+- Router module docs: `README_FLOCK_V2.md`
 - Stack rules: `AGENTS.md` (repo root)
-- Ops dashboard: `http://127.0.0.1:25101/` (RUST_WEB_PORT per `config/ports.env`) — APIs under `/ops/api/*`. NOTE 2026-09-19: nothing is listening on :25101; the dashboard service is down.
+- Ops dashboard backend: `http://127.0.0.1:25201/` (`RUST_WEB_BACKEND_PORT` per `config/ports.env`). NOTE: `RUST_WEB_PORT=25101` in ports.env is stale — :25101 is model-guard per `pitchfork.toml` (flagged for the fleet; ports.env not yet updated).
+
+---
+*Up: [master README](../../README.md) · [projects/](../README.md) · [fleet knowledgebase](../../docs/fleet-knowledgebase.md)*

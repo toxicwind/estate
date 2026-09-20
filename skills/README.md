@@ -37,3 +37,6 @@ bun run skills/mesh-probe.ts
 # Hardware scaling and memory metrics
 ./skills/hardware-telemetry.sh
 ```
+
+---
+*Up: [master README](../README.md) · [fleet knowledgebase](../docs/fleet-knowledgebase.md)*
