@@ -2,9 +2,10 @@
 
 Zero-config `kimi-auto` alias for oh-my-pi / Tau sessions. Every command and
 tool routes through the herd surface with `model: "kimi-auto"`; the kimi-auto
-shim resolves it to the current best live Kimi endpoint from the shared
-resolver state (`~/.local/share/kimi-auto/state.json`, refreshed every
-15 minutes by the `kimi-auto-resolver` pitchfork daemon).
+shim resolves it to the current best live model (Kimi-family preferred,
+any healthy family as fallback) from the shared resolver state
+(`~/.local/share/kimi-auto/state.json`, written by the event-driven
+`kimi-auto-resolver` pitchfork daemon with a 15-minute backstop).
 
 Routing design follows the live-health cascade pattern: like FrugalGPT
 (arXiv:2305.05176) we route to the cheapest healthy tier first and escalate
@@ -35,11 +36,13 @@ routing overhead is negligible (a single state-file read per call).
 | `KIMI_AUTO_MAX_TOKENS` | `1024` |
 | `KIMI_AUTO_DISABLED=1` | skip the extension entirely |
 
-## Kimi-only guarantee
+## Routing contract (model-agnostic)
 
-The alias routes Kimi models only. When no Kimi candidate is healthy the
-commands fail loud (error, no silent fallback to another vendor's model) —
-same contract as the herd shim. A self-referential state (`model:
+The alias prefers the Kimi/Moonshot family but is not locked to it: when
+no Kimi candidate is healthy the resolver serves the fastest healthy
+model of any other family rather than failing. Commands fail loud (error,
+no silent stale route) only when nothing at all is healthy — same
+contract as the herd shim. A self-referential state (`model:
 "kimi-auto"`) is refused as a routing-loop guard.
 
 ## Develop
