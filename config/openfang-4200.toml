@@ -1,0 +1,3 @@
+# OpenFang sovereign daemon - canonical home /home/toxic/.openfang, API on :4200
+# Created 2026-09-20: replaces ephemeral /tmp/rig-home setup
+api_listen = "127.0.0.1:4200"

@@ -1,101 +1,101 @@
 {
-  "ts": "2026-09-20T06:12:37.131611+00:00",
+  "ts": "2026-09-20T14:23:19.224039+00:00",
   "overall": "FAIL",
   "checks": [
     {
       "name": "supervisor",
       "status": "ok",
-      "detail": "active pid=1006 mem=5345472512B"
+      "detail": "active pid=1006 mem=13954994176B"
     },
     {
       "name": "daemons",
       "status": "fail",
-      "detail": "27/57 running; down: sovereign/beellama-fast sovereign/coyote sovereign/search-api sovereign/search-ui sovereign/axiom sovereign/rust-web sovereign/hf-downloader sovereign/null-g-proxy sovereign/kimi-audit-dash sovereign/mcp-gateway sovereign/byte-vision sovereign/hindsight sovereign/tau-code sovereign/kimi-code sovereign/nginx sovereign/qdrant sovereign/redis sovereign/kafka sovereign/dnsmasq sovereign/prometheus sovereign/grafana sovereign/matter-server sovereign/tau sovereign/gemini-mcp sovereign/whatsapp-mcp sovereign/boundless sovereign/ws-exec-tunnel sovereign/pixel-adb-keepalive; supervisor-stale (endpoint live): sovereign/awrawr-ws-exec sovereign/toolcall-llm"
+      "detail": "43/63 running; down: sovereign/beellama-fast sovereign/kimi-auto-shim sovereign/coyote sovereign/search-api sovereign/axiom sovereign/hf-downloader sovereign/null-g-proxy sovereign/mcp-gateway sovereign/byte-vision sovereign/hindsight sovereign/nginx sovereign/redis sovereign/kafka sovereign/dnsmasq sovereign/matter-server sovereign/tau sovereign/boundless sovereign/ws-exec-tunnel sovereign/pixel-adb-keepalive; supervisor-stale (endpoint live): sovereign/toolcall-llm"
     },
     {
       "name": "openfang_kernel",
-      "status": "ok",
-      "detail": "boot ok in 186ms; Audit trail loaded: 424 entries, chain integrity OK"
+      "status": "fail",
+      "detail": "openfang status rc=0 after 6ms"
     },
     {
       "name": "agents",
       "status": "ok",
-      "detail": "4/4 expected Running (total Running=4) in 42ms"
+      "detail": "4/4 expected Running (total Running=9) in 6ms"
     },
     {
       "name": "audit_chain",
-      "status": "ok",
-      "detail": "chain integrity OK"
+      "status": "fail",
+      "detail": "chain integrity NOT verified"
     },
     {
       "name": "llama_swap",
       "status": "ok",
-      "detail": ":25100/v1/models ok in 45ms, 206 models"
+      "detail": ":25100/v1/models ok in 18ms, 77 models"
     },
     {
       "name": "kimi_auto",
-      "status": "ok",
-      "detail": "state fresh (797s); kimi-k3-nim True 431"
+      "status": "warn",
+      "detail": "state age=473s info=[kimi-k2 False -]"
     },
     {
       "name": "provider_nvidia",
-      "status": "warn",
-      "detail": "auth=Missing (live/dead only)"
+      "status": "ok",
+      "detail": "auth=unknown (live/dead only)"
     },
     {
       "name": "provider_anthropic",
-      "status": "warn",
-      "detail": "auth=Missing (live/dead only)"
+      "status": "ok",
+      "detail": "auth=unknown (live/dead only)"
     },
     {
       "name": "provider_groq",
-      "status": "warn",
-      "detail": "auth=Missing (live/dead only)"
+      "status": "ok",
+      "detail": "auth=unknown (live/dead only)"
     },
     {
       "name": "provider_cerebras",
-      "status": "warn",
-      "detail": "auth=Missing (live/dead only)"
+      "status": "ok",
+      "detail": "auth=unknown (live/dead only)"
     },
     {
       "name": "provider_deepseek",
-      "status": "warn",
-      "detail": "auth=Missing (live/dead only)"
+      "status": "ok",
+      "detail": "auth=unknown (live/dead only)"
     },
     {
       "name": "provider_openrouter",
-      "status": "warn",
-      "detail": "auth=Missing (live/dead only)"
+      "status": "ok",
+      "detail": "auth=unknown (live/dead only)"
     },
     {
       "name": "providers_summary",
       "status": "ok",
-      "detail": "36 Missing, 6 NotRequired(local)"
+      "detail": "0 Missing, 0 NotRequired(local)"
     },
     {
       "name": "yote_ep",
       "status": "ok",
-      "detail": ":25102/health reachable (200) in 10ms"
+      "detail": ":25102/health reachable (200) in 4ms"
     },
     {
       "name": "meshub_ep",
       "status": "ok",
-      "detail": ":25115 tcp open in 6ms"
+      "detail": ":25115 tcp open in 4ms"
     },
     {
       "name": "coyote_ep",
       "status": "warn",
-      "detail": ":25143 code=000000 after 8ms (sovereign/coyote not in live pitchfork set)"
+      "detail": ":25143 code=000000 after 4ms (sovereign/coyote not in live pitchfork set)"
     },
     {
       "name": "memory",
       "status": "ok",
-      "detail": "total=63895MB used=13482MB avail=50412MB"
+      "detail": "total=63895MB used=14348MB avail=49547MB"
     },
     {
       "name": "gpu",
       "status": "ok",
-      "detail": "NVIDIA GeForce RTX 3090  6 %  13433 MiB  24576 MiB"
+      "detail": "NVIDIA GeForce RTX 3090  100 %  19331 MiB  24576 MiB"
     }
   ],
   "papers": [

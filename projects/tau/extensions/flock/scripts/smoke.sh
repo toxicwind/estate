@@ -7,7 +7,7 @@
 #   3. POST /v1/chat/completions -> NON-EMPTY message content (needs proxy API key)
 #
 # Key resolution (never printed, only reported present/absent):
-#   FLOCK_API_KEY -> NVIDIA_API_KEY -> NIM_PROXY_API_KEY (env only).
+#   FLOCK_API_KEY -> NVIDIA_API_KEY (env only).
 # If no key is present in env, the script reports exactly that and degrades
 # to proving /health (+ /v1/models if the proxy answers without a key).
 #
@@ -20,7 +20,7 @@ CHAT_PROMPT="${FLOCK_SMOKE_PROMPT:-Reply with exactly: smoke-test-ok}"
 
 KEY_SOURCE=""
 KEY=""
-for var in FLOCK_API_KEY NVIDIA_API_KEY NIM_PROXY_API_KEY; do
+for var in FLOCK_API_KEY NVIDIA_API_KEY; do
   if [ -n "${!var:-}" ]; then
     KEY="${!var}"
     KEY_SOURCE="$var"
@@ -36,14 +36,14 @@ echo "base: $BASE"
 if [ -n "$KEY" ]; then
   echo "proxy API key: present (via $KEY_SOURCE) — value NOT shown"
 else
-  echo "proxy API key: ABSENT from env (checked FLOCK_API_KEY, NVIDIA_API_KEY, NIM_PROXY_API_KEY)"
+  echo "proxy API key: ABSENT from env (checked FLOCK_API_KEY, NVIDIA_API_KEY)"
   # Check well-known key store locations for presence only — never print values.
   for store in /home/toxic/.secrets; do
     if [ -d "$store" ]; then
-      if grep -lq -E 'NVIDIA_API_KEY|NIM_PROXY_API_KEY' "$store"/* 2>/dev/null; then
-        echo "key-store check: $store contains a NVIDIA_API_KEY/NIM_PROXY_API_KEY entry (presence only)"
+      if grep -lq -E 'NVIDIA_API_KEY' "$store"/* 2>/dev/null; then
+        echo "key-store check: $store contains a NVIDIA_API_KEY entry (presence only)"
       else
-        echo "key-store check: $store present, no NVIDIA_API_KEY/NIM_PROXY_API_KEY entry found"
+        echo "key-store check: $store present, no NVIDIA_API_KEY entry found"
       fi
     else
       echo "key-store check: $store not present"
