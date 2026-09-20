@@ -220,6 +220,32 @@ export class HealthDB {
     return result;
   }
 
+  /** p50/p95 of successful request latency per provider, last 30 min. */
+  getLatencyPercentiles(): Record<string, { p50_ms: number | null; p95_ms: number | null; n: number }> {
+    const cutoff = Date.now() / 1000 - 1800;
+    const out: Record<string, { p50_ms: number | null; p95_ms: number | null; n: number }> = {};
+    const provs = this.conn
+      .query(`SELECT DISTINCT provider FROM requests WHERE ts>=?`)
+      .all(cutoff) as { provider: string }[];
+    for (const { provider } of provs) {
+      const rows = this.conn
+        .query(
+          `SELECT latency_ms FROM requests
+           WHERE provider=? AND ts>=? AND status=200
+           ORDER BY latency_ms`,
+        )
+        .all(provider, cutoff) as { latency_ms: number }[];
+      if (!rows.length) {
+        out[provider] = { p50_ms: null, p95_ms: null, n: 0 };
+        continue;
+      }
+      const q = (p: number) => rows[Math.min(rows.length - 1, Math.floor(p * rows.length))].latency_ms;
+      const r2 = (v: number) => Math.round(v * 10) / 10;
+      out[provider] = { p50_ms: r2(q(0.5)), p95_ms: r2(q(0.95)), n: rows.length };
+    }
+    return out;
+  }
+
   stickyGet(
     sessionId: string,
     ttl = STICKY_TTL,

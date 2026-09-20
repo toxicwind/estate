@@ -1,6 +1,6 @@
 import type { ChatBody, RouteResult } from "./router_types.ts";
 import { state, isWorkerExhausted } from "./router_matrix.ts";
-import { PROVIDERS, PROVIDER_MODELS, catalogModelsFor, modelFree, LOCAL_ROLES, CODING, MAX_PARALLEL, FIFO_MAX, STRATEGY, UA, AST_RE, getKey, keyOk, firstModelFor, resolveModel, isLocalSwapModelId, isAst, isExplicit, json } from "./router_config.ts";
+import { PROVIDERS, PROVIDER_MODELS, catalogModelsFor, modelFree, LOCAL_ROLES, CODING, MAX_PARALLEL, FIFO_MAX, STRATEGY, UA, AST_RE, getKey, keyOk, firstModelFor, resolveModel, isLocalSwapModelId, isAst, isExplicit, json, normalizeModelSpec, CONNECT_MS, TTFT_MS, ATTEMPT_MS, ATTEMPT_STREAM_MS, HEDGE_MS } from "./router_config.ts";
 
 // ---------------------------------------------------------------------------
 // Substance guard: a completion is servable only if it carries non-empty
@@ -36,8 +36,11 @@ function contentText(r: RouteResult): string {
 // Any model id the router can directly address: explicit alias, local id,
 // or any curated/live catalog id on any keyed provider. Unknown ids keep
 // the old race-everything behavior.
-function isRoutableModelId(model: string): boolean {
+export function isRoutableModelId(model: string): boolean {
   if (isExplicit(model)) return true;
+  // openfang shim: "provider:model" / "provider/model" specs are directly
+  // routable — resolveModel pins the provider via normalizeModelSpec.
+  if (normalizeModelSpec(model).provider) return true;
   for (const p of Object.keys(PROVIDERS)) {
     if (catalogModelsFor(p).includes(model)) return true;
   }
@@ -52,6 +55,7 @@ export async function callOne(
   model: string,
   body: ChatBody,
   stream = false,
+  externalSignal?: AbortSignal,
 ): Promise<RouteResult> {
   if (!state.circuitOk(provider)) {
     return {
@@ -115,14 +119,70 @@ export async function callOne(
   }
   const payload = { ...body, model, stream };
   const start = performance.now();
+  // Failfast signal stack: connect (headers) < TTFT (first byte, stream) <
+  // total attempt cap. AbortSignal.any keeps each layer independent.
+  const connectCtrl = new AbortController();
+  const connectTimer = setTimeout(
+    () => connectCtrl.abort(new Error("connect_timeout")),
+    CONNECT_MS,
+  );
+  const totalSignal = AbortSignal.timeout(
+    stream ? ATTEMPT_STREAM_MS : ATTEMPT_MS,
+  );
+  const signals = externalSignal
+    ? [totalSignal, connectCtrl.signal, externalSignal]
+    : [totalSignal, connectCtrl.signal];
+  let resp: Response;
   try {
-    const resp = await fetch(url, {
+    resp = await fetch(url, {
       method: "POST",
       headers,
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(stream ? 180_000 : 120_000),
+      signal: AbortSignal.any(signals),
     });
+  } catch (e) {
+    clearTimeout(connectTimer);
     const lat = (performance.now() - start) / 1000;
+    const msg = e instanceof Error ? e.message : String(e);
+    // A hedged loser abort is NOT a provider failure: no circuit strike,
+    // no error note, no DB row. The winner already served the client.
+    if (/hedged_loser/.test(msg)) {
+      return {
+        ok: false,
+        status: 499,
+        provider,
+        lat,
+        err: "hedged_loser",
+        timings: {
+          connect_ms: Math.round((performance.now() - start) * 10) / 10,
+          ttft_ms: null,
+          total_ms: Math.round(lat * 1000 * 10) / 10,
+        },
+      };
+    }
+    const err = /connect_timeout/.test(msg)
+      ? "connect_timeout"
+      : /TimeoutError|attempt_timeout/.test(msg)
+        ? "attempt_timeout"
+        : "fetch_error:" + msg.slice(0, 120);
+    state.noteError(provider, 504, err);
+    state.record(model, provider, 504, lat, 0, STRATEGY);
+    const t = {
+      connect_ms: Math.round((performance.now() - start) * 10) / 10,
+      ttft_ms: null as number | null,
+      total_ms: Math.round(lat * 1000 * 10) / 10,
+    };
+    return { ok: false, status: 504, provider, lat, err, timings: t };
+  }
+  clearTimeout(connectTimer);
+  const connectMs = Math.round((performance.now() - start) * 10) / 10;
+  const lat = (performance.now() - start) / 1000;
+  const mkTimings = (ttft: number | null) => ({
+    connect_ms: connectMs,
+    ttft_ms: ttft,
+    total_ms: Math.round((performance.now() - start) * 10) / 10,
+  });
+  try {
     if (!resp.ok) {
       const errText = (await resp.text()).slice(0, 500);
       // Worker-exhaustion signature is checked BEFORE generic failure
@@ -130,6 +190,7 @@ export async function callOne(
       // The permit is still held, so the observed in-flight count
       // includes this request when the governor engages at half of it.
       if (isWorkerExhausted(errText)) state.governor.noteExhausted(govKey);
+      state.noteError(provider, resp.status, errText.slice(0, 200));
       state.record(model, provider, resp.status, lat, 0, STRATEGY);
       return {
         ok: false,
@@ -137,9 +198,64 @@ export async function callOne(
         provider,
         lat,
         err: errText,
+        timings: mkTimings(null),
       };
     }
     if (stream) {
+      if (resp.body) {
+        // TTFT failfast: first chunk must arrive within the TTFT budget.
+        const ttftRemain = TTFT_MS - (performance.now() - start);
+        const reader = resp.body.getReader();
+        let first: ReadableStreamReadResult<Uint8Array> | "ttft_timeout";
+        if (ttftRemain <= 0) {
+          first = "ttft_timeout";
+        } else {
+          first = await Promise.race([
+            reader.read(),
+            new Promise<"ttft_timeout">((res) =>
+              setTimeout(() => res("ttft_timeout"), ttftRemain),
+            ),
+          ]);
+        }
+        if (first === "ttft_timeout" || first.done) {
+          const tlat = (performance.now() - start) / 1000;
+          try {
+            reader.cancel();
+          } catch { /* noop */ }
+          state.noteError(provider, 504, "ttft_timeout");
+          state.record(model, provider, 504, tlat, 0, STRATEGY);
+          return { ok: false, status: 504, provider, lat: tlat, err: "ttft_timeout", timings: mkTimings(null) };
+        }
+        // Re-emit the consumed first chunk, then pipe the rest.
+        const firstChunk = first.value;
+        const rest = new ReadableStream<Uint8Array>({
+          async start(controller) {
+            if (firstChunk) controller.enqueue(firstChunk);
+            try {
+              for (;;) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                controller.enqueue(value);
+              }
+              controller.close();
+            } catch (e) {
+              controller.error(e);
+            }
+          },
+        });
+        state.record(model, provider, 200, lat, 0, STRATEGY);
+        if (state.circuit.get(provider) === "half")
+          state.circuit.set(provider, "closed");
+        return {
+          ok: true,
+          status: resp.status,
+          provider,
+          model,
+          lat,
+          stream: rest,
+          timings: mkTimings(Math.round((performance.now() - start) * 10) / 10),
+        };
+      }
       state.record(model, provider, 200, lat, 0, STRATEGY);
       if (state.circuit.get(provider) === "half")
         state.circuit.set(provider, "closed");
@@ -163,6 +279,7 @@ export async function callOne(
       provider,
       model,
       lat,
+      timings: mkTimings(Math.round((performance.now() - start) * 10) / 10),
     };
   } catch (e) {
     const lat = (performance.now() - start) / 1000;
@@ -183,7 +300,7 @@ export function pickWeighted(n = MAX_PARALLEL): [string, string][] {
   const scored: [number, string, string][] = [];
   for (const p of Object.keys(PROVIDERS)) {
     if (!keyOk(p) || !state.circuitOk(p)) continue;
-    const sc = (state.elo.get(p) || 1000) + Math.random() * 10;
+    const sc = state.candidateScore(p) + Math.random() * 10;
     const mid = firstModelFor(p);
     if (mid) scored.push([sc, p, mid]);
   }
@@ -222,66 +339,71 @@ export async function routeAstRace(
       return r;
     }
     if (r.ok) state.recordEmpty(p, mid);
-    return {
-      ok: false,
-      status: r.ok ? 502 : r.status || 502,
-      provider: p,
-      lat: r.lat,
-      err: r.ok ? "empty_completion" : r.err,
-    };
+    // v3.2: explicit model failed -> fail over to the full candidate race
+    // (resilience over strictness; the direct attempt stays the fast path).
   }
   const cands = candsOverride || pickWeighted(MAX_PARALLEL);
   if (!cands.length)
     return { ok: false, status: 503, err: "ast_race_exhausted" };
-  const futs = cands.map(([p, mid]) => callOne(p, mid, body));
-  let best: RouteResult | null = null;
-  // Non-substantive (empty/whitespace-only, no tool_calls) completions are
-  // failures, never winners: a 200 with no content must not be served or
-  // sticky-pinned.
-  try {
-    const results = await Promise.race([
-      Promise.allSettled(futs).then((all) => all),
-      new Promise<"timeout">((res) => setTimeout(() => res("timeout"), 95_000)),
-    ]);
-    if (results !== "timeout") {
-      for (const settled of results) {
-        if (settled.status !== "fulfilled" || !settled.value.ok) continue;
-        const r = settled.value;
-        const content = contentText(r);
-        if (isAst(content)) {
-          state.stickySet(session, r.provider!, r.model!);
-          state.record(r.model!, r.provider!, 200, r.lat || 0, 1, "ast_race");
-          return r;
-        }
-        if (!substantive(r)) {
-          // Non-substantive completion: never a winner — strike the model
-          // (flap tracker benches it after FLAP_STRIKES within the window).
-          state.recordEmpty(r.provider!, r.model!);
-        } else if (!best) {
-          best = r;
-        }
+  // HFT: first substantive finisher wins — the slowest lane must not set the
+  // pace (previously Promise.allSettled waited for every lane). Losers are
+  // aborted; their aborts are not circuit strikes. An isAst (code-shaped)
+  // finisher still takes priority over a plain substantive one.
+  const ctrls = cands.map(() => new AbortController());
+  return new Promise<RouteResult>((resolve) => {
+    let settled = false;
+    let pending = cands.length;
+    let lastErr = "ast_race_exhausted";
+    let bestSubstantive: RouteResult | null = null;
+    const finish = (r: RouteResult) => {
+      if (settled) return;
+      settled = true;
+      for (const c of ctrls) {
+        try {
+          c.abort(new Error("hedged_loser"));
+        } catch { /* noop */ }
       }
-    } else {
-      // timeout: take first completed substantive result, if any
-      for (const f of futs) {
-        const settled = await Promise.race([
-          f.then((v) => v),
-          Promise.resolve(null as RouteResult | null),
-        ]);
-        if (settled && substantive(settled)) {
-          best = settled;
-          break;
+      resolve(r);
+    };
+    const win = (r: RouteResult) => {
+      state.stickySet(session, r.provider!, r.model!);
+      state.record(r.model!, r.provider!, 200, r.lat || 0, 1, "ast_race");
+      finish(r);
+    };
+    cands.forEach(([p, mid], i) => {
+      callOne(p, mid, body, false, ctrls[i].signal).then((r) => {
+        pending--;
+        if (settled) return;
+        if (!r.ok) {
+          if (r.err && r.err !== "hedged_loser") lastErr = r.err;
+        } else if (!substantive(r)) {
+          // Non-substantive (empty/whitespace-only) completion: never a
+          // winner — strike the model via the flap tracker.
+          state.recordEmpty(p, mid);
+        } else if (isAst(contentText(r))) {
+          win(r); // code-shaped output takes priority
+          return;
+        } else if (!bestSubstantive) {
+          bestSubstantive = r;
+          // Brief quality window: a code-shaped finisher arriving within
+          // 250ms still preempts; otherwise first valid wins.
+          setTimeout(() => {
+            if (!settled && bestSubstantive) win(bestSubstantive);
+          }, 250);
         }
+        if (pending === 0 && !settled) {
+          if (bestSubstantive) win(bestSubstantive);
+          else finish({ ok: false, status: 503, err: lastErr });
+        }
+      });
+    });
+    setTimeout(() => {
+      if (!settled) {
+        if (bestSubstantive) win(bestSubstantive);
+        else finish({ ok: false, status: 503, err: "ast_race_timeout" });
       }
-    }
-  } catch {
-    /* exhausted */
-  }
-  if (best?.ok) {
-    state.stickySet(session, best.provider!, best.model!);
-    return best;
-  }
-  return { ok: false, status: 503, err: "ast_race_exhausted" };
+    }, 95_000);
+  });
 }
 
 export async function routeSticky(
@@ -335,35 +457,19 @@ export async function routeCircuitChain(
         return r;
       }
       if (r.ok) state.recordEmpty(p, mid);
-      return {
-        ok: false,
-        status: r.ok ? 502 : r.status || 502,
-        provider: p,
-        lat: r.lat,
-        err: r.ok ? "empty_completion" : r.err,
-      };
+      // v3.2: fall through to the chain (explicit_provider_unavailable is
+      // no longer terminal while any backend is alive).
     }
-    return {
-      ok: false,
-      status: 502,
-      err: `explicit_provider_unavailable:${p}`,
-    };
   }
   const order = Object.keys(PROVIDERS).sort(
-    (a, b) => (state.elo.get(b) || 1000) - (state.elo.get(a) || 1000),
+    (a, b) => state.candidateScore(b) - state.candidateScore(a),
   );
+  const cands: [string, string][] = [];
   for (const p of order) {
-    if (!keyOk(p) || !state.circuitOk(p)) continue;
     const mid = firstModelFor(p);
-    if (!mid) continue;
-    const r = await callOne(p, mid, body);
-    if (substantive(r)) {
-      state.stickySet(session, p, mid);
-      return r;
-    }
-    if (r.ok) state.recordEmpty(p, mid);
+    if (mid) cands.push([p, mid]);
   }
-  return { ok: false, status: 503, err: "circuit_chain_exhausted" };
+  return hedgedChain(cands, body, session, "circuit_chain");
 }
 
 export async function routeFifo(
@@ -388,20 +494,15 @@ export async function routeHybrid(
   const model = String(body.model || "auto");
   if (isRoutableModelId(model)) {
     const [p, mid] = resolveModel(model);
-    const r = await callOne(p, mid, body);
-    if (substantive(r)) {
-      state.stickySet(session, p, mid);
-      state.record(mid, p, 200, r.lat || 0, 1, "hybrid_direct");
-      return r;
-    }
-    if (r.ok) state.recordEmpty(p, mid);
-    return {
-      ok: false,
-      status: r.ok ? 502 : r.status || 502,
-      provider: p,
-      lat: r.lat,
-      err: r.ok ? "empty_completion" : r.err,
-    };
+    // HFT: the explicit lane is hedged — if it hasn't delivered within
+    // HEDGE_MS, the weighted field races in parallel and first substantive
+    // wins. A hanging explicit backend no longer costs the client its
+    // full connect timeout before failover begins.
+    const field = pickWeighted(MAX_PARALLEL).filter(([cp]) => cp !== p);
+    const r = await hedgedChain([[p, mid], ...field], body, session, "hybrid_direct");
+    if (r.ok) return r;
+    // v3.2: total explicit+field failure -> fall through to chain failover.
+    return routeCircuitChain(body, session);
   }
   const [p, m] = state.stickyGet(session);
   if (p && keyOk(p) && state.circuitOk(p)) {
@@ -412,6 +513,117 @@ export async function routeHybrid(
   const r2 = await routeAstRace(body, session);
   if (r2.ok) return r2;
   return routeCircuitChain(body, session);
+}
+
+/**
+ * hedgedChain — HFT "redundant exchange feeds" applied to provider lanes.
+ * Fires cands[0] (the preferred lane: explicit, cheapest, or best-scored).
+ * If no winner within HEDGE_MS, the whole remaining field races in
+ * parallel — first substantive completion wins and the losers are aborted
+ * (their aborts are NOT recorded as provider failures). A lane that fails
+ * fast immediately triggers the single next lane without waiting for the
+ * hedge timer. HEDGE_MS=0 restores the classic sequential chain.
+ */
+export async function hedgedChain(
+  cands: [string, string][],
+  body: ChatBody,
+  session: string,
+  stratName: string,
+): Promise<RouteResult> {
+  const live = cands.filter(([p]) => keyOk(p) && state.circuitOk(p));
+  if (!live.length) return { ok: false, status: 503, err: stratName + "_exhausted" };
+  // A provider that just burned a full timeout must not lead the next chain
+  // and burn another: sort healthy lanes first (stable — explicit preference
+  // kept among equal strike counts). Demoted lanes still race at the hedge.
+  live.sort(
+    (a, b) => state.consecutiveFailures(a[0]) - state.consecutiveFailures(b[0]),
+  );
+  if (HEDGE_MS <= 0) {
+    let lastErr = stratName + "_exhausted";
+    for (const [p, mid] of live) {
+      const r = await callOne(p, mid, body);
+      if (substantive(r)) {
+        state.stickySet(session, p, mid);
+        state.record(mid, p, 200, r.lat || 0, 1, stratName);
+        return r;
+      }
+      if (r.ok) state.recordEmpty(p, mid);
+      lastErr = r.err || lastErr;
+    }
+    return { ok: false, status: 503, err: lastErr };
+  }
+  return new Promise((resolve) => {
+    let settled = false;
+    let idx = 0;
+    let pending = 0;
+    let lastErr = stratName + "_exhausted";
+    const ctrls: AbortController[] = [];
+    const settle = (r: RouteResult) => {
+      if (settled) return;
+      settled = true;
+      for (const c of ctrls) {
+        try {
+          c.abort(new Error("hedged_loser"));
+        } catch { /* noop */ }
+      }
+      resolve(r);
+    };
+    const fire = (): void => {
+      if (settled || idx >= live.length) return;
+      const [p, mid] = live[idx++];
+      const ctrl = new AbortController();
+      ctrls.push(ctrl);
+      pending++;
+      const hedgeTimer = setTimeout(() => {
+        if (!settled) {
+          // Hedge: the preferred lane is slow — race the whole field.
+          while (idx < live.length) fire();
+        }
+      }, HEDGE_MS);
+      callOne(p, mid, body, false, ctrl.signal).then((r) => {
+        clearTimeout(hedgeTimer);
+        pending--;
+        if (settled) return;
+        if (substantive(r)) {
+          state.stickySet(session, p, mid);
+          state.record(mid, p, 200, r.lat || 0, 1, stratName);
+          settle(r);
+        } else {
+          if (r.ok) state.recordEmpty(p, mid);
+          if (r.err && r.err !== "hedged_loser") lastErr = r.err;
+          if (pending === 0) {
+            if (idx >= live.length) settle({ ok: false, status: 503, err: lastErr });
+            else fire(); // fail fast: next lane immediately
+          }
+        }
+      });
+    };
+    fire();
+  });
+}
+
+export async function routeCascade(
+  body: ChatBody,
+  session: string,
+): Promise<RouteResult> {
+  const localFirst = ["llama-swap", "kimi-auto", "nim-local"];
+  const order = Object.keys(PROVIDERS).sort((a, b) => {
+    const la = localFirst.includes(a) ? 0 : 1;
+    const lb = localFirst.includes(b) ? 0 : 1;
+    if (la !== lb) return la - lb;
+    const am = firstModelFor(a);
+    const bm = firstModelFor(b);
+    const fa = am && modelFree(a, am) ? 0 : 1;
+    const fb = bm && modelFree(b, bm) ? 0 : 1;
+    if (fa !== fb) return fa - fb;
+    return (state.elo.get(b) || 1000) - (state.elo.get(a) || 1000);
+  });
+  const cands: [string, string][] = [];
+  for (const p of order) {
+    const mid = firstModelFor(p);
+    if (mid) cands.push([p, mid]);
+  }
+  return hedgedChain(cands, body, session, "cascade");
 }
 
 export const ROUTERS: Record<
@@ -427,6 +639,7 @@ export const ROUTERS: Record<
   circuit_chain: routeCircuitChain,
   hybrid: routeHybrid,
   free: routeFree,
+  cascade: routeCascade,
 };
 
 // freeCandidates: the free pool is derived from LIVE catalog metadata, not a

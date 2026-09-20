@@ -4,7 +4,7 @@ import { homedir } from "node:os";
 // ---------------------------------------------------------------------------
 // Secrets + local stack env (mise loads these; standalone bun needs them too)
 // ---------------------------------------------------------------------------
-export function loadEnvFile(path: string): void {
+export function loadEnvFile(path: string, overwrite = false): void {
   if (!existsSync(path)) return;
   try {
     for (let line of readFileSync(path, "utf8").split("\n")) {
@@ -18,7 +18,7 @@ export function loadEnvFile(path: string): void {
         .slice(eq + 1)
         .trim()
         .replace(/^['"]|['"]$/g, "");
-      if (k && v && !process.env[k]) process.env[k] = v;
+      if (k && v && (overwrite || !process.env[k])) process.env[k] = v;
     }
   } catch (e) {
     console.error(`[matrix] loadEnvFile ${path}:`, e);
@@ -49,6 +49,38 @@ export const DB_PATH =
   process.env.SOVEREIGN_DB || "/home/toxic/sovereign/data/sovereign_router.db";
 
 export const MAX_PARALLEL = 4;
+
+// --- Resilience tunables (v3.2; all env-overridable, failfast-first) ---
+// CONNECT_MS: headers must arrive (dead backend detected fast).
+// TTFT_MS: first body byte must arrive for streaming (time-to-first-token).
+// ATTEMPT_MS / ATTEMPT_STREAM_MS: total per-attempt caps.
+export const CONNECT_MS = parseInt(process.env.SOVEREIGN_CONNECT_MS || "8000", 10);
+export const TTFT_MS = parseInt(process.env.SOVEREIGN_TTFT_MS || "45000", 10);
+export const ATTEMPT_MS = parseInt(process.env.SOVEREIGN_ATTEMPT_MS || "120000", 10);
+export const ATTEMPT_STREAM_MS = parseInt(
+  process.env.SOVEREIGN_ATTEMPT_STREAM_MS || "180000",
+  10,
+);
+// QUARANTINE: dead providers are quarantined with exponential backoff
+// re-probing: BASE * 2^(level-1) capped at MAX.
+export const QUARANTINE_BASE_S = parseInt(
+  process.env.SOVEREIGN_QUARANTINE_BASE_S || "60",
+  10,
+);
+export const QUARANTINE_MAX_S = parseInt(
+  process.env.SOVEREIGN_QUARANTINE_MAX_S || "1800",
+  10,
+);
+// HEDGE_MS: speculative hedging (HFT redundant-feeds pattern). When a chain
+// lane hasn't produced a winner within HEDGE_MS, the next lane fires in
+// parallel; first substantive wins, losers are aborted. 0 disables.
+export const HEDGE_MS = parseInt(process.env.SOVEREIGN_HEDGE_MS || "1500", 10);
+
+// Active quarantine re-probe cadence.
+export const QUARANTINE_PROBE_MS = parseInt(
+  process.env.SOVEREIGN_QUARANTINE_PROBE_MS || "15000",
+  10,
+);
 
 export const STICKY_TTL = 1800;
 
@@ -111,6 +143,23 @@ export const PROVIDERS: Record<
     key_env: "LLAMA_SWAP_API_KEY",
     no_auth: true,
   },
+  // Local NIM proxy (:8000, nim-consolidation track). Key via
+  // NIM_PROXY_API_KEY; shows dead in /status until the proxy key lands --
+  // the router then picks it up via hot reload (/admin/reload, SIGHUP).
+  "nim-local": {
+    base: process.env.NIM_PROXY_BASE || "http://127.0.0.1:8000/v1",
+    key_env: "NIM_PROXY_API_KEY",
+  },
+  // kimi-auto sidecar shim (pitchfork daemon kimi-auto-shim): rewrites
+  // model "kimi-auto" -> resolver's current best Kimi, forwards to herd.
+  // Kimi-only by design (shim 503s when no Kimi candidate is healthy).
+  "kimi-auto": {
+    base:
+      process.env.KIMI_AUTO_SHIM_BASE ||
+      "http://127.0.0.1:" + (process.env.KIMI_AUTO_SHIM_PORT || "25105") + "/v1",
+    key_env: "KIMI_AUTO_SHIM_KEY",
+    no_auth: true,
+  },
   openrouter: {
     base: "https://openrouter.ai/api/v1",
     key_env: "OPENROUTER_API_KEY",
@@ -139,6 +188,8 @@ export const PROVIDERS: Record<
 // ---------------------------------------------------------------------------
 export const PROVIDER_MODELS: Record<string, string[]> = {
   "llama-swap": [LOCAL_ROLES.fast, LOCAL_ROLES.quality, LOCAL_ROLES.longctx],
+  "nim-local": [],
+  "kimi-auto": ["kimi-auto"],
   openrouter: [
     "tencent/hy3:free",
     "poolside/laguna-m.1:free",
@@ -348,7 +399,7 @@ export function keyOk(p: string): boolean {
 
 export function firstModelFor(p: string): string {
   if (p === "llama-swap") return LOCAL_ROLES.quality;
-  return PROVIDER_MODELS[p]?.[0] || "";
+  return PROVIDER_MODELS[p]?.[0] || LIVE_MODELS[p]?.[0] || "";
 }
 
 export function isLocalSwapModelId(model: string): boolean {
@@ -367,7 +418,72 @@ export function isLocalSwapModelId(model: string): boolean {
   );
 }
 
+/**
+ * normalizeModelSpec — the openfang `agent set` parsing shim (router-side).
+ *
+ * Accepts every spec shape the (buggy) fork can produce and returns a
+ * canonical { provider, model }:
+ *   "nvidia:gpt-oss-20b"      -> { provider: "nvidia", model: <best catalog match> }
+ *   "openrouter/openai/gpt-oss-20b:free" -> { provider: "openrouter", model: <same> }
+ *   "fast" / "auto"           -> { provider: null, model: <alias untouched> }
+ *   "meta-llama/llama-3.3-70b-instruct:free" -> { provider: null, model: <same> }
+ * provider is null when the spec is provider-agnostic (alias or bare model
+ * id); callers then fall back to resolveModel()'s normal catalog search.
+ */
+export function normalizeModelSpec(spec: string): {
+  provider: string | null;
+  model: string;
+} {
+  const s = (spec || "").trim();
+  if (!s) return { provider: null, model: "auto" };
+  // CODING aliases pass through untouched.
+  if (s in CODING) return { provider: null, model: s };
+  const provNames = Object.keys(PROVIDERS);
+  const inCatalog = (p: string, m: string) => catalogModelsFor(p).includes(m);
+  const anyCatalogHas = (m: string) => provNames.some((p) => inCatalog(p, m));
+  // Bare model id already in some catalog: provider-agnostic.
+  if (anyCatalogHas(s)) return { provider: null, model: s };
+  // "provider:model" colon form (the exact shape the fork mangles).
+  const ci = s.indexOf(":");
+  if (ci > 0) {
+    const pre = s.slice(0, ci).toLowerCase();
+    if (provNames.includes(pre)) {
+      const rest = s.slice(ci + 1);
+      const mid = matchModelOnProvider(pre, rest);
+      if (mid) return { provider: pre, model: mid };
+    }
+  }
+  // "provider/rest/of/id" slash form, e.g. "openrouter/openai/gpt-oss-20b:free".
+  const si = s.indexOf("/");
+  if (si > 0) {
+    const pre = s.slice(0, si).toLowerCase();
+    if (provNames.includes(pre)) {
+      const rest = s.slice(si + 1);
+      if (inCatalog(pre, rest)) return { provider: pre, model: rest };
+      const mid = matchModelOnProvider(pre, rest);
+      if (mid) return { provider: pre, model: mid };
+    }
+  }
+  return { provider: null, model: s };
+}
+
+/** Best catalog model id on provider p matching a loose name `rest`. */
+export function matchModelOnProvider(p: string, rest: string): string | null {
+  const r = (rest || "").trim();
+  if (!r) return null;
+  const cat = catalogModelsFor(p);
+  if (cat.includes(r)) return r;
+  const stripTag = (m: string) => m.split(":")[0];
+  const rBase = stripTag(r).split("/").pop()!.toLowerCase();
+  for (const m of cat) {
+    if (stripTag(m).split("/").pop()!.toLowerCase() === rBase) return m;
+  }
+  return null;
+}
+
 export function resolveModel(model: string): [string, string] {
+  const norm = normalizeModelSpec(model);
+  if (norm.provider) return [norm.provider, norm.model];
   if (model in CODING && CODING[model] != null) return CODING[model]!;
   // Prefer llama-swap for any local GGUF id so hybrid never sends GPU models to Gemini
   if (isLocalSwapModelId(model)) return ["llama-swap", model];
