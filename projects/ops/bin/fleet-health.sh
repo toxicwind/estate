@@ -92,6 +92,7 @@ for f in sorted(CHDIR.glob("*.md")):
     except ValueError:
         seq = 0
     msgs.append({"seq": seq, "from": meta.get("from", "?"),
+                 "human": meta.get("human", ""),
                  "ts": ts, "body": body, "file": f.name})
 msgs.sort(key=lambda m: (m["ts"], m["seq"]))
 
@@ -129,13 +130,39 @@ for name, (jts, jseq) in sorted(joins.items(), key=lambda kv: kv[1][0]):
         reported.append(name)
 
 # ---------------------------------------------------------------- 2. erroring loops
+# Relayed messages are attributed to their true author: the "@user" in the
+# "[relayed #chan by @user]" envelope line, else the frontmatter "human:".
+# The envelope line and any JSON blobs are stripped before error matching —
+# machine fields like "timeout_ms" or "error":"" in market JSON are routine
+# traffic, not error reports.
+RELAY_HDR_RE = re.compile(r"^\[relayed #\S+ by @(\S+)\]\s*", re.M)
+def true_src(m):
+    if m["from"] == "relay":
+        mm = RELAY_HDR_RE.search(m["body"])
+        if mm:
+            return mm.group(1).rstrip("]")
+        if m["human"]:
+            return m["human"]
+    return m["from"]
+def err_scan_text(m):
+    t = RELAY_HDR_RE.sub("", m["body"])
+    prev = None
+    while prev != t:      # strip nested JSON objects
+        prev = t
+        t = re.sub(r"\{[^{}]*\}", " ", t)
+    return t
+for m in msgs:
+    m["src"] = true_src(m)
+
 ERR_RE = re.compile(r"traceback|error\b|failed|exception|refused|timeout|died|crash|panic", re.I)
 by_sender_firstline = {}
 for m in msgs:
-    if not ERR_RE.search(m["body"][:2000]):
+    scan = err_scan_text(m)
+    if not ERR_RE.search(scan[:2000]):
         continue
-    first = norm_template(m["body"].splitlines()[0] if m["body"].splitlines() else "")
-    key = (m["from"], first)
+    lines = [l for l in scan.splitlines() if l.strip()]
+    first = norm_template(lines[0] if lines else "")
+    key = (m["src"], first)
     by_sender_firstline.setdefault(key, []).append(m)
 for (sender, first), group in sorted(by_sender_firstline.items(), key=lambda kv: -len(kv[1])):
     if len(group) >= 4:
@@ -145,12 +172,21 @@ for (sender, first), group in sorted(by_sender_firstline.items(), key=lambda kv:
 
 # generic repeat loop: same sender, same normalized opening, high volume.
 # Routine market-engine traffic (oracle settles/assigns all day) is normal
-# operation, not a loop — exclude it.
+# operation, not a loop — exclude it. Hearth posts are excluded here too:
+# they get their own dedicated WATCHDOG-SPAM section below, so listing
+# them twice is noise.
 ROUTINE_RE = re.compile(
-    r"^(oracle:|auction |intake:|bidder-\S+ (bids|bid))", re.I)
+    r"^(oracle:|auction |intake:|bidder-\S+ (bids|bid)|"
+    r"\[relayed #\S*market)", re.I)
+def is_hearth(m):
+    return (m["from"] in ("hearth",) or
+            (m["from"] == "ember" and
+             ("Hearth" in m["body"][:80] or "🐺" in m["body"][:20])))
 by_open = {}
 for m in msgs:
     if ROUTINE_RE.search(m["body"][:80]):
+        continue
+    if is_hearth(m):
         continue
     opening = norm_template(" ".join(m["body"].split()[:14]))
     key = (m["from"], opening)
@@ -162,9 +198,7 @@ for (sender, opening), group in sorted(by_open.items(), key=lambda kv: -len(kv[1
             f"opening: {opening[:160]} (seqs {group[0]['seq']}..{group[-1]['seq']})"))
 
 # ---------------------------------------------------------------- 3. watchdog template-spam
-hearthish = [m for m in msgs
-             if m["from"] in ("hearth",) or
-             (m["from"] == "ember" and ("Hearth" in m["body"][:80] or "🐺" in m["body"][:20]))]
+hearthish = [m for m in msgs if is_hearth(m)]
 tmpl = {}
 for m in hearthish:
     t = norm_template(m["body"])
