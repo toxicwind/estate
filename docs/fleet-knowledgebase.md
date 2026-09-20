@@ -95,6 +95,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | perm-surgeon | Permissions/identity/execution-context audit + live repair (sudoers, unshare, capabilities, setuid, systemd users, interactive-toxic path) | Ember | DONE (2026-09-20) — perm-audit.sh committed to projects/yote/ops/ |
 | bg-tracker | Detached/backgrounded process audit (hatch+yote); permanent background-task registry (bg-launch/register/heartbeat/audit/kill) under projects/ops/bg-tracker | Ember | RUNNING (2026-09-20) |
 | sudo-smith | Sudo posture hardening (passwordless scope, key paths, shared-tree ownership) + missing-file forging (systemd/config/doc references) + permanent ops scripts | Ember | DONE (2026-09-20) -- commit 628bccc435 (projects/ops/bin/{sudo-audit.sh,missing-files.sh} + projects/yote/ops/hw-audit/{hw-audit.sh,hw-watchdog.py}; hw-audit.service/.timer referrers restored; live copies deployed to /home/toxic/) |
+| lodestone | Oracle-market wiring (Bedrock): live oracle intake E2E proof, DEBATE CHASE RULE (SPEC §9), knowledgebase-attestation bid gate (SPEC §10), permanent coordinator oracle-route skill | Ember (Bedrock) | RUNNING (2026-09-20) |
 
 | kindling | Fleet-culture implementation (Bedrock): spawn-protocol skill, welcome hooks, identity reconciliation, fleet-onboard step-zero script | Bedrock (parent orchestrator) | RUNNING (2026-09-20) |
 
