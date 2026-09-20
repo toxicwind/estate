@@ -43,13 +43,63 @@ pitchfork restart herd                           # restart the service
 Rebuild the fork binary:
 
 ```bash
-# NOTE (2026-09-19): this vendored tree is missing internal/config and does NOT
-# build standalone (`go build` fails: no required module provides
-# github.com/mostlygeek/llama-swap/internal/config). The supervised service
-# builds from sovereign-projects/sovereign-swap
+# This tree builds standalone: `go build` succeeds here (internal/config is
+# present; verified 2026-09-20). The supervised production service builds
+# from sovereign-projects/sovereign-swap
 # (binary: ~/projects/sovereign-projects/sovereign-swap/build/llama-swap).
-# Do not run `go build` here until internal/config is restored to this tree.
 ```
+
+## Self-healing peers (2026-09-20)
+
+Every `peers:` entry carries an event-driven health state machine
+(`internal/router/peer_health.go`, knobs in `internal/config/health.go`):
+
+- **States:** `healthy` -> `degraded` (advisory; still serves) ->
+  `circuit-open` (ejected from rotation; requests fail fast with
+  structured 503 `peer_circuit_open`) -> `half-open` -> `healthy`.
+- **No polling.** The half-open probe is the next *real* request after
+  `cool_off_seconds`, admitted single-flight. No timers, sleeps, or
+  background health checks anywhere in the path.
+- **Clean slate on recovery.** A successful probe readmits the peer with the
+  failure score reset to zero: re-ejection needs the full configured
+  threshold of *fresh* evidence. A recovered peer is never one failure away
+  from the circuit reopening. (The rolling error window is telemetry, not
+  score: a just-recovered peer may briefly read as `degraded` while the
+  window still holds the earlier failures — it stays in rotation.)
+- **Taxonomy:** every outcome is classified per the reliability taxonomy --
+  `402-not-entitled`, `404-dead-id`, `429-throttled`, `200-empty`,
+  `403-refused`, `5xx`, `transport`, `success` (aligned with
+  `projects/openrouter-probe/probe_reliability.py`). Each failure adds
+  its class weight to a score; each success subtracts `recovery_credit`.
+  Score >= `failure_threshold` opens the circuit.
+- **Scoring:** EWMA latency plus a rolling 32-outcome error window drive
+  the `degraded` signal; every state change emits a structured transition
+  log (peer id, states, class, score -- never URLs, headers, bodies,
+  or secrets).
+- **Config:** optional `health:` block per peer in `config/herd.yaml`
+  (see `config.example.yaml` and `config-schema.json`); enabled with
+  conservative defaults when absent. `enabled: false` opts a peer out.
+  Model selection stays in router config -- no model IDs are hardcoded.
+- **Observe:** `GET /peer-health` returns per-peer state, EWMA latency,
+  error rate, failure score, and retry-after.
+- **Prove it:** `scripts/probe-peer-health.sh` drives the full
+  failure -> ejection -> recovery -> readmission cycle against a scripted
+  backend and asserts every step. The driver is fully event-driven: process
+  readiness is signaled over named pipes, ports are allocated collision-free,
+  and the cool-off is never slept through — instead the herd runs twice
+  (long cool-off proves fail-fast 503; 5ms cool-off makes the first real
+  request after recovery the half-open probe). No sleeps, no polling loops,
+  no timer delays.
+
+Borrowed discipline: sony/gobreaker closed/half-open/open two-step
+admit/report with a generation guard; EWMA + rolling-window signals per
+current routing literature (HACO 2607.19215, SkyWalker 2505.24095, vLLM
+Semantic Router 2603.04444).
+
+Hot-path overhead (AMD Ryzen 7 8700F, `go test -bench`):
+`BenchmarkAdmit` 9.6 ns/op, `BenchmarkClassifyOutcome` 261 ns/op,
+`BenchmarkReportSuccess` 747 ns/op — about 1 microsecond per proxied
+request, dominated by proxy latency by three orders of magnitude.
 
 ## Related
 
