@@ -6,7 +6,7 @@
 set -euo pipefail
 
 KC_DIR="/home/toxic/sovereign/tools/kimi-claw"
-PF="/home/toxic/.local/share/mise/installs/pitchfork/2.25.0/pitchfork"
+PF="/home/toxic/.local/share/mise/installs/pitchfork/latest/pitchfork"
 BUN="/home/toxic/.bun/bin/bun"
 TOML="/home/toxic/sovereign/pitchfork.toml"
 

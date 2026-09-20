@@ -24,7 +24,7 @@ OUT_HTML="$VAR/openfang-health.html"
 STATUS_FILE="$VAR/last-status"
 LAST_POST="$VAR/last-post-ts"
 SQUAWK_ROOT="${SQUAWK_ROOT:-/home/toxic/.shingle/squawk-root}"
-PITCHFORK="/home/toxic/.local/share/mise/installs/pitchfork/2.25.0/pitchfork"
+PITCHFORK="/home/toxic/.local/share/mise/installs/pitchfork/latest/pitchfork"
 PROBE_TIMEOUT=5
 DIGEST_INTERVAL=86400
 
