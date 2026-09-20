@@ -81,6 +81,13 @@ RESERVE = 0.35          # minimum winning amount; below -> no_assign
 BID_SKEW_S = 2.0        # accept bids this far past deadline (clock skew)
 OUT_CAP = 65536         # captured output cap (informational; oracle never executes)
 
+# Debate chase rule (fleet mechanism, SPEC §9): debates settle at quorum
+# (>=2 replies) or at the hard deadline with a recorded chase.
+DEBATE_SOFT_MS = 30 * 60 * 1000    # chase (re-nudge) when <2 replies
+DEBATE_HARD_MS = 4 * 3600 * 1000   # hard settle (always > soft)
+DEBATE_QUORUM = 2                 # replies needed for a quorum settle
+KB_SHA_RE = re.compile(r"^[0-9a-f]{40}$")  # knowledgebase commit SHA
+
 # ---------------- inotify (ctypes, stdlib only) ----------------
 IN_CLOSE_WRITE = 0x00000008
 IN_MOVED_TO = 0x00000080
@@ -266,6 +273,28 @@ class Auction:
         self.assign_ts = None
 
 
+class Debate:
+    """Debate chase rule (SPEC §9): a debate settles only at quorum
+    (>=2 distinct replies) or at the hard deadline with the chase
+    recorded. States: OPEN -> CHASED -> SETTLED."""
+
+    def __init__(self, debate_id, question, opener, wanted, soft_ms,
+                 hard_ms, opened_ts=None):
+        self.debate_id = debate_id
+        self.question = question
+        self.opener = opener
+        self.wanted = list(wanted)
+        self.replies = {}       # from -> ts
+        self.state = "OPEN"
+        self.chased = False
+        now = opened_ts or time.time()
+        self.opened_ts = now
+        self.soft_ts = now + max(1, int(soft_ms or DEBATE_SOFT_MS)) / 1000.0
+        self.hard_ts = now + max(1, int(hard_ms or DEBATE_HARD_MS)) / 1000.0
+        if self.hard_ts <= self.soft_ts:
+            self.hard_ts = self.soft_ts + 60.0
+
+
 class OracleLoop:
     def __init__(self):
         WORK.mkdir(parents=True, exist_ok=True)
@@ -276,6 +305,9 @@ class OracleLoop:
         self.auctions = {}
         self.done = set()       # task_ids terminally published this run
         self.timers = []        # heap of (ts, kind, task_id)
+        self.debates = {}       # debate_id -> Debate (chase rule)
+        self.debate_req_seen = set()  # fingerprints of opened debates
+        self.attestation_gate_ts = 0.0  # set in reconstruct()
         self.running = True
         self._watch = None       # (fd, path, st_dev, st_ino, mask)
         self._pwatch = None      # parent-dir watch, same shape
@@ -373,6 +405,13 @@ class OracleLoop:
 
     # ----- oracle intake (front door) ---------------------------------
     def handle_intake(self, meta, data, replay=False):
+        # Intake decisions are live-only: replaying an intake_request must
+        # not re-append an intake-decision ledger row. The watch re-arm
+        # path re-ingests recent channel files with replay=True, and
+        # ingest is NOT idempotent for intake (triage appends to the
+        # ledger), so bail before triage touches anything.
+        if replay:
+            return
         try:
             from oracle_intake import triage
         except ImportError as e:
@@ -381,13 +420,21 @@ class OracleLoop:
         req = {"from": meta.get("from", "?"), "text": data.get("text", "")}
         d = triage(req, str(LEDGER))
         route = d.get("route")
-        if replay:
-            return
         if route == "TASK":
             tid = "intake-%d" % int(time.time() * 1000)
-            task = {
+            safe_frm = re.sub(r"[^A-Za-z0-9_-]", "-",
+                              str(req["from"]))[:40] or "intake"
+            payload = (
+                "# oracle intake task %s (triaged from %s)\n"
+                "# request: %s\n"
+                "# acceptance: %s\n"
+                "print('intake-executed:%s')\n"
+                % (tid, safe_frm, req["text"][:500].replace("\n", " "),
+                   str(d.get("acceptance", "")).replace("\n", " "), tid))
+            body = {
                 "task_id": tid,
                 "title": (req["text"][:80] or tid),
+                "payload": payload,
                 "tags": d.get("tags", ["probe"]),
                 "acceptance": d.get("acceptance", ""),
                 "posted_ts": time.time(),
@@ -395,9 +442,24 @@ class OracleLoop:
                 "timeout_ms": 300000,
                 "task_class": "standard",
             }
-            self.open_auction(task)
+            # The oracle vouches for the triaged request by publishing a
+            # control-signed task_post (SPEC 1.5): bidders only bid on
+            # channel task_posts, so a memory-only open_auction here would
+            # silently starve. The normal ingest path opens the auction
+            # and reconstruct() resumes it across restarts.
+            ctl_ts = int(time.time())
+            ctl_sig = sealed_mod.sign_control(
+                self.ctl_hmac_key, "task_post", tid,
+                sealed_mod.ctl_body_sha256(body), ctl_ts)
+            canon = json.dumps(body, sort_keys=True, separators=(",", ":"))
+            self.market.post("task_post", "task-%s" % tid, canon,
+                             task_id=tid, raw_body=True, frm=safe_frm,
+                             extra_fm={"ctl_sig": ctl_sig, "ctl_ts": ctl_ts},
+                             note=("intake: triaged TASK from %s "
+                                   "[tags: %s] (control-signed)."
+                                   % (req["from"], ",".join(body["tags"]))))
             self.fleet_note("intake: TASK %s opened (tags: %s)"
-                            % (tid, ",".join(task["tags"])))
+                            % (tid, ",".join(body["tags"])))
         elif route == "DIRECT":
             self.log("intake_direct", frm=req["from"],
                      request=req["text"][:200])
@@ -406,8 +468,159 @@ class OracleLoop:
             self.fleet_note("intake: REJECTED (%s): %s"
                             % (d.get("reason"), req["text"][:200]))
         else:
-            self.fleet_note("intake: %s opened (%s): %s"
-                            % (route, d.get("reason"), req["text"][:200]))
+            # RESEARCH / PETITION: recorded in the ledger by triage and
+            # announced here; no auction is opened (intake never mutates
+            # tasks for non-TASK routes).
+            if route == "DEBATE":
+                # The debate chase rule owns this now: open a real debate
+                # (named agents, chase on timeout, quorum-or-hard settle)
+                # instead of announcing into the void.
+                self.open_debate(req["text"], req["from"], wanted=None)
+            else:
+                self.fleet_note("intake: %s (%s): %s"
+                                % (route, d.get("reason"), req["text"][:200]))
+
+    def _attestation_ok(self, att):
+        """Knowledgebase attestation gate (SPEC §10). Returns None when
+        the bid attestation is well-formed, else the reject reason."""
+        if not isinstance(att, dict):
+            return "no-attestation"
+        if not KB_SHA_RE.match(str(att.get("kb_sha") or "")):
+            return "malformed-attestation"
+        crews = att.get("checked_crews")
+        if (not isinstance(crews, list) or not crews
+                or not all(isinstance(c, str) and c.strip()
+                           for c in crews)):
+            return "malformed-attestation"
+        if (not isinstance(att.get("no_overlap"), str)
+                or not att["no_overlap"].strip()):
+            return "malformed-attestation"
+        return None
+
+    # ----- debate chase rule (SPEC §9) -----
+    def debate_roster(self):
+        """Default named agents for debates opened without an explicit
+        wanted list. Committed file beats the builtin fallback."""
+        try:
+            raw = (AGENT_DIR / "debates" / "roster.json").read_text(
+                encoding="utf-8")
+            wanted = json.loads(raw).get("wanted")
+            if isinstance(wanted, list) and wanted:
+                return [str(w).strip() for w in wanted if str(w).strip()]
+        except (OSError, ValueError):
+            pass
+        return ["ember", "kindling"]
+
+    def open_debate(self, question, opener, wanted=None, soft_ms=None,
+                    hard_ms=None):
+        question = (question or "").strip()[:500]
+        if not question:
+            self.log("debate_rejected", reason="empty-question",
+                     opener=opener)
+            return None
+        fp = hashlib.sha256(
+            (opener + "\n" + question).encode()).hexdigest()[:16]
+        if fp in self.debate_req_seen:
+            self.log("debate_duplicate", opener=opener, fp=fp)
+            return None
+        did = "debate-%d-%s" % (int(time.time() * 1000),
+                                os.urandom(2).hex())
+        want = [str(w).strip() for w in (wanted or self.debate_roster())
+                if str(w).strip()] or self.debate_roster()
+        soft_ms = int(soft_ms) if soft_ms else DEBATE_SOFT_MS
+        hard_ms = int(hard_ms) if hard_ms else DEBATE_HARD_MS
+        d = Debate(did, question, opener, want, soft_ms, hard_ms)
+        self.debates[did] = d
+        self.debate_req_seen.add(fp)
+        self.log("debate_open", debate_id=did, question=question,
+                 opener=opener, wanted=want, soft_ms=soft_ms,
+                 hard_ms=hard_ms, fp=fp)
+        heapq.heappush(self.timers, (d.soft_ts, "debate_chase", did))
+        heapq.heappush(self.timers, (d.hard_ts, "debate_hard", did))
+        self.fleet_note(
+            "\U0001f5e3\ufe0f debate opened (%s) by %s: %s\n"
+            "wanted replies from: %s \u2014 reply in bid-market as "
+            "debate_reply with debate_id=%s (quorum: %d replies; the "
+            "oracle chases if it goes quiet)."
+            % (did, opener, question, ", ".join(want), did,
+               DEBATE_QUORUM))
+        return did
+
+    def handle_debate_reply(self, meta, data):
+        did = meta.get("task_id") or data.get("debate_id") or ""
+        d = self.debates.get(did)
+        frm = meta.get("from", "?")
+        if not d or d.state == "SETTLED":
+            self.log("debate_reply_orphan", debate_id=did, frm=frm)
+            return
+        if frm in SELF_FROMS or frm in d.replies:
+            return
+        d.replies[frm] = time.time()
+        self.log("debate_reply", debate_id=did, frm=frm,
+                 text=str(data.get("text", ""))[:300],
+                 replies=len(d.replies))
+        if len(d.replies) >= DEBATE_QUORUM:
+            self._settle_debate(d, "quorum")
+        else:
+            self.fleet_note(
+                "\U0001f5e3\ufe0f debate %s: reply %d/%d (from %s)."
+                % (did, len(d.replies), DEBATE_QUORUM, frm))
+
+    def debate_chase(self, did):
+        """Soft deadline with <quorum replies: name-and-nudge once."""
+        d = self.debates.get(did)
+        if not d or d.state != "OPEN":
+            return
+        if len(d.replies) >= DEBATE_QUORUM:
+            return  # settled concurrently; stale timer
+        d.state = "CHASED"
+        d.chased = True
+        missing = [w for w in d.wanted if w not in d.replies]
+        self.log("debate_chased", debate_id=did, wanted=d.wanted,
+                 replied=sorted(d.replies), missing=missing)
+        names = ", ".join(missing) if missing else "anyone watching"
+        self.fleet_note(
+            "\U0001f514 debate chase (%s): %d/%d replies so far \u2014 "
+            "%s, you were named as wanted on this debate and haven\u2019t "
+            "replied. Question: %s"
+            % (did, len(d.replies), DEBATE_QUORUM, names, d.question))
+
+    def debate_hard(self, did):
+        d = self.debates.get(did)
+        if not d or d.state == "SETTLED":
+            return
+        n = len(d.replies)
+        self._settle_debate(d, "quorum" if n >= DEBATE_QUORUM
+                            else "no_quorum")
+
+    def _settle_debate(self, d, verdict, replay=False):
+        """Terminal settle. Invariant: a no_quorum settle ALWAYS has a
+        recorded chase \u2014 if the soft timer never fired, the settle
+        path fires (and records) the chase first."""
+        if d.state == "SETTLED":
+            return
+        if verdict == "no_quorum" and not d.chased:
+            d.chased = True
+            d.state = "CHASED"
+            missing = [w for w in d.wanted if w not in d.replies]
+            self.log("debate_chased", debate_id=d.debate_id,
+                     wanted=d.wanted, replied=sorted(d.replies),
+                     missing=missing,
+                     note="fired by settle path (invariant)", replay=replay)
+            self.fleet_note(
+                "\U0001f514 debate chase (%s): recorded at settle \u2014 "
+                "wanted %s; %d/%d replies. Question: %s"
+                % (d.debate_id, ", ".join(d.wanted), len(d.replies),
+                   DEBATE_QUORUM, d.question))
+        d.state = "SETTLED"
+        self.log("debate_settled", debate_id=d.debate_id, verdict=verdict,
+                 replies=sorted(d.replies), chased=d.chased,
+                 question=d.question[:200], replay=replay)
+        self.fleet_note(
+            "\U0001f5e3\ufe0f debate settled (%s): %s \u2014 %d/%d "
+            "replies%s. %s"
+            % (d.debate_id, verdict, len(d.replies), DEBATE_QUORUM,
+               " (chase recorded)" if d.chased else "", d.question[:160]))
 
     def handle_bid(self, meta, data, replay=False):
         tid = meta.get("task_id") or data.get("task_id")
@@ -427,9 +640,24 @@ class OracleLoop:
         except (TypeError, ValueError):
             bid_ts = 0
         reason = None
-        verified, vreason = self.verify_bid_envelope(meta, tid)
-        if vreason:
-            reason = vreason
+        # Knowledgebase attestation gate (fleet rule, SPEC §10): a bid
+        # must attest it read Active Crews (docs/fleet-knowledgebase.md
+        # §2) and checked for overlapping work. Shape-checked BEFORE
+        # the envelope crypto; missing/malformed -> mechanism reject.
+        att = data.get("kb_attestation")
+        areason = self._attestation_ok(att)
+        if areason and mtime >= self.attestation_gate_ts:
+            reason = areason
+        else:
+            if areason:
+                # grandfather: bid predates the gate (in flight across the
+                # deploy restart). Logged, accepted once, never again.
+                self.log("bid_grandfathered", task_id=tid, bidder=bidder,
+                         replay=replay)
+                att = None
+            verified, vreason = self.verify_bid_envelope(meta, tid)
+            if vreason:
+                reason = vreason
         elif (mtime > a.deadline
               or bid_ts > a.deadline + BID_SKEW_S):
             # Deadline is enforced on the oracle-observed arrival (mtime,
@@ -469,9 +697,13 @@ class OracleLoop:
             "tags_matched": sorted(set(data.get("tags_matched", [])) & a.tags),
             "cost_ms": data.get("cost_ms"),
             "eta_ms": data.get("eta_ms"),
+            "attestation": att,
         }
         self.log("bid_accepted", task_id=tid, bidder=bidder,
                  amount=verified["amount"], nonce=verified["nonce"],
+                 kb_sha=(att or {}).get("kb_sha"),
+                 checked_crews=(att or {}).get("checked_crews"),
+                 no_overlap=(att or {}).get("no_overlap"),
                  replay=replay)
 
     def _vickrey(self, a):
@@ -493,7 +725,8 @@ class OracleLoop:
                         key=lambda kv: (-kv[1]["amount"], kv[1]["mtime"]))
         reveal = [{"bidder": b, "amount": d["amount"], "nonce": d["nonce"],
                    "eligible": eligible(b),
-                   "tags_matched": d["tags_matched"]}
+                   "tags_matched": d["tags_matched"],
+                   "kb_attestation": d.get("attestation")}
                   for b, d in ranked]
         contenders = [(b, d) for b, d in ranked if eligible(b)]
         if not contenders:
@@ -855,6 +1088,20 @@ class OracleLoop:
                     self.handle_intake(meta, data, replay=replay)
                 else:
                     self.log("intake_ignored", reason="flag_off", frm=frm)
+            elif mt == "debate_request":
+                # Debate chase rule (SPEC §9). Live-only: replay
+                # reconstructs debates from the ledger's debate_open
+                # events; re-ingesting the request would open a duplicate.
+                if not replay:
+                    self.open_debate(data.get("question", ""), frm,
+                                     wanted=data.get("wanted"),
+                                     soft_ms=data.get("soft_ms"),
+                                     hard_ms=data.get("hard_ms"))
+            elif mt == "debate_reply":
+                # Replies are ledger-recorded live; replay rebuilds from
+                # debate_reply events.
+                if not replay:
+                    self.handle_debate_reply(meta, data)
             elif mt == "result":
                 self.handle_result(meta, data, replay=replay)
         except Exception as e:
@@ -896,6 +1143,9 @@ class OracleLoop:
         terminal = {}    # task_id -> "settled" | "no_assign"
         assign_ev = {}   # task_id -> last ledger "assigned" event
         settle_ev = {}   # task_id -> last ledger "settled" event
+        debates_build = {}   # debate_id -> rebuild dict (chase rule)
+        debate_req_seen = set()  # request fingerprints (dupe guard)
+        gate_ts = 0.0        # attestation_gate_live activation (SPEC §10)
         if LEDGER.exists():
             with open(LEDGER, encoding="utf-8") as f:
                 for line in f:
@@ -907,9 +1157,46 @@ class OracleLoop:
                     except json.JSONDecodeError:
                         continue
                     tid = ev.get("task_id")
+                    e = ev.get("event")
+                    # Debate chase rule + attestation gate: their events
+                    # carry debate_id (or no id), not task_id.
+                    if e == "attestation_gate_live":
+                        gate_ts = max(gate_ts, ev.get("ts", 0) or 0)
+                    elif e == "debate_open":
+                        did = ev.get("debate_id")
+                        if did:
+                            debate_req_seen.add(ev.get("fp", ""))
+                            debates_build[did] = {
+                                "question": ev.get("question", ""),
+                                "opener": ev.get("opener", "?"),
+                                "wanted": ev.get("wanted", []),
+                                "soft_ms": ev.get("soft_ms",
+                                                  DEBATE_SOFT_MS),
+                                "hard_ms": ev.get("hard_ms",
+                                                  DEBATE_HARD_MS),
+                                "opened_ts": ev.get("ts", 0),
+                                "replies": {},
+                                "state": "OPEN",
+                                "chased": False,
+                                "settled": False,
+                            }
+                    elif e == "debate_reply":
+                        db = debates_build.get(ev.get("debate_id"))
+                        if db and not db["settled"]:
+                            db["replies"][ev.get("frm", "?")] = \
+                                ev.get("ts", 0)
+                    elif e == "debate_chased":
+                        db = debates_build.get(ev.get("debate_id"))
+                        if db:
+                            db["state"] = "CHASED"
+                            db["chased"] = True
+                    elif e == "debate_settled":
+                        db = debates_build.get(ev.get("debate_id"))
+                        if db:
+                            db["settled"] = True
+                            db["state"] = "SETTLED"
                     if not tid:
                         continue
-                    e = ev.get("event")
                     if e == "settled":
                         terminal[tid] = "settled"
                         settle_ev[tid] = ev
@@ -1169,6 +1456,44 @@ class OracleLoop:
                 self.log("replay_resumed_open", task_id=tid,
                          bids=len(a.bids))
                 resumed["open"] += 1
+        # ----- debate chase rule: rebuild open debates, re-arm timers --
+        # ----- attestation gate: record first activation ---------------
+        self.attestation_gate_ts = gate_ts
+        if self.attestation_gate_ts <= 0:
+            # First run with the gate: bids already in flight
+            # (mtime < now) are grandfathered exactly once.
+            self.attestation_gate_ts = now
+            self.log("attestation_gate_live",
+                     note="knowledgebase-attestation gate active; bids "
+                          "without kb_attestation are rejected (SPEC §10)")
+        self.debate_req_seen = debate_req_seen
+        for did, db in debates_build.items():
+            if db["settled"]:
+                continue
+            d = Debate(did, db["question"], db["opener"], db["wanted"],
+                       db["soft_ms"], db["hard_ms"], db["opened_ts"])
+            d.replies.update(db["replies"])
+            d.state = db["state"]
+            d.chased = db["chased"]
+            self.debates[did] = d
+            n = len(d.replies)
+            if n >= DEBATE_QUORUM:
+                # quorum reached while down: settle now, once
+                self._settle_debate(d, "quorum", replay=True)
+            elif d.hard_ts <= now:
+                # hard deadline passed while down: settle once. The chase
+                # invariant is enforced inside _settle_debate.
+                self._settle_debate(
+                    d, "quorum" if n >= DEBATE_QUORUM else "no_quorum",
+                    replay=True)
+            else:
+                if d.state == "OPEN":
+                    heapq.heappush(
+                        self.timers,
+                        (d.soft_ts if d.soft_ts > now else now,
+                         "debate_chase", did))
+                heapq.heappush(self.timers, (d.hard_ts, "debate_hard",
+                                             did))
         self.log("replay_done", **resumed)
 
     # ----- self-healing channel watch (2026-09-20) -----
@@ -1263,6 +1588,10 @@ class OracleLoop:
                         self.close_bidding(tid)
                     elif kind == "exec_timeout":
                         self.exec_timeout(tid)
+                    elif kind == "debate_chase":
+                        self.debate_chase(tid)
+                    elif kind == "debate_hard":
+                        self.debate_hard(tid)
                 timeout = self.timers[0][0] - time.time() if self.timers else None
                 if timeout is not None and timeout < 0:
                     timeout = 0
