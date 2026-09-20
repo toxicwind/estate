@@ -214,6 +214,7 @@ composer.phar
 bin/*
 !bin/.gitkeep
 !bin/port-audit
+!bin/tcp-probe
 obj/*
 !obj/.gitkeep
 *.user

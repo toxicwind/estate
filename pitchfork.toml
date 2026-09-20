@@ -52,7 +52,7 @@ run = "exec bun run src/yote.ts"
 dir = "projects/yote"
 mise = false
 retry = true
-ready_http = "http://127.0.0.1:25109/health"
+ready_http = "http://127.0.0.1:25102/health"
 depends = ["shep"]
 auto = ["start"]
 
@@ -523,22 +523,10 @@ boot_start = true
 ready_cmd = "curl -sf http://127.0.0.1:25160/health >/dev/null"
 auto = ["start"]
 
-# pixel-adb-keepalive (2026-09-17): holds Pixel adb over LAN wireless debugging.
-# One-time: phone "Pair with pairing code" -> adb pair 10.0.0.77:<port>.
-# From then on this reconnects 10.0.0.77:<connect-port> every 60s, rediscovering
-# the port if wireless debugging rotates it. Replaces Tailscale tcpip target.
-# NOTE: pitchfork supervisor is stale (daemon unknown to it); currently started
-# direct via setsid nohup until supervisor is reconciled. Additive only.
-[daemons.pixel-adb-keepalive]
-run = "exec /home/toxic/sovereign/projects/android-fleet/bin/pixel-adb-keepalive.sh"
-dir = "/home/toxic"
-mise = false
-retry = true
-auto = ["start"]
+# pixel-adb-keepalive REMOVED 2026-09-20: superseded by phone-lane-keeper.service
+# (active, event-driven, identity-validated healing; successful heal in today ledger).
+# Script kept at projects/android-fleet/bin/pixel-adb-keepalive.sh for reference.
 
-# sovereign-chat: first-class fleet coordination plane (2026-09-18).
-# Presence, activity, rooms, WebSocket push, MCP. Binds 127.0.0.1 + tailscale.
-# Token lives ONLY in /home/toxic/.config/sovereign-chat-token (0600).
 [daemons.sovereign-chat]
 run = "exec bun run chat.ts"
 dir = "/home/toxic/sovereign/tools/sovereign-chat"
