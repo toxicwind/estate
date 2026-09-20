@@ -228,6 +228,39 @@ def restart_bidder(name):
     return False, (out or "empty response")[-300:]
 
 
+def pulse_verdict(snap_fresh, active):
+    """Pure pulse-verdict rule (kept separate so tests can pin it):
+    "all green" only when the snapshot is fresh AND the condition
+    registry is empty. Any active condition — daemon, bridge, stuck,
+    oracle — forces "needs eyes". Stale snapshot forces "eyes closed".
+    The pulse can never contradict the alert state."""
+    if not snap_fresh:
+        return ("eyes closed this half hour — snapshot stale or "
+                "unreachable, not claiming green")
+    if active:
+        return ("needs eyes this half hour — active: "
+                + ", ".join(active))
+    return "all green this half hour"
+
+
+def sweep_domain_keys(active_keys, observed, is_yote):
+    """Pure domain-sweep key selection (kept separate so tests can pin
+    it): the yote sweep only clears non-`hatch:` keys, the hatch sweep
+    only clears `hatch:` keys. Neither domain may clear the other's
+    conditions — cross-domain residue is a bug."""
+    observed = set(observed)
+    return sorted(k for k in active_keys
+                  if (not k.startswith("hatch:")) == is_yote
+                  and k not in observed)
+
+
+def reannounce_allowed(reann, tid):
+    """Pure re-announce budget check (kept separate so tests can pin
+    it): a stuck task gets at most REANNOUNCE_MAX re-posts, then the
+    watchdog escalates instead of re-posting forever."""
+    return reann.get(tid, {}).get("attempts", 0) < REANNOUNCE_MAX
+
+
 def run():
     """One watchdog tick. Returns (verdict, extra)."""
     state = load_state()
@@ -304,14 +337,26 @@ def run():
     led = snap.get("ledger", {})
 
     # --- oracle-market loop ---
+    # Loop-dead is a process fact, not a ledger-age guess: ledger age
+    # alone cannot distinguish "loop dead" from "no demand" (2026-09-20:
+    # a 21,050s gap was a loop_stop/loop_start boundary with zero intake
+    # files present — healthy quiet, not a wedge).
     oc = snap.get("oracle", {})
-    if oc.get("pitchfork") != "running" or not oc.get("proc_alive"):
-        cond("oracle:down", f"{oc.get('pitchfork')}/{oc.get('proc_alive')}",
+    oproc = oc.get("proc") or {}
+    if oc.get("pitchfork") != "running" or not oproc.get("running"):
+        pid_txt = (f"pid {oproc['pid']}" if oproc.get("pid") else "no pid")
+        cond("oracle:loop-dead", "dead",
              f"\U0001F43A Hearth here — \U0001F6A8 the market loop is dark "
-             f"(pitchfork: {oc.get('pitchfork')}, process alive: "
-             f"{oc.get('proc_alive')}). The whole bazaar stalls without it. "
-             f"I'm NOT restarting it myself — needs a careful hand. "
+             f"(pitchfork: {oc.get('pitchfork')}, {pid_txt}). The whole "
+             f"bazaar stalls without it. I'm NOT restarting it myself — "
+             f"needs a careful hand. "
              f"Ember/Chris, eyes on sovereign/oracle-market please.")
+    for b in led.get("intake_backlog", []):
+        fn = b.get("file", "?")
+        cond(f"oracle:backlog:{fn}", "backlogged",
+             f"\U0001F43A Hearth here — intake `{fn}` has waited "
+             f"{b.get('age_s', '?')}s with no triage decision from the "
+             f"oracle. It may be wedged. Keeping watch.")
 
     # --- stuck tasks (re-announce deduped: max REANNOUNCE_MAX per task) ---
     reann = state.setdefault("reannounced", {})
@@ -319,7 +364,7 @@ def run():
         tid = t["task_id"]
         if t["kind"] == "unseen":
             att = reann.get(tid, {"attempts": 0})
-            if att["attempts"] < REANNOUNCE_MAX:
+            if reannounce_allowed(reann, tid):
                 ok = reannounce_on_yote(t["file"], tid)
                 att = {"attempts": att["attempts"] + 1, "ts": now,
                        "ok": ok}
@@ -396,14 +441,12 @@ def run():
              f"anything — needs Chris/Ember. Exec lane still worked this "
              f"tick, so we're not dark yet.")
 
-    # --- ledger stall (no growth while market should be live) ---
-    last_age = led.get("last_age_s")
-    if (last_age is not None and last_age > 1200
-            and snap.get("stuck_tasks")):
-        cond("ledger:stall", "stall",
-             f"\U0001F43A Hearth here — ledger hasn't grown in "
-             f"{last_age:.0f}s and there are stuck tasks. Market may be "
-             f"gummed up. Keeping watch.")
+    # --- ledger stall: REMOVED 2026-09-20 ---
+    # The old "ledger hasn't grown in Ns" alert was the source of the
+    # false "stalled 24,206 seconds" diagnosis: ledger age alone cannot
+    # distinguish a dead loop from a quiet market. Replaced by the
+    # oracle:loop-dead (process fact) and oracle:backlog:* (per-request
+    # triage fact) conditions above. A quiet market is healthy.
 
     # --- proof-of-life ---
     plof = led.get("proof_of_life", {})
@@ -434,15 +477,13 @@ def run():
     # Yote domain only trusted when the snapshot was good; hatch domain
     # only when the watchlist was readable. Never sweep blind.
     def sweep_domain(is_yote):
-        cleared = [k for k in reg.active()
-                   if (not k.startswith("hatch:")) == is_yote
-                   and k not in observed]
+        cleared = sweep_domain_keys(reg.active(), observed, is_yote)
         for k in cleared:
             del reg.d[k]
             # a re-occurring stuck task gets a fresh re-announce budget
             if k.startswith("stuck:") and k[6:] in reann:
                 del reann[k[6:]]
-        return sorted(cleared)
+        return cleared
 
     if snapshot_ok:
         for k in sweep_domain(True):
@@ -466,16 +507,7 @@ def run():
     # --- 30-min pulse: verdict from the SAME registry (no drift) ---
     if now - state.get("last_heartbeat_ts", 0) >= HEARTBEAT_S:
         snap_fresh = snapshot_ok and (now - snap.get("ts", 0)) < SNAP_FRESH_S
-        active = reg.active()
-        if not snap_fresh:
-            # PRE-FLIGHT: stale/unreachable snapshot -> never claim green
-            vtext = ("eyes closed this half hour — snapshot stale or "
-                     "unreachable, not claiming green")
-        elif active:
-            vtext = (f"needs eyes this half hour — active: "
-                     f"{', '.join(active)}")
-        else:
-            vtext = "all green this half hour"
+        vtext = pulse_verdict(snap_fresh, reg.active())
         wins = led.get("wins_30m", {}) or {}
         top = max(wins.items(), key=lambda kv: kv[1]) if wins else None
         shout = (f" Top dog: {top[0].replace('bidder-', '')} with {top[1]} "
