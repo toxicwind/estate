@@ -5,6 +5,9 @@ description: "Chris's latency-first engineering doctrine (NOT trading): latency 
 
 # hft-latency
 
+Repo: [toxicwind/sovereign-projects](https://github.com/toxicwind/sovereign-projects)
+(`skills/hft-latency/`); catalog entry in [`skills/README.md`](../README.md).
+
 > **THIS SKILL IS MUTABLE BY AGENTS.** Any agent may edit, extend, or correct
 > this skill live as it learns — new patterns, sharper ceilings, better winners.
 > It is a living document, not a spec. If reality disagrees with a line in here,

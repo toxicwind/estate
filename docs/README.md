@@ -24,6 +24,7 @@ grouped by what it actually is. New docs go in `docs/plans/` (proposals) or
 - [MORPHE_PATCHING.md](MORPHE_PATCHING.md) — Morphe patching research SSOT
 - [gemini-tool-retrieval.md](gemini-tool-retrieval.md) — Gemini API tool retrieval integration brief
 - [NVIDIA_NIM_API_DOCS.md](NVIDIA_NIM_API_DOCS.md) — NVIDIA NIM API reference
+- [edge-additions-20260920.md](edge-additions-20260920.md) — September-2026 cutting-edge additions: keypool racing, hedged racer, routing scores, squawk history search (impact-ordered, with paper lineage)
 
 ## Hardware & OS tuning (awrawr-pc)
 
