@@ -1,88 +1,91 @@
 #!/usr/bin/env bun
-// Modular tau-tmux audit helper - takes argv maximally and experimentally
-// Usage: bun run helper/audit.ts [--check nvidia|cascade|env|all] [--verbose]
+// tau-tmux audit helper — REAL checks against the live tau install.
+// Usage: bun run helper/audit.ts [--verbose]
+// Exit: 0 = all PASS, 1 = any FAIL. Every check observes the box; none are stubbed.
+import { existsSync, lstatSync, readlinkSync, readdirSync } from "fs";
+import { join } from "path";
+import { execFileSync } from "child_process";
 
-import "./src/env"; // load env vars
+const HOME = process.env.HOME || "/home/toxic";
+const TAU_HOME = join(HOME, ".tau");
+const SOVEREIGN = join(HOME, "sovereign");
+const verbose = process.argv.includes("--verbose") || process.argv.includes("-v");
 
-interface CheckConfig {
-  nvidiaJson?: boolean;
-  nvidiaTs?: boolean;
-  cascadeJson?: boolean;
-  envVars?: boolean;
-  all?: boolean;
+interface Result { name: string; pass: boolean; detail: string }
+const results: Result[] = [];
+function check(name: string, pass: boolean, detail: string) {
+  results.push({ name, pass, detail });
+  console.log(`[${pass ? "PASS" : "FAIL"}] ${name}${verbose || !pass ? ` — ${detail}` : ""}`);
 }
-
-const args = process.argv.slice(2);
-
-// Parse simple flags
-let checks: CheckConfig = {};
-let verbose = false;
-
-for (let i = 0; i < args.length; i++) {
-  if (args[i] === "--check" && i + 1 < args.length) {
-    const key = args[i + 1] as keyof CheckConfig;
-    if (key) checks[key] = true;
-    i++;
-  } else if (args[i] === "--verbose" || args[i] === "-v") {
-    verbose = true;
-  } else if (args[i] === "--all") {
-    checks = {
-      nvidiaJson: true,
-      nvidiaTs: true,
-      cascadeJson: true,
-      envVars: true,
-    };
+function sh(cmd: string, args: string[], timeoutMs = 15000): string {
+  try {
+    return execFileSync(cmd, args, { timeout: timeoutMs, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+  } catch (e: any) {
+    throw new Error(e?.stderr?.toString?.().trim() || e?.message || String(e));
   }
 }
 
-// Default to all checks if none specified
-if (Object.keys(checks).length === 0) checks = { all: true };
+// 1. tau on PATH is the launcher and the chain resolves
+try {
+  const which = sh("sh", ["-c", "command -v tau"]);
+  const head = sh("head", ["-c", "200", which]);
+  const isLauncher = head.includes("Tau Launcher");
+  let resolved = "unresolved";
+  if (isLauncher) {
+    const distBin = join(SOVEREIGN, "projects/tau/engine/packages/coding-agent/dist/omp");
+    if (existsSync(distBin)) resolved = `dist/omp`;
+    else resolved = "bun src fallback";
+  }
+  check("tau launcher resolves", isLauncher && resolved !== "unresolved", `${which} -> ${resolved}`);
+} catch (e: any) { check("tau launcher resolves", false, e.message); }
 
-// Core check functions
-function checkNvidiaJson(): boolean {
-  console.log("🔍 Checking nvidia.json...");
-  return true;
+// 2. Engine version
+try {
+  const ver = sh("tau", ["--version"], 30000);
+  check("tau engine version", /18\.2\.\d+/.test(ver), ver.split("\n")[0]);
+} catch (e: any) { check("tau engine version", false, e.message.slice(0, 120)); }
+
+// 3. PI_CONFIG_DIR honored
+{
+  const cfg = join(TAU_HOME, "agent", "config.yml");
+  check("PI_CONFIG_DIR=.tau honored", existsSync(cfg), cfg);
 }
 
-function checkNvidiaTs(): boolean {
-  console.log("🔍 Checking nvidia.ts...");
-  return true;
+// 4. Skills symlink + discoverability
+{
+  const link = join(TAU_HOME, "agent", "skills");
+  let ok = false, detail = "missing";
+  try {
+    if (lstatSync(link).isSymbolicLink()) {
+      const target = readlinkSync(link);
+      const abs = target.startsWith("/") ? target : join(join(TAU_HOME, "agent"), target);
+      if (existsSync(abs)) {
+        let n = 0;
+        for (const entry of readdirSync(abs, { withFileTypes: true })) {
+          if (entry.isDirectory() && existsSync(join(abs, entry.name, "SKILL.md"))) n++;
+        }
+        ok = n > 0;
+        detail = `${link} -> ${target} (${n} skills with SKILL.md)`;
+      } else detail = `target missing: ${abs}`;
+    } else detail = "not a symlink";
+  } catch (e: any) { detail = e.message; }
+  check("skills symlink live", ok, detail);
 }
 
-function checkCascadeJson(): boolean {
-  console.log("🔍 Checking cascade.json...");
-  return true;
+// 5. Routers reachable
+for (const [name, url] of [["herd :25100", "http://127.0.0.1:25100/v1/models"], ["sovereign :25104", "http://127.0.0.1:25104/v1/models"]]) {
+  try {
+    const out = sh("curl", ["-s", "-m", "8", "-o", "/dev/null", "-w", "%{http_code}", url]);
+    check(`${name} reachable`, out === "200", `HTTP ${out}`);
+  } catch (e: any) { check(`${name} reachable`, false, e.message.slice(0, 120)); }
 }
 
-function checkEnvVars(): boolean {
-  console.log("🔍 Checking .env...");
-  return true;
+// 6. No stale config files
+{
+  const stale = ["nvidia.json", "cascade.json"].filter(f => existsSync(join(SOVEREIGN, f)));
+  check("no stale nvidia/cascade json", stale.length === 0, stale.length ? `found: ${stale.join(", ")}` : "absent (provider catalog is models.yml)");
 }
 
-// Run checks
-const results: Array<{ name: string; pass: boolean }> = [];
-
-if (checks.nvidiaJson || checks.all) {
-  results.push({ name: "nvidia.json", pass: checkNvidiaJson() });
-}
-if (checks.nvidiaTs || checks.all) {
-  results.push({ name: "nvidia.ts", pass: checkNvidiaTs() });
-}
-if (checks.cascadeJson || checks.all) {
-  results.push({ name: "cascade.json", pass: checkCascadeJson() });
-}
-if (checks.envVars || checks.all) {
-  results.push({ name: ".env", pass: checkEnvVars() });
-}
-
-// Summary
-let allPass = true;
-results.forEach((r) => {
-  const status = r.pass ? "PASS" : "FAIL";
-  console.log(`[${status}] ${r.name}`);
-  if (!r.pass) allPass = false;
-  if (verbose && !r.pass)
-    console.log(`  Details: check configuration matches expected values`);
-});
-
-process.exit(allPass ? 0 : 1);
+const failed = results.filter(r => !r.pass);
+console.log(`\n${results.length - failed.length}/${results.length} checks passed`);
+process.exit(failed.length ? 1 : 0);
