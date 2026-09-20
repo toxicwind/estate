@@ -82,6 +82,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | readme-deconfusion (bedrock/codex) | README inventory + deconfusion + deeplinking for every repo except the sovereign-projects master README (Scribe's lane); permanent re-runnable link-check script | Bedrock | RUNNING (2026-09-20) |
 
 | quarry | Orphan AUDIT/inventory (Spindle + estate: worktrees, /tmp, stashes, stray repos, daemon PIDs); verdicts revived/retired/left-alone; integration-worthy finds FED to repo-integrator-max in fleet | Bedrock (parent orchestrator) | RUNNING (2026-09-20) — stood down from repo integration per fleet seq 11314; feeds integration candidates to repo-integrator-max |
+| signal (beellama/toolcall-liaison) | Bedrock liaison: live end-to-end inference proof for beellama-fast + toolcall-llm repair; zero-touch on daemon configs (edge-daemon-fix/edge-forge/herd-healer own repair) | Bedrock (parent orchestrator) | DONE (2026-09-20) — repair verified: real inference round-trips via yote-conn, beellama-fast :25122 returned real output, toolcall-llm :25152 returned real generated reasoning; proof posted fleet seq 11320; worker verdicts fleet seq 11199/11241/11244 |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 
