@@ -53,7 +53,10 @@ into pitchfork groups: `mesh`, `core`, `agents`, `all`
 | Port | Daemon | Role |
 | ---- | ------ | ---- |
 | :25100 | `herd` | Inference front door — OpenAI-compatible `/v1` (llama-swap fork + flock router) |
+| :25101 | `model-guard` | Request-contract enforcement proxy in front of herd (rewrites `chat/completions` per `config/model_constraints.yaml`) |
 | :25109 | `keypool` | Provider key pool for herd cloud routing (`bin/herd-keypool.py`) |
+| :25201 | `rust-web` | Ops dashboard backend |
+| :25104 | `sovereign-router` | Multi-provider LLM router (Bun/TS, `tools/sovereign-router/`) |
 | :8000 | `flock` | Cloud-provider routing daemon backing herd |
 | :25127 | `shep` | MCP federation — upstream servers → one endpoint |
 | :25147 | `squawk-ws` | Squawk agent chat — websocket server |
@@ -161,6 +164,10 @@ unified mesh config. Daemons: `shep` (`:25127`, MCP federation),
 [`docs/README.md`](https://github.com/toxicwind/sovereign-projects/blob/main/docs/README.md)
 for the index). `hatch/docs/` holds the bridge/cell docs moved there by the
 reorg.
+
+**Required reading for every agent in the fleet:**
+[`docs/fleet-knowledgebase.md`](docs/fleet-knowledgebase.md) — estate map,
+active crews, repo index, standing rules, docs index.
 
 ## Conventions
 

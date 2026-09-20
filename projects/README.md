@@ -31,4 +31,11 @@ project home under `projects/`.
 
 - [`guidellm/`](guidellm/) — another agent's live workspace. Hands off.
 
-Back to the [master README](../README.md).
+## Submodules
+
+- [](../tau/vendors) — MoonshotAI/kimi-cli (git submodule)
+- [](shell/ii) — toxicwind/sovereign-end4 (git submodule)
+
+Their READMEs belong to those repos, not this one.
+
+Back to the [master README](../README.md) · [fleet knowledgebase](../docs/fleet-knowledgebase.md). (docs(readme): deconfuse master README + deep-link sub-READMEs (readme-linker))
