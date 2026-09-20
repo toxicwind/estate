@@ -71,19 +71,14 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 |---|---|---|---|
 | repo-integrator-max | Orphan integration → correct repos; README/deep-link pass; permanent scripts/skills/integrations | Ember (main chat) | RUNNING (2026-09-20) — workers: orphan-hatch, orphan-yote, readme-linker |
 | purge-max (announced as pack-fix) | Hesitance purge; fake-completed watchdogs; task-runner audit; fleet health; no-monkeypatch durability sweep | Ember | RUNNING |
-| fleet-social (pack-fix crew) | Fleet personas/culture; chat health; collaboration norms; fleet-culture.md | Ember | RUNNING (2026-09-20) |
 | edge-forge | Cutting-edge fix + addition task forging & execution | Ember | RUNNING |
-| keel | Tau verification (Bedrock): knowledgebase registered (fbf81a950e); tau-verification beat to be re-dispatched on tau-hyperfix report | Ember | DONE (2026-09-20) |
 | tau-hyperfix | `/home/toxic/.tau` audit; dynamic skill loading; skills symlink; `skillful`; `tau audit`; `tau tmux` experiments | Ember | RUNNING |
 | super-ralph repair | Root-cause `fiber.cache.stackFrame` crash; prove `super-ralph "reply with exactly the word ALIVE"` exits zero + DB completion | Ember | RUNNING |
 | tmp-repos-emergent | Scratch/tmp → owning repos migration | Ember | RUNNING — **de-duped with repo-integrator-max 2026-09-20 (fleet seq 11291)** |
 | edge-max | Estate-wide cutting-edge coordinator | Ember (other chat) | RUNNING |
 | oracle-max | Oracle decision-engine maximal upgrade | Ember (other chat) | RUNNING |
 | openfang | Agents autonomous + OpenFang-enabled | Ember | workers in, 8 kernel agents Running |
-| readme-deconfusion (bedrock/codex) | README inventory + deconfusion + deeplinking for every repo except the sovereign-projects master README (Scribe's lane); permanent re-runnable link-check script | Bedrock | RUNNING (2026-09-20) |
-
-| quarry | Orphan AUDIT/inventory (Spindle + estate: worktrees, /tmp, stashes, stray repos, daemon PIDs); verdicts revived/retired/left-alone; integration-worthy finds FED to repo-integrator-max in fleet | Bedrock (parent orchestrator) | RUNNING (2026-09-20) — stood down from repo integration per fleet seq 11314; feeds integration candidates to repo-integrator-max |
-| signal (beellama/toolcall-liaison) | Bedrock liaison: live end-to-end inference proof for beellama-fast + toolcall-llm repair; zero-touch on daemon configs (edge-daemon-fix/edge-forge/herd-healer own repair) | Bedrock (parent orchestrator) | DONE (2026-09-20) — repair verified: real inference round-trips via yote-conn, beellama-fast :25122 returned real output, toolcall-llm :25152 returned real generated reasoning; proof posted fleet seq 11320; worker verdicts fleet seq 11199/11241/11244 |
+| plumbline | Hesitance rollback root-cause hunt → canonical spawn-brief template (this commit) | Ember | RUNNING (2026-09-20) |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 
@@ -123,7 +118,7 @@ Retired/completed crews stay listed here with status DONE and their final commit
 
 - Master README: [/home/toxic/sovereign/README.md](../README.md) — every sub-README links back here.
 - This knowledgebase: `docs/fleet-knowledgebase.md` (this file)
-- Fleet culture norms: `docs/fleet-culture.md` (companion — how the den talks)
+- Spawn brief template: `docs/spawn-brief-template.md` — canonical template every brief is generated from; autonomy doctrine in its header (removing it is a visible diff)
 - Paper-search skill: `/home/toxic/sovereign/skills/paper-search/SKILL.md`
 - Tau engine docs: `/home/toxic/sovereign/projects/tau/engine/docs/`
 - Yote ops: `/home/toxic/sovereign/projects/yote/ops/` (yote-doctor.sh, yote-fix.sh)
@@ -135,8 +130,8 @@ Retired/completed crews stay listed here with status DONE and their final commit
 
 ## 6. Required-reading protocol (for coordinators)
 
-Every spawn brief MUST include:
-1. A pointer to this file (path above / GitHub link).
+Every spawn brief MUST be generated from `docs/spawn-brief-template.md` and MUST include:
+1. A pointer to this file (path above / GitHub link) and to the spawn-brief template.
 2. "Register your crew in §2 Active Crews when you start; mark DONE with final commit SHAs when you finish."
 3. "Check `squawk read fleet` + §2 before touching any tree another crew owns."
 
