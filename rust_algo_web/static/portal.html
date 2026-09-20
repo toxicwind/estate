@@ -141,7 +141,7 @@
             <li class="mono text-xs text-gray-500">Loading…</li>
           </ul>
           <p class="text-[11px] text-gray-500 mt-4 leading-relaxed">
-            GHAS stdio + HTTP :25113 · llama-swap MCP · filesystem · prometheus
+            GHAS stdio · llama-swap MCP · filesystem · prometheus
             · browserless. Configure in
             <span class="mono">~/.grok/config.toml</span> and Zed
             <span class="mono">context_servers</span>.
@@ -185,29 +185,15 @@
           id: "llama-swap",
           port: 25100,
           path: "/health",
-          ui: "http://127.0.0.1:25100/ui/",
-          label: "LLM + Chat UI",
+          ui: "/herd-ui/",
+          label: "LLM + Herd UI",
         },
         {
           id: "rust-web",
-          port: 25101,
+          port: 25201,
           path: "/health",
-          ui: "http://127.0.0.1:25101/",
-          label: "Ops dashboard",
-        },
-        {
-          id: "yote",
-          port: 25102,
-          path: "/health",
-          ui: "http://127.0.0.1:25102/",
-          label: "Telegram gateway",
-        },
-        {
-          id: "openfang",
-          port: 25103,
-          path: "/api/health",
-          ui: "http://127.0.0.1:25103/",
-          label: "Agent kernel",
+          ui: "/",
+          label: "Ops dashboard (this)",
         },
         {
           id: "ast-matrix",
@@ -224,20 +210,6 @@
           label: "Metrics",
         },
         {
-          id: "hf-downloader",
-          port: 25106,
-          path: "/",
-          ui: "http://127.0.0.1:25106/",
-          label: "HF models",
-        },
-        {
-          id: "null-g-proxy",
-          port: 25107,
-          path: "/health",
-          ui: "http://127.0.0.1:25107/health",
-          label: "Edge proxy (Bun)",
-        },
-        {
           id: "grafana",
           port: 25110,
           path: "/api/health",
@@ -245,18 +217,11 @@
           label: "Grafana",
         },
         {
-          id: "ghas-api",
-          port: 25112,
-          path: "/health",
-          ui: "http://127.0.0.1:25112/health",
-          label: "GHAS API",
-        },
-        {
-          id: "ghas-mcp",
-          port: 25113,
-          path: "/health",
-          ui: "http://127.0.0.1:25113/health",
-          label: "GHAS MCP HTTP",
+          id: "search-ui",
+          port: 25114,
+          path: "/",
+          ui: "http://127.0.0.1:25114/",
+          label: "GH search UI",
         },
         {
           id: "mesh-hub",
@@ -265,51 +230,133 @@
           ui: "http://127.0.0.1:25115/mesh/discover",
           label: "Mesh hub",
         },
+        {
+          id: "kimi-audit",
+          port: 25116,
+          path: "/health",
+          ui: "http://127.0.0.1:25116/",
+          label: "Kimi token audit",
+        },
+        {
+          id: "kimi-code",
+          port: 25126,
+          path: "/",
+          ui: "http://127.0.0.1:25126/",
+          label: "Kimi code UI",
+        },
+        {
+          id: "shep",
+          port: 25127,
+          path: "/health",
+          ui: "http://127.0.0.1:25127/health",
+          label: "MCP gateway (shep)",
+        },
+        {
+          id: "squawk-feed",
+          port: 25135,
+          path: "/squawk-feed/seq",
+          ui: "http://127.0.0.1:25135/squawk-feed/seq",
+          label: "Squawk feed",
+        },
+        {
+          id: "whatsapp",
+          port: 25146,
+          path: "/health",
+          ui: "http://127.0.0.1:25146/health",
+          label: "WhatsApp MCP",
+        },
+        {
+          id: "squawk-ws",
+          port: 25147,
+          path: "/squawk-ws",
+          ui: "http://127.0.0.1:25147/squawk-ws",
+          label: "Squawk WS",
+        },
+        {
+          id: "ralph",
+          port: 8420,
+          path: "/",
+          ui: "http://127.0.0.1:8420/",
+          label: "Ralph dashboard",
+        },
+        {
+          id: "codebase-memory",
+          port: 9749,
+          path: "/",
+          ui: "http://127.0.0.1:9749/",
+          label: "Codebase Memory",
+        },
+        {
+          id: "openfang",
+          port: 4200,
+          path: "/",
+          ui: "http://127.0.0.1:4200/",
+          label: "OpenFang",
+        },
+        {
+          id: "boundless",
+          port: 10200,
+          path: "/",
+          ui: "http://127.0.0.1:10200/",
+          label: "Boundless",
+        },
+        {
+          id: "node-exporter",
+          port: 9100,
+          path: "/metrics",
+          ui: "http://127.0.0.1:9100/metrics",
+          label: "Node metrics",
+        },
         // funnel backends (public via tailscale funnel)
         { id: "awrawr-mcp", port: 8377, path: "/mcp", ui: "http://127.0.0.1:8377/mcp", label: "MCP bridge" },
         { id: "gemini-mcp", port: 8378, path: "/mcp", ui: "http://127.0.0.1:8378/mcp", label: "Gemini MCP" },
         { id: "exec-ws", port: 8379, path: "/exec-ws", ui: "http://127.0.0.1:8379/exec-ws", label: "Exec bridge WS" },
-        { id: "shep", port: 25127, path: "/health", ui: "http://127.0.0.1:25127/health", label: "MCP gateway (shep)" },
-        { id: "squawk-ws", port: 25147, path: "/squawk-ws", ui: "http://127.0.0.1:25147/squawk-ws", label: "Squawk WS" },
-        { id: "squawk-feed", port: 25135, path: "/squawk-feed/seq", ui: "http://127.0.0.1:25135/squawk-feed/seq", label: "Squawk feed" },
-        { id: "whatsapp", port: 25146, path: "/health", ui: "http://127.0.0.1:25146/health", label: "WhatsApp MCP" },
         { id: "files", port: 34567, path: "/", ui: "http://127.0.0.1:34567/", label: "Files (tailnet)" },
         { id: "status-api", port: 8443, path: "/health", ui: "http://127.0.0.1:8443/", label: "Status dashboard" },
-        { id: "kimi-code", port: 25126, path: "/health", ui: "http://127.0.0.1:25126/", label: "Kimi code UI" },
-        { id: "search-ui", port: 25114, path: "/", ui: "http://127.0.0.1:25114/", label: "GH search UI" },
-        { id: "kimi-audit", port: 25116, path: "/health", ui: "http://127.0.0.1:25116/", label: "Kimi token audit" },
       ];
 
       const DASHES = [
         {
           title: "Command Center",
           href: "/",
-          desc: "YOTE ops · GPU · models · status",
+          desc: "Fleet-first ops · agents · models · status",
           tone: "from-cyan-500/20 to-violet-500/10",
         },
         {
-          title: "Llama-swap Chat",
-          href: "http://127.0.0.1:25100/ui/",
-          desc: "Primary chat UI · multi-model",
+          title: "Herd UI",
+          href: "/herd-ui/",
+          desc: "Svelte herd console · same-origin",
           tone: "from-emerald-500/20 to-cyan-500/10",
         },
         {
+          title: "Ralph Dashboard",
+          href: "http://127.0.0.1:8420/",
+          desc: "Ralph agent oversight",
+          tone: "from-amber-500/20 to-orange-500/10",
+        },
+        {
           title: "OpenFang",
-          href: "http://127.0.0.1:25103/",
-          desc: "18 agents · Discord · webchat",
+          href: "http://127.0.0.1:4200/",
+          desc: "Agent kernel · chat",
           tone: "from-violet-500/20 to-fuchsia-500/10",
+        },
+        {
+          title: "Codebase Memory",
+          href: "http://127.0.0.1:9749/",
+          desc: "Semantic code index",
+          tone: "from-sky-500/20 to-blue-500/10",
+        },
+        {
+          title: "Cockpit",
+          href: "https://127.0.0.1:9090/",
+          desc: "Host console · self-signed",
+          tone: "from-slate-500/20 to-gray-500/10",
         },
         {
           title: "Grafana",
           href: "http://127.0.0.1:25110/",
           desc: "Prom dashboards :25110",
           tone: "from-orange-500/20 to-amber-500/10",
-        },
-        {
-          title: "HF Downloader",
-          href: "http://127.0.0.1:25106/",
-          desc: "GGUF fetch · analyze",
-          tone: "from-amber-500/15 to-yellow-500/5",
         },
         {
           title: "Prometheus",
@@ -322,18 +369,6 @@
           href: "http://127.0.0.1:25115/mesh/discover",
           desc: "20 features × services",
           tone: "from-sky-500/15 to-blue-500/5",
-        },
-        {
-          title: "Yote status",
-          href: "http://127.0.0.1:25102/",
-          desc: "Telegram + OpenFang HTTP",
-          tone: "from-lime-500/15 to-green-500/5",
-        },
-        {
-          title: "Qdrant",
-          href: "http://127.0.0.1:25133/dashboard",
-          desc: "Vector DB · collections",
-          tone: "from-red-500/20 to-rose-500/10",
         },
         {
           title: "Tau Code",
@@ -371,13 +406,6 @@
           desc: "Token health dashboard",
           tone: "from-amber-500/20 to-orange-500/10",
         },
-        },
-        {
-          title: "null-g (Bun)",
-          href: "http://127.0.0.1:25107/health",
-          desc: "Antigravity proxy · mesh",
-          tone: "from-pink-500/15 to-rose-500/5",
-        },
       ];
 
       const APIS = [
@@ -387,18 +415,28 @@
           "completions · models · SSE",
         ],
         [
-          "OpenFang agents",
-          "http://127.0.0.1:25203/api/agents",
-          "agent list (backend)",
+          "Fleet roster",
+          "http://127.0.0.1:25201/api/agents/roster",
+          "agent cards JSON",
         ],
         [
-          "OpenFang chat",
-          "http://127.0.0.1:25203/v1/chat/completions",
-          "openfang:<agent> models",
+          "Fleet WS",
+          "ws://127.0.0.1:25201/ws/fleet",
+          "live event feed",
+        ],
+        [
+          "Squawk channels",
+          "http://127.0.0.1:25201/ops/api/squawk/channels",
+          "squawk channels",
+        ],
+        [
+          "Mesh features",
+          "http://127.0.0.1:25201/ops/api/mesh/features",
+          "20 features via dashboard",
         ],
         [
           "Ops status",
-          "http://127.0.0.1:25101/ops/api/status",
+          "http://127.0.0.1:25201/ops/api/status",
           "dashboard JSON",
         ],
         [
@@ -406,26 +444,10 @@
           "http://127.0.0.1:25115/mesh/chain-health",
           "fan-out health",
         ],
-        [
-          "GHAS search",
-          "http://127.0.0.1:25112/api/search?q=test",
-          "GitHub advanced search",
-        ],
-        ["GHAS MCP health", "http://127.0.0.1:25113/health", "MCP HTTP mode"],
-        [
-          "Yote → OF chat",
-          "http://127.0.0.1:25102/api/openfang/chat?msg=hi",
-          "external OF client",
-        ],
-        [
-          "null-g models",
-          "http://127.0.0.1:25107/v1/models",
-          "OpenAI-compat edge",
-        ],
       ];
 
       const MCP = [
-        { name: "ghas", detail: "stdio ghas-mcp-stdio.sh · HTTP :25113" },
+        { name: "ghas", detail: "stdio ghas-mcp-stdio.sh" },
         { name: "llama-swap", detail: "src/mcp/llama_swap.ts · chat/models" },
         { name: "ast-grep", detail: "structural search MCP" },
         { name: "filesystem", detail: "project FS tools" },
@@ -518,7 +540,6 @@
       document.getElementById("refresh").addEventListener("click", refresh);
       renderStatic();
       refresh();
-      setInterval(refresh, 15000);
     </script>
   </body>
 </html>
