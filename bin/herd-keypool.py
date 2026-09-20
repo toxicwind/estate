@@ -60,7 +60,6 @@ import time
 import urllib.request
 import urllib.error
 import queue
-from concurrent import futures
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 LISTEN = (
@@ -474,13 +473,18 @@ class Pool:
             return (st, ks.latency_ms if ks.latency_ms is not None else 1e9)
         return sorted(cands, key=rank)
 
-    def _select_one(self, ks, model_id, now, via=None):
+    def _select_one(self, ks, model_id, now, via=None, force_probe=False):
         """Probe-or-select a single candidate. Returns True when ks may
         carry traffic. Shared by pick() and race_candidates() so both paths
-        apply identical probing, parking, free_only gating and audits."""
-        if ks.state == "unknown" or not ks.last_probe_ok:
+        apply identical probing, parking, free_only gating and audits.
+        force_probe=True reproduces the legacy recovery-sweep semantics:
+        always re-probe (revalidation), audit select WITHOUT the model key,
+        and park silently on probe failure (no probe_fail audit)."""
+        if force_probe or ks.state == "unknown" or not ks.last_probe_ok:
             if self._probe_and_update(ks):
-                detail = {"latency_ms": ks.latency_ms, "model": model_id}
+                detail = {"latency_ms": ks.latency_ms}
+                if not force_probe:
+                    detail["model"] = model_id
                 if via:
                     detail["via"] = via
                 self._audit("select", ks, detail)
@@ -489,7 +493,8 @@ class Pool:
             with self.lock:
                 ks.state = "down"
                 ks.down_until = now + self.cooldown_default
-            self._audit("probe_fail", ks, {"error": ks.last_error})
+            if not force_probe:
+                self._audit("probe_fail", ks, {"error": ks.last_error})
             return False
         detail = {"latency_ms": ks.latency_ms, "model": model_id}
         if via:
@@ -514,7 +519,7 @@ class Pool:
             if ks.free_only and not _is_free_model(model_id):
                 continue
             if self._select_one(ks, model_id, time.time(),
-                                via="recovery_sweep"):
+                                via="recovery_sweep", force_probe=True):
                 return ks
         return None
 
@@ -542,7 +547,7 @@ class Pool:
                 if ks.free_only and not _is_free_model(model_id):
                     continue
                 if self._select_one(ks, model_id, time.time(),
-                                    via="recovery_sweep"):
+                                    via="recovery_sweep", force_probe=True):
                     out.append(ks)
         return out
 
