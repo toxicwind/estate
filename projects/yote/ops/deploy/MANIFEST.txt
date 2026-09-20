@@ -1,0 +1,44 @@
+# Yote deploy bundle — MANIFEST
+# Repository: toxicwind/sovereign-projects (public)
+# Status: STAGED ONLY — review by parent/human before running apply.sh on yote.
+# Nothing here has been applied to the box; there is no automatic apply path.
+
+Raw-URL verification (hatch, 2026-09-20):
+  PASS — all three canonical raw URLs served content byte-identical to the
+  GitHub API blob content (sha256 of raw bytes == sha256 of blob bytes):
+    https://raw.githubusercontent.com/toxicwind/sovereign-projects/main/projects/yote/ops/yote-fix.sh
+    https://raw.githubusercontent.com/toxicwind/sovereign-projects/main/projects/yote/ops/yote-doctor.sh
+    https://raw.githubusercontent.com/toxicwind/sovereign-projects/main/shingle-workspace/awrawr_ws_exec.py
+  (No 404s, no mismatches. The gist URLs are deprecated per consolidation plan §0.5.)
+
+Format: SP_SOURCE | GIT_BLOB_SHA | BYTES -> YOTE_DESTINATION | EXPECTED_SHA256
+
+projects/yote/ops/yote-fix.sh \
+  | f28769760760df68b0f5dbf73bc928927f50226e \
+  | 23803 \
+  -> /home/toxic/yote-ops/yote-fix.sh \
+  | 0e03807e543e812af597c92f66e467222274cea8400c55c8b81ad639744fe150
+  # yote-fix.sh v3 (repair script). Executable after apply.
+
+projects/yote/ops/yote-doctor.sh \
+  | 03e44e32465ef8c9563ca32c6d3a5ba0873b225c \
+  | 6138 \
+  -> /home/toxic/yote-ops/yote-doctor.sh \
+  | 5dca76ee6ff39cadbe243984c0546e2051e52b6a04f8b1e3c6b3f16a35e9f495
+  # yote-doctor.sh v2 (diagnose-only). Executable after apply.
+
+shingle-workspace/awrawr_ws_exec.py \
+  | 84586bebe27d56023e094f4de6d09aa000e4adec \
+  | 24586 \
+  -> /home/toxic/sovereign/shingle-workspace/awrawr_ws_exec.py.new \
+  | 40b282f2a0293927a42b123bc4cde3338c2e9d1dcc0e63f57bdb9ae3efabdfcd
+  # REVIEW ONLY: staged side-by-side as .new, NEVER overwrites the live file.
+  # The parent diffs the box's live copy against this staged copy before any
+  # overwrite; the box copy may be newer or locally configured.
+
+Notes:
+  - apply.sh reads this manifest, verifies sha256 of each staged file, then
+    copies to the destinations above and chmods +x the two .sh scripts.
+  - apply.sh NEVER restarts or kills any service and NEVER touches squawk
+    (squawk_ws_server.py, squawk-ws-client.py, watchdog).
+  - If a staged file's sha256 does not match, apply.sh aborts before copying.
