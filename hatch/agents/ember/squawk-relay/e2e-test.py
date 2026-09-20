@@ -27,11 +27,10 @@ def log(msg):
 
 def chat_stack():
     sys.path.insert(0, str(C.SQUAWK_CODE))
-    import fleet_relay
-    import chat_commands
-    fleet_relay.ensure_keys_env(root=C.CHAT_ROOT)
-    key_dir = fleet_relay.resolve_key_dir(None, root=C.CHAT_ROOT)
-    return chat_commands, key_dir
+    import canonical_post  # canonical v2 adapter (see forward.py)
+    canonical_post.ensure_keys_env(root=C.CHAT_ROOT)
+    key_dir = canonical_post.resolve_key_dir(C.CHAT_ROOT)
+    return canonical_post, key_dir
 
 
 def wait_for(desc, fn, timeout=TIMEOUT):

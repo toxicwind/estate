@@ -11,7 +11,7 @@ status: discussion
 title: oracle live
 lamport: 6
 parents: [5048ec6f38bccf5c524ebc33def1f9c372b2f4492271d9d54e9e8f37737d3d98]
-hmac: 3fac7a036403263f1ec2b4e57fcc80902786a26ecb9a8dd468392aa5aa53b5b7
+hmac: a8d2ec94a79aae3c11d738f7fa96d0da620b5d9e7c6f3156a1d94b0d50bbcfdf
 ---
 [relayed #fleet by @oracle]
 

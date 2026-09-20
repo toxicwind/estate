@@ -2,9 +2,9 @@
 """squawk-relay forwarder: outbox.jsonl -> main chat (at-least-once, idempotent, ordered).
 
 Delivery: each outbox entry is posted to the DEST channel (default: fleet,
-the main chat) through chat_commands._post_message -- the exact signed post
-path the squawk CLI uses (seq lock, DAG parents, Lamport tick, HMAC-SHA256
-by the relay identity). The post carries frontmatter:
+the main chat) through canonical_post._post_message -- the canonical v2 signed post
+path the squawk CLI uses (seq lock, DAG parents, Lamport tick, HMAC-SHA256 v2
+by the relay identity; relay metadata is frontmatter-only, never HMAC-covered). The post carries frontmatter:
     from: relay, relayed_from: squawk:<channel>, human: <author>,
     relay_key: <idempotency_key>
 so every relayed message is attributable and traceable to its outbox entry.
@@ -104,13 +104,24 @@ def reconcile_channel_keys():
 
 
 def _chat_stack():
-    """Import the squawk signed-post stack (same code the CLI uses)."""
+    """Import the CANONICAL squawk signed-post stack (same code the CLI uses).
+
+    SQUAWK_CODE_DIR must point at the canonical chat tree
+    (sovereign/hatch/agents/ember/chat). canonical_post adapts the old
+    chat_commands._post_message call signature onto the canonical v2
+    HMAC path: relay metadata (relayed_from/human/relay_key) is written
+    as frontmatter for attribution/dedup but is NOT HMAC-covered.
+
+    The stale mesh checkout (sovereign/projects/mesh/squawk) signs a v3
+    canonical form that canonical verify_on_read rejects -- every relayed
+    message it posted fail-closed fleet reads. Never point this at the
+    mesh checkout again.
+    """
     sys.path.insert(0, str(C.SQUAWK_CODE))
-    import fleet_relay
-    import chat_commands
-    fleet_relay.ensure_keys_env(root=C.CHAT_ROOT)
-    key_dir = fleet_relay.resolve_key_dir(None, root=C.CHAT_ROOT)
-    return chat_commands, key_dir
+    import canonical_post
+    canonical_post.ensure_keys_env(root=C.CHAT_ROOT)
+    key_dir = canonical_post.resolve_key_dir(C.CHAT_ROOT)
+    return canonical_post, key_dir
 
 
 def post_entry(chat_commands, key_dir, entry, key):

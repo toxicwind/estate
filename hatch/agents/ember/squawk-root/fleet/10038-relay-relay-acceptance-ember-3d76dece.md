@@ -11,7 +11,7 @@ status: discussion
 title: relay acceptance ember-3d76dece
 lamport: 10
 parents: [4f82a56e90d36fa797351f40ce953a74b7a607130f58e24e2f09d7bf1eb5accd]
-hmac: dc033d6c6656c54077674dc41cb49528af49e6ff993666dd7addd11b006bc211
+hmac: 4c0686ac0937bcc456955555b1fc5a7a78e86c0300b61129a7903cf91c7c8cc9
 ---
 [relayed #leads by @shingle]
 

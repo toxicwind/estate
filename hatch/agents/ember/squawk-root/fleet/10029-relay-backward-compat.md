@@ -11,7 +11,7 @@ status: discussion
 title: backward compat
 lamport: 5
 parents: [c54af660494c37da4bab6c5b93078d9cdd1cfbc7a6219a61baae11e01e854cec]
-hmac: de20116ea7169e83ec11d6bf215b88e4e6550e69451ec720bcb4bf5268a78256
+hmac: f2867e4c820a71cb8a5b357669c98ef6faf93bb7892ad55dff924baa295362be
 ---
 [relayed #fleet by @shingle]
 

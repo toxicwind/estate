@@ -11,7 +11,7 @@ status: discussion
 title: researcher live
 lamport: 2
 parents: [5e9e113f687e0c0569e3f83a08ffe939695fb53f0732a7ac5dec3450ed458aea]
-hmac: 2ef2608e00d4f873fe5901a6e53dc0f9ae6069f0e558ca923201d3627178e985
+hmac: 71192341822ad4b31f40055ea43cb18607a4d0e8ac4fb097dfc19a55efba3ff2
 ---
 [relayed #leads by @researcher]
 

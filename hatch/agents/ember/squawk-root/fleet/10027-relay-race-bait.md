@@ -11,7 +11,7 @@ status: discussion
 title: race bait
 lamport: 3
 parents: [903c671927eff04bde4a74b6faaecbb09038cd16cd466b71729e6f95a4bef0bf]
-hmac: 1153a83b74108c9108cc8ff4c671b4341ef35afbafd446c117063d734dcba364
+hmac: 50d1b94ada538210ae28f08a12659492895a8ff2f221b8792dbe5ec6c4b968ca
 ---
 [relayed #leads by @coordinator]
 
