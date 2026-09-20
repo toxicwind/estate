@@ -356,7 +356,12 @@ class Pool:
             self._audit("select", ks, {"latency_ms": ks.latency_ms})
             return ks
         # Nothing eligible: on-demand revalidation sweep (recovery path).
+        # Respect cooldown: never re-probe a key that was just marked down
+        # (its health probe may pass while a specific model still 429s --
+        # re-selecting it causes the "keys exhausted" repeat-pick bug).
         for ks in self._order(self.keys):
+            if ks.state == "down" and time.time() < ks.down_until:
+                continue
             if self._probe_and_update(ks):
                 self._audit("select", ks, {"latency_ms": ks.latency_ms,
                                            "via": "recovery_sweep"})
