@@ -287,3 +287,15 @@ id_ed25519*
 
 # --- sovereign reorg 2026-09-20: /scratch is the renamed shingle-workspace (tracked) ---
 !/scratch/
+
+# ─── Sweep 2026-09-20: runtime state, agent backups, heavy work dirs ─────────
+hatch/agents/ember/squawk-root/
+*.bak*
+*.bak-*
+__pycache__/
+*.pyc
+projects/tau/engine.bak-*/
+projects/tau-occupied-*/
+projects/nim-repos/
+projects/guidellm/
+worktrees/

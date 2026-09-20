@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# mise run restart-llama — restart the LLM serving daemon.
+# 2026-09-20: was `pitchfork restart llama-swap` but no daemon named
+# llama-swap exists (renamed to herd long ago). Now uses the owned
+# pitchfork-restart wrapper, which reconciles against the port.
 set -euo pipefail
 cd "${SOVEREIGN_ROOT:-/home/toxic/sovereign}"
-exec pitchfork restart llama-swap
+exec ./bin/pitchfork-restart sovereign/herd

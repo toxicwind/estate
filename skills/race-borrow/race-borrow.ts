@@ -3,6 +3,11 @@
  * race-borrow.ts — Race multiple providers for patterns, borrow the best results.
  * Combines the "race" parallel-first-wins concept with pattern-borrow ranking.
  *
+ * HFT rules (2026-09-20): TRUE first-valid-wins per pattern. Losers are
+ * aborted the moment a winner arrives (AbortController) — never awaited.
+ * Fail-fast: a 403/429/timeout kills that contestant instantly; no retry
+ * loops, no 60s sleeps. A dead lane is data, not a reason to wait.
+ *
  * Usage: bun run race-borrow.ts [patterns...] [--top N] [--per-page N] [--weights k=v,...] [--providers p1,p2,...] [--interactive] [--help]
  */
 
@@ -23,6 +28,9 @@ const BUG_TERMS = ["TODO", "FIXME", "HACK", "BUG", "WORKAROUND", "XXX"];
 const FACTORS = ["stars", "forks", "open_issues", "updated"] as const;
 type Weight = Partial<Record<(typeof FACTORS)[number], number>>;
 const DEFAULT_W: Weight = { stars: 3, forks: 1, open_issues: 1, updated: 2 };
+
+// Per-attempt fail-fast ceiling. Slow is a kind of wrong.
+const ATTEMPT_TIMEOUT_MS = 15_000;
 
 const { values, positionals } = parseArgs({
   args: Bun.argv.slice(2),
@@ -57,57 +65,51 @@ if (values.weights) {
   }
 }
 
-async function gh(path: string, params?: Record<string, string>): Promise<any> {
+async function gh(path: string, params: Record<string, string> | undefined, signal: AbortSignal): Promise<any> {
   let url = `${API}${path}`;
   if (params) url += `?${new URLSearchParams(params).toString()}`;
-  for (let attempt = 0; attempt < 6; attempt++) {
-    const res = await fetch(url, { headers: HEAD });
-    if (res.status === 403 && res.headers.get("x-ratelimit-remaining") === "0") {
-      await new Promise((r) => setTimeout(r, 60000));
-      continue;
-    }
-    if (!res.ok) throw new Error(`GH API ${res.status}`);
-    return res.json();
-  }
-  throw new Error("GH API exhausted");
+  // Single attempt, fail-fast. A 403/429/timeout/abort kills this contestant
+  // instantly — the other lanes are already in flight. No retry loops.
+  const res = await fetch(url, { headers: HEAD, signal });
+  if (!res.ok) throw new Error(`GH API ${res.status}`);
+  return res.json();
 }
 
-async function repoStats(full: string): Promise<any> {
-  const [owner, repo] = full.split("/");
-  return gh(`/repos/${owner}/${repo}`);
-}
-
-async function raceProvider(pattern: string, provider: string, page: number): Promise<any> {
+async function raceProvider(pattern: string, provider: string, page: number, signal: AbortSignal): Promise<any> {
   const query = `${pattern} repo:sovereign-projects/ language:typescript language:ts language:rust language:go`;
   const data = await gh("/search/code", {
     q: query,
     per_page: String(PER_PAGE),
     page: String(page),
-  });
+  }, signal);
   return { provider, pattern, data, time: Date.now() };
 }
 
 const rows: any[] = [];
 
-// Race: fire all provider+pattern combos concurrently, first valid response wins per pattern
+// TRUE first-valid-wins per pattern: all provider lanes fire at once, the
+// first valid response wins, losers are aborted immediately. Patterns race
+// each other concurrently (independent).
+async function racePattern(pattern: string): Promise<any> {
+  const kill = new AbortController();
+  try {
+    const contenders = SELECTED_PROVIDERS.map((provider) => {
+      const laneSignal = AbortSignal.any([kill.signal, AbortSignal.timeout(ATTEMPT_TIMEOUT_MS)]);
+      const p = raceProvider(pattern, provider, 1, laneSignal);
+      // Swallow post-race loser rejections: aborting a lost lane is not an error.
+      p.catch(() => {});
+      return p;
+    });
+    const winner = await Promise.race(contenders);
+    rows.push({ pattern, winner });
+    return winner;
+  } finally {
+    kill.abort(); // losers die NOW — never awaited, never nursed
+  }
+}
+
 async function raceAll() {
-  const promises: Promise<any>[] = [];
-  for (const pattern of PATTERNS) {
-    for (const provider of SELECTED_PROVIDERS) {
-      promises.push(raceProvider(pattern, provider, 1));
-    }
-  }
-  const results = await Promise.all(promises);
-  // Group by pattern, pick fastest valid result
-  const grouped: Record<string, any[]> = {};
-  for (const r of results) {
-    if (!grouped[r.pattern]) grouped[r.pattern] = [];
-    grouped[r.pattern].push(r);
-  }
-  for (const [pattern, items] of Object.entries(grouped)) {
-    items.sort((a, b) => a.time - b.time);
-    rows.push({ pattern, winner: items[0], all: items });
-  }
+  await Promise.all(PATTERNS.map(racePattern));
 }
 
 function norm(key: string) {

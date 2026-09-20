@@ -9,7 +9,7 @@
  * Configuration (environment):
  *   FLOCK_BASE_URL   Proxy base URL (default http://127.0.0.1:8000).
  *   FLOCK_API_KEY    Proxy client key (Authorization: Bearer). Optional;
- *                    falls back to NVIDIA_API_KEY, then NIM_PROXY_API_KEY.
+ *                    falls back to NVIDIA_API_KEY (flock accepts both).
  *                    Required for /v1/models and /v1/chat/completions.
  *   FLOCK_TIMEOUT_MS Per-request timeout (default 60000, clamp 1000..600000).
  *   FLOCK_DISABLED=1 Skip the extension entirely.
@@ -35,7 +35,6 @@ export function resolveApiKey(env: EnvLike): string | null {
 	return (
 		env.FLOCK_API_KEY ??
 		env.NVIDIA_API_KEY ??
-		env.NIM_PROXY_API_KEY ??
 		null
 	);
 }
@@ -74,7 +73,7 @@ function needsKey(cfg: FlockConfig): asserts cfg is FlockConfig & {
 	if (!cfg.apiKey) {
 		throw new FlockError(
 			"auth",
-			"flock: no proxy API key. Set FLOCK_API_KEY (or NVIDIA_API_KEY / NIM_PROXY_API_KEY).",
+			"flock: no proxy API key. Set FLOCK_API_KEY (or NVIDIA_API_KEY).",
 		);
 	}
 }

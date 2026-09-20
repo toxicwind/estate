@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# mise run restart-rust-web — restart via the owned pitchfork-restart wrapper
+# (2026-09-20: was raw `pitchfork restart`, which dies on desync/EADDRINUSE).
 set -euo pipefail
 cd "${SOVEREIGN_ROOT:-/home/toxic/sovereign}"
-exec pitchfork restart rust-web
+exec ./bin/pitchfork-restart sovereign/rust-web
