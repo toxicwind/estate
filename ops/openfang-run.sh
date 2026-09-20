@@ -22,12 +22,11 @@ trap "kill -TERM $KPID 2>/dev/null" TERM INT
 # registration below needs the API serving. The kernel offers no wait/ready
 # flag, so a fail-fast deadline gate is the honest primitive here.
 KPORT=${OPENFANG_KERNEL_PORT:-25196}
-# fail-fast: single probe, no poll loop. If the kernel API isn't ready,
-# exit non-zero and the supervisor retries (event-driven, not timer-driven).
-curl -sf -m 5 "http://127.0.0.1:${KPORT}/api/status" >/dev/null 2>&1 || {
-  echo "[openfang-run] kernel API not ready on :${KPORT}, exiting for supervisor retry" >&2
-  exit 3
-}
+deadline=$((SECONDS + 90))
+while (( SECONDS < deadline )); do
+  curl -sf -m 2 "http://127.0.0.1:${KPORT}/api/status" >/dev/null 2>&1 && break
+  sleep 1
+done
 # idempotent trigger re-registration (durable across restarts by construction)
 HAVE=$("$CLI" trigger list 2>/dev/null)
 maybe_add() {
