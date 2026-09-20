@@ -1,0 +1,249 @@
+{
+  "log": {
+    "version": "1.2",
+    "creator": {
+      "name": "MobiDevTools",
+      "version": "3.0"
+    },
+    "entries": [
+      {
+        "startedDateTime": "2026-09-14T20:09:29.203Z",
+        "time": 453,
+        "request": {
+          "method": "GET",
+          "url": "/ajax/pagelet/generic.php/DeveloperAppDashboardContentPagelet?fb_dtsg_ag=Ad4SeG3st6JeEbPXRrlAm5JgDZkrDyepidLi_qSIX6qBhWEC%3A3%3A1789416380&data=%7B%22app_id%22%3A%221245410386367716%22%2C%22page%22%3A%22dashboard%22%2C%22tab%22%3Anull%2C%22view%22%3Anull%2C%22app_locale%22%3Anull%2C%22id%22%3Anull%2C%22a_n%22%3Anull%2C%22c_n%22%3Anull%2C%22alert_id%22%3Anull%2C%22ref%22%3Anull%2C%22dev_listing_id%22%3Anull%2C%22use_case_enum%22%3Anull%2C%22add_on_enum%22%3Anull%2C%22is_go_live_modal_shown%22%3Afalse%2C%22show_uba_opt_in%22%3Afalse%7D&__aaid=0&__user=100000034722199&__a=1&__req=8&__hs=20710.BP%3Adevsite_pkg.2.0...0&dpr=3&__ccg=EXCELLENT&__rev=1047471845&__s=g92ow1%3Aaojlee%3Ap5m75d&__hsi=7685485627671331181&__dyn=7xeUmxa3-Q5E5ObwKBAgdE9E6u5U4e1Fx-ewSxu68uxa0z8S2S0lW4o0B-qbwgEbUy742ppU460RUb87C2m3K2y1Dw4WwgEhwnU14E9k2C0O84K5E2sx-2a4p8aHwzzXwae4Ueo2swkE5G4E7K1uwa-5819oc84qazo8U3ywbS1Lyo5-i2G0z8co9U6O1Fg6e0hi1Twto26wwwww2DVo3OwDzo&jazoest=24899",
+          "httpVersion": "HTTP/1.1",
+          "headers": [],
+          "queryString": [],
+          "cookies": [],
+          "headersSize": -1,
+          "bodySize": -1
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "httpVersion": "HTTP/1.1",
+          "headers": [],
+          "cookies": [],
+          "content": {
+            "size": 131295,
+            "mimeType": ""
+          },
+          "redirectURL": "",
+          "headersSize": -1,
+          "bodySize": -1
+        },
+        "cache": {},
+        "timings": {
+          "send": 0,
+          "wait": 453,
+          "receive": 0
+        }
+      },
+      {
+        "startedDateTime": "2026-09-14T20:09:30.068Z",
+        "time": 1166,
+        "request": {
+          "method": "POST",
+          "url": "/api/graphql/",
+          "httpVersion": "HTTP/1.1",
+          "headers": [],
+          "queryString": [],
+          "cookies": [],
+          "headersSize": -1,
+          "bodySize": -1
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "httpVersion": "HTTP/1.1",
+          "headers": [],
+          "cookies": [],
+          "content": {
+            "size": 1751,
+            "mimeType": ""
+          },
+          "redirectURL": "",
+          "headersSize": -1,
+          "bodySize": -1
+        },
+        "cache": {},
+        "timings": {
+          "send": 0,
+          "wait": 1166,
+          "receive": 0
+        }
+      },
+      {
+        "startedDateTime": "2026-09-14T20:09:30.070Z",
+        "time": 197,
+        "request": {
+          "method": "POST",
+          "url": "/api/graphql/",
+          "httpVersion": "HTTP/1.1",
+          "headers": [],
+          "queryString": [],
+          "cookies": [],
+          "headersSize": -1,
+          "bodySize": -1
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "httpVersion": "HTTP/1.1",
+          "headers": [],
+          "cookies": [],
+          "content": {
+            "size": 263,
+            "mimeType": ""
+          },
+          "redirectURL": "",
+          "headersSize": -1,
+          "bodySize": -1
+        },
+        "cache": {},
+        "timings": {
+          "send": 0,
+          "wait": 197,
+          "receive": 0
+        }
+      },
+      {
+        "startedDateTime": "2026-09-14T20:09:30.070Z",
+        "time": 223,
+        "request": {
+          "method": "POST",
+          "url": "/api/graphql/",
+          "httpVersion": "HTTP/1.1",
+          "headers": [],
+          "queryString": [],
+          "cookies": [],
+          "headersSize": -1,
+          "bodySize": -1
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "httpVersion": "HTTP/1.1",
+          "headers": [],
+          "cookies": [],
+          "content": {
+            "size": 149,
+            "mimeType": ""
+          },
+          "redirectURL": "",
+          "headersSize": -1,
+          "bodySize": -1
+        },
+        "cache": {},
+        "timings": {
+          "send": 0,
+          "wait": 223,
+          "receive": 0
+        }
+      },
+      {
+        "startedDateTime": "2026-09-14T20:09:30.086Z",
+        "time": 36,
+        "request": {
+          "method": "POST",
+          "url": "/ajax/bz?__a=1&__aaid=0&__ccg=EXCELLENT&__dyn=7xeUmxa3-Q5E5ObwKBAgdE9E6u5U4e1Fx-ewSxu68uxa0z8S2S0lW4o0B-qbwgEbUy742ppU460RUb87C2m3K2y1Dw4WwgEhwnU14E9k2C0O84K5E2sx-2a4p8aHwzzXwae4Ueo2swkE5G4E7K1uwa-5819oc84qazo8U3ywbS1Lyo5-i2G0z8co9U6O1Fg6e0hi1Twto26wwwww2DVo3OwDzo&__hs=20710.BP%3Adevsite_pkg.2.0...0&__hsi=7685485627671331181&__req=c&__rev=1047471845&__s=g92ow1%3Aaojlee%3Ap5m75d&__user=100000034722199&dpr=3&fb_dtsg=NAfxUP4KeWC_86U9N4kiHkAgfWoXJT9gDB-R8iUArkDwh3P0NzywuLg%3A3%3A1789416380&jazoest=25347&lsd=kdZYVttF3MVoGCLDLwnElp",
+          "httpVersion": "HTTP/1.1",
+          "headers": [],
+          "queryString": [],
+          "cookies": [],
+          "headersSize": -1,
+          "bodySize": -1
+        },
+        "response": {
+          "status": 0,
+          "statusText": "",
+          "httpVersion": "HTTP/1.1",
+          "headers": [],
+          "cookies": [],
+          "content": {
+            "size": -1,
+            "mimeType": ""
+          },
+          "redirectURL": "",
+          "headersSize": -1,
+          "bodySize": -1
+        },
+        "cache": {},
+        "timings": {
+          "send": 0,
+          "wait": 36,
+          "receive": 0
+        }
+      },
+      {
+        "startedDateTime": "2026-09-14T20:09:31.144Z",
+        "time": 161,
+        "request": {
+          "method": "POST",
+          "url": "/api/graphql/",
+          "httpVersion": "HTTP/1.1",
+          "headers": [],
+          "queryString": [],
+          "cookies": [],
+          "headersSize": -1,
+          "bodySize": -1
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "httpVersion": "HTTP/1.1",
+          "headers": [],
+          "cookies": [],
+          "content": {
+            "size": 183,
+            "mimeType": ""
+          },
+          "redirectURL": "",
+          "headersSize": -1,
+          "bodySize": -1
+        },
+        "cache": {},
+        "timings": {
+          "send": 0,
+          "wait": 161,
+          "receive": 0
+        }
+      },
+      {
+        "startedDateTime": "2026-09-14T20:09:31.157Z",
+        "time": 118,
+        "request": {
+          "method": "POST",
+          "url": "/api/graphql/",
+          "httpVersion": "HTTP/1.1",
+          "headers": [],
+          "queryString": [],
+          "cookies": [],
+          "headersSize": -1,
+          "bodySize": -1
+        },
+        "response": {
+          "status": 200,
+          "statusText": "",
+          "httpVersion": "HTTP/1.1",
+          "headers": [],
+          "cookies": [],
+          "content": {
+            "size": 223,
+            "mimeType": ""
+          },
+          "redirectURL": "",
+          "headersSize": -1,
+          "bodySize": -1
+        },
+        "cache": {},
+        "timings": {
+          "send": 0,
+          "wait": 118,
+          "receive": 0
+        }
+      }
+    ]
+  }
+}

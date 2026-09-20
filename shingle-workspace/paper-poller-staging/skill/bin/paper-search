@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# paper-search one-shot: thin wrapper over the canonical racer in the
+# paper-poller repo. No logic here — the repo owns it.
+exec /usr/bin/python3 /home/toxic/paper-poller/bin/race_papers.py "$@"

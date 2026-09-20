@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Overview — NIM probe</title>
+<link rel="stylesheet" href="assets/style.css"></head>
+<body>
+<header class="top"><div class="wrap">
+<div class="brand"><span class="dot"></span> nvidia-nim-model-probe <span class="dim">/ 2026-09-14</span></div>
+<nav><a href="index.html" class="on">Overview</a><a href="models.html" class="">Models</a><a href="tooluse.html" class="">Tool Use</a><a href="fuzz.html" class="">Fuzz Matrix</a><a href="cards.html" class="">Model Cards</a><a href="methodology.html" class="">Methodology</a><a href="https://github.com/toxicwind/nvidia-nim-model-probe" class="repo">GitHub ↗</a></nav>
+</div></header>
+<main class="wrap">
+
+<section class="hero">
+<h1>NVIDIA NIM: the catalog is an unreliable narrator</h1>
+<p class="lede">A fail-fast, no-retries probe of every model in NVIDIA's hosted
+inference catalog — what <span class="mono">/v1/models</span> claims vs what actually answers.
+<strong>82 models probed</strong>, <strong>10 answer a ping</strong>,
+<strong>6 do native tool calls</strong>.</p>
+<div class="statgrid">
+<div class="stat"><b>82</b><span>models probed</span></div>
+<div class="stat"><b>10</b><span>ping alive</span></div>
+<div class="stat"><b>6</b><span>native tool calls</span></div>
+<div class="stat"><b>55</b><span>gated 404</span></div>
+<div class="stat"><b>9</b><span>timeouts</span></div>
+<div class="stat"><b>81</b><span>models in live catalog</span></div>
+</div></section>
+
+<section><h2>Verdict distribution</h2><svg class="bars" viewBox="0 0 560 186" width="100%" role="img"><text x="0" y="19" class="sl">alive</text><rect x="157" y="4" width="73" height="22" fill="#34d399" rx="3"/><text x="238" y="19" class="sv">10</text><text x="0" y="49" class="sl">timeout</text><rect x="157" y="34" width="66" height="22" fill="#fbbf24" rx="3"/><text x="231" y="49" class="sv">9</text><text x="0" y="79" class="sl">stream stall</text><rect x="157" y="64" width="15" height="22" fill="#fb923c" rx="3"/><text x="179" y="79" class="sv">2</text><text x="0" y="109" class="sl">503</text><rect x="157" y="94" width="22" height="22" fill="#fb7185" rx="3"/><text x="187" y="109" class="sv">3</text><text x="0" y="139" class="sl">error</text><rect x="157" y="124" width="22" height="22" fill="#ef4444" rx="3"/><text x="187" y="139" class="sv">3</text><text x="0" y="169" class="sl">gated 404</text><rect x="157" y="154" width="403" height="22" fill="#ef4444" rx="3"/><text x="568" y="169" class="sv">55</text></svg>
+<p class="dim small">Fail-fast ladder: ping first (5s ceiling), then one streaming
+request. No retries — a model's first honest answer is the data.</p></section>
+
+<section><h2>Category × verdict</h2>
+<div class="tscroll"><table class="matrix"><thead><tr><th></th><th>alive</th><th>timeout</th><th>stream stall</th><th>503</th><th>error</th><th>gated 404</th><th>total</th></tr></thead>
+<tbody><tr><td class="cat">chat</td><td class="num hot">2</td><td class="num hot">4</td><td class="num hot">1</td><td class="num hot">1</td><td class="num "></td><td class="num hot">3</td><td class="num tot">11</td></tr><tr><td class="cat">nemotron-3</td><td class="num hot">2</td><td class="num hot">1</td><td class="num "></td><td class="num hot">2</td><td class="num "></td><td class="num hot">1</td><td class="num tot">6</td></tr><tr><td class="cat">legacy</td><td class="num "></td><td class="num hot">1</td><td class="num "></td><td class="num "></td><td class="num "></td><td class="num hot">36</td><td class="num tot">37</td></tr><tr><td class="cat">embedding/retrieval</td><td class="num "></td><td class="num "></td><td class="num "></td><td class="num "></td><td class="num "></td><td class="num hot">7</td><td class="num tot">7</td></tr><tr><td class="cat">vision</td><td class="num hot">1</td><td class="num hot">1</td><td class="num "></td><td class="num "></td><td class="num "></td><td class="num hot">4</td><td class="num tot">6</td></tr><tr><td class="cat">guard/safety</td><td class="num hot">1</td><td class="num hot">1</td><td class="num hot">1</td><td class="num "></td><td class="num hot">1</td><td class="num "></td><td class="num tot">4</td></tr><tr><td class="cat">reward</td><td class="num "></td><td class="num "></td><td class="num "></td><td class="num "></td><td class="num "></td><td class="num hot">1</td><td class="num tot">1</td></tr><tr><td class="cat">oddball</td><td class="num hot">4</td><td class="num hot">1</td><td class="num "></td><td class="num "></td><td class="num hot">2</td><td class="num hot">3</td><td class="num tot">10</td></tr></tbody></table></div>
+<p class="dim small">The catalog is modality-blind: embeddings, guards, vision, reward
+and translation models all sit in the same flat list. Only probing reveals which
+ids are chat-capable.</p></section>
+
+<section><h2>Usable models <span class="dim small">— native tool calls, ranked by TTFT</span></h2>
+<div class="mgrid"><div class="mcard"><div class="mname">nvidia/nemotron-3-super-120b-a12b</div><div class="mrow"><span class="badge" style="--c:#34d399">native</span><span class="dim">TTFT 2.06s</span></div><div class="dim small">I need to call get_paper_details with arxiv_id 1706.03762. Let me do that. </div></div><div class="mcard"><div class="mname">openai/gpt-oss-20b</div><div class="mrow"><span class="badge" style="--c:#34d399">native</span><span class="dim">TTFT 1.87s</span></div><div class="dim small">We need to call the function get_paper_details.</div></div><div class="mcard"><div class="mname">z-ai/glm-5.3-flash</div><div class="mrow"><span class="badge" style="--c:#34d399">native</span><span class="dim">TTFT 3.67s</span></div><div class="dim small">The user wants me to call get_paper_details with arxiv_id 1706.03762. That&#x27;s the &quot;Attention Is All You Need&quot; p</div></div><div class="mcard"><div class="mname">meta/llama-3.2-11b-vision-instruct</div><div class="mrow"><span class="badge" style="--c:#34d399">native</span><span class="dim">TTFT 1.96s</span></div><div class="dim small"></div></div><div class="mcard"><div class="mname">google/diffusiongemma-26b-a4b-it</div><div class="mrow"><span class="badge" style="--c:#34d399">native</span><span class="dim">TTFT 2.88s</span></div><div class="dim small"></div></div><div class="mcard"><div class="mname">deepseek-ai/deepseek-v4-flash-0731</div><div class="mrow"><span class="badge" style="--c:#34d399">native</span><span class="dim">TTFT 10.84s</span></div><div class="dim small">I&#x27;ll look up the paper details for arXiv ID 1706.03762.  </div></div><div class="mcard"><div class="mname">nvidia/nemotron-3-ultra-550b-a55b</div><div class="mrow"><span class="badge" style="--c:#fbbf24">empty</span><span class="dim">TTFT 2.72s</span></div><div class="dim small"> ⚠ empty response</div></div></div>
+<p><a href="tooluse.html">Full tool-use audit →</a></p></section>
+
+<section><h2>Key findings</h2>
+<ul class="findings">
+<li><b>The catalog endpoint is public.</b> <span class="mono">GET /v1/models</span>
+with no bearer — or a wrong one — returns 200 with the full list. Per-model gating
+happens at inference time, not at listing.</li>
+<li><b>Availability flaps.</b> super-120b went alive → 503 → alive with native tools
+across runs; ultra-550b went timeout → alive; deepseek-v4-pro went alive → timeout →
+<strong>delisted from the catalog entirely</strong> (82 → 81 models in ~10 min).</li>
+<li><b>Deprecation lives in headers, not docs.</b> super-120b serves
+<span class="mono">deprecation: 2026-10-03T09:00:00Z</span>; its model card says nothing.</li>
+<li><b>The "physics model" is a VLM.</b> <span class="mono">nvidia/ising-calibration-1.5-31b</span>
+is a Gemma-4-based vision model for quantum calibration plots. Weird name, normal chat endpoint.</li>
+<li><b>Malformed JSON → 500.</b> The Go gateway leaks struct internals
+(<span class="mono">openAIRequestBody.Model</span>) instead of returning 400.</li>
+<li><b>No rate limiting observed.</b> 20 parallel requests: zero 429s.</li>
+<li><b>Embedding models output "Floats".</b> Card-admitted — yet they sit in the chat
+catalog and 404 on chat completions. <a href="cards.html">Card audit →</a></li>
+</ul></section>
+
+<section><h2>Data</h2>
+<ul class="datalinks">
+<li><a href="https://raw.githubusercontent.com/toxicwind/nvidia-nim-model-probe/main/data/probe_results_all_2026-09-14.json">probe_results_all_2026-09-14.json</a> — 82-model sweep</li>
+<li><a href="https://raw.githubusercontent.com/toxicwind/nvidia-nim-model-probe/main/data/fuzz_max_2026-09-14.json">fuzz_max_2026-09-14.json</a> — 187-case fuzz matrix</li>
+<li><a href="https://raw.githubusercontent.com/toxicwind/nvidia-nim-model-probe/main/data/tooluse_probe_2026-09-14.json">tooluse_probe_2026-09-14.json</a> — 10-model tool-use audit</li>
+<li><a href="https://raw.githubusercontent.com/toxicwind/nvidia-nim-model-probe/main/data/card_xref_2026-09-14.json">card_xref_2026-09-14.json</a> — 51 model cards × verdicts</li>
+</ul>
+<p class="dim small">Account IDs and request UUIDs redacted. Probe scripts:
+<span class="mono">probe.py</span>, <span class="mono">fuzz_max.py</span>,
+<span class="mono">tooluse_probe.py</span> in the repo.</p></section>
+
+</main>
+<footer class="wrap dim small">Fail-fast probe of NVIDIA NIM's hosted API · 2026-09-14 ·
+<a href="https://raw.githubusercontent.com/toxicwind/nvidia-nim-model-probe/main/data/probe_results_all_2026-09-14.json">raw sweep JSON</a> ·
+<a href="https://github.com/toxicwind/nvidia-nim-model-probe">repo</a></footer>
+<script src="assets/app.js"></script>
+</body></html>

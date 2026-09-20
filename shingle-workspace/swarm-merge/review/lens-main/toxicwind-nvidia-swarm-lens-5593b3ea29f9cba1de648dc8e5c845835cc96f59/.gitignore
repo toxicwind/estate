@@ -1,0 +1,10 @@
+.env
+*.key
+*.pem
+__pycache__/
+*.pyc
+.checkpoints/
+.stress_log.txt
+.count_state.json
+*.sock
+*.log

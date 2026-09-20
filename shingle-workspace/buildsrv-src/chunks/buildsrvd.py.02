@@ -1,0 +1,48 @@
+ation = time.time() - started
+            if exit_code == 0:
+                status = "succeeded"
+                artifact_dir = copy_artifacts(job, jhash, logf)
+            else:
+                status = "failed"
+            logf.write(f"\n[buildsrv] {status} exit={exit_code} duration={duration:.1f}s\n")
+        except Exception as e:
+            duration = time.time() - started
+            logf.write(f"\n[buildsrv] launcher error: {e}\n")
+            log(f"job {jid} launcher error: {e}")
+    logf.write(f"===== buildsrv job {jid} finished {now_iso()} =====\n")
+    logf.close()
+
+    result = {
+        "id": jid,
+        "name": job.get("name"),
+        "status": status,
+        "exit_code": exit_code,
+        "duration_s": round(duration, 1),
+        "job_hash": jhash,
+        "artifact_dir": artifact_dir,
+        "finished_at": now_iso(),
+        "log": str(log_path),
+    }
+    (RESULTS / f"{jid}.json").write_text(json.dumps(result, indent=1))
+    with state_lock:
+        rec = state["jobs"].get(jid, {})
+        rec.update(
+            status=status, exit_code=exit_code,
+            duration_s=round(duration, 1), job_hash=jhash,
+            artifact_dir=artifact_dir, finished_at=now_iso(),
+        )
+        state["jobs"][jid] = rec
+        state["counters"][status] = state["counters"].get(status, 0) + 1
+    save_state()
+    log(f"job {jid}: {status} exit={exit_code} {duration:.1f}s")
+    return result
+
+
+def claim_next():
+    """Atomically claim one pending job file. Returns (jid, job) or None."""
+    global active_threads
+    with state_lock:
+        if active_threads >= MAX_WORKERS:
+            return None
+        pendin
+...[truncated 4076 chars]

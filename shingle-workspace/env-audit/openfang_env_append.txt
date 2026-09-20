@@ -1,0 +1,59 @@
+
+# ─── More LLM Providers ──────────────────────────────────────────────
+
+# Kimi / Moonshot
+# KIMI_API_KEY=<redacted>
+
+# Azure OpenAI
+# AZURE_OPENAI_API_KEY=<redacted>
+
+# ElevenLabs (voice)
+# ELEVENLABS_API_KEY=<redacted>
+
+# Google Vertex AI
+# VERTEX_AI_ACCESS_TOKEN=<redacted>
+# VERTEX_AI_REGION=us-central1
+
+# AWS Bedrock
+# AWS_BEARER_TOKEN_BEDROCK=<redacted>
+# AWS_REGION=us-east-1
+# AWS_DEFAULT_REGION=us-east-1
+
+# Google Cloud (for GCP-backed providers)
+# GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
+# GOOGLE_CLOUD_PROJECT=...
+# GOOGLE_CLOUD_REGION=us-central1
+# GCLOUD_PROJECT=...
+# GCP_PROJECT=...
+
+# ─── More Channels ───────────────────────────────────────────────────
+
+# Gotify push notifications
+# GOTIFY_SERVER_URL=https://gotify.example.com
+# GOTIFY_APP_TOKEN=<redacted>
+
+# WhatsApp web gateway (local gateway service; distinct from Cloud API above)
+# WHATSAPP_WEB_GATEWAY_URL=http://127.0.0.1:8080
+
+# ─── OpenFang Configuration (continued) ──────────────────────────────
+
+# Agents directory override (default: <home>/agents)
+# OPENFANG_AGENTS_DIR=~/.openfang/agents
+
+# Allow unauthenticated access (DANGEROUS — isolated dev only)
+# OPENFANG_ALLOW_NO_AUTH=false
+
+# Enable Parakeet MLX transcription backend (Apple Silicon)
+# OPENFANG_ENABLE_PARAKEET_MLX=false
+
+# Subprocess timeout in seconds
+# OPENFANG_SUBPROCESS_TIMEOUT_SECS=120
+
+# Chrome/Chromium binary path override (browser tooling)
+# CHROME_PATH=/usr/bin/chromium
+
+# OpenClaw state dir (migration/compat)
+# OPENCLAW_STATE_DIR=~/.openclaw
+
+# Codex home dir override
+# CODEX_HOME=~/.codex

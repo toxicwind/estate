@@ -1,0 +1,1 @@
+# REORG manifest 20260920-001333 — reverse order = rollback

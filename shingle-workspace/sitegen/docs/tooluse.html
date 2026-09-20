@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tool Use — NIM probe</title>
+<link rel="stylesheet" href="assets/style.css"></head>
+<body>
+<header class="top"><div class="wrap">
+<div class="brand"><span class="dot"></span> nvidia-nim-model-probe <span class="dim">/ 2026-09-14</span></div>
+<nav><a href="index.html" class="">Overview</a><a href="models.html" class="">Models</a><a href="tooluse.html" class="on">Tool Use</a><a href="fuzz.html" class="">Fuzz Matrix</a><a href="cards.html" class="">Model Cards</a><a href="methodology.html" class="">Methodology</a><a href="https://github.com/toxicwind/nvidia-nim-model-probe" class="repo">GitHub ↗</a></nav>
+</div></header>
+<main class="wrap">
+
+<h1>Tool-use audit</h1>
+<p class="lede">One streaming tool-call request per model, in parallel — can it emit a
+<strong>native</strong> function call, a textual pseudo-call, or nothing at all?
+<strong>6 of 10 do native tool calls.</strong></p>
+<h2>Time to first token (tool request)</h2><svg class="bars" viewBox="0 0 640 216" width="100%" role="img"><text x="0" y="19" class="sl">gpt-oss-20b</text><rect x="179" y="4" width="79" height="22" fill="#34d399" rx="3"/><text x="267" y="19" class="sv">1.87</text><text x="0" y="49" class="sl">llama-3.2-11b-vision-instruct</text><rect x="179" y="34" width="83" height="22" fill="#34d399" rx="3"/><text x="271" y="49" class="sv">1.96</text><text x="0" y="79" class="sl">nemotron-3-super-120b-a12b</text><rect x="179" y="64" width="88" height="22" fill="#34d399" rx="3"/><text x="275" y="79" class="sv">2.06</text><text x="0" y="109" class="sl">nemotron-3-ultra-550b-a55b</text><rect x="179" y="94" width="116" height="22" fill="#fbbf24" rx="3"/><text x="303" y="109" class="sv">2.72</text><text x="0" y="139" class="sl">diffusiongemma-26b-a4b-it</text><rect x="179" y="124" width="122" height="22" fill="#34d399" rx="3"/><text x="310" y="139" class="sv">2.88</text><text x="0" y="169" class="sl">glm-5.3-flash</text><rect x="179" y="154" width="156" height="22" fill="#34d399" rx="3"/><text x="343" y="169" class="sv">3.67</text><text x="0" y="199" class="sl">deepseek-v4-flash-0731</text><rect x="179" y="184" width="461" height="22" fill="#34d399" rx="3"/><text x="648" y="199" class="sv">10.84</text></svg>
+<div class="tgrid">
+<div class="tcard"><div class="mname mono">openai/gpt-oss-20b</div>
+<div class="mrow"><span class="badge" style="--c:#34d399">native</span>
+<span class="dim">TTFT 1.87s · total 3.4s · native calls 1</span></div>
+<div class="snip mono">“We need to call the function get_paper_details.…”</div></div>
+<div class="tcard"><div class="mname mono">meta/llama-3.2-11b-vision-instruct</div>
+<div class="mrow"><span class="badge" style="--c:#34d399">native</span>
+<span class="dim">TTFT 1.96s · total 3.7s · native calls 1</span></div>
+</div>
+<div class="tcard"><div class="mname mono">nvidia/nemotron-3-super-120b-a12b</div>
+<div class="mrow"><span class="badge" style="--c:#34d399">native</span>
+<span class="dim">TTFT 2.06s · total 2.4s · native calls 1</span></div>
+<div class="snip mono">“I need to call get_paper_details with arxiv_id 1706.03762. Let me do that. …”</div></div>
+<div class="tcard"><div class="mname mono">nvidia/nemotron-3-ultra-550b-a55b</div>
+<div class="mrow"><span class="badge" style="--c:#fbbf24">empty</span>
+<span class="dim">TTFT 2.72s · total 2.7s · native calls 0</span></div>
+<p class=warn>Answered the ping fine, but this request returned zero text and zero tool calls — the weirdest result in the audit.</p></div>
+<div class="tcard"><div class="mname mono">google/diffusiongemma-26b-a4b-it</div>
+<div class="mrow"><span class="badge" style="--c:#34d399">native</span>
+<span class="dim">TTFT 2.88s · total 2.9s · native calls 1</span></div>
+</div>
+<div class="tcard"><div class="mname mono">z-ai/glm-5.3-flash</div>
+<div class="mrow"><span class="badge" style="--c:#34d399">native</span>
+<span class="dim">TTFT 3.67s · total 10.0s · native calls 1</span></div>
+<div class="snip mono">“The user wants me to call get_paper_details with arxiv_id 1706.03762. That&#x27;s the &quot;Attention Is All You Need&quot; paper. Let …”</div></div>
+<div class="tcard"><div class="mname mono">deepseek-ai/deepseek-v4-flash-0731</div>
+<div class="mrow"><span class="badge" style="--c:#34d399">native</span>
+<span class="dim">TTFT 10.84s · total 14.4s · native calls 1</span></div>
+<div class="snip mono">“I&#x27;ll look up the paper details for arXiv ID 1706.03762.  …”</div><p class=warn>Streaming stalled before headers in the sweep; given 15s here it emits native tool calls. Slow but real.</p></div>
+<div class="tcard"><div class="mname mono">google/gemma-4-31b-it</div>
+<div class="mrow"><span class="badge" style="--c:#ef4444">error:The read operation timed out</span>
+<span class="dim">TTFT no response · total 31.2s · native calls 0</span></div>
+<p class=warn>No usable output in 30s. Same models also timed out in the 82-model sweep — consistently unreachable, not flapping.</p></div>
+<div class="tcard"><div class="mname mono">moonshotai/kimi-k3</div>
+<div class="mrow"><span class="badge" style="--c:#ef4444">error:The read operation timed out</span>
+<span class="dim">TTFT no response · total 30.4s · native calls 0</span></div>
+<p class=warn>No usable output in 30s. Same models also timed out in the 82-model sweep — consistently unreachable, not flapping.</p></div>
+<div class="tcard"><div class="mname mono">mistralai/mistral-nemotron</div>
+<div class="mrow"><span class="badge" style="--c:#ef4444">error:The read operation timed out</span>
+<span class="dim">TTFT no response · total 30.3s · native calls 0</span></div>
+<p class=warn>No usable output in 30s. Same models also timed out in the 82-model sweep — consistently unreachable, not flapping.</p></div></div>
+<h2>What "usable" means here</h2>
+<ul class="findings">
+<li><b>native</b> — the model returned a real <span class="mono">tool_calls</span> block
+with callable arguments. This is the only mode that counts for agentic work.</li>
+<li><b>empty</b> — HTTP 200, stream opened, but zero text and zero calls.
+ultra-550b did this: reachable, unresponsive to the task.</li>
+<li><b>error</b> — nothing usable inside the timeout window.</li>
+<li>Only ~4 of the 7 native models are plausible general chat models; the rest are
+guards, translators, vision, diffusion and parsing specialists that happen to speak tools.</li>
+</ul>
+</main>
+<footer class="wrap dim small">Fail-fast probe of NVIDIA NIM's hosted API · 2026-09-14 ·
+<a href="https://raw.githubusercontent.com/toxicwind/nvidia-nim-model-probe/main/data/probe_results_all_2026-09-14.json">raw sweep JSON</a> ·
+<a href="https://github.com/toxicwind/nvidia-nim-model-probe">repo</a></footer>
+<script src="assets/app.js"></script>
+</body></html>

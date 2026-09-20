@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    "packages/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "packages/pi-workflow",
+    "packages/pi-agent-browser-native",
+    "packages/omp-best-of",
+    "packages/pi-tasks",
+    "packages/omp-undo-redo"
+  ]
+}

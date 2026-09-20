@@ -1,0 +1,27 @@
+# AGENTS.md — awrawr-pc standing rules (bridge side)
+
+Mirror of the cell's standing rules that bridge workers must follow.
+Cell copy: ~/AGENTS.md (authoritative if they disagree — flag the drift).
+
+## Chris's standing directives
+- Be confident and fix things on your own — maximal. Make the call yourself, don't kick decisions up.
+- "Audit" = production-grade repair, not report-only. "Don't debate, poc."
+- No review gates: workers merge, commit, push. Forward-only; never stop for approval.
+- PUSH EVERYTHING — no local-only work, all repos, all agents. Commit after every unit of work.
+- Bruteforce repairs go straight to `main`; no PR ceremony. Never push to evmts/super-ralph.
+- Diverged main: preserve origin main as `backup/main-20260914` on origin FIRST, then maximal merge, then push. Never force-push main without the backup.
+- Infrastructure is never out of scope. Additive only — never remove/disable peers, daemons, models without Chris's explicit order.
+- His guesses are starting points, not specs — fuzz/verify instead of anchoring.
+
+## 3-minute auto-select (2026-09-14)
+- When a pick is presented (fork-unblind), silence for 3 minutes = proceed with the most emergent (#1 ranked) option.
+- One-shot `fork-autoselect` runonce timer; a reply from Chris removes it and his reply rules.
+
+## Tooling
+- Use `fd` and `rg` (10.5.0 / 15.2.0, pacman). Never `find`/`grep`.
+- Unique per-task /tmp paths (`mktemp -d`); NEVER `rm -rf` a shared hardcoded /tmp path. Nothing precious in /tmp — stage under /home/toxic/.
+- Never end a turn with a backgrounded bridge/exec call outstanding — wait for delivery (yield_ms up to 120000).
+- Services are owned by pitchfork+mise (defs in /home/toxic/sovereign/pitchfork.toml + mise.toml). No competing systemd units. NEVER touch `awrawr-mcp.service` from inside a bridge call.
+- NEVER run `bun run scripts/generate.ts` — retired (46aa41cca2); it would destroy 15 live daemons.
+- Verify `bash -lc true` after shell changes. Two failures on one target → stop and replan.
+- Never expose, print, log, or commit credentials. Secret values stay in the vault.

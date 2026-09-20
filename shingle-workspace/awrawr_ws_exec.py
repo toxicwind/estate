@@ -11,7 +11,7 @@ Security layers (same as the HTTPS bridge):
  2. X-MCP-Token checked per handshake against ~/.awrawr_mcp_token (else 401).
     Token file is re-read on EVERY handshake so rotation needs no restart.
  3. Command policy + audit: imported from awrawr_mcp (single policy/audit impl).
- 4. Limits: 90 s default timeout, 20000-char total output cap, same as exec().
+ 4. Limits: 90 s default timeout, 200000-char total output cap, same as exec().
 
 Protocol (JSON text messages, multiplexed by client-chosen "id"):
   C->S  {"id": "<id>", "cmd": "...", "workdir": "/home/toxic",
@@ -52,6 +52,7 @@ import json
 import os
 import shlex
 import shutil
+import signal
 import sys
 import time
 from datetime import datetime, timezone
@@ -70,6 +71,9 @@ XFER_IDLE_S = 120
 XFER_TOTAL_S = 3600
 XFER_CHUNK = 262144
 XFER_MAX_FRAME = 4 * 1024 * 1024
+# Command-path frames larger than this are rejected and the connection closed.
+# Xfer chunks are 256 KiB, well under this cap.
+CMD_MAX_FRAME = 16 * 1024 * 1024
 XFER_ROOTS = ("/home/toxic", "/tmp")
 _ACTIVE_PUTS = set()  # paths with a live put op; second put -> clean "busy"
 _ACTIVE_PUTS_LOCK = asyncio.Lock()
@@ -99,6 +103,10 @@ async def read_frame(reader):
     elif length == 127:
         length = int.from_bytes(await reader.readexactly(8), "big")
     mask = await reader.readexactly(4) if masked else None
+    if length > CMD_MAX_FRAME:
+        # Killer-feature hardening: never buffer an unbounded command-path
+        # frame. Callers treat this as fatal and close the connection.
+        raise ValueError("frame too large: %d > %d" % (length, CMD_MAX_FRAME))
     payload = await reader.readexactly(length) if length else b""
     if mask:
         payload = bytes(b ^ mask[i % 4] for i, b in enumerate(payload))
@@ -224,6 +232,22 @@ def _spawn_env():
     return env
 
 
+def _kill_tree(proc):
+    """SIGKILL the child's whole process group, then the child itself.
+
+    Children are spawned with start_new_session=True, so the group contains
+    only this command's subtree (shell wrappers and their children included).
+    """
+    try:
+        os.killpg(proc.pid, signal.SIGKILL)
+    except (ProcessLookupError, PermissionError, OSError):
+        pass
+    try:
+        proc.kill()
+    except ProcessLookupError:
+        pass
+
+
 async def run_command(writer, send_lock, msg_id, cmd, workdir,
                       argv=None, timeout=TIMEOUT_S):
     t0 = time.monotonic()
@@ -293,6 +317,7 @@ async def run_command(writer, send_lock, msg_id, cmd, workdir,
                 stderr=asyncio.subprocess.PIPE,
                 cwd=workdir or "/home/toxic",
                 env=env,
+                start_new_session=True,  # own process group: _kill_tree reaps all
             )
         else:
             resolved = [exe] + [str(a) for a in argv[1:]] \
@@ -303,6 +328,7 @@ async def run_command(writer, send_lock, msg_id, cmd, workdir,
                 stderr=asyncio.subprocess.PIPE,
                 cwd=workdir or "/home/toxic",
                 env=env,
+                start_new_session=True,
             )
         state = {"total": 0, "truncated": False}
         try:
@@ -314,15 +340,16 @@ async def run_command(writer, send_lock, msg_id, cmd, workdir,
             code = proc.returncode
             status, extra = "ok", {}
         except asyncio.TimeoutError:
-            try:
-                proc.kill()
-            except ProcessLookupError:
-                pass
+            _kill_tree(proc)
             code, status = -1, "timeout"
             extra = {"reason": "TIMEOUT after %ds" % timeout}
             await send_json(writer, send_lock, {
                 "id": msg_id, "type": "chunk", "stream": "stderr",
                 "data": "TIMEOUT after %ds" % timeout})
+        except asyncio.CancelledError:
+            # Disconnect mid-command: kill the whole tree or it leaks on the box.
+            _kill_tree(proc)
+            raise
         _audit(**base, status=status, exit=code, out_chars=state["total"],
                truncated=state["truncated"],
                elapsed_ms=int((time.monotonic() - t0) * 1000), **extra)
@@ -642,7 +669,11 @@ async def handle_client(reader, writer):
 
 
 async def main():
-    server = await asyncio.start_server(handle_client, "127.0.0.1", PORT)
+    try:
+        server = await asyncio.start_server(handle_client, "127.0.0.1", PORT)
+    except OSError as e:
+        log("FATAL: cannot bind 127.0.0.1:%d: %s (port busy — stale holder?)" % (PORT, e))
+        raise SystemExit(1)
     log("listening on 127.0.0.1:%d%s" % (PORT, WS_PATH))
     async with server:
         await server.serve_forever()

@@ -1,0 +1,88 @@
+# MEMORY.md
+
+<!-- Your curated long-term memory: durable facts, preferences, and commitments. Keep it tight: promote what lasts here, and leave raw day-to-day detail in your daily notes. -->
+
+## Facts
+
+## Preferences
+- Chris wants bulk automation to be genuinely automated — proper rate limiting and timing instrumentation, not ad-hoc manual runs.
+
+## Commitments
+
+## Paper router legs (2026-09-14)
+- `papers.py` now has 6 free search legs: arXiv, OpenAlex, Semantic Scholar, DBLP, Hugging Face Papers, **alphaXiv** (community index: upvotes, topics, linked GitHub repos).
+- **OpenCitations** wired as citation-graph enrichment in `--id` mode for DOI inputs (no key, 180 req/min/IP): incoming citations + outgoing references.
+- `--id` accepts arXiv ID or DOI; alphaXiv also attaches up to 8 similar papers per ID lookup. `--id` output capped to 1 paper, exact-ID matches preferred over search neighbors.
+- **JSONL everywhere**: `--format jsonl` emits meta line + one `{"type":"paper"}` per line; pipes into jq/sqlite/pandas.
+- **`--s2dupe`** (with `--id`): free dupe of Semantic Scholar's key-gated features — tldr (S2's own free tldr field when served, else extractive local), **influential citations** (2-hop: OpenCitations citing DOIs → one batched OpenAlex `filter=doi:a|b` for citer cited_by_count, ranked), **citation velocity** (cites/year from OC creation dates). Citation parts need a DOI; TLDR runs on any abstract. New route.py fns: `tldr_extractive`, `influential_citations`, `citation_velocity`, `s2_free_lookup`, `openalex_lookup_doi` (exact `works/doi:` lookup).
+- OpenAlex quirk found 2026-09-14: batch OR filter must be single-field `doi:10.1|10.2` — repeating the field (`doi:10.1|doi:10.2`) returns HTTP 400.
+- **Audit system** (2026-09-14): every `papers.py` run appends one JSONL line to `~/.cache/shingle/papers_audit.jsonl`; `papers.py --audit [--audit-window 1h|24h|7d|all]` reports per-leg ok-rate, p50/p95/max latency, error taxonomy (http_429/timeout/bot_check/connection/other), fail-fast score, shared arXiv attempt log, generated recommendations. `--no-audit` skips logging; `--audit-log PATH` overrides.
+- **Completions** (2026-09-14): `bin/completions/papers.bash` + `papers.zsh` (all flags; value completion for --sort/--format/--audit-window).
+- **Repo comparison** (2026-09-14, via new `github/bin/repo_search.py`, best-match order): closest analogs are `alexfdez1010/paperhound` (7 sources incl. CORE/Crossref, PDF download+docling→markdown, local library, refs/cited-by commands) and `hossam1522/VerifiSci` (Go CLI for LLM agents); `danielnsilva/semanticscholar` is the de-facto S2 client (typed, async, exposes real tldr/influentialCitationCount — needs S2, key optional). Our edges: no-key s2dupe, per-leg rate-limit audit, JSONL-first, fail-fast redundancy, alphaXiv community signal. Gaps vs paperhound: no PDF download/convert, no local library, no rerank.
+- alphaXiv endpoints used: `GET /v1/search/paper`, `GET /papers/v3/legacy/{arxiv_id}`, `GET /papers/v3/{arxiv_id}/similar-papers` (takes arXiv ID, not UUID). Search/metadata/similar are public; key only unlocks library/private features.
+- User created an alphaXiv API key on 2026-09-14; connector `custom.alphaxiv` (api.alphaxiv.org, Bearer header) set up but key NOT yet stored in vault — capture link sent, pending user action. Key must never be written to files/memory; router degrades gracefully to public endpoints until stored.
+
+## NIM completions (2026-09-14)
+- **`nvidia-nim-loader`** skill: runs LLM completions through NVIDIA's hosted NIM API (`https://integrate.api.nvidia.com/v1`, OpenAI-compatible, 130+ models). External isolated venv at `~/workspace/skills/nvidia-nim-loader/.venv` (openai lib installed); `bin/nim.py` = `models` (list ids) | `chat --model ID` (prompt or stdin, `--system/--temperature/--max-tokens/--format json|text`) | `ping`. Auth via Secure Vault `custom.nvidia` (Bearer `nvapi-…`) through the dynamic credential surrogate — raw key never readable/printed/stored; graceful `no_nvidia_credential` error when missing.
+- **`model-ranking`** skill: `bin/rank.py --task tldr|rerank|chat|reasoning|agent|longctx|fast --top N --format table|json|id` ranks a curated Sept-2026 NIM model table (heuristic quality/speed/context/tools scores). `--format id` feeds the loader: `nim.py chat --model $(rank.py --task tldr --format id)`.
+- **`papers.py --tldr-llm`** (with `--id`): replaces extractive TLDR with abstractive NIM TLDR (model from ranking skill, `--nim-model` overrides). Falls back to extractive on any failure; own `tldr-llm` leg entry. Verified 2026-09-14 on 2302.01318: degraded cleanly with `no_nvidia_credential`, extractive TLDR intact.
+- **nvapikey status 2026-09-14**: key stored as `custom.nvidia` and VERIFIED working (`nim.py ping` ok). Live /v1/models catalog pulled same day (82 models); ranking table rebuilt with `avail` field (verified/listed/flaky/eol) and availability-weighted scoring. `nvidia/nemotron-3-super-120b-a12b` is the verified default (tldr leg ok, ~3.3s). Catalog traps found: `nvidia/nemotron-3-nano-30b-a3b` = HTTP 410 end-of-life; several listed ids 404 for this account/key; big models cold-start slowly (timeouts at 40-60s).
+- **Complete 82-model audit 2026-09-14** (pushed to repo, README rewritten): fail-fast ladder (5s ceiling, no retries), verdicts — 55 dead-404-gated, 10 alive-fast, 9 timeout-fast, 3 unavailable-503, 3 error-other, 2 streaming-noheaders. Category x verdict: LEGACY 21/21 gated, EMBEDDING 7/7 gated, REWARD 1/1 gated, GUARD 5/5 respond somehow (most callable category), CHAT 32 only 5 alive, NEMOTRON-3 5 with 1 alive (ultra-550b) + 2 on 503 (super-120b, omni). Of the 10 alive, only ~4 are general chat models (rest: 3 guards, 2 riva-translate, vision, diffusion, parse). Alive list: diffusiongemma-26b, llama-3.2-11b-vision, safety-guard-8b-v3, ultra-550b, nemotron-3.5-content-safety, nemotron-parse-2.0, riva-translate v1.1+v2, gpt-oss-20b, glm-5.3-flash.
+- **NIM availability is nondeterministic + catalog mutates**: across runs minutes apart ultra-550b dead->alive, super-120b alive->503, deepseek-v4-pro alive->timeout->DELISTED from /v1/models (82->81 models within ~10 min). EOL models are delisted, not 410'd (nano-30b gone). GET /v1/models/{id} = 200 for everything listed = existence oracle only, not entitlement. Fuzz (25 probes): only real inference route is POST /v1/chat/completions; /v1/embeddings is model-aware (nv-embed-v1 -> 410 EOL 2026-08-25); n=2+temp0 -> 400; nemotron-parse v1 400s on plain strings. super-120b serves `deprecation: 2026-10-03T09:00:00Z` and 503'd — default model is dying.
+- **The /v1/models catalog is a registry dump, not a chat-model list**: its 7 embedding/retrieval models can never answer a chat completion; oddballs include an Ising physics calibration model and a synthetic-video detector. This came from the NIM model audit when the user asked for the NIM catalog audit, recorded 2026-09-14.
+- **api-fuzzing skill installed** 2026-09-14: ~/workspace/skills/api-fuzzing/ (from langbyyi/CyberStrikeAI-SRC, pushed 2026-09-13; beat ffuf-web-fuzzing = path discovery only, and low-level-dev-skills = libFuzzer/C binaries wrong domain).
+- **Public repo 2026-09-14**: `toxicwind/nvidia-nim-model-probe` (https://github.com/toxicwind/nvidia-nim-model-probe) — fail-fast probe of 19 NIM models (only 5 usable: super-120b, deepseek-v4-pro, glm-5.3-flash, gpt-oss-20b alive-fast; gemma-4 cold-start; deepseek-v4-flash streaming-stall; ultra-550b/lightning/kimi-k3 flaky-timeout; omni-reasoning 503; 8x 404-gated; nano-30b 410-EOL). Contains probe.py/bench.py/nim.py/rank.py (public variants w/ auth.py shim, NVIDIA_API_KEY fallback), sanitized data/ (account IDs redacted), star-bait README w/ per-model deep dives + deep links. Update README when Exa/GitHub research lands.
+
+## Skills workspace (2026-09-14)
+- 40 skills installed from Drive bundle into ~/workspace/skills/, plus new `skill-setup` harness (41 total).
+- Shared portable venv: ~/workspace/skills/.venv (Pillow, numpy, python-dotenv, requests, pandas, networkx, pydantic, nest_asyncio, curl_cffi, camoufox); requirements.txt alongside. runner.sh files prefer it on PATH.
+- Port-holding skills fixed to read ports from loaded env: direct-socket-task-runner (CDP_PORT, was hardcoded 9223), kimi-container-runtime (KIMI_GATEWAY_PORT), sovereign-egress-orchestrator (EGRESS_PORT), pitchfork-service-triage (MCP_PROXY_PORT), asymmetric-procedural-orchestrator (PROXY_EGRESS_URL).
+- `skill-setup/main.py`: --list/--check/--setup/--smoke/--report/--ports/--dns. --ports discovers all skill ports (configured from .env, documented in SKILL.md), listening state via /proc, owning PID/process; run wrapped: `unshare -U -r python3 main.py --ports`.
+- Configured ports: 5901/6080/9223 (vnc/cdp), 8080 (asymmetric-procedural-orchestrator PROXY_EGRESS_URL), 25109 (pitchfork MCP proxy), 25126 (kimi gateway), 25127 (sovereign egress).
+- cdp-namespace-controller + web-tool-vnc-wrapper runners: read .env, audit procs/sockets, unshare check, probe TRUSTED_HOSTS (default 127.0.0.1), chromium --remote-allow-origins built from trusted hosts.
+- /home/toxic refs corrected to /home/hatch everywhere except env-log-debugger (purposefully external: describes awrawr-pc target machine, marked as such).
+- EXA_API_KEY (same key) in 7 skills, all return HTTP 200. Only credential-like var across all .env files.
+
+## Trusted DNS fix (2026-09-14, permanent)
+- Local resolver is an unreliable narrator: sinkholes domains to 198.18.0.0/15 (seen for annas-archive.org/.se, intermittently example.com) instead of real answers; DoH (1.1.1.1, dns.google) gives truth.
+- Fix: ~/workspace/skills/shared/trusted_dns.py — doh_resolve/resolve_host/patch_socket/pinned_session (curl_cffi CURLOPT_RESOLVE pinning, SNI intact)/fetch with backoff. Patch covers getaddrinfo AND gethostbyname/gethostbyname_ex (C gethostbyname bypasses getaddrinfo-only patch). System DNS fast-path kept unless all answers sinkholed; definitive DoH NXDOMAIN raises instead of returning the lie.
+- Permanently attached: venv site-packages/zzz_trusted_dns.pth auto-runs trusted_dns_bootstrap at every venv interpreter startup (venv sitecustomize.py does NOT work — /usr/lib/python3.12/sitecustomize.py takes precedence). Canonical copies in skill-setup/assets/; `--setup` redeploys drifted files; `--dns` ensures + live-canary tests.
+- Verified 2026-09-14: example.com -> 104.20.23.154 (was sinkholed), annas-archive.se -> gaierror, annas-archive.is fetch 200 via DoH-pinned curl_cffi, pip unaffected.
+
+## Encrypted GitHub FS (2026-09-14)
+- Public repo `toxicwind/vaultfs` (https://github.com/toxicwind/vaultfs) — holds ONLY ciphertext: random-name encrypted blobs + encrypted manifest + README explaining it's ciphertext + .gitattributes routing blobs/** to LFS. Public viewers see nonsense.
+- Skill: ~/workspace/skills/encrypted-github-fs/ (SKILL.md, main.py, runner.sh, README.md). CLI: init | put <src> [-a alias] | get <alias> [-o out] | list | rm <alias> | sync [--pull].
+- Crypto: Fernet key in skill `.env` as VAULTFS_KEY (name only — never the value; never committed/uploaded/printed). Blobs = Fernet(zlib-9(data)); manifest = Fernet(zlib-9(json)). put dedupes by SHA-256. Key loss = vault loss, no recovery.
+- Sync via GitHub Contents API (api.github.com, custom.github surrogate); no git push. Prunes remote orphan blobs on sync.
+- git-lfs 3.6.1 binary at ~/workspace/bin/git-lfs (ephemeral /usr avoided). `cryptography` added to skills requirements.txt + venv.
+- Tested 2026-09-14: put/get roundtrip OK, no plaintext in blobs/manifest, pull-from-scratch OK, remote pruning OK, skill-setup --check PASS.
+- **Dual-routed 2026-09-14**: skill now routes by type — documents (pdf/epub/mobi/txt/docx/...) go plaintext to Google Drive folder "vaultfs" (live API via hatch_gws_cli, local store/drive.json alias→fileId index, rm = trash); everything else goes to the encrypted vault. `--to vault|drive|auto` overrides. Drive folder auto-created on first drive put; verified put/get byte-identical/rm/list end to end.
+
+## Portable binaries ZipFS (2026-09-14)
+- Skill: ~/workspace/skills/portable-binfs/. Bundle: assets/portable-binaries.zip (bin/<name> + manifest.json {version, sha256, size, source, added_at}), staging area ~/workspace/bin/.
+- CLI: build [--src] | list | verify | mount [--target] | exec <name> [args] | which <name> | path. Extraction to skill-local .local/bin, exec bits preserved, re-extract on manifest drift.
+- Currently bundled: git-lfs 3.6.1 (12MB). Workflow: drop binary in ~/workspace/bin → `main.py build` → verify.
+- Code portability audit 2026-09-14: zero hardcoded /home paths in any skill .py/.sh (skill-setup computes SKILLS_DIR/VENV_DIR from __file__; annas-router resolves shared/ relative to its own dir; trusted_dns path-free; .pth content generated dynamically). Remaining /home/hatch refs are bundle .env values (real user config dirs) and env-log-debugger's intentionally-external docs.
+
+## Anna's Archive downloads (2026-09-14)
+- Current site version gates ALL downloads (fast + slow partner servers) behind account login — every button hard-links to /account in server HTML, confirmed in live Chromium. Legacy no-login routes (/slow_download/<md5>/0/0, /md5/<md5>, /dyn/downloads/check_downloaded/) all 404 on this version. Page copy still claims "no membership requirement" on slow side, but no no-login route exists.
+- annas-router SKILL.md updated with this; CLI stays search/metadata-only. Downloads need the user signed in via live browser.
+- Law of One books also freely available: Internet Archive "All Law of One Books" (PDF/EPUB/txt, no login) and L/L Research's own free PDFs (assets.llresearch.org).
+
+## Playwright headless in sandbox (2026-09-14)
+- playwright 1.62.0 installed in skills venv. Raw Chromium could NOT egress at first (ERR_EMPTY_RESPONSE): it can't speak IPv6 to the sandbox egress proxy (hatch-egress-proxy resolves IPv6-only) and its background networking (component update, google pings) breaks navigation.
+- Fix: `annas-router/bin/proxy_fwd.py` bridges 127.0.0.1:3129 -> proxy IPv6:3128 (proxy allows unauth CONNECT from this VM, verified). Launch Chromium headless with --proxy-server=http://127.0.0.1:3129 --disable-component-update --disable-background-networking --ignore-certificate-errors (egress proxy MITMs TLS). Keep proxy_fwd.py running in background for headless work. `bin/probe_annas.py` = working headless probe of Anna's download buttons.
+- GitHub recency-ranked Anna's tools (2026-09-14): zelestcarlyone/stacks (816*, upd 2026-09-13, needs membership for fast dl), ALBEDO-TABAI/annas-archive-downloader "aget" (Playwright, upd 2026-08-16, slow-dl then LibGen fallback, member key for fast), proItheus/AA-add-dllink (userscript adding libgen links). All assume membership or working slow downloads; none bypass the current account wall.
+- annas-archive.li redirects headless browsers to external bot-check (usokac.com) — dead end from here.
+
+## Model-card audit (2026-09-14)
+- Every build.nvidia.com model page has `<link rel="alternate" type="text/markdown" href=".../{org}/{model}.md">` — 51/81 live catalog models have fetchable cards (no browser needed); 30 have no public card (404), incl. riva-translate-v1.1, several guards, legacy models. Website card coverage is a SUBSET of the API catalog.
+- Cards prove the /v1/models catalog is modality-blind: nemotron-3-embed-1b card output = "Floats", nvclip = "Float tensor", omni-reasoning = Video/Audio/Image/Text in — all listed in the chat catalog, all 404-gated for chat POSTs. The API never declares which ids are chat-capable; only probing does.
+- **Ising "physics model" explained**: nvidia/ising-calibration-1.5-31b card = dense multimodal VLM built on Gemma 4 31B for quantum calibration plot analysis, Text+Image in, structured text out. Weird name, normal chat endpoint. It timed out in probes (cold), not dead.
+- **Deprecation signals live in API headers, not cards**: super-120b's card says nothing about retirement; the API serves `deprecation: 2026-10-03T09:00:00Z`. Cards are marketing-fresh, headers are ops-fresh.
+- Headless Chromium now available: chrome-headless-shell 151 zip in ~/workspace/headless/ (see TOOLS.md); playwright's own CDN blocked by egress gateway, use storage.googleapis.com chrome-for-testing.
+- Maximal fuzz (187 cases, 19.2s) findings: /health returns 200 (undocumented); GET /v1/models needs NO auth (200 with no/bad bearer — catalog is public, per-model gating happens at inference); malformed JSON -> 500 not 400 (Go gateway leaks `openAIRequestBody` struct errors); n=2+temp0 rejected differently per model (heterogeneous backends); parallel_tool_calls=false 500s super-120b; POST /v1/images/generations -> 400 "model field required" (route EXISTS, not 404); 0/20 429s on burst (no rate limiting seen).
+- api-fuzzing skill rewritten as v1.2-local: environment tool mapping, fixed dead Related Routing links, rate-limits-audited-not-bypassed, DNS/auth/nondeterminism lessons.
+
+## Law of One book pipeline (2026-09-14)
+- `~/workspace/law-of-one/pipeline.py`: rate-limited (3s gaps, 429 handling, exponential backoff), per-stage timing, idempotent. Converted all five Law of One books (959 pages) into 959 Snappy Parquet rows / 354,518 words, one row per page; PDFs stored in the Drive "vaultfs" folder, Parquet files in the encrypted vault; full timing report at `~/workspace/law-of-one/report.json`. This came from the Law of One pipeline run when the user asked for the Law of One conversion, recorded 2026-09-14.

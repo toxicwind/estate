@@ -1,0 +1,1 @@
+../goals/awrawr-pc-mcp-exec-bridge/files/awrawr_mcp_client.py

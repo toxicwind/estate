@@ -1,0 +1,107 @@
+{
+  "books": {
+    "1": {
+      "downloaded": false,
+      "validation": {
+        "bytes": 4883187,
+        "pages": 233,
+        "sample_chars": 1835,
+        "sha256": "ab027ec3c93e5577"
+      },
+      "parquet": "/home/hatch/workspace/law-of-one/parquet/law_of_one_book_1.parquet",
+      "stats": {
+        "rows": 233,
+        "words": 84579,
+        "chars": 497108,
+        "empty_units": 0,
+        "bytes": 276875
+      }
+    },
+    "2": {
+      "downloaded": false,
+      "validation": {
+        "bytes": 380848,
+        "pages": 125,
+        "sample_chars": 1540,
+        "sha256": "f73320e35fa3c449"
+      },
+      "parquet": "/home/hatch/workspace/law-of-one/parquet/law_of_one_book_2.parquet",
+      "stats": {
+        "rows": 125,
+        "words": 46662,
+        "chars": 274954,
+        "empty_units": 0,
+        "bytes": 153555
+      }
+    },
+    "3": {
+      "downloaded": false,
+      "validation": {
+        "bytes": 530771,
+        "pages": 178,
+        "sample_chars": 1694,
+        "sha256": "65801701fe44dc05"
+      },
+      "parquet": "/home/hatch/workspace/law-of-one/parquet/law_of_one_book_3.parquet",
+      "stats": {
+        "rows": 178,
+        "words": 67205,
+        "chars": 395685,
+        "empty_units": 0,
+        "bytes": 216062
+      }
+    },
+    "4": {
+      "downloaded": false,
+      "validation": {
+        "bytes": 1944704,
+        "pages": 213,
+        "sample_chars": 1728,
+        "sha256": "07471e9341cf1833"
+      },
+      "parquet": "/home/hatch/workspace/law-of-one/parquet/law_of_one_book_4.parquet",
+      "stats": {
+        "rows": 213,
+        "words": 74068,
+        "chars": 434475,
+        "empty_units": 0,
+        "bytes": 231271
+      }
+    },
+    "5": {
+      "downloaded": false,
+      "validation": {
+        "bytes": 1035074,
+        "pages": 210,
+        "sample_chars": 1824,
+        "sha256": "4ccc2e29fd32f907"
+      },
+      "parquet": "/home/hatch/workspace/law-of-one/parquet/law_of_one_book_5.parquet",
+      "stats": {
+        "rows": 210,
+        "words": 82004,
+        "chars": 467918,
+        "empty_units": 0,
+        "bytes": 284530
+      }
+    }
+  },
+  "timings": {
+    "validate book 1": 0.19,
+    "convert law_of_one_book_1": 7.65,
+    "inspect law_of_one_book_1": 0.37,
+    "validate book 2": 0.04,
+    "convert law_of_one_book_2": 2.23,
+    "inspect law_of_one_book_2": 0.0,
+    "validate book 3": 0.05,
+    "convert law_of_one_book_3": 2.83,
+    "inspect law_of_one_book_3": 0.0,
+    "validate book 4": 0.12,
+    "convert law_of_one_book_4": 6.71,
+    "inspect law_of_one_book_4": 0.0,
+    "validate book 5": 0.15,
+    "convert law_of_one_book_5": 7.01,
+    "inspect law_of_one_book_5": 0.0
+  },
+  "total_s": 27.5
+}

@@ -1,0 +1,421 @@
+{
+ "toxicwind/ast-grep": {
+  "repo": "toxicwind/ast-grep",
+  "branch": "main",
+  "nfiles": 342,
+  "truncated": false,
+  "suspicious_files": [],
+  "findings": []
+ },
+ "toxicwind/caddy-sovereign-auth": {
+  "repo": "toxicwind/caddy-sovereign-auth",
+  "branch": "main",
+  "nfiles": 13,
+  "truncated": false,
+  "suspicious_files": [
+   ".env.example"
+  ],
+  "findings": [
+   {
+    "path": ".env.example",
+    "real_secret_signals": [],
+    "clean": true
+   }
+  ]
+ },
+ "toxicwind/qed": {
+  "repo": "toxicwind/qed",
+  "branch": "main",
+  "nfiles": 10,
+  "truncated": false,
+  "suspicious_files": [
+   ".env.example"
+  ],
+  "findings": [
+   {
+    "path": ".env.example",
+    "real_secret_signals": [],
+    "clean": true
+   }
+  ]
+ },
+ "toxicwind/sovereign-router": {
+  "repo": "toxicwind/sovereign-router",
+  "branch": "main",
+  "nfiles": 131,
+  "truncated": false,
+  "suspicious_files": [
+   ".env.example",
+   "ultimate_extract/kimi_tokens.json",
+   "ultimate_extract/kimi_tokens_full.json"
+  ],
+  "findings": [
+   {
+    "path": ".env.example",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "ultimate_extract/kimi_tokens.json",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "ultimate_extract/kimi_tokens_full.json",
+    "real_secret_signals": [],
+    "clean": true
+   }
+  ]
+ },
+ "toxicwind/zedra-sovereign": {
+  "repo": "toxicwind/zedra-sovereign",
+  "branch": "main",
+  "nfiles": 12,
+  "truncated": false,
+  "suspicious_files": [
+   ".env.example"
+  ],
+  "findings": [
+   {
+    "path": ".env.example",
+    "real_secret_signals": [],
+    "clean": true
+   }
+  ]
+ },
+ "toxicwind/herd": {
+  "repo": "toxicwind/herd",
+  "branch": "main",
+  "nfiles": 479,
+  "truncated": false,
+  "suspicious_files": [
+   ".env.example",
+   "ui-svelte/src/components/TokenHistogram.svelte"
+  ],
+  "findings": [
+   {
+    "path": ".env.example",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "ui-svelte/src/components/TokenHistogram.svelte",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "config.example.yaml",
+    "real_secret_signals": [
+     "sk-"
+    ],
+    "clean": false
+   }
+  ]
+ },
+ "toxicwind/nvidia-swarm-lens": {
+  "repo": "toxicwind/nvidia-swarm-lens",
+  "branch": "main",
+  "nfiles": 572,
+  "truncated": false,
+  "suspicious_files": [
+   ".env",
+   ".env.example",
+   "bin/pylibs/certifi/cacert.pem"
+  ],
+  "findings": [
+   {
+    "path": ".env",
+    "real_secret_signals": [
+     "github_pat_",
+     "sk-"
+    ],
+    "clean": false
+   },
+   {
+    "path": ".env.example",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "bin/pylibs/certifi/cacert.pem",
+    "real_secret_signals": [],
+    "clean": true
+   }
+  ]
+ },
+ "toxicwind/sovereign-pi-archive": {
+  "repo": "toxicwind/sovereign-pi-archive",
+  "branch": "main",
+  "nfiles": 6838,
+  "truncated": false,
+  "suspicious_files": [
+   ".env.example",
+   ".pi/sessions/2026-08-27T00-34-30-572Z_01a040a3-c82c-7a4d-b0d6-a62309cd1f8b.jsonl",
+   ".pi/sessions/2026-08-27T23-24-31-620Z_01a0458a-1204-7781-8a35-39573658eede.jsonl",
+   ".pi/sessions/2026-08-27T23-46-43-718Z_01a0459e-6586-7c09-8742-ff12c0fa9553.jsonl",
+   "crates/pi-natives/src/tokens.rs",
+   "crates/pi-natives/src/utok/pretoken.rs",
+   "crates/pi-natives/tools/cache/cl100k_base.tiktoken",
+   "crates/pi-natives/tools/cache/deepseek-v3.tokenizer.json",
+   "crates/pi-natives/tools/cache/deepseek-v4.tokenizer.json",
+   "crates/pi-natives/tools/cache/glm-5.tokenizer.json",
+   "crates/pi-natives/tools/cache/kimi.tiktoken.model",
+   "crates/pi-natives/tools/cache/o200k_base.tiktoken",
+   "crates/pi-natives/tools/cache/qwen3.8.tokenizer.json",
+   "crates/pi-natives/tools/cache/tokenization_kimi.py",
+   "docs/secrets.md",
+   "packages/agent/src/compaction/transcript-tokens.ts",
+   "packages/agent/src/tokenizer.ts",
+   "packages/agent/test/context-tokens-orchestration.test.ts",
+   "packages/agent/test/tokenizer.test.ts",
+   "packages/agent/test/transcript-tokens.test.ts",
+   "packages/ai/src/auth/sqlite-credential-store.ts",
+   "packages/ai/src/providers/aws-credentials.ts",
+   "packages/ai/src/providers/data/qwen-token-plan-cn.json",
+   "packages/ai/src/providers/data/qwen-token-plan.json",
+   "packages/ai/src/providers/data/xiaomi-token-plan-ams.json",
+   "packages/ai/src/providers/data/xiaomi-token-plan-cn.json",
+   "packages/ai/src/providers/data/xiaomi-token-plan-sgp.json",
+   "packages/ai/src/providers/devin/proto/exa/tokenizer_pb/tokenizer.proto",
+   "packages/ai/src/registry/alibaba-token-plan.ts",
+   "packages/ai/src/registry/xiaomi-token-plan-ams.ts",
+   "packages/ai/src/registry/xiaomi-token-plan-cn.ts",
+   "packages/ai/src/registry/xiaomi-token-plan-sgp.ts",
+   "packages/ai/src/usage/alibaba-token-plan.ts",
+   "packages/ai/test/alibaba-token-plan-usage.test.ts",
+   "packages/ai/test/alibaba-token-plan.test.ts",
+   "packages/ai/test/auth-broker-disabled-credentials.test.ts",
+   "packages/ai/test/auth-storage-check-credentials.test.ts",
+   "packages/ai/test/auth-storage-credential-disabled-event.test.ts",
+   "packages/ai/test/auth-storage-credential-origin.test.ts",
+   "packages/ai/test/aws-credentials.test.ts"
+  ],
+  "findings": [
+   {
+    "path": ".env.example",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": ".pi/sessions/2026-08-27T00-34-30-572Z_01a040a3-c82c-7a4d-b0d6-a62309cd1f8b.jsonl",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": ".pi/sessions/2026-08-27T23-24-31-620Z_01a0458a-1204-7781-8a35-39573658eede.jsonl",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": ".pi/sessions/2026-08-27T23-46-43-718Z_01a0459e-6586-7c09-8742-ff12c0fa9553.jsonl",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "crates/pi-natives/src/tokens.rs",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "crates/pi-natives/src/utok/pretoken.rs",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "crates/pi-natives/tools/cache/cl100k_base.tiktoken",
+    "note": "too big to scan"
+   },
+   {
+    "path": "crates/pi-natives/tools/cache/deepseek-v3.tokenizer.json",
+    "note": "too big to scan"
+   },
+   {
+    "path": "crates/pi-natives/tools/cache/deepseek-v4.tokenizer.json",
+    "note": "too big to scan"
+   },
+   {
+    "path": "crates/pi-natives/tools/cache/glm-5.tokenizer.json",
+    "note": "too big to scan"
+   },
+   {
+    "path": "crates/pi-natives/tools/cache/kimi.tiktoken.model",
+    "note": "too big to scan"
+   },
+   {
+    "path": "crates/pi-natives/tools/cache/o200k_base.tiktoken",
+    "note": "too big to scan"
+   },
+   {
+    "path": "crates/pi-natives/tools/cache/qwen3.8.tokenizer.json",
+    "note": "too big to scan"
+   },
+   {
+    "path": "crates/pi-natives/tools/cache/tokenization_kimi.py",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "docs/secrets.md",
+    "real_secret_signals": [
+     "AKIA",
+     "github_pat_",
+     "sk-"
+    ],
+    "clean": false
+   },
+   {
+    "path": "packages/agent/src/compaction/transcript-tokens.ts",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "packages/agent/src/tokenizer.ts",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "packages/agent/test/context-tokens-orchestration.test.ts",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "packages/agent/test/tokenizer.test.ts",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "packages/agent/test/transcript-tokens.test.ts",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "packages/ai/src/auth/sqlite-credential-store.ts",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "packages/ai/src/providers/aws-credentials.ts",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "packages/ai/src/providers/data/qwen-token-plan-cn.json",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "packages/ai/src/providers/data/qwen-token-plan.json",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "packages/ai/src/providers/data/xiaomi-token-plan-ams.json",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "packages/ai/src/providers/data/xiaomi-token-plan-cn.json",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "packages/ai/src/providers/data/xiaomi-token-plan-sgp.json",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "packages/ai/src/providers/devin/proto/exa/tokenizer_pb/tokenizer.proto",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "packages/ai/src/registry/alibaba-token-plan.ts",
+    "real_secret_signals": [
+     "sk-"
+    ],
+    "clean": false
+   },
+   {
+    "path": "packages/ai/src/registry/xiaomi-token-plan-ams.ts",
+    "real_secret_signals": [],
+    "clean": true
+   }
+  ]
+ },
+ "toxicwind/k3-capacity-hack": {
+  "repo": "toxicwind/k3-capacity-hack",
+  "branch": "main",
+  "nfiles": 25,
+  "truncated": false,
+  "suspicious_files": [],
+  "findings": []
+ },
+ "toxicwind/codex-desktop-linux": {
+  "repo": "toxicwind/codex-desktop-linux",
+  "branch": "main",
+  "nfiles": 10,
+  "truncated": false,
+  "suspicious_files": [],
+  "findings": []
+ },
+ "toxicwind/ontological-atlas": {
+  "repo": "toxicwind/ontological-atlas",
+  "branch": "main",
+  "nfiles": 65,
+  "truncated": false,
+  "suspicious_files": [],
+  "findings": []
+ },
+ "toxicwind/playwright-mcp": {
+  "repo": "toxicwind/playwright-mcp",
+  "branch": "main",
+  "nfiles": 68,
+  "truncated": false,
+  "suspicious_files": [
+   "packages/extension/src/ui/authToken.css",
+   "packages/extension/src/ui/authToken.tsx",
+   "packages/playwright-mcp/tests/testserver/cert.pem",
+   "packages/playwright-mcp/tests/testserver/key.pem"
+  ],
+  "findings": [
+   {
+    "path": "packages/extension/src/ui/authToken.css",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "packages/extension/src/ui/authToken.tsx",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "packages/playwright-mcp/tests/testserver/cert.pem",
+    "real_secret_signals": [],
+    "clean": true
+   },
+   {
+    "path": "packages/playwright-mcp/tests/testserver/key.pem",
+    "real_secret_signals": [
+     "-----BEGIN PRIVATE KEY"
+    ],
+    "clean": false
+   }
+  ]
+ },
+ "toxicwind/web3-sec-workspace": {
+  "repo": "toxicwind/web3-sec-workspace",
+  "branch": "main",
+  "nfiles": 32,
+  "truncated": false,
+  "suspicious_files": [
+   ".env.example"
+  ],
+  "findings": [
+   {
+    "path": ".env.example",
+    "real_secret_signals": [],
+    "clean": true
+   }
+  ]
+ }
+}

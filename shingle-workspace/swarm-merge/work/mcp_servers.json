@@ -1,0 +1,148 @@
+{
+  "$schema": "mcp-server-manifest-v1",
+  "servers": [
+    {
+      "name": "context7",
+      "transport": "http-sse",
+      "url": "https://mcp.context7.com/mcp",
+      "auth": {
+        "type": "bearer",
+        "env_key": "CONTEXT7_API_KEY"
+      },
+      "headers": [
+        "Authorization: Bearer {CONTEXT7_API_KEY}",
+        "Accept: application/json, text/event-stream"
+      ],
+      "free_tier": true,
+      "tools": [
+        "resolve-library-id",
+        "query-docs"
+      ],
+      "status": "LIVE"
+    },
+    {
+      "name": "exa",
+      "transport": "rest",
+      "url": "https://api.exa.ai",
+      "auth": {
+        "type": "bearer",
+        "env_key": "EXA_API_KEY"
+      },
+      "free_tier": false,
+      "tools": [
+        "search",
+        "findSimilar",
+        "getContents"
+      ],
+      "status": "DEAD (402 Payment Required)",
+      "replacement": "duckduckgo or chrome_cdp"
+    },
+    {
+      "name": "bash_root",
+      "transport": "local-unshare",
+      "url": "unix:///tmp/mcp_bash.sock",
+      "auth": {
+        "type": "none"
+      },
+      "free_tier": true,
+      "tools": [
+        "bash_exec",
+        "bash_stream",
+        "bash_kill"
+      ],
+      "yolo_mode": true,
+      "status": "LIVE"
+    },
+    {
+      "name": "strace_live",
+      "transport": "local-unshare",
+      "url": "unix:///tmp/mcp_strace.sock",
+      "auth": {
+        "type": "none"
+      },
+      "free_tier": true,
+      "tools": [
+        "strace_attach",
+        "strace_stream",
+        "ptrace_peek",
+        "ptrace_poke"
+      ],
+      "status": "PARTIAL (strace binary missing)"
+    },
+    {
+      "name": "nvidia_nim",
+      "transport": "http",
+      "url": "https://integrate.api.nvidia.com/v1",
+      "auth": {
+        "type": "bearer",
+        "env_key": "NVIDIA_API_KEY"
+      },
+      "free_tier": false,
+      "tools": [
+        "chat.completions",
+        "embeddings"
+      ],
+      "models": [
+        "openai/gpt-oss-20b",
+        "z-ai/glm-5.3-flash",
+        "meta/llama-3.2-11b-vision-instruct"
+      ],
+      "status": "LIVE 2026-09-14 (fail-fast audit; old llama-3.1 defaults were 404-gated/delisted)"
+    },
+    {
+      "name": "mintlify_gdrive",
+      "transport": "http-sse",
+      "url": "https://mcp.mintlify.com/mcp",
+      "auth": {
+        "type": "bearer",
+        "env_key": "MINTLIFY_MCP_KEY"
+      },
+      "free_tier": false,
+      "tools": [
+        "search-docs",
+        "read-doc",
+        "list-files"
+      ],
+      "status": "DEAD (Cloudflare 1010)"
+    },
+    {
+      "name": "duckduckgo",
+      "transport": "python-package",
+      "url": "local",
+      "auth": {
+        "type": "none"
+      },
+      "free_tier": true,
+      "tools": [
+        "ddg_text",
+        "ddg_news"
+      ],
+      "status": "INSTALLING",
+      "note": "FREE Exa replacement \u2014 no API key"
+    },
+    {
+      "name": "chrome_cdp",
+      "transport": "http",
+      "url": "http://127.0.0.1:9222",
+      "auth": {
+        "type": "none"
+      },
+      "free_tier": true,
+      "tools": [
+        "navigate",
+        "evaluate",
+        "screenshot",
+        "scrape_search"
+      ],
+      "status": "PARTIAL",
+      "note": "FREE Exa replacement \u2014 browser scraping"
+    }
+  ],
+  "unlock_variables": [
+    "yolo",
+    "always-accept-and-continue",
+    "no-confirm",
+    "force-root",
+    "de-sandbox"
+  ]
+}

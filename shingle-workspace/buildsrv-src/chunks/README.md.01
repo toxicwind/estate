@@ -1,0 +1,56 @@
+dsrv/logs/b260914-175901-a1b2c3d4.log
+```
+
+## pitchfork stanza
+
+Hand-added to `/home/toxic/sovereign/pitchfork.toml` (generator retired —
+this file is hand-edited; `scripts/generate.ts` must never run):
+
+```toml
+# buildsrv — fleet continuous-modification engine (2026-09-14): disk-backed
+# job queue, streaming logs, content-hash artifact cache. Source:
+# tools/buildsrv in toxicwind/sovereign-projects. Submit via `buildsrv`.
+[daemons.buildsrv]
+run = "exec /usr/bin/python3 /home/toxic/sovereign/tools/buildsrv/buildsrvd.py"
+dir = "/home/toxic/sovereign/tools/buildsrv"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25148/health"
+env = { BUILDSRV_ROOT = "/home/toxic/buildsrv", BUILDSRV_PORT = "25148", BUILDSRV_WORKERS = "2" }
+auto = ["start"]
+```
+
+`"buildsrv"` was also appended to the `[groups.all]` daemon list.
+Reload/start: `pitchfork start buildsrv` / `pitchfork restart buildsrv` /
+`pitchfork status buildsrv` / `pitchfork logs buildsrv`.
+
+Env knobs: `BUILDSRV_PORT` (default 25148), `BUILDSRV_WORKERS` (default 2),
+`BUILDSRV_POLL` (queue poll seconds, default 2).
+
+## Toolchains
+
+The daemon **orchestrates, never installs**. On every job it preflights
+`<toolchain>` through the login shell (`bash -lc "command -v …"`), so mise
+shims resolve exactly as they do for an interactive shell. Missing
+toolchain → job fails in <1s with `install/enable it via mise, then
+resubmit`. Known toolchains: `rust`/`cargo`, `go`, `bun`, `node`,
+`python`/`python3`, `tsc`.
+
+## Failure modes
+
+* Toolchain missing → `failed` in <1s, clear message, nothing ran.
+* Build fails → `failed`, exit code + full log kept, tree untouched.
+* Timeout (default 1200s, `--timeout`) → process group SIGKILLed, `failed`.
+* Daemon dies mid-build → on boot, `active/` jobs return to `queue/` and
+  re-run from scratch. The orphaned child was started in its own process
+  group; builds themselves are expected to be re-runnable (forward-only).
+* State file corrupt → daemon logs a warning and starts fresh (queue dir
+  is the source of truth for pending work, results/ for history).
+
+## Verified 2026-09-14
+
+End-to-end on awrawr-pc (see commit history): Rust `cargo build -p pi-ast`
+(tau engine, 17.7s), Bun `bunx tsc --noEmit` (null-g-proxy, 1.4s),
+Go `go build ./...` (caddy-sovereign-auth, Xs) — all green through the
+daemon, plus cache-hit no-op and retry paths.
