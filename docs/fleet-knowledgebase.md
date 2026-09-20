@@ -78,6 +78,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | super-ralph repair | Root-cause `fiber.cache.stackFrame` crash; prove `super-ralph "reply with exactly the word ALIVE"` exits zero + DB completion | Ember | RUNNING |
 | tmp-repos-emergent | Scratch/tmp → owning repos migration | Ember | RUNNING — **de-duped with repo-integrator-max 2026-09-20 (fleet seq 11291)** |
 | edge-max | Estate-wide cutting-edge coordinator | Ember (other chat) | RUNNING |
+| edge-additions | September-2026 cutting-edge additions (edge-max worker): keypool KEYPOOL_RACE_KEYS first-valid-wins racing, hft-latency --hedge-ms hedged launch, read-only calibrated routing-score publisher, squawk history_search CLI | Ember (edge-max crew) | DONE (2026-09-20) -- branch edge-max-20260920 commits c979437f26 (docs/evidence), adaaf1e80d (keypool recovery fix), 97d88d6f48 (squawk history_search), 15acd0f15c (routing-score), 8bba83a0fc (hft-latency --hedge-ms), a03edca0e2 (keypool racing); verified: selftest x5, race sidecar x3, hft/routing/squawk suites x3 each, legacy serial OK, real-root sanity OK; remote ref verified via ls-remote |
 | oracle-max | Oracle decision-engine maximal upgrade | Ember (other chat) | RUNNING |
 | openfang | Agents autonomous + OpenFang-enabled | Ember | workers in, 8 kernel agents Running |
 | plumbline | Hesitance rollback root-cause hunt → canonical spawn-brief template | Ember | DONE — commits `f9095c2665` (template + registration) |
