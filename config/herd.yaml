@@ -794,33 +794,58 @@ peers:
       idleConn: 90
 
   # --- openrouter-free: probed-working OpenRouter :free models (added 2026-09-20) ---
-  # Only models that returned real completions in the 2026-09-20 direct probe are listed.
-  # Excluded as HTTP 429 in probe: z-ai/glm-5.2:free, qwen/qwen3.8-27b:free,
-  # google/gemma-4-26b-a4b-it:free (free-tier rate limits; re-probe before adding).
+  # Only models that returned real completions in the 2026-09-20 probes are listed.
   openrouter-free:
     proxy: http://127.0.0.1:25109/openrouter
     # apiKey intentionally OMITTED (2026-09-20, herd-deployer): auth is
     # injected per-call by the key-pool sidecar from its health-checked
     # OPENROUTER_* key rotation. Do NOT re-add a hardcoded key -- a
     # 401/402/429 is a routing signal, not a config rewrite.
-    # Model list = speculative ranking from abstract probe 2026-09-20
-    # (openrouter-probe/probe_abstract.py; prompt "Output exactly:
-    # ABSTRACT-7X3Q. No other text."; score 2 = exact, 1 = contains).
-    # Ordered score desc, latency asc. The :free suffix is an unreliable
-    # narrator -- every ID here was verified LIVE, never trusted from /models.
-    # Union of two 446-model abstract probes (14:25 + 14:29 MDT); availability
-    # rotates, so the union is kept and the keypool fails over across keys.
+    # RECONCILED 2026-09-20 ~14:40 MDT (herd-rewire): two independent 446-model
+    # sweeps merged into ONE ordered list. ORDERING DOCTRINE --
+    #   primary:   census LLM-judge quality 0-10 (var/or-free-ranking.md;
+    #              judges nex-agi/nex-n2.5-pro:free + openrouter/free; rubric:
+    #              3pts exactly-three-sentences / 3pts correctness /
+    #              2pts concrete example / 2pts age-fit; heuristic
+    #              sentence-count cross-check)
+    #   secondary: sibling abstract-probe instruction-following score 2/1/0
+    #              (projects/openrouter-probe/RANKING.md; union of the 14:25 and
+    #              14:29 MDT probes) as corroboration
+    #   tiebreak:  sweep latency ascending
+    # The :free suffix is an unreliable narrator -- every ID here was verified
+    # LIVE, never trusted from /models. Availability rotates; the keypool
+    # fails over across keys and respects down_until/cooldown, so throttled
+    # models are safe as fallback tiers.
     models:
-      - nex-agi/nex-n2.5-mini:free
-      - poolside/laguna-s-2.1:free
-      - cohere/north-mini-code:free
-      - nex-agi/nex-n2.5-pro:free
-      - inclusionai/ling-3.0-flash-sante:free
-      - nvidia/nemotron-3-ultra-550b-a55b:free
-      - nvidia/nemotron-3-super-120b-a12b:free
-      - nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
-      - nvidia/nemotron-3.5-lightning:free
-      - google/gemma-4-31b-it:free
+      # TIER 1 -- census judge 10/10 (both sweeps agree where both have data)
+      - openrouter/free  # census #1, 1248ms (sibling: exact but saw 35s once -- latency varies, watch it)
+      - inclusionai/ling-3.0-flash-fin:free  # census #2, 3085ms (sibling false-negatived: empty at max_tokens=30, needs >=100)
+      - nex-agi/nex-n2.5-pro:free  # census #3, 3171ms; sibling #4
+      - inclusionai/ling-3.0-flash-vl:free  # census #4, 3283ms (sibling false-negatived like fin)
+      - inclusionai/ling-3.0-flash-sante:free  # census #5, 3321ms; sibling #5
+      - nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free  # census #6, 8050ms; sibling #8
+      - cohere/north-mini-code:free  # census #7, 9908ms; sibling #3
+      - poolside/laguna-s-2.1:free  # census #8, 11044ms; sibling #2
+      - dots-studio/dots-3-note-preview:free  # census #9, 20771ms (sibling had no data -- throttled then)
+      # TIER 2 -- usable but degraded (census judge < 10)
+      - nex-agi/nex-n2.5-mini:free  # census 7/10 (missed 3rd sentence), 1395ms; sibling #1 -- fast but sloppy
+      - nvidia/nemotron-3-ultra-550b-a55b:free  # census 2/10 heuristic-only (thinking leaked into content), 9252ms; sibling #6; resurrected (was 503/EOL)
+      - nvidia/nemotron-3-super-120b-a12b:free  # census 2/10 heuristic-only (thinking leaked), 19080ms; sibling #7
+      - liquid/lfm-2.5-2.6b:free  # census 2/10 (incomplete, no example), 1979ms; sibling no data -- lowest confidence
+      # TIER 3 (throttled-elite) -- 429 through ALL census passes; likely-best
+      # candidates kept as fallback. Safe: keypool respects down_until/cooldown
+      # and auto-recovers, so these engage only when cooldowns clear.
+      - google/gemma-4-31b-it:free  # throttled; sibling had it healthy before (was wired as 429-fallback)
+      - google/gemma-4-26b-a4b-it:free  # throttled all passes
+      - qwen/qwen3.8-27b:free  # throttled all passes
+      - z-ai/glm-5.2:free  # throttled all passes
+      # EXCLUDED (auditable -- re-probe before re-adding):
+      # - nvidia/nemotron-3.5-lightning:free: census judge 0/10 (unrelated
+      #   fragment); sibling score 1 (chatty, emits thinking). Verdict: unusable.
+      # - nvidia/nemotron-3.5-content-safety:free: census judge 0/10 (refuses the
+      #   task by design -- safety classifier, not a general LLM).
+      # - poolside/laguna-xs-2.1:free: census empty-content + throttled;
+      #   sibling empty bodies. Ungradeable.
     timeouts:
       connect: 30
       keepalive: 30
