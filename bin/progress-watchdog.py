@@ -46,7 +46,7 @@ def _resolve_pf():
 
 
 PF = _resolve_pf()
-LEDGER = Path("/tmp/e2e-market/ledger.json")
+LEDGER = Path("/home/toxic/sovereign/agents/oracle-market/ledger/ledger.jsonl")
 PLOF = ["tau-1826-health", "super-ralph-e2e"]
 DAEMONS = {
     "kimi-auto-shim": 25153,
@@ -110,8 +110,8 @@ def load_ledger(path=LEDGER):
                     events.append(json.loads(line))
                 except json.JSONDecodeError:
                     continue
-    except OSError:
-        pass
+    except OSError as e:
+        out["errors"].append(f"load_ledger {path}: {type(e).__name__}")
     return events
 
 

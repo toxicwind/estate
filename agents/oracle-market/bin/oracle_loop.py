@@ -373,6 +373,13 @@ class OracleLoop:
 
     # ----- oracle intake (front door) ---------------------------------
     def handle_intake(self, meta, data, replay=False):
+        # Intake decisions are live-only: replaying an intake_request must
+        # not re-append an intake-decision ledger row. The watch re-arm
+        # path re-ingests recent channel files with replay=True, and
+        # ingest is NOT idempotent for intake (triage appends to the
+        # ledger), so bail before triage touches anything.
+        if replay:
+            return
         try:
             from oracle_intake import triage
         except ImportError as e:
@@ -381,13 +388,21 @@ class OracleLoop:
         req = {"from": meta.get("from", "?"), "text": data.get("text", "")}
         d = triage(req, str(LEDGER))
         route = d.get("route")
-        if replay:
-            return
         if route == "TASK":
             tid = "intake-%d" % int(time.time() * 1000)
-            task = {
+            safe_frm = re.sub(r"[^A-Za-z0-9_-]", "-",
+                              str(req["from"]))[:40] or "intake"
+            payload = (
+                "# oracle intake task %s (triaged from %s)\n"
+                "# request: %s\n"
+                "# acceptance: %s\n"
+                "print('intake-executed:%s')\n"
+                % (tid, safe_frm, req["text"][:500].replace("\n", " "),
+                   str(d.get("acceptance", "")).replace("\n", " "), tid))
+            body = {
                 "task_id": tid,
                 "title": (req["text"][:80] or tid),
+                "payload": payload,
                 "tags": d.get("tags", ["probe"]),
                 "acceptance": d.get("acceptance", ""),
                 "posted_ts": time.time(),
@@ -395,9 +410,24 @@ class OracleLoop:
                 "timeout_ms": 300000,
                 "task_class": "standard",
             }
-            self.open_auction(task)
+            # The oracle vouches for the triaged request by publishing a
+            # control-signed task_post (SPEC 1.5): bidders only bid on
+            # channel task_posts, so a memory-only open_auction here would
+            # silently starve. The normal ingest path opens the auction
+            # and reconstruct() resumes it across restarts.
+            ctl_ts = int(time.time())
+            ctl_sig = sealed_mod.sign_control(
+                self.ctl_hmac_key, "task_post", tid,
+                sealed_mod.ctl_body_sha256(body), ctl_ts)
+            canon = json.dumps(body, sort_keys=True, separators=(",", ":"))
+            self.market.post("task_post", "task-%s" % tid, canon,
+                             task_id=tid, raw_body=True, frm=safe_frm,
+                             extra_fm={"ctl_sig": ctl_sig, "ctl_ts": ctl_ts},
+                             note=("intake: triaged TASK from %s "
+                                   "[tags: %s] (control-signed)."
+                                   % (req["from"], ",".join(body["tags"]))))
             self.fleet_note("intake: TASK %s opened (tags: %s)"
-                            % (tid, ",".join(task["tags"])))
+                            % (tid, ",".join(body["tags"])))
         elif route == "DIRECT":
             self.log("intake_direct", frm=req["from"],
                      request=req["text"][:200])
@@ -406,7 +436,10 @@ class OracleLoop:
             self.fleet_note("intake: REJECTED (%s): %s"
                             % (d.get("reason"), req["text"][:200]))
         else:
-            self.fleet_note("intake: %s opened (%s): %s"
+            # DEBATE / RESEARCH / PETITION: recorded in the ledger by
+            # triage and announced here; no auction is opened (intake
+            # never mutates tasks for non-TASK routes).
+            self.fleet_note("intake: %s (%s): %s"
                             % (route, d.get("reason"), req["text"][:200]))
 
     def handle_bid(self, meta, data, replay=False):
