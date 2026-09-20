@@ -1,0 +1,1162 @@
+#!/usr/bin/env python3
+"""
+oracle-market: event-driven auctioneer loop for the Squawk bid-market.
+
+Watches the bid-market channel dir via inotify (ctypes, stdlib-only).
+Deadline wakeups via select() timeout. No polling, no artificial sleeps.
+
+Mechanism (SPEC.md): HMAC-signed bidder profiles (§1) via bin/sealed.py,
+Vickrey second-price sealed-bid clearing (§2), stake/slash + ledger-derived
+reputation (§3) via bin/mechanism.py. Key separation: HKDF derives distinct
+HMAC and AES-GCM keys from each bidder's master secret (never shared).
+
+Message files: NNNN-<from>-<slug>.md
+  frontmatter: seq, from, to, msg_type, task_id, channel, ts, status, title,
+               lamport, parents, [note]
+    bid frontmatter additionally (SPEC §1.2): bidder, key_id, nonce, bid_ts,
+               sealed (base64 AES-GCM), bid_sig (hex HMAC-SHA256)
+  body: JSON (non-secret bid metadata: tags_matched, cost_ms, eta_ms, class)
+  msg_type: task_post | bid | assign | result | reject | no_assign | settle
+
+Auction lifecycle per task:
+  task_post -> OPEN (collect bids until posted_ts + bid_window_ms)
+  deadline  -> Vickrey clear: highest sealed amount wins, pays
+               max(second_highest, reserve) -> assign (+ stake lock)
+  assign    -> ASSIGNED (wait for winner's result until timeout_ms)
+  result    -> verify (success, duration, artifact hash) -> settle -> CLOSED
+               verified: bond released + reward + rep bump
+               failed/timeout: bond slashed (objective triggers only)
+  exec timeout with no result -> settle FAILED, slash full bond.
+               There is NO oracle fallback execution: running arbitrary
+               task-post payloads as the oracle was removed 2026-09-20.
+
+Startup (REPLAY-SAFE): the loop reconstructs state from the ledger and
+oracle-authored channel history and NEVER re-publishes history. Only
+auctions that are genuinely still open are resumed; assigned-but-unsettled
+ones get their timers restored without re-publishing the assign; expired
+historical auctions are marked closed in memory with a replay_closed log.
+A single-instance flock guarantees no two loops ever run at once, which
+is the root-cause fix for duplicate seq allocation.
+"""
+import ctypes
+import fcntl
+import hashlib
+import heapq
+import json
+import os
+import re
+import select
+import signal
+import struct
+import sys
+import time
+from pathlib import Path
+
+BIN = Path(__file__).resolve().parent
+sys.path.insert(0, str(BIN))
+import sealed as sealed_mod          # noqa: E402
+import mechanism as mech            # noqa: E402
+
+AGENT_DIR = BIN.parent
+# All paths are env-overridable: the staged defaults are hatch-local and MUST
+# be set to the yote squawk-root paths on deploy (see RESUME.md). Deploying
+# with the defaults on yote watches a nonexistent dir and crashes on startup.
+CHANNEL = Path(os.environ.get("ORACLE_CHANNEL",
+    "/home/toxic/sovereign/hatch/agents/ember/squawk-root/bid-market"))
+FLEET = Path(os.environ.get("ORACLE_FLEET",
+    "/home/toxic/shingle/squawk-root/fleet"))
+WORK = Path(os.environ.get("ORACLE_WORK", str(AGENT_DIR / "work")))
+LEDGER = Path(os.environ.get("ORACLE_LEDGER",
+                             str(AGENT_DIR / "ledger" / "ledger.jsonl")))
+LOCKFILE = Path(os.environ.get("ORACLE_LOCK", str(AGENT_DIR / "oracle.lock")))
+
+FROM = "oracle-market"
+SELF_FROMS = {"oracle-market", "oracle"}  # "oracle" = legacy identity (history only)
+# Control-plane messages (task_post, assign) carry an HMAC under the
+# dedicated control key (SPEC §1.5) — the frontmatter `from:` field is a
+# string anyone can spoof, so it is never trusted for control messages.
+# The old TRUSTED_POSTERS={"ember"} string match is gone: trust is in the
+# signature, not the name.
+RESERVE = 0.35          # minimum winning amount; below -> no_assign
+BID_SKEW_S = 2.0        # accept bids this far past deadline (clock skew)
+OUT_CAP = 65536         # captured output cap (informational; oracle never executes)
+
+# ---------------- inotify (ctypes, stdlib only) ----------------
+IN_CLOSE_WRITE = 0x00000008
+IN_MOVED_TO = 0x00000080
+
+_libc = ctypes.CDLL("libc.so.6", use_errno=True)
+_libc.inotify_init1.argtypes = [ctypes.c_int]
+_libc.inotify_init1.restype = ctypes.c_int
+_libc.inotify_add_watch.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_uint32]
+_libc.inotify_add_watch.restype = ctypes.c_int
+
+
+def inotify_init(path):
+    fd = _libc.inotify_init1(0)
+    if fd < 0:
+        raise OSError("inotify_init1 failed")
+    wd = _libc.inotify_add_watch(fd, str(path).encode(), IN_CLOSE_WRITE | IN_MOVED_TO)
+    if wd < 0:
+        raise OSError("inotify_add_watch failed")
+    return fd
+
+
+def inotify_names(fd):
+    """Non-blocking drain; returns list of filenames with close_write/moved_to."""
+    out = []
+    while True:
+        r, _, _ = select.select([fd], [], [], 0)
+        if not r:
+            break
+        data = os.read(fd, 65536)
+        i = 0
+        while i + 16 <= len(data):
+            wd, mask, cookie, ln = struct.unpack("iIII", data[i:i + 16])
+            name = data[i + 16:i + 16 + ln].split(b"\0", 1)[0].decode("utf-8", "replace")
+            i += 16 + ln
+            if mask & (IN_CLOSE_WRITE | IN_MOVED_TO) and name.endswith(".md"):
+                out.append(name)
+    return out
+
+
+# ---------------- message IO ----------------
+SEQ_RE = re.compile(r"^(\d+)-")
+
+
+def parse_msg(path):
+    """Returns (frontmatter dict, body) or None."""
+    try:
+        text = Path(path).read_text(encoding="utf-8")
+    except OSError:
+        return None
+    if not text.startswith("---"):
+        return None
+    parts = text.split("---", 2)
+    if len(parts) < 3:
+        return None
+    fm, body = parts[1], parts[2]
+    meta = {}
+    for line in fm.splitlines():
+        if ":" in line:
+            k, v = line.split(":", 1)
+            meta[k.strip()] = v.strip()
+    body = body.strip()
+    try:
+        data = json.loads(body) if body else {}
+    except json.JSONDecodeError:
+        data = {"_raw": body}
+    return meta, data
+
+
+class Poster:
+    """Atomic message writer for one channel dir.
+
+    Refreshes seq from the directory on every post and bumps past
+    collisions, so the oracle and bidders can share a channel safely.
+    (Seq races were previously caused by duplicate loop instances; the
+    single-instance flock is the root-cause fix, this is belt-and-braces.)
+    """
+
+    def __init__(self, channel_dir, channel_name):
+        self.dir = Path(channel_dir)
+        self.channel = channel_name
+        self.lamport = 0
+        self.last_hash = ""
+
+    def _refresh(self):
+        files = [f for f in os.listdir(self.dir) if SEQ_RE.match(f)]
+        self.seq = max([int(SEQ_RE.match(f).group(1)) for f in files] or [0])
+        if files:
+            latest = sorted(files)[-1]
+            parsed = parse_msg(self.dir / latest)
+            if parsed:
+                meta, _ = parsed
+                try:
+                    self.lamport = int(meta.get("lamport", 0))
+                except ValueError:
+                    pass
+                self.last_hash = hashlib.sha256(
+                    (self.dir / latest).read_bytes()).hexdigest()
+
+    def post(self, msg_type, title, body, task_id="", note="", frm=FROM,
+             to="all", raw_body=False, extra_fm=None):
+        self._refresh()
+        self.seq += 1
+        self.lamport += 1
+        parents = [self.last_hash] if self.last_hash else []
+        ts = time.strftime("%Y-%m-%dT%H:%M:%S%z", time.localtime())
+        fm = (
+            f"---\nseq: {self.seq}\nfrom: {frm}\nto: {to}\n"
+            f"msg_type: {msg_type}\ntask_id: {task_id}\n"
+            f"channel: {self.channel}\nts: {ts}\nstatus: {self.channel}\n"
+            f"title: {title}\nlamport: {self.lamport}\nparents: {json.dumps(parents)}\n"
+        )
+        if extra_fm:
+            for k, v in extra_fm.items():
+                fm += f"{k}: {v}\n"
+        if note:
+            fm += f"note: {note}\n"
+        fm += "---\n"
+        text = fm + (body if raw_body else json.dumps(body))
+        slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:60]
+        while True:
+            name = f"{self.seq:04d}-{frm}-{slug}.md"
+            final = self.dir / name
+            try:
+                # O_EXCL: atomic no-replace create (see bidder.py SeqPoster
+                # for why the old exists()-then-rename was racy). Close
+                # raises IN_CLOSE_WRITE, which our inotify watch listens for.
+                fd = os.open(final, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            except FileExistsError:
+                self.seq += 1  # lost the race; bump and retry
+                continue
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                f.write(text)
+            break
+        self.last_hash = hashlib.sha256(text.encode()).hexdigest()
+        return name
+
+
+# ---------------- single instance ----------------
+def acquire_lock():
+    LOCKFILE.parent.mkdir(parents=True, exist_ok=True)
+    fh = open(LOCKFILE, "w")
+    try:
+        fcntl.flock(fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        sys.stderr.write("oracle-market: another instance holds the lock; exiting\n")
+        sys.exit(2)
+    fh.write(str(os.getpid()))
+    fh.flush()
+    return fh
+
+
+# ---------------- auction state ----------------
+def _fnum(v, default):
+    """Coerce to float; a hostile/malformed message must never crash the loop."""
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return default
+
+
+class Auction:
+    def __init__(self, task):
+        self.task = task
+        self.task_id = task["task_id"]
+        self.tags = set(task.get("tags", []))
+        self.task_class = task.get("task_class", "standard")
+        self.deadline = (_fnum(task.get("posted_ts"), time.time())
+                         + _fnum(task.get("bid_window_ms"), 8000) / 1000.0)
+        self.timeout_ms = _fnum(task.get("timeout_ms"), 30000)
+        self.bids = {}          # bidder_id -> bid dict (amount decrypted)
+        self.state = "OPEN"     # OPEN -> ASSIGNED -> CLOSED
+        self.winner = None
+        self.price_paid = None
+        self.assign_ts = None
+
+
+class OracleLoop:
+    def __init__(self):
+        WORK.mkdir(parents=True, exist_ok=True)
+        LEDGER.parent.mkdir(parents=True, exist_ok=True)
+        self.lock_fh = acquire_lock()
+        self.market = Poster(CHANNEL, "bid-market")
+        self.fleet = Poster(FLEET, "fleet")
+        self.auctions = {}
+        self.done = set()       # task_ids terminally published this run
+        self.timers = []        # heap of (ts, kind, task_id)
+        self.running = True
+        self.profiles = mech.load_profiles()
+        self.rep = mech.reputation(LEDGER)
+        # Control-plane HMAC key (SPEC §1.5): derived from the oracle-held
+        # control master via HKDF domain separation (SPEC §2.1). The oracle
+        # is the custodian and creates the master on first start.
+        ctl_master = mech.ensure_control_key()
+        self.ctl_hmac_key = sealed_mod.hkdf(
+            bytes.fromhex(ctl_master), sealed_mod.CTL_INFO)
+        signal.signal(signal.SIGTERM, self._stop)
+        signal.signal(signal.SIGINT, self._stop)
+
+    def _stop(self, *_):
+        self.running = False
+        # wake the select() in run(): signal handlers must be async-safe,
+        # so write one byte to the self-pipe (non-blocking, best effort).
+        try:
+            os.write(self._wake_w, b"x")
+        except (OSError, AttributeError):
+            pass  # pipe not created yet (signal during startup)
+
+    def log(self, event, **kw):
+        kw.update({"event": event, "ts": time.time()})
+        with open(LEDGER, "a", encoding="utf-8") as f:
+            f.write(json.dumps(kw) + "\n")
+
+    def fleet_note(self, text):
+        """Fleet narration as oracle-market, markdown body, single write."""
+        try:
+            self.fleet.post("note", f"oracle-{int(time.time())}", text,
+                            frm=FROM, raw_body=True)
+        except OSError:
+            pass
+
+    def _control_ok(self, meta, data, msg_type):
+        """Control-plane authentication (SPEC §1.5): task_post and assign
+        are valid only with a fresh HMAC under the control key. The `from:`
+        frontmatter field is never consulted — it is spoofable."""
+        tid = meta.get("task_id") or data.get("task_id") or ""
+        return sealed_mod.verify_control(
+            self.ctl_hmac_key, msg_type, tid,
+            sealed_mod.ctl_body_sha256(data),
+            meta.get("ctl_ts", ""), meta.get("ctl_sig", ""),
+            time.time())
+
+    # ----- signed-bid verification (SPEC §1.3) -----
+    def verify_bid_envelope(self, meta, tid):
+        key_id = meta.get("key_id", "")
+        profile = mech.profile_by_key_id(self.profiles, key_id)
+        if not profile:
+            return None, "unknown_key"
+        try:
+            hmac_key, seal_key = sealed_mod.derive_keys(profile["secret"])
+        except (ValueError, KeyError):
+            return None, "bad-profile"
+        now = time.time()
+        reason = sealed_mod.verify_envelope(
+            hmac_key, key_id, meta.get("bid_ts"), tid, meta.get("nonce", ""),
+            meta.get("sealed", ""), meta.get("bid_sig", ""), now)
+        if reason:
+            return None, reason
+        try:
+            inner = sealed_mod.unseal_bid(seal_key, meta.get("sealed", ""), tid)
+        except Exception:
+            return None, "seal-fail"
+        # binding check (SPEC §2.1): sealed fields must match the envelope
+        if (inner.get("task_id") != tid
+                or inner.get("nonce") != meta.get("nonce")
+                or inner.get("bidder_id") != meta.get("bidder")):
+            return None, "tamper"
+        try:
+            amount = float(inner.get("amount"))
+            if not (0.0 <= amount <= 1.0):
+                return None, "bad-amount"
+        except (TypeError, ValueError):
+            return None, "bad-amount"
+        return {"amount": amount, "nonce": inner["nonce"],
+                "bidder_id": inner["bidder_id"]}, None
+
+    # ----- auction ops -----
+    def open_auction(self, task, replay=False):
+        tid = task.get("task_id")
+        if not tid or tid in self.auctions or tid in self.done:
+            return None
+        a = Auction(task)
+        self.auctions[tid] = a
+        heapq.heappush(self.timers, (a.deadline, "bid_close", tid))
+        self.log("task_open", task_id=tid, title=task.get("title"),
+                 deadline=a.deadline, tags=sorted(a.tags),
+                 task_class=a.task_class, replay=replay)
+        return a
+
+    def handle_bid(self, meta, data, replay=False):
+        tid = meta.get("task_id") or data.get("task_id")
+        a = self.auctions.get(tid)
+        if not a or a.state != "OPEN":
+            return
+        bidder = meta.get("bidder") or data.get("bidder_id") or meta.get("from", "?")
+        now = time.time()
+        # file mtime is the oracle's own observation of arrival; the bid file
+        # may vanish between the directory scan and here (concurrent cleanup).
+        try:
+            mtime = (CHANNEL / meta["_file"]).stat().st_mtime
+        except (OSError, KeyError):
+            mtime = now
+        try:
+            bid_ts = int(meta.get("bid_ts"))
+        except (TypeError, ValueError):
+            bid_ts = 0
+        reason = None
+        verified, vreason = self.verify_bid_envelope(meta, tid)
+        if vreason:
+            reason = vreason
+        elif (mtime > a.deadline
+              or bid_ts > a.deadline + BID_SKEW_S):
+            # Deadline is enforced on the oracle-observed arrival (mtime,
+            # the oracle's own clock: no skew needed) and the HMAC-signed
+            # bid_ts (bidder's clock: BID_SKEW_S tolerance). The old check
+            # used the bidder-controlled body posted_ts, letting anyone bid
+            # up to BID_TS_TOLERANCE_S (300s) late by backdating the body
+            # while keeping a fresh envelope timestamp.
+            reason = "late"
+        elif bidder in a.bids:
+            reason = "duplicate-bidder"
+        elif not (set(data.get("tags_matched", [])) & a.tags):
+            reason = "no-tag-match"
+        else:
+            # capabilities are registry-side, not self-reported: a bidder can
+            # only bid tasks intersecting its provisioned capabilities.
+            prof = self.profiles.get(bidder.removeprefix("bidder-"))
+            if not prof or not (set(prof.get("capabilities", [])) & a.tags):
+                reason = "no-capability-match"
+        if reason:
+            if not replay:
+                self.market.post("reject", f"reject-{bidder}-{tid}",
+                                 {"task_id": tid, "bidder_id": bidder,
+                                  "reason": reason, "posted_ts": now},
+                                 task_id=tid,
+                                 note=f"oracle-market: bid from {bidder} rejected ({reason}).")
+            self.log("bid_rejected", task_id=tid, bidder=bidder,
+                     reason=reason, replay=replay)
+            return
+        a.bids[bidder] = {
+            "amount": verified["amount"],
+            "nonce": verified["nonce"],
+            "bidder_id": verified["bidder_id"],
+            "key_id": meta.get("key_id"),
+            "bid_ts": bid_ts,
+            "mtime": mtime,
+            "tags_matched": sorted(set(data.get("tags_matched", [])) & a.tags),
+            "cost_ms": data.get("cost_ms"),
+            "eta_ms": data.get("eta_ms"),
+        }
+        self.log("bid_accepted", task_id=tid, bidder=bidder,
+                 amount=verified["amount"], nonce=verified["nonce"],
+                 replay=replay)
+
+    def _vickrey(self, a):
+        """Pure Vickrey clearing over a.bids.
+
+        Returns (winner, amount, price_paid, reveal, contenders, ties), or
+        (None, reason, reveal) when the auction closes unassigned.
+        Highest sealed amount wins; ties break on earliest bid-file mtime
+        (SPEC §2.2); winner pays max(second_highest, RESERVE). Reputation
+        gates eligibility but never distorts the clearing price.
+        """
+        def eligible(bidder):
+            prof = self.profiles.get(bidder.removeprefix("bidder-"))
+            if not prof:
+                return False
+            return mech.class_allowed(a.task_class, self.rep.get(bidder, 0))
+
+        ranked = sorted(a.bids.items(),
+                        key=lambda kv: (-kv[1]["amount"], kv[1]["mtime"]))
+        reveal = [{"bidder": b, "amount": d["amount"], "nonce": d["nonce"],
+                   "eligible": eligible(b),
+                   "tags_matched": d["tags_matched"]}
+                  for b, d in ranked]
+        contenders = [(b, d) for b, d in ranked if eligible(b)]
+        if not contenders:
+            return None, ("no-eligible-bids" if ranked else "no-valid-bids"), \
+                reveal, None, None, None
+        winner, wbid = contenders[0]
+        amount = wbid["amount"]
+        if amount < RESERVE:
+            return None, "reserve-not-met", reveal, None, None, None
+        ties = [b for b, d in contenders if d["amount"] == amount]
+        second = contenders[1][1]["amount"] if len(contenders) > 1 else RESERVE
+        price_paid = round(max(second, RESERVE), 6)
+        return winner, amount, price_paid, reveal, contenders, ties
+
+    def _publish_assign(self, a, winner, amount, price_paid, reveal, ties,
+                        bond, republished=False):
+        """Post the assign message (channel) + fleet note. Publish-only."""
+        now = time.time()
+        tid = a.task_id
+        note = ("oracle-market: Vickrey clearing (highest amount wins, "
+                "pays max(second, reserve)). Full reveal embedded; "
+                "any agent can re-verify.")
+        if republished:
+            note += " Re-published once after restart: the assign was logged " \
+                    "but never reached the channel (crash recovery)."
+        self.market.post("assign", f"assign-{tid}",
+                         {"posted_ts": now, "task_id": tid, "winner": winner,
+                          "winning_amount": amount, "price_paid": price_paid,
+                          "reserve": RESERVE, "clearing": "vickrey",
+                          "bond": bond, "judged_by": "oracle-market",
+                          "reveal": reveal,
+                          "tie": ties if len(ties) > 1 else [],
+                          "republished": republished},
+                         task_id=tid, note=note)
+        self.fleet_note(
+            f"oracle-market: auction {tid} assigned to {winner} "
+            f"(amount {amount:.3f}, pays {price_paid:.3f}).")
+
+    def close_bidding(self, tid, replay=False):
+        """Vickrey clearing (SPEC §2.2). Never re-publishes on replay."""
+        a = self.auctions.get(tid)
+        if not a or a.state != "OPEN" or tid in self.done:
+            return
+        now = time.time()
+        a.state = "ASSIGNED"  # tentatively; may flip to CLOSED below
+        v = self._vickrey(a)
+        winner, amount, price_paid, reveal, contenders, ties = v
+        if winner is None:
+            # _vickrey returns (None, reason, reveal, None, None, None)
+            reason = amount
+            if not replay:
+                body = {"task_id": tid, "reason": reason, "posted_ts": now,
+                        "reveal": reveal}
+                if reason == "reserve-not-met":
+                    body["best_amount"] = max(
+                        (d["amount"] for _, d in
+                         sorted(a.bids.items(),
+                                key=lambda kv: -kv[1]["amount"])),
+                        default=0.0)
+                self.market.post("no_assign", f"no-assign-{tid}", body,
+                                 task_id=tid,
+                                 note=f"oracle-market: {reason}; auction closed unassigned.")
+                self.fleet_note(f"oracle-market: auction {tid} closed unassigned ({reason}).")
+            self.log("no_assign", task_id=tid, reason=reason, reveal=reveal,
+                     replay=replay)
+            a.state = "CLOSED"
+            self.done.add(tid)
+            return
+        a.winner, a.price_paid, a.assign_ts = winner, price_paid, now
+        bond = mech.BOND
+        try:
+            mech.lock_bond(self.profiles, winner.removeprefix("bidder-"),
+                           tid, bond)
+        except (KeyError, ValueError) as e:
+            if not replay:
+                self.market.post("no_assign", f"no-assign-{tid}",
+                                 {"task_id": tid, "reason": "stake-lock-failed",
+                                  "detail": str(e)[:200], "posted_ts": now,
+                                  "reveal": reveal},
+                                 task_id=tid,
+                                 note="oracle-market: winner could not lock stake bond; closed.")
+            self.log("no_assign", task_id=tid, reason="stake-lock-failed",
+                     detail=str(e)[:200], replay=replay)
+            a.state = "CLOSED"
+            self.done.add(tid)
+            return
+        if not replay:
+            self._publish_assign(a, winner, amount, price_paid, reveal, ties,
+                                 bond)
+            heapq.heappush(self.timers,
+                           (now + a.timeout_ms / 1000.0, "exec_timeout", tid))
+        else:
+            # replay: restore the exec timer without re-publishing
+            heapq.heappush(self.timers,
+                           (a.assign_ts + a.timeout_ms / 1000.0, "exec_timeout", tid))
+        self.log("assigned", task_id=tid, winner=winner, amount=amount,
+                 price_paid=price_paid, bond=bond, reveal=reveal,
+                 tie=(ties if len(ties) > 1 else []), replay=replay)
+        if replay:
+            self.log("replay_resumed_assigned", task_id=tid, winner=winner)
+
+    def handle_assign(self, meta, data, replay=False):
+        # Adopt assigns from a trusted foreign auctioneer (manual override
+        # path). ingest() only routes these from TRUSTED_POSTERS; anything
+        # else is ignored before it gets here.
+        tid = data.get("task_id")
+        a = self.auctions.get(tid)
+        if not a or a.state != "OPEN":
+            return
+        winner = data.get("winner")
+        short = (winner or "").removeprefix("bidder-")
+        if not short or short not in self.profiles:
+            self.log("assign_adopt_failed", task_id=tid, reason="unknown-winner",
+                     by=meta.get("from"), replay=replay)
+            return
+        # An adopted assign must escrow the bond exactly like a Vickrey
+        # assign; otherwise a later timeout would slash free stake (or, with
+        # the fail-closed slash, slash nothing while the settle claims a
+        # slash happened).
+        try:
+            mech.lock_bond(self.profiles, short, tid, mech.BOND)
+        except (KeyError, ValueError) as e:
+            self.log("assign_adopt_failed", task_id=tid,
+                     reason="stake-lock-failed", detail=str(e)[:200],
+                     by=meta.get("from"), replay=replay)
+            return
+        a.state = "ASSIGNED"
+        a.winner = winner
+        a.price_paid = data.get("price_paid")
+        a.assign_ts = _fnum(data.get("posted_ts"), time.time())
+        heapq.heappush(self.timers, (a.assign_ts + a.timeout_ms / 1000.0,
+                                     "exec_timeout", tid))
+        # Log as "assigned" (not a sidecar event): slash() resolves the
+        # assignee from the ledger's assignment row, and reconstruct resumes
+        # assigned-but-unsettled auctions from it.
+        self.log("assigned", task_id=tid, winner=winner,
+                 price_paid=a.price_paid, bond=mech.BOND, adopted=True,
+                 by=meta.get("from"), replay=replay)
+
+    def _verify_result_sig(self, meta, data, tid, bidder):
+        """True when the result carries a valid HMAC under the winner's key.
+
+        Results used to be accepted on the unauthenticated body: any channel
+        writer could forge a result as the winner — success=false to frame
+        them for a full-bond slash, or success=true with a self-consistent
+        hash to settle a task as verified without doing the work. The key is
+        looked up from the winner's registry profile, never from the message.
+        """
+        prof = self.profiles.get(bidder.removeprefix("bidder-"))
+        if not prof or meta.get("key_id") != prof.get("key_id"):
+            return False
+        try:
+            hmac_key, _ = sealed_mod.derive_keys(prof["secret"])
+        except (ValueError, KeyError):
+            return False
+        return sealed_mod.verify_result_sig(
+            hmac_key, meta.get("key_id", ""), tid, bidder,
+            data.get("result_hash", ""), data.get("success"),
+            data.get("duration_ms", 0), data.get("artifacts") or [],
+            meta.get("result_sig", ""))
+
+    def _publish_settle(self, a, success, verified, duration_ms, notes,
+                        republished=False):
+        """Post the settle message (channel) + fleet note. Publish-only:
+        no stake mutation, so it is safe to call exactly once for a
+        settle that was decided but never reached the channel."""
+        now = time.time()
+        tid = a.task_id
+        note = ("oracle-market: result from "
+                f"{a.winner} {'verified' if verified else 'FLAGGED'}.")
+        if republished:
+            note += " Re-published once after restart: the settle was decided " \
+                    "but never reached the channel (crash recovery)."
+        self.market.post("settle", f"settle-{tid}",
+                         {"task_id": tid, "winner": a.winner,
+                          "success": success, "verified": verified,
+                          "duration_ms": duration_ms,
+                          "price_paid": a.price_paid,
+                          "notes": notes, "posted_ts": now,
+                          "republished": republished},
+                         task_id=tid, note=note)
+        self.fleet_note(
+            f"oracle-market: {tid} settled — {a.winner} "
+            f"{'verified' if verified else 'FLAGGED'}.")
+
+    def _apply_settle(self, tid, bidder, success, verified, duration_ms,
+                        notes, replay, reason=None):
+        """Stake + reputation consequences. Idempotent: the locked bond is
+        the pending marker — if it is already gone, the transition applied
+        (a crash between the profile write and the ledger log only loses the
+        ledger mark, which the caller re-adds)."""
+        short_id = bidder.removeprefix("bidder-")
+        prof = self.profiles.get(short_id)
+        if not prof or tid not in (prof.get("locked") or {}):
+            self.log("settle_no_lock", task_id=tid, bidder=bidder,
+                     verified=verified, replay=replay)
+            return False
+        if verified:
+            mech.release_bond(self.profiles, short_id, tid)
+            self.rep[bidder] = self.rep.get(bidder, 0) + 1
+            self.log("stake_released", task_id=tid, bidder=bidder,
+                     reward=mech.REWARD, replay=replay)
+        else:
+            # severity tiers (nexaflow decay): no usable result at all ->
+            # full bond; failed attempt -> half bond.
+            fraction = 1.0 if not success else 0.5
+            if reason is None:
+                reason = "failed-verification" if success else "no-result"
+            sl = mech.slash(self.profiles, LEDGER, tid, reason=reason,
+                            fraction=fraction)
+            # NOTE: rep is only decremented when the slash actually landed.
+            # Updating it unconditionally diverged in-memory rep from the
+            # ledger-derived rep on restart whenever slash() failed closed.
+            if sl:
+                self.log("slashed", **sl, verified=False, replay=replay)
+                self.rep[bidder] = max(0, self.rep.get(bidder, 0) - 2)
+        # The settled event carries the full decision: reconstruct() can
+        # re-publish a settle that was decided but never reached the channel
+        # (crash between the stake write and _publish_settle) exactly once.
+        self.log("settled", task_id=tid, winner=bidder, verified=verified,
+                 success=success, duration_ms=duration_ms,
+                 price_paid=self.auctions[tid].price_paid, notes=notes,
+                 reason=reason, replay=replay)
+        return True
+
+    def handle_result(self, meta, data, replay=False, verify_sig=True):
+        """Returns a dict of the settle decision, or None when ignored."""
+        tid = data.get("task_id")
+        a = self.auctions.get(tid)
+        if not a or a.state != "ASSIGNED" or tid in self.done:
+            return None
+        bidder = data.get("bidder_id") or meta.get("from")
+        if not bidder or bidder != a.winner:
+            return None
+        # Strict schema at the gate: `success` must be a real boolean.
+        # bool("false") is True -- coercing would let a tampered envelope
+        # flip a failure into a success (or vice versa). A non-boolean
+        # cannot be authenticated under the signature scheme, so it is
+        # rejected outright rather than coerced.
+        sraw = data.get("success")
+        if sraw is not True and sraw is not False:
+            self.log("result_rejected", task_id=tid, bidder=bidder,
+                     reason="bad-success-type", got=repr(sraw)[:60],
+                     frm=meta.get("from"), replay=replay)
+            return None
+        if verify_sig and not self._verify_result_sig(meta, data, tid, bidder):
+            # Forged or corrupt result: ignore it. The winner's genuine
+            # signed result (or the exec timeout) still settles the task.
+            self.log("result_rejected", task_id=tid, bidder=bidder,
+                     reason="bad-result-sig", frm=meta.get("from"),
+                     replay=replay)
+            return None
+        success = sraw
+        try:
+            duration_ok = float(data.get("duration_ms", 0)) <= a.timeout_ms
+        except (TypeError, ValueError):
+            duration_ok = False  # malformed duration fails objective checks
+        # artifact verification: committed proof hash must match delivered
+        # output hash (SPEC §3.3); artifacts must exist on disk.
+        hash_ok = True
+        notes = []
+        committed = data.get("result_hash")
+        if committed:
+            actual = hashlib.sha256(
+                (data.get("output") or "").encode()).hexdigest()
+            if committed != actual:
+                hash_ok = False
+                notes.append("proof-hash-mismatch")
+        artifacts_ok = True
+        for art in data.get("artifacts", []) or []:
+            # Artifact names are winner-controlled: confine the existence
+            # check to the task workdir (no separators, no traversal), so a
+            # hostile winner cannot use it as a filesystem existence oracle.
+            if not isinstance(art, str) or ".." in art or "/" in art \
+                    or "\\" in art or art.startswith(".") or not art:
+                artifacts_ok = False
+                notes.append(f"bad-artifact:{str(art)[:60]}")
+                continue
+            p = WORK / bidder.removeprefix("bidder-") / tid / art
+            if not p.is_file():
+                artifacts_ok = False
+                notes.append(f"missing-artifact:{art}")
+        verified = success and duration_ok and hash_ok and artifacts_ok
+        if data.get("error"):
+            notes.append(f"error: {str(data['error'])[:200]}")
+        duration_ms = data.get("duration_ms")
+        if not replay:
+            self._publish_settle(a, success, verified, duration_ms, notes)
+        # stake + reputation consequences (objective triggers only, SPEC §3.3)
+        self._apply_settle(tid, bidder, success, verified, duration_ms,
+                           notes, replay)
+        a.state = "CLOSED"
+        self.done.add(tid)
+        return {"success": success, "verified": verified,
+                "duration_ms": duration_ms, "notes": notes}
+
+    def exec_timeout(self, tid):
+        """Winner missed the result deadline: settle FAILED + slash full
+        bond. There is deliberately NO fallback execution — the oracle
+        never runs task-post payloads (removed 2026-09-20)."""
+        a = self.auctions.get(tid)
+        if not a or a.state != "ASSIGNED" or tid in self.done:
+            return
+        notes = ["exec-timeout: no result by deadline"]
+        self.log("exec_timeout", task_id=tid, winner=a.winner)
+        self.fleet_note(
+            f"oracle-market: {a.winner} missed the result deadline on {tid}; "
+            f"settling FAILED, bond slashed.")
+        # Stake first, publish second. Any crash between the two is
+        # reconciled exactly once by reconstruct(): the locked bond is the
+        # pending marker for _apply_settle, and a ledger "settled" event
+        # without a channel settle is re-published once.
+        self._apply_settle(tid, a.winner, False, False, None, notes,
+                           replay=False, reason="exec-timeout")
+        self._publish_settle(a, False, False, None, notes)
+        a.state = "CLOSED"
+        self.done.add(tid)
+
+    # ----- ingest -----
+    def ingest(self, name, replay=False):
+        meta_data = parse_msg(CHANNEL / name)
+        if not meta_data:
+            return
+        meta, data = meta_data
+        if not isinstance(data, dict):
+            return  # non-object body: nothing to dispatch on
+        if meta.get("from") in SELF_FROMS:
+            return  # our own posts (current + legacy identity)
+        meta["_file"] = name
+        mt = meta.get("msg_type", "")
+        frm = meta.get("from", "")
+        try:
+            if mt == "task_post":
+                # Control plane (SPEC §1.5): only HMAC-authenticated
+                # task_posts open auctions. Anyone else forging a task_post
+                # could self-deal (post a task, bid, win, "execute" a
+                # trivial payload, mint reward).
+                if not self._control_ok(meta, data, "task_post"):
+                    self.log("task_post_untrusted",
+                             task_id=data.get("task_id"), frm=frm,
+                             replay=replay)
+                    return
+                self.open_auction(data, replay=replay)
+            elif mt == "bid":
+                self.handle_bid(meta, data, replay=replay)
+            elif mt == "assign":
+                # Manual-override path (SPEC §1.5): control-HMAC only. An
+                # unauthenticated foreign assign used to override the
+                # winner with no bond.
+                if not self._control_ok(meta, data, "assign"):
+                    self.log("assign_untrusted",
+                             task_id=data.get("task_id"), frm=frm,
+                             replay=replay)
+                    return
+                self.handle_assign(meta, data, replay=replay)
+            elif mt == "result":
+                self.handle_result(meta, data, replay=replay)
+        except Exception as e:
+            # One hostile or malformed message must never kill the daemon.
+            self.log("ingest_error", file=name, msg_type=mt,
+                     error=f"{type(e).__name__}: {e}"[:200], replay=replay)
+
+    # ----- replay-safe startup reconstruction -----
+    def reconstruct(self):
+        """Rebuild state from ledger + channel history, reconciling crash
+        windows exactly once.
+
+        Evidence per task:
+          ledger: "assigned" / "settled" / "no_assign" events
+          channel (oracle-authored): assign / settle / no_assign messages
+          profiles: locked bond for (winner, task) == a pending stake
+          transition
+
+        Crash windows (each recovered exactly once, idempotent):
+          A. bond locked, assign never published nor logged -> re-run the
+             clearing deterministically (bids + _vickrey are deterministic)
+             and _publish_assign(republished=True) + log the missed
+             "assigned" row once. On clearing/escrow mismatch (rep changed
+             under us via another task): abort safely — release the bond,
+             log assign_aborted, close the task for re-posting.
+          B. assign published, "assigned" row lost -> re-log the row from
+             the channel body (which embeds the reveal). Never re-publish.
+          C. "settled" logged, channel settle lost -> apply the stake
+             transition if the lock is still present, then
+             _publish_settle(republished=True) once.
+          D. channel settle exists, "settled" never logged -> _apply_settle
+             once from the message body (the lock is the pending marker;
+             an absent lock means the transition already applied).
+        Terminal evidence from EITHER source closes the task in memory.
+        Only genuinely-open auctions are resumed; expired historical
+        auctions are marked closed in memory with a replay_closed log
+        (never re-published).
+        """
+        terminal = {}    # task_id -> "settled" | "no_assign"
+        assign_ev = {}   # task_id -> last ledger "assigned" event
+        settle_ev = {}   # task_id -> last ledger "settled" event
+        if LEDGER.exists():
+            with open(LEDGER, encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        ev = json.loads(line)
+                    except json.JSONDecodeError:
+                        continue
+                    tid = ev.get("task_id")
+                    if not tid:
+                        continue
+                    e = ev.get("event")
+                    if e == "settled":
+                        terminal[tid] = "settled"
+                        settle_ev[tid] = ev
+                    elif e == "no_assign":
+                        terminal[tid] = "no_assign"
+                    elif e == "assigned":
+                        assign_ev[tid] = ev
+        posts = {}       # task_id -> task dict (trusted posters only)
+        assign_msg = {}  # task_id -> oracle/trusted assign body
+        settle_msg = {}  # task_id -> (meta, data) oracle-authored settle
+        results = {}     # task_id -> (meta, data) latest winner result
+        files = sorted([f for f in os.listdir(CHANNEL) if SEQ_RE.match(f)])
+        for name in files:
+            parsed = parse_msg(CHANNEL / name)
+            if not parsed:
+                continue
+            meta, data = parsed
+            if not isinstance(data, dict):
+                continue
+            frm, mt = meta.get("from"), meta.get("msg_type", "")
+            tid = meta.get("task_id") or data.get("task_id")
+            if not tid:
+                continue
+            if mt == "task_post" and self._control_ok(meta, data, "task_post"):
+                # control-plane evidence: HMAC-authenticated task_post only
+                # (the from: field is spoofable, never consulted)
+                posts.setdefault(tid, data)
+            elif mt in ("settle", "no_assign") and frm in SELF_FROMS:
+                # channel "settle" == ledger "settled" (terminal either way)
+                terminal[tid] = "settled" if mt == "settle" else mt
+                if mt == "settle":
+                    settle_msg[tid] = (meta, data)
+            elif mt == "assign" and (frm in SELF_FROMS
+                                     or self._control_ok(meta, data, "assign")):
+                # oracle-authored, or HMAC-authenticated manual override
+                # (same gate as ingest; untrusted foreign assigns are not
+                # evidence)
+                assign_msg.setdefault(tid, data)
+            elif mt == "result":
+                # collected regardless of terminal state: window D needs
+                # the winner's signed result as independent proof before
+                # it will move stake on a settle message. Kept as a list so
+                # a shadowing forgery can't hide the genuine result.
+                results.setdefault(tid, []).append((meta, data))
+        now = time.time()
+        resumed = {"open": 0, "assigned": 0, "closed": 0, "expired": 0,
+                   "recovered": 0}
+        for tid, task in posts.items():
+            if terminal.get(tid) == "no_assign":
+                self.done.add(tid)
+                resumed["closed"] += 1
+                self.log("replay_closed", task_id=tid, terminal="no_assign")
+                continue
+            if terminal.get(tid) == "settled":
+                # Window C: decided + logged, channel settle lost ->
+                # re-publish once (applying the stake transition first if
+                # its lock survived the crash).
+                if tid not in settle_msg and tid in settle_ev:
+                    evs = settle_ev[tid]
+                    winner = evs.get("winner")
+                    a = self.open_auction(task, replay=True)
+                    if a is not None:
+                        a.state = "ASSIGNED"
+                        a.winner = winner
+                        a.price_paid = evs.get("price_paid")
+                        short = (winner or "").removeprefix("bidder-")
+                        prof = self.profiles.get(short)
+                        if prof and tid in (prof.get("locked") or {}):
+                            self._apply_settle(
+                                tid, winner, evs.get("success", False),
+                                evs.get("verified", False),
+                                evs.get("duration_ms"),
+                                evs.get("notes") or [], replay=True,
+                                reason=evs.get("reason"))
+                        self._publish_settle(
+                            a, evs.get("success", False),
+                            evs.get("verified", False),
+                            evs.get("duration_ms"),
+                            evs.get("notes") or [], republished=True)
+                        resumed["recovered"] += 1
+                elif tid in settle_msg and tid not in settle_ev:
+                    # Window D: a channel settle exists but the ledger holds
+                    # no decision. A bare settle message is NOT proof --
+                    # `from:` is frontmatter any channel writer can spoof,
+                    # so trusting the body here would let anyone mint bond
+                    # releases and rewards (genuine window D is unreachable
+                    # in the current write ordering: stake is always applied
+                    # before the settle is published). Only re-derive from a
+                    # signature-verified winner result; otherwise fail closed
+                    # and alert.
+                    meta, data = settle_msg[tid]
+                    winner = data.get("winner")
+                    dec = None
+                    for pmeta, pdata in results.get(tid, []):
+                        if ((pdata.get("bidder_id") or pmeta.get("from"))
+                                != winner):
+                            continue
+                        if not self._verify_result_sig(pmeta, pdata, tid,
+                                                       winner):
+                            continue
+                        a = self.open_auction(task, replay=True)
+                        if a is None:
+                            break
+                        a.state = "ASSIGNED"
+                        a.winner = winner
+                        a.price_paid = data.get("price_paid")
+                        # replay=True: applies the stake once if the lock
+                        # survived, but never re-publishes (the settle
+                        # message already exists).
+                        dec = self.handle_result(pmeta, pdata, replay=True)
+                        if dec:
+                            resumed["recovered"] += 1
+                        break
+                    if dec is None:
+                        self.log("settle_unproven", task_id=tid,
+                                 winner=winner,
+                                 reason="settle message without ledger "
+                                        "decision or signed winner result; "
+                                        "refusing to move stake")
+                self.done.add(tid)
+                resumed["closed"] += 1
+                self.log("replay_closed", task_id=tid, terminal="settled")
+                continue
+            a = self.open_auction(task, replay=True)
+            if a is None:
+                continue
+            # rebuild bids from surviving bid files (signatures re-verify
+            # deterministically; deadline re-enforced on oracle-observed
+            # mtime + signed bid_ts)
+            for name in files:
+                parsed = parse_msg(CHANNEL / name)
+                if not parsed:
+                    continue
+                meta, data = parsed
+                if (isinstance(data, dict)
+                        and meta.get("msg_type") == "bid"
+                        and (meta.get("task_id") or data.get("task_id")) == tid
+                        and meta.get("from") not in SELF_FROMS):
+                    meta["_file"] = name
+                    self.handle_bid(meta, data, replay=True)
+            ev = assign_ev.get(tid)
+            msg = assign_msg.get(tid)
+            ev_winner = (ev or {}).get("winner")
+            msg_winner = (msg or {}).get("winner")
+            winner = ev_winner or msg_winner
+            short = (winner or "").removeprefix("bidder-")
+            locked = bool(short) and tid in (
+                (self.profiles.get(short) or {}).get("locked") or {})
+            # window A probe: bond locked for SOME bidder, but no assign
+            # evidence anywhere
+            locked_holder = None
+            if not (ev or msg):
+                for bshort, prof in self.profiles.items():
+                    if tid in (prof.get("locked") or {}):
+                        locked_holder = bshort
+                        break
+            if ev or msg:
+                if not ev and msg:
+                    # Window B: assign reached the channel but the ledger
+                    # row was lost -> re-log it from the channel body
+                    # (which embeds the reveal). Never re-publish.
+                    try:
+                        if not locked:
+                            mech.lock_bond(self.profiles, short, tid,
+                                           mech.BOND)
+                    except (KeyError, ValueError) as e:
+                        self.log("assign_recover_failed", task_id=tid,
+                                 reason="stake-lock-failed",
+                                 detail=str(e)[:200])
+                        a.state = "CLOSED"
+                        self.done.add(tid)
+                        resumed["closed"] += 1
+                        continue
+                    self.log("assigned", task_id=tid, winner=winner,
+                             amount=msg.get("winning_amount"),
+                             price_paid=msg.get("price_paid"),
+                             bond=msg.get("bond", mech.BOND),
+                             reveal=msg.get("reveal", []),
+                             tie=msg.get("tie", []),
+                             recovered=True, replay=True)
+                    resumed["recovered"] += 1
+                a.state = "ASSIGNED"
+                a.winner = winner
+                a.price_paid = ((ev or {}).get("price_paid")
+                                or (msg or {}).get("price_paid"))
+                a.assign_ts = _fnum((ev or {}).get("ts")
+                                    or (msg or {}).get("posted_ts"), now)
+                if tid in results:
+                    # result arrived but was never settled: complete the
+                    # transition exactly once (signature re-verified).
+                    # Multiple results are tried in channel order; forgeries
+                    # fail verification and the genuine one still settles.
+                    # If every result is rejected, the task is NOT done --
+                    # fall through to the exec-timeout logic below.
+                    for meta, data in results[tid]:
+                        if self.handle_result(meta, data, replay=True):
+                            break
+                if tid in self.done:
+                    resumed["closed"] += 1
+                elif a.assign_ts + a.timeout_ms / 1000.0 <= now:
+                    # exec deadline passed while down: settle the missed
+                    # transition once (publishes the missed settle).
+                    self.exec_timeout(tid)
+                    resumed["closed"] += 1
+                else:
+                    heapq.heappush(self.timers,
+                                   (a.assign_ts + a.timeout_ms / 1000.0,
+                                    "exec_timeout", tid))
+                    self.log("replay_resumed_assigned", task_id=tid,
+                             winner=a.winner)
+                    resumed["assigned"] += 1
+            elif locked_holder:
+                # Window A: bond locked, assign never published nor logged
+                # -> re-run the clearing deterministically and publish
+                # exactly once.
+                v = self._vickrey(a)
+                w2, amount2, price2, reveal2, _, ties2 = v
+                if w2 != f"bidder-{locked_holder}":
+                    # Escrow disagrees with the re-clearing (rep moved via
+                    # another task mid-crash). Funds stay safe: release the
+                    # bond WITHOUT reward (the task never completed; the
+                    # default release_bond would mint an unearned REWARD),
+                    # close the task for re-posting, log loudly.
+                    mech.release_bond(self.profiles, locked_holder, tid,
+                                      reward=0.0)
+                    self.log("assign_aborted", task_id=tid,
+                             locked_for=f"bidder-{locked_holder}",
+                             cleared=w2, replay=True)
+                    a.state = "CLOSED"
+                    self.done.add(tid)
+                    resumed["closed"] += 1
+                    continue
+                a.winner, a.price_paid = w2, price2
+                a.assign_ts = now
+                self._publish_assign(a, w2, amount2, price2, reveal2, ties2,
+                                     mech.BOND, republished=True)
+                self.log("assigned", task_id=tid, winner=w2, amount=amount2,
+                         price_paid=price2, bond=mech.BOND, reveal=reveal2,
+                         tie=(ties2 if len(ties2) > 1 else []),
+                         recovered=True, replay=True)
+                heapq.heappush(self.timers,
+                               (now + a.timeout_ms / 1000.0,
+                                "exec_timeout", tid))
+                a.state = "ASSIGNED"
+                self.log("replay_resumed_assigned", task_id=tid, winner=w2)
+                resumed["assigned"] += 1
+                resumed["recovered"] += 1
+            elif a.deadline <= now:
+                # historical open auction, window long past: close in
+                # memory WITHOUT publishing (the replay-burst fix).
+                a.state = "CLOSED"
+                self.done.add(tid)
+                self.log("replay_expired", task_id=tid,
+                         bids=len(a.bids))
+                resumed["expired"] += 1
+            else:
+                self.log("replay_resumed_open", task_id=tid,
+                         bids=len(a.bids))
+                resumed["open"] += 1
+        self.log("replay_done", **resumed)
+
+    def run(self):
+        self.log("loop_start", pid=os.getpid(), identity=FROM)
+        self.reconstruct()
+        fd = inotify_init(CHANNEL)
+        # self-pipe: SIGTERM/SIGINT writes a byte so the select() below
+        # wakes immediately even with no timers and no channel events
+        # (no timeout-polling to notice shutdown).
+        self._wake_r, self._wake_w = os.pipe()
+        for pfd in (self._wake_r, self._wake_w):
+            flags = fcntl.fcntl(pfd, fcntl.F_GETFL)
+            fcntl.fcntl(pfd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
+        try:
+            while self.running:
+                for name in inotify_names(fd):
+                    self.ingest(name)
+                # drain any wake bytes
+                try:
+                    while os.read(self._wake_r, 64):
+                        pass
+                except OSError:
+                    pass
+                now = time.time()
+                while self.timers and self.timers[0][0] <= now:
+                    _, kind, tid = heapq.heappop(self.timers)
+                    if kind == "bid_close":
+                        self.close_bidding(tid)
+                    elif kind == "exec_timeout":
+                        self.exec_timeout(tid)
+                timeout = self.timers[0][0] - time.time() if self.timers else None
+                if timeout is not None and timeout < 0:
+                    timeout = 0
+                select.select([fd, self._wake_r], [], [], timeout)
+        finally:
+            os.close(fd)
+            os.close(self._wake_r)
+            os.close(self._wake_w)
+            self.log("loop_stop")
+
+
+def main():
+    OracleLoop().run()
+
+
+if __name__ == "__main__":
+    main()
