@@ -1,13 +1,29 @@
 #!/usr/bin/env bash
-# fleet-watch — event stream of new fleet messages. One line per message file:
-#   FILE <seq>-<from>-msg.md
-# Runs inotifywait -m on yote over the bridge; output streams live (WS lane).
-# This command never exits on its own: background it via exec, then
-# process.poll the session — the poll wakes ONLY when a message lands.
-# Zero polling, zero timers.
+# fleet-watch — event-driven wake for new fleet messages (long-poll).
+#
+# Blocks inside `inotifywait` ON YOTE until a new message file lands in the
+# channel dir, then prints one line per file:  FILE <seq>-<from>-msg.md
+# and exits 0. If nothing arrives within --timeout seconds it exits 2
+# (idle re-arm: zero work, just re-arm the watch).
+#
+# This is a long-poll, not a poll: between arms the coordinator does nothing
+# and yote does nothing — the wake comes from the filesystem event.
+# Bridge output is delivered on command completion, so the blocking call IS
+# the event delivery. Run it in the foreground of the dispatcher loop with a
+# generous yield_ms; NEVER background it (backgrounded output is buffered).
 set -u
-CHANNEL="${1:-fleet}"
-if [[ "${1:-}" == "--channel" ]]; then CHANNEL="${2:-fleet}"; fi
+CHANNEL="fleet"
+TIMEOUT=110
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --channel) CHANNEL="$2"; shift 2;;
+    --timeout) TIMEOUT="$2"; shift 2;;
+    *) shift;;
+  esac
+done
 DIR="/home/toxic/.shingle/squawk-root/${CHANNEL}"
-exec /home/hatch/workspace/bin/yote-conn exec \
-  "inotifywait -m -e close_write,moved_to --format 'FILE %f' ${DIR}/"
+/home/hatch/workspace/bin/yote-conn exec \
+  "inotifywait -e close_write,moved_to --timeout ${TIMEOUT} --format 'FILE %f' ${DIR}/ 2>/dev/null"
+rc=$?
+# inotifywait: 0 = event, 2 = timeout. Normalize timeout to quiet exit 2.
+exit $rc
