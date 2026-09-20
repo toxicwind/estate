@@ -15,6 +15,7 @@ data loss. (Symlinked as `helpers/` at the repo root.)
 | **`ast-migrate.ts`**        | Bun / TypeScript | AST structural pattern matching and codemods via `ast-grep`                | `bun run skills/ast-migrate.ts [dir] [scan\|rewrite]` |
 | **`surgical-edit`**         | Python 3 (stdlib) | Assertive exact-text config surgery: all checks before any write, atomic  | `skills/surgical-edit/bin/surgical-edit patch.json` |
 | **`herd-probe`**            | Python 3 (stdlib) | Exact-token probe of a herd model route (verbatim output check)            | `skills/surgical-edit/bin/herd-probe <model> <expected>` |
+| **`hft-latency`**           | Python 3 (stdlib) | HFT strategy racer: concurrent first-valid-wins, fail-fast ceilings, `--hedge-ms` hedged launch | `skills/hft-latency/bin/race.py --strategies s.json --tag t [--hedge-ms 300]` |
 
 More tools live in the directory (`engine-audit.ts`, `fleet-status`, `gguf-rank`,
 `model-switch`, `repo-audit`, `tau-tmux`, …) — the table above is the core set.
