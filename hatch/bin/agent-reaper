@@ -1,0 +1,327 @@
+#!/usr/bin/env python3
+"""agent-reaper: filesystem-side stall census + watchlist pruning for hatch agents.
+
+Stall mechanisms this kills (found 2026-09-20 by stale-hunter autopsy):
+  PHANTOM  - agent.agents row stuck at status='running' that never started:
+             updated_at == created_at, last_assistant_message IS NULL, and NO
+             /home/hatch/agents/agent-<id> dir. Spawn reservation inserted the
+             row; the worker never materialized (cousin of the DB lock-timeout
+             spawn failures). Nothing reaps them; they pollute 'running' counts.
+  STALLED  - was active, now quiet beyond threshold while still 'running'.
+  WATCHDOG-NOISE - progress-watchdog's hatch_agents.txt watchlist goes stale:
+             entries for completed agents cry wolf every tick (5 false "quiet
+             12h" alerts on 2026-09-20; all 5 were COMPLETED in the DB).
+
+What this script does (no DB access, no credentials, filesystem only):
+  --report            per-agent activity census from /home/hatch/agents
+  --prune-watchlist   drop watchlist entries whose agent dir is gone (safe:
+                      live agents always have a dir). Fixes WATCHDOG-NOISE.
+  --verify-phantoms <candidates.json|->   cross-check DB phantom candidates
+                      (from the cron task's muse.db query pack) against the
+                      filesystem; for TRUE phantoms (no agent dir AND no tool
+                      events AND older than 1h) emit a fleet close-directive
+                      naming the owning parent with the evidence. False
+                      phantoms (live workers whose row just isn't bumped) are
+                      reported, never directed. Directives are tracked in
+                      ~/workspace/watchdog/reaper_directives.json so the loop
+                      is closed, not fire-and-forget.
+
+TERMINALIZATION PATH (why phantoms exist, 2026-09-20 autopsy):
+  subagent.spawn -> runtime inserts agent.agents row (status='running') ->
+  runtime materializes the worker (agent dir, transcript, inference loop).
+  Break: the row can persist while the worker never materializes (spawn
+  reservation without materialization — cousin of the DB lock-timeout
+  spawn failures). muse.db is read-only for agents, so the ONLY proper
+  terminalization channel is the owning parent's subagent.close. This
+  reaper closes the loop: detect (DB) -> verify (filesystem) -> direct
+  (fleet, to the owner) -> track (directives ledger) -> owner closes.
+
+DB half (phantom/stall detection) needs muse.db, so it runs in the cron task
+that drives this script. Query pack:
+
+  -- phantoms: running, never started, quiet > 1h
+  SELECT agent_id, kind, parent_agent_id, created_at, updated_at
+    FROM agent.agents
+   WHERE status='running'
+     AND updated_at = created_at
+     AND last_assistant_message IS NULL
+     AND updated_at < EXTRACT(epoch FROM now()) - 3600;
+
+  -- stalled: running, was active, quiet > 6h
+  SELECT agent_id, kind, parent_agent_id, updated_at
+    FROM agent.agents
+   WHERE status='running'
+     AND updated_at > created_at
+     AND updated_at < EXTRACT(epoch FROM now()) - 21600;
+
+  -- errored spawns (DB lock-timeout reservation failures): re-dispatch
+  SELECT agent_id, parent_agent_id, left(last_assistant_message, 120)
+    FROM agent.agents WHERE status='errored';
+
+Close protocol: only the OWNING parent (or an agent in its tree) may close a
+phantom via subagent.close (scope=direct for its own children). The reaper
+emits verified close directives; it never forges a close. Stalled agents get
+a subagent.send nudge first ("quiet Xh, still alive?") — revive before close.
+Never close an agent with live children/descendants or recent mailbox
+deliveries: check agent.agent_ancestors and agent.message_mailbox first
+(coordinator-hygiene rule: inspect before classifying).
+
+Bridge exec already has fail-fast ceilings (yote-connector defaults timeout=120s
+on the WS call, 180s on the hatch-side HTTP hop), so stalls are NOT hung exec
+calls — they are unreaped rows. This reaper is the missing piece.
+"""
+
+import argparse
+import json
+import os
+import subprocess
+import sys
+import time
+
+AGENTS_ROOT = "/home/hatch/agents"
+WATCHLIST = os.path.expanduser("~/workspace/watchdog/hatch_agents.txt")
+DEFAULT_STALE_S = 21600  # 6h
+DIRECTIVES = os.path.expanduser("~/workspace/watchdog/reaper_directives.json")
+SQUAWK = os.path.expanduser("~/workspace/bin/squawk")
+PHANTOM_MIN_AGE_S = 3600  # never direct a close on a phantom younger than this
+
+
+def newest_mtime(d):
+    newest = 0
+    for root, _, files in os.walk(d):
+        for fn in files:
+            try:
+                mt = os.path.getmtime(os.path.join(root, fn))
+                if mt > newest:
+                    newest = mt
+            except OSError:
+                pass
+    return newest
+
+
+def sessions_meta(d):
+    """(updated_at_iso, item_count) from sessions/sessions.json, or (None, None)."""
+    p = os.path.join(d, "sessions", "sessions.json")
+    try:
+        with open(p) as f:
+            data = json.load(f)
+        ss = (data.get("sessions") or [{}])[0]
+        return ss.get("updated_at"), ss.get("item_count")
+    except (OSError, ValueError, IndexError):
+        return None, None
+
+
+def census(stale_s):
+    now = time.time()
+    out = []
+    try:
+        names = os.listdir(AGENTS_ROOT)
+    except OSError as e:
+        return {"error": str(e)}
+    for name in sorted(names):
+        if not name.startswith("agent-"):
+            continue
+        aid = name[len("agent-"):]
+        d = os.path.join(AGENTS_ROOT, name)
+        if not os.path.isdir(d):
+            continue
+        nm = newest_mtime(d)
+        upd_iso, items = sessions_meta(d)
+        age = now - nm if nm else None
+        cls = "ACTIVE"
+        if age is None:
+            cls = "EMPTY-DIR"
+        elif age > stale_s:
+            cls = "STALE"
+        out.append({"agent_id": aid, "file_age_s": round(age) if age else None,
+                    "sessions_updated_at": upd_iso, "item_count": items,
+                    "class": cls})
+    return {"now": time.strftime("%FT%TZ", time.gmtime()),
+            "stale_threshold_s": stale_s, "agents": out}
+
+
+def read_watchlist():
+    entries = []
+    try:
+        with open(WATCHLIST) as f:
+            lines = f.read().splitlines()
+    except OSError:
+        return None, []
+    for line in lines:
+        s = line.strip()
+        if not s or s.startswith("#"):
+            continue
+        aid = s.split()[0]
+        entries.append(aid)
+    return lines, entries
+
+
+def prune_watchlist(dry_run=False):
+    lines, entries = read_watchlist()
+    if lines is None:
+        return {"error": "watchlist unreadable: %s" % WATCHLIST}
+    dead = [a for a in entries
+            if not os.path.isdir(os.path.join(AGENTS_ROOT, "agent-" + a))]
+    kept = [l for l in lines
+            if not (l.strip() and not l.strip().startswith("#")
+                    and l.strip().split()[0] in dead)]
+    if not dry_run and dead:
+        with open(WATCHLIST, "w") as f:
+            f.write("\n".join(kept).rstrip("\n") + "\n")
+    return {"pruned": dead, "remaining": len(entries) - len(dead),
+            "dry_run": dry_run}
+
+
+def load_directives():
+    try:
+        with open(DIRECTIVES) as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
+def save_directives(d):
+    try:
+        os.makedirs(os.path.dirname(DIRECTIVES), exist_ok=True)
+        with open(DIRECTIVES, "w") as f:
+            json.dump(d, f, indent=1)
+    except OSError:
+        pass
+
+
+def emit_close_directive(c, evidence):
+    """Publish a verified phantom close-directive to fleet via squawk.
+
+    Only the OWNING parent (or an agent in its tree) may close a phantom
+    through subagent.close. This function never closes anything itself;
+    it routes the directive to the owner with the evidence attached.
+    Fail-soft: if squawk is unreachable the directive is still recorded
+    locally so the next run retries.
+    """
+    msg = ("REAPER-DIRECTIVE (ember): phantom agent row %s (kind=%s, "
+           "model=%s) stuck 'running' since %s — %s. Owner %s: verify and "
+           "close via subagent.close when confirmed dead. "
+           "muse.db is read-only; this is the terminalization channel." % (
+               c["agent_id"], c.get("kind"), c.get("model"),
+               time.strftime("%FT%TZ", time.gmtime(c["created_at"])),
+               evidence, c["parent_agent_id"]))
+    try:
+        r = subprocess.run([SQUAWK, "send", "fleet", msg],
+                           capture_output=True, text=True, timeout=90)
+        return r.returncode == 0
+    except Exception:
+        return False
+
+
+def verify_phantoms(candidates, dry_run=False):
+    """Cross-check DB phantom candidates against the filesystem.
+
+    Input (from the cron task that owns the muse.db query pack — this
+    script never touches the DB):
+      [{agent_id, parent_agent_id, kind, model, created_at,
+        last_progress_ev}]   # last_progress_ev: epoch or null
+
+    A candidate is a TRUE PHANTOM only when ALL hold:
+      - no /home/hatch/agents/agent-<id> dir  (never materialized)
+      - last_progress_ev is null (no tool events ever observed)
+      - created_at older than PHANTOM_MIN_AGE_S (no racing a live spawn)
+
+    Anything with a dir or recent events is a FALSE PHANTOM (live worker
+    whose row just isn't bumped) and is reported but never directed.
+    """
+    now = time.time()
+    known = load_directives()
+    result = {"true_phantoms": [], "false_phantoms": [],
+              "directives_sent": [], "directives_failed": []}
+    for c in candidates:
+        aid = c["agent_id"]
+        d = os.path.join(AGENTS_ROOT, "agent-" + aid)
+        has_dir = os.path.isdir(d)
+        age = now - c["created_at"]
+        ev = c.get("last_progress_ev")
+        if has_dir or ev is not None:
+            result["false_phantoms"].append(
+                {"agent_id": aid,
+                 "why": "has_dir" if has_dir else "recent_tool_events"})
+            continue
+        if age < PHANTOM_MIN_AGE_S:
+            result["false_phantoms"].append(
+                {"agent_id": aid, "why": "too_young_s=%.0f" % age})
+            continue
+        evidence = ("no agent dir, no transcript, no tool events in "
+                    "%.1fh" % (age / 3600))
+        result["true_phantoms"].append({"agent_id": aid,
+                                        "parent_agent_id": c["parent_agent_id"],
+                                        "evidence": evidence})
+        if aid in known and known[aid].get("sent") and not dry_run:
+            continue  # directive already live; owner hasn't closed yet
+        if dry_run:
+            result["directives_sent"].append(aid + " (dry-run)")
+            continue
+        ok = emit_close_directive(c, evidence)
+        known[aid] = {"sent": ok, "at": now,
+                      "parent": c["parent_agent_id"], "evidence": evidence}
+        (result["directives_sent"] if ok
+         else result["directives_failed"]).append(aid)
+    save_directives(known)
+    return result
+
+
+def main():
+    ap = argparse.ArgumentParser(description="agent-reaper: stall census + watchlist pruning")
+    ap.add_argument("--report", action="store_true", help="full census (default)")
+    ap.add_argument("--prune-watchlist", action="store_true",
+                    help="drop watchlist entries whose agent dir is gone")
+    ap.add_argument("--stale", type=int, default=DEFAULT_STALE_S,
+                    help="staleness threshold seconds (default 21600)")
+    ap.add_argument("--json", action="store_true", help="JSON output")
+    ap.add_argument("--dry-run", action="store_true", help="with --prune-watchlist, report only")
+    ap.add_argument("--verify-phantoms", metavar="CANDIDATES_JSON",
+                    help="cross-check DB phantom candidates (JSON array on "
+                    "file/stdin) against the filesystem; emit fleet "
+                    "close-directives for true phantoms. DB query pack "
+                    "runs in the owning cron task; this script never "
+                    "touches the DB.")
+    a = ap.parse_args()
+
+    result = {}
+    if a.verify_phantoms:
+        src = a.verify_phantoms
+        raw = sys.stdin.read() if src == "-" else open(src).read()
+        result["phantoms"] = verify_phantoms(json.loads(raw),
+                                             dry_run=a.dry_run)
+    elif a.prune_watchlist:
+        result["prune"] = prune_watchlist(dry_run=a.dry_run)
+    else:
+        result["census"] = census(a.stale)
+
+    if a.json:
+        print(json.dumps(result, indent=1))
+    else:
+        if "census" in result:
+            c = result["census"]
+            if "error" in c:
+                print("agent-reaper: %s" % c["error"], file=sys.stderr)
+                return 1
+            stale = [g for g in c["agents"] if g["class"] == "STALE"]
+            print("agent-reaper: %d agent dirs, %d stale (>%ds), %s" % (
+                len(c["agents"]), len(stale), c["stale_threshold_s"], c["now"]))
+            for g in stale:
+                hrs = g["file_age_s"] / 3600 if g["file_age_s"] else -1
+                print("  STALE %s quiet %.1fh items=%s" % (g["agent_id"], hrs, g["item_count"]))
+        if "prune" in result:
+            p = result["prune"]
+            if "error" in p:
+                print("agent-reaper: %s" % p["error"], file=sys.stderr)
+                return 1
+            tag = "dry-run: would prune" if p["dry_run"] else "pruned"
+            print("agent-reaper: %s %d dead watchlist entr%s (%d remain)" % (
+                tag, len(p["pruned"]), "y" if len(p["pruned"]) == 1 else "ies",
+                p["remaining"]))
+            for aid in p["pruned"]:
+                print("  dead: %s" % aid)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
