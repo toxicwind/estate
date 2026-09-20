@@ -1,0 +1,44 @@
+# Key pools for herd-keypool (:25109). Key VALUES live only in /home/toxic/.secrets
+# (parsed at startup + SIGHUP, never logged). Only key NAMES appear here.
+# Doctrine (Chris 2026-09-20): a 401/402/429 on one key is a ROUTING SIGNAL,
+# not a death certificate -- the key is parked for a cooldown, traffic fails
+# over to the next key, and the parked key revalidates on demand.
+pools:
+  openrouter:
+    upstream: https://openrouter.ai/api
+    health:
+      method: GET
+      path: /v1/auth/key
+      ok: [200]
+    fail_status: [401, 402, 429]
+    probe_timeout: 5
+    request_timeout: 120
+    cooldown:
+      401: 300
+      402: 300
+      429: 60
+      default: 120
+    keys:
+      - OPENROUTER_API_KEY
+      - OPENROUTER_API_KEY_1
+  gemini:
+    upstream: https://generativelanguage.googleapis.com/v1beta/openai
+    health:
+      method: GET
+      path: /models
+      ok: [200]
+    fail_status: [401, 402, 429]
+    probe_timeout: 5
+    request_timeout: 120
+    cooldown:
+      401: 300
+      402: 300
+      429: 60
+      default: 120
+    keys:
+      - GEMINI_API_KEY
+      - GEMINI_API_KEY_1
+      - GEMINI_API_KEY_2
+      - GEMINI_API_KEY_3
+      - GEMINI_API_KEY_4
+      - GEMINI_API_KEY_5

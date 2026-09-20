@@ -550,6 +550,37 @@ models:
       vram: ~5GB
       experimental: true
 
+# =============================================================================
+# ROUTING DOCTRINE (Chris, 2026-09-20): RANKING > FREE-ON-PROVIDER > PAY.
+# Default model preference, measured live 2026-09-20 ~09:00 MDT through herd
+# :25100 (tiny completion probe, first-valid-wins). Latency is the measured
+# ranking proxy until eval scores land. A 429 is a TRANSIENT routing signal --
+# the key/model stays in rotation -- never a death certificate, never a config
+# rewrite. Local models are the fallback, never the default.
+#
+# FREE, ranked (model -- probe ms):
+#   openrouter-free/nex-agi/nex-n2.5-pro:free               566
+#   gemini/gemini-3-flash-preview                          577
+#   openrouter-ling/inclusionai/ling-3.0-flash-sante:free   692
+#   openrouter-ling/inclusionai/ling-3.0-flash-vl:free      749
+#   openrouter-ling/inclusionai/ling-3.0-flash-fin:free     752
+#   gemini/gemini-3.6-flash                                 865
+#   openrouter-free/nvidia/nemotron-3-super-120b-a12b:free 1133
+#   gemini/gemini-3.7-flash                                1751
+#   gemini/gemini-3.8-flash                                2052
+#   openrouter-free/nvidia/nemotron-3.5-lightning:free     3201
+#   gemini/gemini-3.5-flash                                4727
+# PAID, working (model -- probe ms):
+#   mistral/ministral-3b-latest                             300
+#   mistral/codestral-latest                                458
+#   mistral/ministral-14b-latest                            478
+#   mistral/ministral-8b-latest                             836
+#   moonshot/kimi-k2.6, kimi-k2.7-code -- 429 on 2026-09-20 ~09:00 (rate-limit,
+#     transient; key verified live via /v1/models 200). Kimi is NOT dead.
+# LOCAL (fallback only): beellama/*, toolcall-local/qwen3.5-9b-tool.
+# DEAD/HANGING (do not route): flock-direct (25s hangs, disabled above).
+# Google Antigravity is the comparison baseline for agent/model quality when usable.
+# =============================================================================
 peers:
   # RE-ENABLED 2026-09-20 ~01:50 MDT (ember): surgeon 401 claim re-probed live --
   # no-auth and dummy-bearer both return HTTP 200 with real completions
@@ -701,6 +732,7 @@ peers:
   # CURRENT KIMI TRUTH: MOONSHOT_API_KEY is live (verified HTTP 200 on /v1/models).
   # This is the MAIN Kimi route. Model IDs verbatim from api.moonshot.ai/v1/models.
   # kimi-k2.6 = main Kimi; kimi-k2.7-code = code specialist. No kimi-k3 on this key.
+  # 2026-09-20 ~09:00: /v1/models 200 (key live); chat 429 = rate-limit, transient.
   # NOTE: proxy has no /v1 suffix -- the router joins proxy + /v1/chat/completions.
   moonshot:
     proxy: https://api.moonshot.ai
@@ -805,18 +837,23 @@ peers:
   # deepseek-ai/deepseek-v4-flash-0731 EXCLUDED: hangs, 60s timeout, no
   # response as of 2026-09-20. Auth: FLOCK_API_KEY as Bearer.
   # Re-probe before adding more models.
-  flock-direct:
-    proxy: http://127.0.0.1:8000
-    apiKey: ${env.FLOCK_API_KEY}
-    models:
-      - nvidia/nemotron-3.5-lightning-30b-a3b
-      - z-ai/glm-5.3-flash
-    timeouts:
-      connect: 30
-      keepalive: 30
-      responseHeader: 120
-      tlsHandshake: 10
-      idleConn: 90
+  # DISABLED 2026-09-20 ~09:05 MDT (ember): re-probed live through herd :25100 --
+  # both models hang 25s+ (TimeoutError) on every attempt. Comment said DISABLED
+  # since 03:55 but the block was still live; now actually commented out.
+  # Re-probe before re-enabling.
+#   flock-direct:
+#     proxy: http://127.0.0.1:8000
+#     apiKey: ${env.FLOCK_API_KEY}
+#     models:
+#       - nvidia/nemotron-3.5-lightning-30b-a3b
+#       - z-ai/glm-5.3-flash
+#     timeouts:
+#       connect: 30
+#       keepalive: 30
+#       responseHeader: 120
+#       tlsHandshake: 10
+#       idleConn: 90
+
 
   # Track C — Cloudflare AI Gateway Custom Provider (optional, not blocking v1)
   # When you create the Custom Provider at https://api.cloudflare.com/.../custom-providers
