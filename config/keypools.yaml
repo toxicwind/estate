@@ -1,0 +1,74 @@
+# =============================================================================
+# KEYPOOLS — API key-pool rotation config for herd cloud peers
+# =============================================================================
+# Consumed by bin/herd-keypool.py (127.0.0.1:25102). Herd peers point their
+# proxy at http://127.0.0.1:25102/<pool> and carry NO apiKey — the pool
+# injects a health-checked key per call.
+#
+# DOCTRINE (Chris 2026-09-20): a 401/402/429 on one key is a ROUTING SIGNAL,
+# not a death certificate and never a config rewrite. Keep ALL candidate
+# keys; probe cheaply before routing; first-valid-wins per call; down keys
+# revalidate on demand so a recovered key rejoins automatically.
+#
+# Key VALUES are never stored here — only env NAMES. Values are read from
+# /home/toxic/.secrets at pool startup (and on SIGHUP). They never appear
+# in logs, /status, or the audit log (only names + sha256 fingerprints).
+# =============================================================================
+
+version: 1
+secrets_file: /home/toxic/.secrets
+
+pools:
+  # --- openrouter: OpenRouter (free + paid Kimi, free Ling, free-tier models)
+  openrouter:
+    upstream: https://openrouter.ai/api
+    keys:
+      - OPENROUTER_API_KEY
+      - OPENROUTER_API_KEY_1
+    health:
+      method: GET
+      path: /v1/auth/key      # cheap: returns key info, no spend
+      ok: [200]
+    fail_status: [401, 402, 429]
+    probe_timeout: 5
+    request_timeout: 180
+    cooldown:
+      401: 300
+      402: 300
+      429: 60
+      default: 120
+
+  # --- gemini: Google AI via OpenAI-compatible endpoint (free tier first)
+  gemini:
+    upstream: https://generativelanguage.googleapis.com/v1beta/openai
+    keys:
+      - GEMINI_API_KEY
+      - GEMINI_API_KEY_1
+      - GEMINI_API_KEY_2
+      - GEMINI_API_KEY_3
+      - GEMINI_API_KEY_4
+      - GEMINI_API_KEY_5
+    health:
+      method: GET
+      path: /models           # cheap: lists models for the key, no spend
+      ok: [200]
+    fail_status: [400, 401, 402, 403, 429]
+    probe_timeout: 5
+    request_timeout: 180
+    cooldown:
+      400: 120
+      401: 300
+      402: 300
+      403: 300
+      429: 60
+      default: 120
+
+  # --- template: add the next provider pool here (copy, fill, SIGHUP the daemon)
+  # huggingface:
+  #   upstream: https://router.huggingface.co
+  #   keys: [HF_TOKEN, HF_TOKEN_1]
+  #   health: {method: GET, path: /v1/models, ok: [200]}
+  #   fail_status: [401, 402, 429]
+  #   probe_timeout: 5
+  #   request_timeout: 180
+  #   cooldown: {401: 300, 402: 300, 429: 60, default: 120}
