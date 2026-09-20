@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """herd-model-guard — card-derived per-model request enforcement for herd.
 
-Listens on 127.0.0.1:25101, reverse-proxies to herd on 127.0.0.1:25100
+Listens on 127.0.0.1:25101 (override with MODEL_GUARD_HOST / MODEL_GUARD_PORT env), reverse-proxies to herd on 127.0.0.1:25100
 (override with MODEL_GUARD_UPSTREAM).
 For POST <any>/v1/chat/completions with a constrained model ID, rewrites
 the request body per config/model_constraints.yaml BEFORE it reaches herd:
@@ -36,7 +36,10 @@ import time
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-LISTEN = ("127.0.0.1", 25101)
+LISTEN = (
+    __import__("os").environ.get("MODEL_GUARD_HOST", "127.0.0.1"),
+    int(__import__("os").environ.get("MODEL_GUARD_PORT", "25101")),
+)
 UPSTREAM = os.environ.get("MODEL_GUARD_UPSTREAM", "http://127.0.0.1:25100")
 CONSTRAINTS_PATH = os.environ.get(
     "MODEL_CONSTRAINTS",
@@ -612,7 +615,17 @@ def main():
     if len(sys.argv) > 1 and sys.argv[1] == "--selftest":
         sys.exit(1 if selftest() else 0)
     load_constraints()
-    srv = ThreadingHTTPServer(LISTEN, Handler)
+    try:
+        srv = ThreadingHTTPServer(LISTEN, Handler)
+    except OSError as e:
+        import errno as _errno
+        if e.errno == _errno.EADDRINUSE:
+            msg = ("[model-guard] FATAL: %s:%d already in use - another model-guard "
+                   "holds it. Set MODEL_GUARD_PORT to run a second instance."
+                   % (LISTEN[0], LISTEN[1]))
+            print(msg, flush=True)
+            sys.exit(98)
+        raise
     print(f"[model-guard] listening on {LISTEN[0]}:{LISTEN[1]} -> {UPSTREAM} "
           f"(constraints: {CONSTRAINTS_PATH})", flush=True)
     srv.serve_forever()

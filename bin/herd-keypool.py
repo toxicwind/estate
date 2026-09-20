@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """herd-keypool — API key-pool rotation proxy for herd cloud peers.
 
-Listens on 127.0.0.1:25109. Path-routed: /<pool>/... forwards to the
+Listens on 127.0.0.1:25109 (override with KEYPOOL_HOST / KEYPOOL_PORT env). Path-routed: /<pool>/... forwards to the
 pool's upstream with a HEALTH-CHECKED key picked first-valid-wins per call.
 
   GET/POST /openrouter/v1/chat/completions -> https://openrouter.ai/api/v1/chat/completions
@@ -46,7 +46,10 @@ import urllib.request
 import urllib.error
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-LISTEN = ("127.0.0.1", 25109)
+LISTEN = (
+    __import__("os").environ.get("KEYPOOL_HOST", "127.0.0.1"),
+    int(__import__("os").environ.get("KEYPOOL_PORT", "25109")),
+)
 POOLS_PATH = os.environ.get(
     "KEYPOOLS_CONFIG",
     "/home/toxic/sovereign/config/keypools.yaml",
@@ -858,7 +861,17 @@ def main():
         sys.exit(1 if selftest() else 0)
     load_pools()
     signal.signal(signal.SIGHUP, reload_all)
-    srv = ThreadingHTTPServer(LISTEN, Handler)
+    try:
+        srv = ThreadingHTTPServer(LISTEN, Handler)
+    except OSError as e:
+        import errno as _errno
+        if e.errno == _errno.EADDRINUSE:
+            msg = ("[keypool] FATAL: %s:%d already in use - another keypool "
+                   "holds it. Set KEYPOOL_PORT to run a second instance."
+                   % (LISTEN[0], LISTEN[1]))
+            print(msg, flush=True)
+            sys.exit(98)
+        raise
     log(f"listening on {LISTEN[0]}:{LISTEN[1]} (pools: {', '.join(sorted(POOLS)) or 'none'})")
     srv.serve_forever()
 
