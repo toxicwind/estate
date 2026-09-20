@@ -50,6 +50,7 @@ import hashlib
 import hmac
 import json
 import os
+import re
 import shlex
 import shutil
 import signal
@@ -668,11 +669,47 @@ async def handle_client(reader, writer):
         log("client %s disconnected" % (peer,))
 
 
+def _port_holder_is_self():
+    """Check if PORT is held by another instance of this script.
+    Returns (is_self, pid) tuple."""
+    import subprocess
+    try:
+        out = subprocess.check_output(
+            ['ss', '-tlnp'], stderr=subprocess.DEVNULL, text=True, timeout=5)
+    except Exception:
+        return (False, None)
+    for line in out.splitlines():
+        if f'127.0.0.1:{PORT}' not in line and f':{PORT} ' not in line:
+            continue
+        m = re.search(r'pid=(\d+)', line)
+        if not m:
+            continue
+        pid = m.group(1)
+        try:
+            with open(f'/proc/{pid}/cmdline', 'rb') as f:
+                cmd = f.read().replace(b'\x00', b' ').decode('utf-8', 'replace')
+        except Exception:
+            continue
+        # If the holder is this same script, it's a healthy duplicate — not a stale holder
+        if 'awrawr_ws_exec.py' in cmd:
+            return (True, pid)
+        return (False, pid)
+    return (False, None)
+
+
 async def main():
     try:
         server = await asyncio.start_server(handle_client, "127.0.0.1", PORT)
     except OSError as e:
-        log("FATAL: cannot bind 127.0.0.1:%d: %s (port busy — stale holder?)" % (PORT, e))
+        is_self, pid = _port_holder_is_self()
+        if is_self:
+            # Another instance of this script already serves the port (e.g. pitchfork
+            # desync left a healthy child). Exit cleanly so the supervisor does not
+            # mark this as an error and spawn zombie retries.
+            # 2026-09-20: daemon-fix-coordinator — own the code, don't FATAL on self.
+            log("port 127.0.0.1:%d already served by this script (pid %s); exiting cleanly" % (PORT, pid))
+            raise SystemExit(0)
+        log("FATAL: cannot bind 127.0.0.1:%d: %s (port busy — holder pid %s)" % (PORT, e, pid))
         raise SystemExit(1)
     log("listening on 127.0.0.1:%d%s" % (PORT, WS_PATH))
     async with server:

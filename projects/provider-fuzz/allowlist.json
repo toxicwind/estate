@@ -1,0 +1,101 @@
+{
+  "models": [
+    {
+      "provider": "openrouter",
+      "model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "last_verified": "2026-09-20T08:43:34.992669+00:00",
+      "latency_ms": 489,
+      "notes": "Fastest free model",
+      "verification": "probe_truth.py LIVE (real completion)"
+    },
+    {
+      "provider": "openrouter",
+      "model": "nex-agi/nex-n2.5-mini:free",
+      "last_verified": "2026-09-20T08:43:34.992785+00:00",
+      "latency_ms": 593,
+      "notes": "Steady",
+      "verification": "probe_truth.py LIVE (real completion)"
+    },
+    {
+      "provider": "openrouter",
+      "model": "dots-studio/dots-3-note-preview:free",
+      "last_verified": "2026-09-20T08:43:34.992893+00:00",
+      "latency_ms": 2000,
+      "notes": "NEW: found via max_tokens=100 re-fuzz",
+      "verification": "probe_truth.py LIVE (real completion)"
+    },
+    {
+      "provider": "openrouter",
+      "model": "liquid/lfm-2.5-2.6b:free",
+      "last_verified": "2026-09-20T08:43:34.992970+00:00",
+      "latency_ms": 1000,
+      "notes": "NEW: found via max_tokens=100 re-fuzz",
+      "verification": "probe_truth.py LIVE (real completion)"
+    },
+    {
+      "provider": "openrouter",
+      "model": "cohere/north-mini-code:free",
+      "last_verified": "2026-09-20T08:43:34.993045+00:00",
+      "latency_ms": 1000,
+      "notes": "NEW: found via max_tokens=100 re-fuzz",
+      "verification": "probe_truth.py LIVE (real completion)"
+    },
+    {
+      "provider": "openrouter",
+      "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+      "last_verified": "2026-09-20T08:43:34.993122+00:00",
+      "latency_ms": 2000,
+      "notes": "NEW: reasoning model",
+      "verification": "probe_truth.py LIVE (real completion)"
+    },
+    {
+      "provider": "openrouter",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "last_verified": "2026-09-20T08:43:34.993199+00:00",
+      "latency_ms": 3000,
+      "notes": "NEW: found via max_tokens=100 re-fuzz",
+      "verification": "probe_truth.py LIVE (real completion)"
+    },
+    {
+      "provider": "openrouter",
+      "model": "inclusionai/ling-3.0-flash-vl:free",
+      "last_verified": "2026-09-20T08:43:34.993288+00:00",
+      "latency_ms": 885,
+      "notes": "Reasoning-first, insanely fast",
+      "verification": "probe_truth.py LIVE (real completion)"
+    },
+    {
+      "provider": "openrouter",
+      "model": "inclusionai/ling-3.0-flash-fin:free",
+      "last_verified": "2026-09-20T08:43:34.993378+00:00",
+      "latency_ms": 1000,
+      "notes": "Reasoning-first",
+      "verification": "probe_truth.py LIVE (real completion)"
+    },
+    {
+      "provider": "openrouter",
+      "model": "inclusionai/ling-3.0-flash-sante:free",
+      "last_verified": "2026-09-20T08:43:34.993466+00:00",
+      "latency_ms": 1000,
+      "notes": "Reasoning-first",
+      "verification": "probe_truth.py LIVE (real completion)"
+    },
+    {
+      "provider": "mistral",
+      "model": "codestral-latest",
+      "last_verified": "2026-09-20T08:43:34.993555+00:00",
+      "latency_ms": 408,
+      "notes": "Direct Mistral API",
+      "verification": "probe_truth.py LIVE (real completion)"
+    },
+    {
+      "provider": "pollinations",
+      "model": "openai",
+      "last_verified": "2026-09-20T08:43:34.993648+00:00",
+      "latency_ms": 1500,
+      "notes": "Anonymous, reliable",
+      "verification": "probe_truth.py LIVE (real completion)"
+    }
+  ],
+  "updated": "2026-09-20T08:43:34.993651+00:00"
+}

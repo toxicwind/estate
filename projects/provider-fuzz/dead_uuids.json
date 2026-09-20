@@ -1,0 +1,39 @@
+{
+  "23d4f03a-b8a6-4adb-a183-7daa083a09cc": {
+    "model": "moonshotai/kimi-k2.6",
+    "first_seen": "2026-09-20T08:43:29.219551Z",
+    "sources": [
+      {
+        "account": "forum-Puz1IkUPZY7iIoHTLqp68ZAjt_isx3DvCLB-voyutbY",
+        "note": "NVIDIA forum #379257 (2026-08-05): 404 function-not-found-for-account, other NIM models worked"
+      },
+      {
+        "account": "ours-iuh5eKGaKSnWglC73O7UeZBzNHZ5aP7TLHyJpM-rxWY",
+        "note": "Our probe 2026-09-20: NVIDIA_API_KEY, same UUID as forum"
+      }
+    ],
+    "verdict": "GLOBALLY_DEAD"
+  },
+  "01327741-a1cb-4bdb-a31e-5391c8ca48c2": {
+    "model": "unknown (three.ws cosmos/text-to-world image lane)",
+    "first_seen": "2026-09-20T09:00:00Z",
+    "sources": [
+      {
+        "account": "three.ws-live-account",
+        "note": "nirholas/three.ws tests/api/cosmos-endpoint.test.js:62 - 'The exact upstream body the live account received on the retired model' (2026-06-11). Author-labeled RETIRED."
+      }
+    ],
+    "verdict": "LIKELY_DEAD"
+  },
+  "767b5b9a-3f9d-4c1d-86e8-fa861988cee7": {
+    "model": "unspecified",
+    "first_seen": "2026-09-20T09:00:00Z",
+    "sources": [
+      {
+        "account": "nemoclaw-test-fixture",
+        "note": "NVIDIA/NemoClaw src/lib/validation.test.ts:373 - 'the literal NVCF detail string from /v1/chat/completions'. Real captured 404 body, model not named in test."
+      }
+    ],
+    "verdict": "CONFIRMED_404_EXAMPLE"
+  }
+}
