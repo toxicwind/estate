@@ -801,51 +801,51 @@ peers:
     # injected per-call by the key-pool sidecar from its health-checked
     # OPENROUTER_* key rotation. Do NOT re-add a hardcoded key -- a
     # 401/402/429 is a routing signal, not a config rewrite.
-    # RECONCILED 2026-09-20 ~14:40 MDT (herd-rewire): two independent 446-model
-    # sweeps merged into ONE ordered list. ORDERING DOCTRINE --
-    #   primary:   census LLM-judge quality 0-10 (var/or-free-ranking.md;
-    #              judges nex-agi/nex-n2.5-pro:free + openrouter/free; rubric:
-    #              3pts exactly-three-sentences / 3pts correctness /
-    #              2pts concrete example / 2pts age-fit; heuristic
-    #              sentence-count cross-check)
-    #   secondary: sibling abstract-probe instruction-following score 2/1/0
-    #              (projects/openrouter-probe/RANKING.md; union of the 14:25 and
-    #              14:29 MDT probes) as corroboration
-    #   tiebreak:  sweep latency ascending
-    # The :free suffix is an unreliable narrator -- every ID here was verified
-    # LIVE, never trusted from /models. Availability rotates; the keypool
-    # fails over across keys and respects down_until/cooldown, so throttled
-    # models are safe as fallback tiers.
+    # ORDERING DOCTRINE (v3, 2026-09-20 ~14:55 MDT) --
+    #   primary:   v3 abstract-probe reliability: 3 full passes x 446 /models
+    #              IDs, prompt "Output exactly: ABSTRACT-7X3Q. No other text.",
+    #              exact-match rate desc, p50 latency asc
+    #              (projects/openrouter-probe/RANKING.md,
+    #              reliability-20260920-144532.json). Explicitly SPECULATIVE:
+    #              measures instruction-following on a trivial task, not quality.
+    #   secondary: census LLM-judge quality 0-10 (var/or-free-ranking.md) as
+    #              corroboration where it exists.
+    #   The :free suffix is an unreliable narrator -- every ID here was verified
+    #   LIVE, never trusted from /models. Availability rotates; the keypool
+    #   fails over across keys and respects down_until/cooldown, so throttled
+    #   models are safe as fallback tiers.
     models:
-      # TIER 1 -- census judge 10/10 (both sweeps agree where both have data)
-      - openrouter/free  # census #1, 1248ms (sibling: exact but saw 35s once -- latency varies, watch it)
-      - inclusionai/ling-3.0-flash-fin:free  # census #2, 3085ms (sibling false-negatived: empty at max_tokens=30, needs >=100)
-      - nex-agi/nex-n2.5-pro:free  # census #3, 3171ms; sibling #4
-      - inclusionai/ling-3.0-flash-vl:free  # census #4, 3283ms (sibling false-negatived like fin)
-      - inclusionai/ling-3.0-flash-sante:free  # census #5, 3321ms; sibling #5
-      - nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free  # census #6, 8050ms; sibling #8
-      - cohere/north-mini-code:free  # census #7, 9908ms; sibling #3
-      - poolside/laguna-s-2.1:free  # census #8, 11044ms; sibling #2
-      - dots-studio/dots-3-note-preview:free  # census #9, 20771ms (sibling had no data -- throttled then)
-      # TIER 2 -- usable but degraded (census judge < 10)
-      - nex-agi/nex-n2.5-mini:free  # census 7/10 (missed 3rd sentence), 1395ms; sibling #1 -- fast but sloppy
-      - nvidia/nemotron-3-ultra-550b-a55b:free  # census 2/10 heuristic-only (thinking leaked into content), 9252ms; sibling #6; resurrected (was 503/EOL)
-      - nvidia/nemotron-3-super-120b-a12b:free  # census 2/10 heuristic-only (thinking leaked), 19080ms; sibling #7
-      - liquid/lfm-2.5-2.6b:free  # census 2/10 (incomplete, no example), 1979ms; sibling no data -- lowest confidence
-      # TIER 3 (throttled-elite) -- 429 through ALL census passes; likely-best
-      # candidates kept as fallback. Safe: keypool respects down_until/cooldown
-      # and auto-recovers, so these engage only when cooldowns clear.
-      - google/gemma-4-31b-it:free  # throttled; sibling had it healthy before (was wired as 429-fallback)
-      - google/gemma-4-26b-a4b-it:free  # throttled all passes
-      - qwen/qwen3.8-27b:free  # throttled all passes
-      - z-ai/glm-5.2:free  # throttled all passes
-      # EXCLUDED (auditable -- re-probe before re-adding):
-      # - nvidia/nemotron-3.5-lightning:free: census judge 0/10 (unrelated
-      #   fragment); sibling score 1 (chatty, emits thinking). Verdict: unusable.
-      # - nvidia/nemotron-3.5-content-safety:free: census judge 0/10 (refuses the
-      #   task by design -- safety classifier, not a general LLM).
-      # - poolside/laguna-xs-2.1:free: census empty-content + throttled;
-      #   sibling empty bodies. Ungradeable.
+      # TIER 1 -- v3 3/3 exact, p50 ascending
+      - cohere/north-mini-code:free  # v3 3/3 exact, p50 557ms -- fastest AND most reliable
+      - nex-agi/nex-n2.5-pro:free  # v3 3/3 exact, p50 583ms
+      - nex-agi/nex-n2.5-mini:free  # v3 3/3 exact, p50 609ms (census 7/10: fast but sloppy on prose)
+      - inclusionai/ling-3.0-flash-sante:free  # v3 3/3 exact, p50 941ms
+      - nvidia/nemotron-3-super-120b-a12b:free  # v3 3/3 exact, p50 1349ms
+      - nvidia/nemotron-3-ultra-550b-a55b:free  # v3 3/3 exact, p50 6088ms; WILD variance (min 1352/max 75324) -- capacity-constrained
+      # TIER 2 -- partial (2/3 exact): usable with failover; keypool cooldown absorbs misses
+      - nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free  # v3 2/3 exact, 1x 200-empty
+      - poolside/laguna-s-2.1:free  # v3 2/3 exact, 1x http-529
+      # TIER 3 -- marginal: auto-router, exact 1/3, throttled 1/3
+      - openrouter/free  # v3 1/3 exact (p50 600ms when it answers), 1x 429, 1x contains-only
+      # TIER 4 (throttled-elite) -- 429 on ALL v3 passes; fallback only.
+      # Keypool respects down_until/cooldown and auto-recovers, so these engage
+      # only when cooldowns clear. Re-probe before promoting.
+      - google/gemma-4-31b-it:free  # v3: 429 x3
+      - google/gemma-4-26b-a4b-it:free  # v3: 429 x3
+      - qwen/qwen3.8-27b:free  # v3: 429 x3
+      - z-ai/glm-5.2:free  # v3: 429 x3
+      # EXCLUDED (v3-observed -- re-probe before re-adding):
+      # - inclusionai/ling-3.0-flash-fin:free, ling-3.0-flash-vl:free:
+      #   200-EMPTY x3 (census ranked them #2/#4; v3 says they don't follow the
+      #   instruction). Demoted from tier 1.
+      # - dots-studio/dots-3-note-preview:free: 200-empty x3.
+      # - poolside/laguna-xs-2.1:free: 200-empty x2, 429 x1.
+      # - liquid/lfm-2.5-2.6b:free: responds without error but never emitted the
+      #   token in 3 trials -- fails instruction-following, not availability.
+      # - nvidia/nemotron-3.5-lightning:free: 0/3 exact, 3/3 contains-only
+      #   (emits thinking). Unusable for exact-output tasks.
+      # - nvidia/nemotron-3.5-content-safety:free: refuses by design (safety
+      #   classifier, not a general LLM).
     timeouts:
       connect: 30
       keepalive: 30
@@ -872,6 +872,123 @@ peers:
       tlsHandshake: 10
       idleConn: 90
 
+  # --- RESURRECTED 404s (2026-09-20, dead-model-resurrector) ---
+  # 5 IDs from the 78-dead census still 404 on the free key after stripping :batch.
+  # Archaeology verdict: 4 are LIVE (gated/unroutable, not dead), 1 is TRULY-DEAD.
+  # None have verified 200s, so NO live entries. Details:
+  # LIVE (account-gated): meta/muse-spark-1.3-contributor, meta/muse-spark-1.2-contributor
+  #   - 404 "0 endpoints available" is an OpenRouter guardrail artifact, not a delisting.
+  #   - Models are live (100% uptime); filtered unless account opts into 18+ attestation
+  #   - + paid-model-training consent at openrouter.ai/settings/privacy.
+  # LIVE (temporarily unroutable): openai/gpt-5.2-chat, sakana/sakana-namazu
+  #   - gpt-5.2-chat: catalog-listed, Azure endpoint registered but currently down.
+  #   - sakana-namazu: real model, endpoint exists (100% 1d uptime) but 0 available now;
+  #     regional/policy restrictions documented. Re-probe later.
+  # TRULY-DEAD: mistralai/mistral-large-2512
+  #   - Real model (Mistral Large 3, Dec 2025); was routable 2026-09-01; now endpoints=[]
+  #   - on OpenRouter (de-routed). Only the :batch catalog stub remains. Do not use.
+  #   - Closest real equivalent: mistralai/mistral-medium-3-5 (live, paid).
+
+  # --- RESURRECTED PAID TIER (2026-09-20, dead-model-resurrector) ---
+  # 72 models from the 78-dead census were MISCLASSIFIED. The census probed
+  # batch-suffixed IDs (404 on chat/completions); stripping the suffix reveals
+  # the base IDs are REAL and catalog-listed, returning HTTP 402 (paid) on the
+  # free key. They are NOT free-tier: no verified 200, so NO live entries.
+  # Verified 2026-09-20 via live probe (16 workers, free key, exact-OK prompt).
+  # TO ACTIVATE: add a paid key to config/keypools.yaml openrouter-paid pool,
+  # then uncomment this peer block. (moonshotai/kimi-k3 already live above.)
+#   openrouter-resurrected-paid:
+#     proxy: http://127.0.0.1:25109/openrouter-paid
+#     models:
+#       # anthropic (12)
+#       - anthropic/claude-fable-5
+#       - anthropic/claude-fable-5.1
+#       - anthropic/claude-haiku-4.5
+#       - anthropic/claude-opus-4.1
+#       - anthropic/claude-opus-4.5
+#       - anthropic/claude-opus-4.6
+#       - anthropic/claude-opus-4.7
+#       - anthropic/claude-opus-4.8
+#       - anthropic/claude-opus-5
+#       - anthropic/claude-sonnet-4.5
+#       - anthropic/claude-sonnet-4.6
+#       - anthropic/claude-sonnet-5
+#       # deepseek (3)
+#       - deepseek/deepseek-v4-flash-0731
+#       - deepseek/deepseek-v4-flash-vision-exp
+#       - deepseek/deepseek-v4-pro-0813
+#       # google (11)
+#       - google/gemini-2.5-flash
+#       - google/gemini-2.5-flash-lite
+#       - google/gemini-2.5-pro
+#       - google/gemini-3-flash-preview
+#       - google/gemini-3.1-flash-lite
+#       - google/gemini-3.1-pro-preview
+#       - google/gemini-3.5-flash
+#       - google/gemini-3.5-flash-lite
+#       - google/gemini-3.6-flash
+#       - google/gemini-3.7-flash
+#       - google/gemini-3.8-flash
+#       # meta (1)
+#       - meta/muse-glimmer-30b
+#       # minimax (1)
+#       - minimax/minimax-m3
+#       # mistralai (5)
+#       - mistralai/codestral-2508
+#       - mistralai/ministral-8b-2512
+#       - mistralai/mistral-medium-3-5
+#       - mistralai/mistral-medium-3.1
+#       - mistralai/mistral-small-2603
+#       # openai (32)
+#       - openai/gpt-3.5-turbo
+#       - openai/gpt-4-turbo
+#       - openai/gpt-4.1
+#       - openai/gpt-4.1-mini
+#       - openai/gpt-4.1-nano
+#       - openai/gpt-4o
+#       - openai/gpt-4o-mini
+#       - openai/gpt-5
+#       - openai/gpt-5-mini
+#       - openai/gpt-5-nano
+#       - openai/gpt-5-pro
+#       - openai/gpt-5.1
+#       - openai/gpt-5.2
+#       - openai/gpt-5.2-pro
+#       - openai/gpt-5.4
+#       - openai/gpt-5.4-mini
+#       - openai/gpt-5.4-nano
+#       - openai/gpt-5.4-pro
+#       - openai/gpt-5.5
+#       - openai/gpt-5.5-pro
+#       - openai/gpt-5.6-luna
+#       - openai/gpt-5.6-luna-pro
+#       - openai/gpt-5.6-sol
+#       - openai/gpt-5.6-sol-pro
+#       - openai/gpt-5.6-terra
+#       - openai/gpt-5.6-terra-pro
+#       - openai/gpt-6-astra
+#       - openai/gpt-6-astra-pro
+#       - openai/gpt-oss-120b
+#       - openai/o3
+#       - openai/o3-mini
+#       - openai/o4-mini
+#       # qwen (2)
+#       - qwen/qwen3.5-9b
+#       - qwen/qwen3.8-2.4t-a95b
+#       # thinkingmachines (1)
+#       - thinkingmachines/inkling
+#       # x-ai (1)
+#       - x-ai/grok-4.3
+#       # z-ai (3)
+#       - z-ai/glm-5.2
+#       - z-ai/glm-5.3
+#       - z-ai/glm-5.3-flash
+#     timeouts:
+#       connect: 30
+#       keepalive: 30
+#       responseHeader: 180
+#       tlsHandshake: 10
+#       idleConn: 90
   # DISABLED 2026-09-20 ~03:55 MDT (provider-surgeon): the 3 models probed UP at ~03:30
   # (deepseek-v4-flash-0731, nemotron-3.5-lightning-30b-a3b, glm-5.3-flash) began timing out
   # upstream (~40-60s, empty/502) at ~03:50. Flock's upstream is unstable; the daemon itself
