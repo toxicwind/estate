@@ -284,6 +284,7 @@ dir = "/home/toxic/.shingle/squawk-relay"
 mise = false
 retry = true
 boot_start = true
+env = { SQUAWK_CODE_DIR = "/home/toxic/sovereign/hatch/agents/ember/chat" }
 auto = ["start"]
 
 [daemons.squawk-feed]
