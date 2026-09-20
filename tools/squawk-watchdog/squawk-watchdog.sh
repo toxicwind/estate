@@ -23,7 +23,7 @@ cd /home/toxic/sovereign
 # Resolve the pitchfork binary from the LIVE supervisor so CLI and
 # supervisor can never skew versions (2.16.0 vs 2.25.0 is a known hazard).
 # The same pgrep doubles as the liveness check (no CLI output parsing).
-PF=/home/toxic/.local/share/mise/installs/pitchfork/2.16.0/pitchfork
+PF=/home/toxic/.local/share/mise/installs/pitchfork/latest/pitchfork
 SUP_PID=""
 for p in $(pgrep -f "pitchfork supervisor run" 2>/dev/null); do
   exe=$(readlink "/proc/$p/exe" 2>/dev/null || true)
