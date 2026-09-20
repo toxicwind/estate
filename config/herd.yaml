@@ -708,7 +708,7 @@ peers:
   # falsely looked "empty". Verified live: LING-LIVE in 0.885s. Do NOT park on
   # small-token probes.
   openrouter-ling:
-    proxy: http://127.0.0.1:25109/openrouter
+    proxy: http://127.0.0.1:25109/openrouter-free
     # apiKey intentionally OMITTED (2026-09-20, herd-deployer): auth is
     # injected per-call by the key-pool sidecar from its health-checked
     # OPENROUTER_* key rotation. Do NOT re-add a hardcoded key — a
@@ -796,7 +796,7 @@ peers:
   # --- openrouter-free: probed-working OpenRouter :free models (added 2026-09-20) ---
   # Only models that returned real completions in the 2026-09-20 probes are listed.
   openrouter-free:
-    proxy: http://127.0.0.1:25109/openrouter
+    proxy: http://127.0.0.1:25109/openrouter-free
     # apiKey intentionally OMITTED (2026-09-20, herd-deployer): auth is
     # injected per-call by the key-pool sidecar from its health-checked
     # OPENROUTER_* key rotation. Do NOT re-add a hardcoded key -- a
@@ -860,7 +860,7 @@ peers:
   # keys revalidate on demand and rejoin automatically.
   # No apiKey here BY DESIGN: the sidecar injects the chosen key. Do not add one.
   openrouter-pool:
-    proxy: http://127.0.0.1:25109/openrouter
+    proxy: http://127.0.0.1:25109/openrouter-paid
     models:
       - moonshotai/kimi-k3
       - moonshotai/kimi-k2.6
