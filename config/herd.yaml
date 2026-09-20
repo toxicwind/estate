@@ -50,6 +50,8 @@ flock:
     flock-deepseek-v4-flash: deepseek-ai/deepseek-v4-flash-0731
     flock-nemotron-35-lightning: nvidia/nemotron-3.5-lightning-30b-a3b
     flock-glm-53-flash: z-ai/glm-5.3-flash
+    kimi-k2: moonshotai/kimi-k2.6
+    kimi-k3-nim: moonshotai/kimi-k3
 routing:
   scheduler:
     use: fifo
