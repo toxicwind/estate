@@ -1,0 +1,191 @@
+# =============================================================================
+# sovereign bin manifest — canonical inventory of executable entry points.
+#   /home/toxic/sovereign/bin/manifest.yaml
+# Verified by /home/toxic/sovereign/bin/bin-verify.sh (exit != 0 on any FAIL).
+#
+# What "bin" means here (2026-09-20):
+#   bin/                        canonical ops-tool dir. REORG phase 5 merged
+#                               shingle-workspace/bin/* here (collision-checked,
+#                               zero external refs). This is THE bin dir.
+#   projects/tau/launcher/bin/  tau launcher scripts (the tau collapse chain).
+#   /home/toxic/.local/bin/tau  installed tau — collapse level 2, md5-pinned
+#                               to the repo copy (verifier fails on drift).
+#   .../engine/packages/coding-agent/dist/omp
+#                               built engine CLI — collapse level 5.
+# NOTE: /home/toxic/sovereign/tau/bin does NOT exist; `tau` is a symlink
+#       -> projects/tau. There is no [[bin]] in tau's Cargo.toml files —
+#       the engine ships as a dist artifact (omp), not a cargo bin target.
+# =============================================================================
+schema: sovereign-bin-manifest/1
+
+stale_paths:
+  - sovereign-merge-stash-20260914
+  - /home/toxic/projects/ik_llama.cpp-main
+  - /home/toxic/workspace/tau-launcher-build
+
+dirs:
+  - bin
+  - projects/tau/launcher/bin
+  - projects/tau/launcher/profiles
+
+bins:
+  # ---------------- sovereign/bin ----------------
+  - name: cron-trust-monitor
+    dir: bin
+    kind: script
+    shebang: "#!/usr/bin/env python3"
+    syntax: python
+    run: []
+    expect: "CRON-TRUST"
+    timeout: 15
+    notes: "cron reliability watchdog; read-only, safe to run"
+
+  - name: hotfix
+    dir: bin
+    kind: script
+    shebang: "#!/usr/bin/env bun"
+    run: [--help]
+    expect: "Usage: hotfix"
+    timeout: 20
+    notes: "sovereign hotfix registry CLI (bun)"
+
+  - name: nvidia-fan-curve.py
+    dir: bin
+    kind: script
+    shebang: "#!/usr/bin/env python3"
+    syntax: python
+    notes: "backup NVIDIA fan controller (NVML); touches hardware — verifier does not run it"
+
+  - name: push-guard.sh
+    dir: bin
+    kind: script
+    shebang: "#!/bin/sh"
+    syntax: sh
+    notes: "pre-push secret guard for Go repos; --help HANGS (starts repo scan) — never run bare"
+
+  - name: sovereign_web
+    dir: bin
+    kind: binary
+    run: []
+    expect_in_output: true
+    expect_any: ["Watchdog running", "Address already in use"]
+    timeout: 5
+    notes: "Rust web dashboard (Jul 13); binds 25101+25104. 25104 held by bun router.ts watchdog — AddrInUse on start is environmental, not a broken binary"
+
+  - name: git-lfs
+    dir: bin
+    kind: binary
+    run: [--version]
+    expect: "git-lfs/"
+    timeout: 10
+    notes: "upstream git-lfs binary; moved here by REORG phase 5"
+
+  - name: io-rate-reaper
+    dir: bin
+    kind: script
+    shebang: "#!/usr/bin/env bash"
+    syntax: bash
+    notes: "kill disk-thrashers by measured read rate; verifier never runs reapers"
+
+  - name: iowait-gate
+    dir: bin
+    kind: script
+    shebang: "#!/usr/bin/env bash"
+    syntax: bash
+    notes: "refuse heavy I/O work when disk saturated; gate, not run by verifier"
+
+  - name: oracle-judge
+    dir: bin
+    kind: script
+    shebang: "#!/usr/bin/env bash"
+    syntax: bash
+    notes: "deterministic scaffolding for automated debate verdicts"
+
+  - name: orphan-reaper
+    dir: bin
+    kind: script
+    shebang: "#!/usr/bin/env bash"
+    syntax: bash
+    notes: "kill detached forensics scans outliving parents; exec bit fixed 2026-09-20 (was 644)"
+
+  - name: safe-rg
+    dir: bin
+    kind: script
+    shebang: "#!/usr/bin/env bash"
+    syntax: bash
+    notes: "I/O-disciplined ripgrep wrapper; exec bit fixed 2026-09-20 (was 644)"
+
+  - name: saturation-watchdog
+    dir: bin
+    kind: script
+    shebang: "#!/usr/bin/env bash"
+    syntax: bash
+    notes: "cell-saturation detector + attributor + pager"
+
+  - name: manifest.yaml
+    dir: bin
+    kind: data
+    parse: manifest
+    notes: "this file — must parse with the verifier's own parser"
+
+  - name: bin-verify.sh
+    dir: bin
+    kind: script
+    shebang: "#!/usr/bin/env bash"
+    syntax: bash
+    notes: "the verifier itself"
+
+  # ---------------- tau launcher ----------------
+  - name: tau
+    dir: projects/tau/launcher/bin
+    kind: script
+    shebang: "#!/usr/bin/env bash"
+    syntax: bash
+    run: [--help]
+    expect: "tau v"
+    timeout: 20
+    notes: "tau launcher. Collapse chain: 1 TAU_BIN, 2 PATH tau (~/.local/bin/tau), 3 ./tau, 4 bun engine src, 5 dist/omp"
+
+  - name: test-collapse.sh
+    dir: projects/tau/launcher/bin
+    kind: script
+    shebang: "#!/usr/bin/env bash"
+    syntax: bash
+    notes: "collapse-chain tests; default LAUNCHER fixed 2026-09-20 (was stale $HOME/workspace/tau-launcher-build/tau)"
+
+  - name: default.yml
+    dir: projects/tau/launcher/profiles
+    kind: data
+    notes: "launcher profile"
+
+  - name: kimi.yml
+    dir: projects/tau/launcher/profiles
+    kind: data
+    notes: "launcher profile"
+
+  # ---------------- installed / built ----------------
+  - name: tau
+    dir: /home/toxic/.local/bin
+    kind: script
+    shebang: "#!/usr/bin/env bash"
+    syntax: bash
+    same_as: projects/tau/launcher/bin/tau
+    notes: "installed tau (collapse L2); md5-pinned to repo copy — verifier fails on drift"
+
+  - name: omp
+    dir: projects/tau/engine/packages/coding-agent/dist
+    kind: binary
+    run: [--version]
+    expect: "tau/"
+    timeout: 15
+    notes: "built engine CLI (collapse L5); reports tau/18.1.18"
+
+archived:
+  - name: llama-gguf-hash
+    from: bin/llama-gguf-hash
+    to: .archive-20260920/bin/llama-gguf-hash
+    reason: "dead symlink; wrapper pointed at nonexistent /home/toxic/projects/ik_llama.cpp-main"
+  - name: llama-gguf-hash-run
+    from: bin/llama-gguf-hash-run
+    to: .archive-20260920/bin/llama-gguf-hash-run
+    reason: "wrapper exec + LD_LIBRARY_PATH both stale; no llama-gguf-hash binary in any ik_llama.cpp build dir (build_ralph/build_rescue_verify/build_sm86). Restore: build ik_llama.cpp with the tool, rewrite wrapper."
