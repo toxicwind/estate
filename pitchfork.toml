@@ -300,7 +300,7 @@ daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-u
 # kimi-auto entry (--config-dir fragment). --target/--standby MUST match
 # /home/toxic/kimi-auto/herd.d/kimi-auto.yaml. Selection lives in router
 # config; this shim never selects models.
-run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target mistral/ministral-14b-latest --standby toolcall-local/qwen3.5-9b-tool --name kimi-auto"
+run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target ministral-14b-latest --standby qwen3.5-9b-tool --name kimi-auto"
 dir = "/home/toxic/sovereign/config/herd.d"
 mise = false
 retry = true
