@@ -4,7 +4,8 @@ Bidder worker for the oracle-market.
 
 Watches the bid-market channel via inotify, posts HMAC-signed AES-GCM-sealed
 bids (SPEC §1.2) on tasks whose tags intersect its own, executes won tasks
-in a network-isolated subprocess (unshare -n), posts results with a
+in a local subprocess, posts results with a
+(2026-09-20: unshare -rn restored - proof-live-2 verified it works under pitchfork),
 committed proof hash + artifact list, and narrates everything to the fleet
 channel in a persona voice.
 
@@ -201,6 +202,9 @@ class Bidder:
         self.seen_tasks = {}   # task_id -> task dict
         self.my_bids = {}      # task_id -> confidence
         self.welcomed = set()
+        self.executed = set()      # task_ids already executed (catch-up guard)
+        self._watches = {}         # name -> (fd, path, st_dev, st_ino, mask)
+        self._last_rearm_note = 0.0
         self.running = True
         self.exec_lock = threading.Lock()
         signal.signal(signal.SIGTERM, self._stop)
@@ -318,9 +322,12 @@ class Bidder:
             w = winner.replace("bidder-", "")
             self.say(self._pick("lost", t=tid, w=w))
 
-    # ----- execution (network-isolated) -----
+    # ----- execution -----
     def execute_task(self, task):
         tid = task["task_id"]
+        if tid in self.executed:
+            return  # catch-up re-drive must never double-execute
+        self.executed.add(tid)
         payload = task.get("payload", "")
         timeout_ms = task.get("timeout_ms", 30000)
         workdir = ol.WORK / self.id / tid
@@ -343,8 +350,14 @@ class Bidder:
         success, out, err = False, "", ""
         try:
             cmd = ["python3", "-c", payload]
+            # 2026-09-20: payloads run under `unshare -rn` (new user+network
+            # namespaces, works unprivileged). Plain `unshare -n` needs
+            # CAP_SYS_ADMIN and EPERMs on yote -- that was proof-live-1's
+            # failure, not -rn's: proof-live-2 ran under -rn via pitchfork
+            # and verified end-to-end. Isolation matters: the payload env
+            # carries pooled provider keys, so it must not reach the net.
             if Path("/usr/bin/unshare").exists():
-                cmd = ["unshare", "-n"] + cmd  # no network for payloads
+                cmd = ["unshare", "-rn"] + cmd
             p = subprocess.run(cmd, cwd=str(workdir), capture_output=True,
                                text=True,
                                timeout=min(timeout_ms / 1000.0, PAYLOAD_CAP_S),
@@ -427,6 +440,77 @@ class Bidder:
         elif mt == "assign":
             self.on_assign(meta, data)
 
+    # ----- self-healing inotify watches (2026-09-20) -----
+    # Observed: the bid-market channel dir was REPLACED (inode change) at
+    # ~08:23:50 MDT, permanently orphaning every inotify watch. A watch on
+    # a replaced dir is deaf forever (IN_IGNORED is terminal), so: arm a
+    # watch on each channel AND its parent dir; after every select wakeup
+    # verify each watched path still has the same (st_dev, st_ino); on
+    # mismatch re-arm, announce (60s cooldown), and run catch-up.
+
+    def _arm_watch(self, name, path, mask=None):
+        """(Re)arm an inotify watch on path, recording its identity."""
+        old = self._watches.get(name)
+        if old is not None:
+            try:
+                os.close(old[0])
+            except OSError:
+                pass
+        fd = ol.inotify_init(path, mask=mask)
+        st = os.stat(path)
+        self._watches[name] = (fd, path, st.st_dev, st.st_ino, mask)
+        return fd
+
+    def _check_watches(self):
+        """Verify every armed watch still points at the same directory;
+        re-arm (and catch up) on identity mismatch. True if any re-armed."""
+        rearmed = False
+        for name in ("market", "mparent", "fleet", "fparent"):
+            fd, path, dev, ino, mask = self._watches[name]
+            try:
+                st = os.stat(path)
+                if (st.st_dev, st.st_ino) == (dev, ino):
+                    continue
+            except OSError:
+                pass  # dir vanished entirely - re-arm below anyway
+            self._arm_watch(name, path, mask=mask)
+            rearmed = True
+        if rearmed:
+            self.startup_scan()
+            self._catchup_assigns()
+            now = time.time()
+            if now - self._last_rearm_note > 60:
+                self._last_rearm_note = now
+                self.say(f"{self.emoji} my channel watch went deaf "
+                         "(dir replaced?) - re-armed and caught up.",
+                         msg_type="note", title=f"rearm-{self.id}-{int(now)}")
+        return rearmed
+
+    def _catchup_assigns(self):
+        """Re-drive recent task_post/assign files missed during a deaf
+        window. on_task_post dedupes via seen_tasks; execute_task guards
+        via self.executed - re-drive is safe."""
+        now = time.time()
+        files = sorted([f for f in os.listdir(CHANNEL) if SEQ_RE.match(f)])
+        for f in files[-50:]:
+            parsed = ol.parse_msg(CHANNEL / f)
+            if not parsed:
+                continue
+            meta, data = parsed
+            if meta.get("from") == self.frm:
+                continue
+            try:
+                ts = float(data.get("posted_ts", 0) or meta.get("ts", 0))
+            except (TypeError, ValueError):
+                ts = 0
+            if now - ts > 600:
+                continue  # only recent history
+            mt = meta.get("msg_type", "")
+            if mt == "task_post":
+                self.on_task_post(data)
+            elif mt == "assign":
+                self.on_assign(meta, data)
+
     def startup_scan(self):
         now = time.time()
         files = sorted([f for f in os.listdir(CHANNEL) if SEQ_RE.match(f)])
@@ -444,8 +528,14 @@ class Bidder:
 
     def run(self):
         self.startup_scan()
-        mfd = ol.inotify_init(CHANNEL)
-        ffd = ol.inotify_init(FLEET)
+        self._watches = {}
+        self._last_rearm_note = 0.0
+        pw = (ol.IN_CLOSE_WRITE | ol.IN_MOVED_TO | ol.IN_CREATE
+              | ol.IN_DELETE | ol.IN_MOVED_FROM)
+        self._arm_watch("market", CHANNEL)
+        self._arm_watch("mparent", CHANNEL.parent, mask=pw)
+        self._arm_watch("fleet", FLEET)
+        self._arm_watch("fparent", FLEET.parent, mask=pw)
         # intro: name, persona, tagline — the pack meets the new member
         key_note = "signed-bidding live" if self.can_bid else \
             "NO BIDDING KEYS — observer mode"
@@ -461,9 +551,9 @@ class Bidder:
             fcntl.fcntl(pfd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
         try:
             while self.running:
-                for name in ol.inotify_names(mfd):
+                for name in ol.inotify_names(self._watches["market"][0]):
                     self.on_market(name)
-                for name in ol.inotify_names(ffd):
+                for name in ol.inotify_names(self._watches["fleet"][0]):
                     self.on_fleet(name)
                 # drain any wake bytes
                 try:
@@ -471,10 +561,19 @@ class Bidder:
                         pass
                 except OSError:
                     pass
-                select.select([mfd, ffd, self._wake_r], [], [])
+                rlist = [self._watches[x][0]
+                         for x in ("market", "mparent", "fleet", "fparent")]
+                rlist.append(self._wake_r)
+                # no timeout: pure push wakeups. The watch check below is
+                # the self-healing for replaced dirs (IN_IGNORED is terminal).
+                select.select(rlist, [], [])
+                self._check_watches()
         finally:
-            os.close(mfd)
-            os.close(ffd)
+            for fd, _, _, _, _ in self._watches.values():
+                try:
+                    os.close(fd)
+                except OSError:
+                    pass
             os.close(self._wake_r)
             os.close(self._wake_w)
 
