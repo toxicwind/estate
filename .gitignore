@@ -278,3 +278,6 @@ id_ed25519*
 .aws/
 .gnupg/
 **/secrets/**
+
+# --- stale-dir archive (herd triage 2026-09-20) ---
+.archive-*/
