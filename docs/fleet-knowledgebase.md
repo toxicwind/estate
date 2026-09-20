@@ -132,6 +132,8 @@ Retired/completed crews stay listed here with status DONE and their final commit
 11. **Routers ≠ model code.** Model-family tooling never hardcodes model IDs; model selection lives in herd router config alone.
 12. **Fleet protocol.** Every spawn announces: `agent joined: <name> — <task> (ember)`. Squawk fleet is a live chat: greet, collaborate, ask questions, celebrate, banter, develop personas. A pack, not a pipeline.
 
+13. **Hypr lib set is -git (decided 2026-09-20).** yote runs release `hyprland 0.6.2` with `-git` libs (`hyprlang-git`, `hyprland-guiutils-git`, `hyprpaper-git`, `hyprtoolkit-git`) — verified live: Hyprland running, `pacman -Syu --print` shows 0 conflicts, yq = `go-yq` only. Two chats fought a package war over these variants once; do NOT flip back to release. If the set ever breaks, decide once, change once, record here.
+
 ---
 
 ## 5. Docs index (deep links)
