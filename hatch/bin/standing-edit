@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+# standing-edit — the ONLY way to modify standing files.
+#
+# Standing files (AGENTS.md, SOUL.md, IDENTITY.md, USER.md, MEMORY.md) are
+# protected by POLICY + DETECTION, not filesystem flags (the runtime's btrfs
+# lacks CAP_LINUX_IMMUTABLE, so chattr +i is unavailable).
+#
+# This script is the structural enforcement:
+# 1. It is the documented, auditable path for all standing-file edits.
+# 2. Every edit is logged to ~/workspace/fleet-locks/standing-edits.log.
+# 3. The standing-guard cron verifies mtimes against the log and alerts
+#    to fleet if a file was modified without a log entry.
+#
+# A subagent that edits a standing file directly WILL be caught by the guard.
+#
+# Subagents: DO NOT use this. You do not have a legitimate reason to edit
+# standing files. Propose changes in your report; the main agent decides.
+#
+# Usage:
+#   standing-edit <file> <operation> [args...]
+#
+# Operations:
+#   unlock             — remove immutable flag (for manual editing)
+#   lock               — re-apply immutable flag
+#   append <text>      — append text to file
+#   check              — verify all standing files are locked
+
+set -euo pipefail
+
+STANDING_FILES=(
+  "$HOME/AGENTS.md"
+  "$HOME/SOUL.md"
+  "$HOME/IDENTITY.md"
+  "$HOME/USER.md"
+  "$HOME/MEMORY.md"
+)
+
+LOG="$HOME/workspace/fleet-locks/standing-edits.log"
+
+usage() {
+  cat <<'EOF'
+usage: standing-edit <file> unlock|lock|append <text>|check
+       standing-edit check   — verify all standing files are locked
+EOF
+}
+
+log_edit() {
+  mkdir -p "$(dirname "$LOG")"
+  echo "$(date -u +%FT%TZ) MAIN_AGENT $1" >> "$LOG"
+}
+
+is_standing() {
+  local f="$1"
+  for s in "${STANDING_FILES[@]}"; do
+    [ "$f" = "$s" ] && return 0
+  done
+  return 1
+}
+
+cmd="${1:-}"
+if [ "$cmd" = "check" ]; then
+  echo "Standing files (guard via audit log + standing-guard cron):"
+  for f in "${STANDING_FILES[@]}"; do
+    if [ ! -f "$f" ]; then
+      echo "  MISSING: $f"
+    else
+      echo "  TRACKED: $f"
+    fi
+  done
+  if [ -f "$LOG" ]; then
+    echo "Edit log: $LOG ($(wc -l < "$LOG") entries)"
+  else
+    echo "Edit log: $LOG (no entries yet)"
+  fi
+  exit 0
+fi
+
+file="${1:-}"; op="${2:-}"
+[ -n "$file" ] || { usage >&2; exit 2; }
+[ -n "$op" ] || { usage >&2; exit 2; }
+
+# Resolve to absolute path
+case "$file" in
+  /*) abs="$file";;
+  *) abs="$HOME/$file";;
+esac
+
+if ! is_standing "$abs"; then
+  echo "Not a standing file: $abs" >&2
+  echo "Standing files:" >&2
+  printf "  %s\n" "${STANDING_FILES[@]}" >&2
+  exit 2
+fi
+
+[ -f "$abs" ] || { echo "File not found: $abs" >&2; exit 2; }
+
+case "$op" in
+  unlock)
+    # No-op: immutable flag unavailable in this runtime.
+    # The guard is detection + audit log, not filesystem blocking.
+    log_edit "UNLOCK $abs (no-op: chattr unavailable)"
+    echo "Note: filesystem immutable flag unavailable; guard is via audit log + standing-guard cron."
+    ;;
+  lock)
+    # No-op: see above.
+    log_edit "LOCK $abs (no-op: chattr unavailable)"
+    echo "Note: filesystem immutable flag unavailable; guard is via audit log + standing-guard cron."
+    ;;
+  append)
+    text="${3:-}"
+    [ -n "$text" ] || { echo "append requires text" >&2; exit 2; }
+    echo "$text" >> "$abs"
+    log_edit "APPEND $abs: ${text:0:80}"
+    echo "Appended to $abs (logged)"
+    ;;
+  *)
+    usage >&2; exit 2;;
+esac
