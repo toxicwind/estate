@@ -1,0 +1,89 @@
+# =============================================================================
+# MODEL CONSTRAINTS — card-derived per-model request contracts
+# =============================================================================
+# Source of truth for strict model API contracts (NIM model cards +
+# Hugging Face model cards, verified 2026-09-20). This file is ENFORCED,
+# not just documented: bin/herd-model-guard.py reads it and rewrites
+# /v1/chat/completions request bodies for matching models before they
+# reach herd (:25100). Guard listens on 127.0.0.1:25101 -> 127.0.0.1:25100.
+#
+# Schema per entry:
+#   match:        list of model IDs (exact, case-insensitive) this entry covers
+#   match_regex:  optional regexes, same purpose
+#   force:        params unconditionally set on every request (card mandates)
+#   clamp:        param -> {allowed: [...], default: <x>} ; out-of-range
+#                 values are replaced with default, missing values get default
+#   forbid:       param -> [forbidden values] ; request is rejected (HTTP 400)
+#                 if any forbidden value is present. Use sparingly.
+#   strip_never:  fields the guard must never remove from the request body
+#                 (multi-turn/tool-call state that the endpoint requires echoed)
+#   notes:        human-readable card provenance
+# =============================================================================
+
+version: 1
+
+models:
+  - id: kimi-k3
+    match:
+      - kimi-k3
+      - moonshotai/kimi-k3
+      - moonshotai/Kimi-K3
+      - nvidia/Kimi-K3-NVFP4
+    force:
+      # NIM card: endpoint is strict, top_p MUST be 0.95. Anything else 400s.
+      top_p: 0.95
+    clamp:
+      # NIM card: reasoning_effort ONLY accepts low | high | max.
+      # "medium", "none", "disabled" are contract violations -> 400/422.
+      reasoning_effort:
+        allowed: ["low", "high", "max"]
+        default: "low"
+      reasoning.effort:
+        allowed: ["low", "high", "max"]
+        default: "low"
+    forbid:
+      # (none for K3; schema supports param -> [forbidden values])
+    strip_never:
+      # Card: multi-turn and tool-call continuations MUST echo back
+      # reasoning_content and tool_calls from prior turns, or the
+      # endpoint drops state / 400s. Guard never strips these.
+      - reasoning_content
+      - tool_calls
+    thinking_always_on: true
+    notes: |
+      moonshotai/kimi-k3 NIM card (build.nvidia.com, released 2026-08-20):
+      thinking is ALWAYS enabled; reasoning_effort in {low, high, max} only;
+      top_p fixed at 0.95; multi-turn/tool calls must retain
+      reasoning/tool-call state. HF cards: MoonshotAI/Kimi-K3 (MXFP4/MXFP8
+      QAT, no BF16) and nvidia/Kimi-K3-NVFP4 (Model Optimizer second pass).
+      thinking_always_on: guard flips any thinking-disable flag
+      (enable_thinking:false, reasoning.enabled:false, reasoning_effort:none)
+      back on instead of passing it through.
+
+  # --- template for the next strict card (copy, fill, done) ---
+  # - id: example-strict
+  #   match: ["org/model-id"]
+  #   force: {top_p: 1.0}
+  #   clamp: {}
+  #   forbid: {}
+  #   strip_never: []
+  #   thinking_always_on: false
+  #   notes: "card URL + date verified"
+
+# Models parked with NO live route. This list is a human-readable revive
+# checklist + revive order — the guard does NOT read it. Enforcement on
+# revive comes from the matching `models:` entry above: kimi-k3 keeps its
+# full contract there, so no config edit is needed when a route revives.
+# If you park a model that has NO `models:` entry, add one — a bare ID
+# listed here enforces nothing by itself.
+#
+# REVIVE ORDER per debate verdict (2026-09-20): HuggingFace Inference
+# Providers first, Moonshot-direct only on measured need, NIM never again
+# as primary (24h 429 soft-locks poison fail-fast routing).
+parked_contracts:
+  # (empty 2026-09-20, herd-deployer): kimi-k3 REVIVED via the OpenRouter
+  # key-pool (openrouter-pool peer -> 127.0.0.1:25102/openrouter ->
+  # openrouter.ai). OPENROUTER_API_KEY_1 verified alive (HTTP 200 on
+  # /v1/auth/key, free tier 1000/day). The K3 card contract above still
+  # applies to the revived route via the model-guard sidecar.
+  []

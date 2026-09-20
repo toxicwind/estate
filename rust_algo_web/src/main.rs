@@ -2,7 +2,7 @@ mod fleet;
 mod gpu;
 mod watchdog;
 
-use axum::{response::IntoResponse, routing::get, Json, Router};
+use axum::{extract::{Path, Query}, response::IntoResponse, routing::get, Json, Router};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -151,6 +151,150 @@ async fn get_integrations() -> Json<IntegrationsResponse> {
             "Fleet bench: tools/fleet/bench-forks.sh (graduated ctx; no 27B max first)".into(),
         ],
     })
+}
+
+
+// ---------- Squawk feed ----------
+const SQUAWK_ROOT: &str = "/home/toxic/.shingle/squawk-root";
+
+#[derive(Serialize)]
+struct SquawkMessage {
+    seq: u64,
+    from: String,
+    to: String,
+    ts: String,
+    title: String,
+    body: String,
+}
+
+fn squawk_channel_ok(name: &str) -> bool {
+    !name.is_empty()
+        && name.len() <= 64
+        && name
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
+}
+
+fn parse_squawk_message(path: &std::path::Path) -> Option<SquawkMessage> {
+    let name = path.file_name()?.to_str()?;
+    let file_seq: u64 = name.split('-').next()?.parse().ok()?;
+    let content = std::fs::read_to_string(path).ok()?;
+    let mut seq = file_seq;
+    let mut from = String::new();
+    let mut to = String::new();
+    let mut ts = String::new();
+    let mut title = String::new();
+    let mut body = content.clone();
+    let mut lines = content.lines();
+    if lines.next().map(|l| l.trim()) == Some("---") {
+        let mut fm: HashMap<String, String> = HashMap::new();
+        let mut rest: Vec<&str> = Vec::new();
+        let mut in_fm = true;
+        for line in lines {
+            if in_fm {
+                if line.trim() == "---" {
+                    in_fm = false;
+                    continue;
+                }
+                if let Some(i) = line.find(':') {
+                    fm.insert(line[..i].trim().to_string(), line[i + 1..].trim().to_string());
+                }
+            } else {
+                rest.push(line);
+            }
+        }
+        if !in_fm {
+            if let Some(s) = fm.get("seq").and_then(|v| v.parse::<u64>().ok()) {
+                seq = s;
+            }
+            from = fm.get("from").cloned().unwrap_or_default();
+            to = fm.get("to").cloned().unwrap_or_default();
+            ts = fm.get("ts").cloned().unwrap_or_default();
+            title = fm.get("title").cloned().unwrap_or_default();
+            body = rest.join("\n").trim().to_string();
+        }
+    }
+    if from.is_empty() {
+        let parts: Vec<&str> = name.trim_end_matches(".md").split('-').collect();
+        if parts.len() >= 3 {
+            from = parts[1].to_string();
+        }
+    }
+    Some(SquawkMessage {
+        seq,
+        from,
+        to,
+        ts,
+        title,
+        body,
+    })
+}
+
+async fn get_squawk_channels() -> Json<Vec<String>> {
+    let mut chans = Vec::new();
+    if let Ok(rd) = std::fs::read_dir(SQUAWK_ROOT) {
+        for e in rd.flatten() {
+            if e.file_type().map(|t| t.is_dir()).unwrap_or(false) {
+                if let Some(n) = e.file_name().to_str() {
+                    if squawk_channel_ok(n) {
+                        let has_md = std::fs::read_dir(e.path())
+                            .map(|rd| {
+                                rd.flatten().any(|f| {
+                                    f.path().extension().and_then(|x| x.to_str()) == Some("md")
+                                })
+                            })
+                            .unwrap_or(false);
+                        if has_md {
+                            chans.push(n.to_string());
+                        }
+                    }
+                }
+            }
+        }
+    }
+    chans.sort();
+    Json(chans)
+}
+
+async fn get_squawk_channel(
+    Path(channel): Path<String>,
+    Query(q): Query<HashMap<String, String>>,
+) -> impl IntoResponse {
+    if !squawk_channel_ok(&channel) {
+        return (
+            axum::http::StatusCode::BAD_REQUEST,
+            Json(serde_json::json!({"error": "invalid_channel"})),
+        )
+            .into_response();
+    }
+    let limit: usize = q
+        .get("limit")
+        .and_then(|v| v.parse().ok())
+        .unwrap_or(50)
+        .clamp(1, 200);
+    let dir = std::path::Path::new(SQUAWK_ROOT).join(&channel);
+    let mut msgs: Vec<SquawkMessage> = Vec::new();
+    if let Ok(rd) = std::fs::read_dir(&dir) {
+        for e in rd.flatten() {
+            let p = e.path();
+            if p.extension().and_then(|x| x.to_str()) == Some("md") {
+                if let Some(m) = parse_squawk_message(&p) {
+                    msgs.push(m);
+                }
+            }
+        }
+    }
+    msgs.sort_by(|a, b| b.seq.cmp(&a.seq));
+    let max_seq = msgs.first().map(|m| m.seq).unwrap_or(0);
+    let total = msgs.len();
+    msgs.truncate(limit);
+    Json(serde_json::json!({
+        "channel": channel,
+        "seq": max_seq,
+        "count": total,
+        "messages": msgs,
+    }))
+    .into_response()
 }
 
 async fn get_fleet_last() -> Json<serde_json::Value> {
@@ -505,6 +649,8 @@ async fn main() {
         .route("/ops/api/integrations", get(get_integrations))
         .route("/ops/api/fleet/last", get(get_fleet_last))
         .route("/ops/api/gpu/metrics", get(get_gpu_metrics))
+        .route("/ops/api/squawk/channels", get(get_squawk_channels))
+        .route("/ops/api/squawk/:channel", get(get_squawk_channel))
         .route(
             "/ops/api/mesh",
             get(|| async {

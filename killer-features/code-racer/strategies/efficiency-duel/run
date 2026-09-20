@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+"""efficiency-duel: RACE-inspired correctness-gated efficiency selection.
+
+RACE (Apache-2.0) evaluates codegen on correctness AND efficiency. Its
+pipeline needs torch/transformers (absent on yote), so this adapter
+implements the RACE *idea* with our own code:
+  1. duel: fast (1.2B) vs tool (9B), one candidate each
+  2. model-generated probe.py (from spec only, never tests/) runs timed
+     against both
+  3. correctness gate: candidates whose probe outputs agree with the
+     majority behavior; among those, the FASTEST wall-clock wins --
+     efficiency is the primary criterion between correct solutions
+  4. fallback: most ok probes wins
+Distinct from evolve (N-sample majority) and showdown (judge scoring):
+here timed efficiency decides between behaviorally-correct solutions.
+Anti-cheat: tests/ is never opened or read.
+Ceiling: 360s.
+"""
+import os, sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "lib"))
+from cr import *
+
+CEILING = 360
+
+def main(task_dir, output_path):
+    arm_timeout(CEILING)
+    spec = read_task(task_dir)
+    lang = spec.get("language", "python")
+    prompt = spec_prompt(spec)
+    log("efficiency-duel: fast vs tool")
+    cands = []
+    for name, url, model, mt, to in (
+            ("fast", FAST_URL, FAST_MODEL, 2048, 120),
+            ("tool", TOOL_URL, TOOL_MODEL, 4096, 180)):
+        check_deadline(f"gen-{name}")
+        try:
+            code = extract_code(chat(url, model, prompt, max_tokens=mt,
+                                     temperature=0.5, timeout=to), lang)
+            if code: cands.append((name, code))
+        except Exception as e:
+            log(f"{name} generation failed: {e}")
+    if not cands:
+        log("no candidates"); return 1
+    if lang.lower() != "python":
+        write_solution(output_path, f"solution.{lang}", cands[0][1]); return 0
+
+    check_deadline("probe-gen")
+    try:
+        probe_src = gen_probe_code(spec)
+    except Exception as e:
+        log(f"probe gen failed: {e}; emitting first")
+        write_solution(output_path, "solution.py", cands[0][1]); return 0
+    if not probe_src:
+        write_solution(output_path, "solution.py", cands[0][1]); return 0
+
+    runs = []
+    for name, code in cands:
+        check_deadline(f"probe-{name}")
+        results, el = run_probe(code, probe_src)
+        key = behavior_key(results)
+        runs.append({"name": name, "code": code, "ok": ok_count(results),
+                     "n": len(results), "el": el, "key": key})
+        log(f"{name}: {runs[-1]['ok']}/{runs[-1]['n']} probes ok in {el:.2f}s")
+
+    # majority behavior = most common key among runs with at least one ok probe
+    from collections import Counter
+    keys = Counter(r["key"] for r in runs if r["ok"] > 0)
+    correct = ([r for r in runs if keys and r["key"] == keys.most_common(1)[0][0]]
+               if keys else [])
+    if correct:
+        correct.sort(key=lambda r: r["el"])
+        w = correct[0]
+        log(f"efficiency winner: {w['name']} ({w['el']:.2f}s, majority behavior)")
+    else:
+        runs.sort(key=lambda r: (-r["ok"], r["el"]))
+        w = runs[0]
+        log(f"fallback winner: {w['name']} ({w['ok']}/{w['n']} ok)")
+    write_solution(output_path, "solution.py", w["code"])
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1], sys.argv[2]))

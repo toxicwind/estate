@@ -42,7 +42,7 @@ run = "exec bun run src/yote.ts"
 dir = "projects/yote"
 mise = false
 retry = true
-ready_http = "http://127.0.0.1:25102/health"
+ready_http = "http://127.0.0.1:25109/health"
 depends = ["shep"]
 auto = ["start"]
 
@@ -230,6 +230,21 @@ ready_cmd = "ss -ltn 'sport = :5580' | grep -q LISTEN"
 env = { MATTER_SERVER_PORT = "5580" }
 auto = ["start"]
 
+[daemons.openfang]
+run = "exec env HOME=/home/toxic /home/toxic/projects/rig-work/target/debug/openfang start --config /home/toxic/sovereign/config/openfang-4200.toml"
+dir = "/home/toxic/projects/rig-work"
+mise = false
+retry = true
+ready_cmd = "ss -ltn 'sport = :4200' | grep -q LISTEN"
+auto = ["start"]
+
+[daemons.oracle-market]
+run = "exec /home/toxic/sovereign/agents/oracle-market/bin/run.sh"
+dir = "/home/toxic/sovereign/agents/oracle-market"
+mise = false
+retry = true
+auto = ["start"]
+
 [daemons.tau]
 run = "exec /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/dist/omp"
 dir = "/home/toxic"
@@ -266,8 +281,8 @@ dir = "/home/toxic/kimi-auto"
 mise = false
 retry = true
 boot_start = true
-ready_http = "http://127.0.0.1:${KIMI_AUTO_SHIM_PORT}/health"
-env = { KIMI_AUTO_SHIM_PORT = "25105" }
+ready_http = "http://127.0.0.1:25153/health" # 2026-09-20: literal, was ${KIMI_AUTO_SHIM_PORT}=25105
+env = { KIMI_AUTO_SHIM_PORT = "25153" }
 auto = ["start"]
 
 [daemons.squawk-relay-sink]
@@ -576,6 +591,7 @@ run = "exec /home/toxic/sovereign/stack/services/beellama-fast.sh"
 dir = "/home/toxic/sovereign"
 mise = false
 retry = true
+env = { BEELLAMA_PORT = "25122" }
 boot_start = true
 # NOTE 2026-09-20: literal port; pitchfork does not expand ${} in ready_http (25122 == $BEELLAMA_PORT SSOT)
 ready_http = "http://127.0.0.1:25122/health"
@@ -588,4 +604,68 @@ run = "/home/toxic/sovereign/ops/openfang-health/loop.sh"
 dir = "/home/toxic/sovereign/ops/openfang-health"
 mise = false
 retry = true
+auto = ["start"]
+
+# mesh-landing — public funnel homepage (funnel  -> 127.0.0.1:8443).
+# Replaces the dead 8443 backend (502) with a live status dashboard.
+# Added 2026-09-20.
+[daemons.mesh-landing]
+run = "exec /usr/bin/python3 /home/toxic/sovereign/projects/mesh/bin/landing.py"
+dir = "/home/toxic/sovereign/projects/mesh"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:8443/health"
+auto = ["start"]
+
+[daemons.bidder-forge]
+run = "exec /home/toxic/sovereign/agents/oracle-market/bin/bidder-forge.sh"
+dir = "/home/toxic/sovereign/agents/oracle-market"
+mise = false
+retry = true
+auto = ["start"]
+
+[daemons.bidder-scout]
+run = "exec /home/toxic/sovereign/agents/oracle-market/bin/bidder-scout.sh"
+dir = "/home/toxic/sovereign/agents/oracle-market"
+mise = false
+retry = true
+auto = ["start"]
+
+[daemons.kimiclaw-a]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/kimi-claw/bridge.ts --daemon --instance a"
+dir = "/home/toxic/sovereign/tools/kimi-claw"
+mise = false
+retry = true
+ready_cmd = "pgrep -f 'bridge.ts --daemon --instance a' >/dev/null"
+auto = ["start"]
+
+[daemons.kimiclaw-b]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/kimi-claw/bridge.ts --daemon --instance b"
+dir = "/home/toxic/sovereign/tools/kimi-claw"
+mise = false
+retry = true
+ready_cmd = "pgrep -f 'bridge.ts --daemon --instance b' >/dev/null"
+auto = ["start"]
+
+# --- herd-deployer 2026-09-20: key-pool rotation sidecar for herd cloud peers.
+# Cheap health probes, first-valid-wins per call, 401/402/429 = routing signal.
+[daemons.keypool]
+run = "exec python3 /home/toxic/sovereign/bin/herd-keypool.py"
+dir = "/home/toxic/sovereign"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25109/health"
+auto = ["start"]
+
+# --- herd-deployer 2026-09-20: card-derived model request-contract enforcement.
+# Proxies 127.0.0.1:25101 -> herd :25100; rewrites chat/completions bodies per
+# config/model_constraints.yaml (K3: top_p=0.95, reasoning_effort clamp, thinking on).
+[daemons.model-guard]
+run = "exec python3 /home/toxic/sovereign/bin/herd-model-guard.py"
+dir = "/home/toxic/sovereign"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25101/v1/models"
 auto = ["start"]

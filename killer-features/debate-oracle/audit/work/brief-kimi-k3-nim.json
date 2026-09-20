@@ -1,0 +1,49 @@
+{
+  "candidates": [
+    {
+      "claimed_strengths": [
+        "model card exists on NIM since 08/20/2026",
+        "moonshotai/kimi-k3 listed in NIM API today (82 models)",
+        "weights public on HF, 5+ providers serving"
+      ],
+      "id": "nim-fine",
+      "files": {
+        "evidence-nim-fine.txt": "EVIDENCE for position nim-fine (NIM is fine, failures transient):\n\n1. NIM model card LIVE: https://build.nvidia.com/moonshotai/kimi-k3 \u2014 \"kimi-k3 Model by Moonshotai | NVIDIA NIM\". Released on build.nvidia.com 08/20/2026. Description: 2.8T MoE, 104B active, 1M context, Modified MIT/Kimi K3 License, vLLM+SGLang+TokenSpeed supported, deployment geography Global.\n2. NIM API model list TODAY (2026-09-20, no auth): GET https://integrate.api.nvidia.com/v1/models returns 82 models including 'moonshotai/kimi-k3' and 'moonshotai/kimi-k2.6'. The model is advertised by NVIDIA's own API right now.\n3. HuggingFace official weights: https://huggingface.co/moonshotai/Kimi-K3, released 07/27/2026, 1.4TB MXFP4. NVIDIA quant: https://huggingface.co/nvidia/Kimi-K3-NVFP4 (08/14/2026).\n4. HF Inference Providers serving it: Together AI, Fireworks AI, Featherless AI, Baseten, DeepInfra (~$3/M in, $15/M out).\n5. vLLM 0.28 ships kimi_k3 tool parser and kimi_k3 reasoning parser (verified by third-party serving guide).\n6. Our herd kimi-k3 NEVER used NIM \u2014 it used Pollinations (free) and OpenRouter (paid). Its death (401/402) says nothing about NIM.\n"
+      },
+      "undefended": false
+    },
+    {
+      "claimed_strengths": [
+        "documented 404s on NIM endpoint (Aug 2026, multiple users)",
+        "24-hour 429 soft-locks reported",
+        "degraded responses suggest broken routing"
+      ],
+      "id": "nim-unreliable",
+      "files": {
+        "evidence-nim-unreliable.txt": "EVIDENCE for position nim-unreliable (NIM hosted endpoint genuinely unreliable):\n\n1. NVIDIA Developer Forums, thread \"Kimi k3 repsonses degraded?\" (Aug 25-26 2026): user reports \"super fast and very degraded responses... far from the previous well articulated long responses\". Multiple users confirm.\n2. Same thread: \"right now the model is returning 404\" \u2014 confirmed by 3+ users (NuDuplex, Melody_Roses, ohmygodsquad).\n3. Same thread: \"A few hours ago, I had two successful responses after the 24-hour 429 soft-lock\" \u2014 429 rate-limit lockouts lasting 24 hours.\n4. Thread \"Kimi K3 fails to respond when asking for Structured markdown response\" (Aug 31 2026).\n5. Thread \"Kimi K3 Error\" (Aug 31 2026), thread \"Moonshotai/kimi-k3\" (Sep 6 2026).\n6. Third-party blog (dredyson.com, Aug 28): \"404 errors, 429 soft-locks, and the hidden truth about Nvidia NIM API instability\" \u2014 6-month case study.\n7. Critical: \"DeepSeek is also getting the 404 error. I think Nvidia has a serious bug right now.\" \u2014 the 404s hit multiple models, indicating NVIDIA infra problems, not Kimi-specific issues. But from the caller's perspective, the NIM endpoint for kimi-k3 is unreliable regardless of root cause.\n"
+      },
+      "undefended": false
+    },
+    {
+      "claimed_strengths": [
+        "three different ID formats across NIM/HF/local",
+        "kimi-k3-nim was a local alias, not a real ID",
+        "HF uses capital K3, NIM uses lowercase"
+      ],
+      "id": "naming-confusion",
+      "files": {
+        "evidence-naming.txt": "EVIDENCE for position naming-confusion (wrong IDs cause most \"broken\" reports):\n\n1. NIM API expects: moonshotai/kimi-k3 (all lowercase).\n2. HuggingFace repo is: moonshotai/Kimi-K3 (capital K, capital K3). Anyone copying the HF ID to NIM gets a 404.\n3. Our own herd used a local alias 'kimi-k3-nim' that was NEVER a real model ID on any surface \u2014 on 2026-09-17 an agent repointed it at dead nvidia nemotron models while keeping the kimi name, because it misdiagnosed a 401 (bad key) as a routing failure.\n4. Kimi Code API uses yet another ID: 'k3' via https://api.kimi.com/coding/v1.\n5. vLLM requires the 'kimi_k3' tool parser \u2014 using 'kimi_k2' \"mis-parses K3 and the chat content comes back empty\" (third-party serving guide). A parser mismatch looks exactly like \"model broken\" (empty responses).\n6. Pattern observed twice: credential/endpoint/config failures get misdiagnosed as model failures \u2014 by our own agent (09-17) and by internet users (404 on wrong ID \u2192 \"model broken\").\n"
+      },
+      "undefended": false
+    }
+  ],
+  "debate_id": "kimi-k3-nim-truth-v1",
+  "hard_constraints": [
+    "every factual claim must be grounded in the evidence files",
+    "distinguish model existence from endpoint reliability",
+    "distinguish credential failures from model failures"
+  ],
+  "measured_failure": "people report 'kimi k3 broken on NIM'; our herd kimi-k3 route died 2026-09-20",
+  "spec": "# Question: Is Kimi K3 actually broken on NVIDIA NIM, and what is the correct way to call it?\n\nBackground: Kimi K3 (moonshotai, 2.8T MoE) has a model card on build.nvidia.com and weights on HuggingFace. Online reports say it is 'broken on NIM'. Our own herd kimi-k3 route (via Pollinations/OpenRouter, never via NIM directly) died on 2026-09-20 with 401s/402s. Three positions compete: (1) NIM is fine, failures are transient infra; (2) NIM's hosted endpoint is genuinely unreliable, use HF providers instead; (3) the reputation is mostly wrong model IDs per surface.\n\nJudge which position best fits the evidence, with a synthesis of what to actually do.",
+  "task_ref": "kimi-k3-nim"
+}

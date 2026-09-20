@@ -287,3 +287,31 @@ id_ed25519*
 
 # --- sovereign reorg 2026-09-20: /scratch is the renamed shingle-workspace (tracked) ---
 !/scratch/
+
+# ─── Sweep 2026-09-20: runtime state, agent backups, heavy work dirs ─────────
+hatch/agents/ember/squawk-root/
+*.bak*
+*.bak-*
+__pycache__/
+*.pyc
+projects/tau/engine.bak-*/
+projects/tau-occupied-*/
+projects/nim-repos/
+projects/guidellm/
+worktrees/
+
+# Committer 2026-09-20: deliberately untracked (foreign forks, nested repos, runtime state)
+sovereign-github-search/
+bench-wt-tau/
+killer-features/*/vendor/
+agents/oracle-market/ledger/
+agents/**/*.lock
+projects/outlier-toolkit/
+projects/wezterm/
+merge-main-20260914/
+kimi-audit-scratch-20260914/
+codeflux/
+projects/mesh/bin/shep-v0.51.0
+projects/tau/archive/from-tau/crates/pi-natives/tools/cache/*.bin
+killer-features/**/var/
+killer-features/**/state.json

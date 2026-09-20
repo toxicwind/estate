@@ -1,0 +1,58 @@
+{
+ "strategies": [
+  {
+   "name": "demo-fast",
+   "cmd": [
+    "/usr/bin/python3",
+    "/home/toxic/sovereign/killer-features/code-racer/run_candidate.py",
+    "--strategy",
+    "demo-fast",
+    "--task",
+    "/home/toxic/sovereign/killer-features/code-racer/tasks/task-2-bugfix-rate-limiter",
+    "--registry",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/registry.json",
+    "--solve-timeout",
+    "120.0",
+    "--test-timeout",
+    "30.0"
+   ],
+   "match": "RACE-PASS"
+  },
+  {
+   "name": "demo-slow",
+   "cmd": [
+    "/usr/bin/python3",
+    "/home/toxic/sovereign/killer-features/code-racer/run_candidate.py",
+    "--strategy",
+    "demo-slow",
+    "--task",
+    "/home/toxic/sovereign/killer-features/code-racer/tasks/task-2-bugfix-rate-limiter",
+    "--registry",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/registry.json",
+    "--solve-timeout",
+    "120.0",
+    "--test-timeout",
+    "30.0"
+   ],
+   "match": "RACE-PASS"
+  },
+  {
+   "name": "demo-broken",
+   "cmd": [
+    "/usr/bin/python3",
+    "/home/toxic/sovereign/killer-features/code-racer/run_candidate.py",
+    "--strategy",
+    "demo-broken",
+    "--task",
+    "/home/toxic/sovereign/killer-features/code-racer/tasks/task-2-bugfix-rate-limiter",
+    "--registry",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/registry.json",
+    "--solve-timeout",
+    "120.0",
+    "--test-timeout",
+    "30.0"
+   ],
+   "match": "RACE-PASS"
+  }
+ ]
+}

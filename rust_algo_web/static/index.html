@@ -141,6 +141,115 @@
         background: rgba(6, 182, 212, 0.12);
         color: #22d3ee;
       }
+      /* ---------- Squawk ---------- */
+      .sq-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        padding: 0.45rem 0.9rem;
+        border-radius: 9999px;
+        border: 1px solid rgba(139, 92, 246, 0.22);
+        background: rgba(139, 92, 246, 0.06);
+        color: #c4b5fd;
+        cursor: pointer;
+        transition: all 0.25s ease;
+      }
+      .sq-tab:hover {
+        border-color: rgba(139, 92, 246, 0.55);
+        background: rgba(139, 92, 246, 0.14);
+        color: #ede9fe;
+        transform: translateY(-1px);
+      }
+      .sq-tab.active {
+        border-color: rgba(139, 92, 246, 0.7);
+        background: rgba(139, 92, 246, 0.22);
+        color: #fff;
+        box-shadow: 0 0 18px rgba(139, 92, 246, 0.35);
+      }
+      .sq-tab .fa-hashtag {
+        font-size: 9px;
+        opacity: 0.7;
+      }
+      .sq-badge {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.15rem;
+        height: 1.15rem;
+        padding: 0 0.3rem;
+        border-radius: 9999px;
+        background: #f43f5e;
+        color: #fff;
+        font-size: 9px;
+        font-weight: 700;
+      }
+      .sq-msg {
+        background: rgba(18, 16, 28, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 0.9rem;
+        padding: 0.85rem 1rem;
+        transition: border-color 0.25s ease, background 0.25s ease;
+      }
+      .sq-msg:hover {
+        border-color: rgba(139, 92, 246, 0.3);
+        background: rgba(18, 16, 28, 0.75);
+      }
+      .sq-msg.fresh {
+        animation: sqFresh 2.4s ease-out;
+      }
+      @keyframes sqFresh {
+        0% {
+          border-color: rgba(139, 92, 246, 0.9);
+          background: rgba(139, 92, 246, 0.16);
+          box-shadow: 0 0 22px rgba(139, 92, 246, 0.25);
+        }
+        100% {
+          border-color: rgba(255, 255, 255, 0.05);
+          background: rgba(18, 16, 28, 0.5);
+          box-shadow: none;
+        }
+      }
+      .sq-sender {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 0.2rem 0.6rem;
+        border-radius: 9999px;
+        color: hsl(var(--h), 85%, 72%);
+        border: 1px solid hsl(var(--h), 70%, 50%, 0.35);
+        background: hsl(var(--h), 70%, 50%, 0.1);
+      }
+      .sq-seq {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: #6b7280;
+      }
+      .sq-time {
+        font-size: 10px;
+        color: #6b7280;
+        margin-left: auto;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .sq-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #e9e4ff;
+        margin-top: 0.5rem;
+        font-family: "Outfit", sans-serif;
+      }
+      .sq-body {
+        font-size: 12.5px;
+        line-height: 1.55;
+        color: #b8b3c9;
+        margin-top: 0.35rem;
+        word-break: break-word;
+      }
+
     </style>
   </head>
   <body class="overflow-x-hidden">
@@ -577,6 +686,62 @@ flowchart TD
           </div>
         </div>
       </main>
+
+      <!-- Squawk Feed -->
+      <section
+        class="glass-panel rounded-2xl p-6 flex flex-col gap-4 mt-8"
+        id="squawk-section"
+      >
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2
+            class="text-xl font-bold font-display tracking-wide flex items-center gap-2"
+          >
+            <i class="fa-solid fa-comments text-violet-400"></i> SQUAWK
+            <span class="relative flex h-2.5 w-2.5 ml-1">
+              <span
+                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60"
+              ></span>
+              <span
+                class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"
+              ></span>
+            </span>
+          </h2>
+          <span
+            class="text-[10px] font-mono text-gray-500"
+            id="squawk-status"
+            >connecting&hellip;</span
+          >
+        </div>
+        <div class="flex flex-wrap gap-2" id="squawk-tabs"></div>
+        <div class="flex flex-wrap gap-3 items-center">
+          <div class="relative flex-1 min-w-[200px]">
+            <i
+              class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"
+            ></i>
+            <input
+              id="squawk-search"
+              type="text"
+              placeholder="Search messages&hellip;"
+              class="w-full bg-black/20 border border-white/10 rounded-xl pl-9 pr-3 py-2 text-sm text-gray-200 placeholder-gray-600 outline-none focus:border-violet-500/50 transition"
+            />
+          </div>
+          <select
+            id="squawk-sender"
+            class="bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-sm text-gray-300 outline-none focus:border-violet-500/50 transition"
+          >
+            <option value="">All senders</option>
+          </select>
+        </div>
+        <div
+          id="squawk-feed"
+          class="flex flex-col gap-3 overflow-y-auto max-h-[520px] pr-1"
+        >
+          <div class="text-gray-600 text-sm font-mono p-6 text-center">
+            loading feed&hellip;
+          </div>
+        </div>
+      </section>
+
     </div>
 
     <script>
@@ -1066,12 +1231,253 @@ flowchart TD
         fetchLogs();
         fetchArchitecture();
         fetchRankingsPreview();
+        initSquawk();
         setInterval(refreshAll, 15000);
         setInterval(fetchTelemetry, 20000);
         setInterval(fetchModels, 25000);
         setInterval(fetchLogs, 4000);
         setInterval(fetchArchitecture, 8000);
         setInterval(fetchRankingsPreview, 12000);
+        setInterval(pollSquawk, 8000);
+      }
+
+
+      /* ---------- Squawk feed ---------- */
+      const squawkState = {
+        channels: [],
+        active: null,
+        msgs: [],
+        seq: 0,
+        unread: {},
+        freshSeq: new Set(),
+      };
+
+      function sqEsc(s) {
+        return String(s == null ? "" : s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function sqSenderHue(name) {
+        if (name === "ember") return 24;
+        let h = 0;
+        for (let i = 0; i < name.length; i++)
+          h = (h * 31 + name.charCodeAt(i)) >>> 0;
+        return h % 360;
+      }
+
+      function sqRel(ts) {
+        const t = new Date(ts).getTime();
+        if (isNaN(t)) return "";
+        const s = Math.max(0, Math.floor((Date.now() - t) / 1000));
+        if (s < 60) return s + "s ago";
+        const m = Math.floor(s / 60);
+        if (m < 60) return m + "m ago";
+        const h = Math.floor(m / 60);
+        if (h < 24) return h + "h ago";
+        return Math.floor(h / 24) + "d ago";
+      }
+
+      async function initSquawk() {
+        const statusEl = document.getElementById("squawk-status");
+        try {
+          const res = await fetch("/ops/api/squawk/channels");
+          if (!res.ok) throw new Error("channels " + res.status);
+          const channels = await res.json();
+          squawkState.channels = channels;
+          channels.forEach((c) => (squawkState.unread[c] = 0));
+          buildSquawkTabs();
+          if (statusEl)
+            statusEl.textContent = channels.length + " channels live";
+          const first = channels.includes("fleet") ? "fleet" : channels[0];
+          if (first) await loadSquawkChannel(first, true);
+        } catch (e) {
+          console.error("squawk init:", e);
+          if (statusEl) statusEl.textContent = "unavailable";
+        }
+        const search = document.getElementById("squawk-search");
+        if (search) search.addEventListener("input", renderSquawk);
+        const sender = document.getElementById("squawk-sender");
+        if (sender) sender.addEventListener("change", renderSquawk);
+      }
+
+      function buildSquawkTabs() {
+        const host = document.getElementById("squawk-tabs");
+        if (!host) return;
+        host.innerHTML = "";
+        squawkState.channels.forEach((ch) => {
+          const b = document.createElement("button");
+          b.className = "sq-tab" + (ch === squawkState.active ? " active" : "");
+          b.innerHTML =
+            '<i class="fa-solid fa-hashtag"></i><span>' +
+            sqEsc(ch) +
+            '</span><span class="sq-badge" id="sq-badge-' +
+            sqEsc(ch) +
+            '"></span>';
+          b.addEventListener("click", () => loadSquawkChannel(ch, true));
+          host.appendChild(b);
+        });
+        paintSquawkBadges();
+      }
+
+      function paintSquawkBadges() {
+        squawkState.channels.forEach((ch) => {
+          const el = document.getElementById("sq-badge-" + ch);
+          if (!el) return;
+          const n = squawkState.unread[ch] || 0;
+          el.textContent = n > 0 ? (n > 99 ? "99+" : n) : "";
+          el.style.display = n > 0 ? "inline-flex" : "none";
+        });
+      }
+
+      async function loadSquawkChannel(ch, userClicked) {
+        squawkState.active = ch;
+        squawkState.unread[ch] = 0;
+        buildSquawkTabs();
+        const feed = document.getElementById("squawk-feed");
+        try {
+          const res = await fetch(
+            "/ops/api/squawk/" + encodeURIComponent(ch) + "?limit=60"
+          );
+          if (!res.ok) throw new Error("channel " + res.status);
+          const data = await res.json();
+          const oldSeq = squawkState.seq;
+          squawkState.msgs = data.messages || [];
+          squawkState.seq = data.seq || 0;
+          squawkState.freshSeq.clear();
+          if (!userClicked) {
+            squawkState.msgs.forEach((m) => {
+              if (m.seq > oldSeq) squawkState.freshSeq.add(m.seq);
+            });
+          }
+          buildSenderFilter();
+          renderSquawk();
+        } catch (e) {
+          console.error("squawk load:", e);
+          if (feed)
+            feed.innerHTML =
+              '<div class="text-gray-500 text-sm font-mono p-4">feed unavailable</div>';
+        }
+        paintSquawkBadges();
+      }
+
+      function buildSenderFilter() {
+        const sel = document.getElementById("squawk-sender");
+        if (!sel) return;
+        const cur = sel.value;
+        const senders = [
+          ...new Set(squawkState.msgs.map((m) => m.from).filter(Boolean)),
+        ].sort();
+        sel.innerHTML =
+          '<option value="">All senders</option>' +
+          senders
+            .map(
+              (s) =>
+                '<option value="' + sqEsc(s) + '">' + sqEsc(s) + "</option>"
+            )
+            .join("");
+        if (senders.includes(cur)) sel.value = cur;
+      }
+
+      function renderSquawk() {
+        const feed = document.getElementById("squawk-feed");
+        if (!feed) return;
+        const q = (
+          document.getElementById("squawk-search") || { value: "" }
+        ).value.trim().toLowerCase();
+        const sender = (document.getElementById("squawk-sender") || {
+          value: "",
+        }).value;
+        const msgs = squawkState.msgs.filter((m) => {
+          if (sender && m.from !== sender) return false;
+          if (q) {
+            const hay = (m.title + " " + m.body + " " + m.from).toLowerCase();
+            if (!hay.includes(q)) return false;
+          }
+          return true;
+        });
+        if (!msgs.length) {
+          feed.innerHTML =
+            '<div class="text-gray-600 text-sm font-mono p-6 text-center">no messages match</div>';
+          return;
+        }
+        feed.innerHTML = msgs
+          .map((m) => {
+            const hue = sqSenderHue(m.from || "?");
+            const fresh = squawkState.freshSeq.has(m.seq) ? " fresh" : "";
+            const title =
+              m.title && m.title !== "msg"
+                ? '<div class="sq-title">' + sqEsc(m.title) + "</div>"
+                : "";
+            return (
+              '<article class="sq-msg' +
+              fresh +
+              '">' +
+              '<div class="flex items-center gap-2 flex-wrap">' +
+              '<span class="sq-sender" style="--h:' +
+              hue +
+              '"><i class="fa-solid fa-user-astronaut"></i>' +
+              sqEsc(m.from || "?") +
+              "</span>" +
+              '<span class="sq-seq">#' +
+              m.seq +
+              "</span>" +
+              '<span class="sq-time">' +
+              sqEsc(sqRel(m.ts)) +
+              "</span>" +
+              "</div>" +
+              title +
+              '<div class="sq-body">' +
+              sqEsc(m.body).replace(/\n/g, "<br>") +
+              "</div>" +
+              "</article>"
+            );
+          })
+          .join("");
+        if (squawkState.freshSeq.size) {
+          setTimeout(() => {
+            squawkState.freshSeq.clear();
+            document
+              .querySelectorAll(".sq-msg.fresh")
+              .forEach((el) => el.classList.remove("fresh"));
+          }, 2500);
+        }
+      }
+
+      async function pollSquawk() {
+        if (!squawkState.channels.length) return;
+        try {
+          const checks = await Promise.all(
+            squawkState.channels.map((ch) =>
+              fetch("/ops/api/squawk/" + encodeURIComponent(ch) + "?limit=1")
+                .then((r) => (r.ok ? r.json() : null))
+                .then((d) => ({ ch: ch, seq: d ? d.seq : 0 }))
+                .catch(() => ({ ch: ch, seq: 0 }))
+            )
+          );
+          for (const item of checks) {
+            const ch = item.ch;
+            const seq = item.seq;
+            if (!seq) continue;
+            if (ch === squawkState.active) {
+              if (seq > squawkState.seq) await loadSquawkChannel(ch, false);
+            } else {
+              const prev = squawkState["_seq_" + ch] || 0;
+              if (seq > prev) {
+                if (squawkState["_seen_" + ch])
+                  squawkState.unread[ch] =
+                    (squawkState.unread[ch] || 0) + (seq - prev);
+                squawkState["_seen_" + ch] = true;
+              }
+              squawkState["_seq_" + ch] = seq;
+            }
+          }
+          paintSquawkBadges();
+        } catch (e) {
+          console.error("squawk poll:", e);
+        }
       }
 
       document.addEventListener("DOMContentLoaded", init);
