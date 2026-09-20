@@ -271,7 +271,7 @@ def probe6_bad_key():
     live_model = "nvidia/llama-3.1-nemotron-70b-instruct"  # live as of 2026-09-20
     payload = {"model": live_model,
                "messages": [{"role": "user", "content": "hi"}], "max_tokens": 5}
-    h403, _, b403, _ = _req(INTEGRATE + "/chat/completions", "nvapi-DEADBEEF-bad-key",
+    h403, _, b403, _ = _req(INTEGRATE + "/chat/completions", "INVALID-TEST-KEY-0000",
                             method="POST", payload=payload, timeout=30)
     h401, _, b401, _ = _req(INTEGRATE + "/chat/completions", None,
                             method="POST", payload=payload, timeout=30)
