@@ -1,0 +1,16 @@
+{
+  "id": "t3e2e-bloom-filter-qwen35-9b",
+  "source": {
+    "kind": "manual",
+    "ref": "t3-e2e lane-gen qwen35-9b"
+  },
+  "task_ref": "bloom-filter",
+  "files": {
+    "bloom_filter.py": "import math\nimport hashlib\n\n\nclass BloomFilter:\n    def __init__(self, n: int, fp_rate: float):\n        if n <= 0:\n            raise ValueError(\"n must be > 0\")\n        if not (0 < fp_rate < 1):\n            raise ValueError(\"fp_rate must be in (0, 1)\")\n\n        ln2 = math.log(2)\n        ln2_sq = ln2 * ln2\n        m = math.ceil(-(n * math.log(fp_rate)) / ln2_sq)\n        k = max(1, round((m / n) * ln2))\n\n        self.num_bits = m\n        self.num_hashes = k\n        self._bits = bytearray((m + 7) // 8)\n\n    def add(self, item: str) -> None:\n        item_bytes = item.encode('utf-8')\n        for i in range(self.num_hashes):\n            h = hashlib.sha256(item_bytes + str(i).encode('utf-8')).digest()\n            bit_idx = int.from_bytes(h, 'big') % self.num_bits\n            byte_idx = bit_idx >> 3\n            bit_offset = bit_idx & 7\n            self._bits[byte_idx] |= (1 << bit_offset)\n\n    def __contains__(self, item: str) -> bool:\n        item_bytes = item.encode('utf-8')\n        for i in range(self.num_hashes):\n            h = hashlib.sha256(item_bytes + str(i).encode('utf-8')).digest()\n            bit_idx = int.from_bytes(h, 'big') % self.num_bits\n            byte_idx = bit_idx >> 3\n            bit_offset = bit_idx & 7\n            if not (self._bits[byte_idx] & (1 << bit_offset)):\n                return False\n        return True"
+  },
+  "test_cmd": "python -m pytest tests -q",
+  "claimed_strengths": [
+    "single-pass generation via mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m"
+  ],
+  "entry_cmd": "python3 bloom_filter.py"
+}

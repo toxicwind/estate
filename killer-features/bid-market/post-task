@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+"""post-task -- post a signed TASK_POST to the bid-market.
+
+Usage:
+    post-task --title T --desc D --budget B --deadline S [--window S]
+              [--task-id ID] [--as SENDER]
+
+TASK_POST is open (unsigned OK) per the frozen wire; this CLI signs it as
+the given sender anyway (default: auctioneer).
+"""
+import argparse
+import random
+import sys
+import time
+from pathlib import Path
+
+BASE = Path("/home/toxic/sovereign/killer-features/bid-market")
+sys.path.insert(0, str(BASE))
+import market as M
+
+
+def gen_task_id():
+    return "t-%s-%04d" % (time.strftime("%Y%m%d-%H%M%S"), random.randint(0, 9999))
+
+
+def main():
+    ap = argparse.ArgumentParser(description="post a TASK_POST to the market")
+    ap.add_argument("--title", required=True)
+    ap.add_argument("--desc", required=True)
+    ap.add_argument("--budget", required=True, type=float)
+    ap.add_argument("--deadline", required=True, type=float,
+                    help="seconds the winner has to post RESULT")
+    ap.add_argument("--window", type=float, default=10.0,
+                    help="bidding window seconds (clamped 5..30)")
+    ap.add_argument("--kind", default="shell",
+                    help="task kind hint for executors (shell|python|text)")
+    ap.add_argument("--payload", default="",
+                    help="executable payload (shell command or code)")
+    ap.add_argument("--task-id", default=None)
+    ap.add_argument("--as", dest="sender", default="auctioneer")
+    args = ap.parse_args()
+
+    M.ensure_key(args.sender)
+    task_id = args.task_id or gen_task_id()
+    human = f"TASK {task_id}: {args.title}\n\n{args.desc}"
+    payload = {
+        "task_id": task_id,
+        "title": args.title,
+        "attempt": 1,
+        "budget": args.budget,
+        "deadline_s": args.deadline,
+        "window_s": args.window,
+        "kind": args.kind,
+        "payload": args.payload,
+        "posted_ts": time.time(),
+    }
+    seq, fname = M.post_wire(M.CHANNEL, args.sender, f"task-{task_id}",
+                             human, payload, "TASK_POST")
+    M.append_ledger({"event": "cli_post", "task_id": task_id, "seq": seq,
+                     "sender": args.sender})
+    print(f"posted TASK_POST {task_id} seq={seq} file={fname}")
+
+
+if __name__ == "__main__":
+    main()

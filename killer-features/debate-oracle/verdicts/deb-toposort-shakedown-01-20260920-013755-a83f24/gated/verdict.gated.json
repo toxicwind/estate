@@ -1,0 +1,51 @@
+{
+  "debate_id": "deb-toposort-shakedown-01-20260920-013755-a83f24",
+  "task_ref": "toposort-shakedown-01",
+  "winner": "shakedown-topo-a",
+  "ranking": [
+    "shakedown-topo-a",
+    "shakedown-topo-b",
+    "shakedown-topo-c"
+  ],
+  "confidence": 0.95,
+  "rationale": "C1 implements Kahn's algorithm with heap for lexicographically smallest order and includes a real cycle detection via DFS that returns a valid cycle [u,v,w,u] with consecutive edges. C2's stub cycle report [leftover[0], leftover[0]] fails the measured failure mode (real cycle reporting). C3 fails lex smallest ordering and silently ignores unknown nodes. C1 passes all hard constraints and the measured failure mode. Evidence: C1 code lines 39-64 for real cycle detection, lines 24-33 for lex smallest ordering. C2 lines 33-37 for stub. C3 lines 16-18 for unknown node bug, lines 38-39 for non-lex smallest.",
+  "judge_model": "beellama/qwen-flash-128k",
+  "judge_prompt_version": "oracle-v1",
+  "rubric": {
+    "correctness": 10,
+    "evidence": 0,
+    "constraint_fit": 10,
+    "failure_coverage": 10,
+    "simplicity": 8
+  },
+  "decided_at": "2026-09-20T07:43:19.995831+00:00",
+  "swap_agreement": null,
+  "e2e": {
+    "status": "pass",
+    "accepted_id": "shakedown-topo-a",
+    "log_ref": "verdicts/deb-toposort-shakedown-01-20260920-013755-a83f24/gated/logs",
+    "per_candidate": {
+      "shakedown-topo-a": {
+        "passed": true,
+        "passed_n": 10,
+        "failed_n": 0,
+        "latency_s": 0.16,
+        "error": null
+      },
+      "shakedown-topo-b": {
+        "passed": false,
+        "passed_n": 8,
+        "failed_n": 2,
+        "latency_s": 0.15,
+        "error": null
+      },
+      "shakedown-topo-c": {
+        "passed": false,
+        "passed_n": 7,
+        "failed_n": 3,
+        "latency_s": 0.15,
+        "error": null
+      }
+    }
+  }
+}

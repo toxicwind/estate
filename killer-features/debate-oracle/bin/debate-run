@@ -1,0 +1,477 @@
+#!/usr/bin/env python3
+"""bin/debate-run -- HFT debate orchestrator for debate-oracle-code-selector.
+
+t3-impl-orchestrator. Spawns N debater lanes (one champion-advocate per
+candidate), runs R timed rounds through the sovereign router (:25104,
+hedgedChain), CUTS slow lanes mid-round (partial streamed output stands),
+and assembles a structured transcript for `oracle-judge --mode code`.
+
+HFT rules (ARCHITECTURE.md v1, t3-architect):
+- per-turn wall budget enforced on the HTTP call; overrun lane = CUT
+- round ends when all live lanes settle OR turn_timeout+GRACE expires;
+  in-flight losers are aborted (response closed), never waited on
+- no sleep-polling anywhere: futures.wait(timeout=...), per-recv timeouts
+- every hop measured -> timings.jsonl
+
+Usage:
+  bin/debate-run --task <debate-task.json> [--out <dir>] [--rounds N]
+                 [--turn-timeout S] [--budget S] [--lanes "url|model,..."]
+                 [--router http://127.0.0.1:25104/v1] [--max-tokens N]
+"""
+import argparse
+import concurrent.futures
+import datetime
+import hashlib
+import json
+import os
+import random
+import re
+import sys
+import time
+import urllib.request
+import urllib.error
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ORACLE_DIR = os.path.dirname(HERE)
+PROMPTS_DIR = os.path.join(ORACLE_DIR, "prompts")
+RUNS_DIR = os.path.join(ORACLE_DIR, "runs")
+
+DEFAULT_ROUTER = "http://127.0.0.1:25104/v1"
+# Default debater ladder: DIRECT backend endpoints, one per candidate.
+# Shakedown 2026-09-20 proved the sovereign-router's hedgedChain substitutes
+# a DIFFERENT (cloud!) model for the pinned lane after HEDGE_MS, breaking
+# lane identity and burning cloud inference. Direct pinning keeps each lane
+# on its own backend. Index-aligned with candidates.
+#   lane 1: fast (exaone 1.2B, dedicated llama-server :25122)
+#   lane 2: qwen-flash-64k via llama-swap :25100 (9B-class mid)
+#   lane 3: qwen-flash-256k via llama-swap :25100 (long context)
+# NOTE: lanes 2+3 share the swap backend -- a model swap between them is
+# possible; the per-hop timings log exposes it. Prefer 3 distinct backends
+# when available. Override with --lanes "url|model,..." or --router.
+DEFAULT_LANES = [
+    ("http://127.0.0.1:25122/v1", "fast"),
+    ("http://127.0.0.1:25100/v1", "beellama/qwen-flash-64k"),
+    ("http://127.0.0.1:25100/v1", "beellama/qwen-flash-256k"),
+    ("http://127.0.0.1:25100/v1", "code"),
+]
+ROUND_GRACE_S = 15          # extra wait after turn timeout before aborting losers
+RECV_TIMEOUT_S = 12         # per-recv stall ceiling -> cut with partial
+MAX_TOKENS = {1: 900, 2: 750, 3: 450}  # prompt word caps 500/400/250
+
+CLOSE_TMPL = """You are DEBATER {label}, champion-advocate for candidate {label}.
+
+FINAL CLOSE (<= 250 words). Answer the STRONGEST criticism made against
+{label} in the rebuttals below. Rules:
+- Concede nothing false; defend with code lines, tests, or measured behavior.
+- Evidence over adjectives. No new attacks on other candidates.
+- Honesty constraint: do not invent test results.
+- End your close with exactly: VERDICT: {label}
+
+## Rebuttals this round
+{rebuttals}
+
+## Your champion {label} (reference)
+{champion}
+"""
+
+
+def log(msg):
+    print(f"[debate-run] {msg}", file=sys.stderr, flush=True)
+
+
+def utcnow():
+    return datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+
+def resolve_lanes(lane_specs, router_url):
+    """Resolve lane specs to (base_url, model) pairs.
+
+    Spec forms: "url|model" for a direct backend, or plain "model" which
+    routes through router_url (default DEFAULT_ROUTER).
+    """
+    base = (router_url or DEFAULT_ROUTER).rstrip("/")
+    out = []
+    for spec in lane_specs:
+        spec = spec.strip()
+        if "|" in spec:
+            url, model = spec.split("|", 1)
+            out.append((url.strip().rstrip("/"), model.strip()))
+        else:
+            out.append((base, spec))
+    return out
+
+
+def load_prompt(name):
+    with open(os.path.join(PROMPTS_DIR, name)) as f:
+        return f.read()
+
+
+def render_candidate(cand, max_chars=4000):
+    """Candidate code/patch as markdown for debater context (anonymized)."""
+    parts = []
+    patch = cand.get("patch")
+    files = cand.get("files") or {}
+    if patch:
+        parts.append("```diff\n" + patch[:max_chars] + "\n```")
+    per = max(1, max_chars // max(1, len(files)))
+    for path, content in files.items():
+        parts.append(f"### {path}\n```\n{(content or '')[:per]}\n```")
+    if not parts:
+        parts.append("(no patch/files supplied)")
+    return "\n\n".join(parts)
+
+
+def lane_stream(base_url, model, messages, max_tokens, temperature,
+                 turn_timeout, registry, lane_label):
+    """One debater turn: streaming chat call with a hard wall budget.
+
+    Returns dict(status, argument, ttft_ms, prompt_ms, gen_ms, tokens,
+    model_actual, error). status: ok | cut | error.
+    cut = budget exceeded or stalled; partial streamed text stands.
+    error = transport failure OR zero substantive output (an empty
+    finish_reason argument is NOT an argument).
+    """
+    deadline = time.time() + turn_timeout
+    body = {"model": model, "messages": messages, "max_tokens": max_tokens,
+            "temperature": temperature, "stream": True,
+            "stream_options": {"include_usage": True}}
+    req = urllib.request.Request(
+        base_url.rstrip("/") + "/chat/completions",
+        data=json.dumps(body).encode(),
+        headers={"Content-Type": "application/json"})
+    t0 = time.time()
+    first = None
+    chunks = []
+    usage, timings, model_actual = {}, {}, model
+    status, err = "ok", None
+    resp = None
+    try:
+        resp = urllib.request.urlopen(req, timeout=min(RECV_TIMEOUT_S, turn_timeout))
+        registry[lane_label] = resp
+        finished = False
+        for raw in resp:
+            if time.time() >= deadline:
+                status = "cut"
+                break
+            try:
+                line = raw.decode("utf-8", "replace").strip()
+            except Exception:
+                continue
+            if not line.startswith("data:"):
+                continue
+            payload = line[5:].strip()
+            if payload == "[DONE]":
+                finished = True
+                break
+            try:
+                obj = json.loads(payload)
+            except Exception:
+                continue
+            if obj.get("model"):
+                model_actual = obj["model"]
+            choices = obj.get("choices") or [{}]
+            ch = choices[0] or {}
+            delta = ch.get("delta") or {}
+            c = delta.get("content")
+            if c:
+                if first is None:
+                    first = time.time()
+                chunks.append(c)
+            if isinstance(obj.get("usage"), dict):
+                usage = obj["usage"]
+            if isinstance(obj.get("timings"), dict):
+                timings = obj["timings"]
+            if ch.get("finish_reason"):
+                finished = True
+                break
+        if status == "ok" and not finished:
+            # stream ended without DONE/finish_reason: treat as cut if we
+            # have partial, error if we have nothing
+            status = "cut" if chunks else "error"
+            if not chunks:
+                err = "stream ended with no content"
+    except Exception as e:
+        status = "cut" if chunks else "error"
+        err = f"{type(e).__name__}: {e}"
+    finally:
+        if resp is not None:
+            try:
+                resp.close()
+            except Exception:
+                pass
+        registry.pop(lane_label, None)
+    t1 = time.time()
+    if not chunks and status == "ok":
+        # finish_reason/DONE with zero content: not an argument, not a cut
+        status = "error"
+        err = err or "empty argument (no content chunks)"
+    return {
+        "status": status,
+        "argument": "".join(chunks),
+        "ttft_ms": round((first - t0) * 1000, 1) if first else None,
+        "wall_ms": round((t1 - t0) * 1000, 1),
+        "prompt_ms": timings.get("prompt_ms"),
+        "gen_ms": timings.get("predicted_ms", timings.get("gen_ms")),
+        "tokens": {"prompt": usage.get("prompt_tokens"),
+                   "completion": usage.get("completion_tokens")},
+        "model": model,
+        "model_actual": model_actual,
+        "error": err,
+    }
+
+
+def build_round_messages(round_n, label, cand_code, task, prev_rounds):
+    """Assemble the prompt for one lane's turn."""
+    spec = task["spec"]
+    hc = "\n".join(f"- {c}" for c in task.get("hard_constraints", []))
+    mf = task.get("measured_failure") or "n/a"
+    efn = task.get("e2e_failure_notes")
+    extra = f"\n## New hard constraints (from e2e failure logs)\n{efn}\n" if efn else ""
+    if round_n == 1:
+        tmpl = load_prompt("debater.md").replace("C<n>", label)
+        user = (f"{tmpl}\n\n## Task\n{spec}\n\n## Hard constraints\n{hc}\n\n"
+                f"## Measured failure mode\n{mf}\n{extra}\n"
+                f"## Your champion: {label}\n{cand_code}\n")
+    elif round_n == 2:
+        tmpl = load_prompt("rebuttal.md").replace("C<n>", label)
+        opps = []
+        for other_label, turn in prev_rounds[0]["turns"].items():
+            if other_label == label or turn["status"] != "ok":
+                continue
+            opps.append(f"### {other_label} opening\n{turn['argument'][:1500]}")
+        user = (f"{tmpl}\n\n## Task (reference)\n{spec[:800]}\n\n"
+                f"## Opponent openings\n{chr(10).join(opps) if opps else '(none delivered)'}\n\n"
+                f"## Your champion {label} (reference)\n{cand_code[:2000]}\n")
+    else:
+        rebuts = []
+        for r in prev_rounds:
+            for other_label, turn in r["turns"].items():
+                if turn["status"] != "ok":
+                    continue
+                rebuts.append(f"### {other_label} (round {r['n']})\n{turn['argument'][:1200]}")
+        user = CLOSE_TMPL.format(label=label,
+                                 rebuttals=chr(10).join(rebuts) if rebuts else "(none)",
+                                 champion=cand_code[:2000])
+        user = f"## Task (reference)\n{spec[:600]}\n\n{user}"
+    return [{"role": "user", "content": user}]
+
+
+def run_round(round_n, kind, labels, lanes, cand_codes, task,
+              router_url, turn_timeout, temperature, max_tokens, timings_fh,
+              debate_id, t_start_global, budget_s):
+    """Fire all lanes in parallel; HFT round manager. Returns round record."""
+    r_started = utcnow()
+    t0 = time.time()
+    registry = {}  # lane_label -> live response (for loser-abort)
+    results = {}
+
+    def _lane(label):
+        idx = labels.index(label)
+        msgs = build_round_messages(round_n, label, cand_codes[idx], task,
+                                    run_round.prev)
+        base_url, model = lanes[idx]
+        res = lane_stream(base_url, model, msgs,
+                          max_tokens or MAX_TOKENS.get(round_n, 600),
+                          temperature, turn_timeout, registry, label)
+        res["lane"] = label
+        res["url"] = base_url
+        return label, res
+
+    run_round.prev = getattr(run_round, "prev", [])
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(labels)) as ex:
+        futs = {ex.submit(_lane, l): l for l in labels}
+        # HFT: never wait past turn_timeout + grace; abort losers instead.
+        done, not_done = concurrent.futures.wait(
+            futs, timeout=turn_timeout + ROUND_GRACE_S)
+        if not_done:
+            log(f"round {round_n}: {len(not_done)} lane(s) past deadline "
+                f"({turn_timeout}s+{ROUND_GRACE_S}s) -- aborting losers")
+            for f in not_done:
+                resp = registry.pop(futs[f], None)
+                if resp is not None:
+                    try:
+                        resp.close()
+                    except Exception:
+                        pass
+            # brief final sweep for threads that were mid-close
+            done2, _ = concurrent.futures.wait(not_done, timeout=5)
+            done |= done2
+        for f in done:
+            try:
+                label, res = f.result()
+            except Exception as e:
+                label = futs[f]
+                res = {"lane": label, "status": "error",
+                       "argument": "", "error": f"lane-crash: {e}",
+                       "ttft_ms": None, "wall_ms": None, "tokens": {}}
+            results[label] = res
+        for f in (set(futs) - done):
+            label = futs[f]
+            if label not in results:
+                results[label] = {"lane": label, "status": "cut",
+                                  "argument": "", "error": "round deadline",
+                                  "ttft_ms": None, "wall_ms": None, "tokens": {}}
+    # timings hop log (measure every hop)
+    for label in labels:
+        r = results[label]
+        timings_fh.write(json.dumps({
+            "debate_id": debate_id, "round": round_n, "kind": kind,
+            "lane": label, "url": r.get("url"), "model": r.get("model"),
+            "model_actual": r.get("model_actual"),
+            "status": r["status"], "wall_ms": r.get("wall_ms"),
+            "ttft_ms": r.get("ttft_ms"), "prompt_ms": r.get("prompt_ms"),
+            "gen_ms": r.get("gen_ms"), "tokens": r.get("tokens"),
+            "error": r.get("error"), "ts": utcnow()}) + "\n")
+    timings_fh.flush()
+    ok = sum(1 for r in results.values() if r["status"] == "ok")
+    cut = sum(1 for r in results.values() if r["status"] == "cut")
+    log(f"round {round_n} ({kind}): {ok} ok / {cut} cut / "
+        f"{len(labels)-ok-cut} error in {time.time()-t0:.1f}s")
+    rec = {"n": round_n, "kind": kind, "turn_timeout_s": turn_timeout,
+           "started_at": r_started, "ended_at": utcnow(),
+           "duration_s": round(time.time() - t0, 2),
+           "turns": {l: results[l] for l in labels}}
+    run_round.prev.append(rec)
+    return rec
+
+
+def main():
+    ap = argparse.ArgumentParser(description="HFT debate orchestrator")
+    ap.add_argument("--task", required=True, help="debate-task.json path")
+    ap.add_argument("--out", default=None, help="output dir (default runs/<debate_id>/)")
+    ap.add_argument("--rounds", type=int, default=None)
+    ap.add_argument("--turn-timeout", type=int, default=None, dest="turn_timeout")
+    ap.add_argument("--budget", type=int, default=None, help="end-to-end ceiling s")
+    ap.add_argument("--lanes", default=None,
+                      help='lane specs: "url|model,..." for direct backends, '
+                           'or plain "model,..." routed via --router')
+    ap.add_argument("--router", default=None,
+                      help="router base URL for plain model specs "
+                           "(default: direct backends, no router)")
+    ap.add_argument("--max-tokens", type=int, default=None)
+    ap.add_argument("--temperature", type=float, default=0.3)
+    args = ap.parse_args()
+
+    with open(args.task) as f:
+        task = json.load(f)
+    for k in ("task_id", "spec", "hard_constraints", "candidates"):
+        if k not in task:
+            log(f"FATAL: debate-task.json missing required key '{k}'"); return 2
+    cands = task["candidates"]
+    if not (2 <= len(cands) <= 4):
+        log(f"FATAL: need 2..4 candidates, got {len(cands)}"); return 2
+
+    rounds = args.rounds or task.get("rounds", 3)
+    turn_timeout = args.turn_timeout or task.get("turn_timeout_s", 120)
+    budget_s = args.budget or task.get("debate_budget_s", 300)
+    router_url = args.router or os.environ.get("DEBATE_ROUTER")
+
+    # lanes: (base_url, model) pairs. Direct backends by default; --lanes
+    # accepts "url|model" or plain model ids (-> --router/DEBATE_ROUTER).
+    # debate-task.json "lanes" may hold either form.
+    if args.lanes:
+        lanes = resolve_lanes([m for m in args.lanes.split(",")], router_url)
+    elif task.get("lanes"):
+        lanes = resolve_lanes(list(task["lanes"]), router_url)
+    else:
+        lanes = list(DEFAULT_LANES)
+    if len(lanes) < len(cands):
+        log(f"FATAL: {len(cands)} candidates but only {len(lanes)} lanes "
+            f"(lanes are index-aligned with candidates)"); return 2
+    lanes = lanes[:len(cands)]
+
+    labels = [f"C{i+1}" for i in range(len(cands))]
+    cand_codes = [render_candidate(c) for c in cands]
+
+    digest = hashlib.sha256(json.dumps(task, sort_keys=True).encode()).hexdigest()[:6]
+    debate_id = f"deb-{task['task_id']}-{time.strftime('%Y%m%d-%H%M%S')}-{digest}"
+    out_dir = args.out or os.path.join(RUNS_DIR, debate_id)
+    os.makedirs(out_dir, exist_ok=True)
+    timings_path = os.path.join(out_dir, "timings.jsonl")
+    transcript_path = os.path.join(out_dir, "transcript.json")
+
+    transcript = {
+        "debate_id": debate_id, "protocol": "debate-oracle/v1",
+        "task_id": task["task_id"],
+        "task": {"spec": task["spec"],
+                 "hard_constraints": task["hard_constraints"],
+                 "measured_failure": task.get("measured_failure"),
+                 "e2e_failure_notes": task.get("e2e_failure_notes"),
+                 "redebate_of": task.get("redebate_of")},
+        "config": {"rounds": rounds, "turn_timeout_s": turn_timeout,
+                   "debate_budget_s": budget_s, "router": router_url,
+                   "lanes": [{"lane": l, "url": u, "model": m,
+                              "candidate_id": c["id"]}
+                             for (l, (u, m), c) in zip(labels, lanes, cands)]},
+        "rounds": [], "undefended": [], "summary": {},
+        "candidates": cands,
+        "created_at": utcnow(),
+    }
+    kinds = {1: "opening", 2: "rebuttal", 3: "close"}
+    timeouts = {1: turn_timeout, 2: turn_timeout, 3: min(turn_timeout, 90)}
+
+    def save():
+        tmp = transcript_path + ".tmp"
+        with open(tmp, "w") as f:
+            json.dump(transcript, f, indent=1)
+        os.replace(tmp, transcript_path)
+
+    t_global = time.time()
+    run_round.prev = []
+    with open(timings_path, "a") as tfh:
+        for r in range(1, rounds + 1):
+            elapsed = time.time() - t_global
+            if elapsed > budget_s:
+                log(f"debate budget {budget_s}s blown after {elapsed:.0f}s -- "
+                    f"stopping before round {r}")
+                transcript["summary"]["budget_blown"] = True
+                break
+            rec = run_round(r, kinds.get(r, f"round{r}"), labels, lanes,
+                            cand_codes, task, router_url, timeouts.get(r, turn_timeout),
+                            args.temperature, args.max_tokens, tfh,
+                            debate_id, t_global, budget_s)
+            transcript["rounds"].append(rec)
+            save()
+
+    # undefended: champion cut/error in EVERY round
+    for i, label in enumerate(labels):
+        if all(r["turns"][label]["status"] != "ok" for r in transcript["rounds"]):
+            transcript["undefended"].append(label)
+    total_s = round(time.time() - t_global, 2)
+    n_ok = sum(1 for r in transcript["rounds"]
+               for t in r["turns"].values() if t["status"] == "ok")
+    n_cut = sum(1 for r in transcript["rounds"]
+                for t in r["turns"].values() if t["status"] == "cut")
+    transcript["summary"] = {"total_s": total_s, "turns_ok": n_ok,
+                             "turns_cut": n_cut,
+                             "rounds_completed": len(transcript["rounds"]),
+                             "budget_blown": transcript["summary"].get("budget_blown", False)}
+    save()
+
+    # human-readable transcript
+    md_path = os.path.join(out_dir, "transcript.md")
+    with open(md_path, "w") as f:
+        f.write(f"# Debate {debate_id}\n\ntask: {task['task_id']} | "
+                f"rounds: {len(transcript['rounds'])} | total {total_s}s | "
+                f"ok {n_ok} / cut {n_cut}\n\n")
+        for r in transcript["rounds"]:
+            f.write(f"## Round {r['n']} — {r['kind']} ({r['duration_s']}s)\n\n")
+            for label in labels:
+                t = r["turns"][label]
+                f.write(f"### {label} [{t['status']}] "
+                        f"(model {t.get('model_actual') or t.get('model')}, "
+                        f"wall {t.get('wall_ms')}ms, ttft {t.get('ttft_ms')}ms)\n\n")
+                f.write((t.get("argument") or f"({t['status']}: {t.get('error')})") + "\n\n")
+    log(f"done: {debate_id} rounds={len(transcript['rounds'])} "
+        f"ok={n_ok} cut={n_cut} total={total_s}s")
+    log(f"transcript: {transcript_path}")
+    log(f"timings:    {timings_path}")
+    # fleet-ready one-liner (post from hatch via squawk CLI)
+    print(f"debate-oracle debate done: task={task['task_id']} id={debate_id} "
+          f"rounds={len(transcript['rounds'])} ok={n_ok} cut={n_cut} "
+          f"undefended={transcript['undefended'] or 'none'} total_s={total_s}")
+    return 0 if transcript["rounds"] else 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
