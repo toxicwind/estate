@@ -20,8 +20,9 @@
 #   - The REAL yote servers are discovered, never hardcoded. The backend map
 #     comes from `tailscale serve status --json`; a dead backend's server file
 #     is found by searching .py sources for the backend's port number.
-#   - Deploy is gist-only. raw.githubusercontent.com/toxicwind/gear is dead
-#     (no such repo); the gist mirror is the only source.
+#   - Deploy pulls exec.py / ws_daemon.py from LIVE GitHub raw:
+#     raw.githubusercontent.com/toxicwind/sovereign-projects/main/projects/yote/bridge/bin
+#     (the old gist mirror e817e044162bb59c386615f89b1baeb0 is DEPRECATED 2026-09-20).
 #   - All TLS probes use the tailnet DNS name for SNI. Probing the raw tail IP
 #     (or 127.0.0.1 with SNI=localhost) through Tailscale Serve/Funnel causes
 #     TLSV1_ALERT_INTERNAL_ERROR — that was a probe defect, not a server defect.
@@ -29,7 +30,7 @@
 #   - NEVER kills a live squawk process. Hands off, always.
 #
 # Usage: sudo ./yote-fix.sh [--dry-run] [--bridge-dir DIR] [--supervise]
-#   --ref is accepted for backward compatibility but ignored (gist-only now).
+#   --ref is accepted for backward compatibility but ignored (deploy source is live GitHub raw).
 #
 # Exit codes: 0 all fixed & verified | 1 issues remain | 3 usage/environment error
 
@@ -41,7 +42,7 @@ prev=""
 for a in "$@"; do
   if [ -n "$prev" ]; then
     case "$prev" in
-      --ref) : ;;            # accepted, ignored: deploy is gist-only in v2
+      --ref) : ;;            # accepted, ignored: deploy source is live GitHub raw in v3
       --bridge-dir) BRIDGE_DIR="$a" ;;
     esac
     prev=""
@@ -379,10 +380,11 @@ if have systemctl; then
   done
 fi
 
-# --- 7. deploy hatch-side client files (gist ONLY) ------------------------------------
+# --- 7. deploy hatch-side client files (live GitHub raw) --------------------------------
 # exec.py / ws_daemon.py run on HATCH, not yote — this just keeps the checkout
-# in sync. v1's raw.githubusercontent.com/toxicwind/gear fallback is dead
-# (no such repo); the gist mirror is the only source.
+# in sync. v1's raw.githubusercontent.com/toxicwind/gear fallback is dead (no such repo);
+# v2/v3's gist mirror (e817e044162bb59c386615f89b1baeb0) is DEPRECATED 2026-09-20 —
+# canonical source is now live GitHub raw (sovereign-projects, projects/yote/bridge/bin).
 YF_CACHE="/var/cache/yote-fix/bridge-dir"
 if [ -z "$BRIDGE_DIR" ] && [ -f "$YF_CACHE" ]; then
   _cached="$(cat "$YF_CACHE" 2>/dev/null)"
@@ -402,22 +404,22 @@ if [ -z "$BRIDGE_DIR" ]; then
     echo "$BRIDGE_DIR" > "$YF_CACHE" 2>/dev/null
   fi
 fi
-GIST_RAW="https://gist.githubusercontent.com/toxicwind/e817e044162bb59c386615f89b1baeb0/raw"
+SP_RAW="https://raw.githubusercontent.com/toxicwind/sovereign-projects/main/projects/yote/bridge/bin"
 if [ -n "${BRIDGE_DIR:-}" ] && [ -d "$BRIDGE_DIR" ] && have curl; then
   note ok "deploy:dir" "$BRIDGE_DIR"
   for f in exec.py ws_daemon.py; do
     _tmp="$(mktemp)"; _got=0
-    if curl -sSL --fail --max-time 30 -o "$_tmp" "$GIST_RAW/$f" 2>/dev/null \
+    if curl -sSL --fail --max-time 30 -o "$_tmp" "$SP_RAW/$f" 2>/dev/null \
        && python3 -m py_compile "$_tmp" 2>/dev/null; then _got=1; fi
     if [ "$_got" -eq 0 ]; then
-      note fail "deploy:$f" "gist download/compile check failed"; rm -f "$_tmp"; continue
+      note fail "deploy:$f" "GitHub raw download/compile check failed"; rm -f "$_tmp"; continue
     fi
     if [ -f "$BRIDGE_DIR/$f" ] && cmp -s "$_tmp" "$BRIDGE_DIR/$f"; then
       note ok "deploy:$f" "already current"
     else
       [ -f "$BRIDGE_DIR/$f" ] && run cp -p "$BRIDGE_DIR/$f" "$BRIDGE_DIR/$f.bak-$TS"
       if run bash -c "cat \"\$0\" > \"\$1\"" "$_tmp" "$BRIDGE_DIR/$f"; then
-        note fixed "deploy:$f" "installed from gist"
+        note fixed "deploy:$f" "installed from live GitHub raw"
       else note fail "deploy:$f" "install failed"; fi
     fi
     rm -f "$_tmp"
