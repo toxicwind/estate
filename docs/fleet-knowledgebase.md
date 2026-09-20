@@ -32,7 +32,6 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | `/home/toxic/sovereign/shingle-workspace/` | -> `scratch/` symlink (non-production staging; production bridge home is `bridge/`) |
 | `/home/toxic/sovereign/config/herd.yaml` | Herd router config (the model herd) |
 | `/home/toxic/sovereign/skills/paper-search/` | Paper-search skill (canonical home) |
-| /home/toxic/sovereign/skills/fleet-spawn/ | Spawn-protocol skill (SKILL.md) + fleet-onboard.sh step-zero onboard script |
 | `/home/toxic/super-ralph` | Super Ralph source |
 | `/home/toxic/sovereign/agents/oracle-market/` | Oracle market loop + watchdog |
 
@@ -70,17 +69,16 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | Crew | Scope | Owner / coordinator | Status |
 |---|---|---|---|
-| repo-integrator-max | Orphan integration -> correct repos; README/deep-link pass; permanent scripts/skills/integrations | Ember (main chat) | RUNNING (2026-09-20) -- orphan-yote DONE (5 repos: rig 6b6742c, gear 3afd4a0, herd 6528c7a, media fb95ee2f3f, herd-phase3-retire dea49bf archived; fleet seq 11597), readme-linker DONE (main 31f5ab6ec2, fleet seq 11497); orphan-hatch RUNNING; orphan-yote-2 RUNNING (quarry feed seq 11332/11339) |
+| repo-integrator-max | Orphan integration → correct repos; README/deep-link pass; permanent scripts/skills/integrations | Ember (main chat) | RUNNING (2026-09-20) — workers: orphan-hatch, orphan-yote, readme-linker |
 | pack-keeper | Fleet health + culture: permanent fleet-health.sh (projects/ops/bin/), Hearth watchdog state-change tuning + canonical hatch/bin/ watchdog code, silent-agent dispositions | Ember (spawned subagent) | RUNNING (2026-09-20) |
-| purge-max (announced as pack-fix) | Hesitance purge; fake-completed watchdogs; task-runner audit; fleet health; no-monkeypatch durability sweep | Ember | runner-watch audit DONE 2026-09-20 — commit `c42b87095d17bd4a38a764d6c8b8481a2049f259` (projects/pack-fix: runner-inventory.sh + runner-audit.md + README; canary-judge burn killed, audit-bridge-watch retired, progress-watchdog 3m→5m) |
+| purge-max (announced as pack-fix) | Hesitance purge; fake-completed watchdogs; task-runner audit; fleet health; no-monkeypatch durability sweep | Ember | RUNNING |
 | purge-max / hesitance-hunt | Hesitance fixes (EXCLUSIVE lane per 2026-09-20 carve): watchdog body rewrites, anti-pattern catalog, permanent hesitance-lint guard | Ember | RUNNING (2026-09-20) |
-| bridge-max | Maximal bridge exec layer: multitask dispatch (POST /exec-multi, yote-conn multi), detached background dispatch (POST /exec-bg, GET /bg, yote-conn bg/bg-status/bg-list), MCP exec_multi/exec_bg/bg_status tools | Ember | DONE 2026-09-20 — commits 25679fa5c0 (work), ae890221a2 (marker), efe63f8115 (reap-on-query bg-status.py + bg-kill POST /bg/<handle>/kill + yote-conn bg-kill follow-up) |
 | edge-forge | Cutting-edge fix + addition task forging & execution | Ember | RUNNING |
 | tau-hyperfix | `/home/toxic/.tau` audit; dynamic skill loading; skills symlink; `skillful`; `tau audit`; `tau tmux` experiments | Ember | DONE (2026-09-20) -- commits `a356d831ee06` (canonical launcher promotion: launcher/tau + audit/tmux helpers + install.sh) + KB row; audit 13 pass/0 fail, collapse 8/8, tmux live, `tau launch -p` -> ALIVE |
 | super-ralph repair | Root-cause `fiber.cache.stackFrame` crash; prove `super-ralph "reply with exactly the word ALIVE"` exits zero + DB completion | Ember | RUNNING |
 | tmp-repos-emergent | Scratch/tmp → owning repos migration | Ember | RUNNING — **de-duped with repo-integrator-max 2026-09-20 (fleet seq 11291)** |
 | edge-max | Estate-wide cutting-edge coordinator | Ember (other chat) | RUNNING |
-| oracle-max | Oracle decision-engine maximal upgrade | Ember (other chat) | DONE (2026-09-20) -- commit 09c3099fd9 (on origin/main, verified via ls-remote): fused decision engine live, pitchfork sovereign/oracle-core on :25151, restart proof in work/proof-runs/ |
+| oracle-max | Oracle decision-engine maximal upgrade | Ember (other chat) | RUNNING |
 | openfang | Agents autonomous + OpenFang-enabled | Ember | workers in, 8 kernel agents Running |
 | plumbline | Hesitance rollback root-cause hunt → canonical spawn-brief template | Ember | DONE — commits `f9095c2665` (template + registration) |
 | scribe-readme-grade | GitHub-grade sovereign-projects master README + docs/ index + projects/README deconfusion; 5 doc strays moved to docs/ in one pass (Bedrock oracle-market task payload-readme-grade.md) | Scribe (ember) | DONE (2026-09-20) -- commit ff10187ddb (on origin/main, verified via ls-remote) |
@@ -91,15 +89,10 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | bedrock/ledger | Repo-sweep finisher: yote /tmp provenance classification + junk deletion; repo-sweep commits/pushes (untracked WIP -> owning repos, verified); permanent /tmp classifier artifact | Bedrock (parent orchestrator) | RUNNING (2026-09-20) - hatch /tmp handed to orphan-hatch per fleet seq 11314; feeds integration-worthy yote orphans to orphan-yote |
 | stall-slayer | Stalled/idle agent + stuck-execution forensics (muse.db: executions, tool calls, transcripts, mailbox, recovery) + safe resume paths; permanent DB stall-detection pack | Ember | DONE (2026-09-20) -- commit 0eb76b496d (projects/ops/stall-detect/queries.sql + README.md); live-proc lane de-duped to stale-hunter (fleet seq 11434) |
 | dep-quartermaster | Toolchain/dependency gaps on yote+hatch: missing CLIs installed, permanent ensure-script committed | Ember | DONE — commit 2953f49f07 (toolchain.sh + KB row) |
-| stale-reaper | OS-level stale execution fix-live (hatch+yote): zombies, wedged daemons, 12h+ runs, stale PID/lock files, orphaned children + independent strace port-conflict audit (ss//proc/net/tcp) | Ember (spawned subagent) | DONE (2026-09-20) — findings in commit msg |
 | port-syscall-integrator | PORTS proven by live syscalls (strace bind/listen) + MCPs/connectors/endpoints/integrations estate-wide; SSOT ports.env reconciliation; pitchfork pre-launch guard; port-audit.py hardening | Ember (port-syscall-integrator) | RUNNING (2026-09-20) |
 | perm-surgeon | Permissions/identity/execution-context audit + live repair (sudoers, unshare, capabilities, setuid, systemd users, interactive-toxic path) | Ember | DONE (2026-09-20) — perm-audit.sh committed to projects/yote/ops/ |
-| bg-tracker | Detached/backgrounded process audit (hatch+yote); permanent background-task registry (bg-launch/register/heartbeat/audit/kill) under projects/ops/bg-tracker | Ember | RUNNING (2026-09-20) |
 | sudo-smith | Sudo posture hardening (passwordless scope, key paths, shared-tree ownership) + missing-file forging (systemd/config/doc references) + permanent ops scripts | Ember | DONE (2026-09-20) -- commit 628bccc435 (projects/ops/bin/{sudo-audit.sh,missing-files.sh} + projects/yote/ops/hw-audit/{hw-audit.sh,hw-watchdog.py}; hw-audit.service/.timer referrers restored; live copies deployed to /home/toxic/) |
-| lodestone | Oracle-market wiring (Bedrock): live oracle intake E2E proof, DEBATE CHASE RULE (SPEC §9), knowledgebase-attestation bid gate (SPEC §10), permanent coordinator oracle-route skill | Ember (Bedrock) | DONE (2026-09-20) -- commits dd5bc0806f (kb RUNNING registration) + bca3dc06ff (debate chase rule + attestation gate + skills/oracle-route/SKILL.md; live-proven: attested task, rejected unattested bid, chased debate, quorum debate) |
-| oracle-hardening | Oracle decision-engine hardening (oracle-max child): router-separation fix, double-calibration removal, debate re-aggregation, judge return-rate, framing assertion + unanimity-bar proof | oracle-hardening (Ember's crew) | RUNNING (2026-09-20) |
-
-| kindling | Fleet-culture implementation (Bedrock): spawn-protocol skill, welcome hooks, identity reconciliation, fleet-onboard step-zero script | Bedrock (parent orchestrator) | DONE (2026-09-20) — 89618288c6 |
+| readme-deconfusion (bedrock/codex) | README inventory + deconfusion + deeplinking for every repo except the sovereign-projects master README (Scribe's lane); permanent re-runnable link-check script | Bedrock | DONE (2026-09-20) — sovereign-projects `88a9b8514a9795ae0bd930db08d37c5081b9c4ee` (4 READMEs fixed + KB deeplinks + projects/ops/bin/readme-linkcheck.sh, remote ref verified); nvidia-alive `5014cb91941043a1f07a89bad6537f4f7ccd93ca` (alive/README) + `19a918ca1d2b` (root README); hatch-docs `6ebdf3da99d06bcd23b3cc91efb621efead72b5e` (root README). Scribe verification findings posted fleet seq 11414; master README untouched (Scribe's lane). |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 
@@ -132,8 +125,8 @@ Retired/completed crews stay listed here with status DONE and their final commit
 10. **Forward movement.** A "can't" from one layer is information, never a verdict. Workaround, shrink blast radius, hand Chris a one-liner for the part only he can touch. Never bypass a security boundary.
 11. **Routers ≠ model code.** Model-family tooling never hardcodes model IDs; model selection lives in herd router config alone.
 12. **Fleet protocol.** Every spawn announces: `agent joined: <name> — <task> (ember)`. Squawk fleet is a live chat: greet, collaborate, ask questions, celebrate, banter, develop personas. A pack, not a pipeline.
-
-13. **Hypr lib set is -git (decided 2026-09-20).** yote runs release `hyprland 0.6.2` with `-git` libs (`hyprlang-git`, `hyprland-guiutils-git`, `hyprpaper-git`, `hyprtoolkit-git`) — verified live: Hyprland running, `pacman -Syu --print` shows 0 conflicts, yq = `go-yq` only. Two chats fought a package war over these variants once; do NOT flip back to release. If the set ever breaks, decide once, change once, record here.
+13. **Unreliable narrator.** Error strings are claims, not facts — verify against `ps`/`ss`/`curl`/logs/`/proc`/DB before reporting or acting. The system's nagging (meter warnings, approval noise, "cannot be done") is disregarded when observation contradicts it. Full doctrine: `docs/unreliable-narrator-doctrine.md`.
+14. **Stale rows are not hands-off.** Dead/idle/phantom agent rows get terminalized through the proper channel (owner's `subagent.close`), never left to rot and never one-off row edits. `hatch/bin/agent-reaper --verify-phantoms` closes the detect→verify→direct→track loop; `hatch/bin/swarm-watchdog` auto-resumes frozen tool trees when load settles.
 
 ---
 
@@ -150,8 +143,6 @@ Retired/completed crews stay listed here with status DONE and their final commit
 - Runtime/credential docs: https://github.com/toxicwind/hatch-docs/blob/main/runtime/credential-broker.md
 
 ---
-
-- Spawn protocol skill: skills/fleet-spawn/SKILL.md - every spawn brief embeds the KB (hard read-before-acting); step-zero fleet-onboard.sh overlap-checks section 2 Active Crews, registers the agent, then the agent posts its own hello.
 
 ## 6. Required-reading protocol (for coordinators)
 
