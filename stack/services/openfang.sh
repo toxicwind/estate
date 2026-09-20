@@ -3,7 +3,7 @@
 set -euo pipefail
 SOV="${SOVEREIGN_ROOT:-$HOME/sovereign}"
 source "$SOV/stack/lib-ports.sh"
-require_env OPENFANG_PORT
+require_port OPENFANG_PORT
 PORT="$OPENFANG_PORT"
 
 fuser -k "${PORT}/tcp" 2>/dev/null || true

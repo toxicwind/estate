@@ -6,9 +6,9 @@ SOV="${SOVEREIGN_ROOT:-$PWD}"
 source "$SOV/stack/lib-ports.sh"
 # Backend binary binds the internal backend port; mesh-front proxies 25101→25201
 RUST_WEB_PORT="${RUST_WEB_BACKEND_PORT:-25201}"
-require_env RUST_WEB_PORT
-require_env WATCHDOG_PORT
-require_env LLAMA_SWAP_PORT
+require_port RUST_WEB_PORT
+require_port WATCHDOG_PORT
+require_port LLAMA_SWAP_PORT
 export RUST_WEB_PORT WATCHDOG_PORT SOVEREIGN_ROOT="$SOV"
 export LLM_PROXY_URL="${LLM_PROXY_URL:-http://127.0.0.1:${LLAMA_SWAP_PORT}}"
 
