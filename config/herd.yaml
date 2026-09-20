@@ -182,22 +182,24 @@ macros:
 models:
   # --- Kimi short aliases (added 2026-09-20) ---
   # Fixed-target forwarders via config/herd.d/alias-shim.py. No fallback,
-  # no substitution: each alias IS its target. Targets verified live today.
+  # no substitution: each alias IS its target. Retargeted 2026-09-20
+  # (herd-deployer) from moonshot/* to openrouter-pool/* — the moonshot
+  # peer is parked; Kimi routes via the OpenRouter key-pool sidecar.
   kimi:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
-    description: "Kimi (alias -> moonshot/kimi-k2.6)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-pool/moonshotai/kimi-k2.6
+    description: "Kimi (alias -> openrouter-pool/moonshotai/kimi-k2.6)"
     metadata:
-      alias_of: moonshot/kimi-k2.6
+      alias_of: openrouter-pool/moonshotai/kimi-k2.6
   kimi-k2:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
-    description: "Kimi K2 (alias -> moonshot/kimi-k2.6)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-pool/moonshotai/kimi-k2.6
+    description: "Kimi K2 (alias -> openrouter-pool/moonshotai/kimi-k2.6)"
     metadata:
-      alias_of: moonshot/kimi-k2.6
+      alias_of: openrouter-pool/moonshotai/kimi-k2.6
   kimi-code:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.7-code
-    description: "Kimi code specialist (alias -> moonshot/kimi-k2.7-code)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-pool/moonshotai/kimi-k2.7-code
+    description: "Kimi code specialist (alias -> openrouter-pool/moonshotai/kimi-k2.7-code)"
     metadata:
-      alias_of: moonshot/kimi-k2.7-code
+      alias_of: openrouter-pool/moonshotai/kimi-k2.7-code
   beellama/exaone-4-0-1-2b-iq4xs:
     cmd: ${BEELLAMA_BIN} --model ${EXAONE_1B_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     aliases:
@@ -551,6 +553,22 @@ models:
       experimental: true
 
 peers:
+  # ROUTING DOCTRINE (2026-09-20, Chris): FREE BEATS LOCAL.
+  # Priority: working free cloud (OpenRouter free tier, Pollinations free,
+  # Gemini free tiers) > paid cloud > local. Local peers (herd-local,
+  # beellama, llama-swap locals) are the FALLBACK, never the default. Apply
+  # in modelMap choices, peer ordering, and default routes. Never claim
+  # local-first — fix such claims where found.
+  # MODEL CONSTRAINTS (2026-09-20, herd-surgeon): card-derived per-model
+  # request contracts live in config/model_constraints.yaml and are ENFORCED
+  # by bin/herd-model-guard.py (127.0.0.1:25101 -> herd :25100). Point Kimi
+  # callers at :25101 so top_p=0.95 / reasoning_effort clamp /
+  # thinking-always-on apply automatically.
+  # KEY POOLS (2026-09-20, herd-deployer): cloud-provider keys rotate through
+  # bin/herd-keypool.py (127.0.0.1:25109, config/keypools.yaml) — cheap
+  # health probes, first-valid-wins per call, 401/402/429 = routing signal
+  # (parked with cooldown, revalidated on demand). Peers below carry NO
+  # apiKey where the pool injects auth; do not re-add single hardcoded keys.
   # RE-ENABLED 2026-09-20 ~01:50 MDT (ember): surgeon 401 claim re-probed live --
   # no-auth and dummy-bearer both return HTTP 200 with real completions
   # (kimi-k3 @ 0.24-0.53s, openai @ 0.28s). Free-Kimi route is live;
@@ -662,8 +680,11 @@ peers:
   # falsely looked "empty". Verified live: LING-LIVE in 0.885s. Do NOT park on
   # small-token probes.
   openrouter-ling:
-    proxy: https://openrouter.ai/api
-    apiKey: ${env.OPENROUTER_API_KEY_1}
+    proxy: http://127.0.0.1:25109/openrouter
+    # apiKey intentionally OMITTED (2026-09-20, herd-deployer): auth is
+    # injected per-call by the key-pool sidecar from its health-checked
+    # OPENROUTER_* key rotation. Do NOT re-add a hardcoded key — a
+    # 401/402/429 is a routing signal, not a config rewrite.
     models:
       - inclusionai/ling-3.0-flash-vl:free
       - inclusionai/ling-3.0-flash-fin:free
@@ -697,70 +718,39 @@ peers:
       tlsHandshake: 10
       idleConn: 90
 
-  # --- moonshot: Moonshot AI direct (added 2026-09-20) ---
-  # CURRENT KIMI TRUTH: MOONSHOT_API_KEY is live (verified HTTP 200 on /v1/models).
-  # This is the MAIN Kimi route. Model IDs verbatim from api.moonshot.ai/v1/models.
-  # kimi-k2.6 = main Kimi; kimi-k2.7-code = code specialist. No kimi-k3 on this key.
+  # --- moonshot: Moonshot AI direct (PARKED 2026-09-20, herd-deployer) ---
+  # LAST VERIFIED 2026-09-20: MOONSHOT_API_KEY reaches api.moonshot.ai
+  # (HTTP 200 on /v1/models) but chat completions return balance/quota
+  # errors. Kimi now routes via the OpenRouter key-pool (openrouter-pool
+  # peer -> 127.0.0.1:25109/openrouter) — see the ROUTING DOCTRINE block at
+  # the top of this peers section.
+  # RESTORE: top up the Moonshot balance (or attach a working key), re-probe
+  #   curl -s https://api.moonshot.ai/v1/chat/completions ... -> HTTP 200,
+  # then uncomment the block below. Do NOT re-enable on a /v1/models 200 alone.
   # NOTE: proxy has no /v1 suffix -- the router joins proxy + /v1/chat/completions.
-  moonshot:
-    proxy: https://api.moonshot.ai
-    apiKey: ${env.MOONSHOT_API_KEY}
-    models:
-      - kimi-k2.6
-      - kimi-k2.7-code
-    timeouts:
-      connect: 30
-      keepalive: 30
-      responseHeader: 120
-      tlsHandshake: 10
-      idleConn: 90
-
-  # --- nim-kimi: Kimi K3 via NVIDIA NIM (added 2026-09-20) ---
-  # VERIFIED 2026-09-20: moonshotai/kimi-k3 is a REAL NIM model card
-  # (https://build.nvidia.com/moonshotai/kimi-k3, released 08/20/2026).
-  # NIM API model list includes it TODAY. HF: moonshotai/Kimi-K3.
-  # WARNING: NIM hosted endpoint is FLAKY (documented 404s, 429 soft-locks,
-  # degraded responses Aug-Sep 2026). Treat 404/429 as TRANSIENT infra issues,
-  # NOT as "model broken". Retry with backoff. Never repoint-on-4xx.
-  # Exact ID for NIM: moonshotai/kimi-k3 (lowercase). HF uses moonshotai/Kimi-K3.
-  # NEEDS: NVIDIA_API_KEY in .secrets (build.nvidia.com -> API keys).
-  # Currently DISABLED - uncomment when key is available.
-  nim-kimi:
-    proxy: https://integrate.api.nvidia.com/v1
-    apiKey: ${env.NVIDIA_API_KEY}
-    models:
-      - moonshotai/kimi-k3
-    timeouts:
-      connect: 30
-      keepalive: 30
-      responseHeader: 60
-      tlsHandshake: 10
-      idleConn: 90
-
-  # DISABLED 2026-09-20 ~02:45 MDT (provider-surgeon): DEEPSEEK_API_KEY returns HTTP 402
-  # "Insufficient Balance" on both deepseek-chat and deepseek-reasoner (direct probe).
-  # No working DeepSeek backup key exists. Re-enable when balance is topped up.
-  # --- deepseek: DeepSeek direct (added 2026-09-20) ---
-  # Model IDs verbatim from https://api.deepseek.com/v1/models.
-  # deepseek:
-  #   proxy: https://api.deepseek.com/v1
-  #   apiKey: ${env.DEEPSEEK_API_KEY}
+  # moonshot:
+  #   proxy: https://api.moonshot.ai
+  #   apiKey: ${env.MOONSHOT_API_KEY}
   #   models:
-  #     - deepseek-chat
-  #     - deepseek-reasoner
+  #     - kimi-k2.6
+  #     - kimi-k2.7-code
   #   timeouts:
   #     connect: 30
   #     keepalive: 30
   #     responseHeader: 120
   #     tlsHandshake: 10
   #     idleConn: 90
+  # nim-kimi peer DELETED 2026-09-20 (herd-deployer). Debate verdict:
+  # NIM is DELETED, not demoted — 24h 429 soft-locks poison fail-fast
+  # routing, so NIM never returns as primary. Kimi K3 serves via the
+  # OpenRouter key-pool (openrouter-pool peer). K3 card contract
+  # preserved in config/model_constraints.yaml.
 
-  # --- gemini: Google AI direct via OpenAI-compatible endpoint (added 2026-09-20) ---
-  # Model IDs verbatim from https://generativelanguage.googleapis.com/v1beta/models
-  # (the 'models/' prefix is stripped for the OpenAI-compatible path).
   gemini:
-    proxy: https://generativelanguage.googleapis.com/v1beta/openai
-    apiKey: ${env.GEMINI_API_KEY_4}
+    proxy: http://127.0.0.1:25109/gemini
+    # apiKey intentionally OMITTED (2026-09-20, herd-deployer): auth is
+    # injected per-call by the key-pool sidecar from its health-checked
+    # GEMINI_API_KEY* rotation. Do NOT re-add a hardcoded key.
     models:
       - gemini-3.1-pro-preview
       - gemini-3.5-flash
@@ -780,8 +770,11 @@ peers:
   # Excluded as HTTP 429 in probe: z-ai/glm-5.2:free, qwen/qwen3.8-27b:free,
   # google/gemma-4-26b-a4b-it:free (free-tier rate limits; re-probe before adding).
   openrouter-free:
-    proxy: https://openrouter.ai/api
-    apiKey: ${env.OPENROUTER_API_KEY_1}
+    proxy: http://127.0.0.1:25109/openrouter
+    # apiKey intentionally OMITTED (2026-09-20, herd-deployer): auth is
+    # injected per-call by the key-pool sidecar from its health-checked
+    # OPENROUTER_* key rotation. Do NOT re-add a hardcoded key — a
+    # 401/402/429 is a routing signal, not a config rewrite.
     models:
       - google/gemma-4-31b-it:free
       - nvidia/nemotron-3.5-lightning:free
@@ -793,6 +786,26 @@ peers:
       responseHeader: 120
       tlsHandshake: 10
       idleConn: 90
+  # --- openrouter-pool: OpenRouter via key-pool sidecar (added 2026-09-20, herd-deployer) ---
+  # ROUTING DOCTRINE: free beats local. This peer carries OpenRouter Kimi
+  # traffic through the key-pool sidecar (127.0.0.1:25109), which
+  # health-checks every OPENROUTER_* key and picks first-valid-wins per
+  # call. A 401/402/429 is a routing signal, never a config rewrite — down
+  # keys revalidate on demand and rejoin automatically.
+  # No apiKey here BY DESIGN: the sidecar injects the chosen key. Do not add one.
+  openrouter-pool:
+    proxy: http://127.0.0.1:25109/openrouter
+    models:
+      - moonshotai/kimi-k3
+      - moonshotai/kimi-k2.6
+      - kimi-k2.7-code
+    timeouts:
+      connect: 30
+      keepalive: 30
+      responseHeader: 180
+      tlsHandshake: 10
+      idleConn: 90
+
   # DISABLED 2026-09-20 ~03:55 MDT (provider-surgeon): the 3 models probed UP at ~03:30
   # (deepseek-v4-flash-0731, nemotron-3.5-lightning-30b-a3b, glm-5.3-flash) began timing out
   # upstream (~40-60s, empty/502) at ~03:50. Flock's upstream is unstable; the daemon itself
