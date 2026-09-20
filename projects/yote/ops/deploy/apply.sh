@@ -13,7 +13,7 @@ sha256_of() { sha256sum "$1" | awk '{print $1}'; }
 
 # Explicit per-file expectations (from MANIFEST.txt; keep in sync).
 declare -A EXPECT=(
-  [yote-fix.sh]="0e03807e543e812af597c92f66e467222274cea8400c55c8b81ad639744fe150 /home/toxic/yote-ops/yote-fix.sh"
+  [yote-fix.sh]="e6904f4a5843f219ffba6b207d9959f3d72b2a7edef92560fea9b8b127213f1e /home/toxic/yote-ops/yote-fix.sh"
   [yote-doctor.sh]="5dca76ee6ff39cadbe243984c0546e2051e52b6a04f8b1e3c6b3f16a35e9f495 /home/toxic/yote-ops/yote-doctor.sh"
   [awrawr_ws_exec.py]="40b282f2a0293927a42b123bc4cde3338c2e9d1dcc0e63f57bdb9ae3efabdfcd /home/toxic/sovereign/shingle-workspace/awrawr_ws_exec.py.new"
 )

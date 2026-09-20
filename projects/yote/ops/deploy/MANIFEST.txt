@@ -1,7 +1,11 @@
 # Yote deploy bundle — MANIFEST
 # Repository: toxicwind/sovereign-projects (public)
-# Status: STAGED ONLY — review by parent/human before running apply.sh on yote.
-# Nothing here has been applied to the box; there is no automatic apply path.
+# Status: APPLIED 2026-09-20 (~05:48 UTC) via the authenticated exec bridge.
+# All VERIFY.md checks passed post-apply: serve map intact (incl. /exec-ws,
+# /squawk-ws, /squawk-feed/seq), pitchfork daemons running, /exec-ws probes 400
+# as expected, 9 squawk procs untouched, WS command execution live.
+# NOTE: /mcp returned 401 at apply time (was 502 at the 2026-09-20 05:24 baseline;
+# backend 8377 now responds with auth required — change noted, not investigated).
 
 Raw-URL verification (hatch, 2026-09-20):
   PASS — all three canonical raw URLs served content byte-identical to the
@@ -14,11 +18,11 @@ Raw-URL verification (hatch, 2026-09-20):
 Format: SP_SOURCE | GIT_BLOB_SHA | BYTES -> YOTE_DESTINATION | EXPECTED_SHA256
 
 projects/yote/ops/yote-fix.sh \
-  | f28769760760df68b0f5dbf73bc928927f50226e \
-  | 23803 \
+  | 823623b02a4de00bc2b215f8b6e4d0ec26db1b52 \
+  | 24107 \
   -> /home/toxic/yote-ops/yote-fix.sh \
-  | 0e03807e543e812af597c92f66e467222274cea8400c55c8b81ad639744fe150
-  # yote-fix.sh v3 (repair script). Executable after apply.
+  | e6904f4a5843f219ffba6b207d9959f3d72b2a7edef92560fea9b8b127213f1e
+  # yote-fix.sh v3 (repair script, GitHub-repointed). Executable after apply.
 
 projects/yote/ops/yote-doctor.sh \
   | 03e44e32465ef8c9563ca32c6d3a5ba0873b225c \
