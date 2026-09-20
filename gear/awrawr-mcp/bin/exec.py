@@ -1,8 +1,19 @@
 #!/usr/bin/env python3
-"""Run a shell command on awrawr-pc through its MCP exec bridge.
+"""Run a shell command on yote through its MCP exec bridge.
 
 Usage:
     exec.py "echo ok && whoami" [workdir]
+    exec.py --sysinfo            one JSON snapshot: fresh vitals, hatch + yote
+    exec.py --poll [SECS]        full-snapshot stream (default 5s); Ctrl-C stops
+    exec.py --watch [SECS]       agentic event stream: baseline snapshot, then
+                                 only changes, threshold alerts and errors;
+                                 --alert-load N, --alert-mem PCT for thresholds
+
+Sides: hatch is this runtime; yote is the bridge box (CachyOS/Arch, BORE
+scheduler, server kernel). Every poll reads FRESH values from /proc and
+sysfs on each side -- nothing is cached, because load, memory, thread counts
+and uptime can change at any moment. The yote leg reuses the same transport
+priority (ws_daemon, then HTTPS) and never re-dispatches.
 
 Auth: Secure Vault connector custom.awrawr-mcp. The raw token is never
 readable here; only its hsurr:* surrogate is sent, and only to the bridge
@@ -45,6 +56,13 @@ CRED = "custom.awrawr-mcp"
 HOSTS = ["github-mcp-host.tailc9ac71.ts.net"]
 BASE = "https://github-mcp-host.tailc9ac71.ts.net/mcp"
 TIMEOUT = 120
+# Socket timeout for the HTTPS lane's urlopen (finding #4, 2026-09-20):
+# must comfortably exceed the daemon's max wait (~150s). A quiet command
+# in the 120-150s window previously died client-side with socket.timeout
+# while the daemon was fine — and was then wrongly marked a read stall.
+# Keep this above _DEFAULT_READ_TIMEOUT (150s) so the local read deadline,
+# not the socket timeout, decides when a stalled stream is a real stall.
+_HTTPS_SOCKET_TIMEOUT = 180
 SESSION_FILE = os.path.expanduser("~/.cache/awrawr-mcp-session.json")
 WS_SOCK = os.path.expanduser("~/.cache/awrawr-ws-bridge.sock")
 WS_DAEMON = os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -73,6 +91,21 @@ def _ws_mark_down() -> None:
             f.write(str(time.time()))
     except OSError:
         pass
+
+
+# Last pre-dispatch message from the WS daemon (e.g. "bridge not connected:
+# ws handshake failed: HTTP/1.1 401 Unauthorized"). _ws_exec returns None on
+# pre-dispatch failure (the HTTPS-fallback signal), which would otherwise
+# discard the daemon's diagnosis; _sysinfo_yote reads this for auth
+# detection. Reset on every _ws_exec entry; meaningful only when that call
+# returned None.
+_ws_predispatch_error = ""
+
+
+def _ws_names_auth(msg):
+    """Does this WS lane message name an auth failure (401/unauthorized)?"""
+    m = (msg or "").lower()
+    return "401" in m or "unauthorized" in m
 
 
 # Local read deadline for the HTTPS lane (finding #2, 2026-09-18): a bridge
@@ -203,7 +236,10 @@ def _ws_exec(cmd: str, workdir: str, argv=None,
     falling back, so a command that may have executed remotely is never
     run twice.
     """
+    global _ws_predispatch_error
+    _ws_predispatch_error = ""
     if _ws_known_down():
+        _ws_predispatch_error = "ws lane marked down (degraded steady-state)"
         return None  # degraded steady-state: straight to HTTPS
     t0 = time.monotonic()
     out_parts: list[str] = []
@@ -222,22 +258,37 @@ def _ws_exec(cmd: str, workdir: str, argv=None,
         # Lazy-start the daemon (singleflight: stale socket file is unlinked
         # by the daemon itself on start; a second starter just fails to bind
         # and the connect below still succeeds).
+        logf = None
         try:
             logf = open(os.path.expanduser("~/.cache/awrawr-ws-bridge.log"),
                         "a")
-            subprocess.Popen(
+            proc = subprocess.Popen(
                 [sys.executable, WS_DAEMON],
                 stdin=subprocess.DEVNULL, stdout=logf, stderr=logf,
                 start_new_session=True)
         except Exception:
+            if logf is not None:
+                try:
+                    logf.close()
+                except Exception:
+                    pass
             return None
+        try:
+            logf.close()  # child keeps its own fd copy; don't leak ours
+        except Exception:
+            pass
         deadline = time.monotonic() + 12
         while time.monotonic() < deadline:
             s = try_once()
             if s is not None:
                 break
+            if proc.poll() is not None:
+                # Daemon exited during start (e.g. ImportError on wsframe):
+                # fail fast instead of burning the whole 12s wait.
+                break
             time.sleep(0.25)
         if s is None:
+            _ws_predispatch_error = "ws daemon unavailable (no socket)"
             return None
     try:
         payload = {"workdir": workdir}
@@ -254,6 +305,7 @@ def _ws_exec(cmd: str, workdir: str, argv=None,
             # Pre-dispatch: the payload never reached the daemon, so HTTPS
             # re-dispatch is safe. Mark the lane down briefly so a flapping
             # daemon doesn't get hammered.
+            _ws_predispatch_error = "ws send to daemon failed (pre-dispatch)"
             _ws_mark_down()
             return None
         dispatched = True  # daemon now owns the command; no re-dispatch
@@ -335,7 +387,9 @@ def _ws_exec(cmd: str, workdir: str, argv=None,
                         return 1
                     # Pre-dispatch ("not connected", "send failed",
                     # "reconnecting"): the daemon never sent it upstream,
-                    # so HTTPS re-dispatch is safe.
+                    # so HTTPS re-dispatch is safe. Keep the daemon's
+                    # message: it may name the real cause (e.g. a 401).
+                    _ws_predispatch_error = msg
                     _ws_mark_down()
                     return None
     except socket.timeout:
@@ -354,6 +408,10 @@ def _ws_exec(cmd: str, workdir: str, argv=None,
         # the command may have executed: report, no fallback. Otherwise
         # (payload never built/sent) HTTPS re-dispatch is safe.
         _ws_mark_down()
+        try:
+            s.close()
+        except Exception:
+            pass
         if dispatched:
             msg = "ws transport failed post-dispatch (no retry)"
             if capture:
@@ -364,11 +422,8 @@ def _ws_exec(cmd: str, workdir: str, argv=None,
                         "truncated": False}
             print("exec.py: " + msg, file=sys.stderr)
             return 1
+        _ws_predispatch_error = "ws lane failed pre-dispatch"
         return None
-        try:
-            s.close()
-        except Exception:
-            pass
 
 
 _MISSING = object()
@@ -429,10 +484,20 @@ def _post(payload: dict, session_id: str | None,
     if session_id:
         req.add_header("Mcp-Session-Id", session_id)
     try:
-        resp = urllib.request.urlopen(req, timeout=TIMEOUT)
+        resp = urllib.request.urlopen(req, timeout=_HTTPS_SOCKET_TIMEOUT)
     except urllib.error.HTTPError as e:
         detail = e.read().decode("utf-8", "replace")[:500]
         raise RuntimeError(f"HTTP {e.code} from bridge: {detail}")
+    except (urllib.error.URLError, ConnectionError, socket.timeout) as e:
+        # Finding #3 (2026-09-20): connect-path failures (DNS failure,
+        # connection refused, connect stall) never marked the HTTPS lane
+        # degraded, so every call burned the full socket timeout again
+        # before failing. Mark the lane sick and fail fast, like read
+        # stalls do. (No retry anywhere here, so no double-exec risk.)
+        _degraded_and_raise(
+            "connect failure: %s" % type(e).__name__,
+            "https connect failed (%s: %s)"
+            % (type(e).__name__, e))
     deadline = time.monotonic() + read_timeout
     with resp:
         ctype = resp.headers.get("Content-Type", "")
@@ -514,9 +579,432 @@ def _initialize(read_timeout: float = _DEFAULT_READ_TIMEOUT) -> str | None:
     return session_id
 
 
+def _read_sysinfo_file(path):
+    try:
+        with open(path) as f:
+            return f.read().strip()
+    except OSError:
+        return ""
+
+
+def _sysinfo_hatch():
+    """Fresh local (hatch) vitals from /proc + sysfs. No caching: load,
+    memory, thread counts and uptime can change at any moment."""
+    info = {"side": "hatch", "ok": True}
+    info["kernel"] = os.uname().release
+    try:
+        info["nproc"] = os.cpu_count()
+    except OSError:
+        info["nproc"] = None
+    mem = {}
+    for line in _read_sysinfo_file("/proc/meminfo").splitlines():
+        parts = line.split()
+        if len(parts) >= 2 and parts[0].rstrip(":") in ("MemTotal",
+                                                       "MemAvailable"):
+            try:
+                mem[parts[0].rstrip(":")] = int(parts[1])  # kB
+            except ValueError:
+                pass
+    info["mem_total_kb"] = mem.get("MemTotal")
+    info["mem_avail_kb"] = mem.get("MemAvailable")
+    load = _read_sysinfo_file("/proc/loadavg").split()
+    info["loadavg"] = load[:3] if len(load) >= 3 else []
+    # 4th field is "running/total" kernel threads, e.g. "2/365".
+    info["threads_running_total"] = load[3] if len(load) >= 4 else None
+    up = _read_sysinfo_file("/proc/uptime").split()
+    try:
+        info["uptime_s"] = float(up[0]) if up else None
+    except ValueError:
+        info["uptime_s"] = None
+    scheds = set()
+    try:
+        block_devs = os.listdir("/sys/block")
+    except OSError:
+        block_devs = []
+    for dev in block_devs:
+        s = _read_sysinfo_file(
+            os.path.join("/sys/block", dev, "queue", "scheduler"))
+        if s:
+            scheds.add(" ".join(s.split()))
+    info["io_schedulers"] = sorted(scheds)
+    return info
+
+
+# Labeled-line probe executed ON yote; parsed back by
+# _sysinfo_parse_probe. Same fields as _sysinfo_hatch.
+_SYSINFO_PROBE = (
+    "echo \"kernel=$(uname -r)\"; "
+    "echo \"nproc=$(nproc)\"; "
+    "awk '/^MemTotal:/{t=$2} /^MemAvailable:/{a=$2} "
+    "END{print \"mem_total_kb=\"t; print \"mem_avail_kb=\"a}' /proc/meminfo; "
+    "echo \"loadavg=$(cat /proc/loadavg)\"; "
+    "echo \"uptime_s=$(cut -d' ' -f1 /proc/uptime)\"; "
+    "echo \"io_sched=$(cat /sys/block/*/queue/scheduler 2>/dev/null"
+    " | sort -u | tr '\\n' ';')\""
+)
+
+
+def _sysinfo_parse_probe(stdout):
+    parsed = {}
+    for line in stdout.splitlines():
+        if "=" not in line:
+            continue
+        k, v = line.split("=", 1)
+        k, v = k.strip(), v.strip()
+        if k in ("nproc", "mem_total_kb", "mem_avail_kb"):
+            try:
+                v = int(v)
+            except ValueError:
+                pass
+        elif k == "uptime_s":
+            try:
+                v = float(v)
+            except ValueError:
+                pass
+        elif k == "loadavg":
+            v = v.split()[:3]
+        elif k == "io_sched":
+            v = [s for s in v.split(";") if s]
+        parsed[k] = v
+    return parsed
+
+
+def _sysinfo_yote(read_timeout):
+    """Fresh yote vitals through the exec bridge. Never raises.
+
+    Lane contract honored: the WS lane returns None pre-dispatch (safe to
+    fall back to HTTPS); any non-None WS result is owned by that lane and
+    is never re-dispatched, so the probe can never double-execute.
+
+    Auth detection: the daemon owns the TLS handshake, so a token mismatch
+    surfaces as its pre-dispatch message ("bridge not connected: ws
+    handshake failed: HTTP/1.1 401 Unauthorized"), which _ws_exec stashes in
+    _ws_predispatch_error instead of discarding it with the None return."""
+    probe = _SYSINFO_PROBE
+    workdir = "/home/toxic"
+    result = None
+    if os.environ.get("AWRAWR_TRANSPORT", "ws") != "https":
+        try:
+            result = _ws_exec(probe, workdir, None, None, capture=True)
+        except Exception as e:
+            result = {"code": 1, "stdout": "", "stderr": "",
+                      "error": "ws lane exception: %s" % e}
+    if result is None and not _ws_names_auth(_ws_predispatch_error) \
+            and "never connected" in _ws_predispatch_error:
+        # Fresh-daemon race: the handshake may not have resolved when the
+        # first probe landed. One bounded pre-dispatch re-probe after it
+        # settles (nothing was dispatched: no double-exec risk), bypassing
+        # our own 15s down-mark for this single retry.
+        time.sleep(2.0)
+        try:
+            os.unlink(_WS_DOWN_FLAG)
+        except OSError:
+            pass
+        try:
+            result = _ws_exec(probe, workdir, None, None, capture=True)
+        except Exception as e:
+            result = {"code": 1, "stdout": "", "stderr": "",
+                      "error": "ws lane exception: %s" % e}
+    if result is None:
+        # WS gave up pre-dispatch; we now fail on the HTTPS lane, but a 401
+        # would have happened on the WS lane -- check the daemon's message.
+        ws_msg = _ws_predispatch_error.lower()
+        auth_failed = "401" in ws_msg or "unauthorized" in ws_msg
+        down, why = _https_known_down()
+        if down:
+            err = "https lane degraded (%s)" % why
+            if auth_failed:
+                err += "; yote also rejected credentials (401)"
+            return {"side": "yote", "ok": False,
+                    "auth_failed": auth_failed, "error": err}
+        try:
+            result = _https_exec_capture(probe, workdir, read_timeout)
+        except Exception as e:
+            if auth_failed:
+                err = ("yote rejected credentials (401): token mismatch -- "
+                       "resubmit the exact value of ~/.awrawr_mcp_token via "
+                       "the connector")
+            else:
+                err = "https lane exception: %s" % str(e)[:160]
+            return {"side": "yote", "ok": False,
+                    "auth_failed": auth_failed, "error": err}
+    info = {"side": "yote", "transport": result.get("transport"),
+            "auth_failed": False,
+            "ok": result.get("code", 1) == 0 and not result.get("error")}
+    if not info["ok"]:
+        err_text = ("%s %s %s" % (result.get("error") or "",
+                                  result.get("stderr") or "",
+                                  _ws_predispatch_error)).lower()
+        auth_failed = "401" in err_text or "unauthorized" in err_text
+        info["auth_failed"] = auth_failed
+        if auth_failed:
+            info["error"] = ("yote rejected credentials (401): token "
+                             "mismatch -- resubmit the exact value of "
+                             "~/.awrawr_mcp_token via the connector")
+        else:
+            info["error"] = (result.get("error")
+                             or (result.get("stderr") or "")[:160]
+                             or "yote command failed")
+        return info
+    info.update(_sysinfo_parse_probe(result.get("stdout", "")))
+    return info
+
+
+def _utc_ts():
+    import datetime
+    return datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+
+def _sysinfo_snapshot(read_timeout):
+    return {
+        "ts": _utc_ts(),
+        "hatch": _sysinfo_hatch(),
+        "yote": _sysinfo_yote(read_timeout),
+    }
+
+
+def _sysinfo_loop(interval, read_timeout):
+    """Dynamic polling loop: one fresh both-sides snapshot per interval.
+
+    No-overlap: if a cycle overruns the interval, the next starts after a
+    short breather instead of stacking up."""
+    try:
+        while True:
+            t0 = time.monotonic()
+            print(json.dumps(_sysinfo_snapshot(read_timeout)), flush=True)
+            time.sleep(max(0.5, interval - (time.monotonic() - t0)))
+    except KeyboardInterrupt:
+        pass
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# --watch: the agentic event stream.
+#
+# --poll streams full snapshots blindly; --watch emits NDJSON *events* so an
+# agent can tail the stream and react instead of re-parsing everything:
+#   snapshot   first full both-sides snapshot (the baseline)
+#   change     field(s) moved beyond noise tolerance; carries before/after
+#   alert      an --alert-* threshold was breached or cleared (hysteresis)
+#   error      a side failed: first occurrence, or the error text changed
+#   recovered  a side came back after failing (with downtime_s)
+#   heartbeat  every 60s: liveness, per-side ok, cycle/overrun counters
+#
+# Edge cases, integrated:
+# - No-overlap polling: an overrunning cycle never stacks; it is counted.
+# - Auth-failure backoff: a 401 will not heal by retrying, so a yote leg
+#   that fails auth re-probes at most every 60s instead of every cycle.
+# - No error spam: repeated identical failures emit nothing new; only
+#   transitions (and heartbeats) speak.
+# - No threshold flapping: alerts use hysteresis (load clears at 90% of
+#   the breach level; memory clears 5 points above it).
+# - Noisy counters don't spam: loadavg needs a 0.25 move, mem_available a
+#   5% move, the running-thread count is ignored (only the total matters),
+#   and monotonic uptime_s is excluded from change detection entirely.
+# - Ctrl-C exits 0. Every line is one valid JSON object (pipe-safe).
+# ---------------------------------------------------------------------------
+_WATCH_HEARTBEAT_S = 60.0
+_WATCH_AUTH_RETRY_S = 60.0
+_WATCH_NOISE_LOAD = 0.25    # max abs move across loadavg to count
+_WATCH_NOISE_MEM = 0.05     # mem_avail_kb move, relative to mem_total_kb
+_WATCH_SKIP_FIELDS = {"uptime_s"}  # monotonic: would fire every cycle
+
+
+def _watch_flat(info):
+    """Flatten one side snapshot to comparable fields for change detection."""
+    flat = {}
+    for k, v in info.items():
+        if k == "side" or k in _WATCH_SKIP_FIELDS:
+            continue
+        if k == "loadavg":
+            try:
+                flat[k] = tuple(float(x) for x in v)
+            except (TypeError, ValueError):
+                flat[k] = None
+        elif k == "threads_running_total" and isinstance(v, str) \
+                and "/" in v:
+            # "running/total": the running count jitters every cycle; the
+            # total is the signal (a climbing total means a thread leak).
+            flat[k] = v.split("/", 1)[1]
+        elif isinstance(v, list):
+            flat[k] = tuple(v)
+        else:
+            flat[k] = v
+    return flat
+
+
+def _watch_significant(field, before, after, info):
+    """True if a before->after move on field is a real change, not noise."""
+    if before == after:
+        return False
+    if before is None or after is None:
+        return True  # appeared / disappeared
+    if field == "loadavg":
+        try:
+            return max(abs(a - b)
+                       for a, b in zip(before, after)) > _WATCH_NOISE_LOAD
+        except TypeError:
+            return True
+    if field == "mem_avail_kb":
+        total = info.get("mem_total_kb") or 0
+        try:
+            if total:
+                return abs(after - before) > _WATCH_NOISE_MEM * total
+        except TypeError:
+            pass
+        return True
+    return True
+
+
+def _watch_diffs(prev_flat, cur_flat, cur_info):
+    diffs = []
+    for field in sorted(set(prev_flat) | set(cur_flat)):
+        b, a = prev_flat.get(field), cur_flat.get(field)
+        if _watch_significant(field, b, a, cur_info):
+            diffs.append({"field": field, "before": b, "after": a})
+    return diffs
+
+
+def _watch_alerts(side, info, states, alert_load, alert_mem, ts):
+    """Threshold transitions with hysteresis; events only on transitions."""
+    events = []
+    if alert_load is None and alert_mem is None:
+        return events
+    try:
+        load1 = float((info.get("loadavg") or [None])[0])
+    except (TypeError, ValueError, IndexError):
+        load1 = None
+    total = info.get("mem_total_kb")
+    avail = info.get("mem_avail_kb")
+    try:
+        mem_pct = (100.0 * avail / total) \
+            if total and avail is not None else None
+    except TypeError:
+        mem_pct = None
+    checks = []
+    if alert_load is not None and load1 is not None:
+        checks.append(("load1", round(load1, 2), alert_load,
+                       load1 > alert_load, load1 <= alert_load * 0.9))
+    if alert_mem is not None and mem_pct is not None:
+        checks.append(("mem_avail_pct", round(mem_pct, 1), alert_mem,
+                       mem_pct < alert_mem, mem_pct >= alert_mem + 5.0))
+    for metric, value, thr, is_breach, is_clear in checks:
+        key = (side, metric)
+        prev_state = states.get(key, "ok")
+        if is_breach and prev_state != "breach":
+            states[key] = "breach"
+            events.append({"event": "alert", "ts": ts, "side": side,
+                           "metric": metric, "state": "breach",
+                           "value": value, "threshold": thr})
+        elif is_clear and prev_state == "breach":
+            states[key] = "ok"
+            events.append({"event": "alert", "ts": ts, "side": side,
+                           "metric": metric, "state": "cleared",
+                           "value": value, "threshold": thr})
+    return events
+
+
+def _watch_loop(interval, read_timeout, alert_load, alert_mem):
+    """Agentic event stream over both sides. Ctrl-C exits 0."""
+    def emit(ev):
+        print(json.dumps(ev), flush=True)
+
+    snap = _sysinfo_snapshot(read_timeout)
+    emit({"event": "snapshot", "ts": snap["ts"],
+          "hatch": snap["hatch"], "yote": snap["yote"]})
+    prev = {s: _watch_flat(snap[s]) for s in ("hatch", "yote")}
+    state = {}
+    now = time.time()
+    for s in ("hatch", "yote"):
+        ok = bool(snap[s].get("ok", True))
+        state[s] = {"ok": ok,
+                    "fail_n": 0,
+                    "last_error": snap[s].get("error"),
+                    "down_since": None if ok else now,
+                    "auth_backoff": bool(snap[s].get("auth_failed")),
+                    "next_retry": now + _WATCH_AUTH_RETRY_S
+                    if snap[s].get("auth_failed") else 0.0}
+    alert_states = {}
+    cycles = 0
+    overruns = 0
+    next_heartbeat = time.monotonic() + _WATCH_HEARTBEAT_S
+    try:
+        while True:
+            t0 = time.monotonic()
+            now = time.time()
+            ts = _utc_ts()
+            infos = {}
+            for s in ("hatch", "yote"):
+                st = state[s]
+                if not st["ok"] and st["auth_backoff"] \
+                        and now < st["next_retry"]:
+                    # Auth will not heal by retrying: hold the last error,
+                    # re-probe at most every _WATCH_AUTH_RETRY_S.
+                    infos[s] = {"side": s, "ok": False,
+                                "backoff": True,
+                                "error": st["last_error"]}
+                    continue
+                info = _sysinfo_hatch() if s == "hatch" \
+                    else _sysinfo_yote(read_timeout)
+                infos[s] = info
+                ok = bool(info.get("ok", True))
+                err = info.get("error")
+                auth = bool(info.get("auth_failed"))
+                if ok and not st["ok"]:
+                    emit({"event": "recovered", "ts": ts, "side": s,
+                          "downtime_s": round(now - (st["down_since"] or now),
+                                              1)})
+                    st.update(ok=True, fail_n=0, last_error=None,
+                              down_since=None, auth_backoff=False,
+                              next_retry=0.0)
+                elif not ok:
+                    if st["ok"]:
+                        st["down_since"] = now
+                    st["fail_n"] += 1
+                    if err != st["last_error"] or st["ok"]:
+                        emit({"event": "error", "ts": ts, "side": s,
+                              "error": err, "auth_failed": auth,
+                              "fail_n": st["fail_n"]})
+                    st["last_error"] = err
+                    st["ok"] = False
+                    if auth:
+                        st["auth_backoff"] = True
+                        st["next_retry"] = now + _WATCH_AUTH_RETRY_S
+                else:
+                    st["fail_n"] = 0
+            for s in ("hatch", "yote"):
+                info = infos[s]
+                if not info.get("ok"):
+                    continue
+                flat = _watch_flat(info)
+                diffs = _watch_diffs(prev.get(s, {}), flat, info)
+                if diffs:
+                    emit({"event": "change", "ts": ts, "side": s,
+                          "diffs": diffs})
+                prev[s] = flat
+                for ev in _watch_alerts(s, info, alert_states,
+                                        alert_load, alert_mem, ts):
+                    emit(ev)
+            cycles += 1
+            if time.monotonic() >= next_heartbeat:
+                emit({"event": "heartbeat", "ts": ts, "cycles": cycles,
+                      "overruns": overruns,
+                      "hatch_ok": state["hatch"]["ok"],
+                      "yote_ok": state["yote"]["ok"]})
+                next_heartbeat = time.monotonic() + _WATCH_HEARTBEAT_S
+            if time.monotonic() - t0 > interval:
+                overruns += 1
+            time.sleep(max(0.5, interval - (time.monotonic() - t0)))
+    except KeyboardInterrupt:
+        pass
+    return 0
+
+
 def main() -> int:
     # exec.py "cmd" [workdir]
     # exec.py --argv cmd arg... [--timeout N] [--read-timeout SECS] [--json]
+    # exec.py --sysinfo | --poll [SECS] | --watch [SECS]
+    #   --watch takes --alert-load N (1m loadavg) and --alert-mem PCT
     args = sys.argv[1:]
     timeout = None
     json_mode = False
@@ -543,6 +1031,72 @@ def main() -> int:
                   "(seconds)", file=sys.stderr)
             return 2
         del args[i:i + 2]
+    sysinfo_once = False
+    if "--sysinfo" in args:
+        sysinfo_once = True
+        args.remove("--sysinfo")
+    poll_interval = None
+    if "--poll" in args:
+        i = args.index("--poll")
+        try:
+            poll_interval = float(args[i + 1])
+            if poll_interval <= 0:
+                raise ValueError
+            del args[i:i + 2]
+        except (IndexError, ValueError):
+            # Bare --poll (or a non-numeric next arg): default 5s, keep the
+            # next arg for the normal command path (a mode flag still wins).
+            poll_interval = 5.0
+            del args[i:i + 1]
+    watch_interval = None
+    if "--watch" in args:
+        i = args.index("--watch")
+        try:
+            watch_interval = float(args[i + 1])
+            if watch_interval <= 0:
+                raise ValueError
+            del args[i:i + 2]
+        except (IndexError, ValueError):
+            watch_interval = 5.0
+            del args[i:i + 1]
+    alert_load = None
+    if "--alert-load" in args:
+        i = args.index("--alert-load")
+        try:
+            alert_load = float(args[i + 1])
+            if alert_load <= 0:
+                raise ValueError
+        except (IndexError, ValueError):
+            print("exec.py: --alert-load needs a positive number",
+                  file=sys.stderr)
+            return 2
+        del args[i:i + 2]
+    alert_mem = None
+    if "--alert-mem" in args:
+        i = args.index("--alert-mem")
+        try:
+            alert_mem = float(args[i + 1])
+            if not 0 < alert_mem < 100:
+                raise ValueError
+        except (IndexError, ValueError):
+            print("exec.py: --alert-mem needs a percent between 0 and 100",
+                  file=sys.stderr)
+            return 2
+        del args[i:i + 2]
+    modes = [sysinfo_once, poll_interval is not None,
+             watch_interval is not None]
+    if sum(1 for m in modes if m) > 1:
+        print("exec.py: --sysinfo, --poll and --watch are mutually "
+              "exclusive", file=sys.stderr)
+        return 2
+    if sysinfo_once:
+        print(json.dumps(_sysinfo_snapshot(read_timeout)), flush=True)
+        return 0
+    if poll_interval is not None:
+        return _sysinfo_loop(poll_interval, read_timeout)
+    if watch_interval is not None:
+        return _watch_loop(watch_interval, read_timeout,
+                           alert_load, alert_mem)
     argv = None
     if args and args[0] == "--argv":
         argv = args[1:]
