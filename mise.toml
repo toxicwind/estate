@@ -1,6 +1,7 @@
 # ============================================================================
-# SOVEREIGN MISE CONFIG — GENERATED from config/ports.env + service definitions
-# DO NOT EDIT DIRECTLY — Run: bun run scripts/generate.ts
+# SOVEREIGN MISE CONFIG — hand-edited source of truth (2026-09-20).
+# NOTE: scripts/generate.ts was RETIRED 2026-09-14 (do not run: it overwrites
+# pitchfork.toml and destroys native additions). Edit this file directly.
 # ============================================================================
 
 [tools]
@@ -9,7 +10,7 @@ node = "22.12.0"
 bun = "1.1.38"
 rust = "nightly"
 go = "1.23.1"
-pitchfork = "2.16.0"
+pitchfork = "2.25.0"
 
 [env]
 # Source ports.env for all tasks
@@ -23,12 +24,8 @@ SCOUT_MODEL = "local-fast"
 
 [tasks]
 # ─── Stack orchestration ───
-up = "pitchfork start -q --group core"
 "up:all" = "pitchfork start -q --group all"
-down = "pitchfork stop --all"
 restart = "pitchfork restart -q --group core"
-health = "mise run svc-check"
-status = "pitchfork list"
 logs = "pitchfork logs --raw -n 100"
 "logs-tail" = "pitchfork logs --raw --follow"
 "logs-json" = "pitchfork logs --json -n 100"
@@ -101,7 +98,6 @@ logs = "pitchfork logs --raw -n 100"
 "restart-search-api" = "pitchfork restart -q search-api"
 "restart-search-ui" = "pitchfork restart -q search-ui"
 "restart-axiom" = "pitchfork restart -q axiom"
-"restart-rust-web" = "pitchfork restart -q rust-web"
 "restart-hf-downloader" = "pitchfork restart -q hf-downloader"
 "restart-null-g-proxy" = "pitchfork restart -q null-g-proxy"
 "restart-kimi-audit-dash" = "pitchfork restart -q kimi-audit-dash"
@@ -153,7 +149,7 @@ logs = "pitchfork logs --raw -n 100"
 "health-grafana" = "curl -sf --max-time 5 http://127.0.0.1:25110/api/health"
 "health-flock" = "ss -ltn 'sport = :8000' | grep -q LISTEN"
 "health-matter-server" = "ss -ltn 'sport = :5580' | grep -q LISTEN"
-"health-tau" = "sleep 2 && echo ready"
+"health-tau" = "pgrep -f coding-agent/dist/omp > /dev/null"
 
 # ─── Utilities ───
 svc-check = """bash -c 'FAILED=0; for entry in mesh=25127 mesh-hub=25115 herd=25100 coyote=25143 yote=25102 search-api=25112 search-ui=25114 axiom=25103 rust-web=25201 hf-downloader=25106 null-g-proxy=25107 kimi-audit-dash=25116 mcp-gateway=25120 byte-vision=25121 hindsight=25117 tau-code=25145 kimi-code=25126 nginx=62200 qdrant=25133 redis=25199 kafka=25144 dnsmasq=53 prometheus=25105 grafana=25110 nim-proxy=8000 matter-server=5580 tau=25125; do svc=${entry%%=*}; port=${entry##*=}; if [ -n "${port}" ]; then if ! curl -sf -m 2 "http://127.0.0.1:${port}/health" >/dev/null 2>&1 && ! curl -sf -m 2 "http://127.0.0.1:${port}/-/healthy" >/dev/null 2>&1 && ! curl -sf -m 2 "http://127.0.0.1:${port}/api/health" >/dev/null 2>&1; then echo "❌ :${port} (${svc})"; FAILED=1; else echo "✅ :${port} (${svc})"; fi; else echo "⚠️ :${svc} (no port)"; fi; done; exit $FAILED' """

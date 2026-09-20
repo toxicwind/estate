@@ -1,0 +1,52 @@
+name = "rig-toolcall-e2e"
+version = "0.1.0"
+description = "toolcall e2e via herd"
+author = ""
+module = "builtin:chat"
+schedule = "reactive"
+fallback_models = []
+priority = "Normal"
+skills = []
+mcp_servers = []
+tags = []
+workspace = "/home/toxic/.openfang/workspaces/rig-toolcall-e2e"
+state_dir = "/home/toxic/.openfang/workspaces/rig-toolcall-e2e"
+generate_identity_files = true
+tool_allowlist = []
+tool_blocklist = []
+cache_context = false
+
+[model]
+provider = "llama-swap"
+model = "toolcall-local/qwen3.5-9b-tool"
+max_tokens = 4096
+temperature = 0.7
+system_prompt = "You are a helpful AI agent."
+api_key_env = "LLAMA_SWAP_API_KEY"
+
+[resources]
+max_memory_bytes = 268435456
+max_cpu_time_ms = 30000
+max_tool_calls_per_minute = 60
+max_llm_tokens_per_hour = 0
+max_network_bytes_per_hour = 104857600
+max_cost_per_hour_usd = 0.0
+max_cost_per_day_usd = 0.0
+max_cost_per_month_usd = 0.0
+
+[capabilities]
+network = []
+tools = []
+memory_read = []
+memory_write = []
+agent_spawn = false
+agent_message = []
+shell = []
+ofp_discover = false
+ofp_connect = []
+
+[tools]
+
+[metadata]
+
+[persona]

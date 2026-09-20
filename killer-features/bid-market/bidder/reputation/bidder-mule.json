@@ -1,0 +1,9 @@
+{
+  "bids": 9,
+  "assigns": 1,
+  "successes": 0,
+  "failures": 1,
+  "total_duration_s": 0.0,
+  "total_bid_latency_s": 0.9921042919158936,
+  "cal_mult": 0.85
+}

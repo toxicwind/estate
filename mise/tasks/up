@@ -18,7 +18,8 @@ set +a
 if ! pitchfork list >/dev/null 2>&1; then
   echo "Supervisor not running — starting it..."
   nohup pitchfork supervisor start > /tmp/pitchfork-supervisor.log 2>&1 &
-  sleep 3
+  # 2026-09-20: poll for supervisor liveness instead of blind sleep.
+  for _ in $(seq 1 30); do pitchfork list >/dev/null 2>&1 && break; sleep 0.5; done
   if ! pitchfork list >/dev/null 2>&1; then
     echo "ERROR: supervisor failed to start. Check /tmp/pitchfork-supervisor.log"
     exit 1

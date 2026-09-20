@@ -1,0 +1,70 @@
+{
+ "task_id": "toposort-shakedown-01",
+ "spec": "# Task: toposort\n\nImplement **topological ordering with cycle detection** in a single file named `toposort.py`.\n\n## API\n\n```python\nclass CycleError(Exception):\n    def __init__(self, cycle): ...   # cycle: list of nodes forming the cycle\n\ndef topological_order(nodes, edges) -> list: ...\n```\n\n- `nodes`: iterable of hashable nodes.\n- `edges`: iterable of `(u, v)` tuples meaning **u comes before v**.\n- Returns a list containing every node exactly once, in an order where every edge\n  `(u, v)` has `u` positioned before `v`.\n- **Determinism:** when several valid orders exist, return the lexicographically\n  smallest one, comparing nodes by their `repr()`.\n- If the graph has a cycle, raise `CycleError` whose `.cycle` attribute is a list of\n  nodes forming a directed cycle, with the first node repeated at the end\n  (e.g. `[a, b, c, a]`). A self-loop `(u, u)` is a cycle `[u, u]`.\n- An edge referencing a node not present in `nodes` raises `ValueError`.\n- Duplicate edges are ignored. Empty input returns `[]`.\n\nOnly the Python standard library may be used.\n\n(The hidden acceptance tests check: basic ordering, determinism tiebreaks,\ndisconnected/empty input, duplicate edges, ValueError on unknown nodes,\nself-loop cycle shape, REAL cycle reporting where every consecutive pair is an\nactual edge, and brute-force lexicographic minimality on random small graphs.)\n",
+ "hard_constraints": [
+  "stdlib only: no third-party imports in the solution",
+  "additive-only: debaters must not modify tests or harness",
+  "no network or filesystem access in the solution",
+  "cell-disposable: debate artifacts stay under debate-oracle/runs/"
+ ],
+ "measured_failure": "Candidate implementations must report REAL directed cycles (first node repeated at the end, every consecutive pair an actual edge) and return the lexicographically smallest valid order. Naive DFS finish orderings and stub cycle reports fail the hidden acceptance tests.",
+ "candidates": [
+  {
+   "id": "shakedown-topo-a",
+   "source": {
+    "kind": "manual",
+    "ref": "t3-impl-orchestrator shakedown"
+   },
+   "task_ref": "toposort-shakedown-01",
+   "files": {
+    "toposort.py": "\"\"\"Topological ordering with cycle detection (Kahn + heap, DFS cycle report).\"\"\"\nimport heapq\n\n\nclass CycleError(Exception):\n    def __init__(self, cycle):\n        super().__init__(\"cycle detected: %r\" % (cycle,))\n        self.cycle = cycle\n\n\ndef topological_order(nodes, edges):\n    nodes = list(nodes)\n    node_set = set(nodes)\n    adj = {n: set() for n in nodes}\n    indeg = {n: 0 for n in nodes}\n    for u, v in edges:\n        if u not in node_set or v not in node_set:\n            raise ValueError(\"edge references unknown node: %r\" % ((u, v),))\n        if v not in adj[u]:\n            adj[u].add(v)\n            indeg[v] += 1\n    # Kahn's algorithm; heap keyed by repr() gives the lexicographically\n    # smallest valid order deterministically.\n    heap = [(repr(n), n) for n in nodes if indeg[n] == 0]\n    heapq.heapify(heap)\n    order = []\n    while heap:\n        _, n = heapq.heappop(heap)\n        order.append(n)\n        for m in adj[n]:\n            indeg[m] -= 1\n            if indeg[m] == 0:\n                heapq.heappush(heap, (repr(m), m))\n    if len(order) != len(nodes):\n        raise CycleError(_find_cycle(nodes, adj))\n    return order\n\n\ndef _find_cycle(nodes, adj):\n    \"\"\"Return a real directed cycle: first node repeated at the end.\"\"\"\n    WHITE, GRAY, BLACK = 0, 1, 2\n    color = {n: WHITE for n in nodes}\n    stack = []\n\n    def dfs(n):\n        color[n] = GRAY\n        stack.append(n)\n        for m in adj[n]:\n            if color[m] == GRAY:\n                i = stack.index(m)\n                return stack[i:] + [m]\n            if color[m] == WHITE:\n                r = dfs(m)\n                if r:\n                    return r\n        stack.pop()\n        color[n] = BLACK\n        return None\n\n    for n in nodes:\n        if color[n] == WHITE:\n            r = dfs(n)\n            if r:\n                return r\n    return [nodes[0], nodes[0]] if nodes else []\n"
+   },
+   "entry_cmd": "python3 toposort.py",
+   "test_cmd": "python3 -m pytest tests/ -q",
+   "claimed_strengths": [
+    "Kahn's algorithm with repr-keyed heap: lexicographically smallest order",
+    "DFS-based real cycle reporting (first node repeated, every pair a real edge)",
+    "ValueError on unknown nodes, duplicate edges ignored"
+   ]
+  },
+  {
+   "id": "shakedown-topo-b",
+   "source": {
+    "kind": "manual",
+    "ref": "t3-impl-orchestrator shakedown"
+   },
+   "task_ref": "toposort-shakedown-01",
+   "files": {
+    "toposort.py": "\"\"\"Topological ordering (Kahn, repr-sorted); cycle report is a stub.\"\"\"\nimport heapq\n\n\nclass CycleError(Exception):\n    def __init__(self, cycle):\n        super().__init__(\"cycle detected\")\n        self.cycle = cycle\n\n\ndef topological_order(nodes, edges):\n    nodes = list(nodes)\n    node_set = set(nodes)\n    adj = {n: set() for n in nodes}\n    indeg = {n: 0 for n in nodes}\n    for u, v in edges:\n        if u not in node_set or v not in node_set:\n            raise ValueError(\"edge references unknown node\")\n        if v not in adj[u]:\n            adj[u].add(v)\n            indeg[v] += 1\n    heap = [(repr(n), n) for n in nodes if indeg[n] == 0]\n    heapq.heapify(heap)\n    order = []\n    while heap:\n        _, n = heapq.heappop(heap)\n        order.append(n)\n        for m in adj[n]:\n            indeg[m] -= 1\n            if indeg[m] == 0:\n                heapq.heappush(heap, (repr(m), m))\n    if len(order) != len(nodes):\n        leftover = [n for n in nodes if n not in order]\n        # STUB: reports a self-loop on an arbitrary leftover node instead of\n        # the real directed cycle. Passes self-loop tests, fails real-cycle\n        # reporting (consecutive pair is not an actual edge).\n        raise CycleError([leftover[0], leftover[0]])\n    return order\n"
+   },
+   "entry_cmd": "python3 toposort.py",
+   "test_cmd": "python3 -m pytest tests/ -q",
+   "claimed_strengths": [
+    "same correct Kahn ordering as the strong candidate",
+    "passes self-loop cycle tests",
+    "simpler code (no separate DFS pass)"
+   ]
+  },
+  {
+   "id": "shakedown-topo-c",
+   "source": {
+    "kind": "manual",
+    "ref": "t3-impl-orchestrator shakedown"
+   },
+   "task_ref": "toposort-shakedown-01",
+   "files": {
+    "toposort.py": "\"\"\"Topological ordering via iterative DFS (no determinism guarantee).\"\"\"\n\n\nclass CycleError(Exception):\n    def __init__(self, cycle):\n        super().__init__(\"cycle detected\")\n        self.cycle = cycle\n\n\ndef topological_order(nodes, edges):\n    nodes = list(nodes)\n    adj = {}\n    for n in nodes:\n        adj[n] = []\n    for u, v in edges:\n        # BUG: unknown nodes are silently absorbed instead of ValueError.\n        adj.setdefault(u, []).append(v)\n        adj.setdefault(v, [])\n    order = []\n    state = {}  # 1 = in current path, 2 = finished\n\n    def visit(n, path):\n        s = state.get(n, 0)\n        if s == 2:\n            return\n        if s == 1:\n            i = path.index(n)\n            raise CycleError(path[i:] + [n])\n        state[n] = 1\n        for m in adj.get(n, []):\n            visit(m, path + [n])\n        state[n] = 2\n        order.append(n)\n\n    for n in nodes:\n        visit(n, [])\n    order.reverse()\n    # BUG: DFS finish order is a valid topological order but NOT the\n    # lexicographically smallest one the spec requires.\n    return order\n"
+   },
+   "entry_cmd": "python3 toposort.py",
+   "test_cmd": "python3 -m pytest tests/ -q",
+   "claimed_strengths": [
+    "simple iterative DFS, real cycle path reporting",
+    "passes basic ordering tests"
+   ]
+  }
+ ],
+ "rounds": 3,
+ "turn_timeout_s": 45,
+ "debate_budget_s": 240,
+ "task_ref": "shakedown-toposort"
+}

@@ -1,0 +1,27 @@
+{
+  "debate_id": "audit-fallback-test",
+  "task_ref": "token-bucket",
+  "winner": "tb-c1",
+  "ranking": [
+    "tb-c2",
+    "tb-c1",
+    "tb-c3"
+  ],
+  "confidence": 0.88,
+  "rationale": "C1 satisfies every hard constraint: uses time.monotonic() [C1 L18], threading.Lock guards all state mutations [C1 L15,27-32], bucket starts full [C1 L13], validates capacity/refill_rate>0 [C1 L9-10] and n>0 [C1 L25-26,35-36]. wait_time returns math.inf for n>capacity [C1 L37-38] and correct delay otherwise [C1 L42-43]. C2 violates two hard constraints: uses time.time() [C2 L13,16] not monotonic, and has no synchronization \u2014 C1's rebuttal correctly identifies the over-granting race [R2.2]. C3 concedes its wait_time stub violates the spec [R2.3]. C1 is the only complete, correct implementation. [gate: judge winner tb-c2 failed e2e; crowned tb-c1 per ranking cascade]",
+  "judge_model": "kimi-k3-nim",
+  "judge_prompt_version": "oracle-v1",
+  "rubric": {
+    "correctness": 10,
+    "evidence": 10,
+    "constraint_fit": 10,
+    "failure_coverage": 10,
+    "simplicity": 10
+  },
+  "decided_at": "2026-09-20T06:45:33.099610+00:00",
+  "e2e": {
+    "status": "fallback-runner-up",
+    "log_ref": "audit/work/verdicts/audit-fallback-test/gated/logs",
+    "accepted_id": "tb-c1"
+  }
+}

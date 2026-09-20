@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+"""showdown: speed-run-style structured competition (pattern-adapted).
+
+Adapts the speed-run vendor skill pattern (showdown + judge SKILL.md):
+  1. two runners compete: fast (1.2B) vs tool (9B), one candidate each
+  2. SMOKE PROBE: model-generated probe.py (from spec only, never tests/)
+     runs against both -- crash check + observed outputs
+  3. JUDGE: the tool model scores both on a compact worksheet --
+     correctness evidence (probe results), spec adherence, edge cases,
+     efficiency -- and picks a winner
+Distinct from oracle-consensus: probe execution evidence feeds the judge.
+Anti-cheat: tests/ is never opened or read.
+Ceiling: 480s.
+"""
+import os, sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "lib"))
+from cr import *
+
+CEILING = 480
+
+JUDGE_SYS = ("You are the showdown judge. Reply with exactly one line: "
+             "WINNER: A or WINNER: B")
+
+def main(task_dir, output_path):
+    arm_timeout(CEILING)
+    spec = read_task(task_dir)
+    lang = spec.get("language", "python")
+    prompt = spec_prompt(spec)
+    log("showdown: runner A <- fast, runner B <- tool")
+    a = extract_code(chat(FAST_URL, FAST_MODEL, prompt, max_tokens=2048,
+                          temperature=0.4, timeout=120), lang)
+    check_deadline("runner-b")
+    b = extract_code(chat(TOOL_URL, TOOL_MODEL, prompt, max_tokens=4096,
+                          temperature=0.4, timeout=200), lang)
+    if not a and not b:
+        log("both runners empty"); return 1
+    if not a: write_solution(output_path, f"solution.{lang}", b); return 0
+    if not b: write_solution(output_path, f"solution.{lang}", a); return 0
+
+    probe_note = "probe unavailable"
+    if lang.lower() == "python":
+        try:
+            check_deadline("probe-gen")
+            probe_src = gen_probe_code(spec)
+            ra, ea = run_probe(a, probe_src)
+            check_deadline("probe-b")
+            rb, eb = run_probe(b, probe_src)
+            def summ(r, e):
+                ok = ok_count(r)
+                outs = "; ".join(str(x.get("output", x.get("error")))[:80]
+                                 for x in r[:6])
+                return f"{ok}/{len(r)} ok in {e:.2f}s; outputs: {outs}"
+            probe_note = f"A: {summ(ra, ea)}\nB: {summ(rb, eb)}"
+            log(f"showdown probe:\n{probe_note}")
+        except Exception as e:
+            log(f"probe failed: {e}")
+
+    judge_prompt = (f"Task: {spec.get('title', spec.get('id',''))}\n\n"
+                    f"{spec.get('description','')}\n\n"
+                    f"Impl A:\n```{lang}\n{a}\n```\n\n"
+                    f"Impl B:\n```{lang}\n{b}\n```\n\n"
+                    f"Probe execution evidence (model-generated probes, not the hidden tests):\n{probe_note}\n\n"
+                    "Score both 1-5 on correctness, spec adherence, edge "
+                    "cases, efficiency. Reply exactly: WINNER: A or WINNER: B")
+    check_deadline("judge")
+    verdict = chat(TOOL_URL, TOOL_MODEL, judge_prompt, max_tokens=16,
+                   temperature=0.0, timeout=90, system=JUDGE_SYS).upper()
+    winner = a if "WINNER: A" in verdict else b
+    log(f"showdown winner: {'A' if winner is a else 'B'}")
+    write_solution(output_path, f"solution.{lang}", winner)
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1], sys.argv[2]))

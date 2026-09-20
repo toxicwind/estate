@@ -1,0 +1,81 @@
+#!/usr/bin/env python3
+"""evolve: sample-and-select by BEHAVIORAL self-consistency (AlphaCode-style).
+
+  1. sample N=4 candidates from the tool model (t=0.8)
+  2. the model writes probe.py from the SPEC ONLY (never reads tests/)
+  3. each candidate is executed against the probes; behavior = per-probe
+     (ok, output) signature
+  4. candidates cluster by identical behavior; winner = the candidate from
+     the cluster with the most ok probes, tie-broken by cluster size
+     (self-consistency / majority vote on behavior)
+
+Selection is by EXECUTION + majority vote -- distinct from reviewer-rank
+(model scoring, no execution) and oracle-consensus (binary judge).
+Anti-cheat: tests/ is never opened or read; only candidate code runs.
+Ceiling: 480s.
+"""
+import os, sys
+from collections import defaultdict
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "lib"))
+from cr import *
+
+CEILING = 480
+N_SAMPLES = 4
+
+def main(task_dir, output_path):
+    arm_timeout(CEILING)
+    spec = read_task(task_dir)
+    lang = spec.get("language", "python")
+    if lang.lower() != "python":
+        log("evolve supports python only; emitting single sample")
+        code = extract_code(chat(TOOL_URL, TOOL_MODEL, spec_prompt(spec),
+                                 max_tokens=4096, temperature=0.2, timeout=170), lang)
+        if not code: return 1
+        write_solution(output_path, f"solution.{lang}", code); return 0
+
+    prompt = spec_prompt(spec)
+    cands = []
+    for i in range(N_SAMPLES):
+        check_deadline("sample")
+        log(f"evolve: sample {i+1}/{N_SAMPLES}")
+        try:
+            code = extract_code(chat(TOOL_URL, TOOL_MODEL, prompt, max_tokens=4096,
+                                     temperature=0.8, timeout=170), lang)
+            if code: cands.append(code)
+        except Exception as e:
+            log(f"sample {i+1} failed: {e}")
+    if not cands:
+        log("no candidates"); return 1
+
+    check_deadline("probe-gen")
+    log("evolve: generating probes from spec")
+    try:
+        probe_src = gen_probe_code(spec)
+    except Exception as e:
+        log(f"probe gen failed: {e}; emitting sample 1")
+        write_solution(output_path, "solution.py", cands[0]); return 0
+    if not probe_src:
+        log("empty probe; emitting sample 1")
+        write_solution(output_path, "solution.py", cands[0]); return 0
+
+    clusters = defaultdict(list)   # behavior_key -> [candidate idx]
+    oks = {}
+    for i, code in enumerate(cands):
+        check_deadline("probe-run")
+        results, el = run_probe(code, probe_src)
+        key = behavior_key(results)
+        clusters[key].append(i)
+        oks[i] = ok_count(results)
+        log(f"evolve: sample {i+1}: {oks[i]}/{len(results)} probes ok ({el:.2f}s)")
+
+    # winner: cluster whose members have the most ok probes, then biggest
+    best_key = max(clusters, key=lambda k: (max(oks[i] for i in clusters[k]),
+                                            len(clusters[k])))
+    winner_idx = clusters[best_key][0]
+    log(f"evolve: winner sample {winner_idx+1} "
+        f"(ok={oks[winner_idx]}, cluster={len(clusters[best_key])})")
+    write_solution(output_path, "solution.py", cands[winner_idx])
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1], sys.argv[2]))

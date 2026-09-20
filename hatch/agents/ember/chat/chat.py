@@ -29,6 +29,7 @@ import io
 import json
 import os
 import re
+import shutil
 import sys
 import time
 from pathlib import Path
@@ -350,27 +351,65 @@ def is_relevant(meta: dict, agent: str) -> bool:
 # --- atomic sequence lock ----------------------------------------------------
 
 
-def _acquire_lock(chan: Path, timeout: float = 10.0, stale: float = 30.0) -> Path:
-    """Atomic cross-platform lock via mkdir (fails if the dir already exists).
+def _pid_alive(pid: int) -> bool:
+    """True if a process with this pid exists. Fail-closed: an unreadable
+    or foreign pid counts as alive (we wait rather than steal)."""
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except (PermissionError, ValueError, OverflowError):
+        return True
+    return True
 
-    Steals a lock older than `stale` seconds so a crashed poster can't wedge the
-    channel forever.
+
+def _lock_dead(lock: Path, stale: float) -> bool:
+    """A lock is stealable when its owner is gone (or unknown) and the lock
+    dir is older than `stale`. A live owner is NEVER stolen from, however
+    old the lock is."""
+    try:
+        mtime = lock.stat().st_mtime
+    except FileNotFoundError:
+        return True
+    try:
+        owner = int((lock / "owner").read_text(encoding="utf-8").strip())
+    except (OSError, ValueError):
+        owner = None
+    if owner is not None and _pid_alive(owner):
+        return False
+    return (time.time() - mtime) > stale
+
+
+def _acquire_lock(chan: Path, timeout: float = 30.0, stale: float = 10.0) -> Path:
+    """Atomic cross-process lock via mkdir (atomic on POSIX).
+
+    Steals a lock whose owner died (or is unknown) and whose mtime exceeds
+    `stale` seconds, so a crashed poster can't wedge the channel forever.
+    `stale` MUST be < `timeout`: the old defaults (timeout=10, stale=30)
+    made the steal branch unreachable -- no poster lived long enough to see
+    a stealable lock, so one crashed poster wedged the channel permanently.
+    The owner pid is recorded in the lock dir so a slow-but-alive holder is
+    never stolen from.
     """
+    if not stale < timeout:
+        raise ValueError(f"stale ({stale}) must be < timeout ({timeout})")
     lock = chan / "_seq.lock"
     start = time.time()
     while True:
         try:
             os.mkdir(lock)
+            try:
+                (lock / "owner").write_text(f"{os.getpid()}\n",
+                                            encoding="utf-8")
+            except OSError:
+                pass
             return lock
         except FileExistsError:
-            try:
-                if time.time() - lock.stat().st_mtime > stale:
-                    try:
-                        os.rmdir(lock)
-                    except OSError:
-                        pass
-                    continue
-            except FileNotFoundError:
+            if _lock_dead(lock, stale):
+                try:
+                    shutil.rmtree(lock)
+                except OSError:
+                    pass
                 continue
             if time.time() - start > timeout:
                 raise AgentChatError(
@@ -381,7 +420,7 @@ def _acquire_lock(chan: Path, timeout: float = 10.0, stale: float = 30.0) -> Pat
 
 def _release_lock(lock: Path):
     try:
-        os.rmdir(lock)
+        shutil.rmtree(lock)
     except OSError:
         pass
 

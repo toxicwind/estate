@@ -7,7 +7,6 @@ cd "$SOV"
 echo "--- Mise Run Down: Stopping Core Daemons ---"
 echo "Timestamp: $(date -Iseconds)"
 
-# Check if pitchfork is available
 if ! command -v pitchfork >/dev/null; then
   echo "INFO: pitchfork not on PATH; nothing to stop via pitchfork" >&2
   exit 0
@@ -22,9 +21,12 @@ echo "--- Mise Run Down: Final Pitchfork Status ---"
 pitchfork list
 
 echo "--- Mise Run Down: Port Check ---"
-# Check for any remaining open ports in the sovereign range
-if ss -tlnp | grep -E '25100|25101|25102|25103|25104|25105|25106|25107|25109|25110|25112|25113|25115|25120|25121|25199|25133'; then
+# 2026-09-20: ports derived live from pitchfork.toml (old list was stale —
+# it missed 25122/25146/25152/25153/25201/25202 and others).
+PORTS=$(grep -oP 'ready_http\s*=\s*"http://[^:]+:\K[0-9]+' pitchfork.toml | sort -u | paste -sd"|" -)
+if [[ -n "$PORTS" ]] && ss -tlnp 2>/dev/null | grep -E "(${PORTS})" >/dev/null; then
   echo "WARNING: Some sovereign service ports are still open. Manual intervention may be required." >&2
+  ss -tlnp 2>/dev/null | grep -E "(${PORTS})" >&2 || true
   exit 1
 else
   echo "INFO: All sovereign service ports appear to be closed."
