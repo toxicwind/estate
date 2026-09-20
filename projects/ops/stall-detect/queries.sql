@@ -11,6 +11,13 @@
 -- transcripts, mailbox, recovery). Live process behavior (ps, CPU, py-spy,
 -- strace, ports) belongs to the live-proc lane (stale-hunter) — do not
 -- duplicate their hunt; share DB findings in fleet and divide targets there.
+--
+-- Q8/Q9/Q10 are the error-claim harvest: raw error-shaped strings are CLAIMS,
+-- not facts (unreliable-narrator doctrine). Feed harvest results to
+-- `agent-reaper --classify-errors` (JSON array of {id, source, error_text}),
+-- which classifies each claim against the shared ERROR_CLAIM_CATALOG
+-- (hatch/bin/error_claims.py) and prints an executable cause->verify->action
+-- report. Never act on an error string before classify+verify.
 -- ============================================================================
 
 -- Q1: stale running agents — idle > 12h (tune threshold per fleet needs)
@@ -75,3 +82,49 @@ SELECT spawn_id AS sid, parent_agent_id AS parent,
 FROM agent.subagent_spawns
 WHERE child_agent_id = '<AGENT_ID>'
 LIMIT 5;
+
+-- Q8: error-claim harvest — error-shaped strings in agent final messages.
+-- Most hits are completed agents whose final reports merely MENTION errors
+-- (e.g. "10 Mistral + 1 Gemini + 4 OpenRouter failures") — not error claims
+-- about stalls. Classify with `agent-reaper --classify-errors` before acting.
+SELECT agent_id AS aid, status AS s, kind AS k,
+       round((EXTRACT(epoch FROM now()) - updated_at)/3600, 1) AS idle_hrs,
+       substr(last_assistant_message, 1, 300) AS claim_txt
+FROM agent.agents
+WHERE last_assistant_message IS NOT NULL
+  AND (lower(last_assistant_message) LIKE '%error%'
+    OR lower(last_assistant_message) LIKE '%failed%'
+    OR lower(last_assistant_message) LIKE '%timeout%'
+    OR lower(last_assistant_message) LIKE '%refused%'
+    OR lower(last_assistant_message) LIKE '%denied%'
+    OR lower(last_assistant_message) LIKE '%no space%'
+    OR lower(last_assistant_message) LIKE '%unauthorized%'
+    OR lower(last_assistant_message) LIKE '%429%'
+    OR lower(last_assistant_message) LIKE '%401%')
+ORDER BY updated_at DESC
+LIMIT 50;
+
+-- Q9: error-claim harvest — failed tool outputs (canonical DB lane).
+-- NOTE (verified 2026-09-20): runtime.tool_calls and runtime.tool_outputs
+-- are EMPTY in this cell's muse.db view, so this returns 0 rows here. Where
+-- populated, this is the primary failed-output lane; otherwise use Q10.
+-- Classify results with `agent-reaper --classify-errors` before acting.
+SELECT o.call_id AS tcall,
+       substr(coalesce(o.error_text, o.output_text), 1, 300) AS claim_txt
+FROM runtime.tool_outputs o
+WHERE o.error_text IS NOT NULL
+ORDER BY o.event_seq DESC
+LIMIT 50;
+
+-- Q10: error-claim harvest — failed tool events (the populated lane here).
+-- agent.subagent_progress_tool_events carries tool_status='failed' rows with
+-- tool_result_preview (1,185 on 2026-09-20). Genuine tool failures
+-- (exit 1, edit mismatch, browser action failed) usually return NO catalog
+-- claim from the classifier — that is correct: a failed tool is not a
+-- misleading error claim. Only act on claims the classifier recognizes.
+SELECT tool_name AS tname, tool_status AS s, child_agent_id AS aid,
+       substr(tool_result_preview, 1, 300) AS claim_txt
+FROM agent.subagent_progress_tool_events
+WHERE tool_status = 'failed'
+ORDER BY event_id DESC
+LIMIT 50;
