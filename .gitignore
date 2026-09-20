@@ -55,6 +55,7 @@ logs/
 /tmp/
 tmp/
 pids/
+*.pid
 session-export*
 *.session
 *.sqlite
