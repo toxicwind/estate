@@ -97,7 +97,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | sudo-smith | Sudo posture hardening (passwordless scope, key paths, shared-tree ownership) + missing-file forging (systemd/config/doc references) + permanent ops scripts | Ember | DONE (2026-09-20) -- commit 628bccc435 (projects/ops/bin/{sudo-audit.sh,missing-files.sh} + projects/yote/ops/hw-audit/{hw-audit.sh,hw-watchdog.py}; hw-audit.service/.timer referrers restored; live copies deployed to /home/toxic/) |
 | lodestone | Oracle-market wiring (Bedrock): live oracle intake E2E proof, DEBATE CHASE RULE (SPEC §9), knowledgebase-attestation bid gate (SPEC §10), permanent coordinator oracle-route skill | Ember (Bedrock) | RUNNING (2026-09-20) |
 
-| kindling | Fleet-culture implementation (Bedrock): spawn-protocol skill, welcome hooks, identity reconciliation, fleet-onboard step-zero script | Bedrock (parent orchestrator) | RUNNING (2026-09-20) |
+| kindling | Fleet-culture implementation (Bedrock): spawn-protocol skill, welcome hooks, identity reconciliation, fleet-onboard step-zero script | Bedrock (parent orchestrator) | DONE (2026-09-20) — 89618288c6 |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 
