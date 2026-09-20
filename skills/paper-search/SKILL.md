@@ -28,14 +28,14 @@ posting intent, not a gate.
 
 ## Doctrine (not redefined here)
 
-All latency behavior follows the **hft-latency** skill (`../hft-latency/SKILL.md`):
+All latency behavior follows the **hft-latency** skill (`/home/toxic/workspace/skills/hft-latency/SKILL.md (yote); ~/workspace/skills/race/SKILL.md (cell)`):
 race redundant legs concurrently, fail-fast per-leg timeouts, measure everything,
 keep the fast path hot via the winners JSONL, maximal = wider not harder, never
 roll back, borrow before inventing. This skill adds no new doctrine — it applies
 that one to paper search.
 
 Ranked results (titles, IDs, URLs, relevance lines) are admissible evidence for
-**architect-caucus** debates (`../architect-caucus/SKILL.md`); cite the
+**architect-caucus** debates (`/home/toxic/workspace/skills/architect-caucus/SKILL.md`); cite the
 PAPER-RESULT entry when you bring papers to a debate.
 
 ## Components (canonical code: `toxicwind/paper-poller`, runs at `/home/toxic/paper-poller`)
