@@ -17,8 +17,15 @@ Research grounding:
     regime at small scale; this harness targets exactly that regime with a
     retry/repair loop for robustness.
 
+HFT layer: set TOOLCALL_RACE=1 to route every chat call through hft_race.py —
+redundant-lane racing (direct :25152 vs herd-routed :25100), first-valid-wins,
+hot persistent connections, per-hop timings, winner ledger. This is the
+recommended mode for the Agent 2 pilot: if one lane dies, the other wins
+transparently.
+
 Usage:
   python3 agent_loop.py "What GPU is in this box? Compute its VRAM in GiB."
+  TOOLCALL_RACE=1 python3 agent_loop.py "..."
 """
 import ast
 import json
@@ -28,11 +35,12 @@ import sys
 import time
 import urllib.request
 
-BASE = os.environ.get("TOOLCALL_BASE", "http://127.0.0.1:25124")
+BASE = os.environ.get("TOOLCALL_BASE", "http://127.0.0.1:25152")
 MODEL = os.environ.get("TOOLCALL_MODEL", "qwen3.5-9b-tool")
 PER_ATTEMPT_TIMEOUT = int(os.environ.get("TOOLCALL_TIMEOUT", "120"))
 MAX_TOOL_ROUNDS = int(os.environ.get("TOOLCALL_MAX_ROUNDS", "6"))
 MAX_REPAIR = 2
+RACE = os.environ.get("TOOLCALL_RACE", "0") == "1"
 
 TOOLS = [
     {"type": "function", "function": {
@@ -110,7 +118,7 @@ def validate_and_run(call):
     return False, "unreachable"
 
 
-def chat(messages, tools=True):
+def _chat_direct(messages, tools=True):
     body = {"model": MODEL, "messages": messages, "temperature": 0,
             "tool_choice": "auto" if tools else "none"}
     if tools:
@@ -119,7 +127,24 @@ def chat(messages, tools=True):
                                  data=json.dumps(body).encode(),
                                  headers={"Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=PER_ATTEMPT_TIMEOUT) as r:
-        return json.load(r)
+        return json.load(r), {}
+
+
+def _chat_race(messages, tools=True):
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import hft_race
+    resp, meta = hft_race.race_chat(
+        messages,
+        tools=TOOLS if tools else None,
+        tool_choice="auto" if tools else "none",
+        temperature=0, ceiling=PER_ATTEMPT_TIMEOUT)
+    return resp, meta
+
+
+def chat(messages, tools=True):
+    if RACE:
+        return _chat_race(messages, tools)
+    return _chat_direct(messages, tools)
 
 
 def run_turn(user_prompt, system_prompt=None, verbose=True):
@@ -130,16 +155,21 @@ def run_turn(user_prompt, system_prompt=None, verbose=True):
     messages.append({"role": "user", "content": user_prompt})
     transcript = []
     for round_i in range(MAX_TOOL_ROUNDS):
-        resp = chat(messages)
+        resp, meta = chat(messages)
         msg = resp["choices"][0]["message"]
         finish = resp["choices"][0].get("finish_reason")
         transcript.append({"round": round_i, "finish_reason": finish,
                            "tool_calls": msg.get("tool_calls"),
-                           "content": msg.get("content")})
+                           "content": msg.get("content"),
+                           "race": meta.get("winner") if meta else None,
+                           "ms_total": meta.get("ms_total") if meta else None})
         tcs = msg.get("tool_calls") or []
         messages.append(msg)
         if verbose:
-            print("--- round %d (finish=%s, %.1fs) ---" % (round_i, finish, time.time() - t0))
+            lane = (" [lane=%s %sms]" % (meta.get("winner"), meta.get("ms_total"))
+                    if meta else "")
+            print("--- round %d (finish=%s, %.1fs)%s ---" %
+                  (round_i, finish, time.time() - t0, lane))
             for tc in tcs:
                 print("TOOL:", tc["function"]["name"], tc["function"]["arguments"])
         if not tcs:
@@ -173,4 +203,5 @@ if __name__ == "__main__":
     out = run_turn(prompt, system)
     with open("/tmp/toolcall-transcript.json", "w") as f:
         json.dump(out, f, indent=2)
-    print("ROUNDS:", out.get("rounds"), "ELAPSED:", out.get("elapsed_s"))
+    print("ROUNDS:", out.get("rounds"), "ELAPSED:", out.get("elapsed_s"),
+          "RACE:" , "on" if RACE else "off")
