@@ -256,6 +256,16 @@ mise = false
 retry = true
 auto = ["start"]
 
+[daemons.oracle-core]
+port = 25151
+health_port = { port = 25151, interval = "30s", timeout = "5s", retries = 3 }
+ready_cmd = "ss -ltn 'sport = :25151' | grep -q LISTEN"
+run = "exec /home/toxic/sovereign/agents/oracle-market/bin/run-oracle-core.sh"
+dir = "/home/toxic/sovereign/agents/oracle-market"
+mise = false
+retry = true
+auto = ["start"]
+
 [daemons.tau]
 run = "exec /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/dist/omp"
 dir = "/home/toxic"
