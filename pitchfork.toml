@@ -157,7 +157,7 @@ env = { TAU_CODE_PORT = "25145" }
 auto = ["start"]
 
 [daemons.kimi-code]
-run = "exec /home/toxic/sovereign/bin/claim-port 25126 /home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126"
+run = "exec /home/toxic/sovereign/bin/claim-port 25126 /home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126 --no-port-walk"
 dir = "/home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code"
 mise = true
 retry = true
@@ -345,11 +345,14 @@ env = { BROWSERLESS_PORT = "25130" }
 auto = ["start"]
 
 [daemons.gemini-mcp]
+health_http = { url = "http://127.0.0.1:25202/health", interval = "30s", timeout = "5s", retries = 3 }
+env = { GEMINI_MCP_PORT = "25202" }
+port = 25202
 run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/gemini-mcp/server.py"
 dir = "/home/toxic/gemini-mcp"
 mise = false
 retry = true
-ready_http = "http://127.0.0.1:8378/health"
+ready_http = "http://127.0.0.1:25202/health"
 auto = ["start"]
 
 [daemons.sovereign-router]
