@@ -11,7 +11,7 @@ import sys
 
 BIN = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "bin")
 sys.path.insert(0, BIN)
-os.environ["ORACLE_WORK"] = "/tmp/oracle-test-work"
+os.environ.setdefault("ORACLE_WORK", "/tmp/oracle-test-work")
 
 import bayes
 import calibration as cal
@@ -126,8 +126,9 @@ tier3, _ = escalation.route([], 0.5, False)
 check("human tier empty", tier3 == "HUMAN", tier3)
 tier4, _ = escalation.route([0.7, 0.75], 0.7, True, invariant_ok=False)
 check("invariant violation debates", tier4 == "DEBATE", tier4)
-mock = lambda prompt: {"posterior": 0.6, "concession": None}
-d = escalation.debate_tier("Q?", "crit", "ev", mock, k=2, max_rounds=2)
+mock = lambda model, prompt, timeout_s: {"content": "0.6"}
+d = escalation.debate_tier("Q?", "crit", "ev", ["oracle-judge-a"], mock,
+                           k=2, max_rounds=2)
 check("debate budgeted", d["rounds"] <= 2 and 0.01 <= d["posterior"] <= 0.99)
 
 # ---- sizing ----
@@ -148,6 +149,266 @@ viol2 = sizing.invariant_check([
     {"id": "a", "p": 0.8, "implies": "b"},
     {"id": "b", "p": 0.5}])
 check("implication violation", len(viol2) == 1)
+
+#!/usr/bin/env python3
+"""Rebuilt hardening test sections for bench/test_core.py (appended before the
+final print). Deterministic: no model calls, no network."""
+import threading
+import time
+
+import framing
+import oracle_ask
+
+# ---- framing: fail-closed question intake ----
+_framing_cases = [
+    ("Will this work?", "refused"),
+    ("the market is really big these days", "refused"),
+    ("hello", "refused"),
+    ("Will Bitcoin go up?", "refused"),
+    ("Will Bitcoin go up by Friday?", "refused"),
+    ("Will the herd router serve 100 or more models by 2026-12-31?", "framed"),
+    ("Will the sun rise tomorrow?", "framed"),
+    ("Did Apollo 11 land humans on the Moon in 1969?", "framed"),
+    ("Is 2 + 2 equal to 5 in standard arithmetic?", "framed"),
+    ("Was the Eiffel Tower completed before the year 1900?", "framed"),
+    ("Will Bitcoin exceed $100,000 by December 31, 2026?", "framed"),
+]
+for _q, _want in _framing_cases:
+    _r = framing.frame_question(_q)
+    check("framing %s -> %s" % (_q[:44], _want),
+          _r["status"] == _want, str(_r.get("refusal_reason")))
+_f5 = framing.frame_question(
+    "Will the herd router serve 100 or more models by 2026-12-31?")
+check("framing accepts real question",
+      _f5["status"] == "framed" and _f5["question_id"]
+      and _f5["base_rate_prior"] == 0.5, str(_f5))
+_btc = framing.frame_question("Will Bitcoin go up?")
+check("bitcoin refusal names missing pieces",
+      "resolution date" in _btc.get("refusal_reason", "")
+      and "resolvable event" in _btc.get("refusal_reason", ""),
+      str(_btc))
+check("bitcoin refusal carries clarification",
+      bool(_btc.get("clarification_request")), str(_btc))
+
+# ---- router/model separation: aliases only ----
+_rejected = False
+try:
+    oracle_ask._check_alias_models(
+        ["openrouter-free/nex-agi/nex-n2.5-mini:free"])
+except SystemExit:
+    _rejected = True
+check("concrete model rejected", _rejected)
+try:
+    oracle_ask._check_alias_models(
+        list(oracle_ask.DEFAULT_JUDGES) + [oracle_ask.FALLBACK_JUDGE])
+    _aliases_ok = True
+except SystemExit:
+    _aliases_ok = False
+check("alias panel accepted", _aliases_ok)
+check("default judges are aliases",
+      all("/" not in m and ":" not in m for m in oracle_ask.DEFAULT_JUDGES),
+      str(oracle_ask.DEFAULT_JUDGES))
+check("fallback is local alias",
+      oracle_ask.FALLBACK_JUDGE == "oracle-judge-local",
+      oracle_ask.FALLBACK_JUDGE)
+
+# ---- calibration ownership: engine applies exactly once per posterior ----
+_apply_calls = []
+_orig_apply = cal.CalibrationLoop.apply
+
+
+def _counting_apply(self, judge_id, score):
+    _apply_calls.append((judge_id, score))
+    return _orig_apply(self, judge_id, score)
+
+
+cal.CalibrationLoop.apply = _counting_apply
+try:
+    _fj = [engine.JudgePosterior("oracle-judge-a", 0.72),
+           engine.JudgePosterior("oracle-judge-b", 0.68),
+           engine.JudgePosterior("oracle-judge-c", 0.75)]
+    _apply_calls.clear()
+    _v1 = engine.build_verdict(_f5, _fj)
+    check("engine applies calibration exactly once per judge posterior",
+          len(_apply_calls) == len(_fj)
+          and sorted(j for j, _ in _apply_calls)
+          == sorted(j.judge_id for j in _fj),
+          "apply() calls=%d for %d judges: %s"
+          % (len(_apply_calls), len(_fj), _apply_calls))
+    _v2 = engine.build_verdict(_f5, _fj)
+    check("re-running build_verdict re-applies once more, never double-applies",
+          len(_apply_calls) == 2 * len(_fj),
+          "apply() calls after 2 runs=%d" % len(_apply_calls))
+finally:
+    cal.CalibrationLoop.apply = _orig_apply
+
+check("engine aggregation deterministic",
+      _v1["probability"] == _v2["probability"]
+      and _v1["verdict_sha256"] == _v2["verdict_sha256"],
+      "%s %s" % (_v1["probability"], _v2["probability"]))
+
+# ask path never touches calibration
+_ask_src = open(os.path.join(BIN, "oracle_ask.py")).read()
+check("ask path never applies calibration",
+      "CalibrationLoop" not in _ask_src and "loop.apply" not in _ask_src,
+      "calibration must live in engine.build_verdict only")
+
+# ---- resilient judge: bounded retry then local fallback ----
+class _FakeJP(object):
+    def __init__(self, refused, posterior=0.7, judge_id="x"):
+        self.refused = refused
+        self.posterior = posterior
+        self.judge_id = judge_id
+
+
+def _judge_seq(results):
+    calls = []
+
+    def fn(model, prompt, timeout_s):
+        calls.append((model, timeout_s))
+        r = results[min(len(calls) - 1, len(results) - 1)]
+        return _FakeJP(r[0], r[1], model)
+    fn.calls = calls
+    return fn
+
+
+_seq = _judge_seq([(False, 0.8)])
+jp, info = oracle_ask._resilient_judge("oracle-judge-a", "Q?", 90,
+                                       judge_fn=_seq)
+check("resilient live slot",
+      not jp.refused and info["served_by"] == "oracle-judge-a"
+      and info["attempts"] == 1 and len(_seq.calls) == 1, str(info))
+
+_seq = _judge_seq([(True, 0.5), (False, 0.6)])
+jp, info = oracle_ask._resilient_judge("oracle-judge-a", "Q?", 90,
+                                       judge_fn=_seq)
+check("resilient retry recovers",
+      not jp.refused and info["served_by"] == "oracle-judge-a"
+      and info["attempts"] == 2 and len(_seq.calls) == 2, str(info))
+
+_seq = _judge_seq([(True, 0.5), (True, 0.5), (False, 0.55)])
+jp, info = oracle_ask._resilient_judge("oracle-judge-a", "Q?", 90,
+                                       judge_fn=_seq)
+check("resilient falls back to local",
+      not jp.refused and info["served_by"] == oracle_ask.FALLBACK_JUDGE
+      and info["attempts"] == 3
+      and [c[0] for c in _seq.calls] ==
+      ["oracle-judge-a", "oracle-judge-a", oracle_ask.FALLBACK_JUDGE],
+      "%s %s" % (info, _seq.calls))
+
+_seq = _judge_seq([(True, 0.5)] * 5)
+jp, info = oracle_ask._resilient_judge("oracle-judge-a", "Q?", 90,
+                                       judge_fn=_seq)
+check("resilient bounded fail-open",
+      jp.refused and info["refused"] and info["attempts"] == 3
+      and len(_seq.calls) == 3, str(info))
+
+# ---- debate: parallel, diverse, bounded, fail-open ----
+_active = 0
+_peak = 0
+_plock = threading.Lock()
+
+
+def _par_chat(model, prompt, timeout_s):
+    global _active, _peak
+    with _plock:
+        _active += 1
+        _peak = max(_peak, _active)
+    try:
+        time.sleep(0.05)
+        return {"content": '{"posterior": 0.7}'}
+    finally:
+        with _plock:
+            _active -= 1
+
+
+_judges = ["oracle-judge-a", "oracle-judge-b", "oracle-judge-c"]
+_d = escalation.debate_tier("Will X happen by 2027?", "crit", "ev", _judges,
+                            _par_chat, k=2, max_rounds=2)
+check("debate parallel", _peak > 1, "peak=%d" % _peak)
+check("debate budgeted",
+      _d["rounds"] <= 2 and 0.01 <= _d["posterior"] <= 0.99, str(_d))
+check("debate finals shape",
+      len(_d["advocate_finals"]) == 4 and all(
+          set(f) >= {"model", "side", "posterior", "rounds"}
+          for f in _d["advocate_finals"]),
+      str(_d["advocate_finals"]))
+_yes_models = [f["model"] for f in _d["advocate_finals"] if f["side"] == "YES"]
+_no_models = [f["model"] for f in _d["advocate_finals"] if f["side"] == "NO"]
+check("debate same-side diversity",
+      len(set(_yes_models)) == 2 and len(set(_no_models)) == 2,
+      "%s %s" % (_yes_models, _no_models))
+check("debate counts requests",
+      _d["requests"] == _d["rounds"] * len(_d["advocate_finals"]),
+      str(_d["requests"]))
+
+
+def _flaky_chat(model, prompt, timeout_s):
+    if model == "oracle-judge-a":
+        raise ConnectionError("free-tier flake")
+    return {"content": "0.62"}
+
+
+_d2 = escalation.debate_tier("Will X happen by 2027?", "crit", "ev",
+                             ["oracle-judge-a", "oracle-judge-b"],
+                             _flaky_chat, k=1, max_rounds=1)
+_f0 = _d2["advocate_finals"][0]
+check("debate bounded retry switches alias",
+      _f0["model"] == "oracle-judge-b"
+      and 0.01 <= _f0["posterior"] <= 0.99,
+      str(_f0))
+check("debate retry counted",
+      _d2["requests"] == 3,  # 2 advocates + 1 bounded retry
+      str(_d2["requests"]))
+
+
+def _dead_chat(model, prompt, timeout_s):
+    raise ConnectionError("all down")
+
+
+_d3 = escalation.debate_tier("Will X happen by 2027?", "crit", "ev",
+                             ["oracle-judge-a", "oracle-judge-b"],
+                             _dead_chat, k=1, max_rounds=1)
+check("debate fail-open on priors",
+      all(abs(f["posterior"] - (0.85 if f["side"] == "YES" else 0.15)) < 0.03
+          for f in _d3["advocate_finals"]),
+      str(_d3["advocate_finals"]))
+
+# debate finals re-enter the engine: gates, hash, contributions recomputed
+_adv_judges = [engine.JudgePosterior(judge_id=a["model"],
+                                     posterior=a["posterior"],
+                                     cal_weight=0.5)
+               for a in _d["advocate_finals"]]
+_dv = engine.build_verdict(_f5, _adv_judges)
+check("debate final rebuilt by engine",
+      _dv["status"] in ("verdict", "escalate")
+      and _dv["verdict_sha256"] and len(_dv["judge_contributions"]) == 4,
+      "%s %s" % (_dv["status"], _dv["verdict_sha256"]))
+
+# ---- budget exhaustion: verdict, never a crash ----
+def _slow_slot(model, prompt, timeout_s):
+    time.sleep(2.0)
+    jp = engine.JudgePosterior(judge_id=model, posterior=0.5, refused=True)
+    return jp, {"slot": model, "served_by": model, "refused": True,
+                "attempts": 0}
+
+
+_orig_rj = oracle_ask._resilient_judge
+oracle_ask._resilient_judge = _slow_slot
+try:
+    _t0 = time.time()
+    _bv = oracle_ask.run_ask(
+        "Will the herd router serve 100 or more models by 2026-12-31?",
+        models=["oracle-judge-a"], timeout_s=5, allow_debate=False, budget_s=1)
+    _dt = time.time() - _t0
+finally:
+    oracle_ask._resilient_judge = _orig_rj
+check("budget exhaustion yields verdict not crash",
+      _bv["status"] in ("verdict", "escalate") and _dt < 30,
+      "%s %.1fs" % (_bv["status"], _dt))
+check("exhausted slot recorded refused",
+      _bv["judge_slots"] and _bv["judge_slots"][0]["refused"],
+      str(_bv.get("judge_slots")))
 
 print("PASS %d FAIL %d" % (PASS, FAIL))
 sys.exit(1 if FAIL else 0)
