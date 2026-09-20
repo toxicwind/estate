@@ -79,6 +79,8 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | oracle-max | Oracle decision-engine maximal upgrade | Ember (other chat) | RUNNING |
 | openfang | Agents autonomous + OpenFang-enabled | Ember | workers in, 8 kernel agents Running |
 
+| quarry | Orphan AUDIT/inventory (Spindle + estate: worktrees, /tmp, stashes, stray repos, daemon PIDs); verdicts revived/retired/left-alone; integration-worthy finds FED to repo-integrator-max in fleet | Bedrock (parent orchestrator) | RUNNING (2026-09-20) — stood down from repo integration per fleet seq 11314; feeds integration candidates to repo-integrator-max |
+
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 
 ---
