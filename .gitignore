@@ -313,3 +313,5 @@ kimi-audit-scratch-20260914/
 codeflux/
 projects/mesh/bin/shep-v0.51.0
 projects/tau/archive/from-tau/crates/pi-natives/tools/cache/*.bin
+killer-features/**/var/
+killer-features/**/state.json
