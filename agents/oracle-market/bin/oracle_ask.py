@@ -1,16 +1,25 @@
 #!/usr/bin/env python3
-"""oracle-ask: the trivial ask path. One command consults the Oracle.
+"""oracle-ask: the ask path. One command consults the Oracle.
 
 Usage:
-  oracle-ask "Will X happen by <date>?" [--json] [--judges n] [--timeout s]
+  oracle-ask "Will X happen by <date>?" [--json] [--models a,b,c] [--timeout s]
             [--evidence evidence.json] [--canaries] [--no-debate]
 
-Pipeline: frame (fail-closed) -> judge panel in parallel (herd router) ->
-calibrate -> pooled posterior (engine owns the number) -> abstention gate
--> escalation ladder -> verdict JSON on stdout + verdicts.jsonl.
+Pipeline: frame (fail-closed) -> resilient judge panel in parallel (herd
+router) -> pooled posterior (engine owns the number: calibration +
+aggregation + gate, exactly once) -> escalation ladder -> verdict JSON on
+stdout + verdicts.jsonl.
 
-Judge models: free-beats-local (SPEC §8.3). Defaults are the proven panel
-from the 2026-09-20 herd census (see docs/oracle-core.md for why each won).
+ROUTER SEPARATION (standing doctrine): this file names only judge ROLE
+ALIASES (oracle-judge-a/b/c, oracle-judge-local). Concrete model selection
+lives in the herd router config (config/herd.yaml, "Oracle judge panel")
+and is owned there exclusively. --models accepts aliases only; concrete
+model IDs are rejected. To retarget the panel, edit herd.yaml and restart
+herd -- never this file.
+
+Judge models: free-beats-local (SPEC §8.3). The panel shape (3 free-tier
+aliases + local fallback) is the proven default from the 2026-09-20 herd
+census (see docs/oracle-core.md for the rationale).
 """
 import argparse
 import concurrent.futures as cf
@@ -28,18 +37,19 @@ import calibration as cal
 import engine
 import evidence as evmod
 import escalation
-import sizing
 
 HERD_URL = os.environ.get("HERD_URL", "http://127.0.0.1:25100")
 WORK = os.environ.get("ORACLE_WORK", "/home/toxic/sovereign/agents/oracle-market/work")
 
-# Proven panel defaults (docs/oracle-core.md §defaults).
+# Judge panel: ROUTER ROLE ALIASES. Concrete targets are owned by
+# config/herd.yaml ("Oracle judge panel"); this list is routing surface
+# only, never model-family selection.
 DEFAULT_JUDGES = [
-    "openrouter-free/nex-agi/nex-n2.5-mini:free",   # fastest exact: 489ms
-    "openrouter-free/nex-agi/nex-n2.5-pro:free",    # exact 799ms, complement
-    "openrouter-free/poolside/laguna-s-2.1:free",   # exact 2161ms, 3rd family
+    "oracle-judge-a",
+    "oracle-judge-b",
+    "oracle-judge-c",
 ]
-FALLBACK_JUDGE = "beellama/gemma-96k"               # local fallback only
+FALLBACK_JUDGE = "oracle-judge-local"  # local last resort, router-owned
 
 JUDGE_PROMPT = """You are judge {idx} (anonymous) on the OpenFang Oracle panel.
 Question: {question}
@@ -60,6 +70,29 @@ Reply with JSON ONLY, no other text:
                "rationale": "<one line>", "urls": [],
                "credibility": "<low|medium|high>"}}],
   "reasoning_summary": "<2-3 sentences>"}}"""
+
+
+def _env_models():
+    raw = os.environ.get("ORACLE_JUDGES", ",".join(DEFAULT_JUDGES))
+    return [m.strip() for m in raw.split(",") if m.strip()]
+
+
+def _alias_allowlist():
+    extra = [m.strip() for m in os.environ.get("ORACLE_JUDGES", "").split(",")
+             if m.strip()]
+    return set(DEFAULT_JUDGES + [FALLBACK_JUDGE] + extra)
+
+
+def _check_alias_models(models):
+    """Fail closed: only router aliases may serve as judges. Concrete
+    model IDs (with /, :, or known family names) are never accepted --
+    model selection lives in herd.yaml, not here."""
+    bad = [m for m in models if m not in _alias_allowlist()]
+    if bad:
+        raise SystemExit(
+            "refusing non-alias judge model(s): %s. Model selection lives "
+            "in the herd router config (config/herd.yaml); add panel "
+            "aliases via ORACLE_JUDGES." % ", ".join(bad))
 
 
 def herd_chat(model, prompt, timeout_s=90, max_tokens=1500):
@@ -142,6 +175,30 @@ def judge_once(model, prompt, timeout_s):
     return jp
 
 
+def _resilient_judge(model, prompt, timeout_s, judge_fn=judge_once):
+    """One panel slot with fail-fast redundancy.
+
+    Try the slot alias; on refusal, one bounded retry at half timeout
+    (free-tier flakiness is transient); if still refused, the
+    local-fallback alias fills the slot. Returns (JudgePosterior,
+    slot_info). A refused slot never silently shrinks the panel -- the
+    slot_info records who actually served it.
+    """
+    attempts = 0
+    jp = judge_fn(model, prompt, timeout_s); attempts += 1
+    if jp.refused:
+        jp = judge_fn(model, prompt, min(timeout_s, 45.0) / 2.0); attempts += 1
+    served_by = model
+    if jp.refused and model != FALLBACK_JUDGE:
+        fb = judge_fn(FALLBACK_JUDGE, prompt, 60.0); attempts += 1
+        if not fb.refused:
+            fb.judge_id = FALLBACK_JUDGE
+            jp = fb
+            served_by = FALLBACK_JUDGE
+    return jp, {"slot": model, "served_by": served_by,
+                "refused": jp.refused, "attempts": attempts}
+
+
 def load_datasheets():
     if os.path.exists(cal.DATASHEET_PATH):
         try:
@@ -154,12 +211,18 @@ def load_datasheets():
 
 def run_ask(question, models=None, timeout_s=90, evidence_items=None,
             allow_debate=True, budget_s=240):
-    """Full ask pipeline. Returns the verdict dict."""
+    """Full ask pipeline. Returns the verdict dict.
+
+    Calibration ownership: engine.build_verdict is the SOLE applier of
+    calibration. This function never touches judge posteriors between
+    receipt and the engine (double application was removed 2026-09-20).
+    """
     t0 = time.time()
     framed = framing.frame_question(question)
     if framed.get("status") == "refused":
         return engine.build_verdict(framed, [])
-    models = models or list(DEFAULT_JUDGES)
+    models = models or _env_models()
+    _check_alias_models(models)
     datasheets = load_datasheets()
 
     # evidence partitions (asymmetry) — empty for pure-judgment asks
@@ -177,35 +240,42 @@ def run_ask(question, models=None, timeout_s=90, evidence_items=None,
                      evmod.summarize_evidence_for_judge(partition, i))
         return base
 
+    calls = 0
     judges = []
     latencies = {}
+    slots = []
     with cf.ThreadPoolExecutor(max_workers=len(models)) as ex:
-        futs = {ex.submit(judge_once, m, prompt_for(i), timeout_s): (m, i)
+        futs = {ex.submit(_resilient_judge, m, prompt_for(i), timeout_s): (m, i)
                 for i, m in enumerate(models)}
         deadline = t0 + budget_s
-        for fut in cf.as_completed(futs, timeout=max(1, deadline - time.time())):
+        for fut in cf.as_completed(futs):  # no outer timeout: its TimeoutError
+            # escaped uncaught with pending futures. Every slot is
+            # time-bounded by construction and each fut.result() below
+            # is deadline-bounded, so this loop always terminates.
             m, i = futs[fut]
             try:
-                jp = fut.result(timeout=max(1, deadline - time.time()))
+                jp, slot = fut.result(timeout=max(1, deadline - time.time()))
             except Exception as e:
-                jp = engine.JudgePosterior(judge_id=m, posterior=0.5, refused=True)
+                jp = engine.JudgePosterior(judge_id=m, posterior=0.5,
+                                           refused=True)
                 jp.error = "executor: %s" % e
-            ds = datasheets.get(m, {})
+                slot = {"slot": m, "served_by": m, "refused": True}
+            calls += slot.get("attempts", 1)  # actual requests, incl. bounded retries
+            ds = datasheets.get(jp.judge_id, datasheets.get(m, {}))
             jp.reliability = float(ds.get("reliability", 1.0))
-            jp.cal_weight = 1.0  # calibration loop adjusts post-fit
+            jp.cal_weight = 1.0
             judges.append(jp)
+            slots.append(slot)
             latencies[m] = getattr(jp, "latency_s", 0)
     judges.sort(key=lambda j: models.index(j.judge_id)
                 if j.judge_id in models else 99)
 
-    loop = cal.CalibrationLoop()
-    for jp in judges:
-        if not jp.refused:
-            jp.posterior = loop.apply(jp.judge_id, jp.posterior)
-
+    # NOTE: no calibration here. engine.build_verdict applies the
+    # calibration loop exactly once, deterministically, then aggregates.
     verdict = engine.build_verdict(framed, judges)
     verdict["latency_s"] = time.time() - t0
     verdict["judge_latencies"] = latencies
+    verdict["judge_slots"] = slots
     verdict["models"] = models
 
     # escalation ladder: route on the ABSTENTION decision (the emission gate),
@@ -220,17 +290,54 @@ def run_ask(question, models=None, timeout_s=90, evidence_items=None,
     if tier == "DEBATE" and allow_debate:
         ev_text = "\n".join(
             "- " + (c.get("text", "") or "") for j in judges for c in j.claims[:4])
+
+        def _debate_chat(model, prompt, t):
+            res = herd_chat(model, prompt, t, max_tokens=400)
+            return {"content": res.get("text", "")}
+
+        budget_left = max(10.0, budget_s - (time.time() - t0))
         debate = escalation.debate_tier(
             framed["binary_question"], framed["resolution_criteria"], ev_text,
-            lambda prompt: extract_json(
-                herd_chat(models[0 % len(models)], prompt, timeout_s).get("text", "")
-                or "") or {"posterior": 0.5})
-        # engine re-owns the debate output: deterministic mean of advocates
-        verdict["probability"] = debate["posterior"]
-        verdict["debate"] = {k: v for k, v in debate.items() if k != "trace"}
-        verdict["debate_trace_n"] = len(debate["trace"])
-        verdict["status"] = "verdict"
-        verdict["tier"] = "DEBATE"
+            judges=models,  # router aliases; distinct per advocate
+            chat_fn=_debate_chat,
+            k=escalation.DEBATE_K, max_rounds=escalation.DEBATE_MAX_ROUNDS,
+            eps=escalation.DEBATE_EPS,
+            per_advocate_timeout_s=min(90.0, budget_left / 2.0))
+        calls += debate.get("requests",
+                        debate["rounds"] * len(debate["advocate_finals"]))
+        # Engine re-owns the debate output: advocate finals become
+        # half-weight judges (they share one converged trajectory, so
+        # k advocates/side ~= 1 independent judge/side of evidence).
+        # Gates, confidence, contributions, and the verdict hash are all
+        # recomputed on the final number -- the vote verdict is kept only
+        # for provenance. Nothing is overwritten in place.
+        adv_judges = [
+            engine.JudgePosterior(judge_id=a["model"],
+                                  posterior=a["posterior"], cal_weight=0.5)
+            for a in debate["advocate_finals"]]
+        final = engine.build_verdict(framed, adv_judges)
+        final["tier"] = "DEBATE"
+        final["tier_reason"] = (
+            "structured advocate debate: %d rounds%s"
+            % (debate["rounds"],
+               ", converged" if debate["converged"] else ", budget-capped"))
+        final["debate"] = {
+            "rounds": debate["rounds"],
+            "converged": debate["converged"],
+            "internal_posterior": debate["posterior"],
+            "advocate_finals": debate["advocate_finals"],
+            "vote_probability": verdict["probability"],
+            "vote_status": verdict["status"],
+            "vote_tier": verdict["tier"],
+        }
+        final["vote_verdict"] = verdict  # provenance, not the decision
+        final["judge_slots"] = slots
+        final["judge_latencies"] = latencies
+        final["models"] = models
+        final["latency_s"] = time.time() - t0
+        final["cost_usd"] = round(calls * 0.002, 6)
+        engine.record_verdict(final)
+        return final
     elif tier == "HUMAN":
         path = escalation.flag_human(framed, tier_reason,
                                      {"verdict": verdict["probability"]})
@@ -238,6 +345,7 @@ def run_ask(question, models=None, timeout_s=90, evidence_items=None,
     elif verdict["status"] == "escalate" and tier == "VOTE":
         # gate withheld but no disagreement: escalate path stays, engine honest
         verdict["tier"] = "VOTE"
+    verdict["cost_usd"] = round(calls * 0.002, 6)
     engine.record_verdict(verdict)
     return verdict
 
@@ -266,8 +374,10 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description="Ask the OpenFang Oracle.")
     ap.add_argument("question", nargs="?", default=None)
     ap.add_argument("--json", action="store_true")
-    ap.add_argument("--models", default=",".join(DEFAULT_JUDGES),
-                    help="comma-separated herd model ids")
+    ap.add_argument("--models", default=",".join(_env_models()),
+                    help="comma-separated herd judge aliases "
+                         "(router role aliases only; concrete model IDs "
+                         "are refused)")
     ap.add_argument("--timeout", type=float, default=90)
     ap.add_argument("--budget", type=float, default=240)
     ap.add_argument("--evidence", default=None, help="JSON file of evidence items")
@@ -290,7 +400,7 @@ def main(argv=None):
                       allow_debate=not args.no_debate, budget_s=args.budget)
     if args.json or True:
         print(json.dumps(verdict, indent=2, default=str))
-    return 0 if verdict.get("status") == "verdict" else 3
+    return 0 if verdict.get("status") in ("verdict", "escalate") else 3
 
 
 if __name__ == "__main__":

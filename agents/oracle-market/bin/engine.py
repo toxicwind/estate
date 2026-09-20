@@ -40,6 +40,13 @@ GATE_ALPHA = 0.05          # FDR target among emitted verdicts
 GATE_MIN_HISTORY = 8       # labeled accepted verdicts before the gate trusts history
 GATE_MIN_ACCURACY = 0.80   # CP lower bound on accepted-set accuracy to emit
 AUTO_P = 0.85              # unanimity auto-resolve posterior bar
+# Cold-start unanimity bar (justified by bench/exp_abstention.py section 5):
+# with no track record, emit only on unanimous extreme confidence.
+# The posterior bar equals AUTO_P so the gate can never emit what the
+# tier ladder would not auto-resolve; the confidence bar 0.90 matches
+# the unanimity confidence in escalation.route.
+COLD_STRUCT_BAR = 0.90
+COLD_POSTERIOR_BAR = AUTO_P
 
 
 class JudgePosterior:
@@ -126,18 +133,26 @@ def _accepted_history():
     return rows
 
 
-def abstention_gate(posterior, struct_conf, alpha=GATE_ALPHA):
+def abstention_gate(posterior, struct_conf, alpha=GATE_ALPHA,
+                      struct_bar=None, post_bar=None):
     """Finite-sample abstention gate (Judge/Retrieve/Abstain pattern).
 
     Emits only if the Clopper-Pearson LOWER bound on the accepted set's
     historical accuracy stays above GATE_MIN_ACCURACY. Cold start (too
     little history): emit only unanimous high-confidence verdicts.
     Below threshold -> ("escalate", reason), never emitted.
+
+    struct_bar/post_bar override the cold-start bars for threshold
+    sweeps (bench/exp_abstention.py section 5); production always uses
+    the module constants COLD_STRUCT_BAR / COLD_POSTERIOR_BAR.
     """
+    struct_bar = COLD_STRUCT_BAR if struct_bar is None else struct_bar
+    post_bar = COLD_POSTERIOR_BAR if post_bar is None else post_bar
     hist = [r for r in _accepted_history() if "correct" in r]
     if len(hist) < GATE_MIN_HISTORY:
         # cold start: conservative — unanimity bar only
-        if struct_conf >= 0.90 and (posterior >= AUTO_P or posterior <= 1 - AUTO_P):
+        if struct_conf >= struct_bar and (
+                posterior >= post_bar or posterior <= 1 - post_bar):
             return ("emit", "cold-start unanimity bar")
         return ("escalate", "cold start: insufficient accepted history "
                 "(%d<%d)" % (len(hist), GATE_MIN_HISTORY))
