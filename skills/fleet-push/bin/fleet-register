@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+"""fleet-register — manage the push-bus subscription registry.
+
+  fleet-register --init
+  fleet-register --add <agent-id> --lanes stalls,db
+  fleet-register --rm <agent-id>
+  fleet-register --list
+Registry: ~/workspace/fleet-push/registry.json
+"""
+import json
+import os
+import sys
+import time
+
+REG_DIR = os.path.expanduser("~/workspace/fleet-push")
+REG = os.path.join(REG_DIR, "registry.json")
+
+
+def load():
+    if os.path.exists(REG):
+        with open(REG) as f:
+            return json.load(f)
+    return {"version": 1, "agents": {}}
+
+
+def save(reg):
+    os.makedirs(REG_DIR, exist_ok=True)
+    tmp = REG + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(reg, f, indent=2)
+    os.replace(tmp, REG)
+
+
+def main():
+    a = sys.argv[1:]
+    if not a or a[0] == "--init":
+        save(load())
+        print("registry at %s" % REG)
+        return
+    reg = load()
+    if a[0] == "--add" and len(a) >= 2:
+        lanes = []
+        if "--lanes" in a:
+            lanes = [l.strip() for l in a[a.index("--lanes") + 1].split(",") if l.strip()]
+        reg["agents"][a[1]] = {"lanes": lanes, "subscribed_at": time.time()}
+        save(reg)
+        print("subscribed %s lanes=%s" % (a[1], lanes))
+    elif a[0] == "--rm" and len(a) >= 2:
+        reg["agents"].pop(a[1], None)
+        save(reg)
+        print("unsubscribed %s" % a[1])
+    elif a[0] == "--list":
+        print(json.dumps(reg, indent=2))
+    else:
+        sys.exit("usage: fleet-register --init|--add ID --lanes a,b|--rm ID|--list")
+
+
+if __name__ == "__main__":
+    main()
