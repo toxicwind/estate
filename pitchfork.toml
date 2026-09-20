@@ -241,7 +241,7 @@ env = { MATTER_SERVER_PORT = "5580" }
 auto = ["start"]
 
 [daemons.openfang]
-run = "exec /home/toxic/sovereign/ops/openfang-run.sh"
+run = "exec env HOME=/home/toxic /home/toxic/projects/rig-work/target/debug/openfang start --config /home/toxic/sovereign/config/openfang-4200.toml"
 dir = "/home/toxic/projects/rig-work"
 mise = false
 retry = true
@@ -249,11 +249,11 @@ ready_cmd = "ss -ltn 'sport = :4200' | grep -q LISTEN"
 auto = ["start"]
 
 [daemons.oracle-market]
+env = { ORACLE_INTAKE = "1" }
 run = "exec /home/toxic/sovereign/agents/oracle-market/bin/run.sh"
 dir = "/home/toxic/sovereign/agents/oracle-market"
 mise = false
 retry = true
-env = { ORACLE_INTAKE = "1" }
 auto = ["start"]
 
 [daemons.tau]
