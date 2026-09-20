@@ -35,8 +35,8 @@ flock:
   baseUrl: http://127.0.0.1:8000
   keyEnv: FLOCK_API_KEY
   modelMap:
-    kimi-k2: nvidia/nemotron-3-super-120b-a12b
-    kimi-k3-nim: nvidia/nemotron-3-ultra-550b-a55b
+    kimi-k2: moonshotai/kimi-k2.6
+    kimi-k3-nim: moonshotai/kimi-k3
 routing:
   scheduler:
     use: fifo
