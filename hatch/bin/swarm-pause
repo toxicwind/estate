@@ -1,0 +1,109 @@
+#!/usr/bin/env python3
+"""swarm-pause — FORCEFUL, immediate pause of all agent tool-call processes.
+
+Mechanism: SIGSTOP to every descendant of hatch-execd (the runtime's tool
+executor). Kernel-level: no cooperation needed, no polling, instantaneous.
+Agent reasoning (in the runtime) continues but cannot act — every effector
+is frozen mid-syscall.
+
+State saved to ~/.cache/shingle/swarm-paused.json for swarm-resume.
+"""
+import json
+import os
+import signal
+import subprocess
+import sys
+import time
+
+sys.path.insert(0, os.path.expanduser("~/workspace/bin"))
+import watchdog_lib as wl
+
+STATE = os.path.expanduser("~/.cache/shingle/swarm-paused.json")
+
+
+def exacd_pid():
+    out = subprocess.run(["pgrep", "-f", "hatch-execd --runtime-cell-leader"],
+                         capture_output=True, text=True)
+    pids = [int(p) for p in out.stdout.split()]
+    return pids[0] if pids else None
+
+
+def ppid_map():
+    m = {}
+    for pid in os.listdir("/proc"):
+        if not pid.isdigit():
+            continue
+        try:
+            with open(f"/proc/{pid}/stat") as f:
+                parts = f.read().rsplit(")", 1)[1].split()
+            m[int(pid)] = int(parts[1])  # ppid is field 4 -> index 1 after comm
+        except (FileNotFoundError, IndexError, ValueError):
+            pass
+    return m
+
+
+def ancestors(pid, pm):
+    seen = set()
+    while pid in pm and pid not in seen:
+        seen.add(pid)
+        pid = pm[pid]
+    return seen
+
+
+def main():
+    root = exacd_pid()
+    if not root:
+        print("hatch-execd not found; nothing to pause")
+        return 0
+    pm = ppid_map()
+    me = os.getpid()
+    my_chain = ancestors(me, pm) | {me}
+    try:
+        my_pgid = os.getpgid(me)
+    except OSError:
+        my_pgid = None
+    stopped = []
+    for pid in pm:
+        if pid in my_chain or pid == root:
+            continue
+        if my_pgid is not None:
+            try:
+                if os.getpgid(pid) == my_pgid:
+                    continue  # same pipeline (e.g. the `| tail` on our own cmdline)
+            except OSError:
+                pass
+        if root in ancestors(pid, pm):
+            try:
+                os.kill(pid, signal.SIGSTOP)
+                stopped.append(pid)
+            except ProcessLookupError:
+                pass
+            except PermissionError as e:
+                print(f"  ! pid {pid}: {e}", file=sys.stderr)
+    os.makedirs(os.path.dirname(STATE), exist_ok=True)
+    # UNION with any existing pause state (a second pause must not orphan
+    # the first pause's pids — otherwise a later resume would leave them
+    # SIGSTOP-frozen forever). Same pattern as swarm-eject.
+    pids = list(stopped)
+    if os.path.exists(STATE):
+        try:
+            old = json.load(open(STATE))
+            pids = sorted(set(old.get("pids", [])) | set(stopped))
+        except Exception:
+            pass
+    wl.atomic_write_json(STATE, {"ts": time.time(), "pids": pids})
+    print(f"PAUSED {len(stopped)} processes (SIGSTOP), "
+          f"{len(pids)} total tracked -> {STATE}", flush=True)
+    # coordination broadcast (best-effort, fail-fast ceiling — never hang the pause)
+    try:
+        subprocess.run(
+            [os.path.expanduser("~/workspace/bin/squawk"), "send", "fleet",
+             "SWARM PAUSED (ember) — all agent tool processes force-frozen. Hold new work until resume."],
+            capture_output=True, timeout=15)
+    except Exception as e:
+        print(f"  broadcast failed (non-fatal): {e}", flush=True)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
