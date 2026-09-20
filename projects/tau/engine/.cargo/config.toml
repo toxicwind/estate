@@ -1,20 +1,40 @@
+# Cargo environment for the workspace.
+#
+# Native CMake builds use Ninja: Xcode's GNU make 3.81 can block while reading
+# cargo's forwarded jobserver pipe. CI images and the Nix dev shell include
+# Ninja; macOS dev hosts need `brew install ninja`.
 [build]
 incremental = true
 jobs = 16
 rustc-wrapper = "sccache"
 
 [env]
+CMAKE_GENERATOR = "Ninja"
 CMAKE_POLICY_VERSION_MINIMUM = "3.5"
 PCRE2_SYS_STATIC = "1"
 
 [target.x86_64-unknown-linux-gnu]
 linker = "clang"
+# NOTE: do NOT add "target-feature=+crt-static" here. When host == target
+# (the normal dev case) it makes rustc refuse to build proc-macro dylibs
+# ("target ... does not support these crate types"), breaking plain
+# cargo check/build/test. The napi cdylibs also want the dynamic CRT.
+# Windows static-CRT is handled per-build in
+# packages/natives/scripts/build-bindings.ts; a truly static Linux binary
+# should use the x86_64-unknown-linux-musl target instead.
 rustflags = [
   "-C", "target-cpu=native",
-  "-C", "target-feature=+crt-static",
   "-C", "link-arg=-fuse-ld=mold",
   "-C", "link-arg=-Wl,--no-rosegment",
 ]
+
+# Store each crate's metadata only in its .rmeta instead of duplicating it into
+# every rlib. Measured on a reqwest-sized graph: 196 MB -> 130 MB target dir at
+# identical build times. Requires the pinned nightly (rust-toolchain.toml).
+# The accepted spelling is toolchain-coupled: this nightly accepts a bare
+# boolean, while older nightlies took `"DoNotEmbed"`.
+[unstable]
+embed-metadata = false
 
 [profile.dev]
 opt-level = 1

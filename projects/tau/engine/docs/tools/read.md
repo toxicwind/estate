@@ -52,19 +52,20 @@ Literal filesystem paths take precedence over selector interpretation, so an exi
 - Single-shot `AgentToolResult` built through `toolResult()` in `packages/coding-agent/src/tools/tool-result.ts`.
 - `content` is usually one text block. Image reads may return `[text, image]`.
 - `details` is path-dependent. `ReadToolDetails` may include:
-  - `kind: "file" | "url"` (URL path uses `kind: "url"`; file reads usually omit `kind`)
-  - `isDirectory`
-  - `resolvedPath`
-  - `suffixResolution`
-  - URL fields: `url`, `finalUrl`, `contentType`, `method`, `notes`
-  - `truncation`
-  - `displayContent` (unprefixed text + starting line for TUI rendering)
-  - `summary` (`lines`, `elidedSpans`, `elidedLines`) for structural summaries
-  - `conflictCount` for `<path>:conflicts`
-  - `displayReadTargets` when the tool recovered an accidental delimited list of paths for TUI display
-  - `meta` from `packages/coding-agent/src/tools/output-meta.ts`
+   - `kind: "file" | "url"` (URL path uses `kind: "url"`; file reads usually omit `kind`)
+   - `isDirectory`
+   - `resolvedPath`
+   - `suffixResolution`
+   - URL fields: `url`, `finalUrl`, `contentType`, `method`, `notes`
+   - `truncation` (`ReadTruncationStats`: counters and flags only; no duplicate `content` field)
+   - `displayContent` (unprefixed text + starting line for TUI rendering)
+   - `summary` (`lines`, `elidedSpans`, `elidedLines`) for structural summaries
+   - `conflictCount` for `<path>:conflicts`
+   - `displayReadTargets` when the tool recovered an accidental delimited list of paths for TUI display
+   - `meta` from `packages/coding-agent/src/tools/output-meta.ts`
 - `details.meta.source` is set to the backing path, URL, or internal URL.
 - `details.meta.truncation` carries shown range, total lines/bytes, next offset, and optional `artifactId` for cached URL output.
+- Read result bodies live in `content`; `details.displayContent` remains the unprefixed TUI representation. Extensions that previously read `details.truncation.content` must use those fields instead. Older session records containing the extra field still load and render without migration.
 - Directory/archive listings and SQLite table lists also set `details.meta.limits` when list limits trigger.
 
 ## Flow

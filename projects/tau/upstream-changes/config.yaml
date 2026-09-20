@@ -1,37 +1,49 @@
-# upstream-changes/config.yaml — single source of truth for ingestion
-upstreams:
-  pi:
-    url: https://github.com/earendil-works/pi.git
-    branch: main
-    local_mirror: modules/pi
-    remote_name: upstream
-  pi-mono:
-    url: https://github.com/badlogic/pi-mono.git
-    branch: main
-    local_mirror: modules/pi-mono
-    remote_name: upstream-mono
-  can1357-pi:
-    url: https://github.com/can1357/oh-my-pi.git
-    branch: main
-    local_mirror: modules/can1357
-    remote_name: upstream-can1357
+# upstream-changes/config.yaml — single source of truth for tau upstream merges
+# The tau engine is a FORK of upstream, not a git child of it. Upstream moves
+# (18.1.18 -> 18.2.x); we merge it in via a synthetic git DAG (see merge.sh).
+# Verified fork point: upstream tag v18.1.18 (MIRROR-DIFF-vs-upstream.md §2).
+
+primary_upstream:
+  name: can1357/oh-my-pi
+  url: https://github.com/can1357/oh-my-pi.git
+  fork_point_tag: v18.1.18
+  current_version: "18.2.6"   # upstream version our engine currently tracks — bump on promote
+
+mirror:
+  dir: /home/toxic/scratch/oh-my-pi-upstream   # persistent upstream clone (the airlock)
+
+work:
+  dir: /home/toxic/scratch/tau-merge           # merge worktrees land here, one per target version
+
+engine:
+  dir: /home/toxic/sovereign/projects/tau/engine
+
+# paths excluded from the merge overlay (generated / local / nested checkouts)
+merge_excludes:
+  - .git/
+  - node_modules/
+  - dist/
+  - build/
+  - vendor/
+  - runs/
+  - .omp/
+  - .nanocoder/
 
 policy:
-  auto_merge: false
-  # tau-owned paths — ingestion warns but never auto-patches these
+  auto_merge: false          # never auto-promote — human (or explicit flag) promotes
+  # sovereign-owned paths: a merge conflict here always needs human review,
+  # never auto-resolve to the upstream side. (Full sovereign delta inventory:
+  # ../MIRROR-DIFF-vs-upstream.md §4 — 398 paths, +8,878/\u22124,669.)
   keep_tau:
-    - "packages/ai/src/registry/cloudflare*"
-    - "packages/ai/src/registry/cloudflare-ai-gateway-workers.ts"
+    - "packages/ai/src/auth/oauth-refresh-support.ts"
+    - "packages/ai/src/auth/storage-contract.ts"
+    - "packages/ai/src/auth/usage-cache-impl.ts"
+    - "packages/ai/src/auth/usage-metrics.ts"
+    - "packages/ai/src/utils/hedged-stream.ts"
     - "AGENTS.md"
     - "tau/**"
-    - ".github/workflows/benchmark.yml"
-  # files that are safe to auto-apply (docs, non-tau utils)
-  auto_safe:
-    - "docs/**"
-    - "packages/tui/**"
 
 ingest:
   log_dir: log
   patches_dir: patches
-  # keep last N ingestion logs
   retain_logs: 30

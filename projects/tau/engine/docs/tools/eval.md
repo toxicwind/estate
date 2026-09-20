@@ -162,8 +162,8 @@ Runs one subagent through `runStructuredSubagent(...)`:
 ## Side effects and cancellation
 
 - Prelude helpers may read/write files and call arbitrary registered tools; JS exposes network-capable `fetch`.
-- Python, Ruby, and Julia use retained subprocess kernels speaking framed local IPC. JavaScript uses a worker VM.
-- Retained runtimes survive calls until reset, owner cleanup, or process exit.
+- Python uses a retained subprocess kernel speaking framed local IPC. JavaScript uses an isolated subprocess, with a Bun Worker fallback; if both fail to start, the call fails without executing code on the host thread.
+- Retained runtimes have no heartbeat or idle timer; they survive calls until reset, owner disposal (`EvalRunner.disposeKernels()` calls `disposeKernelSessionsByOwner` and `disposeVmContextsByOwner` keyed by `kernelOwnerId`, in `packages/coding-agent/src/session/eval-runner.ts`), or process exit.
 - Cancellation is destructive when needed: JS terminates its worker; managed kernels interrupt and may escalate to shutdown. A reset is likewise destructive to concurrent work sharing that backend session.
 - Eval-driven `agent()` may run tools and isolated workspaces, but its child is disposed rather than retained for hub follow-up.
 

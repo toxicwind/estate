@@ -37,6 +37,8 @@ The agent can read memory files directly using `memory://` URLs with the `read` 
 | `memory://root/learned.md`             | Lessons captured by the `learn` tool |
 | `memory://root/skills/<name>/SKILL.md` | A generated skill playbook           |
 
+The `memory://root[/…]` rows are file-backed and only exist with `memory.backend: local`, which populates the on-disk memory root via the consolidation pipeline. Under `hindsight` or `mnemopi` the root is never written, so those URLs do not resolve — use `recall`/`reflect` (and `read memory://<memory-id>` on `mnemopi`) instead.
+
 ### `/memory` slash command
 
 | Subcommand            | Effect                                                    |

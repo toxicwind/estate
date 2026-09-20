@@ -17,7 +17,6 @@ import { Database } from "bun:sqlite";
  *   bun scripts/bench-title-models.ts
  *   bun scripts/bench-title-models.ts --count 30 --seed 42
  *   bun scripts/bench-title-models.ts --models lfm2.5-230m,falcon-h1-90m
- *   bun scripts/bench-title-models.ts --local-examples
  *   bun scripts/bench-title-models.ts --ollama-url http://spark.internal:11434 --ollama-models llama3.2:3b,lfm2.5:2.6b
  *   bun scripts/bench-title-models.ts --db ~/.omp/agent/history.db --out bench.json
  *   bun scripts/bench-title-models.ts --count 6 --seed 20260917 --no-ollama --deadline-s 600
@@ -77,7 +76,6 @@ interface BenchConfig {
 	count: number;
 	seed: number;
 	localModels: string[];
-	localExamples: boolean;
 	ollamaUrl: string | null;
 	ollamaModels: string[];
 	outPath: string;
@@ -90,10 +88,7 @@ const DEFAULT_OLLAMA_MODELS = ["llama3.2:3b", "lfm2.5:2.6b"];
 const MIN_INPUT_CHARS = 10;
 const MAX_INPUT_CHARS = 800;
 
-/** System prompt with examples (used for the capable Ollama model). */
-const TITLE_PROMPT_WITH_EXAMPLES = prompt.render(titleSystemPrompt, { includeExamples: true });
-/** Example-free prompt matching what the on-device worker ships to tiny models. */
-const TITLE_PROMPT_NO_EXAMPLES = prompt.render(titleSystemPrompt, { includeExamples: false });
+const TITLE_PROMPT = prompt.render(titleSystemPrompt);
 
 /** Deterministic mulberry32 PRNG so `--seed` reproduces a sample set. */
 function createRng(seed: number): () => number {
@@ -143,11 +138,11 @@ function sampleHistoryPrompts(dbPath: string, count: number, rng: () => number):
 }
 
 /** Run one local ONNX model over every prompt (sequential; worker is single-lane). */
-async function runLocalLane(model: string, prompts: PreparedPrompt[], systemPrompt: string): Promise<BenchSample[]> {
+async function runLocalLane(model: string, prompts: PreparedPrompt[]): Promise<BenchSample[]> {
 	const samples: BenchSample[] = [];
 	for (const item of prompts) {
 		const started = performance.now();
-		const title = await tinyTitleClient.generate(model, item.input, { systemPrompt });
+		const title = await tinyTitleClient.generate(model, item.input);
 		samples.push({ id: item.id, input: item.input, title, ms: performance.now() - started });
 	}
 	return samples;
@@ -175,7 +170,7 @@ async function runOllamaLane(baseUrl: string, model: string, prompts: PreparedPr
 				think: false,
 				keep_alive: "10m",
 				messages: [
-					{ role: "system", content: TITLE_PROMPT_WITH_EXAMPLES },
+					{ role: "system", content: TITLE_PROMPT },
 					{ role: "user", content: `<user>\n${item.input}\n</user>` },
 				],
 				options: { temperature: 0, num_predict: 1024 },
@@ -240,7 +235,6 @@ function parseArgs(argv: string[]): BenchConfig {
 					.map(model => model.trim())
 					.filter(Boolean)
 			: DEFAULT_LOCAL_MODELS,
-		localExamples: has("--local-examples"),
 		ollamaUrl: has("--no-ollama") ? null : (ollamaUrlArg ?? DEFAULT_OLLAMA_URL),
 		ollamaModels: ollamaModelsArg
 			? ollamaModelsArg
@@ -278,11 +272,10 @@ async function main(): Promise<void> {
 
 	console.info(`Benchmarking ${rows.length} prompts (seed ${config.seed}) from ${config.dbPath}`);
 
-	const localPrompt = config.localExamples ? TITLE_PROMPT_WITH_EXAMPLES : TITLE_PROMPT_NO_EXAMPLES;
 	// Each model is its own concurrent lane; the local worker still serializes
 	// its own lanes internally, but the Ollama lane genuinely runs in parallel.
 	const laneTasks: Promise<BenchLane>[] = config.localModels.map(async (model): Promise<BenchLane> => {
-		const samples = await runLocalLane(model, prepared, localPrompt);
+		const samples = await runLocalLane(model, prepared);
 		return { model, transport: "local", samples, summary: summarize(samples) };
 	});
 	if (config.ollamaUrl) {

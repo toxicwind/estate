@@ -1,76 +1,76 @@
-# upstream-changes — Modular Upstream Ingestion
+# upstream-changes — Version-aware upstream merge system for the tau engine
 
-> **Keep tau work isolated from upstream churn.** Every `git fetch upstream` lands here first, not in `main`.
+> **Keep tau work isolated from upstream churn.** Upstream (`can1357/oh-my-pi`)
+> moves fast (18.1.18 → 18.2.x); our engine is a fork, not a git child of it.
+> This folder is the **airlock**: every upstream version lands here first,
+> gets 3-way merged against our sovereign delta in a worktree, and only then
+> — after checks pass — is promoted to the live engine.
 
-Upstream: `earendil-works/pi` (→ `can1357/oh-my-pi` + `badlogic/pi-mono`) is the moving target. Tau tracks it but never lets it overwrite tau deltas. This folder is the **airlock**.
+## The situation
+
+- **Fork point (verified):** upstream tag `v18.1.18` — see `../MIRROR-DIFF-vs-upstream.md` §2
+- **Sovereign delta:** 398 changed paths (+8,878/−4,669) — our customizations on top
+- **Tracked version:** `config.yaml` → `primary_upstream.current_version`
+- **Mirror:** `/home/toxic/scratch/oh-my-pi-upstream` (persistent upstream clone)
 
 ## Layout
+
 ```
 upstream-changes/
-  README.md                # this file — the contract
-  config.yaml              # sources + branch + auto-merge policy
+  README.md                # this file
+  config.yaml              # upstream, fork point, tracked version, policy
   scripts/
-    ingest.sh              # 1-command fetch → diff → patch
-    promote.sh             # promote vetted change to main
-    status.sh              # what’s pending from upstream?
-  modules/
-    pi/                    # mirror of earendil-works/pi main
-    pi-mono/               # mirror of badlogic/pi-mono (if needed)
-  patches/
-    *.patch                # cherry-picked or adapted upstream commits
-  log/
-    ingestion-*.md         # per-ingestion decision log
+    status.sh              # where do we stand vs upstream?
+    ingest.sh [ver]        # fetch + pure upstream delta + sovereign-overlap analysis
+    merge.sh [ver]         # 3-way merge in a worktree (synthetic git DAG)
+    promote.sh <ver>       # verify worktree -> adopt into live engine
+    upgrade.sh [ver]       # ingest + merge in one command (stops before promote)
+    archive-20260920/      # the old earendil-works/pi-era scripts (retired)
+  log/                     # per-run decision logs
+  patches/                 # upstream patch bundles (record)
 ```
 
-## Sources (`config.yaml`)
-```yaml
-upstreams:
-  pi:
-    url: https://github.com/earendil-works/pi.git
-    branch: main
-    local_mirror: modules/pi
-  pi-mono:
-    url: https://github.com/badlogic/pi-mono.git
-    branch: main
-    local_mirror: modules/pi-mono
-policy:
-  auto_merge: false   # never — human promotes
-  keep_tau: [packages/ai/src/registry/*, packages/ai/src/providers/anthropic*]
-```
+## Workflow — version update in 2 commands
 
-## Workflow — 3 commands, no surprises
-
-**1) Ingest (fetch + diff, no merge)**
 ```bash
-./upstream-changes/scripts/ingest.sh
-# -> fetches pi/main into modules/pi, writes log/ingestion-YYYY-MM-DD.md
-#    with: new commits, file-list, conflict risk, tau-overlap
+# 1. What changed upstream? (nothing touches the engine)
+./upstream-changes/scripts/upgrade.sh 18.2.6
+# -> ingest: fetches upstream, diffs v18.1.18..v18.2.6, classifies every file
+#    as upstream-only (safe) vs overlap (both sides touched)
+# -> merge: builds a synthetic DAG (base=v18.1.18, +sovereign delta, merge v18.2.6)
+#    in /home/toxic/scratch/tau-merge/tau-merge-18.2.6 and reports conflicts
+
+# 2. Review conflicts in the worktree, resolve them, then promote:
+./upstream-changes/scripts/promote.sh 18.2.6
+# -> conflict check, bun install, tsc, tests, binary build, smoke test,
+#    engine backup, rsync in, version bump in config.yaml
 ```
 
-**2) Review**
-```bash
-./upstream-changes/scripts/status.sh
-# shows: pending patches in patches/, unapplied commits, overlap with tau files
-# open log/ingestion-*.md and patches/*.patch — decide keep / adapt / drop
-```
+No arg = latest `v18.*` tag upstream.
 
-**3) Promote (one patch at a time)**
-```bash
-./upstream-changes/scripts/promote.sh patches/2026-09-02-pi-abc1234.patch
-# -> applies to a temp worktree, runs bun tsc --noEmit + bun test, then cherry-picks to main
-```
+## How the 3-way merge works (merge.sh)
 
-## Rules (modular, not monolithic)
-- **No direct `git merge upstream/main` into `main`.** Always via `modules/pi` + `patches/`.
-- **One upstream commit = one patch** in `patches/` (or a squashed logical group with `Co-authored-by: upstream`).
-- **Tau files never auto-overwritten**: `packages/ai/src/registry/cloudflare*`, `AGENTS.md`, `tau/` etc. are in `policy.keep_tau`.
-- **Every promotion has a log** in `log/` — what changed, why kept/dropped, test result.
-- **Full tasks stay visible**: ingestion does NOT hide local work — `git status` + `status.sh` surface both.
+The engine is not a git child of upstream, so git can't merge directly.
+We synthesize the DAG inside the mirror clone:
 
-## Adding a new upstream
-1. Add entry to `config.yaml` under `upstreams`
-2. `mkdir -p modules/<name> && git clone --bare <url> modules/<name>.git` (or let `ingest.sh` do it)
-3. Run `ingest.sh` — new source appears in next log.
+1. worktree at `v18.1.18` (the verified fork point) = BASE
+2. rsync the live engine tree over it (minus generated dirs), commit = SOVEREIGN
+3. `git merge v<target>` = true 3-way merge of the upstream delta
 
----
-*Created 2026-09-02 as part of full-grade push. See tau `README.md` → Credits & Lineage for upstream attribution.*
+Git auto-merges everything only one side touched. Conflicts = files both
+sides touched — those need human review, and `keep_tau` policy paths
+(sovereign-owned files) are flagged specially in the log.
+
+## Rules
+
+- **No direct merge into the live engine.** Always via worktree + promote.sh.
+- **promote.sh never runs with unresolved conflicts** — it exits.
+- **promote.sh never touches the engine until checks pass** — backup first.
+- **Every run writes a log** in `log/` — what changed, conflicts, decisions.
+- **config.yaml `current_version`** is the tracked version; bump on promote.
+
+## Old scripts
+
+`scripts/archive-20260920/` holds the previous generation (ingest/promote/status
+from 2026-09-16), which hardcoded the retired `earendil-works/pi` remote and
+assumed the engine was a git child of upstream. Retired, kept for reference.

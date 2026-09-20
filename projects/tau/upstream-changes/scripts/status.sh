@@ -1,20 +1,33 @@
 #!/usr/bin/env bash
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-echo "== upstream-changes status =="
-echo "-- git status (tau work) --"
-git -C "$ROOT" status --porcelain | head -50
-echo ""
-echo "-- pending patches --"
-ls -lh "$ROOT/upstream-changes/patches" 2>/dev/null || echo "(no patches/)"
-echo ""
-echo "-- recent ingestion logs --"
-ls -lt "$ROOT/upstream-changes/log" 2>/dev/null | head -10 || echo "(no log/)"
-echo ""
-echo "-- upstream tip vs HEAD --"
-if git -C "$ROOT" remote get-url upstream &>/dev/null; then
-  git -C "$ROOT" fetch upstream main --dry-run 2>&1 | head -5 || true
-  echo "HEAD: $(git -C "$ROOT" rev-parse --short HEAD)"
-  echo "upstream/main: $(git -C "$ROOT" rev-parse --short upstream/main 2>/dev/null || echo 'not fetched')"
-  echo "Commits behind: $(git -C "$ROOT" rev-list --count HEAD..upstream/main 2>/dev/null || echo '?')"
+# status.sh — where do we stand vs upstream?
+UC="$(cd "$(dirname "$0")/.." && pwd)"
+MIRROR=/home/toxic/scratch/oh-my-pi-upstream
+ENGINE=/home/toxic/sovereign/projects/tau/engine
+WORKROOT=/home/toxic/scratch/tau-merge
+
+CUR="$(grep 'current_version' "$UC/config.yaml" | sed 's/.*"\([0-9.]*\)".*/\1/')"
+echo "== tau upstream status =="
+echo "engine tracks upstream: $CUR   (fork point v18.1.18)"
+if [ -d "$MIRROR/.git" ]; then
+  git -C "$MIRROR" fetch --quiet --tags origin 2>/dev/null || true
+  LATEST="$(git -C "$MIRROR" tag --list 'v18.*' --sort=-v:refname | head -1)"
+  echo "latest upstream tag:  ${LATEST#v}"
+  if [ "v$CUR" != "$LATEST" ]; then
+    BEHIND="$(git -C "$MIRROR" rev-list --count "v$CUR".."$LATEST" 2>/dev/null || echo '?')"
+    echo "behind by: $BEHIND commits — run ./upstream-changes/scripts/upgrade.sh ${LATEST#v}"
+  else
+    echo "up to date."
+  fi
+else
+  echo "mirror not cloned yet — run ingest.sh"
 fi
+echo ""
+echo "-- merge worktrees --"
+ls -d "$WORKROOT"/tau-merge-* 2>/dev/null || echo "(none)"
+echo ""
+echo "-- recent logs --"
+ls -t "$UC/log" 2>/dev/null | head -8 || echo "(no logs yet)"
+echo ""
+echo "-- engine binary --"
+ls -la "$ENGINE/packages/coding-agent/dist/omp" 2>/dev/null || echo "(no binary)"
