@@ -734,7 +734,7 @@
                         "additionalProperties": false,
                         "description": "Per-peer self-healing knobs (optional). States: healthy -> degraded (advisory) -> circuit-open (ejected, 503 fail-fast) -> half-open (single real-traffic probe) -> healthy. No polling: the probe is the next real request after cool_off_seconds. Observe at GET /peer-health."
                     }
-                
+
                 }
             },
             "default": {},
