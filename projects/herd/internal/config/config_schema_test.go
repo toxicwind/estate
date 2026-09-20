@@ -9,12 +9,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// TestConfig_ExampleMatchesSchema validates that docs/config.example.yaml
+// TestConfig_ExampleMatchesSchema validates that config.example.yaml
 // conforms to the root config-schema.json.
 func TestConfig_ExampleMatchesSchema(t *testing.T) {
 	const (
 		schemaPath  = "../../config-schema.json"
-		examplePath = "../../docs/config.example.yaml"
+		examplePath = "../../config.example.yaml"
 	)
 
 	schemaBytes, err := os.ReadFile(schemaPath)

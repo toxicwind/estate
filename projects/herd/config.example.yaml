@@ -665,6 +665,36 @@ peers:
       tlsHandshake: 10
       idleConn: 90
 
+    # health: per-peer self-healing (event-driven dead-peer ejection + recovery)
+    # - optional; when absent, conservative defaults apply and health is enabled
+    # - states: healthy -> degraded (advisory, still serves) -> circuit-open
+    #   (ejected from rotation, 503 fail-fast) -> half-open (the next real
+    #   request is admitted single-flight as a probe) -> healthy on success
+    # - every outcome is classified per the reliability taxonomy
+    #   (402-not-entitled, 404-dead-id, 429-throttled, 200-empty, 403-refused,
+    #   5xx, transport, success); each failure adds its class weight to a
+    #   score, each success subtracts recovery_credit; score >= failure_threshold
+    #   opens the circuit. No polling: the probe is real traffic, admitted only
+    #   after cool_off_seconds, single-flight.
+    # - observe per-peer state at GET /peer-health
+    health:
+      enabled: true
+      ewma_alpha: 0.2
+      failure_threshold: 8
+      recovery_credit: 1
+      success_threshold: 1
+      cool_off_seconds: 30
+      degraded_latency_ms: 15000
+      degraded_error_rate: 0.5
+      weights:
+        transport: 2.0
+        5xx: 1.5
+        404-dead-id: 3.0
+        402-not-entitled: 2.0
+        403-refused: 1.5
+        429-throttled: 0.5
+        200-empty: 1.5
+
     # filters: a dictionary of filter settings for peer requests
     # - optional, default: empty dictionary
     # - same capabilities as model filters (stripParams, setParams)

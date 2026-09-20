@@ -118,6 +118,9 @@ Live service: pitchfork `herd` → `stack/services/herd.sh` with
 [`config/herd.yaml`](https://github.com/toxicwind/sovereign-projects/blob/main/config/herd.yaml).
 [`flock` daemon`](https://github.com/toxicwind/sovereign-projects/blob/main/pitchfork.toml#L224-L231) ·
 [`keypool` daemon`](https://github.com/toxicwind/sovereign-projects/blob/main/pitchfork.toml#L662-L668)
+[Self-healing peers](https://github.com/toxicwind/sovereign-projects/blob/main/projects/herd/README.md#self-healing-peers-2026-09-20):
+event-driven dead-peer detection (healthy/degraded/circuit-open FSM, single-flight
+half-open recovery on real traffic) with `GET /peer-health` observability.
 
 ### Agents
 
