@@ -169,6 +169,26 @@ import time
 import framing
 import oracle_ask
 
+
+#!/usr/bin/env python3
+"""Rebuilt hardening test sections for bench/test_core.py (appended before the
+final print). Deterministic: no model calls, no network."""
+import threading
+import time
+
+import framing
+import oracle_ask
+
+
+#!/usr/bin/env python3
+"""Rebuilt hardening test sections for bench/test_core.py (appended before the
+final print). Deterministic: no model calls, no network."""
+import threading
+import time
+
+import framing
+import oracle_ask
+
 # ---- framing: fail-closed question intake ----
 _framing_cases = [
     ("Will this work?", "refused"),
@@ -394,6 +414,29 @@ check("debate final rebuilt by engine",
       _dv["status"] in ("verdict", "escalate")
       and _dv["verdict_sha256"] and len(_dv["judge_contributions"]) == 4,
       "%s %s" % (_dv["status"], _dv["verdict_sha256"]))
+
+# ---- canonical verdict hash: recompute and match the ledger row ----
+import hashlib as _hl
+import json as _json
+_hv = engine.build_verdict({"binary_question": "Q?", "base_rate_prior": 0.5,
+                            "question_id": "hash1",
+                            "resolution_criteria": "c"},
+                           [engine.JudgePosterior("a", 0.7),
+                            engine.JudgePosterior("b", 0.8)])
+_canon = _json.dumps(
+    {k: _hv[k] for k in
+     ("question_id", "probability", "judge_contributions")},
+    sort_keys=True)
+_expected = _hl.sha256(_canon.encode()).hexdigest()[:16]
+check("verdict hash recomputes exactly",
+      _hv["verdict_sha256"] == _expected,
+      "%s vs %s" % (_hv["verdict_sha256"], _expected))
+_lp = "/home/toxic/.xfer/oracle-test-work/hash_ledger.jsonl"
+engine.record_verdict(_hv, path=_lp)
+_row = _json.loads(open(_lp).read().strip().split("\n")[-1])
+check("ledger row preserves hash",
+      _row["verdict_sha256"] == _expected == _hv["verdict_sha256"],
+      str(_row.get("verdict_sha256")))
 
 # ---- none-content robustness: free-tier nulls never crash ----
 _orig_herd = oracle_ask.herd_chat
