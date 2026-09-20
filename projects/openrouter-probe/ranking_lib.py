@@ -55,14 +55,21 @@ def rank_models(candidates: list[dict]) -> list[dict]:
 
 
 def build_report(ts: str, instrument: dict, results: list[dict]) -> dict:
-    """Aggregate JSON: ranking (tokenizer-valid only) + fallback_tier."""
+    """Aggregate JSON: ranking (tokenizer-valid only) + fallback_tier.
+
+    ``results`` carries the ranked tier only (tokenizer-comparable models,
+    in rank order). Fallback-tokenizer models live exclusively under
+    ``fallback_tier`` (full result embedded); dead/errored models under
+    ``dead_or_errored``. ``openrouter/free`` therefore never appears in
+    ``ranking`` or ``results``.
+    """
     ranked_src, fallback = split_tiers(results)
     ranked = rank_models(ranked_src)
     return {
         "ts": ts,
         "instrument": instrument,
         "ranking": [r["model"] for r in ranked],
-        "results": results,
+        "results": ranked,
         "fallback_tier": [
             {
                 "model": r["model"],
