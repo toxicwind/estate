@@ -266,7 +266,7 @@ export const ALL_SERVICES: ServiceDef[] = [
     id: "kimi-code",
     name: "kimi-code-sovereign",
     portKey: "KIMI_CODE_PORT",
-    run: "exec /home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126",
+    run: "exec /home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126 --no-port-walk",
     dir: "/home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code",
     readyHttp: "/health",
     group: "main",
