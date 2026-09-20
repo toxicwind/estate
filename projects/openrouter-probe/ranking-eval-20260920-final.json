@@ -1,0 +1,314 @@
+{
+ "ts": "20260920-final",
+ "instrument": {
+  "harness": "guidellm fork toxicwind/guidellm (pluggable scorers)",
+  "scorer": "instruction_following (deterministic)",
+  "scorer_semantics": "borrowed from probe_abstract.py: exact=2.0, contains=1.0, completed-empty=0.0; transport-errored requests scored for the record only, excluded from quality aggregates",
+  "thinking_strip": true,
+  "tokenizers": "per-model HF repos (models-bench.json); openrouter/free on explicitly labelled gpt2 fallback (not tokenizer-comparable)",
+  "prompt": "Output exactly: ABSTRACT-7X3Q. No other text.",
+  "max_tokens": 300,
+  "requests_per_model": 6,
+  "profile": "synchronous",
+  "formality_tier": "deterministic-instrument",
+  "scope": "provider-free OpenRouter models, abstract instruction-following task; 10 models across two runs (8 x 20260920-151629 reconstructed from raw per-model JSON after the runner crashed on model 9's null-content liveness probe \u2014 since fixed \u2014 plus 2 x 20260920-152756); same prompt, profile, n=6; free status verified live against the OpenRouter catalogue (446 models, 24 provider-free)",
+  "ranking_rule": "quality desc, provider-free desc, latency p50 asc"
+ },
+ "ranking": [
+  "nex-agi/nex-n2.5-mini:free",
+  "nex-agi/nex-n2.5-pro:free",
+  "cohere/north-mini-code:free",
+  "poolside/laguna-s-2.1:free",
+  "nvidia/nemotron-3-super-120b-a12b:free",
+  "inclusionai/ling-3.0-flash-sante:free",
+  "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+  "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "nvidia/nemotron-3.5-lightning:free",
+  "openrouter/free"
+ ],
+ "results": [
+  {
+   "model": "cohere/north-mini-code:free",
+   "tokenizer_repo": "CohereLabs/North-Mini-Code-1.0",
+   "wall_s": null,
+   "quality_mean": 2.0,
+   "quality_min": 2.0,
+   "quality_max": 2.0,
+   "quality_n": 6.0,
+   "quality_key": "instruction_following_nothink",
+   "latency_p50_s": 0.6526222229003906,
+   "ttft_p50_ms": 109.3904972076416,
+   "output_tps": 100.19541979084852,
+   "prompt_tok_mean": 14.0,
+   "output_tok_mean": 90.83333333333331,
+   "n_successful": 6,
+   "n_errored": 0,
+   "instrument": {
+    "scorers": [
+     "instruction_following_nothink"
+    ],
+    "formality_tier": "deterministic-instrument",
+    "scope": "benchmark completed requests",
+    "compiled_at": 1789939001.0793588
+   },
+   "status": "ok",
+   "free": true,
+   "tokenizer_status": "verified"
+  },
+  {
+   "model": "inclusionai/ling-3.0-flash-sante:free",
+   "tokenizer_repo": "inclusionAI/Ling-3.0-flash-Fin",
+   "wall_s": null,
+   "quality_mean": 2.0,
+   "quality_min": 2.0,
+   "quality_max": 2.0,
+   "quality_n": 6.0,
+   "quality_key": "instruction_following_nothink",
+   "latency_p50_s": 1.0518929958343506,
+   "ttft_p50_ms": 624.9005794525146,
+   "output_tps": 79.43962681631655,
+   "prompt_tok_mean": 35.0,
+   "output_tok_mean": 78.0,
+   "n_successful": 6,
+   "n_errored": 0,
+   "instrument": {
+    "scorers": [
+     "instruction_following_nothink"
+    ],
+    "formality_tier": "deterministic-instrument",
+    "scope": "benchmark completed requests",
+    "compiled_at": 1789939024.1002975
+   },
+   "status": "ok",
+   "free": true,
+   "tokenizer_status": "verified-family"
+  },
+  {
+   "model": "nex-agi/nex-n2.5-mini:free",
+   "tokenizer_repo": "nex-agi/Nex-N2.5-mini",
+   "wall_s": null,
+   "quality_mean": 2.0,
+   "quality_min": 2.0,
+   "quality_max": 2.0,
+   "quality_n": 6.0,
+   "quality_key": "instruction_following_nothink",
+   "latency_p50_s": 0.41161632537841797,
+   "ttft_p50_ms": 362.08486557006836,
+   "output_tps": 26.013069679460013,
+   "prompt_tok_mean": 24.0,
+   "output_tok_mean": 11.0,
+   "n_successful": 6,
+   "n_errored": 0,
+   "instrument": {
+    "scorers": [
+     "instruction_following_nothink"
+    ],
+    "formality_tier": "deterministic-instrument",
+    "scope": "benchmark completed requests",
+    "compiled_at": 1789939014.1952643
+   },
+   "status": "ok",
+   "free": true,
+   "tokenizer_status": "verified"
+  },
+  {
+   "model": "nex-agi/nex-n2.5-pro:free",
+   "tokenizer_repo": "nex-agi/Nex-N2.5-Pro",
+   "wall_s": null,
+   "quality_mean": 2.0,
+   "quality_min": 2.0,
+   "quality_max": 2.0,
+   "quality_n": 6.0,
+   "quality_key": "instruction_following_nothink",
+   "latency_p50_s": 0.5822131633758545,
+   "ttft_p50_ms": 439.42856788635254,
+   "output_tps": 21.662789817324867,
+   "prompt_tok_mean": 24.0,
+   "output_tok_mean": 14.166666666666668,
+   "n_successful": 6,
+   "n_errored": 0,
+   "instrument": {
+    "scorers": [
+     "instruction_following_nothink"
+    ],
+    "formality_tier": "deterministic-instrument",
+    "scope": "benchmark completed requests",
+    "compiled_at": 1789939008.412671
+   },
+   "status": "ok",
+   "free": true,
+   "tokenizer_status": "verified"
+  },
+  {
+   "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+   "tokenizer_repo": "nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning-BF16",
+   "wall_s": null,
+   "quality_mean": 2.0,
+   "quality_min": 2.0,
+   "quality_max": 2.0,
+   "quality_n": 5.0,
+   "quality_key": "instruction_following_nothink",
+   "latency_p50_s": 1.1785037517547607,
+   "ttft_p50_ms": 258.2061290740967,
+   "output_tps": 37.19476959247057,
+   "prompt_tok_mean": 32.0,
+   "output_tok_mean": 53.6,
+   "n_successful": 5,
+   "n_errored": 1,
+   "instrument": {
+    "scorers": [
+     "instruction_following_nothink"
+    ],
+    "formality_tier": "deterministic-instrument",
+    "scope": "benchmark completed requests",
+    "compiled_at": 1789939135.8746047
+   },
+   "status": "ok",
+   "free": true,
+   "tokenizer_status": "verified"
+  },
+  {
+   "model": "nvidia/nemotron-3-super-120b-a12b:free",
+   "tokenizer_repo": "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16",
+   "wall_s": null,
+   "quality_mean": 2.0,
+   "quality_min": 2.0,
+   "quality_max": 2.0,
+   "quality_n": 3.0,
+   "quality_key": "instruction_following_nothink",
+   "latency_p50_s": 1.0380499362945557,
+   "ttft_p50_ms": 290.4942035675049,
+   "output_tps": 54.7737663024426,
+   "prompt_tok_mean": 32.0,
+   "output_tok_mean": 77.0,
+   "n_successful": 3,
+   "n_errored": 3,
+   "instrument": {
+    "scorers": [
+     "instruction_following_nothink"
+    ],
+    "formality_tier": "deterministic-instrument",
+    "scope": "benchmark completed requests",
+    "compiled_at": 1789939031.875015
+   },
+   "status": "ok",
+   "free": true,
+   "tokenizer_status": "verified"
+  },
+  {
+   "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+   "tokenizer_repo": "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4",
+   "wall_s": null,
+   "quality_mean": 2.0,
+   "quality_min": 2.0,
+   "quality_max": 2.0,
+   "quality_n": 6.0,
+   "quality_key": "instruction_following_nothink",
+   "latency_p50_s": 3.440185546875,
+   "ttft_p50_ms": 446.50888442993164,
+   "output_tps": 10.664891285034725,
+   "prompt_tok_mean": 32.0,
+   "output_tok_mean": 120.66666666666664,
+   "n_successful": 6,
+   "n_errored": 0,
+   "instrument": {
+    "scorers": [
+     "instruction_following_nothink"
+    ],
+    "formality_tier": "deterministic-instrument",
+    "scope": "benchmark completed requests",
+    "compiled_at": 1789939124.96369
+   },
+   "status": "ok",
+   "free": true,
+   "tokenizer_status": "verified"
+  },
+  {
+   "model": "poolside/laguna-s-2.1:free",
+   "tokenizer_repo": "poolside/Laguna-S-2.1",
+   "wall_s": null,
+   "quality_mean": 2.0,
+   "quality_min": 2.0,
+   "quality_max": 2.0,
+   "quality_n": 6.0,
+   "quality_key": "instruction_following_nothink",
+   "latency_p50_s": 0.9303786754608154,
+   "ttft_p50_ms": 621.5794086456299,
+   "output_tps": 5.732923263723918,
+   "prompt_tok_mean": 58.0,
+   "output_tok_mean": 8.0,
+   "n_successful": 6,
+   "n_errored": 0,
+   "instrument": {
+    "scorers": [
+     "instruction_following_nothink"
+    ],
+    "formality_tier": "deterministic-instrument",
+    "scope": "benchmark completed requests",
+    "compiled_at": 1789939148.8306818
+   },
+   "status": "ok",
+   "free": true,
+   "tokenizer_status": "verified"
+  },
+  {
+   "model": "openrouter/free",
+   "tokenizer_repo": "gpt2",
+   "wall_s": 16.7,
+   "quality_mean": 1.6666666666666667,
+   "quality_min": 0.0,
+   "quality_max": 2.0,
+   "quality_n": 6.0,
+   "quality_key": "instruction_following_nothink",
+   "latency_p50_s": 1.6882307529449463,
+   "ttft_p50_ms": 431.6868782043457,
+   "output_tps": 54.64519367266815,
+   "prompt_tok_mean": 104.33333333333333,
+   "output_tok_mean": 124.33333333333333,
+   "n_successful": 6,
+   "n_errored": 0,
+   "instrument": {
+    "scorers": [
+     "instruction_following_nothink"
+    ],
+    "formality_tier": "deterministic-instrument",
+    "scope": "benchmark completed requests",
+    "compiled_at": 1789939697.0476098
+   },
+   "guidellm_json": "/home/toxic/sovereign-eval-wt/projects/openrouter-probe/eval-20260920-152756-openrouter_free.json",
+   "status": "ok",
+   "free": true,
+   "tokenizer_status": "fallback-labeled"
+  },
+  {
+   "model": "nvidia/nemotron-3.5-lightning:free",
+   "tokenizer_repo": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4",
+   "wall_s": 296.1,
+   "quality_mean": 1.8333333333333333,
+   "quality_min": 1.0,
+   "quality_max": 2.0,
+   "quality_n": 6.0,
+   "quality_key": "instruction_following_nothink",
+   "latency_p50_s": 32.24698185920715,
+   "ttft_p50_ms": 15936.036109924316,
+   "output_tps": 4.726349401817848,
+   "prompt_tok_mean": 32.0,
+   "output_tok_mean": 230.33333333333331,
+   "n_successful": 6,
+   "n_errored": 0,
+   "instrument": {
+    "scorers": [
+     "instruction_following_nothink"
+    ],
+    "formality_tier": "deterministic-instrument",
+    "scope": "benchmark completed requests",
+    "compiled_at": 1789939995.1122866
+   },
+   "guidellm_json": "/home/toxic/sovereign-eval-wt/projects/openrouter-probe/eval-20260920-152756-nvidia_nemotron-3.5-lightning:free.json",
+   "status": "ok",
+   "free": true,
+   "tokenizer_status": "verified"
+  }
+ ],
+ "dead_or_errored": []
+}

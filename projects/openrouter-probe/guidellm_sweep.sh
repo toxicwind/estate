@@ -6,7 +6,7 @@ set -u
 SECRETS=/home/toxic/.secrets
 OUTDIR=/home/toxic/sovereign/projects/openrouter-probe/guidellm
 mkdir -p "$OUTDIR"
-KEY=$(grep -E '^[[:space:]]*(export[[:space:]]+)?OPENROUTER_API_KEY_1[[:space:]]*=' "$SECRETS" | head -1 | sed -E 's/^[[:space:]]*(export[[:space:]]+)?OPENROUTER_API_KEY_1[[:space:]]*=[[:space:]]*//; s/^"//; s/"$//')
+KEY=$(grep -E '^[[:space:]]*(export[[:space:]]+)?OPENROUTER_API_KEY_FREE[[:space:]]*=' "$SECRETS" | head -1 | sed -E 's/^[[:space:]]*(export[[:space:]]+)?OPENROUTER_API_KEY_FREE[[:space:]]*=[[:space:]]*//; s/^"//; s/"$//')
 if [ -z "$KEY" ]; then echo "KEY NOT FOUND"; exit 1; fi
 echo "key loaded (${#KEY} chars, not shown)"
 
