@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+"""Resolve a squawk runner profile from $SQUAWK_ROOT/runners.yml.
+
+Usage:
+  squawk-profile list                  # print profile names, one per line
+  squawk-profile resolve <name>        # print shell assignments for eval
+  squawk-profile show <name>           # print the profile as JSON
+
+Root resolution: $SQUAWK_ROOT, default /home/toxic/.shingle/squawk-root,
+resolved via os.path.realpath so symlinks (shingle <-> .shingle) and the
+planned sovereign reorg keep working.
+"""
+import json
+import os
+import sys
+
+try:
+    import yaml
+except ImportError:
+    sys.exit("squawk-profile: pyyaml is required (pip install pyyaml)")
+
+
+def root_dir():
+    return os.path.realpath(
+        os.environ.get("SQUAWK_ROOT", "/home/toxic/.shingle/squawk-root")
+    )
+
+
+def load_profiles():
+    path = os.path.join(root_dir(), "runners.yml")
+    try:
+        with open(path) as f:
+            doc = yaml.safe_load(f)
+    except FileNotFoundError:
+        sys.exit(f"squawk-profile: no runners.yml at {path}")
+    profiles = (doc or {}).get("profiles") or {}
+    if not profiles:
+        sys.exit(f"squawk-profile: no profiles defined in {path}")
+    return profiles
+
+
+def main():
+    args = sys.argv[1:]
+    if not args or args[0] in ("-h", "--help"):
+        print(__doc__.strip())
+        return 0
+    cmd = args[0]
+    profiles = load_profiles()
+    if cmd == "list":
+        for name in sorted(profiles):
+            print(name)
+        return 0
+    if cmd in ("resolve", "show"):
+        if len(args) < 2:
+            sys.exit(f"squawk-profile: usage: squawk-profile {cmd} <name>")
+        name = args[1]
+        if name not in profiles:
+            sys.exit(
+                f"squawk-profile: unknown profile {name!r} "
+                f"(known: {', '.join(sorted(profiles))})"
+            )
+        p = dict(profiles[name])
+        p.setdefault("key", p.get("identity", name))
+        p.setdefault("channels", ["fleet"])
+        if cmd == "show":
+            print(json.dumps({"name": name, **p}, indent=2))
+            return 0
+        # resolve: shell-safe assignments for the wrapper to eval
+        def q(v):
+            return "'" + str(v).replace("'", "'\\''") + "'"
+        print(f"SQUAWK_PROFILE_ID={q(p['identity'])}")
+        print(f"SQUAWK_PROFILE_KEY={q(p['key'])}")
+        print(f"SQUAWK_PROFILE_ROLE={q(p.get('role', name))}")
+        print(f"SQUAWK_PROFILE_CHANNELS={q(' '.join(p['channels']))}")
+        print(f"SQUAWK_PROFILE_POLL={q(p.get('poll_interval', 10))}")
+        print(f"SQUAWK_PROFILE_HEARTBEAT={q(p.get('heartbeat', 120))}")
+        return 0
+    sys.exit(f"squawk-profile: unknown command {cmd!r}")
+
+
+if __name__ == "__main__":
+    sys.exit(main())

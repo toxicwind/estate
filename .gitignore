@@ -284,3 +284,6 @@ id_ed25519*
 
 # --- engine build trees (herd triage 2026-09-20: 3G, never commit) ---
 /engines/
+
+# --- sovereign reorg 2026-09-20: /scratch is the renamed shingle-workspace (tracked) ---
+!/scratch/

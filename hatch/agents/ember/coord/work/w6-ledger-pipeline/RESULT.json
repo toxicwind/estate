@@ -1,0 +1,19 @@
+{
+ "lane": "w6-ledger-pipeline",
+ "ts_utc": "2026-09-16T23:10:50Z",
+ "claims": [
+  "regen_seed.py reproduces -1/0 labeling on a synthetic fixture",
+  "echo_chain detection verified True on chained fixture"
+ ],
+ "evidence": {
+  "test_log": [
+   "fixture turns=6 storm=2 echo_chain_detected=True",
+   "regen stdout: wrote /home/toxic/.shingle/coord/work/w6-ledger-pipeline/fixture_seed.json: 6 turns, 2 storm"
+  ]
+ },
+ "proof_files": [
+  "regen_seed.py",
+  "fixture.jsonl",
+  "brief.py"
+ ]
+}

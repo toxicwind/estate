@@ -1,0 +1,32 @@
+{
+ "lane": "w4-tripwire",
+ "ts_utc": "2026-09-16T23:10:48Z",
+ "claims": [
+  "tripwire self-test 3/3 pass (hot trips, cold clear, sub-threshold clear)",
+  "live LATEST.json state: TRIPPED storm_active=true chat_hits=27 thr=10"
+ ],
+ "evidence": {
+  "selftest": {
+   "hot": [
+    2,
+    "TRIPPED storm_active=true chat_hits=74 thr=10"
+   ],
+   "cold": [
+    0,
+    "CLEAR storm_active=False chat_hits=0"
+   ],
+   "warm": [
+    0,
+    "CLEAR storm_active=True chat_hits=3"
+   ]
+  },
+  "live": [
+   2,
+   "TRIPPED storm_active=true chat_hits=27 thr=10"
+  ]
+ },
+ "proof_files": [
+  "storm_tripwire.py",
+  "brief.py"
+ ]
+}

@@ -1,0 +1,11 @@
+{
+ "item": "chat-coord-server",
+ "claimed_by": "subagent cffd2340-7d3d-4b4f-ac95-6301a896d055 (main agent, via side chat 768ad4c4)",
+ "claimed_at": 1789771739,
+ "ttl_s": 86400,
+ "note": "First-class agent chat coordination server on awrawr-pc (Chris order 2026-09-18). Design debate -> build -> pitchfork daemon -> tailscale serve. Additive only; squawk-ws untouched.",
+ "port": 25152,
+ "notes": " 2026-09-18 ~17:03 MDT: moved 25151->25152; peer fleetd holds 25151.",
+ "released_at": 1789772738,
+ "release_note": "Work complete and verified; claim released 2026-09-18 ~17:05 MDT. Port 25152 stays assigned to chat-coord."
+}

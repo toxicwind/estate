@@ -1,0 +1,20 @@
+__pycache__/
+*.pyc
+dist/
+build/
+*.egg-info/
+.worktrees/
+mock_chat_root/
+test_benchmark_corpus/
+
+# Environment files (never commit live secrets)
+.env
+.env.local
+!.env.example
+
+# token-scrub 2026-09-14: never commit secrets
+*.pat
+github_*_pat.json
+.env*
+*secret*
+*token*

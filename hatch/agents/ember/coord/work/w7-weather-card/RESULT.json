@@ -1,0 +1,16 @@
+{
+ "lane": "w7-weather-card",
+ "ts_utc": "2026-09-16T23:10:51Z",
+ "claims": [
+  "single-file HTML status card built, no external deps",
+  "size 2306 bytes, renders storm_active=True"
+ ],
+ "evidence": {
+  "bytes": 2306,
+  "storm_active": true
+ },
+ "proof_files": [
+  "weather.html",
+  "brief.py"
+ ]
+}
