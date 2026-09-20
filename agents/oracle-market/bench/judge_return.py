@@ -107,10 +107,12 @@ def run_harness(mode, bin_dir, timeout_s, out_path):
             prompt = make_prompt(q)
             for m in models:
                 futs[ex.submit(slot_fn, m, prompt)] = (qi, q, m)
-        for fut in cf.as_completed(futs, timeout=timeout_s * 2 + 60):
+        # No outer timeout: slots are self-bounded by _resilient_judge's
+        # own per-attempt ceilings (primary + retry + local fallback).
+        for fut in cf.as_completed(futs):
             qi, q, m = futs[fut]
             try:
-                jp, slot = fut.result(timeout=timeout_s + 10)
+                jp, slot = fut.result(timeout=timeout_s * 3 + 60)
                 rows.append({
                     "question_idx": qi, "question": q,
                     "slot": slot.get("slot", m),
