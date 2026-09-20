@@ -10,10 +10,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/mostlygeek/llama-swap/internal/flock"
 	"github.com/mostlygeek/llama-swap/internal/chain"
 	"github.com/mostlygeek/llama-swap/internal/config"
 	"github.com/mostlygeek/llama-swap/internal/event"
+	"github.com/mostlygeek/llama-swap/internal/flock"
 	"github.com/mostlygeek/llama-swap/internal/logmon"
 	"github.com/mostlygeek/llama-swap/internal/perf"
 	"github.com/mostlygeek/llama-swap/internal/process"
@@ -198,10 +198,10 @@ func New(cfg config.Config, muxlog *logmon.Monitor, proxylog *logmon.Monitor, up
 		amCfg.Providers = make(map[string]flock.ProviderCfg)
 		for name, pcfg := range cfg.AstMatrix.Providers {
 			amCfg.Providers[name] = flock.ProviderCfg{
-				BaseURL:  pcfg.BaseURL,
-				KeyEnv:   pcfg.KeyEnv,
+				BaseURL:   pcfg.BaseURL,
+				KeyEnv:    pcfg.KeyEnv,
 				KeyEnvAlt: pcfg.KeyEnvAlt,
-				NoAuth:   pcfg.NoAuth,
+				NoAuth:    pcfg.NoAuth,
 			}
 		}
 		cloud, err = flock.NewRouter(amCfg, proxylog)
