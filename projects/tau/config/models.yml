@@ -1,6 +1,9 @@
 # Tau provider catalog -- CANONICAL SOURCE (tracked in sovereign-projects).
-# Deployed to ~/.tau/agent/models.yml on yote (byte-identical; the engine
-# expands ${VAR:-default}). Reconciled 2026-09-20 by provider-surgeon-2:
+# Deployed to ~/.tau/agent/models.yml on yote (byte-identical).
+# NOTE 2026-09-20 tau-hyperfix: the engine does NOT expand ${VAR:-default}
+# (verified: no env expansion in config-file.ts) -- baseUrls MUST be
+# literals or every call through the provider fails with
+# "fetch() URL is invalid". Reconciled 2026-09-20 by provider-surgeon-2:
 # merged tau-config's verified-live provider set (2026-09-20) with the
 # portable env-var-ized structure. Do NOT let these diverge again --
 # live-verified changes go here first, then sync to the overlay.
@@ -24,7 +27,7 @@ providers:
     # openrouter-free tiers (v3 reliability + reasoning-artifact corrections,
     # 2026-09-20). Keyless pollinations is wired INSIDE herd, never as a
     # direct provider.
-    baseUrl: ${HERD_BASE_URL:-http://127.0.0.1:25100/v1}
+    baseUrl: http://127.0.0.1:25100/v1
     api: openai-completions
     auth: none
     discovery:
@@ -33,7 +36,7 @@ providers:
     # Sovereign free pool: live router on :25104. `free` races all free-tier
     # models and serves the first non-empty completion (substance-guarded).
     # Measured live 2026-09-20: 0pct errors, 781 models.
-    baseUrl: ${SOVEREIGN_ROUTER_URL:-http://127.0.0.1:25104/v1}
+    baseUrl: http://127.0.0.1:25104/v1
     api: openai-completions
     auth: none
     discovery:

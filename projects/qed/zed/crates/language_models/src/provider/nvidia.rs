@@ -16,6 +16,7 @@
 //! * Tool definitions are sanitized: descriptions are truncated and the tool
 //!   count is capped so Outlines does not explode.
 
+use crate::schema_normalizer::normalize_tool_schemas;
 use anyhow::Result;
 use collections::BTreeMap;
 use credentials_provider::CredentialsProvider;
@@ -30,20 +31,19 @@ use language_model::{
     LanguageModelToolChoice, LanguageModelToolSchemaFormat, ProviderSettingsView, RateLimiter,
     env_var,
 };
+use nvidia::NVIDIA_API_URL;
 use open_ai::ResponseStreamEvent;
 pub use settings::NvidiaAvailableModel as AvailableModel;
 use settings::{Settings, SettingsStore};
 use std::sync::{Arc, LazyLock};
 use strum::IntoEnumIterator;
 use ui::IconName;
-use nvidia::NVIDIA_API_URL;
 
 const PROVIDER_ID: LanguageModelProviderId = LanguageModelProviderId::new("nvidia");
 const PROVIDER_NAME: LanguageModelProviderName = LanguageModelProviderName::new("NVIDIA");
 
 const API_KEY_ENV_VAR_NAME: &str = "NVIDIA_API_KEY";
 static API_KEY_ENV_VAR: LazyLock<EnvVar> = env_var!(API_KEY_ENV_VAR_NAME);
-
 
 #[derive(Default, Clone, Debug, PartialEq)]
 pub struct NvidiaSettings {
@@ -476,80 +476,6 @@ impl LanguageModel for NvidiaLanguageModel {
     }
 }
 
-/// Non-destructive JSON-Schema normalizer for NVIDIA's Outlines tool parser.
-///
-/// Outlines materializes a regex/grammar from each tool's JSON Schema. It 500s
-/// ("Could not translate instance to regex") when a schema is structurally
-/// ambiguous: missing root `type`, untyped properties, or `type: null`. We
-/// repair those defects in place and return every tool unchanged otherwise.
-/// No tool-count cap and no description truncation — the mcpproxy compact router
-/// is what keeps the *set* small; the provider must never drop tools.
-fn normalize_tool_schemas(
-    tools: Vec<language_model::LanguageModelRequestTool>,
-) -> Vec<language_model::LanguageModelRequestTool> {
-    tools
-        .into_iter()
-        .map(|mut tool| {
-            if let language_model::LanguageModelRequestToolInput::Function { input_schema, .. } =
-                &mut tool.input
-            {
-                *input_schema = normalize_schema(input_schema.clone());
-            }
-            tool
-        })
-        .collect()
-}
-
-/// Repair a single JSON Schema object so Outlines can compile it.
-fn normalize_schema(mut schema: serde_json::Value) -> serde_json::Value {
-    if !schema.is_object() {
-        return serde_json::json!({ "type": "object" });
-    }
-
-    // Ensure an explicit root type. Outlines needs an explicit object root;
-    // set it unconditionally when the schema is an object (whether or not it
-    // already declares properties) so the grammar compiler never sees an
-    // ambiguous root.
-    let root_type = schema.get("type").cloned();
-    let is_explicit_object = matches!(root_type, Some(serde_json::Value::String(s)) if s == "object");
-    if !is_explicit_object {
-        schema["type"] = serde_json::json!("object");
-    }
-
-    // Recurse into properties, giving each an explicit type when missing.
-    if let Some(props) = schema.get_mut("properties").and_then(|p| p.as_object_mut()) {
-        for (_name, prop) in props.iter_mut() {
-            if prop.is_object() {
-                let t = prop.get("type").cloned();
-                let has_type = match &t {
-                    Some(serde_json::Value::String(s)) => !s.is_empty() && s != "null",
-                    Some(serde_json::Value::Array(a)) => {
-                        // oneOf/anyOf-style: keep, but drop bare "null" entries
-                        // that Outlines cannot translate.
-                        let cleaned: Vec<_> = a
-                            .iter()
-                            .filter(|v| !matches!(v, serde_json::Value::String(s) if s == "null"))
-                            .cloned()
-                            .collect();
-                        let non_empty = !cleaned.is_empty();
-                        prop["type"] = serde_json::Value::Array(cleaned);
-                        non_empty
-                    }
-                    _ => false,
-                };
-                if !has_type {
-                    prop["type"] = serde_json::json!("string");
-                }
-                // Recurse for nested objects.
-                if matches!(prop.get("type"), Some(serde_json::Value::String(s)) if s == "object") {
-                    *prop = normalize_schema(prop.clone());
-                }
-            }
-        }
-    }
-    schema
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -570,51 +496,5 @@ mod tests {
                 .map(|level| level.value.as_ref()),
             Some("max")
         );
-    }
-
-    #[test]
-    fn normalize_tool_schemas_repairs_structural_defects_without_dropping_tools() {
-        let tools = vec![
-            // Untyped root + untyped property -> should become object/string.
-            language_model::LanguageModelRequestTool {
-                name: "a".into(),
-                description: "x".repeat(5000),
-                input: language_model::LanguageModelRequestToolInput::Function {
-                    use_input_streaming: false,
-                    input_schema: serde_json::json!({"properties": {"q": {}}}),
-                },
-            },
-            // Nullable property -> bare "null" dropped, keeps "string".
-            language_model::LanguageModelRequestTool {
-                name: "b".into(),
-                description: "keep me".into(),
-                input: language_model::LanguageModelRequestToolInput::Function {
-                    use_input_streaming: false,
-                    input_schema: serde_json::json!({
-                        "type": "object",
-                        "properties": {"q": {"type": ["string", "null"]}}
-                    }),
-                },
-            },
-        ];
-
-        let normalized = normalize_tool_schemas(tools);
-        // No tool dropped.
-        assert_eq!(normalized.len(), 2);
-        // Description preserved verbatim (no truncation).
-        assert_eq!(normalized[0].description.chars().count(), 5000);
-
-        let a = match &normalized[0].input {
-            language_model::LanguageModelRequestToolInput::Function { input_schema, .. } => input_schema,
-            _ => panic!("expected function input"),
-        };
-        assert_eq!(a["type"], "object");
-        assert_eq!(a["properties"]["q"]["type"], "string");
-
-        let b = match &normalized[1].input {
-            language_model::LanguageModelRequestToolInput::Function { input_schema, .. } => input_schema,
-            _ => panic!("expected function input"),
-        };
-        assert_eq!(b["properties"]["q"]["type"], serde_json::json!(["string"]));
     }
 }

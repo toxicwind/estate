@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+"""swarm-resume — undo swarm-pause: SIGCONT every process frozen by it.
+
+Reads ~/.cache/shingle/swarm-paused.json, sends SIGCONT (skipping pids
+that already exited), clears state. Forceful and immediate like the pause.
+"""
+import json
+import os
+import signal
+import subprocess
+import sys
+
+sys.path.insert(0, os.path.expanduser("~/workspace/bin"))
+import watchdog_lib as wl
+
+STATE = os.path.expanduser("~/.cache/shingle/swarm-paused.json")
+
+
+def main():
+    if not os.path.exists(STATE):
+        print("no pause state; nothing to resume")
+        return 0
+    with open(STATE) as f:
+        st = json.load(f)
+    resumed, gone = 0, 0
+    for pid in st.get("pids", []):
+        try:
+            os.kill(pid, signal.SIGCONT)
+            resumed += 1
+        except ProcessLookupError:
+            gone += 1
+        except PermissionError as e:
+            print(f"  ! pid {pid}: {e}", file=sys.stderr)
+    ypids = st.get("yote_pids", [])
+    yh = 0
+    if ypids:
+        # CONT the yote processes via one bridge call
+        code = ("import os,signal,json\npids=%s\nok=[]\n"
+                "for p in pids:\n try:\n  os.kill(p,signal.SIGCONT);ok.append(p)\n"
+                " except Exception: pass\nprint(json.dumps(ok))" % json.dumps(ypids))
+        try:
+            r = subprocess.run(
+                [os.path.expanduser("~/workspace/awrawr-bridge/exec.py"),
+                 "python3 -c " + repr(code)],
+                capture_output=True, text=True, timeout=60)
+            for line in reversed(r.stdout.splitlines()):
+                if line.startswith("["):
+                    yh = len(json.loads(line))
+                    break
+        except Exception as e:
+            print(f"  yote resume failed: {e}", file=sys.stderr)
+    os.remove(STATE)
+    print(f"RESUMED {resumed} hatch + {yh} yote processes (SIGCONT), {gone} already exited")
+    # VERIFY against live state: any listed pid still T-frozen, or any
+    # exacd descendant T-frozen but NOT in our list (e.g. stranded by an
+    # old overwrite-style pause state), is reported, not silently left.
+    still = [p for p in st.get("pids", []) if wl.proc_state(p) == "T"]
+    v = wl.verify_pause()
+    listed = set(st.get("pids", []))
+    unlisted = []
+    if v["frozen"]:
+        pm = wl.ppid_map()
+        root = wl.find_hatch_execd()
+        me = os.getpid()
+        my_chain = wl.ancestors(me, pm) | {me}
+        for pid in pm:
+            if pid in listed or pid in my_chain:
+                continue
+            if root and root in wl.ancestors(pid, pm) \
+                    and wl.proc_state(pid) == "T":
+                unlisted.append(pid)
+    if still:
+        print(f"  ! STILL FROZEN after CONT: {still}", file=sys.stderr)
+    if unlisted:
+        print(f"  ! T-frozen exacd descendants NOT in pause state "
+              f"(stranded?): {unlisted}", file=sys.stderr)
+    if still or unlisted:
+        subprocess.run(
+            [os.path.expanduser("~/workspace/bin/squawk"), "send", "fleet",
+             f"SWARM RESUME (ember) — thawed {resumed}, but {len(still)} "
+             f"still frozen and {len(unlisted)} frozen-but-untracked. "
+             f"Eyes on this."],
+            capture_output=True)
+    subprocess.run(
+        [os.path.expanduser("~/workspace/bin/squawk"), "send", "fleet",
+         "SWARM RESUMED (ember) — all frozen agent processes thawed."],
+        capture_output=True)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

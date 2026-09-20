@@ -23,3 +23,18 @@ in the correct repo, and must survive a full bridge restart and a full
 yote reboot. The script is the deliverable; running it once is just proof.
 
 See the repo master README for the estate map.
+
+- `bin/bg-launch`, `bin/bg-register`, `bin/bg-heartbeat`, `bin/bg-audit`,
+  `bin/bg-kill` + `bg-tracker/` — **bg-tracker**: the background-task
+  registry. Every detached job launches (or retro-registers) through it;
+  who/what/why/pid recorded in a durable per-box registry
+  (`bg-tracker/state/`, gitignored runtime state). `bg-audit` is read-only:
+  classifies every detached proc (KNOWN-SYSTEM / SUPERVISED /
+  REGISTERED-OK / REGISTERED-STALE / REGISTERED-DEAD / UNREGISTERED /
+  AMP-VICTIM), exit 1 when anything needs attention, never kills.
+  Event-driven — no polling daemons. Full docs: `bg-tracker/README.md`.
+  Kill policy: positive orphan confirmation + fleet evidence note at kill
+  time; when in doubt, leave running and flag.
+
+See the repo master README for the estate map, and
+`docs/fleet-knowledgebase.md` §2 for the crew registry.
