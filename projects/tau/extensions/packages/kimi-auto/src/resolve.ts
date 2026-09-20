@@ -2,10 +2,10 @@
  * kimi-auto state resolution — pure functions shared by the omp extension.
  *
  * Reads the resolver's shared state file (~/.local/share/kimi-auto/state.json),
- * written every 15 minutes by the kimi-auto-resolver pitchfork daemon.
- * The single source of truth for "which Kimi model is best right now" lives
- * in the shim (herd surface); these helpers expose the same resolution for
- * Tau sessions without duplicating selection logic.
+ * written by the kimi-auto-resolver pitchfork daemon (event-driven, 15-min
+ * backstop). The single source of truth for "which model is best right now"
+ * lives in the shim (herd surface); these helpers expose the same resolution
+ * for Tau sessions without duplicating selection logic.
  */
 
 export interface KimiCandidate {
@@ -83,15 +83,16 @@ export type Resolution = { model: string } | { error: string };
 
 /**
  * Resolve the alias to a concrete model id, or fail loud.
- * Mirrors shim.py resolve_target: Kimi-only, no silent fallback, and never
- * routes the alias back into itself (routing-loop guard).
+ * Mirrors shim.py resolve_target: model-agnostic, no silent fallback, and
+ * never routes the alias back into itself (routing-loop guard).
  */
 export function resolveModel(state: KimiAutoState): Resolution {
 	if (!state.healthy || !state.model) {
 		return {
 			error:
-				`kimi-auto: no healthy Kimi model available (${state.reason}). ` +
-				`Provide KIMI_API_KEY or MOONSHOT_API_KEY so the resolver can select one.`,
+				`kimi-auto: no healthy model available (${state.reason}). ` +
+				`Provide API keys (e.g. MOONSHOT_API_KEY, OPENROUTER_API_KEY) so the ` +
+				`resolver has healthy candidates to select from.`,
 		};
 	}
 	if (state.model.toLowerCase() === "kimi-auto") {
