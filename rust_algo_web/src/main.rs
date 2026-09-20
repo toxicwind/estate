@@ -1,8 +1,14 @@
+mod agents;
 mod fleet;
 mod gpu;
 mod watchdog;
 
-use axum::{extract::{Path, Query}, response::IntoResponse, routing::get, Json, Router};
+use axum::{
+    extract::{Path, Query},
+    response::IntoResponse,
+    routing::get,
+    Json, Router,
+};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -153,7 +159,6 @@ async fn get_integrations() -> Json<IntegrationsResponse> {
     })
 }
 
-
 // ---------- Squawk feed ----------
 const SQUAWK_ROOT: &str = "/home/toxic/.shingle/squawk-root";
 
@@ -197,7 +202,10 @@ fn parse_squawk_message(path: &std::path::Path) -> Option<SquawkMessage> {
                     continue;
                 }
                 if let Some(i) = line.find(':') {
-                    fm.insert(line[..i].trim().to_string(), line[i + 1..].trim().to_string());
+                    fm.insert(
+                        line[..i].trim().to_string(),
+                        line[i + 1..].trim().to_string(),
+                    );
                 }
             } else {
                 rest.push(line);
@@ -306,6 +314,68 @@ async fn get_fleet_last() -> Json<serde_json::Value> {
             "hint": "run: bash tools/fleet/bench-forks.sh"
         })),
     }
+}
+
+/// /ops/api/rankings — ranked bench throughput per inference fork, derived
+/// from the latest bench-forks results. Higher score = faster bench.
+async fn get_rankings() -> Json<serde_json::Value> {
+    let path = "/home/toxic/sovereign/tools/fleet/results/bench-forks-latest.json";
+    let mut rankings: Vec<serde_json::Value> = Vec::new();
+    if let Ok(s) = std::fs::read_to_string(path) {
+        if let Ok(v) = serde_json::from_str::<serde_json::Value>(&s) {
+            if let Some(forks) = v.get("forks").and_then(|f| f.as_object()) {
+                for (name, f) in forks {
+                    let ok = f.get("ok").and_then(|x| x.as_bool()).unwrap_or(false);
+                    let secs = f.get("bench_sec").and_then(|x| x.as_f64()).unwrap_or(0.0);
+                    let score = if ok && secs > 0.0 {
+                        (1000.0 / secs * 100.0).round() / 100.0
+                    } else {
+                        0.0
+                    };
+                    rankings.push(serde_json::json!({
+                        "model": name,
+                        "score": score,
+                        "ok": ok,
+                        "bench_sec": secs,
+                    }));
+                }
+                rankings.sort_by(|a, b| {
+                    b.get("score")
+                        .and_then(|x| x.as_f64())
+                        .partial_cmp(&a.get("score").and_then(|x| x.as_f64()))
+                        .unwrap_or(std::cmp::Ordering::Equal)
+                });
+            }
+        }
+    }
+    Json(serde_json::json!({"rankings": rankings}))
+}
+
+async fn proxy_simple(url: &str) -> impl IntoResponse {
+    match Client::new()
+        .get(url)
+        .timeout(std::time::Duration::from_secs(10))
+        .send()
+        .await
+    {
+        Ok(resp) => {
+            let status = axum::http::StatusCode::from_u16(resp.status().as_u16())
+                .unwrap_or(axum::http::StatusCode::BAD_GATEWAY);
+            let bytes = resp.bytes().await.unwrap_or_default();
+            (status, bytes).into_response()
+        }
+        Err(e) => (
+            axum::http::StatusCode::BAD_GATEWAY,
+            format!("upstream unreachable: {e}"),
+        )
+            .into_response(),
+    }
+}
+
+/// /ops/api/mesh/features — same-origin proxy of the mesh hub's feature
+/// catalog for the dashboard's Mesh Hub tab.
+async fn proxy_mesh_features() -> impl IntoResponse {
+    proxy_simple("http://127.0.0.1:25115/mesh/features").await
 }
 
 async fn health() -> Json<Health> {
@@ -582,6 +652,10 @@ async fn get_arch_live() -> Json<ArchLiveResponse> {
 async fn main() {
     dotenvy::dotenv().ok();
 
+    // Start the event-driven fleet WS feed early so no squawk message is
+    // missed between boot and the first client connect.
+    agents::init_fleet_feed();
+
     let watchdog_port: u16 = std::env::var("WATCHDOG_PORT")
         .ok()
         .and_then(|x| x.parse().ok())
@@ -607,7 +681,9 @@ async fn main() {
         }))
     }
     async fn mesh_readyz() -> impl IntoResponse {
-        Json(serde_json::json!({"feature":"readyz","service":"rust-web","ready":true,"ghas":"k8s-readyz"}))
+        Json(
+            serde_json::json!({"feature":"readyz","service":"rust-web","ready":true,"ghas":"k8s-readyz"}),
+        )
     }
     async fn mesh_livez() -> impl IntoResponse {
         Json(serde_json::json!({"feature":"livez","service":"rust-web","live":true}))
@@ -651,6 +727,14 @@ async fn main() {
         .route("/ops/api/gpu/metrics", get(get_gpu_metrics))
         .route("/ops/api/squawk/channels", get(get_squawk_channels))
         .route("/ops/api/squawk/:channel", get(get_squawk_channel))
+        .route("/ops/api/rankings", get(get_rankings))
+        .route("/ops/api/mesh/features", get(proxy_mesh_features))
+        // Fleet-first dashboard: agent roster, drill-down, live WS feed.
+        .route("/api/agents/roster", get(agents::roster))
+        .route("/api/agents/:name", get(agents::agent_history))
+        .route("/ws/fleet", get(agents::ws_fleet))
+        // /api/status alias for the ops status handler.
+        .route("/api/status", get(get_status))
         .route(
             "/ops/api/mesh",
             get(|| async {
@@ -667,10 +751,7 @@ async fn main() {
                 {
                     Ok(resp) => {
                         let status = resp.status();
-                        let body = resp
-                            .text()
-                            .await
-                            .unwrap_or_else(|_| "{}".into());
+                        let body = resp.text().await.unwrap_or_else(|_| "{}".into());
                         (
                             axum::http::StatusCode::from_u16(status.as_u16())
                                 .unwrap_or(axum::http::StatusCode::BAD_GATEWAY),
@@ -688,6 +769,10 @@ async fn main() {
                 }
             }),
         )
+        // Single Svelte build mounted at /herd-ui only. The built herd UI
+        // is byte-identical to the former mesh UI source; mesh keeps its
+        // Mesh Hub tab as a link-out to :25115 instead of a second build.
+        .nest_service("/herd-ui", ServeDir::new("static/herd-ui"))
         .nest_service("/", s);
 
     let p: u16 = std::env::var("RUST_WEB_PORT")

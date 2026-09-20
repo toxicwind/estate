@@ -84,6 +84,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | oracle-max | Oracle decision-engine maximal upgrade | Ember (other chat) | RUNNING |
 | openfang | Agents autonomous + OpenFang-enabled | Ember | workers in, 8 kernel agents Running |
 | plumbline | Hesitance rollback root-cause hunt → canonical spawn-brief template | Ember | DONE — commits `f9095c2665` (template + registration) |
+| dashboard-max | Maximal fleet dashboard: every agent everywhere visible; tabs for all surfaces; project Svelte UIs integrated as verified deeplink tabs | Ember (main chat) | RUNNING (2026-09-20) |
 | scribe-readme-grade | GitHub-grade sovereign-projects master README + docs/ index + projects/README deconfusion; 5 doc strays moved to docs/ in one pass (Bedrock oracle-market task payload-readme-grade.md) | Scribe (ember) | DONE (2026-09-20) -- commit ff10187ddb (on origin/main, verified via ls-remote) |
 | dashboard-max | Maximal fleet dashboard: every agent everywhere visible; tabs for all surfaces; project Svelte UIs integrated as verified deeplink tabs | Ember (main chat) | RUNNING (2026-09-20) |
 
