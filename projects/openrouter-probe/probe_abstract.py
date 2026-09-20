@@ -11,7 +11,7 @@ Scoring (speculative ranking signal):
 
 Sort: score desc, latency asc. Cost is NOT a factor (402s fail fast, free).
 
-Reads OPENROUTER_API_KEY_1 from /home/toxic/.secrets IN-PROCESS.
+Reads OPENROUTER_API_KEY_FREE from /home/toxic/.secrets IN-PROCESS.
 Key NEVER leaves this box, NEVER printed or logged (sanitize defense).
 """
 import json, re, time, urllib.request, urllib.error
@@ -21,7 +21,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 SECRETS = "/home/toxic/.secrets"
 OUTDIR = "/home/toxic/sovereign/projects/openrouter-probe"
 BASE = "https://openrouter.ai/api/v1"
-KEY_NAME = "OPENROUTER_API_KEY_1"
+KEY_NAME = "OPENROUTER_API_KEY_FREE"
 WORKERS = 8
 TIMEOUT = 30
 TOKEN = "ABSTRACT-7X3Q"
