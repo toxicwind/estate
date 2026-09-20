@@ -71,6 +71,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 |---|---|---|---|
 | repo-integrator-max | Orphan integration → correct repos; README/deep-link pass; permanent scripts/skills/integrations | Ember (main chat) | RUNNING (2026-09-20) — workers: orphan-hatch, orphan-yote, readme-linker |
 | purge-max (announced as pack-fix) | Hesitance purge; fake-completed watchdogs; task-runner audit; fleet health; no-monkeypatch durability sweep | Ember | RUNNING |
+| fleet-social (pack-fix crew) | Fleet personas/culture; chat health; collaboration norms; fleet-culture.md | Ember | RUNNING (2026-09-20) |
 | edge-forge | Cutting-edge fix + addition task forging & execution | Ember | RUNNING |
 | keel | Tau verification (Bedrock): knowledgebase registered (fbf81a950e); tau-verification beat to be re-dispatched on tau-hyperfix report | Ember | DONE (2026-09-20) |
 | tau-hyperfix | `/home/toxic/.tau` audit; dynamic skill loading; skills symlink; `skillful`; `tau audit`; `tau tmux` experiments | Ember | RUNNING |
@@ -122,6 +123,7 @@ Retired/completed crews stay listed here with status DONE and their final commit
 
 - Master README: [/home/toxic/sovereign/README.md](../README.md) — every sub-README links back here.
 - This knowledgebase: `docs/fleet-knowledgebase.md` (this file)
+- Fleet culture norms: `docs/fleet-culture.md` (companion — how the den talks)
 - Paper-search skill: `/home/toxic/sovereign/skills/paper-search/SKILL.md`
 - Tau engine docs: `/home/toxic/sovereign/projects/tau/engine/docs/`
 - Yote ops: `/home/toxic/sovereign/projects/yote/ops/` (yote-doctor.sh, yote-fix.sh)
