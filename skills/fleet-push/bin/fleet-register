@@ -1,59 +1,181 @@
 #!/usr/bin/env python3
-"""fleet-register — manage the push-bus subscription registry.
+"""fleet-register — manage the push-bus subscription registry (schema v2).
 
-  fleet-register --init
-  fleet-register --add <agent-id> --lanes stalls,db
+  fleet-register --init --chat <bus-chat-id>
+  fleet-register --add <agent-id> --lanes stalls,db --name <name> [--chat <id>]
+  fleet-register --set-relay <agent-id> <relay-chat-id>
+  fleet-register --clear-relay <agent-id>
   fleet-register --rm <agent-id>
   fleet-register --list
+  fleet-register --audit
+
 Registry: ~/workspace/fleet-push/registry.json
+Schema v2: {version, chat_id, agents: {id: {name, chat_id, lanes,
+relay_chat_id, relay_created_at, subscribed_at}}}
 """
+import argparse
 import json
 import os
 import sys
 import time
 
-REG_DIR = os.path.expanduser("~/workspace/fleet-push")
-REG = os.path.join(REG_DIR, "registry.json")
+REG = os.path.expanduser("~/workspace/fleet-push/registry.json")
+
+
+def fresh():
+    return {"version": 2, "chat_id": None, "agents": {}}
 
 
 def load():
-    if os.path.exists(REG):
-        with open(REG) as f:
-            return json.load(f)
-    return {"version": 1, "agents": {}}
+    with open(REG) as f:
+        reg = json.load(f)
+    if reg.get("version", 1) < 2:  # migrate v1 -> v2
+        reg["version"] = 2
+        reg.setdefault("chat_id", None)
+        for a in reg.get("agents", {}).values():
+            a.setdefault("name", None)
+            a.setdefault("chat_id", None)
+            a.setdefault("relay_chat_id", None)
+            a.setdefault("relay_created_at", None)
+    return reg
 
 
 def save(reg):
-    os.makedirs(REG_DIR, exist_ok=True)
+    os.makedirs(os.path.dirname(REG), exist_ok=True)
     tmp = REG + ".tmp"
     with open(tmp, "w") as f:
-        json.dump(reg, f, indent=2)
+        json.dump(reg, f, indent=2, sort_keys=True)
+        f.write("\n")
     os.replace(tmp, REG)
 
 
-def main():
-    a = sys.argv[1:]
-    if not a or a[0] == "--init":
-        save(load())
-        print("registry at %s" % REG)
-        return
+def cmd_init(ns):
+    reg = load() if os.path.exists(REG) else fresh()
+    reg["chat_id"] = ns.chat
+    save(reg)
+    print(f"bus chat_id = {ns.chat}")
+
+
+def cmd_add(ns):
     reg = load()
-    if a[0] == "--add" and len(a) >= 2:
-        lanes = []
-        if "--lanes" in a:
-            lanes = [l.strip() for l in a[a.index("--lanes") + 1].split(",") if l.strip()]
-        reg["agents"][a[1]] = {"lanes": lanes, "subscribed_at": time.time()}
-        save(reg)
-        print("subscribed %s lanes=%s" % (a[1], lanes))
-    elif a[0] == "--rm" and len(a) >= 2:
-        reg["agents"].pop(a[1], None)
-        save(reg)
-        print("unsubscribed %s" % a[1])
-    elif a[0] == "--list":
-        print(json.dumps(reg, indent=2))
+    bus = reg.get("chat_id")
+    if not bus:
+        sys.exit("registry has no bus chat_id; run --init --chat <id> first")
+    chat = ns.chat or bus
+    if chat != bus:
+        sys.exit(f"REFUSED: agent chat {chat} != bus chat {bus} (cross-tree)")
+    if not ns.name:
+        sys.exit("--name is required")
+    reg["agents"][ns.id] = {
+        "name": ns.name,
+        "chat_id": chat,
+        "lanes": ns.lanes,
+        "relay_chat_id": None,
+        "relay_created_at": None,
+        "subscribed_at": time.time(),
+    }
+    save(reg)
+    print(f"subscribed {ns.id} ({ns.name}) chat={chat} lanes={','.join(ns.lanes)}")
+
+
+def cmd_set_relay(ns):
+    reg = load()
+    a = reg["agents"].get(ns.id)
+    if a is None:
+        sys.exit(f"unknown agent {ns.id}")
+    a["relay_chat_id"] = ns.relay
+    a["relay_created_at"] = time.time()
+    save(reg)
+    print(f"{ns.id} ({a.get('name')}): relay_chat_id = {ns.relay}")
+
+
+def cmd_clear_relay(ns):
+    reg = load()
+    a = reg["agents"].get(ns.id)
+    if a is None:
+        sys.exit(f"unknown agent {ns.id}")
+    old = a.get("relay_chat_id")
+    a["relay_chat_id"] = None
+    a["relay_created_at"] = None
+    save(reg)
+    print(f"{ns.id}: relay cleared (was {old})")
+    if old:
+        print(f"ACTION for coordinator: chat.archive({old})")
+
+
+def cmd_rm(ns):
+    reg = load()
+    a = reg["agents"].pop(ns.id, None)
+    if a is None:
+        sys.exit(f"unknown agent {ns.id}")
+    save(reg)
+    print(f"unsubscribed {ns.id} ({a.get('name')})")
+    if a.get("relay_chat_id"):
+        print(f"ACTION for coordinator: chat.archive({a['relay_chat_id']})")
+
+
+def cmd_audit(ns):
+    reg = load()
+    problems = []
+    if not reg.get("chat_id"):
+        problems.append("registry: no bus chat_id (--init --chat)")
+    for aid, a in reg.get("agents", {}).items():
+        tag = f"{aid} ({a.get('name')})"
+        if not a.get("name"):
+            problems.append(f"{tag}: missing name")
+        if a.get("chat_id") != reg.get("chat_id"):
+            problems.append(f"{tag}: chat_id {a.get('chat_id')} != bus {reg.get('chat_id')}")
+        if not a.get("relay_chat_id"):
+            problems.append(f"{tag}: no relay_chat_id — dispatch will refuse "
+                            f"(coordinator: chat.create relay/{a.get('name')})")
+    if problems:
+        print("AUDIT FAIL:")
+        for p in problems:
+            print(f"  - {p}")
+        sys.exit(1)
+    print(f"AUDIT OK: {len(reg['agents'])} agents, chat scope clean, all relay chats mapped")
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--init", action="store_true")
+    ap.add_argument("--chat", default=None)
+    ap.add_argument("--add", dest="id", default=None, metavar="AGENT_ID")
+    ap.add_argument("--lanes", default="")
+    ap.add_argument("--name", default=None)
+    ap.add_argument("--set-relay", dest="set_relay", default=None, metavar="AGENT_ID")
+    ap.add_argument("relay", nargs="?", default=None)
+    ap.add_argument("--clear-relay", dest="clear_relay", default=None, metavar="AGENT_ID")
+    ap.add_argument("--rm", default=None, metavar="AGENT_ID")
+    ap.add_argument("--list", action="store_true")
+    ap.add_argument("--audit", action="store_true")
+    ns = ap.parse_args()
+    ns.lanes = [l for l in ns.lanes.split(",") if l] if ns.lanes else []
+
+    if ns.init:
+        if not ns.chat:
+            sys.exit("--init requires --chat <bus-chat-id>")
+        cmd_init(ns)
+    elif ns.id and ns.set_relay is None:
+        cmd_add(ns)
+    elif ns.set_relay:
+        ns.id = ns.set_relay
+        if not ns.relay:
+            sys.exit("--set-relay <agent-id> <relay-chat-id>")
+        cmd_set_relay(ns)
+    elif ns.clear_relay:
+        ns.id = ns.clear_relay
+        cmd_clear_relay(ns)
+    elif ns.rm:
+        ns.id = ns.rm
+        cmd_rm(ns)
+    elif ns.list:
+        print(json.dumps(load(), indent=2, sort_keys=True))
+    elif ns.audit:
+        cmd_audit(ns)
     else:
-        sys.exit("usage: fleet-register --init|--add ID --lanes a,b|--rm ID|--list")
+        ap.print_help()
+        sys.exit(2)
 
 
-if __name__ == "__main__":
-    main()
+main()
