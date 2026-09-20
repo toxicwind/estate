@@ -216,12 +216,9 @@ composer.phar
 bin/*
 !bin/.gitkeep
 !bin/port-audit
-<<<<<<< HEAD
 !bin/port-audit.py
-=======
 !bin/manifest.yaml
 !bin/bin-verify.sh
->>>>>>> 3c39756102 (bin: add manifest.yaml + bin-verify.sh (hatch orphan))
 !bin/tcp-probe
 !bin/tests/
 obj/*
