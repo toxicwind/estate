@@ -10,6 +10,7 @@ use provider::deepseek::DeepSeekLanguageModelProvider;
 
 pub mod extension;
 pub mod provider;
+pub(crate) mod schema_normalizer;
 mod settings;
 
 pub use crate::extension::init_proxy as init_extension_proxy;
