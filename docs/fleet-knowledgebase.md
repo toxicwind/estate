@@ -72,7 +72,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | repo-integrator-max | Orphan integration → correct repos; README/deep-link pass; permanent scripts/skills/integrations | Ember (main chat) | RUNNING (2026-09-20) — workers: orphan-hatch, orphan-yote, readme-linker |
 | purge-max (announced as pack-fix) | Hesitance purge; fake-completed watchdogs; task-runner audit; fleet health; no-monkeypatch durability sweep | Ember | RUNNING |
 | edge-forge | Cutting-edge fix + addition task forging & execution | Ember | RUNNING |
-| keel | Tau verification (Bedrock): independently verify tau-hyperfix claims against live systems; fix failures durably or hand back in fleet | Ember | RUNNING (2026-09-20) |
+| keel | Tau verification (Bedrock): knowledgebase registered (fbf81a950e); tau-verification beat to be re-dispatched on tau-hyperfix report | Ember | DONE (2026-09-20) |
 | tau-hyperfix | `/home/toxic/.tau` audit; dynamic skill loading; skills symlink; `skillful`; `tau audit`; `tau tmux` experiments | Ember | RUNNING |
 | super-ralph repair | Root-cause `fiber.cache.stackFrame` crash; prove `super-ralph "reply with exactly the word ALIVE"` exits zero + DB completion | Ember | RUNNING |
 | tmp-repos-emergent | Scratch/tmp → owning repos migration | Ember | RUNNING — **de-duped with repo-integrator-max 2026-09-20 (fleet seq 11291)** |
