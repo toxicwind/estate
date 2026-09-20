@@ -1,5 +1,13 @@
 import { HealthDB } from "./router_health.ts";
-import { DB_PATH, STICKY_TTL, PROVIDERS, nvidiaKeys } from "./router_config.ts";
+import {
+  DB_PATH,
+  STICKY_TTL,
+  PROVIDERS,
+  nvidiaKeys,
+  QUARANTINE_BASE_S,
+  QUARANTINE_MAX_S,
+  QUARANTINE_PROBE_MS,
+} from "./router_config.ts";
 import * as fs from "node:fs";
 
 // ---------------------------------------------------------------------------
@@ -223,6 +231,13 @@ export class Matrix {
   elo = new Map<string, number>();
   circuit = new Map<string, string>();
   circuitOpenUntil = new Map<string, number>();
+  // --- v3.2 exponential-backoff quarantine ---
+  // quarantineLevel: consecutive circuit openings without a success.
+  // lastError: most recent failure signature per provider (for /status).
+  quarantineLevel = new Map<string, number>();
+  /** EMA of successful completion latency (ms) — HFT: ordering input. */
+  emaLat = new Map<string, number>();
+  lastError = new Map<string, { status: number; err: string; at: number }>();
   fifoDepth = 0;
   health: HealthDB;
   governor: Governor;
@@ -327,8 +342,12 @@ export class Matrix {
     if (status === 200) {
       const old = this.circuit.get(prov) || "closed";
       this.elo.set(prov, (this.elo.get(prov) || 1000) + 16);
+      // Latency EMA: alpha 0.2 — recent completions steer ordering.
+      const prev = this.emaLat.get(prov) ?? latMs;
+      this.emaLat.set(prov, prev * 0.8 + latMs * 0.2);
       this.fail.set(prov, [0, Date.now() / 1000]);
       this.circuit.set(prov, "closed");
+      this.quarantineLevel.set(prov, 0);
       if (old !== "closed") {
         this.health.recordHealing(
           prov,
@@ -349,15 +368,22 @@ export class Matrix {
       this.elo.set(prov, Math.max(100, (this.elo.get(prov) || 1000) - 32));
       if (c + 1 >= 3) {
         const old = this.circuit.get(prov) || "closed";
+        // Exponential backoff: BASE * 2^(level-1), capped at MAX.
+        const level = (this.quarantineLevel.get(prov) || 0) + 1;
+        this.quarantineLevel.set(prov, level);
+        const backoff = Math.min(
+          QUARANTINE_BASE_S * 2 ** (level - 1),
+          QUARANTINE_MAX_S,
+        );
         this.circuit.set(prov, "open");
-        this.circuitOpenUntil.set(prov, Date.now() / 1000 + 60);
+        this.circuitOpenUntil.set(prov, Date.now() / 1000 + backoff);
         this.health.recordHealing(
           prov,
           model,
           "circuit_opened",
           old,
           "open",
-          `${c + 1} consecutive failures`,
+          `${c + 1} consecutive failures; quarantine level ${level}, backoff ${backoff}s`,
         );
       }
     }
@@ -368,6 +394,105 @@ export class Matrix {
   }
   stickySet(sid: string, p: string, m: string) {
     this.health.stickySet(sid, p, m);
+  }
+
+  /** Record a failure signature for /status (call on every failed attempt). */
+  noteError(prov: string, status: number, err: string): void {
+    this.lastError.set(prov, {
+      status,
+      err: String(err).slice(0, 300),
+      at: Date.now() / 1000,
+    });
+  }
+
+  consecutiveFailures(p: string): number {
+    return this.fail.get(p)?.[0] || 0;
+  }
+
+  /** EMA of successful completion latency in ms, or null if never measured. */
+  latencyEmaMs(p: string): number | null {
+    return this.emaLat.get(p) ?? null;
+  }
+
+  /**
+   * Latency-adjusted candidate score: Elo minus a latency penalty.
+   * 300ms EMA -> -6pts; 17s EMA -> -340pts. Elo moves +/-16..32 per
+   * request, so chronic slowness reliably demotes a provider, while the
+   * 0.2 EMA alpha keeps a single slow outlier from deciding alone.
+   */
+  candidateScore(p: string): number {
+    return (this.elo.get(p) || 1000) - (this.latencyEmaMs(p) || 0) / 50;
+  }
+
+  /**
+   * recordProbe — synthetic liveness ping outcome. Updates strike counts
+   * and the circuit WITHOUT touching Elo or the request DB (synthetic
+   * rows would pollute latency percentiles and inflate Elo). Used by the
+   * warm-standby pinger so a dead local backend quarantines before user
+   * traffic hits it.
+   */
+  recordProbe(prov: string, ok: boolean, err = ""): void {
+    const now = Date.now() / 1000;
+    if (ok) {
+      this.fail.set(prov, [0, now]);
+      if (this.circuit.get(prov) === "half") {
+        this.circuit.set(prov, "closed");
+        this.quarantineLevel.set(prov, 0);
+        this.health.recordHealing(
+          prov,
+          "warm-standby",
+          "circuit_recovered",
+          "half",
+          "closed",
+        );
+      }
+      return;
+    }
+    const [c] = this.fail.get(prov) || [0, 0];
+    this.fail.set(prov, [c + 1, now]);
+    this.noteError(prov, 0, err || "warm-standby failed");
+    if (c + 1 >= 3 && this.circuit.get(prov) !== "open") {
+      const level = (this.quarantineLevel.get(prov) || 0) + 1;
+      this.quarantineLevel.set(prov, level);
+      const backoff = Math.min(
+        QUARANTINE_BASE_S * 2 ** (level - 1),
+        QUARANTINE_MAX_S,
+      );
+      this.circuit.set(prov, "open");
+      this.circuitOpenUntil.set(prov, now + backoff);
+      this.health.recordHealing(
+        prov,
+        "warm-standby",
+        "circuit_opened",
+        "closed",
+        "open",
+        `${c + 1} consecutive probe failures; quarantine level ${level}, backoff ${backoff}s`,
+      );
+    }
+  }
+
+  /** Full quarantine/circuit snapshot for /status. */
+  circuitInfo(p: string): {
+    state: string;
+    quarantine_level: number;
+    consecutive_failures: number;
+    backoff_s: number;
+    open_until: number | null;
+    probe_in_s: number | null;
+    last_error: { status: number; err: string; at: number } | null;
+  } {
+    const now = Date.now() / 1000;
+    const until = this.circuitOpenUntil.get(p) || 0;
+    const open = (this.circuit.get(p) || "closed") === "open";
+    return {
+      state: this.circuit.get(p) || "closed",
+      quarantine_level: this.quarantineLevel.get(p) || 0,
+      consecutive_failures: this.consecutiveFailures(p),
+      backoff_s: open ? Math.max(0, Math.round(until - now)) : 0,
+      open_until: open ? until : null,
+      probe_in_s: open ? Math.max(0, Math.round(until - now)) : null,
+      last_error: this.lastError.get(p) || null,
+    };
   }
 
   circuitOk(p: string): boolean {
@@ -385,3 +510,57 @@ export class Matrix {
 }
 
 export const state = new Matrix();
+
+/**
+ * startQuarantineProber — active health probing for quarantined providers.
+ * Every QUARANTINE_PROBE_MS, each provider whose circuit is open and whose
+ * backoff has expired gets ONE probe (per-attempt deadline inside `probe`).
+ * This makes re-admission proactive instead of waiting for live traffic.
+ */
+export function startQuarantineProber(
+  probe: (p: string) => Promise<boolean>,
+): void {
+  const tick = async () => {
+    const now = Date.now() / 1000;
+    for (const p of state.circuit.keys()) {
+      try {
+        if (state.circuit.get(p) !== "open") continue;
+        if (now < (state.circuitOpenUntil.get(p) || 0)) continue;
+        const ok = await probe(p);
+        if (ok) {
+          state.circuit.set(p, "half");
+          state.health.recordHealing(
+            p,
+            "",
+            "quarantine_probe_ok",
+            "open",
+            "half",
+            "active re-probe succeeded; admitting traffic",
+          );
+        } else {
+          // Re-open at the next backoff level.
+          const level = (state.quarantineLevel.get(p) || 0) + 1;
+          state.quarantineLevel.set(p, level);
+          const backoff = Math.min(
+            QUARANTINE_BASE_S * 2 ** (level - 1),
+            QUARANTINE_MAX_S,
+          );
+          state.circuitOpenUntil.set(p, now + backoff);
+          state.health.recordHealing(
+            p,
+            "",
+            "quarantine_probe_failed",
+            "open",
+            "open",
+            `re-probe failed; quarantine level ${level}, backoff ${backoff}s`,
+          );
+        }
+      } catch (e) {
+        console.error("[router] quarantine prober error for", p, e);
+      }
+    }
+  };
+  setInterval(() => {
+    tick().catch((e) => console.error("[router] quarantine prober tick:", e));
+  }, QUARANTINE_PROBE_MS);
+}

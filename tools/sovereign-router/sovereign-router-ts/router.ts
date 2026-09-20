@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Sovereign Router v3.1 (Bun/TypeScript)
+ * Sovereign Router v3.2 (Bun/TypeScript)
  * Port of sovereign-router/router.py — same strategies, HealthDB WAL, circuit breakers.
  *
  * Strategies: fifo_matrix (alias fifo_flock) | ast_race (alias flock_race) | sticky_affinity | weighted_elo | circuit_chain | hybrid
@@ -11,13 +11,14 @@
  */
 
 import { createHash } from "node:crypto";
+import { watch, readFileSync, existsSync } from "node:fs";
 import { handleMeshRequest } from "../../../src/lib/ghas-mesh-features.ts";
 import type { ChatBody } from "./router_types.ts";
-import { CODING, PROVIDERS, PROVIDER_MODELS, keyOk, STRATEGY, MAX_PARALLEL, PORT, json, log, DB_PATH, isExplicit } from "./router_config.ts";
+import { CODING, PROVIDERS, PROVIDER_MODELS, keyOk, getKey, STRATEGY, MAX_PARALLEL, PORT, json, log, DB_PATH, isExplicit, normalizeModelSpec, resolveModel, loadEnvFile } from "./router_config.ts";
 import { catalogModelsFor, LIVE_MODELS, LIVE_MODEL_META, modelFree } from "./router_config.ts";
-import { startLiveDiscovery, LIVE_STATUS } from "./router_live_models.ts";
-import { state } from "./router_matrix.ts";
-import { ROUTERS, routeHybrid, callOne, pickWeighted } from "./router_strategy.ts";
+import { startLiveDiscovery, refreshLiveModels, LIVE_STATUS } from "./router_live_models.ts";
+import { state, startQuarantineProber } from "./router_matrix.ts";
+import { ROUTERS, routeHybrid, callOne, pickWeighted, isRoutableModelId } from "./router_strategy.ts";
 import { uiData, ROUTER_UI_HTML } from "./router_ui.ts";
 import {
   loadAuthFromEnv,
@@ -90,6 +91,7 @@ async function handleStream(
     const r = await callOne(p, mid, body, true);
     if (!r.ok || !r.stream) return null;
     state.stickySet(sid, p, mid);
+    const st = r.timings;
     return new Response(r.stream, {
       status: 200,
       headers: {
@@ -97,13 +99,21 @@ async function handleStream(
         "Cache-Control": "no-cache",
         Connection: "keep-alive",
         "X-Routed-Via": `${p}/${mid}`,
+        ...(st
+          ? {
+              "X-Sovereign-Timings": `connect_ms=${st.connect_ms};ttft_ms=${st.ttft_ms ?? "-"};total_ms=${st.total_ms}`,
+            }
+          : {}),
       },
     });
   };
 
-  if (isExplicit(model)) {
-    const [p, mid] = CODING[model]!;
-    const resp = await tryStream(p, mid);
+  // Explicit model: resolved lane first, then fail over to the weighted
+  // field (mirrors routeHybrid). resolveModel covers CODING aliases,
+  // provider:model slash/colon specs, and local model ids.
+  const routed = isRoutableModelId(model) ? resolveModel(model) : null;
+  if (routed) {
+    const resp = await tryStream(routed[0], routed[1]);
     if (resp) return resp;
   } else {
     const [sp, sm] = state.stickyGet(sid);
@@ -113,8 +123,8 @@ async function handleStream(
     }
   }
 
-  const cands = isExplicit(model)
-    ? [CODING[model]!]
+  const cands: [string, string][] = routed
+    ? [routed, ...pickWeighted(MAX_PARALLEL).filter(([cp]) => cp !== routed[0])]
     : pickWeighted(MAX_PARALLEL);
   for (const [p, mid] of cands) {
     const resp = await tryStream(p, mid);
@@ -133,7 +143,7 @@ const server = Bun.serve({
     if (path.startsWith("/mesh")) {
       const m = await handleMeshRequest(req, {
         service: "sovereign-router",
-        version: "v3.1",
+        version: "v3.2",
       });
       if (m) return m;
     }
@@ -226,6 +236,36 @@ const server = Bun.serve({
       return json({ object: "list", data, live: LIVE_STATUS });
     }
 
+    if (req.method === "GET" && path === "/status") {
+      // v3.2: live per-provider state — the resilience dashboard.
+      const dbSummary = state.health.getProviderSummary();
+      const pct = state.health.getLatencyPercentiles();
+      const providers: Record<string, unknown> = {};
+      for (const p of Object.keys(PROVIDERS)) {
+        providers[p] = {
+          keys: keyOk(p) ? "configured" : "no_key",
+          base_url: PROVIDERS[p].base,
+          circuit: state.circuitInfo(p),
+          elo: Math.round((state.elo.get(p) || 1000) * 10) / 10,
+          models: catalogModelsFor(p).length,
+          live_models: (LIVE_MODELS[p] || []).length,
+          live_status: LIVE_STATUS[p] || null,
+          health: dbSummary[p] || null,
+          latency_ms: pct[p] || { p50_ms: null, p95_ms: null, n: 0 },
+          ...(p === "kimi-auto" ? { resolved: kimiResolved } : {}),
+        };
+      }
+      return json({
+        status: "ok",
+        router: "sovereign-router-ts",
+        version: "v3.2",
+        strategy: STRATEGY,
+        uptime_s: Math.round(process.uptime()),
+        started_at: new Date(Date.now() - process.uptime() * 1000).toISOString(),
+        providers,
+      });
+    }
+
     if (req.method === "GET" && path === "/metrics") {
       // Prometheus exposition (absorbed from the retired :8000 key-proxy).
       const dbSummary = state.health.getProviderSummary() as Record<
@@ -309,10 +349,44 @@ const server = Bun.serve({
       return json({
         status: "ok",
         router: "sovereign-router-ts",
-        version: "v3.1",
+        version: "v3.2",
         strategy: STRATEGY,
         parallel: MAX_PARALLEL,
         providers,
+      });
+    }
+
+    if (req.method === "POST" && path === "/admin/reload") {
+      if (AUTH) {
+        const id = await identifyRequest(req, AUTH.admin, AUTH.store);
+        if (!id) return json({ error: "unauthorized" }, 401);
+      }
+      return json({ status: "ok", reloaded: hotReload("http") });
+    }
+
+    // openfang `agent set` parsing shim (router-side; the fork itself is
+    // track-4 domain). Normalizes any spec the buggy CLI can produce —
+    // "nvidia:gpt-oss-20b", "provider/model", bare ids, aliases — into the
+    // canonical (provider, model, base_url) triple the daemon should use.
+    if (req.method === "GET" && path === "/openfang/resolve") {
+      const spec = url.searchParams.get("spec") || "";
+      const norm = normalizeModelSpec(spec);
+      const [p, mid] = resolveModel(spec);
+      const conf = PROVIDERS[p];
+      return json({
+        spec,
+        provider: p,
+        model: mid,
+        provider_base_url: conf?.base || null,
+        router_chat_url: `http://127.0.0.1:${PORT}/v1/chat/completions`,
+        router_status_url: `http://127.0.0.1:${PORT}/status`,
+        normalized_from: norm.provider ? `${norm.provider}:${norm.model}` : norm.model,
+        note:
+          "Point the daemon at the router (OpenAI-compatible): set the " +
+          "agent provider base_url to router_chat_url, or use provider " +
+          "provider_base_url with model as returned. The router itself " +
+          "accepts the raw spec — the mangled 'provider:model' form is " +
+          "normalized here, not in the fork.",
       });
     }
 
@@ -348,6 +422,17 @@ const server = Bun.serve({
       }
       const sid = sessionId(req, body);
       const strat = req.headers.get("X-Sovereign-Strategy") || STRATEGY;
+      // openfang shim: canonicalize "provider:model" / "provider/model"
+      // mangled specs before routing.
+      const rawModel = String(body.model || "auto");
+      const norm = normalizeModelSpec(rawModel);
+      if (norm.provider) {
+        const canon = `${norm.provider}:${norm.model}`;
+        if (canon !== rawModel) {
+          log(`model spec normalized: ${rawModel} -> ${canon}`);
+          body = { ...body, model: canon };
+        }
+      }
       log(`${req.method} ${path} model=${body.model} strat=${strat}`);
 
       if (body.stream) {
@@ -357,6 +442,7 @@ const server = Bun.serve({
       const fn = ROUTERS[strat] || routeHybrid;
       const r = await fn(body, sid);
       if (r.ok) {
+        const t = r.timings;
         return new Response(r.data as BodyInit, {
           status: 200,
           headers: {
@@ -364,6 +450,11 @@ const server = Bun.serve({
             "X-Routed-Via": `${r.provider}/${r.model}`,
             "X-Latency": String(Math.round((r.lat || 0) * 1000) / 1000),
             "X-Strategy": strat,
+            ...(t
+              ? {
+                  "X-Sovereign-Timings": `connect_ms=${t.connect_ms};ttft_ms=${t.ttft_ms ?? "-"};total_ms=${t.total_ms}`,
+                }
+              : {}),
           },
         });
       }
@@ -377,12 +468,127 @@ const server = Bun.serve({
   },
 });
 
+// Hot config reload: secrets are re-read with overwrite so a key refresh
+// (NVIDIA_API_KEY, NIM_PROXY_API_KEY, ...) lands without a restart.
+const SECRET_FILES = [
+  `${process.env.HOME}/.secrets`,
+  "/home/toxic/.secrets",
+  "/home/toxic/sovereign/.env.local",
+];
+function hotReload(source: string): Record<string, unknown> {
+  for (const f of SECRET_FILES) loadEnvFile(f, true);
+  const keys: Record<string, string> = {};
+  for (const p of Object.keys(PROVIDERS)) keys[p] = keyOk(p) ? "configured" : "no_key";
+  log(`hot reload (${source}): keys=${JSON.stringify(keys)}`);
+  // Refresh live model catalogs in the background; the quarantine prober
+  // re-admits revived providers on its next window.
+  refreshLiveModels().catch((e) => log("post-reload live refresh failed:", e));
+  return { source, keys };
+}
+process.on("SIGHUP", () => hotReload("SIGHUP"));
+
+// Active quarantine re-prober: cheap GET {base}/models with a short
+// deadline; success half-opens the provider, failure re-opens at the next
+// exponential backoff level.
+async function probeProvider(p: string): Promise<boolean> {
+  const conf = PROVIDERS[p];
+  if (!conf) return false;
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+    "User-Agent": "SovereignRouter/3.2 quarantine-probe",
+  };
+  if (!conf.no_auth) {
+    const k = getKey(p);
+    if (!k) return false;
+    headers["Authorization"] = `Bearer ${k}`;
+  }
+  try {
+    const r = await fetch(`${conf.base.replace(/\/+$/, "")}/models`, {
+      headers,
+      signal: AbortSignal.timeout(10000),
+    });
+    // 401/403 = key still bad (stay quarantined); anything else reachable
+    // (even 404/429) means the endpoint is alive -> half-open.
+    return r.status !== 401 && r.status !== 403;
+  } catch {
+    return false;
+  }
+}
+startQuarantineProber(probeProvider);
+
+// Push-not-poll kimi-auto resolution (HFT: subscribe, don't poll).
+// The shim reads state live per request; this watch keeps /status's
+// resolved_model marker instant without waiting for the 30-min discovery.
+const KIMI_STATE_PATH =
+  process.env.KIMI_AUTO_STATE ||
+  `${process.env.HOME}/.local/share/kimi-auto/state.json`;
+let kimiResolved: { model: string | null; healthy: boolean; updated_at: string | null } = {
+  model: null,
+  healthy: false,
+  updated_at: null,
+};
+function readKimiState(): void {
+  try {
+    if (!existsSync(KIMI_STATE_PATH)) return;
+    const j = JSON.parse(readFileSync(KIMI_STATE_PATH, "utf8"));
+    kimiResolved = {
+      model: typeof j.model === "string" ? j.model : null,
+      healthy: j.healthy !== false,
+      updated_at: j.updated_at || null,
+    };
+  } catch (e) {
+    log("kimi state read failed:", String(e).slice(0, 120));
+  }
+}
+readKimiState();
+try {
+  watch(KIMI_STATE_PATH, () => {
+    readKimiState();
+    log(`kimi-auto state changed -> ${kimiResolved.model} (healthy=${kimiResolved.healthy})`);
+  });
+} catch (e) {
+  log("kimi state watch unavailable:", String(e).slice(0, 120));
+}
+
+// Warm standby (HFT: dial once, keep alive): low-frequency liveness pings
+// for LOCAL providers only (no cloud spend). A dead local backend earns
+// circuit strikes here so quarantine can engage before user traffic hits it;
+// consecutive successes keep the TCP path warm.
+const LOCAL_WARM = ["llama-swap", "kimi-auto", "nim-local"];
+function startWarmStandby(): void {
+  const tick = async () => {
+    for (const p of LOCAL_WARM) {
+      try {
+        if (!keyOk(p)) continue;
+        const conf = PROVIDERS[p];
+        const headers: Record<string, string> = {
+          Accept: "application/json",
+          "User-Agent": "SovereignRouter/3.2 warm-standby",
+        };
+        const r = await fetch(`${conf.base.replace(/\/+$/, "")}/models`, {
+          headers,
+          signal: AbortSignal.timeout(5000),
+        });
+        // recordProbe: strikes + circuit only — no Elo inflation, no DB rows.
+        state.recordProbe(p, r.ok, r.ok ? "" : `warm-standby http_${r.status}`);
+      } catch (e) {
+        state.recordProbe(p, false, `warm-standby: ${String(e).slice(0, 120)}`);
+      }
+    }
+  };
+  setInterval(() => {
+    tick().catch((e) => log("warm standby tick:", String(e).slice(0, 120)));
+  }, 30000);
+  tick().catch(() => {});
+}
+startWarmStandby();
+
 // Live model discovery: curated list + every model each key can serve.
 startLiveDiscovery();
 
 const keyed = Object.keys(PROVIDERS).filter(keyOk);
 
-console.log(`Sovereign Router TS v3.1 on http://127.0.0.1:${PORT}/v1`);
+console.log(`Sovereign Router TS v3.2 on http://127.0.0.1:${PORT}/v1`);
 
 console.log(
   `Strategy=${STRATEGY} | routes: ${Object.keys(ROUTERS).join(", ")}`,
