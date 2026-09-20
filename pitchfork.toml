@@ -214,6 +214,13 @@ retry = true
 ready_http = "http://127.0.0.1:25105/-/healthy"
 auto = ["start"]
 
+[daemons.node-exporter]
+run = "exec /usr/local/bin/node_exporter --web.listen-address=127.0.0.1:9100"
+dir = "."
+retry = true
+ready_http = "http://127.0.0.1:9100/metrics"
+auto = ["start"]
+
 [daemons.grafana]
 run = "exec ./stack/services/grafana-mesh.sh"
 dir = "."
