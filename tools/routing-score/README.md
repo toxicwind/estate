@@ -1,5 +1,8 @@
 # routing-score — read-only calibrated routing scores
 
+Repo: [toxicwind/sovereign-projects](https://github.com/toxicwind/sovereign-projects)
+(`tools/routing-score/`); index in the [master README](../../README.md#docs).
+
 Advisory signal for routing decisions, computed from exact-output probe
 results. **Read-only by construction**: this tool reads one probe JSONL file
 and writes one score artifact. It never reads or writes `herd.yaml`, never
