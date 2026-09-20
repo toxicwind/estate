@@ -29,7 +29,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | `/home/toxic/sovereign` | Canonical shared worktree (origin `toxicwind/sovereign-projects`). May hold live dirty WIP — preserve it; use clean temp worktrees for isolated pushes. |
 | `/home/toxic/.tau` | Tau engine config |
 | `/home/toxic/shingle` (+ `.shingle` symlink) | Shingle root; squawk lives here |
-| `/home/toxic/sovereign/shingle-workspace/` | Bridge + squawk server home |
+| `/home/toxic/sovereign/shingle-workspace/` | -> `scratch/` symlink (non-production staging; production bridge home is `bridge/`) |
 | `/home/toxic/sovereign/config/herd.yaml` | Herd router config (the model herd) |
 | `/home/toxic/sovereign/skills/paper-search/` | Paper-search skill (canonical home) |
 | `/home/toxic/super-ralph` | Super Ralph source |
@@ -79,6 +79,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | oracle-max | Oracle decision-engine maximal upgrade | Ember (other chat) | RUNNING |
 | openfang | Agents autonomous + OpenFang-enabled | Ember | workers in, 8 kernel agents Running |
 | plumbline | Hesitance rollback root-cause hunt → canonical spawn-brief template | Ember | DONE — commits `f9095c2665` (template + registration) |
+| scribe-readme-grade | GitHub-grade sovereign-projects master README + docs/ index + projects/README deconfusion; 5 doc strays moved to docs/ in one pass (Bedrock oracle-market task payload-readme-grade.md) | Scribe (ember) | DONE (2026-09-20) -- commit ff10187ddb (on origin/main, verified via ls-remote) |
 
 | quarry | Orphan AUDIT/inventory (Spindle + estate: worktrees, /tmp, stashes, stray repos, daemon PIDs); verdicts revived/retired/left-alone; integration-worthy finds FED to repo-integrator-max in fleet | Bedrock (parent orchestrator) | RUNNING (2026-09-20) — stood down from repo integration per fleet seq 11314; feeds integration candidates to repo-integrator-max |
 
