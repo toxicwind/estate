@@ -62,6 +62,13 @@ sends SIGTERM to the whole process group, then the same reap path marks it
 - `exec_multi(cmds, workdir, timeout)` — concurrent local exec, same policy/audit path as `exec`.
 - `exec_bg(cmd, workdir)` — detached local launch (`start_new_session=True`), returns handle.
 - `bg_status(handle)` — status + log tails from `/home/toxic/.cache/mcp-bg/<handle>/`.
+- `bg_list()` — every exec_bg handle with state/exit/pid/cmd (mcp-smith).
+- `bg_kill(handle)` — SIGTERM then SIGKILL a background handle's process group (mcp-smith).
+- `fleet_send(channel, text, title, sender)` — publish to a squawk channel natively (mcp-smith).
+- `fleet_read(channel, limit, since_seq)` — read a squawk channel natively (mcp-smith).
+- `yote_load()` — load vs cores, memory, top CPU procs (mcp-smith).
+- `port_map()` — listening TCP ports with owning process (mcp-smith).
+- `pitchfork_daemon(name, action)` — list/status/restart pitchfork daemons; never the live bridge (mcp-smith).
 
 ## Durability
 

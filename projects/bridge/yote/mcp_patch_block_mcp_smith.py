@@ -178,11 +178,20 @@ def port_map() -> str:
 
 
 def _pitchfork_bin() -> str:
+    # Resolve like bin/pitchfork-restart does: `mise which` first, then the
+    # installs dir. Never the mise shim (it tries to reinstall and fails).
+    try:
+        p = subprocess.run(["mise", "which", "pitchfork"], capture_output=True,
+                           text=True, timeout=15)
+        if p.returncode == 0 and p.stdout.strip():
+            return p.stdout.strip()
+    except Exception:
+        pass
+    fb = "/home/toxic/.local/share/mise/installs/pitchfork/latest/pitchfork"
+    if os.path.isfile(fb) and os.access(fb, os.X_OK):
+        return fb
     found = _shutil.which("pitchfork")
-    if found:
-        return found
-    fb = "/home/toxic/.local/share/mise/installs/pitchfork/2.27.0/pitchfork"
-    return fb if os.path.exists(fb) else "pitchfork"
+    return found if found else "pitchfork"
 
 
 @mcp.tool()
