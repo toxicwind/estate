@@ -1,4 +1,4 @@
-# AUDIT.md — Zed Fork (`/home/toxic/projects/zed`)
+# AUDIT.md — Zed Fork (`/home/toxic/sovereign/projects/qed/zed`)
 
 **Verdict:** A Rust/GPUI fork of Zed (the Zed Industries editor + agent). This
 fork adds hardened OpenAI-compatible provider plumbing for untrusted/free model

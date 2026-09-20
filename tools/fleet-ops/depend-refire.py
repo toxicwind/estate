@@ -35,7 +35,36 @@ import tomllib
 from datetime import datetime, timezone
 from pathlib import Path
 
-PF = Path("/home/toxic/.local/share/mise/installs/pitchfork/2.25.0/pitchfork")
+def _resolve_pf():
+    """Resolve the pitchfork binary without a version-pinned path.
+
+    Order: live supervisor's own exe (can never skew) -> mise `latest`
+    symlink (tracks newest install) -> mise shim -> /usr/bin fallback.
+    Survives mise upgrades without edits. (ember, 2026-09-20)
+    """
+    for proc in Path("/proc").glob("[0-9]*"):
+        try:
+            cmdline = (proc / "cmdline").read_bytes().replace(b"\0", b" ").decode()
+        except OSError:
+            continue
+        if "pitchfork supervisor run" in cmdline:
+            try:
+                exe = os.readlink(proc / "exe")
+            except OSError:
+                continue
+            if exe.endswith("/pitchfork") and Path(exe).is_file():
+                return Path(exe)
+    for cand in (
+        "/home/toxic/.local/share/mise/installs/pitchfork/latest/pitchfork",
+        "/home/toxic/.local/share/mise/shims/pitchfork",
+        "/usr/bin/pitchfork",
+    ):
+        if Path(cand).is_file():
+            return Path(cand)
+    return Path("/home/toxic/.local/share/mise/installs/pitchfork/latest/pitchfork")
+
+
+PF = _resolve_pf()
 TOML = Path("/home/toxic/sovereign/pitchfork.toml")
 LOG = Path("/home/toxic/sovereign/logs/depend-refire.log")
 EVIDENCE = Path("/home/toxic/.local/state/fleet-ops/depend-refire-evidence.json")

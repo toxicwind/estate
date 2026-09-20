@@ -164,6 +164,10 @@ export function buildWebCommand(
     .option(
       '--web-title <title>',
       'Set a custom browser tab title for this web UI instance (default: "<workspace dir> | Kimi Code").',
+    )
+    .option(
+      '--no-port-walk',
+      'Fail immediately with EADDRINUSE when the requested --port is taken, instead of walking to the next free port. Required for daemon deployments with a fixed port assignment (SSOT): the server binds the requested port or exits non-zero.',
     );
   if (!forceRemoteControl) {
     withServerOptions.addOption(
@@ -374,6 +378,7 @@ async function runServerInProcess(
     allowedHosts: options.allowedHosts,
     disableAuth: options.dangerousBypassAuth,
     webTitle: options.webTitle,
+    failFastOnPortConflict: options.noPortWalk,
     // Attach the engine's cloud telemetry appender (still gated by the config
     // `telemetry` toggle). Complements the v1 client registered above, which
     // only covers host-level events.

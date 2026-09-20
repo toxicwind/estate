@@ -10,6 +10,7 @@ use provider::deepseek::DeepSeekLanguageModelProvider;
 
 pub mod extension;
 pub mod provider;
+pub(crate) mod schema_normalizer;
 mod settings;
 
 pub use crate::extension::init_proxy as init_extension_proxy;
@@ -27,9 +28,9 @@ use crate::provider::nvidia::NvidiaLanguageModelProvider;
 use crate::provider::ollama::OllamaLanguageModelProvider;
 use crate::provider::open_ai::OpenAiLanguageModelProvider;
 use crate::provider::open_ai_compatible::OpenAiCompatibleLanguageModelProvider;
+use crate::provider::open_router::OpenRouterLanguageModelProvider;
 use crate::provider::openai_mcpproxy::OpenAiMcpProxyLanguageModelProvider;
 use crate::provider::openai_mcpproxy_nvidia::OpenAiMcpProxyNvidiaLanguageModelProvider;
-use crate::provider::open_router::OpenRouterLanguageModelProvider;
 use crate::provider::openai_subscribed::OpenAiSubscribedProvider;
 use crate::provider::opencode::OpenCodeLanguageModelProvider;
 use crate::provider::vercel_ai_gateway::VercelAiGatewayLanguageModelProvider;

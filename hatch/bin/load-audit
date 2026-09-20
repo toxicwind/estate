@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+"""load-audit: one-glance load readout for the hatch cell + yote.
+
+What this reports (and what it does NOT claim):
+  - Cell load1 vs the 2 vCPUs the runtime exposes. This is TOOL-PATH
+    pressure only: it constrains shell/tool-call throughput on this cell.
+    It says NOTHING about agent cognition capacity — subagent reasoning
+    runs on the Hatch inference substrate outside this cell and does not
+    consume these 2 vCPUs.
+  - Live vs T-state (SIGSTOP-frozen) hatch-execd descendants. Frozen
+    rows mean the watchdog's circuit breaker fired; an unfrozen tree
+    after a storm means the auto-resume path worked.
+  - Open watchdog storm episodes (leaky-pause tracking).
+  - Yote load separately: yote is the REMOTE HEAVY TOOL HOST (16 cores),
+    reached via the bridge. It is not proven to host agent cognition.
+
+Rule of thumb: keep the cell under ~4x cores (load1 < 8) before big
+fan-outs. The watchdog pauses the tool tree at load1 > 10 and
+auto-resumes frozen processes once load settles under 6.
+"""
+import json
+import os
+import subprocess
+import sys
+
+STATE = os.path.expanduser("~/.cache/shingle/swarm-watchdog-episode.json")
+
+
+def load1():
+    return float(open("/proc/loadavg").read().split()[0])
+
+
+def hatch_execd_pids():
+    out = []
+    for pid in os.listdir("/proc"):
+        if not pid.isdigit():
+            continue
+        try:
+            with open(f"/proc/{pid}/comm") as f:
+                if f.read().strip() == "hatch-execd":
+                    out.append(pid)
+        except Exception:
+            continue
+    return out
+
+
+def descendants(root_pids):
+    # ppid -> children map, then walk
+    children = {}
+    for pid in os.listdir("/proc"):
+        if not pid.isdigit():
+            continue
+        try:
+            with open(f"/proc/{pid}/stat") as f:
+                parts = f.read().rsplit(")", 1)[1].split()
+            ppid, state = parts[1], parts[0]
+            children.setdefault(ppid, []).append((pid, state))
+        except Exception:
+            continue
+    seen, stack, live, frozen = set(), list(root_pids), 0, 0
+    while stack:
+        p = stack.pop()
+        if p in seen:
+            continue
+        seen.add(p)
+        for c, st in children.get(p, []):
+            stack.append(c)
+            live += 1
+            if st == "T":
+                frozen += 1
+    return live, frozen
+
+
+def yote_load():
+    try:
+        r = subprocess.run(
+            [os.path.expanduser("~/workspace/bin/yote-conn"), "exec",
+             "cat /proc/loadavg"], capture_output=True, text=True, timeout=25)
+        return float(r.stdout.split()[0])
+    except Exception as e:
+        return f"unreachable ({type(e).__name__})"
+
+
+def main():
+    hl = load1()
+    roots = hatch_execd_pids()
+    live, frozen = descendants(roots)
+    try:
+        ep = json.load(open(STATE))
+        ep_txt = f"OPEN (fires={ep.get('fires')}, leaky={ep.get('leaky')})"
+    except Exception:
+        ep_txt = "none"
+    yl = yote_load()
+    print(f"hatch cell: load1={hl:.1f} / 2 vCPUs "
+          f"({'OVER 4x' if hl > 8 else 'ok'})  [tool-path pressure only]")
+    print(f"  hatch-execd roots={len(roots)} live_desc={live} "
+          f"T-state(frozen)={frozen}")
+    print(f"  storm episode: {ep_txt}")
+    print(f"yote (remote heavy tool host, 16 cores): load1={yl} "
+          f"{'(OVER 2.5x)' if isinstance(yl, float) and yl > 40 else ''}")
+    print("cognition runs on the Hatch inference substrate, not these cores.")
+
+
+if __name__ == "__main__":
+    sys.exit(main())

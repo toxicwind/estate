@@ -46,6 +46,8 @@ export interface ParsedServerOptions {
   allowedHosts: readonly string[];
   /** Custom browser tab title for this web UI instance (`--web-title`). */
   webTitle?: string;
+  /** Fail immediately on EADDRINUSE (`--no-port-walk`); never walk to a higher port. */
+  noPortWalk: boolean;
 }
 
 export interface ServerCliOptions {
@@ -63,6 +65,8 @@ export interface ServerCliOptions {
   allowedHost?: string[];
   /** Custom browser tab title for this web UI instance (`--web-title`). */
   webTitle?: string;
+  /** Fail immediately on EADDRINUSE (`--no-port-walk`). */
+  noPortWalk?: boolean;
 }
 
 export function parseServerOptions(opts: ServerCliOptions): ParsedServerOptions {
@@ -76,6 +80,8 @@ export function parseServerOptions(opts: ServerCliOptions): ParsedServerOptions 
     dangerousBypassAuth: opts.dangerousBypassAuth === true,
     allowedHosts: parseAllowedHostArgs(opts.allowedHost),
     webTitle: opts.webTitle,
+    // commander maps --no-port-walk to opts.portWalk === false (negated flag)
+    noPortWalk: opts.portWalk === false,
   };
 }
 
