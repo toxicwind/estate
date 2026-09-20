@@ -71,7 +71,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 |---|---|---|---|
 | repo-integrator-max | Orphan integration → correct repos; README/deep-link pass; permanent scripts/skills/integrations | Ember (main chat) | RUNNING (2026-09-20) — workers: orphan-hatch, orphan-yote; readme-linker README/deep-link pass DONE 38439000b0 |
 | purge-max (announced as pack-fix) | Hesitance purge; fake-completed watchdogs; task-runner audit; fleet health; no-monkeypatch durability sweep | Ember | RUNNING |
-| purge-max / hesitance-hunt | Hesitance fixes (EXCLUSIVE lane per 2026-09-20 carve): watchdog body rewrites, anti-pattern catalog, permanent hesitance-lint guard | Ember | RUNNING (2026-09-20) |
+| purge-max / hesitance-hunt | Hesitance fixes (EXCLUSIVE lane per 2026-09-20 carve): watchdog body rewrites, anti-pattern catalog, permanent hesitance-lint guard | Ember | DONE 2026-09-20 — commit 25679fa5c04a5ee0f5ab5737ea94dc5ce51566ee |
 | edge-forge | Cutting-edge fix + addition task forging & execution | Ember | RUNNING |
 | tau-hyperfix | `/home/toxic/.tau` audit; dynamic skill loading; skills symlink; `skillful`; `tau audit`; `tau tmux` experiments | Ember | RUNNING |
 | super-ralph repair | Root-cause `fiber.cache.stackFrame` crash; prove `super-ralph "reply with exactly the word ALIVE"` exits zero + DB completion | Ember | RUNNING |
