@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+"""oracle-consensus: two models propose, a judge picks the winner.
+
+fast (1.2B) and tool (9B) each write a candidate independently; the tool
+model then judges the two candidates against the spec and picks one.
+Selection is by model judgment, NOT by test execution (contrast `evolve`).
+Ceiling: 480s.
+"""
+import os, sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "lib"))
+from cr import *
+
+CEILING = 480
+
+def ext(lang):
+    return {"python": "py", "javascript": "js", "typescript": "ts",
+            "rust": "rs", "go": "go"}.get(lang.lower(), "txt")
+
+JUDGE_SYS = ("You are a strict code reviewer. Compare two candidate solutions "
+             "against the task spec. Reply with exactly one line: A or B.")
+
+def main(task_dir, output_path):
+    arm_timeout(CEILING)
+    spec = read_task(task_dir)
+    lang = spec.get("language", "python")
+    prompt = spec_prompt(spec)
+    log(f"oracle-consensus: {spec.get('id')}: candidate A <- {FAST_MODEL}")
+    a = extract_code(chat(FAST_URL, FAST_MODEL, prompt, max_tokens=2048,
+                          temperature=0.4, timeout=120), lang)
+    log(f"oracle-consensus: candidate B <- {TOOL_MODEL}")
+    b = extract_code(chat(TOOL_URL, TOOL_MODEL, prompt, max_tokens=4096,
+                          temperature=0.4, timeout=200), lang)
+    if not a and not b:
+        log("both candidates empty"); return 1
+    if not a: winner = b; log("A empty, B wins by default")
+    elif not b: winner = a; log("B empty, A wins by default")
+    else:
+        judge_prompt = (f"Task: {spec.get('title', spec.get('id',''))}\n\n"
+                        f"{spec.get('description','')}\n\n"
+                        f"Candidate A:\n```{lang}\n{a}\n```\n\n"
+                        f"Candidate B:\n```{lang}\n{b}\n```\n\n"
+                        "Which candidate better satisfies the spec? Reply A or B only.")
+        verdict = chat(TOOL_URL, TOOL_MODEL, judge_prompt, max_tokens=8,
+                       temperature=0.0, timeout=60, system=JUDGE_SYS).strip().upper()
+        winner = a if verdict.startswith("A") else b
+        log(f"judge verdict: {verdict[:4]} -> {'A' if winner is a else 'B'}")
+    dest = write_solution(output_path, f"solution.{ext(lang)}", winner)
+    log(f"wrote {dest}")
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1], sys.argv[2]))
