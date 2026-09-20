@@ -1,75 +1,51 @@
-# tau-tmux - TMUX Controller for Tau Agent
+# tau-tmux — tmux lab + live tau audit
 
-This directory contains tools and skills for controlling the Tau agent via tmux sessions.
+Run parallel tau experiments in tmux panes and audit the live tau install
+with real checks. Nothing here is stubbed: every check observes the box.
 
-## Quick Start
-
-```bash
-# Create a new tmux session for tau
-tmux new-session -d -s tau "bash"
-
-# Run tau in the session
-tau --help
-
-# Run tau with audit profile
-tau --profile audit
-
-# Send commands to the session
-tmux send-keys -t tau "tau -p 'your prompt'" C-m
-```
-
-## Available Commands
-
-| Command                | Description                      |
-| ---------------------- | -------------------------------- |
-| `tau --help`           | Show tau/omp help                |
-| `tau --profile <name>` | Run with isolated profile        |
-| `tau -p <prompt>`      | Non-interactive mode with prompt |
-| `tau --skill <name>`   | Load a skill (if supported)      |
-
-## Helper Tools
-
-### `helper/audit.ts`
-
-Modular Bun helper with argv support:
-
-- `--check nvidia` - Check nvidia.json config
-- `--check cascade` - Check cascade.json config
-- `--check env` - Check .env vars
-- `--all` - Run all checks
-- `-v` / `--verbose` - Detailed output
-
-### Available Skills
-
-Skills ranked by relevance to non-mainstream datetime > weird commits > non-mainstream > stars > code > mainstream > default:
-
-1. **somasays** - Skill creator from scratch (most niche)
-2. **402md** - SPEC.md format specification
-3. **microsoft** - .github/skills/ non-standard path
-4. **openai** - OpenAI .system/skill-creator/
-5. **claudient** - Claudient guide format
-6. **skillmdcreator** - Mainstream template repo
-
-Usage: `tau --skill somasays` or `tmux send-keys -t tau "tau --skill somasays" C-m`
-
-## Skills Directory
-
-Each folder contains reference skill.md files from maximal web search:
-
-- `skills/somasays/` - Most non-mainstream creator
-- `skills/402md/` - SPEC.md specification
-- `skills/microsoft/` - .github/skills/ path
-- `skills/openai/` - OpenAI .system/ path
-- `skills/claudient/` - Claudient guide format
-- `skills/skillmdcreator/` - Mainstream template repo
-
-## Example
+## Quick start
 
 ```bash
-# Run audit in tmux
-tmux new-session -d -s tau "bash"
-tau --profile audit
+# Detached 3-pane lab
+tmux new-session -d -s tau-lab -n lab
+tmux split-window -h -t tau-lab
+tmux split-window -v -t tau-lab:0.1
 
-# Or use helper directly
-bun run helper/audit.ts --all
+# Fire a probe in pane 0 without attaching
+tmux send-keys -t tau-lab:0.0 "tau -p 'reply with exactly: PANE0_OK'" C-m
+
+# Read results programmatically
+tmux capture-pane -t tau-lab:0.0 -p | tail -20
+
+# Clean up
+tmux kill-session -t tau-lab
 ```
+
+## Audit
+
+```bash
+bun run /home/toxic/sovereign/skills/tau-tmux/helper/audit.ts [--verbose]
+```
+
+Exit 0 = all checks pass. Checks: tau launcher collapse chain resolves,
+engine version 18.2.6+, `PI_CONFIG_DIR=.tau` honored, skills symlink live
+with discoverable `SKILL.md` files, herd (:25100) and sovereign (:25104)
+routers reachable, no stale `nvidia.json`/`cascade.json`.
+
+## Flags that exist (verified against `tau --help`, 18.2.6)
+
+| Flag | Meaning |
+| ---- | ------- |
+| `--skills "<glob>"` | Filter discovered skills (there is no singular `--skill`) |
+| `--profile <name>` | Isolated profile (only `default` exists by default) |
+| `-p` / `--print` | Non-interactive: process prompt and exit |
+| `--no-skills` | Disable skills discovery (fastest boot) |
+| `--config <file>` | Extra config.yml-style overlay for this run (repeatable) |
+
+## History note
+
+An earlier version of this skill audited `nvidia.json` / `cascade.json` /
+`nvidia.ts` and shipped a helper whose checks always returned true. Those
+files were removed on 2026-09-20 when the provider catalog moved to
+`~/.tau/agent/models.yml` (herd + sovereign dynamic discovery), and the
+stub helper was replaced with the real one above. Docs now match the box.

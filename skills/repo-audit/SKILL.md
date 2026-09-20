@@ -1,8 +1,10 @@
+---
 name: repo-audit
 description: >
   Audit GitHub repositories and local project structure. Provides two approaches:
   1. repo_audit.py - Uses gh CLI to fetch remote repository data for privacy analysis
   2. local_audit.py - Scans local filesystem for git repos, builds tree structure DataFrame
+---
 
 ## Concept
 

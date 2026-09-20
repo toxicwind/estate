@@ -1,3 +1,4 @@
+---
 name: maximal-sovereign-agentic-audit
 description: >
   Maximal agentic repo visibility audit tool. Uses Bun.nanoseconds() microsecond-precision timing,
