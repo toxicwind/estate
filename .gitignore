@@ -34,6 +34,9 @@ storageState.json
 # Session data, cookies, browser profiles
 *cookie*
 *session*
+# tau-session-audit is a real skill, not session data (collateral of the *session* rule)
+!skills/tau-session-audit/
+!skills/tau-session-audit/**
 browser_profile/
 browser_profiles/
 browser-profile/

@@ -1,0 +1,550 @@
+# Tau agent config -- CANONICAL SOURCE (tracked in sovereign-projects).
+# Deployed to ~/.tau/agent/config.yml on yote (byte-identical apart from this
+# header; the engine expands ${VAR:-default}). Live-verified changes go here
+# first, then sync to ~/.tau/agent/config.yml.
+#
+# 2026-09-20 tau-hyperfix: added skills.customDirectories pointing at
+# /home/toxic/sovereign/skills so the curated, tracked skill dump is always
+# discovered (customDirectories outranks default-path discovery, so sovereign
+# skills win name collisions with the gk-live-gear mega-dump symlinked at
+# ~/.tau/agent/skills).
+
+providers:
+  webSearchOrder:
+    - exa
+    - perplexity
+    - gemini
+    - anthropic
+    - codex
+    - xai
+    - zai
+    - tinyfish
+    - jina
+    - kagi
+    - tavily
+    - firecrawl
+    - brave
+    - kimi
+    - parallel
+    - synthetic
+    - searxng
+    - startpage
+    - duckduckgo
+    - ecosia
+    - google
+    - mojeek
+    - public
+  anthropic:
+    serverSideFallback: true
+  autoThinkingModel: online
+  autoThinkingMaxEffort: xhigh
+  memoryModel: online
+  maxInFlightRequests:
+    {}
+  openai-codex:
+    codeMode: "on"
+    codeModeDirectTools:
+      []
+  ollama-cloud:
+    maxConcurrency: 3
+  openai-compatible:
+    baseUrl: http://127.0.0.1:25100/v1
+    apiKey: llama-swap
+  webSearchExclude:
+    []
+  webSearchTimeoutSeconds: 60
+  antigravityEndpoint: auto
+  imageOrder:
+    []
+  fireworksTier: standard
+  tts: auto
+  tinyModel: online
+  tinyModelDevice: auto
+  tinyModelDtype: auto
+  unexpectedStopModel: online
+  kimiApiFormat: auto
+  openaiWebsockets: auto
+  cacheRetention: auto
+  streamFirstEventTimeoutSeconds: -1
+  streamIdleTimeoutSeconds: -1
+  unboundedRetryAfter:
+    - opencode-go
+    - opencode-zen
+  openrouterVariant: default
+  fetch: auto
+modelRoles:
+  # 2026-09-20 tau-config: every role now resolves against a provider defined
+  # in agent/models.yml (herd / sovereign). The old nvidia/ and openrouter/
+  # selectors named providers that exist NOWHERE -> dead routes. Evidence:
+  # ranker live-measurements 2026-09-20 (sovereign/free: 0% errors, nemotron
+  # winner; herd local: fast, /bin/bash, private; pollinations: backup lane only).
+  task: sovereign/free
+  smol: herd/qwen-flash-da-128k
+  tiny: herd/beellama/exaone-4-0-1-2b-iq4xs
+  advisor: sovereign/free
+  default: herd/qwen-flash-da-128k
+subagents:
+  can_spawn_subagents: true
+  whitelist:
+    - task
+    - plan
+    - review
+    - auditor
+    - critic
+    - explorer
+    - analyst
+    - debugger
+  defaultModel: herd/kimi-k3-nim
+  subagent: inherit
+tools:
+  approvalMode: yolo
+  intentTracing: true
+  xdev: true
+  xdevDocs: builtins
+  approval:
+    {}
+  format: auto
+  artifactSpillThreshold: 50
+  artifactTailBytes: 20
+  artifactHeadBytes: 20
+  outputMaxColumns: 768
+  artifactTailLines: 500
+  abortOnFabricatedResult: true
+  maxTimeout: 0
+  xdevInlineDevices:
+    []
+task:
+  batch: true
+  maxConcurrency: 4
+  enableLsp: true
+  showResolvedModelBadge: true
+  isolation:
+    apply: true
+    merge: patch
+    commits: generic
+    enabled: false
+  eager: preferred
+  enableEffort: true
+  maxRecursionDepth: 1
+  maxRuntimeMs: 0
+  agentIdleTtlMs: 420000
+  softRequestBudget: 200
+  softRequestBudgetNotice: true
+  maxEffort: high
+  prewalk: true
+interruptMode: wait
+steeringMode: all
+followUpMode: all
+appearance:
+  theme: dark-midnight
+  compact: true
+symbolPreset: nerd
+composer:
+  shape: box
+theme:
+  dark: dark-sakura
+  light: light
+setupVersion: 2
+defaultThinkingLevel: auto
+hideThinkingBlock: false
+memory:
+  backend: hindsight
+hindsight:
+  apiUrl: http://127.0.0.1:25117
+  scoping: global
+  autoRecall: true
+  autoRetain: true
+  retainMode: full-session
+  mentalModelsEnabled: true
+  mentalModelAutoSeed: true
+  bankId: ""
+  apiToken: ""
+temperature: 0.2
+effort:
+  high: 0.9
+  ultrathink: 0.99
+colorBlindMode: false
+statusLine:
+  preset: nerd
+  separator: powerline
+  contextLine: embedded
+  sessionAccent: true
+  transparent: false
+  compactThinkingLevel: true
+  showHookStatus: true
+terminal:
+  showImages: true
+  showProgress: true
+images:
+  autoResize: true
+  blockImages: false
+  describeForTextModels: true
+  urls:
+    enabled: false
+    backends:
+      - provider-files
+      - tailscale
+      - cloudflared
+      - litterbox
+    ttlHours: 72
+    bindHost: 127.0.0.1
+    sshRemotePort: 8787
+  questionTimeoutMs: 300000
+tui:
+  resizeScrollback: rebuild
+  textSizing: false
+  renderMermaid: true
+  codexResetFireworks: false
+  titleState: true
+  hyperlinks: auto
+  tight: true
+  imeSafeCursor: false
+display:
+  shimmer: kitt
+  smoothStreaming: true
+  hideToolActivity: false
+  showTokenUsage: true
+  showTurnTime: true
+  cacheMissMarker: true
+  collapseCompacted: true
+  pinnedAgents: full
+showHardwareCursor: true
+advisor:
+  enabled: false
+  syncBacklog: "off"
+  immuneTurns: 3
+prewalk:
+  enabled: false
+modelRoleStorage: global
+proseOnlyThinking: true
+omitThinking: false
+externalThinking: false
+model:
+  loopGuard:
+    enabled: true
+    checkAssistantContent: true
+    toolCallReminder: true
+  toolCallLoopGuard:
+    enabled: true
+    threshold: 5
+    exemptTools:
+      - hub
+inlineToolDescriptors: auto
+includeModelInPrompt: true
+includeWorkspaceTree: false
+personality: friendly
+topP: -1
+topK: -1
+minP: -1
+presencePenalty: -1
+repetitionPenalty: -1
+textVerbosity: medium
+tier:
+  openai: auto
+  anthropic: priority
+  google: flex
+  subagent: auto
+  advisor: flex
+retry:
+  maxRetries: 3
+  maxDelayMs: 300000
+  modelFallback: true
+  usageAwareFallback: true
+  usageReservePct: 10
+  usageReservePolicy: confirm
+  fallbackChains:
+    {}
+  fallbackRevertPolicy: cooldown-expiry
+autoResume: false
+power:
+  sleepPrevention: idle
+git:
+  enabled: true
+loop:
+  mode: prompt
+doubleEscapeAction: none
+treeFilterMode: default
+autocompleteMaxVisible: 20
+spelling:
+  typoDetection: true
+  autocomplete: true
+  autocorrect: false
+emojiAutocomplete: true
+paste:
+  largeMenuThreshold: 100
+startup:
+  quiet: false
+  showSplash: false
+  setupWizard: true
+  checkUpdate: true
+  changelogMode: expanded
+update:
+  channel: stable
+marketplace:
+  autoUpdate: notify
+magicKeywords:
+  enabled: false
+  ultrathink: true
+  orchestrate: true
+  workflow: true
+completion:
+  notify: "on"
+error:
+  notify: "on"
+ask:
+  timeout: 15
+  notify: "on"
+  enabled: true
+recap:
+  enabled: false
+  idleSeconds: 240
+collab:
+  relayUrl: wss://my.omp.sh
+  webUrl: ""
+  displayName: ""
+share:
+  serverUrl: https://my.omp.sh/s
+  store: blob
+  redactSecrets: true
+stt:
+  enabled: false
+  modelName: parakeet
+  submitTrigger: never
+features:
+  unexpectedStopDetection: smart
+workspace:
+  additionalDirectories:
+    []
+contextPromotion:
+  enabled: true
+extendedContext: true
+compaction:
+  enabled: true
+  midTurnEnabled: true
+  methodOrder:
+    - shake
+    - soft
+    - snapcompact
+    - remote
+    - handoff
+  thresholdPercent: 95
+  thresholdTokens: -1
+  handoffSaveToDisk: true
+  remoteStreamingV2Enabled: true
+  asyncEnabled: true
+  idleEnabled: false
+  idleThresholdTokens: 200000
+  idleTimeoutSeconds: 300
+  supersedeReads: true
+  dropUseless: true
+  experimentalContextManagement: true
+snapcompact:
+  systemPrompt: none
+  toolResults: false
+  shape: auto
+branchSummary:
+  enabled: true
+ttsr:
+  enabled: true
+  contextMode: keep
+  interruptMode: always
+  repeatMode: after-gap
+  repeatGap: 10
+  builtinRules: true
+  disabledRules:
+    []
+autolearn:
+  enabled: true
+  autoContinue: true
+mnemopi:
+  scoping: per-project
+  embeddingVariant: en
+  autoRecall: true
+  autoRetain: true
+  polyphonicRecall: false
+  enhancedRecall: false
+  proactiveLinking: false
+  noEmbeddings: false
+  llmMode: smol
+edit:
+  mode: sloppy
+  fuzzyMatch: true
+  fuzzyThreshold: 0.95
+  streamingAbort: true
+  blockAutoGenerated: false
+  enforceSeenLines: true
+  blackbox:
+    enabled: true
+  autoRepair:
+    enabled: true
+readLineNumbers: true
+read:
+  defaultLimit: 500
+  renderMarkdown: true
+  summarize:
+    enabled: true
+    prose: true
+    minBodyLines: 4
+    minCommentLines: 6
+    minTotalLines: 100
+    unfoldUntil: 50
+    unfoldLimit: 100
+  toolResultPreview: true
+lsp:
+  enabled: true
+  lazy: true
+  shared: true
+  formatOnWrite: false
+  diagnosticsOnWrite: true
+  diagnosticsOnEdit: true
+  diagnosticsDeduplicate: true
+bash:
+  enabled: true
+  autoBackground:
+    enabled: true
+  patterns:
+    []
+  direnv: auto
+  direnvLoadTimeoutMs: 30000
+bashInterceptor:
+  enabled: false
+shellMinimizer:
+  enabled: true
+  sourceOutlineLevel: aggressive
+eval:
+  py: true
+  js: false
+  rb: true
+  jl: true
+  autoBackground:
+    enabled: true
+python:
+  kernelMode: session
+  interpreter: ""
+ruby:
+  interpreter: ""
+julia:
+  interpreter: ""
+todo:
+  enabled: true
+  reminders: true
+  remindersMax: 5
+  eager: preferred
+glob:
+  enabled: true
+grep:
+  enabled: false
+  contextBefore: 3
+  contextAfter: 3
+astGrep:
+  enabled: true
+astEdit:
+  enabled: true
+debug:
+  enabled: true
+launch:
+  enabled: true
+speechgen:
+  enabled: false
+generate_image:
+  enabled: false
+computer:
+  enabled: true
+  display: all
+  maxWidth: 3840
+  maxHeight: 2400
+checkpoint:
+  enabled: true
+fetch:
+  enabled: true
+vault:
+  enabled: true
+github:
+  enabled: true
+  cache:
+    enabled: true
+    softTtlSec: 300
+    hardTtlSec: 604800
+web_search:
+  enabled: true
+security:
+  enabled: false
+browser:
+  enabled: true
+  relay: false
+  headless: true
+  cmux: true
+  screenshotDir: ~/screenshots/
+async:
+  enabled: true
+  pollWaitDuration: smart
+irc:
+  timeoutMs: 120000
+mcp:
+  enableProjectConfig: true
+  renderMarkdownResults: true
+  notifications: true
+  notificationDebounceMs: 500
+tasks:
+  todoClearDelay: 60
+extensionHandlers:
+  toolCallTimeoutMs: 30000
+dev:
+  autoqa: true
+  autoqaPush:
+    endpoint: https://qa.omp.sh/v1/grievances
+plan:
+  enabled: true
+  defaultOnStartup: false
+  autosave: true
+goal:
+  enabled: true
+  statusInFooter: true
+  continuationModes:
+    - interactive
+title:
+  refreshOnReplan: true
+skills:
+  enableSkillCommands: true
+  # 2026-09-20 tau-hyperfix: canonical curated skills dump (tracked in
+  # sovereign-projects). customDirectories outranks default-path discovery,
+  # so sovereign skills win name collisions with the gk-live-gear mega-dump
+  # symlinked at ~/.tau/agent/skills.
+  customDirectories:
+    - /home/toxic/sovereign/skills
+commands:
+  enableClaudeUser: true
+  enableClaudeProject: true
+  enableOpencodeUser: true
+  enableOpencodeProject: true
+secrets:
+  enabled: false
+live:
+  voice: sol
+tts:
+  localModel: kokoro
+  localVoice: af_heart
+speech:
+  enabled: false
+  mode: assistant
+  enhanced: false
+  voice: af_heart
+codexResets:
+  autoRedeem: "yes"
+  minBlockedMinutes: 60
+  keepCredits: 0
+  salvageHorizonHours: 12
+provider:
+  appendOnlyContext: auto
+exa:
+  enabled: true
+  searchDelayMs: 1000
+cycleOrder:
+  - smol
+  - default
+  - slow
+disabledProviders:
+  []
+disabledExtensions:
+  []
+skillful: true
