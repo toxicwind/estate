@@ -1,13 +1,20 @@
+mod agents;
 mod fleet;
 mod gpu;
 mod watchdog;
 
-use axum::{extract::{Path, Query}, response::IntoResponse, routing::get, Json, Router};
+use axum::{
+    extract::{Path, Query},
+    response::IntoResponse,
+    routing::{any, get},
+    Json, Router,
+};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::net::SocketAddr;
-use tower_http::services::ServeDir;
+use std::time::Duration;
+use tower_http::services::{ServeDir, ServeFile};
 
 #[derive(Serialize)]
 struct Health {
@@ -153,7 +160,6 @@ async fn get_integrations() -> Json<IntegrationsResponse> {
     })
 }
 
-
 // ---------- Squawk feed ----------
 const SQUAWK_ROOT: &str = "/home/toxic/.shingle/squawk-root";
 
@@ -197,7 +203,10 @@ fn parse_squawk_message(path: &std::path::Path) -> Option<SquawkMessage> {
                     continue;
                 }
                 if let Some(i) = line.find(':') {
-                    fm.insert(line[..i].trim().to_string(), line[i + 1..].trim().to_string());
+                    fm.insert(
+                        line[..i].trim().to_string(),
+                        line[i + 1..].trim().to_string(),
+                    );
                 }
             } else {
                 rest.push(line);
@@ -591,6 +600,13 @@ async fn main() {
     });
 
     let s = ServeDir::new("static");
+    // Fleet agent backend: notify-driven roster/history/live WS feed.
+    agents::init_fleet_feed();
+    // Built herd/mesh UIs (Svelte). SPA fallback to index.html.
+    let herd_ui = ServeDir::new("static/herd-ui")
+        .not_found_service(ServeFile::new("static/herd-ui/index.html"));
+    let mesh_ui = ServeDir::new("static/mesh-ui")
+        .not_found_service(ServeFile::new("static/mesh-ui/index.html"));
     // GHAS mesh (20 features) — thin native surface; full catalog also on mesh-hub :25115
     async fn mesh_features() -> impl IntoResponse {
         Json(serde_json::json!({
@@ -607,7 +623,9 @@ async fn main() {
         }))
     }
     async fn mesh_readyz() -> impl IntoResponse {
-        Json(serde_json::json!({"feature":"readyz","service":"rust-web","ready":true,"ghas":"k8s-readyz"}))
+        Json(
+            serde_json::json!({"feature":"readyz","service":"rust-web","ready":true,"ghas":"k8s-readyz"}),
+        )
     }
     async fn mesh_livez() -> impl IntoResponse {
         Json(serde_json::json!({"feature":"livez","service":"rust-web","live":true}))
@@ -667,10 +685,7 @@ async fn main() {
                 {
                     Ok(resp) => {
                         let status = resp.status();
-                        let body = resp
-                            .text()
-                            .await
-                            .unwrap_or_else(|_| "{}".into());
+                        let body = resp.text().await.unwrap_or_else(|_| "{}".into());
                         (
                             axum::http::StatusCode::from_u16(status.as_u16())
                                 .unwrap_or(axum::http::StatusCode::BAD_GATEWAY),
@@ -688,6 +703,20 @@ async fn main() {
                 }
             }),
         )
+        .route("/api/agents/roster", get(agents::roster))
+        .route("/api/agents/:name", get(agents::agent_history))
+        .route("/ws/fleet", get(agents::ws_fleet))
+        .route("/ops/api/mesh/features", get(proxy_mesh_features))
+        // llama-swap API surface proxied for the built herd/mesh UIs
+        // (the Svelte bundle fetches /v1, /api, /logs, /upstream, /unload, /sdapi).
+        .route("/v1/*rest", any(proxy_llama_swap))
+        .route("/api/*rest", any(proxy_llama_swap))
+        .route("/logs/*rest", any(proxy_llama_swap))
+        .route("/upstream/*rest", any(proxy_llama_swap))
+        .route("/unload/*rest", any(proxy_llama_swap))
+        .route("/sdapi/*rest", any(proxy_llama_swap))
+        .nest_service("/herd-ui", herd_ui)
+        .nest_service("/mesh-ui", mesh_ui)
         .nest_service("/", s);
 
     let p: u16 = std::env::var("RUST_WEB_PORT")
@@ -698,4 +727,96 @@ async fn main() {
     println!("rust web http://{}", a);
     let l = tokio::net::TcpListener::bind(a).await.unwrap();
     axum::serve(l, app).await.unwrap()
+}
+
+/// Reverse-proxy a request to the local llama-swap herd API (:25100).
+/// Lets the built Svelte UIs (served at /herd-ui and /mesh-ui) call the
+/// herd API through the same origin without a separate CORS surface.
+async fn proxy_llama_swap(req: axum::http::Request<axum::body::Body>) -> impl IntoResponse {
+    let (parts, body) = req.into_parts();
+    let path = parts.uri.path().to_string();
+    let query = parts
+        .uri
+        .query()
+        .map(|q| format!("?{q}"))
+        .unwrap_or_default();
+    let url = format!("http://127.0.0.1:25100{path}{query}");
+    let client = Client::builder()
+        .timeout(Duration::from_secs(30))
+        .build()
+        .unwrap_or_else(|_| Client::new());
+    let body_bytes = match axum::body::to_bytes(body, 16 * 1024 * 1024).await {
+        Ok(b) => b,
+        Err(_) => {
+            return (
+                axum::http::StatusCode::BAD_REQUEST,
+                "request body too large",
+            )
+                .into_response()
+        }
+    };
+    let mut rb = client
+        .request(parts.method.clone(), &url)
+        .body(body_bytes.to_vec());
+    for (k, v) in parts.headers.iter() {
+        if k == axum::http::header::HOST || k == axum::http::header::CONTENT_LENGTH {
+            continue;
+        }
+        rb = rb.header(k, v);
+    }
+    match rb.send().await {
+        Ok(resp) => {
+            let status = axum::http::StatusCode::from_u16(resp.status().as_u16())
+                .unwrap_or(axum::http::StatusCode::BAD_GATEWAY);
+            let mut builder = axum::http::Response::builder().status(status);
+            for (k, v) in resp.headers().iter() {
+                if k == axum::http::header::TRANSFER_ENCODING
+                    || k == axum::http::header::CONTENT_LENGTH
+                {
+                    continue;
+                }
+                builder = builder.header(k, v);
+            }
+            let bytes = resp.bytes().await.unwrap_or_default();
+            match builder.body(axum::body::Body::from(bytes)) {
+                Ok(r) => r.into_response(),
+                Err(_) => (
+                    axum::http::StatusCode::BAD_GATEWAY,
+                    "proxy response build failed",
+                )
+                    .into_response(),
+            }
+        }
+        Err(e) => (
+            axum::http::StatusCode::BAD_GATEWAY,
+            format!("llama-swap unreachable: {e}"),
+        )
+            .into_response(),
+    }
+}
+
+/// Simple GET proxy for a fixed upstream URL (mesh-hub JSON).
+async fn proxy_simple(url: &str) -> impl IntoResponse {
+    match Client::new()
+        .get(url)
+        .timeout(Duration::from_secs(10))
+        .send()
+        .await
+    {
+        Ok(resp) => {
+            let status = axum::http::StatusCode::from_u16(resp.status().as_u16())
+                .unwrap_or(axum::http::StatusCode::BAD_GATEWAY);
+            let bytes = resp.bytes().await.unwrap_or_default();
+            (status, bytes).into_response()
+        }
+        Err(e) => (
+            axum::http::StatusCode::BAD_GATEWAY,
+            format!("upstream unreachable: {e}"),
+        )
+            .into_response(),
+    }
+}
+
+async fn proxy_mesh_features() -> impl IntoResponse {
+    proxy_simple("http://127.0.0.1:25115/mesh/features").await
 }
