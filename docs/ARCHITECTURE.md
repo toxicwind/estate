@@ -166,7 +166,7 @@ ho64: 1 # Holo MoE, evict first
 | **25100** | Public OpenAI-compatible API (`/v1`, `/ui`, `/models/sse`) |
 | **25200** | Internal backend (mesh-front proxies here)                 |
 
-### Config (`/home/toxic/sovereign/tools/llama-swap/config.yaml`)
+### Config (`/home/toxic/sovereign/config/llama-swap.yaml`)
 
 - **Health checks**: 300s timeout, 600s TTL
 - **Preload**: `beellama/exaone-4-0-1-2b-iq4xs` on startup (3.3 GiB, ~70 tok/s idle)

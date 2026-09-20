@@ -53,7 +53,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 ### Bridge tools (hatch)
 | Tool | Use |
 |---|---|
-| `~/workspace/bin/yote-conn` | Exec on yote: `yote-conn exec '<cmd>'`; multitask: `yote-conn multi cmds.json`; background: `yote-conn bg '<cmd>'` / `bg-status <handle>` / `bg-list` |
+| `~/workspace/bin/yote-conn` | Exec on yote: `yote-conn exec '<cmd>'` |
 | `~/workspace/bin/squawk` | Fleet chat: `squawk read [channel]`, `squawk send <channel> <text>` |
 | `~/workspace/bin/bridge-put.py` | Transfer files hatch→yote. Run via `python3` (no exec bit). For >1.5KB scripts: base64-chunk it, sha256-verify on yote — never inline large heredocs through the bridge (they get mangled). |
 | `~/workspace/bin/load-audit` | Load check, both boxes |
@@ -69,13 +69,12 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | Crew | Scope | Owner / coordinator | Status |
 |---|---|---|---|
-| repo-integrator-max | Orphan integration → correct repos; README/deep-link pass; permanent scripts/skills/integrations | Ember (main chat) | RUNNING (2026-09-20) — workers: orphan-hatch, orphan-yote; readme-linker README/deep-link pass DONE 38439000b0 |
+| repo-integrator-max | Orphan integration → correct repos; README/deep-link pass; permanent scripts/skills/integrations | Ember (main chat) | RUNNING (2026-09-20) — workers: orphan-hatch, orphan-yote, readme-linker |
 | purge-max (announced as pack-fix) | Hesitance purge; fake-completed watchdogs; task-runner audit; fleet health; no-monkeypatch durability sweep | Ember | RUNNING |
-| purge-max / hesitance-hunt | Hesitance fixes (EXCLUSIVE lane per 2026-09-20 carve): watchdog body rewrites, anti-pattern catalog, permanent hesitance-lint guard | Ember | DONE 2026-09-20 — commit 25679fa5c04a5ee0f5ab5737ea94dc5ce51566ee |
+| purge-max / hesitance-hunt | Hesitance fixes (EXCLUSIVE lane per 2026-09-20 carve): watchdog body rewrites, anti-pattern catalog, permanent hesitance-lint guard | Ember | RUNNING (2026-09-20) |
 | edge-forge | Cutting-edge fix + addition task forging & execution | Ember | RUNNING |
 | tau-hyperfix | `/home/toxic/.tau` audit; dynamic skill loading; skills symlink; `skillful`; `tau audit`; `tau tmux` experiments | Ember | RUNNING |
 | super-ralph repair | Root-cause `fiber.cache.stackFrame` crash; prove `super-ralph "reply with exactly the word ALIVE"` exits zero + DB completion | Ember | RUNNING |
-| bridge-max | Maximal bridge exec layer: multitask dispatch (POST /exec-multi, yote-conn multi), detached background dispatch (POST /exec-bg, GET /bg, yote-conn bg/bg-status/bg-list), MCP exec_multi/exec_bg/bg_status tools | Ember | RUNNING (2026-09-20) |
 | tmp-repos-emergent | Scratch/tmp → owning repos migration | Ember | RUNNING — **de-duped with repo-integrator-max 2026-09-20 (fleet seq 11291)** |
 | edge-max | Estate-wide cutting-edge coordinator | Ember (other chat) | RUNNING |
 | oracle-max | Oracle decision-engine maximal upgrade | Ember (other chat) | RUNNING |
@@ -91,7 +90,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | dep-quartermaster | Toolchain/dependency gaps on yote+hatch: missing CLIs installed, permanent ensure-script committed | Ember | DONE — commit 2953f49f07 (toolchain.sh + KB row) |
 | port-syscall-integrator | PORTS proven by live syscalls (strace bind/listen) + MCPs/connectors/endpoints/integrations estate-wide; SSOT ports.env reconciliation; pitchfork pre-launch guard; port-audit.py hardening | Ember (port-syscall-integrator) | RUNNING (2026-09-20) |
 | perm-surgeon | Permissions/identity/execution-context audit + live repair (sudoers, unshare, capabilities, setuid, systemd users, interactive-toxic path) | Ember | RUNNING (2026-09-20) |
-| anvil | Durability sweep: kill recurring monkey-patches; permanent audit (ops/durability/), OpenFang launcher typo fix + TOML wiring | Bedrock | DONE (2026-09-20) -- commits 38bc62316972 (audit+launcher), 686646061e4b (registration) |
+| sudo-smith | Sudo posture hardening (passwordless scope, key paths, shared-tree ownership) + missing-file forging (systemd/config/doc references) + permanent ops scripts | Ember | RUNNING (2026-09-20) |
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 
 ---
@@ -123,9 +122,6 @@ Retired/completed crews stay listed here with status DONE and their final commit
 10. **Forward movement.** A "can't" from one layer is information, never a verdict. Workaround, shrink blast radius, hand Chris a one-liner for the part only he can touch. Never bypass a security boundary.
 11. **Routers ≠ model code.** Model-family tooling never hardcodes model IDs; model selection lives in herd router config alone.
 12. **Fleet protocol.** Every spawn announces: `agent joined: <name> — <task> (ember)`. Squawk fleet is a live chat: greet, collaborate, ask questions, celebrate, banter, develop personas. A pack, not a pipeline.
-
-13. **The "impossible" rule (Chris, 2026-09-20).** Nothing is impossible on our own boxes -- we are yolo sudo: we install what we want and fix what breaks. An agent that writes "currently impossible" about a package conflict, a permission wall, or any fixable breakage has failed. Fix it, or get a decider verdict -- never narrate the impossibility and walk away. Caution ("it is your desktop environment") is context for the decision, not a veto.
-14. **Deciders via oracle (Chris, 2026-09-20).** Genuine judgment calls go to a decider, not to unilateral punting. Protocol: post a decision-request to the fleet channel -- the options, the evidence, what is at stake, a deadline. Until the debate-oracle grows an ops-decision mode, Ember renders the verdict from the thread; verdicts are recorded in the fleet log. Punting without a verdict is the bug.
 
 ---
 

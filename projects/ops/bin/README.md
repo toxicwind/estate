@@ -1,34 +1,15 @@
-# projects/ops/bin
+# projects/ops/bin/
 
-Permanent operations tooling. Per the permanence rule: the script is the
-deliverable — one-off commands and chat-only results are not.
+Permanent operations scripts for the fleet. Runnable by anyone, anytime, on
+yote (CachyOS). The script is the deliverable; a one-off run is just proof.
 
-## hesitance-scan.sh
+| Script | What |
+|---|---|
+| `sudo-audit.sh` | Verifies the pack's action posture: passwordless sudo scope, key paths + permissions, shared-tree ownership (`/home/toxic/sovereign`, `/home/toxic/.tau`), pitchfork/systemd daemon management without interactive auth. Reports blockers; exit 1 if any. `--json` for machine output. |
+| `missing-files.sh` | Finds files the system REFERENCES but that don't exist: greps systemd units (Exec*/EnvironmentFile/WorkingDirectory), live configs (`herd.yaml`, `pitchfork.toml`, `ports.env`, …), and docs (`*.md`) for paths, then checks each exists. Prints `MISSING <path>` with the referencing file, line number, and line. `--units` / `--configs` / `--docs` / `--quiet`. |
 
-Estate hesitance-rot detector. Scans briefs, docs, cron bodies, and skill
-docs for designed-in hesitance ("ask Chris", "awaiting approval",
-"skip long builds", "do not investigate", ...), classifies each hit as
-ROT / LEGITIMATE / QUOTE / ANTI, and exits nonzero when rot is found.
-
-Usage:
-
-```sh
-hesitance-scan.sh [path ...]     # scan files/dirs (defaults pick box roots)
-hesitance-scan.sh --fleet -n 30  # also scan recent fleet messages (squawk CLI)
-hesitance-scan.sh --quiet        # summary suppressed; exit code only
-```
-
-Classifications:
-
-- **ROT** — genuine hesitance baked into an instruction. Fix at the root:
-  rewrite the offending brief template or doc, don't patch around it.
-- **LEGITIMATE** — genuinely needs Chris: money, credentials, irreversible
-  external sends, or "only Chris can do X" stated once, plainly.
-- **QUOTE** — historical quote of the old bad brief (scar documentation in
-  SOUL.md/IDENTITY.md), not a live instruction.
-- **ANTI** — the line explicitly prohibits the pattern (negation), e.g.
-  "I never ask Chris to do things". Anti-hesitance doctrine, not rot.
-
-Never scanned: vendored code (`vendor/`, `vendors/`), `node_modules/`,
-`site-packages/`, `archive/`, `_archive/` (superseded bodies are historical
-evidence, not live instructions), `.git/`.
+Related docs:
+- Estate map, crews, repo index, standing rules: [`docs/fleet-knowledgebase.md`](../../docs/fleet-knowledgebase.md)
+- Hardware audit schema (consumed by `hw-audit.service`): [`docs/HARDWARE_AUDIT_20260914.md`](../../docs/HARDWARE_AUDIT_20260914.md)
+- hw-audit masters: [`../yote/ops/hw-audit/`](../yote/ops/hw-audit/)
+- Master README: [`../../README.md`](../../README.md)
