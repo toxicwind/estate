@@ -2,7 +2,7 @@
 """deep_pass.py -- deeper latency/throughput pass on working OpenRouter models.
 
 Streaming completions: measures TTFT, total latency, tokens, TPS.
-Reads OPENROUTER_API_KEY_1 from /home/toxic/.secrets IN-PROCESS.
+Reads OPENROUTER_API_KEY_FREE from /home/toxic/.secrets IN-PROCESS.
 Key NEVER leaves this box, NEVER printed.
 Rank on quality/latency/availability only -- cost is NOT a factor.
 """
@@ -16,7 +16,7 @@ import urllib.error
 SECRETS = "/home/toxic/.secrets"
 OUTDIR = "/home/toxic/sovereign/projects/openrouter-probe"
 BASE = "https://openrouter.ai/api/v1"
-KEY_NAME = "OPENROUTER_API_KEY_1"
+KEY_NAME = "OPENROUTER_API_KEY_FREE"
 REQS_PER_MODEL = 5
 MAX_TOKENS = 50
 TIMEOUT = 120
