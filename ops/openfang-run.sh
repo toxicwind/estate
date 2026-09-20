@@ -15,7 +15,7 @@ RELAY_AGENT_ID=69ac0683-9483-42a5-a22c-7710cba8da61
 
 "$KERNEL" start --config "$CFG" &
 KPID=$!
-trap "kill -TERM $KPid 2>/dev/null" TERM INT
+trap "kill -TERM $KPID 2>/dev/null" TERM INT
 # readiness gate: wait for the API port (fail-fast deadline, no blind sleep)
 for _ in $(seq 1 90); do
   (echo > /dev/tcp/127.0.0.1/4200) 2>/dev/null && break
@@ -28,4 +28,4 @@ maybe_add() {
 }
 maybe_add "{\"agent_spawned\":{\"name_pattern\":\"*\"}}"
 maybe_add "{\"system_keyword\":{\"keyword\":\"cronjobexecuted\"}}"
-wait $KPid
+wait $KPID
