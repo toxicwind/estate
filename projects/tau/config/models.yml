@@ -1,3 +1,17 @@
+# Tau provider catalog -- CANONICAL SOURCE (tracked in sovereign-projects).
+# Deployed to ~/.tau/agent/models.yml on yote (byte-identical; the engine
+# expands ${VAR:-default}). Reconciled 2026-09-20 by provider-surgeon-2:
+# merged tau-config's verified-live provider set (2026-09-20) with the
+# portable env-var-ized structure. Do NOT let these diverge again --
+# live-verified changes go here first, then sync to the overlay.
+#
+# Provider ORDER authority: bench/rankers/robust.py (ranker-audit 2026-09-20):
+#   nim (sovereign/free) 0.8087 > pollinations 0.7535 > herd-local 0.5791.
+# Every provider below is verified live on yote; herd and sovereign use
+# openai-models-list discovery so tau dynamically exposes EVERY genuinely
+# available herd model (no curated subset). Static entries exist only where
+# discovery cannot name the route (`free`/`ling` pool aliases on :25104,
+# both verified live 2026-09-20).
 discovery:
   type: openai-models-list
   ollama: true
@@ -5,14 +19,20 @@ discovery:
   llama.cpp: true
 providers:
   herd:
+    # llama-swap gateway. Local models (beellama/*, qwen-*, exaone-*, gemma-*)
+    # plus herd-side upstreams incl. pollinations-free/* and the merged
+    # openrouter-free tiers (v3 reliability + reasoning-artifact corrections,
+    # 2026-09-20). Keyless pollinations is wired INSIDE herd, never as a
+    # direct provider.
     baseUrl: ${HERD_BASE_URL:-http://127.0.0.1:25100/v1}
     api: openai-completions
     auth: none
     discovery:
       type: openai-models-list
-  # Sovereign free pool: live router on :25104. `free` races all free-tier
-  # models and serves the first non-empty completion (substance-guarded).
   sovereign:
+    # Sovereign free pool: live router on :25104. `free` races all free-tier
+    # models and serves the first non-empty completion (substance-guarded).
+    # Measured live 2026-09-20: 0pct errors, 781 models.
     baseUrl: ${SOVEREIGN_ROUTER_URL:-http://127.0.0.1:25104/v1}
     api: openai-completions
     auth: none
@@ -27,6 +47,8 @@ providers:
         cost:
           input: 0
           output: 0
+          cacheRead: 0
+          cacheWrite: 0
       - id: ling
         name: Ling 3.0 Flash (Sovereign default free model)
         api: openai-completions
@@ -35,6 +57,9 @@ providers:
         cost:
           input: 0
           output: 0
-modelOverrides:
-  disable:
-    - gemini-3.7-flash-tiered
+          cacheRead: 0
+          cacheWrite: 0
+# modelOverrides: NO global disables. 2026-09-20: removed the stale
+# `gemini-3.7-flash-tiered` disable -- tau must dynamically expose every
+# genuinely available herd model; exclusions require live-verified evidence
+# (a dead /models ID or repeated non-429 failures), never inherited config.
