@@ -1,161 +1,176 @@
-# Sovereign
+# sovereign-projects
 
-Local-first ops stack on awrawr-pc: one OpenAI-compatible LLM front door, an agent runtime, MCP federation, an ops dashboard, and metrics — orchestrated by **mise** + **pitchfork**.
+Chris's ops + workspace monorepo on the yote box (`/home/toxic/sovereign`): one
+OpenAI-compatible inference front door, a pitchfork-supervised service stack,
+agent runtimes, MCP federation, and the Ember operational home — all in one
+repo. Canonical GitHub remote is
+[toxicwind/sovereign-projects](https://github.com/toxicwind/sovereign-projects)
+(`toxicwind/sovereign` is a stale trap — don't push there).
 
-## Quick start
+## What this is
+
+Two things in one tree:
+
+1. **The control plane** — `pitchfork.toml` (service definitions, pitchfork
+   supervisor), `mise.toml` (tooling + tasks), `config/` (port assignments,
+   the inference routing matrix). This is the ops layer that keeps the box
+   running.
+2. **The workspaces** — `projects/` holds the actual projects: the inference
+   stack (`herd`), the agent engine (`tau`), the lightweight agent (`yote`),
+   the agent OS mirror (`openfang`), the editor substrate (`qed`), the
+   tool-federation layer (`mesh`), the quickshell home (`shell`), plus
+   research probes and audit workspaces.
+
+Plus the agent layer: `hatch/agents/ember` (Ember's operational home, with the
+squawk agent-to-agent chat), `agents/` (oracle-market, coyote, …),
+`bridge/` (the live hatch↔yote exec bridge), and `scratch/` (explicitly
+non-production staging).
+
+## Quickstart
+
+On yote, in `/home/toxic/sovereign`:
 
 ```bash
-cd /home/toxic/sovereign
-mise install
-mise run up        # start everything via the pitchfork supervisor
-mise run health    # probe key ports
-mise run status    # pitchfork list + listeners
-mise run down      # stop everything
+mise install          # pins python/node/bun/rust/go/pitchfork per mise.toml
+mise run up:all       # pitchfork start -q --group all (all daemons)
+pitchfork list        # daemon status
+mise run health-herd  # curl the herd /health endpoint
+mise run down-herd    # stop just the herd daemon
+mise run logs-tail    # follow the supervisor log
 ```
 
-Service definitions are the source of truth in `pitchfork.toml` (edited directly — the old generator is retired). Port assignments live in `config/ports.env`.
+- Tasks are defined in [`mise.toml`](https://github.com/toxicwind/sovereign-projects/blob/main/mise.toml#L27-L31) — `up:all`, per-service `up-<name>` / `down-<name>`, per-service `health-<name>` probes, `logs`/`logs-tail`/`logs-json`.
+- Port numbers live in one place: [`config/ports.env`](https://github.com/toxicwind/sovereign-projects/blob/main/config/ports.env#L1-L3) — the port SSOT, loaded by mise and pitchfork.
+- **pitchfork does NOT hot-reload its config** — after editing any `[daemons.*]` section, run `bin/pitchfork-restart sovereign/<name>`. The reload rule is documented at the top of [`pitchfork.toml`](https://github.com/toxicwind/sovereign-projects/blob/main/pitchfork.toml#L1-L13).
 
-## Services
+## The service stack
 
-### Core
+Daemon definitions live in [`pitchfork.toml`](https://github.com/toxicwind/sovereign-projects/blob/main/pitchfork.toml)
+(the generator is retired — this file is hand-edited). Daemons are organized
+into pitchfork groups: `mesh`, `core`, `agents`, `all`
+([`pitchfork.toml#L267-L276`](https://github.com/toxicwind/sovereign-projects/blob/main/pitchfork.toml#L267-L276)).
 
-| Port | Service | Role |
-| ---- | ------- | ---- |
-| :25100 | **herd** | OpenAI-compatible inference front door — llama-swap fork + AST Matrix router |
-| :25101 | **rust-web** | Ops dashboard, `/ops/api/*` (backend on :25201) |
-| :25104 | **sovereign-router** | Multi-provider LLM router (Bun/TS, 7 providers, `/ui`) |
-| :25127 | **shep** | MCP federation — 30 upstream MCP servers → one endpoint |
+| Port | Daemon | Role |
+| ---- | ------ | ---- |
+| :25100 | `herd` | Inference front door — OpenAI-compatible `/v1` (llama-swap fork + flock router) |
+| :25109 | `keypool` | Provider key pool for herd cloud routing (`bin/herd-keypool.py`) |
+| :8000 | `flock` | Cloud-provider routing daemon backing herd |
+| :25127 | `shep` | MCP federation — upstream servers → one endpoint |
+| :25147 | `squawk-ws` | Squawk agent chat — websocket server |
+| :25135 | `squawk-feed` | Squawk feed sequence server |
+| :8379 | `awrawr-ws-exec` | The live hatch↔yote exec bridge (see `bridge/`) |
+| :25102 | `yote` | Lightweight agent runtime |
+| :25143 | `coyote` | Autonomous agent inference engine |
+| :25125 | `tau` | Tau agent engine service |
+| :25103 | `axiom` | OpenFang agent host |
 
-### Agents
-
-| Port | Service | Role |
-| ---- | ------- | ---- |
-| :25102 | **yote** | Telegram bot / status |
-| :25103 | **axiom** | OpenFang agent host (`src/services/openfang.ts`) |
-| :25143 | **coyote** | Autonomous agent inference engine — 14 providers via :25100 |
-| :25125 | tau | Tau agent engine service |
-| :25145 | tau-code | Tau code service |
-| :25126 | kimi-code | Kimi code web UI |
-
-### Tooling & search
-
-| Port | Service | Role |
-| ---- | ------- | ---- |
-| :25106 | hf-downloader | GGUF model download UI |
-| :25107 | null-g-proxy | Spare LLM proxy |
-| :25112 / :25114 | search-api / search-ui | GitHub code search (GHAS) |
-| :25115 | mesh-hub | Service discovery + health |
-| :25116 | kimi-audit-dash | Kimi token audit dashboard |
-| :25117 | hindsight | Agent memory (vectorize-io/hindsight) |
-| :25120 | mcp-gateway | Sovereign MCP gateway — trust boundary + circuit breaker + sticky affinity (code at `mesh/router/sovereign-mcp-gateway/`; supervisor wiring in progress) |
-| :25121 | byte-vision | Vision MCP (OCR / screenshots) |
-| :25130 | itvx-browserless | Headless browser (native) |
-| :25146 | whatsapp-mcp | WhatsApp Cloud API MCP |
-| :25147 | squawk-ws | Squawk websocket feed |
-| :8378 | gemini-mcp | Gemini API MCP |
-
-### Data & infrastructure
-
-| Port | Service | Role |
-| ---- | ------- | ---- |
-| :25105 | prometheus | Metrics |
-| :25110 | grafana | Dashboards |
-| :25133 | qdrant | Vector store |
-| :25144 | kafka | Event bus |
-| :25199 | redis | Session cache / telemetry store |
-| :8000 | nim-proxy | NVIDIA NIM proxy (keyed) |
-| :62200 | nginx | Local reverse proxy |
-| :53 | dnsmasq | Local DNS |
-| :5580 | matter-server | Matter smart-home bridge |
-| :10200 | boundless | Document ingestion + chunking |
-
-## Inference chain
+Inference chain, verified from the config files:
 
 ```text
 clients (Zed / OpenFang / IDEs)
-  └─► herd :25100  (llama-swap fork + AST Matrix Go router)
-        ├─► local backends :25001–:25099  (llama-server forks: beellama, turboquant, ik_llama, ik_llama-turboquant)
-        └─► cloud providers via AST Matrix (openrouter, nvidia, groq, …)
+  └─► herd :25100  (llama-swap fork + flock cloud routing)
+        ├─► local backends from :25001 up (llama-server forks)
+        └─► cloud providers via flock :8000 (openrouter, nvidia, groq, …)
 ```
 
-## AST Matrix routing
+The routing matrix is [`config/herd.yaml`](https://github.com/toxicwind/sovereign-projects/blob/main/config/herd.yaml#L4-L8) —
+the canonical llama-swap config (RTX 3090 24GB, `startPort: 25001`).
 
-Two implementations, one theory:
-
-- **Go** (`herd/internal/flock/`) — compiled into the front door. 8 strategies, 13 providers, SQLite-backed health DB with ELO scoring and circuit breakers. See `herd/README_ASTMATRIX_V2.md`.
-- **TypeScript** (`tools/sovereign-router/sovereign-router-ts/router.ts`) — standalone Bun service on :25104 for external tooling. 7 providers: llama-swap, openrouter, nvidia, groq, cerebras, google, mistral.
-
-Per-request strategy override: `X-Sovereign-Strategy: free` races local + free-tier cloud models.
-
-## Sovereign Monitor
-
-`tools/sovereign-monitor/` — failure-recovery primitives for the agent loop: recursive fallback (try → fix → scaffold → borrow → decompose → escalate), a bounded watchdog (judge → SIGINT → SIGKILL), and repo-radar (autonomous repo discovery).
-
-## Configuration
-
-| Source | Contents |
-| ------ | -------- |
-| `config/ports.env` | Port SSOT (loaded by mise) |
-| `config/herd.yaml` | Inference routing matrix + backends |
-| `~/.secrets` | Secrets (never in git) |
-| `.env.local` | Optional local overrides |
-
-Never invent port numbers in app code — read them from env, `src/lib/ports.ts`, or `stack/lib-ports.sh`.
-
-## Project layout
+## Repo layout
 
 ```text
-sovereign/
-├── pitchfork.toml          # service definitions (supervisor)
-├── mise.toml               # up / down / health / status / doctor tasks
-├── config/                 # ports.env, herd.yaml
-├── stack/services/         # service entry scripts (herd.sh, coyote.sh, …)
-├── src/                    # Bun services (yote, mesh-hub, openfang, mcp, …)
-├── herd/                   # llama-swap fork source + AST Matrix Go router
-├── mesh/                   # MCP gateway + router variants + mesh config
-├── openfang/               # placeholder — live work is in sovereign-projects
-├── qed/                    # zed fork + zedra remote substrate
-├── pi-conversion/          # archived grok-build → pi.dev migration
-├── tools/sovereign-router/ # TS router + monitor
-├── rust_algo_web/          # rust-web dashboard source
-├── tailscale/              # optional Funnel exposure → rust-web :25101
-└── docs/                   # deeper docs
+sovereign-projects/                     # this repo — /home/toxic/sovereign on yote
+├── pitchfork.toml          # service definitions (supervisor) — hand-edited SSOT
+├── mise.toml               # tool pins + up/down/health/log tasks
+├── config/                 # ports.env (port SSOT), herd.yaml, keypools.yaml, …
+├── bridge/                 # production home of the hatch↔yote exec bridge
+├── hatch/                  # hatch-cell side: agents/ember, docs/
+├── scratch/                # NON-PRODUCTION staging (old shingle-workspace); symlinks shimmed
+├── projects/               # the workspaces: herd, tau, yote, openfang, qed, mesh, shell, …
+│                           # root-level symlinks (herd/, tau/, yote/, mesh/, shell/, qed/)
+│                           # point here for historical paths
+├── agents/                 # oracle-market, coyote, kimiclaw, toolcall rigs, …
+├── skills/                 # reusable skills (paper-search, …)
+├── bin/                    # ops scripts: pitchfork-restart, herd-keypool.py, …
+├── stack/                  # service entry scripts (stack/services/herd.sh, …)
+├── src/                    # Bun services (mesh-hub, yote, openfang, …)
+├── tools/                  # sovereign-router, sovereign-monitor, …
+├── tests/ test/            # test suites
+├── ops/                    # yote-fix.sh, yote-doctor.sh — bridge repair runbook
+├── docs/                   # architecture + ops docs (see docs/README.md)
+└── .secrets                # 400KB local secret bundle — gitignored, NEVER commit
 ```
 
-## Workspaces
+Layout SSOT for the 2026-09-20 reorg (hatch/, bridge/, scratch/): `REORG-PLAN.md`.
 
-Application code lives in the sibling monorepo **[toxicwind/sovereign-projects](https://github.com/toxicwind/sovereign-projects)** (`/home/toxic/projects/sovereign-projects/`) — herd, mesh, tau, yote, openfang, qed, shell, boundless. This repo is the ops/control plane: services, supervisor, ports, configs.
+## Key components
 
-## Zed integration
+### Inference — herd
 
-Zed talks directly to the stack (`~/.config/zed/settings.json`):
+[`projects/herd/`](https://github.com/toxicwind/sovereign-projects/tree/main/projects/herd) —
+the **toxicwind fork of llama-swap** (Go): the stack's single OpenAI-compatible
+endpoint on `:25100`. Cloud-provider routing is delegated to the `flock` daemon
+on `:8000`; the in-process `internal/flock` Go router was retired 2026-09-17.
+Live service: pitchfork `herd` → `stack/services/herd.sh` with
+[`config/herd.yaml`](https://github.com/toxicwind/sovereign-projects/blob/main/config/herd.yaml).
+[`flock` daemon`](https://github.com/toxicwind/sovereign-projects/blob/main/pitchfork.toml#L224-L231) ·
+[`keypool` daemon`](https://github.com/toxicwind/sovereign-projects/blob/main/pitchfork.toml#L662-L668)
 
-| Provider | Wire | Port |
-| -------- | ---- | ---- |
-| nvidia | NVIDIA NIM, direct | external |
-| llama-swap | llama.cpp provider | :25100 |
-| sovereign-router | OpenAI-compatible | :25104 |
-| shep | MCP context server | :25127 |
+### Agents
 
-Free-tier bounty aliases route through :25104 — full list in the Zed settings. Custom in-tree providers (NVIDIA schema hardening, MCP-proxy tool normalizers) live in the zed fork.
+- **[`projects/tau/`](https://github.com/toxicwind/sovereign-projects/tree/main/projects/tau)** — Tau agent engine (AI-native agent engine, 1M+ context reasoning, MCP + herd inference). Pitchfork daemon `tau` runs `engine/packages/coding-agent/dist/omp`.
+- **[`projects/yote/`](https://github.com/toxicwind/sovereign-projects/tree/main/projects/yote)** — Yote, the minimal embeddable agent runtime (`:25102`, inference via herd, MCP via shep `:25127`).
+- **[`agents/oracle-market/`](https://github.com/toxicwind/sovereign-projects/tree/main/agents/oracle-market)** — the oracle market: HMAC-signed bidder profiles, Vickrey second-price clearing, stake-and-slash accountability. Spec at [`agents/oracle-market/SPEC.md`](https://github.com/toxicwind/sovereign-projects/blob/main/agents/oracle-market/SPEC.md#L1-L13).
+- **[`projects/openfang/`](https://github.com/toxicwind/sovereign-projects/tree/main/projects/openfang)** — OpenFang agent OS (mirror of RightNow-AI/openfang; daemon `axiom` hosts it on `:25103`).
 
-## Why no Caddy
+### Bridge — hatch↔yote exec
 
-Caddy's path routing fought real services and its port docs drifted; every service already has a stable 25xxx port, so a multipath proxy was never needed. Removed (artifacts archived). Optional public exposure is Tailscale Funnel → rust-web :25101 only — see `tailscale/`.
+[`bridge/`](https://github.com/toxicwind/sovereign-projects/tree/main/bridge) is
+the [production home](https://github.com/toxicwind/sovereign-projects/blob/main/bridge/README.md#L1-L4)
+of [`awrawr_ws_exec.py`](https://github.com/toxicwind/sovereign-projects/blob/main/bridge/awrawr_ws_exec.py#L1-L13) —
+the persistent websocket exec bridge (Tailscale Funnel `/exec-ws` → `127.0.0.1:8379`),
+stdlib-only asyncio websocket, same security layers as the HTTPS bridge.
+Pitchfork daemon [`awrawr-ws-exec`](https://github.com/toxicwind/sovereign-projects/blob/main/pitchfork.toml#L390-L397)
+runs the tracked copy. Bridge repair runbook: `ops/` (`yote-fix.sh`, `yote-doctor.sh`).
 
-## Security
+### Hatch cell side — squawk
 
-- No app auth. Treat as **localhost + Tailscale** only.
-- Never expose :25100 / :25101 to the open internet without your own gate.
+[`hatch/`](https://github.com/toxicwind/sovereign-projects/tree/main/hatch) is the
+[hatch-cell side of the world](https://github.com/toxicwind/sovereign-projects/blob/main/hatch/README.md#L1-L4):
+`agents/ember/` is Ember's operational home, `docs/` consolidates
+hatch/bridge/cell documentation. The squawk agent-to-agent chat is driven by
+[`bin/squawk`](https://github.com/toxicwind/sovereign-projects/blob/main/hatch/agents/ember/bin/squawk#L1-L19) —
+one-command wrapper over HMAC-signed, profile-based message publication
+(fleet/lead channels, global sequence).
 
-## Build & test
+### Tool federation — mesh
 
-```bash
-bun test                     # unit + integration
-bun run test:cov             # coverage (≥88% enforced)
-mise run doctor              # pitchfork + ports + hot-reload core
-```
+[`projects/mesh/`](https://github.com/toxicwind/sovereign-projects/tree/main/projects/mesh) —
+MCP gateway source, sovereign-router variants, AST code-navigation packages, the
+unified mesh config. Daemons: `shep` (`:25127`, MCP federation),
+`mesh-hub` (service discovery + health).
+
+### Editor + shell
+
+- [`projects/qed/`](https://github.com/toxicwind/sovereign-projects/tree/main/projects/qed) — the editor layer: the zed fork and zedra (remote/mobile substrate).
+- [`projects/shell/`](https://github.com/toxicwind/sovereign-projects/tree/main/projects/shell) — Chris's quickshell home: the `ii` fork of end-4's illogical-impulse (submodule `toxicwind/sovereign-end4`) plus its ops layer.
+
+## Docs
+
+`docs/` holds architecture + ops docs (see
+[`docs/README.md`](https://github.com/toxicwind/sovereign-projects/blob/main/docs/README.md)
+for the index). `hatch/docs/` holds the bridge/cell docs moved there by the
+reorg.
+
+## Conventions
+
+- **Never invent port numbers in app code** — read them from env, `config/ports.env`, or `src/lib/ports.ts`.
+- **`git add` specific paths only** — this is a shared tree with multiple workers and live WIP; never `git add -A`.
+- **Fetch-first, rebase, never force-push.** Verify with `git ls-remote origin refs/heads/main` after every push.
+- **`projects/guidellm` is another agent's live workspace** — don't touch it.
+- **Don't kill live daemons** (`:8379` bridge, `:25147`/`:25135` squawk, `:25100` herd, `:25109` keypool); bridge-repair scripts must never kill squawk.
+- Secrets live in `~/.secrets` and `.env.local` — never in git.
 
 ## License
 
-Stack glue: MIT where marked. Upstream binaries keep their licenses (llama-swap, Zed, Grafana, …).
+Stack glue: MIT where marked. Upstream binaries and forks keep their licenses (llama-swap, Zed, Grafana, …).
