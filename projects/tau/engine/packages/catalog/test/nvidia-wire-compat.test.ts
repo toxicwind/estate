@@ -9,13 +9,13 @@
  */
 import { describe, expect, it } from "bun:test";
 import { resolveModelPolicy } from "@oh-my-pi/pi-catalog/compat/resolve";
-import type { Api, ModelSpec, Provider } from "@oh-my-pi/pi-catalog/types";
+import type { ModelSpec, Provider } from "@oh-my-pi/pi-catalog/types";
 
 const NVIDIA_BASE_URL = "https://integrate.api.nvidia.com/v1";
 
 function nvidiaSpec(id: string): ModelSpec<"openai-completions"> {
 	const provider: Provider = "nvidia";
-	const api: Api = "openai-completions";
+	const api = "openai-completions";
 	return {
 		id,
 		name: id,

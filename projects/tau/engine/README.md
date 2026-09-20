@@ -3,6 +3,8 @@
 > **Name note:** `.omp` == `.tau` — renamed monorepo. `alias omp` is leftover from install; real CLI is `tau` (`opencode`).
 Tau (formerly OMP) is the AI-native agent engine for the Sovereign ecosystem, designed for 1M+ context reasoning and multi-tool orchestration.
 
+> **Fork lineage:** Tau is a sovereign fork of [oh-my-pi](https://github.com/can1357/oh-my-pi) — itself a fork of [Pi](https://github.com/badlogic/pi-mono) by [Mario Zechner](https://github.com/mariozechner). This tree merges upstream **v18.2.6**.
+
 ## Architecture
 - **Engine Core:** Located in `packages/coding-agent/` and `packages/agent/`.
 - **Orchestration:** Built for federated tool use via MCP and high-performance inference through the Herd inference router.
@@ -38,7 +40,16 @@ Tau (formerly OMP) is the AI-native agent engine for the Sovereign ecosystem, de
 - [Contributor Guide](/CONTRIBUTING.md)
 - [Packages Overview](/docs/packages/)
 
----
-- **Harness state:** See `.tau/harness-ref.json` (mesh URL `25127` mcpproxy-go, subagent `inkling-small:free`, env deconfused, `.pi`/`.omp` symlinks verified, temp `1.0`, effort mapped).
-- **Commit reference:** `fa7f8ad` in sovereign-projects root.
-*(Managed by the Sovereign infrastructure pipeline.)*
+## Upstream v18.2.6 snapshot (oh-my-pi)
+
+Factual highlights from the merged upstream release that apply to Tau (read `.omp` as `.tau`):
+
+- **Scale:** 60+ providers · 31 built-in tools · 14 LSP ops · 28 DAP ops · ~80k lines of Rust core (search, shell, AST, PTY, desktop control, image decode, BPE counting — all in-process, no fork/exec on the hot path).
+- **Entry points:** interactive TUI (`tau`), one-shot (`tau -p`), RPC (`tau --mode rpc`), and ACP (`tau acp`) for editor integration.
+- **Subagents & review:** `task` fans out into isolated worktrees with schema-validated yields; `/review` spawns parallel reviewer subagents with P0–P3 verdicts; Agent Hub (`Alt+A`) supervises live subagents — see [docs/agent-hub.md](docs/agent-hub.md).
+- **Providers:** 60+ providers incl. Command Code, Charm Hyper, OpenCode Go/Zen; 23 `web_search` backends (`providers.webSearchOrder`, new `providers.webSearchExclude`); new `providers.judgmentProvider` backend knob. Full reference: [omp.sh/docs/providers](https://omp.sh/docs/providers).
+- **Eval:** Python retained subprocess kernel; JavaScript on an isolated subprocess with Bun Worker fallback (Ruby/Julia kernels retired upstream).
+- **Compaction:** provider-native replay (`providerReplayThroughEntryId`), `/clear` reset boundaries, `previousSummary` separation — see [docs/compaction.md](docs/compaction.md).
+- **Collab/share:** new `collab.autoStart` (`off`/`view`/`control`) auto-hosts interactive sessions; `/share` obfuscates secrets before upload — see [docs/collab.md](docs/collab.md).
+- **Extensions:** runtime model discovery (`fetchDynamicModels`, 15s hard-bounded fetch), masked secret login prompts, `deliverAs: "aside"` injection at step boundaries, explicit `session_stop` block-vs-advisory semantics — see [docs/extensions.md](docs/extensions.md).
+- **Docs added upstream in this merge:** [Agent Hub](docs/agent-hub.md), [LSP config](docs/lsp-config.md), [Magic keywords](docs/magic-keywords.md), [Vibe mode](docs/vibe-mode.md), [Session operations](docs/session-operations-export-share-fork-resume.md), [SDK](https://omp.sh/docs/sdk), [tools reference](https://omp.sh/docs/tools).

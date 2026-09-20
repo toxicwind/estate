@@ -9,6 +9,7 @@ import type { CredentialRankingContext, CredentialRankingStrategy, UsageCredenti
 import { alibabaTokenPlanRankingStrategy, alibabaTokenPlanUsageProvider } from "../usage/alibaba-token-plan";
 import { claudeRankingStrategy, claudeUsageProvider } from "../usage/claude";
 import { clinePassUsageProvider } from "../usage/cline-pass";
+import { charmHyperUsageProvider } from "../usage/charm-hyper";
 import { cursorUsageProvider } from "../usage/cursor";
 import { devinUsageProvider } from "../usage/devin";
 import { googleGeminiCliUsageProvider } from "../usage/gemini";
@@ -55,6 +56,7 @@ export const DEFAULT_USAGE_PROVIDERS: UsageProvider[] = [
 	syntheticUsageProvider,
 	xaiOauthUsageProvider,
 	devinUsageProvider,
+	charmHyperUsageProvider,
 ];
 
 export const DEFAULT_USAGE_PROVIDER_MAP = new Map<Provider, UsageProvider>(
@@ -105,6 +107,8 @@ export interface UsageLimitMarkResult {
 	switched: boolean;
 	retryAtMs?: number;
 	blockedUntilMs?: number;
+	/** This mark call's initial deadline, before report correction and merging. */
+	requestedBlockedUntilMs?: number;
 	priorBlockedUntilMs?: number;
 	priorBlockedUntilTimed?: boolean;
 	reportResetAtMs?: number;
