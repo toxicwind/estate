@@ -31,20 +31,19 @@ use language_model::{
     LanguageModelToolChoice, LanguageModelToolSchemaFormat, ProviderSettingsView, RateLimiter,
     env_var,
 };
+use nvidia::NVIDIA_API_URL;
 use open_ai::ResponseStreamEvent;
 pub use settings::NvidiaAvailableModel as AvailableModel;
 use settings::{Settings, SettingsStore};
 use std::sync::{Arc, LazyLock};
 use strum::IntoEnumIterator;
 use ui::IconName;
-use nvidia::NVIDIA_API_URL;
 
 const PROVIDER_ID: LanguageModelProviderId = LanguageModelProviderId::new("nvidia");
 const PROVIDER_NAME: LanguageModelProviderName = LanguageModelProviderName::new("NVIDIA");
 
 const API_KEY_ENV_VAR_NAME: &str = "NVIDIA_API_KEY";
 static API_KEY_ENV_VAR: LazyLock<EnvVar> = env_var!(API_KEY_ENV_VAR_NAME);
-
 
 #[derive(Default, Clone, Debug, PartialEq)]
 pub struct NvidiaSettings {

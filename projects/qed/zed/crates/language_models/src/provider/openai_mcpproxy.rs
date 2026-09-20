@@ -27,8 +27,9 @@ use language_model::{
     AuthenticateError, IconOrSvg, LanguageModel, LanguageModelCompletionError,
     LanguageModelCompletionEvent, LanguageModelEffortLevel, LanguageModelId, LanguageModelName,
     LanguageModelProvider, LanguageModelProviderId, LanguageModelProviderName,
-    LanguageModelProviderState, LanguageModelRequest, LanguageModelToolChoice, LanguageModelToolUse, LanguageModelToolUseInput,
-    LanguageModelToolSchemaFormat, ProviderSettingsView, RateLimiter, SubPageProviderSettings,
+    LanguageModelProviderState, LanguageModelRequest, LanguageModelToolChoice,
+    LanguageModelToolSchemaFormat, LanguageModelToolUse, LanguageModelToolUseInput,
+    ProviderSettingsView, RateLimiter, SubPageProviderSettings,
 };
 use open_ai::{
     ResponseStreamEvent,
@@ -39,14 +40,15 @@ use settings::Settings;
 use std::sync::Arc;
 use ui::IconName;
 
-use crate::schema_normalizer::normalize_tool_schemas;
 use crate::provider::api_compatible::{
     ApiCompatibleProviderConfigurationView, ApiCompatibleProviderSettings,
     ApiCompatibleProviderState,
 };
 use crate::provider::open_ai::{
-    ChatCompletionMaxTokensParameter, OpenAiEventMapper, OpenAiResponseEventMapper, into_open_ai, into_open_ai_response,
+    ChatCompletionMaxTokensParameter, OpenAiEventMapper, OpenAiResponseEventMapper, into_open_ai,
+    into_open_ai_response,
 };
+use crate::schema_normalizer::normalize_tool_schemas;
 pub use settings::OpenAiCompatibleAvailableModel as AvailableModel;
 pub use settings::OpenAiCompatibleModelCapabilities as ModelCapabilities;
 
@@ -58,7 +60,6 @@ pub struct OpenAiMcpProxySettings {
     pub available_models: Vec<AvailableModel>,
     pub custom_headers: CustomHeaders,
 }
-
 
 impl ApiCompatibleProviderSettings for OpenAiMcpProxySettings {
     fn api_url(&self) -> &str {
@@ -247,8 +248,8 @@ impl OpenAiMcpProxyLanguageModel {
         &self,
         request: ResponseRequest,
         cx: &AsyncApp,
-    ) -> BoxFuture<'static, Result<futures::stream::BoxStream<'static, Result<ResponsesStreamEvent>>>
-    > {
+    ) -> BoxFuture<'static, Result<futures::stream::BoxStream<'static, Result<ResponsesStreamEvent>>>>
+    {
         let http_client = self.http_client.clone();
 
         let (api_key, api_url, extra_headers) = self.state.read_with(cx, |state, _cx| {
@@ -326,7 +327,9 @@ fn supported_thinking_effort_levels(model: &AvailableModel) -> Vec<LanguageModel
     levels
 }
 
-fn chat_completion_max_tokens_parameter(model: &AvailableModel) -> ChatCompletionMaxTokensParameter {
+fn chat_completion_max_tokens_parameter(
+    model: &AvailableModel,
+) -> ChatCompletionMaxTokensParameter {
     if model.capabilities.max_tokens_parameter {
         ChatCompletionMaxTokensParameter::MaxTokens
     } else {
@@ -524,14 +527,18 @@ struct McpProxyEventMapper {
 
 impl McpProxyEventMapper {
     fn new() -> Self {
-        Self { inner: OpenAiEventMapper::new() }
+        Self {
+            inner: OpenAiEventMapper::new(),
+        }
     }
 
     fn map_stream(
         self,
         events: futures::stream::BoxStream<'static, Result<ResponseStreamEvent>>,
-    ) -> futures::stream::BoxStream<'static, Result<LanguageModelCompletionEvent, LanguageModelCompletionError>>
-    {
+    ) -> futures::stream::BoxStream<
+        'static,
+        Result<LanguageModelCompletionEvent, LanguageModelCompletionError>,
+    > {
         self.inner
             .map_stream(events)
             .map(|event| match event {
@@ -545,16 +552,18 @@ impl McpProxyEventMapper {
                         "openai-mcpproxy: auto-recovering malformed tool call `{tool_name}` \
                          (arguments did not parse) as empty input instead of retrying"
                     );
-                    Ok(LanguageModelCompletionEvent::ToolUse(LanguageModelToolUse {
-                        id,
-                        name: tool_name,
-                        is_input_complete: true,
-                        input: LanguageModelToolUseInput::Json(serde_json::Value::Object(
-                            serde_json::Map::new(),
-                        )),
-                        raw_input: raw_input.to_string(),
-                        thought_signature: None,
-                    }))
+                    Ok(LanguageModelCompletionEvent::ToolUse(
+                        LanguageModelToolUse {
+                            id,
+                            name: tool_name,
+                            is_input_complete: true,
+                            input: LanguageModelToolUseInput::Json(serde_json::Value::Object(
+                                serde_json::Map::new(),
+                            )),
+                            raw_input: raw_input.to_string(),
+                            thought_signature: None,
+                        },
+                    ))
                 }
                 other => other,
             })
