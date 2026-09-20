@@ -746,13 +746,14 @@ peers:
       tlsHandshake: 10
       idleConn: 90
 
-  # --- moonshot: Moonshot AI direct (added 2026-09-20) ---
-  # MOONSHOT_API_KEY is live (verified HTTP 200 on /v1/models 2026-09-20 ~09:00).
-  # Chat returned 429 on 2026-09-20 ~09:00 -- per doctrine a 429 is a TRANSIENT
-  # routing signal, not a death certificate, so this peer stays ACTIVE in the
-  # pool. Kimi ALSO routes via openrouter-pool (key-pool sidecar :25109);
-  # the router fails over between them. If 429s persist for hours, suspect
-  # balance exhaustion and top up. Model IDs verbatim from api.moonshot.ai/v1/models.
+  # --- moonshot: Moonshot AI direct (PARKED 2026-09-20) ---
+  # MOONSHOT_API_KEY is live (verified HTTP 200 on /v1/models 2026-09-20 ~09:00)
+  # but chat returned 429 on the ~09:00 probe. Per doctrine a 429 is TRANSIENT,
+  # so this peer is PARKED as a documented standby -- NOT deleted. Kimi currently
+  # routes via openrouter-pool (key-pool sidecar :25109). If 429s persist for hours,
+  # suspect balance exhaustion and top up. RESTORE: uncomment the block below and
+  # re-probe chat completions to HTTP 200 before relying on it.
+  # Model IDs verbatim from api.moonshot.ai/v1/models.
   # kimi-k2.6 = main Kimi; kimi-k2.7-code = code specialist. No kimi-k3 on this key.
   # NOTE: proxy has no /v1 suffix -- the router joins proxy + /v1/chat/completions.
   # moonshot:
