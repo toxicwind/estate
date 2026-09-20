@@ -147,6 +147,8 @@ _probe*.sh
 
 # Audit / scratch scripts
 audit_*.py
+# ...except the canonical debate-oracle prompt-audit harness
+!killer-features/debate-oracle/audit/audit_v1.py
 nohup.out
 output/
 MCP_AUDIT.md
