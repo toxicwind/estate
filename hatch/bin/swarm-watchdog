@@ -27,6 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import watchdog_lib as wl
 
 HATCH_TRIG = 10.0
+HATCH_RESUME_TRIG = 6.0   # load must be under this before auto-resume thaws
 YOTE_TRIG = 40.0
 BIN = "/home/hatch/workspace/bin"
 RUN_LEDGER = Path.home() / "workspace" / "watchdog" / "swarm_runs.jsonl"
