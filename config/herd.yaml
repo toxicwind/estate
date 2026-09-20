@@ -191,22 +191,22 @@ models:
   # the shim tries the standby exactly once, then surfaces whatever comes
   # back. 4xx surfaces verbatim so misconfiguration stays visible.
   oracle-judge-a:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/nex-agi/nex-n2.5-mini:free --standby openrouter-free/nex-agi/nex-n2.5-pro:free
-    description: "Oracle judge A (alias -> openrouter-free/nex-agi/nex-n2.5-mini:free) -- fastest exact-output free judge (489ms census)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target nex-agi/nex-n2.5-mini:free --standby nex-agi/nex-n2.5-pro:free
+    description: "Oracle judge A (alias -> nex-agi/nex-n2.5-mini:free) -- fastest exact-output free judge (489ms census)"
     metadata:
-      alias_of: openrouter-free/nex-agi/nex-n2.5-mini:free
+      alias_of: nex-agi/nex-n2.5-mini:free
       role: oracle-judge
   oracle-judge-b:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/nex-agi/nex-n2.5-pro:free --standby openrouter-free/poolside/laguna-s-2.1:free
-    description: "Oracle judge B (alias -> openrouter-free/nex-agi/nex-n2.5-pro:free) -- exact-output NEX complement (799ms census)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target nex-agi/nex-n2.5-pro:free --standby poolside/laguna-s-2.1:free
+    description: "Oracle judge B (alias -> nex-agi/nex-n2.5-pro:free) -- exact-output NEX complement (799ms census)"
     metadata:
-      alias_of: openrouter-free/nex-agi/nex-n2.5-pro:free
+      alias_of: nex-agi/nex-n2.5-pro:free
       role: oracle-judge
   oracle-judge-c:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/poolside/laguna-s-2.1:free --standby openrouter-free/nex-agi/nex-n2.5-mini:free
-    description: "Oracle judge C (alias -> openrouter-free/poolside/laguna-s-2.1:free) -- third model family (2161ms census)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target poolside/laguna-s-2.1:free --standby nex-agi/nex-n2.5-mini:free
+    description: "Oracle judge C (alias -> poolside/laguna-s-2.1:free) -- third model family (2161ms census)"
     metadata:
-      alias_of: openrouter-free/poolside/laguna-s-2.1:free
+      alias_of: poolside/laguna-s-2.1:free
       role: oracle-judge
   oracle-judge-local:
     cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target beellama/gemma-96k
