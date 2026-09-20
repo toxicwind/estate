@@ -82,6 +82,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | quarry | Orphan AUDIT/inventory (Spindle + estate: worktrees, /tmp, stashes, stray repos, daemon PIDs); verdicts revived/retired/left-alone; integration-worthy finds FED to repo-integrator-max in fleet | Bedrock (parent orchestrator) | RUNNING (2026-09-20) — stood down from repo integration per fleet seq 11314; feeds integration candidates to repo-integrator-max |
 
+| bedrock/ledger | Repo-sweep finisher: yote /tmp provenance classification + junk deletion; repo-sweep commits/pushes (untracked WIP -> owning repos, verified); permanent /tmp classifier artifact | Bedrock (parent orchestrator) | RUNNING (2026-09-20) - hatch /tmp handed to orphan-hatch per fleet seq 11314; feeds integration-worthy yote orphans to orphan-yote |
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 
 ---
