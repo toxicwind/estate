@@ -13,13 +13,19 @@ Local protocol: Unix socket ~/.cache/awrawr-ws-bridge.sock, newline JSON:
 The daemon re-fetches the auth surrogate on every (re)connect. If the bridge
 is unreachable it keeps retrying with backoff and fails local requests fast
 so callers can fall back to the HTTPS path.
+
+Singleton: pidfile + flock(LOCK_EX|LOCK_NB) on
+~/.cache/awrawr-ws-bridge.lock, acquired before anything else. Pre-lock
+orphans are SIGTERM'd by the new holder before it binds the socket.
 """
 import asyncio
 import base64
+import fcntl
 import hashlib
 import json
 import os
 import secrets
+import signal
 import socket
 import ssl
 import sys
@@ -32,14 +38,20 @@ sys.path.insert(0, "/opt/hatch/skills/skill-creator/bin")
 from dynamic_credentials import dynamic_credential_entry  # noqa: E402
 
 CRED = "custom.awrawr-mcp"
-HOSTS = {"github-mcp-host.tailc9ac71.ts.net"}
-WS_HOST = "github-mcp-host.tailc9ac71.ts.net"
+# Tunnel override (2026-09-20): when the runtime's direct-TCP policy blocks
+# the tailnet hostname, route via a public tunnel (e.g. Cloudflare Quick
+# Tunnel) through the egress proxy. Set AWRAWR_TUNNEL_HOST to the tunnel's
+# public hostname; the WS path (/exec-ws) stays the same.
+WS_HOST = os.environ.get("AWRAWR_TUNNEL_HOST",
+                         "github-mcp-host.tailc9ac71.ts.net")
+HOSTS = {"github-mcp-host.tailc9ac71.ts.net", WS_HOST}
 WS_PATH = "/exec-ws"
 from wsframe import WS_GUID, read_frame, send_frame  # noqa: E402
 
 CACHE = os.path.expanduser("~/.cache")
 SOCK_PATH = os.path.join(CACHE, "awrawr-ws-bridge.sock")
 LOG_PATH = os.path.join(CACHE, "awrawr-ws-bridge.log")
+LOCK_PATH = os.path.join(CACHE, "awrawr-ws-bridge.lock")
 PING_INTERVAL = 25
 LOG_MAX = 2_000_000  # rotate past 2MB; one spare generation kept
 
@@ -57,6 +69,134 @@ def log(*a):
             f.write(line)
     except OSError:
         pass
+
+
+# --- single-instance lock ----------------------------------------------
+# Incident 2026-09-20: two/three daemons ran concurrently. Root cause: main()
+# unlinked the socket then bound it, with no mutual exclusion, so two
+# starters raced — the second unlink() stole the path and the first went
+# anonymous but stayed connected, holding a second bridge WS connection.
+# Fix: pidfile + flock(LOCK_EX|LOCK_NB) acquired before anything else.
+# flock is released by the OS on holder death, so a contested lock always
+# means a LIVE holder — there is no stale-lock state to time out.
+
+_lock_fd = None  # kept open for process lifetime → lock held
+
+
+def _pid_alive(pid):
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True  # exists, not ours to signal
+    return True
+
+
+def _recorded_holder_pid():
+    try:
+        with open(LOCK_PATH) as f:
+            return int(f.read().strip().split()[0])
+    except (OSError, ValueError, IndexError):
+        return 0
+
+
+def acquire_singleton():
+    """Take the singleton lock; exit(1) if a live holder exists."""
+    global _lock_fd
+    os.makedirs(CACHE, exist_ok=True)
+    fd = os.open(LOCK_PATH, os.O_RDWR | os.O_CREAT, 0o600)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        os.close(fd)
+        holder = _recorded_holder_pid()
+        if holder and _pid_alive(holder):
+            log("singleton: live holder pid %d, exiting" % holder)
+            print("ws_daemon: already running as pid %d; exiting" % holder,
+                  file=sys.stderr)
+            sys.exit(1)
+        # Contested but no live recorded pid: transient (holder exiting).
+        # Retry once briefly rather than risk a double start.
+        time.sleep(1)
+        fd = os.open(LOCK_PATH, os.O_RDWR | os.O_CREAT, 0o600)
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            os.close(fd)
+            holder = _recorded_holder_pid()
+            log("singleton: still contested by pid %d, exiting" % holder)
+            sys.exit(1)
+    os.ftruncate(fd, 0)
+    os.write(fd, ("%d\n" % os.getpid()).encode())
+    os.fsync(fd)
+    _lock_fd = fd
+    log("singleton lock acquired (pid %d)" % os.getpid())
+
+
+def _running_script_pids():
+    """PIDs of OTHER processes running this exact script file."""
+    me = os.getpid()
+    script = os.path.realpath(os.path.abspath(__file__))
+    out = []
+    for entry in os.listdir("/proc"):
+        if not entry.isdigit():
+            continue
+        pid = int(entry)
+        if pid == me:
+            continue
+        try:
+            with open("/proc/%d/cmdline" % pid, "rb") as f:
+                args = f.read().split(b"\0")
+        except OSError:
+            continue
+        for a in args:
+            if not a:
+                continue
+            try:
+                token = a.decode()
+            except UnicodeDecodeError:
+                continue
+            # Absolute-path token resolving to this exact file: a real
+            # sibling instance. (Relative "ws_daemon.py" tokens — e.g. a
+            # watchdog's `grep ws_daemon.py` — never match.)
+            if os.path.isabs(token):
+                try:
+                    if os.path.realpath(token) == script:
+                        out.append(pid)
+                        break
+                except OSError:
+                    pass
+    return out
+
+
+def retire_legacy_instances():
+    """SIGTERM pre-lock sibling instances, then wait for them to exit.
+
+    Instances started before the lock existed never took it, so the
+    flock alone cannot stop them. The new holder terminates them BEFORE
+    binding the socket: the old holder keeps serving until it exits, so
+    the replacement is already running when the socket changes hands —
+    no gap in local service, one bridge connection owner at all times.
+    """
+    victims = _running_script_pids()
+    for pid in victims:
+        try:
+            os.kill(pid, signal.SIGTERM)
+            log("retired legacy ws_daemon instance", pid)
+        except OSError:
+            pass
+    deadline = time.time() + 10
+    for pid in victims:
+        while _pid_alive(pid) and time.time() < deadline:
+            time.sleep(0.05)
+    for pid in victims:
+        if _pid_alive(pid):
+            try:
+                os.kill(pid, signal.SIGKILL)
+                log("SIGKILLed stubborn legacy instance", pid)
+            except OSError:
+                pass
 
 
 # --- websocket framing lives in wsframe.py (shared with xfer.py) -----------
@@ -350,7 +490,10 @@ async def handle_local(reader, writer, bridge):
             await writer.drain()
             if out["type"] == "done":
                 return
-    except (asyncio.TimeoutError, ConnectionResetError, BrokenPipeError):
+    except (asyncio.TimeoutError, ConnectionResetError, BrokenPipeError,
+            ValueError):
+        # ValueError: asyncio readline() raises it when a client line
+        # exceeds the 64KiB stream limit — close that client, not the daemon.
         pass
     finally:
         try:
@@ -361,6 +504,8 @@ async def handle_local(reader, writer, bridge):
 
 async def main():
     os.makedirs(CACHE, exist_ok=True)
+    acquire_singleton()        # exits if a live lock holder exists
+    retire_legacy_instances()  # SIGTERM pre-lock orphans, wait for exit
     try:
         os.unlink(SOCK_PATH)
     except OSError:
