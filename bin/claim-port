@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+# claim-port — pre-start port reconciler for pitchfork daemons (2026-09-20).
+#
+# Usage: claim-port <port> <command...>
+#
+# Ensures nothing else holds TCP <port> on 127.0.0.1 before exec'ing <command>.
+# SIGTERMs stale holders, waits for the port to free, SIGKILLs stragglers,
+# and aborts LOUDLY (non-zero exit, no start) if the port never frees.
+#
+# WHY: pitchfork's stop/start (and automatic retry=true restarts) do not
+# verify the old process actually released its port before the new one
+# binds. On 2026-09-20 the kimi-code daemon split-brained this way: the old
+# instance survived the restart on 127.0.0.1:25126 while the new instance's
+# EADDRINUSE fallback silently bound 127.0.0.1:25128 — pitchfork tracked
+# the new PID but health-checked the orphan's port. A pre-start claim
+# makes that race impossible: one port, one owner, or a loud refusal.
+#
+# Companion to bin/pitchfork-restart (the operator's restart path, which
+# reconciles stop->start against the port). This script guards the
+# daemon's OWN start path, including pitchfork's automatic retries.
+#
+# Use in pitchfork.toml run lines:
+#   run = "exec /home/toxic/sovereign/bin/claim-port 25126 <real command...>"
+#
+# SAFETY: never touches the live bridge (:8379 / awrawr_ws_exec) — refuses
+# outright. Never kills PID 1 or itself. Port match is exact (ss, with a
+# numeric boundary) so 2512 never matches 25126.
+set -euo pipefail
+
+PORT="${1:?usage: claim-port <port> <command...>}"; shift
+[[ "$PORT" =~ ^[0-9]+$ ]] || { echo "[claim-port] invalid port: $PORT" >&2; exit 2; }
+(( $# >= 1 )) || { echo "[claim-port] no command given" >&2; exit 2; }
+
+# The live bridge is sacrosanct: refuse the port outright, and refuse any
+# holder whose cmdline is the bridge exec daemon.
+if [[ "$PORT" == "8379" ]]; then
+  echo "[claim-port] REFUSING: 8379 is the live bridge port" >&2
+  exit 5
+fi
+is_bridge_holder() {
+  tr '\0' ' ' < "/proc/$1/cmdline" 2>/dev/null | grep -q "awrawr_ws_exec"
+}
+
+holders() {
+  ss -tlnp 2>/dev/null \
+    | grep -E "127\.0\.0\.1:${PORT}([^0-9]|$)" \
+    | grep -oP 'pid=\K[0-9]+' \
+    | sort -un || true
+}
+
+SELF=$$
+reap() { # $1 = signal name
+  local sig="$1" h
+  for h in $(holders); do
+    [[ "$h" == "$SELF" ]] && continue
+    [[ "$h" == "1" ]] && { echo "[claim-port] refusing to kill pid 1" >&2; exit 3; }
+    if is_bridge_holder "$h"; then
+      echo "[claim-port] REFUSING to kill bridge holder pid=$h" >&2
+      exit 5
+    fi
+    echo "[claim-port] :$PORT held by $h — $sig" >&2
+    kill "-$sig" "$h" 2>/dev/null || true
+  done
+}
+
+if [[ -n "$(holders | tr -d '[:space:]')" ]]; then
+  reap TERM
+  for _ in $(seq 1 20); do
+    [[ -z "$(holders | tr -d '[:space:]')" ]] && break
+    sleep 0.5
+  done
+  if [[ -n "$(holders | tr -d '[:space:]')" ]]; then
+    reap KILL
+    sleep 1
+  fi
+  REMAIN="$(holders | tr '\n' ' ')"
+  if [[ -n "${REMAIN// /}" ]]; then
+    echo "[claim-port] FATAL: :$PORT still held by ${REMAIN} after SIGKILL — refusing to start" >&2
+    exit 4
+  fi
+  echo "[claim-port] :$PORT claimed (stale holder reaped)" >&2
+fi
+
+exec "$@"

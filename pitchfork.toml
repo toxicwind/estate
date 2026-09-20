@@ -157,7 +157,7 @@ env = { TAU_CODE_PORT = "25145" }
 auto = ["start"]
 
 [daemons.kimi-code]
-run = "exec /home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126"
+run = "exec /home/toxic/sovereign/bin/claim-port 25126 /home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126"
 dir = "/home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code"
 mise = true
 retry = true
