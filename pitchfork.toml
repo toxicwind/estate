@@ -1,5 +1,5 @@
-# SOVEREIGN PITCHFORK CONFIG — GENERATED from config/ports.env + service definitions
-# DO NOT EDIT DIRECTLY — Run: bun run scripts/generate.ts
+# SOVEREIGN PITCHFORK CONFIG — HAND-EDITED (generator retired 2026-09-14 per sovereign/AGENTS.md;
+# never run bun run scripts/generate.ts — it would destroy live daemons). Port SSOT: config/ports.env.
 env_file = "config/ports.env"
 
 [daemons.shep]
@@ -287,7 +287,7 @@ boot_start = true
 auto = ["start"]
 
 [daemons.squawk-feed]
-run = "exec /home/toxic/.shingle/squawk-relay/run-feed.sh"
+run = "exec /home/toxic/sovereign/hatch/agents/ember/squawk-relay/run-feed.sh"
 dir = "/home/toxic/sovereign/projects/mesh/squawk"
 mise = false
 retry = true
@@ -347,7 +347,7 @@ mise = false
 retry = true
 boot_start = true
 ready_cmd = "ss -ltn 'sport = :25147' | grep -q LISTEN"
-env = { SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/.shingle/squawk-root" }
+env = { SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/sovereign/hatch/agents/ember/squawk-root" }
 auto = ["start"]
 
 [daemons.boundless]
@@ -364,7 +364,7 @@ auto = ["start"]
 [daemons.awrawr-ws-exec]
 # NOTE: runs the TRACKED source; /home/toxic/awrawr_ws_exec.py is kept
 # as a synced fallback copy (do not delete).
-run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/sovereign/shingle-workspace/awrawr_ws_exec.py"
+run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/sovereign/bridge/awrawr_ws_exec.py"
 dir = "/home/toxic"
 mise = false
 retry = true

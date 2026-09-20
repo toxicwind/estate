@@ -1,0 +1,97 @@
+#!/bin/bash
+# squawk — one-command wrapper for the squawk agent-to-agent chat.
+#
+# Usage:
+#   SQUAWK_ID=breaker squawk post fleet --title "hello" --body "hi all"
+#   SQUAWK_ID=yote   squawk read fleet
+#   squawk --profile coordinator post fleet --title "plan" --body "..."
+#   squawk --profile researcher read          # reads all profile channels
+#   squawk profiles                            # list runner profiles
+#   squawk channels
+#   squawk --root /other/root <any chat.py command...>
+#
+# Env: SQUAWK_ID (default: shingle), SQUAWK_ROOT (default: live squawk root),
+#      SQUAWK_PROFILE (same as --profile).
+# --profile NAME resolves runners.yml ($SQUAWK_ROOT/runners.yml): posts are
+# HMAC-signed under the profile identity (key in $SQUAWK_ROOT/keys), and
+# bare `read` fans out over the profile channels. No --profile = old behavior.
+set -euo pipefail
+ROOT="$(readlink -f "${SQUAWK_ROOT:-/home/toxic/.shingle/squawk-root}")"
+ME="${SQUAWK_ID:-shingle}"
+CHAT_PY="/home/toxic/.shingle/chat/chat.py"
+BIN_DIR="$(dirname "$(readlink -f "$0")")"
+# chat.py signs via fleet_identity, which reads $FLEET_KEYS_DIR (default
+# /home/toxic/.shingle/keys — stale since the shingle reorg). Point it at
+# the live keys next to this root.
+export FLEET_KEYS_DIR="$ROOT/keys"
+if [ ! -x "$CHAT_PY" ] && [ ! -f "$CHAT_PY" ]; then
+  echo "squawk: chat.py not found at $CHAT_PY" >&2
+  exit 1
+fi
+
+# Global flags (before the subcommand).
+PROFILE="${SQUAWK_PROFILE:-}"
+REST=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --profile)   PROFILE="$2"; shift 2;;
+    --profile=*) PROFILE="${1#--profile=}"; shift;;
+    --root)      ROOT="$(readlink -f "$2")"; export FLEET_KEYS_DIR="$ROOT/keys"; shift 2;;
+    --root=*)    ROOT="$(readlink -f "${1#--root=}")"; export FLEET_KEYS_DIR="$ROOT/keys"; shift;;
+    *)           REST+=("$1"); shift;;
+  esac
+done
+set -- "${REST[@]:-}"
+
+PROFILE_CHANNELS=""
+if [ -n "$PROFILE" ]; then
+_prof_out="$("$BIN_DIR/squawk-profile" resolve "$PROFILE")" || exit 1
+  eval "$_prof_out"  # sets SQUAWK_PROFILE_ID etc.
+  ME="$SQUAWK_PROFILE_ID"
+  PROFILE_CHANNELS="$SQUAWK_PROFILE_CHANNELS"
+  if [ ! -f "$ROOT/keys/$SQUAWK_PROFILE_KEY.key" ]; then
+    echo "squawk: no key for profile identity '$SQUAWK_PROFILE_KEY' — generating" >&2
+    python3 "$CHAT_PY" --root "$ROOT" keygen "$SQUAWK_PROFILE_KEY"
+  fi
+fi
+
+cmd="${1:-}"; shift || true
+case "$cmd" in
+  profiles) exec "$BIN_DIR/squawk-profile" list ;;
+  profile)  exec "$BIN_DIR/squawk-profile" show "${1:-}" ;;
+  post)     exec python3 "$CHAT_PY" --root "$ROOT" post --from "$ME" "$@" ;;
+  trace)    SQUAWK_W_ROOT="$ROOT" SQUAWK_W_ME="$ME" SQUAWK_W_CHAT="$CHAT_PY" exec "$BIN_DIR/squawk-trace" "$@" ;;
+  follow)
+    _fchs=(); _ftmo=""
+    while [ $# -gt 0 ]; do
+      case "$1" in
+        --timeout)   _ftmo="$2"; shift 2;;
+        --timeout=*) _ftmo="${1#--timeout=}"; shift;;
+        *)           _fchs+=("$1"); shift;;
+      esac
+    done
+    if [ ${#_fchs[@]} -eq 0 ]; then
+      if [ -n "$PROFILE_CHANNELS" ]; then
+        # shellcheck disable=SC2086
+        set -- $PROFILE_CHANNELS
+      else
+        set -- fleet
+      fi
+    else
+      set -- "${_fchs[@]}"
+    fi
+    if [ -n "$_ftmo" ]; then set -- "$@" --timeout "$_ftmo"; fi
+    SQUAWK_W_ROOT="$ROOT" SQUAWK_W_ME="$ME" SQUAWK_W_CHAT="$CHAT_PY" exec "$BIN_DIR/squawk-follow" "$@" ;;
+  read)
+    if [ -n "$PROFILE_CHANNELS" ] && [ $# -eq 0 ]; then
+      # No channel given: fan out over every channel the profile joins.
+      # shellcheck disable=SC2086
+      for ch in $PROFILE_CHANNELS; do
+        echo "--- channel: $ch (as $ME) ---"
+        python3 "$CHAT_PY" --root "$ROOT" read --as "$ME" "$ch" "$@"
+      done
+      exit 0
+    fi
+    exec python3 "$CHAT_PY" --root "$ROOT" read --as "$ME" "$@" ;;
+  *)        exec python3 "$CHAT_PY" --root "$ROOT" "$cmd" "$@" ;;
+esac

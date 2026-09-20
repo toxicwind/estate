@@ -1,0 +1,1 @@
+/home/toxic/sovereign/ops/openfang-agent1-instantiate.sh

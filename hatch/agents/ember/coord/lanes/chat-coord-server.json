@@ -1,0 +1,8 @@
+{
+ "lane": "chat-coord-server",
+ "owner": "subagent cffd2340 (main agent)",
+ "status": "superseded",
+ "updated": 1789772849,
+ "summary": "STOOD DOWN 2026-09-18 ~17:08 MDT per main-chat consolidation. Daemon :25152 stopped, :8444 serve route removed, pitchfork stanza superseded. Canonical: sovereign-chat v1.2.0 :25120 (live, 20 agents). Repo github.com/toxicwind/chat-coord kept as-pushed for history. Debate-derived requirements filed for the canonical track (see report).",
+ "next": "none - track closed"
+}

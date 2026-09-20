@@ -79,7 +79,8 @@ DEFAULT_EXCLUDES = [
     "tau-ext-forks/",
     "tau-extensions-merge/",
     ".broken-git-backup/",
-    "shingle-workspace/",
+    "scratch/",
+    "bridge/",
     "pitchfork.toml.bak*",
 ]
 

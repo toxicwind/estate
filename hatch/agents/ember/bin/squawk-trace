@@ -1,0 +1,81 @@
+#!/usr/bin/env python3
+"""squawk-trace — HFT per-hop latency probe for squawk runner profiles.
+
+Posts a signed probe under the profile identity, then measures each hop:
+  post (chat.py sign+write) -> file visible on disk -> HMAC verified.
+Appends JSONL telemetry to $SQUAWK_ROOT/.latency.jsonl (measure everything).
+
+Env (set by the squawk wrapper):
+  SQUAWK_W_ROOT    squawk root dir
+  SQUAWK_W_ME      profile identity (sender)
+  SQUAWK_W_CHAT    path to chat.py
+Usage: squawk-trace [channel]   (default: fleet)
+"""
+import glob
+import json
+import os
+import subprocess
+import sys
+import time
+import uuid
+from pathlib import Path
+
+ROOT = os.environ["SQUAWK_W_ROOT"]
+ME = os.environ["SQUAWK_W_ME"]
+CHAT = os.environ["SQUAWK_W_CHAT"]
+LATENCY_LOG = os.path.join(ROOT, ".latency.jsonl")
+
+
+def main():
+    channel = sys.argv[1] if len(sys.argv) > 1 else "fleet"
+    probe = "trace-" + uuid.uuid4().hex[:8]
+    t0 = time.monotonic_ns()
+    r = subprocess.run(
+        [sys.executable, CHAT, "--root", ROOT, "post", "--from", ME,
+         channel, "--title", "trace", "--body", "latency probe " + probe],
+        capture_output=True, text=True,
+    )
+    t_posted = time.monotonic_ns()
+    if r.returncode != 0:
+        sys.exit("trace: post failed: " + (r.stderr or r.stdout))
+    # chat.py prints: posted #<seq> -> <channel>/<fname>
+    seq = r.stdout.strip().split("#")[1].split()[0]
+
+    pattern = os.path.join(ROOT, channel, seq + "-*.md")
+    deadline = t_posted + 5_000_000_000  # 5s fail-fast ceiling
+    path = None
+    t_visible = None
+    while time.monotonic_ns() < deadline:
+        hits = glob.glob(pattern)
+        if hits:
+            path = hits[0]
+            t_visible = time.monotonic_ns()
+            break
+        time.sleep(0.005)
+    if t_visible is None:
+        sys.exit("trace: probe file never appeared within 5s (fail fast)")
+
+    sys.path.insert(0, os.path.dirname(CHAT))
+    os.environ["FLEET_KEYS_DIR"] = os.path.join(ROOT, "keys")
+    import fleet_identity
+    fleet_identity.verify_on_read(Path(path))
+    t_verified = time.monotonic_ns()
+
+    rec = {
+        "ts": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "kind": "trace",
+        "profile": ME,
+        "channel": channel,
+        "seq": int(seq),
+        "post_ms": round((t_posted - t0) / 1e6, 2),
+        "visible_ms": round((t_visible - t_posted) / 1e6, 2),
+        "verify_ms": round((t_verified - t_visible) / 1e6, 2),
+        "total_ms": round((t_verified - t0) / 1e6, 2),
+    }
+    with open(LATENCY_LOG, "a") as f:
+        f.write(json.dumps(rec) + "\n")
+    print(json.dumps(rec, indent=2))
+
+
+if __name__ == "__main__":
+    sys.exit(main())

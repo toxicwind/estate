@@ -1,0 +1,25 @@
+{
+ "lane": "w3-burst-model",
+ "ts_utc": "2026-09-16T23:10:47Z",
+ "claims": [
+  "30s same-digest dedup sketch collapses 53.9% of storm turns",
+  "burst gaps are machine-speed: see gap_stats"
+ ],
+ "evidence": {
+  "gap_stats": {
+   "582bcbd0": {
+    "n": 206,
+    "median_gap_s": 12.53,
+    "p10_gap_s": 1.79,
+    "p90_gap_s": 416.89
+   }
+  },
+  "storm_turns": 206,
+  "collapsed": 111,
+  "kept": 95,
+  "collapse_pct": 53.9
+ },
+ "proof_files": [
+  "brief.py"
+ ]
+}

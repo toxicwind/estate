@@ -1,0 +1,19 @@
+{
+ "lane": "w1-chain-breaker",
+ "ts_utc": "2026-09-16T23:11:22Z",
+ "claims": [
+  "scrub() quarantines byte-identical storm bodies by digest",
+  "collapses 3rd+ consecutive identical storm turns",
+  "synthetic test: 0 storm bytes survive, <50ms per 100 turns"
+ ],
+ "evidence": {
+  "test_log": [
+   "in=100 out=99 storm_bytes_surviving=0 latency_ms=0.08",
+   "real storm digests registered in default config: 2"
+  ]
+ },
+ "proof_files": [
+  "PROOF.txt",
+  "brief.py"
+ ]
+}

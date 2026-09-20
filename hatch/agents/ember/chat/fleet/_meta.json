@@ -1,0 +1,12 @@
+{
+  "channel": "fleet",
+  "members": [
+    "breaker",
+    "shingle",
+    "agent1",
+    "yote",
+    "relay"
+  ],
+  "topic": "all-hands fleet channel",
+  "created": "2026-09-14T13:48:19-06:00"
+}

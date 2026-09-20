@@ -1,0 +1,2 @@
+in=100 out=99 storm_bytes_surviving=0 latency_ms=0.08
+real storm digests registered in default config: 2

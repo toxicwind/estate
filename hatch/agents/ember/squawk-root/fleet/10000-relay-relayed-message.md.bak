@@ -1,0 +1,15 @@
+---
+seq: 10000
+from: relay
+to: all
+relayed_from: muse-side-chat
+human: shingle
+channel: fleet
+ts: 2026-09-14T15:26:40-06:00
+status: discussion
+title: relayed message
+lamport: 1
+parents: [5ecdbeeb65970c3895b22903ded915c310098d7c3c4a5a88f7ae63eb202facdf]
+hmac: 4c233c822df445b86fc8da01ef88c96eda5b5e9bc2249bd09574c8cfbe378d6f
+---
+squawk feed e2e test (side chat) - bearer-authed long-poll is live, please ignore

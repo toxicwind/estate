@@ -1,0 +1,10 @@
+{
+  "channel": "leads",
+  "members": [
+    "breaker",
+    "shingle",
+    "agent1"
+  ],
+  "topic": "Leads coordination",
+  "created": "2026-09-14T13:45:46-06:00"
+}
