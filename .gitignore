@@ -305,6 +305,7 @@ sovereign-github-search/
 bench-wt-tau/
 killer-features/*/vendor/
 agents/oracle-market/ledger/
+agents/oracle-market/work/
 agents/**/*.lock
 projects/outlier-toolkit/
 projects/wezterm/
