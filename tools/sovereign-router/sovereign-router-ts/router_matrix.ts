@@ -238,6 +238,20 @@ export class Matrix {
   /** EMA of successful completion latency (ms) — HFT: ordering input. */
   emaLat = new Map<string, number>();
   lastError = new Map<string, { status: number; err: string; at: number }>();
+  /**
+   * entitlementDead — per-model fail-fast bench (503-forensics 2026-09-21).
+   *
+   * A 404 on a model attempt means "no such model for this key" — the ID is
+   * delisted or we're not entitled, and NEITHER heals by retrying (measured:
+   * tencent/hy3:free 404'd 7x in 15 min, each attempt pure burn at ~130ms).
+   * So the model is benched for the process lifetime after ONE 404: no
+   * retry burn, and the race sets skip it (see firstUsableModelFor /
+   * freeCandidates / callOne guard). Only an NVIDIA-side relist (or a
+   * daemon restart) re-admits it. Distinct from transient 404/429 by
+   * construction: 429s never bench, and provider-level 404s (endpoint
+   * misconfig) don't flow through record().
+   */
+  entitlementDead = new Map<string, number>();
   fifoDepth = 0;
   health: HealthDB;
   governor: Governor;
@@ -363,10 +377,19 @@ export class Matrix {
       const [c] = this.fail.get(prov) || [0, 0];
       this.fail.set(prov, [c + 1, Date.now() / 1000]);
     } else {
+      // 503-forensics 2026-09-21: failure-class-aware counting.
+      // - 401/402 (dead key): the PROVIDER is dead — count 3x so the
+      //   circuit opens and laneDead excludes it after a single attempt.
+      // - 404 (delisted / not-entitled model id): the MODEL is dead —
+      //   bench it permanently (fail-fast, zero retry burn); the provider
+      //   keeps serving its healthy models, so normal +1 counting here.
+      // - 5xx/timeouts: transient until proven otherwise (+1).
+      if (status === 404) this.noteEntitlement404(prov, model);
+      const step = status === 401 || status === 402 ? 3 : 1;
       const [c] = this.fail.get(prov) || [0, 0];
-      this.fail.set(prov, [c + 1, Date.now() / 1000]);
+      this.fail.set(prov, [c + step, Date.now() / 1000]);
       this.elo.set(prov, Math.max(100, (this.elo.get(prov) || 1000) - 32));
-      if (c + 1 >= 3) {
+      if (c + step >= 3) {
         const old = this.circuit.get(prov) || "closed";
         // Exponential backoff: BASE * 2^(level-1), capped at MAX.
         const level = (this.quarantineLevel.get(prov) || 0) + 1;
@@ -383,7 +406,7 @@ export class Matrix {
           "circuit_opened",
           old,
           "open",
-          `${c + 1} consecutive failures; quarantine level ${level}, backoff ${backoff}s`,
+          `${c + step} consecutive failures (step ${step}); quarantine level ${level}, backoff ${backoff}s`,
         );
       }
     }
@@ -530,6 +553,32 @@ export class Matrix {
     const [c, ts] = this.fail.get(p) || [0, 0];
     if (c < 6) return false;
     return Date.now() / 1000 - ts < 600;
+  }
+
+  /**
+   * noteEntitlement404 — LOUD permanent bench for a 404'd model id.
+   * Logs to stderr (pitchfork logs) and records a healing event so the
+   * bench is visible in /status and the DB, not silent.
+   */
+  noteEntitlement404(prov: string, model: string): void {
+    const key = `${prov}:${model}`;
+    if (this.entitlementDead.has(key)) return;
+    this.entitlementDead.set(key, Date.now() / 1000);
+    console.error(
+      `[router] entitlement-404 BENCHED ${key} — no retry burn (re-admit: restart or NVIDIA-side relist)`,
+    );
+    this.health.recordHealing(
+      prov,
+      model,
+      "live",
+      "entitlement_benched",
+      "404 not-entitled/delisted: model benched for process lifetime, zero retries",
+    );
+  }
+
+  /** True when the model id was benched by a 404 (fail-fast, no attempts). */
+  isEntitlementDead(prov: string, model: string): boolean {
+    return this.entitlementDead.has(`${prov}:${model}`);
   }
 }
 

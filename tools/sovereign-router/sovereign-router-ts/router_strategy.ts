@@ -57,6 +57,19 @@ export async function callOne(
   stream = false,
   externalSignal?: AbortSignal,
 ): Promise<RouteResult> {
+  // 404-entitlement bench (503-forensics 2026-09-21): fail fast with ZERO
+  // attempt burn — this model id 404'd before (delisted or not entitled
+  // for our key) and never heals by retrying. Every path funnels through
+  // callOne, so this one guard covers races, chains, sticky, and streams.
+  if (state.isEntitlementDead(provider, model)) {
+    return {
+      ok: false,
+      status: 404,
+      provider,
+      lat: 0,
+      err: "entitlement_benched",
+    };
+  }
   if (!state.circuitOk(provider)) {
     return {
       ok: false,
@@ -296,6 +309,18 @@ export async function callOne(
   }
 }
 
+/**
+ * firstUsableModelFor — first catalog model that isn't flap-benched or
+ * entitlement-benched. Race sets use this instead of firstModelFor so
+ * dead IDs never occupy a lane. Exported for regression tests.
+ */
+export function firstUsableModelFor(p: string): string | undefined {
+  for (const m of catalogModelsFor(p)) {
+    if (!state.flapBanned(p, m) && !state.isEntitlementDead(p, m)) return m;
+  }
+  return undefined;
+}
+
 export function pickWeighted(n = MAX_PARALLEL): [string, string][] {
   // Dead-lane exclusion (503-forensics 2026-09-21): providers whose recent
   // attempts all failed sit out of the race — they never win, they only
@@ -304,6 +329,7 @@ export function pickWeighted(n = MAX_PARALLEL): [string, string][] {
   const live: string[] = [];
   const dead: string[] = [];
   for (const p of Object.keys(PROVIDERS)) {
+    if (p === "llama-swap") continue; // bonus lane below — always races healthy
     if (!keyOk(p) || !state.circuitOk(p)) continue;
     (state.laneDead(p) ? dead : live).push(p);
   }
@@ -313,7 +339,7 @@ export function pickWeighted(n = MAX_PARALLEL): [string, string][] {
   const scored: [number, string, string][] = [];
   for (const p of pool) {
     const sc = state.candidateScore(p) + Math.random() * 10;
-    const mid = firstModelFor(p);
+    const mid = firstUsableModelFor(p);
     if (mid) scored.push([sc, p, mid]);
   }
   scored.sort((a, b) => b[0] - a[0]);
@@ -325,8 +351,22 @@ export function pickWeighted(n = MAX_PARALLEL): [string, string][] {
     out.push([p, mid]);
     if (out.length >= n) break;
   }
+  // llama-swap bonus lane (503-forensics 2026-09-21): the local zero-cost
+  // lane ALWAYS joins the race when healthy. It is the guaranteed fallback
+  // that held client 503s down while nvidia flapped (nvidia 503'd 29x in
+  // 15 min; llama-swap served 98x). Appended AFTER the n-cut so no caller
+  // can slice it off; hedged losers abort cleanly (499, no strike).
+  if (
+    keyOk("llama-swap") &&
+    state.circuitOk("llama-swap") &&
+    !state.laneDead("llama-swap")
+  ) {
+    const mid = firstUsableModelFor("llama-swap");
+    if (mid && !seen.has("llama-swap")) out.push(["llama-swap", mid]);
+  }
   if (!out.length && keyOk("openrouter")) {
-    out.push(["openrouter", "tencent/hy3:free"]);
+    // 2026-09-21: tencent/hy3:free delisted (404s) — ling is the live default.
+    out.push(["openrouter", "inclusionai/ling-3.0-flash-fin:free"]);
   }
   return out;
 }
@@ -478,7 +518,7 @@ export async function routeCircuitChain(
   );
   const cands: [string, string][] = [];
   for (const p of order) {
-    const mid = firstModelFor(p);
+    const mid = firstUsableModelFor(p);
     if (mid) cands.push([p, mid]);
   }
   return hedgedChain(cands, body, session, "circuit_chain");
@@ -640,7 +680,7 @@ export async function routeCascade(
   });
   const cands: [string, string][] = [];
   for (const p of order) {
-    const mid = firstModelFor(p);
+    const mid = firstUsableModelFor(p);
     if (mid) cands.push([p, mid]);
   }
   return hedgedChain(cands, body, session, "cascade");
@@ -682,8 +722,10 @@ export function freeCandidates(): [string, string][] {
     // pickWeighted — dead lanes sit out unless nothing else is alive.
     const bucket = state.laneDead(name) ? deadOut : out;
     for (const mid of catalogModelsFor(name)) {
-      // Flap-benched models sit out until their empty-strikes decay.
-      if (state.flapBanned(name, mid)) continue;
+      // Flap-benched models sit out until their empty-strikes decay;
+      // entitlement-benched (404) models sit out for the process lifetime.
+      if (state.flapBanned(name, mid) || state.isEntitlementDead(name, mid))
+        continue;
       if (modelFree(name, mid)) bucket.push([name, mid]);
     }
   }
