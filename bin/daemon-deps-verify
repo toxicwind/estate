@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+# daemon-deps-verify — P5 dependency hermeticity gate.
+#
+# For each node/bun daemon: assert lockfile presence + node_modules
+# completeness. On mismatch, repair with FROZEN installs only:
+#     npm ci | bun install --frozen-lockfile
+# NEVER bare `npm install` / `bun install` (re-resolves and mutates the
+# lockfile — the exact failure that broke matter-server and null-g-proxy).
+#
+# Usage: daemon-deps-verify [daemon-short-name]
+#   no arg  -> verify every known node/bun daemon
+#   one arg -> verify just that daemon (no-op success for non-js daemons)
+#
+# Exit 0 = all verified (repaired where needed), 1 = unrepairable
+# (missing lockfile, failed frozen install, missing dir).
+# KNOWN LIMITATION: kimi-claw's devDeps pull a git-pinned transitive dep
+# (libsignal) that this environment's npm refuses to fetch (EALLOWGIT), so
+# a from-scratch `npm ci` cannot succeed here. The daemon is unaffected —
+# its entry imports node: builtins only and needs zero npm packages.
+set -euo pipefail
+
+# daemon | app dir | manager | lockfile name | lockfile dir | install dir
+# (lockfile/install dirs differ from the app dir for workspace monorepos)
+#
+# Per-daemon exemptions: declared deps proven unused by the daemon's entry
+# point (verified 2026-09-21; re-verify if the entry's imports change).
+#   "daemon:pkg1 pkg2:reason"
+EXEMPT=(
+  # kimi-claw bridge.ts imports node: builtins only; these three are
+  # imported solely by dead dist/ output that nothing loads. The daemon
+  # needs zero npm packages; their absence must NOT block restarts.
+  "kimiclaw-a:@bufbuild/protobuf undici ws:vestigial, entry uses node builtins only"
+  "kimiclaw-b:@bufbuild/protobuf undici ws:vestigial, entry uses node builtins only"
+)
+read -r -d '' TABLE <<'EOF' || true
+mesh-hub|/home/toxic/sovereign|bun|bun.lock|/home/toxic/sovereign|/home/toxic/sovereign
+# Aliases: these daemons run via stack/services/*.sh wrappers that
+# `bun run $SOVEREIGN_ROOT/src/services/*.ts` — same dep root as mesh-hub.
+axiom|/home/toxic/sovereign|bun|bun.lock|/home/toxic/sovereign|/home/toxic/sovereign
+hf-downloader|/home/toxic/sovereign|bun|bun.lock|/home/toxic/sovereign|/home/toxic/sovereign
+prometheus|/home/toxic/sovereign|bun|bun.lock|/home/toxic/sovereign|/home/toxic/sovereign
+grafana|/home/toxic/sovereign|bun|bun.lock|/home/toxic/sovereign|/home/toxic/sovereign
+yote|/home/toxic/sovereign/projects/yote|bun|bun.lock|/home/toxic/sovereign/projects/yote|/home/toxic/sovereign/projects/yote
+search-api|/home/toxic/sovereign/sovereign-github-search|bun|bun.lock|/home/toxic/sovereign/sovereign-github-search|/home/toxic/sovereign/sovereign-github-search
+search-ui|/home/toxic/sovereign/sovereign-github-search/apps/frontend|bun|bun.lock|/home/toxic/sovereign/sovereign-github-search|/home/toxic/sovereign/sovereign-github-search
+null-g-proxy|/home/toxic/sovereign/tools/null-g-proxy|bun|bun.lock|/home/toxic/sovereign/tools/null-g-proxy|/home/toxic/sovereign/tools/null-g-proxy
+tau-code|/home/toxic/sovereign/tau/engine/packages/metaharness|bun|bun.lock|/home/toxic/sovereign/tau/engine|/home/toxic/sovereign/tau/engine
+kimi-code|/home/toxic/sovereign/tau/vendors/kimi-code/apps/kimi-code|bun|bun.lock|/home/toxic/sovereign/tau/vendors/kimi-code|/home/toxic/sovereign/tau/vendors/kimi-code
+matter-server|/home/toxic/.matter-server/app|npm|package-lock.json|/home/toxic/.matter-server/app|/home/toxic/.matter-server/app
+sovereign-router|/home/toxic/sovereign/tools/sovereign-router/sovereign-router-ts|bun|bun.lock|/home/toxic/sovereign/tools/sovereign-router/sovereign-router-ts|/home/toxic/sovereign/tools/sovereign-router/sovereign-router-ts
+sovereign-chat|/home/toxic/sovereign/tools/sovereign-chat|bun|bun.lock|/home/toxic/sovereign/tools/sovereign-chat|/home/toxic/sovereign/tools/sovereign-chat
+kimiclaw-a|/home/toxic/sovereign/tools/kimi-claw|npm|package-lock.json|/home/toxic/sovereign/tools/kimi-claw|/home/toxic/sovereign/tools/kimi-claw
+kimiclaw-b|/home/toxic/sovereign/tools/kimi-claw|npm|package-lock.json|/home/toxic/sovereign/tools/kimi-claw|/home/toxic/sovereign/tools/kimi-claw
+EOF
+
+ONLY="${1:-}"
+
+# Top-level RUNTIME deps only (dependencies + optionalDependencies).
+# devDependencies are deliberately excluded: no supervised daemon loads them
+# at runtime (bun transpiles TS natively; node runs compiled dist), and the
+# failure mode this gate exists for is missing runtime deps (hono,
+# @matter/protocol). Including devDeps would permanently fail kimi-claw:
+# its lockfile pins a git dependency that this environment's npm refuses to
+# fetch (EALLOWGIT), while the bun-served daemon itself is healthy.
+# Searches dir/node_modules AND each parent's node_modules up to lockdir
+# (workspace hoisting: tau/engine, sovereign-github-search and kimi-code
+# hoist member deps to the workspace root). Prints one per line; empty =
+# complete.
+missing_deps() {
+  local dir="$1" lockdir="$2" daemon="$3"
+  local exempt_pkgs=""
+  local e ename rest
+  for e in ${EXEMPT[@]+"${EXEMPT[@]}"}; do
+    ename="${e%%:*}"; rest="${e#*:}"
+    if [[ "$ename" == "$daemon" ]]; then exempt_pkgs="${rest%%:*}"; fi
+  done
+  python3 - "$dir" "$lockdir" "$exempt_pkgs" <<'PYEOF'
+import json, os, sys
+d, top = sys.argv[1], sys.argv[2]
+exempt = set(sys.argv[3].split())
+try:
+    pkg = json.load(open(os.path.join(d, "package.json")))
+except Exception as e:
+    print("PACKAGE_JSON_UNREADABLE:" + str(e)); sys.exit(0)
+deps = list(pkg.get("dependencies", {})) + list(pkg.get("optionalDependencies", {}))
+cands, cur = [], d
+while True:
+    cands.append(os.path.join(cur, "node_modules"))
+    if os.path.realpath(cur) == os.path.realpath(top):
+        break
+    parent = os.path.dirname(cur)
+    if parent == cur:
+        break
+    cur = parent
+missing = [dep for dep in deps if dep not in exempt
+           and not any(os.path.isdir(os.path.join(nm, dep)) for nm in cands)]
+print("\n".join(missing))
+PYEOF
+}
+
+frozen_install() {
+  local manager="$1" dir="$2"
+  echo "[deps-verify] frozen repair: $manager in $dir"
+  if [[ "$manager" == "npm" ]]; then
+    ( cd "$dir" && npm ci --no-audit --no-fund )
+  else
+    ( cd "$dir" && bun install --frozen-lockfile )
+  fi
+}
+
+verify_one() {
+  local name="$1" dir="$2" manager="$3" lock="$4" lockdir="$5" installdir="$6"
+  if [[ ! -d "$dir" ]]; then
+    echo "[deps-verify] FAIL $name: dir missing: $dir" >&2; return 1
+  fi
+  if [[ ! -f "$dir/package.json" ]]; then
+    echo "[deps-verify] SKIP $name: no package.json (nothing to verify)"
+    return 0
+  fi
+  # Lockfile presence (bun accepts bun.lock or legacy bun.lockb).
+  local lock_ok=0
+  if [[ "$manager" == "bun" ]]; then
+    [[ -f "$lockdir/bun.lock" || -f "$lockdir/bun.lockb" ]] && lock_ok=1
+  else
+    [[ -f "$lockdir/$lock" ]] && lock_ok=1
+  fi
+  if (( ! lock_ok )); then
+    echo "[deps-verify] FAIL $name: no lockfile in $lockdir — generate once with" >&2
+    echo "[deps-verify]   '$manager install' in $lockdir, COMMIT the lockfile, then re-run." >&2
+    return 1
+  fi
+  local need=0 missing=""
+  missing="$(missing_deps "$dir" "$lockdir" "$name")"
+  if [[ "$missing" == PACKAGE_JSON_UNREADABLE* ]]; then
+    echo "[deps-verify] FAIL $name: $missing" >&2; return 1
+  fi
+  [[ -n "$missing" ]] && need=1
+  if (( need )); then
+    echo "[deps-verify] REPAIR $name: incomplete node_modules (missing: ${missing//$'\n'/ })"
+    if ! frozen_install "$manager" "$installdir"; then
+      echo "[deps-verify] FAIL $name: frozen install failed" >&2; return 1
+    fi
+    missing="$(missing_deps "$dir" "$lockdir" "$name")"
+    if [[ -n "$missing" ]]; then
+      echo "[deps-verify] FAIL $name: still missing after frozen install: ${missing//$'\n'/ }" >&2
+      return 1
+    fi
+    echo "[deps-verify] OK $name (repaired via frozen install)"
+    return 0
+  fi
+  echo "[deps-verify] OK $name"
+  return 0
+}
+
+rc=0
+while IFS='|' read -r name dir manager lock lockdir installdir; do
+  [[ -z "$name" || "$name" == \#* ]] && continue
+  if [[ -n "$ONLY" && "$name" != "$ONLY" ]]; then continue; fi
+  verify_one "$name" "$dir" "$manager" "$lock" "$lockdir" "$installdir" || rc=1
+done <<<"$TABLE"
+
+if [[ -n "$ONLY" ]]; then
+  # Unknown daemon name = not a js daemon: no-op success (keeps the
+  # pitchfork-restart gate safe for all 68 daemons).
+  exit "$rc"
+fi
+exit "$rc"
