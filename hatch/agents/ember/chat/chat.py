@@ -34,6 +34,12 @@ import sys
 import time
 from pathlib import Path
 
+try:
+    import seq_alloc
+except ImportError:  # canonical allocator lives in the mesh squawk sources
+    sys.path.insert(0, "/home/toxic/sovereign/projects/mesh/squawk")
+    import seq_alloc
+
 from fleet_addr import addressed_wait_filter
 
 import fleet_dag
@@ -426,7 +432,15 @@ def _release_lock(lock: Path):
 
 
 def _next_seq(chan: Path) -> int:
-    return max_seq(chan) + 1
+    """Monotonic seq allocation via the durable high-water mark.
+
+    Never reuses a deleted seq (2026-09-21: disk-derived next-seq
+    reused dead numbers and the feed suppressed those messages
+    forever). MUST run inside the per-channel seq lock; alloc_seq
+    serializes the read-modify-write on its own internal flock
+    as well.
+    """
+    return seq_alloc.alloc_seq(chan.parent, chan.name)
 
 
 # --- cursors -----------------------------------------------------------------
