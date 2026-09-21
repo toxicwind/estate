@@ -8,12 +8,16 @@ connector.
 Canonical sources (toxicwind/sovereign-projects on yote):
   projects/bridge/hatch/connector.py  -> ~/workspace/yote-connector/connector.py
   gear/awrawr-mcp/bin/exec.py          -> ~/workspace/awrawr-bridge/exec.py
+  projects/bridge/hatch/yote-conn      -> ~/workspace/bin/yote-conn
 
 The cell-side ~/workspace/awrawr-bridge/exec.py is a MANAGED DEPLOYED ARTIFACT.
 Its canonical source is gear/awrawr-mcp/bin/exec.py. Do not edit it on the
-cell directly — edit the source and re-run this script.
+cell directly — edit the source and re-run this script. Same for
+~/workspace/bin/yote-conn (canonical: projects/bridge/hatch/yote-conn).
 
-Usage: deploy-yote-connector.py [--no-restart]
+Usage: deploy-yote-connector [--no-restart]
+       (canonical: projects/bridge/hatch/deploy-cell.py;
+        cell copy: ~/workspace/bin/deploy-yote-connector — keep in sync)
 """
 
 import hashlib
@@ -30,6 +34,8 @@ FILES = [
      os.path.expanduser("~/workspace/yote-connector/connector.py")),
     ("/home/toxic/sovereign/gear/awrawr-mcp/bin/exec.py",
      os.path.expanduser("~/workspace/awrawr-bridge/exec.py")),
+    ("/home/toxic/sovereign/projects/bridge/hatch/yote-conn",
+     os.path.expanduser("~/workspace/bin/yote-conn")),
 ]
 
 def yote_exec(cmd: str, timeout: int = 60) -> str:
@@ -108,6 +114,7 @@ def main():
         fd, tmp = tempfile.mkstemp(dir=os.path.dirname(cell_dst))
         with os.fdopen(fd, "wb") as f:
             f.write(data)
+        os.chmod(tmp, 0o755)  # yote-conn must stay directly executable
         os.rename(tmp, cell_dst)
         print(f"  Installed -> {cell_dst}")
 

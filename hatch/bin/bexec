@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# bexec: yote bridge exec — compatibility shim over the canonical path.
+#
+# Canonical: ~/workspace/bin/yote-conn (projects/bridge/hatch/yote-conn in
+# toxicwind/sovereign-projects). This name is kept for runbook/caller
+# compatibility (runbook R2); new code should call yote-conn directly.
+exec ~/workspace/bin/yote-conn exec "$1"

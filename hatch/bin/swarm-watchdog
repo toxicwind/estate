@@ -73,6 +73,8 @@ def hatch_load():
 
 def yote_load():
     try:
+        # DELIBERATE: raw exec.py, NOT yote-conn. The watchdog must read yote
+        # load even when the 18301 connector daemon is wedged. Do not migrate.
         r = subprocess.run(["python3", f"{BIN}/../awrawr-bridge/exec.py",
                             "cat /proc/loadavg"],
                            capture_output=True, text=True, timeout=45)

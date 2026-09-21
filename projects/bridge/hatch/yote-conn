@@ -5,9 +5,12 @@ Usage:
   yote-conn health
   yote-conn exec "<cmd>" [workdir] [timeout_s]
   yote-conn multi <cmds.json | ->     # JSON array of {cmd, workdir?, timeout?, tag?}
-  yote-conn bg "long-cmd" [workdir]      # detached background dispatch -> handle
+  yote-conn bg "long-cmd" [workdir] [timeout_s]
+                                     # detached background dispatch -> handle
   yote-conn bg-status <handle>        # live status + log tails
-  yote-conn bg-list                   # known handles
+  yote-conn bg-tail <handle> [soff] [eoff]
+                                     # incremental output attach from offsets
+  yote-conn bg-list                   # known handles + live state
   yote-conn bg-kill <handle>          # SIGTERM the job's process group
   yote-conn herd <METHOD> <path> [body.json | -]
   yote-conn flock <METHOD> <path> [body.json | -]
@@ -92,11 +95,18 @@ def main():
                         for r in d.get("results", [])) else 1
     if cmd == "bg":
         if len(sys.argv) < 3:
-            print("usage: yote-conn bg \"<cmd>\" [workdir]", file=sys.stderr)
+            print("usage: yote-conn bg \"<cmd>\" [workdir] [timeout_s]",
+                  file=sys.stderr)
             return 2
         spec = {"cmd": sys.argv[2]}
         if len(sys.argv) > 3:
             spec["workdir"] = sys.argv[3]
+        if len(sys.argv) > 4:
+            try:
+                spec["timeout_s"] = int(sys.argv[4])
+            except ValueError:
+                print("timeout_s must be an integer", file=sys.stderr)
+                return 2
         code, body = req("POST", "/exec-bg", json.dumps(spec).encode())
         d = json.loads(body.decode())
         if d.get("handle"):
@@ -125,11 +135,68 @@ def main():
         if d.get("error"):
             print("error  : %s" % d.get("error"), file=sys.stderr)
         return 0
+    if cmd == "bg-tail":
+        # Incremental attach: fetch stdout/stderr deltas from byte offsets.
+        # Negative offset = last N bytes. The daemon returns the new offsets;
+        # pass them back on the next call to resume (reattach loop).
+        if len(sys.argv) < 3:
+            print("usage: yote-conn bg-tail <handle> [soff] [eoff]",
+                  file=sys.stderr)
+            return 2
+        try:
+            soff = int(sys.argv[3]) if len(sys.argv) > 3 else 0
+            eoff = int(sys.argv[4]) if len(sys.argv) > 4 else 0
+        except ValueError:
+            print("offsets must be integers", file=sys.stderr)
+            return 2
+        code, body = req("GET", "/bg/%s?soff=%d&eoff=%d"
+                         % (sys.argv[2], soff, eoff))
+        d = json.loads(body.decode())
+        if d.get("error"):
+            print("error  : %s" % d["error"], file=sys.stderr)
+            return 1
+        print("handle : %s" % d.get("handle"))
+        print("state  : %s" % d.get("state"))
+        if d.get("code") is not None:
+            print("exit   : %s" % d.get("code"))
+        so = d.get("stdout_b64") or ""
+        eo = d.get("stderr_b64") or ""
+        if so:
+            nso = d.get("stdout_soff")
+            print("--- stdout (bytes %d->%s) ---"
+                  % (soff, "?" if nso is None else nso))
+            sys.stdout.buffer.write(
+                __import__("base64").b64decode(so.encode()))
+            sys.stdout.write("\n")
+        elif d.get("stdout_tail"):
+            # Old daemon without offset support: fall back to the tail.
+            print("--- stdout (tail; daemon has no offset support) ---")
+            sys.stdout.write(d["stdout_tail"])
+        if eo:
+            neo = d.get("stderr_eoff")
+            print("--- stderr (bytes %d->%s) ---"
+                  % (eoff, "?" if neo is None else neo))
+            sys.stdout.buffer.write(
+                __import__("base64").b64decode(eo.encode()))
+            sys.stdout.write("\n")
+        elif d.get("stderr_tail"):
+            print("--- stderr (tail; daemon has no offset support) ---")
+            sys.stdout.write(d["stderr_tail"])
+        rso = d.get("stdout_soff")
+        reo = d.get("stderr_eoff")
+        if rso is None and reo is None:
+            print("resume : daemon has no offset support; use bg-status")
+        else:
+            print("resume : yote-conn bg-tail %s %s %s"
+                  % (d.get("handle"), rso if rso is not None else soff,
+                     reo if reo is not None else eoff))
+        return 0
     if cmd == "bg-list":
         code, body = req("GET", "/bg")
         d = json.loads(body.decode())
         for h in d.get("handles", []):
-            print("%s  %s" % (h.get("handle"), (h.get("cmd") or "")[:80]))
+            print("%s  %-9s %s" % (h.get("handle"), h.get("state") or "?",
+                                   (h.get("cmd") or "")[:70]))
         return 0
     if cmd == "bg-kill":
         if len(sys.argv) < 3:

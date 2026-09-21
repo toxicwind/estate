@@ -39,6 +39,8 @@ def main():
                 "for p in pids:\n try:\n  os.kill(p,signal.SIGCONT);ok.append(p)\n"
                 " except Exception: pass\nprint(json.dumps(ok))" % json.dumps(ypids))
         try:
+            # DELIBERATE: raw exec.py, NOT yote-conn. The resume path must
+            # work when the 18301 connector daemon is down. Do not migrate.
             r = subprocess.run(
                 [os.path.expanduser("~/workspace/awrawr-bridge/exec.py"),
                  "python3 -c " + repr(code)],
