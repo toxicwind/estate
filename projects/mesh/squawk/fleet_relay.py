@@ -146,7 +146,9 @@ def _unverified_body(path: Path, channel: str) -> tuple[str | None, bool]:
         return None, True
     try:
         _meta, body = fleet_identity._parse_file(path)
-    except (OSError, UnicodeError):
+    except (OSError, UnicodeError, fleet_identity.FleetIdentityError):
+        # Unparseable file (e.g. no frontmatter block at all): nothing to
+        # serve. The record keeps signature:'invalid', body None.
         return None, False
     body = body or ""
     # A sealed envelope (or anything shaped like one) is ciphertext:
