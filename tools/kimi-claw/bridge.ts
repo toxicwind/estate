@@ -1,9 +1,15 @@
 #!/usr/bin/env bun
 /**
- * Sovereign Kimi-Claw Bridge — repaired 2026-09-20 (kimiclaw-deployer)
+ * Sovereign Kimi-Claw Bridge — repaired 2026-09-20 (kimiclaw-deployer);
+ *   model-agnostic rewire 2026-09-21 (relay): ZERO hardcoded model IDs.
+ *   Model selection lives ONLY in router config: KIMICLAW_HERD_MODEL env,
+ *   instance routing.herdModel, or herd's own aliases (e.g. "fast") — the
+ *   bridge never picks a provider or model itself. Dead :4200 OpenFang
+ *   default is now :25196 (live kernel API); :25103/:25143 mentions below
+ *   are historical repair notes only.
  *
  * Repaired vs the Sep-17 bridge.ts:
- * - OpenFang default route is now http://127.0.0.1:4200 (dead :25103 removed).
+ * - OpenFang default route is now http://127.0.0.1:25196 (2026-09-21; :4200 dead, :25103 long dead).
  * - The dead direct Coyote route on 127.0.0.1:25143 is REMOVED. Coyote
  *   dispatches go through the OpenFang agent "coyote" on :4200 instead.
  * - Per-instance endpoints: kimiclaw-a (sovereign-yote-kimiclaw-a, im_rpc,
@@ -93,9 +99,6 @@ function resolveInstance(raw?: string): InstanceDef {
 // Redaction-safe .secrets parsing — presence only, values never surface
 // ---------------------------------------------------------------------------
 const SECRET_KEYS = [
-  "KIMI_API_KEY",
-  "KIMI_BRIDGE_TOKEN",
-  "KIMI_USER_ID",
   "OPENFANG_API_KEY",
 ] as const;
 
@@ -144,6 +147,7 @@ interface KimiBridgeConfig {
   instance: InstanceDef;
   openfangUrl: string;
   herdUrl: string;
+  herdModel: string;
   secrets: SecretsPresence;
   // connector fields (ported from dist/src/config.js)
   bridge: {
@@ -191,9 +195,14 @@ function loadKimiConfig(inst: InstanceDef): KimiBridgeConfig {
   const file = loadInstanceConfigFile(inst);
   const routing = (file.routing || {}) as Record<string, string>;
   const openfangUrl =
-    process.env.OPENFANG_URL || routing.openfangUrl || "http://127.0.0.1:4200";
+    process.env.OPENFANG_URL || routing.openfangUrl || "http://127.0.0.1:25196";
   const herdUrl =
     process.env.HERD_URL || routing.herdUrl || "http://127.0.0.1:25100/v1";
+  // Model selection lives in router config ONLY: explicit arg, then
+  // KIMICLAW_HERD_MODEL env, then instance routing.herdModel. Empty means
+  // the bridge refuses to pick — it never selects a model itself.
+  const herdModel =
+    process.env.KIMICLAW_HERD_MODEL || routing.herdModel || "";
   const bridgeCfg = (file.bridge || {}) as Record<string, unknown>;
   const gatewayCfg = (file.gateway || {}) as Record<string, unknown>;
   const sessionCfg = (file.session || {}) as Record<string, string>;
@@ -221,14 +230,11 @@ function loadKimiConfig(inst: InstanceDef): KimiBridgeConfig {
     instance: inst,
     openfangUrl,
     herdUrl,
+    herdModel,
     secrets: loadSecretsPresence(),
     bridge: {
-      url: String(
-        bridgeCfg.url || "wss://www.kimi.com/api-claw/bots/agent-ws",
-      ),
-      kimiapiHost: String(
-        bridgeCfg.kimiapiHost || "https://www.kimi.com/api-claw",
-      ),
+      url: String(bridgeCfg.url || ""),
+      kimiapiHost: String(bridgeCfg.kimiapiHost || ""),
       protocol: Number(bridgeCfg.protocol || 3),
       instanceId: inst.instanceId,
       deviceId: inst.deviceId,
@@ -334,18 +340,21 @@ export async function dispatchToCoyote(
 export async function dispatchToHerd(
   cfg: KimiBridgeConfig,
   prompt: string,
-  // 2026-09-21 modelmap: was "flock-direct/nvidia/nemotron-3.5-lightning-30b-a3b"
-  // -- the flock-direct peer is disabled in herd.yaml, so this 404'd. This
-  // posts DIRECTLY to herd :25100 (not tau), so the ID must be herd-routable:
-  // nex-agi/nex-n2.5-pro:free via the openrouter-free peer (fastest measured
-  // free route, 566ms 2026-09-20). Fleet-relay fallback: availability first.
-  model = "nex-agi/nex-n2.5-pro:free",
+  model?: string,
 ): Promise<string> {
+  const resolved = model || cfg.herdModel;
+  if (!resolved) {
+    return (
+      "[Herd Error: no model configured — set KIMICLAW_HERD_MODEL env or " +
+      "routing.herdModel in the instance JSON. The bridge never picks a " +
+      "model itself; selection belongs to router config.]"
+    );
+  }
   const res = await fetch(`${cfg.herdUrl}/chat/completions`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model,
+      model: resolved,
       messages: [{ role: "user", content: prompt }],
       temperature: 0.4,
     }),
@@ -417,6 +426,40 @@ export async function checkRoutes(cfg: KimiBridgeConfig): Promise<ProbeResult[]>
     probe("herd-models", `${cfg.herdUrl}/models`, 5000, (res) =>
       res.ok ? null : `HTTP ${res.status}`,
     ),
+    (async (): Promise<ProbeResult> => {
+      const t0 = Date.now();
+      const resolved = cfg.herdModel;
+      if (!resolved)
+        return {
+          route: "herd-model-live",
+          ok: false,
+          ms: Date.now() - t0,
+          detail: "no herdModel configured (KIMICLAW_HERD_MODEL / routing.herdModel)",
+        };
+      try {
+        const res = await fetch(`${cfg.herdUrl}/chat/completions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: resolved,
+            messages: [{ role: "user", content: "Reply with exactly the word ALIVE" }],
+            max_tokens: 8,
+            temperature: 0,
+          }),
+          signal: AbortSignal.timeout(60000),
+        });
+        const ms = Date.now() - t0;
+        if (!res.ok)
+          return { route: "herd-model-live", ok: false, ms, detail: `HTTP ${res.status}` };
+        const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
+        const text = (data.choices?.[0]?.message?.content || "").trim();
+        return text.length > 0
+          ? { route: "herd-model-live", ok: true, ms, detail: `model=${resolved} answered` }
+          : { route: "herd-model-live", ok: false, ms, detail: `model=${resolved} empty completion` };
+      } catch (err) {
+        return { route: "herd-model-live", ok: false, ms: Date.now() - t0, detail: `exception: ${String(err).slice(0, 120)}` };
+      }
+    })(),
   ]);
 }
 
@@ -519,7 +562,7 @@ export async function runDaemon(cfg: KimiBridgeConfig): Promise<void> {
     `[Kimi-Claw] daemon up: instance=${cfg.instance.instanceId} ` +
       `transport=${cfg.instance.outboundTransport}->${cfg.bridge.effectiveOutboundTransport} ` +
       `agent=${cfg.instance.openfangAgent} session=${cfg.sessionKey} ` +
-      `watching=${FLEET_DIR}`,
+      `herdModel=${cfg.herdModel || "(unset)"} watching=${FLEET_DIR}`,
   );
   const scan = async () => {
     if (!existsSync(FLEET_DIR)) return;
@@ -547,6 +590,7 @@ function usage(): never {
       `  --check-route    fail-fast probe of OpenFang + Herd routes\n` +
       `  --send TEXT      dispatch TEXT via the instance's OpenFang agent\n` +
       `  --agent NAME     override target agent for --send (e.g. coyote)\n` +
+      `  --model MODEL    route --send through herd with MODEL (any router model/alias)\n` +
       `  --daemon         run the squawk fleet relay loop`,
   );
   process.exit(2);
@@ -558,6 +602,7 @@ if (import.meta.main) {
   let checkRoute = false;
   let sendText: string | undefined;
   let agentOverride: string | undefined;
+  let modelOverride: string | undefined;
   let daemon = false;
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -565,6 +610,7 @@ if (import.meta.main) {
     else if (a === "--check-route") checkRoute = true;
     else if (a === "--send") sendText = args[++i];
     else if (a === "--agent") agentOverride = args[++i];
+    else if (a === "--model") modelOverride = args[++i];
     else if (a === "--daemon") daemon = true;
     else usage();
   }
@@ -585,21 +631,19 @@ if (import.meta.main) {
     }
     const s = cfg.secrets.present;
     console.log(
-      `[secrets] KIMI_API_KEY=${s.KIMI_API_KEY ? "present" : "missing"} ` +
-        `KIMI_BRIDGE_TOKEN=${s.KIMI_BRIDGE_TOKEN ? "present" : "missing"} ` +
-        `KIMI_USER_ID=${s.KIMI_USER_ID ? "present" : "missing"} ` +
-        `OPENFANG_API_KEY=${s.OPENFANG_API_KEY ? "present" : "missing"} ` +
-        `(values redacted)`,
+      `[secrets] OPENFANG_API_KEY=${s.OPENFANG_API_KEY ? "present" : "missing"} (values redacted)`,
     );
     console.log(
       `[config] instance=${cfg.instance.instanceId} ` +
         `transport=${cfg.instance.outboundTransport}->${cfg.bridge.effectiveOutboundTransport} ` +
         `agent=${cfg.instance.openfangAgent} openfang=${cfg.openfangUrl} ` +
-        `herd=${cfg.herdUrl} session=${cfg.sessionKey}`,
+        `herd=${cfg.herdUrl} herdModel=${cfg.herdModel || "(unset)"} session=${cfg.sessionKey}`,
     );
     process.exit(failed > 0 ? 1 : 0);
   } else if (sendText !== undefined) {
-    const reply = await dispatchToOpenFang(cfg, sendText, agentOverride);
+    const reply = modelOverride
+      ? await dispatchToHerd(cfg, sendText, modelOverride)
+      : await dispatchToOpenFang(cfg, sendText, agentOverride);
     console.log(reply);
   } else {
     console.log(
