@@ -201,21 +201,33 @@ def _xfer_path(path):
 
 
 # --- command execution ------------------------------------------------------
-# The daemon is usually started by a supervisor (pitchfork) whose inherited
-# PATH can contain unexpanded shell placeholders (e.g. fish's literal
-# "%h/.local/bin") — a bare argv[0] then fails lookup with
-# "[Errno 2] No such file or directory: 'git'". _spawn_env() rebuilds a
-# sane PATH once per spawn: drop unexpanded placeholders, expand "~",
-# keep the core dirs, dedupe. argv[0] is resolved up front with
-# shutil.which so a missing executable fails with a clear message
-# instead of an opaque -2.
+# The bridge is a single-user lane for the toxic user on yote. _spawn_env()
+# normalizes the environment for EVERY spawned command, in protocol code:
+#   - HOME/USER/LOGNAME are pinned to the toxic user. A supervisor started
+#     from a foreign session (or with a scrubbed env) can never leak its
+#     HOME into remote commands again.
+#   - PATH is rebuilt with the canonical yote dirs first — mise shims must
+#     win over system binaries — then the supervisor's surviving entries
+#     (minus unexpanded shell placeholders like fish's literal "%h/..."),
+#     then the core system dirs. No caller ever needs to export PATH/HOME
+#     by hand. argv[0] is resolved up front with shutil.which so a missing
+#     executable fails with a clear message instead of an opaque -2.
+# projects/bridge/yote/awrawr_mcp.py carries the same canonical definition
+# (_canonical_spawn_env) for the HTTPS/MCP lane — keep the two in sync.
+_CANON_HOME = "/home/toxic"
+_CANON_USER = "toxic"
+_CANON_PATH_FIRST = ("/home/toxic/.local/share/mise/shims",
+                     "/home/toxic/.local/bin")
 _CORE_PATH_DIRS = ("/usr/local/sbin", "/usr/local/bin", "/usr/sbin",
                    "/usr/bin", "/sbin", "/bin")
 
 
 def _spawn_env():
-    raw = os.environ.get("PATH", "") or ""
     seen, parts = set(), []
+    for d in _CANON_PATH_FIRST:
+        seen.add(d)
+        parts.append(d)
+    raw = os.environ.get("PATH", "") or ""
     for seg in raw.split(os.pathsep):
         seg = seg.strip()
         if not seg or "%" in seg:  # unexpanded placeholder, unusable
@@ -230,6 +242,9 @@ def _spawn_env():
             parts.append(d)
     env = dict(os.environ)
     env["PATH"] = os.pathsep.join(parts)
+    env["HOME"] = _CANON_HOME
+    env["USER"] = _CANON_USER
+    env["LOGNAME"] = _CANON_USER
     return env
 
 
