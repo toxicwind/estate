@@ -9,6 +9,7 @@ import {
   existsSync,
   readFileSync,
   appendFileSync,
+  renameSync,
 } from "fs";
 import { join, dirname, resolve } from "path";
 import { fileURLToPath } from "url";
@@ -16,6 +17,9 @@ import { checkHealth, checkHealthLegacy } from "./lib/health";
 import { Overlord } from "./lib/overlord";
 import { handleMeshRequest } from "./lib/ghas-mesh-features";
 import { OpenFangClient, RouteOption } from "./lib/openfang_api";
+import { DeliveryLedger, BOT_CHANNEL } from "./lib/delivery-ledger";
+import { sendValidated } from "./lib/validated-send";
+import { resolveReplyText } from "./lib/resilient-route";
 
 const __f = fileURLToPath(import.meta.url);
 const __d = dirname(__f);
@@ -98,6 +102,59 @@ function needAuth(req: Request): Response | null {
 const ofClient = new OpenFangClient(OF_URL, process.env.OPENFANG_API_KEY || "", DEFAULT_AGENT);
 const openfang = ofClient;
 
+// WS3 delivery reliability: durable inbox, poll cursor, send-dedupe, DLQ.
+// The ledger is the source of truth; last_update.json is only a mirror
+// for external readers (kept for one release, then it can go).
+const ledger = new DeliveryLedger();
+const MAX_ATTEMPTS = Number(process.env.YOTE_MAX_ATTEMPTS || 5);
+const DEAD_LETTER_DIR = `${process.env.HOME || "/home/toxic"}/.yote/dead-letter`;
+let procUpdate: any = null; // the update currently being processed
+
+/** Atomically persist the full failed update for the operator + sweeper. */
+function writeDeadLetter(updateId: number, update: any, error: string) {
+  try {
+    mkdirSync(DEAD_LETTER_DIR, { recursive: true });
+    const tmp = `${DEAD_LETTER_DIR}/${updateId}.json.tmp`;
+    const fin = `${DEAD_LETTER_DIR}/${updateId}.json`;
+    const doc = {
+      update_id: updateId,
+      channel_id: BOT_CHANNEL,
+      received_at: new Date().toISOString(),
+      chat_id: update?.message?.chat?.id ?? update?.callback_query?.message?.chat?.id ?? null,
+      thread_id: update?.message?.message_thread_id ?? null,
+      reply_to: update?.message?.message_id ?? null,
+      reply_text: procUpdate?.lastReplyText ?? null,
+      error,
+      update,
+    };
+    writeFileSync(tmp, JSON.stringify(doc, null, 2));
+    renameSync(tmp, fin);
+    log(`dlq write ${fin}`);
+  } catch (e: any) {
+    log(`dlq write failed: ${e?.message ?? e}`);
+  }
+}
+
+/** Re-drive crashed/pending inbox rows through proc (boot + poll loop). */
+async function redrivePending(cooldownMs: number) {
+  try {
+    const rows = ledger.listRedrivable(BOT_CHANNEL, MAX_ATTEMPTS, Date.now(), cooldownMs);
+    for (const row of rows) {
+      let update: any;
+      try {
+        update = JSON.parse(row.update_json);
+      } catch {
+        ledger.markTerminal(BOT_CHANNEL, row.update_id, "dead_lettered", "update_json corrupt");
+        writeDeadLetter(row.update_id, { raw: row.update_json }, "update_json corrupt");
+        continue;
+      }
+      await proc(update);
+    }
+  } catch (e: any) {
+    log(`redrive err ${e?.message ?? e}`);
+  }
+}
+
 /** per-chat agent override (user can /agent coyote) */
 const chatAgent: Record<string, string> = {};
 
@@ -159,11 +216,17 @@ function loadLast() {
 }
 function saveLast() {
   try {
+    const s = ledger.healthStats();
     mkdirSync(dirname(LF), { recursive: true });
     writeFileSync(
       LF,
       JSON.stringify(
-        { lastUpdateId: last, updatedAt: new Date().toISOString() },
+        {
+          lastUpdateId: s.pollOffset > 0 ? s.pollOffset - 1 : 0,
+          pollCursor: s.pollOffset,
+          processedWatermark: s.processedWatermark,
+          updatedAt: new Date().toISOString(),
+        },
         null,
         2,
       ),
@@ -201,75 +264,124 @@ async function tg(m: string, b: any) {
   }
 }
 
+/** WS3 validated send: shape-validated, response-checked, jitter-retried,
+ *  dedupe-guarded. The update that is being processed lives in procUpdate
+ *  so a failed reply can be dead-lettered with its full context. */
 async function send(cid: number, t: string, o: any = {}) {
-  const MX = 4000;
-  const ps: string[] = [];
-  let rem = t;
-  while (rem.length > MX) {
-    let cut = rem.lastIndexOf("\n", MX);
-    if (cut < MX * 0.5) cut = rem.lastIndexOf(" ", MX);
-    if (cut < 0) cut = MX;
-    ps.push(rem.slice(0, cut));
-    rem = rem.slice(cut).trimStart();
+  const updateId = typeof o.updateId === "number" ? o.updateId : 0;
+  if (procUpdate) procUpdate.lastReplyText = t;
+  const res = await sendValidated(tg, ledger, cid, t, {
+    updateId,
+    threadId: o.threadId,
+    replyTo: o.replyTo,
+    parseMode: o.parse_mode,
+  });
+  if (!res.ok && res.permanent) {
+    log(`send permanent fail update=${updateId}: ${res.error}`);
+    throw new Error(`send failed permanently: ${res.error}`);
   }
-  ps.push(rem);
-  for (const p of ps) {
-    if (!p.trim()) continue;
-    const bd: any = { chat_id: cid, text: p };
-    // Markdown often breaks on model output; plain text is safer
-    if (o.parse_mode) bd.parse_mode = o.parse_mode;
-    if (o.threadId) bd.message_thread_id = o.threadId;
-    if (o.replyTo) bd.reply_to_message_id = o.replyTo;
-    await tg("sendMessage", bd);
-    await Bun.sleep(200);
+  if (!res.ok) {
+    log(`send transient fail update=${updateId} attempts=${res.attempts}: ${res.error}`);
+    throw new Error(`send failed transiently: ${res.error}`);
   }
+  if (res.deduped > 0) log(`send deduped update=${updateId} chunks=${res.deduped}`);
+  return res;
 }
 
 /** OpenFang HTTP chat only — never llama-swap env wiring for OF agents */
 async function ofChat(txt: string, agent?: string) {
-  const r = await ofClient.chat(txt, {
-    agent: agent || DEFAULT_AGENT,
-    max_tokens: 1024,
-  });
+  const a = agent || DEFAULT_AGENT;
+  const r = await ofClient.chat(txt, { agent: a, max_tokens: 1024 });
   if (!r.ok) {
-    return `openfang err (${r.agent}): ${r.error || "empty"}`;
+    return { ok: false as const, content: "", error: `HTTP ${r.status ?? "?"} ${r.error || "empty"}`, ms: r.ms ?? 0 };
   }
-  return r.content;
+  return { ok: true as const, content: r.content, ms: r.ms ?? 0 };
 }
 
+/** WS3 resilient routing: OpenFang primary, direct-herd fallback on
+ *  500-class/model-not-found/transport failure, actionable user error if
+ *  both fail. Never returns a bare "openfang err" string anymore. */
 async function hChat(cid: number, txt: string, o: any = {}) {
   const tb: any = { chat_id: cid, action: "typing" };
   if (o.threadId) tb.message_thread_id = o.threadId;
   await tg("sendChatAction", tb);
   const agent = chatAgent[String(cid)] || DEFAULT_AGENT;
-  try {
-    const rp = await ofChat(txt, agent);
-    await send(cid, rp || "empty", o);
-  } catch (e: any) {
-    await send(cid, `err:${e.message || e}`, o);
-  }
+  const updateId = typeof o.updateId === "number" ? o.updateId : 0;
+  const routed = await resolveReplyText({
+    ofChat: (t, a) => ofChat(t, a),
+    herdUrl: LLM,
+    herdModel: process.env.YOTE_HERD_FALLBACK_MODEL || "kimi-k3-nim",
+    ofUrl: OF_URL,
+    txt,
+    agent,
+    updateId,
+    recordLatency: (ms) => ledger.recordOpenFangLatency(ms),
+  });
+  log(`route update=${updateId} via=${routed.route} of_ms=${routed.openfangMs}`);
+  await send(cid, routed.text || "empty", o);
 }
 
 async function proc(up: any) {
   if (!up || typeof up !== "object") return;
-  if (typeof up.update_id === "number" && Number.isFinite(up.update_id)) {
-    last = up.update_id;
-    saveLast();
+  const updateId = up.update_id;
+  if (typeof updateId !== "number" || !Number.isFinite(updateId)) return;
+  // WS3: commit-before-process — the update is durable in the inbox AND
+  // the poll cursor is advanced BEFORE any side effect. A crash after
+  // this point re-drives the row; the send-dedupe claim guarantees the
+  // user never sees a duplicate reply.
+  const committed = ledger.commitInbound(BOT_CHANNEL, up);
+  if (committed.status === "processed" || committed.status === "dead_lettered") {
+    return; // already terminal: do not reprocess
   }
+  ledger.saveOffset(BOT_CHANNEL, updateId + 1);
+  last = Math.max(last, updateId + 1);
+  saveLast();
+  ledger.markAttempt(BOT_CHANNEL, updateId);
+  const prevProcUpdate = procUpdate;
+  procUpdate = { updateId, lastReplyText: null as string | null };
+  try {
+    await procInner(up, updateId);
+    ledger.markTerminal(BOT_CHANNEL, updateId, "processed");
+  } catch (e: any) {
+    const attempts = ledger.markAttempt(BOT_CHANNEL, updateId);
+    const errMsg = (e?.message ?? String(e)).slice(0, 300);
+    if (attempts >= MAX_ATTEMPTS) {
+      writeDeadLetter(updateId, up, errMsg);
+      ledger.markTerminal(BOT_CHANNEL, updateId, "dead_lettered", errMsg);
+      log(`dlq update=${updateId} attempts=${attempts}: ${errMsg}`);
+    } else {
+      log(`proc retry update=${updateId} attempts=${attempts}: ${errMsg}`);
+    }
+  } finally {
+    procUpdate = prevProcUpdate;
+  }
+}
+
+/** The original proc() body, now terminal-state aware. Every path that
+ *  produces (or intentionally skips) a user-visible outcome ends with a
+ *  markTerminal so the processed watermark can advance. */
+async function procInner(up: any, updateId: number) {
   if (up.callback_query) {
     const cb = up.callback_query;
     log(`cb ${cb.from?.username}:${cb.data}`);
     await tg("answerCallbackQuery", { callback_query_id: cb.id });
+    ledger.markTerminal(BOT_CHANNEL, updateId, "processed");
     return;
   }
   const msg = (up.message ?? up.edited_message) as any;
-  if (!msg) return;
+  if (!msg) {
+    ledger.markTerminal(BOT_CHANNEL, updateId, "processed");
+    return;
+  }
   const cid = msg.chat?.id;
   const txt = (msg.text ?? "").trim();
   const uid = msg.from?.id;
   const tid = msg.message_thread_id;
   const mid = msg.message_id;
-  if (!cid || !txt || !uid) return;
+  if (!cid || !txt || !uid) {
+    ledger.markTerminal(BOT_CHANNEL, updateId, "processed");
+    return;
+  }
   if (ALW.size > 0 && !ALW.has(uid)) {
     log(`unauth ${uid} in ${cid}`);
     await tg("sendMessage", {
@@ -277,6 +389,7 @@ async function proc(up: any) {
       text: "unauth",
       message_thread_id: tid,
     });
+    ledger.markTerminal(BOT_CHANNEL, updateId, "processed");
     return;
   }
 
@@ -291,7 +404,7 @@ async function proc(up: any) {
     await send(
       cid,
       `yote v0.6 · openfang external API @ ${OF_URL}\nagent: ${chatAgent[String(cid)] || DEFAULT_AGENT}\ncmds: /start /status /health /agent <name> /agents\nwatching: ${CHS.join(",") || "all"}\nallowed: ${Array.from(ALW).join(",")}`,
-      { threadId: tid },
+      { threadId: tid, updateId },
     );
     return;
   }
@@ -302,7 +415,7 @@ async function proc(up: any) {
     await send(
       cid,
       `status llama:${h.llama ? "ok" : "down"} openfang:${ofh.ok ? "ok" : "down"} (${ofh.ms}ms) agent:${chatAgent[String(cid)] || DEFAULT_AGENT} gpu:${h.gpu}`,
-      { threadId: tid },
+      { threadId: tid, updateId },
     );
     return;
   }
@@ -313,7 +426,7 @@ async function proc(up: any) {
     await send(
       cid,
       `health ${h.overall} dur:${h.durationMs}ms llama:${h.llamaSwap.healthy ? "ok" : "down"} of_api:${ofh.ok ? "ok" : "down"} of_body:${JSON.stringify(ofh.body).slice(0, 80)}`,
-      { threadId: tid },
+      { threadId: tid, updateId },
     );
     return;
   }
@@ -321,7 +434,7 @@ async function proc(up: any) {
   if (txt === "/agents" || txt.startsWith("/agents ")) {
     const { ok, agents, error } = await ofClient.listAgents();
     if (!ok) {
-      await send(cid, `agents err: ${error}`, { threadId: tid });
+      await send(cid, `agents err: ${error}`, { threadId: tid, updateId });
       return;
     }
     const lines = agents.map(
@@ -332,7 +445,7 @@ async function proc(up: any) {
       cid,
       `openfang agents (${agents.length}) via ${OF_URL}/api/agents\n` +
         lines.join("\n"),
-      { threadId: tid },
+      { threadId: tid, updateId },
     );
     return;
   }
@@ -343,7 +456,7 @@ async function proc(up: any) {
       await send(
         cid,
         `current agent: ${chatAgent[String(cid)] || DEFAULT_AGENT}\nset: /agent coyote`,
-        { threadId: tid },
+        { threadId: tid, updateId },
       );
       return;
     }
@@ -354,22 +467,35 @@ async function proc(up: any) {
     return;
   }
 
-  await hChat(cid, txt, { threadId: tid, replyTo: mid });
+  await hChat(cid, txt, { threadId: tid, replyTo: mid, updateId });
 }
 
 async function poll() {
   loadChats();
-  loadLast();
-  log(`poll start last=${last} token=${TOK ? "set" : "MISSING"}`);
+  // WS3: the sqlite cursor is the source of truth. On first boot after
+  // the upgrade, adopt the legacy last_update.json as the cursor floor.
+  last = ledger.loadOffset(BOT_CHANNEL);
+  if (last <= 0) {
+    loadLast();
+    if (last > 0) {
+      last = last + 1; // legacy stored lastUpdateId; cursor = next offset
+      ledger.saveOffset(BOT_CHANNEL, last);
+      saveLast();
+    }
+  }
+  log(`poll start cursor=${last} token=${TOK ? "set" : "MISSING"}`);
+  // WS3: boot reconciliation — replay updates left pending by a crash.
+  await redrivePending(0);
   while (!shut) {
     try {
       const r: any = await tg("getUpdates", {
-        offset: last + 1,
+        offset: last,
         timeout: 25,
         allowed_updates: ["message", "edited_message", "callback_query"],
       });
       if (r.ok && Array.isArray(r.result)) {
         for (const u of r.result) await proc(u);
+        last = ledger.loadOffset(BOT_CHANNEL);
       } else if (r.description) {
         log(`poll tg: ${r.description}`);
         await Bun.sleep(3000);
@@ -378,6 +504,8 @@ async function poll() {
       log(`poll err ${e.message || e}`);
       await Bun.sleep(2000);
     }
+    // WS3: periodic redrive of stuck rows (30s since-last-attempt cooldown).
+    await redrivePending(30000);
     await Bun.sleep(500);
   }
 }
@@ -405,6 +533,16 @@ async function testE2E(chatId: number, text: string) {
   };
   await proc(fakeUp);
   last = prev;
+  // e2e used the durable inbox path; reset the terminal test row so a
+  // re-run is not skipped as already-processed.
+  try {
+    const { Database } = await import("bun:sqlite");
+    const db = new Database(ledger.path);
+    db.run("DELETE FROM telegram_inbox WHERE channel_id = ? AND update_id = 999999", [BOT_CHANNEL]);
+    db.close();
+  } catch {
+    /* best effort */
+  }
   saveLast();
   return {
     ok: true,
@@ -477,7 +615,35 @@ try {
       });
       if (m) return cors(m);
     }
-    if (p === "/health") return cors(new Response("ok"));
+    if (p === "/health") {
+      let s: any = null;
+      try {
+        s = ledger.healthStats();
+      } catch {
+        /* ledger unavailable: readiness is unaffected */
+      }
+      return cors(
+        new Response(
+          JSON.stringify({
+            ok: true,
+            telegram: s
+              ? {
+                  pollCursor: s.pollOffset,
+                  processedWatermark: s.processedWatermark,
+                  inboxPending: s.inboxPending,
+                  inboxDeferred: s.inboxDeliveryUnknown,
+                  dlqDepth: s.dlqDepth,
+                  lastSuccessfulSend: s.lastSuccessfulSendMs
+                    ? new Date(s.lastSuccessfulSendMs).toISOString()
+                    : null,
+                  lastOpenFangLatencyMs: s.lastOpenFangLatencyMs,
+                }
+              : null,
+          }),
+          { headers: { "Content-Type": "application/json" } },
+        ),
+      );
+    }
     if (p === "/") {
       return jres({
         svc: "yote",
