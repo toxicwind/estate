@@ -179,6 +179,8 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | warden | keeper lane: true UI-click end-to-end validation of the browser-toggle button and production-grade browserless MCP 1.3.0 | ember | RUNNING (2026-09-21) |
 
+| kimi-merge | Kimi Code sovereign-router rewiring merged onto canonical main: bin/kimi-code-setup default route herd/qwen-flash -> sovereign/free (:25104), [providers.sovereign] + [models."sovereign/free"], herd models kept as selectable fallbacks; live probe switched to SOVEREIGN_ROUTER_OK semantics. Cherry-picked from origin/nim-probe-20260920:56f85dbf60 (message preserved, history kept); herd-keypool.py racing + ROUTER_PROOF.md verified byte-identical to main already -- no duplication. Temp worktree merge; shared-tree dirty WIP untouched | kimi-merge (Ember's crew) | DONE (2026-09-21) -- merge commit 6bbdf1019f on origin/main (ls-remote verified); config live: default_model=sovereign/free, [providers.sovereign] :25104, herd fallbacks; kimi doctor OK; :25126 200; live completion via :25104 PENDING: upstream free keypools 429-exhausted under concurrent benchmark load 19:51-19:53 UTC, router /status 200, retry loop running (SOVEREIGN_ROUTER_OK semantics already proven on-branch 2026-09-21 ~19:10 UTC) |
+
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
 
