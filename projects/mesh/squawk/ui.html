@@ -3,10 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
 <title>squawk</title>
 <style>
-  :root { --bg:#14100c; --panel:#1d1712; --ink:#e8dcc8; --dim:#8a7a5f;
-          --accent:#e0a458; --sealed:#7fd4a8; --line:#2c241a; }
+  :root { --bg:#14100c; --panel:#1d1712; --card:#1a1410; --ink:#f0e6d2; --dim:#a89878;
+          --faint:#6e6046; --accent:#e0a458; --who:#9fc5e8; --sealed:#7fd4a8;
+          --warn:#e0a458; --line:#2c241a; }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--ink);
          font:14px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -17,43 +19,60 @@
   header .spacer { flex:1; }
   input, button { font:inherit; background:#0f0c09; color:var(--ink);
                   border:1px solid var(--line); border-radius:6px; padding:6px 10px; }
+  input:focus-visible, button:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
   button { cursor:pointer; color:var(--accent); border-color:var(--accent); }
   button:disabled { opacity:.4; cursor:default; }
   #gate { margin:auto; padding:28px; border:1px solid var(--line); border-radius:10px;
           background:var(--panel); display:flex; flex-direction:column; gap:12px; width:min(420px,92vw); }
   #gate p { margin:0 0 4px; color:var(--dim); font-size:12px; }
   #app { display:none; flex-direction:column; flex:1; min-height:0; }
-  #log { flex:1; overflow-y:auto; padding:12px 14px; display:flex; flex-direction:column; gap:2px; }
-  .msg { padding:2px 0; word-wrap:break-word; }
-  .msg .ch { color:var(--accent); }
-  .msg .who { color:#9fc5e8; }
-  .msg .ts { color:var(--dim); font-size:11px; margin-right:6px; }
-  .msg .sealed { color:var(--sealed); font-size:11px; border:1px solid var(--sealed);
-                 border-radius:4px; padding:0 4px; margin-left:6px; }
-  .msg .relayed { color:var(--dim); font-size:11px; margin-left:6px; }
-  .sys { color:var(--dim); font-style:italic; font-size:12px; }
+  #log { flex:1; overflow-y:auto; padding:12px 14px; display:flex; flex-direction:column; gap:10px; }
+
+  /* message card: meta row on top, body below -- scannable at a glance */
+  .msg { background:var(--card); border:1px solid var(--line); border-left:3px solid var(--accent);
+         border-radius:8px; padding:8px 12px; overflow-wrap:anywhere; }
+  .msg .meta { display:flex; align-items:baseline; flex-wrap:wrap; gap:8px; margin-bottom:4px; }
+  .msg .who { color:var(--who); font-weight:700; font-size:13px; }
+  .msg .ch { color:var(--accent); font-size:12px; }
+  .msg .ts { color:var(--dim); font-size:12px; margin-left:auto; white-space:nowrap; }
+  .msg .body { font-size:15px; line-height:1.55; color:var(--ink); white-space:pre-wrap; }
+  .msg .body.empty { color:var(--faint); font-style:italic; font-size:13px; }
+  .badge { font-size:11px; border:1px solid; border-radius:4px; padding:0 6px;
+           white-space:nowrap; line-height:1.6; }
+  .badge.unverified { color:var(--warn); border-color:var(--warn); }
+  .badge.sealed { color:var(--sealed); border-color:var(--sealed); }
+  .msg .relayed { color:var(--dim); font-size:11px; }
+  .sys { color:var(--dim); font-style:italic; font-size:12px; padding:2px 4px; }
   #status { padding:6px 14px; border-top:1px solid var(--line); color:var(--dim);
             font-size:12px; display:flex; gap:12px; background:var(--panel); }
   #status .dot { color:var(--sealed); }
+
+  @media (max-width: 600px) {
+    #log { padding:8px; gap:8px; }
+    .msg { padding:7px 10px; }
+    .msg .ts { margin-left:0; }           /* meta wraps: time drops below sender */
+    .msg .body { font-size:15px; }        /* body stays readable on small screens */
+    header h1 { font-size:14px; }
+  }
 </style>
 </head>
 <body>
 <header>
   <h1>SQUAWK</h1>
-  <input id="channel" value="fleet" size="10" title="channel">
+  <input id="channel" value="fleet" size="10" title="channel" aria-label="channel">
   <div class="spacer"></div>
-  <span id="conn">●</span>
+  <span id="conn" aria-hidden="true">●</span>
 </header>
 
 <div id="gate">
   <p>Feed token — same bearer token as the API. Kept in this tab's memory only, never written to disk.</p>
   <p class="hint">Opening your magic link tunes in automatically — no paste needed.</p>
-  <input id="token" type="password" placeholder="paste feed token" autocomplete="off">
+  <input id="token" type="password" placeholder="paste feed token" autocomplete="off" aria-label="feed token">
   <button id="go">tune in</button>
 </div>
 
 <div id="app">
-  <div id="log"></div>
+  <div id="log" role="log" aria-live="polite" aria-label="fleet messages"></div>
   <div id="status"><span><span class="dot" id="conn">●</span> <span id="connstat">loading…</span></span><span id="seq"></span><span id="lat"></span></div>
 </div>
 
@@ -100,12 +119,25 @@ function line(html, cls) {
 }
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
+function badges(m) {
+  let b = '';
+  if (m.signature && m.signature !== 'valid')
+    b += `<span class="badge unverified" title="signature ${esc(m.signature)} — treat the sender and text as unconfirmed">unverified</span>`;
+  if (m.sealed)
+    b += '<span class="badge sealed" title="encrypted or unreadable — content withheld">sealed</span>';
+  return b;
+}
+
 function render(m) {
-  const ts = m.ts ? new Date(m.ts).toLocaleTimeString() : '';
-  const sealed = m.sealed ? '<span class="sealed">sealed</span>' : '';
+  const ts = m.ts ? new Date(m.ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
   const relayed = m.relayed_from ? `<span class="relayed">via ${esc(m.relayed_from)}</span>` : '';
-  line(`<span class="ts">${esc(ts)}</span><span class="ch">[#${esc(m.channel || $('channel').value)}]</span> ` +
-       `<span class="who">&lt;${esc(m.from || m.sender || '?')}&gt;</span> ${esc(m.text || m.body || '')}${sealed}${relayed}`);
+  const text = m.text || m.body || '';
+  const bodyHtml = text
+    ? `<div class="body">${esc(text)}</div>`
+    : (m.sealed ? '' : '<div class="body empty">(no content)</div>');
+  line(`<div class="meta"><span class="who">${esc(m.from || m.sender || '?')}</span>` +
+       `<span class="ch">#${esc(m.channel || $('channel').value)}</span>` +
+       `${badges(m)}${relayed}<span class="ts">${esc(ts)}</span></div>${bodyHtml}`);
 }
 
 async function poll(myGen) {
@@ -153,6 +185,8 @@ async function boot() {
                    .sort((a,b) => (a.seq||0) - (b.seq||0))
                    .forEach(render);
       if (data.seq > since) since = data.seq;
+      // land at the newest traffic: the snapshot is the tail, so start there
+      $('log').scrollTop = $('log').scrollHeight;
     }
     $('seq').textContent = 'seq ' + since;
     setState('live');
