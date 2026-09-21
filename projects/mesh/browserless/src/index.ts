@@ -430,7 +430,7 @@ class BrowserlessMCPServer {
               content: [
                 {
                   type: 'text',
-                  text: `Browserless client initialized successfully. Health status: ${health.data?.status || 'unknown'}`,
+                  text: "Browserless client initialized successfully.",
                 },
               ],
             };
@@ -673,7 +673,7 @@ class BrowserlessMCPServer {
                 content: [
                   {
                     type: 'text',
-                    text: `Health status: ${result.data.status}`,
+                    text: "Health: see JSON below",
                   },
                   {
                     type: 'text',
@@ -898,6 +898,9 @@ class BrowserlessMCPServer {
       version: "1.3.0",
       keeperCdp: process.env.BROWSER_KEEPER_CDP || "http://127.0.0.1:9223",
     });
+    // Shut down cleanly when stdin closes (MCP client disconnect/EOF).
+    process.stdin.on('end', () => { void this.shutdown().then(() => process.exit(0)); });
+    process.stdin.on('close', () => { void this.shutdown().then(() => process.exit(0)); });
   }
 
   /** Graceful shutdown: drop the keeper CDP session, then close the MCP server. */

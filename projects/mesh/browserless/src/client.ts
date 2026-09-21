@@ -39,9 +39,6 @@ export class BrowserlessClient {
     this.httpClient = axios.create({
       baseURL: this.baseUrl,
       timeout: this.config.timeout,
-      headers: {
-        'Content-Type': 'application/json',
-      },
     });
 
     // Add request interceptor to include token
@@ -274,7 +271,7 @@ export class BrowserlessClient {
    */
   async getHealth(): Promise<BrowserlessResponse<HealthResponse>> {
     try {
-      const response: AxiosResponse<HealthResponse> = await this.httpClient.get('/health');
+      const response: AxiosResponse<HealthResponse> = await this.httpClient.get('/pressure');
 
       return {
         success: true,
