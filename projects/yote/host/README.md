@@ -78,3 +78,22 @@ balance needed). Hardware healthy (NVMe 11% used, 0 media errors; RTX 3090
 - `systemctl is-active nvidia-persistenced` → `active`
 - `nvidia-smi --query-gpu=persistence_mode --format=csv,noheader` → `Enabled`
 - `systemd-analyze verify nvidia-persistenced.service` → clean
+
+
+## Build-cache home configs (added 2026-09-21)
+
+home/ mirrors HOME paths (no sudo; installed as the invoking user by
+apply.sh via install_home_file). These are the canonical sources for
+the build-cache environment that buildsrv injects into every job
+(pitchfork.toml daemons.buildsrv env):
+
+- home/.cargo/config.toml : [build] rustc-wrapper = sccache.
+  Routes all Cargo rustc invocations through sccache (10 GiB at
+  HOME/.cache/sccache). Requires CARGO_INCREMENTAL=0 in the daemon env:
+  sccache refuses incremental compilation outright.
+- home/.config/ccache/ccache.conf : max_size = 10.0G, compression = true.
+  Backs CC/CXX/CMAKE compiler launchers in the buildsrv env
+  (10 GiB at HOME/.cache/ccache).
+
+Proven 2026-09-21: real buildsrv job, cargo clean between builds,
+second build showed nonzero sccache hits (2 hits, 50 percent hit rate).
