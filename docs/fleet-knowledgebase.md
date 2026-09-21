@@ -104,6 +104,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | quarry | Orphan AUDIT/inventory (Spindle + estate: worktrees, /tmp, stashes, stray repos, daemon PIDs); verdicts revived/retired/left-alone; integration-worthy finds FED to repo-integrator-max in fleet | Bedrock (parent orchestrator) | DONE (2026-09-20) — fed repo-integrator-max via fleet seq 11332/11339; pruned 7 stale worktree registrations; knowledgebase commits 6c0dcb527e + ca830c5884. Orphan-triage artifact offer pending repo-integrator-max reply. |
 | bedrock/ledger | Repo-sweep finisher: yote /tmp provenance classification + junk deletion; repo-sweep commits/pushes (untracked WIP -> owning repos, verified); permanent /tmp classifier artifact | Bedrock (parent orchestrator) | RUNNING (2026-09-20) - hatch /tmp handed to orphan-hatch per fleet seq 11314; feeds integration-worthy yote orphans to orphan-yote |
 | stall-slayer | Stalled/idle agent + stuck-execution forensics (muse.db: executions, tool calls, transcripts, mailbox, recovery) + safe resume paths; permanent DB stall-detection pack | Ember | DONE (2026-09-20) -- commit 0eb76b496d (projects/ops/stall-detect/queries.sql + README.md); live-proc lane de-duped to stale-hunter (fleet seq 11434) |
+| yote-consolidation (ember-ironwright) | Herd FQN + config durability + Telegram delivery (Chris directive) | ember-ironwright (Ember's crew) | DONE (2026-09-21): WS1 FQN regression (sovereign-swap main 61e497ee) + immutable deploy live :25100; bare+FQN 200, incident FQN 200, openfang:coyote 200. WS2: manifest.yaml, estate-reconcile 12/12, real-drift restore, OpenFang SQLite self-heal (0-byte DB found). WS3: sqlite inbox+cursor+dedupe+DLQ live :25102, 44/44 tests, crash-replay PASS, e2e send ok + dupe denied. |
 | dep-quartermaster | Toolchain/dependency gaps on yote+hatch: missing CLIs installed, permanent ensure-script committed | Ember | DONE — commit 2953f49f07 (toolchain.sh + KB row) |
 | bridge-max | Maximal bridge exec layer: multitask dispatch (POST /exec-multi, yote-conn multi), detached background dispatch (POST /exec-bg, GET /bg, yote-conn bg/bg-status/bg-list), bg-kill (POST /bg/<handle>/kill, yote-conn bg-kill), MCP exec_multi/exec_bg/bg_status tools; reap-on-query stale jobs (pid-reuse-safe /proc cmdline check) | Ember | DONE (2026-09-20) -- commits 25679fa5c0 (core), ae890221a2 (marker), efe63f8115 (reap-on-query + bg-kill), f59949ae0c (follow-up marker); connector v2.1 live (daemon PID 40978); kill path live-tested (SIGTERM process group -> stale, zero survivors) |
 | port-syscall-integrator | PORTS proven by live syscalls (strace bind/listen) + MCPs/connectors/endpoints/integrations estate-wide; SSOT ports.env reconciliation; pitchfork pre-launch guard; port-audit.py hardening | Ember (port-syscall-integrator) | DONE (2026-09-20) -- core fix fc6b912a91 (kimi-code --no-port-walk fail-fast on EADDRINUSE; live 25126 health 200); hardening DONE by port-guard-harden: commits 7f6146bc42 (hardened port-audit.py: /proc cmdline+ancestry attribution, intentional alias groups, dynamic-pool classification, exit 0/1/2 + --strict/--json; claim-port rewritten as fail-fast pre-launch guard - no kills/sleeps/polls, exit 4 occupied with holder cmdlines, exit 5 protected ports 8379/25204/25147/25135 incl. protected-holder cmdline detection; ports.env hygiene: retired ZEDRA_HOST_PORT + dup NULL_G_PROXY_PORT removed, WAYLAND_MCP_PORT -> SQUAWK_FEED_PORT, owner hints for 25101/25108/25114/25120/25145/25199) + f0c63dca77 (tracked bin/port-audit.py + bin/tests, bin/port-audit wrapper, README). 21 stdlib-unittest tests pass on yote; live audit exits 0 on healthy estate; occupied-port refusal proven live (exit 4, holder survives, payload not executed); kimi restarted via pitchfork-restart through new guard (pid 2976788, :25126 health 200). |
@@ -189,3 +190,20 @@ Every spawn brief MUST be generated from `docs/spawn-brief-template.md` and MUST
 3. "Check `squawk read fleet` + §2 before touching any tree another crew owns."
 
 Staleness is a bug: if you find this file wrong, fix it and push — same commit rules as §3.
+
+---
+
+## WS2 declared-vs-runtime contract (ferrous-warden, 2026-09-20)
+
+**Declared** (intent -- deploy/manifest.yaml + pitchfork.toml + configs): changes only via
+commits or content-hash-gated deploy scripts. A daemon or agent rewriting declared state by
+hand is DRIFT, not an edit.
+
+**Runtime** (fact -- process table, /proc/*/exe, paths under runtime_paths in the
+manifest): the reconciler reads it, never converges toward it. Daemons write under
+runtime_paths freely; those paths are EXEMPT from drift detection by construction.
+
+**Machinery**: deploy/manifest.yaml pins herd (llama-swap 9305f95663db..), herd-keypool,
+herd-model-guard, openfang-kernel. bin/estate-reconcile: check/--apply/watch/proc-audit.
+ops/openfang-sqlite-check.sh on OpenFang boot: integrity_check + non-empty + schema version,
+snapshots (keep 5), atomic self-heal. Configs REPORT-ONLY (shared tree WIP).
