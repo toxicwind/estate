@@ -409,6 +409,7 @@ class _Handler(http.server.BaseHTTPRequestHandler):
     def _send_json(self, code: int, obj: dict):
         body = json.dumps(obj, ensure_ascii=False).encode("utf-8")
         self.send_response(code)
+        self._send_cors()
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
@@ -417,8 +418,29 @@ class _Handler(http.server.BaseHTTPRequestHandler):
     def _send_404(self):
         # Never reveal the endpoint exists: bare 404, empty body.
         self.send_response(404)
+        self._send_cors()
         self.send_header("Content-Length", "0")
         self.end_headers()
+
+    # CORS (2026-09-21, Chris's direct order): the feed is fetchable
+    # cross-origin under a simple open policy. Auth still via Bearer <redacted>
+    # preflight is answered explicitly; actual responses carry ACAO too.
+    def _send_cors(self):
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers",
+                         "Authorization, Content-Type")
+        self.send_header("Access-Control-Max-Age", "86400")
+
+    def do_OPTIONS(self):
+        parsed = urllib.parse.urlparse(self.path)
+        if parsed.path.startswith("/squawk-feed/"):
+            self.send_response(204)
+            self._send_cors()
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
+        self._send_404()
 
     def _send_ui(self):
         # Web UI shell: static HTML, zero secrets inside. Feed data still
@@ -429,6 +451,7 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             self._send_404()
             return
         self.send_response(200)
+        self._send_cors()
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(data)))
         self.send_header("Cache-Control", "no-store")
