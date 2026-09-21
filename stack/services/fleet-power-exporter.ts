@@ -1,4 +1,4 @@
-// fleet-power-exporter.ts — polls Fleet-Bench :25203/api/power and exposes
+// fleet-power-exporter.ts — polls Fleet-Bench /api/power (FLEET_BENCH_PORT env) and exposes
 // Prometheus text metrics at :25208/metrics for Grafana (T13).
 function need(n: string) {
   const v = process.env[n];

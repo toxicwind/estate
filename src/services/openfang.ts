@@ -1,6 +1,23 @@
 #!/usr/bin/env bun
 /**
- * OpenFang entry — secrets, daemon on backend port, mesh-front on public OPENFANG_PORT.
+ * OpenFang public front — mesh-front on OPENFANG_PORT proxying the single
+ * OpenFang kernel on OPENFANG_KERNEL_PORT.
+ *
+ * Canonical map (2026-09-21 full audit):
+ *   :25196 (OPENFANG_KERNEL_PORT) — the ONE kernel (pitchfork daemons.openfang,
+ *            ops/openfang-run.sh). Serves the dashboard UI + /v1 (OpenAI-compat)
+ *            + /api. Owns ~/.openfang (config, SQLite DB, triggers).
+ *   :25103 (OPENFANG_PORT)        — THIS service: mesh-front reverse proxy in
+ *            front of the kernel (adds /mesh/* GHAS features on the public port).
+ *   :25203 — RETIRED 2026-09-21. It ran a DUPLICATE kernel sharing the same
+ *            SQLite DB (double-writer hazard), split-brain heartbeat warnings,
+ *            and flapped the CLI's API target between instances.
+ *   :4200  — RETIRED (legacy pre-migration port; config moved to
+ *            config/deprecated/openfang-4200.toml).
+ *
+ * This service NEVER spawns the openfang binary and NEVER mutates
+ * ~/.openfang/config.toml or daemon.json — the kernel owns its own lifecycle
+ * and config. See ops/openfang-run.sh.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -9,18 +26,8 @@ import { loadSovereignPorts, requirePort } from "../lib/ports.ts";
 loadSovereignPorts();
 const HOME = process.env.HOME || "/home/toxic";
 const PUBLIC = requirePort("OPENFANG_PORT");
-const BACKEND = Number(process.env.OPENFANG_BACKEND_PORT || "25203");
+const KERNEL = requirePort("OPENFANG_KERNEL_PORT");
 const SOV = process.env.SOVEREIGN_ROOT || resolve(HOME, "sovereign");
-const CANDIDATES = [
-  process.env.OPENFANG_BIN,
-  resolve(HOME, ".local/bin/openfang"),
-  resolve(HOME, ".openfang/bin/openfang"),
-  "/usr/local/bin/openfang",
-  resolve(SOV, "bin/openfang"),
-];
-const BIN =
-  CANDIDATES.find((c) => c && existsSync(c)) ||
-  resolve(HOME, ".local/bin/openfang");
 
 function loadSecretsFile(path: string) {
   if (!existsSync(path)) return;
@@ -50,65 +57,32 @@ delete process.env.ANTHROPIC_API_KEY;
 loadSecretsFile(resolve(HOME, ".secrets"));
 loadSecretsFile(resolve(HOME, ".openfang/secrets.env"));
 
-// Force OpenFang binary onto backend port (config.toml + daemon.json are SSOT for listen)
-function pinOpenfangBackend(port: number) {
-  const conf = resolve(HOME, ".openfang/config.toml");
-  if (existsSync(conf)) {
-    let t = readFileSync(conf, "utf8");
-    t = t.replace(
-      /api_listen\s*=\s*"[^"]*"/,
-      `api_listen = "127.0.0.1:${port}"`,
-    );
-    if (!t.includes("api_listen")) {
-      t = `api_listen = "127.0.0.1:${port}"\n${t}`;
-    }
-    Bun.write(conf, t);
-  }
-  const daemon = resolve(HOME, ".openfang/daemon.json");
-  if (existsSync(daemon)) {
-    try {
-      const j = JSON.parse(readFileSync(daemon, "utf8"));
-      j.listen_addr = `127.0.0.1:${port}`;
-      Bun.write(daemon, JSON.stringify(j, null, 2));
-    } catch {
-      /* ignore */
-    }
-  }
-}
+console.log(`[openfang-front] kernel :${KERNEL} mesh-front :${PUBLIC}`);
 
-pinOpenfangBackend(BACKEND);
-
-const env = {
-  ...process.env,
-  HOST: "127.0.0.1",
-  BIND: "127.0.0.1",
-  OPENFANG_PORT: String(BACKEND),
-};
-
-console.log(`[OpenFang] backend :${BACKEND} mesh-front :${PUBLIC}`);
-
-// stop any prior
-Bun.spawnSync({
-  cmd: [BIN, "stop"],
-  env,
-  stdout: "ignore",
-  stderr: "ignore",
-});
-
-const start = Bun.spawn({
-  cmd: [BIN, "start", "--yolo"],
-  env,
-  stdout: "inherit",
-  stderr: "inherit",
-});
-
-for (let i = 0; i < 40; i++) {
+// Bounded boot gate (one-shot, not a polling daemon): wait for the kernel's
+// real API before exposing the proxy. If the kernel never comes up we still
+// start the listener so the port is held and the backend 502s loudly instead
+// of the port going dark.
+const deadline = Date.now() + 60_000;
+let kernelUp = false;
+while (Date.now() < deadline) {
   try {
-    if ((await fetch(`http://127.0.0.1:${BACKEND}/api/health`)).ok) break;
+    const r = await fetch(`http://127.0.0.1:${KERNEL}/api/health`, {
+      signal: AbortSignal.timeout(3000),
+    });
+    if (r.ok) {
+      kernelUp = true;
+      break;
+    }
   } catch {
-    /* retry */
+    /* kernel not up yet */
   }
-  await Bun.sleep(250);
+  await Bun.sleep(1000);
+}
+if (!kernelUp) {
+  console.error(
+    `[openfang-front] kernel :${KERNEL} not healthy after 60s — starting proxy anyway (backend will 502)`
+  );
 }
 
 const front = Bun.spawn({
@@ -121,7 +95,7 @@ const front = Bun.spawn({
     "--listen",
     `0.0.0.0:${PUBLIC}`,
     "--backend",
-    `127.0.0.1:${BACKEND}`,
+    `127.0.0.1:${KERNEL}`,
   ],
   stdout: "inherit",
   stderr: "inherit",
@@ -129,13 +103,6 @@ const front = Bun.spawn({
 
 const stop = () => {
   front.kill();
-  Bun.spawnSync({
-    cmd: [BIN, "stop"],
-    env,
-    stdout: "ignore",
-    stderr: "ignore",
-  });
-  start.kill();
   process.exit(0);
 };
 process.on("SIGTERM", stop);

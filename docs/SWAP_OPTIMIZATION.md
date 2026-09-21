@@ -28,7 +28,7 @@
 | ----------------- | ----------- | ----------------------------------------------------------------------------------------------- | --------------------- |
 | **llama-swap**    | 25100/25200 | Model orchestration — 49 models, 4 forks                                                        | 1-8 GB per model load |
 | **mesh-front**    | 25100-25115 | Service mesh frontends (llama-swap, grafana, openfang, prometheus, hf-downloader, rust-web)     | ~50 MB each           |
-| **openfang**      | 25103/25203 | Agent kernel web UI                                                                             | ~100 MB               |
+| **openfang**      | 25196/25103 | Agent kernel web UI                                                                             | ~100 MB               |
 | **mcpproxy**      | 25112/25113 | MCP proxy — 30+ servers (qdrant, fetch, github, sqlite, markitdown, prometheus, context7, etc.) | ~150 MB               |
 | **qdrant**        | 6333        | Vector DB for embeddings                                                                        | ~600 MB               |
 | **pitchfork**     | —           | Process supervisor                                                                              | ~40 MB                |
