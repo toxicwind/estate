@@ -834,6 +834,28 @@ auto = ["start"]
 # Pitchfork daemon fragment - merge into [daemons.browser-keeper] in
 # /home/toxic/sovereign/pitchfork.toml (owned sequence: stop -> ss-verify ->
 # clean --daemon -> start from /home/toxic/sovereign).
+[daemons.agent-display]
+# Forge 2026-09-21: isolated virtual display for the agent browser.
+port = 5900
+run = "exec Xvnc :99 -geometry 1600x900 -depth 24 -rfbport 5900 -localhost -SecurityTypes VncAuth -rfbauth /home/toxic/.browserless/vncpasswd"
+dir = "."
+mise = false
+retry = true
+ready_cmd = "ss -tln | grep -q 127.0.0.1:5900"
+boot_start = true
+auto = ["start"]
+
+[daemons.agent-viewer]
+# Forge 2026-09-21: noVNC web viewer for the agent display.
+port = 6080
+run = "exec /home/toxic/.local/bin/websockify --web /home/toxic/.browserless/novnc 6080 127.0.0.1:5900"
+dir = "."
+mise = false
+retry = true
+ready_cmd = "curl -sf http://127.0.0.1:6080/vnc.html > /dev/null"
+boot_start = true
+auto = ["start"]
+
 [daemons.browser-keeper]
 port = 9223
 run = "exec /home/toxic/sovereign/projects/mesh/browserless/keeper/keeper.sh"
@@ -842,5 +864,5 @@ mise = false
 retry = true
 ready_cmd = "curl -sf http://127.0.0.1:9223/json/version > /dev/null"
 boot_start = true
-env = { WAYLAND_DISPLAY = "wayland-1", XDG_RUNTIME_DIR = "/run/user/1000" }
+env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000" }
 auto = ["start"]
