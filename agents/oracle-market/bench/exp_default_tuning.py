@@ -7,7 +7,10 @@ modified by this harness -- sweeps set module constants in-process only
 (the harness's own process; the deployed defaults are untouched).
 
 Sweeps:
-  T1 unanimity bar AUTO_P in {0.80, 0.85, 0.90}: replay the cold-start
+  T1 unanimity bar AUTO_P in {0.80, 0.85, 0.90}: sweep the TIER-LADDER
+     unanimity bar (escalation.route). The abstention gate no longer
+     has a unanimity parameter -- the finite-sample CP bound governs
+     emit/withhold at every n, and withholds at n=0 (no bypass)
      gate + escalation.route per eval row. Winner: min Brier on emitted,
      tie-break higher emission rate at accuracy >= 0.90.
   T2 escalation margin DISAGREE_MARGIN in {0.15, 0.25, 0.35}: the trigger
@@ -18,9 +21,11 @@ Sweeps:
   T4 calibration loop per judge: 5-fold cross-fitted Platt vs isotonic vs
      raw on eval posteriors. Winner per judge: min NLL.
   T5 abstention (alpha, min_accuracy) in {0.01,0.05,0.10}x{0.75,0.80,0.85}:
-     replay the WARM gate branch (mirrors engine.abstention_gate exactly)
-     with leave-one-out histories from eval outcomes. Winner: max emission
-     rate subject to emitted accuracy >= 0.90 (frontier reported).
+     replay the gate rule (mirrors engine.abstention_gate exactly:
+     CP lower bound >= min_acc on leave-one-out genuine-label
+     histories, no label-count floor) from eval outcomes.
+     Winner: max emission rate subject to emitted accuracy >= 0.90
+     (frontier reported).
   T6 debate budget (k, rounds) in {(1,2),(1,3),(2,2),(2,3)} (LIVE rerun on
      DEBATE-tier subset, n<=12): final-p distance vs the (2,3) reference
      rerun. Winner: cheapest config with mean|dp| < 0.03 vs reference.
@@ -69,7 +74,7 @@ def t1_unanimity_bar(rows):
             if not posts or sc is None:
                 tiers["none"] = tiers.get("none", 0) + 1
                 continue
-            # cold-start gate, candidate posterior bar
+            # tier-ladder unanimity gate, candidate posterior bar
             emit = sc >= 0.90 and (r["probability"] is not None and
                     (r["probability"] >= bar or r["probability"] <= 1 - bar))
             tier, _ = escalation.route(posts, sc, emit)
@@ -89,8 +94,9 @@ def t1_unanimity_bar(rows):
     win = min(cands, key=lambda kv: (kv[1]["brier"] if kv[1]["brier"] is not None else 9,
                                     -(kv[1]["emit_rate"])))
     return {"table": out, "winner": win[0],
-            "rationale": "min Brier on emitted verdicts (N=%d rows); "
-                         "tie-break: higher emission rate at accuracy>=0.90" % len(rows)}
+            "rationale": "min Brier on tier-ladder-routed verdicts (N=%d rows); "
+                         "tie-break: higher emission rate at accuracy>=0.90; "
+                         "tunes the tier ladder, not the abstention gate" % len(rows)}
 
 
 def t2_margin(rows, esc):
@@ -241,8 +247,8 @@ def t5_abstention(rows):
             em, em_correct = 0, 0
             for r in emitted:
                 hist = [correct[i] for i in correct if i != r["eval_id"]]
-                if len(hist) < 8:
-                    continue
+                # no label-count floor: the exact-binomial bound
+                # withholds honestly at small n by itself
                 k = sum(1 for h in hist if h)
                 lo, _ = cal.clopper_pearson(k, len(hist), alpha)
                 if lo >= min_acc:
@@ -261,8 +267,9 @@ def t5_abstention(rows):
             "rationale": "max emission rate subject to emitted accuracy "
                          ">= 0.90, warm-gate replay with leave-one-out "
                          "histories (N=%d emitted)" % len(emitted),
-            "note": "mirrors engine.abstention_gate's warm branch exactly; "
-                    "cold-start behavior is unchanged by (alpha, min_acc)"}
+            "note": "mirrors engine.abstention_gate exactly (CP lower bound "
+                    "on genuine-label history; no warm/cold branches, no "
+                    "label-count floor)"}
 
 
 def t6_debate_budget(rows, concurrency):
