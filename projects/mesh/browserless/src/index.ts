@@ -10,20 +10,24 @@ import { BrowserlessConfigSchema } from './types.js';
 import dotenv from 'dotenv';
 
 // Load environment variables
+import { PersistentBrowser } from "./persistent.js";
+
 dotenv.config();
 
 class BrowserlessMCPServer {
   private server: Server;
   private client: BrowserlessClient | null = null;
+  private persistent: PersistentBrowser;
 
   constructor() {
     this.server = new Server(
       {
         name: 'browserless-mcp',
-        version: '1.1.0',
+        version: "1.2.0",
       }
     );
 
+    this.persistent = new PersistentBrowser();
     this.setupToolHandlers();
   }
 
@@ -272,6 +276,77 @@ class BrowserlessMCPServer {
               properties: {},
             },
           },
+          {
+            name: "persistent_status",
+            description: "Status of the persistent keeper Chromium (CDP alive, keeper pid, state). No initialize_browserless needed.",
+            inputSchema: {
+              type: "object",
+              properties: {},
+            },
+          },
+          {
+            name: "persistent_navigate",
+            description: "Navigate the persistent keeper Chromium to a URL. Headed, logged-in profile, survives across tasks.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                url: { type: "string" },
+              },
+              required: ["url"],
+            },
+          },
+          {
+            name: "persistent_screenshot",
+            description: "Screenshot the current page of the persistent keeper Chromium.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                fullPage: { type: "boolean", default: false },
+              },
+            },
+          },
+          {
+            name: "persistent_click",
+            description: "Click a CSS selector in the persistent keeper Chromium.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                selector: { type: "string" },
+              },
+              required: ["selector"],
+            },
+          },
+          {
+            name: "persistent_fill",
+            description: "Fill a CSS selector with text in the persistent keeper Chromium.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                selector: { type: "string" },
+                text: { type: "string" },
+              },
+              required: ["selector", "text"],
+            },
+          },
+          {
+            name: "persistent_text",
+            description: "Get the visible text of the current page in the persistent keeper Chromium.",
+            inputSchema: {
+              type: "object",
+              properties: {},
+            },
+          },
+          {
+            name: "persistent_evaluate",
+            description: "Evaluate a JS expression in the persistent keeper Chromium page and return the result.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                js: { type: "string" },
+              },
+              required: ["js"],
+            },
+          },
         ] as Tool[],
       };
     });
@@ -279,7 +354,7 @@ class BrowserlessMCPServer {
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { name, arguments: args } = request.params;
 
-      if (!this.client && name !== 'initialize_browserless') {
+      if (!this.client && name !== "initialize_browserless" && !name.startsWith("persistent_")) {
         throw new Error('Browserless client not initialized. Call initialize_browserless first.');
       }
 
@@ -607,6 +682,93 @@ class BrowserlessMCPServer {
             } else {
               throw new Error(result.error || 'Failed to get metrics');
             }
+          }
+
+          case "persistent_status": {
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: JSON.stringify(await this.persistent.status(), null, 2),
+                },
+              ],
+            };
+          }
+
+          case "persistent_navigate": {
+            const nav = await this.persistent.navigate((args as any).url);
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: "Navigated: " + nav.title + " - " + nav.url,
+                },
+              ],
+            };
+          }
+
+          case "persistent_screenshot": {
+            const png = await this.persistent.screenshot(!!(args as any).fullPage);
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: "Screenshot of the persistent keeper browser:",
+                },
+                {
+                  type: "image",
+                  mimeType: "image/png",
+                  data: png,
+                },
+              ],
+            };
+          }
+
+          case "persistent_click": {
+            await this.persistent.click((args as any).selector);
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: "Clicked.",
+                },
+              ],
+            };
+          }
+
+          case "persistent_fill": {
+            await this.persistent.fill((args as any).selector, (args as any).text);
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: "Filled.",
+                },
+              ],
+            };
+          }
+
+          case "persistent_text": {
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: await this.persistent.pageText(),
+                },
+              ],
+            };
+          }
+
+          case "persistent_evaluate": {
+            const val = await this.persistent.evaluate((args as any).js);
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: typeof val === "string" ? val : JSON.stringify(val),
+                },
+              ],
+            };
           }
 
           default:
