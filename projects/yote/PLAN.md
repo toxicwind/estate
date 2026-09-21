@@ -11,7 +11,7 @@
 | Component | Status | Notes |
 |-----------|--------|-------|
 | **Yote Telegram Gateway** | Running on :25102 | Uses OpenFang external HTTP (bun) |
-| **OpenFang Backend** | Running on :25203/:25103 | 20+ agents ready (bun) |
+| **OpenFang Backend** | Running on :25196 (kernel) / :25103 (mesh-front) | 8 agents running |
 | **Overlord (MTProto)** | Connected | Userbot via GramJS (bun) |
 | **Yote → OpenFang Chat** | Working | `openfang:<agent>` model routing |
 | **OpenFang Agents** | 20 agents | `coyote`, `coder-max`, `sage`, `planner`, etc. |
@@ -117,8 +117,8 @@
 - [x] Restart yote
 
 ### 1.2 Fix OpenFang URL Mismatch
-- [x] Ensure OpenFang is running on :25203 (mesh-backend)
-- [x] Verify :25103 is mesh-front (health/mesh only)
+- [x] Ensure OpenFang kernel is running on :25196 (single instance; :25203 retired 2026-09-21)
+- [x] Verify :25103 is mesh-front proxying the :25196 kernel
 - [x] Update yote to use `OPENFANG_URL` from env correctly
 
 ### 1.3 Set OpenFang API Key
