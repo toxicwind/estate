@@ -3,10 +3,15 @@
 # Token is sourced from 0600 /home/toxic/.browserless/.env and NEVER committed.
 # Server binary: upstream browserless.io v2.49.0 at /home/toxic/.browserless/app
 # (npm-installed, not tracked in git). Pitchfork daemon: itvx-browserless (:25130).
+#
+# CWD CONTRACT: do NOT cd anywhere in this script. The browserless app resolves
+# node_modules/playwright-core/browsers.json relative to process.cwd(), so the
+# supervisor must launch with CWD=/home/toxic/sovereign (pitchfork `dir = "."`
+# in the [daemons.itvx-browserless] section). Relocating CWD crashes the app.
 set -a
 . /home/toxic/.browserless/.env
 set +a
-export TOKEN=""
+export TOKEN="${BROWSERLESS_TOKEN:?BROWSERLESS_TOKEN missing from /home/toxic/.browserless/.env}"
 export PORT="${BROWSERLESS_PORT:-25130}"
 export HOST="127.0.0.1"
 export PLAYWRIGHT_BROWSERS_PATH="/home/toxic/.browserless/browsers"

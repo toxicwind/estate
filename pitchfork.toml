@@ -386,7 +386,7 @@ auto = ["start"]
 [daemons.itvx-browserless]
 port = 25130
 run = "exec /home/toxic/sovereign/projects/mesh/browserless/server/run.sh"
-dir = "/home/toxic/sovereign/projects/mesh/browserless/server"
+dir = "."
 mise = false
 retry = true
 ready_cmd = "ss -ltn 'sport = :25130' | grep -q LISTEN"
