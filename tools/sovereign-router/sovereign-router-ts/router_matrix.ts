@@ -360,51 +360,105 @@ export class Matrix {
     return null;
   }
 
-  constructor() {
+  constructor(dbPath: string = DB_PATH) {
     for (const p of Object.keys(PROVIDERS)) {
       this.circuit.set(p, "closed");
     }
+    // HealthDB first: Elo restore reads persisted live-learned values from
+    // it; bench priors only fill providers with no stored row.
+    this.health = new HealthDB(dbPath);
     const seeded = this.applyBenchPriors(true);
     console.log(
       `[sovereign-router] bench priors: source=${seeded.source} ` +
-        `seeded=${seeded.reseeded.join(",")}`,
+        `seeded=${seeded.reseeded.join(",")}` +
+        (seeded.restored.length
+          ? ` restored=${seeded.restored.join(",")}`
+          : ""),
     );
-    this.health = new HealthDB(DB_PATH);
-    this.governor = new Governor(DB_PATH + ".governor.json");
+    this.governor = new Governor(dbPath + ".governor.json");
+  }
+
+  /**
+   * setElo — the ONLY writer of provider Elo. Updates the in-memory map and
+   * writes through to the HealthDB (elo_state table) so the value survives
+   * a daemon restart. Best-effort: a DB failure must never break routing
+   * (same contract as the Governor's snapshot persistence).
+   */
+  private setElo(prov: string, value: number): void {
+    this.elo.set(prov, value);
+    try {
+      this.health.saveElo(prov, value);
+    } catch {
+      /* persistence is best-effort; routing semantics are untouched */
+    }
   }
 
   /**
    * applyBenchPriors -- seed Elo from bench-priors.json.
    *
-   * Startup (force=true): every provider gets its bench prior (1000 when
-   * unbenched or the file is missing).
+   * Startup (force=true): providers with a persisted Elo row in the
+   * HealthDB get their live-learned value back — priors never clobber a
+   * restore. Providers with no stored row fall back to the bench prior
+   * (1000 when unbenched or the file is missing), which is then persisted.
    * Hot-reload: only providers whose Elo is still exactly at the last
-   * applied prior are re-seeded -- providers with live traffic history keep
-   * their learned Elo. Live outcomes keep updating Elo either way.
+   * applied prior are re-seeded -- providers with live traffic history
+   * (including restored values) keep their learned Elo. Live outcomes keep
+   * updating Elo either way.
    */
   applyBenchPriors(force = false): {
     reloaded: boolean;
     reseeded: string[];
+    restored: string[];
     source: string;
   } {
     const { priors, source, mtime } = loadBenchPriors();
     if (!force && mtime === this.priorsMtime) {
-      return { reloaded: false, reseeded: [], source: this.priorsSource };
+      return {
+        reloaded: false,
+        reseeded: [],
+        restored: [],
+        source: this.priorsSource,
+      };
+    }
+    let stored: Record<string, number> = {};
+    if (force) {
+      try {
+        stored = this.health.loadElo();
+      } catch {
+        /* corrupt/empty table — priors are the fallback */
+      }
     }
     const reseeded: string[] = [];
+    const restored: string[] = [];
     for (const p of Object.keys(PROVIDERS)) {
       const prior = priors[p] ?? 1000;
-      const cur = this.elo.get(p) ?? 1000;
-      const last = this.priorElo.get(p) ?? 1000;
-      if (force || cur === last) {
-        this.elo.set(p, prior);
-        this.priorElo.set(p, prior);
-        reseeded.push(p);
+      if (force) {
+        const prev = stored[p];
+        if (typeof prev === "number") {
+          // Restored live-learned Elo: map-only (already in the DB).
+          // priorElo records the *prior* baseline so hot-reload treats a
+          // restored value as live-learned and never re-seeds it.
+          this.elo.set(p, prev);
+          this.priorElo.set(p, prior);
+          restored.push(p);
+        } else {
+          this.setElo(p, prior);
+          this.priorElo.set(p, prior);
+          reseeded.push(p);
+        }
+      } else {
+        const cur = this.elo.get(p) ?? 1000;
+        const last = this.priorElo.get(p) ?? 1000;
+        if (cur === last) {
+          this.setElo(p, prior);
+          this.priorElo.set(p, prior);
+          reseeded.push(p);
+        }
       }
     }
     this.priorsMtime = mtime;
     this.priorsSource = source;
-    return { reloaded: true, reseeded, source };
+    return { reloaded: true, reseeded, restored, source };
   }
 
   record(
@@ -430,7 +484,7 @@ export class Matrix {
     );
     if (status === 200) {
       const old = this.circuit.get(prov) || "closed";
-      this.elo.set(prov, (this.elo.get(prov) || 1000) + 16);
+      this.setElo(prov, (this.elo.get(prov) || 1000) + 16);
       // Latency EMA: alpha 0.2 — recent completions steer ordering.
       const prev = this.emaLat.get(prov) ?? latMs;
       this.emaLat.set(prov, prev * 0.8 + latMs * 0.2);
@@ -448,7 +502,7 @@ export class Matrix {
       }
     } else if (status === 429) {
       this.health.recordRateLimit(prov, model, status);
-      this.elo.set(prov, Math.max(100, (this.elo.get(prov) || 1000) - 8));
+      this.setElo(prov, Math.max(100, (this.elo.get(prov) || 1000) - 8));
       const [c] = this.fail.get(prov) || [0, 0];
       this.fail.set(prov, [c + 1, Date.now() / 1000]);
     } else {
@@ -463,7 +517,7 @@ export class Matrix {
       const step = status === 401 || status === 402 ? 3 : 1;
       const [c] = this.fail.get(prov) || [0, 0];
       this.fail.set(prov, [c + step, Date.now() / 1000]);
-      this.elo.set(prov, Math.max(100, (this.elo.get(prov) || 1000) - 32));
+      this.setElo(prov, Math.max(100, (this.elo.get(prov) || 1000) - 32));
       if (c + step >= 3) {
         const old = this.circuit.get(prov) || "closed";
         // Exponential backoff: BASE * 2^(level-1), capped at MAX.

@@ -76,6 +76,12 @@ export class HealthDB {
         model TEXT NOT NULL,
         updated_at REAL NOT NULL
       );
+
+      CREATE TABLE IF NOT EXISTS elo_state (
+        provider TEXT PRIMARY KEY,
+        elo REAL NOT NULL,
+        updated_at REAL NOT NULL
+      );
     `);
     // 1M-context pin (DECISION 12187): pinned rows carry est tokens.
     // Idempotent — ALTER fails on a live DB if the column already exists,
@@ -186,6 +192,38 @@ export class HealthDB {
         newStatus,
         details,
       );
+  }
+
+  /**
+   * Elo durability (2026-09-21): provider Elo is written through on every
+   * update (Matrix.setElo) and restored on startup, so a daemon restart no
+   * longer wipes live-learned values back to bench priors. bench-priors.json
+   * remains the fallback when no stored row exists.
+   */
+  saveElo(provider: string, elo: number): void {
+    this.conn
+      .query(
+        `INSERT INTO elo_state (provider, elo, updated_at)
+         VALUES (?,?,?)
+         ON CONFLICT(provider) DO UPDATE SET
+           elo=excluded.elo, updated_at=excluded.updated_at`,
+      )
+      .run(provider, elo, Date.now() / 1000);
+  }
+
+  /** All persisted provider Elos; {} when nothing was ever stored. */
+  loadElo(): Record<string, number> {
+    const rows = this.conn.query(`SELECT provider, elo FROM elo_state`).all() as {
+      provider: string;
+      elo: number;
+    }[];
+    const out: Record<string, number> = {};
+    for (const r of rows) {
+      if (typeof r.elo === "number" && Number.isFinite(r.elo)) {
+        out[r.provider] = r.elo;
+      }
+    }
+    return out;
   }
 
   getProviderSummary(): Record<
