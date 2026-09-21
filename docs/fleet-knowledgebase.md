@@ -112,6 +112,9 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | ember-rebootwright | Infra ports assessment + crew-b-f844 snapshot cleanup + staged yote kernel cutover (7.1.5-1 -> 7.2.6-1) | ember-rebootwright (Ember's crew) | PARTIAL (2026-09-21) — (a) DONE: live ss audit; cockpit 9090->25212 via systemd drop-in /etc/systemd/system/cockpit.socket.d/override.conf (curl -k 200 verified), COCKPIT_PORT=25212 in config/ports.env + KB services table, commit 10f39112c3 (remote ref verified). Exempt w/ rationale: tailscaled:443 (tailnet itself), resolved:53 (OS DNS), bubbleupnp 58050/58051 (explicitly preserved), postgres:5432 (dormant app DB effusion_labs_tickets, 2 lifetime xacts, consumer unproven), sshd:22/2222, adb:5037, llmnr:5355, cups:631. (b) DONE: /home/toxic/crew-b-f844 (Sep-18 f8448140 snapshots, zero live refs) moved to /home/toxic/.trash-20260920/crew-b-f844 (recoverable); cell backup tarball left intact. (c) REBOOT EXECUTED ~19:41 MDT via /tmp/kernel-cutover.sh (sha256 ad596f83, transfer verified); preconditions green (accept11 ALIVE: stdout 414c495645 + DB valid=1 + zero stray procs; linger=yes; pitchfork.service enabled). Bridge dark 15+ min (36x20s probes all dark; raw curl: fast TCP accept then close, no HTTPS server behind it; yote-connector exec probes 503) — ABNORMAL vs 2-4 min expected; new-kernel + service verification PENDING, needs physical console check. Re-entry: /tmp/verify-boot.sh staged on hatch. |
 
+
+| lane-dispatcher | canonical dispatcher/ledger build: mission/coordinator/worker/relay IDs, lifecycle+result tracking, direct-Chris precedence, duplicate-admis | Ember (parent orchestrator) | RUNNING (2026-09-21) |
+
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 
 ---
