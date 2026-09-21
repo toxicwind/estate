@@ -7,6 +7,8 @@
 //
 // SECURITY: the revealed value is NEVER printed. It goes straight from the
 // page into the env file. Logs carry only prefix/length metadata.
+// NOTE: this file must not contain single-quote characters — it is deployed
+// through a single-quoted exec wrapper (quoting bug killed rev 1, 2026-09-21).
 const { chromium } = require("/home/toxic/.browserless/app/node_modules/playwright-core");
 const fs = require("fs");
 const { execSync } = require("child_process");
@@ -29,8 +31,7 @@ const ENV_FILE = "/home/toxic/.config/claude/env";
   await page.goto("https://org.ngc.nvidia.com/account/api-keys", { waitUntil: "domcontentloaded", timeout: 60000 });
   await page.waitForTimeout(6000);
 
-  // Find "View" controls for key rows and click the first one.
-  const viewBtn = page.locator(text=View).first();
+  const viewBtn = page.locator("text=View").first();
   await viewBtn.waitFor({ timeout: 30000 });
   await viewBtn.click();
   await page.waitForTimeout(4000);
@@ -39,21 +40,20 @@ const ENV_FILE = "/home/toxic/.config/claude/env";
   const m = bodyText.match(/nvapi-[A-Za-z0-9_\-\.]+/);
   if (!m) {
     console.log("REVEAL_FAILED no nvapi key found in dialog (re-auth may be required)");
-    try { await page.waitForTimeout(2 * 60 * 1000); } catch {}
+    try { await page.waitForTimeout(10 * 60 * 1000); } catch (e) {}
     await ctx.close().catch(() => {});
     process.exit(2);
   }
   const key = m[0];
   console.log("REVEALED prefix=" + key.slice(0, 6) + " len=" + key.length);
 
-  // Backup + install. Only replace values that are NOT already nvapi keys.
   execSync("cp " + ENV_FILE + " " + ENV_FILE + ".bak-nvkey-" + Date.now());
   let env = fs.readFileSync(ENV_FILE, "utf8");
   let changed = [];
   for (const name of ["NVIDIA_API_KEY", "NVIDIA_NIM_API_KEY"]) {
     const re = new RegExp("^export " + name + "=.*$", "m");
     const cur = (env.match(re) || [""])[0];
-    if (cur && !cur.includes("nvapi-")) {
+    if (cur && cur.indexOf("nvapi-") === -1) {
       env = env.replace(re, "export " + name + "=" + key);
       changed.push(name);
     } else {
@@ -63,8 +63,8 @@ const ENV_FILE = "/home/toxic/.config/claude/env";
   fs.writeFileSync(ENV_FILE, env);
   console.log("ENV_UPDATED " + (changed.join(",") || "none"));
 
-  console.log("HOLDING 2 min for live viewing.");
-  try { await page.waitForTimeout(2 * 60 * 1000); } catch {}
+  console.log("HOLDING 10 min for live viewing.");
+  try { await page.waitForTimeout(10 * 60 * 1000); } catch (e) {}
   await ctx.close().catch(() => {});
   console.log("DONE");
-})().catch((e) => { console.error("FATAL", e.message.split("\n")[0]); process.exit(1); });
+})().catch((e) => { console.error("FATAL", String(e.message).split("\n")[0]); process.exit(1); });
