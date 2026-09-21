@@ -294,6 +294,20 @@ ready_cmd = "pgrep -f coding-agent/dist/omp > /dev/null"
 depends = ["shep"]
 env = { PI_CONFIG_DIR = "/home/toxic/.tau", PI_AGENT_DIR = "/home/toxic/.tau/agent", PI_CODING_AGENT = "true", PI_REASONING_LEVEL = "high", PI_SUBAGENT_MODEL = "thinkingmachines/inkling", PI_OPENAI_STREAM_IDLE_TIMEOUT_MS = "120000" }
 
+[daemons.files]
+# /files backend (tailnet-only): tailscale serve maps /files -> 127.0.0.1:34567.
+# Static file share rooted at /home/toxic/files. Built 2026-09-20 (files-medic):
+# the serve entry existed but no backend was defined anywhere in the estate.
+port = 34567
+run = "exec python3 /home/toxic/sovereign/stack/services/files-server.py"
+dir = "/home/toxic/sovereign"
+mise = false
+retry = true
+env = { FILES_PORT = "34567", FILES_ROOT = "/home/toxic/files" }
+ready_http = "http://127.0.0.1:34567/health"
+health_http = { url = "http://127.0.0.1:34567/health", interval = "30s", timeout = "5s", retries = 3 }
+auto = ["start"]
+
 [groups.mesh]
 daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "mcp-gateway", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx"]
 
@@ -304,7 +318,7 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "floc
 daemons = ["tau"]
 
 [groups.all]
-daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "mcp-gateway", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar"]
+daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "mcp-gateway", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar", "files"]
 
 
 [daemons.kimi-auto-shim]
@@ -777,4 +791,11 @@ boot_start = true
 port = 25195
 ready_cmd = "ss -ltn 'sport = :25195' | grep -q LISTEN"
 health_port = { port = 25195, interval = "30s", timeout = "5s", retries = 3 }
+auto = ["start"]
+
+[daemons.market-watchdog]
+run = "exec /home/toxic/sovereign/agents/oracle-market/bin/market-watchdog.sh"
+dir = "/home/toxic/sovereign/agents/oracle-market"
+mise = false
+retry = true
 auto = ["start"]
