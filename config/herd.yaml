@@ -220,21 +220,24 @@ models:
   # (moonshot-parked-audit) from openrouter-pool/* back to moonshot/* --
   # the direct peer is restored; openrouter-pool Kimi is 402
   # "Insufficient credits" until the account is topped up.
+  # 2026-09-21 modelmap: targets were `moonshot/<id>` -- peer.go does
+  # EXACT-match lookups, no `peer/` prefix stripping, so those 404'd.
+  # Targets are the bare upstream IDs the moonshot peer claims.
   kimi:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
-    description: "Kimi (alias -> moonshot/kimi-k2.6)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target kimi-k2.6
+    description: "Kimi (alias -> kimi-k2.6)"
     metadata:
-      alias_of: moonshot/kimi-k2.6
+      alias_of: kimi-k2.6
   kimi-k2:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
-    description: "Kimi K2 (alias -> moonshot/kimi-k2.6)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target kimi-k2.6
+    description: "Kimi K2 (alias -> kimi-k2.6)"
     metadata:
-      alias_of: moonshot/kimi-k2.6
+      alias_of: kimi-k2.6
   kimi-code:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.7-code
-    description: "Kimi code specialist (alias -> moonshot/kimi-k2.7-code)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target kimi-k2.7-code
+    description: "Kimi code specialist (alias -> kimi-k2.7-code)"
     metadata:
-      alias_of: moonshot/kimi-k2.7-code
+      alias_of: kimi-k2.7-code
   beellama/exaone-4-0-1-2b-iq4xs:
     cmd: ${BEELLAMA_BIN} --model ${EXAONE_1B_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     aliases:
