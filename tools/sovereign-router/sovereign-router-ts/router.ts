@@ -18,7 +18,7 @@ import { CODING, PROVIDERS, PROVIDER_MODELS, keyOk, getKey, STRATEGY, MAX_PARALL
 import { catalogModelsFor, LIVE_MODELS, LIVE_MODEL_META, modelFree } from "./router_config.ts";
 import { startLiveDiscovery, refreshLiveModels, LIVE_STATUS } from "./router_live_models.ts";
 import { state, startQuarantineProber } from "./router_matrix.ts";
-import { ROUTERS, routeHybrid, callOne, pickWeighted, isRoutableModelId } from "./router_strategy.ts";
+import { ROUTERS, routeHybrid, callOne, pickWeighted, isRoutableModelId, tryLongctxPin, substantive } from "./router_strategy.ts";
 import { uiData, ROUTER_UI_HTML } from "./router_ui.ts";
 import {
   loadAuthFromEnv,
@@ -86,6 +86,29 @@ async function handleStream(
   sid: string,
   _strat: string,
 ): Promise<Response> {
+  // 1M-context pin (DECISION 12187): >200k est tokens -> direct keyed
+  // nvidia lane, skipping the race. Ineligible or pinned failure falls
+  // through to the normal stream logic below (single race fallback).
+  const pinnedStream = await tryLongctxPin(body, sid, true);
+  if (pinnedStream?.ok && pinnedStream.stream) {
+    const pst = pinnedStream.timings;
+    return new Response(pinnedStream.stream, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+        "X-Routed-Via": `${pinnedStream.provider}/${pinnedStream.model}`,
+        "X-Longctx-Pin": "1",
+        ...(pst
+          ? {
+              "X-Sovereign-Timings": `connect_ms=${pst.connect_ms};ttft_ms=${pst.ttft_ms ?? "-"};total_ms=${pst.total_ms}`,
+            }
+          : {}),
+      },
+    });
+  }
+
   const model = String(body.model || "auto");
   const tryStream = async (p: string, mid: string) => {
     const r = await callOne(p, mid, body, true);
@@ -117,7 +140,7 @@ async function handleStream(
     if (resp) return resp;
   } else {
     const [sp, sm] = state.stickyGet(sid);
-    if (sp && keyOk(sp) && state.circuitOk(sp)) {
+    if (sp && keyOk(sp) && state.circuitOk(sp) && !state.laneDead(sp)) {
       const resp = await tryStream(sp, sm || model);
       if (resp) return resp;
     }
@@ -246,6 +269,7 @@ const server = Bun.serve({
           keys: keyOk(p) ? "configured" : "no_key",
           base_url: PROVIDERS[p].base,
           circuit: state.circuitInfo(p),
+          lane_dead: state.laneDead(p),
           elo: Math.round((state.elo.get(p) || 1000) * 10) / 10,
           models: catalogModelsFor(p).length,
           live_models: (LIVE_MODELS[p] || []).length,
@@ -437,6 +461,29 @@ const server = Bun.serve({
 
       if (body.stream) {
         return handleStream(body, sid, strat);
+      }
+
+      // 1M-context pin (DECISION 12187): est tokens >200k -> direct keyed
+      // nvidia lane, skipping the race. Ineligible or pinned failure falls
+      // through to the normal strategy dispatch (single race fallback).
+      const pinned = await tryLongctxPin(body, sid, false);
+      if (pinned && substantive(pinned)) {
+        const t = pinned.timings;
+        return new Response(pinned.data as BodyInit, {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "X-Routed-Via": `${pinned.provider}/${pinned.model}`,
+            "X-Latency": String(Math.round((pinned.lat || 0) * 1000) / 1000),
+            "X-Strategy": strat,
+            "X-Longctx-Pin": "1",
+            ...(t
+              ? {
+                  "X-Sovereign-Timings": `connect_ms=${t.connect_ms};ttft_ms=${t.ttft_ms ?? "-"};total_ms=${t.total_ms}`,
+                }
+              : {}),
+          },
+        });
       }
 
       const fn = ROUTERS[strat] || routeHybrid;
