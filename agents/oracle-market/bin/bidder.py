@@ -668,6 +668,12 @@ class Bidder:
                     self.on_market(name)
                 for name in ol.inotify_names(self._watches["fleet"][0]):
                     self.on_fleet(name)
+                # Drain parent-dir watches too: an undrained inotify fd
+                # stays readable forever, making select() return instantly
+                # in a tight loop (2026-09-20: 70%+ CPU spin). Parent
+                # events carry no messages; healing stays in _check_watches.
+                for _pk in ("mparent", "fparent"):
+                    ol.inotify_names(self._watches[_pk][0])
                 # drain any wake bytes
                 try:
                     while os.read(self._wake_r, 64):
