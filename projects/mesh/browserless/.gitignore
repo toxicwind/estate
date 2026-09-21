@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+*.log
+# token-scrub: never commit secrets (server token lives in 0600 /home/toxic/.browserless/.env)
+*.pat
+github_*_pat.json
+.env*
+*secret*
+*token*
