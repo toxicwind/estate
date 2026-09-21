@@ -12,6 +12,9 @@ running against the hatch runtime cell (2 vCPUs — saturates fast).
 | `progress-watchdog` | Hearth watchdog (cron, 30-min pulse). One ConditionRegistry drives alerts AND pulse: identical alerts fire once (never re-fire); pulse says "all green" only on a fresh snapshot with zero active conditions, "eyes closed" on stale snapshot. Stuck-task re-announce capped at 3. Oracle alerts are process/per-request facts (loop-dead, intake backlog), never ledger-age guesses. |
 | `tests/test_watchdog.py` | Unit tests (40 pass): registry dedup, domain sweeps, atomic writes, run ledger, pause verification, pulse honesty, re-announce cap, per-request intake backlog. |
 | `watchdog_lib.py` | Shared helpers: pause verification against live /proc, run ledger. |
+| `jarvis-static` | Reproducible static-analysis pipeline for the Hatch/Jarvis daemon binary: strings → env-var inventory, model-route inventory, stem-anchored compaction-token extraction, transport evidence, human-readable log-message corpus. Re-runnable after a daemon rebuild. Findings: `../audit-jarvis/`. |
+| `jarvis-capture` | Bounded one-shot live capture (NOT a daemon): N-second pcap of cell egress + socket//proc/ledger snapshots → timestamped bundle + `SUMMARY.txt`. Invoke manually around real work. |
+| `tcpdump` + `pcap-install.sh` | Packet-capture wrapper (`-Z root`, `$HOME`-relative) and its reproducible installer (DoH via 1.1.1.1 → Ubuntu archive debs → `pcaproot/`). |
 
 ## Deploy
 

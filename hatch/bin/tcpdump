@@ -1,0 +1,7 @@
+#!/bin/sh
+# tcpdump — cell packet-capture wrapper.
+# Forces -Z root (this image has no `tcpdump` user, so the priv-drop fails
+# without it) and points at the pcaproot libs installed by pcap-install.sh.
+# Reproducible: sh pcap-install.sh ; tcpdump -i host0 ...
+export LD_LIBRARY_PATH="$HOME/workspace/bin/pcaproot/usr/lib/x86_64-linux-gnu"
+exec "$HOME/workspace/bin/pcaproot/usr/bin/tcpdump" -Z root "$@"

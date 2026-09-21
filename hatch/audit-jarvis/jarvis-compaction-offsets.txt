@@ -1,0 +1,25 @@
+# byte offsets of compaction token occurrences in /opt/hatch/bin/hatch
+# generated: 2026-09-21T02:10:17Z
+## eager_background_compaction: 158 occurrences
+  50470266
+  50470293
+  50470342
+  50470379
+  50470406
+## context_pressure_compaction: 20 occurrences
+  50470178
+  50470217
+  50588793
+  52187374
+  56514789
+## compaction_decision: 10 occurrences
+  48233931
+  48424020
+  50606776
+  52104344
+  54334625
+## compaction_execution_mode: 4 occurrences
+  56425889
+  56977052
+  57019377
+  60152042

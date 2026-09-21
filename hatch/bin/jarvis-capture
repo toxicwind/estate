@@ -1,0 +1,60 @@
+#!/bin/sh
+# jarvis-capture — bounded, one-shot live-capture around real agent activity.
+# NOT a daemon: you invoke it manually before/after heavy work; it runs for
+# N seconds, then exits leaving a timestamped bundle + a summary.
+# Correlates: cell-egress pcap, unix-socket snapshots, daemon /proc status,
+# and ledger pointers (query the DB yourself with the printed hints).
+#
+# What it CANNOT see (verified walls, see audit): the daemon's own inference
+# flows (host netns), PID 67 environ/ptrace/ns. What it CAN see: our own
+# egress CONNECTs, visible socket state, ledger rows.
+#
+# Usage: jarvis-capture [seconds] [label]
+#   e.g. jarvis-capture 120 "before-big-research-run"
+set -eu
+
+SECS="${1:-60}"
+LABEL="${2:-manual}"
+TS="$(date +%Y%m%d-%H%M%S)"
+DIR="$HOME/workspace/audit/captures/$TS-$LABEL"
+mkdir -p "$DIR"
+
+TCPDUMP="$HOME/workspace/bin/tcpdump"
+PCAP="$DIR/egress.pcap"
+
+echo "[jarvis-capture] $SECS s -> $DIR"
+
+# t=0 snapshots
+ss -xln > "$DIR/ss-listen-t0.txt" 2>&1
+ss -x   > "$DIR/ss-all-t0.txt" 2>&1
+cat /proc/67/status > "$DIR/proc67-status-t0.txt" 2>&1 || echo "denied" > "$DIR/proc67-status-t0.txt"
+ls -la /run/hatch/ > "$DIR/run-hatch-t0.txt" 2>&1
+date -u +%Y-%m-%dT%H:%M:%SZ > "$DIR/window-utc.txt"
+echo "ledger hint: SELECT id,tokens_before,tokens_after,trigger,created_at FROM agent.agent_compactions ORDER BY created_at DESC LIMIT 5" > "$DIR/ledger-hint.txt"
+
+# bounded pcap of cell egress (background, killed after window)
+"$TCPDUMP" -i host0 -s 200 -w "$PCAP" 'tcp port 3128' > "$DIR/tcpdump.log" 2>&1 &
+CAP_PID=$!
+sleep "$SECS"
+kill "$CAP_PID" 2>/dev/null || true
+wait "$CAP_PID" 2>/dev/null || true
+
+# t=1 snapshots
+ss -xln > "$DIR/ss-listen-t1.txt" 2>&1
+ss -x   > "$DIR/ss-all-t1.txt" 2>&1
+cat /proc/67/status > "$DIR/proc67-status-t1.txt" 2>&1 || echo "denied" > "$DIR/proc67-status-t1.txt"
+
+# summary: CONNECT targets seen in-window (SNI-equivalent visibility)
+{
+  echo "# jarvis-capture summary — $TS $LABEL (${SECS}s window)"
+  echo "# pcap packets: $("$TCPDUMP" -r "$PCAP" 2>/dev/null | wc -l)"
+  "$TCPDUMP" -r "$PCAP" -A -nn 2>/dev/null \
+    | grep -oE 'CONNECT [a-zA-Z0-9._-]+(:[0-9]+)?' | sort | uniq -c | sort -rn \
+    | sed 's/^/connect: /'
+  echo "# new listening sockets t0->t1:"
+  diff "$DIR/ss-listen-t0.txt" "$DIR/ss-listen-t1.txt" | grep '^>' | sed 's/^/  /' || echo "  (none)"
+  echo "# daemon VmRSS t0/t1:"
+  grep VmRSS "$DIR/proc67-status-t0.txt" "$DIR/proc67-status-t1.txt" 2>/dev/null | sed 's/^/  /'
+} > "$DIR/SUMMARY.txt"
+cat "$DIR/SUMMARY.txt"
+echo "[jarvis-capture] bundle: $DIR"
