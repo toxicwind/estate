@@ -14,7 +14,6 @@ scrape_configs:
           - "127.0.0.1:25105"
           - "127.0.0.1:25106"
           - "127.0.0.1:25107"
-          - "127.0.0.1:25203"
 
   - job_name: "fleet_power"
     metrics_path: /metrics

@@ -1,0 +1,8 @@
+# DEPRECATED 2026-09-21 (openfang full audit): :4200 is dead — nothing has
+# listened here since the 2026-09-20 migration to :25196. Kept for history
+# only; do not point any launcher at this file. Canonical kernel config:
+# config/openfang-25196.toml (api_listen 127.0.0.1:25196).
+
+# OpenFang sovereign daemon - canonical home /home/toxic/.openfang, API on :4200
+# Created 2026-09-20: replaces ephemeral /tmp/rig-home setup
+api_listen = "127.0.0.1:4200"

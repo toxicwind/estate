@@ -25,11 +25,12 @@
 # then verify with lane-probe.sh (it parses all serve paths and probes each
 # through the public funnel URL).
 #
-# :25203 placement (2026-09-21, Chris delegated the choice): /openfang ->
-# the TypeScript/CLI OpenFang backend (OpenFang Dashboard UI) on 127.0.0.1:25203.
-# Naming follows the existing map (service-name-first, like /mesh-mcp and
-# /squawk-ws); /openfang-api is left free for the :25196 kernel API if it
-# ever needs a public path.
+# /openfang placement (2026-09-21 full audit): /openfang -> mesh-front proxy on
+# 127.0.0.1:25103 (OpenFang Dashboard UI), fronting the :25196 kernel. :25203
+# RETIRED (duplicate kernel). Dashboard HTML uses root-absolute /api/*,
+# /favicon.ico, /logo.png, /manifest.json, so those map at funnel root too
+# (:25201 serves 404 there, no collision; /api uses backend-path form so the
+# funnel does not strip the prefix).
 #
 # Placement conflict guard: if you need /openfang or /openfang-api for
 # something else, post a fleet directive — path collisions are decisions,
@@ -42,7 +43,7 @@ if [[ "${EUID:-$(id -u)}" -ne 0 ]]; then
     exit 2
 fi
 
-# serve-path<TAB>target-url — the canonical funnel map, 13 mounts.
+# serve-path<TAB>target-url — the canonical funnel map, 17 mounts.
 MAP=(
 "/		http://127.0.0.1:25201"
 "/mcp		http://127.0.0.1:25198/mcp"
@@ -56,7 +57,11 @@ MAP=(
 "/mesh-metrics		http://127.0.0.1:25127/metrics"
 "/squawk-feed/seq		http://127.0.0.1:25135/squawk-feed/seq"
 "/whatsapp-webhook		http://127.0.0.1:25146/webhook"
-"/openfang		http://127.0.0.1:25203"
+"/openfang		http://127.0.0.1:25103"
+"/api		http://127.0.0.1:25103/api"
+"/favicon.ico		http://127.0.0.1:25103"
+"/logo.png		http://127.0.0.1:25103"
+"/manifest.json		http://127.0.0.1:25103"
 )
 
 CHECK_ONLY=0
