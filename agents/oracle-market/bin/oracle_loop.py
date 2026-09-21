@@ -1578,6 +1578,11 @@ class OracleLoop:
             while self.running:
                 for name in inotify_names(self._watch[0]):
                     self.ingest(name)
+                # Drain the parent watch too: an undrained inotify fd stays
+                # readable forever -> select() spins at ~97% CPU
+                # (2026-09-20). Parent events carry no messages; healing
+                # stays in _check_channel().
+                inotify_names(self._pwatch[0])
                 # drain any wake bytes
                 try:
                     while os.read(self._wake_r, 64):
