@@ -1,0 +1,93 @@
+[
+ {
+  "name": "JARVIS_ACCEPTED_TURN_FIRST_PROGRESS_TIMEOUT_MS",
+  "len": 46,
+  "default": 90000,
+  "str_va": "0x2f41881",
+  "chunk": "0x65ca130"
+ },
+ {
+  "name": "JARVIS_SUBAGENT_CONTROL_OP_TIMEOUT_MS",
+  "len": 37,
+  "default": 90000,
+  "str_va": "0x2f418af",
+  "chunk": "0x65ca070"
+ },
+ {
+  "name": "JARVIS_POST_TOOL_CONTINUATION_TIMEOUT_MS",
+  "len": 40,
+  "default": 30000,
+  "str_va": "0x2f418d4",
+  "chunk": "0x65ca090"
+ },
+ {
+  "name": "JARVIS_POST_INFERENCE_TERMINALIZATION_TIMEOUT_MS",
+  "len": 48,
+  "default": 30000,
+  "str_va": "0x2f418fc",
+  "chunk": "0x65ca170"
+ },
+ {
+  "name": "JARVIS_RESUMED_TURN_INFERENCE_READINESS_TIMEOUT_MS",
+  "len": 50,
+  "default": 90000,
+  "str_va": "0x2f4192c",
+  "chunk": "0x65ca1b0"
+ },
+ {
+  "name": "JARVIS_MESSAGE_EVENT_STREAM_IDLE_TIMEOUT_MS",
+  "len": 43,
+  "default": 90000,
+  "str_va": "0x2f4195e",
+  "chunk": "0x65ca110"
+ },
+ {
+  "name": "JARVIS_MODEL_STREAM_FIRST_CHUNK_TIMEOUT_MS",
+  "len": 42,
+  "default": 600000,
+  "str_va": "0x2f41989",
+  "chunk": "0x65ca0d0"
+ },
+ {
+  "name": "JARVIS_CRON_MODEL_STREAM_FIRST_CHUNK_TIMEOUT_MS",
+  "len": 47,
+  "default": 1800000,
+  "str_va": "0x2f419b3",
+  "chunk": "0x65ca150"
+ },
+ {
+  "name": "JARVIS_MODEL_STREAM_CHUNK_IDLE_TIMEOUT_MS",
+  "len": 41,
+  "default": 90000,
+  "str_va": "0x2f419e2",
+  "chunk": "0x65ca0b0"
+ },
+ {
+  "name": "JARVIS_MODEL_STREAM_CHUNK_IDLE_TIMEOUT_MS",
+  "len": 41,
+  "default": 180000,
+  "str_va": "0x2f419e2",
+  "chunk": "0x65ca190"
+ },
+ {
+  "name": "JARVIS_COMMENTARY_END_TURN_MERGE_TIMEOUT_MS",
+  "len": 43,
+  "default": 60000,
+  "str_va": "0x2f41a0b",
+  "chunk": "0x65ca0f0"
+ },
+ {
+  "name": "JARVIS_TOOL_DISPATCH_TIMEOUT_MS",
+  "len": 31,
+  "default": 180000,
+  "str_va": "0x2f41a36",
+  "chunk": "0x65ca030"
+ },
+ {
+  "name": "JARVIS_PRE_INFERENCE_STEP_TIMEOUT_MS",
+  "len": 36,
+  "default": 10000,
+  "str_va": "0x2f41a55",
+  "chunk": "0x65ca050"
+ }
+]
