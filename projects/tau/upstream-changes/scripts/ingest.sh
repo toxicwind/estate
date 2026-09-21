@@ -34,6 +34,8 @@ if ! git -C "$MIRROR" rev-parse --verify --quiet "$TARGET" >/dev/null; then
 fi
 STAMP="$(date +%Y-%m-%d)"
 LOG="$LOGDIR/ingestion-$STAMP-${TARGET#v}.md"
+SOV_TMP="$(mktemp -d)"
+export SOV_TMP
 {
 echo "# Ingestion $STAMP — target $TARGET"
 echo "Base: $BASE_TAG (verified fork point) -> Target: $TARGET"
@@ -46,8 +48,7 @@ UP_COUNT="$(echo "$UP_FILES" | grep -c . || true)"
 echo "Upstream changed files: $UP_COUNT"
 echo ""
 echo "## Sovereign delta (engine vs $BASE_TAG tree)"
-SOV_TMP="$(mktemp -d)"
-export SOV_TMP ENGINE
+export ENGINE
 git -C "$MIRROR" archive "$BASE_TAG" | tar -x -C "$SOV_TMP"
 SOV_FILES="$(diff -rq "$SOV_TMP" "$ENGINE" 2>/dev/null | python3 -c "
 import sys, os

@@ -4,45 +4,12 @@ import { directoryExists, getProjectDir, normalizePathForComparison, setProjectD
 import type { Args } from "./args";
 
 async function maybeAutoChdir(parsed: Args): Promise<void> {
-	if (parsed.allowHome || parsed.cwd) {
+	// Disabled auto-chdir to temp directories; stay in current working directory unless --cwd is provided.
+	if (parsed.cwd) {
 		return;
 	}
-
-	const home = os.homedir();
-	if (!home) {
-		return;
-	}
-
-	const normalizePath = normalizePathForComparison;
-
-	const cwd = normalizePath(getProjectDir());
-	const normalizedHome = normalizePath(home);
-	if (cwd !== normalizedHome) {
-		return;
-	}
-
-	const candidates =
-		process.platform === "win32" ? [path.join(home, "tmp")] : [path.join(home, "tmp"), "/tmp", "/var/tmp"];
-	for (const candidate of candidates) {
-		try {
-			if (!(await directoryExists(candidate))) {
-				continue;
-			}
-			setProjectDir(candidate);
-			return;
-		} catch {
-			// Try next candidate.
-		}
-	}
-
-	try {
-		const fallback = os.tmpdir();
-		if (fallback && normalizePath(fallback) !== cwd && (await directoryExists(fallback))) {
-			setProjectDir(fallback);
-		}
-	} catch {
-		// Ignore fallback errors.
-	}
+	// No auto-chdir behavior.
+	return;
 }
 
 export async function applyStartupCwd(parsed: Args): Promise<void> {
