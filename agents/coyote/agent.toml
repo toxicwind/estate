@@ -3,15 +3,25 @@ version = "3.1.0"
 description = "Autonomous agent inference engine with sigil-driven workflow orchestration. First-class sovereign service that routes through the AST matrix (llama-swap :25100) and integrates with Yote messaging (:25102)."
 author = "toxicwind"
 module = "builtin:chat"
+schedule = "reactive"
+fallback_models = []
+priority = "Normal"
+skills = []
+mcp_servers = []
+tags = []
+workspace = "/home/toxic/.openfang/workspaces/coyote"
+generate_identity_files = true
+tool_allowlist = []
+tool_blocklist = []
+cache_context = false
 
 [model]
 provider = "llama-swap"
-model = "kimi-auto"
-base_url = "http://127.0.0.1:25100/v1"
+model = "nex-agi/nex-n2.5-mini:free"
 max_tokens = 131072
 temperature = 0.7
-top_p = 0.95
-system_prompt = """You are Coyote, an autonomous agent inference engine operating within the Sovereign ecosystem.
+system_prompt = """
+You are Coyote, an autonomous agent inference engine operating within the Sovereign ecosystem.
 
 Your primary function is to execute complex, multi-step tasks with minimal human intervention. You communicate via sigils:
 - [[OPHEL::PROCEED]] — Task incomplete, continue to next step
@@ -33,41 +43,52 @@ When given a task:
 4. End with [[OPHEL::PROCEED]] or [[OPHEL::HALT]]
 
 You can spawn child agents, trigger workflows, and use all available tools."""
+base_url = "http://127.0.0.1:25100/v1"
 
 [resources]
+max_memory_bytes = 268435456
+max_cpu_time_ms = 30000
+max_tool_calls_per_minute = 60
 max_llm_tokens_per_hour = 500000
-max_context_tokens = 120000
+max_network_bytes_per_hour = 104857600
+max_cost_per_hour_usd = 0.0
+max_cost_per_day_usd = 0.0
+max_cost_per_month_usd = 0.0
 
 [capabilities]
-tools = ["file_read", "file_list", "file_write", "web_fetch", "web_search", "memory_store", "memory_recall", "agent_spawn", "workflow_run", "mcp_call", "channel_send"]
-network = ["127.0.0.1:*", "localhost:*", "*.msh.team", "*.github.com", "*.huggingface.co"]
+network = [
+    "127.0.0.1:*",
+    "localhost:*",
+    "*.msh.team",
+    "*.github.com",
+    "*.huggingface.co",
+]
+tools = [
+    "file_read",
+    "file_list",
+    "file_write",
+    "web_fetch",
+    "web_search",
+    "memory_store",
+    "memory_recall",
+    "agent_spawn",
+    "workflow_run",
+    "mcp_call",
+    "channel_send",
+]
 memory_read = ["*"]
-memory_write = ["self.*", "coyote.*"]
+memory_write = [
+    "self.*",
+    "coyote.*",
+]
 agent_spawn = true
-workflow_run = true
-mcp_servers = ["ghas-mcp", "kimi-code", "mcpproxy"]
+agent_message = []
+shell = []
+ofp_discover = false
+ofp_connect = []
 
-[bindings]
-# Route all messages from #coyote channel to this agent
-[[binding]]
-channel = "telegram"
-pattern = "#coyote"
-action = "route"
+[tools]
 
-[[binding]]
-channel = "discord"
-pattern = "#coyote"
-action = "route"
+[metadata]
 
-[[binding]]
-channel = "yote"
-pattern = "*"
-action = "route"
-
-[http]
-enabled = true
-port = 25143
-host = "0.0.0.0"
-health_path = "/health"
-task_path = "/task"
-status_path = "/status"
+[persona]

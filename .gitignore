@@ -291,6 +291,9 @@ id_ed25519*
 .aws/
 .gnupg/
 **/secrets/**
+# mesh gateway live config: shep rewrites it on every start with effective
+# secrets (api_key, server env) -- never track; bootstrap from mcp_config.json.dist
+projects/mesh/gateway/mcp_config.json
 
 # --- stale-dir archive (herd triage 2026-09-20) ---
 .archive-*/

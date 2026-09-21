@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """tunnel_asyncio.py (candidate A): stdlib-asyncio TCP forwarder.
 
-Listens on 127.0.0.1:25379, forwards every byte both ways to 127.0.0.1:25204.
+Listens on 127.0.0.1:25379, forwards every byte both ways to 127.0.0.1:25204 (BRIDGE_EXEC_PORT).
 Fully transparent to the WS protocol (handshake + frames pass through untouched).
 """
 import asyncio
