@@ -1,7 +1,8 @@
 // Elo durability (2026-09-21): provider Elo is written through to the
-// HealthDB on every update, restored on restart, falls back to
+// HealthDB on every live update, restored on restart, falls back to
 // bench-priors.json when no stored row exists, and is never clobbered by
-// priors on hot-reload.
+// priors on hot-reload. Initial bench seeding is in-memory ONLY -- fallback
+// priors are not learned state and never create elo_state rows.
 //
 //  1. Kill-restart round trip: live-learned Elo survives close + reopen.
 //  2. No stored row -> bench prior (from the committed bench-priors.json).
@@ -9,6 +10,13 @@
 //  4. Untouched providers still re-seed on priors refresh (benchlink
 //     behavior preserved).
 //  5. Failure decrements persist too.
+//  6. Fallback priors never create elo_state rows (no prior persistence).
+//  7. Equality edge: a restored value exactly equal to the bench prior is
+//     still protected across a priors refresh (persisted set, not numeric
+//     comparison).
+//  8. Subprocess restart: values survive a real process exit, not just
+//     close/reopen in one process.
+//  9. Corrupt DB fails open: Matrix still constructs, routing on priors.
 import { describe, test, expect } from "bun:test";
 import { Database } from "bun:sqlite";
 import * as fs from "node:fs";
@@ -22,22 +30,32 @@ process.env.SOVEREIGN_DB = "/tmp/sovereign_router_elo_persist_module.db";
 
 const { Matrix } = await import("../router_matrix");
 const { PROVIDERS } = await import("../router_config");
+const { HealthDB } = await import("../router_health");
 
 function tmpDb(): string {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "elo-persist-"));
   return path.join(dir, "router.db");
 }
 
+const PRIORS_URL = new URL("../bench-priors.json", import.meta.url);
+
 function readPriors(): Record<string, number> {
-  const doc = JSON.parse(
-    fs.readFileSync(new URL("../bench-priors.json", import.meta.url), "utf8"),
-  );
+  const doc = JSON.parse(fs.readFileSync(PRIORS_URL, "utf8"));
   const out: Record<string, number> = {};
   for (const [p, pr] of Object.entries(doc.priors || {})) {
     const elo = (pr as { elo?: number }).elo;
     if (typeof elo === "number" && Number.isFinite(elo)) out[p] = elo;
   }
   return out;
+}
+
+function eloRowCount(db: string): number {
+  const ro = new Database(db, { readonly: true });
+  const row = ro
+    .query(`SELECT COUNT(*) AS n FROM elo_state`)
+    .get() as { n: number };
+  ro.close();
+  return row.n;
 }
 
 const PROVS = Object.keys(PROVIDERS);
@@ -121,5 +139,99 @@ describe("Elo persistence", () => {
     const m2 = new Matrix(db);
     expect(m2.elo.get(p)).toBe(after);
     m2.health.conn.close();
+  });
+
+  test("initial bench seeding never persists fallback priors", () => {
+    const db = tmpDb();
+    const m = new Matrix(db);
+    // Zero elo_state rows: priors live in memory only.
+    expect(eloRowCount(db)).toBe(0);
+    const priors = readPriors();
+    for (const p of PROVS) {
+      expect(m.elo.get(p)).toBe(priors[p] ?? 1000);
+    }
+    m.health.conn.close();
+  });
+
+  test("equality edge: restored value equal to prior survives priors refresh", () => {
+    const db = tmpDb();
+    const priors = readPriors();
+    const p = "groq";
+    // The edge needs stored == prior exactly.
+    expect(priors[p]).toBe(1000);
+    // Persist exactly the bench prior as if previously learned.
+    const h = new HealthDB(db);
+    h.saveElo(p, 1000);
+    h.conn.close();
+    // Startup restores it and marks it persisted.
+    const m = new Matrix(db);
+    expect(m.elo.get(p)).toBe(1000);
+    expect(m.persistedEloProviders.has(p)).toBe(true);
+    const backup = fs.readFileSync(PRIORS_URL, "utf8");
+    try {
+      // Priors refresh: groq 1000 -> 1100. Old numeric logic (cur === last)
+      // would re-seed to 1100; the persisted set must protect it.
+      const doc = JSON.parse(backup);
+      doc.priors[p].elo = 1100;
+      doc.generated_ts = new Date().toISOString();
+      fs.writeFileSync(PRIORS_URL, JSON.stringify(doc, null, 2));
+      m.priorsMtime = 0; // force re-evaluation
+      const r = m.applyBenchPriors();
+      expect(r.reloaded).toBe(true);
+      expect(r.reseeded).not.toContain(p);
+      expect(m.elo.get(p)).toBe(1000); // protected: restored, not re-seeded
+    } finally {
+      fs.writeFileSync(PRIORS_URL, backup);
+    }
+    m.health.conn.close();
+  });
+
+  test("subprocess restart: values survive a real process exit", () => {
+    const db = tmpDb();
+    const modPath = new URL("../router_matrix.ts", import.meta.url).pathname;
+    const writer = `
+      process.env.SOVEREIGN_DB = ${JSON.stringify(db)};
+      const { Matrix } = await import(${JSON.stringify(modPath)});
+      const m = new Matrix();
+      for (let i = 0; i < 4; i++) m.record("subproc-model", "nvidia", 200, 0.5);
+      console.log("wrote:" + m.elo.get("nvidia"));
+    `;
+    const r1 = Bun.spawnSync([process.execPath, "-e", writer], {
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    if (r1.exitCode !== 0)
+      console.log("writer stderr:", r1.stderr.toString().slice(-2000));
+    expect(r1.exitCode).toBe(0);
+    expect(r1.stdout.toString()).toContain("wrote:1064");
+    // First process is fully gone; a new process must restore from the DB.
+    const reader = `
+      process.env.SOVEREIGN_DB = ${JSON.stringify(db)};
+      const { Matrix } = await import(${JSON.stringify(modPath)});
+      const m = new Matrix();
+      console.log("read:" + m.elo.get("nvidia"));
+    `;
+    const r2 = Bun.spawnSync([process.execPath, "-e", reader], {
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    if (r2.exitCode !== 0)
+      console.log("reader stderr:", r2.stderr.toString().slice(-2000));
+    expect(r2.exitCode).toBe(0);
+    expect(r2.stdout.toString()).toContain("read:1064");
+  });
+
+  test("corrupt DB fails open: Matrix constructs, routing on priors", () => {
+    const db = tmpDb();
+    fs.writeFileSync(db, "this is not a database");
+    const m = new Matrix(db); // must not throw
+    const priors = readPriors();
+    for (const p of PROVS) {
+      expect(m.elo.get(p)).toBe(priors[p] ?? 1000);
+    }
+    // Live updates still work in memory.
+    m.record("elo-test-model", "groq", 200, 0.5);
+    expect(m.elo.get("groq")).toBe((priors["groq"] ?? 1000) + 16);
+    m.health.conn.close();
   });
 });
