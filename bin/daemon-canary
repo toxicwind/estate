@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+# daemon-canary — P2 verification gate for daemon-spawn.
+#
+#  1. Spawns `sleep 300` via daemon-spawn from inside a `setsid bash -c`
+#     parent session. The child reports its own pid through a pidfile whose
+#     path travels via the ENVIRONMENT (never in any cmdline, so it can't
+#     be confused with another process).
+#  2. Kills the entire parent session (kill -KILL on its process group).
+#  3. Asserts via `ps -o pid,ppid,sid` that the child survives with its own
+#     SID, reparented outside the dead parent session (PPID 1, or the
+#     user-session subreaper — on yote that's systemd --user, so orphans
+#     land there instead of init; verified 2026-09-21).
+#
+# Exit 0 = PASS, 1 = FAIL. The child is reaped on the way out either way.
+set -euo pipefail
+
+SPAWN="${1:-/home/toxic/sovereign/bin/daemon-spawn}"
+[[ -x "$SPAWN" ]] || { echo "FAIL: daemon-spawn not executable: $SPAWN" >&2; exit 1; }
+
+TAG="canary-$BASHPID-$RANDOM"
+LOG="/tmp/$TAG.log"
+PPIDFILE="/tmp/$TAG.ppid"
+export CANARY_CPIDFILE="/tmp/$TAG.cpid"   # env-only: invisible to pgrep/ps
+
+# Parent session: the session leader records its pid, spawns the canary
+# child via daemon-spawn (the child writes its own pidfile, then execs
+# sleep so the pidfile pid IS the sleep pid), then idles until killed.
+setsid bash -c '
+  echo $$ > "$1"
+  "$2" "$3" bash -c '\''echo $$ > "$CANARY_CPIDFILE"; exec sleep 300'\''
+  sleep 120
+' _ "$PPIDFILE" "$SPAWN" "$LOG" &
+
+# Bounded wait for the child pidfile (test gate, not a daemon loop).
+CHILD_PID=""
+for _ in $(seq 1 50); do
+  if [[ -s "$CANARY_CPIDFILE" ]]; then CHILD_PID="$(cat "$CANARY_CPIDFILE")"; break; fi
+  sleep 0.1
+done
+if [[ -z "$CHILD_PID" ]]; then
+  echo "FAIL: daemon-spawn produced no child (no pidfile in 5s)"
+  P="$(cat "$PPIDFILE" 2>/dev/null || true)"
+  [[ -n "$P" ]] && kill -KILL "$P" 2>/dev/null || true
+  rm -f "$LOG" "$PPIDFILE" "$CANARY_CPIDFILE"
+  exit 1
+fi
+PARENT_PID="$(cat "$PPIDFILE")"
+PARENT_SID="$(ps -o sid= -p "$PARENT_PID" | tr -d ' ')"
+echo "[canary] parent pid=$PARENT_PID sid=$PARENT_SID"
+echo "[canary] child before kill: $(ps -o pid=,ppid=,sid= -p "$CHILD_PID" | awk '{print "pid="$1" ppid="$2" sid="$3}')"
+
+# Kill the whole parent session. A setsid'd bash is session leader with
+# pgid == pid == sid, so signalling the negative pid hits the full session
+# but NOT the canary child (it lives in its own session now).
+kill -KILL -- "-$PARENT_PID" 2>/dev/null || kill -KILL "$PARENT_PID" 2>/dev/null || true
+sleep 1
+
+if ! kill -0 "$CHILD_PID" 2>/dev/null; then
+  echo "FAIL: child $CHILD_PID died with its parent session"
+  rm -f "$LOG" "$PPIDFILE" "$CANARY_CPIDFILE"
+  exit 1
+fi
+read -r CPID CPPID CSID < <(ps -o pid=,ppid=,sid= -p "$CHILD_PID" | awk '{print $1, $2, $3}')
+echo "[canary] child after kill:  pid=$CPID ppid=$CPPID sid=$CSID"
+if [[ "$CPPID" == "$PARENT_PID" ]]; then
+  echo "FAIL: child still parented to the dead session leader"
+  kill -KILL "$CHILD_PID" 2>/dev/null || true
+  rm -f "$LOG" "$PPIDFILE" "$CANARY_CPIDFILE"
+  exit 1
+fi
+if [[ "$CPPID" != "1" ]]; then
+  # Orphans reparent to the nearest subreaper, not necessarily init(1).
+  # On yote that's systemd --user. Accept it iff it lives OUTSIDE the
+  # dead parent session.
+  REAPER_SID="$(ps -o sid= -p "$CPPID" 2>/dev/null | tr -d ' ' || true)"
+  REAPER_COMM="$(ps -o comm= -p "$CPPID" 2>/dev/null | tr -d ' ' || true)"
+  if [[ -z "$REAPER_SID" || "$REAPER_SID" == "$PARENT_SID" ]]; then
+    echo "FAIL: child PPID=$CPPID is inside/gone with the dead parent session"
+    kill -KILL "$CHILD_PID" 2>/dev/null || true
+    rm -f "$LOG" "$PPIDFILE" "$CANARY_CPIDFILE"
+    exit 1
+  fi
+  echo "[canary] note: reparented to subreaper pid=$CPPID ($REAPER_COMM), not init — correct on this box"
+fi
+if [[ "$CSID" == "$PARENT_SID" ]]; then
+  echo "FAIL: child still shares the parent session ($CSID)"
+  kill -KILL "$CHILD_PID" 2>/dev/null || true
+  rm -f "$LOG" "$PPIDFILE" "$CANARY_CPIDFILE"
+  exit 1
+fi
+echo "PASS: child $CHILD_PID survived parent-session kill (ppid=$CPPID, own sid=$CSID)"
+kill -KILL "$CHILD_PID" 2>/dev/null || true
+rm -f "$LOG" "$PPIDFILE" "$CANARY_CPIDFILE"
