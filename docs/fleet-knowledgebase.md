@@ -190,6 +190,8 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | auto1m | Effective-1M-context composite route implementation (Ember crew): sentence-aware chunking + query-term ranking + parallel map extraction + ExtAgents-style fact scoring + tree-collapse reduction, per-chunk provenance with fail-closed citation validation, env-overridable router/model (AUTO1M_ROUTER/AUTO1M_MODEL/AUTO1M_DIRECT_MODEL), source-aware multi-file input; pure-function unit tests 30/30 (no router); full ~740k-token proof test with grep-verified needles + test-evidence.json. Complementary to Tally's tau-routing-benchmark (which benchmarks routing; this lane builds the composite consumer). Code: projects/auto1m/ | auto1m-builder (Ember's crew) | RUNNING (2026-09-21) -- code commit e44739ac3b on origin/main; full proof green pending a capable worker (sovereign :25104 serving sovereign/free via local EXAONE-4.0-1.2B only; strong-worker watcher armed) |
 
+| taps-nats | NATS + JetStream fleet-chat substrate (Ember decider verdict fleet 12811): nats-server + JetStream on yote, subject design fleet.messages/leads.messages, dual-publish file/WS feed + NATS, Squawk passive-aggregator read path, bounded-retention history replay, tests (dual-sink, NATS-kill fallback, restart replay) | Taps (Ember's crew) | RUNNING (2026-09-21) -- spawned from verdict fleet 12811 |
+
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
 
