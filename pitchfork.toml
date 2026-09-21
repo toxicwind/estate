@@ -279,6 +279,14 @@ mise = false
 retry = true
 auto = ["start"]
 
+[daemons.oracle-chat]
+run = "exec /home/toxic/sovereign/agents/oracle-market/bin/oracle_chat.py"
+dir = "/home/toxic/sovereign/agents/oracle-market"
+mise = false
+retry = true
+env = { ORACLE_CHANNEL = "/home/toxic/.shingle/squawk-root/bid-market" }
+auto = ["start"]
+
 [daemons.tau]
 port = 25111
 # P4 headless-TUI policy (2026-09-20): dist/omp acp is stdio-only (no --acp-port
