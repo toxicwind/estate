@@ -480,7 +480,12 @@ mise = false
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25148/health"
-env = { BUILDSRV_ROOT = "/home/toxic/buildsrv", BUILDSRV_PORT = "25148", BUILDSRV_WORKERS = "2" }
+# Build-cache env (2026-09-21): every buildsrv job inherits these. sccache/ccache/uv caches live on NVMe.
+# CARGO_INCREMENTAL=0 because sccache refuses incremental compilation outright.
+# CC/CXX intentionally NOT set: BASH_ENV rewrites them to clang for bash -lc jobs,
+# so CMAKE compiler launchers are the robust ccache path for CMake builds.
+# BUILDSRV_WORKERS stays 2 (16 logical CPUs; two Cargo builds already oversubscribe).
+env = { BUILDSRV_ROOT = "/home/toxic/buildsrv", BUILDSRV_PORT = "25148", BUILDSRV_WORKERS = "2", RUSTC_WRAPPER = "sccache", SCCACHE_DIR = "/home/toxic/.cache/sccache", CCACHE_DIR = "/home/toxic/.cache/ccache", CMAKE_C_COMPILER_LAUNCHER = "ccache", CMAKE_CXX_COMPILER_LAUNCHER = "ccache", UV_CACHE_DIR = "/home/toxic/.cache/uv", CARGO_INCREMENTAL = "0" }
 auto = ["start"]
 
 # buildsrv-watchdog - external liveness guard for buildsrv (2026-09-14):

@@ -248,6 +248,66 @@
      }
     }
    ]
+  },
+  {
+   "title": "buildsrv up",
+   "type": "stat",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    }
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 8,
+    "x": 0,
+    "y": 42
+   },
+   "targets": [
+    {
+     "expr": "sovereign_buildsrv_up"
+    }
+   ]
+  },
+  {
+   "title": "buildsrv queue depth",
+   "type": "stat",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    }
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 8,
+    "x": 8,
+    "y": 42
+   },
+   "targets": [
+    {
+     "expr": "sovereign_buildsrv_queue_depth"
+    }
+   ]
+  },
+  {
+   "title": "buildsrv active jobs",
+   "type": "stat",
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short"
+    }
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 8,
+    "x": 16,
+    "y": 42
+   },
+   "targets": [
+    {
+     "expr": "sovereign_buildsrv_active_jobs"
+    }
+   ]
   }
  ]
 }

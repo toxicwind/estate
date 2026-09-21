@@ -257,3 +257,48 @@ runtime_paths freely; those paths are EXEMPT from drift detection by constructio
   corruption; refuses boot only when corrupt AND no usable backup. Live
   2026-09-20: ~/.openfang/openfang.db was 0 bytes -- the exact silent-data-loss
   case this catches.
+
+## 7. Build server = buildsrv (2026-09-21)
+
+buildsrv IS the fleet build server -- a literal build daemon on yote, not a
+concept. Canonical source: tools/buildsrv/ in this repo. Service:
+127.0.0.1:25148 (pitchfork daemons: buildsrv, buildsrv-watchdog).
+
+Lifecycle: queue JSON -> active JSON -> results JSON under
+/home/toxic/buildsrv/. Successful identical specs short-circuit as CACHED,
+keyed by content hash. Forward-only: buildsrv never checks out, stashes, or
+reverts repos. Jobs run via bash -lc and inherit the daemon environment.
+
+Access:
+- Yote CLI: /home/toxic/bin/buildsrv (submit/status/logs/list/health)
+- Hatch proxy: hatch/bin/buildsrv proxies safely through yote-conn exec
+  (shlex.join quoting, never raw concatenation)
+- MCP (awrawr-mcp :25198): buildsrv_submit, buildsrv_status, buildsrv_logs,
+  buildsrv_list, buildsrv_health (argv lists only, job IDs validated,
+  submit returns immediately after queueing)
+
+Cache environment (pitchfork.toml daemons.buildsrv env):
+- RUSTC_WRAPPER=sccache, SCCACHE_DIR=/home/toxic/.cache/sccache (10 GiB)
+- CCACHE_DIR=/home/toxic/.cache/ccache (10 GiB)
+- CMAKE_C_COMPILER_LAUNCHER=ccache, CMAKE_CXX_COMPILER_LAUNCHER=ccache
+- UV_CACHE_DIR=/home/toxic/.cache/uv (NVMe)
+- CARGO_INCREMENTAL=0 -- REQUIRED: sccache refuses incremental compilation
+- Canonical home configs: projects/yote/host/home/.cargo/config.toml and
+  home/.config/ccache/ccache.conf (installed by apply.sh)
+
+Caveats:
+- CC/CXX NOT set in daemon env: BASH_ENV rewrites them to clang for bash -lc
+  jobs. CMAKE compiler launchers are the robust ccache path.
+- Bun cache at /home/toxic/.bun/install/cache (4.4G, verified 2026-09-21).
+- Binary-only Rust crates are non-cacheable by sccache (crate-type rule).
+
+Why workers = 2: yote has 16 logical CPUs / 62 GB RAM / NVMe, but two Cargo
+builds already oversubscribe it. Keep BUILDSRV_WORKERS=2.
+
+Observability: sovereign-exporter (:25213) exposes sovereign_buildsrv_up,
+sovereign_buildsrv_queue_depth, sovereign_buildsrv_active_jobs; Grafana
+workflows.json has a buildsrv row.
+
+New-toolchain rule: persistent config in projects/yote/host/home/, daemon
+env in pitchfork.toml, then a REAL buildsrv compile with nonzero cache-hit
+proof. Proven 2026-09-21: 2 hits, 50 percent hit rate on a real job.
