@@ -57,6 +57,19 @@ export async function callOne(
   stream = false,
   externalSignal?: AbortSignal,
 ): Promise<RouteResult> {
+  // 404-entitlement bench (503-forensics 2026-09-21): fail fast with ZERO
+  // attempt burn — this model id 404'd before (delisted or not entitled
+  // for our key) and never heals by retrying. Every path funnels through
+  // callOne, so this one guard covers races, chains, sticky, and streams.
+  if (state.isEntitlementDead(provider, model)) {
+    return {
+      ok: false,
+      status: 404,
+      provider,
+      lat: 0,
+      err: "entitlement_benched",
+    };
+  }
   if (!state.circuitOk(provider)) {
     return {
       ok: false,
@@ -296,13 +309,62 @@ export async function callOne(
   }
 }
 
+/**
+ * firstUsableModelFor — first catalog model that isn't flap-benched or
+ * entitlement-benched. Race sets use this instead of firstModelFor so
+ * dead IDs never occupy a lane. Exported for regression tests.
+ */
+export function firstUsableModelFor(p: string): string | undefined {
+  for (const m of catalogModelsFor(p)) {
+    if (!state.flapBanned(p, m) && !state.isEntitlementDead(p, m)) return m;
+  }
+  return undefined;
+}
+
+// DECISION 12187 (B) — ADDITIVE-OPTIONAL, model-level quality term.
+// Probe-verified (provider, model) pairs get a small documented bonus in
+// the race score: +5 is tie-break scale against elo (hundreds-thousands),
+// the latency penalty (elo − latencyEMA/50), and the existing rand*10
+// jitter — it nudges ties, never overrides the breaker or elo.
+// Reversible: SOVEREIGN_MODEL_BONUS=0. Cites: health DB rows
+// strategy='longctx-probe' (session 1m-probe-20260921-1745), commit
+// 7f4f79a48c, tools/sovereign-router/probes/RESULTS-2026-09-21.md.
+const PROBE_VERIFIED_MODELS: Record<string, Set<string>> = {
+  nvidia: new Set([
+    // 1M needle retrieval verified at 100k/500k/1M, exact every time.
+    "nvidia/nemotron-3-super-120b-a12b",
+    // Ping-verified (1.8s, genuine reasoning trace); 1M ladder pending.
+    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+  ]),
+};
+const PROBE_VERIFIED_BONUS = 5;
+export function modelProbeBonus(p: string, mid: string): number {
+  if (process.env.SOVEREIGN_MODEL_BONUS === "0") return 0;
+  return PROBE_VERIFIED_MODELS[p]?.has(mid) ? PROBE_VERIFIED_BONUS : 0;
+}
+
 export function pickWeighted(n = MAX_PARALLEL): [string, string][] {
-  const scored: [number, string, string][] = [];
+  // Dead-lane exclusion (503-forensics 2026-09-21): providers whose recent
+  // attempts all failed sit out of the race — they never win, they only
+  // burn the connect budget and steal slots from serving lanes. Degraded
+  // fallback below keeps the "try something rather than 503" guarantee.
+  const live: string[] = [];
+  const dead: string[] = [];
   for (const p of Object.keys(PROVIDERS)) {
+    if (p === "llama-swap") continue; // bonus lane below — always races healthy
     if (!keyOk(p) || !state.circuitOk(p)) continue;
-    const sc = state.candidateScore(p) + Math.random() * 10;
-    const mid = firstModelFor(p);
-    if (mid) scored.push([sc, p, mid]);
+    (state.laneDead(p) ? dead : live).push(p);
+  }
+  // Degraded mode: every lane is dead — race the dead ones anyway (a lane
+  // that recovered mid-window can still win) rather than serve 503.
+  const pool = live.length ? live : dead;
+  const scored: [number, string, string][] = [];
+  for (const p of pool) {
+    const mid = firstUsableModelFor(p);
+    if (!mid) continue;
+    const sc =
+      state.candidateScore(p) + Math.random() * 10 + modelProbeBonus(p, mid);
+    scored.push([sc, p, mid]);
   }
   scored.sort((a, b) => b[0] - a[0]);
   const out: [string, string][] = [];
@@ -313,8 +375,22 @@ export function pickWeighted(n = MAX_PARALLEL): [string, string][] {
     out.push([p, mid]);
     if (out.length >= n) break;
   }
+  // llama-swap bonus lane (503-forensics 2026-09-21): the local zero-cost
+  // lane ALWAYS joins the race when healthy. It is the guaranteed fallback
+  // that held client 503s down while nvidia flapped (nvidia 503'd 29x in
+  // 15 min; llama-swap served 98x). Appended AFTER the n-cut so no caller
+  // can slice it off; hedged losers abort cleanly (499, no strike).
+  if (
+    keyOk("llama-swap") &&
+    state.circuitOk("llama-swap") &&
+    !state.laneDead("llama-swap")
+  ) {
+    const mid = firstUsableModelFor("llama-swap");
+    if (mid && !seen.has("llama-swap")) out.push(["llama-swap", mid]);
+  }
   if (!out.length && keyOk("openrouter")) {
-    out.push(["openrouter", "tencent/hy3:free"]);
+    // 2026-09-21: tencent/hy3:free delisted (404s) — ling is the live default.
+    out.push(["openrouter", "inclusionai/ling-3.0-flash-fin:free"]);
   }
   return out;
 }
@@ -413,7 +489,7 @@ export async function routeSticky(
   const model = String(body.model || "auto");
   if (isRoutableModelId(model)) return routeAstRace(body, session);
   const [p, m] = state.stickyGet(session);
-  if (p && keyOk(p) && state.circuitOk(p)) {
+  if (p && keyOk(p) && state.circuitOk(p) && !state.laneDead(p)) {
     const r = await callOne(p, m || model, body);
     if (substantive(r)) return r;
     if (r.ok) state.recordEmpty(p, m || model);
@@ -466,7 +542,7 @@ export async function routeCircuitChain(
   );
   const cands: [string, string][] = [];
   for (const p of order) {
-    const mid = firstModelFor(p);
+    const mid = firstUsableModelFor(p);
     if (mid) cands.push([p, mid]);
   }
   return hedgedChain(cands, body, session, "circuit_chain");
@@ -505,7 +581,7 @@ export async function routeHybrid(
     return routeCircuitChain(body, session);
   }
   const [p, m] = state.stickyGet(session);
-  if (p && keyOk(p) && state.circuitOk(p)) {
+  if (p && keyOk(p) && state.circuitOk(p) && !state.laneDead(p)) {
     const r = await callOne(p, m || model, body);
     if (substantive(r)) return r;
     if (r.ok) state.recordEmpty(p, m || model);
@@ -530,7 +606,15 @@ export async function hedgedChain(
   session: string,
   stratName: string,
 ): Promise<RouteResult> {
-  const live = cands.filter(([p]) => keyOk(p) && state.circuitOk(p));
+  // Dead-lane exclusion (503-forensics 2026-09-21): lanes whose recent
+  // attempts all failed sit out of the chain. Degraded fallback: if that
+  // empties the set, try every circuitOk lane anyway rather than 503.
+  let live = cands.filter(
+    ([p]) => keyOk(p) && state.circuitOk(p) && !state.laneDead(p),
+  );
+  if (!live.length) {
+    live = cands.filter(([p]) => keyOk(p) && state.circuitOk(p));
+  }
   if (!live.length) return { ok: false, status: 503, err: stratName + "_exhausted" };
   // A provider that just burned a full timeout must not lead the next chain
   // and burn another: sort healthy lanes first (stable — explicit preference
@@ -620,10 +704,145 @@ export async function routeCascade(
   });
   const cands: [string, string][] = [];
   for (const p of order) {
-    const mid = firstModelFor(p);
+    const mid = firstUsableModelFor(p);
     if (mid) cands.push([p, mid]);
   }
   return hedgedChain(cands, body, session, "cascade");
+}
+
+// ---------------------------------------------------------------------------
+// 1M-context pin — oracle DECISION 12187, verdict A (CONDITIONAL).
+// Evidence: probe session 1m-probe-20260921-1745 (13 rows,
+// strategy='longctx-probe' in the health DB; artifacts committed in
+// 7f4f79a48c; analysis in tools/sovereign-router/probes/RESULTS-2026-09-21.md)
+// verified EXACT 1M-token needle retrieval on the KEYED lane below
+// (100k/500k/1M at 3.4/9.2/18.2/41.4s) plus the verified negative:
+// OpenRouter :free caps at 262144 tokens (HTTP 400 at 500k) — no free lane
+// can serve >262k, so the pin displaces no free lane (routing doctrine:
+// ranking > free-on-provider > pay orders preference, not a pay ban).
+// Mechanism: est-token gate -> DIRECT lane call, executing OUTSIDE the
+// parallel race (the LING_DEFAULT pool-order unshift was proven a no-op in
+// DECISION 12097 and is NOT used here).
+// BINDING GUARDS (no guard = no merge):
+//  (1) Credit guard: the NVIDIA key is a free-tier BUILD key — finite and
+//      shared across the swarm, NOT one of Chris's paid subs. The pinned
+//      path is capped at LONGCTX_PIN_DAILY_CAP requests/day (~10 to start;
+//      counts EVERY pinned attempt, ok or not, since every attempt burns
+//      key credits). EVERY pinned attempt is logged under
+//      strategy='longctx-pinned' with est tokens + latency so the next
+//      oracle review has real traffic data.
+//  (2) Circuit check FIRST via state.circuitOk('nvidia') — open -> fall
+//      through to the normal race; never fight the breaker.
+// On pinned failure: the attempt is logged and the caller does a single
+// fallback to the normal race. The pin never sets session stickiness — it
+// is size-deterministic, not session-affine; the next request re-races.
+// Operational kill switch: SOVEREIGN_LONGCTX_PIN=0 disables the pin.
+// ---------------------------------------------------------------------------
+export const LONGCTX_PIN_PROVIDER = "nvidia";
+// KEYED lane ONLY — never the :free id (provider cap 262144 tokens).
+export const LONGCTX_PIN_MODEL = "nvidia/nemotron-3-super-120b-a12b";
+export const LONGCTX_PIN_GATE_TOKENS = 200_000;
+export const LONGCTX_PIN_DAILY_CAP = 10;
+const LONGCTX_PIN_STRATEGY = "longctx-pinned";
+
+export function longctxPinEnabled(): boolean {
+  return process.env.SOVEREIGN_LONGCTX_PIN !== "0";
+}
+
+/**
+ * estPromptTokens — prompt-size estimator, chars/4, the SAME estimator the
+ * 1M probe used (haystack_chars / 4.0). Counts string content and text parts
+ * of content arrays across all messages.
+ */
+export function estPromptTokens(body: ChatBody): number {
+  let chars = 0;
+  const msgs = (body as { messages?: unknown[] }).messages;
+  if (Array.isArray(msgs)) {
+    for (const m of msgs) {
+      const c = (m as { content?: unknown })?.content;
+      if (typeof c === "string") chars += c.length;
+      else if (Array.isArray(c)) {
+        for (const part of c) {
+          const t = (part as { text?: unknown })?.text;
+          if (typeof t === "string") chars += t.length;
+        }
+      }
+    }
+  }
+  return chars / 4;
+}
+
+export type LongctxPinReason =
+  | "eligible"
+  | "disabled"
+  | "under_gate"
+  | "explicit_model"
+  | "circuit_open"
+  | "no_key"
+  | "budget_exhausted";
+
+export type LongctxPinVerdict = {
+  ok: boolean;
+  reason: LongctxPinReason;
+  estTokens: number;
+};
+
+/**
+ * Eligibility only (no side effects): pin enabled, gate tripped, no
+ * explicit model request (an explicitly named model — alias,
+ * provider:model spec, catalog id — is honored, never hijacked), circuit
+ * closed (never fight the breaker), key present, daily pinned-request
+ * budget not exhausted.
+ */
+export function longctxPinEligible(body: ChatBody): LongctxPinVerdict {
+  const estTokens = estPromptTokens(body);
+  if (!longctxPinEnabled()) return { ok: false, reason: "disabled", estTokens };
+  if (estTokens <= LONGCTX_PIN_GATE_TOKENS)
+    return { ok: false, reason: "under_gate", estTokens };
+  // Explicit model requests keep their direct lane — the pin only serves
+  // the default/auto path.
+  if (isRoutableModelId(String(body.model || "auto")))
+    return { ok: false, reason: "explicit_model", estTokens };
+  if (!state.circuitOk(LONGCTX_PIN_PROVIDER))
+    return { ok: false, reason: "circuit_open", estTokens };
+  if (!keyOk(LONGCTX_PIN_PROVIDER))
+    return { ok: false, reason: "no_key", estTokens };
+  if (
+    state.health.countStrategyToday(LONGCTX_PIN_STRATEGY) >=
+    LONGCTX_PIN_DAILY_CAP
+  )
+    return { ok: false, reason: "budget_exhausted", estTokens };
+  return { ok: true, reason: "eligible", estTokens };
+}
+
+/**
+ * tryLongctxPin — fire the pin: direct callOne to the KEYED nvidia lane,
+ * skipping the race. Returns null when not eligible (caller falls through
+ * to the normal race). EVERY pinned attempt is logged under
+ * strategy='longctx-pinned' with est tokens + latency, ok or not (callOne
+ * also writes its usual STRATEGY row, so provider health/elo/circuit keep
+ * learning from pinned traffic). On failure the caller falls back to the
+ * race exactly once.
+ */
+export async function tryLongctxPin(
+  body: ChatBody,
+  sid: string,
+  stream = false,
+): Promise<RouteResult | null> {
+  const v = longctxPinEligible(body);
+  if (!v.ok) return null;
+  const r = await callOne(LONGCTX_PIN_PROVIDER, LONGCTX_PIN_MODEL, body, stream);
+  state.record(
+    LONGCTX_PIN_MODEL,
+    LONGCTX_PIN_PROVIDER,
+    r.status || (r.ok ? 200 : 500),
+    r.lat || 0,
+    r.ok ? 1 : 0,
+    LONGCTX_PIN_STRATEGY,
+    sid,
+    v.estTokens,
+  );
+  return r;
 }
 
 export const ROUTERS: Record<
@@ -655,18 +874,32 @@ export const ROUTERS: Record<
 // llama-swap roles are always zero-cost and always join.
 export function freeCandidates(): [string, string][] {
   const out: [string, string][] = [];
+  const deadOut: [string, string][] = [];
   for (const [name] of Object.entries(PROVIDERS)) {
     if (!keyOk(name) || !state.circuitOk(name)) continue;
+    // Dead-lane exclusion (503-forensics 2026-09-21): same rule as
+    // pickWeighted — dead lanes sit out unless nothing else is alive.
+    const bucket = state.laneDead(name) ? deadOut : out;
     for (const mid of catalogModelsFor(name)) {
-      // Flap-benched models sit out until their empty-strikes decay.
-      if (state.flapBanned(name, mid)) continue;
-      if (modelFree(name, mid)) out.push([name, mid]);
+      // Flap-benched models sit out until their empty-strikes decay;
+      // entitlement-benched (404) models sit out for the process lifetime.
+      if (state.flapBanned(name, mid) || state.isEntitlementDead(name, mid))
+        continue;
+      if (modelFree(name, mid)) bucket.push([name, mid]);
     }
   }
-  if (keyOk("llama-swap")) {
+  if (keyOk("llama-swap") && !state.laneDead("llama-swap")) {
     out.push(["llama-swap", LOCAL_ROLES.fast]);
     out.push(["llama-swap", LOCAL_ROLES.quality]);
     out.push(["llama-swap", LOCAL_ROLES.longctx]);
+  }
+  // Degraded mode: every lane is dead — race the dead pool anyway rather
+  // than serve 503.
+  const pool = out.length ? out : deadOut;
+  if (!pool.length && keyOk("llama-swap")) {
+    pool.push(["llama-swap", LOCAL_ROLES.fast]);
+    pool.push(["llama-swap", LOCAL_ROLES.quality]);
+    pool.push(["llama-swap", LOCAL_ROLES.longctx]);
   }
   // Ling-first default (Chris 2026-09-17): Ling leads the free pool so the
   // `free` race prefers it. A flap-banned Ling still sits out above; the
@@ -676,14 +909,14 @@ export function freeCandidates(): [string, string][] {
     "openrouter",
     "inclusionai/ling-3.0-flash-fin:free",
   ];
-  const lingIdx = out.findIndex(
+  const lingIdx = pool.findIndex(
     ([p, m]) => p === LING_DEFAULT[0] && m === LING_DEFAULT[1],
   );
   if (lingIdx > 0) {
-    out.splice(lingIdx, 1);
-    out.unshift(LING_DEFAULT);
+    pool.splice(lingIdx, 1);
+    pool.unshift(LING_DEFAULT);
   }
-  return out;
+  return pool;
 }
 
 // routeFree: maximal free-provider strategy. Races the free+local candidate

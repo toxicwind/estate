@@ -77,6 +77,17 @@ export class HealthDB {
         updated_at REAL NOT NULL
       );
     `);
+    // 1M-context pin (DECISION 12187): pinned rows carry est tokens.
+    // Idempotent — ALTER fails on a live DB if the column already exists,
+    // so gate on PRAGMA table_info.
+    const cols = this.conn
+      .query(`PRAGMA table_info(requests)`)
+      .all() as { name: string }[];
+    if (!cols.some((c) => c.name === "est_tokens")) {
+      this.conn.exec(
+        `ALTER TABLE requests ADD COLUMN est_tokens REAL NOT NULL DEFAULT 0`,
+      );
+    }
   }
 
   recordRequest(
@@ -87,13 +98,14 @@ export class HealthDB {
     strategy = "",
     winner = 0,
     sessionId = "",
+    estTokens = 0,
   ): void {
     const now = Date.now() / 1000;
     const window = now - (now % 300);
     this.conn
       .query(
-        `INSERT INTO requests (ts,provider,model,status,latency_ms,strategy,winner,session_id)
-         VALUES (?,?,?,?,?,?,?,?)`,
+        `INSERT INTO requests (ts,provider,model,status,latency_ms,strategy,winner,session_id,est_tokens)
+         VALUES (?,?,?,?,?,?,?,?,?)`,
       )
       .run(
         now,
@@ -104,6 +116,7 @@ export class HealthDB {
         strategy,
         winner,
         sessionId,
+        estTokens,
       );
 
     if (status === 200) {
@@ -244,6 +257,19 @@ export class HealthDB {
       out[provider] = { p50_ms: r2(q(0.5)), p95_ms: r2(q(0.95)), n: rows.length };
     }
     return out;
+  }
+
+  /** Pinned-path credit guard (DECISION 12187): requests logged under a
+   *  strategy since UTC midnight. The pin counts EVERY attempt (ok or not)
+   *  — every attempt burns key credits. */
+  countStrategyToday(strategy: string): number {
+    const row = this.conn
+      .query(
+        `SELECT COUNT(*) AS n FROM requests
+         WHERE strategy=? AND ts >= strftime('%s','now','start of day')`,
+      )
+      .get(strategy) as { n: number } | null;
+    return row?.n || 0;
   }
 
   stickyGet(
