@@ -3,7 +3,8 @@
  *
  * Zero-config `kimi-auto` alias for Tau/omp sessions: every command and tool
  * routes through the herd surface with `model: "kimi-auto"`, and the shim
- * resolves it to the current best live Kimi endpoint (15-min resolver audit).
+ * resolves it to the current best live model (Kimi-family preferred,
+ * any healthy family as fallback).
  *
  *   /kimi-auto <prompt>   One prompt through the alias; shows resolution first.
  *   /kimi-auto-status      Current resolution + latency + resolver freshness.
@@ -149,8 +150,8 @@ export default function kimiAutoExtension(pi: ExtensionAPI): void {
 
 	pi.registerCommand("kimi-auto", {
 		description:
-			"Run one prompt through the kimi-auto alias (best live Kimi endpoint, " +
-			"auto-resolved by the 15-min resolver audit).",
+			"Run one prompt through the kimi-auto alias (best live model, " +
+			"Kimi-family preferred, auto-resolved by the resolver audit).",
 		handler: async (args, ctx) => {
 			const prompt = args.trim();
 			if (!prompt) {
@@ -214,12 +215,13 @@ export default function kimiAutoExtension(pi: ExtensionAPI): void {
 		name: "kimi_auto_ask",
 		label: "Kimi Auto Ask",
 		description:
-			"Run one prompt through the kimi-auto alias — the best live Kimi " +
-			"endpoint, auto-resolved by the 15-minute resolver audit. Use for a " +
-			"second model's take via the Kimi family without pinning a model id. " +
+			"Run one prompt through the kimi-auto alias — the best live model " +
+			"(Kimi-family preferred, any healthy family as fallback), " +
+			"auto-resolved by the resolver audit. Use for a second model's " +
+			"take without pinning a model id. " +
 			"Parameters: prompt (string, required), maxTokens (integer 1..32000, " +
 			"optional), timeoutMs (integer 1000..600000, optional). Fails loudly " +
-			"when no Kimi model is healthy.",
+			"when no model is healthy.",
 		parameters: askParameters,
 		async execute(
 			_id: string,

@@ -168,10 +168,22 @@ section "patched files outside any repo"
 # node_modules is the classic monkeypatch zone: a debug/edit there dies on reinstall.
 if [ -d "$HOME_DIR/node_modules" ]; then
   while IFS= read -r f; do
+    # install-batch artifacts are not patches: skip files touched within 5 min
+    # of their own package's package.json (one npm install writes them together)
+    pkgdir=$(dirname "$f")
+    while [ "$pkgdir" != "$HOME_DIR" ] && [ ! -f "$pkgdir/package.json" ]; do
+      pkgdir=$(dirname "$pkgdir")
+    done
+    if [ -f "$pkgdir/package.json" ]; then
+      fm=$(stat -c %Y "$f" 2>/dev/null || echo 0)
+      pm=$(stat -c %Y "$pkgdir/package.json" 2>/dev/null || echo 0)
+      d=$(( fm - pm )); [ "$d" -lt 0 ] && d=$(( -d ))
+      [ "$d" -lt 300 ] && continue
+    fi
     emit "node_modules-patch" "file inside node_modules modified in last 14d (dies on npm reinstall)" "$f" \
       "clean revert (npm pack / reinstall the package); if it was a real fix, patch the owning repo or vendor a fork; document the incident in sovereign-projects"
   done < <(find "$HOME_DIR"/node_modules "$HOME_DIR"/*/node_modules -maxdepth 4 -type f -newermt '14 days ago' \
-    ! -name '*.log' ! -path '*/.cache/*' 2>/dev/null | head -20)
+    ! -name '*.log' ! -path '*/.cache/*' 2>/dev/null | head -200)
   # .bak/.orig sitting next to node_modules sources = a patch happened here
   while IFS= read -r f; do
     emit "node_modules-backup" "backup file next to a node_modules source (evidence of an in-place patch)" "$f" \
