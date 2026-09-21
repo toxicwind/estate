@@ -165,6 +165,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 
 | secretsmith-promoter | first-class repo promotion for secretsmith | secretsmith-promoter | RUNNING (2026-09-21) |
+| end4-corrective | sovereign-end4 system-tuning corrective commit: true zero-byte udev mask, corrected Btrfs attribution (911 exclusive bytes never measured), rewritten apply-system-tuning.sh (STAGING_ROOT isolated mode, install -m 644, service reconciliation), installer staging test (18/18 on yote), btrfs-status.sh health+guard tool, audit.py v3 (vmstat/buddyinfo/Btrfs/thermals) | Ember | DONE (2026-09-21) -- commit fedb26a0da (on top of toxic's 9e904729): 9 paths under system-tuning/, 3 executables 100755; mask blob verified 0 bytes; sysctl blob sha256 matches live /etc/sysctl.d/99-zswap-vm.conf; installer test 18/18 pass on yote; audit v3 smoke OK (unallocated_bytes=6443552768, 27 vmstat, 6 thermals); btrfs-status live report exit 0 via passwordless sudo (snapperd wedge timeout-guarded) |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
@@ -175,6 +176,7 @@ Retired/completed crews stay listed here with status DONE and their final commit
 | guidellm | `toxicwind/guidellm` (fork of `vllm-project/guidellm`) | Benchmark harness fork |
 | mcpproxy-go | `toxicwind/mcpproxy-go` (fork of `smart-mcp-proxy/mcpproxy-go`) | MCP proxy fork |
 | hatch-docs | `toxicwind/hatch-docs` (private) | Runtime/credential docs |
+| sovereign-end4 | `toxicwind/sovereign-end4` (branch `main`) | yote system-tuning: udev/sysctl/systemd/Btrfs/limine kernel profiles |
 
 **Push rules (non-negotiable):** fetch-first, never force-push, verify remote refs independently (`git ls-remote` or API). Fork histories preserved — merge/rebase properly, never squash away fork-only commits. Hatch git HTTPS pushes with broker `hsurr:` credentials FAIL (egress proxy CONNECT) — use the GitHub git-database API via the github skill's urllib surrogate helper, or commit on yote and push from there.
 
