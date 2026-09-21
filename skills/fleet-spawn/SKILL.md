@@ -48,9 +48,17 @@ below carries it. An agent that hasn't read the KB hasn't started.
 Every new agent runs this on start, BEFORE announcing itself:
 
 ```bash
-/home/toxic/sovereign/skills/fleet-spawn/fleet-onboard.sh \
-  --name <name> --task "<one-line task description>" --register
+fleet-onboard --name <name> --task "<one-line task description>" --register
 ```
+
+`fleet-onboard` is on PATH on yote (`/home/toxic/.local/bin/fleet-onboard`,
+branch-independent — it works no matter which branch the worktree sits on).
+On the hatch cell: `~/workspace/skills/fleet-spawn/fleet-onboard.sh`.
+Source of truth is `skills/fleet-spawn/fleet-onboard.sh` in this repo; the
+repo path `/home/toxic/sovereign/skills/fleet-spawn/fleet-onboard.sh` works
+as a fallback on main checkouts. After any script change, redeploy to yote:
+copy the repo file over `/home/toxic/.local/bin/fleet-onboard` (byte-exact,
+`bash -n` before chmod +x).
 
 What it does (permanent script, not guidance):
 
@@ -162,8 +170,9 @@ REQUIRED READING (hard — read before acting):
 
 FLEET PROTOCOL (non-negotiable, from the fleet-spawn skill):
 0. STEP ZERO — run fleet-onboard before anything else:
-   /home/toxic/sovereign/skills/fleet-spawn/fleet-onboard.sh \
-     --name <name> --task "<your task in one line>" --register
+   fleet-onboard --name <name> --task "<your task in one line>" --register
+   (on PATH on yote, branch-independent; on the hatch cell use
+   ~/workspace/skills/fleet-spawn/fleet-onboard.sh)
    It overlap-checks §2 Active Crews (exit 2 = coordinate in fleet first),
    registers you, and shows you the room. No KB, no start.
 1. Before acting: `squawk read fleet --n 25` — know the room. Check §2 +
