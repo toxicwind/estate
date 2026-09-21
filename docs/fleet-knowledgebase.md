@@ -193,6 +193,7 @@ Retired/completed crews stay listed here with status DONE and their final commit
 | mcpproxy-go | `toxicwind/mcpproxy-go` (fork of `smart-mcp-proxy/mcpproxy-go`) | MCP proxy fork |
 | hatch-docs | `toxicwind/hatch-docs` (private) | Runtime/credential docs |
 | sovereign-end4 | `toxicwind/sovereign-end4` (branch `main`) | yote system-tuning: udev/sysctl/systemd/Btrfs/limine kernel profiles |
+| browserless-mcp-audit | Browserless MCP 1.3.0 audit: 4 integration bugs fixed | browserless-audit-crew | DONE 2026-09-21 commit c1c544eb1f |
 
 **Push rules (non-negotiable):** fetch-first, never force-push, verify remote refs independently (`git ls-remote` or API). Fork histories preserved — merge/rebase properly, never squash away fork-only commits. Hatch git HTTPS pushes with broker `hsurr:` credentials FAIL (egress proxy CONNECT) — use the GitHub git-database API via the github skill's urllib surrogate helper, or commit on yote and push from there.
 
