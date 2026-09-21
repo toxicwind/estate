@@ -156,6 +156,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 
 | forge-union | unify github search tooling | forge-union | RUNNING (2026-09-21) |
+| ts-migration | Production Python daemons -> Bun/TS maximal + monorepo (bun workspaces + turbo.json). Tier 0: keypool, model-guard, squawk-ws, awrawr-mcp. Tier 1: exporter, stash-guard, buildsrv. Python stays only for ML/torch glue + throwaway probes | Ember (main chat) | RUNNING (2026-09-21) -- announced fleet seq 12335, no crew overlap |
 
 
 | secretsmith | secrets project: fork Secret Service tooling, maximalize into mesh project | ember | DONE (2026-09-21) — 1005ab333f |
