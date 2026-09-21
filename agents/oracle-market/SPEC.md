@@ -313,3 +313,39 @@ tasks without reading Active Crews. Now the mechanism gates it:
   the gate; bids with file-mtime before it are grandfathered once
   (`bid_grandfathered`) so in-flight bids across the deploy restart
   aren't burned.
+
+## 11. Oracle-as-approval protocol (Chris 2026-09-21)
+
+Standing directive: the oracle stands in for Chris's approvals. When an
+agent needs his sign-off (go/no-go, upgrade petitions, risky-but-reversible
+calls), it does NOT wait on Chris — it files the decision as a dated yes/no
+oracle question with evidence and treats the verdict as his word. Final.
+
+- **Framing.** Dated yes/no: `"Will <concrete outcome> by <YYYY-MM-DD>?"`.
+  For go/no-go, phrase so YES = proceed. Open-ended "what should we do"
+  questions are refused — the oracle is a prediction market, not an adviser.
+- **Evidence format.** `--evidence` takes a JSON array of dicts:
+  `[{"id":"...","text":"...","relevance":0.0-1.0}]`. Bare strings 500 the
+  engine. Keep it tight: 2-6 items, each with an id, a factual claim, and
+  a relevance weight.
+- **Ask path.** `bin/oracle_ask.py "<question>" --evidence evidence.json
+  --json` (CLI; framing → judge panel → pooled posterior → abstention
+  gate → escalation ladder → verdict JSON on stdout + `work/verdicts.jsonl`),
+  or `POST 127.0.0.1:25151/ask` (daemon). Cost is real (~$0.05/ask) —
+  don't file frivolous approvals.
+- **Verdict handling.** Read `status` in the verdict record. A firm
+  YES/NO (probability past the abstention gate) **is** Chris's approval:
+  act immediately, do not re-ask, do not wait. `status: escalate` means
+  the oracle abstained (fail-closed, e.g. no calibration data for the
+  question class) — that is the ONE case that goes to Chris directly
+  (the HUMAN step of the escalation ladder, §escalation.py).
+- **Ledger.** Every approval verdict is appended to the market ledger as
+  an `oracle-approval` event:
+  `{"event":"oracle-approval","question":"...","verdict":"yes|no|escalate",
+  "probability":0.0-1.0,"evidence_ids":[...],"agent":"...","ts":...}`.
+  The audit trail is public.
+- **Hard boundary (no exceptions).** Money and credentials stay Chris's
+  alone. The oracle can NEVER approve spending, top-ups, credential
+  minting/rotation, or anything credential-shaped. Those go to Chris
+  directly — no verdict, no debate, no workaround.
+- Fleet KB mirror: `docs/fleet-knowledgebase.md` rule 15 + procedure.

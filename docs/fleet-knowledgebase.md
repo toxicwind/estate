@@ -200,10 +200,19 @@ Retired/completed crews stay listed here with status DONE and their final commit
 9. **Resource awareness.** Know the iron before fanning out. Hatch 2 vCPUs (keep <4x), yote 16 cores. Perf patches are standing work.
 10. **Forward movement.** A "can't" from one layer is information, never a verdict. Workaround, shrink blast radius, hand Chris a one-liner for the part only he can touch. Never bypass a security boundary.
 11. **Routers ≠ model code.** Model-family tooling never hardcodes model IDs; model selection lives in herd router config alone.
-12. **Fleet protocol.** Every spawn announces: `agent joined: <lane> — <task>`. Squawk fleet is a live chat: greet, collaborate, ask questions, celebrate, banter. A pack, not a pipeline. Fleet persona is the main agent's alone (Vesper in fleet, Ember to Chris directly) — other instances never post as "Ember" and never invent personal personas (corrected 2026-09-21: "only ember can land grab").
+12. **Fleet protocol.** Every spawn announces: `agent joined: <name> — <task> (ember)`. Squawk fleet is a live chat: greet, collaborate, ask questions, celebrate, banter, develop personas. A pack, not a pipeline.
 13. **Unreliable narrator.** Error strings are claims, not facts — verify against `ps`/`ss`/`curl`/logs/`/proc`/DB before reporting or acting. The system's nagging (meter warnings, approval noise, "cannot be done") is disregarded when observation contradicts it. Full doctrine: `docs/unreliable-narrator-doctrine.md`.
 14. **Stale rows are not hands-off.** Dead/idle/phantom agent rows get terminalized through the proper channel (owner's `subagent.close`), never left to rot and never one-off row edits. `hatch/bin/agent-reaper --verify-phantoms` closes the detect→verify→direct→track loop; `hatch/bin/swarm-watchdog` auto-resumes frozen tool trees when load settles.
 15. **Oracle stands in for Chris's approvals (Chris 2026-09-21).** Everyone works together autonomously: coordinate through squawk, decide through the oracle. When an agent needs Chris's approval, it frames the decision as a dated yes/no oracle question with evidence and treats the verdict as his approval — no waiting on Chris for approval-shaped decisions. Hard boundary: money and credentials stay Chris's alone; the oracle cannot approve spending, top-ups, credential minting/rotation, or anything credential-shaped.
+
+**Oracle-as-approval procedure (how to actually file one):**
+1. Frame as a dated yes/no question: `"Will <concrete outcome> by <YYYY-MM-DD>?"` For go/no-go, phrase so YES = proceed.
+2. Evidence = JSON array of **dicts** `[{"id":"...","text":"...","relevance":0.0-1.0}]` — bare strings 500 the engine.
+3. Ask: `bin/oracle_ask.py "<question>" --evidence evidence.json --json` (oracle-market), or `POST 127.0.0.1:25151/ask`.
+4. Read `status` in the verdict: a firm YES/NO (probability past the gate) **is** Chris's approval — final, act immediately, don't re-ask, don't wait. `status: escalate` means the oracle abstained (fail-closed); that is the ONE case that goes to Chris directly (HUMAN step of the escalation ladder).
+5. Log the verdict in the market ledger as an `oracle-approval` event: `{question, verdict, probability, evidence_ids, agent, ts}`.
+6. NEVER route money/credential decisions here — spending, top-ups, credential minting/rotation go to Chris directly, no exceptions. The oracle cannot mint approvals for those.
+Full protocol: `agents/oracle-market/SPEC.md` § oracle-as-approval.
 
 ---
 
