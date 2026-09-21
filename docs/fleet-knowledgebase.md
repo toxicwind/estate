@@ -175,6 +175,8 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | squawk-feed-perf | Squawk feed + UI perf & hot-reload: bounded recent snapshot for initial load, live-append no-reload, loading/live/reconnecting/catching-up UI states; end-to-end verify | Ember's crew (squawk lane) | RUNNING (2026-09-21) |
 | tau-routing-benchmark | Fair head-to-head: Sovereign router :25104 (sovereign/free) vs TAU/oh-my-pi's actual routing extension (canonical copy mapped with ffs); benchmark suites: coding, reasoning, long-context recall, cross-chunk synthesis, contradiction handling, provenance correctness; controlled failures: broken primary, empty HTTP 200, HTTP 429, slow provider, recovery after quarantine. Build automatic effective-1M-context composite route (query-aware partitioning, parallel map via :25104, hierarchical tree reduction, per-chunk provenance, native long-context bypass); reuse LLMxMapReduce/ExtAgents/ToM patterns. Wire proven canonical route into TAU, Kimi Code, and every canonical inference caller; merge Kimi Code rewiring to canonical main | Tally (Ember's crew) | RUNNING (2026-09-21) -- fleet-lock tau-routing-benchmark held by tally-sidechat |
 
+| nvidia-openfang-browserless | NVIDIA-first embeddings for OpenFang (real nvapi key via authenticated NGC UI, Mistral fallback until proven) + persistent Browserless keeper: event-driven visible Chromium, first-class browserless-mcp tools, Quickshell float toggle button | Sable (Ember's crew) | RUNNING (2026-09-21) |
+
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
 
