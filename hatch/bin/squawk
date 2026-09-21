@@ -179,12 +179,20 @@ def send(channel, text, title="", sender=SENDER, extra_fm=None):
     # base64 so arbitrary text (quotes, newlines) can't break remote quoting;
     # @SEQ@ is substituted inside the lock.
     b64 = base64.b64encode(content.encode()).decode()
+    # NOTE (2026-09-21 lane-reaper-squawk): the channel dir must be created
+    # INSIDE the flock. Without mkdir -p, a first-ever send to a new channel
+    # read max from an empty glob (seq=1 every time) and the write redirect
+    # failed silently — 8 concurrent publishers all reported seq 1 and every
+    # message was dropped. Also: verify the file landed before claiming
+    # "published" — a silent write loss is worse than an error.
     cmd = (
         "flock %(root)s/.seq-%(ch)s.lock -c '"
+        "mkdir -p %(root)s/%(ch)s; "
         "max=$(ls %(root)s/%(ch)s/*.md 2>/dev/null | sed \"s/.*\\///; s/-.*//\" | sort -n | tail -1); "
         "seq=${max:-0}; seq=$((seq+1)); "
         "fname=${seq}-%(ss)s-%(sl)s.md; "
         "echo %(b64)s | base64 -d | sed \"s/@SEQ@/${seq}/g\" > %(root)s/%(ch)s/$fname; "
+        "[ -s %(root)s/%(ch)s/$fname ] || { echo \"squawk send: write failed for $fname\" >&2; exit 1; }; "
         "echo published $fname'"
         % {"root": SQUAWK_ROOT, "ch": channel, "ss": sender_slug, "sl": slug, "b64": b64}
     )
