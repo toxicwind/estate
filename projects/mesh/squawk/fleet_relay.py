@@ -139,19 +139,33 @@ def unseal_message(channel: str, body: str, identity: str, key_dir: Path):
 
 
 def _read_frontmatter(path: Path) -> dict:
-    """Minimal frontmatter parse (mirrors chat.parse_frontmatter semantics)."""
+    """Minimal frontmatter parse (mirrors chat.parse_frontmatter semantics).
+
+    Tolerates a missing opening '---' fence: several publishers write bare
+    'key: value' header lines followed by the closing '---'. Previously
+    those messages parsed as {} and were served as empty seq-0 ghosts;
+    now their leading 'k: v' lines are parsed until the first blank line,
+    '---', or non-header line.
+    """
     meta: dict = {}
     try:
         with path.open(encoding="utf-8") as f:
-            if not f.readline().startswith("---"):
-                return meta
-            for line in f:
-                if line.strip() == "---":
-                    break
-                if ":" not in line:
-                    continue
-                k, v = line.split(":", 1)
-                meta[k.strip()] = v.strip()
+            first = f.readline()
+            if first.startswith("---"):
+                for line in f:
+                    if line.strip() == "---":
+                        break
+                    if ":" not in line:
+                        continue
+                    k, v = line.split(":", 1)
+                    meta[k.strip()] = v.strip()
+            else:
+                for line in [first] + list(f):
+                    s = line.strip()
+                    if not s or s == "---" or ":" not in s:
+                        break
+                    k, v = s.split(":", 1)
+                    meta[k.strip()] = v.strip()
     except (OSError, UnicodeError):
         return {}
     return meta

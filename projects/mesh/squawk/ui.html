@@ -54,7 +54,7 @@
 
 <div id="app">
   <div id="log"></div>
-  <div id="status"><span><span class="dot">●</span> live</span><span id="seq"></span><span id="lat"></span></div>
+  <div id="status"><span><span class="dot" id="conn">●</span> <span id="connstat">loading…</span></span><span id="seq"></span><span id="lat"></span></div>
 </div>
 
 <script>
@@ -69,9 +69,25 @@ try {
     history.replaceState(null, '', location.pathname + location.hash);
   }
 } catch (e) {}
-let since = 0, running = false, failures = 0;
+let since = 0, running = false, failures = 0, booted = false, gen = 0;
+const TAIL = 200;       // bounded recent snapshot for initial load
+const BATCH_CAP = 50;   // server MAX_MESSAGES: a full batch means backlog
 
 function auth() { return { 'Authorization': 'Bearer ' + token }; }
+function chan() { return encodeURIComponent($('channel').value.trim() || 'fleet'); }
+
+// --- connection state: loading / live / catching-up / reconnecting -----
+const STATES = {
+  'loading':     ['#e0a458', 'loading…'],
+  'live':        ['var(--sealed)', 'live'],
+  'catching-up': ['#e0a458', 'catching up…'],
+  'reconnecting':['#c46a5a', 'reconnecting…'],
+};
+function setState(name, extra) {
+  const s = STATES[name] || STATES.live;
+  $('conn').style.color = s[0];
+  $('connstat').textContent = s[1] + (extra || '');
+}
 
 function line(html, cls) {
   const d = document.createElement('div');
@@ -92,31 +108,63 @@ function render(m) {
        `<span class="who">&lt;${esc(m.from || m.sender || '?')}&gt;</span> ${esc(m.text || m.body || '')}${sealed}${relayed}`);
 }
 
-async function poll() {
-  if (!running) return;
+async function poll(myGen) {
+  if (!running || myGen !== gen) return;
   const t0 = performance.now();
-  const ch = encodeURIComponent($('channel').value.trim() || 'fleet');
   try {
-    const r = await fetch(`wait?since=${since}&channel=${ch}`, { headers: auth(), signal: AbortSignal.timeout(60000) });
+    const r = await fetch(`wait?since=${since}&channel=${chan()}`, { headers: auth(), signal: AbortSignal.timeout(65000) });
     if (r.status === 401 || r.status === 404) throw new Error('unauthorized');
     const data = await r.json();
     failures = 0;
-    $('conn').style.color = 'var(--sealed)';
     if (Array.isArray(data.messages)) {
       // only render messages newer than our cursor (dedup across concurrent wakes)
       const fresh = data.messages.filter(m => (m.seq || 0) > since).sort((a,b) => (a.seq||0) - (b.seq||0));
       fresh.forEach(render);
       if (data.seq > since) since = data.seq;
-    } else if (data.seq > since) { since = data.seq; }
+      // a full batch means the server still has backlog: drain visibly
+      const catching = data.messages.length >= BATCH_CAP;
+      setState(catching ? 'catching-up' : 'live');
+    } else if (data.seq > since) { since = data.seq; setState('live'); }
+    else setState('live');
     $('seq').textContent = 'seq ' + since;
     $('lat').textContent = 'wake ' + Math.round(performance.now() - t0) + 'ms';
   } catch (e) {
     failures++;
-    $('conn').style.color = '#c46a5a';
+    setState('reconnecting', failures > 1 ? ` · try ${failures}` : '');
     if (failures === 1) line('feed hiccup — retrying…', 'sys');
     await new Promise(r => setTimeout(r, Math.min(5000, 500 * failures)));
   }
-  poll();
+  poll(myGen);
+}
+
+// Initial load: one bounded snapshot (the TAIL most recent messages) lands
+// us at the live cursor immediately -- no full-history drain, no reload.
+async function boot() {
+  const myGen = ++gen;
+  setState('loading');
+  if (!booted) line('tuned in — pulling the latest traffic…', 'sys');
+  try {
+    const r = await fetch(`wait?since=0&tail=${TAIL}&channel=${chan()}`, { headers: auth(), signal: AbortSignal.timeout(65000) });
+    if (r.status === 401 || r.status === 404) throw new Error('unauthorized');
+    const data = await r.json();
+    if (myGen !== gen) return; // superseded by a channel switch
+    if (Array.isArray(data.messages)) {
+      data.messages.filter(m => (m.seq || 0) > 0)
+                   .sort((a,b) => (a.seq||0) - (b.seq||0))
+                   .forEach(render);
+      if (data.seq > since) since = data.seq;
+    }
+    $('seq').textContent = 'seq ' + since;
+    setState('live');
+    booted = true;
+  } catch (e) {
+    if (myGen !== gen) return;
+    setState('reconnecting');
+    await new Promise(r => setTimeout(r, 1500));
+    if (running && myGen === gen) return boot();
+    return;
+  }
+  poll(myGen);
 }
 
 $('go').onclick = () => {
@@ -126,8 +174,15 @@ $('go').onclick = () => {
   $('gate').style.display = 'none';
   $('app').style.display = 'flex';
   running = true;
-  line('tuned in — listening for traffic', 'sys');
-  poll();
+  boot();
+};
+// switching channels re-tunes live: clear, snapshot, resume -- no reload
+$('channel').onchange = () => {
+  if (!running || !booted) return;
+  $('log').innerHTML = '';
+  since = 0; failures = 0;
+  line(`switched to #${$('channel').value.trim() || 'fleet'} — pulling the latest traffic…`, 'sys');
+  boot();
 };
 if (token) { $('token').value = token; $('go').click(); }
 </script>

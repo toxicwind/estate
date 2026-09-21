@@ -7,6 +7,17 @@ Endpoints (all under /squawk-feed):
   GET /squawk-feed/wait?since=N        bearer auth -> {"seq": M, "messages": [...]}
   GET /squawk-feed/subscribe?since=N   same handler as /wait (alias)
 
+Query params on /wait (and /subscribe):
+  since=N    cursor: messages with seq > N, oldest first, capped at 50 per
+             response; returned "seq" is the last message's seq, so the
+             client re-polls to drain the rest.
+  tail=N     bounded recent snapshot: the N most recent messages in one
+             shot, cursor set to the channel high-water mark. Fast initial
+             load instead of draining all history. Capped at TAIL_CAP.
+             Answers immediately (never parks).
+  channel=C  which channel to read (default: the daemon's --channel).
+             Restricted to [A-Za-z0-9_-]; unknown channel -> 404.
+
 Auth: `Authorization: Bearer <token>`, constant-time compare
 (hmac.compare_digest); missing or invalid -> 404 with an empty body, never
 revealing the endpoint exists. The token auto-configures server-style:
@@ -127,9 +138,11 @@ TOKEN_FILE_DEFAULT = str(Path.home() / ".shingle" / "squawk-relay" / "feed-token
 SETTINGS_FILE_DEFAULT = str(Path.home() / ".shingle" / "squawk-relay" / "settings.conf")
 HOLD_SECONDS = 55.0
 MAX_MESSAGES = 50
+TAIL_CAP = 1000  # server-side ceiling for ?tail=N snapshots
 TEXT_CAP = 500
 WATCH_MASK = 0x00000008 | 0x00000100  # IN_CLOSE_WRITE | IN_MOVED_TO
 _MSG_RE = re.compile(r"^(\d+)-.*\.md$")
+_CHANNEL_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$")
 
 
 # ---------------------------------------------------------------------------
@@ -187,16 +200,24 @@ def _channel_high(chan_dir: Path) -> int:
 
 
 def _new_messages(chan_dir: Path, since: int) -> list:
-    out = []
+    """Paths of messages with seq > since, oldest first (numeric seq order).
+
+    Numeric sort, not lexicographic: filenames are "<seq>-*.md" and seqs
+    cross digit widths (9999 -> 10000), so plain sorted() misorders them.
+    """
+    hits = []
     try:
         names = os.listdir(chan_dir)
     except OSError:
-        return out
-    for name in sorted(names):
+        return []
+    for name in names:
         m = _MSG_RE.match(name)
-        if m and int(m.group(1)) > since:
-            out.append(chan_dir / name)
-    return out
+        if m:
+            seq = int(m.group(1))
+            if seq > since:
+                hits.append((seq, name))
+    hits.sort(key=lambda t: (t[0], t[1]))
+    return [chan_dir / name for _, name in hits]
 
 
 class FeedState:
@@ -260,13 +281,23 @@ def _truncate(text, cap: int = TEXT_CAP) -> str:
 
 
 def build_fat(since: int, state: FeedState,
-              max_messages: int = MAX_MESSAGES) -> dict:
+              max_messages: int = MAX_MESSAGES,
+              tail: int | None = None) -> dict:
     """{"seq": M, "messages": [...]} for messages with seq > since.
 
     M is the seq of the last message in the batch (== channel high-water
     when nothing was capped), so the client can re-poll to drain.
+
+    tail=N: bounded recent snapshot -- the N most recent messages in one
+    shot (ignores the 50-cap, honours TAIL_CAP), M set to the channel
+    high-water mark. For fast initial load; live updates then continue
+    with plain since-cursor long-polls.
     """
-    paths = _new_messages(state.chan_dir, since)[:max_messages]
+    paths = _new_messages(state.chan_dir, since)
+    if tail is not None and tail > 0:
+        paths = paths[-min(tail, TAIL_CAP):]
+    else:
+        paths = paths[:max_messages]
     messages = []
     last = since
     for p in paths:
@@ -276,9 +307,20 @@ def build_fat(since: int, state: FeedState,
         rec["body"] = _truncate(rec.get("body"))
         messages.append(rec)
         last = max(last, int(rec["seq"]))
+    if paths:
+        # Drain progress is driven by filename seqs too: even if a record
+        # carries seq 0 (unparseable frontmatter), the files in this batch
+        # are consumed and never re-fetched.
+        last = max(last, max(int(_MSG_RE.match(p.name).group(1))
+                             for p in paths))
     if not messages:
         with state.cond:
             last = state.high
+    elif tail is not None and tail > 0:
+        # Snapshot: cursor jumps straight to the live high-water mark so
+        # the client long-polls from "now" instead of draining history.
+        with state.cond:
+            last = max(last, state.high)
     return {"seq": last, "messages": messages}
 
 
@@ -327,12 +369,28 @@ class _Handler(http.server.BaseHTTPRequestHandler):
         want = "Bearer " + token
         return bool(token) and hmac.compare_digest(presented, want)
 
+    def _channel_state(self, qs) -> "FeedState | None":
+        """Resolve ?channel=C to a live FeedState (lazily watched).
+
+        The UI has always sent ?channel=; previously the server ignored it.
+        Names are restricted to [A-Za-z0-9_-] and must be an existing
+        directory directly under the chat root -- no traversal, no 404
+        oracle beyond "no such channel".
+        """
+        raw = (qs.get("channel", [self.server.default_channel])[0] or "").strip()
+        if not _CHANNEL_RE.match(raw):
+            return None
+        return self.server.state_for(raw)
+
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
         if path in ("/squawk-feed/ping", "/squawk-feed/seq"):  # /seq kept for the relay agent
-            with self.server.state.cond:
-                high = self.server.state.high
+            qs = urllib.parse.parse_qs(parsed.query)
+            state = self._channel_state(qs) or self.server.state_for(
+                self.server.default_channel)
+            with state.cond:
+                high = state.high
             self._send_json(200, {"seq": high})
             return
         if path in ("/squawk-feed/wait", "/squawk-feed/subscribe"):
@@ -345,11 +403,23 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             except (TypeError, ValueError):
                 since = 0
             since = max(since, 0)
-            state = self.server.state
-            with state.cond:
-                if state.high <= since:
-                    state.cond.wait(timeout=self.server.hold)
-            self._send_json(200, build_fat(since, state))
+            try:
+                tail = int(qs.get("tail", ["0"])[0])
+            except (TypeError, ValueError):
+                tail = 0
+            tail = min(max(tail, 0), TAIL_CAP) or None
+            state = self._channel_state(qs)
+            if state is None:
+                self._send_404()
+                return
+            if tail is None:
+                # Classic cursor long-poll: park until inotify wakes us or
+                # the hold expires.
+                with state.cond:
+                    if state.high <= since:
+                        state.cond.wait(timeout=self.server.hold)
+            # tail snapshots answer immediately -- never park.
+            self._send_json(200, build_fat(since, state, tail=tail))
             return
         if path in ("/squawk-feed/", "/squawk-feed/ui"):
             self._send_ui()
@@ -361,13 +431,48 @@ class FeedServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     daemon_threads = True
     allow_reuse_address = True
 
-    def __init__(self, addr, state: FeedState, token: str,
+    def __init__(self, addr, root: Path, default_channel: str,
+                 identity: str, key_dir: Path, token: str,
                  hold: float = HOLD_SECONDS, ui_file=None):
-        self.state = state
+        self.root = root
+        self.default_channel = default_channel
+        self.identity = identity
+        self.key_dir = key_dir
         self.token = token
         self.hold = hold
         self.ui_file = Path(ui_file) if ui_file else Path(__file__).with_name("ui.html")
+        self._states: dict = {}
+        self._states_lock = threading.Lock()
         super().__init__(addr, _Handler)
+        # Pre-warm the default channel so /ping is hot at boot.
+        self.state_for(default_channel)
+
+    @property
+    def state(self) -> FeedState:
+        """Default channel state (back-compat for existing callers)."""
+        return self.state_for(self.default_channel)
+
+    def state_for(self, channel: str) -> "FeedState | None":
+        """Lazily create (and inotify-watch) per-channel tail state."""
+        with self._states_lock:
+            state = self._states.get(channel)
+            if state is not None:
+                return state
+            chan_dir = self.root / channel
+            if not chan_dir.is_dir():
+                return None
+            state = FeedState(chan_dir, channel, self.identity, self.key_dir)
+            watcher = threading.Thread(target=_watch_loop, args=(state,),
+                                       daemon=True)
+            watcher.start()
+            self._states[channel] = state
+            return state
+
+    def stop_watchers(self):
+        with self._states_lock:
+            states = list(self._states.values())
+        for state in states:
+            state.stop.set()
 
 
 def _ensure_keys_env(root: Path) -> None:
@@ -389,12 +494,9 @@ def serve(*, root: Path, channel: str, identity: str, key_dir: Path,
     if not chan_dir.is_dir():
         raise RuntimeError(f"channel '{channel}' not found under {root}")
     _ensure_keys_env(root)
-    state = FeedState(chan_dir, channel, identity, key_dir)
-    watcher = threading.Thread(target=_watch_loop, args=(state,),
-                               daemon=True)
-    watcher.start()
-    server = FeedServer((bind, port), state, token, hold, ui_file)
-    server.feed_state = state
+    server = FeedServer((bind, port), root, channel, identity, key_dir,
+                        token, hold, ui_file)
+    server.feed_state = server.state  # back-compat alias (default channel)
     return server
 
 
@@ -506,7 +608,7 @@ def main(argv=None) -> None:
     except KeyboardInterrupt:
         pass
     finally:
-        server.feed_state.stop.set()
+        server.stop_watchers()
 
 
 if __name__ == "__main__":
