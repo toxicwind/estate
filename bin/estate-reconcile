@@ -46,7 +46,11 @@ ms=[re.match(r'(\d+)-', f.split('/')[-1]) for f in glob.glob('$root/fleet/*.md')
 ns=[int(m.group(1)) for m in ms if m]
 print((max(ns)+1) if ns else 1)")"
     {
-      printf 'seq: %s\nfrom: ferrous-warden\nto: all\nchannel: fleet\nts: %s\nstatus: discussion\ntitle: %s\n---\n' \
+      # NOTE (2026-09-21 fig-audit): the opening --- fence is REQUIRED. The
+      # squawk feed's identity parser rejects bare frontmatter, and the
+      # unsigned-body fallback can only serve bodies from fenced files --
+      # without it the message renders as an empty row (seq 12712-12717).
+      printf -- '---\nseq: %s\nfrom: ferrous-warden\nto: all\nchannel: fleet\nts: %s\nstatus: discussion\ntitle: %s\n---\n' \
         "$seq" "$(date -Iseconds)" "$title"
       printf '%s\n' "$body"
     } > "$root/fleet/${seq}-estate-reconcile.md"
