@@ -807,3 +807,14 @@ port = 25195
 ready_cmd = "ss -ltn 'sport = :25195' | grep -q LISTEN"
 health_port = { port = 25195, interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
+# estate-reconcile-watch — event-driven config/binary drift watcher (WS2).
+# supervises: bin/estate-reconcile watch (inotify event loop over manifest
+# dirs; no timers, no polls). Drifted binaries are restored atomically from
+# immutable copies or signed git HEAD; declared configs are report-only.
+# Squawks on drift/restore. Added 2026-09-21.
+[daemons.estate-reconcile-watch]
+run = "exec /home/toxic/sovereign/bin/estate-reconcile watch"
+dir = "/home/toxic/sovereign"
+mise = false
+retry = true
+auto = ["start"]
