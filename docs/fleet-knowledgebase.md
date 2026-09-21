@@ -45,7 +45,8 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | 25147 | squawk-ws (fleet chat backend) |
 | 25135 | squawk-feed (global seq feed) |
 | 25146 | WhatsApp webhook backend |
-| 4200 (127.0.0.1) | OpenFang kernel daemon |
+| 25196 (127.0.0.1) | OpenFang kernel daemon (single instance; dashboard UI + /v1 + /api) |
+| 25103 | OpenFang mesh-front (public proxy -> :25196 kernel, serves /mesh/* features) |
 | 8377 / 8378 / 8379 | /mcp, /gemini-mcp, /exec-ws backends (via tailscale Funnel on 443) |
 | 25212 | Cockpit web console (`https://awrawr-pc:25212/`, moved from :9090 via systemd drop-in 2026-09-20) |
 
@@ -135,6 +136,18 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 
 | oracle-repair | oracle E2E defect repair | oracle-repair | DONE (2026-09-21): lifecycle repair live-verified E2E (intake->signed task->bids->vickrey assign->real super-ralph->signed result->settlement verified->next_work). Commits ad2ade8077 + e25b2e6b25 on nim-probe-20260920, pushed to toxicwind/sovereign-projects. |
+
+
+| itvx-merge-7dee | merge itvx-browserless into browserless-mcp, move to sovereign mesh | itvx-merge-7dee | DONE (2026-09-21): unified projects/mesh/browserless (browserless-mcp 1.1.0 + itvx native launcher); daemon itvx-browserless on :25130 restarted via owned sequence, auth gate 401/200 verified, live /content fetch + MCP handshake (15 tools) proven. Commits 9bab2b8a95 + 4b8421b719 on toxicwind/sovereign-projects main (ls-remote verified). |
+
+
+| volt | zswap/nvidia-persistenced/hardware health on yote | parent-orchestrator | DONE (2026-09-21) — lane-2-complete-no-repo-changes |
+
+
+| cookie-ferry | firefox-to-chromium login migration | ember | RUNNING (2026-09-21) |
+
+
+| forge-union | unify github search tooling | forge-union | RUNNING (2026-09-21) |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
