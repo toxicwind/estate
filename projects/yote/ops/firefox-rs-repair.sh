@@ -71,7 +71,7 @@ CHANGED=0   # set to 1 whenever a real mutation happens
 # --- logging ----------------------------------------------------------------
 log()  { [ "$QUIET" -eq 1 ] && return 0; printf '%s\n' "$*"; }
 vlog() { [ "$QUIET" -eq 1 ] && return 0; printf '  %s\n' "$*"; }
-log_to_file() { printf '%s %s\n' "$(date -u +%FT%TZ)" "$*" >>"$LOG_FILE" 2>/dev/null || true; }
+log_to_file() { { printf '%s %s\n' "$(date -u +%FT%TZ)" "$*" >>"$LOG_FILE"; } 2>/dev/null || true; }
 note_change() { CHANGED=1; log_to_file "CHANGE: $*"; log "  [changed] $*"; }
 
 die() { printf '%s: ERROR: %s\n' "$PROG" "$*" >&2; exit 1; }
