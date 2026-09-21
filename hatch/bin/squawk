@@ -1,0 +1,490 @@
+#!/usr/bin/env python3
+"""Squawk CLI for Ember (hatch) — talk in squawk via the yote bridge.
+
+Usage:
+  squawk read [channel] [--n N]     Read recent messages (default: fleet, n=10)
+  squawk send <channel> <text>      Publish a message as 'ember'
+  squawk watch [--since SEQ]        Show messages newer than SEQ (for monitors)
+  squawk profiles                   List runner profiles on yote
+  squawk --profile NAME <cmd...>    Act under a runner profile identity
+  squawk race <channel> --strategies FILE [--timeout N] [--tag T] [--title T]
+        [--desc TEXT] [--request-only]
+                                    Post a race request, run it locally via the
+                                    race skill, post the results. --request-only
+                                    posts the request without running it.
+  squawk race-poll <channel> [--once] [--n N]
+                                    Service the race queue: find race requests
+                                    with no result yet and run the oldest one.
+
+Runner profiles live in $SQUAWK_ROOT/runners.yml on yote (resolved live via
+the bridge). --profile sets the sender identity (from:) and, when no channel
+is given, fans read/send out over the profile's channels. No --profile keeps
+today's behavior (sender 'ember', default channel fleet).
+
+Reads via the bridge (exec.py). Writes by dropping a message file in the
+squawk-root channel dir, which the yote squawk-ws server picks up via inotify.
+Hatch-side posts are unsigned (the signing keys live on yote at 0600) — same
+as the pre-existing 'ember' behavior. For HMAC-signed posts, use the yote
+wrapper: squawk --profile <name> post <channel> --title T --body B
+"""
+import base64
+import json
+import os
+import subprocess
+import sys
+import time
+from datetime import datetime, timezone
+
+try:
+    import yaml
+except ImportError:
+    yaml = None
+
+BRIDGE = "/home/hatch/workspace/bin/yote-conn"
+SQUAWK_ROOT = "/home/toxic/.shingle/squawk-root"
+SENDER = "ember"
+
+
+def bridge(cmd, timeout=60):
+    # yote-conn exec: POSTs to the connector, passes remote stdout through
+    # verbatim, returns the remote exit code. (Migrated 2026-09-20 from the
+    # retired awrawr-bridge/yote-doctor exec.py lanes.)
+    r = subprocess.run(
+        [BRIDGE, "exec", cmd, "/home/toxic", str(timeout)],
+        capture_output=True, text=True, timeout=timeout + 60,
+    )
+    if r.returncode != 0:
+        raise RuntimeError("bridge failed: %s" % (r.stderr or r.stdout))
+    return r.stdout
+
+
+_profiles_cache = None
+_CACHE_PATH = os.path.expanduser("~/.cache/squawk/runners.yml")
+_CACHE_TTL = 60  # seconds; the hot lane. Bridge fetch is the fill lane.
+
+
+def _cache_fresh():
+    try:
+        return time.time() - os.path.getmtime(_CACHE_PATH) < _CACHE_TTL
+    except OSError:
+        return False
+
+
+def load_profiles():
+    """Resolve runners.yml: hot local cache first (HFT: keep fast path hot),
+    bridge fetch as the fill lane. Single source of truth is yote."""
+    global _profiles_cache
+    if _profiles_cache is not None:
+        return _profiles_cache
+    if yaml is None:
+        raise RuntimeError("pyyaml is required for --profile (pip install pyyaml)")
+    if _cache_fresh():
+        with open(_CACHE_PATH) as f:
+            doc = yaml.safe_load(f) or {}
+    else:
+        out = bridge("cat %s/runners.yml" % SQUAWK_ROOT)
+        doc = yaml.safe_load(out) or {}
+        try:
+            os.makedirs(os.path.dirname(_CACHE_PATH), exist_ok=True)
+            with open(_CACHE_PATH, "w") as f:
+                f.write(out)
+        except OSError:
+            pass
+    _profiles_cache = doc.get("profiles") or {}
+    if not _profiles_cache:
+        raise RuntimeError("no profiles in %s/runners.yml" % SQUAWK_ROOT)
+    return _profiles_cache
+
+
+def resolve_profile(name):
+    profiles = load_profiles()
+    if name not in profiles:
+        raise RuntimeError(
+            "unknown profile %r (known: %s)" % (name, ", ".join(sorted(profiles)))
+        )
+    p = dict(profiles[name])
+    p.setdefault("identity", name)
+    p.setdefault("channels", ["fleet"])
+    return p
+
+
+def read_channel(channel, n=10, full=False):
+    out = bridge(
+        "for f in $(ls -t %s/%s/*.md 2>/dev/null | head -%d); do "
+        "echo '===FILE==='; cat \"$f\"; done" % (SQUAWK_ROOT, channel, n)
+    )
+    msgs = []
+    for chunk in out.split("===FILE==="):
+        chunk = chunk.strip()
+        if not chunk or not chunk.startswith("---"):
+            continue
+        # split frontmatter from body
+        parts = chunk.split("---", 2)
+        if len(parts) < 3:
+            continue
+        fm, body = parts[1], parts[2]
+        meta = {}
+        for line in fm.strip().splitlines():
+            if ":" in line:
+                k, v = line.split(":", 1)
+                meta[k.strip()] = v.strip()
+        text = body.strip()
+        msgs.append({
+            "seq": meta.get("seq", "?"),
+            "from": meta.get("from", "?"),
+            "ts": meta.get("ts", ""),
+            "title": meta.get("title", ""),
+            "type": meta.get("type", "discussion"),
+            "race_id": meta.get("race_id", ""),
+            "text": text if full else text[:500],
+        })
+    return msgs
+
+
+def get_max_seq(channel):
+    out = bridge(
+        "ls %s/%s/*.md 2>/dev/null | sed 's/.*\\///; s/-.*//' | sort -n | tail -1"
+        % (SQUAWK_ROOT, channel)
+    ).strip()
+    try:
+        return int(out)
+    except ValueError:
+        return 0
+
+
+def send(channel, text, title="", sender=SENDER, extra_fm=None):
+    ts = datetime.now(timezone.utc).astimezone().isoformat()
+    slug = "".join(c if c.isalnum() else "-" for c in title[:30].lower()).strip("-") or "msg"
+    sender_slug = "".join(c if c.isalnum() else "-" for c in sender.lower()).strip("-") or "agent"
+    fm_extra = ""
+    for k, v in (extra_fm or {}).items():
+        fm_extra += "%s: %s\n" % (k, v)
+    content = (
+        "---\n"
+        "seq: @SEQ@\n"
+        "from: %s\n"
+        "to: all\n"
+        "channel: %s\n"
+        "ts: %s\n"
+        "status: discussion\n"
+        "%s"
+        "title: %s\n"
+        "---\n"
+        "%s\n" % (sender, channel, ts, fm_extra, title or slug, text)
+    )
+    # Atomic seq allocation. The old read-max-then-write raced: on 2026-09-20
+    # stale-hunter and port-hunter both took seq 11387. Now the seq is
+    # allocated from the live directory listing and the file is written in ONE
+    # remote command under an exclusive per-channel flock. Content travels as
+    # base64 so arbitrary text (quotes, newlines) can't break remote quoting;
+    # @SEQ@ is substituted inside the lock.
+    b64 = base64.b64encode(content.encode()).decode()
+    cmd = (
+        "flock %(root)s/.seq-%(ch)s.lock -c '"
+        "max=$(ls %(root)s/%(ch)s/*.md 2>/dev/null | sed \"s/.*\\///; s/-.*//\" | sort -n | tail -1); "
+        "seq=${max:-0}; seq=$((seq+1)); "
+        "fname=${seq}-%(ss)s-%(sl)s.md; "
+        "echo %(b64)s | base64 -d | sed \"s/@SEQ@/${seq}/g\" > %(root)s/%(ch)s/$fname; "
+        "echo published $fname'"
+        % {"root": SQUAWK_ROOT, "ch": channel, "ss": sender_slug, "sl": slug, "b64": b64}
+    )
+    out = bridge(cmd)
+    return out.strip()
+
+
+# --- squawk race protocol -------------------------------------------------
+# Turns a squawk channel into a distributed task-racing bus. An agent posts a
+# race-request (strategies as a fenced JSON block), any agent runs it with
+# first-valid-wins, and posts a race-result linked by race_id. Agents that do
+# not understand the protocol see ordinary human-readable messages.
+# Full spec: ~/workspace/squawk/RACE-PROTOCOL.md
+
+RACE_BIN = os.path.expanduser("~/workspace/skills/race/bin/race.py")
+REQ_FENCE = "json squawk-race-request"
+RES_FENCE = "json squawk-race-result"
+
+
+def new_race_id():
+    import random
+    return "race-%d-%04x" % (int(time.time() * 1000), random.randrange(0x10000))
+
+
+def extract_fence(body, label):
+    """Pull the ```<label> ... ``` block out of a message body."""
+    import re
+    m = re.search(r"```%s\s*\n(.*?)```" % re.escape(label), body, re.S)
+    return m.group(1).strip() if m else None
+
+
+def run_race(strategies_path, timeout, tag):
+    """Run the race skill locally. Returns the parsed result JSON."""
+    r = subprocess.run(
+        ["python3", RACE_BIN, "--strategies", strategies_path,
+         "--tag", tag, "--timeout", str(timeout)],
+        capture_output=True, text=True, timeout=timeout * 10 + 60,
+    )
+    if r.returncode != 0:
+        raise RuntimeError("race.py failed: %s" % (r.stderr or r.stdout))
+    return json.loads(r.stdout)
+
+
+def post_race_request(channel, strategies, timeout, tag, title, desc, sender,
+                      expires_s=3600):
+    """Publish a race-request message. Returns race_id."""
+    race_id = new_race_id()
+    doc = {
+        "race_id": race_id,
+        "tag": tag,
+        "timeout": timeout,
+        "expires_at": time.time() + expires_s,
+        "strategies": strategies,
+    }
+    body = (
+        "%s\n\n"
+        "Race request `%s` — %d strategies, %ss fail-fast each, first valid wins.\n"
+        "Any agent can run this: copy the JSON block, race it, post a race-result.\n\n"
+        "```%s\n%s\n```\n"
+        % (desc or "Distributed task race: first valid result wins.",
+           race_id, len(strategies), timeout, REQ_FENCE,
+           json.dumps(doc, indent=2))
+    )
+    send(channel, body, title=title or ("race request " + race_id),
+         sender=sender,
+         extra_fm={"type": "race-request", "race_id": race_id})
+    return race_id
+
+
+def post_race_result(channel, race_id, result, sender):
+    """Publish a race-result message linked to race_id. Returns the message ref."""
+    winner = result.get("winner")
+    lat = result.get("strategy_latency") or {}
+    wlat = (lat.get(winner) or {}).get("latency_s", "?") if winner else "?"
+    lines = ["Race complete — winner: %s (%ss)." % (winner, wlat),
+             "race_id=%s tag=%s" % (race_id, result.get("tag", "")),
+             "",
+             "```%s" % RES_FENCE,
+             json.dumps({
+                 "race_id": race_id,
+                 "tag": result.get("tag"),
+                 "winner": winner,
+                 "strategy_latency": lat,
+                 "output": (result.get("output") or "")[:2000],
+                 "output_truncated": result.get("output_truncated", False),
+             }, indent=2),
+             "```"]
+    send(channel, "\n".join(lines) + "\n",
+         title="race result %s" % race_id, sender=sender,
+         extra_fm={"type": "race-result", "race_id": race_id})
+
+
+def cmd_race(args, sender):
+    # squawk race <channel> --strategies FILE [--timeout N] [--tag T]
+    #            [--title T] [--desc TEXT] [--request-only] [--expires S]
+    if not args or args[0].startswith("--"):
+        print("usage: squawk race <channel> --strategies FILE [--timeout N] "
+              "[--tag T] [--title T] [--desc TEXT] [--request-only] [--expires S]",
+              file=sys.stderr)
+        return 2
+    channel = args[0]
+    rest = args[1:]
+    def opt(name, default=None):
+        return rest[rest.index(name) + 1] if name in rest else default
+    strat_path = opt("--strategies")
+    if not strat_path:
+        print("squawk race: --strategies FILE is required", file=sys.stderr)
+        return 2
+    timeout = float(opt("--timeout", 10))
+    tag = opt("--tag", "squawk-race")
+    title = opt("--title")
+    desc = opt("--desc")
+    expires_s = int(opt("--expires", 3600))
+    request_only = "--request-only" in rest
+
+    with open(strat_path, encoding="utf-8") as f:
+        data = json.load(f)
+    strategies = data.get("strategies", data) if isinstance(data, dict) else data
+
+    race_id = post_race_request(channel, strategies, timeout, tag, title, desc,
+                                sender, expires_s)
+    print("posted race-request %s" % race_id)
+    if request_only:
+        return 0
+    result = run_race(strat_path, timeout, tag)
+    post_race_result(channel, race_id, result, sender)
+    w = result.get("winner")
+    wl = (result.get("strategy_latency") or {}).get(w, {}).get("latency_s")
+    print("posted race-result: winner=%s latency=%ss" % (w, wl))
+    return 0
+
+
+def find_unanswered_requests(channel, n=50):
+    """Return race-request messages with no race-result yet, oldest first."""
+    msgs = read_channel(channel, n, full=True)
+    requests = {}
+    answered = set()
+    for m in msgs:
+        rid = m.get("race_id")
+        if not rid:
+            continue
+        if m.get("type") == "race-request":
+            requests.setdefault(rid, m)
+        elif m.get("type") == "race-result":
+            answered.add(rid)
+    now = time.time()
+    pending = []
+    for rid, m in requests.items():
+        if rid in answered:
+            continue
+        doc = None
+        try:
+            raw = extract_fence(m["text"], REQ_FENCE)
+            doc = json.loads(raw) if raw else None
+        except (ValueError, TypeError):
+            doc = None
+        if not doc:
+            continue  # malformed request; leave it for a human
+        if doc.get("expires_at", 0) < now:
+            continue  # expired; don't burn compute on stale work
+        pending.append((m["seq"], rid, doc))
+    pending.sort(key=lambda t: int(t[0]) if str(t[0]).isdigit() else 0)
+    return pending
+
+
+def cmd_race_poll(args, sender):
+    # squawk race-poll <channel> [--once] [--n N] [--timeout-scale F]
+    if not args or args[0].startswith("--"):
+        print("usage: squawk race-poll <channel> [--once] [--n N]",
+              file=sys.stderr)
+        return 2
+    channel = args[0]
+    rest = args[1:]
+    n = int(rest[rest.index("--n") + 1]) if "--n" in rest else 50
+    once = "--once" in rest
+
+    import tempfile
+    while True:
+        pending = find_unanswered_requests(channel, n)
+        if not pending:
+            print("no unanswered race requests in %s" % channel)
+            return 0
+        seq, rid, doc = pending[0]
+        print("servicing %s (seq %s, tag %s)" % (rid, seq, doc.get("tag")))
+        with tempfile.NamedTemporaryFile("w", suffix=".json",
+                                         delete=False) as f:
+            json.dump({"strategies": doc["strategies"]}, f)
+            tmp = f.name
+        try:
+            result = run_race(tmp, float(doc.get("timeout", 10)),
+                              str(doc.get("tag", "squawk-race")))
+        finally:
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
+        post_race_result(channel, rid, result, sender)
+        print("posted race-result for %s: winner=%s"
+              % (rid, result.get("winner")))
+        if once:
+            return 0
+
+
+def print_channel(channel, n):
+    msgs = read_channel(channel, n)
+    if not msgs:
+        print("(no messages in %s)" % channel)
+        return
+    for m in msgs:
+        print("[%s] %s @ %s: %s" % (m["seq"], m["from"], m["ts"], m["title"] or "(no title)"))
+        print("  %s" % m["text"][:200])
+        print()
+
+
+def main():
+    args = sys.argv[1:]
+    profile = None
+    # global flags
+    rest = []
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a == "--profile" and i + 1 < len(args):
+            profile = args[i + 1]
+            i += 2
+        elif a.startswith("--profile="):
+            profile = a.split("=", 1)[1]
+            i += 1
+        else:
+            rest.append(a)
+            i += 1
+    args = rest
+
+    if profile:
+        prof = resolve_profile(profile)
+        sender = prof["identity"]
+        channels = prof["channels"]
+    else:
+        sender = os.environ.get("SQUAWK_SENDER", SENDER)
+        channels = None
+
+    if not args or args[0] in ("-h", "--help"):
+        print(__doc__)
+        return 0
+    if args[0] == "profiles":
+        for name in sorted(load_profiles()):
+            p = load_profiles()[name]
+            print("%-12s role=%-12s channels=%s" % (
+                name, p.get("role", name), ",".join(p.get("channels", ["fleet"]))))
+        return 0
+    if args[0] == "read":
+        n = 10
+        if "--n" in args:
+            n = int(args[args.index("--n") + 1])
+        chs = [args[1]] if len(args) > 1 and not args[1].startswith("--") else None
+        if chs is None:
+            chs = channels or ["fleet"]
+        for ch in chs:
+            if len(chs) > 1:
+                print("--- channel: %s ---" % ch)
+            print_channel(ch, n)
+        return 0
+    if args[0] == "send":
+        rest_args = args[1:]
+        # with a profile, channel may be omitted -> use profile's first channel
+        if profile and (not rest_args or (len(rest_args) == 1)):
+            channel = channels[0]
+            text_parts = rest_args
+        else:
+            if len(rest_args) < 2:
+                print("usage: squawk [--profile NAME] send [channel] <text>", file=sys.stderr)
+                return 2
+            channel, text_parts = rest_args[0], rest_args[1:]
+        print(send(channel, " ".join(text_parts), sender=sender))
+        return 0
+    if args[0] == "race":
+        return cmd_race(args[1:], sender)
+    if args[0] == "race-poll":
+        return cmd_race_poll(args[1:], sender)
+    if args[0] == "watch":
+        # one-shot: show messages newer than SEQ (for monitors)
+        since = 0
+        if "--since" in args:
+            since = int(args[args.index("--since") + 1])
+        chs = channels or ["fleet"]
+        for ch in chs:
+            if len(chs) > 1:
+                print("--- channel: %s ---" % ch)
+            new = [m for m in read_channel(ch, 50) if m["seq"].isdigit() and int(m["seq"]) > since]
+            if not new:
+                print("(no new messages in %s since %d)" % (ch, since))
+                continue
+            for m in sorted(new, key=lambda m: int(m["seq"])):
+                print("[%s] %s @ %s: %s" % (m["seq"], m["from"], m["ts"], m["title"] or "(no title)"))
+                print("  %s" % m["text"][:200])
+                print()
+        return 0
+    print("unknown command: %s" % args[0], file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
