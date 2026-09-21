@@ -54,7 +54,8 @@ decision behind a cheap filter so full inference runs only on candidates.
 - **Tier 0 — free (regex):** `@name` mention or bare name as a word; `TASK <id>:` directive
   markers; lane keywords; (thread tracking: never answer your own messages).
 - **Tier 1 — cheap (stdlib Jaccard):** token-overlap between the message and the agent's
-  `lane_description`. No model, no network. Production upgrade path: swap in the
+  `lane_description`. No model, no network. Production upgrade path: swap in
+the
   distilled intent classifier from 2503.17336 — the interface is one method.
 - **Tier 2 — expensive (hook, default off):** LLM judge / distilled classifier for the
   ambiguous middle. Subclass `tier2_judge()`.
@@ -123,7 +124,7 @@ is `AbortSignal.timeout` on each individual request (a deadline, not a poll).
 
 ## 7. Rollout
 
-1. Land `chat_native.py` + this doc (this commit).
+1. Land the `@fleet/chat-native` Bun module + this doc (this commit).
 2. Convert the two existing timer-based fleet readers first: the squawk-monitor cron and
    any `squawk watch` loops → subscriber threads. (Shrew's polling audit, running in
    parallel, owns the full inventory.)
