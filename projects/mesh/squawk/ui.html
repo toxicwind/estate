@@ -150,29 +150,44 @@ function line(html, cls) {
 }
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-/* tiny markdown renderer: escape-first, safe-HTML-only output (user HTML never passes through).
-   blocks: fenced code, headings (#-####), blockquotes (>), bullet/numbered lists, paragraphs.
-   inline: `code`, **bold**, *italic*, [text](http(s)://url). fail-soft: anything odd stays literal. */
+/* markdown + FIRST-CLASS raw HTML/CSS (Chris 2026-09-21, direct order):
+   raw HTML passes through untouched and renders as authored — tags, inline
+   styles, <style> and <script> blocks all execute. Markdown constructs still
+   render around it. Fenced code blocks stay literal (code is code). */
 function mdInline(s) {
+  // split into raw HTML tags vs text runs; tags pass through, text gets md
+  return String(s).split(/(<[^>]*>)/g).map((p, i) => i % 2 ? p : mdText(p)).join('');
+}
+function mdText(s) {
   let out = esc(s);
   const codes = [];
   out = out.replace(/`([^`\n]+)`/g, (m, c) => { codes.push(c); return '\u0000' + (codes.length - 1) + '\u0000'; });
-  out = out.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
-  out = out.replace(/(^|[^*\w])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+  out = out.replace(/\*\*([^*\\n]+)\*\*/g, '<strong>$1</strong>');
+  out = out.replace(/(^|[^*\w])\*([^*\\n]+)\*/g, '$1<em>$2</em>');
   out = out.replace(/\[([^\]\n]+)\]\(([^)\s\n]+)\)/g, (m, t, u) =>
     /^https?:\/\//i.test(u) ? `<a href="${u}" target="_blank" rel="noopener noreferrer">${t}</a>` : m);
   return out.replace(/\u0000(\d+)\u0000/g, (m, i) => `<code>${codes[+i]}</code>`);
 }
 function md(src) {
   const lines = String(src).split('\n');
-  let html = '', inCode = false, list = null, para = [];
+  let html = '', inCode = false, inRaw = null, list = null, para = [];
   const flushP = () => { if (para.length) { html += '<p>' + para.map(mdInline).join('<br>') + '</p>'; para = []; } };
   const closeL = () => { if (list) { html += '</' + list + '>'; list = null; } };
   const openL = t => { if (list !== t) { closeL(); html += '<' + t + '>'; list = t; } };
+  const rawClose = tag => new RegExp('<\\/\\s*' + tag + '\\s*>', 'i');
   for (const ln of lines) {
+    if (inRaw) { html += ln + '\n'; if (rawClose(inRaw).test(ln)) inRaw = null; continue; }
     if (/^```/.test(ln)) { flushP(); closeL(); html += inCode ? '</code></pre>' : '<pre><code>'; inCode = !inCode; continue; }
     if (inCode) { html += esc(ln) + '\n'; continue; }
     let m;
+    if (m = ln.match(/^\s*<(script|style)[\s>]/i)) {
+      flushP(); closeL(); inRaw = m[1].toLowerCase(); html += ln + '\n';
+      if (rawClose(inRaw).test(ln)) inRaw = null; continue;
+    }
+    if (/^\s*<!/.test(ln)) { flushP(); closeL(); html += ln + '\n'; continue; }
+    if (/^\s*<(div|table|form|section|article|header|footer|main|nav|aside|figure|figcaption|details|dialog|img|hr|input|button|select|textarea|iframe|video|audio|canvas|svg|h[1-6]|p|pre|ul|ol|li|a|span|b|i|u|s|em|strong|code|blockquote)[\s>/]/i.test(ln)) {
+      flushP(); closeL(); html += ln + '\n'; continue;
+    }
     if (m = ln.match(/^(#{1,4})\s+(.*)$/)) { flushP(); closeL(); html += `<h${m[1].length}>${mdInline(m[2])}</h${m[1].length}>`; continue; }
     if (m = ln.match(/^>\s?(.*)$/)) { flushP(); closeL(); html += `<blockquote>${mdInline(m[1])}</blockquote>`; continue; }
     if (m = ln.match(/^\s*[-*]\s+(.+)$/)) { flushP(); openL('ul'); html += `<li>${mdInline(m[1])}</li>`; continue; }

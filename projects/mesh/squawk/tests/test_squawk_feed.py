@@ -181,6 +181,44 @@ class SquawkFeedFatTests(unittest.TestCase):
         text = obj["messages"][-1]["body"]
         self.assertEqual(text, body)
         self.assertGreater(len(text), 500)
+
+    def test_html_body_served_verbatim(self):
+        # Chris 2026-09-21: HTML/CSS is first-class -- bodies carrying tags,
+        # inline styles, style/script blocks survive end to end byte-identical
+        # (rendering happens client-side in ui.html).
+        port = self._serve()
+        base = self._high(port)
+        body = ("<div style=\"color:red\">hi</div>\n"
+                "<style>.x{color:blue}</style>\n"
+                "<script>window.__vex_html=1</script>")
+        self._post(body)
+        _status, obj = _get(port, "/squawk-feed/wait?since=%d" % base,
+                            token=TOKEN)
+        self.assertEqual(obj["messages"][-1]["body"], body)
+
+    def test_cors_preflight_and_headers(self):
+        # Chris 2026-09-21: the feed is fetchable cross-origin.
+        port = self._serve()
+        req = urllib.request.Request(
+            "http://127.0.0.1:%d/squawk-feed/send" % port, method="OPTIONS")
+        req.add_header("Origin", "https://example.com")
+        req.add_header("Access-Control-Request-Method", "POST")
+        req.add_header("Access-Control-Request-Headers",
+                       "Authorization, Content-Type")
+        with urllib.request.urlopen(req, timeout=10) as r:
+            self.assertEqual(r.status, 204)
+            self.assertEqual(r.headers.get("Access-Control-Allow-Origin"), "*")
+            self.assertIn("POST",
+                          r.headers.get("Access-Control-Allow-Methods"))
+            allow_h = r.headers.get("Access-Control-Allow-Headers") or ""
+            self.assertIn("Authorization", allow_h)
+        # actual responses carry ACAO too
+        req = urllib.request.Request(
+            "http://127.0.0.1:%d/squawk-feed/seq?channel=fleet" % port)
+        req.add_header("Origin", "https://example.com")
+        with urllib.request.urlopen(req, timeout=10) as r:
+            self.assertEqual(r.status, 200)
+            self.assertEqual(r.headers.get("Access-Control-Allow-Origin"), "*")
     # -- wake + timeout --------------------------------------------------------
 
     def test_wait_wakes_on_post(self):
