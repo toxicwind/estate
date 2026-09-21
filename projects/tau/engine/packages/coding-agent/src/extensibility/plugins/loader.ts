@@ -127,6 +127,10 @@ async function collectPluginsAtRoot(
 				settings: { ...(runtimeConfig.settings ?? {}), ...(parsed.settings ?? {}) },
 			};
 		} catch (err) {
+			if (isUnreadableRoot(err)) {
+				logger.warn("plugins: skipping unreadable plugin root", { root, path: lockPath });
+				return [];
+			}
 			if (!isEnoent(err)) throw err;
 		}
 	}
