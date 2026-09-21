@@ -60,6 +60,60 @@ OUT_CAP = 8000
 ERR_CAP = 2000
 
 
+# ---- super-ralph model resolution (2026-09-21: ralph-pathfinder) ----
+# Root cause of the 2026-09-21 execution collapse: the bidder's inherited
+# env carried NIM_MODEL=moonshotai/kimi-k3 -- an UPSTREAM provider ID, not
+# a herd-router route name. The router 404s it ("no router for requested
+# model"), so every super-ralph model call failed and tasks died empty.
+# Never trust the inherited NIM_MODEL blindly: resolve a WORKING model
+# against the router with a live probe, falling back down a priority chain.
+RALPH_MODEL_CANDIDATES = [
+    os.environ.get("RALPH_MODEL") or "",  # explicit operator override
+    "kimi-k3-nim",                         # intended Kimi K3 route (NVIDIA NIM)
+    "gemini-3-flash-preview",              # known-good fallback (verified live)
+]
+_ralph_model_cache = {"model": None, "ts": 0.0}
+RALPH_MODEL_CACHE_S = 300
+
+
+def _resolve_ralph_model(base_url, timeout=15):
+    """Pick a working model for super-ralph.
+
+    Probes each candidate with a tiny completion against the router;
+    returns the first that answers. Caches the winner for 5 minutes so
+    the probe cost is paid once, not per task. If nothing answers, returns
+    the first candidate so the run fails loudly (never silently swaps in
+    an unrelated model).
+    """
+    now = time.time()
+    if (_ralph_model_cache["model"]
+            and now - _ralph_model_cache["ts"] < RALPH_MODEL_CACHE_S):
+        return _ralph_model_cache["model"]
+    candidates = [c for c in RALPH_MODEL_CANDIDATES if c]
+    base = base_url.rstrip("/")
+    for cand in candidates:
+        try:
+            body = json.dumps({
+                "model": cand,
+                "messages": [{"role": "user", "content": "Reply with: ok"}],
+                "max_tokens": 5,
+            }).encode()
+            req = urllib.request.Request(
+                base + "/chat/completions", data=body,
+                headers={"Content-Type": "application/json",
+                         "User-Agent": "oracle-market-bidder"})
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                payload = json.loads(r.read().decode("utf-8", "replace"))
+            if payload.get("choices"):
+                _ralph_model_cache.update(model=cand, ts=now)
+                return cand
+        except Exception:
+            continue
+    model = candidates[0] if candidates else "kimi-k3-nim"
+    _ralph_model_cache.update(model=model, ts=now)
+    return model
+
+
 # ---- knowledgebase attestation (fleet rule, enforced by the oracle) ----
 # Every bid must attest the bidder read Active Crews
 # (docs/fleet-knowledgebase.md §2, canonical main) and checked for
@@ -482,12 +536,16 @@ class Bidder:
         renv["NIM_PROXY_BYPASS"] = "1"
         renv["NIM_BASE_URL"] = RALPH_BASE_URL
         renv["ANTHROPIC_BASE_URL"] = RALPH_BASE_URL
-        renv["NIM_MODEL"] = renv.get("NIM_MODEL", RALPH_MODEL)
-        renv["ANTHROPIC_DEFAULT_OPUS_MODEL"] = renv.get(
-            "ANTHROPIC_DEFAULT_OPUS_MODEL", RALPH_MODEL)
+        # 2026-09-21 (ralph-pathfinder): resolve a WORKING model. The
+        # inherited NIM_MODEL may be an upstream provider ID (not a router
+        # route) which 404s on every call -- never inherit it blindly.
+        # _resolve_ralph_model probes candidates and falls back live.
+        ralph_model = _resolve_ralph_model(RALPH_BASE_URL)
+        renv["NIM_MODEL"] = ralph_model
+        renv["ANTHROPIC_DEFAULT_OPUS_MODEL"] = ralph_model
         ceiling = min(timeout_ms / 1000.0, RALPH_CAP_S)
         self.say("%s invoking super-ralph on %s (ceiling %.0fs, model %s)."
-                 % (self.name, tid, ceiling, renv["NIM_MODEL"]))
+                 % (self.name, tid, ceiling, ralph_model))
         try:
             p = subprocess.run(
                 [str(RALPH_BIN), prompt, "--skip-questions",
@@ -521,7 +579,7 @@ class Bidder:
         (workdir / "ralph-invocation.txt").write_text(
             "bin: %s\nmodel: %s\nbase_url: %s\nceiling_s: %.0f\n"
             "exit: %s\nduration_ms: %.1f\n"
-            % (RALPH_BIN, renv["NIM_MODEL"], RALPH_BASE_URL, ceiling,
+            % (RALPH_BIN, ralph_model, RALPH_BASE_URL, ceiling,
                rc, dur),
             encoding="utf-8")
         return success, out, err, dur
