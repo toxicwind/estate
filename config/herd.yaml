@@ -686,41 +686,37 @@ peers:
   # no-auth and dummy-bearer both return HTTP 200 with real completions
   # (kimi-k3 @ 0.24-0.53s, openai @ 0.28s). Free-Kimi route is live;
   # re-probe before disabling. (openrouter-kimi/hf-free/flock disables verified dead.)
-  # DISABLED 2026-09-20 ~02:35 MDT (provider-surgeon): re-probed per the 01:50 re-enable note.
-  # Through-herd requests now return HTTP 401 'A valid API key is required'; direct no-auth
-  # to gen.pollinations.ai returns HTTP 200 with real completions (verified this run).
-  # Root cause: the Sep-18 herd binary bakes in the P1 dummy-bearer workaround
-  # (Authorization: Bearer <redacted> + x-api-key, from herd-origmain-test/internal/router/peer.go);
-  # Pollinations now rejects the dummy bearer while accepting no-auth. The peer config omits
-  # apiKey, so the binary always injects the dummy -> 401. Proper fix: rebuild herd from
-  # projects/herd (which does NOT contain the P1 patch) so empty apiKey sends no auth headers,
-  # then pitchfork-restart sovereign/herd. Until then this peer stays parked.
-  #pollinations-free:
-  #  proxy: https://gen.pollinations.ai
-  #  # apiKey omitted → router injects pollinations-free-workaround (see internal/router/peer.go P1)
-  #  models:
-  #    - openai
-  #    - gemma-4-31b
-  #    - gpt-oss
-  #    - qwen3.8-27b
-  #    - muse-glimmer
-  #    - muse-spark-1.2
-  #    - kimi-k3
-  #    - nemotron-3.5-lightning
-  #    # Free Kimi note (verified 2026-09-14 free-tier fuzz):
-  #    # moonshotai/kimi-k3, kimi-k2.6, kimi-k2.7-code all serve HTTP 200
-  #    # free on Pollinations (no-auth and with the injected dummy bearer,
-  #    # peer.go P1, 500-700ms) -- but they are NOT listed here: the
-  #    # openrouter-kimi peer claims the same IDs and sorts first
-  #    # (peer.go sorts peer IDs; first claim wins), so listing them would
-  #    # be shadowed. The unprefixed kimi-k3 above is pollinations-unique
-  #    # and is the live free-Kimi route (resolves via Fireworks backend).
-  #  timeouts:
-  #    connect: 30
-  #    keepalive: 30
-  #    responseHeader: 60
-  #    tlsHandshake: 10
-  #    idleConn: 90
+  # RE-ENABLED 2026-09-21 (forge): herd rebuilt from sovereign-swap branch
+  # herd-fqn-fix commit 7fc25280816f -- the Sep-18 dummy-Bearer workaround is gone:
+  # empty apiKey now sends NO auth headers (peer.go strips client auth too).
+  # Direct no-auth probe 2026-09-21 returned HTTP 200 on openai; through-herd
+  # verification after restart below. Re-park if 401s return.
+  pollinations-free:
+    proxy: https://gen.pollinations.ai
+    # apiKey omitted -> anonymous: no auth headers sent (sovereign-swap rebuild 2026-09-21, commit 7fc2528)
+    models:
+      - openai
+      - gemma-4-31b
+      - gpt-oss
+      - qwen3.8-27b
+      - muse-glimmer
+      - muse-spark-1.2
+      - kimi-k3
+      - nemotron-3.5-lightning
+      # Free Kimi note (verified 2026-09-14 free-tier fuzz):
+      # moonshotai/kimi-k3, kimi-k2.6, kimi-k2.7-code all serve HTTP 200
+      # free on Pollinations (no-auth and with the injected dummy bearer,
+      # peer.go P1, 500-700ms) -- but they are NOT listed here: the
+      # openrouter-kimi peer claims the same IDs and sorts first
+      # (peer.go sorts peer IDs; first claim wins), so listing them would
+      # be shadowed. The unprefixed kimi-k3 above is pollinations-unique
+      # and is the live free-Kimi route (resolves via Fireworks backend).
+    timeouts:
+      connect: 30
+      keepalive: 30
+      responseHeader: 60
+      tlsHandshake: 10
+      idleConn: 90
   # --- hf-free: free Kimi via HuggingFace Inference Providers ---
   # RE-ENABLED 2026-09-21 (ember-kimi-route): the 2026-09-20 "HF_TOKEN dead"
   # verdict used the v1 whoami endpoint (401s even for valid tokens -- VOID).
