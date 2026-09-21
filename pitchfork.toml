@@ -848,11 +848,26 @@ auto = ["start"]
 [daemons.agent-viewer]
 # Forge 2026-09-21: noVNC web viewer for the agent display.
 port = 6080
-run = "exec /home/toxic/.local/bin/websockify --web /home/toxic/.browserless/novnc 6080 127.0.0.1:5900"
+run = "exec /home/toxic/.local/bin/websockify --web /home/toxic/.browserless/novnc 127.0.0.1:6080 127.0.0.1:5900"
 dir = "."
 mise = false
 retry = true
 ready_cmd = "curl -sf http://127.0.0.1:6080/vnc.html > /dev/null"
+boot_start = true
+auto = ["start"]
+
+[daemons.agent-viewer-gate]
+# Forge 2026-09-21: token-gated front door for the noVNC agent viewer.
+# Requires ?token=<viewer-token> (or the aview cookie it issues), then
+# proxies to websockify :6080. Funnel mounts this at /agent-browser.
+# The viewer is INTERACTIVE (Chris 2026-09-21: "user should be able to
+# interact or help"); :6080 itself stays loopback-only.
+port = 6081
+run = "exec python3 /home/toxic/sovereign/projects/mesh/browserless/viewer/agent-viewer-gate.py"
+dir = "."
+mise = false
+retry = true
+ready_cmd = "curl -sf http://127.0.0.1:6081/healthz > /dev/null"
 boot_start = true
 auto = ["start"]
 
