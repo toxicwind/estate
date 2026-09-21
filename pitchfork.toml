@@ -396,7 +396,7 @@ mise = false
 retry = true
 ready_cmd = "ss -ltn 'sport = :25130' | grep -q LISTEN"
 boot_start = true
-env = { BROWSERLESS_PORT = "25130", WAYLAND_DISPLAY = "wayland-1", XDG_RUNTIME_DIR = "/run/user/1000" }
+env = { BROWSERLESS_PORT = "25130", WAYLAND_DISPLAY = "wayland-1", XDG_RUNTIME_DIR = "/run/user/1000", BROWSERLESS_CONNECTION_TIMEOUT = "900000" }
 auto = ["start"]
 
 [daemons.gemini-mcp]
