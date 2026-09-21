@@ -88,6 +88,14 @@ DEBATE_HARD_MS = 4 * 3600 * 1000   # hard settle (always > soft)
 DEBATE_QUORUM = 2                 # replies needed for a quorum settle
 KB_SHA_RE = re.compile(r"^[0-9a-f]{40}$")  # knowledgebase commit SHA
 
+# Agentic execution (2026-09-21, oracle-repair): intake TASK/RESEARCH/DIRECT
+# requests become Super Ralph prompts (exec_mode="super-ralph") executed by
+# the winning bidder. The oracle never executes payloads; it only verifies.
+AGENTIC_TIMEOUT_MS = 30 * 60 * 1000   # Super Ralph runs are slow (~11 min
+                                      # observed for a trivial run)
+AGENTIC_BID_WINDOW_MS = 15000
+ACCEPT_REPORT_MARKER = "ACCEPTANCE-REPORT:"
+
 # ---------------- inotify (ctypes, stdlib only) ----------------
 IN_CLOSE_WRITE = 0x00000008
 IN_MOVED_TO = 0x00000080
@@ -279,12 +287,15 @@ class Debate:
     recorded. States: OPEN -> CHASED -> SETTLED."""
 
     def __init__(self, debate_id, question, opener, wanted, soft_ms,
-                 hard_ms, opened_ts=None):
+                 hard_ms, opened_ts=None, kind="debate"):
         self.debate_id = debate_id
         self.question = question
         self.opener = opener
         self.wanted = list(wanted)
+        self.kind = kind        # "debate" | "petition"
+        self.request = question  # petitions: the upgrade request text
         self.replies = {}       # from -> ts
+        self.evidence = {}      # from -> reply text (substance, not names)
         self.state = "OPEN"
         self.chased = False
         now = opened_ts or time.time()
@@ -293,6 +304,44 @@ class Debate:
         self.hard_ts = now + max(1, int(hard_ms or DEBATE_HARD_MS)) / 1000.0
         if self.hard_ts <= self.soft_ts:
             self.hard_ts = self.soft_ts + 60.0
+
+
+def _parse_acceptance_report(output):
+    """Parse the ACCEPTANCE-REPORT section from a result's output.
+
+    Returns (found, all_met, items) where items is a list of
+    (criterion, met, note). Tolerant: the section starts at a line whose
+    stripped text is ACCEPTANCE-REPORT: (case-insensitive); following
+    dash-led lines are items. The oracle parses the SIGNED output itself
+    -- the winner's word is the output text, hash-bound to its signature,
+    so no separate bidder-supplied field is trusted.
+    """
+    items = []
+    found = False
+    for line in (output or "").splitlines():
+        s = line.strip()
+        if not found:
+            if s.upper() == ACCEPT_REPORT_MARKER:
+                found = True
+            continue
+        if not s.startswith("-"):
+            if s:  # non-item, non-empty line ends the section
+                break
+            continue
+        body = s[1:].strip()
+        m = re.match(r"(.+?)\s*:\s*(MET|UNMET|NOT MET|NOT-MET)\b\s*-?\s*(.*)$",
+                     body, re.I)
+        if m:
+            crit, status, note = m.group(1), m.group(2).upper(), m.group(3)
+            met = (status == "MET")
+        else:
+            crit, note = body, ""
+            up = body.upper()
+            met = ("MET" in up and "UNMET" not in up
+                   and "NOT MET" not in up and "NOT-MET" not in up)
+        items.append((crit.strip()[:200], met, note.strip()[:200]))
+    all_met = bool(items) and all(m for _, m, _ in items)
+    return found, all_met, items
 
 
 class OracleLoop:
@@ -403,6 +452,137 @@ class OracleLoop:
                  task_class=a.task_class, replay=replay)
         return a
 
+    # ----- intake task construction (agentic execution) ---------------
+    @staticmethod
+    def _safe_frm(name):
+        return re.sub(r"[^A-Za-z0-9_-]", "-", str(name))[:40] or "intake"
+
+    @staticmethod
+    def _research_tags(text):
+        try:
+            from oracle_intake import _tags_for
+            tags = _tags_for(text)
+        except ImportError:
+            tags = ["probe"]
+        return sorted(set(tags) | {"research"})
+
+    def _post_signed_task(self, body, tid, frm, note):
+        """Publish a control-signed task_post (SPEC 1.5)."""
+        ctl_ts = int(time.time())
+        ctl_sig = sealed_mod.sign_control(
+            self.ctl_hmac_key, "task_post", tid,
+            sealed_mod.ctl_body_sha256(body), ctl_ts)
+        canon = json.dumps(body, sort_keys=True, separators=(",", ":"))
+        self.market.post("task_post", "task-%s" % tid, canon,
+                         task_id=tid, raw_body=True, frm=frm,
+                         extra_fm={"ctl_sig": ctl_sig, "ctl_ts": ctl_ts},
+                         note=note)
+
+    def _acceptance_for(self, request_text):
+        req = (request_text or "").strip()[:300].replace("\n", " ")
+        return (
+            "1. The request is fully addressed: \"%s\".\n"
+            "2. Result output is non-empty and summarizes what was done.\n"
+            "3. Deliverable files (if any) are written to the task workdir "
+            "and listed as result artifacts.\n"
+            "4. The final reply ends with an ACCEPTANCE-REPORT: section, "
+            "one '- <criterion>: MET - <evidence>' line per criterion "
+            "above (UNMET + reason if one fails)." % req)
+
+    def _agentic_prompt(self, tid, request_text, requester, acceptance):
+        return (
+            "# Oracle task %s (from %s)\n\n"
+            "## Request\n%s\n\n"
+            "## Acceptance criteria\n%s\n\n"
+            "## Instructions\n"
+            "Do the request above as real work. Write any deliverable files "
+            "into the current working directory. This run is "
+            "non-interactive: do not ask questions. Your final reply must "
+            "summarize the outcome against each acceptance criterion and "
+            "MUST end with exactly this section:\n"
+            "ACCEPTANCE-REPORT:\n"
+            "- criterion 1: MET - <evidence>\n"
+            "- criterion 2: MET - <evidence>\n"
+            "(one line per criterion; write UNMET with a reason instead of "
+            "MET if a criterion fails)" % (
+                tid, requester, (request_text or "").strip()[:2000],
+                acceptance))
+
+    def _agentic_task_body(self, tid, request_text, requester, tags,
+                           task_class,
+                           bid_window_ms=AGENTIC_BID_WINDOW_MS,
+                           timeout_ms=AGENTIC_TIMEOUT_MS):
+        acceptance = self._acceptance_for(request_text)
+        return {
+            "task_id": tid,
+            "title": ((request_text or "").strip()[:80] or tid),
+            "payload": self._agentic_prompt(tid, request_text, requester,
+                                            acceptance),
+            "tags": sorted(set(tags or ["probe"])),
+            "acceptance": acceptance,
+            "task_class": task_class,
+            "exec_mode": "super-ralph",
+            "posted_ts": time.time(),
+            "bid_window_ms": bid_window_ms,
+            "timeout_ms": timeout_ms,
+        }
+
+    # ----- direct assignment (urgent intake) ---------------------------
+    def _pick_direct_worker(self):
+        """Least-loaded capable worker: fewest locked (in-flight) tasks;
+        alphabetical tiebreak. Every registered bidder runs Super Ralph
+        from the shared PATH, so all are capable of agentic tasks."""
+        cands = [(len((self.profiles[s].get("locked") or {})), s)
+                 for s in sorted(self.profiles)]
+        return cands[0][1] if cands else None
+
+    def _assign_direct(self, tid, body, safe_frm):
+        """Immediate signed assignment for DIRECT intake: no auction delay,
+        but full authentication (control-signed task_post), stake escrow,
+        signed-result verification, and settlement. Durable: the assigned
+        row + channel assign let reconstruct() resume it exactly like a
+        Vickrey assignment."""
+        a = self.open_auction(body)
+        if not a:
+            self.log("direct_assign_failed", task_id=tid,
+                     reason="auction-not-opened")
+            return None
+        short = self._pick_direct_worker()
+        if not short:
+            self.log("direct_assign_failed", task_id=tid,
+                     reason="no-workers")
+            a.state = "CLOSED"
+            self.done.add(tid)
+            return None
+        bond = mech.BOND
+        try:
+            mech.lock_bond(self.profiles, short, tid, bond)
+        except (KeyError, ValueError) as e:
+            self.log("direct_assign_failed", task_id=tid,
+                     reason="stake-lock-failed", detail=str(e)[:200])
+            self.fleet_note("intake: DIRECT %s failed (stake lock): %s"
+                            % (tid, str(e)[:120]))
+            a.state = "CLOSED"
+            self.done.add(tid)
+            return None
+        now = time.time()
+        winner = "bidder-" + short
+        a.state = "ASSIGNED"
+        a.winner, a.price_paid, a.assign_ts = winner, 0.0, now
+        # Stake first, publish second -- same crash-window ordering as
+        # close_bidding; reconstruct() reconciles exactly once.
+        self._publish_assign(a, winner, 0.0, 0.0,
+                             {"mode": "direct", "clearing": "direct",
+                              "reason": "urgent-intake"},
+                             [], bond)
+        heapq.heappush(self.timers,
+                       (now + a.timeout_ms / 1000.0, "exec_timeout", tid))
+        self.log("assigned", task_id=tid, winner=winner, amount=0.0,
+                 price_paid=0.0, bond=bond, mode="direct", replay=False)
+        self.fleet_note("intake: DIRECT %s assigned to %s immediately "
+                        "(urgent; stake escrowed)." % (tid, winner))
+        return a
+
     # ----- oracle intake (front door) ---------------------------------
     def handle_intake(self, meta, data, replay=False):
         # Intake decisions are live-only: replaying an intake_request must
@@ -420,65 +600,67 @@ class OracleLoop:
         req = {"from": meta.get("from", "?"), "text": data.get("text", "")}
         d = triage(req, str(LEDGER))
         route = d.get("route")
-        if route == "TASK":
-            tid = "intake-%d" % int(time.time() * 1000)
-            safe_frm = re.sub(r"[^A-Za-z0-9_-]", "-",
-                              str(req["from"]))[:40] or "intake"
-            payload = (
-                "# oracle intake task %s (triaged from %s)\n"
-                "# request: %s\n"
-                "# acceptance: %s\n"
-                "print('intake-executed:%s')\n"
-                % (tid, safe_frm, req["text"][:500].replace("\n", " "),
-                   str(d.get("acceptance", "")).replace("\n", " "), tid))
-            body = {
-                "task_id": tid,
-                "title": (req["text"][:80] or tid),
-                "payload": payload,
-                "tags": d.get("tags", ["probe"]),
-                "acceptance": d.get("acceptance", ""),
-                "posted_ts": time.time(),
-                "bid_window_ms": 15000,
-                "timeout_ms": 300000,
-                "task_class": "standard",
-            }
+        safe_frm = self._safe_frm(req["from"])
+        if route in ("TASK", "RESEARCH"):
+            # Biddable work: TASK goes to auction; RESEARCH becomes a
+            # normally-signed biddable task with research tags and
+            # concrete deliverables. Both are real Super Ralph prompts
+            # with explicit acceptance criteria -- never print() stubs.
+            if route == "RESEARCH":
+                tags = self._research_tags(req["text"])
+                task_class = "research"
+            else:
+                tags = d.get("tags", ["probe"])
+                task_class = "standard"
+            tid = "%s-%d" % (route.lower(), int(time.time() * 1000))
+            body = self._agentic_task_body(tid, req["text"], req["from"],
+                                           tags, task_class)
             # The oracle vouches for the triaged request by publishing a
             # control-signed task_post (SPEC 1.5): bidders only bid on
             # channel task_posts, so a memory-only open_auction here would
             # silently starve. The normal ingest path opens the auction
             # and reconstruct() resumes it across restarts.
-            ctl_ts = int(time.time())
-            ctl_sig = sealed_mod.sign_control(
-                self.ctl_hmac_key, "task_post", tid,
-                sealed_mod.ctl_body_sha256(body), ctl_ts)
-            canon = json.dumps(body, sort_keys=True, separators=(",", ":"))
-            self.market.post("task_post", "task-%s" % tid, canon,
-                             task_id=tid, raw_body=True, frm=safe_frm,
-                             extra_fm={"ctl_sig": ctl_sig, "ctl_ts": ctl_ts},
-                             note=("intake: triaged TASK from %s "
-                                   "[tags: %s] (control-signed)."
-                                   % (req["from"], ",".join(body["tags"]))))
-            self.fleet_note("intake: TASK %s opened (tags: %s)"
-                            % (tid, ",".join(body["tags"])))
+            self._post_signed_task(
+                body, tid, safe_frm,
+                note=("intake: triaged %s from %s [tags: %s] "
+                      "(control-signed)." % (route, req["from"],
+                                             ",".join(body["tags"]))))
+            self.fleet_note("intake: %s %s opened (tags: %s)"
+                            % (route, tid, ",".join(body["tags"])))
         elif route == "DIRECT":
-            self.log("intake_direct", frm=req["from"],
+            # Urgent: skip the auction delay, but NOT authentication,
+            # stake escrow, result verification, or settlement.
+            tid = "direct-%d" % int(time.time() * 1000)
+            body = self._agentic_task_body(tid, req["text"], req["from"],
+                                           ["direct", "urgent"], "direct",
+                                           bid_window_ms=5000)
+            self._post_signed_task(
+                body, tid, safe_frm,
+                note=("intake: DIRECT from %s (control-signed); "
+                      "assigning immediately." % req["from"]))
+            self.log("intake_direct", frm=req["from"], task_id=tid,
                      request=req["text"][:200])
-            self.fleet_note("intake: DIRECT requested: %s" % req["text"][:200])
+            self._assign_direct(tid, body, safe_frm)
+        elif route == "PETITION":
+            # Governance: upgrade petitions get a real debate with named
+            # advocates, recorded evidence, and an explicit verdict --
+            # not a ledger line and a fleet announcement.
+            did = self.open_debate(req["text"], req["from"], wanted=None,
+                                   kind="petition")
+            if did:
+                self.log("intake_petition", frm=req["from"], debate_id=did,
+                         request=req["text"][:200])
+        elif route == "DEBATE":
+            # The debate chase rule owns this: open a real debate
+            # (named agents, chase on timeout, quorum-or-hard settle)
+            # instead of announcing into the void.
+            self.open_debate(req["text"], req["from"], wanted=None)
         elif route == "REJECT":
             self.fleet_note("intake: REJECTED (%s): %s"
                             % (d.get("reason"), req["text"][:200]))
         else:
-            # RESEARCH / PETITION: recorded in the ledger by triage and
-            # announced here; no auction is opened (intake never mutates
-            # tasks for non-TASK routes).
-            if route == "DEBATE":
-                # The debate chase rule owns this now: open a real debate
-                # (named agents, chase on timeout, quorum-or-hard settle)
-                # instead of announcing into the void.
-                self.open_debate(req["text"], req["from"], wanted=None)
-            else:
-                self.fleet_note("intake: %s (%s): %s"
-                                % (route, d.get("reason"), req["text"][:200]))
+            self.fleet_note("intake: %s (%s): %s"
+                            % (route, d.get("reason"), req["text"][:200]))
 
     def _attestation_ok(self, att):
         """Knowledgebase attestation gate (SPEC §10). Returns None when
@@ -512,7 +694,7 @@ class OracleLoop:
         return ["ember", "kindling"]
 
     def open_debate(self, question, opener, wanted=None, soft_ms=None,
-                    hard_ms=None):
+                    hard_ms=None, kind="debate"):
         question = (question or "").strip()[:500]
         if not question:
             self.log("debate_rejected", reason="empty-question",
@@ -529,21 +711,32 @@ class OracleLoop:
                 if str(w).strip()] or self.debate_roster()
         soft_ms = int(soft_ms) if soft_ms else DEBATE_SOFT_MS
         hard_ms = int(hard_ms) if hard_ms else DEBATE_HARD_MS
-        d = Debate(did, question, opener, want, soft_ms, hard_ms)
+        d = Debate(did, question, opener, want, soft_ms, hard_ms,
+                 kind=kind)
         self.debates[did] = d
         self.debate_req_seen.add(fp)
         self.log("debate_open", debate_id=did, question=question,
                  opener=opener, wanted=want, soft_ms=soft_ms,
-                 hard_ms=hard_ms, fp=fp)
+                 hard_ms=hard_ms, fp=fp, kind=kind)
         heapq.heappush(self.timers, (d.soft_ts, "debate_chase", did))
         heapq.heappush(self.timers, (d.hard_ts, "debate_hard", did))
-        self.fleet_note(
-            "\U0001f5e3\ufe0f debate opened (%s) by %s: %s\n"
-            "wanted replies from: %s \u2014 reply in bid-market as "
-            "debate_reply with debate_id=%s (quorum: %d replies; the "
-            "oracle chases if it goes quiet)."
-            % (did, opener, question, ", ".join(want), did,
-               DEBATE_QUORUM))
+        if kind == "petition":
+            self.fleet_note(
+                "\U0001f5e3\ufe0f PETITION debate opened (%s) by %s: %s\n"
+                "wanted advocates: %s \u2014 reply in bid-market as "
+                "debate_reply with debate_id=%s. Start your reply with "
+                "APPROVE or REJECT and give your evidence; quorum is %d "
+                "replies, then the oracle tallies a verdict."
+                % (did, opener, question, ", ".join(want), did,
+                   DEBATE_QUORUM))
+        else:
+            self.fleet_note(
+                "\U0001f5e3\ufe0f debate opened (%s) by %s: %s\n"
+                "wanted replies from: %s \u2014 reply in bid-market as "
+                "debate_reply with debate_id=%s (quorum: %d replies; the "
+                "oracle chases if it goes quiet)."
+                % (did, opener, question, ", ".join(want), did,
+                   DEBATE_QUORUM))
         return did
 
     def handle_debate_reply(self, meta, data):
@@ -556,6 +749,7 @@ class OracleLoop:
         if frm in SELF_FROMS or frm in d.replies:
             return
         d.replies[frm] = time.time()
+        d.evidence[frm] = str(data.get("text", ""))[:2000]
         self.log("debate_reply", debate_id=did, frm=frm,
                  text=str(data.get("text", ""))[:300],
                  replies=len(d.replies))
@@ -612,15 +806,77 @@ class OracleLoop:
                 "wanted %s; %d/%d replies. Question: %s"
                 % (d.debate_id, ", ".join(d.wanted), len(d.replies),
                    DEBATE_QUORUM, d.question))
+        if d.kind == "petition" and verdict == "quorum":
+            # Governance verdict tallied from the recorded evidence. The
+            # tally is heuristic (explicit APPROVE/REJECT replies, which
+            # the petition fleet note asks for); the full evidence text
+            # is preserved in the ledger for audit.
+            verdict = self._tally_petition(d)
         d.state = "SETTLED"
         self.log("debate_settled", debate_id=d.debate_id, verdict=verdict,
-                 replies=sorted(d.replies), chased=d.chased,
+                 kind=d.kind, replies=sorted(d.replies),
+                 evidence=d.evidence, chased=d.chased,
                  question=d.question[:200], replay=replay)
-        self.fleet_note(
-            "\U0001f5e3\ufe0f debate settled (%s): %s \u2014 %d/%d "
-            "replies%s. %s"
-            % (d.debate_id, verdict, len(d.replies), DEBATE_QUORUM,
-               " (chase recorded)" if d.chased else "", d.question[:160]))
+        if d.kind == "petition":
+            ev_txt = ("; ".join("%s: %s" % (k, v[:120])
+                                for k, v in d.evidence.items())[:400]
+                      or "none recorded")
+            self.fleet_note(
+                "\U0001f5e3\ufe0f petition %s VERDICT: %s \u2014 %d/%d "
+                "advocates heard. Evidence: %s"
+                % (d.debate_id, verdict.upper(), len(d.replies),
+                   DEBATE_QUORUM, ev_txt))
+            self._on_petition_verdict(d, verdict, replay=replay)
+        else:
+            self.fleet_note(
+                "\U0001f5e3\ufe0f debate settled (%s): %s \u2014 %d/%d "
+                "replies%s. %s"
+                % (d.debate_id, verdict, len(d.replies), DEBATE_QUORUM,
+                   " (chase recorded)" if d.chased else "",
+                   d.question[:160]))
+
+    def _tally_petition(self, d):
+        """Explicit governance verdict from recorded advocate evidence."""
+        approve = reject = 0
+        for text in d.evidence.values():
+            t = text.lower()
+            a = bool(re.search(
+                r"(approve|approved|\byes\b|\+1|support|agree|ship it)", t))
+            r = bool(re.search(
+                r"(reject|rejected|veto|\bno\b|-1|oppose|against|block)", t))
+            if a and not r:
+                approve += 1
+            elif r and not a:
+                reject += 1
+        if approve > reject:
+            return "approved"
+        if reject > approve:
+            return "rejected"
+        return "tied"
+
+    def _on_petition_verdict(self, d, verdict, replay=False):
+        """Approved upgrades become market tasks (agent governance)."""
+        if verdict != "approved":
+            self.log("petition_closed", debate_id=d.debate_id,
+                     verdict=verdict, replay=replay)
+            return
+        if replay:
+            # The pre-crash task_post (if any) is re-opened by
+            # reconstruct(); never re-publish on replay.
+            self.log("petition_approved_replay", debate_id=d.debate_id,
+                     replay=True)
+            return
+        tid = "petition-%d" % int(time.time() * 1000)
+        body = self._agentic_task_body(
+            tid, d.request, d.opener, ["petition", "upgrade"], "standard")
+        self._post_signed_task(
+            body, tid, self._safe_frm(d.opener),
+            note=("petition %s APPROVED -> market task %s "
+                  "(control-signed)." % (d.debate_id, tid)))
+        self.log("petition_task_opened", debate_id=d.debate_id, task_id=tid,
+                 verdict=verdict)
+        self.fleet_note("petition %s approved: upgrade task %s opened "
+                        "for bidding." % (d.debate_id, tid))
 
     def handle_bid(self, meta, data, replay=False):
         tid = meta.get("task_id") or data.get("task_id")
@@ -797,6 +1053,7 @@ class OracleLoop:
                      replay=replay)
             a.state = "CLOSED"
             self.done.add(tid)
+            self._maybe_start_next_work(tid)
             return
         a.winner, a.price_paid, a.assign_ts = winner, price_paid, now
         bond = mech.BOND
@@ -815,6 +1072,7 @@ class OracleLoop:
                      detail=str(e)[:200], replay=replay)
             a.state = "CLOSED"
             self.done.add(tid)
+            self._maybe_start_next_work(tid)
             return
         if not replay:
             self._publish_assign(a, winner, amount, price_paid, reveal, ties,
@@ -1012,7 +1270,25 @@ class OracleLoop:
             if not p.is_file():
                 artifacts_ok = False
                 notes.append(f"missing-artifact:{art}")
-        verified = success and duration_ok and hash_ok and artifacts_ok
+        # Explicit acceptance validation (oracle-repair): never trust
+        # the bare success flag. Output must be non-empty, and agentic
+        # tasks must carry a fully-MET ACCEPTANCE-REPORT parsed from the
+        # SIGNED output itself (hash-bound to the winner's signature).
+        output_ok = bool((data.get("output") or "").strip())
+        acceptance_ok = True
+        if (a.task or {}).get("exec_mode") == "super-ralph":
+            found, all_met, acc_items = _parse_acceptance_report(
+                data.get("output") or "")
+            acceptance_ok = found and all_met
+            if not found:
+                notes.append("acceptance-report-missing")
+            elif not all_met:
+                bad = ",".join(c for c, m, _ in acc_items if not m)
+                notes.append("acceptance-unmet:%s" % bad[:200])
+        if not output_ok:
+            notes.append("empty-output")
+        verified = (success and duration_ok and hash_ok and artifacts_ok
+                    and output_ok and acceptance_ok)
         if data.get("error"):
             notes.append(f"error: {str(data['error'])[:200]}")
         duration_ms = data.get("duration_ms")
@@ -1023,6 +1299,7 @@ class OracleLoop:
                            notes, replay)
         a.state = "CLOSED"
         self.done.add(tid)
+        self._maybe_start_next_work(tid)
         return {"success": success, "verified": verified,
                 "duration_ms": duration_ms, "notes": notes}
 
@@ -1047,6 +1324,39 @@ class OracleLoop:
         self._publish_settle(a, False, False, None, notes)
         a.state = "CLOSED"
         self.done.add(tid)
+        self._maybe_start_next_work(tid)
+
+    # ----- autonomous next-work selection ------------------------------
+    def _maybe_start_next_work(self, prev_tid):
+        """Settlement-driven autonomy: when a task reaches a terminal state
+        and nothing else is in flight, invite the swarm to propose the next
+        task through intake (the front door). Event-driven: invoked exactly
+        at settlement transitions (handle_result, exec_timeout,
+        close_bidding terminal paths) -- never a poll loop, never a timer.
+        Idempotent per settlement via the done set; replay-safe because
+        the trigger points only fire on live transitions."""
+        key = ("nextwork", prev_tid)
+        if key in self.done:
+            return
+        self.done.add(key)
+        busy = any(a.state in ("OPEN", "ASSIGNED")
+                   for a in self.auctions.values())
+        if busy:
+            # Another task still in flight: its settlement re-triggers.
+            return
+        self.market.post("next_work", "next-work-%s" % prev_tid,
+                         {"prev_task": prev_tid, "idle_ts": time.time(),
+                          "note": ("market idle: all auctions terminal. "
+                                   "Swarm: propose the next task via "
+                                   "intake.")},
+                         task_id=prev_tid,
+                         note=("oracle-market: %s settled; market idle. "
+                               "Next task proposals welcome via intake."
+                               % prev_tid))
+        self.fleet_note("oracle-market: %s settled and the market is idle "
+                        "-- swarm, propose the next task via intake."
+                        % prev_tid)
+        self.log("next_work_request", prev_task=prev_tid)
 
     # ----- ingest -----
     def ingest(self, name, replay=False):
@@ -1173,6 +1483,8 @@ class OracleLoop:
                                 "question": ev.get("question", ""),
                                 "opener": ev.get("opener", "?"),
                                 "wanted": ev.get("wanted", []),
+                                "kind": ev.get("kind", "debate"),
+                                "evidence": {},
                                 "soft_ms": ev.get("soft_ms",
                                                   DEBATE_SOFT_MS),
                                 "hard_ms": ev.get("hard_ms",
@@ -1188,6 +1500,8 @@ class OracleLoop:
                         if db and not db["settled"]:
                             db["replies"][ev.get("frm", "?")] = \
                                 ev.get("ts", 0)
+                            db["evidence"][ev.get("frm", "?")] = \
+                                ev.get("text", "")
                     elif e == "debate_chased":
                         db = debates_build.get(ev.get("debate_id"))
                         if db:
@@ -1474,8 +1788,10 @@ class OracleLoop:
             if db["settled"]:
                 continue
             d = Debate(did, db["question"], db["opener"], db["wanted"],
-                       db["soft_ms"], db["hard_ms"], db["opened_ts"])
+                       db["soft_ms"], db["hard_ms"], db["opened_ts"],
+                       kind=db.get("kind", "debate"))
             d.replies.update(db["replies"])
+            d.evidence.update(db.get("evidence", {}))
             d.state = db["state"]
             d.chased = db["chased"]
             self.debates[did] = d
