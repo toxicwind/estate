@@ -3,3 +3,4 @@
 *.log
 ranking-*.json
 guidellm/*.json
+router-proof-*.json
