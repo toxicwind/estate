@@ -12,6 +12,7 @@ PASS=0; WARN=0; FAIL=0
 ok()   { PASS=$((PASS+1)); echo "PASS  $1"; }
 warn() { WARN=$((WARN+1)); echo "WARN  $1"; }
 fail() { FAIL=$((FAIL+1)); echo "FAIL  $1"; }
+info() { echo "INFO  $1"; }
 
 echo "== tau audit :: $(date -u +%FT%TZ) host=$(hostname) =="
 
@@ -91,15 +92,41 @@ fi
 # 4. profiles -----------------------------------------------------------------
 if [ -f "$TAU_HOME/.tau/profiles/default.yml" ]; then ok "default profile present"; else warn "no default profile"; fi
 
-# 5. engine git hookup (warn-only; shared tree, never touch) --------------------
+# 5. engine git hookup (read-only; shared tree, never touch) --------------------
+# Canonical reference is origin/main, NOT the worktree HEAD: this tree is a
+# shared dev branch that intentionally lags main, so "behind main" and
+# "dirty vs HEAD" are branch-lag artifacts, not tau defects. What counts is
+# content drift of projects/tau vs canonical main.
 if [ -n "$BIN" ] && [[ "$BIN" == *sovereign* ]]; then
   engdir="$(echo "$BIN" | sed 's|/packages/coding-agent/dist/omp||')"
   if git -C "$engdir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     br="$(git -C "$SOV" rev-parse --abbrev-ref HEAD 2>/dev/null)"
     behind="$(git -C "$SOV" rev-list --count HEAD..origin/main 2>/dev/null || echo '?')"
-    dirty="$(git -C "$SOV" status --porcelain -- projects/tau 2>/dev/null | wc -l)"
-    [ "$behind" = "0" ] && ok "engine tree on $br, at origin/main" || warn "engine tree on $br, $behind behind origin/main (shared tree — informational)"
-    [ "$dirty" = "0" ] && ok "engine tree clean" || warn "$dirty dirty files under projects/tau (other workers' WIP — left alone)"
+    if [ "$behind" = "0" ]; then ok "engine tree on $br, at origin/main"
+    else info "engine tree on $br, $behind behind origin/main (shared tree -- informational, never touch)"; fi
+    # drift vs canonical main: every file dirty-vs-HEAD is judged on content.
+    # untracked: drift only if absent from main or content differs from main.
+    # tracked: drift only on real line changes (mode-only noise ignored).
+    drift=0; drift_list=""
+    while IFS= read -r line; do
+      st="${line:0:2}"; f="${line:3}"; f="${f##* -> }"
+      [ -z "$f" ] && continue
+      if [ "$st" = "??" ]; then
+        if git -C "$SOV" cat-file -e "origin/main:$f" 2>/dev/null; then
+          git -C "$SOV" show "origin/main:$f" 2>/dev/null | cmp -s - "$SOV/$f" \
+            || { drift=$((drift+1)); drift_list="$drift_list $f"; }
+        else
+          drift=$((drift+1)); drift_list="$drift_list $f"
+        fi
+      elif git -C "$SOV" cat-file -e "origin/main:$f" 2>/dev/null; then
+        if ! git -C "$SOV" diff --quiet origin/main -- "$f" 2>/dev/null; then
+          changes="$(git -C "$SOV" diff --numstat origin/main -- "$f" 2>/dev/null | awk '{print $1+$2}')"
+          [ "$changes" = "0" ] || { drift=$((drift+1)); drift_list="$drift_list $f"; }
+        fi
+      fi
+    done < <(git -C "$SOV" status --porcelain -- projects/tau 2>/dev/null)
+    if [ "$drift" = "0" ]; then ok "projects/tau content matches origin/main (no drift)"
+    else warn "projects/tau drifts from origin/main in $drift file(s):${drift_list:0:200}"; fi
   fi
 fi
 
@@ -115,7 +142,11 @@ fi
 
 # 7. bridge (read-only) ----------------------------------------------------------
 if pgrep -f 'awrawr_ws_exec.py' >/dev/null 2>&1; then ok "bridge process alive (awrawr_ws_exec.py)"; else fail "bridge process NOT running"; fi
-if ss -ltn 2>/dev/null | grep -q ':8379 '; then ok "bridge port 8379 listening"; else warn "port 8379 not in ss output"; fi
+# effective ws-exec port: pitchfork env WS_EXEC_PORT wins; the old script
+# default 8379 is stale (bridge moved to 25204 via [daemons.awrawr-ws-exec])
+WS_PORT="$(grep -A8 'daemons.awrawr-ws-exec' "$SOV/pitchfork.toml" 2>/dev/null | grep 'WS_EXEC_PORT =' | grep -o '[0-9][0-9]*' | awk 'NR==1')"
+[ -n "$WS_PORT" ] || WS_PORT=8379
+if ss -ltn 2>/dev/null | grep -q ":${WS_PORT} "; then ok "bridge port $WS_PORT listening"; else warn "bridge port $WS_PORT not in ss output"; fi
 [ -f "$TAU_HOME/.awrawr_mcp_token" ] && ok "bridge token file present" || warn "bridge token file missing"
 
 # 8. efficiency: no timer-driven polling in tau config ---------------------------
