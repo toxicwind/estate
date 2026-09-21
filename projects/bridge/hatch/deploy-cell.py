@@ -83,6 +83,107 @@ def yote_fetch_b64(yote_path: str) -> bytes:
     print()
     return b"".join(chunks)
 
+def _proc_exe_name(pid: int) -> str:
+    """Executable basename of a process, from /proc/<pid>/comm."""
+    try:
+        with open(f"/proc/{pid}/comm") as f:
+            return f.read().strip()
+    except OSError:
+        return ""
+
+def _proc_cmdline(pid: int) -> str:
+    """Full argv of a process, NULs replaced by spaces."""
+    try:
+        with open(f"/proc/{pid}/cmdline", "rb") as f:
+            return f.read().replace(b"\0", b" ").decode(errors="replace")
+    except OSError:
+        return ""
+
+def _proc_cwd(pid: int) -> str:
+    try:
+        return os.readlink(f"/proc/{pid}/cwd")
+    except OSError:
+        return ""
+
+def _proc_ppid(pid: int) -> int:
+    try:
+        with open(f"/proc/{pid}/stat") as f:
+            # comm is parenthesized and may contain spaces/parens; ppid is the
+            # field right after the closing paren.
+            stat = f.read()
+            after = stat.rsplit(")", 1)[1].split()
+            return int(after[1])
+    except (OSError, IndexError, ValueError):
+        return 0
+
+def verified_connector_pid() -> int:
+    """Return the PID from connector.pid only if it is really our connector.
+
+    Exact-PID discipline: the pid file is trusted ONLY when
+    /proc/<pid>/cmdline names connector.py AND /proc/<pid>/cwd is the
+    connector dir. No pkill, no pgrep, no loose patterns — a stale or
+    recycled pid file must never kill an innocent process.
+    """
+    conn_dir = os.path.expanduser("~/workspace/yote-connector")
+    pid_file = os.path.join(conn_dir, "connector.pid")
+    try:
+        with open(pid_file) as f:
+            pid = int(f.read().strip().split()[0])
+    except (OSError, ValueError):
+        return 0
+    if pid <= 1:
+        return 0
+    cmdline = _proc_cmdline(pid)
+    if "connector.py" not in cmdline:
+        print(f"  connector.pid={pid} but cmdline is not our connector ({cmdline[:80]}...); refusing to signal", file=sys.stderr)
+        return 0
+    if _proc_cwd(pid) != conn_dir:
+        print(f"  connector.pid={pid} but cwd={_proc_cwd(pid)} != {conn_dir}; refusing to signal", file=sys.stderr)
+        return 0
+    return pid
+
+def stop_connector_exact(timeout: int = 8):
+    """SIGTERM the verified connector child and its verified supervisor parent.
+
+    Exact PIDs only. If verification fails, nothing is signaled.
+    """
+    pid = verified_connector_pid()
+    if not pid:
+        print("  No verified connector process; nothing to stop.")
+        return
+    parent = _proc_ppid(pid)
+    parent_ok = (
+        parent > 1
+        and "supervise-connector.py" in _proc_cmdline(parent)
+        and _proc_cwd(parent) == os.path.expanduser("~/workspace/yote-connector")
+    )
+    print(f"  Stopping connector pid={pid}" + (f" (supervisor pid={parent})" if parent_ok else " (no verified supervisor parent)"))
+    try:
+        os.kill(pid, 15)
+    except OSError as e:
+        print(f"  SIGTERM to {pid} failed: {e}", file=sys.stderr)
+        return
+    # Wait for the child to exit, then SIGKILL if it lingers.
+    import time
+    for _ in range(timeout * 2):
+        if not _proc_cmdline(pid):
+            break
+        time.sleep(0.5)
+    else:
+        print(f"  pid={pid} ignored SIGTERM; SIGKILL", file=sys.stderr)
+        try:
+            os.kill(pid, 9)
+        except OSError:
+            pass
+    if parent_ok and _proc_cmdline(parent):
+        # The supervisor exits on its own once the child dies; nudge it.
+        try:
+            os.kill(parent, 15)
+        except OSError:
+            pass
+
+
+
 def main():
     no_restart = "--no-restart" in sys.argv
 
@@ -112,23 +213,15 @@ def main():
         print(f"  Installed -> {cell_dst}")
 
     if not no_restart:
-        print("Restarting connector...")
-        # Kill old: match 'python3 connector.py' (the daemon cmdline).
-        # Does NOT match this deploy script (its cmdline is '.../deploy-yote-connector').
-        subprocess.run(
-            ["bash", "-c", "pkill -f 'python3 connector\\.py' || true"],
-            timeout=30,
-        )
+        print("Restarting connector (supervised: supervise-connector.py wraps connector.py and classifies the next death)...")
+        # Exact-PID stop only: no pkill -f, no loose pgrep. A loose pattern
+        # once SIGTERMed the live production connector (2026-09-21); the pid
+        # file is trusted only when /proc/<pid>/cmdline + cwd verify.
+        stop_connector_exact()
         import time
         time.sleep(2)
-        # Verify old is gone
-        check = subprocess.run(
-            ["bash", "-c", "pgrep -f 'python3 connector\\.py' || true"],
-            capture_output=True, text=True, timeout=10,
-        )
-        if check.stdout.strip():
-            print(f"  WARNING: old connector PIDs still alive: {check.stdout.strip()}", file=sys.stderr)
-        # Start new detached (PPID 1, own SID).
+        # Start new detached (PPID 1, own SID) UNDER THE SUPERVISOR, so the
+        # next silent death is classified (signal vs exit code) in supervisor.log.
         # Use Popen with start_new_session + all fds redirected; do NOT wait.
         # (bash '&' via subprocess.run hangs on pipe cleanup; see AGENTS.md.)
         conn_dir = os.path.expanduser("~/workspace/yote-connector")
@@ -136,7 +229,7 @@ def main():
         log_fd = os.open(log_path, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o644)
         devnull = os.open(os.devnull, os.O_RDONLY)
         subprocess.Popen(
-            ["python3", "connector.py"],
+            ["python3", "supervise-connector.py"],
             cwd=conn_dir,
             stdout=log_fd,
             stderr=log_fd,
