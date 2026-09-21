@@ -16,9 +16,12 @@
 #   4. Deploys /etc/firefox/policies/policies.json (+ README) from the repo.
 #   5. Verifies everything (--verify), with a sync-freshness report.
 #   6. --install deploys durability: a pacman hook (re-applies after every
-#      firefox-nightly upgrade, since package-owned files get overwritten) and
-#      a systemd.path unit (event-driven re-apply if policy files change —
-#      no timers, no polling).
+#      firefox-nightly upgrade, since package-owned files get overwritten),
+#      a systemd.path unit watching /etc/firefox/policies (event-driven
+#      re-apply if policy files change), and a second path unit watching
+#      every discovered profile's prefs.js — so even if a running Firefox
+#      writes a poisoned value back on shutdown, the next filesystem event
+#      re-cleans it while the profile is idle. No timers, no polling.
 #
 # Safety:
 #   - Never kills, restarts, or signals Firefox. Ever.
@@ -361,6 +364,7 @@ SELF_SRC="$(readlink -f "$0")"
 DEPLOY_BIN="/usr/local/bin/firefox-rs-repair"
 HOOK_FILE="/usr/share/libalpm/hooks/firefox-rs-repair.hook"
 PATH_UNIT="/etc/systemd/system/firefox-rs-repair.path"
+PREFS_PATH_UNIT="/etc/systemd/system/firefox-rs-repair-prefs.path"
 SVC_UNIT="/etc/systemd/system/firefox-rs-repair.service"
 
 do_install() {
@@ -446,6 +450,48 @@ ExecStart=$DEPLOY_BIN --repair --quiet
     else
         vlog "(dry-run) would daemon-reload + enable firefox-rs-repair.path"
     fi
+
+    # 4. systemd.path unit watching every discovered profile's prefs.js.
+    #    This closes the shutdown-restore hazard: if a running Firefox ever
+    #    writes a poisoned value back to prefs.js on quit, the very next
+    #    filesystem event re-runs the repair while the profile is idle.
+    #    While Firefox runs, the lock-symlink check makes repair a no-op on
+    #    prefs.js, so mid-session writes can't cause a repair loop.
+    local prefs_paths="" profile
+    while IFS= read -r profile; do
+        [ -d "$profile" ] && prefs_paths="${prefs_paths}PathModified=$profile/prefs.js
+"
+    done < <(discover_profiles)
+    if [ -n "$prefs_paths" ]; then
+        local prefs_path_content
+        prefs_path_content="[Unit]
+Description=Watch Firefox profiles' prefs.js for Remote Settings drift
+
+[Path]
+${prefs_paths}Unit=firefox-rs-repair.service
+
+[Install]
+WantedBy=multi-user.target
+"
+        if [ ! -f "$PREFS_PATH_UNIT" ] || ! cmp -s <(printf '%s' "$prefs_path_content") "$PREFS_PATH_UNIT"; then
+            backup_file "$PREFS_PATH_UNIT"
+            if [ "$DRY_RUN" -eq 1 ]; then
+                vlog "(dry-run) would write $PREFS_PATH_UNIT"
+            else
+                printf '%s' "$prefs_path_content" >"$PREFS_PATH_UNIT"
+                chmod 644 "$PREFS_PATH_UNIT"
+                note_change "installed $PREFS_PATH_UNIT"
+                systemctl daemon-reload 2>/dev/null || true
+                systemctl enable --now firefox-rs-repair-prefs.path 2>/dev/null \
+                    && vlog "enabled firefox-rs-repair-prefs.path" \
+                    || vlog "could not enable prefs path unit"
+            fi
+        else
+            vlog "prefs path unit already installed"
+        fi
+    else
+        vlog "no profiles discovered; skipping prefs path unit"
+    fi
 }
 
 # --- verification ----------------------------------------------------------------
@@ -508,6 +554,15 @@ do_verify() {
         pass "path unit enabled"
     else
         vlog "NOTE: firefox-rs-repair.path not enabled (run --install)"
+    fi
+    if [ -f "$PREFS_PATH_UNIT" ]; then
+        if systemctl is-enabled firefox-rs-repair-prefs.path >/dev/null 2>&1; then
+            pass "prefs path unit enabled"
+        else
+            vlog "NOTE: firefox-rs-repair-prefs.path not enabled (run --install)"
+        fi
+    else
+        vlog "NOTE: prefs path unit not installed (run --install)"
     fi
     if [ "$FAILURES" -gt 0 ]; then
         log "$FAILURES verification FAILURE(S)"
