@@ -133,6 +133,9 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | stale-hunter | Process staleness + speed audit across hatch+yote: 12h+ silence/idle hunt, CPU-vs-wall profiling, faster paths/libs, paru/pacman installs; repair live, durable, event-driven | Ember (main chat) | RUNNING (2026-09-20) |
 | oracle-experiments | Oracle deep proving suite: labeled eval vs outcomes (KalshiBench N=100), escalation analysis, latency/cost per tier, default tuning with rationale, co-failure certificate | oracle-experiments (Ember's crew, under oracle-max) | RUNNING (2026-09-20) |
 
+
+| oracle-repair | oracle E2E defect repair | oracle-repair | DONE (2026-09-21): lifecycle repair live-verified E2E (intake->signed task->bids->vickrey assign->real super-ralph->signed result->settlement verified->next_work). Commits ad2ade8077 + e25b2e6b25 on nim-probe-20260920, pushed to toxicwind/sovereign-projects. |
+
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
 
