@@ -2,9 +2,9 @@
 # bridge-open — the router for opening URLs in the desktop Chromium.
 #
 # The bridge's physical display (Hyprland on DP) runs one Chromium singleton.
-# This router hands URLs to THAT instance, verifies the handoff landed, and
-# if the launcher lingers (handoff failed) kills exactly the PIDs born from
-# this launch so a rogue main can never be left behind.
+# This router hands URLs to THAT instance, verifies each handoff landed, and
+# if a launcher lingers (handoff failed) kills exactly the PIDs born from
+# that launch so a rogue main can never be left behind.
 #
 # NEVER run bare `chromium --new-tab` (or headless/headed automation without
 # --user-data-dir) against the default profile: automation runs poison the
@@ -35,32 +35,40 @@ browser_mains() {
   done
 }
 
-before=$(browser_mains | sort -u)
+kill_rogues() {
+  local before="$1" p b born c
+  for p in $(browser_mains | sort -u); do
+    born=1
+    for b in $before; do [ "$p" = "$b" ] && born=0; done
+    [ "$born" -eq 0 ] && continue
+    c=$(tr '\0' ' ' < "/proc/$p/cmdline" 2>/dev/null | cut -c1-100)
+    echo "bridge-open: killing rogue main $p :: $c" >&2
+    kill -9 "$p" 2>/dev/null || true
+  done
+}
 
-as_toxic /usr/bin/chromium --new-tab "$@" </dev/null >>"$LOG" 2>&1 &
-LAUNCHER=$!
+# One URL per launch: Chromium only reliably opens the first URL when
+# several are passed in a single invocation (2026-09-21).
+rc=0
+for url in "$@"; do
+  before=$(browser_mains | sort -u)
+  as_toxic /usr/bin/chromium --new-tab "$url" </dev/null >>"$LOG" 2>&1 &
+  LAUNCHER=$!
 
-# Handoff check: a successful handoff exits the launcher within ~10s.
-ok=0
-for _ in $(seq 1 40); do
-  kill -0 "$LAUNCHER" 2>/dev/null || { ok=1; break; }
-  sleep 0.25
+  # Handoff check: a successful handoff exits the launcher within ~10s.
+  ok=0
+  for _ in $(seq 1 40); do
+    kill -0 "$LAUNCHER" 2>/dev/null || { ok=1; break; }
+    sleep 0.25
+  done
+
+  if [ "$ok" -eq 1 ]; then
+    echo "bridge-open: handed to desktop chromium :: $url"
+  else
+    echo "bridge-open: handoff FAILED for $url — removing rogue launcher tree" >&2
+    kill_rogues "$before"
+    kill -9 "$LAUNCHER" 2>/dev/null || true
+    rc=1
+  fi
 done
-
-if [ "$ok" -eq 1 ]; then
-  echo "bridge-open: handed to desktop chromium"
-  exit 0
-fi
-
-# Launcher lingered: handoff failed. Kill exactly the mains born from it.
-echo "bridge-open: handoff FAILED — removing rogue launcher tree" >&2
-for p in $(browser_mains | sort -u); do
-  born=1
-  for b in $before; do [ "$p" = "$b" ] && born=0; done
-  [ "$born" -eq 0 ] && continue
-  c=$(tr '\0' ' ' < "/proc/$p/cmdline" 2>/dev/null | cut -c1-100)
-  echo "bridge-open: killing rogue main $p :: $c" >&2
-  kill -9 "$p" 2>/dev/null || true
-done
-kill -9 "$LAUNCHER" 2>/dev/null || true
-exit 1
+exit "$rc"
