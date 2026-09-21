@@ -321,6 +321,28 @@ export function firstUsableModelFor(p: string): string | undefined {
   return undefined;
 }
 
+// DECISION 12187 (B) — ADDITIVE-OPTIONAL, model-level quality term.
+// Probe-verified (provider, model) pairs get a small documented bonus in
+// the race score: +5 is tie-break scale against elo (hundreds-thousands),
+// the latency penalty (elo − latencyEMA/50), and the existing rand*10
+// jitter — it nudges ties, never overrides the breaker or elo.
+// Reversible: SOVEREIGN_MODEL_BONUS=0. Cites: health DB rows
+// strategy='longctx-probe' (session 1m-probe-20260921-1745), commit
+// 7f4f79a48c, tools/sovereign-router/probes/RESULTS-2026-09-21.md.
+const PROBE_VERIFIED_MODELS: Record<string, Set<string>> = {
+  nvidia: new Set([
+    // 1M needle retrieval verified at 100k/500k/1M, exact every time.
+    "nvidia/nemotron-3-super-120b-a12b",
+    // Ping-verified (1.8s, genuine reasoning trace); 1M ladder pending.
+    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+  ]),
+};
+const PROBE_VERIFIED_BONUS = 5;
+export function modelProbeBonus(p: string, mid: string): number {
+  if (process.env.SOVEREIGN_MODEL_BONUS === "0") return 0;
+  return PROBE_VERIFIED_MODELS[p]?.has(mid) ? PROBE_VERIFIED_BONUS : 0;
+}
+
 export function pickWeighted(n = MAX_PARALLEL): [string, string][] {
   // Dead-lane exclusion (503-forensics 2026-09-21): providers whose recent
   // attempts all failed sit out of the race — they never win, they only
@@ -338,9 +360,11 @@ export function pickWeighted(n = MAX_PARALLEL): [string, string][] {
   const pool = live.length ? live : dead;
   const scored: [number, string, string][] = [];
   for (const p of pool) {
-    const sc = state.candidateScore(p) + Math.random() * 10;
     const mid = firstUsableModelFor(p);
-    if (mid) scored.push([sc, p, mid]);
+    if (!mid) continue;
+    const sc =
+      state.candidateScore(p) + Math.random() * 10 + modelProbeBonus(p, mid);
+    scored.push([sc, p, mid]);
   }
   scored.sort((a, b) => b[0] - a[0]);
   const out: [string, string][] = [];
@@ -684,6 +708,141 @@ export async function routeCascade(
     if (mid) cands.push([p, mid]);
   }
   return hedgedChain(cands, body, session, "cascade");
+}
+
+// ---------------------------------------------------------------------------
+// 1M-context pin — oracle DECISION 12187, verdict A (CONDITIONAL).
+// Evidence: probe session 1m-probe-20260921-1745 (13 rows,
+// strategy='longctx-probe' in the health DB; artifacts committed in
+// 7f4f79a48c; analysis in tools/sovereign-router/probes/RESULTS-2026-09-21.md)
+// verified EXACT 1M-token needle retrieval on the KEYED lane below
+// (100k/500k/1M at 3.4/9.2/18.2/41.4s) plus the verified negative:
+// OpenRouter :free caps at 262144 tokens (HTTP 400 at 500k) — no free lane
+// can serve >262k, so the pin displaces no free lane (routing doctrine:
+// ranking > free-on-provider > pay orders preference, not a pay ban).
+// Mechanism: est-token gate -> DIRECT lane call, executing OUTSIDE the
+// parallel race (the LING_DEFAULT pool-order unshift was proven a no-op in
+// DECISION 12097 and is NOT used here).
+// BINDING GUARDS (no guard = no merge):
+//  (1) Credit guard: the NVIDIA key is a free-tier BUILD key — finite and
+//      shared across the swarm, NOT one of Chris's paid subs. The pinned
+//      path is capped at LONGCTX_PIN_DAILY_CAP requests/day (~10 to start;
+//      counts EVERY pinned attempt, ok or not, since every attempt burns
+//      key credits). EVERY pinned attempt is logged under
+//      strategy='longctx-pinned' with est tokens + latency so the next
+//      oracle review has real traffic data.
+//  (2) Circuit check FIRST via state.circuitOk('nvidia') — open -> fall
+//      through to the normal race; never fight the breaker.
+// On pinned failure: the attempt is logged and the caller does a single
+// fallback to the normal race. The pin never sets session stickiness — it
+// is size-deterministic, not session-affine; the next request re-races.
+// Operational kill switch: SOVEREIGN_LONGCTX_PIN=0 disables the pin.
+// ---------------------------------------------------------------------------
+export const LONGCTX_PIN_PROVIDER = "nvidia";
+// KEYED lane ONLY — never the :free id (provider cap 262144 tokens).
+export const LONGCTX_PIN_MODEL = "nvidia/nemotron-3-super-120b-a12b";
+export const LONGCTX_PIN_GATE_TOKENS = 200_000;
+export const LONGCTX_PIN_DAILY_CAP = 10;
+const LONGCTX_PIN_STRATEGY = "longctx-pinned";
+
+export function longctxPinEnabled(): boolean {
+  return process.env.SOVEREIGN_LONGCTX_PIN !== "0";
+}
+
+/**
+ * estPromptTokens — prompt-size estimator, chars/4, the SAME estimator the
+ * 1M probe used (haystack_chars / 4.0). Counts string content and text parts
+ * of content arrays across all messages.
+ */
+export function estPromptTokens(body: ChatBody): number {
+  let chars = 0;
+  const msgs = (body as { messages?: unknown[] }).messages;
+  if (Array.isArray(msgs)) {
+    for (const m of msgs) {
+      const c = (m as { content?: unknown })?.content;
+      if (typeof c === "string") chars += c.length;
+      else if (Array.isArray(c)) {
+        for (const part of c) {
+          const t = (part as { text?: unknown })?.text;
+          if (typeof t === "string") chars += t.length;
+        }
+      }
+    }
+  }
+  return chars / 4;
+}
+
+export type LongctxPinReason =
+  | "eligible"
+  | "disabled"
+  | "under_gate"
+  | "explicit_model"
+  | "circuit_open"
+  | "no_key"
+  | "budget_exhausted";
+
+export type LongctxPinVerdict = {
+  ok: boolean;
+  reason: LongctxPinReason;
+  estTokens: number;
+};
+
+/**
+ * Eligibility only (no side effects): pin enabled, gate tripped, no
+ * explicit model request (an explicitly named model — alias,
+ * provider:model spec, catalog id — is honored, never hijacked), circuit
+ * closed (never fight the breaker), key present, daily pinned-request
+ * budget not exhausted.
+ */
+export function longctxPinEligible(body: ChatBody): LongctxPinVerdict {
+  const estTokens = estPromptTokens(body);
+  if (!longctxPinEnabled()) return { ok: false, reason: "disabled", estTokens };
+  if (estTokens <= LONGCTX_PIN_GATE_TOKENS)
+    return { ok: false, reason: "under_gate", estTokens };
+  // Explicit model requests keep their direct lane — the pin only serves
+  // the default/auto path.
+  if (isRoutableModelId(String(body.model || "auto")))
+    return { ok: false, reason: "explicit_model", estTokens };
+  if (!state.circuitOk(LONGCTX_PIN_PROVIDER))
+    return { ok: false, reason: "circuit_open", estTokens };
+  if (!keyOk(LONGCTX_PIN_PROVIDER))
+    return { ok: false, reason: "no_key", estTokens };
+  if (
+    state.health.countStrategyToday(LONGCTX_PIN_STRATEGY) >=
+    LONGCTX_PIN_DAILY_CAP
+  )
+    return { ok: false, reason: "budget_exhausted", estTokens };
+  return { ok: true, reason: "eligible", estTokens };
+}
+
+/**
+ * tryLongctxPin — fire the pin: direct callOne to the KEYED nvidia lane,
+ * skipping the race. Returns null when not eligible (caller falls through
+ * to the normal race). EVERY pinned attempt is logged under
+ * strategy='longctx-pinned' with est tokens + latency, ok or not (callOne
+ * also writes its usual STRATEGY row, so provider health/elo/circuit keep
+ * learning from pinned traffic). On failure the caller falls back to the
+ * race exactly once.
+ */
+export async function tryLongctxPin(
+  body: ChatBody,
+  sid: string,
+  stream = false,
+): Promise<RouteResult | null> {
+  const v = longctxPinEligible(body);
+  if (!v.ok) return null;
+  const r = await callOne(LONGCTX_PIN_PROVIDER, LONGCTX_PIN_MODEL, body, stream);
+  state.record(
+    LONGCTX_PIN_MODEL,
+    LONGCTX_PIN_PROVIDER,
+    r.status || (r.ok ? 200 : 500),
+    r.lat || 0,
+    r.ok ? 1 : 0,
+    LONGCTX_PIN_STRATEGY,
+    sid,
+    v.estTokens,
+  );
+  return r;
 }
 
 export const ROUTERS: Record<

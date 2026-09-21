@@ -342,6 +342,7 @@ export class Matrix {
     winner = 0,
     strategy = "",
     session = "",
+    estTokens = 0,
   ): void {
     const latMs = lat * 1000;
     this.health.recordRequest(
@@ -352,6 +353,7 @@ export class Matrix {
       strategy,
       winner,
       session,
+      estTokens,
     );
     if (status === 200) {
       const old = this.circuit.get(prov) || "closed";
