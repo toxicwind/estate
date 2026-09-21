@@ -1,0 +1,13 @@
+# Pitchfork daemon fragment - merge into [daemons.browser-keeper] in
+# /home/toxic/sovereign/pitchfork.toml (owned sequence: stop -> ss-verify ->
+# clean --daemon -> start from /home/toxic/sovereign).
+[daemons.browser-keeper]
+port = 9223
+run = "exec /home/toxic/sovereign/projects/mesh/browserless/keeper/keeper.sh"
+dir = "."
+mise = false
+retry = true
+ready_cmd = "curl -sf http://127.0.0.1:9223/json/version > /dev/null"
+boot_start = true
+env = { WAYLAND_DISPLAY = "wayland-1", XDG_RUNTIME_DIR = "/run/user/1000" }
+auto = ["start"]
