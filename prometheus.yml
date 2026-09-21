@@ -7,22 +7,12 @@ scrape_configs:
     metrics_path: /metrics
     static_configs:
       - targets:
-          - "127.0.0.1:25100"
-          - "127.0.0.1:25101"
-          - "127.0.0.1:25102"
-          - "127.0.0.1:25103"
-          - "127.0.0.1:25105"
-          - "127.0.0.1:25106"
-          - "127.0.0.1:25107"
-          - "127.0.0.1:25203"
+          - "127.0.0.1:25100"   # herd
+          - "127.0.0.1:25101"   # model-guard
+          - "127.0.0.1:25105"   # prometheus self
+          - "127.0.0.1:25211"   # node-exporter
+          - "127.0.0.1:25213"   # sovereign-exporter (daemons/ports/lanes/market/gpu)
 
-  - job_name: "fleet_power"
-    metrics_path: /metrics
-    static_configs:
-      - targets: ["127.0.0.1:25208"]
-
-  - job_name: "node"
-    static_configs:
-      - targets: ["127.0.0.1:9100"]
-
-# hotreload 1784356805503
+# NOTE: 25102/25103/25106/25107/25203/25208 have no /metrics endpoint
+# (404 on scrape). Their up/down is covered by sovereign-exporter
+# (sovereign_port_listening / sovereign_daemon_up).
