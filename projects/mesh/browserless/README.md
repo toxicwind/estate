@@ -4,6 +4,31 @@ Browser automation for the fleet: the **browserless.io MCP server** plus the
 **native-launcher deployment** of the browserless server itself, unified
 in one mesh project at `projects/mesh/browserless/` (visible as `mesh/browserless/`).
 
+## Topology (the real serve path)
+
+Two separate lanes — do not confuse them:
+
+```text
+browser-keeper daemon (pitchfork: browser-keeper)
+  └─ headed Chromium, nv-audit profile ── CDP 127.0.0.1:9223
+       └─ browserless-mcp persistent_* tools (11: status/tabs/new_tab/
+          close_tab/activate_tab/navigate/screenshot/click/fill/text/evaluate)
+            └─ stdio ── ./mcp.sh ── mesh MCP registry (browserless-mcp)
+
+vendor browserless.io v2.49.0 app (/home/toxic/.browserless/app, stock, untouched)
+  └─ HTTP 127.0.0.1:25130 (pitchfork: browserless)
+       └─ browserless-mcp legacy HTTP tools (initialize_browserless + 14 more)
+            └─ stdio ── ./mcp.sh ── mesh MCP registry (browserless-mcp)
+```
+
+The MCP server is **stdio only** — no port, no daemon. MCP clients spawn
+`./mcp.sh` per session, and it **refuses to start** if the keeper CDP is
+down (fail loud, never half-working; `BROWSER_MCP_ALLOW_NO_KEEPER=1`
+bypasses for maintenance). `persistent_*` is the first-class path
+(headed, logged-in, state survives across tasks); the `:25130` HTTP
+tools are the legacy lane and several are honestly documented as
+broken against v2.49.0 in their tool descriptions.
+
 ## Deployment: native launcher
 
 The live deployment never forked browserless code. `/home/toxic/.browserless/app`
@@ -71,14 +96,36 @@ npm run build     # tsc -> dist/
 BROWSERLESS_TOKEN=... node dist/index.js
 # simpler single-purpose server (env-driven URL, defaults to live endpoint)
 node dist/simple-server.js
-# keeper-wired launcher (first-class): stdio, no port/daemon — 22 tools incl.
-# persistent_* -> keeper CDP 127.0.0.1:9223
+# keeper-wired launcher (first-class): stdio, no port/daemon — 26 tools incl.
+# 11 persistent_* -> keeper CDP 127.0.0.1:9223
 ./mcp.sh
 ```
 
 Registered in the mesh MCP registry
 (`/home/toxic/projects/my-ai-tools/configs/mcp-registry.json`) as
 `browserless-mcp`. See `keeper/README.md` for the serve path + e2e evidence.
+
+### Rebuild from a clean checkout
+
+`dist/` and `node_modules/` are gitignored build artifacts — rebuild them:
+
+```bash
+cd projects/mesh/browserless
+/usr/bin/node --version   # want v24.x; the mise node 22.12.0 npm is BROKEN
+                          # on yote (missing nopt module) — never use bare
+                          # `npm` under mise node 22
+npm install && npm run build   # tsc -> dist/
+npm test                       # smoke suite vs the LIVE keeper (scratch tab)
+./mcp.sh                       # stdio MCP server; refuses to start if the
+                               # keeper CDP is down (BROWSER_MCP_ALLOW_NO_KEEPER=1 bypasses)
+```
+
+### Smoke suite
+
+`npm test` runs `smoke/keeper-smoke.mjs` against the **live** keeper:
+status → tabs → new_tab (scratch) → activate → navigate → evaluate →
+pageText → screenshot → error-path codes → close_tab → status. The scratch
+tab is closed afterwards; existing tabs are never touched. Exit 0 = all pass.
 
 `initialize_browserless` defaults to host `127.0.0.1`, port `25130` — the live
 mesh server. `simple-server.ts` builds its URL from `BROWSERLESS_PROTOCOL/HOST/PORT`

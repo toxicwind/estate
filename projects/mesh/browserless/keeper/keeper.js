@@ -19,11 +19,19 @@ const STATUS_FILE = path.join(KEEPER_DIR, "status.json");
 const log = (...args) => console.log(new Date().toISOString(), "[keeper]", ...args);
 let activeCtx = null;
 
-process.on("SIGTERM", async () => {
-  log("SIGTERM received, closing browser");
+// Production tracking: uptime anchor, relaunch history, last failure.
+const STARTED_AT = new Date().toISOString();
+let relaunchCount = 0;
+let lastError = null;
+let lastHealthyAt = Date.now();
+
+async function shutdown(signal) {
+  log(signal + " received, closing browser");
   try { if (activeCtx) await activeCtx.close(); } catch (e) { log("close error:", e.message); }
   process.exit(0);
-});
+}
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
 
 function cdpAlive() {
   return new Promise((resolve) => {
@@ -34,6 +42,18 @@ function cdpAlive() {
     req.on("error", () => resolve(false));
     req.on("timeout", () => { req.destroy(); resolve(false); });
   });
+}
+
+function baseStatus(state) {
+  return {
+    cdp: "http://127.0.0.1:" + CDP_PORT,
+    pid: process.pid,
+    state,
+    profile: PROFILE_DIR,
+    started_at: STARTED_AT,
+    relaunch_count: relaunchCount,
+    last_error: lastError,
+  };
 }
 
 function writeStatus(state) {
@@ -62,16 +82,26 @@ async function launchOnce() {
   await ctx.addInitScript(() => {
     Object.defineProperty(navigator, "webdriver", { get: () => undefined });
   });
-  writeStatus({ cdp: "http://127.0.0.1:" + CDP_PORT, pid: process.pid, state: "up" });
+  writeStatus(baseStatus("up"));
   log("chromium up, CDP on 127.0.0.1:" + CDP_PORT);
 
+  let checks = 0;
   for (;;) {
     await new Promise((r) => setTimeout(r, 10000));
+    checks++;
     if (!(await cdpAlive())) { log("CDP unresponsive, recycling browser"); break; }
+    lastHealthyAt = Date.now();
+    // Bounded observability: one heartbeat per ~5min instead of silence.
+    if (checks % 30 === 0) {
+      log("heartbeat: chromium healthy", {
+        checks,
+        uptimeMin: Math.round((Date.now() - Date.parse(STARTED_AT)) / 60000),
+      });
+    }
   }
   try { await ctx.close(); } catch (e) { log("close error:", e.message); }
   activeCtx = null;
-  writeStatus({ cdp: "http://127.0.0.1:" + CDP_PORT, pid: process.pid, state: "relaunching" });
+  writeStatus(baseStatus("relaunching"));
 }
 
 (async () => {
@@ -81,8 +111,17 @@ async function launchOnce() {
   }
   for (;;) {
     try { await launchOnce(); }
-    catch (e) { log("launch failed:", e.message); }
-    log("relaunching in 5s");
-    await new Promise((r) => setTimeout(r, 5000));
+    catch (e) {
+      lastError = e && e.message ? e.message : String(e);
+      log("launch failed:", lastError);
+    }
+    // Backoff with jitter; a sustained healthy run (>2min) resets the
+    // count so one old crash doesn't permanently slow recovery.
+    const n = (Date.now() - lastHealthyAt > 120000) ? 0 : relaunchCount;
+    const delayMs = Math.min(120000, 5000 * 2 ** n) + Math.floor(Math.random() * 1500);
+    relaunchCount = n + 1;
+    log("relaunching", { inMs: delayMs, relaunchCount, lastError });
+    writeStatus(baseStatus("relaunching"));
+    await new Promise((r) => setTimeout(r, delayMs));
   }
 })();

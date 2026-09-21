@@ -10,9 +10,23 @@ import { BrowserlessConfigSchema } from './types.js';
 import dotenv from 'dotenv';
 
 // Load environment variables
-import { PersistentBrowser } from "./persistent.js";
+import { PersistentBrowser, errMsg, log } from "./persistent.js";
 
 dotenv.config();
+
+// Structured stderr logging (stdout is the MCP wire).
+type McpLogLevel = "debug" | "info" | "warn" | "error" | "fatal";
+function mlog(level: McpLogLevel, msg: string, fields: Record<string, unknown> = {}): void {
+  log(level, msg, { ...fields, component: "mcp" });
+}
+
+// Optional numeric tab argument from MCP tool args (undefined = last-active tab).
+// NaN fails the zod check inside PersistentBrowser with a clear INVALID_ARGS.
+function tabArg(v: unknown): number | undefined {
+  if (v === undefined || v === null || v === "") return undefined;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : NaN;
+}
 
 class BrowserlessMCPServer {
   private server: Server;
@@ -23,7 +37,7 @@ class BrowserlessMCPServer {
     this.server = new Server(
       {
         name: 'browserless-mcp',
-        version: "1.2.0",
+        version: "1.3.0",
       }
     );
 
@@ -36,6 +50,125 @@ class BrowserlessMCPServer {
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       return {
         tools: [
+          {
+            name: "persistent_tabs",
+            description: "[keeper-first] List all tabs in the keeper Chromium: index, URL, title, which is active.",
+            inputSchema: {
+              type: "object",
+              properties: {},
+            },
+          },
+          {
+            name: "persistent_new_tab",
+            description: "[keeper-first] Open a new tab in the keeper Chromium (optionally to a URL) and make it active. Returns the tab info.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                url: { type: "string", description: "Optional http(s) or data: URL to open in the new tab" },
+              },
+            },
+          },
+          {
+            name: "persistent_close_tab",
+            description: "[keeper-first] Close a keeper tab by index (from persistent_tabs). Refuses to close the last tab.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                tab: { type: "number", description: "Tab index from persistent_tabs" },
+              },
+              required: ["tab"],
+            },
+          },
+          {
+            name: "persistent_activate_tab",
+            description: "[keeper-first] Bring a keeper tab to the front by index (from persistent_tabs).",
+            inputSchema: {
+              type: "object",
+              properties: {
+                tab: { type: "number", description: "Tab index from persistent_tabs" },
+              },
+              required: ["tab"],
+            },
+          },
+          {
+            name: "persistent_status",
+            description: "[keeper-first] Status of the persistent keeper Chromium (CDP alive, keeper pid/state, last error). No initialize_browserless needed.",
+            inputSchema: {
+              type: "object",
+              properties: {},
+            },
+          },
+          {
+            name: "persistent_navigate",
+            description: "[keeper-first] Navigate the persistent keeper Chromium to a URL. Headed, logged-in profile, survives across tasks.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                url: { type: "string" },
+                tab: { type: "number", description: "Tab index from persistent_tabs; defaults to the last-active tab" },
+              },
+              required: ["url"],
+            },
+          },
+          {
+            name: "persistent_screenshot",
+            description: "[keeper-first] Screenshot the current page of the persistent keeper Chromium.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                fullPage: { type: "boolean", default: false },
+                tab: { type: "number", description: "Tab index from persistent_tabs; defaults to the last-active tab" },
+              },
+            },
+          },
+          {
+            name: "persistent_click",
+            description: "[keeper-first] Click a CSS selector in the persistent keeper Chromium.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                selector: { type: "string" },
+                tab: { type: "number", description: "Tab index from persistent_tabs; defaults to the last-active tab" },
+              },
+              required: ["selector"],
+            },
+          },
+          {
+            name: "persistent_fill",
+            description: "[keeper-first] Fill a CSS selector with text in the persistent keeper Chromium.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                selector: { type: "string" },
+                text: { type: "string" },
+                tab: { type: "number", description: "Tab index from persistent_tabs; defaults to the last-active tab" },
+              },
+              required: ["selector", "text"],
+            },
+          },
+          {
+            name: "persistent_text",
+            description: "[keeper-first] Get the visible text of the current page in the persistent keeper Chromium.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                tab: { type: "number", description: "Tab index from persistent_tabs; defaults to the last-active tab" },
+              },
+            },
+          },
+          {
+            name: "persistent_evaluate",
+            description: "[keeper-first] Evaluate a JS expression in the persistent keeper Chromium page and return the result.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                js: { type: "string" },
+                tab: { type: "number", description: "Tab index from persistent_tabs; defaults to the last-active tab" },
+              },
+              required: ["js"],
+            },
+          },
+
           {
             name: 'initialize_browserless',
             description: 'Initialize connection to Browserless instance',
@@ -84,7 +217,7 @@ class BrowserlessMCPServer {
           },
           {
             name: 'take_screenshot',
-            description: 'Take screenshot of a webpage',
+            description: 'Take screenshot of a webpage (ephemeral session via :25130; historically timed out under load on browserless.io v2.49.0 — prefer persistent_screenshot).',
             inputSchema: {
               type: 'object',
               properties: {
@@ -138,7 +271,7 @@ class BrowserlessMCPServer {
           },
           {
             name: 'execute_function',
-            description: 'Execute custom JavaScript function in browser context',
+            description: 'Execute custom JavaScript function in browser context (ephemeral session via :25130; v2.49.0 expects a specific payload shape — 4xx likely; prefer persistent_evaluate).',
             inputSchema: {
               type: 'object',
               properties: {
@@ -150,7 +283,7 @@ class BrowserlessMCPServer {
           },
           {
             name: 'download_files',
-            description: 'Handle file downloads',
+            description: 'Handle file downloads (thin wrapper over :25130; behavior depends on the server build).',
             inputSchema: {
               type: 'object',
               properties: {
@@ -162,7 +295,7 @@ class BrowserlessMCPServer {
           },
           {
             name: 'export_page',
-            description: 'Export webpage with resources',
+            description: 'Export webpage with resources (NOT present in the browserless.io v2.49.0 build — expect 404).',
             inputSchema: {
               type: 'object',
               properties: {
@@ -175,7 +308,7 @@ class BrowserlessMCPServer {
           },
           {
             name: 'run_performance_audit',
-            description: 'Run Lighthouse performance audit',
+            description: 'Run Lighthouse performance audit (NOT present in the browserless.io v2.49.0 build — expect 404).',
             inputSchema: {
               type: 'object',
               properties: {
@@ -276,78 +409,7 @@ class BrowserlessMCPServer {
               properties: {},
             },
           },
-          {
-            name: "persistent_status",
-            description: "Status of the persistent keeper Chromium (CDP alive, keeper pid, state). No initialize_browserless needed.",
-            inputSchema: {
-              type: "object",
-              properties: {},
-            },
-          },
-          {
-            name: "persistent_navigate",
-            description: "Navigate the persistent keeper Chromium to a URL. Headed, logged-in profile, survives across tasks.",
-            inputSchema: {
-              type: "object",
-              properties: {
-                url: { type: "string" },
-              },
-              required: ["url"],
-            },
-          },
-          {
-            name: "persistent_screenshot",
-            description: "Screenshot the current page of the persistent keeper Chromium.",
-            inputSchema: {
-              type: "object",
-              properties: {
-                fullPage: { type: "boolean", default: false },
-              },
-            },
-          },
-          {
-            name: "persistent_click",
-            description: "Click a CSS selector in the persistent keeper Chromium.",
-            inputSchema: {
-              type: "object",
-              properties: {
-                selector: { type: "string" },
-              },
-              required: ["selector"],
-            },
-          },
-          {
-            name: "persistent_fill",
-            description: "Fill a CSS selector with text in the persistent keeper Chromium.",
-            inputSchema: {
-              type: "object",
-              properties: {
-                selector: { type: "string" },
-                text: { type: "string" },
-              },
-              required: ["selector", "text"],
-            },
-          },
-          {
-            name: "persistent_text",
-            description: "Get the visible text of the current page in the persistent keeper Chromium.",
-            inputSchema: {
-              type: "object",
-              properties: {},
-            },
-          },
-          {
-            name: "persistent_evaluate",
-            description: "Evaluate a JS expression in the persistent keeper Chromium page and return the result.",
-            inputSchema: {
-              type: "object",
-              properties: {
-                js: { type: "string" },
-              },
-              required: ["js"],
-            },
-          },
-        ] as Tool[],
+] as Tool[],
       };
     });
 
@@ -696,19 +758,19 @@ class BrowserlessMCPServer {
           }
 
           case "persistent_navigate": {
-            const nav = await this.persistent.navigate((args as any).url);
+            const nav = await this.persistent.navigate((args as any)?.url, { tab: tabArg((args as any)?.tab) });
             return {
               content: [
                 {
                   type: "text",
-                  text: "Navigated: " + nav.title + " - " + nav.url,
+                  text: "Navigated tab " + nav.tab + ": " + nav.title + " - " + nav.url,
                 },
               ],
             };
           }
 
           case "persistent_screenshot": {
-            const png = await this.persistent.screenshot(!!(args as any).fullPage);
+            const png = await this.persistent.screenshot({ fullPage: !!(args as any)?.fullPage, tab: tabArg((args as any)?.tab) });
             return {
               content: [
                 {
@@ -725,24 +787,24 @@ class BrowserlessMCPServer {
           }
 
           case "persistent_click": {
-            await this.persistent.click((args as any).selector);
+            const clicked = await this.persistent.click((args as any)?.selector, { tab: tabArg((args as any)?.tab) });
             return {
               content: [
                 {
                   type: "text",
-                  text: "Clicked.",
+                  text: "Clicked tab " + clicked.tab + ": " + clicked.selector,
                 },
               ],
             };
           }
 
           case "persistent_fill": {
-            await this.persistent.fill((args as any).selector, (args as any).text);
+            const filled = await this.persistent.fill((args as any)?.selector, (args as any)?.text, { tab: tabArg((args as any)?.tab) });
             return {
               content: [
                 {
                   type: "text",
-                  text: "Filled.",
+                  text: "Filled tab " + filled.tab + ": " + filled.selector,
                 },
               ],
             };
@@ -753,19 +815,67 @@ class BrowserlessMCPServer {
               content: [
                 {
                   type: "text",
-                  text: await this.persistent.pageText(),
+                  text: await this.persistent.pageText({ tab: tabArg((args as any)?.tab) }),
                 },
               ],
             };
           }
 
           case "persistent_evaluate": {
-            const val = await this.persistent.evaluate((args as any).js);
+            const val = await this.persistent.evaluate((args as any)?.js, { tab: tabArg((args as any)?.tab) });
             return {
               content: [
                 {
                   type: "text",
                   text: typeof val === "string" ? val : JSON.stringify(val),
+                },
+              ],
+            };
+          }
+
+          case "persistent_tabs": {
+            const tabs = await this.persistent.tabs();
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: JSON.stringify(tabs, null, 2),
+                },
+              ],
+            };
+          }
+
+          case "persistent_new_tab": {
+            const t = await this.persistent.newTab((args as any)?.url);
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: `New tab ${t.index}: ${t.title} - ${t.url}`,
+                },
+              ],
+            };
+          }
+
+          case "persistent_close_tab": {
+            const r = await this.persistent.closeTab(tabArg((args as any)?.tab) as number);
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: `Closed tab ${r.closed}; ${r.remaining} tab(s) remain.`,
+                },
+              ],
+            };
+          }
+
+          case "persistent_activate_tab": {
+            const t = await this.persistent.activateTab(tabArg((args as any)?.tab) as number);
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: `Active tab ${t.index}: ${t.title} - ${t.url}`,
                 },
               ],
             };
@@ -781,12 +891,74 @@ class BrowserlessMCPServer {
   }
 
   async run() {
+    await probeKeeperOrDie();
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
-    console.error('Browserless MCP server started');
+    mlog("info", "browserless-mcp started", {
+      version: "1.3.0",
+      keeperCdp: process.env.BROWSER_KEEPER_CDP || "http://127.0.0.1:9223",
+    });
+  }
+
+  /** Graceful shutdown: drop the keeper CDP session, then close the MCP server. */
+  async shutdown() {
+    mlog("info", "shutting down browserless-mcp");
+    try {
+      await this.persistent.disconnect();
+    } catch (e) {
+      mlog("warn", "keeper disconnect failed during shutdown", { error: errMsg(e) });
+    }
+    try {
+      await this.server.close();
+    } catch (e) {
+      mlog("warn", "MCP server close failed during shutdown", { error: errMsg(e) });
+    }
+  }
+}
+
+/**
+ * Startup readiness probe: the persistent_* tools are the first-class path,
+ * so refuse to start half-working when the keeper is down. Bypass only with
+ * BROWSER_MCP_ALLOW_NO_KEEPER=1 (maintenance).
+ */
+async function probeKeeperOrDie(): Promise<void> {
+  const cdp = process.env.BROWSER_KEEPER_CDP || "http://127.0.0.1:9223";
+  if (process.env.BROWSER_MCP_ALLOW_NO_KEEPER === "1") {
+    mlog("warn", "keeper readiness probe skipped (BROWSER_MCP_ALLOW_NO_KEEPER=1)");
+    return;
+  }
+  try {
+    const res = await fetch(cdp + "/json/version", { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const v = (await res.json()) as { Browser?: string };
+    mlog("info", "keeper readiness probe OK", { cdp, browser: v?.Browser ?? "unknown" });
+  } catch (e) {
+    mlog(
+      "fatal",
+      "keeper CDP not answering — refusing to start half-working",
+      {
+        cdp,
+        error: errMsg(e),
+        hint: "start the keeper first: pitchfork start browser-keeper (or set BROWSER_MCP_ALLOW_NO_KEEPER=1)",
+      }
+    );
+    process.exit(1);
   }
 }
 
 // Start the server
 const server = new BrowserlessMCPServer();
-server.run().catch(console.error);
+for (const sig of ["SIGTERM", "SIGINT"] as const) {
+  process.on(sig, () => {
+    mlog("info", `${sig} received`);
+    void server
+      .shutdown()
+      .catch((e) => mlog("error", "shutdown error", { error: errMsg(e) }))
+      .finally(() => process.exit(0));
+    setTimeout(() => process.exit(0), 5000).unref();
+  });
+}
+server.run().catch((e) => {
+  mlog("fatal", "startup failed", { error: errMsg(e) });
+  process.exit(1);
+});
