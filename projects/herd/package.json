@@ -4,14 +4,11 @@
   "description": "Maximal sovereign herd \u2014 llama-swap engine with mesh orchestration",
   "main": "llama-swap.go",
   "scripts": {
-    "build": "cd ui-svelte && bun run build",
-    "dev": "cd ui-svelte && bun run dev",
     "start": "go run ./cmd/main.go",
-    "test": "go test ./... && bun run test --root ui-svelte",
-    "lint": "cd ui-svelte && bun run check",
+    "test": "go test ./...",
+    "lint": "gofmt -l ./internal ./cmd",
     "go-mod": "go mod download && go mod tidy",
-    "ui-install": "cd ui-svelte && bun install",
-    "full-install": "go mod download && cd ui-svelte && bun install && bun add -g tsx typescript svelte @sveltejs/vite-plugin-svelte vite @tailwindcss/vite tailwindcss",
+    "full-install": "go mod download",
     "docker-build": "docker build -t llama-swap ./docker/unified",
     "benchmark": "go test -bench=. ./internal/bench/..."
   },

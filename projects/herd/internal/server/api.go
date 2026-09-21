@@ -336,11 +336,11 @@ func handleHealth(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleRootRedirect(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/ui", http.StatusFound)
+	http.Redirect(w, r, "https://github.com/toxicwind/ranch/tree/main/ui", http.StatusFound)
 }
 
 func handleUpstreamRedirect(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/ui/models", http.StatusFound)
+	http.Redirect(w, r, "https://github.com/toxicwind/ranch/tree/main/ui", http.StatusFound)
 }
 
 // handleUpstream proxies ANY request under /upstream/<model>/<path> directly to
