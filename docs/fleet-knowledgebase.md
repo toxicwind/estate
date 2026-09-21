@@ -196,6 +196,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 
 | tern | oracle-market: fix super-ralph timeout evidence loss in bidder.py, run genuine E2E market tasks, measure before/after success rates | Nightjar (Ember crew) | DONE (2026-09-21) |
+| shep-repair | Shep MCP gateway repair: pitchfork sovereign/shep errored -- mcp_config.json (gitignored live config) deleted from projects/mesh/gateway/; toml run line invoked shep directly, bypassing shep-serve.sh self-heal bootstrap. Durable fix: restore config from mcp_config.json.bak-20260920 (33 servers, live 2026-09-20), repoint toml run -> shep-serve.sh (self-bootstraps from .dist + injects secrets from /home/toxic/.secrets), restart via owned pitchfork sequence, verify :25127 /health + MCP/tools + Herd/Coyote | Vesper (Ember's crew) | RUNNING (2026-09-21) -- fleet-lock shep-repair held by vesper |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
