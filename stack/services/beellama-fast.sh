@@ -6,6 +6,8 @@
 set -euo pipefail
 SOV="$HOME/sovereign"
 source "$SOV/stack/lib-ports.sh"
+# 2026-09-20: default the SSOT port so a spawn without env (pitchfork retry path) cannot hit llama-server --port stoi
+BEELLAMA_PORT="${BEELLAMA_PORT:-25122}"
 require_port BEELLAMA_PORT
 ENGINE="$HOME/projects/sovereign-projects/herd/engines/beellama.cpp/build-cuda86/bin"
 BIN="$ENGINE/llama-server"
