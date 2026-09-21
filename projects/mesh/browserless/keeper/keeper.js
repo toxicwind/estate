@@ -70,6 +70,7 @@ async function launchOnce() {
     args: [
       "--remote-debugging-port=" + CDP_PORT,
       "--disable-blink-features=AutomationControlled",
+      "--ozone-platform=x11",  // Forge 2026-09-21: force X11 on :99 (hint was ignored)
       "--disable-dev-shm-usage",
       "--no-first-run",
       "--no-default-browser-check",
