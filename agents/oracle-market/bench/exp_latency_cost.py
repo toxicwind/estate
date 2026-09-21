@@ -53,17 +53,19 @@ def mean(xs):
 
 
 def part_a(rows):
-    emitted = [r for r in rows if r["status"] == "verdict"
-               and r["probability"] is not None]
+    # Scorable rows (all forecasts); policy tiers for the breakdown.
+    # (Cold-gate emits few verdicts; the latency/cost profile is the
+    # panel's, not the gate's.)
+    scorable = [r for r in rows if r["probability"] is not None]
     phases = {}
     for ph in ("frame_s", "judge_s", "engine_s", "debate_s"):
-        vals = [r["timing"].get(ph) for r in emitted]
+        vals = [r["timing"].get(ph) for r in scorable]
         phases[ph] = {"p50": pct(vals, 0.5), "p95": pct(vals, 0.95),
                       "mean": mean(vals),
                       "n": len([v for v in vals if v is not None])}
     per_tier = {}
-    for r in emitted:
-        t = r["tier"] or "?"
+    for r in scorable:
+        t = r["policy_tier"] or "?"
         d = per_tier.setdefault(t, {"lat": [], "calls": [],
                                     "acct": [], "meas": []})
         d["lat"].append(r["latency_s"])
@@ -75,7 +77,7 @@ def part_a(rows):
                            "mean": mean(v)} for k, v in d.items()}
     # per-judge latency: which slot is usually slowest?
     slowest = {}
-    for r in emitted:
+    for r in scorable:
         live = [(j["slot"], j["latency_s"]) for j in r["judges"]
                 if not j["refused"] and j["latency_s"]]
         if len(live) >= 2:
@@ -109,11 +111,12 @@ def part_b(questions_path, concurrencies, seed):
 
         def one(q):
             t0 = time.time()
+            txt = q["question"].strip()
+            if q.get("resolution_date"):
+                txt += " Resolution date: %s." % q["resolution_date"]
+            txt += " Resolution criterion: " + (q.get("criteria") or "").strip()
             try:
-                v = oracle_ask.run_ask(
-                    q["question"].strip() + " Resolution criterion: " +
-                    (q.get("criteria") or "").strip(),
-                    timeout_s=90, budget_s=240)
+                v = oracle_ask.run_ask(txt, timeout_s=90, budget_s=240)
             except Exception:
                 return None
             el = time.time() - t0
@@ -148,8 +151,10 @@ def part_b(questions_path, concurrencies, seed):
 def part_c(rows):
     sys.path.insert(0, BIN)
     import engine
-    emitted = [r for r in rows if r["status"] == "verdict"
-               and r["probability"] is not None and r["n_live"] >= 2]
+    # Scorable rows with 2+ live judges (cold-gate emits few verdicts;
+    # the ablation is on the panel, not the gate).
+    scorable = [r for r in rows if r["probability"] is not None
+                and r["n_live"] >= 2]
 
     def metrics(items):
         acc = mean([1.0 if (p >= 0.5) == bool(y) else 0.0 for p, y in items])
@@ -159,7 +164,7 @@ def part_c(rows):
     # C1: drop the slowest live judge per question, re-pool
     full, cut = [], []
     saved_lat, saved_calls = [], []
-    for r in emitted:
+    for r in scorable:
         live = [j for j in r["judges"] if not j["refused"]
                 and j["posterior"] is not None]
         if len(live) < 2:
@@ -186,19 +191,10 @@ def part_c(rows):
                          (metrics(full)["brier"] or 0),
           "mean_latency_saved_s": mean(saved_lat)}
 
-    # C2: skip debate -- score the vote probability as the verdict
-    drows = [r for r in emitted if r.get("tier") == "DEBATE"
-             and r.get("debate") and r["debate"].get("vote_probability") is not None]
-    vote = [(r["debate"]["vote_probability"], r["label"]) for r in drows]
-    final = [(r["probability"], r["label"]) for r in drows]
-    c2 = {"n": len(drows),
-          "debate_final": metrics(final), "vote_only": metrics(vote),
-          "accuracy_delta_vote_minus_debate":
-              (metrics(vote)["accuracy"] or 0) - (metrics(final)["accuracy"] or 0),
-          "mean_debate_calls": mean(
-              [(r["llm_calls"] or 0) - 3 for r in drows]),
-          "mean_debate_s": mean(
-              [r["timing"].get("debate_s") for r in drows])}
+    # C2: debate value is measured live in exp_escalation_counterfactual
+    # (Part 1: panel vote vs debate final on policy-DEBATE rows). Eval rows
+    # were panel-only (allow_debate=False), so no saved debates exist here.
+    c2 = {"n": 0, "note": "see escalation experiment Part 1"}
     return {"C1_drop_slowest_judge": c1, "C2_skip_debate": c2}
 
 
