@@ -1,0 +1,6 @@
+# Masked 2026-09-21: restores Chris hand-tuned zswap+swappiness=60 setup.
+# Vendor rule (cachyos-settings /usr/lib/udev/rules.d/30-zram.rules) fired on every
+# zram0 init and silently wrote swappiness=150 + zswap=N, trampling
+# /etc/sysctl.d/99-zswap-vm.conf and the zswap.enabled=1 cmdline. Same filename
+# in /etc/udev/rules.d takes precedence and survives package upgrades.
+# Source of truth: sovereign/projects/yote/host/etc/udev/rules.d/30-zram.rules
