@@ -11,6 +11,14 @@ shim never selects, ranks, probes, or prefers any model family. If every
 candidate is down the caller gets the last upstream error verbatim (fail
 loudly, never silently substitute).
 
+CRITICAL CONSTRAINT (learned 2026-09-21, oracle-judge-local incident): a
+shim hosted INSIDE llama-swap as a cmd model MUST NOT target another
+llama-swap cmd model. The swapper cannot swap to the target while the shim
+holds the active slot for the in-flight outer request -- re-entrant
+deadlock: /health stays 200 (no swap on GET /v1/models) while completions
+hang until the connect/TTFT timeout fires. Targets must be proxy peers
+(remote upstreams) or standalone daemons -- never sibling cmd models.
+
 Optional ordered standby chain (HFT telecom pattern): --standby may be
 repeated to declare an ordered failover chain. When a candidate errors with
 a chain-advancing signal the shim tries the next candidate exactly once
@@ -21,16 +29,25 @@ maximal chains where throttle/billing/rotation are expected transients).
 HTTP 401 NEVER advances: an auth failure is misconfiguration and surfaces
 verbatim so it stays visible. Without --advance-on, 4xx surfaces verbatim.
 
-Transport behavior preserved from the kimi-auto shim it replaces:
+Transport behavior:
 curl-like header layout (Pollinations bot-filter workaround), browser
 User-Agent, Authorization passthrough, verbatim SSE streaming, fail-fast
-8s herd connect ceiling, self-loop rejection (508).
+8s herd connect/TTFT ceiling, self-loop rejection (508).
+Timeout split (v3.1): the 8s ceiling covers connect + response headers
+only. Once headers arrive the socket timeout relaxes to READ_TIMEOUT
+(default 300s, env SHIM_READ_TIMEOUT) so a slow-but-alive upstream is
+never killed mid-generation. A stalled upstream still surfaces a loud
+502 JSON -- never a dropped connection (HTTP 000).
 
 Health is honest: /health does one bounded catalog GET to the router's
 /v1/models on every call (event-driven -- no timers, no probes, no
-completions) and returns 200 only when the configured target is
-advertised; otherwise 503. Request failures surface as the upstream
-status, never a masked 200.
+completions) and ALWAYS returns HTTP 200 (process liveness); the body
+carries "routable": true/false plus a detail string. A non-200 here
+would make supervisors (llama-swap swap scheduler, pitchfork health)
+treat an unroutable-but-alive alias as dead and wedge dispatch -- the
+process must stay dispatchable so the chain can advance past dead
+candidates. Request failures surface as the upstream status, never a
+masked 200.
 
 Router-config ownership: to change what an alias serves, edit the --target
 / --standby flags in the herd config (config/herd.yaml or the --config-dir
@@ -42,6 +59,7 @@ Usage (herd invokes it; never run by hand with a different target).
 import argparse
 import http.client
 import json
+import os
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
@@ -62,6 +80,12 @@ ap.add_argument("--herd", default="http://127.0.0.1:25100")
 args = ap.parse_args()
 HERD = urlparse(args.herd)
 
+# Timeout split: fail-fast on connect/first-byte (herd is localhost; a
+# stalled upstream must surface loudly, not hang the caller), generous
+# once the upstream proves alive (slow/cold models stream for minutes).
+CONNECT_TIMEOUT = float(os.environ.get("SHIM_CONNECT_TIMEOUT", "8"))
+READ_TIMEOUT = float(os.environ.get("SHIM_READ_TIMEOUT", "300"))
+
 # Browser UA for all herd traffic (Pollinations bot-filter workaround,
 # verified 2026-09-14). Transport detail, not model selection.
 BROWSER_UA = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
@@ -70,8 +94,12 @@ BROWSER_UA = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
 LOOP_MSG = "alias loop: requested model is the alias target itself"
 
 
+class _UpstreamError(Exception):
+    """Upstream failed before we sent response headers: safe to 502."""
+
+
 class Handler(BaseHTTPRequestHandler):
-    server_version = "alias-shim/3.0"
+    server_version = "alias-shim/3.1"
 
     def log_message(self, fmt, *a):
         sys.stderr.write("[alias-shim:%s] " % args.target + fmt % a + "\n")
@@ -103,7 +131,10 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
-        self.wfile.write(body)
+        try:
+            self.wfile.write(body)
+        except (BrokenPipeError, ConnectionResetError):
+            pass
 
     def do_GET(self):
         if self.path == "/health" or self.path.startswith("/health?"):
@@ -170,12 +201,18 @@ class Handler(BaseHTTPRequestHandler):
                     pass
 
     def _forward(self, model_id, payload, auth):
-        """Forward one attempt to herd with model_id. Returns (conn, resp) or (None, None, err)."""
+        """Forward one attempt to herd with model_id.
+
+        Connect + response headers are fail-fast (CONNECT_TIMEOUT); once
+        headers arrive the socket timeout relaxes to READ_TIMEOUT so a
+        slow-but-alive upstream is never killed mid-generation.
+        Returns (conn, resp, None) or (None, None, err).
+        """
         body = json.dumps(payload).encode("utf-8")
+        conn = None
         try:
-            # Fail fast (HFT): herd is localhost -- a connect that takes
-            # >8s means herd is dead; surface 502 immediately.
-            conn = http.client.HTTPConnection(HERD.hostname, HERD.port or 80, timeout=8)
+            conn = http.client.HTTPConnection(HERD.hostname, HERD.port or 80,
+                                              timeout=CONNECT_TIMEOUT)
             conn.putrequest("POST", "/v1/chat/completions")
             conn.putheader("Accept", "*/*")
             conn.putheader("Content-Type", "application/json")
@@ -185,11 +222,25 @@ class Handler(BaseHTTPRequestHandler):
             conn.putheader("Content-Length", str(len(body)))
             conn.endheaders()
             conn.send(body)
-            return conn, conn.getresponse(), None
+            resp = conn.getresponse()
+            # Headers arrived: upstream is alive. Relax the timeout for the
+            # body -- a cold local model or long generation takes minutes.
+            try:
+                conn.sock.settimeout(READ_TIMEOUT)
+            except Exception:
+                pass
+            return conn, resp, None
         except Exception as exc:
-            return None, None, "herd unreachable: %s" % exc
+            if conn is not None:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+            return None, None, "upstream %s via herd %s: %s" % (model_id, args.herd, exc)
 
     def _stream_back(self, resp, conn):
+        """Relay the upstream response. Raises _UpstreamError if the body
+        dies before we sent headers (caller turns it into a loud 502)."""
         self.send_response(resp.status)
         ctype = resp.getheader("Content-Type", "application/json")
         self.send_header("Content-Type", ctype)
@@ -207,11 +258,21 @@ class Handler(BaseHTTPRequestHandler):
             except (BrokenPipeError, ConnectionResetError):
                 pass
         else:
-            data = resp.read()
+            try:
+                data = resp.read()
+            except Exception as exc:
+                raise _UpstreamError("upstream %s body read failed: %s"
+                                    % (args.target, exc))
             self.send_header("Content-Length", str(len(data)))
             self.end_headers()
-            self.wfile.write(data)
-        conn.close()
+            try:
+                self.wfile.write(data)
+            except (BrokenPipeError, ConnectionResetError):
+                pass
+        try:
+            conn.close()
+        except Exception:
+            pass
 
     def do_POST(self):
         if self.path != "/v1/chat/completions":
@@ -278,7 +339,18 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json(502, {"error": err or "herd unreachable",
                                   "chain": chain, "served": served})
             return
-        self._stream_back(resp, conn)
+        try:
+            self._stream_back(resp, conn)
+        except _UpstreamError as exc:
+            # Headers not yet sent: loud 502, never a dropped connection.
+            self._send_json(502, {"error": str(exc), "chain": chain,
+                                  "served": served})
+        except (BrokenPipeError, ConnectionResetError):
+            pass  # client went away; nothing to surface
+        except Exception as exc:
+            # Headers already sent (mid-stream): log loudly, close.
+            sys.stderr.write("[alias-shim:%s] stream aborted: %s\n"
+                             % (args.target, exc))
         sys.stderr.write("[alias-shim:%s] %s -> %s (%s)\n"
                          % (args.target, requested, served, resp.status))
 

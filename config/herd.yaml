@@ -212,12 +212,13 @@ models:
     metadata:
       alias_of: poolside/laguna-s-2.1:free
       role: oracle-judge
-  oracle-judge-local:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target beellama/gemma-96k
-    description: "Oracle judge fallback (alias -> beellama/gemma-96k) -- local last-resort slot filler"
-    metadata:
-      alias_of: beellama/gemma-96k
-      role: oracle-judge-fallback
+  # oracle-judge-local: native llama-swap alias of beellama/gemma-96k (2026-09-21).
+  # Was an alias-shim.py cmd entry; REMOVED because a shim hosted INSIDE
+  # llama-swap cannot forward to another llama-swap cmd model -- the swapper
+  # cannot swap to the target while the shim holds the active slot for the
+  # in-flight outer request (re-entrant deadlock: health 200, completions
+  # hang -> 502). Native aliasing routes the swap directly, no re-entrancy.
+  # Router config still owns selection: edit the aliases list below.
   # --- Kimi short aliases (added 2026-09-20) ---
   # Fixed-target forwarders via config/herd.d/alias-shim.py. No fallback,
   # no substitution: each alias IS its target. Retargeted 2026-09-20
@@ -566,6 +567,7 @@ models:
     cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_BASE_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_96K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     aliases:
       - gemma-96k
+      - oracle-judge-local
     env:
       - LD_LIBRARY_PATH=${BEELLAMA_LD}
       - ${CUDA_ENV}
