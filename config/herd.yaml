@@ -50,8 +50,12 @@ flock:
     flock-deepseek-v4-flash: deepseek-ai/deepseek-v4-flash-0731
     flock-nemotron-35-lightning: nvidia/nemotron-3.5-lightning-30b-a3b
     flock-glm-53-flash: z-ai/glm-5.3-flash
-    kimi-k2: moonshot/kimi-k2.6
-    kimi-k3-nim: moonshotai/kimi-k3
+    # 2026-09-21 (eclipse): moonshot/* stood down (billing-suspended, no
+    # top-up per Chris). Re-pointed at the free-Kimi OpenRouter IDs the
+    # maximal free-Kimi chains chase; section dormant (flock disabled) --
+    # fails loudly with genuine upstream status when the chain is dry.
+    kimi-k2: moonshotai/kimi-k2.6:free
+    kimi-k3-nim: moonshotai/kimi-k3:free
 routing:
   scheduler:
     use: fifo
@@ -843,28 +847,35 @@ peers:
       tlsHandshake: 10
       idleConn: 90
 
-  # --- moonshot: Moonshot AI direct (RESTORED 2026-09-20, moonshot-parked-audit) ---
-  # Key verified live 2026-09-20 ~15:00 MDT (HTTP 200 on /v1/models; serves
-  # kimi-k2.6 + kimi-k2.7-code, no kimi-k3 on this key). Chat was 429 at probe
-  # time -- TRANSIENT per doctrine; herd peer failover + cooldown apply. If 429s
-  # persist for hours, suspect balance exhaustion, re-park, and top up.
-  # OpenRouter Kimi is 402 "Insufficient credits" (E4) -- this peer is the
-  # working K2-line route until credits land or HF-free revives. k3 has no
-  # direct route: kimi-k3-nim stays on openrouter-pool (honest 402).
-  # Model IDs verbatim from api.moonshot.ai/v1/models.
-  # NOTE: proxy has no /v1 suffix -- the router joins proxy + /v1/chat/completions.
-  moonshot:
-    proxy: https://api.moonshot.ai
-    apiKey: ${env.MOONSHOT_API_KEY}
-    models:
-      - kimi-k2.6
-      - kimi-k2.7-code
-    timeouts:
-      connect: 30
-      keepalive: 30
-      responseHeader: 120
-      tlsHandshake: 10
-      idleConn: 90
+  # STOOD DOWN 2026-09-21 (eclipse, Chris directive: NO Moonshot top-up, ever).
+  # Verified 2026-09-21: key valid (/v1/models -> 200) but chat completions ->
+  # exceeded_current_quota_error "suspended due to insufficient balance" --
+  # hard billing state, not transient. Peer parked per file convention
+  # (commented block); re-enable ONLY on Chris's explicit order + balance.
+  # Kimi routes resolve via the maximal free-Kimi chains (models.kimi /
+  # kimi-k2 / kimi-code) and fail loudly with genuine upstream status.
+#  # --- moonshot: Moonshot AI direct (RESTORED 2026-09-20, moonshot-parked-audit) ---
+#  # Key verified live 2026-09-20 ~15:00 MDT (HTTP 200 on /v1/models; serves
+#  # kimi-k2.6 + kimi-k2.7-code, no kimi-k3 on this key). Chat was 429 at probe
+#  # time -- TRANSIENT per doctrine; herd peer failover + cooldown apply. If 429s
+#  # persist for hours, suspect balance exhaustion, re-park, and top up.
+#  # OpenRouter Kimi is 402 "Insufficient credits" (E4) -- this peer is the
+#  # working K2-line route until credits land or HF-free revives. k3 has no
+#  # direct route: kimi-k3-nim stays on openrouter-pool (honest 402).
+#  # Model IDs verbatim from api.moonshot.ai/v1/models.
+#  # NOTE: proxy has no /v1 suffix -- the router joins proxy + /v1/chat/completions.
+#  moonshot:
+#    proxy: https://api.moonshot.ai
+#    apiKey: ${env.MOONSHOT_API_KEY}
+#    models:
+#      - kimi-k2.6
+#      - kimi-k2.7-code
+#    timeouts:
+#      connect: 30
+#      keepalive: 30
+#      responseHeader: 120
+#      tlsHandshake: 10
+#      idleConn: 90
   # nim-kimi peer DELETED 2026-09-20 (herd-deployer). Debate verdict:
   # NIM is DELETED, not demoted — 24h 429 soft-locks poison fail-fast
   # routing, so NIM never returns as primary. Kimi K3 serves via the
