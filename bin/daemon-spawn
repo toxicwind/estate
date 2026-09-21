@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# daemon-spawn — SIGHUP-proof process launcher (P2 of the supervision fixes).
+#
+# Usage: daemon-spawn <logfile> <command> [args...]
+#
+# Launches <command> fully detached from the spawning session and returns
+# immediately:
+#   - `&` backgrounds the work so the CALLER NEVER BLOCKS on the daemon.
+#     (Bare `setsid cmd` is not enough: setsid(1) forks only when it is a
+#     process-group leader, otherwise it execs the command in place and the
+#     spawner hangs until the daemon exits — observed 2026-09-21.)
+#   - setsid: new session + new process group, no controlling terminal.
+#     Detachment comes from the setsid() syscall itself, not from the fork:
+#     the child is immune to HUP/KILL sent at the parent's session
+#     (the exit-129 deaths) and is reparented to init (PPID 1).
+#   - stdin from /dev/null (never blocks on a dead tty).
+#   - stdout/stderr appended to <logfile>.
+#
+# Verify detachment afterwards:  ps -o pid,ppid,sid -p <child>
+# Expected: own SID (differs from the spawner's), PPID 1.
+#
+# NOTE (2026-09-20 lesson): `&` binds the whole `cd && ...` chain, so callers
+# must not rely on `cmd &` for detachment — this wrapper owns the detach.
+set -euo pipefail
+
+if (( $# < 2 )); then
+  echo "usage: daemon-spawn <logfile> <command> [args...]" >&2
+  exit 2
+fi
+
+LOGFILE="$1"; shift
+mkdir -p "$(dirname "$LOGFILE")"
+: >>"$LOGFILE"   # fail early if the log path is not writable
+
+# The subshell exits the moment the background job is launched; the daemon
+# keeps only the new session and the log file.
+( setsid "$@" </dev/null >>"$LOGFILE" 2>&1 & )
+exit 0
