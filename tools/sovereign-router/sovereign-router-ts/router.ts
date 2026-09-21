@@ -117,7 +117,7 @@ async function handleStream(
     if (resp) return resp;
   } else {
     const [sp, sm] = state.stickyGet(sid);
-    if (sp && keyOk(sp) && state.circuitOk(sp)) {
+    if (sp && keyOk(sp) && state.circuitOk(sp) && !state.laneDead(sp)) {
       const resp = await tryStream(sp, sm || model);
       if (resp) return resp;
     }
@@ -246,6 +246,7 @@ const server = Bun.serve({
           keys: keyOk(p) ? "configured" : "no_key",
           base_url: PROVIDERS[p].base,
           circuit: state.circuitInfo(p),
+          lane_dead: state.laneDead(p),
           elo: Math.round((state.elo.get(p) || 1000) * 10) / 10,
           models: catalogModelsFor(p).length,
           live_models: (LIVE_MODELS[p] || []).length,
