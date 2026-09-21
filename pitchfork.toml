@@ -393,8 +393,8 @@ auto = ["start"]
 health_http = { url = "http://127.0.0.1:25202/health", interval = "30s", timeout = "5s", retries = 3 }
 env = { GEMINI_MCP_PORT = "25202" }
 port = 25202
-run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/gemini-mcp/server.py"
-dir = "/home/toxic/gemini-mcp"
+run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/sovereign/projects/mesh/gemini-mcp/server.py"
+dir = "/home/toxic/sovereign/projects/mesh/gemini-mcp"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25202/health"
