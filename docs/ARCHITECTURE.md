@@ -264,7 +264,7 @@ Each catch block has its own nested try/catch — **no single point of failure**
 | **llama-swap**       | 25100/25200 | Go (toxicwind fork) | LLM front door + flock router                   |
 | **rust-web**         | 25101       | Rust                | Ops dashboard + embedded watchdog                    |
 | **yote**             | 25102       | Bun                 | Telegram / status                                    |
-| **openfang**         | 25103/25203 | Rust                | Agent kernel — 206 models, 61 skills, Discord bridge |
+| **openfang**         | 25196/25103 | Rust                | Agent kernel — 206 models, 61 skills, Discord bridge |
 | **llama-swap:25100** | 25100       | Bun (TS)            | 5-strategy flock (external tooling)             |
 | **prometheus**       | 25105       | Go                  | Metrics                                              |
 | **hf-downloader**    | 25106       | Bun                 | GGUF download UI                                     |

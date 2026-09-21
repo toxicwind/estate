@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-# Openfang service — Rust binary on OPENFANG_PORT.
+# OpenFang public front — mesh-front proxy on OPENFANG_PORT -> OPENFANG_KERNEL_PORT.
+# (The kernel itself is pitchfork daemons.openfang on :25196 and owns its own
+# lifecycle via ops/openfang-run.sh. This service never spawns the openfang
+# binary — see src/services/openfang.ts.)
 set -euo pipefail
 SOV="${SOVEREIGN_ROOT:-$HOME/sovereign}"
 source "$SOV/stack/lib-ports.sh"
