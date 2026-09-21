@@ -755,9 +755,18 @@ ready_http = "http://127.0.0.1:25211/metrics"
 auto = ["start"]
 
 # ── port-dynamic 2026-09-20: orphans adopted + out-of-range ports moved ──
+
+[daemons.sovereign-exporter]
+port = 25213
+run = "exec python3 ./stack/services/sovereign-exporter.py"
+dir = "."
+retry = true
+ready_http = "http://127.0.0.1:25213/metrics"
+auto = ["start"]
+
 [daemons.awrawr-mcp]
-run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/sovereign/projects/bridge/yote/awrawr_mcp.py"
-dir = "/home/toxic/sovereign/projects/bridge/yote"
+run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/awrawr_mcp.py"
+dir = "/home/toxic"
 mise = false
 retry = true
 boot_start = true
