@@ -1,0 +1,76 @@
+# =============================================================================
+# deploy/manifest.yaml — DECLARED intent (what SHOULD be running).
+# =============================================================================
+# Owned by ferrous-warden (Ember's crew), WS2 2026-09-20.
+# This file declares DESIRED STATE. Runtime state (what is actually running,
+# /proc, runtime_paths) is fact. bin/estate-reconcile diffs intent vs fact and
+# converges fact toward intent — never the reverse.
+#
+# Declared-vs-runtime contract:
+#   declared = this file + declared_configs below + pitchfork.toml: intent.
+#             Changes ONLY via commits or the content-hash-gated deploy scripts
+#             (bin/herd-deploy, bin/estate-reconcile --apply). A daemon or agent
+#             rewriting declared state by hand is drift, not an edit.
+#   runtime  = process table, /proc/*/exe, runtime_paths below: fact. The
+#             reconciler reads it; it never converges toward it. Daemons may
+#             write under runtime_paths freely — they are EXEMPT from drift
+#             detection by construction (this is what makes the old
+#             openfang-health rewrite of agent.toml impossible: declared TOML,
+#             runtime JSON in different places).
+#
+# Restore rules (estate-reconcile --apply):
+#   - binary with immutable_copy: restored atomically (tmp + rename) from the
+#     immutable copy, only if the copy's sha256 matches the declared sha256.
+#   - binary with git_path (repo-tracked script): restored from git HEAD only
+#     if `git verify-commit HEAD` passes AND git's copy matches declared sha.
+#     Unsigned HEAD -> alert only, no restore (unsigned-HEAD test).
+#   - binary with neither: CHECK ONLY (alert). Rebuild, re-record, redeploy.
+#   - declared_configs are REPORT-ONLY in this workstream: the tree is shared
+#     with ~198 dirty files from other crews, so auto-restoring configs from
+#     git would nuke live WIP. estate-reconcile check lists them as DIRTY
+#     (informational, no squawk); a signed-HEAD config converge is future work.
+version: 1
+
+binaries:
+  herd:
+    path: /home/toxic/projects/sovereign-projects/sovereign-swap/build/llama-swap
+    sha256: "9305f95663dbf7a8c0e07e6c46a5549cbc173075fc2bf77cbd7e98ee3b81b519"
+    immutable_copy: /home/toxic/projects/sovereign-projects/sovereign-swap/build/llama-swap.20260920-223545
+    source: toxicwind/sovereign-swap
+    commit: 61e497ee88f36b176b7e74bace697f142ef99aa2
+    upstream_base: 7a14664d98f0e66bc68bba08548290ca0b469f98
+    built_at: "2026-09-21T04:34:33Z"
+    daemon: herd
+    note: live path is a symlink to the immutable versioned file (herd-deploy)
+  herd-keypool:
+    path: /home/toxic/sovereign/bin/herd-keypool.py
+    sha256: "649e8a38e44ea502db2590af0b1e8bc9124d7f8f9ecde7cf7660a21f72c7b4a7"
+    source: toxicwind/sovereign-projects
+    commit: 7f4e5c8c65643b007b80a4274304052746389a4e
+    git_path: bin/herd-keypool.py
+    daemon: keypool
+  herd-model-guard:
+    path: /home/toxic/sovereign/bin/herd-model-guard.py
+    sha256: "e27a332f7524dbfdcd56d655999d28000c7c038db172e900659c5f4149e74d94"
+    source: toxicwind/sovereign-projects
+    commit: 162a18380fcac46af722430f6f1dd5f661a05346
+    git_path: bin/herd-model-guard.py
+    daemon: model-guard
+  openfang-kernel:
+    path: /home/toxic/projects/rig-work/target/debug/openfang
+    sha256: "0d64e851e0373777dbd2f0148a76be12cff39d5f43a6929f78f6155ab71320e0"
+    source: toxicwind/rig
+    commit: 6b6742c
+    daemon: openfang
+    note: local debug build, no immutable copy — check-only; re-record after any rebuild
+
+declared_configs:
+  - config/herd.yaml
+  - pitchfork.toml
+  - config/ports.env
+
+runtime_paths:
+  - /home/toxic/.openfang/runtime/
+  - /home/toxic/.openfang/backups/
+  - /home/toxic/sovereign/log/
+  - /home/toxic/kimi-auto/herd.d/

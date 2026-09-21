@@ -1,0 +1,306 @@
+#!/usr/bin/env bash
+# bin/estate-reconcile — event-driven estate drift reconciler (WS2, ferrous-warden).
+#
+# Compares DECLARED intent (deploy/manifest.yaml) against RUNTIME state
+# (file shas, symlink targets, running process binaries via /proc), reports
+# drift, and can atomically restore drifted binaries from immutable copies.
+#
+# Usage:
+#   estate-reconcile check [--manifest F]     read-only drift report; exit 1 on drift
+#   estate-reconcile --apply [--manifest F]   atomically restore drifted binaries
+#   estate-reconcile watch  [--manifest F]    inotify event loop (event-driven; no timers)
+#   estate-reconcile proc-audit               declared vs /proc exe for the daemons
+#
+# Environment:
+#   ESTATE_ROOT   sovereign worktree (default /home/toxic/sovereign)
+#   SQUAWK_ROOT   squawk root (default /home/toxic/.shingle/squawk-root);
+#                 unset/no-fleet-dir => squawk alerts no-op (sandbox-safe)
+#
+# Restore rules: see deploy/manifest.yaml header. Binaries restore atomically
+# (tmp file + rename, or tmp symlink + mv -T). Configs are REPORT-ONLY in this
+# workstream — the tree is shared with other crews' live WIP.
+set -euo pipefail
+
+ESTATE_ROOT="${ESTATE_ROOT:-/home/toxic/sovereign}"
+MANIFEST_DEFAULT="$ESTATE_ROOT/deploy/manifest.yaml"
+LOG_DIR="$ESTATE_ROOT/log"
+AUDIT_DIR="$LOG_DIR/drift-audit"
+LOCK_FILE="$LOG_DIR/.estate-reconcile.lock"
+mkdir -p "$AUDIT_DIR"
+
+_log()  { printf '%s %s\n' "$(date -Iseconds)" "$*" >> "$LOG_DIR/estate-reconcile.log"; }
+_out()  { printf '%s\n' "$*"; }
+
+# yote-side squawk publish, flock-protected seq allocation (borrowed from
+# ops/openfang-health/openfang-health.sh's proven pattern).
+_squawk() {
+  local title="$1" body="$2"
+  local root="${SQUAWK_ROOT:-/home/toxic/.shingle/squawk-root}"
+  [ -d "$root/fleet" ] || return 0
+  (
+    flock -x 200
+    local seq
+    seq="$(python3 -c "
+import re, glob
+ms=[re.match(r'(\d+)-', f.split('/')[-1]) for f in glob.glob('$root/fleet/*.md')]
+ns=[int(m.group(1)) for m in ms if m]
+print((max(ns)+1) if ns else 1)")"
+    {
+      printf 'seq: %s\nfrom: ferrous-warden\nto: all\nchannel: fleet\nts: %s\nstatus: discussion\ntitle: %s\n---\n' \
+        "$seq" "$(date -Iseconds)" "$title"
+      printf '%s\n' "$body"
+    } > "$root/fleet/${seq}-estate-reconcile.md"
+  ) 200>"$LOCK_FILE" || true
+}
+
+# Parse manifest.yaml into rows: name<TAB>key<TAB>value (bash 4+, fixed schema).
+# Sets global arrays: NAMES[], and assoc BIN[path], BIN[sha256], ...
+declare -a NAMES=()
+declare -A BIN=()
+_parse_manifest() {
+  local mf="$1" name="" key val line
+  NAMES=(); BIN=()
+  local in_bin=0
+  while IFS= read -r line || [ -n "$line" ]; do
+    if [[ "$line" =~ ^binaries: ]]; then
+      in_bin=1; continue
+    fi
+    if [[ "$line" =~ ^[a-z_][a-z_]*: ]]; then
+      in_bin=0; continue
+    fi
+    if [ "$in_bin" -eq 0 ]; then continue; fi
+    if [[ "$line" =~ ^[[:space:]][[:space:]]([a-zA-Z0-9_-]+):[[:space:]]*$ ]]; then
+      name="${BASH_REMATCH[1]}"; NAMES+=("$name"); continue
+    fi
+    # value class: everything up to an optional closing quote (no \r escape in ERE)
+    if [[ "$line" =~ ^[[:space:]][[:space:]][[:space:]][[:space:]]([a-zA-Z0-9_]+):[[:space:]]*\"?([^\"]*)\"?[[:space:]]*$ ]]; then
+      key="${BASH_REMATCH[1]}"; val="${BASH_REMATCH[2]}"
+      BIN["$name/$key"]="$val"
+    fi
+  done < "$mf"
+}
+_field() { printf '%s' "${BIN["$1/$2"]:-}"; }
+
+_sha() { sha256sum "$1" 2>/dev/null | awk '{print $1}'; }
+
+# Is path under one of the manifest runtime_paths? -> exempt from drift.
+_exempt() {
+  local path="$1" rp
+  rp="$(awk '/^runtime_paths:/{f=1;next}/^[a-z_]+:/{f=0} f && /^[[:space:]]*-/{sub(/^[[:space:]]*-[[:space:]]*/,""); print}' "$MANIFEST")"
+  local p
+  while IFS= read -r p; do
+    if [ -z "$p" ]; then continue; fi
+    case "${path%/}" in "$p"*|"$p") return 0;; esac
+  done <<< "$rp"
+  return 1
+}
+
+# --- drift checks -----------------------------------------------------------
+# Prints DRIFT lines "name|kind|detail"; returns count.
+_check_binaries() {
+  local mf="$1" drift=0 name path want got real
+  for name in "${NAMES[@]}"; do
+    path="$(_field "$name" path)"; want="$(_field "$name" sha256)"
+    if _exempt "$path"; then continue; fi
+    if [ ! -e "$path" ] && [ ! -L "$path" ]; then
+      _out "DRIFT $name missing (declared path absent: $path)"; drift=$((drift+1)); continue
+    fi
+    if [ -L "$path" ]; then
+      real="$(readlink -f "$path" 2>/dev/null || true)"
+      [ -e "$real" ] || { _out "DRIFT $name dangling-symlink ($path -> $real)"; drift=$((drift+1)); continue; }
+      got="$(_sha "$real")"
+    else
+      got="$(_sha "$path")"
+    fi
+    if [ "$got" != "$want" ]; then
+      _out "DRIFT $name sha-mismatch (declared ${want:0:12}.. live ${got:0:12}..)"; drift=$((drift+1))
+    fi
+    _check_running "$name" "$path" "$want" || drift=$((drift+1))
+  done
+  return "$drift"
+}
+
+# Running-process check: the process running the declared artifact must match it.
+# Handles native binaries (compare /proc/pid/exe) and interpreted daemons
+# (python3 scripts: exe is the interpreter, so compare the script from cmdline).
+_check_running() {
+  local name="$1" path="$2" want="$3"
+  local daemon exe exesha cmdline
+  daemon="$(_field "$name" daemon)"
+  if [ -z "$daemon" ]; then return 0; fi
+  for pid in $(pgrep -f "$path" 2>/dev/null || true); do
+    if [ "$pid" = "$$" ]; then continue; fi
+    if [ ! -d "/proc/$pid" ]; then continue; fi
+    exe="$(readlink -f "/proc/$pid/exe" 2>/dev/null || true)"
+    if [ -z "$exe" ]; then continue; fi
+    exesha="$(_sha "$exe")"
+    if [ "$exesha" = "$want" ]; then continue; fi           # native: exe IS the artifact
+    cmdline="$(tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null || true)"
+    case "$cmdline" in
+      *"$path"*)
+        # interpreted: exe is the interpreter, script is the artifact
+        if [ "$(_sha "$path")" = "$want" ]; then continue; fi
+        ;;
+    esac
+    _out "DRIFT $name running (pid $pid exe=$exe sha ${exesha:0:12}.. != declared ${want:0:12}..)"
+    return 1
+  done
+  return 0
+}
+
+cmd_check() {
+  local mf="$1"
+  _parse_manifest "$mf"
+  local out n=0
+  out="$(_check_binaries "$mf")" || n=$?
+  if [ "$n" -gt 0 ]; then
+    printf '%s\n' "$out"
+    _log "CHECK drift=$n"
+    return 1
+  fi
+  _out "OK: all ${#NAMES[@]} declared binaries match (files + running)"
+  return 0
+}
+
+cmd_proc_audit() {
+  local mf="$1"
+  _parse_manifest "$mf"
+  local name path daemon exe exesha
+  for name in "${NAMES[@]}"; do
+    path="$(_field "$name" path)"; daemon="$(_field "$name" daemon)"
+    printf '== %s (daemon %s)\n  declared: %s\n' "$name" "${daemon:-none}" "$path"
+    for pid in $(pgrep -f "$path" 2>/dev/null || true); do
+      exe="$(readlink -f "/proc/$pid/exe" 2>/dev/null || true)"
+      exesha="$(_sha "$exe")"
+      printf '  pid %-7s exe=%s sha=%s\n' "$pid" "$exe" "${exesha:0:16}.."
+    done
+  done
+}
+
+# --- atomic restore ---------------------------------------------------------
+# Restores drifted binaries atomically. Returns: 0 all restored, 2 some alert-only.
+cmd_apply() {
+  local mf="$1"
+  _parse_manifest "$mf"
+  local name path want got imm gp restored=0 alerted=0
+  local signed_head=0
+  git -C "$ESTATE_ROOT" verify-commit HEAD >/dev/null 2>&1 && signed_head=1
+  for name in "${NAMES[@]}"; do
+    path="$(_field "$name" path)"; want="$(_field "$name" sha256)"
+    if _exempt "$path"; then continue; fi
+    got=""
+    if [ -e "$path" ] || [ -L "$path" ]; then
+      got="$(_sha "$(readlink -f "$path" 2>/dev/null || echo "$path")")"
+    fi
+    if [ "$got" = "$want" ]; then continue; fi   # not drifted
+    imm="$(_field "$name" immutable_copy)"; gp="$(_field "$name" git_path)"
+    if [ -n "$imm" ] && [ -f "$imm" ] && [ "$(_sha "$imm")" = "$want" ]; then
+      _restore_from_copy "$name" "$path" "$imm" "$want" && restored=$((restored+1)) || alerted=$((alerted+1))
+    elif [ -n "$gp" ] && [ "$signed_head" -eq 1 ] \
+         && [ "$(_sha <(git -C "$ESTATE_ROOT" show "HEAD:$gp" 2>/dev/null))" = "$want" ]; then
+      _restore_from_git "$name" "$path" "$gp" && restored=$((restored+1)) || alerted=$((alerted+1))
+    else
+      local reason="no trusted restore source"
+      [ -n "$gp" ] && [ "$signed_head" -eq 0 ] && reason="HEAD unsigned — refusing git restore (see unsigned-HEAD rule)"
+      [ -n "$imm" ] && [ ! -f "$imm" ] && reason="immutable_copy missing: $imm"
+      _out "ALERT $name drifted but NOT restored: $reason"
+      _log "ALERT $name not-restored: $reason"
+      _squawk "estate-reconcile ALERT: $name drifted, not restored" \
+        "Drifted binary '$name' ($path) could not be restored: $reason. Manual intervention required."
+      alerted=$((alerted+1))
+    fi
+  done
+  _out "apply done: restored=$restored alerted=$alerted"
+  if [ "$alerted" -gt 0 ]; then return 2; fi
+  return 0
+}
+
+_restore_from_copy() {
+  local name="$1" path="$2" imm="$3" want="$4"
+  local tmp="$path.restore.$$" ts; ts="$(date +%Y%m%d-%H%M%S)"
+  _backup_drifted "$name" "$path" "$ts"
+  if [ -L "$path" ]; then
+    # symlink: atomically re-point at the immutable versioned file
+    ln -s "$imm" "$tmp" && mv -T "$tmp" "$path"
+  else
+    install -m755 "$imm" "$tmp" && mv "$tmp" "$path"
+  fi
+  if [ "$(_sha "$(readlink -f "$path")")" = "$want" ]; then
+    _out "RESTORED $name <- $imm (atomic)"
+    _log "RESTORED $name from $imm"
+    _squawk "estate-reconcile: restored $name" "Drifted binary '$name' was atomically restored from its immutable copy ($imm). Backup of the drifted file kept in $AUDIT_DIR."
+    return 0
+  fi
+  _out "FATAL $name restore verification failed"; _log "FATAL $name restore failed"
+  return 1
+}
+
+_restore_from_git() {
+  local name="$1" path="$2" gp="$3"
+  local tmp="$path.restore.$$" ts; ts="$(date +%Y%m%d-%H%M%S)"
+  _backup_drifted "$name" "$path" "$ts"
+  git -C "$ESTATE_ROOT" show "HEAD:$gp" > "$tmp" && chmod 755 "$tmp" && mv "$tmp" "$path"
+  _out "RESTORED $name <- git HEAD:$gp (atomic, signed HEAD)"
+  _log "RESTORED $name from git HEAD:$gp"
+  _squawk "estate-reconcile: restored $name" "Drifted binary '$name' was atomically restored from signed git HEAD ($gp)."
+  return 0
+}
+
+_backup_drifted() {
+  local name="$1" path="$2" ts="$3"
+  if [ -e "$path" ] || [ -L "$path" ]; then
+    cp -a "$path" "$AUDIT_DIR/drift-$ts-$name.bak" 2>/dev/null || true
+  fi
+}
+
+# --- event-driven watch -----------------------------------------------------
+# inotify on the build/bin dirs + manual invocation. No timers: every pass is
+# event-triggered, plus a circuit breaker (not a poller) that caps restore rate.
+cmd_watch() {
+  local mf="$1"
+  _parse_manifest "$mf"
+  command -v inotifywait >/dev/null || { _out "FATAL: inotifywait not found"; exit 1; }
+  local dirs=() d name path
+  for name in "${NAMES[@]}"; do
+    path="$(_field "$name" path)"
+    d="$(dirname "$path")"
+    case " ${dirs[*]} " in *" $d "*) : ;; *) dirs+=("$d") ;; esac
+  done
+  _log "watch started on: ${dirs[*]}"
+  _out "watching: ${dirs[*]}"
+  inotifywait -m -q -e modify,attrib,move,delete,moved_to,moved_from,create \
+    --format '%w%f %e' "${dirs[@]}" 2>/dev/null | while read -r evpath ev; do
+    sleep 1   # debounce burst writes
+    if cmd_check "$mf" >/dev/null 2>&1; then continue; fi
+    # circuit breaker: >5 restores in trailing 60 min => alert-only
+    local recent cutoff
+    cutoff="$(date -d '60 minutes ago' -Iseconds 2>/dev/null || date -u -d '60 minutes ago' +%Y-%m-%dT%H:%M:%S%z)"
+    recent="$(awk -v c="$cutoff" '$1 > c && /RESTORED/{n++} END{print n+0}' "$LOG_DIR/estate-reconcile.log" 2>/dev/null || echo 0)"
+    if [ "${recent:-0}" -gt 5 ]; then
+      _log "BREAKER-OPEN drift on $evpath ($ev): alert-only"
+      _squawk "estate-reconcile BREAKER OPEN" "Drift detected on $evpath ($ev) but restore rate exceeded (circuit breaker). Manual intervention required."
+      continue
+    fi
+    cmd_apply "$mf" || true
+  done
+}
+
+# --- main -------------------------------------------------------------------
+MANIFEST="$MANIFEST_DEFAULT"
+CMD="check"
+while [ $# -gt 0 ]; do
+  case "$1" in
+    check|--apply|watch|proc-audit) CMD="${1#--}" ;;
+    --manifest) MANIFEST="$2"; shift ;;
+    *) _out "usage: $0 [check|--apply|watch|proc-audit] [--manifest FILE]"; exit 1 ;;
+  esac
+  shift
+done
+[ -f "$MANIFEST" ] || { _out "FATAL: manifest not found: $MANIFEST"; exit 1; }
+
+case "$CMD" in
+  check)      cmd_check "$MANIFEST" ;;
+  apply)      cmd_apply "$MANIFEST" ;;
+  watch)      cmd_watch "$MANIFEST" ;;
+  proc-audit) cmd_proc_audit "$MANIFEST" ;;
+esac
