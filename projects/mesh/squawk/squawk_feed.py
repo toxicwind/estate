@@ -9,9 +9,14 @@ Endpoints (all under /squawk-feed):
 
 Auth: `Authorization: Bearer <token>`, constant-time compare
 (hmac.compare_digest); missing or invalid -> 404 with an empty body, never
-revealing the endpoint exists. The token comes from the SQUAWK_FEED_TOKEN
-environment variable (pitchfork service env); the server REFUSES TO START
-without it. The token is never logged and never committed.
+revealing the endpoint exists. The token auto-configures server-style:
+$ SQUAWK_FEED_TOKEN env var first, then the canonical token file
+(~/.shingle/squawk-relay/feed-token), else a secure random token is
+generated, persisted (0600) to the token file, and used. The server never
+refuses to start for a missing token -- it is a server, it configures
+itself. Additional keys for future use go in the settings file
+(~/.shingle/squawk-relay/settings.conf, KEY=VALUE lines). The token is
+never logged and never committed.
 
 Fat response: {"seq": M, "messages": [relay-record envelopes, ...]} where
 every envelope carries its own per-message "seq". Messages with seq >
@@ -37,6 +42,7 @@ import http.server
 import json
 import os
 import re
+import secrets
 import select
 import socketserver
 import sys
@@ -113,6 +119,12 @@ def _install_telemetry():
         pass
 
 TOKEN_ENV = "SQUAWK_FEED_TOKEN"
+# Canonical token file (auto-created on first run, 0600). Overridable via
+# --token-file or $SQUAWK_FEED_TOKEN_FILE. Server-like: never ask, configure.
+TOKEN_FILE_DEFAULT = str(Path.home() / ".shingle" / "squawk-relay" / "feed-token")
+# Settings file for future keys: KEY=VALUE lines, sourced on startup.
+# Add other keys here as needed; the server reads them into the environment.
+SETTINGS_FILE_DEFAULT = str(Path.home() / ".shingle" / "squawk-relay" / "settings.conf")
 HOLD_SECONDS = 55.0
 MAX_MESSAGES = 50
 TEXT_CAP = 500
@@ -294,6 +306,21 @@ class _Handler(http.server.BaseHTTPRequestHandler):
         self.send_header("Content-Length", "0")
         self.end_headers()
 
+    def _send_ui(self):
+        # Web UI shell: static HTML, zero secrets inside. Feed data still
+        # needs the Bearer token, which the page itself gates on.
+        try:
+            data = self.server.ui_file.read_bytes()
+        except OSError:
+            self._send_404()
+            return
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(data)
+
     def _authed(self) -> bool:
         token = self.server.token
         presented = self.headers.get("Authorization") or ""
@@ -324,6 +351,9 @@ class _Handler(http.server.BaseHTTPRequestHandler):
                     state.cond.wait(timeout=self.server.hold)
             self._send_json(200, build_fat(since, state))
             return
+        if path in ("/squawk-feed/", "/squawk-feed/ui"):
+            self._send_ui()
+            return
         self._send_404()
 
 
@@ -332,10 +362,11 @@ class FeedServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     allow_reuse_address = True
 
     def __init__(self, addr, state: FeedState, token: str,
-                 hold: float = HOLD_SECONDS):
+                 hold: float = HOLD_SECONDS, ui_file=None):
         self.state = state
         self.token = token
         self.hold = hold
+        self.ui_file = Path(ui_file) if ui_file else Path(__file__).with_name("ui.html")
         super().__init__(addr, _Handler)
 
 
@@ -352,7 +383,7 @@ def _ensure_keys_env(root: Path) -> None:
 
 def serve(*, root: Path, channel: str, identity: str, key_dir: Path,
           bind: str, port: int, token: str,
-          hold: float = HOLD_SECONDS) -> FeedServer:
+          hold: float = HOLD_SECONDS, ui_file=None) -> FeedServer:
     """Build (not start) the server; caller runs serve_forever()."""
     chan_dir = root / channel
     if not chan_dir.is_dir():
@@ -362,9 +393,62 @@ def serve(*, root: Path, channel: str, identity: str, key_dir: Path,
     watcher = threading.Thread(target=_watch_loop, args=(state,),
                                daemon=True)
     watcher.start()
-    server = FeedServer((bind, port), state, token, hold)
+    server = FeedServer((bind, port), state, token, hold, ui_file)
     server.feed_state = state
     return server
+
+
+def _load_settings_file(path):
+    """Load KEY=VALUE settings for future keys. Missing file is fine."""
+    try:
+        p = Path(path)
+        if not p.is_file():
+            return
+        for line in p.read_text().splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            k, v = k.strip(), v.strip().strip('"').strip("'")
+            if k and k not in os.environ:
+                os.environ[k] = v
+    except Exception as e:
+        print(f"squawk-feed: settings file {path}: {e}", file=sys.stderr)
+
+
+def _resolve_token(token_file):
+    """Server-style token resolution: env > file > auto-generate.
+
+    Never asks, never refuses to start. A generated token is persisted
+    (0600) to the canonical file so restarts reuse it.
+    """
+    token = os.environ.get(TOKEN_ENV, "").strip()
+    if token:
+        return token
+    p = Path(token_file)
+    try:
+        if p.is_file():
+            token = p.read_text().strip()
+            if token:
+                return token
+    except Exception as e:
+        print(f"squawk-feed: reading token file {token_file}: {e}",
+              file=sys.stderr)
+    # Auto-generate: the server configures itself.
+    token = secrets.token_urlsafe(32)
+    try:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(token + "\n")
+        try:
+            os.chmod(p, 0o600)
+        except Exception:
+            pass
+        print(f"squawk-feed: generated new bearer token -> {token_file}",
+              file=sys.stderr)
+    except Exception as e:
+        print(f"squawk-feed: cannot persist token to {token_file}: {e} "
+              f"(using ephemeral token for this run)", file=sys.stderr)
+    return token
 
 
 def main(argv=None) -> None:
@@ -384,20 +468,35 @@ def main(argv=None) -> None:
                          "(default: $FLEET_KEYS_DIR, else <root>/keys)")
     ap.add_argument("--hold", type=float, default=HOLD_SECONDS,
                     help="long-poll hold seconds (default: 55)")
+    ap.add_argument("--ui-file", default=None,
+                    help="squawk web UI html (default: ui.html next to this script)")
+    ap.add_argument("--token-file", default=None,
+                    help="bearer token file (default: $SQUAWK_FEED_TOKEN_FILE, "
+                         "else ~/.shingle/squawk-relay/feed-token; "
+                         "auto-generated on first run if missing)")
+    ap.add_argument("--settings-file", default=None,
+                    help="settings file for future keys, KEY=VALUE lines "
+                         "(default: $SQUAWK_FEED_SETTINGS, else "
+                         "~/.shingle/squawk-relay/settings.conf)")
     a = ap.parse_args(argv)
 
-    token = os.environ.get(TOKEN_ENV)
-    if not token:
-        print(f"squawk-feed: refusing to start without {TOKEN_ENV} "
-              f"(pitchfork service env must provide it)",
-              file=sys.stderr)
-        raise SystemExit(2)
+    token_file = (a.token_file
+                or os.environ.get("SQUAWK_FEED_TOKEN_FILE", "").strip()
+                or TOKEN_FILE_DEFAULT)
+    settings_file = (a.settings_file
+                     or os.environ.get("SQUAWK_FEED_SETTINGS", "").strip()
+                     or SETTINGS_FILE_DEFAULT)
+    # Settings first: future keys live here as KEY=VALUE lines.
+    _load_settings_file(settings_file)
+    # Token resolution, server-style: env > file > auto-generate. Never ask,
+    # never refuse to start.
+    token = _resolve_token(token_file)
 
     identity = fleet_relay.resolve_identity(a.identity)
     key_dir = fleet_relay.resolve_key_dir(a.key_dir, root=Path(a.root))
     server = serve(root=Path(a.root), channel=a.channel, identity=identity,
                    key_dir=key_dir, bind=a.bind, port=a.port, token=token,
-                   hold=a.hold)
+                   hold=a.hold, ui_file=a.ui_file)
     sa = server.server_address
     print(f"squawk-feed: serving #{a.channel} on {sa[0]}:{sa[1]} "
           f"(hold={a.hold}s, bearer auth on /wait + /subscribe)",
