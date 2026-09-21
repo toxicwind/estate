@@ -29,11 +29,14 @@ from auto1m import answer_question, est_tokens
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-CORPUS = [
-    "/home/toxic/sovereign/tools/sovereign-router/ROUTER.md",
-    "/home/toxic/sovereign/docs/fleet-knowledgebase.md",
-    "/home/toxic/sovereign/docs/shingle-2026-09-13.md",
-    os.path.join(HERE, "corpus", "completions-internal.md"),
+# Corpus: targeted question files + real doc trees for ~700k-token weight.
+# Every EXPECT needle is grep-verified in its file (2026-09-21).
+CORPUS_DIRS = [
+    "/home/toxic/sovereign/docs",              # KB + estate docs (Q1, Q2 live here)
+    "/home/toxic/sovereign/projects/tau/docs",  # corpus weight (~2.5M chars)
+]
+CORPUS_EXTRA_FILES = [
+    os.path.join(HERE, "corpus", "completions-internal.md"),  # Q3 lives here
 ]
 
 QUESTIONS = [
@@ -48,20 +51,19 @@ QUESTIONS = [
 ]
 
 # Hard requirements on corpus files (fail fast if the corpus isn't real)
-for path in CORPUS:
-    if not os.path.isfile(path):
-        sys.exit("corpus file missing: " + path)
 NEEDLE_FILES = {
-    "nemotron-3-super-120b-a12b": CORPUS[1],
-    "49c17bb9fd": CORPUS[1],
-    "41.4s": CORPUS[1],
-    "Muse Spark": CORPUS[3],
-    "200,000 tokens": CORPUS[3],
-    "16 cores": CORPUS[0],
-    "62 GB": CORPUS[0],
-    "RTX 3090": CORPUS[0],
+    "16 cores": "/home/toxic/sovereign/docs/fleet-knowledgebase.md",
+    "62 GB": "/home/toxic/sovereign/docs/fleet-knowledgebase.md",
+    "RTX 3090": "/home/toxic/sovereign/docs/fleet-knowledgebase.md",
+    "nemotron-3-super-120b-a12b": "/home/toxic/sovereign/docs/fleet-knowledgebase.md",
+    "49c17bb9fd": "/home/toxic/sovereign/docs/fleet-knowledgebase.md",
+    "41.4s": "/home/toxic/sovereign/docs/fleet-knowledgebase.md",
+    "Muse Spark": os.path.join(HERE, "corpus", "completions-internal.md"),
+    "200,000 tokens": os.path.join(HERE, "corpus", "completions-internal.md"),
 }
 for needle, path in NEEDLE_FILES.items():
+    if not os.path.isfile(path):
+        sys.exit("corpus file missing: " + path)
     if needle not in open(path, errors="replace").read():
         sys.exit(f"needle {needle!r} NOT in {path} -- corpus changed, fix test")
 
@@ -91,25 +93,32 @@ def check_router(timeout=600):
 
 def main():
     serving_model = check_router()
-    texts, total = [], 0
-    for path in CORPUS:
-        with open(path, errors="replace") as f:
-            t = f.read()
-        texts.append({"path": path, "text": t})
-        total += len(t)
-    print(f"corpus: {len(texts)} files, {total} chars, ~{total//4} est tokens")
+    # multi-source input: every real .md keeps its own provenance label
+    seen, sources = set(), []
+    for d in CORPUS_DIRS:
+        for root, _, files in os.walk(d):
+            for fn in sorted(files):
+                if not fn.endswith(".md"):
+                    continue
+                p = os.path.join(root, fn)
+                if p in seen:
+                    continue
+                seen.add(p)
+                with open(p, errors="replace") as f:
+                    sources.append((f.read(), p))
+    for p in CORPUS_EXTRA_FILES:
+        if p in seen:
+            continue
+        seen.add(p)
+        with open(p, errors="replace") as f:
+            sources.append((f.read(), p))
+    total = sum(len(t) for t, _ in sources)
+    print(f"corpus: {len(sources)} files, {total} chars, ~{total//4} est tokens")
 
     t0 = time.time()
     results, prov = [], {}
     for qi, (q, expect) in enumerate(QUESTIONS):
-        # multi-source input: each doc keeps its own provenance label
-        sources = [(s["text"], s["path"]) for s in texts]
-        if qi == 0:
-            # Q1 is a yote-ops question: ROUTER.md is the authoritative doc,
-            # but let the composite prove cross-file ranking anyway
-            pass
-        res = answer_question(q, corpus_text=None, sources=sources,
-                              force_composite=True)
+        res = answer_question(q, sources=sources, force_composite=True)
         prov.update(res["provenance"])
         results.append({"question": q, "expect": expect,
                         "answer": res["answer"], "lane": res["lane"],
@@ -131,6 +140,11 @@ def main():
     dangling = sorted(c for c in cited if f"C{c}" not in prov)
     if dangling:
         fails.append(f"dangling citations: {dangling}")
+    # cross-file: citations must span at least 2 distinct source files
+    cited_sources = {prov[f"C{c}"]["source"] for c in cited if f"C{c}" in prov}
+    if len(cited_sources) < 2:
+        fails.append(f"citations span only {len(cited_sources)} source file(s): "
+                     f"{sorted(cited_sources)}")
     # lane must be composite for all questions
     for r in results:
         if not r["lane"].startswith("composite"):
@@ -141,8 +155,9 @@ def main():
         "router": ROUTER,
         "serving_model": serving_model,
         "worker": os.environ.get("AUTO1M_MODEL", "sovereign/free"),
-        "corpus_files": CORPUS,
-        "est_tokens": sum(est_tokens(s["text"]) for s in texts),
+        "corpus_files": CORPUS_DIRS + CORPUS_EXTRA_FILES,
+        "corpus_sources": len(sources),
+        "est_tokens": sum(est_tokens(t) for t, _ in sources),
         "wall_secs": round(wall, 1),
         "questions": [{"q": r["question"], "lane": r["lane"],
                        "stats": r["stats"],
