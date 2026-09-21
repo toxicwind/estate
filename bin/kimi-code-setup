@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+# kimi-code-setup — idempotent Kimi Code CLI + Web setup for yote.
+#
+# What it does:
+#   1. Ensures ~/.kimi-code/config.toml exists with the herd provider
+#      (local router :25100, no key needed) and Moonshot direct provider
+#      (key read at RUNTIME from ~/.secrets — never written to the repo).
+#   2. Sets the default model to the verified working route.
+#   3. Runs `kimi doctor` to validate the config.
+#   4. Probes the default model end-to-end through herd (:25100).
+#   5. Ensures the kimi-code pitchfork daemon is running on :25126.
+#
+# Safe to re-run. Reads credentials at runtime; commits nothing secret.
+set -euo pipefail
+
+KIMI_DIR="$HOME/.kimi-code"
+CONFIG="$KIMI_DIR/config.toml"
+SECRETS="$HOME/.secrets"
+HERD_URL="http://127.0.0.1:25126"
+HERD_API="http://127.0.0.1:25100/v1"
+KIMI_CODE_DIR="/home/toxic/sovereign/tau/vendors/kimi-code/apps/kimi-code"
+NODE=/usr/bin/node
+
+log() { echo "[kimi-setup] $*"; }
+
+mkdir -p "$KIMI_DIR"
+chmod 700 "$KIMI_DIR"
+
+# --- Moonshot key: runtime only, from ~/.secrets --------------------------------
+MOONSHOT_KEY=""
+if [[ -f "$SECRETS" ]]; then
+  # shellcheck disable=SC1090
+  set -a; source "$SECRETS"; set +a
+  MOONSHOT_KEY="${MOONSHOT_API_KEY:-}"
+fi
+
+# --- Write config (key goes into the 0600 private config, never the repo) ------
+cat > "$CONFIG" <<EOF
+# Kimi Code CLI config — managed by kimi-code-setup (sovereign/bin).
+# Providers: herd router (local, key-free) + Moonshot direct (serves on top-up)
+default_model = "herd/qwen-flash"
+default_permission_mode = "manual"
+merge_all_available_skills = true
+
+[providers.herd]
+type = "openai"
+base_url = "$HERD_API"
+api_key = "herd-local"
+
+[providers.kimi]
+type = "kimi"
+base_url = "https://api.moonshot.ai/v1"
+[providers.kimi.env]
+KIMI_API_KEY = "${MOONSHOT_KEY}"
+KIMI_BASE_URL = "https://api.moonshot.ai/v1"
+
+[models."herd/qwen-flash"]
+provider = "herd"
+model = "beellama/qwen-flash-128k"
+max_context_size = 131072
+capabilities = ["tool_use"]
+display_name = "Qwen Flash 128k (herd local, key-free)"
+
+[models."herd/kimi-k2.7-code"]
+provider = "herd"
+model = "openrouter-free/moonshotai/kimi-k2.7-code:free"
+max_context_size = 262144
+capabilities = ["tool_use"]
+display_name = "Kimi K2.7 Code (herd, free)"
+
+[models."herd/kimi-k2.6"]
+provider = "herd"
+model = "openrouter-free/moonshotai/kimi-k2.6:free"
+max_context_size = 262144
+capabilities = ["tool_use"]
+display_name = "Kimi K2.6 (herd, free)"
+
+[models."herd/gemini-flash"]
+provider = "herd"
+model = "gemini/gemini-3-flash-preview"
+max_context_size = 1048576
+capabilities = ["tool_use"]
+display_name = "Gemini 3 Flash (herd)"
+
+[models."moonshot/kimi-k2.7-code"]
+provider = "kimi"
+model = "kimi-k2.7-code"
+max_context_size = 262144
+capabilities = ["tool_use"]
+display_name = "Kimi K2.7 Code (Moonshot direct)"
+EOF
+chmod 600 "$CONFIG"
+log "wrote $CONFIG (0600)"
+
+# --- Validate ------------------------------------------------------------------
+"$NODE" "$KIMI_CODE_DIR/dist/main.mjs" doctor
+
+# --- Live probe of the default route -------------------------------------------
+log "probing default model herd/qwen-flash via herd :25100 ..."
+RESP=$(curl -s --max-time 120 "$HERD_API/chat/completions" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"beellama/qwen-flash-128k","messages":[{"role":"user","content":"Reply with exactly: KIMI_HERD_OK and nothing else. No thinking, just output the string."}],"max_tokens":300}')
+if echo "$RESP" | grep -q "KIMI_HERD_OK"; then
+  log "LIVE OK: default route returned KIMI_HERD_OK"
+else
+  log "LIVE FAIL: default route did not return KIMI_HERD_OK"
+  echo "$RESP" | head -c 500; echo
+  exit 1
+fi
+
+# --- Daemon --------------------------------------------------------------------
+if curl -sf -o /dev/null --max-time 5 "$HERD_URL/health"; then
+  log "kimi-code web daemon already up on :25126"
+else
+  log "restarting kimi-code daemon ..."
+  /home/toxic/sovereign/bin/pitchfork-restart kimi-code
+fi
+
+log "setup complete"
