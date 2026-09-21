@@ -102,6 +102,37 @@ def fingerprint(value):
     return hashlib.sha256(value.encode()).hexdigest()[:12]
 
 
+# ---------------------------------------------------------------------------
+# Audit-log secret scrubbing (write-time, defense in depth). The audit log
+# records key NAMES and value FINGERPRINTS only. _audit() runs every `detail`
+# payload through _scrub_audit_detail() so any credential-shaped string that
+# reaches a detail field -- now or via a future call site -- is replaced by
+# its fingerprint before it hits disk. Discriminator: known secret prefixes,
+# or long (>=32ch) separator-free token material. Model IDs carry "/" or ":"
+# (or are short) and key names are short, so they pass through untouched.
+_SECRET_PREFIXES = ("gsk_", "sk-", "sk-ant-", "xai-", "nvapi-", "AIza",
+                    "AKIA", "xox")
+
+def _looks_like_secret(v):
+    if not isinstance(v, str):
+        return False
+    if v.startswith(_SECRET_PREFIXES) and len(v) >= 20:
+        return True
+    return (len(v) >= 32
+            and re.fullmatch(r"[A-Za-z0-9_\-+=.]+", v) is not None
+            and not any(c in v for c in "/: \t\n"))
+
+def _scrub_audit_detail(detail):
+    """Recursively redact credential-shaped strings to fp:<sha256[:12]>."""
+    if isinstance(detail, dict):
+        return {k: _scrub_audit_detail(x) for k, x in detail.items()}
+    if isinstance(detail, (list, tuple)):
+        return [_scrub_audit_detail(x) for x in detail]
+    if _looks_like_secret(detail):
+        return "fp:" + fingerprint(detail)
+    return detail
+
+
 def _is_free_model(model_id):
     """True only for OpenRouter free-model IDs. This gates a free-ONLY key
     (what the key may serve), never what any key must serve."""
@@ -430,7 +461,8 @@ class Pool:
             rec = {"ts": time.time(), "pool": self.name, "key": ks.name,
                    "fp": ks.fp, "event": event}
             if detail is not None:
-                rec["detail"] = detail
+                # write-time scrub: fingerprints only, never raw values
+                rec["detail"] = _scrub_audit_detail(detail)
             with open(AUDIT_PATH, "a") as f:
                 f.write(json.dumps(rec) + "\n")
         except OSError as e:
