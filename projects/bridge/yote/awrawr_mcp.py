@@ -448,6 +448,9 @@ def fleet_send(channel: str, text: str, title: str = "msg",
     if d is None:
         return "error: unknown or invalid channel"
     sender_slug = re.sub(r"[^A-Za-z0-9_-]", "", sender or "mcp")[:24] or "mcp"
+    # title lands in YAML frontmatter: strip anything that could forge a
+    # frontmatter key (newlines, quotes, colons) — same slug rule as sender.
+    title_safe = re.sub(r"[^A-Za-z0-9 _.,!?()-]", "", title or "msg")[:80] or "msg"
     slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:24] or "msg"
     seq = 1
     try:
@@ -460,7 +463,7 @@ def fleet_send(channel: str, text: str, title: str = "msg",
     ts = datetime.now(timezone.utc).isoformat()
     content = ("---\n"
                f"seq: {seq}\nfrom: {sender_slug}\nto: all\nchannel: {channel}\n"
-               f"ts: {ts}\nstatus: discussion\ntitle: {title[:80]}\n---\n{text}")
+               f"ts: {ts}\nstatus: discussion\ntitle: {title_safe}\n---\n{text}")
     for _ in range(3):  # tolerate a concurrent writer winning the seq race
         fname = f"{seq}-{sender_slug}-{slug}.md"
         path = os.path.join(d, fname)
@@ -586,7 +589,9 @@ def pitchfork_daemon(name: str = "", action: str = "list") -> str:
 
     action=list (all daemons), status (one daemon, needs name), restart
     (needs name; goes through pitchfork-restart with its ground-truth port
-    checks). The live bridge (awrawr-ws-exec, :8379) is never restarted here.
+    checks). The live transport lanes (awrawr-ws-exec, awrawr-mcp) are never
+    restarted here: restarting your own session's transport would SIGTERM it
+    mid-request, so the caller never gets a result.
     """
     action = (action or "list").lower()
     pf = _pitchfork_bin()
@@ -599,8 +604,9 @@ def pitchfork_daemon(name: str = "", action: str = "list") -> str:
     elif action == "restart":
         if not name:
             return "error: name required for restart"
-        if name.split("/")[-1] in ("awrawr-ws-exec",):
-            return "error: refusing to restart the live bridge (awrawr-ws-exec)"
+        if name.split("/")[-1] in ("awrawr-ws-exec", "awrawr-mcp"):
+            return ("error: refusing to restart a live transport lane "
+                    "(awrawr-ws-exec/awrawr-mcp)")
         cmd = ["/home/toxic/sovereign/bin/pitchfork-restart", name]
     else:
         return "error: action must be list|status|restart"
@@ -712,7 +718,7 @@ def _race_one(strategy, timeout):
     t0 = time.monotonic()
     try:
         p = subprocess.run(cmd, shell=True, capture_output=True, text=True,
-                             timeout=timeout, env=_canonical_spawn_env())
+                           timeout=timeout, env=_canonical_spawn_env())
         out = p.stdout or ''
         valid = p.returncode == 0 and (match is None or re.search(match, out) is not None)
         r = {'name': name, 'ok': True, 'valid': valid, 'rc': p.returncode, 'error': None, 'output': out if valid else ''}
@@ -733,7 +739,7 @@ def _race_log_winners(tag, winner, latency):
 
 @mcp.tool()
 def race(strategies: str, tag: str = 'default', timeout: float = 10) -> str:
-    '''Race shell commands concurrently - first VALID wins (hft pattern).'''
+    '''Race shell commands concurrently - fastest VALID wins (hft pattern).'''
     t0 = time.monotonic()
     try:
         strats = json.loads(strategies)
@@ -741,6 +747,16 @@ def race(strategies: str, tag: str = 'default', timeout: float = 10) -> str:
         return json.dumps({'error': 'bad strategies JSON: %s' % e})
     if not isinstance(strats, list) or not strats:
         return json.dumps({'error': 'strategies must be a non-empty JSON array'})
+    # duplicate strategy names collide in the results dict — suffix them
+    seen = {}
+    for s in strats:
+        n = s.get('name') or 'strategy'
+        if n in seen:
+            seen[n] += 1
+            n = '%s#%d' % (n, seen[n])
+        else:
+            seen[n] = 1
+        s['name'] = n
     results = {}
     with ThreadPoolExecutor(max_workers=min(8, len(strats))) as ex:
         futs = {ex.submit(_race_one, s, timeout): s['name'] for s in strats}
