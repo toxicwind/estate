@@ -139,7 +139,6 @@ SETTINGS_FILE_DEFAULT = str(Path.home() / ".shingle" / "squawk-relay" / "setting
 HOLD_SECONDS = 55.0
 MAX_MESSAGES = 50
 TAIL_CAP = 1000  # server-side ceiling for ?tail=N snapshots
-TEXT_CAP = 500
 WATCH_MASK = 0x00000008 | 0x00000100  # IN_CLOSE_WRITE | IN_MOVED_TO
 _MSG_RE = re.compile(r"^(\d+)-.*\.md$")
 _CHANNEL_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$")
@@ -272,13 +271,6 @@ def _watch_loop(state: FeedState):
 # fat response builder
 # ---------------------------------------------------------------------------
 
-def _truncate(text, cap: int = TEXT_CAP) -> str:
-    if text is None:
-        return None
-    if len(text) > cap:
-        return text[: cap - 1] + "…"
-    return text
-
 
 def build_fat(since: int, state: FeedState,
               max_messages: int = MAX_MESSAGES,
@@ -304,7 +296,8 @@ def build_fat(since: int, state: FeedState,
         rec = fleet_relay.build_relay_record(
             p, channel=state.channel,
             identity=state.identity, key_dir=state.key_dir)
-        rec["body"] = _truncate(rec.get("body"))
+        # full bodies served untruncated (Chris 2026-09-21: the "…" cut is useless;
+        # tail=200 worst case ~100KB today -- trivial for one response + 200 cards)
         messages.append(rec)
         last = max(last, int(rec["seq"]))
     if paths:
