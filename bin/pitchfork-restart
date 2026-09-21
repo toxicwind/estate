@@ -269,6 +269,22 @@ if [[ "$MODE" == "evict" ]]; then
   exit 0
 fi
 
+# P5 (dependency hermeticity) + P2/P4 (lint) pre-start gates. Each is guarded
+# by -x so deploy ordering with the owning crews is safe: an absent script
+# is a no-op, never a failure. daemon-deps-verify is a no-op success for
+# daemons not in its node/bun table.
+REPO_BIN="$(dirname "$TOML")/bin"
+if [[ -x "$REPO_BIN/daemon-deps-verify" ]]; then
+  echo "[pitchfork-restart] deps-verify pre-start gate..."
+  "$REPO_BIN/daemon-deps-verify" "$SHORT" \
+    || { echo "[pitchfork-restart] FAILED: dependency hermeticity gate" >&2; exit 8; }
+fi
+if [[ -x "$REPO_BIN/daemon-lint" ]]; then
+  echo "[pitchfork-restart] daemon-lint pre-register gate..."
+  "$REPO_BIN/daemon-lint" "$DAEMON" \
+    || { echo "[pitchfork-restart] FAILED: daemon-lint gate" >&2; exit 9; }
+fi
+
 # Start with supervisor-side readiness gating: --port/--http make `pitchfork
 # start` block until the daemon actually binds and answers. This IS the event
 # mechanism (supervisor probes), not a wrapper poll loop.
