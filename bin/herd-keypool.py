@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """herd-keypool — API key-pool rotation proxy for herd cloud peers.
 
-Listens on 127.0.0.1:25109. Path-routed: /<pool>/... forwards to the
+Listens on 127.0.0.1:25109 (override with KEYPOOL_HOST / KEYPOOL_PORT env). Path-routed: /<pool>/... forwards to the
 pool's upstream with a HEALTH-CHECKED key picked first-valid-wins per call.
 
   GET/POST /openrouter/v1/chat/completions -> https://openrouter.ai/api/v1/chat/completions
@@ -46,7 +46,10 @@ import urllib.request
 import urllib.error
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-LISTEN = ("127.0.0.1", 25109)
+LISTEN = (
+    __import__("os").environ.get("KEYPOOL_HOST", "127.0.0.1"),
+    int(__import__("os").environ.get("KEYPOOL_PORT", "25109")),
+)
 POOLS_PATH = os.environ.get(
     "KEYPOOLS_CONFIG",
     "/home/toxic/sovereign/config/keypools.yaml",
@@ -96,6 +99,83 @@ def _extract_model(raw):
         pass
     return None
 
+
+
+# ------------------------------------------ OpenAI-compat request adaptation
+# Borrowed from tau provider compat layer
+# (projects/tau/engine/docs/provider-compat-reference.md). Tau documents
+# per-provider wire rules for OpenAI-compatible hosts; the keypool applies the
+# request-shaping subset here so callers can send neutral OpenAI bodies and get
+# correct wire format per upstream.
+#
+# Borrowed mapping (tau flag -> keypool behavior):
+# - maxTokensField: "max_tokens" for Mistral/native Moonshot/Z.AI/Fireworks/
+#   direct DeepSeek, else "max_completion_tokens". Our upstreams need NO rename:
+#   openrouter.ai accepts both fields; the Google OpenAI-compat endpoint
+#   accepts max_tokens. Documented here, deliberately not transformed -- a
+#   rename would risk breaking callers for zero observed benefit.
+# - supportsSamplingParams=false for the o1/o3/gpt-5+ class: those hosts 400
+#   when temperature/top_p/penalties are present -> stripped below.
+# - supportsStore=false for Mistral: omit "store". (The mistral peer in
+#   herd.yaml proxies DIRECTLY to api.mistral.ai, not through the keypool, so
+#   this is documented for completeness, not implemented here.)
+# - Reasoning-first families need token headroom: the budget is consumed by
+#   reasoning tokens BEFORE visible content. A tiny max_tokens reads as
+#   200-empty (proven live 2026-09-20: ling-fin at max_tokens=100 -> 91
+#   reasoning tokens, 0 content; at 2000 -> exact output). Floor applied below.
+
+_REASONING_FIRST_SUBSTR = (
+    "ling-3.0-flash",        # inclusionai ling family (reasoning-first)
+    "nemotron-3-nano-omni",  # nvidia nano-omni reasoning variant
+    "north-mini-code",       # cohere north-mini-code (reasoning model)
+    "dots-3-note",           # dots-studio note preview
+    "lfm-2.5",              # liquid lfm-2.5
+)
+_REASONING_TOKEN_FLOOR = 512
+
+_NO_SAMPLING_RE = re.compile(r"(^|/)(o1|o3|gpt-5)(" + chr(92) + "b|[-.])")
+_SAMPLING_FIELDS = ("temperature", "top_p", "frequency_penalty", "presence_penalty")
+
+
+def _apply_openai_compat(pool_name, model_id, raw):
+    """Adapt a neutral OpenAI request body to the upstream wire rules.
+
+    Returns the (possibly rewritten) raw bytes. Never raises: on any doubt
+    the body passes through untouched, so this is strictly safer than raw
+    proxying."""
+    if not raw or not model_id:
+        return raw
+    try:
+        doc = json.loads(raw)
+    except Exception:
+        return raw
+    if not isinstance(doc, dict) or "messages" not in doc:
+        return raw  # not a chat-completions body; leave alone
+    changed = False
+    mlow = model_id.lower()
+    # 1. reasoning-first token floor
+    if any(sub in mlow for sub in _REASONING_FIRST_SUBSTR):
+        mt = doc.get("max_tokens")
+        if isinstance(mt, int) and mt < _REASONING_TOKEN_FLOOR:
+            doc["max_tokens"] = _REASONING_TOKEN_FLOOR
+            changed = True
+        else:
+            mt = doc.get("max_completion_tokens")
+            if isinstance(mt, int) and mt < _REASONING_TOKEN_FLOOR:
+                doc["max_completion_tokens"] = _REASONING_TOKEN_FLOOR
+                changed = True
+    # 2. strip sampling params for the o1/o3/gpt-5+ class
+    if _NO_SAMPLING_RE.search(mlow):
+        for f in _SAMPLING_FIELDS:
+            if f in doc:
+                del doc[f]
+                changed = True
+    if not changed:
+        return raw
+    try:
+        return json.dumps(doc, separators=(",", ":")).encode()
+    except Exception:
+        return raw
 
 # ------------------------------------------------------------------ config
 
@@ -547,6 +627,9 @@ class Handler(BaseHTTPRequestHandler):
             return
         raw = _read_body(self)
         model_id = _extract_model(raw)
+        # Tau-compat borrow: adapt neutral OpenAI bodies to upstream wire
+        # rules (reasoning-first token floor, sampling-strip for o1/o3/gpt-5+).
+        raw = _apply_openai_compat(pool.name, model_id, raw)
 
         tried = []
         while True:
@@ -778,7 +861,15 @@ def main():
         sys.exit(1 if selftest() else 0)
     load_pools()
     signal.signal(signal.SIGHUP, reload_all)
-    srv = ThreadingHTTPServer(LISTEN, Handler)
+    try:
+        srv = ThreadingHTTPServer(LISTEN, Handler)
+    except OSError as e:
+        import errno as _errno
+        if e.errno == _errno.EADDRINUSE:
+            log(f"FATAL: {LISTEN[0]}:{LISTEN[1]} already in use - another keypool holds it. " +
+                "Set KEYPOOL_PORT to run a second instance.")
+            sys.exit(98)
+        raise
     log(f"listening on {LISTEN[0]}:{LISTEN[1]} (pools: {', '.join(sorted(POOLS)) or 'none'})")
     srv.serve_forever()
 
