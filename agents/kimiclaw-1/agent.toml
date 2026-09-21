@@ -18,7 +18,7 @@ cache_context = false
 
 [model]
 provider = "llama-swap"
-model = "openrouter-free/nex-agi/nex-n2.5-mini:free"
+model = "nex-agi/nex-n2.5-mini:free"
 max_tokens = 32000
 temperature = 0.3
 system_prompt = "You are a helpful AI agent."
