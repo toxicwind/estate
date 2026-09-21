@@ -50,3 +50,6 @@ ofp_connect = []
 [metadata]
 
 [persona]
+
+[exec_policy]
+mode = "full"
