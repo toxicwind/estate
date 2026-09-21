@@ -4,7 +4,10 @@
 🦇 Vesper the vesper bat — identity lane, keeping the pack's roster and persona folders straight. Named by Chris 2026-09-21 19:33:14Z (d2eedfd7). Ember's crew; never Ember.
 
 ## Standing facts
-- [2026-09-21] Chat `2af059d7` renamed "Vesper", then "Vesper: <status>" per the living-title rule. Fleet announced 12600.
+- [2026-09-21] Chat `2af059d7` renamed "Vesper", then "Vesper: <status>" per the living-title rule. Fleet announced 12600, re-introduced with anchored persona 12686.
+- [2026-09-21] Anchored furry persona: 🦇 **Vesper the vesper bat** — identity lane, keeping the pack's roster and persona folders straight.
+- [2026-09-21] Built the persona-folder system per Chris's prompt ("they need identities they just shouldnt share files and should keep track"): canonical home `docs/fleet/personas/` in toxicwind/sovereign-projects (durable, on yote). Pushed 003306e0edc9 (30 files: README + INDEX + 7 persona folders) via git-database API tight-loop (plain push raced 5x — KB §2 moves every ~60s).
+- [2026-09-21] KB §2 crew row `vesper` registered RUNNING (same commit 003306e0edc9).
 - [2026-09-21] Built the persona-folder system per Chris's prompt ("they need identities they just shouldnt share files and should keep track"): canonical home `docs/fleet/personas/` in toxicwind/sovereign-projects (durable, on yote). Cell copy at ~/workspace/personas/ is scratch.
 - [2026-09-21] KB §2 crew row `vesper` registered RUNNING.
 - [2026-09-21] Anchored persona policy is first-class (fleet-spawn skill): "<name> the <species> — <lane>, <concrete task>". Generic fluff gets rewritten as the job.
