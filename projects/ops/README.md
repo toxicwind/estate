@@ -36,5 +36,18 @@ See the repo master README for the estate map.
   Kill policy: positive orphan confirmation + fleet evidence note at kill
   time; when in doubt, leave running and flag.
 
+- `dispatcher/` — **fleet dispatcher/ledger (canonical)**: mission /
+  coordinator / worker / relay ID issuance, lifecycle + result tracking,
+  direct-Chris precedence (chris-direct preempts coordinator/oracle/agent),
+  duplicate-admission locks, append-only hash-chained relay records,
+  artifact/commit aggregation, automatic relay archival on completion, and
+  exactly-four-audit-lanes enforcement (`dispatch`, `lifecycle`, `artifact`,
+  `governance`). CLI: `projects/ops/dispatcher/bin/dispatch`
+  (`admit-mission`, `admit-worker`, `transition`, `result`, `manifest`,
+  `audit`, `intake`). File-based state (`dispatcher/state/`, gitignored) —
+  survives restarts and reboots with no daemon. Full docs:
+  `dispatcher/README.md`. Tests: `python3 -m unittest discover -s tests`
+  from `projects/ops/dispatcher/`.
+
 See the repo master README for the estate map, and
 `docs/fleet-knowledgebase.md` §2 for the crew registry.
