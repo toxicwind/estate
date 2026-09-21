@@ -133,6 +133,37 @@ def unseal_message(channel: str, body: str, identity: str, key_dir: Path):
         raise SealError(f"unsealed payload is not valid UTF-8: {e}")
 
 
+def _unverified_body(path: Path, channel: str) -> tuple[str | None, bool]:
+    """Body for a message that failed HMAC verification.
+
+    Returns (text, False) with the raw plaintext body so the feed stays
+    readable for pre-HMAC history -- the record keeps signature:'invalid'
+    so clients badge it unverified. Returns (None, True) -- body withheld
+    and marked sealed -- when the body is ciphertext: E2EE priv-* channels
+    or a squawk_seal envelope. Ciphertext is never served.
+    """
+    if channel.startswith(fleet_e2ee.PRIV_PREFIX):
+        return None, True
+    try:
+        _meta, body = fleet_identity._parse_file(path)
+    except (OSError, UnicodeError):
+        return None, False
+    body = body or ""
+    # A sealed envelope (or anything shaped like one) is ciphertext:
+    # withhold. Marker presence alone is enough to fail closed -- we do
+    # NOT use parse_envelope() here because it raises ValueError both for
+    # "no envelope" and for "malformed envelope", and a malformed envelope
+    # must withhold, not be served as plaintext.
+    try:
+        import squawk_seal
+        begin_mark = squawk_seal.BEGIN_MARK
+    except (ImportError, OSError, AttributeError):
+        return None, True  # cannot even check: fail closed
+    if begin_mark in body:
+        return None, True
+    return body, False
+
+
 # ---------------------------------------------------------------------------
 # Relay record: the machine contract shared by relay-out and squawk-feed
 # ---------------------------------------------------------------------------
@@ -197,7 +228,10 @@ def build_relay_record(path: Path, *, channel: str, identity: str, key_dir: Path
 
     Never raises on a bad message: signature problems are reported in the
     record ("signature": "invalid"|"revoked"|"unknown-sender"), never
-    silently passed and never fatal to the stream. Sealed/unreadable
+    silently passed and never fatal to the stream. Messages that fail HMAC
+    verification (e.g. pre-HMAC history) have their *plaintext* body served
+    with "signature": "invalid" so the feed stays readable -- clients badge
+    them unverified. Sealed/unreadable
     bodies are reported with "sealed": true and "body": null -- ciphertext
     is never dumped into the record.
     """
@@ -238,6 +272,12 @@ def build_relay_record(path: Path, *, channel: str, identity: str, key_dir: Path
         rec["unseal_error"] = None
         rec["signature"] = "invalid"
         rec["_verify_error"] = str(e)
+        # Serve the plaintext body flagged unverified: pre-HMAC history is
+        # otherwise a wall of empty lines. Ciphertext is never served --
+        # _unverified_body withholds E2EE and sealed-envelope bodies.
+        text, sealed = _unverified_body(path, rec["channel"])
+        rec["body"] = text
+        rec["sealed"] = sealed
         return _finalize_record(rec)
 
     rec["body"] = verified.get("body", "")
