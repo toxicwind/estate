@@ -71,7 +71,14 @@ npm run build     # tsc -> dist/
 BROWSERLESS_TOKEN=... node dist/index.js
 # simpler single-purpose server (env-driven URL, defaults to live endpoint)
 node dist/simple-server.js
+# keeper-wired launcher (first-class): stdio, no port/daemon — 22 tools incl.
+# persistent_* -> keeper CDP 127.0.0.1:9223
+./mcp.sh
 ```
+
+Registered in the mesh MCP registry
+(`/home/toxic/projects/my-ai-tools/configs/mcp-registry.json`) as
+`browserless-mcp`. See `keeper/README.md` for the serve path + e2e evidence.
 
 `initialize_browserless` defaults to host `127.0.0.1`, port `25130` — the live
 mesh server. `simple-server.ts` builds its URL from `BROWSERLESS_PROTOCOL/HOST/PORT`
