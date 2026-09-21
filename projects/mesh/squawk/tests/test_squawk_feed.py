@@ -4,7 +4,8 @@
 Covers: /ping public + content-free; /wait + /subscribe alias both 404
 without/invalid bearer and 200 with it; fat response shape (per-message
 seq, 50-cap cursor protocol); wake on post; timeout; 500-char truncation;
-sealed envelopes unsealed server-side (fail closed when unopenable).
+sealed envelopes unsealed server-side (fail closed when unopenable);
+unsigned pre-HMAC bodies served flagged invalid (ciphertext still withheld).
 """
 
 import json
@@ -242,6 +243,56 @@ class SquawkFeedFatTests(unittest.TestCase):
         rec = obj["messages"][-1]
         self.assertTrue(rec["sealed"])
         self.assertEqual(rec["body"], "secret for relay")
+
+
+    # -- unsigned (pre-HMAC) history -------------------------------------------
+
+    def _write_unsigned(self, body, sender="relay"):
+        # Simulate pre-HMAC history: a real message file with the hmac
+        # line stripped. Written before the server starts (no inotify race).
+        seq, fname = self._post(body, sender=sender)
+        p = self.root / "fleet" / fname
+        p.write_text("".join(
+            l for l in p.read_text().splitlines(keepends=True)
+            if not l.startswith("hmac:")))
+        return seq
+
+    def test_unsigned_plaintext_served_flagged_invalid(self):
+        seq = self._write_unsigned("history without a signature")
+        port = self._serve()
+        _status, obj = _get(port, f"/squawk-feed/wait?since={seq - 1}",
+                            token=TOKEN)
+        rec = obj["messages"][-1]
+        self.assertEqual(rec["seq"], seq)
+        self.assertEqual(rec["signature"], "invalid")
+        self.assertFalse(rec["sealed"])
+        self.assertEqual(rec["body"], "history without a signature")
+
+    def test_unsigned_sealed_envelope_withheld(self):
+        body = ("-----BEGIN SQUAWK SEALED MESSAGE-----\nto: relay\n"
+                "alg: sealedbox\n\nQUJD\n-----END SQUAWK SEALED MESSAGE-----\n")
+        seq = self._write_unsigned(body)
+        port = self._serve()
+        _status, obj = _get(port, f"/squawk-feed/wait?since={seq - 1}",
+                            token=TOKEN)
+        rec = obj["messages"][-1]
+        self.assertEqual(rec["seq"], seq)
+        self.assertEqual(rec["signature"], "invalid")
+        self.assertTrue(rec["sealed"])
+        self.assertIsNone(rec["body"])
+
+    def test_tampered_body_served_flagged_invalid(self):
+        seq, fname = self._post("original text")
+        p = self.root / "fleet" / fname
+        p.write_text(p.read_text().replace("original text", "FORGED text"))
+        port = self._serve()
+        _status, obj = _get(port, f"/squawk-feed/wait?since={seq - 1}",
+                            token=TOKEN)
+        rec = obj["messages"][-1]
+        self.assertEqual(rec["seq"], seq)
+        self.assertEqual(rec["signature"], "invalid")
+        self.assertFalse(rec["sealed"])
+        self.assertIn("FORGED text", rec["body"])
 
 
 if __name__ == "__main__":
