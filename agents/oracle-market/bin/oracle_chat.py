@@ -201,10 +201,15 @@ def publish(channel, text, title=""):
 
 # ---------------- trigger / routing -----------------------------------------
 def extract_query(meta, body):
-    """Return the addressed query text, or None if not for the oracle."""
+    """Return the addressed query text, or None if not for the oracle.
+
+    Address forms: a leading "oracle:" or "oracle," (colon/comma required --
+    a bare "oracle <word>" is someone labeling text ABOUT the oracle, e.g.
+    "oracle note: ...", not addressing it), or an @oracle mention anywhere.
+    """
     if meta.get("from", "").strip().lower() == FROM:
         return None  # own message -- never reply
-    m = re.sub(r"^\s*oracle\b\s*[:,]?\s*", "", body, flags=re.I)
+    m = re.sub(r"^\s*oracle\s*[:,]\s*", "", body, flags=re.I)
     if m != body:
         q = m.strip()
     elif "@oracle" in body.lower():
