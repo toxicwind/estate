@@ -237,6 +237,14 @@ class Handler(BaseHTTPRequestHandler):
                         return
                     self._send(200, payload)
                 return
+            except BrokenPipeError:
+                # Downstream client disconnected while we waited out the
+                # ~130s cold upstream (its own timeout fired). Upstream
+                # already answered 200 -- retrying would burn another
+                # full cold call for a client that is gone. Log and stop:
+                # no retry, no consec_fail (the provider did its job).
+                log("client disconnected after upstream 200; not retrying")
+                return
             except urllib.error.HTTPError as e:
                 etext = e.read().decode()[:500]
                 log("upstream HTTP %s (attempt %d): %s" % (e.code, attempt + 1, etext[:160]))
