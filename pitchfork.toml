@@ -146,7 +146,7 @@ auto = ["start"]
 
 [daemons.tau-code]
 port = 25145
-run = "exec bun run src/server.ts --port 25145"
+run = "exec bun run src/server.ts --port 25145" # 25145 == $TAU_CODE_PORT (SSOT); literal: ${} not expanded in run lines
 dir = "/home/toxic/projects/sovereign-projects/tau/engine/packages/metaharness"
 mise = true
 retry = true
@@ -157,7 +157,7 @@ auto = ["start"]
 
 [daemons.kimi-code]
 port = 25126
-run = "exec /home/toxic/sovereign/bin/claim-port 25126 /home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126 --no-port-walk"
+run = "exec /home/toxic/sovereign/bin/claim-port 25126 /home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126 --no-port-walk" # 25126 == $KIMI_CODE_PORT (SSOT); literal: ${} not expanded in run lines
 dir = "/home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code"
 mise = true
 retry = true
@@ -185,7 +185,7 @@ ready_http = "http://127.0.0.1:25133/"
 auto = ["start"]
 
 [daemons.redis]
-run = "exec valkey-server --port 25199 --bind 0.0.0.0 --protected-mode no --save '' --appendonly no"
+run = "exec valkey-server --port 25199 --bind 0.0.0.0 --protected-mode no --save '' --appendonly no" # 25199 == $REDIS_PORT (SSOT); literal: ${} not expanded in run lines
 dir = "."
 mise = false
 retry = true
@@ -760,6 +760,7 @@ auto = ["start"]
 port = 25213
 run = "exec python3 ./stack/services/sovereign-exporter.py"
 dir = "."
+mise = false
 retry = true
 ready_http = "http://127.0.0.1:25213/metrics"
 auto = ["start"]
