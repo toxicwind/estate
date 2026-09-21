@@ -6,6 +6,8 @@ Endpoints (all under /squawk-feed):
   GET /squawk-feed/ping                public, content-free -> {"seq": N}
   GET /squawk-feed/wait?since=N        bearer auth -> {"seq": M, "messages": [...]}
   GET /squawk-feed/subscribe?since=N   same handler as /wait (alias)
+  POST /squawk-feed/send               bearer auth, JSON {channel, text, from?, title?}
+                                       -> {"ok": true, "seq": N, "file": name}
 
 Query params on /wait (and /subscribe):
   since=N    cursor: messages with seq > N, oldest first, capped at 50 per
@@ -48,6 +50,8 @@ HARD RULE: no unauthenticated unsealed content, ever. No exceptions.
 import argparse
 import ctypes
 import ctypes.util
+import datetime
+import fcntl
 import hmac
 import http.server
 import json
@@ -318,6 +322,70 @@ def build_fat(since: int, state: FeedState,
 
 
 # ---------------------------------------------------------------------------
+# publish: atomic seq allocation + file write (same shape as squawk CLI)
+# ---------------------------------------------------------------------------
+
+_SENDER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,31}$")
+
+
+def _publish_message(root: Path, channel: str, sender: str, title: str, text: str):
+    """Write one chat message file under <root>/<channel>/, seq-allocated
+    under an exclusive per-channel flock. Returns (seq, filename).
+    Mirrors the hatch squawk CLI's file shape so the inotify watcher,
+    squawk-ws, and relay all pick it up identically."""
+    chan_dir = root / channel
+    chan_dir.mkdir(parents=True, exist_ok=True)
+    lock_path = root / f".seq-{channel}.lock"
+    try:
+        lock_path.touch(exist_ok=True)
+    except OSError:
+        pass
+    with open(lock_path, "w") as lockf:
+        fcntl.flock(lockf, fcntl.LOCK_EX)
+        try:
+            max_seq = _channel_high(chan_dir)
+            seq = max_seq + 1
+            slug = "".join(
+                c if c.isalnum() else "-"
+                for c in (title[:30].lower() if title else "msg")
+            ).strip("-") or "msg"
+            sender_slug = "".join(
+                c if c.isalnum() else "-" for c in sender.lower()
+            ).strip("-") or "agent"
+            fname = f"{seq}-{sender_slug}-{slug}.md"
+            ts = datetime.datetime.now(datetime.timezone.utc).astimezone().isoformat()
+
+            def clean(v: str) -> str:
+                return str(v).replace("\n", " ").replace("\r", " ")[:200]
+
+            content = (
+                "---\n"
+                f"seq: {seq}\n"
+                f"from: {clean(sender)}\n"
+                "to: all\n"
+                f"channel: {clean(channel)}\n"
+                f"ts: {ts}\n"
+                "status: discussion\n"
+                f"title: {clean(title or slug)}\n"
+                "---\n"
+                f"{text}\n"
+            )
+            # atomic write via temp file then rename
+            tmp = chan_dir / f".tmp-{seq}-{sender_slug}.md"
+            tmp.write_text(content, encoding="utf-8")
+            final = chan_dir / fname
+            tmp.replace(final)
+            if not final.is_file() or final.stat().st_size == 0:
+                raise RuntimeError("write failed for %s" % fname)
+            return seq, fname
+        finally:
+            try:
+                fcntl.flock(lockf, fcntl.LOCK_UN)
+            except OSError:
+                pass
+
+
+# ---------------------------------------------------------------------------
 # HTTP: one port, bearer-authed fat endpoints + public ping
 # ---------------------------------------------------------------------------
 
@@ -416,6 +484,63 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             return
         if path in ("/squawk-feed/", "/squawk-feed/ui"):
             self._send_ui()
+            return
+        self._send_404()
+
+    def do_POST(self):
+        parsed = urllib.parse.urlparse(self.path)
+        path = parsed.path
+        if path == "/squawk-feed/send":
+            if not self._authed():
+                self._send_404()
+                return
+            try:
+                length = int(self.headers.get("Content-Length", "0") or "0")
+            except (TypeError, ValueError):
+                length = 0
+            if length <= 0 or length > 100_000:
+                self._send_json(400 if length > 0 else 411,
+                                {"ok": False, "error": "bad length"})
+                return
+            try:
+                raw = self.rfile.read(length)
+                data = json.loads(raw.decode("utf-8") or "{}")
+            except Exception:
+                self._send_json(400, {"ok": False, "error": "invalid json"})
+                return
+            channel = str(data.get("channel") or self.server.default_channel).strip()
+            text = str(data.get("text") or "")
+            # keep newlines in body, strip only leading/trailing blank space
+            if not text.strip():
+                self._send_json(400, {"ok": False, "error": "empty text"})
+                return
+            if len(text) > 20000:
+                self._send_json(400, {"ok": False, "error": "text too long"})
+                return
+            title = str(data.get("title") or "").strip()[:120]
+            sender = str(data.get("from") or "chris").strip()[:32] or "chris"
+            if not _CHANNEL_RE.match(channel):
+                self._send_json(400, {"ok": False, "error": "bad channel"})
+                return
+            if not _SENDER_RE.match(sender):
+                sender = "chris"
+            state = self.server.state_for(channel)
+            if state is None:
+                self._send_json(404, {"ok": False, "error": "no such channel"})
+                return
+            try:
+                seq, fname = _publish_message(
+                    self.server.root, channel, sender, title, text.strip())
+            except Exception as e:
+                sys.stderr.write("squawk-feed: publish failed: %s\n" % e)
+                self._send_json(500, {"ok": False, "error": "publish failed"})
+                return
+            try:
+                state.note_advanced()
+            except Exception:
+                pass
+            self._send_json(200, {"ok": True, "seq": seq,
+                                  "file": fname, "channel": channel})
             return
         self._send_404()
 
