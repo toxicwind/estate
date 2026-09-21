@@ -3,7 +3,7 @@
 
 Covers: /ping public + content-free; /wait + /subscribe alias both 404
 without/invalid bearer and 200 with it; fat response shape (per-message
-seq, 50-cap cursor protocol); wake on post; timeout; 500-char truncation;
+seq, 50-cap cursor protocol); wake on post; timeout; full bodies served untruncated;
 sealed envelopes unsealed server-side (fail closed when unopenable);
 unsigned pre-HMAC bodies served flagged invalid (ciphertext still withheld).
 """
@@ -169,16 +169,18 @@ class SquawkFeedFatTests(unittest.TestCase):
         self.assertTrue(
             all(m["signature"] == "valid" for m in obj["messages"]))
 
-    def test_text_truncated_at_500(self):
+    def test_text_served_untruncated(self):
+        # 0b33559ad2 killed the 500-char server cut (Chris 2026-09-21):
+        # full bodies survive end to end.
         port = self._serve()
         base = self._high(port)
-        self._post("y" * 600)
-        _status, obj = _get(port, f"/squawk-feed/wait?since={base}",
+        body = "y" * 1200
+        self._post(body)
+        _status, obj = _get(port, "/squawk-feed/wait?since=%d" % base,
                             token=TOKEN)
         text = obj["messages"][-1]["body"]
-        self.assertEqual(len(text), 500)
-        self.assertTrue(text.endswith("…"))
-
+        self.assertEqual(text, body)
+        self.assertGreater(len(text), 500)
     # -- wake + timeout --------------------------------------------------------
 
     def test_wait_wakes_on_post(self):
