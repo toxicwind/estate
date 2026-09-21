@@ -1,4 +1,4 @@
-> NOTE (2026-09-21, mesh merge): this historical run targeted the old docker endpoint 172.22.0.1:3000. The live server is now the pitchfork daemon itvx-browserless on 127.0.0.1:25130. Re-run test-all-features.js against the live endpoint to refresh these results.
+> NOTE (2026-09-21, mesh merge): this historical run targeted the old docker endpoint 172.22.0.1:3000. The live server is now the pitchfork daemon browserless on 127.0.0.1:25130. Re-run test-all-features.js against the live endpoint to refresh these results.
 
 # Browserless MCP Test Results
 

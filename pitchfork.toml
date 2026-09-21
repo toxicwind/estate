@@ -383,7 +383,7 @@ retry = true
 boot_start = true
 auto = ["start"]
 
-[daemons.itvx-browserless]
+[daemons.browserless]
 port = 25130
 run = "exec /home/toxic/sovereign/projects/mesh/browserless/server/run.sh"
 dir = "."

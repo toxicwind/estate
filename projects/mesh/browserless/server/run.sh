@@ -1,13 +1,13 @@
 #!/bin/bash
-# browserless native launcher (sovereign mesh) — itvx deployment pattern.
+# browserless native launcher (sovereign mesh).
 # Token is sourced from 0600 /home/toxic/.browserless/.env and NEVER committed.
 # Server binary: upstream browserless.io v2.49.0 at /home/toxic/.browserless/app
-# (npm-installed, not tracked in git). Pitchfork daemon: itvx-browserless (:25130).
+# (npm-installed, not tracked in git). Pitchfork daemon: browserless (:25130).
 #
 # CWD CONTRACT: do NOT cd anywhere in this script. The browserless app resolves
 # node_modules/playwright-core/browsers.json relative to process.cwd(), so the
 # supervisor must launch with CWD=/home/toxic/sovereign (pitchfork `dir = "."`
-# in the [daemons.itvx-browserless] section). Relocating CWD crashes the app.
+# in the [daemons.browserless] section). Relocating CWD crashes the app.
 set -a
 . /home/toxic/.browserless/.env
 set +a

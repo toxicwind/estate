@@ -1,5 +1,5 @@
 # LEGACY docker path (2026-09-21 mesh merge): the LIVE deployment is the native
-# itvx launcher at server/run.sh via pitchfork daemon itvx-browserless (:25130).
+# launcher at server/run.sh via pitchfork daemon browserless (:25130).
 # This compose file is kept for docker-based users only.
 version: '3.8'
 
