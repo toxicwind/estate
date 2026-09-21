@@ -2,8 +2,8 @@ import { z } from 'zod';
 
 // Browserless configuration
 export const BrowserlessConfigSchema = z.object({
-  host: z.string().default('localhost'),
-  port: z.number().default(3000),
+  host: z.string().default("127.0.0.1"),
+  port: z.number().default(25130),
   token: z.string(),
   protocol: z.enum(['http', 'https', 'ws', 'wss']).default('http'),
   timeout: z.number().default(30000),
