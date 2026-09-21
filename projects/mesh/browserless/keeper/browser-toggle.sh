@@ -2,6 +2,10 @@
 # browser-toggle.sh: show/hide the keeper Chromium window via Hyprland scratchpad.
 # Wired to the Quickshell bar button (quickshell/BrowserToggle snippet).
 set -u
+if [ -z "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+  HYPRLAND_INSTANCE_SIGNATURE="$(ls /run/user/1000/hypr/ 2>/dev/null | head -n 1)"
+  export HYPRLAND_INSTANCE_SIGNATURE
+fi
 SCRATCH="browser"
 ADDR="$(hyprctl clients -j | python3 -c "import json,sys; cs=json.load(sys.stdin); print(next((c.get(\"address\",\"\") for c in cs if \"chrom\" in ((c.get(\"class\") or \"\")+\" \"+(c.get(\"initialClass\") or \"\")).lower()), \"\"))")"
 if [ -z "$ADDR" ]; then
