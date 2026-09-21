@@ -1,0 +1,19 @@
+# transport evidence — generated 2026-09-21T02:10:17Z
+tungstenite_ws_refs=44
+grpc_app_refs=0
+inference_sock_refs=10
+header: x-jarvis-client-latitudex-client-latitudex-latitudex-client-latx-jarvis-client-longitudex-client-longitudex-longitudex-client-lngx-lngdaemon
+header: x-jarvis-client-timezonex-client-timezonex-timezone
+header: x-jarvis-client-timezonex-client-timezonex-timezoneactive
+header: x-jarvis-componentx-jarvis-request-idx-jarvis-inference-request-idx-jarvis-inference-contextx-magi-caller-request-idclassifier
+header: x-jarvis-inference-contextevent
+header: x-jarvis-inference-contextinteractiveuser
+header: x-jarvis-inference-request-idx-jarvis-componentx-jarvis-user-prompt-previewx-magi-caller-request-id
+header: x-jarvis-inference-workload-classmax
+header: x-jarvis-inference-workload-classrequest
+header: x-jarvis-inference-workload-classx-agent-typex-jarvis-request-idx-jarvis-inference-request-idx-jarvis-componentx-jarvis-user-prompt-previewx-jarvis-inference-contextx-magi-caller-request-idmodeltoolstool
+header: x-jarvis-kimi-tool-call-id-namespaceinteractiveuser
+header: x-jarvis-request-id
+header: x-jarvis-request-idsize
+header: x-jarvis-request-idx-jarvis-inference-contextdeferred
+header: x-jarvis-request-idx-jarvis-inference-contextx-jarvis-inference-workload-classx-jarvis-inference-request-idx-jarvis-componentx-magi-caller-request-idno

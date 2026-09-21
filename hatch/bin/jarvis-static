@@ -1,0 +1,137 @@
+#!/bin/sh
+# jarvis-static — reproducible static-analysis pipeline for the Hatch/Jarvis daemon binary.
+# Rebuilds the env-var, model-route, and compaction-token inventories from
+# /opt/hatch/bin/hatch and regenerates the machine-readable dataframes.
+# One-shot, no daemon, no network. Re-runnable after a daemon rebuild.
+#
+# Usage: jarvis-static [binary-path] [out-dir]
+# Defaults: /opt/hatch/bin/hatch  ~/workspace/audit
+set -eu
+
+BIN="${1:-/opt/hatch/bin/hatch}"
+OUT="${2:-$HOME/workspace/audit}"
+TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+TMPD="$(mktemp -d)"
+trap 'rm -rf "$TMPD"' EXIT
+
+echo "[jarvis-static] binary: $BIN"
+echo "[jarvis-static] built:  $($BIN --version 2>/dev/null || echo unknown)"
+echo "[jarvis-static] sha256: $(sha256sum "$BIN" | cut -d' ' -f1)"
+
+# 1. raw strings (once, reused by every extractor).
+# NOTE: default min length (4), not -n 8 — the daemon's rodata holds many
+# short/glued tokens; -n 8 drops ~2.7M lines including env-var fragments.
+strings "$BIN" > "$TMPD/strings.txt"
+wc -l "$TMPD/strings.txt"
+
+# 2. env-var inventory: whole-line matches PLUS pattern extraction for
+# glued/concatenated occurrences (Rust format strings glue identifiers).
+{
+  grep -ax 'JARVIS_[A-Za-z0-9_]*' "$TMPD/strings.txt"
+  grep -aoE 'JARVIS_[A-Z0-9_]{3,60}' "$TMPD/strings.txt"
+} | sort -u > "$OUT/jarvis-env-vars.txt"
+{
+  grep -ax 'HATCH_[A-Za-z0-9_]*' "$TMPD/strings.txt"
+  grep -aoE 'HATCH_[A-Z0-9_]{3,60}' "$TMPD/strings.txt"
+} | sort -u > "$OUT/hatch-env-vars.txt"
+echo "env vars: $(wc -l < "$OUT/jarvis-env-vars.txt") JARVIS_, $(wc -l < "$OUT/hatch-env-vars.txt") HATCH_"
+
+# 3. model route inventory: provider/model shaped tokens (binary-direct, glued-safe)
+grep -aoE '[a-z0-9]+/[a-z0-9][a-zA-Z0-9._:+/-]{2,80}' "$BIN" \
+  | grep -E '^(ipnext|azure|anthropic|openai|codex|fireworks|kimi_chat_completions|meta)/' \
+  | sort -u > "$OUT/jarvis-model-routes.txt"
+echo "model routes: $(wc -l < "$OUT/jarvis-model-routes.txt")"
+
+# 4. compaction token sets (byte-offset located, for objdump/readelf follow-up)
+for pat in 'eager_background_compaction' 'context_pressure_compaction' 'compaction_decision' 'compaction_execution_mode'; do
+  grep -aob "$pat" "$BIN" | cut -d: -f1 | sort -un > "$TMPD/off-$pat.txt"
+done
+{
+  echo "# byte offsets of compaction token occurrences in $BIN"
+  echo "# generated: $TS"
+  for pat in 'eager_background_compaction' 'context_pressure_compaction' 'compaction_decision' 'compaction_execution_mode'; do
+    echo "## $pat: $(wc -l < "$TMPD/off-$pat.txt") occurrences"
+    # first 5 offsets per token; full lists in the audit dir on demand
+    head -5 "$TMPD/off-$pat.txt" | sed 's/^/  /'
+  done
+} > "$OUT/jarvis-compaction-offsets.txt"
+
+# 4. compaction token sets.
+# METHOD HONESTY NOTE: the daemon's rodata holds these vocabularies as
+# BUILD-TIME CONCATENATED runs with no separators
+# (e.g. b'...persist_endbackground_persisteager_background_compaction...').
+# There is no perfect unsupervised tokenization. We use stem-anchored
+# segmentation: for each known stem, take stem + following [a-z0-9_]+ and cut
+# at the next known-stem occurrence. Results are CANDIDATES (heuristic);
+# the stem inventory itself is exact (substring-verified with counts).
+python3 - "$BIN" "$OUT" << 'PYEOF'
+import re, sys
+binpath, outdir = sys.argv[1], sys.argv[2]
+data = open(binpath,'rb').read().decode('utf-8', errors='ignore')
+
+families = {
+    'eager':      ['eager_background_compaction',
+                   'adopted_eager_background_compaction',
+                   'persisted_eager_background_compaction'],
+    'pressure':   ['context_pressure_compaction', 'context_pressure_estimate',
+                   'pre_inference_compaction', 'compaction_memory_flush',
+                   'compaction_prompt_build', 'compaction_summary_inference',
+                   'estimated_prompt_tokens', 'provider_context_window_input_tokens',
+                   'compact_limit_override'],
+    'decision':   ['compaction_decision', 'compaction_execution_mode'],
+}
+all_stems = sorted({s for f in families.values() for s in f},
+                   key=len, reverse=True)
+stem_re = re.compile('|'.join(re.escape(s) for s in all_stems))
+
+for fam, stems in families.items():
+    cands = set()
+    counts = {}
+    for stem in stems:
+        counts[stem] = 0
+        for m in re.finditer(re.escape(stem) + r'[a-z0-9_]*', data):
+            counts[stem] += 1
+            s = m.group(0)
+            # cut the suffix at the next known-stem occurrence (glue boundary)
+            nxt = stem_re.search(s, len(stem))
+            if nxt:
+                s = s[:nxt.start()]
+            s = s.rstrip('_')
+            if len(s) >= len(stem):
+                cands.add(s)
+    # split candidates: clean (short, plausible single token) vs glued-remainder
+    clean = sorted(c for c in cands if len(c) <= 90)
+    long_ = sorted(c for c in cands if len(c) > 90)
+    with open(f"{outdir}/jarvis-{fam}-tokens.txt", 'w') as f:
+        f.write(f"# stem-anchored segmentation candidates for '{fam}' family\n")
+        f.write("# method: stem + [a-z0-9_]*, cut at next known stem; heuristic\n")
+        f.write("# exact substring counts per stem:\n")
+        for stem in stems:
+            f.write(f"#   {stem}: {counts[stem]}\n")
+        f.write(f"# clean candidates ({len(clean)}):\n")
+        for c in clean:
+            f.write(c + "\n")
+        f.write(f"# glued-remainder candidates ({len(long_)}, need manual review):\n")
+        for c in long_:
+            f.write(c + "\n")
+    print(f"tokens: {fam}: {len(clean)} clean + {len(long_)} long")
+PYEOF
+echo "tokens rebuilt (see headers for method + exact stem counts)"
+
+# 5. transport evidence
+{
+  echo "# transport evidence — generated $TS"
+  echo "tungstenite_ws_refs=$(grep -ac 'tungstenite' "$TMPD/strings.txt")"
+  echo "grpc_app_refs=$(grep -ac 'application/grpc' "$TMPD/strings.txt")"
+  echo "inference_sock_refs=$(grep -ac 'proxy/inference.sock' "$TMPD/strings.txt")"
+  grep -ao 'x-jarvis-[a-z-]*' "$TMPD/strings.txt" | sort -u | sed 's/^/header: /'
+} > "$OUT/jarvis-transport.txt"
+
+# 6. human-readable log messages (spaced words, no underscores) — the strongest
+# lifecycle evidence; proves pipeline stages in plain language.
+grep -a -o -E '[a-z][a-z ]{8,90}(compaction|compact)[a-z ]{0,60}' "$TMPD/strings.txt" \
+  | grep -av '_' | sort -u > "$OUT/jarvis-compaction-logmsgs.txt"
+echo "log messages: $(wc -l < "$OUT/jarvis-compaction-logmsgs.txt")"
+
+echo "[jarvis-static] done -> $OUT"
+ls -la "$OUT"/jarvis-* "$OUT"/hatch-env-vars.txt 2>/dev/null
