@@ -276,11 +276,15 @@ retry = true
 auto = ["start"]
 
 [daemons.tau]
-run = "exec /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/dist/omp acp"
+port = 25111
+# P4 headless-TUI policy (2026-09-20): dist/omp acp is stdio-only (no --acp-port
+# TCP flag on this binary). The TCP->stdio bridge makes it an observable daemon
+# with a real TCP readiness probe instead of the pgrep liveness lie.
+run = "exec node /home/toxic/sovereign/bin/acp-tcp-bridge.mjs 25111 /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/dist/omp acp"
 dir = "/home/toxic"
 mise = true
 retry = true
-ready_cmd = "pgrep -f coding-agent/dist/omp > /dev/null"
+ready_cmd = "/home/toxic/sovereign/bin/tcp-probe 25111"
 depends = ["shep"]
 env = { PI_CONFIG_DIR = "/home/toxic/.tau", PI_AGENT_DIR = "/home/toxic/.tau/agent", PI_CODING_AGENT = "true", PI_REASONING_LEVEL = "high", PI_SUBAGENT_MODEL = "thinkingmachines/inkling", PI_OPENAI_STREAM_IDLE_TIMEOUT_MS = "120000" }
 
@@ -553,7 +557,7 @@ dir = "/home/toxic/refusal-hunt"
 mise = false
 retry = true
 boot_start = true
-ready_cmd = "pgrep -f inotifywait.*/home/toxic/refusal-hunt >/dev/null"
+ready_cmd = "p=$(pgrep -f '[r]efusal-watchdog[.]py' | head -1); [ -n \"$p\" ] && pgrep -P \"$p\" -f 'inotifywait -m' >/dev/null"
 auto = ["start"]
 [daemons.sorry-watchdog]
 run = "exec python3 /home/toxic/refusal-hunt/sorry-watchdog.py"
@@ -561,7 +565,7 @@ dir = "/home/toxic/refusal-hunt"
 mise = false
 retry = true
 boot_start = true
-ready_cmd = "pgrep -f sorry-watchdog.py >/dev/null"
+ready_cmd = "p=$(pgrep -f '[s]orry-watchdog[.]py' | head -1); [ -n \"$p\" ] && pgrep -P \"$p\" -f 'inotifywait -m' >/dev/null"
 auto = ["start"]
 
 [daemons.forensics-srv]
@@ -705,7 +709,7 @@ run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/kimi-claw/bridg
 dir = "/home/toxic/sovereign/tools/kimi-claw"
 mise = false
 retry = true
-ready_cmd = "pgrep -f 'bridge.ts --daemon --instance a' >/dev/null"
+ready_cmd = "p=$(pgrep -f '[b]ridge[.]ts --daemon --instance a' | head -1); [ -n \"$p\" ] && ls -l /proc/$p/fd 2>/dev/null | grep -q inotify"
 auto = ["start"]
 
 [daemons.kimiclaw-b]
@@ -713,7 +717,7 @@ run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/kimi-claw/bridg
 dir = "/home/toxic/sovereign/tools/kimi-claw"
 mise = false
 retry = true
-ready_cmd = "pgrep -f 'bridge.ts --daemon --instance b' >/dev/null"
+ready_cmd = "p=$(pgrep -f '[b]ridge[.]ts --daemon --instance b' | head -1); [ -n \"$p\" ] && ls -l /proc/$p/fd 2>/dev/null | grep -q inotify"
 auto = ["start"]
 
 # --- herd-deployer 2026-09-20: key-pool rotation sidecar for herd cloud peers.
