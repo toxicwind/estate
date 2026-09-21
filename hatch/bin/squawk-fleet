@@ -1,0 +1,174 @@
+#!/usr/bin/env python3
+"""squawk-fleet — cell CLI for ordered fleet delivery (dedup, gaps, acks, chats).
+
+Thin wrapper: every command runs hatch/bin/fleet/fleet.py ON yote via the
+yote-conn bridge and prints the result. The engine is not a daemon; state is
+files under the channel/scope dir on yote (survives reboot).
+
+Usage:
+  squawk-fleet send <channel> [--chat NAME] [--id MSGID] [--title T] <text>
+  squawk-fleet fetch <channel> [--chat NAME] --after N [--full] [--limit K]
+  squawk-fleet gaps <channel> [--chat NAME]
+  squawk-fleet ack <channel> --consumer NAME --seq N
+  squawk-fleet acks <channel> [--consumer NAME]
+  squawk-fleet lag <channel> [--chat NAME]
+  squawk-fleet chat-new <channel> --name NAME
+
+Env: SQUAWK_FLEET_PY overrides the yote-side engine path.
+"""
+import base64
+import json
+import os
+import shlex
+import subprocess
+import sys
+import uuid
+
+BRIDGE = "/home/hatch/workspace/bin/yote-conn"
+FLEET_PY = os.environ.get("SQUAWK_FLEET_PY",
+                          "/home/toxic/squawk-fleet/fleet.py")
+SQUAWK_ROOT = "/home/toxic/.shingle/squawk-root"
+
+
+def bridge(cmd, timeout=60):
+    r = subprocess.run([BRIDGE, "exec", cmd, "/home/toxic", str(timeout)],
+                       capture_output=True, text=True, timeout=timeout + 60)
+    if r.returncode != 0:
+        raise RuntimeError("bridge failed: %s" % (r.stderr or r.stdout))
+    return r.stdout
+
+
+def fleet(*args, timeout=60):
+    q = " ".join(shlex.quote(a) for a in args)
+    out = bridge("python3 %s --root %s %s"
+                 % (shlex.quote(FLEET_PY), shlex.quote(SQUAWK_ROOT), q),
+                 timeout=timeout)
+    return json.loads(out)
+
+
+def scope_of(channel, chat):
+    return "%s/chats/%s" % (channel, chat) if chat else channel
+
+
+def opt(args, name, default=None):
+    return args[args.index(name) + 1] if name in args else default
+
+
+def cmd_send(args):
+    if not args or args[0].startswith("--"):
+        sys.exit("usage: squawk-fleet send <channel> [--chat NAME] "
+                 "[--id MSGID] [--title T] <text>")
+    channel, rest = args[0], args[1:]
+    chat = opt(rest, "--chat")
+    msg_id = opt(rest, "--id") or ("cli-%s" % uuid.uuid4().hex)
+    title = opt(rest, "--title", "")
+    text = " ".join(a for a in rest
+                    if not a.startswith("--")
+                    and a not in (chat, msg_id, title))
+    b64 = base64.b64encode(text.encode()).decode()
+    res = fleet("publish", "--scope", scope_of(channel, chat),
+                "--id", msg_id, "--from", "ember",
+                "--title", title, "--text-b64", b64)
+    print(json.dumps(res, indent=2))
+
+
+def cmd_fetch(args):
+    channel = args[0]
+    rest = args[1:]
+    chat = opt(rest, "--chat")
+    after = int(opt(rest, "--after", 0))
+    limit = int(opt(rest, "--limit", 0))
+    argv = ["fetch", "--scope", scope_of(channel, chat),
+            "--after", str(after)]
+    if limit:
+        argv += ["--limit", str(limit)]
+    if "--full" in rest:
+        argv.append("--full")
+    res = fleet(*argv)
+    msgs = res["messages"]
+    if not msgs:
+        print("(no messages in %s after %d)" % (scope_of(channel, chat), after))
+        return
+    for m in msgs:
+        print("[%s] %s @ %s id=%s: %s" % (
+            m["seq"], m["from"], m["ts"], m.get("msg_id", ""),
+            m["title"] or "(no title)"))
+        print("  %s" % m["text"][:200])
+        print()
+
+
+def cmd_gaps(args):
+    channel = args[0]
+    chat = opt(args[1:], "--chat")
+    res = fleet("gaps", "--scope", scope_of(channel, chat))
+    missing = res["missing"]
+    print("scope %s: max_seq=%d missing=%s" % (
+        res["scope"], res["max_seq"],
+        missing if missing else "none"))
+
+
+def cmd_ack(args):
+    channel = args[0]
+    rest = args[1:]
+    consumer = opt(rest, "--consumer")
+    seq = opt(rest, "--seq")
+    chat = opt(rest, "--chat")
+    if not consumer or seq is None:
+        sys.exit("usage: squawk-fleet ack <channel> --consumer NAME --seq N")
+    res = fleet("ack", "--scope", scope_of(channel, chat),
+                "--consumer", consumer, "--seq", seq)
+    print(json.dumps(res))
+
+
+def cmd_acks(args):
+    channel = args[0]
+    rest = args[1:]
+    consumer = opt(rest, "--consumer")
+    argv = ["ack-get", "--scope", scope_of(channel, opt(rest, "--chat"))]
+    if consumer:
+        argv += ["--consumer", consumer]
+    res = fleet(*argv)
+    if not res:
+        print("(no consumers yet)")
+        return
+    for c, s in sorted(res.items()):
+        print("%-20s acked=%d" % (c, s))
+
+
+def cmd_lag(args):
+    channel = args[0]
+    chat = opt(args[1:], "--chat")
+    res = fleet("lag", "--scope", scope_of(channel, chat))
+    print("scope %s: max_seq=%d" % (scope_of(channel, chat), res["max_seq"]))
+    for c, d in sorted(res["consumers"].items()):
+        print("  %-20s acked=%-6d lag=%d" % (c, d["acked"], d["lag"]))
+
+
+def cmd_chat_new(args):
+    channel = args[0]
+    name = opt(args[1:], "--name")
+    if not name:
+        sys.exit("usage: squawk-fleet chat-new <channel> --name NAME")
+    res = fleet("chat-new", "--channel", channel, "--name", name)
+    print(json.dumps(res, indent=2))
+
+
+def main():
+    args = sys.argv[1:]
+    if not args or args[0] in ("-h", "--help"):
+        print(__doc__)
+        return 0
+    cmds = {"send": cmd_send, "fetch": cmd_fetch, "gaps": cmd_gaps,
+            "ack": cmd_ack, "acks": cmd_acks, "lag": cmd_lag,
+            "chat-new": cmd_chat_new}
+    if args[0] not in cmds:
+        sys.exit("unknown command: %s" % args[0])
+    try:
+        cmds[args[0]](args[1:])
+    except RuntimeError as ex:
+        sys.exit("error: %s" % ex)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
