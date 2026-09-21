@@ -2,12 +2,13 @@
 # kimi-code-setup — idempotent Kimi Code CLI + Web setup for yote.
 #
 # What it does:
-#   1. Ensures ~/.kimi-code/config.toml exists with the herd provider
+#   1. Ensures ~/.kimi-code/config.toml exists with the sovereign router
+#      (:25104, proven default — router-proof 2026-09-21), the herd provider
 #      (local router :25100, no key needed) and Moonshot direct provider
 #      (key read at RUNTIME from ~/.secrets — never written to the repo).
-#   2. Sets the default model to the verified working route.
+#   2. Sets the default model to the proven route (sovereign/free).
 #   3. Runs `kimi doctor` to validate the config.
-#   4. Probes the default model end-to-end through herd (:25100).
+#   4. Probes the default model end-to-end through the sovereign router (:25104).
 #   5. Ensures the kimi-code pitchfork daemon is running on :25126.
 #
 # Safe to re-run. Reads credentials at runtime; commits nothing secret.
@@ -18,6 +19,7 @@ CONFIG="$KIMI_DIR/config.toml"
 SECRETS="$HOME/.secrets"
 HERD_URL="http://127.0.0.1:25126"
 HERD_API="http://127.0.0.1:25100/v1"
+SOVEREIGN_API="http://127.0.0.1:25104/v1"  # proven route: router-proof 2026-09-21
 KIMI_CODE_DIR="/home/toxic/sovereign/tau/vendors/kimi-code/apps/kimi-code"
 NODE=/usr/bin/node
 
@@ -37,8 +39,8 @@ fi
 # --- Write config (key goes into the 0600 private config, never the repo) ------
 cat > "$CONFIG" <<EOF
 # Kimi Code CLI config — managed by kimi-code-setup (sovereign/bin).
-# Providers: herd router (local, key-free) + Moonshot direct (serves on top-up)
-default_model = "herd/qwen-flash"
+# Providers: sovereign router (proven default) + herd router (local, key-free) + Moonshot direct (serves on top-up)
+default_model = "sovereign/free"
 default_permission_mode = "manual"
 merge_all_available_skills = true
 
@@ -47,12 +49,24 @@ type = "openai"
 base_url = "$HERD_API"
 api_key = "herd-local"
 
+[providers.sovereign]
+type = "openai"
+base_url = "$SOVEREIGN_API"
+api_key = "none"
+
 [providers.kimi]
 type = "kimi"
 base_url = "https://api.moonshot.ai/v1"
 [providers.kimi.env]
 KIMI_API_KEY = "${MOONSHOT_KEY}"
 KIMI_BASE_URL = "https://api.moonshot.ai/v1"
+
+[models."sovereign/free"]
+provider = "sovereign"
+model = "sovereign/free"
+max_context_size = 131072
+capabilities = ["tool_use"]
+display_name = "Sovereign Router (proven: router-proof 2026-09-21)"
 
 [models."herd/qwen-flash"]
 provider = "herd"
@@ -96,14 +110,14 @@ log "wrote $CONFIG (0600)"
 "$NODE" "$KIMI_CODE_DIR/dist/main.mjs" doctor
 
 # --- Live probe of the default route -------------------------------------------
-log "probing default model herd/qwen-flash via herd :25100 ..."
-RESP=$(curl -s --max-time 120 "$HERD_API/chat/completions" \
+log "probing default model sovereign/free via sovereign router :25104 ..."
+RESP=$(curl -s --max-time 120 "$SOVEREIGN_API/chat/completions" \
   -H "Content-Type: application/json" \
-  -d '{"model":"beellama/qwen-flash-128k","messages":[{"role":"user","content":"Reply with exactly: KIMI_HERD_OK and nothing else. No thinking, just output the string."}],"max_tokens":300}')
-if echo "$RESP" | grep -q "KIMI_HERD_OK"; then
-  log "LIVE OK: default route returned KIMI_HERD_OK"
+  -d '{"model":"sovereign/free","messages":[{"role":"user","content":"Reply with exactly: SOVEREIGN_ROUTER_OK and nothing else. No thinking, just output the string."}],"max_tokens":300}')
+if echo "$RESP" | grep -q "SOVEREIGN_ROUTER_OK"; then
+  log "LIVE OK: default route returned SOVEREIGN_ROUTER_OK"
 else
-  log "LIVE FAIL: default route did not return KIMI_HERD_OK"
+  log "LIVE FAIL: default route did not return SOVEREIGN_ROUTER_OK"
   echo "$RESP" | head -c 500; echo
   exit 1
 fi
