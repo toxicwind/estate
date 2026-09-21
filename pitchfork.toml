@@ -15,7 +15,9 @@ env_file = "config/ports.env"
 [daemons.shep]
 health_http = { url = "http://127.0.0.1:25127/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25127
-run = "exec /home/toxic/sovereign/mesh/bin/shep serve --config=/home/toxic/sovereign/mesh/gateway/mcp_config.json --log-level=warn --log-to-file --listen=127.0.0.1:25127"
+# shep-serve.sh self-heals: bootstraps gitignored mcp_config.json from .dist when missing,
+# injects secrets from /home/toxic/.secrets (shep direct-run crash-loops without it).
+run = "exec /home/toxic/sovereign/mesh/bin/shep-serve.sh"
 dir = "/home/toxic/sovereign/mesh/gateway"
 mise = false
 retry = true
