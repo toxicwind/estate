@@ -450,6 +450,17 @@ class Bidder:
             self.say(self._pick("lost", t=tid, w=w))
 
     # ----- execution -----
+    @staticmethod
+    def _collect_artifacts(workdir, before):
+        """Winner-declared result artifacts, minus what the oracle's
+        confinement would reject. Excludes dotfiles/dotdirs (Super
+        Ralph litters .super-ralph/.smithers into the workdir) and
+        non-files, so a good run is never flagged for its runner's
+        litter."""
+        return sorted(
+            n for n in set(os.listdir(workdir)) - before
+            if not n.startswith(".") and (workdir / n).is_file())
+
     def _run_super_ralph(self, task, workdir, env, timeout_ms, t0):
         """Execute an agentic task via the real Super Ralph CLI.
 
@@ -486,6 +497,14 @@ class Bidder:
             rc = p.returncode
             dur = (time.time() - t0) * 1000
             out = (p.stdout or "")[-OUT_CAP:]
+            # Super Ralph's headless stdout may carry literal "\n"
+            # escapes instead of real newlines. Canonicalize before
+            # hash/sign/post so the acceptance parser (and humans) see
+            # real text. Only when no real newlines exist, to avoid
+            # corrupting mixed or legitimately-backslashed output.
+            if "\\n" in out and "\n" not in out:
+                out = (out.replace("\\r\\n", "\n").replace("\\n", "\n")
+                          .replace("\\t", "\t"))
             err = (p.stderr or "")[-ERR_CAP:]
             success = rc == 0 and bool((p.stdout or "").strip())
             if not success and not err.strip():
@@ -581,7 +600,7 @@ class Bidder:
         except Exception as e:  # noqa: BLE001
             dur = (time.time() - t0) * 1000
             err = f"{type(e).__name__}: {e}"[:500]
-        artifacts = sorted(set(os.listdir(workdir)) - before)
+        artifacts = self._collect_artifacts(workdir, before)
         now = time.time()
         result_hash = hashlib.sha256(out.encode()).hexdigest()
         dur_r = round(dur, 1)
