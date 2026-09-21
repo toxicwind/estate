@@ -7,7 +7,7 @@ dependencies — runs on system python3... except it reuses the command
 policy and audit log from awrawr_mcp, so it runs under the same venv.
 
 Security layers (same as the HTTPS bridge):
- 1. Tailscale funnel: TLS, outbound-only (route /exec-ws -> 127.0.0.1:25204).
+ 1. Tailscale funnel: TLS, outbound-only (route /exec-ws -> 127.0.0.1:8379).
  2. X-MCP-Token checked per handshake against ~/.awrawr_mcp_token (else 401).
     Token file is re-read on EVERY handshake so rotation needs no restart.
  3. Command policy + audit: imported from awrawr_mcp (single policy/audit impl).
@@ -63,7 +63,7 @@ from awrawr_mcp import _policy_check, _audit  # noqa: E402  (single policy/audit
 
 WS_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 WS_PATH = "/exec-ws"
-PORT = int(os.environ.get("WS_EXEC_PORT", "25204"))
+PORT = int(os.environ.get("WS_EXEC_PORT", "8379"))
 TOKEN_FILE = os.path.expanduser("~/.awrawr_mcp_token")
 MAX_OUT = 200000
 TIMEOUT_S = 90
