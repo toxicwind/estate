@@ -58,6 +58,85 @@ RALPH_BASE_URL = os.environ.get("RALPH_BASE_URL",
                                 "http://127.0.0.1:25100/v1")
 OUT_CAP = 8000
 ERR_CAP = 2000
+PARTIAL_CAP = 65536  # bound for the on-disk partial-output evidence file
+RALPH_POST_BUFFER_S = 30.0  # time to preserve evidence + post result
+                             # before the oracle's exec deadline
+
+
+# ---- timeout evidence preservation (2026-09-21: tern) ----
+# A super-ralph timeout used to discard everything: the TimeoutExpired
+# handler returned empty output, so finished nodes' work vanished and the
+# task settled "no-result / empty-output". Preserve bounded, redacted
+# partial evidence instead -- graceful degradation, never silent loss.
+def _redact_text(s):
+    """Redact credential-shaped values. Conservative: value replaced,
+    key name kept so the shape of the output stays readable."""
+    if not s:
+        return s
+    if isinstance(s, bytes):
+        # 2026-09-21 (tern): TimeoutExpired.stdout/stderr are bytes;
+        # decode before regex (was TypeError on tern-proof-005).
+        s = s.decode("utf-8", errors="replace")
+    pats = [
+        (r"(?i)(api[_-]?key|apikey)\s*[:=]\s*[\"']?([^\s\"\n]+)",
+         r"\1=[REDACTED]"),
+        (r"(?i)\b(bearer)\s+([A-Za-z0-9\-._~+/=]{8,})",
+         r"\1 [REDACTED]"),
+        (r"(?i)(token|secret|password|passwd|pwd)\s*[:=]\s*[\"']?"
+         r"([^\s\"\n]+)", r"\1=[REDACTED]"),
+        (r"\bsk-[A-Za-z0-9]{16,}", "sk-[REDACTED]"),
+        (r"\bhf_[A-Za-z0-9]{16,}", "hf-[REDACTED]"),
+    ]
+    for pat, sub in pats:
+        s = re.sub(pat, sub, s)
+    return s
+
+
+def _canon_ralph_text(s):
+    """Super Ralph's headless stdout may carry literal "\n" escapes
+    instead of real newlines. Canonicalize before hash/sign/post so the
+    acceptance parser (and humans) see real text. Only when no real
+    newlines exist, to avoid corrupting mixed or legitimately-backslashed
+    output."""
+    if "\\n" in s and "\n" not in s:
+        s = (s.replace("\\r\\n", "\n").replace("\\n", "\n")
+              .replace("\\t", "\t"))
+    return s
+
+
+def _summarize_ralph_nodes(workdir):
+    """Best-effort node-state summary from the super-ralph workflow DB.
+    Returns e.g. 'nodes: 12 finished / 2 pending / 1 in-progress (15
+    total)' or '' when the DB is absent/unreadable. Never raises."""
+    try:
+        import sqlite3
+        from pathlib import Path
+        db = None
+        for cand in Path(workdir).glob(".super-ralph/**/workflow.db"):
+            db = cand
+            break
+        if db is None:
+            return ""
+        con = sqlite3.connect("file:%s?mode=ro" % db, uri=True)
+        try:
+            rows = con.execute(
+                "SELECT state, COUNT(*) FROM _smithers_nodes GROUP BY state"
+            ).fetchall()
+        finally:
+            con.close()
+        if not rows:
+            return ""
+        states = {r[0]: r[1] for r in rows}
+        total = sum(states.values())
+        parts = ["%d %s" % (states[k], k)
+                 for k in ("finished", "in-progress", "pending") if k in states]
+        extra = [k for k in states if k not in ("finished", "in-progress",
+                                                "pending")]
+        parts += ["%d %s" % (states[k], k) for k in extra]
+        return "nodes at timeout: %s (%d total)" % (", ".join(parts), total)
+    except Exception:
+        return ""
+
 
 
 # ---- super-ralph model resolution (2026-09-21: ralph-pathfinder) ----
@@ -285,7 +364,7 @@ VOICES = {
             "\\U0001F528 **{t}** is mine. Time to earn it.",
         ],
         "done_ok": [
-            "\\U0001F528 **{t}** done in {d:.0f}s — verified clean. Another one for the wall. \\u2705",
+            "\\U0001F528 **{t}** done in {d:.0f}s — output posted, awaiting oracle verdict. \\u2705",
             "\\U0001F528 **{t}**: green across the board ({d:.0f}s). Told you.",
         ],
         "done_fail": [
@@ -328,7 +407,7 @@ VOICES = {
 GENERIC_VOICE = {
     "bid": ["{e} {n} bids {c:.2f} on **{t}** ({m} tag match)."],
     "win": ["{e} {n} won **{t}** at {c:.2f}. On it."],
-    "done_ok": ["{e} **{t}** done in {d:.0f}s — verified. \\u2705"],
+    "done_ok": ["{e} **{t}** done in {d:.0f}s — output posted, awaiting oracle verdict. \\u2705"],
     "done_fail": ["{e} **{t}** failed after {d:.0f}s — {e2}."],
     "lost": ["{e} {w} took **{t}**. Next one."],
     "welcome": ["{e} Welcome, {n}! — {n2}"],
@@ -528,6 +607,7 @@ class Bidder:
         prompt = task.get("payload", "") or ""
         (workdir / "prompt.md").write_text(prompt, encoding="utf-8")
         rc = None
+        timed_out = False
         if not RALPH_BIN.exists():
             dur = (time.time() - t0) * 1000
             return (False, "",
@@ -543,7 +623,14 @@ class Bidder:
         ralph_model = _resolve_ralph_model(RALPH_BASE_URL)
         renv["NIM_MODEL"] = ralph_model
         renv["ANTHROPIC_DEFAULT_OPUS_MODEL"] = ralph_model
-        ceiling = min(timeout_ms / 1000.0, RALPH_CAP_S)
+        # 2026-09-21 (tern): the oracle's exec deadline is
+        # assign_ts + timeout_ms/1000, but the bidder starts the
+        # subprocess after assignment. Without a buffer the oracle
+        # always wins the race and the TimeoutExpired handler (with
+        # partial-evidence preservation) can never fire. Leave room
+        # to preserve evidence and post the partial result.
+        ceiling = max(10.0, min(timeout_ms / 1000.0, RALPH_CAP_S)
+                    - RALPH_POST_BUFFER_S)
         self.say("%s invoking super-ralph on %s (ceiling %.0fs, model %s)."
                  % (self.name, tid, ceiling, ralph_model))
         try:
@@ -554,23 +641,48 @@ class Bidder:
                 timeout=ceiling, env=renv)
             rc = p.returncode
             dur = (time.time() - t0) * 1000
-            out = (p.stdout or "")[-OUT_CAP:]
-            # Super Ralph's headless stdout may carry literal "\n"
-            # escapes instead of real newlines. Canonicalize before
-            # hash/sign/post so the acceptance parser (and humans) see
-            # real text. Only when no real newlines exist, to avoid
-            # corrupting mixed or legitimately-backslashed output.
-            if "\\n" in out and "\n" not in out:
-                out = (out.replace("\\r\\n", "\n").replace("\\n", "\n")
-                          .replace("\\t", "\t"))
+            out = _canon_ralph_text((p.stdout or "")[-OUT_CAP:])
             err = (p.stderr or "")[-ERR_CAP:]
             success = rc == 0 and bool((p.stdout or "").strip())
             if not success and not err.strip():
                 err = "super-ralph exited %d with empty output" % rc
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired as te:
+            # 2026-09-21 (tern): NEVER discard partial evidence on timeout.
+            # TimeoutExpired carries the output captured before the kill;
+            # finished nodes' progress also lives in the workflow DB.
+            # Preserve it bounded + redacted instead of returning empty.
             dur = (time.time() - t0) * 1000
-            out, success = "", False
-            err = "super-ralph timeout after %.0fs" % ceiling
+            success = False
+            timed_out = True
+            part_out = _redact_text((te.stdout or "") or "")
+            part_err = _redact_text((te.stderr or "") or "")
+            node_summary = _summarize_ralph_nodes(workdir)
+            chunks = []
+            if node_summary:
+                chunks.append(node_summary)
+            if part_out.strip():
+                chunks.append("--- partial stdout (last %d bytes) ---\n%s"
+                              % (PARTIAL_CAP, part_out[-PARTIAL_CAP:]))
+            if part_err.strip():
+                chunks.append("--- partial stderr (truncated) ---\n%s"
+                              % part_err[-ERR_CAP:])
+            (workdir / "partial-output.txt").write_text(
+                "\n\n".join(chunks) if chunks
+                else "(no partial output captured before timeout)",
+                encoding="utf-8")
+            # The no-result path carries the partial summary -- clearly
+            # marked so nobody mistakes it for a completed result.
+            marker = ("[PARTIAL - super-ralph timed out after %.0fs; "
+                      "full evidence in partial-output.txt]\n" % ceiling)
+            head = marker + (node_summary + "\n" if node_summary else "")
+            # 2026-09-21 (tern): the PARTIAL marker must survive even
+            # with huge partial stdout -- reserve its headroom first.
+            body = _canon_ralph_text(part_out)[-(OUT_CAP - len(head)):]
+            out = head + body
+            err = ("super-ralph timeout after %.0fs; partial evidence "
+                   "preserved in partial-output.txt" % ceiling)
+            if part_err.strip():
+                err = (err + "\n" + part_err)[-ERR_CAP:]
         except Exception as e:  # noqa: BLE001
             dur = (time.time() - t0) * 1000
             out, success = "", False
@@ -578,9 +690,11 @@ class Bidder:
         # Invocation evidence for the audit trail (also a result artifact).
         (workdir / "ralph-invocation.txt").write_text(
             "bin: %s\nmodel: %s\nbase_url: %s\nceiling_s: %.0f\n"
-            "exit: %s\nduration_ms: %.1f\n"
+            "exit: %s\nduration_ms: %.1f\ntimed_out: %s\n"
+            "partial_evidence: %s\n"
             % (RALPH_BIN, ralph_model, RALPH_BASE_URL, ceiling,
-               rc, dur),
+               rc, dur, timed_out,
+               "partial-output.txt" if timed_out else "n/a"),
             encoding="utf-8")
         return success, out, err, dur
 

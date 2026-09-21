@@ -51,6 +51,8 @@ def main():
     ap.add_argument("--bid-window-ms", type=int, default=15000)
     ap.add_argument("--payload-file", required=True)
     ap.add_argument("--from", dest="frm", default="ember")
+    ap.add_argument("--exec-mode", default="python",
+                    help="execution mode: python (default) or super-ralph")
     args = ap.parse_args()
 
     ctl_hmac = load_control_hmac_key()
@@ -63,6 +65,7 @@ def main():
         "tags": [t.strip() for t in args.tags.split(",") if t.strip()],
         "bid_window_ms": args.bid_window_ms,
         "timeout_ms": args.timeout_ms,
+        "exec_mode": args.exec_mode,
         "posted_ts": time.time(),
     }
     ctl_ts = int(time.time())
