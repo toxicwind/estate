@@ -105,3 +105,12 @@ profiles:
     poll_interval: 5
     heartbeat: 60
     message_template: "[relay] {title}\n\n{body}"
+  taps:
+    identity: taps
+    key: taps
+    role: substrate-builder
+    description: >
+      Taps the beaver — NATS + JetStream fleet-chat substrate builder
+      (Ember's crew). Laying the message pipes: nats-server + JetStream,
+      dual-publish, Squawk as passive aggregator.
+    channels: [fleet]
