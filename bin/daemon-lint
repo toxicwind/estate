@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+# daemon-lint — pre-register gate for pitchfork daemons.
+#
+# Implements the P4 headless-TUI policy and the P5 lockfile check from
+# ~/workspace/supervision-paper-fixes/DESIGN.md:
+#   (1) 5s canary: run the candidate with stdin=/dev/null, setsid, no tty.
+#       REJECT if it exits 129 (SIGHUP death) or emits terminal-init escape
+#       sequences (bare TUI binary that grabbed for a terminal it can't have).
+#   (2) node/bun daemon dirs (dir containing package.json): REJECT if there is
+#       no committed lockfile (package-lock.json / bun.lock / bun.lockb).
+#   (3) WARN (not reject) if readiness is a bare pgrep — a process that exists
+#       but doesn't serve is not "running" (P6: readiness, not pgrep).
+#
+# Usage: daemon-lint <daemon-id>                      # reads [daemons.<id>] from pitchfork.toml
+#        daemon-lint --run 'cmd...' --dir DIR [--name N]   # lint a raw run line
+# Exit: 0 = pass (warnings on stderr allowed), 1 = reject with reason on stderr.
+#
+# INTEGRATION POINT for bin/pitchfork-restart (wired by ember-build-p2p5,
+# guarded by [ -x bin/daemon-lint ]):
+#   location: after the bridge-safety refusal block (the `fi` closing the
+#             awrawr-ws-exec check), before the `# --- helpers` line
+#   line:     if [ -x /home/toxic/sovereign/bin/daemon-lint ]; then /home/toxic/sovereign/bin/daemon-lint "$DAEMON" || exit 6; fi
+set -uo pipefail
+
+TOML=/home/toxic/sovereign/pitchfork.toml
+NAME=""; RUN=""; DIR=""; READY_CMD=""; READY_HTTP=""
+
+usage() { echo "usage: daemon-lint <daemon-id> | daemon-lint --run 'cmd' --dir DIR [--name N]" >&2; exit 2; }
+
+if [[ "${1:-}" == "--run" ]]; then
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --run)  RUN="$2"; shift 2;;
+      --dir)  DIR="$2"; shift 2;;
+      --name) NAME="$2"; shift 2;;
+      *) usage;;
+    esac
+  done
+  [[ -n "$RUN" && -n "$DIR" ]] || usage
+  [[ -n "$NAME" ]] || NAME="adhoc"
+else
+  [[ $# -eq 1 ]] || usage
+  SHORT="${1##*/}"
+  NAME="$1"
+  # Read the toml section with python (also validates TOML parses).
+  eval "$(python3 - "$TOML" "$SHORT" <<'PYEOF'
+import sys, tomllib
+toml, short = sys.argv[1], sys.argv[2]
+with open(toml, "rb") as f:
+    data = tomllib.load(f)
+sec = data.get("daemons", {}).get(short)
+if sec is None:
+    sys.exit(f"no [daemons.{short}] in {toml}")
+def sh(v):
+    return "'" + str(v).replace("'", "'\\''") + "'"
+for k in ("run", "dir", "ready_cmd", "ready_http"):
+    print(f"{k.upper()}={sh(sec.get(k, ''))}")
+PYEOF
+)" || exit 1
+  [[ -n "$RUN" && -n "$DIR" ]] || { echo "[daemon-lint] REJECT $NAME: toml section missing run= or dir=" >&2; exit 1; }
+fi
+
+fail() { echo "[daemon-lint] REJECT $NAME: $1" >&2; exit 1; }
+warn() { echo "[daemon-lint] WARN $NAME: $1" >&2; }
+
+# --- (3) readiness probe sanity (warn only) ---------------------------------
+if [[ -n "$READY_CMD" && "$READY_CMD" == *pgrep* ]]; then
+  warn "bare pgrep readiness probe — a process that exists but doesn't serve is not 'running'; prefer a TCP connect or HTTP probe (P6)"
+fi
+
+# --- (2) lockfile policy -----------------------------------------------------
+if [[ -f "$DIR/package.json" ]]; then
+  LOCK=""
+  for f in package-lock.json bun.lock bun.lockb; do
+    [[ -f "$DIR/$f" ]] && { LOCK="$f"; break; }
+  done
+  [[ -n "$LOCK" ]] || fail "node/bun dir $DIR has package.json but no lockfile (package-lock.json / bun.lock / bun.lockb) — commit one (P5)"
+  if git -C "$DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    git -C "$DIR" ls-files --error-unmatch "$LOCK" >/dev/null 2>&1 \
+      || fail "lockfile $DIR/$LOCK exists but is NOT committed — git add it (P5)"
+  fi
+fi
+
+# --- (1) 5s headless canary ---------------------------------------------------
+OUT="$(mktemp /tmp/daemon-lint-XXXXXX.out)"
+# setsid: new session, no controlling tty. stdin=/dev/null. CWD = daemon dir.
+# With setsid the child is its own process-group leader, so "-$CPID" kills the
+# whole tree afterwards.
+setsid env -C "$DIR" bash -c "$RUN" </dev/null >"$OUT" 2>&1 &
+CPID=$!
+sleep 5
+RC=124  # 124 = still alive at the 5s deadline (healthy for a daemon)
+if kill -0 "$CPID" 2>/dev/null; then
+  kill -KILL -- "-$CPID" 2>/dev/null || kill -KILL "$CPID" 2>/dev/null || true
+  wait "$CPID" 2>/dev/null || true
+else
+  wait "$CPID"; RC=$?
+fi
+
+[[ "$RC" -eq 129 ]] && { rm -f "$OUT"; fail "exited 129 (SIGHUP) headless — daemon dies without a terminal session; wrap with setsid or use a server mode (P2)"; }
+
+# Terminal-init escape sequences: alt-screen, hide-cursor, mouse tracking,
+# synchronized output — the fingerprints of a TUI grabbing a terminal.
+# (Plain colored log lines like ESC[31m do NOT match; only private-mode ?NNN.)
+if grep -aUP '\x1b\[\?(1049|25|1000|1002|1003|1006|2026)[hl]' "$OUT" >/dev/null 2>&1; then
+  MATCH="$(grep -aUPo '\x1b\[\?[0-9]+[hl]' "$OUT" | head -3 | tr '\n' ' ')"
+  rm -f "$OUT"
+  fail "emitted terminal-init escape sequences ($MATCH...) — bare TUI binary; register a headless/server mode instead (P4)"
+fi
+
+rm -f "$OUT"
+echo "[daemon-lint] PASS $NAME (canary rc=$RC, no terminal-init escapes, lockfile ok)"
+exit 0
