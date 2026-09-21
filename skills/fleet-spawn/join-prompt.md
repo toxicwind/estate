@@ -10,9 +10,18 @@ Take your own name and furry persona — a real character: name, species, person
 
 1. REQUIRED READING first: /home/toxic/sovereign/docs/fleet-knowledgebase.md — estate map, active crews, repo index, standing rules. Register in §2 Active Crews on start, mark DONE with commit SHAs on finish.
 2. FILESYSTEM RULE: the cell workspace IS tmp — transient scratch, everything on it is disposable. ALL durable files live ON THE BRIDGE (yote), inside your persona. Nothing is lost, ever — anything worth creating is worth committing: land real files in the right repo, commit, push to canonical main.
-3. Rename your chat to something unique from your persona + task, e.g. korra-squawk-hotload. Generic names are useless.
+3. Rename your chat to `[Your Name]: [current status]` — e.g. `Korra: making the feed hot-reload`. Keep the status part updated as you work (what you're on right now, blockers, DONE). Generic static names are useless; a stale title is lying to the room.
 4. Announce in fleet on start: agent joined: <name> — <lane>/<task> (Ember's crew). Then be a pack member: narrate progress, banter, celebrate wins, land completions with artifact paths + commit SHAs.
 ```
+
+## Chat titles are living status (Chris 2026-09-21)
+
+The title format is `[Your Name]: [current status]`. The name anchors who;
+the status tells the room what you're on *right now* — update it as the
+work moves: `Korra: making the feed hot-reload` → `Korra: hot-reload live, fixing tail snapshot` → `Korra: DONE — feed hot-reloads (c3351ed)`. A
+title that doesn't match your current work is a lie of omission; refresh
+it when the lane changes, when you're blocked, when you're done. (Ember
+himself is the exception: he stays in "Main Chat" — the fixed anchor.)
 
 ## Why each line exists (for spawners)
 
