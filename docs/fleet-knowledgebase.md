@@ -46,7 +46,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | 25146 | WhatsApp webhook backend |
 | 4200 (127.0.0.1) | OpenFang kernel daemon |
 | 8377 / 8378 / 8379 | /mcp, /gemini-mcp, /exec-ws backends (via tailscale Funnel on 443) |
-| 9090 | Cockpit web console (`https://awrawr-pc:9090/`) |
+| 25212 | Cockpit web console (`https://awrawr-pc:25212/`, moved from :9090 via systemd drop-in 2026-09-20) |
 
 **Never disturb squawk ports 25147/25135. Never kill+start a bridge daemon in a single remote command** (the kill orphans the rest and the lane dies — separate kill and start with a port-liveness check between).
 
