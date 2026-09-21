@@ -17,9 +17,11 @@ urllib3.disable_warnings()
 
 @dataclass
 class HalConfig:
+    # Model selection is owned by router/service config (COYOTE_MODEL env,
+    # set in stack/services/coyote.sh). Tooling never hardcodes model IDs.
     base_url: str = "http://localhost:8080"
     api_key: str = "sk-hal-local"
-    model: str = "kimi-auto"
+    model: str = field(default_factory=lambda: os.getenv("COYOTE_MODEL", "gpt-oss"))
     max_rounds: int = 50
     limit_step: int = 10
     tick_interval: float = 2.5
