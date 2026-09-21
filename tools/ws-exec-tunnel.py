@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """tunnel_asyncio.py (candidate A): stdlib-asyncio TCP forwarder.
 
-Listens on 127.0.0.1:25379, forwards every byte both ways to 127.0.0.1:8379.
+Listens on 127.0.0.1:25379, forwards every byte both ways to 127.0.0.1:25204.
 Fully transparent to the WS protocol (handshake + frames pass through untouched).
 """
 import asyncio
@@ -10,7 +10,7 @@ import sys
 
 LISTEN_PORT = int(os.environ.get("TUNNEL_LISTEN_PORT", "25379"))
 TARGET_HOST = os.environ.get("TUNNEL_TARGET_HOST", "127.0.0.1")
-TARGET_PORT = int(os.environ.get("TUNNEL_TARGET_PORT", "8379"))
+TARGET_PORT = int(os.environ.get("TUNNEL_TARGET_PORT", "25204"))
 
 
 async def pipe(reader, writer):

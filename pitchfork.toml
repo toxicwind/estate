@@ -156,7 +156,7 @@ auto = ["start"]
 
 [daemons.tau-code]
 port = 25145
-run = "exec bun run src/server.ts --port 25145"
+run = "exec bun run src/server.ts --port 25145" # 25145 == $TAU_CODE_PORT (SSOT); literal: ${} not expanded in run lines
 dir = "/home/toxic/projects/sovereign-projects/tau/engine/packages/metaharness"
 mise = true
 retry = true
@@ -167,7 +167,7 @@ auto = ["start"]
 
 [daemons.kimi-code]
 port = 25126
-run = "exec /home/toxic/sovereign/bin/claim-port 25126 /home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126 --no-port-walk"
+run = "exec /home/toxic/sovereign/bin/claim-port 25126 /home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126 --no-port-walk" # 25126 == $KIMI_CODE_PORT (SSOT); literal: ${} not expanded in run lines
 dir = "/home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code"
 mise = true
 retry = true
@@ -195,7 +195,7 @@ ready_http = "http://127.0.0.1:25133/"
 auto = ["start"]
 
 [daemons.redis]
-run = "exec valkey-server --port 25199 --bind 0.0.0.0 --protected-mode no --save '' --appendonly no"
+run = "exec valkey-server --port 25199 --bind 0.0.0.0 --protected-mode no --save '' --appendonly no" # 25199 == $REDIS_PORT (SSOT); literal: ${} not expanded in run lines
 dir = "."
 mise = false
 retry = true
@@ -438,7 +438,7 @@ env = { PORT = "25197", HOST = "127.0.0.1", BOUNDLESS_PORT = "25197" }
 auto = ["start"]
 # awrawr-ws-exec websocket bridge (2026-09-14): persistent stdlib-asyncio WS
 # exec server; handshake/framing borrowed from squawk-ws. Same token, command
-# policy and audit as the HTTPS bridge (awrawr_mcp.py). Funnel: /exec-ws -> :8379.
+# policy and audit as the HTTPS bridge (awrawr_mcp.py). Funnel: /exec-ws -> :25204.
 [daemons.awrawr-ws-exec]
 health_port = { port = 25204, interval = "30s", timeout = "5s", retries = 3 }
 ready_cmd = "ss -ltn 'sport = :25204' | grep -q LISTEN"
@@ -526,7 +526,7 @@ auto = ["start"]
 [daemons.ws-exec-tunnel]
 ready_cmd = "ss -ltn 'sport = :25379' | grep -q LISTEN"
 port = 25379
-env = { TUNNEL_TARGET_PORT = "25204" }
+env = { TUNNEL_LISTEN_PORT = "25379", TUNNEL_TARGET_PORT = "25204" }
 run = "exec /usr/bin/python3 /home/toxic/sovereign/tools/ws-exec-tunnel.py" # 2026-09-20: path was /home/toxic/ws-exec-tunnel.py (missing)
 dir = "/home/toxic"
 mise = false
