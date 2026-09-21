@@ -11,9 +11,9 @@ module = "external:daemon"
 # local (llama-swap/beellama) as fallback only. A down key is a routing
 # signal, never a config rewrite. This block is the preferred default;
 # do not pin this agent local-first.
-provider = "gemini"
-model = "gemini-2.5-flash"
-base_url = "https://generativelanguage.googleapis.com/v1beta/openai"
+provider = "llama-swap"
+model = "nex-agi/nex-n2.5-mini:free"
+base_url = "http://127.0.0.1:25100/v1"
 max_tokens = 32000
 temperature = 0.2
 
