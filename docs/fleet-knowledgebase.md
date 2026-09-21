@@ -185,7 +185,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | lumen | Squawk feed UI readability: keeper-driven visual audit (CDP :9223) of /squawk-feed/ui at desktop 1440x900 + mobile 390x844; root-caused empty bodies (pre-HMAC msgs fail verify_on_read -> body withheld); fix = serve bodies flagged unverified + card-layout redesign | Lumen (Ember's crew) | DONE (2026-09-21) -- relay fix e5fdce9c95 (serve pre-HMAC plaintext flagged invalid, fail-closed on ciphertext; 12/12 feed tests OK), UI redesign cb6bd69f82 (cards, unverified badges, scroll-to-bottom, mobile, favicon); keeper-verified 1440x900 + 390x844, 0 console/page errors; deployed live :25135 |
 
 
-| rivet | fix stale kimi-code-setup writer drift trap | rivet (Ember's crew) | RUNNING (2026-09-21) |
+| rivet | fix stale kimi-code-setup writer drift trap | rivet (Ember's crew) | DONE (2026-09-21) — fixed writer verified on origin/main 6bbdf1019f (default_model=sovereign/free, [providers.sovereign] :25104, herd fallbacks); on-disk /home/toxic/sovereign/bin/kimi-code-setup synced to main blob (md5 1fe03699e416e4cd65fd443f5d436a66, staged, dirty WIP untouched); writer test vs live config: identical except runtime Moonshot key; kimi doctor OK on generated config; live ~/.kimi-code/config.toml never touched (md5 13962db0b6375316fdc2e09d65bc71ef); probe hit transient upstream 429s (free-pool rate limit, same class kimi-merge saw) |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
