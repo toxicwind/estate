@@ -47,6 +47,7 @@
 
 <div id="gate">
   <p>Feed token — same bearer token as the API. Kept in this tab's memory only, never written to disk.</p>
+  <p class="hint">Opening your magic link tunes in automatically — no paste needed.</p>
   <input id="token" type="password" placeholder="paste feed token" autocomplete="off">
   <button id="go">tune in</button>
 </div>
@@ -59,6 +60,15 @@
 <script>
 const $ = id => document.getElementById(id);
 let token = sessionStorage.getItem('squawk-token') || '';
+// magic link: ?token=... auto-tunes, no paste needed (scrubbed from the bar after)
+try {
+  var q = new URLSearchParams(location.search).get('token');
+  if (q && !token) {
+    token = q.trim();
+    sessionStorage.setItem('squawk-token', token);
+    history.replaceState(null, '', location.pathname + location.hash);
+  }
+} catch (e) {}
 let since = 0, running = false, failures = 0;
 
 function auth() { return { 'Authorization': 'Bearer ' + token }; }
