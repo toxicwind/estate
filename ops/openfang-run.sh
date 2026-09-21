@@ -8,6 +8,10 @@ set -a
 . /home/toxic/.secrets
 set +a
 export HOME=/home/toxic
+# WS2 (ferrous-warden 2026-09-20): SQLite startup integrity — self-heals
+# ~/.openfang/openfang.db from ~/.openfang/backups, or refuses boot on
+# unrecoverable corruption (a green health over a 0-byte DB is silent data loss).
+/home/toxic/sovereign/ops/openfang-sqlite-check.sh || exit 1
 KERNEL=/home/toxic/projects/rig-work/target/debug/openfang
 CFG=${OPENFANG_CONFIG:-/home/toxic/sovereign/config/openfang-25196.toml}
 CLI=/home/toxic/.local/bin/openfang
