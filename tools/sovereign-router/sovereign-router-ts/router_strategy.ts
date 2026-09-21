@@ -297,9 +297,21 @@ export async function callOne(
 }
 
 export function pickWeighted(n = MAX_PARALLEL): [string, string][] {
-  const scored: [number, string, string][] = [];
+  // Dead-lane exclusion (503-forensics 2026-09-21): providers whose recent
+  // attempts all failed sit out of the race — they never win, they only
+  // burn the connect budget and steal slots from serving lanes. Degraded
+  // fallback below keeps the "try something rather than 503" guarantee.
+  const live: string[] = [];
+  const dead: string[] = [];
   for (const p of Object.keys(PROVIDERS)) {
     if (!keyOk(p) || !state.circuitOk(p)) continue;
+    (state.laneDead(p) ? dead : live).push(p);
+  }
+  // Degraded mode: every lane is dead — race the dead ones anyway (a lane
+  // that recovered mid-window can still win) rather than serve 503.
+  const pool = live.length ? live : dead;
+  const scored: [number, string, string][] = [];
+  for (const p of pool) {
     const sc = state.candidateScore(p) + Math.random() * 10;
     const mid = firstModelFor(p);
     if (mid) scored.push([sc, p, mid]);
@@ -413,7 +425,7 @@ export async function routeSticky(
   const model = String(body.model || "auto");
   if (isRoutableModelId(model)) return routeAstRace(body, session);
   const [p, m] = state.stickyGet(session);
-  if (p && keyOk(p) && state.circuitOk(p)) {
+  if (p && keyOk(p) && state.circuitOk(p) && !state.laneDead(p)) {
     const r = await callOne(p, m || model, body);
     if (substantive(r)) return r;
     if (r.ok) state.recordEmpty(p, m || model);
@@ -505,7 +517,7 @@ export async function routeHybrid(
     return routeCircuitChain(body, session);
   }
   const [p, m] = state.stickyGet(session);
-  if (p && keyOk(p) && state.circuitOk(p)) {
+  if (p && keyOk(p) && state.circuitOk(p) && !state.laneDead(p)) {
     const r = await callOne(p, m || model, body);
     if (substantive(r)) return r;
     if (r.ok) state.recordEmpty(p, m || model);
@@ -530,7 +542,15 @@ export async function hedgedChain(
   session: string,
   stratName: string,
 ): Promise<RouteResult> {
-  const live = cands.filter(([p]) => keyOk(p) && state.circuitOk(p));
+  // Dead-lane exclusion (503-forensics 2026-09-21): lanes whose recent
+  // attempts all failed sit out of the chain. Degraded fallback: if that
+  // empties the set, try every circuitOk lane anyway rather than 503.
+  let live = cands.filter(
+    ([p]) => keyOk(p) && state.circuitOk(p) && !state.laneDead(p),
+  );
+  if (!live.length) {
+    live = cands.filter(([p]) => keyOk(p) && state.circuitOk(p));
+  }
   if (!live.length) return { ok: false, status: 503, err: stratName + "_exhausted" };
   // A provider that just burned a full timeout must not lead the next chain
   // and burn another: sort healthy lanes first (stable — explicit preference
@@ -655,18 +675,30 @@ export const ROUTERS: Record<
 // llama-swap roles are always zero-cost and always join.
 export function freeCandidates(): [string, string][] {
   const out: [string, string][] = [];
+  const deadOut: [string, string][] = [];
   for (const [name] of Object.entries(PROVIDERS)) {
     if (!keyOk(name) || !state.circuitOk(name)) continue;
+    // Dead-lane exclusion (503-forensics 2026-09-21): same rule as
+    // pickWeighted — dead lanes sit out unless nothing else is alive.
+    const bucket = state.laneDead(name) ? deadOut : out;
     for (const mid of catalogModelsFor(name)) {
       // Flap-benched models sit out until their empty-strikes decay.
       if (state.flapBanned(name, mid)) continue;
-      if (modelFree(name, mid)) out.push([name, mid]);
+      if (modelFree(name, mid)) bucket.push([name, mid]);
     }
   }
-  if (keyOk("llama-swap")) {
+  if (keyOk("llama-swap") && !state.laneDead("llama-swap")) {
     out.push(["llama-swap", LOCAL_ROLES.fast]);
     out.push(["llama-swap", LOCAL_ROLES.quality]);
     out.push(["llama-swap", LOCAL_ROLES.longctx]);
+  }
+  // Degraded mode: every lane is dead — race the dead pool anyway rather
+  // than serve 503.
+  const pool = out.length ? out : deadOut;
+  if (!pool.length && keyOk("llama-swap")) {
+    pool.push(["llama-swap", LOCAL_ROLES.fast]);
+    pool.push(["llama-swap", LOCAL_ROLES.quality]);
+    pool.push(["llama-swap", LOCAL_ROLES.longctx]);
   }
   // Ling-first default (Chris 2026-09-17): Ling leads the free pool so the
   // `free` race prefers it. A flap-banned Ling still sits out above; the
@@ -676,14 +708,14 @@ export function freeCandidates(): [string, string][] {
     "openrouter",
     "inclusionai/ling-3.0-flash-fin:free",
   ];
-  const lingIdx = out.findIndex(
+  const lingIdx = pool.findIndex(
     ([p, m]) => p === LING_DEFAULT[0] && m === LING_DEFAULT[1],
   );
   if (lingIdx > 0) {
-    out.splice(lingIdx, 1);
-    out.unshift(LING_DEFAULT);
+    pool.splice(lingIdx, 1);
+    pool.unshift(LING_DEFAULT);
   }
-  return out;
+  return pool;
 }
 
 // routeFree: maximal free-provider strategy. Races the free+local candidate
