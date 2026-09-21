@@ -646,6 +646,24 @@ models:
 # DEAD/HANGING (do not route): flock-direct (25s hangs, disabled above).
 # Google Antigravity is the comparison baseline for agent/model quality when usable.
 # =============================================================================
+# Local size-tier aliases (committed 2026-09-21 modelmap-r2): these were
+# worktree-only WIP and were wiped by an unrelated config rewrite at
+# 2026-09-21 06:26 MDT; restored here durably. Each entry is a full cmd
+# model (distinct ctx/reasoning params per tier) -- the estate's
+# sovereign-swap fork serves cmd blocks under top-level `aliases:`.
+# Model files come from the macros: section (MODEL_DIR, QWEN35_9B_FLASH_IQ4XS,
+# GEMMA_12B_BASE_Q4KM); both gguf files verified on disk 2026-09-21.
+# Router config owns selection: retarget by editing the --model macros.
+aliases:
+  small:
+    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_ON} ${SPEC_NONE}
+  medium:
+    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_BASE_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_ON} ${SPEC_NONE}
+  code:
+    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_BASE_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_ON} ${SPEC_NONE}
+  long:
+    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_256K} ${KV_Q8} ${REASONING_ON} ${SPEC_NONE}
+
 peers:
   # ROUTING DOCTRINE (Chris, 2026-09-20) refined: RANKING > FREE-ON-PROVIDER > PAY.
   # See the canonical doctrine block above 'peers:'. (Supersedes the 2026-09-20
