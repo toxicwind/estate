@@ -1,11 +1,17 @@
 # agent-viewer-gate
 
-Token-gated front door for the noVNC agent viewer (`:6080`, loopback-only, interactive).
+RETIRED 2026-09-21 (Forge) -- Chris: token gate was not wanted; the viewer is
+tailscale/network/agent access only. `/agent-browser` is now served
+tailnet-only via `tailscale serve` on `:8443`, straight from websockify
+`:6080` (see `projects/yote/ops/funnel-map.sh` SERVE_MAP). This script is
+kept as reference only; it is no longer a pitchfork daemon and `:6081`
+no longer listens.
 
-- Listens `127.0.0.1:6081`, requires `?token=` (`/home/toxic/.browserless/viewer-token`, 0600) or the `aview` cookie,
-  then proxies HTTP + websocket upgrades to websockify on `:6080`.
-- Funnel mounts this at `/agent-browser` (see `projects/yote/ops/funnel-map.sh`).
-- `/healthz` → 200, no token (pitchfork `ready_cmd`).
-- The VNC password itself is never handled here — noVNC still prompts for it.
+What it was: token-gated front door for the noVNC agent viewer (`:6080`,
+loopback-only, interactive). Listened on `127.0.0.1:6081`, required
+`?token=` (or the `aview` cookie), then proxied HTTP + websocket upgrades
+to `:6080`. Funnel mounted it at `/agent-browser`.
 
-Full lane docs: `../keeper/README.md` → "Agent display + interactive viewer".
+The VNC password itself was never handled here -- noVNC still prompts for it.
+
+Full lane docs: `../keeper/README.md` -> "Agent display + interactive viewer".
