@@ -78,6 +78,7 @@
 <header>
   <h1>SQUAWK</h1>
   <input id="channel" value="fleet" size="10" title="channel" aria-label="channel">
+  <button id="src" title="live source: click to switch poll/nats" aria-label="live source">poll</button>
   <div class="spacer"></div>
   <span id="conn" aria-hidden="true">●</span>
 </header>
@@ -111,6 +112,13 @@ try {
   }
 } catch (e) {}
 let since = 0, running = false, failures = 0, booted = false, gen = 0;
+// live source: 'poll' (long-poll, default) or 'nats' (JetStream mirror over websocket).
+// ?src=nats selects NATS; the header button toggles at runtime.
+let srcMode = 'poll';
+try { const qsrc = new URLSearchParams(location.search).get('src');
+      if (qsrc === 'nats' || qsrc === 'poll') srcMode = qsrc; } catch (e) {}
+function paintSrc() { const b = $('src'); if (b) { b.textContent = srcMode;
+  b.title = 'live source: ' + srcMode + ' (click to switch)'; } }
 const TAIL = 200;       // bounded recent snapshot for initial load
 const BATCH_CAP = 50;   // server MAX_MESSAGES: a full batch means backlog
 
@@ -226,6 +234,71 @@ $('msg').addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
 });
 
+// --- NATS live source ------------------------------------------------
+// Minimal NATS-over-WebSocket client: INFO/CONNECT/SUB/MSG/PING/PONG only.
+// History still comes from the bounded file snapshot in boot(); this socket
+// carries live messages published by the nats-tail daemon. Any failure
+// falls back to the long-poll loop -- the file feed stays the fallback.
+let natsWs = null;
+function natsUrl() {
+  return (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/nats-ws';
+}
+function natsLive(myGen) {
+  if (myGen !== gen || !running) return;
+  setState('loading');
+  let ws;
+  try { ws = new WebSocket(natsUrl()); } catch (e) { return pollFallback(myGen, 'ws blocked'); }
+  natsWs = ws;
+  let buf = '', fails = 0;
+  const sid = 'ui-' + myGen;
+  const send = t => { if (ws.readyState === 1) ws.send(t + '\r\n'); };
+  const dead = why => {
+    try { ws.close(); } catch (e) {}
+    if (myGen !== gen || !running) return;
+    if (++fails > 3) return pollFallback(myGen, why);
+    line('nats hiccup — retrying…', 'sys');
+    setTimeout(() => natsLive(myGen), Math.min(5000, 500 * fails));
+  };
+  ws.onmessage = ev => {
+    buf += ev.data;
+    let i;
+    while ((i = buf.indexOf('\r\n')) >= 0) {
+      const ln = buf.slice(0, i); buf = buf.slice(i + 2);
+      if (ln.startsWith('INFO')) {
+        send('CONNECT {"verbose":false,"pedantic":false,"tls_required":false,'
+             + '"auth_token":' + JSON.stringify(token)
+             + ',"protocol":1,"echo":true,"name":"squawk-ui"}');
+        send('SUB ' + chan() + '.messages ' + sid);
+        setState('live', ' · nats');
+        fails = 0;
+      } else if (ln === 'PING') { send('PONG'); }
+      else if (ln.startsWith('MSG ')) {
+        // payload is one CRLF-terminated line: json.dumps never emits raw
+        // CR/LF inside a JSON string, so line framing is exact here.
+        const j = buf.indexOf('\r\n');
+        if (j < 0) { buf = ln + '\r\n' + buf; break; } // payload still in flight
+        const payload = buf.slice(0, j); buf = buf.slice(j + 2);
+        try {
+          const m = JSON.parse(payload);
+          if ((m.seq || 0) > since) {
+            render(m); since = m.seq;
+            $('seq').textContent = 'seq ' + since;
+          }
+        } catch (e) { /* malformed envelope: skip */ }
+      } else if (ln.startsWith('-ERR')) { line('nats: ' + esc(ln), 'sys'); }
+    }
+  };
+  ws.onerror = () => dead('ws error');
+  ws.onclose = () => { if (natsWs === ws) dead('ws closed'); };
+};
+function pollFallback(myGen, why) {
+  natsWs = null;
+  srcMode = 'poll'; paintSrc();
+  line('nats unavailable (' + esc(why || '?') + ') — back on long-poll, nothing lost', 'sys');
+  setState('reconnecting');
+  poll(myGen);
+}
+
 async function poll(myGen) {
   if (!running || myGen !== gen) return;
   const t0 = performance.now();
@@ -259,6 +332,7 @@ async function poll(myGen) {
 // us at the live cursor immediately -- no full-history drain, no reload.
 async function boot() {
   const myGen = ++gen;
+  if (natsWs) { try { natsWs.close(); } catch (e) {} natsWs = null; }
   setState('loading');
   if (!booted) line('tuned in — pulling the latest traffic…', 'sys');
   try {
@@ -284,7 +358,7 @@ async function boot() {
     if (running && myGen === gen) return boot();
     return;
   }
-  poll(myGen);
+  if (srcMode === 'nats') natsLive(myGen); else poll(myGen);
 }
 
 $('go').onclick = () => {
@@ -296,6 +370,16 @@ $('go').onclick = () => {
   running = true;
   boot();
 };
+$('src').onclick = () => {
+  srcMode = srcMode === 'nats' ? 'poll' : 'nats';
+  paintSrc();
+  if (!running || !booted) return;
+  $('log').innerHTML = '';
+  since = 0; failures = 0;
+  line(`live source → ${srcMode} — pulling the latest traffic…`, 'sys');
+  boot();
+};
+paintSrc();
 // switching channels re-tunes live: clear, snapshot, resume -- no reload
 $('channel').onchange = () => {
   if (!running || !booted) return;

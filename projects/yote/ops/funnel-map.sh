@@ -52,6 +52,7 @@ MAP=(
 "/exec-ws		http://127.0.0.1:25204/exec-ws"
 "/mesh-mcp		http://127.0.0.1:25127/mcp"
 "/squawk-ws		http://127.0.0.1:25147/squawk-ws"
+"/nats-ws		http://127.0.0.1:4223"
 "/gemini-mcp		http://127.0.0.1:25202/mcp"
 "/mesh-health		http://127.0.0.1:25127/health"
 "/mesh-metrics		http://127.0.0.1:25127/metrics"
