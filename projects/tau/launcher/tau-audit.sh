@@ -105,17 +105,16 @@ if [ -n "$BIN" ] && [[ "$BIN" == *sovereign* ]]; then
     if [ "$behind" = "0" ]; then ok "engine tree on $br, at origin/main"
     else info "engine tree on $br, $behind behind origin/main (shared tree -- informational, never touch)"; fi
     # drift vs canonical main: every file dirty-vs-HEAD is judged on content.
-    # untracked: drift only if absent from main or content differs from main.
+    # untracked: drift only if absent from main (on-main = detritus/synced copy).
     # tracked: drift only on real line changes (mode-only noise ignored).
     drift=0; drift_list=""
     while IFS= read -r line; do
       st="${line:0:2}"; f="${line:3}"; f="${f##* -> }"
       [ -z "$f" ] && continue
       if [ "$st" = "??" ]; then
-        if git -C "$SOV" cat-file -e "origin/main:$f" 2>/dev/null; then
-          git -C "$SOV" show "origin/main:$f" 2>/dev/null | cmp -s - "$SOV/$f" \
-            || { drift=$((drift+1)); drift_list="$drift_list $f"; }
-        else
+        # Untracked but present on main (any content) = branch-lag detritus or a
+        # synced copy -- never drift. Only a file ABSENT from main is new local WIP.
+        if ! git -C "$SOV" cat-file -e "origin/main:$f" 2>/dev/null; then
           drift=$((drift+1)); drift_list="$drift_list $f"
         fi
       elif git -C "$SOV" cat-file -e "origin/main:$f" 2>/dev/null; then
