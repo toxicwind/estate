@@ -89,10 +89,10 @@ export const PERIPHERAL_SERVICES: ServiceDef[] = [
     mise: false,
   },
   {
-    id: "itvx-browserless",
-    name: "itvx-browserless",
+    id: "browserless",
+    name: "browserless",
     portKey: "BROWSERLESS_PORT",
-    run: "exec /home/toxic/.browserless/run.sh",
+    run: "exec /home/toxic/sovereign/projects/mesh/browserless/server/run.sh",
     dir: ".",
     readyCmd: "ss -ltn 'sport = :25130' | grep -q LISTEN",
     group: "aux",

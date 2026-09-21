@@ -1,7 +1,7 @@
 {
   "name": "browserless-mcp",
   "version": "1.1.0",
-  "description": "Model Context Protocol server for Browserless.io browser automation (sovereign mesh edition: itvx native-launcher deployment on 127.0.0.1:25130)",
+  "description": "Model Context Protocol server for Browserless.io browser automation (sovereign mesh edition: native-launcher deployment on 127.0.0.1:25130)",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {

@@ -14,7 +14,7 @@ mesh/
 │   ├── sovereign-ast-router/   # TS router variant (v3)
 │   └── free_zed_gateway/       # free-LLM gateway concept
 ├── flock-pkg/                  # flock extraction snapshot (frozen, was ast-matrix/)
-├── browserless/                # browserless.io MCP server + itvx native launcher (:25130)
+├── browserless/                # browserless.io MCP server + native launcher (:25130)
 ├── ui-svelte/                  # Svelte dashboard for the router
 ├── config.yml                  # unified mesh config — model roles, port mappings
 └── research/ data/              # provider discovery scripts, model catalog dumps
