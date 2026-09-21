@@ -18,7 +18,7 @@ cache_context = false
 
 [model]
 provider = "llama-swap"
-model = "toolcall-local/qwen3.5-9b-tool"
+model = "qwen3.5-9b-tool"
 max_tokens = 4096
 temperature = 0.7
 system_prompt = "You are a helpful AI agent."

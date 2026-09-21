@@ -6,7 +6,7 @@ module = "builtin:chat"
 
 [model]
 provider = "llama-swap"
-model = "flock-direct/nvidia/nemotron-3.5-lightning-30b-a3b"
+model = "nex-agi/nex-n2.5-mini:free"
 base_url = "http://127.0.0.1:25100/v1"
 max_tokens = 32000
 temperature = 0.3
