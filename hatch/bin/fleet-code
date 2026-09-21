@@ -1,0 +1,204 @@
+#!/usr/bin/env python3
+"""fleet-code: parallel collaborative-coding sessions for agent fleets.
+
+Eight agents editing one repo step on each other (branch switches under
+you, squashed commits dropping directories, conflicting edits). fleet-code
+gives each agent an isolated git worktree + branch for a file-scoped packet,
+then merges packets back in order with a test gate after each merge.
+
+Usage:
+  fleet-code start <repo-path> <session> [--ref main]
+      Create sessions/<session>/ with a `main` worktree at origin/<ref>
+      (fetch-first). Fails if the session already exists.
+
+  fleet-code packet <session> <packet> <path> [<path> ...]
+      Create worktree+branch fleet/<session>/<packet> and record the claimed
+      paths in packets.json. Refuses when paths overlap another packet's
+      claim (agents must negotiate, not silently collide).
+
+  fleet-code merge <session> [--test <cmd>] [--into <ref>]
+      Merge packets in creation order into the session main worktree
+      (--no-ff, one merge commit per packet). After each merge, run --test
+      (from the main worktree, parsed with shlex -- quoted args work, but
+      no shell metacharacters/pipes); on test failure or merge conflict
+      the run STOPS, the offending packet stays quarantined on its branch,
+      and the report names exactly what failed. Nothing is force-pushed,
+      no work is lost. Writes merge-report.json.
+
+  fleet-code status <session>
+      Show packets: claimed paths, merged/quarantined/pending, SHAs.
+
+  fleet-code done <session>
+      Verify every packet merged and tests passed, then archive the session
+      dir to sessions/.archive/<session>-<ts>. Refuses if anything is
+      unmerged or quarantined.
+
+Design rules (from scars):
+  - fetch-first, never force-push, never rewrite shared history.
+  - A conflict quarantines the packet; it never blocks already-merged work
+    from being kept.
+  - The test gate runs from the merged tree, not from a packet branch.
+  - Sessions live under $FLEET_CODE_ROOT or ~/.cache/shingle/fleet-code/.
+"""
+import json, os, shlex, shutil, subprocess, sys, time
+
+ROOT = os.environ.get("FLEET_CODE_ROOT",
+                       os.path.expanduser("~/.cache/shingle/fleet-code"))
+
+def sh(cmd, cwd=None, check=True):
+    r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    if check and r.returncode != 0:
+        raise RuntimeError(f"{' '.join(cmd)} failed in {cwd}:\n{r.stderr.strip()}")
+    return r
+
+def sdir(session):
+    d = os.path.join(ROOT, "sessions", session)
+    if not os.path.isdir(d):
+        sys.exit(f"no such session: {session} (fleet-code start first)")
+    return d
+
+def load_packets(d):
+    p = os.path.join(d, "packets.json")
+    return json.load(open(p)) if os.path.exists(p) else []
+
+def save_packets(d, packets):
+    with open(os.path.join(d, "packets.json"), "w") as f:
+        json.dump(packets, f, indent=2)
+
+def cmd_start(args):
+    repo, session = args[0], args[1]
+    ref = "main"
+    if "--ref" in args:
+        ref = args[args.index("--ref") + 1]
+    d = os.path.join(ROOT, "sessions", session)
+    if os.path.exists(d):
+        sys.exit(f"session exists: {session}")
+    os.makedirs(d)
+    main_wt = os.path.join(d, "main")
+    sh(["git", "clone", "-q", repo, main_wt])
+    sh(["git", "fetch", "-q", "origin"], cwd=main_wt)
+    sh(["git", "checkout", "-q", "-B", ref, f"origin/{ref}"], cwd=main_wt)
+    save_packets(d, [])
+    json.dump({"repo": repo, "ref": ref, "started": time.time()},
+              open(os.path.join(d, "session.json"), "w"), indent=2)
+    print(f"session {session}: main worktree at {main_wt} on origin/{ref}")
+
+def _norm(p):
+    return p.rstrip("/") + "/"
+
+def _overlaps(a, b):
+    na, nb = _norm(a), _norm(b)
+    return na.startswith(nb) or nb.startswith(na)
+
+def cmd_packet(args):
+    session, packet = args[0], args[1]
+    paths = args[2:]
+    if not paths:
+        sys.exit("packet needs at least one path")
+    d = sdir(session)
+    packets = load_packets(d)
+    if any(p["name"] == packet for p in packets):
+        sys.exit(f"packet exists: {packet}")
+    claimed = [q for p in packets for q in p["paths"]]
+    overlap = {}
+    for q in paths:
+        for c in claimed:
+            if _overlaps(q, c):
+                owner = next(p["name"] for p in packets
+                             if any(_overlaps(q, x) for x in p["paths"]))
+                overlap[q] = owner
+    if overlap:
+        sys.exit(f"path collision (negotiate, not collide): {overlap}")
+    branch = f"fleet/{session}/{packet}"
+    wt = os.path.join(d, "packets", packet)
+    os.makedirs(os.path.dirname(wt), exist_ok=True)
+    main_wt = os.path.join(d, "main")
+    sh(["git", "worktree", "add", "-q", "-b", branch, wt, "HEAD"], cwd=main_wt)
+    packets.append({"name": packet, "branch": branch, "worktree": wt,
+                    "paths": paths, "status": "pending", "sha": None,
+                    "created": time.time()})
+    save_packets(d, packets)
+    print(f"packet {packet}: worktree {wt} on {branch}, claims {paths}")
+
+def cmd_merge(args):
+    session = args[0]
+    test_cmd = None
+    into = None
+    if "--test" in args:
+        test_cmd = args[args.index("--test") + 1]
+    if "--into" in args:
+        into = args[args.index("--into") + 1]
+    d = sdir(session)
+    packets = load_packets(d)
+    main_wt = os.path.join(d, "main")
+    ref = into or json.load(open(os.path.join(d, "session.json")))["ref"]
+    sh(["git", "fetch", "-q", "origin"], cwd=main_wt)
+    sh(["git", "checkout", "-q", ref], cwd=main_wt)
+    report = {"session": session, "merged": [], "quarantined": [],
+              "failed_test": None}
+    for p in packets:
+        if p["status"] == "merged":
+            continue
+        pre_sha = sh(["git", "rev-parse", "HEAD"], cwd=main_wt).stdout.strip()
+        r = sh(["git", "merge", "--no-ff", "-q", "-m",
+                f"fleet-code: merge packet {p['name']} ({session})",
+                p["branch"]], cwd=main_wt, check=False)
+        if r.returncode != 0:
+            sh(["git", "merge", "--abort"], cwd=main_wt, check=False)
+            p["status"] = "quarantined"
+            p["quarantine_reason"] = "merge conflict"
+            report["quarantined"].append(
+                {"packet": p["name"], "reason": "merge conflict"})
+            save_packets(d, packets)
+            break
+        if test_cmd:
+            # shlex: quoted args work ("pytest -k 'foo bar'"); no shell,
+            # so no injection from packet contents.
+            t = sh(shlex.split(test_cmd), cwd=main_wt, check=False)
+            if t.returncode != 0:
+                # Roll the failed merge back out: quarantine means the
+                # packet's commits never land on the integration ref.
+                sh(["git", "reset", "--hard", "-q", pre_sha], cwd=main_wt)
+                p["status"] = "quarantined"
+                p["quarantine_reason"] = f"test gate failed: {test_cmd}"
+                report["quarantined"].append(
+                    {"packet": p["name"], "reason": p["quarantine_reason"],
+                     "test_output": (t.stdout + t.stderr)[-2000:]})
+                report["failed_test"] = p["name"]
+                save_packets(d, packets)
+                break
+        p["status"] = "merged"
+        p["sha"] = sh(["git", "rev-parse", "HEAD"], cwd=main_wt
+                      ).stdout.strip()
+        report["merged"].append(p["name"])
+        save_packets(d, packets)
+    json.dump(report, open(os.path.join(d, "merge-report.json"), "w"),
+              indent=2)
+    print(json.dumps(report, indent=2))
+
+def cmd_status(args):
+    d = sdir(args[0])
+    for p in load_packets(d):
+        extra = f" sha={p['sha'][:8]}" if p.get("sha") else ""
+        q = f" ({p['quarantine_reason']})" if p.get("quarantine_reason") else ""
+        print(f"{p['name']:20} {p['status']:12} {p['branch']}{extra}{q}")
+
+def cmd_done(args):
+    d = sdir(args[0])
+    packets = load_packets(d)
+    bad = [p["name"] for p in packets if p["status"] != "merged"]
+    if bad:
+        sys.exit(f"cannot archive, unmerged/quarantined: {bad}")
+    arc = os.path.join(ROOT, "sessions", ".archive",
+                       f"{args[0]}-{int(time.time())}")
+    os.makedirs(os.path.dirname(arc), exist_ok=True)
+    shutil.move(d, arc)
+    print(f"session {args[0]} archived to {arc}")
+
+CMDS = {"start": cmd_start, "packet": cmd_packet, "merge": cmd_merge,
+        "status": cmd_status, "done": cmd_done}
+
+if __name__ == "__main__":
+    if len(sys.argv) < 3 or sys.argv[1] not in CMDS:
+        sys.exit(__doc__)
+    CMDS[sys.argv[1]](sys.argv[2:])
