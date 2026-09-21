@@ -150,13 +150,12 @@ auto = ["start"]
 
 [daemons.tau-code]
 port = 25145
-run = "exec bun run src/server.ts --port 25145" # 25145 == $TAU_CODE_PORT (SSOT); literal: ${} not expanded in run lines
+run = "exec bun run src/server.ts --port 25145" # 25145 == $TAU_CODE_PORT (config/ports.env SSOT); run line is literal, code default is 25145
 dir = "/home/toxic/projects/sovereign-projects/tau/engine/packages/metaharness"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25145/"
 depends = ["shep"]
-env = { TAU_CODE_PORT = "25145" }
 auto = ["start"]
 
 [daemons.kimi-code]
@@ -544,7 +543,6 @@ dir = "/home/toxic/sovereign/projects/mesh/squawk-ws"
 mise = false
 retry = true
 boot_start = true
-env = { SQUAWK_WS_TOKEN_FILE = "/home/toxic/.squawk-ws-token" }
 ready_cmd = "find /home/toxic/sovereign/projects/mesh/squawk-ws/client-heartbeat -mmin -2 | grep -q ."
 depends = ["squawk-ws"]
 auto = ["start"]
@@ -570,14 +568,13 @@ boot_start = true
 ready_cmd = "p=$(pgrep -f '[s]orry-watchdog[.]py' | head -1); [ -n \"$p\" ] && pgrep -P \"$p\" -f 'inotifywait -m' >/dev/null"
 auto = ["start"]
 
-[daemons.forensics-srv]
-run = "exec /home/toxic/sovereign/forensics-srv/venv/bin/python /home/toxic/sovereign/forensics-srv/server.py"
-dir = "/home/toxic/sovereign/forensics-srv"
-mise = false
-retry = true
-boot_start = true
-ready_cmd = "curl -sf http://127.0.0.1:25160/health >/dev/null"
-auto = ["start"]
+# forensics-srv REMOVED 2026-09-21 (envhunt): double-supervised. The live
+# process on :25160 is owned by the systemd user unit
+# sovereign-forensics-srv.service (enabled, active, Restart=always; ppid chain
+# verified -> systemd --user). Pitchfork's copy sat "stopped" but carried
+# auto=["start"], so the next supervisor restart would wedge it on EADDRINUSE.
+# Single owner = systemd. To migrate to pitchfork: stop+disable the unit,
+# re-add this section, then `pitchfork start forensics-srv`.
 
 # pixel-adb-keepalive REMOVED 2026-09-20: superseded by phone-lane-keeper.service
 # (systemd user unit, active, event-driven, identity-validated healing,
@@ -732,7 +729,7 @@ dir = "/home/toxic/sovereign"
 mise = false
 retry = true
 boot_start = true
-ready_http = "http://127.0.0.1:25102/health"
+ready_http = "http://127.0.0.1:25109/health"
 auto = ["start"]
 
 # --- herd-deployer 2026-09-20: card-derived model request-contract enforcement.
