@@ -326,7 +326,7 @@ port = 25153
 # a kimi-named alias serving a non-Kimi model. Doctrine (AGENTS.md):
 # "kimi-auto is Kimi-only. Honest 503 when no Kimi route is healthy;
 # never a silent fallback." Retargeted to the moonshot peer's Kimi IDs.
-run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target kimi-k2.6 --standby kimi-k2.7-code --name kimi-auto"
+run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
 dir = "/home/toxic/sovereign/config/herd.d"
 mise = false
 retry = true
@@ -730,6 +730,22 @@ boot_start = true
 ready_http = "http://127.0.0.1:25101/v1/models"
 auto = ["start"]
 
+# --- nim-kimi-sidecar 2026-09-21: cold-aware NVIDIA NIM proxy for moonshotai/kimi-k3.
+# Listens 127.0.0.1:25163; proxies integrate.api.nvidia.com with the K3
+# contract built in (top_p strip, 300s upstream timeout, warmup on start,
+# identity enforcement, 404/429 classification). Event-driven only: no
+# periodic re-warm (hosted NIM exposes no keep-warm to trial keys).
+[daemons.nim-kimi-sidecar]
+health_http = { url = "http://127.0.0.1:25163/health", interval = "30s", timeout = "5s", retries = 3 }
+port = 25163
+run = "exec python3 /home/toxic/sovereign/bin/nim-kimi-sidecar.py"
+dir = "/home/toxic/sovereign"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25163/health"
+auto = ["start"]
+
 [daemons.node-exporter]
 port = 25211
 run = "exec /usr/local/bin/node_exporter --web.listen-address=127.0.0.1:25211"
@@ -777,6 +793,18 @@ auto = ["start"]
 [daemons.market-watchdog]
 run = "exec /home/toxic/sovereign/agents/oracle-market/bin/market-watchdog.sh"
 dir = "/home/toxic/sovereign/agents/oracle-market"
+mise = false
+retry = true
+auto = ["start"]
+
+# estate-reconcile-watch — event-driven config/binary drift watcher (WS2).
+# supervises: bin/estate-reconcile watch (inotify event loop over manifest
+# dirs; no timers, no polls). Drifted binaries are restored atomically from
+# immutable copies or signed git HEAD; declared configs are report-only.
+# Squawks on drift/restore. Added 2026-09-21.
+[daemons.estate-reconcile-watch]
+run = "exec /home/toxic/sovereign/bin/estate-reconcile watch"
+dir = "/home/toxic/sovereign"
 mise = false
 retry = true
 auto = ["start"]
