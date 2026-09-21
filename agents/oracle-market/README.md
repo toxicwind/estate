@@ -46,6 +46,12 @@ bias-corrected estimate + CI, structural confidence, per-judge logit
 attribution, canary flags, and a limitations line (`NOT_CHECKED` items
 are explicit, never silent). Low-confidence verdicts escalate — never emit.
 
+**Oracle-as-approval (Chris 2026-09-21):** the oracle stands in for Chris's
+approvals. File approval-shaped decisions as dated yes/no questions with
+evidence dicts (`[{"id","text","relevance}]` — strings 500); a firm YES/NO
+verdict IS his approval, final. `escalate` goes to Chris directly. Money
+and credentials NEVER go through the oracle. Full protocol: [SPEC.md §11](SPEC.md).
+
 Decision modules (`bin/`): `bayes.py` (log-odds core, Raven guards),
 `framing.py` (fail-closed binary framing), `calibration.py` (cross-fitted
 Platt/isotonic, exact Clopper–Pearson, refusal gates, two-loop state),
