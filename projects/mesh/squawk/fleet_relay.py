@@ -133,6 +133,30 @@ def unseal_message(channel: str, body: str, identity: str, key_dir: Path):
         raise SealError(f"unsealed payload is not valid UTF-8: {e}")
 
 
+def _tolerant_body(path: Path) -> str | None:
+    """Body text for a file whose frontmatter the strict parser rejected.
+
+    Mirrors _read_frontmatter's tolerance of a missing opening '---' fence
+    (some publishers write bare frontmatter: fields then a closing ---).
+    The body is everything after the first line that is exactly ---, with
+    the same one-blank-line strip and CRLF/rstrip normalization as
+    fleet_identity._parse_file. Returns None when no closing fence exists
+    (meta and body cannot be separated reliably).
+    """
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return None
+    lines = text.split("\n")
+    for i, line in enumerate(lines):
+        if line.strip() == "---":
+            rest = "\n".join(lines[i + 1 :])
+            if rest.startswith("\n"):
+                rest = rest[1:]
+            return rest.replace("\r\n", "\n").replace("\r", "\n").rstrip()
+    return None
+
+
 def _unverified_body(path: Path, channel: str) -> tuple[str | None, bool]:
     """Body for a message that failed HMAC verification.
 
@@ -146,10 +170,20 @@ def _unverified_body(path: Path, channel: str) -> tuple[str | None, bool]:
         return None, True
     try:
         _meta, body = fleet_identity._parse_file(path)
-    except (OSError, UnicodeError, fleet_identity.FleetIdentityError):
-        # Unparseable file (e.g. no frontmatter block at all): nothing to
-        # serve. The record keeps signature:'invalid', body None.
+    except (OSError, UnicodeError):
+        # Unreadable file: nothing to serve. The record keeps
+        # signature:'invalid', body None.
         return None, False
+    except fleet_identity.FleetIdentityError:
+        # Malformed frontmatter (e.g. bare frontmatter with no opening ---
+        # fence, as some publishers write). The record meta was already
+        # parsed tolerantly by _read_frontmatter; recover the body the same
+        # way so unsigned plaintext renders flagged unverified instead of
+        # an empty row (fleet seq 12712-12717, 2026-09-21). Anything shaped
+        # like a sealed envelope still fails closed below.
+        body = _tolerant_body(path)
+        if body is None:
+            return None, False
     body = body or ""
     # A sealed envelope (or anything shaped like one) is ciphertext:
     # withhold. Marker presence alone is enough to fail closed -- we do
