@@ -84,7 +84,10 @@ ready_http = "http://127.0.0.1:25114/"
 depends = ["shep"]
 auto = ["start"]
 
-[daemons.axiom]
+# (Renamed from "axiom" 2026-09-21: the old service spawned a DUPLICATE kernel
+# on :25203 sharing the kernel SQLite DB. Now proxy-only; the kernel is
+# daemons.openfang on :25196. See src/services/openfang.ts.)
+[daemons.openfang-front]
 port = 25103
 run = "exec ./stack/services/openfang.sh"
 dir = "."
@@ -92,6 +95,7 @@ mise = true
 retry = true
 ready_http = "http://127.0.0.1:25103/api/health"
 depends = ["shep"]
+health_http = { url = "http://127.0.0.1:25103/api/health", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
 
 [daemons.rust-web]
@@ -254,6 +258,7 @@ run = "exec /home/toxic/sovereign/ops/openfang-run.sh"
 dir = "/home/toxic/projects/rig-work"
 mise = false
 retry = true
+health_http = { url = "http://127.0.0.1:25196/api/health", interval = "30s", timeout = "5s", retries = 3 }
 ready_cmd = "ss -ltn 'sport = :25196' | grep -q LISTEN"
 auto = ["start"]
 
@@ -303,7 +308,7 @@ health_http = { url = "http://127.0.0.1:34567/health", interval = "30s", timeout
 auto = ["start"]
 
 [groups.mesh]
-daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx"]
+daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx"]
 
 [groups.core]
 daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server"]
@@ -312,7 +317,7 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "floc
 daemons = ["tau"]
 
 [groups.all]
-daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "axiom", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar", "files"]
+daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar", "files"]
 
 
 [daemons.kimi-auto-shim]
@@ -360,15 +365,15 @@ retry = true
 boot_start = true
 auto = ["start"]
 
-[daemons.itvx-browserless]
+[daemons.browserless]
 port = 25130
-run = "exec /home/toxic/.browserless/run.sh"
+run = "exec /home/toxic/sovereign/projects/mesh/browserless/server/run.sh"
 dir = "."
 mise = false
 retry = true
 ready_cmd = "ss -ltn 'sport = :25130' | grep -q LISTEN"
 boot_start = true
-env = { BROWSERLESS_PORT = "25130" }
+env = { BROWSERLESS_PORT = "25130", WAYLAND_DISPLAY = "wayland-1", XDG_RUNTIME_DIR = "/run/user/1000", BROWSERLESS_CONNECTION_TIMEOUT = "900000" }
 auto = ["start"]
 
 [daemons.gemini-mcp]
