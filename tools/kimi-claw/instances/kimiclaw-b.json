@@ -1,1 +1,51 @@
-{"bridge":{"cronSessionTarget":"isolated","forwardThinking":true,"forwardToolCalls":true,"historyPendingTimeoutMs":15000,"imBypassCommandNames":["stop"],"ingressMode":"im_only","kimiapiHost":"https://www.kimi.com/api-claw","outboundTransport":"bridge_ws","promptTimeoutMs":1800000,"protocol":3,"shell":{"enabled":false},"terminalWs":{"enabled":false},"url":"wss://www.kimi.com/api-claw/bots/agent-ws"},"deviceId":"sovereign-yote-kimiclaw-b","gateway":{"agentId":"main","clientId":"gateway-client","clientMode":"backend","protocol":3,"url":"ws://127.0.0.1:18789"},"instance":"b","instanceId":"sovereign-yote-kimiclaw-b","openfangAgent":"kimiclaw-2","routing":{"herdUrl":"http://127.0.0.1:25100/v1","note":"OpenFang default route is :4200 (dead :25103 removed). Direct Coyote :25143 route removed; coyote dispatches via the OpenFang agent 'coyote'.","openfangUrl":"http://127.0.0.1:4200"},"session":{"accountId":"main","agentSessionSegment":"kimiclaw-b","channelSegment":"kimi-claw","namespace":"agent"},"squawk":{"channel":"fleet","from":"kimiclaw-b","mention":"@kimiclaw-b"}}
+{
+  "bridge": {
+    "cronSessionTarget": "isolated",
+    "forwardThinking": true,
+    "forwardToolCalls": true,
+    "historyPendingTimeoutMs": 15000,
+    "imBypassCommandNames": [
+      "stop"
+    ],
+    "ingressMode": "im_only",
+    "kimiapiHost": "",
+    "outboundTransport": "bridge_ws",
+    "promptTimeoutMs": 1800000,
+    "protocol": 3,
+    "shell": {
+      "enabled": false
+    },
+    "terminalWs": {
+      "enabled": false
+    },
+    "url": ""
+  },
+  "deviceId": "sovereign-yote-kimiclaw-b",
+  "gateway": {
+    "agentId": "main",
+    "clientId": "gateway-client",
+    "clientMode": "backend",
+    "protocol": 3,
+    "url": "ws://127.0.0.1:18789"
+  },
+  "instance": "b",
+  "instanceId": "sovereign-yote-kimiclaw-b",
+  "openfangAgent": "kimiclaw-2",
+  "routing": {
+    "herdUrl": "http://127.0.0.1:25100/v1",
+    "note": "OpenFang default route is :25196 (live kernel API). herdModel is a herd router alias \u2014 herd.yaml owns what it resolves to; the bridge never selects a model itself.",
+    "openfangUrl": "http://127.0.0.1:25196",
+    "herdModel": "fast"
+  },
+  "session": {
+    "accountId": "main",
+    "agentSessionSegment": "kimiclaw-b",
+    "channelSegment": "kimi-claw",
+    "namespace": "agent"
+  },
+  "squawk": {
+    "channel": "fleet",
+    "from": "kimiclaw-b",
+    "mention": "@kimiclaw-b"
+  }
+}
