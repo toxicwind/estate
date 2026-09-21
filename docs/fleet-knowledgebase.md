@@ -157,7 +157,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 
 | forge-union | unify github search tooling | forge-union | RUNNING (2026-09-21) |
-| ts-migration (Forge) | Production Python daemons -> Bun/TS maximal + monorepo (bun workspaces + turbo.json). Tier 0: keypool, model-guard, squawk-ws, awrawr-mcp. Tier 1: exporter, stash-guard, buildsrv. Python stays only for ML/torch glue + throwaway probes | Forge (Ember's pack, ts-migration lane) | PHASE 1 DONE (2026-09-21): workspaces+turbo+scaffold on main 7a61ad6be9; template binary proven (health 200, fail-fast). Phase 2 (Tier 0 rewrites) next — Forge joined pack 2026-09-21, chat forge-ts-migration |
+| ts-migration (Forge) | Production Python daemons -> Bun/TS maximal + monorepo (bun workspaces + turbo.json). Tier 0: keypool, model-guard, squawk-ws, awrawr-mcp. Tier 1: exporter, stash-guard, buildsrv. Python stays only for ML/torch glue + throwaway probes | Forge (Ember's pack, ts-migration lane) | PHASE 1 DONE (2026-09-21): workspaces+turbo+scaffold on main 7a61ad6be9; template binary proven (health 200, fail-fast). Phase 2 (Tier 0 rewrites) next; BROWSER-ISOLATION DONE 2026-09-21: agent-display (Xvnc :99) + agent-viewer (noVNC :6080) live, keeper on DISPLAY=:99, c776f7cd25 — Forge joined pack 2026-09-21, chat forge-ts-migration |
 
 
 | secretsmith | secrets project: fork Secret Service tooling, maximalize into mesh project | ember | DONE (2026-09-21) — 1005ab333f |
