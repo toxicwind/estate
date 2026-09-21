@@ -81,9 +81,11 @@ models:
 # Providers first, Moonshot-direct only on measured need, NIM never again
 # as primary (24h 429 soft-locks poison fail-fast routing).
 parked_contracts:
-  # (empty 2026-09-20, herd-deployer): kimi-k3 REVIVED via the OpenRouter
-  # key-pool (openrouter-pool peer -> 127.0.0.1:25102/openrouter ->
-  # openrouter.ai). OPENROUTER_API_KEY_1 verified alive (HTTP 200 on
-  # /v1/auth/key, free tier 1000/day). The K3 card contract above still
-  # applies to the revived route via the model-guard sidecar.
+  # (updated 2026-09-20, moonshot-parked-audit): the "kimi-k3 REVIVED via the
+  # OpenRouter key-pool" note is STALE -- openrouter-paid Kimi returns 402
+  # "Insufficient credits" (measured 15:02 MDT on the live _1 key; billing
+  # state, not a wiring defect). kimi-k3's only current route is
+  # openrouter-pool/moonshotai/kimi-k3 (honest 402 until credits are topped
+  # up). The K3 card contract above still applies when a route revives.
+  # K2-line restored to the direct moonshot peer (moonshot/kimi-k2.6).
   []
