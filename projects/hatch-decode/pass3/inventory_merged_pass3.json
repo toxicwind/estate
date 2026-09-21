@@ -1,0 +1,2880 @@
+{
+  "binary": "/opt/hatch/bin/hatch",
+  "build_id": "a733660761e017bf523cc4be3e467cddf3c4e639",
+  "count": 158,
+  "inventory": {
+    "JARVIS_ACCEPTED_TURN_FIRST_PROGRESS_TIMEOUT_MS": {
+      "defaults": [
+        90000
+      ],
+      "lengths": [
+        46
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x59da9e0"
+      ]
+    },
+    "JARVIS_ACTIVITY_MONITOR_TIMEOUT_MS": {
+      "defaults": [],
+      "lengths": [
+        34
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xab1393d]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x99eec99"
+      ]
+    },
+    "JARVIS_AGENT_RECOVERY_OWNER_PURGE_LIMIT": {
+      "defaults": [
+        500
+      ],
+      "lengths": [
+        39
+      ],
+      "readers": [
+        "0xf5fec70"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf1dd058"
+      ]
+    },
+    "JARVIS_AGENT_RECOVERY_OWNER_RECONCILE_LIMIT": {
+      "defaults": [
+        500
+      ],
+      "lengths": [
+        43
+      ],
+      "readers": [
+        "0xf5fec70"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf1dd075"
+      ]
+    },
+    "JARVIS_AGENT_RECOVERY_OWNER_RETENTION_SECS": {
+      "defaults": [
+        7776000
+      ],
+      "lengths": [
+        42
+      ],
+      "readers": [
+        "0xf5fec70"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf1dcc22"
+      ]
+    },
+    "JARVIS_ALLOW_DIRECT_COMMAND_EXEC": {
+      "defaults": [
+        32
+      ],
+      "readers": [
+        "qword ptr [rip + 0x4f3367e]"
+      ],
+      "shapes": [
+        "E"
+      ],
+      "sites": [
+        "0xf5cef5d"
+      ]
+    },
+    "JARVIS_ANTHROPIC_TIMEOUT_MS": {
+      "defaults": [],
+      "lengths": [
+        27
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xace9253]",
+        "0x986efb0"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x97fa594",
+        "0x97fa629"
+      ]
+    },
+    "JARVIS_AUDIO_TRANSCRIPTION_COLD_TIMEOUT_MS": {
+      "defaults": [
+        15000
+      ],
+      "lengths": [
+        42
+      ],
+      "readers": [
+        "0x59ec280"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x6541ab9",
+        "0xb893129"
+      ]
+    },
+    "JARVIS_AUDIO_TRANSCRIPTION_PREWARM_DELAY_MS": {
+      "defaults": [],
+      "lengths": [
+        43
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x68f7cb2]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdc0a929"
+      ]
+    },
+    "JARVIS_AUDIO_TRANSCRIPTION_PREWARM_TIMEOUT_MS": {
+      "defaults": [
+        45000
+      ],
+      "lengths": [
+        45
+      ],
+      "readers": [
+        "0x59ec280"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xd7140a5"
+      ]
+    },
+    "JARVIS_AUDIO_TRANSCRIPTION_TIMEOUT_MS": {
+      "defaults": [
+        4000
+      ],
+      "lengths": [
+        37
+      ],
+      "readers": [
+        "0x59ec280",
+        "call qword ptr [rip + 0xaeb9c14]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x6541aa0",
+        "0x96489c2",
+        "0xb893110"
+      ]
+    },
+    "JARVIS_AUTHD_SOCK": {
+      "defaults": [],
+      "lengths": [
+        17
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xec91f8e]",
+        "call qword ptr [rip + 0xa58aa18]",
+        "call qword ptr [rip + 0x88dc72d]",
+        "call qword ptr [rip + 0x3b01d06]"
+      ],
+      "shapes": [
+        "A",
+        "C"
+      ],
+      "sites": [
+        "0x5870648",
+        "0x676ff92",
+        "0x9f77bc1",
+        "0xbc25eac",
+        "0x10a008c6",
+        "0x14170898",
+        "0x14197018",
+        "0x14202048",
+        "0x14296d98",
+        "0x142f0308"
+      ]
+    },
+    "JARVIS_AUTHD_SOCKET": {
+      "defaults": [],
+      "lengths": [
+        19
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xbd7ff3e]",
+        "call qword ptr [rip + 0xbd7fe91]",
+        "call qword ptr [rip + 0x68c0ec2]",
+        "call qword ptr [rip + 0x68c0e16]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x87827b3",
+        "0x87827df",
+        "0xdc41831",
+        "0xdc4185a"
+      ]
+    },
+    "JARVIS_AVATAR_MEDIA_ORIENTATION": {
+      "defaults": [],
+      "lengths": [
+        31
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xed5a512]"
+      ],
+      "shapes": [
+        "A",
+        "C"
+      ],
+      "sites": [
+        "0x57a80c7",
+        "0x13f41440"
+      ]
+    },
+    "JARVIS_AVOCADO_COMPACTION_TRIGGER_TOKENS": {
+      "defaults": [],
+      "lengths": [
+        40
+      ],
+      "readers": [
+        "0x99db570"
+      ],
+      "shapes": [
+        "A",
+        "C"
+      ],
+      "sites": [
+        "0x9a5c0fc",
+        "0x141072e0"
+      ]
+    },
+    "JARVIS_AVOCADO_CONTEXT_WINDOW_TOKENS": {
+      "defaults": [
+        200000
+      ],
+      "lengths": [
+        36
+      ],
+      "readers": [
+        "0x99db570"
+      ],
+      "shapes": [
+        "A",
+        "C"
+      ],
+      "sites": [
+        "0x9a5c0dc",
+        "0x141072f0"
+      ]
+    },
+    "JARVIS_BIN_DIR": {
+      "defaults": [],
+      "lengths": [
+        14
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xe9d2601]",
+        "call qword ptr [rip + 0xd9fb298]",
+        "call qword ptr [rip + 0xbd800f5]",
+        "call qword ptr [rip + 0x6a08543]",
+        "call qword ptr [rip + 0x68c13de]",
+        "call qword ptr [rip + 0x68a52b5]",
+        "call qword ptr [rip + 0x6854cea]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x5b2ffd5",
+        "0x6b07341",
+        "0x87825fc",
+        "0xdafa1ab",
+        "0xdc41313",
+        "0xdc5d439",
+        "0xdcada07"
+      ]
+    },
+    "JARVIS_CAGI_PROXY_SOCK": {
+      "defaults": [],
+      "lengths": [
+        22
+      ],
+      "readers": [
+        "0xa9b1540"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x10ced70f"
+      ]
+    },
+    "JARVIS_CD_CHANNEL": {
+      "defaults": [],
+      "lengths": [
+        17
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xda55872]",
+        "call qword ptr [rip + 0xd115da2]",
+        "call qword ptr [rip + 0xd1130a5]",
+        "call qword ptr [rip + 0xd10f9c0]",
+        "call qword ptr [rip + 0xb76c026]",
+        "call qword ptr [rip + 0x4fd62f0]",
+        "call qword ptr [rip + 0x2cd3f25]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x6aacd67",
+        "0x73ec837",
+        "0x73ef534",
+        "0x73f2c16",
+        "0x8d965b5",
+        "0xf52c2e6",
+        "0x1182e6b6"
+      ]
+    },
+    "JARVIS_CHECKOUT_SPEND_SOCK": {
+      "defaults": [
+        45
+      ],
+      "lengths": [
+        26
+      ],
+      "readers": [
+        "0xd729930"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdc18eb9"
+      ]
+    },
+    "JARVIS_COMMENTARY_END_TURN_MERGE_TIMEOUT_MS": {
+      "defaults": [
+        60000
+      ],
+      "lengths": [
+        43
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x59da9a0"
+      ]
+    },
+    "JARVIS_COMPACTION_HEARTBEAT_SECS": {
+      "defaults": [
+        30
+      ],
+      "readers": [
+        "0x59f81f0"
+      ],
+      "shapes": [
+        "E"
+      ],
+      "sites": [
+        "0x72086d6",
+        "0x109da2e1"
+      ]
+    },
+    "JARVIS_CONNECTION_PRESENCE_ACTIVE_TTL_SECS": {
+      "defaults": [],
+      "lengths": [
+        42
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x4da8ba2]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf759a37"
+      ]
+    },
+    "JARVIS_CONVERSATION_SHARE_REVIEW_TEST_FAULT": {
+      "defaults": [],
+      "lengths": [
+        43
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x7ec521c]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xc63d3bd"
+      ]
+    },
+    "JARVIS_CONVERSATION_SHARE_REVIEW_TEST_LIFECYCLE": {
+      "defaults": [],
+      "lengths": [
+        47
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x7ec4f6c]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xc63d66d"
+      ]
+    },
+    "JARVIS_CREDIT_WATCHER_SOCK": {
+      "defaults": [],
+      "lengths": [
+        26
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xa5d3338]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x9f2f2a1"
+      ]
+    },
+    "JARVIS_CRON_MODEL_STREAM_FIRST_CHUNK_TIMEOUT_MS": {
+      "defaults": [
+        1800000
+      ],
+      "lengths": [
+        47
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x59daa00"
+      ]
+    },
+    "JARVIS_DAEMON_BROWSER_CONTROL_SOCK": {
+      "defaults": [],
+      "lengths": [
+        34
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x68e9b19]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdc18abd"
+      ]
+    },
+    "JARVIS_DAEMON_EGRESS_APPROVAL_SOCK": {
+      "defaults": [
+        48
+      ],
+      "lengths": [
+        34
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xd9d5f84"
+      ]
+    },
+    "JARVIS_DAEMON_HEALTH_DELETE_SOCK": {
+      "defaults": [],
+      "readers": [
+        "0xd729930"
+      ],
+      "shapes": [
+        "E"
+      ],
+      "sites": [
+        "0xdc18f1f"
+      ]
+    },
+    "JARVIS_DAEMON_PRESENT_WIDGET_SOCK": {
+      "defaults": [
+        45
+      ],
+      "lengths": [
+        33
+      ],
+      "readers": [
+        "0xd729930"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdc18eda"
+      ]
+    },
+    "JARVIS_DB_OPERATION_APPLICATION_NAME_TAGGING": {
+      "defaults": [],
+      "lengths": [
+        44
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xb1793bb]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x938921e"
+      ]
+    },
+    "JARVIS_DEFAULT_MAX_TRAINING_TIER": {
+      "defaults": [
+        32
+      ],
+      "readers": [
+        "qword ptr [rip + 0x2c60e70]"
+      ],
+      "shapes": [
+        "E"
+      ],
+      "sites": [
+        "0x118a1766"
+      ]
+    },
+    "JARVIS_DEFAULT_REQUEST_MODE": {
+      "defaults": [],
+      "lengths": [
+        27
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x2c60f18]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x118a16c1"
+      ]
+    },
+    "JARVIS_DISABLE_NATIVE_FILESYSTEM_WATCHER": {
+      "defaults": [],
+      "lengths": [
+        40
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x9437858]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xb0be286"
+      ]
+    },
+    "JARVIS_DISABLE_SCHEDULER_LOOP": {
+      "defaults": [],
+      "lengths": [
+        29
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x6dcff47]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xd725b97"
+      ]
+    },
+    "JARVIS_DISABLE_SELF_IMPROVEMENT_BASELINE": {
+      "defaults": [
+        7
+      ],
+      "lengths": [
+        40
+      ],
+      "readers": [
+        "0x11190b40"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xbe5d7c4",
+        "0xbe83436",
+        "0xc066b18",
+        "0xc0826cd",
+        "0xc8b9f3a",
+        "0xd701de0",
+        "0xd78b261",
+        "0xdbd76b3",
+        "0xed9332d",
+        "0xee13899",
+        "0xee14626",
+        "0xee35a88",
+        "0xef0c541",
+        "0xf03ed55",
+        "0xf048518",
+        "0xf10c683",
+        "0xf1b280d",
+        "0x10c1e5e3",
+        "0x10c3953f",
+        "0x10dc5318",
+        "0x10dc544f",
+        "0x1115c4c4"
+      ]
+    },
+    "JARVIS_DISABLE_SUBAGENT_MONITOR_LOOP": {
+      "defaults": [],
+      "lengths": [
+        36
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x320e3eb]"
+      ],
+      "shapes": [
+        "C",
+        "D"
+      ],
+      "sites": [
+        "0x142f2898",
+        "0x112e76f8"
+      ]
+    },
+    "JARVIS_EGRESS_APPROVAL_ADMIN_SOCK": {
+      "defaults": [
+        47
+      ],
+      "lengths": [
+        33
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x70aac71]",
+        "call qword ptr [rip + 0x2cf5638]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x66ac29f",
+        "0x83faf14",
+        "0x83fbbe1",
+        "0x83fc82d",
+        "0x83fd729",
+        "0x8f1cb6b",
+        "0xb3f1719",
+        "0xba4b7bf",
+        "0xd438afd",
+        "0xed7d100",
+        "0x10af50ce",
+        "0x10bcfa8a",
+        "0x114f99b1",
+        "0x11523f69",
+        "0x11524c25",
+        "0x11525845",
+        "0x1180cfa1"
+      ]
+    },
+    "JARVIS_EGRESS_APPROVAL_EVENTS_SOCK": {
+      "defaults": [
+        46
+      ],
+      "lengths": [
+        34
+      ],
+      "readers": [
+        "0x8da0320",
+        "call qword ptr [rip + 0x68ea6eb]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xb0b6aa4",
+        "0xdc17eeb"
+      ]
+    },
+    "JARVIS_ENV_FILE": {
+      "defaults": [],
+      "lengths": [
+        15
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xb766618]",
+        "call qword ptr [rip + 0xb7621b5]",
+        "call qword ptr [rip + 0xb76144f]",
+        "call qword ptr [rip + 0xad0877c]",
+        "call qword ptr [rip + 0xad02b82]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x8d9bfc1",
+        "0x8da0424",
+        "0x8da12a2",
+        "0x97f9f6f",
+        "0x97ffb6f"
+      ]
+    },
+    "JARVIS_ENV_ID": {
+      "defaults": [],
+      "lengths": [
+        13
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x6cb4f68]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xd84d66e"
+      ]
+    },
+    "JARVIS_EVAL_REQUIRE_S2S_CONTEXT_SUMMARY": {
+      "defaults": [],
+      "lengths": [
+        39
+      ],
+      "readers": [
+        "0x11190b40"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xbe83415",
+        "0xd78b248",
+        "0xef0c528",
+        "0x10c3952a"
+      ]
+    },
+    "JARVIS_EVAL_SIDECAR": {
+      "defaults": [],
+      "lengths": [
+        19
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xea31d88]",
+        "call qword ptr [rip + 0xac3abd8]",
+        "call qword ptr [rip + 0x7ec536a]",
+        "call qword ptr [rip + 0x7ec50ba]",
+        "call qword ptr [rip + 0x6db55df]",
+        "call qword ptr [rip + 0x68be938]"
+      ],
+      "shapes": [
+        "A",
+        "D"
+      ],
+      "sites": [
+        "0x5ad0851",
+        "0x98c7a01",
+        "0xc63d387",
+        "0xc63d637",
+        "0xd74d10f",
+        "0xdc43ca1",
+        "0x5b30b4d"
+      ]
+    },
+    "JARVIS_EXECD_SOCKET": {
+      "defaults": [],
+      "lengths": [
+        19
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x69f2bc3]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdb0fa16"
+      ]
+    },
+    "JARVIS_EXTERNAL_CONTENT_BOUNDARIES_ENABLED": {
+      "defaults": [],
+      "lengths": [
+        42
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xac3ab6d]"
+      ],
+      "shapes": [
+        "A",
+        "C"
+      ],
+      "sites": [
+        "0x98c7a69",
+        "0x14100cd8"
+      ]
+    },
+    "JARVIS_FQDN": {
+      "defaults": [],
+      "lengths": [
+        11
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xb77f198]",
+        "call qword ptr [rip + 0xb765237]",
+        "call qword ptr [rip + 0xaaba51e]",
+        "call qword ptr [rip + 0xa8c3755]",
+        "call qword ptr [rip + 0xa5a6f65]",
+        "call qword ptr [rip + 0xa5a6aae]",
+        "call qword ptr [rip + 0xa5a1878]",
+        "call qword ptr [rip + 0xa55da5a]",
+        "call qword ptr [rip + 0xa576638]",
+        "call qword ptr [rip + 0xa55d8ca]",
+        "call qword ptr [rip + 0xa55d871]",
+        "0xc642cb0",
+        "call qword ptr [rip + 0x6b3ebd5]",
+        "call qword ptr [rip + 0x69c2d78]",
+        "call qword ptr [rip + 0x2ea8758]",
+        "call qword ptr [rip + 0x2ea6268]"
+      ],
+      "shapes": [
+        "A",
+        "C",
+        "D"
+      ],
+      "sites": [
+        "0x8d83441",
+        "0x8d9d3a4",
+        "0x9a480b8",
+        "0x9a48360",
+        "0x9c3ee83",
+        "0x9f5b674",
+        "0x9f5bb2b",
+        "0x9f60d61",
+        "0x9f8be51",
+        "0x9f8bfa1",
+        "0x9f8bfe4",
+        "0x9f8c038",
+        "0xc642bac",
+        "0xd9c3a04",
+        "0xdb3f861",
+        "0xdcb43e2",
+        "0x11659e81",
+        "0x1165c371",
+        "0x13f3cff8",
+        "0x13f72d90",
+        "0x13fd7298",
+        "0x1416fc80",
+        "0x142dc300",
+        "0x5b2ea47"
+      ]
+    },
+    "JARVIS_HATCHLING_ID": {
+      "defaults": [],
+      "lengths": [
+        19
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xb7652d6]",
+        "call qword ptr [rip + 0xb76510c]",
+        "call qword ptr [rip + 0xa5a6b35]",
+        "call qword ptr [rip + 0xa5766ce]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x8d9d303",
+        "0x8d9d4cf",
+        "0x9f5baa4",
+        "0x9f8bf0b"
+      ]
+    },
+    "JARVIS_HOME": {
+      "defaults": [
+        1
+      ],
+      "lengths": [
+        11
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xe9d3586]",
+        "call qword ptr [rip + 0xdb9187d]",
+        "call qword ptr [rip + 0xd9fb1b2]",
+        "call qword ptr [rip + 0xd20a255]",
+        "call qword ptr [rip + 0xd06eb92]",
+        "call qword ptr [rip + 0xc06b487]",
+        "call qword ptr [rip + 0xbd7ff27]",
+        "call qword ptr [rip + 0xb761dbf]",
+        "call qword ptr [rip + 0xacfd363]",
+        "call qword ptr [rip + 0xac6ae84]",
+        "call qword ptr [rip + 0xac45918]",
+        "call qword ptr [rip + 0xac07a54]",
+        "call qword ptr [rip + 0xabb7767]",
+        "call qword ptr [rip + 0xabaf5ad]",
+        "call qword ptr [rip + 0xaadc331]",
+        "call qword ptr [rip + 0xaad08ed]",
+        "call qword ptr [rip + 0x85bd8e0]",
+        "call r12",
+        "call qword ptr [rip + 0x7c3c4f8]",
+        "call qword ptr [rip + 0x6a0761e]",
+        "call qword ptr [rip + 0x68c0ea6]",
+        "call qword ptr [rip + 0x387a668]",
+        "call qword ptr [rip + 0x2f53e7a]",
+        "call qword ptr [rip + 0x2dbaaec]",
+        "call qword ptr [rip + 0x2caa6c8]",
+        "0x8da0670"
+      ],
+      "shapes": [
+        "A",
+        "D"
+      ],
+      "sites": [
+        "0x5b2f050",
+        "0x6970d59",
+        "0x6b07427",
+        "0x72f8381",
+        "0x7493a47",
+        "0x8497267",
+        "0x8782749",
+        "0x8da080e",
+        "0x9805390",
+        "0x9897752",
+        "0x98bccbe",
+        "0x98fab82",
+        "0x994ae74",
+        "0x995302c",
+        "0x9a262a8",
+        "0x9a31e04",
+        "0xbf44cf6",
+        "0xc68f5d2",
+        "0xc8c617b",
+        "0xdafb04f",
+        "0xdc417cd",
+        "0x10c87f6e",
+        "0x115ae761",
+        "0x11747aed",
+        "0x11857f11",
+        "0x8d9b1da"
+      ]
+    },
+    "JARVIS_HTTP_API_SOCKET": {
+      "defaults": [],
+      "lengths": [
+        22
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x68eafaa]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdc1762c"
+      ]
+    },
+    "JARVIS_IDEAS_EVENTS_RETENTION_SECS": {
+      "defaults": [
+        15552000
+      ],
+      "lengths": [
+        34
+      ],
+      "readers": [
+        "0xf5fec70"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf062576"
+      ]
+    },
+    "JARVIS_IDEA_DOCTOR_ENRICHED_EVIDENCE_ENABLED": {
+      "defaults": [],
+      "lengths": [
+        44
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x4f06842]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf5fbd97"
+      ]
+    },
+    "JARVIS_IDEA_DOCTOR_INFERENCE_TIMEOUT_SECS": {
+      "defaults": [],
+      "lengths": [
+        41
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x4fabee2]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf5566f9"
+      ]
+    },
+    "JARVIS_IDEA_DOCTOR_MAX_JUDGED_PER_RUN": {
+      "defaults": [],
+      "lengths": [
+        37
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x5339c78]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf1c895e"
+      ]
+    },
+    "JARVIS_IDEA_RECONCILE_MAX_AGE_SECS": {
+      "defaults": [],
+      "lengths": [
+        34
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x5339df4]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf1c87e2"
+      ]
+    },
+    "JARVIS_IDEA_RECONCILE_REACTION_GRACE_SECS": {
+      "defaults": [],
+      "lengths": [
+        41
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x5339d36]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf1c88a0"
+      ]
+    },
+    "JARVIS_INFERENCE_HOSTNAME": {
+      "defaults": [],
+      "lengths": [
+        25
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xaaba782]",
+        "call qword ptr [rip + 0x6cb4f1e]",
+        "call qword ptr [rip + 0x4ecc628]"
+      ],
+      "shapes": [
+        "A",
+        "D"
+      ],
+      "sites": [
+        "0x9a47e54",
+        "0xd84d6b8",
+        "0xf635fb1",
+        "0x5b2e978"
+      ]
+    },
+    "JARVIS_INFERENCE_PROXY_SOCK": {
+      "defaults": [],
+      "lengths": [
+        27
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xdef7033]",
+        "call qword ptr [rip + 0xd276663]",
+        "call qword ptr [rip + 0xc522ddc]",
+        "call qword ptr [rip + 0xace3874]",
+        "0x986efb0",
+        "call qword ptr [rip + 0xabb9632]",
+        "call qword ptr [rip + 0xa1da8bf]",
+        "call qword ptr [rip + 0x94456c7]",
+        "call qword ptr [rip + 0x8b53533]",
+        "call qword ptr [rip + 0x6f5aa6c]",
+        "call qword ptr [rip + 0x55aa5f3]",
+        "call qword ptr [rip + 0x4da25bc]",
+        "call qword ptr [rip + 0x4da0acf]",
+        "call qword ptr [rip + 0x3a49762]"
+      ],
+      "shapes": [
+        "A",
+        "C",
+        "D"
+      ],
+      "sites": [
+        "0x660b5a6",
+        "0x728bf76",
+        "0x7fdf7fd",
+        "0x97fff77",
+        "0x9800013",
+        "0x9948fa4",
+        "0xa327d1c",
+        "0xb0bcf0f",
+        "0xb9af0a6",
+        "0xd5a7b6d",
+        "0xef57fe3",
+        "0xf76001d",
+        "0xf761b0a",
+        "0x10ab8e74",
+        "0x140fca28",
+        "0x141970a8",
+        "0xc122d40"
+      ]
+    },
+    "JARVIS_INFERENCE_READINESS_PROBE_INTERVAL_MS": {
+      "defaults": [],
+      "lengths": [
+        44
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x94380c4]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xb0bd00a"
+      ]
+    },
+    "JARVIS_IPNEXT_FREQUENCY_PENALTY": {
+      "defaults": [],
+      "lengths": [
+        31
+      ],
+      "readers": [
+        "0x9932ab0"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x995db10"
+      ]
+    },
+    "JARVIS_IPNEXT_MIN_P": {
+      "defaults": [],
+      "lengths": [
+        19
+      ],
+      "readers": [
+        "0x9932ab0"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x995daa9"
+      ]
+    },
+    "JARVIS_IPNEXT_PRESENCE_PENALTY": {
+      "defaults": [],
+      "lengths": [
+        30
+      ],
+      "readers": [
+        "0x9932ab0"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x995daf6"
+      ]
+    },
+    "JARVIS_IPNEXT_REASONING_EFFORT": {
+      "defaults": [],
+      "lengths": [
+        30
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xab9da6b]",
+        "call qword ptr [rip + 0xab1334b]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x9964b6e",
+        "0x99ef28b"
+      ]
+    },
+    "JARVIS_IPNEXT_REPETITION_PENALTY": {
+      "defaults": [],
+      "readers": [
+        "0x9932ab0"
+      ],
+      "shapes": [
+        "E"
+      ],
+      "sites": [
+        "0x995dadc"
+      ]
+    },
+    "JARVIS_IPNEXT_SEED": {
+      "defaults": [],
+      "lengths": [
+        18
+      ],
+      "readers": [
+        "0x9932ed0"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x995dac4"
+      ]
+    },
+    "JARVIS_IPNEXT_TEMPERATURE": {
+      "defaults": [],
+      "lengths": [
+        25
+      ],
+      "readers": [
+        "0x9932ab0"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x995da4f"
+      ]
+    },
+    "JARVIS_IPNEXT_TOP_K": {
+      "defaults": [],
+      "lengths": [
+        19
+      ],
+      "readers": [
+        "0x9932ed0"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x995da8d"
+      ]
+    },
+    "JARVIS_IPNEXT_TOP_P": {
+      "defaults": [],
+      "lengths": [
+        19
+      ],
+      "readers": [
+        "0x9932ab0"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x995da6c"
+      ]
+    },
+    "JARVIS_IPNEXT_TRACE_DIR": {
+      "defaults": [],
+      "lengths": [
+        23
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xaadc3c0]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x9a26219"
+      ]
+    },
+    "JARVIS_IPNEXT_TRACE_LOG": {
+      "defaults": [],
+      "lengths": [
+        23
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xaadc642]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x9a25f97"
+      ]
+    },
+    "JARVIS_LOCAL_CLI_REQUEST_ID": {
+      "defaults": [],
+      "lengths": [
+        27
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x2d2f5e8]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x117d2ff1"
+      ]
+    },
+    "JARVIS_MAGIC_MOMENT_GK_FORCE": {
+      "defaults": [],
+      "lengths": [
+        28
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xddc2b88]",
+        "call qword ptr [rip + 0x8a2cd38]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x673fb6b",
+        "0xbad59bb"
+      ]
+    },
+    "JARVIS_MAX_COMPANION_LIFETIME_SECS": {
+      "defaults": [],
+      "lengths": [
+        34
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x6953152]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdbaf489"
+      ]
+    },
+    "JARVIS_MAX_TRAINING_TIER": {
+      "defaults": [],
+      "lengths": [
+        24
+      ],
+      "readers": [
+        "0x6d57b70",
+        "call qword ptr [rip + 0x2caa2f2]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x8306964",
+        "0x118582e7"
+      ]
+    },
+    "JARVIS_MEDIA_PUBLIC_BASE_URL": {
+      "defaults": [],
+      "lengths": [
+        28
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xa8c385a]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x9c3ed81"
+      ]
+    },
+    "JARVIS_MEMORY_FLUSH_PERIODIC_THRESHOLD_TOKENS": {
+      "defaults": [],
+      "lengths": [
+        45
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xe88caaa]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x5c75b31"
+      ]
+    },
+    "JARVIS_MEMORY_TEST_MODELS": {
+      "defaults": [],
+      "lengths": [
+        25
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xa5f749d]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x9f0b13c"
+      ]
+    },
+    "JARVIS_MESSAGE_EVENT_STREAM_IDLE_TIMEOUT_MS": {
+      "defaults": [
+        90000
+      ],
+      "lengths": [
+        43
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x59da9c0"
+      ]
+    },
+    "JARVIS_METRICS_SOCKET": {
+      "defaults": [],
+      "lengths": [
+        21
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x68eaae2]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdc17af4"
+      ]
+    },
+    "JARVIS_MODEL_IDENTITY_VISIBILITY": {
+      "defaults": [
+        32
+      ],
+      "readers": [
+        "qword ptr [rip + 0x7ea7dc5]",
+        "qword ptr [rip + 0xabcb48d]"
+      ],
+      "shapes": [
+        "E"
+      ],
+      "sites": [
+        "0x993714e",
+        "0xc65a811"
+      ]
+    },
+    "JARVIS_MODEL_ID_OVERRIDE": {
+      "defaults": [],
+      "lengths": [
+        24
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xab1384a]"
+      ],
+      "shapes": [
+        "A",
+        "C"
+      ],
+      "sites": [
+        "0x99eed89",
+        "0x1410a3c0"
+      ]
+    },
+    "JARVIS_MODEL_STREAM_CHUNK_IDLE_TIMEOUT_MS": {
+      "defaults": [
+        90000,
+        180000
+      ],
+      "lengths": [
+        41
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x59da960",
+        "0x59daa40"
+      ]
+    },
+    "JARVIS_MODEL_STREAM_FIRST_CHUNK_TIMEOUT_MS": {
+      "defaults": [
+        600000
+      ],
+      "lengths": [
+        42
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x59da980"
+      ]
+    },
+    "JARVIS_NAVIGATION_GK_FORCE": {
+      "defaults": [],
+      "lengths": [
+        26
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xeccc3f8]",
+        "call qword ptr [rip + 0xdecc570]",
+        "call qword ptr [rip + 0x8b25a90]",
+        "call qword ptr [rip + 0x593b1cc]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x58362f6",
+        "0x663617e",
+        "0xb9dcc5e",
+        "0xebc7522"
+      ]
+    },
+    "JARVIS_ONBOARDING_CURATED_IDEAS": {
+      "defaults": [],
+      "lengths": [
+        31
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xad812eb]"
+      ],
+      "shapes": [
+        "A",
+        "C"
+      ],
+      "sites": [
+        "0x97812ee",
+        "0x13f845e8",
+        "0x1418e3b8"
+      ]
+    },
+    "JARVIS_PHONE_GK_FORCE": {
+      "defaults": [],
+      "lengths": [
+        21
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xec85553]",
+        "call qword ptr [rip + 0xdc965e3]",
+        "call qword ptr [rip + 0x883dfb3]",
+        "call qword ptr [rip + 0x57ce863]",
+        "call qword ptr [rip + 0x394aa73]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x587d19e",
+        "0x686c10e",
+        "0xbcc473e",
+        "0xed33e8e",
+        "0x10bb7c7e"
+      ]
+    },
+    "JARVIS_POST_INFERENCE_TERMINALIZATION_TIMEOUT_MS": {
+      "defaults": [
+        30000
+      ],
+      "lengths": [
+        48
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x59daa20"
+      ]
+    },
+    "JARVIS_POST_TOOL_CONTINUATION_TIMEOUT_MS": {
+      "defaults": [
+        30000
+      ],
+      "lengths": [
+        40
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x59da940"
+      ]
+    },
+    "JARVIS_PRE_INFERENCE_STEP_TIMEOUT_MS": {
+      "defaults": [
+        10000
+      ],
+      "lengths": [
+        36
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x59da900"
+      ]
+    },
+    "JARVIS_PROMPT_HOT_SWAP_DIR": {
+      "defaults": [],
+      "lengths": [
+        26
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xeb2a044]",
+        "call qword ptr [rip + 0xeb29f01]",
+        "call qword ptr [rip + 0xa082229]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x59d86ad",
+        "0x59d87ea",
+        "0xa4804c2"
+      ]
+    },
+    "JARVIS_PROMPT_PROFILE": {
+      "defaults": [],
+      "lengths": [
+        21
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x2bf6e93]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x1190b748"
+      ]
+    },
+    "JARVIS_PUBLIC_BASE_URL": {
+      "defaults": [],
+      "lengths": [
+        22
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xa8c37e6]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x9c3edf5"
+      ]
+    },
+    "JARVIS_REALTIME_SOCKET": {
+      "defaults": [
+        40
+      ],
+      "lengths": [
+        22
+      ],
+      "readers": [
+        "0xd729930"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdc18a7f"
+      ]
+    },
+    "JARVIS_RELEASE_ID": {
+      "defaults": [],
+      "lengths": [
+        17
+      ],
+      "readers": [
+        "0xf5b1f80"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf519ea8"
+      ]
+    },
+    "JARVIS_REQUEST_ID": {
+      "defaults": [],
+      "lengths": [
+        17
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdc41888"
+      ]
+    },
+    "JARVIS_REQUEST_MODE": {
+      "defaults": [],
+      "lengths": [
+        19
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x2caa4d5]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x11858104"
+      ]
+    },
+    "JARVIS_RESUMED_TURN_INFERENCE_READINESS_TIMEOUT_MS": {
+      "defaults": [
+        90000
+      ],
+      "lengths": [
+        50
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x59daa60"
+      ]
+    },
+    "JARVIS_ROOT": {
+      "defaults": [],
+      "lengths": [
+        11
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xe9d21ab]",
+        "call qword ptr [rip + 0xb761d7b]",
+        "call qword ptr [rip + 0xacfd344]",
+        "call qword ptr [rip + 0xaad08cb]",
+        "call qword ptr [rip + 0x2dbaa6f]",
+        "0x8da0670"
+      ],
+      "shapes": [
+        "A",
+        "D"
+      ],
+      "sites": [
+        "0x5b3042b",
+        "0x8da0852",
+        "0x98053af",
+        "0x9a31e26",
+        "0x11747b6a",
+        "0x8d9b234"
+      ]
+    },
+    "JARVIS_RUNTIME_WORK_DB_PURGE_LIMIT": {
+      "defaults": [],
+      "lengths": [
+        34
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x690847f]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdbfa15a"
+      ]
+    },
+    "JARVIS_RUNTIME_WORK_DB_TERMINAL_RETENTION_SECS": {
+      "defaults": [],
+      "lengths": [
+        46
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x6907552]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdbfb089"
+      ]
+    },
+    "JARVIS_RUNTIME_WORK_MODE": {
+      "defaults": [],
+      "lengths": [
+        24
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x7f84ef8]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xc57d6e1"
+      ]
+    },
+    "JARVIS_RUNTIME_WORK_STALE_AFTER_SECS": {
+      "defaults": [],
+      "lengths": [
+        36
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x6908612]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdbf9fc9"
+      ]
+    },
+    "JARVIS_RUNTIME_WORK_SUPERVISOR_INTERVAL_SECS": {
+      "defaults": [],
+      "lengths": [
+        44
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x69076e2]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdbfaef9"
+      ]
+    },
+    "JARVIS_RUNTIME_WORK_TERMINAL_RETENTION_SECS": {
+      "defaults": [],
+      "lengths": [
+        43
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x6907852]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdbfad87"
+      ]
+    },
+    "JARVIS_RUNTIME_WORK_TOOL_DISPATCH_STALE_AFTER_SECS": {
+      "defaults": [],
+      "lengths": [
+        50
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x69073c2]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdbfb219"
+      ]
+    },
+    "JARVIS_SAFETY_MODEL": {
+      "defaults": [],
+      "lengths": [
+        19
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xe59ddcf]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x5f64807"
+      ]
+    },
+    "JARVIS_SANDBOX_API_SOCK": {
+      "defaults": [],
+      "lengths": [
+        23
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xa5b4d68]",
+        "call qword ptr [rip + 0x94453a0]",
+        "call qword ptr [rip + 0x69ca812]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x9f4d871",
+        "0xb0bd34b",
+        "0xdb37dc4"
+      ]
+    },
+    "JARVIS_SECURITY_SOCK": {
+      "defaults": [
+        31
+      ],
+      "lengths": [
+        20
+      ],
+      "readers": [
+        "0x8da0320"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xd4020d4"
+      ]
+    },
+    "JARVIS_SELF_IMPROVEMENT_BACKFILL_DAYS_RETENTION_SECS": {
+      "defaults": [
+        2592000
+      ],
+      "lengths": [
+        52
+      ],
+      "readers": [
+        "0xf5fec70"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf0603fb"
+      ]
+    },
+    "JARVIS_SELF_IMPROVEMENT_CONNECTOR_AUDIT_RETENTION_SECS": {
+      "defaults": [
+        2592000
+      ],
+      "lengths": [
+        54
+      ],
+      "readers": [
+        "0xf5fec70"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf0601e2"
+      ]
+    },
+    "JARVIS_SELF_IMPROVEMENT_DB_PURGE_LIMIT": {
+      "defaults": [
+        500
+      ],
+      "lengths": [
+        38
+      ],
+      "readers": [
+        "0xf5fec70"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf05f6ae"
+      ]
+    },
+    "JARVIS_SELF_IMPROVEMENT_DB_TERMINAL_RETENTION_SECS": {
+      "defaults": [
+        2592000
+      ],
+      "lengths": [
+        50
+      ],
+      "readers": [
+        "0xf5fec70"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf05f6d3"
+      ]
+    },
+    "JARVIS_SELF_IMPROVEMENT_IDLE_ENABLED": {
+      "defaults": [],
+      "lengths": [
+        36
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xa08a208]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xa4783d1"
+      ]
+    },
+    "JARVIS_SELF_IMPROVEMENT_IDLE_MIN_EXCHANGE_PAIRS": {
+      "defaults": [
+        10
+      ],
+      "lengths": [
+        47
+      ],
+      "readers": [
+        "0xa541940"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xa47881a"
+      ]
+    },
+    "JARVIS_SELF_IMPROVEMENT_IDLE_PER_DAY_CEILING": {
+      "defaults": [
+        4
+      ],
+      "lengths": [
+        44
+      ],
+      "readers": [
+        "0xa541940"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xa4787fd"
+      ]
+    },
+    "JARVIS_SELF_IMPROVEMENT_IDLE_QUIET_WINDOW_SECS": {
+      "defaults": [],
+      "lengths": [
+        46
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xa089f35]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xa4786a4"
+      ]
+    },
+    "JARVIS_SELF_IMPROVEMENT_LEARNINGS_RETIRED_RETENTION_SECS": {
+      "defaults": [
+        7776000
+      ],
+      "lengths": [
+        56
+      ],
+      "readers": [
+        "0xf5fec70"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf0602ed"
+      ]
+    },
+    "JARVIS_SELF_IMPROVEMENT_RECORDS_RETENTION_SECS": {
+      "defaults": [
+        7776000
+      ],
+      "lengths": [
+        46
+      ],
+      "readers": [
+        "0xf5fec70"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf0600e1"
+      ]
+    },
+    "JARVIS_SENTINEL_HTTP_API_SOCKET": {
+      "defaults": [
+        33
+      ],
+      "lengths": [
+        31
+      ],
+      "readers": [],
+      "shapes": [
+        "A",
+        "C"
+      ],
+      "sites": [
+        "0x86fdd74",
+        "0x8cbb911",
+        "0xbe47f10",
+        "0xc8828af",
+        "0xd9d5faf",
+        "0xd9d6056",
+        "0xd9d611d",
+        "0xf0dd6ac",
+        "0x14197180"
+      ]
+    },
+    "JARVIS_SESSION_ID": {
+      "defaults": [],
+      "lengths": [
+        17
+      ],
+      "readers": [
+        "0xa9b1540"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x10ced74c"
+      ]
+    },
+    "JARVIS_SPACES_COMPLETION_CHECKS": {
+      "defaults": [],
+      "lengths": [
+        31
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xd0bd7f3]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x7444de8"
+      ]
+    },
+    "JARVIS_SPACES_INTERNAL_REQUEST_QUEUE_TIMEOUT_MS": {
+      "defaults": [],
+      "lengths": [
+        47
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x4f45304]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf5afdca"
+      ]
+    },
+    "JARVIS_SPACES_MAX_CONCURRENT_REQUESTS": {
+      "defaults": [],
+      "lengths": [
+        37
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x4f45360]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf5afd6e"
+      ]
+    },
+    "JARVIS_SPACES_MAX_QUEUED_REQUESTS": {
+      "defaults": [],
+      "lengths": [
+        33
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x4f4533c]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf5afd92"
+      ]
+    },
+    "JARVIS_SPACES_USER_FACING_REQUEST_QUEUE_TIMEOUT_MS": {
+      "defaults": [],
+      "lengths": [
+        50
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x4f45320]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf5afdae"
+      ]
+    },
+    "JARVIS_SPACES_WORKER_IDLE_TIMEOUT_SECS": {
+      "defaults": [],
+      "lengths": [
+        38
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x4f453f9]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf5afcd5"
+      ]
+    },
+    "JARVIS_SPACES_WORKER_REQUEST_TIMEOUT_MS": {
+      "defaults": [],
+      "lengths": [
+        39
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x4f453ad]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf5afd21"
+      ]
+    },
+    "JARVIS_SPACES_WORKER_STARTUP_TIMEOUT_MS": {
+      "defaults": [],
+      "lengths": [
+        39
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x4f453d6]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf5afcf8"
+      ]
+    },
+    "JARVIS_SPACE_INFERENCE_SOCKET": {
+      "defaults": [
+        39
+      ],
+      "lengths": [
+        29
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xb0b7704",
+        "0xdafb43f"
+      ]
+    },
+    "JARVIS_SPACE_MEDIA_SOCKET": {
+      "defaults": [
+        35
+      ],
+      "lengths": [
+        25
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xb0bc88c",
+        "0xdafb65d"
+      ]
+    },
+    "JARVIS_SPACE_PRIVILEGED_SOCKET": {
+      "defaults": [
+        40
+      ],
+      "lengths": [
+        30
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xb0bc0c3",
+        "0xdafb6c9"
+      ]
+    },
+    "JARVIS_SPACE_SHARE_SOCKET": {
+      "defaults": [],
+      "lengths": [
+        25
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x68e993a]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdc18c9c"
+      ]
+    },
+    "JARVIS_SPACE_WEB_SEARCH_SOCKET": {
+      "defaults": [
+        40
+      ],
+      "lengths": [
+        30
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xb0bb987",
+        "0xdafb5f1"
+      ]
+    },
+    "JARVIS_STALE_COMPLETED_UNSEEN_SUBAGENT_CRON_GRACE_SECS": {
+      "defaults": [
+        21600
+      ],
+      "lengths": [
+        54
+      ],
+      "readers": [
+        "0xf5fc790"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf055662"
+      ]
+    },
+    "JARVIS_STALE_COMPLETED_UNSEEN_SUBAGENT_NON_CRON_TERMINAL_GRACE_SECS": {
+      "defaults": [
+        604800
+      ],
+      "lengths": [
+        67
+      ],
+      "readers": [
+        "0xf5fc790"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf0556e3"
+      ]
+    },
+    "JARVIS_STALE_COMPLETED_UNSEEN_SUBAGENT_PRUNE_BATCH_LIMIT": {
+      "defaults": [],
+      "lengths": [
+        56
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x54ace98]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf05573e"
+      ]
+    },
+    "JARVIS_STALE_COMPLETED_UNSEEN_SUBAGENT_RECENT_DECISION_GRACE_SECS": {
+      "defaults": [
+        3600
+      ],
+      "lengths": [
+        65
+      ],
+      "readers": [
+        "0xf5fc790"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf055712"
+      ]
+    },
+    "JARVIS_STEFI_PROXY_SOCK": {
+      "defaults": [],
+      "lengths": [
+        23
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xed5e3ef]",
+        "call qword ptr [rip + 0xec98380]",
+        "call qword ptr [rip + 0xdfd758b]",
+        "call qword ptr [rip + 0xdf785b6]",
+        "call qword ptr [rip + 0xd2c5091]",
+        "call qword ptr [rip + 0xd16fff9]",
+        "call qword ptr [rip + 0xc5571fe]",
+        "call qword ptr [rip + 0xbfcf615]",
+        "call qword ptr [rip + 0xbe04e18]",
+        "call qword ptr [rip + 0xbd7ff90]",
+        "call qword ptr [rip + 0xbd7fee3]",
+        "call qword ptr [rip + 0xbb4cef8]",
+        "call qword ptr [rip + 0xba166fb]",
+        "call qword ptr [rip + 0xba13c78]",
+        "call qword ptr [rip + 0xb80ea75]",
+        "call qword ptr [rip + 0xa5b8238]",
+        "call qword ptr [rip + 0xa5a7188]",
+        "call qword ptr [rip + 0x8ddca7a]",
+        "call qword ptr [rip + 0x8c8dac8]",
+        "call qword ptr [rip + 0x8c229c4]",
+        "call qword ptr [rip + 0x7f31863]",
+        "call qword ptr [rip + 0x7f1d245]",
+        "call qword ptr [rip + 0x6fa1ce7]",
+        "call qword ptr [rip + 0x6f66a5d]",
+        "call qword ptr [rip + 0x6f28e98]",
+        "call qword ptr [rip + 0x6cc9423]",
+        "call qword ptr [rip + 0x69eb688]",
+        "call qword ptr [rip + 0x68c0f11]",
+        "call qword ptr [rip + 0x68c0e65]",
+        "call qword ptr [rip + 0x68621e2]",
+        "call qword ptr [rip + 0x58dd957]",
+        "call qword ptr [rip + 0x5597f2c]",
+        "call qword ptr [rip + 0x54ec0b4]",
+        "call qword ptr [rip + 0x54e4e19]",
+        "call qword ptr [rip + 0x4f18bd8]",
+        "call qword ptr [rip + 0x4eda45f]",
+        "call qword ptr [rip + 0x3f9e9ea]",
+        "call qword ptr [rip + 0x3ad09d0]",
+        "call qword ptr [rip + 0x39d441d]",
+        "call qword ptr [rip + 0x39c69af]",
+        "call qword ptr [rip + 0x36972c7]",
+        "call qword ptr [rip + 0x365e890]",
+        "call qword ptr [rip + 0x3353b7a]",
+        "call qword ptr [rip + 0x2ca9693]",
+        "call qword ptr [rip + 0x25011e5]"
+      ],
+      "shapes": [
+        "A",
+        "C",
+        "D"
+      ],
+      "sites": [
+        "0x57a41e7",
+        "0x586a256",
+        "0x652b046",
+        "0x658a020",
+        "0x723d545",
+        "0x73925dd",
+        "0x7fab3d8",
+        "0x8532fc4",
+        "0x86fd7c1",
+        "0x8782761",
+        "0x878278d",
+        "0x89b56e1",
+        "0x8aebede",
+        "0x8aee961",
+        "0x8cf3b64",
+        "0x9f4a3a1",
+        "0x9f5b451",
+        "0xb725b5c",
+        "0xb874b0e",
+        "0xb8dfc12",
+        "0xc5d0d76",
+        "0xc5e5394",
+        "0xd5608ef",
+        "0xd59bb7c",
+        "0xd5d973e",
+        "0xd8391b3",
+        "0xdb16f51",
+        "0xdc417e2",
+        "0xdc4180b",
+        "0xdca03f4",
+        "0xec24c7f",
+        "0xef5d06a",
+        "0xf01663a",
+        "0xf01d8d5",
+        "0xf5e9a01",
+        "0xf62817a",
+        "0x10563bec",
+        "0x10a31c06",
+        "0x10b2e1b9",
+        "0x10b3bc27",
+        "0x10e6b312",
+        "0x10ea3d46",
+        "0x111aea61",
+        "0x11858f48",
+        "0x120013f1",
+        "0x140023f8",
+        "0x1400b490",
+        "0x14017c58",
+        "0x1401b740",
+        "0x14023190",
+        "0x140272b0",
+        "0x141702e8",
+        "0x141971c8",
+        "0x141f43a0",
+        "0x142894b8",
+        "0x142dc5f0",
+        "0xc122df8",
+        "0xd59bd79",
+        "0xd59bfe4"
+      ]
+    },
+    "JARVIS_SUBAGENT_CONTROL_OP_TIMEOUT_MS": {
+      "defaults": [
+        90000
+      ],
+      "lengths": [
+        37
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x59da920"
+      ]
+    },
+    "JARVIS_SUBPROCESS_EXECUTOR": {
+      "defaults": [],
+      "lengths": [
+        26
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x69f2c45]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdb0f994"
+      ]
+    },
+    "JARVIS_SUMMARIZATION_RECHECK_STALE_SECS": {
+      "defaults": [],
+      "lengths": [
+        39
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x688909f]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xdc7953a"
+      ]
+    },
+    "JARVIS_TARGET_COMMITISH": {
+      "defaults": [],
+      "lengths": [
+        23
+      ],
+      "readers": [
+        "0xf5b1f80"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf519ec1"
+      ]
+    },
+    "JARVIS_TELEMETRY_PROXY_SOCK": {
+      "defaults": [],
+      "lengths": [
+        27
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xa5a6458]"
+      ],
+      "shapes": [
+        "A",
+        "C",
+        "D"
+      ],
+      "sites": [
+        "0x9f5c181",
+        "0x14197060",
+        "0xc122d9c"
+      ]
+    },
+    "JARVIS_TOOL_CALL_ID": {
+      "defaults": [],
+      "lengths": [
+        19
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x2d2f7d0]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x117d2e09"
+      ]
+    },
+    "JARVIS_TOOL_DISPATCH_HEARTBEAT_SECS": {
+      "defaults": [
+        60
+      ],
+      "lengths": [
+        35
+      ],
+      "readers": [
+        "0x59f81f0"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x6415fb1",
+        "0x81be89d",
+        "0xbee1c13"
+      ]
+    },
+    "JARVIS_TOOL_DISPATCH_TIMEOUT_MS": {
+      "defaults": [
+        180000
+      ],
+      "lengths": [
+        31
+      ],
+      "readers": [],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x59da8e0"
+      ]
+    },
+    "JARVIS_TOOL_SETTLE_LOCK_OBSERVE_SECS": {
+      "defaults": [],
+      "lengths": [
+        36
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xed59cfc]"
+      ],
+      "shapes": [
+        "A",
+        "C"
+      ],
+      "sites": [
+        "0x57a88d7",
+        "0x13f415b0"
+      ]
+    },
+    "JARVIS_TRACE_CONTEXT": {
+      "defaults": [],
+      "lengths": [
+        20
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xc668beb]",
+        "0xf760920",
+        "call qword ptr [rip + 0x7e72fab]",
+        "call qword ptr [rip + 0x7c3c43f]",
+        "call qword ptr [rip + 0x6a073a3]",
+        "call qword ptr [rip + 0x5491cb8]",
+        "0xa9b70c0",
+        "call qword ptr [rip + 0x3020b22]",
+        "call qword ptr [rip + 0x2d2f3d5]",
+        "0x774db40",
+        "call qword ptr [rip + 0xd0b92f4]"
+      ],
+      "shapes": [
+        "A",
+        "D"
+      ],
+      "sites": [
+        "0x7e99a8b",
+        "0xbe75feb",
+        "0xbe8e3c1",
+        "0xc68f6c2",
+        "0xc8c622a",
+        "0xdafb2cd",
+        "0xf0709b8",
+        "0x10e5840c",
+        "0x114e1b47",
+        "0x117d3206",
+        "0x6a53d4d",
+        "0x741c718",
+        "0x741c7c7"
+      ]
+    },
+    "JARVIS_USER_TIMEZONE": {
+      "defaults": [],
+      "lengths": [
+        20
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x2d3afae]"
+      ],
+      "shapes": [
+        "A",
+        "D"
+      ],
+      "sites": [
+        "0x117c762d",
+        "0x83060c9"
+      ]
+    },
+    "JARVIS_VAR_LIB_DIR": {
+      "defaults": [],
+      "lengths": [
+        18
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xb761718]",
+        "call r12",
+        "call qword ptr [rip + 0x7c3c4d5]",
+        "0x8da0670"
+      ],
+      "shapes": [
+        "A",
+        "D"
+      ],
+      "sites": [
+        "0x8da0ec1",
+        "0xc68f5f3",
+        "0xc8c619e",
+        "0x8da0be0"
+      ]
+    },
+    "JARVIS_VM_COMPUTE_REGION": {
+      "defaults": [],
+      "lengths": [
+        24
+      ],
+      "readers": [
+        "0xc644020"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xc647cb6",
+        "0xef5d0ba"
+      ]
+    },
+    "JARVIS_VM_DATA_REGION": {
+      "defaults": [],
+      "lengths": [
+        21
+      ],
+      "readers": [
+        "0xc644020"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xc647ccf"
+      ]
+    },
+    "JARVIS_VM_ENV_ID": {
+      "defaults": [
+        16
+      ],
+      "readers": [
+        "qword ptr [rip + 0x6cb4fb2]"
+      ],
+      "shapes": [
+        "E"
+      ],
+      "sites": [
+        "0xd84d624"
+      ]
+    },
+    "JARVIS_VOICE_DOC_GK_FORCE": {
+      "defaults": [],
+      "lengths": [
+        25
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x6e71080]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xd691671"
+      ]
+    },
+    "JARVIS_VOICE_GENUI_DECISION_SOCK": {
+      "defaults": [],
+      "readers": [
+        "0xd729930"
+      ],
+      "shapes": [
+        "E"
+      ],
+      "sites": [
+        "0xdc18efb"
+      ]
+    },
+    "JARVIS_VOICE_RTC_MEDIA_PORT": {
+      "defaults": [],
+      "lengths": [
+        27
+      ],
+      "readers": [
+        "call qword ptr [rip + 0x4ede323]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0xf6242b8"
+      ]
+    },
+    "JARVIS_VOICE_TIER_BYPASS": {
+      "defaults": [],
+      "lengths": [
+        24
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xab13258]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x99ef37e"
+      ]
+    },
+    "JARVIS_WASA_KEYD_SOCK": {
+      "defaults": [],
+      "lengths": [
+        21
+      ],
+      "readers": [
+        "call qword ptr [rip + 0xb908ee2]"
+      ],
+      "shapes": [
+        "A"
+      ],
+      "sites": [
+        "0x8bf96f4"
+      ]
+    }
+  }
+}
