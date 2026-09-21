@@ -3,11 +3,16 @@
 // to avoid Google "This browser or app may not be secure" / "Couldn’t sign you in".
 // Headed (headless=false) + Wayland display env from pitchfork.toml.
 // Connection timeout is 15 min via BROWSERLESS_CONNECTION_TIMEOUT=900000.
+// PERSISTENT PROFILE: --user-data-dir=/home/toxic/.browserless/profiles/nv-audit
+// means Chris signs in ONCE and the login survives relaunches/restarts.
+// Never wipe this dir as part of the audit; it is the durable session store.
 //
 // Usage: node nv-audit-headed.js
 // The browser stays open 15 min for live viewing; Chris signs in manually.
 const { chromium } = require("/home/toxic/.browserless/app/node_modules/playwright-core");
 const fs = require("fs");
+const PROFILE_DIR = "/home/toxic/.browserless/profiles/nv-audit";
+fs.mkdirSync(PROFILE_DIR, { recursive: true });
 
 const envText = fs.readFileSync("/home/toxic/.browserless/.env", "utf8");
 const tokenLine = envText.split("\n").find((l) => l.trim().startsWith("BROWSERLESS_TOKEN"));
@@ -34,6 +39,9 @@ const dump = async (page, label) => {
       "--disable-gpu",
       "--no-first-run",
       "--no-default-browser-check",
+      // Persistent profile: user args are appended AFTER playwright defaults,
+      // so this --user-data-dir wins over the ephemeral temp dir.
+      "--user-data-dir=" + PROFILE_DIR,
     ],
     ignoreDefaultArgs: ["--enable-automation"],
   };
