@@ -2,20 +2,24 @@
 """alias-shim: fixed-target alias forwarder for herd.
 
 Started by herd (llama-swap) as a models.<alias> cmd entry:
-    python3 alias-shim.py --port ${PORT} --target <peer-model-id> [--standby <peer-model-id>] [--name <alias>]
+    python3 alias-shim.py --port ${PORT} --target <peer-model-id> [--standby <peer-model-id>]... [--advance-on 5xx,conn,429,402,404] [--name <alias>]
 
 Rewrites incoming `model: "<alias>"` to the fixed target and forwards to
-herd, streaming the response back. The target (and optional standby) are
-fixed at config time -- the ROUTER CONFIG owns model selection; this shim
-never selects, ranks, probes, or prefers any model family. If the target is
-down the caller gets the upstream error verbatim (fail loudly, never
-silently substitute).
+herd, streaming the response back. The target (and optional standby chain)
+are fixed at config time -- the ROUTER CONFIG owns model selection; this
+shim never selects, ranks, probes, or prefers any model family. If every
+candidate is down the caller gets the last upstream error verbatim (fail
+loudly, never silently substitute).
 
-Optional one-shot standby failover (HFT telecom pattern): when the primary
-target errors (connection failure or HTTP 5xx) the shim tries the
-config-provided --standby exactly once, then surfaces whatever comes back.
-Never a retry spin. 4xx (auth/billing/not-found) is NOT a failover trigger:
-a 402/401/404 surfaces verbatim so misconfiguration stays visible.
+Optional ordered standby chain (HFT telecom pattern): --standby may be
+repeated to declare an ordered failover chain. When a candidate errors with
+a chain-advancing signal the shim tries the next candidate exactly once
+each, then surfaces whatever the last candidate returned. Never a retry
+spin. Default advancing signals: connection failure and HTTP 5xx. Config
+may extend via --advance-on (e.g. "5xx,conn,429,402,404" for free-tier
+maximal chains where throttle/billing/rotation are expected transients).
+HTTP 401 NEVER advances: an auth failure is misconfiguration and surfaces
+verbatim so it stays visible. Without --advance-on, 4xx surfaces verbatim.
 
 Transport behavior preserved from the kimi-auto shim it replaces:
 curl-like header layout (Pollinations bot-filter workaround), browser
@@ -46,8 +50,12 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--port", type=int, required=True)
 ap.add_argument("--target", required=True,
                 help="primary model id -- set in ROUTER CONFIG (herd.yaml / config-dir fragment)")
-ap.add_argument("--standby", default=None,
-                help="optional one-shot failover model id -- set in ROUTER CONFIG")
+ap.add_argument("--standby", action="append", default=[],
+                help="optional ordered failover model id -- repeat for a chain; "
+                     "set in ROUTER CONFIG")
+ap.add_argument("--advance-on", default="5xx,conn",
+                help="comma list of chain-advancing signals: 5xx, conn, 429, "
+                     "402, 404 (401 never advances). Set in ROUTER CONFIG.")
 ap.add_argument("--name", default=None,
                 help="alias name advertised on /v1/models (optional)")
 ap.add_argument("--herd", default="http://127.0.0.1:25100")
@@ -63,10 +71,31 @@ LOOP_MSG = "alias loop: requested model is the alias target itself"
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "alias-shim/2.0"
+    server_version = "alias-shim/3.0"
 
     def log_message(self, fmt, *a):
         sys.stderr.write("[alias-shim:%s] " % args.target + fmt % a + "\n")
+
+    def _chain(self):
+        """Ordered candidate chain: target first, then unique standbys."""
+        seen = []
+        for cand in [args.target] + (args.standby or []):
+            if cand and cand not in seen:
+                seen.append(cand)
+        return seen
+
+    def _advance_signals(self):
+        """Parse --advance-on into ({status codes}, allow_conn, allow_5xx)."""
+        codes, conn, fxx = set(), False, False
+        for tok in (args.advance_on or "").split(","):
+            tok = tok.strip().lower()
+            if tok == "conn":
+                conn = True
+            elif tok in ("5xx", "500"):
+                fxx = True
+            elif tok.isdigit():
+                codes.add(int(tok))
+        return codes, conn, fxx
 
     def _send_json(self, code, obj):
         body = json.dumps(obj).encode("utf-8")
@@ -78,15 +107,24 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == "/health" or self.path.startswith("/health?"):
+            # Process liveness is ALWAYS 200: the shim is up and serving.
+            # Route health rides in the body ("routable" bool). A non-200
+            # here makes supervisors (llama-swap swap, pitchfork health)
+            # treat an unroutable-but-alive alias as dead and wedge the
+            # scheduler -- the process must stay dispatchable so the chain
+            # can advance past dead candidates.
             ok, detail = self._route_check()
-            self._send_json(200 if ok else 503, {
+            self._send_json(200, {
                 "status": "ok" if ok else "unroutable",
                 "target": args.target,
-                "standby": args.standby,
+                "standby": args.standby or [],
+                "chain": self._chain(),
+                "advance_on": args.advance_on,
                 "alias": args.name,
                 "selection": "router-config",
                 "routable": ok,
                 "detail": detail,
+                "note": "http 200 = process alive; see 'routable' for route health",
             })
         elif self.path == "/v1/models" or self.path.startswith("/v1/models?"):
             data = []
@@ -94,7 +132,8 @@ class Handler(BaseHTTPRequestHandler):
                 data.append({
                     "id": args.name, "object": "model", "owned_by": "alias-shim",
                     "metadata": {"alias_of": args.target,
-                                 "standby_of": args.standby,
+                                 "chain": self._chain(),
+                                 "advance_on": args.advance_on,
                                  "selection": "router-config"},
                 })
             self._send_json(200, {"object": "list", "data": data})
@@ -189,40 +228,55 @@ class Handler(BaseHTTPRequestHandler):
         if requested in (None, ""):
             self._send_json(400, {"error": "missing model"})
             return
-        if requested == args.target or (args.standby and requested == args.standby):
+        chain = self._chain()
+        if requested in chain:
             # Self-reference guard: the alias must never route into itself.
             self._send_json(508, {"error": LOOP_MSG})
             return
-        # Fixed-target rewrite: the alias IS its target. No selection here.
-        payload["model"] = args.target
+        advance_codes, advance_conn, advance_5xx = self._advance_signals()
         auth = self.headers.get("Authorization")
 
-        conn, resp, err = self._forward(args.target, payload, auth)
-        served = args.target
-
-        # One-shot standby failover (config-driven): primary transport
-        # failure or 5xx -> try --standby once. Never a retry spin; 4xx
-        # surfaces verbatim.
-        if (resp is None or resp.status >= 500) and args.standby and args.standby != args.target:
-            why = err or ("herd HTTP %d" % resp.status)
-            if resp is not None:
+        # Ordered chain walk (config-driven): each candidate tried at most
+        # once, in config order. A candidate advances the chain on connection
+        # failure (if 'conn') or HTTP 5xx (if '5xx') or any listed status.
+        # HTTP 401 NEVER advances -- auth misconfiguration surfaces verbatim.
+        # The caller receives the LAST candidate's response verbatim: success
+        # streams back, terminal failure surfaces as the upstream status.
+        conn, resp, err, served = None, None, None, None
+        for i, cand in enumerate(chain):
+            last = (i == len(chain) - 1)
+            payload["model"] = cand
+            conn, resp, err = self._forward(cand, payload, auth)
+            if resp is None:
+                if advance_conn and not last:
+                    sys.stderr.write("[alias-shim:%s] %s unreachable (%s); advancing chain\n"
+                                     % (args.target, cand, err))
+                    continue
+                break
+            st = resp.status
+            if st < 400 or st == 401:
+                served = cand if i == 0 else "%s ->[%d] %s" % (args.target, i, cand)
+                break  # success, or auth failure: surface verbatim, no advance
+            adv = (st >= 500 and advance_5xx) or (st in advance_codes)
+            if adv and not last:
                 try:
                     resp.read()
                 except Exception:
                     pass
-            if conn is not None:
                 try:
                     conn.close()
                 except Exception:
                     pass
-            sys.stderr.write("[alias-shim:%s] primary failed (%s); one-shot failover to standby %s\n"
-                             % (args.target, why, args.standby))
-            payload["model"] = args.standby
-            conn, resp, err = self._forward(args.standby, payload, auth)
-            served = "%s -> standby %s" % (args.target, args.standby)
+                sys.stderr.write("[alias-shim:%s] %s -> herd HTTP %d; advancing chain\n"
+                                 % (args.target, cand, st))
+                conn, resp = None, None
+                continue
+            served = cand if i == 0 else "%s ->[%d] %s" % (args.target, i, cand)
+            break
 
         if resp is None:
-            self._send_json(502, {"error": err or "herd unreachable"})
+            self._send_json(502, {"error": err or "herd unreachable",
+                                  "chain": chain, "served": served})
             return
         self._stream_back(resp, conn)
         sys.stderr.write("[alias-shim:%s] %s -> %s (%s)\n"
@@ -230,6 +284,6 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    sys.stderr.write("[alias-shim] target=%s standby=%s alias=%s -> herd %s (selection: router-config)\n"
-                     % (args.target, args.standby, args.name, args.herd))
+    sys.stderr.write("[alias-shim] target=%s standby=%s advance_on=%s alias=%s -> herd %s (selection: router-config)\n"
+                     % (args.target, args.standby or [], args.advance_on, args.name, args.herd))
     ThreadingHTTPServer(("127.0.0.1", args.port), Handler).serve_forever()
