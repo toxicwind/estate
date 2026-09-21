@@ -55,6 +55,13 @@ that drives this script. Query pack:
      AND last_assistant_message IS NULL
      AND updated_at < EXTRACT(epoch FROM now()) - 3600;
 
+  -- owner status for each phantom candidate (feeds verify_phantoms as
+  -- owner_status; the reaper checks owner dir liveness on the filesystem
+  -- itself):
+  SELECT agent_id, status
+    FROM agent.agents
+   WHERE agent_id IN (<distinct parent_agent_ids of the candidates>);
+
   -- stalled: running, was active, quiet > 6h
   SELECT agent_id, kind, parent_agent_id, updated_at
     FROM agent.agents
@@ -73,6 +80,22 @@ a subagent.send nudge first ("quiet Xh, still alive?") — revive before close.
 Never close an agent with live children/descendants or recent mailbox
 deliveries: check agent.agent_ancestors and agent.message_mailbox first
 (coordinator-hygiene rule: inspect before classifying).
+
+ERRORED SPAWN RESERVATIONS (2026-09-20 evidence — documented, not cleaned):
+  68a595ef-070f-4cd8-97b8-578061d37b23 (kind=subagent, status='errored')
+  e98f8d77-1ac1-4c2c-b2f1-c30d0366bdd3 (kind=subagent, status='errored')
+  3ab964d2-2b82-48c0-be02-8a6f451914a0 (kind=subagent, status='errored')
+DB lock-timeout spawn failures; parents completed, re-dispatch undeliverable.
+They are tombstone rows, not live agents: do not auto-clean (muse.db is
+read-only; only the owning parent closes), do not alert on them.
+
+PERMANENT RESIDUE (2026-09-20 lane-reaper-squawk): a true phantom whose owner
+is terminal (completed/errored/cancelled, or never materialized: no agent dir)
+and whose directive was sent AND escalated is classified as residue in
+~/workspace/watchdog/reaper_residue.json after MIN_RESIDUE_RECHECKS
+post-escalation re-verifications with the row still 'running'. Residue stops
+alerting but stays documented with the full evidence chain. A live owner that
+ignored the directive is AWAITING-OWNER: visible, never re-emitted.
 
 Bridge exec already has fail-fast ceilings (yote-connector defaults timeout=120s
 on the WS call, 180s on the hatch-side HTTP hop), so stalls are NOT hung exec
@@ -100,6 +123,37 @@ DIRECTIVES = os.path.expanduser("~/workspace/watchdog/reaper_directives.json")
 NOTES = os.path.expanduser("~/workspace/watchdog/error_claim_notes.json")
 SQUAWK = os.path.expanduser("~/workspace/bin/squawk")
 PHANTOM_MIN_AGE_S = 3600  # never direct a close on a phantom younger than this
+
+# Permanent-residue classification (2026-09-20 lane-reaper-squawk).
+# A true phantom whose owner row is terminal (completed/errored/cancelled, or
+# never materialized: no agent dir and no last_assistant_message) AND whose
+# close-directive has been sent AND escalated to fleet AND whose row is still
+# 'running' after MIN_RESIDUE_RECHECKS post-escalation re-verifications is
+# permanently uncloseable: muse.db is read-only for agents and the only
+# terminalization channel (the owner) is gone. Such rows go to the RESIDUE
+# registry so they stop alerting; they are documented, not deleted.
+# Rows with a LIVE owner that ignored the directive stay visible as
+# AWAITING-OWNER (never silenced, never re-emitted).
+RESIDUE = os.path.expanduser("~/workspace/watchdog/reaper_residue.json")
+TERMINAL_OWNER_STATUSES = {"completed", "errored", "cancelled"}
+MIN_RESIDUE_RECHECKS = 2
+
+
+def load_residue():
+    try:
+        with open(RESIDUE) as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
+def save_residue(d):
+    try:
+        os.makedirs(os.path.dirname(RESIDUE), exist_ok=True)
+        with open(RESIDUE, "w") as f:
+            json.dump(d, f, indent=1)
+    except OSError:
+        pass
 
 
 def newest_mtime(d):
@@ -229,6 +283,38 @@ def emit_close_directive(c, evidence):
         return False
 
 
+def emit_escalation(c, evidence, prior_at):
+    """Escalate an unacted phantom directive to fleet.
+
+    The owner has not closed the row after the first directive; the escalation
+    names the owner explicitly, states the owner-status evidence, and asks the
+    fleet for a human/owner decision. Fail-soft like emit_close_directive."""
+    msg = ("REAPER-ESCALATION (ember): phantom agent row %s still 'running' "
+           "%s after directive %s — %s. Owner %s: close via subagent.close "
+           "when confirmed dead, or reply on fleet if this row must stay. "
+           "muse.db is read-only; the owner is the terminalization channel."
+           % (c["agent_id"],
+              time.strftime("%FT%TZ", time.gmtime(c["created_at"])),
+              time.strftime("%FT%TZ", time.gmtime(prior_at)) if prior_at else "?",
+              evidence, c["parent_agent_id"]))
+    try:
+        r = subprocess.run([SQUAWK, "send", "fleet", msg],
+                           capture_output=True, text=True, timeout=90)
+        return r.returncode == 0
+    except Exception:
+        return False
+
+
+def owner_terminal(owner_status, owner_dir):
+    """Owner is terminal when the row says so, or the worker never
+    materialized (no agent dir — the spawn-reservation pattern)."""
+    if (owner_status or "") in TERMINAL_OWNER_STATUSES:
+        return True, "owner status=%s" % owner_status
+    if not owner_dir:
+        return True, "owner never materialized (no agent dir)"
+    return False, "owner live (status=%s, agent dir present)" % owner_status
+
+
 def _load_notes():
     try:
         with open(NOTES) as f:
@@ -327,7 +413,9 @@ def verify_phantoms(candidates, dry_run=False):
     Input (from the cron task that owns the muse.db query pack — this
     script never touches the DB):
       [{agent_id, parent_agent_id, kind, model, created_at,
-        last_progress_ev}]   # last_progress_ev: epoch or null
+        last_progress_ev, owner_status}]
+        # last_progress_ev: epoch or null; owner_status: the parent row's
+        # status from muse.db (cron task fills it; falls back to 'unknown')
 
     A candidate is a TRUE PHANTOM only when ALL hold:
       - no /home/hatch/agents/agent-<id> dir  (never materialized)
@@ -336,11 +424,22 @@ def verify_phantoms(candidates, dry_run=False):
 
     Anything with a dir or recent events is a FALSE PHANTOM (live worker
     whose row just isn't bumped) and is reported but never directed.
+
+    Directive lifecycle per true phantom (no spam, no silent drop):
+      - no directive sent yet        -> emit close-directive (state: direct)
+      - sent, not escalated          -> emit escalation (state: escalated)
+      - sent+escalated, owner LIVE   -> awaiting_owner (visible, no re-emit)
+      - sent+escalated, owner GONE   -> residue after MIN_RESIDUE_RECHECKS
+                                        post-escalation re-verifications
+                                        (silenced, documented)
     """
     now = time.time()
     known = load_directives()
+    residue = load_residue()
     result = {"true_phantoms": [], "false_phantoms": [],
-              "directives_sent": [], "directives_failed": []}
+              "directives_sent": [], "directives_failed": [],
+              "escalations": [], "escalations_failed": [],
+              "awaiting_owner": [], "residue": []}
     for c in candidates:
         aid = c["agent_id"]
         d = os.path.join(AGENTS_ROOT, "agent-" + aid)
@@ -358,20 +457,75 @@ def verify_phantoms(candidates, dry_run=False):
             continue
         evidence = ("no agent dir, no transcript, no tool events in "
                     "%.1fh" % (age / 3600))
-        result["true_phantoms"].append({"agent_id": aid,
-                                        "parent_agent_id": c["parent_agent_id"],
-                                        "evidence": evidence})
-        if aid in known and known[aid].get("sent") and not dry_run:
-            continue  # directive already live; owner hasn't closed yet
-        if dry_run:
-            result["directives_sent"].append(aid + " (dry-run)")
+        parent = c["parent_agent_id"]
+        owner_dir = os.path.isdir(os.path.join(AGENTS_ROOT, "agent-" + parent))
+        owner_status = c.get("owner_status") or "unknown"
+        terminal, owner_ev = owner_terminal(owner_status, owner_dir)
+        entry = {"agent_id": aid, "parent_agent_id": parent,
+                 "evidence": evidence, "owner_status": owner_status,
+                 "owner_terminal": terminal, "owner_evidence": owner_ev}
+        result["true_phantoms"].append(entry)
+
+        if aid in residue:
+            result["residue"].append(
+                dict(entry, residue_since=residue[aid].get("classified_at")))
+            continue  # permanent residue: documented, silenced
+
+        rec = known.get(aid) or {}
+        if not rec.get("sent"):
+            # first contact: close-directive
+            if dry_run:
+                result["directives_sent"].append(aid + " (dry-run)")
+                continue
+            ok = emit_close_directive(c, evidence)
+            rec = {"sent": ok, "at": now, "parent": parent,
+                   "evidence": evidence,
+                   "rechecks_post_escalation": 0}
+            known[aid] = rec
+            (result["directives_sent"] if ok
+             else result["directives_failed"]).append(aid)
             continue
-        ok = emit_close_directive(c, evidence)
-        known[aid] = {"sent": ok, "at": now,
-                      "parent": c["parent_agent_id"], "evidence": evidence}
-        (result["directives_sent"] if ok
-         else result["directives_failed"]).append(aid)
+        if not rec.get("escalated_to_fleet"):
+            # second contact: escalate explicitly
+            if dry_run:
+                result["escalations"].append(aid + " (dry-run)")
+                continue
+            ok = emit_escalation(c, evidence, rec.get("at"))
+            rec["escalated_to_fleet"] = ok
+            rec["escalated_at"] = now
+            rec["rechecks_post_escalation"] = 0
+            known[aid] = rec
+            (result["escalations"] if ok
+             else result["escalations_failed"]).append(aid)
+            continue
+        # sent AND escalated: re-verify, never re-emit
+        rec["rechecks_post_escalation"] = \
+            rec.get("rechecks_post_escalation", 0) + 1
+        rec["last_seen"] = now
+        rec["last_evidence"] = evidence
+        known[aid] = rec
+        if terminal and rec["rechecks_post_escalation"] >= MIN_RESIDUE_RECHECKS:
+            residue[aid] = {
+                "classified_at": time.strftime("%FT%TZ", time.gmtime()),
+                "parent": parent, "evidence": evidence,
+                "owner_evidence": owner_ev,
+                "directive_at": rec.get("at"),
+                "escalated_at": rec.get("escalated_at"),
+                "rechecks": rec["rechecks_post_escalation"],
+                "why": ("owner terminal and unreachable; muse.db is "
+                        "read-only for agents, owner is the only "
+                        "terminalization channel — row documented, not "
+                        "deleted"),
+            }
+            result["residue"].append(dict(entry, residue_since="this run"))
+        else:
+            result["awaiting_owner"].append(
+                dict(entry,
+                     directive_at=rec.get("at"),
+                     escalated_at=rec.get("escalated_at"),
+                     rechecks=rec.get("rechecks_post_escalation")))
     save_directives(known)
+    save_residue(residue)
     return result
 
 
@@ -443,6 +597,38 @@ def main():
                 p["remaining"]))
             for aid in p["pruned"]:
                 print("  dead: %s" % aid)
+        if "phantoms" in result:
+            ph = result["phantoms"]
+            print("agent-reaper: %d true, %d false phantoms; directives=%d "
+                  "failed=%d escalations=%d esc_failed=%d awaiting_owner=%d "
+                  "residue=%d" % (
+                      len(ph["true_phantoms"]), len(ph["false_phantoms"]),
+                      len(ph["directives_sent"]), len(ph["directives_failed"]),
+                      len(ph["escalations"]), len(ph["escalations_failed"]),
+                      len(ph["awaiting_owner"]), len(ph["residue"])))
+            for t in ph["true_phantoms"]:
+                print("  TRUE %s owner=%s(%s) %s" % (
+                    t["agent_id"], t["parent_agent_id"], t["owner_status"],
+                    t["evidence"]))
+            for f in ph["false_phantoms"]:
+                print("  FALSE %s (%s)" % (f["agent_id"], f["why"]))
+            for aid in ph["directives_sent"]:
+                print("  directive sent: %s" % aid)
+            for aid in ph["directives_failed"]:
+                print("  directive FAILED: %s" % aid)
+            for aid in ph["escalations"]:
+                print("  escalated: %s" % aid)
+            for aid in ph["escalations_failed"]:
+                print("  escalation FAILED: %s" % aid)
+            for a in ph["awaiting_owner"]:
+                print("  AWAITING-OWNER %s owner=%s(%s) directive=%s "
+                      "escalated=%s rechecks=%d" % (
+                          a["agent_id"], a["parent_agent_id"],
+                          a["owner_status"], a.get("directive_at"),
+                          a.get("escalated_at"), a.get("rechecks", 0)))
+            for r in ph["residue"]:
+                print("  RESIDUE %s (%s; owner: %s)" % (
+                    r["agent_id"], r["evidence"], r["owner_evidence"]))
         if "errors" in result:
             e = result["errors"]
             if "error" in e:
