@@ -35,7 +35,7 @@ Fat response: {"seq": M, "messages": [relay-record envelopes, ...]} where
 every envelope carries its own per-message "seq". Messages with seq >
 since, oldest first, capped at 50 per response; the returned "seq" is the
 seq of the LAST message in the batch, so the client re-polls with it to
-drain the rest. Each message text is truncated to 500 chars. Sealed
+drain the rest. Full message bodies are served untruncated. Sealed
 messages are unsealed server-side with the relay identity (the hosting
 lane provisions relay.seal.key); unopenable ones ride as
 {"sealed": true, "body": null} -- ciphertext is never served.
