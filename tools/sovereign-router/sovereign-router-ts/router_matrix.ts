@@ -264,6 +264,13 @@ export class Matrix {
   priorElo = new Map<string, number>();
   priorsMtime = 0;
   priorsSource = "";
+  /**
+   * Providers with a durably persisted Elo row: restored at startup or
+   * written by a live update through setElo(). Hot-reload NEVER re-seeds
+   * these -- even when the persisted value numerically equals the bench
+   * prior. Numeric equality is not proof a provider is untouched.
+   */
+  persistedEloProviders = new Set<string>();
   circuit = new Map<string, string>();
   circuitOpenUntil = new Map<string, number>();
   // --- v3.2 exponential-backoff quarantine ---
@@ -366,7 +373,18 @@ export class Matrix {
     }
     // HealthDB first: Elo restore reads persisted live-learned values from
     // it; bench priors only fill providers with no stored row.
-    this.health = new HealthDB(dbPath);
+    // Fail open: a corrupt/unopenable DB must never take the router down --
+    // fall back to an in-memory DB and keep routing on priors.
+    try {
+      this.health = new HealthDB(dbPath);
+    } catch (e) {
+      console.error(
+        `[sovereign-router] HealthDB unavailable at ${dbPath}, ` +
+          `Elo persistence disabled (routing on priors):`,
+        e,
+      );
+      this.health = new HealthDB(":memory:");
+    }
     const seeded = this.applyBenchPriors(true);
     console.log(
       `[sovereign-router] bench priors: source=${seeded.source} ` +
@@ -383,9 +401,16 @@ export class Matrix {
    * writes through to the HealthDB (elo_state table) so the value survives
    * a daemon restart. Best-effort: a DB failure must never break routing
    * (same contract as the Governor's snapshot persistence).
+   *
+   * markPersisted=true (default): the provider joins persistedEloProviders.
+   * Use for live-learned values and startup restores. Hot-reload re-seeds a
+   * bench prior with markPersisted=false: the refreshed baseline is written,
+   * but a later priors refresh may still update it -- it is a baseline, not
+   * learned state.
    */
-  private setElo(prov: string, value: number): void {
+  private setElo(prov: string, value: number, markPersisted = true): void {
     this.elo.set(prov, value);
+    if (markPersisted) this.persistedEloProviders.add(prov);
     try {
       this.health.saveElo(prov, value);
     } catch {
@@ -397,13 +422,17 @@ export class Matrix {
    * applyBenchPriors -- seed Elo from bench-priors.json.
    *
    * Startup (force=true): providers with a persisted Elo row in the
-   * HealthDB get their live-learned value back — priors never clobber a
-   * restore. Providers with no stored row fall back to the bench prior
-   * (1000 when unbenched or the file is missing), which is then persisted.
-   * Hot-reload: only providers whose Elo is still exactly at the last
-   * applied prior are re-seeded -- providers with live traffic history
-   * (including restored values) keep their learned Elo. Live outcomes keep
-   * updating Elo either way.
+   * HealthDB get their live-learned value back and join
+   * persistedEloProviders -- priors never clobber a restore, even on exact
+   * numeric equality with the prior. Providers with no stored row fall back
+   * to the bench prior (1000 when unbenched or the file is missing) IN
+   * MEMORY ONLY: initial bench seeding is a fallback, not learned state,
+   * and is never persisted. Only live outcome changes (via setElo) create
+   * elo_state rows.
+   * Hot-reload: re-seeds only providers that are neither durably persisted
+   * nor touched by live traffic. persistedEloProviders is the authority, so
+   * a restored value that happens to equal the old prior stays protected.
+   * Live outcomes keep updating Elo either way.
    */
   applyBenchPriors(force = false): {
     reloaded: boolean;
@@ -435,22 +464,31 @@ export class Matrix {
       if (force) {
         const prev = stored[p];
         if (typeof prev === "number") {
-          // Restored live-learned Elo: map-only (already in the DB).
-          // priorElo records the *prior* baseline so hot-reload treats a
-          // restored value as live-learned and never re-seeds it.
+          // Restored live-learned Elo: map-only (already in the DB), and
+          // marked persisted so hot-reload never re-seeds it -- even when
+          // the stored value numerically equals the bench prior.
           this.elo.set(p, prev);
           this.priorElo.set(p, prior);
+          this.persistedEloProviders.add(p);
           restored.push(p);
         } else {
-          this.setElo(p, prior);
+          // Missing row: bench prior fills the in-memory map ONLY. Never
+          // persisted -- fallback priors are not learned state.
+          this.elo.set(p, prior);
           this.priorElo.set(p, prior);
           reseeded.push(p);
         }
       } else {
+        // Durably persisted providers are never re-seeded, regardless of
+        // numeric equality with the prior.
+        if (this.persistedEloProviders.has(p)) continue;
         const cur = this.elo.get(p) ?? 1000;
         const last = this.priorElo.get(p) ?? 1000;
         if (cur === last) {
-          this.setElo(p, prior);
+          // Untouched by live traffic: refresh the baseline. Written to the
+          // DB but NOT marked persisted -- a later priors refresh may update
+          // it again; only learned values are protected.
+          this.setElo(p, prior, false);
           this.priorElo.set(p, prior);
           reseeded.push(p);
         }
