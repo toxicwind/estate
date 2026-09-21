@@ -192,6 +192,9 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | taps-nats | NATS + JetStream fleet-chat substrate (Ember decider verdict fleet 12811): nats-server + JetStream on yote, subject design fleet.messages/leads.messages, dual-publish file/WS feed + NATS, Squawk passive-aggregator read path, bounded-retention history replay, tests (dual-sink, NATS-kill fallback, restart replay) | Taps (Ember's crew) | RUNNING (2026-09-21) -- spawned from verdict fleet 12811 |
 
+
+| tern | oracle-market: fix super-ralph timeout evidence loss in bidder.py, run genuine E2E market tasks, measure before/after success rates | Nightjar (Ember crew) | RUNNING (2026-09-21) |
+
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
 
