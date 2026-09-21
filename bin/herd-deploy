@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# herd-deploy: content-hash-gated immutable deploy of the herd (llama-swap) binary.
+#
+# Borrowed pattern: ZST258/qb-manager scripts/deploy-atomic.sh (MIT) —
+# EXPECTED_SHA256 verification, immutable versioned release paths, atomic
+# symlink swap, previous version kept as the rollback target.
+#
+# Usage: herd-deploy <binary> [buildinfo.json]
+#   HERD_SRC (optional): sovereign-swap source dir; when set, the go test
+#     gate runs before any file is touched.
+#
+# Exit codes: 2 usage, 3 sha256 mismatch, 4 go tests failed.
+set -euo pipefail
+
+BUILD_DIR="/home/toxic/projects/sovereign-projects/sovereign-swap/build"
+LIVE_LINK="$BUILD_DIR/llama-swap"
+
+usage() { echo "usage: herd-deploy <binary> [buildinfo.json]" >&2; exit 2; }
+BIN="${1:-}"; [ -n "$BIN" ] || usage
+INFO="${2:-build/BUILDINFO.json}"; [ -f "$INFO" ] || usage
+[ -x "$BIN" ] || { echo "FATAL: not executable: $BIN" >&2; exit 2; }
+
+want="$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["sha256"])' "$INFO")"
+[ -n "$want" ] || { echo "FATAL: empty expected sha256 in $INFO" >&2; exit 3; }
+got="$(sha256sum "$BIN" | awk '{print $1}')"
+[ "$want" = "$got" ] || {
+  echo "FATAL: sha256 mismatch (buildinfo=$want binary=$got); refusing deploy" >&2
+  exit 3
+}
+
+if [ -n "${HERD_SRC:-}" ]; then
+  (cd "$HERD_SRC" && go test ./internal/router/ ./internal/config/) \
+    || { echo "FATAL: go tests failed in $HERD_SRC; refusing deploy" >&2; exit 4; }
+else
+  echo "WARN: HERD_SRC unset, skipping go test gate" >&2
+fi
+
+ts="$(date +%Y%m%d-%H%M%S)"
+dest="$BUILD_DIR/llama-swap.$ts"
+install -m755 "$BIN" "$dest"
+cp "$INFO" "$BUILD_DIR/BUILDINFO.json.$ts"
+
+prev=""
+if [ -L "$LIVE_LINK" ]; then
+  prev="$(readlink "$LIVE_LINK")"
+  ln -sfn "$(basename "$dest")" "$LIVE_LINK"
+elif [ -e "$LIVE_LINK" ]; then
+  # First conversion from in-place binary: preserve it as a rollback target.
+  mv "$LIVE_LINK" "$BUILD_DIR/llama-swap.prev-inplace-$ts"
+  ln -s "$(basename "$dest")" "$LIVE_LINK"
+  prev="llama-swap.prev-inplace-$ts"
+else
+  ln -s "$(basename "$dest")" "$LIVE_LINK"
+fi
+
+echo "deployed: $LIVE_LINK -> $(readlink "$LIVE_LINK")"
+echo "BUILDINFO: $BUILD_DIR/BUILDINFO.json.$ts"
+if [ -n "$prev" ]; then
+  echo "rollback: ln -sfn '$prev' '$LIVE_LINK' && bin/pitchfork-restart herd"
+fi
