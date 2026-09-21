@@ -54,8 +54,8 @@ The prompt's four demands, briefly:
    durable files live ON THE BRIDGE (yote), inside your persona. Anything
    worth creating is worth committing: land real files in the right repo,
    commit, push to canonical main.
-3. Rename your chat to something unique (persona + task, e.g.
-   korra-squawk-hotload). Generic names are useless.
+3. Chat title is living status: `[Your Name]: [current status]`, updated as
+   the work moves. Generic static names are useless; a stale title lies.
 4. Announce in fleet: `agent joined: <name> — <lane>/<task> (Ember's crew)`.
    Never bare "Ember" — that name is the main agent's alone.
 
