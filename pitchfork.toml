@@ -514,22 +514,6 @@ env = { WATCHDOG_PORT = "25150", WATCHDOG_INTERVAL = "30" }
 # Live process runs the sovereign/projects/mesh/squawk-ws/ path on :25147; this block reflects that.
 auto = ["start"]
 
-# ws-exec-tunnel (2026-09-14): TCP forwarder 127.0.0.1:25379 -> 127.0.0.1:25204.
-# Chris's rule: 8379 is the ws-exec default - leave it in place, tunnel to it
-# instead of moving it. Transparent to the WS protocol (handshake+frames pass
-# through untouched). NOTE: running supervisor (2.16.0) has no reload mechanism
-# and was not restarted (forbidden) - this section takes effect on the next
-# supervisor start; the tunnel is currently supervised via `pitchfork run`.
-[daemons.ws-exec-tunnel]
-ready_cmd = "ss -ltn 'sport = :25379' | grep -q LISTEN"
-port = 25379
-env = { TUNNEL_TARGET_PORT = "25204" }
-run = "exec /usr/bin/python3 /home/toxic/sovereign/tools/ws-exec-tunnel.py" # 2026-09-20: path was /home/toxic/ws-exec-tunnel.py (missing)
-dir = "/home/toxic"
-mise = false
-retry = true
-auto = ["start"]
-
 # squawk-ws-client (2026-09-14, cell-proof pilot): push client ON awrawr-pc,
 # connecting directly to 127.0.0.1:25147. The cell-side client
 # (~/workspace/squawk-ws-client.py) dies with the cell; this one cannot.
