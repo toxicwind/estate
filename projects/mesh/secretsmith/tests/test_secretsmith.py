@@ -135,3 +135,87 @@ class TestKeyringIntegration(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+class TestDisplayProtection(unittest.TestCase):
+    """os_crypt key material (secret_is_key schemas) is never printable."""
+
+    def _reg(self):
+        return ssm.load_registry()
+
+    def _chromium_schema(self):
+        reg = self._reg()
+        schema, _ = ssm.resolve_schema("chromium", reg)
+        return schema
+
+    def test_protected_schemas_contains_chromium(self):
+        self.assertIn(self._chromium_schema(), ssm.protected_schemas(self._reg()))
+
+    def test_generic_not_protected(self):
+        reg = self._reg()
+        schema, _ = ssm.resolve_schema("generic", reg)
+        self.assertNotIn(schema, ssm.protected_schemas(reg))
+
+    def _fake_svc(self, schema):
+        item = {"path": "/org/freedesktop/secrets/item/1",
+                "label": "Chromium Safe Storage",
+                "attributes": {"xdg:schema": schema, "application": "chromium"},
+                "collection": "/org/freedesktop/secrets/aliases/default",
+                "locked": False}
+
+        class FakeSvc:
+            def __init__(self):
+                self.secret_calls = []
+
+            def search(self, filters, collection=None):
+                return [item]
+
+            def ensure_unlocked_items(self, items):
+                pass
+
+            def get_secret(self, path):
+                self.secret_calls.append(path)
+                return (b"raw-key-bytes", "text/plain")
+
+        return FakeSvc()
+
+    def _args(self, show):
+        import argparse
+        return argparse.Namespace(attr=[], collection=None, show=show, schema=None)
+
+    def test_get_show_refuses_chromium(self):
+        reg = self._reg()
+        svc = self._fake_svc(self._chromium_schema())
+        with self.assertRaises(ssm.SecretsmithError):
+            ssm.cmd_get(svc, self._args(True), reg, False)
+        self.assertEqual(svc.secret_calls, [])  # refused BEFORE any fetch
+
+    def test_get_noshow_ok_chromium(self):
+        reg = self._reg()
+        svc = self._fake_svc(self._chromium_schema())
+        import io
+        from contextlib import redirect_stdout
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            rc = ssm.cmd_get(svc, self._args(False), reg, False)
+        self.assertEqual(rc, 0)
+        self.assertIn("<redacted", buf.getvalue())
+
+    def test_search_show_refuses_chromium(self):
+        reg = self._reg()
+        svc = self._fake_svc(self._chromium_schema())
+        with self.assertRaises(ssm.SecretsmithError):
+            ssm.cmd_search(svc, self._args(True), reg, False)
+        self.assertEqual(svc.secret_calls, [])
+
+    def test_get_show_ok_for_generic(self):
+        reg = self._reg()
+        schema, _ = ssm.resolve_schema("generic", reg)
+        svc = self._fake_svc(schema)
+        import io
+        from contextlib import redirect_stdout
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            rc = ssm.cmd_get(svc, self._args(True), reg, False)
+        self.assertEqual(rc, 0)
+        self.assertEqual(len(svc.secret_calls), 1)

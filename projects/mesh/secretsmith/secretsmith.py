@@ -14,7 +14,8 @@ This tool reimplements and maximalizes secret-tool's D-Bus semantics in Python
   * Chromium/Chrome os_crypt pipeline: key lookup + Login Data / Cookies
     decryption (the real use case that started this)
   * safe defaults: secrets never printed without --show; values redacted in
-    listings and logs
+    listings and logs; os_crypt key material (secret_is_key schemas) is
+    never printed on any path -- check/attrs are metadata-only
   * `check` health command
 
 Exit codes: 0 ok, 1 runtime error, 2 usage error.
@@ -69,6 +70,31 @@ def resolve_schema(name, registry):
         return entry["xdg:schema"], entry
     # raw schema string passthrough (warned at call site)
     return name, {"xdg:schema": name, "description": "unregistered raw schema"}
+
+
+def protected_schemas(registry):
+    """xdg:schema strings whose secrets must NEVER be printed.
+
+    Driven by the registry: any schema entry with secret_is_key: true
+    (Chromium's os_crypt Safe Storage entry) is display-protected on every
+    output path -- get --show, search --show, human and JSON alike. The key
+    is consumed internally by decrypt operations only; no flag can print it.
+    """
+    out = set()
+    for _name, entry in registry.get("schemas", {}).items():
+        if isinstance(entry, dict) and entry.get("secret_is_key"):
+            xs = entry.get("xdg:schema")
+            if xs:
+                out.add(xs)
+    return out
+
+
+def _refuse_protected(item, registry):
+    schema = (item.get("attributes") or {}).get("xdg:schema", "")
+    if schema in protected_schemas(registry):
+        raise SecretsmithError(
+            "refusing to display secret for schema %r: os_crypt key material "
+            "is never printed (check/attrs report metadata only)" % schema)
 
 
 def redact(nbytes):
@@ -433,6 +459,8 @@ def cmd_search(svc, a, registry, as_json):
     # bug (wrong-schema filter silently returning empty) cannot happen.
     found = svc.search(filters, collection=a.collection)
     if a.show:
+        for it in found:
+            _refuse_protected(it, registry)
         svc.ensure_unlocked_items(found)
         for it in found:
             secret, _ct = svc.get_secret(it["path"])
@@ -473,6 +501,8 @@ def cmd_get(svc, a, registry, as_json):
     if len(found) > 1:
         raise SecretsmithError("%d items match %r — refine attributes" % (len(found), filters))
     it = found[0]
+    if a.show:
+        _refuse_protected(it, registry)
     svc.ensure_unlocked_items([it])
     secret, content_type = svc.get_secret(it["path"])
     if as_json:
@@ -689,24 +719,6 @@ def cmd_check(svc, a, registry, as_json):
     return 0 if result["ok"] else 1
 
 
-def cmd_chromium_key(svc, a, registry, as_json):
-    secret, info = chromium_key_bytes(svc, registry)
-    cands = _key_candidates(secret)
-    if as_json:
-        print(json.dumps({
-            "label": info["label"], "path": info["path"],
-            "secret_bytes": len(secret),
-            "key_candidates": len(cands),
-            "key_base64": base64.b64encode(cands[0]).decode() if a.show and cands else None,
-            "note": "raw key printed only with --show",
-        }, indent=2))
-    else:
-        print("Chromium Safe Storage: %d bytes, %d AES key candidate(s)" % (len(secret), len(cands)))
-        if a.show and cands:
-            print("key (base64): %s" % base64.b64encode(cands[0]).decode())
-        elif not a.show:
-            print("(use --show to print the key)")
-    return 0
 
 
 def _secret_rows(rows, show):
@@ -804,9 +816,6 @@ def build_parser():
 
     sub.add_parser("schemas", help="list the known-schema registry").set_defaults(func=cmd_schemas)
     sub.add_parser("check", help="health check").set_defaults(func=cmd_check)
-
-    ck = sub.add_parser("chromium-key", help="Chromium os_crypt key lookup via registry")
-    ck.set_defaults(func=cmd_chromium_key)
 
     cl = sub.add_parser("chromium-logins", help="decrypt Chromium Login Data")
     cl.add_argument("--profile-dir", default="")

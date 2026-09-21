@@ -1,5 +1,4 @@
 # secretsmith
-> **Canonical source:** [toxicwind/secretsmith](https://github.com/toxicwind/secretsmith) — this mesh dir is the live deployment.
 
 Maximal freedesktop Secret Service CLI for the estate. Fork lineage:
 [GNOME/libsecret](https://github.com/GNOME/libsecret) (`secret-tool`), forked to
@@ -57,8 +56,8 @@ secretsmith lock default / unlock default
 secretsmith schemas
 
 # Chromium/Chrome os_crypt pipeline (the use case that started this)
-secretsmith chromium-key                 # key lookup via registry (byte count)
-secretsmith chromium-key --show          # print base64 key
+# NOTE: the raw os_crypt key is never printed -- check/attrs are metadata-only
+secretsmith check                        # key metadata: byte count, AES key candidates
 secretsmith chromium-logins              # decrypt ~/.config/chromium/Default/Login Data
 secretsmith chromium-logins --profile-dir /path/to/profile --show
 secretsmith chromium-cookies
@@ -72,6 +71,12 @@ secretsmith --json search --schema chromium
 Secrets are **never printed without `--show`**. Listings show
 `<redacted: N bytes>`. Binary secrets print as base64 under `--show`.
 `set` reads from stdin/`--secret-file`, never argv (no `ps` leakage).
+
+The Chromium os_crypt key (`secret_is_key` schemas in `schemas.json`) is
+**never printed on any path** -- not with `--show`, not as JSON. `get` /
+`search --show` on such an item is refused with an error *before* the secret
+is even fetched. Decrypt operations (`chromium-logins`, `chromium-cookies`)
+consume the key internally and never emit it.
 
 ## Schema registry
 
