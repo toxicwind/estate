@@ -87,5 +87,5 @@ python3 bin/nvcf-access-probe.py [--report /tmp/nvcf-access.json]
                                   [--inference-models a/b,c/d] [--no-inference]
 ```
 
-Probe script commit: `<see git log>` · This doc: `docs/nvidia-access-map.md`.
+Probe script commit: `0ad1161efc` · This doc: `docs/nvidia-access-map.md`.
 Key material: `/home/toxic/.secrets` (`NVIDIA_API_KEY`), read-only, never committed.
