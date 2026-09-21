@@ -1,152 +1,147 @@
 #!/usr/bin/env python3
-"""Experiment: the Clopper-Pearson abstention guarantee behaves as specified.
+"""EXP-ABSTAIN — abstention gate experiment, 2026-09-21 (redesign).
 
-Checks (deterministic, no model calls):
-  1. Cold start (no history): only unanimous high-confidence emits; a
-     0.62/0.58 split escalates.
-  2. Strong history (38/40 correct): CP lower bound 0.832 >= 0.80 -> emits.
-  2b. Same 95% rate at n=20 (19/20): CP lower bound 0.751 < 0.80 ->
-      correctly ESCALATES (finite-sample honesty: n=20 cannot
-      guarantee 80% at 95% confidence).
-  3. Weak history (14/20 correct): CP lower bound 0.457 < 0.80 -> escalates.
-  4. Monotonicity: as accuracy degrades, the gate flips emit->escalate once.
+The gate is a FINITE-SAMPLE safety instrument, not a hand-tuned bar:
+
+  1. Cold start: with zero genuine labels the gate WITHHOLDS even at
+     posterior 0.99 / confidence 0.99. The old cold-unanimity bypass is
+     gone; the reason cites n=0 and the finite-sample bound.
+  2. Finite-sample honesty: 38/40 labeled emits; 19/20 and 14/20 withhold.
+     The old hand-tuned `struct_bar`/`post_bar` parameters are gone —
+     the only knob is GATE_MIN_ACCURACY plus the Clopper-Pearson bound.
+  3. Monotonicity: once the gate emits, additional correct labels never
+     flip it back to escalate.
+  4. Provenance: legacy history rows without an explicit label_source are
+     QUARANTINED (counted, never evidence). 40 genuine + 100 legacy rows
+     still emit on the 40 genuine alone.
+  5. Shrinkage + honesty: shrunk_accuracy(0,0) == 0.5 (prior reported, not
+     hidden); the gate and operating_point() never write to the history.
+  6. Provenance enforcement: record_accepted_outcome requires a valid
+     source; the gate bootstrap entry point is bench/seed_bench_labels.py
+     (bench evals graded against known labels).
+
+The safety-vs-served-traffic frontier is swept by bench/coverage_risk.py
+(plan/select split, per-question margin rule). This experiment validates
+the GLOBAL history gate; coverage_risk.py draws the curve.
 """
 import json
 import os
 import sys
+import tempfile
 
-BIN = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "bin")
-sys.path.insert(0, BIN)
-
-WORK = "/tmp/oracle-abstain-work"
-os.environ["ORACLE_WORK"] = WORK
-os.makedirs(WORK, exist_ok=True)
-
-import calibration as cal
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                "..", "bin"))
 import engine
-
-PASS = 0
-FAIL = 0
+import calibration as cal
 
 
-def check(name, cond, detail=""):
-    global PASS, FAIL
-    if cond:
-        PASS += 1
-    else:
-        FAIL += 1
-        print("FAIL %s %s" % (name, detail))
+def fresh():
+    cal.CAL_DIR = tempfile.mkdtemp(prefix="exp-abstain-")
+    cal.HISTORY_PATH = os.path.join(cal.CAL_DIR, "accepted_history.jsonl")
+    cal.DATASHEET_PATH = os.path.join(cal.CAL_DIR, "judge_datasheets.json")
+    cal.CAL_STATE_PATH = os.path.join(cal.CAL_DIR, "calibration_state.json")
 
 
-def seed_history(correct, total):
-    os.makedirs(os.path.dirname(cal.HISTORY_PATH), exist_ok=True)
-    with open(cal.HISTORY_PATH, "w") as f:
-        for i in range(total):
-            f.write(json.dumps({"question_id": "h%d" % i,
-                                "correct": i < correct,
-                                "ts": 0.0}) + "\n")
+def gate(post=0.9, conf=0.8):
+    """-> (decision, reason, operating_point)."""
+    decision, reason = engine.abstention_gate(post, conf)
+    return decision, reason, engine.gate_operating_point()
 
 
-# 1. cold start
-if os.path.exists(cal.HISTORY_PATH):
-    os.remove(cal.HISTORY_PATH)
-d, r = engine.abstention_gate(0.93, 0.95)
-check("cold start unanimous emits", d == "emit", "%s %s" % (d, r))
-d2, r2 = engine.abstention_gate(0.62, 0.55)
-check("cold start split escalates", d2 == "escalate", "%s %s" % (d2, r2))
+def main():
+    results = []
 
-# 2. strong history: 38/40 (same 95% rate as 19/20, but n=40 lets the
-#    finite-sample guarantee clear the bar: CP lo 0.832 >= 0.80)
-seed_history(38, 40)
-d3, r3 = engine.abstention_gate(0.75, 0.8)
-lo, _ = cal.clopper_pearson(38, 40, 0.05)
-check("38/40 emits (CP lo=%.3f)" % lo, d3 == "emit", r3)
+    def check(name, cond, detail=""):
+        results.append((name, cond, detail))
+        print(("ok   " if cond else "FAIL ") + name +
+              ("" if cond else " " + str(detail)))
 
-# 2b. same rate, half the labels: 19/20 correctly ESCALATES — n=20 cannot
-#     guarantee 80% at 95% confidence (CP lo 0.751). This is the guarantee
-#     working, not a bug.
-seed_history(19, 20)
-d3b, r3b = engine.abstention_gate(0.75, 0.8)
-check("19/20 escalates (finite-sample honesty)", d3b == "escalate", r3b)
+    # 1. cold start withholds even at 0.99/0.99 (no unanimity bypass)
+    fresh()
+    g, reason, op = gate(0.99, 0.99)
+    check("1. cold 0.99/0.99 withholds", g == "escalate", (g, reason))
+    check("1. reason cites n=0", "n=0" in reason or "0 labeled" in reason,
+          reason)
+    check("1. no unanimity bypass",
+          op["history_n"] == 0 and g != "verdict", op)
+    check("1. no history file created",
+          not os.path.exists(cal.HISTORY_PATH))
 
-# 3. weak history
-seed_history(14, 20)
-d4, r4 = engine.abstention_gate(0.75, 0.8)
-lo4, _ = cal.clopper_pearson(14, 20, 0.05)
-check("14/20 escalates (CP lo=%.3f)" % lo4, d4 == "escalate", r4)
+    # 2. finite-sample honesty
+    fresh()
+    for i in range(40):
+        engine.record_accepted_outcome("q%d" % i, i < 38, source="bench")
+    g, reason, op = gate()
+    check("2. 38/40 emits", g == "emit", (g, reason))
+    check("2. served_planned true", op["served_planned"] is True, op)
 
-# 4. monotonicity: 20 histories from perfect down to 50%
-flips = 0
-prev = "emit"
-for correct in range(20, 9, -1):
-    seed_history(correct, 20)
-    d5, _ = engine.abstention_gate(0.75, 0.8)
-    if d5 != prev:
-        flips += 1
-    prev = d5
-check("single emit->escalate flip", flips == 1, "flips=%d" % flips)
+    fresh()
+    for i in range(20):
+        engine.record_accepted_outcome("q%d" % i, i < 19, source="bench")
+    g, reason, op = gate()
+    check("2. 19/20 withholds", g == "escalate", (g, reason))
 
-# 5. cold-start unanimity/confidence threshold sweep. The bar must satisfy
-#    three properties:
-#    (a) emits the canonical unanimous extreme (0.93, 0.95);
-#    (b) refuses the near-miss (0.85 posterior, 0.88 conf) -- confidence
-#        below the unanimity proxy must not emit;
-#    (c) refuses (0.82 posterior, 0.93 conf) -- posterior below the AUTO
-#        tier's own 0.85 bar must not emit at cold start, or the gate would
-#        be looser than the tier ladder it serves.
-#    The sweep maps the candidate space. Two candidates satisfy all three;
-#    the tie-break is principled, not empirical: the posterior bar must
-#    equal AUTO_P so the gate can never emit what the tier ladder would
-#    not auto-resolve. The rejected qualifier (0.95, 0.90) would withhold
-#    verdicts at posteriors [0.85, 0.90) that the AUTO tier itself emits --
-#    a gate/ladder contradiction. The confidence bar 0.90 matches the
-#    unanimity confidence in escalation.route. Emit fractions are reported
-#    for transparency (fail-closed prefers the smaller emit region).
-if os.path.exists(cal.HISTORY_PATH):
-    os.remove(cal.HISTORY_PATH)
-posteriors = [0.55, 0.62, 0.70, 0.75, 0.80, 0.82, 0.85, 0.88, 0.90, 0.95]
-confidences = [0.50, 0.60, 0.70, 0.80, 0.83, 0.85, 0.88, 0.90, 0.93, 0.95]
-candidates = [(0.80, 0.80), (0.85, 0.85), (0.90, 0.85),
-              (0.90, 0.90), (0.95, 0.90)]
+    fresh()
+    for i in range(20):
+        engine.record_accepted_outcome("q%d" % i, i < 14, source="bench")
+    g, reason, _op = gate()
+    check("2. 14/20 withholds", g == "escalate", (g, reason))
+
+    # 3. monotonicity: once emit, more correct labels never flip back
+    fresh()
+    flips = 0
+    ever_emitted = False
+    for i in range(60):
+        engine.record_accepted_outcome("q%d" % i, True, source="bench")
+        g, _, _ = gate()
+        if g == "emit":
+            ever_emitted = True
+        elif ever_emitted:
+            flips += 1
+    check("3. monotonic: emitted then stayed emitted",
+          ever_emitted and flips == 0, (ever_emitted, flips))
+
+    # 4. provenance: legacy rows quarantined
+    fresh()
+    for i in range(40):
+        engine.record_accepted_outcome("q%d" % i, i < 38, source="bench")
+    with open(cal.HISTORY_PATH, "a") as f:
+        for i in range(100):
+            f.write(json.dumps({"question_id": "legacy%d" % i,
+                                "correct": True}) + "\n")
+    g, reason, op = gate()
+    check("4. 40 genuine + 100 legacy emits on genuine alone",
+          g == "emit" and op["history_n"] == 40, (g, op))
+    check("4. legacy quarantined", op["quarantined_rows"] == 100, op)
+
+    # 5. shrinkage + no synthetic writes
+    check("5. shrunk(0,0)==0.5 (prior reported, not hidden)",
+          engine.shrunk_accuracy(0, 0) == 0.5)
+    fresh()
+    for i in range(3):
+        engine.record_accepted_outcome("q%d" % i, i < 2, source="bench")
+    before = open(cal.HISTORY_PATH).read()
+    gate()
+    engine.gate_operating_point()
+    after = open(cal.HISTORY_PATH).read()
+    check("5. gate reads only, never writes synthetic labels",
+          before == after)
+
+    # 6. source enforcement
+    try:
+        engine.record_accepted_outcome("qx", True)
+        check("6. source required", False, "no ValueError")
+    except ValueError:
+        check("6. source required", True)
+
+    fails = [n for n, c, d in results if not c]
+    print("---")
+    if fails:
+        print("FAILURES: %s" % ", ".join(fails))
+        return 1
+    print("EXP-ABSTAIN: all sections passed")
+    return 0
 
 
-def _emit(p, c, sb, pb):
-    d, _ = engine.abstention_gate(p, c, struct_bar=sb, post_bar=pb)
-    return d == "emit"
-
-
-rows = []
-for sb, pb in candidates:
-    grid_emits = sum(_emit(p, c, sb, pb)
-                     for p in posteriors for c in confidences)
-    frac = grid_emits / (len(posteriors) * len(confidences))
-    canon = _emit(0.93, 0.95, sb, pb)
-    nearmiss = _emit(0.85, 0.88, sb, pb)
-    belowauto = _emit(0.82, 0.93, sb, pb)
-    rows.append((sb, pb, frac, canon, nearmiss, belowauto))
-    print("sweep struct>=%.2f post>=%.2f: emit-frac=%.3f canon=%s "
-          "near-miss=%s below-auto=%s"
-          % (sb, pb, frac, canon, nearmiss, belowauto))
-
-qualifiers = [r for r in rows
-              if r[3] and not r[4] and not r[5]]
-check("selected bar satisfies all three properties",
-      (engine.COLD_STRUCT_BAR, engine.COLD_POSTERIOR_BAR, True, False, False)
-      in [(r[0], r[1], r[3], r[4], r[5]) for r in rows],
-      str(rows))
-sel = (engine.COLD_STRUCT_BAR, engine.COLD_POSTERIOR_BAR)
-check("selected bar posterior bar == AUTO_P (tier-ladder consistency)",
-      sel[1] == engine.AUTO_P, "post_bar=%.2f AUTO_P=%.2f" % (sel[1], engine.AUTO_P))
-check("selected bar confidence bar == unanimity confidence (0.90)",
-      sel[0] == 0.90, "struct_bar=%.2f" % sel[0])
-for r in qualifiers:
-    if (r[0], r[1]) != sel:
-        check("rejected qualifier documented: (%.2f,%.2f) contradicts ladder"
-              % (r[0], r[1]),
-              r[1] > engine.AUTO_P,
-              "withholds posteriors [%.2f,%.2f) the AUTO tier emits"
-              % (engine.AUTO_P, r[1]))
-print("qualifiers: %s" % [(r[0], r[1]) for r in qualifiers])
-
-print("PASS %d FAIL %d" % (PASS, FAIL))
-sys.exit(1 if FAIL else 0)
+if __name__ == "__main__":
+    sys.exit(main())

@@ -89,13 +89,18 @@ def run_harness(mode, bin_dir, timeout_s, out_path):
         models = OLD_MODELS
 
         def slot_fn(m, prompt):
-            jp = ask.judge_once(m, prompt, timeout_s)
-            return jp, {"slot": m, "served_by": m, "refused": jp.refused}
+            jp, _att = ask.judge_once(m, prompt, timeout_s)
+            return jp, {"slot": m, "served_by": m, "refused": jp.refused,
+                        "valid": jp.valid,
+                        "failure_category": jp.failure_category,
+                        "attempts": 1}
     elif mode == "new":
         models = NEW_MODELS
 
         def slot_fn(m, prompt):
-            return ask._resilient_judge(m, prompt, timeout_s)
+            jp, slot, attempts = ask._resilient_judge(m, prompt, timeout_s)
+            slot["attempts"] = len(attempts)
+            return jp, slot
     else:
         raise SystemExit("mode must be old|new")
 
@@ -118,6 +123,8 @@ def run_harness(mode, bin_dir, timeout_s, out_path):
                     "slot": slot.get("slot", m),
                     "served_by": slot.get("served_by", m),
                     "refused": bool(jp.refused),
+                    "failure_category": slot.get("failure_category"),
+                    "attempts": slot.get("attempts", 1),
                     "posterior": None if jp.refused else jp.posterior,
                     "latency_s": round(getattr(jp, "latency_s", 0) or 0, 2),
                     "error": getattr(jp, "error", None),
