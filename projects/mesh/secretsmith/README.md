@@ -105,5 +105,6 @@ secretsmith/
 
 `compat-chromium-keyring.sh` is the source of the old `/home/toxic/.local/bin/chromium-keyring`
 stopgap, now a thin shim over secretsmith (`check` → `secretsmith check`,
-`attrs` → `secretsmith search --schema chromium`, `key` → `secretsmith chromium-key --show`).
+`attrs` → `secretsmith search --schema chromium`). The old `key` subcommand was
+removed — the raw os_crypt secret is never printed.
 One truth lives in secretsmith; the shim exists for muscle memory only.
