@@ -1,23 +1,24 @@
 #!/usr/bin/env python3
 """Mesh landing page: public homepage for the sovereign funnel.
 
-Serves on 127.0.0.1:8443 (funnel `/` -> here). Shows live status of every
+Serves on 127.0.0.1:$MESH_LANDING_PORT (25207; funnel `/` -> here). Shows live status of every
 funnel route by probing the localhost backends. stdlib only.
 """
 import concurrent.futures
+import os
 import html
 import json
 import time
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-PORT = 8443
+PORT = int(os.environ.get("MESH_LANDING_PORT", "25207"))
 
 # (display name, probe url, public funnel path or None for tailnet-only)
 BACKENDS = [
-    ("awrawr MCP", "http://127.0.0.1:8377/mcp", "/mcp"),
-    ("exec bridge (ws)", "http://127.0.0.1:8379/exec-ws", "/exec-ws"),
-    ("gemini MCP", "http://127.0.0.1:8378/mcp", "/gemini-mcp"),
+    ("awrawr MCP", f"http://127.0.0.1:{os.environ.get('AWR_MCP_PORT', '25198')}/mcp", "/mcp"),
+    ("exec bridge (ws)", f"http://127.0.0.1:{os.environ.get('BRIDGE_EXEC_PORT', '25204')}/exec-ws", "/exec-ws"),
+    ("gemini MCP", f"http://127.0.0.1:{os.environ.get('GEMINI_MCP_PORT', '25202')}/mcp", "/gemini-mcp"),
     ("squawk WS", "http://127.0.0.1:25147/squawk-ws", "/squawk-ws"),
     ("squawk feed", "http://127.0.0.1:25135/squawk-feed/seq", "/squawk-feed/seq"),
     ("whatsapp webhook", "http://127.0.0.1:25146/webhook", "/whatsapp-webhook"),
