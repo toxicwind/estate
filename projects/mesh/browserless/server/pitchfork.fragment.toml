@@ -1,10 +1,10 @@
-# Pitchfork daemon fragment — merged into the [daemons.itvx-browserless] section
+# Pitchfork daemon fragment — merged into the [daemons.browserless] section
 # of /home/toxic/sovereign/pitchfork.toml (owned sequence: stop -> ss-verify ->
 # clean --daemon -> start from /home/toxic/sovereign).
-[daemons.itvx-browserless]
+[daemons.browserless]
 port = 25130
 run = "exec /home/toxic/sovereign/projects/mesh/browserless/server/run.sh"
-dir = "/home/toxic/sovereign/projects/mesh/browserless/server"
+dir = "."
 mise = false
 retry = true
 ready_cmd = "ss -ltn 'sport = :25130' | grep -q LISTEN"

@@ -8,7 +8,7 @@
     "concurrent": 5
   },
   "notes": [
-    "Live endpoint is the pitchfork daemon itvx-browserless on 127.0.0.1:25130.",
+    "Live endpoint is the pitchfork daemon browserless on 127.0.0.1:25130.",
     "Token is NOT stored here: server token lives in 0600 /home/toxic/.browserless/.env;",
     "MCP clients pass it via initialize_browserless or BROWSERLESS_TOKEN env (see server/.env.example). NEVER commit a token."
   ],
