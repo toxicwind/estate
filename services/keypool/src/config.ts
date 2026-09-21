@@ -155,8 +155,9 @@ export function loadSecrets(path: string): Map<string, string> {
     throw new Error(`keypool: secrets file not found: ${path}`);
   }
   for (const line of readFileSync(path, "utf8").split("\n")) {
-    const t = line.trim();
+    let t = line.trim();
     if (!t || t.startsWith("#")) continue;
+    if (t.startsWith("export ")) t = t.slice(7).trim();
     const eq = t.indexOf("=");
     if (eq < 0) continue;
     out.set(t.slice(0, eq).trim(), t.slice(eq + 1).trim());
