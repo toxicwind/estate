@@ -27,6 +27,9 @@ import sys
 import time
 
 STATE = os.path.expanduser("~/.cache/shingle/swarm-paused.json")
+# DELIBERATE: raw exec.py, NOT yote-conn. This is the emergency path — it
+# must keep working when the 127.0.0.1:18301 connector daemon itself is
+# down or the cell is overloaded. Do not "canonicalize" this to yote-conn.
 EXEC = os.path.expanduser("~/workspace/awrawr-bridge/exec.py")
 SQUAWK = os.path.expanduser("~/workspace/bin/squawk")
 
