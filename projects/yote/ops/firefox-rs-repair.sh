@@ -49,13 +49,16 @@ PROG="$(basename "$0")"
 RS_SERVER_DEFAULT="https://firefox.settings.services.mozilla.com/v1"
 NORMANDY_API_DEFAULT="https://normandy.cdn.mozilla.net/api/v1"
 
-# Extra enterprise policies merged into /etc/firefox/policies/policies.json.
-# Baseline keeps DisableAppUpdate (nightly is pacman-managed on this box).
-# DisableFirefoxStudies is intentionally NOT set here: research (2026-09-21)
-# showed it disallows the "Shield" feature which gates Normandy recipes
-# including emergency remediation — see README.md for the full trace.
-# Override with env EXTRA_POLICIES_JSON='{"DisableFoo":true}' if needed.
+# Policy baseline: the repo source of truth when available
+# ($REPO_POLICIES_SRC/policies.json), else the baked-in default.
+# Current repo baseline: DisableAppUpdate (nightly is pacman-managed) +
+# DisableFirefoxStudies (source-traced 2026-09-21: kills Nimbus
+# experiments/rollouts, leaves RS syncs and Normandy emergency remediation
+# untouched — see firefox-policies/README.md for the full trace).
+# EXTRA_POLICIES_JSON merges additional policies on top at deploy time:
+#   EXTRA_POLICIES_JSON='{"DisableFoo":true}'
 EXTRA_POLICIES_JSON="${EXTRA_POLICIES_JSON:-{}}"
+DEFAULT_BASELINE='{"policies":{"DisableAppUpdate":true,"DisableFirefoxStudies":true}}'
 
 BACKUP_ROOT="/var/lib/firefox-rs-repair/backups"
 LOG_FILE="/var/log/firefox-rs-repair.log"
@@ -283,7 +286,14 @@ repair_one_profile() {
 write_policies() {
     local dest="$POLICIES_DIR/policies.json" baseline tmp merged
     command -v python3 >/dev/null || die "python3 required for policy merge"
-    baseline='{"policies":{"DisableAppUpdate":true}}'
+    # Baseline priority: repo source of truth > baked-in default.
+    if [ -n "$REPO_POLICIES_SRC" ] && [ -f "$REPO_POLICIES_SRC/policies.json" ]; then
+        baseline="$(cat "$REPO_POLICIES_SRC/policies.json")"
+        vlog "policy baseline from repo: $REPO_POLICIES_SRC/policies.json"
+    else
+        baseline="$DEFAULT_BASELINE"
+        vlog "policy baseline: baked-in default (no repo source)"
+    fi
     tmp="$(mktemp)"
     EXTRA_POLICIES_JSON="$EXTRA_POLICIES_JSON" BASELINE="$baseline" python3 - "$dest" >"$tmp" <<'EOF'
 import json, os, sys
@@ -505,10 +515,10 @@ do_verify() {
     log "== $PROG --verify =="
     # 1. policies.json parses and has required policies
     if [ -f "$POLICIES_DIR/policies.json" ]; then
-        if python3 -c "import json,sys; d=json.load(open('$POLICIES_DIR/policies.json')); assert d['policies']['DisableAppUpdate'] is True" 2>/dev/null; then
-            pass "policies.json valid, DisableAppUpdate=true"
+        if python3 -c "import json; d=json.load(open('$POLICIES_DIR/policies.json')); assert d['policies']['DisableAppUpdate'] is True and d['policies']['DisableFirefoxStudies'] is True" 2>/dev/null; then
+            pass "policies.json valid, DisableAppUpdate=true, DisableFirefoxStudies=true"
         else
-            fail "policies.json invalid or missing DisableAppUpdate"
+            fail "policies.json invalid or missing DisableAppUpdate/DisableFirefoxStudies"
         fi
     else
         fail "policies.json missing at $POLICIES_DIR/policies.json"

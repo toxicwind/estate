@@ -10,23 +10,62 @@ source and re-run the script (or let the pacman hook / path unit re-apply it).
 |---|---|---|
 | `DisableAppUpdate` | `true` | This box runs `firefox-nightly` from pacman. In-browser updates would fight the package manager and can leave a half-updated install. Updates come from `pacman -Syu`; the `firefox-rs-repair` pacman hook re-applies this repair after every upgrade. |
 
-## Deliberately NOT set (pending final source trace): `DisableFirefoxStudies`
+## SET: `DisableFirefoxStudies` — source-traced, 2026-09-21
 
-Chris's requirement is: no experiments/studies enrolled, Remote Settings
+Chris's requirement: no experiments/studies enrolled, Remote Settings
 security/update collections keep working, emergency remediation preserved if
-separable from experimentation.
+separable from experimentation. The mozilla-central trace (gecko-dev master,
+all citations file:line) says this policy delivers exactly that:
 
-Status 2026-09-21: `DisableFirefoxStudies` is under active source trace
-(mozilla-central `browser/components/enterprisepolicies/Policies.sys.mjs`).
-Verified so far: the handler calls `manager.disallowFeature("Shield")` and
-locks CFR prefs off. The open question being nailed down with exact
-file:line citations is what the `"Shield"` feature string gates — whether it
-covers only studies/experiments or also the Normandy recipe pipeline that
-carries emergency remediation. Until that trace lands with citations, this
-policy stays OUT: the safe posture is to not touch a gate whose blast radius
-is unconfirmed.
+**What it does** — `browser/components/enterprisepolicies/Policies.sys.mjs:933-948`:
+calls `manager.disallowFeature("Shield")` and locks the two CFR new-tab prefs
+(`browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons`,
+`...cfr.features`) off.
 
-The chosen mechanism instead (independent of that outcome):
+**What "Shield" gates** — the ONLY consumer of the feature string is
+`ExperimentAPI.studiesEnabled`
+(`toolkit/components/nimbus/ExperimentAPI.sys.mjs:308-314`), which ANDs
+`datareporting.healthreport.uploadEnabled`,
+`app.shield.optoutstudies.enabled`, and `Services.policies.isAllowed("Shield")`.
+With the policy set, `studiesEnabled` is false, which:
+- refuses to start `RemoteSettingsExperimentLoader`
+  (`RemoteSettingsExperimentLoader.sys.mjs:247-252`),
+- unenrolls EVERY active experiment AND rollout with reason `STUDIES_OPT_OUT`
+  (`ExperimentManager.sys.mjs:890+`, reliably awaited since Bug 1969309),
+- blocks force-enroll (`RemoteSettingsExperimentLoader.sys.mjs:584-588`).
+
+So: Nimbus experiments, rollouts, secure experiments, and messaging
+experiments are all dead — enrolled or future.
+
+**What it does NOT touch:**
+- Remote Settings syncs: zero occurrences of `studiesEnabled`/`isAllowed`/
+  `Shield` in `services/settings/remote-settings.sys.mjs` (753 lines) or
+  `RemoteSettingsClient.sys.mjs` (1370 lines) — grep-verified. Blocklists,
+  OneCRL/cert-revocation, hijack blocklists, and `normandy-recipes-capabilities`
+  keep syncing on their normal poll. There is no `services.settings.enabled`
+  kill-switch; the layers are fully orthogonal.
+- Normandy emergency remediation: `Normandy.sys.mjs:137` calls
+  `RecipeRunner.init()` unconditionally; the runner gates only on
+  `app.normandy.enabled` (default true, `firefox.js:2738`) and a valid https
+  `app.normandy.api_url` (`RecipeRunner.sys.mjs:198-225`) — no
+  `Services.policies` reference anywhere in the runner. The recipe path
+  (6h timer, `normandy-recipes-capabilities` RS collection, add-on rollout
+  actions) survives the policy. This is the separable emergency path.
+
+**History:** the policy body is untouched since ~2020 (800-commit scan of
+`Policies.sys.mjs` found nothing); 2025 changes (Bug 1950237 live opt-out
+observers, Bug 1969309 awaited unenroll) only strengthened the kill. The
+"Shield" string's meaning migrated from the Normandy era to Nimbus-only —
+which is why the emergency path survives.
+
+**Empirical check** (proves the emergency path is healthy): watch
+`services.settings.last_update_seconds` and
+`services.settings.main.normandy-recipes-capabilities.last_check` advance —
+both are set only after a clean sync (`remote-settings.sys.mjs:476-501`).
+
+No narrower mechanism does better: a bare `app.shield.optoutstudies.enabled`
+pref lock misses the CFR locks and the policy-level guarantee (the policy
+keeps `isAllowed("Shield")` false even if prefs are tampered with).
 
 - **No enrollment happens without data.** The 2026-09-21 incident was a
   poisoned `services.settings.server` (`data:,#remote-settings-dummy/v1`, a
