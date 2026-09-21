@@ -80,7 +80,7 @@ interface SseClient {
 }
 
 function parseServerArgs(argv: string[]): { port: number; jobsDir: string } {
-	let port = 4700;
+	let port = 25145;
 	let jobsDir = DEFAULT_JOBS_DIR;
 	for (let i = 0; i < argv.length; i++) {
 		if (argv[i] === "--port" && argv[i + 1]) port = Number(argv[++i]);

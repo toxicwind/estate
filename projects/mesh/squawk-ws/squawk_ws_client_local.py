@@ -26,7 +26,7 @@ import time
 HOST = os.environ.get("SQUAWK_WS_HOST", "127.0.0.1")
 PORT = int(os.environ.get("SQUAWK_WS_PORT", "25147"))
 WS_PATH = "/squawk-ws"
-TOKEN_FILE = os.environ.get("SQUAWK_WS_TOKEN_FILE", "/home/toxic/squawk-ws/token")
+TOKEN_FILE = os.environ.get("SQUAWK_WS_TOKEN_FILE", "/home/toxic/.squawk-ws-token")
 SPOOL = os.environ.get("SQUAWK_WS_CLIENT_SPOOL",
                        "/home/toxic/squawk-ws/client-spool.jsonl")
 CURSOR = os.environ.get("SQUAWK_WS_CLIENT_CURSOR",
