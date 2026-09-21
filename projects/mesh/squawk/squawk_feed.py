@@ -66,6 +66,7 @@ import urllib.parse
 from pathlib import Path
 
 import fleet_relay
+import seq_alloc
 
 # ---------------------------------------------------------------------------
 # process/boot/exit telemetry (2026-09-18)
@@ -231,7 +232,12 @@ class FeedState:
         self.channel = channel
         self.identity = identity
         self.key_dir = key_dir
-        self.high = _channel_high(chan_dir)
+        # Durable high-water floor (2026-09-21): after message
+        # deletions the disk-derived max can sit below seqs the
+        # feed already broadcast, so seed from the monotonic
+        # allocator too -- never start below it.
+        self.high = max(_channel_high(chan_dir),
+                        seq_alloc.read_high(chan_dir.parent, channel))
         self.cond = threading.Condition()
         self.stop = threading.Event()
 
@@ -343,8 +349,13 @@ def _publish_message(root: Path, channel: str, sender: str, title: str, text: st
     with open(lock_path, "w") as lockf:
         fcntl.flock(lockf, fcntl.LOCK_EX)
         try:
-            max_seq = _channel_high(chan_dir)
-            seq = max_seq + 1
+            # Monotonic durable allocation (2026-09-21): the old
+            # disk-derived next-seq reused dead numbers after
+            # deletions and the in-memory high-water mark then
+            # suppressed those messages forever (seq <= high
+            # looks already-delivered). alloc_seq serializes on
+            # its own internal flock; safe inside this outer lock.
+            seq = seq_alloc.alloc_seq(root, channel)
             slug = "".join(
                 c if c.isalnum() else "-"
                 for c in (title[:30].lower() if title else "msg")
