@@ -326,13 +326,13 @@ port = 25153
 # a kimi-named alias serving a non-Kimi model. Doctrine (AGENTS.md):
 # "kimi-auto is Kimi-only. Honest 503 when no Kimi route is healthy;
 # never a silent fallback." Retargeted to the moonshot peer's Kimi IDs.
-run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
+run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
 dir = "/home/toxic/sovereign/config/herd.d"
 mise = false
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25153/health" # 2026-09-20: literal, was ${KIMI_AUTO_SHIM_PORT}=25105
-env = { KIMI_AUTO_SHIM_PORT = "25153" }
+env = { KIMI_AUTO_SHIM_PORT = "25153", SHIM_CONNECT_TIMEOUT = "240" }
 auto = ["start"]
 
 [daemons.squawk-relay-sink]

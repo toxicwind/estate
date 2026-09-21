@@ -646,6 +646,8 @@ models:
   # verbatim. NEVER repointed at another model to hide a provider failure.
   kimi-k3-nim:
     cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target nim-kimi/moonshotai/kimi-k3 --name kimi-k3-nim
+    env:
+      - SHIM_CONNECT_TIMEOUT=240
     description: "Kimi K3 via NVIDIA NIM (genuine moonshotai/kimi-k3, cold-aware). Fails loudly; no fallback."
     metadata:
       alias_of: nim-kimi/moonshotai/kimi-k3
