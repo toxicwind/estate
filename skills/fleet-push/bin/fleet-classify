@@ -10,7 +10,8 @@ import re
 import subprocess
 import sys
 
-BRIDGE = "/home/hatch/workspace/awrawr-bridge/exec.py"
+BRIDGE = "/home/hatch/workspace/awrawr-bridge/exec.py"  # legacy transport (kept as fallback)
+YOTE_CONN = "/home/hatch/workspace/bin/yote-conn"  # canonical transport
 SQUAWK = "/home/hatch/workspace/bin/squawk"
 ROOT = "/home/toxic/.shingle/squawk-root/fleet"
 
@@ -42,6 +43,20 @@ ORDER_KEYWORDS = [
 
 
 def bridge(cmd):
+    """Run cmd on yote via the canonical yote-conn CLI (raw exec.py fallback).
+
+    yote-conn already unwraps both bridge output shapes (raw stdout on the
+    WS lane, JSON envelope on fallback), so no envelope handling here.
+    """
+    r = subprocess.run([YOTE_CONN, "exec", cmd],
+                       capture_output=True, text=True, timeout=60)
+    if r.returncode != 0:
+        raise RuntimeError("yote-conn failed: %s" % (r.stderr or r.stdout))
+    return r.stdout.strip()
+
+
+def bridge_legacy(cmd):
+    """Raw exec.py fallback — used only if the connector daemon is down."""
     r = subprocess.run(["python3", BRIDGE, cmd],
                        capture_output=True, text=True, timeout=60)
     if r.returncode != 0:
