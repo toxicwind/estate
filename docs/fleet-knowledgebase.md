@@ -149,6 +149,15 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | forge-union | unify github search tooling | forge-union | RUNNING (2026-09-21) |
 
+
+| secretsmith | secrets project: fork Secret Service tooling, maximalize into mesh project | ember | DONE (2026-09-21) — 1005ab333f |
+
+
+| sweep-runner-9c | first-class commit sweep | ember | RUNNING (2026-09-21) |
+
+
+| secretsmith-promoter | first-class repo promotion for secretsmith | secretsmith-promoter | RUNNING (2026-09-21) |
+
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
 

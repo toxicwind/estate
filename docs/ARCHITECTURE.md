@@ -166,7 +166,7 @@ ho64: 1 # Holo MoE, evict first
 | **25100** | Public OpenAI-compatible API (`/v1`, `/ui`, `/models/sse`) |
 | **25200** | Internal backend (mesh-front proxies here)                 |
 
-### Config (`/home/toxic/sovereign/tools/llama-swap/config.yaml`)
+### Config (`/home/toxic/sovereign/config/llama-swap.yaml`)
 
 - **Health checks**: 300s timeout, 600s TTL
 - **Preload**: `beellama/exaone-4-0-1-2b-iq4xs` on startup (3.3 GiB, ~70 tok/s idle)
@@ -264,7 +264,7 @@ Each catch block has its own nested try/catch — **no single point of failure**
 | **llama-swap**       | 25100/25200 | Go (toxicwind fork) | LLM front door + flock router                   |
 | **rust-web**         | 25101       | Rust                | Ops dashboard + embedded watchdog                    |
 | **yote**             | 25102       | Bun                 | Telegram / status                                    |
-| **openfang**         | 25103/25203 | Rust                | Agent kernel — 206 models, 61 skills, Discord bridge |
+| **openfang**         | 25196/25103 | Rust                | Agent kernel — 206 models, 61 skills, Discord bridge |
 | **llama-swap:25100** | 25100       | Bun (TS)            | 5-strategy flock (external tooling)             |
 | **prometheus**       | 25105       | Go                  | Metrics                                              |
 | **hf-downloader**    | 25106       | Bun                 | GGUF download UI                                     |

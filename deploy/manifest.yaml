@@ -34,12 +34,12 @@ version: 1
 binaries:
   herd:
     path: /home/toxic/projects/sovereign-projects/sovereign-swap/build/llama-swap
-    sha256: "9305f95663dbf7a8c0e07e6c46a5549cbc173075fc2bf77cbd7e98ee3b81b519"
-    immutable_copy: /home/toxic/projects/sovereign-projects/sovereign-swap/build/llama-swap.20260920-223545
+    sha256: "98978a2612445ff59b07abb51797d453368bb494f9c4fb28ed57c6092d2281f6"
+    immutable_copy: /home/toxic/projects/sovereign-projects/sovereign-swap/build/llama-swap.20260921-124036
     source: toxicwind/sovereign-swap
-    commit: 61e497ee88f36b176b7e74bace697f142ef99aa2
+    commit: 7fc25280816fa7f98764ac46d1435d55ac9dc3c3
     upstream_base: 7a14664d98f0e66bc68bba08548290ca0b469f98
-    built_at: "2026-09-21T04:34:33Z"
+    built_at: "2026-09-21T12:40:37Z"
     daemon: herd
     note: live path is a symlink to the immutable versioned file (herd-deploy)
   herd-keypool:
