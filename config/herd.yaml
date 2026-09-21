@@ -50,8 +50,12 @@ flock:
     flock-deepseek-v4-flash: deepseek-ai/deepseek-v4-flash-0731
     flock-nemotron-35-lightning: nvidia/nemotron-3.5-lightning-30b-a3b
     flock-glm-53-flash: z-ai/glm-5.3-flash
-    kimi-k2: moonshot/kimi-k2.6
-    kimi-k3-nim: moonshotai/kimi-k3
+    # 2026-09-21 (eclipse): moonshot/* stood down (billing-suspended, no
+    # top-up per Chris). Re-pointed at the free-Kimi OpenRouter IDs the
+    # maximal free-Kimi chains chase; section dormant (flock disabled) --
+    # fails loudly with genuine upstream status when the chain is dry.
+    kimi-k2: moonshotai/kimi-k2.6:free
+    kimi-k3-nim: moonshotai/kimi-k3:free
 routing:
   scheduler:
     use: fifo
@@ -191,53 +195,59 @@ models:
   # the shim tries the standby exactly once, then surfaces whatever comes
   # back. 4xx surfaces verbatim so misconfiguration stays visible.
   oracle-judge-a:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target nex-agi/nex-n2.5-mini:free --standby nex-agi/nex-n2.5-pro:free
-    description: "Oracle judge A (alias -> nex-agi/nex-n2.5-mini:free) -- fastest exact-output free judge (489ms census)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/nex-agi/nex-n2.5-mini:free --standby openrouter-free/nex-agi/nex-n2.5-pro:free
+    description: "Oracle judge A (alias -> openrouter-free/nex-agi/nex-n2.5-mini:free) -- fastest exact-output free judge (489ms census)"
     metadata:
-      alias_of: nex-agi/nex-n2.5-mini:free
+      alias_of: openrouter-free/nex-agi/nex-n2.5-mini:free
       role: oracle-judge
   oracle-judge-b:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target nex-agi/nex-n2.5-pro:free --standby poolside/laguna-s-2.1:free
-    description: "Oracle judge B (alias -> nex-agi/nex-n2.5-pro:free) -- exact-output NEX complement (799ms census)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/nex-agi/nex-n2.5-pro:free --standby openrouter-free/poolside/laguna-s-2.1:free
+    description: "Oracle judge B (alias -> openrouter-free/nex-agi/nex-n2.5-pro:free) -- exact-output NEX complement (799ms census)"
     metadata:
-      alias_of: nex-agi/nex-n2.5-pro:free
+      alias_of: openrouter-free/nex-agi/nex-n2.5-pro:free
       role: oracle-judge
   oracle-judge-c:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target poolside/laguna-s-2.1:free --standby nex-agi/nex-n2.5-mini:free
-    description: "Oracle judge C (alias -> poolside/laguna-s-2.1:free) -- third model family (2161ms census)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/poolside/laguna-s-2.1:free --standby openrouter-free/nex-agi/nex-n2.5-mini:free
+    description: "Oracle judge C (alias -> openrouter-free/poolside/laguna-s-2.1:free) -- third model family (2161ms census)"
     metadata:
-      alias_of: poolside/laguna-s-2.1:free
+      alias_of: openrouter-free/poolside/laguna-s-2.1:free
       role: oracle-judge
-  oracle-judge-local:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target beellama/gemma-96k
-    description: "Oracle judge fallback (alias -> beellama/gemma-96k) -- local last-resort slot filler"
-    metadata:
-      alias_of: beellama/gemma-96k
-      role: oracle-judge-fallback
+  # oracle-judge-local: native llama-swap alias of beellama/gemma-96k (2026-09-21).
+  # Was an alias-shim.py cmd entry; REMOVED because a shim hosted INSIDE
+  # llama-swap cannot forward to another llama-swap cmd model -- the swapper
+  # cannot swap to the target while the shim holds the active slot for the
+  # in-flight outer request (re-entrant deadlock: health 200, completions
+  # hang -> 502). Native aliasing routes the swap directly, no re-entrancy.
+  # Router config still owns selection: edit the aliases list below.
   # --- Kimi short aliases (added 2026-09-20) ---
-  # Fixed-target forwarders via config/herd.d/alias-shim.py. No fallback,
-  # no substitution: each alias IS its target. Retargeted 2026-09-20
-  # (moonshot-parked-audit) from openrouter-pool/* back to moonshot/* --
-  # the direct peer is restored; openrouter-pool Kimi is 402
-  # "Insufficient credits" until the account is topped up.
-  # 2026-09-21 modelmap: targets were `moonshot/<id>` -- peer.go does
-  # EXACT-match lookups, no `peer/` prefix stripping, so those 404'd.
-  # Targets are the bare upstream IDs the moonshot peer claims.
+  # Fixed-target forwarders via config/herd.d/alias-shim.py (v3: ordered
+  # --standby chains + --advance-on). CHRIS DOCTRINE 2026-09-21: Kimi routes
+  # are NEVER defaults; their sole purpose is routing Kimi FREE models
+  # maximally. Each alias declares the full free-Kimi chain in priority
+  # order; the shim walks it one-shot per candidate, advancing on
+  # 5xx/conn/429/402/404 (free-tier rotation, throttle, and depleted-credit
+  # states are expected transients, never misconfiguration). HTTP 401 never
+  # advances: bad auth surfaces verbatim. Paid Kimi (moonshot direct, 429
+  # billing-suspended; openrouter-pool, 402 insufficient-credits) is
+  # deliberately NOT in these chains -- free only.
   kimi:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target kimi-k2.6
-    description: "Kimi (alias -> kimi-k2.6)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --advance-on 5xx,conn,429,402,404 --name kimi
+    description: "Kimi (maximal free-Kimi chain: openrouter-free :free IDs -> hf-free)"
     metadata:
-      alias_of: kimi-k2.6
+      alias_of: openrouter-free/moonshotai/kimi-k3:free
+      chain: free-kimi-maximal
   kimi-k2:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target kimi-k2.6
-    description: "Kimi K2 (alias -> kimi-k2.6)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --advance-on 5xx,conn,429,402,404 --name kimi-k2
+    description: "Kimi K2 (maximal free-Kimi chain: openrouter-free :free IDs -> hf-free)"
     metadata:
-      alias_of: kimi-k2.6
+      alias_of: openrouter-free/moonshotai/kimi-k3:free
+      chain: free-kimi-maximal
   kimi-code:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target kimi-k2.7-code
-    description: "Kimi code specialist (alias -> kimi-k2.7-code)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/moonshotai/kimi-k2.7-code:free --standby openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby hf-free/moonshotai/Kimi-K3 --advance-on 5xx,conn,429,402,404 --name kimi-code
+    description: "Kimi code specialist (maximal free-Kimi chain, code-first -> hf-free)"
     metadata:
-      alias_of: kimi-k2.7-code
+      alias_of: openrouter-free/moonshotai/kimi-k2.7-code:free
+      chain: free-kimi-maximal
   beellama/exaone-4-0-1-2b-iq4xs:
     cmd: ${BEELLAMA_BIN} --model ${EXAONE_1B_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     aliases:
@@ -543,6 +553,7 @@ models:
     cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_BASE_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_96K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     aliases:
       - gemma-96k
+      - oracle-judge-local
     env:
       - LD_LIBRARY_PATH=${BEELLAMA_LD}
       - ${CUDA_ENV}
@@ -621,6 +632,34 @@ models:
 # DEAD/HANGING (do not route): flock-direct (25s hangs, disabled above).
 # Google Antigravity is the comparison baseline for agent/model quality when usable.
 # =============================================================================
+# Local size-tier aliases (committed 2026-09-21 modelmap-r2): these were
+# worktree-only WIP and were wiped by an unrelated config rewrite at
+# 2026-09-21 06:26 MDT; restored here durably. Each entry is a full cmd
+# model (distinct ctx/reasoning params per tier) -- the estate's
+# sovereign-swap fork serves cmd blocks under top-level `aliases:`.
+# Model files come from the macros: section (MODEL_DIR, QWEN35_9B_FLASH_IQ4XS,
+# GEMMA_12B_BASE_Q4KM); both gguf files verified on disk 2026-09-21.
+# Router config owns selection: retarget by editing the --model macros.
+  # kimi-k3-nim REPAIRED 2026-09-21: fixed-target alias to nim-kimi /
+  # moonshotai/kimi-k3 (genuine K3 via NVIDIA NIM, identity-enforced by
+  # the sidecar). Single target, no standby: failures surface loud and
+  # verbatim. NEVER repointed at another model to hide a provider failure.
+  kimi-k3-nim:
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target nim-kimi/moonshotai/kimi-k3 --name kimi-k3-nim
+    description: "Kimi K3 via NVIDIA NIM (genuine moonshotai/kimi-k3, cold-aware). Fails loudly; no fallback."
+    metadata:
+      alias_of: nim-kimi/moonshotai/kimi-k3
+      role: kimi-nim
+aliases:
+  small:
+    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_ON} ${SPEC_NONE}
+  medium:
+    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_BASE_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_ON} ${SPEC_NONE}
+  code:
+    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_BASE_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_ON} ${SPEC_NONE}
+  long:
+    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_256K} ${KV_Q8} ${REASONING_ON} ${SPEC_NONE}
+
 peers:
   # ROUTING DOCTRINE (Chris, 2026-09-20) refined: RANKING > FREE-ON-PROVIDER > PAY.
   # See the canonical doctrine block above 'peers:'. (Supersedes the 2026-09-20
@@ -639,63 +678,58 @@ peers:
   # no-auth and dummy-bearer both return HTTP 200 with real completions
   # (kimi-k3 @ 0.24-0.53s, openai @ 0.28s). Free-Kimi route is live;
   # re-probe before disabling. (openrouter-kimi/hf-free/flock disables verified dead.)
-  # DISABLED 2026-09-20 ~02:35 MDT (provider-surgeon): re-probed per the 01:50 re-enable note.
-  # Through-herd requests now return HTTP 401 'A valid API key is required'; direct no-auth
-  # to gen.pollinations.ai returns HTTP 200 with real completions (verified this run).
-  # Root cause: the Sep-18 herd binary bakes in the P1 dummy-bearer workaround
-  # (Authorization: Bearer <redacted> + x-api-key, from herd-origmain-test/internal/router/peer.go);
-  # Pollinations now rejects the dummy bearer while accepting no-auth. The peer config omits
-  # apiKey, so the binary always injects the dummy -> 401. Proper fix: rebuild herd from
-  # projects/herd (which does NOT contain the P1 patch) so empty apiKey sends no auth headers,
-  # then pitchfork-restart sovereign/herd. Until then this peer stays parked.
-  #pollinations-free:
-  #  proxy: https://gen.pollinations.ai
-  #  # apiKey omitted → router injects pollinations-free-workaround (see internal/router/peer.go P1)
-  #  models:
-  #    - openai
-  #    - gemma-4-31b
-  #    - gpt-oss
-  #    - qwen3.8-27b
-  #    - muse-glimmer
-  #    - muse-spark-1.2
-  #    - kimi-k3
-  #    - nemotron-3.5-lightning
-  #    # Free Kimi note (verified 2026-09-14 free-tier fuzz):
-  #    # moonshotai/kimi-k3, kimi-k2.6, kimi-k2.7-code all serve HTTP 200
-  #    # free on Pollinations (no-auth and with the injected dummy bearer,
-  #    # peer.go P1, 500-700ms) -- but they are NOT listed here: the
-  #    # openrouter-kimi peer claims the same IDs and sorts first
-  #    # (peer.go sorts peer IDs; first claim wins), so listing them would
-  #    # be shadowed. The unprefixed kimi-k3 above is pollinations-unique
-  #    # and is the live free-Kimi route (resolves via Fireworks backend).
-  #  timeouts:
-  #    connect: 30
-  #    keepalive: 30
-  #    responseHeader: 60
-  #    tlsHandshake: 10
-  #    idleConn: 90
+  # RE-ENABLED 2026-09-21 (forge): herd rebuilt from sovereign-swap branch
+  # herd-fqn-fix commit 7fc25280816f -- the Sep-18 dummy-Bearer workaround is gone:
+  # empty apiKey now sends NO auth headers (peer.go strips client auth too).
+  # Direct no-auth probe 2026-09-21 returned HTTP 200 on openai; through-herd
+  # verification after restart below. Re-park if 401s return.
+  pollinations-free:
+    proxy: https://gen.pollinations.ai
+    # apiKey omitted -> anonymous: no auth headers sent (sovereign-swap rebuild 2026-09-21, commit 7fc2528)
+    models:
+      - openai
+      - gemma-4-31b
+      - gpt-oss
+      - qwen3.8-27b
+      - muse-glimmer
+      - muse-spark-1.2
+      - kimi-k3
+      - nemotron-3.5-lightning
+      # Free Kimi note (verified 2026-09-14 free-tier fuzz):
+      # moonshotai/kimi-k3, kimi-k2.6, kimi-k2.7-code all serve HTTP 200
+      # free on Pollinations (no-auth and with the injected dummy bearer,
+      # peer.go P1, 500-700ms) -- but they are NOT listed here: the
+      # openrouter-kimi peer claims the same IDs and sorts first
+      # (peer.go sorts peer IDs; first claim wins), so listing them would
+      # be shadowed. The unprefixed kimi-k3 above is pollinations-unique
+      # and is the live free-Kimi route (resolves via Fireworks backend).
+    timeouts:
+      connect: 30
+      keepalive: 30
+      responseHeader: 60
+      tlsHandshake: 10
+      idleConn: 90
   # 
-  # DISABLED 2026-09-20 (provider-surgeon): HF_TOKEN and all 3 backup HF keys are
-  # dead (HTTP 401); no working HuggingFace key exists. Remove entirely if a new
-  # HF key never materializes. Original block below:
-  #   # --- hf-free: free Kimi via HuggingFace Inference Providers (additive 2026-09-14) ---
-  #   # Matrix-verified: moonshotai/Kimi-K3 -> HTTP 200 + real completion on our
-  #   # HF_TOKEN (no billing attached; HF free-served set). Other Kimi IDs 402.
-  #   # The kimi-auto resolver auto-discovers this ID from herd /v1/models.
-  #   hf-free:
-  #     proxy: https://router.huggingface.co
-  #     apiKey: ${env.HF_TOKEN}
-  #     models:
-  #       - moonshotai/Kimi-K3
-  #     options:
-  #       validateModel: true
-  #
-  #
-  #
-  #
-  #
-  #
-  #
+  # --- hf-free: free Kimi via HuggingFace Inference Providers (additive 2026-09-14) ---
+  # RE-ENABLED 2026-09-21 (ember-kimi-route): HF_TOKEN is valid again
+  # (fine-grained token, auth verified live 2026-09-21 -- no more 401).
+  # Monthly included credits are DEPLETED (HTTP 402 as of 2026-09-21), so
+  # this peer is a fallback tier in the maximal free-Kimi chain: the shim
+  # advances past 402 to the next candidate, and it serves automatically
+  # when credits reset. moonshotai/Kimi-K3 is the only Kimi ID verified to
+  # exist on HF Inference Providers (lowercase moonshotai/kimi-k3 -> 400
+  # "does not exist"). Other Kimi IDs 402.
+  hf-free:
+    proxy: https://router.huggingface.co
+    apiKey: ${env.HF_TOKEN}
+    models:
+      - moonshotai/Kimi-K3
+    timeouts:
+      connect: 30
+      keepalive: 30
+      responseHeader: 120
+      tlsHandshake: 10
+      idleConn: 90
   #   # Track K -- OpenRouter Kimi/Moonshot models (kimi-auto routing).
   # DISABLED 2026-09-20 (provider-surgeon): OPENROUTER_API_KEY_1 is valid but the
   # account has INSUFFICIENT CREDITS (HTTP 402 on all paid kimi IDs) and OpenRouter
@@ -784,33 +818,58 @@ peers:
       tlsHandshake: 10
       idleConn: 90
 
-  # --- moonshot: Moonshot AI direct (RESTORED 2026-09-20, moonshot-parked-audit) ---
-  # Key verified live 2026-09-20 ~15:00 MDT (HTTP 200 on /v1/models; serves
-  # kimi-k2.6 + kimi-k2.7-code, no kimi-k3 on this key). Chat was 429 at probe
-  # time -- TRANSIENT per doctrine; herd peer failover + cooldown apply. If 429s
-  # persist for hours, suspect balance exhaustion, re-park, and top up.
-  # OpenRouter Kimi is 402 "Insufficient credits" (E4) -- this peer is the
-  # working K2-line route until credits land or HF-free revives. k3 has no
-  # direct route: kimi-k3-nim stays on openrouter-pool (honest 402).
-  # Model IDs verbatim from api.moonshot.ai/v1/models.
-  # NOTE: proxy has no /v1 suffix -- the router joins proxy + /v1/chat/completions.
-  moonshot:
-    proxy: https://api.moonshot.ai
-    apiKey: ${env.MOONSHOT_API_KEY}
+  # STOOD DOWN 2026-09-21 (eclipse, Chris directive: NO Moonshot top-up, ever).
+  # Verified 2026-09-21: key valid (/v1/models -> 200) but chat completions ->
+  # exceeded_current_quota_error "suspended due to insufficient balance" --
+  # hard billing state, not transient. Peer parked per file convention
+  # (commented block); re-enable ONLY on Chris's explicit order + balance.
+  # Kimi routes resolve via the maximal free-Kimi chains (models.kimi /
+  # kimi-k2 / kimi-code) and fail loudly with genuine upstream status.
+#  # --- moonshot: Moonshot AI direct (RESTORED 2026-09-20, moonshot-parked-audit) ---
+#  # Key verified live 2026-09-20 ~15:00 MDT (HTTP 200 on /v1/models; serves
+#  # kimi-k2.6 + kimi-k2.7-code, no kimi-k3 on this key). Chat was 429 at probe
+#  # time -- TRANSIENT per doctrine; herd peer failover + cooldown apply. If 429s
+#  # persist for hours, suspect balance exhaustion, re-park, and top up.
+#  # OpenRouter Kimi is 402 "Insufficient credits" (E4) -- this peer is the
+#  # working K2-line route until credits land or HF-free revives. k3 has no
+#  # direct route: kimi-k3-nim stays on openrouter-pool (honest 402).
+#  # Model IDs verbatim from api.moonshot.ai/v1/models.
+#  # NOTE: proxy has no /v1 suffix -- the router joins proxy + /v1/chat/completions.
+#  moonshot:
+#    proxy: https://api.moonshot.ai
+#    apiKey: ${env.MOONSHOT_API_KEY}
+#    models:
+#      - kimi-k2.6
+#      - kimi-k2.7-code
+#    timeouts:
+#      connect: 30
+#      keepalive: 30
+#      responseHeader: 120
+#      tlsHandshake: 10
+#      idleConn: 90
+  # --- nim-kimi: NVIDIA NIM Kimi-K3 via cold-aware sidecar (2026-09-21) ---
+  # CORRECTION 2026-09-21: the 2026-09-20 "NIM is DELETED" verdict was built
+  # on a false premise (front-door 404/410s from WRONG model IDs like
+  # moonshotai/kimi-k2-instruct, which EOL'd 2026-05-12). Live-verified
+  # 2026-09-21: moonshotai/kimi-k3 returns genuine K3 (identity-checked)
+  # via integrate.api.nvidia.com with the K3 contract (top_p omitted,
+  # ~120s cold-load tolerance). Direct NVCF-plane invocation is NOT
+  # available to this key (203 functions listed are NVIDIA-internal
+  # dynamo benchmark/shadow rigs; POST /v2/nvcf/queues/{id} 404s) -- the
+  # front door IS the NVCF plane's public face. The sidecar on
+  # 127.0.0.1:25163 bakes the contract in: warmup on start, 300s upstream
+  # timeout, top_p strip, identity enforcement, 404/429 classification.
+  # No silent fallback to another model, ever.
+  nim-kimi:
+    proxy: http://127.0.0.1:25163
     models:
-      - kimi-k2.6
-      - kimi-k2.7-code
+      - moonshotai/kimi-k3
     timeouts:
       connect: 30
       keepalive: 30
-      responseHeader: 120
+      responseHeader: 300
       tlsHandshake: 10
       idleConn: 90
-  # nim-kimi peer DELETED 2026-09-20 (herd-deployer). Debate verdict:
-  # NIM is DELETED, not demoted — 24h 429 soft-locks poison fail-fast
-  # routing, so NIM never returns as primary. Kimi K3 serves via the
-  # OpenRouter key-pool (openrouter-pool peer). K3 card contract
-  # preserved in config/model_constraints.yaml.
 
   gemini:
     proxy: http://127.0.0.1:25109/gemini
@@ -883,6 +942,16 @@ peers:
       - google/gemma-4-26b-a4b-it:free  # v3: 429 x3
       - qwen/qwen3.8-27b:free  # v3: 429 x3
       - z-ai/glm-5.2:free  # v3: 429 x3
+      # TIER 5 -- Kimi free variants (maximal free-Kimi routing, 2026-09-21,
+      # ember-kimi-route): OpenRouter rotates free Kimi availability; all 404
+      # "unavailable for free" as of 2026-09-21. Listed as fallback tier --
+      # keypool cooldown + shim chain-advance (429/402/404) absorb misses, so
+      # they serve automatically the moment OpenRouter re-enables them.
+      # Re-probe before promoting.
+      - moonshotai/kimi-k3:free
+      - moonshotai/kimi-k2.6:free
+      - moonshotai/kimi-k2.5:free
+      - moonshotai/kimi-k2.7-code:free
       # EXCLUDED (auditable -- re-probe before re-adding):
       # - poolside/laguna-xs-2.1:free: 200-empty x2, 429 x1 (v3) + HTTP 502 on
       #   adequate-token re-probe 2026-09-20. Stays excluded.
