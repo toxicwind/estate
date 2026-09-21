@@ -8,17 +8,24 @@ Persistent cell-side daemon (runs as root), listening on a local TCP port
   GET  /health          {"ok", "exec_probe", "ws_lane_claim",
                          "https_lane_claim", "https_down_reason", "ts"}
                          (ok=True requires a real authenticated exec probe;
-                         *_claim flags are claims, not truth — see lines below)
+                         *_claim flags are derived from that probe -- a claim
+                         never contradicts a successful authenticated run)
   POST /exec            {"cmd", "workdir"?, "timeout"?} -> exec result dict
   POST /exec-multi      {"cmds": [{"cmd", "workdir"?, "timeout"?}], "max_workers"?}
                          -> {"results": [exec result dict per cmd, tagged]}
                          Runs N commands concurrently on yote (bridge-max).
-  POST /exec-bg         {"cmd", "workdir"?} -> {"handle", "state"}
+  POST /exec-bg         {"cmd", "workdir"?, "timeout_s"?} -> {"handle", "state"}
                          Dispatches a long-running command fully detached on
                          yote (setsid, own session, PPID 1). Returns immediately.
+                         workdir and timeout_s are forwarded to bg-run.py
+                         (timeout_s=0: no limit; exceeded -> state "timeout").
   GET  /bg              list known background handles + cached status
   GET  /bg/<handle>     live status: state, exit code, log tails
                        (reaps stale runners on read: dead pid -> "stale")
+  GET  /bg/<handle>?soff=N&eoff=M
+                       incremental attach: returns stdout_b64/stderr_b64 chunks
+                       from byte offsets N/M plus stdout_soff/stderr_eoff to
+                       resume from (negative N/M = last N/M bytes)
   POST /bg/<handle>/kill
                        SIGTERM the job's process group (pid verified via
                        /proc cmdline; a reused pid is never signaled)
@@ -36,11 +43,13 @@ import importlib.util
 import json
 import os
 import re
+import shlex
 import sys
 import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import parse_qs, urlparse
 
 PORT = int(os.environ.get("YOTE_CONNECTOR_PORT", "18301"))
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -66,6 +75,13 @@ _spec.loader.exec_module(bridge)
 
 def b64e(b):
     return base64.b64encode(b).decode()
+
+
+def _qint(v):
+    """Query-string int or None (missing). Raises ValueError on garbage."""
+    if v is None:
+        return None
+    return int(v)
 
 
 def b64d(s):
@@ -114,36 +130,48 @@ def _reg_save(reg):
         log("registry save failed: %s" % e)
 
 
-def _bg_launch(cmd, workdir="/home/toxic"):
+def _bg_launch(cmd, workdir="/home/toxic", timeout_s=0):
     """Dispatch cmd fully detached on yote. Returns handle.
 
     Detachment: the launch exec runs with workdir=rundir so `&` binds only
     to the setsid'd launcher (AGENTS.md daemon-start scoping rule). The
     launcher survives the exec session: new session (setsid), stdin
     /dev/null, output redirected. bg-run.py writes status.json atomically.
+
+    workdir and timeout_s are forwarded to bg-run.py as its positional
+    args (timeout_s=0: no limit; exceeded -> state "timeout").
     """
     handle = uuid.uuid4().hex[:12]
     rundir = "%s/%s" % (BG_BASE_YOTE, handle)
     cmdb64 = b64e(cmd.encode())
+    try:
+        timeout_s = float(timeout_s or 0)
+    except (TypeError, ValueError):
+        raise RuntimeError("bad timeout_s: %r" % (timeout_s,))
+    if timeout_s < 0:
+        raise RuntimeError("negative timeout_s")
+    if not isinstance(workdir, str) or not workdir:
+        workdir = "/home/toxic"
     r = yote_exec("mkdir -p %s" % rundir, "/home/toxic", 30)
     if r.get("code") != 0:
         raise RuntimeError("mkdir failed: %s %s"
                            % (r.get("error"), r.get("stderr")))
-    launch = ("setsid nohup python3 %s %s %s >launcher.log 2>&1 < /dev/null &"
-              % (BG_RUN_PY, handle, cmdb64))
+    launch = ("setsid nohup python3 %s %s %s %s %s >launcher.log 2>&1 < /dev/null &"
+              % (BG_RUN_PY, handle, cmdb64, shlex.quote(workdir), timeout_s))
     r2 = yote_exec(launch, rundir, 30)
     if r2.get("code") != 0 or r2.get("error"):
         raise RuntimeError("launch failed: %s %s"
                            % (r2.get("error"), r2.get("stderr")))
     reg = _reg_load()
     reg[handle] = {"cmd": cmd[:500], "workdir": workdir,
+                   "timeout_s": timeout_s or None,
                    "launched_at": time.time()}
     _reg_save(reg)
     log("bg dispatched handle=%s cmd=%.60s" % (handle, cmd))
     return handle
 
 
-def _bg_status(handle):
+def _bg_status(handle, soff=None, eoff=None):
     """Live status of a background handle. One exec call, no polling.
 
     Truth is the yote-side bg-status.py: it reads status.json, reaps a
@@ -151,12 +179,20 @@ def _bg_status(handle):
     verified via /proc/<pid>/cmdline), and returns status + log tails
     as one JSON doc. A job whose runner died without writing its final
     status comes back as state "stale", never stuck "running".
+
+    When soff/eoff are given they are forwarded as byte offsets, and
+    bg-status.py adds incremental-attach chunks (stdout_b64/stdout_soff,
+    stderr_b64/stderr_eoff) on top of the tails.
     """
     if not HANDLE_RX.match(handle or ""):
         return {"handle": handle, "state": "bad-handle"}
+    if soff is not None or eoff is not None:
+        args = "%s %s" % (int(soff or 0), int(eoff or 0))
+    else:
+        args = ""
     reg = _reg_load()
     info = reg.get(handle, {})
-    res = yote_exec("python3 %s %s" % (BG_STATUS_PY, handle),
+    res = yote_exec("python3 %s %s %s" % (BG_STATUS_PY, handle, args),
                     "/home/toxic", 30)
     out = {"handle": handle, "cmd": info.get("cmd"),
            "launched_at": info.get("launched_at")}
@@ -253,19 +289,13 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == "/health":
-            # Lane flags below are claims, not truth: a connectable socket
-            # does not prove authenticated execution (caught 2026-09-20:
-            # both lanes "true" while every real command 401'd). The
-            # authoritative bit is exec_probe: a real no-op command executed
-            # end-to-end through auth. ok=True requires it.
-            ws_ok = False
-            try:
-                s = bridge._ws_try_once()
-                if s is not None:
-                    ws_ok = True
-                    s.close()
-            except Exception:
-                pass
+            # The authoritative bit is exec_probe: a real no-op command
+            # executed end-to-end through auth. ok=True requires it.
+            # The lane flags are DERIVED from that probe, never from a
+            # separate claim: a claim that contradicts a successful
+            # authenticated probe is a lie (caught 2026-09-21: raw-socket
+            # claim probe called a nonexistent bridge helper, so
+            # ws_lane_claim sat False while exec_probe ran fine over WS).
             https_down, https_why = bridge._https_known_down()
             probe = {"ok": False, "ms": 0, "transport": None,
                      "error": "not run"}
@@ -289,6 +319,10 @@ class Handler(BaseHTTPRequestHandler):
                 probe["ms"] = int((time.time() - t0) * 1000)
                 probe["error"] = "%s: %s" % (type(e).__name__, e)
             ok = probe["ok"]
+            # Lane claims derived from the probe just run: if an
+            # authenticated command succeeded over WS, the WS lane works --
+            # no separate claim may contradict that.
+            ws_ok = bool(ok and probe.get("transport") == "ws")
             self._json(200 if ok else 503,
                        {"ok": ok, "exec_probe": probe,
                         "ws_lane_claim": ws_ok,
@@ -307,8 +341,16 @@ class Handler(BaseHTTPRequestHandler):
             self._json(200, {"handles": items})
             return
         if self.path.startswith("/bg/"):
-            handle = self.path[len("/bg/"):].split("/")[0].split("?")[0]
-            self._json(200, _bg_status(handle))
+            parsed = urlparse(self.path)
+            handle = parsed.path[len("/bg/"):].split("/")[0]
+            qs = parse_qs(parsed.query)
+            try:
+                soff = _qint(qs.get("soff", [None])[0])
+                eoff = _qint(qs.get("eoff", [None])[0])
+            except (TypeError, ValueError):
+                self._json(400, {"error": "soff/eoff must be integers"})
+                return
+            self._json(200, _bg_status(handle, soff, eoff))
             return
         self._proxy()
 
@@ -380,7 +422,16 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(400, {"error": "missing cmd"})
                 return
             try:
-                handle = _bg_launch(cmd, spec.get("workdir", "/home/toxic"))
+                timeout_s = float(spec.get("timeout_s", 0) or 0)
+            except (TypeError, ValueError):
+                self._json(400, {"error": "timeout_s must be a number"})
+                return
+            if timeout_s < 0:
+                self._json(400, {"error": "timeout_s must be >= 0"})
+                return
+            try:
+                handle = _bg_launch(cmd, spec.get("workdir", "/home/toxic"),
+                                    timeout_s)
             except Exception as e:
                 self._json(500, {"error": "dispatch failed: %s" % e})
                 return
