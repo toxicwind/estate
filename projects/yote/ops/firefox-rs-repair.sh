@@ -374,6 +374,7 @@ do_install() {
         vlog "(dry-run) would install $SELF_SRC -> $DEPLOY_BIN"
     else
         cp -a "$SELF_SRC" "$DEPLOY_BIN"
+        chown root:root "$DEPLOY_BIN"
         chmod 755 "$DEPLOY_BIN"
         note_change "installed $DEPLOY_BIN"
     fi
