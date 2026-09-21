@@ -10,13 +10,13 @@ spawning ephemeral sessions, so logins, tabs and state survive across tasks.
   exclusively, exposes CDP on `127.0.0.1:9223`, writes
   `/home/toxic/.browserless/keeper/status.json`, relaunches Chromium if it
   dies. Single-instance: exits if CDP already answers.
-- `keeper.sh` - pitchfork launcher (sets Wayland env, execs keeper.js).
+- `keeper.sh` - pitchfork launcher for the isolated display: unsets `WAYLAND_DISPLAY`, sets `DISPLAY=:99`, execs keeper.js (Forge 2026-09-21 — the keeper never renders in Chris's Hyprland session).
 - `pitchfork.fragment.toml` - merge into `[daemons.browser-keeper]` in
   `/home/toxic/sovereign/pitchfork.toml` (owned sequence from
   `/home/toxic/sovereign`).
-- `browser-toggle.sh` - show/hide the keeper window via the Hyprland
-  scratchpad (`special:browser`). Wired to the Quickshell bar button; also
-  runnable by hand.
+- `browser-toggle.sh` - LEGACY: showed/hid the keeper window via the Hyprland
+  scratchpad. Dead since the keeper moved to the isolated Xvnc :99 display
+  (no Hyprland window exists any more); kept for reference.
 
 ## MCP tools (browserless-mcp 1.3.0, `src/persistent.ts`)
 
@@ -82,3 +82,42 @@ per ~5min while healthy — no log spam.
 Canonical snippet: `../quickshell/BrowserToggle.snippet.qml`. Installed into
 `~/.config/quickshell/ii/modules/ii/bar/UtilButtons.qml` (RowLayout tail).
 Quickshell reloads the config live.
+
+## Agent display + interactive viewer (Forge 2026-09-21)
+
+The keeper Chromium renders on an **isolated virtual display** — never in
+Chris's Hyprland session. (Root cause of the 2026-09-21 takeover: keeper.sh
+exported `WAYLAND_DISPLAY=wayland-1`, so agent windows stole his mouse and
+focus.)
+
+- `agent-display` — `Xvnc :99`, RFB on `127.0.0.1:5900` only (`-localhost`),
+  VNC password auth via `/home/toxic/.browserless/vncpasswd` (0600, Chris's —
+  never rotated, never stored anywhere else).
+- `agent-viewer` — websockify serving stock noVNC on **`127.0.0.1:6080`
+  (loopback-only)**. The viewer is **INTERACTIVE**: noVNC defaults
+  `view_only=false` (verified in vendored `app/ui.js`; `mandatory.json` and
+  `defaults.json` are empty), so Chris can click, type, and take over the
+  agent browser. View-only was explicitly rejected (Chris 2026-09-21:
+  "view only is no point, user should be able to interact or help lol").
+- `agent-viewer-gate` (`../viewer/agent-viewer-gate.py`) — token-gated front
+  door on `127.0.0.1:6081`. Requires `?token=<viewer-token>` (or the `aview`
+  cookie a successful check issues), then transparently proxies HTTP and
+  websocket upgrades to `:6080`. Token: `/home/toxic/.browserless/viewer-token`
+  (0600, generated once). `/healthz` answers 200 with no token for the
+  pitchfork readiness probe.
+- External route: tailscale funnel `/agent-browser` -> `127.0.0.1:6081`
+  (declared in `projects/yote/ops/funnel-map.sh`). The public URL is useless
+  without the token — 403 on the page and on the websocket handshake alike.
+  noVNC resolves its `./websockify` WS path relative to the page URL, so the
+  subpath mount just works.
+- VNC auth is untouched: past the gate, noVNC still prompts for the Xvnc
+  password.
+
+Viewer URL: `https://github-mcp-host.tailc9ac71.ts.net/agent-browser/vnc.html?token=<viewer-token>`
+
+Restart/rollback: `pitchfork-restart agent-viewer --reregister` (picks up
+`pitchfork.toml` run-line changes), `pitchfork start agent-viewer-gate`.
+To close the external route without touching the daemons:
+`tailscale funnel --bg --set-path /agent-browser` off — i.e. remove the
+`/agent-browser` line from `funnel-map.sh` and run
+`tailscale serve --bg --remove /agent-browser` as root.

@@ -43,7 +43,7 @@ if [[ "${EUID:-$(id -u)}" -ne 0 ]]; then
     exit 2
 fi
 
-# serve-path<TAB>target-url — the canonical funnel map, 18 mounts.
+# serve-path<TAB>target-url — the canonical funnel map, 19 mounts.
 MAP=(
 "/		http://127.0.0.1:25201"
 "/mcp		http://127.0.0.1:25198/mcp"
@@ -63,6 +63,7 @@ MAP=(
 "/favicon.ico		http://127.0.0.1:25103"
 "/logo.png		http://127.0.0.1:25103"
 "/manifest.json		http://127.0.0.1:25103"
+"/agent-browser		http://127.0.0.1:6081"
 )
 
 CHECK_ONLY=0
@@ -86,7 +87,7 @@ print("\n".join(sorted(set(paths))))
 missing=0
 for entry in "${MAP[@]}"; do
     servepath="${entry%%	*}"
-    target="${entry#*	}"
+    target="${entry##*	}"
     if grep -qxF "$servepath" <<< "$CURRENT"; then
         echo "ok      $servepath -> $target"
     else

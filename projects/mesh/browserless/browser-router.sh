@@ -9,7 +9,9 @@
 #             window (focus steal — reads as a mouse takeover). Use ONLY on
 #             his direct order. Never for background automation.
 #   agent     Isolated agent Chromium — Xvnc :99 (RFB 127.0.0.1:5900, noVNC
-#             :6080 view-only), CDP 127.0.0.1:9223, profile nv-audit.
+#             :6080 INTERACTIVE on loopback (external: token-gated
+#             funnel /agent-browser -> gate :6081), CDP 127.0.0.1:9223,
+#             profile nv-audit.
 #             DEFAULT for all agent browsing. Zero Hyprland/input impact.
 #   ephemeral browserless 2.x at 127.0.0.1:25130 — throwaway sessions, no
 #             logins. Scrape-and-forget work.
