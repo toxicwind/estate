@@ -530,7 +530,9 @@ function hotReload(source: string): Record<string, unknown> {
   // Refresh live model catalogs in the background; the quarantine prober
   // re-admits revived providers on its next window.
   refreshLiveModels().catch((e) => log("post-reload live refresh failed:", e));
-  return { source, keys };
+  const priors = state.applyBenchPriors();
+  log(`hot reload (${source}): priors=${JSON.stringify(priors)}`);
+  return { source, keys, priors };
 }
 process.on("SIGHUP", () => hotReload("SIGHUP"));
 
