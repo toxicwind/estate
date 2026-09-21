@@ -507,6 +507,30 @@ export class Matrix {
     }
     return true; // half-open probe
   }
+
+  /**
+   * laneDead — dead-lane exclusion for automatic race sets
+   * (503-forensics 2026-09-21).
+   *
+   * A provider whose last 6+ attempts ALL failed (no success resetting the
+   * streak) within the last 10 minutes sits out of pickWeighted /
+   * freeCandidates / hedgedChain. This catches lanes the circuit breaker
+   * intentionally ignores: persistent 429s (never open the circuit by
+   * design), 504s to a dead shim whose /models still 200s for the
+   * quarantine prober, and hard 401/402/404s between circuit openings.
+   * Dead lanes never win races — they only burn the connect budget
+   * (kimi-auto's 8s anchors) and steal slots from serving lanes.
+   *
+   * Self-healing, no operator action: any success resets the consecutive
+   * counter in record(), and the dead flag expires 10 minutes after the
+   * last failure, so a recovered lane rejoins on its own. Degraded mode
+   * (every lane dead) still races the dead lanes rather than serving 503.
+   */
+  laneDead(p: string): boolean {
+    const [c, ts] = this.fail.get(p) || [0, 0];
+    if (c < 6) return false;
+    return Date.now() / 1000 - ts < 600;
+  }
 }
 
 export const state = new Matrix();
