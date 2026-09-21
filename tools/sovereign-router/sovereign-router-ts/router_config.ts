@@ -191,23 +191,25 @@ export const PROVIDER_MODELS: Record<string, string[]> = {
   "nim-local": [],
   "kimi-auto": ["kimi-auto"],
   openrouter: [
-    "tencent/hy3:free",
-    "poolside/laguna-m.1:free",
+    // 2026-09-21 sweep: delisted IDs removed (verified against the public
+    // /models list + live 404 probes): tencent/hy3:free, poolside/laguna-
+    // m.1:free, nvidia/nemotron-3-nano-30b-a3b:free, qwen/qwen3-coder:free,
+    // meta-llama/llama-3.3-70b-instruct:free,
+    // nousresearch/hermes-3-llama-3.1-405b:free, openai/gpt-oss-20b:free.
+    // Belt-and-braces: DEAD_MODEL_IDS also filters them if live discovery
+    // re-lists them.
     "poolside/laguna-xs-2.1:free",
     "google/gemma-4-31b-it:free",
     "nvidia/nemotron-3-super-120b-a12b:free",
-    "nvidia/nemotron-3-nano-30b-a3b:free",
-    "qwen/qwen3-coder:free",
-    "meta-llama/llama-3.3-70b-instruct:free",
-    "nousresearch/hermes-3-llama-3.1-405b:free",
-    "openai/gpt-oss-20b:free",
     "inclusionai/ling-3.0-flash-fin:free",
   ],
   nvidia: [
     "nvidia/nemotron-3-super-120b-a12b",
+    // 2026-09-21: second entitled NVIDIA lane — serving 200s (0.8-10s),
+    // genuine reasoning trace. Backup when super flaps; Elo sorts it live.
+    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
     "nvidia/nemotron-3-nano-30b-a3b",
     "meta/llama-3.1-70b-instruct",
-    "meta/llama-3.3-70b-instruct",
     "qwen/qwen3.5-397b-a17b",
     "qwen/qwen3.5-122b-a10b",
     "deepseek-ai/deepseek-v4-flash",
@@ -274,13 +276,45 @@ export function catalogModelsFor(p: string): string[] {
   const seen = new Set<string>();
   const out: string[] = [];
   for (const m of [...(PROVIDER_MODELS[p] || []), ...(LIVE_MODELS[p] || [])]) {
-    if (typeof m === "string" && m && !seen.has(m)) {
+    if (typeof m === "string" && m && !seen.has(m) && !DEAD_MODEL_IDS.has(m)) {
       seen.add(m);
       out.push(m);
     }
   }
   return out;
 }
+
+/**
+ * DEAD_MODEL_IDS — permanently retired model IDs (503-forensics 2026-09-21).
+ *
+ * NVIDIA 410-retired / OpenRouter-delisted IDs. They 404 (or 410) on every
+ * attempt and never self-heal — only an NVIDIA-side relist would revive
+ * them, at which point this list gets edited. Filtered in
+ * catalogModelsFor, the single choke point for provider model lists, so
+ * dead IDs can enter neither the race sets nor explicit routing (an
+ * explicit request for one falls through to the healthy hybrid field
+ * instead of burning a 404).
+ *
+ * The runtime entitlement-404 bench (Matrix.noteEntitlement404) is the
+ * dynamic layer for IDs that die mid-process; this list is the static
+ * layer for IDs already known dead.
+ */
+export const DEAD_MODEL_IDS: Set<string> = new Set([
+  // NVIDIA-retired (410), EOL dates from the retirement notices.
+  "moonshotai/kimi-k2-instruct", // EOL 2026-05-12
+  "meta/llama-3.1-8b-instruct", // EOL 2026-08-26
+  "meta-llama/llama-3.1-8b-instruct", // EOL 2026-08-26 (openrouter form)
+  "meta/llama-3.3-70b-instruct", // EOL 2026-08-26
+  "meta-llama/llama-3.3-70b-instruct", // EOL 2026-08-26 (openrouter form)
+  "meta-llama/llama-3.3-70b-instruct:free", // EOL 2026-08-26 (:free form)
+  // OpenRouter-delisted (verified against the public /models list 2026-09-21).
+  "tencent/hy3:free",
+  "poolside/laguna-m.1:free",
+  "nvidia/nemotron-3-nano-30b-a3b:free",
+  "qwen/qwen3-coder:free",
+  "nousresearch/hermes-3-llama-3.1-405b:free",
+  "openai/gpt-oss-20b:free",
+]);
 
 // ---------------------------------------------------------------------------
 // Live-metadata free eligibility (Chris 2026-09-17: routing must consume the
@@ -322,24 +356,20 @@ export const CODING: Record<string, [string, string] | null> = {
   longctx: ["llama-swap", LOCAL_ROLES.longctx],
   "local-longctx": ["llama-swap", LOCAL_ROLES.longctx],
   "local-auto": ["llama-swap", LOCAL_ROLES.quality],
-  hy3: ["openrouter", "tencent/hy3:free"],
+  // 2026-09-21 sweep: aliases pointing at delisted/410 IDs removed —
+  // hy3 (tencent/hy3:free), laguna-m1 (poolside/laguna-m.1:free),
+  // qwen3-coder, llama-3.3-70b-free, hermes-3-405b, gpt-oss-20b,
+  // nim-llama-3.3-70b. Requesting one now falls through to the healthy
+  // hybrid field instead of burning a 404.
   ling: ["openrouter", "inclusionai/ling-3.0-flash-fin:free"],
-  "laguna-m1": ["openrouter", "poolside/laguna-m.1:free"],
   "laguna-xs": ["openrouter", "poolside/laguna-xs-2.1:free"],
   "gemma4-31b": ["openrouter", "google/gemma-4-31b-it:free"],
   "nemotron-super": ["openrouter", "nvidia/nemotron-3-super-120b-a12b:free"],
-  "nemotron-nano": ["openrouter", "nvidia/nemotron-3-nano-30b-a3b:free"],
-  "qwen3-coder": ["openrouter", "qwen/qwen3-coder:free"],
-  "llama-3.3-70b-free": [
-    "openrouter",
-    "meta-llama/llama-3.3-70b-instruct:free",
-  ],
-  "hermes-3-405b": ["openrouter", "nousresearch/hermes-3-llama-3.1-405b:free"],
-  "gpt-oss-20b": ["openrouter", "openai/gpt-oss-20b:free"],
+  "nemotron-nano": ["nvidia", "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning"],
   "nim-nemotron-super": ["nvidia", "nvidia/nemotron-3-super-120b-a12b"],
+  "nim-nemotron-omni": ["nvidia", "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning"],
   "nim-nemotron-nano": ["nvidia", "nvidia/nemotron-3-nano-30b-a3b"],
   "nim-llama-3.1-70b": ["nvidia", "meta/llama-3.1-70b-instruct"],
-  "nim-llama-3.3-70b": ["nvidia", "meta/llama-3.3-70b-instruct"],
   "nim-qwen3.5-397b": ["nvidia", "qwen/qwen3.5-397b-a17b"],
   "nim-qwen3.5-122b": ["nvidia", "qwen/qwen3.5-122b-a10b"],
   "nim-deepseek-v4-flash": ["nvidia", "deepseek-ai/deepseek-v4-flash"],
@@ -426,7 +456,7 @@ export function isLocalSwapModelId(model: string): boolean {
  *   "nvidia:gpt-oss-20b"      -> { provider: "nvidia", model: <best catalog match> }
  *   "openrouter/openai/gpt-oss-20b:free" -> { provider: "openrouter", model: <same> }
  *   "fast" / "auto"           -> { provider: null, model: <alias untouched> }
- *   "meta-llama/llama-3.3-70b-instruct:free" -> { provider: null, model: <same> }
+ *   "openrouter/inclusionai/ling-3.0-flash-fin:free" -> { provider: "openrouter", model: <same> }
  * provider is null when the spec is provider-agnostic (alias or bare model
  * id); callers then fall back to resolveModel()'s normal catalog search.
  */
