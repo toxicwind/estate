@@ -1,0 +1,49 @@
+# Canonical source: sovereign/agents/assistant/agent.toml
+# Live copy: ~/.openfang/agents/assistant/agent.toml (kernel re-seeds from disk on boot)
+# NOTE: anthropic/claude-sonnet-4-20250514 route PARKED 2026-09-20: stored ANTHROPIC_API_KEY revoked (Anthropic 401 invalid x-api-key). Restore provider=anthropic + model=claude-sonnet-4-20250514 once Chris supplies a fresh key. Until then this herd-free route serves.
+name = "assistant"
+version = "0.1.0"
+description = "General-purpose assistant"
+author = ""
+module = "builtin:chat"
+schedule = "reactive"
+fallback_models = []
+priority = "Normal"
+skills = []
+mcp_servers = []
+tags = []
+workspace = "/home/toxic/.openfang/workspaces/assistant"
+state_dir = "/home/toxic/.openfang/workspaces/assistant"
+generate_identity_files = true
+tool_allowlist = []
+tool_blocklist = []
+cache_context = false
+
+[model]
+provider = "llama-swap"
+model = "nex-agi/nex-n2.5-mini:free"
+base_url = "http://127.0.0.1:25100/v1"
+max_tokens = 4096
+temperature = 0.699999988079071
+system_prompt = "You are a helpful AI assistant."
+
+[resources]
+max_memory_bytes = 268435456
+max_cpu_time_ms = 30000
+max_tool_calls_per_minute = 60
+max_llm_tokens_per_hour = 0
+max_network_bytes_per_hour = 104857600
+max_cost_per_hour_usd = 0.0
+max_cost_per_day_usd = 0.0
+max_cost_per_month_usd = 0.0
+
+[capabilities]
+network = []
+tools = []
+memory_read = []
+memory_write = []
+agent_message = []
+shell = []
+ofp_connect = []
+agent_spawn = false
+ofp_discover = false

@@ -8,7 +8,8 @@ Persistent cell-side daemon (runs as root), listening on a local TCP port
   GET  /health          {"ok", "exec_probe", "ws_lane_claim",
                          "https_lane_claim", "https_down_reason", "ts"}
                          (ok=True requires a real authenticated exec probe;
-                         *_claim flags are claims, not truth — see lines below)
+                         *_claim flags are derived from that probe -- a claim
+                         never contradicts a successful authenticated run)
   POST /exec            {"cmd", "workdir"?, "timeout"?} -> exec result dict
   POST /exec-multi      {"cmds": [{"cmd", "workdir"?, "timeout"?}], "max_workers"?}
                          -> {"results": [exec result dict per cmd, tagged]}
@@ -288,19 +289,13 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == "/health":
-            # Lane flags below are claims, not truth: a connectable socket
-            # does not prove authenticated execution (caught 2026-09-20:
-            # both lanes "true" while every real command 401'd). The
-            # authoritative bit is exec_probe: a real no-op command executed
-            # end-to-end through auth. ok=True requires it.
-            ws_ok = False
-            try:
-                s = bridge._ws_try_once()
-                if s is not None:
-                    ws_ok = True
-                    s.close()
-            except Exception:
-                pass
+            # The authoritative bit is exec_probe: a real no-op command
+            # executed end-to-end through auth. ok=True requires it.
+            # The lane flags are DERIVED from that probe, never from a
+            # separate claim: a claim that contradicts a successful
+            # authenticated probe is a lie (caught 2026-09-21: raw-socket
+            # claim probe called a nonexistent bridge helper, so
+            # ws_lane_claim sat False while exec_probe ran fine over WS).
             https_down, https_why = bridge._https_known_down()
             probe = {"ok": False, "ms": 0, "transport": None,
                      "error": "not run"}
@@ -324,6 +319,10 @@ class Handler(BaseHTTPRequestHandler):
                 probe["ms"] = int((time.time() - t0) * 1000)
                 probe["error"] = "%s: %s" % (type(e).__name__, e)
             ok = probe["ok"]
+            # Lane claims derived from the probe just run: if an
+            # authenticated command succeeded over WS, the WS lane works --
+            # no separate claim may contradict that.
+            ws_ok = bool(ok and probe.get("transport") == "ws")
             self._json(200 if ok else 503,
                        {"ok": ok, "exec_probe": probe,
                         "ws_lane_claim": ws_ok,
@@ -499,13 +498,19 @@ def main():
     # Self-maintained pidfile: launcher $! capture is unreliable across
     # subshell/setsid boundaries (goes stale, watchdogs then kill the wrong
     # pid or none). The daemon always knows its own pid.
-    try:
-        with open(os.path.join(HERE, "connector.pid"), "w") as f:
-            f.write(str(os.getpid()))
-    except OSError:
-        pass
+    # NOTE: pidfile is written only AFTER the socket bind succeeds. A child
+    # that loses the bind race (EADDRINUSE) must not leave its pid behind,
+    # or watchdogs will pid-check a dead process and miss the live daemon.
     srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
     srv.daemon_threads = True
+    pidfile = os.path.join(HERE, "connector.pid")
+    try:
+        tmp = pidfile + ".tmp"
+        with open(tmp, "w") as f:
+            f.write(str(os.getpid()))
+        os.replace(tmp, pidfile)
+    except OSError:
+        pass
     log("listening on 127.0.0.1:%d (pid %d)" % (PORT, os.getpid()))
     try:
         srv.serve_forever()

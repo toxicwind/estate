@@ -128,16 +128,6 @@ ready_http = "http://127.0.0.1:25107/health"
 depends = ["shep"]
 auto = ["start"]
 
-[daemons.mcp-gateway]
-port = 25120
-run = "exec bun run gateway.ts"
-dir = "/home/toxic/sovereign/tools/sovereign-chat" # 2026-09-20: was nonexistent sovereign-mcp-gateway
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25120/health"
-depends = ["shep"]
-auto = ["start"]
-
 [daemons.byte-vision]
 port = 25121
 run = "exec ./stack/services/byte-vision.sh"
@@ -317,7 +307,7 @@ health_http = { url = "http://127.0.0.1:34567/health", interval = "30s", timeout
 auto = ["start"]
 
 [groups.mesh]
-daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "mcp-gateway", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx"]
+daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx"]
 
 [groups.core]
 daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server"]
@@ -326,7 +316,7 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "floc
 daemons = ["tau"]
 
 [groups.all]
-daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "mcp-gateway", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar", "files"]
+daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar", "files"]
 
 
 [daemons.kimi-auto-shim]
@@ -346,7 +336,7 @@ mise = false
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25153/health" # 2026-09-20: literal, was ${KIMI_AUTO_SHIM_PORT}=25105
-env = { KIMI_AUTO_SHIM_PORT = "25153" }
+env = { KIMI_AUTO_SHIM_PORT = "25153", SHIM_CONNECT_TIMEOUT = "240" }
 auto = ["start"]
 
 [daemons.nim-kimi-sidecar]
@@ -362,6 +352,7 @@ mise = false
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25163/health"
+auto = ["start"]
 
 [daemons.squawk-relay-sink]
 run = "exec /home/toxic/.shingle/squawk-relay/run-sink.sh"
@@ -540,22 +531,6 @@ env = { WATCHDOG_PORT = "25150", WATCHDOG_INTERVAL = "30" }
 # variant kept for reference — old path /home/toxic/squawk/relay/squawk_ws_server.py,
 # old dir /home/toxic/squawk, old ready_http http://127.0.0.1:25147/ping.
 # Live process runs the sovereign/projects/mesh/squawk-ws/ path on :25147; this block reflects that.
-auto = ["start"]
-
-# ws-exec-tunnel (2026-09-14): TCP forwarder 127.0.0.1:25379 -> 127.0.0.1:8379.
-# Chris's rule: 8379 is the ws-exec default - leave it in place, tunnel to it
-# instead of moving it. Transparent to the WS protocol (handshake+frames pass
-# through untouched). NOTE: running supervisor (2.16.0) has no reload mechanism
-# and was not restarted (forbidden) - this section takes effect on the next
-# supervisor start; the tunnel is currently supervised via `pitchfork run`.
-[daemons.ws-exec-tunnel]
-ready_cmd = "ss -ltn 'sport = :25379' | grep -q LISTEN"
-port = 25379
-env = { TUNNEL_LISTEN_PORT = "25379", TUNNEL_TARGET_PORT = "25204" }
-run = "exec /usr/bin/python3 /home/toxic/sovereign/tools/ws-exec-tunnel.py" # 2026-09-20: path was /home/toxic/ws-exec-tunnel.py (missing)
-dir = "/home/toxic"
-mise = false
-retry = true
 auto = ["start"]
 
 # squawk-ws-client (2026-09-14, cell-proof pilot): push client ON awrawr-pc,
@@ -782,16 +757,16 @@ retry = true
 ready_http = "http://127.0.0.1:25211/metrics"
 auto = ["start"]
 
-[daemons.kimi-audit-dash]
-run = "exec bun run /home/toxic/kimi-token-audit/dashboard/server.ts"
-dir = "/home/toxic/kimi-token-audit"
-mise = true
+# ── port-dynamic 2026-09-20: orphans adopted + out-of-range ports moved ──
+
+[daemons.sovereign-exporter]
+port = 25213
+run = "exec python3 ./stack/services/sovereign-exporter.py"
+dir = "."
 retry = true
-ready_http = "http://127.0.0.1:25116/health"
-depends = ["shep"]
+ready_http = "http://127.0.0.1:25213/metrics"
 auto = ["start"]
 
-# ── port-dynamic 2026-09-20: orphans adopted + out-of-range ports moved ──
 [daemons.awrawr-mcp]
 run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/awrawr_mcp.py"
 dir = "/home/toxic"
@@ -826,6 +801,14 @@ port = 25195
 ready_cmd = "ss -ltn 'sport = :25195' | grep -q LISTEN"
 health_port = { port = 25195, interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
+
+[daemons.market-watchdog]
+run = "exec /home/toxic/sovereign/agents/oracle-market/bin/market-watchdog.sh"
+dir = "/home/toxic/sovereign/agents/oracle-market"
+mise = false
+retry = true
+auto = ["start"]
+
 # estate-reconcile-watch — event-driven config/binary drift watcher (WS2).
 # supervises: bin/estate-reconcile watch (inotify event loop over manifest
 # dirs; no timers, no polls). Drifted binaries are restored atomically from

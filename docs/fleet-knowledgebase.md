@@ -45,7 +45,8 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | 25147 | squawk-ws (fleet chat backend) |
 | 25135 | squawk-feed (global seq feed) |
 | 25146 | WhatsApp webhook backend |
-| 4200 (127.0.0.1) | OpenFang kernel daemon |
+| 25196 (127.0.0.1) | OpenFang kernel daemon (single instance; dashboard UI + /v1 + /api) |
+| 25103 | OpenFang mesh-front (public proxy -> :25196 kernel, serves /mesh/* features) |
 | 8377 / 8378 / 8379 | /mcp, /gemini-mcp, /exec-ws backends (via tailscale Funnel on 443) |
 | 25212 | Cockpit web console (`https://awrawr-pc:25212/`, moved from :9090 via systemd drop-in 2026-09-20) |
 
@@ -142,6 +143,20 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | 1m-prober | Long-context engagement probe (oracle verdict 12097, mission 4e621a18): needle-in-haystack retrieval at 100k/500k/1M tokens through the nvidia keyed lane (nemotron-3-super-120b-a12b, nemotron-3-nano-omni-30b-a3b-reasoning) and the openrouter :free nemotron ID; results recorded in ast_matrix.db requests (strategy=longctx-probe); probe script tools/sovereign-router/probes/long-context-probe.py | 1m-prober (Ember crew, worker under coordinator 4e621a18) | DONE (2026-09-21) -- sovereign-projects 49c17bb9fd (probe script + 13 run JSONs + RESULTS-2026-09-21.md; keyed nvidia nemotron-3-super-120b-a12b 1M needle retrieval PASSED accurate 41.4s; openrouter :free capped 262144 tokens verified; lane flapped 503 ~40min mid-probe) |
 | splice | MCP drift merge: canonical superset of awrawr_mcp.py (mcp-smith 318-line additions preserved + canonical spawn-env fix) | splice (Ember pack) | DONE (2026-09-21) -- sovereign-projects dcdcdba90b (ls-remote verified); deployed /home/toxic/awrawr_mcp.py byte-verified; daemon restarted via owned sequence; :25198 /mcp live, 29 tools incl. 7 mcp-smith additions; big catch: supervisor had been running the stale repo copy from the dirty checkout, mcp-smith deployment was never live -- run line repointed to /home/toxic/awrawr_mcp.py |
 
+| oracle-repair | oracle E2E defect repair | oracle-repair | DONE (2026-09-21): lifecycle repair live-verified E2E (intake->signed task->bids->vickrey assign->real super-ralph->signed result->settlement verified->next_work). Commits ad2ade8077 + e25b2e6b25 on nim-probe-20260920, pushed to toxicwind/sovereign-projects. |
+
+
+| itvx-merge-7dee | merge itvx-browserless into browserless-mcp, move to sovereign mesh | itvx-merge-7dee | DONE (2026-09-21): unified projects/mesh/browserless (browserless-mcp 1.1.0 + itvx native launcher); daemon itvx-browserless on :25130 restarted via owned sequence, auth gate 401/200 verified, live /content fetch + MCP handshake (15 tools) proven. Commits 9bab2b8a95 + 4b8421b719 on toxicwind/sovereign-projects main (ls-remote verified). |
+
+
+| volt | zswap/nvidia-persistenced/hardware health on yote | parent-orchestrator | DONE (2026-09-21) — lane-2-complete-no-repo-changes |
+
+
+| cookie-ferry | firefox-to-chromium login migration | ember | RUNNING (2026-09-21) |
+
+
+| forge-union | unify github search tooling | forge-union | RUNNING (2026-09-21) |
+
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
 
@@ -211,7 +226,23 @@ hand is DRIFT, not an edit.
 manifest): the reconciler reads it, never converges toward it. Daemons write under
 runtime_paths freely; those paths are EXEMPT from drift detection by construction.
 
-**Machinery**: deploy/manifest.yaml pins herd (llama-swap 9305f95663db..), herd-keypool,
-herd-model-guard, openfang-kernel. bin/estate-reconcile: check/--apply/watch/proc-audit.
-ops/openfang-sqlite-check.sh on OpenFang boot: integrity_check + non-empty + schema version,
-snapshots (keep 5), atomic self-heal. Configs REPORT-ONLY (shared tree WIP).
+**Machinery** (nim-probe-20260920, ferrous-warden):
+- deploy/manifest.yaml -- pins every deployed binary (path, sha256, immutable copy,
+  source repo + commit). Currently: herd (llama-swap 9305f95663db..), herd-keypool,
+  herd-model-guard, openfang-kernel (check-only, local debug build).
+- bin/estate-reconcile -- event-driven reconciler (chezmoi status/apply concept,
+  qb-manager atomic-deploy mechanics): check (read-only, exit 1 on drift),
+  --apply (atomic tmp+rename restore from immutable copy or SIGNED git HEAD --
+  unsigned HEAD alerts only, never restores), watch (inotify on build/bin dirs,
+  circuit breaker at 5 restores/60min, never a timer), proc-audit (declared vs
+  /proc exe, handles interpreted daemons via cmdline script path).
+- Configs are REPORT-ONLY in WS2 (shared tree holds ~198 dirty files from other
+  crews -- auto-restoring from git would nuke live WIP). Signed-HEAD config
+  converge is future work.
+- ops/openfang-sqlite-check.sh -- runs on OpenFang boot (hooked into
+  ops/openfang-run.sh): PRAGMA integrity_check + non-empty + >=1 table +
+  schema-version record; bounded snapshots (keep 5) into ~/.openfang/backups/
+  on every healthy boot; self-heals from the newest backup atomically on
+  corruption; refuses boot only when corrupt AND no usable backup. Live
+  2026-09-20: ~/.openfang/openfang.db was 0 bytes -- the exact silent-data-loss
+  case this catches.
