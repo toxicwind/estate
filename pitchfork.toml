@@ -627,12 +627,13 @@ auto = ["start"]
 
 [daemons.toolcall-llm]
 port = 25152
-run = "exec /home/toxic/sovereign/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/models/qwen3.5-9b-dflash-Q5_K_M.gguf --host 127.0.0.1 --port ${TOOLCALL_PORT} -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
+run = "exec /home/toxic/sovereign/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/models/qwen3.5-9b-dflash-Q5_K_M.gguf --host 127.0.0.1 --port 25152 -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
 env = { TOOLCALL_PORT = "25152" }
 dir = "/home/toxic/sovereign/engines/llama.cpp-b11059/llama-b11059"
 mise = false
 retry = 5 # 2026-09-20: was infinite; flappy daemon churned 125+ retries
 # NOTE 2026-09-20: literal port; pitchfork does not expand ${} in ready_http (25152 == $TOOLCALL_PORT SSOT)
+# NOTE 2026-09-20: literal port also in run line above; pitchfork does not expand ${} in run either (was --port stoi crash loop since 00:01)
 ready_http = "http://127.0.0.1:25152/health"
 auto = ["start"]
 
