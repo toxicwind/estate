@@ -140,6 +140,7 @@ usr/
 
 # Agent orchestration runtime state
 .agent-orchestration/
+projects/ops/dispatcher/state/
 *.db
 *.db-shm
 *.db-wal
