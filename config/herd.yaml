@@ -266,6 +266,21 @@ models:
       alias_of: openrouter-free/moonshotai/kimi-k3:free
       chain: free-kimi-maximal
       selection: router-config
+  # kimi-k3-nim: genuine Kimi K3 via NVIDIA NIM (2026-09-21).
+  # Fixed-target alias to nim-kimi/moonshotai/kimi-k3; identity enforced by
+  # the sidecar (response model must be moonshotai/kimi-k3). Single target,
+  # no standby: failures surface loud and verbatim. NEVER repointed at
+  # another model to hide a provider failure. Cold-aware: first request
+  # after idle takes ~120-220s (serverless hot-load); SHIM_CONNECT_TIMEOUT
+  # covers the header wait.
+  kimi-k3-nim:
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target nim-kimi/moonshotai/kimi-k3 --name kimi-k3-nim
+    env:
+      - SHIM_CONNECT_TIMEOUT=240
+    description: "Kimi K3 via NVIDIA NIM (genuine moonshotai/kimi-k3, cold-aware). Fails loudly; no fallback."
+    metadata:
+      alias_of: nim-kimi/moonshotai/kimi-k3
+      role: kimi-nim
   beellama/exaone-4-0-1-2b-iq4xs:
     cmd: ${BEELLAMA_BIN} --model ${EXAONE_1B_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
     aliases:
@@ -872,11 +887,32 @@ peers:
 #      responseHeader: 120
 #      tlsHandshake: 10
 #      idleConn: 90
-  # nim-kimi peer DELETED 2026-09-20 (herd-deployer). Debate verdict:
-  # NIM is DELETED, not demoted — 24h 429 soft-locks poison fail-fast
-  # routing, so NIM never returns as primary. Kimi K3 serves via the
-  # OpenRouter key-pool (openrouter-pool peer). K3 card contract
-  # preserved in config/model_constraints.yaml.
+  # --- nim-kimi: NVIDIA NIM Kimi-K3 via cold-aware sidecar (2026-09-21) ---
+  # CORRECTION 2026-09-21 (Chris directive -- overrides the 2026-09-20
+  # "NIM is DELETED" debate verdict): that verdict was built on a false
+  # premise -- front-door 404/410s from WRONG model IDs (e.g.
+  # moonshotai/kimi-k2-instruct, EOL'd 2026-05-12). Live-verified 2026-09-21:
+  # moonshotai/kimi-k3 returns genuine K3 (identity-checked -- "I'm Kimi,
+  # an AI assistant developed by Moonshot AI", Chinese reasoning trace)
+  # via integrate.api.nvidia.com with the K3 contract (top_p stripped,
+  # ~120-220s cold-load tolerance). Direct NVCF-plane invocation is NOT
+  # available to this key (203 listed functions are NVIDIA-internal dynamo
+  # benchmark/shadow rigs; the public serving deployment is not exposed
+  # as an invocable function) -- the front door IS the NVCF plane's public
+  # face. The sidecar on 127.0.0.1:25163 bakes the contract in: warmup on
+  # start, 300s upstream timeout, top_p strip, identity enforcement,
+  # 404/429 classification, no-retry on client disconnect. No silent
+  # fallback to another model, ever.
+  nim-kimi:
+    proxy: http://127.0.0.1:25163
+    models:
+      - moonshotai/kimi-k3
+    timeouts:
+      connect: 30
+      keepalive: 30
+      responseHeader: 300
+      tlsHandshake: 10
+      idleConn: 90
 
   gemini:
     proxy: http://127.0.0.1:25109/gemini

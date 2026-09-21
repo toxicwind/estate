@@ -335,7 +335,7 @@ port = 25153
 # -- Kimi routes are never defaults; they route Kimi FREE models maximally.
 # Chain: openrouter-free kimi :free IDs -> hf-free Kimi-K3; advance on
 # 5xx/conn/429/402/404; 401 never advances. Paid Kimi excluded (free only).
-run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
+run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
 dir = "/home/toxic/sovereign/config/herd.d"
 mise = false
 retry = true
@@ -343,6 +343,20 @@ boot_start = true
 ready_http = "http://127.0.0.1:25153/health" # 2026-09-20: literal, was ${KIMI_AUTO_SHIM_PORT}=25105
 env = { KIMI_AUTO_SHIM_PORT = "25153" }
 auto = ["start"]
+
+[daemons.nim-kimi-sidecar]
+health_http = { url = "http://127.0.0.1:25163/health", interval = "30s", timeout = "5s", retries = 3 }
+port = 25163
+# Cold-aware NVIDIA NIM proxy for moonshotai/kimi-k3 (2026-09-21).
+# Bakes the K3 contract in: warmup on start, 300s upstream timeout
+# (serverless cold load ~120-220s is normal), top_p strip, identity
+# enforcement, 404/429 classification. Fails loud; never substitutes.
+run = "exec python3 /home/toxic/sovereign/bin/nim-kimi-sidecar.py"
+dir = "/home/toxic/sovereign"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25163/health"
 
 [daemons.squawk-relay-sink]
 run = "exec /home/toxic/.shingle/squawk-relay/run-sink.sh"
