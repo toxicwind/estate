@@ -159,37 +159,43 @@ def main():
         print("state  : %s" % d.get("state"))
         if d.get("code") is not None:
             print("exit   : %s" % d.get("code"))
+        import base64 as _b64
+        has_offsets = "stdout_soff" in d or "stderr_eoff" in d
         so = d.get("stdout_b64") or ""
         eo = d.get("stderr_b64") or ""
-        if so:
+        if has_offsets:
             nso = d.get("stdout_soff")
-            print("--- stdout (bytes %d->%s) ---"
-                  % (soff, "?" if nso is None else nso))
-            sys.stdout.buffer.write(
-                __import__("base64").b64decode(so.encode()))
-            sys.stdout.write("\n")
-        elif d.get("stdout_tail"):
-            # Old daemon without offset support: fall back to the tail.
-            print("--- stdout (tail; daemon has no offset support) ---")
-            sys.stdout.write(d["stdout_tail"])
-        if eo:
+            if so:
+                print("--- stdout (bytes %d->%s) ---"
+                      % (soff, "?" if nso is None else nso))
+                sys.stdout.write(
+                    _b64.b64decode(so.encode()).decode("utf-8", "replace"))
+                sys.stdout.write("\n")
+            else:
+                print("--- stdout: no new bytes (offset %d) ---" % soff)
             neo = d.get("stderr_eoff")
-            print("--- stderr (bytes %d->%s) ---"
-                  % (eoff, "?" if neo is None else neo))
-            sys.stdout.buffer.write(
-                __import__("base64").b64decode(eo.encode()))
-            sys.stdout.write("\n")
-        elif d.get("stderr_tail"):
-            print("--- stderr (tail; daemon has no offset support) ---")
-            sys.stdout.write(d["stderr_tail"])
-        rso = d.get("stdout_soff")
-        reo = d.get("stderr_eoff")
-        if rso is None and reo is None:
-            print("resume : daemon has no offset support; use bg-status")
-        else:
+            if eo:
+                print("--- stderr (bytes %d->%s) ---"
+                      % (eoff, "?" if neo is None else neo))
+                sys.stdout.write(
+                    _b64.b64decode(eo.encode()).decode("utf-8", "replace"))
+                sys.stdout.write("\n")
+            else:
+                print("--- stderr: no new bytes (offset %d) ---" % eoff)
+            rso = d.get("stdout_soff")
+            reo = d.get("stderr_eoff")
             print("resume : yote-conn bg-tail %s %s %s"
                   % (d.get("handle"), rso if rso is not None else soff,
                      reo if reo is not None else eoff))
+        else:
+            # Old daemon without offset support: fall back to the tails.
+            if d.get("stdout_tail"):
+                print("--- stdout (tail; daemon has no offset support) ---")
+                sys.stdout.write(d["stdout_tail"])
+            if d.get("stderr_tail"):
+                print("--- stderr (tail; daemon has no offset support) ---")
+                sys.stdout.write(d["stderr_tail"])
+            print("resume : daemon has no offset support; use bg-status")
         return 0
     if cmd == "bg-list":
         code, body = req("GET", "/bg")
