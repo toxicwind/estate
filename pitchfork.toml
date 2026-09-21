@@ -788,8 +788,8 @@ auto = ["start"]
 
 # ── port-dynamic 2026-09-20: orphans adopted + out-of-range ports moved ──
 [daemons.awrawr-mcp]
-run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/sovereign/projects/bridge/yote/awrawr_mcp.py"
-dir = "/home/toxic/sovereign/projects/bridge/yote"
+run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/awrawr_mcp.py"
+dir = "/home/toxic"
 mise = false
 retry = true
 boot_start = true
