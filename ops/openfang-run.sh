@@ -17,7 +17,7 @@ CFG=${OPENFANG_CONFIG:-/home/toxic/sovereign/config/openfang-25196.toml}
 CLI=/home/toxic/.local/bin/openfang
 RELAY_AGENT_ID=69ac0683-9483-42a5-a22c-7710cba8da61
 
-"$KERNEL" start --config "$CFG" &
+"$KERNEL" start --config "$CFG" --yolo &
 KPID=$!
 trap "kill -TERM $KPID 2>/dev/null" TERM INT
 # readiness gate (bounded STARTUP SYNCHRONIZATION, not a polling daemon: runs
