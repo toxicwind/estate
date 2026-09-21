@@ -1,22 +1,27 @@
 # projects/
 
-The project workspaces of sovereign-projects. Every directory here is a real
-project or research workspace (the old "intentionally empty" placeholder note
-was retired 2026-09-20).
+The project workspaces of sovereign-projects. Every directory here is a real project or research workspace (the old "intentionally empty" placeholder note was retired 2026-09-20).
 
-Root-level symlinks (`herd/`, `tau/`, `yote/`, `mesh/`, `shell/`, `qed/`,
-`openfang/`) point here for historical paths — follow the symlink to the
-project home under `projects/`.
+Root-level symlinks (`herd/`, `tau/`, `yote/`, `mesh/`, `shell/`, `qed/`, `openfang/`) point here for historical paths — follow the symlink to the project home under `projects/`.
+
+## Contents
+
+- [Core projects](#core-projects)
+- [Research & probes](#research--probes)
+- [Do-not-touch](#do-not-touch)
+- [Submodules](#submodules)
 
 ## Core projects
 
-- [`herd/`](herd/) — inference front door: the toxicwind fork of llama-swap + flock cloud routing
-- [`tau/`](tau/) — Tau AI agent engine
-- [`yote/`](yote/) — Yote, the lightweight embeddable agent runtime
-- [`openfang/`](openfang/) — OpenFang agent OS mirror
-- [`mesh/`](mesh/) — tool federation & routing layer (MCP gateway, sovereign-router)
-- [`qed/`](qed/) — editor layer: the zed fork + zedra remote substrate
-- [`shell/`](shell/) — Chris's quickshell home (`ii` fork of end-4 illogical-impulse)
+| Project | What it is |
+| ------- | ---------- |
+| [`herd/`](herd/) | Inference front door: the toxicwind fork of llama-swap + flock cloud routing (`:25100`) |
+| [`tau/`](tau/) | Tau AI agent engine (`:25125`) |
+| [`yote/`](yote/) | Yote, the lightweight embeddable agent runtime (`:25102`) |
+| [`openfang/`](openfang/) | OpenFang agent OS mirror (daemon `axiom`, `:25103`) |
+| [`mesh/`](mesh/) | Tool federation & routing layer — MCP gateway, sovereign-router |
+| [`qed/`](qed/) | Editor layer: the zed fork + zedra remote substrate |
+| [`shell/`](shell/) | Chris's quickshell home (`ii` fork of end-4 illogical-impulse) |
 
 ## Research & probes
 
@@ -29,13 +34,16 @@ project home under `projects/`.
 
 ## Do-not-touch
 
-- [`guidellm/`](guidellm/) — another agent's live workspace. Hands off.
+> [!CAUTION]
+> [`guidellm/`](guidellm/) — another agent's live workspace. Hands off.
 
 ## Submodules
 
-- [](../tau/vendors) — MoonshotAI/kimi-cli (git submodule)
-- [](shell/ii) — toxicwind/sovereign-end4 (git submodule)
+- [`../tau/vendors`](../tau/vendors) — MoonshotAI/kimi-cli (git submodule)
+- [`shell/ii`](shell/ii) — toxicwind/sovereign-end4 (git submodule)
 
 Their READMEs belong to those repos, not this one.
 
-Back to the [master README](../README.md) · [fleet knowledgebase](../docs/fleet-knowledgebase.md). (docs(readme): deconfuse master README + deep-link sub-READMEs (readme-linker))
+---
+
+*Up: [root README](../README.md) · [fleet knowledgebase](../docs/fleet-knowledgebase.md) · [↑ top](#projects)*

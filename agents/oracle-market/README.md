@@ -6,6 +6,17 @@ winners execute, the oracle verifies and settles — and the Oracle itself
 now answers binary questions through a deterministic aggregation engine
 advised by a calibrated judge panel.
 
+> [!NOTE]
+> Live pitchfork daemons: `sovereign/oracle-market` (market loop + intake, `bin/run.sh`), `sovereign/oracle-core` (decision engine, `bin/run-oracle-core.sh`, `127.0.0.1:25151`), `sovereign/bidder-forge`, `sovereign/bidder-scout` (bidders).
+
+## Contents
+
+- [Ask the Oracle](#ask-the-oracle)
+- [Intake front door](#intake-front-door)
+- [Ports](#ports)
+- [Durability](#durability)
+- [Tests](#tests)
+
 Live daemons (pitchfork):
 - `sovereign/oracle-market` — market loop + intake (`bin/run.sh`)
 - `sovereign/oracle-core` — decision engine daemon (`bin/run-oracle-core.sh`, `127.0.0.1:25151`)
@@ -112,3 +123,7 @@ bin/test_oracle_intake.py   # triage routes, tags, ledger append, hostile input
 bench/test_core.py          # decision core: guards, calibration math, gates, routing, sizing
 bench/exp_calibration.py bench/exp_pooled_vs_majority.py bench/exp_abstention.py
 ```
+
+---
+
+*Up: [root README](../../README.md) · [fleet knowledgebase](../../docs/fleet-knowledgebase.md) · [↑ top](#oracle-market)*

@@ -1,30 +1,141 @@
 # sovereign-projects
 
-Chris's ops + workspace monorepo on the yote box (`/home/toxic/sovereign`): one
-OpenAI-compatible inference front door, a pitchfork-supervised service stack,
-agent runtimes, MCP federation, and the Ember operational home — all in one
-repo. Canonical GitHub remote is
-[toxicwind/sovereign-projects](https://github.com/toxicwind/sovereign-projects)
-(`toxicwind/sovereign` is a stale trap — don't push there).
+[![last commit](https://img.shields.io/github/last-commit/toxicwind/sovereign-projects)](https://github.com/toxicwind/sovereign-projects/commits/main)
+[![repo size](https://img.shields.io/github/repo-size/toxicwind/sovereign-projects)](https://github.com/toxicwind/sovereign-projects)
+[![license: mixed](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue)](LICENSE)
+[![yote: RTX 3090](https://img.shields.io/badge/yote-RTX%203090%20%C2%B7%2016C%20%C2%B7%2062GB-76b900)](docs/HARDWARE_AUDIT_20260914.md)
 
-## What this is
+> Chris's ops + workspace monorepo on the yote box (`/home/toxic/sovereign`): one OpenAI-compatible inference front door, a pitchfork-supervised service stack, agent runtimes, MCP federation, and the Ember operational home — all in one tree.
 
-Two things in one tree:
+> [!CAUTION]
+> The canonical remote is [`toxicwind/sovereign-projects`](https://github.com/toxicwind/sovereign-projects). A separate repo **`toxicwind/sovereign`** exists with a stale main — pushing or verifying against it is a silent wrong-target error. Never push there.
 
-1. **The control plane** — `pitchfork.toml` (service definitions, pitchfork
-   supervisor), `mise.toml` (tooling + tasks), `config/` (port assignments,
-   the inference routing matrix). This is the ops layer that keeps the box
-   running.
-2. **The workspaces** — `projects/` holds the actual projects: the inference
-   stack (`herd`), the agent engine (`tau`), the lightweight agent (`yote`),
-   the agent OS mirror (`openfang`), the editor substrate (`qed`), the
-   tool-federation layer (`mesh`), the quickshell home (`shell`), plus
-   research probes and audit workspaces.
+> [!NOTE]
+> **Required reading for every agent in the fleet:** [`docs/fleet-knowledgebase.md`](docs/fleet-knowledgebase.md) — estate map, active crews, repo index, standing rules, docs index.
 
-Plus the agent layer: `hatch/agents/ember` (Ember's operational home, with the
-squawk agent-to-agent chat), `agents/` (oracle-market, coyote, …),
-`bridge/` (the live hatch↔yote exec bridge), and `scratch/` (explicitly
-non-production staging).
+> [!WARNING]
+> No app auth. Treat as **localhost + Tailscale only** — never expose `:25100` / `:25101` to the open internet without your own gate.
+
+## Contents
+
+- [Start here](#start-here)
+- [Architecture](#architecture)
+- [Routing doctrine](#routing-doctrine)
+- [The service stack](#the-service-stack)
+- [Quickstart](#quickstart)
+- [Repo layout](#repo-layout)
+- [Key components](#key-components)
+- [Docs](#docs)
+- [Conventions](#conventions)
+- [Post-reboot verification](#post-reboot-verification)
+- [README index](#readme-index)
+- [License](#license)
+
+## Start here
+
+Two things live in one tree:
+
+1. **The control plane** — [`pitchfork.toml`](pitchfork.toml) (service definitions, pitchfork supervisor), [`mise.toml`](mise.toml) (tooling + tasks), [`config/`](config/) (port assignments, the inference routing matrix). This is the ops layer that keeps the box running.
+2. **The workspaces** — [`projects/`](projects/) holds the actual projects: the inference stack (`herd`), the agent engine (`tau`), the lightweight agent (`yote`), the agent OS mirror (`openfang`), the editor substrate (`qed`), the tool-federation layer (`mesh`), the quickshell home (`shell`), plus research probes and audit workspaces.
+
+Plus the agent layer: [`hatch/agents/ember`](hatch/agents/ember) (Ember's operational home, with the squawk agent-to-agent chat), [`agents/`](agents/) (oracle-market, coyote, …), [`bridge/`](bridge/) (the live hatch↔yote exec bridge), and [`scratch/`](scratch/) (explicitly non-production staging).
+
+## Architecture
+
+```mermaid
+flowchart TB
+    subgraph clients["Clients"]
+        ZED[Zed / OpenFang / IDEs]
+        AG[Agents: tau · yote · oracle bidders]
+    end
+    subgraph frontdoor["Inference front door"]
+        HERD[herd :25100<br/>llama-swap fork + flock router]
+        MG[model-guard :25101<br/>request-contract proxy]
+        KP[keypool :25109<br/>provider key pool]
+    end
+    subgraph backends["Backends"]
+        LOCAL[local :25001+<br/>llama-server forks<br/>RTX 3090]
+        CLOUD[cloud via flock :8000<br/>openrouter · nvidia · moonshot …]
+    end
+    ZED --> HERD
+    AG --> HERD
+    MG --> HERD
+    HERD --> KP
+    HERD --> LOCAL
+    HERD --> CLOUD
+    subgraph supervise["Supervision"]
+        PF[pitchfork<br/>systemd user unit]
+    end
+    PF -.-> HERD
+    PF -.-> MG
+    PF -.-> KP
+```
+
+```mermaid
+flowchart LR
+    subgraph bridge["hatch ↔ yote bridge"]
+        WS[awrawr-ws-exec :8379<br/>Funnel /exec-ws]
+    end
+    subgraph chat["Squawk"]
+        SW[squawk-ws :25147]
+        SF[squawk-feed :25135]
+    end
+    WS -.->|never killed| SW
+    WS -.->|never killed| SF
+```
+
+> [!TIP]
+> Both diagrams render inline on GitHub and in any Mermaid-capable preview. If you change a diagram, re-verify it parses — a stray `;` fails the render.
+
+## Routing doctrine
+
+Model selection is **ranking first**, never latency-first and never pay-first:
+
+$$ \text{RANKING} \;>\; \text{FREE-ON-PROVIDER} \;>\; \text{PAY} $$
+
+- **Kimi routes are not defaults.** Their purpose is routing Kimi free models maximally — restored 2026-09-20 after a misroute pointed them at dead models.[^1]
+- Free-tier ground truth: [`docs/free-tier-models.md`](docs/free-tier-models.md) · naming grammar: [`docs/naming-grammar.md`](docs/naming-grammar.md)
+- GuideLLM benchmark traffic routes maximally through the herd router, multi-chat / multi-turn included.
+
+## The service stack
+
+Daemon definitions live in [`pitchfork.toml`](pitchfork.toml) (the generator is retired — this file is hand-edited). Daemons are organized into pitchfork groups: `mesh`, `core`, `agents`, `all`.
+
+| Port | Daemon | Role |
+| ---- | ------ | ---- |
+| `:25100` | `herd` | Inference front door — OpenAI-compatible `/v1` (llama-swap fork + flock router) |
+| `:25101` | `model-guard` | Request-contract enforcement proxy in front of herd (rewrites `chat/completions` per [`config/model_constraints.yaml`](config/model_constraints.yaml)) |
+| `:25109` | `keypool` | Provider key pool for herd cloud routing ([`bin/herd-keypool.py`](bin/herd-keypool.py)) |
+| `:25201` | `rust-web` | Ops dashboard backend |
+| `:25104` | `sovereign-router` | Multi-provider LLM router (Bun/TS, [`tools/sovereign-router/`](tools/sovereign-router/)) |
+| `:8000` | `flock` | Cloud-provider routing daemon backing herd |
+| `:25127` | `shep` | MCP federation — upstream servers → one endpoint |
+| `:25147` | `squawk-ws` | Squawk agent chat — websocket server |
+| `:25135` | `squawk-feed` | Squawk feed sequence server |
+| `:8379` | `awrawr-ws-exec` | The live hatch↔yote exec bridge (see [`bridge/`](bridge/)) |
+| `:25102` | `yote` | Lightweight agent runtime |
+| `:25143` | `coyote` | Autonomous agent inference engine |
+| `:25125` | `tau` | Tau agent engine service |
+| `:25103` | `axiom` | OpenFang agent host |
+
+<details>
+<summary><strong>Port SSOT & audit tooling</strong></summary>
+
+- Port numbers live in one place: [`config/ports.env`](config/ports.env) — the port SSOT, loaded by mise and pitchfork. **Never invent port numbers in app code** — read them from env, `config/ports.env`, or `src/lib/ports.ts`.
+- `bin/port-audit` diffs the live `ss -tlnp` listener table against `config/ports.env`: bind conflicts, unregistered listeners, stale entries. Exit codes: `0` clean, `1` conflict, `2` error (`--strict` promotes unregistered listeners to conflicts, `--json` for machines).
+- `bin/claim-port <port> <cmd>` is the fail-fast pre-launch guard: occupied ports refuse (exit 4) with holder cmdlines; protected ports (bridge 8379/25204, squawk 25147/25135) refuse outright (exit 5). It never kills, never sleeps, never polls.
+- `herd-keypool` listens on 25109 (override `KEYPOOL_HOST`/`KEYPOOL_PORT`); `herd-model-guard` on 25101 (override `MODEL_GUARD_HOST`/`MODEL_GUARD_PORT`) — a second instance on a taken port exits 98 with a clear message instead of a traceback.
+
+</details>
+
+<details>
+<summary><strong>Keypool racing (experimental)</strong></summary>
+
+The keypool sidecar supports concurrent first-valid-wins racing via `KEYPOOL_RACE_KEYS=N` — production default is `1` (serial, legacy behavior, unchanged). To experiment, run a sidecar copy with `KEYPOOL_PORT=<alt>` + `KEYPOOL_RACE_KEYS=2` and point test traffic at it; do not enable racing on the live `:25109` pool without a deliberate decision. See [`docs/edge-additions-20260920.md`](docs/edge-additions-20260920.md).
+
+</details>
+
+The routing matrix is [`config/herd.yaml`](config/herd.yaml) — the canonical llama-swap config (RTX 3090 24GB, `startPort: 25001`).
 
 ## Quickstart
 
@@ -39,45 +150,8 @@ mise run down-herd    # stop just the herd daemon
 mise run logs-tail    # follow the supervisor log
 ```
 
-- Tasks are defined in [`mise.toml`](https://github.com/toxicwind/sovereign-projects/blob/main/mise.toml#L27-L31) — `up:all`, per-service `up-<name>` / `down-<name>`, per-service `health-<name>` probes, `logs`/`logs-tail`/`logs-json`.
-- Port numbers live in one place: [`config/ports.env`](https://github.com/toxicwind/sovereign-projects/blob/main/config/ports.env#L1-L3) — the port SSOT, loaded by mise and pitchfork.
-- **pitchfork does NOT hot-reload its config** — after editing any `[daemons.*]` section, run `bin/pitchfork-restart sovereign/<name>`. The reload rule is documented at the top of [`pitchfork.toml`](https://github.com/toxicwind/sovereign-projects/blob/main/pitchfork.toml#L1-L13).
-
-## The service stack
-
-Daemon definitions live in [`pitchfork.toml`](https://github.com/toxicwind/sovereign-projects/blob/main/pitchfork.toml)
-(the generator is retired — this file is hand-edited). Daemons are organized
-into pitchfork groups: `mesh`, `core`, `agents`, `all`
-([`pitchfork.toml#L267-L276`](https://github.com/toxicwind/sovereign-projects/blob/main/pitchfork.toml#L267-L276)).
-
-| Port | Daemon | Role |
-| ---- | ------ | ---- |
-| :25100 | `herd` | Inference front door — OpenAI-compatible `/v1` (llama-swap fork + flock router) |
-| :25101 | `model-guard` | Request-contract enforcement proxy in front of herd (rewrites `chat/completions` per `config/model_constraints.yaml`) |
-| :25109 | `keypool` | Provider key pool for herd cloud routing (`bin/herd-keypool.py`) |
-| :25201 | `rust-web` | Ops dashboard backend |
-| :25104 | `sovereign-router` | Multi-provider LLM router (Bun/TS, `tools/sovereign-router/`) |
-| :8000 | `flock` | Cloud-provider routing daemon backing herd |
-| :25127 | `shep` | MCP federation — upstream servers → one endpoint |
-| :25147 | `squawk-ws` | Squawk agent chat — websocket server |
-| :25135 | `squawk-feed` | Squawk feed sequence server |
-| :8379 | `awrawr-ws-exec` | The live hatch↔yote exec bridge (see `bridge/`) |
-| :25102 | `yote` | Lightweight agent runtime |
-| :25143 | `coyote` | Autonomous agent inference engine |
-| :25125 | `tau` | Tau agent engine service |
-| :25103 | `axiom` | OpenFang agent host |
-
-Inference chain, verified from the config files:
-
-```text
-clients (Zed / OpenFang / IDEs)
-  └─► herd :25100  (llama-swap fork + flock cloud routing)
-        ├─► local backends from :25001 up (llama-server forks)
-        └─► cloud providers via flock :8000 (openrouter, nvidia, groq, …)
-```
-
-The routing matrix is [`config/herd.yaml`](https://github.com/toxicwind/sovereign-projects/blob/main/config/herd.yaml#L4-L8) —
-the canonical llama-swap config (RTX 3090 24GB, `startPort: 25001`).
+- Tasks are defined in [`mise.toml`](mise.toml) — `up:all`, per-service `up-<name>` / `down-<name>`, per-service `health-<name>` probes, `logs`/`logs-tail`/`logs-json`.
+- **pitchfork does NOT hot-reload its config** — after editing any `[daemons.*]` section, run `bin/pitchfork-restart sovereign/<name>`. The reload rule is documented at the top of [`pitchfork.toml`](pitchfork.toml).
 
 ## Repo layout
 
@@ -104,95 +178,90 @@ sovereign-projects/                     # this repo — /home/toxic/sovereign on
 └── .secrets                # 400KB local secret bundle — gitignored, NEVER commit
 ```
 
-Layout SSOT for the 2026-09-20 reorg (hatch/, bridge/, scratch/): `REORG-PLAN.md`.
+Layout SSOT for the 2026-09-20 reorg (`hatch/`, `bridge/`, `scratch/`): `REORG-PLAN.md`.
 
 ## Key components
 
 ### Inference — herd
 
-[`projects/herd/`](https://github.com/toxicwind/sovereign-projects/tree/main/projects/herd) —
-the **toxicwind fork of llama-swap** (Go): the stack's single OpenAI-compatible
-endpoint on `:25100`. Cloud-provider routing is delegated to the `flock` daemon
-on `:8000`; the in-process `internal/flock` Go router was retired 2026-09-17.
-Live service: pitchfork `herd` → `stack/services/herd.sh` with
-[`config/herd.yaml`](https://github.com/toxicwind/sovereign-projects/blob/main/config/herd.yaml).
-[`flock` daemon`](https://github.com/toxicwind/sovereign-projects/blob/main/pitchfork.toml#L224-L231) ·
-[`keypool` daemon`](https://github.com/toxicwind/sovereign-projects/blob/main/pitchfork.toml#L662-L668)
-[Self-healing peers](https://github.com/toxicwind/sovereign-projects/blob/main/projects/herd/README.md#self-healing-peers-2026-09-20):
-event-driven dead-peer detection (healthy/degraded/circuit-open FSM, single-flight
-half-open recovery on real traffic) with `GET /peer-health` observability.
+[`projects/herd/`](projects/herd) — the **toxicwind fork of llama-swap** (Go): the stack's single OpenAI-compatible endpoint on `:25100`. Cloud-provider routing is delegated to the `flock` daemon on `:8000`. Live service: pitchfork `herd` → `stack/services/herd.sh` with [`config/herd.yaml`](config/herd.yaml).
 
-The keypool sidecar (`bin/herd-keypool.py`) supports concurrent
-first-valid-wins racing via `KEYPOOL_RACE_KEYS=N` — production default is
-`1` (serial, legacy behavior, unchanged). To experiment, run a sidecar copy
-with `KEYPOOL_PORT=<alt>` + `KEYPOOL_RACE_KEYS=2` and point test traffic at
-it; do not enable racing on the live `:25109` pool without a deliberate
-decision. See [`docs/edge-additions-20260920.md`](docs/edge-additions-20260920.md).
+Self-healing peers (2026-09-20): event-driven dead-peer detection (healthy/degraded/circuit-open FSM, single-flight half-open recovery on real traffic) with `GET /peer-health` observability.
 
 ### Agents
 
-- **[`projects/tau/`](https://github.com/toxicwind/sovereign-projects/tree/main/projects/tau)** — Tau agent engine (AI-native agent engine, 1M+ context reasoning, MCP + herd inference). Pitchfork daemon `tau` runs `engine/packages/coding-agent/dist/omp`.
-- **[`projects/yote/`](https://github.com/toxicwind/sovereign-projects/tree/main/projects/yote)** — Yote, the minimal embeddable agent runtime (`:25102`, inference via herd, MCP via shep `:25127`).
-- **[`agents/oracle-market/`](https://github.com/toxicwind/sovereign-projects/tree/main/agents/oracle-market)** — the oracle market: HMAC-signed bidder profiles, Vickrey second-price clearing, stake-and-slash accountability. Spec at [`agents/oracle-market/SPEC.md`](https://github.com/toxicwind/sovereign-projects/blob/main/agents/oracle-market/SPEC.md#L1-L13).
-- **[`projects/openfang/`](https://github.com/toxicwind/sovereign-projects/tree/main/projects/openfang)** — OpenFang agent OS (mirror of RightNow-AI/openfang; daemon `axiom` hosts it on `:25103`).
+- [`projects/tau/`](projects/tau) — Tau agent engine (AI-native, 1M+ context reasoning, MCP + herd inference). Pitchfork daemon `tau` runs `engine/packages/coding-agent/dist/omp`.
+- [`projects/yote/`](projects/yote) — Yote, the minimal embeddable agent runtime (`:25102`, inference via herd, MCP via shep `:25127`).
+- [`agents/oracle-market/`](agents/oracle-market) — the oracle market: HMAC-signed bidder profiles, Vickrey second-price clearing, stake-and-slash accountability — plus the fused Oracle decision engine. Spec: [`agents/oracle-market/SPEC.md`](agents/oracle-market/SPEC.md).
+- [`projects/openfang/`](projects/openfang) — OpenFang agent OS (mirror of RightNow-AI/openfang; daemon `axiom` hosts it on `:25103`).
 
 ### Bridge — hatch↔yote exec
 
-[`bridge/`](https://github.com/toxicwind/sovereign-projects/tree/main/bridge) is
-the [production home](https://github.com/toxicwind/sovereign-projects/blob/main/bridge/README.md#L1-L4)
-of [`awrawr_ws_exec.py`](https://github.com/toxicwind/sovereign-projects/blob/main/bridge/awrawr_ws_exec.py#L1-L13) —
-the persistent websocket exec bridge (Tailscale Funnel `/exec-ws` → `127.0.0.1:8379`),
-stdlib-only asyncio websocket, same security layers as the HTTPS bridge.
-Pitchfork daemon [`awrawr-ws-exec`](https://github.com/toxicwind/sovereign-projects/blob/main/pitchfork.toml#L390-L397)
-runs the tracked copy. Bridge repair runbook: `ops/` (`yote-fix.sh`, `yote-doctor.sh`).
+[`bridge/`](bridge/) is the production home of `awrawr_ws_exec.py` — the persistent websocket exec bridge (Tailscale Funnel `/exec-ws` → `127.0.0.1:8379`), stdlib-only asyncio websocket, same security layers as the HTTPS bridge. Bridge repair runbook: [`ops/`](ops/) (`yote-fix.sh`, `yote-doctor.sh`).
 
 ### Hatch cell side — squawk
 
-[`hatch/`](https://github.com/toxicwind/sovereign-projects/tree/main/hatch) is the
-[hatch-cell side of the world](https://github.com/toxicwind/sovereign-projects/blob/main/hatch/README.md#L1-L4):
-`agents/ember/` is Ember's operational home, `docs/` consolidates
-hatch/bridge/cell documentation. The squawk agent-to-agent chat is driven by
-[`bin/squawk`](https://github.com/toxicwind/sovereign-projects/blob/main/hatch/agents/ember/bin/squawk#L1-L19) —
-one-command wrapper over HMAC-signed, profile-based message publication
-(fleet/lead channels, global sequence).
+[`hatch/`](hatch/) is the hatch-cell side of the world: `agents/ember/` is Ember's operational home, `docs/` consolidates hatch/bridge/cell documentation. The squawk agent-to-agent chat is driven by `bin/squawk` — one-command wrapper over HMAC-signed, profile-based message publication (fleet/lead channels, global sequence).
 
 ### Tool federation — mesh
 
-[`projects/mesh/`](https://github.com/toxicwind/sovereign-projects/tree/main/projects/mesh) —
-MCP gateway source, sovereign-router variants, AST code-navigation packages, the
-unified mesh config. Daemons: `shep` (`:25127`, MCP federation),
-`mesh-hub` (service discovery + health).
+[`projects/mesh/`](projects/mesh) — MCP gateway source, sovereign-router variants, AST code-navigation packages, the unified mesh config. Daemons: `shep` (`:25127`, MCP federation), `mesh-hub` (service discovery + health).
 
 ### Editor + shell
 
-- [`projects/qed/`](https://github.com/toxicwind/sovereign-projects/tree/main/projects/qed) — the editor layer: the zed fork and zedra (remote/mobile substrate).
-- [`projects/shell/`](https://github.com/toxicwind/sovereign-projects/tree/main/projects/shell) — Chris's quickshell home: the `ii` fork of end-4's illogical-impulse (submodule `toxicwind/sovereign-end4`) plus its ops layer.
+- [`projects/qed/`](projects/qed) — the editor layer: the zed fork and zedra (remote/mobile substrate).
+- [`projects/shell/`](projects/shell) — Chris's quickshell home: the `ii` fork of end-4's illogical-impulse (submodule `toxicwind/sovereign-end4`) plus its ops layer.
 
 ## Docs
 
-`docs/` holds architecture + ops docs (see
-[`docs/README.md`](https://github.com/toxicwind/sovereign-projects/blob/main/docs/README.md)
-for the index), including
-[`docs/edge-additions-20260920.md`](https://github.com/toxicwind/sovereign-projects/blob/main/docs/edge-additions-20260920.md) —
-the September-2026 cutting-edge additions (keypool racing, hedged racer,
-routing scores, squawk history search). `hatch/docs/` holds the bridge/cell
-docs moved there by the reorg.
+[`docs/`](docs/) holds architecture + ops docs — full index at [`docs/README.md`](docs/README.md), every-README map at [`docs/README-INDEX.md`](docs/README-INDEX.md). Highlights:
 
-**Required reading for every agent in the fleet:**
-[`docs/fleet-knowledgebase.md`](docs/fleet-knowledgebase.md) — estate map,
-active crews, repo index, standing rules, docs index.
+- [`docs/fleet-knowledgebase.md`](docs/fleet-knowledgebase.md) — **required reading**: estate map, active crews, repo index, standing rules
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — Sovereign Architecture, the single source of truth
+- [`docs/edge-additions-20260920.md`](docs/edge-additions-20260920.md) — September-2026 cutting-edge additions (keypool racing, hedged racer, routing scores, squawk history search)
+
+`hatch/docs/` holds the bridge/cell docs moved there by the reorg. Some older docs predate the 2026-09-20 reorg and may reference moved paths — when in doubt, `pitchfork.toml`, `mise.toml`, and `config/ports.env` are the live sources of truth.
 
 ## Conventions
 
 - **Never invent port numbers in app code** — read them from env, `config/ports.env`, or `src/lib/ports.ts`.
-
-Run `bin/port-audit` on yote any time ports look wrong: it diffs the live `ss -tlnp` listener table against `config/ports.env` and reports bind conflicts, unregistered listeners, and stale entries. The hardened audit (2026-09-20) attributes every listener by full /proc cmdline plus process ancestry (no more blind spots behind bun/node/python comm names), reads `# owner:` hints from `ports.env`, knows the intentional alias groups (:25100 herd/llama-swap, :25107 null-g, :25133 qdrant), treats the 25001-25099 herd pool and expected-but-dark ports as informational, and warns on SSOT ports outside Chris's 25000-35000 mandate. Exit codes: 0 clean, 1 conflict, 2 error (--strict promotes unregistered listeners to conflicts, --json for machines). `bin/claim-port <port> <cmd>` is the fail-fast pre-launch guard: occupied ports refuse (exit 4) with holder cmdlines, protected ports (bridge 8379/25204, squawk 25147/25135) refuse outright (exit 5) - it never kills, never sleeps, never polls. Tests: `python3 -m unittest discover -s bin/tests`. `herd-keypool` listens on 25109 (override: `KEYPOOL_HOST`/`KEYPOOL_PORT`); `herd-model-guard` on 25101 (override: `MODEL_GUARD_HOST`/`MODEL_GUARD_PORT`) — a second instance on a taken port exits 98 with a clear message instead of a traceback.
 - **`git add` specific paths only** — this is a shared tree with multiple workers and live WIP; never `git add -A`.
 - **Fetch-first, rebase, never force-push.** Verify with `git ls-remote origin refs/heads/main` after every push.
 - **`projects/guidellm` is another agent's live workspace** — don't touch it.
 - **Don't kill live daemons** (`:8379` bridge, `:25147`/`:25135` squawk, `:25100` herd, `:25109` keypool); bridge-repair scripts must never kill squawk.
 - Secrets live in `~/.secrets` and `.env.local` — never in git.
 
+## Post-reboot verification
+
+After the 2026-09-20 kernel cutover (`linux-cachyos 7.2.6-1`), confirm before declaring healthy:
+
+- [ ] `uname -r` reports `7.2.6-1`
+- [ ] Bridge WS lane up (`:8379` via Funnel `/exec-ws`)
+- [ ] Squawk `:25147` / `:25135` serving
+- [ ] Herd `:25100` healthy, keypool `:25109`, model-guard `:25101`
+- [ ] `/mnt/8TB` mounted (ntfs-3g, fstab entry)
+- [ ] Cockpit on `:25212`, nothing on `:9090`
+- [ ] pitchfork daemons all `running`, Tailscale serve routes intact
+
+## README index
+
+Every directory README deeplinks back here; the full 445-file map is [`docs/README-INDEX.md`](docs/README-INDEX.md).
+
+| README | What it covers |
+| ------ | -------------- |
+| [`projects/`](projects/) | Project workspaces (herd, tau, yote, openfang, mesh, qed, shell, …) |
+| [`docs/`](docs/) | Architecture + ops doc index |
+| [`bridge/`](bridge/) | hatch↔yote exec bridge |
+| [`hatch/`](hatch/) | Hatch-cell side (Ember home, squawk, watchdogs) |
+| [`agents/oracle-market/`](agents/oracle-market) | Oracle market + decision engine |
+| [`killer-features/`](killer-features/) | Code racer · bid marketplace · debate oracle |
+
 ## License
 
 Stack glue: MIT where marked. Upstream binaries and forks keep their licenses (llama-swap, Zed, Grafana, …).
+
+---
+
+[^1]: 2026-09-20: an agent misdiagnosed a Moonshot 401 ("User not found", bad key) as a routing failure and repointed `kimi-k2`/`kimi-k3-nim` at dead NVIDIA model IDs while keeping the kimi names. Fixed in `a49f7bf0` — routes restored to `moonshotai/kimi-k2.6` / `moonshotai/kimi-k3`, free-model purpose intact, never the default.
+
+*Last verified 2026-09-20 · [↑ top](#sovereign-projects)*

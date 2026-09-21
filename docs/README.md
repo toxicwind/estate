@@ -1,8 +1,21 @@
 # docs/
 
-Architecture + ops documentation for sovereign-projects. Index of what's here,
-grouped by what it actually is. New docs go in `docs/plans/` (proposals) or
-`docs/audits/` (verdicts); bridge/cell docs live in `hatch/docs/`.
+Architecture + ops documentation for sovereign-projects. New docs go in `docs/plans/` (proposals) or `docs/audits/` (verdicts); bridge/cell docs live in `hatch/docs/`.
+
+> [!NOTE]
+> **Required reading for every agent in the fleet:** [`fleet-knowledgebase.md`](fleet-knowledgebase.md) — estate map, active crews, repo index, standing rules, docs index.
+
+> [!TIP]
+> New here? Read in this order: [fleet-knowledgebase](fleet-knowledgebase.md) → [ARCHITECTURE](ARCHITECTURE.md) → [CONTROL_PLANE](CONTROL_PLANE.md) → the topic you need below.
+
+## Contents
+
+- [Architecture](#architecture-the-design-of-the-stack)
+- [Inference & routing](#inference--routing)
+- [Hardware & OS tuning](#hardware--os-tuning-awrawr-pc)
+- [Research](#research)
+- [Inventories & plans](#inventories--plans)
+- [Full README map](#full-readme-map)
 
 ## Architecture (the design of the stack)
 
@@ -47,8 +60,13 @@ grouped by what it actually is. New docs go in `docs/plans/` (proposals) or
 - [Meta/](Meta/) — field notes on the Muse platform (runtime cells), evidence-based
 - [MANIFESTO.md](MANIFESTO.md) — memetic forensics analysis (cultural artifact, not architecture)
 
-Note: some older docs predate the 2026-09-20 reorg and may reference moved paths
-(`hatch/`, `bridge/`, `scratch/`). When in doubt, `pitchfork.toml`, `mise.toml`,
-and `config/ports.env` are the live sources of truth.
+## Full README map
 
-Back to the [master README](../README.md).
+All 445 READMEs in this repo, deeplinked: [README-INDEX.md](README-INDEX.md).
+
+> [!WARNING]
+> Some older docs predate the 2026-09-20 reorg and may reference moved paths (`hatch/`, `bridge/`, `scratch/`). When in doubt, `pitchfork.toml`, `mise.toml`, and `config/ports.env` are the live sources of truth.
+
+---
+
+*Up: [root README](../README.md) · [fleet knowledgebase](fleet-knowledgebase.md) · [↑ top](#docs)*
