@@ -17,6 +17,7 @@ mesh/
 ├── browserless/                # browserless.io MCP server + native launcher (:25130)
 ├── ui-svelte/                  # Svelte dashboard for the router
 ├── config.yml                  # unified mesh config — model roles, port mappings
+├── secretsmith/                # Secret Service CLI (secret-tool lineage, maximal)
 └── research/ data/              # provider discovery scripts, model catalog dumps
 ```
 
