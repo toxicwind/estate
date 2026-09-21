@@ -61,7 +61,7 @@ bins:
     kind: script
     shebang: "#!/bin/sh"
     syntax: sh
-    notes: "pre-push secret guard for Go repos; --help HANGS (starts repo scan) — never run bare"
+    notes: "pre-push secret guard for Go repos; check-0 secret scan has durable ignore memory (~/.config/push-guard/ignore) + placeholder auto-clear; the safe non-scanning invocation is: push-guard.sh ignore <path>... (bare run still scans the worktree)"
 
   - name: sovereign_web
     dir: bin
