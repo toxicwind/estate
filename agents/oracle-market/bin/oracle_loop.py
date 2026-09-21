@@ -316,6 +316,11 @@ def _parse_acceptance_report(output):
     -- the winner's word is the output text, hash-bound to its signature,
     so no separate bidder-supplied field is trusted.
     """
+    # Tolerate producers that emit literal "\n" escapes instead of
+    # real newlines (observed from Super Ralph headless stdout). The
+    # bidder canonicalizes before posting; this is belt-and-braces.
+    if output and "\\n" in output and "\n" not in output:
+        output = output.replace("\\r\\n", "\n").replace("\\n", "\n")
     items = []
     found = False
     for line in (output or "").splitlines():
