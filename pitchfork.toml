@@ -471,7 +471,6 @@ auto = ["start"]
 # see (2026-09-14 18:03 lock deadlock: process "running", health dead).
 # Scoped to buildsrv only; sibling lanes own their watchdogs.
 [daemons.buildsrv-watchdog]
-port = 25148
 run = "exec /usr/bin/python3 /home/toxic/sovereign/tools/buildsrv/buildsrv-watchdog.py"
 dir = "/home/toxic/sovereign/tools/buildsrv"
 mise = false
