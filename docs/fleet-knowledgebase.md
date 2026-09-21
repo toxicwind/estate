@@ -109,6 +109,8 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | suture | Watchdog surgery (5 cases): Hearth/progress-watchdog dedup + honest pulse; verifiable swarm pause; atomic run ledgers; oracle intake per-request triage (killed false "stalled 24,206s"); super-ralph vs omp-router doc correction | Suture (Bedrock crew) | DONE (2026-09-20) -- commits aabb87bc3b (surgery) + 1999fb3643 (+x restore), remote ref verified via ls-remote |
 | zed-qed | QED maximal readiness (projects/qed): zed fork 241 crates + zedra remote substrate — schema-normalizer dedup across 3 providers, nullable-recursion fix, zedra workspace repair (7 crates resolve), settings_ui autonomous_edits fix, README/AUDIT deconfusion | Ember (zed-qed) | DONE 2026-09-20 — commits a87f5e5189 (normalizer+zedra+docs), d77c1ce7fd (ZED_SYNC.md), 7ac0dc03b6 (README link), f42ca9e4e4 (rustfmt), db4179319a (settings_ui fix). PROOF: cargo check --package zed EXIT 0; 5/5 normalizer tests pass; zedra workspace check clean; bun check clean |
 
+| ember-rebootwright | Infra ports assessment + crew-b-f844 snapshot cleanup + staged yote kernel cutover (7.1.5-1 -> 7.2.6-1) | ember-rebootwright (Ember's crew) | RUNNING |
+
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 
 ---
