@@ -30,12 +30,12 @@ hooks:
 
 # RETIRED 2026-09-17: astMatrix in-process router replaced by Flock delegation.
 # Flock (:8000) is the unified multi-provider remote-API/completions subsystem.
-# DISABLED 2026-09-20 (provider-surgeon): flock :8000 cloud upstream is dead -
+# DISABLED 2026-09-20 (provider-surgeon): flock :25193 cloud upstream is dead -
 # NVIDIA account returns 404/410/502 on every probed chat model; the flock daemon
 # itself runs with zero upstream env keys. Re-enable when flock upstream is healthy.
 # (flock daemon keeps running under pitchfork for the TAU flock extension.)
 # RE-ENABLED 2026-09-20 ~03:10 MDT (provider-surgeon): flock upstream completions
-# verified live via 127.0.0.1:8000 with FLOCK_API_KEY. Only the 3 model IDs
+# verified live via 127.0.0.1:25193 with FLOCK_API_KEY. Only the 3 model IDs
 # below returned real completions in the probe; the other 100 flock-advertised
 # IDs 404 upstream (stale) and are deliberately NOT mapped. Re-probe before adding more.
 # DISABLED 2026-09-20 ~03:20 MDT (provider-surgeon): the flock delegation advertises
@@ -44,7 +44,7 @@ hooks:
 # exposes only the 3 probe-verified live models.
 flock:
   enabled: false
-  baseUrl: http://127.0.0.1:8000
+  baseUrl: http://127.0.0.1:25193
   keyEnv: FLOCK_API_KEY
   modelMap:
     flock-deepseek-v4-flash: deepseek-ai/deepseek-v4-flash-0731
@@ -985,6 +985,16 @@ peers:
       - google/gemma-4-26b-a4b-it:free  # v3: 429 x3
       - qwen/qwen3.8-27b:free  # v3: 429 x3
       - z-ai/glm-5.2:free  # v3: 429 x3
+      # TIER 5 -- Kimi free variants (maximal free-Kimi routing, 2026-09-21,
+      # ember-kimi-route): OpenRouter rotates free Kimi availability; all 404
+      # "unavailable for free" as of 2026-09-21. Listed as fallback tier --
+      # keypool cooldown + shim chain-advance (429/402/404) absorb misses, so
+      # they serve automatically the moment OpenRouter re-enables them.
+      # Re-probe before promoting.
+      - moonshotai/kimi-k3:free
+      - moonshotai/kimi-k2.6:free
+      - moonshotai/kimi-k2.5:free
+      - moonshotai/kimi-k2.7-code:free
       # EXCLUDED (auditable -- re-probe before re-adding):
       # - poolside/laguna-xs-2.1:free: 200-empty x2, 429 x1 (v3) + HTTP 502 on
       #   adequate-token re-probe 2026-09-20. Stays excluded.
@@ -1145,7 +1155,7 @@ peers:
   # responds (auth errors are fast) but inference hangs. Re-probe before re-enabling.
   # --- flock-direct: Flock daemon via plain peer (added 2026-09-20) ---
   # PROBE-GATED 2026-09-20 ~02:00 MDT (kimiclaw-builder): only the model IDs
-  # below returned real completions in live probes against 127.0.0.1:8000
+  # below returned real completions in live probes against 127.0.0.1:25193
   # (nemotron HTTP 200 ~13s; glm-5.3-flash real completion). The flock:
   # delegation stays disabled (it advertises all 103 upstream IDs, ~100 404).
   # deepseek-ai/deepseek-v4-flash-0731 EXCLUDED: hangs, 60s timeout, no
@@ -1156,7 +1166,7 @@ peers:
   # since 03:55 but the block was still live; now actually commented out.
   # Re-probe before re-enabling.
 #   flock-direct:
-#     proxy: http://127.0.0.1:8000
+#     proxy: http://127.0.0.1:25193
 #     apiKey: ${env.FLOCK_API_KEY}
 #     models:
 #       - nvidia/nemotron-3.5-lightning-30b-a3b

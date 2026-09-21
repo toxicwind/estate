@@ -218,6 +218,7 @@
       <!-- ============ IFRAME TABS ============ -->
       <section id="tab-herd" class="tabpane"><div class="card p-2"><iframe class="dashtab" data-src="/herd-ui/" title="Herd UI" loading="lazy"></iframe></div>
         <p class="text-[11px] text-gray-500 mono mt-2">herd Svelte build · served same-origin by sovereign_web · API proxied through this server</p></section>
+      <section id="tab-meshs" class="tabpane"><div class="card p-2"><iframe class="dashtab" data-src="/mesh-ui/" title="Mesh UI" loading="lazy"></iframe></div>
         <p class="text-[11px] text-gray-500 mono mt-2">mesh UI · same build as herd (single build, two mounts)</p></section>
       <section id="tab-ralph" class="tabpane"><div class="card p-2"><iframe class="dashtab" data-dyn=":8420/" title="Ralph Dashboard" loading="lazy"></iframe></div></section>
       <section id="tab-kimi" class="tabpane"><div class="card p-2"><iframe class="dashtab" data-dyn=":25126/" title="Kimi Web" loading="lazy"></iframe></div></section>
@@ -245,6 +246,7 @@
         { id: "services", label: "Services", icon: "fa-server" },
         { id: "meshhub", label: "Mesh Hub", icon: "fa-share-nodes" },
         { id: "herd", label: "Herd UI", icon: "fa-layer-group", iframe: true },
+        { id: "meshs", label: "Mesh UI", icon: "fa-cubes", iframe: true },
         { id: "ralph", label: "Ralph", icon: "fa-robot", iframe: true, dyn: ":8420/" },
         { id: "kimi", label: "Kimi Web", icon: "fa-terminal", iframe: true, dyn: ":25126/" },
         { id: "boundless", label: "Boundless", icon: "fa-infinity", iframe: true, dyn: ":10200/" },
@@ -337,35 +339,19 @@
         };
       }
       function applyEvents(evs) {
-        let rosterDirty = false;
-        const squawkMsgs = [];
+        let rosterDirty = false, squawkDirty = false;
         for (const d of evs) {
           if (d.type === "hello") continue;
-          if (d.type === "fleet:init") {
-            // Snapshot: paint roster + recent messages straight from the
-            // frame, no HTTP round-trip.
-            if (Array.isArray(d.roster)) {
-              for (const a of d.roster) rosterCache[a.name] = a;
-              rosterDirty = true;
-            }
-            if (Array.isArray(d.messages) && d.messages.length && sqCache.length === 0) {
-              sqCache = d.messages; // backend orders newest-first, like the channel API
-              buildSenderFilter();
-              paintSquawkBadges();
-              if ($("#tab-squawk").classList.contains("active")) renderSquawkCache();
-            }
-            continue;
-          }
           if (d.type === "agent" && d.agent) { rosterCache[d.agent.name] = d.agent; rosterDirty = true; addActivity(d.agent.name + " · " + (d.agent.last_title || "updated")); }
           if (d.type === "squawk" && d.message) {
+            squawkDirty = true;
             const m = d.message;
-            squawkMsgs.push(m);
             addActivity("✦ " + m.from + " → " + (m.to || "all") + (m.title ? ": " + m.title : ""));
             addLog("[" + new Date().toLocaleTimeString() + "] squawk " + m.from + ": " + (m.title || "").slice(0, 80));
           }
         }
         if (rosterDirty && $("#tab-fleet").classList.contains("active")) renderFleet();
-        if (squawkMsgs.length) handleSquawkEvent(squawkMsgs);
+        if (squawkDirty) handleSquawkEvent();
       }
 
       /* ---------------- fleet tab ---------------- */
@@ -493,25 +479,10 @@
       }
       function hideBadge(ch) { const el = document.querySelector('[data-badge="' + ch + '"]'); if (el) { el.style.display = "none"; el.textContent = ""; } }
       // Called from the WS event path (debounced 200ms upstream).
-      function handleSquawkEvent(msgs) {
+      function handleSquawkEvent() {
         paintSquawkBadges();
-        // Event-driven: append the incoming message straight into the cache
-        // instead of re-fetching the channel over HTTP. The WS feed carries
-        // the fleet channel; a message lands in the cache when the user is
-        // viewing fleet, otherwise the unread badge is the only signal.
-        // The backend may re-send a seq with more complete content (writer
-        // raced the first notify); replace in place in that case.
-        let added = false;
-        for (const m of msgs) {
-          if (sqActive === "fleet") {
-            const ix = sqCache.findIndex((x) => x.seq === m.seq);
-            if (ix >= 0) sqCache[ix] = m;
-            else sqCache.unshift(m); // channel API orders newest-first
-            added = true;
-          }
-        }
-        if (added && $("#tab-squawk").classList.contains("active")) { buildSenderFilter(); renderSquawkCache(); }
-        if (!$("#tab-squawk").classList.contains("active")) bumpUnread("squawk");
+        if ($("#tab-squawk").classList.contains("active")) loadSquawkChannel(sqActive);
+        else bumpUnread("squawk");
       }
 
       /* ---------------- models tab ---------------- */

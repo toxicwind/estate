@@ -50,6 +50,12 @@ CHANNEL = ol.CHANNEL
 FLEET = ol.FLEET
 SEQ_RE = ol.SEQ_RE
 PAYLOAD_CAP_S = 590  # hard ceiling per task execution
+RALPH_BIN = Path("/home/toxic/.local/bin/super-ralph")
+RALPH_CAP_S = 1740  # 29 min ceiling: Super Ralph runs are slow (~11 min
+                    # observed for a trivial run)
+RALPH_MODEL = os.environ.get("RALPH_MODEL", "kimi-k3-nim")
+RALPH_BASE_URL = os.environ.get("RALPH_BASE_URL",
+                                "http://127.0.0.1:25100/v1")
 OUT_CAP = 8000
 ERR_CAP = 2000
 
@@ -404,10 +410,35 @@ class Bidder:
         self.my_bids[tid] = conf
         self.say(self._pick("bid", t=tid, c=conf, m=len(matched)))
 
+    def _fetch_task(self, tid):
+        """Synchronous channel lookup for a task_post not yet ingested.
+
+        Direct assigns can beat the inotify task_post delivery; without
+        this fallback the winner would drop the assignment for lack of
+        the task dict."""
+        task = self.seen_tasks.get(tid)
+        if task:
+            return task
+        try:
+            files = sorted(
+                [f for f in os.listdir(CHANNEL) if SEQ_RE.match(f)])
+        except OSError:
+            return None
+        for f in files[-50:]:
+            parsed = ol.parse_msg(CHANNEL / f)
+            if not parsed:
+                continue
+            meta, data = parsed
+            if (meta.get("msg_type") == "task_post"
+                    and data.get("task_id") == tid):
+                self.on_task_post(data)
+                return self.seen_tasks.get(tid)
+        return None
+
     def on_assign(self, meta, data):
         tid = data.get("task_id")
         winner = data.get("winner")
-        task = self.seen_tasks.get(tid)
+        task = self._fetch_task(tid)
         if winner == self.frm and task is not None:
             conf = self.my_bids.get(tid, 0)
             self.say(self._pick("win", t=tid, c=conf))
@@ -419,6 +450,82 @@ class Bidder:
             self.say(self._pick("lost", t=tid, w=w))
 
     # ----- execution -----
+    @staticmethod
+    def _collect_artifacts(workdir, before):
+        """Winner-declared result artifacts, minus what the oracle's
+        confinement would reject. Excludes dotfiles/dotdirs (Super
+        Ralph litters .super-ralph/.smithers into the workdir) and
+        non-files, so a good run is never flagged for its runner's
+        litter."""
+        return sorted(
+            n for n in set(os.listdir(workdir)) - before
+            if not n.startswith(".") and (workdir / n).is_file())
+
+    def _run_super_ralph(self, task, workdir, env, timeout_ms, t0):
+        """Execute an agentic task via the real Super Ralph CLI.
+
+        The task payload IS the Ralph prompt. Headless stdout carries the
+        exact final reply. Model calls route through the herd router
+        directly (NIM_PROXY_BYPASS=1 skips the :25193 nim-proxy, whose
+        model "free" 404s; NIM_BASE_URL passes through untouched to the
+        claude shim). Returns (success, out, err, dur_ms).
+        """
+        tid = task["task_id"]
+        prompt = task.get("payload", "") or ""
+        (workdir / "prompt.md").write_text(prompt, encoding="utf-8")
+        rc = None
+        if not RALPH_BIN.exists():
+            dur = (time.time() - t0) * 1000
+            return (False, "",
+                    "super-ralph binary not found: %s" % RALPH_BIN, dur)
+        renv = dict(env)
+        renv["NIM_PROXY_BYPASS"] = "1"
+        renv["NIM_BASE_URL"] = RALPH_BASE_URL
+        renv["ANTHROPIC_BASE_URL"] = RALPH_BASE_URL
+        renv["NIM_MODEL"] = renv.get("NIM_MODEL", RALPH_MODEL)
+        renv["ANTHROPIC_DEFAULT_OPUS_MODEL"] = renv.get(
+            "ANTHROPIC_DEFAULT_OPUS_MODEL", RALPH_MODEL)
+        ceiling = min(timeout_ms / 1000.0, RALPH_CAP_S)
+        self.say("%s invoking super-ralph on %s (ceiling %.0fs, model %s)."
+                 % (self.name, tid, ceiling, renv["NIM_MODEL"]))
+        try:
+            p = subprocess.run(
+                [str(RALPH_BIN), prompt, "--skip-questions",
+                 "--max-concurrency", "8"],
+                cwd=str(workdir), capture_output=True, text=True,
+                timeout=ceiling, env=renv)
+            rc = p.returncode
+            dur = (time.time() - t0) * 1000
+            out = (p.stdout or "")[-OUT_CAP:]
+            # Super Ralph's headless stdout may carry literal "\n"
+            # escapes instead of real newlines. Canonicalize before
+            # hash/sign/post so the acceptance parser (and humans) see
+            # real text. Only when no real newlines exist, to avoid
+            # corrupting mixed or legitimately-backslashed output.
+            if "\\n" in out and "\n" not in out:
+                out = (out.replace("\\r\\n", "\n").replace("\\n", "\n")
+                          .replace("\\t", "\t"))
+            err = (p.stderr or "")[-ERR_CAP:]
+            success = rc == 0 and bool((p.stdout or "").strip())
+            if not success and not err.strip():
+                err = "super-ralph exited %d with empty output" % rc
+        except subprocess.TimeoutExpired:
+            dur = (time.time() - t0) * 1000
+            out, success = "", False
+            err = "super-ralph timeout after %.0fs" % ceiling
+        except Exception as e:  # noqa: BLE001
+            dur = (time.time() - t0) * 1000
+            out, success = "", False
+            err = "%s: %s" % (type(e).__name__, e)[:500]
+        # Invocation evidence for the audit trail (also a result artifact).
+        (workdir / "ralph-invocation.txt").write_text(
+            "bin: %s\nmodel: %s\nbase_url: %s\nceiling_s: %.0f\n"
+            "exit: %s\nduration_ms: %.1f\n"
+            % (RALPH_BIN, renv["NIM_MODEL"], RALPH_BASE_URL, ceiling,
+               rc, dur),
+            encoding="utf-8")
+        return success, out, err, dur
+
     def execute_task(self, task):
         tid = task["task_id"]
         if tid in self.executed:
@@ -445,47 +552,55 @@ class Bidder:
         t0 = time.time()
         success, out, err = False, "", ""
         try:
-            base_cmd = ["python3", "-c", payload]
-            # 2026-09-20: prefer `unshare -rn` (user+network namespaces,
-            # unprivileged) so the payload env -- which carries pooled
-            # provider keys -- cannot reach the net. BUT unshare -rn is
-            # flaky on yote under pitchfork: proof-live-1 EPERMed
-            # ("unshare: unshare failed: Operation not permitted", ledger
-            # settle notes) while proof-live-2 verified under the same
-            # wrapper. So: try isolated, fall back to direct execution on
-            # an unshare failure. A payload that never runs is worse than
-            # a payload that runs unisolated.
-            use_unshare = Path("/usr/bin/unshare").exists()
-            cmd = (["unshare", "-rn"] + base_cmd) if use_unshare else base_cmd
-            p = subprocess.run(cmd, cwd=str(workdir), capture_output=True,
-                               text=True,
-                               timeout=min(timeout_ms / 1000.0, PAYLOAD_CAP_S),
-                               env=env)
-            perr = (p.stderr or "").lower()
-            fallback_note = ""
-            if (use_unshare and p.returncode != 0 and "unshare" in perr
-                    and ("operation not permitted" in perr
-                         or "permission denied" in perr)):
-                fallback_note = ("unshare -rn failed (%s); fell back "
-                                   "to direct execution"
-                                   % (p.stderr or "").strip()[:120])
-                p = subprocess.run(base_cmd, cwd=str(workdir),
-                                   capture_output=True, text=True,
-                                   timeout=min(timeout_ms / 1000.0,
-                                               PAYLOAD_CAP_S),
+            if task.get("exec_mode") == "super-ralph":
+                # Agentic execution via the real Super Ralph CLI.
+                # Returns the same (success, out, err, dur) tuple
+                # the python path computes below; the shared tail
+                # (artifacts, hash, sign, post) runs unchanged.
+                success, out, err, dur = self._run_super_ralph(
+                    task, workdir, env, timeout_ms, t0)
+            else:
+                base_cmd = ["python3", "-c", payload]
+                # 2026-09-20: prefer `unshare -rn` (user+network namespaces,
+                # unprivileged) so the payload env -- which carries pooled
+                # provider keys -- cannot reach the net. BUT unshare -rn is
+                # flaky on yote under pitchfork: proof-live-1 EPERMed
+                # ("unshare: unshare failed: Operation not permitted", ledger
+                # settle notes) while proof-live-2 verified under the same
+                # wrapper. So: try isolated, fall back to direct execution on
+                # an unshare failure. A payload that never runs is worse than
+                # a payload that runs unisolated.
+                use_unshare = Path("/usr/bin/unshare").exists()
+                cmd = (["unshare", "-rn"] + base_cmd) if use_unshare else base_cmd
+                p = subprocess.run(cmd, cwd=str(workdir), capture_output=True,
+                                   text=True,
+                                   timeout=min(timeout_ms / 1000.0, PAYLOAD_CAP_S),
                                    env=env)
-            dur = (time.time() - t0) * 1000
-            out = (p.stdout or "")[-OUT_CAP:]
-            err = (((fallback_note + "\n") if fallback_note else "")
-                   + (p.stderr or "")[-ERR_CAP:])
-            success = p.returncode == 0
+                perr = (p.stderr or "").lower()
+                fallback_note = ""
+                if (use_unshare and p.returncode != 0 and "unshare" in perr
+                        and ("operation not permitted" in perr
+                             or "permission denied" in perr)):
+                    fallback_note = ("unshare -rn failed (%s); fell back "
+                                       "to direct execution"
+                                       % (p.stderr or "").strip()[:120])
+                    p = subprocess.run(base_cmd, cwd=str(workdir),
+                                       capture_output=True, text=True,
+                                       timeout=min(timeout_ms / 1000.0,
+                                                   PAYLOAD_CAP_S),
+                                       env=env)
+                dur = (time.time() - t0) * 1000
+                out = (p.stdout or "")[-OUT_CAP:]
+                err = (((fallback_note + "\n") if fallback_note else "")
+                       + (p.stderr or "")[-ERR_CAP:])
+                success = p.returncode == 0
         except subprocess.TimeoutExpired:
             dur = (time.time() - t0) * 1000
             err = f"timeout after {min(timeout_ms/1000.0, PAYLOAD_CAP_S):.0f}s"
         except Exception as e:  # noqa: BLE001
             dur = (time.time() - t0) * 1000
             err = f"{type(e).__name__}: {e}"[:500]
-        artifacts = sorted(set(os.listdir(workdir)) - before)
+        artifacts = self._collect_artifacts(workdir, before)
         now = time.time()
         result_hash = hashlib.sha256(out.encode()).hexdigest()
         dur_r = round(dur, 1)

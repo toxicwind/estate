@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """kimi-auto: single-shot codegen via the kimi-auto resolver lane (herd :25100).
 
-Different model class entirely: cloud-frontier Kimi resolved by kimi-auto's
-15-min audited resolver. Backend diversity, not prompt diversity.
+Different model class entirely: best live model (Kimi-family preferred,
+any healthy family as fallback) resolved by kimi-auto's audited resolver.
+Backend diversity, not prompt diversity.
 Ceiling: 300s.
 """
 import os, sys
