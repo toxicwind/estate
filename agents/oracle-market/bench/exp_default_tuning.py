@@ -140,8 +140,9 @@ def t2_margin(rows, esc):
 def t3_panel_size(question_rows, concurrency):
     import oracle_ask
     rng = random.Random(20260920)
-    sub = [q for q in question_rows
-           if q.get("status") == "verdict"][:]
+    # Scorable rows (bearing a probability); status is not required since
+    # we rerun the panel -- cold-gate withholding does not block the test.
+    sub = [q for q in question_rows if q.get("probability") is not None][:]
     rng.shuffle(sub)
     sub = sub[:20]
     cfgs = {"2": ["oracle-judge-a", "oracle-judge-b"],
@@ -266,8 +267,11 @@ def t5_abstention(rows):
 
 def t6_debate_budget(rows, concurrency):
     import framing, engine, escalation, oracle_ask
-    drows = [r for r in rows if r.get("tier") == "DEBATE"
-             and r["status"] == "verdict"][:12]
+    # Policy-DEBATE rows (disagreement-routed, gate_ok=True): the questions
+    # where production would actually pay for a debate. status is not
+    # required -- the debate runs on the question text.
+    drows = [r for r in rows if r.get("policy_tier") == "DEBATE"
+             and r["n_live"] >= 2][:12]
     cfgs = [(1, 2), (1, 3), (2, 2), (2, 3)]
 
     def run_cfg(r, k, rounds):
@@ -299,9 +303,13 @@ def t6_debate_budget(rows, concurrency):
             except Exception:
                 return None
         with cf.ThreadPoolExecutor(max_workers=concurrency) as ex:
-            got = [f.result() for f in
-                   cf.as_completed([ex.submit(one, r) for r in drows])]
-        ok = [(r, g) for r, g in zip(drows, got) if g and g["p"] is not None]
+            futs = {ex.submit(one, r): r for r in drows}
+            ok = []
+            for f in cf.as_completed(futs):
+                r = futs[f]
+                g = f.result()
+                if g and g["p"] is not None:
+                    ok.append((r, g))
         results["k=%d/r=%d" % (k, rounds)] = {
             "n": len(ok), "mean_requests": mean([g["requests"] for _, g in ok]),
             "ps": [g["p"] for _, g in ok],

@@ -57,6 +57,8 @@ RESULTS = os.path.join(HERE, "results")
 
 def ask_text(q):
     t = q["question"].strip()
+    if q.get("resolution_date"):
+        t += " Resolution date: %s." % q["resolution_date"]
     c = (q.get("criteria") or "").strip()
     if c:
         t += " Resolution criterion: " + c
@@ -93,8 +95,12 @@ def mean(xs):
     return sum(xs) / len(xs) if xs else None
 
 
-def summarize_question(q, verdict, elapsed):
-    """Flatten one verdict into an eval row."""
+def summarize_question(q, verdict, elapsed, escalation_mod):
+    """Flatten one verdict into an eval row.
+
+    escalation_mod: the imported escalation module (for policy-tier
+    computation with gate_ok=True, independent of cold-start history).
+    """
     contribs = {c["judge"]: c for c in
                 (verdict.get("judge_contributions") or [])}
     models = verdict.get("models") or []
@@ -113,17 +119,26 @@ def summarize_question(q, verdict, elapsed):
             "weight": (c or {}).get("weight"),
             "latency_s": lat,
         })
+    conf = (verdict.get("structural_confidence") or {}).get("confidence")
+    live_posts = [j["posterior"] for j in judges
+                  if not j["refused"] and j["posterior"] is not None]
+    if live_posts and conf is not None:
+        policy_tier, policy_tier_reason = escalation_mod.route(
+            live_posts, conf, True)
+    else:
+        policy_tier, policy_tier_reason = None, "no live judges/posterior"
     row = {
         "eval_id": q["eval_id"], "kb_id": q.get("kb_id"),
         "category": q.get("category"), "label": q["label"],
         "question": ask_text(q),
         "status": verdict.get("status"), "tier": verdict.get("tier"),
         "tier_reason": verdict.get("tier_reason"),
+        "policy_tier": policy_tier,
+        "policy_tier_reason": policy_tier_reason,
         "probability": verdict.get("probability"),
         "prior": verdict.get("prior"),
         "gate_reason": verdict.get("gate_reason"),
-        "structural_confidence":
-            (verdict.get("structural_confidence") or {}).get("confidence"),
+        "structural_confidence": conf,
         "judges": judges,
         "n_live": sum(1 for j in judges if not j["refused"]),
         "latency_s": verdict.get("latency_s", elapsed),
@@ -185,6 +200,9 @@ def main(argv):
     ap.add_argument("--budget", type=float, default=240)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--tag", default="")
+    ap.add_argument("--question-delay", type=float, default=0,
+                    help="seconds to wait between questions (free-tier pacing; "
+                         "eval methodology only, not production behavior)")
     a = ap.parse_args(argv)
 
     ts = int(time.time())
@@ -196,6 +214,7 @@ def main(argv):
     sys.path.insert(0, BIN)
     import oracle_ask
     import calibration as cal
+    import escalation as esc_mod
 
     with open(a.questions) as f:
         questions = [json.loads(l) for l in f if l.strip()]
@@ -214,16 +233,22 @@ def main(argv):
     rows = []
 
     def one(q):
+        # Panel-only: allow_debate=False. Debates run separately on
+        # policy-DEBATE rows (escalation counterfactual harness), keeping
+        # panel call volume at 3 judges/question.
         time.sleep(rng.uniform(0, 1.5))  # stagger: no thundering herd
         t0 = time.time()
         try:
             v = oracle_ask.run_ask(ask_text(q), timeout_s=a.timeout,
-                                   budget_s=a.budget)
+                                   budget_s=a.budget, allow_debate=False)
         except Exception as e:  # never lose the row; record the failure
             v = {"status": "harness_error", "tier": None,
                  "probability": None, "error": "%s: %s" % (type(e).__name__, e),
                  "latency_s": time.time() - t0}
-        return summarize_question(q, v, time.time() - t0)
+        r = summarize_question(q, v, time.time() - t0, esc_mod)
+        if a.question_delay:
+            time.sleep(a.question_delay)
+        return r
 
     with cf.ThreadPoolExecutor(max_workers=a.concurrency) as ex:
         futs = {ex.submit(one, q): q for q in questions}
@@ -242,12 +267,34 @@ def main(argv):
     rows.sort(key=lambda r: r["eval_id"])
 
     # ---- metrics ----
-    emitted = [r for r in rows if r["status"] == "verdict"
-               and r["probability"] is not None]
+    # SCORABLE: every row bearing a probability (even if cold-gate withheld).
+    # EMITTED: the subset the gate actually released (status == verdict).
+    scorable = [r for r in rows if r["probability"] is not None]
+    emitted = [r for r in scorable if r["status"] == "verdict"]
+    overall_scorable = brier_nll_acc(scorable) if scorable else {"n": 0}
+    overall_emitted = brier_nll_acc(emitted) if emitted else {"n": 0}
+
+    # Per policy tier (disagreement-only routing, gate_ok=True) on scorable.
+    by_policy = {}
+    for r in scorable:
+        by_policy.setdefault(r["policy_tier"] or "?", []).append(r)
+    policy_tier_metrics = {t: brier_nll_acc(rs)
+                           for t, rs in by_policy.items()}
+    # Per reported tier on emitted (cold-gate behavior).
     by_tier = {}
     for r in emitted:
         by_tier.setdefault(r["tier"] or "?", []).append(r)
     tier_metrics = {t: brier_nll_acc(rs) for t, rs in by_tier.items()}
+    # Calibration bins on scorable (all forecasts) and emitted.
+    calib_scorable = calibration_bins(scorable) if scorable else {"ece": None}
+    calib_emitted = calibration_bins(emitted) if emitted else {"ece": None}
+    # Cold-gate withholding.
+    gate_stats = {
+        "n_rows": len(rows), "n_scorable": len(scorable),
+        "n_emitted": len(emitted),
+        "withholding_rate": (1 - len(emitted) / len(scorable)
+                             if scorable else None),
+    }
 
     # per-judge (by panel slot)
     judge_stats = {}
@@ -277,8 +324,8 @@ def main(argv):
         s["mean_attempts"] = mean(s["attempts"])
         del s["ps"], s["ys"], s["lat"], s["attempts"]
 
-    # pooled vs mean-judge vs hard majority (emitted, >=2 live judges)
-    multi = [r for r in emitted if r["n_live"] >= 2]
+    # pooled vs mean-judge vs hard majority (SCORABLE, >=2 live judges)
+    multi = [r for r in scorable if r["n_live"] >= 2]
     def agg_metrics(aggfn, name):
         ps = [aggfn(r) for r in multi]
         return {"name": name, **brier_nll_acc(
@@ -294,7 +341,11 @@ def main(argv):
             else 0.25, "hard_majority"),
     ]
 
-    # co-failure beta: all live judges wrong (emitted, >=2 live)
+    # co-failure beta: all live judges wrong (SCORABLE, >=2 live).
+    # beta = P(all live judges wrong); 1-beta is the ensemble ceiling:
+    # no aggregation of this panel can beat it (if every judge is wrong,
+    # every convex combination is wrong). Exact two-sided Clopper-Pearson
+    # bounds throughout (production calibration.clopper_pearson).
     cofail = [r for r in multi
               if all(((j["posterior"] >= 0.5) != bool(r["label"]))
                      for j in r["judges"] if not j["refused"])]
@@ -353,6 +404,7 @@ def main(argv):
             "herd_panel": load_panel_snapshot(),
             "timeout_s": a.timeout, "budget_s": a.budget,
             "concurrency": a.concurrency,
+            "question_delay_s": a.question_delay,
             "oracle_work": work + " (SCRATCH: cold calibrators=identity, "
                            "cold abstention gate=unanimity bar, eval "
                            "verdicts isolated from production ledger)",
@@ -378,11 +430,17 @@ def main(argv):
             "(docs/oracle-core.md's 0.6366 for 13/15 used bench/judge_return.py's "
             "one-sided bisection; not the same convention.)",
         ],
-        "n_rows": len(rows), "n_emitted": len(emitted),
+        "n_rows": len(rows), "n_scorable": len(scorable),
+        "n_emitted": len(emitted),
+        "gate": gate_stats,
         "statuses": statuses, "tiers": tiers,
-        "overall": brier_nll_acc(emitted),
-        "per_tier": tier_metrics,
-        "calibration": calibration_bins(emitted),
+        "policy_tiers": {t: len(rs) for t, rs in by_policy.items()},
+        "overall_scorable": overall_scorable,
+        "overall_emitted": overall_emitted,
+        "per_policy_tier": policy_tier_metrics,
+        "per_tier_emitted": tier_metrics,
+        "calibration_scorable": calib_scorable,
+        "calibration_emitted": calib_emitted,
         "judge_stats": judge_stats,
         "aggregation_comparison": agg_cmp,
         "cofailure_beta": beta,
@@ -393,12 +451,14 @@ def main(argv):
         json.dump(summary, f, indent=2, default=str)
     print("rows: %s" % rows_path)
     print("summary: %s" % sum_path)
-    print(json.dumps({"overall": summary["overall"], "tiers": tiers,
-                      "statuses": statuses,
+    print(json.dumps({"overall_scorable": summary["overall_scorable"],
+                      "overall_emitted": summary["overall_emitted"],
+                      "policy_tiers": summary["policy_tiers"],
+                      "tiers": tiers, "statuses": statuses,
                       "beta": {k: beta[k] for k in
                                ("n", "cofailures", "beta", "ceiling_cp_lo")}},
                      indent=2, default=str))
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+    sys.exit(main(sy
