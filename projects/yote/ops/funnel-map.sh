@@ -43,7 +43,7 @@ if [[ "${EUID:-$(id -u)}" -ne 0 ]]; then
     exit 2
 fi
 
-# serve-path<TAB>target-url — the canonical funnel map, 17 mounts.
+# serve-path<TAB>target-url — the canonical funnel map, 18 mounts.
 MAP=(
 "/		http://127.0.0.1:25201"
 "/mcp		http://127.0.0.1:25198/mcp"
@@ -56,6 +56,7 @@ MAP=(
 "/mesh-health		http://127.0.0.1:25127/health"
 "/mesh-metrics		http://127.0.0.1:25127/metrics"
 "/squawk-feed/seq		http://127.0.0.1:25135/squawk-feed/seq"
+"/squawk-feed/		http://127.0.0.1:25135/squawk-feed/"
 "/whatsapp-webhook		http://127.0.0.1:25146/webhook"
 "/openfang		http://127.0.0.1:25103"
 "/api		http://127.0.0.1:25103/api"
