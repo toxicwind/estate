@@ -300,4 +300,41 @@ try:
 finally:
     bidder.RALPH_BIN = old_bin
 
+# 12. F2: parser tolerates literal \n escapes ------------------------------
+esc = ("poem line one\\npoem line two\\n\\nACCEPTANCE-REPORT:\\n"
+       "- crit one: MET - evidence\\n- crit two: MET - evidence\\n")
+f, m, items = ol._parse_acceptance_report(esc)
+check("parser-escaped-found", f is True)
+check("parser-escaped-met", m is True and len(items) == 2)
+
+# 13. F2a: bidder canonicalizes Ralph stdout escapes -----------------------
+stub_esc = TMP / "super-ralph-stub-esc"
+stub_esc.write_text("#!/bin/sh\nprintf 'l1\\\\nl2\\\\nACCEPTANCE-REPORT:\\\\n- a: MET - x\\\\n'\n")
+stub_esc.chmod(0o755)
+bidder.RALPH_BIN = stub_esc
+try:
+    ns = SimpleNamespace(name="testbot", say=lambda *a, **k: None)
+    wd3 = TMP / "w" / "t3"
+    wd3.mkdir(parents=True, exist_ok=True)
+    ok, out, err, dur = bidder.Bidder._run_super_ralph(
+        ns, {"task_id": "t3", "payload": "x"}, wd3, {}, 60000, time.time())
+    check("ralph-unescape", ok is True and "\n" in out and "\\n" not in out,
+          repr(out[:80]))
+finally:
+    bidder.RALPH_BIN = old_bin
+
+# 14. F1: artifact filtering drops dotfiles/dotdirs and non-files ---------
+wd4 = TMP / "w" / "t4"
+wd4.mkdir(parents=True, exist_ok=True)
+(wd4 / "prompt.md").write_text("p")
+(wd4 / "result.txt").write_text("r")
+(wd4 / ".super-ralph").mkdir()
+(wd4 / ".smithers").mkdir()
+(wd4 / "subdir").mkdir()
+arts = bidder.Bidder._collect_artifacts(wd4, set())
+check("artifacts-filtered", arts == ["prompt.md", "result.txt"],
+      str(arts))
+arts2 = bidder.Bidder._collect_artifacts(wd4, {"prompt.md"})
+check("artifacts-before-excluded", arts2 == ["result.txt"], str(arts2))
+
 print("ALL %d CHECKS PASSED" % N)
