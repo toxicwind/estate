@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# hooks/post-commit -- tracked source; installed to .git/hooks/post-commit.
+#
+# MAPE-K wiring (P1): runs `bin/pitchfork-reconcile --apply` ONLY when the
+# just-created commit touched pitchfork.toml, so "edit toml -> it converges"
+# becomes true. Silent no-op otherwise, and NEVER fails a commit (post-commit
+# cannot fail the commit anyway; the trailing `exit 0` + `|| true` make the
+# guarantee explicit).
+set -u
+REPO="/home/toxic/sovereign"
+
+if git -C "$REPO" diff-tree --no-commit-id --name-only -r HEAD 2>/dev/null \
+    | grep -qx 'pitchfork.toml'; then
+  "$REPO/bin/pitchfork-reconcile" --apply \
+    >>"$REPO/logs/reconcile-hook.log" 2>&1 || true
+fi
+exit 0

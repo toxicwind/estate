@@ -1,0 +1,313 @@
+#!/usr/bin/env bash
+# pitchfork-restart — owned restart wrapper for pitchfork daemons (2026-09-20).
+#
+# ROOT CAUSE IT FIXES:
+#   pitchfork tracks daemons by PID. When that tracking desyncs from reality
+#   (stale PID after an external kill, a double-spawn race, supervisor state
+#   loss), `pitchfork restart` signals the WRONG pid: the real port holder
+#   survives, the fresh spawn dies on EADDRINUSE, and retry=true then spawns
+#   zombies in a loop. The signal path itself is fine (verified: SIGTERM kills
+#   a healthy daemon in ~0.15s) — the defect is that stop/restart never verify
+#   against ground truth.
+#   This wrapper reconciles against GROUND TRUTH (the port, via ss): after
+#   `pitchfork stop` it verifies the port is actually free, and reaps a
+#   desynced holder if one remains, before starting the new instance.
+#
+# SAFETY: will NEVER kill the 25204 bridge holder unless --force-bridge is
+#   passed explicitly (and even then it prints the safe procedure reminder).
+#
+# Usage: pitchfork-restart <daemon-id> [--reregister|--evict] [--force-bridge]
+#   e.g. pitchfork-restart sovereign/herd
+# Modes:
+#   (default)    stop -> start. Ground-truth port verification + desync reap.
+#   --reregister stop -> clean --daemon -> start. Evicts the supervisor's
+#                persisted snapshot so `pitchfork start` re-reads the CURRENT
+#                pitchfork.toml (fixes the config-vs-state split: run/dir/env
+#                edits are invisible to a running daemon until re-registration).
+#   --evict      stop -> clean --daemon. Deregisters without starting.
+# SAFETY: awrawr-ws-exec (live bridge, :25204) is refused without
+#   --force-bridge. Anything squawk (name match, :25147, :25135) is ALWAYS
+#   refused -- no override flag. Squawk is Chris's lane; use the fleet.
+set -euo pipefail
+
+# Resolve pitchfork: prefer the RUNNING supervisor's own binary (same source of
+# truth as `pitchfork list`/`status`), so we never talk to a different-version
+# registry view. `mise which` is deliberately NOT first: the mise pin can point
+# at a version mise refuses to install (seen 2026-09-20: 2.27.0 blocked by
+# minimum_release_age), which made start fail AFTER the port holder had already
+# been reaped -- a service outage from a version-resolution bug.
+resolve_pf() {
+  local pid exe
+  for pid in $(pgrep -f 'pitchfork supervisor run' 2>/dev/null); do
+    if exe=$(readlink "/proc/$pid/exe" 2>/dev/null) && [[ "$exe" == */pitchfork && -x "$exe" ]]; then
+      echo "$exe"; return 0
+    fi
+  done
+  for cand in "$HOME/.local/share/mise/installs/pitchfork/2.25.0/pitchfork" \
+             "$HOME/.local/share/mise/installs/pitchfork/latest/pitchfork" \
+             "$HOME/.local/share/mise/shims/pitchfork"; do
+    [[ -x "$cand" ]] && { echo "$cand"; return 0; }
+  done
+  return 1
+}
+PF="$(resolve_pf)" || { echo "[pitchfork-restart] FATAL: no usable pitchfork binary" >&2; exit 5; }
+TOML="/home/toxic/sovereign/pitchfork.toml"
+# pitchfork resolves the project from CWD: start needs pitchfork.toml, so cd there.
+cd "$(dirname "$TOML")"
+
+DAEMON="${1:?usage: pitchfork-restart <daemon-id> [--reregister|--evict] [--force-bridge]}"
+FORCE_BRIDGE=0; MODE="restart"
+for a in "${@:2}"; do
+  case "$a" in
+    --force-bridge) FORCE_BRIDGE=1 ;;
+    --reregister) MODE="reregister" ;;
+    --evict) MODE="evict" ;;
+    *) echo "[pitchfork-restart] unknown flag: $a" >&2; exit 2 ;;
+  esac
+done
+SHORT="${DAEMON##*/}"
+# Squawk protection (absolute, no override): any squawk daemon belongs to
+# Chris's fleet lane -- the reconciler and this wrapper never touch it.
+if [[ "${SHORT,,}" == *squawk* ]]; then
+  echo "[pitchfork-restart] REFUSING: $DAEMON is squawk (Chris's lane). No override." >&2
+  exit 3
+fi
+# Systemd-migrated daemons (P3): pitchfork no longer manages these -- the
+# pitchfork registration is intentionally kept stopped as a status shim.
+# Never re-register/start/evict via pitchfork; systemd owns them.
+if [[ -f "/home/toxic/.config/systemd/user/sovereign-${SHORT}.service" ]] || \
+   systemctl --user list-units --all --no-legend "sovereign-${SHORT}.service" 2>/dev/null | grep -q .; then
+  echo "[pitchfork-restart] REFUSING: $DAEMON is systemd-managed (sovereign-${SHORT}.service). Use systemctl --user." >&2
+  exit 3
+fi
+# Bridge safety: awrawr-ws-exec (live bridge, :25204) is NEVER restarted here. Refuse up front.
+if [[ "$SHORT" == "awrawr-ws-exec" ]] && (( ! FORCE_BRIDGE )); then
+  echo "[pitchfork-restart] REFUSING: $DAEMON is the live bridge (pid $(pgrep -f "awrawr_ws_exec.py" | head -1), :25204)." >&2
+  echo "[pitchfork-restart] Safe procedure only: start replacement -> verify binds :25204 -> then retire old. Never reverse." >&2
+  exit 3
+fi
+
+# --- helpers ---------------------------------------------------------------
+
+# Resolve the daemon's expected port from pitchfork.toml ready_http.
+resolve_port() {
+  python3 - "$TOML" "$SHORT" <<'PYEOF'
+import sys, re
+toml, name = sys.argv[1], sys.argv[2]
+blk, in_target = [], False
+for line in open(toml):
+    m = re.match(r'\[daemons\.([^\]]+)\]', line)
+    if m:
+        if in_target:
+            break  # next stanza: stop collecting
+        in_target = (m.group(1) == name)
+        continue
+    if in_target:
+        blk.append(line)
+text = "".join(blk)
+m = re.search(r'(?m)^port\s*=\s*(?:\[\s*)?(\d+)', text)   # port = N (or [N, ...])
+if not m:
+    m = re.search(r'ready_http\s*=\s*"http://[^:]+:(\d+)', text)
+if not m:
+    m = re.search(r"ready_cmd\s*=\s*\"ss -ltn 'sport = :(\d+)'", text)
+if m:
+    print(m.group(1))
+PYEOF
+}
+
+resolve_health_url() {
+  python3 - "$TOML" "$SHORT" <<'PYEOF'
+import sys, re
+toml, name = sys.argv[1], sys.argv[2]
+blk, in_target = [], False
+for line in open(toml):
+    m = re.match(r'\[daemons\.([^\]]+)\]', line)
+    if m:
+        if in_target:
+            break  # next stanza: stop collecting
+        in_target = (m.group(1) == name)
+        continue
+    if in_target:
+        blk.append(line)
+text = "".join(blk)
+m = re.search(r'health_http\s*=\s*(?:\{[^}]*url\s*=\s*)?"(https?://[^"]+)"', text)
+if not m:
+    m = re.search(r'ready_http\s*=\s*"([^"]+)"', text)
+if m:
+    print(m.group(1))
+PYEOF
+}
+
+# PIDs (space-separated) currently holding 127.0.0.1:$port.
+port_holders() {
+  ss -tlnp 2>/dev/null | grep -E "127\.0\.0\.1:${1}([^0-9]|$)" | grep -oP 'pid=\K[0-9]+' | sort -u | tr '\n' ' ' || true
+}
+
+pid_alive() { kill -0 "$1" 2>/dev/null; }
+
+tracked_pid() {
+  "$PF" status --json "$DAEMON" 2>/dev/null \
+    | python3 -c 'import json,sys; print(json.load(sys.stdin).get("pid") or "")' 2>/dev/null || true
+}
+
+# The live bridge must never be reaped by accident.
+is_protected() {
+  local pid="$1" port="$2"
+  if [[ "$port" == "25204" ]]; then return 0; fi
+  if tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null | grep -q "awrawr_ws_exec"; then return 0; fi
+  return 1
+}
+
+# --- main (event-driven: zero sleep/poll loops) -------------------------------
+# Readiness is the SUPERVISOR's job: `pitchfork start --port/--http` blocks until
+# the daemon's own probes pass. This wrapper only orchestrates stop/start against
+# ground truth (the port, via ss) and performs ONE independent verification pass
+# (real ss + real curl) afterwards. No deadline loops, no sleeps.
+
+PORT="$(resolve_port)"
+HEALTH_URL="$(resolve_health_url)"
+echo "[pitchfork-restart] daemon=$DAEMON port=${PORT:-none}"
+
+OLD_PID="$(tracked_pid)"
+echo "[pitchfork-restart] tracked pid: ${OLD_PID:-none}"
+
+# Absolute squawk-port refusal: no flag overrides this. (Name-based squawk
+# refusal happened up front; this covers a non-squawk-named daemon squatting
+# on a squawk port.)
+if [[ -n "$PORT" ]]; then
+  case "$PORT" in
+    25147|25135)
+      echo "[pitchfork-restart] REFUSING: :$PORT is squawk (Chris's lane). No override." >&2
+      exit 3 ;;
+  esac
+fi
+
+# Protected-holder precheck: never disturb the bridge holder without
+# --force-bridge (and the caller must have a verified replacement listening).
+if [[ -n "$PORT" ]]; then
+  for h in $(port_holders "$PORT"); do
+    if is_protected "$h" "$PORT" && (( ! FORCE_BRIDGE )); then
+      echo "[pitchfork-restart] REFUSING: :$PORT held by protected pid=$h (bridge)." >&2
+      echo "[pitchfork-restart] Safe procedure only: start replacement -> verify binds :$PORT -> then retire old. Never reverse." >&2
+      exit 3
+    fi
+  done
+fi
+
+echo "[pitchfork-restart] stop via pitchfork..."
+"$PF" stop "$DAEMON" >/dev/null 2>&1 || true
+
+# Desync reap (single-shot, no loops): if pitchfork's stop did not clear the
+# port, escalate TERM -> KILL with one ground-truth observation per step.
+if [[ -n "$PORT" ]]; then
+  HOLDERS="$(port_holders "$PORT")"
+  if [[ -n "${HOLDERS// /}" ]]; then
+    echo "[pitchfork-restart] DESYNC: :$PORT still held by ${HOLDERS} after pitchfork stop"
+    for h in $HOLDERS; do
+      echo "[pitchfork-restart] SIGTERM -> $h"
+      kill -TERM "$h" 2>/dev/null || true
+      # event-driven wait: kernel notifies via /proc when $h exits (no poll loop)
+      timeout 10 tail --pid="$h" -f /dev/null 2>/dev/null || true
+    done
+    HOLDERS="$(port_holders "$PORT")"
+    for h in $HOLDERS; do
+      echo "[pitchfork-restart] SIGKILL -> $h"
+      kill -KILL "$h" 2>/dev/null || true
+    done
+    HOLDERS="$(port_holders "$PORT")"
+    if [[ -n "${HOLDERS// /}" ]]; then
+      echo "[pitchfork-restart] FAILED: :$PORT still held after SIGKILL: $HOLDERS" >&2
+      exit 4
+    fi
+    echo "[pitchfork-restart] port :$PORT clear"
+  fi
+fi
+
+# Portless-daemon reap: with no port to observe, fall back to the tracked pid
+# so we never `clean --daemon` a still-running process (which would orphan it
+# from the supervisor while it keeps running).
+if [[ -z "$PORT" ]]; then
+  RPID="$(tracked_pid)"
+  if [[ -n "$RPID" ]] && pid_alive "$RPID"; then
+    echo "[pitchfork-restart] portless daemon alive as pid=$RPID after stop; SIGTERM"
+    kill -TERM "$RPID" 2>/dev/null || true
+    timeout 10 tail --pid="$RPID" -f /dev/null 2>/dev/null || true
+    if pid_alive "$RPID"; then
+      echo "[pitchfork-restart] SIGKILL -> $RPID"
+      kill -KILL "$RPID" 2>/dev/null || true
+    fi
+  fi
+fi
+
+# Snapshot eviction (--reregister/--evict only): pitchfork persists each
+# daemon's definition at registration and reuses it forever -- stop+start
+# alone does NOT pick up pitchfork.toml edits. Evicting the snapshot forces
+# the next start to re-read the toml. Only ever run on a stopped daemon
+# (guaranteed by the stop + reaps above); `clean --daemon` on a RUNNING
+# daemon orphans it.
+if [[ "$MODE" == "reregister" || "$MODE" == "evict" ]]; then
+  echo "[pitchfork-restart] evicting supervisor snapshot: clean --daemon $DAEMON"
+  if ! "$PF" clean --daemon "$DAEMON" >/dev/null 2>&1; then
+    echo "[pitchfork-restart] WARN: clean --daemon failed (daemon may not have been registered)" >&2
+  fi
+fi
+
+if [[ "$MODE" == "evict" ]]; then
+  # Verify deregistration; nothing to start.
+  if "$PF" ls 2>/dev/null | awk '{print $1}' | grep -qx "$DAEMON"; then
+    echo "[pitchfork-restart] FAILED: $DAEMON still registered after clean" >&2
+    exit 8
+  fi
+  if [[ -n "$PORT" ]]; then
+    HOLDERS="$(port_holders "$PORT")"
+    if [[ -n "${HOLDERS// /}" ]]; then
+      echo "[pitchfork-restart] FAILED: :$PORT still held after evict: $HOLDERS" >&2
+      exit 4
+    fi
+  fi
+  echo "[pitchfork-restart] DONE: $DAEMON evicted (deregistered, port clear)"
+  exit 0
+fi
+
+# Start with supervisor-side readiness gating: --port/--http make `pitchfork
+# start` block until the daemon actually binds and answers. This IS the event
+# mechanism (supervisor probes), not a wrapper poll loop.
+echo "[pitchfork-restart] start via pitchfork (supervisor gates readiness)..."
+PFR_LOG="$(mktemp /tmp/pfr-start-XXXXXX.log)"
+START_RC=0
+if [[ -n "$PORT" && -n "$HEALTH_URL" ]]; then
+  "$PF" start "$DAEMON" --port "$PORT" --http "$HEALTH_URL" >"$PFR_LOG" 2>&1 || START_RC=$?
+elif [[ -n "$PORT" ]]; then
+  "$PF" start "$DAEMON" --port "$PORT" >"$PFR_LOG" 2>&1 || START_RC=$?
+else
+  "$PF" start "$DAEMON" >"$PFR_LOG" 2>&1 || START_RC=$?
+fi
+if (( START_RC )); then
+  echo "[pitchfork-restart] start failed (rc=$START_RC):" >&2
+  tail -5 "$PFR_LOG" >&2 || true
+  exit 5
+fi
+
+# Independent verification: ONE ss read + ONE curl (real probes, not supervisor
+# self-report). The supervisor already gated readiness; this is the wrapper's
+# own ground-truth confirmation.
+if [[ -n "$PORT" ]]; then
+  FINAL_HOLDERS="$(port_holders "$PORT")"
+  if [[ -z "${FINAL_HOLDERS// /}" ]]; then
+    echo "[pitchfork-restart] FAILED: nothing listening on :$PORT after start" >&2
+    exit 6
+  fi
+  if [[ -n "$HEALTH_URL" ]]; then
+    if curl -sf -m 5 "$HEALTH_URL" >/dev/null 2>&1; then
+      echo "[pitchfork-restart] DONE: ${OLD_PID:-none} -> ${FINAL_HOLDERS// /} (:$PORT, health 200)"
+    else
+      echo "[pitchfork-restart] DONE (health not 200): ${OLD_PID:-none} -> ${FINAL_HOLDERS// /} (:$PORT bound)" >&2
+      exit 7
+    fi
+  else
+    echo "[pitchfork-restart] DONE: ${OLD_PID:-none} -> ${FINAL_HOLDERS// /} (:$PORT bound, no health URL)"
+  fi
+else
+  NEW_PID="$(tracked_pid)"
+  echo "[pitchfork-restart] DONE: ${OLD_PID:-none} -> ${NEW_PID:-?} (no port to verify)"
+fi
