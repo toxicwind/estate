@@ -112,6 +112,7 @@ try {
   }
 } catch (e) {}
 let since = 0, running = false, failures = 0, booted = false, gen = 0;
+let pollCtrl = null; // per-generation AbortController: a channel switch aborts in-flight polls
 // live source: 'poll' (long-poll, default) or 'nats' (JetStream mirror over websocket).
 // ?src=nats selects NATS; the header button toggles at runtime.
 let srcMode = 'poll';
@@ -303,9 +304,10 @@ async function poll(myGen) {
   if (!running || myGen !== gen) return;
   const t0 = performance.now();
   try {
-    const r = await fetch(`wait?since=${since}&channel=${chan()}`, { headers: auth(), signal: AbortSignal.timeout(65000) });
+    const r = await fetch(`wait?since=${since}&channel=${chan()}`, { headers: auth(), signal: AbortSignal.any([pollCtrl.signal, AbortSignal.timeout(65000)]) });
     if (r.status === 401 || r.status === 404) throw new Error('unauthorized');
     const data = await r.json();
+    if (myGen !== gen) return; // channel switched mid-flight: drop the stale response
     failures = 0;
     if (Array.isArray(data.messages)) {
       // only render messages newer than our cursor (dedup across concurrent wakes)
@@ -320,6 +322,7 @@ async function poll(myGen) {
     $('seq').textContent = 'seq ' + since;
     $('lat').textContent = 'wake ' + Math.round(performance.now() - t0) + 'ms';
   } catch (e) {
+    if (myGen !== gen) return; // superseded: the new generation owns the loop now
     failures++;
     setState('reconnecting', failures > 1 ? ` · try ${failures}` : '');
     if (failures === 1) line('feed hiccup — retrying…', 'sys');
@@ -332,11 +335,13 @@ async function poll(myGen) {
 // us at the live cursor immediately -- no full-history drain, no reload.
 async function boot() {
   const myGen = ++gen;
+  if (pollCtrl) { try { pollCtrl.abort(); } catch (e) {} } // kill the old generation in flight
+  pollCtrl = new AbortController();
   if (natsWs) { try { natsWs.close(); } catch (e) {} natsWs = null; }
   setState('loading');
   if (!booted) line('tuned in — pulling the latest traffic…', 'sys');
   try {
-    const r = await fetch(`wait?since=0&tail=${TAIL}&channel=${chan()}`, { headers: auth(), signal: AbortSignal.timeout(65000) });
+    const r = await fetch(`wait?since=0&tail=${TAIL}&channel=${chan()}`, { headers: auth(), signal: AbortSignal.any([pollCtrl.signal, AbortSignal.timeout(65000)]) });
     if (r.status === 401 || r.status === 404) throw new Error('unauthorized');
     const data = await r.json();
     if (myGen !== gen) return; // superseded by a channel switch

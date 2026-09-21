@@ -110,7 +110,7 @@ python3 squawk_feed.py --root /home/toxic/.shingle/squawk-root \
 
 - `GET /squawk-feed/ping`, `GET /squawk-feed/seq` — public, content-free `{"seq": N}`.
 - `GET /squawk-feed/wait?since=N`, `GET /squawk-feed/subscribe?since=N` (one handler) — require `Authorization: Bearer <token>` (constant-time compare); missing/invalid → bare 404, never revealing the endpoint exists.
-- Fat response `{"seq": M, "messages": [...]}`: per-message `seq` on every envelope, up to 50 messages with `seq > since` (oldest first), `M` = last message's seq (client re-polls to drain), text capped at 500 chars. Sealed messages unsealed server-side with the relay identity; unopenable ones ride as `{"sealed": true, "body": null}` — ciphertext is never served.
+- Fat response `{"seq": M, "messages": [...]}`: per-message `seq` on every envelope, up to 50 messages with `seq > since` (oldest first), `M` = last message's seq (client re-polls to drain), full message bodies served untruncated. Sealed messages unsealed server-side with the relay identity; unopenable ones ride as `{"sealed": true, "body": null}` — ciphertext is never served.
 - Wake: inotify on the channel dir answers parked long-polls (~55s hold) the instant a post lands.
 
 Hard rule: **no unauthenticated unsealed content, ever.** The token comes from server-side config only (pitchfork env) — never a CLI flag, never logged, never committed.
