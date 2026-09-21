@@ -69,20 +69,30 @@ check("bias CI ordered", bc_lo <= 0.875 <= bc_hi, "%s %s" % (bc_lo, bc_hi))
 check("norm_ppf", approx(cal.norm_ppf(0.5), 0.0, 1e-9))
 check("norm roundtrip", approx(cal.norm_cdf(cal.norm_ppf(0.7)), 0.7, 1e-9))
 check("nll sane", cal.nll([0.9, 0.1], [1, 0]) < cal.nll([0.5, 0.5], [1, 0]))
-g = cal.RefusalGate()
-g.set("a", "PASS", "ok"); g.set("b", "NOT_CHECKED", "later")
-check("gate strict: NOT_CHECKED blocks ok()", not g.ok() and g.failures() == {},
-      "NOT_CHECKED must never pass silently")
-check("limitations line", "NOT_CHECKED" in g.limitations_line())
+import tempfile as _tf
+_tmpd = _tf.mkdtemp(prefix="tc-gate-")
+cal.CAL_DIR = _tmpd
+cal.HISTORY_PATH = _tmpd + "/accepted_history.jsonl"
+cal.DATASHEET_PATH = _tmpd + "/judge_datasheets.json"
+cal.CAL_STATE_PATH = _tmpd + "/calibration_state.json"
+_g, _reason = engine.abstention_gate(0.99, 0.99)
+_gop = engine.gate_operating_point()
+check("gate strict: no labels withholds", _g == "escalate",
+      "no labels must never emit silently: %s" % _reason)
+check("gate withhold never writes synthetic rows",
+      not os.path.exists(cal.HISTORY_PATH), "withhold is read-only")
 budget = cal.label_budget(100, {"j1": 1.0, "j2": 4.0})
 check("sqrt budget", budget["j2"] > budget["j1"] and
       abs(sum(budget.values()) - 100) < 1e-9, str(budget))
 
 # ---- engine ----
-jp = [engine.JudgePosterior("a", 0.7), engine.JudgePosterior("b", 0.8)]
+jp = [engine.JudgePosterior("a", 0.7, provider="p1"), engine.JudgePosterior("b", 0.8, provider="p2")]
 post, contrib = engine.pooled_posterior(0.5, jp)
 check("pooled", approx(post, 0.9032, 1e-3), "post=%s" % post)
 check("pooled contrib", len(contrib) == 2)
+jp_col = [engine.JudgePosterior("a", 0.7, provider="p1"), engine.JudgePosterior("b", 0.8, provider="p1")]
+postc, contribc = engine.pooled_posterior(0.5, jp_col)
+check("provider collapse one unit", approx(postc, 0.7534, 1e-3) and abs(sum(c["weight"] for c in contribc) - 1.0) < 1e-9, "post=%s" % postc)
 refused = [engine.JudgePosterior("a", 0.7, refused=True)]
 post2, _ = engine.pooled_posterior(0.5, refused)
 check("refused ignored", post2 == 0.5)
@@ -303,21 +313,21 @@ def _judge_seq(results):
 
 
 _seq = _judge_seq([(False, 0.8)])
-jp, info = oracle_ask._resilient_judge("oracle-judge-a", "Q?", 90,
+jp, info, _att = oracle_ask._resilient_judge("oracle-judge-a", "Q?", 90,
                                        judge_fn=_seq)
 check("resilient live slot",
       not jp.refused and info["served_by"] == "oracle-judge-a"
       and info["attempts"] == 1 and len(_seq.calls) == 1, str(info))
 
 _seq = _judge_seq([(True, 0.5), (False, 0.6)])
-jp, info = oracle_ask._resilient_judge("oracle-judge-a", "Q?", 90,
+jp, info, _att = oracle_ask._resilient_judge("oracle-judge-a", "Q?", 90,
                                        judge_fn=_seq)
 check("resilient retry recovers",
       not jp.refused and info["served_by"] == "oracle-judge-a"
       and info["attempts"] == 2 and len(_seq.calls) == 2, str(info))
 
 _seq = _judge_seq([(True, 0.5), (True, 0.5), (False, 0.55)])
-jp, info = oracle_ask._resilient_judge("oracle-judge-a", "Q?", 90,
+jp, info, _att = oracle_ask._resilient_judge("oracle-judge-a", "Q?", 90,
                                        judge_fn=_seq)
 check("resilient falls back to local",
       not jp.refused and info["served_by"] == oracle_ask.FALLBACK_JUDGE
@@ -327,7 +337,7 @@ check("resilient falls back to local",
       "%s %s" % (info, _seq.calls))
 
 _seq = _judge_seq([(True, 0.5)] * 5)
-jp, info = oracle_ask._resilient_judge("oracle-judge-a", "Q?", 90,
+jp, info, _att = oracle_ask._resilient_judge("oracle-judge-a", "Q?", 90,
                                        judge_fn=_seq)
 check("resilient bounded fail-open",
       jp.refused and info["refused"] and info["attempts"] == 3
@@ -444,12 +454,14 @@ oracle_ask.herd_chat = (
     lambda model, prompt, timeout_s=90, max_tokens=1500:
     {"ok": True, "text": None, "latency_s": 0.1})
 try:
-    _njp = oracle_ask.judge_once("oracle-judge-a", "Q?", 30)
+    _njp, _natt = oracle_ask.judge_once("oracle-judge-a", "Q?", 30)
 finally:
     oracle_ask.herd_chat = _orig_herd
-check("judge_once null content -> refused not crash",
-      _njp.refused and _njp.posterior == 0.5,
-      "%s %s" % (_njp.refused, _njp.posterior))
+check("judge_once null content -> parse_failure not crash",
+      not _njp.refused and not _njp.valid
+      and _njp.failure_category == engine.FAILURE_PARSE
+      and _njp.posterior == 0.5,
+      "%s %s %s" % (_njp.refused, _njp.valid, _njp.failure_category))
 
 _ok_ar = escalation._advocate_round(
     lambda m, p, t: {"content": None}, "oracle-judge-a", "Q?", 0.7, 30)
@@ -467,7 +479,7 @@ def _slow_slot(model, prompt, timeout_s):
     time.sleep(2.0)
     jp = engine.JudgePosterior(judge_id=model, posterior=0.5, refused=True)
     return jp, {"slot": model, "served_by": model, "refused": True,
-                "attempts": 0}
+                "attempts": 0}, []
 
 
 _orig_rj = oracle_ask._resilient_judge
@@ -483,8 +495,9 @@ finally:
 check("budget exhaustion yields verdict not crash",
       _bv["status"] in ("verdict", "escalate") and _dt < 30,
       "%s %.1fs" % (_bv["status"], _dt))
-check("exhausted slot recorded refused",
-      _bv["judge_slots"] and _bv["judge_slots"][0]["refused"],
+check("exhausted slot recorded executor_error",
+      _bv["judge_slots"] and not _bv["judge_slots"][0]["valid"]
+      and _bv["judge_slots"][0]["failure_category"] == "executor_error",
       str(_bv.get("judge_slots")))
 
 print("PASS %d FAIL %d" % (PASS, FAIL))

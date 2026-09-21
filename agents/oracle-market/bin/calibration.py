@@ -33,6 +33,41 @@ DATASHEET_PATH = os.path.join(CAL_DIR, "datasheets.json")
 HISTORY_PATH = os.path.join(CAL_DIR, "accepted_history.jsonl")
 
 
+# Label provenance. Only rows carrying one of these sources count as
+# evidence for the abstention gate and the calibrator. Legacy rows without
+# a source are quarantined (counted, never used). Nothing in this module
+# ever writes synthetic labels.
+LABEL_SOURCES = frozenset({"bench", "human", "market_settlement"})
+
+
+def labeled_history(source=None, path=None):
+    """Genuinely labeled accepted outcomes from the history ledger.
+
+    Returns (rows, quarantined_count). When source is given, only rows
+    with that label_source are returned. This is the provenance gate:
+    the gate and the calibrator fit ONLY on what this returns.
+    """
+    path = path or HISTORY_PATH
+    rows = []
+    quarantined = 0
+    if os.path.exists(path):
+        with open(path) as f:
+            for line in f:
+                try:
+                    r = json.loads(line)
+                except Exception:
+                    continue
+                if "correct" not in r:
+                    continue
+                if r.get("label_source") not in LABEL_SOURCES:
+                    quarantined += 1
+                    continue
+                if source is not None and r.get("label_source") != source:
+                    continue
+                rows.append(r)
+    return rows, quarantined
+
+
 # ---------------- normal distribution (stdlib) ----------------
 
 def norm_cdf(x):
