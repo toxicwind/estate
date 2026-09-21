@@ -22,6 +22,7 @@ import anyio
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
+import random
 import re
 import subprocess
 import time
@@ -498,7 +499,58 @@ def _squawk_parse(path: str) -> dict | None:
         m = re.match(r"(\d+)-", os.path.basename(path))
         seq = m.group(1) if m else "?"
     return {"seq": seq, "from": fm.get("from", "?"), "ts": fm.get("ts", ""),
-            "title": fm.get("title", ""), "body": body}
+            "title": fm.get("title", ""), "body": body,
+            "type": fm.get("type", "discussion"),
+            "ask_id": fm.get("ask_id", "")}
+
+
+def _squawk_write(channel: str, sender: str, title: str, text: str,
+                  extra_fm: dict | None = None) -> tuple[int | None, str]:
+    """Write a message file into a squawk channel dir.
+
+    Shared write path for fleet_send / fleet_ask / fleet_answer. Returns
+    (seq, fname) on success, (None, error) on failure. extra_fm keys land in
+    the YAML frontmatter (e.g. type/ask_id) — keys are slugged, values are
+    single-line sanitized.
+    """
+    d = _squawk_channel_dir(channel)
+    if d is None:
+        return None, "unknown or invalid channel"
+    sender_slug = re.sub(r"[^A-Za-z0-9_-]", "", sender or "mcp")[:24] or "mcp"
+    # title lands in YAML frontmatter: strip anything that could forge a
+    # frontmatter key (newlines, quotes, colons) — same slug rule as sender.
+    title_safe = re.sub(r"[^A-Za-z0-9 _.,!?()-]", "", title or "msg")[:80] or "msg"
+    slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:24] or "msg"
+    fm_extra = ""
+    for k, v in (extra_fm or {}).items():
+        kk = re.sub(r"[^a-z0-9_]", "", k.lower())[:24]
+        vv = re.sub(r"[\r\n]", " ", str(v)).strip()[:80]
+        if kk:
+            fm_extra += f"{kk}: {vv}\n"
+    seq = 1
+    try:
+        for f in os.listdir(d):
+            m = re.match(r"(\d+)-", f)
+            if m:
+                seq = max(seq, int(m.group(1)) + 1)
+    except OSError as e:
+        return None, str(e)
+    ts = datetime.now(timezone.utc).isoformat()
+    content = ("---\n"
+               f"seq: {seq}\nfrom: {sender_slug}\nto: all\nchannel: {channel}\n"
+               f"ts: {ts}\nstatus: discussion\n{fm_extra}title: {title_safe}\n---\n{text}")
+    for _ in range(3):  # tolerate a concurrent writer winning the seq race
+        fname = f"{seq}-{sender_slug}-{slug}.md"
+        path = os.path.join(d, fname)
+        try:
+            with open(path, "x", encoding="utf-8") as f:
+                f.write(content)
+            break
+        except FileExistsError:
+            seq += 1
+    else:
+        return None, "seq race, retry"
+    return seq, fname
 
 
 @mcp.tool()
@@ -510,38 +562,13 @@ def fleet_send(channel: str, text: str, title: str = "msg",
     picks the file up via inotify and assigns the global seq.
     """
     t0 = time.monotonic()
-    d = _squawk_channel_dir(channel)
-    if d is None:
-        return "error: unknown or invalid channel"
-    sender_slug = re.sub(r"[^A-Za-z0-9_-]", "", sender or "mcp")[:24] or "mcp"
-    # title lands in YAML frontmatter: strip anything that could forge a
-    # frontmatter key (newlines, quotes, colons) — same slug rule as sender.
-    title_safe = re.sub(r"[^A-Za-z0-9 _.,!?()-]", "", title or "msg")[:80] or "msg"
-    slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:24] or "msg"
-    seq = 1
-    try:
-        for f in os.listdir(d):
-            m = re.match(r"(\d+)-", f)
-            if m:
-                seq = max(seq, int(m.group(1)) + 1)
-    except OSError as e:
-        return f"error: {e}"
-    ts = datetime.now(timezone.utc).isoformat()
-    content = ("---\n"
-               f"seq: {seq}\nfrom: {sender_slug}\nto: all\nchannel: {channel}\n"
-               f"ts: {ts}\nstatus: discussion\ntitle: {title_safe}\n---\n{text}")
-    for _ in range(3):  # tolerate a concurrent writer winning the seq race
-        fname = f"{seq}-{sender_slug}-{slug}.md"
-        path = os.path.join(d, fname)
-        try:
-            with open(path, "x", encoding="utf-8") as f:
-                f.write(content)
-            break
-        except FileExistsError:
-            seq += 1
-    else:
-        return "error: seq race, retry"
-    _audit(tool="fleet_send", channel=channel, seq=seq, sender=sender_slug,
+    seq, fname = _squawk_write(channel, sender, title, text)
+    if seq is None:
+        if fname == "unknown or invalid channel":
+            return "error: unknown or invalid channel"
+        return f"error: {fname}"
+    _audit(tool="fleet_send", channel=channel, seq=seq,
+           sender=re.sub(r"[^A-Za-z0-9_-]", "", sender or "mcp")[:24] or "mcp",
            elapsed_ms=int((time.monotonic() - t0) * 1000))
     return f"published seq={seq} ({fname})"
 
@@ -576,6 +603,103 @@ def fleet_read(channel: str, limit: int = 20, since_seq: int = 0) -> str:
             body = body[:600] + "..."
         out.append(f"[{m['seq']}] {m['from']} @ {m['ts']}: {m['title']}\n{body}")
     return "\n---\n".join(out) if out else "(no messages)"
+
+
+# --- fleet ask/answer: first-class request/response ---------------------------
+# A question is a message with frontmatter `type: ask` + `ask_id`; answers
+# carry `type: answer` + the same ask_id. fleet_ask posts the question and
+# BLOCKS (bounded wait, 0.5s granularity — no poll loops in agent code)
+# until max_answers arrive or timeout_s elapses. Agents answer with
+# fleet_answer (or `squawk answer` on the CLI); humans just see ordinary
+# readable messages with the ask_id quoted in the body.
+_ASK_ID_RE = re.compile(r"q[0-9a-f]{8}-[0-9a-f]{4}")
+
+
+def _new_ask_id() -> str:
+    return "q%08x-%04x" % (int(time.time()) & 0xFFFFFFFF,
+                           random.randrange(0x10000))
+
+
+@mcp.tool()
+def fleet_ask(channel: str, question: str, timeout_s: int = 120,
+              max_answers: int = 3, title: str = "question",
+              sender: str = "mcp") -> str:
+    """Ask the fleet a question and wait for answers. First-class
+    request/response: posts the question, then blocks until `max_answers`
+    answers arrive or `timeout_s` (default 120, max 600) elapses.
+
+    Returns the ask_id, the answers collected (seq, sender, timestamp,
+    text), and whether it timed out. Answerers use fleet_answer(ask_id, ...)
+    or `squawk answer <channel> <ask_id> <text>`.
+    """
+    t0 = time.monotonic()
+    if not (question or "").strip():
+        return "error: empty question"
+    timeout_s = max(5, min(int(timeout_s or 120), 600))
+    max_answers = max(1, min(int(max_answers or 3), 10))
+    ask_id = _new_ask_id()
+    body = (question.rstrip() + "\n\n`ask_id: %s` — answer with "
+            "fleet_answer(ask_id, ...) or `squawk answer`" % ask_id)
+    seq, fname = _squawk_write(channel, sender, title or "question", body,
+                               {"type": "ask", "ask_id": ask_id})
+    if seq is None:
+        return f"error: {fname}"
+    _audit(tool="fleet_ask", channel=channel, seq=seq, ask_id=ask_id,
+           elapsed_ms=int((time.monotonic() - t0) * 1000))
+    d = os.path.join(SQUAWK_ROOT, channel)
+    deadline = time.monotonic() + timeout_s
+    seen: set[str] = set()
+    answers: list[dict] = []
+    while time.monotonic() < deadline and len(answers) < max_answers:
+        try:
+            files = os.listdir(d)
+        except OSError:
+            files = []
+        for f in files:
+            m = re.match(r"(\d+)-", f)
+            if not m or int(m.group(1)) <= seq or f in seen:
+                continue
+            seen.add(f)
+            p = _squawk_parse(os.path.join(d, f))
+            if p and p.get("type") == "answer" and p.get("ask_id") == ask_id:
+                answers.append(p)
+        if len(answers) >= max_answers:
+            break
+        time.sleep(0.5)
+    waited = time.monotonic() - t0
+    out = [f"ask {ask_id} posted seq={seq} ({channel})",
+           f"answers: {len(answers)}/{max_answers} (waited {waited:.0f}s)"]
+    for a in answers:
+        txt = a["body"]
+        if len(txt) > 800:
+            txt = txt[:800] + "..."
+        out.append(f"[{a['seq']}] {a['from']} @ {a['ts']}:\n{txt}")
+    if len(answers) < max_answers:
+        out.append("(timed out waiting for more)")
+    return "\n---\n".join(out)
+
+
+@mcp.tool()
+def fleet_answer(ask_id: str, text: str, channel: str = "fleet",
+                 sender: str = "mcp", title: str = "answer") -> str:
+    """Answer a fleet_ask question. `ask_id` is the id quoted in the question
+    message (format q<8 hex>-<4 hex>). Posts the answer to the channel with
+    frontmatter linking it to the question; the blocked fleet_ask caller
+    picks it up automatically.
+    """
+    ask_id = (ask_id or "").strip()
+    if not _ASK_ID_RE.fullmatch(ask_id):
+        return "error: invalid ask_id (expected like q1a2b3c4d-9e8f)"
+    if not (text or "").strip():
+        return "error: empty answer"
+    t0 = time.monotonic()
+    seq, fname = _squawk_write(channel, sender, title or "answer", text,
+                               {"type": "answer", "ask_id": ask_id})
+    if seq is None:
+        return f"error: {fname}"
+    _audit(tool="fleet_answer", channel=channel, seq=seq, ask_id=ask_id,
+           elapsed_ms=int((time.monotonic() - t0) * 1000))
+    return f"answered {ask_id} seq={seq} ({fname})"
 
 
 # --- estate introspection ----------------------------------------------------
