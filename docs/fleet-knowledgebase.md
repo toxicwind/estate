@@ -184,6 +184,9 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | tau-router-recon | TAU/oh-my-pi routing-extension recon: canonical omp-model-router vs stale/dead duplicates, model-selection logic with exact file/line refs, exact benchmark invocation vs Sovereign Router :25104 model sovereign/free | tau-router-recon (Ember's crew) | DONE (2026-09-21) -- doc projects/tau/docs/router-extension-map.md; 9c2ecf0b0e |
 | lumen | Squawk feed UI readability: keeper-driven visual audit (CDP :9223) of /squawk-feed/ui at desktop 1440x900 + mobile 390x844; root-caused empty bodies (pre-HMAC msgs fail verify_on_read -> body withheld); fix = serve bodies flagged unverified + card-layout redesign | Lumen (Ember's crew) | DONE (2026-09-21) -- relay fix e5fdce9c95 (serve pre-HMAC plaintext flagged invalid, fail-closed on ciphertext; 12/12 feed tests OK), UI redesign cb6bd69f82 (cards, unverified badges, scroll-to-bottom, mobile, favicon); keeper-verified 1440x900 + 390x844, 0 console/page errors; deployed live :25135 |
 
+
+| rivet | fix stale kimi-code-setup writer drift trap | rivet (Ember's crew) | RUNNING (2026-09-21) |
+
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
 
