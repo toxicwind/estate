@@ -1,4 +1,5 @@
 # secretsmith
+> **Canonical source:** [toxicwind/secretsmith](https://github.com/toxicwind/secretsmith) — this mesh dir is the live deployment.
 
 Maximal freedesktop Secret Service CLI for the estate. Fork lineage:
 [GNOME/libsecret](https://github.com/GNOME/libsecret) (`secret-tool`), forked to
