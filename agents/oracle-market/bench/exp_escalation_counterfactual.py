@@ -106,22 +106,43 @@ def main(argv):
     with open(a.rows) as f:
         rows = [json.loads(l) for l in f if l.strip()]
 
-    # ---- part 1: DEBATE rows, vote vs final (no new LLM calls) ----
-    debate_rows = [r for r in rows if r.get("tier") == "DEBATE"
-                   and r.get("debate") and r["debate"].get("vote_probability") is not None]
-    part1 = []
-    for r in debate_rows:
-        m = mattered(r["debate"]["vote_probability"], r["probability"], r["label"])
-        part1.append({"eval_id": r["eval_id"], "label": r["label"],
-                      "p_vote": r["debate"]["vote_probability"],
-                      "p_final": r["probability"],
-                      "rounds": r["debate"]["rounds"],
-                      "converged": r["debate"]["converged"], **m})
-
-    # ---- part 2: counterfactual debates on AUTO/VOTE sample ----
-    cand = [r for r in rows if r.get("tier") in ("AUTO", "VOTE")
-            and r["status"] == "verdict" and r["probability"] is not None]
+    # ---- part 1: policy-DEBATE rows -- run the production debate path
+    # and compare the debate final against the panel vote.
+    # (Eval rows were panel-only, allow_debate=False, so debates run here.)
+    debate_cand = [r for r in rows
+                   if r.get("policy_tier") == "DEBATE"
+                   and r["probability"] is not None and r["n_live"] >= 2]
     rng = random.Random(a.seed)
+    rng.shuffle(debate_cand)
+    debate_sample = debate_cand[:a.n_counter]
+    part1 = []
+
+    def one_debate(r):
+        t0 = time.time()
+        try:
+            time.sleep(rng.uniform(0, 1.5))
+            fin, err = debated_final(r["question"])
+        except Exception as e:
+            fin, err = None, "%s: %s" % (type(e).__name__, e)
+        m = mattered(r["probability"], (fin or {}).get("p"), r["label"])
+        return {"eval_id": r["eval_id"], "label": r["label"],
+                "policy_tier": r["policy_tier"],
+                "p_vote": r["probability"],
+                "debate": fin, "error": err,
+                "wall_s": round(time.time() - t0, 1), **m}
+
+    with cf.ThreadPoolExecutor(max_workers=a.concurrency) as ex:
+        futs = [ex.submit(one_debate, r) for r in debate_sample]
+        for i, fut in enumerate(cf.as_completed(futs)):
+            part1.append(fut.result())
+            if (i + 1) % 5 == 0:
+                print("  debate %d/%d" % (i + 1, len(debate_sample)),
+                      flush=True)
+    part1.sort(key=lambda x: x["eval_id"])
+
+    # ---- part 2: counterfactual debates on policy-AUTO/VOTE sample ----
+    cand = [r for r in rows if r.get("policy_tier") in ("AUTO", "VOTE")
+            and r["probability"] is not None and r["n_live"] >= 2]
     rng.shuffle(cand)
     sample = cand[:a.n_counter]
     part2 = []
@@ -135,7 +156,7 @@ def main(argv):
             fin, err = None, "%s: %s" % (type(e).__name__, e)
         m = mattered(r["probability"], (fin or {}).get("p"), r["label"])
         return {"eval_id": r["eval_id"], "label": r["label"],
-                "tier": r["tier"], "p_vote": r["probability"],
+                "policy_tier": r["policy_tier"], "p_vote": r["probability"],
                 "counter": fin, "error": err,
                 "wall_s": round(time.time() - t0, 1), **m}
 
@@ -154,13 +175,24 @@ def main(argv):
 
     out = {
         "ts": ts, "rows_path": a.rows, "oracle_work": work,
+        "conditions": {
+            "policy_tier_source": "eval rows' policy_tier (route with "
+                                  "gate_ok=True, disagreement-only)",
+            "debate_path": "escalation.debate_tier + engine re-aggregation "
+                           "(half-weight advocate finals), same as run_ask",
+            "n_debate_sample": len(debate_sample),
+            "n_counter_sample": len(sample),
+            "seed": a.seed, "concurrency": a.concurrency,
+        },
         "caveats": [
             "Counterfactual debates run with EMPTY evidence text (judge "
             "claims were not persisted in eval rows); question, criteria, "
             "panel aliases, k/rounds/eps/timeouts match the production "
             "debate path exactly.",
             "Debate is stochastic (temperature 0.2); one run per question.",
-            "Part 1 needs no new LLM calls (vote vs final both saved).",
+            "Part 1 runs the debate live on policy-DEBATE rows (panel eval "
+            "used allow_debate=False); Part 2 runs it on policy-AUTO/VOTE "
+            "rows as the counterfactual.",
         ],
         "part1_debate_escalated": {
             "n": len(part1),
