@@ -78,11 +78,17 @@ modelRoles:
   # selectors named providers that exist NOWHERE -> dead routes. Evidence:
   # ranker live-measurements 2026-09-20 (sovereign/free: 0% errors, nemotron
   # winner; herd local: fast, /bin/bash, private; pollinations: backup lane only).
+  # 2026-09-21 modelmap: default/smol were herd/qwen-flash-da-128k (local 9B
+  # beellama) -- absurd for the DEFAULT: measured ranking is nim 0.8087 >
+  # pollinations 0.7535 > herd-local 0.5791, and the routing doctrine says
+  # "Local models are the fallback, never the default". default/task/advisor/
+  # smol -> sovereign/free (ranked #1). tiny keeps the local 1.2B -- the one
+  # role where local is the sane choice.
   task: sovereign/free
-  smol: herd/qwen-flash-da-128k
+  smol: sovereign/free
   tiny: herd/beellama/exaone-4-0-1-2b-iq4xs
   advisor: sovereign/free
-  default: herd/qwen-flash-da-128k
+  default: sovereign/free
 subagents:
   can_spawn_subagents: true
   whitelist:
@@ -94,7 +100,10 @@ subagents:
     - explorer
     - analyst
     - debugger
-  defaultModel: herd/kimi-k3-nim
+  # 2026-09-21 modelmap: was herd/kimi-k3-nim -- kimi-k3-nim existed ONLY in
+  # the disabled flock.modelMap (flock.enabled: false), so every subagent
+  # spawn 404'd. -> sovereign/free (ranked #1, 0% errors 2026-09-20).
+  defaultModel: sovereign/free
   subagent: inherit
 tools:
   approvalMode: yolo

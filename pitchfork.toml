@@ -324,11 +324,15 @@ daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-u
 [daemons.kimi-auto-shim]
 health_http = { url = "http://127.0.0.1:25153/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25153
-# Router-configured alias forwarder (2026-09-20): same routing as the herd
+# Router-configured alias forwarder: same routing as the herd
 # kimi-auto entry (--config-dir fragment). --target/--standby MUST match
 # /home/toxic/kimi-auto/herd.d/kimi-auto.yaml. Selection lives in router
 # config; this shim never selects models.
-run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target ministral-14b-latest --standby qwen3.5-9b-tool --name kimi-auto"
+# 2026-09-21 modelmap: was --target ministral-14b-latest (paid Mistral) --
+# a kimi-named alias serving a non-Kimi model. Doctrine (AGENTS.md):
+# "kimi-auto is Kimi-only. Honest 503 when no Kimi route is healthy;
+# never a silent fallback." Retargeted to the moonshot peer's Kimi IDs.
+run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target kimi-k2.6 --standby kimi-k2.7-code --name kimi-auto"
 dir = "/home/toxic/sovereign/config/herd.d"
 mise = false
 retry = true

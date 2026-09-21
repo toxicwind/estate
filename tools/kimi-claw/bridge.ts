@@ -334,7 +334,12 @@ export async function dispatchToCoyote(
 export async function dispatchToHerd(
   cfg: KimiBridgeConfig,
   prompt: string,
-  model = "flock-direct/nvidia/nemotron-3.5-lightning-30b-a3b",
+  // 2026-09-21 modelmap: was "flock-direct/nvidia/nemotron-3.5-lightning-30b-a3b"
+  // -- the flock-direct peer is disabled in herd.yaml, so this 404'd. This
+  // posts DIRECTLY to herd :25100 (not tau), so the ID must be herd-routable:
+  // nex-agi/nex-n2.5-pro:free via the openrouter-free peer (fastest measured
+  // free route, 566ms 2026-09-20). Fleet-relay fallback: availability first.
+  model = "nex-agi/nex-n2.5-pro:free",
 ): Promise<string> {
   const res = await fetch(`${cfg.herdUrl}/chat/completions`, {
     method: "POST",
