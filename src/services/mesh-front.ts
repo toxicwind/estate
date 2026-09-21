@@ -86,10 +86,18 @@ const server = Bun.serve({
       };
       const res = await fetch(target, init);
 
-      // Pipe response body directly — works for both SSE and JSON
+      // Pipe response body directly — works for both SSE and JSON.
+      // NOTE: Bun's fetch transparently decodes gzip/deflate/br response
+      // bodies, but the Content-Encoding header survives on res.headers.
+      // Proxying that header with the already-decoded body makes browsers
+      // fail with "Content Encoding Error". Strip encoding/framing headers
+      // so the streamed body is served as identity.
+      const outHeaders = new Headers(res.headers);
+      outHeaders.delete("content-encoding");
+      outHeaders.delete("content-length");
       return new Response(res.body, {
         status: res.status,
-        headers: res.headers,
+        headers: outHeaders,
       });
     } catch (e) {
       return new Response(
