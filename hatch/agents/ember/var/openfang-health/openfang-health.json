@@ -1,11 +1,11 @@
 {
-  "ts": "2026-09-22T18:28:20.334435+00:00",
+  "ts": "2026-09-22T18:47:01.383414+00:00",
   "overall": "FAIL",
   "checks": [
     {
       "name": "supervisor",
       "status": "ok",
-      "detail": "active pid=1026 mem=27500826624B"
+      "detail": "active pid=1026 mem=7181942784B"
     },
     {
       "name": "daemons",
@@ -15,12 +15,12 @@
     {
       "name": "openfang_kernel",
       "status": "fail",
-      "detail": "openfang status rc=0 after 9ms"
+      "detail": "openfang status rc=0 after 194ms"
     },
     {
       "name": "agents",
       "status": "fail",
-      "detail": "not Running: coyote shingle-pilot squawk-relay assistant (query took 11ms)"
+      "detail": "not Running: coyote shingle-pilot squawk-relay assistant (query took 71ms)"
     },
     {
       "name": "audit_chain",
@@ -30,12 +30,12 @@
     {
       "name": "llama_swap",
       "status": "ok",
-      "detail": ":25100/v1/models ok in 18ms, 114 models"
+      "detail": ":25100/v1/models ok in 71ms, 114 models"
     },
     {
       "name": "kimi_auto",
       "status": "warn",
-      "detail": "state age=160051s info=[mistral/ministral-3b-latest True 302]"
+      "detail": "state age=161171s info=[mistral/ministral-3b-latest True 302]"
     },
     {
       "name": "provider_nvidia",
@@ -75,12 +75,12 @@
     {
       "name": "yote_ep",
       "status": "fail",
-      "detail": ":25102/health code=000000 after 5ms"
+      "detail": ":25102/health code=000000 after 39ms"
     },
     {
       "name": "meshub_ep",
       "status": "ok",
-      "detail": ":25115 tcp open in 17ms"
+      "detail": ":25115 tcp open in 170ms"
     },
     {
       "name": "coyote_ep",
@@ -90,12 +90,12 @@
     {
       "name": "memory",
       "status": "ok",
-      "detail": "total=63893MB used=14450MB avail=49443MB"
+      "detail": "total=63893MB used=54197MB avail=9696MB"
     },
     {
       "name": "gpu",
       "status": "ok",
-      "detail": "NVIDIA GeForce RTX 3090  97 %  16209 MiB  24576 MiB"
+      "detail": "NVIDIA GeForce RTX 3090  95 %  16180 MiB  24576 MiB"
     }
   ],
   "papers": [

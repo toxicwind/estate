@@ -2,13 +2,13 @@
 # Acceptance probe: openfang agents live on the mesh.
 # Exits 0 only if the full chain works: shep -> shim -> openfang mcp -> coyote.
 set -u
-SHEP=/home/toxic/sovereign/mesh/bin/shep
-CFG=/home/toxic/sovereign/mesh/gateway/mcp_config.json
+SHEP=/home/toxic/sovereign/projects/range/bin/shep
+CFG=/home/toxic/sovereign/projects/range/ranch/barn/shep/mcp_config.json
 fail() { echo "PROBE-FAIL: $1" >&2; exit 1; }
 
 line=$($SHEP -c "$CFG" upstream list 2>/dev/null | grep -i openfang) || fail "openfang missing from upstream list"
 echo "$line" | grep -q "Connected" || fail "openfang not Connected: $line"
-ntools=$(echo "$line" | grep -oE '[0-9]+ tools' | grep -oE '[0-9]+' | head -1)
+ntools=$(echo "$line" | grep -oE '[0-9]+ tools' | grep -oE '[0-9]+' | sed -e 1q)
 [ "${ntools:-0}" -ge 1 ] || fail "no tools discovered"
 
 out=$($SHEP -c "$CFG" call tool-write --tool-name=openfang:openfang_agent_coyote \

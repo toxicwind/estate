@@ -24,9 +24,9 @@ Scans `/tmp/tmux-<uid>/` (or `$TMUX_TMPDIR`) for socket files. The default socke
 /home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/tmux-mcp/server.ts
 ```
 
-Registered in the mesh gateway (`mesh/gateway/mcp_config.json`) as `tmux` (currently disabled pending deployment review).
+Registered in the shep gateway (`projects/range/ranch/barn/shep/mcp_config.json`) as `tmux` (currently disabled pending deployment review).
 
 ## See also
 
 - [Fleet Knowledgebase](../../docs/fleet-knowledgebase.md) — crew `tau-tmux-mcp`
-- [Mesh gateway](../../projects/mesh/gateway/) — canonical MCP config
+- [Shep gateway](../../projects/range/ranch/barn/shep/) — canonical MCP config

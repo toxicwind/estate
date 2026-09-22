@@ -36,7 +36,7 @@ const scanRoots = [
   join(home, ".cargo/bin"),
   join(home, ".bun/bin"),
   join(sovereignRoot, "projects/tau/launcher"),
-  join(sovereignRoot, "projects/mesh/bin"),
+  join(sovereignRoot, "projects/range/bin"),
   sovereignRoot,
   home,
 ];

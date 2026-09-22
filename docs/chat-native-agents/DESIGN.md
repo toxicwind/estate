@@ -80,7 +80,7 @@ claim pattern (atomic claim → work → result posted back to chat).
 
 ## 5. The one import
 
-`projects/mesh/squawk/chat-native/` — a zero-dependency Bun module
+`projects/range/ranch/squawk/chat-native/` — a zero-dependency Bun module
 (`@fleet/chat-native`), installed into the repo's workspace, `bun install`-able:
 
 ```ts
