@@ -1,0 +1,14 @@
+import { Database } from "bun:sqlite";
+const { sendValidated } = await import("/home/toxic/sovereign/projects/yote/src/lib/validated-send.ts");
+const { DeliveryLedger } = await import("/home/toxic/sovereign/projects/yote/src/lib/delivery-ledger.ts");
+const fs = await import("fs");
+const env = Object.fromEntries(fs.readFileSync("/home/toxic/sovereign/projects/yote/.env","utf8").split("\n").filter(l=>l.includes("=")&&!l.startsWith("#")).map(l=>{const i=l.indexOf("=");return [l.slice(0,i),l.slice(i+1)]}));
+const TOK = env.YOTE_TELEGRAM_BOT_TOKEN, CHAT = Number(env.YOTE_TARGET_USER);
+const tg = async (method, body) => { const r = await fetch("https://api.telegram.org/bot"+TOK+"/"+method,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); return r.json(); };
+const ledger = new DeliveryLedger(process.env.HOME+"/.yote/delivery-ledger.db");
+const txt = "E2E-WS3-PROD-PATH "+Date.now();
+const o1 = await sendValidated(tg, ledger, CHAT, txt, {updateId: 424242});
+console.log("SEND1:", JSON.stringify({ok:o1.ok,sent:o1.sent,deduped:o1.deduped,attempts:o1.attempts}));
+const o2 = await sendValidated(tg, ledger, CHAT, txt, {updateId: 424242});
+console.log("SEND2-DUPE:", JSON.stringify({ok:o2.ok,sent:o2.sent,deduped:o2.deduped}));
+console.log(o1.ok && o1.sent===1 && o2.deduped===1 && o2.sent===0 ? "E2E-PASS" : "E2E-FAIL");
