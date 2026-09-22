@@ -3,7 +3,7 @@
  * sovereign-mcp-server.ts — First-class unified Bun MCP server.
  * Hardcore stdout logging (live, never file-only). stdio JSON-RPC 2.0.
  */
-console.log(`[sovereign-mcp] STARTUP at ${new Date().toISOString()} pid=${process.pid}`);
+console.error(`[sovereign-mcp] STARTUP at ${new Date().toISOString()} pid=${process.pid}`);
 
 import { join, resolve } from "node:path";
 const SCRIPT_DIR = import.meta.dir;
@@ -21,9 +21,8 @@ const TOOLS: Record<string, { desc: string; params: any[] }> = {
 };
 
 function log(msg: string) {
-  const line = `[sovereign-mcp] ${new Date().toISOString()} ${msg}`;
-  console.log(line);
-  // live stdout — never suppress
+  const line = `[sovereign-mcp] ${new Date().toISOString()} ${msg}\n`;
+  process.stderr.write(line);
 }
 
 const stdin = process.stdin;
