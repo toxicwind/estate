@@ -1,0 +1,21 @@
+{
+ "verified_at_utc": "2026-09-22T04:09:02Z",
+ "verified_by": "do-the-thing lane (cell via awrawr-mcp bridge)",
+ "seed_list_chat.json": {
+  "rows": 1171,
+  "label_-1": 206,
+  "label_0": 965,
+  "storm_len96_md5_582bcbd0": 206,
+  "storm_echo_chain": 150,
+  "echo_chain_rate": 0.7282
+ },
+ "sessions_digest_scan": {
+  "main_96_582bcbd0": 121,
+  "side_96_582bcbd0": 85,
+  "total": 206,
+  "digest_384_b4aefd29": 0
+ },
+ "consistency": "seed-list storm rows (206) == session digest rows (206); echo_chain_rate 0.7282 matches w8-proof-reel evidence",
+ "full_corpus_note": "entries 1-3 support counts (877/81/79) originate from the larger 2026-09-15/16 live corpus (sources chat/runtime.messages/spawn); that corpus is not archived in coord/work/seeds (seeds.tar.gz = archive of seeds/ only); counts retained as measured by the 2026-09-16 8-lane run, spot-verified consistent with the archived subset",
+ "offending_tokens.json": "measured LR token correlations present; top entries consistent with w5 canary_pack top_tokens_used"
+}

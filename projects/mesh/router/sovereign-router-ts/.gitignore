@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.log
+*.pid
+.env*
+.secrets*
+*.db*
+.cache/

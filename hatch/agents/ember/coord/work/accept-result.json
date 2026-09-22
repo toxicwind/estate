@@ -1,0 +1,74 @@
+{
+ "accept_test_run": true,
+ "run_at_utc": "2026-09-22T04:09:58Z",
+ "run_by": "do-the-thing lane (cell via awrawr-mcp bridge)",
+ "interpreter_note": "w1-w7: python3 (bridge default); w8-proof-reel: /usr/bin/python3.14 (matplotlib only there)",
+ "lanes": {
+  "w1-chain-breaker": {
+   "pass": true,
+   "ts_utc": "2026-09-22T04:09:10Z",
+   "claims": [
+    "scrub() quarantines byte-identical storm bodies by digest",
+    "collapses 3rd+ consecutive identical storm turns",
+    "synthetic test: 0 storm bytes survive, <50ms per 100 turns"
+   ]
+  },
+  "w2-replay-detector": {
+   "pass": true,
+   "ts_utc": "2026-09-22T04:09:10Z",
+   "claims": [
+    "composite-replay detector found 17 candidate turns"
+   ]
+  },
+  "w3-burst-model": {
+   "pass": true,
+   "ts_utc": "2026-09-22T04:09:10Z",
+   "claims": [
+    "30s same-digest dedup sketch collapses 53.9% of storm turns",
+    "burst gaps are machine-speed: see gap_stats"
+   ]
+  },
+  "w4-tripwire": {
+   "pass": true,
+   "ts_utc": "2026-09-22T04:09:10Z",
+   "claims": [
+    "tripwire self-test 3/3 pass (hot trips, cold clear, sub-threshold clear)",
+    "live LATEST.json state: TRIPPED storm_active=true chat_hits=27 thr=10"
+   ]
+  },
+  "w5-canary-v2": {
+   "pass": true,
+   "ts_utc": "2026-09-22T04:09:10Z",
+   "claims": [
+    "canary pack built: 10 probes (5 treatment/control pairs)",
+    "no measurements fabricated: all probes marked unexecuted",
+    "cell owns execution via cell_runner.py"
+   ]
+  },
+  "w6-ledger-pipeline": {
+   "pass": true,
+   "ts_utc": "2026-09-22T04:09:10Z",
+   "claims": [
+    "regen_seed.py reproduces -1/0 labeling on a synthetic fixture",
+    "echo_chain detection verified True on chained fixture"
+   ]
+  },
+  "w7-weather-card": {
+   "pass": true,
+   "ts_utc": "2026-09-22T04:09:10Z",
+   "claims": [
+    "single-file HTML status card built, no external deps",
+    "size 2306 bytes, renders storm_active=True"
+   ]
+  },
+  "w8-proof-reel": {
+   "pass": true,
+   "ts_utc": "2026-09-22T04:09:52Z",
+   "claims": [
+    "rendered tokens.png + echo.png (echo_rate=0.728)",
+    "mp4 reel: ffmpeg missing, PNGs only"
+   ]
+  }
+ },
+ "summary": "8/8 entrypoint tests PASS"
+}
