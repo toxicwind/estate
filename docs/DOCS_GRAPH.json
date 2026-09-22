@@ -1,0 +1,1972 @@
+{
+  "nodes": {
+    "Meta/Muse AI/open-questions.md": {
+      "path": "Meta/Muse AI/open-questions.md",
+      "filename": "open-questions.md",
+      "title": "Open questions",
+      "category": "Meta",
+      "tags": [
+        "Meta",
+        "Muse AI"
+      ],
+      "links": [],
+      "sizeBytes": 1633
+    },
+    "Meta/Muse AI/runtime-cell.md": {
+      "path": "Meta/Muse AI/runtime-cell.md",
+      "filename": "runtime-cell.md",
+      "title": "The runtime cell",
+      "category": "Meta",
+      "tags": [
+        "Meta",
+        "Muse AI",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 3300
+    },
+    "Meta/Muse AI/README.md": {
+      "path": "Meta/Muse AI/README.md",
+      "filename": "README.md",
+      "title": "Meta / Muse AI",
+      "category": "Meta",
+      "tags": [
+        "Meta",
+        "Muse AI"
+      ],
+      "links": [
+        "runtime-cell.md",
+        "open-questions.md"
+      ],
+      "sizeBytes": 1459
+    },
+    "plans/free-pollinations-herd-hotfix-plan.md": {
+      "path": "plans/free-pollinations-herd-hotfix-plan.md",
+      "filename": "free-pollinations-herd-hotfix-plan.md",
+      "title": "Free Pollinations via Herd — Maximal Hotfix Plan (Tester + Live)",
+      "category": "plans",
+      "tags": [
+        "plans",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 29136
+    },
+    "plans/mesh-tau-verified-plan.md": {
+      "path": "plans/mesh-tau-verified-plan.md",
+      "filename": "mesh-tau-verified-plan.md",
+      "title": "mesh-tau-verified-plan.md",
+      "category": "plans",
+      "tags": [
+        "plans"
+      ],
+      "links": [],
+      "sizeBytes": 646
+    },
+    "plans/wezterm-shell-integration-plan.md": {
+      "path": "plans/wezterm-shell-integration-plan.md",
+      "filename": "wezterm-shell-integration-plan.md",
+      "title": "WezTerm Shell Integration Plan",
+      "category": "plans",
+      "tags": [
+        "plans",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 1998
+    },
+    "plans/master/MASTER_PLAN.md": {
+      "path": "plans/master/MASTER_PLAN.md",
+      "filename": "MASTER_PLAN.md",
+      "title": "Sovereign Pi Fork — Master Execution Plan",
+      "category": "plans",
+      "tags": [
+        "plans",
+        "master",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 5026
+    },
+    "plans/master/REORG-PLAN.md": {
+      "path": "plans/master/REORG-PLAN.md",
+      "filename": "REORG-PLAN.md",
+      "title": "SOVEREIGN REORG PLAN — shingle → hatch/agents/ember, shingle-workspace collision resolved",
+      "category": "plans",
+      "tags": [
+        "plans",
+        "master",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 28522
+    },
+    "plans/master/TASKS.md": {
+      "path": "plans/master/TASKS.md",
+      "filename": "TASKS.md",
+      "title": "Sovereign Fix Tasks - Live Tracker",
+      "category": "plans",
+      "tags": [
+        "plans",
+        "master",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 6552
+    },
+    "plans/migrations/naming-rename-plan.md": {
+      "path": "plans/migrations/naming-rename-plan.md",
+      "filename": "naming-rename-plan.md",
+      "title": "Naming Rename Plan (2026-09-20, naming-auditor)",
+      "category": "plans",
+      "tags": [
+        "plans",
+        "migrations",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 3683
+    },
+    "plans/migrations/wezterm-shell-integration-plan.md": {
+      "path": "plans/migrations/wezterm-shell-integration-plan.md",
+      "filename": "wezterm-shell-integration-plan.md",
+      "title": "WezTerm Shell Integration Plan",
+      "category": "plans",
+      "tags": [
+        "plans",
+        "migrations",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 1998
+    },
+    "plans/verified/mesh-tau-verified-plan.md": {
+      "path": "plans/verified/mesh-tau-verified-plan.md",
+      "filename": "mesh-tau-verified-plan.md",
+      "title": "mesh-tau-verified-plan.md",
+      "category": "plans",
+      "tags": [
+        "plans",
+        "verified"
+      ],
+      "links": [],
+      "sizeBytes": 646
+    },
+    "audits/bedf89a9-post-recovery-audit-bid.md": {
+      "path": "audits/bedf89a9-post-recovery-audit-bid.md",
+      "filename": "bedf89a9-post-recovery-audit-bid.md",
+      "title": "POST-RECOVERY ADDITIONS AUDIT — debate bedf89a9 (bid)",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "pitchfork",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 6545
+    },
+    "audits/nim-oracle-research.md": {
+      "path": "audits/nim-oracle-research.md",
+      "filename": "nim-oracle-research.md",
+      "title": "NVIDIA NIM Model Research for Super-Ralph Oracle",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 2443
+    },
+    "audits/pi-conversion-summary.md": {
+      "path": "audits/pi-conversion-summary.md",
+      "filename": "pi-conversion-summary.md",
+      "title": "npm-to-bun Migration Summary",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 2470
+    },
+    "audits/2026-09-14/HARDWARE_AUDIT_20260914.md": {
+      "path": "audits/2026-09-14/HARDWARE_AUDIT_20260914.md",
+      "filename": "HARDWARE_AUDIT_20260914.md",
+      "title": "Hardware Audit Classification — awrawr-pc — 2026-09-14",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "2026-09-14",
+        "ports",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 6974
+    },
+    "audits/2026-09-14/fleet-inventory-20260914.md": {
+      "path": "audits/2026-09-14/fleet-inventory-20260914.md",
+      "filename": "fleet-inventory-20260914.md",
+      "title": "Sovereign fleet inventory + completion reconciliation — 2026-09-14 ~18:20 MDT",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "2026-09-14",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 7950
+    },
+    "audits/2026-09-14/FORKS_AUDIT.md": {
+      "path": "audits/2026-09-14/FORKS_AUDIT.md",
+      "filename": "FORKS_AUDIT.md",
+      "title": "Sovereign Ecosystem — Deep Fork & Repository Audit",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "2026-09-14",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 7439
+    },
+    "audits/2026-09-14/AUDIT.md": {
+      "path": "audits/2026-09-14/AUDIT.md",
+      "filename": "AUDIT.md",
+      "title": "AUDIT.md — sovereign-projects (`~/projects/sovereign-projects`)",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "2026-09-14",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 7982
+    },
+    "audits/2026-09-20/openfang-proof-2026-09-20.md": {
+      "path": "audits/2026-09-20/openfang-proof-2026-09-20.md",
+      "filename": "openfang-proof-2026-09-20.md",
+      "title": "OpenFang execution + persistence proof (2026-09-20, ~21:50–22:00 MDT)",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "2026-09-20",
+        "pitchfork",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 4575
+    },
+    "audits/2026-09-20/edge-additions-20260920.md": {
+      "path": "audits/2026-09-20/edge-additions-20260920.md",
+      "filename": "edge-additions-20260920.md",
+      "title": "edge-additions — September-2026 cutting-edge additions (2026-09-20)",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "2026-09-20",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 5256
+    },
+    "audits/2026-09-20/MCP_AUDIT.md": {
+      "path": "audits/2026-09-20/MCP_AUDIT.md",
+      "filename": "MCP_AUDIT.md",
+      "title": "MCP Infrastructure Audit Report",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "2026-09-20",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 10996
+    },
+    "audits/2026-09-21/polling-audit-2026-09-21.md": {
+      "path": "audits/2026-09-21/polling-audit-2026-09-21.md",
+      "filename": "polling-audit-2026-09-21.md",
+      "title": "Estate Polling Audit — 2026-09-21",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "2026-09-21",
+        "pitchfork",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 13664
+    },
+    "audits/2026-09-21/PROVIDER_SECRET_AUDIT_20260921.md": {
+      "path": "audits/2026-09-21/PROVIDER_SECRET_AUDIT_20260921.md",
+      "filename": "PROVIDER_SECRET_AUDIT_20260921.md",
+      "title": "Provider Secret Audit — 2026-09-21",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "2026-09-21",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 4041
+    },
+    "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md": {
+      "path": "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md",
+      "filename": "bedf89a9-post-recovery-audit-bid.md",
+      "title": "POST-RECOVERY ADDITIONS AUDIT — debate bedf89a9 (bid)",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "2026-09-22",
+        "pitchfork",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 6545
+    },
+    "audits/2026-09-22/pi-conversion-summary.md": {
+      "path": "audits/2026-09-22/pi-conversion-summary.md",
+      "filename": "pi-conversion-summary.md",
+      "title": "npm-to-bun Migration Summary",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "2026-09-22",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 2470
+    },
+    "fleet/personas/README.md": {
+      "path": "fleet/personas/README.md",
+      "filename": "README.md",
+      "title": "Persona folders",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 2266
+    },
+    "fleet/personas/cinder/AGENTS.md": {
+      "path": "fleet/personas/cinder/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Cinder — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 300
+    },
+    "fleet/personas/cinder/IDENTITY.md": {
+      "path": "fleet/personas/cinder/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Cinder",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 402
+    },
+    "fleet/personas/cinder/SOUL.md": {
+      "path": "fleet/personas/cinder/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Cinder — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 162
+    },
+    "fleet/personas/cinder/MEMORY.md": {
+      "path": "fleet/personas/cinder/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Cinder — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 316
+    },
+    "fleet/personas/forge/AGENTS.md": {
+      "path": "fleet/personas/forge/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Forge — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 266
+    },
+    "fleet/personas/forge/IDENTITY.md": {
+      "path": "fleet/personas/forge/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Forge",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 347
+    },
+    "fleet/personas/forge/SOUL.md": {
+      "path": "fleet/personas/forge/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Forge — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 47
+    },
+    "fleet/personas/forge/MEMORY.md": {
+      "path": "fleet/personas/forge/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Forge — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 162
+    },
+    "fleet/personas/gavel/AGENTS.md": {
+      "path": "fleet/personas/gavel/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Gavel — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 200
+    },
+    "fleet/personas/gavel/IDENTITY.md": {
+      "path": "fleet/personas/gavel/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Gavel",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 595
+    },
+    "fleet/personas/gavel/MEMORY.md": {
+      "path": "fleet/personas/gavel/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Gavel — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 222
+    },
+    "fleet/personas/gavel/SOUL.md": {
+      "path": "fleet/personas/gavel/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Gavel — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 47
+    },
+    "fleet/personas/hearth/AGENTS.md": {
+      "path": "fleet/personas/hearth/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Hearth — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 201
+    },
+    "fleet/personas/hearth/IDENTITY.md": {
+      "path": "fleet/personas/hearth/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Hearth",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 196
+    },
+    "fleet/personas/hearth/MEMORY.md": {
+      "path": "fleet/personas/hearth/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Hearth — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 108
+    },
+    "fleet/personas/hearth/SOUL.md": {
+      "path": "fleet/personas/hearth/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Hearth — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 90
+    },
+    "fleet/personas/rivet/AGENTS.md": {
+      "path": "fleet/personas/rivet/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Rivet — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 200
+    },
+    "fleet/personas/rivet/IDENTITY.md": {
+      "path": "fleet/personas/rivet/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Rivet",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 653
+    },
+    "fleet/personas/rivet/SOUL.md": {
+      "path": "fleet/personas/rivet/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Rivet — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 47
+    },
+    "fleet/personas/rivet/MEMORY.md": {
+      "path": "fleet/personas/rivet/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Rivet — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 219
+    },
+    "fleet/personas/sable/AGENTS.md": {
+      "path": "fleet/personas/sable/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Sable — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 249
+    },
+    "fleet/personas/sable/IDENTITY.md": {
+      "path": "fleet/personas/sable/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Sable",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 652
+    },
+    "fleet/personas/sable/SOUL.md": {
+      "path": "fleet/personas/sable/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Sable — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 47
+    },
+    "fleet/personas/sable/MEMORY.md": {
+      "path": "fleet/personas/sable/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Sable — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 220
+    },
+    "fleet/personas/tally/AGENTS.md": {
+      "path": "fleet/personas/tally/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Tally — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 305
+    },
+    "fleet/personas/tally/IDENTITY.md": {
+      "path": "fleet/personas/tally/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Tally",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 386
+    },
+    "fleet/personas/tally/SOUL.md": {
+      "path": "fleet/personas/tally/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Tally — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 185
+    },
+    "fleet/personas/tally/MEMORY.md": {
+      "path": "fleet/personas/tally/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Tally — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 318
+    },
+    "fleet/personas/vesper/AGENTS.md": {
+      "path": "fleet/personas/vesper/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Vesper — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 1605
+    },
+    "fleet/personas/vesper/SOUL.md": {
+      "path": "fleet/personas/vesper/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Vesper — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 1288
+    },
+    "fleet/personas/vesper/IDENTITY.md": {
+      "path": "fleet/personas/vesper/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Vesper",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 2142
+    },
+    "fleet/personas/vesper/MEMORY.md": {
+      "path": "fleet/personas/vesper/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Vesper — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 4552
+    },
+    "fleet/personas/warden/AGENTS.md": {
+      "path": "fleet/personas/warden/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Warden — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 275
+    },
+    "fleet/personas/warden/IDENTITY.md": {
+      "path": "fleet/personas/warden/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Warden",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 550
+    },
+    "fleet/personas/warden/MEMORY.md": {
+      "path": "fleet/personas/warden/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Warden — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 356
+    },
+    "fleet/personas/warden/SOUL.md": {
+      "path": "fleet/personas/warden/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Warden — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 179
+    },
+    "fleet/personas/INDEX.md": {
+      "path": "fleet/personas/INDEX.md",
+      "filename": "INDEX.md",
+      "title": "Fleet roster",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 4082
+    },
+    "fleet/knowledgebase/fleet-knowledgebase.md": {
+      "path": "fleet/knowledgebase/fleet-knowledgebase.md",
+      "filename": "fleet-knowledgebase.md",
+      "title": "Fleet Knowledgebase",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "knowledgebase",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [
+        "../README.md"
+      ],
+      "sizeBytes": 65196
+    },
+    "fleet/knowledgebase/spawn-brief-template.md": {
+      "path": "fleet/knowledgebase/spawn-brief-template.md",
+      "filename": "spawn-brief-template.md",
+      "title": "Spawn Brief Template (canonical)",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "knowledgebase",
+        "ports",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 5394
+    },
+    "fleet/culture-and-doctrine/fleet-culture.md": {
+      "path": "fleet/culture-and-doctrine/fleet-culture.md",
+      "filename": "fleet-culture.md",
+      "title": "Fleet Culture — how the den talks",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "culture-and-doctrine",
+        "ports",
+        "audit"
+      ],
+      "links": [
+        "fleet-knowledgebase.md"
+      ],
+      "sizeBytes": 4505
+    },
+    "fleet/culture-and-doctrine/unreliable-narrator-doctrine.md": {
+      "path": "fleet/culture-and-doctrine/unreliable-narrator-doctrine.md",
+      "filename": "unreliable-narrator-doctrine.md",
+      "title": "Unreliable Narrator Doctrine (standing, 2026-09-20)",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "culture-and-doctrine",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 3583
+    },
+    "fleet/culture-and-doctrine/MANIFESTO.md": {
+      "path": "fleet/culture-and-doctrine/MANIFESTO.md",
+      "filename": "MANIFESTO.md",
+      "title": "The Anna-Senpai Question: A Memetic Forensics Analysis",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "culture-and-doctrine",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 35777
+    },
+    "chat-native-agents/PAPER-TRAIL.md": {
+      "path": "chat-native-agents/PAPER-TRAIL.md",
+      "filename": "PAPER-TRAIL.md",
+      "title": "Paper trail + build-vs-borrow verdict",
+      "category": "chat-native-agents",
+      "tags": [
+        "chat-native-agents",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 7305
+    },
+    "chat-native-agents/DESIGN.md": {
+      "path": "chat-native-agents/DESIGN.md",
+      "filename": "DESIGN.md",
+      "title": "Chat-native agents: buildable design (no polling)",
+      "category": "chat-native-agents",
+      "tags": [
+        "chat-native-agents",
+        "pitchfork",
+        "ports",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 6969
+    },
+    "architecture/control-plane/ARCHITECTURE.md": {
+      "path": "architecture/control-plane/ARCHITECTURE.md",
+      "filename": "ARCHITECTURE.md",
+      "title": "Sovereign Architecture — Single Source of Truth",
+      "category": "architecture",
+      "tags": [
+        "architecture",
+        "control-plane",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 20263
+    },
+    "architecture/control-plane/UNIVERSAL_ARCHITECTURE.md": {
+      "path": "architecture/control-plane/UNIVERSAL_ARCHITECTURE.md",
+      "filename": "UNIVERSAL_ARCHITECTURE.md",
+      "title": "Universal Architecture — Polyglot Sovereign Stack (August 2026)",
+      "category": "architecture",
+      "tags": [
+        "architecture",
+        "control-plane",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 9166
+    },
+    "architecture/control-plane/CONTROL_PLANE.md": {
+      "path": "architecture/control-plane/CONTROL_PLANE.md",
+      "filename": "CONTROL_PLANE.md",
+      "title": "Sovereign Control Plane",
+      "category": "architecture",
+      "tags": [
+        "architecture",
+        "control-plane",
+        "pitchfork",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 2803
+    },
+    "architecture/control-plane/PRE_RELEASE_INTEGRATION_ENGINE.md": {
+      "path": "architecture/control-plane/PRE_RELEASE_INTEGRATION_ENGINE.md",
+      "filename": "PRE_RELEASE_INTEGRATION_ENGINE.md",
+      "title": "Sovereign Pre-Release Integration Engine",
+      "category": "architecture",
+      "tags": [
+        "architecture",
+        "control-plane",
+        "pitchfork",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 7708
+    },
+    "architecture/integrations/HINDSIGHT_TAU_INTEGRATION.md": {
+      "path": "architecture/integrations/HINDSIGHT_TAU_INTEGRATION.md",
+      "filename": "HINDSIGHT_TAU_INTEGRATION.md",
+      "title": "Sovereign Hindsight & Tau Long-Term Memory Architecture",
+      "category": "architecture",
+      "tags": [
+        "architecture",
+        "integrations",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 6687
+    },
+    "architecture/integrations/MORPHE_PATCHING.md": {
+      "path": "architecture/integrations/MORPHE_PATCHING.md",
+      "filename": "MORPHE_PATCHING.md",
+      "title": "Morphe Patching — Research SSOT (never redo)",
+      "category": "architecture",
+      "tags": [
+        "architecture",
+        "integrations",
+        "ports",
+        "mcp",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 46360
+    },
+    "architecture/integrations/cross-box-router.md": {
+      "path": "architecture/integrations/cross-box-router.md",
+      "filename": "cross-box-router.md",
+      "title": "Cross-box router (ember)",
+      "category": "architecture",
+      "tags": [
+        "architecture",
+        "integrations",
+        "mcp",
+        "router"
+      ],
+      "links": [
+        "yote_send.patch.md",
+        "hatch_send-v2-spec.md",
+        "../skills/router/SKILL.md"
+      ],
+      "sizeBytes": 2055
+    },
+    "architecture/integrations/RIDICULOUS_MULTI_PROFILE.md": {
+      "path": "architecture/integrations/RIDICULOUS_MULTI_PROFILE.md",
+      "filename": "RIDICULOUS_MULTI_PROFILE.md",
+      "title": "RIDICULOUS MULTI-PROFILE SETUP — Sovereign Model Router",
+      "category": "architecture",
+      "tags": [
+        "architecture",
+        "integrations",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 2436
+    },
+    "architecture/storage-and-cache/STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md": {
+      "path": "architecture/storage-and-cache/STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md",
+      "filename": "STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md",
+      "title": "Sovereign Storage Tiering & Cache Architecture",
+      "category": "architecture",
+      "tags": [
+        "architecture",
+        "storage-and-cache",
+        "pitchfork",
+        "ports",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 4769
+    },
+    "architecture/storage-and-cache/postgres-ownership.md": {
+      "path": "architecture/storage-and-cache/postgres-ownership.md",
+      "filename": "postgres-ownership.md",
+      "title": "PostgreSQL Ownership — Decision (2026-09-14)",
+      "category": "architecture",
+      "tags": [
+        "architecture",
+        "storage-and-cache",
+        "pitchfork",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 1696
+    },
+    "operations/hardware-and-cooling/GPU_COOLING.md": {
+      "path": "operations/hardware-and-cooling/GPU_COOLING.md",
+      "filename": "GPU_COOLING.md",
+      "title": "RTX 3090 cooling · LACT · undervolt notes",
+      "category": "operations",
+      "tags": [
+        "operations",
+        "hardware-and-cooling",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 2646
+    },
+    "operations/hardware-and-cooling/SWAP_OPTIMIZATION.md": {
+      "path": "operations/hardware-and-cooling/SWAP_OPTIMIZATION.md",
+      "filename": "SWAP_OPTIMIZATION.md",
+      "title": "Sovereign Swap Architecture — zram / zswap / NVMe Tiering",
+      "category": "operations",
+      "tags": [
+        "operations",
+        "hardware-and-cooling",
+        "pitchfork",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 18426
+    },
+    "operations/hardware-and-cooling/SWAP_QUICKREF.md": {
+      "path": "operations/hardware-and-cooling/SWAP_QUICKREF.md",
+      "filename": "SWAP_QUICKREF.md",
+      "title": "Swap Architecture Quick Reference",
+      "category": "operations",
+      "tags": [
+        "operations",
+        "hardware-and-cooling"
+      ],
+      "links": [],
+      "sizeBytes": 2639
+    },
+    "operations/kernel-and-tuning/KERNELOPTS_LLM_TUNING_AND_RANKING.md": {
+      "path": "operations/kernel-and-tuning/KERNELOPTS_LLM_TUNING_AND_RANKING.md",
+      "filename": "KERNELOPTS_LLM_TUNING_AND_RANKING.md",
+      "title": "Kernelopts LLM Tuning & Algorithmic Ranking Reference",
+      "category": "operations",
+      "tags": [
+        "operations",
+        "kernel-and-tuning",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 6635
+    },
+    "operations/kernel-and-tuning/systemd-migration.md": {
+      "path": "operations/kernel-and-tuning/systemd-migration.md",
+      "filename": "systemd-migration.md",
+      "title": "systemd substrate migration contract",
+      "category": "operations",
+      "tags": [
+        "operations",
+        "kernel-and-tuning",
+        "pitchfork",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 2983
+    },
+    "operations/ports-and-networking/port-ssot.md": {
+      "path": "operations/ports-and-networking/port-ssot.md",
+      "filename": "port-ssot.md",
+      "title": "Port SSOT — `config/ports.env`",
+      "category": "operations",
+      "tags": [
+        "operations",
+        "ports-and-networking",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 3309
+    },
+    "operations/ports-and-networking/nvidia-access-map.md": {
+      "path": "operations/ports-and-networking/nvidia-access-map.md",
+      "filename": "nvidia-access-map.md",
+      "title": "NVIDIA API Access Map — NVCF-DIG (2026-09-21)",
+      "category": "operations",
+      "tags": [
+        "operations",
+        "ports-and-networking",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 6103
+    },
+    "operations/ports-and-networking/config-naming-conventions.md": {
+      "path": "operations/ports-and-networking/config-naming-conventions.md",
+      "filename": "config-naming-conventions.md",
+      "title": "Config naming conventions (sovereign)",
+      "category": "operations",
+      "tags": [
+        "operations",
+        "ports-and-networking",
+        "pitchfork",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 3392
+    },
+    "operations/ports-and-networking/naming-grammar.md": {
+      "path": "operations/ports-and-networking/naming-grammar.md",
+      "filename": "naming-grammar.md",
+      "title": "Sovereign Model Naming Grammar (canonical, 2026-09-20)",
+      "category": "operations",
+      "tags": [
+        "operations",
+        "ports-and-networking",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 5735
+    },
+    "operations/security-and-guards/push-guard.md": {
+      "path": "operations/security-and-guards/push-guard.md",
+      "filename": "push-guard.md",
+      "title": "push-guard secret scan: ignore memory + placeholder auto-clear",
+      "category": "operations",
+      "tags": [
+        "operations",
+        "security-and-guards"
+      ],
+      "links": [],
+      "sizeBytes": 2111
+    },
+    "operations/security-and-guards/ENV_OWNERSHIP.md": {
+      "path": "operations/security-and-guards/ENV_OWNERSHIP.md",
+      "filename": "ENV_OWNERSHIP.md",
+      "title": "mise + direnv coexistence — final design",
+      "category": "operations",
+      "tags": [
+        "operations",
+        "security-and-guards",
+        "pitchfork",
+        "ports",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 7040
+    },
+    "operations/security-and-guards/FIX.md": {
+      "path": "operations/security-and-guards/FIX.md",
+      "filename": "FIX.md",
+      "title": "Sovereign Mesh — FIX.md (Live Mutable Checklist)",
+      "category": "operations",
+      "tags": [
+        "operations",
+        "security-and-guards",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 10013
+    },
+    "research/model-catalogs/free-tier-models.md": {
+      "path": "research/model-catalogs/free-tier-models.md",
+      "filename": "free-tier-models.md",
+      "title": "Free-Tier Model Routing — Ground Truth (2026-09-14)",
+      "category": "research",
+      "tags": [
+        "research",
+        "model-catalogs",
+        "pitchfork",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 7269
+    },
+    "research/model-catalogs/NVIDIA_NIM_API_DOCS.md": {
+      "path": "research/model-catalogs/NVIDIA_NIM_API_DOCS.md",
+      "filename": "NVIDIA_NIM_API_DOCS.md",
+      "title": "NVIDIA NIM API Documentation — Complete Reference",
+      "category": "research",
+      "tags": [
+        "research",
+        "model-catalogs",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 9690
+    },
+    "research/model-catalogs/KIMI_CODE_FORK_RESEARCH.md": {
+      "path": "research/model-catalogs/KIMI_CODE_FORK_RESEARCH.md",
+      "filename": "KIMI_CODE_FORK_RESEARCH.md",
+      "title": "Kimi Code Fork Feasibility Research",
+      "category": "research",
+      "tags": [
+        "research",
+        "model-catalogs",
+        "ports",
+        "mcp",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 6993
+    },
+    "research/surveys-and-preprints/ARXIV_EMERGENCE_SURVEY.md": {
+      "path": "research/surveys-and-preprints/ARXIV_EMERGENCE_SURVEY.md",
+      "filename": "ARXIV_EMERGENCE_SURVEY.md",
+      "title": "ArXiv Emergence Survey — Synthesis (Sovereign Registry)",
+      "category": "research",
+      "tags": [
+        "research",
+        "surveys-and-preprints",
+        "pitchfork",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 1998
+    },
+    "research/surveys-and-preprints/REASONING_SUPPRESSION_TEST.md": {
+      "path": "research/surveys-and-preprints/REASONING_SUPPRESSION_TEST.md",
+      "filename": "REASONING_SUPPRESSION_TEST.md",
+      "title": "Reasoning Suppression Test — Verdict",
+      "category": "research",
+      "tags": [
+        "research",
+        "surveys-and-preprints"
+      ],
+      "links": [],
+      "sizeBytes": 472
+    },
+    "research/surveys-and-preprints/nim-oracle-research.md": {
+      "path": "research/surveys-and-preprints/nim-oracle-research.md",
+      "filename": "nim-oracle-research.md",
+      "title": "NVIDIA NIM Model Research for Super-Ralph Oracle",
+      "category": "research",
+      "tags": [
+        "research",
+        "surveys-and-preprints",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 2443
+    },
+    "research/tool-retrieval/gemini-tool-retrieval.md": {
+      "path": "research/tool-retrieval/gemini-tool-retrieval.md",
+      "filename": "gemini-tool-retrieval.md",
+      "title": "Gemini API Tool Retrieval EAP — integration brief",
+      "category": "research",
+      "tags": [
+        "research",
+        "tool-retrieval",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 5082
+    },
+    "research/tool-retrieval/gemini-tool-retrieval-reference.md": {
+      "path": "research/tool-retrieval/gemini-tool-retrieval-reference.md",
+      "filename": "gemini-tool-retrieval-reference.md",
+      "title": "Purpose",
+      "category": "research",
+      "tags": [
+        "research",
+        "tool-retrieval",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 9138
+    }
+  },
+  "categories": {
+    "Meta": [
+      "Meta/Muse AI/open-questions.md",
+      "Meta/Muse AI/runtime-cell.md",
+      "Meta/Muse AI/README.md"
+    ],
+    "plans": [
+      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/mesh-tau-verified-plan.md",
+      "plans/wezterm-shell-integration-plan.md",
+      "plans/master/MASTER_PLAN.md",
+      "plans/master/REORG-PLAN.md",
+      "plans/master/TASKS.md",
+      "plans/migrations/naming-rename-plan.md",
+      "plans/migrations/wezterm-shell-integration-plan.md",
+      "plans/verified/mesh-tau-verified-plan.md"
+    ],
+    "audits": [
+      "audits/bedf89a9-post-recovery-audit-bid.md",
+      "audits/nim-oracle-research.md",
+      "audits/pi-conversion-summary.md",
+      "audits/2026-09-14/HARDWARE_AUDIT_20260914.md",
+      "audits/2026-09-14/fleet-inventory-20260914.md",
+      "audits/2026-09-14/FORKS_AUDIT.md",
+      "audits/2026-09-14/AUDIT.md",
+      "audits/2026-09-20/openfang-proof-2026-09-20.md",
+      "audits/2026-09-20/edge-additions-20260920.md",
+      "audits/2026-09-20/MCP_AUDIT.md",
+      "audits/2026-09-21/polling-audit-2026-09-21.md",
+      "audits/2026-09-21/PROVIDER_SECRET_AUDIT_20260921.md",
+      "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md",
+      "audits/2026-09-22/pi-conversion-summary.md"
+    ],
+    "fleet": [
+      "fleet/personas/README.md",
+      "fleet/personas/cinder/AGENTS.md",
+      "fleet/personas/cinder/IDENTITY.md",
+      "fleet/personas/cinder/SOUL.md",
+      "fleet/personas/cinder/MEMORY.md",
+      "fleet/personas/forge/AGENTS.md",
+      "fleet/personas/forge/IDENTITY.md",
+      "fleet/personas/forge/SOUL.md",
+      "fleet/personas/forge/MEMORY.md",
+      "fleet/personas/gavel/AGENTS.md",
+      "fleet/personas/gavel/IDENTITY.md",
+      "fleet/personas/gavel/MEMORY.md",
+      "fleet/personas/gavel/SOUL.md",
+      "fleet/personas/hearth/AGENTS.md",
+      "fleet/personas/hearth/IDENTITY.md",
+      "fleet/personas/hearth/MEMORY.md",
+      "fleet/personas/hearth/SOUL.md",
+      "fleet/personas/rivet/AGENTS.md",
+      "fleet/personas/rivet/IDENTITY.md",
+      "fleet/personas/rivet/SOUL.md",
+      "fleet/personas/rivet/MEMORY.md",
+      "fleet/personas/sable/AGENTS.md",
+      "fleet/personas/sable/IDENTITY.md",
+      "fleet/personas/sable/SOUL.md",
+      "fleet/personas/sable/MEMORY.md",
+      "fleet/personas/tally/AGENTS.md",
+      "fleet/personas/tally/IDENTITY.md",
+      "fleet/personas/tally/SOUL.md",
+      "fleet/personas/tally/MEMORY.md",
+      "fleet/personas/vesper/AGENTS.md",
+      "fleet/personas/vesper/SOUL.md",
+      "fleet/personas/vesper/IDENTITY.md",
+      "fleet/personas/vesper/MEMORY.md",
+      "fleet/personas/warden/AGENTS.md",
+      "fleet/personas/warden/IDENTITY.md",
+      "fleet/personas/warden/MEMORY.md",
+      "fleet/personas/warden/SOUL.md",
+      "fleet/personas/INDEX.md",
+      "fleet/knowledgebase/fleet-knowledgebase.md",
+      "fleet/knowledgebase/spawn-brief-template.md",
+      "fleet/culture-and-doctrine/fleet-culture.md",
+      "fleet/culture-and-doctrine/unreliable-narrator-doctrine.md",
+      "fleet/culture-and-doctrine/MANIFESTO.md"
+    ],
+    "chat-native-agents": [
+      "chat-native-agents/PAPER-TRAIL.md",
+      "chat-native-agents/DESIGN.md"
+    ],
+    "architecture": [
+      "architecture/control-plane/ARCHITECTURE.md",
+      "architecture/control-plane/UNIVERSAL_ARCHITECTURE.md",
+      "architecture/control-plane/CONTROL_PLANE.md",
+      "architecture/control-plane/PRE_RELEASE_INTEGRATION_ENGINE.md",
+      "architecture/integrations/HINDSIGHT_TAU_INTEGRATION.md",
+      "architecture/integrations/MORPHE_PATCHING.md",
+      "architecture/integrations/cross-box-router.md",
+      "architecture/integrations/RIDICULOUS_MULTI_PROFILE.md",
+      "architecture/storage-and-cache/STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md",
+      "architecture/storage-and-cache/postgres-ownership.md"
+    ],
+    "operations": [
+      "operations/hardware-and-cooling/GPU_COOLING.md",
+      "operations/hardware-and-cooling/SWAP_OPTIMIZATION.md",
+      "operations/hardware-and-cooling/SWAP_QUICKREF.md",
+      "operations/kernel-and-tuning/KERNELOPTS_LLM_TUNING_AND_RANKING.md",
+      "operations/kernel-and-tuning/systemd-migration.md",
+      "operations/ports-and-networking/port-ssot.md",
+      "operations/ports-and-networking/nvidia-access-map.md",
+      "operations/ports-and-networking/config-naming-conventions.md",
+      "operations/ports-and-networking/naming-grammar.md",
+      "operations/security-and-guards/push-guard.md",
+      "operations/security-and-guards/ENV_OWNERSHIP.md",
+      "operations/security-and-guards/FIX.md"
+    ],
+    "research": [
+      "research/model-catalogs/free-tier-models.md",
+      "research/model-catalogs/NVIDIA_NIM_API_DOCS.md",
+      "research/model-catalogs/KIMI_CODE_FORK_RESEARCH.md",
+      "research/surveys-and-preprints/ARXIV_EMERGENCE_SURVEY.md",
+      "research/surveys-and-preprints/REASONING_SUPPRESSION_TEST.md",
+      "research/surveys-and-preprints/nim-oracle-research.md",
+      "research/tool-retrieval/gemini-tool-retrieval.md",
+      "research/tool-retrieval/gemini-tool-retrieval-reference.md"
+    ]
+  },
+  "tagIndex": {
+    "Meta": [
+      "Meta/Muse AI/open-questions.md",
+      "Meta/Muse AI/runtime-cell.md",
+      "Meta/Muse AI/README.md"
+    ],
+    "Muse AI": [
+      "Meta/Muse AI/open-questions.md",
+      "Meta/Muse AI/runtime-cell.md",
+      "Meta/Muse AI/README.md"
+    ],
+    "audit": [
+      "Meta/Muse AI/runtime-cell.md",
+      "plans/master/MASTER_PLAN.md",
+      "plans/master/REORG-PLAN.md",
+      "plans/master/TASKS.md",
+      "plans/migrations/naming-rename-plan.md",
+      "audits/bedf89a9-post-recovery-audit-bid.md",
+      "audits/nim-oracle-research.md",
+      "audits/2026-09-14/HARDWARE_AUDIT_20260914.md",
+      "audits/2026-09-14/fleet-inventory-20260914.md",
+      "audits/2026-09-14/FORKS_AUDIT.md",
+      "audits/2026-09-14/AUDIT.md",
+      "audits/2026-09-20/openfang-proof-2026-09-20.md",
+      "audits/2026-09-20/edge-additions-20260920.md",
+      "audits/2026-09-20/MCP_AUDIT.md",
+      "audits/2026-09-21/polling-audit-2026-09-21.md",
+      "audits/2026-09-21/PROVIDER_SECRET_AUDIT_20260921.md",
+      "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md",
+      "fleet/personas/README.md",
+      "fleet/personas/vesper/SOUL.md",
+      "fleet/personas/vesper/MEMORY.md",
+      "fleet/personas/INDEX.md",
+      "fleet/knowledgebase/fleet-knowledgebase.md",
+      "fleet/knowledgebase/spawn-brief-template.md",
+      "fleet/culture-and-doctrine/fleet-culture.md",
+      "chat-native-agents/PAPER-TRAIL.md",
+      "chat-native-agents/DESIGN.md",
+      "architecture/control-plane/ARCHITECTURE.md",
+      "architecture/control-plane/UNIVERSAL_ARCHITECTURE.md",
+      "architecture/integrations/MORPHE_PATCHING.md",
+      "architecture/storage-and-cache/STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md",
+      "operations/kernel-and-tuning/KERNELOPTS_LLM_TUNING_AND_RANKING.md",
+      "operations/ports-and-networking/port-ssot.md",
+      "operations/ports-and-networking/config-naming-conventions.md",
+      "operations/security-and-guards/ENV_OWNERSHIP.md",
+      "operations/security-and-guards/FIX.md",
+      "research/model-catalogs/KIMI_CODE_FORK_RESEARCH.md",
+      "research/surveys-and-preprints/nim-oracle-research.md",
+      "research/tool-retrieval/gemini-tool-retrieval.md"
+    ],
+    "plans": [
+      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/mesh-tau-verified-plan.md",
+      "plans/wezterm-shell-integration-plan.md",
+      "plans/master/MASTER_PLAN.md",
+      "plans/master/REORG-PLAN.md",
+      "plans/master/TASKS.md",
+      "plans/migrations/naming-rename-plan.md",
+      "plans/migrations/wezterm-shell-integration-plan.md",
+      "plans/verified/mesh-tau-verified-plan.md"
+    ],
+    "pitchfork": [
+      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/master/MASTER_PLAN.md",
+      "plans/master/REORG-PLAN.md",
+      "plans/master/TASKS.md",
+      "audits/bedf89a9-post-recovery-audit-bid.md",
+      "audits/2026-09-14/fleet-inventory-20260914.md",
+      "audits/2026-09-14/FORKS_AUDIT.md",
+      "audits/2026-09-20/openfang-proof-2026-09-20.md",
+      "audits/2026-09-20/MCP_AUDIT.md",
+      "audits/2026-09-21/polling-audit-2026-09-21.md",
+      "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md",
+      "fleet/knowledgebase/fleet-knowledgebase.md",
+      "chat-native-agents/DESIGN.md",
+      "architecture/control-plane/ARCHITECTURE.md",
+      "architecture/control-plane/UNIVERSAL_ARCHITECTURE.md",
+      "architecture/control-plane/CONTROL_PLANE.md",
+      "architecture/control-plane/PRE_RELEASE_INTEGRATION_ENGINE.md",
+      "architecture/storage-and-cache/STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md",
+      "architecture/storage-and-cache/postgres-ownership.md",
+      "operations/hardware-and-cooling/SWAP_OPTIMIZATION.md",
+      "operations/kernel-and-tuning/systemd-migration.md",
+      "operations/ports-and-networking/port-ssot.md",
+      "operations/ports-and-networking/config-naming-conventions.md",
+      "operations/security-and-guards/ENV_OWNERSHIP.md",
+      "operations/security-and-guards/FIX.md",
+      "research/model-catalogs/free-tier-models.md",
+      "research/surveys-and-preprints/ARXIV_EMERGENCE_SURVEY.md"
+    ],
+    "ports": [
+      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/wezterm-shell-integration-plan.md",
+      "plans/master/MASTER_PLAN.md",
+      "plans/master/REORG-PLAN.md",
+      "plans/master/TASKS.md",
+      "plans/migrations/naming-rename-plan.md",
+      "plans/migrations/wezterm-shell-integration-plan.md",
+      "audits/bedf89a9-post-recovery-audit-bid.md",
+      "audits/pi-conversion-summary.md",
+      "audits/2026-09-14/HARDWARE_AUDIT_20260914.md",
+      "audits/2026-09-14/fleet-inventory-20260914.md",
+      "audits/2026-09-14/FORKS_AUDIT.md",
+      "audits/2026-09-14/AUDIT.md",
+      "audits/2026-09-20/openfang-proof-2026-09-20.md",
+      "audits/2026-09-20/edge-additions-20260920.md",
+      "audits/2026-09-20/MCP_AUDIT.md",
+      "audits/2026-09-21/polling-audit-2026-09-21.md",
+      "audits/2026-09-21/PROVIDER_SECRET_AUDIT_20260921.md",
+      "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md",
+      "audits/2026-09-22/pi-conversion-summary.md",
+      "fleet/personas/README.md",
+      "fleet/personas/cinder/AGENTS.md",
+      "fleet/personas/forge/AGENTS.md",
+      "fleet/personas/forge/IDENTITY.md",
+      "fleet/personas/gavel/AGENTS.md",
+      "fleet/personas/hearth/AGENTS.md",
+      "fleet/personas/rivet/AGENTS.md",
+      "fleet/personas/sable/AGENTS.md",
+      "fleet/personas/sable/IDENTITY.md",
+      "fleet/personas/tally/AGENTS.md",
+      "fleet/personas/tally/MEMORY.md",
+      "fleet/personas/vesper/AGENTS.md",
+      "fleet/personas/warden/AGENTS.md",
+      "fleet/personas/warden/IDENTITY.md",
+      "fleet/personas/INDEX.md",
+      "fleet/knowledgebase/fleet-knowledgebase.md",
+      "fleet/knowledgebase/spawn-brief-template.md",
+      "fleet/culture-and-doctrine/fleet-culture.md",
+      "fleet/culture-and-doctrine/unreliable-narrator-doctrine.md",
+      "fleet/culture-and-doctrine/MANIFESTO.md",
+      "chat-native-agents/PAPER-TRAIL.md",
+      "chat-native-agents/DESIGN.md",
+      "architecture/control-plane/ARCHITECTURE.md",
+      "architecture/control-plane/UNIVERSAL_ARCHITECTURE.md",
+      "architecture/control-plane/CONTROL_PLANE.md",
+      "architecture/control-plane/PRE_RELEASE_INTEGRATION_ENGINE.md",
+      "architecture/integrations/HINDSIGHT_TAU_INTEGRATION.md",
+      "architecture/integrations/MORPHE_PATCHING.md",
+      "architecture/storage-and-cache/STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md",
+      "architecture/storage-and-cache/postgres-ownership.md",
+      "operations/hardware-and-cooling/GPU_COOLING.md",
+      "operations/hardware-and-cooling/SWAP_OPTIMIZATION.md",
+      "operations/kernel-and-tuning/systemd-migration.md",
+      "operations/ports-and-networking/port-ssot.md",
+      "operations/ports-and-networking/nvidia-access-map.md",
+      "operations/ports-and-networking/config-naming-conventions.md",
+      "operations/security-and-guards/ENV_OWNERSHIP.md",
+      "operations/security-and-guards/FIX.md",
+      "research/model-catalogs/free-tier-models.md",
+      "research/model-catalogs/NVIDIA_NIM_API_DOCS.md",
+      "research/model-catalogs/KIMI_CODE_FORK_RESEARCH.md",
+      "research/surveys-and-preprints/ARXIV_EMERGENCE_SURVEY.md",
+      "research/tool-retrieval/gemini-tool-retrieval.md",
+      "research/tool-retrieval/gemini-tool-retrieval-reference.md"
+    ],
+    "mcp": [
+      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/master/MASTER_PLAN.md",
+      "plans/master/REORG-PLAN.md",
+      "plans/master/TASKS.md",
+      "audits/2026-09-14/fleet-inventory-20260914.md",
+      "audits/2026-09-14/FORKS_AUDIT.md",
+      "audits/2026-09-14/AUDIT.md",
+      "audits/2026-09-20/MCP_AUDIT.md",
+      "fleet/personas/warden/IDENTITY.md",
+      "fleet/personas/warden/MEMORY.md",
+      "fleet/personas/INDEX.md",
+      "fleet/knowledgebase/fleet-knowledgebase.md",
+      "architecture/control-plane/ARCHITECTURE.md",
+      "architecture/control-plane/UNIVERSAL_ARCHITECTURE.md",
+      "architecture/control-plane/CONTROL_PLANE.md",
+      "architecture/integrations/MORPHE_PATCHING.md",
+      "architecture/integrations/cross-box-router.md",
+      "operations/hardware-and-cooling/SWAP_OPTIMIZATION.md",
+      "operations/ports-and-networking/port-ssot.md",
+      "operations/security-and-guards/FIX.md",
+      "research/model-catalogs/KIMI_CODE_FORK_RESEARCH.md",
+      "research/tool-retrieval/gemini-tool-retrieval.md",
+      "research/tool-retrieval/gemini-tool-retrieval-reference.md"
+    ],
+    "router": [
+      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/wezterm-shell-integration-plan.md",
+      "plans/master/MASTER_PLAN.md",
+      "plans/master/REORG-PLAN.md",
+      "plans/migrations/naming-rename-plan.md",
+      "plans/migrations/wezterm-shell-integration-plan.md",
+      "audits/bedf89a9-post-recovery-audit-bid.md",
+      "audits/2026-09-14/fleet-inventory-20260914.md",
+      "audits/2026-09-14/FORKS_AUDIT.md",
+      "audits/2026-09-14/AUDIT.md",
+      "audits/2026-09-20/openfang-proof-2026-09-20.md",
+      "audits/2026-09-20/edge-additions-20260920.md",
+      "audits/2026-09-20/MCP_AUDIT.md",
+      "audits/2026-09-21/polling-audit-2026-09-21.md",
+      "audits/2026-09-21/PROVIDER_SECRET_AUDIT_20260921.md",
+      "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md",
+      "fleet/personas/gavel/IDENTITY.md",
+      "fleet/personas/INDEX.md",
+      "fleet/knowledgebase/fleet-knowledgebase.md",
+      "chat-native-agents/PAPER-TRAIL.md",
+      "architecture/control-plane/ARCHITECTURE.md",
+      "architecture/control-plane/UNIVERSAL_ARCHITECTURE.md",
+      "architecture/control-plane/PRE_RELEASE_INTEGRATION_ENGINE.md",
+      "architecture/integrations/cross-box-router.md",
+      "architecture/integrations/RIDICULOUS_MULTI_PROFILE.md",
+      "operations/ports-and-networking/config-naming-conventions.md",
+      "operations/ports-and-networking/naming-grammar.md",
+      "operations/security-and-guards/FIX.md",
+      "research/model-catalogs/free-tier-models.md",
+      "research/model-catalogs/NVIDIA_NIM_API_DOCS.md",
+      "research/surveys-and-preprints/ARXIV_EMERGENCE_SURVEY.md",
+      "research/tool-retrieval/gemini-tool-retrieval.md"
+    ],
+    "master": [
+      "plans/master/MASTER_PLAN.md",
+      "plans/master/REORG-PLAN.md",
+      "plans/master/TASKS.md"
+    ],
+    "migrations": [
+      "plans/migrations/naming-rename-plan.md",
+      "plans/migrations/wezterm-shell-integration-plan.md"
+    ],
+    "verified": [
+      "plans/verified/mesh-tau-verified-plan.md"
+    ],
+    "audits": [
+      "audits/bedf89a9-post-recovery-audit-bid.md",
+      "audits/nim-oracle-research.md",
+      "audits/pi-conversion-summary.md",
+      "audits/2026-09-14/HARDWARE_AUDIT_20260914.md",
+      "audits/2026-09-14/fleet-inventory-20260914.md",
+      "audits/2026-09-14/FORKS_AUDIT.md",
+      "audits/2026-09-14/AUDIT.md",
+      "audits/2026-09-20/openfang-proof-2026-09-20.md",
+      "audits/2026-09-20/edge-additions-20260920.md",
+      "audits/2026-09-20/MCP_AUDIT.md",
+      "audits/2026-09-21/polling-audit-2026-09-21.md",
+      "audits/2026-09-21/PROVIDER_SECRET_AUDIT_20260921.md",
+      "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md",
+      "audits/2026-09-22/pi-conversion-summary.md"
+    ],
+    "2026-09-14": [
+      "audits/2026-09-14/HARDWARE_AUDIT_20260914.md",
+      "audits/2026-09-14/fleet-inventory-20260914.md",
+      "audits/2026-09-14/FORKS_AUDIT.md",
+      "audits/2026-09-14/AUDIT.md"
+    ],
+    "2026-09-20": [
+      "audits/2026-09-20/openfang-proof-2026-09-20.md",
+      "audits/2026-09-20/edge-additions-20260920.md",
+      "audits/2026-09-20/MCP_AUDIT.md"
+    ],
+    "2026-09-21": [
+      "audits/2026-09-21/polling-audit-2026-09-21.md",
+      "audits/2026-09-21/PROVIDER_SECRET_AUDIT_20260921.md"
+    ],
+    "2026-09-22": [
+      "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md",
+      "audits/2026-09-22/pi-conversion-summary.md"
+    ],
+    "fleet": [
+      "fleet/personas/README.md",
+      "fleet/personas/cinder/AGENTS.md",
+      "fleet/personas/cinder/IDENTITY.md",
+      "fleet/personas/cinder/SOUL.md",
+      "fleet/personas/cinder/MEMORY.md",
+      "fleet/personas/forge/AGENTS.md",
+      "fleet/personas/forge/IDENTITY.md",
+      "fleet/personas/forge/SOUL.md",
+      "fleet/personas/forge/MEMORY.md",
+      "fleet/personas/gavel/AGENTS.md",
+      "fleet/personas/gavel/IDENTITY.md",
+      "fleet/personas/gavel/MEMORY.md",
+      "fleet/personas/gavel/SOUL.md",
+      "fleet/personas/hearth/AGENTS.md",
+      "fleet/personas/hearth/IDENTITY.md",
+      "fleet/personas/hearth/MEMORY.md",
+      "fleet/personas/hearth/SOUL.md",
+      "fleet/personas/rivet/AGENTS.md",
+      "fleet/personas/rivet/IDENTITY.md",
+      "fleet/personas/rivet/SOUL.md",
+      "fleet/personas/rivet/MEMORY.md",
+      "fleet/personas/sable/AGENTS.md",
+      "fleet/personas/sable/IDENTITY.md",
+      "fleet/personas/sable/SOUL.md",
+      "fleet/personas/sable/MEMORY.md",
+      "fleet/personas/tally/AGENTS.md",
+      "fleet/personas/tally/IDENTITY.md",
+      "fleet/personas/tally/SOUL.md",
+      "fleet/personas/tally/MEMORY.md",
+      "fleet/personas/vesper/AGENTS.md",
+      "fleet/personas/vesper/SOUL.md",
+      "fleet/personas/vesper/IDENTITY.md",
+      "fleet/personas/vesper/MEMORY.md",
+      "fleet/personas/warden/AGENTS.md",
+      "fleet/personas/warden/IDENTITY.md",
+      "fleet/personas/warden/MEMORY.md",
+      "fleet/personas/warden/SOUL.md",
+      "fleet/personas/INDEX.md",
+      "fleet/knowledgebase/fleet-knowledgebase.md",
+      "fleet/knowledgebase/spawn-brief-template.md",
+      "fleet/culture-and-doctrine/fleet-culture.md",
+      "fleet/culture-and-doctrine/unreliable-narrator-doctrine.md",
+      "fleet/culture-and-doctrine/MANIFESTO.md"
+    ],
+    "personas": [
+      "fleet/personas/README.md",
+      "fleet/personas/cinder/AGENTS.md",
+      "fleet/personas/cinder/IDENTITY.md",
+      "fleet/personas/cinder/SOUL.md",
+      "fleet/personas/cinder/MEMORY.md",
+      "fleet/personas/forge/AGENTS.md",
+      "fleet/personas/forge/IDENTITY.md",
+      "fleet/personas/forge/SOUL.md",
+      "fleet/personas/forge/MEMORY.md",
+      "fleet/personas/gavel/AGENTS.md",
+      "fleet/personas/gavel/IDENTITY.md",
+      "fleet/personas/gavel/MEMORY.md",
+      "fleet/personas/gavel/SOUL.md",
+      "fleet/personas/hearth/AGENTS.md",
+      "fleet/personas/hearth/IDENTITY.md",
+      "fleet/personas/hearth/MEMORY.md",
+      "fleet/personas/hearth/SOUL.md",
+      "fleet/personas/rivet/AGENTS.md",
+      "fleet/personas/rivet/IDENTITY.md",
+      "fleet/personas/rivet/SOUL.md",
+      "fleet/personas/rivet/MEMORY.md",
+      "fleet/personas/sable/AGENTS.md",
+      "fleet/personas/sable/IDENTITY.md",
+      "fleet/personas/sable/SOUL.md",
+      "fleet/personas/sable/MEMORY.md",
+      "fleet/personas/tally/AGENTS.md",
+      "fleet/personas/tally/IDENTITY.md",
+      "fleet/personas/tally/SOUL.md",
+      "fleet/personas/tally/MEMORY.md",
+      "fleet/personas/vesper/AGENTS.md",
+      "fleet/personas/vesper/SOUL.md",
+      "fleet/personas/vesper/IDENTITY.md",
+      "fleet/personas/vesper/MEMORY.md",
+      "fleet/personas/warden/AGENTS.md",
+      "fleet/personas/warden/IDENTITY.md",
+      "fleet/personas/warden/MEMORY.md",
+      "fleet/personas/warden/SOUL.md",
+      "fleet/personas/INDEX.md"
+    ],
+    "knowledgebase": [
+      "fleet/knowledgebase/fleet-knowledgebase.md",
+      "fleet/knowledgebase/spawn-brief-template.md"
+    ],
+    "culture-and-doctrine": [
+      "fleet/culture-and-doctrine/fleet-culture.md",
+      "fleet/culture-and-doctrine/unreliable-narrator-doctrine.md",
+      "fleet/culture-and-doctrine/MANIFESTO.md"
+    ],
+    "chat-native-agents": [
+      "chat-native-agents/PAPER-TRAIL.md",
+      "chat-native-agents/DESIGN.md"
+    ],
+    "architecture": [
+      "architecture/control-plane/ARCHITECTURE.md",
+      "architecture/control-plane/UNIVERSAL_ARCHITECTURE.md",
+      "architecture/control-plane/CONTROL_PLANE.md",
+      "architecture/control-plane/PRE_RELEASE_INTEGRATION_ENGINE.md",
+      "architecture/integrations/HINDSIGHT_TAU_INTEGRATION.md",
+      "architecture/integrations/MORPHE_PATCHING.md",
+      "architecture/integrations/cross-box-router.md",
+      "architecture/integrations/RIDICULOUS_MULTI_PROFILE.md",
+      "architecture/storage-and-cache/STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md",
+      "architecture/storage-and-cache/postgres-ownership.md"
+    ],
+    "control-plane": [
+      "architecture/control-plane/ARCHITECTURE.md",
+      "architecture/control-plane/UNIVERSAL_ARCHITECTURE.md",
+      "architecture/control-plane/CONTROL_PLANE.md",
+      "architecture/control-plane/PRE_RELEASE_INTEGRATION_ENGINE.md"
+    ],
+    "integrations": [
+      "architecture/integrations/HINDSIGHT_TAU_INTEGRATION.md",
+      "architecture/integrations/MORPHE_PATCHING.md",
+      "architecture/integrations/cross-box-router.md",
+      "architecture/integrations/RIDICULOUS_MULTI_PROFILE.md"
+    ],
+    "storage-and-cache": [
+      "architecture/storage-and-cache/STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md",
+      "architecture/storage-and-cache/postgres-ownership.md"
+    ],
+    "operations": [
+      "operations/hardware-and-cooling/GPU_COOLING.md",
+      "operations/hardware-and-cooling/SWAP_OPTIMIZATION.md",
+      "operations/hardware-and-cooling/SWAP_QUICKREF.md",
+      "operations/kernel-and-tuning/KERNELOPTS_LLM_TUNING_AND_RANKING.md",
+      "operations/kernel-and-tuning/systemd-migration.md",
+      "operations/ports-and-networking/port-ssot.md",
+      "operations/ports-and-networking/nvidia-access-map.md",
+      "operations/ports-and-networking/config-naming-conventions.md",
+      "operations/ports-and-networking/naming-grammar.md",
+      "operations/security-and-guards/push-guard.md",
+      "operations/security-and-guards/ENV_OWNERSHIP.md",
+      "operations/security-and-guards/FIX.md"
+    ],
+    "hardware-and-cooling": [
+      "operations/hardware-and-cooling/GPU_COOLING.md",
+      "operations/hardware-and-cooling/SWAP_OPTIMIZATION.md",
+      "operations/hardware-and-cooling/SWAP_QUICKREF.md"
+    ],
+    "kernel-and-tuning": [
+      "operations/kernel-and-tuning/KERNELOPTS_LLM_TUNING_AND_RANKING.md",
+      "operations/kernel-and-tuning/systemd-migration.md"
+    ],
+    "ports-and-networking": [
+      "operations/ports-and-networking/port-ssot.md",
+      "operations/ports-and-networking/nvidia-access-map.md",
+      "operations/ports-and-networking/config-naming-conventions.md",
+      "operations/ports-and-networking/naming-grammar.md"
+    ],
+    "security-and-guards": [
+      "operations/security-and-guards/push-guard.md",
+      "operations/security-and-guards/ENV_OWNERSHIP.md",
+      "operations/security-and-guards/FIX.md"
+    ],
+    "research": [
+      "research/model-catalogs/free-tier-models.md",
+      "research/model-catalogs/NVIDIA_NIM_API_DOCS.md",
+      "research/model-catalogs/KIMI_CODE_FORK_RESEARCH.md",
+      "research/surveys-and-preprints/ARXIV_EMERGENCE_SURVEY.md",
+      "research/surveys-and-preprints/REASONING_SUPPRESSION_TEST.md",
+      "research/surveys-and-preprints/nim-oracle-research.md",
+      "research/tool-retrieval/gemini-tool-retrieval.md",
+      "research/tool-retrieval/gemini-tool-retrieval-reference.md"
+    ],
+    "model-catalogs": [
+      "research/model-catalogs/free-tier-models.md",
+      "research/model-catalogs/NVIDIA_NIM_API_DOCS.md",
+      "research/model-catalogs/KIMI_CODE_FORK_RESEARCH.md"
+    ],
+    "surveys-and-preprints": [
+      "research/surveys-and-preprints/ARXIV_EMERGENCE_SURVEY.md",
+      "research/surveys-and-preprints/REASONING_SUPPRESSION_TEST.md",
+      "research/surveys-and-preprints/nim-oracle-research.md"
+    ],
+    "tool-retrieval": [
+      "research/tool-retrieval/gemini-tool-retrieval.md",
+      "research/tool-retrieval/gemini-tool-retrieval-reference.md"
+    ]
+  },
+  "totalFiles": 101,
+  "generatedAt": "2026-09-22T15:08:03.070Z"
+}
