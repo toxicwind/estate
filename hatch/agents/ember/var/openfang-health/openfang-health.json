@@ -1,26 +1,26 @@
 {
-  "ts": "2026-09-20T14:58:22.367083+00:00",
+  "ts": "2026-09-22T18:28:20.334435+00:00",
   "overall": "FAIL",
   "checks": [
     {
       "name": "supervisor",
       "status": "ok",
-      "detail": "active pid=1006 mem=19114795008B"
+      "detail": "active pid=1026 mem=27500826624B"
     },
     {
       "name": "daemons",
       "status": "fail",
-      "detail": "48/51 running; down: sovereign/beellama-fast sovereign/kimi-auto-shim; supervisor-stale (endpoint live): sovereign/toolcall-llm"
+      "detail": "61/75 running; down: sovereign/dnsmasq sovereign/tau sovereign/yote sovereign/search-api sovereign/search-ui sovereign/tau-code sovereign/nginx sovereign/kafka sovereign/squawk-relay-sink sovereign/squawk-relay-forward sovereign/squawk-ws-client sovereign/sovereign-chat sovereign/codebase-memory sovereign/browser-keeper"
     },
     {
       "name": "openfang_kernel",
       "status": "fail",
-      "detail": "openfang status rc=0 after 7ms"
+      "detail": "openfang status rc=0 after 9ms"
     },
     {
       "name": "agents",
       "status": "fail",
-      "detail": "not Running: shingle-pilot (query took 6ms)"
+      "detail": "not Running: coyote shingle-pilot squawk-relay assistant (query took 11ms)"
     },
     {
       "name": "audit_chain",
@@ -30,12 +30,12 @@
     {
       "name": "llama_swap",
       "status": "ok",
-      "detail": ":25100/v1/models ok in 17ms, 72 models"
+      "detail": ":25100/v1/models ok in 18ms, 114 models"
     },
     {
       "name": "kimi_auto",
       "status": "warn",
-      "detail": "state age=767s info=[kimi-k2 False -]"
+      "detail": "state age=160051s info=[mistral/ministral-3b-latest True 302]"
     },
     {
       "name": "provider_nvidia",
@@ -74,28 +74,28 @@
     },
     {
       "name": "yote_ep",
-      "status": "ok",
-      "detail": ":25102/health reachable (200) in 4ms"
+      "status": "fail",
+      "detail": ":25102/health code=000000 after 5ms"
     },
     {
       "name": "meshub_ep",
       "status": "ok",
-      "detail": ":25115 tcp open in 3ms"
+      "detail": ":25115 tcp open in 17ms"
     },
     {
       "name": "coyote_ep",
-      "status": "warn",
-      "detail": ":25143 code=000000 after 3ms (sovereign/coyote not in live pitchfork set)"
+      "status": "ok",
+      "detail": ":25143/health reachable in 5ms"
     },
     {
       "name": "memory",
       "status": "ok",
-      "detail": "total=63895MB used=14222MB avail=49673MB"
+      "detail": "total=63893MB used=14450MB avail=49443MB"
     },
     {
       "name": "gpu",
       "status": "ok",
-      "detail": "NVIDIA GeForce RTX 3090  6 %  11290 MiB  24576 MiB"
+      "detail": "NVIDIA GeForce RTX 3090  97 %  16209 MiB  24576 MiB"
     }
   ],
   "papers": [
