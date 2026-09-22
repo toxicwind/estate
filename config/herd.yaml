@@ -742,8 +742,13 @@ peers:
   # the terminal candidate of the maximal free-Kimi chains (kimi, kimi-k2,
   # kimi-code, kimi-auto).
   hf-free:
-    baseUrl: https://router.huggingface.co/v1
-    keyEnv: HF_TOKEN
+    # NOTE: proxy has no /v1 suffix -- the router joins the proxy with the
+    # request path (/v1/chat/completions); a /v1 suffix would double it.
+    # (2026-09-21: was baseUrl:/keyEnv:, which the peers schema does not
+    # recognize -- config failed validation ("proxy is required") and herd
+    # died on its first reload/restart after the block was added.)
+    proxy: https://router.huggingface.co
+    apiKey: ${env.HF_TOKEN}
     models:
       - moonshotai/Kimi-K3
 
