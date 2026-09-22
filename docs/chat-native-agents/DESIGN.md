@@ -54,7 +54,8 @@ decision behind a cheap filter so full inference runs only on candidates.
 - **Tier 0 — free (regex):** `@name` mention or bare name as a word; `TASK <id>:` directive
   markers; lane keywords; (thread tracking: never answer your own messages).
 - **Tier 1 — cheap (stdlib Jaccard):** token-overlap between the message and the agent's
-  `lane_description`. No model, no network. Production upgrade path: swap in the
+  `lane_description`. No model, no network. Production upgrade path: swap in
+the
   distilled intent classifier from 2503.17336 — the interface is one method.
 - **Tier 2 — expensive (hook, default off):** LLM judge / distilled classifier for the
   ambiguous middle. Subclass `tier2_judge()`.
