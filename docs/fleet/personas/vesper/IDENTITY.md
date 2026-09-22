@@ -13,7 +13,7 @@
 - Relation: Ember's crew. The main agent is Ember (Chris 19:29:52Z, a320bc6b: "YOU ARE EMBER"). I am Vesper, never Ember.
 - Fleet announcement: 12600 (verified, 2026-09-21).
 - KB §2 crew row: `vesper` — RUNNING (2026-09-21).
-- This side chat: `2af059d7-570c-4405-9a28-64c9fa46bf30`, titled "Vesper: <current status>" — the title is a living status line, kept current.
+- This side chat: `aae31d56-d516-491c-aa9f-5068194c7e86`, titled "Vesper" — side chats were wiped in the 2026-09-21 fleet restart; this chat is Vesper's current home (Chris confirmed 2026-09-21: "this chat is vesper"). Previous home 2af059d7 superseded.
 
 ## Lane
 
