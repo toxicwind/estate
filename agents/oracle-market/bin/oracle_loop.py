@@ -69,6 +69,7 @@ WORK = Path(os.environ.get("ORACLE_WORK", str(AGENT_DIR / "work")))
 LEDGER = Path(os.environ.get("ORACLE_LEDGER",
                              str(AGENT_DIR / "ledger" / "ledger.jsonl")))
 LOCKFILE = Path(os.environ.get("ORACLE_LOCK", str(AGENT_DIR / "oracle.lock")))
+BACKLOG = Path(os.environ.get("ORACLE_BACKLOG", str(WORK / "task-backlog.jsonl")))
 
 FROM = "oracle-market"
 SELF_FROMS = {"oracle-market", "oracle"}  # "oracle" = legacy identity (history only)
@@ -1332,6 +1333,77 @@ class OracleLoop:
         self._maybe_start_next_work(tid)
 
     # ----- autonomous next-work selection ------------------------------
+
+    # ----- autonomous backlog pump (2026-09-21, ember) -------------------
+    def _pump_backlog(self):
+        """Autonomous task supply: when the market is idle and the swarm
+        has proposed nothing, pop the next queued task from the backlog
+        file and feed it through intake (the front door), so auctions
+        launch without waiting on a human. The backlog is JSONL, one task
+        per line: {"title","text","added_by","added_ts","status"}.
+        Entries are claimed (status -> posted) BEFORE the channel post,
+        so a crash can never double-launch a task; a claimed-but-unposted
+        task stays visible in the file for manual re-queue. Returns the
+        entry dict, or None when there is nothing to pump."""
+        try:
+            if not BACKLOG.exists():
+                return None
+            raw = BACKLOG.read_text(encoding="utf-8").splitlines()
+        except OSError as e:
+            self.log("backlog_read_error", reason=str(e))
+            return None
+        entries = []
+        for ln in raw:
+            ln = ln.strip()
+            if not ln:
+                continue
+            try:
+                entries.append(json.loads(ln))
+            except (json.JSONDecodeError, ValueError):
+                continue
+        idx = None
+        for i, e in enumerate(entries):
+            if (isinstance(e, dict) and e.get("status") == "queued"
+                    and (e.get("text") or "").strip()):
+                idx = i
+                break
+        if idx is None:
+            return None
+        # Claim BEFORE posting: crash-safe, never double-launches.
+        entries[idx]["status"] = "posted"
+        entries[idx]["posted_ts"] = time.time()
+        try:
+            tmp = BACKLOG.with_name(BACKLOG.name + ".tmp")
+            tmp.write_text(
+                "\n".join(json.dumps(e) for e in entries) + "\n",
+                encoding="utf-8")
+            os.replace(tmp, BACKLOG)
+        except OSError as e:
+            self.log("backlog_claim_error", reason=str(e))
+            return None
+        text = entries[idx]["text"]
+        title = entries[idx].get("title") or "backlog-task"
+        # NOTE: frm="backlog-pump", NOT FROM. ingest() ignores the
+        # oracle's own posts (SELF_FROMS); a self-from intake_request would
+        # never be triaged and no auction would open. backlog-pump is a
+        # non-self requester identity, so the normal intake -> task_post
+        # -> auction path runs. The task_post stays control-HMAC-signed.
+        try:
+            name = self.market.post(
+                "intake_request",
+                "intake-%s" % self._safe_frm(title),
+                {"text": text},
+                note=("oracle-market: autonomous backlog pump -- no swarm "
+                      "proposal arrived; launching next queued task."),
+                frm="backlog-pump")
+        except Exception as e:
+            self.log("backlog_post_error", reason=str(e), title=title)
+            return None
+        self.log("backlog_pumped", title=title, file=name)
+        self.fleet_note(
+            "oracle-market: backlog -> intake: %s" % title[:120])
+        return entries[idx]
+
     def _maybe_start_next_work(self, prev_tid):
         """Settlement-driven autonomy: when a task reaches a terminal state
         and nothing else is in flight, invite the swarm to propose the next
@@ -1362,6 +1434,13 @@ class OracleLoop:
                         "-- swarm, propose the next task via intake."
                         % prev_tid)
         self.log("next_work_request", prev_task=prev_tid)
+        # Autonomous supply: if the swarm proposes nothing, the backlog
+        # pump feeds the next queued task through intake. Defensive: a
+        # pump failure must never break the settlement path.
+        try:
+            self._pump_backlog()
+        except Exception as e:
+            self.log("backlog_pump_error", reason=str(e))
 
     # ----- ingest -----
     def ingest(self, name, replay=False):
@@ -1888,6 +1967,16 @@ class OracleLoop:
         self.reconstruct()
         self._arm_channel()
         self._arm_parent()
+        # Startup kick: if the market is idle after replay and the backlog
+        # holds queued work, launch the first auction now -- no settlement
+        # will ever re-trigger the pump for the current idle state.
+        # Defensive: never break startup.
+        try:
+            if not any(a.state in ("OPEN", "ASSIGNED")
+                       for a in self.auctions.values()):
+                self._pump_backlog()
+        except Exception as e:
+            self.log("backlog_startup_pump_error", reason=str(e))
         # self-pipe: SIGTERM/SIGINT writes a byte so the select() below
         # wakes immediately even with no timers and no channel events
         # (no timeout-polling to notice shutdown).
