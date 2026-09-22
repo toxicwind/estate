@@ -5,7 +5,7 @@
 [![license: mixed](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue)](LICENSE)
 [![yote: RTX 3090](https://img.shields.io/badge/yote-RTX%203090%20%C2%B7%2016C%20%C2%B7%2062GB-76b900)](docs/HARDWARE_AUDIT_20260914.md)
 
-> Chris's ops + workspace monorepo on the yote box (`/home/toxic/sovereign`): one OpenAI-compatible inference front door, a pitchfork-supervised service stack, agent runtimes, MCP federation, and the Ember operational home — all in one tree.
+> **Sovereign is the self-hosted operating environment where a working agent fleet lives** — one OpenAI-compatible inference front door, HMAC-signed fleet chat, a work market with stake-and-slash accountability, and a pitchfork-supervised service stack, all in one tree on the yote box. Communication, accountability, and supervision aren’t three projects here; they’re three layers of the same commitments: nothing silent, nothing unverifiable.
 
 > [!CAUTION]
 > The canonical remote is [`toxicwind/sovereign-projects`](https://github.com/toxicwind/sovereign-projects). A separate repo **`toxicwind/sovereign`** exists with a stale main — pushing or verifying against it is a silent wrong-target error. Never push there.
@@ -42,6 +42,33 @@ Plus the agent layer: [`hatch/agents/ember`](hatch/agents/ember) (Ember's operat
 
 ## Architecture
 
+Three layers compose into one working system. Each one independently enforces the same commitments — every action attributable, every claim checkable, nothing running silent:
+
+- **Communication — squawk.** HMAC-signed agent chat (websocket `:25147` + feed `:25135`, global sequence). The fleet's voice and the live operations log.
+- **Accountability — oracle-market.** Work is triaged, bid on, cleared by Vickrey auction, executed, then verified and settled — with stake-and-slash collateral and the fused Oracle decision engine standing in for approval. Cheating is priced; decisions are checkable.
+- **Governance — pitchfork + bridge + the knowledgebase.** A systemd-user-unit supervisor over the daemon stack, the live hatch↔yote exec bridge, and the fleet knowledgebase as required reading. The doctrine that keeps the box honest.
+
+```mermaid
+flowchart TB
+    subgraph comm["Communication"]
+        SQ[squawk<br/>signed fleet chat<br/>:25147 / :25135]
+    end
+    subgraph acct["Accountability"]
+        OM[oracle-market<br/>bids · Vickrey · stake/slash<br/>Oracle decision engine]
+    end
+    subgraph gov["Governance"]
+        PF[pitchfork<br/>systemd user unit]
+        BR[bridge<br/>hatch↔yote exec :8379]
+        KB[fleet-knowledgebase<br/>standing rules]
+    end
+    SQ <--> OM
+    OM <--> PF
+    SQ <--> PF
+    BR -.-> PF
+```
+
+The inference path underneath:
+
 ```mermaid
 flowchart TB
     subgraph clients["Clients"]
@@ -64,16 +91,16 @@ flowchart TB
     HERD --> LOCAL
     HERD --> CLOUD
     subgraph supervise["Supervision"]
-        PF[pitchfork<br/>systemd user unit]
+        PF2[pitchfork<br/>systemd user unit]
     end
-    PF -.-> HERD
-    PF -.-> MG
-    PF -.-> KP
+    PF2 -.-> HERD
+    PF2 -.-> MG
+    PF2 -.-> KP
 ```
 
 ```mermaid
 flowchart LR
-    subgraph bridge["hatch ↔ yote bridge"]
+    subgraph bridge2["hatch ↔ yote bridge"]
         WS[awrawr-ws-exec :8379<br/>Funnel /exec-ws]
     end
     subgraph chat["Squawk"]
@@ -85,7 +112,7 @@ flowchart LR
 ```
 
 > [!TIP]
-> Both diagrams render inline on GitHub and in any Mermaid-capable preview. If you change a diagram, re-verify it parses — a stray `;` fails the render.
+> All diagrams render inline on GitHub and in any Mermaid-capable preview. If you change a diagram, re-verify it parses — a stray `;` fails the render.
 
 ## Routing doctrine
 
@@ -264,4 +291,4 @@ Stack glue: MIT where marked. Upstream binaries and forks keep their licenses (l
 
 [^1]: 2026-09-20: an agent misdiagnosed a Moonshot 401 ("User not found", bad key) as a routing failure and repointed `kimi-k2`/`kimi-k3-nim` at dead NVIDIA model IDs while keeping the kimi names. Fixed in `a49f7bf0` — routes restored to `moonshotai/kimi-k2.6` / `moonshotai/kimi-k3`, free-model purpose intact, never the default.
 
-*Last verified 2026-09-20 · [↑ top](#sovereign-projects)*
+*Last verified 2026-09-21 · [↑ top](#sovereign-projects)*
