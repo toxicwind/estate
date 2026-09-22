@@ -285,8 +285,8 @@ def snapshot(chan_dir, ledger_events):
         "intake_backlog": None,  # filled below
     }
     _bl, _sf = intake_backlog(chan_dir, ledger_events, now)
-    snap["intake_backlog"] = _bl
-    snap["intake_self_from"] = _sf
+    snap["ledger"]["intake_backlog"] = _bl  # was top-level: left ledger key None
+    snap["ledger"]["intake_self_from"] = _sf  # which crashed the hatch watchdog
 
     # --- stuck tasks ---
     stuck = []
