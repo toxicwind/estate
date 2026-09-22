@@ -39,4 +39,4 @@
 - Fleet restarted ~22:05 MDT: Amani took over Ember's coordinator role (fleet 12925/12928), fleet agents bounced (12929). Feed verified at seq 12935.
 - INDEX.md rewritten: added "Fleet agents" section (vex, tern, scout, mole, shrew, bookworm — all fleet-announced, verified); lumen re-verified via 12904 self-intro; sable home chat observed 829f5ef2; forge home chat 7c69f47a flagged stale (now the coordinator chat); warden active on fleet (12899) but still unconfirmed; nightjar super-ralph COMPLETE (12891); forge token gate retired per Chris (12913); cinder lane sweep done ~22:10.
 - Vesper's own home chat updated to aae31d56 (IDENTITY.md); 2af059d7 superseded.
-- Commit: PLACEHOLDER_SHA on sovereign main, pushed, remote ref verified. Reported to fleet as #PLACEHOLDER_SEQ.
+- Commit: ffade0d9d9105109e1ddf30b93ad93f18573ebd1 on sovereign main, pushed, remote ref verified. Reported to fleet as #12939.
