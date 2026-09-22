@@ -21,6 +21,10 @@ no "still ongoing" reminders):
     (hatch/bin/error_claims.py claim_annotation): known-mislead error
     strings gain their executable verify step so responders verify
     BEFORE acting. Unknown text is left alone.
+  - bridge-down outbox (2026-09-22): say() queues failed sends to
+    alert_outbox.jsonl and flush_outbox() replays them on the next
+    healthy run, before the cleared-notes. An alert that fires into a
+    dead bridge is no longer silently lost.
 Healthy state is silence. Hearth speaks only when something changed.
 
 State is written atomically (write-temp + fsync + rename); every run
@@ -74,10 +78,15 @@ YOTE_SCRIPT = "/home/toxic/sovereign/bin/progress-watchdog.py"
 PF_RESTART = "/home/toxic/sovereign/bin/pitchfork-restart"
 CHANNEL = "/home/toxic/sovereign/hatch/agents/ember/squawk-root/bid-market"
 PAUSE_STATE = HOME / ".cache" / "shingle" / "swarm-paused.json"
+CONNECTOR_DIR = HOME / "workspace" / "yote-connector"
+CONN_HEALTH = "http://127.0.0.1:18301/health"
 
 AGENT_STALE_S = 1500   # hatch agent quiet longer than this -> note
 REANNOUNCE_MAX = 3     # max re-announce attempts per stuck task
 FLEET = "fleet"
+OUTBOX = WDIR / "alert_outbox.jsonl"   # queued fleet msgs, bridge-down
+OUTBOX_SENDING = WDIR / "alert_outbox.sending"  # claimed batch (crash-safe)
+OUTBOX_MAX = 100       # cap queued messages; oldest dropped first
 ME = "hearth"          # persona sign-off (sent via ember identity)
 
 WDIR.mkdir(parents=True, exist_ok=True)
@@ -102,13 +111,133 @@ def save_state(s):
     wl.atomic_write_json(STATE, s)
 
 
-def say(text):
-    """Send one fleet message as Hearth."""
+def _outbox_append(text):
+    """Durably queue a fleet message that couldn't be sent (bridge down).
+
+    2026-09-22: the bridge:exec alert fired at 02:17 into a dead bridge —
+    say() failed, the alert never reached the pack, and the only trace was
+    a stdout line nobody reads. Alerts must survive the outage that caused
+    them. flush_outbox() replays these on the next healthy run. Bounded:
+    oldest entries are dropped past OUTBOX_MAX so a long outage can't grow
+    the file without limit.
+    """
     try:
-        subprocess.run([SQUAWK, "send", FLEET, text],
-                       capture_output=True, timeout=60)
+        WDIR.mkdir(parents=True, exist_ok=True)
+        entry = json.dumps({"ts": time.time(), "text": text}) + "\n"
+        with open(OUTBOX, "a") as f:
+            f.write(entry)
+            f.flush()
+            os.fsync(f.fileno())
+        # bound the queue: keep the newest OUTBOX_MAX entries
+        try:
+            with open(OUTBOX) as f:
+                lines = f.readlines()
+        except OSError:
+            return
+        if len(lines) > OUTBOX_MAX:
+            dropped = len(lines) - OUTBOX_MAX
+            tmp = OUTBOX.with_suffix(".tmp")
+            with open(tmp, "w") as f:
+                f.writelines(lines[-OUTBOX_MAX:])
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp, OUTBOX)
+            print(f"OUTBOX-TRIMMED: dropped {dropped} oldest", flush=True)
+    except OSError as e:  # noqa: BLE001
+        print(f"OUTBOX-APPEND-FAILED: {e}", flush=True)
+
+
+def _outbox_claim():
+    """Claim the queued batch for sending (crash-safe).
+
+    Moves OUTBOX -> OUTBOX_SENDING so a crash mid-flush can't lose or
+    double-post: leftovers in .sending are reclaimed on the next flush.
+    Returns the list of message dicts (possibly empty).
+    """
+    for path in (OUTBOX_SENDING, OUTBOX):
+        try:
+            lines = path.read_text().splitlines()
+        except OSError:
+            continue
+        if path is OUTBOX:
+            try:
+                os.replace(OUTBOX, OUTBOX_SENDING)
+            except OSError:
+                continue
+        msgs = []
+        for line in lines:
+            try:
+                msgs.append(json.loads(line))
+            except (json.JSONDecodeError, ValueError):
+                continue
+        return msgs
+    return []
+
+
+def _outbox_release():
+    """Drop the claimed batch after a successful flush."""
+    try:
+        OUTBOX_SENDING.unlink()
+    except OSError:
+        pass
+
+
+def flush_outbox():
+    """Replay fleet messages queued while the bridge was unreachable.
+
+    Called on a healthy run (snapshot_ok) BEFORE the cleared-notes go out,
+    so the pack sees what it missed, then the all-clear. Event-driven:
+    only runs when the bridge is back, never on a timer. If the bridge
+    dies mid-flush, unposted messages stay claimed in OUTBOX_SENDING and
+    are reclaimed next time — nothing is lost, nothing double-posts
+    (barring the pre-existing send-timeout-after-write race, which the
+    reader-side dedups by content).
+    """
+    msgs = _outbox_claim()
+    if not msgs:
+        _outbox_release()
+        return
+    print(f"OUTBOX-FLUSH: replaying {len(msgs)} queued alert(s)", flush=True)
+    digest = (
+        "\U0001F43A Hearth here — the bridge was down, so these "
+        f"{len(msgs)} alert(s) couldn't reach fleet when they fired. "
+        "Catching up first, then the all-clear. \U0001F49B"
+    )
+    if not say(digest):
+        # bridge died again before the digest landed: say() already
+        # re-queued the digest; put the batch back behind it, in order.
+        for m in msgs:
+            _outbox_append(m["text"])
+        return
+    for m in msgs:
+        say(m["text"])  # say() re-queues individually on failure
+    _outbox_release()
+
+
+def say(text):
+    """Send one fleet message as Hearth. Returns True on success.
+
+    On failure (bridge down, broken CLI) the message is queued in the
+    durable outbox instead of being dropped — flush_outbox() replays it
+    on the next healthy run.
+    """
+    try:
+        r = subprocess.run([SQUAWK, "send", FLEET, text],
+                           capture_output=True, text=True, timeout=60)
     except Exception as e:  # noqa: BLE001
         print(f"HEARTH-SAY-FAILED: {type(e).__name__}", flush=True)
+        _outbox_append(text)
+        return False
+    # 2026-09-21: subprocess.run without check=True never raises on a
+    # nonzero exit, so a broken CLI (e.g. seq_alloc.py deleted on yote)
+    # used to print WELCOMED while nothing posted. Surface it loudly.
+    if r.returncode != 0:
+        err = (r.stderr or "").strip().splitlines()
+        tail = err[-1][:160] if err else "no stderr"
+        print(f"HEARTH-SAY-FAILED: rc={r.returncode} {tail}", flush=True)
+        _outbox_append(text)
+        return False
+    return True
 
 
 def bridge_exec(cmd, timeout=120):
@@ -250,6 +379,72 @@ def restart_bidder(name):
     return False, (out or "empty response")[-300:]
 
 
+def connector_socket_alive(timeout=10):
+    """True iff the local yote-connector process answers /health AT ALL
+    (even with ok:false). Distinguishes a dead local process (socket
+    unreachable: restart is the right fix) from a live process reporting
+    a bridge-side failure (ok:false with JSON: the connector is innocent
+    and must NOT be killed). Caught 2026-09-21 21:12: the watchdog killed
+    a healthy connector three times in one evening because a transient
+    yote-side blink made the exec probe fail; connector_healthy() saw
+    ok:false and diagnosed "dead connector". Never kill on ok:false —
+    only on an unreachable socket.
+    """
+    try:
+        p = subprocess.run(
+            ["curl", "-s", "-m", str(timeout), "-o", "/dev/null",
+             "-w", "%{http_code}", CONN_HEALTH],
+            capture_output=True, text=True, timeout=timeout + 5)
+        return p.stdout.strip() in ("200", "503")
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def connector_healthy(timeout=10):
+    """True iff the local yote-connector answers /health with ok:true.
+
+    The health probe is a real authenticated exec probe, so ok:true means
+    the bridge lane is genuinely usable — not just a listening socket.
+    """
+    try:
+        p = subprocess.run(
+            ["curl", "-s", "-m", str(timeout), CONN_HEALTH],
+            capture_output=True, text=True, timeout=timeout + 5)
+        d = json.loads(p.stdout or "")
+        return bool(isinstance(d, dict) and d.get("ok"))
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def restart_local_connector():
+    """Self-heal the hatch-side connector (it dies on every cell
+    re-provision; nothing else restarts it). Kills stale connector.py
+    procs, relaunches via the supervised launcher, and re-probes.
+    Returns True if the connector answers /health afterwards."""
+    try:
+        subprocess.run(["pkill", "-f", "[c]onnector.py"],
+                       capture_output=True, timeout=15)
+    except Exception:  # noqa: BLE001
+        pass
+    try:
+        # Launch per the supervisor docstring: detached, own session, logs
+        # preserved. Popen (not run): the supervisor blocks in wait() on
+        # the child, so run() would hang until timeout and look like a
+        # failure. workdir set so log files land in CONNECTOR_DIR.
+        logf = open(os.path.join(CONNECTOR_DIR, "supervisor.log"), "a")
+        subprocess.Popen(
+            ["setsid", "nohup", "python3", "supervise-connector.py"],
+            cwd=str(CONNECTOR_DIR),
+            stdin=subprocess.DEVNULL,
+            stdout=logf, stderr=subprocess.STDOUT,
+            start_new_session=True, close_fds=True)
+        logf.close()  # child holds its own fd; parent must not leak
+    except Exception:  # noqa: BLE001
+        return False
+    time.sleep(4)
+    return connector_healthy()
+
+
 def sweep_domain_keys(active_keys, observed, is_yote):
     """Pure domain-sweep key selection (kept separate so tests can pin
     it): the yote sweep only clears non-`hatch:` keys, the hatch sweep
@@ -329,13 +524,47 @@ def run():
     # --- bridge/exec itself failed: nothing else is trustworthy ---
     # (no cleared-sweep here: we observed nothing, so we clear nothing)
     if snap.get("_error"):
-        cond("bridge:exec", f"err={snap['_error'][:80]}",
-             f"\U0001F43A Hearth here — I can't reach yote at all "
-             f"({snap['_error'][:120]}). My eyes are closed, pack — "
-             f"someone check the bridge!")
-        save_state(state)
-        return ("bridge-unreachable", {"fired": fired})
-    snapshot_ok = True
+        # Self-heal first: the hatch-side connector dies on every cell
+        # re-provision and nothing else restarts it (yote-connector-watch
+        # cron is archived). Restart ONLY when the local process is truly
+        # dead (socket unreachable). A live connector answering /health
+        # with ok:false is innocent — the blink is bridge-side (transient
+        # yote 401 windows self-recover in ~3 min, 2026-09-21). Killing a
+        # live connector on ok:false was the 3x self-heal storm of
+        # 2026-09-21 evening; never kill on ok:false.
+        err0 = snap["_error"][:120]
+        healed = False
+        did_restart = False
+        if not connector_socket_alive():
+            healed = restart_local_connector()
+            did_restart = True
+        else:
+            healed = True  # local process alive; failure is bridge-side
+        if healed:
+            snap = yote_snapshot()
+        if healed and not snap.get("_error"):
+            if did_restart:
+                say(f"\U0001F43A Hearth here — the bridge blinked ({err0}), "
+                    f"I restarted the local connector and it's healthy again. "
+                    f"Carry on, pack. \U0001F43E")
+                print("SELF-HEALED bridge:exec via connector restart",
+                      flush=True)
+            else:
+                # Transient bridge blink absorbed (re-probe succeeded, local
+                # connector was never dead). Stay quiet per doctrine: no
+                # timed all-green pulses, no self-heal theater.
+                print("BRIDGE-BLINK absorbed: transient yote-side failure, "
+                      "local connector alive, no restart needed", flush=True)
+            snapshot_ok = True
+        else:
+            cond("bridge:exec", f"err={snap['_error'][:80]}",
+                 f"\U0001F43A Hearth here — I can't reach yote at all "
+                 f"({snap['_error'][:120]}). My eyes are closed, pack — "
+                 f"someone check the bridge!")
+            save_state(state)
+            return ("bridge-unreachable", {"fired": fired})
+    else:
+        snapshot_ok = True
 
     led = snap.get("ledger", {})
 
@@ -362,7 +591,7 @@ def run():
              f"bazaar stalls without it. I'm NOT restarting it myself — "
              f"needs a careful hand. "
              f"Ember/Chris, eyes on sovereign/oracle-market please.")
-    for b in led.get("intake_backlog", []):
+    for b in (led.get("intake_backlog") or []):  # None-safe: key may exist as None
         fn = b.get("file", "?")
         cond(f"oracle:backlog:{fn}", "backlogged",
              f"\U0001F43A Hearth here — intake `{fn}` has waited "
@@ -501,6 +730,11 @@ def run():
         return cleared
 
     if snapshot_ok:
+        # Bridge is back: first replay anything that couldn't reach fleet
+        # while it was down, then post the cleared notes. (2026-09-22:
+        # the 02:17 bridge:exec alert fired into a dead bridge and was
+        # silently lost — the pack only ever saw the all-clear.)
+        flush_outbox()
         for k in sweep_domain(True):
             say(f"\U0001F43A Hearth here — ✅ `{k}` cleared, back to healthy. "
                 f"Nice. \U0001F49B")

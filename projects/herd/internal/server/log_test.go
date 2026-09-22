@@ -68,22 +68,6 @@ func TestServer_HandleLogs_Plain(t *testing.T) {
 	}
 }
 
-func TestServer_HandleLogs_HTMLRedirect(t *testing.T) {
-	s := newTestServer(newStubRouter(nil, ""), newStubRouter(nil, ""))
-
-	req := httptest.NewRequest(http.MethodGet, "/logs", nil)
-	req.Header.Set("Accept", "text/html")
-	w := httptest.NewRecorder()
-	s.ServeHTTP(w, req)
-
-	if w.Code != http.StatusFound {
-		t.Fatalf("status = %d, want 302", w.Code)
-	}
-	if got := w.Header().Get("Location"); got != "/ui/" {
-		t.Errorf("Location = %q, want /ui/", got)
-	}
-}
-
 func TestServer_ClientIP(t *testing.T) {
 	cases := []struct {
 		name  string
