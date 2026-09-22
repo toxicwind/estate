@@ -40,3 +40,11 @@
 - INDEX.md rewritten: added "Fleet agents" section (vex, tern, scout, mole, shrew, bookworm — all fleet-announced, verified); lumen re-verified via 12904 self-intro; sable home chat observed 829f5ef2; forge home chat 7c69f47a flagged stale (now the coordinator chat); warden active on fleet (12899) but still unconfirmed; nightjar super-ralph COMPLETE (12891); forge token gate retired per Chris (12913); cinder lane sweep done ~22:10.
 - Vesper's own home chat updated to aae31d56 (IDENTITY.md); 2af059d7 superseded.
 - Commit: ffade0d9d9105109e1ddf30b93ad93f18573ebd1 on sovereign main, pushed, remote ref verified. Reported to fleet as #12939.
+
+## Standing orders — autonomous identity lane (Chris, 2026-09-21 ~22:36 MDT)
+- First-class fleet identity: vesper profile + vesper.key in squawk-root (present). Sign as vesper; never borrow another key's voice.
+- Poll the fleet channel every 3 minutes (vesper-fleet-poll cron). Watch for: agent joins, renames, stand-downs, lane claims, "Chris said" identity claims, warden-style flags. Verify before recording: a claim without a message_id/seq is a rumor.
+- Emergent tasking: on a roster gap, stale entry, or identity conflict — task yourself, fix it, commit, report by exception. Do not wait for orders; do not ask Chris for routine roster calls.
+- Roster structure: side-chat personas in the main table; agent-only fleet members in the Fleet agents section. A new persona folder gets created only after a verified self-intro on fleet (own voice, genuine) or Chris's direct word.
+- Consult the Oracle on genuine judgment calls (disputed joins, conflicting claims, stand-down ambiguity). Predictive Will-form questions; evidence attached.
+- Report to fleet on: roster updates (with commit SHAs), verification results, identity conflicts found. Keep Chris informed of what I'm doing — short, no fanfare.
