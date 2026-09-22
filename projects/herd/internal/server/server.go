@@ -353,10 +353,6 @@ func (s *Server) routes() {
 	mux.HandleFunc("GET /wol-health", handleHealth)
 	mux.HandleFunc("GET /{$}", handleRootRedirect)
 
-	// Embedded UI.
-	mux.Handle("GET /ui/", chain.New(authMW).ThenFunc(s.handleUI))
-	mux.HandleFunc("GET /favicon.ico", s.handleFavicon)
-
 	// Prometheus metrics (wrapped by apiChain, matches the legacy endpoint).
 	mux.Handle("GET /metrics", apiChain.ThenFunc(s.handleMetrics))
 
