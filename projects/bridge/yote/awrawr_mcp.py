@@ -1268,10 +1268,10 @@ tools/call over localhost.
 # --- mesh (mcpproxy/shep) proxy -------------------------------------------
 MESH_MCP_URL = os.environ.get("MESH_MCP_URL", "http://127.0.0.1:25127/mcp")
 MESH_SHEP_BIN = os.environ.get(
-    "MESH_SHEP_BIN", "/home/toxic/sovereign/projects/mesh/bin/shep")
+    "MESH_SHEP_BIN", "/home/toxic/sovereign/projects/range/bin/shep")
 MESH_SHEP_CONFIG = os.environ.get(
     "MESH_SHEP_CONFIG",
-    "/home/toxic/sovereign/projects/mesh/gateway/mcp_config.json")
+    "/home/toxic/sovereign/projects/range/ranch/barn/shep/mcp_config.json")
 MESH_OUT_CAP = 20000
 _MESH_INTENTS = {"read": "call_tool_read", "write": "call_tool_write",
                  "destructive": "call_tool_destructive"}

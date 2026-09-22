@@ -92,7 +92,7 @@ export const PERIPHERAL_SERVICES: ServiceDef[] = [
     id: "browserless",
     name: "browserless",
     portKey: "BROWSERLESS_PORT",
-    run: "exec /home/toxic/sovereign/projects/mesh/browserless/server/run.sh",
+    run: "exec /home/toxic/sovereign/projects/range/ranch/barn/browserless/server/run.sh",
     dir: ".",
     readyCmd: "ss -ltn 'sport = :25130' | grep -q LISTEN",
     group: "aux",

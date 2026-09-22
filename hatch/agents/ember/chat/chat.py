@@ -37,7 +37,7 @@ from pathlib import Path
 try:
     import seq_alloc
 except ImportError:  # canonical allocator lives in the mesh squawk sources
-    sys.path.insert(0, "/home/toxic/sovereign/projects/mesh/squawk")
+    sys.path.insert(0, "/home/toxic/sovereign/projects/range/ranch/squawk")
     import seq_alloc
 
 from fleet_addr import addressed_wait_filter

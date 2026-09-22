@@ -17,8 +17,8 @@ health_http = { url = "http://127.0.0.1:25127/health", interval = "30s", timeout
 port = 25127
 # shep-serve.sh self-heals: bootstraps gitignored mcp_config.json from .dist when missing,
 # injects secrets from /home/toxic/.secrets (shep direct-run crash-loops without it).
-run = "exec /home/toxic/sovereign/mesh/bin/shep-serve.sh"
-dir = "/home/toxic/sovereign/mesh/gateway"
+run = "exec /home/toxic/sovereign/projects/range/bin/shep-serve.sh"
+dir = "/home/toxic/sovereign/projects/range/ranch/barn/shep"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25127/health"
@@ -382,15 +382,15 @@ auto = ["start"]
 
 [daemons.squawk-feed]
 run = "exec /home/toxic/sovereign/hatch/agents/ember/squawk-relay/run-feed.sh"
-dir = "/home/toxic/sovereign/projects/mesh/squawk"
+dir = "/home/toxic/sovereign/projects/range/ranch/squawk"
 mise = false
 retry = true
 boot_start = true
 auto = ["start"]
 
 [daemons.nats]
-run = "exec /home/toxic/sovereign/projects/mesh/squawk/nats/run-nats.sh"
-dir = "/home/toxic/sovereign/projects/mesh/squawk/nats"
+run = "exec /home/toxic/sovereign/projects/range/ranch/squawk/nats/run-nats.sh"
+dir = "/home/toxic/sovereign/projects/range/ranch/squawk/nats"
 mise = false
 retry = true
 boot_start = true
@@ -398,8 +398,8 @@ ready_cmd = "ss -ltn 'sport = :4222' | grep -q LISTEN"
 auto = ["start"]
 
 [daemons.nats-tail]
-run = "exec /home/toxic/sovereign/projects/mesh/squawk/nats/run-tail.sh"
-dir = "/home/toxic/sovereign/projects/mesh/squawk/nats"
+run = "exec /home/toxic/sovereign/projects/range/ranch/squawk/nats/run-tail.sh"
+dir = "/home/toxic/sovereign/projects/range/ranch/squawk/nats"
 mise = false
 retry = true
 boot_start = true
@@ -407,7 +407,7 @@ auto = ["start"]
 
 [daemons.browserless]
 port = 25130
-run = "exec /home/toxic/sovereign/projects/mesh/browserless/server/run.sh"
+run = "exec /home/toxic/sovereign/projects/range/ranch/barn/browserless/server/run.sh"
 dir = "."
 mise = false
 retry = true
@@ -420,8 +420,8 @@ auto = ["start"]
 health_http = { url = "http://127.0.0.1:25202/health", interval = "30s", timeout = "5s", retries = 3 }
 env = { GEMINI_MCP_PORT = "25202" }
 port = 25202
-run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/sovereign/projects/mesh/gemini-mcp/server.py"
-dir = "/home/toxic/sovereign/projects/mesh/gemini-mcp"
+run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/sovereign/projects/range/ranch/barn/gemini-mcp/server.py"
+dir = "/home/toxic/sovereign/projects/range/ranch/barn/gemini-mcp"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25202/health"
@@ -460,8 +460,8 @@ env = { WHATSAPP_MCP_PORT = "25146" }
 [daemons.squawk-ws]
 health_port = { port = 25147, interval = "30s", timeout = "5s", retries = 3 }
 port = 25147
-run = "exec python3 /home/toxic/sovereign/projects/mesh/squawk-ws/squawk_ws_server.py"
-dir = "/home/toxic/sovereign/projects/mesh/squawk-ws"
+run = "exec python3 /home/toxic/sovereign/projects/range/ranch/squawk-ws/squawk_ws_server.py"
+dir = "/home/toxic/sovereign/projects/range/ranch/squawk-ws"
 mise = false
 retry = true
 boot_start = true
@@ -561,21 +561,21 @@ env = { WATCHDOG_PORT = "25150", WATCHDOG_INTERVAL = "30" }
 # NOTE (merged 2026-09-14, stash wip-kimi-audit): superseded squawk-ws
 # variant kept for reference — old path /home/toxic/squawk/relay/squawk_ws_server.py,
 # old dir /home/toxic/squawk, old ready_http http://127.0.0.1:25147/ping.
-# Live process runs the sovereign/projects/mesh/squawk-ws/ path on :25147; this block reflects that.
+# Live process runs the sovereign/projects/range/ranch/squawk-ws/ path on :25147; this block reflects that.
 auto = ["start"]
 
 # squawk-ws-client (2026-09-14, cell-proof pilot): push client ON awrawr-pc,
 # connecting directly to 127.0.0.1:25147. The cell-side client
 # (~/workspace/squawk-ws-client.py) dies with the cell; this one cannot.
-# Spool: sovereign/projects/mesh/squawk-ws/client-spool.jsonl (durable, cell-independent).
+# Spool: sovereign/projects/range/ranch/squawk-ws/client-spool.jsonl (durable, cell-independent).
 # Additive pilot — cell-side client + watchdog stay as fallback until 24h proven.
 [daemons.squawk-ws-client]
-run = "exec python3 /home/toxic/sovereign/projects/mesh/squawk-ws/squawk_ws_client_local.py"
-dir = "/home/toxic/sovereign/projects/mesh/squawk-ws"
+run = "exec python3 /home/toxic/sovereign/projects/range/ranch/squawk-ws/squawk_ws_client_local.py"
+dir = "/home/toxic/sovereign/projects/range/ranch/squawk-ws"
 mise = false
 retry = true
 boot_start = true
-ready_cmd = "find /home/toxic/sovereign/projects/mesh/squawk-ws/client-heartbeat -mmin -2 | grep -q ."
+ready_cmd = "find /home/toxic/sovereign/projects/range/ranch/squawk-ws/client-heartbeat -mmin -2 | grep -q ."
 depends = ["squawk-ws"]
 auto = ["start"]
 
@@ -714,8 +714,8 @@ auto = ["start"]
 health_http = { url = "http://127.0.0.1:25207/health", interval = "30s", timeout = "5s", retries = 3 }
 env = { MESH_LANDING_PORT = "25207" }
 port = 25207
-run = "exec /usr/bin/python3 /home/toxic/sovereign/projects/mesh/bin/landing.py"
-dir = "/home/toxic/sovereign/projects/mesh"
+run = "exec /usr/bin/python3 /home/toxic/sovereign/projects/range/bin/landing.py"
+dir = "/home/toxic/sovereign/projects/range"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25207/health"
@@ -877,7 +877,7 @@ auto = ["start"]
 
 [daemons.browser-keeper]
 port = 9223
-run = "exec /home/toxic/sovereign/projects/mesh/browserless/keeper/keeper.sh"
+run = "exec /home/toxic/sovereign/projects/range/ranch/barn/browserless/keeper/keeper.sh"
 dir = "."
 mise = false
 retry = true

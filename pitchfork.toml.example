@@ -21,8 +21,8 @@
 env_file = "config/ports.env"
 
 [daemons.shep]
-run = "exec /usr/local/bin/shep serve --config=/home/toxic/projects/sovereign-projects/mesh/gateway/mcp_config.json --log-level=warn --log-to-file --listen=127.0.0.1:25127"
-dir = "/home/toxic/projects/sovereign-projects/mesh/gateway"
+run = "exec /usr/local/bin/shep serve --config=/home/toxic/projects/range/ranch/barn/shep/mcp_config.json --log-level=warn --log-to-file --listen=127.0.0.1:25127"
+dir = "/home/toxic/projects/range/ranch/barn/shep"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25127/health"

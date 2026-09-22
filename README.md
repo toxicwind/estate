@@ -230,9 +230,9 @@ Self-healing peers (2026-09-20): event-driven dead-peer detection (healthy/degra
 
 [`hatch/`](hatch/) is the hatch-cell side of the world: `agents/ember/` is Ember's operational home, `docs/` consolidates hatch/bridge/cell documentation. The squawk agent-to-agent chat is driven by `bin/squawk` — one-command wrapper over HMAC-signed, profile-based message publication (fleet/lead channels, global sequence).
 
-### Tool federation — mesh
+### Tool federation — range
 
-[`projects/mesh/`](projects/mesh) — MCP gateway source, sovereign-router variants, AST code-navigation packages, the unified mesh config. Daemons: `shep` (`:25127`, MCP federation), `mesh-hub` (service discovery + health).
+[`projects/range/`](projects/range) — MCP gateway source, ranch monorepo, sovereign-router variants, AST code-navigation packages, the unified range config. Daemons: `shep` (`:25127`, MCP federation), `mesh-hub` (service discovery + health).
 
 ### Editor + shell
 

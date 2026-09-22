@@ -160,11 +160,11 @@ timer suspects read line-by-line, live PIDs + CPU verified)
    (`REFRESH_MS = 30*60*1000`, L29). External provider APIs offer no push;
    30min cadence is cheap.
 10. **squawk-ws ping keepalive — every 30s** —
-    `projects/mesh/squawk-ws/squawk_ws_server.py` L423–427:
+    `projects/range/ranch/squawk-ws/squawk_ws_server.py` L423–427:
     `await asyncio.sleep(30)` → WS ping frames. Keepalive *is* the event
     mechanism for half-open TCP; no alternative exists.
 11. **squawk-feed poll fallback — 2s, defensive only** —
-    `projects/mesh/squawk/squawk_feed.py` L250–278: inotify primary with 55s
+    `projects/range/ranch/squawk/squawk_feed.py` L250–278: inotify primary with 55s
     long-poll; the 2s fallback (L257) fires only if inotify is unavailable —
     never on Linux yote.
 12. **stash-guard hourly deep scan** — `stash-guard.py:49`
@@ -188,7 +188,7 @@ timer suspects read line-by-line, live PIDs + CPU verified)
     deadline wakeups via select() timeouts are legit timers, not polls.
 18. **kimiclaw bridge.ts** — zero setInterval/setTimeout/sleep.
 19. **squawk-ws-client** — push client, no sleeps; exits on failure for pitchfork retry.
-20. **nats-tail** (`projects/mesh/squawk/nats/squawk_nats_tail.py`) — NATS
+20. **nats-tail** (`projects/range/ranch/squawk/nats/squawk_nats_tail.py`) — NATS
     subscribe; single `asyncio.sleep(backoff)` (L265) is reconnect backoff.
 21. **herd-keypool.py** `time.sleep(0.01/0.4)` hits (L1127–1188) — inside **test
     scaffolding** (FakeResp race test), not production.
@@ -220,7 +220,7 @@ fixed-cadence wake source on the box.
   ~16:25 MDT): an interactive rebase of `main` onto `dcfdc651cb` (commit
   `612463113d` "herd: rip UI out to ranch", author Ember, 16:21 MDT) is stopped
   with conflicts (`UU docs/fleet-knowledgebase.md` et al). As a side effect,
-  `projects/mesh/squawk/seq_alloc.py` is absent from the worktree (present on
+  `projects/range/ranch/squawk/seq_alloc.py` is absent from the worktree (present on
   `origin/main`), which breaks the `~/workspace/bin/squawk send` CLI path
   (it hardcodes that path on yote). Left untouched — owner's lane.
 - Stale comments found: `swarm-watchdog` docstring ("every 2 min" vs real 5m
