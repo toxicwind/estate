@@ -210,7 +210,7 @@ if (import.meta.main) {
   console.log("== Non-Invasive Database & Telemetry Grounding Test ==");
   const parsed = oracle.parseHudLine(sampleHud);
   if (parsed) {
-    const verdict = oracle.evaluate(parsed, "/home/toxic/sovereign/projects/mesh/super-ralph/.super-ralph/workflow.db");
+    const verdict = oracle.evaluate(parsed, "/home/toxic/sovereign/projects/range/ranch/corral/.super-ralph/workflow.db");
     console.log(verdict.observabilitySummary);
     console.log("Full Grounding Verdict:", JSON.stringify(verdict, null, 2));
   }

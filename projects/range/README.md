@@ -1,30 +1,28 @@
-# Mesh — Tool Federation & Routing Layer
+# Range — Tool Federation & Ranch Domain Layer
 
-`mesh/` holds the tool-federation and routing components: the MCP gateway source, the sovereign-router variants, AST code-navigation packages, and the unified mesh config.
+`range/` holds the tool-federation and routing domain: service launchers, domain config, and the `ranch/` monorepo.
 
 ## Layout
 
 ```text
-mesh/
-├── gateway/                    # vendored mcpproxy-go source — the engine behind shep
-├── router/
-│   ├── sovereign-router-ts/    # live TS router (Bun, :25104, /ui) — 7 providers
-│   ├── sovereign-mcp-gateway/  # Sovereign MCP gateway source (trust boundary + circuit breaker + sticky affinity)
-│   ├── flock-py/# Python FastAPI router (v2)
-│   ├── sovereign-ast-router/   # TS router variant (v3)
-│   └── free_zed_gateway/       # free-LLM gateway concept
-├── flock-pkg/                  # flock extraction snapshot (frozen, was ast-matrix/)
-├── browserless/                # browserless.io MCP server + native launcher (:25130)
-├── ui-svelte/                  # Svelte dashboard for the router
-├── config.yml                  # unified mesh config — model roles, port mappings
-├── secretsmith/                # Secret Service CLI (secret-tool lineage, maximal)
-└── research/ data/              # provider discovery scripts, model catalog dumps
+range/
+├── bin/                        # Service launchers and probes (landing.py, shep-serve.sh, openfang-mesh-probe.sh)
+├── config.yml                  # Unified range config — model roles, port mappings
+└── ranch/                      # Monorepo (toxicwind/ranch)
+    ├── stockyard/              # Routers (herd, flock, paddock, router-legacy)
+    ├── barn/                   # MCP tools (shep, browserless, gemini-mcp, secretsmith)
+    ├── corral/                 # Multi-agent engineering engine (@sovereign/corral)
+    ├── squawk/                 # File-based multi-agent markdown chat
+    ├── squawk-ws/              # WebSocket bridge for squawk events
+    ├── data/                   # Model discovery catalogs, package tables
+    ├── research/               # Research scripts and extraction toolkits
+    ├── docs/                   # Architecture and contract documentation
+    └── ui/                     # Ranch web dashboard
 ```
 
 ## shep — MCP federation (:25127)
 
-**shep** (renamed from mcpproxy) serves one endpoint in front of **30 upstream MCP servers**: quarantine for new servers, BM25 tool discovery, health checks, and security scanning. Live config: `sovereign-projects/mesh/gateway/mcp_config.json` (pitchfork `shep` daemon). Gateway source is vendored here at `gateway/` (upstream: smart-mcp-proxy/mcpproxy-go).
-
+**shep** (renamed from mcpproxy) serves one endpoint in front of **30 upstream MCP servers**: quarantine for new servers, BM25 tool discovery, health checks, and security scanning. Live config: `projects/range/ranch/barn/shep/mcp_config.json` (pitchfork `shep` daemon).
 ## sovereign-router (:25104)
 
 The TypeScript router is the live multi-provider gateway: 7 providers (llama-swap, openrouter, nvidia, groq, cerebras, google, mistral), 5-strategy hybrid routing, built-in `/ui` dashboard. Override per request:

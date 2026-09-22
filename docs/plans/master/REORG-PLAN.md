@@ -97,7 +97,7 @@ pitchfork-supervised yote service inside the cell-material tree, confusing the n
 | 11 | `pitchfork.toml` (in place) | 3 path updates + header fix (§6) | hand-edit (generator retired) |
 | 12 | `tools/fleet-ops/cron-mirror/README.md` historical note, `xfer-report-20260915/REPORT.md` | — | left as history; still resolves via symlink |
 | 13 | `bench-wt-tau/pitchfork.toml` (stale worktree copy, `.shingle` refs) | — | left; non-live worktree artifact |
-| 14 | `sovereign/projects/mesh/squawk-ws/squawk_ws_server.py:42` default `SQUAWK_CHAT_ROOT` | — | optional hygiene one-liner (env overrides in prod) |
+| 14 | `sovereign/projects/range/ranch/squawk-ws/squawk_ws_server.py:42` default `SQUAWK_CHAT_ROOT` | — | optional hygiene one-liner (env overrides in prod) |
 
 **Named homes for all other current sovereign children** (nothing orphaned; nothing else moves):
 - **Orchestration:** `pitchfork.toml`, `config/` (ports.env SSOT), `stack/` (service scripts), `mise/`, `agents/` (bash-agent-merged, coyote, shingle-pilot), `profiles/`
@@ -121,7 +121,7 @@ pitchfork-supervised yote service inside the cell-material tree, confusing the n
   - `pitchfork.toml:274/282` — `[daemons.squawk-relay-sink]` / `[daemons.squawk-relay-forward]` `run`+`dir` under
     `/home/toxic/.shingle/squawk-relay/` (missed by the 2026-09-19 survey; resolve via the compat symlink chain —
     left on old paths deliberately, canonicalization is future hygiene)
-  - `projects/mesh/squawk-ws/squawk_ws_server.py:42` — `CHAT_ROOT` default `/home/toxic/.shingle/squawk-root` (env overrides)
+  - `projects/range/ranch/squawk-ws/squawk_ws_server.py:42` — `CHAT_ROOT` default `/home/toxic/.shingle/squawk-root` (env overrides)
   - `fleet/dispatch_fallback.py:26` — `DEFAULT_DIRECTIVES = "/home/toxic/.shingle/directives.md"`
   - `shingle/bin/squawk` wrapper — defaults `ROOT=/home/toxic/.shingle/squawk-root`, `CHAT_PY=/home/toxic/.shingle/chat/chat.py`
   - hatch-side `~/workspace/bin/squawk:19` — `SQUAWK_ROOT = "/home/toxic/.shingle/squawk-root"` (publishes via bridge; unaffected, resolves through symlink)

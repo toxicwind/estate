@@ -10,8 +10,8 @@
 #   - Secrets always come from /home/toxic/.secrets at runtime, never from disk.
 set -e
 SECRETS=/home/toxic/.secrets
-CFG=/home/toxic/sovereign/mesh/gateway/mcp_config.json
-DIST=/home/toxic/sovereign/mesh/gateway/mcp_config.json.dist
+CFG=/home/toxic/sovereign/projects/range/ranch/barn/shep/mcp_config.json
+DIST=/home/toxic/sovereign/projects/range/ranch/barn/shep/mcp_config.json.dist
 
 if [ -f "$SECRETS" ]; then
   # shellcheck disable=SC1090
@@ -29,7 +29,7 @@ if [ ! -f "$CFG" ]; then
   chmod 600 "$CFG"
 fi
 
-exec /home/toxic/sovereign/mesh/bin/shep serve \
+exec /home/toxic/sovereign/projects/range/bin/shep serve \
   --config="$CFG" \
   --log-level=warn --log-to-file \
   --listen=127.0.0.1:25127 "$@"
