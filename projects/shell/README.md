@@ -43,3 +43,22 @@ same path.
 Instance registration lives at `/run/user/1000/quickshell/by-id/<id>/`. If `qs-doctor` reports
 "IPC: No running instances" while the bar renders, the registration dir was lost — restart via
 `qs-restart` (recreates it). `qs-doctor` checks this on every run.
+
+## WezTerm
+
+Terminal emulator: `wezterm` (GPU-accelerated, listed in `ii/packages.arch.txt`).
+
+- **Config**: `~/.config/wezterm/wezterm.lua` — Lua-first config with Catppuccin Mocha colors, JetBrains Mono/Fira Code fonts, LEADER keybindings (h/j/k/l navigation, v/s splits, w/n/t/r shortcuts), OSC 133 semantic prompt markers via `wezterm.on("exec-before")` and `wezterm.on("window-created")` hooks.
+- **OSC 133 shell integration**: `~/.config/wezterm/shell-integration.sh` → `ii/dots/.config/wezterm/shell-integration.sh` — bash-side `PROMPT_COMMAND` + `DEBUG` trap for `A`/`B`/`C`/`D;<status>` semantic markers. Sourced by `.bashrc` when `TERM_PROGRAM=WezTerm`.
+- **Command palette**: `wezterm-cmdpicker` plugin (`~/.config/wezterm/plugins/wezterm-cmdpicker` → `ii/dots/.config/wezterm/plugins/wezterm-cmdpicker` → fork `toxicwind/wezterm-cmdpicker` at `abidibo/wezterm-cmdpicker` upstream).
+- **Shell search wrappers**: `.bashrc.env` provides `find()` (ffs), `grep()` (ffs local + `gh search code --github`), `findgh()` (`gh search repos`), and `ff()`/`ffa()`/`ffr()`/`ffo()` shorthand aliases.
+
+### Repo layout
+
+| Path | Content |
+|---|---|
+| `ii/dots/.config/wezterm/shell-integration.sh` | Original bash OSC 133 script |
+| `ii/dots/.config/wezterm/plugins/wezterm-cmdpicker/` | Forked cmdpicker plugin repo |
+| `~/.config/wezterm/wezterm.lua` | Active Lua-first config |
+| `~/.config/wezterm/shell-integration.sh` | Symlink to shell repo script |
+| `~/.config/wezterm/plugins/wezterm-cmdpicker` | Symlink to shell repo plugin |
