@@ -325,7 +325,7 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "floc
 daemons = ["tau"]
 
 [groups.all]
-daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar", "files"]
+daemons = ["shep", "mesh-hub", "herd", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless"]
 
 
 [daemons.kimi-auto-shim]
