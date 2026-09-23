@@ -50,7 +50,7 @@ const HTTP_SERVICES: ServiceEndpoint[] = [
   { name: "mesh-hub", url: "http://127.0.0.1:25115/health", port: 25115 },
   { name: "kimi-audit", url: "http://127.0.0.1:25116/health", port: 25116 },
   { name: "hindsight-api", url: "http://127.0.0.1:25117/health", port: 25117 },
-  { name: "mcp-gateway", url: "http://127.0.0.1:25120/health", port: 25120 },
+  { name: "mcp-gateway", url: "http://127.0.0.1:25104/health", port: 25104 },
   { name: "byte-vision", url: "http://127.0.0.1:25121/health", port: 25121 },
   {
     name: "mesh/mcpproxy-go",
