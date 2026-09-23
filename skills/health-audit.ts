@@ -31,7 +31,7 @@ interface ProbeResult {
 
 const HTTP_SERVICES: ServiceEndpoint[] = [
   { name: "herd", url: "http://127.0.0.1:25100/health", port: 25100 },
-  { name: "rust-web", url: "http://127.0.0.1:25101/health", port: 25101 },
+  { name: "rust-web", url: "http://127.0.0.1:25201/health", port: 25201 },
   { name: "yote", url: "http://127.0.0.1:25102/health", port: 25102 },
   {
     name: "axiom/openfang",
@@ -59,6 +59,10 @@ const HTTP_SERVICES: ServiceEndpoint[] = [
   },
   { name: "qdrant", url: "http://127.0.0.1:25133/", port: 25133 },
   { name: "coyote", url: "http://127.0.0.1:25143/health", port: 25143 },
+  { name: "keypool", url: "http://127.0.0.1:25109/health", port: 25109 },
+  { name: "hindsight-cp", url: "http://127.0.0.1:25118/", port: 25118 },
+  { name: "flock", url: "http://127.0.0.1:25193/health", port: 25193 },
+  { name: "boundless", url: "http://127.0.0.1:25197/api/health", port: 25197 },
 ];
 
 const TCP_SERVICES: TcpEndpoint[] = [
