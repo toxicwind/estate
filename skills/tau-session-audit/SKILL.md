@@ -1,7 +1,9 @@
 ---
 name: tau-session-audit
-description: Audit tau session JSONL files - reconstruct user intent, track completion, flag anomalies, and generate next-step plans.
+description: >
+  Audit tau session JSONL files. Reconstruct user intent, track completion, flag anomalies, and generate next-step plans. Triggers on: "tau session audit", "session audit", "intent tracking".
 ---
+
 # tau-session-audit Skill: Track User Intent and Completion
 
 ## Purpose

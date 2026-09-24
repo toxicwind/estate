@@ -1,6 +1,7 @@
 ---
-name: "surgical_edit"
-description: "Assertive surgical file editing: exact-text replacements with pre/post occurrence counts, every check before any write, abort on any mismatch. For config surgery (herd.yaml, model_constraints.yaml, etc.) where a wrong edit is worse than no edit. Born from the 2026-09-20 moonshot peer restore — the pattern that survived two scoping bugs because the asserts caught them."
+name: surgical-edit
+description: >
+  Assertive surgical file editing: exact-text replacements with pre/post occurrence counts, every check before any write, abort on any mismatch. Triggers on: "surgical edit", "config surgery", "exact-text replacement".
 ---
 
 # surgical-edit
