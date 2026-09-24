@@ -82,7 +82,7 @@ flowchart TB
     end
     subgraph backends["Backends"]
         LOCAL[local :25001+<br/>llama-server forks<br/>RTX 3090]
-        CLOUD[cloud via flock :8000<br/>openrouter · nvidia · moonshot …]
+        CLOUD[cloud via flock :25193<br/>openrouter · nvidia · moonshot …]
     end
     ZED --> HERD
     AG --> HERD
@@ -101,7 +101,7 @@ flowchart TB
 ```mermaid
 flowchart LR
     subgraph bridge2["hatch ↔ yote bridge"]
-        WS[awrawr-ws-exec :8379<br/>Funnel /exec-ws]
+        WS[awrawr-ws-exec :25204<br/>Funnel :8379]
     end
     subgraph chat["Squawk"]
         SW[squawk-ws :25147]
@@ -135,15 +135,17 @@ Daemon definitions live in [`pitchfork.toml`](pitchfork.toml) (the generator is 
 | `:25109` | `keypool` | Provider key pool for herd cloud routing ([`bin/herd-keypool.py`](bin/herd-keypool.py)) |
 | `:25201` | `rust-web` | Ops dashboard backend |
 | `:25104` | `sovereign-router` | Multi-provider LLM router (Bun/TS, [`tools/sovereign-router/`](tools/sovereign-router/)) |
-| `:8000` | `flock` | Cloud-provider routing daemon backing herd |
+| `:25193` | `flock` | Cloud-provider routing daemon backing herd |
 | `:25127` | `shep` | MCP federation — upstream servers → one endpoint |
 | `:25147` | `squawk-ws` | Squawk agent chat — websocket server |
 | `:25135` | `squawk-feed` | Squawk feed sequence server |
-| `:8379` | `awrawr-ws-exec` | The live hatch↔yote exec bridge (see [`bridge/`](bridge/)) |
+| `:25204` | `awrawr-ws-exec` | The live hatch↔yote exec bridge (Funnel exposed at `:8379`, see [`bridge/`](bridge/)) |
 | `:25102` | `yote` | Lightweight agent runtime |
 | `:25143` | `coyote` | Autonomous agent inference engine |
-| `:25125` | `tau` | Tau agent engine service |
-| `:25103` | `axiom` | OpenFang agent host |
+| `:25111` | `tau` | Tau agent engine service (ACP TCP-to-stdio bridge) |
+| `:25103` | `openfang-front` | OpenFang agent host proxy |
+| `:25148` | `buildsrv` | Build daemon & continuous compilation engine (2-worker NVMe queue) |
+| `:25117` | `hindsight` | Fleet state persistence and session durability |
 
 <details>
 <summary><strong>Port SSOT & audit tooling</strong></summary>
