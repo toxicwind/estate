@@ -1,111 +1,387 @@
-# herd — Inference Front Door
+# Herd (llama-swap)
 
-`herd/` is the **toxicwind fork of llama-swap** (Go, module `github.com/mostlygeek/llama-swap`). It serves the stack's single OpenAI-compatible endpoint. Cloud-provider routing is delegated to the **flock** daemon on `127.0.0.1:8000` via the `flock:` config key — the in-process `internal/flock` Go router was retired 2026-09-17 and the shipped binary ignores the `astMatrix:` config key with a warning (see `README_FLOCK_V2.md`).
+> **Orchestrate fleets of LLM inference engines. Zero downtime, zero friction.**  
+> Canonical Lineage: **[toxicwind/herd](https://github.com/toxicwind/herd)** & **[toxicwind/llama-swap](https://github.com/toxicwind/llama-swap)** (Upstream: [mostlygeek/llama-swap](https://github.com/mostlygeek/llama-swap))
 
-- **Upstream:** <https://github.com/mostlygeek/llama-swap>
-- **Fork:** <https://github.com/toxicwind/llama-swap>
-- **Live service:** pitchfork `herd` → `http://127.0.0.1:25100` (`/v1`, `/ui`, `/health`), launched by `stack/services/herd.sh` with `config/herd.yaml`
-
-## What's in here
-
-| Path | Role |
-| ---- | ---- |
-| `llama-swap.go`, `internal/` | Fork source (upstream + our additions) |
-| `internal/flock/` | flock Go router — RETIRED from the shipped binary 2026-09-17 (tree-only; live cloud routing is the `:8000` flock daemon via the `flock:` key). Kept: 8 strategies, 13 cloud providers, SQLite health DB (see `README_FLOCK_V2.md`) |
-| `config.yaml` | Symlink -> ../../config/herd.yaml (canonical; was a stale autoscan copy) |
-| `MODEL_INVENTORY.md` | Local GGUF / model-id audit for this host |
-| `TUNING.md` | Performance tuning notes |
-| `model-profiles.json` | Model profiles |
-
-The supervised service builds from `sovereign-projects/sovereign-swap`; this tree is the vendored fork source. Don't treat this README as upstream docs — upstream usage lives in the fork repo.
-
-## Why a fork
-
-Sovereign clients (Zed's llama.cpp provider, OpenFang, IDE copilots) need:
-
-1. Stable **OpenAI-compatible streaming** across differing backends → `normalize_sse`
-2. **Model discovery events** for Zed → `GET /models/sse`
-3. Port reclaim when an orphan `llama-server` holds a slot → pre-spawn `fuser -k`
-4. **IPv4 loopback** defaults (`127.0.0.1`) so dual-stack `localhost` doesn't break dials
-
-## Backends
-
-`config/herd.yaml` maps model aliases to three llama.cpp engine builds on `:25001–:25099`: beellama.cpp, llama-cpp-turboquant, and ik_llama.cpp. (The vendored `herd/config.yaml` also defines a fourth, ik_llama.cpp's turboquant build, but the live `config/herd.yaml` does not use it.)
-
-## Operate
-
-```bash
-curl -sS http://127.0.0.1:25100/health          # → OK
-curl -sS http://127.0.0.1:25100/v1/models | python3 -c "import sys,json;print([m['id'] for m in json.load(sys.stdin)['data'] if m['id'].startswith('flock:')][:5])"  # cloud models via flock daemon
-pitchfork restart herd                           # restart the service
-```
-
-Rebuild the fork binary:
-
-```bash
-# This tree builds standalone: `go build` succeeds here (internal/config is
-# present; verified 2026-09-20). The supervised production service builds
-# from sovereign-projects/sovereign-swap
-# (binary: ~/projects/sovereign-projects/sovereign-swap/build/llama-swap).
-```
-
-## Self-healing peers (2026-09-20)
-
-Every `peers:` entry carries an event-driven health state machine
-(`internal/router/peer_health.go`, knobs in `internal/config/health.go`):
-
-- **States:** `healthy` -> `degraded` (advisory; still serves) ->
-  `circuit-open` (ejected from rotation; requests fail fast with
-  structured 503 `peer_circuit_open`) -> `half-open` -> `healthy`.
-- **No polling.** The half-open probe is the next *real* request after
-  `cool_off_seconds`, admitted single-flight. No timers, sleeps, or
-  background health checks anywhere in the path.
-- **Clean slate on recovery.** A successful probe readmits the peer with the
-  failure score reset to zero: re-ejection needs the full configured
-  threshold of *fresh* evidence. A recovered peer is never one failure away
-  from the circuit reopening. (The rolling error window is telemetry, not
-  score: a just-recovered peer may briefly read as `degraded` while the
-  window still holds the earlier failures — it stays in rotation.)
-- **Taxonomy:** every outcome is classified per the reliability taxonomy --
-  `402-not-entitled`, `404-dead-id`, `429-throttled`, `200-empty`,
-  `403-refused`, `5xx`, `transport`, `success` (aligned with
-  `projects/openrouter-probe/probe_reliability.py`). Each failure adds
-  its class weight to a score; each success subtracts `recovery_credit`.
-  Score >= `failure_threshold` opens the circuit.
-- **Scoring:** EWMA latency plus a rolling 32-outcome error window drive
-  the `degraded` signal; every state change emits a structured transition
-  log (peer id, states, class, score -- never URLs, headers, bodies,
-  or secrets).
-- **Config:** optional `health:` block per peer in `config/herd.yaml`
-  (see `config.example.yaml` and `config-schema.json`); enabled with
-  conservative defaults when absent. `enabled: false` opts a peer out.
-  Model selection stays in router config -- no model IDs are hardcoded.
-- **Observe:** `GET /peer-health` returns per-peer state, EWMA latency,
-  error rate, failure score, and retry-after.
-- **Prove it:** `scripts/probe-peer-health.sh` drives the full
-  failure -> ejection -> recovery -> readmission cycle against a scripted
-  backend and asserts every step. The driver is fully event-driven: process
-  readiness is signaled over named pipes, ports are allocated collision-free,
-  and the cool-off is never slept through — instead the herd runs twice
-  (long cool-off proves fail-fast 503; 5ms cool-off makes the first real
-  request after recovery the half-open probe). No sleeps, no polling loops,
-  no timer delays.
-
-Borrowed discipline: sony/gobreaker closed/half-open/open two-step
-admit/report with a generation guard; EWMA + rolling-window signals per
-current routing literature (HACO 2607.19215, SkyWalker 2505.24095, vLLM
-Semantic Router 2603.04444).
-
-Hot-path overhead (AMD Ryzen 7 8700F, `go test -bench`):
-`BenchmarkAdmit` 9.6 ns/op, `BenchmarkClassifyOutcome` 261 ns/op,
-`BenchmarkReportSuccess` 747 ns/op — about 1 microsecond per proxied
-request, dominated by proxy latency by three orders of magnitude.
-
-## Related
-
-- Router module docs: `README_FLOCK_V2.md`
-- Stack rules: `AGENTS.md` (repo root)
-- Ops dashboard backend: `http://127.0.0.1:25201/` (`RUST_WEB_BACKEND_PORT` per `config/ports.env`). NOTE: `RUST_WEB_PORT=25101` in ports.env is stale — :25101 is model-guard per `pitchfork.toml` (flagged for the fleet; ports.env not yet updated).
+[![CI](https://github.com/toxicwind/herd/actions/workflows/ci.yml/badge.svg)](https://github.com/toxicwind/herd/actions)
+[![Test](https://github.com/toxicwind/herd/actions/workflows/test.yml/badge.svg)](https://github.com/toxicwind/herd/actions)
+[![License: SOL / MIT](https://img.shields.io/badge/License-SOL%20v1.0%20%2F%20MIT-blue.svg)](./LICENSE.md)
 
 ---
-*Up: [master README](../../README.md) · [projects/](../README.md) · [fleet knowledgebase](../../docs/fleet-knowledgebase.md)*
+
+## 🔱 Sovereign Fleet Orchestration (75 Models via AST Matrix)
+
+Herd is the high-performance inference gateway and model router for the Sovereign Stack. It transforms single-model hot-swapping into multi-tier fleet orchestration across local hardware (NVIDIA RTX 3090 24GB CUDA 8.6 + AMD Ryzen 7 8700F Zen 4 AVX-512) and remote endpoints.
+
+- ✅ Easy to deploy and configure: one binary, one configuration file. no external dependencies
+- ✅ On-demand model switching for many local AI servers (llama.cpp + forks, vllm, stable-diffusion.cpp, audio.cpp, ComfyUI, etc.)
+  - future proof, upgrade your inference servers at any time.
+- ✅ OpenAI API supported endpoints:
+  - `v1/completions`
+  - `v1/chat/completions`
+  - `v1/responses`
+  - `v1/embeddings`
+  - `v1/models` - list available models
+  - `v1/audio/speech` ([#36](https://github.com/mostlygeek/llama-swap/issues/36))
+  - `v1/audio/transcriptions` ([docs](https://github.com/mostlygeek/llama-swap/issues/41#issuecomment-2722637867))
+  - `v1/audio/voices`
+  - `v1/images/generations`
+  - `v1/images/edits`
+- ✅ Anthropic API supported endpoints:
+  - `v1/messages`
+  - `v1/messages/count_tokens`
+- ✅ llama-server (llama.cpp) supported endpoints
+  - `v1/rerank`, `v1/reranking`, `/rerank`
+  - `/infill` - for code infilling
+  - `/completion` - for completion endpoint
+  - `/models` - list available models. same behavior as `v1/models`
+  - `/props` - requires `?model={model_id}` query parameter to be provided. The autoload parameter is not supported and will be ignored.
+- ✅ SDAPI via [stable-diffusion.cpp's server](https://github.com/leejet/stable-diffusion.cpp/tree/master/examples/server)
+  - `/sdapi/v1/txt2img`
+  - `/sdapi/v1/img2img`
+  - `/sdapi/v1/loras` - requires `model` in request body to fetch the correct loras
+- ✅ [audio.cpp](https://github.com/0xShug0/audio.cpp) supported [extra endpoints](https://github.com/0xShug0/audio.cpp/blob/main/app/server/README.md#post-v1tasksrun)
+  - `/audioapi/v1/tasks/run`
+- ✅ `/comfyui/` - ComfyUI custom endpoint ([#1001](https://github.com/mostlygeek/llama-swap/issues/1001)) for more reliable swapping
+- ✅ llama-swap API
+  - `/ui` - web UI
+  - `/upstream/:model_id` - direct access to upstream server ([demo](https://github.com/mostlygeek/llama-swap/pull/31))  
+  - `/running` - list currently running models ([#61](https://github.com/mostlygeek/llama-swap/issues/61))
+  - `POST /api/models/unload` - manually unload all running models ([#58](https://github.com/mostlygeek/llama-swap/issues/58))
+  - `POST /api/models/unload/:model_id` - unload a specific model
+  - `GET /api/profiles` - list configured profiles and the active selection
+  - `PUT /api/profiles/active` - activate a profile or select none
+  - `/logs` - remote log monitoring
+    - `GET /logs` returns buffered plain text logs.
+      - If `Accept: text/html` is sent, `/logs` redirects to `/ui/`.
+    - `GET /logs/stream` keeps the connection open for live log streaming.
+      - Stream endpoints send buffered history first by default; add `?no-history` to stream only new lines.
+    - `GET /logs/stream/proxy` streams proxy logs only.
+    - `GET /logs/stream/upstream` streams upstream process logs only.
+    - `GET /logs/stream/{model_id}` streams logs for one model (including IDs with slashes, like `author/model`).
+  - `/health` - just returns "OK"
+  - `/metrics` - system and GPU metrics for prometheus
+- ✅ API Key support - define keys to restrict access to API endpoints
+- ✅ Customization
+  - Switch model ID routing at runtime with profiles
+  - Run concurrent models with a custom DSL swap matrix ([#643](https://github.com/mostlygeek/llama-swap/issues/643))
+  - Automatic unloading of models after timeout by setting a `ttl`
+  - Docker and Podman support using `cmd` and `cmdStop` together
+  - Preload models on startup with `hooks` ([#235](https://github.com/mostlygeek/llama-swap/pull/235))
+  - Apply filters to requests to control inference with `stripParams`, `setParams` and `setParamsByID`
+
+### Core Capabilities Matrix
+
+| Capability | Standard Hot-Swap | Herd Sovereign Orchestrator |
+|---|---|---|
+| **Model Fleet** | 1 model active | **75 models routed via AST Matrix** |
+| **Connection Handling** | Drop connection on swap | **Zero-downtime SSE keep-alive** |
+| **Hardware Offload** | Unmanaged CPU/GPU | **CUDA 8.6 Flash-Attn + Zen 4 AVX-512** |
+| **API Endpoints** | OpenAI basic | **OpenAI, Anthropic, Ollama, SDAPI, Rerank, Voice** |
+| **Supervisor Integration** | Standalone process | **Pitchfork-LLM & Sovereign Control Plane (:25100)** |
+| **Observability** | CLI logs | **Prometheus Metrics (:25105) + SSE Event Stream** |
+
+---
+
+## 🚀 Architecture & Routing
+
+```mermaid
+graph TD
+    A[Client Request] --> B[Herd Router :25100]
+    B --> C{AST Matrix Classifier}
+    C -->|Fast / Reasoning| D[beellama-cpp :25001 - EXAONE 1.2B]
+    C -->|Defrag / Fit-Margin| E[ik-llama-cpp :25002 - Heretic 27B]
+    C -->|Turbo 96k Context| F[llama-cpp-turboquant :25003 - Gemma 12B]
+    C -->|Autonomous Inference| G[HAL Substrate :25143]
+    C -->|Remote / NIM Fleet| H[NVIDIA NIM 1M Context Fleet]
+    D --> I[Unified OpenAI / Anthropic SSE Response]
+    E --> I
+    F --> I
+    G --> I
+    H --> I
+```
+
+---
+
+## 🛠️ API & Feature Reference
+
+- ✅ **Full Multi-Format API Support**:
+  - `v1/chat/completions`, `v1/completions`, `v1/responses`
+  - `v1/messages` (Anthropic Messages API with prompt caching preservation)
+  - `v1/embeddings`, `v1/rerank`, `v1/reranking`
+  - `v1/audio/speech`, `v1/audio/transcriptions`, `v1/audio/voices`
+  - `v1/images/generations`, `v1/images/edits` (SDAPI via stable-diffusion.cpp)
+- ✅ **Dynamic Management & Observability**:
+  - `GET /health` -> `OK`
+  - `GET /metrics` -> Prometheus metrics for memory, active model state, request rates
+  - `GET /running` -> Active running models and memory allocations
+  - `POST /api/models/unload` & `POST /api/models/unload/:model_id`
+  - `GET /logs/stream` & `GET /models/sse` -> Live SSE event streams for editor integration (Zed / QED)
+
+---
+
+## 📦 Build & Run
+
+```bash
+# Build with Zen 4 AVX-512 and maximal Go compiler flags
+go build -v -ldflags="-s -w" -o llama-swap ./cmd
+./llama-swap --config /home/toxic/sovereign/config/llama-swap.yaml
+```
+
+<details>
+<summary>
+more examples
+</summary>
+
+```shell
+# pull latest images per platform
+docker pull ghcr.io/mostlygeek/llama-swap:cpu
+docker pull ghcr.io/mostlygeek/llama-swap:cuda
+docker pull ghcr.io/mostlygeek/llama-swap:vulkan
+docker pull ghcr.io/mostlygeek/llama-swap:intel
+docker pull ghcr.io/mostlygeek/llama-swap:musa
+
+# tagged llama-swap, platform and llama-server version images
+docker pull ghcr.io/mostlygeek/llama-swap:v166-cuda-b6795
+
+# non-root cuda
+docker pull ghcr.io/mostlygeek/llama-swap:cuda-non-root
+
+```
+
+</details>
+
+### Homebrew Install (macOS/Linux)
+
+```shell
+brew tap mostlygeek/llama-swap
+brew install llama-swap
+llama-swap --config path/to/config.yaml --listen localhost:8080
+```
+
+### MacPorts (macOS)
+
+> [!NOTE]
+> Maintained by MacPorts community - [llama-swap port](https://ports.macports.org/port/llama-swap). It is not an official part of llama-swap.
+
+```shell
+sudo port install llama-swap
+llama-swap --config path/to/config.yaml --listen localhost:8080
+```
+
+### WinGet Install (Windows)
+
+> [!NOTE]
+> WinGet is maintained by community contributor [Dvd-Znf](https://github.com/Dvd-Znf) ([#327](https://github.com/mostlygeek/llama-swap/issues/327)). It is not an official part of llama-swap.
+
+```shell
+# install
+C:\> winget install llama-swap
+
+# upgrade
+C:\> winget upgrade llama-swap
+```
+
+### Pre-built Binaries
+
+Binaries are available on the [release](https://github.com/mostlygeek/llama-swap/releases) page for Linux, Mac, Windows and FreeBSD.
+
+### Building from source
+
+1. Building requires Go and Node.js (for UI).
+1. `git clone https://github.com/mostlygeek/llama-swap.git`
+1. `make clean all`
+1. look in the `build/` subdirectory for the llama-swap binary
+
+## Configuration
+
+```yaml
+# minimum viable config.yaml
+
+models:
+  model1:
+    cmd: llama-server --port ${PORT} --model /path/to/model.gguf
+```
+
+That's all you need to get started:
+
+1. `models` - holds all model configurations
+2. `model1` - the ID used in API calls
+3. `cmd` - the command to run to start the server.
+4. `${PORT}` - an automatically assigned port number
+
+Almost all configuration settings are optional and can be added one step at a time:
+
+- Advanced features
+  - `matrix` to run concurrent models with a custom swap logic DSL
+  - `hooks` to run things on startup
+  - `macros` reusable snippets
+- Model customization
+  - `ttl` to automatically unload models
+  - `unloadTimeout` to tune graceful unloads (manual, API and `ttl` expiry)
+  - `aliases` to use familiar model names (e.g., "gpt-4o-mini")
+  - `env` to pass custom environment variables to inference servers
+  - `cmdStop` gracefully stop Docker/Podman containers
+  - `useModelName` to override model names sent to upstream servers
+  - `${PORT}` automatic port variables for dynamic port assignment
+  - `filters` rewrite parts of requests before sending to the upstream server
+
+See the [configuration guide](docs/kb/guides/configuration/configuration-overview.md) for an overview, and
+the [knowledge base](docs/kb/) for focused guides on the features people ask about
+most.
+
+You can also just ask. The Playground's **Docs** tab is an agent that calls
+llama-swap's own documentation tools and answers questions about your
+configuration using the real text of `config.example.yaml` and the knowledge
+base, running entirely on a local model. Pick a tool-capable model in
+**Playground → Docs** and ask away — see
+[Setting up tool calling](docs/kb/tutorials/tool-calling-setup.md) if the model
+answers without calling anything.
+
+Those same tools are served as an MCP endpoint at `/api/mcp`, so any MCP client
+can ask about your configuration too. See
+[Connecting an MCP client](docs/kb/guides/api-integration/mcp-endpoint.md).
+
+## How does llama-swap work?
+
+When a request is made to an OpenAI compatible endpoint, llama-swap will extract the `model` value and load the appropriate server configuration to serve it. If the wrong upstream server is running, it will be replaced with the correct one. This is where the "swap" part comes in. The upstream server is automatically swapped to handle the request correctly.
+
+In the most basic configuration llama-swap handles one model at a time. For more advanced use cases, using a `matrix` allows multiple models to be loaded at the same time. You have complete control over how your system resources are used.
+
+## Reverse Proxy Configuration (nginx)
+
+If you deploy llama-swap behind nginx, disable response buffering for streaming endpoints. By default, nginx buffers responses which breaks Server‑Sent Events (SSE) and streaming chat completion. ([#236](https://github.com/mostlygeek/llama-swap/issues/236))
+
+Recommended nginx configuration snippets:
+
+```nginx
+# SSE for UI events/logs
+location /api/events {
+    proxy_pass http://your-llama-swap-backend;
+    proxy_buffering off;
+    proxy_cache off;
+}
+
+# Streaming chat completions (stream=true)
+location /v1/chat/completions {
+    proxy_pass http://your-llama-swap-backend;
+    proxy_buffering off;
+    proxy_cache off;
+}
+```
+
+As a safeguard, llama-swap also sets `X-Accel-Buffering: no` on SSE responses. However, explicitly disabling `proxy_buffering` at your reverse proxy is still recommended for reliable streaming behavior.
+
+## Monitoring Logs on the CLI
+
+```sh
+# sends up to the last 10KB of logs
+$ curl http://host/logs
+
+# streams combined logs
+curl -Ns http://host/logs/stream
+
+# stream llama-swap's proxy status logs
+curl -Ns http://host/logs/stream/proxy
+
+# stream logs from upstream processes that llama-swap loads
+curl -Ns http://host/logs/stream/upstream
+
+# stream logs only from a specific model
+curl -Ns http://host/logs/stream/{model_id}
+
+# stream and filter logs with linux pipes
+curl -Ns http://host/logs/stream | grep 'eval time'
+
+# appending ?no-history will disable sending buffered history first
+curl -Ns 'http://host/logs/stream?no-history'
+```
+
+## Do I need to use llama.cpp's server (llama-server)?
+
+Any OpenAI compatible server would work. llama-swap was originally designed for llama-server and it is the best supported.
+
+For Python based inference servers like vllm or tabbyAPI it is recommended to run them via podman or docker. This provides clean environment isolation as well as responding correctly to `SIGTERM` signals for proper shutdown.
+
+
+---
+
+## AstMatrix V2 — Production-Grade Cloud Provider Router
+
+AstMatrix provides intelligent routing to cloud LLM providers with production-grade reliability.
+
+### Features
+
+- **8 Routing Strategies**: hybrid, ast_race, sticky_affinity, weighted_elo, least_latency, round_robin, free, circuit_chain
+- **Circuit Breakers**: Closed→Open→Half-Open with automatic probe recovery
+- **Health Probes**: Background 5s checks every 30s
+- **Request Coalescing**: Deduplicates identical concurrent requests
+- **Streaming SSE**: Proper flush every 32KB for real-time responses
+- **Retry with Backoff**: 3 attempts per provider with exponential backoff
+- **Rate Limiting**: Token bucket per provider (60/min paid, 10/min free)
+- **Latency Tracking**: Exponential moving average per provider
+- **Sticky Sessions**: Session affinity via Authorization header
+- **Model Mapping**: Map local model IDs to provider-specific IDs
+
+### Built-in Providers (13)
+
+| Provider | Base URL | Free Tier | Models |
+|----------|----------|-----------|--------|
+| llama-swap | http://127.0.0.1:25100/v1 | ✓ | local-fast, local-quality, local-longctx |
+| openrouter | https://openrouter.ai/api/v1 | | openrouter/auto |
+| nvidia | https://integrate.api.nvidia.com/v1 | ✓ | llama-3.1-nemotron-70b |
+| groq | https://api.groq.com/openai/v1 | ✓ | llama-3.1-70b-versatile |
+| together | https://api.together.xyz/v1 | | llama-3.1-70b |
+| cerebras | https://api.cerebras.ai/v1 | ✓ | llama-3.1-70b |
+| fireworks | https://api.fireworks.ai/inference/v1 | | llama-3.1-70b |
+| hyperbolic | https://api.hyperbolic.xyz/v1 | ✓ | llama-3.1-70b |
+| github | https://models.inference.ai.azure.com | ✓ | Phi-4, gpt-4o-mini |
+| mistral | https://api.mistral.ai/v1 | | mistral-large-2 |
+| openai | https://api.openai.com/v1 | | gpt-4o, gpt-4o-mini, o1-preview |
+| perplexity | https://api.perplexity.ai | | sonar |
+| siliconflow | https://api.siliconflow.cn/v1 | ✓ | deepseek-v2 |
+
+### Configuration
+
+```yaml
+astMatrix:
+  enabled: true
+  strategy: hybrid
+  astStrategy: ast_race
+  requestTimeout: 95
+  maxRetries: 3
+  healthProbeInterval: 30
+  enableCoalescing: true
+  providers:
+    openrouter:
+      baseUrl: https://openrouter.ai/api/v1
+      keyEnv: OPENROUTER_API_KEY
+      models: [openrouter/auto]
+    groq:
+      baseUrl: https://api.groq.com/openai/v1
+      keyEnv: GROQ_API_KEY
+      freeTier: true
+      models: [groq/llama-3.1-70b-versatile]
+```
+
+### Status Endpoint
+
+```bash
+curl http://localhost:25100/astmatrix/status
+curl http://localhost:25100/astmatrix/metrics
+```
+
+### Architecture
+
+| File | Purpose |
+|------|---------|
+| `config.go` | YAML configuration structs |
+| `circuit.go` | Circuit breaker with half-open support |
+| `coalescer.go` | Request deduplication |
+| `metrics.go` | Latency histograms, error rates |
+| `providers.go` | Provider registry (13 built-in) |
+| `healthdb.go` | SQLite health DB + sticky sessions |
+| `ratelimit.go` | Token bucket rate limiter |
+| `router.go` | Main HTTP handler (8 strategies) |
+| `matrix.go` | Coordinator wrapper |
+| `ui.go` | Status/metrics HTTP endpoints |

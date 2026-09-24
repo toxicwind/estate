@@ -32,13 +32,14 @@
                 "pattern": "^[a-zA-Z0-9_-]+$",
                 "not": {
                     "enum": [
+                        "PID",
                         "PORT",
                         "MODEL_ID"
                     ]
                 }
             },
             "default": {},
-            "description": "A dictionary of string substitutions. Macros are reusable snippets used in model cmd, cmdStop, proxy, checkEndpoint, filters.stripParams. Macro names must be <64 chars, match ^[a-zA-Z0-9_-]+$, and not be PORT or MODEL_ID. Values can be string, number, or boolean. Macros can reference other macros defined before them."
+            "description": "A dictionary of string substitutions. Global macros can be used in any configuration value; model macros are scoped to their model. Macro names must be <64 chars, match ^[a-zA-Z0-9_-]+$, and not be PID, PORT, or MODEL_ID. Values can be string, number, or boolean. Macros can reference other macros defined before them."
         },
         "timeouts": {
             "type": "object",
@@ -320,7 +321,7 @@
                     "pins": {
                         "type": "object",
                         "minProperties": 1,
-                        "description": "Model IDs to rewrite while this profile is active. An empty string or null disables the model ID.",
+                        "description": "Model IDs to rewrite while this profile is active. Targets may be concrete models, aliases, peer models, or selector IDs. An empty string or null disables the model ID.",
                         "propertyNames": {
                             "type": "string",
                             "minLength": 1
@@ -335,6 +336,79 @@
                                 }
                             ]
                         }
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        "selectors": {
+            "type": "object",
+            "default": {},
+            "description": "Virtual model IDs that select a concrete target for each request. Selectors run after profiles and are not supported on /upstream paths.",
+            "propertyNames": {
+                "type": "string",
+                "minLength": 1
+            },
+            "additionalProperties": {
+                "type": "object",
+                "required": [
+                    "strategy",
+                    "targets"
+                ],
+                "properties": {
+                    "strategy": {
+                        "type": "string",
+                        "enum": [
+                            "warm",
+                            "pin",
+                            "spillover"
+                        ],
+                        "description": "How a target is selected for each request."
+                    },
+                    "targets": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "description": "Ordered target model IDs or aliases. Selector IDs cannot be targets."
+                    },
+                    "settings": {
+                        "type": "object",
+                        "properties": {
+                            "spillover": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "default": 1,
+                                "description": "Requests reserved per active target before spilling over to the next target."
+                            }
+                        },
+                        "additionalProperties": false,
+                        "default": {}
+                    },
+                    "name": {
+                        "type": "string",
+                        "default": "",
+                        "maxLength": 128,
+                        "description": "Display name used in the /v1/models response."
+                    },
+                    "description": {
+                        "type": "string",
+                        "default": "",
+                        "maxLength": 1024,
+                        "description": "Description used in the /v1/models response."
+                    },
+                    "unlisted": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Hide this selector from /v1/models while keeping it requestable."
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "default": {},
+                        "description": "Arbitrary selector metadata included in /v1/models."
                     }
                 },
                 "additionalProperties": false
@@ -474,6 +548,19 @@
                     "timeouts": {
                         "$ref": "#/definitions/timeouts"
                     },
+                    "compat": {
+                        "type": "object",
+                        "properties": {
+                            "ignoreWebsockets": {
+                                "type": "boolean",
+                                "default": false,
+                                "description": "Do not let websocket connections load a stopped model or count toward concurrency, TTL activity, swap decisions, selector load, or in-flight activity."
+                            }
+                        },
+                        "additionalProperties": false,
+                        "default": {},
+                        "description": "Compatibility settings for upstream applications."
+                    },
                     "capabilities": {
                         "type": "object",
                         "properties": {
@@ -487,7 +574,8 @@
                                     "enum": [
                                         "text",
                                         "audio",
-                                        "image"
+                                        "image",
+                                        "video"
                                     ]
                                 },
                                 "description": "List of input modalities understood by the model."
@@ -502,7 +590,8 @@
                                     "enum": [
                                         "text",
                                         "audio",
-                                        "image"
+                                        "image",
+                                        "video"
                                     ]
                                 },
                                 "description": "List of output modalities generated by the model."
@@ -549,10 +638,15 @@
                             },
                             "default": [],
                             "description": "List of model IDs to load on startup. Model names must match keys in models. When preloading multiple models, define a group to prevent swapping."
+                        },
+                        "profile": {
+                            "type": "string",
+                            "default": "",
+                            "description": "Profile to activate on startup and after a configuration reload. Must name a key under profiles. An empty value starts with no profile active."
                         }
                     },
                     "additionalProperties": false,
-                    "description": "Actions to perform on startup. Only supported action is preload."
+                    "description": "Actions to perform on startup."
                 }
             },
             "additionalProperties": false,
@@ -661,80 +755,7 @@
                         },
                         "additionalProperties": false,
                         "description": "Timeout settings for proxy connections to this peer."
-                    },
-                    "health": {
-                        "type": "object",
-                        "properties": {
-                            "enabled": {
-                                "type": "boolean",
-                                "default": true,
-                                "description": "Enable per-peer self-healing for this peer (default true). Set false to opt a peer out explicitly."
-                            },
-                            "ewma_alpha": {
-                                "type": "number",
-                                "exclusiveMinimum": 0,
-                                "maximum": 1,
-                                "default": 0.2,
-                                "description": "EWMA smoothing factor for the per-peer latency signal."
-                            },
-                            "failure_threshold": {
-                                "type": "number",
-                                "minimum": 0,
-                                "default": 8,
-                                "description": "Weighted failure score that opens the circuit and ejects the peer from rotation."
-                            },
-                            "recovery_credit": {
-                                "type": "number",
-                                "minimum": 0,
-                                "default": 1,
-                                "description": "Score subtracted per successful response (floor zero); lets a flapping peer bleed its score back down."
-                            },
-                            "success_threshold": {
-                                "type": "integer",
-                                "minimum": 1,
-                                "default": 1,
-                                "description": "Consecutive successful half-open probes required to readmit the peer."
-                            },
-                            "cool_off_seconds": {
-                                "type": "number",
-                                "minimum": 0,
-                                "default": 30,
-                                "description": "Seconds an open circuit fails fast before the next real request is admitted as a single-flight half-open probe. Values <= 0 fall back to 30 (YAML cannot distinguish omitted from explicit 0)."
-                            },
-                            "degraded_latency_ms": {
-                                "type": "number",
-                                "minimum": 0,
-                                "default": 15000,
-                                "description": "EWMA latency at or above which the peer is flagged degraded (advisory; still serves)."
-                            },
-                            "degraded_error_rate": {
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 1,
-                                "default": 0.5,
-                                "description": "Rolling 32-outcome error rate at or above which the peer is flagged degraded (advisory; still serves)."
-                            },
-                            "weights": {
-                                "type": "object",
-                                "additionalProperties": {
-                                    "type": "number"
-                                },
-                                "default": {
-                                    "transport": 2.0,
-                                    "5xx": 1.5,
-                                    "404-dead-id": 3.0,
-                                    "402-not-entitled": 2.0,
-                                    "403-refused": 1.5,
-                                    "429-throttled": 0.5,
-                                    "200-empty": 1.5
-                                },
-                                "description": "Per-outcome-class failure weights added to the peer's score. Classes: transport, 5xx, 404-dead-id, 402-not-entitled, 403-refused, 429-throttled, 200-empty (the reliability taxonomy). success/cancelled are always neutral."
-                            }
-                        },
-                        "additionalProperties": false,
-                        "description": "Per-peer self-healing knobs (optional). States: healthy -> degraded (advisory) -> circuit-open (ejected, 503 fail-fast) -> half-open (single real-traffic probe) -> healthy. No polling: the probe is the next real request after cool_off_seconds. Observe at GET /peer-health."
                     }
-
                 }
             },
             "default": {},
@@ -753,39 +774,9 @@
                         ".*\\.(js|json|css|png|gif|jpg|jpeg|ico|txt)$"
                     ],
                     "description": "List of RE2 compatible regular expressions. Any request to a path matching any of the regular expressions will be ignored and not trigger a swap. When not specified, defaults to a pattern matching common static-asset suffixes (.js, .json, .css, .png, .gif, .jpg, .jpeg, .ico, .txt)."
-                },
-                "normalize_sse": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Fork addition: when true, normalizes all outgoing SSE streaming chunks to canonical OpenAI chat.completion.chunk format. Can be overridden per-model. Implemented in the fork's config loader; the shipped binary contains this key."
                 }
             },
             "additionalProperties": false,
-            "default": {}
-        },
-        "flock": {
-            "type": "object",
-            "description": "Fork addition: flock delegation. Routes cloud models through the flock daemon (replaces the retired astMatrix key; the shipped binary ignores astMatrix with a warning).",
-            "properties": {
-                "enabled": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Enable flock delegation."
-                },
-                "baseUrl": {
-                    "type": "string",
-                    "description": "Flock daemon base URL, e.g. http://127.0.0.1:8000."
-                },
-                "keyEnv": {
-                    "type": "string",
-                    "description": "Environment variable holding the flock API key."
-                },
-                "modelMap": {
-                    "type": "object",
-                    "description": "Map of local model IDs to flock upstream model IDs."
-                }
-            },
-            "additionalProperties": true,
             "default": {}
         },
         "routing": {

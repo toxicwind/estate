@@ -160,6 +160,20 @@ func TestServer_StripVersionPrefix(t *testing.T) {
 	}
 }
 
+func TestServer_StripAudioAPIPrefix(t *testing.T) {
+	r := httptest.NewRequest(http.MethodGet, "/audioapi/v1/tasks/run", nil)
+	stripAudioAPIPrefix(r)
+	if r.URL.Path != "/v1/tasks/run" {
+		t.Errorf("path = %q, want /v1/tasks/run", r.URL.Path)
+	}
+
+	r2 := httptest.NewRequest(http.MethodGet, "/v1/tasks/run", nil)
+	stripAudioAPIPrefix(r2)
+	if r2.URL.Path != "/v1/tasks/run" {
+		t.Errorf("path = %q, want unchanged", r2.URL.Path)
+	}
+}
+
 func TestServer_CloseStreams(t *testing.T) {
 	s := newTestServer(newStubRouter(nil, ""), newStubRouter(nil, ""))
 	s.CloseStreams()
@@ -169,6 +183,20 @@ func TestServer_CloseStreams(t *testing.T) {
 		t.Error("CloseStreams did not cancel shutdown context")
 	}
 	s.CloseStreams() // idempotent
+}
+
+func TestServer_HandleUIAndFavicon(t *testing.T) {
+	s := newTestServer(newStubRouter(nil, ""), newStubRouter(nil, ""))
+
+	for _, path := range []string{"/ui/", "/favicon.ico"} {
+		w := httptest.NewRecorder()
+		s.ServeHTTP(w, httptest.NewRequest(http.MethodGet, path, nil))
+		// Tests build without the `embed_ui` tag, so uiFS is empty and these
+		// resolve to 404 — the handlers still execute end to end.
+		if w.Code != http.StatusOK && w.Code != http.StatusNotFound {
+			t.Errorf("%s: status = %d", path, w.Code)
+		}
+	}
 }
 
 func TestServer_HandleAPIUnloadAll(t *testing.T) {

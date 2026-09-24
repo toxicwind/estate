@@ -16,16 +16,8 @@ type MatrixConfig struct {
 	EvictCosts map[string]int    `yaml:"evict_costs"`
 	Sets       OrderedSets       `yaml:"sets"`
 
-	// ExpandedSets is populated by ValidateMatrix: one entry per set with
-	// fully-resolved model names. Consumed by the matrix router's solver.
-	ExpandedSets []ExpandedSet `yaml:"-"`
-
 	program *matrixdsl.Program
 }
-
-// ExpandedSet is a single named matrix set with its DSL expression and the
-// fully-resolved model names it contains.
-type ExpandedSet = matrixdsl.ExpandedSet
 
 // SetEntry is a single named set with its DSL expression.
 type SetEntry struct {
@@ -108,7 +100,6 @@ func ValidateMatrix(matrix *MatrixConfig, models map[string]ModelConfig) error {
 		return err
 	}
 	matrix.program = program
-	matrix.ExpandedSets = program.ExpandedSets()
 	return nil
 }
 
