@@ -20,7 +20,7 @@ if [[ -f /home/toxic/.secrets ]]; then
   set +a
 fi
 PORT="$HERD_PORT"
-BIN="$HOME/projects/sovereign-projects/sovereign-swap/build/llama-swap"
+BIN="$SOV/projects/herd/llama-swap"
 [[ -x "$BIN" ]] || { echo "herd (llama-swap) bin not found at $BIN" >&2; exit 1; }
 CONF="$SOV/config/herd.yaml"
 [[ -f "$CONF" ]] || CONF="$SOV/config/llama-swap.yaml"
