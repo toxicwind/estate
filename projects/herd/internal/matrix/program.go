@@ -31,35 +31,6 @@ type Program struct {
 	words     int
 }
 
-// ExpandedSet describes one compiled matrix set: its name, the original DSL
-// expression, and the sorted, fully-resolved model names its expression can
-// mention. It is the precomputed input for the matrix swap-decision solver.
-type ExpandedSet struct {
-	SetName string
-	DSL     string
-	Models  []string
-}
-
-// ExpandedSets returns one entry per compiled set, in definition order.
-func (p *Program) ExpandedSets() []ExpandedSet {
-	bitToModel := make([]string, len(p.modelBits))
-	for name, bit := range p.modelBits {
-		bitToModel[bit] = name
-	}
-	out := make([]ExpandedSet, 0, len(p.sets))
-	for _, s := range p.sets {
-		var models []string
-		for bit, name := range bitToModel {
-			if s.support.has(bit) {
-				models = append(models, name)
-			}
-		}
-		sort.Strings(models)
-		out = append(out, ExpandedSet{SetName: s.name, DSL: s.dsl, Models: models})
-	}
-	return out
-}
-
 // Decision describes the selected matrix set and the running models it evicts.
 type Decision struct {
 	Evict     []string

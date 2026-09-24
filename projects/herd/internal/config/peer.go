@@ -19,10 +19,6 @@ type PeerConfig struct {
 
 	// Timeout settings for proxy connections
 	Timeouts TimeoutsConfig `yaml:"timeouts"`
-
-	// Health holds the per-peer self-healing knobs (optional `health:` block).
-	// Defaults apply when unset: health is enabled with conservative thresholds.
-	Health HealthConfig `yaml:"health"`
 }
 
 // PeerModelFQN returns the fully qualified routing name for a peer model.
