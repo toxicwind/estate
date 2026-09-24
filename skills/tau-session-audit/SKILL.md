@@ -32,7 +32,7 @@ bun run /home/toxic/sovereign/skills/tau-session-audit/helper/audit.ts --verbose
 
 ## Audit Checks
 
-The skill scans all `*.jsonl` files under `~/.tau/agent/sessions/` and reports:
+The skill scans all `*.jsonl` files under `~/.tau/sessions/` and reports:
 
 ### 1. User Intent Reconstruction
 - Analyzes session titles, model changes, and event sequences
@@ -78,5 +78,5 @@ tau --skill tau-session-audit --check intent --check completed --check plan
 ```
 
 ## Files Audited
-- `~/.tau/agent/sessions/**/*.jsonl` — all session JSONL files
-- `~/.tau/agent/sessions/-*/**/__advisor.jsonl` — advisor sub-sessions
+- `~/.tau/sessions/**/*.jsonl` — all session JSONL files
+- `~/.tau/sessions/-*/**/__advisor.jsonl` — advisor sub-sessions
