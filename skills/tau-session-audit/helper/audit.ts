@@ -1,46 +1,39 @@
 #!/usr/bin/env bun
-// tau-session-audit — maximal integrated: audit + ML + intent + completion + plan
-// Usage: bun run helper/audit.ts [--check all|intent|completed|plan|anomalies|unknown-types|near-empty|compaction|credential-pin|ttsr-injection|branch-summary|session-init|mode-change|service-tier-change|empty|cluster|anomaly|model|cwd|completion-rate] [--verbose]
+// tau-session-audit — maximal integrated: audit + ML + patterns + report
+// Usage: bun run helper/audit.ts [--report] [--check all|intent|completed|plan|patterns|todo-phantom|anomalies|unknown-types|near-empty|model|cwd] [--verbose]
 
-import { readdirSync, readFileSync, existsSync } from "fs";
-import { join, basename, dirname } from "path";
+import { readdirSync, readFileSync, existsSync, writeFileSync } from "fs";
+import { join } from "path";
+import { runAllPatterns } from "../patterns/index";
+import type { PatternMatch, SessionEvent } from "../patterns/types";
+import { generateMarkdownReport, type AuditedSession } from "./report";
 
 const SESSIONS_DIR = join(process.env.HOME || "/home/toxic", ".tau", "agent", "sessions");
 
-interface Session {
-  file: string;
-  events: number;
-  types: Map<string, number>;
-  title: string;
-  model: string;
-  cwd: string;
-  intent: string;
-  completed: boolean;
-  anomalyScore: number;
-}
+export interface Session extends AuditedSession {}
 
-function extractTitle(events: any[]): string {
+function extractTitle(events: SessionEvent[]): string {
   for (const e of events) {
-    if (e.type === "session" && e.title) return e.title;
+    if (e.type === "session" && typeof e.title === "string") return e.title;
   }
   return "";
 }
 
-function extractModel(events: any[]): string {
+function extractModel(events: SessionEvent[]): string {
   for (const e of events) {
-    if (e.type === "model_change" && e.model) return e.model;
+    if (e.type === "model_change" && typeof e.model === "string") return e.model;
   }
   return "";
 }
 
-function extractCwd(events: any[]): string {
+function extractCwd(events: SessionEvent[]): string {
   for (const e of events) {
-    if (e.type === "session" && e.cwd) return e.cwd;
+    if (e.type === "session" && typeof e.cwd === "string") return e.cwd;
   }
   return "";
 }
 
-function inferIntent(title: string, model: string, cwd: string): string {
+export function inferIntent(title: string, model: string, cwd: string): string {
   const t = title.toLowerCase();
   const m = model.toLowerCase();
   const c = cwd.toLowerCase();
@@ -78,29 +71,35 @@ function inferIntent(title: string, model: string, cwd: string): string {
   return "General agent work";
 }
 
-function inferCompleted(types: Map<string, number>, events: number): boolean {
+export function inferCompleted(types: Map<string, number>, events: number, patterns: PatternMatch[]): boolean {
+  // If there are critical phantom todo completions, do not mark completed
+  const hasCriticalPhantom = patterns.some((p) => p.patternId === "CONSECUTIVE_TODO_FLURRY" && p.severity === "critical");
+  if (hasCriticalPhantom) return false;
+
   if ((types.get("session_init") || 0) > 0 && events > 20) return true;
-  if ((types.get("compaction") || 0) > 0) return true;
-  if ((types.get("title_change") || 0) > 0) return true;
-  if ((types.get("mode_change") || 0) > 0 && events > 10) return true;
-  if ((types.get("service_tier_change") || 0) > 0 && events > 20) return true;
+  if ((types.get("compaction") || 0) > 0 && events > 50) return true;
+  if ((types.get("title_change") || 0) > 0 && events > 30) return true;
+  if ((types.get("mode_change") || 0) > 0 && events > 20) return true;
   if (events < 5) return false;
-  if (events > 200) return true;
   return false;
 }
 
-function computeAnomalyScore(s: Session): number {
+export function computeAnomalyScore(eventsCount: number, types: Map<string, number>, patterns: PatternMatch[]): number {
   let score = 0;
-  score += (s.types.get("?") || 0) * 10;
-  if (s.events < 5) score += 5;
-  score += (s.types.get("credential_pin") || 0) * 3;
-  score += (s.types.get("ttsr_injection") || 0) * 3;
-  score += (s.types.get("branch_summary") || 0) * 2;
-  if (s.events > 500 && (s.types.get("mode_change") || 0) > 50) score += 5;
+  score += (types.get("?") || 0) * 10;
+  if (eventsCount < 5) score += 5;
+  score += (types.get("credential_pin") || 0) * 3;
+  score += (types.get("ttsr_injection") || 0) * 3;
+  score += (types.get("branch_summary") || 0) * 2;
+  for (const p of patterns) {
+    if (p.severity === "critical") score += 15;
+    else if (p.severity === "high") score += 8;
+    else if (p.severity === "medium") score += 3;
+  }
   return score;
 }
 
-function loadSessions(): Session[] {
+export function loadSessions(): Session[] {
   const sessions: Session[] = [];
   function walk(dir: string) {
     if (!existsSync(dir)) return;
@@ -110,8 +109,8 @@ function loadSessions(): Session[] {
       if (entry.isDirectory()) { walk(full); continue; }
       if (!entry.name.endsWith(".jsonl")) continue;
       const content = readFileSync(full, "utf-8");
-      const lines = content.split("\n").filter((l: string) => l.trim());
-      const events: any[] = [];
+      const lines = content.split("\n").filter((l) => l.trim());
+      const events: SessionEvent[] = [];
       for (const line of lines) {
         try { events.push(JSON.parse(line)); } catch { /* skip */ }
       }
@@ -124,9 +123,33 @@ function loadSessions(): Session[] {
       const model = extractModel(events);
       const cwd = extractCwd(events);
       const intent = inferIntent(title, model, cwd);
-      const completed = inferCompleted(types, events);
-      const anomalyScore = computeAnomalyScore({ events, types, file: full, intent, completed, model, cwd, title, sessionId: "" });
-      sessions.push({ file: full.replace(SESSIONS_DIR, "").replace(/^\//, ""), events: events.length, types, title, model, cwd, intent, completed, anomalyScore });
+
+      const patterns = runAllPatterns(events, { file: full, model, cwd, title });
+      let phantomTodoCount = 0;
+      for (const p of patterns) {
+        if (p.patternId === "CONSECUTIVE_TODO_FLURRY" && typeof p.details.consecutiveCount === "number") {
+          phantomTodoCount += p.details.consecutiveCount;
+        } else if (p.patternId === "MESSAGE_NO_TOOLS_THEN_TODO_DONE") {
+          phantomTodoCount += 1;
+        }
+      }
+
+      const completed = inferCompleted(types, events.length, patterns);
+      const anomalyScore = computeAnomalyScore(events.length, types, patterns);
+
+      sessions.push({
+        file: full.replace(SESSIONS_DIR, "").replace(/^\//, ""),
+        events: events.length,
+        types,
+        title,
+        model,
+        cwd,
+        intent,
+        completed,
+        anomalyScore,
+        patterns,
+        phantomTodoCount,
+      });
     }
   }
   walk(SESSIONS_DIR);
@@ -135,65 +158,56 @@ function loadSessions(): Session[] {
 
 function fmt(n: number): string { return n.toLocaleString(); }
 
-// K-means clustering
-function clusterSessions(sessions: Session[], k: number = 3): Map<number, Session[]> {
-  const features = sessions.map((s) => s.events);
-  const min = Math.min(...features);
-  const range = Math.max(...features) - min || 1;
-  const centroids: number[] = [];
-  for (let i = 0; i < k; i++) centroids.push(min + (range * i) / (k - 1));
-  let clusters: Map<number, Session[]> = new Map();
-  for (let iter = 0; iter < 20; iter++) {
-    clusters = new Map();
-    for (let i = 0; i < k; i++) clusters.set(i, []);
-    for (const s of sessions) {
-      let nearest = 0, minDist = Math.abs(s.events - centroids[0]);
-      for (let c = 1; c < k; c++) { const d = Math.abs(s.events - centroids[c]); if (d < minDist) { minDist = d; nearest = c; } }
-      clusters.get(nearest)!.push(s);
-    }
-    for (let c = 0; c < k; c++) { const cl = clusters.get(c)!; if (cl.length > 0) centroids[c] = cl.reduce((sum: number, s: Session) => sum + s.events, 0) / cl.length; }
-  }
-  return clusters;
-}
-
 function main() {
   const args = process.argv.slice(2);
   const checks = new Set<string>();
   let verbose = false;
+  let reportMode = false;
+  let saveReportPath = "";
+
   for (const arg of args) {
     if (arg === "--verbose" || arg === "-v") verbose = true;
+    else if (arg === "--report" || arg === "-r") reportMode = true;
+    else if (arg.startsWith("--out=")) saveReportPath = arg.slice(6);
     else if (arg.startsWith("--check=")) checks.add(arg.slice(8));
-    else if (arg === "--check" || arg === "-c") { const idx = args.indexOf(arg); if (idx + 1 < args.length) checks.add(args[idx + 1]); }
+    else if (arg === "--check" || arg === "-c") {
+      const idx = args.indexOf(arg);
+      if (idx + 1 < args.length) checks.add(args[idx + 1]);
+    }
     else if (arg === "--all" || arg === "-a") checks.add("all");
   }
-  if (checks.size === 0) checks.add("all");
+
+  if (checks.size === 0 && !reportMode) {
+    checks.add("all");
+  }
   const runAll = checks.has("all");
   const run = (name: string) => runAll || checks.has(name);
 
   const sessions = loadSessions();
 
-  // Global type distribution
-  const allTypes = new Map<string, number>();
-  for (const s of sessions) for (const [t, c] of s.types) allTypes.set(t, (allTypes.get(t) || 0) + c);
-
-  // Anomaly counts
-  const anomalyCounts = new Map<string, number>();
-  for (const s of sessions) for (const a of s.anomalies || []) anomalyCounts.set(a, (anomalyCounts.get(a) || 0) + 1);
-
-  // Intent counts
-  const intentCounts = new Map<string, number>();
-  for (const s of sessions) intentCounts.set(s.intent, (intentCounts.get(s.intent) || 0) + 1);
+  // If reportMode or requested, generate and print/save markdown report
+  if (reportMode) {
+    const reportMd = generateMarkdownReport(sessions, { verbose });
+    if (saveReportPath) {
+      writeFileSync(saveReportPath, reportMd, "utf-8");
+      console.log(`Report written to ${saveReportPath}`);
+    } else {
+      console.log(reportMd);
+    }
+    return;
+  }
 
   const completedCount = sessions.filter((s) => s.completed).length;
   const incompleteCount = sessions.filter((s) => !s.completed).length;
   let hasCritical = false;
 
   console.log("=".repeat(80));
-  console.log("TAU SESSION AUDIT — MAXIMAL INTEGRATED");
+  console.log("TAU SESSION AUDIT — REPORT FORWARD & PATTERNS INTEGRATED");
   console.log("=".repeat(80));
   console.log();
-  // DATAFRAME OUTPUT — TSV for LLM consumption
-  console.log("file\tevents\ttitle\tmodel\tcwd\tintent\tcompleted\tanomalyScore\tsession_init\tmode_change\tservice_tier_change\tcompaction\tcredential_pin\tttsr_injection\tbranch_summary\tmessage\tcustom\tcustom_message\tthinking_level_change\ttitle_change\tunknown_types");
+
+  // DATAFRAME OUTPUT — TSV
+  console.log("file\tevents\ttitle\tmodel\tcwd\tintent\tcompleted\tanomalyScore\tphantom_todos\tpattern_matches\tunknown_types");
   for (const s of sessions) {
     const line = [
       s.file,
@@ -204,18 +218,8 @@ function main() {
       s.intent,
       s.completed,
       s.anomalyScore.toFixed(1),
-      s.types.get("session_init") || 0,
-      s.types.get("mode_change") || 0,
-      s.types.get("service_tier_change") || 0,
-      s.types.get("compaction") || 0,
-      s.types.get("credential_pin") || 0,
-      s.types.get("ttsr_injection") || 0,
-      s.types.get("branch_summary") || 0,
-      s.types.get("message") || 0,
-      s.types.get("custom") || 0,
-      s.types.get("custom_message") || 0,
-      s.types.get("thinking_level_change") || 0,
-      s.types.get("title_change") || 0,
+      s.phantomTodoCount,
+      s.patterns.length,
       s.types.get("?") || 0,
     ].join("\t");
     console.log(line);
@@ -225,126 +229,31 @@ function main() {
   // SUMMARY STATS
   console.log("SUMMARY:");
   console.log(`total_files: ${fmt(sessions.length)}`);
-  console.log(`total_events: ${fmt(sessions.reduce((sum: number, s: Session) => sum + s.events, 0))}`);
+  console.log(`total_events: ${fmt(sessions.reduce((sum, s) => sum + s.events, 0))}`);
   console.log(`completed: ${completedCount}`);
   console.log(`incomplete: ${incompleteCount}`);
-  console.log(`avg_events: ${(sessions.reduce((sum: number, s: Session) => sum + s.events, 0) / sessions.length).toFixed(1)}`);
-  console.log(`max_events: ${sessions[0].events}`);
-  console.log(`min_events: ${sessions[sessions.length - 1].events}`);
+  console.log(`sessions_with_phantom_todos: ${sessions.filter((s) => s.phantomTodoCount > 0).length}`);
+  console.log(`total_pattern_detections: ${sessions.reduce((sum, s) => sum + s.patterns.length, 0)}`);
   console.log();
 
-  // INTENT BREAKDOWN
-  if (run("intent") || run("all")) {
-    console.log("INTENT BREAKDOWN:");
-    for (const [intent, count] of [...intentCounts.entries()].sort((a, b) => b[1] - a[1])) {
-      console.log(`  ${intent}: ${fmt(count)}`);
-    }
-    console.log();
-  }
-
-  // COMPLETION RATE
-  if (run("completion-rate") || run("all")) {
-    console.log("COMPLETION RATE BY INTENT:");
-    const stats = new Map<string, { total: number; completed: number }>();
+  // PATTERN CHECKS
+  if (run("patterns") || run("todo-phantom") || runAll) {
+    console.log("FIRST-CLASS PATTERN DETECTIONS:");
+    const patternSummary = new Map<string, number>();
     for (const s of sessions) {
-      const st = stats.get(s.intent) || { total: 0, completed: 0 };
-      st.total++; if (s.completed) st.completed++;
-      stats.set(s.intent, st);
-    }
-    for (const [intent, st] of [...stats.entries()].sort((a, b) => {
-      const rA = a[1].completed / a[1].total; const rB = b[1].completed / b[1].total; return rB - rA;
-    })) {
-      console.log(`  ${intent}: ${st.completed}/${st.total} (${((st.completed / st.total) * 100).toFixed(1)}%)`);
-    }
-    console.log();
-  }
-
-  // CLUSTERING
-  if (run("cluster") || run("all")) {
-    console.log("K-MEANS CLUSTERING (k=3):");
-    const clusters = clusterSessions(sessions, 3);
-    for (const [cid, cluster] of clusters) {
-      const avg = cluster.reduce((sum: number, s: Session) => sum + s.events, 0) / cluster.length;
-      console.log(`  Cluster ${cid}: ${cluster.length} sessions, avg ${fmt(Math.round(avg))} events`);
-      const intents = new Map<string, number>();
-      for (const s of cluster) intents.set(s.intent, (intents.get(s.intent) || 0) + 1);
-      for (const [intent, count] of [...intents.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3)) {
-        console.log(`    - ${intent}: ${count}`);
+      for (const p of s.patterns) {
+        patternSummary.set(p.name, (patternSummary.get(p.name) || 0) + 1);
       }
     }
-    console.log();
-  }
-
-  // MODEL DISTRIBUTION
-  if (run("model") || run("all")) {
-    console.log("MODEL DISTRIBUTION:");
-    const models = new Map<string, number>();
-    for (const s of sessions) { if (s.model) models.set(s.model, (models.get(s.model) || 0) + 1); }
-    for (const [model, count] of [...models.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10)) {
-      console.log(`  ${model}: ${count}`);
+    for (const [pname, count] of patternSummary.entries()) {
+      console.log(`  ${pname}: ${count} incident(s)`);
     }
     console.log();
-  }
 
-  // CWD ANALYSIS
-  if (run("cwd") || run("all")) {
-    console.log("WORKING DIRECTORY ANALYSIS:");
-    const cwds = new Map<string, number>();
-    for (const s of sessions) { if (s.cwd) cwds.set(s.cwd, (cwds.get(s.cwd) || 0) + 1); }
-    for (const [cwd, count] of [...cwds.entries()].sort((a, b) => b[1] - a[1])) {
-      console.log(`  ${cwd}: ${count} sessions`);
-    }
-    console.log();
-  }
-
-  // ANOMALY DETECTION
-  if (run("anomaly") || run("all")) {
-    console.log("ANOMALY DETECTION (top 10):");
-    for (const s of [...sessions].sort((a, b) => b.anomalyScore - a.anomalyScore).slice(0, 10)) {
-      console.log(`  score=${s.anomalyScore.toFixed(1)}  ${s.file} — ${s.intent}`);
-    }
-    console.log();
-  }
-
-  // PLAN GENERATION
-  if (run("plan") || run("all")) {
-    console.log("PLAN — NEXT STEPS:");
-    const incomplete = sessions.filter((s) => !s.completed);
-    if (incomplete.length > 0) {
-      console.log(`  1. Review ${incomplete.length} incomplete session(s):`);
-      for (const s of incomplete.slice(0, 5)) console.log(`     - ${s.file} (${s.intent})`);
-    }
-    const unknownTypeSessions = sessions.filter((s) => (s.types.get("?") || 0) > 0);
-    if (unknownTypeSessions.length > 0) {
-      console.log(`  2. Fix ${unknownTypeSessions.length} session(s) with unknown event types:`);
-      for (const s of unknownTypeSessions) console.log(`     - ${s.file}`);
-      hasCritical = true;
-    }
-    const largeIncomplete = incomplete.filter((s) => s.events > 100);
-    if (largeIncomplete.length > 0) {
-      console.log(`  3. Investigate ${largeIncomplete.length} large incomplete session(s):`);
-      for (const s of largeIncomplete) console.log(`     - ${s.file} (${fmt(s.events)} events, ${s.intent})`);
-    }
-    const credSessions = sessions.filter((s) => (s.types.get("credential_pin") || 0) > 0);
-    if (credSessions.length > 0) {
-      console.log(`  4. Verify ${credSessions.length} session(s) with credential_pin events:`);
-      for (const s of credSessions.slice(0, 3)) console.log(`     - ${s.file}`);
-    }
-    console.log();
-  }
-
-  // ANOMALY SUMMARY
-  if (run("anomalies") || run("all")) {
-    console.log("ANOMALY SUMMARY:");
-    for (const [a, c] of [...anomalyCounts.entries()].sort((a, b) => b[1] - a[1])) console.log(`  ${a}: ${fmt(c)} sessions`);
-    console.log();
-  }
-
-  // SESSIONS WITH ANOMALIES
-  if (run("anomalies") || run("all")) {
-    console.log("SESSIONS WITH ANOMALIES:");
-    for (const s of sessions) {
-      if (s.anomalies && s.anomalies.length > 0) console.log(`  ${s.file}: [${s.anomalies.join(", ")}] (${fmt(s.events)} events)`);
+    const topPhantom = sessions.filter((s) => s.phantomTodoCount > 0).slice(0, 10);
+    console.log("TOP SESSIONS WITH PHANTOM TODO COMPLETIONS:");
+    for (const s of topPhantom) {
+      console.log(`  ${s.file} (${s.model}): ${s.phantomTodoCount} phantom todos [Intent: ${s.intent}]`);
     }
     console.log();
   }
@@ -353,27 +262,16 @@ function main() {
   if (run("unknown-types") || runAll) {
     console.log("UNKNOWN EVENT TYPES (CRITICAL):");
     for (const s of sessions) {
-      if ((s.types.get("?") || 0) > 0) { console.log(`  ${s.file}: ${s.types.get("?")} unknown event(s)`); hasCritical = true; }
+      if ((s.types.get("?") || 0) > 0) {
+        console.log(`  ${s.file}: ${s.types.get("?")} unknown event(s)`);
+        hasCritical = true;
+      }
     }
     console.log();
   }
 
-  // NEAR-EMPTY
-  if (run("near-empty") || runCheck("empty") || runAll) {
-    console.log("NEAR-EMPTY SESSIONS (≤4 events):");
-    for (const s of sessions) { if (s.events <= 4) console.log(`  ${s.file}: ${fmt(s.events)} events`); }
-    console.log();
-  }
-
-  // TOP 10 LARGEST
-  if (run("anomalies") || run("all")) {
-    console.log("TOP 10 LARGEST SESSIONS:");
-    for (const s of sessions.slice(0, 10)) console.log(`  ${fmt(s.events).padStart(6)} events  ${s.file} — ${s.intent}`);
-    console.log();
-  }
-
   console.log("=".repeat(80));
-  console.log(`Audit complete: ${fmt(sessions.length)} files, ${fmt(sessions.reduce((sum: number, s: Session) => sum + s.events, 0))} events`);
+  console.log(`Audit complete: ${fmt(sessions.length)} files analyzed. Use --report for GitHub Markdown report.`);
   if (hasCritical) console.log("⚠ CRITICAL: Unknown event types found");
   process.exit(hasCritical ? 1 : 0);
 }
