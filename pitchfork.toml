@@ -153,7 +153,7 @@ auto = ["start"]
 [daemons.tau-code]
 port = 25145
 run = "exec bun run src/server.ts --port 25145" # 25145 == $TAU_CODE_PORT (config/ports.env SSOT); run line is literal, code default is 25145
-dir = "/home/toxic/projects/sovereign-projects/tau/engine/packages/metaharness"
+dir = "/home/toxic/sovereign/projects/tau/packages/metaharness"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25145/"
@@ -162,8 +162,8 @@ auto = ["start"]
 
 [daemons.kimi-code]
 port = 25126
-run = "exec /home/toxic/sovereign/bin/claim-port 25126 /home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126 --no-port-walk" # 25126 == $KIMI_CODE_PORT (SSOT); literal: ${} not expanded in run lines
-dir = "/home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code"
+run = "exec /home/toxic/sovereign/bin/claim-port 25126 /home/toxic/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126 --no-port-walk" # 25126 == $KIMI_CODE_PORT (SSOT); literal: ${} not expanded in run lines
+dir = "/home/toxic/kimi-code/apps/kimi-code"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25126/health"
