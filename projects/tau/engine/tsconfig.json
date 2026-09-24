@@ -1,7 +1,0 @@
-{
-  "extends": "./tsconfig.base.json",
-  "files": [],
-  "references": [
-    { "path": "packages/agent" },    { "path": "packages/ai" },    { "path": "packages/browser-relay" },    { "path": "packages/catalog" },    { "path": "packages/coding-agent" },    { "path": "packages/collab-web" },    { "path": "packages/metaharness" },    { "path": "packages/mnemopi" },    { "path": "packages/natives" },    { "path": "packages/omptype" },    { "path": "packages/snapcompact" },    { "path": "packages/stats" },    { "path": "packages/tui" },    { "path": "packages/typescript-edit-benchmark" },    { "path": "packages/utils" },    { "path": "packages/wire" }
-  ]
-}
