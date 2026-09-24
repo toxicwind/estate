@@ -903,3 +903,12 @@ ready_cmd = "curl -sf http://127.0.0.1:9223/json/version > /dev/null"
 boot_start = true
 env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000" }
 auto = ["start"]
+
+[daemons.sovereign-stream-broker]
+port = 25215
+run = "exec bun run src/index.ts"
+dir = "/home/toxic/sovereign/projects/range/ranch/stockyard/stream-broker"
+mise = false
+retry = true
+ready_cmd = "ss -ltn 'sport = :25215' | grep -q LISTEN"
+auto = ["start"]

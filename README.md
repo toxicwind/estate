@@ -131,12 +131,13 @@ Daemon definitions live in [`pitchfork.toml`](pitchfork.toml) (the generator is 
 | Port | Daemon | Role |
 | ---- | ------ | ---- |
 | `:25100` | `herd` | Inference front door — OpenAI-compatible `/v1` (llama-swap fork + flock router) |
-| `:25101` | `model-guard` | Request-contract enforcement proxy in front of herd (rewrites `chat/completions` per [`config/model_constraints.yaml`](config/model_constraints.yaml)) |
-| `:25109` | `keypool` | Provider key pool for herd cloud routing ([`bin/herd-keypool.py`](bin/herd-keypool.py)) |
-| `:25201` | `rust-web` | Ops dashboard backend |
-| `:25104` | `sovereign-router` | Multi-provider LLM router (Bun/TS, [`tools/sovereign-router/`](tools/sovereign-router/)) |
-| `:25193` | `flock` | Cloud-provider routing daemon backing herd |
-| `:25127` | `shep` | MCP federation — upstream servers → one endpoint |
+|| `:25101` | `model-guard` | Request-contract enforcement proxy in front of herd (rewrites `chat/completions` per [`config/model_constraints.yaml`](config/model_constraints.yaml)) |
+|| `:25109` | `keypool` | Provider key pool for herd cloud routing ([`bin/herd-keypool.py`](bin/herd-keypool.py)) |
+|| `:25201` | `rust-web` | Ops dashboard backend |
+|| `:25215` | `sovereign-stream-broker` | Socket Stream transport broker (UNIX + TCP, OS keepalive 30s) |
+|| `:25104` | `sovereign-router` | Multi-provider LLM router (Bun/TS, [`tools/sovereign-router/`](tools/sovereign-router/)) |
+|| `:25193` | `flock` | Cloud-provider routing daemon backing herd |
+|| `:25127` | `shep` | MCP federation — upstream servers → one endpoint |
 | `:25147` | `squawk-ws` | Squawk agent chat — websocket server |
 | `:25135` | `squawk-feed` | Squawk feed sequence server |
 | `:25204` | `awrawr-ws-exec` | The live hatch↔yote exec bridge (Funnel exposed at `:8379`, see [`bridge/`](bridge/)) |
@@ -154,6 +155,16 @@ Daemon definitions live in [`pitchfork.toml`](pitchfork.toml) (the generator is 
 - `bin/port-audit` diffs the live `ss -tlnp` listener table against `config/ports.env`: bind conflicts, unregistered listeners, stale entries. Exit codes: `0` clean, `1` conflict, `2` error (`--strict` promotes unregistered listeners to conflicts, `--json` for machines).
 - `bin/claim-port <port> <cmd>` is the fail-fast pre-launch guard: occupied ports refuse (exit 4) with holder cmdlines; protected ports (bridge 8379/25204, squawk 25147/25135) refuse outright (exit 5). It never kills, never sleeps, never polls.
 - `herd-keypool` listens on 25109 (override `KEYPOOL_HOST`/`KEYPOOL_PORT`); `herd-model-guard` on 25101 (override `MODEL_GUARD_HOST`/`MODEL_GUARD_PORT`) — a second instance on a taken port exits 98 with a clear message instead of a traceback.
+
+</details>
+
+<details>
+<summary><strong>Socket Stream & Cognitive EKG</strong></summary>
+
+- The **Socket Stream Transport** (`sovereign/packages/sovereign-utils/src/transport/socket-stream.ts`) provides OS-level TCP keepalives (30s) to prevent middlebox drops in long-running reasoning SSE streams. Components: `SocketStreamConfig`, `RingTokenBuffer` (append-only ring buffer for token recovery across network interrupts), and `DirectSocketStreamClient`.
+- The **Stream Broker** daemon (`sovereign/projects/range/ranch/stockyard/stream-broker/`) listens on UNIX socket (`/run/user/1000/sovereign-stream-broker.sock`) and TCP port `:25215`. Supervised by Pitchfork with auto-restart.
+- The **Cognitive EKG** monitoring layer (`herd-model-guard.py`) wraps all request/response lifecycles in `try/except (BrokenPipeError, ConnectionResetError)` to prevent server thread crashes on client disconnects. Audit trail at `data/model-guard-audit.jsonl`.
+- Full architecture spec: [`docs/architecture/socket-stream-cognitive-ekg.md`](docs/architecture/socket-stream-cognitive-ekg.md).
 
 </details>
 

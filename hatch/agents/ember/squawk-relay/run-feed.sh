@@ -6,4 +6,4 @@ set -euo pipefail
 # No manual token setup needed. Future keys go in
 # ~/.shingle/squawk-relay/settings.conf (KEY=VALUE lines).
 export FLEET_KEYS_DIR="/home/toxic/.shingle/squawk-root/keys"
-exec python3 /home/toxic/squawk/squawk_feed.py --root /home/toxic/.shingle/squawk-root --channel fleet --bind 127.0.0.1 --port 25135 --identity relay
+exec python3 /home/toxic/sovereign/projects/range/ranch/squawk/squawk_feed.py --root /home/toxic/.shingle/squawk-root --channel fleet --bind 127.0.0.1 --port 25135 --identity relay
