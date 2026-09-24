@@ -90,7 +90,7 @@ export function generateMarkdownReport(sessions: AuditedSession[], options: { ve
 
   const sortedPhantom = [...phantomTodoSessions].sort((a, b) => b.phantomTodoCount - a.phantomTodoCount).slice(0, 10);
   for (const s of sortedPhantom) {
-    const link = `[\`${s.file}\`](${GITHUB_BLOB_BASE}.tau/agent/sessions/${s.file})`;
+    const link = `[\`${s.file}\`](${GITHUB_BLOB_BASE}.tau/sessions/${s.file})`;
     lines.push(`| ${link} | \`${s.model}\` | **${s.phantomTodoCount}** | ${s.events} | Intent: *${s.intent}* |`);
   }
   lines.push("");
