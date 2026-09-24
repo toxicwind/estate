@@ -51,7 +51,7 @@ bun run /home/toxic/sovereign/skills/tau-tmux/helper/audit.ts [--verbose]
 Checks (each prints PASS/FAIL; exit 0 = all pass, 1 = any fail):
 
 1. `tau` on PATH is the launcher script and its collapse chain resolves
-   (TAU_BIN → PATH → ./tau → dist/omp → bun src).
+   (TAU_BIN → PATH → ./tau → tau → bun src).
 2. `tau --version` reports the expected engine (18.2.6+).
 3. `PI_CONFIG_DIR=.tau` is honored: `$HOME/.tau/agent/config.yml` exists.
 4. Skills: `~/.tau/agent/skills` symlink exists, target is a directory, and

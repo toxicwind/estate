@@ -8,7 +8,7 @@ import { runAllPatterns } from "../patterns/index";
 import type { PatternMatch, SessionEvent } from "../patterns/types";
 import { generateMarkdownReport, type AuditedSession } from "./report";
 
-const SESSIONS_DIR = join(process.env.HOME || "/home/toxic", ".tau", "agent", "sessions");
+const SESSIONS_DIR = join(process.env.HOME || "/home/toxic", ".tau", "sessions");
 
 export interface Session extends AuditedSession {}
 

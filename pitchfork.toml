@@ -309,10 +309,10 @@ auto = ["start"]
 
 [daemons.tau]
 port = 25111
-# P4 headless-TUI policy (2026-09-20): dist/omp acp is stdio-only (no --acp-port
+# P4 headless-TUI policy (2026-09-20): tau acp is stdio-only (no --acp-port
 # TCP flag on this binary). The TCP->stdio bridge makes it an observable daemon
 # with a real TCP readiness probe instead of the pgrep liveness lie.
-run = "exec node /home/toxic/sovereign/bin/acp-tcp-bridge.mjs 25111 /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/dist/omp acp"
+run = "exec /home/toxic/.local/bin/tau -e ~/.tau/extensions/vansrouter.ts acp"
 dir = "/home/toxic"
 mise = true
 retry = true
