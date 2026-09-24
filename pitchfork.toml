@@ -282,15 +282,6 @@ ready_http = "http://127.0.0.1:25116/health"
 env = { KIMI_AUDIT_DASH_PORT = "25116" }
 auto = ["start"]
 
-[daemons.mcp-gateway]
-run = "exec bun run /home/toxic/sovereign/tools/sovereign-router/sovereign-router-ts/router.ts"
-dir = "/home/toxic/sovereign/tools/sovereign-router/sovereign-router-ts"
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25120/health"
-env = { MCP_GATEWAY_PORT = "25120" }
-auto = ["start"]
-
 [daemons.oracle-market]
 run = "exec /home/toxic/sovereign/agents/oracle-market/bin/run.sh"
 dir = "/home/toxic/sovereign/agents/oracle-market"
@@ -353,7 +344,7 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "floc
 daemons = ["tau"]
 
 [groups.all]
-daemons = ["shep", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash", "mcp-gateway"]
+daemons = ["shep", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
 
 
 [daemons.kimi-auto-shim]
