@@ -8,7 +8,8 @@
 
 ## 🎯 Repository Specifics
 
-- **Primary Entrypoints**: `src/` (generators, coyote, services, mesh-front).
+- **Primary Entrypoints**: `src/` (generators, coyote, services, hal-substrate).
+- **Workspace & Projects**: `packages/sovereign-utils` (shared operational utilities); legacy `mesh` is superseded and now lives at `projects/range/ranch`.
 - **Pitchfork Daemons**: `pitchfork.toml` orchestrates services across `25xxx` ports.
 - **Mise Tasks**: `mise.toml` defines local task runners and environment configurations.
 - **Port SSOT**: `config/ports.env` is the single source of truth for all allocated ports.
@@ -45,6 +46,8 @@
 17. **GOAL = ENDLESS TODO.** TODO.md is a CONTINUOUS improvement loop, not a finite list.
     Re-audit constantly; new findings always append; done items cycle back as deeper waves.
     No "finished" — only "next wave". Mutate TODO after every meaningful step.
+18. **Anti-Hallucination & Tool Proof:** NEVER fake completion declarations or fire consecutive todo done calls without tool execution proof.
+19. **Context Synthesis:** When user provides iterative/ADHD stream-of-consciousness, synthesize multi-turn context; do not anchor rigidly on a single token or username.
 
 ---
 
@@ -144,6 +147,16 @@ ast-grep scan -p 'NVIDIA_MODELS' -l ts --json=stream /home/toxic/projects/pi-age
 opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable from a
   plain assistant context) — fanout only works inside an interactive pi session.
 
+## 🏗️ Build Server (buildsrv - :25148)
+
+- **Daemon**: Running on port `25148` managed via Pitchfork (`/home/toxic/sovereign/tools/buildsrv/buildsrvd.py`).
+- **Heavy Builds**: Use `buildsrv submit --name <name> --repo <dir> --toolchain <bun|rust|go|python> --cmd "<cmd>"` for heavy builds rather than running long compilation in turn shell.
+- **Worker & Cache Architecture**:
+  - 2-worker concurrent queue preventing resource exhaustion.
+  - NVMe-backed shared compiler/package caches: `sccache` (Rust/C++), `ccache`, and `uv` (Python wheels/environments).
+
+---
+
 ## 🔌 Port SSOT
 
 `/home/toxic/sovereign/config/ports.env` — all 25xxx, never invent.
@@ -157,6 +170,8 @@ opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable
 - `config/ports.env` — Port SSOT
 - `pitchfork.toml` — Daemon service definitions
 - `mise.toml` — Task runner and tool versions
+- `packages/sovereign-utils` — Shared sovereign utilities and ecosystem helpers
+- `projects/range/ranch` — Ranch system (supersedes legacy mesh)
 - `src/` — Sovereign backend, mesh frontend, HAL substrate
 - `agents/` — Subagent profiles and identities
 
