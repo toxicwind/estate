@@ -48,7 +48,14 @@ Instance registration lives at `/run/user/1000/quickshell/by-id/<id>/`. If `qs-d
 
 Terminal emulator: `wezterm` (GPU-accelerated, listed in `ii/packages.arch.txt`).
 
-- **Config**: `~/.config/wezterm/wezterm.lua` — Lua-first config with Catppuccin Mocha colors, JetBrains Mono/Fira Code fonts, LEADER keybindings (h/j/k/l navigation, v/s splits, w/n/t/r shortcuts), OSC 133 semantic prompt markers via `wezterm.on("exec-before")` and `wezterm.on("window-created")` hooks.
+- **Config**: `~/.config/wezterm/wezterm.lua` → `ii/dots/.config/wezterm/wezterm.lua` (symlinked)
+  - Lua-first config with Catppuccin Mocha colors, JetBrains Mono/Fira Code fonts
+  - **Tab bar enabled** (`enable_tab_bar = true`, `use_fancy_tab_bar = false`, `tab_bar_at_bottom = false`, `hide_tab_bar_if_only_one_tab = false`) with active/inactive/new tab colors
+  - **Tab switching**: `Ctrl+Tab` / `Ctrl+Shift+Tab`, `LEADER + [` / `LEADER + ]`, `LEADER + 1-9`, `ALT + 1-9`
+  - **Window switching**: `LEADER + p` / `LEADER + n` (previous/next window)
+  - **Quick actions**: `Ctrl+Shift+T` (new tab), `Ctrl+Shift+W` (close tab), `LEADER + o` (tab navigator), `LEADER + w` (launcher args)
+  - **Pane navigation**: `LEADER + h/j/k/l`, `LEADER + v/s` (splits)
+  - **OSC 133 semantic prompt markers** via `wezterm.on("exec-before")` and `wezterm.on("window-created")` hooks
 - **OSC 133 shell integration**: `~/.config/wezterm/shell-integration.sh` → `ii/dots/.config/wezterm/shell-integration.sh` — bash-side `PROMPT_COMMAND` + `DEBUG` trap for `A`/`B`/`C`/`D;<status>` semantic markers. Sourced by `.bashrc` when `TERM_PROGRAM=WezTerm`.
 - **Command palette**: `wezterm-cmdpicker` plugin (`~/.config/wezterm/plugins/wezterm-cmdpicker` → `ii/dots/.config/wezterm/plugins/wezterm-cmdpicker` → fork `toxicwind/wezterm-cmdpicker` at `abidibo/wezterm-cmdpicker` upstream).
 - **Shell search wrappers**: `.bashrc.env` provides `find()` (ffs), `grep()` (ffs local + `gh search code --github`), `findgh()` (`gh search repos`), and `ff()`/`ffa()`/`ffr()`/`ffo()` shorthand aliases.
@@ -59,6 +66,7 @@ Terminal emulator: `wezterm` (GPU-accelerated, listed in `ii/packages.arch.txt`)
 |---|---|
 | `ii/dots/.config/wezterm/shell-integration.sh` | Original bash OSC 133 script |
 | `ii/dots/.config/wezterm/plugins/wezterm-cmdpicker/` | Forked cmdpicker plugin repo |
-| `~/.config/wezterm/wezterm.lua` | Active Lua-first config |
-| `~/.config/wezterm/shell-integration.sh` | Symlink to shell repo script |
-| `~/.config/wezterm/plugins/wezterm-cmdpicker` | Symlink to shell repo plugin |
+| `ii/dots/.config/wezterm/wezterm.lua` | Active Lua-first config (tab bar + keybindings) |
+| `ii/dots/.config/wezterm/shell-integration.sh` | Symlink to shell repo script |
+| `ii/dots/.config/wezterm/plugins/wezterm-cmdpicker` | Symlink to shell repo plugin |
+| `~/.config/wezterm` | **Symlink** → `ii/dots/.config/wezterm` (managed by Dotbot via `ii/install.conf.yaml`) |
