@@ -1,6 +1,7 @@
 ---
 name: buildsrv
-description: Pitchfork build daemon interface (port 25148) for accelerated, forward-only Rust, Go, Bun, and Python builds and tests with sccache/ccache and log streaming.
+description: >
+  Pitchfork build daemon interface (port 25148) for accelerated, forward-only Rust, Go, Bun, and Python builds and tests with sccache/ccache and log streaming. Triggers on: "buildsrv", "build daemon", "pitchfork build".
 ---
 
 # buildsrv — Accelerated Build Daemon
