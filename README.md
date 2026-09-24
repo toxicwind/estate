@@ -304,4 +304,4 @@ Stack glue: MIT where marked. Upstream binaries and forks keep their licenses (l
 
 [^1]: 2026-09-20: an agent misdiagnosed a Moonshot 401 ("User not found", bad key) as a routing failure and repointed `kimi-k2`/`kimi-k3-nim` at dead NVIDIA model IDs while keeping the kimi names. Fixed in `a49f7bf0` — routes restored to `moonshotai/kimi-k2.6` / `moonshotai/kimi-k3`, free-model purpose intact, never the default.
 
-*Last verified 2026-09-21 · [↑ top](#sovereign-projects)*
+*Last verified 2026-09-23 · [↑ top](#sovereign-projects)*
