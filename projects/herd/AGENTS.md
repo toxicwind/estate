@@ -1,7 +1,7 @@
-# AGENTS.md — Herd / llama-swap (`/home/toxic/sovereign/herd`)
+# AGENTS.md — Herd / llama-swap (`/home/toxic/projects/llama-swap`)
 
 **Role**: Lightweight, transparent proxy server providing dynamic model swapping to llama.cpp and sovereign backends.
-**Stack**: Go (1.26 per `go.mod`), TypeScript / Vite / Svelte 5 (`ui-svelte/`).
+**Stack**: Go (1.23+), TypeScript / Vite / Svelte 5 (`ui-svelte/`).
 
 ---
 
@@ -28,7 +28,7 @@ llama-swap is a light weight, transparent proxy server that provides automatic m
 - Use `go test -v -run <name pattern for new tests>` to run any new tests you've written.
 - Run `gofmt -w <file>` before committing to fix any formatting
 - Build go binaries into the ./build/ subdirectory
-- Use `make test-dev` after running new tests for a quick over all test run. This runs `go test` and `staticcheck`. Fix any static checking errors. Use this only when changes are made to any code under the `internal/` directory (the legacy `proxy/` directory was retired in the newrouter migration)
+- Use `make test-dev` after running new tests for a quick over all test run. This runs `go test` and `staticcheck`. Fix any static checking errors. Use this only when changes are made to any code under the `proxy/` directory
 - Use `make test-all` before completing work. This includes long running concurrency tests.
 - Use `make test-ui` after making changes to the UI in ui-svelte/
 
@@ -60,11 +60,12 @@ fixes #123
 
 ---
 
+
 ## 🔧 Hard Rules (universal)
 
 1. **Verify live, then claim.** No "done" without `curl` / `lsof` / `nvidia-smi` / `npx tsgo --noEmit`.
 2. **Fail loud.** Never `2>/dev/null`, never `|| true`. Errors are diagnostic.
-3. **Push everything, forward-only.** Commit + push after every unit of work, including WIP - no local-only work. No review gates, no PR ceremony; report ambiguities, never stop for approval.
+3. **No commit without explicit user request.** Fork stays private under `toxicwind`.
 4. **Multi-strategy.** Non-trivial work → 3+ approaches, benchmark, keep runner-up.
 5. **TDD/BDD.** Failing assertion first, then fix. `npx tsgo --noEmit` for type-check.
 6. **Use emergence tools first.** GHAS (`:25113`) → ast-grep (`ast-grep` binary) → Tombi for TOML.
@@ -151,7 +152,7 @@ ast-grep scan --rule rule.yaml src/
 ## 📡 Live-verify commands
 
 ```bash
-for p in 25100 25104 25115 25127; do
+for p in 25100 25109 25112 25115; do
   fuser -s $p/tcp 2>/dev/null && echo "✅ :$p" || echo "❌ :$p DOWN"
 done
 
@@ -175,7 +176,7 @@ ast-grep scan -p 'NVIDIA_MODELS' -l ts --json=stream /home/toxic/projects/pi-age
 
 ## 🔌 MCP / mcpproxy (sovereign-owned)
 
-- **mcpproxy** is the single MCP federation gateway: `http://127.0.0.1:25127/mcp` (MCPPROXY_GO_PORT per `/home/toxic/sovereign/config/ports.env`; corrected 2026-09-19 — the old `:25109` value below is dead, nothing listens there), owned by
+- **mcpproxy** is the single MCP federation gateway: `http://127.0.0.1:25109/mcp`, owned by
 sovereign (`pitchfork start mcpproxy` / `mise run restart-mcpproxy` -> `mcpproxy serve
 --config=/home/toxic/.mcpproxy/mcp_config.json`). 43 real upstreams (ghas + 42 others).
 - **pi MUST list ONLY `mcpproxy`** in `~/.pi/agent/mcp.json` (no duplicate direct `ghas`/
@@ -192,3 +193,44 @@ sovereign (`pitchfork start mcpproxy` / `mise run restart-mcpproxy` -> `mcpproxy
 `/home/toxic/sovereign/config/ports.env` — all 25xxx, never invent.
 
 ---
+
+## 📁 Directory Structure
+
+```
+/home/toxic/sovereign/
+├── agents/              # Agent profiles & identities
+├── audit/               # Session deltas, fix history, AGENTS.md inventory
+├── docs/                # Architecture docs
+├── profiles/            # User/subagent profiles
+├── src/                 # Sovereign source code
+├── config/              # All configs (ports.env, etc.)
+├── mise.toml            # Mise tool config + tasks
+├── pitchfork.toml       # Pitchfork daemon definitions
+└── package.json         # Bun package config
+
+/home/toxic/.pi/agent/
+├── static_prompt.txt    # Agent persona (replaces generic "helpful assistant")
+├── config.yaml          # Allowed tools
+└── skills/              # Skill definitions
+```
+
+---
+
+## Known outstanding (not blockers)
+
+- **`applyReportedCost` missing** in `packages/ai/src/models.ts`
+- 4 services down: `:25106 hf-downloader`, `:25116 kimi-audit-dash`, `:25120 mcp-gateway`, `:25121 byte-vision`
+
+---
+
+**Maintainer**: toxic (`toxicwind@gmail.com`) · **Last Updated**: 2026-08-13 (C2 takeover — mcpproxy correct-use, NVIDIA first-class [98/102], timeout/failfast/${ENV} first-class)
+
+# Emergent findings (2026-09-02 session)
+- Sovereign deployment: kafka listener 25144 still 0 (Java/permission limitation accepted); G502 sensitivity 0.1 verified (lua 190); subagent tracking (PreviousPelican/UglyCod/VoluntaryCat) completed; plan mode preserved; read-only enforced.
+- Pi-metaharness: native build bg_51 completed (189MB .node); benchmark reports 0% rate (2 reports at tau/runs/); models.yml configured (discovery + overrides + dead disable); CI spec at .github/workflows/benchmark.yml.
+- Emergent-finder: installed (emergent-finder-v1.0.0.tar.gz → /home/toxic/projects/emergent-finder-package); binary /mnt block documented (symlink workaround at ~/.local/share/agents-output/); install.sh executed (exit 0).
+
+# Emergent findings (2026-09-03 session — Firefox Nightly & Web UI Launcher)
+- Firefox Nightly SSOT: `firefox-nightly` standardized as primary Wayland browser (`BROWSER=firefox-nightly`, `MOZ_ENABLE_WAYLAND=1`, `SUPER + W` in `~/.config/hypr/custom/variables.lua`, default MIME `firefox-nightly.desktop`).
+- Port 9222 SSOT: Dedicated strictly to Chromium CDP sandbox (`/tmp/chrome-headed`, Kataware-Doki WebGPU `cdp-node.ts`, Playwright CDP `helpers.mjs`). `firefox-bidi.service` remains disabled to avoid profile lock collisions (`g304xzha.default-release`) and WebDriver BiDi vs CDP protocol mismatches.
+- Sovereign Web UI Launcher: `scripts/open-web-uis.ts` / `scripts/open-web-uis.sh` (`mise run open-uis`, `mise run list-uis`) probes active listening services with failfast timeouts, reads SSOT ports from `config/ports.env`, and cleanly opens tabs into running Firefox Nightly via native IPC. Anonymous admin auto-login added to `stack/services/grafana-mesh.sh`.
