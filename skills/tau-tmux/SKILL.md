@@ -1,6 +1,7 @@
 ---
 name: tau-tmux
-description: Run parallel tau experiments in tmux and audit the live tau install — launcher chain, dist binary version, PI_CONFIG_DIR, skills discovery, and router reachability. Real checks, real exit codes.
+description: >
+  Run parallel tau experiments in tmux and audit the live tau install. Triggers on: "tau tmux", "parallel experiments", "tmux lab", "live tau audit".
 ---
 
 # tau-tmux — tmux lab + live tau audit

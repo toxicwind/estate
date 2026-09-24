@@ -1,6 +1,7 @@
 ---
-name: "hft_latency"
-description: "Chris's latency-first engineering doctrine (NOT trading): latency is a correctness criterion; race redundant approaches concurrently with fail-fast timeouts, first valid wins; measure everything, keep the fast path hot; maximal = wider not harder; never roll back; borrow before inventing. Reusable racer (bin/race.py) + latency measurement helper (bin/measure.py). LIVING DOCUMENT — any agent may mutate it live."
+name: hft-latency
+description: >
+  Chris's latency-first engineering doctrine: latency is a correctness criterion; race redundant approaches with fail-fast timeouts; measure everything; keep the fast path hot; maximal = wider not harder; never roll back. Triggers on: "hft-latency", "latency-first", "race redundant", "fail-fast".
 ---
 
 # hft-latency
