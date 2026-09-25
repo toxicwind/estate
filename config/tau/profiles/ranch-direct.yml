@@ -1,0 +1,14 @@
+schema_version: 2
+model: nvidia/llama-3_3-nemotron-super-49b-v1
+smol_model: nvidia/llama-3_3-nemotron-super-49b-v1
+slow_model: nvidia/llama-3_3-nemotron-super-49b-v1
+plan_model: nvidia/llama-3_3-nemotron-super-49b-v1
+models: ["nvidia/llama-3_3-nemotron-super-49b-v1"]
+discover:
+  custom_models: true
+  discoverable_models: false
+  cached_standard_models: false
+# no herd/flock/keypool base_url overrides — direct NVIDIA API, not via ranch
+provider:
+  nvidia:
+    timeout_ms: 30000
