@@ -164,15 +164,24 @@ function main() {
   let verbose = false;
   let reportMode = false;
   let saveReportPath = "";
+  let searchRegex: RegExp | null = null;
 
-  for (const arg of args) {
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
     if (arg === "--verbose" || arg === "-v") verbose = true;
     else if (arg === "--report" || arg === "-r") reportMode = true;
     else if (arg.startsWith("--out=")) saveReportPath = arg.slice(6);
     else if (arg.startsWith("--check=")) checks.add(arg.slice(8));
     else if (arg === "--check" || arg === "-c") {
-      const idx = args.indexOf(arg);
-      if (idx + 1 < args.length) checks.add(args[idx + 1]);
+      if (i + 1 < args.length) checks.add(args[++i]);
+    }
+    else if (arg.startsWith("--search=")) {
+      try { searchRegex = new RegExp(arg.slice(9), "i"); } catch (e) { console.error("Invalid search regex:", e); }
+    }
+    else if (arg === "--search" || arg === "-s") {
+      if (i + 1 < args.length) {
+        try { searchRegex = new RegExp(args[++i], "i"); } catch (e) { console.error("Invalid search regex:", e); }
+      }
     }
     else if (arg === "--all" || arg === "-a") checks.add("all");
   }
@@ -184,6 +193,51 @@ function main() {
   const run = (name: string) => runAll || checks.has(name);
 
   const sessions = loadSessions();
+
+  // If searchRegex is provided, filter sessions matching file, title, intent, model, or raw JSON event lines
+  let filteredSessions = sessions;
+  if (searchRegex) {
+    console.log(`🔎 SEARCH REGEX: ${searchRegex.source}\n`);
+    filteredSessions = sessions.filter((s) => {
+      if (searchRegex.test(s.file) || searchRegex.test(s.title) || searchRegex.test(s.intent) || searchRegex.test(s.model) || searchRegex.test(s.cwd)) {
+        return true;
+      }
+      // Read raw session file content and check if any line matches searchRegex
+      try {
+        const fullPath = join(SESSIONS_DIR, s.file);
+        if (existsSync(fullPath)) {
+          const content = readFileSync(fullPath, "utf-8");
+          return searchRegex.test(content);
+        }
+      } catch {}
+      return false;
+    });
+
+    console.log(`Found ${filteredSessions.length} matching session(s):\n`);
+    for (const s of filteredSessions) {
+      console.log(`📁 ${s.file} [Intent: ${s.intent}] [Model: ${s.model}]`);
+      try {
+        const fullPath = join(SESSIONS_DIR, s.file);
+        if (existsSync(fullPath)) {
+          const lines = readFileSync(fullPath, "utf-8").split("\n");
+          let matchNum = 0;
+          for (const line of lines) {
+            if (searchRegex.test(line)) {
+              matchNum++;
+              if (matchNum <= 5 || verbose) {
+                console.log(`    MATCH: ${line.slice(0, 140)}`);
+              }
+            }
+          }
+          if (matchNum > 5 && !verbose) {
+            console.log(`    ... and ${matchNum - 5} more matching lines (pass --verbose for all)`);
+          }
+        }
+      } catch {}
+      console.log();
+    }
+    return;
+  }
 
   // If reportMode or requested, generate and print/save markdown report
   if (reportMode) {

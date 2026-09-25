@@ -150,16 +150,6 @@ ready_http = "http://127.0.0.1:25117/health"
 depends = ["shep"]
 auto = ["start"]
 
-[daemons.tau-code]
-port = 25145
-run = "exec bun run src/server.ts --port 25145" # 25145 == $TAU_CODE_PORT (config/ports.env SSOT); run line is literal, code default is 25145
-dir = "/home/toxic/sovereign/projects/tau/packages/metaharness"
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25145/"
-depends = ["shep"]
-auto = ["start"]
-
 [daemons.kimi-code]
 port = 25126
 run = "exec /home/toxic/sovereign/bin/claim-port 25126 /home/toxic/kimi-code-npm/node_modules/@moonshot-ai/kimi-code/dist/main.mjs web --no-open --port 25126" # 25126 == $KIMI_CODE_PORT (SSOT); literal: ${} not expanded in run lines
@@ -239,7 +229,7 @@ dir = "."
 mise = false
 retry = true
 ready_cmd = "ss -ltn 'sport = :25193' | grep -q LISTEN"
-env = { FLOCK_PORT = "25193" }
+env = { VANSROUTER_API_KEY = "local-sovereign", FLOCK_PORT = "25193" }
 auto = ["start"]
 
 [daemons.vansrouter]
@@ -308,18 +298,6 @@ retry = true
 env = { ORACLE_CHANNEL = "/home/toxic/.shingle/squawk-root/bid-market" }
 auto = ["start"]
 
-[daemons.tau]
-port = 25111
-# P4 headless-TUI policy (2026-09-20): tau acp is stdio-only (no --acp-port
-# TCP flag on this binary). The TCP->stdio bridge makes it an observable daemon
-# with a real TCP readiness probe instead of the pgrep liveness lie.
-run = "exec /home/toxic/.local/bin/tau -e ~/.tau/extensions/vansrouter.ts acp"
-dir = "/home/toxic"
-mise = true
-retry = true
-ready_cmd = "/home/toxic/sovereign/bin/tcp-probe 25111"
-depends = ["shep"]
-env = { PI_CONFIG_DIR = "/home/toxic/.tau", PI_AGENT_DIR = "/home/toxic/.tau/agent", PI_CODING_AGENT = "true", PI_REASONING_LEVEL = "high", PI_SUBAGENT_MODEL = "thinkingmachines/inkling", PI_OPENAI_STREAM_IDLE_TIMEOUT_MS = "120000" }
 [daemons.files]
 # /files backend (tailnet-only): tailscale serve maps /files -> 127.0.0.1:34567.
 # Static file share rooted at /home/toxic/files. Built 2026-09-20 (files-medic):
