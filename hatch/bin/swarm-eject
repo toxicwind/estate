@@ -150,13 +150,19 @@ def yote_eject():
             if line.startswith("{"):
                 d = json.loads(line)
                 st = {"ts": time.time(), "yote_pids": d.get("hit", []), "mode": d.get("signal")}
-                if os.path.exists(STATE):
-                    try:
-                        old = json.load(open(STATE))
-                        old["yote_pids"] = sorted(set(old.get("yote_pids", [])) | set(st["yote_pids"]))
-                        json.dump(old, open(STATE, "w"))
-                    except Exception:
-                        pass
+                # ALWAYS persist: swarm-resume reads this file to SIGCONT the
+                # yote victims. The old exists-guard dropped the write on the
+                # first-ever eject, stranding STOPped processes with no resume
+                # path (proven 2026-09-26: 2 rustc frozen, state never written).
+                os.makedirs(os.path.dirname(STATE), exist_ok=True)
+                try:
+                    old = json.load(open(STATE))
+                    st["yote_pids"] = sorted(set(old.get("yote_pids", [])) | set(st["yote_pids"]))
+                    if "pids" in old:
+                        st["pids"] = old["pids"]
+                except (FileNotFoundError, json.JSONDecodeError):
+                    pass
+                json.dump(st, open(STATE, "w"))
                 return {"ok": True, **d}
         return {"ok": False, "why": "no JSON from yote", "out": r.stdout[-500:], "err": r.stderr[-500:]}
     except subprocess.TimeoutExpired:
