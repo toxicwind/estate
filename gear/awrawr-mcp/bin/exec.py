@@ -778,7 +778,15 @@ def _post(payload: dict, session_id: str | None,
     if session_id:
         req.add_header("Mcp-Session-Id", session_id)
     try:
-        resp = urllib.request.urlopen(req, timeout=_HTTPS_SOCKET_TIMEOUT)
+        # Bound the connect phase by the caller's read deadline as well: a
+        # blackholed connect must not outlive the budget set for the whole
+        # call. (2026-09-26: /health's 8s probe budget vs the 180s connect
+        # timeout — a stalled connect alone could blow the watchdog's 10s
+        # liveness curl and get a live connector pkill'd.) For the default
+        # 150s read deadline this is min(180,150)=150s, i.e. no behavior
+        # change on the normal path — the read deadline already dominated.
+        resp = urllib.request.urlopen(
+            req, timeout=min(_HTTPS_SOCKET_TIMEOUT, read_timeout))
     except urllib.error.HTTPError as e:
         detail = e.read().decode("utf-8", "replace")[:500]
         raise RuntimeError(f"HTTP {e.code} from bridge: {detail}")
@@ -1480,7 +1488,22 @@ def _emit_json(result: dict) -> int:
 
 def _https_exec_capture(cmd: str, workdir: str,
                         read_timeout: float = _DEFAULT_READ_TIMEOUT) -> dict:
-    """HTTPS fallback returning a result dict instead of printing."""
+    """HTTPS fallback returning a result dict instead of printing.
+
+    Degraded steady-state (mirrors main()'s HTTPS fallback gate): a lane
+    that recently stalled, blew its read deadline, or failed the connect
+    is failed fast here too instead of burning another full read cycle
+    per call. Without this, a lane blip piled unbounded 150s+ HTTPS
+    attempts onto callers — the 2026-09-26 connector restart storm, where
+    wedged fallback threads pushed /health past the watchdog's 10s
+    liveness curl. Raises like the CLI path does; the connector's
+    yote_exec() converts it to an "all lanes down" error dict.
+    """
+    down, why = _https_known_down()
+    if down:
+        raise RuntimeError(
+            "https transport degraded (%s); failing fast, retry shortly"
+            % why)
     t0 = time.monotonic()
     buf: list[str] = []
     code = _https_exec(cmd, workdir, read_timeout, _sink=buf.append)
