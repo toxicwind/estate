@@ -95,12 +95,21 @@ def log(*a):
     sys.stderr.flush()
 
 
-def yote_exec(cmd, workdir="/home/toxic", timeout=120):
-    """Run cmd on yote; WS lane first, HTTPS fallback on pre-dispatch fail."""
+def yote_exec(cmd, workdir="/home/toxic", timeout=120, https_timeout=150):
+    """Run cmd on yote; WS lane first, HTTPS fallback on pre-dispatch fail.
+
+    https_timeout bounds ONLY the HTTPS fallback's local read deadline
+    (default 150s, matching the lane's long-command needs). Liveness
+    probes (/health) pass a short one: during a lane blip the fallback
+    used to wedge the probe past the watchdog's 10s liveness curl, the
+    watchdog misread a live connector as dead, and pkill'd it — a
+    restart storm every ~2h on each bridge blip (2026-09-26). A degraded
+    lane must report failure FAST, never hang the prober.
+    """
     res = bridge._ws_exec(cmd, workdir, None, timeout, capture=True)
     if res is None:
         try:
-            res = bridge._https_exec_capture(cmd, workdir, 150)
+            res = bridge._https_exec_capture(cmd, workdir, https_timeout)
         except Exception as e:
             res = {"code": 1, "stdout": "", "stderr": "",
                    "transport": "none",
@@ -301,7 +310,17 @@ class Handler(BaseHTTPRequestHandler):
                      "error": "not run"}
             t0 = time.time()
             try:
-                res = yote_exec("true", "/home/toxic", timeout=15)
+                # Liveness budget: the watchdog curls /health with -m 10
+                # and treats a timeout as a dead connector (restart). A
+                # degraded lane must therefore report ok:false FAST (503),
+                # never hang: the probe's HTTPS fallback gets an 8s read
+                # deadline so the whole probe stays under ~9s worst case
+                # (WS fast-fails in ms when the daemon is reconnecting).
+                # 2026-09-26: the 150s fallback wedged the probe past the
+                # curl on every ~2h bridge blip and the watchdog pkill'd a
+                # live connector five times in one day.
+                res = yote_exec("true", "/home/toxic", timeout=15,
+                                https_timeout=8)
                 probe["ms"] = int((time.time() - t0) * 1000)
                 probe["transport"] = res.get("transport")
                 probe["code"] = res.get("code")
