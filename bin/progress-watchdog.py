@@ -53,6 +53,7 @@ DAEMONS = {
     "beellama-fast": 25122,
     "whatsapp-mcp": 25146,
     "toolcall-llm": 25152,
+    "sovereign-router": 25104,
 }
 STUCK_UNSEEN_S = 180      # task_post with no ledger trace older than this
 STUCK_WEDGED_S = 1800     # task_open but no terminal event older than this
