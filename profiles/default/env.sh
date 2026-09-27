@@ -25,7 +25,10 @@ export QDRANT_PORT="${QDRANT_PORT:-25133}"
 export REDIS_PORT="${REDIS_PORT:-25199}"
 
 # Inference Defaults (Configurable via environment)
-export PI_SUBAGENT_MODEL="${PI_SUBAGENT_MODEL:-thinkingmachines/inkling}"
+# PI_SUBAGENT_MODEL was here and is gone: 0 source files in the tau monorepo
+# read it, so it never selected a subagent model. Subagent routing comes from
+# the `subagents:` / `modelRoles:` keys in the agent config
+# (config/tau/agent/config.yml), not from the environment.
 export SCOUT_MODEL="${SCOUT_MODEL:-local-fast}"
 export SCOUT_BASE_URL="${SCOUT_BASE_URL:-http://127.0.0.1:25100/v1}"
 export SCOUT_API_KEY="${SCOUT_API_KEY:-llama-swap}"
