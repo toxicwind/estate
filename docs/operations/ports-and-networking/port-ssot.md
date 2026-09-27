@@ -2,7 +2,7 @@
 
 `config/ports.env` is the single source of truth for every port on the
 sovereign estate. Pitchfork (`pitchfork.toml`) sources it at daemon launch;
-`bin/claim-port` allocates from it; `scripts/port-audit.py` diffs it against
+`bin/claim-port` allocates from it; `bin/port-audit` diffs it against
 live listeners.
 
 ## The guard
@@ -33,12 +33,20 @@ exit, a refusal on stderr, and nothing listening on the next port.
 ## The sweep
 
 ```bash
-scripts/port-audit.py [--ssot config/ports.env] [--json]
+bin/port-audit [--ssot config/ports.env] [--json] [--strict]
 ```
 
 Diffs the SSOT against `ss -tlnp`, attributing each listener via
 `/proc/<pid>/cmdline` + cwd (so `python3`, `bun`, `node` resolve to the
 real service). Exit 1 on real conflicts, 0 otherwise.
+
+`--strict` also fails on warnings, which is what CI wants. A clean run
+exits 0, real conflicts exit 1, and bad usage exits 2.
+
+`projects/ops/bin/port-audit.sh` is a separate, complementary sweep. It
+answers the questions this one does not: dead `pitchfork.toml` claims,
+herd dynamic-pool slots, Tailscale Serve backends answering 502, and
+EADDRINUSE failures scraped from the logs. Use both.
 
 Findings:
 
