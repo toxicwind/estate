@@ -12,13 +12,13 @@ env_file = "config/ports.env"
 # while the old orphaned binary still answers /health 200 (Hearth then
 # reports pitchfork=errored, health=200 for the same daemon).
 
-[daemons.shep]
+[daemons.gatehouse]
 health_http = { url = "http://127.0.0.1:25127/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25127
-# shep-serve.sh self-heals: bootstraps gitignored mcp_config.json from .dist when missing,
-# injects secrets from /home/toxic/.secrets (shep direct-run crash-loops without it).
-run = "exec /home/toxic/sovereign/projects/range/bin/shep-serve.sh"
-dir = "/home/toxic/sovereign/projects/range/ranch/barn/shep"
+# gatehouse-serve.sh self-heals: bootstraps gitignored mcp_config.json from .dist when missing,
+# injects secrets from /home/toxic/.secrets (gatehouse direct-run crash-loops without it).
+run = "exec /home/toxic/sovereign/projects/range/bin/gatehouse-serve.sh"
+dir = "/home/toxic/sovereign/projects/range/ranch/barn/gatehouse"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25127/health"
@@ -31,7 +31,7 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25115/health"
-depends = ["shep"]
+depends = ["gatehouse"]
 auto = ["start"]
 
 [daemons.herd]
@@ -42,7 +42,7 @@ dir = "."
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25100/health"
-depends = ["shep"]
+depends = ["gatehouse"]
 auto = ["start"]
 
 [daemons.coyote]
@@ -52,7 +52,7 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25143/health"
-depends = ["shep", "herd"]
+depends = ["gatehouse", "herd"]
 auto = ["start"]
 
 [daemons.yote]
@@ -63,7 +63,7 @@ dir = "projects/yote"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25102/health"
-depends = ["shep"]
+depends = ["gatehouse"]
 auto = ["start"]
 
 [daemons.search-api]
@@ -73,7 +73,7 @@ dir = "/home/toxic/projects/sovereign-projects/sovereign-github-search"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25112/health"
-depends = ["shep"]
+depends = ["gatehouse"]
 auto = ["start"]
 
 [daemons.search-ui]
@@ -83,7 +83,7 @@ dir = "/home/toxic/projects/sovereign-projects/sovereign-github-search/apps/fron
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25114/"
-depends = ["shep"]
+depends = ["gatehouse"]
 auto = ["start"]
 
 # (Renamed from "axiom" 2026-09-21: the old service spawned a DUPLICATE kernel
@@ -96,7 +96,7 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25103/api/health"
-depends = ["shep"]
+depends = ["gatehouse"]
 health_http = { url = "http://127.0.0.1:25103/api/health", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
 
@@ -107,7 +107,7 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25201/health"
-depends = ["shep"]
+depends = ["gatehouse"]
 auto = ["start"]
 
 [daemons.hf-downloader]
@@ -117,7 +117,7 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25106/api/health"
-depends = ["shep"]
+depends = ["gatehouse"]
 auto = ["start"]
 
 [daemons.null-g-proxy]
@@ -127,7 +127,7 @@ dir = "/home/toxic/sovereign/tools/null-g-proxy"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25107/health"
-depends = ["shep"]
+depends = ["gatehouse"]
 auto = ["start"]
 
 [daemons.byte-vision]
@@ -137,7 +137,7 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25121/health"
-depends = ["shep"]
+depends = ["gatehouse"]
 auto = ["start"]
 
 [daemons.hindsight]
@@ -147,7 +147,7 @@ dir = "."
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25117/health"
-depends = ["shep"]
+depends = ["gatehouse"]
 auto = ["start"]
 
 [daemons.kimi-code]
@@ -157,7 +157,7 @@ dir = "/home/toxic/kimi-code-npm"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25126/health"
-depends = ["shep"]
+depends = ["gatehouse"]
 auto = ["start"]
 
 [daemons.nginx]
@@ -167,7 +167,7 @@ dir = "."
 mise = false
 retry = true
 ready_cmd = "ss -ltn 'sport = :25208' | grep -q LISTEN"
-depends = ["shep"]
+depends = ["gatehouse"]
 auto = ["start"]
 
 [daemons.qdrant]
@@ -313,7 +313,7 @@ health_http = { url = "http://127.0.0.1:34567/health", interval = "30s", timeout
 auto = ["start"]
 
 [groups.mesh]
-daemons = ["shep", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx"]
+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx"]
 
 [groups.core]
 daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server"]
@@ -322,7 +322,7 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "floc
 daemons = ["tau"]
 
 [groups.all]
-daemons = ["shep", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
 
 
 [daemons.kimi-auto-shim]
@@ -431,7 +431,7 @@ dir = "/home/toxic/sovereign/tools/sovereign-router/sovereign-router-ts"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25104/health"
-depends = ["shep"]
+depends = ["gatehouse"]
 env = { SOVEREIGN_ROUTER_PORT = "25104" }
 auto = ["start"]
 
