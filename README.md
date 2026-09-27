@@ -299,13 +299,13 @@ sovereign-projects/                     # this repo — /home/toxic/sovereign on
 ├── hatch/                  # hatch-cell side: agents/ember, bin/squawk, docs/
 ├── scratch/                # NON-PRODUCTION staging (old fleet-workspace); symlinks shimmed
 ├── projects/               # the workspaces (see below)
-│   ├── range/ranch/        # the ranch monorepo — stockyard + squawk + barn
+│   ├── range/ranch/        # the ranch monorepo — stockyard + squawk + barn + gear
 │   ├── yote/  qed/  shell/  openfang/  audits/  ops/  tools/
 │   ├── herd -> range/ranch/stockyard/herd      # root-level symlinks
 │   ├── tau  -> range/ranch/stockyard/tau       # point here for historical paths
 │   └── sigma-> range/ranch/stockyard/sigma
 ├── agents/                 # oracle-market, coyote, kimiclaw, squawk-relay, …
-├── skills/                 # reusable skills (billion-context, paper-search, …)
+├── skills/                 # 29 hand-authored skills — skill root #1, see Key components
 ├── bin/                    # ops scripts: pitchfork-restart, herd-keypool.py, claim-port, …
 ├── packages/               # sovereign-utils, coding-agent, metaharness, …
 ├── src/                    # Bun services (mesh-hub, mesh-front, …)
@@ -325,7 +325,7 @@ Layout SSOT for the 2026-09-20 reorg (`hatch/`, `bridge/`, `scratch/`): `REORG-P
 
 [`projects/sigma/`](projects/sigma) → [`projects/range/ranch/stockyard/sigma`](projects/range/ranch/stockyard/sigma) — the **toxicwind fork of `billion-context`**: a transparent compression proxy that sits between agents and inference. Point a client at `http://127.0.0.1:32847/bili/<upstream-url>` and it streams the response while folding the conversation into a compact digest at a token boundary. Measured on the live log: ~5× token reduction, 28 ms added per compress call, proxy overhead p50 41 ms / p99 107 ms, prompt-cache hit rate p50 99.5%.
 
-It runs as a **tau extension**, not a pitchfork daemon — [`~/.tau/agent/config.yml`](../../.tau/agent/config.yml) loads `billion-context/dist/agent/omp-native.js` alongside `npm:context-forger`. Because it compresses at the ACP layer, it applies to agent traffic specifically, not to every request herd serves.
+It runs as a **tau extension**, not a pitchfork daemon — [`config/tau/agent/config.yml`](config/tau/agent/config.yml) (what `~/.tau/agent` symlinks to) loads `billion-context/dist/agent/omp-native.js` alongside `npm:context-forger`. Because it compresses at the ACP layer, it applies to agent traffic specifically, not to every request herd serves.
 
 Two upstream inputs make it maintainable: [`bin/upstream-pull.sh`](projects/sigma/bin/upstream-pull.sh) drives a mechanical preview/merge/sync against `upstream/master` (requires the `weave` driver — it checks before merging, because an absent driver makes the merge silently do the wrong thing), and [`.gitattributes`](projects/sigma/.gitattributes) pins golden-fixture line endings and routes structured files to `merge=weave`. [`FORK-NOTES.md`](projects/sigma/FORK-NOTES.md) records exactly what the fork changed. Upstream is `ranxianglei/billion-context`; the fork is `toxicwind/sigma` on `main`.
 
@@ -362,7 +362,33 @@ These daemons are **protected**: `bin/claim-port` refuses 25147 and 25135 outrig
 
 ### Tool federation — range
 
-[`projects/range/`](projects/range) — the ranch monorepo and MCP gateway source. `stockyard/` holds the inference and agent engines (herd, tau, sigma, flock, vansrouter, boundless, paddock, stream-broker); `squawk` and `squawk-ws` hold fleet chat; `barn/` holds shared runtime plumbing such as `chute`. Daemons: `gatehouse` (`:25127`, MCP federation), `mesh-hub` (`:25115`, service discovery + health, [`src/services/mesh-hub.ts`](src/services/mesh-hub.ts)), `mesh-landing` (`:25207`). Herd's MCP gateway config also lives at `stockyard/herd/mesh/`.
+[`projects/range/`](projects/range) — the ranch monorepo and MCP gateway source. `stockyard/` holds the inference and agent engines (herd, tau, sigma, flock, vansrouter, boundless, paddock, stream-broker); `squawk` and `squawk-ws` hold fleet chat; `barn/` holds shared runtime plumbing such as `chute`; `gear/` holds the skill library. Daemons: `gatehouse` (`:25127`, MCP federation), `mesh-hub` (`:25115`, service discovery + health, [`src/services/mesh-hub.ts`](src/services/mesh-hub.ts)), `mesh-landing` (`:25207`). Herd's MCP gateway config also lives at `stockyard/herd/mesh/`.
+
+### Skills — sovereign + gear
+
+Two hand-maintained roots plus one machine-written root. Registration lives in one place: `skills.customDirectories` in `~/.tau/config.yml`.
+
+| Root | Loaded | What it is |
+| --- | --- | --- |
+| [`skills/`](skills/) | 29 | hand-authored ops skills: `buildsrv`, `cattle-manager`, `hft-latency`, `parquet-ml`, … |
+| [`projects/range/ranch/gear/`](projects/range/ranch/gear) | 486 | the private skill library, flat by design — one directory per skill at the repo root |
+| `config/tau/agent/managed-skills` | 17 | output of the autolearn `manage_skill` tool. **Must be a real directory, never a symlink** — `assertManagedRootSafe` refuses a symlinked root, so a symlink there silently breaks every managed write. |
+
+532 skills load, 527 unique names. Measured with the real loader, not a `find` approximation.
+
+**How the loader behaves** ([`discovery/helpers.ts`](projects/range/ranch/stockyard/tau/packages/coding-agent/src/discovery/helpers.ts)):
+
+- The registered roots are scanned at **depth 1**: `<dir>/<name>/SKILL.md`. A flat repo like `gear` is therefore registered by pointing at its root. Nothing is copied, symlinked, or hoisted into category folders, so every skill keeps its own code and its own relative references. `scanSkillsFromDir` also takes an opt-in `recursive` / `maxDepth` for a collection that groups skills by category; no caller enables it yet, and a directory containing a `SKILL.md` stays terminal so a skill's own `scripts/` and `references/` never become phantom skills.
+- A skill with **no `description` in its frontmatter is dropped silently**. That is the most common way a skill becomes invisible.
+- Precedence is **first wins**, and `customDirectories` outrank `~/.claude/skills`. Order matters: `skills/` is listed first, so it wins the 5 names it shares with `gear` (`buildsrv`, `fleet-push`, `repo-audit`, `hft-latency`, `sovereign-chat`).
+- The answer to "too many skills" is a registry plus on-demand install (`omp skill` / skillshare), not a directory reshuffle. Re-homing skills breaks the parent-relative paths they were written against.
+
+**Audit them** with [`tools/skill-audit.ts`](tools/skill-audit.ts). It discovers the roots from the agent config itself, so registering a collection is enough to get it audited, and it reports dangling symlinks, missing frontmatter, name/directory mismatches, dead `skill://` and file references, and cross-root name collisions. Run it after touching any skill root:
+
+```bash
+bun tools/skill-audit.ts          # report; exit 1 on defects
+bun tools/skill-audit.ts --fix    # repair names and synthesise frontmatter
+```
 
 ### Editor + shell
 
