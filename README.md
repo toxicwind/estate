@@ -307,7 +307,7 @@ sovereign-projects/                     # this repo — /home/toxic/sovereign on
 ├── agents/                 # oracle-market, coyote, kimiclaw, squawk-relay, …
 ├── skills/                 # 29 hand-authored skills — skill root #1, see Key components
 ├── bin/                    # ops scripts: pitchfork-restart, herd-keypool.py, claim-port, …
-├── packages/               # sovereign-utils, coding-agent, metaharness, …
+├── packages/               # sovereign-utils, metaharness, sovereign-scripts, … + coding-agent -> ../projects/tau/packages/coding-agent
 ├── src/                    # Bun services (mesh-hub, mesh-front, …)
 ├── stack/                  # service entry scripts (stack/services/herd.sh, …)
 ├── tools/                  # sovereign-chat, sovereign-router, sovereign-monitor, …
@@ -429,16 +429,16 @@ After the 2026-09-20 kernel cutover, confirm before declaring healthy:
 
 ## README index
 
-Every directory README deeplinks back here; the full map is [`docs/README-INDEX.md`](docs/README-INDEX.md).
+This is the short list. The full map of every README in the tree is [`docs/README-INDEX.md`](docs/README-INDEX.md). Note that the reverse link is the exception, not the rule — most of the 165 directory READMEs do not point back here, and there is no reason they should.
 
 | README | What it covers |
 | ------ | -------------- |
+| [`projects/sigma/FORK-NOTES.md`](projects/sigma/FORK-NOTES.md) | The compression proxy that fronts inference, and what the fork changed |
 | [`projects/`](projects/) | Project workspaces (herd, tau, sigma, yote, openfang, qed, shell, …) |
 | [`docs/`](docs/) | Architecture + ops doc index |
 | [`bridge/`](bridge/) | hatch↔yote exec bridge |
 | [`hatch/`](hatch/) | Hatch-cell side (Ember home, squawk, watchdogs) |
 | [`agents/oracle-market/`](agents/oracle-market/) | Oracle market + decision engine |
-| [`projects/sigma/FORK-NOTES.md`](projects/sigma/FORK-NOTES.md) | What the sigma fork changed |
 
 ## License
 
@@ -448,4 +448,4 @@ Stack glue: MIT where marked. Upstream binaries and forks keep their licenses (l
 
 [^1]: 2026-09-20: an agent misdiagnosed a Moonshot 401 ("User not found", bad key) as a routing failure and repointed `kimi-k2`/`kimi-k3-nim` at dead NVIDIA model IDs while keeping the kimi names. Fixed in `a49f7bf0` — routes restored to `moonshotai/kimi-k2.6` / `moonshotai/kimi-k3`, free-model purpose intact, never the default.
 
-*Last verified 2026-09-27 against `pitchfork.toml` (76 daemons), `config/ports.env`, and `mise.toml` on branch `forge/gate-retire-final` · [↑ top](#sovereign-projects)*
+*Last verified 2026-09-27 against `pitchfork.toml` (76 daemons), `config/ports.env`, and `mise.toml` on branch `forge/gate-retire-final`. Every port row, layout path, component path, task definition, and relative link in this file was re-checked against the live tree on that date; the claims it makes about a daemon's *runtime* health are for the yote box, not this one. [↑ top](#sovereign-projects)*
