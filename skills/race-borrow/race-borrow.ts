@@ -13,14 +13,37 @@
 
 import { parseArgs } from "node:util";
 
-const TOKEN = Bun.env.GITHUB_TOKEN ?? Bun.env.GH_TOKEN;
-if (!TOKEN) {
-  console.error("ERROR: GITHUB_TOKEN or GH_TOKEN required");
+// A token is not enough. The GitHub API answers 403 to any request without a
+// User-Agent, and Bun's fetch does not add one. So the skill failed with a
+// valid token in the environment while curl on the same URL returned 200.
+// `token` is the legacy scheme; fine-grained PATs want `Bearer`.
+function resolveToken(): string | undefined {
+  const fromEnv = Bun.env.GITHUB_TOKEN ?? Bun.env.GH_TOKEN;
+  if (fromEnv !== undefined && fromEnv.length > 0) return fromEnv;
+  // The gh CLI usually holds a working credential. Reach for it rather than
+  // demanding a duplicate secret in the environment.
+  try {
+    const result = Bun.spawnSync(["gh", "auth", "token"], { stdout: "pipe", stderr: "ignore" });
+    const token = new TextDecoder().decode(result.stdout).trim();
+    return token.length > 0 ? token : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+const TOKEN = resolveToken();
+if (TOKEN === undefined) {
+  console.error("ERROR: no GitHub token. Set GITHUB_TOKEN, GH_TOKEN, or log in with `gh auth login`.");
   process.exit(1);
 }
 
 const API = "https://api.github.com";
-const HEAD = { Authorization: `token ${TOKEN}`, Accept: "application/vnd.github.v3+json" };
+const HEAD = {
+  Authorization: `Bearer ${TOKEN}`,
+  Accept: "application/vnd.github+json",
+  "X-GitHub-Api-Version": "2022-11-28",
+  "User-Agent": "race-borrow",
+};
 
 const DEFAULT_PATTERNS = ["sovereign", "tau", "pi", "oh-my-pi", "llama-swap"];
 const DEFAULT_PROVIDERS = ["openrouter", "groq", "google", "mistral"];
