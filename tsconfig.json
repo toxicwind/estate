@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "compilerOptions": {
     "types": ["bun-types"],
     "lib": ["ESNext"],
@@ -20,14 +19,4 @@
     "yote/**/*",
     "index.ts"
   ]
-=======
-	"references": [
-		{
-			"path": "./packages/tsconfig.workspace.json"
-		},
-		{
-			"path": "./tsconfig.tools.json"
-		}
-	]
->>>>>>> v18.3.0
 }
