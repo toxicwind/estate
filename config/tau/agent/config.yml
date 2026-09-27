@@ -1,9 +1,10 @@
-# THIS is the file the engine actually reads. settings.ts:183 documents
-# "Agent directory for config.yml/config.yaml storage", and dirs.ts joins
-# PI_CODING_AGENT_DIR for it. The 599-line ../config.yml (the PI_CONFIG_DIR
-# root) is NOT loaded for settings — modelRoles written there are dead, and an
-# undefined `default` then collides with the bundled `cursor/default` catalog
-# entry, which dies on "No API key found for cursor".
+# THIS is the file the engine actually reads. settings.ts:601 sets
+# `#configPath = path.join(this.#agentDir, MAIN_CONFIG_FILENAMES[0])`, and
+# dirs.ts derives that agentDir from PI_CODING_AGENT_DIR. The 609-line
+# ../config.yml (the PI_CONFIG_DIR root) is NOT in the load chain — modelRoles
+# written there are dead, and an undefined `default` then collides with the
+# bundled `cursor/default` catalog entry, which dies on "No API key found for
+# cursor". The only other layer is a project-local .omp/config.yml.
 #
 # Every model below was verified live (HTTP 200) against
 # https://openrouter.ai/api/v1/chat/completions on 2026-09-27. The account has
@@ -49,9 +50,9 @@ retry:
     - openrouter/liquid/lfm-2.5-2.6b:free
     - openrouter/nvidia/nemotron-3-super-120b-a12b:free
     - openrouter/inclusionai/ling-3.0-flash-fin:free
-    # sovereign/free (:25104) and herd/qwen-flash-da-128k (:25100) are both
-    # down — herd's dependency gatehouse aborts on a missing
-    # barn/shep/bin/github-mcp.sh. These two are verified live.
+    # sovereign/free (:25104) has no daemon block at all, and herd (:25100)
+    # has no Go sources in this repo — only cmd/** was ever committed, so
+    # `go build .` reports "no non-test Go files". These two are verified live.
     google-antigravity/*:
     - openrouter/inclusionai/ling-3.0-flash-fin:free
     - openrouter/nvidia/nemotron-3-super-120b-a12b:free
@@ -59,5 +60,3 @@ retry:
 extensions:
   - /home/toxic/.bun/install/global/node_modules/billion-context/dist/agent/omp-native.js
   - npm:context-forger
-providers:
-  p1: {}
