@@ -44,6 +44,24 @@
       "homepage": "https://github.com/toxicwind/omp-extensions/tree/main/packages/omp-edit-committer",
       "license": "MIT",
       "repository": "https://github.com/toxicwind/omp-extensions"
+    },
+    {
+      "name": "tau-loops",
+      "description": "Reusable audit loops: model/config liveness, two-tree diff with a consumer census, and a throwaway-extension probe runner. Registers /loop-model-audit, /loop-dir-diff and /loop-probe.",
+      "version": "0.1.0",
+      "source": "./tau-loops",
+      "category": "workflow",
+      "keywords": [
+        "audit",
+        "models",
+        "config",
+        "diff",
+        "latency",
+        "extension"
+      ],
+      "homepage": "https://github.com/toxicwind/omp-extensions/tree/main/packages/tau-loops",
+      "license": "MIT",
+      "repository": "https://github.com/toxicwind/omp-extensions"
     }
   ]
 }
