@@ -6,7 +6,10 @@ export SOVEREIGN_PROFILE="toxic"
 # ==============================================================================
 
 # 1. Inference & Subagent Models
-export PI_SUBAGENT_MODEL="thinkingmachines/inkling"
+# PI_SUBAGENT_MODEL ("thinkingmachines/inkling") was here and is gone: 0 source
+# files in the tau monorepo read it, so it never selected a subagent model.
+# Subagent routing comes from the `subagents:` / `modelRoles:` keys in the
+# agent config (config/tau/agent/config.yml), not from the environment.
 export SCOUT_MODEL="local-fast"
 export SCOUT_BASE_URL="http://127.0.0.1:25100/v1"
 export SCOUT_API_KEY="llama-swap"
