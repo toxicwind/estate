@@ -1,41 +1,39 @@
 plugins:
-  - name: herd
-    source: ./projects/range/ranch/stockyard/herd
-    merged: sovereign-swap
-    privileged: true
-  - name: flock
-    source: ./projects/range/ranch/stockyard/flock
-    privileged: true
-  - name: shep
-    source: ./projects/range/ranch/barn/gatehouse
-    privileged: true
-    role: MCP federation gateway
-  - name: router
-    source: ./projects/range/ranch/stockyard/router-legacy
-    merged:
-      - router-legacy
-      - stockyard-flock-router
-      - sovereign-router
-    privileged: true
-  - name: barn-browser
-    source: ./projects/range/ranch/barn/browserless
-    privileged: false
-  - name: barn-gemini
-    source: ./projects/range/ranch/barn/gemini-mcp
-    privileged: false
-  - name: secretsmith
-    source: ./projects/range/ranch/barn/secretsmith
-    privileged: true
+- name: herd
+  source: ./projects/range/ranch/stockyard/herd
+  merged: sovereign-swap
+  privileged: true
+- name: flock
+  source: ./projects/range/ranch/stockyard/flock
+  privileged: true
+- name: shep
+  source: ./projects/range/ranch/barn/gatehouse
+  privileged: true
+  role: MCP federation gateway
+- name: router
+  source: ./projects/range/ranch/stockyard/router-legacy
+  merged:
+  - router-legacy
+  - stockyard-flock-router
+  - sovereign-router
+  privileged: true
+- name: barn-browser
+  source: ./projects/range/ranch/barn/browserless
+  privileged: false
+- name: barn-gemini
+  source: ./projects/range/ranch/barn/gemini-mcp
+  privileged: false
+- name: secretsmith
+  source: ./projects/range/ranch/barn/secretsmith
+  privileged: true
 providers:
   anthropic:
     serverSideFallback: true
   autoThinkingMaxEffort: xhigh
-  maxInFlightRequests:
-    {}
+  maxInFlightRequests: {}
   openai-codex:
-    codeMode: "on"
-    codeModeDirectTools:
-      []
+    codeMode: 'on'
+    codeModeDirectTools: []
   ollama-cloud:
     maxConcurrency: 3
   openai-compatible:
@@ -52,35 +50,43 @@ providers:
   streamFirstEventTimeoutSeconds: 300
   streamIdleTimeoutSeconds: 120
   unboundedRetryAfter:
-    - opencode-go
-    - opencode-zen
+  - opencode-go
+  - opencode-zen
   openrouterVariant: default
   fetch: auto
 modelRoles:
-  default: google-antigravity/gemini-3.8-flash:high
+  # Verified live against openrouter.ai/api/v1 on 2026-09-27.
+  # The previous default, google-antigravity/gemini-3.8-flash:high, answers
+  # 402 "Insufficient credits", so every untargeted turn and every subagent
+  # dispatch failed before reaching a model at all.
+  default: openrouter/nvidia/nemotron-3.5-lightning:free
   verification: openrouter/nvidia/nemotron-3.5-lightning:free
-  fallback: openrouter/inclusionai/ling-3.0-flash-vl:free
+  # ling-3.0-flash-vl:free is gone upstream — 404 "unavailable for free. The
+  # paid version is available now". This one answers 200.
+  fallback: openrouter/inclusionai/ling-3.0-flash-fin:free
   web: web/exa
 subagents:
   can_spawn_subagents: true
   whitelist:
-    - task
-    - plan
-    - review
-    - auditor
-    - critic
-    - explorer
-    - analyst
-    - debugger
-  defaultModel: sovereign/free
+  - task
+  - plan
+  - review
+  - auditor
+  - critic
+  - explorer
+  - analyst
+  - debugger
+  # Was sovereign/free — provider baseUrl http://127.0.0.1:25104/v1, which has
+  # no daemon in pitchfork.toml at all and nothing listening. Every subagent
+  # dispatch resolved to a dead endpoint. Same live default as modelRoles.
+  defaultModel: openrouter/nvidia/nemotron-3.5-lightning:free
   subagent: inherit
 tools:
   approvalMode: yolo
   intentTracing: true
   xdev: true
   xdevDocs: builtins
-  approval:
-    {}
+  approval: {}
   format: auto
   artifactSpillThreshold: 50
   artifactTailBytes: 20
@@ -89,8 +95,7 @@ tools:
   artifactTailLines: 500
   abortOnFabricatedResult: true
   maxTimeout: 0
-  xdevInlineDevices:
-    []
+  xdevInlineDevices: []
   speculativeExecution:
     enabled: true
 task:
@@ -137,8 +142,8 @@ hindsight:
   retainMode: full-session
   mentalModelsEnabled: true
   mentalModelAutoSeed: true
-  bankId: ""
-  apiToken: ""
+  bankId: ''
+  apiToken: ''
 temperature: -1
 effort:
   high: 0.9
@@ -162,10 +167,10 @@ images:
   urls:
     enabled: false
     backends:
-      - provider-files
-      - tailscale
-      - cloudflared
-      - litterbox
+    - provider-files
+    - tailscale
+    - cloudflared
+    - litterbox
     ttlHours: 72
     bindHost: 127.0.0.1
     sshRemotePort: 8787
@@ -191,7 +196,7 @@ display:
 showHardwareCursor: true
 advisor:
   enabled: false
-  syncBacklog: "off"
+  syncBacklog: 'off'
   immuneTurns: 3
 prewalk:
   enabled: false
@@ -208,8 +213,8 @@ model:
     enabled: true
     threshold: 5
     exemptTools:
-      - hub
-inlineToolDescriptors: "off"
+    - hub
+inlineToolDescriptors: 'off'
 includeModelInPrompt: true
 includeWorkspaceTree: false
 personality: friendly
@@ -233,37 +238,41 @@ retry:
   usageReservePct: 10
   usageReservePolicy: confirm
   fallbackChains:
+    # sovereign/free (:25104) and herd/qwen-flash-da-128k (:25100) are both
+    # down — herd's dependency gatehouse aborts startup on a missing
+    # projects/range/ranch/barn/shep/bin/github-mcp.sh. These two are verified
+    # 200 against openrouter and restore the chain's whole point.
     google-antigravity/*:
-      - sovereign/free
-      - herd/qwen-flash-da-128k
+    - openrouter/inclusionai/ling-3.0-flash-fin:free
+    - openrouter/nvidia/nemotron-3-super-120b-a12b:free
     web:
-      - web/perplexity
-      - google/gemini-2.5-flash
-      - anthropic/claude-haiku-4-5
-      - openai-codex/gpt-5.6-luna
-      - xai/grok-4.5
-      - web/zai
-      - web/tinyfish
-      - web/jina
-      - web/kagi
-      - web/tavily
-      - web/firecrawl
-      - web/brave
-      - web/kimi
-      - web/parallel
-      - web/synthetic
-      - web/searxng
-      - web/startpage
-      - web/duckduckgo
-      - web/ecosia
-      - web/google
-      - web/mojeek
-      - web/public
-      - google-antigravity/gemini-2.5-flash
-      - openai-codex/gpt-5.6
-      - openai-codex/gpt-5.5
-      - xai-oauth/grok-4.5
-      - web/ollama
+    - web/perplexity
+    - google/gemini-2.5-flash
+    - anthropic/claude-haiku-4-5
+    - openai-codex/gpt-5.6-luna
+    - xai/grok-4.5
+    - web/zai
+    - web/tinyfish
+    - web/jina
+    - web/kagi
+    - web/tavily
+    - web/firecrawl
+    - web/brave
+    - web/kimi
+    - web/parallel
+    - web/synthetic
+    - web/searxng
+    - web/startpage
+    - web/duckduckgo
+    - web/ecosia
+    - web/google
+    - web/mojeek
+    - web/public
+    - google-antigravity/gemini-2.5-flash
+    - openai-codex/gpt-5.6
+    - openai-codex/gpt-5.5
+    - xai-oauth/grok-4.5
+    - web/ollama
   fallbackRevertPolicy: cooldown-expiry
 autoResume: false
 power:
@@ -299,20 +308,20 @@ magicKeywords:
   orchestrate: true
   workflow: true
 completion:
-  notify: "on"
+  notify: 'on'
 error:
-  notify: "on"
+  notify: 'on'
 ask:
   timeout: 15
-  notify: "on"
+  notify: 'on'
   enabled: true
 recap:
   enabled: false
   idleSeconds: 240
 collab:
   relayUrl: wss://my.omp.sh
-  webUrl: ""
-  displayName: ""
+  webUrl: ''
+  displayName: ''
 share:
   serverUrl: https://my.omp.sh/s
   store: blob
@@ -323,20 +332,18 @@ stt:
 features:
   unexpectedStopDetection: smart
 workspace:
-  additionalDirectories:
-    []
+  additionalDirectories: []
 contextPromotion:
   enabled: true
 extendedContext: true
 compaction:
-  enabled: true
+  enabled: false
   midTurnEnabled: true
   methodOrder:
-    - shake
-    - soft
-    - snapcompact
-    - remote
-    - handoff
+  - shake
+  - soft
+  - remote
+  - handoff
   thresholdPercent: 95
   thresholdTokens: -1
   handoffSaveToDisk: true
@@ -361,8 +368,7 @@ ttsr:
   repeatMode: after-gap
   repeatGap: 10
   builtinRules: true
-  disabledRules:
-    []
+  disabledRules: []
 autolearn:
   enabled: true
   autoContinue: true
@@ -412,8 +418,7 @@ bash:
   enabled: true
   autoBackground:
     enabled: true
-  patterns:
-    []
+  patterns: []
   direnv: auto
   direnvLoadTimeoutMs: 30000
 bashInterceptor:
@@ -430,11 +435,11 @@ eval:
     enabled: true
 python:
   kernelMode: session
-  interpreter: ""
+  interpreter: ''
 ruby:
-  interpreter: ""
+  interpreter: ''
 julia:
-  interpreter: ""
+  interpreter: ''
 todo:
   enabled: true
   reminders: true
@@ -512,13 +517,17 @@ goal:
   enabled: true
   statusInFooter: true
   continuationModes:
-    - interactive
+  - interactive
 title:
   refreshOnReplan: true
 skills:
   enableSkillCommands: true
   customDirectories:
-    - /home/toxic/sovereign/skills
+  - /home/toxic/sovereign/skills
+  # Flat symlink library: 1943 skills from toxicwind/gear + antigravity-awesome-skills.
+  # One dir per skill, no parent repo code, collisions resolved to gear. Rebuilt by
+  # bin/build-skill-library.sh; non-portable skills (absolute parent paths) are excluded.
+  - /home/toxic/sovereign/skills-library
 commands:
   enableClaudeUser: true
   enableClaudeProject: true
@@ -536,7 +545,7 @@ speech:
   enhanced: false
   voice: af_heart
 codexResets:
-  autoRedeem: "yes"
+  autoRedeem: 'yes'
   minBlockedMinutes: 60
   keepCredits: 0
   salvageHorizonHours: 12
@@ -546,11 +555,9 @@ exa:
   enabled: true
   searchDelayMs: 1000
 cycleOrder:
-  - smol
-  - default
-  - slow
-disabledProviders:
-  []
-disabledExtensions:
-  []
+- smol
+- default
+- slow
+disabledProviders: []
+disabledExtensions: []
 skillful: true
