@@ -29,7 +29,11 @@ export interface DocGraph {
 }
 
 const SCRIPT_DIR = import.meta.dir;
-const DOCS_ROOT = process.env.SOVEREIGN_DOCS_ROOT || resolve(SCRIPT_DIR, "..", "docs");
+// This script lives in `<repo>/skills/scripts/`, so the repo root is two levels
+// up. It used to sit at the repo root, and the old one-level-up default
+// resolved to `skills/docs`, which does not exist, so every run died on the
+// first readdir. Override with SOVEREIGN_DOCS_ROOT to point somewhere else.
+const DOCS_ROOT = process.env.SOVEREIGN_DOCS_ROOT || resolve(SCRIPT_DIR, "..", "..", "docs");
 
 export function buildDocumentationGraph(): DocGraph {
   const nodes: Record<string, DocNode> = {};
