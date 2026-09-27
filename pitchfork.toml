@@ -24,6 +24,21 @@ retry = true
 ready_http = "http://127.0.0.1:25127/health"
 auto = ["start"]
 
+
+
+
+[daemons.tau]
+# omp acp exposed as TCP daemon via chute (stdio→TCP + mcpServers normalization)
+port = 25111
+run = "exec /home/toxic/sovereign/projects/range/ranch/barn/chute/chute.mjs --port 25111 -- /home/toxic/sovereign/projects/range/ranch/stockyard/tau/packages/coding-agent/dist/omp acp -e /home/toxic/.tau/extensions/vansrouter.ts"
+dir = "/home/toxic"
+mise = false
+retry = true
+ready_cmd = "/home/toxic/sovereign/bin/tcp-probe 25111"
+health_port = { port = 25111, interval = "30s", timeout = "5s", retries = 3 }
+depends = ["gatehouse"]
+env = { PI_CONFIG_DIR = "/home/toxic/.tau", PI_AGENT_DIR = "/home/toxic/.tau/agent", PI_CODING_AGENT = "true", PI_REASONING_LEVEL = "high", PI_SUBAGENT_MODEL = "thinkingmachines/inkling", PI_OPENAI_STREAM_IDLE_TIMEOUT_MS = "120000", VANSROUTER_API_KEY = "local-sovereign" }
+auto = ["start"]
 [daemons.mesh-hub]
 port = 25115
 run = "exec bun run src/services/mesh-hub.ts"
@@ -31,6 +46,7 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25115/health"
+health_http = { url = "http://127.0.0.1:25115/health", interval = "30s", timeout = "5s", retries = 3 }
 depends = ["gatehouse"]
 auto = ["start"]
 
@@ -52,6 +68,7 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25143/health"
+health_http = { url = "http://127.0.0.1:25143/health", interval = "30s", timeout = "5s", retries = 3 }
 depends = ["gatehouse", "herd"]
 auto = ["start"]
 
@@ -69,17 +86,18 @@ auto = ["start"]
 [daemons.search-api]
 port = 25112
 run = "exec bun --hot run apps/api/src/server.ts"
-dir = "/home/toxic/projects/sovereign-projects/sovereign-github-search"
+dir = "/home/toxic/sovereign/sovereign-github-search"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25112/health"
+health_http = { url = "http://127.0.0.1:25112/health", interval = "30s", timeout = "5s", retries = 3 }
 depends = ["gatehouse"]
 auto = ["start"]
 
 [daemons.search-ui]
 port = 25114
 run = "exec ./node_modules/.bin/next dev -p 25114"
-dir = "/home/toxic/projects/sovereign-projects/sovereign-github-search/apps/frontend"
+dir = "/home/toxic/sovereign/sovereign-github-search/apps/frontend"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25114/"
@@ -107,6 +125,7 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25201/health"
+health_http = { url = "http://127.0.0.1:25201/health", interval = "30s", timeout = "5s", retries = 3 }
 depends = ["gatehouse"]
 auto = ["start"]
 
@@ -117,6 +136,7 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25106/api/health"
+health_http = { url = "http://127.0.0.1:25106/health", interval = "30s", timeout = "5s", retries = 3 }
 depends = ["gatehouse"]
 auto = ["start"]
 
@@ -127,6 +147,7 @@ dir = "/home/toxic/sovereign/tools/null-g-proxy"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25107/health"
+health_http = { url = "http://127.0.0.1:25107/health", interval = "30s", timeout = "5s", retries = 3 }
 depends = ["gatehouse"]
 auto = ["start"]
 
@@ -137,6 +158,7 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25121/health"
+health_http = { url = "http://127.0.0.1:25121/health", interval = "30s", timeout = "5s", retries = 3 }
 depends = ["gatehouse"]
 auto = ["start"]
 
@@ -147,6 +169,7 @@ dir = "."
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25117/health"
+health_http = { url = "http://127.0.0.1:25117/health", interval = "30s", timeout = "5s", retries = 3 }
 depends = ["gatehouse"]
 auto = ["start"]
 
@@ -157,6 +180,7 @@ dir = "/home/toxic/kimi-code-npm"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25126/health"
+health_http = { url = "http://127.0.0.1:25126/health", interval = "30s", timeout = "5s", retries = 3 }
 depends = ["gatehouse"]
 auto = ["start"]
 
@@ -177,6 +201,7 @@ dir = "."
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25133/"
+health_http = { url = "http://127.0.0.1:25133/healthz", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
 
 [daemons.redis]
@@ -210,6 +235,7 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25105/-/healthy"
+health_http = { url = "http://127.0.0.1:25105/-/healthy", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
 
 [daemons.grafana]
@@ -219,6 +245,7 @@ dir = "."
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25110/api/health"
+health_http = { url = "http://127.0.0.1:25110/health", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
 
 [daemons.flock]
@@ -228,7 +255,7 @@ run = "exec env HOST=127.0.0.1 PORT=${FLOCK_PORT} DATA_DIR=/home/toxic/.flock-da
 dir = "."
 mise = false
 retry = true
-ready_cmd = "ss -ltn 'sport = :25193' | grep -q LISTEN"
+ready_http = "http://127.0.0.1:25193/health"
 env = { VANSROUTER_API_KEY = "local-sovereign", FLOCK_PORT = "25193" }
 auto = ["start"]
 
@@ -248,7 +275,8 @@ run = "exec env STORAGE_PATH=/home/toxic/.matter_data BLUETOOTH_ADAPTER=0 LOG_LE
 dir = "."
 mise = false
 retry = true
-ready_cmd = "ss -ltn 'sport = :25209' | grep -q LISTEN"
+ready_http = "http://127.0.0.1:25209/health"
+health_http = { url = "http://127.0.0.1:25209/health", interval = "30s", timeout = "5s", retries = 3 }
 env = { MATTER_SERVER_PORT = "25209" }
 auto = ["start"]
 
@@ -260,7 +288,7 @@ dir = "/home/toxic/projects/rig-work"
 mise = false
 retry = true
 health_http = { url = "http://127.0.0.1:25196/api/health", interval = "30s", timeout = "5s", retries = 3 }
-ready_cmd = "ss -ltn 'sport = :25196' | grep -q LISTEN"
+ready_http = "http://127.0.0.1:25196/api/health"
 auto = ["start"]
 
 [daemons.kimi-audit-dash]
@@ -269,6 +297,7 @@ dir = "/home/toxic/kimi-token-audit"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25116/health"
+health_http = { url = "http://127.0.0.1:25116/health", interval = "30s", timeout = "5s", retries = 3 }
 env = { KIMI_AUDIT_DASH_PORT = "25116" }
 auto = ["start"]
 
@@ -282,8 +311,8 @@ auto = ["start"]
 
 [daemons.oracle-core]
 port = 25151
-health_port = { port = 25151, interval = "30s", timeout = "5s", retries = 3 }
-ready_cmd = "ss -ltn 'sport = :25151' | grep -q LISTEN"
+ready_http = "http://127.0.0.1:25151/health"
+health_http = { url = "http://127.0.0.1:25151/health", interval = "30s", timeout = "5s", retries = 3 }
 run = "exec /home/toxic/sovereign/agents/oracle-market/bin/run-oracle-core.sh"
 dir = "/home/toxic/sovereign/agents/oracle-market"
 mise = false
@@ -295,7 +324,7 @@ run = "exec /home/toxic/sovereign/agents/oracle-market/bin/oracle_chat.py"
 dir = "/home/toxic/sovereign/agents/oracle-market"
 mise = false
 retry = true
-env = { ORACLE_CHANNEL = "/home/toxic/.shingle/squawk-root/bid-market" }
+env = { ORACLE_CHANNEL = "/home/toxic/.fleet-bus/squawk-root/bid-market" }
 auto = ["start"]
 
 [daemons.files]
@@ -313,16 +342,16 @@ health_http = { url = "http://127.0.0.1:34567/health", interval = "30s", timeout
 auto = ["start"]
 
 [groups.mesh]
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx"]
+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx"]
 
 [groups.core]
 daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server"]
 
 [groups.agents]
-daemons = ["tau"]
+daemons = []
 
 [groups.all]
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "tau-code", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
 
 
 [daemons.kimi-auto-shim]
@@ -361,16 +390,16 @@ ready_http = "http://127.0.0.1:25163/health"
 auto = ["start"]
 
 [daemons.squawk-relay-sink]
-run = "exec /home/toxic/.shingle/squawk-relay/run-sink.sh"
-dir = "/home/toxic/.shingle/squawk-relay"
+run = "exec /home/toxic/.fleet-bus/squawk-relay/run-sink.sh"
+dir = "/home/toxic/.fleet-bus/squawk-relay"
 mise = false
 retry = true
 boot_start = true
 auto = ["start"]
 
 [daemons.squawk-relay-forward]
-run = "exec /home/toxic/.shingle/squawk-relay/run-forward.sh"
-dir = "/home/toxic/.shingle/squawk-relay"
+run = "exec /home/toxic/.fleet-bus/squawk-relay/run-forward.sh"
+dir = "/home/toxic/.fleet-bus/squawk-relay"
 mise = false
 retry = true
 boot_start = true
@@ -403,34 +432,9 @@ boot_start = true
 auto = ["start"]
 
 [daemons.browserless]
-port = 25130
-run = "exec /home/toxic/sovereign/projects/range/ranch/barn/browserless/server/run.sh"
 dir = "."
-mise = false
-retry = true
-ready_cmd = "ss -ltn 'sport = :25130' | grep -q LISTEN"
-boot_start = true
-env = { BROWSERLESS_PORT = "25130", WAYLAND_DISPLAY = "wayland-1", XDG_RUNTIME_DIR = "/run/user/1000", BROWSERLESS_CONNECTION_TIMEOUT = "900000" }
-auto = ["start"]
-
-[daemons.gemini-mcp]
-health_http = { url = "http://127.0.0.1:25202/health", interval = "30s", timeout = "5s", retries = 3 }
-env = { GEMINI_MCP_PORT = "25202" }
-port = 25202
-run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/sovereign/projects/range/ranch/barn/gemini-mcp/server.py"
-dir = "/home/toxic/sovereign/projects/range/ranch/barn/gemini-mcp"
-mise = false
-retry = true
-ready_http = "http://127.0.0.1:25202/health"
-auto = ["start"]
-
-[daemons.sovereign-router]
-port = 25104
-run = "exec bun run router.ts"
-dir = "/home/toxic/sovereign/tools/sovereign-router/sovereign-router-ts"
-mise = true
-retry = true
-ready_http = "http://127.0.0.1:25104/health"
+run = "exec /home/toxic/sovereign/projects/range/ranch/barn/browserless/server/run.sh"
+ready_port = 25130
 depends = ["gatehouse"]
 env = { SOVEREIGN_ROUTER_PORT = "25104" }
 auto = ["start"]
@@ -455,19 +459,16 @@ env = { WHATSAPP_MCP_PORT = "25146" }
 # Squawk websocket push feed (2026-09-14): stdlib asyncio ws server, inotify on
 # channel files + zipfs-vault, bearer-token auth. Replaces polling.
 [daemons.squawk-ws]
-health_port = { port = 25147, interval = "30s", timeout = "5s", retries = 3 }
 port = 25147
 run = "exec python3 /home/toxic/sovereign/projects/range/ranch/squawk-ws/squawk_ws_server.py"
 dir = "/home/toxic/sovereign/projects/range/ranch/squawk-ws"
 mise = false
 retry = true
 boot_start = true
-ready_cmd = "ss -ltn 'sport = :25147' | grep -q LISTEN"
 env = { SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/sovereign/hatch/agents/ember/squawk-root" }
 auto = ["start"]
 
 [daemons.boundless]
-ready_cmd = "ss -ltn 'sport = :25197' | grep -q LISTEN"
 port = 25197
 run = "exec /home/toxic/boundless/.venv/bin/python -m uvicorn web.server:app --host 127.0.0.1 --port ${BOUNDLESS_PORT}"
 dir = "/home/toxic/boundless"
@@ -480,8 +481,6 @@ auto = ["start"]
 # exec server; handshake/framing borrowed from squawk-ws. Same token, command
 # policy and audit as the HTTPS bridge (awrawr_mcp.py). Funnel: /exec-ws -> :25204.
 [daemons.awrawr-ws-exec]
-health_port = { port = 25204, interval = "30s", timeout = "5s", retries = 3 }
-ready_cmd = "ss -ltn 'sport = :25204' | grep -q LISTEN"
 port = 25204
 env = { WS_EXEC_PORT = "25204" }
 # NOTE: runs the TRACKED source; /home/toxic/awrawr_ws_exec.py is kept
@@ -504,6 +503,7 @@ mise = false
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25148/health"
+health_http = { url = "http://127.0.0.1:25197/api/health", interval = "30s", timeout = "5s", retries = 3 }
 # Build-cache env (2026-09-21): every buildsrv job inherits these. sccache/ccache/uv caches live on NVMe.
 # CARGO_INCREMENTAL=0 because sccache refuses incremental compilation outright.
 # CC/CXX intentionally NOT set: BASH_ENV rewrites them to clang for bash -lc jobs,
@@ -524,6 +524,16 @@ mise = false
 retry = true
 boot_start = true
 env = { BUILDSRV_PORT = "25148", WATCHDOG_INTERVAL_S = "20", WATCHDOG_MAX_FAILS = "3" }
+auto = ["start"]
+[daemons.pcie-moe-telemetry]
+health_http = { url = "http://127.0.0.1:25219/api/status", interval = "10s", timeout = "5s", retries = 2 }
+port = 25219
+run = "exec bun run /home/toxic/sovereign/tools/pcie-moe/server.ts"
+dir = "/home/toxic/sovereign/tools/pcie-moe"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25219/api/status"
 auto = ["start"]
 
 
@@ -572,7 +582,6 @@ dir = "/home/toxic/sovereign/projects/range/ranch/squawk-ws"
 mise = false
 retry = true
 boot_start = true
-ready_cmd = "find /home/toxic/sovereign/projects/range/ranch/squawk-ws/client-heartbeat -mmin -2 | grep -q ."
 depends = ["squawk-ws"]
 auto = ["start"]
 
@@ -586,7 +595,6 @@ dir = "/home/toxic/refusal-hunt"
 mise = false
 retry = true
 boot_start = true
-ready_cmd = "p=$(pgrep -f '[r]efusal-watchdog[.]py' | head -1); [ -n \"$p\" ] && pgrep -P \"$p\" -f 'inotifywait -m' >/dev/null"
 auto = ["start"]
 [daemons.sorry-watchdog]
 run = "exec python3 /home/toxic/refusal-hunt/sorry-watchdog.py"
@@ -594,7 +602,6 @@ dir = "/home/toxic/refusal-hunt"
 mise = false
 retry = true
 boot_start = true
-ready_cmd = "p=$(pgrep -f '[s]orry-watchdog[.]py' | head -1); [ -n \"$p\" ] && pgrep -P \"$p\" -f 'inotifywait -m' >/dev/null"
 auto = ["start"]
 
 # forensics-srv REMOVED 2026-09-21 (envhunt): double-supervised. The live
@@ -643,6 +650,7 @@ mise = false
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25180/health"
+health_http = { url = "http://127.0.0.1:25180/health", interval = "30s", timeout = "5s", retries = 3 }
 env = { ML_SERVE_PORT = "25180" }
 auto = ["start"]
 
@@ -654,6 +662,7 @@ mise = false
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25181/health"
+health_http = { url = "http://127.0.0.1:25181/health", interval = "30s", timeout = "5s", retries = 3 }
 env = { BENCH_RADAR_PORT = "25181" }
 auto = ["start"]
 
@@ -745,7 +754,6 @@ run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/kimi-claw/bridg
 dir = "/home/toxic/sovereign/tools/kimi-claw"
 mise = false
 retry = true
-ready_cmd = "p=$(pgrep -f '[b]ridge[.]ts --daemon --instance b' | head -1); [ -n \"$p\" ] && ls -l /proc/$p/fd 2>/dev/null | grep -q inotify"
 auto = ["start"]
 
 # --- herd-deployer 2026-09-20: key-pool rotation sidecar for herd cloud peers.
@@ -781,6 +789,7 @@ run = "exec /usr/local/bin/node_exporter --web.listen-address=127.0.0.1:25211"
 dir = "."
 retry = true
 ready_http = "http://127.0.0.1:25211/metrics"
+health_http = { url = "http://127.0.0.1:25211/health", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
 
 # ── port-dynamic 2026-09-20: orphans adopted + out-of-range ports moved ──
@@ -791,6 +800,7 @@ run = "exec python3 ./stack/services/sovereign-exporter.py"
 dir = "."
 retry = true
 ready_http = "http://127.0.0.1:25213/metrics"
+health_http = { url = "http://127.0.0.1:25213/health", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
 
 [daemons.awrawr-mcp]
@@ -868,26 +878,32 @@ run = "exec /home/toxic/.local/bin/websockify --web /home/toxic/.browserless/nov
 dir = "."
 mise = false
 retry = true
-ready_cmd = "curl -sf http://127.0.0.1:6080/vnc.html > /dev/null"
+ready_http = "http://127.0.0.1:6080/"
+health_http = { url = "http://127.0.0.1:6080/", interval = "30s", timeout = "5s", retries = 3 }
 boot_start = true
 auto = ["start"]
 
 [daemons.browser-keeper]
 port = 9223
+# The keeper launches a HEADED chromium on DISPLAY :99, so it cannot come up
+# without agent-display (Xvnc :99). Undeclared, the keeper started anyway and
+# relaunch-looped on "Missing X server or $DISPLAY" every 5s. That left the
+# browserless MCP server refusing to start ("keeper CDP not answering"), and
+# every omp startup paid for the failed connect. The dependency is real, so
+# it is declared here instead of being discovered again after a reboot.
+depends = ["agent-display"]
 run = "exec /home/toxic/sovereign/projects/range/ranch/barn/browserless/keeper/keeper.sh"
 dir = "."
 mise = false
 retry = true
-ready_cmd = "curl -sf http://127.0.0.1:9223/json/version > /dev/null"
+ready_http = "http://127.0.0.1:9223/"
+health_http = { url = "http://127.0.0.1:9223/", interval = "30s", timeout = "5s", retries = 3 }
 boot_start = true
 env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000" }
 auto = ["start"]
 
 [daemons.sovereign-stream-broker]
-port = 25215
-run = "exec bun run src/index.ts"
 dir = "/home/toxic/sovereign/projects/range/ranch/stockyard/stream-broker"
-mise = false
-retry = true
-ready_cmd = "ss -ltn 'sport = :25215' | grep -q LISTEN"
-auto = ["start"]
+run = "exec bun run src/index.ts"
+port = 25215
+ready_port = 25215
