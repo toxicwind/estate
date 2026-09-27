@@ -364,7 +364,7 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "floc
 daemons = []
 
 [groups.all]
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash", "sovereign-router"]
 
 
 [daemons.kimi-auto-shim]
@@ -920,3 +920,18 @@ dir = "/home/toxic/sovereign/projects/range/ranch/stockyard/stream-broker"
 run = "exec bun run src/index.ts"
 port = 25215
 ready_port = 25215
+
+# Sovereign Router (bun router.ts v3.2) -- intelligent free-pool routing behind
+# the fleet default model sovereign/free (:25104). Restored 2026-09-27: this
+# daemon never had a pitchfork entry, so the 2026-09-21 ad-hoc deploy died
+# silently in the 9/26 yote flaps. Owned by pitchfork now, auto-started.
+[daemons.sovereign-router]
+port = 25104
+run = "exec bun router.ts"
+dir = "/home/toxic/sovereign/tools/sovereign-router/sovereign-router-ts"
+retry = true
+ready_http = "http://127.0.0.1:25104/health"
+health_http = { url = "http://127.0.0.1:25104/health", interval = "30s", timeout = "5s", retries = 3 }
+depends = ["gatehouse", "keypool"]
+env = { SOVEREIGN_ROUTER_PORT = "25104" }
+auto = ["start"]
