@@ -59,4 +59,9 @@ retry:
 
 extensions:
   - /home/toxic/.bun/install/global/node_modules/billion-context/dist/agent/omp-native.js
-  - npm:context-forger
+# `npm:context-forger` used to sit here. It is not a package: npm returns 404
+# for it, it appears in no GitHub repo, and the string is the fixture that
+# sigma's own third-party scanner test writes
+# (`tests/issue1206-thirdparty-scan.test.ts:165`) to prove the scanner flags a
+# keyword-matched third-party extension. This file had been seeded from that
+# fixture, which is also where the broken `/u/node_modules/...` path came from.
