@@ -60,11 +60,43 @@ modelRoles:
   # 402 "Insufficient credits", so every untargeted turn and every subagent
   # dispatch failed before reaching a model at all.
   default: openrouter/nvidia/nemotron-3.5-lightning:free
+  # smol was never defined here, but two things reference it: cycleOrder is
+  # [smol, default, slow], and the skill-description compressor resolves the
+  # "smol" role (skill-descriptions.ts:30). With it undefined, resolution fell
+  # through to priority.json's MODEL_PRIO.smol, whose first entry is
+  # google-antigravity/gemini-3.8-flash. That answers 402, and the compressor
+  # runs once per skill at startup, so every session opened made ~100 failing
+  # model calls and could not exit until they drained. 2.6B, 200 in 0.33s.
+  smol: openrouter/liquid/lfm-2.5-2.6b:free
+  # slow was undefined too, and cycleOrder is [smol, default, slow]. Undefined
+  # roles fall through to priority.json's MODEL_PRIO.slow, whose first entry is
+  # anthropic/claude-opus-5-5. With no working anthropic credential every turn
+  # ended "agent turn ended with provider error: Connection error." on the
+  # largest model in the free tier, verified 200.
+  slow: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
+  # The other 9 chat roles were undefined too. An undefined role falls through
+  # to priority.json's MODEL_PRIO.<role>, and every entry in those lists is a
+  # paid model from a provider this account has no working credential for, so
+  # every one of them ended in a provider error. All verified 200.
+  vision: openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
+  plan: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  advisor: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  judge: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  task: openrouter/nvidia/nemotron-3.5-lightning:free
+  commit: openrouter/liquid/lfm-2.5-2.6b:free
+  tiny: openrouter/liquid/lfm-2.5-2.6b:free
+  memory: openrouter/liquid/lfm-2.5-2.6b:free
   verification: openrouter/nvidia/nemotron-3.5-lightning:free
   # ling-3.0-flash-vl:free is gone upstream — 404 "unavailable for free. The
   # paid version is available now". This one answers 200.
   fallback: openrouter/inclusionai/ling-3.0-flash-fin:free
   web: web/exa
+  # image, speech and dictation are deliberately left unset. The free tier has
+  # no image-output and no audio model at all (checked against the live
+  # catalog: 17 free models, 8 accept image input, 0 emit image, 0 touch audio),
+  # so there is no honest free mapping. Leaving them unset keeps them falling
+  # through to the paid priority list, which fails loudly rather than routing
+  # image generation to a text model.
 subagents:
   can_spawn_subagents: true
   whitelist:
@@ -524,10 +556,14 @@ skills:
   enableSkillCommands: true
   customDirectories:
   - /home/toxic/sovereign/skills
-  # Flat symlink library: 1943 skills from toxicwind/gear + antigravity-awesome-skills.
-  # One dir per skill, no parent repo code, collisions resolved to gear. Rebuilt by
-  # bin/build-skill-library.sh; non-portable skills (absolute parent paths) are excluded.
-  - /home/toxic/sovereign/skills-library
+  # Register a flat skill repo by its root. The loader reads <dir>/<name>/SKILL.md
+  # at depth 1 only, so a repo whose skills sit directly at the root works as-is.
+  # Nothing is copied or symlinked: each skill keeps its own code, its relative
+  # refs into the parent repo, and the parent repo itself, so the skill stays
+  # repo-aware. This is the universal rule -- any flat skill repo registers this
+  # way. toxicwind/gear (486 skills) holds the *-swarm family, including
+  # webapp-building-swarm, vibecoding-webapp-swarm and backend-building-swarm.
+  - /home/toxic/gk-live-gear
 commands:
   enableClaudeUser: true
   enableClaudeProject: true
