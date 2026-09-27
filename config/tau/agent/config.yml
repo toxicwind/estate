@@ -1,0 +1,39 @@
+# THIS is the file the engine actually reads. settings.ts:183 documents
+# "Agent directory for config.yml/config.yaml storage", and dirs.ts joins
+# PI_CODING_AGENT_DIR for it. The 599-line ../config.yml (the PI_CONFIG_DIR
+# root) is NOT loaded for settings — modelRoles written there are dead, and an
+# undefined `default` then collides with the bundled `cursor/default` catalog
+# entry, which dies on "No API key found for cursor".
+#
+# Every model below was verified live (HTTP 200) against
+# https://openrouter.ai/api/v1/chat/completions on 2026-09-27. The account has
+# NO openrouter credits (402 "Insufficient credits" on every paid model), so a
+# paid default silently burns ~100 model calls per session open on skill
+# description compression alone. Keep these on :free models.
+modelRoles:
+  default: openrouter/nvidia/nemotron-3.5-lightning:free
+  smol: openrouter/liquid/lfm-2.5-2.6b:free
+  slow: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
+  vision: openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
+  plan: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  advisor: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  judge: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  task: openrouter/nvidia/nemotron-3.5-lightning:free
+  commit: openrouter/liquid/lfm-2.5-2.6b:free
+  tiny: openrouter/liquid/lfm-2.5-2.6b:free
+  memory: openrouter/liquid/lfm-2.5-2.6b:free
+  verification: openrouter/nvidia/nemotron-3.5-lightning:free
+  fallback: openrouter/inclusionai/ling-3.0-flash-fin:free
+  web: web/exa
+  # image / speech / dictation stay UNSET on purpose. The live free catalog has
+  # 17 models, 8 accept image input, 0 emit image and 0 touch audio. Unset,
+  # they fail loudly against priority.json's paid list instead of silently
+  # routing image generation to a text model.
+
+defaultThinkingLevel: auto
+
+extensions:
+  - /home/toxic/.bun/install/global/node_modules/billion-context/dist/agent/omp-native.js
+  - npm:context-forger
+providers:
+  p1: {}
