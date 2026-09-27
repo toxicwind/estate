@@ -87,7 +87,9 @@ Plus the agent layer: [`hatch/agents/ember`](hatch/agents/ember) (Ember's operat
 | `herd` | `engines/herd/`, C++ inference **engine** forks | `projects/herd/` → `stockyard/herd`, the **Go** router on `:25100` |
 | `squawk` | `projects/range/ranch/squawk/` and `squawk-ws/`, the **servers** | `hatch/agents/ember/chat/`, the **client**, a separate repo |
 
-**Stale leftovers, belonging to no tier.** These are abandoned worktrees and scratch clones from 2026-09-14 through 2026-09-20. Their `.git` files still point into `.git/worktrees/`, but `git worktree list` no longer registers them, so they are inert: `bench-wt-tau/`, `merge-main-20260914/`, `mesh-bruteforce-20260914/`, `modelpush-71728/`, `wt-hft-hygiene-20260914/`, `.archive-20260920/`, `kimi-audit-scratch-20260914/` (a nested clone of this very repo), plus `.git.broken-2026-09-24T15-42-58-450Z/` and `.merge-state.json`.
+**Stale leftovers, belonging to no tier — now archived.** These were abandoned worktrees and scratch clones from 2026-09-14 through 2026-09-20 whose `.git` files pointed into `.git/worktrees/`, a directory `git worktree list` no longer registered, so `git` could not resolve them at all. On 2026-09-27 they were moved, not deleted, to `.archive-20260920/orphaned-worktrees-20260927/` and recorded in that directory's `MANIFEST.md`: `bench-wt-tau/`, `merge-main-20260914/`, `mesh-bruteforce-20260914/`, `modelpush-71728/`, `wt-hft-hygiene-20260914/`, `kimi-audit-scratch-20260914/` (a nested clone of this very repo, 141 MB), and `.git.broken-2026-09-24T15-42-58-450Z/` (a partial copy of `.git/hooks`, superseded by the intact one). `mv` back to restore.
+
+One of the old entries was **not** a leftover: `.merge-state.json` is live `bun` state recording `patchedDependencies` for `patches/@ark%2Fschema@0.56.2.patch` and `patches/puppeteer-core@25.3.0.patch`. Both patches exist, so deleting it would break `bun install`. It stays.
 
 **The rule.** Before editing any directory, run `git remote get-url origin` inside it. No output means the monorepo, so commit here. Output means it is its own repository, so commit there.
 
