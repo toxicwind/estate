@@ -287,7 +287,7 @@ def main():
     else:
         if healthy:
             # Count non-genuine for honest reporting
-            non_genuine = sum(v["vetoed"] + v["overlap_skip"] + v["no_op"] + v["failed"] 
+            non_genuine = sum(v["vetoed"] + v["overlap_skip"] + v["no_op"] + v["failed"]
                            for v in job_reports.values())
             if non_genuine > 0:
                 print(f"CRON-TRUST: OK — {len(job_reports)} jobs, {non_genuine} non-genuine runs below alert threshold")
