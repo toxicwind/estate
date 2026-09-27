@@ -371,3 +371,8 @@ killer-features/**/state.json
 # re-materialising real credentials into it. Never track; bootstrap the live
 # file from the tracked mcp_config.json.dist. Untracked in ca01d2b8.
 projects/herd/mesh/gateway/mcp_config.json
+
+# Bleve BM25 search index for the mcpproxy-go gateway. A runtime artifact of
+# internal/index/; its canonical home is ~/.mcpproxy/index.bleve/, not the
+# repo. Untracked here.
+projects/herd/mesh/gateway/index.bleve/
