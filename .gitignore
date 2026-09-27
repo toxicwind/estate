@@ -144,6 +144,8 @@ storageState.json
 *session*
 !skills/tau-session-audit/
 !skills/tau-session-audit/**
+!skills/fix-tau-session-corruption/
+!skills/fix-tau-session-corruption/**
 browser_profile/
 browser_profiles/
 browser-profile/
@@ -350,6 +352,7 @@ projects/tau/engine.bak-*/
 projects/tau-occupied-*/
 projects/nim-repos/
 projects/guidellm/
+projects/gear/
 worktrees/
 sovereign-github-search/
 bench-wt-tau/
