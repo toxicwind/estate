@@ -47,16 +47,34 @@ _probe() {
   fi
 }
 
-# Probe the critical ones (add more as needed)
-_probe "llama-swap"        "http://127.0.0.1:25100/health"
+# Reported, but never counted. These two have a ports.env entry and real
+# consumers, yet pitchfork does not start them: `ghas-mcp` (:25113) has no
+# launcher anywhere in this tree, and `antigravity-gw` (:25128) lives in its
+# own fork at /home/toxic/projects/antigravity-gateway-master. Counting them
+# as failures would make "ALL HEALTHY" unreachable, so they are informational.
+_info() {
+  local name=$1 url=$2
+  if curl -sf --max-time 2 "$url" >/dev/null 2>&1; then
+    printf '· %-22s %s (up, unmanaged)\n' "$name" "$url"
+  else
+    printf '· %-22s %s (not started — no pitchfork daemon)\n' "$name" "$url"
+  fi
+}
+
+# Probe the critical ones. Names match the pitchfork daemon that owns the port:
+# :25100 is `herd` (the llama-swap fork) and :25112 is `search-api` (renamed
+# from ghas-api). A label naming a daemon that no longer exists sends you
+# hunting for a service that was never broken.
+_probe "herd"              "http://127.0.0.1:25100/health"
 _probe "qdrant"            "http://127.0.0.1:25133/"
 _probe "keypool"           "http://127.0.0.1:25109/health"
-_probe "ghas-api"          "http://127.0.0.1:25112/health"
-_probe "ghas-mcp"          "http://127.0.0.1:25113/health"
+_probe "search-api"        "http://127.0.0.1:25112/health"
 _probe "prometheus"        "http://127.0.0.1:25105/-/healthy"
 _probe "gatehouse"         "http://127.0.0.1:25127/health"
-_probe "antigravity-gw"    "http://127.0.0.1:25128/health"
 _probe "kimi-code"         "http://127.0.0.1:25126/health"
+
+_info "ghas-mcp"           "http://127.0.0.1:25113/health"
+_info "antigravity-gw"     "http://127.0.0.1:25128/health"
 
 echo
 echo "=== summary ==="
