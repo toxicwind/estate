@@ -270,6 +270,16 @@ retry:
   usageReservePct: 10
   usageReservePolicy: confirm
   fallbackChains:
+    # Every free model here answered HTTP 200 in under 2.5s on 2026-09-27. All
+    # :free models share one per-key rate limit, so a throttle usually hits
+    # several at once — but rotating still beats backing off on a model that is
+    # not coming back, and it is what keeps a stalled turn from going silent
+    # for 90s+ (maxDelayMs is a fail-fast cap the engine only sleeps past when
+    # there is no chain to rotate into).
+    openrouter/*:
+    - openrouter/liquid/lfm-2.5-2.6b:free
+    - openrouter/nvidia/nemotron-3-super-120b-a12b:free
+    - openrouter/inclusionai/ling-3.0-flash-fin:free
     # sovereign/free (:25104) and herd/qwen-flash-da-128k (:25100) are both
     # down — herd's dependency gatehouse aborts startup on a missing
     # projects/range/ranch/barn/shep/bin/github-mcp.sh. These two are verified
@@ -563,7 +573,7 @@ skills:
   # repo-aware. This is the universal rule -- any flat skill repo registers this
   # way. toxicwind/gear (486 skills) holds the *-swarm family, including
   # webapp-building-swarm, vibecoding-webapp-swarm and backend-building-swarm.
-  - /home/toxic/gk-live-gear
+  - /home/toxic/sovereign/projects/range/ranch/gear
 commands:
   enableClaudeUser: true
   enableClaudeProject: true
