@@ -5,7 +5,7 @@
 set -euo pipefail
 CHANNEL="${1:?usage: squawk-alert <channel> <text>}"
 TEXT="${2:?usage: squawk-alert <channel> <text>}"
-ROOT="/home/toxic/.shingle/squawk-root/$CHANNEL"
+ROOT="/home/toxic/.fleet-bus/squawk-root/$CHANNEL"
 mkdir -p "$ROOT"
 SEQ=$(python3 -c "
 import os
