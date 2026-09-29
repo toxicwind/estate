@@ -145,7 +145,7 @@ logs = "pitchfork logs --raw -n 100"
 "health-hf-downloader" = "curl -sf --max-time 5 http://127.0.0.1:25106/api/health"
 "health-null-g-proxy" = "curl -sf --max-time 5 http://127.0.0.1:25107/health"
 "health-kimi-audit-dash" = "curl -sf --max-time 5 http://127.0.0.1:25116/health"
-"health-mcp-gateway" = "curl -sf --max-time 5 http://127.0.0.1:25104/health"
+"health-mcp-gateway" = "curl -sf --max-time 5 http://127.0.0.1:25155/health"
 "health-byte-vision" = "curl -sf --max-time 5 http://127.0.0.1:25121/health"
 "health-hindsight" = "curl -sf --max-time 5 http://127.0.0.1:25117/health"
 "health-tau-code" = "curl -sf --max-time 5 http://127.0.0.1:25145/"
@@ -204,3 +204,10 @@ depends = ["up-squawk-ws", "up-squawk-feed"]
 [tasks."down-squawk"]
 description = "Stop squawk-ws and squawk-feed"
 depends = ["down-squawk-ws", "down-squawk-feed"]
+# --- keypool modular additions ---
+[tasks."keypool-selftest"]
+run = "python3 -m keypool --selftest"
+[tasks."keypool-status"]
+run = "curl -s http://127.0.0.1:25109/status | jq -r '.pools | to_entries[] | \"\\(.key): \" + ([.value.keys[] | \"\\(.name)=\\(.state)\"] | join(\" \"))'"
+[tasks."keypool-logs"]
+run = "pitchfork logs keypool -n 100"

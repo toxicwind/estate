@@ -64,7 +64,7 @@ AGENT_DIR = BIN.parent
 CHANNEL = Path(os.environ.get("ORACLE_CHANNEL",
     "/home/toxic/sovereign/hatch/agents/ember/squawk-root/bid-market"))
 FLEET = Path(os.environ.get("ORACLE_FLEET",
-    "/home/toxic/shingle/squawk-root/fleet"))
+    "/home/toxic/.fleet-bus/squawk-root/fleet"))
 WORK = Path(os.environ.get("ORACLE_WORK", str(AGENT_DIR / "work")))
 LEDGER = Path(os.environ.get("ORACLE_LEDGER",
                              str(AGENT_DIR / "ledger" / "ledger.jsonl")))
