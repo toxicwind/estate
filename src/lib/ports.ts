@@ -9,6 +9,25 @@ import { resolve } from "node:path";
 
 const SOV = process.env.SOVEREIGN_ROOT || resolve(homedir(), "sovereign");
 
+/**
+ * Strip a trailing ` # comment` from an env-file value. Quote-aware: a `#`
+ * inside a quoted value is preserved, so `KEY="a#b"` keeps `a#b`.
+ * Unquoted values are cut at the first whitespace-then-`#`, so
+ * `OPENFANG_PORT=25103  # owner: x` parses as `25103`. Without this, any
+ * trailing comment becomes part of the value and numeric parsing (ports,
+ * timeouts) fails on the polluted string.
+ */
+function stripInlineComment(raw: string): string {
+  const v = raw.trim();
+  const q = v[0];
+  if (q === '"' || q === "'") {
+    const end = v.indexOf(q, 1);
+    return end > 0 ? v.slice(0, end + 1) : v;
+  }
+  const hash = v.search(/\s#/);
+  return (hash >= 0 ? v.slice(0, hash) : v).trim();
+}
+
 function loadEnvFile(path: string): void {
   if (!existsSync(path)) return;
   for (let line of readFileSync(path, "utf8").split("\n")) {
@@ -18,10 +37,10 @@ function loadEnvFile(path: string): void {
     const eq = line.indexOf("=");
     if (eq < 1) continue;
     const k = line.slice(0, eq).trim();
-    const v = line
-      .slice(eq + 1)
-      .trim()
-      .replace(/^['"]|['"]$/g, "");
+    const v = stripInlineComment(line.slice(eq + 1)).replace(
+      /^['"]|['"]$/g,
+      "",
+    );
     if (k && v !== undefined && process.env[k] === undefined) {
       process.env[k] = v;
     }
