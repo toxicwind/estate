@@ -935,4 +935,3 @@ health_http = { url = "http://127.0.0.1:25104/health", interval = "30s", timeout
 depends = ["gatehouse", "keypool"]
 env = { SOVEREIGN_ROUTER_PORT = "25104" }
 auto = ["start"]
-
