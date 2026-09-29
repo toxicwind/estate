@@ -873,7 +873,13 @@ class Bidder:
                     continue
             except OSError:
                 pass  # dir vanished entirely - re-arm below anyway
-            self._arm_watch(name, path, mask=mask)
+            try:
+                self._arm_watch(name, path, mask=mask)
+            except OSError:
+                # transient (e.g. dir mid-replacement): keep the old
+                # (orphaned) entry and retry on the next wakeup. A single
+                # failed re-arm must not crash the event loop.
+                continue
             rearmed = True
         if rearmed:
             self.startup_scan()
@@ -926,16 +932,42 @@ class Bidder:
                 if now - float(data.get("posted_ts", 0)) < 120:
                     self.on_task_post(data)
 
+    def _arm_watches_startup(self, pw):
+        """Arm all four inotify watches, retrying transients with backoff.
+
+        2026-09-29: forge died at 03:47 with OSError: inotify_add_watch
+        failed on the fleet watch — a transient while the channel dir was
+        briefly unavailable. run() armed watches once with no retry, so a
+        single transient killed the whole bidder. Retry here instead of
+        dying; only give up (raise) after ~30 attempts (~5 min).
+        """
+        arms = [("market", CHANNEL, None),
+                ("mparent", CHANNEL.parent, pw),
+                ("fleet", FLEET, None),
+                ("fparent", FLEET.parent, pw)]
+        failed = None
+        for attempt in range(30):
+            failed = None
+            for name, path, mask in arms:
+                try:
+                    self._arm_watch(name, path, mask=mask)
+                except OSError as e:
+                    failed = (name, str(path), e)
+                    break
+            if failed is None:
+                return
+            time.sleep(min(2 ** attempt, 20))
+        name, path, e = failed
+        raise OSError(f"could not arm inotify watch {name} on {path} "
+                      f"after 30 attempts: {e}")
+
     def run(self):
         self.startup_scan()
         self._watches = {}
         self._last_rearm_note = 0.0
         pw = (ol.IN_CLOSE_WRITE | ol.IN_MOVED_TO | ol.IN_CREATE
               | ol.IN_DELETE | ol.IN_MOVED_FROM)
-        self._arm_watch("market", CHANNEL)
-        self._arm_watch("mparent", CHANNEL.parent, mask=pw)
-        self._arm_watch("fleet", FLEET)
-        self._arm_watch("fparent", FLEET.parent, mask=pw)
+        self._arm_watches_startup(pw)
         # intro: name, persona, tagline — the pack meets the new member
         key_note = "signed-bidding live" if self.can_bid else \
             "NO BIDDING KEYS — observer mode"
