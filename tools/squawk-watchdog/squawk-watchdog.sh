@@ -41,14 +41,23 @@ if [ -z "$SUP_PID" ]; then
   sleep 10
 fi
 
-# 2. daemons: port must listen AND pitchfork must report running.
+# 2. daemons: port must listen AND (pitchfork reports running OR the
+# service health endpoint actually responds). The endpoint check covers
+# pitchfork supervisor state desync (2026-09-29: supervisor stuck on
+# "errored"/"stopped" for squawk-feed while the service was healthy;
+# pf_running alone caused false restarts).
+endpoint_ok() { curl -sf --max-time 3 "http://127.0.0.1:$1$2" >/dev/null 2>&1; }
 check_daemon() {
-  local name=$1 port=$2
-  if port_open "$port" && pf_running "$name"; then return 0; fi
-  log "ACTION $name down (port $port closed or not running) -> pitchfork start $name"
+  local name=$1 port=$2 health_path="${3:-}"
+  healthy() {
+    port_open "$port" || return 1
+    if [ -n "$health_path" ]; then endpoint_ok "$port" "$health_path"; else pf_running "$name"; fi
+  }
+  if healthy; then return 0; fi
+  log "ACTION $name down (port $port closed or not healthy) -> pitchfork start $name"
   "$PF" start "$name" >>"$LOG" 2>&1
   sleep 6
-  if port_open "$port" && pf_running "$name"; then
+  if healthy; then
     log "OK $name recovered on :$port"
   else
     log "ALERT $name STILL DOWN on :$port after pitchfork start"
@@ -56,6 +65,6 @@ check_daemon() {
 }
 
 check_daemon squawk-ws 25147
-check_daemon squawk-feed 25135
+check_daemon squawk-feed 25135 /squawk-feed/seq
 
 date "+%F %T %Z" >"$STATE_DIR/heartbeat"

@@ -1,6 +1,12 @@
 #!/bin/bash
 # bidder-scout launcher - started by pitchfork
 set -euo pipefail
+# IDEMPOTENT (2026-09-29): if another instance is already running, exit 0
+# quietly instead of crashing on the flock. The pitchfork supervisor can
+# spawn duplicate retries when its state desyncs; duplicates must be no-ops.
+if pgrep -f "bidder.py --id scout" >/dev/null 2>&1; then
+  exit 0
+fi
 exec python3 /home/toxic/sovereign/agents/oracle-market/bin/bidder.py \
   --id scout \
   --name Scout \
