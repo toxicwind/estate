@@ -99,25 +99,20 @@ focus.)
   `defaults.json` are empty), so Chris can click, type, and take over the
   agent browser. View-only was explicitly rejected (Chris 2026-09-21:
   "view only is no point, user should be able to interact or help lol").
-- `agent-viewer-gate` (`../viewer/agent-viewer-gate.py`) — token-gated front
-  door on `127.0.0.1:6081`. Requires `?token=<viewer-token>` (or the `aview`
-  cookie a successful check issues), then transparently proxies HTTP and
-  websocket upgrades to `:6080`. Token: `/home/toxic/.browserless/viewer-token`
-  (0600, generated once). `/healthz` answers 200 with no token for the
-  pitchfork readiness probe.
-- External route: tailscale funnel `/agent-browser` -> `127.0.0.1:6081`
-  (declared in `projects/yote/ops/funnel-map.sh`). The public URL is useless
-  without the token — 403 on the page and on the websocket handshake alike.
-  noVNC resolves its `./websockify` WS path relative to the page URL, so the
-  subpath mount just works.
-- VNC auth is untouched: past the gate, noVNC still prompts for the Xvnc
-  password.
+- External route (2026-09-21, Forge): tailnet-only via `tailscale serve`
+  on `:8443` -- `/agent-browser` -> `127.0.0.1:6080` (declared in
+  `projects/yote/ops/funnel-map.sh` SERVE_MAP). No funnel, no token gate
+  (Chris 2026-09-21: token gate was not wanted -- tailscale and network and
+  agent access only). The old gate (`../viewer/agent-viewer-gate.py`, was
+  `:6081`) is retired, kept as reference only. noVNC resolves its
+  `./websockify` WS path relative to the page URL, so the subpath mount just
+  works. Use the MagicDNS name -- raw tailnet IPs fail the TLS handshake
+  (SNI).
+- VNC auth is untouched: noVNC still prompts for the Xvnc password.
 
-Viewer URL: `https://github-mcp-host.tailc9ac71.ts.net/agent-browser/vnc.html?token=<viewer-token>`
+Viewer URL: `https://github-mcp-host.tailc9ac71.ts.net:8443/agent-browser/vnc.html`
 
 Restart/rollback: `pitchfork-restart agent-viewer --reregister` (picks up
-`pitchfork.toml` run-line changes), `pitchfork start agent-viewer-gate`.
+`pitchfork.toml` run-line changes).
 To close the external route without touching the daemons:
-`tailscale funnel --bg --set-path /agent-browser` off — i.e. remove the
-`/agent-browser` line from `funnel-map.sh` and run
-`tailscale serve --bg --remove /agent-browser` as root.
+`tailscale serve --https=8443 --set-path /agent-browser off` as root.

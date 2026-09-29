@@ -2,7 +2,6 @@
 # Already merged into /home/toxic/sovereign/pitchfork.toml; this file is the
 # committed record, not a merge source. Owned restart from /home/toxic/sovereign:
 #   ./bin/pitchfork-restart <agent-display|agent-viewer> --reregister
-#   pitchfork start agent-viewer-gate   (new daemons)
 
 [daemons.agent-display]
 # Isolated virtual display for the agent browser.
@@ -17,24 +16,13 @@ auto = ["start"]
 
 [daemons.agent-viewer]
 # noVNC web viewer. INTERACTIVE (Chris 2026-09-21); loopback-only.
-# External access goes through agent-viewer-gate below.
+# External access: tailnet-only via tailscale serve :8443 (no funnel, no token gate).
 port = 6080
 run = "exec /home/toxic/.local/bin/websockify --web /home/toxic/.browserless/novnc 127.0.0.1:6080 127.0.0.1:5900"
 dir = "."
 mise = false
 retry = true
 ready_cmd = "curl -sf http://127.0.0.1:6080/vnc.html > /dev/null"
-boot_start = true
-auto = ["start"]
-
-[daemons.agent-viewer-gate]
-# Token-gated front door for the viewer; funnel mounts :6081 at /agent-browser.
-port = 6081
-run = "exec python3 /home/toxic/sovereign/projects/mesh/browserless/viewer/agent-viewer-gate.py"
-dir = "."
-mise = false
-retry = true
-ready_cmd = "curl -sf http://127.0.0.1:6081/healthz > /dev/null"
 boot_start = true
 auto = ["start"]
 
