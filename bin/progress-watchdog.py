@@ -301,14 +301,22 @@ def snapshot(chan_dir, ledger_events):
     snap["stuck_tasks"] = stuck
 
     # --- bidders ---
+    # pgrep is process ground truth: pitchfork status can desync (2026-09-29:
+    # the no-op idempotent launcher exits 0 while a live bidder from an
+    # older generation still holds the flock, leaving pitchfork at
+    # "stopped" with a healthy bidder running). Report both; the hatch
+    # watchdog restarts only when neither is alive.
     bidders = []
     for name, status in sorted(pf.items()):
         if not name.startswith("sovereign/bidder-"):
             continue
         short = name.split("/", 1)[1]
+        bid = short.split("-", 1)[1] if "-" in short else short
         act = Path(f"/tmp/{short}.activity")
         age = round(now - act.stat().st_mtime, 1) if act.exists() else None
+        proc = bool(sh(["pgrep", "-f", f"[b]idder.py --id {bid}"]))
         bidders.append({"name": name, "status": status,
+                        "proc_running": proc,
                         "activity_age_s": age})
     snap["bidders"] = bidders
 
