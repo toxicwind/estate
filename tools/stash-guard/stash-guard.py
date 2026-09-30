@@ -50,7 +50,7 @@ DEFAULT_DEEP_EVERY = 3600                # deep sweep cadence (seconds)
 
 DEFAULT_EXCLUDES = [
     "builds/",
-    "buildsrv*/",
+    "brand*/",
     "bench-*/",
     ".broken-git-backup/",
     "analysis-*/",

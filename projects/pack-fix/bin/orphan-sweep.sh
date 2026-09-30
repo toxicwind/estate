@@ -27,7 +27,7 @@ while [[ $# -gt 0 ]]; do
     *) echo "usage: $0 [--json] [--pid-dirs DIR ...]" >&2; exit 2 ;;
   esac
 done
-[[ ${#PID_DIRS[@]} -eq 0 ]] && PID_DIRS=(/home/toxic /home/toxic/sovereign /home/toxic/paper-poller/state /home/toxic/buildsrv /home/toxic/projects)
+[[ ${#PID_DIRS[@]} -eq 0 ]] && PID_DIRS=(/home/toxic /home/toxic/sovereign /home/toxic/paper-poller/state /home/toxic/brand /home/toxic/projects)
 
 ORPHANS=0; STALE=0
 declare -a REPORT_LINES=()
@@ -55,7 +55,7 @@ ALLOW=(
   'actions-runner'
   'tailscaled|sshd|systemd|sd-pam|dbus|pipewire|wireplumber|portal|gvfs|udisksd|localsearch|at-spi|rtkit|polkit|geoclue|upowerd|power-profiles|wpa_supplicant|bluetoothd|cupsd|avahi|containerd|docker|postgres|lact|bpftune|ananicy|scx_|seatd|sddm|Hyprland|hypridle|hyprsunset|wezterm|firefox|Xwayland|easyeffects|wl-paste|quickshell|ydotool|bubbleupnp|nvidia-persistenced|limine-snapper|waydroid|inotifywait'
   'gatehouse serve|/mesh/bin/|mcp-background-job|arxiv-mcp|markitdown-mcp|codebase-memory-mcp|xray-mcp|ghas-mcp|ast-grep-mcp|openfang-mcp-shim|prometheus-mcp|sequential-thinking|llama_swap\.ts|computer-use-linux mcp|exa-mcp-server|redis-mcp-server|patchwork-mcp|server-github|smarter-faster-better-mcp|context7-mcp'
-  'buildsrvd\.py|buildsrv-watchdog\.py'
+  'brandd\.py|brand-watchdog\.py'
   'paper-poller/bin/(poller|watchdog)\.py'
   'refusal-watchdog\.py|sorry-watchdog\.py'
   'forensics-srv/server\.py'
