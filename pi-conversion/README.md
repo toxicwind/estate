@@ -2,6 +2,37 @@
 
 One-shot migration package from **July 2026** that converted the grok-build stack to [pi.dev](https://pi.dev) (open-source agent framework, MIT). The migration is complete — this directory is kept as a reference for the config mapping.
 
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+## Why this exists (and why it's archived)
+
+In July 2026 the estate moved from grok-build to pi.dev. This package was the migration itself: config mappings, the installer, the model table. It worked — the migration is done — so the directory now serves as the reference for *how* the mapping was done. If you need to understand why a pi.dev config looks the way it does, the answer is in the table below.
+
+```mermaid
+flowchart LR
+    subgraph grok[grok-build — before]
+        TOML[config.toml<br/>TOML · ~/.grok/]
+        ENVK[inline env_key]
+        MCP1[hardcoded mcp_servers TOML]
+        PERM[permission_mode<br/>"always-approve"]
+    end
+    subgraph pi[pi.dev — after]
+        JSON[models.json · settings.json<br/>JSON · ~/.pi/agent/]
+        AUTH[auth.json encrypted<br/>or env vars or /login]
+        MCP2[shep :25127 federated gateway]
+        TRUST[defaultProjectTrust<br/>"always" + /trust]
+    end
+    TOML --> JSON
+    ENVK --> AUTH
+    MCP1 --> MCP2
+    PERM --> TRUST
+```
+
 ## Contents
 
 ```text
@@ -87,6 +118,6 @@ grok-build's hardcoded `mcp_servers` TOML block is replaced by a federated gatew
 - **NIM `reasoning_effort`**: grok-build's serde layer sent the wrong type and blinded the error; pi.dev's `thinkingLevelMap` maps levels to exact provider values (`off/minimal/low/medium/high/xhigh/max` → `"0.2"`–`"0.99"`), with full raw error dumps. `thinkingmachines/inkling` was discontinued 2026-09-03, so the NIM-specific section is reference only.
 - Debug any provider directly: `curl` the provider endpoint, then `PI_LOG_LEVEL=debug pi`, then Ctrl+L in the TUI for the full request/response log.
 
-## License
+## License & security
 
-Configs derived from the July 2026 grok-build `config.toml`, mapped to pi.dev's documented schema. MIT.
+MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). Configs derived from the July 2026 grok-build `config.toml`, mapped to pi.dev's documented schema. This directory is archived reference — don't resurrect `install.sh` as a live installer without reviewing it against the current shep-based MCP setup. API keys go in `auth.json` (encrypted) or env vars — never in a committed config.

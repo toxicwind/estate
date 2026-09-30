@@ -1,7 +1,33 @@
 # hatch/bin — hatch cell swarm tooling (canonical)
 
-Emergency intervention + crash-prevention interlock for the agent swarm
-running against the hatch runtime cell (2 vCPUs — saturates fast).
+Emergency intervention + crash-prevention interlock for the agent swarm running against the hatch runtime cell (2 vCPUs — saturates fast). This is the toolkit that keeps dozens of agents from taking the box down: pause the world, eject the runaways, audit the errors, race the bridge lanes.
+
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+## Why this exists
+
+Thirty agents on two vCPUs is a load spike waiting to happen. The swarm has no natural backpressure — so this directory is the artificial kind: a crash-prevention interlock (watchdog → pause → eject), a stall census (reaper), ordered fleet delivery (fleet/), parallel collaborative coding (fleet-code), and bridge-lane racing (race_exec). When the cell is on fire, you reach here first.
+
+```mermaid
+flowchart TB
+    subgraph interlock[crash-prevention interlock]
+        WD[swarm-watchdog<br/>cron 2min] -->|load1 > 10| PAUSE[swarm-pause<br/>SIGSTOP the tool tree]
+        WD -->|yote load1 > 40| EJECT[swarm-eject<br/>STOP/KILL runaways]
+        PAUSE --> RESUME[swarm-resume<br/>SIGCONT thaw]
+    end
+    subgraph bus[fleet bus]
+        SQ[squawk<br/>send/read/watch] --> FLT[fleet/<br/>dedup · gap replay · acks · chat isolation]
+    end
+    subgraph misc[ops]
+        RP[agent-reaper<br/>stall census] --> ERR[error_claims.py<br/>error classification]
+        RACE[race_exec<br/>WS vs HTTPS lane race]
+    end
+```
 
 | tool | what it does |
 |---|---|
@@ -46,3 +72,7 @@ itself (`swarm-watchdog` entry, every 2 min).
 Fleet knowledgebase: `docs/fleet-knowledgebase.md` (repo root) § crash
 interlock. Goal workspace on the cell:
 `~/workspace/goals/forceful-pause-and-resume-for-agent-swarms/`.
+
+## License & security
+
+MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). These tools wield SIGSTOP/SIGKILL against live processes — they're the fleet's circuit breakers, not toys. The interlock protects the boxes; disabling it to make a workload fit is a standing-rule violation (Chris). `swarm-eject` has a protected-process list (bridge, squawk, tailscaled, sshd, systemd, herd, pitchfork) — never shrink it without a fleet-visible decision.

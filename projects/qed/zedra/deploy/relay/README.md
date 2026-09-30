@@ -1,6 +1,50 @@
+<div align="right">
+
+[![license](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-part%20of-blueviolet?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
 # deploy/relay — iroh-relay multi-instance deployment
 
-Self-hosted `iroh-relay` on cloud compute. Three instances across regions:
+**Self-hosted `iroh-relay` on cloud compute.** Three instances across regions so Zedra clients can always reach a relay when direct P2P hole-punching fails. One `deploy.sh` builds, streams, and brings up everything — no container registry, no click-ops.
+
+## Why should I care?
+
+- **Registry-free deploys** — `docker save | gzip | ssh` streams arch-suffixed images straight to hosts; mixed ARM/x64 batches build once per platform
+- **Cost is a first-class citizen** — per-DAU traffic models, free-egress break-evens (AWS: ~794 DAU at $0 egress), and budget guardrails are documented here, not discovered in the invoice
+- **Production checklist included** — pre-deploy, post-deploy, and ongoing health steps with exact verification commands
+
+```mermaid
+flowchart TD
+    LAP[your laptop<br/>deploy.sh] -->|docker save \| gzip \| ssh| AP1[ap1 · Singapore]
+    LAP -->|docker save \| gzip \| ssh| US1[us1 · Iowa/N. Virginia]
+    LAP -->|docker save \| gzip \| ssh| EU1[eu1 · Netherlands/Frankfurt]
+    AP1 --> R1["zedra-relay<br/>:443 WSS · :80 ACME · :7842/udp QUIC"]
+    AP1 --> M1["zedra-monitor<br/>Discord alerts"]
+    US1 --> R2["zedra-relay"]
+    EU1 --> R3["zedra-relay"]
+    CL[Zedra clients] -->|~70% relayed traffic| R1
+    CL --> R2
+    CL --> R3
+```
+
+## Quick start
+
+```bash
+./deploy/relay/deploy.sh --instance ap1           # build + stream + bring up one instance
+curl -I http://ap1.relay.zedra.dev/generate_204   # expect HTTP 204
+```
+
+## License & security
+
+- This repo's own files are [MIT](https://github.com/toxicwind/sovereign-projects#license). The relay binary is `iroh-relay` (upstream license); base images are Debian slim.
+- **Secrets live in `deploy/relay/.env` (gitignored)** — at minimum `DISCORD_WEBHOOK`. Never commit it; `deploy.sh` merges and uploads it per-instance. SSH keys stay in your local `~/.ssh/`.
+- The relay only forwards traffic it is configured to forward; it never stores payloads. Budget alerts are notification-only on both providers — they don't stop instances, so treat runaway egress as an incident, not a bill.
+
+---
+
+## Instances
 
 | Instance | Region | Hostname |
 | -------- | ------ | -------- |
@@ -19,7 +63,7 @@ Both AWS and GCP are supported. Use whichever has active credits.
 | **Network** | up to 5 Gbps burst | flat 10 Gbps |
 | **Per-node/mo** | ~$13 (us-east-1) | ~$23 (us-central1) |
 | **ARM Docker** | native (no `--platform`) | native (no `--platform`) |
-| **SSH** | PEM key + `ubuntu@<ip>` | `gcloud compute ssh` or OS Login |
+| **SSH** | PEM key + `ubuntu@` host | `gcloud compute ssh` or OS Login |
 | **Firewall** | Security Group | Firewall rule + network tag |
 | **Static IP** | Elastic IP | Reserved address |
 | **Billing stop** | Delete or stop instance (EBS still charged when stopped) | Delete or stop (disk still charged when stopped) |
@@ -107,31 +151,31 @@ packages/relay-check/ # local-only: SSH health daemon + CLI (`INSTANCES=...`) �
 
 ### Prerequisites
 
-Add SSH aliases to `~/.ssh/config` for each instance (adjust `HostName` and `IdentityFile` per provider):
+Add SSH aliases to `~/.ssh/config` for each instance. The example IPs below are RFC 5737 documentation addresses — substitute your instances' real public IPs:
 
 ```
 Host zedra-relay-ap1
-  HostName <AP1_PUBLIC_IP>
-  User <your-username>              # AWS: ubuntu; GCP: your Google username
-  IdentityFile ~/.ssh/<your-key>    # AWS: .pem file; GCP: google_compute_engine
+  HostName 203.0.113.10    # your ap1 instance's public IP
+  User ubuntu               # AWS Ubuntu AMIs; on GCP use `gcloud compute ssh` or your OS Login username
+  IdentityFile ~/.ssh/zedra-relay.pem   # your key file (AWS: the .pem for the key pair you launched with)
 
 Host zedra-relay-us1
-  HostName <US1_PUBLIC_IP>
-  User <your-username>
-  IdentityFile ~/.ssh/<your-key>
+  HostName 203.0.113.20    # your us1 instance's public IP
+  User ubuntu
+  IdentityFile ~/.ssh/zedra-relay.pem
 
 Host zedra-relay-eu1
-  HostName <EU1_PUBLIC_IP>
-  User <your-username>
-  IdentityFile ~/.ssh/<your-key>
+  HostName 203.0.113.30    # your eu1 instance's public IP
+  User ubuntu
+  IdentityFile ~/.ssh/zedra-relay.pem
 ```
 
-> **GCP**: User is typically your Google account username (e.g. `thomasle`). `gcloud compute ssh INSTANCE_NAME --zone=ZONE` manages keys automatically — no `~/.ssh/config` entry needed.
+> **GCP**: `gcloud compute ssh INSTANCE_NAME --zone=ZONE` manages keys automatically — no `~/.ssh/config` entry needed.
 > **AWS**: User is `ubuntu` for Ubuntu AMIs.
 
 **Secrets (local):** copy `deploy/relay/.env.example` to `deploy/relay/.env` and set at least `DISCORD_WEBHOOK`. The root `.gitignore` ignores `.env` everywhere.
 
-> **How `.env` works:** `deploy.sh` merges your local `deploy/relay/.env` with injected `INSTANCE=<name>` and arch-specific `RELAY_IMAGE` / `MONITOR_IMAGE`, uploads to `/opt/zedra/deploy/relay/.env.local`, then copies to `.env` for Compose. `INSTANCE=` / `INSTANCES=` / image lines in your local file are ignored. The relay uses `INSTANCE` for hostname (`${INSTANCE}.relay.zedra.dev`). The **Docker** `relay-monitor` sidecar uses **`INSTANCE` only**. **Multi-host SSH checks from your laptop** use **`packages/relay-check`** (`INSTANCES=sg1,us1,eu1 bun monitor.ts` or `bun cli.ts`).
+> **How `.env` works:** `deploy.sh` merges your local `deploy/relay/.env` with injected `INSTANCE` (e.g. `ap1`) and arch-specific `RELAY_IMAGE` / `MONITOR_IMAGE`, uploads to `/opt/zedra/deploy/relay/.env.local`, then copies to `.env` for Compose. `INSTANCE=` / `INSTANCES=` / image lines in your local file are ignored. The relay uses `INSTANCE` for hostname (`${INSTANCE}.relay.zedra.dev`). The **Docker** `relay-monitor` sidecar uses **`INSTANCE` only**. **Multi-host SSH checks from your laptop** use **`packages/relay-check`** (`INSTANCES=sg1,us1,eu1 bun monitor.ts` or `bun cli.ts`).
 
 ### Deploy one instance
 
@@ -160,7 +204,7 @@ Use `--service relay` or `--service monitor` to rebuild and restart only one con
 
 When `--service` is set:
 - Only the relevant Docker image is built for each detected platform and streamed to matching hosts
-- `docker compose up -d --no-deps <service>` restarts that container only — the other keeps running
+- `docker compose up -d --no-deps relay` restarts that container only — the other keeps running
 
 ### Build without deploying
 
@@ -176,8 +220,8 @@ Use `--skip-deploy` to detect target platforms, build the arch-suffixed images, 
 1. Detects each target host platform with `uname -s` / `uname -m`
 2. Groups instances by Docker platform, such as `linux/arm64` or `linux/amd64`
 3. Builds arch-suffixed images locally once per platform, such as `zedra-relay:arm64` or `zedra-monitor:amd64`, with Docker `--platform` (skips images not relevant to `--service`)
-4. `docker save | gzip | ssh <host> docker load` — streams each platform image to matching hosts without a registry
-5. Uploads `docker-compose.yml`, merges local `deploy/relay/.env` with injected `INSTANCE`, `RELAY_IMAGE`, and `MONITOR_IMAGE` to `.env.local` and `.env` on the host, runs `docker compose up -d` (or `--no-deps <service>` when targeting a single service)
+4. `docker save | gzip | ssh` into each matching host, piped to `docker load` — streams each platform image to matching hosts without a registry
+5. Uploads `docker-compose.yml`, merges local `deploy/relay/.env` with injected `INSTANCE`, `RELAY_IMAGE`, and `MONITOR_IMAGE` to `.env.local` and `.env` on the host, runs `docker compose up -d` (or `--no-deps relay` / `--no-deps monitor` when targeting a single service)
 
 When `--skip-deploy` is set, steps 4 and 5 are skipped.
 
@@ -258,33 +302,38 @@ gcloud compute addresses create zedra-relay-eu1-ip --region=europe-west4
 # ap1 — Singapore (ap-southeast-1)
 aws ec2 run-instances \
   --region ap-southeast-1 \
-  --image-id ami-0c1907b6d738188e5 \   # Ubuntu 24.04 arm64 — verify current AMI
+  --image-id ami-0c1907b6d738188e5 \
   --instance-type t4g.small \
   --key-name zedra-relay-ap1 \
-  --security-group-ids <SG_ID> \
+  --security-group-ids $SECURITY_GROUP_ID \
   --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=zedra-relay-ap1}]'
 
 # us1 — N. Virginia (us-east-1)
 aws ec2 run-instances \
   --region us-east-1 \
-  --image-id ami-0a7a4e87939439934 \   # Ubuntu 24.04 arm64 — verify current AMI
+  --image-id ami-0a7a4e87939439934 \
   --instance-type t4g.small \
   --key-name zedra-relay-us1 \
-  --security-group-ids <SG_ID> \
+  --security-group-ids $SECURITY_GROUP_ID \
   --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=zedra-relay-us1}]'
 
 # eu1 — Frankfurt (eu-central-1)
 aws ec2 run-instances \
   --region eu-central-1 \
-  --image-id ami-01e444924a2233b07 \   # Ubuntu 24.04 arm64 — verify current AMI
+  --image-id ami-01e444924a2233b07 \
   --instance-type t4g.small \
   --key-name zedra-relay-eu1 \
-  --security-group-ids <SG_ID> \
+  --security-group-ids $SECURITY_GROUP_ID \
   --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=zedra-relay-eu1}]'
 ```
 
-> **AMI IDs change per region and over time.** Find the current Ubuntu 24.04 arm64 AMI:
-> `aws ec2 describe-images --owners 099720109477 --filters "Name=name,Values=ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-arm64-server-*" --query 'sort_by(Images,&CreationDate)[-1].ImageId' --output text --region <REGION>`
+Set `SECURITY_GROUP_ID` to your security group before running. The AMI IDs above are Ubuntu 24.04 arm64 at the time of writing — **AMI IDs change per region and over time**, so verify with:
+
+```bash
+aws ec2 describe-images --owners 099720109477 \
+  --filters "Name=name,Values=ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-arm64-server-*" \
+  --query 'sort_by(Images,&CreationDate)[-1].ImageId' --output text --region ap-southeast-1
+```
 
 ### Security group inbound rules (per region)
 
@@ -301,8 +350,8 @@ UDP 7842  — QUIC addr discovery
 aws ec2 allocate-address --region ap-southeast-1
 aws ec2 allocate-address --region us-east-1
 aws ec2 allocate-address --region eu-central-1
-# Then associate each with its instance
-aws ec2 associate-address --region <REGION> --instance-id <ID> --allocation-id <ALLOC_ID>
+# Then associate each with its instance, using the IDs from the allocate-address output
+aws ec2 associate-address --region ap-southeast-1 --instance-id $INSTANCE_ID --allocation-id $ALLOCATION_ID
 ```
 
 ### Stopping vs deleting on AWS
@@ -384,9 +433,9 @@ sudo systemctl restart docker
 Point each hostname to its public IP (A record, TTL 60):
 
 ```
-ap1.relay.zedra.dev  →  <AP1_IP>
-us1.relay.zedra.dev  →  <US1_IP>
-eu1.relay.zedra.dev  →  <EU1_IP>
+ap1.relay.zedra.dev  →  your ap1 instance's public IP
+us1.relay.zedra.dev  →  your us1 instance's public IP
+eu1.relay.zedra.dev  →  your eu1 instance's public IP
 ```
 
 ## iroh-relay Version
@@ -410,7 +459,7 @@ Set these up **before** deploying. The relay's egress cost scales linearly with 
 # Via console: Billing → Budgets & Alerts → Create Budget
 # Or via CLI:
 gcloud billing budgets create \
-  --billing-account=BILLING_ACCOUNT_ID \
+  --billing-account=$BILLING_ACCOUNT_ID \
   --display-name="zedra-relay monthly" \
   --budget-amount=50USD \
   --threshold-rule=percent=50,basis=CURRENT_SPEND \
@@ -429,7 +478,7 @@ GCP does **not** auto-stop instances at budget — alerts are notification-only.
 # Set monthly budget, alert at 80% actual + 100% forecasted
 ```
 
-Or via CLI:
+Or via CLI (set `ALERT_EMAIL` to your on-call address first):
 ```bash
 aws budgets create-budget \
   --account-id $(aws sts get-caller-identity --query Account --output text) \
@@ -447,7 +496,7 @@ aws budgets create-budget \
         "Threshold": 80,
         "ThresholdType": "PERCENTAGE"
       },
-      "Subscribers": [{"SubscriptionType": "EMAIL", "Address": "you@example.com"}]
+      "Subscribers": [{"SubscriptionType": "EMAIL", "Address": "'"$ALERT_EMAIL"'"}]
     }
   ]'
 ```

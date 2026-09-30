@@ -1,4 +1,46 @@
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
 # Maximal Sovereign Agentic Audit
+
+> Production-grade, fully agentic repository audit system for the Sovereign ecosystem.
+
+> **Why care? 327 projects, one command: local-first auditing with a multi-tier modular architecture — git scanning, secrets scanning, broken-symlink detection, pre-check validation, Parquet export, and AI-powered insights via the `:25100` API.**
+
+- **Local-first — scans all 327 projects from `projects.env` directly, no cloning**
+- **Modular — types, parser, git-scanner, secrets-scanner, completions, autofix, precheck, dataframe, parquet**
+- **Secrets-aware — `/home/toxic/.secrets` scanned as a protected credential record (never committed)**
+- **Parquet export — audit results as dataframes for analysis**
+- **Agentic completions — AI insights via the 25100 API; 86%+ coverage target**
+
+```mermaid
+flowchart LR
+    ENV[projects.env: 327 projects] --> PRE[precheck: paths exist]
+    PRE --> SCAN[git-scanner + secrets-scanner + symlinks]
+    SCAN --> DF[dataframe]
+    DF --> PQ[parquet export]
+    DF --> AI[completions via :25100]
+    AI --> FIX[autofix]
+```
+
+## Quick start
+
+```bash
+bun run start --all --precheck --parquet output/audit.parquet
+bun test tests/local-audit.test.ts --coverage
+bun run local --all --precheck
+```
+
+## License & security
+
+- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **Security:** The `.secrets` file is a first-class credential record — scanned but never committed, excluded via `.gitignore`. Requirements: Bun 1.4+, parquetjs-lite, git repos in `/home/toxic/projects/` and `/home/toxic/sovereign/`.
+
+---
 
 A production-grade, fully agentic repository audit system for the Sovereign ecosystem.
 
