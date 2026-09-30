@@ -65,3 +65,66 @@ export function comfyuiPhaseLabel(phase: ComfyUIPhase): string {
 			return "stopping";
 	}
 }
+
+/** Delays before each launch attempt (ms): attempt 1 fires immediately,
+// attempt 2 after 2s, attempt 3 after 8s. */
+export const COMFYUI_LAUNCH_RETRY_DELAYS_MS = [0, 2000, 8000];
+
+// Sleep that rejects with AbortError when the signal fires, so a launch
+// aborted mid-backoff stops instead of firing a stale retry.
+function sleepAbortable(ms: number, signal: AbortSignal): Promise<void> {
+	return new Promise((resolve, reject) => {
+		if (signal.aborted) {
+			reject(new DOMException("The operation was aborted.", "AbortError"));
+			return;
+		}
+		const onAbort = () => {
+			clearTimeout(timer);
+			reject(new DOMException("The operation was aborted.", "AbortError"));
+		};
+		const timer = setTimeout(() => {
+			signal.removeEventListener("abort", onAbort);
+			resolve();
+		}, ms);
+		signal.addEventListener("abort", onAbort, { once: true });
+	});
+}
+
+/**
+ * Fire the /comfyui/ root request (which starts the model on the backend)
+ * with retries across the delay slots (default: immediate, 2s, 8s). A
+ * non-2xx herd response counts as a failure and is retried; the response
+ * body is drained so a slow proxy start does not leave the connection
+ * hanging. Resolves with the number of attempts made (1..slots); throws the
+ * last error when every attempt fails, or AbortError when `signal` aborts.
+ *
+ * The fetch is injected (fetchImpl) so this stays testable without the DOM;
+ * the route passes the global fetch. `onAttempt` lets the route show which
+ * attempt is in flight ("Retrying… attempt 2/3").
+ */
+export async function launchWithRetry(
+	fetchImpl: (input: string, init?: RequestInit) => Promise<Response>,
+	url: string,
+	signal: AbortSignal,
+	delaysMs: number[] = COMFYUI_LAUNCH_RETRY_DELAYS_MS,
+	onAttempt?: (attempt: number) => void,
+): Promise<{ attempts: number }> {
+	const slots = delaysMs.length > 0 ? delaysMs : [0];
+	let lastError: unknown = null;
+	for (let i = 0; i < slots.length; i++) {
+		if (i > 0) await sleepAbortable(slots[i], signal);
+		onAttempt?.(i + 1);
+		try {
+			const res = await fetchImpl(url, { signal });
+			if (!res.ok) throw new Error(`herd answered ${res.status}`);
+			// Drain the body so a slow proxy start does not leave the
+			// connection hanging; UI state comes from the events feed.
+			await res.arrayBuffer();
+			return { attempts: i + 1 };
+		} catch (e) {
+			if (e instanceof DOMException && e.name === "AbortError") throw e;
+			lastError = e;
+		}
+	}
+	throw lastError;
+}

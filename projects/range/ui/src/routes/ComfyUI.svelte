@@ -5,6 +5,12 @@
 	// therefore renders from the model state the /api/events feed reports --
 	// the iframe only mounts once the model is ready, and a launch button
 	// covers the stopped state. No polling: the feed pushes state changes.
+	//
+	// The launch request is retried with backoff (immediate, 2s, 8s) because
+	// herd can be mid-start when it is first hit; and the mounted iframe is
+	// guarded by a 15s load timer -- a model can report "ready" while ComfyUI
+	// itself is unreachable behind the proxy, which must show an error card
+	// rather than a blank page.
 	import { onDestroy, onMount } from "svelte";
 	import {
 		Workflow,
@@ -13,6 +19,7 @@
 		CircleAlert,
 		Play,
 		PowerOff,
+		RotateCcw,
 	} from "@lucide/svelte";
 	import { Badge } from "$lib/components/ui/badge/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
@@ -22,10 +29,12 @@
 	import { formatUptime } from "$lib/format";
 	import {
 		COMFYUI_MODEL_ID,
+		COMFYUI_LAUNCH_RETRY_DELAYS_MS,
 		comfyuiUrl,
 		findComfyUIModel,
 		comfyuiPhase,
 		comfyuiPhaseLabel,
+		launchWithRetry,
 		type ComfyUIPhase,
 	} from "$lib/comfyui";
 
@@ -36,8 +45,45 @@
 	const phase = $derived(comfyuiPhase(comfyModel, connected));
 
 	let launching = $state(false);
+	let launchAttempt = $state(1);
 	let launchError = $state<string | null>(null);
 	let aborter: AbortController | null = null;
+
+	// Iframe load guard: if the iframe has not loaded within 15s of mounting
+	// (or it errors), swap it for an error card with a retry instead of
+	// leaving a blank page. Remounting via iframeKey re-arms the timer.
+	let iframeError = $state(false);
+	let iframeKey = $state(0);
+	let loadTimer: ReturnType<typeof setTimeout> | undefined;
+
+	function clearIframeLoadTimer(): void {
+		if (loadTimer !== undefined) {
+			clearTimeout(loadTimer);
+			loadTimer = undefined;
+		}
+	}
+
+	function armIframeLoadTimer(): void {
+		clearIframeLoadTimer();
+		iframeError = false;
+		loadTimer = setTimeout(() => {
+			iframeError = true;
+		}, 15_000);
+	}
+
+	function onIframeLoad(): void {
+		clearIframeLoadTimer();
+	}
+
+	function onIframeError(): void {
+		clearIframeLoadTimer();
+		iframeError = true;
+	}
+
+	function retryIframe(): void {
+		iframeKey += 1; // remounts the iframe via {#key}
+		armIframeLoadTimer();
+	}
 
 	// Uptime ticks on the same 30s cadence the Surfaces tab uses for health.
 	let now = $state(Date.now());
@@ -48,6 +94,15 @@
 			: formatUptime(Math.max(0, now - comfyModel.readyAt)),
 	);
 
+	$effect(() => {
+		if (phase === "ready") {
+			armIframeLoadTimer();
+		} else {
+			clearIframeLoadTimer();
+			iframeError = false;
+		}
+	});
+
 	onMount(() => {
 		timer = setInterval(() => {
 			now = Date.now();
@@ -56,6 +111,7 @@
 
 	onDestroy(() => {
 		if (timer !== undefined) clearInterval(timer);
+		clearIframeLoadTimer();
 		aborter?.abort();
 	});
 
@@ -75,18 +131,24 @@
 	async function launch(): Promise<void> {
 		if (launching) return;
 		launching = true;
+		launchAttempt = 1;
 		launchError = null;
 		aborter?.abort();
 		aborter = new AbortController();
 		try {
 			// The explicit root request is what starts the model on the
 			// backend; the events feed flips the phase to ready when it is
-			// up, which mounts the iframe below.
-			const res = await fetch(url, { signal: aborter.signal });
-			if (!res.ok) throw new Error(`herd answered ${res.status}`);
-			// Drain the body so a slow proxy start does not leave the
-			// connection hanging; UI state comes from the events feed.
-			await res.arrayBuffer();
+			// up, which mounts the iframe below. Retried with backoff so a
+			// slow herd start does not surface as a one-shot failure.
+			await launchWithRetry(
+				fetch,
+				url,
+				aborter.signal,
+				COMFYUI_LAUNCH_RETRY_DELAYS_MS,
+				(attempt) => {
+					launchAttempt = attempt;
+				},
+			);
 		} catch (e) {
 			if (e instanceof DOMException && e.name === "AbortError") return;
 			launchError = e instanceof Error ? e.message : String(e);
@@ -133,33 +195,59 @@
 	</div>
 
 	{#if phase === "ready"}
-		<Card.Root class="flex min-h-0 flex-1 flex-col overflow-hidden py-0">
-			<Card.Content class="min-h-0 flex-1 p-0">
-				<iframe
-					src={url}
-					title="ComfyUI"
-					class="size-full border-0"
-					referrerpolicy="no-referrer"
-					allow="clipboard-read; clipboard-write"
-				></iframe>
-			</Card.Content>
-			<div
-				class="text-muted-foreground flex items-center gap-3 border-t px-4 py-2 text-xs"
-			>
-				<span class="font-mono">{COMFYUI_MODEL_ID}</span>
-				{#if uptime}
-					<span>up {uptime}</span>
-				{/if}
-				{#if launchError}
-					<span class="text-destructive">{launchError}</span>
-				{/if}
-				<span class="ml-auto"></span>
-				<Button variant="outline" size="sm" onclick={() => void unload()}>
-					<PowerOff />
-					Unload
-				</Button>
-			</div>
-		</Card.Root>
+		{#if iframeError}
+			<Card.Root class="flex min-h-0 flex-1 items-center justify-center py-0">
+				<Card.Content class="flex max-w-md flex-col items-center gap-3 p-8 text-center">
+					<span
+						class="bg-muted flex size-14 items-center justify-center rounded-full"
+					>
+						<CircleAlert class="text-destructive size-7" />
+					</span>
+					<h2 class="text-base font-semibold">ComfyUI is not responding</h2>
+					<p class="text-muted-foreground text-sm">
+						The model reports ready, but the interface did not load from
+						<span class="font-mono">{url}</span> within 15 seconds. The backend
+						may be unreachable behind the ready state.
+					</p>
+					<Button onclick={() => retryIframe()}>
+						<RotateCcw class="size-4" />
+						Retry
+					</Button>
+				</Card.Content>
+			</Card.Root>
+		{:else}
+			<Card.Root class="flex min-h-0 flex-1 flex-col overflow-hidden py-0">
+				<Card.Content class="min-h-0 flex-1 p-0">
+					{#key iframeKey}
+						<iframe
+							src={url}
+							title="ComfyUI"
+							class="size-full border-0"
+							referrerpolicy="no-referrer"
+							allow="clipboard-read; clipboard-write"
+							onload={onIframeLoad}
+							onerror={onIframeError}
+						></iframe>
+					{/key}
+				</Card.Content>
+				<div
+					class="text-muted-foreground flex items-center gap-3 border-t px-4 py-2 text-xs"
+				>
+					<span class="font-mono">{COMFYUI_MODEL_ID}</span>
+					{#if uptime}
+						<span>up {uptime}</span>
+					{/if}
+					{#if launchError}
+						<span class="text-destructive">{launchError}</span>
+					{/if}
+					<span class="ml-auto"></span>
+					<Button variant="outline" size="sm" onclick={() => void unload()}>
+						<PowerOff />
+						Unload
+					</Button>
+				</div>
+			</Card.Root>
+		{/if}
 	{:else}
 		<Card.Root class="flex min-h-0 flex-1 items-center justify-center py-0">
 			<Card.Content class="flex max-w-md flex-col items-center gap-3 p-8 text-center">
@@ -222,14 +310,22 @@
 					<Button onclick={() => void launch()} disabled={launching}>
 						{#if launching}
 							<Loader2 class="animate-spin" />
-							Starting…
+							{launchAttempt > 1
+								? `Retrying… attempt ${launchAttempt}/${COMFYUI_LAUNCH_RETRY_DELAYS_MS.length}`
+								: "Starting…"}
 						{:else}
 							<Play />
 							Start ComfyUI
 						{/if}
 					</Button>
 					{#if launchError}
-						<p class="text-destructive text-sm">{launchError}</p>
+						<div class="flex items-center gap-2">
+							<p class="text-destructive text-sm">{launchError}</p>
+							<Button variant="outline" size="sm" onclick={() => void launch()}>
+								<RotateCcw class="size-3.5" />
+								Retry
+							</Button>
+						</div>
 					{/if}
 				{/if}
 			</Card.Content>

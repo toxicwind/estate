@@ -130,3 +130,29 @@ export function listCapabilityBadges(
 
   return badges;
 }
+
+// Push-first merge of a modelStatus feed entry with its /v1/models record.
+//
+// The feed now carries capabilities, context_length and capabilitySources
+// the instant herd learns them (ModelCapabilitiesChangedEvent pushed over
+// SSE), so a feed payload with any enabled capability wins: badges render
+// with no round-trip. When the feed entry has no capability payload yet, the
+// debounced /v1/models refetch (refreshPlaygroundModels) supplies the data
+// as the fallback. `modalities` has no feed field, so it always comes from
+// the /v1/models record.
+export function mergeFeedCapabilities(feedModel: Model, apiModel?: Model): Model {
+  const feedHasCaps = Object.values(feedModel.capabilities ?? {}).some(Boolean);
+  if (!apiModel || feedHasCaps) {
+    return {
+      ...feedModel,
+      modalities: apiModel?.modalities ?? feedModel.modalities,
+    };
+  }
+  return {
+    ...feedModel,
+    capabilities: apiModel.capabilities,
+    context_length: apiModel.context_length ?? feedModel.context_length,
+    modalities: apiModel.modalities ?? feedModel.modalities,
+    capabilitySources: apiModel.capabilitySources,
+  };
+}
