@@ -123,8 +123,10 @@ export const TRIGGER_SHAPES: TriggerShape[] = [
   },
   {
     id: "kill-language",
-    pattern: "\\b(never kill|kill the)\\b",
-    why: "Reads as process-kill authorization; flags goal guides and task bodies.",
+    // "never kill X" is a standing safety boundary (prohibition) and must not
+    // match; only bare "kill the X" authorization framing matches.
+    pattern: "(?<!never\\s)\\bkill the\\b",
+    why: "Reads as process-kill authorization; flags goal guides and task bodies. Bare prohibitions ('never kill the live bridge daemon', 'never kill squawk processes') are standing safety boundaries and do NOT match.",
     rewrite: "Name the protected process and the repair path: 'bridge repairs never touch squawk processes.'",
   },
   {
