@@ -281,6 +281,9 @@ bin/*
 !bin/manifest.yaml
 !bin/bin-verify.sh
 !bin/tcp-probe
+!bin/pitchfork-compose
+!bin/pitchfork-split
+!bin/pitchfork-orphan-watch
 !bin/tests/
 obj/*
 !obj/.gitkeep
