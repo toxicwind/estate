@@ -1,4 +1,46 @@
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
 # Yote — Sovereign Lightweight Agent
+
+> Minimal, embeddable agent runtime for the Sovereign ecosystem — plus the box it runs on.
+
+> **Why care? **Yote** is two things at once: a lightweight agent runtime for diffing, scaffolding, and tool orchestration — and Chris's CachyOS box (`awrawr-pc`), the 16-core / 62GB / RTX 3090 home server the whole Sovereign stack lives on. This directory is the canonical consolidation point for both.**
+
+- **Light agent runtime — `:25102`, inference via Herd (`:25100`), tools via the MCP gateway (`:25127/mcp`)**
+- **TS gateway — Telegram gateway over OpenFang HTTP (bun + hono)**
+- **Rust gateway — unified Telegram + Discord gateway, extracted from OpenFang**
+- **Exec bridge — hatch ↔ yote over the Tailscale funnel (`bin/exec.py`, `ws_daemon.py`, …)**
+- **Box ops — `yote-doctor.sh` diagnoses every serve backend, `yote-fix.sh` repairs autonomously**
+
+```mermaid
+flowchart LR
+    HATCH[hatch cell] -->|tailscale funnel| BR[exec bridge]
+    BR --> YOTE[yote runtime :25102]
+    YOTE --> HERD[herd :25100: inference]
+    YOTE --> MCP[mcpproxy :25127: tools]
+    TG[Telegram] --> TSGW[TS gateway]
+    DC[Discord] --> RSGW[rust gateway]
+    TSGW & RSGW --> OPENFANG[openfang / LLM]
+```
+
+## Quick start
+
+```bash
+curl -sf http://127.0.0.1:25102/health && echo "yote HEALTHY"
+curl -sf http://127.0.0.1:25100/v1/models | jq '.data[].id' | grep -i yote
+```
+
+## License & security
+
+- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **Security:** Consolidated 2026-09-20 (see `CONSOLIDATION.md` for the full merge manifest). The gateway duality (TS vs Rust on `:25102`) is an open decision — check the README body before wiring new clients to the port.
+
+---
 
 **Yote** is a minimal, embeddable agent runtime for the Sovereign ecosystem.
 
