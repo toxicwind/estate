@@ -217,4 +217,5 @@ run = "curl -s http://127.0.0.1:25109/status | jq -r '.pools | to_entries[] | \"
 run = "pitchfork logs keypool -n 100"
 
 # cell-files hot-reload explorer UI (bun --hot, WS/SSE hyper-race HMR)
-"up-cellfiles-ui" = "bun --hot /home/toxic/sovereign/hatch/cell-files/cell-files/packages/cell-files/ui/server.ts"
+[tasks."up-cellfiles-ui"]
+run = "bun --hot /home/toxic/sovereign/hatch/cell-files/cell-files/packages/cell-files/ui/server.ts"
