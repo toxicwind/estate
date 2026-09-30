@@ -1,0 +1,11 @@
+  scanned 'dagger mcp': 7 repos, 2990 stars
+  scanned 'dagger ai agent': 8 repos, 325 stars
+
+=== RANKED PATTERNS (GitHub-wide) ===
+score  bug  repos  stars   iss  test  term
+ 64.7   0     7    2990    63 0.14  dagger mcp
+ 10.0   0     8     325    36 0.00  dagger ai agent
+
+TOP 3 TO MERGE:
+  - dagger mcp
+  - dagger ai agent
