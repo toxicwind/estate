@@ -361,7 +361,11 @@ cmd_watch() {
       _squawk "estate-reconcile BREAKER OPEN" "Drift detected on $evpath but restore rate exceeded (circuit breaker). Manual intervention required."
       continue
     fi
-    cmd_apply "$mf" || true
+    # Auto-restore DISABLED by Chris 2026-09-30 ("shouldn't be restoring
+    # anything"): the watch loop is alert-only now. Drift gets logged +
+    # squawked; a human (or the oracle) decides rebuild/bless/trusted-copy.
+    _log "ALERT-ONLY drift on $evpath ($ev): auto-restore disabled"
+    _squawk "estate-reconcile drift (alert-only)" "Drift detected on $evpath ($ev). Auto-restore is disabled by Chris's order - manual decision required (rebuild, bless, or trusted copy)."
   done
 }
 
