@@ -40,29 +40,54 @@ def build_pools():
 
 
 
-def _health_poller(pools_getter, interval: float = 10.0):
-    """Probe unknown / expired-down keys in the background.
+HEALTHY_TTL = float(os.environ.get("KEYPOOL_HEALTHY_TTL", "300"))
 
-    Without this, /health reports 0/N until the first real request
-    arrives, and keys never get pre-validated at startup.
+# Event-driven poller wakeups: reloads / failures notify instead of polling.
+_poller_cond = threading.Condition()
+
+
+def wake_poller():
+    """Wake the health poller immediately (e.g. after a reload)."""
+    with _poller_cond:
+        _poller_cond.notify_all()
+
+
+def _health_poller(pools_getter, ttl: float = HEALTHY_TTL):
+    """Probe unknown / expired-down / TTL-stale-healthy keys.
+
+    Event-driven: sleeps on a Condition until the next healthy-key TTL
+    expiry or an explicit wake_poller() — no fixed-interval timer.
+    Previously healthy keys were NEVER revalidated, so a provider-side
+    revocation left them green forever.
     """
     import time as _t
-    _t.sleep(1.5)
+    _t.sleep(1.5)  # let the server socket bind first
     while True:
+        now = _t.monotonic()
+        next_wake = None
         try:
             pools = pools_getter()
             for pname, pool in pools.items():
                 for ks in list(pool.keys):
-                    needs = (ks.state == "unknown") or (
-                        ks.state == "down" and ks.is_parked() is False
+                    needs = (
+                        ks.state == "unknown"
+                        or (ks.state == "down" and ks.is_parked() is False)
+                        or ks.needs_revalidation(ttl)
                     )
                     if needs:
                         ok = pool.probe_and_update(ks)
-                        if ok:
-                            log(f"poller: {pname}/{ks.name} healthy")
+                        log(f"poller: {pname}/{ks.name} -> "
+                            f"{'healthy' if ok else 'down'}")
+                for ks in list(pool.keys):
+                    if ks.state == "healthy" and ks.last_probe_at > 0:
+                        expiry = ks.last_probe_at + ttl - now
+                        if next_wake is None or expiry < next_wake:
+                            next_wake = expiry
         except Exception as e:
             log(f"poller error: {e}")
-        _t.sleep(interval)
+        with _poller_cond:
+            wait_s = max(1.0, next_wake) if next_wake is not None else 30.0
+            _poller_cond.wait(timeout=wait_s)
 
 def main():
     if "--selftest" in sys.argv:
@@ -79,6 +104,7 @@ def main():
             fresh, _ = build_pools()
             proxy.POOLS = fresh
             persist.write_json(HEALTH_PATH, _snap(fresh))
+            wake_poller()
         except Exception as e:
             log(f"reload failed: {e}")
 
