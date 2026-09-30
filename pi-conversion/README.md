@@ -1,6 +1,12 @@
 # pi-conversion — grok-build → pi.dev migration (archived)
 
-One-shot migration package from **July 2026** that converted the grok-build stack to [pi.dev](https://pi.dev) (open-source agent framework, MIT). The migration is complete — this directory is kept as a reference for the config mapping.
+<div align="right">
+![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge) ![status](https://img.shields.io/badge/status-archived-red?style=for-the-badge) ![json](https://img.shields.io/badge/config-json-black?style=for-the-badge) ![bash](https://img.shields.io/badge/installer-bash-green?style=for-the-badge)
+</div>
+
+*One-shot migration package from **July 2026** that converted the grok-build stack to [pi.dev](https://pi.dev) (open-source agent framework, MIT). The migration is complete — this directory is kept as the **config-mapping reference** for how every grok-build model, setting, and MCP hook became its pi.dev equivalent.*
+
+If you're wondering "what did `groq-compound` become?" or "where did the TOML `mcp_servers` block go?" — the answers are below.
 
 ## Contents
 
@@ -10,30 +16,31 @@ pi-conversion/
 ├── settings.json          →  ~/.pi/agent/settings.json
 ├── project-settings.json  →  /home/toxic/.pi/settings.json
 ├── mcpproxy-config.json   →  ~/.mcpproxy/mcp_config.json
-└── install.sh             →  one-shot installer
+└── install.sh             →  one-shot installer (bash, non-interactive)
 ```
 
-## Quick start (reference)
+## Migration map
+
+```mermaid
+flowchart LR
+    GROK["grok-build<br/>TOML config"] --> MAP["pi-conversion/<br/>models.json + settings.json"]
+    MAP --> PI["pi.dev<br/>~/.pi/agent/"]
+    MCPJ["mcpproxy-config.json"] --> SHEP["shep :25127<br/>federated MCP gateway"]
+    PI --> SHEP
+```
+
+## Quick Start (reference)
 
 ```bash
-# 1. Install pi
 curl -fsSL https://pi.dev/install.sh | sh
-
-# 2. Install MCPProxy (now the shep service on :25127 — prefer that over a local mcpproxy)
-# 3. Copy configs
-mkdir -p ~/.pi/agent ~/.mcpproxy /home/toxic/.pi
-cp models.json ~/.pi/agent/models.json
-cp settings.json ~/.pi/agent/settings.json
-cp project-settings.json /home/toxic/.pi/settings.json
-cp mcpproxy-config.json ~/.mcpproxy/mcp_config.json
-
-# 4. Export keys (or use /login in pi)
-export NVIDIA_API_KEY="…" OPENROUTER_API_KEY="…" GROQ_API_KEY="…"
-
-# 5. Run
+cp models.json ~/.pi/agent/models.json && cp settings.json ~/.pi/agent/settings.json
 cd /home/toxic && pi
-/model              # list converted models
-/model groq         # select Groq
+```
+
+Then in pi: `/model` lists converted models, `/model groq` selects Groq. For MCP, prefer the **shep** service on `:25127` over a local mcpproxy (see below). Export keys or use `/login` in pi:
+
+```bash
+export NVIDIA_API_KEY=<redacted>
 ```
 
 ## Model reference
@@ -87,6 +94,6 @@ grok-build's hardcoded `mcp_servers` TOML block is replaced by a federated gatew
 - **NIM `reasoning_effort`**: grok-build's serde layer sent the wrong type and blinded the error; pi.dev's `thinkingLevelMap` maps levels to exact provider values (`off/minimal/low/medium/high/xhigh/max` → `"0.2"`–`"0.99"`), with full raw error dumps. `thinkingmachines/inkling` was discontinued 2026-09-03, so the NIM-specific section is reference only.
 - Debug any provider directly: `curl` the provider endpoint, then `PI_LOG_LEVEL=debug pi`, then Ctrl+L in the TUI for the full request/response log.
 
-## License
+## License & Security
 
-Configs derived from the July 2026 grok-build `config.toml`, mapped to pi.dev's documented schema. MIT.
+Configs derived from the July 2026 grok-build `config.toml`, mapped to pi.dev's documented schema. MIT. Security posture of the target stack: API keys live in `auth.json` (encrypted), environment variables, or `/login` — never inline in config files. This directory is a frozen reference; don't resurrect `install.sh` against a live system without reading it first.
