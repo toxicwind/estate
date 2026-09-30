@@ -364,7 +364,7 @@ daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "floc
 daemons = []
 
 [groups.all]
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "fleet-ui", "buildsrv", "buildsrv-watchdog", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash", "sovereign-router"]
+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "fleet-ui", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash", "sovereign-router"]
 
 
 [daemons.kimi-auto-shim]
@@ -515,39 +515,39 @@ mise = false
 retry = true
 auto = ["start"]
 
-# buildsrv - fleet continuous-modification engine (2026-09-14): disk-backed
+# brand - fleet continuous-modification engine (2026-09-14, renamed 2026-09-30): disk-backed
 # job queue, streaming logs, content-hash artifact cache. Source:
-# tools/buildsrv in toxicwind/sovereign-projects. Submit via the buildsrv CLI.
+# branding/ in toxicwind/ranch (moved 2026-09-30). Submit via the brand CLI.
 # NOTE: pitchfork.toml is hand-edited (generator retired 2026-09-14, never run it).
-[daemons.buildsrv]
+[daemons.brand]
 port = 25148
-run = "exec /usr/bin/python3 /home/toxic/sovereign/tools/buildsrv/buildsrvd.py"
-dir = "/home/toxic/sovereign/tools/buildsrv"
+run = "exec /usr/bin/python3 /home/toxic/sovereign/projects/range/ranch/branding/brandd.py"
+dir = "/home/toxic/sovereign/projects/range/ranch/branding"
 mise = false
 retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25148/health"
 health_http = { url = "http://127.0.0.1:25197/api/health", interval = "30s", timeout = "5s", retries = 3 }
-# Build-cache env (2026-09-21): every buildsrv job inherits these. sccache/ccache/uv caches live on NVMe.
+# Build-cache env (2026-09-21): every brand job inherits these. sccache/ccache/uv caches live on NVMe.
 # CARGO_INCREMENTAL=0 because sccache refuses incremental compilation outright.
 # CC/CXX intentionally NOT set: BASH_ENV rewrites them to clang for bash -lc jobs,
 # so CMAKE compiler launchers are the robust ccache path for CMake builds.
-# BUILDSRV_WORKERS stays 2 (16 logical CPUs; two Cargo builds already oversubscribe).
-env = { BUILDSRV_ROOT = "/home/toxic/buildsrv", BUILDSRV_PORT = "25148", BUILDSRV_WORKERS = "2", RUSTC_WRAPPER = "sccache", SCCACHE_DIR = "/home/toxic/.cache/sccache", CCACHE_DIR = "/home/toxic/.cache/ccache", CMAKE_C_COMPILER_LAUNCHER = "ccache", CMAKE_CXX_COMPILER_LAUNCHER = "ccache", UV_CACHE_DIR = "/home/toxic/.cache/uv", CARGO_INCREMENTAL = "0" }
+# BRAND_WORKERS stays 2 (16 logical CPUs; two Cargo builds already oversubscribe).
+env = { BRAND_ROOT = "/home/toxic/brand", BRAND_PORT = "25148", BRAND_WORKERS = "2", RUSTC_WRAPPER = "sccache", SCCACHE_DIR = "/home/toxic/.cache/sccache", CCACHE_DIR = "/home/toxic/.cache/ccache", CMAKE_C_COMPILER_LAUNCHER = "ccache", CMAKE_CXX_COMPILER_LAUNCHER = "ccache", UV_CACHE_DIR = "/home/toxic/.cache/uv", CARGO_INCREMENTAL = "0" }
 auto = ["start"]
 
-# buildsrv-watchdog - external liveness guard for buildsrv (2026-09-14):
-# polls /health every 20s; `pitchfork restart buildsrv` after 3 consecutive
+# brand-watchdog - external liveness guard for brand (2026-09-14, renamed 2026-09-30):
+# polls /health every 20s; `pitchfork restart brand` after 3 consecutive
 # failures. Covers the wedged-but-alive case pitchfork retry=true cannot
 # see (2026-09-14 18:03 lock deadlock: process "running", health dead).
-# Scoped to buildsrv only; sibling lanes own their watchdogs.
-[daemons.buildsrv-watchdog]
-run = "exec /usr/bin/python3 /home/toxic/sovereign/tools/buildsrv/buildsrv-watchdog.py"
-dir = "/home/toxic/sovereign/tools/buildsrv"
+# Scoped to brand only; sibling lanes own their watchdogs.
+[daemons.brand-watchdog]
+run = "exec /usr/bin/python3 /home/toxic/sovereign/projects/range/ranch/branding/brand-watchdog.py"
+dir = "/home/toxic/sovereign/projects/range/ranch/branding"
 mise = false
 retry = true
 boot_start = true
-env = { BUILDSRV_PORT = "25148", WATCHDOG_INTERVAL_S = "20", WATCHDOG_MAX_FAILS = "3" }
+env = { BRAND_PORT = "25148", WATCHDOG_INTERVAL_S = "20", WATCHDOG_MAX_FAILS = "3" }
 auto = ["start"]
 [daemons.windmill]
 health_http = { url = "http://127.0.0.1:25219/api/status", interval = "10s", timeout = "5s", retries = 2 }
@@ -959,3 +959,14 @@ mise = false
 retry = true
 auto = ["start"]
 ready_cmd = "pgrep -f '[m]arket-loop.ts' >/dev/null"
+# hashline serve — Unix-socket JSON-RPC daemon (first-class edit tool,
+# Chris 2026-09-30). Agents edit via the binary; MCP hosts use
+# `hashline mcp --proxy-to-daemon` against this socket. No HTTP surface —
+# readiness is the socket listening.
+[daemons.hashline]
+run = "exec /home/toxic/.local/bin/hashline serve --socket /home/toxic/.hashline/hashline.sock --pid-file /home/toxic/.hashline/hashline.pid"
+dir = "/home/toxic"
+env = { HASHLINE_NO_UPDATE_CHECK = "1" }
+retry = true
+ready_cmd = "ss -lx | grep -q /home/toxic/.hashline/hashline.sock"
+auto = ["start"]

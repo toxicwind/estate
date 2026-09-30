@@ -3,7 +3,7 @@ set -euo pipefail
 SOV="$HOME/sovereign"
 TAU="$SOV/projects/tau"
 CONFIG="$SOV/config"
-QUEUE="$HOME/buildsrv/queue"
+QUEUE="$HOME/brand/queue"
 
 mkdir -p "$CONFIG" "$SOV/projects" "$QUEUE" "$SOV/helpers" "$HOME/.local/bin" "$HOME/.config/vansrouter"
 
