@@ -87,15 +87,26 @@ async function flush(): Promise<void> {
   try { files = (await readdir(OUTBOX)).filter(f => f.endsWith(".json")).sort(); }
   catch { console.log("outbox empty"); return; }
   if (!files.length) { console.log("outbox empty"); return; }
+  let ok = 0, deferred = 0;
   for (const f of files) {
     try {
       const m = JSON.parse(await readFile(join(OUTBOX, f), "utf8"));
       // re-race; if it still fails, leave it spooled
       const winner = await Promise.any([pathAFor(m), pathBFor(m)]);
       await unlink(join(OUTBOX, f));
+      ok++;
       console.log(`flushed ${f}: ${winner}`);
-    } catch (e) { console.log(`flush deferred ${f}: ${(e as Error).message?.slice(0, 120)}`); }
+    } catch (e) {
+      deferred++;
+      // Promise.any throws AggregateError whose .message is empty — unwrap it
+      const sub = (e as any)?.errors;
+      const reason = (Array.isArray(sub) && sub.length
+        ? sub.map((x: any) => String(x?.message || x).slice(0, 80)).join(" | ")
+        : String((e as Error)?.message || e).slice(0, 120)) || "both paths failed";
+      console.log(`flush deferred ${f}: ${reason}`);
+    }
   }
+  console.log(`flush summary: ${ok} flushed, ${deferred} deferred`);
 }
 async function pathAFor(m: any): Promise<string> {
   const out = await $`${SQUAWK} send ${m.channel} ${m.message}`.env({ ...process.env, SQUAWK_SENDER: m.sender }).text();
@@ -103,8 +114,11 @@ async function pathAFor(m: any): Promise<string> {
   return out.trim();
 }
 async function pathBFor(m: any): Promise<string> {
-  const fname = `${Date.now()}-${uuid}.md`;
-  const b64 = Buffer.from(frontmatter(`ts-${Date.now()}`).replace(uuid, m.uuid)).toString("base64");
+  // Flush mode runs before the module-level globals (sender/channel/message/ts/uuid)
+  // are initialized — build everything from the spooled record, never globals.
+  const fname = `${Date.now()}-${m.uuid}.md`;
+  const fm = `---\nseq: ts-${Date.now()}\nfrom: ${m.sender}\nto: all\nchannel: ${m.channel}\nts: ${m.ts}\nstatus: discussion\nuuid: ${m.uuid}\ntitle: msg\n---\n${m.message}\n`;
+  const b64 = Buffer.from(fm).toString("base64");
   const chunks: string[] = [];
   for (let i = 0; i < b64.length; i += 1200) chunks.push(b64.slice(i, i + 1200));
   const assemble = chunks.map(c => `printf '%s' '${c}'`).join(" ");
