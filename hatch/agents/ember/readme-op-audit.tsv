@@ -1,0 +1,200 @@
+sovereign-projects	main	fa0e129	2026-09-27T10:13:37Z	feat(tools): add bili-deploy so the sigma fork is actually what runs
+python-sdk-auditor	main	bd71452	2026-09-30T01:04:46Z	docs: maximalize README per readme skill
+toxic-vault-mind	main	f2d08c0	2026-09-30T01:04:17Z	docs: maximalize README per readme skill
+nvidia-swarm-lens	main	498f40c	2026-09-30T01:04:11Z	docs: maximalize README per readme skill
+nvidia-nim-model-probe	main	21e8136	2026-09-30T01:04:07Z	docs: maximalize README per readme skill
+nvidia-kernel-guard	main	a7089eb	2026-09-30T01:04:04Z	docs: maximalize README per readme skill
+nvidia-alive	main	d78720f	2026-09-30T01:04:00Z	docs: maximalize README per readme skill
+local-work-archive	main	1121281	2026-09-14T17:52:53Z	docs: rewrite README to match reality — full layout/inventory, chunking + restore instructions, secrets-hygiene warning;
+nitrado_api_lib	main	172bd67	2026-09-30T01:03:57Z	docs: maximalize README per readme skill
+nim-inkling-api-research	master	76c8083	2026-09-30T01:03:53Z	docs: maximalize README per readme skill
+neo-osint	main	6bb33eb	2026-09-30T01:03:49Z	docs: maximalize README per readme skill
+musepool	main	0a68736	2026-09-30T01:03:45Z	docs: maximalize README per readme skill
+mintlify-docs	main	3924aa8	2026-09-30T01:03:42Z	docs: maximalize README per readme skill
+bashrc-quote-fix	main	aaa317b	2026-09-30T01:03:27Z	docs: maximalize README per readme skill
+paper-poller	main	f65799f	2026-09-30T01:03:20Z	docs: maximalize README per readme skill
+secretsmith	main	b78e245	2026-09-30T01:01:49Z	docs(readme): maximal README pass per readme-maximal skill
+mcpproxy-go	main	36055d9	2026-09-30T01:01:15Z	docs(readme): maximal README pass per readme-maximal skill
+super-ralph	main	4e5cd2b	2026-09-30T01:00:02Z	docs(readme): maximal README pass per readme-maximal skill
+squawk	main	054aea2	2026-09-30T01:00:18Z	docs(readme): maximal README pass per readme-maximal skill
+optimized-cr3-repo	main	839aa0d	2026-09-30T01:00:26Z	docs: maximalize README per readme skill
+ontological-atlas	main	39a12e9	2026-09-30T01:00:19Z	docs: maximalize README per readme skill
+agent-dashboard	canary	b1c4f3a	2018-09-30T23:02:10Z	Monorepo (#5341)
+ast-grep	main	4daad14	2026-09-30T00:59:09Z	docs(readme): maximal README pass per readme-maximal skill
+ranch	main	7cbcce9	2026-09-30T00:59:07Z	docs(readme): maximal README pass per readme-maximal skill
+codeflux-watchfiles	main	61c0a09	2026-09-30T00:59:06Z	docs(readme): maximal README pass per readme-maximal skill
+flock	main	3e9e1ba	2026-09-30T00:58:29Z	docs(readme): maximal README pass per readme-maximal skill
+tau	main	c446f28	2026-09-30T00:57:40Z	docs(readme): maximal README pass per readme-maximal skill
+sovereign-swap	main	d6f4483	2026-09-30T00:56:49Z	docs(readme): skill-conformant badges - own CI, for-the-badge, MIT license
+safety-review-gate	main	f9f0223	2026-09-30T00:56:49Z	docs(readme): maximal README pass per readme-maximal skill
+repo-first-class	main	09d1f21	2026-09-30T00:56:49Z	docs(readme): maximal README pass per readme-maximal skill
+identity-router	main	67732d5	2026-09-30T00:56:49Z	docs(readme): maximal README pass per readme-maximal skill
+sovereign-scripts	main	abf8ac7	2026-09-30T00:56:49Z	docs(readme): maximal README pass per readme-maximal skill
+sovereign-dispersal	main	2fc2ca2	2026-09-30T00:56:49Z	docs(readme): maximal README pass per readme-maximal skill
+caddy-sovereign-auth	main	db89c5b	2026-09-30T00:56:20Z	docs(readme): maximal README pass per readme-maximal skill
+codex-desktop-linux	main	b925166	2026-09-30T00:56:20Z	docs(readme): maximal README pass per readme-maximal skill
+guidellm	main	483838e	2026-09-30T00:56:50Z	docs(readme): maximal README pass per readme-maximal skill
+qed	main	e04c6c9	2026-09-30T00:50:50Z	docs(readme): maximal README pass per readme-maximal skill
+playwright-mcp	main	ea96731	2026-09-30T00:56:36Z	docs(readme): maximal README pass per readme-maximal skill
+fleetd	main	759d113	2026-09-30T00:56:03Z	docs(readme): maximal README pass per readme-maximal skill
+sovereign	main	07ff184	2026-09-30T00:56:16Z	docs(readme): maximal README pass per readme-maximal skill
+vaultfs	main	31c2e79	2026-09-30T00:56:07Z	docs(readme): maximal README pass per readme-maximal skill
+zedra-sovereign	main	be3320d	2026-09-30T00:56:07Z	docs(readme): maximal README pass per readme-maximal skill
+k3-capacity-hack	main	bfa4740	2026-09-30T00:55:40Z	docs(readme): maximal README pass per readme-maximal skill
+modelbeats	main	35587c1	2026-09-30T00:55:36Z	docs(readme): maximal README pass per readme-maximal skill
+session-bus-refresh	master	05a7c68	2026-09-30T00:55:35Z	docs(readme): maximal README pass per readme-maximal skill
+rig	main	d2db564	2026-09-30T00:55:34Z	docs(readme): maximal README pass per readme-maximal skill
+herd	main	c6a07ba	2026-09-30T00:55:09Z	docs(readme): maximal README pass per readme-maximal skill
+outlier-toolkit	main	b242ba2	2026-09-30T00:55:06Z	docs(readme): maximal README pass per readme-maximal skill
+refusal-hunt	main	39e0d46	2026-09-30T00:55:06Z	docs(readme): maximal README pass per readme-maximal skill
+entropy-gpu	main	f166073	2026-09-30T00:54:59Z	docs(readme): maximal README pass per readme-maximal skill
+pj-fast	main	5333d10	2026-09-30T00:54:32Z	docs(readme): maximal README pass per readme-maximal skill
+web3-sec-workspace	main	d9224e4	2026-09-30T00:54:30Z	docs(readme): maximal README pass per readme-maximal skill
+codeflux-python-patch	master	3683d5f	2026-09-30T00:54:22Z	docs(readme): maximal README pass per readme-maximal skill
+codeflux-patchling	main	3b02f32	2026-09-30T00:54:04Z	docs(readme): maximal README pass per readme-maximal skill
+tau-extensions	main	1c898e3	2026-09-30T00:53:54Z	docs(readme): maximal README pass per readme-maximal skill
+codeflux-moulti	master	ac2aeaf	2026-09-30T00:54:01Z	docs(readme): maximal README pass per readme-maximal skill
+codeflux	main	f6b9f10	2026-09-30T00:53:58Z	docs(readme): maximal README pass per readme-maximal skill
+Boundless	main	1306de1	2026-09-30T00:51:43Z	docs(readme): maximal README pass per readme-maximal skill
+effusion-labs	main	f7da96c	2026-09-30T00:51:13Z	docs(readme): maximal README pass per readme-maximal skill
+sigma	main	f98afdf	2026-09-27T07:10:01Z	docs: add the FORK-NOTES.md the README links, and correct the zh-CN README
+omp-model-probe	main	fe7c3a5	2026-09-27T07:50:46Z	fix: probe the way the engine authenticates, and stop probing at startup
+omp-semantic-policy	main	6d179a6	2026-09-21T18:29:51Z	fix: enforce enabled tool allowlist
+sovereign-end4	main	322766b	2026-09-21T19:19:03Z	fix: remove .github/README.md shadowing root README (GitHub readme resolver picked .github/ over root); merge its unique
+VansRouter	main	bd768d6	2026-08-15T20:24:42Z	docs(readme): fix broken provider images and document Gemini 3.7 & caching features
+hatch-docs	main	6ebdf3d	2026-09-20T21:45:50Z	docs: deeplink README to fleet knowledgebase + master README (codex readme-deconfusion)
+awrawr-mcp	main	8d263a4	2026-09-21T18:06:47Z	Add WS sibling (awrawr_ws_exec.py) + docs/ws-lane.md; repo now holds both lanes, all parts
+gear	main	04207f1	2026-09-14T19:42:12Z	gear: adapt sovereign-skills lenses — 465 skills
+papajohns-backup-2026-09-20	main	06552eb	2026-09-21T03:55:12Z	Papa backup complete: sanitized artifacts + corrected docs + manifest
+ralph-dashboard	main	1902d74	2026-09-21T03:51:08Z	docs: toxicwind fork notes (yote durability changes)
+kimi-auto	master	ab91ebb	2026-09-20T22:00:46Z	Router-config cutover v3.0: retire resolver/loop/shim; selection lives in herd.d/kimi-auto.yaml
+media	release	925bc70	2026-06-11T16:31:58Z	Fix local dependency instructions
+libsecret	main	fc99b00	2025-07-24T11:27:50Z	readme: replace translation project's wiki link with a welcome.g.o link
+cron-jobs	main	02abd42	2026-09-17T16:02:36Z	Initial commit: live scheduler job definitions (prompts the scheduler reads)
+morphe-patches	main	d58f834	2026-09-17T10:38:35Z	README: regenerate patches section (148 patches, Aura section)
+wezterm	main	1ec372f	2026-06-16T07:28:50Z	docs: Fix link to Matrix room to be client agnostic
+ik_llama.cpp	main	5fb707d	2026-06-12T06:24:22Z	Update docs (#1956)
+squawk-observability	main	2cdc280	2026-09-19T02:05:13Z	Migrate Squawk observability cell-only artifacts to durable repo (debate 7fbf3e4f)
+transfer-benchmark	main	dc4388a	2026-09-17T19:59:03Z	benchmark harness: 8-route transfer benchmark cell<->awrawr-pc
+transfer-driver	main	9f664fb	2026-09-19T08:14:58Z	README: 39 -> 40 tests (stale miscount since day one; suite verified 40/40 green)
+chat-coord	main	d652354	2026-09-18T23:05:13Z	chat-coord: port 25151->25152 (peer fleetd holds 25151), presence on any activity
+session-bus	main	
+ask-complete-guard	main	6f14c28	2026-09-18T15:07:29Z	ACFix repair lane: implementation + live cron-spec mirrors (venv-python patch)
+cell-backup	main	
+awawr-loader	main	11f7ba9	2026-09-17T20:43:25Z	docs: maximal polish — honest README, AUDIT/OVERLAY findings, ROADMAP of known gaps
+github-grade	main	7f6bbe3	2026-09-17T21:39:25Z	citation-graph lane: universal pipeline spec v1 + ReAct test-case graph (60 nodes, 54 edges, 8 live-validated)
+toxicwind-repos	dev/security-audit-2026	0a28484	2026-08-10T04:18:13Z	recovery: re-init after git loss + security scrub + audit data
+grok-build	main	7c68e8b	2026-08-07T17:15:27Z	docs: add serialization error fix documentation
+nim-audit	master	3b5a2f2	2026-09-17T10:04:45Z	pointer: consolidated into toxicwind/nvidia-nim (history-preserving subtree merge)
+arc-agi-experiment	production-v3	
+workspace-helpers	main	
+fleet-jobs	master	f43dbae	2026-09-16T23:11:13Z	job reaper: auto-reap zombies, reap CLI, zombie-accumulation alerts, wrapper spawn-failure self-record
+launch-experiments	master	9ea848c	2026-09-17T10:26:46Z	shared production entrypoint: launch.py CLI (plan/ingest/reconcile/status); launcher accepts custom briefs + JSON state;
+nvidia-nim	main	c459976	2026-09-17T10:16:10Z	model catalog (82 models, audited specs/limits) + README status updates
+moonbox-nim-benchmark-2-20260822	main	686f1e0	2026-09-17T10:04:32Z	pointer: consolidated into toxicwind/nvidia-nim (history-preserving subtree merge)
+nim-proxy-audit-20260915	main	
+sovereign-pi-archive	main	1c1375a	2026-08-29T19:47:35Z	feat(tau): harmonize sovereign 1M agent framework, Zen 4 AVX-512 flags, and test suite
+additional-lens-profiles	main	4db7acc	2026-09-30T01:06:37Z	docs: maximalize README per readme skill
+hook-spike-20260915	main	
+wt-wezterm-research-20260915	main	
+whatsapp-mcp	main	ee75679	2026-09-15T02:31:25Z	docs: secrets live in untracked pitchfork-secrets env file, not pitchfork.toml
+kimi-code-sovereign	main	b800e63	2026-09-15T01:16:41Z	mass commit 2026-09-14: <tracked>1095</tracked> modified, <untracked>477</untracked> new
+x-algorithm	main	e414c17	2026-05-15T07:28:04Z	Open-source X Recommendation Algorithm
+gemini-mcp	main	6acb26f	2026-09-14T20:07:26Z	gemini-mcp: multi-key Gemini MCP server, key audit, API inventory, nightly SDK refresh
+sovereign-router-backup	main	bed9120	2026-09-14T17:53:57Z	docs: fix README paths for standalone backup repo (drop tools/sovereign-router prefix, real run commands, mcp-gateway la
+sovereign-router	main	e5a2c30	2026-09-14T17:53:43Z	docs: fix stale monorepo paths, add Agentic Lens section, honest quickstart
+antigravity-gateway-master	main	5644645	2026-06-22T20:26:22Z	META: Emergent 2026 Multi-Agent Cutting Edge integrations (6 Features) successfully deployed
+yote	main	ce63a81	2026-08-20T03:25:18Z	Initial commit: Yote extracted from OpenFang
+mist-factory	main	3877fd7	2026-06-03T23:34:06Z	feat(stack): consolidate and unify stack changes across compose, scanner, and bot
+star-loom-archive	main	
+nucleosynthesis-oddity	main	
+test-ralph	main	
+toxic	main	
+codeprobe	main	d449dfd	2026-08-06T16:01:16Z	docs: lead with uv tool install, and match doctor's upgrade advice to it
+sovereign-zed	main	f0b2e9c	2026-09-07T21:59:53Z	fix: shell_env.rs type annotations and borrow fixes
+CodeShift	main	4733df7	2026-08-23T12:49:11Z	Count the tests the suite actually has
+arxiv-code	main	2b538db	2026-09-02T00:35:06Z	feat(init): emergent 2026 arXiv TeX decompiler, code extractor, and repo miner
+sovereign-skills	main	26903e7	2026-08-24T12:08:57Z	docs: update README with badges and structure
+github-advanced-search-mcp	main	da0758d	2026-08-29T19:34:42Z	docs: modernize README with sovereign ports (:25112-25114) and toxicwind header
+zedra	main	f82ee87	2026-07-09T06:37:09Z	Merge pull request #183 from tanlethanh/roan-cart
+sovereign-rebrand	main	
+gayxxx-sovereign	main	b421835	2026-05-25T07:21:56Z	Ultimate fix: correct repack with validated DEX - 2026-05-25T01:21:56-06:00
+strata-debt-forensic-taxonomy-2026	master	
+aquamarine	main	023eed5	2026-03-05T13:15:49Z	README: drop todo list
+emergent-august	main	c08bbf6	2026-08-28T22:22:09Z	emergent-august: full environment hardening toolkit
+swarm-coord	main	
+agent-chat-ui	main	2a76b8e	2026-08-26T13:49:40Z	docs: reduce to langgraph deployment auth in readme (#317)
+huh	master	6627296	2026-08-26T01:58:06Z	Add README.md
+token-recovery-20260824	main	
+moonbox-skills-deploy	master	
+bay-onyx-harbor-glow	main	
+dotfiles	main	32f4a47	2025-10-27T16:43:02Z	feat: capture full hypebrut shell stack
+infra-recon	main	150906f	2026-08-24T12:08:00Z	Initial commit
+_git	main	69372d7	2026-08-22T17:52:37Z	Initial commit
+moonbox-intel-v2	main	d4669b3	2026-08-23T00:27:57Z	Initial commit
+test-1787449974	2026-08-23T01:53:00Z	{"message":"Git Repository is empty.","documentation_url":"https://docs.github.com/rest/commits/commits#list-commits","status":"409"}
+moonbox-intel	main	035a33e	2026-08-23T00:13:14Z	Initial commit
+moonbox-test_git-20260823	main	
+corey-affair-osint	main	d712ee3	2026-08-23T00:57:25Z	Initial commit
+moonbox-files-v2	main	3f18c36	2026-08-23T00:28:00Z	Initial commit
+moonbox-live	master	0c1886b	2026-08-23T00:19:57Z	auto: 2026-08-23T00:19:55+00:00
+moonbox-packages-20260823	2026-08-23T00:01:45Z	{"message":"Git Repository is empty.","documentation_url":"https://docs.github.com/rest/commits/commits#list-commits","status":"409"}
+moonbox-output-20260822	2026-08-22T23:55:03Z	{"message":"Git Repository is empty.","documentation_url":"https://docs.github.com/rest/commits/commits#list-commits","status":"409"}
+moonbox-loops--20260822	2026-08-22T23:54:34Z	{"message":"Git Repository is empty.","documentation_url":"https://docs.github.com/rest/commits/commits#list-commits","status":"409"}
+moonbox-list-20260822	main	14ef230	2026-08-22T23:54:21Z	autopush:1787442844:list
+moonbox-intel--20260822	2026-08-22T23:53:46Z	{"message":"Git Repository is empty.","documentation_url":"https://docs.github.com/rest/commits/commits#list-commits","status":"409"}
+moonbox-images-20260822	main	6e7c5de	2026-08-22T23:53:31Z	autopush:1787442796:images
+moonbox-fyksfgnG-workspace-20260822	main	
+moonbox-drive9_full_audit-20260822	main	610779c	2026-08-22T23:17:14Z	autopush:1787440623:drive9_full_audit
+moonbox-drive9_audit-20260822	main	b2c1c63	2026-08-22T23:16:58Z	autopush:1787440608:drive9_audit
+moonbox-dot-20260822	main	25e59ba	2026-08-22T19:01:16Z	init: moonbox dot 2026-08-22T19:01:15+00:00
+moonbox-deploy-20260822	main	e892387	2026-08-22T23:02:01Z	autopush:1787439714:deploy
+moonbox-claude-forge-20260822	main	83e7f3b	2026-08-22T23:01:36Z	autopush:1787439545:claude-forge
+moonbox-ProtoDeep-20260822	main	945f0ba	2026-08-22T22:58:56Z	autopush:1787439517:ProtoDeep
+moonbox-.websites-templates-20260822	main	4f5a4d6	2026-08-22T22:58:25Z	autopush:1787439482:.websites-templates
+moonbox-.user-20260822	main	
+moonbox-.tmp-20260822	main	981e7e7	2026-08-22T22:57:45Z	autopush:1787439445:.tmp
+moonbox-.secrets-20260822	main	f20fd28	2026-08-22T22:57:20Z	autopush:1787439432:.secrets
+moonbox-.kernel_override-20260822	main	512f185	2026-08-22T22:57:07Z	autopush:1787439421:.kernel_override
+moonbox-.drive9-health-20260822	main	417d5e1	2026-08-22T22:56:53Z	autopush:1787439397:.drive9-health
+moonbox-.chat-20260822	main	82af645	2026-08-22T22:56:30Z	autopush:1787439367:.chat
+moonbox-.audit_logs-20260822	main	b2f5293	2026-08-22T22:56:01Z	autopush:1787439352:.audit_logs
+moonbox-.agents-20260822	main	
+portal-audit	master	3641bca	2026-08-13T03:49:15Z	portal audit v1.0
+moonbox-session-2026-08-22	main	f3eebdd	2026-08-22T18:09:32Z	init dot 1787422170
+ophel	main	2779c38	2026-03-10T19:51:19Z	fix: finalize firefox-first xpi + pin pnpm + brand + i18n tools
+musubi-no-nawa	main	ebc83de	2026-08-19T09:36:51Z	結びの縄 — Full manifesto
+arc-agi-ops-monolith	main	
+one-box-problem	main	4f83bec	2026-08-19T23:31:01Z	Live: 12 modules + Thread Gap + Affective Parsing Error + tools + recon data
+public-research	main	8fe4256	2026-07-24T17:52:21Z	Add Jackskid residential-proxy report and peer4you/trees4sale IoCs
+youtube-403-bypass	main	d0bbaff	2026-08-19T23:30:19Z	push: README.md from arc-agi session
+yt-dlp-universal-wrapper	main	
+arc-agi-ops	2026-08-19T13:55:09Z	{"message":"Git Repository is empty.","documentation_url":"https://docs.github.com/rest/commits/commits#list-commits","status":"409"}
+kataware-doki	2026-08-19T09:38:12Z	{"message":"Git Repository is empty.","documentation_url":"https://docs.github.com/rest/commits/commits#list-commits","status":"409"}
+snacky-paintball-project	main	d4381d0	2026-08-19T01:58:55Z	PAT UPDATE + re-init: New token from Chris. DRIVE9 reset recovered. All project files present. META: EXTREME.
+kimi-apk-audit	main	6bbc907	2026-08-19T01:51:12Z	feat: APK audit suite v1 — hardened against all edge cases
+http-bench-toxicwind	main	5dabdbe	2026-06-09T02:46:12Z	docs: update README with correct URL, run count, env vars, and CI section
+crawlee-python-toxicwind	master	8af5498	2026-07-21T07:03:00Z	docs: Fix stale and inaccurate documentation (#2081)
+Scrapling-toxicwind	main	3f32fa9	2026-08-10T21:37:19Z	docs: re-adding a sponsor
+curl_cffi-toxicwind	main	1911026	2026-05-20T08:26:45Z	Update docs
+kimi-multi-kernel	main	cb35deb	2026-08-18T00:41:49Z	sync 2026-08-18-00:41
+zed-byok-config	main	4df89e6	2026-08-18T02:10:42Z	Update README with actual BYOK content
+antigravity-white	main	60390c4	2026-01-16T19:18:26Z	docs: refresh README and theme assets
+arlockworks-core	main	
+AutoDAN-Turbo	main	0a86754	2025-04-09T17:18:47Z	Update README.md
+envd-project	master	b398941	2026-08-11T02:49:24Z	feat: gitw wrapper, .git-less repos, persistent metadata
+triangle-access	main	d3fdaef	2026-08-18T00:41:52Z	sync 2026-08-18-00:41
+codex-backup	main	af2f649	2025-06-05T15:40:35Z	Rewrite readme with new repo identity
+arxiv-mcp-server	main	d589017	2026-05-18T18:00:09Z	fix: add paginated paper content responses (#105)
+antigravity-conversations-analysis	main	4dba80a	2026-07-11T10:45:06Z	feat: antigravity conversations analysis toolkit
+apex-operator	main	3301c02	2026-03-08T03:20:20Z	apex: honor env profile overrides and fix ghas-live runtime sequencing
+codex-forksmith	main	db79a0b	2026-01-07T09:08:33Z	Emergency Baseline Stabilization
+codex-updater	main	3442b8b	2025-11-09T06:40:03Z	feat(wrapper): opt-in dev workspace builds
+comfyui-art-venture	main	
+celebrity-connections-osint	main	80ec97c	2026-08-06T19:02:47Z	Aesthetic README v2.0: Public star-gaining edition
+awesome-osint-crawler	main	7114c2a	2026-07-29T07:48:22Z	Initial commit: awesome-osint-crawler v0.1.0
+awesome-token-audit	main	96003aa	2026-07-29T07:48:09Z	Initial commit: awesome-token-audit v0.1.0
+awesome-api-shape-explorer	main	ee2ce16	2026-07-29T07:48:03Z	Initial commit: awesome-api-shape-explorer v0.1.0
+awesome-llm-sdks	main	2ac3235	2026-07-29T08:07:42Z	Rebuild as real awesome list: 18 verified repos + public Moonshot ecosystem
+antigravity-linux	main	09cb0ef	2026-03-10T14:55:36Z	chore: final 2026 Silent-Slay architecture modernization
+codex-patches	main	ff66a03	2025-11-05T06:14:16Z	sync: update community patches (2025-11-05)
