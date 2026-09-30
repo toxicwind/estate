@@ -209,6 +209,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | fennec-cell-files | CELL-FILES stream: mise.toml hot-reload audit (up-cellfiles-ui forensics; stream D repaired the parse break as 1cdeac68f6), pitchfork bun --hot for kimi-audit-dash/windmill/bench-radar, hatch/README cell-files row, findings UX redesign in Deuz-SDK (3-class triage, workload grouping, WHY strings) | Fennec (Ember crew) | RUNNING (2026-09-30) |
 | pinto | move Oracle into the ranch with western theme; fix bidder-forge/bidder-scout daemons | ember | RUNNING (2026-09-30) |
 | canyon | merge origin/main into forge/gate-retire-final, conflict-free, branch-safe | Ember (main agent) | DONE (2026-09-30) -- merge b9a27e845c pushed, remote ref 50086eafe7 verified via ls-remote |
+| brand-move | buildsrv -> ranch/branding relocate + western rename (CLI brand, port 25148, faithful move; ranch brand/ taken by Hooksmith git-hooks iron) | Brander (Ember's crew) | DONE 2026-09-30 -- ranch 548139a (move) + db3e2b8 (status null-sort fix), sovereign 8920c03f8b (refs rename) + 2d1b3f0282 (cutover+deletion), all remote refs verified via ls-remote. E2E: smoke job succeeded, resubmit CACHED, brand status/health clean. |
 <!-- KB-ROLLUP:END -->
 
 
