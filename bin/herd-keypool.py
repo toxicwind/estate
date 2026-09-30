@@ -1250,6 +1250,28 @@ def selftest():
     print("keypool selftest: " + ("ALL PASS" if not fails else f"{fails} FAILURES"))
     return fails
 
+def _background_healthy_poller(interval=10.0):
+    """Proactive background health poller (borrowed from coyote-loop / buildsrvd pattern).
+    Periodically checks unknown keys and expired 429-cooldown keys so pools stay warm
+    and recovered without client-side latency penalties."""
+    time.sleep(1.5)
+    while True:
+        try:
+            now = time.time()
+            for p_name, pool in list(POOLS.items()):
+                for ks in list(pool.keys):
+                    needs_probe = (ks.state == "unknown") or (ks.state == "down" and now >= ks.down_until)
+                    if needs_probe:
+                        ok = pool._probe_and_update(ks)
+                        if ok:
+                            with pool.lock:
+                                ks.state = "healthy"
+                                ks.down_until = 0.0
+                            log(f"poller: {p_name}/{ks.name} PROACTIVELY RECOVERED ({ks.latency_ms:.0f}ms)")
+        except Exception as e:
+            log(f"poller error: {e}")
+        time.sleep(interval)
+
 
 def main():
     if len(sys.argv) > 1 and sys.argv[1] == "--selftest":
@@ -1268,6 +1290,8 @@ def main():
             sys.exit(98)
         raise
     log(f"listening on {LISTEN[0]}:{LISTEN[1]} (pools: {', '.join(sorted(POOLS)) or 'none'})")
+    threading.Thread(target=_background_healthy_poller, daemon=True, name="keypool-healthy-poller").start()
+    log("proactive health poller thread started (interval=10s)")
     srv.serve_forever()
 
 

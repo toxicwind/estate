@@ -40,6 +40,8 @@ flowchart LR
 bun run /home/toxic/sovereign/skills/tau-session-audit/helper/audit.ts
 bun run /home/toxic/sovereign/skills/tau-session-audit/helper/audit.ts --check plan
 bun run /home/toxic/sovereign/skills/tau-session-audit/helper/audit.ts --check all > sessions.tsv
+# GitHub-ready Markdown report to stdout
+bun run /home/toxic/sovereign/skills/tau-session-audit/helper/audit.ts --report
 ```
 
 ## Checks

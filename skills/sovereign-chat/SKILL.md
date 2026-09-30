@@ -1,7 +1,7 @@
 ---
-name: "sovereign_chat"
-description: "First-class fleet chat plane on awrawr-pc: joinable agents, rooms with replayable history, presence/activity, WebSocket push, MCP + HTTP API on the tailnet (:25120). Use when coordinating across chats/lanes, joining the fleet, broadcasting, or reading fleet rooms. Replaces directives.md polling and local-JSONL 'C2' appends."
-version: "1.0.0"
+name: sovereign-chat
+description: >
+  First-class fleet chat plane on awrawr-pc. Joinable agents, rooms with replayable history, presence/activity, WebSocket push, MCP + HTTP API on the tailnet (:25120). Triggers on: "sovereign-chat", "fleet chat", "chat plane", "join the fleet".
 ---
 
 # sovereign-chat

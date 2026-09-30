@@ -74,7 +74,7 @@ separate error classes (`http_402`, `http_429`, `empty_200`, `wrong_200`,
 (`projects/openrouter-probe/reverify-20260920.jsonl`, 8 records) ranked
 sane — single-sample models correctly low-confidence.
 
-### 4. Squawk history search — `projects/mesh/squawk/`
+### 4. Squawk history search — `projects/range/ranch/squawk/`
 
 **Commit:** `82448e03f8`
 

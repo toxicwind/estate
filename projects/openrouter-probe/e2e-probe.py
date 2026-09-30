@@ -5,7 +5,7 @@ import json
 import re
 import sys
 
-sys.path.insert(0, "/home/toxic/sovereign/projects/guidellm/src")
+sys.path.insert(0, "/home/toxic/sovereign/projects/range/ranch/guidellm/fork/src")
 
 SECRETS = "/home/toxic/.secrets"
 PROMPT = "Output exactly: ABSTRACT-7X3Q. No other text."

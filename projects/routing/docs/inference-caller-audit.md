@@ -87,7 +87,7 @@ Also observed (config, flag for hygiene): `/home/toxic/.secrets` model values ar
 | `ops/openfang-health/provider-race.py` | Candidates `[{:25100, "qwen3.5-9b-tool"}, {:25100, "kimi-auto"}, {:25100, "beellama/exaone-4-0-1-2b-iq4xs"}]` | **hardcoded** candidate list | sovereign/ops | **map only** — selection in code; route names only, no upstream IDs |
 | `projects/kodi-fleet/addons/lasso/.../groq_api.py` + `manifold-upstream/.../groq_api.py` | `https://api.groq.com/openai/v1/chat/completions` with caller-supplied `model_id` | **hardcoded direct upstream bypass** (external API, Groq key) | kodi-fleet | **map only** — bypasses all routers; only canonical caller hitting a provider directly |
 
-Research/checker scripts (not live wiring, enumerated for completeness): `projects/model-max/sweep.py` (enumerates herd `/models`, probes liveness — no hardcoded models, clean), `projects/mesh/research/check_providers.py` (hardcoded provider/model test lists — research-only), `killer-features/code-racer/strategies/lib/cr.py` (env-configurable URLs, but **no importers anywhere on the estate** — dead lib, excluded).
+Research/checker scripts (not live wiring, enumerated for completeness): `projects/model-max/sweep.py` (enumerates herd `/models`, probes liveness — no hardcoded models, clean), `projects/range/ranch/research/check_providers.py` (hardcoded provider/model test lists — research-only), `killer-features/code-racer/strategies/lib/cr.py` (env-configurable URLs, but **no importers anywhere on the estate** — dead lib, excluded).
 
 ## TAU callers (engine + extensions + configs)
 
