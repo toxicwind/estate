@@ -1,12 +1,29 @@
 # squawk
 
-**File-based multi-agent chat with no daemon, no sockets, no HTTP — just a
-folder of Markdown files.** Forked from `n24q02m/agent-chat-plugin`
-(Apache-2.0), then maximally merged with the working mechanisms of six
-other agent-chat repositories and ten distributed-systems papers. Every
-claim in this README is traceable to code: module docstrings carry the
-provenance, and the behaviors listed under "Verified" were exercised, not
-assumed.
+**File-based multi-agent chat with no daemon, no sockets, no HTTP — just a folder of Markdown files.** The fleet's voice: HMAC-signed, Lamport-stamped, DAG-linked, end-to-end-encrypted-capable agent chat. Forked from `n24q02m/agent-chat-plugin` (Apache-2.0), then maximally merged with the working mechanisms of six other agent-chat repositories and ten distributed-systems papers. Every claim in this README is traceable to code: module docstrings carry the provenance, and the behaviors listed under "Verified" were exercised, not assumed.
+
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+## Why this exists
+
+Agents need to talk to each other without a server to babysit. The WhatsApp-side agent has a filesystem and nothing else — so the core stays file-based. Nothing in the hot path needs a network port, a server, or an MCP bridge. Messages are Markdown files (human-readable, grep-able, diff-able); every derived index is rebuildable from them.
+
+```mermaid
+flowchart TB
+    subgraph root["<chat-root>/ — the whole system"]
+        MSG["<channel>/NNNN-<from>-<slug>.md<br/>messages — the source of truth"]
+        IDX["log.jsonl · .ops.jsonl · .vectors/<br/>derived indexes — rebuildable"]
+        SEC[".clocks/ · .peers/ · .cursors/<br/>time, presence, read state"]
+    end
+    A[agent alice] -->|post: HMAC-sign| MSG
+    MSG -->|read: HMAC-verify| B[agent bob]
+    MSG -.->|gossip --repair| IDX
+```
 
 Target deployment: `/home/toxic/.shingle/chat` on awrawr-pc. The
 WhatsApp-side agent can only read/write files there — so the core stays
@@ -63,7 +80,7 @@ senders. Keys live **outside** the chat root (`~/.shingle/keys/`, or
 | Command | What it does |
 |---|---|
 | `init` / `channels` / `roster` | channel lifecycle, discovery, membership |
-| `post --from --title [--to] [--reply] [--body]` | signed, Lamport-stamped, DAG-linked message |
+| `post --from --title [--to] [--body]` | signed, Lamport-stamped, DAG-linked message |
 | `read --as` / `peek` / `wait --as` | verified read; cursor-advancing read; zero-token block |
 | `digest --as` | slow-path "what's new" across channels (delta vectors) |
 | `gossip [--repair]` | anti-entropy: scan seq gaps, backfill from `log.jsonl` |
@@ -230,8 +247,13 @@ Exercised 2026-09-14, not asserted:
   .cursors/<agent>        # read cursors
 ```
 
-## License
+## License & security
 
-Base `chat.py` is Apache-2.0 (`n24q02m/agent-chat-plugin`). Fleet modules
-are original implementations of stolen *concepts*; see each module
-docstring for its provenance.
+MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). Base `chat.py` is Apache-2.0 (`n24q02m/agent-chat-plugin`); fleet modules are original implementations of stolen *concepts* — see each module docstring for its provenance.
+
+Security posture, stated plainly:
+
+- **Identity is cryptographic or it doesn't exist.** Posts are HMAC-SHA256 signed; readers reject forged, unsigned, or revoked senders. Keys live **outside** the chat root (`~/.shingle/keys/`, `$FLEET_KEYS_DIR` override) — never commit them.
+- **Private channels are E2E** (`priv-*`): encrypt-before-write with a per-channel Fernet key; tampering fails closed at HMAC before decryption. Without the `cryptography` package, `priv-*` ops fail closed — never plaintext.
+- **Sealed secrets** (`squawk_seal.py`) protect secret *values* at rest (NaCl sealed box, X25519). Metadata (sender, recipient, timestamp, ciphertext size) is visible; no forward secrecy; `--burn` destroys the ciphertext after decrypt *by design*, breaking HMAC on purpose.
+- **Presence never authorizes; the roster does.** Heartbeats are liveness hints, not identity.
