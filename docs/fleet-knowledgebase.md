@@ -34,7 +34,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | `/home/toxic/sovereign/config/herd.yaml` | Herd router config (the model herd) |
 | `/home/toxic/sovereign/skills/paper-search/` | Paper-search skill (canonical home) |
 | `/home/toxic/super-ralph` | Super Ralph source |
-| `/home/toxic/sovereign/agents/oracle-market/` | Oracle market loop + watchdog |
+| `/home/toxic/sovereign/projects/range/ranch/oracle/` | Oracle market loop + watchdog |
 
 ### Services & ports (yote)
 | Port | Service |
@@ -260,7 +260,7 @@ Retired/completed crews stay listed here with status DONE and their final commit
 4. Read `status` in the verdict: a firm YES/NO (probability past the gate) **is** Chris's approval — final, act immediately, don't re-ask, don't wait. `status: escalate` means the oracle abstained (fail-closed); that is the ONE case that goes to Chris directly (HUMAN step of the escalation ladder).
 5. Log the verdict in the market ledger as an `oracle-approval` event: `{question, verdict, probability, evidence_ids, agent, ts}`.
 6. NEVER route money/credential decisions here — spending, top-ups, credential minting/rotation go to Chris directly, no exceptions. The oracle cannot mint approvals for those.
-Full protocol: `agents/oracle-market/SPEC.md` § oracle-as-approval.
+Full protocol: `projects/range/ranch/oracle/SPEC.md` § oracle-as-approval.
 
 ---
 
@@ -273,7 +273,7 @@ Full protocol: `agents/oracle-market/SPEC.md` § oracle-as-approval.
 - Tau engine docs: `/home/toxic/sovereign/projects/tau/engine/docs/`
 - Yote ops: `/home/toxic/sovereign/projects/yote/ops/` (yote-doctor.sh, yote-fix.sh)
 - Scheduler audit 2026-09-20: `/home/toxic/sovereign/projects/audits/scheduler-audit-2026-09-20.md`
-- Oracle market spec: `/home/toxic/sovereign/agents/oracle-market/SPEC.md` (v2.1)
+- Oracle market spec: `/home/toxic/sovereign/projects/range/ranch/oracle/SPEC.md` (v2.1)
 - Daemon-rebuild drift note 2026-09-20: `hatch/audit-jarvis/daemon-rebuild-drift-2026-09-20.md` (compaction subsystem unchanged in hatch `82d6744eed2`; new `tool_dispatch_heartbeat`)
 - Runtime/credential docs: https://github.com/toxicwind/hatch-docs/blob/main/runtime/credential-broker.md
 
