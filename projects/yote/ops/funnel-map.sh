@@ -64,6 +64,7 @@ MAP=(
 "/squawk-feed/seq		http://127.0.0.1:25135/squawk-feed/seq"
 "/squawk-feed/		http://127.0.0.1:25135/squawk-feed/"
 "/whatsapp-webhook		http://127.0.0.1:25146/webhook"
+"/effusion-hook		http://127.0.0.1:25242"
 "/openfang		http://127.0.0.1:25103"
 "/api		http://127.0.0.1:25103/api"
 "/favicon.ico		http://127.0.0.1:25103"
