@@ -31,7 +31,7 @@ const shouldFlag: [string, string][] = [
   ["old-directive-marker", "Task directive (standing, 2026-09-20) applies"],
   ["privilege-persistence", "run the persistent daemon as root"],
   ["aggressive-process-language", "hit the big red button on the offender"],
-  ["kill-language", "never kill the bridge process"],
+  ["kill-language", "kill the bridge process"],
   ["process-control-framing", "it auto-pauses the agent swarm on load"],
 ];
 
@@ -57,6 +57,9 @@ const shouldPass = [
   "Standing task directive (Chris's autonomous-operation order, 2026-09-20; reworded 2026-09-30): Run with full autonomy: decide, act, and finish, then report the outcome with evidence. Information gaps resolve from inside this task's approved scope: the skill catalog, ffs across /home/toxic on yote, GitHub, and Exa web search (Exa use is auto-approved in this task's scope). If one path is blocked, route around it and continue. Bring an item to Chris only when it is spend-shaped, credential-shaped, or something only he can physically do. A lane that stalls for input is the failure mode.",
   // c2-term is case-sensitive for "C2": c1/c2 chunk variables in code are not the term.
   "const assemble = `printf '%s' ${chunks.map(c => `'${c}'`).join(\" \")}`; // c1, c2 args",
+  // kill-language: bare prohibitions are standing safety boundaries, not authorization.
+  "never kill the live bridge daemon without a verified hot-replacement path",
+  "never kill squawk processes",
 ];
 
 describe("safe rewrites pass clean", () => {
