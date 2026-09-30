@@ -11,7 +11,7 @@ import {
   MODEL_ALIASES as PKG_MODEL_ALIASES,
   DEAD_MODEL_IDS as PKG_DEAD_MODEL_IDS,
   type ProviderDef,
-} from "../../../projects/range/ranch/tack/src/index.ts";
+} from "../../../projects/range/ranch/flock/roost/src/index.ts";
 
 // ---------------------------------------------------------------------------
 // Secrets + local stack env (mise loads these; standalone bun needs them too)
