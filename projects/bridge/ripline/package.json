@@ -1,0 +1,11 @@
+{
+  "name": "ripline",
+  "version": "0.1.0",
+  "description": "Fast Bun-native exec bridge for the hatch cell -> yote lane, with automatic fallover to mainline yote-conn.",
+  "type": "module",
+  "bin": { "ripline": "./src/ripline.ts" },
+  "scripts": {
+    "test": "bun test",
+    "start": "bun src/ripline.ts"
+  }
+}

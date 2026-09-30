@@ -2,12 +2,12 @@
 # bin/estate-reconcile — event-driven estate drift reconciler (WS2, ferrous-warden).
 #
 # Compares DECLARED intent (deploy/manifest.yaml) against RUNTIME state
-# (file shas, symlink targets, running process binaries via /proc), reports
-# drift, and can atomically restore drifted binaries from immutable copies.
+# (file shas, symlink targets, running process binaries via /proc) and reports
+# drift. The warden is ALERT-ONLY — it never restores anything (Chris 2026-09-30).
 #
 # Usage:
 #   estate-reconcile check [--manifest F]     read-only drift report; exit 1 on drift
-#   estate-reconcile --apply [--manifest F]   atomically restore drifted binaries
+#   estate-reconcile --apply [--manifest F]   DISABLED — always refuses, exit 2
 #   estate-reconcile watch  [--manifest F]    inotify event loop (event-driven; no timers)
 #   estate-reconcile proc-audit               declared vs /proc exe for the daemons
 #
@@ -16,9 +16,11 @@
 #   SQUAWK_ROOT   squawk root (default /home/toxic/.fleet-bus/squawk-root);
 #                 unset/no-fleet-dir => squawk alerts no-op (sandbox-safe)
 #
-# Restore rules: see deploy/manifest.yaml header. Binaries restore atomically
-# (tmp file + rename, or tmp symlink + mv -T). Configs are REPORT-ONLY in this
-# workstream — the tree is shared with other crews' live WIP.
+# Restore rules: there are none anymore. Restoration is HARD-DISABLED in this
+# workstream (Chris 2026-09-30: "shouldn't be restoring anything"). The warden
+# is alert-only on every path — autonomous watch, manual --apply, everything.
+# Configs are REPORT-ONLY in this workstream — the tree is shared with other
+# crews' live WIP.
 set -euo pipefail
 
 ESTATE_ROOT="${ESTATE_ROOT:-/home/toxic/sovereign}"
@@ -247,85 +249,40 @@ cmd_proc_audit() {
   done
 }
 
-# --- atomic restore ---------------------------------------------------------
-# Restores drifted binaries atomically. Returns: 0 all restored, 2 some alert-only.
+# --- restore: HARD-DISABLED --------------------------------------------------
+# Chris 2026-09-30: "ferrious warden is broke and shouldn't be restoring
+# anything it's being idiotic". Every restore path is dead code that refuses.
+# cmd_apply keeps the --apply CLI token ONLY so stale call sites fail LOUDLY
+# (exit 2) instead of silently doing nothing. The warden is alert-only,
+# period — drift is reported by `check` and the watch loop; restoring is a
+# human decision (rebuild, bless, or trusted copy by hand).
 cmd_apply() {
   local mf="$1"
-  _parse_manifest "$mf"
-  local name path want got imm gp restored=0 alerted=0
-  local signed_head=0
-  git -C "$ESTATE_ROOT" verify-commit HEAD >/dev/null 2>&1 && signed_head=1
-  for name in "${NAMES[@]}"; do
-    path="$(_field "$name" path)"; want="$(_field "$name" sha256)"
-    if _exempt "$path"; then continue; fi
-    got=""
-    if [ -e "$path" ] || [ -L "$path" ]; then
-      got="$(_sha "$(readlink -f "$path" 2>/dev/null || echo "$path")")"
-    fi
-    if [ "$got" = "$want" ]; then continue; fi   # not drifted
-    imm="$(_field "$name" immutable_copy)"; gp="$(_field "$name" git_path)"
-    if [ -n "$imm" ] && [ -f "$imm" ] && [ "$(_sha "$imm")" = "$want" ]; then
-      _restore_from_copy "$name" "$path" "$imm" "$want" && restored=$((restored+1)) || alerted=$((alerted+1))
-    elif [ -n "$gp" ] && [ "$signed_head" -eq 1 ] \
-         && [ "$(_sha <(git -C "$ESTATE_ROOT" show "HEAD:$gp" 2>/dev/null))" = "$want" ]; then
-      _restore_from_git "$name" "$path" "$gp" && restored=$((restored+1)) || alerted=$((alerted+1))
-    else
-      local reason="no trusted restore source"
-      [ -n "$gp" ] && [ "$signed_head" -eq 0 ] && reason="HEAD unsigned — refusing git restore (see unsigned-HEAD rule)"
-      [ -n "$imm" ] && [ ! -f "$imm" ] && reason="immutable_copy missing: $imm"
-      _out "ALERT $name drifted but NOT restored: $reason"
-      _log "ALERT $name not-restored: $reason"
-      _squawk "estate-reconcile ALERT: $name drifted, not restored" \
-        "Drifted binary '$name' ($path) could not be restored: $reason. Manual intervention required."
-      alerted=$((alerted+1))
-    fi
-  done
-  _out "apply done: restored=$restored alerted=$alerted"
-  if [ "$alerted" -gt 0 ]; then return 2; fi
-  return 0
+  _log "APPLY-REFUSED: --apply invoked but all restore paths are disabled by Chris's order"
+  _out "REFUSED: estate-reconcile --apply is disabled (Chris 2026-09-30 — the warden restores NOTHING)."
+  _out "Drifted binaries are reported by 'check' and the watch loop; restoration is a human decision."
+  return 2
 }
 
+# Former restore helpers: kept as fail-closed refuse stubs so ANY code path
+# that reaches them (present or future) cannot restore. No install/ln/mv of
+# drifted binaries exists anywhere in this file anymore.
 _restore_from_copy() {
-  local name="$1" path="$2" imm="$3" want="$4"
-  local tmp="$path.restore.$$" ts; ts="$(date +%Y%m%d-%H%M%S)"
-  _backup_drifted "$name" "$path" "$ts"
-  if [ -L "$path" ]; then
-    # symlink: atomically re-point at the immutable versioned file
-    ln -s "$imm" "$tmp" && mv -T "$tmp" "$path"
-  else
-    install -m755 "$imm" "$tmp" && mv "$tmp" "$path"
-  fi
-  if [ "$(_sha "$(readlink -f "$path")")" = "$want" ]; then
-    _out "RESTORED $name <- $imm (atomic)"
-    _log "RESTORED $name from $imm"
-    _squawk "estate-reconcile: restored $name" "Drifted binary '$name' was atomically restored from its immutable copy ($imm). Backup of the drifted file kept in $AUDIT_DIR."
-    return 0
-  fi
-  _out "FATAL $name restore verification failed"; _log "FATAL $name restore failed"
-  return 1
+  _log "RESTORE-REFUSED: _restore_from_copy $1 (restore paths disabled)"
+  _out "REFUSED: restore disabled — the warden restores nothing."
+  return 2
 }
 
 _restore_from_git() {
-  local name="$1" path="$2" gp="$3"
-  local tmp="$path.restore.$$" ts; ts="$(date +%Y%m%d-%H%M%S)"
-  _backup_drifted "$name" "$path" "$ts"
-  git -C "$ESTATE_ROOT" show "HEAD:$gp" > "$tmp" && chmod 755 "$tmp" && mv "$tmp" "$path"
-  _out "RESTORED $name <- git HEAD:$gp (atomic, signed HEAD)"
-  _log "RESTORED $name from git HEAD:$gp"
-  _squawk "estate-reconcile: restored $name" "Drifted binary '$name' was atomically restored from signed git HEAD ($gp)."
-  return 0
-}
-
-_backup_drifted() {
-  local name="$1" path="$2" ts="$3"
-  if [ -e "$path" ] || [ -L "$path" ]; then
-    cp -a "$path" "$AUDIT_DIR/drift-$ts-$name.bak" 2>/dev/null || true
-  fi
+  _log "RESTORE-REFUSED: _restore_from_git $1 (restore paths disabled)"
+  _out "REFUSED: restore disabled — the warden restores nothing."
+  return 2
 }
 
 # --- event-driven watch -----------------------------------------------------
 # inotify on the build/bin dirs + manual invocation. No timers: every pass is
-# event-triggered, plus a circuit breaker (not a poller) that caps restore rate.
+# event-triggered, plus a circuit breaker (not a poller) that rate-limits
+# alert bursts. Restoration is DISABLED on this path too (Chris 2026-09-30).
 cmd_watch() {
   local mf="$1"
   _parse_manifest "$mf"
@@ -357,8 +314,9 @@ cmd_watch() {
       # Dedupe key (2026-09-30, torque): the raw inotify kind ($ev) varies per
       # burst (CREATE/MODIFY/DELETE on one deploy) and used to defeat the
       # (title,body) dedupe, flooding the fleet. Body is now canonical per path;
-      # repeats coalesce inside DEDUPE_WINDOW_S (600s).
-      _squawk "estate-reconcile BREAKER OPEN" "Drift detected on $evpath but restore rate exceeded (circuit breaker). Manual intervention required."
+      # repeats coalesce inside DEDUPE_WINDOW_S (600s). Restores are disabled
+      # on every path — this branch is a pure alert burst-guard now.
+      _squawk "estate-reconcile BREAKER OPEN" "Drift detected on $evpath but alert burst limit exceeded (circuit breaker). The warden restores nothing — manual intervention required."
       continue
     fi
     # Auto-restore DISABLED by Chris 2026-09-30 ("shouldn't be restoring
