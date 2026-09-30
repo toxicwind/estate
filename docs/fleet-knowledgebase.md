@@ -230,13 +230,16 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | quill | bedrock timeline refinement: enumerate uncertainties, gather primary evidence, settle contested points by debate, land verified corrections | Quill (Ember's crew) | DONE (2026-09-30) — fb5baa3 |
 
-| twitch | infra recon: fireworks.ai + moonshot.ai public surface via pd-mcp | ember | RUNNING (2026-09-30) |
+| twitch | infra recon: fireworks.ai + moonshot.ai public surface via pd-mcp | ember | DONE (2026-09-30) — 50e0c7952eb9f62ab8787f7cbe49810e2d4e361c |
 
 
 | rigger | yote-conn mainline fix + Bun forward fork (ripline) with fallover | rigger | RUNNING (2026-09-30) |
 
 
 | barnaby | flock ts/policy: port sovereign-router policy engine (Elo, bench-priors, quarantine circuits, warm standby, health analytics) to TypeScript | Ember (main) | RUNNING (2026-09-30) |
+
+
+| juniper | effusion-labs maximalization: CSS/JS killshot fix, framework, LFS, pages, reorg | Ember | RUNNING (2026-09-30) |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
