@@ -213,6 +213,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | canyon | merge origin/main into forge/gate-retire-final, conflict-free, branch-safe | Ember (main agent) | DONE (2026-09-30) -- merge b9a27e845c pushed, remote ref 50086eafe7 verified via ls-remote |
 | sparrow | Pitchfork D2 live migration: 81-daemon monolith to 79 project-owned pitchfork.d fragments across 30 projects. Composer with fail-closed ownership conflicts, splitter, orphan-watch. Retired bidder-forge and bidder-scout. flicker and flicker-agent verified live on :25148 and migrated with ranch/flicker. | Sparrow (Ember crew) | DONE (2026-09-30) -- sovereign-projects main 54c3772440 (composer, splitter, orphan-watch, parent/projects/attribution, docs, composed pitchfork.toml); ranch main 4c7a68b (15 daemon fragments, 7 projects). Verified: composed output parse-equal to monolith (0 mismatched, only 2 retirements removed), cutover with zero daemon restarts, orphan-watch 0 orphans (74 running). Remote refs verified via git ls-remote. |
 | brass-fork-research | Fork-candidate research for the brand build daemon: ffs sweep of the bridge, GitHub-wide ranked recon (recency+relevance over stars), deep evaluation of woodpecker/buildbot/laminar + alternatives; ranked shortlist doc at ranch/branding/docs/fork-research.md | Brass (Ember's crew) | DONE (2026-09-30) -- ranch 5f58f52 fork-research.md committed+pushed, origin/main verified |
+| tawny | Ember-1 community chatter deep-dive: social.search (Threads/IG/FB) + web recon for oddities beyond the HN/AI-Benchy baseline | tawny (Ember crew) | DONE (2026-09-30) -- cell report ~/workspace/ember-kimi-audit/hidden/chatter.md; 3 weirdest: Kimi K3 license USD20M MaaS gate vs Fireworks USD1B run rate (undisclosed deal?), day-one 503 no-healthy-upstream on OpenRouter + phantom 8B open-weights Ember-1 misinfo on IG/FB, Moonshot total silence during 30pct revenue-share talks |
 | quarry-hashline | stream A: hashline first-class edit tool — skill, project docs, daemon, KB rule 18, gatehouse MCP registration | f75585bc-fd3c-4e54-9814-6c4cf7f53b51 | DONE (2026-09-30) -- sovereign-projects ff7b6fbe375d |
 | ripple | Portainer replacement research: pattern-borrow + paper-search + web recon; ranked agentic control-plane shortlist | parent orchestrator (Ember crew) | DONE (2026-09-30) — e97c964619 |
 | quill-tns-dig | TNS/author deep-dive: Ember-1 coverage — Wachtel full archive (WP REST author=1977), benchmark series accuracy/corrections, Insight Partners AI-infra portfolio + auto-disclosure mechanics, TNS ad/tracker stack + sponsored labeling, stealth-edit/deleted-post weirdness hunt; report to ~/workspace/ember-kimi-audit/hidden/author-dig.md | Quill (Ember crew) | RUNNING (2026-09-30) |
@@ -228,6 +229,9 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | twitch | infra recon: fireworks.ai + moonshot.ai public surface via pd-mcp | ember | RUNNING (2026-09-30) |
 
+| rigger | yote-conn mainline fix + Bun forward fork (ripline) with fallover | rigger | RUNNING (2026-09-30) |
+
+| barnaby | flock ts/policy: port sovereign-router policy engine (Elo, bench-priors, quarantine circuits, warm standby, health analytics) to TypeScript | Ember (main) | RUNNING (2026-09-30) |
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
 
