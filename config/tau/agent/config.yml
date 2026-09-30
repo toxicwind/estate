@@ -1,16 +1,3 @@
-# THIS is the file the engine actually reads. settings.ts:601 sets
-# `#configPath = path.join(this.#agentDir, MAIN_CONFIG_FILENAMES[0])`, and
-# dirs.ts derives that agentDir from PI_CODING_AGENT_DIR. The 609-line
-# ../config.yml (the PI_CONFIG_DIR root) is NOT in the load chain — modelRoles
-# written there are dead, and an undefined `default` then collides with the
-# bundled `cursor/default` catalog entry, which dies on "No API key found for
-# cursor". The only other layer is a project-local .omp/config.yml.
-#
-# Every model below was verified live (HTTP 200) against
-# https://openrouter.ai/api/v1/chat/completions on 2026-09-27. The account has
-# NO openrouter credits (402 "Insufficient credits" on every paid model), so a
-# paid default silently burns ~100 model calls per session open on skill
-# description compression alone. Keep these on :free models.
 modelRoles:
   default: openrouter/nvidia/nemotron-3.5-lightning:free
   smol: openrouter/liquid/lfm-2.5-2.6b:free
@@ -26,42 +13,19 @@ modelRoles:
   verification: openrouter/nvidia/nemotron-3.5-lightning:free
   fallback: openrouter/inclusionai/ling-3.0-flash-fin:free
   web: web/exa
-  # image / speech / dictation stay UNSET on purpose. The live free catalog has
-  # 17 models, 8 accept image input, 0 emit image and 0 touch audio. Unset,
-  # they fail loudly against priority.json's paid list instead of silently
-  # routing image generation to a text model.
-
 defaultThinkingLevel: auto
-
 retry:
   maxRetries: 3
-  # Fail-fast cap. The engine only sleeps when a provider asks for longer than
-  # this AND there is no fallback to rotate to. A 300s cap with no openrouter
-  # chain below meant a single throttle stalled a turn for 90s+ in silence:
-  # startup finished in 0.5s, then the log went quiet until the turn died.
   maxDelayMs: 300000
   modelFallback: true
   fallbackChains:
-    # Every model here answered HTTP 200 in under 2.5s on 2026-09-27. All
-    # :free models share one per-key rate limit, so a throttle usually hits
-    # several at once — but rotating still beats backing off on a model that
-    # is not coming back, and it is the only thing that keeps retry bounded.
     openrouter/*:
-    - openrouter/liquid/lfm-2.5-2.6b:free
-    - openrouter/nvidia/nemotron-3-super-120b-a12b:free
-    - openrouter/inclusionai/ling-3.0-flash-fin:free
-    # sovereign/free (:25104) has no daemon block at all, and herd (:25100)
-    # has no Go sources in this repo — only cmd/** was ever committed, so
-    # `go build .` reports "no non-test Go files". These two are verified live.
+      - openrouter/liquid/lfm-2.5-2.6b:free
+      - openrouter/nvidia/nemotron-3-super-120b-a12b:free
+      - openrouter/inclusionai/ling-3.0-flash-fin:free
     google-antigravity/*:
-    - openrouter/inclusionai/ling-3.0-flash-fin:free
-    - openrouter/nvidia/nemotron-3-super-120b-a12b:free
-
+      - openrouter/inclusionai/ling-3.0-flash-fin:free
+      - openrouter/nvidia/nemotron-3-super-120b-a12b:free
 extensions:
   - /home/toxic/.bun/install/global/node_modules/billion-context/dist/agent/omp-native.js
-# `npm:context-forger` used to sit here. It is not a package: npm returns 404
-# for it, it appears in no GitHub repo, and the string is the fixture that
-# sigma's own third-party scanner test writes
-# (`tests/issue1206-thirdparty-scan.test.ts:165`) to prove the scanner flags a
-# keyword-matched third-party extension. This file had been seeded from that
-# fixture, which is also where the broken `/u/node_modules/...` path came from.
+setupVersion: 2
