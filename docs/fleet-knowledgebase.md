@@ -212,7 +212,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | canyon | merge origin/main into forge/gate-retire-final, conflict-free, branch-safe | Ember (main agent) | DONE (2026-09-30) -- merge b9a27e845c pushed, remote ref 50086eafe7 verified via ls-remote |
 | brass-fork-research | Fork-candidate research for the brand build daemon: ffs sweep of the bridge, GitHub-wide ranked recon (recency+relevance over stars), deep evaluation of woodpecker/buildbot/laminar + alternatives; ranked shortlist doc at ranch/branding/docs/fork-research.md | Brass (Ember's crew) | DONE (2026-09-30) -- ranch 5f58f52 fork-research.md committed+pushed, origin/main verified |
 | quarry-hashline | stream A: hashline first-class edit tool — skill, project docs, daemon, KB rule 18, gatehouse MCP registration | f75585bc-fd3c-4e54-9814-6c4cf7f53b51 | DONE (2026-09-30) -- sovereign-projects ff7b6fbe375d |
-| ripple | Portainer replacement research: pattern-borrow + paper-search + web recon; ranked agentic control-plane shortlist | parent orchestrator (Ember crew) | RUNNING (2026-09-30) |
+| ripple | Portainer replacement research: pattern-borrow + paper-search + web recon; ranked agentic control-plane shortlist | parent orchestrator (Ember crew) | DONE (2026-09-30) — e97c964619 |
 <!-- KB-ROLLUP:END -->
 
 
