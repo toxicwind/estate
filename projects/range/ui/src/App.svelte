@@ -46,6 +46,7 @@
     "/hardware": wrap({ asyncComponent: () => import("./routes/Hardware.svelte"), loadingComponent: RouteLoading }),
     "/tailcat": wrap({ asyncComponent: () => import("./routes/Tailcat.svelte"), loadingComponent: RouteLoading }),
     "/surfaces": wrap({ asyncComponent: () => import("./routes/Surfaces.svelte"), loadingComponent: RouteLoading }),
+    "/comfyui": wrap({ asyncComponent: () => import("./routes/ComfyUI.svelte"), loadingComponent: RouteLoading }),
     "*": wrap({ asyncComponent: () => import("./routes/Activity.svelte"), loadingComponent: RouteLoading }),
   };
 
@@ -61,6 +62,7 @@
     "/hardware": "Hardware",
     "/tailcat": "Tailcat",
     "/surfaces": "Surfaces",
+    "/comfyui": "ComfyUI",
   };
 
   // The phone header is tight (sidebar button, title, profile picker), so the
