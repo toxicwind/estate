@@ -2,7 +2,7 @@
 """fleet/dispatch_fallback.py — directives-file fallback for fleet dispatch (e3918e04 §3).
 
 When :25120 is unreachable, dispatch frames are appended to the directives
-file (/home/toxic/.shingle/directives.md) instead of being dropped. On
+file (/home/toxic/.fleet-bus/directives.md) instead of being dropped. On
 reconnect, `replay` re-POSTs the queued frames in order and advances the
 cursor. Push latency of successful sends is logged for p50/p99 reporting.
 

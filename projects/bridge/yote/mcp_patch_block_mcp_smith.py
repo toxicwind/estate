@@ -13,7 +13,7 @@ import shutil as _shutil
 # subprocess per call. Message format mirrors ~/workspace/bin/squawk:
 # YAML frontmatter between --- markers; the squawk server assigns the global
 # seq on inotify pickup.
-SQUAWK_ROOT = os.environ.get("SQUAWK_CHAT_ROOT", "/home/toxic/.shingle/squawk-root")
+SQUAWK_ROOT = os.environ.get("SQUAWK_CHAT_ROOT", "/home/toxic/.fleet-bus/squawk-root")
 _CHANNEL_RE = re.compile(r"[A-Za-z0-9_-]{1,32}")
 
 
