@@ -7,7 +7,7 @@ How free models actually work across our providers, verified live. No marketing 
 - **Only OpenRouter has a `:free` convention.** 19 `:free` models in its 445-model catalog right now. **Zero Kimi/Moonshot `:free` models** — the Kimi free lineup rotated off ~11 days ago.
 - **Opencode uses a `-free` suffix** (e.g. `mimo-v2.5-free`) on its Zen API, but Zen 403s from our egress, so it's unverified from here.
 - **Nobody else has a free-tier model convention**: Groq, Cerebras, DeepSeek, Mistral, Gemini, NVIDIA NIM, Anthropic, HuggingFace — zero free IDs.
-- **Pollinations is no longer free keyless.** `gen.pollinations.ai` requires an API key (401 without); the old `image.pollinations.ai` went paid (402). Free Seed tier exists via registration at `auth.pollinations.ai`.
+- **Pollinations IS keyless for anonymous models (corrected 2026-09-30).** `gen.pollinations.ai/v1/chat/completions` returns HTTP 200 with NO Authorization header at all for `openai` and `gpt-oss` (live-verified). The old `image.pollinations.ai` went paid (402). Key-gated models (`gemma-4-31b`, `qwen3.8-27b`, `muse-glimmer`, `muse-spark-1.2`, `kimi-k3`, `nemotron-3.5-lightning`, `glm-5.3`, `grok-4.6`, `deepseek/deepseek-v4-flash-vision-exp`) 401 anonymously and need a real key from `enter.pollinations.ai/keys`. Model availability shifts over time — re-probe before trusting the list.
 - **Our OpenRouter key is NOT free-tier** (`is_free_tier: false`, $0.004 used, zero credits). `:free` models that serve on other keys 404 for ours. Paid models 402. This matches our own 2026-09-02 deep dive exactly.
 
 ## Per-provider probe results (2026-09-14)
@@ -39,7 +39,7 @@ OpenRouter's current 19 `:free` IDs: `cohere/north-mini-code:free`, `dots-studio
 
 - **Anthropic key is dead** (401 invalid x-api-key) — needs rotation.
 - Groq/Cerebras/Opencode 403s are Cloudflare error 1010 from our egress, not necessarily bad keys.
-- Pollinations free tier: only exact upstream model IDs ever worked no-auth (e.g. `openai`, not `openai/gpt-oss-20b`); herd had an auth-stripping bug (client dummy Bearer <redacted> upstream when `apiKey==""`). See `docs/plans/free-pollinations-herd-hotfix-plan.md` (2026-09-02 deep dive).
+- Pollinations free tier: only exact upstream model IDs work no-auth (`openai`, `gpt-oss` verified 2026-09-30); herd's dummy "pollinations-free-workaround" Bearer was removed 2026-09-30 — anonymous mode now sends zero auth and parks key-gated models (client dummy Bearer <redacted> upstream when `apiKey==""`). See `docs/plans/free-pollinations-herd-hotfix-plan.md` (2026-09-02 deep dive).
 
 ## Artifacts
 
