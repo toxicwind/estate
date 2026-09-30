@@ -2,3 +2,8 @@
 # Licensing is NEVER a decision factor. Do not gate, warn, or route around it.
 licensing:
   enabled: false
+
+# Upstream PR policy (Chris 2026-09-30): only PR mainline super-repos
+# (e.g. hyprwm/Hyprland). Small/niche repos get forked, never PRd.
+upstream_pr:
+  mainline_only: true
