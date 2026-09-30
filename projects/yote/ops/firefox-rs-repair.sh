@@ -595,8 +595,8 @@ maybe_alert() {
         "$cli" send fleet "$PROG corrected Firefox RS/policy drift on $(hostname) (mode=$MODE). See $LOG_FILE." >/dev/null 2>&1 || true
     fi
     # yote-local fallback: drop a message file straight into the squawk root
-    local root="/home/toxic/shingle/squawk-root/fleet"
-    [ -d "/home/toxic/.shingle/squawk-root/fleet" ] && root="/home/toxic/.shingle/squawk-root/fleet"
+    local root="/home/toxic/.fleet-bus/squawk-root/fleet"
+    [ -d "/home/toxic/.fleet-bus/squawk-root/fleet" ] && root="/home/toxic/.fleet-bus/squawk-root/fleet"
     if [ -z "$cli" ] && [ -d "$root" ]; then
         printf -- '---\nfrom: %s\nts: %s\n---\n%s corrected Firefox RS/policy drift on %s (mode=%s). See %s.\n' \
             "$PROG" "$(date -u +%FT%TZ)" "$PROG" "$(hostname)" "$MODE" "$LOG_FILE" \

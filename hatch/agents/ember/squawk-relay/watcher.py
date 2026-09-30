@@ -18,8 +18,8 @@ import sys
 import time
 from pathlib import Path
 
-CHAT_ROOT = Path(os.environ.get("SQUAWK_CHAT_ROOT", "/home/toxic/.shingle/chat"))
-RELAY_DIR = Path(os.environ.get("SQUAWK_RELAY_DIR", "/home/toxic/.shingle/squawk-relay"))
+CHAT_ROOT = Path(os.environ.get("SQUAWK_CHAT_ROOT", "/home/toxic/.fleet-bus/chat"))
+RELAY_DIR = Path(os.environ.get("SQUAWK_RELAY_DIR", "/home/toxic/.fleet-bus/squawk-relay"))
 OUTBOX = RELAY_DIR / "outbox.jsonl"
 STATE = RELAY_DIR / "state.json"
 CONTROL = RELAY_DIR / "control.json"

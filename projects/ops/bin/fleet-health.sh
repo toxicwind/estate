@@ -30,7 +30,7 @@ while [ $# -gt 0 ]; do
 done
 
 # Resolve the squawk root the way the fleet server does (symlink-tolerant).
-ROOT="$(readlink -f "${SQUAWK_ROOT:-/home/toxic/.shingle/squawk-root}" 2>/dev/null || echo /home/toxic/.shingle/squawk-root)"
+ROOT="$(readlink -f "${SQUAWK_ROOT:-/home/toxic/.fleet-bus/squawk-root}" 2>/dev/null || echo /home/toxic/.fleet-bus/squawk-root)"
 CHDIR="$ROOT/$CHANNEL"
 if [ ! -d "$CHDIR" ]; then
   echo "FLEET-HEALTH: channel dir not found: $CHDIR" >&2
