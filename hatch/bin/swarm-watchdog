@@ -78,6 +78,12 @@ RUN_LEDGER.parent.mkdir(parents=True, exist_ok=True)
 EPISODE = Path.home() / ".cache" / "shingle" / "swarm-watchdog-episode.json"
 EPISODE_TTL = 1800          # an episode older than this is stale
 LEAKY_ESCALATE_AT = 2       # consecutive over-threshold runs before escalating
+# Pause state written by swarm-pause. The auto-resume below only fires when
+# live /proc shows T-frozen exacd descendants — so a pause whose recorded
+# pids all exited before pressure settled (proven 2026-09-30: 20/20 pids
+# dead within ~40s of a pause, zero T-frozen) leaves this file behind as a
+# ghost that fires the progress-watchdog self-check. Cleaned up below.
+PAUSE_STATE = Path.home() / ".cache" / "shingle" / "swarm-paused.json"
 
 _PSI_RE = re.compile(r"(\w+)\s+avg10=([0-9.]+)")
 
@@ -203,6 +209,31 @@ def close_episode():
         pass
 
 
+def pause_state_is_ghost():
+    """True when swarm-paused.json exists but the pause is fully dissolved:
+    none of the recorded hatch pids is alive AND no live exacd descendant
+    is T-frozen. In that state a resume would be a no-op (SIGCONT on dead
+    pids) and the file is only a stale flag. Conservative: if the file
+    lists yote_pids (unverifiable hatch-side) or any recorded hatch pid is
+    still alive, returns False and leaves the file alone."""
+    try:
+        st = json.loads(PAUSE_STATE.read_text())
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return False
+    if st.get("yote_pids"):
+        return False
+    pids = st.get("pids", [])
+    if not pids:
+        return True  # file exists, tracks nothing -> stale by definition
+    try:
+        v = wl.verify_pause()
+    except Exception:
+        v = {"frozen": 0}
+    if v["frozen"] > 0:
+        return False  # live freeze in effect regardless of the file
+    return not any(wl.proc_state(p) is not None for p in pids)
+
+
 def main():
     run_id = wl.ledger_run_start(str(RUN_LEDGER), "swarm-watchdog")
     verdict, extra = "ok", {}
@@ -324,6 +355,21 @@ def tick():
         elif v["frozen"] > 0:
             print(f"pressure not settled: frozen={v['frozen']} held",
                   flush=True)
+        elif pause_state_is_ghost():
+            # Pause-state file exists but the pause fully dissolved: all
+            # recorded pids dead AND no live T-frozen exacd descendants.
+            # A resume now would be a no-op, and the stale file fires the
+            # progress-watchdog self-check — clear the flag. Quiet print,
+            # no squawk noise for a no-op cleanup.
+            try:
+                PAUSE_STATE.unlink()
+                actions.append("pause-ghost-cleanup")
+                print("pause state was a ghost (no recorded pid alive, "
+                      "nothing frozen) — stale flag cleared", flush=True)
+            except FileNotFoundError:
+                pass
+            except Exception as e:
+                print(f"pause-ghost-cleanup failed: {e}", flush=True)
         if ep:
             close_episode()
             actions.append("storm-episode-closed")
