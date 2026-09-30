@@ -165,7 +165,7 @@ function effectiveDefs(): ProviderDef[] {
         baseUrl:
           process.env.KIMI_AUTO_SHIM_BASE ||
           "http://127.0.0.1:" +
-            (process.env.KIMI_AUTO_SHIM_PORT || "25105") +
+            (process.env.KIMI_AUTO_SHIM_PORT || "25153") +
             "/v1",
       };
     return d;
