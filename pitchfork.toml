@@ -305,7 +305,7 @@ ready_http = "http://127.0.0.1:25196/api/health"
 auto = ["start"]
 
 [daemons.kimi-audit-dash]
-run = "exec bun run /home/toxic/kimi-token-audit/dashboard/server.ts"
+run = "exec bun --hot run /home/toxic/kimi-token-audit/dashboard/server.ts"
 dir = "/home/toxic/kimi-token-audit"
 mise = true
 retry = true
@@ -541,7 +541,7 @@ auto = ["start"]
 [daemons.windmill]
 health_http = { url = "http://127.0.0.1:25219/api/status", interval = "10s", timeout = "5s", retries = 2 }
 port = 25219
-run = "exec bun run /home/toxic/sovereign/projects/range/ranch/windmill/server.ts"
+run = "exec bun --hot run /home/toxic/sovereign/projects/range/ranch/windmill/server.ts"
 dir = "/home/toxic/sovereign/projects/range/ranch/windmill"
 mise = false
 retry = true
@@ -669,7 +669,7 @@ auto = ["start"]
 
 [daemons.bench-radar]
 port = 25181
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/bench-radar/server.ts"
+run = "exec /home/toxic/.bun/bin/bun --hot /home/toxic/sovereign/tools/bench-radar/server.ts"
 dir = "/home/toxic/sovereign/tools/bench-radar"
 mise = false
 retry = true
