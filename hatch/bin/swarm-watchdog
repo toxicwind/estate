@@ -154,8 +154,17 @@ def yote_load():
 
 
 def alert(msg):
-    subprocess.run([f"{BIN}/squawk", "send", "fleet", msg],
-                   capture_output=True, timeout=15)
+    # Alerting is best-effort: a hung/slow squawk must NEVER crash the
+    # watchdog — the alert is the message, not the interlock. Proven
+    # 2026-09-30: a 15s squawk TimeoutExpired during a yote eject raised
+    # out of alert(), killed the whole script before it printed EJECTED
+    # or recorded the action, and fleet never got the alert at all.
+    try:
+        subprocess.run([f"{BIN}/squawk", "send", "fleet", msg],
+                       capture_output=True, timeout=15)
+    except Exception as e:
+        print(f"alert FAILED ({e.__class__.__name__}): {msg}",
+              file=sys.stderr, flush=True)
 
 
 def pressure_breached(p):
