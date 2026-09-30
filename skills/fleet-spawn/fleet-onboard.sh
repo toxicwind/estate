@@ -9,9 +9,12 @@
 #   2. Overlap-checks §2 Active Crews against your task. On overlap it prints
 #      the colliding crews and exits 2 — coordinate in fleet BEFORE announcing.
 #      (--advisory softens to a warning.)
-#   3. --register: adds your row to §2 Active Crews (refuses duplicates).
-#      --done SHA: marks your row DONE with the final commit SHA.
-#   4. Shows you the room: recent fleet voices (who's here, what they're on).
+#   3. --register: creates your per-crew file (docs/fleet/crews/<crew>.md) and
+#      regenerates the §2 rollup via `bun projects/ops/bin/kb-rollup.ts`.
+#      --done SHA: marks your per-crew file DONE and regenerates §2.
+#      §2 Active Crews is a GENERATED rollup (Alternative A, Chris 2026-09-29):
+#      never hand-edit the table — the per-crew files are the source of truth.
+#   4. Shows you the room: recent fleet voices (who's here, what's on).
 #   5. Prints your hello template. It does NOT write your hello for you —
 #      your first words in fleet must be your own voice + one genuine question.
 #
@@ -33,8 +36,8 @@ usage: fleet-onboard.sh --name NAME --task "task description" [options]
   --kb PATH|URL      knowledgebase path (default: yote canonical path,
                      then GitHub raw fallback)
   --owner OWNER       crew owner/coordinator (required with --register)
-  --register         add your row to §2 Active Crews
-  --done SHA         mark your §2 row DONE with final commit SHA
+  --register         create your per-crew file + regenerate the §2 rollup
+  --done SHA         mark your per-crew file DONE with final commit SHA
   --advisory         overlap check warns instead of exiting 2
   --fleet-n N        recent fleet messages to show (default 10)
 EOF
@@ -136,48 +139,43 @@ else
   echo "fleet-onboard: no §2 overlap detected for this task."
 fi
 
-# --- 3. §2 registration ----------------------------------------------------
+# --- 3. registration: per-crew file + generated §2 rollup ------------------
+# §2 Active Crews is a GENERATED rollup (Alternative A, Chris 2026-09-29).
+# Source of truth: docs/fleet/crews/<crew>.md — one file per crew, frontmatter
+# (crew/scope/owner/status). kb-rollup.ts writes the file and regenerates §2
+# under flock, so concurrent registrations can't clobber each other.
+# Never hand-edit the §2 table.
 kb_is_local=0
 case "$KB_FILE" in /tmp/fleet-kb.*) kb_is_local=0;; *) kb_is_local=1;; esac
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+ROLLUP="$REPO_ROOT/projects/ops/bin/kb-rollup.ts"
+if [ ! -f "$ROLLUP" ] && [ "$kb_is_local" -eq 1 ]; then
+  # Deployed copy (e.g. /home/toxic/.local/bin/fleet-onboard): the script no
+  # longer sits inside the repo, so resolve the rollup from the KB file's own
+  # repo instead of the script location.
+  kb_dir="$(dirname "$KB_FILE")"
+  KB_REPO_ROOT="$(git -C "$kb_dir" rev-parse --show-toplevel 2>/dev/null || (cd "$kb_dir/.." && pwd))"
+  if [ -f "$KB_REPO_ROOT/projects/ops/bin/kb-rollup.ts" ]; then
+    ROLLUP="$KB_REPO_ROOT/projects/ops/bin/kb-rollup.ts"
+  fi
+fi
+BUN_BIN="$(command -v bun || true)"
+[ -n "$BUN_BIN" ] || BUN_BIN="$HOME/.bun/bin/bun"
+[ -x "$BUN_BIN" ] || { echo "fleet-onboard: bun not found (need bun for kb-rollup.ts)" >&2; exit 2; }
+[ -f "$ROLLUP" ] || { echo "fleet-onboard: kb-rollup.ts not found at $ROLLUP" >&2; exit 2; }
 
 if [ "$DO_REGISTER" -eq 1 ]; then
   [ -n "$OWNER" ] || { echo "fleet-onboard: --owner is required with --register" >&2; exit 2; }
   [ "$kb_is_local" -eq 1 ] || { echo "fleet-onboard: --register needs a local KB file (use --kb PATH)" >&2; exit 2; }
-  if grep -qi "^| *${NAME} *|" "$KB_FILE"; then
-    echo "fleet-onboard: '${NAME}' is already registered in §2 — not duplicating."
-    grep -i "^| *${NAME} *|" "$KB_FILE"
-  else
-    today="$(date +%F)"
-    scope_short="$(echo "$TASK" | cut -c1-140)"
-    newline="| ${NAME} | ${scope_short} | ${OWNER} | RUNNING (${today}) |"
-    anchor="$(grep -n "Retired/completed crews stay listed here" "$KB_FILE" | head -1 | cut -d: -f1)"
-    [ -n "$anchor" ] || { echo "fleet-onboard: cannot find §2 table anchor in KB" >&2; exit 2; }
-    awk -v n="$anchor" -v line="$newline" 'NR==n{print ""; print line; print ""} {print}' "$KB_FILE" > "${KB_FILE}.new" \
-      && mv "${KB_FILE}.new" "$KB_FILE"
-    echo "fleet-onboard: registered in §2 Active Crews:"
-    echo "  $newline"
-    echo "  (commit + push the KB per §3 push rules — staleness is a bug)"
-  fi
+  "$BUN_BIN" "$ROLLUP" register --name "$NAME" --scope "$TASK" --owner "$OWNER" --kb "$KB_FILE"
+  echo "  (commit + push the per-crew file AND the KB per §3 push rules — staleness is a bug)"
 fi
 
 if [ -n "$DONE_SHA" ]; then
   [ "$kb_is_local" -eq 1 ] || { echo "fleet-onboard: --done needs a local KB file (use --kb PATH)" >&2; exit 2; }
-  if ! grep -qi "^| *${NAME} *|" "$KB_FILE"; then
-    echo "fleet-onboard: '${NAME}' has no §2 row to mark DONE" >&2; exit 2
-  fi
-  today="$(date +%F)"
-  lname="$(echo "$NAME" | tr '[:upper:]' '[:lower:]')"
-  awk -v n="$lname" -v d="$today" -v sha="$DONE_SHA" -F'|' '
-    BEGIN{OFS="|"}
-    /^\|/ {
-      c2=$2; gsub(/^ +| +$/,"",c2)
-      lc=tolower(c2)
-      if (lc==n) { $5=" DONE ("d") — "sha" "; print; next }
-    }
-    {print}
-  ' "$KB_FILE" > "${KB_FILE}.new" && mv "${KB_FILE}.new" "$KB_FILE"
-  echo "fleet-onboard: marked DONE in §2:"
-  grep -i "^| *${NAME} *|" "$KB_FILE"
+  "$BUN_BIN" "$ROLLUP" done --name "$NAME" --sha "$DONE_SHA" --kb "$KB_FILE"
 fi
 
 # --- 4. show the room -------------------------------------------------------
