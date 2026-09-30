@@ -264,7 +264,7 @@ auto = ["start"]
 [daemons.flock]
 health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25193
-run = "exec env HOST=127.0.0.1 PORT=${FLOCK_PORT} DATA_DIR=/home/toxic/.flock-data /home/toxic/.flock/flock"
+run = "exec /home/toxic/sovereign/projects/range/ranch/remuda/flock/bin/flock-run.sh"
 dir = "."
 mise = false
 retry = true
