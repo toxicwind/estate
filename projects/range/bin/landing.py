@@ -22,9 +22,9 @@ BACKENDS = [
     ("squawk WS", "http://127.0.0.1:25147/squawk-ws", "/squawk-ws"),
     ("squawk feed", "http://127.0.0.1:25135/squawk-feed/seq", "/squawk-feed/seq"),
     ("whatsapp webhook", "http://127.0.0.1:25146/webhook", "/whatsapp-webhook"),
-    ("shep MCP", "http://127.0.0.1:25127/mcp", "/mesh-mcp"),
-    ("shep health", "http://127.0.0.1:25127/health", "/mesh-health"),
-    ("shep metrics", "http://127.0.0.1:25127/metrics", "/mesh-metrics"),
+    ("gatehouse MCP", "http://127.0.0.1:25127/mcp", "/mesh-mcp"),
+    ("gatehouse health", "http://127.0.0.1:25127/health", "/mesh-health"),
+    ("gatehouse metrics", "http://127.0.0.1:25127/metrics", "/mesh-metrics"),
     ("files", "http://127.0.0.1:34567/", None),
 ]
 
