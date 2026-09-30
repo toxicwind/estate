@@ -201,7 +201,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | bookworm-chatnative | Chat-native agent research: paper-backed buildable design for event-driven squawk agents (no polling). Ships @fleet/chat-native Bun/TS module: recursive long-poll subscribe, tiered attention, TASK directives, AsyncQueue handoff; OpenFang verdict (stays as runtime, squawk adapter is future work); Solace pattern borrow (reference only) | Bookworm (Ember's crew) | DONE (2026-09-21) -- commit 3bb32fe7907a7f0081b9f0353e09bf227e421b35, origin/main verified via git ls-remote |
 
-| bramble | readme maximalization batch b8: 9 toxicwind repos (tau-extensions, toxic-vault-mind, universal-search-fuzzer, vaultfs, web3-sec-workspace, wii-meta-client, wii-stream-pack, wllama-forge, youtube-403-bypass) | 72ff4aa9-c62a-4881-8f70-c6fa220e7383 | RUNNING (2026-09-29) |
+| bramble | readme maximalization batch b8 (narrowed to 6): toxic-vault-mind f2d08c0, wii-meta-client b1d6471, wii-stream-pack a756004, wllama-forge 63a9837, youtube-403-bypass dda9669 -- all pushed + remote-verified, no open PRs; universal-search-fuzzer BLOCKED (repo archived, push 403, README commit a05cddaa kept locally); cut per dedup: tau-extensions, vaultfs, web3-sec-workspace (untouched, verified no push) | 72ff4aa9-c62a-4881-8f70-c6fa220e7383 | DONE (2026-09-29) |
 
 
 | starling | squawk maximalization: pattern-borrow + tests (feed :25135, ws :25147, ui, CLI); boundary: Taps owns NATS substrate | Starling (Ember's pack), Tally side chat | RUNNING (2026-09-29) |
