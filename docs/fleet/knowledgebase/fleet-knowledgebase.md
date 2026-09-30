@@ -157,7 +157,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 
 | forge-union | unify github search tooling | forge-union | RUNNING (2026-09-21) |
-| ts-migration (Forge) | Production Python daemons -> Bun/TS maximal + monorepo (bun workspaces + turbo.json). Tier 0: keypool, model-guard, squawk-ws, awrawr-mcp. Tier 1: exporter, stash-guard, buildsrv. Python stays only for ML/torch glue + throwaway probes | Forge (Ember's pack, ts-migration lane) | PHASE 1 DONE (2026-09-21): workspaces+turbo+scaffold on main 7a61ad6be9; template binary proven (health 200, fail-fast). Phase 2: KEYPOOL TS PORT DONE 2026-09-21 (971ccc5b63, 8eceaa0f4b): services/keypool/ full port, 17 parity tests pass, sidecar differential vs :25109 verified; BROWSER-ISOLATION DONE 2026-09-21: agent-display (Xvnc :99) + agent-viewer (noVNC :6080) live, keeper on DISPLAY=:99, c776f7cd25 — Forge joined pack 2026-09-21, chat forge-ts-migration |
+| ts-migration (Forge) | Production Python daemons -> Bun/TS maximal + monorepo (bun workspaces + turbo.json). Tier 0: keypool, model-guard, squawk-ws, awrawr-mcp. Tier 1: exporter, stash-guard, brand. Python stays only for ML/torch glue + throwaway probes | Forge (Ember's pack, ts-migration lane) | PHASE 1 DONE (2026-09-21): workspaces+turbo+scaffold on main 7a61ad6be9; template binary proven (health 200, fail-fast). Phase 2: KEYPOOL TS PORT DONE 2026-09-21 (971ccc5b63, 8eceaa0f4b): services/keypool/ full port, 17 parity tests pass, sidecar differential vs :25109 verified; BROWSER-ISOLATION DONE 2026-09-21: agent-display (Xvnc :99) + agent-viewer (noVNC :6080) live, keeper on DISPLAY=:99, c776f7cd25 — Forge joined pack 2026-09-21, chat forge-ts-migration |
 
 
 | secretsmith | secrets project: fork Secret Service tooling, maximalize into mesh project | ember | DONE (2026-09-21) — 1005ab333f |
@@ -302,26 +302,26 @@ runtime_paths freely; those paths are EXEMPT from drift detection by constructio
   2026-09-20: ~/.openfang/openfang.db was 0 bytes -- the exact silent-data-loss
   case this catches.
 
-## 7. Build server = buildsrv (2026-09-21)
+## 7. Build server = brand (2026-09-21)
 
-buildsrv IS the fleet build server -- a literal build daemon on yote, not a
-concept. Canonical source: tools/buildsrv/ in this repo. Service:
-127.0.0.1:25148 (pitchfork daemons: buildsrv, buildsrv-watchdog).
+brand IS the fleet build server -- a literal build daemon on yote, not a
+concept. Canonical source: branding/ in toxicwind/ranch (moved 2026-09-30 from tools/buildsrv in this repo). Service:
+127.0.0.1:25148 (pitchfork daemons: brand, brand-watchdog).
 
 Lifecycle: queue JSON -> active JSON -> results JSON under
-/home/toxic/buildsrv/. Successful identical specs short-circuit as CACHED,
-keyed by content hash. Forward-only: buildsrv never checks out, stashes, or
+/home/toxic/brand/. Successful identical specs short-circuit as CACHED,
+keyed by content hash. Forward-only: brand never checks out, stashes, or
 reverts repos. Jobs run via bash -lc and inherit the daemon environment.
 
 Access:
-- Yote CLI: /home/toxic/bin/buildsrv (submit/status/logs/list/health)
-- Hatch proxy: hatch/bin/buildsrv proxies safely through yote-conn exec
+- Yote CLI: /home/toxic/bin/brand (submit/status/logs/list/health)
+- Hatch proxy: hatch/bin/brand proxies safely through yote-conn exec
   (shlex.join quoting, never raw concatenation)
-- MCP (awrawr-mcp :25198): buildsrv_submit, buildsrv_status, buildsrv_logs,
-  buildsrv_list, buildsrv_health (argv lists only, job IDs validated,
+- MCP (awrawr-mcp :25198): brand_submit, brand_status, brand_logs,
+  brand_list, brand_health (argv lists only, job IDs validated,
   submit returns immediately after queueing)
 
-Cache environment (pitchfork.toml daemons.buildsrv env):
+Cache environment (pitchfork.toml daemons.brand env):
 - RUSTC_WRAPPER=sccache, SCCACHE_DIR=/home/toxic/.cache/sccache (10 GiB)
 - CCACHE_DIR=/home/toxic/.cache/ccache (10 GiB)
 - CMAKE_C_COMPILER_LAUNCHER=ccache, CMAKE_CXX_COMPILER_LAUNCHER=ccache
@@ -337,12 +337,12 @@ Caveats:
 - Binary-only Rust crates are non-cacheable by sccache (crate-type rule).
 
 Why workers = 2: yote has 16 logical CPUs / 62 GB RAM / NVMe, but two Cargo
-builds already oversubscribe it. Keep BUILDSRV_WORKERS=2.
+builds already oversubscribe it. Keep BRAND_WORKERS=2.
 
-Observability: sovereign-exporter (:25213) exposes sovereign_buildsrv_up,
-sovereign_buildsrv_queue_depth, sovereign_buildsrv_active_jobs; Grafana
-workflows.json has a buildsrv row.
+Observability: sovereign-exporter (:25213) exposes sovereign_brand_up,
+sovereign_brand_queue_depth, sovereign_brand_active_jobs; Grafana
+workflows.json has a brand row.
 
 New-toolchain rule: persistent config in projects/yote/host/home/, daemon
-env in pitchfork.toml, then a REAL buildsrv compile with nonzero cache-hit
+env in pitchfork.toml, then a REAL brand compile with nonzero cache-hit
 proof. Proven 2026-09-21: 2 hits, 50 percent hit rate on a real job.
