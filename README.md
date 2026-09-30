@@ -1,9 +1,13 @@
 # sovereign-projects
 
-[![last commit](https://img.shields.io/github/last-commit/toxicwind/sovereign-projects)](https://github.com/toxicwind/sovereign-projects/commits/main)
-[![repo size](https://img.shields.io/github/repo-size/toxicwind/sovereign-projects)](https://github.com/toxicwind/sovereign-projects)
-[![license: mixed](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue)](LICENSE)
-[![yote: RTX 3090](https://img.shields.io/badge/yote-RTX%203090%20%C2%B7%2016C%20%C2%B7%2062GB-76b900)](docs/HARDWARE_AUDIT_20260914.md)
+<div align="right">
+
+[![last commit](https://img.shields.io/github/last-commit/toxicwind/sovereign-projects?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects/commits/main)
+[![repo size](https://img.shields.io/github/repo-size/toxicwind/sovereign-projects?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![license: mixed](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](LICENSE)
+[![yote: RTX 3090](https://img.shields.io/badge/yote-RTX%203090%20%C2%B7%2016C%20%C2%B7%2062GB-76b900?style=for-the-badge)](docs/HARDWARE_AUDIT_20260914.md)
+
+</div>
 
 > **Sovereign is the self-hosted operating environment where a working agent fleet lives** — one OpenAI-compatible inference front door, a compression layer that folds every long context, HMAC-signed fleet chat, a work market with stake-and-slash accountability, and a pitchfork-supervised service stack, all in one tree. Communication, accountability, and supervision are not three projects here; they are three layers of the same commitments: nothing silent, nothing unverifiable.
 
