@@ -25,11 +25,15 @@ if [ "${PI_ALLOW_LOCKFILE_CHANGE:-0}" != "1" ]; then
     fi
 fi
 
-SECRET_PATTERN='(sk-[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{36}|hf_[a-zA-Z0-9]{34}|Bearer [a-zA-Z0-9_.-]{30,}|eyJh[a-zA-Z0-9_-]{30,})'
-LEAKS=$(git diff --cached -U0 --diff-filter=ACM 2>/dev/null | grep '^[+]' | grep -v '^[+][+][+]' | grep -E -n "$SECRET_PATTERN" || true)
-if [ -n "$LEAKS" ]; then
-    echo "⚠ WARN: Secret pattern detected in staged diff (non-blocking):" >&2
-    echo "$LEAKS" >&2
+# Secret scan: gitleaks over the staged diff (warn-only here; the pre-push
+# guard refuses). Skips silently when gitleaks or the fleet config is absent.
+GITLEAKS_BIN="${GITLEAKS_BIN:-gitleaks}"
+GITLEAKS_CONFIG="${GITLEAKS_CONFIG:-$HOME/.config/gitleaks/gitleaks.toml}"
+if command -v "$GITLEAKS_BIN" >/dev/null 2>&1 && [ -f "$GITLEAKS_CONFIG" ]; then
+    GL_OUT="$("$GITLEAKS_BIN" protect --staged --source "$GIT_ROOT" --config "$GITLEAKS_CONFIG" --no-banner --redact 2>&1)" || {
+        echo "⚠ WARN: gitleaks found possible secrets in staged diff (non-blocking; pre-push guard will refuse):" >&2
+        printf '%s\n' "$GL_OUT" >&2
+    }
 fi
 
 exit 0
