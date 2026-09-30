@@ -45,9 +45,9 @@ loadEnvFile("/home/toxic/sovereign/config/ports.env");
 
 loadEnvFile("/home/toxic/sovereign/.env.local");
 
-// Port SSOT: process-compose injects SOVEREIGN_PORT=${SOVEREIGN_ROUTER_PORT}
+// Port SSOT: service-specific SOVEREIGN_ROUTER_PORT wins; SOVEREIGN_PORT is legacy fallback.
 export const _portRaw =
-  process.env.SOVEREIGN_PORT || process.env.SOVEREIGN_ROUTER_PORT || "";
+  process.env.SOVEREIGN_ROUTER_PORT || process.env.SOVEREIGN_PORT || "";
 
 if (!_portRaw) {
   throw new Error(
