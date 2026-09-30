@@ -13,6 +13,14 @@ knobs extracted from the runtime binary, plus honest notes on what we don't know
   session). Not a public model; not on OpenRouter/HF; no public API.
 - `ipnext` = Meta's internal inference provider route. `avocado` = the model family.
 - Versioning: `5.16-v4` = family generation 5.16, 4th revision.
+- Naming layers (observed live 2026-09-30 via session status): the platform-facing
+  model ID is `meta/muse-spark` ("Muse Spark", provider Meta); the internal
+  inference route underneath is `ipnext/avocado-5.16-v4` (seen on crew agent
+  records). Muse Spark is the product name for the avocado-powered assistant.
+- Client app: `hatch-web` (request `app_id`), origin `external.hatch_chat` —
+  Meta's web client, not on our boxes. `model.requested` is null (no override
+  active) and the client declares no model-picker UI target — model selection
+  is platform-side.
 
 ## Version map (from `/opt/hatch/bin/hatch` strings, 2026-09-30)
 
