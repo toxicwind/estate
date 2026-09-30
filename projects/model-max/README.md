@@ -1,19 +1,40 @@
+<div align="right">
+
+[![license](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-part_of_the_estate-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+![measured](https://img.shields.io/badge/healthy_=_observed_completion-green?style=for-the-badge)
+
+</div>
+
 # MODEL-MAX — herd model measurement
 
-Sweep harness that measures every model exposed by the herd gateway
-(llama-swap on yote `127.0.0.1:25100`) with real completions. No advertised
-catalog entries, no guessed RPM — every `healthy=true` is an observed
-completion.
+**Sweep harness that measures every model exposed by the herd gateway (llama-swap on yote `127.0.0.1:25100`) with real completions.** No advertised catalog entries, no guessed RPM — every `healthy=true` is an *observed* completion, including semantic failure detection (HTTP 200s carrying error text count as failures).
 
-## One-command re-run (on yote)
+- **Liveness sweep** — one real `/v1/chat/completions` call per model, fail-fast, checkpointed
+- **Deep probes** — streaming TTFT/TPS plus *observed* valid-RPM on healthy models only
+- **Semantic triage** — "not enough credits" notices, empty completions, and error-text-in-200 are failures, not health; reasoning models re-probed with larger budgets; 429s re-probed serially to separate rate-limit from death
+- **Resumable** — checkpoints after every model; kill and re-run resumes
+
+## How a sweep flows
+
+```mermaid
+flowchart LR
+    A["sweep.py --phase=all"] --> B["liveness\n1 completion/model\nfail-fast"]
+    B --> C{semantic check}
+    C -->|"200 with error text\ncredits notice, empty"| D[failure]
+    C -->|real completion| E["deep\n6 streaming samples + 3-way burst\nTTFT / TPS / observed RPM"]
+    E --> F["model-health.json\nconsumed by herd racing,\nrobust.py, Tau"]
+    B --> G["checkpoint per model\nkill-safe resume"]
+```
+
+## Quick start
 
 ```bash
 cd /home/toxic/sovereign/projects/model-max
 python3 sweep.py --phase=all        # liveness + deep + report
 ```
 
-Phases can run separately; both checkpoint after every model, so killing and
-re-running resumes where it left off:
+Phases can run separately; both checkpoint after every model, so killing and re-running resumes where it left off:
 
 ```bash
 python3 sweep.py --phase=liveness   # 1 completion/model, fail-fast
@@ -59,3 +80,9 @@ at the top of that file (`_schema` key).
   to reference an env var the pitchfork daemon doesn't have.
 - GuideLLM lives here for proper load benchmarks of the top candidates;
   the custom prober handles liveness/semantic triage where GuideLLM doesn't fit.
+
+## License + security
+
+MIT — [sovereign-projects](https://github.com/toxicwind/sovereign-projects) ([license](https://github.com/toxicwind/sovereign-projects#license)).
+
+**Security note:** the harness talks to the herd gateway on localhost — it never touches provider keys directly (that's the herd's job). Sweep logs record model outputs; treat them as untrusted text. The hard lesson is in the layout section: never hand herd.yaml an env var the pitchfork daemon doesn't have, or llama-swap exits on reload.
