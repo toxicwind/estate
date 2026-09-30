@@ -1,48 +1,72 @@
+<div align="right">
+
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/part_of-sovereign--projects-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
 # Quickshell home — `ii`
 
-Canonical home for Chris's `ii` quickshell setup: the `ii` fork of end-4's illogical-impulse
-(`ii/`, submodule, remote `toxicwind/sovereign-end4`) plus the first-class operations layer
-around it (`bin/`, `lib/`, `deploy/`).
+> **The canonical home of Chris's `ii` quickshell setup: the illogical-impulse fork plus the operations layer that keeps it alive on Hyprland.**
+
+Two halves: `ii/` — the `ii` fork of end-4's illogical-impulse (submodule, remote `toxicwind/sovereign-end4`; QML/config work lives here, untouched by the redo) — and the first-class operations layer around it (`bin/`, `lib/`, `deploy/`) that launches, supervises, and doctors it.
+
+## Entrypoints
+
+All quickshell operations go through `bin/`:
+
+- `qs-launch [-c ii] [--systemd]` — canonical launcher (env auto-detect, single-instance guard, detached; `--systemd` = foreground mode for the unit)
+- `qs-restart`, `qs-stop` — bounce/stop, systemd-aware
+- `qs-doctor [--repair]` — health: binary, config resolution + sha256 vs canonical repo, wayland socket, hyprland instance, process, **IPC reachability**, unit state, DP-1/DP-2 layer surfaces
+- `qs-logs [n]` — launcher log + quickshell qslog + unit journal
+- `qs-install` — idempotent install: config symlink, systemd unit, hyprland entries
+- `qs-version` — binary + config + repo pins
+
+```mermaid
+flowchart TB
+    hypr[Hyprland session<br/>execs.lua] --> unit[quickshell-ii.service<br/>Restart=always]
+    unit --> qs[quickshell -c ii]
+    cli[qs-launch / qs-restart<br/>qs-stop / qs-doctor] -.manage.-> unit
+    conf[ii/dots/.config/quickshell] -.dotbot symlink.-> live[~/.config/quickshell]
+```
+
+## Quick start
+
+```bash
+./bin/qs-install        # symlink config, install systemd unit + hyprland entries
+./bin/qs-launch -c ii  # start the shell
+./bin/qs-doctor        # verify everything is healthy
+```
+
+## License & security
+
+MIT — see the [canonical LICENSE](https://github.com/toxicwind/sovereign-projects#license). `qs-install` writes to `~/.config/systemd/user/` and `~/.config/hypr/` — your own dotfiles, nothing system-wide.
 
 ## Layout
 
-- `bin/` — user entrypoints. All quickshell operations go through these:
-  - `qs-launch [-c ii] [--systemd]` — canonical launcher (env auto-detect, single-instance
-    guard, detached; `--systemd` = foreground mode for the unit)
-  - `qs-restart`, `qs-stop` — bounce/stop, systemd-aware
-  - `qs-doctor [--repair]` — health: binary, config resolution + sha256 vs canonical repo,
-    wayland socket, hyprland instance, process, **IPC reachability**, unit state,
-    DP-1/DP-2 layer surfaces
-  - `qs-logs [n]` — launcher log + quickshell qslog + unit journal
-  - `qs-install` — idempotent install: config symlink, systemd unit, hyprland entries
-  - `qs-version` — binary + config + repo pins
-- `lib/qs-common.sh` — shared env/pid/unit helpers (sourced by `bin/*`)
-- `deploy/quickshell-ii.service` — systemd `--user` unit (`Restart=always`, `RestartSec=2`);
-  installed by `qs-install` to `~/.config/systemd/user/`
-- `quarantine/` — legacy material, parked never deleted (see `quarantine/MANIFEST.md`)
-- `evidence/` — grim DP-1/DP-2 captures per verification run
-- `AUDIT.md` — structural inventory + IPC anomaly root cause (2026-09-19)
-- `ii/` — the fork. QML/config work lives here; this redo does not touch its content.
+| Path | What |
+|---|---|
+| [`bin/`](./bin) | User entrypoints (above) |
+| [`lib/qs-common.sh`](./lib/qs-common.sh) | Shared env/pid/unit helpers (sourced by `bin/*`) |
+| [`deploy/quickshell-ii.service`](./deploy/quickshell-ii.service) | systemd `--user` unit (`Restart=always`, `RestartSec=2`); installed by `qs-install` |
+| [`quarantine/`](./quarantine) | Legacy material — parked, never deleted (see [`quarantine/MANIFEST.md`](./quarantine/MANIFEST.md)) |
+| [`evidence/`](./evidence) | grim DP-1/DP-2 captures per verification run |
+| [`AUDIT.md`](./AUDIT.md) | Structural inventory + IPC anomaly root cause (2026-09-19) |
+| [`ii/`](./ii) | The fork — QML/config work lives here; this redo does not touch its content |
 
-`/usr/local/bin/qs` delegates to `bin/qs-launch` (old hand-rolled version in quarantine).
+`/usr/local/bin/qs` delegates to `bin/qs-launch` (the old hand-rolled version lives in quarantine).
 
 ## Live config
 
-`~/.config/quickshell` → `ii/dots/.config/quickshell` (dotbot symlink, `ii/install.conf.yaml:18`).
-Edits in the repo reach the live shell immediately.
+`~/.config/quickshell` → `ii/dots/.config/quickshell` (dotbot symlink, `ii/install.conf.yaml:18`). Edits in the repo reach the live shell immediately.
 
 ## Supervision
 
-Hyprland (`~/.config/hypr/hyprland/execs.lua`) starts the `quickshell-ii.service` unit on session
-start — idempotent, no-op when already running. The unit restarts quickshell on crash
-(`Restart=always`). Manual `qs -c ii` launches are single-instance guarded and converge on the
-same path.
+Hyprland (`~/.config/hypr/hyprland/execs.lua`) starts the `quickshell-ii.service` unit on session start — idempotent, no-op when already running. The unit restarts quickshell on crash (`Restart=always`). Manual `qs -c ii` launches are single-instance guarded and converge on the same path.
 
 ## IPC
 
-Instance registration lives at `/run/user/1000/quickshell/by-id/<id>/`. If `qs-doctor` reports
-"IPC: No running instances" while the bar renders, the registration dir was lost — restart via
-`qs-restart` (recreates it). `qs-doctor` checks this on every run.
+Instance registration lives at `/run/user/1000/quickshell/by-id/<id>/`. If `qs-doctor` reports "IPC: No running instances" while the bar renders, the registration dir was lost — restart via `qs-restart` (recreates it). `qs-doctor` checks this on every run.
 
 ## WezTerm
 
@@ -70,3 +94,7 @@ Terminal emulator: `wezterm` (GPU-accelerated, listed in `ii/packages.arch.txt`)
 | `ii/dots/.config/wezterm/shell-integration.sh` | Symlink to shell repo script |
 | `ii/dots/.config/wezterm/plugins/wezterm-cmdpicker` | Symlink to shell repo plugin |
 | `~/.config/wezterm` | **Symlink** → `ii/dots/.config/wezterm` (managed by Dotbot via `ii/install.conf.yaml`) |
+
+## Contributing
+
+New operations go in `bin/` and source `lib/qs-common.sh` — never duplicate env/pid/unit logic. The `ii/` submodule is upstream territory: never commit QML fixes here that belong in the fork.
