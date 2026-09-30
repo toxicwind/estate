@@ -1,10 +1,12 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
 	COMFYUI_MODEL_ID,
+	COMFYUI_LAUNCH_RETRY_DELAYS_MS,
 	comfyuiUrl,
 	findComfyUIModel,
 	comfyuiPhase,
 	comfyuiPhaseLabel,
+	launchWithRetry,
 	type ComfyUIPhase,
 } from "./comfyui";
 import { api } from "./apiBase";
@@ -78,5 +80,95 @@ describe("comfyuiPhaseLabel", () => {
 		for (const [phase, label] of Object.entries(labels)) {
 			expect(comfyuiPhaseLabel(phase as ComfyUIPhase)).toBe(label);
 		}
+	});
+});
+
+describe("launchWithRetry", () => {
+	const url = "http://herd:25104/comfyui/";
+
+	function okResponse(): Response {
+		return new Response("ok", { status: 200 });
+	}
+
+	function failResponse(status = 502): Response {
+		return new Response("bad", { status });
+	}
+
+	it("defaults to the immediate / 2s / 8s delay schedule", () => {
+		expect(COMFYUI_LAUNCH_RETRY_DELAYS_MS).toEqual([0, 2000, 8000]);
+	});
+
+	it("succeeds on the first attempt with no backoff", async () => {
+		const fetchImpl = vi.fn().mockResolvedValue(okResponse());
+		const r = await launchWithRetry(
+			fetchImpl,
+			url,
+			new AbortController().signal,
+			[0, 5, 10],
+		);
+		expect(r).toEqual({ attempts: 1 });
+		expect(fetchImpl).toHaveBeenCalledTimes(1);
+		expect(fetchImpl).toHaveBeenCalledWith(url, { signal: expect.any(AbortSignal) });
+	});
+
+	it("retries failures across the delay slots and reports each attempt", async () => {
+		const fetchImpl = vi
+			.fn()
+			.mockRejectedValueOnce(new Error("boom"))
+			.mockResolvedValueOnce(failResponse())
+			.mockResolvedValueOnce(okResponse());
+		const attemptsSeen: number[] = [];
+		const r = await launchWithRetry(
+			fetchImpl,
+			url,
+			new AbortController().signal,
+			[0, 10, 20],
+			(a) => attemptsSeen.push(a),
+		);
+		expect(r).toEqual({ attempts: 3 });
+		expect(fetchImpl).toHaveBeenCalledTimes(3);
+		expect(attemptsSeen).toEqual([1, 2, 3]);
+	});
+
+	it("treats non-2xx herd responses as failures and throws the last error", async () => {
+		const fetchImpl = vi.fn().mockResolvedValue(failResponse(503));
+		await expect(
+			launchWithRetry(fetchImpl, url, new AbortController().signal, [0, 5, 10]),
+		).rejects.toThrow("herd answered 503");
+		expect(fetchImpl).toHaveBeenCalledTimes(3);
+	});
+
+	it("throws the last network error when every attempt fails", async () => {
+		const fetchImpl = vi.fn().mockRejectedValue(new TypeError("fetch failed"));
+		await expect(
+			launchWithRetry(fetchImpl, url, new AbortController().signal, [0, 5, 10]),
+		).rejects.toThrow("fetch failed");
+		expect(fetchImpl).toHaveBeenCalledTimes(3);
+	});
+
+	it("stops retrying when the signal aborts mid-backoff", async () => {
+		const ctl = new AbortController();
+		const fetchImpl = vi.fn().mockRejectedValue(new Error("down"));
+		const p = launchWithRetry(fetchImpl, url, ctl.signal, [0, 50, 50]);
+		// Let the first attempt fail, then abort during the 50ms backoff slot.
+		await new Promise((r) => setTimeout(r, 10));
+		ctl.abort();
+		await expect(p).rejects.toMatchObject({ name: "AbortError" });
+		expect(fetchImpl).toHaveBeenCalledTimes(1);
+	});
+
+	it("a manual retry starts over at attempt 1 with no leftover state", async () => {
+		const signal = new AbortController().signal;
+		const failing = vi.fn().mockRejectedValue(new Error("down"));
+		await expect(
+			launchWithRetry(failing, url, signal, [0, 5, 10]),
+		).rejects.toThrow("down");
+		const succeeding = vi.fn().mockResolvedValue(okResponse());
+		const seen: number[] = [];
+		const r = await launchWithRetry(succeeding, url, signal, [0, 5, 10], (a) =>
+			seen.push(a),
+		);
+		expect(r).toEqual({ attempts: 1 });
+		expect(seen).toEqual([1]);
 	});
 });
