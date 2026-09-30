@@ -1,28 +1,42 @@
-# Project Structure Policies
+# Project structure policies
 
-This directory contains policies that enforce consistent code organization and documentation standards for the Code Scalpel project.
+![code-scalpel](https://img.shields.io/badge/code--scalpel-6C5CE7?style=for-the-badge) ![rego](https://img.shields.io/badge/rego-FF6B6B?style=for-the-badge) ![structure](https://img.shields.io/badge/project--structure-16A085?style=for-the-badge)
 
-## Overview
+> One codebase, one layout: similar code in similar directories, docs where you'd look for them, no circular dependencies sneaking in.
 
-The project structure policy ensures:
+```mermaid
+flowchart TD
+    F[file written] --> R[structure.rego]
+    R --> C{location matches<br/>project-structure.yaml?}
+    C -->|yes| OK[allow + audit]
+    C -->|no| D[block: misplaced file]
+    R -->|import graph| G{circular dependency?}
+    G -->|yes| D
+    G -->|no| OK
+```
 
-- **Consistent file placement** - Similar code in similar directories
-- **Complete documentation** - README.md in every meaningful directory
-- **Clean architecture** - Core analysis isolated from integrations
-- **Naming conventions** - PEP 8 compliance and project standards
-- **Module boundaries** - Preventing circular dependencies
+## Quick Start
 
-## Policy: structure.rego
+```bash
+code-scalpel policy validate
+code-scalpel policy test --category project
+```
 
-Enforces Code Scalpel's project structure conventions.
+## Policies
 
-### Configuration
+### `structure.rego`
 
-Configuration file: [.code-scalpel/project-structure.yaml](../../project-structure.yaml)
+Enforces the project's structural conventions — file location rules driven by configuration, not hardcoded paths:
 
-## Usage
+- **consistent file placement** — similar code lands in similar directories
+- **module boundaries** — circular dependencies are rejected
+- **layout conventions** — naming and organization standards (PEP 8 and project norms)
 
-Enable in `.code-scalpel/policy.yaml`:
+Configuration: [`.code-scalpel/project-structure.yaml`](../../project-structure.yaml), loaded as `data.project_config` in Rego. Rego package: `project.structure`.
+
+## Enable
+
+In `.code-scalpel/policy.yaml`:
 
 ```yaml
 policies:
@@ -33,6 +47,8 @@ policies:
       action: DENY
 ```
 
----
+When the layout itself needs to evolve, update `project-structure.yaml` first — the policy follows the config, so a single source of truth keeps the rule and the docs in sync.
 
-_Part of Code Scalpel v3.1+ Policy Engine_
+## License and security
+
+Part of Code Scalpel v3.1+ Policy Engine. Structure policy is a guardrail for humans and agents alike: it keeps the tree navigable as the codebase grows, and it keeps automated edits from scattering files where the next reader won't find them.

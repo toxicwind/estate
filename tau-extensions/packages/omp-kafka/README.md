@@ -1,13 +1,15 @@
 # omp-kafka
 
-Part of [`toxicwind/omp-extensions`](https://github.com/toxicwind/omp-extensions) — a monorepo of oh-my-pi (`omp`) extensions.
+![omp-kafka](https://img.shields.io/badge/omp--kafka-D35400?style=for-the-badge) ![typescript](https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![bun](https://img.shields.io/badge/bun-000000?style=for-the-badge&logo=bun&logoColor=white) ![MIT](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
 
-An [oh-my-pi (`omp`)](https://github.com/can1357/oh-my-pi) extension that lets an `omp` (or `pi`) instance subscribe to Apache Kafka topics and surface the messages in two ways:
+> Give your agent ears: stream Apache Kafka topics straight into the session — pushed live as messages, or buffered for on-demand pulls.
 
-- **auto (push) mode** — every consumed message is delivered into the running session as a user message (`sendUserMessage`) and shown as a `ctx.ui.notify`, so the LLM can react to it without any explicit request.
-- **pull mode** — messages are buffered silently. The user (or the LLM, via the `kafka_consume` tool) pulls them on demand with `/kafka-tail`, `/kafka`, and `/kafka-reload`.
+Part of [`toxicwind/tau-extensions`](https://github.com/toxicwind/tau-extensions). An [oh-my-pi (`omp`)](https://github.com/can1357/oh-my-pi) extension that lets an `omp` (or `pi`) instance subscribe to Apache Kafka topics and surface messages two ways:
 
-The wiring per instance is configured by a single `kafka.yml` file. One repo = many instances, each with its own client ID, topic set, and group ID.
+- **auto (push) mode** — every consumed message is delivered into the running session as a user message (`sendUserMessage`) plus a `ctx.ui.notify`, so the LLM reacts without being asked.
+- **pull mode** — messages buffer silently; the user (or the LLM, via the `kafka_consume` tool) pulls them on demand with `/kafka-tail`, `/kafka`, and `/kafka-reload`.
+
+One `kafka.yml` configures the wiring per instance — one repo, many instances, each with its own client ID, topic set, and group ID.
 
 ```mermaid
 flowchart LR
@@ -17,41 +19,14 @@ flowchart LR
     ext -->|pull: tool / slash cmd| s3[omp #3]
 ```
 
-## Install
-
-Requires `omp >= 17.0.0`.
-
-### Option A — clone the monorepo and link
+## Quick Start
 
 ```bash
-git clone --depth 1 --filter=blob:none --sparse https://github.com/toxicwind/omp-extensions ~/.tau/agent/extensions/omp-extensions
-cd ~/.tau/agent/extensions/omp-extensions
-git sparse-checkout set packages/omp-kafka
-cd packages/omp-kafka
-bun install
-omp plugin link .
+git clone --depth 1 --filter=blob:none --sparse https://github.com/toxicwind/tau-extensions ~/.tau/agent/extensions/tau-extensions
+cd ~/.tau/agent/extensions/tau-extensions/packages/omp-kafka && bun install && omp plugin link .
 ```
 
-The whole monorepo can be cloned if you want other extensions too — drop `--filter=blob:none --sparse` and the `sparse-checkout` lines.
-
-### Option B — install via npm (once published)
-
-```bash
-bun add -g @toxicwind/omp-kafka
-```
-
-Then add to `~/.tau/agent/config.yml`:
-
-```yaml
-extensions:
-  - @toxicwind/omp-kafka
-```
-
-### Option C — load once for a single session
-
-```bash
-omp --extension /path/to/omp-extensions/packages/omp-kafka
-```
+Requires `omp >= 17.0.0`. Then create `kafka.yml` (see [Configure](#configure)) and start `omp`.
 
 ## Configure
 
@@ -96,7 +71,7 @@ consumers:
 | `clientId` | `"omp-kafka"` | KafkaJS client ID. |
 | `groupId` | `"omp-kafka-<name>"` | Consumer group. Set explicitly to share with another consumer. |
 | `fromBeginning` | `false` | `false` = latest offset on first connect (good for live tails). |
-| `notify` | `true` | Flash a UI notification for each message (works in both modes). |
+| `notify` | `true` | Flash a UI notification per message (both modes). |
 | `maxQueue` | `200` | Ring-buffer size for the in-memory tail. Older records drop off. |
 | `auto.deliverAs` | `"steer"` | How `sendUserMessage` injects: `steer` (current turn) or `followUp` (queued). |
 | `auto.prefix` | `"[kafka:<name>] "` | Prepended to the formatted record body. |
@@ -108,10 +83,10 @@ consumers:
 
 `loadConfig` looks for the config in this order (first hit wins):
 
-1. `$KAFKA_CONFIG` (absolute path wins, otherwise resolved against `cwd`).
-2. `<cwd>/kafka.yml`.
-3. `<cwd>/.tau/kafka.yml`.
-4. `~/.tau/agent/kafka.yml`.
+1. `$KAFKA_CONFIG` (absolute path wins, otherwise resolved against `cwd`)
+2. `<cwd>/kafka.yml`
+3. `<cwd>/.tau/kafka.yml`
+4. `~/.tau/agent/kafka.yml`
 
 ## Slash commands
 
@@ -128,7 +103,7 @@ The status line at the bottom of the TUI mirrors the same info: `kafka: events[a
 
 ## LLM-callable tool
 
-`kafka_consume` is registered automatically. The LLM can call it to peek at the ring buffer without the user invoking a slash command:
+`kafka_consume` is registered automatically — the LLM can peek at the ring buffer without a slash command:
 
 ```json
 {
@@ -149,10 +124,16 @@ The status line at the bottom of the TUI mirrors the same info: `kafka: events[a
 | `KAFKA_DEBUG=1` | Log lifecycle and connect events to stderr. |
 | `KAFKA_CONFIG=<path>` | Force a specific config file. |
 
-## Verification
+## Architecture
 
-The package typechecks cleanly and a symlink at `~/.tau/agent/extensions/omp-extensions/packages/omp-kafka` makes omp auto-discover the factory at load.
+The extension registers one KafkaJS consumer per profile in `kafka.yml`. In **auto** mode each record is formatted (with the `auto.prefix`) and injected via `sendUserMessage` with the configured `deliverAs` strategy; in **pull** mode records accumulate in a per-consumer ring buffer (`maxQueue`) that the slash commands and the `kafka_consume` tool read from. The TUI status line reflects each consumer's state. Verification: the package typechecks cleanly, and a symlink at `~/.tau/agent/extensions/tau-extensions/packages/omp-kafka` makes omp auto-discover the factory at load.
 
-## License
+## License and security
 
 MIT — see [LICENSE](./LICENSE).
+
+Security notes:
+
+- SASL credentials live in `kafka.yml` — keep it at 0600 and never commit a populated one.
+- In auto mode, Kafka messages become user messages in the session: only subscribe to topics you trust, since message content can steer the LLM.
+- `ssl: true` + SASL for anything crossing a network boundary.

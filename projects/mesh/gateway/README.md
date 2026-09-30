@@ -1,8 +1,10 @@
-<p align="center">
-  <a href="https://mcpproxy.app" target="_blank" rel="noopener">
-    <img src="docs/social.png" alt="MCPProxy — Supercharge AI Agents, Safely · One safe endpoint in front of every MCP server" width="100%" />
-  </a>
-</p>
+# MCPProxy — vendored gateway engine (shep)
+
+*One safe endpoint in front of every MCP server. Vendored upstream source for **shep**, the sovereign mesh's MCP federation daemon (`:25127`).*
+
+![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge) ![vendored](https://img.shields.io/badge/vendored-upstream-orange?style=for-the-badge) ![go](https://img.shields.io/badge/go-00ADD8?style=for-the-badge)
+
+> **Mesh context.** This directory is the vendored source of [smart-mcp-proxy/mcpproxy-go](https://github.com/smart-mcp-proxy/mcpproxy-go) — the engine behind **shep**, which fronts 30 upstream MCP servers on the mesh. The sovereign deployment is configured in `sovereign-projects/mesh/gateway/mcp_config.json` and runs as the pitchfork `shep` daemon on `:25127`. Vendored code tracks upstream; keep local diffs minimal so re-vends stay clean.
 
 <div align="center">
 
@@ -12,7 +14,6 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/smart-mcp-proxy/mcpproxy-go.svg)](https://pkg.go.dev/github.com/smart-mcp-proxy/mcpproxy-go)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/smart-mcp-proxy/mcpproxy-go?style=social)](https://github.com/smart-mcp-proxy/mcpproxy-go/stargazers)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/smart-mcp-proxy/mcpproxy-go/badge)](https://securityscorecards.dev/viewer/?uri=github.com/smart-mcp-proxy/mcpproxy-go)
 
 </div>
 
@@ -26,16 +27,7 @@
   <strong>🌐 <a href="https://mcpproxy.app">mcpproxy.app</a></strong>
 </p>
 
-> The demo above shows the **embedded web UI**. The MCPProxy **core is a single binary for macOS, Linux, and Windows** — the web UI ships inside it, with no extra service to run. On **macOS**, an optional **menu‑bar app** adds one‑click convenience (start/stop, server health, quarantine, logs).
-
-<div align="center">
-  <img src="docs/screenshot-macos-tray.png" height="300" alt="MCPProxy macOS menu-bar app" />
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="docs/screenshot-macos-activity.png" height="300" alt="MCPProxy macOS app — Activity log with sensitive-data detection" />
-  <br />
-  <em>macOS menu‑bar app &nbsp;&nbsp;·&nbsp;&nbsp; Activity log &amp; audit in the macOS app</em>
-</div>
-
+> The demo above shows the **embedded web UI**. The MCPProxy **core is a single binary for macOS, Linux, and Windows** — the web UI ships inside it, with no extra service to run. On **macOS**, an optional **menu-bar app** adds one-click convenience (start/stop, server health, quarantine, logs).
 
 ## Why MCPProxy?
 
@@ -45,29 +37,39 @@
 - **Pluggable security scanners** – Run Snyk, Semgrep, Trivy, Cisco, and other Docker-based scanners against quarantined servers before you approve them; findings are normalized to SARIF with a composite risk score. See [Security scanner plugins](https://docs.mcpproxy.app/features/security-scanner-plugins/).
 - **Works offline & cross-platform** – A single core binary for macOS (Intel & Apple Silicon), Windows (x64 & ARM64), and Linux (x64 & ARM64), with the **web UI embedded**. macOS additionally ships an optional menu-bar app.
 
+## shep on the mesh
+
+```mermaid
+flowchart LR
+    agent([agents / MCP clients]) -->|"retrieve_tools (BM25)"| shep[("shep :25127<br/>mcpproxy core")]
+    shep --> ui["embedded web UI<br/>dashboard · activity log"]
+    shep --> q{"quarantine gate"}
+    q -->|approved| up1[(upstream MCP servers ×30)]
+    q -->|new / suspicious| scan["docker scanners<br/>Snyk · Semgrep · Trivy"]
+    scan -->|risk score| q
+```
+
+In the sovereign deployment, agents see a handful of built-in MCPProxy tools instead of hundreds of upstream schemas. Shep's config (`mcp_config.json`) declares the 30 upstream servers; the quarantine gate holds new servers until approved; BM25 `retrieve_tools` keeps agent context small. The reproducible numbers behind the token-reduction claims are measured by `bench/` — see [bench/README.md](bench/README.md).
+
 ---
 
 ## Quick Start
 
 ### 1. Install
 
-**macOS (Recommended - DMG Installer):**
+**macOS (Recommended — DMG Installer):**
 
 Download the latest DMG installer for your architecture:
 - **Apple Silicon (M1/M2):** [Download DMG](https://github.com/smart-mcp-proxy/mcpproxy-go/releases/latest) → `mcpproxy-*-darwin-arm64.dmg`
 - **Intel Mac:** [Download DMG](https://github.com/smart-mcp-proxy/mcpproxy-go/releases/latest) → `mcpproxy-*-darwin-amd64.dmg`
 
-**Windows (Recommended - Installer):**
+**Windows (Recommended — Installer):**
 
 Download the latest Windows installer for your architecture:
 - **x64 (64-bit):** [Download Installer](https://github.com/smart-mcp-proxy/mcpproxy-go/releases/latest) → `mcpproxy-setup-*-amd64.exe`
 - **ARM64:** [Download Installer](https://github.com/smart-mcp-proxy/mcpproxy-go/releases/latest) → `mcpproxy-setup-*-arm64.exe`
 
-The installer automatically:
-- Installs both `mcpproxy.exe` (core server) and `mcpproxy-tray.exe` (system tray app) to Program Files
-- Adds MCPProxy to your system PATH for command-line access
-- Creates Start Menu shortcuts
-- Supports silent installation: `.\mcpproxy-setup.exe /VERYSILENT`
+The installer automatically installs both `mcpproxy.exe` (core server) and `mcpproxy-tray.exe` (system tray app), adds MCPProxy to your system PATH, and creates Start Menu shortcuts. Silent install: `.\mcpproxy-setup.exe /VERYSILENT`.
 
 **Alternative install methods:**
 
@@ -79,8 +81,6 @@ brew install --cask smart-mcp-proxy/mcpproxy/mcpproxy
 # macOS / Linux — headless CLI only:
 brew install smart-mcp-proxy/mcpproxy/mcpproxy
 ```
-
-The cask installs the menu-bar app (bundles the CLI); the formula is the CLI binary only. Both update via `brew upgrade`.
 
 Linux (Debian/Ubuntu) — apt repository, auto-updates via `apt upgrade`:
 ```bash
@@ -95,39 +95,15 @@ sudo apt update && sudo apt install mcpproxy
 Linux (Fedora / RHEL / Rocky / AlmaLinux) — dnf repository, auto-updates via `dnf upgrade`:
 ```bash
 sudo dnf config-manager --add-repo https://rpm.mcpproxy.app/mcpproxy.repo
-# Fedora 41+ (dnf5): sudo curl -fsSL https://rpm.mcpproxy.app/mcpproxy.repo -o /etc/yum.repos.d/mcpproxy.repo
 sudo dnf install -y mcpproxy
 ```
 
 Arch Linux (AUR): [`mcpproxy-bin`](https://aur.archlinux.org/packages/mcpproxy-bin)
 ```bash
 yay -S mcpproxy-bin
-# or
-git clone https://aur.archlinux.org/mcpproxy-bin.git && cd mcpproxy-bin && makepkg -si
 ```
 
 The apt and dnf packages ship a hardened `systemd` unit and start the service automatically. Repository signing key fingerprint: `3B6F A1AD 5D53 59DA 51F1  8DDC E1B5 9B9B A1CB 8A3B`.
-
-For one-off `.deb` / `.rpm` downloads (air-gapped installs), grab them from the [latest release](https://github.com/smart-mcp-proxy/mcpproxy-go/releases/latest).
-
-Manual download (all platforms):
-- **Linux tarball**: [AMD64](https://github.com/smart-mcp-proxy/mcpproxy-go/releases/latest/download/mcpproxy-latest-linux-amd64.tar.gz) | [ARM64](https://github.com/smart-mcp-proxy/mcpproxy-go/releases/latest/download/mcpproxy-latest-linux-arm64.tar.gz)
-- **Windows**: [AMD64](https://github.com/smart-mcp-proxy/mcpproxy-go/releases/latest/download/mcpproxy-latest-windows-amd64.zip) | [ARM64](https://github.com/smart-mcp-proxy/mcpproxy-go/releases/latest/download/mcpproxy-latest-windows-arm64.zip)
-
-**Prerelease Builds (Latest Features):**
-
-Want to try the newest features? Download prerelease builds from the `next` branch:
-
-1. Go to [GitHub Actions](https://github.com/smart-mcp-proxy/mcpproxy-go/actions)
-2. Click the latest successful "Prerelease" workflow run
-3. Download from **Artifacts**:
-   - `dmg-darwin-arm64` (Apple Silicon Macs)
-   - `dmg-darwin-amd64` (Intel Macs)
-   - `versioned-linux-amd64`, `versioned-windows-amd64` (other platforms)
-
-> **Note**: Prerelease builds are signed and notarized for macOS but contain cutting-edge features that may be unstable.
-
-- **macOS**: [Intel](https://github.com/smart-mcp-proxy/mcpproxy-go/releases/latest/download/mcpproxy-latest-darwin-amd64.tar.gz) | [Apple Silicon](https://github.com/smart-mcp-proxy/mcpproxy-go/releases/latest/download/mcpproxy-latest-darwin-arm64.tar.gz)
 
 Anywhere with Go 1.25+:
 ```bash
@@ -155,29 +131,6 @@ Create or edit `~/.mcpproxy/mcp_config.json`:
 ```
 
 See [Configuration](https://docs.mcpproxy.app/configuration/config-file/) and [Upstream Servers](https://docs.mcpproxy.app/configuration/upstream-servers/) for the full reference.
-
-### 4. Connect to your IDE/AI tool
-
-📖 **[Complete Setup Guide](docs/setup.md)** - Detailed instructions for Cursor, VS Code, Claude Desktop, and Goose
-
-## Add proxy to Cursor
-
-### One-click install into Cursor IDE
-
-[![Install in Cursor IDE](https://img.shields.io/badge/Install_in_Cursor-3e44fe?logo=data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94P…&style=for-the-badge)](https://mcpproxy.app/cursor-install.html)
-
-### Manual install
-
-
-1. Open Cursor Settings
-2. Click "Tools & Integrations"
-3. Add MCP server
-```json
-    "MCPProxy": {
-      "type": "http",
-      "url": "http://localhost:8080/mcp/"
-    }
-```
 
 ---
 
@@ -238,7 +191,7 @@ mcpproxy tools preflight gh-ops:sync_issues slack:post_message --wait 10s
 case $? in
   0)  run-agent-session ;;   # all ready — go
   10) exit 75 ;;             # transient (server starting) — let the next cron tick retry
-  11) page-operator ;;       # blocked — someone must approve / enable / log in
+  11) page-operator ;;        # blocked — someone must approve / enable / log in
   12) fail-pipeline ;;       # unknown tool id — the automation itself is misconfigured
 esac
 ```
@@ -250,8 +203,6 @@ See [Required-Tools Preflight](https://docs.mcpproxy.app/features/tools-prefligh
 ## 🔐 Optional HTTPS Setup
 
 MCPProxy works with HTTP by default for easy setup. HTTPS is optional and primarily useful for production environments or when stricter security is required.
-
-**💡 Note**: Most users can stick with HTTP (the default) as it works perfectly with all supported clients including Claude Desktop, Cursor, and VS Code.
 
 ### Quick HTTPS Setup
 
@@ -274,45 +225,6 @@ mcpproxy trust-cert
 - MCP endpoint: `https://localhost:8080/mcp`
 - Web UI: `https://localhost:8080/ui/`
 
-### Claude Desktop Integration
-
-For Claude Desktop, add this to your `claude_desktop_config.json`:
-
-**HTTP (Default - Recommended):**
-```json
-{
-  "mcpServers": {
-    "mcpproxy": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "mcp-remote",
-        "http://localhost:8080/mcp"
-      ]
-    }
-  }
-}
-```
-
-**HTTPS (With Certificate Trust):**
-```json
-{
-  "mcpServers": {
-    "mcpproxy": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "mcp-remote",
-        "https://localhost:8080/mcp"
-      ],
-      "env": {
-        "NODE_EXTRA_CA_CERTS": "~/.mcpproxy/certs/ca.pem"
-      }
-    }
-  }
-}
-```
-
 ### Certificate Management
 
 - **Automatic generation**: Certificates created on first HTTPS startup
@@ -322,22 +234,11 @@ For Claude Desktop, add this to your `claude_desktop_config.json`:
 
 ### Troubleshooting HTTPS
 
-**Certificate trust issues**:
 ```bash
-# Re-trust certificate
-mcpproxy trust-cert --force
-
-# Check certificate location
-ls ~/.mcpproxy/certs/
-
-# Test HTTPS connection
-curl -k https://localhost:8080/api/v1/status
+mcpproxy trust-cert --force   # re-trust certificate
+ls ~/.mcpproxy/certs/         # check certificate location
+curl -k https://localhost:8080/api/v1/status   # test HTTPS connection
 ```
-
-**Claude Desktop connection issues**:
-- Ensure `NODE_EXTRA_CA_CERTS` points to the correct ca.pem file
-- Restart Claude Desktop after config changes
-- Verify HTTPS is enabled: `mcpproxy serve --log-level=debug`
 
 ---
 
@@ -377,9 +278,9 @@ curl -k https://localhost:8080/api/v1/status
 
 ---
 
-## Contributing
+## Dev / contributing
 
-We welcome issues, feature ideas, and PRs!
+We welcome issues, feature ideas, and PRs! (Upstream: contribute to [smart-mcp-proxy/mcpproxy-go](https://github.com/smart-mcp-proxy/mcpproxy-go); mesh-local fixes go to the sovereign-projects repo with minimal local diffs.)
 
 ### Development Setup
 
@@ -414,3 +315,8 @@ make test           # Unit tests
 make test-e2e       # E2E tests
 make lint           # Run linters
 ```
+
+## License & Security
+
+- **License:** MIT — see [LICENSE](LICENSE). (Vendored copy carries the upstream license; the sovereign deployment config around it follows the sovereign-projects repo licensing.)
+- **Security posture:** automatic quarantine blocks tool-poisoning attacks until new servers are manually approved; pluggable Docker-based security scanners (Snyk, Semgrep, Trivy, Cisco) scan quarantined servers with findings normalized to SARIF + a composite risk score; intent is validated against tool annotations on every call; arguments and responses are scanned for sensitive data; every call lands in the local activity log with a request ID. Report upstream vulnerabilities to the [smart-mcp-proxy/mcpproxy-go](https://github.com/smart-mcp-proxy/mcpproxy-go) maintainers.
