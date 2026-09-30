@@ -1,8 +1,42 @@
+<div align="right">
+
+[![license](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-part%20of-blueviolet?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
 # Zed Docs
 
-Welcome to Zed's documentation.
+**The documentation pipeline behind [zed.dev/docs](https://zed.dev/docs).** mdBook source, a custom preprocessor that validates keybinding/action references against the real codebase, and a postprocessor for per-page titles and meta descriptions.
 
-This is built on push to `main` and published automatically to [https://zed.dev/docs](https://zed.dev/docs).
+## Why should I care?
+
+- **Docs that can't rot** — the `zed-docs-preprocessor` validates every `{#kb …}` and `{#action …}` reference against the action manifest; stale references fail the build
+- **Per-page SEO** — the postprocessor injects front-matter `title`/`description` into each page's `<head>`
+- **Pinned toolchain** — mdBook 0.4.40 (0.4.48 breaks URLs); the Nix shell provides it pinned, no install needed
+
+```mermaid
+flowchart LR
+    MD[docs/src/*.md] --> PRE[docs_preprocessor<br/>validate kb/action refs]
+    PRE --> MDB[mdBook 0.4.40]
+    MDB --> POST[postprocessor<br/>per-page title/meta]
+    POST --> OUT[HTML]
+    OUT --> CF[docs-proxy worker<br/>→ zed.dev/docs]
+```
+
+## Quick start
+
+```sh
+script/generate-action-metadata   # dump action manifest (re-run when actions change)
+mdbook serve docs
+```
+
+## License & security
+
+- Zed upstream code is **GPL-3.0-or-later**; this fork ships inside the sovereign-projects monorepo ([MIT](https://github.com/toxicwind/sovereign-projects#license) for sovereign-authored files).
+- Binary assets (images, videos) must NOT be committed — upload to zed.dev or GitHub's asset storage and link out, or the repo bloats.
+
+## Preview locally
 
 To preview the docs locally you will need to install [mdBook](https://rust-lang.github.io/mdBook/) (`cargo install mdbook@0.4.40`), generate the action metadata, and then serve:
 
@@ -13,16 +47,13 @@ mdbook serve docs
 
 The first command dumps an action manifest to `crates/docs_preprocessor/actions.json`. Without it, the preprocessor cannot validate keybinding and action references in the docs and will report errors. You only need to re-run it when actions change.
 
-If you use Nix, the development shell provides a pinned `mdbook` (0.4.40) and a
-prebuilt docs preprocessor, so you can build the docs without installing anything
-or compiling the preprocessor on every run:
+If you use Nix, the development shell provides a pinned `mdbook` (0.4.40) and a prebuilt docs preprocessor, so you can build the docs without installing anything or compiling the preprocessor on every run:
 
 ```sh
 nix develop -c mdbook build docs
 ```
 
-(When `actions.json` has not been generated, action/keybinding validation is
-skipped with a warning rather than failing the build.)
+(When `actions.json` has not been generated, action/keybinding validation is skipped with a warning rather than failing the build.)
 
 It's important to note the version number above. For an unknown reason, as of 2025-04-23, running 0.4.48 will cause odd URL behavior that breaks things.
 
@@ -32,19 +63,21 @@ Before committing, verify that the docs are formatted in the way Prettier expect
 cd docs && pnpm dlx prettier@3.5.0 . --write && cd ..
 ```
 
-## Preprocessor
+## Architecture
+
+### Preprocessor
 
 We have a custom mdBook preprocessor for interfacing with our crates (`crates/docs_preprocessor`).
 
 If for some reason you need to bypass the docs preprocessor, you can comment out `[preprocessor.zed-docs-preprocessor]` from the `book.toml`.
 
-## Images and videos
+### Images and videos
 
 To add images or videos to the docs, upload them to another location (e.g., zed.dev, GitHub's asset storage) and then link out to them from the docs.
 
 Putting binary assets such as images in the Git repository will bloat the repository size over time.
 
-## Internal notes:
+### Internal notes
 
 - We have a Cloudflare router called `docs-proxy` that intercepts requests to `zed.dev/docs` and forwards them to the "docs" Cloudflare Pages project.
 - The CI uploads a new version to the Cloudflare Pages project from `.github/workflows/deploy_docs.yml` on every push to `main`.
@@ -55,7 +88,7 @@ The table of contents files (`theme/page-toc.js` and `theme/page-doc.css`) were 
 
 Since all this preprocessor does is generate the static assets, we don't need to keep it around once they have been generated.
 
-## Referencing Keybindings and Actions
+## Referencing keybindings and actions
 
 When referencing keybindings or actions, use the following formats:
 
@@ -67,7 +100,7 @@ This will output a code element like: `<code>Cmd + , | Ctrl + ,</code>`. We then
 
 By using the action name, we can ensure that the keybinding is always up-to-date rather than hardcoding the keybinding.
 
-#### Keymap Overlays
+#### Keymap overlays
 
 `{#kb:keymap_name scope::Action}` - e.g., `{#kb:jetbrains editor::GoToDefinition}`.
 
@@ -81,26 +114,27 @@ Supported overlays: `jetbrains`.
 
 This will render a human-readable version of the action name, e.g., "zed: open settings", and will allow us to implement things like additional context on hover, etc.
 
-### Creating New Templates
+### Creating new templates
 
 Templates are functions that modify the source of the docs pages (usually with a regex match and replace).
 You can see how the actions and keybindings are templated in `crates/docs_preprocessor/src/main.rs` for reference on how to create new templates.
 
-## Consent Banner
+## Consent banner
 
 We pre-bundle the `c15t` package because the docs pipeline does not include a JS bundler. If you need to update `c15t` and rebuild the bundle, use:
 
 ```
 mkdir c15t-bundle && cd c15t-bundle
 npm init -y
-npm install c15t@<version> esbuild
+V="$NEW_C15T_VERSION"   # set to the c15t version you are installing
+npm install "c15t@$V" esbuild
 echo "import { getOrCreateConsentRuntime } from 'c15t'; window.c15t = { getOrCreateConsentRuntime };" > entry.js
-npx esbuild entry.js --bundle --format=iife --minify --outfile=c15t@<version>.js
-cp c15t@<version>.js ../theme/c15t@<version>.js
+npx esbuild entry.js --bundle --format=iife --minify --outfile="c15t@$V.js"
+cp "c15t@$V.js" "../theme/c15t@$V.js"
 cd .. && rm -rf c15t-bundle
 ```
 
-Replace `<version>` with the new version of `c15t` you are installing. Then update `book.toml` to reference the new bundle filename.
+Then update `book.toml` to reference the new bundle filename.
 
 ### References
 
@@ -168,3 +202,7 @@ title: "Some title"
 
 - The front matter must be at the top of the file, with only white-space preceding it.
 - The contents of the `title` and `description` will not be HTML escaped. They should be simple ASCII text with no unicode or emoji characters.
+
+## Contribute
+
+Docs changes need `script/generate-action-metadata` re-run when actions change, and Prettier formatting before commit. Built on push to `main`, published automatically to [zed.dev/docs](https://zed.dev/docs).

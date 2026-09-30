@@ -1,54 +1,40 @@
+![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
+![python](https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![pitchfork](https://img.shields.io/badge/pitchfork--daemon-purple?style=for-the-badge)
+
 # buildsrv — the fleet's continuous-modification engine
 
-A pitchfork-managed build daemon on awrawr-pc. You submit a build as a
-JSON job file; the daemon runs it through your login shell (so mise
-toolchains resolve exactly as they do interactively), streams the log to
-a tail-able file, and caches artifacts keyed by content hash of the job
-spec. Re-submitting an identical job is a no-op returning the cached
-result. Interrupted jobs restart cleanly on daemon boot.
+Submit a build as a JSON job file; the daemon runs it through your login shell, streams the log to a tail-able file, and caches artifacts keyed by the content hash of the job spec. Re-submitting an identical job is a **no-op that returns the cached result**. Builds never touch your working tree — they iterate forward.
 
-Source: `tools/buildsrv/` in `toxicwind/sovereign-projects`
-(also checked out at `/home/toxic/sovereign` on awrawr-pc).
+- **Disk-backed queue** — `buildsrv` CLI and `buildsrvd` share only the filesystem: no RPC to break, no protocol to version.
+- **Forward-only semantics** — no `git checkout`, no stash, no revert. A failed build leaves the tree alone; you fix forward and resubmit.
+- **Content-hash caching** — identical spec (repo + cmd + toolchain + env + artifacts) → `CACHED`, nothing runs.
+- **Real toolchains** — jobs run through `bash -lc`, so mise shims resolve exactly as they do interactively. The daemon orchestrates; it never installs.
 
-## Architecture
-
-```
-submit (CLI) ──JSON──▶ /home/toxic/buildsrv/queue/<id>.json
-                          │
-buildsrvd (pitchfork daemon, stdlib-only python3) polls queue/ every 2s
-  1. claims job → moves to active/ (atomic; boot moves active/ back to queue/)
-  2. preflights toolchain via `bash -lc "command -v <bin>"` — fail fast,
-     clear message if a mise toolchain is missing (daemon never installs)
-  3. runs `bash -lc "<cmd>"` in the job workdir, stdout+stderr streamed to
-     logs/<id>.json... logs/<id>.log (tail -f while it runs)
-  4. on success copies declared artifacts → artifacts/<jobhash>/ + manifest
-  5. writes results/<id>.json and updates state.json (atomic tmp+rename)
-health: http://127.0.0.1:25148/health  (pitchfork ready_http)
+```mermaid
+flowchart LR
+    CLI[buildsrv CLI] -->|JSON job| Q[queue/<id>.json]
+    Q -->|poll 2s| D[buildsrvd<br/>pitchfork daemon]
+    D -->|claim| A[active/]
+    D -->|preflight toolchain| P{toolchain<br/>resolves?}
+    P -->|no| F[failed < 1s]
+    P -->|yes| R[run bash -lc cmd<br/>stream logs/]
+    R -->|exit 0| C[artifacts/<jobhash>/<br/>+ results/<id>.json]
+    R -->|exit != 0| G[failed + full log kept]
 ```
 
-Job-spec hash = sha256 of `{repo, workdir, toolchain, cmd, env, artifacts}`.
-Any previously *succeeded* job with the same hash makes a resubmit return
-`CACHED` without running anything.
+## Quick start
 
-**Forward-only semantics.** buildsrv never touches your working tree — no
-`git checkout`, no stash, no revert. The build command sees the tree as it
-is; jobs iterate forward. A failed build leaves the tree alone; you fix
-forward and resubmit (new spec hash → runs again).
+```bash
+buildsrv submit --name my-tool --repo /home/toxic/sovereign/tools/my-tool --toolchain bun --cmd "bunx tsc --noEmit"
+```
 
-## Layout
-
-| path | purpose |
-|---|---|
-| `/home/toxic/buildsrv/queue/` | pending job specs (`<id>.json`) |
-| `/home/toxic/buildsrv/active/` | claimed by the daemon (transient) |
-| `/home/toxic/buildsrv/logs/` | `<id>.log` — streamed during the build |
-| `/home/toxic/buildsrv/results/` | `<id>.json` — terminal result |
-| `/home/toxic/buildsrv/artifacts/` | `<jobhash>/` — cached outputs + `manifest.json` |
-| `/home/toxic/buildsrv/state.json` | job ledger (status/attempts/hashes/timings) |
+```bash
+buildsrv logs <id> -f        # tail the streaming log
+buildsrv status               # recent jobs table
+```
 
 ## Submitting jobs
-
-The CLI is `buildsrv` (symlinked into `/home/toxic/bin`, on the login PATH):
 
 ```bash
 # Rust — build one crate of the tau engine workspace
@@ -57,61 +43,59 @@ buildsrv submit --name tau-pi-ast \
   --toolchain rust \
   --cmd "cargo build -p pi-ast"
 
-# Bun/TypeScript — typecheck a tool
-buildsrv submit --name null-g-proxy-typecheck \
-  --repo /home/toxic/sovereign/tools/null-g-proxy \
-  --toolchain bun \
-  --cmd "bunx tsc --noEmit"
-
-# Go
+# Go — with an artifact to cache
 buildsrv submit --name caddy-auth \
   --repo /home/toxic/sovereign/projects/packages/caddy-sovereign-auth \
   --toolchain go \
   --cmd "go build ./..." \
   --artifact bin/
 
-# Python (pytest example)
+# Python — extras: --workdir, repeatable --env KEY=VAL, repeatable --artifact, --timeout seconds
 buildsrv submit --name mysuite \
   --repo /home/toxic/sovereign/tools/some-py-tool \
   --toolchain python \
   --cmd "python3 -m pytest -q" \
   --timeout 900
-
-# extras: --workdir (defaults to --repo), --env KEY=VAL (repeatable),
-# --artifact <relpath> (repeatable), --timeout seconds (default 1200)
 ```
 
-Then:
-
-```bash
-buildsrv status            # recent jobs table
-buildsrv status <id>       # one job, full detail
-buildsrv logs <id> -f      # tail -f the streaming log
-buildsrv list -n 30
-buildsrv retry <id>        # re-queue a finished/failed job
-buildsrv artifacts <id>    # what got cached
-buildsrv health            # daemon health JSON
-```
-
-Idempotent resubmit demo:
+Idempotent resubmit — the second call never runs:
 
 ```bash
 $ buildsrv submit --name tau-pi-ast --repo /home/toxic/sovereign/tau/engine \
     --toolchain rust --cmd "cargo build -p pi-ast"
 CACHED  identical job already succeeded as b260914-175901-a1b2c3d4
-        result: exit=0 duration=17.7s finished=2026-09-14T23:59:01+00:00
+        result: exit=0 duration=17.7s
         logs: /home/toxic/buildsrv/logs/b260914-175901-a1b2c3d4.log
 ```
 
-## pitchfork stanza
+## Architecture
 
-Hand-added to `/home/toxic/sovereign/pitchfork.toml` (generator retired —
-this file is hand-edited; `scripts/generate.ts` must never run):
+The daemon (`buildsrvd.py`, stdlib-only, pitchfork-managed) polls `queue/` every 2s:
+
+1. **Claim** — moves the job to `active/` (atomic; on boot, `active/` moves back to `queue/`).
+2. **Preflight** — `<toolchain>` through `bash -lc "command -v …"`; missing toolchain → `failed` in <1s with a clear "install/enable it via mise" message.
+3. **Run** — `bash -lc "<cmd>"` in the job workdir; stdout+stderr streamed to `logs/<id>.log`.
+4. **Cache** — on success, declared artifacts → `artifacts/<jobhash>/` + manifest.
+5. **Record** — `results/<id>.json` + `state.json` (atomic tmp+rename).
+
+Job-spec hash = sha256 of `{repo, workdir, toolchain, cmd, env, artifacts}`. Any previously *succeeded* job with the same hash makes a resubmit return `CACHED`.
+
+| Path | Purpose |
+|---|---|
+| `/home/toxic/buildsrv/queue/` | pending job specs (`<id>.json`) |
+| `/home/toxic/buildsrv/active/` | claimed by the daemon (transient) |
+| `/home/toxic/buildsrv/logs/` | `<id>.log` — streamed during the build |
+| `/home/toxic/buildsrv/results/` | `<id>.json` — terminal result |
+| `/home/toxic/buildsrv/artifacts/` | `<jobhash>/` — cached outputs + `manifest.json` |
+| `/home/toxic/buildsrv/state.json` | job ledger (status/attempts/hashes/timings) |
+
+Health: `http://127.0.0.1:25148/health` (pitchfork `ready_http`).
+
+## Config
+
+pitchfork stanza (hand-added to `pitchfork.toml` — hand-edited file; the generator must never run):
 
 ```toml
-# buildsrv — fleet continuous-modification engine (2026-09-14): disk-backed
-# job queue, streaming logs, content-hash artifact cache. Source:
-# tools/buildsrv in toxicwind/sovereign-projects. Submit via `buildsrv`.
 [daemons.buildsrv]
 run = "exec /usr/bin/python3 /home/toxic/sovereign/tools/buildsrv/buildsrvd.py"
 dir = "/home/toxic/sovereign/tools/buildsrv"
@@ -123,36 +107,29 @@ env = { BUILDSRV_ROOT = "/home/toxic/buildsrv", BUILDSRV_PORT = "25148", BUILDSR
 auto = ["start"]
 ```
 
-`"buildsrv"` was also appended to the `[groups.all]` daemon list.
-Reload/start: `pitchfork start buildsrv` / `pitchfork restart buildsrv` /
-`pitchfork status buildsrv` / `pitchfork logs buildsrv`.
+Env knobs: `BUILDSRV_PORT` (default 25148), `BUILDSRV_WORKERS` (default 2), `BUILDSRV_POLL` (queue poll seconds, default 2).
 
-Env knobs: `BUILDSRV_PORT` (default 25148), `BUILDSRV_WORKERS` (default 2),
-`BUILDSRV_POLL` (queue poll seconds, default 2).
+Reload/start: `pitchfork start buildsrv` · `pitchfork restart buildsrv` · `pitchfork status buildsrv`.
 
 ## Toolchains
 
-The daemon **orchestrates, never installs**. On every job it preflights
-`<toolchain>` through the login shell (`bash -lc "command -v …"`), so mise
-shims resolve exactly as they do for an interactive shell. Missing
-toolchain → job fails in <1s with `install/enable it via mise, then
-resubmit`. Known toolchains: `rust`/`cargo`, `go`, `bun`, `node`,
-`python`/`python3`, `tsc`.
+`rust`/`cargo`, `go`, `bun`, `node`, `python`/`python3`, `tsc`. The daemon **orchestrates, never installs**.
 
 ## Failure modes
 
-* Toolchain missing → `failed` in <1s, clear message, nothing ran.
-* Build fails → `failed`, exit code + full log kept, tree untouched.
-* Timeout (default 1200s, `--timeout`) → process group SIGKILLed, `failed`.
-* Daemon dies mid-build → on boot, `active/` jobs return to `queue/` and
-  re-run from scratch. The orphaned child was started in its own process
-  group; builds themselves are expected to be re-runnable (forward-only).
-* State file corrupt → daemon logs a warning and starts fresh (queue dir
-  is the source of truth for pending work, results/ for history).
+- Toolchain missing → `failed` in <1s, clear message, nothing ran.
+- Build fails → `failed`, exit code + full log kept, tree untouched.
+- Timeout (default 1200s, `--timeout`) → process group SIGKILLed, `failed`.
+- Daemon dies mid-build → on boot, `active/` jobs return to `queue/` and re-run from scratch (children run in their own process group; builds are expected to be re-runnable).
+- State file corrupt → daemon logs a warning and starts fresh (queue dir is the source of truth for pending work, results/ for history).
 
-## Verified 2026-09-14
+## Dev / contributing
 
-End-to-end on awrawr-pc (see commit history): Rust `cargo build -p pi-ast`
-(tau engine, 17.7s), Bun `bunx tsc --noEmit` (null-g-proxy, 1.4s),
-Go `go build ./...` (caddy-sovereign-auth, Xs) — all green through the
-daemon, plus cache-hit no-op and retry paths.
+- Source: `tools/buildsrv/` in `toxicwind/sovereign-projects` (also checked out at `/home/toxic/sovereign` on the box).
+- The CLI is `buildsrv` (symlinked into `/home/toxic/bin`, on the login PATH).
+- This directory (`scratch/buildsrv-src/`) holds the staging source tree: `buildsrv` (CLI), `buildsrvd.py` (daemon), `chunks/`.
+- Verified end-to-end 2026-09-14: Rust `cargo build -p pi-ast` (17.7s), Bun `bunx tsc --noEmit` (1.4s), Go `go build ./...` — all green through the daemon, plus cache-hit no-op and retry paths.
+
+## License + security
+
+Stack glue: MIT where marked. The daemon runs arbitrary shell commands submitted to it — it is a **localhost-only build service**: keep it behind the login boundary, never expose `:25148` to a network you don't trust, and treat submitted commands as fully trusted input from the fleet. Build jobs run as the daemon user with no sandboxing beyond process-group isolation.
