@@ -8,10 +8,11 @@ import { join } from "path";
 // - tmux_send is destructive-gated: requires explicit confirm:true in arguments
 
 function writeRpc(res: object) {
-  const s = JSON.stringify(res);
-  process.stdout.write(
-    `Content-Length: ${Buffer.byteLength(s, "utf8")}\r\n\r\n${s}`,
-  );
+  // Newline-delimited JSON-RPC: one object per line. Content-Length framing
+  // is NOT emitted — mcpproxy-go's stdio path silently ignores
+  // Content-Length-only peers (zero tools discovered). Input still accepts
+  // both framings for backward compatibility.
+  process.stdout.write(JSON.stringify(res) + "\n");
 }
 
 function discoverSockets(): string[] {
@@ -91,21 +92,36 @@ const TOOLS = [
 ];
 
 let buf = Buffer.alloc(0);
+// Framing: accept BOTH Content-Length headers and newline-delimited JSON
+// (one object per line). A leading "Content-Length:" line selects header
+// framing; anything else is parsed line-by-line.
+function takeMessage(b: Buffer): { msg: any; rest: Buffer } | null {
+  const head = b.subarray(0, Math.min(b.length, 1024)).toString();
+  const cl = head.match(/^Content-Length:\s*(\d+)/im);
+  if (cl) {
+    const hdrEnd = b.indexOf("\r\n\r\n");
+    if (hdrEnd === -1) return null;
+    const len = parseInt(cl[1], 10);
+    if (b.length < hdrEnd + 4 + len) return null;
+    return {
+      msg: JSON.parse(b.subarray(hdrEnd + 4, hdrEnd + 4 + len).toString()),
+      rest: b.subarray(hdrEnd + 4 + len),
+    };
+  }
+  const nl = b.indexOf("\n");
+  if (nl === -1) return null;
+  const line = b.subarray(0, nl).toString().trim();
+  if (!line) return { msg: null, rest: b.subarray(nl + 1) };
+  return { msg: JSON.parse(line), rest: b.subarray(nl + 1) };
+}
 process.stdin.on("data", async (chunk) => {
   buf = Buffer.concat([buf, chunk]);
   while (true) {
-    const idx = buf.indexOf("\r\n\r\n");
-    if (idx === -1) break;
-    const len = parseInt(
-      (buf
-        .subarray(0, idx)
-        .toString()
-        .match(/Content-Length:\s*(\d+)/i) || [])[1] || "0",
-      10,
-    );
-    if (buf.length < idx + 4 + len) break;
-    const msg = JSON.parse(buf.subarray(idx + 4, idx + 4 + len).toString());
-    buf = buf.subarray(idx + 4 + len);
+    const taken = takeMessage(buf);
+    if (!taken) break;
+    buf = taken.rest;
+    const msg = taken.msg;
+    if (!msg) continue;
 
     if (msg.method === "initialize") {
       writeRpc({
