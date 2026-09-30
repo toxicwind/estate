@@ -51,6 +51,21 @@ def load_json(path):
 
 
 def main():
+    # Guard (2026-09-30): bench-priors.json may now carry provider-bench priors
+    # merged by merge-provider-priors.ts. This legacy generator writes the file
+    # wholesale and would ERASE them. Refuse instead of clobbering.
+    if os.path.exists(OUT):
+        try:
+            existing = load_json(OUT)
+            if isinstance(existing, dict) and "provider_bench" in (existing.get("sources") or {}):
+                print("REFUSING: bench-priors.json already contains provider_bench priors.",
+                      file=sys.stderr)
+                print("Run merge-provider-priors.ts instead (it preserves legacy sources).",
+                      file=sys.stderr)
+                sys.exit(2)
+        except (OSError, ValueError):
+            pass
+
     missing = [p for p in (GUIDELLM, MODELMAX, ROUTERPROOF) if not os.path.exists(p)]
     if missing:
         print("missing sources:", missing, file=sys.stderr)
