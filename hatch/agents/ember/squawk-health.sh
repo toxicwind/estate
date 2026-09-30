@@ -3,8 +3,8 @@
 # file-based chat: no daemon to supervise; this verifies the deployment is healthy.
 # exit 0 = healthy, 1 = degraded (prints FAIL lines). Pass --write-test for a post/read round-trip.
 set -u
-ROOT=/home/toxic/.shingle/chat
-KEYS=/home/toxic/.shingle/keys
+ROOT=/home/toxic/.fleet-bus/chat
+KEYS=/home/toxic/.fleet-bus/keys
 fail=0
 say() { [ "$1" = OK ] && echo "OK: $2" || { echo "FAIL: $2"; fail=1; }; }
 [ -d "$ROOT/.git" ] && say OK "chat root $ROOT is a git repo" || say FAIL "chat root missing/not a repo"
