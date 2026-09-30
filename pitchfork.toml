@@ -474,6 +474,16 @@ retry = true
 boot_start = true
 auto = ["start"]
 
+[daemons.bedrock-ui]
+# bedrock evidence-locker web UI (:25137). Private: binds tailnet IP only, token-gated (?token= magic link).
+port = 25137
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/projects/bedrock/web/server.ts"
+dir = "/home/toxic/projects/bedrock/web"
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
+
 [daemons.boundless]
 port = 25197
 run = "exec /home/toxic/boundless/.venv/bin/python -m uvicorn web.server:app --host 127.0.0.1 --port ${BOUNDLESS_PORT}"
