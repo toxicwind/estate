@@ -21,7 +21,7 @@ cache_context = false
 
 [model]
 provider = "llama-swap"
-model = "nex-agi/nex-n2.5-mini:free"
+model = "openrouter-free/inclusionai/ling-3.0-flash-sante:free"
 base_url = "http://127.0.0.1:25100/v1"
 max_tokens = 4096
 temperature = 0.699999988079071

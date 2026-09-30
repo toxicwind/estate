@@ -19,7 +19,7 @@ cache_context = false
 
 [model]
 provider = "llama-swap"
-model = "nex-agi/nex-n2.5-mini:free"
+model = "openrouter-free/inclusionai/ling-3.0-flash-sante:free"
 max_tokens = 131072
 temperature = 0.3
 system_prompt = """

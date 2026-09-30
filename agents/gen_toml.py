@@ -110,7 +110,7 @@ def main():
         manifests["assistant"],
         model_override={
             "provider": "llama-swap",
-            "model": "nex-agi/nex-n2.5-mini:free",
+            "model": "openrouter-free/inclusionai/ling-3.0-flash-sante:free",
             "base_url": "http://127.0.0.1:25100/v1",
         },
         header_note=("anthropic/claude-sonnet-4-20250514 route PARKED 2026-09-20: stored "
@@ -132,7 +132,7 @@ def main():
 
     # sanity: assistant TOML must contain the new route and no anthropic leftovers
     a = out["assistant"]
-    assert 'provider = "llama-swap"' in a and "nex-agi/nex-n2.5-mini:free" in a
+    assert 'provider = "llama-swap"' in a and "openrouter-free/inclusionai/ling-3.0-flash-sante:free" in a
     assert "anthropic" not in a.split("[model]")[1].split("[resources]")[0].replace(
         "ANTHROPIC_API_KEY", "").replace("anthropic/", "")
     print("sanity OK")
