@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""buildsrv — hatch-side proxy for the fleet build server on yote.
+"""brand — hatch-side proxy for the fleet build server on yote.
 
 Proxies arguments safely through ~/workspace/bin/yote-conn exec to
-/home/toxic/bin/buildsrv on yote (127.0.0.1:25148). All arguments pass
+/home/toxic/bin/brand on yote (127.0.0.1:25148). All arguments pass
 through transparently; user input is quoted with shlex.join, never
 concatenated raw.
 
 Flows:
-  buildsrv submit --name X --cmd "..." [--repo R] [--toolchain T]
-  buildsrv status <job-id>
-  buildsrv logs <job-id> [-n N] [-f]
-  buildsrv list [-n N]
-  buildsrv health
+  brand submit --name X --cmd "..." [--repo R] [--toolchain T]
+  brand status <job-id>
+  brand logs <job-id> [-n N] [-f]
+  brand list [-n N]
+  brand health
 """
 import os
 import shlex
@@ -19,7 +19,7 @@ import subprocess
 import sys
 
 YOTE_CONN = os.path.expanduser("~/workspace/bin/yote-conn")
-REMOTE_BIN = "/home/toxic/bin/buildsrv"
+REMOTE_BIN = "/home/toxic/bin/brand"
 
 
 def main(argv):
