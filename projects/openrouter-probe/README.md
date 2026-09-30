@@ -14,7 +14,7 @@ second, GuideLLM-measured performance third.**
 | `ranking-eval-<ts>.json` / `RANKING-eval-<ts>.md` | Aggregate reports. Each names its instrument: scorer, semantics, tokenizer policy, scope, formality tier, prompt, timestamp. |
 | `eval-<ts>-<model>.json` | Raw per-model GuideLLM reports (with `scores`/`score_details` per request, `quality`/`quality_instrument` at benchmark level). |
 | `probe_abstract.py` | Original abstract probe. Semantics borrowed by the fork's scorer (exact `ABSTRACT-7X3Q` = 2.0, contains = 1.0, missing/empty = 0.0). Kept as reference; ranking runs through the fork. |
-| `probe_all.py`, `deep_pass.py`, `guidellm_sweep.sh` | Legacy sweep tooling (key: `OPENROUTER_API_KEY_FREE`). |
+| `probe_all.py`, `deep_pass.py` | Legacy sweep tooling; `guidellm_sweep.sh` moved to `../range/ranch/guidellm/sweeps/` (key: `OPENROUTER_API_KEY_FREE`). |
 
 ## Running
 
@@ -25,7 +25,7 @@ second, GuideLLM-measured performance third.**
 ```
 
 The runner reads `OPENROUTER_API_KEY_FREE` from the environment (never
-logged). GuideLLM source: `/home/toxic/sovereign/projects/guidellm`
+logged). GuideLLM source: `/home/toxic/sovereign/projects/range/ranch/guidellm/fork`
 (remote `toxicwind/guidellm`).
 
 ## Latest ranking

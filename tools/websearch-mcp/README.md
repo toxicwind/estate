@@ -30,4 +30,4 @@ Live-tested 2026-09-20: initialize + tools/list + real `web_search` for "Model C
 ## See also
 
 - [Fleet Knowledgebase](../../docs/fleet-knowledgebase.md) — crew `tau-tmux-mcp`
-- [Mesh gateway](../../projects/mesh/gateway/) — registered as `websearch-mcp`
+- [Shep gateway](../../projects/range/ranch/barn/shep/) — registered as `websearch-mcp`

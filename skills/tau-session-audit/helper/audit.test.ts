@@ -2,6 +2,9 @@ import { describe, it, expect } from "bun:test";
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "fs";
 import { join } from "path";
 import { tmpdir } from "os";
+import { runAllPatterns, getAllDetectors } from "../patterns/index";
+import { todoPhantomCompletionDetector } from "../patterns/todo-phantom-completion";
+import { thinkingLeakDetector } from "../patterns/thinking-leak";
 
 // Import the functions we want to test
 // We'll test by running the script and checking output, plus direct function testing
@@ -20,6 +23,7 @@ describe("tau-session-audit", () => {
     it("detects Groq provider integration", () => {
       const title = "";
       const model = "groq/llama-3.1-70b-instruct";
+      const t = title.toLowerCase();
       const m = model.toLowerCase();
       if (t.includes("groq") || m.includes("groq")) expect("Groq provider integration").toBe("Groq provider integration");
     });
@@ -322,6 +326,63 @@ describe("tau-session-audit", () => {
         if (e.type === "session" && e.cwd) { cwd = e.cwd; break; }
       }
       expect(cwd).toBe("/home/toxic");
+    });
+  });
+
+  describe("patterns", () => {
+    it("exports all pattern detectors", () => {
+      const detectors = getAllDetectors();
+      expect(detectors.length).toBeGreaterThanOrEqual(4);
+    });
+
+    it("detects message with no tools followed by todo done", () => {
+      const events = [
+        {
+          type: "message",
+          message: {
+            role: "assistant",
+            content: [{ type: "text", text: "I have finished everything and tests pass." }],
+          },
+        },
+        {
+          type: "custom",
+          customType: "tool_execution_start",
+          data: {
+            toolName: "todo",
+            intent: "mark task done",
+            args: { op: "done", task: "Verify build" },
+          },
+        },
+      ];
+      const matches = todoPhantomCompletionDetector.detect(events);
+      expect(matches.length).toBe(1);
+      expect(matches[0].patternId).toBe("MESSAGE_NO_TOOLS_THEN_TODO_DONE");
+      expect(matches[0].severity).toBe("critical");
+    });
+
+    it("detects consecutive todo done flurries (3+ calls)", () => {
+      const events = [
+        { type: "custom", customType: "tool_execution_start", data: { toolName: "todo", intent: "mark 1 done", args: { op: "done" } } },
+        { type: "custom", customType: "tool_execution_start", data: { toolName: "todo", intent: "mark 2 done", args: { op: "done" } } },
+        { type: "custom", customType: "tool_execution_start", data: { toolName: "todo", intent: "mark 3 done", args: { op: "done" } } },
+      ];
+      const matches = todoPhantomCompletionDetector.detect(events);
+      expect(matches.some((m) => m.patternId === "CONSECUTIVE_TODO_FLURRY")).toBe(true);
+    });
+
+    it("detects pseudo-tool syntax leaks (SM:FIND / SM:EDIT)", () => {
+      const events = [
+        {
+          type: "message",
+          message: {
+            role: "assistant",
+            content: [{ type: "text", text: "We can SM:FIND the line and then SM:AFTER insert code." }],
+          },
+        },
+      ];
+      const matches = thinkingLeakDetector.detect(events);
+      expect(matches.length).toBe(1);
+      expect(matches[0].patternId).toBe("THINKING_LEAK_SYNTAX");
     });
   });
 });

@@ -1,2 +1,0 @@
-[module]
-plugins = ["./bun-plugin.js"]

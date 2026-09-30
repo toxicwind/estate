@@ -1,0 +1,18 @@
+schema_version: 2
+# force working model everywhere — no fallback thrashing
+model: herd/fast
+smol_model: herd/fast
+slow_model: herd/fast
+plan_model: herd/fast
+# limit Ctrl+P cycling to 3 LIVE models only, not 176 catalog
+models: ["herd/fast", "herd/beellama/exaone-4-0-1-2b-iq4xs", "gemini/gemini-3.5-flash"]
+# disable discoverable catalog that causes extreme dump
+discover:
+  custom_models: true
+  discoverable_models: false
+  cached_standard_models: false
+provider:
+  herd:
+    base_url: http://127.0.0.1:25100/v1
+    api_key: llama-swap-local-key
+    timeout_ms: 8000
