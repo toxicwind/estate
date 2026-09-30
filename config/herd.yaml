@@ -145,6 +145,7 @@ macros:
   QWEN35_9B_FLASH_DA_Q4KM: ${MODEL_DIR}/Q3.5-9B-DS-v4-Flash-DA-Q4_K_M.gguf
 
   STRANGE_7B_Q4KM: ${MODEL_DIR}/StrangeMerges_19-7B-dare_ties.Q4_K_M.gguf
+  NOMIC_EMBED_Q8: ${MODEL_DIR}/nomic-embed-text-v1.5-Q8_0.gguf
 
   CUDA_ENV: CUDA_VISIBLE_DEVICES=0 GGML_CUDA=1 GGML_CUDA_GRAPHS=1 GGML_CUDA_FA_ALL_QUANTS=1
 
@@ -421,6 +422,20 @@ models:
       quant: Q4_K_M
       vram: ~8GB
       code: true
+
+  nomic-embed-text:
+    cmd: ${BEELLAMA_BIN} --model ${NOMIC_EMBED_Q8} ${SRV_HOST_PORT} --embedding --n-gpu-layers 99 ${SRV_PARALLEL} ${SRV_METRICS}
+    aliases:
+      - embed
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+    name: "Nomic Embed Text v1.5 - Q8_0 (embedding)"
+    description: "Local embedding model for OpenFang memory (yote RTX 3090)."
+    metadata:
+      kind: embedding
+      dims: 768
+      quant: Q8_0
 
   gemma-4-12b-unified:
     cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_BASE_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_96K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
