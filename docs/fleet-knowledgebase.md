@@ -200,6 +200,12 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | polling-audit | Estate-wide polling audit: every timer/sleep/poll-loop on hatch + yote, classified LEGIT vs CONVERT (event-driven alternatives) | Shrew (Ember's crew) | DONE (2026-09-21) -- report docs/polling-audit-2026-09-21.md, commit ce3f867754821f132709163470ac394603e297a8; 7 CONVERT / 17 LEGIT / 10 already-event-driven / 2 ambiguous; top converts: paper-poller 30s->inotify, stash-guard 90s->inotify, squawk-monitor 5m->subscribe |
 
 | bookworm-chatnative | Chat-native agent research: paper-backed buildable design for event-driven squawk agents (no polling). Ships @fleet/chat-native Bun/TS module: recursive long-poll subscribe, tiered attention, TASK directives, AsyncQueue handoff; OpenFang verdict (stays as runtime, squawk adapter is future work); Solace pattern borrow (reference only) | Bookworm (Ember's crew) | DONE (2026-09-21) -- commit 3bb32fe7907a7f0081b9f0353e09bf227e421b35, origin/main verified via git ls-remote |
+
+| bramble | readme maximalization batch b8: 9 toxicwind repos (tau-extensions, toxic-vault-mind, universal-search-fuzzer, vaultfs, web3-sec-workspace, wii-meta-client, wii-stream-pack, wllama-forge, youtube-403-bypass) | 72ff4aa9-c62a-4881-8f70-c6fa220e7383 | RUNNING (2026-09-29) |
+
+
+| starling | squawk maximalization: pattern-borrow + tests (feed :25135, ws :25147, ui, CLI); boundary: Taps owns NATS substrate | Starling (Ember's pack), Tally side chat | RUNNING (2026-09-29) |
+
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
 
@@ -348,3 +354,39 @@ workflows.json has a buildsrv row.
 New-toolchain rule: persistent config in projects/yote/host/home/, daemon
 env in pitchfork.toml, then a REAL buildsrv compile with nonzero cache-hit
 proof. Proven 2026-09-21: 2 hits, 50 percent hit rate on a real job.
+## 8. Gate retire + README maximalization + AST-BM25 racer (2026-09-29, Forge)
+
+### /agent-browser tailnet-only (gate retired) — LIVE on main as 3ff44863d2
+Chris 2026-09-21: "Token gate we didn't even want remember, because I thought
+it was tailscale and network and you only". The dedicated viewer-token gate
+(`agent-viewer-gate.py`, was `:6081`) is retired, not repaired:
+- `/agent-browser` removed from public Tailscale Funnel `:443`.
+- Now tailnet-only: `tailscale serve :8443` → `http://127.0.0.1:6080` (websockify/noVNC).
+- Gate daemon stopped, removed from `pitchfork.toml` and the keeper fragment; old
+  `agent-viewer-gate.py` kept as retired reference only.
+- `projects/yote/ops/funnel-map.sh` gains `SERVE_MAP` for tailnet-only mounts +
+  a regression guard that fails the script if `/agent-browser` ever lands on a
+  public funnel frontend again. `funnel-map.sh --check` exits 0 with
+  `[serve:8443] /agent-browser -> http://127.0.0.1:6080`.
+- VNC auth untouched (never read, displayed, rotated); noVNC stays interactive.
+- Transport rule: Tailscale Serve needs the MagicDNS hostname as SNI — raw
+  tailnet-IP HTTPS fails TLS. Use the MagicDNS name or `curl --resolve`.
+- Landed on canonical `toxicwind/sovereign-projects/main` as `3ff44863d2`
+  (cherry-picked from `ea2d28f8b5a5` on `origin/forge/gate-retire-final`,
+  rebased over `9df90e6fc4`, fast-forward, remote ref verified).
+
+### README maximalization (readme-maximal skill)
+Skill: `/home/toxic/workspace/skills/readme/SKILL.md` (rubric: badges first,
+"why should I care?" in first viewport, mermaid/tables/code, first-class links,
+license + security up front). Chris 2026-09-29: every first-party README.md
+uses it. Scope: 401 first-party READMEs (`/tmp/readme-triage/firstparty.txt`
+method); vendor/, scratch/, node_modules/ excluded (upstream). 7 majors were
+maximalized 2026-09-21 (`c6bc997e13`).
+
+### AST-BM25 racer — local-heavy edition (Forge, 2026-09-29)
+Chris: adapt the Sovereign AST-BM25 Racer to be local-heavy, "avoid that part
+obv" (Dropbox). The Dropbox sync step is removed, not replaced. Skill:
+`~/workspace/skills/ast-bm25-racer/` (SKILL.md + `ast_bm25_racer.py`).
+Measured on yote: 53,851 files indexed in ~98s; scoped query 0.395ms;
+nanosecond race (50 runs, GC-isolated): bm25_only median 60,139ns,
+hybrid_full median 300,425ns.
