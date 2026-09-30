@@ -47,7 +47,7 @@ so nobody re-hunts them:
 - `/home/toxic/projects/experimental-crisis-2026/zmq_daemon.pid` (dead)
 - `/home/toxic/sovereign/scratch/{service-health-poller,squawk-ws-client}.pid` (dead)
 - `/home/toxic/paper-poller/state/poller.pid` (dead; poller now runs under pitchfork — pid file was a pre-pitchfork lie)
-- `/home/toxic/buildsrv/buildsrvd.pid` (dead; buildsrvd runs under pitchfork)
+- `/home/toxic/brand/brandd.pid` (dead; brandd runs under pitchfork)
 - `sovereign-wt-provider-surgeon-2/scratch/`, `sovereign-eval-wt/scratch/`, `wt-tau-hyperfix/scratch/` — `service-health-poller.pid` + `squawk-ws-client.pid` (dead)
 - `/tmp/bench-all.pid` → pids 1517072/1517076 dead (live bench is 1600478) — **fed to kimi-unlock-audit** (/tmp lane), not deleted by me
 

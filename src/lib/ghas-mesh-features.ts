@@ -22,7 +22,7 @@ export type MeshServiceId =
   | "ghas-api"
   | "ghas-mcp"
   | "mesh-hub"
-  | "buildsrv"
+  | "brand"
   | "bench-radar";
 
 export type FeatureId =
@@ -170,8 +170,8 @@ export function serviceCatalog(): ServiceMeta[] {
       ghas_borrow: "service-discovery hub + chain-health",
     },
     {
-      id: "buildsrv",
-      portEnv: "BUILDSRV_PORT",
+      id: "brand",
+      portEnv: "BRAND_PORT",
       healthPath: "/health",
       role: "build-server",
       ghas_borrow: "disk-backed build queue + worker pool",
@@ -348,7 +348,7 @@ export async function runFeature(
         "ghas-api": ["ghas-mcp"],
         "ghas-mcp": [],
         "mesh-hub": cat.map((c) => c.id).filter((id) => id !== "mesh-hub"),
-        "buildsrv": [],
+        "brand": [],
         "bench-radar": [],
       };
       return {

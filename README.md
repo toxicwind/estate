@@ -241,7 +241,7 @@ Daemon definitions live in [`pitchfork.toml`](pitchfork.toml) (the generator is 
 | `:25201` | `rust-web` | Ops dashboard backend |
 | `:25215` | `sovereign-stream-broker` | Socket Stream transport broker (UNIX + TCP, OS keepalive 30s) |
 | `:25117` | `hindsight` | Fleet state persistence and session durability |
-| `:25148` | `buildsrv` | Build daemon & continuous compilation engine (2-worker NVMe queue) |
+| `:25148` | `brand` | Build daemon & continuous compilation engine (2-worker NVMe queue) |
 | `:25197` | `boundless` | Boundless web service |
 | `:20128` | `vansrouter` | Source-owned VansRouter runtime |
 | `:32847` | `billion-context` | Sigma's compression proxy in its default local instance |
@@ -365,7 +365,7 @@ These daemons are **protected**: `bin/claim-port` refuses 25147 and 25135 outrig
 
 ### Accountability — oracle-market
 
-[`agents/oracle-market/`](agents/oracle-market/) — the oracle market: HMAC-signed bidder profiles, Vickrey second-price clearing, stake-and-slash accountability, plus the fused Oracle decision engine (`oracle-core`, `:25151`) standing in for human approval. Spec: [`agents/oracle-market/SPEC.md`](agents/oracle-market/SPEC.md).
+[`projects/range/ranch/oracle/`](projects/range/ranch/oracle/) — the oracle market: HMAC-signed bidder profiles, Vickrey second-price clearing, stake-and-slash accountability, plus the fused Oracle decision engine (`oracle-core`, `:25151`) standing in for human approval. Spec: [`projects/range/ranch/oracle/SPEC.md`](projects/range/ranch/oracle/SPEC.md).
 
 ### Agents
 
@@ -392,7 +392,7 @@ Two hand-maintained roots plus one machine-written root. Registration lives in o
 
 | Root | Loaded | What it is |
 | --- | --- | --- |
-| [`skills/`](skills/) | 29 | hand-authored ops skills: `buildsrv`, `cattle-manager`, `hft-latency`, `parquet-ml`, … |
+| [`skills/`](skills/) | 29 | hand-authored ops skills: `brand`, `cattle-manager`, `hft-latency`, `parquet-ml`, … |
 | [`projects/range/ranch/gear/`](projects/range/ranch/gear) | 486 | the private skill library, flat by design — one directory per skill at the repo root |
 | `config/tau/agent/managed-skills` | 17 | output of the autolearn `manage_skill` tool. **Must be a real directory, never a symlink** — `assertManagedRootSafe` refuses a symlinked root, so a symlink there silently breaks every managed write. |
 
@@ -402,7 +402,7 @@ Two hand-maintained roots plus one machine-written root. Registration lives in o
 
 - The registered roots are scanned at **depth 1**: `<dir>/<name>/SKILL.md`. A flat repo like `gear` is therefore registered by pointing at its root. Nothing is copied, symlinked, or hoisted into category folders, so every skill keeps its own code and its own relative references. `scanSkillsFromDir` also takes an opt-in `recursive` / `maxDepth` for a collection that groups skills by category; no caller enables it yet, and a directory containing a `SKILL.md` stays terminal so a skill's own `scripts/` and `references/` never become phantom skills.
 - A skill with **no `description` in its frontmatter is dropped silently**. That is the most common way a skill becomes invisible.
-- Precedence is **first wins**, and `customDirectories` outrank `~/.claude/skills`. Order matters: `skills/` is listed first, so it wins the 5 names it shares with `gear` (`buildsrv`, `fleet-push`, `repo-audit`, `hft-latency`, `sovereign-chat`).
+- Precedence is **first wins**, and `customDirectories` outrank `~/.claude/skills`. Order matters: `skills/` is listed first, so it wins the 5 names it shares with `gear` (`brand`, `fleet-push`, `repo-audit`, `hft-latency`, `sovereign-chat`).
 - The answer to "too many skills" is a registry plus on-demand install (`omp skill` / skillshare), not a directory reshuffle. Re-homing skills breaks the parent-relative paths they were written against.
 
 **Audit them** with [`tools/skill-audit.ts`](tools/skill-audit.ts). It discovers the roots from the agent config itself, so registering a collection is enough to get it audited, and it reports dangling symlinks, missing frontmatter, name/directory mismatches, dead `skill://` and file references, and cross-root name collisions. Run it after touching any skill root:
@@ -460,7 +460,7 @@ This is the short list. The full map of every README in the tree is [`docs/READM
 | [`docs/`](docs/) | Architecture + ops doc index |
 | [`bridge/`](bridge/) | hatch↔yote exec bridge |
 | [`hatch/`](hatch/) | Hatch-cell side (Ember home, squawk, watchdogs) |
-| [`agents/oracle-market/`](agents/oracle-market/) | Oracle market + decision engine |
+| [`projects/range/ranch/oracle/`](projects/range/ranch/oracle/) | Oracle market + decision engine |
 
 ## License
 
