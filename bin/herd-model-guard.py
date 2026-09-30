@@ -460,96 +460,99 @@ class Handler(BaseHTTPRequestHandler):
     server_version = "ModelGuard/1.0"
 
     def _proxy(self):
-        raw = _read_request_body(self)
-        ctype = self.headers.get("Content-Type", "")
+        try:
+            raw = _read_request_body(self)
+            ctype = self.headers.get("Content-Type", "")
 
-        if (
-            self.command == "POST"
-            and self.path.rstrip("/").endswith("/chat/completions")
-            and "json" in ctype
-            and raw
-        ):
+            if (
+                self.command == "POST"
+                and self.path.rstrip("/").endswith("/chat/completions")
+                and "json" in ctype
+                and raw
+            ):
+                try:
+                    body = json.loads(raw)
+                    new_body, violations = enforce(body)
+                    if violations:
+                        audit(body.get("model") if isinstance(body, dict) else None,
+                              violations)
+                        raw = json.dumps(new_body, separators=(",", ":")).encode()
+                except ValueError as e:
+                    # forbid-rejection, or malformed JSON (JSONDecodeError is a
+                    # ValueError) -> 400 either way
+                    self.send_response(400)
+                    self.send_header("Content-Type", "application/json")
+                    msg = json.dumps({"error": str(e)}).encode()
+                    self.send_header("Content-Length", str(len(msg)))
+                    self.end_headers()
+                    self.wfile.write(msg)
+                    return
+                except Exception as e:
+                    print(f"[model-guard] enforce error (fail-open): {e}", file=sys.stderr, flush=True)
+
+            req = urllib.request.Request(
+                UPSTREAM + self.path, data=raw if self.command in ("POST", "PUT", "PATCH") else None,
+                method=self.command,
+            )
+            for k, v in self.headers.items():
+                if k.lower() not in REQ_STRIP_HEADERS:
+                    req.add_header(k, v)
             try:
-                body = json.loads(raw)
-                new_body, violations = enforce(body)
-                if violations:
-                    audit(body.get("model") if isinstance(body, dict) else None,
-                          violations)
-                    raw = json.dumps(new_body, separators=(",", ":")).encode()
-            except ValueError as e:
-                # forbid-rejection, or malformed JSON (JSONDecodeError is a
-                # ValueError) -> 400 either way
-                self.send_response(400)
+                resp = urllib.request.urlopen(req, timeout=600)
+            except Exception as e:
+                self.send_response(502)
                 self.send_header("Content-Type", "application/json")
-                msg = json.dumps({"error": str(e)}).encode()
+                msg = json.dumps({"error": f"model-guard upstream: {e}"}).encode()
                 self.send_header("Content-Length", str(len(msg)))
                 self.end_headers()
                 self.wfile.write(msg)
                 return
-            except Exception as e:
-                print(f"[model-guard] enforce error (fail-open): {e}", file=sys.stderr, flush=True)
 
-        req = urllib.request.Request(
-            UPSTREAM + self.path, data=raw if self.command in ("POST", "PUT", "PATCH") else None,
-            method=self.command,
-        )
-        for k, v in self.headers.items():
-            if k.lower() not in REQ_STRIP_HEADERS:
-                req.add_header(k, v)
-        try:
-            resp = urllib.request.urlopen(req, timeout=600)
-        except Exception as e:
-            self.send_response(502)
-            self.send_header("Content-Type", "application/json")
-            msg = json.dumps({"error": f"model-guard upstream: {e}"}).encode()
-            self.send_header("Content-Length", str(len(msg)))
+            rctype = resp.headers.get("Content-Type", "")
+            no_length = resp.headers.get("Content-Length") is None
+            self.send_response(resp.status)
+            for k, v in resp.headers.items():
+                if k.lower() not in HOP_HEADERS:
+                    self.send_header(k, v)
+            if no_length:
+                # De-chunked body with no declared length: the client cannot
+                # delimit it on a keep-alive connection, so close after the body.
+                self.send_header("Connection", "close")
             self.end_headers()
-            self.wfile.write(msg)
-            return
 
-        rctype = resp.headers.get("Content-Type", "")
-        no_length = resp.headers.get("Content-Length") is None
-        self.send_response(resp.status)
-        for k, v in resp.headers.items():
-            if k.lower() not in HOP_HEADERS:
-                self.send_header(k, v)
-        if no_length:
-            # De-chunked body with no declared length: the client cannot
-            # delimit it on a keep-alive connection, so close after the body.
-            self.send_header("Connection", "close")
-        self.end_headers()
-
-        # Streaming (SSE / chunked-no-length) must NOT use read(N): it fills
-        # N bytes across chunks and would buffer the whole stream. read(1)
-        # returns as soon as 1 byte is available. wfile must be flushed or
-        # the client sees nothing until the buffer fills / close.
-        streaming = ("text/event-stream" in rctype) or (
-            no_length and "chunked" in resp.headers.get("Transfer-Encoding", "").lower()
-        )
-        try:
-            if streaming:
-                while True:
-                    b = resp.read(1)
-                    if not b:
-                        break
-                    self.wfile.write(b)
-                    self.wfile.flush()
-            else:
-                while True:
-                    chunk = resp.read(65536)
-                    if not chunk:
-                        break
-                    self.wfile.write(chunk)
-        except (BrokenPipeError, ConnectionResetError):
-            pass
-        finally:
+            # Streaming (SSE / chunked-no-length) must NOT use read(N): it fills
+            # N bytes across chunks and would buffer the whole stream. read(1)
+            # returns as soon as 1 byte is available. wfile must be flushed or
+            # the client sees nothing until the buffer fills / close.
+            streaming = ("text/event-stream" in rctype) or (
+                no_length and "chunked" in resp.headers.get("Transfer-Encoding", "").lower()
+            )
             try:
-                self.wfile.flush()
+                if streaming:
+                    while True:
+                        b = resp.read(1)
+                        if not b:
+                            break
+                        self.wfile.write(b)
+                        self.wfile.flush()
+                else:
+                    while True:
+                        chunk = resp.read(65536)
+                        if not chunk:
+                            break
+                        self.wfile.write(chunk)
             except (BrokenPipeError, ConnectionResetError):
                 pass
-        if no_length:
-            self.close_connection = True
+            finally:
+                try:
+                    self.wfile.flush()
+                except (BrokenPipeError, ConnectionResetError):
+                    pass
+            if no_length:
+                self.close_connection = True
 
+        except (BrokenPipeError, ConnectionResetError):
+            pass  # client disconnected, dont crash the thread
     do_GET = _proxy
     do_POST = _proxy
     do_PUT = _proxy

@@ -1,0 +1,4484 @@
+{
+  "nodes": {
+    "Meta/Muse AI/open-questions.md": {
+      "path": "Meta/Muse AI/open-questions.md",
+      "filename": "open-questions.md",
+      "title": "Open questions",
+      "category": "Meta",
+      "tags": [
+        "Meta",
+        "Muse AI"
+      ],
+      "links": [],
+      "sizeBytes": 1633
+    },
+    "Meta/Muse AI/runtime-cell.md": {
+      "path": "Meta/Muse AI/runtime-cell.md",
+      "filename": "runtime-cell.md",
+      "title": "The runtime cell",
+      "category": "Meta",
+      "tags": [
+        "Meta",
+        "Muse AI",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 3300
+    },
+    "Meta/Muse AI/README.md": {
+      "path": "Meta/Muse AI/README.md",
+      "filename": "README.md",
+      "title": "Meta / Muse AI",
+      "category": "Meta",
+      "tags": [
+        "Meta",
+        "Muse AI"
+      ],
+      "links": [
+        "runtime-cell.md",
+        "open-questions.md"
+      ],
+      "sizeBytes": 1459
+    },
+    "plans/free-pollinations-herd-hotfix-plan.md": {
+      "path": "plans/free-pollinations-herd-hotfix-plan.md",
+      "filename": "free-pollinations-herd-hotfix-plan.md",
+      "title": "Free Pollinations via Herd — Maximal Hotfix Plan (Tester + Live)",
+      "category": "plans",
+      "tags": [
+        "plans",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 29136
+    },
+    "plans/mesh-tau-verified-plan.md": {
+      "path": "plans/mesh-tau-verified-plan.md",
+      "filename": "mesh-tau-verified-plan.md",
+      "title": "mesh-tau-verified-plan.md",
+      "category": "plans",
+      "tags": [
+        "plans"
+      ],
+      "links": [],
+      "sizeBytes": 646
+    },
+    "plans/wezterm-shell-integration-plan.md": {
+      "path": "plans/wezterm-shell-integration-plan.md",
+      "filename": "wezterm-shell-integration-plan.md",
+      "title": "WezTerm Shell Integration Plan",
+      "category": "plans",
+      "tags": [
+        "plans",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 1998
+    },
+    "plans/master/MASTER_PLAN.md": {
+      "path": "plans/master/MASTER_PLAN.md",
+      "filename": "MASTER_PLAN.md",
+      "title": "Sovereign Pi Fork — Master Execution Plan",
+      "category": "plans",
+      "tags": [
+        "plans",
+        "master",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 5026
+    },
+    "plans/master/REORG-PLAN.md": {
+      "path": "plans/master/REORG-PLAN.md",
+      "filename": "REORG-PLAN.md",
+      "title": "SOVEREIGN REORG PLAN — shingle → hatch/agents/ember, shingle-workspace collision resolved",
+      "category": "plans",
+      "tags": [
+        "plans",
+        "master",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 28536
+    },
+    "plans/master/TASKS.md": {
+      "path": "plans/master/TASKS.md",
+      "filename": "TASKS.md",
+      "title": "Sovereign Fix Tasks - Live Tracker",
+      "category": "plans",
+      "tags": [
+        "plans",
+        "master",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 6552
+    },
+    "plans/migrations/wezterm-shell-integration-plan.md": {
+      "path": "plans/migrations/wezterm-shell-integration-plan.md",
+      "filename": "wezterm-shell-integration-plan.md",
+      "title": "WezTerm Shell Integration Plan",
+      "category": "plans",
+      "tags": [
+        "plans",
+        "migrations",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 1998
+    },
+    "plans/verified/mesh-tau-verified-plan.md": {
+      "path": "plans/verified/mesh-tau-verified-plan.md",
+      "filename": "mesh-tau-verified-plan.md",
+      "title": "mesh-tau-verified-plan.md",
+      "category": "plans",
+      "tags": [
+        "plans",
+        "verified"
+      ],
+      "links": [],
+      "sizeBytes": 646
+    },
+    "audits/bedf89a9-post-recovery-audit-bid.md": {
+      "path": "audits/bedf89a9-post-recovery-audit-bid.md",
+      "filename": "bedf89a9-post-recovery-audit-bid.md",
+      "title": "POST-RECOVERY ADDITIONS AUDIT — debate bedf89a9 (bid)",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "pitchfork",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 6545
+    },
+    "audits/nim-oracle-research.md": {
+      "path": "audits/nim-oracle-research.md",
+      "filename": "nim-oracle-research.md",
+      "title": "NVIDIA NIM Model Research for Super-Ralph Oracle",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 2443
+    },
+    "audits/pi-conversion-summary.md": {
+      "path": "audits/pi-conversion-summary.md",
+      "filename": "pi-conversion-summary.md",
+      "title": "npm-to-bun Migration Summary",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 2470
+    },
+    "audits/2026-09-20/MCP_AUDIT.md": {
+      "path": "audits/2026-09-20/MCP_AUDIT.md",
+      "filename": "MCP_AUDIT.md",
+      "title": "MCP Infrastructure Audit Report",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "2026-09-20",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 10996
+    },
+    "audits/2026-09-14/AUDIT.md": {
+      "path": "audits/2026-09-14/AUDIT.md",
+      "filename": "AUDIT.md",
+      "title": "AUDIT.md — sovereign-projects (`~/projects/sovereign-projects`)",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "2026-09-14",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 7982
+    },
+    "audits/2026-09-14/FORKS_AUDIT.md": {
+      "path": "audits/2026-09-14/FORKS_AUDIT.md",
+      "filename": "FORKS_AUDIT.md",
+      "title": "Sovereign Ecosystem — Deep Fork & Repository Audit",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "2026-09-14",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 7439
+    },
+    "audits/2026-09-21/polling-audit-2026-09-21.md": {
+      "path": "audits/2026-09-21/polling-audit-2026-09-21.md",
+      "filename": "polling-audit-2026-09-21.md",
+      "title": "Estate Polling Audit — 2026-09-21",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "2026-09-21",
+        "pitchfork",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 13692
+    },
+    "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md": {
+      "path": "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md",
+      "filename": "bedf89a9-post-recovery-audit-bid.md",
+      "title": "POST-RECOVERY ADDITIONS AUDIT — debate bedf89a9 (bid)",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "2026-09-22",
+        "pitchfork",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 6545
+    },
+    "audits/2026-09-22/pi-conversion-summary.md": {
+      "path": "audits/2026-09-22/pi-conversion-summary.md",
+      "filename": "pi-conversion-summary.md",
+      "title": "npm-to-bun Migration Summary",
+      "category": "audits",
+      "tags": [
+        "audits",
+        "2026-09-22",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 2470
+    },
+    "fleet/personas/README.md": {
+      "path": "fleet/personas/README.md",
+      "filename": "README.md",
+      "title": "Persona folders",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 2266
+    },
+    "fleet/personas/cinder/AGENTS.md": {
+      "path": "fleet/personas/cinder/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Cinder — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 300
+    },
+    "fleet/personas/cinder/IDENTITY.md": {
+      "path": "fleet/personas/cinder/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Cinder",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 402
+    },
+    "fleet/personas/cinder/SOUL.md": {
+      "path": "fleet/personas/cinder/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Cinder — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 162
+    },
+    "fleet/personas/cinder/MEMORY.md": {
+      "path": "fleet/personas/cinder/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Cinder — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 316
+    },
+    "fleet/personas/forge/AGENTS.md": {
+      "path": "fleet/personas/forge/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Forge — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 266
+    },
+    "fleet/personas/forge/IDENTITY.md": {
+      "path": "fleet/personas/forge/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Forge",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 347
+    },
+    "fleet/personas/forge/SOUL.md": {
+      "path": "fleet/personas/forge/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Forge — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 47
+    },
+    "fleet/personas/forge/MEMORY.md": {
+      "path": "fleet/personas/forge/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Forge — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 162
+    },
+    "fleet/personas/gavel/AGENTS.md": {
+      "path": "fleet/personas/gavel/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Gavel — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 200
+    },
+    "fleet/personas/gavel/IDENTITY.md": {
+      "path": "fleet/personas/gavel/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Gavel",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 595
+    },
+    "fleet/personas/gavel/MEMORY.md": {
+      "path": "fleet/personas/gavel/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Gavel — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 222
+    },
+    "fleet/personas/gavel/SOUL.md": {
+      "path": "fleet/personas/gavel/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Gavel — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 47
+    },
+    "fleet/personas/hearth/AGENTS.md": {
+      "path": "fleet/personas/hearth/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Hearth — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 201
+    },
+    "fleet/personas/hearth/IDENTITY.md": {
+      "path": "fleet/personas/hearth/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Hearth",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 196
+    },
+    "fleet/personas/hearth/MEMORY.md": {
+      "path": "fleet/personas/hearth/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Hearth — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 108
+    },
+    "fleet/personas/hearth/SOUL.md": {
+      "path": "fleet/personas/hearth/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Hearth — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 90
+    },
+    "fleet/personas/rivet/AGENTS.md": {
+      "path": "fleet/personas/rivet/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Rivet — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 200
+    },
+    "fleet/personas/rivet/IDENTITY.md": {
+      "path": "fleet/personas/rivet/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Rivet",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 653
+    },
+    "fleet/personas/rivet/SOUL.md": {
+      "path": "fleet/personas/rivet/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Rivet — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 47
+    },
+    "fleet/personas/rivet/MEMORY.md": {
+      "path": "fleet/personas/rivet/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Rivet — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 219
+    },
+    "fleet/personas/sable/AGENTS.md": {
+      "path": "fleet/personas/sable/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Sable — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 249
+    },
+    "fleet/personas/sable/IDENTITY.md": {
+      "path": "fleet/personas/sable/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Sable",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 652
+    },
+    "fleet/personas/sable/SOUL.md": {
+      "path": "fleet/personas/sable/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Sable — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 47
+    },
+    "fleet/personas/sable/MEMORY.md": {
+      "path": "fleet/personas/sable/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Sable — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 220
+    },
+    "fleet/personas/tally/AGENTS.md": {
+      "path": "fleet/personas/tally/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Tally — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 305
+    },
+    "fleet/personas/tally/IDENTITY.md": {
+      "path": "fleet/personas/tally/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Tally",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 386
+    },
+    "fleet/personas/tally/SOUL.md": {
+      "path": "fleet/personas/tally/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Tally — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 185
+    },
+    "fleet/personas/tally/MEMORY.md": {
+      "path": "fleet/personas/tally/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Tally — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 318
+    },
+    "fleet/personas/vesper/AGENTS.md": {
+      "path": "fleet/personas/vesper/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Vesper — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 1605
+    },
+    "fleet/personas/vesper/SOUL.md": {
+      "path": "fleet/personas/vesper/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Vesper — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 1288
+    },
+    "fleet/personas/vesper/IDENTITY.md": {
+      "path": "fleet/personas/vesper/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Vesper",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 2253
+    },
+    "fleet/personas/vesper/MEMORY.md": {
+      "path": "fleet/personas/vesper/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Vesper — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 6999
+    },
+    "fleet/personas/warden/AGENTS.md": {
+      "path": "fleet/personas/warden/AGENTS.md",
+      "filename": "AGENTS.md",
+      "title": "Warden — operating notes",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 275
+    },
+    "fleet/personas/warden/IDENTITY.md": {
+      "path": "fleet/personas/warden/IDENTITY.md",
+      "filename": "IDENTITY.md",
+      "title": "Warden",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 550
+    },
+    "fleet/personas/warden/MEMORY.md": {
+      "path": "fleet/personas/warden/MEMORY.md",
+      "filename": "MEMORY.md",
+      "title": "Warden — memory",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 356
+    },
+    "fleet/personas/warden/SOUL.md": {
+      "path": "fleet/personas/warden/SOUL.md",
+      "filename": "SOUL.md",
+      "title": "Warden — soul",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas"
+      ],
+      "links": [],
+      "sizeBytes": 179
+    },
+    "fleet/personas/INDEX.md": {
+      "path": "fleet/personas/INDEX.md",
+      "filename": "INDEX.md",
+      "title": "Fleet roster",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "personas",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 6504
+    },
+    "fleet/knowledgebase/fleet-knowledgebase.md": {
+      "path": "fleet/knowledgebase/fleet-knowledgebase.md",
+      "filename": "fleet-knowledgebase.md",
+      "title": "Fleet Knowledgebase",
+      "category": "fleet",
+      "tags": [
+        "fleet",
+        "knowledgebase",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [
+        "../README.md"
+      ],
+      "sizeBytes": 65218
+    },
+    "chat-native-agents/PAPER-TRAIL.md": {
+      "path": "chat-native-agents/PAPER-TRAIL.md",
+      "filename": "PAPER-TRAIL.md",
+      "title": "Paper trail + build-vs-borrow verdict",
+      "category": "chat-native-agents",
+      "tags": [
+        "chat-native-agents",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 7314
+    },
+    "chat-native-agents/DESIGN.md": {
+      "path": "chat-native-agents/DESIGN.md",
+      "filename": "DESIGN.md",
+      "title": "Chat-native agents: buildable design (no polling)",
+      "category": "chat-native-agents",
+      "tags": [
+        "chat-native-agents",
+        "pitchfork",
+        "ports",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 6976
+    },
+    "ARCHITECTURE.md": {
+      "path": "ARCHITECTURE.md",
+      "filename": "ARCHITECTURE.md",
+      "title": "Sovereign Architecture — Single Source of Truth",
+      "category": "general",
+      "tags": [
+        "general",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 20263
+    },
+    "ARXIV_EMERGENCE_SURVEY.md": {
+      "path": "ARXIV_EMERGENCE_SURVEY.md",
+      "filename": "ARXIV_EMERGENCE_SURVEY.md",
+      "title": "ArXiv Emergence Survey — Synthesis (Sovereign Registry)",
+      "category": "general",
+      "tags": [
+        "general",
+        "pitchfork",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 1998
+    },
+    "CONTROL_PLANE.md": {
+      "path": "CONTROL_PLANE.md",
+      "filename": "CONTROL_PLANE.md",
+      "title": "Sovereign Control Plane",
+      "category": "general",
+      "tags": [
+        "general",
+        "pitchfork",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 2803
+    },
+    "GPU_COOLING.md": {
+      "path": "GPU_COOLING.md",
+      "filename": "GPU_COOLING.md",
+      "title": "RTX 3090 cooling · LACT · undervolt notes",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 2646
+    },
+    "HARDWARE_AUDIT_20260914.md": {
+      "path": "HARDWARE_AUDIT_20260914.md",
+      "filename": "HARDWARE_AUDIT_20260914.md",
+      "title": "Hardware Audit Classification — awrawr-pc — 2026-09-14",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 6974
+    },
+    "KERNELOPTS_LLM_TUNING_AND_RANKING.md": {
+      "path": "KERNELOPTS_LLM_TUNING_AND_RANKING.md",
+      "filename": "KERNELOPTS_LLM_TUNING_AND_RANKING.md",
+      "title": "Kernelopts LLM Tuning & Algorithmic Ranking Reference",
+      "category": "general",
+      "tags": [
+        "general",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 6635
+    },
+    "KIMI_CODE_FORK_RESEARCH.md": {
+      "path": "KIMI_CODE_FORK_RESEARCH.md",
+      "filename": "KIMI_CODE_FORK_RESEARCH.md",
+      "title": "Kimi Code Fork Feasibility Research",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 6993
+    },
+    "MANIFESTO.md": {
+      "path": "MANIFESTO.md",
+      "filename": "MANIFESTO.md",
+      "title": "The Anna-Senpai Question: A Memetic Forensics Analysis",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 35777
+    },
+    "MORPHE_PATCHING.md": {
+      "path": "MORPHE_PATCHING.md",
+      "filename": "MORPHE_PATCHING.md",
+      "title": "Morphe Patching — Research SSOT (never redo)",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 46360
+    },
+    "NVIDIA_NIM_API_DOCS.md": {
+      "path": "NVIDIA_NIM_API_DOCS.md",
+      "filename": "NVIDIA_NIM_API_DOCS.md",
+      "title": "NVIDIA NIM API Documentation — Complete Reference",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 9690
+    },
+    "PRE_RELEASE_INTEGRATION_ENGINE.md": {
+      "path": "PRE_RELEASE_INTEGRATION_ENGINE.md",
+      "filename": "PRE_RELEASE_INTEGRATION_ENGINE.md",
+      "title": "Sovereign Pre-Release Integration Engine",
+      "category": "general",
+      "tags": [
+        "general",
+        "pitchfork",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 7708
+    },
+    "PROVIDER_SECRET_AUDIT_20260921.md": {
+      "path": "PROVIDER_SECRET_AUDIT_20260921.md",
+      "filename": "PROVIDER_SECRET_AUDIT_20260921.md",
+      "title": "Provider Secret Audit — 2026-09-21",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 4041
+    },
+    "REASONING_SUPPRESSION_TEST.md": {
+      "path": "REASONING_SUPPRESSION_TEST.md",
+      "filename": "REASONING_SUPPRESSION_TEST.md",
+      "title": "Reasoning Suppression Test — Verdict",
+      "category": "general",
+      "tags": [
+        "general"
+      ],
+      "links": [],
+      "sizeBytes": 472
+    },
+    "RIDICULOUS_MULTI_PROFILE.md": {
+      "path": "RIDICULOUS_MULTI_PROFILE.md",
+      "filename": "RIDICULOUS_MULTI_PROFILE.md",
+      "title": "RIDICULOUS MULTI-PROFILE SETUP — Sovereign Model Router",
+      "category": "general",
+      "tags": [
+        "general",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 2436
+    },
+    "STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md": {
+      "path": "STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md",
+      "filename": "STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md",
+      "title": "Sovereign Storage Tiering & Cache Architecture",
+      "category": "general",
+      "tags": [
+        "general",
+        "pitchfork",
+        "ports",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 4769
+    },
+    "SWAP_OPTIMIZATION.md": {
+      "path": "SWAP_OPTIMIZATION.md",
+      "filename": "SWAP_OPTIMIZATION.md",
+      "title": "Sovereign Swap Architecture — zram / zswap / NVMe Tiering",
+      "category": "general",
+      "tags": [
+        "general",
+        "pitchfork",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 18426
+    },
+    "SWAP_QUICKREF.md": {
+      "path": "SWAP_QUICKREF.md",
+      "filename": "SWAP_QUICKREF.md",
+      "title": "Swap Architecture Quick Reference",
+      "category": "general",
+      "tags": [
+        "general"
+      ],
+      "links": [],
+      "sizeBytes": 2639
+    },
+    "UNIVERSAL_ARCHITECTURE.md": {
+      "path": "UNIVERSAL_ARCHITECTURE.md",
+      "filename": "UNIVERSAL_ARCHITECTURE.md",
+      "title": "Universal Architecture — Polyglot Sovereign Stack (August 2026)",
+      "category": "general",
+      "tags": [
+        "general",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 9166
+    },
+    "config-naming-conventions.md": {
+      "path": "config-naming-conventions.md",
+      "filename": "config-naming-conventions.md",
+      "title": "Config naming conventions (sovereign)",
+      "category": "general",
+      "tags": [
+        "general",
+        "pitchfork",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 3392
+    },
+    "cross-box-router.md": {
+      "path": "cross-box-router.md",
+      "filename": "cross-box-router.md",
+      "title": "Cross-box router (ember)",
+      "category": "general",
+      "tags": [
+        "general",
+        "mcp",
+        "router"
+      ],
+      "links": [
+        "yote_send.patch.md",
+        "hatch_send-v2-spec.md",
+        "../skills/router/SKILL.md"
+      ],
+      "sizeBytes": 2055
+    },
+    "edge-additions-20260920.md": {
+      "path": "edge-additions-20260920.md",
+      "filename": "edge-additions-20260920.md",
+      "title": "edge-additions — September-2026 cutting-edge additions (2026-09-20)",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 5263
+    },
+    "fleet-culture.md": {
+      "path": "fleet-culture.md",
+      "filename": "fleet-culture.md",
+      "title": "Fleet Culture — how the den talks",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "audit"
+      ],
+      "links": [
+        "fleet-knowledgebase.md"
+      ],
+      "sizeBytes": 4505
+    },
+    "fleet-inventory-20260914.md": {
+      "path": "fleet-inventory-20260914.md",
+      "filename": "fleet-inventory-20260914.md",
+      "title": "Sovereign fleet inventory + completion reconciliation — 2026-09-14 ~18:20 MDT",
+      "category": "general",
+      "tags": [
+        "general",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 7950
+    },
+    "free-tier-models.md": {
+      "path": "free-tier-models.md",
+      "filename": "free-tier-models.md",
+      "title": "Free-Tier Model Routing — Ground Truth (2026-09-14)",
+      "category": "general",
+      "tags": [
+        "general",
+        "pitchfork",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 7293
+    },
+    "gemini-tool-retrieval-reference.md": {
+      "path": "gemini-tool-retrieval-reference.md",
+      "filename": "gemini-tool-retrieval-reference.md",
+      "title": "Purpose",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 9138
+    },
+    "gemini-tool-retrieval.md": {
+      "path": "gemini-tool-retrieval.md",
+      "filename": "gemini-tool-retrieval.md",
+      "title": "Gemini API Tool Retrieval EAP — integration brief",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 5082
+    },
+    "naming-grammar.md": {
+      "path": "naming-grammar.md",
+      "filename": "naming-grammar.md",
+      "title": "Sovereign Model Naming Grammar (canonical, 2026-09-20)",
+      "category": "general",
+      "tags": [
+        "general",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 5735
+    },
+    "naming-rename-plan.md": {
+      "path": "naming-rename-plan.md",
+      "filename": "naming-rename-plan.md",
+      "title": "Naming Rename Plan (2026-09-20, naming-auditor)",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 3683
+    },
+    "nvidia-access-map.md": {
+      "path": "nvidia-access-map.md",
+      "filename": "nvidia-access-map.md",
+      "title": "NVIDIA API Access Map — NVCF-DIG (2026-09-21)",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 6103
+    },
+    "openfang-proof-2026-09-20.md": {
+      "path": "openfang-proof-2026-09-20.md",
+      "filename": "openfang-proof-2026-09-20.md",
+      "title": "OpenFang execution + persistence proof (2026-09-20, ~21:50–22:00 MDT)",
+      "category": "general",
+      "tags": [
+        "general",
+        "pitchfork",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 4575
+    },
+    "polling-audit-2026-09-21.md": {
+      "path": "polling-audit-2026-09-21.md",
+      "filename": "polling-audit-2026-09-21.md",
+      "title": "Estate Polling Audit — 2026-09-21",
+      "category": "general",
+      "tags": [
+        "general",
+        "pitchfork",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 13698
+    },
+    "port-ssot.md": {
+      "path": "port-ssot.md",
+      "filename": "port-ssot.md",
+      "title": "Port SSOT — `config/ports.env`",
+      "category": "general",
+      "tags": [
+        "general",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 3699
+    },
+    "postgres-ownership.md": {
+      "path": "postgres-ownership.md",
+      "filename": "postgres-ownership.md",
+      "title": "PostgreSQL Ownership — Decision (2026-09-14)",
+      "category": "general",
+      "tags": [
+        "general",
+        "pitchfork",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 1696
+    },
+    "push-guard.md": {
+      "path": "push-guard.md",
+      "filename": "push-guard.md",
+      "title": "push-guard secret scan: ignore memory + placeholder auto-clear",
+      "category": "general",
+      "tags": [
+        "general"
+      ],
+      "links": [],
+      "sizeBytes": 2111
+    },
+    "spawn-brief-template.md": {
+      "path": "spawn-brief-template.md",
+      "filename": "spawn-brief-template.md",
+      "title": "Spawn Brief Template (canonical)",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 5394
+    },
+    "systemd-migration.md": {
+      "path": "systemd-migration.md",
+      "filename": "systemd-migration.md",
+      "title": "systemd substrate migration contract",
+      "category": "general",
+      "tags": [
+        "general",
+        "pitchfork",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 2983
+    },
+    "unreliable-narrator-doctrine.md": {
+      "path": "unreliable-narrator-doctrine.md",
+      "filename": "unreliable-narrator-doctrine.md",
+      "title": "Unreliable Narrator Doctrine (standing, 2026-09-20)",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 3583
+    },
+    "architecture/socket-stream-cognitive-ekg.md": {
+      "path": "architecture/socket-stream-cognitive-ekg.md",
+      "filename": "socket-stream-cognitive-ekg.md",
+      "title": "Socket Stream & Cognitive EKG Architecture",
+      "category": "architecture",
+      "tags": [
+        "architecture",
+        "pitchfork",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 5650
+    },
+    "operations/security-and-guards/ENV_OWNERSHIP.md": {
+      "path": "operations/security-and-guards/ENV_OWNERSHIP.md",
+      "filename": "ENV_OWNERSHIP.md",
+      "title": "mise + direnv coexistence — final design",
+      "category": "operations",
+      "tags": [
+        "operations",
+        "security-and-guards",
+        "pitchfork",
+        "ports",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 7040
+    },
+    "operations/security-and-guards/FIX.md": {
+      "path": "operations/security-and-guards/FIX.md",
+      "filename": "FIX.md",
+      "title": "Sovereign Mesh — FIX.md (Live Mutable Checklist)",
+      "category": "operations",
+      "tags": [
+        "operations",
+        "security-and-guards",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 10013
+    },
+    "research/surveys-and-preprints/nim-oracle-research.md": {
+      "path": "research/surveys-and-preprints/nim-oracle-research.md",
+      "filename": "nim-oracle-research.md",
+      "title": "NVIDIA NIM Model Research for Super-Ralph Oracle",
+      "category": "research",
+      "tags": [
+        "research",
+        "surveys-and-preprints",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 2443
+    },
+    "HINDSIGHT_TAU_INTEGRATION.md": {
+      "path": "HINDSIGHT_TAU_INTEGRATION.md",
+      "filename": "HINDSIGHT_TAU_INTEGRATION.md",
+      "title": "Sovereign Hindsight & Tau Long-Term Memory Architecture",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 6687
+    },
+    "fleet-knowledgebase.md": {
+      "path": "fleet-knowledgebase.md",
+      "filename": "fleet-knowledgebase.md",
+      "title": "Fleet Knowledgebase",
+      "category": "general",
+      "tags": [
+        "general",
+        "pitchfork",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [
+        "../README.md"
+      ],
+      "sizeBytes": 66159
+    },
+    "ERRATA-GPT5-HARMONY.md": {
+      "path": "ERRATA-GPT5-HARMONY.md",
+      "filename": "ERRATA-GPT5-HARMONY.md",
+      "title": "ERRATA — GPT-5 Harmony-Header Leakage",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 11843
+    },
+    "adding-a-provider.md": {
+      "path": "adding-a-provider.md",
+      "filename": "adding-a-provider.md",
+      "title": "Adding a provider",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 10851
+    },
+    "advisor-watchdog.md": {
+      "path": "advisor-watchdog.md",
+      "filename": "advisor-watchdog.md",
+      "title": "Advisor, WATCHDOG.md, and WATCHDOG.yml",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "../packages/coding-agent/src/prompts/advisor/system.md",
+        "../packages/coding-agent/src/prompts/advisor/advise-tool.md",
+        "./agent-hub.md",
+        "./agent-hub.md#persisted-agents-and-advisors"
+      ],
+      "sizeBytes": 29368
+    },
+    "agent-hub.md": {
+      "path": "agent-hub.md",
+      "filename": "agent-hub.md",
+      "title": "Agent Hub",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "./task-agent-discovery.md",
+        "./collab.md",
+        "./advisor-watchdog.md"
+      ],
+      "sizeBytes": 7633
+    },
+    "ai-schema-normalize.md": {
+      "path": "ai-schema-normalize.md",
+      "filename": "ai-schema-normalize.md",
+      "title": "AI tool-schema normalization",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 10657
+    },
+    "approval-mode.md": {
+      "path": "approval-mode.md",
+      "filename": "approval-mode.md",
+      "title": "Tool approval mode",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [
+        "./mcp-server-tool-authoring.md#naming-and-collision-domain",
+        "./computer-use.md"
+      ],
+      "sizeBytes": 10778
+    },
+    "auth-broker-gateway.md": {
+      "path": "auth-broker-gateway.md",
+      "filename": "auth-broker-gateway.md",
+      "title": "Auth Broker and Auth Gateway",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "router"
+      ],
+      "links": [
+        "./secrets.md",
+        "./models.md",
+        "./environment-variables.md"
+      ],
+      "sizeBytes": 30118
+    },
+    "bash-tool-runtime.md": {
+      "path": "bash-tool-runtime.md",
+      "filename": "bash-tool-runtime.md",
+      "title": "Bash tool runtime",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "./approval-mode.md"
+      ],
+      "sizeBytes": 24217
+    },
+    "blob-artifact-architecture.md": {
+      "path": "blob-artifact-architecture.md",
+      "filename": "blob-artifact-architecture.md",
+      "title": "Blob and artifact storage architecture",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 18051
+    },
+    "cli-reference.md": {
+      "path": "cli-reference.md",
+      "filename": "cli-reference.md",
+      "title": "CLI reference",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "./session-operations-export-share-fork-resume.md",
+        "./environment-variables.md",
+        "./providers.md",
+        "./models.md",
+        "./approval-mode.md",
+        "./advisor-watchdog.md",
+        "./extensions.md",
+        "./hooks.md",
+        "./skills.md",
+        "./context-files.md",
+        "./system-prompt-customization.md",
+        "./system-prompt-customization.md",
+        "./advisor-watchdog.md#headless-runs",
+        "./rpc.md",
+        "./approval-mode.md#acp-sessions",
+        "./approval-mode.md#acp-sessions",
+        "./auth-broker-gateway.md",
+        "./auth-broker-gateway.md",
+        "./task-agent-discovery.md",
+        "./computer-use.md",
+        "./config-usage.md",
+        "./settings.md",
+        "./tools/grep.md",
+        "./extensions.md",
+        "./collab.md",
+        "./models.md",
+        "./extensions.md",
+        "./marketplace.md",
+        "./tools/tts.md",
+        "./session-operations-export-share-fork-resume.md",
+        "./tools/read.md",
+        "./local-models.md",
+        "./secrets.md",
+        "./ttsr-injection-lifecycle.md",
+        "./tools/web_search.md"
+      ],
+      "sizeBytes": 14171
+    },
+    "collab.md": {
+      "path": "collab.md",
+      "filename": "collab.md",
+      "title": "Collab: Live Session Sharing",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "./agent-hub.md"
+      ],
+      "sizeBytes": 22545
+    },
+    "compaction.md": {
+      "path": "compaction.md",
+      "filename": "compaction.md",
+      "title": "Compaction and Branch Summaries",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 42103
+    },
+    "computer-use.md": {
+      "path": "computer-use.md",
+      "filename": "computer-use.md",
+      "title": "Scriptable computer use",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "./tools/browser.md",
+        "./tools/computer.md"
+      ],
+      "sizeBytes": 12866
+    },
+    "config-usage.md": {
+      "path": "config-usage.md",
+      "filename": "config-usage.md",
+      "title": "Configuration Discovery and Resolution",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [
+        "./system-prompt-customization.md"
+      ],
+      "sizeBytes": 16850
+    },
+    "context-files.md": {
+      "path": "context-files.md",
+      "filename": "context-files.md",
+      "title": "Context files",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp",
+        "router"
+      ],
+      "links": [
+        "./providers.md",
+        "./skills.md",
+        "./system-prompt-customization.md",
+        "./skills.md",
+        "./providers.md",
+        "./settings.md"
+      ],
+      "sizeBytes": 29417
+    },
+    "custom-tools.md": {
+      "path": "custom-tools.md",
+      "filename": "custom-tools.md",
+      "title": "Custom Tools",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 10156
+    },
+    "environment-variables.md": {
+      "path": "environment-variables.md",
+      "filename": "environment-variables.md",
+      "title": "Environment Variables (Current Runtime Reference)",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp",
+        "router"
+      ],
+      "links": [
+        "./auth-broker-gateway.md"
+      ],
+      "sizeBytes": 109509
+    },
+    "extension-loading.md": {
+      "path": "extension-loading.md",
+      "filename": "extension-loading.md",
+      "title": "Extension Loading (TypeScript/JavaScript Modules)",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp",
+        "audit"
+      ],
+      "links": [
+        "./gemini-manifest-extensions.md",
+        "./config-usage.md#profiles",
+        "./hooks.md#native-discovery-location",
+        "./context-files.md#disabling-a-single-context-file"
+      ],
+      "sizeBytes": 14085
+    },
+    "extensions.md": {
+      "path": "extensions.md",
+      "filename": "extensions.md",
+      "title": "Extensions",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp",
+        "audit",
+        "router"
+      ],
+      "links": [
+        "./extension-loading.md",
+        "./user-facing-packages.md",
+        "./session.md#custom",
+        "./session.md#entry-taxonomy"
+      ],
+      "sizeBytes": 49594
+    },
+    "fs-scan-cache-architecture.md": {
+      "path": "fs-scan-cache-architecture.md",
+      "filename": "fs-scan-cache-architecture.md",
+      "title": "Filesystem scan cache architecture contract",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 8795
+    },
+    "gemini-manifest-extensions.md": {
+      "path": "gemini-manifest-extensions.md",
+      "filename": "gemini-manifest-extensions.md",
+      "title": "Gemini Manifest Extensions (`gemini-extension.json`)",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [
+        "./extension-loading.md"
+      ],
+      "sizeBytes": 6874
+    },
+    "handoff-generation-pipeline.md": {
+      "path": "handoff-generation-pipeline.md",
+      "filename": "handoff-generation-pipeline.md",
+      "title": "`/handoff` generation pipeline",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 13600
+    },
+    "hooks.md": {
+      "path": "hooks.md",
+      "filename": "hooks.md",
+      "title": "Hooks",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "./extension-loading.md"
+      ],
+      "sizeBytes": 13509
+    },
+    "install-id.md": {
+      "path": "install-id.md",
+      "filename": "install-id.md",
+      "title": "Install ID",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "environment-variables.md",
+        "config-usage.md"
+      ],
+      "sizeBytes": 5269
+    },
+    "keybindings.md": {
+      "path": "keybindings.md",
+      "filename": "keybindings.md",
+      "title": "Keybindings",
+      "category": "general",
+      "tags": [
+        "general"
+      ],
+      "links": [
+        "./agent-hub.md"
+      ],
+      "sizeBytes": 15861
+    },
+    "local-models.md": {
+      "path": "local-models.md",
+      "filename": "local-models.md",
+      "title": "Local Model Catalog and Experiments",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 16662
+    },
+    "lsp-config.md": {
+      "path": "lsp-config.md",
+      "filename": "lsp-config.md",
+      "title": "LSP configuration in OMP",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 15524
+    },
+    "macos-signing-notarization.md": {
+      "path": "macos-signing-notarization.md",
+      "filename": "macos-signing-notarization.md",
+      "title": "macOS signing & notarization",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 9804
+    },
+    "magic-keywords.md": {
+      "path": "magic-keywords.md",
+      "filename": "magic-keywords.md",
+      "title": "Magic keywords",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "audit"
+      ],
+      "links": [
+        "./settings.md"
+      ],
+      "sizeBytes": 5044
+    },
+    "marketplace.md": {
+      "path": "marketplace.md",
+      "filename": "marketplace.md",
+      "title": "Marketplace plugin system",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 14558
+    },
+    "mcp-config.md": {
+      "path": "mcp-config.md",
+      "filename": "mcp-config.md",
+      "title": "MCP configuration in OMP",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [
+        "./config-usage.md#profiles"
+      ],
+      "sizeBytes": 22702
+    },
+    "mcp-protocol-transports.md": {
+      "path": "mcp-protocol-transports.md",
+      "filename": "mcp-protocol-transports.md",
+      "title": "MCP Protocol and Transport Internals",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 15151
+    },
+    "mcp-runtime-lifecycle.md": {
+      "path": "mcp-runtime-lifecycle.md",
+      "filename": "mcp-runtime-lifecycle.md",
+      "title": "MCP runtime lifecycle",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 18609
+    },
+    "mcp-server-tool-authoring.md": {
+      "path": "mcp-server-tool-authoring.md",
+      "filename": "mcp-server-tool-authoring.md",
+      "title": "MCP server and tool authoring",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 14984
+    },
+    "memory.md": {
+      "path": "memory.md",
+      "filename": "memory.md",
+      "title": "Autonomous Memory",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "./mnemosyne-memory-backend.md",
+        "./environment-variables.md#hindsight-memory-backend"
+      ],
+      "sizeBytes": 14881
+    },
+    "mnemosyne-memory-backend.md": {
+      "path": "mnemosyne-memory-backend.md",
+      "filename": "mnemosyne-memory-backend.md",
+      "title": "Mnemopi memory backend",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 17142
+    },
+    "models.md": {
+      "path": "models.md",
+      "filename": "models.md",
+      "title": "Model and Provider Configuration (`models.yml` / `models.yaml`)",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp",
+        "router"
+      ],
+      "links": [
+        "../packages/catalog/src/compat/rules/README.md#time-based-pricing",
+        "./auth-broker-gateway.md",
+        "./provider-endpoint-constraints.md",
+        "./ai-schema-normalize.md"
+      ],
+      "sizeBytes": 45127
+    },
+    "native-crates.md": {
+      "path": "native-crates.md",
+      "filename": "native-crates.md",
+      "title": "Native Crates",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "./natives-architecture.md",
+        "./natives-addon-loader-runtime.md",
+        "./natives-binding-contract.md",
+        "./natives-build-release-debugging.md",
+        "./natives-media-system-utils.md",
+        "./natives-rust-task-cancellation.md",
+        "./natives-shell-pty-process.md",
+        "./natives-text-search-pipeline.md",
+        "./fs-scan-cache-architecture.md",
+        "./user-facing-packages.md"
+      ],
+      "sizeBytes": 5195
+    },
+    "natives-addon-loader-runtime.md": {
+      "path": "natives-addon-loader-runtime.md",
+      "filename": "natives-addon-loader-runtime.md",
+      "title": "Natives Addon Loader Runtime",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 8866
+    },
+    "natives-architecture.md": {
+      "path": "natives-architecture.md",
+      "filename": "natives-architecture.md",
+      "title": "Natives Architecture",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "./native-crates.md",
+        "./natives-addon-loader-runtime.md"
+      ],
+      "sizeBytes": 8051
+    },
+    "natives-binding-contract.md": {
+      "path": "natives-binding-contract.md",
+      "filename": "natives-binding-contract.md",
+      "title": "Natives Binding Contract (JavaScript/TypeScript Side)",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 11962
+    },
+    "natives-build-release-debugging.md": {
+      "path": "natives-build-release-debugging.md",
+      "filename": "natives-build-release-debugging.md",
+      "title": "Natives Build, Release, and Debugging Runbook",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 43359
+    },
+    "natives-media-system-utils.md": {
+      "path": "natives-media-system-utils.md",
+      "filename": "natives-media-system-utils.md",
+      "title": "Natives media + system utilities",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 11468
+    },
+    "natives-rust-task-cancellation.md": {
+      "path": "natives-rust-task-cancellation.md",
+      "filename": "natives-rust-task-cancellation.md",
+      "title": "Native Rust task execution and cancellation (`pi-natives`)",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 13009
+    },
+    "natives-shell-pty-process.md": {
+      "path": "natives-shell-pty-process.md",
+      "filename": "natives-shell-pty-process.md",
+      "title": "Natives Shell, PTY, Process, and Key Internals",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 18597
+    },
+    "natives-text-search-pipeline.md": {
+      "path": "natives-text-search-pipeline.md",
+      "filename": "natives-text-search-pipeline.md",
+      "title": "Natives Text/Search Pipeline",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 20045
+    },
+    "non-compaction-retry-policy.md": {
+      "path": "non-compaction-retry-policy.md",
+      "filename": "non-compaction-retry-policy.md",
+      "title": "Non-compaction auto-retry policy",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "./compaction.md"
+      ],
+      "sizeBytes": 18105
+    },
+    "notebook-tool-runtime.md": {
+      "path": "notebook-tool-runtime.md",
+      "filename": "notebook-tool-runtime.md",
+      "title": "Notebook file runtime internals",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 9021
+    },
+    "omptype-guide.md": {
+      "path": "omptype-guide.md",
+      "filename": "omptype-guide.md",
+      "title": "omptype Guide (schema authoring in this repo)",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 6222
+    },
+    "plugin-manager-installer-plumbing.md": {
+      "path": "plugin-manager-installer-plumbing.md",
+      "filename": "plugin-manager-installer-plumbing.md",
+      "title": "Plugin manager and installer plumbing",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 18409
+    },
+    "porting-from-pi-mono.md": {
+      "path": "porting-from-pi-mono.md",
+      "filename": "porting-from-pi-mono.md",
+      "title": "Porting From pi-mono: A Practical Merge Guide",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 24741
+    },
+    "porting-to-natives.md": {
+      "path": "porting-to-natives.md",
+      "filename": "porting-to-natives.md",
+      "title": "Porting Hot Paths to `pi-natives`",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 9309
+    },
+    "prewalk.md": {
+      "path": "prewalk.md",
+      "filename": "prewalk.md",
+      "title": "Prewalk",
+      "category": "general",
+      "tags": [
+        "general"
+      ],
+      "links": [
+        "./task-agent-discovery.md"
+      ],
+      "sizeBytes": 2858
+    },
+    "provider-compat-reference.md": {
+      "path": "provider-compat-reference.md",
+      "filename": "provider-compat-reference.md",
+      "title": "Provider compat reference: OpenAI compat flags, reasoning levels, and tool handling",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "router"
+      ],
+      "links": [
+        "./provider-endpoint-constraints.md",
+        "./provider-streaming-internals.md",
+        "./provider-quirks.md",
+        "./models.md"
+      ],
+      "sizeBytes": 34881
+    },
+    "provider-endpoint-constraints.md": {
+      "path": "provider-endpoint-constraints.md",
+      "filename": "provider-endpoint-constraints.md",
+      "title": "Provider endpoint constraints",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "router"
+      ],
+      "links": [
+        "./providers.md",
+        "./models.md",
+        "./provider-streaming-internals.md",
+        "./provider-compat-reference.md",
+        "./provider-quirks.md",
+        "./adding-a-provider.md"
+      ],
+      "sizeBytes": 20361
+    },
+    "provider-quirks.md": {
+      "path": "provider-quirks.md",
+      "filename": "provider-quirks.md",
+      "title": "Provider quirks: special casings, streams, auth, and catalog handling",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp",
+        "router"
+      ],
+      "links": [
+        "./provider-compat-reference.md",
+        "./provider-endpoint-constraints.md",
+        "./provider-streaming-internals.md",
+        "./providers.md",
+        "./provider-compat-reference.md",
+        "./provider-compat-reference.md",
+        "./provider-compat-reference.md"
+      ],
+      "sizeBytes": 347701
+    },
+    "provider-streaming-internals.md": {
+      "path": "provider-streaming-internals.md",
+      "filename": "provider-streaming-internals.md",
+      "title": "Provider streaming internals",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 14942
+    },
+    "providers.md": {
+      "path": "providers.md",
+      "filename": "providers.md",
+      "title": "Providers",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp",
+        "router"
+      ],
+      "links": [
+        "./provider-endpoint-constraints.md",
+        "./models.md",
+        "./settings.md",
+        "./secrets.md",
+        "./environment-variables.md",
+        "./local-models.md",
+        "./context-files.md",
+        "./secrets.md",
+        "./models.md",
+        "./environment-variables.md",
+        "./local-models.md",
+        "./settings.md",
+        "./settings.md",
+        "./context-files.md",
+        "./models.md",
+        "./settings.md",
+        "./models.md"
+      ],
+      "sizeBytes": 32108
+    },
+    "python-repl.md": {
+      "path": "python-repl.md",
+      "filename": "python-repl.md",
+      "title": "Eval Tool Python Backend",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 16095
+    },
+    "resolve-tool-runtime.md": {
+      "path": "resolve-tool-runtime.md",
+      "filename": "resolve-tool-runtime.md",
+      "title": "Resolution devices runtime",
+      "category": "general",
+      "tags": [
+        "general"
+      ],
+      "links": [],
+      "sizeBytes": 3090
+    },
+    "rpc.md": {
+      "path": "rpc.md",
+      "filename": "rpc.md",
+      "title": "RPC Protocol Reference",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [
+        "../python/omp-rpc/README.md"
+      ],
+      "sizeBytes": 32640
+    },
+    "rulebook-matching-pipeline.md": {
+      "path": "rulebook-matching-pipeline.md",
+      "filename": "rulebook-matching-pipeline.md",
+      "title": "Rulebook Matching Pipeline",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 20302
+    },
+    "sdk.md": {
+      "path": "sdk.md",
+      "filename": "sdk.md",
+      "title": "SDK",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [
+        "./providers.md"
+      ],
+      "sizeBytes": 19143
+    },
+    "secrets.md": {
+      "path": "secrets.md",
+      "filename": "secrets.md",
+      "title": "Secret Obfuscation",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [
+        "./auth-broker-gateway.md"
+      ],
+      "sizeBytes": 10058
+    },
+    "session-operations-export-share-fork-resume.md": {
+      "path": "session-operations-export-share-fork-resume.md",
+      "filename": "session-operations-export-share-fork-resume.md",
+      "title": "Session Operations: export, dump, share, fresh, clear, fork, resume/continue",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "slash-command-internals.md#11-built-in-command-note-btw"
+      ],
+      "sizeBytes": 28545
+    },
+    "session-switching-and-recent-listing.md": {
+      "path": "session-switching-and-recent-listing.md",
+      "filename": "session-switching-and-recent-listing.md",
+      "title": "Session switching and recent session listing",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "session.md#on-disk-layout"
+      ],
+      "sizeBytes": 16195
+    },
+    "session-tree-plan.md": {
+      "path": "session-tree-plan.md",
+      "filename": "session-tree-plan.md",
+      "title": "Session tree architecture (current)",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp",
+        "router"
+      ],
+      "links": [
+        "./session.md"
+      ],
+      "sizeBytes": 12244
+    },
+    "session.md": {
+      "path": "session.md",
+      "filename": "session.md",
+      "title": "Session Storage and Entry Model",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 30509
+    },
+    "settings.md": {
+      "path": "settings.md",
+      "filename": "settings.md",
+      "title": "Settings",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp",
+        "router"
+      ],
+      "links": [
+        "./providers.md",
+        "./models.md",
+        "./context-files.md",
+        "./environment-variables.md",
+        "./magic-keywords.md",
+        "./providers.md",
+        "./environment-variables.md",
+        "./approval-mode.md",
+        "tools/bash.md#command-policy-and-dedicated-tool-routing",
+        "./providers.md",
+        "./context-files.md",
+        "./providers.md",
+        "./context-files.md",
+        "./models.md",
+        "./advisor-watchdog.md",
+        "./system-prompt-customization.md",
+        "./toolconv/xml.md",
+        "./toolconv/minimax.md",
+        "./toolconv/glm-4.5.md",
+        "./toolconv/qwen3.md",
+        "./toolconv/kimi-k2.md",
+        "./toolconv/anthropic.md",
+        "./toolconv/deepseek.md",
+        "./toolconv/harmony.md",
+        "./toolconv/gemini.md",
+        "./toolconv/gemma.md",
+        "computer-use.md",
+        "models.md",
+        "./compaction.md",
+        "models.md#usage-costs-and-time-based-pricing",
+        "./secrets.md",
+        "./providers.md",
+        "./models.md",
+        "./providers.md",
+        "./environment-variables.md"
+      ],
+      "sizeBytes": 114608
+    },
+    "skills.md": {
+      "path": "skills.md",
+      "filename": "skills.md",
+      "title": "Skills",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 11704
+    },
+    "skills/examples/hello-extension/README.md": {
+      "path": "skills/examples/hello-extension/README.md",
+      "filename": "README.md",
+      "title": "hello-extension",
+      "category": "skills",
+      "tags": [
+        "skills",
+        "examples",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 1402
+    },
+    "skills/examples/mini-marketplace/README.md": {
+      "path": "skills/examples/mini-marketplace/README.md",
+      "filename": "README.md",
+      "title": "mini-marketplace",
+      "category": "skills",
+      "tags": [
+        "skills",
+        "examples"
+      ],
+      "links": [],
+      "sizeBytes": 1439
+    },
+    "skills/examples/safety-hook/README.md": {
+      "path": "skills/examples/safety-hook/README.md",
+      "filename": "README.md",
+      "title": "safety-hook",
+      "category": "skills",
+      "tags": [
+        "skills",
+        "examples"
+      ],
+      "links": [],
+      "sizeBytes": 1143
+    },
+    "skills/authoring-extensions.md": {
+      "path": "skills/authoring-extensions.md",
+      "filename": "authoring-extensions.md",
+      "title": "Authoring Extensions",
+      "category": "skills",
+      "tags": [
+        "skills",
+        "ports",
+        "mcp"
+      ],
+      "links": [
+        "../extensions.md"
+      ],
+      "sizeBytes": 10319
+    },
+    "skills/authoring-hooks.md": {
+      "path": "skills/authoring-hooks.md",
+      "filename": "authoring-hooks.md",
+      "title": "Authoring Hooks",
+      "category": "skills",
+      "tags": [
+        "skills",
+        "ports",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 10436
+    },
+    "skills/authoring-marketplaces.md": {
+      "path": "skills/authoring-marketplaces.md",
+      "filename": "authoring-marketplaces.md",
+      "title": "Authoring Marketplaces",
+      "category": "skills",
+      "tags": [
+        "skills",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 10364
+    },
+    "slash-command-internals.md": {
+      "path": "slash-command-internals.md",
+      "filename": "slash-command-internals.md",
+      "title": "Slash command internals",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 27210
+    },
+    "stream.md": {
+      "path": "stream.md",
+      "filename": "stream.md",
+      "title": "Stream: Livestream Your Terminal",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "collab.md"
+      ],
+      "sizeBytes": 8355
+    },
+    "system-prompt-customization.md": {
+      "path": "system-prompt-customization.md",
+      "filename": "system-prompt-customization.md",
+      "title": "System Prompt Customization",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [
+        "./config-usage.md"
+      ],
+      "sizeBytes": 21209
+    },
+    "task-agent-discovery.md": {
+      "path": "task-agent-discovery.md",
+      "filename": "task-agent-discovery.md",
+      "title": "Task Agent Discovery and Selection",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "../packages/coding-agent/src/prompts/agents/task.md",
+        "../packages/coding-agent/src/prompts/tools/task.md",
+        "./agent-hub.md"
+      ],
+      "sizeBytes": 18802
+    },
+    "theme.md": {
+      "path": "theme.md",
+      "filename": "theme.md",
+      "title": "Theming Reference",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 12767
+    },
+    "toolconv/anthropic.md": {
+      "path": "toolconv/anthropic.md",
+      "filename": "anthropic.md",
+      "title": "Anthropic Claude tool use (Messages API content blocks)",
+      "category": "toolconv",
+      "tags": [
+        "toolconv",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 35239
+    },
+    "toolconv/deepseek.md": {
+      "path": "toolconv/deepseek.md",
+      "filename": "deepseek.md",
+      "title": "DeepSeek tool-calling wire format",
+      "category": "toolconv",
+      "tags": [
+        "toolconv",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 27003
+    },
+    "toolconv/gemini.md": {
+      "path": "toolconv/gemini.md",
+      "filename": "gemini.md",
+      "title": "Gemini Pythonic tool-calling format (`tool_code` / `default_api`)",
+      "category": "toolconv",
+      "tags": [
+        "toolconv",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 12356
+    },
+    "toolconv/gemma.md": {
+      "path": "toolconv/gemma.md",
+      "filename": "gemma.md",
+      "title": "Gemma 4 tool-calling format (token-delimited `call:NAME{…}`)",
+      "category": "toolconv",
+      "tags": [
+        "toolconv",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 9481
+    },
+    "toolconv/glm-4.5.md": {
+      "path": "toolconv/glm-4.5.md",
+      "filename": "glm-4.5.md",
+      "title": "GLM-4.5 / GLM-4.6 tool-calling format",
+      "category": "toolconv",
+      "tags": [
+        "toolconv",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 26662
+    },
+    "toolconv/harmony.md": {
+      "path": "toolconv/harmony.md",
+      "filename": "harmony.md",
+      "title": "OpenAI Harmony response format",
+      "category": "toolconv",
+      "tags": [
+        "toolconv",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 21434
+    },
+    "toolconv/hermes.md": {
+      "path": "toolconv/hermes.md",
+      "filename": "hermes.md",
+      "title": "Hermes tool-calling format",
+      "category": "toolconv",
+      "tags": [
+        "toolconv",
+        "ports"
+      ],
+      "links": [
+        "qwen3.md",
+        "qwen3.md",
+        "qwen3.md",
+        "qwen3.md",
+        "qwen3.md",
+        "qwen3.md",
+        "qwen3.md"
+      ],
+      "sizeBytes": 21559
+    },
+    "toolconv/kimi-k2.md": {
+      "path": "toolconv/kimi-k2.md",
+      "filename": "kimi-k2.md",
+      "title": "Kimi K2 tool-calling format",
+      "category": "toolconv",
+      "tags": [
+        "toolconv",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 19431
+    },
+    "toolconv/minimax.md": {
+      "path": "toolconv/minimax.md",
+      "filename": "minimax.md",
+      "title": "MiniMax owned tool-calling format (`<minimax:tool_call>`)",
+      "category": "toolconv",
+      "tags": [
+        "toolconv",
+        "ports"
+      ],
+      "links": [
+        "../settings.md#tools-and-approvals"
+      ],
+      "sizeBytes": 12025
+    },
+    "toolconv/pi-native.md": {
+      "path": "toolconv/pi-native.md",
+      "filename": "pi-native.md",
+      "title": "pi-native auth-gateway transport",
+      "category": "toolconv",
+      "tags": [
+        "toolconv",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 7465
+    },
+    "toolconv/qwen3.md": {
+      "path": "toolconv/qwen3.md",
+      "filename": "qwen3.md",
+      "title": "Qwen3 tool-calling format (Hermes convention)",
+      "category": "toolconv",
+      "tags": [
+        "toolconv",
+        "ports"
+      ],
+      "links": [
+        "hermes.md"
+      ],
+      "sizeBytes": 20514
+    },
+    "toolconv/xml.md": {
+      "path": "toolconv/xml.md",
+      "filename": "xml.md",
+      "title": "Generic XML owned tool-calling format (`<invoke>` / `<tool_response>`)",
+      "category": "toolconv",
+      "tags": [
+        "toolconv",
+        "ports"
+      ],
+      "links": [
+        "../settings.md#tools-and-approvals"
+      ],
+      "sizeBytes": 13437
+    },
+    "tools/ask.md": {
+      "path": "tools/ask.md",
+      "filename": "ask.md",
+      "title": "ask",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 8336
+    },
+    "tools/ast-edit.md": {
+      "path": "tools/ast-edit.md",
+      "filename": "ast-edit.md",
+      "title": "ast_edit",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports",
+        "router"
+      ],
+      "links": [
+        "./ast-grep.md#inputs"
+      ],
+      "sizeBytes": 11749
+    },
+    "tools/ast-grep.md": {
+      "path": "tools/ast-grep.md",
+      "filename": "ast-grep.md",
+      "title": "ast_grep",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 10260
+    },
+    "tools/bash.md": {
+      "path": "tools/bash.md",
+      "filename": "bash.md",
+      "title": "bash",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 24597
+    },
+    "tools/browser.md": {
+      "path": "tools/browser.md",
+      "filename": "browser.md",
+      "title": "Browser Eval prelude",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [
+        "./read.md"
+      ],
+      "sizeBytes": 8239
+    },
+    "tools/checkpoint.md": {
+      "path": "tools/checkpoint.md",
+      "filename": "checkpoint.md",
+      "title": "checkpoint",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 5969
+    },
+    "tools/computer.md": {
+      "path": "tools/computer.md",
+      "filename": "computer.md",
+      "title": "computer Eval prelude",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [
+        "../computer-use.md",
+        "../computer-use.md#platforms"
+      ],
+      "sizeBytes": 14416
+    },
+    "tools/context-notes.md": {
+      "path": "tools/context-notes.md",
+      "filename": "context-notes.md",
+      "title": "context_notes",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [
+        "new-context.md",
+        "../compaction.md"
+      ],
+      "sizeBytes": 3223
+    },
+    "tools/debug.md": {
+      "path": "tools/debug.md",
+      "filename": "debug.md",
+      "title": "debug",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 34825
+    },
+    "tools/edit.md": {
+      "path": "tools/edit.md",
+      "filename": "edit.md",
+      "title": "edit",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 9119
+    },
+    "tools/eval.md": {
+      "path": "tools/eval.md",
+      "filename": "eval.md",
+      "title": "eval",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 20654
+    },
+    "tools/find.md": {
+      "path": "tools/find.md",
+      "filename": "find.md",
+      "title": "find",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 8174
+    },
+    "tools/generate_image.md": {
+      "path": "tools/generate_image.md",
+      "filename": "generate_image.md",
+      "title": "generate_image",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 8487
+    },
+    "tools/github.md": {
+      "path": "tools/github.md",
+      "filename": "github.md",
+      "title": "github",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 28991
+    },
+    "tools/glob.md": {
+      "path": "tools/glob.md",
+      "filename": "glob.md",
+      "title": "glob",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 11849
+    },
+    "tools/grep.md": {
+      "path": "tools/grep.md",
+      "filename": "grep.md",
+      "title": "grep",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 16720
+    },
+    "tools/learn.md": {
+      "path": "tools/learn.md",
+      "filename": "learn.md",
+      "title": "learn",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 6839
+    },
+    "tools/lsp.md": {
+      "path": "tools/lsp.md",
+      "filename": "lsp.md",
+      "title": "lsp",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [
+        "../lsp-config.md"
+      ],
+      "sizeBytes": 27380
+    },
+    "tools/manage_skill.md": {
+      "path": "tools/manage_skill.md",
+      "filename": "manage_skill.md",
+      "title": "manage_skill",
+      "category": "tools",
+      "tags": [
+        "tools"
+      ],
+      "links": [],
+      "sizeBytes": 5524
+    },
+    "tools/memory_edit.md": {
+      "path": "tools/memory_edit.md",
+      "filename": "memory_edit.md",
+      "title": "memory_edit",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 5102
+    },
+    "tools/new-context.md": {
+      "path": "tools/new-context.md",
+      "filename": "new-context.md",
+      "title": "new_context",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [
+        "context-notes.md",
+        "../compaction.md"
+      ],
+      "sizeBytes": 2979
+    },
+    "tools/read.md": {
+      "path": "tools/read.md",
+      "filename": "read.md",
+      "title": "read",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports",
+        "mcp",
+        "router"
+      ],
+      "links": [
+        "../compaction.md#experimental-notes-backed-context-windows"
+      ],
+      "sizeBytes": 31072
+    },
+    "tools/recall.md": {
+      "path": "tools/recall.md",
+      "filename": "recall.md",
+      "title": "recall",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 8915
+    },
+    "tools/reflect.md": {
+      "path": "tools/reflect.md",
+      "filename": "reflect.md",
+      "title": "reflect",
+      "category": "tools",
+      "tags": [
+        "tools"
+      ],
+      "links": [],
+      "sizeBytes": 7910
+    },
+    "tools/retain.md": {
+      "path": "tools/retain.md",
+      "filename": "retain.md",
+      "title": "retain",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 11471
+    },
+    "tools/rewind.md": {
+      "path": "tools/rewind.md",
+      "filename": "rewind.md",
+      "title": "rewind",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 8882
+    },
+    "tools/security_scan.md": {
+      "path": "tools/security_scan.md",
+      "filename": "security_scan.md",
+      "title": "security_scan",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports",
+        "mcp"
+      ],
+      "links": [],
+      "sizeBytes": 15122
+    },
+    "tools/task.md": {
+      "path": "tools/task.md",
+      "filename": "task.md",
+      "title": "task",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports",
+        "mcp",
+        "router"
+      ],
+      "links": [
+        "../task-agent-discovery.md#user-tagged-model-agents"
+      ],
+      "sizeBytes": 27320
+    },
+    "tools/todo.md": {
+      "path": "tools/todo.md",
+      "filename": "todo.md",
+      "title": "todo",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 15993
+    },
+    "tools/tts.md": {
+      "path": "tools/tts.md",
+      "filename": "tts.md",
+      "title": "tts",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 5983
+    },
+    "tools/wait.md": {
+      "path": "tools/wait.md",
+      "filename": "wait.md",
+      "title": "wait",
+      "category": "tools",
+      "tags": [
+        "tools"
+      ],
+      "links": [],
+      "sizeBytes": 1884
+    },
+    "tools/web_search.md": {
+      "path": "tools/web_search.md",
+      "filename": "web_search.md",
+      "title": "web_search",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports",
+        "mcp",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 39678
+    },
+    "tools/write.md": {
+      "path": "tools/write.md",
+      "filename": "write.md",
+      "title": "write",
+      "category": "tools",
+      "tags": [
+        "tools",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 17404
+    },
+    "tree.md": {
+      "path": "tree.md",
+      "filename": "tree.md",
+      "title": "`/tree` Command Reference",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 10486
+    },
+    "ttsr-injection-lifecycle.md": {
+      "path": "ttsr-injection-lifecycle.md",
+      "filename": "ttsr-injection-lifecycle.md",
+      "title": "TTSR Injection Lifecycle",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "../packages/coding-agent/src/prompts/system/ttsr-interrupt.md",
+        "../packages/coding-agent/src/prompts/system/ttsr-warning.md"
+      ],
+      "sizeBytes": 21927
+    },
+    "tui-core-renderer.md": {
+      "path": "tui-core-renderer.md",
+      "filename": "tui-core-renderer.md",
+      "title": "TUI core renderer — explicit history and viewport contract",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 8348
+    },
+    "tui-runtime-internals.md": {
+      "path": "tui-runtime-internals.md",
+      "filename": "tui-runtime-internals.md",
+      "title": "TUI runtime internals",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "./tui-core-renderer.md"
+      ],
+      "sizeBytes": 11048
+    },
+    "tui.md": {
+      "path": "tui.md",
+      "filename": "tui.md",
+      "title": "TUI integration for extensions and custom tools",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [
+        "./agent-hub.md"
+      ],
+      "sizeBytes": 10490
+    },
+    "user-facing-packages.md": {
+      "path": "user-facing-packages.md",
+      "filename": "user-facing-packages.md",
+      "title": "User-Facing Packages",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "mcp"
+      ],
+      "links": [
+        "./native-crates.md",
+        "./natives-architecture.md",
+        "../python/robomp/README.md",
+        "../packages/stats/README.md",
+        "../packages/omptype/README.md",
+        "./omptype-guide.md",
+        "../packages/metaharness/README.md",
+        "../packages/browser-relay/README.md",
+        "../packages/collab-web/README.md",
+        "./collab.md",
+        "../packages/snapcompact/README.md",
+        "../packages/mnemopi/README.md",
+        "./mnemosyne-memory-backend.md"
+      ],
+      "sizeBytes": 12863
+    },
+    "vibe-mode.md": {
+      "path": "vibe-mode.md",
+      "filename": "vibe-mode.md",
+      "title": "Vibe mode",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 6236
+    },
+    "AUTOPOIESIS_RESEARCH.md": {
+      "path": "AUTOPOIESIS_RESEARCH.md",
+      "filename": "AUTOPOIESIS_RESEARCH.md",
+      "title": "Autopoiesis Research Constitution — Phase 0",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 13183
+    },
+    "env-reference-fork.md": {
+      "path": "env-reference-fork.md",
+      "filename": "env-reference-fork.md",
+      "title": "Sovereign / Ranch Fork Environment Variables Reference",
+      "category": "general",
+      "tags": [
+        "general",
+        "pitchfork",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 1864
+    },
+    "env-reference-upstream.md": {
+      "path": "env-reference-upstream.md",
+      "filename": "env-reference-upstream.md",
+      "title": "OMP & Tau Sovereign Environment Variables Reference",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 4294
+    },
+    "tau-version.md": {
+      "path": "tau-version.md",
+      "filename": "tau-version.md",
+      "title": "Tau & OMP Version Specification",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports"
+      ],
+      "links": [],
+      "sizeBytes": 407
+    },
+    "upstream-autonomy.md": {
+      "path": "upstream-autonomy.md",
+      "filename": "upstream-autonomy.md",
+      "title": "Upstream Autonomy & Fork Synchronization Architecture",
+      "category": "general",
+      "tags": [
+        "general",
+        "ports",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 1536
+    },
+    "upstream/porting-from-oh-my-pi.md": {
+      "path": "upstream/porting-from-oh-my-pi.md",
+      "filename": "porting-from-oh-my-pi.md",
+      "title": "Porting From oh-my-pi: A Practical Merge Guide",
+      "category": "upstream",
+      "tags": [
+        "upstream",
+        "ports",
+        "mcp",
+        "audit"
+      ],
+      "links": [],
+      "sizeBytes": 24845
+    },
+    "agents/CONVENTION.md": {
+      "path": "agents/CONVENTION.md",
+      "filename": "CONVENTION.md",
+      "title": "Sovereign Guidance Triad — Universal AGENTS.md Convention v1",
+      "category": "agents",
+      "tags": [
+        "agents",
+        "ports",
+        "audit",
+        "router"
+      ],
+      "links": [],
+      "sizeBytes": 11255
+    }
+  },
+  "categories": {
+    "Meta": [
+      "Meta/Muse AI/open-questions.md",
+      "Meta/Muse AI/runtime-cell.md",
+      "Meta/Muse AI/README.md"
+    ],
+    "plans": [
+      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/mesh-tau-verified-plan.md",
+      "plans/wezterm-shell-integration-plan.md",
+      "plans/master/MASTER_PLAN.md",
+      "plans/master/REORG-PLAN.md",
+      "plans/master/TASKS.md",
+      "plans/migrations/wezterm-shell-integration-plan.md",
+      "plans/verified/mesh-tau-verified-plan.md"
+    ],
+    "audits": [
+      "audits/bedf89a9-post-recovery-audit-bid.md",
+      "audits/nim-oracle-research.md",
+      "audits/pi-conversion-summary.md",
+      "audits/2026-09-20/MCP_AUDIT.md",
+      "audits/2026-09-14/AUDIT.md",
+      "audits/2026-09-14/FORKS_AUDIT.md",
+      "audits/2026-09-21/polling-audit-2026-09-21.md",
+      "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md",
+      "audits/2026-09-22/pi-conversion-summary.md"
+    ],
+    "fleet": [
+      "fleet/personas/README.md",
+      "fleet/personas/cinder/AGENTS.md",
+      "fleet/personas/cinder/IDENTITY.md",
+      "fleet/personas/cinder/SOUL.md",
+      "fleet/personas/cinder/MEMORY.md",
+      "fleet/personas/forge/AGENTS.md",
+      "fleet/personas/forge/IDENTITY.md",
+      "fleet/personas/forge/SOUL.md",
+      "fleet/personas/forge/MEMORY.md",
+      "fleet/personas/gavel/AGENTS.md",
+      "fleet/personas/gavel/IDENTITY.md",
+      "fleet/personas/gavel/MEMORY.md",
+      "fleet/personas/gavel/SOUL.md",
+      "fleet/personas/hearth/AGENTS.md",
+      "fleet/personas/hearth/IDENTITY.md",
+      "fleet/personas/hearth/MEMORY.md",
+      "fleet/personas/hearth/SOUL.md",
+      "fleet/personas/rivet/AGENTS.md",
+      "fleet/personas/rivet/IDENTITY.md",
+      "fleet/personas/rivet/SOUL.md",
+      "fleet/personas/rivet/MEMORY.md",
+      "fleet/personas/sable/AGENTS.md",
+      "fleet/personas/sable/IDENTITY.md",
+      "fleet/personas/sable/SOUL.md",
+      "fleet/personas/sable/MEMORY.md",
+      "fleet/personas/tally/AGENTS.md",
+      "fleet/personas/tally/IDENTITY.md",
+      "fleet/personas/tally/SOUL.md",
+      "fleet/personas/tally/MEMORY.md",
+      "fleet/personas/vesper/AGENTS.md",
+      "fleet/personas/vesper/SOUL.md",
+      "fleet/personas/vesper/IDENTITY.md",
+      "fleet/personas/vesper/MEMORY.md",
+      "fleet/personas/warden/AGENTS.md",
+      "fleet/personas/warden/IDENTITY.md",
+      "fleet/personas/warden/MEMORY.md",
+      "fleet/personas/warden/SOUL.md",
+      "fleet/personas/INDEX.md",
+      "fleet/knowledgebase/fleet-knowledgebase.md"
+    ],
+    "chat-native-agents": [
+      "chat-native-agents/PAPER-TRAIL.md",
+      "chat-native-agents/DESIGN.md"
+    ],
+    "general": [
+      "ARCHITECTURE.md",
+      "ARXIV_EMERGENCE_SURVEY.md",
+      "CONTROL_PLANE.md",
+      "GPU_COOLING.md",
+      "HARDWARE_AUDIT_20260914.md",
+      "KERNELOPTS_LLM_TUNING_AND_RANKING.md",
+      "KIMI_CODE_FORK_RESEARCH.md",
+      "MANIFESTO.md",
+      "MORPHE_PATCHING.md",
+      "NVIDIA_NIM_API_DOCS.md",
+      "PRE_RELEASE_INTEGRATION_ENGINE.md",
+      "PROVIDER_SECRET_AUDIT_20260921.md",
+      "REASONING_SUPPRESSION_TEST.md",
+      "RIDICULOUS_MULTI_PROFILE.md",
+      "STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md",
+      "SWAP_OPTIMIZATION.md",
+      "SWAP_QUICKREF.md",
+      "UNIVERSAL_ARCHITECTURE.md",
+      "config-naming-conventions.md",
+      "cross-box-router.md",
+      "edge-additions-20260920.md",
+      "fleet-culture.md",
+      "fleet-inventory-20260914.md",
+      "free-tier-models.md",
+      "gemini-tool-retrieval-reference.md",
+      "gemini-tool-retrieval.md",
+      "naming-grammar.md",
+      "naming-rename-plan.md",
+      "nvidia-access-map.md",
+      "openfang-proof-2026-09-20.md",
+      "polling-audit-2026-09-21.md",
+      "port-ssot.md",
+      "postgres-ownership.md",
+      "push-guard.md",
+      "spawn-brief-template.md",
+      "systemd-migration.md",
+      "unreliable-narrator-doctrine.md",
+      "HINDSIGHT_TAU_INTEGRATION.md",
+      "fleet-knowledgebase.md",
+      "ERRATA-GPT5-HARMONY.md",
+      "adding-a-provider.md",
+      "advisor-watchdog.md",
+      "agent-hub.md",
+      "ai-schema-normalize.md",
+      "approval-mode.md",
+      "auth-broker-gateway.md",
+      "bash-tool-runtime.md",
+      "blob-artifact-architecture.md",
+      "cli-reference.md",
+      "collab.md",
+      "compaction.md",
+      "computer-use.md",
+      "config-usage.md",
+      "context-files.md",
+      "custom-tools.md",
+      "environment-variables.md",
+      "extension-loading.md",
+      "extensions.md",
+      "fs-scan-cache-architecture.md",
+      "gemini-manifest-extensions.md",
+      "handoff-generation-pipeline.md",
+      "hooks.md",
+      "install-id.md",
+      "keybindings.md",
+      "local-models.md",
+      "lsp-config.md",
+      "macos-signing-notarization.md",
+      "magic-keywords.md",
+      "marketplace.md",
+      "mcp-config.md",
+      "mcp-protocol-transports.md",
+      "mcp-runtime-lifecycle.md",
+      "mcp-server-tool-authoring.md",
+      "memory.md",
+      "mnemosyne-memory-backend.md",
+      "models.md",
+      "native-crates.md",
+      "natives-addon-loader-runtime.md",
+      "natives-architecture.md",
+      "natives-binding-contract.md",
+      "natives-build-release-debugging.md",
+      "natives-media-system-utils.md",
+      "natives-rust-task-cancellation.md",
+      "natives-shell-pty-process.md",
+      "natives-text-search-pipeline.md",
+      "non-compaction-retry-policy.md",
+      "notebook-tool-runtime.md",
+      "omptype-guide.md",
+      "plugin-manager-installer-plumbing.md",
+      "porting-from-pi-mono.md",
+      "porting-to-natives.md",
+      "prewalk.md",
+      "provider-compat-reference.md",
+      "provider-endpoint-constraints.md",
+      "provider-quirks.md",
+      "provider-streaming-internals.md",
+      "providers.md",
+      "python-repl.md",
+      "resolve-tool-runtime.md",
+      "rpc.md",
+      "rulebook-matching-pipeline.md",
+      "sdk.md",
+      "secrets.md",
+      "session-operations-export-share-fork-resume.md",
+      "session-switching-and-recent-listing.md",
+      "session-tree-plan.md",
+      "session.md",
+      "settings.md",
+      "skills.md",
+      "slash-command-internals.md",
+      "stream.md",
+      "system-prompt-customization.md",
+      "task-agent-discovery.md",
+      "theme.md",
+      "tree.md",
+      "ttsr-injection-lifecycle.md",
+      "tui-core-renderer.md",
+      "tui-runtime-internals.md",
+      "tui.md",
+      "user-facing-packages.md",
+      "vibe-mode.md",
+      "AUTOPOIESIS_RESEARCH.md",
+      "env-reference-fork.md",
+      "env-reference-upstream.md",
+      "tau-version.md",
+      "upstream-autonomy.md"
+    ],
+    "architecture": [
+      "architecture/socket-stream-cognitive-ekg.md"
+    ],
+    "operations": [
+      "operations/security-and-guards/ENV_OWNERSHIP.md",
+      "operations/security-and-guards/FIX.md"
+    ],
+    "research": [
+      "research/surveys-and-preprints/nim-oracle-research.md"
+    ],
+    "skills": [
+      "skills/examples/hello-extension/README.md",
+      "skills/examples/mini-marketplace/README.md",
+      "skills/examples/safety-hook/README.md",
+      "skills/authoring-extensions.md",
+      "skills/authoring-hooks.md",
+      "skills/authoring-marketplaces.md"
+    ],
+    "toolconv": [
+      "toolconv/anthropic.md",
+      "toolconv/deepseek.md",
+      "toolconv/gemini.md",
+      "toolconv/gemma.md",
+      "toolconv/glm-4.5.md",
+      "toolconv/harmony.md",
+      "toolconv/hermes.md",
+      "toolconv/kimi-k2.md",
+      "toolconv/minimax.md",
+      "toolconv/pi-native.md",
+      "toolconv/qwen3.md",
+      "toolconv/xml.md"
+    ],
+    "tools": [
+      "tools/ask.md",
+      "tools/ast-edit.md",
+      "tools/ast-grep.md",
+      "tools/bash.md",
+      "tools/browser.md",
+      "tools/checkpoint.md",
+      "tools/computer.md",
+      "tools/context-notes.md",
+      "tools/debug.md",
+      "tools/edit.md",
+      "tools/eval.md",
+      "tools/find.md",
+      "tools/generate_image.md",
+      "tools/github.md",
+      "tools/glob.md",
+      "tools/grep.md",
+      "tools/learn.md",
+      "tools/lsp.md",
+      "tools/manage_skill.md",
+      "tools/memory_edit.md",
+      "tools/new-context.md",
+      "tools/read.md",
+      "tools/recall.md",
+      "tools/reflect.md",
+      "tools/retain.md",
+      "tools/rewind.md",
+      "tools/security_scan.md",
+      "tools/task.md",
+      "tools/todo.md",
+      "tools/tts.md",
+      "tools/wait.md",
+      "tools/web_search.md",
+      "tools/write.md"
+    ],
+    "upstream": [
+      "upstream/porting-from-oh-my-pi.md"
+    ],
+    "agents": [
+      "agents/CONVENTION.md"
+    ]
+  },
+  "tagIndex": {
+    "Meta": [
+      "Meta/Muse AI/open-questions.md",
+      "Meta/Muse AI/runtime-cell.md",
+      "Meta/Muse AI/README.md"
+    ],
+    "Muse AI": [
+      "Meta/Muse AI/open-questions.md",
+      "Meta/Muse AI/runtime-cell.md",
+      "Meta/Muse AI/README.md"
+    ],
+    "audit": [
+      "Meta/Muse AI/runtime-cell.md",
+      "plans/master/MASTER_PLAN.md",
+      "plans/master/REORG-PLAN.md",
+      "plans/master/TASKS.md",
+      "audits/bedf89a9-post-recovery-audit-bid.md",
+      "audits/nim-oracle-research.md",
+      "audits/2026-09-20/MCP_AUDIT.md",
+      "audits/2026-09-14/AUDIT.md",
+      "audits/2026-09-14/FORKS_AUDIT.md",
+      "audits/2026-09-21/polling-audit-2026-09-21.md",
+      "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md",
+      "fleet/personas/README.md",
+      "fleet/personas/vesper/SOUL.md",
+      "fleet/personas/vesper/MEMORY.md",
+      "fleet/personas/INDEX.md",
+      "fleet/knowledgebase/fleet-knowledgebase.md",
+      "chat-native-agents/PAPER-TRAIL.md",
+      "chat-native-agents/DESIGN.md",
+      "ARCHITECTURE.md",
+      "HARDWARE_AUDIT_20260914.md",
+      "KERNELOPTS_LLM_TUNING_AND_RANKING.md",
+      "KIMI_CODE_FORK_RESEARCH.md",
+      "MORPHE_PATCHING.md",
+      "PROVIDER_SECRET_AUDIT_20260921.md",
+      "STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md",
+      "UNIVERSAL_ARCHITECTURE.md",
+      "config-naming-conventions.md",
+      "edge-additions-20260920.md",
+      "fleet-culture.md",
+      "fleet-inventory-20260914.md",
+      "gemini-tool-retrieval.md",
+      "naming-rename-plan.md",
+      "openfang-proof-2026-09-20.md",
+      "polling-audit-2026-09-21.md",
+      "port-ssot.md",
+      "spawn-brief-template.md",
+      "architecture/socket-stream-cognitive-ekg.md",
+      "operations/security-and-guards/ENV_OWNERSHIP.md",
+      "operations/security-and-guards/FIX.md",
+      "research/surveys-and-preprints/nim-oracle-research.md",
+      "fleet-knowledgebase.md",
+      "ERRATA-GPT5-HARMONY.md",
+      "extension-loading.md",
+      "extensions.md",
+      "magic-keywords.md",
+      "porting-from-pi-mono.md",
+      "session.md",
+      "skills/authoring-hooks.md",
+      "tui-core-renderer.md",
+      "upstream/porting-from-oh-my-pi.md",
+      "agents/CONVENTION.md"
+    ],
+    "plans": [
+      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/mesh-tau-verified-plan.md",
+      "plans/wezterm-shell-integration-plan.md",
+      "plans/master/MASTER_PLAN.md",
+      "plans/master/REORG-PLAN.md",
+      "plans/master/TASKS.md",
+      "plans/migrations/wezterm-shell-integration-plan.md",
+      "plans/verified/mesh-tau-verified-plan.md"
+    ],
+    "pitchfork": [
+      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/master/MASTER_PLAN.md",
+      "plans/master/REORG-PLAN.md",
+      "plans/master/TASKS.md",
+      "audits/bedf89a9-post-recovery-audit-bid.md",
+      "audits/2026-09-20/MCP_AUDIT.md",
+      "audits/2026-09-14/FORKS_AUDIT.md",
+      "audits/2026-09-21/polling-audit-2026-09-21.md",
+      "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md",
+      "fleet/knowledgebase/fleet-knowledgebase.md",
+      "chat-native-agents/DESIGN.md",
+      "ARCHITECTURE.md",
+      "ARXIV_EMERGENCE_SURVEY.md",
+      "CONTROL_PLANE.md",
+      "PRE_RELEASE_INTEGRATION_ENGINE.md",
+      "STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md",
+      "SWAP_OPTIMIZATION.md",
+      "UNIVERSAL_ARCHITECTURE.md",
+      "config-naming-conventions.md",
+      "fleet-inventory-20260914.md",
+      "free-tier-models.md",
+      "openfang-proof-2026-09-20.md",
+      "polling-audit-2026-09-21.md",
+      "port-ssot.md",
+      "postgres-ownership.md",
+      "systemd-migration.md",
+      "architecture/socket-stream-cognitive-ekg.md",
+      "operations/security-and-guards/ENV_OWNERSHIP.md",
+      "operations/security-and-guards/FIX.md",
+      "fleet-knowledgebase.md",
+      "env-reference-fork.md"
+    ],
+    "ports": [
+      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/wezterm-shell-integration-plan.md",
+      "plans/master/MASTER_PLAN.md",
+      "plans/master/REORG-PLAN.md",
+      "plans/master/TASKS.md",
+      "plans/migrations/wezterm-shell-integration-plan.md",
+      "audits/bedf89a9-post-recovery-audit-bid.md",
+      "audits/pi-conversion-summary.md",
+      "audits/2026-09-20/MCP_AUDIT.md",
+      "audits/2026-09-14/AUDIT.md",
+      "audits/2026-09-14/FORKS_AUDIT.md",
+      "audits/2026-09-21/polling-audit-2026-09-21.md",
+      "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md",
+      "audits/2026-09-22/pi-conversion-summary.md",
+      "fleet/personas/README.md",
+      "fleet/personas/cinder/AGENTS.md",
+      "fleet/personas/forge/AGENTS.md",
+      "fleet/personas/forge/IDENTITY.md",
+      "fleet/personas/gavel/AGENTS.md",
+      "fleet/personas/hearth/AGENTS.md",
+      "fleet/personas/rivet/AGENTS.md",
+      "fleet/personas/sable/AGENTS.md",
+      "fleet/personas/sable/IDENTITY.md",
+      "fleet/personas/tally/AGENTS.md",
+      "fleet/personas/tally/MEMORY.md",
+      "fleet/personas/vesper/AGENTS.md",
+      "fleet/personas/vesper/MEMORY.md",
+      "fleet/personas/warden/AGENTS.md",
+      "fleet/personas/warden/IDENTITY.md",
+      "fleet/personas/INDEX.md",
+      "fleet/knowledgebase/fleet-knowledgebase.md",
+      "chat-native-agents/PAPER-TRAIL.md",
+      "chat-native-agents/DESIGN.md",
+      "ARCHITECTURE.md",
+      "ARXIV_EMERGENCE_SURVEY.md",
+      "CONTROL_PLANE.md",
+      "GPU_COOLING.md",
+      "HARDWARE_AUDIT_20260914.md",
+      "KIMI_CODE_FORK_RESEARCH.md",
+      "MANIFESTO.md",
+      "MORPHE_PATCHING.md",
+      "NVIDIA_NIM_API_DOCS.md",
+      "PRE_RELEASE_INTEGRATION_ENGINE.md",
+      "PROVIDER_SECRET_AUDIT_20260921.md",
+      "STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md",
+      "SWAP_OPTIMIZATION.md",
+      "UNIVERSAL_ARCHITECTURE.md",
+      "config-naming-conventions.md",
+      "edge-additions-20260920.md",
+      "fleet-culture.md",
+      "fleet-inventory-20260914.md",
+      "free-tier-models.md",
+      "gemini-tool-retrieval-reference.md",
+      "gemini-tool-retrieval.md",
+      "naming-rename-plan.md",
+      "nvidia-access-map.md",
+      "openfang-proof-2026-09-20.md",
+      "polling-audit-2026-09-21.md",
+      "port-ssot.md",
+      "postgres-ownership.md",
+      "spawn-brief-template.md",
+      "systemd-migration.md",
+      "unreliable-narrator-doctrine.md",
+      "architecture/socket-stream-cognitive-ekg.md",
+      "operations/security-and-guards/ENV_OWNERSHIP.md",
+      "operations/security-and-guards/FIX.md",
+      "HINDSIGHT_TAU_INTEGRATION.md",
+      "fleet-knowledgebase.md",
+      "ERRATA-GPT5-HARMONY.md",
+      "adding-a-provider.md",
+      "advisor-watchdog.md",
+      "agent-hub.md",
+      "ai-schema-normalize.md",
+      "approval-mode.md",
+      "auth-broker-gateway.md",
+      "bash-tool-runtime.md",
+      "blob-artifact-architecture.md",
+      "cli-reference.md",
+      "collab.md",
+      "compaction.md",
+      "computer-use.md",
+      "config-usage.md",
+      "context-files.md",
+      "custom-tools.md",
+      "environment-variables.md",
+      "extension-loading.md",
+      "extensions.md",
+      "fs-scan-cache-architecture.md",
+      "gemini-manifest-extensions.md",
+      "handoff-generation-pipeline.md",
+      "hooks.md",
+      "install-id.md",
+      "local-models.md",
+      "lsp-config.md",
+      "macos-signing-notarization.md",
+      "magic-keywords.md",
+      "marketplace.md",
+      "mcp-config.md",
+      "mcp-protocol-transports.md",
+      "mcp-runtime-lifecycle.md",
+      "mcp-server-tool-authoring.md",
+      "memory.md",
+      "mnemosyne-memory-backend.md",
+      "models.md",
+      "native-crates.md",
+      "natives-addon-loader-runtime.md",
+      "natives-architecture.md",
+      "natives-binding-contract.md",
+      "natives-build-release-debugging.md",
+      "natives-media-system-utils.md",
+      "natives-rust-task-cancellation.md",
+      "natives-shell-pty-process.md",
+      "natives-text-search-pipeline.md",
+      "non-compaction-retry-policy.md",
+      "notebook-tool-runtime.md",
+      "omptype-guide.md",
+      "plugin-manager-installer-plumbing.md",
+      "porting-from-pi-mono.md",
+      "porting-to-natives.md",
+      "provider-compat-reference.md",
+      "provider-endpoint-constraints.md",
+      "provider-quirks.md",
+      "provider-streaming-internals.md",
+      "providers.md",
+      "python-repl.md",
+      "rpc.md",
+      "rulebook-matching-pipeline.md",
+      "sdk.md",
+      "secrets.md",
+      "session-operations-export-share-fork-resume.md",
+      "session-switching-and-recent-listing.md",
+      "session-tree-plan.md",
+      "session.md",
+      "settings.md",
+      "skills.md",
+      "skills/examples/hello-extension/README.md",
+      "skills/authoring-extensions.md",
+      "skills/authoring-hooks.md",
+      "skills/authoring-marketplaces.md",
+      "slash-command-internals.md",
+      "stream.md",
+      "system-prompt-customization.md",
+      "task-agent-discovery.md",
+      "theme.md",
+      "toolconv/anthropic.md",
+      "toolconv/deepseek.md",
+      "toolconv/gemini.md",
+      "toolconv/gemma.md",
+      "toolconv/glm-4.5.md",
+      "toolconv/harmony.md",
+      "toolconv/hermes.md",
+      "toolconv/kimi-k2.md",
+      "toolconv/minimax.md",
+      "toolconv/pi-native.md",
+      "toolconv/qwen3.md",
+      "toolconv/xml.md",
+      "tools/ask.md",
+      "tools/ast-edit.md",
+      "tools/ast-grep.md",
+      "tools/bash.md",
+      "tools/browser.md",
+      "tools/checkpoint.md",
+      "tools/computer.md",
+      "tools/context-notes.md",
+      "tools/debug.md",
+      "tools/edit.md",
+      "tools/eval.md",
+      "tools/find.md",
+      "tools/generate_image.md",
+      "tools/github.md",
+      "tools/glob.md",
+      "tools/grep.md",
+      "tools/learn.md",
+      "tools/lsp.md",
+      "tools/memory_edit.md",
+      "tools/new-context.md",
+      "tools/read.md",
+      "tools/recall.md",
+      "tools/retain.md",
+      "tools/rewind.md",
+      "tools/security_scan.md",
+      "tools/task.md",
+      "tools/todo.md",
+      "tools/tts.md",
+      "tools/web_search.md",
+      "tools/write.md",
+      "tree.md",
+      "ttsr-injection-lifecycle.md",
+      "tui-core-renderer.md",
+      "tui-runtime-internals.md",
+      "tui.md",
+      "user-facing-packages.md",
+      "vibe-mode.md",
+      "AUTOPOIESIS_RESEARCH.md",
+      "env-reference-fork.md",
+      "env-reference-upstream.md",
+      "tau-version.md",
+      "upstream-autonomy.md",
+      "upstream/porting-from-oh-my-pi.md",
+      "agents/CONVENTION.md"
+    ],
+    "mcp": [
+      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/master/MASTER_PLAN.md",
+      "plans/master/REORG-PLAN.md",
+      "plans/master/TASKS.md",
+      "audits/2026-09-20/MCP_AUDIT.md",
+      "audits/2026-09-14/AUDIT.md",
+      "audits/2026-09-14/FORKS_AUDIT.md",
+      "fleet/personas/warden/IDENTITY.md",
+      "fleet/personas/warden/MEMORY.md",
+      "fleet/personas/INDEX.md",
+      "fleet/knowledgebase/fleet-knowledgebase.md",
+      "ARCHITECTURE.md",
+      "CONTROL_PLANE.md",
+      "KIMI_CODE_FORK_RESEARCH.md",
+      "MORPHE_PATCHING.md",
+      "SWAP_OPTIMIZATION.md",
+      "UNIVERSAL_ARCHITECTURE.md",
+      "cross-box-router.md",
+      "fleet-inventory-20260914.md",
+      "gemini-tool-retrieval-reference.md",
+      "gemini-tool-retrieval.md",
+      "port-ssot.md",
+      "operations/security-and-guards/FIX.md",
+      "fleet-knowledgebase.md",
+      "ai-schema-normalize.md",
+      "approval-mode.md",
+      "config-usage.md",
+      "context-files.md",
+      "custom-tools.md",
+      "environment-variables.md",
+      "extension-loading.md",
+      "extensions.md",
+      "gemini-manifest-extensions.md",
+      "macos-signing-notarization.md",
+      "marketplace.md",
+      "mcp-config.md",
+      "mcp-protocol-transports.md",
+      "mcp-runtime-lifecycle.md",
+      "mcp-server-tool-authoring.md",
+      "models.md",
+      "plugin-manager-installer-plumbing.md",
+      "porting-from-pi-mono.md",
+      "provider-quirks.md",
+      "providers.md",
+      "rpc.md",
+      "sdk.md",
+      "secrets.md",
+      "session-tree-plan.md",
+      "settings.md",
+      "skills/authoring-extensions.md",
+      "skills/authoring-marketplaces.md",
+      "slash-command-internals.md",
+      "system-prompt-customization.md",
+      "tools/debug.md",
+      "tools/read.md",
+      "tools/security_scan.md",
+      "tools/task.md",
+      "tools/web_search.md",
+      "user-facing-packages.md",
+      "upstream/porting-from-oh-my-pi.md"
+    ],
+    "router": [
+      "plans/free-pollinations-herd-hotfix-plan.md",
+      "plans/wezterm-shell-integration-plan.md",
+      "plans/master/MASTER_PLAN.md",
+      "plans/master/REORG-PLAN.md",
+      "plans/migrations/wezterm-shell-integration-plan.md",
+      "audits/bedf89a9-post-recovery-audit-bid.md",
+      "audits/2026-09-20/MCP_AUDIT.md",
+      "audits/2026-09-14/AUDIT.md",
+      "audits/2026-09-14/FORKS_AUDIT.md",
+      "audits/2026-09-21/polling-audit-2026-09-21.md",
+      "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md",
+      "fleet/personas/gavel/IDENTITY.md",
+      "fleet/personas/INDEX.md",
+      "fleet/knowledgebase/fleet-knowledgebase.md",
+      "chat-native-agents/PAPER-TRAIL.md",
+      "ARCHITECTURE.md",
+      "ARXIV_EMERGENCE_SURVEY.md",
+      "NVIDIA_NIM_API_DOCS.md",
+      "PRE_RELEASE_INTEGRATION_ENGINE.md",
+      "PROVIDER_SECRET_AUDIT_20260921.md",
+      "RIDICULOUS_MULTI_PROFILE.md",
+      "UNIVERSAL_ARCHITECTURE.md",
+      "config-naming-conventions.md",
+      "cross-box-router.md",
+      "edge-additions-20260920.md",
+      "fleet-inventory-20260914.md",
+      "free-tier-models.md",
+      "gemini-tool-retrieval.md",
+      "naming-grammar.md",
+      "naming-rename-plan.md",
+      "openfang-proof-2026-09-20.md",
+      "polling-audit-2026-09-21.md",
+      "architecture/socket-stream-cognitive-ekg.md",
+      "operations/security-and-guards/FIX.md",
+      "fleet-knowledgebase.md",
+      "auth-broker-gateway.md",
+      "blob-artifact-architecture.md",
+      "compaction.md",
+      "context-files.md",
+      "environment-variables.md",
+      "extensions.md",
+      "models.md",
+      "provider-compat-reference.md",
+      "provider-endpoint-constraints.md",
+      "provider-quirks.md",
+      "providers.md",
+      "session-tree-plan.md",
+      "settings.md",
+      "toolconv/deepseek.md",
+      "toolconv/pi-native.md",
+      "tools/ast-edit.md",
+      "tools/ast-grep.md",
+      "tools/bash.md",
+      "tools/find.md",
+      "tools/generate_image.md",
+      "tools/grep.md",
+      "tools/read.md",
+      "tools/task.md",
+      "tools/web_search.md",
+      "tools/write.md",
+      "env-reference-upstream.md",
+      "upstream-autonomy.md",
+      "agents/CONVENTION.md"
+    ],
+    "master": [
+      "plans/master/MASTER_PLAN.md",
+      "plans/master/REORG-PLAN.md",
+      "plans/master/TASKS.md"
+    ],
+    "migrations": [
+      "plans/migrations/wezterm-shell-integration-plan.md"
+    ],
+    "verified": [
+      "plans/verified/mesh-tau-verified-plan.md"
+    ],
+    "audits": [
+      "audits/bedf89a9-post-recovery-audit-bid.md",
+      "audits/nim-oracle-research.md",
+      "audits/pi-conversion-summary.md",
+      "audits/2026-09-20/MCP_AUDIT.md",
+      "audits/2026-09-14/AUDIT.md",
+      "audits/2026-09-14/FORKS_AUDIT.md",
+      "audits/2026-09-21/polling-audit-2026-09-21.md",
+      "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md",
+      "audits/2026-09-22/pi-conversion-summary.md"
+    ],
+    "2026-09-20": [
+      "audits/2026-09-20/MCP_AUDIT.md"
+    ],
+    "2026-09-14": [
+      "audits/2026-09-14/AUDIT.md",
+      "audits/2026-09-14/FORKS_AUDIT.md"
+    ],
+    "2026-09-21": [
+      "audits/2026-09-21/polling-audit-2026-09-21.md"
+    ],
+    "2026-09-22": [
+      "audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md",
+      "audits/2026-09-22/pi-conversion-summary.md"
+    ],
+    "fleet": [
+      "fleet/personas/README.md",
+      "fleet/personas/cinder/AGENTS.md",
+      "fleet/personas/cinder/IDENTITY.md",
+      "fleet/personas/cinder/SOUL.md",
+      "fleet/personas/cinder/MEMORY.md",
+      "fleet/personas/forge/AGENTS.md",
+      "fleet/personas/forge/IDENTITY.md",
+      "fleet/personas/forge/SOUL.md",
+      "fleet/personas/forge/MEMORY.md",
+      "fleet/personas/gavel/AGENTS.md",
+      "fleet/personas/gavel/IDENTITY.md",
+      "fleet/personas/gavel/MEMORY.md",
+      "fleet/personas/gavel/SOUL.md",
+      "fleet/personas/hearth/AGENTS.md",
+      "fleet/personas/hearth/IDENTITY.md",
+      "fleet/personas/hearth/MEMORY.md",
+      "fleet/personas/hearth/SOUL.md",
+      "fleet/personas/rivet/AGENTS.md",
+      "fleet/personas/rivet/IDENTITY.md",
+      "fleet/personas/rivet/SOUL.md",
+      "fleet/personas/rivet/MEMORY.md",
+      "fleet/personas/sable/AGENTS.md",
+      "fleet/personas/sable/IDENTITY.md",
+      "fleet/personas/sable/SOUL.md",
+      "fleet/personas/sable/MEMORY.md",
+      "fleet/personas/tally/AGENTS.md",
+      "fleet/personas/tally/IDENTITY.md",
+      "fleet/personas/tally/SOUL.md",
+      "fleet/personas/tally/MEMORY.md",
+      "fleet/personas/vesper/AGENTS.md",
+      "fleet/personas/vesper/SOUL.md",
+      "fleet/personas/vesper/IDENTITY.md",
+      "fleet/personas/vesper/MEMORY.md",
+      "fleet/personas/warden/AGENTS.md",
+      "fleet/personas/warden/IDENTITY.md",
+      "fleet/personas/warden/MEMORY.md",
+      "fleet/personas/warden/SOUL.md",
+      "fleet/personas/INDEX.md",
+      "fleet/knowledgebase/fleet-knowledgebase.md"
+    ],
+    "personas": [
+      "fleet/personas/README.md",
+      "fleet/personas/cinder/AGENTS.md",
+      "fleet/personas/cinder/IDENTITY.md",
+      "fleet/personas/cinder/SOUL.md",
+      "fleet/personas/cinder/MEMORY.md",
+      "fleet/personas/forge/AGENTS.md",
+      "fleet/personas/forge/IDENTITY.md",
+      "fleet/personas/forge/SOUL.md",
+      "fleet/personas/forge/MEMORY.md",
+      "fleet/personas/gavel/AGENTS.md",
+      "fleet/personas/gavel/IDENTITY.md",
+      "fleet/personas/gavel/MEMORY.md",
+      "fleet/personas/gavel/SOUL.md",
+      "fleet/personas/hearth/AGENTS.md",
+      "fleet/personas/hearth/IDENTITY.md",
+      "fleet/personas/hearth/MEMORY.md",
+      "fleet/personas/hearth/SOUL.md",
+      "fleet/personas/rivet/AGENTS.md",
+      "fleet/personas/rivet/IDENTITY.md",
+      "fleet/personas/rivet/SOUL.md",
+      "fleet/personas/rivet/MEMORY.md",
+      "fleet/personas/sable/AGENTS.md",
+      "fleet/personas/sable/IDENTITY.md",
+      "fleet/personas/sable/SOUL.md",
+      "fleet/personas/sable/MEMORY.md",
+      "fleet/personas/tally/AGENTS.md",
+      "fleet/personas/tally/IDENTITY.md",
+      "fleet/personas/tally/SOUL.md",
+      "fleet/personas/tally/MEMORY.md",
+      "fleet/personas/vesper/AGENTS.md",
+      "fleet/personas/vesper/SOUL.md",
+      "fleet/personas/vesper/IDENTITY.md",
+      "fleet/personas/vesper/MEMORY.md",
+      "fleet/personas/warden/AGENTS.md",
+      "fleet/personas/warden/IDENTITY.md",
+      "fleet/personas/warden/MEMORY.md",
+      "fleet/personas/warden/SOUL.md",
+      "fleet/personas/INDEX.md"
+    ],
+    "knowledgebase": [
+      "fleet/knowledgebase/fleet-knowledgebase.md"
+    ],
+    "chat-native-agents": [
+      "chat-native-agents/PAPER-TRAIL.md",
+      "chat-native-agents/DESIGN.md"
+    ],
+    "general": [
+      "ARCHITECTURE.md",
+      "ARXIV_EMERGENCE_SURVEY.md",
+      "CONTROL_PLANE.md",
+      "GPU_COOLING.md",
+      "HARDWARE_AUDIT_20260914.md",
+      "KERNELOPTS_LLM_TUNING_AND_RANKING.md",
+      "KIMI_CODE_FORK_RESEARCH.md",
+      "MANIFESTO.md",
+      "MORPHE_PATCHING.md",
+      "NVIDIA_NIM_API_DOCS.md",
+      "PRE_RELEASE_INTEGRATION_ENGINE.md",
+      "PROVIDER_SECRET_AUDIT_20260921.md",
+      "REASONING_SUPPRESSION_TEST.md",
+      "RIDICULOUS_MULTI_PROFILE.md",
+      "STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md",
+      "SWAP_OPTIMIZATION.md",
+      "SWAP_QUICKREF.md",
+      "UNIVERSAL_ARCHITECTURE.md",
+      "config-naming-conventions.md",
+      "cross-box-router.md",
+      "edge-additions-20260920.md",
+      "fleet-culture.md",
+      "fleet-inventory-20260914.md",
+      "free-tier-models.md",
+      "gemini-tool-retrieval-reference.md",
+      "gemini-tool-retrieval.md",
+      "naming-grammar.md",
+      "naming-rename-plan.md",
+      "nvidia-access-map.md",
+      "openfang-proof-2026-09-20.md",
+      "polling-audit-2026-09-21.md",
+      "port-ssot.md",
+      "postgres-ownership.md",
+      "push-guard.md",
+      "spawn-brief-template.md",
+      "systemd-migration.md",
+      "unreliable-narrator-doctrine.md",
+      "HINDSIGHT_TAU_INTEGRATION.md",
+      "fleet-knowledgebase.md",
+      "ERRATA-GPT5-HARMONY.md",
+      "adding-a-provider.md",
+      "advisor-watchdog.md",
+      "agent-hub.md",
+      "ai-schema-normalize.md",
+      "approval-mode.md",
+      "auth-broker-gateway.md",
+      "bash-tool-runtime.md",
+      "blob-artifact-architecture.md",
+      "cli-reference.md",
+      "collab.md",
+      "compaction.md",
+      "computer-use.md",
+      "config-usage.md",
+      "context-files.md",
+      "custom-tools.md",
+      "environment-variables.md",
+      "extension-loading.md",
+      "extensions.md",
+      "fs-scan-cache-architecture.md",
+      "gemini-manifest-extensions.md",
+      "handoff-generation-pipeline.md",
+      "hooks.md",
+      "install-id.md",
+      "keybindings.md",
+      "local-models.md",
+      "lsp-config.md",
+      "macos-signing-notarization.md",
+      "magic-keywords.md",
+      "marketplace.md",
+      "mcp-config.md",
+      "mcp-protocol-transports.md",
+      "mcp-runtime-lifecycle.md",
+      "mcp-server-tool-authoring.md",
+      "memory.md",
+      "mnemosyne-memory-backend.md",
+      "models.md",
+      "native-crates.md",
+      "natives-addon-loader-runtime.md",
+      "natives-architecture.md",
+      "natives-binding-contract.md",
+      "natives-build-release-debugging.md",
+      "natives-media-system-utils.md",
+      "natives-rust-task-cancellation.md",
+      "natives-shell-pty-process.md",
+      "natives-text-search-pipeline.md",
+      "non-compaction-retry-policy.md",
+      "notebook-tool-runtime.md",
+      "omptype-guide.md",
+      "plugin-manager-installer-plumbing.md",
+      "porting-from-pi-mono.md",
+      "porting-to-natives.md",
+      "prewalk.md",
+      "provider-compat-reference.md",
+      "provider-endpoint-constraints.md",
+      "provider-quirks.md",
+      "provider-streaming-internals.md",
+      "providers.md",
+      "python-repl.md",
+      "resolve-tool-runtime.md",
+      "rpc.md",
+      "rulebook-matching-pipeline.md",
+      "sdk.md",
+      "secrets.md",
+      "session-operations-export-share-fork-resume.md",
+      "session-switching-and-recent-listing.md",
+      "session-tree-plan.md",
+      "session.md",
+      "settings.md",
+      "skills.md",
+      "slash-command-internals.md",
+      "stream.md",
+      "system-prompt-customization.md",
+      "task-agent-discovery.md",
+      "theme.md",
+      "tree.md",
+      "ttsr-injection-lifecycle.md",
+      "tui-core-renderer.md",
+      "tui-runtime-internals.md",
+      "tui.md",
+      "user-facing-packages.md",
+      "vibe-mode.md",
+      "AUTOPOIESIS_RESEARCH.md",
+      "env-reference-fork.md",
+      "env-reference-upstream.md",
+      "tau-version.md",
+      "upstream-autonomy.md"
+    ],
+    "architecture": [
+      "architecture/socket-stream-cognitive-ekg.md"
+    ],
+    "operations": [
+      "operations/security-and-guards/ENV_OWNERSHIP.md",
+      "operations/security-and-guards/FIX.md"
+    ],
+    "security-and-guards": [
+      "operations/security-and-guards/ENV_OWNERSHIP.md",
+      "operations/security-and-guards/FIX.md"
+    ],
+    "research": [
+      "research/surveys-and-preprints/nim-oracle-research.md"
+    ],
+    "surveys-and-preprints": [
+      "research/surveys-and-preprints/nim-oracle-research.md"
+    ],
+    "skills": [
+      "skills/examples/hello-extension/README.md",
+      "skills/examples/mini-marketplace/README.md",
+      "skills/examples/safety-hook/README.md",
+      "skills/authoring-extensions.md",
+      "skills/authoring-hooks.md",
+      "skills/authoring-marketplaces.md"
+    ],
+    "examples": [
+      "skills/examples/hello-extension/README.md",
+      "skills/examples/mini-marketplace/README.md",
+      "skills/examples/safety-hook/README.md"
+    ],
+    "toolconv": [
+      "toolconv/anthropic.md",
+      "toolconv/deepseek.md",
+      "toolconv/gemini.md",
+      "toolconv/gemma.md",
+      "toolconv/glm-4.5.md",
+      "toolconv/harmony.md",
+      "toolconv/hermes.md",
+      "toolconv/kimi-k2.md",
+      "toolconv/minimax.md",
+      "toolconv/pi-native.md",
+      "toolconv/qwen3.md",
+      "toolconv/xml.md"
+    ],
+    "tools": [
+      "tools/ask.md",
+      "tools/ast-edit.md",
+      "tools/ast-grep.md",
+      "tools/bash.md",
+      "tools/browser.md",
+      "tools/checkpoint.md",
+      "tools/computer.md",
+      "tools/context-notes.md",
+      "tools/debug.md",
+      "tools/edit.md",
+      "tools/eval.md",
+      "tools/find.md",
+      "tools/generate_image.md",
+      "tools/github.md",
+      "tools/glob.md",
+      "tools/grep.md",
+      "tools/learn.md",
+      "tools/lsp.md",
+      "tools/manage_skill.md",
+      "tools/memory_edit.md",
+      "tools/new-context.md",
+      "tools/read.md",
+      "tools/recall.md",
+      "tools/reflect.md",
+      "tools/retain.md",
+      "tools/rewind.md",
+      "tools/security_scan.md",
+      "tools/task.md",
+      "tools/todo.md",
+      "tools/tts.md",
+      "tools/wait.md",
+      "tools/web_search.md",
+      "tools/write.md"
+    ],
+    "upstream": [
+      "upstream/porting-from-oh-my-pi.md"
+    ],
+    "agents": [
+      "agents/CONVENTION.md"
+    ]
+  },
+  "totalFiles": 244,
+  "generatedAt": "2026-09-27T09:22:52.066Z"
+}

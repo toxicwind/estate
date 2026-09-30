@@ -1,6 +1,7 @@
 ---
 name: url-extract
-description: Universal URL content extractor — handles JS-rendered SPAs (Meta AI, ChatGPT, Claude, Gemini shares) and static pages via cascading Playwright → curl → OG-meta strategies
+description: >
+  Universal URL content extractor. Handles JS-rendered SPAs via cascading Playwright, curl, and OG-meta strategies. Triggers on: "url extract", "web scraping", "JS-rendered", "OG-meta".
 ---
 
 # URL Extract Skill

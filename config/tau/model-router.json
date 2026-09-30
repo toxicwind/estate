@@ -1,0 +1,69 @@
+{
+ "profiles": {
+  "cheap": {
+   "selector": "herd/beellama/exaone-4-0-1-2b-iq4xs",
+   "profile": "cheap",
+   "tier": "low",
+   "thinking": "low",
+   "auth": "none",
+   "verified": "2026-09-14T20:45MDT live /v1/models on 127.0.0.1:25100 (llama-swap), on-demand load",
+   "note": "1.2B ultralight, no auth, local"
+  },
+  "fast": {
+   "selector": "herd/beellama/qwen-flash-64k",
+   "profile": "fast",
+   "tier": "low",
+   "thinking": "low",
+   "auth": "none",
+   "verified": "2026-09-14T20:45MDT live /v1/models on 127.0.0.1:25100 (llama-swap), on-demand load",
+   "note": "low-latency local flash model, no auth"
+  },
+  "balanced": {
+   "selector": "herd/qwen-flash-da-128k",
+   "profile": "balanced",
+   "tier": "medium",
+   "thinking": "medium",
+   "auth": "none",
+   "verified": "2026-09-20T02:55MDT MODEL-MAX sweep: 183ms TTFT p50, 191 RPM, 38.5 TPS, 3/3 burst, local herd lane",
+   "note": "MODEL-MAX winner: 9B Qwen, 128k ctx, local, no auth"
+  },
+  "quality": {
+   "selector": "sovereign/free",
+   "profile": "quality",
+   "tier": "high",
+   "thinking": "high",
+   "auth": "none",
+   "verified": "2026-09-20T00:45MDT live POST /v1/chat/completions on 127.0.0.1:25104 (sovereign router free race), 0% errors, winner nvidia/nemotron-3-super-120b-a55b",
+   "note": "Sovereign free pool (races free tier, first non-empty wins). 1M ctx nemotron class. Replaces herd/moonshotai/kimi-k3 which 401s 100% (model id absent from :25100)."
+  },
+  "reasoning": {
+   "selector": "sovereign/free",
+   "profile": "reasoning",
+   "tier": "high",
+   "thinking": "high",
+   "auth": "none",
+   "verified": "2026-09-20T00:45MDT live on 127.0.0.1:25104; nemotron-3 class (GPQA 87.0) is reasoning-capable",
+   "note": "Replaces herd/moonshotai/kimi-k2-thinking (dead upstream). Free race picks strongest available reasoner."
+  },
+  "backup": {
+   "selector": "herd/gemma-4-12b-unified",
+   "profile": "backup",
+   "tier": "low",
+   "thinking": "low",
+   "auth": "none",
+   "verified": "2026-09-20T03:10MDT naming-audit: was herd/pollinations-free/openai (dead, peer removed); now gemma-4-12b-unified (MODEL-MAX healthy local, 499ms TTFT p50, 92 RPM)",
+   "note": "local 12B backup, distinct from balanced"
+  }
+ },
+ "timestamp": "2026-09-20T00:45:00-06:00",
+ "source": "tau-config-20260920 (ember)",
+ "picks": 6,
+ "reconcile_notes": [
+  "herd provider is defined in ~/.tau/agent/models.yml (baseUrl http://127.0.0.1:25100/v1, auth none, openai-models-list discovery); mirrors tree config/models.yml providers.herd",
+  "bench selectors re-evaluated against tau catalog models.json: google-antigravity/{claude-opus-4-6,claude-sonnet-4-6,gemini-2.5-flash,gemini-3.1-flash-image} are catalog-valid (provider+model both exist) but require Google OAuth credentials which are NOT stored on this box (no auth db in ~/.tau); kept as alternates only",
+  "groq/openai/gpt-oss-20b resolves per parseModelString (provider=groq, id=openai/gpt-oss-20b) but groq needs an API key, none configured; alternate only",
+  "nvidia/openai/gpt-oss-20b is catalog-valid; tau nvidia provider targets https://integrate.api.nvidia.com/v1 (API key required); local nim-proxy 127.0.0.1:8000 returns 401 without Bearer key",
+  "original bench file preserved at model-router.json.bak-20260914-bench",
+  "2026-09-20 tau-config: quality/reasoning repointed herd/moonshotai/kimi-* (100% 401, model ids absent from :25100) -> sovereign/free (live, 0% errors). Added backup=herd/pollinations-free/openai (keyless, herd-side). fast/cheap/balanced selectors verified present in :25100 /v1/models same day."
+ ]
+}

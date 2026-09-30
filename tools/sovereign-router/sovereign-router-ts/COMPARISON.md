@@ -15,11 +15,11 @@ Three separate implementations have carried similar routing DNA:
    per-provider rate limits, request coalescing, least-latency and
    round-robin strategies, richer status surface. No live discovery, no
    streaming-first design.
-3. **Mesh gateway cloud-router** (`projects/mesh/gateway/flock.go`) —
+3. **Mesh gateway cloud-router** (`projects/range/ranch/barn/shep/flock.go`) —
    routes tool-call/MCP traffic, a different domain entirely (not model
    inference).
 
-Stale copies of the TS tree exist at `projects/mesh/router/`,
+Stale copies of the TS tree exist at `projects/range/ranch/stockyard/router-legacy/`,
 `projects/herd/mesh/router/`, and a nested duplicate
 `sovereign-router-ts/sovereign-router-ts/` — the live daemon runs from
 `tools/sovereign-router/sovereign-router-ts/` only. The old TS User-Agent
@@ -52,10 +52,10 @@ renamed. Archives and frozen snapshots are documented, not renamed.
 | 1 | sovereign-router-ts | `tools/sovereign-router/sovereign-router-ts/` | Bun/TS multi-provider model router | **LIVE** - pitchfork daemon `sovereign-router` on `:25104` |
 | 2 | flock (proxy) | `/home/toxic/projects/flock`, daemon `/home/toxic/.flock/flock` on `:8000` | Rust NVIDIA NIM OpenAI-compatible proxy | **LIVE** - separate repo; NIM-side consolidation owned by main chat |
 | 3 | Go flock module | `projects/herd/internal/flock/` | llama-swap library module (13 providers) | Active source; NOT the running `:25100` binary (built 2026-09-12 from an incomplete tree) |
-| 4 | mesh gateway router | `projects/mesh/gateway/flock.go`, `projects/herd/mesh/gateway/flock.go` | Go MCP/tool-call router | Reference copies; live `:25115` is the Bun mesh-hub |
-| 5 | flock-py | `projects/mesh/router/flock-py/`, `projects/herd/mesh/router/flock-py/` | Python reference router | Frozen reference |
-| 6 | flock-router | `projects/mesh/router/flock-router/` | TS reference router | Frozen reference |
-| 7 | flock-pkg | `projects/mesh/flock-pkg/`, `projects/herd/mesh/flock-pkg/` | Semantic/AST extraction snapshots | Frozen snapshots (not request routers) |
+| 4 | mesh gateway router | `projects/range/ranch/barn/shep/flock.go`, `projects/herd/mesh/gateway/flock.go` | Go MCP/tool-call router | Reference copies; live `:25115` is the Bun mesh-hub |
+| 5 | flock-py | `projects/range/ranch/stockyard/router-legacy/flock-py/`, `projects/herd/mesh/router/flock-py/` | Python reference router | Frozen reference |
+| 6 | flock-router | `projects/range/ranch/stockyard/router-legacy/flock-router/` | TS reference router | Frozen reference |
+| 7 | flock-pkg | `projects/range/flock-pkg/`, `projects/herd/mesh/flock-pkg/` | Semantic/AST extraction snapshots | Frozen snapshots (not request routers) |
 | 8 | tau archive | `projects/tau/archive/from-sovereign-swap/internal/astmatrix` | Old Go copy | **Frozen archive - do not edit** |
 | 9 | tau-flock extension | `projects/tau/extensions/flock/` (`@toxicwind/tau-flock`) | Tau extension: flock client + slash commands + LLM tools | **LIVE-registered** - linked in `~/.tau/plugins`, `plugin list` shows it |
 | 10 | stray NIM implementations | various | NVIDIA NIM clients | Owned by main chat - out of this lane |

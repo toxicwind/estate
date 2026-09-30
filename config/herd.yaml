@@ -126,8 +126,8 @@ routing:
 
 macros:
   MODEL_DIR: /home/toxic/models
-  BEELLAMA_BIN: /home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp/build-cuda86/bin/llama-server
-  BEELLAMA_LD: /home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp/build-cuda86/bin
+  BEELLAMA_BIN: /home/toxic/sovereign/engines/herd/beellama.cpp/build-cuda86/bin/llama-server
+  BEELLAMA_LD: /home/toxic/sovereign/engines/herd/beellama.cpp/build-cuda86/bin
 
   EXAONE_1B_IQ4XS: ${MODEL_DIR}/EXAONE-4.0-1.2B-IQ4_XS.gguf
   EXAONE_1B_Q4KM: ${MODEL_DIR}/EXAONE-4.0-1.2B-Q4_K_M.gguf
@@ -742,8 +742,17 @@ peers:
   # the terminal candidate of the maximal free-Kimi chains (kimi, kimi-k2,
   # kimi-code, kimi-auto).
   hf-free:
-    baseUrl: https://router.huggingface.co/v1
-    keyEnv: HF_TOKEN
+    # NOTE: proxy has no /v1 suffix -- the router joins the proxy with the
+    # request path (/v1/chat/completions); a /v1 suffix would double it.
+    # (2026-09-21: was baseUrl:/keyEnv:, which the peers schema does not
+    # recognize -- config failed validation ("proxy is required") and herd
+    # died on its first reload/restart after the block was added.)
+    proxy: https://router.huggingface.co
+    # apiKey intentionally OMITTED 2026-09-29 (lumen): HF_TOKEN absent from estate
+    # (/home/toxic/.secrets re-rendered 2026-09-28 22:21 without it; no backup copy
+    # found anywhere). llama-swap fails hard on ${env.MISSING}; omitting the key lets
+    # the config load and the peer 401s at runtime until the token is re-installed.
+    # Re-add: apiKey: ${env.HF_TOKEN} + HF_TOKEN in .secrets.
     models:
       - moonshotai/Kimi-K3
 
@@ -841,7 +850,9 @@ peers:
     # NOTE: proxy has no /v1 suffix -- the router joins the proxy with the
     # request path (/v1/chat/completions); a /v1 suffix would double it.
     proxy: https://api.mistral.ai
-    apiKey: ${env.MISTRAL_API_KEY}
+    # apiKey intentionally OMITTED 2026-09-29 (lumen): MISTRAL_API_KEY absent from estate
+    # (.secrets re-rendered 2026-09-28 22:21; no backup copy found). Peer 401s at
+    # runtime until the token is re-installed. Re-add: apiKey: ${env.MISTRAL_API_KEY} + MISTRAL_API_KEY in .secrets.
     models:
       - mistral-medium-3.5
       - magistral-medium-latest
@@ -914,6 +925,20 @@ peers:
       tlsHandshake: 10
       idleConn: 90
 
+  gemini-eap:
+    proxy: http://127.0.0.1:25109/gemini-eap
+    models:
+      - google/gemini-flash-tool-retrieval
+      - gemini-flash-tool-retrieval
+    timeouts: {connect: 30, keepalive: 30, responseHeader: 120}
+
+  gemini-eap-openai:
+    proxy: http://127.0.0.1:25109/gemini-eap-openai
+    models:
+      - google/gemini-3.8-flash
+      - gemini-3.8-flash
+      - google/gemini-3.1-pro-eap
+    timeouts: {connect: 30, keepalive: 30, responseHeader: 120}
   gemini:
     proxy: http://127.0.0.1:25109/gemini
     # apiKey intentionally OMITTED (2026-09-20, herd-deployer): auth is

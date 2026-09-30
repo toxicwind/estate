@@ -1,20 +1,132 @@
-# ============================================================================
-# .gitignore — Sovereign Stack (Bun-primary)
-# ============================================================================
+# Dependencies
+node_modules
+.npm/
 
-# ─── Secrets & Credentials ──────────────────────────────────────────────────
-# Environment files
+# Build output
+dist/
+packages/*/dist/
+packages/*/dist-chrome/
+packages/*/dist-firefox/
+target/
+.xwin-cache/
+*.tsbuildinfo
+*.node
+*.b64.js
+/result
+/result-*
+
+# Environment
 .env
+.venv
+
+# Editors
+.vscode/
+.zed/
+.idea/
+*.swp
+*.swo
+*.kate-swp
+*~
+
+# OS
+*.tmp
+# Bun compile temp artifacts, left in cwd if a `Bun.build({ compile })` run is killed mid-write
+*.bun-build
+.DS_Store
+
+# Logs & profiling
+*.log
+tui-debug.log
+*.cpuprofile
+
+# Test & coverage
+coverage/
+.nyc_output/
+packages/ai/test/.temp-images/
+
+# Project specific
+!.omp/
+.omp/plugins/
+.pi_config/
+.opencode/
+.worktrees/
+.worktree/
+compaction-results/
+changes/
+__pycache__/
+
+# Scratch files
+syntax.jsonl
+out.jsonl
+out.html
+pi-*.html
+.close_issue.sh
+
+# Generated files
+packages/coding-agent/src/export/html/tool-views.generated.js
+packages/natives/npm/
+/runs/
+python/omp-rpc/src/omp_rpc.egg-info/
+python/omp-rpc/build/
+# parallel-agent worktrees
+.wt/
+CPU*.md
+packages/coding-agent/binaries/
+
+# robomp runtime state
+python/robomp/data/
+python/robomp/.cache/
+python/robomp/src/robomp/static/
+python/robomp/web/dist/
+python/robomp/web/verify-out/
+/verify-out/
+python/robomp/.env
+
+# Local, machine-specific boot perf baseline (see packages/coding-agent/scripts/bench-guard.ts)
+packages/coding-agent/bench/boot-baseline.json
+
+# Bazel
+/bazel-bin
+/bazel-out
+/bazel-testlogs
+/bazel-pi
+/bazel-oh-my-pi
+/.bazelrc.user
+
+.parity/
+
+# Sovereign standard sensitive & ephemeral patterns added by auditor
+.secrets
+*.key
+*.pat
+github_*_pat.json
+*.env.local
+*.jsonl
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.sock
+*.pcap
+node_modules/
+.cache/
+.bun/
+
+# ============================================================================
+# Sovereign estate rules restored after the vendored oh-my-pi merge (329ca019)
+# left conflict markers in this file. The de-vendoring commit 9fb535d300
+# removed the upstream source tree but the root .gitignore had been
+# overwritten by the merge, silently dropping the estate's own rules.
+# Every rule below existed in the pre-merge sovereign .gitignore and is
+# reinstated here; none of the upstream base above is removed.
+# ============================================================================
 .env*
 !.env.example
 !.env.template
 .envrc.local
-.secrets
 .secrets*
 *.token
-
-# Certificates and Keys
-*.key
 *.pem
 *.cert
 *.crt
@@ -22,21 +134,18 @@
 *.p12
 *.pkcs12
 *.der
-
-# Credentials, Tokens, Secrets
 *credentials*
 *secret*
 *token*
 auth.json
 tokens.json
 storageState.json
-
-# Session data, cookies, browser profiles
 *cookie*
 *session*
-# tau-session-audit is a real skill, not session data (collateral of the *session* rule)
 !skills/tau-session-audit/
 !skills/tau-session-audit/**
+!skills/fix-tau-session-corruption/
+!skills/fix-tau-session-corruption/**
 browser_profile/
 browser_profiles/
 browser-profile/
@@ -45,91 +154,55 @@ browser-profiles/
 chrome-profile/
 firefox-profile/
 playwright/.auth/
-# ─── Runtime / State ──────────────────────────────────────────────────────────
 .state/
 .prometheus/
 logs/
-*.log
 *.qslog
-*.jsonl
 /tmp/
 tmp/
 pids/
 *.pid
 session-export*
 *.session
-*.sqlite
 .wezterm.sock*
-
-# ─── Build Artifacts ──────────────────────────────────────────────────────────
 .venv/
-__pycache__/
 *.pyc
 *.egg-info/
-node_modules/
-.bun/
-target/
-dist/
 build/
-*.tsbuildinfo
 .turbo/
 Cargo.lock.bak
 bun.lock
-
-# ─── Binaries (built/copied, not tracked in git) ─────────────────────────────
 bin/sovereign_web
 bin/llama-swap
 tools/llama-swap/llama-swap
 tools/llama-swap/ollama-proxy
 tools/llama-swap/*.db
 tools/llama-swap/*.db-journal
-
-# ─── Models (GGUFs live outside this tree) ────────────────────────────────────
 models/
 *.gguf
 data/
-
-# ─── Scratch / Ephemeral ─────────────────────────────────────────────────────
 scratch/
 ~/
 .agents/
 .grok/
 *.local.md
 *.local.toml
-
-# ─── Backup (never stage) ────────────────────────────────────────────────────
 backup/
 **/reorg_*/
 **/cleanup_*/
 hw_dump*
 hardware_audit*
-
-# ─── Non-production (legacy, kept in backup/) ────────────────────────────────
-# yote/ removed 2026-09-17: projects/yote is the production location (pitchfork runs it); version it
 tools/legacy/
 tools/ollama-proxy-rs/
-
-# ─── Retired env managers ─────────────────────────────────────────────────────
 .direnv/
 .devenv/
 .devbox/
-
-## ─── Test / Coverage (local-only, never stage) ─────────────────────────────
-coverage/
 coverage.lcov
 *.lcov
 .bun-test/
-
-# ─── IDE / tests ────────────────────────────────────────────────────────────────
-.idea/
-.vscode/
 .playwright-mcp/
-
-# ─── Misc noise ───────────────────────────────────────────────────────────────
 dashboard/
 ports.env
-
-# Local runtime / plugin noise (do not ship)
 grafana/plugins/
 grafana/data/
 grafana/logs/
@@ -137,31 +210,19 @@ tools/ast-matrix/ultimate_extract/
 tools/ast-matrix/weird_*.json
 *.map
 usr/
-
-# Agent orchestration runtime state
 .agent-orchestration/
 projects/ops/dispatcher/state/
-*.db
-*.db-shm
-*.db-wal
 _probe*.sh
-
-# Audit / scratch scripts
 audit_*.py
-# ...except the canonical debate-oracle prompt-audit harness
 !killer-features/debate-oracle/audit/audit_v1.py
 nohup.out
 output/
 MCP_AUDIT.md
-
-# Qdrant local state
 .qdrant-initialized
 .qdrant/
 qdrant-config.yaml
 .scout-cache/
 .project_map.json
-
-# Security boundaries (git-mutator)
 *.env
 !config/ports.env
 .env.*
@@ -196,7 +257,6 @@ pip-wheel-metadata/
 .next/
 .nuxt/
 .parcel-cache/
-.cache/
 .env.local
 .env.*.local
 target/*
@@ -266,23 +326,12 @@ crash.*.log
 .windsurf/
 .idea_modules/
 *.iml
-*.swp
-*.swo
-.DS_Store
 Thumbs.db
 Desktop.ini
 ehthumbs.db
 $RECYCLE.BIN/
-
-# token-scrub 2026-09-14: never commit secrets
-*.pat
-github_*_pat.json
-
-# branch-merge inspection scratch (branch-integration worker 2026-09-14)
 /branch-merge/
 .super-ralph/
-
-# --- secret hygiene (2026-09-19): never commit credentials ---
 credentials*
 *api_key*
 *apikey*
@@ -291,32 +340,19 @@ id_ed25519*
 .aws/
 .gnupg/
 **/secrets/**
-# mesh gateway live config: shep rewrites it on every start with effective
-# secrets (api_key, server env) -- never track; bootstrap from mcp_config.json.dist
 projects/mesh/gateway/mcp_config.json
-
-# --- stale-dir archive (herd triage 2026-09-20) ---
 .archive-*/
-
-# --- engine build trees (herd triage 2026-09-20: 3G, never commit) ---
 /engines/
-
-# --- sovereign reorg 2026-09-20: /scratch is the renamed shingle-workspace (tracked) ---
 !/scratch/
-
-# ─── Sweep 2026-09-20: runtime state, agent backups, heavy work dirs ─────────
 hatch/agents/ember/squawk-root/
 *.bak*
 *.bak-*
-__pycache__/
 *.pyc
 projects/tau/engine.bak-*/
 projects/tau-occupied-*/
 projects/nim-repos/
-projects/guidellm/
+projects/gear/
 worktrees/
-
-# Committer 2026-09-20: deliberately untracked (foreign forks, nested repos, runtime state)
 sovereign-github-search/
 bench-wt-tau/
 killer-features/*/vendor/
@@ -332,3 +368,13 @@ projects/mesh/bin/shep-v0.51.0
 projects/tau/archive/from-tau/crates/pi-natives/tools/cache/*.bin
 killer-features/**/var/
 killer-features/**/state.json
+
+# Live gateway config: gatehouse rewrites the effective config on every start,
+# re-materialising real credentials into it. Never track; bootstrap the live
+# file from the tracked mcp_config.json.dist. Untracked in ca01d2b8.
+projects/herd/mesh/gateway/mcp_config.json
+
+# Bleve BM25 search index for the mcpproxy-go gateway. A runtime artifact of
+# internal/index/; its canonical home is ~/.mcpproxy/index.bleve/, not the
+# repo. Untracked here.
+projects/herd/mesh/gateway/index.bleve/
