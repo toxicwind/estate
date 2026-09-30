@@ -33,18 +33,45 @@ _out()  { printf '%s\n' "$*"; }
 
 # yote-side squawk publish, flock-protected seq allocation (borrowed from
 # ops/openfang-health/openfang-health.sh's proven pattern).
-_squawk() {
+#
+# DEDUPE (2026-09-30, slate): the 9/25 flood (~70 posts in ~90s) was publisher
+# sickness — identical alerts re-posted on every watch-loop pass while drift
+# persisted. _squawk now coalesces: identical (title,body) within
+# DEDUPE_WINDOW_S posts once and counts the rest; on state change (or window
+# expiry with pending repeats) a single summary goes out first. The warden is
+# NEVER silent — repeats always surface as a summary. State lives in $LOG_DIR,
+# guarded by its own flock; lock order is always dedupe-lock -> publish-lock.
+DEDUPE_WINDOW_S=600
+DEDUPE_STATE="$LOG_DIR/.squawk-dedupe.state"
+
+# Durable seq allocation: the ranch seq_alloc.py serializes read-modify-write
+# on its own flock and never returns a seq at/below a previously allocated
+# one. Degraded forward path = max+1 when the allocator is absent (races under
+# concurrency, but posts rather than dies).
+_seq_next() {
+  local root="$1" ch="$2" sa=""
+  for _sa in "$ESTATE_ROOT/projects/range/ranch/squawk/seq_alloc.py" \
+             /home/toxic/sovereign/projects/range/ranch/squawk/seq_alloc.py; do
+    [ -f "$_sa" ] && sa="$_sa" && break
+  done
+  if [ -n "$sa" ]; then
+    python3 "$sa" "$root" "$ch" 2>/dev/null && return 0
+  fi
+  python3 -c "
+import re, glob
+ms=[re.match(r'(\d+)-', f.split('/')[-1]) for f in glob.glob('$root/$ch/*.md')]
+ns=[int(m.group(1)) for m in ms if m]
+print((max(ns)+1) if ns else 1)"
+}
+
+_squawk_raw() {
   local title="$1" body="$2"
   local root="${SQUAWK_ROOT:-/home/toxic/.fleet-bus/squawk-root}"
   [ -d "$root/fleet" ] || return 0
   (
     flock -x 200
     local seq
-    seq="$(python3 -c "
-import re, glob
-ms=[re.match(r'(\d+)-', f.split('/')[-1]) for f in glob.glob('$root/fleet/*.md')]
-ns=[int(m.group(1)) for m in ms if m]
-print((max(ns)+1) if ns else 1)")"
+    seq="$(_seq_next "$root" fleet)"
     {
       # NOTE (2026-09-21 fig-audit): the opening --- fence is REQUIRED. The
       # squawk feed's identity parser rejects bare frontmatter, and the
@@ -55,6 +82,34 @@ print((max(ns)+1) if ns else 1)")"
       printf '%s\n' "$body"
     } > "$root/fleet/${seq}-estate-reconcile.md"
   ) 200>"$LOCK_FILE" || true
+}
+
+_squawk() {
+  local title="$1" body="$2"
+  local now hash lhash="" lts=0 cnt=0 ltitle=""
+  now="$(date +%s)"
+  hash="$(printf '%s\x00%s' "$title" "$body" | sha256sum | cut -d' ' -f1)"
+  (
+    flock -x 200
+    if [ -f "$DEDUPE_STATE" ]; then
+      IFS='|' read -r lhash lts cnt ltitle < "$DEDUPE_STATE" 2>/dev/null || true
+    fi
+    cnt="${cnt:-0}"; lts="${lts:-0}"
+    if [ "$hash" = "$lhash" ] && [ $((now - lts)) -lt "$DEDUPE_WINDOW_S" ]; then
+      # repeat: count it, stay silent — the summary speaks for the flood
+      printf '%s|%s|%s|%s\n' "$hash" "$now" "$((cnt+1))" "$title" > "$DEDUPE_STATE"
+      _log "SQUAWK-DEDUPE coalesced repeat #$((cnt+1)): $title"
+      exit 0
+    fi
+    # state change (or window expired): flush pending repeats as ONE summary,
+    # then post the new alert. Never silent, never a flood.
+    if [ "$cnt" -gt 0 ] && [ -n "$lhash" ]; then
+      _squawk_raw "estate-reconcile: $cnt repeat(s) coalesced" \
+        "The preceding alert ('${ltitle:-$title}') repeated $cnt time(s) within the dedupe window and was coalesced into this summary instead of $cnt fleet posts. Latest distinct alert follows."
+    fi
+    printf '%s|%s|%s|%s\n' "$hash" "$now" 0 "$title" > "$DEDUPE_STATE"
+    _squawk_raw "$title" "$body"
+  ) 200>"$DEDUPE_STATE.lock"
 }
 
 # Parse manifest.yaml into rows: name<TAB>key<TAB>value (bash 4+, fixed schema).
