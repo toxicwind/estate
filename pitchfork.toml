@@ -936,3 +936,15 @@ health_http = { url = "http://127.0.0.1:25104/health", interval = "30s", timeout
 depends = ["keypool"]
 env = { SOVEREIGN_ROUTER_PORT = "25104" }
 auto = ["start"]
+
+# hashline serve — Unix-socket JSON-RPC daemon (first-class edit tool,
+# Chris 2026-09-30). Agents edit via the binary; MCP hosts use
+# `hashline mcp --proxy-to-daemon` against this socket. No HTTP surface —
+# readiness is the socket listening.
+[daemons.hashline]
+run = "exec /home/toxic/.local/bin/hashline serve --socket /home/toxic/.hashline/hashline.sock --pid-file /home/toxic/.hashline/hashline.pid"
+dir = "/home/toxic"
+env = { HASHLINE_NO_UPDATE_CHECK = "1" }
+retry = true
+ready_cmd = "ss -lx | grep -q /home/toxic/.hashline/hashline.sock"
+auto = ["start"]
