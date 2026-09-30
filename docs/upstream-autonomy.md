@@ -33,7 +33,7 @@ To prevent merge conflicts during upstream pulls, sovereign-specific enhancement
 
 ## 3. Automated CI/CD Upstream Sync & Push Building
 
-Our automated CI/CD pipeline (`buildsrv` on port `25148` + Git `post-commit` hooks) ensures that:
+Our automated CI/CD pipeline (`brand` on port `25148` + Git `post-commit` hooks) ensures that:
 - Every commit or upstream merge triggers an automated background build.
 - Version tracking (`v18.3.0`) and content hashes cache artifacts cleanly.
 - Immutable binary pinning (`omp-pin`) prevents upstream updates from breaking local paths.
