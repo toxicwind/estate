@@ -18,7 +18,7 @@ cache_context = false
 
 [model]
 provider = "llama-swap"
-model = "openrouter-free/google/gemma-4-26b-a4b-it:free"
+model = "nex-agi/nex-n2.5-mini:free"
 fallback_models = [{ provider = "llama-swap", model = "gemini/gemini-3-flash-preview" }]
 max_tokens = 131072
 temperature = 0.3
