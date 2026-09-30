@@ -231,7 +231,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | rigger | yote-conn mainline fix + Bun forward fork (ripline) with fallover | rigger | RUNNING (2026-09-30) |
 
-| barnaby | flock ts/policy: port sovereign-router policy engine (Elo, bench-priors, quarantine circuits, warm standby, health analytics) to TypeScript | Ember (main) | RUNNING (2026-09-30) |
+| barnaby | flock ts/policy: port sovereign-router policy engine (Elo, bench-priors, quarantine circuits, warm standby, health analytics) to TypeScript | Ember (main) | DONE (2026-09-30) -- ranch c328ff6: flock/ts/policy 10 files (elo, circuit, warm-standby, health, bench-priors.json, index, package.json, tsconfig.json, README, policy.test.ts); 23/23 bun tests green on yote; E2E: 9 priors loaded (nvidia 1053/groq 1062/nim-local 1080), 3x500 opens circuit |
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
 
