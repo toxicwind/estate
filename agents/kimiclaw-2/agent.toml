@@ -4,7 +4,6 @@ description = "KimiClaw worker: claw agent routed through herd (openrouter-free 
 author = "toxicwind"
 module = "builtin:chat"
 schedule = "reactive"
-fallback_models = []
 priority = "Normal"
 skills = []
 mcp_servers = []
@@ -18,7 +17,8 @@ cache_context = false
 
 [model]
 provider = "llama-swap"
-model = "nex-agi/nex-n2.5-mini:free"
+model = "openrouter-free/cohere/north-mini-code:free"
+fallback_models = [{ provider = "llama-swap", model = "gemini/gemini-3-flash-preview" }]
 max_tokens = 32000
 temperature = 0.3
 system_prompt = "You are a helpful AI agent."
