@@ -219,7 +219,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | stream-e | document the #yolo exec-policy bypass in the fleet KB | Ember (spawned subagent) | DONE (2026-09-30) — 2c83dd09a714a44d0eccee38bdea3ae257065a81 |
 
 
-| rhyx | brand hyper-race focus core: three-path focus-window racer + mock compositor + tests + native C++ verification | ember | RUNNING (2026-09-30) |
+| rhyx | brand hyper-race focus core: three-path focus-window racer + mock compositor + tests + native C++ verification | ember | DONE (2026-09-30) - toxicwind/brand@547a87811a1cd94e6068cf426ccca587e817b60d |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
