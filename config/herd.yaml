@@ -199,19 +199,19 @@ models:
   # which advertises peer models ONLY prefixed. Bare targets ->
   # 'unroutable' -> herd hangs waiting for ready.
   oracle-judge-a:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target  --standby 
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-ling/inclusionai/ling-3.0-flash-sante:free --standby openrouter-free/poolside/laguna-s-2.1:free
     description: "Oracle judge A (alias -> inclusionai/ling-3.0-flash-sante:free) -- fastest exact-output free judge (489ms census)"
     metadata:
       alias_of: inclusionai/ling-3.0-flash-sante:free
       role: oracle-judge
   oracle-judge-b:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target  --standby openrouter-free/poolside/laguna-s-2.1:free
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-ling/inclusionai/ling-3.0-flash-sante:free --standby openrouter-free/poolside/laguna-s-2.1:free
     description: "Oracle judge B (alias -> inclusionai/ling-3.0-flash-sante:free) -- exact-output NEX complement (799ms census)"
     metadata:
       alias_of: inclusionai/ling-3.0-flash-sante:free
       role: oracle-judge
   oracle-judge-c:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/poolside/laguna-s-2.1:free --standby 
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/poolside/laguna-s-2.1:free --standby openrouter-ling/inclusionai/ling-3.0-flash-sante:free
     description: "Oracle judge C (alias -> poolside/laguna-s-2.1:free) -- third model family (2161ms census)"
     metadata:
       alias_of: poolside/laguna-s-2.1:free

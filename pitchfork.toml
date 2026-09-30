@@ -507,18 +507,10 @@ mise = false
 retry = true
 auto = ["start"]
 
-# buildsrv - fleet continuous-modification engine (2026-09-14): disk-backed
-# job queue, streaming logs, content-hash artifact cache. Source:
-# tools/buildsrv in toxicwind/sovereign-projects. Submit via the buildsrv CLI.
-# NOTE: pitchfork.toml is hand-edited (generator retired 2026-09-14, never run it).
-# SUPERSEDED 2026-09-30 (peregrine, deploy-manifest audit): buildsrv +
-# buildsrv-watchdog retired. Flicker ([daemons.flicker], live on :25148 since
-# the brand->flicker cutover) replaces buildsrv; the old buildsrvd.py entry
-# claimed the same :25148 and is now removed to end the port conflict.
-# Binaries kept at tools/buildsrv/ for history.
+# RESTORED 2026-09-30 (peregrine): [daemons.brand] pointed at deleted
+# ranch/branding/ on :25148 (brand deprecated -> flicker per 2026-09-30 cutover).
+# Flicker is the live build daemon on :25148; blocks restored from origin/main.
 
-# flicker - local-only build daemon (replaces buildsrv). 2026-09-30.
-# Runs on 25241/25240 until E2E validated, then cuts over to 25148.
 [daemons.flicker]
 port = 25148
 run = "exec /home/toxic/sovereign/projects/range/ranch/flicker/bin/flicker-server"
@@ -528,7 +520,7 @@ retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25148/api/health"
 health_http = { url = "http://127.0.0.1:25148/api/health", interval = "30s", timeout = "5s", retries = 3 }
-env = { FLICKER_ROOT = "/home/toxic/flicker", WOODPECKER_HOST = "http://127.0.0.1:25148", WOODPECKER_GRPC_ADDR = ":25240", WOODPECKER_SERVER_ADDR = ":25148", WOODPECKER_GRPC_SECRET = "flicker-grpc-secret-change-me" }
+env = { FLICKER_ROOT = "/home/toxic/flicker", WOODPECKER_HOST = "http://127.0.0.1:25148", WOODPECKER_GRPC_ADDR = ":25240", WOODPECKER_SERVER_ADDR = ":25148", WOODPECKER_GRPC_SECRET = "66a9f7c1d6ffbac15c447f6d3d97827ab3d152286b23c0cbeb19a9372108419b", WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224a60416faf4f" }
 
 [daemons.flicker-agent]
 run = "exec /home/toxic/sovereign/projects/range/ranch/flicker/bin/flicker-agent"
@@ -536,8 +528,12 @@ dir = "/home/toxic/sovereign/projects/range/ranch/flicker"
 mise = false
 retry = true
 boot_start = true
-env = { WOODPECKER_SERVER = "127.0.0.1:25240", WOODPECKER_AGENT_SECRET = "flicker-agent-token-change-me" }
+env = { WOODPECKER_SERVER = "127.0.0.1:25240", WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224a60416faf4f" }
 auto = ["start"]
+
+# SUPERSEDED 2026-09-30 (peregrine): brand-watchdog retired with brand.
+# Flicker has its own health_http checks; no external watchdog needed.
+
 [daemons.windmill]
 health_http = { url = "http://127.0.0.1:25219/api/status", interval = "10s", timeout = "5s", retries = 2 }
 port = 25219
@@ -948,3 +944,14 @@ mise = false
 retry = true
 auto = ["start"]
 ready_cmd = "pgrep -f '[m]arket-loop.ts' >/dev/null"
+# hashline serve — Unix-socket JSON-RPC daemon (first-class edit tool,
+# Chris 2026-09-30). Agents edit via the binary; MCP hosts use
+# `hashline mcp --proxy-to-daemon` against this socket. No HTTP surface —
+# readiness is the socket listening.
+[daemons.hashline]
+run = "exec /home/toxic/.local/bin/hashline serve --socket /home/toxic/.hashline/hashline.sock --pid-file /home/toxic/.hashline/hashline.pid"
+dir = "/home/toxic"
+env = { HASHLINE_NO_UPDATE_CHECK = "1" }
+retry = true
+ready_cmd = "ss -lx | grep -q /home/toxic/.hashline/hashline.sock"
+auto = ["start"]
