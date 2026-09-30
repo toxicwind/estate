@@ -265,9 +265,6 @@ auto = ["start"]
 health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25193
 run = "exec /home/toxic/sovereign/projects/range/ranch/flock/bin/flock-run.sh"
-=======
-run = "exec /home/toxic/.flock/flock-run.sh"
->>>>>>> origin/main
 dir = "."
 mise = false
 retry = true
