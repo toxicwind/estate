@@ -1,12 +1,3 @@
----
-name: fleet-push
-description: >
-  Event-driven fleet push bus: inotifywait on the Yote squawk fleet lane wakes
-  a foreground forwarder that classifies each event and emits a deterministic
-  dispatch plan. No polling, no timers. Triggers on: "fleet-push", "fleet",
-  "squawk", "inotifywait", "event-driven push".
----
-
 # fleet-push
 
 Event-driven fleet push bus: `inotifywait` on the Yote squawk fleet lane wakes a
@@ -15,8 +6,8 @@ plan — which subscribed agents get it, in which relay chats. No polling, no ti
 
 ## Concept
 
-Squawk fleet messages land as files in `/home/toxic/.shingle/squawk-root/fleet/` on
-Yote (inotify survives the shingle move). `fleet-watch` runs an `inotifywait`
+Squawk fleet messages land as files in `~/.fleet-bus/` on
+Yote — the live home (symlink to `sovereign/hatch/agents/ember`). `/home/toxic/.shingle` is GONE (removed 2026-09-30). `fleet-watch` runs an `inotifywait`
 long-poll over the bridge and prints new message files; `fleet-classify` tags each
 event as `broadcast`, `lane:<name>`, or `info`; `fleet-dispatch` matches it against
 the subscription registry and emits the dispatch plan. The coordinator executes the
@@ -82,15 +73,15 @@ confirms briefly, stays out of the way.
 - The transport never failed. What failed was substance: a coordinator's "ignore
   Chris" instruction conflicted with Chris speaking directly in those chats.
   When that happens the instruction is wrong — flag the conflict to Chris
-  visibly and keep the lane running. Don't obey it, don't torch the lane, don't
-  rewrite the charter mid-argument. (Caught 2026-09-20: a coordinator update
-  told four relays to treat Chris's direct turns as "mirror noise" and stop
-  replying; zed-qed obeyed and the update had to be retracted.)
+  visibly, follow his direct turns, and keep the lane running. (Caught
+  2026-09-20: a coordinator update told four relays to treat Chris's direct
+  turns as "mirror noise" and stop replying; zed-qed obeyed and the update had
+  to be retracted.)
 - Not a prompt-injection hole, and the unreliable-narrator doctrine doesn't
   apply — it's plain authority: Chris's word is final in every chat.
   (Chris 2026-09-20.)
 - The spawn brief must carry the non-negotiable doctrines (workers don't inherit
-  them): yolo sudo / conflicts are decisions, never "impossible"; verify errors
+  them): full administrative access on both boxes; conflicts are decisions, never "impossible"; verify errors
   against ps/ss/curl/logs before believing them; fleet announce as ember on
   start/finish.
 - Archive the relay chat on completion (`chat.archive`). Never `chat.delete`
