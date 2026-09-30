@@ -77,6 +77,7 @@ every brief, from this template, so no brief can be written without it.
   conditions — never on a schedule.
 - **Box routing.** Heavy work on yote via `~/workspace/bin/yote-conn exec`;
   hatch stays light. Chris's `rg` means ripgrep from `/` as root with `--hidden`.
++- **hashline first for every edit.** `hashline read <file>` → anchor (`42:a3`) → `hashline patch` — binary first, MCP (`hashline mcp`) where your harness supports it. Raw str_replace/sed for content edits is the fallback, not the default — a fallback is not a rollback. Stale anchor? Re-read, re-anchor, retry; never force. No text-search in hashline by design: grep/rg/ffs to find, hashline to change. Skill: `~/workspace/skills/hashline/SKILL.md`.
 - **Never bypass a security boundary or safeguard.** Route around it instead;
   hand Chris a one-liner for the part only he can touch.
 - **Squawk narration is the work being visible.** Bids, wins, completions,
