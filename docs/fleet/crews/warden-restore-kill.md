@@ -2,7 +2,7 @@
 
 **Scope:** Disable ALL estate-reconcile restore paths — autonomous watch AND manual `--apply` — alert-only everywhere (Chris 2026-09-30: ferrous warden should not restore anything).
 **Owner / coordinator:** ashen (Ember's crew)
-**Status:** RUNNING
+**Status:** DONE
 
 ## Work
 - `bin/estate-reconcile`: `cmd_apply` replaced with fail-closed refuse stub (exit 2, logs APPLY-REFUSED); `_restore_from_copy` / `_restore_from_git` neutered to refuse stubs; `_backup_drifted` removed; zero restore mechanics remain.
@@ -15,3 +15,7 @@
 ## Done criteria
 - Commit on toxicwind/sovereign-projects main, remote ref verified.
 - estate-reconcile-watch daemon restarted on the new build; `--apply` refuses live.
+
+## Result
+- Commits `020f479aa` (restore-kill) + `d48d5a5db` (manifest sha bump) on toxicwind/sovereign-projects main, remote refs verified.
+- Live: `--apply` refuses (exit 2, APPLY-REFUSED logged); watch daemon restarted on new build; 15/15 tests green.
