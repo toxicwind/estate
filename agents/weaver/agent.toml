@@ -4,7 +4,6 @@ description = "Oracle of the emergent task market: intake triage, debate chair, 
 author = "toxicwind"
 module = "builtin:chat"
 schedule = "reactive"
-fallback_models = []
 priority = "Normal"
 skills = []
 mcp_servers = []
@@ -17,7 +16,8 @@ cache_context = false
 
 [model]
 provider = "llama-swap"
-model = "openrouter-free/inclusionai/ling-3.0-flash-sante:free"
+model = "openrouter-free/nvidia/nemotron-3-super-120b-a12b:free"
+fallback_models = [{ provider = "llama-swap", model = "gemini/gemini-3-flash-preview" }]
 max_tokens = 131072
 temperature = 0.3
 system_prompt = """
