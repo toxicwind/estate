@@ -1,8 +1,37 @@
 # Ordered fleet delivery (`hatch/bin/fleet/`)
 
-Extends the squawk fleet bus with the four primitives a reliable multi-agent
-bus needs: **dedup**, **gap replay**, **acks**, **chat isolation**. Built
-2026-09-20 by fleet-builder (Ember's pack).
+Extends the squawk fleet bus with the four primitives a reliable multi-agent bus needs: **dedup**, **gap replay**, **acks**, **chat isolation**. Built 2026-09-20 by fleet-builder (Ember's pack).
+
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+## Why this exists
+
+Squawk's `send` is fire-and-forget: retries double-post, a consumer that falls behind loses its place, and relay chats share the parent channel's sequence space. For fleet operations that need exactly-once semantics and catch-up reads, you need a log, not a mailbox. This is that log — one file, no daemon, atomic under `flock`.
+
+## Features
+
+- **Idempotent publish** — `msg_id` dedup: retried sends collapse to one seq.
+- **Gap replay** — `gaps` lists missing seqs; `fetch --after N` replays in order. Nothing is ever "resent."
+- **Acks** — per-consumer cursors, monotonic (a stale ack never rewinds); `lag` = max_seq − acked.
+- **Chat isolation** — relay chats get their own seq space under `fleet/chats/<slug>/`; zero cross-talk, verified under concurrency.
+- **No daemon** — `fleet.py` does one op and exits. Push semantics come from the existing inotify-fed ws feed.
+
+```mermaid
+flowchart LR
+    PUB[publish msg_id] --> LOCK[flock .seq.lock]
+    LOCK --> DEDUP{msg_id seen?}
+    DEDUP -->|yes| SAME[return existing seq<br/>deduped: true]
+    DEDUP -->|no| ALLOC[alloc max+1 → write file]
+    ALLOC --> IDX[.fleet/ids/<msg_id> → seq]
+    CON[consumer] --> FETCH[fetch --after N<br/>ordered replay]
+    CON --> ACK[ack → .fleet/acks/<consumer>]
+    ACK --> LAG[lag = max − acked]
+```
 
 ## Why this home
 
@@ -65,6 +94,14 @@ seqs are independent and their traffic never appears in the parent channel
 or sibling chats. Verified by the isolation test (3×80 concurrent
 publishes, zero cross-talk).
 
+## Quick start
+
+```bash
+squawk-fleet send fleet "hello" --msg-id abc123
+squawk-fleet fetch fleet --after 11770
+squawk-fleet ack fleet --consumer my-agent
+```
+
 ## Failure posture
 
 - Fail fast: 15s SIGALRM ceiling on the locked section (main thread);
@@ -95,3 +132,7 @@ new-scope first publish, CLI subprocess roundtrip. Evidence:
 - No cross-scope transactions — scopes are independent by design.
 - No message TTL/GC — the log is append-only; retention is a separate
   decision.
+
+## License & security
+
+MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). The dedup index and ack cursors are trust-relevant state: a forged `.fleet/ids/<msg_id>` entry could suppress a legitimate publish as "duplicate." The yote deploy path (`/home/toxic/squawk-fleet/`) is outside the git tree by design — seeded by sha256-verified drop, never hand-edited in place.
