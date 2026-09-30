@@ -1,6 +1,23 @@
+<div align="right">
+
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/part_of-sovereign--projects-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
 # hello-extension
 
+> **The smallest possible `omp` extension — copy it, rename it, ship your own.**
+
 A minimal `omp` extension that demonstrates the two most common authoring patterns: subscribing to `session_start` to notify on load, and registering a `/hello` slash command that sends a greeting into the conversation. It is intentionally small — use it as a copy-paste starting point for your own extension.
+
+```mermaid
+flowchart LR
+    load[extension loads] --> ss[session_start hook<br/>notify on load]
+    user[types /hello] --> cmd[/hello command]
+    cmd --> msg[greeting message<br/>into conversation]
+    cmd --> notif[Message sent! notification]
+```
 
 ## Install
 
@@ -39,3 +56,7 @@ After loading, type `/hello` or `/hello Ada` in the omp prompt. The command send
 - `pi.registerCommand(...)` — slash command registration
 - `ctx.ui.notify(...)` — user-facing notification
 - `package.json` with `omp.extensions` manifest field
+
+## License & Security
+
+MIT where marked — [license](https://github.com/toxicwind/sovereign-projects#license). These are minimal example extensions: safe to copy and adapt. Never drop a real secret into an example config; treat any key-shaped string in docs as untrusted until verified.
