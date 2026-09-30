@@ -1,4 +1,4 @@
-import { PROVIDERS, PROVIDER_MODELS, STRATEGY, keyOk } from "./router_config.ts";
+import { PROVIDERS, STRATEGY, keyOk, catalogModelsFor } from "./router_config.ts";
 import { state } from "./router_matrix.ts";
 
 // ---------------------------------------------------------------------------
@@ -7,14 +7,13 @@ import { state } from "./router_matrix.ts";
 export function uiData(): Record<string, unknown> {
   const providers: Record<string, unknown> = {};
   for (const name of Object.keys(PROVIDERS)) {
-    const free = (PROVIDER_MODELS[name] || []).filter((m) =>
-      m.includes(":free"),
-    );
+    const serving = catalogModelsFor(name);
+    const free = serving.filter((m) => m.includes(":free"));
     providers[name] = {
       keyed: keyOk(name),
       circuit: state.circuit.get(name) || "unknown",
       elo: Math.round((state.elo.get(name) || 1000) * 10) / 10,
-      models: (PROVIDER_MODELS[name] || []).length,
+      models: serving.length,
       free_models: free,
     };
   }
