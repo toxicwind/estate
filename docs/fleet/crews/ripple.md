@@ -2,7 +2,7 @@
 crew: 'ripple'
 scope: 'Portainer replacement research: pattern-borrow + paper-search + web recon; ranked agentic control-plane shortlist'
 owner: 'parent orchestrator (Ember crew)'
-status: 'RUNNING (2026-09-30)'
+status: 'DONE (2026-09-30) — e97c964619'
 order: 202
 registered: '2026-09-30'
 updated: '2026-09-30'
