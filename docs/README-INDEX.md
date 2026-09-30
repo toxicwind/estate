@@ -510,7 +510,7 @@ flowchart LR
 
 ## scratch
 
-- [scratch/buildsrv-src/README.md](../scratch/buildsrv-src/README.md)
+- [scratch/brand-src/README.md](../scratch/brand-src/README.md)
 - [scratch/readmefix-herd/README.md](../scratch/readmefix-herd/README.md)
 - [scratch/README.md](../scratch/README.md)
 - [scratch/swarm-merge/work/nim/README.md](../scratch/swarm-merge/work/nim/README.md)
@@ -572,8 +572,8 @@ flowchart LR
 - [tools/ast-grep-rules/agent-stack/README.md](../tools/ast-grep-rules/agent-stack/README.md)
 - [tools/bench-radar/README.md](../tools/bench-radar/README.md)
 - [tools/bugbounty/README.md](../tools/bugbounty/README.md)
-- [tools/buildsrv/proofs/README.md](../tools/buildsrv/proofs/README.md)
-- [tools/buildsrv/README.md](../tools/buildsrv/README.md)
+- [tools/brand/proofs/README.md](../tools/brand/proofs/README.md)
+- [tools/brand/README.md](../tools/brand/README.md)
 - [tools/fanout/README.md](../tools/fanout/README.md)
 - [tools/fast-race/README.md](../tools/fast-race/README.md)
 - [tools/fleet-chat/README.md](../tools/fleet-chat/README.md)

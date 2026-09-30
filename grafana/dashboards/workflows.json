@@ -250,7 +250,7 @@
    ]
   },
   {
-   "title": "buildsrv up",
+   "title": "brand up",
    "type": "stat",
    "fieldConfig": {
     "defaults": {
@@ -265,12 +265,12 @@
    },
    "targets": [
     {
-     "expr": "sovereign_buildsrv_up"
+     "expr": "sovereign_brand_up"
     }
    ]
   },
   {
-   "title": "buildsrv queue depth",
+   "title": "brand queue depth",
    "type": "stat",
    "fieldConfig": {
     "defaults": {
@@ -285,12 +285,12 @@
    },
    "targets": [
     {
-     "expr": "sovereign_buildsrv_queue_depth"
+     "expr": "sovereign_brand_queue_depth"
     }
    ]
   },
   {
-   "title": "buildsrv active jobs",
+   "title": "brand active jobs",
    "type": "stat",
    "fieldConfig": {
     "defaults": {
@@ -305,7 +305,7 @@
    },
    "targets": [
     {
-     "expr": "sovereign_buildsrv_active_jobs"
+     "expr": "sovereign_brand_active_jobs"
     }
    ]
   }

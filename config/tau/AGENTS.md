@@ -22,9 +22,9 @@
 #   bun /home/toxic/sovereign/helpers/health-audit.ts
 #   mise -C /home/toxic/sovereign run health|status|up|down
 
-## 🏗️ Build Server (buildsrv - :25148)
-- **Daemon**: Running on port `25148` via Pitchfork (`/home/toxic/sovereign/tools/buildsrv/buildsrvd.py`).
-- **Heavy Builds**: Use `buildsrv submit --name <name> --repo <dir> --toolchain <bun|rust|go|python> --cmd "<cmd>"` for heavy builds rather than running long compilation in turn shell.
+## 🏗️ Build Server (brand - :25148)
+- **Daemon**: Running on port `25148` via Pitchfork (`/home/toxic/sovereign/tools/brand/brandd.py`).
+- **Heavy Builds**: Use `brand submit --name <name> --repo <dir> --toolchain <bun|rust|go|python> --cmd "<cmd>"` for heavy builds rather than running long compilation in turn shell.
 - **Worker & Cache Architecture**:
   - 2-worker concurrent queue preventing resource exhaustion.
   - NVMe-backed shared compiler/package caches: `sccache` (Rust/C++), `ccache`, and `uv` (Python wheels/environments).

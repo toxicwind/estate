@@ -105,7 +105,7 @@ pitchfork-supervised yote service inside the cell-material tree, confusing the n
 - **Data/state (do not reorganize):** `data/`, `logs/`, `qdrant_data/`, `prometheus-data/`, `brain/`, `snapshots/`
 - **Docs/research:** `docs/`, `research/`, `audit/`, `audit-output/`, `architecture.d2`, `appinfo.json`
 - **Skills/rules:** `skills/`, `sovereign-skills/`, `ast-grep-rules/`
-- **Lane/worktree dirs (dated `*-20260914`, `wt-*`, `stash-*`, `merge-*`, `worktrees/`, `buildsrv-test*`):** stay as-is; future consolidation candidate, explicitly out of scope for this reorg
+- **Lane/worktree dirs (dated `*-20260914`, `wt-*`, `stash-*`, `merge-*`, `worktrees/`, `brand-test*`):** stay as-is; future consolidation candidate, explicitly out of scope for this reorg
 - **Runtime/build:** `node_modules/`, `tests/`, `test/`, `tools-2/`, `coverage/`, `output/`, `xfer-report-20260915`, `analysis-*`
 - **Special:** `yote -> projects/yote` (symlink, untouched), `tailscale/`, `forensics-srv/`
 - **Out of scope (not sovereign children):** `/home/toxic/cell-backup-*` (hatch cell backups), `/home/toxic/awrawr_ws_exec.py` (synced fallback copy of the bridge — keep, per pitchfork.toml comment), `/home/toxic/kimi-auto`, `/home/toxic/paper-poller`, `/home/toxic/refusal-hunt`, `/home/toxic/gemini-mcp`, `/home/toxic/whatsapp-mcp`, `/home/toxic/boundless`, `/home/toxic/ws-exec-tunnel.py`

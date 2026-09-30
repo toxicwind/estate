@@ -911,19 +911,19 @@ def bg_kill(handle: str) -> str:
 # --- end mcp-smith ------------------------------------------------------------
 
 
-# --- buildsrv tools -----------------------------------------------------------
-# Added 2026-09-21. Native MCP surface for buildsrv, the fleet build server
-# on 127.0.0.1:25148. Wraps /home/toxic/bin/buildsrv via argv lists only
+# --- brand tools -----------------------------------------------------------
+# Added 2026-09-21. Native MCP surface for brand, the fleet build server
+# on 127.0.0.1:25148. Wraps /home/toxic/bin/brand via argv lists only
 # (never shell=True, never raw interpolation). Submit returns immediately
-# after queueing; the build itself runs async in buildsrvd.
+# after queueing; the build itself runs async in brandd.
 
-_BUILDSRV_BIN = "/home/toxic/bin/buildsrv"
-_BUILDSRV_JOB_RX = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$")
-_BUILDSRV_MAX_CMD = 4000
-_BUILDSRV_OUT_CAP = 8000
+_BRAND_BIN = "/home/toxic/bin/brand"
+_BRAND_JOB_RX = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$")
+_BRAND_MAX_CMD = 4000
+_BRAND_OUT_CAP = 8000
 
 
-def _buildsrv_run(argv):
+def _brand_run(argv):
     try:
         p = subprocess.run(argv, capture_output=True, text=True, timeout=90)
     except subprocess.TimeoutExpired:
@@ -933,27 +933,27 @@ def _buildsrv_run(argv):
     out = ((p.stdout or "") + (p.stderr or "")).strip()
     if not out:
         return "[exit=%d] (no output)" % p.returncode
-    return out[:_BUILDSRV_OUT_CAP]
+    return out[:_BRAND_OUT_CAP]
 
 
-def _buildsrv_check_id(job_id):
-    if not _BUILDSRV_JOB_RX.match(job_id or ""):
+def _brand_check_id(job_id):
+    if not _BRAND_JOB_RX.match(job_id or ""):
         return "bad job_id: must match ^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"
     return None
 
 
-_BUILDSRV_DEFAULT_REPO = "/home/toxic/sovereign/tools/buildsrv"
+_BRAND_DEFAULT_REPO = "/home/toxic/sovereign/projects/range/ranch/branding"
 
 
 @mcp.tool()
-def buildsrv_submit(name: str, cmd: str, toolchain: str,
-                    repo: str = _BUILDSRV_DEFAULT_REPO,
+def brand_submit(name: str, cmd: str, toolchain: str,
+                    repo: str = _BRAND_DEFAULT_REPO,
                     workdir: str = "", timeout: int = 1200) -> str:
-    """Submit a build job to buildsrv (fleet build server on :25148).
+    """Submit a build job to brand (fleet build server on :25148).
 
     Queues the job and returns immediately with the job id; the build runs
-    async in buildsrvd. Poll with buildsrv_status / buildsrv_logs.
-    cmd is capped at 4000 chars. repo defaults to the buildsrv tool dir;
+    async in brandd. Poll with brand_status / brand_logs.
+    cmd is capped at 4000 chars. repo defaults to the brand tool dir;
     toolchain is required (rust|cargo|go|bun|node|python|python3|tsc|java|gradle).
     """
     if not (name or "").strip():
@@ -962,9 +962,9 @@ def buildsrv_submit(name: str, cmd: str, toolchain: str,
         return "error: cmd required"
     if not (toolchain or "").strip():
         return "error: toolchain required"
-    if len(cmd) > _BUILDSRV_MAX_CMD:
-        return "error: cmd too long (%d > %d)" % (len(cmd), _BUILDSRV_MAX_CMD)
-    repo = (repo or _BUILDSRV_DEFAULT_REPO).strip()
+    if len(cmd) > _BRAND_MAX_CMD:
+        return "error: cmd too long (%d > %d)" % (len(cmd), _BRAND_MAX_CMD)
+    repo = (repo or _BRAND_DEFAULT_REPO).strip()
     if not repo.startswith("/"):
         return "error: repo must be an absolute path"
     try:
@@ -972,27 +972,27 @@ def buildsrv_submit(name: str, cmd: str, toolchain: str,
     except (TypeError, ValueError):
         return "error: timeout must be an integer"
     timeout = max(30, min(timeout, 7200))
-    argv = [_BUILDSRV_BIN, "submit", "--name", name, "--repo", repo,
+    argv = [_BRAND_BIN, "submit", "--name", name, "--repo", repo,
             "--toolchain", toolchain.strip(), "--cmd", cmd,
             "--timeout", str(timeout)]
     if (workdir or "").strip():
         argv += ["--workdir", workdir.strip()]
-    return _buildsrv_run(argv)
+    return _brand_run(argv)
 
 
 @mcp.tool()
-def buildsrv_status(job_id: str) -> str:
-    """Show buildsrv job status (queued/running/succeeded/failed, exit code)."""
-    err = _buildsrv_check_id(job_id)
+def brand_status(job_id: str) -> str:
+    """Show brand job status (queued/running/succeeded/failed, exit code)."""
+    err = _brand_check_id(job_id)
     if err:
         return err
-    return _buildsrv_run([_BUILDSRV_BIN, "status", job_id])
+    return _brand_run([_BRAND_BIN, "status", job_id])
 
 
 @mcp.tool()
-def buildsrv_logs(job_id: str, tail: int = 50) -> str:
-    """Show the last N lines of a buildsrv job's log (default 50, max 500)."""
-    err = _buildsrv_check_id(job_id)
+def brand_logs(job_id: str, tail: int = 50) -> str:
+    """Show the last N lines of a brand job's log (default 50, max 500)."""
+    err = _brand_check_id(job_id)
     if err:
         return err
     try:
@@ -1000,27 +1000,27 @@ def buildsrv_logs(job_id: str, tail: int = 50) -> str:
     except (TypeError, ValueError):
         return "error: tail must be an integer"
     n = max(1, min(n, 500))
-    return _buildsrv_run([_BUILDSRV_BIN, "logs", "-n", str(n), job_id])
+    return _brand_run([_BRAND_BIN, "logs", "-n", str(n), job_id])
 
 
 @mcp.tool()
-def buildsrv_list(limit: int = 10) -> str:
-    """List recent buildsrv jobs (default 10, max 50)."""
+def brand_list(limit: int = 10) -> str:
+    """List recent brand jobs (default 10, max 50)."""
     try:
         n = int(limit)
     except (TypeError, ValueError):
         return "error: limit must be an integer"
     n = max(1, min(n, 50))
-    return _buildsrv_run([_BUILDSRV_BIN, "list", "-n", str(n)])
+    return _brand_run([_BRAND_BIN, "list", "-n", str(n)])
 
 
 @mcp.tool()
-def buildsrv_health() -> str:
-    """Health probe for the buildsrv daemon (:25148): uptime, workers, queue."""
-    return _buildsrv_run([_BUILDSRV_BIN, "health"])
+def brand_health() -> str:
+    """Health probe for the brand daemon (:25148): uptime, workers, queue."""
+    return _brand_run([_BRAND_BIN, "health"])
 
 
-# --- end buildsrv tools -------------------------------------------------------
+# --- end brand tools -------------------------------------------------------
 # --- hft race tool ----------------------------------------------------------
 RACE_WINNERS_LOG = os.path.expanduser('~/sovereign/hatch/cache-shingle/hft_race_winners.jsonl')
 

@@ -49,7 +49,7 @@ From `/` downward, verified via `ps -ef --forest` and
   **PPid 0** — their parent lives outside this PID namespace. That is as
   high as the trace goes from inside; the host side is unobservable here.
 - **PID 1:** `/usr/lib/systemd/systemd` — the cell init. Direct parent of
-  every in-cell daemon (ws bridge, squawk push client, buildsrvd,
+  every in-cell daemon (ws bridge, squawk push client, brandd,
   proxy_fwd, health poller, journald).
 - **The fleet is not processes.** Subagents/workers have no OS PIDs; they
   are logical rows in the external Postgres (`agent.agents`,
