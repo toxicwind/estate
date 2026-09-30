@@ -207,6 +207,9 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | corvid | ROUTING AUDIT: agent cognition vs tool-call vs heavy-compute placement across hatch+yote; exec-lane routing; cell cron/worker heavy-compute  | corvid (Ember crew) | DONE (2026-09-30) — 1cdeac68f6 |
 <!-- KB-ROLLUP:END -->
 
+
+| stream-e | document the #yolo exec-policy bypass in the fleet KB | Ember (spawned subagent) | RUNNING (2026-09-30) |
+
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
 
@@ -393,3 +396,35 @@ obv" (Dropbox). The Dropbox sync step is removed, not replaced. Skill:
 Measured on yote: 53,851 files indexed in ~98s; scoped query 0.395ms;
 nanosecond race (50 runs, GC-isolated): bm25_only median 60,139ns,
 hybrid_full median 300,425ns.
+
+## 9. `#yolo` exec-policy bypass (2026-09-30)
+
+### What it is
+`yote-conn exec` (and the MCP/WS exec lanes) enforce a default-deny policy on
+catastrophic patterns. The policy lives in the canonical repo
+`toxicwind/sovereign-projects`: `projects/bridge/yote/awrawr_mcp.py`
+(`_DEFAULT_DENY`) and `bridge/awrawr_ws_exec.py`. The first default-deny regex
+blocks recursive `rm` against `/`, `~`, `/*`, or `$HOME` — so
+`rm -rf ~/.cache/bun` matches (the target begins with `~/`) and the command
+fails with `POLICY DENIED for recursive rm pattern`. The KB had zero mentions
+of `#yolo` or `POLICY DENIED`, which is why a cache-cleanup agent hit the deny
+with no documented recourse.
+
+### Syntax
+```
+yote-conn exec "#yolo rm -rf ~/.cache/bun ~/.npm"
+```
+- The literal prefix `#yolo ` (hash, yolo, space) is stripped before execution.
+- Policy matching is skipped for the prefixed command; authentication and audit
+  remain active. The audit record carries `yolo:true`.
+
+### Rules
+- The denylist is accident prevention, not a sandbox — the auth token is the
+  actual security boundary.
+- Ordinary commands keep their catastrophic-operation protection. Only the
+  `#yolo`-prefixed command bypasses the policy.
+- A `#yolo`-prefixed command exercises Chris's yolo authority: you act as him,
+  deliberately. Use it for the specific denied operation, then go back to
+  normal commands — do not prefix routinely.
+- Do NOT weaken, remove, or edit the denylist itself (`_DEFAULT_DENY`,
+  `awrawr_ws_exec.py`) — document the bypass, never touch the policy.
