@@ -22,6 +22,11 @@ import sys
 import urllib.request
 import urllib.error
 
+try:
+    from bridge_sem import bridge_slot
+except ImportError:  # guard unavailable -> proceed unguarded
+    from contextlib import nullcontext as bridge_slot
+
 BASE = "http://127.0.0.1:18301"
 
 
@@ -55,13 +60,14 @@ def main():
             spec["workdir"] = sys.argv[3]
         if len(sys.argv) > 4:
             spec["timeout"] = int(sys.argv[4])
-        code, body = req("POST", "/exec", json.dumps(spec).encode())
-        d = json.loads(body.decode())
-        sys.stdout.write(d.get("stdout", ""))
-        sys.stderr.write(d.get("stderr", ""))
-        if d.get("error"):
-            print("error: %s" % d["error"], file=sys.stderr)
-        return d.get("code", 1)
+        with bridge_slot():
+            code, body = req("POST", "/exec", json.dumps(spec).encode())
+            d = json.loads(body.decode())
+            sys.stdout.write(d.get("stdout", ""))
+            sys.stderr.write(d.get("stderr", ""))
+            if d.get("error"):
+                print("error: %s" % d["error"], file=sys.stderr)
+            return d.get("code", 1)
     if cmd == "multi":
         if len(sys.argv) < 3:
             print("usage: yote-conn multi <cmds.json | ->", file=sys.stderr)
@@ -75,23 +81,24 @@ def main():
             return 2
         # allow a plain list of strings as shorthand
         norm = [c if isinstance(c, dict) else {"cmd": c} for c in cmds]
-        code, body = req("POST", "/exec-multi",
-                         json.dumps({"cmds": norm}).encode())
-        d = json.loads(body.decode())
-        for r in d.get("results", []):
-            tag = r.get("tag", "?")
-            print("=== [%s] exit=%s (%sms, %s) ==="
-                  % (tag, r.get("code"), r.get("connector_ms"),
-                     r.get("transport")))
-            if r.get("stdout"):
-                sys.stdout.write(r["stdout"])
-            if r.get("stderr"):
-                sys.stderr.write("[stderr] " + r["stderr"])
-            if r.get("error"):
-                print("[error] %s" % r["error"], file=sys.stderr)
-        print("--- %d commands in %sms ---"
-              % (d.get("count", 0), d.get("total_ms", 0)))
-        return 0 if all(r.get("code") == 0
+        with bridge_slot():
+            code, body = req("POST", "/exec-multi",
+                             json.dumps({"cmds": norm}).encode())
+            d = json.loads(body.decode())
+            for r in d.get("results", []):
+                tag = r.get("tag", "?")
+                print("=== [%s] exit=%s (%sms, %s) ==="
+                      % (tag, r.get("code"), r.get("connector_ms"),
+                         r.get("transport")))
+                if r.get("stdout"):
+                    sys.stdout.write(r["stdout"])
+                if r.get("stderr"):
+                    sys.stderr.write("[stderr] " + r["stderr"])
+                if r.get("error"):
+                    print("[error] %s" % r["error"], file=sys.stderr)
+            print("--- %d commands in %sms ---"
+                  % (d.get("count", 0), d.get("total_ms", 0)))
+            return 0 if all(r.get("code") == 0
                         for r in d.get("results", [])) else 1
     if cmd == "bg":
         if len(sys.argv) < 3:

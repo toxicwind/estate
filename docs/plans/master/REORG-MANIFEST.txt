@@ -1,0 +1,16 @@
+# REORG manifest 20260920-001333 — reverse order = rollback
+baseline committed 20260920-001333
+mv /home/toxic/shingle -> /home/toxic/sovereign/hatch/agents/ember
+ln -s /home/toxic/sovereign/hatch/agents/ember /home/toxic/shingle
+atomic mv incl. runner-profiles: runners.yml, bin/squawk-{profile,trace,follow}, 5 keys, wrapper --profile/FLEET_KEYS_DIR fix
+cp shingle-workspace/awrawr_ws_exec.py -> bridge/awrawr_ws_exec.py
+mv shingle-workspace/bridge-docs -> hatch/docs/bridge-docs
+git mv docs/ws-exec-8379-audit-20260914.md -> /home/toxic/sovereign/hatch/docs
+git mv docs/connector-bridge-routing-d4734168.md -> /home/toxic/sovereign/hatch/docs
+git mv docs/Meta/Muse AI/Jarvis/runtime-cell.md -> /home/toxic/sovereign/hatch/docs
+mv shingle-workspace -> scratch
+ln -s scratch shingle-workspace
+backup pitchfork.toml.pre-reorg-20260920-001333
+pitchfork.toml: 3 path updates + header fix
+stash-guard.py exclude list updated (shingle-workspace/ -> scratch/ + bridge/)
+dispatch_fallback.py DEFAULT_DIRECTIVES updated
