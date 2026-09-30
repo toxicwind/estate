@@ -123,14 +123,46 @@ def find_hatch_execd():
         return None
 
 
+def throttle_pids():
+    """PIDs currently owned by the swarm-throttle duty-cycle governor.
+
+    The governor writes its live target set to
+    ~/workspace/watchdog/swarm-throttle.json. Those PIDs cycle through
+    T-state as part of normal SIGSTOP/SIGCONT pulsing — a watchdog must
+    not count them as a freeze. Only honored while the daemon is provably
+    alive (pid + cmdline match) and the state is fresh (<60s); a stale
+    file never grants an exclusion, so a real freeze is never hidden.
+    """
+    import time
+    state = os.path.expanduser("~/workspace/watchdog/swarm-throttle.json")
+    try:
+        with open(state) as f:
+            d = json.load(f)
+    except (OSError, ValueError):
+        return set()
+    if time.time() - d.get("ts", 0) > 60:
+        return set()
+    dp = d.get("daemon_pid")
+    if not dp:
+        return set()
+    try:
+        with open(f"/proc/{dp}/cmdline", "rb") as f:
+            if b"swarm-throttle" not in f.read():
+                return set()
+    except OSError:
+        return set()
+    return {int(p) for p in d.get("pids", []) if str(p).isdigit()}
+
+
 def verify_pause():
     """Observe the LIVE pause state. Returns dict:
 
       {"frozen": N, "checked": M, "why": str}
 
     frozen = descendants of hatch-execd currently in T (SIGSTOP) state,
-    excluding our own process chain. A watchdog may only claim "paused"
-    when frozen > 0. why explains a zero result.
+    excluding our own process chain and PIDs owned by the swarm-throttle
+    duty-cycle governor (T-state by design while pulsed; see throttle_pids).
+    A watchdog may only claim "paused" when frozen > 0. why explains a zero result.
     """
     root = find_hatch_execd()
     if not root:
@@ -143,9 +175,13 @@ def verify_pause():
         my_pgid = os.getpgid(me)
     except OSError:
         my_pgid = None
+    # PIDs pulsed by the duty-cycle governor are T-state by design, not frozen.
+    throttled = throttle_pids()
     frozen, checked = 0, 0
     for pid in pm:
         if pid in my_chain or pid == root:
+            continue
+        if pid in throttled:
             continue
         if my_pgid is not None:
             try:
