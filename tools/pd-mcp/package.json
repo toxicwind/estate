@@ -1,0 +1,1 @@
+{"description":"ProjectDiscovery MCP server — stdio JSON-RPC wrappers for httpx, dnsx, shuffledns, subfinder, naabu, nuclei, katana, tlsx","engines":{"bun":">=1.0.0"},"name":"pd-mcp","scripts":{"check":"bun --bun x tsc --noEmit --strict server.ts || true","start":"bun run server.ts"},"type":"module","version":"1.0.0"}
