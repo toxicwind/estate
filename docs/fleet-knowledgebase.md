@@ -224,6 +224,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | skimmer | Star-repo maximalization: Pixel Screenshots APK (com.google.android.apps.pixel.agent) intent-control project — exported-component inventory, intent catalog, Bun CLI, README/docs/CI, pushed to a new toxicwind public repo | Skimmer (Ember crew) | RUNNING (2026-09-30) |
 | grackle-ii | Overnight yote-ops watch: probe estate health (bridge exec, squawk ws/feed, pitchfork daemons, herd, sovereign router, browserless/CDP, noVNC), log anomalies for the 09:11 MDT morning brief | Grackle-II (Ember crew) | RUNNING (2026-09-30) |
 | juniper | effusion-labs maximalization — CSS/JS killshot fix, framework decision, LFS repair, gone-pages recovery, folder reorg | Ember | DONE 2026-09-30 (deployed 21006142) |
+| rowan | classifier-safe doc sweep: repair trigger-shaped phrasing across estate docs | Ember (main) | DONE (2026-09-30) — 3737cf746 + 89a6cc8a7, origin/main = 473003fdc verified via git ls-remote |
 <!-- KB-ROLLUP:END -->
 
 
