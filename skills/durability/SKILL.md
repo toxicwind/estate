@@ -1,3 +1,13 @@
+---
+name: durability
+description: >
+  No monkeypatching — every fix lives in real files committed to the owning
+  repo and pushed to canonical main. Services live in pitchfork.toml, kernel-memory
+  state gets a boot launcher, runtime-only patches are not fixes.
+  Triggers on: "durability", "fix lives in files", "no monkeypatch",
+  "committed fix", "service in pitchfork".
+---
+
 # durability — no monkeypatching, ever
 
 Every fix lives in real files — code, configs, systemd units — committed to the

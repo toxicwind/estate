@@ -157,8 +157,9 @@ def intake_backlog(chan_dir, ledger_events, now):
     TRIAGE_WINDOW_S with no matching decision.
     """
     backlog = []
+    self_from = []
     if not chan_dir.is_dir():
-        return backlog
+        return backlog, self_from
     decisions = sorted(
         (e for e in ledger_events if e.get("event") == "intake-decision"),
         key=lambda e: e.get("ts", 0))
@@ -180,6 +181,14 @@ def intake_backlog(chan_dir, ledger_events, now):
         if age < 120:
             continue  # grace for inotify latency
         toks, frm = _intake_tokens(p)
+        # 2026-09-21 (hearth): self-from intakes (from oracle-market/oracle)
+        # are invisible to ingest() by design (SELF_FROMS) and can NEVER be
+        # triaged -- flagging them as backlog re-alerts forever on legacy
+        # residue (e.g. 100316, posted by the pre-fix pump under the default
+        # identity). Track them separately; do not count as backlog.
+        if frm in ("oracle-market", "oracle"):
+            self_from.append({"file": name, "age_s": round(age)})
+            continue
         handled = False
         for i, d in enumerate(decisions):
             if i in used:
@@ -194,7 +203,7 @@ def intake_backlog(chan_dir, ledger_events, now):
                 break
         if not handled and age > TRIAGE_WINDOW_S:
             backlog.append({"file": name, "age_s": round(age)})
-    return backlog
+    return backlog, self_from
 
 
 def snapshot(chan_dir, ledger_events):
@@ -274,8 +283,11 @@ def snapshot(chan_dir, ledger_events):
         "settled_1h": sum(1 for e in w1h if e.get("event") == "settled"),
         "wins_30m": wins,
         "proof_of_life": plof,
-        "intake_backlog": intake_backlog(chan_dir, ledger_events, now),
+        "intake_backlog": None,  # filled below
     }
+    _bl, _sf = intake_backlog(chan_dir, ledger_events, now)
+    snap["ledger"]["intake_backlog"] = _bl  # was top-level: left ledger key None
+    snap["ledger"]["intake_self_from"] = _sf  # which crashed the hatch watchdog
 
     # --- stuck tasks ---
     stuck = []

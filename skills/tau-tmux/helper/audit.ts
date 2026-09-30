@@ -28,15 +28,16 @@ function sh(cmd: string, args: string[], timeoutMs = 15000): string {
 // 1. tau on PATH is the launcher and the chain resolves
 try {
   const which = sh("sh", ["-c", "command -v tau"]);
-  const head = sh("head", ["-c", "200", which]);
-  const isLauncher = head.includes("Tau Launcher");
+  // tau is a compiled ELF binary, not a script — check file type instead
+  const fileType = sh("file", ["-b", which]);
+  const isBinary = fileType.includes("ELF") || fileType.includes("executable");
   let resolved = "unresolved";
-  if (isLauncher) {
-    const distBin = join(SOVEREIGN, "projects/tau/engine/packages/coding-agent/dist/omp");
-    if (existsSync(distBin)) resolved = `dist/omp`;
+  if (isBinary) {
+    const distBin = join(SOVEREIGN, "projects/tau/engine/packages/coding-agent/dist/tau");
+    if (existsSync(distBin)) resolved = `tau (dist/tau -> ${which})`;
     else resolved = "bun src fallback";
   }
-  check("tau launcher resolves", isLauncher && resolved !== "unresolved", `${which} -> ${resolved}`);
+  check("tau launcher resolves", isBinary && resolved !== "unresolved", `${which} -> ${resolved}`);
 } catch (e: any) { check("tau launcher resolves", false, e.message); }
 
 // 2. Engine version
@@ -47,18 +48,18 @@ try {
 
 // 3. PI_CONFIG_DIR honored
 {
-  const cfg = join(TAU_HOME, "agent", "config.yml");
+  const cfg = join(TAU_HOME, "config.yml");
   check("PI_CONFIG_DIR=.tau honored", existsSync(cfg), cfg);
 }
 
 // 4. Skills symlink + discoverability
 {
-  const link = join(TAU_HOME, "agent", "skills");
+  const link = join(TAU_HOME, "skills");
   let ok = false, detail = "missing";
   try {
     if (lstatSync(link).isSymbolicLink()) {
       const target = readlinkSync(link);
-      const abs = target.startsWith("/") ? target : join(join(TAU_HOME, "agent"), target);
+      const abs = target.startsWith("/") ? target : join(TAU_HOME, target);
       if (existsSync(abs)) {
         let n = 0;
         for (const entry of readdirSync(abs, { withFileTypes: true })) {

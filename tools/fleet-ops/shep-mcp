@@ -11,7 +11,7 @@ Tool ids are in server:tool form, e.g. patchwork:patchwork_list_patchflows.
 """
 import json, sys, urllib.request
 
-CONFIG = "/home/toxic/projects/sovereign-projects/mesh/gateway/mcp_config.json"
+CONFIG = "/home/toxic/sovereign/projects/range/ranch/barn/shep/mcp_config.json"
 BASE = "http://127.0.0.1:25127"
 
 
