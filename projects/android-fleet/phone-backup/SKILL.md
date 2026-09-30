@@ -166,3 +166,22 @@ triage classifier (section 4) running on arrival.
   cleanup between 03:08 and 03:15 — `fast-pull.sh` and `speed-race.sh` had to
   be rewritten from scratch. Untracked work in a shared checkout is one
   `git clean` away from gone. Write → commit → push, same session.
+
+## 7. 2026-09-30 μ-speed run (Chris: "Do it All proceed bruteforce")
+
+**Phone cleanup:** 99% → 90% (215G/239G, 24G free). Freed ~20GB. Deleted from Pixel (all verified in archive): Export/ 1openfang/ Tasker/ House/ Documents/ ik_llama.cpp-main/ Download/ (25G) + 65 loose txt/html from /sdcard/ root. Remaining: DCIM/ 71G + Pictures/ 13G (photos, ignored), Android/ 17G (hands off), Movies/ 13.8G (personal, needs Chris).
+
+**Archive triage COMPLETE:** `/mnt/8TB/phone-archive/` now organized:
+- `repos/` (112M): ik_llama.cpp-main
+- `archives/` (6.3G): zips/tars/apks from Download/
+- `code/` (121M): Tasker/House/Export + classified scripts
+- `docs/` (5.9G): Documents/1openfang/sdcard-root + classified docs
+- `manifests/`: pull-manifest + deletion log
+- `incoming/`: ready for Syncthing
+- `Download/` (9255 files): unclassified remainder (mixed media/unknown)
+
+**Bun/TS implementation:** `ts-src/` (commit 01fe11c7) — hybrid parallel pull + SQLite incremental manifest. See package.json.
+
+**GitHub research (Magpie):** 5 fresh repos (last 6 weeks), none worth forking. mnow-dev/AndroidFiles independently validated 8-stream parallel. Borrow patterns: SQLite manifest (ADB-X), resumable transfers (mtpx).
+
+**Paper search:** Nothing useful on arXiv/alphaXiv for bulk ADB — practitioner topic. Empirical benchmarks stand.
