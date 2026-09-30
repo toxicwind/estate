@@ -1,0 +1,87 @@
+#!/bin/sh
+# =============================================================================
+# hooksmith pre-push — secret scan over the pushed range.
+#
+# Deliberately lighter than the old push-guard: no gofmt, no go vet, no
+# whitespace gate. Just secrets. The pre-commit hook already scanned each
+# commit; this is the backstop for --no-verify commits and rebases.
+#
+# Bypass (always works): git push --no-verify
+# =============================================================================
+
+set -u
+
+if [ "${HOOKSMITH_SKIP:-0}" = "1" ]; then
+    echo "hooksmith: BYPASSED via HOOKSMITH_SKIP=1 (audit trail: secret scan skipped)" >&2
+    exit 0
+fi
+
+GIT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+cd "$GIT_ROOT" || exit 0
+
+HOOK_DIR="$(dirname "$0")"
+CONFIG="${HOOKSMITH_CONFIG:-}"
+if [ -z "$CONFIG" ] && [ -f "$HOOK_DIR/gitleaks.toml" ]; then
+    CONFIG="$HOOK_DIR/gitleaks.toml"
+fi
+if [ -z "$CONFIG" ] && [ -f "$GIT_ROOT/tools/git-hooks/gitleaks.toml" ]; then
+    CONFIG="$GIT_ROOT/tools/git-hooks/gitleaks.toml"
+fi
+
+GITLEAKS_BIN="${GITLEAKS_BIN:-gitleaks}"
+if ! command -v "$GITLEAKS_BIN" >/dev/null 2>&1; then
+    echo "hooksmith: warn: gitleaks not on PATH, scan skipped" >&2
+    exit 0
+fi
+if [ -z "$CONFIG" ] || [ ! -f "$CONFIG" ]; then
+    echo "hooksmith: warn: gitleaks.toml not found, scan skipped" >&2
+    exit 0
+fi
+
+ZERO40='0000000000000000000000000000000000000000'
+
+resolve_range() { # $1 = local_sha, $2 = remote_sha, $3 = remote_ref -> prints "base..tip"
+    if [ "$2" != "$ZERO40" ]; then
+        printf '%s..%s' "$2" "$1"
+        return
+    fi
+    # New branch: diff against merge-base with the push target, else default branch.
+    base=""
+    for cand in "$3" origin/HEAD origin/main origin/master; do
+        base="$(git merge-base "$1" "$cand" 2>/dev/null || true)"
+        [ -n "$base" ] && break
+    done
+    if [ -n "$base" ]; then
+        printf '%s..%s' "$base" "$1"
+    else
+        printf '%s' "$1"
+    fi
+}
+
+FAILED=0
+SEEN=0
+while IFS= read -r line; do
+    [ -z "$line" ] && continue
+    SEEN=1
+    # pre-push stdin: "<local ref> <local sha> <remote ref> <remote sha>"
+    # (refnames never contain spaces, so word-splitting is safe)
+    # shellcheck disable=SC2086
+    set -- $line
+    local_ref="${1:-?}"; local_sha="${2:-}"; remote_ref="${3:-?}"; remote_sha="${4:-}"
+    [ -z "$local_sha" ] && continue
+    if [ "$local_sha" = "$ZERO40" ]; then
+        echo "hooksmith: ref $local_ref deleted — nothing to scan" >&2
+        continue
+    fi
+    RANGE="$(resolve_range "$local_sha" "$remote_sha" "$remote_ref")"
+    OUT="$("$GITLEAKS_BIN" detect --source "$GIT_ROOT" --log-opts="$RANGE" \
+        --config "$CONFIG" --no-banner --redact 2>&1)" || {
+        echo "hooksmith: BLOCKED: possible secret in pushed range $RANGE:" >&2
+        printf '%s\n' "$OUT" >&2
+        echo "hooksmith: bypass (not recommended): git push --no-verify" >&2
+        FAILED=1
+    }
+done
+
+[ "$SEEN" = "0" ] && echo "hooksmith: no ref updates — nothing to scan" >&2
+exit "$FAILED"
