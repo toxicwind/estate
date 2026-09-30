@@ -208,7 +208,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 <!-- KB-ROLLUP:END -->
 
 
-| stream-e | document the #yolo exec-policy bypass in the fleet KB | Ember (spawned subagent) | RUNNING (2026-09-30) |
+| stream-e | document the #yolo exec-policy bypass in the fleet KB | Ember (spawned subagent) | DONE (2026-09-30) — 2c83dd09a714a44d0eccee38bdea3ae257065a81 |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
