@@ -1,3 +1,5 @@
+import type { CapabilitySource } from "./capabilities";
+
 export type ConnectionState = "connected" | "connecting" | "disconnected";
 
 export type ModelStatus = "ready" | "starting" | "stopping" | "stopped" | "shutdown" | "unknown";
@@ -30,6 +32,10 @@ export interface Model {
   playgroundType?: PlaygroundModelType;
   aliases?: string[];
   capabilities?: ModelCapabilities;
+  // Explicit per-capability provenance overrides.
+  // The herd API merges config-set and auto-discovered caps without reporting
+  // provenance, so this is only set when the source is actually known.
+  capabilitySources?: Record<string, CapabilitySource>;
   modalities?: ModelModalities;
   context_length?: number;
   // when the model last became ready (RFC 3339); only set while ready
