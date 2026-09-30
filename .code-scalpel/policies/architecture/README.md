@@ -1,29 +1,42 @@
-# Architecture Management Policies
+# Architecture policies
 
-This directory contains policy templates for enforcing architectural constraints and design patterns in your codebase.
+![code-scalpel](https://img.shields.io/badge/code--scalpel-6C5CE7?style=for-the-badge) ![rego](https://img.shields.io/badge/rego-FF6B6B?style=for-the-badge) ![architecture](https://img.shields.io/badge/layered--architecture-2980B9?style=for-the-badge)
 
-## Policy Categories
+> Keep the layers honest: presentation talks to application, application talks to domain — never the other way around, never skipping.
 
-### 1. Layering & Boundaries
+```mermaid
+flowchart TD
+    UI[presentation<br/>ui views controllers pages components routes middleware]
+    APP[application<br/>services usecases application handlers commands queries]
+    DOM[domain<br/>entities models]
+    UI -->|may depend on| APP
+    APP -->|may depend on| DOM
+    UI -.->|violation| DOM
+    DOM -.->|violation| UI
+```
 
-- **layered_architecture.rego** - Enforce layered architecture (UI → Service → Data)
-- **module_boundaries.rego** - Prevent cross-module violations
+## Quick Start
 
-### 2. Design Patterns
+```bash
+code-scalpel policy validate
+code-scalpel policy test --category architecture
+```
 
-- **dependency_injection.rego** - Enforce DI instead of singletons
-- **interface_segregation.rego** - Validate interface design
-- **clean_architecture.rego** - Enforce Clean Architecture principles
+## Policies
 
-### 3. Code Organization
+### `layered_architecture.rego`
 
-- **folder_structure.rego** - Enforce consistent folder organization
-- **naming_conventions.rego** - Validate naming patterns
-- **file_size_limits.rego** - Prevent monolithic files
+Enforces clean separation between presentation, application, and domain layers using path patterns:
 
-## Usage
+- **presentation** — `*/ui/*`, `*/views/*`, `*/controllers/*`, `*/pages/*`, `*/components/*`, `*/routes/*`, `*/middleware/*`
+- **application** — `*/services/*`, `*/usecases/*`, `*/application/*`, `*/handlers/*`, `*/commands/*`, `*/queries/*`
+- **domain** — the core; nothing above it may reach past its own layer
 
-Enable these policies in `.code-scalpel/policy.yaml`:
+A dependency that skips a layer (presentation → domain) or flows upward (domain → presentation) is flagged. Rego package: `code_scalpel.architecture`.
+
+## Enable
+
+In `.code-scalpel/policy.yaml`:
 
 ```yaml
 policies:
@@ -32,17 +45,10 @@ policies:
       file: policies/architecture/layered_architecture.rego
       severity: HIGH
       action: DENY
-
-    - name: module-boundaries
-      file: policies/architecture/module_boundaries.rego
-      severity: CRITICAL
-      action: DENY
 ```
 
-## Examples
+Use `action: WARN` while rolling out to an existing codebase, then tighten to `DENY` once the violations are burned down.
 
-See `examples/policy_examples/architecture/` for usage examples.
+## License and security
 
----
-
-_Part of Code Scalpel v3.1+ Policy Engine_
+Part of Code Scalpel v3.1+ Policy Engine. Layer rules are only as good as your directory naming — if a new top-level area doesn't match the layer patterns, extend the pattern sets in the `.rego` file rather than letting it slip through unclassified.

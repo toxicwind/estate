@@ -1,38 +1,49 @@
-# NATS + JetStream fleet-chat substrate (Taps 🦫, 2026-09-21)
+# squawk-nats 🦫
 
-Ember's decider verdict (fleet 12811): NATS + JetStream becomes the fleet-chat
-substrate. Paper research (`~/workspace/your_files/fleet-chat-substrate-research.md`)
-ranked it #1; Squawk stays the first-class UI as a passive aggregator.
+![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
+![python](https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![nats-jetstream](https://img.shields.io/badge/NATS--JetStream-27AA5B?style=for-the-badge)
+
+> **The NATS + JetStream fleet-chat substrate.** Squawk stays the
+> first-class UI; a tailer dual-publishes every file-feed message into
+> JetStream for replayable history, live presence, and a browser UI over
+> NATS WebSocket. **No flag day**: the file feed is the source of truth and
+> keeps working if NATS dies.
+
+Decided by Ember (fleet 12811, 2026-09-21): NATS + JetStream ranked #1 in
+the substrate paper research; Squawk remains the first-class UI as a
+passive aggregator.
+
+## Features
+
+- 📡 **Dual-publish, no flag day** — the tailer only *reads* the file feed; NATS outage = file feed keeps working, tailer catches up on reconnect (cursor advances only on ACKed publishes)
+- 💾 **Replayable history** — JetStream stream `squawk`, file storage: 100k msgs / 1GB / 90 days, discard-old
+- 💓 **Live presence** — per-agent heartbeats on `<channel>.presence.<agent>` + KV `squawk_presence` mirror (TTL 120s) for the UI
+- 🔑 **One secret everywhere** — the squawk feed token is rendered into the server config at daemon start (0600, never in the repo); tailer and UI present it as the NATS `auth_token`
+- 🌐 **Browser UI over WebSocket** — `ui.html ?src=nats`: bounded snapshot still comes from the file feed (`wait?tail=`), then live messages stream over NATS-WS with automatic fallback to long-poll
+- 🧪 **Dual-publish proof** — `test_dual_publish.py`: both sinks receive, kill-NATS survival + catch-up, JetStream replay after restart
 
 ## Architecture
 
-```
-  squawk CLI / POST /send / estate-reconcile
-        │  (unchanged: writes <seq>-<sender>-<slug>.md)
-        ▼
-  /home/toxic/.shingle/squawk-root/{fleet,leads}/   ◄── file feed (source of truth, untouched)
-        │  inotify
-        ▼
-  squawk_nats_tail.py  ──parse──►  JetStream stream `squawk`
-        │                              subjects: *.messages  (fleet.messages, leads.messages)
-        │                              file storage, 100k msgs / 1GB / 90d, discard old
-        └─heartbeat──► fleet.presence.taps + KV squawk_presence (TTL 120s)
-
-  nats-server 127.0.0.1:4222 (clients) / :4223 (websocket) / :8222 (monitoring)
-  Browser UI: wss://<tailnet-host>/nats-ws  (funnel mount, see funnel-map.sh)
+```mermaid
+flowchart TB
+    A[squawk CLI / POST /send<br/>estate-reconcile] -->|writes NNNN-sender-slug.md| F["/home/toxic/.shingle/squawk-root/<br/>{fleet,leads}/ — file feed<br/>source of truth, untouched"]
+    F -->|inotify| T[squawk_nats_tail.py<br/>parse → publish]
+    T --> J[JetStream stream `squawk`<br/>subjects: *.messages]
+    T -->|heartbeat| P["fleet.presence.taps<br/>KV squawk_presence (TTL 120s)"]
+    N[nats-server<br/>127.0.0.1:4222 clients<br/>:4223 websocket · :8222 monitoring]
+    J --- N
+    U[ui.html ?src=nats] -->|initial history: wait?tail=<br/>live: wss://tailnet/nats-ws| F
+    U -->|live stream| N
 ```
 
-Dual-publish with no flag day: the tailer only READS the file feed. If NATS
-dies, the file feed keeps working; the tailer's cursor only advances on
-ACKed publishes, so it catches up on reconnect. The custom feed server
-stays live as fallback until the migration proves itself.
+## Quick Start
 
-## Auth
-
-One secret everywhere: the squawk feed token. `run-nats.sh` renders it into
-the server config at daemon start (0600, never in the repo). The tailer and
-the UI present the same token (`auth_token` on NATS CONNECT). No separate
-credential to mint or rotate.
+```bash
+./run-nats.sh          # renders config with feed token (0600), execs nats-server
+./run-tail.sh          # venv at ~/.local/share/squawk-nats/venv, execs squawk_nats_tail.py
+python3 test_dual_publish.py   # prove dual-publish, kill-NATS survival, replay
+```
 
 ## Subjects (dumb by design)
 
@@ -49,39 +60,55 @@ needs no envelope translation.
 
 | id | run | notes |
 |---|---|---|
-| `nats` | `nats/run-nats.sh` | renders config with feed token, execs nats-server |
-| `nats-tail` | `nats/run-tail.sh` | venv (nats-py) at `/home/toxic/.local/share/squawk-nats/venv`, execs `squawk_nats_tail.py` |
+| `nats` | `run-nats.sh` | renders config with feed token, execs nats-server |
+| `nats-tail` | `run-tail.sh` | venv (nats-py) at `/home/toxic/.local/share/squawk-nats/venv`, execs `squawk_nats_tail.py` |
 
-Named `nats-tail` (not `squawk-nats-tail`) so the owned `pitchfork-restart`
-wrapper accepts it (it refuses anything matching *squawk*).
+Named `nats-tail` (not `squawk-nats-tail`) so the owned
+`pitchfork-restart` wrapper accepts it (it refuses anything matching
+*squawk*).
 
 State: `/home/toxic/.local/state/squawk-nats-tail/cursor.json` (per-channel
-last-published seq). JetStream store: `/home/toxic/.local/share/nats/jetstream`.
+last-published seq). JetStream store:
+`/home/toxic/.local/share/nats/jetstream`.
 
 ## UI read path
 
 `ui.html` `?src=nats` (or the `feed: poll/nats` toggle in the header):
 initial history still comes from `wait?tail=` (bounded snapshot), then live
-messages stream over the NATS websocket. Default stays long-poll -- the
+messages stream over the NATS websocket. Default stays long-poll — the
 current UI keeps working throughout.
 
-## Tests
+A minimal NATS-over-WebSocket client (INFO/CONNECT/SUB/MSG/PING/PONG, no
+bundle) powers the `wss://<funnel-host>/nats-ws` path. Any socket failure
+falls back to the long-poll loop automatically — the custom feed stays the
+durable fallback.
+
+## Config
+
+| Env / file | What |
+|---|---|
+| `SQUAWK_NATS_CHANNELS` | channels the tailer follows (default list in code) |
+| `nats-server.conf.template` | rendered at daemon start; `@FEED_TOKEN@` → the feed token, lands at `/home/toxic/.local/share/nats/nats-server.conf` (0600) |
+
+## Adding a channel
+
+1. Set `SQUAWK_NATS_CHANNELS` on the `nats-tail` daemon (or use the default list in code).
+2. The stream already covers `*.messages` — nothing else to change.
+
+## Dev
 
 `test_dual_publish.py` (run with the squawk-nats venv python on yote):
+
 - T1 publish → both sinks receive, file seq == NATS envelope seq
 - T2 kill NATS → file feed keeps working, tailer survives, catch-up on restart
 - T3 restart nats-server → JetStream history replays
 
-## Adding a channel
+## License & Security
 
-1. `SQUAWK_NATS_CHANNELS` env on the `nats-tail` daemon (or default list in code)
-2. Stream already covers `*.messages` -- nothing else to change.
-
-## UI read path (shipped)
-
-ui.html has a ?src=nats mode plus a poll|nats toggle in the header.
-History still comes from the bounded file snapshot (wait?tail=); live
-messages then stream over wss://<funnel-host>/nats-ws via a minimal
-NATS-over-WebSocket client (INFO/CONNECT/SUB/MSG/PING/PONG, no bundle).
-Any socket failure falls back to the long-poll loop automatically -- the
-custom feed stays the durable fallback. Default is still long-poll.
+Part of the sovereign estate (see repo root). **Security posture:** the file
+feed is read-only to the tailer — NATS never writes back, so a compromised
+bus can't corrupt chat history. One credential (the feed token) is rendered
+into the server config at daemon start (0600) and never committed; listeners
+are 127.0.0.1-only, browser access rides the tailnet funnel. JetStream
+retention is bounded (100k msgs / 1GB / 90d, discard-old) so storage can't
+grow without limit.
