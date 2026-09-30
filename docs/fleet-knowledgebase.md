@@ -208,7 +208,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | corvid | ROUTING AUDIT: agent cognition vs tool-call vs heavy-compute placement across hatch+yote; exec-lane routing; cell cron/worker heavy-compute  | corvid (Ember crew) | DONE (2026-09-30) — 1cdeac68f6 |
 | fennec-cell-files | CELL-FILES stream: mise.toml hot-reload audit (up-cellfiles-ui forensics; stream D repaired the parse break as 1cdeac68f6), pitchfork bun --hot for kimi-audit-dash/windmill/bench-radar, hatch/README cell-files row, findings UX redesign in Deuz-SDK (3-class triage, workload grouping, WHY strings) | Fennec (Ember crew) | RUNNING (2026-09-30) |
 | pinto | move Oracle into the ranch with western theme; fix bidder-forge/bidder-scout daemons | ember | RUNNING (2026-09-30) |
-| canyon | merge origin/main into forge/gate-retire-final, conflict-free, branch-safe | Ember (main agent) | RUNNING (2026-09-30) |
+| canyon | merge origin/main into forge/gate-retire-final, conflict-free, branch-safe | Ember (main agent) | DONE (2026-09-30) -- merge b9a27e845c pushed, remote ref 50086eafe7 verified via ls-remote |
 <!-- KB-ROLLUP:END -->
 
 
