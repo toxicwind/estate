@@ -36,6 +36,7 @@
  */
 import {
   existsSync,
+  mkdirSync,
   readFileSync,
   readdirSync,
   renameSync,
@@ -467,7 +468,7 @@ export async function checkRoutes(cfg: KimiBridgeConfig): Promise<ProbeResult[]>
 // Squawk fleet relay (daemon mode) — event-driven via fs.watch
 // ---------------------------------------------------------------------------
 const FLEET_DIR =
-  process.env.SQUAWK_FLEET_DIR || "/home/toxic/shingle/squawk-root/fleet";
+  process.env.SQUAWK_FLEET_DIR || "/home/toxic/.fleet-bus/squawk-root/fleet";
 
 function nextFleetSeq(): number {
   let max = 0;
@@ -573,6 +574,8 @@ export async function runDaemon(cfg: KimiBridgeConfig): Promise<void> {
     }
   };
   // event-driven: fs.watch wakes us; a scan catches anything watch missed
+  // self-heal: recreate the dir if it ever goes missing instead of crash-looping
+  mkdirSync(FLEET_DIR, { recursive: true });
   watch(FLEET_DIR, { persistent: true }, () => {
     void scan();
   });
