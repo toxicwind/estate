@@ -1,18 +1,23 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import type { Snippet } from "svelte";
   import { link } from "svelte-spa-router";
   import {
     activeProfile,
-    fetchPlaygroundModels,
     models,
+    playgroundModels,
     profiles,
     selectorModels,
     unloadAllModels,
   } from "../stores/api";
+  import { refreshPlaygroundModels } from "$lib/hooks/playground-models.svelte";
   import { statusDotColor } from "../stores/modelLoad";
   import { showUnlistedModels as showUnlisted, showCapabilityTags } from "../stores/modelDisplay";
-  import { listCapabilityBadges, capabilityBadgeClass } from "../lib/capabilities";
+  import {
+    listCapabilityBadges,
+    capabilityBadgeClass,
+    capabilitySourceBadgeClass,
+    capabilitySourceLabels,
+  } from "../lib/capabilities";
   import type { Model } from "../lib/types";
   import ModelLoadButton from "../components/ModelLoadButton.svelte";
   import Tag from "../components/Tag.svelte";
@@ -25,12 +30,31 @@
 
   let unloadingAll = $state(false);
 
-  onMount(() => {
-    void fetchPlaygroundModels();
+  // Keep /v1/models (capability data) in step with the live modelStatus
+  // stream: the hook re-fetches (debounced, coalesced) whenever `models`
+  // changes, so capability badges refresh without a page reload.
+  refreshPlaygroundModels();
+
+  // modelStatus carries live state but no capability payload; /v1/models
+  // carries the resolved capabilities. Merge by id so badges react to
+  // either feed updating.
+  let enrichedModels = $derived.by(() => {
+    const full = new Map($playgroundModels.map((m) => [m.id, m] as const));
+    return $models.map((m) => {
+      const f = full.get(m.id);
+      if (!f) return m;
+      return {
+        ...m,
+        capabilities: f.capabilities,
+        context_length: f.context_length ?? m.context_length,
+        modalities: f.modalities ?? m.modalities,
+        capabilitySources: f.capabilitySources,
+      };
+    });
   });
 
   let visibleModels = $derived(
-    $showUnlisted ? $models : $models.filter((m) => !m.unlisted)
+    $showUnlisted ? enrichedModels : enrichedModels.filter((m) => !m.unlisted)
   );
   let localModels = $derived(visibleModels.filter((model) => !model.peerID));
   let peerModels = $derived(visibleModels.filter((model) => model.peerID));
@@ -77,11 +101,14 @@
       </div>
     </a>
     {#if $showCapabilityTags}
-      {@const badges = listCapabilityBadges(model)}
+      {@const badges = listCapabilityBadges(model, { defaultSource: "discovered" })}
       {#if badges.length > 0}
         <div class="hidden min-w-0 flex-wrap items-center gap-1 sm:flex">
           {#each badges as badge (badge.key)}
-            <Tag class={`px-1.5 text-[0.625rem] ${capabilityBadgeClass[badge.key] ?? ""}`}>{badge.label}</Tag>
+            <Tag
+              class={`px-1.5 text-[0.625rem] ${capabilityBadgeClass[badge.key] ?? ""} ${badge.source ? capabilitySourceBadgeClass[badge.source] : ""}`}
+              title={badge.source ? `${badge.label} — ${capabilitySourceLabels[badge.source]}` : undefined}
+            >{badge.label}</Tag>
           {/each}
         </div>
       {/if}
@@ -162,6 +189,12 @@
         </span>
         <span class="text-muted-foreground text-xs uppercase tracking-wide">
           {readyCount} ready
+        </span>
+        <span
+          class="text-muted-foreground hidden text-xs md:inline"
+          title="Badges merge live model state with resolved capabilities from /v1/models. Hover a badge for its source."
+        >
+          capability badges · hover for source
         </span>
         <div class="ml-auto flex items-center gap-2">
           <Button
