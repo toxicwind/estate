@@ -136,19 +136,19 @@ bins:
 archived:
   - name: tau-launcher-retired
     from: projects/tau/launcher/bin/tau
-    to: archived 2026-09-30
+    to: .archive-20260930/tau-launcher-retired.TOMBSTONE
     reason: ranch/tau deleted, deprecated 2026-09-24; collapse chain dead.
   - name: tau-profiles-retired
     from: projects/tau/launcher/profiles
-    to: archived 2026-09-30
+    to: .archive-20260930/tau-profiles-retired.TOMBSTONE
     reason: ranch/tau deleted; launcher profiles orphaned.
   - name: tau-installed-retired
     from: /home/toxic/.local/bin/tau
-    to: archived 2026-09-30
+    to: .archive-20260930/tau-installed-retired.TOMBSTONE
     reason: md5-pin target gone; launcher execs deleted ranch path. Broken.
   - name: omp-built-retired
     from: projects/tau/engine/packages/coding-agent/dist/omp
-    to: archived 2026-09-30
+    to: .archive-20260930/omp-built-retired.TOMBSTONE
     reason: ranch/tau deleted; engine CLI gone.
   - name: llama-gguf-hash
     from: bin/llama-gguf-hash
