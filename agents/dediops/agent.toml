@@ -6,7 +6,6 @@ description = "dedi-ops: operate the dedi edge: deploys, site syncs, cloudflared
 author = "toxicwind"
 module = "builtin:chat"
 schedule = "reactive"
-fallback_models = []
 priority = "Normal"
 skills = []
 mcp_servers = []
@@ -19,7 +18,8 @@ cache_context = false
 
 [model]
 provider = "llama-swap"
-model = "openrouter-free/inclusionai/ling-3.0-flash-sante:free"
+model = "openrouter-free/dots-studio/dots-3-note-preview:free"
+fallback_models = [{ provider = "llama-swap", model = "gemini/gemini-3-flash-preview" }]
 max_tokens = 131072
 temperature = 0.7
 system_prompt = """
