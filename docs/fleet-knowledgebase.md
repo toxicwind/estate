@@ -47,8 +47,34 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | 25146 | WhatsApp webhook backend |
 | 25196 (127.0.0.1) | OpenFang kernel daemon (single instance; dashboard UI + /v1 + /api) |
 | 25103 | OpenFang mesh-front (public proxy -> :25196 kernel, serves /mesh/* features) |
-| 8377 / 8378 / 8379 | /mcp, /gemini-mcp, /exec-ws backends (via tailscale Funnel on 443) |
+| 25198 | /mcp backend (Funnel `:443/mcp` -> `127.0.0.1:25198/mcp`) |
+| 25204 | /exec-ws backend (Funnel `:443/exec-ws` -> `127.0.0.1:25204/exec-ws`) |
+| 25201 | Funnel `/` root backend |
+| 25207 | Funnel `/status` backend |
+| 34567 (127.0.0.1) | Funnel `/files` backend |
+| 25127 | /mesh-mcp backend (Funnel `:443/mesh-mcp` -> `127.0.0.1:25127/mcp`) |
+| 25202 | /gemini-mcp backend (Funnel `:443/gemini-mcp` -> `127.0.0.1:25202/mcp`) |
+| 25136 (tailnet) | /fleet backend (Funnel `:443/fleet`) |
+| 4222 / 4223 (127.0.0.1) | NATS server + websocket (Funnel `:443/nats-ws` -> `:4223`) |
 | 25212 | Cockpit web console (`https://awrawr-pc:25212/`, moved from :9090 via systemd drop-in 2026-09-20) |
+
+**Extended serve map (all verified listening on yote 2026-09-30):**
+| Port | Service |
+|---|---|
+| 25104 | Sovereign router (`sovereign/free`) |
+| 25148 | buildsrv (fleet build server, see section 7) |
+| 25193 | Flock router |
+| 25126 | kimi-auto-shim |
+| 25152 | toolcall-llm |
+| 25122 | beellama-fast |
+| 25110 | Grafana |
+| 25211 | node-exporter |
+| 25213 | sovereign-exporter |
+| 6080 | noVNC agent-viewer (browser isolation) |
+| 9223 | Keeper browser CDP |
+| 25130 | browserless-mcp |
+
+**Routing-audit notes 2026-09-30 (corvid, corrected):** the old `8377 / 8378 / 8379` row was stale — nothing listens on those ports and neither pitchfork.toml nor funnel-map.sh references them; the live funnel backends are the 25xxx ports above. Correction to the first version of this note: an unprivileged `tailscale serve status` shows a PARTIAL view (tailscaled state is root-only) — it hid `/gemini-mcp`, `/whatsapp-webhook`, `/squawk-ws`, `/squawk-feed/seq`, `/mesh-health`, and the `[serve:8443]` tailnet mount. `sudo funnel-map.sh --check` is the authoritative check and it passes: all mounts present, including `[serve:8443] /agent-browser -> 127.0.0.1:6080`, `/gemini-mcp -> 127.0.0.1:25202/mcp`, `/whatsapp-webhook -> 127.0.0.1:25146/webhook`. Lesson: verify serve state as root, never via the unprivileged CLI.
 
 **Never disturb squawk ports 25147/25135. Never kill+start a bridge daemon in a single remote command** (the kill orphans the rest and the lane dies — separate kill and start with a port-liveness check between).
 
@@ -119,7 +145,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | daemon-repair | Post-kernel-cutover yote daemon repair (Ember crew): evicted 76 stale pitchfork registrations (herd-healer / wt-kimi-failfast / wt-port-guard-20260920 / sovereign-phase3-rename port-race duplicates that stole ports and errored the canonical sovereign daemons), restarted sovereign/sovereign-chat; verified herd :25100, keypool :25109, model-guard :25101, kimi-auto-shim :25153, toolcall-llm :25152, beellama :25122 all /health 200, squawk-feed /seq advancing, herd /v1/models serving, 0 errored daemons | ember-wrenchwright (Ember's crew) | DONE (2026-09-20) -- operational state fix, no repo file changes; stale worktrees remain on disk (deregistered, will not auto-start) |
 | kimi-unlock-audit | Kimi tooling decoupled from Kimi models: router-config-only routing (zero selection/ranking/probing/timers in Kimi-named code); resolver+state.json retired; Kimi /tmp audit; deduplicated super-ralph feed | Ember | DONE (2026-09-20) -- toxicwind/kimi-auto@ab91ebb090c (v3.0 router-config cutover) + sovereign-projects@5fa02571292b (cutover) + @1cbe5cb3f597a (honest /health), all verified via git ls-remote; live proofs: model kimi-auto -> ministral-14b-latest exact UNLOCK-PROOF-7X3Q on :25100+:25153, SSE verbatim, 508 self-loop, 503-when-unroutable health; feed via fleet seq 11575/11595/11613 |
 | anvil | Durability sweep: kill recurring monkey-patches; permanent audit (ops/durability/), OpenFang launcher typo fix + TOML wiring | Bedrock | DONE (2026-09-20) -- commit f69a3a4ab6be41028d365e7b3dc23f57b1623b22 |
-| guidellm-eval | GuideLLM fork pluggable scoring + deterministic instruction-following eval; provider-free OpenRouter quality-first ranking (9 ranked + 1 fallback tier) | Ember (subagent) | DONE (2026-09-20) -- toxicwind/roundup 94952a7d051fb88a0f9b4a12d0642dbb265fc7d4 (malformed-thinking + thinking tag + expected-note); toxicwind/sovereign-projects c5192a0d6e16fadd17c5226fd137282b43b09ada (final clean run 20260920-170706: 9 ranked + 1 fallback, ranking_lib tier contract, 8 lib tests; GuideLLM suite: 292 benchmark + 623 scoring/schemas pass) |
+| guidellm-eval | GuideLLM fork pluggable scoring + deterministic instruction-following eval; provider-free OpenRouter quality-first ranking (9 ranked + 1 fallback tier) | Ember (subagent) | DONE (2026-09-20) -- toxicwind/guidellm 94952a7d051fb88a0f9b4a12d0642dbb265fc7d4 (malformed-thinking + thinking tag + expected-note); toxicwind/sovereign-projects c5192a0d6e16fadd17c5226fd137282b43b09ada (final clean run 20260920-170706: 9 ranked + 1 fallback, ranking_lib tier contract, 8 lib tests; GuideLLM suite: 292 benchmark + 623 scoring/schemas pass) |
 | suture | Watchdog surgery (5 cases): Hearth/progress-watchdog dedup + honest pulse; verifiable swarm pause; atomic run ledgers; oracle intake per-request triage (killed false "stalled 24,206s"); super-ralph vs omp-router doc correction | Suture (Bedrock crew) | DONE (2026-09-20) -- commits aabb87bc3b (surgery) + 1999fb3643 (+x restore), remote ref verified via ls-remote |
 | brand-move | buildsrv -> ranch/branding relocate + western rename (CLI brand, port 25148, faithful move; ranch brand/ taken by Hooksmith git-hooks iron) | Brander (Ember's crew) | RUNNING |
 | zed-qed | QED maximal readiness (projects/qed): zed fork 241 crates + zedra remote substrate — schema-normalizer dedup across 3 providers, nullable-recursion fix, zedra workspace repair (7 crates resolve), settings_ui autonomous_edits fix, README/AUDIT deconfusion | Ember (zed-qed) | DONE 2026-09-20 — commits a87f5e5189 (normalizer+zedra+docs), d77c1ce7fd (ZED_SYNC.md), 7ac0dc03b6 (README link), f42ca9e4e4 (rustfmt), db4179319a (settings_ui fix). PROOF: cargo check --package zed EXIT 0; 5/5 normalizer tests pass; zedra workspace check clean; bun check clean |
@@ -150,7 +176,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | itvx-merge-7dee | merge itvx-browserless into browserless-mcp, move to sovereign mesh | itvx-merge-7dee | DONE (2026-09-21): unified projects/range/ranch/barn/browserless (browserless-mcp 1.1.0 + itvx native launcher); daemon itvx-browserless on :25130 restarted via owned sequence, auth gate 401/200 verified, live /content fetch + MCP handshake (15 tools) proven. Commits 9bab2b8a95 + 4b8421b719 on toxicwind/sovereign-projects main (ls-remote verified). |
 | volt | zswap/nvidia-persistenced/hardware health on yote | parent-orchestrator | DONE (2026-09-21) — lane-2-complete-no-repo-changes |
 | forge-union | unify github search tooling | forge-union | RUNNING (2026-09-21) |
-| ts-migration (Forge) | Production Python daemons -> Bun/TS maximal + monorepo (bun workspaces + turbo.json). Tier 0: keypool, model-guard, squawk-ws, awrawr-mcp. Tier 1: exporter, stash-guard, brand. Python stays only for ML/torch glue + throwaway probes | Forge (Ember's pack, ts-migration lane) | PHASE 1 DONE (2026-09-21): workspaces+turbo+scaffold on main 7a61ad6be9; template binary proven (health 200, fail-fast). Phase 2: KEYPOOL TS PORT DONE 2026-09-21 (971ccc5b63, 8eceaa0f4b): services/keypool/ full port, 17 parity tests pass, sidecar differential vs :25109 verified; BROWSER-ISOLATION DONE 2026-09-21: agent-display (Xvnc :99) + agent-viewer (noVNC :6080) live, keeper on DISPLAY=:99, c776f7cd25 — Forge joined pack 2026-09-21, chat forge-ts-migration |
+| ts-migration (Forge) | Production Python daemons -> Bun/TS maximal + monorepo (bun workspaces + turbo.json). Tier 0: keypool, model-guard, squawk-ws, awrawr-mcp. Tier 1: exporter, stash-guard, buildsrv. Python stays only for ML/torch glue + throwaway probes | Forge (Ember's pack, ts-migration lane) | PHASE 1 DONE (2026-09-21): workspaces+turbo+scaffold on main 7a61ad6be9; template binary proven (health 200, fail-fast). Phase 2: KEYPOOL TS PORT DONE 2026-09-21 (971ccc5b63, 8eceaa0f4b): services/keypool/ full port, 17 parity tests pass, sidecar differential vs :25109 verified; BROWSER-ISOLATION DONE 2026-09-21: agent-display (Xvnc :99) + agent-viewer (noVNC :6080) live, keeper on DISPLAY=:99, c776f7cd25 — Forge joined pack 2026-09-21, chat forge-ts-migration |
 | sweep-runner-9c | first-class commit sweep | ember | RUNNING (2026-09-21) |
 | ws-fallback | /home/toxic/awrawr_ws_exec.py stale-8379 fallback re-sync: byte-for-byte with canonical 25204 blob (a67a919b) | ws-fallback (Ember's crew) | DONE (2026-09-21) -- re-synced to canonical blob a67a919b (port default 25204), stale backup .bak-20260921-wsfallback; daemon pid 1799513 untouched, :25204/:25147/:25135 live |
 | end4-corrective | sovereign-end4 system-tuning corrective commit: true zero-byte udev mask, corrected Btrfs attribution (911 exclusive bytes never measured), rewritten apply-system-tuning.sh (STAGING_ROOT isolated mode, install -m 644, service reconciliation), installer staging test (18/18 on yote), btrfs-status.sh health+guard tool, audit.py v3 (vmstat/buddyinfo/Btrfs/thermals) | Ember | DONE (2026-09-21) -- commit fedb26a0da (on top of toxic's 9e904729): 9 paths under system-tuning/, 3 executables 100755; mask blob verified 0 bytes; sysctl blob sha256 matches live /etc/sysctl.d/99-zswap-vm.conf; installer test 18/18 pass on yote; audit v3 smoke OK (unallocated_bytes=6443552768, 27 vmstat, 6 thermals); btrfs-status live report exit 0 via passwordless sudo (snapperd wedge timeout-guarded) |
@@ -176,11 +202,16 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | polling-audit | Estate-wide polling audit: every timer/sleep/poll-loop on hatch + yote, classified LEGIT vs CONVERT (event-driven alternatives) | Shrew (Ember's crew) | DONE (2026-09-21) -- report docs/polling-audit-2026-09-21.md, commit ce3f867754821f132709163470ac394603e297a8; 7 CONVERT / 17 LEGIT / 10 already-event-driven / 2 ambiguous; top converts: paper-poller 30s->inotify, stash-guard 90s->inotify, squawk-monitor 5m->subscribe |
 | bookworm-chatnative | Chat-native agent research: paper-backed buildable design for event-driven squawk agents (no polling). Ships @fleet/chat-native Bun/TS module: recursive long-poll subscribe, tiered attention, TASK directives, AsyncQueue handoff; OpenFang verdict (stays as runtime, squawk adapter is future work); Solace pattern borrow (reference only) | Bookworm (Ember's crew) | DONE (2026-09-21) -- commit 3bb32fe7907a7f0081b9f0353e09bf227e421b35, origin/main verified via git ls-remote |
 | bramble | readme maximalization batch b8 (narrowed to 6): toxic-vault-mind f2d08c0, wii-meta-client b1d6471, wii-stream-pack a756004, wllama-forge 63a9837, youtube-403-bypass dda9669 -- all pushed + remote-verified, no open PRs; universal-search-fuzzer BLOCKED (repo archived, push 403, README commit a05cddaa kept locally); cut per dedup: tau-extensions, vaultfs, web3-sec-workspace (untouched, verified no push) | 72ff4aa9-c62a-4881-8f70-c6fa220e7383 | DONE (2026-09-29) |
+| slate | SQUAWK CLI + WARDEN (stream-C): fail-open CLI reads — cell-local last-good cache lane on total bridge loss + load_profiles stale-cache fallback; ferrous-warden (estate-reconcile) alert dedupe/coalescing so the 9/25 ~70-posts/90s flood can never repeat; _squawk seq via seq_alloc.py | ember | RUNNING (2026-09-30) |
 | starling | squawk maximalization: pattern-borrow + tests (feed :25135, ws :25147, ui, CLI); boundary: Taps owns NATS substrate | Starling (Ember's pack), Tally side chat | RUNNING (2026-09-29) |
 | kestrel | Mistral key proof + GuideLLM audit of Mistral chat models via corral (direct Mistral API, not herd/flock); pattern-borrow useful Mistral integrations | kestrel (Ember crew) | RUNNING (2026-09-29) |
 | flock-free-directive | Flock :25193 literal "free" routing directive repair: was 404 (serves_model filtered before Strategy::Free ran), then Hybrid admitted paid providers, then migrate_v1 dropped free_tier so Strategy::Free selected zero candidates (502). Fix: "free" skips model scoping + forces Strategy::Free + model_map["free"] resolves a real upstream model (never wildcard "*"); migrate_v1 keeps free_tier=true; provider IDs refreshed to live catalog (nvidia nemotron-3-ultra-550b-a55b, llama-3.1-nemotron-70b-instruct; groq/cerebras bare IDs). flock-run.sh wrapper loads GROQ/CEREBRAS/NVIDIA keys from ~/.secrets into the daemon env (pitchfork.toml run= now points at the wrapper). NIM_PROXY_BYPASS workaround removed from bidder.py. | Sable (Ember's crew) | DONE (2026-09-30) -- toxicwind/flock commit `996956a3` (origin/main verified via git ls-remote); deployed binary live on :25193; E2E: POST /v1/chat/completions {"model":"free"} -> 200 real completion from nvidia/nemotron-3-ultra-550b-a55b; suite 387 passed (258 unit + 121 e2e + 8) |
-| bridle | Tack provider-authority expansion: tack 9->46 providers (37 transcribed from tau KDL), tau KDL catalog nodes stripped for 37 providers, 37/37 policy parity, compiler models-from tack fallback | bridle (Ember crew) | DONE (2026-09-30) -- ranch 4dd894db (tack 67/67 tests, herd astmatrix ok), tau 393f60d1 (gen:compat 82 providers/43 tack-sourced, 731 rules; catalog typecheck clean; catalog suite 973 pass/4 pre-existing fail); both ls-remote verified |
+| corvid | ROUTING AUDIT: agent cognition vs tool-call vs heavy-compute placement across hatch+yote; exec-lane routing; cell cron/worker heavy-compute  | corvid (Ember crew) | DONE (2026-09-30) — 1cdeac68f6 |
+| fennec-cell-files | CELL-FILES stream: mise.toml hot-reload audit (up-cellfiles-ui forensics; stream D repaired the parse break as 1cdeac68f6), pitchfork bun --hot for kimi-audit-dash/windmill/bench-radar, hatch/README cell-files row, findings UX redesign in Deuz-SDK (3-class triage, workload grouping, WHY strings) | Fennec (Ember crew) | RUNNING (2026-09-30) |
 <!-- KB-ROLLUP:END -->
+
+
+| stream-e | document the #yolo exec-policy bypass in the fleet KB | Ember (spawned subagent) | DONE (2026-09-30) — 2c83dd09a714a44d0eccee38bdea3ae257065a81 |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
@@ -368,3 +399,35 @@ obv" (Dropbox). The Dropbox sync step is removed, not replaced. Skill:
 Measured on yote: 53,851 files indexed in ~98s; scoped query 0.395ms;
 nanosecond race (50 runs, GC-isolated): bm25_only median 60,139ns,
 hybrid_full median 300,425ns.
+
+## 9. `#yolo` exec-policy bypass (2026-09-30)
+
+### What it is
+`yote-conn exec` (and the MCP/WS exec lanes) enforce a default-deny policy on
+catastrophic patterns. The policy lives in the canonical repo
+`toxicwind/sovereign-projects`: `projects/bridge/yote/awrawr_mcp.py`
+(`_DEFAULT_DENY`) and `bridge/awrawr_ws_exec.py`. The first default-deny regex
+blocks recursive `rm` against `/`, `~`, `/*`, or `$HOME` — so
+`rm -rf ~/.cache/bun` matches (the target begins with `~/`) and the command
+fails with `POLICY DENIED for recursive rm pattern`. The KB had zero mentions
+of `#yolo` or `POLICY DENIED`, which is why a cache-cleanup agent hit the deny
+with no documented recourse.
+
+### Syntax
+```
+yote-conn exec "#yolo rm -rf ~/.cache/bun ~/.npm"
+```
+- The literal prefix `#yolo ` (hash, yolo, space) is stripped before execution.
+- Policy matching is skipped for the prefixed command; authentication and audit
+  remain active. The audit record carries `yolo:true`.
+
+### Rules
+- The denylist is accident prevention, not a sandbox — the auth token is the
+  actual security boundary.
+- Ordinary commands keep their catastrophic-operation protection. Only the
+  `#yolo`-prefixed command bypasses the policy.
+- A `#yolo`-prefixed command exercises Chris's yolo authority: you act as him,
+  deliberately. Use it for the specific denied operation, then go back to
+  normal commands — do not prefix routinely.
+- Do NOT weaken, remove, or edit the denylist itself (`_DEFAULT_DENY`,
+  `awrawr_ws_exec.py`) — document the bypass, never touch the policy.

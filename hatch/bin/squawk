@@ -32,7 +32,10 @@ Reads via the bridge (exec.py). Writes by dropping a message file in the
 squawk-root channel dir, which the yote squawk-ws server picks up via inotify.
 Reads race the file lane against the feed lane: if one is sick the other
 serves, first valid wins. A fallback moves FORWARD to a live lane — it never
-rolls back to a stale read.
+rolls back to a stale read. When BOTH yote lanes are dead (bridge down), the
+human read paths serve a cell-local last-good cache, loudly bannered stale —
+a third lane, forward to older-but-real data, never a silent empty. (Mutating
+consumers — ask sweeps, race-poll — stay fail-closed on stale data.)
 Hatch-side posts are unsigned (the signing keys live on yote at 0600) — same
 as the pre-existing 'ember' behavior. For HMAC-signed posts, use the yote
 wrapper: squawk --profile <name> post <channel> --title T --body B
@@ -92,14 +95,27 @@ def load_profiles():
         with open(_CACHE_PATH) as f:
             doc = yaml.safe_load(f) or {}
     else:
-        out = bridge("cat %s/runners.yml" % SQUAWK_ROOT)
-        doc = yaml.safe_load(out) or {}
         try:
-            os.makedirs(os.path.dirname(_CACHE_PATH), exist_ok=True)
-            with open(_CACHE_PATH, "w") as f:
-                f.write(out)
-        except OSError:
-            pass
+            out = bridge("cat %s/runners.yml" % SQUAWK_ROOT)
+        except Exception:
+            out = None
+        if out is None:
+            # Fail-open (2026-09-30): bridge down -> serve the stale cache
+            # rather than dying. No cache at all -> raise honestly.
+            try:
+                with open(_CACHE_PATH) as f:
+                    doc = yaml.safe_load(f) or {}
+            except OSError:
+                raise RuntimeError(
+                    "bridge down and no cached runners.yml at %s" % _CACHE_PATH)
+        else:
+            doc = yaml.safe_load(out) or {}
+            try:
+                os.makedirs(os.path.dirname(_CACHE_PATH), exist_ok=True)
+                with open(_CACHE_PATH, "w") as f:
+                    f.write(out)
+            except OSError:
+                pass
     _profiles_cache = doc.get("profiles") or {}
     if not _profiles_cache:
         raise RuntimeError("no profiles in %s/runners.yml" % SQUAWK_ROOT)
@@ -116,6 +132,64 @@ def resolve_profile(name):
     p.setdefault("identity", name)
     p.setdefault("channels", ["fleet"])
     return p
+
+
+# --- third read lane: cell-local last-good cache (2026-09-30, slate) --------
+# Nightjar's mutual fallbacks (file lane vs feed lane) both ride the yote
+# bridge — under TOTAL bridge loss they both die and reads return nothing.
+# This cache is the third lane: every successful fresh read is persisted
+# locally, and human read paths serve it (loudly bannered STALE) when both
+# yote lanes are down. Forward to older-but-real data; never a silent empty.
+# Mutating consumers (ask sweeps, race-poll) intentionally do NOT use it:
+# acting on stale data (re-answering, re-servicing races) is worse than
+# waiting. Best-effort throughout; cache failures never break a read.
+_CH_CACHE_DIR = os.path.expanduser("~/.cache/squawk/channels")
+_CH_CACHE_CAP = 200  # messages kept per channel
+
+
+def _ch_cache_path(channel):
+    safe = "".join(c if (c.isalnum() or c in "-_") else "_" for c in channel) or "fleet"
+    return os.path.join(_CH_CACHE_DIR, safe + ".json")
+
+
+def cache_store(channel, msgs):
+    """Persist a successful fresh read. Never raises."""
+    try:
+        os.makedirs(_CH_CACHE_DIR, exist_ok=True)
+        doc = {"ts": time.time(), "msgs": (msgs or [])[:_CH_CACHE_CAP]}
+        tmp = _ch_cache_path(channel) + ".tmp"
+        with open(tmp, "w") as f:
+            json.dump(doc, f)
+        os.replace(tmp, _ch_cache_path(channel))
+    except OSError:
+        pass
+
+
+def cache_load(channel, n):
+    """Return (ts, msgs) of the last good read, or (0, []) when absent."""
+    try:
+        with open(_ch_cache_path(channel)) as f:
+            doc = json.load(f)
+    except (OSError, ValueError):
+        return 0, []
+    msgs = doc.get("msgs") or []
+    return doc.get("ts", 0), (msgs[:n] if n else msgs)
+
+
+def read_channel_failopen(channel, n=10):
+    """Human-facing read: fresh data when any lane is alive, last-good cache
+    (bannered stale) under total outage, and only then an empty result with
+    the honest error. Never raises."""
+    try:
+        return read_channel(channel, n), None
+    except Exception as e:
+        ts, cached = cache_load(channel, n)
+        if cached:
+            age = "%ds" % int(time.time() - ts) if ts > 0 else "unknown age"
+            banner = ("(STALE CACHE — every lane down: %s; last good read %s ago)"
+                      % (e, age))
+            return cached, banner
+        return [], "(squawk read: every lane down: %s)" % e
 
 
 def _race_first(lanes, timeout=30):
@@ -193,7 +267,9 @@ def read_channel(channel, n=10, full=False, _via=None):
         return msgs
 
     try:
-        return primary()
+        msgs = primary()
+        cache_store(channel, msgs)
+        return msgs
     except Exception as first_err:
         if _via is not None:
             raise  # already inside a fallback; surface, don't recurse
@@ -218,7 +294,9 @@ def read_channel(channel, n=10, full=False, _via=None):
                 })
             return out[-n:] if n else out
         try:
-            return _race_first([primary, via_feed], timeout=30)
+            msgs = _race_first([primary, via_feed], timeout=30)
+            cache_store(channel, msgs)
+            return msgs
         except Exception:
             raise first_err
 
@@ -619,11 +697,9 @@ def cmd_answer(args, sender):
 
 
 def print_channel(channel, n):
-    try:
-        msgs = read_channel(channel, n)
-    except Exception as e:
-        print("(squawk read: every lane down: %s)" % e, file=sys.stderr)
-        return
+    msgs, banner = read_channel_failopen(channel, n)
+    if banner:
+        print(banner, file=sys.stderr)
     if not msgs:
         print("(no messages in %s)" % channel)
         return
@@ -748,12 +824,10 @@ def main():
         for ch in chs:
             if len(chs) > 1:
                 print("--- channel: %s ---" % ch)
-            try:
-                new = [m for m in read_channel(ch, 50) if m["seq"].isdigit() and int(m["seq"]) > since]
-            except Exception as e:
-                print("(squawk watch: every lane down for %s: %s)" % (ch, e),
-                      file=sys.stderr)
-                continue
+            msgs, banner = read_channel_failopen(ch, 50)
+            if banner:
+                print("(squawk watch %s: %s)" % (ch, banner), file=sys.stderr)
+            new = [m for m in msgs if m["seq"].isdigit() and int(m["seq"]) > since]
             if not new:
                 print("(no new messages in %s since %d)" % (ch, since))
                 continue
