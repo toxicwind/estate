@@ -2,7 +2,7 @@
 crew: 'slate'
 scope: 'SQUAWK CLI + WARDEN (stream-C): fail-open CLI reads — cell-local last-good cache lane on total bridge loss + load_profiles stale-cache fallback; ferrous-warden (estate-reconcile) alert dedupe/coalescing so the 9/25 ~70-posts/90s flood can never repeat; _squawk seq via seq_alloc.py'
 owner: 'ember'
-status: 'RUNNING (2026-09-30)'
+status: 'DONE (2026-09-30) -- commits 9eb22036d7 (kb register) + 365fa3ecc9 (squawk CLI fail-open cache lane) + f97e987e23 (ferrous-warden dedupe); origin/main verified via git ls-remote; warden watch daemon hot-deployed+restarted'
 order: 96
 registered: '2026-09-30'
 updated: '2026-09-30'
