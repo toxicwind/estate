@@ -4,7 +4,7 @@ scope: 'Pitchfork D2 live migration: 81-daemon monolith to 79 project-owned pitc
 owner: 'Sparrow (Ember crew)'
 order: 120
 registered: '2026-09-30'
-status: 'RUNNING (2026-09-30) -- split applied, composed output proven parse-equal to live monolith, cutover live with zero restarts, 0 orphans; committing now'
+status: 'DONE (2026-09-30) -- sovereign-projects main 54c3772440 (composer, splitter, orphan-watch, parent/projects/attribution, docs, composed pitchfork.toml); ranch main 4c7a68b (15 daemon fragments, 7 projects). Verified: composed output parse-equal to monolith (0 mismatched, only 2 retirements removed), cutover with zero daemon restarts, orphan-watch 0 orphans (74 running). Remote refs verified via git ls-remote.'
 updated: '2026-09-30'
 ---
 
