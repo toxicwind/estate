@@ -1,0 +1,1 @@
+{"dependencies":{"playwright-core":"latest"},"description":"One-shot scripted browser runner (browsnap.ts) — deterministic multi-step browser flows with zero per-step inference.","name":"fast-browser","version":"1.0.0"}
