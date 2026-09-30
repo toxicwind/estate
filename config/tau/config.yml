@@ -6,7 +6,7 @@ plugins:
 - name: flock
   source: ./projects/range/ranch/stockyard/flock
   privileged: true
-- name: shep
+- name: gatehouse
   source: ./projects/range/ranch/barn/gatehouse
   privileged: true
   role: MCP federation gateway
@@ -282,7 +282,7 @@ retry:
     - openrouter/inclusionai/ling-3.0-flash-fin:free
     # sovereign/free (:25104) and herd/qwen-flash-da-128k (:25100) are both
     # down — herd's dependency gatehouse aborts startup on a missing
-    # projects/range/ranch/barn/shep/bin/github-mcp.sh. These two are verified
+    # projects/range/ranch/barn/gatehouse/bin/github-mcp.sh. These two are verified
     # 200 against openrouter and restore the chain's whole point.
     google-antigravity/*:
     - openrouter/inclusionai/ling-3.0-flash-fin:free

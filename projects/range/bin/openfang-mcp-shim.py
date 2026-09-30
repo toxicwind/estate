@@ -2,7 +2,7 @@
 """openfang-mcp-shim: NDJSON <-> Content-Length MCP stdio bridge.
 
 The openfang Rust binary's `mcp` server speaks LSP-style Content-Length
-framing on stdio, while mcpproxy/shep (and most MCP clients) speak
+framing on stdio, while mcpproxy/gatehouse (and most MCP clients) speak
 newline-delimited JSON. This shim translates both directions so the
 openfang agent tools can live behind the mesh gateway.
 
