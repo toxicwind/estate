@@ -520,7 +520,24 @@ def main():
     # NOTE: pidfile is written only AFTER the socket bind succeeds. A child
     # that loses the bind race (EADDRINUSE) must not leave its pid behind,
     # or watchdogs will pid-check a dead process and miss the live daemon.
-    srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+    # Bind-race hardening (2026-09-30): restarts raced the dying holder and
+    # died with EADDRINUSE while the old process still held the port
+    # (SO_REUSEADDR can't help: the holder is live, not TIME_WAIT). Retry
+    # with backoff — a dying holder releases the port within seconds.
+    srv = None
+    for attempt in range(12):
+        try:
+            srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+            break
+        except OSError as e:
+            if getattr(e, "errno", None) != 98:  # EADDRINUSE
+                raise
+            log("bind EADDRINUSE (attempt %d/12): old holder still "
+                "releasing; retrying in 5s" % (attempt + 1))
+            time.sleep(5)
+    if srv is None:
+        log("bind failed after 12 attempts; giving up")
+        sys.exit(1)
     srv.daemon_threads = True
     pidfile = os.path.join(HERE, "connector.pid")
     try:

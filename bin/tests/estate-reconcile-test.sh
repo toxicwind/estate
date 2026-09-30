@@ -46,20 +46,23 @@ if out="$("$ER" check --manifest "$MANIFEST" 2>&1)"; then bad "missing binary de
 fi
 mv "$T/a.bin.moved" "$T/a.bin"
 
-# --- 3. atomic restore --------------------------------------------------------
+# --- 3. --apply is HARD-DISABLED: refuses loudly, touches nothing -------------
 printf 'CORRUPTED' >> "$T/a.bin"
-if "$ER" --apply --manifest "$MANIFEST" >/dev/null 2>&1; then :; else bad "apply exit code"; fi
-if [ "$(sha256sum "$T/a.bin" | awk '{print $1}')" = "$sha_a" ]; then ok "atomic restore from immutable copy"; else bad "atomic restore from immutable copy"; fi
-if "$ER" check --manifest "$MANIFEST" >/dev/null 2>&1; then ok "check clean after restore"; else bad "check clean after restore"; fi
+corrupt_sha="$(sha256sum "$T/a.bin" | awk '{print $1}')"
+if out="$("$ER" --apply --manifest "$MANIFEST" 2>&1)"; then rc=0; else rc=$?; fi
+if [ "$rc" -eq 2 ]; then ok "--apply refuses with exit 2"; else bad "--apply refuses (rc=$rc)"; fi
+case "$out" in *REFUSED*) ok "--apply prints REFUSED";; *) bad "--apply output (no REFUSED: $out)";; esac
+if [ "$(sha256sum "$T/a.bin" | awk '{print $1}')" = "$corrupt_sha" ]; then ok "--apply left drifted file untouched"; else bad "--apply modified the file"; fi
+if grep -q 'APPLY-REFUSED' "$ESTATE_ROOT/log/estate-reconcile.log"; then ok "--apply logged APPLY-REFUSED"; else bad "--apply logged APPLY-REFUSED"; fi
+# manual fix is now the only restore: copy the trusted file back by hand
+cp "$T/a.immutable" "$T/a.bin"; chmod 755 "$T/a.bin"
+if "$ER" check --manifest "$MANIFEST" >/dev/null 2>&1; then ok "check clean after manual fix"; else bad "check clean after manual fix"; fi
 
-# --- 4. kill-mid-restore: file is always old-or-new, never partial ------------
+# --- 4. --apply under concurrency: never modifies the file ---------------------
 bigok=1
 for i in $(seq 1 20); do
-  head -c 2000000 /dev/urandom > "$T/a.immutable"   # large immutable to widen the race
-  sha_big="$(sha256sum "$T/a.immutable" | awk '{print $1}')"
-  # rewrite manifest sha for this round
-  sed -i "s/sha256: \".*\"/sha256: \"$sha_big\"/" "$MANIFEST"
-  printf 'x' > "$T/a.bin"                            # drifted
+  printf 'x' > "$T/a.bin"                              # drifted
+  sha_x="$(sha256sum "$T/a.bin" | awk '{print $1}')"
   "$ER" --apply --manifest "$MANIFEST" >/dev/null 2>&1 &
   apid=$!
   sleep 0.002
@@ -67,17 +70,16 @@ for i in $(seq 1 20); do
   wait "$apid" 2>/dev/null || true
   got="$(sha256sum "$T/a.bin" | awk '{print $1}')"
   case "$got" in
-    "$sha_big") : ;;                                 # fully restored
-    "$(printf 'x' | sha256sum | awk '{print $1}')") : ;;  # untouched old
-    *) bigok=0; echo "  partial write detected on round $i: $got" ;;
+    "$sha_x") : ;;                                     # untouched, always
+    *) bigok=0; echo "  file modified on round $i: $got" ;;
   esac
 done
-if [ "$bigok" -eq 1 ]; then ok "kill-mid-restore: always old-or-new (20 rounds)"; else bad "kill-mid-restore"; fi
-# final converged restore
-"$ER" --apply --manifest "$MANIFEST" >/dev/null 2>&1
+if [ "$bigok" -eq 1 ]; then ok "concurrent --apply: file never modified (20 rounds)"; else bad "concurrent --apply modified the file"; fi
+# reset to healthy
+printf 'binary-a-content' > "$T/a.bin"; chmod 755 "$T/a.bin"
 new_sandbox   # reset sandbox for remaining tests
 
-# --- 5. unsigned-HEAD: alert instead of git restore -----------------------------
+# --- 5. unsigned-HEAD: still alert-only (now by global refusal) -------------------
 G="$T/gitrepo"; mkdir -p "$G"; ( cd "$G" && git init -q && git config user.email t@t && git config user.name t \
   && printf 'v1' > app.py && git add app.py && git commit -qm init )   # unsigned commit
 sha_v1="$(printf 'v1' | sha256sum | awk '{print $1}')"
@@ -97,12 +99,12 @@ if "$ER" --apply --manifest "$MANIFEST" >/dev/null 2>&1; then rc=0; else rc=$?; 
 if [ "$rc" -eq 2 ] && [ "$(cat "$G/app.py")" = "v2-drift" ]; then
   ok "unsigned-HEAD: alert-only, file untouched (exit 2)"
 else bad "unsigned-HEAD (rc=$rc content=$(cat "$G/app.py"))"; fi
-if grep -q 'HEAD unsigned' "$G"/log/estate-reconcile.log 2>/dev/null || grep -q 'HEAD unsigned' "$ESTATE_ROOT/log/estate-reconcile.log" 2>/dev/null; then
-  ok "unsigned-HEAD logged with reason"
-else bad "unsigned-HEAD logged with reason"; fi
+if grep -q 'APPLY-REFUSED' "$G"/log/estate-reconcile.log 2>/dev/null || grep -q 'APPLY-REFUSED' "$ESTATE_ROOT/log/estate-reconcile.log" 2>/dev/null; then
+  ok "unsigned-HEAD logged APPLY-REFUSED"
+else bad "unsigned-HEAD logged APPLY-REFUSED"; fi
 export ESTATE_ROOT="$ESTATE_ROOT_SAVED"
 
-# --- 6. symlink drift + restore (herd-style) -----------------------------------
+# --- 6. symlink drift: --apply refuses, link untouched ----------------------------
 new_sandbox
 ln -s "$T/a.immutable" "$T/link.bin"
 sed -i "s|path: $T/a.bin|path: $T/link.bin|" "$MANIFEST"
@@ -110,11 +112,10 @@ if "$ER" check --manifest "$MANIFEST" >/dev/null 2>&1; then ok "symlink target h
 ln -sfn "$T/a.bin" "$T/link.bin"   # re-point at the drifted file
 printf 'drift' >> "$T/a.bin"
 if "$ER" check --manifest "$MANIFEST" >/dev/null 2>&1; then bad "symlink drift detected"; else ok "symlink drift detected"; fi
-"$ER" --apply --manifest "$MANIFEST" >/dev/null 2>&1
-if [ "$(readlink -f "$T/link.bin")" = "$T/a.immutable" ] && \
-   [ "$(sha256sum "$T/link.bin" | awk '{print $1}')" = "$sha_a" ]; then
-  ok "symlink atomically re-pointed to immutable copy"
-else bad "symlink restore"; fi
+if "$ER" --apply --manifest "$MANIFEST" >/dev/null 2>&1; then rc=0; else rc=$?; fi
+if [ "$rc" -eq 2 ] && [ "$(readlink -f "$T/link.bin")" = "$T/a.bin" ]; then
+  ok "symlink --apply refused (exit 2), link target unchanged"
+else bad "symlink --apply (rc=$rc target=$(readlink -f "$T/link.bin"))"; fi
 
 # --- 7. runtime path exemption -------------------------------------------------
 new_sandbox

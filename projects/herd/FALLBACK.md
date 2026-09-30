@@ -30,8 +30,9 @@ Do NOT roll back to a stale backup. The warden (`bin/estate-reconcile`)
 follows **fallback, not rollback**:
 
 - `estate-reconcile check` — read-only drift report (exit 1 on drift)
-- `estate-reconcile --apply` — atomically restores from the immutable copy
-  (tmp file + rename; never reverts to an older version)
+- `estate-reconcile --apply` — HARD-DISABLED (refuses, exit 2).
+  Restoration is dead on every path (Chris 2026-09-30); the warden only
+  alerts. Rebuild from a trusted source and redeploy by hand.
 
 If the immutable copy itself is corrupt, rebuild from source:
 `toxicwind/sovereign-swap` @ `7fc25280816fa7f98764ac46d1435d55ac9dc3c3`
