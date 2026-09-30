@@ -352,7 +352,7 @@ These daemons are **protected**: `bin/claim-port` refuses 25147 and 25135 outrig
 
 ### Accountability — oracle-market
 
-[`agents/oracle-market/`](agents/oracle-market/) — the oracle market: HMAC-signed bidder profiles, Vickrey second-price clearing, stake-and-slash accountability, plus the fused Oracle decision engine (`oracle-core`, `:25151`) standing in for human approval. Spec: [`agents/oracle-market/SPEC.md`](agents/oracle-market/SPEC.md).
+[`projects/range/ranch/oracle/`](projects/range/ranch/oracle/) — the oracle market: HMAC-signed bidder profiles, Vickrey second-price clearing, stake-and-slash accountability, plus the fused Oracle decision engine (`oracle-core`, `:25151`) standing in for human approval. Spec: [`projects/range/ranch/oracle/SPEC.md`](projects/range/ranch/oracle/SPEC.md).
 
 ### Agents
 
@@ -447,7 +447,7 @@ This is the short list. The full map of every README in the tree is [`docs/READM
 | [`docs/`](docs/) | Architecture + ops doc index |
 | [`bridge/`](bridge/) | hatch↔yote exec bridge |
 | [`hatch/`](hatch/) | Hatch-cell side (Ember home, squawk, watchdogs) |
-| [`agents/oracle-market/`](agents/oracle-market/) | Oracle market + decision engine |
+| [`projects/range/ranch/oracle/`](projects/range/ranch/oracle/) | Oracle market + decision engine |
 
 ## License
 
