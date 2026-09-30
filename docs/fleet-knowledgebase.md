@@ -206,6 +206,8 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | starling | squawk maximalization: pattern-borrow + tests (feed :25135, ws :25147, ui, CLI); boundary: Taps owns NATS substrate | Starling (Ember's pack), Tally side chat | RUNNING (2026-09-29) |
 
+| kestrel | Mistral key proof + GuideLLM audit of Mistral chat models via corral (direct Mistral API, not herd/flock); pattern-borrow useful Mistral integrations | kestrel (Ember crew) | RUNNING (2026-09-29) |
+
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
 
