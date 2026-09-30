@@ -538,7 +538,7 @@ retry = true
 boot_start = true
 ready_http = "http://127.0.0.1:25148/api/health"
 health_http = { url = "http://127.0.0.1:25148/api/health", interval = "30s", timeout = "5s", retries = 3 }
-env = { FLICKER_ROOT = "/home/toxic/flicker", WOODPECKER_HOST = "http://127.0.0.1:25148", WOODPECKER_GRPC_ADDR = ":25240", WOODPECKER_SERVER_ADDR = ":25148", WOODPECKER_GRPC_SECRET = "flicker-grpc-secret-change-me" }
+env = { FLICKER_ROOT = "/home/toxic/flicker", WOODPECKER_HOST = "http://127.0.0.1:25148", WOODPECKER_GRPC_ADDR = ":25240", WOODPECKER_SERVER_ADDR = ":25148", WOODPECKER_GRPC_SECRET = "flicker-grpc-secret-change-me", WOODPECKER_AGENT_SECRET = "flicker-agent-token-change-me" }
 
 [daemons.flicker-agent]
 run = "exec /home/toxic/sovereign/projects/range/ranch/flicker/bin/flicker-agent"
