@@ -104,6 +104,30 @@ Rules:
 5. Confirm an agent reading only the new version takes the same actions.
 6. Preflight every new scheduled-task body at creation: `bun classifier-sweep.ts --preflight`.
 
+## launch-audit.ts (meta-tool, 2026-09-30)
+Enumerates every launch surface in one pass — cron mirrors under
+workspace/cron.d, goal cron mirrors, the worker queue
+(workspace/queue/{active,pending,failed,completed}), and side-chat
+directories — and detects missing canonical directive markers, stall
+phrasing, literal input-request rules, trigger-database matches, stale
+queue entries, and stale side chats. Prohibitions ("never kill the live
+bridge daemon") and documentation of trigger shapes are reported, not
+repaired. Diagnostic probes and system jobs are excluded from repair.
+
+- `bun launch-audit.ts` — read-only audit; writes a timestamped JSON report
+  under reports/.
+- `bun launch-audit.ts --repair --plan-out <file>` — prepends the canonical
+  directive block to definition mirrors missing it; emits a relaunch plan
+  (cron-body-update entries applied via cron.update after confirming a live
+  saved schedule; stale mirrors stay as repaired files).
+- `bun launch-audit.ts --preflight-create <file>` — creation gate: rejects
+  (exit 1) bodies missing the directive block, carrying stall phrasing, or
+  matching actionable trigger shapes.
+- `bun launch-audit.ts --json` — machine-readable report.
+
+Wired into the classifier-sweep cron body (steps 7-8): the 6-hourly sweep
+runs `--repair` and enforces `--preflight-create` on new task bodies.
+
 ## Boundary
 False-positive repair for our own docs and task bodies only. If flagged
 content's actual purpose is circumvention, the classifier was right:
