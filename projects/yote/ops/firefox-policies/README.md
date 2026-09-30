@@ -1,4 +1,45 @@
-# Firefox enterprise policies — /etc/firefox/policies/
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+# Firefox enterprise policies
+
+> Managed `/etc/firefox/policies/` for the yote box — deployed, not hand-edited.
+
+> **Why care? Chris's requirement: no experiments, no studies, no in-browser update fights — while security/update collections keep working. These policies are source-traced to mozilla-central, so every claim about what a policy does (and doesn't touch) is verifiable, not folklore.**
+
+- **`DisableAppUpdate` — updates come from `pacman -Syu`, never the browser**
+- **`DisableFirefoxStudies` — kills Nimbus experiments/rollouts, preserves Remote Settings sync + Normandy emergency remediation**
+- **Source-traced — every behavior claim cites `file:line` in mozilla-central**
+- **Deployed by `firefox-rs-repair.sh` — pacman hook + path unit re-apply after upgrades**
+
+```mermaid
+flowchart LR
+    REPO[firefox-policies/] --> SCRIPT[firefox-rs-repair.sh --install]
+    SCRIPT --> ETC[/etc/firefox/policies/]
+    PACMAN[pacman upgrade] --> HOOK[pacman hook re-applies]
+    POL[DisableFirefoxStudies] -->|kills| NIMBUS[Nimbus experiments]
+    POL -->|preserves| RS[Remote Settings sync]
+    POL -->|preserves| NORM[Normandy emergency path]
+```
+
+## Quick start
+
+```bash
+cd projects/yote/ops/firefox-policies
+./firefox-rs-repair.sh --install   # deploy policies (do not hand-edit on the box)
+./firefox-rs-repair.sh --repair    # re-assert after drift
+```
+
+## License & security
+
+- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **Security:** Policies are the security boundary for the browser on this box: no studies enrolled, no silent experiments. Change the repo source and re-run the script — never hand-edit `/etc/firefox/policies/` on the box.
+
+---
 
 Deployed from `projects/yote/ops/firefox-policies/` by `firefox-rs-repair.sh`
 (`--install` / `--repair`). Do not hand-edit on the box; change the repo

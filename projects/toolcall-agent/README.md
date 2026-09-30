@@ -1,4 +1,46 @@
-# toolcall-agent — persistent tool-capable local LLM endpoint + harness
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+# toolcall-agent
+
+> Persistent tool-capable local LLM endpoint + validator-first harness — on the RTX 3090.
+
+> **Why care? Cloud daemon keys were stale, the 1.2B `fast` model can't tool-call, and the pollinations gate was closed — the openfang Agent 2 pilot was stuck with no tool-capable model. This ships one: a local llama-server endpoint with a ReAct harness that schema-validates every tool call *before* executing it, closing the SLM↔large-model tool-call gap.**
+
+- **Local endpoint — `llama-server` (llama.cpp b11059, CUDA, `-ngl 99`) on `:25152`, model alias `qwen3.5-9b-tool`**
+- **Validator-first execution — tool name + args schema-checked before running; violations feed back for repair (max 2)**
+- **Safe calculator — AST-whitelisted, no `eval()` of raw code; sysinfo is read-only**
+- **Herd-routed — peer `toolcall-local` on `:25100`, addressable as `toolcall-local/qwen3.5-9b-tool`**
+- **Verified live — GPU query → MiB→GiB conversion chained correctly in 3.6s; parallel tool calls in 3.4s**
+
+```mermaid
+flowchart LR
+    PILOT[Agent 2 pilot] --> HERD[herd :25100]
+    HERD -->|toolcall-local| EP[llama-server :25152]
+    EP --> QWEN[qwen3.5-9b-tool]
+    CLI[agent_loop.py] --> EP
+    CLI --> VAL[validator: schema-check before exec]
+    VAL --> TOOLS[calculator AST-safe · sysinfo read-only]
+```
+
+## Quick start
+
+```bash
+cd /home/toxic/sovereign/projects/toolcall-agent
+TOOLCALL_BASE=http://127.0.0.1:25152 python3 agent_loop.py "your prompt"
+# or via herd: model=toolcall-local/qwen3.5-9b-tool on http://127.0.0.1:25100
+```
+
+## License & security
+
+- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **Security:** Endpoint binds 127.0.0.1 only — reachable via herd or the local harness, never exposed directly. The calculator never `eval()`s raw model output (AST whitelist); `sysinfo` is read-only. Research grounding: arXiv:2510.03847 (SLM agentic survey), ToolSpec (arXiv:2604.13519), BFCL v4.
+
+---
 
 **Purpose:** unblock the openfang Agent 2 (Shingle) pilot, which was stuck because
 no tool-capable model was available (cloud daemon keys stale, `fast`=1.2B can't
