@@ -959,3 +959,14 @@ mise = false
 retry = true
 auto = ["start"]
 ready_cmd = "pgrep -f '[m]arket-loop.ts' >/dev/null"
+# hashline serve — Unix-socket JSON-RPC daemon (first-class edit tool,
+# Chris 2026-09-30). Agents edit via the binary; MCP hosts use
+# `hashline mcp --proxy-to-daemon` against this socket. No HTTP surface —
+# readiness is the socket listening.
+[daemons.hashline]
+run = "exec /home/toxic/.local/bin/hashline serve --socket /home/toxic/.hashline/hashline.sock --pid-file /home/toxic/.hashline/hashline.pid"
+dir = "/home/toxic"
+env = { HASHLINE_NO_UPDATE_CHECK = "1" }
+retry = true
+ready_cmd = "ss -lx | grep -q /home/toxic/.hashline/hashline.sock"
+auto = ["start"]
