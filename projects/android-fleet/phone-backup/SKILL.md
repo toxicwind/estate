@@ -53,17 +53,35 @@ Same for `du`: per-dir `du -sm /sdcard/*/` works; bare `du -sm /sdcard` may not.
 
 ## 2. Fastest pull method (benchmarked 2026-09-30, wireless ADB)
 
-259MB `/sdcard/Documents` test, Pixel 9 Pro XL:
+**8-method shootout** (`bin/speed-race.sh`, Pixel 9 Pro XL, 09:24 UTC):
+
+Small files (1000 × 100KB = 131MB):
 
 | Method | Time | Throughput |
 |---|---|---|
-| `adb pull` | 8.6s | ~30 MB/s ← **winner** |
-| `adb exec-out "tar -c …" \| tar -x` | 36.9s | ~7 MB/s |
+| on-device `tar` + single pull | 4.5s | ~29 MB/s ← **winner (small files)** |
+| 8-way parallel `adb pull` | 6.4s | ~20 MB/s |
+| plain `adb pull` | 15.9s | ~8 MB/s |
+| `adb pull -z` (compressed) | 14.8s | ~9 MB/s |
 
-The community tar-stream trick **loses** here (toybox tar + exec-out framing
-overhead). Do not "optimize" back to tar-streaming without re-running the
-benchmark. The winning shape is plain `adb pull`, parallelized across
-top-level dirs (`xargs -P4`) — that is what `fast-pull.sh` does.
+Large file (300MB incompressible blob):
+
+| Method | Time | Throughput |
+|---|---|---|
+| plain `adb pull` | 6.8s | ~44 MB/s ← **winner (large files)** |
+| on-device `tar` + pull | 8.0s | ~38 MB/s |
+| `adb pull -z` | 7.6s | ~40 MB/s |
+| `exec-out cat` pipe | 35.0s | ~9 MB/s (framing overhead kills it) |
+
+**The verdict is HYBRID, not one method:**
+- Many small files → `tar` on device first, then pull the single tarball.
+  Eliminates per-file sync-protocol round-trips (the real bottleneck).
+- Large files → plain `adb pull`, no tar overhead, max sequential throughput.
+- `adb pull -z` never wins on incompressible data; `exec-out` pipes always lose.
+
+(Note: the earlier 259MB Documents test showed plain pull beating tar-*streaming*
+via exec-out at 30 vs 7 MB/s — that's the exec-out framing, not tar itself.
+On-device tar + separate pull is a different animal and wins for small files.)
 
 ```bash
 # one-shot, default source set (~20GB code/archives/repos/docs):
