@@ -158,13 +158,24 @@ def intake_backlog(chan_dir, ledger_events, now):
     decision must not mask a stale intake. Each decision is consumed by
     at most one file (earliest mtime first). Files younger than 120s
     get inotify grace; files within the triage window are still owed
-    time. Returns [{"file", "age_s"}] for files older than
-    TRIAGE_WINDOW_S with no matching decision.
+    time. Returns (backlog, self_from, legacy): [{"file", "age_s"}] for
+    files older than TRIAGE_WINDOW_S with no matching decision, plus
+    self-from intakes (invisible to ingest by design) and legacy intakes
+    that predate the current ledger epoch.
     """
     backlog = []
     self_from = []
+    legacy = []
     if not chan_dir.is_dir():
-        return backlog, self_from
+        return backlog, self_from, legacy
+    # ledger-rotation guard (2026-09-30): intake-decisions live only in the
+    # ledger. After a rotation the triage state of older intakes is
+    # unknowable -- and the inotify-driven loop never revisits pre-existing
+    # files, so they are dead letters, not a wedged oracle. Intakes older
+    # than the oldest ledger event belong to a previous epoch: reported as
+    # legacy, not backlog.
+    ledger_first_ts = min((e.get("ts", 0) for e in ledger_events),
+                          default=0)
     decisions = sorted(
         (e for e in ledger_events if e.get("event") == "intake-decision"),
         key=lambda e: e.get("ts", 0))
@@ -185,6 +196,9 @@ def intake_backlog(chan_dir, ledger_events, now):
         age = now - mtime
         if age < 120:
             continue  # grace for inotify latency
+        if ledger_first_ts and mtime < ledger_first_ts:
+            legacy.append({"file": name, "age_s": round(age)})
+            continue  # previous ledger epoch: triage state unknowable
         toks, frm = _intake_tokens(p)
         # 2026-09-21 (hearth): self-from intakes (from oracle-market/oracle)
         # are invisible to ingest() by design (SELF_FROMS) and can NEVER be
@@ -208,7 +222,7 @@ def intake_backlog(chan_dir, ledger_events, now):
                 break
         if not handled and age > TRIAGE_WINDOW_S:
             backlog.append({"file": name, "age_s": round(age)})
-    return backlog, self_from
+    return backlog, self_from, legacy
 
 
 def snapshot(chan_dir, ledger_events):
@@ -290,31 +304,45 @@ def snapshot(chan_dir, ledger_events):
         "proof_of_life": plof,
         "intake_backlog": None,  # filled below
     }
-    _bl, _sf = intake_backlog(chan_dir, ledger_events, now)
+    _bl, _sf, _lg = intake_backlog(chan_dir, ledger_events, now)
     snap["ledger"]["intake_backlog"] = _bl  # was top-level: left ledger key None
     snap["ledger"]["intake_self_from"] = _sf  # which crashed the hatch watchdog
+    snap["ledger"]["intake_legacy"] = _lg  # pre-rotation dead letters
 
     # --- stuck tasks ---
+    # ledger-rotation guard (2026-09-30): the market loop restarted with a
+    # fresh ledger at 00:37 and the old task_open/bid/settle history went
+    # with it. The channel dir itself is the durable record: a task_id seen
+    # in any non-task_post file (bid, assign, settle, no-assign, result,
+    # next-work) was processed under a previous ledger epoch and is NOT
+    # unseen -- flagging it re-alerts on rotation residue and burns the
+    # re-announce budget re-posting dead work.
     stuck = []
+    processed_tids = set()
+    task_posts = []
     if chan_dir.is_dir():
         for name in sorted(os.listdir(chan_dir)):
             if not name.endswith(".md"):
                 continue
             meta = parse_frontmatter(chan_dir / name)
-            if meta.get("msg_type") != "task_post":
-                continue
-            tid = meta.get("task_id", "")
-            if not tid:
-                continue
-            age = now - (chan_dir / name).stat().st_mtime
-            evs = by_tid.get(tid, set())
-            if "task_open" not in evs and age > STUCK_UNSEEN_S:
-                stuck.append({"task_id": tid, "kind": "unseen",
-                              "age_s": round(age), "file": name})
-            elif "task_open" in evs and not (evs & {"settled", "no_assign"}) \
-                    and age > STUCK_WEDGED_S:
-                stuck.append({"task_id": tid, "kind": "wedged",
-                              "age_s": round(age), "file": name})
+            if meta.get("msg_type") == "task_post":
+                task_posts.append((name, meta))
+            elif meta.get("task_id"):
+                processed_tids.add(meta["task_id"])
+    for name, meta in task_posts:
+        tid = meta.get("task_id", "")
+        if not tid:
+            continue
+        age = now - (chan_dir / name).stat().st_mtime
+        evs = by_tid.get(tid, set())
+        if "task_open" not in evs and tid not in processed_tids \
+                and age > STUCK_UNSEEN_S:
+            stuck.append({"task_id": tid, "kind": "unseen",
+                          "age_s": round(age), "file": name})
+        elif "task_open" in evs and not (evs & {"settled", "no_assign"}) \
+                and age > STUCK_WEDGED_S:
+            stuck.append({"task_id": tid, "kind": "wedged",
+                          "age_s": round(age), "file": name})
     snap["stuck_tasks"] = stuck
 
     # --- bidders ---
