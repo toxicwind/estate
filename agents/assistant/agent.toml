@@ -7,7 +7,6 @@ description = "General-purpose assistant"
 author = ""
 module = "builtin:chat"
 schedule = "reactive"
-fallback_models = []
 priority = "Normal"
 skills = []
 mcp_servers = []
@@ -21,7 +20,8 @@ cache_context = false
 
 [model]
 provider = "llama-swap"
-model = "nex-agi/nex-n2.5-mini:free"
+model = "openrouter-free/liquid/lfm-2.5-2.6b:free"
+fallback_models = [{ provider = "llama-swap", model = "gemini/gemini-3-flash-preview" }]
 base_url = "http://127.0.0.1:25100/v1"
 max_tokens = 4096
 temperature = 0.699999988079071
