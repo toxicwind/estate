@@ -10,7 +10,7 @@ import subprocess
 import sys
 import time
 
-CHAT = "/home/toxic/.shingle/chat"
+CHAT = "/home/toxic/.fleet-bus/chat"
 ROOT = "/tmp/smoke2"
 KEYS = "/tmp/smoke-keys"
 

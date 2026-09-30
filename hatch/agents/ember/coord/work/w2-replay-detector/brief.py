@@ -10,7 +10,7 @@ Quarantine: write seqs/metrics only, never message bodies.
 import json, os, time
 
 WORK = os.path.dirname(os.path.abspath(__file__))
-SEEDS = "/home/toxic/.shingle/coord/work/seeds"
+SEEDS = "/home/toxic/.fleet-bus/coord/work/seeds"
 
 def load(session):
     turns = []

@@ -8,7 +8,7 @@ storm_active and chat_hits >= threshold (default 10), else 0 (CLEAR);
 import json, os, time, subprocess, sys
 
 WORK = os.path.dirname(os.path.abspath(__file__))
-SEEDS = "/home/toxic/.shingle/coord/work/seeds"
+SEEDS = "/home/toxic/.fleet-bus/coord/work/seeds"
 
 TRIPWIRE = '''#!/usr/bin/env python3
 import json, sys

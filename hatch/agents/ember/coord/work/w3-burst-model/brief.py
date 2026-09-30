@@ -9,7 +9,7 @@ import json, os, time
 from datetime import datetime, timezone
 
 WORK = os.path.dirname(os.path.abspath(__file__))
-SEEDS = "/home/toxic/.shingle/coord/work/seeds"
+SEEDS = "/home/toxic/.fleet-bus/coord/work/seeds"
 
 turns = json.load(open(os.path.join(SEEDS, "seed_list_chat.json")))
 storm = [t for t in turns if t["label"] == -1]

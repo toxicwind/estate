@@ -1,6 +1,6 @@
 # Fleet coordination substrate — PROTOCOL.md
 
-Lives at `/home/toxic/.shingle/coord/` on awrawr-pc (the database holder: every
+Lives at `/home/toxic/.fleet-bus/coord/` on awrawr-pc (the database holder: every
 agent class with bridge access can reach it; local processes see it as plain files).
 
 ## Layout
