@@ -26,7 +26,7 @@ import urllib.error
 import ranking_lib  # shared tier/ranking/report logic
 from ranking_lib import split_tiers, rank_models
 
-sys.path.insert(0, "/home/toxic/sovereign/projects/guidellm/src")
+sys.path.insert(0, "/home/toxic/sovereign/projects/range/ranch/guidellm/fork/src")
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
 SECRETS = "/home/toxic/.secrets"
