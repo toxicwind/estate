@@ -58,11 +58,12 @@ binaries:
     daemon: model-guard
   openfang-kernel:
     path: /home/toxic/projects/rig-work/target/debug/openfang
-    sha256: "0d64e851e0373777dbd2f0148a76be12cff39d5f43a6929f78f6155ab71320e0"
+    sha256: "a73df142422ebae537509c6f08890415a2bbbc170d04a307c6b6ce88194d20af"
     source: toxicwind/rig
     commit: 6b6742c
+    immutable_copy: /home/toxic/projects/rig-work/openfang-kernel.20260929-233553
     daemon: openfang
-    note: local debug build, no immutable copy — check-only; re-record after any rebuild
+    note: blessed 2026-09-29 (furnace) — binary verified good (sha matches, v0.6.9 runs); immutable copy enables warden auto-restore
 
 declared_configs:
   - config/herd.yaml
