@@ -53,7 +53,7 @@ AUDIT_MAX_BYTES = int(os.environ.get("MODEL_GUARD_AUDIT_MAX_BYTES", 10_000_000))
 
 # ---------------------------------------------------------------- constraints
 
-_constraints = {"mtime": 0.0, "entries": []}
+_constraints = {"mtime": 0.0, "entries": [], "config_bad": False}
 
 
 def _strip_comment(raw):
@@ -303,8 +303,15 @@ def load_constraints():
                     entries.append(e)
             st["entries"] = entries
             st["mtime"] = mtime
+            if st["config_bad"]:
+                st["config_bad"] = False
+                print("[model-guard] constraints recovered from fallback",
+                      file=sys.stderr, flush=True)
         except Exception as e:
-            print(f"[model-guard] constraints reload failed: {e}", file=sys.stderr, flush=True)
+            st["entries"] = []
+            st["config_bad"] = True
+            print("[model-guard] FALLBACK: constraints malformed; serving SAFE DEFAULTS",
+                  file=sys.stderr, flush=True)
     return st["entries"]
 
 
@@ -502,7 +509,11 @@ class Handler(BaseHTTPRequestHandler):
             except Exception as e:
                 self.send_response(502)
                 self.send_header("Content-Type", "application/json")
-                msg = json.dumps({"error": f"model-guard upstream: {e}"}).encode()
+                self.send_header("X-Model-Guard-Fallback", "upstream-unreachable")
+                msg = json.dumps({
+                    "error": "model-guard fallback: upstream unreachable",
+                    "fallback": "upstream-unreachable",
+                }).encode()
                 self.send_header("Content-Length", str(len(msg)))
                 self.end_headers()
                 self.wfile.write(msg)
@@ -618,6 +629,10 @@ def main():
     if len(sys.argv) > 1 and sys.argv[1] == "--selftest":
         sys.exit(1 if selftest() else 0)
     load_constraints()
+    if _constraints.get("config_bad"):
+        print("[model-guard] STARTUP IN FALLBACK: serving safe defaults", flush=True)
+    else:
+        print("[model-guard] constraints OK", flush=True)
     try:
         srv = ThreadingHTTPServer(LISTEN, Handler)
     except OSError as e:
