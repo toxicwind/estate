@@ -237,7 +237,7 @@ def snapshot(chan_dir, ledger_events):
     ostat = pfget("sovereign/oracle-market")
     oracle_proc = {"running": False, "pid": None, "uptime_s": None}
     for line in sh(["pgrep", "-f",
-                    "[o]racle-market/bin/oracle_loop.py"]).splitlines():
+                    "[o]racle/bin/oracle_loop.py"]).splitlines():
         line = line.strip()
         if line.isdigit():
             pid = int(line)
