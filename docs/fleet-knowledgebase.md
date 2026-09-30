@@ -53,6 +53,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | 25207 | Funnel `/status` backend |
 | 34567 (127.0.0.1) | Funnel `/files` backend |
 | 25127 | /mesh-mcp backend (Funnel `:443/mesh-mcp` -> `127.0.0.1:25127/mcp`) |
+| 25202 | /gemini-mcp backend (Funnel `:443/gemini-mcp` -> `127.0.0.1:25202/mcp`) |
 | 25136 (tailnet) | /fleet backend (Funnel `:443/fleet`) |
 | 4222 / 4223 (127.0.0.1) | NATS server + websocket (Funnel `:443/nats-ws` -> `:4223`) |
 | 25212 | Cockpit web console (`https://awrawr-pc:25212/`, moved from :9090 via systemd drop-in 2026-09-20) |
@@ -73,7 +74,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | 9223 | Keeper browser CDP |
 | 25130 | browserless-mcp |
 
-**Routing-audit notes 2026-09-30 (corvid):** the old `8377 / 8378 / 8379` row was stale — nothing listens on those ports and neither pitchfork.toml nor funnel-map.sh references them; the live funnel backends are the 25xxx ports above (verified via `tailscale serve status`). `/gemini-mcp` and `/whatsapp-webhook` are not on the `:443` funnel map as of 2026-09-30 (the WhatsApp backend :25146 still listens locally). Section 8's tailnet-only `:8443` -> `:6080` serve does NOT appear in `tailscale serve status` — the /agent-browser tailnet path needs re-apply or verification; :6080 itself is listening locally.
+**Routing-audit notes 2026-09-30 (corvid, corrected):** the old `8377 / 8378 / 8379` row was stale — nothing listens on those ports and neither pitchfork.toml nor funnel-map.sh references them; the live funnel backends are the 25xxx ports above. Correction to the first version of this note: an unprivileged `tailscale serve status` shows a PARTIAL view (tailscaled state is root-only) — it hid `/gemini-mcp`, `/whatsapp-webhook`, `/squawk-ws`, `/squawk-feed/seq`, `/mesh-health`, and the `[serve:8443]` tailnet mount. `sudo funnel-map.sh --check` is the authoritative check and it passes: all mounts present, including `[serve:8443] /agent-browser -> 127.0.0.1:6080`, `/gemini-mcp -> 127.0.0.1:25202/mcp`, `/whatsapp-webhook -> 127.0.0.1:25146/webhook`. Lesson: verify serve state as root, never via the unprivileged CLI.
 
 **Never disturb squawk ports 25147/25135. Never kill+start a bridge daemon in a single remote command** (the kill orphans the rest and the lane dies — separate kill and start with a port-liveness check between).
 
