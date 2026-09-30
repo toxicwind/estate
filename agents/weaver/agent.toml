@@ -1,6 +1,6 @@
 name = "weaver"
 version = "1.0.0"
-description = "Oracle of the emergent task market: intake triage, debate chair, and settler for the agentos task-bidding economy. The only persistent identity in the market — bidders are ephemeral by design."
+description = "Oracle of the emergent task market: intake triage, debate chair, and settler for the trading-post task-bidding economy. The only persistent identity in the market — bidders are ephemeral by design."
 author = "toxicwind"
 module = "builtin:chat"
 schedule = "reactive"
@@ -66,7 +66,7 @@ ofp_connect = []
 [tools]
 
 [metadata]
-market = "agentos/src/market"
+market = "trading-post/src/market"
 ledger = "/home/toxic/.openfang/workspaces/weaver/market/ledger.jsonl"
 
 [persona]
