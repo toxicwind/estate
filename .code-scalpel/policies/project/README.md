@@ -1,44 +1,40 @@
-# Project structure policies
+# project/ — project-structure policy
 
-![code-scalpel](https://img.shields.io/badge/code--scalpel-6C5CE7?style=for-the-badge) ![rego](https://img.shields.io/badge/rego-FF6B6B?style=for-the-badge) ![structure](https://img.shields.io/badge/project--structure-16A085?style=for-the-badge)
+Enforces the Code Scalpel project's own conventions: where code lives, how it's documented, and how modules stay decoupled.
 
-> One codebase, one layout: similar code in similar directories, docs where you'd look for them, no circular dependencies sneaking in.
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+## Why this exists
+
+Consistency is a feature: when every module lives where you expect, agents (and humans) navigate the codebase without a map. This policy encodes the Code Scalpel project's structure conventions as a machine-checked rule — a README in every meaningful directory, core analysis isolated from integrations, no circular dependencies.
+
+## What it checks
+
+**`structure.rego`** — the policy in this directory, configured by `.code-scalpel/project-structure.yaml`:
+
+- **File placement** — similar code in similar directories
+- **Documentation** — README in every meaningful directory
+- **Clean architecture** — core analysis isolated from integrations
+- **Naming** — PEP 8 and project naming standards
+- **Module boundaries** — no circular dependencies
 
 ```mermaid
-flowchart TD
-    F[file written] --> R[structure.rego]
-    R --> C{location matches<br/>project-structure.yaml?}
-    C -->|yes| OK[allow + audit]
-    C -->|no| D[block: misplaced file]
-    R -->|import graph| G{circular dependency?}
-    G -->|yes| D
-    G -->|no| OK
+flowchart TB
+    CFG[project-structure.yaml<br/>conventions] --> REGO[structure.rego]
+    TREE[repo tree] --> REGO
+    REGO -->|conforms| OK[✓]
+    REGO -->|misplaced / undocumented / circular| VIOL[✗ warn or deny]
 ```
 
-## Quick Start
-
-```bash
-code-scalpel policy validate
-code-scalpel policy test --category project
-```
-
-## Policies
-
-### `structure.rego`
-
-Enforces the project's structural conventions — file location rules driven by configuration, not hardcoded paths:
-
-- **consistent file placement** — similar code lands in similar directories
-- **module boundaries** — circular dependencies are rejected
-- **layout conventions** — naming and organization standards (PEP 8 and project norms)
-
-Configuration: [`.code-scalpel/project-structure.yaml`](../../project-structure.yaml), loaded as `data.project_config` in Rego. Rego package: `project.structure`.
-
-## Enable
-
-In `.code-scalpel/policy.yaml`:
+## Quick start
 
 ```yaml
+# .code-scalpel/policy.yaml
 policies:
   project:
     - name: structure
@@ -47,8 +43,13 @@ policies:
       action: DENY
 ```
 
-When the layout itself needs to evolve, update `project-structure.yaml` first — the policy follows the config, so a single source of truth keeps the rule and the docs in sync.
+Tune the conventions themselves in [`.code-scalpel/project-structure.yaml`](../../project-structure.yaml) — the Rego enforces it, the YAML describes it.
 
-## License and security
+```bash
+code-scalpel policy validate
+code-scalpel policy test --category project
+```
 
-Part of Code Scalpel v3.1+ Policy Engine. Structure policy is a guardrail for humans and agents alike: it keeps the tree navigable as the codebase grows, and it keeps automated edits from scattering files where the next reader won't find them.
+## License & security
+
+MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). Structure policy edits reshape the whole tree — keep `project-structure.yaml` under the same review bar as `policy.yaml` itself. Decisions land in the Code Scalpel audit trail (`../../audit.log`).

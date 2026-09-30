@@ -1,75 +1,86 @@
-# Tailscale (sovereign)
+# Tailscale — the sovereign edge
 
 <div align="right">
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge) ![bash](https://img.shields.io/badge/funnel.sh-bash-green?style=for-the-badge) ![tailscale](https://img.shields.io/badge/tailscale-funnel-242A36?style=for-the-badge) ![scope](https://img.shields.io/badge/funnel-optional-orange?style=for-the-badge)
+
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
 </div>
 
-*Optional **Tailscale Funnel** edge for the sovereign estate. There is **no Caddy** (removed: wrong ports, path conflicts with openfang `/api/*`, unused by `mise run up`). No reverse-proxy path soup — services are reached directly, over the tailnet or through one narrow Funnel opening.*
+Tailscale is how sovereign services leave the box safely. Every daemon binds
+localhost/tailnet, and remote lanes reach them over MagicDNS — no open ports,
+no reverse-proxy path soup, no Caddy.
+
+## Why this layout
+
+- **Direct over the tailnet** beats a multi-service gateway: one DNS name per
+  service, zero path rewriting, and the LAN firewall posture stays closed.
+- **Funnel is opt-in, single-backend**: `funnel.sh` exposes *only* the
+  rust-web ops dashboard (default port 25101) to the public internet. For LLM
+  access remotely, use Tailscale + direct `:25100` — never funnel.
 
 ## Surfaces (use directly)
 
-| Service | Port | URL |
-|---|---|---|
-| llama-swap (LLM + chat UI) | 25100 | `http://127.0.0.1:25100/ui/` · `/v1` |
-| rust-web (ops dashboard) | 25101 | `http://127.0.0.1:25101/` |
-| yote | 25102 | … |
-| openfang | 25103 | … |
-| rest | see `config/ports.env` | 25xx-range SSOT |
-
-Over Tailscale: `http://<magicdns>:25100` etc. — direct ports, no proxy prefix games.
-
-## Architecture
+| Service                  | Port                   | Local URL                                | Over Tailscale            |
+| ------------------------ | ---------------------- | ---------------------------------------- | ------------------------- |
+| herd (LLM + chat UI)     | `25100` (`HERD_PORT`)  | `http://127.0.0.1:25100/ui/` · `/v1`    | `http://<magicdns>:25100` |
+| rust-web (ops dashboard) | `25101` (`RUST_WEB_PORT`) | `http://127.0.0.1:25101/`             | `http://<magicdns>:25101` |
+| yote                     | `25102` (`YOTE_PORT`)  | `http://127.0.0.1:25102/`               | `http://<magicdns>:25102` |
+| openfang                 | `25103` (`OPENFANG_PORT`) | `http://127.0.0.1:25103/`             | `http://<magicdns>:25103` |
+| everything else           | see `config/ports.env` | 25xxx SSOT                              | same pattern              |
 
 ```mermaid
 flowchart LR
-    NET["internet"] --> FUN["tailscale funnel<br/>rust-web :25101 ONLY"]
-    TAIL["tailnet<br/>(magicdns)"] --> S1["llama-swap :25100<br/>LLM + chat UI"]
-    TAIL --> S2["rust-web :25101<br/>ops dashboard"]
-    TAIL --> S3["yote :25102"]
-    TAIL --> S4["openfang :25103"]
-    TAIL --> SR["rest: config/ports.env<br/>25xx-range SSOT"]
+    you[laptop / phone] -->|tailscale| dns[<magicdns>]
+    dns -->|:25100| herd[herd · LLM]
+    dns -->|:25101| rust[rust-web · ops]
+    dns -->|:25102| yote[yote]
+    dns -->|:25103| fang[openfang]
+    funnel[Tailscale Funnel] -.->|optional, rust-web only| rust
+    note[public internet] -.->|funnel only| funnel
 ```
 
-Funnel is a single narrow opening, not a gateway: exactly one service (rust-web) is exposed to the internet. Everything else is tailnet-only — you reach the LLM remotely via Tailscale + direct `:25100`, not through Funnel.
-
-## Quick Start
+## Quick start
 
 ```bash
-bash tailscale/funnel.sh up
-bash tailscale/funnel.sh status
-curl -s http://<magicdns>:25101/ | head -c 300
+# check / bring up the optional public edge (rust-web only)
+bash /home/toxic/sovereign/tailscale/funnel.sh status
+bash /home/toxic/sovereign/tailscale/funnel.sh up
+bash /home/toxic/sovereign/tailscale/funnel.sh down
 ```
 
-1. **up** — expose rust-web (`RUST_WEB_PORT`, default `25101`) via Tailscale Funnel.
-2. **status** — confirm what's actually exposed.
-3. From anywhere on the tailnet, hit services directly — for the LLM remotely, use Tailscale + direct `:25100`.
+`funnel.sh up` sources `config/ports.env` for `RUST_WEB_PORT` (default 25101),
+runs `tailscale funnel --bg`, and then parks (funnel dies with the process).
+It is **not** a multi-service gateway: funnel exposes exactly one backend.
 
-Tear it down with `bash tailscale/funnel.sh down`.
+## Architecture
 
-## Funnel (optional)
+- **`funnel.sh`** — `up | down | status` wrapper around `tailscale funnel`.
+  Single backend (no Caddy — removed: wrong ports, path conflicts with
+  openfang `/api/*`, unused by `mise run up`). Logs under
+  `/home/toxic/sovereign/.state/logs`.
+- **`tailray.service`** — systemd user unit for the Tailray tray applet
+  (`/home/toxic/.cargo/bin/tailray`, `Restart=always`, needs `DISPLAY=:0`).
+  Independent of Caddy and of funnel; purely a local tray UI.
 
-`funnel.sh up` exposes **only rust-web** (`RUST_WEB_PORT`, default 25101) via Tailscale Funnel. It is **not** a multi-service gateway. For LLM access remotely, use Tailscale + direct `:25100`.
+## Config
 
-```bash
-bash tailscale/funnel.sh status
-bash tailscale/funnel.sh down
-```
+| Knob | Source | Default |
+| ---- | ------ | ------- |
+| `RUST_WEB_PORT` | `config/ports.env` | `25101` |
+| Funnel target | `funnel.sh up` | `$RUST_WEB_PORT` |
 
-## tailray
+## Dev / contributing
 
-Tray applet (`tailray.service`) may still run; it's independent of Caddy and of Funnel.
+Edits here are shell-only: `funnel.sh` and `tailray.service` ship as-is in
+this directory. Keep funnel single-backend — multi-service reverse proxying
+was deliberately removed.
 
-## Configuration
+## License & security
 
-| variable | default | purpose |
-|---|---|---|
-| `RUST_WEB_PORT` | `25101` | the one port Funnel exposes |
-| `config/ports.env` | — | single source of truth for all 25xx-range ports |
+MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
 
-## Dev & contributing
-
-`funnel.sh` is the whole control plane (`up` / `status` / `down`). If you add a service to the estate, register its port in `config/ports.env` and reach it over the tailnet — don't widen Funnel without a reason written down.
-
-## License & Security
-
-Internal estate networking — part of the sovereign projects, not published for external use. Security model: Funnel exposes exactly one service (rust-web) to the internet; everything else is tailnet-only with direct-port access and no proxy auth in front. Keep tailnet ACLs tight, and treat `funnel.sh up` as the intentional, auditable moment a surface goes public.
+- Tailscale's WireGuard identity is the auth boundary; no secrets live in
+  this directory.
+- Funnel is the only public-internet surface and it is opt-in. Nothing else
+  here binds `0.0.0.0`.

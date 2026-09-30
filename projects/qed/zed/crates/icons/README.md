@@ -1,29 +1,36 @@
-# Zed Icons
+<div align="right">
 
-## Guidelines
+[![license](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-part%20of-blueviolet?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-Icons are a big part of Zed, and they're how we convey hundreds of actions without relying on labeled buttons.
-When introducing a new icon, it's important to ensure consistency with the existing set, which follows these guidelines:
+</div>
 
-1. The SVG view box should be 16x16.
-2. For outlined icons, use a 1.2px stroke width.
-3. Not all icons are mathematically aligned; there's quite a bit of optical adjustment. However, try to keep the icon within an internal 12x12 bounding box as much as possible while ensuring proper visibility.
-4. Use the `filled` and `outlined` terminology when introducing icons that will have these two variants.
-5. Icons that are deeply contextual may have the feature context as their name prefix. For example, `ToolWeb`, `ReplPlay`, `DebugStepInto`, etc.
-6. Avoid complex layer structures in the icon SVG, like clipping masks and similar elements. When the shape becomes too complex, we recommend running the SVG through [SVGOMG](https://jakearchibald.github.io/svgomg/) to clean it up.
+# icons — the Zed icon set
 
-## Sourcing
+**One icon pipeline for the whole editor.** This crate holds Zed's icon assets and the tooling that turns them into the icon font/set the UI renders — plus the contribution guidelines for adding or modifying icons.
 
-Most icons are created by sourcing them from [Lucide](https://lucide.dev/).
-Then, they're modified, adjusted, cleaned up, and simplified depending on their use and overall fit with Zed.
+## Why should I care?
 
-Sometimes, we may use other sources like [Phosphor](https://phosphoricons.com/), but we also design many icons completely from scratch.
+- **Single source of truth** — every icon in the editor flows through this crate; no scattered SVGs
+- **Contribution-friendly** — clear guidelines for naming, sizing, and submitting new icons
+- **Font-pipeline** — icons build into the renderable set the GPUI layer consumes
 
-## Contributing
+```mermaid
+flowchart LR
+    SVG[icon sources] --> CRATE[icons crate]
+    CRATE --> BUILD[icon build pipeline]
+    BUILD --> FONT[renderable icon set]
+    FONT --> UI[Zed UI via GPUI]
+```
 
-To introduce a new icon, add the `.svg` file to the `assets/icon` directory and then add its corresponding item to the `icons.rs` file within the `crates` directory.
+## Quick start
 
-- SVG files in the assets folder follow a snake_case name format.
-- Icons in the `icons.rs` file follow the PascalCase name format.
+```sh
+# add an icon following the guidelines in this crate's docs, then rebuild
+cargo build -p icons
+```
 
-Make sure to tag a member of Zed's design team (@zed-industries/design) so we can review and adjust any newly introduced icon.
+## License & security
+
+- Zed upstream code is **GPL-3.0-or-later**; this fork ships inside the sovereign-projects monorepo ([MIT](https://github.com/toxicwind/sovereign-projects#license) for sovereign-authored files).
+- Icon assets are third-party-derived in places — check per-asset attribution before reusing the set outside Zed.

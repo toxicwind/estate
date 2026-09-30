@@ -1,4 +1,45 @@
-# yote host provisioning — source of truth
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+# yote host provisioning
+
+> Source of truth for host-level `/etc` config on the yote box.
+
+> **Why care? Hand-tuned box config rots — vendor packages silently override it (ask the swappiness=150 incident). This directory mirrors `/etc` paths exactly and `apply.sh` re-asserts the intended state, so the box is reproducible and drift is a diff, not a mystery.**
+
+- **`etc/` mirrors `/etc` paths exactly — deploy with `./apply.sh` (runs on yote, needs sudo)**
+- **zram mask — comment-only udev rule masks the vendor `30-zram.rules` that trampled `vm.swappiness=60`**
+- **nvidia-persistenced self-heal — `Restart=on-failure` drop-in for the early-start race**
+- **Drift-proof — live `/etc` files carry a comment naming their repo source; re-running `apply.sh` re-asserts state**
+- **Proven live — every artifact documents its root cause, fix, and no-reboot verification**
+
+```mermaid
+flowchart LR
+    REPO[host/etc/...] --> APPLY[apply.sh on yote]
+    APPLY --> ETC[live /etc]
+    ETC -->|comment names repo source| SYNC[keep in sync]
+    DRIFT[vendor upgrade / drift] --> APPLY
+    APPLY --> VERIFY[checklist: swappiness=60, zswap=Y, persistenced active]
+```
+
+## Quick start
+
+```bash
+cd projects/yote/host && ./apply.sh   # runs on yote, needs sudo
+cat /proc/sys/vm/swappiness           # -> 60
+cat /sys/module/zswap/parameters/enabled  # -> Y
+```
+
+## License & security
+
+- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **Security:** `apply.sh` needs sudo and writes host `/etc` — review the diff before applying on a live box. The zram mask survives `cachyos-settings` upgrades precisely because it doesn't edit `/usr/lib` directly.
+
+---
 
 <div align="right">
 
