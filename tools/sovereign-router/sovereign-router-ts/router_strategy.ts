@@ -284,20 +284,31 @@ export async function callOne(
       };
     }
     const data = await resp.arrayBuffer();
-    // 📒 ledger: record Gemini token usage for cost accounting.
+    // 📒 ledger: record token usage for cost accounting — ALL providers.
     // Best-effort — never throws, never touches the response path.
-    if (provider === "google" && /gemini/i.test(model)) {
-      try {
-        const usage = JSON.parse(new TextDecoder().decode(data))?.usage;
-        if (usage && (usage.prompt_tokens || usage.completion_tokens)) {
+    // Usage shapes vary by upstream: OpenAI (prompt_tokens/completion_tokens),
+    // Anthropic (input_tokens/output_tokens), Gemini EAP interactions
+    // (total_input_tokens/total_output_tokens), Gemini native
+    // (promptTokenCount/candidatesTokenCount). Accept any of them.
+    try {
+      const usage = JSON.parse(new TextDecoder().decode(data))?.usage;
+      if (usage && typeof usage === "object") {
+        const inputTokens =
+          usage.prompt_tokens ?? usage.input_tokens ??
+          usage.total_input_tokens ?? usage.promptTokenCount ?? 0;
+        const outputTokens =
+          usage.completion_tokens ?? usage.output_tokens ??
+          usage.total_output_tokens ?? usage.candidatesTokenCount ?? 0;
+        if (inputTokens || outputTokens) {
           recordUsage({
+            provider: String(provider),
             model: String(model),
-            inputTokens: usage.prompt_tokens || 0,
-            outputTokens: usage.completion_tokens || 0,
+            inputTokens,
+            outputTokens,
           });
         }
-      } catch { /* accounting must never break serving */ }
-    }
+      }
+    } catch { /* accounting must never break serving */ }
     state.record(model, provider, resp.status, lat, 0, STRATEGY);
     if (state.circuit.get(provider) === "half")
       state.circuit.set(provider, "closed");
