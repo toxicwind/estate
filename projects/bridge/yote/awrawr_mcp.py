@@ -477,7 +477,7 @@ import shutil as _shutil
 # subprocess per call. Message format mirrors ~/workspace/bin/squawk:
 # YAML frontmatter between --- markers; the squawk server assigns the global
 # seq on inotify pickup.
-SQUAWK_ROOT = os.environ.get("SQUAWK_CHAT_ROOT", "/home/toxic/.shingle/squawk-root")
+SQUAWK_ROOT = os.environ.get("SQUAWK_CHAT_ROOT", "/home/toxic/.fleet-bus/squawk-root")
 _CHANNEL_RE = re.compile(r"[A-Za-z0-9_-]{1,32}")
 
 
@@ -1022,7 +1022,7 @@ def buildsrv_health() -> str:
 
 # --- end buildsrv tools -------------------------------------------------------
 # --- hft race tool ----------------------------------------------------------
-RACE_WINNERS_LOG = os.path.expanduser('~/.cache/shingle/hft_race_winners.jsonl')
+RACE_WINNERS_LOG = os.path.expanduser('~/sovereign/hatch/cache-shingle/hft_race_winners.jsonl')
 
 def _race_one(strategy, timeout):
     name = strategy['name']

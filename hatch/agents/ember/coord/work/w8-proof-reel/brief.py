@@ -9,7 +9,7 @@ with sha256 of each proof file.
 import json, os, time, hashlib, subprocess, shutil
 
 WORK = os.path.dirname(os.path.abspath(__file__))
-SEEDS = "/home/toxic/.shingle/coord/work/seeds"
+SEEDS = "/home/toxic/.fleet-bus/coord/work/seeds"
 
 d = json.load(open(os.path.join(SEEDS, "offending_tokens.json")))
 toks = d["offending_tokens"][:20]
