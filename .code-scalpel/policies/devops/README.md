@@ -1,27 +1,38 @@
-# DevOps Policies
+# DevOps policies
 
-This directory contains policy templates for DevOps practices, infrastructure validation, and deployment safety.
+![code-scalpel](https://img.shields.io/badge/code--scalpel-6C5CE7?style=for-the-badge) ![rego](https://img.shields.io/badge/rego-FF6B6B?style=for-the-badge) ![docker](https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
-## Policy Categories
+> Dockerfiles that don't leak secrets and containers that don't run as root — enforced at write time, not discovered in the audit.
 
-### 1. Infrastructure as Code (IaC)
+```mermaid
+flowchart LR
+    DF[Dockerfile<br/>written or edited] --> R[docker_security.rego]
+    R -->|secrets in ENV/ARG?| S[block: credential leak]
+    R -->|USER root / no USER?| U[block: root container]
+    R -->|clean| OK[allow + audit]
+```
 
-- **docker_security.rego** - Dockerfile best practices
-- **kubernetes_manifests.rego** - Validate K8s manifest safety
+## Quick Start
 
-### 2. Deployment Safety
+```bash
+code-scalpel policy validate
+code-scalpel policy test --category devops
+```
 
-- **deployment_checklist.rego** - Enforce pre-deployment checks
-- **rollback_capability.rego** - Ensure rollback mechanisms
+## Policies
 
-### 3. Resource Management
+### `docker_security.rego`
 
-- **resource_limits.rego** - Enforce CPU/memory limits
-- **cost_controls.rego** - Prevent expensive configurations
+Dockerfile security best practices. Flags, among others:
 
-## Usage
+- **secrets baked into the image** — `password` / `api_key` / `secret` / `token` / `credential` assignments in Dockerfile instructions
+- **running as root** — missing or root `USER` directives
 
-Enable these policies in `.code-scalpel/policy.yaml`:
+Rego package: `code_scalpel.devops`.
+
+## Enable
+
+In `.code-scalpel/policy.yaml`:
 
 ```yaml
 policies:
@@ -30,17 +41,10 @@ policies:
       file: policies/devops/docker_security.rego
       severity: HIGH
       action: WARN
-
-    - name: kubernetes-security
-      file: policies/devops/kubernetes_manifests.rego
-      severity: CRITICAL
-      action: DENY
 ```
 
-## Examples
+Start with `WARN` — Dockerfiles accumulate legacy sins; burn the list down, then flip to `DENY`.
 
-See `examples/policy_examples/devops/` for usage examples.
+## License and security
 
----
-
-_Part of Code Scalpel v3.1+ Policy Engine_
+Part of Code Scalpel v3.1+ Policy Engine. This policy catches the classic Dockerfile mistakes; it is not a substitute for image scanning (vulnerabilities in base layers) or runtime policy (seccomp, capabilities) — layer your defenses.

@@ -1,16 +1,56 @@
-# 🤗 Hugging Face MCP Server 🤗
+# Hugging Face MCP Server
 
+![python](https://img.shields.io/badge/python-%3E%3D3.13-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![mcp](https://img.shields.io/badge/MCP-stdio-7C3AED?style=for-the-badge)
+![license](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
 [![smithery badge](https://smithery.ai/badge/@shreyaskarnik/huggingface-mcp-server)](https://smithery.ai/server/@shreyaskarnik/huggingface-mcp-server)
 
-A Model Context Protocol (MCP) server that provides read-only access to the Hugging Face Hub APIs. This server allows LLMs like Claude to interact with Hugging Face's models, datasets, spaces, papers, and collections.
+> A Model Context Protocol server giving LLMs read-only access to the entire Hugging Face Hub — models, datasets, spaces, papers, collections — so "compare these two models" or "summarize that paper" becomes one tool call instead of a web hunt.
+
+## Hero
+
+This is a vendored copy of the upstream [huggingface-mcp-server](https://github.com/cristianoaredes/null-g-proxy) by Shreyas Karnik (MIT). It exposes the Hugging Face Hub APIs over MCP stdio: custom `hf://` resource URIs, two prompt templates (`compare-models`, `summarize-paper`), and a tool set covering models, datasets, spaces, papers, and collections. Optional `HF_TOKEN` unlocks higher rate limits and private repos. The package installs as a `huggingface` console script (`pyproject.toml` `[project.scripts]`).
+
+```mermaid
+flowchart LR
+    LLM["Claude / any MCP client\n(stdio)"] --> SRV["huggingface server\n(src/huggingface/server.py)"]
+    SRV --> RES["Resources\n hf://model/{id}\n hf://dataset/{id}\n hf://space/{id}"]
+    SRV --> PRM["Prompts\n compare-models\n summarize-paper"]
+    SRV --> TOOLS["Tools\n search/get: models,\n datasets, spaces,\n papers, collections"]
+    SRV --> HUB["Hugging Face Hub API\n(huggingface-hub ≥ 0.29.3)"]
+```
+
+## Quick Start
+
+```bash
+uv sync
+uv run huggingface
+```
+
+Then add to Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS, `%APPDATA%/Claude/claude_desktop_config.json` on Windows):
+
+```json
+"mcpServers": {
+  "huggingface": {
+    "command": "uv",
+    "args": ["--directory", "/absolute/path/to/huggingface-mcp-server", "run", "huggingface"],
+    "env": { "HF_TOKEN": "your_token_here" }
+  }
+}
+```
+
+Or install automatically via [Smithery](https://smithery.ai/server/@shreyaskarnik/huggingface-mcp-server):
+
+```bash
+npx -y @smithery/cli install @shreyaskarnik/huggingface-mcp-server --client claude
+```
 
 ## Components
 
 ### Resources
 
-The server exposes popular Hugging Face resources:
+Popular Hugging Face resources exposed over a custom `hf://` URI scheme:
 
-- Custom `hf://` URI scheme for accessing resources
 - Models with `hf://model/{model_id}` URIs
 - Datasets with `hf://dataset/{dataset_id}` URIs
 - Spaces with `hf://space/{space_id}` URIs
@@ -18,155 +58,47 @@ The server exposes popular Hugging Face resources:
 
 ### Prompts
 
-The server provides two prompt templates:
+Two prompt templates:
 
-- `compare-models`: Generates a comparison between multiple Hugging Face models
-  - Required `model_ids` argument (comma-separated model IDs)
-  - Retrieves model details and formats them for comparison
-
-- `summarize-paper`: Summarizes a research paper from Hugging Face
-  - Required `arxiv_id` argument for paper identification
-  - Optional `detail_level` argument (brief/detailed) to control summary depth
-  - Combines paper metadata with implementation details
+- **`compare-models`** — comparison between multiple Hugging Face models. Required `model_ids` argument (comma-separated). Retrieves model details and formats them for comparison.
+- **`summarize-paper`** — summarize a research paper from Hugging Face. Required `arxiv_id` argument; optional `detail_level` (brief/detailed). Combines paper metadata with implementation details.
 
 ### Tools
 
-The server implements several tool categories:
+- **Model tools** — `search-models` (filters: query, author, tags, limit), `get-model-info`
+- **Dataset tools** — `search-datasets` (filters), `get-dataset-info`
+- **Space tools** — `search-spaces` (filters incl. SDK type), `get-space-info`
+- **Paper tools** — `get-paper-info` (paper + implementations), `get-daily-papers` (curated daily list)
+- **Collection tools** — `search-collections` (various filters), `get-collection-info`
 
-- **Model Tools**
-  - `search-models`: Search models with filters for query, author, tags, and limit
-  - `get-model-info`: Get detailed information about a specific model
+## Config
 
-- **Dataset Tools**
-  - `search-datasets`: Search datasets with filters
-  - `get-dataset-info`: Get detailed information about a specific dataset
+No required configuration. Optional Hugging Face auth via `HF_TOKEN` env var:
 
-- **Space Tools**
-  - `search-spaces`: Search Spaces with filters including SDK type
-  - `get-space-info`: Get detailed information about a specific Space
+- Higher API rate limits
+- Access to private repositories (if authorized)
+- Improved reliability for high-volume requests
 
-- **Paper Tools**
-  - `get-paper-info`: Get information about a paper and its implementations
-  - `get-daily-papers`: Get the list of curated daily papers
+Requires Python ≥ 3.13. Dependencies: `huggingface-hub>=0.29.3`, `mcp>=1.4.1`.
 
-- **Collection Tools**
-  - `search-collections`: Search collections with various filters
-  - `get-collection-info`: Get detailed information about a specific collection
+## Dev / contributing
 
-## Configuration
-
-The server does not require configuration, but supports optional Hugging Face authentication:
-
-- Set `HF_TOKEN` environment variable with your Hugging Face API token for:
-  - Higher API rate limits
-  - Access to private repositories (if authorized)
-  - Improved reliability for high-volume requests
-
-## Quickstart
-
-### Install
-
-#### Installing via Smithery
-
-To install huggingface-mcp-server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@shreyaskarnik/huggingface-mcp-server):
+Build and publish:
 
 ```bash
-npx -y @smithery/cli install @shreyaskarnik/huggingface-mcp-server --client claude
+uv sync        # sync deps, update uv.lock
+uv build       # sdists + wheels into dist/
+uv publish     # needs UV_PUBLISH_TOKEN or --username/--password
 ```
 
-#### Claude Desktop
-
-On MacOS: `~/Library/Application\ Support/Claude/claude_desktop_config.json`
-On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
-
-<details>
-  <summary>Development/Unpublished Servers Configuration</summary>
-
-```json
-"mcpServers": {
-  "huggingface": {
-    "command": "uv",
-    "args": [
-      "--directory",
-      "/absolute/path/to/huggingface-mcp-server",
-      "run",
-      "huggingface_mcp_server.py"
-    ],
-    "env": {
-      "HF_TOKEN": "your_token_here"  // Optional
-    }
-  }
-}
-```
-
-</details>
-
-## Development
-
-### Building and Publishing
-
-To prepare the package for distribution:
-
-1. Sync dependencies and update lockfile:
+Debug with the [MCP Inspector](https://github.com/modelcontextprotocol/inspector) (stdio servers are hard to debug otherwise):
 
 ```bash
-uv sync
+npx @modelcontextprotocol/inspector uv --directory /path/to/huggingface-mcp-server run huggingface
 ```
 
-1. Build package distributions:
+Try these with Claude once connected: *"Search for BERT models on Hugging Face with less than 100 million parameters"*, *"What are today's featured AI research papers?"*, *"Compare the Llama-3-8B and Mistral-7B models"*.
 
-```bash
-uv build
-```
+## License & security
 
-This will create source and wheel distributions in the `dist/` directory.
-
-1. Publish to PyPI:
-
-```bash
-uv publish
-```
-
-Note: You'll need to set PyPI credentials via environment variables or command flags:
-
-- Token: `--token` or `UV_PUBLISH_TOKEN`
-- Or username/password: `--username`/`UV_PUBLISH_USERNAME` and `--password`/`UV_PUBLISH_PASSWORD`
-
-### Debugging
-
-Since MCP servers run over stdio, debugging can be challenging. For the best debugging
-experience, we strongly recommend using the [MCP Inspector](https://github.com/modelcontextprotocol/inspector).
-
-You can launch the MCP Inspector via [`npm`](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) with this command:
-
-```bash
-npx @modelcontextprotocol/inspector uv --directory /path/to/huggingface-mcp-server run huggingface_mcp_server.py
-```
-
-Upon launching, the Inspector will display a URL that you can access in your browser to begin debugging.
-
-## Example Prompts for Claude
-
-When using this server with Claude, try these example prompts:
-
-- "Search for BERT models on Hugging Face with less than 100 million parameters"
-- "Find the most popular datasets for text classification on Hugging Face"
-- "What are today's featured AI research papers on Hugging Face?"
-- "Summarize the paper with arXiv ID 2307.09288 using the Hugging Face MCP server"
-- "Compare the Llama-3-8B and Mistral-7B models from Hugging Face"
-- "Show me the most popular Gradio spaces for image generation"
-- "Find collections created by TheBloke that include Mixtral models"
-
-## Troubleshooting
-
-If you encounter issues with the server:
-
-1. Check server logs in Claude Desktop:
-   - macOS: `~/Library/Logs/Claude/mcp-server-huggingface.log`
-   - Windows: `%APPDATA%\Claude\logs\mcp-server-huggingface.log`
-
-2. For API rate limiting errors, consider adding a Hugging Face API token
-
-3. Make sure your machine has internet connectivity to reach the Hugging Face API
-
-4. If a particular tool is failing, try accessing the same data through the Hugging Face website to verify it exists
+**MIT License** — Copyright (c) 2025 Shreyas Karnik (see `LICENSE`). This is a vendored upstream project, not sovereign-authored; upstream changes should be pulled, not hand-edited. **Security:** read-only Hub access by design — no repo writes, no token scopes beyond what you grant. Keep `HF_TOKEN` out of committed config; for rate-limit errors, add the token rather than hammering the public endpoint. Troubleshooting: check Claude Desktop MCP logs (`~/Library/Logs/Claude/mcp-server-huggingface.log` on macOS), verify Hub reachability, and confirm the queried ID exists on huggingface.co before blaming the server.

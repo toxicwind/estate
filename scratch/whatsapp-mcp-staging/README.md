@@ -1,12 +1,37 @@
-# whatsapp-mcp
+![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
+![python](https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![mcp](https://img.shields.io/badge/MCP-StreamableHTTP-teal?style=for-the-badge)
+![whatsapp](https://img.shields.io/badge/whatsapp-cloud--api-25D366?style=for-the-badge)
 
-WhatsApp Cloud API as an MCP server + inbound webhook, running on awrawr-pc
-under pitchfork (mise sovereign) as daemon `whatsapp-mcp`.
+# whatsapp-mcp — WhatsApp Cloud API as an MCP server + inbound webhook
+
+Send WhatsApp messages from any agent via MCP tools, and receive inbound messages through a Meta webhook — running on awrawr-pc under pitchfork as daemon `whatsapp-mcp`.
 
 - **MCP (StreamableHTTP)** on `127.0.0.1:25146/mcp` — local only, never exposed.
-- **Webhook** `/webhook` — the only public path, via Tailscale funnel:
-  `https://github-mcp-host.tailc9ac71.ts.net/whatsapp-webhook`
+- **Webhook** `/webhook` — the only public path, via Tailscale funnel: `https://github-mcp-host.tailc9ac71.ts.net/whatsapp-webhook`.
 - **Health** `http://127.0.0.1:25146/health` (pitchfork `ready_http`).
+- Free-form messages deliver inside the **24h customer-service window**; approved templates work outside it.
+
+```mermaid
+flowchart LR
+    AGENT[agent<br/>MCP client] -->|StreamableHTTP| MCP[whatsapp-mcp :25146<br/>localhost only]
+    MCP -->|Graph API v23.0| META[(Meta WhatsApp Cloud API)]
+    META -->|inbound POST| WH[/webhook<br/>via Tailscale funnel]
+    WH --> INBOX[~/.shingle/whatsapp-inbox/<br/>YYYYMMDD.jsonl]
+    FLEET[fleet poller] -->|reads| INBOX
+```
+
+## Quick start
+
+```bash
+/home/toxic/.whatsapp-mcp-venv/bin/python -m pytest test_server.py -q
+```
+
+```bash
+# after the Meta-side setup: reload pitchfork so it picks up the daemon
+pitchfork start whatsapp-mcp
+curl -sS http://127.0.0.1:25146/health
+```
 
 ## MCP tools
 
@@ -17,42 +42,29 @@ under pitchfork (mise sovereign) as daemon `whatsapp-mcp`.
 | `send_media_message` | `to`, `media`, `kind="image"`, `caption=""` | `kind`: image\|video\|audio\|document; `media` = https URL or uploaded media ID |
 | `mark_message_read` | `message_id` | marks an inbound message read |
 
-Free-form (non-template) messages only deliver inside the **24h customer-service
-window** (opened when the user messages the business number). Outside it, use an
-approved template.
+Free-form (non-template) messages only deliver inside the **24h customer-service window** (opened when the user messages the business number). Outside it, use an approved template.
 
 ## Inbound messages
 
-Meta POSTs notifications to `/webhook`. Each inbound message is appended as one
-JSON line to `/home/toxic/.shingle/whatsapp-inbox/YYYYMMDD.jsonl`:
+Meta POSTs notifications to `/webhook`. Each inbound message is appended as one JSON line to `/home/toxic/.shingle/whatsapp-inbox/YYYYMMDD.jsonl`:
 
 ```json
 {"received_at": "...", "from": "13035550100", "type": "text",
  "message_id": "wamid....", "timestamp": "...", "message": {...}}
 ```
 
-The fleet polls these files. `GET /webhook` answers Meta's verification handshake
-(`hub.mode=subscribe`, constant-time verify-token compare).
+The fleet polls these files. `GET /webhook` answers Meta's verification handshake (`hub.mode=subscribe`, constant-time verify-token compare).
 
 ## Setup (Meta side)
 
 1. developers.facebook.com → create a Business app → add the **WhatsApp** product.
-2. **API Setup / Getting Started**: note the **Phone number ID** and generate a
-   **System User access token** with scopes `whatsapp_business_messaging`
-   (+ `whatsapp_business_management`, `business_management` for admin).
-   Use a permanent token, not the 24h test token.
-3. **Configuration → Webhook**: Callback URL
-   `https://github-mcp-host.tailc9ac71.ts.net/whatsapp-webhook`,
-   Verify Token = the `WHATSAPP_VERIFY_TOKEN` value from the pitchfork env
-   (see below). Subscribe to the **messages** field, then Verify & Save.
-4. Message the business number once from your phone to open the 24h window for
-   free-form test messages.
+2. **API Setup / Getting Started**: note the **Phone number ID** and generate a **System User access token** with scopes `whatsapp_business_messaging` (+ `whatsapp_business_management`, `business_management` for admin). Use a permanent token, not the 24h test token.
+3. **Configuration → Webhook**: Callback URL `https://github-mcp-host.tailc9ac71.ts.net/whatsapp-webhook`, Verify Token = the `WHATSAPP_VERIFY_TOKEN` value from the pitchfork env (see below). Subscribe to the **messages** field, then Verify & Save.
+4. Message the business number once from your phone to open the 24h window for free-form test messages.
 
 ## Setup (awrawr-pc side)
 
-Secrets live **only** in the pitchfork daemon env
-(`/home/toxic/sovereign/pitchfork.toml`, `[daemons.whatsapp-mcp]`).
-Nothing secret is committed to this repo.
+Secrets live **only** in the pitchfork daemon env (`/home/toxic/sovereign/pitchfork.toml`, `[daemons.whatsapp-mcp]`). Nothing secret is committed to this repo.
 
 ```toml
 [daemons.whatsapp-mcp]
@@ -64,7 +76,7 @@ ready_http = "http://127.0.0.1:25146/health"
 auto = ["start"]
 env = { WHATSAPP_API_TOKEN = "<paste system-user token>",
         WHATSAPP_PHONE_NUMBER_ID = "<phone number id>",
-        WHATSAPP_VERIFY_TOKEN = "<generated>",
+        WHATSAPP_VERIFY_TOKEN = "<redacted>",
         WHATSAPP_MCP_PORT = "25146" }
 ```
 
@@ -82,14 +94,28 @@ tailscale serve --https=443 /whatsapp-webhook http://127.0.0.1:25146/webhook
 /home/toxic/.whatsapp-mcp-venv/bin/python -m pytest test_server.py -q
 ```
 
-All tool handlers are unit-tested against a mocked Graph layer; the webhook
-verification handshake is tested with good/bad tokens. Tools raise a clear
-`RuntimeError` naming the missing env vars when the key isn't placed yet.
+All tool handlers are unit-tested against a mocked Graph layer; the webhook verification handshake is tested with good/bad tokens. Tools raise a clear `RuntimeError` naming the missing env vars when the key isn't placed yet.
 
-## Layout
+## Architecture
 
-- `server.py` — FastMCP tools + Starlette webhook/health/MCP app
-- `test_server.py` — pytest suite (mocked HTTP)
-- venv: `/home/toxic/.whatsapp-mcp-venv` (pinned `mcp<2` for the FastMCP v1 API)
+| File | Role |
+|---|---|
+| `server.py` | FastMCP tools + Starlette webhook/health/MCP app |
+| `test_server.py` | pytest suite (mocked HTTP) |
+| venv | `/home/toxic/.whatsapp-mcp-venv` (pinned `mcp<2` for the FastMCP v1 API) |
 
 Graph API: `https://graph.facebook.com/v23.0` (current per Meta's Get Started guide).
+
+## Dev / contributing
+
+- `set_route.py` — adds the `/whatsapp-webhook` funnel route.
+- Verify-token comparison is constant-time; keep it that way when touching the handshake.
+- New MCP tools follow the existing pattern: FastMCP tool in `server.py` + mocked test in `test_server.py`.
+
+## License + security
+
+MIT where marked. **Security posture:**
+
+- The MCP endpoint binds `127.0.0.1` only — it is never exposed past the box. Only `/webhook` is public, via the funnel.
+- `WHATSAPP_API_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, and `WHATSAPP_VERIFY_TOKEN` live **exclusively** in the pitchfork daemon env. Never commit them, never paste them into chat, never log them.
+- The verify-token compare is constant-time — don't regress it to a plain `==`.

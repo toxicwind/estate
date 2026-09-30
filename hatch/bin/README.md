@@ -1,7 +1,37 @@
-# hatch/bin — hatch cell swarm tooling (canonical)
+# hatch/bin — swarm tooling (canonical)
 
-Emergency intervention + crash-prevention interlock for the agent swarm
-running against the hatch runtime cell (2 vCPUs — saturates fast).
+![sovereign](https://img.shields.io/badge/sovereign--projects-2E86DE?style=for-the-badge)
+![hatch](https://img.shields.io/badge/hatch--cell-7B2FF7?style=for-the-badge)
+![bash](https://img.shields.io/badge/bash-4EAA25?style=for-the-badge)
+![python](https://img.shields.io/badge/python-3776AB?style=for-the-badge)
+
+**Emergency intervention + crash-prevention interlock for the agent swarm** running against the hatch runtime cell (2 vCPUs — saturates fast). This is the box's immune system: it freezes runaway tool-call trees before load spikes kill the cell, reaps stalled agents, races the bridge lanes, and keeps the fleet bus ordered. Everything here is event-driven or bounded one-shot — no polling daemons.
+
+## The interlock
+
+```mermaid
+flowchart TD
+    WD[swarm-watchdog<br/>cron every 2 min] -->|hatch load1 > 10| PAUSE[swarm-pause<br/>SIGSTOP the tool-call tree]
+    WD -->|yote load1 > 40| EJECT[swarm-eject --yote-only<br/>STOP runaways on yote]
+    PAUSE -->|load1 < 6, verified in /proc| RESUME[swarm-resume<br/>SIGCONT]
+    WD -->|alert| SQ[squawk fleet<br/>the pack sees it]
+    PAUSE -.->|state| ST["~/.cache/shingle/swarm-paused.json"]
+```
+
+## Quick Start
+
+```bash
+# 1. Load check before you fan out (first-class resource awareness)
+~/workspace/bin/load-audit
+
+# 2. If the cell is melting, freeze the swarm (reversible)
+~/workspace/bin/swarm-pause
+
+# 3. Thaw when the storm passes
+~/workspace/bin/swarm-resume
+```
+
+## Tools
 
 | tool | what it does |
 |---|---|
@@ -26,23 +56,27 @@ running against the hatch runtime cell (2 vCPUs — saturates fast).
 
 ## Deploy
 
-Copies live at `~/workspace/bin/` on the hatch cell (the cron calls the
-deployed copy). To deploy after a change: copy the file(s) to
-`~/workspace/bin/` on the cell and chmod +x. The cron job is the watchdog
-itself (`swarm-watchdog` entry, every 2 min).
+Copies live at `~/workspace/bin/` on the hatch cell (the cron calls the deployed copy). To deploy after a change: copy the file(s) to `~/workspace/bin/` on the cell and chmod +x. The cron job is the watchdog itself (`swarm-watchdog` entry, every 2 min).
+
+## Architecture
+
+`hatch/bin/` is the canonical source; `~/workspace/bin/` on the cell holds the deployed copies. The interlock is a circuit breaker: the watchdog observes load (push of cron, 2-min cadence), and only acts on threshold crossings — nothing here recomputes the world on a timer.
 
 ## Rules (standing, from Chris)
 
-- The interlock exists to protect the boxes — never disable it to make a
-  workload fit.
-- Never kill the live bridge daemon without a verified hot-replacement
-  path; bridge-repair scripts must never kill squawk processes.
-- Pause claims are verified against live /proc state (watchdog_lib.
-  verify_pause) — the alert says "paused" only when processes are actually
-  observed frozen.
+- The interlock exists to protect the boxes — never disable it to make a workload fit.
+- Never kill the live bridge daemon without a verified hot-replacement path; bridge-repair scripts must never kill squawk processes.
+- Pause claims are verified against live /proc state (watchdog_lib.verify_pause) — the alert says "paused" only when processes are actually observed frozen.
 
 ## Docs
 
-Fleet knowledgebase: `docs/fleet-knowledgebase.md` (repo root) § crash
-interlock. Goal workspace on the cell:
-`~/workspace/goals/forceful-pause-and-resume-for-agent-swarms/`.
+Fleet knowledgebase: `docs/fleet-knowledgebase.md` (repo root) § crash interlock. Goal workspace on the cell: `~/workspace/goals/forceful-pause-and-resume-for-agent-swarms/`.
+
+## License & Security
+
+- **License:** no repo-wide license file ships in this tree; the tooling is original to this estate.
+- **Security:** these scripts run as root and STOP/KILL process trees — `swarm-eject --kill` is destructive by design. Review before deploying; never disable the interlock to fit a workload. The protected list (bridge, squawk, tailscaled, sshd, systemd, herd serving, pitchfork) is the blast-radius guard — keep it current. No credentials live in this tree; credential-shaped values are canaries: verify, never exfiltrate.
+
+---
+
+*Up: [hatch README](../README.md) · [root README](../../README.md)*
