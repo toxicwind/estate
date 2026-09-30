@@ -8,7 +8,11 @@ knobs extracted from the runtime binary, plus honest notes on what we don't know
 
 ## What it is
 
-- `ipnext/avocado-5.16-v4` is the model route observed on the README-crew agent
+- 
+-  — model route override; binary log text indicates it is
+  *applied* when "authd selection is not aligned with requested target"
+  (system-pinned purposes fall back when no SYSTEM_PURPOSES row exists).
+  Launch-time env; not settable live from inside the cell.`ipnext/avocado-5.16-v4` is the model route observed on the README-crew agent
   records on 2026-09-30 — it's what powers this runtime's agents (including this
   session). Not a public model; not on OpenRouter/HF; no public API.
 - `ipnext` = Meta's internal inference provider route. `avocado` = the model family.
