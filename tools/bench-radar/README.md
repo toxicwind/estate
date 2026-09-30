@@ -1,67 +1,108 @@
 # BENCH-RADAR
 
-Resident, reactive regression-detection service for the tau nightly benchmark
-(cron `tau-bench-nightly`, daily@03:30 America/Denver → `/home/toxic/bench-run.log`).
+<div align="right">
 
-Nobody reads the log. This service does — and pages the moment a suite degrades,
-instead of letting anomalies sit unnoticed for days.
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-## Interface (reactive push, not polling)
+</div>
 
-- `GET http://127.0.0.1:25181/health` — liveness
-- `GET http://127.0.0.1:25181/status` — latest night, per-suite verdicts, open
-  regressions with evidence
-- `WS  ws://127.0.0.1:25181/live` — snapshot on connect, then
-  `{type:"regression", event}` pushed the moment a regression is detected
-- `GET /events` — last 50 events (newest first)
-- `POST /scan` — force an immediate log rescan (returns new events found)
+Nobody reads the nightly benchmark log — so this service does, and **pages
+the moment a suite degrades** instead of letting anomalies sit unnoticed for
+days. BENCH-RADAR is a resident, reactive regression-detection service for
+the tau nightly benchmark (cron `tau-bench-nightly`, daily 03:30
+America/Denver → `/home/toxic/bench-run.log`).
 
-## Detection
+```mermaid
+flowchart LR
+    cron[tau-bench-nightly] --> log[bench-run.log]
+    log -->|fs.watch + mtime fallback| radar[bench-radar :25181]
+    radar -->|regression detected| ws[WS /live push]
+    radar -->|notify.sh| fleet[fleet-chat]
+    ws --> ops[ops room]
+    state[(state/ · events.jsonl)] <--> radar
+```
 
-- **Hard rules (page immediately):** suite `exit != 0`; router-models
-  `nonempty=0/N` (backend returning empty); title-models `warmMeanMs=0` while
-  `coldMs>0` (warm runs not executing); suite section missing vs the previous
-  complete run. `SKIP` lines (e.g. ollama-unreachable) are informational only.
-- **Soft regressions:** rolling-median + MAD z-score per numeric series
+## Features
+
+- **Reactive push, not polling** — `fs.watch` (500ms debounce) triggers an
+  immediate scan; detections push over the `/live` WebSocket the moment they
+  are evaluated. The 10s mtime/size poll remains as fallback.
+- **Hard rules (page immediately)** — suite `exit != 0`; router-models
+  `nonempty=0/N` (backend returning empty); title-models `warmMeanMs=0`
+  while `coldMs>0` (warm runs not executing); suite section missing vs the
+  previous complete run. `SKIP` lines (e.g. ollama-unreachable) are
+  informational only.
+- **Soft regressions** — rolling-median + MAD z-score per numeric series
   (z ≥ 3.5 and ≥25% relative move, ≥4 history points; ≥40% move on short
-  history). Change-point aware: a soft regression must degrade **2 consecutive
-  runs** before paging — first sight only arms a pending watch. New series
-  names get the same treatment: 2 consecutive degraded runs or a hard anomaly.
-- **Dedup:** one event per (suite, series, metric, night).
+  history). Change-point aware: a soft regression must degrade **2
+  consecutive runs** before paging — first sight only arms a pending watch.
+- **Dedup** — one event per (suite, series, metric, night).
+- **Backfill without spam** — boot-time backfill records historical events
+  with `"backfill": true` and never fires the notify hook.
 
-## State
+## Quick start
 
-`state/` holds `events.jsonl` (durable, append-only), `evaluated.json`
-(already-scored run|suite pairs), `pending.json` (armed 1-night watches),
-`alerts.log` (notify.sh output), plus deterministic time-series exports
-rewritten on every scan: `nights.jsonl` (one row per run: night,
-run_start, per-suite exit + series count) and `series.jsonl` (one row per
-run/suite/series/metric value). Backfill runs on boot record historical
-events with `"backfill": true` and never fire the notify hook — no first-boot
-spam, but history is visible in `/status`.
+```bash
+pitchfork start bench-radar
+curl http://127.0.0.1:25181/status   # latest night, per-suite verdicts, open regressions
+```
 
-## Reactivity
+### Interface
 
-The log is watched with `fs.watch` (500ms debounce → immediate scan);
-the 10s mtime/size poll remains as fallback. Detections push over the
-`/live` WebSocket the moment they are evaluated — no polling downstream.
-`POST /scan` forces an immediate rescan.
+| Method | Path | Purpose |
+| --- | --- | --- |
+| GET | `/health` | liveness |
+| GET | `/status` | latest night, per-suite verdicts, open regressions with evidence |
+| WS | `/live` | snapshot on connect, then `{type:"regression", event}` pushed on detection |
+| GET | `/events` | last 50 events (newest first) |
+| POST | `/scan` | force an immediate log rescan |
 
-## Alerting
+## Architecture
 
-`notify.sh` fires once per new event (argv $1 = event JSON). Default: appends
-to `state/alerts.log` and best-effort POSTs to fleet-chat
-(`FLEET_CHAT_URL`, room `BENCH_RADAR_ROOM` default `ops`,
+```
+bench-radar/
+  state/
+    events.jsonl     — durable, append-only event log
+    evaluated.json   — already-scored run|suite pairs
+    pending.json     — armed 1-night watches
+    alerts.log       — notify.sh output
+    nights.jsonl     — one row per run (night, run_start, per-suite exit + series count)
+    series.jsonl     — one row per run/suite/series/metric value
+  notify.sh          — fires once per new event (argv $1 = event JSON)
+```
+
+Time-series exports (`nights.jsonl`, `series.jsonl`) are deterministic and
+rewritten on every scan.
+
+## Config / optional services
+
+| Env | Default | Purpose |
+| --- | --- | --- |
+| `BENCH_RADAR_PORT` | `25181` | HTTP/WS port |
+| `BENCH_RADAR_LOG` | `/home/toxic/bench-run.log` | benchmark log to watch |
+| `BENCH_RADAR_STATE` | `tools/bench-radar/state` | state dir |
+| `BENCH_RADAR_POLL_MS` | `10000` | fallback poll interval |
+| `BENCH_RADAR_BACKFILL` | `1` | page on history when set |
+
+Alerting: `notify.sh` appends to `state/alerts.log` and best-effort POSTs
+to fleet-chat (`FLEET_CHAT_URL`, room `BENCH_RADAR_ROOM` default `ops`,
 `BENCH_RADAR_AGENT_ID` default `bench-radar`). The lane wires the room.
-
-## Run
-
-Pitchfork: `pitchfork start bench-radar` (stanza in `sovereign/pitchfork.toml`).
-Env: `BENCH_RADAR_PORT` (default 25181), `BENCH_RADAR_LOG`
-(default `/home/toxic/bench-run.log`), `BENCH_RADAR_STATE` (default
-`tools/bench-radar/state`), `BENCH_RADAR_POLL_MS` (default 10000),
-`BENCH_RADAR_BACKFILL=1` to page on history (default records only).
 
 Mesh: registered as `bench-radar` in `src/lib/ghas-mesh-features.ts`
 (service IDs, catalog, dependency graph) with `BENCH_RADAR_PORT` in
 `config/ports.env`.
+
+## Dev / contributing
+
+Pitchfork stanza in `sovereign/pitchfork.toml` (`pitchfork start
+bench-radar`). To extend detection: add hard rules or series metrics in the
+scan path, keeping the change-only paging contract (steady state = silence).
+
+## License & security
+
+MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+
+- Read-only over the benchmark log; the only write surface is its own
+  `state/` dir and the fleet-chat alert POST.
+- No credentials in this tree — fleet-chat wiring uses env at the lane level.
