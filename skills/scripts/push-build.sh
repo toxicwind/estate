@@ -3,8 +3,8 @@ set -euo pipefail
 
 REPO_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 REPO_NAME="$(basename "$REPO_DIR")"
-BUILDSRV_ROOT="${BUILDSRV_ROOT:-/home/toxic/buildsrv}"
-QUEUE_DIR="$BUILDSRV_ROOT/queue"
+BRAND_ROOT="${BRAND_ROOT:-/home/toxic/brand}"
+QUEUE_DIR="$BRAND_ROOT/queue"
 
 mkdir -p "$QUEUE_DIR"
 
@@ -50,4 +50,4 @@ cat <<EOF > "$QUEUE_DIR/${JOB_ID}.json"
 }
 EOF
 
-echo "🚀 [CI/CD Push Build] Submitted versioned build job ${JOB_ID} (v${VERSION}) for ${REPO_NAME} (${COMMIT_SHA:0:7}) to buildsrv queue."
+echo "🚀 [CI/CD Push Build] Submitted versioned build job ${JOB_ID} (v${VERSION}) for ${REPO_NAME} (${COMMIT_SHA:0:7}) to brand queue."

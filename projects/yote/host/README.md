@@ -102,12 +102,12 @@ The vendor rule's zram-only policy is defensible for pure-zram setups, but the b
 
 ## Build-cache home configs
 
-`home/` mirrors `$HOME` paths (installed as the invoking user by `apply.sh` via `install_home_file`). These are the canonical sources for the build-cache environment that buildsrv injects into every job (pitchfork.toml `daemons.buildsrv` env):
+`home/` mirrors `$HOME` paths (installed as the invoking user by `apply.sh` via `install_home_file`). These are the canonical sources for the build-cache environment that brand injects into every job (pitchfork.toml `daemons.brand` env):
 
 - `home/.cargo/config.toml` — `[build] rustc-wrapper = sccache`. Routes all Cargo rustc invocations through sccache (10 GiB at `~/.cache/sccache`). Requires `CARGO_INCREMENTAL=0` in the daemon env: sccache refuses incremental compilation outright.
-- `home/.config/ccache/ccache.conf` — `max_size = 10.0G`, `compression = true`. Backs CC/CXX/CMAKE compiler launchers in the buildsrv env (10 GiB at `~/.cache/ccache`).
+- `home/.config/ccache/ccache.conf` — `max_size = 10.0G`, `compression = true`. Backs CC/CXX/CMAKE compiler launchers in the brand env (10 GiB at `~/.cache/ccache`).
 
-Proven 2026-09-21: real buildsrv job, `cargo clean` between builds, second build showed nonzero sccache hits (2 hits, 50% hit rate).
+Proven 2026-09-21: real brand job, `cargo clean` between builds, second build showed nonzero sccache hits (2 hits, 50% hit rate).
 
 ## Config
 

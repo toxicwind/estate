@@ -16,7 +16,7 @@ install_file "$HERE/etc/systemd/system/nvidia-persistenced.service.d/override.co
   /etc/systemd/system/nvidia-persistenced.service.d/override.conf
 
 # Build-cache home configs (no sudo; installed as the invoking user).
-# Canonical sources for the buildsrv-injected cache environment.
+# Canonical sources for the brand-injected cache environment.
 install_home_file() {
   local src="$1" dest="$2"
   install -D -m 644 "$src" "$dest"

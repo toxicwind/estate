@@ -138,5 +138,5 @@ Run from the root: `bun run ws:build` (all services), or per-service:
 
 - Phase 1 (this): monorepo foundation — workspaces, turbo, scaffold. DONE.
 - Phase 2: Tier 0 rewrites — keypool, model-guard, squawk-ws, awrawr-mcp.
-- Phase 3: Tier 1 — exporter, stash-guard, buildsrv.
+- Phase 3: Tier 1 — exporter, stash-guard, brand.
 - Phase 4: Tier 2 — watchdogs, pollers, remainder.
