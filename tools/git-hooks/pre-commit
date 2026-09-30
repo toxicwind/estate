@@ -1,0 +1,81 @@
+#!/bin/sh
+# =============================================================================
+# hooksmith pre-commit — fast, high-precision secret scan + advisories.
+#
+# BLOCKS only on high-confidence secrets (known key formats, PEM blocks).
+# Everything else warns or passes. Target: <100ms on a typical diff.
+#
+# Bypass (always works):   git commit --no-verify
+# Loud bypass (audit line): HOOKSMITH_SKIP=1 git commit
+# =============================================================================
+
+set -u
+
+if [ "${HOOKSMITH_SKIP:-0}" = "1" ]; then
+    echo "hooksmith: BYPASSED via HOOKSMITH_SKIP=1 (audit trail: secret scan skipped)" >&2
+    exit 0
+fi
+
+GIT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+cd "$GIT_ROOT" || exit 0
+
+# --- resolve the hooksmith config -------------------------------------------
+# 1. $HOOKSMITH_CONFIG override, 2. next to this hook (copied installs),
+# 3. versioned location in this repo.
+HOOK_DIR="$(dirname "$0")"
+CONFIG="${HOOKSMITH_CONFIG:-}"
+if [ -z "$CONFIG" ] && [ -f "$HOOK_DIR/gitleaks.toml" ]; then
+    CONFIG="$HOOK_DIR/gitleaks.toml"
+fi
+if [ -z "$CONFIG" ] && [ -f "$GIT_ROOT/tools/git-hooks/gitleaks.toml" ]; then
+    CONFIG="$GIT_ROOT/tools/git-hooks/gitleaks.toml"
+fi
+
+T0="$(date +%s%N 2>/dev/null || echo 0)"
+
+# --- the one blocking check: secret scan ------------------------------------
+GITLEAKS_BIN="${GITLEAKS_BIN:-gitleaks}"
+if ! command -v "$GITLEAKS_BIN" >/dev/null 2>&1; then
+    echo "hooksmith: warn: gitleaks not on PATH, secret scan skipped" >&2
+elif [ -z "$CONFIG" ] || [ ! -f "$CONFIG" ]; then
+    echo "hooksmith: warn: gitleaks.toml not found, secret scan skipped" >&2
+else
+    OUT="$("$GITLEAKS_BIN" protect --staged --source "$GIT_ROOT" \
+        --config "$CONFIG" --no-banner --redact 2>&1)" || {
+        echo "hooksmith: BLOCKED: possible secret in staged changes:" >&2
+        printf '%s\n' "$OUT" >&2
+        echo "hooksmith: if this is a fixture or placeholder, move it to a test file" >&2
+        echo "hooksmith: or extend the allowlist in tools/git-hooks/gitleaks.toml" >&2
+        echo "hooksmith: bypass (not recommended): git commit --no-verify" >&2
+        exit 1
+    }
+fi
+
+# --- advisories: warn, never block -------------------------------------------
+# Lockfile changed without its manifest. Legitimate dependency updates must
+# flow — this is a note, not a gate (the old PI_ALLOW_LOCKFILE_CHANGE gate
+# blocked real work and is gone).
+STAGED="$(git diff --cached --name-only 2>/dev/null || true)"
+warn_lockfile() { # $1 = lockfile, $2 = manifest
+    case "$STAGED" in
+        *"$1"*)
+            case "$STAGED" in
+                *"$2"*) ;;
+                *) echo "hooksmith: note: $1 changed without $2 — if intentional, carry on" >&2 ;;
+            esac
+            ;;
+    esac
+}
+warn_lockfile "bun.lock" "package.json"
+warn_lockfile "package-lock.json" "package.json"
+warn_lockfile "yarn.lock" "package.json"
+warn_lockfile "pnpm-lock.yaml" "package.json"
+warn_lockfile "Cargo.lock" "Cargo.toml"
+warn_lockfile "go.sum" "go.mod"
+
+if [ "${HOOKSMITH_TIME:-0}" = "1" ]; then
+    T1="$(date +%s%N 2>/dev/null || echo 0)"
+    echo "hooksmith: pre-commit took $(( (T1 - T0) / 1000000 )) ms" >&2
+fi
+
+exit 0
