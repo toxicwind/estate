@@ -1,0 +1,138 @@
+#!/usr/bin/env bun
+/**
+ * fleet-post — hyper-race fleet poster with local-spool fallback.
+ *
+ * A fallback is not a rollback: if the primary path fails, the message
+ * still goes FORWARD (delayed via spool), never backward.
+ *
+ * Hyper-race: two independent write paths race concurrently, first-valid-wins.
+ *   Path A: `squawk send` — full-featured (seq_alloc, flock, write-verify).
+ *   Path B: raw bridge exec, direct file write, timestamp filename —
+ *           survives seq_alloc.py missing/renamed (different failure mode).
+ * If both land, the loser is deleted (dedupe by shared UUID).
+ * If both fail (bridge down): spool to ~/workspace/fleet-outbox/ — a cron
+ * flushes it when the bridge returns. Exit 0 on post OR spool.
+ *
+ * Usage:
+ *   fleet-post --sender "Name" --channel fleet --message "text"
+ *   fleet-post --sender "Name" "text"            (channel defaults to fleet)
+ *   fleet-post --flush                           (forward spooled messages)
+ */
+import { $ } from "bun";
+import { mkdir, writeFile, readdir, readFile, unlink } from "node:fs/promises";
+import { join } from "node:path";
+import { randomUUID } from "node:crypto";
+
+const OUTBOX = join(process.env.HOME!, "workspace", "fleet-outbox");
+const SQUAWK = join(process.env.HOME!, "workspace", "bin", "squawk");
+const YOTE_CONN = join(process.env.HOME!, "workspace", "bin", "yote-conn");
+const SQUAWK_ROOT = "/home/toxic/.fleet-bus/squawk-root"; // matches squawk CLI SQUAWK_ROOT
+
+const args = process.argv.slice(2);
+if (args.includes("--flush")) { await flush(); process.exit(0); }
+
+let sender = process.env.SQUAWK_SENDER || "";
+let channel = "fleet";
+let message = "";
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === "--sender") sender = args[++i];
+  else if (args[i] === "--channel") channel = args[++i];
+  else if (args[i] === "--message") message = args[++i];
+  else if (!args[i].startsWith("--") && !message) message = args[i];
+  else if (!args[i].startsWith("--")) message += " " + args[i];
+}
+if (!sender) sender = "agent (ember's pack)";
+if (!message) { console.error("fleet-post: no message"); process.exit(2); }
+
+const uuid = randomUUID().slice(0, 8);
+const senderSlug = sender.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "agent";
+const ts = new Date().toISOString();
+
+function frontmatter(seq: string): string {
+  return `---\nseq: ${seq}\nfrom: ${sender}\nto: all\nchannel: ${channel}\nts: ${ts}\nstatus: discussion\nuuid: ${uuid}\ntitle: msg\n---\n${message}\n`;
+}
+
+// Path A: squawk CLI (seq_alloc + flock + verify)
+async function pathA(): Promise<string> {
+  const out = await $`${SQUAWK} send ${channel} ${message}`.env({ ...process.env, SQUAWK_SENDER: sender }).text();
+  if (!out.includes("published")) throw new Error("pathA: no 'published' in output: " + out.slice(0, 200));
+  return out.trim();
+}
+
+// Path B: raw bridge write, timestamp filename, no seq_alloc dependency.
+// Same UUID in frontmatter so a post-race sweeper can dedupe.
+async function pathB(): Promise<string> {
+  const fname = `${Date.now()}-${senderSlug}-${uuid}.md`;
+  const content = frontmatter(`ts-${Date.now()}`);
+  const b64 = Buffer.from(content).toString("base64");
+  // chunk the base64 to dodge the ~1600-char exec mangling limit
+  const chunks: string[] = [];
+  for (let i = 0; i < b64.length; i += 1200) chunks.push(b64.slice(i, i + 1200));
+  const assemble = chunks.map(c => `printf '%s' '${c}'`).join(" ");
+  const cmd = `f=$(mktemp); ${assemble} > $f; base64 -d $f > $f.dec; mkdir -p ${SQUAWK_ROOT}/${channel} && cat $f.dec > ${SQUAWK_ROOT}/${channel}/${fname} && [ -s ${SQUAWK_ROOT}/${channel}/${fname} ] && echo published ${fname}; rm -f $f $f.dec`;
+  const out = await $`${YOTE_CONN} exec ${cmd}`.text();
+  if (!out.includes("published")) throw new Error("pathB: no 'published' in output: " + out.slice(0, 200));
+  return out.trim();
+}
+
+async function spool(reason: string): Promise<void> {
+  await mkdir(OUTBOX, { recursive: true });
+  const name = `${Date.now()}-${channel}-${uuid}.json`;
+  await writeFile(join(OUTBOX, name), JSON.stringify({ sender, channel, message, ts, uuid, reason }));
+  console.log(`spooled ${name} (${reason}) — will forward when the bridge returns`);
+}
+
+async function flush(): Promise<void> {
+  let files: string[];
+  try { files = (await readdir(OUTBOX)).filter(f => f.endsWith(".json")).sort(); }
+  catch { console.log("outbox empty"); return; }
+  if (!files.length) { console.log("outbox empty"); return; }
+  for (const f of files) {
+    try {
+      const m = JSON.parse(await readFile(join(OUTBOX, f), "utf8"));
+      // re-race; if it still fails, leave it spooled
+      const winner = await Promise.any([pathAFor(m), pathBFor(m)]);
+      await unlink(join(OUTBOX, f));
+      console.log(`flushed ${f}: ${winner}`);
+    } catch (e) { console.log(`flush deferred ${f}: ${(e as Error).message?.slice(0, 120)}`); }
+  }
+}
+async function pathAFor(m: any): Promise<string> {
+  const out = await $`${SQUAWK} send ${m.channel} ${m.message}`.env({ ...process.env, SQUAWK_SENDER: m.sender }).text();
+  if (!out.includes("published")) throw new Error("no published");
+  return out.trim();
+}
+async function pathBFor(m: any): Promise<string> {
+  const fname = `${Date.now()}-${uuid}.md`;
+  const b64 = Buffer.from(frontmatter(`ts-${Date.now()}`).replace(uuid, m.uuid)).toString("base64");
+  const chunks: string[] = [];
+  for (let i = 0; i < b64.length; i += 1200) chunks.push(b64.slice(i, i + 1200));
+  const assemble = chunks.map(c => `printf '%s' '${c}'`).join(" ");
+  const cmd = `f=$(mktemp); ${assemble} > $f; base64 -d $f > $f.dec; mkdir -p ${SQUAWK_ROOT}/${m.channel} && cat $f.dec > ${SQUAWK_ROOT}/${m.channel}/${fname} && [ -s ${SQUAWK_ROOT}/${m.channel}/${fname} ] && echo published ${fname}; rm -f $f $f.dec`;
+  const out = await $`${YOTE_CONN} exec ${cmd}`.text();
+  if (!out.includes("published")) throw new Error("no published");
+  return out.trim();
+}
+
+// --- hyper-race: first valid wins, delete the loser ---
+const results = await Promise.allSettled([pathA(), pathB()]);
+const winners = results.filter(r => r.status === "fulfilled") as PromiseFulfilledResult<string>[];
+if (winners.length > 0) {
+  console.log(`posted (${winners.length}/2 paths won): ${winners[0].value}`);
+  if (winners.length === 2) {
+    // Both landed: keep Path A's canonical seq-based file, delete Path B's
+    // timestamp file. Extract B's filename from its "published <fname>" output.
+    const m = winners[1].value.match(/published\s+(\S+\.md)/);
+    if (m) {
+      try {
+        const rmCmd = `rm -f ${SQUAWK_ROOT}/${channel}/${m[1]}`;
+        await $`${YOTE_CONN} exec ${rmCmd}`.text();
+        console.log(`dedupe: removed losing path-B file ${m[1]} (shared uuid ${uuid})`);
+      } catch (e) { console.log(`dedupe: could not remove ${m[1]} — readers dedupe by uuid ${uuid}`); }
+    }
+  }
+  process.exit(0);
+}
+const reasons = results.map(r => (r as PromiseRejectedResult).reason?.message?.slice(0, 100)).join(" | ");
+await spool(reasons);
+process.exit(0); // spooled = forward progress. Fallback, not rollback.
