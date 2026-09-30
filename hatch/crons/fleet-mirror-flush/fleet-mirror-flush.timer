@@ -1,0 +1,10 @@
+[Unit]
+Description=Flush yote fleet mirror every 2 minutes
+
+[Timer]
+OnCalendar=*:0/2
+Persistent=true
+Unit=fleet-mirror-flush.service
+
+[Install]
+WantedBy=timers.target

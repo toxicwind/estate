@@ -5,13 +5,21 @@
  * A fallback is not a rollback: if the primary path fails, the message
  * still goes FORWARD (delayed via spool), never backward.
  *
- * Hyper-race: two independent write paths race concurrently, first-valid-wins.
+ * Hyper-race: a yote write-ahead journal plus two delivery paths race
+ * concurrently, first-valid-wins.
+ *   Journal: durable witness at /home/toxic/hatch/fleet-outbox/pending/<uuid>.json
+ *            on yote. Deleted (best-effort) on any confirmed delivery; if the
+ *            race fails but the journal landed, the yote mirror-flusher
+ *            completes the post (uuid-checked, idempotent).
  *   Path A: `squawk send` — full-featured (seq_alloc, flock, write-verify).
  *   Path B: raw bridge exec, direct file write, timestamp filename —
  *           survives seq_alloc.py missing/renamed (different failure mode).
- * If both land, the loser is deleted (dedupe by shared UUID).
- * If both fail (bridge down): spool to ~/workspace/fleet-outbox/ — a cron
- * flushes it when the bridge returns. Exit 0 on post OR spool.
+ * If both delivery paths land, the loser is deleted (dedupe by shared UUID).
+ * If the journal AND both paths fail (bridge down): spool to
+ * ~/workspace/fleet-outbox/ — a cron flushes it when the bridge returns.
+ * Exactly one durable store owns an undelivered message (yote journal if its
+ * write landed, else the cell spool), so a message can only be delivered once.
+ * Exit 0 on post, journal, OR spool.
  *
  * Usage:
  *   fleet-post --sender "Name" --channel fleet --message "text"
@@ -52,6 +60,59 @@ function frontmatter(seq: string): string {
   return `---\nseq: ${seq}\nfrom: ${sender}\nto: all\nchannel: ${channel}\nts: ${ts}\nstatus: discussion\nuuid: ${uuid}\ntitle: msg\n---\n${message}\n`;
 }
 
+// Write-ahead journal on yote (/home/toxic/hatch/fleet-outbox/pending).
+// Written CONCURRENTLY with the delivery race. On any confirmed delivery the
+// record is deleted (best-effort rm -f). If the race fails but the journal
+// landed, the yote mirror-flusher completes the post. If the journal write
+// also fails (bridge down), fall back to the cell spool (last resort).
+// Ordering is irrelevant: the flusher checks the fleet channel for the uuid
+// before posting, so a delete racing a late-arriving write is harmless.
+const MIRROR = "/home/toxic/hatch/fleet-outbox/pending";
+const UUID_RE = /^[a-f0-9-]{8,40}$/;
+
+async function journalWrite(): Promise<string> {
+  if (!UUID_RE.test(uuid)) throw new Error("journal: bad uuid");
+  const rec = JSON.stringify({ sender, channel, message, ts, uuid });
+  const b64 = Buffer.from(rec).toString("base64");
+  const chunks: string[] = [];
+  for (let i = 0; i < b64.length; i += 1200) chunks.push(b64.slice(i, i + 1200));
+  // Single printf, chunks as separate args: `printf '%s' 'c1' 'c2'` applies
+  // the format to each arg in turn. (The old form — `printf '%s' 'c1'`
+  // `printf '%s' 'c2'` joined by spaces — made the words `printf`/`%s`
+  // extra printf ARGUMENTS, corrupting every payload over ~900 bytes.)
+  const assemble = `printf '%s' ${chunks.map(c => `'${c}'`).join(" ")}`;
+  const cmd = `f=$(mktemp); ${assemble} > $f; mkdir -p ${MIRROR} && base64 -d $f > ${MIRROR}/${uuid}.json && [ -s ${MIRROR}/${uuid}.json ] && echo journaled ${uuid}; rm -f $f`;
+  const out = await $`${YOTE_CONN} exec ${cmd}`.text();
+  if (!out.includes("journaled")) throw new Error("journal: no 'journaled' in output: " + out.slice(0, 200));
+  return uuid;
+}
+
+async function journalDelete(): Promise<void> {
+  if (!UUID_RE.test(uuid)) return;
+  try {
+    // NOTE: yote-conn's exec takes the remote command as ONE argv element
+    // (it parses fixed positionals after it) — pass a single string, never
+    // split words, or it throws ValueError and the record lingers.
+    const rmCmd = `rm -f ${MIRROR}/${uuid}.json`;
+    await $`${YOTE_CONN} exec ${rmCmd}`.text();
+  } catch { /* the flusher's uuid check covers a missed delete */ }
+}
+
+// pathA (`squawk send`) generates its own frontmatter WITHOUT our uuid, so
+// the mirror-flusher couldn't correlate a pathA-delivered message with its
+// journal record (→ duplicate post on the next sweep). Stamp our uuid into
+// the delivered file right after the win, before journalDelete.
+const FNAME_RE = /^[A-Za-z0-9_.-]+\.md$/;
+async function stampUuid(channel: string, fname: string, theUuid: string): Promise<void> {
+  if (!UUID_RE.test(theUuid) || !FNAME_RE.test(fname)) return;
+  if (!/^[a-z0-9_-]{1,40}$/.test(channel)) return;
+  try {
+    // Idempotent: only insert when no uuid line is present yet.
+    const cmd = `grep -q '^uuid: ' ${SQUAWK_ROOT}/${channel}/${fname} || sed -i 's/^status: discussion$/status: discussion\\nuuid: ${theUuid}/' ${SQUAWK_ROOT}/${channel}/${fname}`;
+    await $`${YOTE_CONN} exec ${cmd}`.text();
+  } catch { /* worst case the flusher posts a reader-deduped duplicate */ }
+}
+
 // Path A: squawk CLI (seq_alloc + flock + verify)
 async function pathA(): Promise<string> {
   const out = await $`${SQUAWK} send ${channel} ${message}`.env({ ...process.env, SQUAWK_SENDER: sender }).text();
@@ -68,7 +129,9 @@ async function pathB(): Promise<string> {
   // chunk the base64 to dodge the ~1600-char exec mangling limit
   const chunks: string[] = [];
   for (let i = 0; i < b64.length; i += 1200) chunks.push(b64.slice(i, i + 1200));
-  const assemble = chunks.map(c => `printf '%s' '${c}'`).join(" ");
+  // Single printf, chunks as separate args (see journalWrite note — the old
+  // joined-printfs form corrupted every payload over ~900 bytes).
+  const assemble = `printf '%s' ${chunks.map(c => `'${c}'`).join(" ")}`;
   const cmd = `f=$(mktemp); ${assemble} > $f; base64 -d $f > $f.dec; mkdir -p ${SQUAWK_ROOT}/${channel} && cat $f.dec > ${SQUAWK_ROOT}/${channel}/${fname} && [ -s ${SQUAWK_ROOT}/${channel}/${fname} ] && echo published ${fname}; rm -f $f $f.dec`;
   const out = await $`${YOTE_CONN} exec ${cmd}`.text();
   if (!out.includes("published")) throw new Error("pathB: no 'published' in output: " + out.slice(0, 200));
@@ -92,7 +155,16 @@ async function flush(): Promise<void> {
     try {
       const m = JSON.parse(await readFile(join(OUTBOX, f), "utf8"));
       // re-race; if it still fails, leave it spooled
-      const winner = await Promise.any([pathAFor(m), pathBFor(m)]);
+      const winner = await Promise.any([
+        // pathA (squawk send) doesn't carry our uuid — stamp it into the
+        // delivered file so the record stays correlatable.
+        pathAFor(m).then(async v => {
+          const pm = v.match(/published\s+(\S+\.md)/);
+          if (pm) await stampUuid(m.channel, pm[1], m.uuid);
+          return v;
+        }),
+        pathBFor(m),
+      ]);
       await unlink(join(OUTBOX, f));
       ok++;
       console.log(`flushed ${f}: ${winner}`);
@@ -121,18 +193,33 @@ async function pathBFor(m: any): Promise<string> {
   const b64 = Buffer.from(fm).toString("base64");
   const chunks: string[] = [];
   for (let i = 0; i < b64.length; i += 1200) chunks.push(b64.slice(i, i + 1200));
-  const assemble = chunks.map(c => `printf '%s' '${c}'`).join(" ");
+  // Single printf, chunks as separate args (see journalWrite note — the old
+  // joined-printfs form corrupted every payload over ~900 bytes).
+  const assemble = `printf '%s' ${chunks.map(c => `'${c}'`).join(" ")}`;
   const cmd = `f=$(mktemp); ${assemble} > $f; base64 -d $f > $f.dec; mkdir -p ${SQUAWK_ROOT}/${m.channel} && cat $f.dec > ${SQUAWK_ROOT}/${m.channel}/${fname} && [ -s ${SQUAWK_ROOT}/${m.channel}/${fname} ] && echo published ${fname}; rm -f $f $f.dec`;
   const out = await $`${YOTE_CONN} exec ${cmd}`.text();
   if (!out.includes("published")) throw new Error("no published");
   return out.trim();
 }
 
-// --- hyper-race: first valid wins, delete the loser ---
-const results = await Promise.allSettled([pathA(), pathB()]);
-const winners = results.filter(r => r.status === "fulfilled") as PromiseFulfilledResult<string>[];
+// --- hyper-race: journal witness + two delivery paths, first-valid-wins ---
+// Exactly one durable store owns an undelivered message: the yote journal if
+// its write landed, else the cell spool. The Hatch fleet-outbox-flush cron
+// sweeps the cell spool; the yote mirror-flusher sweeps the journal —
+// disjoint sources, no double-fire by construction.
+const results = await Promise.allSettled([journalWrite(), pathA(), pathB()]);
+const [jRes, aRes, bRes] = results;
+const journaled = jRes.status === "fulfilled";
+const aWon = aRes.status === "fulfilled";
+const bWon = bRes.status === "fulfilled";
+const winners = [aRes, bRes].filter(r => r.status === "fulfilled") as PromiseFulfilledResult<string>[];
 if (winners.length > 0) {
   console.log(`posted (${winners.length}/2 paths won): ${winners[0].value}`);
+  if (aWon) {
+    // Stamp our uuid into pathA's file so the mirror-flusher can correlate.
+    const m = (aRes as PromiseFulfilledResult<string>).value.match(/published\s+(\S+\.md)/);
+    if (m) await stampUuid(channel, m[1], uuid);
+  }
   if (winners.length === 2) {
     // Both landed: keep Path A's canonical seq-based file, delete Path B's
     // timestamp file. Extract B's filename from its "published <fname>" output.
@@ -145,8 +232,16 @@ if (winners.length > 0) {
       } catch (e) { console.log(`dedupe: could not remove ${m[1]} — readers dedupe by uuid ${uuid}`); }
     }
   }
+  if (journaled) await journalDelete();
   process.exit(0);
 }
-const reasons = results.map(r => (r as PromiseRejectedResult).reason?.message?.slice(0, 100)).join(" | ");
+if (journaled) {
+  // Race failed but the write-ahead journal is durable on yote — the
+  // mirror-flusher will complete the post. Do NOT also spool to the cell:
+  // exactly one store owns the message, so it can only be delivered once.
+  console.log(`no delivery path confirmed, but journal ${uuid} is durable on yote — mirror-flusher will complete it`);
+  process.exit(0);
+}
+const reasons = [aRes, bRes].map(r => (r as PromiseRejectedResult).reason?.message?.slice(0, 100)).join(" | ");
 await spool(reasons);
 process.exit(0); // spooled = forward progress. Fallback, not rollback.
