@@ -34,6 +34,7 @@ hashline patch src/auth.js 'SWAP 2:c6:
 # OK src/auth.js#7f2a edits=1 changed=1
 # ~2:f9|  const decoded = jwt.verify(token, env.SECRET)
 ```
+> WARNING: payload lines must start on a real newline inside the quotes. A literal backslash-n is passed through as text, and a payload-less SWAP silently deletes the line (exit 0, no error). If you copied an example from tool output, verify newlines survived before running.
 
 ## Subcommand reference (all 11 — verified against --help + guide, 0.9.19)
 
