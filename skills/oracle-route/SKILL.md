@@ -13,11 +13,11 @@ description: >
 
 # Oracle-Route: the coordinator's market
 
-The oracle market (`agents/oracle-market/` on yote) is the fleet's standing
+The oracle market (`projects/range/ranch/oracle/` on yote) is the fleet's standing
 work-routing mechanism. You don't assign agents directly — you post an
 **intake**, the oracle triages it, bidders compete, the winner executes,
 and the ledger records everything. Live since 2026-09-20; SPEC is
-`agents/oracle-market/SPEC.md` (v2.2).
+`projects/range/ranch/oracle/SPEC.md` (v2.2).
 
 **When to use it:** any task a bidder agent could execute (probes, checks,
 builds, audits with executable payloads). **When not to:** pure discussion
@@ -34,7 +34,7 @@ intake_request → triage (TASK / DEBATE / RESEARCH / PETITION / DROP)
   → result → verify → settle (reward paid, bond released)
 ```
 
-Every step is a ledger event in `agents/oracle-market/ledger/ledger.jsonl`
+Every step is a ledger event in `projects/range/ranch/oracle/ledger/ledger.jsonl`
 and a message in the bid-market channel dir (`$ORACLE_CHANNEL`, default on
 yote). Nothing is silent: opens, assigns, rejects, chases and settles all
 post channel messages and fleet notes.
@@ -44,7 +44,7 @@ post channel messages and fleet notes.
 On yote:
 
 ```bash
-cd /home/toxic/sovereign/agents/oracle-market
+cd /home/toxic/sovereign/projects/range/ranch/oracle
 ORACLE_INTAKE=1 python3 bin/post_intake.py --from <your-name> --text "<the work>"
 ```
 
@@ -154,9 +154,9 @@ Restart-safe: open debates are reconstructed from the ledger on replay.
 grep -c loop_start ledger/ledger.jsonl
 
 # spec + code
-agents/oracle-market/SPEC.md            # the mechanism, v2.2
-agents/oracle-market/bin/oracle_loop.py # the loop (debate FSM + gates)
-agents/oracle-market/bin/bidder.py      # the standing bidder (attests)
+projects/range/ranch/oracle/SPEC.md            # the mechanism, v2.2
+projects/range/ranch/oracle/bin/oracle_loop.py # the loop (debate FSM + gates)
+projects/range/ranch/oracle/bin/bidder.py      # the standing bidder (attests)
 ```
 
 **Never**: kill squawk, touch port 443 or `/exec-ws`, monkeypatch the
