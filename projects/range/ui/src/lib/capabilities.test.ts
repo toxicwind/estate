@@ -1,5 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { formatContextLength, listCapabilityBadges, capabilityLabels, capabilityBadgeClass } from "./capabilities";
+import {
+  formatContextLength,
+  listCapabilityBadges,
+  capabilityLabels,
+  capabilityBadgeClass,
+  capabilitySourceLabels,
+  capabilitySourceBadgeClass,
+  resolveCapabilitySource,
+} from "./capabilities";
 import type { Model } from "./types";
 
 describe("formatContextLength", () => {
@@ -131,5 +139,66 @@ describe("listCapabilityBadges", () => {
     for (const badge of badges) {
       expect(capabilityBadgeClass[badge.key], `missing color for ${badge.key}`).toBeTruthy();
     }
+  });
+});
+
+describe("resolveCapabilitySource", () => {
+  it("returns undefined when nothing is known", () => {
+    expect(resolveCapabilitySource({ capabilities: { vision: true } }, "vision")).toBeUndefined();
+  });
+
+  it("falls back to the caller-supplied default", () => {
+    expect(
+      resolveCapabilitySource({ capabilities: { vision: true } }, "vision", "discovered"),
+    ).toBe("discovered");
+  });
+
+  it("prefers an explicit per-model override over the default", () => {
+    const model: Pick<Model, "capabilities" | "context_length" | "capabilitySources"> = {
+      capabilities: { vision: true, function_calling: true },
+      capabilitySources: { vision: "configured" },
+    };
+    expect(resolveCapabilitySource(model, "vision", "discovered")).toBe("configured");
+    expect(resolveCapabilitySource(model, "function_calling", "discovered")).toBe("discovered");
+  });
+});
+
+describe("listCapabilityBadges source", () => {
+  it("leaves source undefined without a default (neutral style)", () => {
+    const badges = listCapabilityBadges({ capabilities: { vision: true } });
+    expect(badges[0].source).toBeUndefined();
+  });
+
+  it("stamps the default source onto every badge including context", () => {
+    const badges = listCapabilityBadges(
+      { capabilities: { vision: true }, context_length: 32768 },
+      { defaultSource: "discovered" },
+    );
+    expect(badges.map((b) => b.source)).toEqual(["discovered", "discovered"]);
+  });
+
+  it("lets explicit overrides win per badge", () => {
+    const badges = listCapabilityBadges(
+      {
+        capabilities: { vision: true, function_calling: true },
+        capabilitySources: { function_calling: "configured" },
+      },
+      { defaultSource: "discovered" },
+    );
+    expect(badges.find((b) => b.key === "vision")?.source).toBe("discovered");
+    expect(badges.find((b) => b.key === "function_calling")?.source).toBe("configured");
+  });
+});
+
+describe("capability source presentation", () => {
+  it("has tooltip text for every source", () => {
+    for (const source of ["discovered", "configured", "unknown"] as const) {
+      expect(capabilitySourceLabels[source]).toBeTruthy();
+    }
+  });
+
+  it("gives discovered badges a dashed outline class and configured none", () => {
+    expect(capabilitySourceBadgeClass.discovered).toContain("border-dashed");
+    expect(capabilitySourceBadgeClass.configured).toBe("");
   });
 });
