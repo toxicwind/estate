@@ -430,3 +430,44 @@ yote-conn exec "#yolo rm -rf ~/.cache/bun ~/.npm"
   normal commands — do not prefix routinely.
 - Do NOT weaken, remove, or edit the denylist itself (`_DEFAULT_DENY`,
   `awrawr_ws_exec.py`) — document the bypass, never touch the policy.
+
+## 10. Fleet -> OpenFang join (fleet-join, 2026-09-30)
+
+### What it is
+Any squawk fleet agent can become a first-class OpenFang agent. The join is
+mechanical: `sovereign/bin/fleet-join` (Bun) renders `agent.toml` + `system.md`
+from the fleet identity, writes them to `sovereign/agents/<name>/` (canonical,
+git) and `~/.openfang/agents/<name>/` (live), then hyper-races activation:
+`POST /api/agents {manifest_toml}` vs `POST /api/agents {template}` —
+first 201 wins, loser deduped, verified via `GET /api/agents`. If the API is
+down, the kernel auto-spawns the agent from disk on next boot (idempotent).
+
+### Trigger protocol
+When a fleet agent says "I want to join OpenFang" (or a coordinator decides
+one should), the coordinator runs:
+
+```
+bun /home/toxic/sovereign/bin/fleet-join --name <name> --species <species> \
+    --personality <plain words> --lane <lane> --task <plain words> \
+    --sigil <emoji>
+```
+
+- `--name`: lowercase letters, digits, hyphens. Must not collide with an
+  existing `sovereign/agents/<name>/`.
+- Fleet identity maps: name -> `name` + `[persona].name`; species +
+  personality + lane/task -> `[persona].role` + `description`; lane/task ->
+  `tags`. Species has no native OpenFang field — it folds into role/prompt.
+- Model default: herd free-tier via llama-swap :25100
+  (`openrouter-free/inclusionai/ling-3.0-flash-sante:free`, Ling-first per
+  Chris 2026-09-17; verified live). Override with `--model`.
+- Flags: `--dry-run` (render only), `--no-activate` (files only, kernel
+  picks up on boot), `--no-commit` (skip git commit).
+- The script commits to sovereign-projects main; push + verify the remote ref
+  after (fetch-first, never force-push).
+
+### Notes
+- The joined agent keeps its fleet persona (species, personality, sigil) and
+  narrates in squawk as Ember's crew.
+- OpenFang API: `http://127.0.0.1:25196`. Uninstall:
+  `DELETE /api/agents/{id}/uninstall` (removes the live dir too).
+- Spec: `docs/fleet-openfang-join-spec.md` (Sorrel, 2026-09-30).
