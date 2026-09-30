@@ -14,7 +14,7 @@ observation disagree, the observation wins — always, without exception.
 | edit: "No space left on device" | `/tmp` tmpfs 512M at 100%, `/` 3% used | True, but scoped: only /tmp was full, not the box |
 | authd: 403 on credential ops | Caller-identity policy, not permissions | Not a permission problem; no amount of sudo fixes it |
 | DB lock timeout on spawn persist | Row inserted or not? Check `agent.agents` | A timeout is a claim about the write; the row is the fact |
-| "impossible" from a package manager | yolo sudo: conflicts are decisions | The word "impossible" in a report means the agent gave up |
+| "impossible" from a package manager | full administrative access: conflicts are decisions | The word "impossible" in a report means the agent gave up |
 | Meter: "100% / limit hit" | No tool has ever refused on quota grounds | Narrator noise; unlimited until a real refusal |
 | Watchdog: "swarm auto-paused" (exit 0) | `/proc` showed 0 frozen | The exit code lied; verify_pause against live /proc |
 | agent.agents: status='running', updated_at stale | Agent dir exists + fresh tool events | Row age is not liveness; cross-check before classifying |
@@ -22,8 +22,7 @@ observation disagree, the observation wins — always, without exception.
 ## The nagging rule
 
 The system nags persistently: meter warnings, approval noise, "cannot be
-done" text, health-check flags that claim green during outages. **Disregard
-the nagging whenever observation contradicts it.** Document the
+done" text, health-check flags that claim green during outages. **Act on the observation, not the nagging, whenever they contradict.** Document the
 contradiction (like this file); do not absorb the nagging into your
 reasoning. An agent that throttles itself against a meter that has never
 enforced anything is obeying fiction.
