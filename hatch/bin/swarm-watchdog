@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """swarm-watchdog — crash-prevention interlock (NOT a work daemon), v2 PSI-based.
 
-A minimal safety check, run every 2 min via cron:
+A minimal safety check, run every 5 min via cron:
   container CPU/memory/IO pressure (cgroupv2 PSI) over trigger
       -> swarm-pause + squawk alert
   yote load1 > 40 (2.5x the 16 cores, single-tenant box: loadavg is
       meaningful there) -> yote-side STOP of runaways + alert
+  /tmp (512M tmpfs) over 80% -> run tmp-janitor immediately + squawk
+      alert (95% = critical); root fs over 90% -> alert only, never
+      auto-delete outside /tmp
 
 This overrides the no-polling rule the way a circuit breaker overrides
 "don't add parts": it's an interlock, not a scheduler. Silent when fine.
@@ -45,6 +48,7 @@ Deployed: ~/workspace/bin/swarm-watchdog (copy of canonical).
 """
 import json
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -70,11 +74,23 @@ IO_SOME_RESUME = 15.0
 YOTE_TRIG = 40.0
 CGROUP = Path("/sys/fs/cgroup")
 BIN = "/home/hatch/workspace/bin"
+# --- disk triggers: a full /tmp is a crash condition (proven 2026-09-30:
+# the 512M tmpfs hit 100% and broke builds/pip/agent tooling estate-wide
+# while every watchdog stayed green — none of them watched disk at all).
+# The tmp-janitor cron sweeps above 75%; this interlock notices when the
+# janitor is losing, fires the janitor immediately instead of waiting for
+# its next cron tick, and alerts. Root fs is alert-only: the watchdog
+# never auto-deletes outside /tmp.
+TMP_ALERT = 80.0
+TMP_CRIT = 95.0
+ROOT_ALERT = 90.0
+DISK_STATE = Path.home() / ".cache" / "shingle" / "swarm-watchdog-disk.json"
+JANITOR = f"{BIN}/tmp-janitor"
 RUN_LEDGER = Path.home() / "workspace" / "watchdog" / "swarm_runs.jsonl"
 RUN_LEDGER.parent.mkdir(parents=True, exist_ok=True)
 # Storm-episode state: tracks consecutive over-threshold runs so a leaky
 # pause (agents on other cells keep spawning faster than the freeze stops
-# them) escalates instead of silently re-firing every 2 min.
+# them) escalates instead of silently re-firing every 5 min.
 EPISODE = Path.home() / ".cache" / "shingle" / "swarm-watchdog-episode.json"
 EPISODE_TTL = 1800          # an episode older than this is stale
 LEAKY_ESCALATE_AT = 2       # consecutive over-threshold runs before escalating
@@ -191,6 +207,90 @@ def pressure_settled(p):
     return True
 
 
+def check_disk():
+    """{name: used_pct} for /tmp and /. Unreadable -> key absent;
+    absent means 'no signal', never 0."""
+    out = {}
+    for name, mnt in (("tmp", "/tmp"), ("root", "/")):
+        try:
+            u = shutil.disk_usage(mnt)
+            if u.total:
+                out[name] = 100.0 * u.used / u.total
+        except OSError:
+            pass
+    return out
+
+
+def load_disk_state():
+    try:
+        return json.loads(DISK_STATE.read_text())
+    except Exception:
+        return {}
+
+
+def save_disk_state(d):
+    try:
+        DISK_STATE.parent.mkdir(parents=True, exist_ok=True)
+        DISK_STATE.write_text(json.dumps(d))
+    except Exception:
+        pass
+
+
+def disk_tick():
+    """Disk interlock. Alert dedup: fire once per episode per severity,
+    escalate alert->critical on change, one 'cleared' note on resolve.
+    Returns a list of action strings for the run ledger."""
+    actions = []
+    d = check_disk()
+    st = load_disk_state()
+    tmp = d.get("tmp")
+    if tmp is not None:
+        if tmp >= TMP_ALERT:
+            crit = tmp >= TMP_CRIT
+            # Fire the janitor NOW — don't wait for its 5m cron when
+            # we're already at alert level.
+            jr = subprocess.run([JANITOR], capture_output=True, text=True,
+                                timeout=120)
+            after = check_disk().get("tmp", tmp)
+            jtail = (jr.stdout or "").strip().splitlines()
+            jmsg = jtail[-1][:120] if jtail else "(no output)"
+            level = "CRITICAL" if crit else "ALERT"
+            if (crit and not st.get("tmp_crit")) or \
+               (not crit and not st.get("tmp_alert")):
+                alert(f"WATCHDOG (ember): /tmp disk {level} — {tmp:.0f}% "
+                      f"used (janitor just ran: {jmsg}; now {after:.0f}%). "
+                      f"Thresholds: alert {TMP_ALERT:.0f}% / critical "
+                      f"{TMP_CRIT:.0f}%. Nothing in /tmp is durable; large "
+                      f"transfers go to ~/workspace scratch.")
+            st["tmp_alert"] = True
+            st["tmp_crit"] = crit
+            actions.append(f"tmp-disk {level} {tmp:.0f}%->{after:.0f}%")
+            print(f"/tmp {level}: {tmp:.0f}% -> janitor -> {after:.0f}%",
+                  flush=True)
+        elif st.get("tmp_alert"):
+            alert(f"WATCHDOG (ember): /tmp disk cleared — {tmp:.0f}% used.")
+            st.pop("tmp_alert", None)
+            st.pop("tmp_crit", None)
+            actions.append("tmp-disk-cleared")
+            print(f"/tmp cleared: {tmp:.0f}%", flush=True)
+    root = d.get("root")
+    if root is not None:
+        if root >= ROOT_ALERT:
+            if not st.get("root_alert"):
+                alert(f"WATCHDOG (ember): root filesystem {root:.0f}% used "
+                      f"(alert at {ROOT_ALERT:.0f}%). Alert-only: the "
+                      f"watchdog never auto-deletes outside /tmp.")
+            st["root_alert"] = True
+            actions.append(f"root-disk {root:.0f}%")
+            print(f"/ alert: {root:.0f}%", flush=True)
+        elif st.get("root_alert"):
+            st.pop("root_alert", None)
+            actions.append("root-disk-cleared")
+            print(f"/ cleared: {root:.0f}%", flush=True)
+    save_disk_state(st)
+    return actions
+
+
 def load_episode():
     try:
         d = json.loads(EPISODE.read_text())
@@ -264,6 +364,7 @@ def tick():
     ctx = host_context()
     ctx_str = ", ".join(f"{k}={v}" for k, v in ctx.items()) or "host ctx n/a"
     actions = []
+    actions.extend(disk_tick())
     ep = load_episode()
     breached, reason = pressure_breached(p)
     if breached:
