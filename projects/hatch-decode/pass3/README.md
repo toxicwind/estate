@@ -1,4 +1,18 @@
-# hatch-decode pass 3
+<div align="right">
+
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![sovereign--projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+# hatch-decode pass 3 — the exact `JARVIS_*` inventory
+
+> **Why should you care?** Passes 1–2 counted `JARVIS_*` strings; pass 3 pins down
+> the *exact* inventory with reader-supplied-length discipline — 158 exact names,
+> compiled defaults, reader addresses, and call-site shapes. It even found 8
+> "removed" vars that had merely moved to a new SIMD constant-pool idiom. Every
+> artifact is bound to the binary's build ID, so stale indexes are rejected, not
+> silently trusted.
 
 Static decode of `/opt/hatch/bin/hatch` (`hatch 0.1.0 (e86e3030628)`,
 build ID `a733660761e017bf523cc4be3e467cddf3c4e639`), continuing pass 1
@@ -10,7 +24,7 @@ Recovers the exact `JARVIS_*` environment-variable inventory from the
 binary with reader-supplied-length discipline (no packed-symbol fusion),
 plus compiled defaults, reader addresses, and call-site shapes.
 
-Reader shapes:
+Reader shapes — how the binary references each name:
 
 - **A** — RIP-relative `lea` into `.rodata` + exact supplied length (+
   optional default immediate), verified with Capstone.
@@ -19,6 +33,17 @@ Reader shapes:
 - **D** — length-less LEAs resolved through voted exact names.
 - **E** *(new in pass 3)* — SIMD constant pools `.rodata.cst16` /
   `.rodata.cst32` with the new `(name, name_len, default)` reader idiom.
+
+```mermaid
+flowchart LR
+    B["hatch ELF<br/>build a7336607..."] --> I["build_index.py<br/>LEA/ref index<br/>build-ID bound"]
+    I --> SA["scan_refs.py<br/>shapes A·B·C·D"]
+    I --> SE["shape_e_scan.py<br/>shape E"]
+    SA --> M["inventory_merged_pass3.json<br/>158 exact names"]
+    SE --> M
+    M --> F["FINDINGS-pass3.md"]
+    M --> T["test_scan.py<br/>6 regression tests"]
+```
 
 ## Files
 
@@ -32,14 +57,12 @@ Reader shapes:
 | `test_scan.py` | regression tests (`python3 test_scan.py`) |
 | `requirements.txt` | pinned `capstone==5.0.7` |
 
-## Run
+## Quick start
 
 ```bash
-pip install -r requirements.txt
-python3 build_index.py     # ~10s, writes ref_index.json (build-bound)
-python3 scan_refs.py       # ~70s on the hatch cell
-python3 shape_e_scan.py    # shape E
-python3 test_scan.py       # 6 regression tests
+pip install -r requirements.txt && python3 build_index.py   # ~10s, writes ref_index.json (build-bound)
+python3 scan_refs.py && python3 shape_e_scan.py             # ~70s on the hatch cell
+python3 test_scan.py                                        # 6 regression tests
 ```
 
 Every artifact records the binary build ID; the index is rejected when
@@ -56,3 +79,13 @@ the binary is rebuilt (addresses go stale across builds).
   intact); dispatch is once-per-process lazy (`lock cmpxchg`).
 - Eager compaction module source-attributed:
   `hatch-engine/crates/hatch-agent/src/session/impl_session/eager_compaction.rs`.
+
+## License + security
+
+Licensed under the sovereign-projects monorepo terms (MIT family —
+see the [herd fork license](../../herd/LICENSE.md)). Read-only static
+analysis: disassembly windows via Capstone, no execution of the target
+binary, no ptrace, no writes outside this directory.
+
+---
+*Up: [hatch-decode](../README.md) · [master README](../../../README.md)*
