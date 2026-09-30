@@ -378,3 +378,6 @@ projects/herd/mesh/gateway/mcp_config.json
 # internal/index/; its canonical home is ~/.mcpproxy/index.bleve/, not the
 # repo. Untracked here.
 projects/herd/mesh/gateway/index.bleve/
+
+# kb-rollup.ts flock target (runtime lock, never commit)
+docs/fleet-knowledgebase.md.lock
