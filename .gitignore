@@ -381,3 +381,4 @@ projects/herd/mesh/gateway/index.bleve/
 
 # kb-rollup.ts flock target (runtime lock, never commit)
 docs/fleet-knowledgebase.md.lock
+!bin/openfang-join
