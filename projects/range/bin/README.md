@@ -167,10 +167,9 @@ orchestrator. Two consequences:
 
 - `MCPPROXY_API_KEY` keeps its upstream name. That is upstream's spelling, not
   a rename that was missed here.
-- `landing.py` still renders the `:25127` gateway under a `"shep MCP"` label in
-  its `BACKENDS` table. The daemon behind that port is gatehouse; the string is
-  a stale cosmetic leftover, and the only place in this tree where the old name
-  still appears in code.
+- `landing.py` renders the `:25127` gateway under `"gatehouse MCP"` /
+  `"gatehouse health"` / `"gatehouse metrics"` labels in its `BACKENDS` table
+  (fixed 2026-09-29; was the last `"shep …"` string in code).
 
 ---
 
