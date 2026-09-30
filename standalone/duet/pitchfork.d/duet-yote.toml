@@ -1,0 +1,8 @@
+# standalone/duet — project-owned daemon manifest. Source of truth for duet-yote.
+# Owned by the standalone/duet project; the parent only composes it.
+# (Recovered 2026-09-30: was hand-added to the composed pitchfork.toml with no
+# source fragment; a recompose would have dropped it. Now properly owned.)
+
+[daemons.duet-yote]
+run = "exec /home/toxic/.local/share/mise/shims/bun /home/toxic/duet/src/yote.ts"
+dir = "/home/toxic/duet"

@@ -150,3 +150,8 @@ kind = "dir"
 key = "standalone/whatsapp-mcp"
 manifest = "standalone/whatsapp-mcp/pitchfork.d"
 kind = "dir"
+
+[[project]]
+key = "standalone/duet"
+manifest = "standalone/duet/pitchfork.d"
+kind = "dir"
