@@ -380,8 +380,18 @@ def check_json_state(path, required_keys):
     return _check
 
 
-def check_pause_state_consistent(state_path):
-    """Thunk: swarm-paused.json agrees with live /proc state."""
+def check_pause_state_consistent(state_path, yote_probe=None):
+    """Thunk: swarm-paused.json agrees with live /proc state.
+
+    yote_probe: optional callable(list_of_yote_pids) -> {pid: state_char|None}.
+    Verifies `yote_pids` (written by swarm-eject --yote-only) through the
+    bridge. Without a probe, yote_pids are hatch-side UNVERIFIABLE — the
+    check reports indeterminate instead of asserting STALE. (2026-09-30:
+    the old code fell through to "STALE: all 0 pids gone" for EVERY
+    yote-only pause state, blind — it examined only the hatch-side `pids`
+    list and never looked at yote's `yote_pids`, so a live yote freeze
+    would have been declared a ghost.)
+    """
     def _check():
         try:
             with open(state_path) as f:
@@ -391,7 +401,8 @@ def check_pause_state_consistent(state_path):
         except (json.JSONDecodeError, ValueError, OSError) as e:
             return False, f"unreadable ({type(e).__name__})"
         pids = st.get("pids", [])
-        if not pids and not st.get("yote_pids"):
+        ypids = st.get("yote_pids", [])
+        if not pids and not ypids:
             return False, "empty pid lists but file exists (stale)"
         alive = [p for p in pids if proc_state(p) is not None]
         frozen = [p for p in pids if proc_state(p) == "T"]
@@ -400,6 +411,30 @@ def check_pause_state_consistent(state_path):
         if alive:
             return False, (f"STALE: {len(alive)}/{len(pids)} pids alive but "
                            f"NONE T-frozen — pause not in effect")
+        # Hatch side is fully dissolved; judge the yote side on evidence.
+        if ypids and yote_probe is not None:
+            try:
+                states = yote_probe(ypids)
+            except Exception as e:  # noqa: BLE001
+                return True, (f"yote_pids={len(ypids)} present but bridge "
+                              f"probe failed ({type(e).__name__}) — "
+                              f"unverifiable hatch-side, not asserting stale")
+            y_alive = [p for p in ypids if states.get(int(p)) is not None]
+            y_frozen = [p for p in ypids if states.get(int(p)) == "T"]
+            if y_frozen:
+                return True, (f"hatch side dissolved but "
+                              f"{len(y_frozen)}/{len(ypids)} yote pids "
+                              f"T-frozen (pause live)")
+            if y_alive:
+                return False, (f"STALE: {len(y_alive)}/{len(ypids)} yote "
+                               f"pids alive but NONE T-frozen — pause not "
+                               f"in effect")
+            return False, (f"STALE: all {len(ypids)} yote pids gone — "
+                           f"pause state is a ghost (resume would be a no-op)")
+        if ypids:
+            return True, (f"yote_pids={len(ypids)} present — hatch-side "
+                          f"unverifiable without a bridge probe; not "
+                          f"asserting stale")
         return False, (f"STALE: all {len(pids)} pids gone — pause state "
                        f"is a ghost (resume would be a no-op)")
     return _check
