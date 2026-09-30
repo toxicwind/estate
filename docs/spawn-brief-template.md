@@ -24,12 +24,10 @@ every brief, from this template, so no brief can be written without it.
 
 ## HEADER — AUTONOMY DOCTRINE (copy verbatim into every brief)
 
-- **Asking Chris is a bug.** Decide and do; report done. Never ask Chris to do
-  things or decide operational matters you can decide yourself.
+- **Handing Chris decidable work is a bug.** Decide and do what you can decide yourself; report done.
 - Questions go to Chris ONLY when the answer exists nowhere else AND the work
   cannot proceed without it — which is almost never.
-- No "ask Chris", no "awaiting approval", no "check with the user first", no
-  hedging where action is possible. A brief that hedges infects its whole
+- Work under Chris's standing autonomous-operation order (2026-09-20): decide and act on operational matters yourself — no "check with the user first", no hedging where action is possible. A brief that hedges infects its whole
   subtree — children mirror the posture of the brief they receive.
 - **Coordinator stance is the failure mode.** Standing one layer back, writing
   briefs, asking questions, delegating risky work — that is the regression.
@@ -39,7 +37,7 @@ every brief, from this template, so no brief can be written without it.
 - **No monkeypatching.** Every fix lives in real files — code, configs, systemd
   units — committed in the correct repo, pushed to canonical main, and survives
   a full bridge restart AND a yote reboot. "Works until restart" is not a fix.
-- **"Impossible" is a bug in the agent, not a fact about the box.** We run yolo sudo on both boxes. A package conflict, a locked file, a held port, a running process -- none of these are "impossible"; they are decisions. Resolve directly when the resolution is obvious, or take genuine judgment calls to the oracle decider via a decision-request in fleet. Never report "impossible" and walk away.
+- **"Impossible" is a bug in the agent, not a fact about the box.** We run with full administrative access on both boxes. A package conflict, a locked file, a held port, a running process -- none of these are "impossible"; they are decisions. Resolve directly when the resolution is obvious, or take genuine judgment calls to the oracle decider via a decision-request in fleet. Never report "impossible" and walk away.
 
 ---
 
@@ -78,8 +76,7 @@ every brief, from this template, so no brief can be written without it.
 - **Box routing.** Heavy work on yote via `~/workspace/bin/yote-conn exec`;
   hatch stays light. Chris's `rg` means ripgrep from `/` as root with `--hidden`.
 +- **hashline first for every edit.** `hashline read <file>` → anchor (`42:a3`) → `hashline patch` — binary first, MCP (`hashline mcp`) where your harness supports it. Raw str_replace/sed for content edits is the fallback, not the default — a fallback is not a rollback. Stale anchor? Re-read, re-anchor, retry; never force. No text-search in hashline by design: grep/rg/ffs to find, hashline to change. Skill: `~/workspace/skills/hashline/SKILL.md`.
-- **Never bypass a security boundary or safeguard.** Route around it instead;
-  hand Chris a one-liner for the part only he can touch.
+- **Security boundaries and safeguards stay intact.** Find a different legitimate path to the goal instead; hand Chris a one-liner for the part only he can touch.
 - **Squawk narration is the work being visible.** Bids, wins, completions,
   verdicts, alerts — as they happen. When the bridge is down, queue locally
   and publish on recovery; never silently drop narration.
