@@ -17,6 +17,7 @@
     capabilityBadgeClass,
     capabilitySourceBadgeClass,
     capabilitySourceLabels,
+    mergeFeedCapabilities,
   } from "../lib/capabilities";
   import type { Model } from "../lib/types";
   import ModelLoadButton from "../components/ModelLoadButton.svelte";
@@ -35,22 +36,15 @@
   // changes, so capability badges refresh without a page reload.
   refreshPlaygroundModels();
 
-  // modelStatus carries live state but no capability payload; /v1/models
-  // carries the resolved capabilities. Merge by id so badges react to
-  // either feed updating.
+  // Push-first capability merge: the modelStatus feed now carries
+  // capabilities + context_length + capabilitySources the instant herd learns
+  // them (ModelCapabilitiesChangedEvent over SSE), so a live feed payload
+  // wins and badges appear with no round-trip. The debounced /v1/models
+  // refetch in refreshPlaygroundModels() stays as the fallback: when a feed
+  // entry has no capability payload yet, the API record supplies it.
   let enrichedModels = $derived.by(() => {
     const full = new Map($playgroundModels.map((m) => [m.id, m] as const));
-    return $models.map((m) => {
-      const f = full.get(m.id);
-      if (!f) return m;
-      return {
-        ...m,
-        capabilities: f.capabilities,
-        context_length: f.context_length ?? m.context_length,
-        modalities: f.modalities ?? m.modalities,
-        capabilitySources: f.capabilitySources,
-      };
-    });
+    return $models.map((m) => mergeFeedCapabilities(m, full.get(m.id)));
   });
 
   let visibleModels = $derived(
@@ -192,7 +186,7 @@
         </span>
         <span
           class="text-muted-foreground hidden text-xs md:inline"
-          title="Badges merge live model state with resolved capabilities from /v1/models. Hover a badge for its source."
+          title="Capability badges: live feed first, /v1/models as fallback. Hover a badge for its source."
         >
           capability badges · hover for source
         </span>
