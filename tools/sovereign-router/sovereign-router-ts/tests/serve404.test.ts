@@ -12,11 +12,11 @@ let router: Subprocess | null = null;
 beforeAll(async () => {
   // Start the router with a unique catalog path so the test is isolated.
   router = spawn({
-    cmd: ["bun", "router.ts"],
+    cmd: [process.execPath, "router.ts"], // real bun, not the mise shim (shim overrides SOVEREIGN_ROUTER_PORT from ports.env)
     cwd: new URL("..", import.meta.url).pathname,
     env: {
       ...process.env,
-      SOVEREIGN_PORT: String(PORT),
+      SOVEREIGN_ROUTER_PORT: String(PORT),
       SOVEREIGN_CATALOG_STATE: CATALOG_PATH,
       // No SOVEREIGN_ADMIN_TOKEN: AUTH is unset, endpoint is open in test.
     },
