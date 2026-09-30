@@ -1,4 +1,46 @@
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
 # Skills — Sovereign Helpers Toolkit
+
+> First-class reusable automation: health checks, telemetry, migration tools, fleet utilities.
+
+> **Why care? The estate runs on small sharp tools, not tribal knowledge. Parallel health audits across every service port, hardware telemetry, MCP handshake probes, AST codemods, assertive config surgery — all here, all runnable, Bun/POSIX with zero data loss.**
+
+- **`health-audit.ts` — parallel live probe across all service endpoints, full untruncated JSON**
+- **`hardware-telemetry.sh` — CPU, L3, governor, swap, RTX 3090 metrics**
+- **`mesh-probe.ts` — JSON-RPC 2.0 initialize handshake probe for the MCP gateway**
+- **`ast-migrate.ts` — AST structural pattern matching and codemods via ast-grep**
+- **`surgical-edit` / `herd-probe` / `hft-latency` — assertive config surgery, exact-token model probes, strategy racing**
+
+```mermaid
+flowchart LR
+    YOU[you] --> SK[skills/]
+    SK --> HA[health-audit: all ports]
+    SK --> HT[hardware-telemetry: box]
+    SK --> MP[mesh-probe: :25127]
+    SK --> AM[ast-migrate: codemods]
+    SK --> SE[surgical-edit: config surgery]
+```
+
+## Quick start
+
+```bash
+bun run skills/health-audit.ts          # full parallel health audit
+bun run skills/health-audit.ts --json   # untruncated JSON for tooling
+./skills/hardware-telemetry.sh          # box + GPU metrics
+```
+
+## License & security
+
+- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **Security:** Local operational tooling — `clean-orphans.sh` terminates runaway processes by design; review before running on a shared box. Symlinked as `helpers/` at the repo root.
+
+---
 
 First-class reusable automation for the Sovereign ecosystem: health checks,
 telemetry, migration tools, and fleet utilities. Built for Bun / POSIX, zero

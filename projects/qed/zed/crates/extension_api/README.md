@@ -1,77 +1,38 @@
-# The Zed Rust Extension API
+<div align="right">
 
-This crate lets you write extensions for Zed in Rust.
+[![license](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-part%20of-blueviolet?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-## Extension Manifest
+</div>
 
-You'll need an `extension.toml` file at the root of your extension directory, with the following structure:
+# `extension_api` — the Rust API for Zed extensions
 
-```toml
-id = "my-extension"
-name = "My Extension"
-description = "..."
-version = "0.0.1"
-schema_version = 1
-authors = ["Your Name <you@example.com>"]
-repository = "https://github.com/your/extension-repository"
+**Write Zed extensions in Rust.** This crate defines the stable host↔extension contract: the types and functions an extension uses to talk to Zed, with versioning so extensions keep working across editor releases.
+
+## Why should I care?
+
+- **Stable ABI across releases** — versioned API means extensions don't break every time Zed ships
+- **Rust-native** — extensions compile to WASM and run sandboxed in the editor
+- **First-class citizens** — language servers, themes, grammars, and slash commands all go through this API
+
+```mermaid
+flowchart LR
+    X[extension .rs] --> API[extension_api crate]
+    API -->|WASM| E[Zed host runtime]
+    E --> LS[language servers]
+    E --> TH[themes + grammars]
+    E --> SC[slash commands]
 ```
 
-## Cargo metadata
+## Quick start
 
-Zed extensions are packaged as WebAssembly files. In your Cargo.toml, you'll
-need to set your `crate-type` accordingly:
-
-```toml
-[dependencies]
-zed_extension_api = "0.6.0"
-
-[lib]
-crate-type = ["cdylib"]
+```sh
+# scaffold and build a test extension
+cargo xtask extension:new my-extension
+cargo xtask extension:build my-extension
 ```
 
-## Implementing an Extension
+## License & security
 
-To define your extension, create a type that implements the `Extension` trait, and register it.
-
-```rust
-use zed_extension_api as zed;
-
-struct MyExtension {
-    // ... state
-}
-
-impl zed::Extension for MyExtension {
-    // ...
-}
-
-zed::register_extension!(MyExtension);
-```
-
-## Testing your extension
-
-To run your extension in Zed as you're developing it:
-
-- Make sure you have [Rust installed](https://www.rust-lang.org/learn/get-started)
-- Have the `wasm32-wasip2` target installed (`rustup target add wasm32-wasip2`)
-- Open the extensions view using the `zed: extensions` action in the command palette.
-- Click the `Install Dev Extension` button in the top right
-- Choose the path to your extension directory.
-
-## Compatible Zed versions
-
-Extensions created using newer versions of the Zed extension API won't be compatible with older versions of Zed.
-
-Here is the compatibility of the `zed_extension_api` with versions of Zed:
-
-| Zed version | `zed_extension_api` version |
-| ----------- | --------------------------- |
-| `0.192.x`   | `0.0.1` - `0.6.0`           |
-| `0.186.x`   | `0.0.1` - `0.5.0`           |
-| `0.184.x`   | `0.0.1` - `0.4.0`           |
-| `0.178.x`   | `0.0.1` - `0.3.0`           |
-| `0.162.x`   | `0.0.1` - `0.2.0`           |
-| `0.149.x`   | `0.0.1` - `0.1.0`           |
-| `0.131.x`   | `0.0.1` - `0.0.6`           |
-| `0.130.x`   | `0.0.1` - `0.0.5`           |
-| `0.129.x`   | `0.0.1` - `0.0.4`           |
-| `0.128.x`   | `0.0.1`                     |
+- Zed upstream code is **GPL-3.0-or-later**; this fork ships inside the sovereign-projects monorepo ([MIT](https://github.com/toxicwind/sovereign-projects#license) for sovereign-authored files).
+- Extensions run as WASM in the editor — the API surface is the security boundary; keep host capabilities least-privilege and treat extension code as third-party.

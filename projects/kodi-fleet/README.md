@@ -1,3 +1,19 @@
+<div align="right">
+
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-kodi-fleet-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+```mermaid
+flowchart LR
+    A[awrawr-pc] --> H[kodi-handoff]
+    A --> U[kodi-audit]
+    A --> S[kodi-resume]
+    H --> B1[246 · CoreELEC]
+    H --> B2[225 · Android TV]
+```
+
 # kodi-fleet
 
 One-shot Kodi tooling + audit for the two-box fleet. Lives in the sovereign repo;
@@ -43,6 +59,8 @@ tv/audio settings, which stay per-box.
   a real open+seek was deliberately not fired at 04:35 (sleeping house).
   State: `~/.local/share/kodi-fleet/resume.json` (outside the repo).
 
+- **parked/** — retired tooling: `kodi-sync` was parked 2026-09-19 (Chris: "cancel"); its `NOTE.md` records the incident analysis that killed it.
+
 Deployed copies: `/home/toxic/bin/kodi-handoff` (symlink or copy of `bin/` source).
 Keep the repo source canonical; re-deploy after edits.
 
@@ -59,3 +77,11 @@ Keep the repo source canonical; re-deploy after edits.
 - First seek after `Player.Open` often lands ~0%: retry until within 1%.
 - `Player.Seek` can throw -32100 during transitions: retry on RPC error.
 - Re-fetch the video playerid after open; never assume 1.
+
+
+## License & security
+
+**License:** MIT — [sovereign-projects LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+
+- Box 246 is reached over SSH (`root`/`coreelec`) and both boxes expose JSON-RPC on `:8080` **with no auth** — this tooling assumes a trusted LAN. Change the CoreELEC default credentials and never expose these ports beyond your LAN.
+- `kodi-audit settings --dupe` and `kodi-resume --apply` mutate box state; every mutating path defaults to dry-run / report-only by design.

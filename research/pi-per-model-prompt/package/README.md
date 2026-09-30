@@ -1,4 +1,45 @@
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
 # pi-per-model-prompt
+
+> Model-scoped system prompt correction layers for pi.
+
+> **Why care? Every model family has its own failure modes — verbosity here, weak follow-through there. This package appends one shared harness-core layer plus targeted per-family corrections, so the same pi extension behaves well on GPT-5, Codex, and Claude without becoming a second prompt framework.**
+
+- **One harness core — `output_contract`, `scope_discipline`, `tool_discipline`, `verification_contract` for every model**
+- **Family layers — GPT-5 baseline, Codex-line coding corrections, GPT-5.4 execution delta, Claude family + coding-agent layer**
+- **Additive composition — `gpt-5.4-codex` → core + family + codex + 5.4, resolved by model-id parsing**
+- **Idempotent — unique markers, appended once; partial prompt reuse stays safe**
+- **Narrow by design — doesn't replace Pi's baseline harness policy**
+
+```mermaid
+flowchart LR
+    MID[model id] --> PARSE[model-identity parser]
+    PARSE --> RES[resolve layers]
+    RES --> CORE[harness core]
+    RES --> FAM[family layer: gpt5 / claude]
+    RES --> VER[version delta: 5.4 / 5.3-codex / codex]
+    CORE & FAM & VER --> COMP[composed prompt, appended once]
+```
+
+## Quick start
+
+```bash
+pi install npm:pi-per-model-prompt        # after publishing
+pi install /path/to/pi-per-model-prompt  # from a local checkout
+```
+
+## License & security
+
+- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **Security:** Prompt layers only — no credentials, no network. The `before_provider_request` hook can set Responses API params (e.g. `text.verbosity`) for exact model matches.
+
+---
 
 Model-scoped system prompt correction layers for [pi](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent).
 
