@@ -15,6 +15,7 @@
 | [`docs/`](docs/) | Consolidated hatch/bridge/cell documentation (runtime cell, connector routing, exec audits) |
 | [`cell-files/`](cell-files/) | Cell-files hot-reload explorer: Bun/TS web UI (WS/SSE hyper-race HMR) over the 211k-row cell filesystem inventory — nested toxicwind/Deuz-SDK checkout |
 | [`bin/`](bin/) | Canonical hatch-side swarm tooling: `swarm-watchdog`, `swarm-pause`/`swarm-resume`, `swarm-eject`, `progress-watchdog`, `squawk`, `squawk-fleet`, `fleet/`, `fleet-code`, `agent-reaper`, `race_exec`, jarvis audit tooling — deployed copies in `~/workspace/bin/` on the cell are synced from here |
+| [`hashline/`](hashline/) | hashline first-class edit tool: skill (`skills/hashline/SKILL.md`), project docs (README, discovery, runbook, wiring) — binary first, MCP where supported |
 
 > [!NOTE]
 > Layout SSOT for the 2026-09-20 reorg: [`../REORG-PLAN.md`](../REORG-PLAN.md).
