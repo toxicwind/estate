@@ -199,19 +199,19 @@ models:
   # which advertises peer models ONLY prefixed. Bare targets ->
   # 'unroutable' -> herd hangs waiting for ready.
   oracle-judge-a:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/nex-agi/nex-n2.5-mini:free --standby openrouter-free/nex-agi/nex-n2.5-pro:free
-    description: "Oracle judge A (alias -> nex-agi/nex-n2.5-mini:free) -- fastest exact-output free judge (489ms census)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target  --standby 
+    description: "Oracle judge A (alias -> inclusionai/ling-3.0-flash-sante:free) -- fastest exact-output free judge (489ms census)"
     metadata:
-      alias_of: nex-agi/nex-n2.5-mini:free
+      alias_of: inclusionai/ling-3.0-flash-sante:free
       role: oracle-judge
   oracle-judge-b:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/nex-agi/nex-n2.5-pro:free --standby openrouter-free/poolside/laguna-s-2.1:free
-    description: "Oracle judge B (alias -> nex-agi/nex-n2.5-pro:free) -- exact-output NEX complement (799ms census)"
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target  --standby openrouter-free/poolside/laguna-s-2.1:free
+    description: "Oracle judge B (alias -> inclusionai/ling-3.0-flash-sante:free) -- exact-output NEX complement (799ms census)"
     metadata:
-      alias_of: nex-agi/nex-n2.5-pro:free
+      alias_of: inclusionai/ling-3.0-flash-sante:free
       role: oracle-judge
   oracle-judge-c:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/poolside/laguna-s-2.1:free --standby openrouter-free/nex-agi/nex-n2.5-mini:free
+    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/poolside/laguna-s-2.1:free --standby 
     description: "Oracle judge C (alias -> poolside/laguna-s-2.1:free) -- third model family (2161ms census)"
     metadata:
       alias_of: poolside/laguna-s-2.1:free
@@ -643,7 +643,7 @@ models:
 # rewrite. Local models are the fallback, never the default.
 #
 # FREE, ranked (model -- probe ms):
-#   openrouter-free/nex-agi/nex-n2.5-pro:free               566
+#                  566
 #   gemini/gemini-3-flash-preview                          577
 #   openrouter-ling/inclusionai/ling-3.0-flash-sante:free   692
 #   openrouter-ling/inclusionai/ling-3.0-flash-vl:free      749

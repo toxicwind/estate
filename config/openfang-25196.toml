@@ -30,6 +30,6 @@ embedding_api_key_env = "MISTRAL_API_KEY"
 # Chris supplies a fresh key. Until then the herd-free route serves.
 [default_model]
 provider = "llama-swap"
-model = "nex-agi/nex-n2.5-mini:free"
+model = "openrouter-free/inclusionai/ling-3.0-flash-sante:free"
 api_key_env = ""
 base_url = "http://127.0.0.1:25100/v1"
