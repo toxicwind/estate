@@ -111,12 +111,12 @@ Tools: `join`, `heartbeat`, `post_message`, `read_messages`,
   for topic rooms. History is replayable (`since_seq`).
 - **Legacy:** first boot imports join events from
   `/home/toxic/fleet/agents.jsonl` as `summoner: legacy-import`. The old
-  file-based C2 keeps running untouched; this plane is canonical, not a
+  file-based fleet bus keeps running untouched; this plane is canonical, not a
   patch on it.
 
-## Relationship to fleet-c2
+## Relationship to the file-based fleet bus
 
-`fleet-c2` (file-based doctrine: inbox/send/broadcast/goals/debate/done/verify)
+The file-based fleet bus (doctrine: inbox/send/broadcast/goals/debate/done/verify)
 is the practice; sovereign-chat is the **substrate**. File state remains the
 local fallback when the server is unreachable. `v1/activity` gives the
 first-class awareness snapshot (running activities + per-agent message counts).
