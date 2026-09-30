@@ -1,0 +1,12 @@
+{
+  "agent_id": "tally-sidechat",
+  "blockers": [],
+  "fleet_lock": "tau-routing-benchmark held by tally-sidechat",
+  "heartbeat_ts": "2026-09-22T04:42:02Z",
+  "lane": "tau-routing-benchmark",
+  "status": "running",
+  "task": "Post-restart re-establishment 2026-09-22T04:26:03Z: :25104 router UP (bun pid 2213822, 780 models); sovereign/free route LIVE (probe served by nvidia/nemotron-3-super-120b-a12b via routeFree->freeCandidates->astRace; alias absent from /v1/models listing but functional); TAU omp-model-router core intact (src/routing/compose.ts resolveRouting); bench harness intact (projects/routing/bench: run.ts/prompts.json/score.py/results+bakeoff-20260921-10.json/VERDICT.md); bakeoff verdict stands (Sovereign 4 - TAU 1 - 1 tie, teardown complete). Full suites (coding/reasoning/long-context/cross-chunk/contradiction/provenance) + controlled failures (broken primary/empty-200/429/slow-provider/post-quarantine) queued.",
+  "hunt_8420": "RESOLVED: 8420 (ralph-dashboard uvicorn; old systemd user service now dead+disabled) moved to :25194 under pitchfork daemon sovereign/ralph-dashboard (pid 190481, up since Sep 20 15:55). SSOT config/ports.env RALPH_DASH_PORT=25194. :25194 LISTEN, HTTP 200 on / in ~2ms.",
+  "heartbeat": "2026-09-22T04:52:00Z",
+  "notes": " | 2026-09-22 04:52Z: overnight routing research pass 1 done (5 papers, 3 OSS patterns, proposals A1-A5 filed, not applied); tally-overnight-routing hourly live, wrap-up 06:05 MDT 09-22."
+}

@@ -1,26 +1,26 @@
 {
-  "ts": "2026-09-20T14:58:22.367083+00:00",
+  "ts": "2026-09-24T07:21:03.477040+00:00",
   "overall": "FAIL",
   "checks": [
     {
       "name": "supervisor",
-      "status": "ok",
-      "detail": "active pid=1006 mem=19114795008B"
+      "status": "fail",
+      "detail": "pitchfork.service not active"
     },
     {
       "name": "daemons",
       "status": "fail",
-      "detail": "48/51 running; down: sovereign/beellama-fast sovereign/kimi-auto-shim; supervisor-stale (endpoint live): sovereign/toolcall-llm"
+      "detail": "66/156 running; down: sovereign/browserless sovereign/estate-reconcile-watch sovereign/herd sovereign/kimi-code sovereign/mcp-gateway sovereign/nim-kimi-sidecar sovereign/sovereign-stream-broker sovereign/tau toxic/buildsrv toxic/herd toxic/model-guard toxic/shep toxic/sovereign-router toxic/tau toxic/mesh-hub toxic/coyote toxic/yote toxic/search-api toxic/search-ui toxic/openfang-front toxic/rust-web toxic/hf-downloader toxic/null-g-proxy toxic/byte-vision toxic/hindsight toxic/kimi-code toxic/nginx toxic/qdrant toxic/redis toxic/kafka toxic/dnsmasq toxic/prometheus toxic/grafana toxic/flock toxic/matter-server toxic/openfang toxic/kimi-audit-dash toxic/mcp-gateway toxic/oracle-market toxic/oracle-core toxic/oracle-chat toxic/files toxic/kimi-auto-shim toxic/nim-kimi-sidecar toxic/squawk-relay-sink toxic/squawk-relay-forward toxic/squawk-feed toxic/nats toxic/nats-tail toxic/browserless toxic/gemini-mcp toxic/whatsapp-mcp toxic/squawk-ws toxic/boundless toxic/buildsrv-watchdog toxic/paper-poller toxic/paper-poller-watchdog toxic/squawk-ws-client toxic/refusal-watchdog toxic/sorry-watchdog toxic/sovereign-chat toxic/ml-serve toxic/bench-radar toxic/stash-guard toxic/toolcall-llm toxic/beellama-fast toxic/openfang-health toxic/mesh-landing toxic/bidder-forge toxic/bidder-scout toxic/kimiclaw-a toxic/kimiclaw-b toxic/keypool toxic/node-exporter toxic/sovereign-exporter toxic/awrawr-mcp toxic/ralph-dashboard toxic/codebase-memory toxic/market-watchdog toxic/estate-reconcile-watch toxic/agent-display toxic/agent-viewer toxic/browser-keeper toxic/sovereign-stream-broker sovereign/coyote sovereign/tau-code sovereign/squawk-relay-sink sovereign/squawk-relay-forward sovereign/awrawr-ws-exec sovereign/squawk-ws-client"
     },
     {
       "name": "openfang_kernel",
       "status": "fail",
-      "detail": "openfang status rc=0 after 7ms"
+      "detail": "openfang status rc=0 after 10ms"
     },
     {
       "name": "agents",
       "status": "fail",
-      "detail": "not Running: shingle-pilot (query took 6ms)"
+      "detail": "not Running: coyote shingle-pilot squawk-relay assistant (query took 11ms)"
     },
     {
       "name": "audit_chain",
@@ -29,13 +29,13 @@
     },
     {
       "name": "llama_swap",
-      "status": "ok",
-      "detail": ":25100/v1/models ok in 17ms, 72 models"
+      "status": "fail",
+      "detail": ":25100/v1/models unreachable after 4ms"
     },
     {
       "name": "kimi_auto",
       "status": "warn",
-      "detail": "state age=767s info=[kimi-k2 False -]"
+      "detail": "state age=292814s info=[mistral/ministral-3b-latest True 302]"
     },
     {
       "name": "provider_nvidia",
@@ -80,22 +80,22 @@
     {
       "name": "meshub_ep",
       "status": "ok",
-      "detail": ":25115 tcp open in 3ms"
+      "detail": ":25115 tcp open in 2ms"
     },
     {
       "name": "coyote_ep",
       "status": "warn",
-      "detail": ":25143 code=000000 after 3ms (sovereign/coyote not in live pitchfork set)"
+      "detail": ":25143 code=000000 after 4ms (sovereign/coyote not in live pitchfork set)"
     },
     {
       "name": "memory",
       "status": "ok",
-      "detail": "total=63895MB used=14222MB avail=49673MB"
+      "detail": "total=63893MB used=20682MB avail=43210MB"
     },
     {
       "name": "gpu",
       "status": "ok",
-      "detail": "NVIDIA GeForce RTX 3090  6 %  11290 MiB  24576 MiB"
+      "detail": "NVIDIA GeForce RTX 3090  10 %  10033 MiB  24576 MiB"
     }
   ],
   "papers": [

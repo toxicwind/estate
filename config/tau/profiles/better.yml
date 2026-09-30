@@ -1,0 +1,15 @@
+schema_version: 2
+model: nvidia/nemotron-3.5-lightning-30b-a3b
+smol_model: beellama/exaone-4-0-1-2b-iq4xs
+slow_model: deepseek-ai/deepseek-v4-flash-0731
+plan_model: nvidia/nemotron-3.5-lightning-30b-a3b
+models: ["nvidia/nemotron-3.5-lightning-30b-a3b","deepseek-ai/deepseek-v4-flash-0731","z-ai/glm-5.3-flash","beellama/exaone-4-0-1-2b-iq4xs"]
+provider:
+  herd:
+    base_url: http://127.0.0.1:25100/v1
+    api_key: npk_ea1662622a4d417a14c97722eecc47e9
+    timeout_ms: 15000
+  flock:
+    base_url: http://127.0.0.1:25193/v1
+    api_key: npk_ea1662622a4d417a14c97722eecc47e9
+    timeout_ms: 30000

@@ -1,4 +1,15 @@
 #!/usr/bin/env python3
+try:
+    import sys, os
+    sys.path.insert(0, os.path.expanduser('~/sovereign'))
+    from tools.toon import encode as _toon_encode, MARKER as _TOON_MARKER
+    from tools.rank import rank_tools as _rank_tools
+    from tools.risk import assess as _risk_assess
+    from tools.sig import expand as _sig_expand
+    _TOON_OK = True
+except Exception:
+    _TOON_OK = False
+
 """awrawr-pc MCP exec bridge (tailscale funnel) — hardened.
 
 Security layers (outermost first):
@@ -1252,10 +1263,10 @@ def exa_answer(query: str) -> str:
     return _exa_post('/answer', {'query': query}, timeout=90)
 
 
-"""Mesh (mcpproxy/shep) connector tools — insert into /home/toxic/awrawr_mcp.py
+"""Mesh (mcpproxy/gatehouse) connector tools — insert into /home/toxic/awrawr_mcp.py
 before `async def _serve()`.
 
-Exposes ALL mcpproxy upstream endpoints (33 MCP servers behind the live shep
+Exposes ALL mcpproxy upstream endpoints (33 MCP servers behind the live gatehouse
 daemon at 127.0.0.1:25127) through the awrawr connector. The daemon runs in
 `retrieve_tools` routing mode: a small set of meta-tools fans out to every
 upstream server's tools (namespaced `server:tool`).
@@ -1265,20 +1276,20 @@ per-call process spawn). Each connector call does initialize -> session ->
 tools/call over localhost.
 """
 
-# --- mesh (mcpproxy/shep) proxy -------------------------------------------
+# --- mesh (mcpproxy/gatehouse) proxy -------------------------------------------
 MESH_MCP_URL = os.environ.get("MESH_MCP_URL", "http://127.0.0.1:25127/mcp")
 MESH_SHEP_BIN = os.environ.get(
-    "MESH_SHEP_BIN", "/home/toxic/sovereign/projects/mesh/bin/shep")
+    "MESH_SHEP_BIN", "/home/toxic/sovereign/projects/range/bin/gatehouse")
 MESH_SHEP_CONFIG = os.environ.get(
     "MESH_SHEP_CONFIG",
-    "/home/toxic/sovereign/projects/mesh/gateway/mcp_config.json")
+    "/home/toxic/sovereign/projects/range/ranch/barn/gatehouse/mcp_config.json")
 MESH_OUT_CAP = 20000
 _MESH_INTENTS = {"read": "call_tool_read", "write": "call_tool_write",
                  "destructive": "call_tool_destructive"}
 
 
 def _mesh_session(timeout: int = 15) -> str | None:
-    """Open an MCP session against the live shep daemon. Returns session id."""
+    """Open an MCP session against the live gatehouse daemon. Returns session id."""
     body = json.dumps({
         "jsonrpc": "2.0", "id": 1, "method": "initialize",
         "params": {"protocolVersion": "2025-06-18", "capabilities": {},
@@ -1329,7 +1340,7 @@ def _mesh_call(tool_name: str, arguments: dict, timeout: int = 90) -> str:
         if not sid:
             _audit(**base, status="error", reason="no mcp session",
                    elapsed_ms=int((time.monotonic() - t0) * 1000))
-            return "error: mcpproxy daemon did not issue a session (is shep serve running on 25127?)"
+            return "error: mcpproxy daemon did not issue a session (is gatehouse serve running on 25127?)"
         body = json.dumps({
             "jsonrpc": "2.0", "id": 3, "method": "tools/call",
             "params": {"name": tool_name, "arguments": arguments or {}}},
@@ -1361,7 +1372,7 @@ def _mesh_call(tool_name: str, arguments: dict, timeout: int = 90) -> str:
 
 @mcp.tool()
 def mesh_upstream_servers() -> str:
-    """List all MCP servers proxied by the mesh gateway (shep/mcpproxy):
+    """List all MCP servers proxied by the mesh gateway (gatehouse/mcpproxy):
     name, connection status, health for each of the ~33 upstreams."""
     t0 = time.monotonic()
     base = {"tool": "mesh_upstream_servers"}

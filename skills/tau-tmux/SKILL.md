@@ -1,6 +1,7 @@
 ---
 name: tau-tmux
-description: Run parallel tau experiments in tmux and audit the live tau install — launcher chain, dist binary version, PI_CONFIG_DIR, skills discovery, and router reachability. Real checks, real exit codes.
+description: >
+  Run parallel tau experiments in tmux and audit the live tau install. Triggers on: "tau tmux", "parallel experiments", "tmux lab", "live tau audit".
 ---
 
 # tau-tmux — tmux lab + live tau audit
@@ -51,7 +52,7 @@ bun run /home/toxic/sovereign/skills/tau-tmux/helper/audit.ts [--verbose]
 Checks (each prints PASS/FAIL; exit 0 = all pass, 1 = any fail):
 
 1. `tau` on PATH is the launcher script and its collapse chain resolves
-   (TAU_BIN → PATH → ./tau → dist/omp → bun src).
+   (TAU_BIN → PATH → ./tau → tau → bun src).
 2. `tau --version` reports the expected engine (18.2.6+).
 3. `PI_CONFIG_DIR=.tau` is honored: `$HOME/.tau/agent/config.yml` exists.
 4. Skills: `~/.tau/agent/skills` symlink exists, target is a directory, and

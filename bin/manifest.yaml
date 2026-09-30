@@ -10,7 +10,7 @@
 #   projects/tau/launcher/bin/  tau launcher scripts (the tau collapse chain).
 #   /home/toxic/.local/bin/tau  installed tau — collapse level 2, md5-pinned
 #                               to the repo copy (verifier fails on drift).
-#   .../engine/packages/coding-agent/dist/omp
+#   .../engine/packages/coding-agent/tau
 #                               built engine CLI — collapse level 5.
 # NOTE: /home/toxic/sovereign/tau/bin does NOT exist; `tau` is a symlink
 #       -> projects/tau. There is no [[bin]] in tau's Cargo.toml files —
@@ -144,7 +144,7 @@ bins:
     run: [--help]
     expect: "tau v"
     timeout: 20
-    notes: "tau launcher. Collapse chain: 1 TAU_BIN, 2 PATH tau (~/.local/bin/tau), 3 ./tau, 4 bun engine src, 5 dist/omp"
+    notes: "tau launcher. Collapse chain: 1 TAU_BIN, 2 PATH tau (~/.local/bin/tau), 3 ./tau, 4 bun engine src, 5 tau"
 
   - name: test-collapse.sh
     dir: projects/tau/launcher/bin

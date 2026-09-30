@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # mise run mesh-config — manage mesh (MCP gateway) server config
-# Uses config at /home/toxic/projects/sovereign-projects/mesh/gateway/config/mesh_config.json
+# Uses config at /home/toxic/sovereign/projects/range/ranch/barn/shep/mcp_config.json
 set -euo pipefail
 
-MESH_CONFIG="${MESH_CONFIG:-/home/toxic/projects/sovereign-projects/mesh/gateway/config/mesh_config.json}"
+MESH_CONFIG="${MESH_CONFIG:-/home/toxic/sovereign/projects/range/ranch/barn/shep/mcp_config.json}"
 
 usage() {
   cat <<EOF

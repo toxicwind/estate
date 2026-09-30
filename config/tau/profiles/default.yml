@@ -1,0 +1,15 @@
+schema_version: 2
+# Tau profile: default
+# Rewritten 2026-09-20 by tau-config (ember).
+# NOTE: the coding-agent engine does not read TAU_LLM_BACKEND/TAU_LLM_MODEL;
+# real routing lives in ~/.tau/agent/models.yml (providers: herd, sovereign),
+# ~/.tau/agent/config.yml (modelRoles), and ~/.tau/model-router.json
+# (profiles). This file keeps the launcher profile contract valid and states
+# intent: default quality route is sovereign/free per bench/rankers/robust.py
+# (ranker-audit 2026-09-20: nim 0.8087 > pollinations 0.7535 > herd-local
+# 0.5791 > kimi DEAD standby).
+llm:
+  backend: auto
+  model: sovereign/free
+engine:
+  args: []
