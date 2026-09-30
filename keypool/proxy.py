@@ -19,6 +19,33 @@ def _emit(ev, **detail):
     if ALERTS is not None:
         ALERTS.emit({"ts": clock.wall(), "event": ev, "detail": detail})
 
+LEDGER_PATH = "/home/toxic/.cache/keypool-usage/usage.jsonl"
+
+def _ledger_record(pool_name, key_name, model, ms, out_doc):
+    """Append one JSONL usage record. key_name only, never the key value."""
+    try:
+        import os, uuid
+        usage = None
+        req_id = None
+        if isinstance(out_doc, dict):
+            u = out_doc.get("usage")
+            if isinstance(u, dict):
+                usage = {k: u.get(k) for k in (
+                    "total_tokens", "total_input_tokens", "total_output_tokens",
+                    "total_cached_tokens", "total_thought_tokens",
+                    "prompt_tokens", "completion_tokens") if u.get(k) is not None}
+            req_id = out_doc.get("id") or str(uuid.uuid4())
+        else:
+            req_id = str(uuid.uuid4())
+        os.makedirs(os.path.dirname(LEDGER_PATH), exist_ok=True)
+        rec = {"ts": clock.wall(), "event": "request_complete",
+               "pool": pool_name, "key": key_name, "model": model,
+               "ms": round(ms, 1), "usage": usage, "request_id": req_id}
+        with open(LEDGER_PATH, "a") as f:
+            f.write(json.dumps(rec) + "\n")
+    except Exception:
+        pass
+
 
 def _read_body(h):
     if "chunked" in h.headers.get("Transfer-Encoding", "").lower():
@@ -135,10 +162,12 @@ class Handler(BaseHTTPRequestHandler):
             body = resp.read()
             try:
                 doc = json.loads(body.decode("utf-8", "replace"))
-                self._json(resp.status, transform(doc, model or "eap"))
+                out = transform(doc, model or "eap")
+                self._json(resp.status, out)
+                return out
             except Exception:
                 self._json(resp.status, {"error": "bad upstream body"})
-            return
+            return None
         no_len = resp.headers.get("Content-Length") is None
         rctype = resp.headers.get("Content-Type", "")
         self.send_response(resp.status)
@@ -223,9 +252,11 @@ class Handler(BaseHTTPRequestHandler):
             ms = (clock.mono() - t0) * 1000
             pool.on_success(ks, resp.headers, ms)
             if want_translate:
-                self._serve(resp, transform=translate.interactions_to_openai, model=model)
+                out = self._serve(resp, transform=translate.interactions_to_openai, model=model)
+                _ledger_record(pool.name, ks.name, model, ms, out)
             else:
                 self._serve(resp)
+                _ledger_record(pool.name, ks.name, model, ms, None)
             return
 
     do_POST = do_PUT = do_PATCH = do_DELETE = _proxy
