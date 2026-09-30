@@ -29,7 +29,7 @@ from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-DEFAULT_PATH = "/home/toxic/sovereign/agents/oracle-market/work/judge-failure-evidence.jsonl"
+DEFAULT_PATH = "/home/toxic/sovereign/projects/range/ranch/oracle/work/judge-failure-evidence.jsonl"
 
 # Mirror of the P1 breaker thresholds in oracle_ask.py (kept in sync by hand;
 # the script reads them from env so a report can test hypothetical tuning).
