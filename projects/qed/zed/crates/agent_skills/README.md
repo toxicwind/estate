@@ -1,6 +1,43 @@
-# agent_skills
+<div align="right">
 
-Loading and parsing of [Agent Skills](https://agentskills.io/specification) — `SKILL.md` files that extend the agent with task-specific instructions, references, and bundled scripts. The agent surfaces them to the model through a `skill` tool and to the user through slash commands.
+[![license](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-part%20of-blueviolet?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+# agent_skills — Agent Skills for Zed
+
+**Extend the agent with `SKILL.md` files.** Loading and parsing of [Agent Skills](https://agentskills.io/specification) — task-specific instructions, references, and bundled scripts that the agent surfaces to the model through a `skill` tool and to the user through slash commands.
+
+## Why should I care?
+
+- **Progressive disclosure** — the model sees a tiny catalog (name + description + path); bodies load on demand, so context stays cheap
+- **Security is the design, not a feature** — XML-escaped catalog/envelopes, strict frontmatter validation, skill edits gated as sensitive paths, project skills require worktree trust
+- **Prompt-cache friendly** — body edits never invalidate the system-prompt cache; only catalog metadata changes do
+
+```mermaid
+flowchart TD
+    G["~/.agents/skills/ (global)"] --> D[flat discovery]
+    P["<worktree>/.agents/skills/ (project)"] --> D
+    D --> V["strict frontmatter validation<br/>name [a-z0-9-]{1,64} · desc 1–1024"]
+    V --> C["catalog ≤ 50KB<br/><available_skills> XML, escaped"]
+    C --> SP[system prompt]
+    C --> SC[/slash commands]
+    SP --> T[skill tool → <skill_content> envelope]
+```
+
+## Quick start
+
+```bash
+mkdir -p ~/.agents/skills/my-skill
+# write my-skill/SKILL.md with name + description frontmatter, then reload —
+# discovery is live, no restart needed
+```
+
+## License & security
+
+- Zed upstream code is **GPL-3.0-or-later**; this fork ships inside the sovereign-projects monorepo ([MIT](https://github.com/toxicwind/sovereign-projects#license) for sovereign-authored files).
+- **Threat model is prompt injection:** catalog values are XML-escaped (a hostile description can't break out of the envelope); `SKILL.md` edits require explicit user authorization even in trusted projects (closes the skill self-modification loop); project-local skills load only from trusted worktrees; the model's `skill` tool call goes through the standard tool-permission flow (Allow Once / Always Allow / Reject), while user-typed `/slash` commands don't re-prompt.
 
 This document explains the design decisions that aren't obvious from reading the code. The mechanics live in `skill.rs`, in `crates/agent/src/tools/skill_tool.rs`, and in `crates/agent/src/agent.rs`. This is the rationale for why those pieces look the way they do.
 
@@ -274,3 +311,7 @@ A few things that are common in other tools, that we deliberately deferred:
 - `crates/prompt_store/src/prompts.rs` — `ProjectContext` (the type the system prompt is rendered against; receives the catalog from `select_catalog_skills`).
 - `crates/agent/src/templates/system_prompt.hbs` — catalog rendering in the system prompt.
 - `crates/agent/src/tools/tool_permissions.rs` — sensitive-path classification for skill files (`SensitiveSettingsKind::AgentSkills`) and the global-skills fast path used by `read_file` and `list_directory`.
+
+## Contribute
+
+Design decisions here are permanent postures, not tentative starting points — challenge them with evidence, not preference. New security gates must compose with the existing ones (edit gating, trust gating, authorization gating) rather than duplicating them. Upstream-bound work belongs to [zed-industries/zed](https://github.com/zed-industries/zed).

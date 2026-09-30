@@ -1,53 +1,67 @@
+<div align="right">
+
+[![license](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-part_of_the_estate-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+![measured](https://img.shields.io/badge/healthy_=_observed_completion-green?style=for-the-badge)
+
+</div>
+
 # MODEL-MAX — herd model measurement
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge) ![python](https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 
-Sweep harness that measures **every model exposed by the herd gateway**
-(llama-swap on yote `127.0.0.1:25100`) with real completions. No advertised
-catalog entries, no guessed RPM — every `healthy=true` is an **observed**
-completion. Guilty until proven innocent.
+**Sweep harness that measures every model exposed by the herd gateway (llama-swap on yote `127.0.0.1:25100`) with real completions.** No advertised catalog entries, no guessed RPM — every `healthy=true` is an *observed* completion, including semantic failure detection (HTTP 200s carrying error text count as failures).
 
-## Why this exists
+- **Liveness sweep** — one real `/v1/chat/completions` call per model, fail-fast, checkpointed
+- **Deep probes** — streaming TTFT/TPS plus *observed* valid-RPM on healthy models only
+- **Semantic triage** — "not enough credits" notices, empty completions, and error-text-in-200 are failures, not health; reasoning models re-probed with larger budgets; 429s re-probed serially to separate rate-limit from death
+- **Resumable** — checkpoints after every model; kill and re-run resumes
 
-Provider dashboards lie: HTTP 200s carrying "not enough credits", catalog
-entries that 404, tokenizers that don't exist. MODEL-MAX replaces the brochure
-with measurement — one real completion per model, then deep streaming probes
-on the survivors, then a report the routers actually consume.
-
-## Features
-
-- **Liveness** — one real `/v1/chat/completions` call per model. Records HTTP
-  status, wall latency, and — critically — *semantic* failures: HTTP 200 bodies
-  carrying error text, canned "not enough credits" notices, and empty completions
-  are **failures**, not health
-- **Reasoning-model aware** — models that return empty with `finish=length` are
-  re-probed with a larger token budget (they're usually reasoning models, not
-  dead routes); 429s are re-probed serially to distinguish rate-limit from death
-- **Deep (healthy only)** — 6 sequential streaming samples + one 3-way burst:
-  TTFT, total latency, tokens/sec, and an *observed* valid-RPM (successful
-  completions per minute during the probe window)
-- **Report** — writes the estate's `data/model-health.json` (`_schema` key
-  documents the schema): the artifact consumed by herd racing, `robust.py`, and Tau
-- **Resumable** — both phases checkpoint after every model; kill and re-run to
-  resume exactly where you left off
+## How a sweep flows
 
 ```mermaid
-flowchart TD
-    HERD["herd :25100<br/>/v1/models (fluid set)"] --> L["LIVENESS<br/>1 completion/model<br/>fail-fast"]
-    L -->|healthy| D["DEEP<br/>6 streaming samples<br/>+ 1 3-way burst<br/>TTFT · TPS · observed RPM"]
-    L -->|dead| X["guilty-until-<br/>proven-innocent"]
-    D --> R["REPORT<br/>data/model-health.json<br/>_schema documented"]
-    R --> C["consumers:<br/>herd racing · robust.py · Tau"]
-    L --> CK["phase1.json<br/>checkpoint"]
-    D --> CK2["phase2.json<br/>checkpoint"]
+flowchart LR
+    A["sweep.py --phase=all"] --> B["liveness\n1 completion/model\nfail-fast"]
+    B --> C{semantic check}
+    C -->|"200 with error text\ncredits notice, empty"| D[failure]
+    C -->|real completion| E["deep\n6 streaming samples + 3-way burst\nTTFT / TPS / observed RPM"]
+    E --> F["model-health.json\nconsumed by herd racing,\nrobust.py, Tau"]
+    B --> G["checkpoint per model\nkill-safe resume"]
 ```
 
 ## Quick start
 
 ```bash
-cd projects/model-max && python3 sweep.py --phase=all        # liveness + deep + report
-python3 sweep.py --phase=liveness --models=a,b              # subset
-python3 sweep.py --phase=liveness --fresh                   # ignore checkpoints
+cd /home/toxic/sovereign/projects/model-max
+python3 sweep.py --phase=all        # liveness + deep + report
 ```
+
+Phases can run separately; both checkpoint after every model, so killing and re-running resumes where it left off:
+
+```bash
+python3 sweep.py --phase=liveness   # 1 completion/model, fail-fast
+python3 sweep.py --phase=deep       # streaming TTFT/TPS/RPM on healthy only
+python3 sweep.py --phase=report     # writes model-health.json
+python3 sweep.py --phase=liveness --fresh          # ignore checkpoints
+python3 sweep.py --phase=liveness --models=a,b     # subset
+python3 sweep.py --phase=liveness --max-tokens=256 --workers-cloud=1
+```
+
+## What it measures
+
+**Liveness (all models):** one real `/v1/chat/completions` call per model.
+Records HTTP status, wall latency, and — critically — *semantic* failures:
+HTTP 200 bodies carrying error text, canned "not enough credits" notices,
+and empty completions are failures, not health. Models that return empty
+with `finish=length` are re-probed with a larger token budget (they're
+usually reasoning models, not dead routes); 429s are re-probed serially to
+distinguish rate-limit from death.
+
+**Deep (healthy only):** 6 sequential streaming samples + one 3-way burst.
+Measures TTFT, total latency, tokens/sec, and an *observed* valid-RPM
+(successful completions per minute during the probe window).
+
+**Report:** writes `/home/toxic/sovereign/data/model-health.json` — the
+artifact consumed by herd racing, `robust.py`, and Tau. Schema is documented
+at the top of that file (`_schema` key).
 
 ## Layout
 
@@ -60,20 +74,15 @@ python3 sweep.py --phase=liveness --fresh                   # ignore checkpoints
 ## Lessons baked in
 
 - The herd's `/v1/models` set is **fluid** (peers come and go); the sweep
-  records what was exposed at sweep time. Counts have varied 99–102
-- `--watch-config` + a bad `${env.VAR}` **kills the herd** (llama-swap exits on
-  failed reload instead of keeping the old config). Never edit `herd.yaml` to
-  reference an env var the pitchfork daemon doesn't have
-- GuideLLM lives here for proper load benchmarks of the top candidates; the
-  custom prober handles liveness/semantic triage where GuideLLM doesn't fit
+  records what was exposed at sweep time. Counts have varied 99–102.
+- `--watch-config` + a bad `${env.VAR}` **kills the herd** (llama-swap exits
+  on failed reload instead of keeping the old config). Never edit herd.yaml
+  to reference an env var the pitchfork daemon doesn't have.
+- GuideLLM lives here for proper load benchmarks of the top candidates;
+  the custom prober handles liveness/semantic triage where GuideLLM doesn't fit.
 
-## License & security
+## License + security
 
-Unlicensed — internal estate tooling in the private
-[toxicwind/sovereign-projects](https://github.com/toxicwind/sovereign-projects) repo.
-Security: the harness only talks to the yote-local herd gateway; no provider
-keys are committed or logged — probing "not enough credits" bodies is reading
-error text, not touching billing.
+MIT — [sovereign-projects](https://github.com/toxicwind/sovereign-projects) ([license](https://github.com/toxicwind/sovereign-projects#license)).
 
----
-*Up: [projects/](../README.md) · [fleet knowledgebase](../../docs/fleet-knowledgebase.md)*
+**Security note:** the harness talks to the herd gateway on localhost — it never touches provider keys directly (that's the herd's job). Sweep logs record model outputs; treat them as untrusted text. The hard lesson is in the layout section: never hand herd.yaml an env var the pitchfork daemon doesn't have, or llama-swap exits on reload.

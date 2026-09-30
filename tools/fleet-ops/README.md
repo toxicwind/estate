@@ -1,67 +1,77 @@
-# fleet-ops
+# fleet-ops — hatch cell saturation patches
 
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
-![bash](https://img.shields.io/badge/bash-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white)
-![python](https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+<div align="right">
 
-**Hatch-cell saturation patches.** The tooling that keeps a 2-core agent cell alive: unscoped recursive greps are refused, orphaned search processes get reaped, and heavy jobs defer when iowait climbs — built after the iowait-freeze incident (2026-09-19: 50–80% iowait, load 10–13 on 2 cores, caused by orphaned recursive greps over `~/workspace`).
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-## Why
+</div>
 
-One agent's `rg ~` can starve thirty others. The cell has 2 vCPUs of tool-path policy and zero tolerance for runaway I/O — so the estate's IO defenses live here as executable policy: guardrails on search, reapers for orphans, a saturation gate, and IO leases so forensics work can declare itself exempt. Also mirrored to `/home/toxic/.local/bin/` (on PATH) so every agent gets them by default.
-
-## Features
-
-- **safe-rg** — refuses unscoped `rg` over `~/workspace` (exit 2); scoped searches get timeout + idle ionice; `--yolo` override stays capped
-- **orphan-reaper** — dry-run by default; `--kill` reaps PPID-1 `rg`/`grep`/`find` older than 300s touching `~/workspace`
-- **io-rate-reaper** — kills by measured `/proc/PID/io` read rate (>100MB/s sustained), not just orphan status; honors `io-lease`
-- **iowait-gate** — exit 0 when iowait < 40%, exit 1 when saturated; heavy jobs defer on 1
-- **io-lease** — `io-lease --ttl 600 --reason TEXT` declares forensics work so reapers skip it
-- **oracle-judge** — debate-oracle scaffolding: renders judge-brief, checks pro+con+synthesis readiness, prints the judging rubric + resolve invocation
-
-## How it works
+Built 2026-09-19 after the iowait-freeze incident (50–80% iowait, load
+10–13 on 2 cores — caused by orphaned recursive greps over `~/workspace`).
+A bundle of small, sharp scripts that keep the hatch cell from wedging
+itself again.
 
 ```mermaid
-flowchart TB
-    A[agent runs rg] --> B{safe-rg}
-    B -->|unscoped over ~/workspace| X[refused: exit 2]
-    B -->|scoped| C[timeout + idle ionice]
-    C --> D{io-rate-reaper}
-    D -->|">100MB/s sustained"| K[kill — unless io-lease]
-    E[orphan-reaper] -->|PPID-1 rg/grep/find >300s| K
-    F[iowait-gate] -->|exit 1| G[heavy jobs defer]
-    F -->|exit 0| H[jobs run]
+flowchart LR
+    rg[runaway rg/grep] --> gate[iowait-gate]
+    gate -->|wa% ≥ 40%| defer[heavy job defers]
+    rg --> reaper[orphan-reaper / io-rate-reaper]
+    reaper -->|kill| dead[dead]
+    lease[io-lease] -.->|declared forensics| reaper
+    reaper -.->|skip leased| safe[kept alive]
 ```
 
-## Quick Start
+## Scripts
+
+| script | purpose |
+| --- | --- |
+| `safe-rg` | wrapper: refuses unscoped `rg` over `~/workspace` (exit 2); scoped searches get timeout + idle ionice; `--yolo` override stays capped |
+| `orphan-reaper` | dry-run by default; `--kill` reaps PPID-1 `rg`/`grep`/`find` older than 300s touching `~/workspace` |
+| `io-rate-reaper` | kills by measured `/proc/PID/io` read rate (>100MB/s sustained), not just orphan status; honors `io-lease` |
+| `iowait-gate` | exit 0 when iowait < 40%, exit 1 when saturated — heavy jobs defer on 1 |
+| `io-lease` | `io-lease --ttl 600 --reason TEXT` — declares forensics work so reapers skip it (answers lane-4's con seq 6 point 2) |
+| `oracle-judge` | debate-oracle scaffolding: renders judge-brief, checks pro+con+synthesis readiness, prints the judging rubric + resolve invocation |
+
+Also in this directory: `bridge-watchdog`, `cron-honest-status`,
+`cron-receipt`, `cron-trust-monitor`, `depend-refire.py`,
+`saturation-watchdog`, `sidechat-watch.py`, `zombie-reaper`,
+`cron-mirror/` (durable mirrors of live cell cron bodies), and
+`fleet-watchdog/` (lane-7 fleet presence + rollover watchdog).
+
+## Quick start
 
 ```bash
-safe-rg "pattern" --root ~/workspace/projects   # guarded search
-iowait-gate && run-heavy-job.sh                  # defer when saturated
-io-lease --ttl 600 --reason "forensics on X"     # exempt your work
+safe-rg "pattern" ~/workspace/somedir     # the safe way to grep the cell
+io-lease --ttl 600 --reason "ledger forensics"   # declare long I/O work
 ```
 
-## Layout
-
-The directory also holds the operational sub-suites, each with its own README:
-
-- [`cron-mirror/`](cron-mirror/README.md) — durable mirrors of the live cell cron bodies
-- [`fleet-watchdog/`](fleet-watchdog/README.md) — lane-7 fleet presence + rollover watchdog
-
-Runtime state (`safe-rg.log`, `.io-leases/`) is NOT committed.
+Also mirrored to `/home/toxic/.local/bin/` (on PATH). Runtime state
+(`safe-rg.log`, `.io-leases/`) is NOT committed.
 
 ## Architecture
 
-Standalone scripts + the two sub-suites. Nothing here is a daemon: these are guardrails and reapers invoked by agents, crons, and watchdogs. The durable copies live in this repo (awrawr-pc is the persistent store); live copies also sit in `/home/toxic/.local/bin/` on PATH.
+Each script is standalone and dependency-light. The design contract (debate
+2c7ca733 verdict): **measure first, kill only measured I/O abuse, never
+kill declared forensics work.** `saturation-guard` (the resident daemon
+version of this idea) lives at [`tools/saturation-guard`](../saturation-guard).
 
-## Configuration
+## Config
 
-No config file. `io-lease` TTLs and reaper thresholds are CLI flags. Runtime state lives outside the repo.
+No config files — flags and env only. `io-lease` writes to
+`~/workspace/bin/.io-leases/` (shared registry honored by the reapers).
 
-## Dev
+## Dev / contributing
 
-Contributions: every new reaper must be dry-run by default with an explicit `--kill` to arm it, and must honor `io-lease`. Guardrails refuse loudly (distinct exit codes) rather than silently rate-limiting.
+Scripts are executables in this dir, mirrored to `/home/toxic/.local/bin`.
+Keep the dry-run-by-default discipline for anything destructive.
 
-## License & Security
+## License & security
 
-Part of the [sovereign monorepo](../../README.md#license) — stack glue is MIT where marked. Safety design: reapers are dry-run by default, `safe-rg` refuses rather than rewrites, and `io-lease` gives humans/forensics an explicit exemption path. No network surface, no credentials — these tools act on local process state only.
+MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+
+- Reapers kill real processes — `--kill` is explicit, dry-run is default.
+- Declared forensics leases are honored; undeclared scans are not protected.
+
+---
+*Up: [master README](../../README.md) · [fleet knowledgebase](../../docs/fleet-knowledgebase.md)*

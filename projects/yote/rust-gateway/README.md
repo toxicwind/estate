@@ -1,62 +1,83 @@
-# Yote — Unified Messaging Gateway
-
 <div align="right">
 
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
-![rust](https://img.shields.io/badge/rust-B7410E?style=for-the-badge)
-![telegram](https://img.shields.io/badge/telegram-229ED9?style=for-the-badge)
-![discord](https://img.shields.io/badge/discord-5865F2?style=for-the-badge)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
 </div>
 
-> Extracted from [OpenFang](https://github.com/toxicwind/openfang) `crates/openfang-channels` — the Telegram and Discord channel code, unified into a single service.
+# Yote — Unified Messaging Gateway
 
-**One gateway, both chat networks, your own models behind them.** Instead of running a Telegram bot and a Discord bot as two services with two configs, yote merges them: one binary, one port, one LLM endpoint. Messages come in from either network, get answered by the sovereign inference fabric, and go back out where they came from.
+> Telegram + Discord gateway in Rust, extracted from OpenFang.
 
-## Architecture
+> **Why care? One service, both chat networks: the gateway unifies Telegram Bot API and Discord into a single LLM-backed service, extracted from `openfang-channels` so it can evolve independently.**
+
+- **Telegram + Discord in one binary — unified message ingress**
+- **LLM-backed — routes through llama-swap (`:25100`)**
+- **Sovereign port discipline — `:25102` via `YOTE_PORT`, per the ports SSOT**
+- **Extracted from OpenFang — `crates/openfang-channels` lineage, standalone future**
 
 ```mermaid
 flowchart LR
-    TG["Telegram\nBot API"] --> YOTE["Yote Gateway\n:25102"]
-    DC["Discord\nGateway"] --> YOTE
-    YOTE --> LLM["LLM\nllama-swap :25100"]
+    TG[Telegram Bot API] --> GW[yote gateway]
+    DC[Discord gateway] --> GW
+    GW --> LLM[llama-swap :25100]
+    LLM --> R[responses]
+    R --> GW --> TG & DC
 ```
 
-| Module | Source |
-|---|---|
-| `src/main.rs` | Gateway core + HTTP API |
-| `src/telegram.rs` | Telegram Bot API channel |
-| `src/discord.rs` | Discord gateway channel |
+## Quick start
+
+```bash
+git clone https://github.com/toxicwind/yote.git && cd yote
+cargo build --release
+TELEGRAM_BOT_TOKEN=... DISCORD_BOT_TOKEN=... LLM_ENDPOINT=http://127.0.0.1:25100/v1 ./target/release/yote
+```
+
+## License & security
+
+- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **Security:** Bot tokens via environment variables — never in the repo. Binds per the sovereign ports SSOT (`YOTE_PORT`).
+
+---
+
+> Extracted from [OpenFang](https://github.com/toxicwind/openfang) `crates/openfang-channels`.  
+> Telegram + Discord gateway unified into a single service.
+
+## Architecture
+
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────────┐
+│  Telegram   │────→│             │     │                 │
+│   Bot API   │     │   Yote      │────→│  LLM (llama-    │
+└─────────────┘     │  Gateway    │     │   swap :25100)  │
+┌─────────────┐     │             │     │                 │
+│   Discord   │────→│             │     │                 │
+│  Gateway    │     │             │     │                 │
+└─────────────┘     └─────────────┘     └─────────────────┘
+```
 
 ## Quick Start
 
 ```bash
+git clone https://github.com/toxicwind/yote.git
+cd yote
 cargo build --release
-export TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN}" DISCORD_BOT_TOKEN="${DISCORD_BOT_TOKEN}" LLM_ENDPOINT=http://127.0.0.1:25100/v1
+
+# Configure
+export TELEGRAM_BOT_TOKEN=your_token
+export DISCORD_BOT_TOKEN=your_token
+export LLM_ENDPOINT=http://127.0.0.1:25100/v1
+
+# Run
 ./target/release/yote
 ```
 
-## Config
+## Ports (Sovereign SSOT)
 
 | Service | Port | Env Var |
-|---|---|---|
+|---------|------|---------|
 | Yote HTTP API | 25102 | `YOTE_PORT` |
 
-| Env var | Purpose |
-|---|---|
-| `TELEGRAM_BOT_TOKEN` | Telegram bot token |
-| `DISCORD_BOT_TOKEN` | Discord bot token |
-| `LLM_ENDPOINT` | OpenAI-compatible chat endpoint (default: `http://127.0.0.1:25100/v1`, the herd router) |
-| `YOTE_PORT` | HTTP API port (default: `25102`, the sovereign SSOT port for yote) |
+## License
 
-## Dev / Contributing
-
-- Standard Cargo project — `cargo build --release` produces `target/release/yote`.
-- Channel code lives in `src/telegram.rs` / `src/discord.rs`; keep channels thin and push shared logic into `src/main.rs`.
-- Note the **gateway duality** (see `projects/yote/README.md`): this Rust gateway and the TypeScript gateway in `projects/yote/src/` share the name and port — unification is Chris's call, so don't "fix" the overlap unilaterally.
-
-## License + Security
-
-Apache-2.0 OR MIT (same as OpenFang — see `Cargo.toml`).
-
-**Security posture:** bot tokens arrive via environment variables only — never commit them, never bake them into the binary. The LLM endpoint defaults to the box-local herd router; point it at anything external only over TLS.
+Apache-2.0 OR MIT (same as OpenFang)

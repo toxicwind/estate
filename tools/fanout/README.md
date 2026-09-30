@@ -1,42 +1,33 @@
-# fanout
+# fanout — parallel command fan-out
 
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
-![c](https://img.shields.io/badge/C-compiled_binary-A8B9CC?style=for-the-badge)
-![speed](https://img.shields.io/badge/parallel-xargs--style-orange?style=for-the-badge)
+<div align="right">
 
-> Parallel command fan-out: race independent probes from a single turn instead of running them serially. One receipt line per leg — leg, exit code, wall time, command.
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-## Hero
+</div>
 
-`fanout` runs shell commands concurrently and prints a per-leg receipt. It exists for one reason: **racing independent probes/checks from a single turn instead of running them serially.** Measured 2026-09-19: 4× `sleep 1` finished in 1042ms parallel vs 4159ms serial (~4.0x speedup).
+Runs shell commands **concurrently** and prints a per-leg receipt. Built for
+racing independent probes/checks from a single turn instead of running them
+serially — measured ~4x speedup on 4 parallel legs.
 
 ```mermaid
 flowchart LR
-    YOU["fanout 30 cmd1 cmd2 cmd3 cmd4"] --> F["fanout (C binary)"]
-    F --> L1["leg 0: sh -c cmd1"]
-    F --> L2["leg 1: sh -c cmd2"]
-    F --> L3["leg 2: sh -c cmd3"]
-    F --> L4["leg 3: sh -c cmd4"]
-    L1 --> OUT["stdout streams\nas each leg finishes"]
-    L2 --> OUT
-    L3 --> OUT
-    L4 --> OUT
-    OUT --> RCPT["one receipt per leg:\nleg=N rc=<exit> ms=<wall_ms> cmd=<command>"]
+    f[fanout 5 cmd1 cmd2 cmd3] --> l1[leg 1 · sh -c]
+    f --> l2[leg 2 · sh -c]
+    f --> l3[leg 3 · sh -c]
+    l1 & l2 & l3 --> r[receipt per leg]
+    r --> exit[exit ≠ 0 if any leg failed]
 ```
 
-## Quick Start
+## Quick start
 
 ```bash
-fanout 30 "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:25100/health" "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:25148/health"
-```
-
-## Usage
-
-```
 fanout <timeout_s> <cmd1> [cmd2 ...]
 ```
 
-Each command runs via `sh -c`. Stdout streams as each leg finishes, then one receipt line per leg:
+Each command runs via `sh -c`. Stdout streams as each leg finishes, then one
+receipt line per leg:
 
 ```
 leg=N rc=<exit> ms=<wall_ms> cmd=<command>
@@ -47,25 +38,47 @@ leg=N rc=<exit> ms=<wall_ms> cmd=<command>
 
 ## Measured
 
-2026-09-19 (cell): 4× `sleep 1` → 1042ms parallel vs 4159ms serial (~4.0x). Earlier run: 1.02s vs 3.50s (~3.4x).
+- 2026-09-19 (cell): 4x `sleep 1` → 1042ms parallel vs 4159ms serial (~4.0x).
+- Earlier run: 1.02s vs 3.50s (~3.4x).
 
-## Stagger discipline (2026-09-19, from live fleet incidents)
+## Architecture
 
-This tool parallelizes *your shell commands*. **Subagent spawns** are a different surface: the runtime runs agents concurrently, but the spawn path contends under bulk dispatch. Rules, learned live:
+Single script (`fanout`), no dependencies: fork legs with `sh -c`, enforce
+per-leg timeout, stream stdout as legs complete, print the receipt table,
+exit nonzero on any failure.
 
-- Stagger bulk spawns ~2s apart. Never fire a large identical bulk spawn twice — simultaneous spawns hit DB lock timeouts.
-- On a DB lock timeout: retry in **smaller batches**, never the identical bulk call.
-- A spawn error with an infra signature (compaction-model resolution timeout before inference, DB lock timeout, daemon-restart handle loss) means the work **never ran** — re-dispatch reactively on a fresh agent. Never mark the work failed.
-- `completed` + canned `final_response` = refused. Check the digest on every spawn, not the status badge.
+### Stagger discipline (2026-09-19, from live fleet incidents)
 
-## Config / placement
+This tool parallelizes **your shell commands**. **Subagent spawns** are a
+different surface — the runtime runs agents concurrently, but the spawn path
+contends under bulk dispatch:
 
-No config — it's a single compiled C binary. Durable home: `sovereign/tools/fanout/` in `toxicwind/sovereign-projects`. Working copies: `/home/toxic/bin/fanout` (awrawr-pc), `~/workspace/bin/fanout` (cell — disposable; the repo is the source of truth).
+- Stagger bulk spawns ~2s apart. Never fire a large identical bulk spawn
+  twice — simultaneous spawns hit DB lock timeouts.
+- On a DB lock timeout: retry in **smaller batches**, never the identical
+  bulk call.
+- A spawn error with an infra signature (compaction-model resolution
+  timeout before inference, DB lock timeout, daemon-restart handle loss)
+  means the work **never ran** — re-dispatch reactively on a fresh agent.
+  Never mark the work failed.
+- `completed` + canned `final_response` = refused. Check the digest on
+  every spawn, not the status badge.
+
+## Placement
+
+- Durable home: `sovereign/tools/fanout/` in `toxicwind/sovereign-projects`
+  (this repo is the source of truth).
+- Working copy on awrawr-pc: `/home/toxic/bin/fanout`.
+- Cell copy: `~/workspace/bin/fanout` (cell storage is disposable).
 
 ## Dev / contributing
 
-Rebuild from source where it lives; the committed artifact is the binary itself. Keep the receipt contract stable (`leg=%d rc=%d ms=%lld cmd=%.60s`) — fleet tooling parses it.
+Keep it dependency-free and receipt-shaped: the per-leg receipt line is the
+contract other lanes parse.
 
 ## License & security
 
-Internal sovereign tooling — part of `toxicwind/sovereign-projects`, not published as a standalone package. Each leg runs through `sh -c` as your user with no sandboxing: quote arguments carefully and never fan out commands built from untrusted input.
+MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+
+Runs arbitrary shell commands concurrently — the same trust boundary as
+your shell. Timeouts cap runaway legs; they do not sandbox them.

@@ -1,40 +1,38 @@
-# DevOps policies
+# devops/ — Dockerfile security policy
 
-![code-scalpel](https://img.shields.io/badge/code--scalpel-6C5CE7?style=for-the-badge) ![rego](https://img.shields.io/badge/rego-FF6B6B?style=for-the-badge) ![docker](https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+Validates Dockerfiles against security best practices — before the image gets built, not after it ships.
 
-> Dockerfiles that don't leak secrets and containers that don't run as root — enforced at write time, not discovered in the audit.
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+## Why this exists
+
+Insecure Dockerfiles are the quietest supply-chain hole: a `latest` tag here, a root user there, and your "hermetic" build is neither. This policy checks the Dockerfile *as a document* — no image build, no registry scan, just the file against the rules.
+
+## What it checks
+
+**`docker_security.rego`** — the template in this directory:
+
+- Base images pinned (no floating `:latest` tags)
+- No `root` user at runtime (non-root `USER` required)
+- No secrets baked into layers (`ENV`/`ARG` secret patterns)
+- Minimal layer hygiene (combined `RUN` chains, no package-manager caches left behind)
 
 ```mermaid
 flowchart LR
-    DF[Dockerfile<br/>written or edited] --> R[docker_security.rego]
-    R -->|secrets in ENV/ARG?| S[block: credential leak]
-    R -->|USER root / no USER?| U[block: root container]
-    R -->|clean| OK[allow + audit]
+    DF[Dockerfile] --> REGO[docker_security.rego]
+    REGO -->|clean| OK[✓ build may proceed]
+    REGO -->|latest tag / root / secret| VIOL[✗ warn or deny<br/>per policy.yaml]
 ```
 
-## Quick Start
-
-```bash
-code-scalpel policy validate
-code-scalpel policy test --category devops
-```
-
-## Policies
-
-### `docker_security.rego`
-
-Dockerfile security best practices. Flags, among others:
-
-- **secrets baked into the image** — `password` / `api_key` / `secret` / `token` / `credential` assignments in Dockerfile instructions
-- **running as root** — missing or root `USER` directives
-
-Rego package: `code_scalpel.devops`.
-
-## Enable
-
-In `.code-scalpel/policy.yaml`:
+## Quick start
 
 ```yaml
+# .code-scalpel/policy.yaml
 policies:
   devops:
     - name: docker-security
@@ -43,8 +41,15 @@ policies:
       action: WARN
 ```
 
-Start with `WARN` — Dockerfiles accumulate legacy sins; burn the list down, then flip to `DENY`.
+```bash
+code-scalpel policy validate
+code-scalpel policy test --category devops
+```
 
-## License and security
+## Tuning
 
-Part of Code Scalpel v3.1+ Policy Engine. This policy catches the classic Dockerfile mistakes; it is not a substitute for image scanning (vulnerabilities in base layers) or runtime policy (seccomp, capabilities) — layer your defenses.
+Start at `WARN` — Dockerfile rules are the most likely to fire on legacy files. Fix or exempt the real ones, then promote to `DENY` for new Dockerfiles.
+
+## License & security
+
+MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). This policy is a first gate, not the whole story — pair it with image scanning at build time. Policy decisions land in the Code Scalpel audit trail (`../../audit.log`).

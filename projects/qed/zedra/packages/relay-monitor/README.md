@@ -1,70 +1,62 @@
-# relay-monitor
-
 <div align="right">
 
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
-![docker](https://img.shields.io/badge/docker-2496ED?style=for-the-badge)
-![typescript](https://img.shields.io/badge/typescript-3178C6?style=for-the-badge)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/part_of-sovereign--projects-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
 </div>
 
-**Docker-only long-running poller shipped beside `zedra-relay` on each relay VM.** It watches the relay container, appends metrics to `metrics.jsonl`, and fires Discord alerts when thresholds break — so a sick relay pages you instead of silently degrading P2P fallback. Uses `INSTANCE` + `DISCORD_WEBHOOK` from the merged `.env`.
+# relay-monitor
 
-**Local SSH checks from your laptop** (multi-instance CLI) live in [`packages/relay-check`](../relay-check/README.md).
+> **The always-on poller that watches every Zedra relay and writes the metrics your laptop reads.**
 
-## Architecture
+Docker-side half of Zedra's relay observability. `relay-monitor` ships beside `zedra-relay` on each relay VM (see [`deploy/relay/docker-compose.yml`](../../deploy/relay/docker-compose.yml)), polls on a loop, and appends to `metrics.jsonl` — the log that [`relay-check`](../relay-check/README.md) reads over SSH.
+
+## Features
+
+- 🐳 **Docker-native** — runs as a sidecar in the relay stack, no host agent needed
+- ⚙️ **Env-driven** — reads `INSTANCE` + `DISCORD_WEBHOOK` from the merged `.env`
+- 📝 **Append-only metrics log** — `metrics.jsonl`, one line per sample, replayable by [`relay-check`](../relay-check/README.md)
+- 🔔 **Discord alerts** — pushes to the webhook in `.env` when a relay misbehaves
+
+## How it fits together
 
 ```mermaid
 flowchart LR
-    MON["zedra-monitor\nthis sidecar"] -->|polls| RELAY["zedra-relay\n:9090/metrics"]
-    MON -->|appends| LOG["metrics.jsonl\nread by relay-check --history"]
-    MON -->|threshold breach| DISC["Discord webhook\n(INSTANCE + DISCORD_WEBHOOK)"]
-    subgraph compose["deploy/relay/docker-compose.yml"]
-        RELAY
-        MON
-    end
+    mon[relay-monitor<br/>sidecar] -->|poll| relay[zedra-relay]
+    mon -->|append| log[metrics.jsonl]
+    mon -->|alert| discord[Discord webhook]
+    laptop[relay-check on your laptop] -->|ssh| log
 ```
 
-## Quick Start
+## Quick start
 
 ```bash
+# build the monitor image (context: repo root; Dockerfile copies this package only)
 docker build -f Dockerfile -t zedra-monitor:latest ../..
-./deploy/relay/deploy.sh --instance ap1 --service monitor
-INSTANCES=sg1,us1,eu1 bun packages/relay-check/cli.ts ap1
 ```
 
-## Build
+Deploy via [`deploy/relay/deploy.sh`](../../deploy/relay/deploy.sh) — see the [deploy README](../../deploy/relay/README.md).
 
-The relay stack image is built by `deploy/relay/deploy.sh` (see [`deploy/relay/README.md`](../../deploy/relay/README.md)).
+## License & security
 
-```bash
-docker build -f Dockerfile -t zedra-monitor:latest ../..
-# context: repo root; Dockerfile copies this package only
-```
+MIT — see the [canonical LICENSE](https://github.com/toxicwind/sovereign-projects#license). Keep `DISCORD_WEBHOOK` out of the repo — it lives in the merged `.env` on the relay hosts only.
 
-Or redeploy just the monitor sidecar to one instance without touching the relay container:
+## Architecture
 
-```bash
-./deploy/relay/deploy.sh --instance ap1 --service monitor
-```
+| File | Role |
+|---|---|
+| [`monitor.ts`](./monitor.ts) | The poll loop — collects metrics, writes `metrics.jsonl`, fires alerts |
+| [`lib.ts`](./lib.ts) | Shared helpers |
+| [`Dockerfile`](./Dockerfile) | Image build (package-only context) |
+| [`package.json`](./package.json) / [`tsconfig.json`](./tsconfig.json) | Bun package manifest / TS config |
 
 ## Config
 
-| Env var | Purpose | Source |
-|---|---|---|
-| `INSTANCE` | Hostname suffix (`${INSTANCE}.relay.zedra.dev`) and alert identity | Injected by `deploy.sh` into the merged `.env` |
-| `DISCORD_WEBHOOK` | Where threshold-breach alerts go | Your local `deploy/relay/.env` (gitignored) |
+| Variable | Meaning |
+|---|---|
+| `INSTANCE` | Which relay this sidecar watches (e.g. `sg1`) |
+| `DISCORD_WEBHOOK` | Alert destination |
 
-Alert thresholds are tuned in the monitor code — after changing them, redeploy with `--service monitor`.
+## Contributing
 
-## Dev / Contributing
-
-- Source: `monitor.ts`, `lib.ts` in this package (Bun + TypeScript).
-- The image build context is the repo root but the `Dockerfile` copies this package only — keep it that way so relay image builds stay hermetic.
-- Test alerting end-to-end by temporarily lowering a threshold in your local `deploy/relay/.env`, redeploying `--service monitor`, and watching the Discord channel for the heartbeat.
-
-## License + Security
-
-MIT (see [`LICENSE`](../../LICENSE)).
-
-**Security posture:** the monitor's only secret is `DISCORD_WEBHOOK`, which arrives via the merged `.env` that `deploy.sh` pushes to `/opt/zedra/deploy/relay/` on the instance — never committed, never in the image layers. It polls the relay's metrics endpoint from inside the Compose network; no inbound ports of its own.
+The monitor runs unattended on relay VMs — prefer boring, restart-safe code. Metrics format changes must stay backward-compatible with `relay-check`'s history parser.

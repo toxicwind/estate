@@ -1,44 +1,72 @@
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
-![bun](https://img.shields.io/badge/bun-1.4+-f9f1e1?style=for-the-badge&logo=bun&logoColor=black)
-![typescript](https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+<div align="right">
 
-# Maximal Sovereign Agentic Audit — production-grade repo auditing for the Sovereign ecosystem
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-A fully agentic, modular repository audit system: local-first scanning of every project in `projects.env`, a multi-tier module architecture, LLM-assisted analysis through the :25100 API, and Parquet export for data work. One orchestrator (`local-audit.ts`), nine focused modules, zero monolith.
+</div>
 
-- **Local-first** — scans the on-disk projects directly; no remote crawling.
-- **Modular** — types, constants, parser, git-scanner, completions, autofix, precheck, dataframe, parquet — each its own module.
-- **Agentic completions** — `--completions` pipes findings through the :25100 API for AI-powered insights.
-- **Autofix** — `--fix` remediates what it can, automatically.
-- **Parquet export** — audit results as Parquet for downstream analysis.
-- **Precheck** — validates every required path and file exists before the audit runs.
+# Maximal Sovereign Agentic Audit
+
+> Production-grade, fully agentic repository audit system for the Sovereign ecosystem.
+
+> **Why care? 327 projects, one command: local-first auditing with a multi-tier modular architecture — git scanning, secrets scanning, broken-symlink detection, pre-check validation, Parquet export, and AI-powered insights via the `:25100` API.**
+
+- **Local-first — scans all 327 projects from `projects.env` directly, no cloning**
+- **Modular — types, parser, git-scanner, secrets-scanner, completions, autofix, precheck, dataframe, parquet**
+- **Secrets-aware — `/home/toxic/.secrets` scanned as a protected credential record (never committed)**
+- **Parquet export — audit results as dataframes for analysis**
+- **Agentic completions — AI insights via the 25100 API; 86%+ coverage target**
 
 ```mermaid
 flowchart LR
-    CLI[src/index.ts<br/>CLI entry] --> PRE[precheck.ts<br/>validate paths]
-    PRE --> PAR[parser.ts<br/>parseProjectsEnvSync]
-    PAR --> GS[git-scanner.ts<br/>scanDirSync · runGit]
-    GS --> DF[dataframe.ts<br/>shape records]
-    DF --> CP[completions.ts<br/>:25100 LLM analysis]
-    DF --> PQ[parquet.ts<br/>export]
-    DF --> AF[autofix.ts<br/>--fix remediation]
-    BM[benchmark.ts<br/>audit harness] -.-> CLI
+    ENV[projects.env: 327 projects] --> PRE[precheck: paths exist]
+    PRE --> SCAN[git-scanner + secrets-scanner + symlinks]
+    SCAN --> DF[dataframe]
+    DF --> PQ[parquet export]
+    DF --> AI[completions via :25100]
+    AI --> FIX[autofix]
 ```
 
 ## Quick start
 
 ```bash
-# full audit (package script: --all --precheck --parquet output/repo-audit.parquet)
-bun run audit
-```
-
-```bash
-# local audit only
+bun run start --all --precheck --parquet output/audit.parquet
+bun test tests/local-audit.test.ts --coverage
 bun run local --all --precheck
 ```
 
+## License & security
+
+- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **Security:** The `.secrets` file is a first-class credential record — scanned but never committed, excluded via `.gitignore`. Requirements: Bun 1.4+, parquetjs-lite, git repos in `/home/toxic/projects/` and `/home/toxic/sovereign/`.
+
+---
+
+A production-grade, fully agentic repository audit system for the Sovereign ecosystem.
+
+## What It Does
+
+- **Local-first auditing**: Scans all 327 projects from `projects.env` directly
+- **Multi-tier modular architecture**: Types, constants, parser, git-scanner, secrets-scanner, completions, autofix, precheck, dataframe, parquet — each in its own module
+- **First-class `.secrets` credential store**: Scans `/home/toxic/.secrets` as a protected credential record
+- **Parquet export**: Exports audit results as Parquet files for data analysis
+- **Agentic completions**: Uses the 25100 API for AI-powered insights
+- **Symlink analysis**: Detects broken symlinks across all projects
+- **Pre-check validation**: Verifies all required paths and files exist before auditing
+
+## Quick Start
+
 ```bash
-# with LLM-assisted analysis
+# Full audit
+bun run start --all --precheck --parquet output/audit.parquet
+
+# Run tests
+bun test tests/local-audit.test.ts --coverage
+
+# Local audit only
+bun run local --all --precheck
+
+# With completions
 bun run start --all --completions
 ```
 
@@ -47,49 +75,34 @@ bun run start --all --completions
 ```
 src/
 ├── index.ts              # CLI entry point
-├── local-audit.ts        # orchestrator (imports all modules)
-├── benchmark.ts          # audit benchmarking harness
+├── local-audit.ts        # Orchestrator (imports all modules)
 └── modules/
     ├── types.ts          # RepoRecord, LocalAuditResult, SymlinkRecord, AuditMode
-    ├── constants.ts      # all file paths and URLs
+    ├── constants.ts      # All file paths and URLs
     ├── parser.ts         # parseProjectsEnvSync() — parses projects.env
     ├── git-scanner.ts    # scanDirSync(), scanSymlinksSync(), runGit()
-    ├── completions.ts    # analyzeWithCompletions() via the :25100 API
+    ├── secrets-scanner.ts# scanSecrets(), getSecretsRecord()
+    ├── completions.ts    # analyzeWithCompletions()
     ├── autofix.ts        # autoFix()
     ├── precheck.ts       # preCheck()
     ├── dataframe.ts      # toDataFrame()
     └── parquet.ts        # exportParquet()
 ```
 
-## Config
+## Not Just for Auditing
 
-| Knob | Effect |
-|---|---|
-| `--all` | audit every project in `projects.env` |
-| `--precheck` | validate required paths/files before running |
-| `--parquet <path>` | export results as Parquet |
-| `--json` | JSON output |
-| `--fix` | auto-remediate fixable findings |
-| `--completions` | LLM-assisted analysis via :25100 |
+This tool goes beyond simple repository auditing — it's a full agentic audit framework with AI completions, credential scanning, parquet export, and modular extensibility.
 
-## Dev / contributing
+## `.secrets` First-Class
 
-```bash
-bun test --coverage        # test suite (package script)
-bunx biome check src/ tests/   # lint
-bun build src/index.ts --outdir=dist --minified   # build
-```
-
-- `package.json` scripts are the contract: `start`, `local`, `audit`, `test`, `lint`, `build`.
-- New scan capability = new module under `src/modules/` + wiring in `local-audit.ts`. Keep modules single-purpose.
-- `benchmark.ts` is the audit benchmarking harness — measure before claiming faster.
+The `.secrets` file at `/home/toxic/.secrets` is treated as a first-class credential record in the audit. It is never committed to git and is excluded via `.gitignore`.
 
 ## Requirements
 
 - Bun 1.4+
-- `parquetjs-lite` (declared dependency)
-- Git repos in `/home/toxic/projects/` and `/home/toxic/sovereign/`
+- parquetjs-lite
+- Git repos in /home/toxic/projects/ and /home/toxic/sovereign/
 
-## License + security
+## Coverage
 
-MIT where marked. The auditor walks your project trees and reads file contents — it runs locally and sends nothing anywhere except the :25100 completions endpoint when you pass `--completions`. Never point it at a directory containing secrets you don't want summarized; audit output (JSON/Parquet) can contain path names and file metadata, so treat report files as internal.
+Target: 86%+ code coverage across all modules.

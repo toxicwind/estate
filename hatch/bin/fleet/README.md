@@ -1,13 +1,42 @@
 # Ordered fleet delivery (`hatch/bin/fleet/`)
 
-![sovereign](https://img.shields.io/badge/sovereign--projects-2E86DE?style=for-the-badge)
-![python](https://img.shields.io/badge/python-3776AB?style=for-the-badge)
+Extends the squawk fleet bus with the four primitives a reliable multi-agent bus needs: **dedup**, **gap replay**, **acks**, **chat isolation**. Built 2026-09-20 by fleet-builder (Ember's pack).
 
-**Extends the squawk fleet bus with the four primitives a reliable multi-agent bus needs: dedup, gap replay, acks, chat isolation.** Built 2026-09-20 by fleet-builder (Ember's pack). One engine file plus tests — no daemon, no socket, no database. The message files ARE the log.
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+## Why this exists
+
+Squawk's `send` is fire-and-forget: retries double-post, a consumer that falls behind loses its place, and relay chats share the parent channel's sequence space. For fleet operations that need exactly-once semantics and catch-up reads, you need a log, not a mailbox. This is that log — one file, no daemon, atomic under `flock`.
+
+## Features
+
+- **Idempotent publish** — `msg_id` dedup: retried sends collapse to one seq.
+- **Gap replay** — `gaps` lists missing seqs; `fetch --after N` replays in order. Nothing is ever "resent."
+- **Acks** — per-consumer cursors, monotonic (a stale ack never rewinds); `lag` = max_seq − acked.
+- **Chat isolation** — relay chats get their own seq space under `fleet/chats/<slug>/`; zero cross-talk, verified under concurrency.
+- **No daemon** — `fleet.py` does one op and exits. Push semantics come from the existing inotify-fed ws feed.
+
+```mermaid
+flowchart LR
+    PUB[publish msg_id] --> LOCK[flock .seq.lock]
+    LOCK --> DEDUP{msg_id seen?}
+    DEDUP -->|yes| SAME[return existing seq<br/>deduped: true]
+    DEDUP -->|no| ALLOC[alloc max+1 → write file]
+    ALLOC --> IDX[.fleet/ids/<msg_id> → seq]
+    CON[consumer] --> FETCH[fetch --after N<br/>ordered replay]
+    CON --> ACK[ack → .fleet/acks/<consumer>]
+    ACK --> LAG[lag = max − acked]
+```
 
 ## Why this home
 
-`hatch/bin/` is where operational CLIs live (`squawk`, `fleet-lock`, `swarm-*`). The engine is one file plus its tests, so it gets a subtree:
+`hatch/bin/` is where operational CLIs live (`squawk`, `fleet-lock`,
+`swarm-*`). The engine is one file plus its tests, so it gets a subtree:
 
 | path | what |
 |---|---|
@@ -16,38 +45,19 @@
 | `hatch/bin/fleet/TEST-EVIDENCE.md` | captured test output from the yote run. |
 | `hatch/bin/squawk-fleet` | cell-side CLI: wraps fleet.py over yote-conn, mirrors `squawk` style. Deployed copy: `~/workspace/bin/squawk-fleet`. |
 
-Yote deploy path: `/home/toxic/squawk-fleet/fleet.py` (plain dir, outside any git tree — yote's `/home/toxic/sovereign` checkout sits on probe branches with WIP, so the engine is NOT installed there; the repo stays canonical). Seeded by base64 drop + sha256 verify. `SQUAWK_FLEET_PY` env overrides it.
-
-## How it works
-
-```mermaid
-flowchart TD
-    SEND[squawk-fleet send<br/>msg_id + body] --> LOCK{flock .seq.lock}
-    LOCK --> DEDUP{.fleet/ids/&lt;msg_id&gt;<br/>exists?}
-    DEDUP -->|yes| COLLAPSE[return existing seq<br/>deduped: true]
-    DEDUP -->|no| ALLOC[allocate max&#40;seqs&#41;+1<br/>from live dir listing]
-    ALLOC --> WRITE[write NNNN-&lt;from&gt;-&lt;slug&gt;.md<br/>inside the lock]
-    WRITE --> ACKS[.fleet/acks/&lt;consumer&gt;<br/>per-consumer cursor]
-    FETCH[squawk-fleet fetch --after N] --> REPLAY[ordered replay<br/>seq &gt; N]
-    FETCH --> GAPS[gaps: seqs in 1..max<br/>with no file]
-```
-
-## Quick Start
-
-```bash
-# 1. Publish idempotently (a retried send collapses to one seq)
-~/workspace/bin/squawk-fleet send fleet --msg-id abc123 --body "hello pack"
-
-# 2. Catch up from where you left off
-~/workspace/bin/squawk-fleet fetch --after 11770
-
-# 3. Find holes a dead writer left behind
-~/workspace/bin/squawk-fleet gaps
-```
+Yote deploy path: `/home/toxic/squawk-fleet/fleet.py` (plain dir, outside any
+git tree — yote's `/home/toxic/sovereign` checkout sits on probe branches
+with WIP, so the engine is NOT installed there; the repo stays canonical).
+Seeded by base64 drop + sha256 verify. `SQUAWK_FLEET_PY` env overrides it.
 
 ## Design
 
-A **scope** is one seq space = one directory of message files. The channel dir (`fleet/`) is the default scope; a chat scope is `fleet/chats/<slug>/` with its own seq counter, lock, dedup index and ack dir. Same file format as `squawk send` (YAML frontmatter + markdown body), plus `msg_id:` and `scope:` fields, so the existing ws feed keeps working on the main channel.
+A **scope** is one seq space = one directory of message files. The channel
+dir (`fleet/`) is the default scope; a chat scope is
+`fleet/chats/<slug>/` with its own seq counter, lock, dedup index and ack
+dir. Same file format as `squawk send` (YAML frontmatter + markdown body),
+plus `msg_id:` and `scope:` fields, so the existing ws feed keeps working
+on the main channel.
 
 ```
 <channel>/                      <- default scope (seqs 1..N, shared)
@@ -61,36 +71,68 @@ A **scope** is one seq space = one directory of message files. The channel dir (
     .fleet/{ids,acks}
 ```
 
-**Atomic publish (reused, not reinvented).** Exactly the allocator `hatch/bin/squawk` proved on 2026-09-20: exclusive `flock` on the scope lock, allocate `max(existing seqs)+1` from the live dir listing, write the file, all inside the lock. New scopes are `mkdir -p`'d *inside* the lock's reach (regression cover for the 2026-09-21 new-channel silent drop). Dedup rides the same lock: if `.fleet/ids/<msg_id>` exists, return its seq with `deduped: true` — retried sends collapse to one file.
+**Atomic publish (reused, not reinvented).** Exactly the allocator
+`hatch/bin/squawk` proved on 2026-09-20: exclusive `flock` on the scope
+lock, allocate `max(existing seqs)+1` from the live dir listing, write the
+file, all inside the lock. New scopes are `mkdir -p`'d *inside* the lock's
+reach (regression cover for the 2026-09-21 new-channel silent drop).
+Dedup rides the same lock: if `.fleet/ids/<msg_id>` exists, return its seq
+with `deduped: true` — retried sends collapse to one file.
 
-**Gap replay.** The message files ARE the durable log, so replay needs no producer cooperation: `gaps` lists seqs in `[1..max]` with no file (a write that died between alloc and file creation); `fetch --after N` returns every surviving file with seq > N in order. A consumer that fell behind re-fetches from its last ack — nothing is ever "resent".
+**Gap replay.** The message files ARE the durable log, so replay needs no
+producer cooperation: `gaps` lists seqs in `[1..max]` with no file (a write
+that died between alloc and file creation); `fetch --after N` returns every
+surviving file with seq > N in order. A consumer that fell behind re-fetches
+from its last ack — nothing is ever "resent".
 
-**Acks.** `.fleet/acks/<consumer>` holds one integer, written tmp+rename (atomic, single-writer per consumer). Monotonic: a stale ack never rewinds the cursor. `lag` = max_seq − acked per consumer.
+**Acks.** `.fleet/acks/<consumer>` holds one integer, written tmp+rename
+(atomic, single-writer per consumer). Monotonic: a stale ack never rewinds
+the cursor. `lag` = max_seq − acked per consumer.
 
-**Chat isolation.** Relay chats publish into their own scope dir, so their seqs are independent and their traffic never appears in the parent channel or sibling chats. Verified by the isolation test (3×80 concurrent publishes, zero cross-talk).
+**Chat isolation.** Relay chats publish into their own scope dir, so their
+seqs are independent and their traffic never appears in the parent channel
+or sibling chats. Verified by the isolation test (3×80 concurrent
+publishes, zero cross-talk).
+
+## Quick start
+
+```bash
+squawk-fleet send fleet "hello" --msg-id abc123
+squawk-fleet fetch fleet --after 11770
+squawk-fleet ack fleet --consumer my-agent
+```
 
 ## Failure posture
 
-- Fail fast: 15s SIGALRM ceiling on the locked section (main thread); no retries, no loops, one clear stderr + nonzero exit.
-- No daemons: fleet.py does one op and exits. Consumers that want push semantics use the existing inotify-fed ws feed or their own cron; nothing here polls.
-- All names sanitized (msg_id, consumer, chat slug, sender); scope paths are realpath-checked against the root — no escapes.
-- Lock files (`.seq.lock`) and `.fleet/` metadata are not `*.md`, so the ws server's file pickup is unaffected. Chat-scope `.md` files live in a subdir — they do NOT broadcast on the parent channel feed (isolation is the point); relay consumers read them via `squawk-fleet fetch --chat`.
+- Fail fast: 15s SIGALRM ceiling on the locked section (main thread);
+  no retries, no loops, one clear stderr + nonzero exit.
+- No daemons: fleet.py does one op and exits. Consumers that want push
+  semantics use the existing inotify-fed ws feed or their own cron;
+  nothing here polls.
+- All names sanitized (msg_id, consumer, chat slug, sender); scope paths
+  are realpath-checked against the root — no escapes.
+- Lock files (`.seq.lock`) and `.fleet/` metadata are not `*.md`, so the
+  ws server's file pickup is unaffected. Chat-scope `.md` files live in a
+  subdir — they do NOT broadcast on the parent channel feed (isolation is
+  the point); relay consumers read them via `squawk-fleet fetch --chat`.
 
 ## Testing
 
-`python3 test_fleet.py` — 36 assertions: 800-way concurrent publish (no dup/lost seqs), 16-way racing retries collapse to one seq, gap detection + ordered replay, per-consumer acks + monotonicity + lag, two-chat + main isolation under concurrency, msg_id sanitization, new-scope first publish, CLI subprocess roundtrip. Evidence: `TEST-EVIDENCE.md`.
+`python3 test_fleet.py` — 36 assertions: 800-way concurrent publish
+(no dup/lost seqs), 16-way racing retries collapse to one seq, gap
+detection + ordered replay, per-consumer acks + monotonicity + lag,
+two-chat + main isolation under concurrency, msg_id sanitization,
+new-scope first publish, CLI subprocess roundtrip. Evidence:
+`TEST-EVIDENCE.md`.
 
 ## Not built (deliberately)
 
-- No push daemon / long-lived watcher — out of scope, event loop stays with the existing ws feed.
+- No push daemon / long-lived watcher — out of scope, event loop stays
+  with the existing ws feed.
 - No cross-scope transactions — scopes are independent by design.
-- No message TTL/GC — the log is append-only; retention is a separate decision.
+- No message TTL/GC — the log is append-only; retention is a separate
+  decision.
 
-## License & Security
+## License & security
 
-- **License:** no repo-wide license file ships in this tree; the engine is original to this estate.
-- **Security:** all names (msg_id, consumer, chat slug, sender) are sanitized and scope paths are realpath-checked against the root — no path escapes. Lock files and `.fleet/` metadata are not `*.md`, so the ws server's file pickup never ingests them. Dedup means a replayed `send` is idempotent — safe to retry across a flaky bridge.
-
----
-
-*Up: [hatch/bin README](../README.md) · [hatch README](../../README.md)*
+MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). The dedup index and ack cursors are trust-relevant state: a forged `.fleet/ids/<msg_id>` entry could suppress a legitimate publish as "duplicate." The yote deploy path (`/home/toxic/squawk-fleet/`) is outside the git tree by design — seeded by sha256-verified drop, never hand-edited in place.

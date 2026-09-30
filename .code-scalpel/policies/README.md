@@ -1,55 +1,44 @@
-# Policy templates
+# policies/ — production-ready policy templates
 
-![code-scalpel](https://img.shields.io/badge/code--scalpel-6C5CE7?style=for-the-badge) ![rego](https://img.shields.io/badge/rego-FF6B6B?style=for-the-badge) ![opa](https://img.shields.io/badge/OPA-000000?style=for-the-badge)
+Drop-in governance templates for architecture, DevOps, and DevSecOps — written in Rego, enabled in `policy.yaml`, enforced by Code Scalpel.
 
-> Production-ready Rego policy templates — architecture, DevOps, DevSecOps, and project structure — wired into `.code-scalpel/policy.yaml` with severity and allow/deny actions.
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+## Why this exists
+
+Writing governance policy from scratch is how it never gets written. These templates encode the checks teams actually want — layered-architecture boundaries, Dockerfile hygiene, secret detection — as ready-to-enable Rego files. Copy, tune, enable. The template is the starting point, not the finish line.
+
+## What's here (only what's actually on disk)
+
+```
+policies/
+├── architecture/   layered_architecture.rego     [README](architecture/)
+├── devops/         docker_security.rego           [README](devops/)
+├── devsecops/      secret_detection.rego          [README](devsecops/)
+└── project/        structure.rego                 [README](project/)
+```
 
 ```mermaid
-flowchart TD
-    subgraph policies[policies/]
+flowchart TB
+    subgraph tmpl[policies/ — templates]
         A[architecture/<br/>layered_architecture.rego]
         D[devops/<br/>docker_security.rego]
         S[devsecops/<br/>secret_detection.rego]
         P[project/<br/>structure.rego]
     end
-    Y[.code-scalpel/policy.yaml<br/>name + file + severity + action] --> E[policy engine]
-    A --> Y
-    D --> Y
-    S --> Y
-    P --> Y
-    E -->|DENY| X[block the change]
-    E -->|WARN| W[log + allow]
+    PY[.code-scalpel/policy.yaml<br/>enable + severity + action] --> CS[code-scalpel<br/>policy engine]
+    tmpl --> CS
+    CS -->|audit-only / warn / deny| OP[file operations]
 ```
 
-## Quick Start
+## Quick start
 
-```bash
-code-scalpel policy validate
-code-scalpel policy test --category architecture
-code-scalpel policy test --category devsecops
-```
-
-## Directory structure
-
-```
-policies/
-├── architecture/          # architecture management
-│   ├── README.md
-│   └── layered_architecture.rego
-├── devops/                # DevOps best practices
-│   ├── README.md
-│   └── docker_security.rego
-├── devsecops/             # DevSecOps automation
-│   ├── README.md
-│   └── secret_detection.rego
-└── project/               # project structure
-    ├── README.md
-    └── structure.rego
-```
-
-## Enable policies
-
-Edit `.code-scalpel/policy.yaml`:
+Edit `.code-scalpel/policy.yaml` — three lines per policy:
 
 ```yaml
 policies:
@@ -58,41 +47,34 @@ policies:
       file: policies/architecture/layered_architecture.rego
       severity: HIGH
       action: DENY
-
-  devops:
-    - name: docker-security
-      file: policies/devops/docker_security.rego
-      severity: HIGH
-      action: WARN
-
-  devsecops:
-    - name: secret-detection
-      file: policies/devsecops/secret_detection.rego
-      severity: CRITICAL
-      action: DENY
-
-  project:
-    - name: structure
-      file: policies/project/structure.rego
-      severity: HIGH
-      action: DENY
 ```
 
-`severity` drives how loudly a violation is reported (`CRITICAL` > `HIGH` > `MEDIUM` > `LOW`); `action` decides the outcome — `DENY` blocks the change, `WARN` logs it and lets it through.
+Then:
 
-## Customize
+```bash
+code-scalpel policy validate          # syntax + wiring check
+code-scalpel policy test --category architecture   # dry-run against this tree
+```
 
-Copy a template `.rego` file, adjust the rules to your project, and point `policy.yaml` at your copy. Keep the originals pristine as reference.
+## Severity & actions
 
-## Categories
+| Field | Values | Meaning |
+|---|---|---|
+| `severity` | `LOW` / `MEDIUM` / `HIGH` / `CRITICAL` | how loud a violation is in the audit trail |
+| `action` | `AUDIT` / `WARN` / `DENY` | log it, warn on it, or block the operation |
 
-| Directory | Enforces |
-|---|---|
-| [`architecture/`](architecture/README.md) | Layered architecture — presentation → application → domain separation |
-| [`devops/`](devops/README.md) | Dockerfile security best practices |
-| [`devsecops/`](devsecops/README.md) | Hardcoded secret detection (AWS keys, GitHub tokens, API keys, private keys) |
-| [`project/`](project/README.md) | Consistent file placement and project layout conventions |
+Recommendation: run new policies at `WARN` for a week, promote to `DENY` once the audit trail shows they're firing on real violations, not noise.
 
-## License and security
+## Customizing
 
-Rego templates are configuration, not code execution — but they *decide* what code gets written, so treat them accordingly: review template changes like code review, and sign the set with `code-scalpel policy sign` (see the [parent README](../README.md)) so tampering is detectable. Part of Code Scalpel v3.1+ Policy Engine.
+Templates are meant to be forked: copy the `.rego` file, rename it, tune the rules to your project, point `policy.yaml` at your copy. The upstream templates stay pristine so you can diff when Code Scalpel updates them.
+
+## Dev
+
+- [Policy Engine Guide](https://github.com/3D-Tech-Solutions/code-scalpel/blob/main/docs/policy_engine_guide.md) (upstream)
+- Enforcement wiring: [`../HOOKS_README.md`](../HOOKS_README.md)
+- Config source of truth: [`../README.md`](../README.md)
+
+## License & security
+
+MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). Policies are code review for machines: `DENY` rules block real operations, so every policy change deserves the same review rigor as a production code change. The audit trail (`../audit.log`) records every policy decision — evidence, not vibes.
