@@ -206,6 +206,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | starling | squawk maximalization: pattern-borrow + tests (feed :25135, ws :25147, ui, CLI); boundary: Taps owns NATS substrate | Starling (Ember's pack), Tally side chat | RUNNING (2026-09-29) |
 | kestrel | Mistral key proof + GuideLLM audit of Mistral chat models via corral (direct Mistral API, not herd/flock); pattern-borrow useful Mistral integrations | kestrel (Ember crew) | RUNNING (2026-09-29) |
 | flock-free-directive | Flock :25193 literal "free" routing directive repair: was 404 (serves_model filtered before Strategy::Free ran), then Hybrid admitted paid providers, then migrate_v1 dropped free_tier so Strategy::Free selected zero candidates (502). Fix: "free" skips model scoping + forces Strategy::Free + model_map["free"] resolves a real upstream model (never wildcard "*"); migrate_v1 keeps free_tier=true; provider IDs refreshed to live catalog (nvidia nemotron-3-ultra-550b-a55b, llama-3.1-nemotron-70b-instruct; groq/cerebras bare IDs). flock-run.sh wrapper loads GROQ/CEREBRAS/NVIDIA keys from ~/.secrets into the daemon env (pitchfork.toml run= now points at the wrapper). NIM_PROXY_BYPASS workaround removed from bidder.py. | Sable (Ember's crew) | DONE (2026-09-30) -- toxicwind/flock commit `996956a3` (origin/main verified via git ls-remote); deployed binary live on :25193; E2E: POST /v1/chat/completions {"model":"free"} -> 200 real completion from nvidia/nemotron-3-ultra-550b-a55b; suite 387 passed (258 unit + 121 e2e + 8) |
+| keystone | Architect A: PR-grade fix for Hyprland 0.56.x IPC-Lua focus bug as branch of upstream hypruse (IlyasKhallouki/hypruse). Lane: PR archaeology + paper-finder + AST analysis -> fleet debate vs Architect B -> converge -> build fix+tests on branch fix/ipc-lua-focus-0.56 in /home/toxic/projects/hypruse. No upstream PR, no push (branch + PR body only, Chris decides). | keystone (Ember crew, under coordinator ba5bcfd5) | RUNNING (2026-09-30) |
 | corvid | ROUTING AUDIT: agent cognition vs tool-call vs heavy-compute placement across hatch+yote; exec-lane routing; cell cron/worker heavy-compute  | corvid (Ember crew) | DONE (2026-09-30) — 1cdeac68f6 |
 | fennec-cell-files | CELL-FILES stream: mise.toml hot-reload audit (up-cellfiles-ui forensics; stream D repaired the parse break as 1cdeac68f6), pitchfork bun --hot for kimi-audit-dash/windmill/bench-radar, hatch/README cell-files row, findings UX redesign in Deuz-SDK (3-class triage, workload grouping, WHY strings) | Fennec (Ember crew) | DONE (2026-09-30) — sovereign 28768b51d8, deuz-sdk de219698 |
 | pinto | move Oracle into the ranch with western theme; fix bidder-forge/bidder-scout daemons | ember | RUNNING (2026-09-30) |
@@ -216,6 +217,9 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 
 | stream-e | document the #yolo exec-policy bypass in the fleet KB | Ember (spawned subagent) | DONE (2026-09-30) — 2c83dd09a714a44d0eccee38bdea3ae257065a81 |
+
+
+| rhyx | brand hyper-race focus core: three-path focus-window racer + mock compositor + tests + native C++ verification | ember | RUNNING (2026-09-30) |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
