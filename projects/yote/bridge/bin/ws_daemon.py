@@ -113,6 +113,10 @@ class Bridge:
         header_name, surrogate = await asyncio.to_thread(self._surrogate)
         phost, pport = proxy_target()
         raw = socket.create_connection((phost, pport), timeout=15)
+        # Nagle's algorithm batches small frames waiting for ACKs (~200ms).
+        # WS command frames are tiny; disable Nagle for low-latency dispatch.
+        # (2026-09-30: bridge p50 was 267ms for a 0ms command — Nagle was it.)
+        raw.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         try:
             raw.sendall(("CONNECT %s:443 HTTP/1.1\r\nHost: %s:443\r\n\r\n"
                          % (WS_HOST, WS_HOST)).encode())
