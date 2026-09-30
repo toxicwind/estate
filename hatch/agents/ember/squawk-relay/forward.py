@@ -112,7 +112,7 @@ def _chat_stack():
     HMAC path: relay metadata (relayed_from/human/relay_key) is written
     as frontmatter for attribution/dedup but is NOT HMAC-covered.
 
-    The stale mesh checkout (sovereign/projects/mesh/squawk) signs a v3
+    The stale range checkout (sovereign/projects/range/ranch/squawk) signs a v3
     canonical form that canonical verify_on_read rejects -- every relayed
     message it posted fail-closed fleet reads. Never point this at the
     mesh checkout again.

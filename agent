@@ -16,16 +16,22 @@
 set -euo pipefail
 trap '' HUP
 
-export SOVEREIGN_HOME="/home/toxic/projects/sovereign-projects/tau"
-export PI_CONFIG_DIR=".tau"
+export SOVEREIGN_HOME="/home/toxic/sovereign/projects/tau"
+export PI_CONFIG_DIR="$HOME/.tau"
 export PI_CODING_AGENT_DIR="$HOME/.tau/agent"
-export DAEMON_PROJECT_DIR="$HOME"
+# The engine resolves its project dir from process.cwd() (getProjectDir in
+# packages/utils/src/dirs.ts), so the session follows wherever the user is —
+# ~/Downloads stays ~/Downloads. This variable is NOT read by the engine: the
+# broker keys off OMP_DAEMON_PROJECT_DIR, which the launch client sets per
+# session. It is exported for peer tooling and must stay truthful, so it
+# mirrors the invocation directory rather than hardcoding $HOME.
+export DAEMON_PROJECT_DIR="$PWD"
 export DAEMON_RUNTIME_DIR="$HOME/.tau/run/daemons/00a0a40d4f605f26"
 export BUN_INSTALL_CACHE_DIR="$HOME/.cache/bun"
 
-ENGINE="$SOVEREIGN_HOME/engine"
+ENGINE="$SOVEREIGN_HOME"
 DEV_ENTRY="$ENGINE/packages/coding-agent/src/cli.ts"
-PROD_ENTRY="$ENGINE/packages/coding-agent/dist/cli.js"
+PROD_ENTRY="$ENGINE/packages/coding-agent/dist/omp"
 
 die(){ printf '[tau] %s\n' "$*" >&2; exit 1; }
 need_bun(){ command -v bun >/dev/null 2>&1 || die "bun not on PATH"; }
@@ -37,10 +43,14 @@ build_dist(){
 }
 
 show_where(){
-  local mode entry
-  if [ "${TAU_FORCE_SRC:-0}" = "1" ]; then mode=dev; entry="$DEV_ENTRY"
-  elif [ -f "$PROD_ENTRY" ]; then mode=prod; entry="$PROD_ENTRY"
-  else mode=dev; entry="$DEV_ENTRY"; fi
+  local entry
+  local mode="${mode:-auto}"
+  if [ "$mode" = "auto" ]; then
+    if [ "${TAU_FORCE_SRC:-0}" = "1" ] || [ ! -f "$PROD_ENTRY" ]; then mode=dev; entry="$DEV_ENTRY"
+    else mode=prod; entry="$PROD_ENTRY"; fi
+  else
+    if [ "$mode" = "dev" ]; then entry="$DEV_ENTRY"; else entry="$PROD_ENTRY"; fi
+  fi
   printf 'engine : %s\n' "$ENGINE"
   printf 'mode   : %s\n' "$mode"
   printf 'entry  : %s\n' "$entry"
@@ -60,8 +70,7 @@ run_prod(){
     printf '[tau] dist missing — auto-building ...\n' >&2
     build_dist || { printf '[tau] build failed; falling back to source\n' >&2; run_dev "$@"; }
   fi
-  need_bun
-  exec bun "$PROD_ENTRY" -- "$@"
+  exec "$PROD_ENTRY" "$@"
 }
 
 # ---- consume launcher flags ONLY from the front ----

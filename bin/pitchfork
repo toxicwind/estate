@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Pitchfork wrapper: defaults `pitchfork status` without arguments to `pitchfork list`
+REAL_PITCHFORK="/home/toxic/.local/share/mise/installs/pitchfork/2.25.0/pitchfork"
+if [ "$1" = "status" ] && [ -z "${2:-}" ]; then
+  exec "$REAL_PITCHFORK" list
+else
+  exec "$REAL_PITCHFORK" "$@"
+fi

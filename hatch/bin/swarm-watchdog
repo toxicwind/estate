@@ -1,12 +1,38 @@
 #!/usr/bin/env python3
-"""swarm-watchdog — crash-prevention interlock (NOT a work daemon).
+"""swarm-watchdog — crash-prevention interlock (NOT a work daemon), v2 PSI-based.
 
 A minimal safety check, run every 2 min via cron:
-  hatch load1 > 10 (5x the 2 cores) -> swarm-pause + squawk alert
-  yote  load1 > 40 (2.5x the 16 cores) -> yote-side STOP of runaways + alert
+  container CPU/memory/IO pressure (cgroupv2 PSI) over trigger
+      -> swarm-pause + squawk alert
+  yote load1 > 40 (2.5x the 16 cores, single-tenant box: loadavg is
+      meaningful there) -> yote-side STOP of runaways + alert
 
 This overrides the no-polling rule the way a circuit breaker overrides
 "don't add parts": it's an interlock, not a scheduler. Silent when fine.
+
+WHY v2 (2026-09-29, Chris: "the way watchdog works is crap"):
+  v1 read HOST-global /proc/loadavg from inside a shared-kernel container
+  and compared it to a 2-vCPU-calibrated trigger (load1 > 10). The host is
+  a 126-core EPYC box: load 10 there is ~8% busyness, mostly other
+  tenants' work. v1 froze OUR workers for the host's weather. Observed
+  live: container cpu.pressure some avg10 = 0.00% (our work completely
+  un-stalled) while host /proc/pressure/cpu showed 85.6% stall — and v1
+  SIGSTOP'd a worker anyway.
+
+  v2 measures OUR container's own contention via cgroupv2 PSI
+  (/sys/fs/cgroup/{cpu,memory,io}.pressure): the kernel's direct
+  stall accounting. Precedent: Weiner et al., "PSI: pressure stall
+  information" (the /proc/pressure patch series — built at Facebook
+  precisely because load average could not root-cause contention);
+  Gregg's USE method (saturation > utilization — a waiting line is the
+  signal, not busyness). Host metrics survive only as alert CONTEXT,
+  never as a freeze trigger.
+
+  The counter-intuitive core: a busy host with an unpressured container
+  is the HEALTHY state — the correct action is nothing. Freezing on host
+  loadavg is homeopathic ops: SIGSTOP cannot reduce host contention, it
+  only destroys our own in-flight tool calls. v1's "leaky storm"
+  episodes were largely this bug misread as a storm.
 
 Pause claims are VERIFIED against live /proc state (watchdog_lib.
 verify_pause): the alert says "paused" only when processes are actually
@@ -18,6 +44,7 @@ Canonical: hatch/bin/swarm-watchdog in toxicwind/sovereign-projects.
 Deployed: ~/workspace/bin/swarm-watchdog (copy of canonical).
 """
 import json
+import re
 import subprocess
 import sys
 import time
@@ -26,9 +53,22 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import watchdog_lib as wl
 
-HATCH_TRIG = 10.0
-HATCH_RESUME_TRIG = 6.0   # load must be under this before auto-resume thaws
+# --- v2 triggers: container-local PSI (percent of walltime stalled) ---
+# Research-calibrated (perf-engineering handbook / PSI alerting practice):
+#   cpu some avg10 > 20%  = severe contention
+#   memory full avg10 > 10% = critical thrashing, OOM-adjacent
+#   io some avg10 > 50%   = severe I/O bottleneck
+# Breaker thresholds sit just past "severe" so routine bursts don't trip it;
+# resume marks sit well below so we don't flap.
+CPU_SOME_TRIG = 30.0
+CPU_SOME_RESUME = 10.0
+MEM_FULL_TRIG = 10.0
+MEM_FULL_RESUME = 3.0
+IO_SOME_TRIG = 50.0
+IO_SOME_RESUME = 15.0
+
 YOTE_TRIG = 40.0
+CGROUP = Path("/sys/fs/cgroup")
 BIN = "/home/hatch/workspace/bin"
 RUN_LEDGER = Path.home() / "workspace" / "watchdog" / "swarm_runs.jsonl"
 RUN_LEDGER.parent.mkdir(parents=True, exist_ok=True)
@@ -38,6 +78,102 @@ RUN_LEDGER.parent.mkdir(parents=True, exist_ok=True)
 EPISODE = Path.home() / ".cache" / "shingle" / "swarm-watchdog-episode.json"
 EPISODE_TTL = 1800          # an episode older than this is stale
 LEAKY_ESCALATE_AT = 2       # consecutive over-threshold runs before escalating
+
+_PSI_RE = re.compile(r"(\w+)\s+avg10=([0-9.]+)")
+
+
+def read_psi(path):
+    """Parse a PSI file into {line: {avg10: float}}. Missing file -> {}.
+
+    Unmeasured must never read as calm OR as crisis: a missing PSI file
+    returns {}, and callers treat {} as 'no signal', not 0.0.
+    """
+    out = {}
+    try:
+        for line in Path(path).read_text().splitlines():
+            m = _PSI_RE.match(line.strip())
+            if m:
+                out[m.group(1)] = float(m.group(2))
+    except (OSError, ValueError):
+        pass
+    return out
+
+
+def container_pressure():
+    """Our container's own stall signals. Returns dict with keys like
+    cpu_some, mem_full, io_some (avg10 %). {} values mean 'no signal'."""
+    p = {}
+    cpu = read_psi(CGROUP / "cpu.pressure")
+    mem = read_psi(CGROUP / "memory.pressure")
+    io = read_psi(CGROUP / "io.pressure")
+    if "some" in cpu:
+        p["cpu_some"] = cpu["some"]
+    if "full" in mem:
+        p["mem_full"] = mem["full"]
+    if "some" in mem:
+        p["mem_some"] = mem["some"]
+    if "some" in io:
+        p["io_some"] = io["some"]
+    return p
+
+
+def host_context():
+    """Host-global numbers, for alert context ONLY. Never a trigger."""
+    ctx = {}
+    try:
+        ctx["host_load1"] = float(open("/proc/loadavg").read().split()[0])
+    except (OSError, ValueError):
+        pass
+    host_cpu = read_psi("/proc/pressure/cpu")
+    if "some" in host_cpu:
+        ctx["host_cpu_stall"] = host_cpu["some"]
+    return ctx
+
+
+def yote_load():
+    try:
+        # DELIBERATE: raw exec.py, NOT yote-conn. The watchdog must read yote
+        # load even when the 18301 connector daemon is wedged. Do not migrate.
+        r = subprocess.run(["python3", f"{BIN}/../awrawr-bridge/exec.py",
+                            "cat /proc/loadavg"],
+                           capture_output=True, text=True, timeout=45)
+        for line in r.stdout.splitlines():
+            p = line.strip().split()
+            if p and p[0].replace(".", "", 1).isdigit():
+                return float(p[0])
+    except Exception:
+        pass
+    return None  # FAILED READ is not zero load. Callers must NOT treat
+                 # this as "idle" — the interlock is blind to yote this cycle.
+
+
+def alert(msg):
+    subprocess.run([f"{BIN}/squawk", "send", "fleet", msg],
+                   capture_output=True, timeout=15)
+
+
+def pressure_breached(p):
+    """(breached: bool, reason: str). Missing signals never breach."""
+    hits = []
+    if "cpu_some" in p and p["cpu_some"] > CPU_SOME_TRIG:
+        hits.append(f"cpu stall {p['cpu_some']:.1f}% > {CPU_SOME_TRIG}")
+    if "mem_full" in p and p["mem_full"] > MEM_FULL_TRIG:
+        hits.append(f"memory full-stall {p['mem_full']:.1f}% > {MEM_FULL_TRIG}")
+    if "io_some" in p and p["io_some"] > IO_SOME_TRIG:
+        hits.append(f"io stall {p['io_some']:.1f}% > {IO_SOME_TRIG}")
+    return (len(hits) > 0, "; ".join(hits))
+
+
+def pressure_settled(p):
+    """All available signals under their resume marks. No signal at all
+    counts as settled (nothing measured = nothing to hold the freeze for)."""
+    if "cpu_some" in p and p["cpu_some"] >= CPU_SOME_RESUME:
+        return False
+    if "mem_full" in p and p["mem_full"] >= MEM_FULL_RESUME:
+        return False
+    if "io_some" in p and p["io_some"] >= IO_SOME_RESUME:
+        return False
+    return True
 
 
 def load_episode():
@@ -67,31 +203,6 @@ def close_episode():
         pass
 
 
-def hatch_load():
-    return float(open("/proc/loadavg").read().split()[0])
-
-
-def yote_load():
-    try:
-        # DELIBERATE: raw exec.py, NOT yote-conn. The watchdog must read yote
-        # load even when the 18301 connector daemon is wedged. Do not migrate.
-        r = subprocess.run(["python3", f"{BIN}/../awrawr-bridge/exec.py",
-                            "cat /proc/loadavg"],
-                           capture_output=True, text=True, timeout=45)
-        for line in r.stdout.splitlines():
-            p = line.strip().split()
-            if p and p[0].replace(".", "", 1).isdigit():
-                return float(p[0])
-    except Exception:
-        pass
-    return 0.0
-
-
-def alert(msg):
-    subprocess.run([f"{BIN}/squawk", "send", "fleet", msg],
-                   capture_output=True, timeout=15)
-
-
 def main():
     run_id = wl.ledger_run_start(str(RUN_LEDGER), "swarm-watchdog")
     verdict, extra = "ok", {}
@@ -109,10 +220,13 @@ def main():
 
 
 def tick():
-    hl = hatch_load()
+    p = container_pressure()
+    ctx = host_context()
+    ctx_str = ", ".join(f"{k}={v}" for k, v in ctx.items()) or "host ctx n/a"
     actions = []
     ep = load_episode()
-    if hl > HATCH_TRIG:
+    breached, reason = pressure_breached(p)
+    if breached:
         r = subprocess.run([f"{BIN}/swarm-pause"], capture_output=True,
                            text=True, timeout=60)
         pause_out = (r.stdout or "").strip().splitlines()
@@ -121,20 +235,22 @@ def tick():
         # froze nothing ("hatch-execd not found; nothing to pause").
         v = wl.verify_pause()
         if v["frozen"] > 0:
-            alert(f"WATCHDOG (ember): hatch load {hl:.1f} > {HATCH_TRIG} — "
+            alert(f"WATCHDOG (ember): container pressure BREACH ({reason}) — "
                   f"swarm auto-paused ({v['frozen']} tool processes "
-                  f"SIGSTOP-frozen, verified live). Resume: swarm-resume.")
-            print(f"hatch {hl:.1f}: PAUSED ({v['frozen']} frozen)",
-                  flush=True)
+                  f"SIGSTOP-frozen, verified live). Host ctx: {ctx_str}. "
+                  f"Resume: swarm-resume (auto when pressure settles).")
+            print(f"pressure BREACH ({reason}): PAUSED ({v['frozen']} frozen); "
+                  f"host ctx: {ctx_str}", flush=True)
         else:
             said = pause_out[-1][:160] if pause_out else "(no output)"
-            alert(f"WATCHDOG (ember): hatch load {hl:.1f} > {HATCH_TRIG} — "
+            alert(f"WATCHDOG (ember): container pressure BREACH ({reason}) — "
                   f"PAUSE FAILED: 0 processes observed frozen "
                   f"({v['why']}). swarm-pause said: {said}. NOT paused; "
-                  f"manual check needed.")
-            print(f"hatch {hl:.1f}: PAUSE-FAILED ({v['why']})", flush=True)
-        actions.append(f"hatch-pause frozen={v['frozen']}")
-        # Storm-episode tracking: if load is STILL over threshold on the
+                  f"manual check needed. Host ctx: {ctx_str}.")
+            print(f"pressure BREACH ({reason}): PAUSE-FAILED ({v['why']})",
+                  flush=True)
+        actions.append(f"hatch-pause frozen={v['frozen']} reason={reason}")
+        # Storm-episode tracking: if pressure is STILL over threshold on the
         # next cycle(s), the freeze is leaky — new tool-call storms keep
         # arriving from agents running elsewhere. Re-firing the pause is
         # automatic; the escalation below says so once per episode so the
@@ -142,7 +258,7 @@ def tick():
         if ep is None:
             ep = {"start": time.time(), "fires": 1, "leaky": 0,
                   "escalated": False,
-                  "load_at_first_pause": round(hl, 2),
+                  "pressure_at_first_pause": reason,
                   "frozen_first": v["frozen"]}
         else:
             ep["fires"] = ep.get("fires", 0) + 1
@@ -150,60 +266,77 @@ def tick():
         if ep["leaky"] >= LEAKY_ESCALATE_AT and not ep.get("escalated"):
             mins = int((time.time() - ep["start"]) / 60)
             alert(f"WATCHDOG (ember): storm PERSISTENT — {ep['fires']} pauses "
-                  f"in {mins}m and hatch load still {hl:.1f} > {HATCH_TRIG}. "
-                  f"The freeze is leaky: agents on other cells keep spawning "
-                  f"fresh tool-call storms faster than the freeze stops them. "
-                  f"Hold swarm-resume until load settles; throttle at the "
-                  f"spawn side (fewer parallel bridge execs, no sleep-poll "
-                  f"loops, batch bridge calls).")
+                  f"in {mins}m and container pressure still breached "
+                  f"({reason}). The freeze is leaky: agents on other cells "
+                  f"keep spawning fresh tool-call storms faster than the "
+                  f"freeze stops them. Hold swarm-resume until pressure "
+                  f"settles; throttle at the spawn side (fewer parallel "
+                  f"bridge execs, no sleep-poll loops, batch bridge calls). "
+                  f"Host ctx: {ctx_str}.")
             ep["escalated"] = True
             actions.append("storm-escalated")
         save_episode(ep)
     yl = yote_load()
-    if yl > YOTE_TRIG:
+    if yl is None:
+        # Bridge exec failed — yote interlock is BLIND this cycle, not
+        # "idle". Never claim all-clear, never eject, never auto-resume
+        # on the combined condition while yote is unreadable.
+        print("yote: UNREADABLE (bridge exec failed) — yote interlock blind "
+              "this cycle", flush=True)
+        actions.append("yote-unreadable")
+    elif yl > YOTE_TRIG:
         subprocess.run([f"{BIN}/swarm-eject", "--yote-only"],
                        capture_output=True, timeout=120)
         alert(f"WATCHDOG (ember): yote load {yl:.1f} > {YOTE_TRIG} — "
               f"runaways STOPped via eject.")
         print(f"yote {yl:.1f}: EJECTED", flush=True)
         actions.append("yote-eject")
-    if hl <= HATCH_TRIG and yl <= YOTE_TRIG:
-        # Auto-resume: a SIGSTOP-frozen tool tree left in place after load
-        # settles is a silent completion killer (proven 2026-09-20: 39
-        # T-state tool processes, workers' remote cognition alive but their
-        # local tool calls frozen indefinitely). Only resume when BOTH
-        # hold: load is safely under the resume trigger AND live /proc
-        # shows frozen hatch-execd descendants. Never resume from a state
-        # file alone.
+    if not breached and yl is not None and yl <= YOTE_TRIG:
+        # Auto-resume: a SIGSTOP-frozen tool tree left in place after
+        # pressure settles is a silent completion killer (proven
+        # 2026-09-20: 39 T-state tool processes, workers' remote cognition
+        # alive but their local tool calls frozen indefinitely). Only
+        # resume when BOTH hold: container pressure is settled AND live
+        # /proc shows frozen hatch-execd descendants. Never resume from a
+        # state file alone. Host loadavg is NOT a resume gate anymore —
+        # v1 held freezes for host weather (see module docstring).
         try:
             v = wl.verify_pause()
         except Exception:
             v = {"frozen": 0, "why": "verify-error"}
-        if v["frozen"] > 0 and hl < HATCH_RESUME_TRIG:
+        if v["frozen"] > 0 and pressure_settled(p):
             r = subprocess.run([f"{BIN}/swarm-resume"], capture_output=True,
                                text=True, timeout=120)
             v2 = wl.verify_pause()
             if v2["frozen"] == 0:
-                alert(f"WATCHDOG (ember): hatch load {hl:.1f} < "
-                      f"{HATCH_RESUME_TRIG} — auto-resumed frozen tool tree "
-                      f"({v['frozen']} processes SIGCONTed, verified live).")
+                alert(f"WATCHDOG (ember): container pressure settled — "
+                      f"auto-resumed frozen tool tree ({v['frozen']} "
+                      f"processes SIGCONTed, verified live). "
+                      f"Host ctx: {ctx_str}.")
                 actions.append(f"auto-resume frozen={v['frozen']}")
             else:
-                alert(f"WATCHDOG (ember): auto-resume PARTIAL — load "
-                      f"{hl:.1f} but {v2['frozen']} processes still frozen "
+                alert(f"WATCHDOG (ember): auto-resume PARTIAL — pressure "
+                      f"settled but {v2['frozen']} processes still frozen "
                       f"({v2['why']}). Manual swarm-resume needed.")
                 actions.append(f"resume-partial frozen={v2['frozen']}")
-            print(f"hatch {hl:.1f}: AUTO-RESUME ({v['frozen']}->{v2['frozen']})",
-                  flush=True)
+            print(f"pressure settled: AUTO-RESUME "
+                  f"({v['frozen']}->{v2['frozen']})", flush=True)
         elif v["frozen"] > 0:
-            print(f"hatch {hl:.1f}: frozen={v['frozen']} held "
-                  f"(load >= {HATCH_RESUME_TRIG})", flush=True)
+            print(f"pressure not settled: frozen={v['frozen']} held",
+                  flush=True)
         if ep:
             close_episode()
             actions.append("storm-episode-closed")
-        print(f"ok hatch={hl:.1f} yote={yl:.1f}", flush=True)
-    return ("ok", {"actions": actions,
-                   "hatch_load": hl, "yote_load": yl})
+        print(f"ok pressure={p} yote={yl:.1f}", flush=True)
+    elif not breached and yl is None:
+        # Container is quiet but yote is blind — report honestly, do not
+        # claim all-clear, and hold any auto-resume until yote is
+        # readable again.
+        print(f"pressure={p} yote=unknown — yote blind, no auto-resume",
+              flush=True)
+    return ("ok", {"actions": actions, "pressure": p,
+                   "host_ctx": ctx,
+                   "yote_load": yl if yl is not None else "unknown"})
 
 
 if __name__ == "__main__":

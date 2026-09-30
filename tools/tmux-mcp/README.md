@@ -45,7 +45,7 @@ flowchart LR
 /home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/tmux-mcp/server.ts
 ```
 
-Registered in the mesh gateway (`mesh/gateway/mcp_config.json`) as `tmux` (currently disabled pending deployment review).
+Registered in the shep gateway (`projects/range/ranch/barn/shep/mcp_config.json`) as `tmux` (currently disabled pending deployment review).
 
 ## Architecture
 
@@ -67,4 +67,4 @@ Contributions: the destructive-send gate is load-bearing — any new write-capab
 
 ## License & Security
 
-Part of the [sovereign monorepo](../../README.md#license) — stack glue is MIT where marked. Security model: reads are unrestricted, sends are gated by schema-required `confirm:true` and audit-logged to stderr. It executes `tmux` commands as the hosting user — scope exposure through the MCP client config (e.g. the mesh gateway registration), not through this server.
+Part of the [sovereign monorepo](../../README.md#license) — stack glue is MIT where marked. Security model: reads are unrestricted, sends are gated by schema-required `confirm:true` and audit-logged to stderr. It executes `tmux` commands as the hosting user — scope exposure through the MCP client config (e.g. the shep gateway registration), not through this server.

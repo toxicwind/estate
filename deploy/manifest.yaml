@@ -33,9 +33,9 @@ version: 1
 
 binaries:
   herd:
-    path: /home/toxic/projects/sovereign-projects/sovereign-swap/build/llama-swap
-    sha256: "98978a2612445ff59b07abb51797d453368bb494f9c4fb28ed57c6092d2281f6"
-    immutable_copy: /home/toxic/projects/sovereign-projects/sovereign-swap/build/llama-swap.20260921-124036
+    path: /home/toxic/sovereign/projects/herd/llama-swap
+    sha256: "83119623ecbd209057af130920b3c03ecc260bcdf93acbbfad5f5ec1be87e27b"
+    immutable_copy: /home/toxic/sovereign/projects/herd/llama-swap.20260921-124036
     source: toxicwind/sovereign-swap
     commit: 7fc25280816fa7f98764ac46d1435d55ac9dc3c3
     upstream_base: 7a14664d98f0e66bc68bba08548290ca0b469f98

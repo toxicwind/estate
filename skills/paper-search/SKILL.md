@@ -1,6 +1,7 @@
 ---
-name: "paper_search"
-description: "Paper research as a first-class chat capability: PAPER-TASK/PAPER-RESULT protocol over the fleet channel, arXiv + alphaXiv leg racer, pitchfork-managed poller daemon. Composes the hft-latency skill (race/fail-fast/winner-log doctrine — read that skill, not redefined here) and feeds architect-caucus debates with ranked paper evidence."
+name: paper-search
+description: >
+  Paper research as a first-class chat capability: PAPER-TASK/PAPER-RESULT protocol over the fleet channel, arXiv + alphaXiv leg racer, pitchfork-managed poller daemon. Triggers on: "paper search", "arxiv", "paper-poller".
 ---
 
 # paper-search

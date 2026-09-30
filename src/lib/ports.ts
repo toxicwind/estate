@@ -9,6 +9,14 @@ import { resolve } from "node:path";
 
 const SOV = process.env.SOVEREIGN_ROOT || resolve(homedir(), "sovereign");
 
+type EnvLayer = { resolve: () => string; precedence: number };
+
+/**
+ * Parse one env file into a map. Empty values are dropped: an empty string
+ * means "not configured", and exporting "" makes `key in env` and
+ * `!== undefined` checks pass, so callers fire authenticated requests and eat
+ * a 401 instead of reporting the credential as missing.
+ */
 /**
  * Strip a trailing ` # comment` from an env-file value. Quote-aware: a `#`
  * inside a quoted value is preserved, so `KEY="a#b"` keeps `a#b`.
@@ -28,9 +36,10 @@ function stripInlineComment(raw: string): string {
   return (hash >= 0 ? v.slice(0, hash) : v).trim();
 }
 
-function loadEnvFile(path: string): void {
-  if (!existsSync(path)) return;
-  for (let line of readFileSync(path, "utf8").split("\n")) {
+function parseEnvFile(file: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  if (!existsSync(file)) return out;
+  for (let line of readFileSync(file, "utf8").split("\n")) {
     line = line.trim();
     if (!line || line.startsWith("#")) continue;
     if (line.startsWith("export ")) line = line.slice(7);
@@ -41,17 +50,41 @@ function loadEnvFile(path: string): void {
       /^['"]|['"]$/g,
       "",
     );
-    if (k && v !== undefined && process.env[k] === undefined) {
+    if (!k || v === "") continue;
+    out[k] = v;
+  }
+  return out;
+}
+
+/**
+ * Layered env load, lowest precedence first; the highest-precedence layer
+ * that declares a key wins.
+ *
+ * The vault MUST come last, and it MUST be able to overwrite a key that is
+ * already in process.env. Bun auto-loads a dotfile from the cwd before any
+ * user code runs, so a service launched from $HOME/sovereign starts with
+ * 14-character placeholder values already in process.env (FLOCK_API_KEY,
+ * SCOUT_API_KEY, SCOUT_MODEL, the *_BASE_URLs). A "already set, skip it"
+ * loader then never applies ~/.secrets and every consumer authenticates with
+ * the placeholder; the same service launched from any other directory has no
+ * dotfile and gets the real value. That is why this only ever looked broken
+ * "sometimes", and why it tracked the working directory.
+ *
+ * Keys no layer declares are left exactly as the caller exported them.
+ */
+const ENV_LAYERS: EnvLayer[] = [
+  { resolve: () => resolve(SOV, "config/ports.env"), precedence: 0 },
+  { resolve: () => resolve(SOV, ".env.local"), precedence: 1 },
+  { resolve: () => resolve(homedir(), ".secrets"), precedence: 2 },
+];
+
+export function loadSovereignPorts(): void {
+  const layers = [...ENV_LAYERS].sort((a, b) => a.precedence - b.precedence);
+  for (const layer of layers) {
+    for (const [k, v] of Object.entries(parseEnvFile(layer.resolve()))) {
       process.env[k] = v;
     }
   }
-}
-
-/** Idempotent: load ports.env then .env.local into process.env */
-export function loadSovereignPorts(): void {
-  loadEnvFile(resolve(SOV, "config/ports.env"));
-  loadEnvFile(resolve(SOV, ".env.local"));
-  loadEnvFile(resolve(homedir(), ".secrets"));
 }
 
 /**
