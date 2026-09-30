@@ -140,3 +140,28 @@ pools:
       - GEMINI_EAP_KEY_4
       - GEMINI_EAP_KEY_5
       - GEMINI_EAP_KEY_6
+
+  # --- mistral: Mistral AI direct (added 2026-09-29, kestrel/GuideLLM audit) ---
+  # Key verified live 2026-09-29: /v1/models -> 200 (46 models), chat
+  # completions -> 200 on ministral-3b/8b/14b-latest, codestral-latest,
+  # mistral-code-latest. mistral-medium-*/magistral-*/mistral-small-* are
+  # 429 at 0 req/min on this key (no entitlement) — NOT listed in herd.yaml.
+  # mistral-large-latest is 403 (not entitled).
+  mistral:
+    upstream: https://api.mistral.ai
+    health:
+      method: GET
+      path: /v1/models
+      ok: [200]
+    fail_status: [400, 401, 402, 403, 429]
+    probe_timeout: 5
+    request_timeout: 180
+    cooldown:
+      400: 120
+      401: 300
+      402: 300
+      403: 300
+      429: 60
+      default: 120
+    keys:
+      - MISTRAL_API_KEY

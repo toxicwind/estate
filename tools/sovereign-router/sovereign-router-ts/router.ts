@@ -14,8 +14,8 @@ import { createHash } from "node:crypto";
 import { watch, readFileSync, existsSync } from "node:fs";
 import { handleMeshRequest } from "../../../src/lib/ghas-mesh-features.ts";
 import type { ChatBody } from "./router_types.ts";
-import { CODING, PROVIDERS, PROVIDER_MODELS, keyOk, getKey, STRATEGY, MAX_PARALLEL, PORT, json, log, DB_PATH, isExplicit, normalizeModelSpec, resolveModel, loadEnvFile } from "./router_config.ts";
-import { catalogModelsFor, LIVE_MODELS, LIVE_MODEL_META, modelFree } from "./router_config.ts";
+import { CODING, PROVIDERS, keyOk, getKey, STRATEGY, MAX_PARALLEL, PORT, json, log, DB_PATH, isExplicit, normalizeModelSpec, resolveModel, loadEnvFile, catalog, catalogModelsFor } from "./router_config.ts";
+import { LIVE_MODEL_META, modelFree } from "./router_config.ts";
 import { startLiveDiscovery, refreshLiveModels, LIVE_STATUS } from "./router_live_models.ts";
 import { state, startQuarantineProber } from "./router_matrix.ts";
 import { ROUTERS, routeHybrid, callOne, pickWeighted, isRoutableModelId, tryLongctxPin, substantive } from "./router_strategy.ts";
@@ -197,12 +197,14 @@ const server = Bun.serve({
     }
 
     if (req.method === "GET" && (path === "/v1/models" || path === "/models")) {
-      // Union of every model every configured key can serve (curated + live
-      // discovery), plus the CODING aliases. Each entry carries the provider's
-      // live metadata (pricing, context_length, architecture...) plus the
-      // router's own routing metadata under "x-sovereign". The free flag is
-      // the same live-derived eligibility routing consumes (modelFree), not a
-      // static suffix guess.
+      // Union of every model every configured key can serve (unified catalog:
+      // seeds pre-discovery, live discovery after), plus the CODING aliases.
+      // Each entry carries the provider's live metadata (pricing,
+      // context_length, architecture...) plus the router's own routing
+      // metadata under "x-sovereign". The free flag is the same live-derived
+      // eligibility routing consumes (modelFree), not a static suffix guess.
+      // x-sovereign.source is the catalog's model source:
+      // seed | live | static | overlay.
       const seen = new Set<string>();
       const data: Record<string, unknown>[] = [];
       const sovMeta = (p: string, id: string, source: string) => ({
@@ -227,16 +229,8 @@ const server = Bun.serve({
       };
       for (const p of Object.keys(PROVIDERS)) {
         if (!keyOk(p)) continue;
-        const curated = new Set(PROVIDER_MODELS[p] || []);
-        const liveIds = new Set(LIVE_MODELS[p] || []);
         for (const m of catalogModelsFor(p)) {
-          const source =
-            curated.has(m) && liveIds.has(m)
-              ? "curated+live"
-              : liveIds.has(m)
-                ? "live"
-                : "curated";
-          push(p, m, source);
+          push(p, m, catalog.modelSource(p, m));
         }
       }
       for (const id of Object.keys(CODING)) {
@@ -272,7 +266,7 @@ const server = Bun.serve({
           lane_dead: state.laneDead(p),
           elo: Math.round((state.elo.get(p) || 1000) * 10) / 10,
           models: catalogModelsFor(p).length,
-          live_models: (LIVE_MODELS[p] || []).length,
+          live_models: catalog.liveIds(p).length,
           live_status: LIVE_STATUS[p] || null,
           health: dbSummary[p] || null,
           latency_ms: pct[p] || { p50_ms: null, p95_ms: null, n: 0 },
@@ -317,7 +311,7 @@ const server = Bun.serve({
           `sovereign_router_rate_limited_total{provider="${p}"} ${s.rate_limited ?? 0}`,
           `sovereign_router_circuit_open{provider="${p}"} ${circuitNum(p)}`,
           `sovereign_router_elo{provider="${p}"} ${Math.round((state.elo.get(p) || 1000) * 10) / 10}`,
-          `sovereign_router_live_models{provider="${p}"} ${(LIVE_MODELS[p] || []).length}`,
+          `sovereign_router_live_models{provider="${p}"} ${catalog.liveIds(p).length}`,
         );
       }
       for (const [k, v] of state.emptyStrikes) {
@@ -365,7 +359,7 @@ const server = Bun.serve({
           elo: Math.round((state.elo.get(p) || 1000) * 10) / 10,
           circuit: state.circuit.get(p) || "unknown",
           models: catalogModelsFor(p).length,
-          live_models: (LIVE_MODELS[p] || []).length,
+          live_models: catalog.liveIds(p).length,
           live_status: LIVE_STATUS[p] || null,
           health: dbSummary[p] || null,
         };
@@ -386,6 +380,28 @@ const server = Bun.serve({
         if (!id) return json({ error: "unauthorized" }, 401);
       }
       return json({ status: "ok", reloaded: hotReload("http") });
+    }
+
+    // 404 event intake for non-TS consumers (Go herd). The catalog is the
+    // brain: a serve-time 404 quarantines the id immediately in the unified
+    // catalog and the live export is rewritten, so herd picks it up from the
+    // file. Herd reports the event; the quarantine decision lives here, once.
+    if (req.method === "POST" && path === "/admin/catalog/serve-404") {
+      if (AUTH) {
+        const id = await identifyRequest(req, AUTH.admin, AUTH.store);
+        if (!id) return json({ error: "unauthorized" }, 401);
+      }
+      let body: { provider?: string; model?: string } = {};
+      try {
+        body = (await req.json()) as typeof body;
+      } catch {
+        return json({ error: "invalid json" }, 400);
+      }
+      const provider = String(body.provider ?? "").trim();
+      const model = String(body.model ?? "").trim();
+      if (!provider || !model) return json({ error: "provider and model required" }, 400);
+      state.noteEntitlement404(provider, model);
+      return json({ status: "ok", provider, model, quarantined: true });
     }
 
     // openfang `agent set` parsing shim (router-side; the fork itself is

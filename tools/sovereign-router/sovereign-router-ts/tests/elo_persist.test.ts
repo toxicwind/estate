@@ -23,10 +23,14 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 
-// Must be set before the router modules are imported (DB_PATH is read once).
+// Must be set before the router modules are imported (DB_PATH and the
+// catalog state path are read once at import). The catalog path is unique
+// per run so no persisted quarantine leaks between runs.
 // The module-level `state` singleton uses this; the tests below construct
 // their own Matrix instances on per-test temp DBs.
 process.env.SOVEREIGN_DB = "/tmp/sovereign_router_elo_persist_module.db";
+process.env.SOVEREIGN_CATALOG_STATE =
+  `/tmp/sovereign_router_elo_persist_test.catalog.${process.pid}.json`;
 
 const { Matrix } = await import("../router_matrix");
 const { PROVIDERS } = await import("../router_config");
@@ -157,29 +161,29 @@ describe("Elo persistence", () => {
     const db = tmpDb();
     const priors = readPriors();
     const p = "groq";
+    const prior = priors[p] ?? 1000;
     // The edge needs stored == prior exactly.
-    expect(priors[p]).toBe(1000);
     // Persist exactly the bench prior as if previously learned.
     const h = new HealthDB(db);
-    h.saveElo(p, 1000);
+    h.saveElo(p, prior);
     h.conn.close();
     // Startup restores it and marks it persisted.
     const m = new Matrix(db);
-    expect(m.elo.get(p)).toBe(1000);
+    expect(m.elo.get(p)).toBe(prior);
     expect(m.persistedEloProviders.has(p)).toBe(true);
     const backup = fs.readFileSync(PRIORS_URL, "utf8");
     try {
-      // Priors refresh: groq 1000 -> 1100. Old numeric logic (cur === last)
-      // would re-seed to 1100; the persisted set must protect it.
+      // Priors refresh: groq prior -> prior+100. Old numeric logic (cur === last)
+      // would re-seed to the new value; the persisted set must protect it.
       const doc = JSON.parse(backup);
-      doc.priors[p].elo = 1100;
+      doc.priors[p].elo = prior + 100;
       doc.generated_ts = new Date().toISOString();
       fs.writeFileSync(PRIORS_URL, JSON.stringify(doc, null, 2));
       m.priorsMtime = 0; // force re-evaluation
       const r = m.applyBenchPriors();
       expect(r.reloaded).toBe(true);
       expect(r.reseeded).not.toContain(p);
-      expect(m.elo.get(p)).toBe(1000); // protected: restored, not re-seeded
+      expect(m.elo.get(p)).toBe(prior); // protected: restored, not re-seeded
     } finally {
       fs.writeFileSync(PRIORS_URL, backup);
     }
@@ -203,7 +207,11 @@ describe("Elo persistence", () => {
     if (r1.exitCode !== 0)
       console.log("writer stderr:", r1.stderr.toString().slice(-2000));
     expect(r1.exitCode).toBe(0);
-    expect(r1.stdout.toString()).toContain("wrote:1064");
+    // The writer's exact value is derived from the live bench prior; the
+    // property under test is that the READER restores that same value.
+    const wrote = r1.stdout.toString().match(/wrote:(\d+)/);
+    expect(wrote).not.toBeNull();
+    const wroteVal = wrote[1];
     // First process is fully gone; a new process must restore from the DB.
     const reader = `
       process.env.SOVEREIGN_DB = ${JSON.stringify(db)};
@@ -218,7 +226,7 @@ describe("Elo persistence", () => {
     if (r2.exitCode !== 0)
       console.log("reader stderr:", r2.stderr.toString().slice(-2000));
     expect(r2.exitCode).toBe(0);
-    expect(r2.stdout.toString()).toContain("read:1064");
+    expect(r2.stdout.toString()).toContain(`read:${wroteVal}`);
   });
 
   test("corrupt DB fails open: Matrix constructs, routing on priors", () => {

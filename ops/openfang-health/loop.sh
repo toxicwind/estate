@@ -9,7 +9,7 @@
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STATE="${PITCHFORK_STATE:-/home/toxic/.local/state/pitchfork/state.toml}"
-LOG="${SHINGLE_HOME:-/home/toxic/shingle}/var/openfang-health/loop.log"
+LOG="${SHINGLE_HOME:-/home/toxic/.fleet-bus}/var/openfang-health/loop.log"
 DIGEST_TIMEOUT=86400
 
 run_check() {

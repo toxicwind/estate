@@ -1,6 +1,18 @@
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 
+// Master providers package — the single source of truth for provider
+// definitions, live model discovery, aliases, seeds, and quarantine.
+// The router keeps only: env overlays (base-URL/key overrides), the
+// runtime-dynamic local-role aliases, and router-side metadata.
+import {
+  ModelCatalog,
+  PROVIDER_DEFS as PKG_PROVIDER_DEFS,
+  MODEL_ALIASES as PKG_MODEL_ALIASES,
+  DEAD_MODEL_IDS as PKG_DEAD_MODEL_IDS,
+  type ProviderDef,
+} from "../../../projects/range/ranch/tack/src/index.ts";
+
 // ---------------------------------------------------------------------------
 // Secrets + local stack env (mise loads these; standalone bun needs them too)
 // ---------------------------------------------------------------------------
@@ -33,9 +45,9 @@ loadEnvFile("/home/toxic/sovereign/config/ports.env");
 
 loadEnvFile("/home/toxic/sovereign/.env.local");
 
-// Port SSOT: process-compose injects SOVEREIGN_PORT=${SOVEREIGN_ROUTER_PORT}
+// Port SSOT: service-specific SOVEREIGN_ROUTER_PORT wins; SOVEREIGN_PORT is legacy fallback.
 export const _portRaw =
-  process.env.SOVEREIGN_PORT || process.env.SOVEREIGN_ROUTER_PORT || "";
+  process.env.SOVEREIGN_ROUTER_PORT || process.env.SOVEREIGN_PORT || "";
 
 if (!_portRaw) {
   throw new Error(
@@ -131,121 +143,96 @@ export function loadLocalRoleModels(): {
 export const LOCAL_ROLES = loadLocalRoleModels();
 
 // ---------------------------------------------------------------------------
-// Providers (must come before Catalog that depends on LOCAL_ROLES)
+// Providers — derived from the master package, with router-local env
+// overlays for base URLs. The package owns names, default bases, key envs,
+// adapters, seeds, and aliases; this file only applies this box's overrides.
 // ---------------------------------------------------------------------------
+function effectiveDefs(): ProviderDef[] {
+  return PKG_PROVIDER_DEFS.map((d) => {
+    // Local SSOT — always first-class for sovereign GPU path
+    if (d.name === "llama-swap") return { ...d, baseUrl: LLAMA_SWAP_V1 };
+    // Local NIM proxy (:8000, nim-consolidation track). Shows dead in
+    // /status until the proxy key lands — the router then picks it up via
+    // hot reload (/admin/reload, SIGHUP).
+    if (d.name === "nim-local")
+      return { ...d, baseUrl: process.env.NIM_PROXY_BASE || d.baseUrl };
+    // kimi-auto sidecar shim (pitchfork daemon kimi-auto-shim): rewrites
+    // model "kimi-auto" -> resolver's current best Kimi, forwards to herd.
+    // Kimi-only by design (shim 503s when no Kimi candidate is healthy).
+    if (d.name === "kimi-auto")
+      return {
+        ...d,
+        baseUrl:
+          process.env.KIMI_AUTO_SHIM_BASE ||
+          "http://127.0.0.1:" +
+            (process.env.KIMI_AUTO_SHIM_PORT || "25105") +
+            "/v1",
+      };
+    return d;
+  });
+}
+
+const EFFECTIVE_DEFS = effectiveDefs();
+
 export const PROVIDERS: Record<
   string,
   { base: string; key_env: string; key_env_alt?: string; no_auth?: boolean }
-> = {
-  // Local SSOT — always first-class for sovereign GPU path
-  "llama-swap": {
-    base: LLAMA_SWAP_V1,
-    key_env: "LLAMA_SWAP_API_KEY",
-    no_auth: true,
-  },
-  // Local NIM proxy (:8000, nim-consolidation track). Key via
-  // NIM_PROXY_API_KEY; shows dead in /status until the proxy key lands --
-  // the router then picks it up via hot reload (/admin/reload, SIGHUP).
-  "nim-local": {
-    base: process.env.NIM_PROXY_BASE || "http://127.0.0.1:8000/v1",
-    key_env: "NIM_PROXY_API_KEY",
-  },
-  // kimi-auto sidecar shim (pitchfork daemon kimi-auto-shim): rewrites
-  // model "kimi-auto" -> resolver's current best Kimi, forwards to herd.
-  // Kimi-only by design (shim 503s when no Kimi candidate is healthy).
-  "kimi-auto": {
-    base:
-      process.env.KIMI_AUTO_SHIM_BASE ||
-      "http://127.0.0.1:" + (process.env.KIMI_AUTO_SHIM_PORT || "25105") + "/v1",
-    key_env: "KIMI_AUTO_SHIM_KEY",
-    no_auth: true,
-  },
-  openrouter: {
-    base: "https://openrouter.ai/api/v1",
-    key_env: "OPENROUTER_API_KEY",
-  },
-  // NVIDIA direct (the :8000 key-proxy is retired — multi-key rotation and
-  // per-key rate limiting now live in the router itself, see router_matrix).
-  nvidia: {
-    base: "https://integrate.api.nvidia.com/v1",
-    key_env: "NVIDIA_API_KEY",
-    key_env_alt: "NVIDIA_API_KEYS",
-  },
-  groq: { base: "https://api.groq.com/openai/v1", key_env: "GROQ_API_KEY" },
-  cerebras: {
-    base: "https://api.cerebras.ai/v1",
-    key_env: "CEREBRAS_API_KEY",
-  },
-  google: {
-    base: "https://generativelanguage.googleapis.com/v1beta/openai",
-    key_env: "GOOGLE_API_KEY",
-  },
-  mistral: { base: "https://api.mistral.ai/v1", key_env: "MISTRAL_API_KEY" },
-};
+> = Object.fromEntries(
+  EFFECTIVE_DEFS.filter((d) => d.enabled !== false).map((d) => [
+    d.name,
+    {
+      base: d.baseUrl,
+      key_env: d.keyEnv,
+      ...(d.keyEnvAlt ? { key_env_alt: d.keyEnvAlt } : {}),
+      ...(d.auth === "none" ? { no_auth: true } : {}),
+    },
+  ]),
+);
 
 // ---------------------------------------------------------------------------
-// Catalog (depends on LOCAL_ROLES, must come after loadLocalRoleModels)
+// Catalog — the unified live model catalog (master providers package).
+//
+// Serving semantics (enforced by the package, not this file):
+// - Live discovery owns membership. Seeds serve ONLY before a provider's
+//   first successful discovery; afterwards they go inert.
+// - Failed refresh changes nothing (stale-serve); a 404 on serve or two
+//   consecutive successful refreshes missing an id quarantines it.
+// - The dead list is permanent. Quarantine re-admits on re-listing.
 // ---------------------------------------------------------------------------
-export const PROVIDER_MODELS: Record<string, string[]> = {
-  "llama-swap": [LOCAL_ROLES.fast, LOCAL_ROLES.quality, LOCAL_ROLES.longctx],
-  "nim-local": [],
-  "kimi-auto": ["kimi-auto"],
-  openrouter: [
-    // 2026-09-21 sweep: delisted IDs removed (verified against the public
-    // /models list + live 404 probes): tencent/hy3:free, poolside/laguna-
-    // m.1:free, nvidia/nemotron-3-nano-30b-a3b:free, qwen/qwen3-coder:free,
-    // meta-llama/llama-3.3-70b-instruct:free,
-    // nousresearch/hermes-3-llama-3.1-405b:free, openai/gpt-oss-20b:free.
-    // Belt-and-braces: DEAD_MODEL_IDS also filters them if live discovery
-    // re-lists them.
-    "poolside/laguna-xs-2.1:free",
-    "google/gemma-4-31b-it:free",
-    "nvidia/nemotron-3-super-120b-a12b:free",
-    "inclusionai/ling-3.0-flash-fin:free",
-  ],
-  nvidia: [
-    "nvidia/nemotron-3-super-120b-a12b",
-    // 2026-09-21: second entitled NVIDIA lane — serving 200s (0.8-10s),
-    // genuine reasoning trace. Backup when super flaps; Elo sorts it live.
-    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
-    "nvidia/nemotron-3-nano-30b-a3b",
-    "meta/llama-3.1-70b-instruct",
-    "qwen/qwen3.5-397b-a17b",
-    "qwen/qwen3.5-122b-a10b",
-    "deepseek-ai/deepseek-v4-flash",
-    "deepseek-ai/deepseek-v4-pro",
-    "mistralai/mistral-large-3-675b-instruct-2512",
-    "google/gemma-4-31b-it",
-    "z-ai/glm-5.2",
-    "thinkingmachines/inkling",
-  ],
-  groq: [
-    "llama-3.3-70b-versatile",
-    "qwen/qwen3-32b",
-    "qwen/qwen3.6-27b",
-    "openai/gpt-oss-120b",
-    "openai/gpt-oss-20b",
-    "meta-llama/llama-4-scout-17b-16e-instruct",
-  ],
-  cerebras: [],
-  google: [
-    "models/gemini-2.5-flash",
-    "models/gemini-2.5-flash-lite",
-    "models/gemini-2.0-flash",
-    "models/gemma-4-31b-it",
-  ],
-  mistral: [
-    "mistral-small-latest",
-    "codestral-latest",
-    "mistral-large-latest",
-    "mistral-medium-latest",
-  ],
-};
+export const CATALOG_STATE_PATH =
+  process.env.SOVEREIGN_CATALOG_STATE ||
+  "/home/toxic/sovereign/.state/provider-catalog.json";
+
+export const catalog = new ModelCatalog(EFFECTIVE_DEFS, {
+  aliases: PKG_MODEL_ALIASES,
+  deadIds: PKG_DEAD_MODEL_IDS,
+});
+
+// Restore persisted discovery state (quarantine, miss streaks,
+// everDiscovered). Synchronous — runs once at import; the async discovery
+// scheduler in router_live_models.ts owns everything after.
+catalog.loadFromFileSync(CATALOG_STATE_PATH);
+
+// Router-local overlay: the dynamic local-role model ids from
+// .state/best-models.json. These are runtime-derived (not package data),
+// so they live in the catalog's overlay tier — served always, never
+// pruned by discovery, never persisted — instead of a hardcoded
+// provider->models list.
+catalog.setOverlay("llama-swap", [
+  LOCAL_ROLES.fast,
+  LOCAL_ROLES.quality,
+  LOCAL_ROLES.longctx,
+]);
+
+/** Persist catalog state (quarantine/misses/discovery watermarks). */
+export function persistCatalog(): void {
+  catalog.saveToFile(CATALOG_STATE_PATH).catch((e) => log("catalog persist failed:", e));
+}
 
 // ---------------------------------------------------------------------------
 // Live per-model metadata (populated at runtime by router_live_models.ts):
 // provider -> model id -> raw provider /models object (pricing, context
-// length, architecture...). IDs stay in LIVE_MODELS for routing; metadata
+// length, architecture...). Model IDs live in the package catalog; metadata
 // enriches /v1/models so clients see live data, not just id strings.
 export const LIVE_MODEL_META: Record<string, Record<string, unknown>> = {};
 
@@ -263,58 +250,27 @@ export function nvidiaKeys(): string[] {
 }
 
 // ---------------------------------------------------------------------------
-// Live model catalog (populated at runtime by router_live_models.ts)
+// Live model catalog — owned by the package's ModelCatalog above.
+// catalogModelsFor() is the single choke point for "what can this provider
+// serve right now"; it delegates to the catalog's derived serving set.
 // ---------------------------------------------------------------------------
-// Curated PROVIDER_MODELS above is the stable base (aliases, :free suffix
-// conventions). LIVE_MODELS is filled from each provider's GET /models
-// endpoint using that provider's own API key, so the router serves every
-// model each key is entitled to - not just the hardcoded subset.
-// catalogModelsFor() = curated union live, curated first.
-export const LIVE_MODELS: Record<string, string[]> = {};
-
 export function catalogModelsFor(p: string): string[] {
-  const seen = new Set<string>();
-  const out: string[] = [];
-  for (const m of [...(PROVIDER_MODELS[p] || []), ...(LIVE_MODELS[p] || [])]) {
-    if (typeof m === "string" && m && !seen.has(m) && !DEAD_MODEL_IDS.has(m)) {
-      seen.add(m);
-      out.push(m);
-    }
-  }
-  return out;
+  return catalog.servingModels(p);
 }
 
 /**
- * DEAD_MODEL_IDS — permanently retired model IDs (503-forensics 2026-09-21).
+ * DEAD_MODEL_IDS — permanently retired model IDs (master providers package).
  *
- * NVIDIA 410-retired / OpenRouter-delisted IDs. They 404 (or 410) on every
- * attempt and never self-heal — only an NVIDIA-side relist would revive
- * them, at which point this list gets edited. Filtered in
- * catalogModelsFor, the single choke point for provider model lists, so
- * dead IDs can enter neither the race sets nor explicit routing (an
- * explicit request for one falls through to the healthy hybrid field
- * instead of burning a 404).
+ * The package owns this list; this Set is the router's local view of it.
+ * Filtered at the catalog's serving choke point, so dead IDs can enter
+ * neither the race sets nor explicit routing (an explicit request for one
+ * falls through to the healthy hybrid field instead of burning a 404).
  *
- * The runtime entitlement-404 bench (Matrix.noteEntitlement404) is the
- * dynamic layer for IDs that die mid-process; this list is the static
- * layer for IDs already known dead.
+ * The runtime serve-404 path (Matrix.noteEntitlement404 → catalog
+ * noteServe404) is the dynamic layer for IDs that die mid-process; this
+ * list is the static layer for IDs already known dead.
  */
-export const DEAD_MODEL_IDS: Set<string> = new Set([
-  // NVIDIA-retired (410), EOL dates from the retirement notices.
-  "moonshotai/kimi-k2-instruct", // EOL 2026-05-12
-  "meta/llama-3.1-8b-instruct", // EOL 2026-08-26
-  "meta-llama/llama-3.1-8b-instruct", // EOL 2026-08-26 (openrouter form)
-  "meta/llama-3.3-70b-instruct", // EOL 2026-08-26
-  "meta-llama/llama-3.3-70b-instruct", // EOL 2026-08-26 (openrouter form)
-  "meta-llama/llama-3.3-70b-instruct:free", // EOL 2026-08-26 (:free form)
-  // OpenRouter-delisted (verified against the public /models list 2026-09-21).
-  "tencent/hy3:free",
-  "poolside/laguna-m.1:free",
-  "nvidia/nemotron-3-nano-30b-a3b:free",
-  "qwen/qwen3-coder:free",
-  "nousresearch/hermes-3-llama-3.1-405b:free",
-  "openai/gpt-oss-20b:free",
-]);
+export const DEAD_MODEL_IDS: Set<string> = new Set(PKG_DEAD_MODEL_IDS);
 
 // ---------------------------------------------------------------------------
 // Live-metadata free eligibility (Chris 2026-09-17: routing must consume the
@@ -348,7 +304,9 @@ export const CODING: Record<string, [string, string] | null> = {
   fcm: null,
   // free: route through the `free` strategy (local + all :free cloud models)
   free: null,
-  // Local-first ranked roles (llama-swap exclusive matrix)
+  // Local-first ranked roles (llama-swap exclusive matrix) — runtime-dynamic
+  // from best-models.json. These overlay the package's static alias map;
+  // everything below comes from the master providers package.
   fast: ["llama-swap", LOCAL_ROLES.fast],
   "local-fast": ["llama-swap", LOCAL_ROLES.fast],
   quality: ["llama-swap", LOCAL_ROLES.quality],
@@ -356,45 +314,7 @@ export const CODING: Record<string, [string, string] | null> = {
   longctx: ["llama-swap", LOCAL_ROLES.longctx],
   "local-longctx": ["llama-swap", LOCAL_ROLES.longctx],
   "local-auto": ["llama-swap", LOCAL_ROLES.quality],
-  // 2026-09-21 sweep: aliases pointing at delisted/410 IDs removed —
-  // hy3 (tencent/hy3:free), laguna-m1 (poolside/laguna-m.1:free),
-  // qwen3-coder, llama-3.3-70b-free, hermes-3-405b, gpt-oss-20b,
-  // nim-llama-3.3-70b. Requesting one now falls through to the healthy
-  // hybrid field instead of burning a 404.
-  ling: ["openrouter", "inclusionai/ling-3.0-flash-fin:free"],
-  "laguna-xs": ["openrouter", "poolside/laguna-xs-2.1:free"],
-  "gemma4-31b": ["openrouter", "google/gemma-4-31b-it:free"],
-  "nemotron-super": ["openrouter", "nvidia/nemotron-3-super-120b-a12b:free"],
-  "nemotron-nano": ["nvidia", "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning"],
-  "nim-nemotron-super": ["nvidia", "nvidia/nemotron-3-super-120b-a12b"],
-  "nim-nemotron-omni": ["nvidia", "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning"],
-  "nim-nemotron-nano": ["nvidia", "nvidia/nemotron-3-nano-30b-a3b"],
-  "nim-llama-3.1-70b": ["nvidia", "meta/llama-3.1-70b-instruct"],
-  "nim-qwen3.5-397b": ["nvidia", "qwen/qwen3.5-397b-a17b"],
-  "nim-qwen3.5-122b": ["nvidia", "qwen/qwen3.5-122b-a10b"],
-  "nim-deepseek-v4-flash": ["nvidia", "deepseek-ai/deepseek-v4-flash"],
-  "nim-deepseek-v4-pro": ["nvidia", "deepseek-ai/deepseek-v4-pro"],
-  "nim-mistral-large-3": [
-    "nvidia",
-    "mistralai/mistral-large-3-675b-instruct-2512",
-  ],
-  "nim-gemma4-31b": ["nvidia", "google/gemma-4-31b-it"],
-  "nim-glm5.2": ["nvidia", "z-ai/glm-5.2"],
-  "nim-inkling": ["nvidia", "thinkingmachines/inkling"],
-  "gemini-2.5-flash": ["google", "models/gemini-2.5-flash"],
-  "gemini-2.5-flash-lite": ["google", "models/gemini-2.5-flash-lite"],
-  "gemini-2.0-flash": ["google", "models/gemini-2.0-flash"],
-  "gemma4-31b-google": ["google", "models/gemma-4-31b-it"],
-  "mistral-small": ["mistral", "mistral-small-latest"],
-  codestral: ["mistral", "codestral-latest"],
-  "mistral-large": ["mistral", "mistral-large-latest"],
-  "mistral-medium": ["mistral", "mistral-medium-latest"],
-  "groq-llama-3.3-70b": ["groq", "llama-3.3-70b-versatile"],
-  "groq-qwen3-32b": ["groq", "qwen/qwen3-32b"],
-  "groq-qwen3.6-27b": ["groq", "qwen/qwen3.6-27b"],
-  "groq-gpt-oss-120b": ["groq", "openai/gpt-oss-120b"],
-  "groq-gpt-oss-20b": ["groq", "openai/gpt-oss-20b"],
-  "groq-llama-4-scout": ["groq", "meta-llama/llama-4-scout-17b-16e-instruct"],
+  ...PKG_MODEL_ALIASES,
 };
 
 export const AST_RE =
@@ -429,7 +349,7 @@ export function keyOk(p: string): boolean {
 
 export function firstModelFor(p: string): string {
   if (p === "llama-swap") return LOCAL_ROLES.quality;
-  return PROVIDER_MODELS[p]?.[0] || LIVE_MODELS[p]?.[0] || "";
+  return catalog.servingModels(p)[0] || "";
 }
 
 export function isLocalSwapModelId(model: string): boolean {
@@ -514,7 +434,12 @@ export function matchModelOnProvider(p: string, rest: string): string | null {
 export function resolveModel(model: string): [string, string] {
   const norm = normalizeModelSpec(model);
   if (norm.provider) return [norm.provider, norm.model];
-  if (model in CODING && CODING[model] != null) return CODING[model]!;
+  if (model in CODING && CODING[model] != null) {
+    const [p, m] = CODING[model]!;
+    // A dead or quarantined alias target is not routable — fall through to
+    // the healthy field instead of burning a 404 on a known-bad id.
+    if (!DEAD_MODEL_IDS.has(m) && !catalog.isQuarantined(p, m)) return [p, m];
+  }
   // Prefer llama-swap for any local GGUF id so hybrid never sends GPU models to Gemini
   if (isLocalSwapModelId(model)) return ["llama-swap", model];
   if (model === "auto" || model === "fcm") {

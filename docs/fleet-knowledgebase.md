@@ -77,6 +77,9 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 **Rule: check this table AND `squawk read fleet` before starting work. Register yourself when you start; mark done when you finish. Coordinate, don't collide.**
 
+> **GENERATED TABLE — do not edit by hand.** Source of truth is `docs/fleet/crews/<crew>.md` (one file per crew). Regenerate with `bun projects/ops/bin/kb-rollup.ts`. Register via `fleet-onboard.sh --register`; mark done via `fleet-onboard.sh --done SHA`.
+
+<!-- KB-ROLLUP:START -->
 | Crew | Scope | Owner / coordinator | Status |
 |---|---|---|---|
 | lane-goals | Goals-lane maximal triage: all 17 goal dirs to final verdicts; mcpproxy-go merged build (ad8b0a26); fleet-code collaborative-coding tool (1db0060d); bridge auto-racer (fd3f91de); config naming cleanup (5b75abdb) | lane-goals (Ember's crew) | DONE (2026-09-21) -- 4 pushed SHAs, all ls-remote verified |
@@ -138,35 +141,16 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | stale-hunter | Process staleness + speed audit across hatch+yote: 12h+ silence/idle hunt, CPU-vs-wall profiling, faster paths/libs, paru/pacman installs; repair live, durable, event-driven | Ember (main chat) | RUNNING (2026-09-20) |
 | oracle-experiments | Oracle deep proving suite: labeled eval vs outcomes (KalshiBench N=100), escalation analysis, latency/cost per tier, default tuning with rationale, co-failure certificate | oracle-experiments (Ember's crew, under oracle-max) | RUNNING (2026-09-20) |
 | nightjar | Night-lanes coordinator: super-ralph execution-path degradation -- root-cause, maximal durable fix, live proof through the market loop. Coordinated with super-ralph repair (fiber.cache.stackFrame) and ralph-alive2 (ALIVE acceptance), no duping. | Nightjar (Ember's crew) | DONE (2026-09-21) -- sovereign-projects: model-resolver 20f0994 (stale NIM_MODEL killed every model call) + timeout-evidence 8024654 (partial output preserved on ceiling, 0pct->100pct, proven via tern-proof-006 ledger + partial-output.txt); super-ralph: single-loop fefe4bd (RALPH_MAX_REACHED eliminated, probe-004 DB: 12 nodes finished); remote refs verified via ls-remote; bidders restarted (2723609/2724054) |
-
 | modelmap-round2 | Model-stack round 2 (Chris: "Fix all three of those maximally"): (1) oracle-judge-local re-entrant shim deadlock -- shim hosted INSIDE llama-swap forwarded to beellama/gemma-96k, another cmd model; swapper could not swap while shim held the slot (health 200, completions hung 8s -> 502). Fixed as native llama-swap alias; alias-shim v3.1 hardened (split connect/read timeouts, loud 502s, no-shim-targeting-cmd-models rule). (2) small/medium/code/long: round-1 'undefined vars' diagnosis was WRONG -- macros defined, gguf on disk, routes 200; real fault was aliases were worktree-only WIP wiped by an unrelated 06:26 MDT config rewrite -> now committed; dead beellama-fast dup removed. (3) Kimi exhaustion: NO free Kimi completes -- OpenRouter removed :free Kimi IDs (404), HF monthly credits depleted (402), Moonshot 429 billing-suspended (key valid), NIM 410 gone, Pollinations 404, no local weights (1T MoE cannot fit 24GB); kimi/kimi-k2/kimi-code/kimi-auto fail loudly with genuine upstream status; kimi-auto-shim :25153 TOML-vs-snapshot drift reconciled to the free-Kimi chain. MOONSHOT STOOD DOWN 2026-09-21 (eclipse, Chris: no top-up, ever): chat completions -> exceeded_current_quota_error (suspended, insufficient balance; key itself valid, /v1/models 200). Peer parked in herd.yaml; kimi route names re-pointed at the free-Kimi chain. | modelmap-round2 (Ember's crew) | DONE (2026-09-21) -- sovereign-projects `bff26f8931` (judge deadlock fix + alias-shim v3.1) + `35ca8d4855` (tier aliases committed); proofs: judge 10/10 + 3/3 post-restart 200s with exact content, tiers 4/4 200s real completions post-restart, kimi 4/4 loud 402/404/429; herd + kimi-auto-shim restarted via bin/pitchfork-restart; remote refs ls-remote verified |
 | eclipse | Moonshot peer stand-down (Chris: no top-up, ever) + kimi route-name re-point to the free-Kimi chain | eclipse (Ember's crew) | DONE (2026-09-21) -- sovereign-projects 3ba9019af2 (herd.yaml moonshot peer parked, kimi route names re-pointed, KB money-ask corrected; ls-remote verified); live: herd :25100 hot-reloaded (PID 902868, no restart), moonshot/* gone from /v1/models, oracle-judge-a -> nex-n2.5-mini:free exact ROUTE_OK, kimi-k2 loud genuine 402 |
 | 1m-prober | Long-context engagement probe (oracle verdict 12097, mission 4e621a18): needle-in-haystack retrieval at 100k/500k/1M tokens through the nvidia keyed lane (nemotron-3-super-120b-a12b, nemotron-3-nano-omni-30b-a3b-reasoning) and the openrouter :free nemotron ID; results recorded in ast_matrix.db requests (strategy=longctx-probe); probe script tools/sovereign-router/probes/long-context-probe.py | 1m-prober (Ember crew, worker under coordinator 4e621a18) | DONE (2026-09-21) -- sovereign-projects 49c17bb9fd (probe script + 13 run JSONs + RESULTS-2026-09-21.md; keyed nvidia nemotron-3-super-120b-a12b 1M needle retrieval PASSED accurate 41.4s; openrouter :free capped 262144 tokens verified; lane flapped 503 ~40min mid-probe) |
 | splice | MCP drift merge: canonical superset of awrawr_mcp.py (mcp-smith 318-line additions preserved + canonical spawn-env fix) | splice (Ember pack) | DONE (2026-09-21) -- sovereign-projects dcdcdba90b (ls-remote verified); deployed /home/toxic/awrawr_mcp.py byte-verified; daemon restarted via owned sequence; :25198 /mcp live, 29 tools incl. 7 mcp-smith additions; big catch: supervisor had been running the stale repo copy from the dirty checkout, mcp-smith deployment was never live -- run line repointed to /home/toxic/awrawr_mcp.py |
-
 | oracle-repair | oracle E2E defect repair | oracle-repair | DONE (2026-09-21): lifecycle repair live-verified E2E (intake->signed task->bids->vickrey assign->real super-ralph->signed result->settlement verified->next_work). Commits ad2ade8077 + e25b2e6b25 on nim-probe-20260920, pushed to toxicwind/sovereign-projects. |
-
-
 | itvx-merge-7dee | merge itvx-browserless into browserless-mcp, move to sovereign mesh | itvx-merge-7dee | DONE (2026-09-21): unified projects/range/ranch/barn/browserless (browserless-mcp 1.1.0 + itvx native launcher); daemon itvx-browserless on :25130 restarted via owned sequence, auth gate 401/200 verified, live /content fetch + MCP handshake (15 tools) proven. Commits 9bab2b8a95 + 4b8421b719 on toxicwind/sovereign-projects main (ls-remote verified). |
-
-
 | volt | zswap/nvidia-persistenced/hardware health on yote | parent-orchestrator | DONE (2026-09-21) — lane-2-complete-no-repo-changes |
-
-
-| cookie-ferry | firefox-to-chromium login migration | ember | RUNNING (2026-09-21) |
-
-
 | forge-union | unify github search tooling | forge-union | RUNNING (2026-09-21) |
-| ts-migration (Forge) | Production Python daemons -> Bun/TS maximal + monorepo (bun workspaces + turbo.json). Tier 0: keypool, model-guard, squawk-ws, awrawr-mcp. Tier 1: exporter, stash-guard, buildsrv. Python stays only for ML/torch glue + throwaway probes | Forge (Ember's pack, ts-migration lane) | PHASE 1 DONE (2026-09-21): workspaces+turbo+scaffold on main 7a61ad6be9; template binary proven (health 200, fail-fast). Phase 2: KEYPOOL TS PORT DONE 2026-09-21 (971ccc5b63, 8eceaa0f4b): services/keypool/ full port, 17 parity tests pass, sidecar differential vs :25109 verified; BROWSER-ISOLATION DONE 2026-09-21: agent-display (Xvnc :99) + agent-viewer (noVNC :6080) live, keeper on DISPLAY=:99, c776f7cd25 — Forge joined pack 2026-09-21, chat forge-ts-migration |
-
-
-| secretsmith | secrets project: fork Secret Service tooling, maximalize into mesh project | ember | DONE (2026-09-21) — 1005ab333f |
-
-
+| ts-migration (Forge) | Production Python daemons -> Bun/TS maximal + monorepo (bun workspaces + turbo.json). Tier 0: keypool, model-guard, squawk-ws, awrawr-mcp. Tier 1: exporter, stash-guard, brand. Python stays only for ML/torch glue + throwaway probes | Forge (Ember's pack, ts-migration lane) | PHASE 1 DONE (2026-09-21): workspaces+turbo+scaffold on main 7a61ad6be9; template binary proven (health 200, fail-fast). Phase 2: KEYPOOL TS PORT DONE 2026-09-21 (971ccc5b63, 8eceaa0f4b): services/keypool/ full port, 17 parity tests pass, sidecar differential vs :25109 verified; BROWSER-ISOLATION DONE 2026-09-21: agent-display (Xvnc :99) + agent-viewer (noVNC :6080) live, keeper on DISPLAY=:99, c776f7cd25 — Forge joined pack 2026-09-21, chat forge-ts-migration |
 | sweep-runner-9c | first-class commit sweep | ember | RUNNING (2026-09-21) |
-
-
-| secretsmith-promoter | first-class repo promotion for secretsmith | secretsmith-promoter | RUNNING (2026-09-21) |
 | ws-fallback | /home/toxic/awrawr_ws_exec.py stale-8379 fallback re-sync: byte-for-byte with canonical 25204 blob (a67a919b) | ws-fallback (Ember's crew) | DONE (2026-09-21) -- re-synced to canonical blob a67a919b (port default 25204), stale backup .bak-20260921-wsfallback; daemon pid 1799513 untouched, :25204/:25147/:25135 live |
 | end4-corrective | sovereign-end4 system-tuning corrective commit: true zero-byte udev mask, corrected Btrfs attribution (911 exclusive bytes never measured), rewritten apply-system-tuning.sh (STAGING_ROOT isolated mode, install -m 644, service reconciliation), installer staging test (18/18 on yote), btrfs-status.sh health+guard tool, audit.py v3 (vmstat/buddyinfo/Btrfs/thermals) | Ember | DONE (2026-09-21) -- commit fedb26a0da (on top of toxic's 9e904729): 9 paths under system-tuning/, 3 executables 100755; mask blob verified 0 bytes; sysctl blob sha256 matches live /etc/sysctl.d/99-zswap-vm.conf; installer test 18/18 pass on yote; audit v3 smoke OK (unallocated_bytes=6443552768, 27 vmstat, 6 thermals); btrfs-status live report exit 0 via passwordless sudo (snapperd wedge timeout-guarded) |
 | router-proof | head-to-head router benchmark: sovereign-router :25104 (sovereign/free) vs dumb direct :25100 (pinned north-mini-code:free); 180 requests + 60 judge calls, EXACT/QUALITY/CODE prompt types; verdict: intelligent router wins on availability 3.4-6.3x via failover under dead keypool (75x 502 on dumb route); raw data projects/openrouter-probe/router-proof-20260921.json; doc ROUTER_PROOF.md on nim-probe-20260920 @ 8d7f3d24 | Ember (Ember's crew) | DONE (2026-09-21) |
@@ -176,38 +160,26 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | wiring-audit | Estate-wide READ-ONLY audit of every canonical inference caller: current route/model string, config-vs-hardcoded, owner, rewire action (all deferred until Sovereign-vs-TAU bake-off verdict) | wiring-audit (Ember's crew) | DONE (2026-09-21) -- sovereign-projects 716b5ff50119d33faf22f5609f37e036028d7ce7: projects/routing/docs/inference-caller-audit.md -- 59 live callers, 21 hardcoded (10 live-affecting), 9 already on sovereign/free |
 | tau-routing-benchmark | Fair head-to-head: Sovereign router :25104 (sovereign/free) vs TAU/oh-my-pi's actual routing extension (canonical copy mapped with ffs); benchmark suites: coding, reasoning, long-context recall, cross-chunk synthesis, contradiction handling, provenance correctness; controlled failures: broken primary, empty HTTP 200, HTTP 429, slow provider, recovery after quarantine. Build automatic effective-1M-context composite route (query-aware partitioning, parallel map via :25104, hierarchical tree reduction, per-chunk provenance, native long-context bypass); reuse LLMxMapReduce/ExtAgents/ToM patterns. Wire proven canonical route into TAU, Kimi Code, and every canonical inference caller; merge Kimi Code rewiring to canonical main | Tally (Ember's crew) | RUNNING (2026-09-21) -- fleet-lock tau-routing-benchmark held by tally-sidechat |
 | tau-routing-bakeoff | Sovereign-vs-TAU bake-off execution: real extension routing core [compose.ts resolveRouting] vs :25104 sovereign/free over 10-prompt matrix [quality/latency/availability/failover]; verdict Sovereign 4 - TAU 1 - 1 tie | gavel, ember's pack | DONE [2026-09-21] -- commit 40d9bfdd9f: projects/routing/bench/ [run.ts, prompts.json, score.py, failover-probe.ts, results/bakeoff-20260921-10.json, VERDICT.md, README.md]; teardown complete [bakeoff-gavel + router config removed, tau extensions dir untouched] |
-
 | nvidia-openfang-browserless | NVIDIA-first embeddings for OpenFang (real nvapi key via authenticated NGC UI, Mistral fallback until proven) + persistent Browserless keeper: event-driven visible Chromium, first-class browserless-mcp tools, Quickshell float toggle button | Sable (Ember's crew) | RUNNING (2026-09-21) |
-
-| cinder | Lane-sweep / deconfliction (side chat cinder-lane-sweep): estate sweeps, dupe flags, stall watch; owned the NVIDIA docs-mirror lane (worker 91dcc7e0) to verified completion. Posts as Cinder -- ash-fox fursona, quick and dry, the pack lookout. | Cinder (Ember's crew) | DONE (2026-09-21) -- NVIDIA API docs mirror complete: 6 sections, ~4500 HTML pages, ~2.6GB under nvidia-api/ in private repo toxicwind/hatch-docs; origin/main 11e730158453bf0c2091ce05a19587af8ea502fc (5 commits, fetch-first, no force-push; remote ref + tree verified by Cinder 2026-09-21: 7635 entries, 6 index-READMEs; counts api-reference 1480pp, nim 2764pp, nvcf 277html+273md, ngc 27pp, ngc-cli 14pp, nvcf-github 423md); 62 NIM JSON assets recovered after cleanup misfire, JSON-validity-checked; 11 ReadMe login-wall pages excluded (login required) |
-
+| cinder | Lane-sweep / deconfliction (side chat cinder-lane-sweep): estate sweeps, dupe flags, stall watch; owned the NVIDIA docs-mirror lane (worker 91dcc7e0) to verified completion. Posts as Cinder -- ash-fox fursona, quick and dry, the pack lookout. | Cinder (Ember's crew) | DONE (2026-09-30) -- event-driven worker-admission lane: worker-queue CLI signals dispatch readiness synchronously on submit/complete/fail/retry/start (edge-triggered, coalesced, 15-min re-alert via .dispatch-signal); Bun worker-queue-watch.ts fs.watch daemon covers external file mutations + stale heartbeats (worker-queue heartbeat <id>); 5-min dispatcher cron demoted to stuck/failed/backlog backstop; keepalive cron worker-queue-watch-keepalive every 5m; tests 19/19 Bun + 9/9 bash integration; fleet completion 1790308149-cinder--ember-s-pack-msg.md |
 | kimi-merge | Kimi Code sovereign-router rewiring merged onto canonical main: bin/kimi-code-setup default route herd/qwen-flash -> sovereign/free (:25104), [providers.sovereign] + [models."sovereign/free"], herd models kept as selectable fallbacks; live probe switched to SOVEREIGN_ROUTER_OK semantics. Cherry-picked from origin/nim-probe-20260920:56f85dbf60 (message preserved, history kept); herd-keypool.py racing + ROUTER_PROOF.md verified byte-identical to main already -- no duplication. Temp worktree merge; shared-tree dirty WIP untouched | kimi-merge (Ember's crew) | DONE (2026-09-21) -- merge commit 6bbdf1019f on origin/main (ls-remote verified); config live: default_model=sovereign/free, [providers.sovereign] :25104, herd fallbacks; kimi doctor OK; :25126 200; live completion via :25104 OK (2026-09-21 ~19:58 UTC): sovereign/free returned exact SOVEREIGN_ROUTER_OK, served by local EXAONE-4.0-1.2B failover through the merged default route; kimi doctor OK, :25126 200, config live default_model=sovereign/free |
 | tau-router-recon | TAU/oh-my-pi routing-extension recon: canonical omp-model-router vs stale/dead duplicates, model-selection logic with exact file/line refs, exact benchmark invocation vs Sovereign Router :25104 model sovereign/free | tau-router-recon (Ember's crew) | DONE (2026-09-21) -- doc projects/tau/docs/router-extension-map.md; 9c2ecf0b0e |
 | lumen-md-race | Squawk markdown lane finish: kill stale test_text_truncated_at_500 (replaced by untruncated-body test), fix stale 500-char doc mentions, harden rapid channel-switch vs stale render (AbortController), verify >500-char markdown live end to end, push, fleet markdown-conventions broadcast | Lumen (Ember crew) | DONE (2026-09-21) -- commit 03d2d590: stale 500-char test killed (test_text_served_untruncated, 1200-char body round-trips byte-identical), stale 500-char doc mentions fixed, channel-switch race hardened (AbortController); 16/16 renderer checks + live 1102-char markdown round-trip OK; fleet markdown-conventions broadcast next |
 | lumen | Squawk feed UI readability: keeper-driven visual audit (CDP :9223) of /squawk-feed/ui at desktop 1440x900 + mobile 390x844; root-caused empty bodies (pre-HMAC msgs fail verify_on_read -> body withheld); fix = serve bodies flagged unverified + card-layout redesign | Lumen (Ember's crew) | DONE (2026-09-21) -- relay fix e5fdce9c95 (serve pre-HMAC plaintext flagged invalid, fail-closed on ciphertext; 12/12 feed tests OK), UI redesign cb6bd69f82 (cards, unverified badges, scroll-to-bottom, mobile, favicon); keeper-verified 1440x900 + 390x844, 0 console/page errors; deployed live :25135  markdown render + full bodies 0b33559ad2 (truncate dropped, escape-first md renderer, keeper-verified live) |
-
-
 | rivet | fix stale kimi-code-setup writer drift trap | rivet (Ember's crew) | DONE (2026-09-21) — fixed writer verified on origin/main 6bbdf1019f (default_model=sovereign/free, [providers.sovereign] :25104, herd fallbacks); on-disk /home/toxic/sovereign/bin/kimi-code-setup synced to main blob (md5 1fe03699e416e4cd65fd443f5d436a66, staged, dirty WIP untouched); writer test vs live config: identical except runtime Moonshot key; kimi doctor OK on generated config; live ~/.kimi-code/config.toml never touched (md5 13962db0b6375316fdc2e09d65bc71ef); probe hit transient upstream 429s (free-pool rate limit, same class kimi-merge saw) |
-
 | auto1m | Effective-1M-context composite route implementation (Ember crew): sentence-aware chunking + query-term ranking + parallel map extraction + ExtAgents-style fact scoring + tree-collapse reduction, per-chunk provenance with fail-closed citation validation, env-overridable router/model (AUTO1M_ROUTER/AUTO1M_MODEL/AUTO1M_DIRECT_MODEL), source-aware multi-file input; pure-function unit tests 30/30 (no router); full ~740k-token proof test with grep-verified needles + test-evidence.json. Complementary to Tally's tau-routing-benchmark (which benchmarks routing; this lane builds the composite consumer). Code: projects/auto1m/ | auto1m-builder (Ember's crew) | RUNNING (2026-09-21) -- code commit e44739ac3b on origin/main; full proof green pending a capable worker (sovereign :25104 serving sovereign/free via local EXAONE-4.0-1.2B only; strong-worker watcher armed) |
-
 | taps-nats | NATS + JetStream fleet-chat substrate (Ember decider verdict fleet 12811): nats-server + JetStream on yote, subject design fleet.messages/leads.messages, dual-publish file/WS feed + NATS, Squawk passive-aggregator read path, bounded-retention history replay, tests (dual-sink, NATS-kill fallback, restart replay) | Taps (Ember's crew) | RUNNING (2026-09-21) -- spawned from verdict fleet 12811 |
 | vex-html-cors | Squawk HTML-first-class + CORS (Chris direct order 2026-09-21): raw HTML/CSS renders as authored in ui.html (renderer passes tags, inline styles, <style>/<script> blocks through; fenced code stays literal), CORS on feed :25135 (OPTIONS preflight 204 + ACAO on JSON/UI/404); tests html_body_served_verbatim + cors_preflight_and_headers; renderer 19/19 node checks; live POST round-trip byte-identical | Vex (Ember's crew) | DONE (2026-09-21) -- commit 615a38c69a (origin/main, ls-remote verified): ui.html renderer first-class HTML, squawk_feed.py CORS, 2 new tests; proofs: 14/14 feed tests, 19/19 node renderer checks, live POST round-trip byte-identical (fleet seq 12898), preflight 204 + ACAO live on :25135 |
-
-
 | tern | oracle-market: fix super-ralph timeout evidence loss in bidder.py, run genuine E2E market tasks, measure before/after success rates | Nightjar (Ember crew) | DONE (2026-09-21) |
 | shep-repair | Shep MCP gateway repair: pitchfork sovereign/shep errored -- mcp_config.json (gitignored live config) deleted from projects/range/ranch/barn/shep/; toml run line invoked shep directly, bypassing shep-serve.sh self-heal bootstrap. Durable fix: config restored from mcp_config.json.bak-20260920 (33 servers, 0600), toml run -> shep-serve.sh (self-bootstraps from .dist + injects secrets from /home/toxic/.secrets). Self-heal PROVEN live (deleted config, restart recreated it 0600, health 200). Restarted via owned pitchfork sequence; verified: /proc exe canonical binary, :25127 listen, /health ok, MCP initialize+tools/list 200 (12 tools), herd :25100 200, coyote running; 3 stop/start cycles incl persistence | Vesper (Ember's crew) | DONE (2026-09-21) -- commits 408e4890f1 (KB register) + 7c1d8ae7ac (pitchfork.toml fix), origin/main = 7c1d8ae7ac verified via git ls-remote |
 | polling-audit | Estate-wide polling audit: every timer/sleep/poll-loop on hatch + yote, classified LEGIT vs CONVERT (event-driven alternatives) | Shrew (Ember's crew) | DONE (2026-09-21) -- report docs/polling-audit-2026-09-21.md, commit ce3f867754821f132709163470ac394603e297a8; 7 CONVERT / 17 LEGIT / 10 already-event-driven / 2 ambiguous; top converts: paper-poller 30s->inotify, stash-guard 90s->inotify, squawk-monitor 5m->subscribe |
-
 | bookworm-chatnative | Chat-native agent research: paper-backed buildable design for event-driven squawk agents (no polling). Ships @fleet/chat-native Bun/TS module: recursive long-poll subscribe, tiered attention, TASK directives, AsyncQueue handoff; OpenFang verdict (stays as runtime, squawk adapter is future work); Solace pattern borrow (reference only) | Bookworm (Ember's crew) | DONE (2026-09-21) -- commit 3bb32fe7907a7f0081b9f0353e09bf227e421b35, origin/main verified via git ls-remote |
-
 | bramble | readme maximalization batch b8 (narrowed to 6): toxic-vault-mind f2d08c0, wii-meta-client b1d6471, wii-stream-pack a756004, wllama-forge 63a9837, youtube-403-bypass dda9669 -- all pushed + remote-verified, no open PRs; universal-search-fuzzer BLOCKED (repo archived, push 403, README commit a05cddaa kept locally); cut per dedup: tau-extensions, vaultfs, web3-sec-workspace (untouched, verified no push) | 72ff4aa9-c62a-4881-8f70-c6fa220e7383 | DONE (2026-09-29) |
-
-
 | starling | squawk maximalization: pattern-borrow + tests (feed :25135, ws :25147, ui, CLI); boundary: Taps owns NATS substrate | Starling (Ember's pack), Tally side chat | RUNNING (2026-09-29) |
-
 | kestrel | Mistral key proof + GuideLLM audit of Mistral chat models via corral (direct Mistral API, not herd/flock); pattern-borrow useful Mistral integrations | kestrel (Ember crew) | RUNNING (2026-09-29) |
+| flock-free-directive | Flock :25193 literal "free" routing directive repair: was 404 (serves_model filtered before Strategy::Free ran), then Hybrid admitted paid providers, then migrate_v1 dropped free_tier so Strategy::Free selected zero candidates (502). Fix: "free" skips model scoping + forces Strategy::Free + model_map["free"] resolves a real upstream model (never wildcard "*"); migrate_v1 keeps free_tier=true; provider IDs refreshed to live catalog (nvidia nemotron-3-ultra-550b-a55b, llama-3.1-nemotron-70b-instruct; groq/cerebras bare IDs). flock-run.sh wrapper loads GROQ/CEREBRAS/NVIDIA keys from ~/.secrets into the daemon env (pitchfork.toml run= now points at the wrapper). NIM_PROXY_BYPASS workaround removed from bidder.py. | Sable (Ember's crew) | DONE (2026-09-30) -- toxicwind/flock commit `996956a3` (origin/main verified via git ls-remote); deployed binary live on :25193; E2E: POST /v1/chat/completions {"model":"free"} -> 200 real completion from nvidia/nemotron-3-ultra-550b-a55b; suite 387 passed (258 unit + 121 e2e + 8) |
 | bridle | Tack provider-authority expansion: tack 9->46 providers (37 transcribed from tau KDL), tau KDL catalog nodes stripped for 37 providers, 37/37 policy parity, compiler models-from tack fallback | bridle (Ember crew) | DONE (2026-09-30) -- ranch 4dd894db (tack 67/67 tests, herd astmatrix ok), tau 393f60d1 (gen:compat 82 providers/43 tack-sourced, 731 rules; catalog typecheck clean; catalog suite 973 pass/4 pre-existing fail); both ls-remote verified |
+<!-- KB-ROLLUP:END -->
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
@@ -244,6 +216,8 @@ Retired/completed crews stay listed here with status DONE and their final commit
 15. **Oracle stands in for Chris's approvals (Chris 2026-09-21).** Everyone works together autonomously: coordinate through squawk, decide through the oracle. When an agent needs Chris's approval, it frames the decision as a dated yes/no oracle question with evidence and treats the verdict as his approval — no waiting on Chris for approval-shaped decisions. Hard boundary: money and credentials stay Chris's alone; the oracle cannot approve spending, top-ups, credential minting/rotation, or anything credential-shaped.
 16. **Anchored furry personas (Chris 2026-09-21).** Every agent takes its own furry persona — name, species, personality, a real character — but the persona must be ANCHORED: lane + concrete task in plain words ("Korra the snow-leopard — squawk lane, making the feed hot-reload" is a persona; "the readability relay... loudly held opinions about line-height" is generic fluff and gets rewritten as the job). Ember is the main agent's alone — no other instance uses it. Chats are living status titles: `[Your Name]: [current status]` (e.g. `Korra: making the feed hot-reload`), updated as the work moves — a stale title lies. Fleet announce format: `agent joined: <name> — <lane>/<task> (Ember's crew)`. First-class paste block: `skills/fleet-spawn/join-prompt.md`.
 17. **Cell workspace = tmp (Chris 2026-09-21).** The hatch cell workspace is transient scratch — everything on it is disposable. ALL durable files live ON THE BRIDGE (yote), inside your persona. Nothing is lost, ever: anything worth creating is worth committing — land real files in the right repo, commit, push to canonical main.
+
+18. **Per-crew KB ownership (Chris 2026-09-29).** §2 Active Crews is a GENERATED rollup — never hand-edit the table. Each crew owns `docs/fleet/crews/<crew>.md` (frontmatter: crew/scope/owner/status); register and mark-done through `fleet-onboard.sh`, which writes your file and regenerates the rollup via `bun projects/ops/bin/kb-rollup.ts`. Concurrent registrations cannot clobber each other: per-crew files merge cleanly and the table is always regenerable. If the rollup looks stale, re-run the rollup — never hand-edit §2.
 
 **Oracle-as-approval procedure (how to actually file one):**
 1. Frame as a dated yes/no question: `"Will <concrete outcome> by <YYYY-MM-DD>?"` For go/no-go, phrase so YES = proceed.
@@ -313,26 +287,26 @@ runtime_paths freely; those paths are EXEMPT from drift detection by constructio
   2026-09-20: ~/.openfang/openfang.db was 0 bytes -- the exact silent-data-loss
   case this catches.
 
-## 7. Build server = buildsrv (2026-09-21)
+## 7. Build server = brand (2026-09-21)
 
-buildsrv IS the fleet build server -- a literal build daemon on yote, not a
-concept. Canonical source: tools/buildsrv/ in this repo. Service:
-127.0.0.1:25148 (pitchfork daemons: buildsrv, buildsrv-watchdog).
+brand IS the fleet build server -- a literal build daemon on yote, not a
+concept. Canonical source: tools/brand/ in this repo. Service:
+127.0.0.1:25148 (pitchfork daemons: brand, brand-watchdog).
 
 Lifecycle: queue JSON -> active JSON -> results JSON under
-/home/toxic/buildsrv/. Successful identical specs short-circuit as CACHED,
-keyed by content hash. Forward-only: buildsrv never checks out, stashes, or
+/home/toxic/brand/. Successful identical specs short-circuit as CACHED,
+keyed by content hash. Forward-only: brand never checks out, stashes, or
 reverts repos. Jobs run via bash -lc and inherit the daemon environment.
 
 Access:
-- Yote CLI: /home/toxic/bin/buildsrv (submit/status/logs/list/health)
-- Hatch proxy: hatch/bin/buildsrv proxies safely through yote-conn exec
+- Yote CLI: /home/toxic/bin/brand (submit/status/logs/list/health)
+- Hatch proxy: hatch/bin/brand proxies safely through yote-conn exec
   (shlex.join quoting, never raw concatenation)
-- MCP (awrawr-mcp :25198): buildsrv_submit, buildsrv_status, buildsrv_logs,
-  buildsrv_list, buildsrv_health (argv lists only, job IDs validated,
+- MCP (awrawr-mcp :25198): brand_submit, brand_status, brand_logs,
+  brand_list, brand_health (argv lists only, job IDs validated,
   submit returns immediately after queueing)
 
-Cache environment (pitchfork.toml daemons.buildsrv env):
+Cache environment (pitchfork.toml daemons.brand env):
 - RUSTC_WRAPPER=sccache, SCCACHE_DIR=/home/toxic/.cache/sccache (10 GiB)
 - CCACHE_DIR=/home/toxic/.cache/ccache (10 GiB)
 - CMAKE_C_COMPILER_LAUNCHER=ccache, CMAKE_CXX_COMPILER_LAUNCHER=ccache
@@ -348,14 +322,14 @@ Caveats:
 - Binary-only Rust crates are non-cacheable by sccache (crate-type rule).
 
 Why workers = 2: yote has 16 logical CPUs / 62 GB RAM / NVMe, but two Cargo
-builds already oversubscribe it. Keep BUILDSRV_WORKERS=2.
+builds already oversubscribe it. Keep BRAND_WORKERS=2.
 
-Observability: sovereign-exporter (:25213) exposes sovereign_buildsrv_up,
-sovereign_buildsrv_queue_depth, sovereign_buildsrv_active_jobs; Grafana
-workflows.json has a buildsrv row.
+Observability: sovereign-exporter (:25213) exposes sovereign_brand_up,
+sovereign_brand_queue_depth, sovereign_brand_active_jobs; Grafana
+workflows.json has a brand row.
 
 New-toolchain rule: persistent config in projects/yote/host/home/, daemon
-env in pitchfork.toml, then a REAL buildsrv compile with nonzero cache-hit
+env in pitchfork.toml, then a REAL brand compile with nonzero cache-hit
 proof. Proven 2026-09-21: 2 hits, 50 percent hit rate on a real job.
 ## 8. Gate retire + README maximalization + AST-BM25 racer (2026-09-29, Forge)
 

@@ -17,13 +17,13 @@
 #             1 = the checker itself errored (fail loud — never confuse the two).
 set -euo pipefail
 
-SHINGLE="${SHINGLE_HOME:-/home/toxic/shingle}"
+SHINGLE="${SHINGLE_HOME:-/home/toxic/.fleet-bus}"
 VAR="$SHINGLE/var/openfang-health"
 OUT_JSON="$VAR/openfang-health.json"
 OUT_HTML="$VAR/openfang-health.html"
 STATUS_FILE="$VAR/last-status"
 LAST_POST="$VAR/last-post-ts"
-SQUAWK_ROOT="${SQUAWK_ROOT:-/home/toxic/.shingle/squawk-root}"
+SQUAWK_ROOT="${SQUAWK_ROOT:-/home/toxic/.fleet-bus/squawk-root}"
 PITCHFORK="/home/toxic/.local/share/mise/installs/pitchfork/latest/pitchfork"
 PROBE_TIMEOUT=5
 DIGEST_INTERVAL=86400
