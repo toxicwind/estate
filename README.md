@@ -41,7 +41,7 @@
 Two things live in one tree:
 
 1. **The control plane** — [`pitchfork.toml`](pitchfork.toml) (service definitions, pitchfork supervisor), [`mise.toml`](mise.toml) (tooling + tasks), [`config/`](config/) (port assignments, the inference routing matrix). This is the ops layer that keeps the box running.
-2. **The workspaces** — [`projects/`](projects/) holds the actual projects: the ranch monorepo under [`projects/range/ranch/`](projects/range/ranch/) (herd, tau, sigma, flock, vansrouter, boundless, paddock, stream-broker), the range MCP gateway, the ranch tool-federation layer, plus the agent runtimes (yote, openfang), the editor substrate (qed), the quickshell home (shell), and research and audit probes.
+2. **The workspaces** — [`projects/`](projects/) holds the actual projects: the ranch monorepo under [`projects/range/ranch/`](projects/range/ranch/) (herd, flock, squawk, squawk-ws, lasso, flicker, gatehouse, oracle, rig, corral, roundup, stream-broker, … — one directory per component, fully flattened 2026-09-30), the range MCP gateway, the ranch tool-federation layer, plus the agent runtimes (yote, openfang), the editor substrate (qed), the quickshell home (shell), and research and audit probes.
 
 Plus the agent layer: [`hatch/agents/ember`](hatch/agents/ember) (Ember's operational home, with the squawk agent-to-agent chat), [`agents/`](agents/) (oracle-market, coyote, …), [`bridge/`](bridge/) (the live hatch↔yote exec bridge), and [`scratch/`](scratch/) (explicitly non-production staging).
 
@@ -64,12 +64,13 @@ Plus the agent layer: [`hatch/agents/ember`](hatch/agents/ember) (Ember's operat
 
 **Tier 2, our own repos, developed separately:**
 
+> [!NOTE]
+> The `projects/range/ranch` gitlink in this repo's index is stale — a fresh clone leaves that directory empty. The live ranch is worked as its own checkout: [`toxicwind/ranch`](https://github.com/toxicwind/ranch).
+
 | Path | Remote |
 | ---- | ------ |
 | `projects/range/ranch/` | `toxicwind/ranch` |
-| `projects/range/ranch/corral/` | `toxicwind/super-ralph` |
 | `hatch/agents/ember/chat/` | `toxicwind/squawk` |
-| `projects/guidellm/` | `toxicwind/guidellm` |
 | `projects/outlier-toolkit/` | `toxicwind/outlier-toolkit` |
 | `projects/wezterm/` | `toxicwind/wezterm` |
 | `codeflux/` | `toxicwind/codeflux`, plus 4 forks under `codeflux/forks/` |
@@ -87,8 +88,8 @@ Plus the agent layer: [`hatch/agents/ember`](hatch/agents/ember) (Ember's operat
 
 | Name | One meaning | The other meaning |
 | ---- | ----------- | ----------------- |
-| `tau` | `tau/` at the root, a **bazel** tree | `projects/tau/` → `stockyard/tau`, the **bun** agent engine on `:25111` |
-| `herd` | `engines/herd/`, C++ inference **engine** forks | `projects/herd/` → `stockyard/herd`, the **Go** router on `:25100` |
+| `tau` | `tau/` at the root, a **bazel** tree | the Tau agent engine on `:25111` (the old `projects/tau/` → `stockyard/tau` path is gone with the 2026-09-30 ranch flatten) |
+| `herd` | `engines/herd/`, C++ inference **engine** forks | `projects/herd/`, a real directory (FALLBACK.md + llama-swap) — the **Go** router on `:25100` |
 | `squawk` | `projects/range/ranch/squawk/` and `squawk-ws/`, the **servers** | `hatch/agents/ember/chat/`, the **client**, a separate repo |
 
 **Stale leftovers, belonging to no tier — now archived.** These were abandoned worktrees and scratch clones from 2026-09-14 through 2026-09-20 whose `.git` files pointed into `.git/worktrees/`, a directory `git worktree list` no longer registered, so `git` could not resolve them at all. On 2026-09-27 they were moved, not deleted, to `.archive-20260920/orphaned-worktrees-20260927/` and recorded in that directory's `MANIFEST.md`: `bench-wt-tau/`, `merge-main-20260914/`, `mesh-bruteforce-20260914/`, `modelpush-71728/`, `wt-hft-hygiene-20260914/`, `kimi-audit-scratch-20260914/` (a nested clone of this very repo, 141 MB), and `.git.broken-2026-09-24T15-42-58-450Z/` (a partial copy of `.git/hooks`, superseded by the intact one). `mv` back to restore.
@@ -102,7 +103,6 @@ flowchart TB
     SP["sovereign-projects<br/>the monorepo<br/>control plane · bridge · hatch · agents"]
     subgraph nested["Tier 2 · our repos, separate remotes"]
         RANCH["projects/range/ranch<br/>toxicwind/ranch"]
-        CORRAL["ranch/corral<br/>toxicwind/super-ralph"]
         SQ["hatch/agents/ember/chat<br/>toxicwind/squawk"]
         CF["codeflux<br/>toxicwind/codeflux"]
     end
@@ -115,12 +115,11 @@ flowchart TB
         ENG["engines/herd/* · 3"]
         KILL["killer-features/*/vendor/* · 9"]
     end
-    RANCH --> CORRAL
-    SP -->|symlink| RANCH
-    SP -->|symlink| SQ
+    SP -->|stale gitlink| RANCH
+    SP -->|nested repo| SQ
 ```
 
-Note that `stockyard/` lives inside `projects/range/ranch/`, so `projects/herd`, `projects/tau`, and `projects/sigma` are symlinks into the `ranch` repo rather than directories tracked by this one.
+`stockyard/` and `remuda/` are gone — the ranch flattened to one directory per component on 2026-09-30. `projects/tau` and `projects/sigma` went with them; `projects/herd` is now a real directory (FALLBACK.md + llama-swap), not a symlink.
 
 ## Architecture
 
@@ -215,11 +214,11 @@ $$ \text{RANKING} \;>\; \text{FREE-ON-PROVIDER} \;>\; \text{PAY} $$
 - **Kimi routes are not defaults.** Their purpose is routing Kimi free models maximally — restored 2026-09-20 after a misroute pointed them at dead models.[^1]
 - Free-tier ground truth: [`docs/free-tier-models.md`](docs/free-tier-models.md) · naming grammar: [`docs/naming-grammar.md`](docs/naming-grammar.md)
 - GuideLLM benchmark traffic routes maximally through the herd router, multi-chat / multi-turn included.
-- **A context window is a property of the serving process, not the model family.** Declare it per route rather than inheriting a family guess — `qwen2.5:7b` is 200K in `CONTEXT_LIMIT_TABLE` but Ollama serves 32,768 by default. See `projects/range/ranch/sigma` → `CONFIGURATION.md` → `### context`.
+- **A context window is a property of the serving process, not the model family.** Declare it per route rather than inheriting a family guess — `qwen2.5:7b` is 200K in `CONTEXT_LIMIT_TABLE` but Ollama serves 32,768 by default. Context limits are declared per route — see the ranch `herd/` config docs.
 
 ## The service stack
 
-Daemon definitions live in [`pitchfork.toml`](pitchfork.toml) (the generator is retired — this file is hand-edited). It defines **76 daemons**; the majors are below. Daemons are organized into pitchfork groups: `mesh`, `core`, `agents`, `all`.
+Daemon definitions live in [`pitchfork.toml`](pitchfork.toml) (the generator is retired — this file is hand-edited). It defines **79 daemons**; the majors are below. Daemons are organized into pitchfork groups: `mesh`, `core`, `agents`, `all`.
 
 | Port | Daemon | Role |
 | ---- | ------ | ---- |
@@ -318,15 +317,13 @@ sovereign-projects/                     # this repo — /home/toxic/sovereign on
 ├── hatch/                  # hatch-cell side: agents/ember, bin/squawk, docs/
 ├── scratch/                # NON-PRODUCTION staging (old fleet-workspace); symlinks shimmed
 ├── projects/               # the workspaces (see below)
-│   ├── range/ranch/        # the ranch monorepo — stockyard + squawk + barn + gear
+│   ├── range/ranch/        # the ranch monorepo (stale gitlink in this index — empty on fresh clone; live at toxicwind/ranch)
 │   ├── yote/  qed/  shell/  openfang/  audits/  ops/  tools/
-│   ├── herd -> range/ranch/herd      # root-level symlinks
-│   ├── tau  -> range/ranch/tau       # point here for historical paths
-│   └── sigma-> range/ranch/sigma
+│   ├── herd                # real dir now: FALLBACK.md + llama-swap
 ├── agents/                 # oracle-market, coyote, kimiclaw, squawk-relay, …
 ├── skills/                 # 29 hand-authored skills — skill root #1, see Key components
 ├── bin/                    # ops scripts: pitchfork-restart, herd-keypool.py, claim-port, …
-├── packages/               # sovereign-utils, metaharness, sovereign-scripts, … + coding-agent -> ../projects/tau/packages/coding-agent
+├── packages/               # sovereign-utils, metaharness, sovereign-scripts, …
 ├── src/                    # Bun services (mesh-hub, mesh-front, …)
 ├── stack/                  # service entry scripts (stack/services/herd.sh, …)
 ├── tools/                  # sovereign-chat, sovereign-router, sovereign-monitor, …
@@ -340,7 +337,10 @@ Layout SSOT for the 2026-09-20 reorg (`hatch/`, `bridge/`, `scratch/`): `REORG-P
 
 ## Key components
 
-### Compression — sigma
+### Compression — sigma (historical — paths stale as of 2026-09-30)
+
+> The `projects/sigma/` checkout (the toxicwind fork of `billion-context`) is gone from this tree, `pitchfork.toml` on `main` defines no sigma/bili daemon, and the ranch has no sigma directory. Remnants in-tree: [`tools/bili-deploy.sh`](tools/bili-deploy.sh) and the tau extension config in [`config/tau/agent/config.yml`](config/tau/agent/config.yml). The notes below are historical — verify against the live box before trusting them.
+
 
 [`projects/sigma/`](projects/sigma) → [`projects/range/ranch/sigma`](projects/range/ranch/sigma) — the **toxicwind fork of `billion-context`**: a transparent compression proxy that sits between agents and inference. Point a client at `http://127.0.0.1:32847/bili/<upstream-url>` and it streams the response while folding the conversation into a compact digest at a token boundary. Measured on the live log: ~5× token reduction, 28 ms added per compress call, proxy overhead p50 41 ms / p99 107 ms, prompt-cache hit rate p50 99.5%.
 
@@ -353,7 +353,7 @@ Two upstream inputs make it maintainable: [`bin/upstream-pull.sh`](projects/sigm
 
 ### Inference — herd
 
-[`projects/herd/`](projects/herd) → `stockyard/herd` — the **toxicwind fork of llama-swap** (Go): the stack's single OpenAI-compatible endpoint on `:25100`. Cloud-provider routing is delegated to the `flock` daemon on `:25193`. Live service: pitchfork `herd` → `stack/services/herd.sh` with [`config/herd.yaml`](config/herd.yaml).
+[`projects/herd/`](projects/herd) — the **toxicwind fork of llama-swap** (Go): the stack's single OpenAI-compatible endpoint on `:25100`. Cloud-provider routing is delegated to the `flock` daemon on `:25193`. Live service: pitchfork `herd` → `stack/services/herd.sh` with [`config/herd.yaml`](config/herd.yaml).
 
 Self-healing peers (2026-09-20): event-driven dead-peer detection (healthy/degraded/circuit-open FSM, single-flight half-open recovery on real traffic) with `GET /peer-health` observability.
 
@@ -369,7 +369,7 @@ These daemons are **protected**: `bin/claim-port` refuses 25147 and 25135 outrig
 
 ### Agents
 
-- [`projects/tau/`](projects/tau) → `stockyard/tau` — Tau agent engine (AI-native, 1M+ context reasoning, MCP + herd inference). Pitchfork daemon `tau` (`:25111`) runs `chute` over `stockyard/tau/packages/coding-agent/dist/omp acp`, with the vansrouter extension loaded.
+- Tau agent engine (AI-native, 1M+ context reasoning, MCP + herd inference). Pitchfork daemon `tau` (`:25111`) runs `chute` over the coding-agent ACP. (The old `projects/tau/` → `stockyard/tau` path is gone with the 2026-09-30 ranch flatten.)
 - [`projects/yote/`](projects/yote) — Yote: the lightweight agent runtime **and the chat/bot plane above OpenFang** (`:25102`). Inference via herd, MCP via gatehouse `:25127`. It is also the name of this box's own estate — see `projects/yote/CONSOLIDATION.md`.
 - [`projects/openfang/`](projects/openfang) — OpenFang agent OS (mirror of RightNow-AI/openfang). **This directory is a placeholder**, not a checkout; the running kernel is served by [`ops/openfang-run.sh`](ops/openfang-run.sh) from `/home/toxic/projects/rig-work` with config `config/openfang-25196.toml`. `openfang-front` (`:25103`) is the public proxy, `openfang` (`:25196`) the kernel.
 - [`agents/coyote/`](agents/coyote) — autonomous agent inference engine (`:25143`).
@@ -384,7 +384,7 @@ These daemons are **protected**: `bin/claim-port` refuses 25147 and 25135 outrig
 
 ### Tool federation — range
 
-[`projects/range/`](projects/range) — the ranch monorepo and MCP gateway source. `stockyard/` holds the inference and agent engines (herd, tau, sigma, flock, vansrouter, boundless, paddock, stream-broker); `squawk` and `squawk-ws` hold fleet chat; `barn/` holds shared runtime plumbing such as `chute`; `gear/` holds the skill library. Daemons: `gatehouse` (`:25127`, MCP federation), `mesh-hub` (`:25115`, service discovery + health, [`src/services/mesh-hub.ts`](src/services/mesh-hub.ts)), `mesh-landing` (`:25207`). Herd's MCP gateway config also lives at `stockyard/herd/mesh/`.
+[`projects/range/`](projects/range) — the ranch monorepo and MCP gateway source, flattened 2026-09-30 to one directory per component: herd, flock, squawk, squawk-ws, lasso, flicker, gatehouse, oracle, rig, corral, roundup, stream-broker, chute, … Daemons: `gatehouse` (`:25127`, MCP federation), `mesh-hub` (`:25115`, service discovery + health, [`src/services/mesh-hub.ts`](src/services/mesh-hub.ts)), `mesh-landing` (`:25207`).
 
 ### Skills — sovereign + gear
 
@@ -393,16 +393,16 @@ Two hand-maintained roots plus one machine-written root. Registration lives in o
 | Root | Loaded | What it is |
 | --- | --- | --- |
 | [`skills/`](skills/) | 29 | hand-authored ops skills: `brand`, `cattle-manager`, `hft-latency`, `parquet-ml`, … |
-| [`projects/range/ranch/gear/`](projects/range/ranch/gear) | 486 | the private skill library, flat by design — one directory per skill at the repo root |
+| the ranch (per-component, e.g. `lasso/skills`) | — | skills live with their components since the 2026-09-30 flatten; the old `gear/` library is gone |
 | `config/tau/agent/managed-skills` | 17 | output of the autolearn `manage_skill` tool. **Must be a real directory, never a symlink** — `assertManagedRootSafe` refuses a symlinked root, so a symlink there silently breaks every managed write. |
 
 532 skills load, 527 unique names. Measured with the real loader, not a `find` approximation.
 
 **How the loader behaves** ([`discovery/helpers.ts`](projects/range/ranch/tau/packages/coding-agent/src/discovery/helpers.ts)):
 
-- The registered roots are scanned at **depth 1**: `<dir>/<name>/SKILL.md`. A flat repo like `gear` is therefore registered by pointing at its root. Nothing is copied, symlinked, or hoisted into category folders, so every skill keeps its own code and its own relative references. `scanSkillsFromDir` also takes an opt-in `recursive` / `maxDepth` for a collection that groups skills by category; no caller enables it yet, and a directory containing a `SKILL.md` stays terminal so a skill's own `scripts/` and `references/` never become phantom skills.
+- The registered roots are scanned at **depth 1**: `<dir>/<name>/SKILL.md`. A flat per-component layout is therefore registered by pointing at its root. Nothing is copied, symlinked, or hoisted into category folders, so every skill keeps its own code and its own relative references. `scanSkillsFromDir` also takes an opt-in `recursive` / `maxDepth` for a collection that groups skills by category; no caller enables it yet, and a directory containing a `SKILL.md` stays terminal so a skill's own `scripts/` and `references/` never become phantom skills.
 - A skill with **no `description` in its frontmatter is dropped silently**. That is the most common way a skill becomes invisible.
-- Precedence is **first wins**, and `customDirectories` outrank `~/.claude/skills`. Order matters: `skills/` is listed first, so it wins the 5 names it shares with `gear` (`brand`, `fleet-push`, `repo-audit`, `hft-latency`, `sovereign-chat`).
+- Precedence is **first wins**, and `customDirectories` outrank `~/.claude/skills`. Order matters: `skills/` is listed first, so it wins the 5 names it shares with the ranch skill set (`brand`, `fleet-push`, `repo-audit`, `hft-latency`, `sovereign-chat`).
 - The answer to "too many skills" is a registry plus on-demand install (`omp skill` / skillshare), not a directory reshuffle. Re-homing skills breaks the parent-relative paths they were written against.
 
 **Audit them** with [`tools/skill-audit.ts`](tools/skill-audit.ts). It discovers the roots from the agent config itself, so registering a collection is enough to get it audited, and it reports dangling symlinks, missing frontmatter, name/directory mismatches, dead `skill://` and file references, and cross-root name collisions. Run it after touching any skill root:
@@ -423,7 +423,6 @@ bun tools/skill-audit.ts --fix    # repair names and synthesise frontmatter
 
 - [`docs/fleet-knowledgebase.md`](docs/fleet-knowledgebase.md) — **required reading**: estate map, active crews, repo index, standing rules
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — Sovereign Architecture, the single source of truth
-- [`projects/sigma/FORK-NOTES.md`](projects/sigma/FORK-NOTES.md) — what the sigma fork changed versus upstream `billion-context`
 - [`docs/edge-additions-20260920.md`](docs/edge-additions-20260920.md) — September-2026 additions (keypool racing, hedged racer, routing scores, squawk history search)
 
 `hatch/docs/` holds the bridge/cell docs moved there by the reorg. Some older docs predate the 2026-09-20 reorg and may reference moved paths — when in doubt, `pitchfork.toml`, `mise.toml`, and `config/ports.env` are the live sources of truth.
@@ -433,7 +432,6 @@ bun tools/skill-audit.ts --fix    # repair names and synthesise frontmatter
 - **Never invent port numbers in app code** — read them from env, `config/ports.env`, or `src/lib/ports.ts`.
 - **`git add` specific paths only** — this is a shared tree with multiple workers and live WIP; never `git add -A`.
 - **Fetch-first, rebase, never force-push.** Verify with `git ls-remote origin refs/heads/main` after every push.
-- **`projects/guidellm` is another agent's live workspace** — do not touch it.
 - **Do not kill live daemons** (`:8379` bridge, `:25147`/`:25135` squawk, `:25100` herd, `:25109` keypool). Bridge-repair scripts must never kill squawk.
 - Secrets live in `~/.secrets` and `.env.local` — never in git.
 
@@ -455,8 +453,7 @@ This is the short list. The full map of every README in the tree is [`docs/READM
 
 | README | What it covers |
 | ------ | -------------- |
-| [`projects/sigma/FORK-NOTES.md`](projects/sigma/FORK-NOTES.md) | The compression proxy that fronts inference, and what the fork changed |
-| [`projects/`](projects/) | Project workspaces (herd, tau, sigma, yote, openfang, qed, shell, …) |
+| [`projects/`](projects/) | Project workspaces (herd, yote, openfang, qed, shell, …) |
 | [`docs/`](docs/) | Architecture + ops doc index |
 | [`bridge/`](bridge/) | hatch↔yote exec bridge |
 | [`hatch/`](hatch/) | Hatch-cell side (Ember home, squawk, watchdogs) |
@@ -470,4 +467,4 @@ Stack glue: MIT where marked. Upstream binaries and forks keep their licenses (l
 
 [^1]: 2026-09-20: an agent misdiagnosed a Moonshot 401 ("User not found", bad key) as a routing failure and repointed `kimi-k2`/`kimi-k3-nim` at dead NVIDIA model IDs while keeping the kimi names. Fixed in `a49f7bf0` — routes restored to `moonshotai/kimi-k2.6` / `moonshotai/kimi-k3`, free-model purpose intact, never the default.
 
-*Last verified 2026-09-27 against `pitchfork.toml` (76 daemons), `config/ports.env`, and `mise.toml` on branch `forge/gate-retire-final`. Every port row, layout path, component path, task definition, and relative link in this file was re-checked against the live tree on that date; the claims it makes about a daemon's *runtime* health are for the yote box, not this one. [↑ top](#sovereign-projects)*
+*Last deconfused 2026-09-30 against `origin/main` (`a4058ca79e`): stockyard/remuda gone, ranch flattened, sigma/tau/guidellm/corral paths removed, daemon count re-checked against `pitchfork.toml` (79). Earlier full verification 2026-09-27 on `forge/gate-retire-final`. Runtime-health claims are for the yote box, not this one. [↑ top](#sovereign-projects)*
