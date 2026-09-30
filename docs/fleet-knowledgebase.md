@@ -207,6 +207,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | starling | squawk maximalization: pattern-borrow + tests (feed :25135, ws :25147, ui, CLI); boundary: Taps owns NATS substrate | Starling (Ember's pack), Tally side chat | RUNNING (2026-09-29) |
 
 | kestrel | Mistral key proof + GuideLLM audit of Mistral chat models via corral (direct Mistral API, not herd/flock); pattern-borrow useful Mistral integrations | kestrel (Ember crew) | RUNNING (2026-09-29) |
+| bridle | Tack provider-authority expansion: tack 9->46 providers (37 transcribed from tau KDL), tau KDL catalog nodes stripped for 37 providers, 37/37 policy parity, compiler models-from tack fallback | bridle (Ember crew) | DONE (2026-09-30) -- ranch 4dd894db (tack 67/67 tests, herd astmatrix ok), tau 393f60d1 (gen:compat 82 providers/43 tack-sourced, 731 rules; catalog typecheck clean; catalog suite 973 pass/4 pre-existing fail); both ls-remote verified |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
