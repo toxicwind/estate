@@ -1,9 +1,39 @@
+<div align="right">
+
+[![license](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-part_of_the_estate-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+![polyglot](https://img.shields.io/badge/bun-python-perl-orange?style=for-the-badge)
+
+</div>
+
 # Meta-Research Toolkit
 
-A polyglot research scaffold: lottery scratch-off EV analysis, LLM
-refusal-geometry meta-analysis, and shell tooling. Built with Bun + Python
-+ Perl. See `docs/ARCHITECTURE.md` for how the pieces fit and
-`docs/ITERATION-PLAN.md` for what's next.
+**A polyglot research scaffold for questions that don't fit one language: lottery scratch-off EV analysis, LLM refusal-geometry meta-analysis, and shell tooling.** Bun + Python + Perl, each track in the language that fits it — see `docs/ARCHITECTURE.md` for how the pieces fit and `docs/ITERATION-PLAN.md` for what's next.
+
+- **Lottery EV** — finite-population, without-replacement EV model for Colorado scratch-offs, including a positive-EV "jackpot lag anomaly"
+- **Refusal geometry** — meta-analysis toolkit for LLM refusal *routing behavior*, grounded in published 2026 findings, maintained in parallel Python + TypeScript
+- **Shell tooling** — dynamic ble.sh option linter with `--fix`
+- **Filesystem message bus** — stdlib-only dual-track task bus with atomic claims and 30s leases
+
+## Track map
+
+```mermaid
+flowchart LR
+    A["src/python/lottery/\nev_calculator + scraper"] --> E["make test\n12 pytest + 5 bun"]
+    B["src/python/refusal_geometry/\nsrc/typescript/\nmodels, analyzer, 5 prompt strategies"] --> E
+    C["src/perl/ble-lint.pl\nble.sh option linter"] --> E
+    D["src/python/fsbus_orchestrator.py\natomic claim via rename(2)"] --> E
+```
+
+## Quick start
+
+```bash
+python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+pytest --cov=src/python --cov-report=html
+bun install && bun test
+```
+
+`make test` runs both suites (12 pytest + 5 bun). `make lint` runs `ruff check src/python` and `tsc --noEmit`.
 
 ## Tracks
 
@@ -33,23 +63,6 @@ refusal-geometry meta-analysis, and shell tooling. Built with Bun + Python
   leases, 3 attempts, append-only `manifest.jsonl` audit log. Currently has
   no wired consumers (see iteration plan).
 
-## Quick Start
-
-```bash
-# Python env
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-pytest --cov=src/python --cov-report=html
-
-# Bun env
-bun install
-bun test
-bun run build
-```
-
-`make test` runs both suites (12 pytest + 5 bun). `make lint` runs
-`ruff check src/python` and `tsc --noEmit`.
-
 ## Structure
 
 - `src/python/lottery/` — EV calculator + scraper
@@ -60,3 +73,9 @@ bun run build
 - `tests/` — pytest + Bun test suites
 - `docs/` — `refusal-geometry.md` (research notes + citations),
   `ARCHITECTURE.md`, `ITERATION-PLAN.md`
+
+## License + security
+
+MIT — [sovereign-projects](https://github.com/toxicwind/sovereign-projects) ([license](https://github.com/toxicwind/sovereign-projects#license)).
+
+**Security note:** research scaffold — the lottery scraper hits public Colorado Lottery pages (respect their robots/rate limits), and the refusal-geometry prompts are meta-analytical by design (they study routing behavior, never request harmful content). No credentials anywhere in the tree; `ble-lint.pl --fix` only comments out lines in `~/.blerc` with a timestamped backup.
