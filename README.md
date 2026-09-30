@@ -293,6 +293,19 @@ mise run logs-tail    # follow the supervisor log
 - Tasks are defined in [`mise.toml`](mise.toml) — `up:all`, per-service `up-<name>` / `down-<name>` / `restart-<name>`, per-service `health-<name>` probes, `logs` / `logs-tail` / `logs-json`, and `svc-check` (the all-in-one probe that reports `PASS`/`FAIL` per port). Script-shaped tasks live as files in [`mise/tasks/`](mise/tasks/) — `up`, `down`, `health`, `status`, `doctor`; local overrides in [`mise.local.toml`](mise.local.toml).
 - **pitchfork does NOT hot-reload its config** — after editing any `[daemons.*]` section, run `bin/pitchfork-restart sovereign/<name>`. The reload rule is documented at the top of [`pitchfork.toml`](pitchfork.toml).
 
+## Build
+
+The canonical build entry is [`scripts/flicker-build.sh`](scripts/flicker-build.sh).
+It submits the repo's bounded CI check — the `bun test` suites from
+[`.github/workflows/sovereign-ci.yml`](.github/workflows/sovereign-ci.yml) plus a
+`bash -n` syntax check of `scripts/*.sh` — to the flicker build-job daemon
+(`127.0.0.1:25148`) and exits 0 only when the job succeeds (or an identical job
+already succeeded):
+
+```bash
+./scripts/flicker-build.sh
+```
+
 ## Repo layout
 
 ```text
