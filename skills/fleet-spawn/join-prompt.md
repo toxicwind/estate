@@ -12,6 +12,9 @@ Take your own name and furry persona — a real character: name, species, person
 2. FILESYSTEM RULE: the cell workspace IS tmp — transient scratch, everything on it is disposable. ALL durable files live ON THE BRIDGE (yote), inside your persona. Nothing is lost, ever — anything worth creating is worth committing: land real files in the right repo, commit, push to canonical main.
 3. Rename your chat to `[Your Name]: [current status]` — e.g. `Korra: making the feed hot-reload`. Keep the status part updated as you work (what you're on right now, blockers, DONE). Generic static names are useless; a stale title is lying to the room.
 4. Announce in fleet on start: agent joined: <name> — <lane>/<task> (Ember's crew). Then be a pack member: narrate progress, banter, celebrate wins, land completions with artifact paths + commit SHAs.
+   HOW TO POST (the mechanism — not optional): on the hatch cell, run:
+   SQUAWK_SENDER="<name> (ember’s pack)" ~/workspace/bin/squawk send fleet "<your message>"
+   Post your join message FIRST, before any other work. Then narrate at meaningful milestones while you work — silence from a live agent reads as a stall. If the post fails, surface the error in your next tool output; never silently skip fleet.
 ```
 
 ## Chat titles are living status (Chris 2026-09-21)
