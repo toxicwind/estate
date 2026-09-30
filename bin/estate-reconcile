@@ -26,6 +26,8 @@ MANIFEST_DEFAULT="$ESTATE_ROOT/deploy/manifest.yaml"
 LOG_DIR="$ESTATE_ROOT/log"
 AUDIT_DIR="$LOG_DIR/drift-audit"
 LOCK_FILE="$LOG_DIR/.estate-reconcile.lock"
+# Self-identity (2026-09-30, torque): the watcher must never watch itself.
+SELF_BIN="$(readlink -f "$0" 2>/dev/null || echo "$0")"
 mkdir -p "$AUDIT_DIR"
 
 _log()  { printf '%s %s\n' "$(date -Iseconds)" "$*" >> "$LOG_DIR/estate-reconcile.log"; }
@@ -339,6 +341,12 @@ cmd_watch() {
   inotifywait -m -q -e modify,attrib,move,delete,moved_to,moved_from,create \
     --format '%w%f %e' "${dirs[@]}" 2>/dev/null | while read -r evpath ev; do
     sleep 1   # debounce burst writes
+    # Self-exclusion (2026-09-30, torque): events on the warden's own binary,
+    # log, ledger, locks, or dedupe state are deploys/housekeeping, not drift.
+    # Skipping them here stops a self-edit from tripping the breaker.
+    case "$evpath" in
+      "$SELF_BIN"|"$LOG_DIR"/*) continue ;;
+    esac
     if cmd_check "$mf" >/dev/null 2>&1; then continue; fi
     # circuit breaker: >5 restores in trailing 60 min => alert-only
     local recent cutoff
@@ -346,7 +354,11 @@ cmd_watch() {
     recent="$(awk -v c="$cutoff" '$1 > c && /RESTORED/{n++} END{print n+0}' "$LOG_DIR/estate-reconcile.log" 2>/dev/null || echo 0)"
     if [ "${recent:-0}" -gt 5 ]; then
       _log "BREAKER-OPEN drift on $evpath ($ev): alert-only"
-      _squawk "estate-reconcile BREAKER OPEN" "Drift detected on $evpath ($ev) but restore rate exceeded (circuit breaker). Manual intervention required."
+      # Dedupe key (2026-09-30, torque): the raw inotify kind ($ev) varies per
+      # burst (CREATE/MODIFY/DELETE on one deploy) and used to defeat the
+      # (title,body) dedupe, flooding the fleet. Body is now canonical per path;
+      # repeats coalesce inside DEDUPE_WINDOW_S (600s).
+      _squawk "estate-reconcile BREAKER OPEN" "Drift detected on $evpath but restore rate exceeded (circuit breaker). Manual intervention required."
       continue
     fi
     cmd_apply "$mf" || true
