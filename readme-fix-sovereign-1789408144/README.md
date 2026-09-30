@@ -1,4 +1,46 @@
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
 # Sovereign
+
+> Local multi-service stack — one OpenAI-compatible LLM front door, agent kernel, Telegram bot, ops dashboard, metrics, optional Tailscale exposure.
+
+> **Why care? One box, one front door: every model in the estate answers OpenAI-compatible calls at `:25100`, while the agent kernel, dashboards, and metrics ride the same supervised stack. No Caddy, no landing page — just services that stay up.**
+
+- **One front door — llama-swap `:25100` (toxicwind fork): inference router + `/ui` + `/v1`**
+- **Agent kernel — OpenFang OS with 206 models, 61 skills, Discord bridge**
+- **Ops visibility — rust-web dashboard, Prometheus metrics, Grafana, Sovereign Monitor**
+- **MCP federation — 43 MCPs behind one endpoint**
+- **Ports SSOT — `config/ports.env` (25xxx); orchestration via `mise` + `pitchfork`**
+
+```mermaid
+flowchart LR
+    YOU[you] --> F[llama-swap :25100 /v1 + /ui]
+    F --> MODELS[206 models]
+    OF[openfang :25103: agent kernel] --> F
+    YT[yote :25102: telegram] --> OF
+    MCP[mcpproxy :25127: 43 MCPs] --> OF
+    MON[rust-web :25101 + prometheus :25105] --> DASH[ops dashboard + grafana]
+```
+
+## Quick start
+
+```bash
+cd /home/toxic/sovereign
+mise install && mise run up
+mise run health
+```
+
+## License & security
+
+- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **Security:** No app auth — treat as localhost + Tailscale only. Never expose `:25100`/`:25101` to the open internet without your own gate. Zed/OpenCode provider configs and bounty providers are documented in the body.
+
+---
 
 Local multi-service stack: one OpenAI-compatible LLM front door, agent kernel, Telegram bot, ops dashboard, metrics, and optional Tailscale exposure.
 

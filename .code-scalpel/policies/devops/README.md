@@ -1,46 +1,55 @@
-# DevOps Policies
+# devops/ — Dockerfile security policy
 
-This directory contains policy templates for DevOps practices, infrastructure validation, and deployment safety.
+Validates Dockerfiles against security best practices — before the image gets built, not after it ships.
 
-## Policy Categories
+<div align="right">
 
-### 1. Infrastructure as Code (IaC)
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-- **docker_security.rego** - Dockerfile best practices
-- **kubernetes_manifests.rego** - Validate K8s manifest safety
+</div>
 
-### 2. Deployment Safety
+## Why this exists
 
-- **deployment_checklist.rego** - Enforce pre-deployment checks
-- **rollback_capability.rego** - Ensure rollback mechanisms
+Insecure Dockerfiles are the quietest supply-chain hole: a `latest` tag here, a root user there, and your "hermetic" build is neither. This policy checks the Dockerfile *as a document* — no image build, no registry scan, just the file against the rules.
 
-### 3. Resource Management
+## What it checks
 
-- **resource_limits.rego** - Enforce CPU/memory limits
-- **cost_controls.rego** - Prevent expensive configurations
+**`docker_security.rego`** — the template in this directory:
 
-## Usage
+- Base images pinned (no floating `:latest` tags)
+- No `root` user at runtime (non-root `USER` required)
+- No secrets baked into layers (`ENV`/`ARG` secret patterns)
+- Minimal layer hygiene (combined `RUN` chains, no package-manager caches left behind)
 
-Enable these policies in `.code-scalpel/policy.yaml`:
+```mermaid
+flowchart LR
+    DF[Dockerfile] --> REGO[docker_security.rego]
+    REGO -->|clean| OK[✓ build may proceed]
+    REGO -->|latest tag / root / secret| VIOL[✗ warn or deny<br/>per policy.yaml]
+```
+
+## Quick start
 
 ```yaml
+# .code-scalpel/policy.yaml
 policies:
   devops:
     - name: docker-security
       file: policies/devops/docker_security.rego
       severity: HIGH
       action: WARN
-
-    - name: kubernetes-security
-      file: policies/devops/kubernetes_manifests.rego
-      severity: CRITICAL
-      action: DENY
 ```
 
-## Examples
+```bash
+code-scalpel policy validate
+code-scalpel policy test --category devops
+```
 
-See `examples/policy_examples/devops/` for usage examples.
+## Tuning
 
----
+Start at `WARN` — Dockerfile rules are the most likely to fire on legacy files. Fix or exempt the real ones, then promote to `DENY` for new Dockerfiles.
 
-_Part of Code Scalpel v3.1+ Policy Engine_
+## License & security
+
+MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). This policy is a first gate, not the whole story — pair it with image scanning at build time. Policy decisions land in the Code Scalpel audit trail (`../../audit.log`).

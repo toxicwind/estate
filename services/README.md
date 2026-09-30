@@ -1,4 +1,46 @@
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
 # services/ — sovereign TS service monorepo
+
+> Every production service in the estate, one Bun/TypeScript package each.
+
+> **Why care? Chris's order: Python is for ML glue and throwaway probes — never for a pitchfork daemon. Every production service here is a self-contained Bun binary with a declared port, a `/health` endpoint, and a build pipeline — scaffold a new one from the template in minutes.**
+
+- **Template scaffold — `cp -r services/_template services/<name>`, fill 5 steps, done**
+- **Port registry discipline — declared once in `package.json`'s `sovereign` block, assigned in `config/ports.env`, read from env at runtime**
+- **Single-binary builds — `bun build --compile`, no runtime dependency at deploy**
+- **Non-negotiable conventions — event-driven, 127.0.0.1-only, `/health`, graceful shutdown, fail fast**
+- **Turbo pipelines — build, typecheck, lint, test, dev across all services**
+
+```mermaid
+flowchart LR
+    DEV[you] --> TPL[_template]
+    TPL --> SVC[services/<name>]
+    SVC --> BUILD[bun build --compile]
+    BUILD --> BIN[dist/<name> binary]
+    BIN --> PF[pitchfork daemon]
+    PF --> HEALTH[/health 200 JSON]
+```
+
+## Quick start
+
+```bash
+cp -r services/_template services/<name>   # then rename + fill the sovereign{} block
+bun run --filter @sovereign/<name> build
+bun run ws:build                           # all services, from the repo root
+```
+
+## License & security
+
+- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **Security:** Services bind 127.0.0.1 only — public exposure goes through mesh-front. A hardcoded port is a bug: the template's `requiredPort()` fails fast when the env var is missing.
+
+---
 
 Every production service in the sovereign estate lives here as a Bun/TypeScript
 package. **Python is for ML/torch glue and throwaway probes — never for a

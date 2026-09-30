@@ -1,4 +1,45 @@
-# tau-tmux — tmux lab + live tau audit
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+# tau-tmux
+
+> tmux lab for parallel tau experiments + a live audit of the tau install.
+
+> **Why care? Parallel agent experiments need isolated panes you can drive programmatically — and the tau install itself needs proving, not assuming. This skill gives you both: a 3-pane lab recipe and a real audit where every check observes the box (nothing stubbed).**
+
+- **Detached 3-pane lab — fire probes with `send-keys`, read results with `capture-pane`**
+- **Real audit — collapse chain resolves, engine version, `PI_CONFIG_DIR` honored, skills symlink live**
+- **Router checks — herd (`:25100`) and sovereign (`:25104`) reachable**
+- **Verified flag table — every flag checked against `tau --help` (18.2.6)**
+- **Honest history — the stub-helper era is documented, not hidden**
+
+```mermaid
+flowchart LR
+    YOU[you] --> TMUX[tmux: tau-lab]
+    TMUX --> P0[pane 0: probe]
+    TMUX --> P1[pane 1: probe]
+    TMUX --> P2[pane 2: probe]
+    AUDIT[audit.ts] --> CHECKS[collapse chain · engine · skills · routers]
+```
+
+## Quick start
+
+```bash
+tmux new-session -d -s tau-lab -n lab
+tmux send-keys -t tau-lab:0.0 "tau -p 'reply with exactly: PANE0_OK'" C-m
+bun run /home/toxic/sovereign/skills/tau-tmux/helper/audit.ts
+```
+
+## License & security
+
+- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **Security:** The audit is read-only and observes the live box. The earlier stub-helper version (checks that always returned true) was replaced 2026-09-20 — docs now match the box.
+
+---
 
 Run parallel tau experiments in tmux panes and audit the live tau install
 with real checks. Nothing here is stubbed: every check observes the box.

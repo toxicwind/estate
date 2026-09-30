@@ -1,48 +1,55 @@
-# Architecture Management Policies
+# architecture/ — layered-architecture policy
 
-This directory contains policy templates for enforcing architectural constraints and design patterns in your codebase.
+Enforces the codebase's architectural layering — UI → Service → Data — so dependencies only flow downhill.
 
-## Policy Categories
+<div align="right">
 
-### 1. Layering & Boundaries
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-- **layered_architecture.rego** - Enforce layered architecture (UI → Service → Data)
-- **module_boundaries.rego** - Prevent cross-module violations
+</div>
 
-### 2. Design Patterns
+## Why this exists
 
-- **dependency_injection.rego** - Enforce DI instead of singletons
-- **interface_segregation.rego** - Validate interface design
-- **clean_architecture.rego** - Enforce Clean Architecture principles
+Layer violations are silent tech debt: a UI module importing the database layer works fine today and rots the architecture tomorrow. This policy makes the dependency direction a machine-checked rule instead of a code-review hope.
 
-### 3. Code Organization
+## What it checks
 
-- **folder_structure.rego** - Enforce consistent folder organization
-- **naming_conventions.rego** - Validate naming patterns
-- **file_size_limits.rego** - Prevent monolithic files
+**`layered_architecture.rego`** — the template in this directory:
 
-## Usage
+- Dependencies may only point **down** the layer stack: UI → Service → Data.
+- No layer may depend on a layer above it; no layer may skip the contract of the layer below it.
 
-Enable these policies in `.code-scalpel/policy.yaml`:
+```mermaid
+flowchart TB
+    UI[UI layer] --> SVC[Service layer]
+    SVC --> DATA[Data layer]
+    UI -.->|✗ blocked| DATA
+    DATA -.->|✗ blocked| UI
+    DATA -.->|✗ blocked| SVC
+```
+
+## Quick start
 
 ```yaml
+# .code-scalpel/policy.yaml
 policies:
   architecture:
     - name: layered-architecture
       file: policies/architecture/layered_architecture.rego
       severity: HIGH
       action: DENY
-
-    - name: module-boundaries
-      file: policies/architecture/module_boundaries.rego
-      severity: CRITICAL
-      action: DENY
 ```
 
-## Examples
+```bash
+code-scalpel policy validate
+code-scalpel policy test --category architecture
+```
 
-See `examples/policy_examples/architecture/` for usage examples.
+## Tuning
 
----
+Open `layered_architecture.rego` and adjust the layer definitions to match your codebase's actual module layout — the template's layer names are placeholders, not gospel. Run at `action: WARN` first; promote to `DENY` when the violations it finds are real.
 
-_Part of Code Scalpel v3.1+ Policy Engine_
+## License & security
+
+MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). A `DENY` architecture rule blocks real commits — review policy edits like production code. Decisions are logged to the Code Scalpel audit trail (`../../audit.log`).

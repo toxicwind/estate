@@ -1,50 +1,57 @@
 # tau-extensions
 
-[`toxicwind/tau-extensions`](https://github.com/toxicwind/tau-extensions) — a monorepo of Tau extensions.
+<div align="right">
 
-A curated set of Tau extensions that plug directly into your Tau agent session. Two extensions ship out of the box:
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/tau-extensions/blob/main/LICENSE)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-- **omp-kafka** — subscribe to Apache Kafka topics and surface messages in the session (auto push or on-demand pull).
-- **omp-edit-committer** — auto-commit every Edit/Write with a descriptive Conventional-Commits message and surface the SHA under the tool result.
+</div>
+
+[`toxicwind/tau-extensions`](https://github.com/toxicwind/tau-extensions) —
+a curated monorepo of Tau/omp extensions that plug directly into your agent
+session. Your agent gets Kafka streams, auto-committed edits, and a
+self-healing Kimi alias — install the ones you want, ignore the rest.
 
 ```mermaid
 flowchart LR
     subgraph omp[omp session]
         ext1[omp-kafka]
         ext2[omp-edit-committer]
+        ext3[tau-kimi-auto]
     end
     Kafka((Kafka)) --> ext1
     Agent --> ext1
     Agent --> ext2
     Git[(Git)] --> ext2
-end
+    ext3 -->|resolves| Kimi[Kimi models]
+    ext3 --> Agent
 ```
 
 ## Extensions
 
 | Extension | Category | What it does |
-|---|---|---|
-| [`omp-kafka`](packages/omp-kafka) | Integration | Consume Kafka topics into an `omp` session; supports auto (push) and pull modes with `/kafka-*` slash commands and a `kafka_consume` LLM tool. |
-| [`omp-edit-committer`](packages/omp-edit-committer) | Workflow | Auto-commit every Edit/Write with intent, trade-offs, and an ASCII diagram; renders a commit badge next to the tool result for use with `modem-dev/hunk`. |
+| --- | --- | --- |
+| [`omp-kafka`](packages/omp-kafka) | Integration | Consume Kafka topics into an `omp` session; auto (push) and pull modes with `/kafka-*` slash commands and a `kafka_consume` LLM tool. |
+| [`omp-edit-committer`](packages/omp-edit-committer) | Workflow | Auto-commit every Edit/Write with a Conventional-Commits message (Intent / Trade-offs / Diagram sections); renders a commit badge under the tool result for use with `modem-dev/hunk`. |
+| [`tau-kimi-auto`](packages/tau-kimi-auto) | Model | Registers the `kimi-auto` virtual model — a herd-side alias that resolves to the best healthy Kimi model per request (Kimi-only; 503 instead of silent fallback). |
 
-## Install
+## Quick start
 
 Requires `omp >= 17.0.0`.
 
-### Option A — clone the monorepo and link
-
 ```bash
-git clone --depth 1 --filter=blob:none --sparse https://github.com/toxicwind/omp-extensions ~/.tau/agent/extensions/omp-extensions
-cd ~/.tau/agent/extensions/omp-extensions
+# clone the monorepo (sparse: only the extensions you want)
+git clone --depth 1 --filter=blob:none --sparse \
+  https://github.com/toxicwind/tau-extensions ~/.tau/agent/extensions/tau-extensions
+cd ~/.tau/agent/extensions/tau-extensions
 git sparse-checkout set packages/omp-kafka
-cd packages/omp-kafka
-bun install
-omp plugin link .
+cd packages/omp-kafka && bun install && omp plugin link .
 ```
 
-The whole monorepo can be cloned if you want both extensions — drop `--filter=blob:none --sparse` and the `sparse-checkout` lines.
+Drop `--filter=blob:none --sparse` and the `sparse-checkout` line to take
+the whole monorepo.
 
-### Option B — install via npm (once published)
+### Install via npm (once published)
 
 ```bash
 bun add -g @toxicwind/omp-kafka
@@ -59,14 +66,30 @@ extensions:
   - @toxicwind/omp-edit-committer
 ```
 
-### Option C — load once for a single session
+### Load once for a single session
 
 ```bash
-omp --extension /path/to/omp-extensions/packages/omp-kafka
-omp --extension /path/to/omp-extensions/packages/omp-edit-committer
+omp --extension /path/to/tau-extensions/packages/omp-kafka
+omp --extension /path/to/tau-extensions/packages/omp-edit-committer
 ```
 
-## Development
+## Architecture
+
+Each package is a self-contained omp extension: an `extension.ts` factory
+that registers tools, slash commands, and session hooks. Shared monorepo
+tooling is Bun workspaces; packages declare only their own dependencies —
+`node_modules/` stays minimal, no transitive junk.
+
+## Config
+
+Each extension is configured independently — see its own README for env
+vars and config files:
+
+- `omp-kafka`: `kafka.yml` (resolution order `$KAFKA_CONFIG` → `./kafka.yml` → `./.tau/kafka.yml` → `~/.tau/agent/kafka.yml`).
+- `omp-edit-committer`: `OMP_EDIT_COMMITTER_DISABLED=1` / `OMP_EDIT_COMMITTER_DEBUG=1`.
+- `tau-kimi-auto`: `KIMI_AUTO_HERD` (default `http://127.0.0.1:25100`), `KIMI_AUTO_STATE`.
+
+## Dev / contributing
 
 ```bash
 bun install
@@ -74,8 +97,14 @@ bun run --workspaces test
 bun run --workspaces typecheck
 ```
 
-All packages typecheck and test cleanly. `node_modules/` stays minimal — only declared dependencies, no transitive junk.
+All packages typecheck and test cleanly. New extensions go in `packages/`
+following the existing `extension.ts` factory shape.
 
-## License
+## License & security
 
 MIT — see [LICENSE](./LICENSE).
+
+- Extensions run with full agent privileges inside your Tau session; review
+  package source before linking.
+- `omp-kafka` SASL credentials go in `kafka.yml`, never in chat or env files
+  committed to repos.

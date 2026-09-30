@@ -1,72 +1,35 @@
-# GPUI Examples
+<div align="right">
 
-Examples can be run from the Zed repository root:
+[![license](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-part%20of-blueviolet?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+# GPUI examples — the interactive gallery
+
+**Learn GPUI by running it.** Every example in this directory is a standalone runnable app — hello world, text input, lists, drag-and-drop, animations, and the kitchen-sink demos. Clone, tweak, re-run.
+
+## Why should I care?
+
+- **Copy-paste learning** — each example is self-contained; steal the pattern you need
+- **API coverage** — the gallery exercises views, focus, events, layout, and GPU rendering end to end
+- **Instant feedback loop** — `cargo run -p gpui --example hello_world` and you're looking at the pattern
+
+```mermaid
+flowchart LR
+    YOU[you] -->|cargo run --example| EX[example app]
+    EX --> GPUI[gpui framework]
+    GPUI --> GPU[GPU render]
+```
+
+## Quick start
 
 ```sh
 cargo run -p gpui --example hello_world
+cargo run -p gpui --example input
 ```
 
-## Where to start
+## License & security
 
-- `hello_world` shows the basic shape of a GPUI application: create an
-  `Application`, open a window, create a root view, and render a `div`.
-- `input` demonstrates text input, focus, selections, clipboard actions, and
-  keyboard bindings.
-- `uniform_list` shows how to render a simple virtualized list.
-- `testing` demonstrates `#[gpui::test]`, `TestAppContext`, actions, focus, and
-  window-based tests.
-
-## Layout and styling
-
-- `grid_layout` demonstrates CSS-grid-style layout.
-- `opacity` demonstrates opacity styling.
-- `pattern` shows patterned backgrounds.
-- `shadow` demonstrates box shadows.
-- `text` shows styled text rendering.
-- `text_layout` demonstrates text alignment, decoration, weights, and wrapping.
-- `text_wrapper` shows wrapping text content.
-
-## Interaction
-
-- `anchor` demonstrates anchored positioning.
-- `data_table` combines virtualized list rendering with table-style rows and a
-  custom scrollbar.
-- `drag_drop` shows draggable elements and drop targets.
-- `focus_visible` demonstrates keyboard-visible focus styling.
-- `mouse_pressure` demonstrates pressure-sensitive pointer input where supported.
-- `popover` shows floating layers with `deferred` and `anchored`.
-- `scrollable` demonstrates scrollable content.
-- `tab_stop` shows keyboard tab navigation.
-
-## Images, drawing, and animation
-
-- `animation` demonstrates GPUI animations and animated SVG transforms.
-- `gif_viewer` shows GIF rendering.
-- `gradient` demonstrates linear gradients and color spaces.
-- `image` shows local and remote image loading, image sizing, and asset setup.
-- `image_gallery` demonstrates image caching and loading remote images.
-- `image_loading` shows image loading states and asset loading.
-- `painting` demonstrates custom drawing with paths and canvas.
-- `svg` shows SVG rendering.
-
-## Windows and application behavior
-
-- `move_entity_between_windows` shows moving an entity between windows.
-- `on_window_close_quit` demonstrates quitting when a window closes.
-- `set_menus` shows application menu setup.
-- `system_notifications` demonstrates posting, replacing, dismissing, and responding to operating-system notifications.
-- `window` demonstrates creating normal, dialog, popup, and floating windows.
-- `window_positioning` demonstrates window bounds and placement.
-- `window_shadow` demonstrates window shadow styling.
-
-## Specialized examples
-
-These examples are useful when working on GPUI itself, but they may not be the
-best starting point for new applications:
-
-- `active_state_bug` is a focused active-state reproduction.
-- `layer_shell` demonstrates Linux layer-shell windows.
-- `list_example` demonstrates bottom-aligned list state and scrollbar behavior.
-- `ownership_post` supports the ownership and data-flow documentation.
-- `paths_bench` is a path rendering benchmark.
-- `tree` renders a deep tree of nested elements.
+- Zed upstream code is **GPL-3.0-or-later**; this fork ships inside the sovereign-projects monorepo ([MIT](https://github.com/toxicwind/sovereign-projects#license) for sovereign-authored files).
+- Examples are demo code — fine to copy into your own projects, but don't ship them as-is into production without reviewing their error handling.
