@@ -1,9 +1,42 @@
 # bridge — hatch→yote bridge exec maximal layer
 
-The bridge is the control plane between **hatch** (this cell) and **yote**
-(the heavy box). This project holds the maximalized exec layer built by
-**bridge-max** (2026-09-20): multitask dispatch, detached background dispatch,
-and the supporting docs.
+The bridge is the control plane between **hatch** (this cell) and **yote** (the heavy box). This project holds the maximalized exec layer built by **bridge-max** (2026-09-20): multitask dispatch, detached background dispatch, and the supporting docs. The cell-side `yote-conn` CLI and connector daemon are deployed *from* this repo — edit here, deploy, never the reverse.
+
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+## Why this exists
+
+Cell→yote exec is the fleet's spinal cord — every probe, deploy, and daemon restart rides it. The maximal layer makes it a real control plane instead of a raw pipe: concurrent multitask dispatch (one lane, N commands), detached background jobs that survive the launching session, incremental log attach, and a canonical operator path with deliberate exceptions for the emergency breakers that must work when the connector itself is down.
+
+```mermaid
+flowchart TB
+    subgraph cell[hatch cell]
+        CLI[yote-conn CLI<br/>hatch/yote-conn]
+        CONN[connector.py daemon<br/>127.0.0.1:18301]
+        CLI --> CONN
+    end
+    subgraph lanes[transport]
+        WS[WS lane :8379]
+        HTTPS[HTTPS fallback]
+    end
+    subgraph yote[yote]
+        MULTI[exec-multi<br/>≤8 concurrent cmds]
+        BG[bg-run.py<br/>detached · PPID 1 · own SID]
+        STATUS[bg-status.py<br/>reap-on-query]
+        KILL[bg-kill.py<br/>pid-reuse guard]
+    end
+    CONN --> WS
+    CONN --> HTTPS
+    WS --> MULTI
+    WS --> BG
+    BG --> STATUS
+    STATUS --> KILL
+```
 
 ## Layout
 
@@ -98,3 +131,7 @@ truth lives in files on yote), no monkeypatching, no `/tmp` dependencies.
 - `docs/fleet-knowledgebase.md` — estate map, services & ports, bridge tools.
 - `~/workspace/awrawr-bridge/exec.py` — the WS/HTTPS lane implementation (hatch cell).
 - `/home/toxic/sovereign/shingle-workspace/awrawr_ws_exec.py` — the yote-side WS exec server.
+
+## License & security
+
+MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). This is the fleet's control plane — the kill semantics are deliberately conservative: `bg-kill` verifies `/proc/<pid>/cmdline` before signaling, so a reused pid is never killed; `bg-status` reaps stale runners on read instead of leaving zombies. Never bypass the pid-reuse guards for convenience. Deploys go through `deploy-cell.py` (SHA-verified, atomic) — never hand-copy the connector onto the cell.

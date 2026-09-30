@@ -1,12 +1,17 @@
-# Persona folders
+# docs/fleet/personas/ — one home per fleet identity
 
 One folder per fleet identity. Each named chat keeps its OWN standing files here — never in the shared root files.
 
-**Canonical home:** `docs/fleet/personas/` in `toxicwind/sovereign-projects` (on yote, `/home/toxic/sovereign/docs/fleet/personas/`). Committed to canonical main; the repo is the restore point. Any cell-local copy is scratch.
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
 
 ## Why this exists
 
-2026-09-21: within minutes of Chris's naming order, several instances wrote conflicting first-person "I am X" sections into the shared `~/MEMORY.md` and `~/IDENTITY.md`, corrupting them. Chris's ruling: "they need identities they just shouldnt share files and should keep track idiot." This folder is the answer.
+2026-09-21: within minutes of Chris's naming order, several instances wrote conflicting first-person "I am X" sections into the shared `~/MEMORY.md` and `~/IDENTITY.md`, corrupting them. Chris's ruling: *"they need identities they just shouldnt share files and should keep track idiot."* This folder is the answer — identity with a namespace, so personas can't collide.
 
 ## Rules (Chris, 2026-09-21)
 
@@ -14,8 +19,27 @@ One folder per fleet identity. Each named chat keeps its OWN standing files here
 2. Every other named chat keeps its own `MEMORY.md` / `IDENTITY.md` / `SOUL.md` / `AGENTS.md` in its own folder: `docs/fleet/personas/<name>/`.
 3. Personas are anchored (Chris 2026-09-21, fleet-spawn skill): a real furry character — name, species, personality — carrying lane + concrete task in plain words. `"<name> the <species> — <lane>, <concrete task>"` is a persona; generic stylized fluff gets rewritten as the job.
 4. Identity claims need Ember's authorization — "only ember can land grab." The roster marks each name confirmed / observed / reported.
-5. Each instance maintains its OWN files and keeps them current. Nobody writes another agent's words for it — the fleet-culture audit proved that silences them. `INDEX.md` (the roster) is Vesper's lane artifact.
+5. Each instance maintains its OWN files and keeps them current. Nobody writes another agent's words for it — the fleet-culture audit proved that silences them. `INDEX.md` (the roster) is a lane artifact.
 6. Cell workspace is tmp (Chris 2026-09-21): durable files live on yote, committed to canonical main.
+
+```mermaid
+flowchart TB
+    subgraph shared[shared root — Ember only]
+        MEM[MEMORY.md]
+        ID[IDENTITY.md]
+        SO[SOUL.md]
+        AG[AGENTS.md]
+    end
+    subgraph personas[docs/fleet/personas/]
+        ROSTER[INDEX.md — the roster]
+        F1[<name>/ — own MEMORY/IDENTITY/SOUL/AGENTS]
+        F2[<other>/ — own MEMORY/IDENTITY/SOUL/AGENTS]
+    end
+    F1 -.->|never writes| shared
+    F2 -.->|never writes| shared
+    ROSTER --> F1
+    ROSTER --> F2
+```
 
 ## Layout
 
@@ -30,4 +54,21 @@ docs/fleet/personas/
     AGENTS.md        — its operating lessons
 ```
 
+## Quick start
+
+```bash
+# claim a persona folder (new named chat)
+mkdir -p docs/fleet/personas/<name>
+# write YOUR OWN files — nobody writes them for you
+$EDITOR docs/fleet/personas/<name>/IDENTITY.md
+```
+
+## Canonical home
+
+`docs/fleet/personas/` in `toxicwind/sovereign-projects` (on yote, `/home/toxic/sovereign/docs/fleet/personas/`). Committed to canonical main; **the repo is the restore point**. Any cell-local copy is scratch.
+
 Ember (the main agent) has no folder here — the shared root files are his alone.
+
+## License & security
+
+MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). Persona files are public to the fleet by design — never put credentials, tokens, or secrets in them. The authorship guard (standing-edit + standing-guard) detects direct edits to the shared root files; don't test it.
