@@ -1,6 +1,6 @@
 <script lang="ts">
   import { link } from "svelte-spa-router";
-  import { FerrisWheel, Boxes, Activity, Cat, ScrollText, Gauge, Cpu, Sun, Moon, Monitor, ChevronRight, Settings, CircleQuestionMark, PanelsTopLeft } from "@lucide/svelte";
+  import { FerrisWheel, Boxes, Activity, Cat, ScrollText, Gauge, Cpu, Sun, Moon, Monitor, ChevronRight, Settings, CircleQuestionMark, PanelsTopLeft, Workflow } from "@lucide/svelte";
   import * as Sidebar from "$lib/components/ui/sidebar/index.js";
   import * as Collapsible from "$lib/components/ui/collapsible/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
@@ -11,6 +11,7 @@
   import { showUnlistedModels } from "../stores/modelDisplay";
   import { modelsMenuOpen } from "../stores/sidebar";
   import type { Model } from "../lib/types";
+  import { COMFYUI_MODEL_ID } from "../lib/comfyui";
   import { isComposingKey } from "../lib/ime";
   import ConnectionStatus from "./ConnectionStatus.svelte";
   import MiddleTruncate from "./MiddleTruncate.svelte";
@@ -230,6 +231,19 @@
               {/snippet}
             </Sidebar.MenuButton>
           </Sidebar.MenuItem>
+
+          {#if $models.some((m) => m.id === COMFYUI_MODEL_ID)}
+            <Sidebar.MenuItem>
+              <Sidebar.MenuButton isActive={isActive("/comfyui", $currentRoute)} tooltipContent="ComfyUI">
+                {#snippet child({ props })}
+                  <a href="/comfyui" use:link {...props}>
+                    <Workflow />
+                    <span>ComfyUI</span>
+                  </a>
+                {/snippet}
+              </Sidebar.MenuButton>
+            </Sidebar.MenuItem>
+          {/if}
         </Sidebar.Menu>
       </Sidebar.GroupContent>
     </Sidebar.Group>
