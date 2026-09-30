@@ -2,7 +2,7 @@
 crew: 'corvid'
 scope: 'ROUTING AUDIT: agent cognition vs tool-call vs heavy-compute placement across hatch+yote; exec-lane routing; cell cron/worker heavy-compute '
 owner: 'corvid (Ember crew)'
-status: 'RUNNING (2026-09-30)'
+status: 'DONE (2026-09-30) — be6c40796c'
 order: 100
 registered: '2026-09-30'
 updated: '2026-09-30'
