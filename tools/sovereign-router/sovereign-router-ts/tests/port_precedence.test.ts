@@ -22,7 +22,7 @@ async function resolvePort(
   prelude = "",
 ): Promise<string> {
   const proc = Bun.spawn({
-    cmd: ["bun", "-e", childScript(prelude)],
+    cmd: [process.execPath, "-e", childScript(prelude)],
     cwd: ROUTER_DIR,
     env: { ...process.env, ...env },
     stdout: "pipe",
