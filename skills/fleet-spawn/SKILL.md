@@ -97,9 +97,14 @@ What it does (permanent script, not guidance):
    and exits 2. You then coordinate in fleet BEFORE announcing. This is
    what would have caught the repo-integrator-max collision.
    `--advisory` softens it to a warning (default is hard).
-3. **Registers you in §2 Active Crews** (`--register`; needs `--owner`).
-   Refuses to double-register. `--done <sha>` later marks your row DONE
-   with the final commit SHA.
+3. **Registers you** (`--register`; needs `--owner`): creates your
+   per-crew file `docs/fleet/crews/<you>.md` (the source of truth for your
+   row) and regenerates the §2 rollup via `bun projects/ops/bin/kb-rollup.ts`
+   under flock. Refuses to double-register. `--done <sha>` later marks your
+   per-crew file DONE with the final commit SHA and regenerates §2.
+   §2 Active Crews is a GENERATED rollup (Alternative A, Chris 2026-09-29):
+   never hand-edit the table — edit your per-crew file instead. A pre-commit
+   hook rejects stale/hand-edited §2 tables.
 4. **Shows you the room** — last fleet voices (seq, sender, title) so you
    know who to talk to.
 5. **Hands you the hello template** — it does NOT write your hello for
