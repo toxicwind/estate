@@ -211,3 +211,6 @@ run = "python3 -m keypool --selftest"
 run = "curl -s http://127.0.0.1:25109/status | jq -r '.pools | to_entries[] | \"\\(.key): \" + ([.value.keys[] | \"\\(.name)=\\(.state)\"] | join(\" \"))'"
 [tasks."keypool-logs"]
 run = "pitchfork logs keypool -n 100"
+
+# cell-files hot-reload explorer UI (bun --hot, SSE auto-refresh)
+"up-cellfiles-ui" = "bun --hot /home/toxic/hatch/cell-files/packages/cell-files/ui/server.ts"
