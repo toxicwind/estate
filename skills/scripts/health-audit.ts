@@ -63,7 +63,7 @@ const HTTP_SERVICES: ServiceEndpoint[] = [
   { name: "hindsight-cp", url: "http://127.0.0.1:25118/", port: 25118 },
   { name: "flock", url: "http://127.0.0.1:25193/health", port: 25193 },
   { name: "boundless", url: "http://127.0.0.1:25197/api/health", port: 25197 },
-  { name: "pcie-moe-telemetry", url: "http://127.0.0.1:25219/api/status", port: 25219 },
+  { name: "windmill", url: "http://127.0.0.1:25219/api/status", port: 25219 },
 ];
 
 const TCP_SERVICES: TcpEndpoint[] = [
