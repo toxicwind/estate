@@ -6,8 +6,13 @@
 //  4. Latency-aware candidate scoring (EMA demotes chronic slowness).
 import { describe, test, expect, afterAll } from "bun:test";
 
-// Must be set before the router modules are imported (DB_PATH is read once).
+// Must be set before the router modules are imported (DB_PATH and the
+// catalog state path are read once at import). The catalog path is unique
+// per run: noteEntitlement404 persists quarantine to it, and a reused path
+// would leak a bench into the next run.
 process.env.SOVEREIGN_DB = "/tmp/sovereign_router_hedge_test.db";
+process.env.SOVEREIGN_CATALOG_STATE =
+  `/tmp/sovereign_router_hedge_test.catalog.${process.pid}.json`;
 
 const { state } = await import("../router_matrix");
 const { hedgedChain, substantive } = await import("../router_strategy");
