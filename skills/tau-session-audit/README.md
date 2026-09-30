@@ -1,8 +1,28 @@
+<div align="right">
+
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/part_of-sovereign--projects-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
 # 🔍 tau-session-audit — Intent Reconstruction, Hallucination Detection & Monorepo Health
+
+> **Reconstruct what the user wanted, verify what actually got done, and catch hallucinations in TAU session logs.**
 
 A production-grade audit engine for `.tau/sessions/` JSONL logs. Reconstructs user intent, verifies genuine task completion vs. model hallucinations, and outputs GitHub-ready Markdown reports with deep links.
 
 ---
+
+```mermaid
+flowchart LR
+    jsonl[.tau/sessions/<br/>JSONL logs] --> audit[audit.ts]
+    audit --> intent[intent reconstruction]
+    audit --> complete[completion verification]
+    audit --> detect[hallucination + anomaly<br/>pattern detectors]
+    intent --> report[GitHub-ready Markdown report]
+    complete --> report
+    detect --> report
+```
 
 ## 🚀 Quick Start
 
@@ -83,3 +103,7 @@ bun test /home/toxic/sovereign/skills/tau-session-audit/helper/audit.test.ts
 ```
 
 All 32 unit tests pass covering intent inference, anomaly scoring, and pattern detection.
+
+## License & Security
+
+MIT where marked — [license](https://github.com/toxicwind/sovereign-projects#license). Audit reports may quote session content: treat any credential-shaped string in logs as untrusted until verified, never paste real secrets into reports.
