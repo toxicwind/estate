@@ -399,13 +399,13 @@ export const SURFACES: readonly Surface[] = [
 	},
 	{
 		id: "telemetry",
-		label: "PCIe Moe",
+		label: "Windmill",
 		group: "Ops",
 		origin: loopback(25219),
 		kind: "api",
-		daemon: "pcie-moe-telemetry",
+		daemon: "windmill",
 		healthPath: "/api/status",
-		description: "PCIe / MoE accelerator telemetry.",
+		description: "GPU / PCIe telemetry -- which way the wind blows.",
 	},
 	{
 		id: "node-exporter",
