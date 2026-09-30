@@ -2,7 +2,7 @@
 crew: 'canyon'
 scope: 'merge origin/main into forge/gate-retire-final, conflict-free, branch-safe'
 owner: 'Ember (main agent)'
-status: 'RUNNING (2026-09-30)'
+status: 'DONE (2026-09-30) -- merge b9a27e845c pushed, remote ref 50086eafe7 verified via ls-remote'
 order: 103
 registered: '2026-09-30'
 updated: '2026-09-30'
