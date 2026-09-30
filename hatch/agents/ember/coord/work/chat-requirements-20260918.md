@@ -83,7 +83,7 @@ construction — the strongest property in v0.1.0); cursor history with
 
 This task's premise ("fleet-chat :25122 LIVE and canonical, owned by lane
 0fcb5f23") is contradicted by two newer facts: (a) this probe finds 0
-listeners on :25122; (b) `/home/toxic/.shingle/directives.md` (main chat's
+listeners on :25122; (b) `/home/toxic/.fleet-bus/directives.md` (main chat's
 consolidated truth) supersedes the :25122 pick — ONE canonical server is
 **sovereign-chat v1.2.0 on :25120** (verified live by main chat: 20 agents,
 2 rooms, 38 messages at 17:07 MDT; `/v1/*` 401 unauth; MCP stdio +

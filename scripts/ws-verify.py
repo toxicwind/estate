@@ -19,7 +19,7 @@ import struct
 import sys
 import time
 
-FLEET_DIR = "/home/toxic/.shingle/squawk-root/fleet"
+FLEET_DIR = "/home/toxic/.fleet-bus/squawk-root/fleet"
 PROBE_FROM = "ws-verify"
 PROBE_TITLE = "ws-verify liveness probe"
 PROBE_BODY = "genuine new squawk message; must arrive via /ws/fleet push"

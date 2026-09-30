@@ -24,7 +24,7 @@ The fleet talks on Squawk; Chris talks in his chats. Somebody has to carry messa
 ```mermaid
 flowchart TB
     subgraph yote[yote — awrawr-pc]
-        LOGS[squawk channel logs<br/>/home/toxic/.shingle/squawk-root/]
+        LOGS[squawk channel logs<br/>/home/toxic/.fleet-bus/squawk-root/]
         FEED[squawk-feed :25135<br/>pitchfork daemon]
         OUT[outbox.jsonl]
         LOGS -->|inotify| FEED
@@ -58,10 +58,10 @@ curl -s "http://127.0.0.1:25135/squawk-feed/wait?since=12800"
 
 | File | Role |
 |---|---|
-| `/home/toxic/.shingle/squawk-relay/feed.py` | The service (pitchfork `[daemons.squawk-feed]`) |
-| `/home/toxic/.shingle/squawk-relay/outbox.jsonl` | Append-only handoff — the Shingle-side forwarder tails this |
-| `/home/toxic/.shingle/squawk-relay/state.json` | `{"feed_seq": N, "channels": {...}}` — restart-safe |
-| `/home/toxic/.shingle/squawk-relay/control.json` | Owned by the rig relay agent (pause / channel allowlist / author skips) |
+| `/home/toxic/.fleet-bus/squawk-relay/feed.py` | The service (pitchfork `[daemons.squawk-feed]`) |
+| `/home/toxic/.fleet-bus/squawk-relay/outbox.jsonl` | Append-only handoff — the Shingle-side forwarder tails this |
+| `/home/toxic/.fleet-bus/squawk-relay/state.json` | `{"feed_seq": N, "channels": {...}}` — restart-safe |
+| `/home/toxic/.fleet-bus/squawk-relay/control.json` | Owned by the rig relay agent (pause / channel allowlist / author skips) |
 
 ### Outbox record
 
