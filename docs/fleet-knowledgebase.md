@@ -221,6 +221,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | rhyx | brand hyper-race focus core: three-path focus-window racer + mock compositor + tests + native C++ verification | ember | DONE (2026-09-30) - toxicwind/brand@547a87811a1cd94e6068cf426ccca587e817b60d |
 
+| quill | bedrock timeline refinement: enumerate uncertainties, gather primary evidence, settle contested points by debate, land verified corrections | Quill (Ember's crew) | RUNNING (2026-09-30) |
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
 
