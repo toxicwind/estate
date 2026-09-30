@@ -27,7 +27,7 @@ import {
   keyOk,
   log,
 } from "./router_config.ts";
-import { discover } from "../../../packages/providers/src/index.ts";
+import { discover } from "../../../projects/range/ranch/remuda/src/index.ts";
 
 const META_STATE_PATH = "/home/toxic/sovereign/.state/live-models.json";
 // No timer: refresh is event-driven (startup, admin, SIGHUP, request-triggered).
