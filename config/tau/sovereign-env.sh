@@ -33,5 +33,5 @@ export MNEMOPI_LLM_BASE_URL="${MNEMOPI_LLM_BASE_URL:-http://127.0.0.1:25117}"
 
 # ── Local Mesh & Endpoints ──────────────────────────────────────────────
 export HINDRA_API_URL="${HINDRA_API_URL:-http://127.0.0.1:25117}"
-export BUILDSRV_PORT="${BUILDSRV_PORT:-25148}"
+export BRAND_PORT="${BRAND_PORT:-25148}"
 export PAPER_POLLER_PORT="${PAPER_POLLER_PORT:-25149}"

@@ -12,7 +12,7 @@ SOV_SHA=$(git -C "$SOV_ROOT" rev-parse --short=8 HEAD 2>/dev/null || echo "nosov
 SOV_FULL=$(git -C "$SOV_ROOT" rev-parse HEAD 2>/dev/null || echo "nosov")
 TAU_SHA=$(git -C "$ROOT" rev-parse --short=8 HEAD 2>/dev/null || echo "notau")
 CANONICAL="tau/main-${VER_BASE}-sovereign-tau-${SOV_SHA}"
-QUEUE_DIR="$HOME/buildsrv/queue"
+QUEUE_DIR="$HOME/brand/queue"
 mkdir -p "$QUEUE_DIR"
 bash "$ROOT/helpers/gen-version.sh"
 HASH=$(tar -cf - -C "$ROOT" packages/coding-agent/src/generated/version.json 2>/dev/null | sha256sum | cut -c1-8)
@@ -43,6 +43,6 @@ cat <<JSON > "$QF"
   }
 }
 JSON
-echo "[buildsrv] queued $QF"
-echo "[buildsrv] canonical=$CANONICAL"
+echo "[brand] queued $QF"
+echo "[brand] canonical=$CANONICAL"
 ls -lh "$QF"

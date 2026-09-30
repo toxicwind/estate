@@ -147,10 +147,10 @@ ast-grep scan -p 'NVIDIA_MODELS' -l ts --json=stream /home/toxic/projects/pi-age
 opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable from a
   plain assistant context) — fanout only works inside an interactive pi session.
 
-## 🏗️ Build Server (buildsrv - :25148)
+## 🏗️ Build Server (brand - :25148)
 
-- **Daemon**: Running on port `25148` managed via Pitchfork (`/home/toxic/sovereign/tools/buildsrv/buildsrvd.py`).
-- **Heavy Builds**: Use `buildsrv submit --name <name> --repo <dir> --toolchain <bun|rust|go|python> --cmd "<cmd>"` for heavy builds rather than running long compilation in turn shell.
+- **Daemon**: Running on port `25148` managed via Pitchfork (`/home/toxic/sovereign/tools/brand/brandd.py`).
+- **Heavy Builds**: Use `brand submit --name <name> --repo <dir> --toolchain <bun|rust|go|python> --cmd "<cmd>"` for heavy builds rather than running long compilation in turn shell.
 - **Worker & Cache Architecture**:
   - 2-worker concurrent queue preventing resource exhaustion.
   - NVMe-backed shared compiler/package caches: `sccache` (Rust/C++), `ccache`, and `uv` (Python wheels/environments).
