@@ -1336,3 +1336,17 @@ mise = false
 retry = true
 auto = ["start"]
 ready_cmd = "pgrep -f '[t]ask-launch/src/daemon.ts' >/dev/null"
+
+# ---- project: ranch/mission-control (1 daemon) ----
+# ranch/mission-control — project-owned daemon manifest. Source of truth for mission-control.
+# Owned by the ranch project; the parent only composes it.
+# Event-driven (fs.watch on state/missions/*/events + startup replay); no timers, no polling.
+# Watches mission event dirs; classifies terminal failures and emits continuation directives.
+
+[daemons.mission-control]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/projects/range/ranch/mission-control/src/controller.ts"
+dir = "/home/toxic/sovereign/projects/range/ranch/mission-control"
+mise = false
+retry = true
+auto = ["start"]
+ready_cmd = "pgrep -f '[m]ission-control/src/controller.ts' >/dev/null"
