@@ -1,6 +1,8 @@
 import type { ChatBody, RouteResult } from "./router_types.ts";
 import { state, isWorkerExhausted } from "./router_matrix.ts";
 import { PROVIDERS, PROVIDER_MODELS, catalogModelsFor, modelFree, LOCAL_ROLES, CODING, MAX_PARALLEL, FIFO_MAX, STRATEGY, UA, AST_RE, getKey, keyOk, firstModelFor, resolveModel, isLocalSwapModelId, isAst, isExplicit, json, normalizeModelSpec, CONNECT_MS, TTFT_MS, ATTEMPT_MS, ATTEMPT_STREAM_MS, HEDGE_MS } from "./router_config.ts";
+// 📒 ledger — the ranch account book: durable Gemini cost accounting.
+import { recordUsage } from "../../../projects/range/ranch/ledger/ledger.ts";
 
 // ---------------------------------------------------------------------------
 // Substance guard: a completion is servable only if it carries non-empty
@@ -282,6 +284,20 @@ export async function callOne(
       };
     }
     const data = await resp.arrayBuffer();
+    // 📒 ledger: record Gemini token usage for cost accounting.
+    // Best-effort — never throws, never touches the response path.
+    if (provider === "google" && /gemini/i.test(model)) {
+      try {
+        const usage = JSON.parse(new TextDecoder().decode(data))?.usage;
+        if (usage && (usage.prompt_tokens || usage.completion_tokens)) {
+          recordUsage({
+            model: String(model),
+            inputTokens: usage.prompt_tokens || 0,
+            outputTokens: usage.completion_tokens || 0,
+          });
+        }
+      } catch { /* accounting must never break serving */ }
+    }
     state.record(model, provider, resp.status, lat, 0, STRATEGY);
     if (state.circuit.get(provider) === "half")
       state.circuit.set(provider, "closed");
