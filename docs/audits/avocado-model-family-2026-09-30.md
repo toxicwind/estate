@@ -8,11 +8,7 @@ knobs extracted from the runtime binary, plus honest notes on what we don't know
 
 ## What it is
 
-- 
--  — model route override; binary log text indicates it is
-  *applied* when "authd selection is not aligned with requested target"
-  (system-pinned purposes fall back when no SYSTEM_PURPOSES row exists).
-  Launch-time env; not settable live from inside the cell.`ipnext/avocado-5.16-v4` is the model route observed on the README-crew agent
+- `ipnext/avocado-5.16-v4` is the model route observed on the README-crew agent
   records on 2026-09-30 — it's what powers this runtime's agents (including this
   session). Not a public model; not on OpenRouter/HF; no public API.
 - `ipnext` = Meta's internal inference provider route. `avocado` = the model family.
@@ -57,6 +53,10 @@ Notable neighbor on the same provider: `ipnext/glm-5.2`
   of 200000 window; staged 170000 override was wiped by host re-provision —
   see TOOLS.md).
 - `JARVIS_AVOCADO_CONTEXT_WINDOW_TOKENS`
+- `JARVIS_MODEL_ID_OVERRIDE` — model route override. Binary log text indicates it is
+  *applied* when "authd selection is not aligned with requested target"
+  (system-pinned purposes fall back when no SYSTEM_PURPOSES row exists).
+  Launch-time env; not settable live from inside the cell.
 - `avocado_compaction_272k` experiment flag.
 
 ## Quality — what we can honestly say
