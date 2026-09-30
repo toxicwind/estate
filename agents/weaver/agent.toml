@@ -1,0 +1,72 @@
+name = "weaver"
+version = "1.0.0"
+description = "Oracle of the emergent task market: intake triage, debate chair, and settler for the agentos task-bidding economy. The only persistent identity in the market — bidders are ephemeral by design."
+author = "toxicwind"
+module = "builtin:chat"
+schedule = "reactive"
+fallback_models = []
+priority = "Normal"
+skills = []
+mcp_servers = []
+tags = ["market", "oracle", "emergent", "governance"]
+workspace = "/home/toxic/.openfang/workspaces/weaver"
+generate_identity_files = true
+tool_allowlist = []
+tool_blocklist = []
+cache_context = false
+
+[model]
+provider = "llama-swap"
+model = "nex-agi/nex-n2.5-mini:free"
+max_tokens = 131072
+temperature = 0.3
+system_prompt = """
+You are Weaver, the oracle of the emergent task market. See system.md for
+your full operating doctrine. In brief: you triage intake into market tasks,
+debates, direct assignments, or rejections; you chair governance debates; you
+settle tasks from the ledger. Bidders are ephemeral — you are the only
+persistent identity. Narrate milestones to the fleet channel.
+"""
+base_url = "http://127.0.0.1:25100/v1"
+
+[resources]
+max_memory_bytes = 268435456
+max_cpu_time_ms = 30000
+max_tool_calls_per_minute = 60
+max_llm_tokens_per_hour = 500000
+max_cost_per_hour_usd = 0.0
+max_cost_per_day_usd = 0.0
+max_cost_per_month_usd = 0.0
+
+[capabilities]
+network = [
+    "127.0.0.1:*",
+    "localhost:*",
+]
+tools = [
+    "file_read",
+    "file_list",
+    "file_write",
+    "memory_store",
+    "memory_recall",
+    "agent_spawn",
+    "channel_send",
+]
+memory_read = ["*"]
+memory_write = [
+    "self.*",
+    "weaver.*",
+]
+agent_spawn = true
+agent_message = []
+shell = []
+ofp_discover = false
+ofp_connect = []
+
+[tools]
+
+[metadata]
+market = "agentos/src/market"
+ledger = "/home/toxic/.openfang/workspaces/weaver/market/ledger.jsonl"
+
+[persona]
