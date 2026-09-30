@@ -30,7 +30,7 @@ auto = ["start"]
 [daemons.tau]
 # omp acp exposed as TCP daemon via chute (stdio→TCP + mcpServers normalization)
 port = 25111
-run = "exec /home/toxic/sovereign/projects/range/ranch/barn/chute/chute.mjs --port 25111 -- /home/toxic/sovereign/projects/range/ranch/stockyard/tau/packages/coding-agent/dist/omp acp -e /home/toxic/.tau/extensions/vansrouter.ts"
+run = "exec /home/toxic/sovereign/projects/range/ranch/barn/chute/chute.mjs --port 25111 -- /home/toxic/sovereign/projects/range/ranch/tau/packages/coding-agent/dist/omp acp -e /home/toxic/.tau/extensions/vansrouter.ts"
 dir = "/home/toxic"
 mise = false
 retry = true
@@ -538,11 +538,11 @@ retry = true
 boot_start = true
 env = { BUILDSRV_PORT = "25148", WATCHDOG_INTERVAL_S = "20", WATCHDOG_MAX_FAILS = "3" }
 auto = ["start"]
-[daemons.pcie-moe-telemetry]
+[daemons.windmill]
 health_http = { url = "http://127.0.0.1:25219/api/status", interval = "10s", timeout = "5s", retries = 2 }
 port = 25219
-run = "exec bun run /home/toxic/sovereign/tools/pcie-moe/server.ts"
-dir = "/home/toxic/sovereign/tools/pcie-moe"
+run = "exec bun run /home/toxic/sovereign/projects/range/ranch/windmill/server.ts"
+dir = "/home/toxic/sovereign/projects/range/ranch/windmill"
 mise = false
 retry = true
 boot_start = true
@@ -916,7 +916,7 @@ env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000" }
 auto = ["start"]
 
 [daemons.sovereign-stream-broker]
-dir = "/home/toxic/sovereign/projects/range/ranch/stockyard/stream-broker"
+dir = "/home/toxic/sovereign/projects/range/ranch/stream-broker"
 run = "exec bun run src/index.ts"
 port = 25215
 ready_port = 25215

@@ -215,7 +215,7 @@ $$ \text{RANKING} \;>\; \text{FREE-ON-PROVIDER} \;>\; \text{PAY} $$
 - **Kimi routes are not defaults.** Their purpose is routing Kimi free models maximally — restored 2026-09-20 after a misroute pointed them at dead models.[^1]
 - Free-tier ground truth: [`docs/free-tier-models.md`](docs/free-tier-models.md) · naming grammar: [`docs/naming-grammar.md`](docs/naming-grammar.md)
 - GuideLLM benchmark traffic routes maximally through the herd router, multi-chat / multi-turn included.
-- **A context window is a property of the serving process, not the model family.** Declare it per route rather than inheriting a family guess — `qwen2.5:7b` is 200K in `CONTEXT_LIMIT_TABLE` but Ollama serves 32,768 by default. See `projects/range/ranch/stockyard/sigma` → `CONFIGURATION.md` → `### context`.
+- **A context window is a property of the serving process, not the model family.** Declare it per route rather than inheriting a family guess — `qwen2.5:7b` is 200K in `CONTEXT_LIMIT_TABLE` but Ollama serves 32,768 by default. See `projects/range/ranch/sigma` → `CONFIGURATION.md` → `### context`.
 
 ## The service stack
 
@@ -246,7 +246,7 @@ Daemon definitions live in [`pitchfork.toml`](pitchfork.toml) (the generator is 
 | `:20128` | `vansrouter` | Source-owned VansRouter runtime |
 | `:32847` | `billion-context` | Sigma's compression proxy in its default local instance |
 
-Undocumented-by-design remainder: infrastructure and on-demand daemons (`qdrant`, `redis`/valkey, `kafka`, `nginx`, `prometheus`, `grafana`, `node-exporter`, `cockpit` on `:25212`, `pcie-moe-telemetry`, `paper-poller`, `bench-radar`, `hf-downloader`, …). `pitchfork.toml` is the index; this table is orientation, not inventory.
+Undocumented-by-design remainder: infrastructure and on-demand daemons (`qdrant`, `redis`/valkey, `kafka`, `nginx`, `prometheus`, `grafana`, `node-exporter`, `cockpit` on `:25212`, `windmill`, `paper-poller`, `bench-radar`, `hf-downloader`, …). `pitchfork.toml` is the index; this table is orientation, not inventory.
 
 <details>
 <summary><strong>Port SSOT &amp; audit tooling</strong></summary>
@@ -262,7 +262,7 @@ Undocumented-by-design remainder: infrastructure and on-demand daemons (`qdrant`
 <summary><strong>Socket Stream &amp; Cognitive EKG</strong></summary>
 
 - The **Socket Stream Transport** ([`packages/sovereign-utils/src/transport/socket-stream.ts`](packages/sovereign-utils/src/transport/socket-stream.ts)) provides OS-level TCP keepalives (30s) to prevent middlebox drops in long-running reasoning SSE streams. Components: `SocketStreamConfig`, `RingTokenBuffer` (append-only ring buffer for token recovery across network interrupts), and `DirectSocketStreamClient`.
-- The **Stream Broker** daemon ([`projects/range/ranch/stockyard/stream-broker/`](projects/range/ranch/stockyard/stream-broker/)) listens on UNIX socket (`/run/user/1000/sovereign-stream-broker.sock`) and TCP port `:25215`. Supervised by pitchfork with auto-restart.
+- The **Stream Broker** daemon ([`projects/range/ranch/stream-broker/`](projects/range/ranch/stream-broker/)) listens on UNIX socket (`/run/user/1000/sovereign-stream-broker.sock`) and TCP port `:25215`. Supervised by pitchfork with auto-restart.
 - The **Cognitive EKG** monitoring layer (`herd-model-guard.py`) wraps all request/response lifecycles in `try/except (BrokenPipeError, ConnectionResetError)` to prevent server thread crashes on client disconnects. Audit trail at `data/model-guard-audit.jsonl`.
 - Full architecture spec: [`docs/architecture/socket-stream-cognitive-ekg.md`](docs/architecture/socket-stream-cognitive-ekg.md).
 
@@ -307,9 +307,9 @@ sovereign-projects/                     # this repo — /home/toxic/sovereign on
 ├── projects/               # the workspaces (see below)
 │   ├── range/ranch/        # the ranch monorepo — stockyard + squawk + barn + gear
 │   ├── yote/  qed/  shell/  openfang/  audits/  ops/  tools/
-│   ├── herd -> range/ranch/stockyard/herd      # root-level symlinks
-│   ├── tau  -> range/ranch/stockyard/tau       # point here for historical paths
-│   └── sigma-> range/ranch/stockyard/sigma
+│   ├── herd -> range/ranch/herd      # root-level symlinks
+│   ├── tau  -> range/ranch/tau       # point here for historical paths
+│   └── sigma-> range/ranch/sigma
 ├── agents/                 # oracle-market, coyote, kimiclaw, squawk-relay, …
 ├── skills/                 # 29 hand-authored skills — skill root #1, see Key components
 ├── bin/                    # ops scripts: pitchfork-restart, herd-keypool.py, claim-port, …
@@ -329,7 +329,7 @@ Layout SSOT for the 2026-09-20 reorg (`hatch/`, `bridge/`, `scratch/`): `REORG-P
 
 ### Compression — sigma
 
-[`projects/sigma/`](projects/sigma) → [`projects/range/ranch/stockyard/sigma`](projects/range/ranch/stockyard/sigma) — the **toxicwind fork of `billion-context`**: a transparent compression proxy that sits between agents and inference. Point a client at `http://127.0.0.1:32847/bili/<upstream-url>` and it streams the response while folding the conversation into a compact digest at a token boundary. Measured on the live log: ~5× token reduction, 28 ms added per compress call, proxy overhead p50 41 ms / p99 107 ms, prompt-cache hit rate p50 99.5%.
+[`projects/sigma/`](projects/sigma) → [`projects/range/ranch/sigma`](projects/range/ranch/sigma) — the **toxicwind fork of `billion-context`**: a transparent compression proxy that sits between agents and inference. Point a client at `http://127.0.0.1:32847/bili/<upstream-url>` and it streams the response while folding the conversation into a compact digest at a token boundary. Measured on the live log: ~5× token reduction, 28 ms added per compress call, proxy overhead p50 41 ms / p99 107 ms, prompt-cache hit rate p50 99.5%.
 
 It runs as a **tau extension**, not a pitchfork daemon — [`config/tau/agent/config.yml`](config/tau/agent/config.yml) (what `~/.tau/agent` symlinks to) loads `billion-context/dist/agent/omp-native.js`. Because it compresses at the ACP layer, it applies to agent traffic specifically, not to every request herd serves. That file is the **only** config the engine reads: `PI_CODING_AGENT_DIR` must point at it, and `~/.tau` (the config root) is a *different* directory — pointing the variable there silently disables compression on a login-shell session.
 
@@ -385,7 +385,7 @@ Two hand-maintained roots plus one machine-written root. Registration lives in o
 
 532 skills load, 527 unique names. Measured with the real loader, not a `find` approximation.
 
-**How the loader behaves** ([`discovery/helpers.ts`](projects/range/ranch/stockyard/tau/packages/coding-agent/src/discovery/helpers.ts)):
+**How the loader behaves** ([`discovery/helpers.ts`](projects/range/ranch/tau/packages/coding-agent/src/discovery/helpers.ts)):
 
 - The registered roots are scanned at **depth 1**: `<dir>/<name>/SKILL.md`. A flat repo like `gear` is therefore registered by pointing at its root. Nothing is copied, symlinked, or hoisted into category folders, so every skill keeps its own code and its own relative references. `scanSkillsFromDir` also takes an opt-in `recursive` / `maxDepth` for a collection that groups skills by category; no caller enables it yet, and a directory containing a `SKILL.md` stays terminal so a skill's own `scripts/` and `references/` never become phantom skills.
 - A skill with **no `description` in its frontmatter is dropped silently**. That is the most common way a skill becomes invisible.
