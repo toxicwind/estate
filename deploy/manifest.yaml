@@ -44,16 +44,17 @@ binaries:
     note: live path is a symlink to the immutable versioned file (herd-deploy)
   herd-keypool:
     path: /home/toxic/sovereign/bin/herd-keypool.py
-    sha256: "7bcc8429c5e09c0e59073148d24b0cf46154533f6614eaaf4f01113da755197d"
+    sha256: "3fe304d471e5c1c6ff898d75f09dafd59a815fe553f17e531cae5322451ab2c5"
     source: toxicwind/sovereign-projects
     commit: 7f4e5c8c65643b007b80a4274304052746389a4e
     git_path: bin/herd-keypool.py
     daemon: keypool
+    immutable_copy: /home/toxic/sovereign/bin/herd-keypool.py.20260929-234239
   herd-model-guard:
     path: /home/toxic/sovereign/bin/herd-model-guard.py
-    sha256: "33a92b38e693fca1d6300c2a6ed427c33163b8b2735e4a7f2e6c843f33cfb945"
+    sha256: "2621d6524b4633292dfbe1a6bf837bc7d297372bbe74598f6556630b2f0aee9f"
     source: toxicwind/sovereign-projects
-    commit: 162a18380fcac46af722430f6f1dd5f661a05346
+    commit: b135cd2e7c6f4b0e76d33c272e88f5806399f436
     git_path: bin/herd-model-guard.py
     daemon: model-guard
   openfang-kernel:
