@@ -947,3 +947,15 @@ health_http = { url = "http://127.0.0.1:25104/health", interval = "30s", timeout
 depends = ["keypool"]
 env = { SOVEREIGN_ROUTER_PORT = "25104" }
 auto = ["start"]
+
+# market-loop — autonomous market-loop daemon for weaver's emergent task
+# market (trading-post/src/market). Event-driven: inotify on weaver's
+# intake/ dir, first-eligible-bid close, watchdog sweep on every ledger
+# append. No timers, no polling loops. Added 2026-09-30.
+[daemons.market-loop]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/agents/weaver/bin/market-loop.ts"
+dir = "/home/toxic/sovereign/agents/weaver"
+mise = false
+retry = true
+auto = ["start"]
+ready_cmd = "pgrep -f '[m]arket-loop.ts' >/dev/null"
