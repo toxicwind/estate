@@ -598,10 +598,11 @@ class Bidder:
         """Execute an agentic task via the real Super Ralph CLI.
 
         The task payload IS the Ralph prompt. Headless stdout carries the
-        exact final reply. Model calls route through the herd router
-        directly (NIM_PROXY_BYPASS=1 skips the :25193 nim-proxy, whose
-        model "free" 404s; NIM_BASE_URL passes through untouched to the
-        claude shim). Returns (success, out, err, dur_ms).
+        exact final reply. Model calls route through the :25193 flock
+        router (the literal "free" directive now resolves correctly --
+        fixed 2026-09-30; the NIM_PROXY_BYPASS workaround was removed).
+        NIM_BASE_URL passes through untouched to the claude shim.
+        Returns (success, out, err, dur_ms).
         """
         tid = task["task_id"]
         prompt = task.get("payload", "") or ""
@@ -613,7 +614,6 @@ class Bidder:
             return (False, "",
                     "super-ralph binary not found: %s" % RALPH_BIN, dur)
         renv = dict(env)
-        renv["NIM_PROXY_BYPASS"] = "1"
         renv["NIM_BASE_URL"] = RALPH_BASE_URL
         renv["ANTHROPIC_BASE_URL"] = RALPH_BASE_URL
         # 2026-09-21 (ralph-pathfinder): resolve a WORKING model. The
