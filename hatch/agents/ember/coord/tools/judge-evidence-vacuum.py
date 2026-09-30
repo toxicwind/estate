@@ -41,7 +41,7 @@ import tempfile
 import time
 from datetime import datetime, timezone
 
-DEFAULT_PATH = "/home/toxic/sovereign/agents/oracle-market/work/judge-failure-evidence.jsonl"
+DEFAULT_PATH = "/home/toxic/sovereign/projects/range/ranch/oracle/work/judge-failure-evidence.jsonl"
 MAX_RACE_RETRIES = 5
 
 

@@ -34,7 +34,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | `/home/toxic/sovereign/config/herd.yaml` | Herd router config (the model herd) |
 | `/home/toxic/sovereign/skills/paper-search/` | Paper-search skill (canonical home) |
 | `/home/toxic/super-ralph` | Super Ralph source |
-| `/home/toxic/sovereign/agents/oracle-market/` | Oracle market loop + watchdog |
+| `/home/toxic/sovereign/projects/range/ranch/oracle/` | Oracle market loop + watchdog |
 
 ### Services & ports (yote)
 | Port | Service |
@@ -161,6 +161,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | kimi-web-ui-dedup | Kimi web UI dedup | Ember | DONE -- sovereign-projects `06f0a5c08204bff901af0377c4da5b58e8d2b098` (ancestor of origin/main, verified 2026-09-21) |
 | stall-slayer-q8 | Stall Slayer Q8 | Ember | DONE -- sovereign-projects `d5b6a816defe098b6971111a2ad75c6237d54d2f` (ancestor of origin/main, verified 2026-09-21) |
 | estate-reconcile-watch-reg | Register estate-reconcile watch as a Pitchfork daemon (WS2 gap close) | register-pitchfork | DONE (2026-09-21) -- sovereign-projects b6b4c5a1634 (pitchfork.toml [daemons.estate-reconcile-watch] entry) + nim-probe live toml appended; pitchfork start/stop/start verified: PID 891181 -> stop -> PID 892919 running, inotifywait watch live on 3 manifest dirs; synthetic herd-keypool.py drift detected in ~8s, ALERT (unsigned-HEAD rule, no untrusted restore), drift reverted, check OK 4/4; remote ref verified |
+| warden-fix-torque | Fix ferrous-warden self-alert loop: bless herd rebuild, self-watch exclusion, breaker dedupe key | Torque (Ember crew) | DONE (2026-09-30) |
 | yote-console-fix | yote console black-screen fix (post-kernel-switch): bore flavor had no nvidia driver -> sddm couldn't render on RTX 3090 (black DP-1/DP-2) and `Conflicts=getty@tty1.service` killed the console fallback; installed `linux-cachyos-bore-nvidia-open 7.2.6-1`, `mkinitcpio -p linux-cachyos-bore`, modprobed nvidia_drm, restarted sddm -- greeter active; all three 7.2.6 flavors now covered | Ember | DONE (2026-09-20) -- operational fix, no repo changes; PER-KERNEL RULE recorded in §1 |
 | kb-scribe | Fleet KB update: 9 verified DONE rows added (all SHAs ancestor-checked vs origin/main), tau-hyperfix SHA corrected (a356d831ee06 is local-only, not canonical), boot-incident + per-kernel-nvidia + compaction-trigger + /mnt/8TB notes added, §2 table consolidated (dup dashboard-max dropped, misplaced tail rows moved in) | kb-scribe (Ember's crew) | DONE (2026-09-21) -- pushed in this commit (SHA reported to fleet) |
 | lane-oracle-connector | Oracle intake adoption (verified complete, zero oracle code changes) + yote-connector canonicalization: yote-conn promoted to the single canonical operator path | lane-oracle-connector (Ember's crew) | DONE (2026-09-20) -- sovereign-projects main `0f4f3bdadf032d8030db2bcab928efbf93dbb739` (ls-remote verified): (A) oracle adoption PROVEN live — `agents/oracle-market/docs/ADOPTION-PROOF.md`: intake unit test OK (6 routes), live TASK (ledger settled, winner bidder-scout), live REJECT, live DIRECT; ORACLE_INTAKE=1 in running process env; no oracle source touched. (B) canonicalization — bg-tail finished end-to-end (`bg-status.py` offset args -> `stdout_b64/stdout_soff`, daemon `GET /bg/<handle>?soff=&eoff=`, CLI resume/negative-offset/tails-fallback; fixed empty-chunk resume + stdout ordering bugs caught in live test); `/exec-bg` `timeout_s` + `workdir` now forwarded to bg-run.py (both silently dropped before — workdir ran in /home/toxic regardless); `projects/bridge/hatch/yote-conn` updated to the live CLI (169->222 lines) and added to `deploy-cell.py` FILES with chmod 755; `bexec` -> thin `yote-conn exec` shim (adopted as `hatch/bin/bexec`); `fleet-classify` -> yote-conn transport (raw exec.py fallback kept); `swarm-{eject,resume,watchdog}` DELIBERATELY keep raw exec.py (emergency path when 18301 is down — commented); bridge README canonical-path policy section. Deployed: daemon restarted via deploy-yote-connector, health ok (transport ws); live-tested bg-tail resume, workdir (/tmp file created), timeout (state=timeout, exit -1), bg-kill (SIGTERM, exit -15). |
@@ -207,6 +208,10 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | flock-free-directive | Flock :25193 literal "free" routing directive repair: was 404 (serves_model filtered before Strategy::Free ran), then Hybrid admitted paid providers, then migrate_v1 dropped free_tier so Strategy::Free selected zero candidates (502). Fix: "free" skips model scoping + forces Strategy::Free + model_map["free"] resolves a real upstream model (never wildcard "*"); migrate_v1 keeps free_tier=true; provider IDs refreshed to live catalog (nvidia nemotron-3-ultra-550b-a55b, llama-3.1-nemotron-70b-instruct; groq/cerebras bare IDs). flock-run.sh wrapper loads GROQ/CEREBRAS/NVIDIA keys from ~/.secrets into the daemon env (pitchfork.toml run= now points at the wrapper). NIM_PROXY_BYPASS workaround removed from bidder.py. | Sable (Ember's crew) | DONE (2026-09-30) -- toxicwind/flock commit `996956a3` (origin/main verified via git ls-remote); deployed binary live on :25193; E2E: POST /v1/chat/completions {"model":"free"} -> 200 real completion from nvidia/nemotron-3-ultra-550b-a55b; suite 387 passed (258 unit + 121 e2e + 8) |
 | corvid | ROUTING AUDIT: agent cognition vs tool-call vs heavy-compute placement across hatch+yote; exec-lane routing; cell cron/worker heavy-compute  | corvid (Ember crew) | DONE (2026-09-30) — 1cdeac68f6 |
 | fennec-cell-files | CELL-FILES stream: mise.toml hot-reload audit (up-cellfiles-ui forensics; stream D repaired the parse break as 1cdeac68f6), pitchfork bun --hot for kimi-audit-dash/windmill/bench-radar, hatch/README cell-files row, findings UX redesign in Deuz-SDK (3-class triage, workload grouping, WHY strings) | Fennec (Ember crew) | DONE (2026-09-30) — sovereign 28768b51d8, deuz-sdk de219698 |
+| pinto | move Oracle into the ranch with western theme; fix bidder-forge/bidder-scout daemons | ember | RUNNING (2026-09-30) |
+| canyon | merge origin/main into forge/gate-retire-final, conflict-free, branch-safe | Ember (main agent) | DONE (2026-09-30) -- merge b9a27e845c pushed, remote ref 50086eafe7 verified via ls-remote |
+| brass-fork-research | Fork-candidate research for the brand build daemon: ffs sweep of the bridge, GitHub-wide ranked recon (recency+relevance over stars), deep evaluation of woodpecker/buildbot/laminar + alternatives; ranked shortlist doc at ranch/branding/docs/fork-research.md | Brass (Ember's crew) | DONE (2026-09-30) -- ranch 5f58f52 fork-research.md committed+pushed, origin/main verified |
+| quarry-hashline | stream A: hashline first-class edit tool — skill, project docs, daemon, KB rule 18, gatehouse MCP registration | f75585bc-fd3c-4e54-9814-6c4cf7f53b51 | RUNNING (2026-09-30) |
 <!-- KB-ROLLUP:END -->
 
 
@@ -257,7 +262,7 @@ Retired/completed crews stay listed here with status DONE and their final commit
 4. Read `status` in the verdict: a firm YES/NO (probability past the gate) **is** Chris's approval — final, act immediately, don't re-ask, don't wait. `status: escalate` means the oracle abstained (fail-closed); that is the ONE case that goes to Chris directly (HUMAN step of the escalation ladder).
 5. Log the verdict in the market ledger as an `oracle-approval` event: `{question, verdict, probability, evidence_ids, agent, ts}`.
 6. NEVER route money/credential decisions here — spending, top-ups, credential minting/rotation go to Chris directly, no exceptions. The oracle cannot mint approvals for those.
-Full protocol: `agents/oracle-market/SPEC.md` § oracle-as-approval.
+Full protocol: `projects/range/ranch/oracle/SPEC.md` § oracle-as-approval.
 
 ---
 
@@ -270,7 +275,7 @@ Full protocol: `agents/oracle-market/SPEC.md` § oracle-as-approval.
 - Tau engine docs: `/home/toxic/sovereign/projects/tau/engine/docs/`
 - Yote ops: `/home/toxic/sovereign/projects/yote/ops/` (yote-doctor.sh, yote-fix.sh)
 - Scheduler audit 2026-09-20: `/home/toxic/sovereign/projects/audits/scheduler-audit-2026-09-20.md`
-- Oracle market spec: `/home/toxic/sovereign/agents/oracle-market/SPEC.md` (v2.1)
+- Oracle market spec: `/home/toxic/sovereign/projects/range/ranch/oracle/SPEC.md` (v2.1)
 - Daemon-rebuild drift note 2026-09-20: `hatch/audit-jarvis/daemon-rebuild-drift-2026-09-20.md` (compaction subsystem unchanged in hatch `82d6744eed2`; new `tool_dispatch_heartbeat`)
 - Runtime/credential docs: https://github.com/toxicwind/hatch-docs/blob/main/runtime/credential-broker.md
 
