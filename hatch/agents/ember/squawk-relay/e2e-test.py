@@ -12,7 +12,7 @@ import time
 import uuid
 from pathlib import Path
 
-sys.path.insert(0, "/home/toxic/shingle/squawk-relay")
+sys.path.insert(0, "/home/toxic/.fleet-bus/squawk-relay")
 import relay_common as C
 
 TOKEN = "e2e-" + uuid.uuid4().hex[:8]

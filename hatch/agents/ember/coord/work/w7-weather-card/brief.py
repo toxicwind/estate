@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from collections import Counter
 
 WORK = os.path.dirname(os.path.abspath(__file__))
-SEEDS = "/home/toxic/.shingle/coord/work/seeds"
+SEEDS = "/home/toxic/.fleet-bus/coord/work/seeds"
 
 latest = json.load(open(os.path.join(SEEDS, "LATEST.json")))
 turns = json.load(open(os.path.join(SEEDS, "seed_list_chat.json")))
