@@ -41,9 +41,9 @@ binaries:
     note: live path is a symlink to the immutable versioned file (herd-deploy)
   herd-keypool:
     path: /home/toxic/sovereign/bin/herd-keypool.py
-    sha256: "3fe304d471e5c1c6ff898d75f09dafd59a815fe553f17e531cae5322451ab2c5"
+    sha256: "432c60f839be5fe4823461b103cb53b808d41d6d73283cc7702103506a6a92b2"
     source: toxicwind/sovereign-projects
-    commit: 7f4e5c8c65643b007b80a4274304052746389a4e
+    commit: 020f479aa899a5c6dc4226fdec690420540c20f9
     git_path: bin/herd-keypool.py
     daemon: keypool
     immutable_copy: /home/toxic/sovereign/bin/herd-keypool.py.20260929-234239
