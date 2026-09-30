@@ -208,7 +208,7 @@ export const PROVIDER_MODELS: Record<string, string[]> = {
     // 2026-09-21: second entitled NVIDIA lane — serving 200s (0.8-10s),
     // genuine reasoning trace. Backup when super flaps; Elo sorts it live.
     "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
-    "nvidia/nemotron-3-nano-30b-a3b",
+    // 2026-09-30: nvidia/nemotron-nano-3-30b-a3b 404s on pool keys (not entitled) — dropped
     "meta/llama-3.1-70b-instruct",
     "qwen/qwen3.5-397b-a17b",
     "qwen/qwen3.5-122b-a10b",
@@ -220,7 +220,9 @@ export const PROVIDER_MODELS: Record<string, string[]> = {
     "thinkingmachines/inkling",
   ],
   groq: [
-    "llama-3.3-70b-versatile",
+    // 2026-09-30: llama-3.3-70b-versatile 404s (retired) — dropped;
+    // qwen/qwen3.8-27b bench-proven quality 2.00 p50 106ms
+    "qwen/qwen3.8-27b",
     "qwen/qwen3-32b",
     "qwen/qwen3.6-27b",
     "openai/gpt-oss-120b",
@@ -229,15 +231,17 @@ export const PROVIDER_MODELS: Record<string, string[]> = {
   ],
   cerebras: [],
   google: [
-    "models/gemini-2.5-flash",
-    "models/gemini-2.5-flash-lite",
-    "models/gemini-2.0-flash",
+    // 2026-09-30: gemini-2.5-flash / 2.5-flash-lite / 2.0-flash all 404 (retired) — dropped;
+    // models/gemini-3.8-flash bench-proven live (quality 0.67)
+    "models/gemini-3.8-flash",
     "models/gemma-4-31b-it",
   ],
   mistral: [
     "mistral-small-latest",
     "codestral-latest",
-    "mistral-large-latest",
+    // 2026-09-30: mistral-large-latest absent from live catalog — dropped;
+    // magistral-small-latest is catalog-live (provider 429s, no completion data yet)
+    "magistral-small-latest",
     "mistral-medium-latest",
   ],
 };
