@@ -1,44 +1,38 @@
-# Architecture policies
+# architecture/ — layered-architecture policy
 
-![code-scalpel](https://img.shields.io/badge/code--scalpel-6C5CE7?style=for-the-badge) ![rego](https://img.shields.io/badge/rego-FF6B6B?style=for-the-badge) ![architecture](https://img.shields.io/badge/layered--architecture-2980B9?style=for-the-badge)
+Enforces the codebase's architectural layering — UI → Service → Data — so dependencies only flow downhill.
 
-> Keep the layers honest: presentation talks to application, application talks to domain — never the other way around, never skipping.
+<div align="right">
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+## Why this exists
+
+Layer violations are silent tech debt: a UI module importing the database layer works fine today and rots the architecture tomorrow. This policy makes the dependency direction a machine-checked rule instead of a code-review hope.
+
+## What it checks
+
+**`layered_architecture.rego`** — the template in this directory:
+
+- Dependencies may only point **down** the layer stack: UI → Service → Data.
+- No layer may depend on a layer above it; no layer may skip the contract of the layer below it.
 
 ```mermaid
-flowchart TD
-    UI[presentation<br/>ui views controllers pages components routes middleware]
-    APP[application<br/>services usecases application handlers commands queries]
-    DOM[domain<br/>entities models]
-    UI -->|may depend on| APP
-    APP -->|may depend on| DOM
-    UI -.->|violation| DOM
-    DOM -.->|violation| UI
+flowchart TB
+    UI[UI layer] --> SVC[Service layer]
+    SVC --> DATA[Data layer]
+    UI -.->|✗ blocked| DATA
+    DATA -.->|✗ blocked| UI
+    DATA -.->|✗ blocked| SVC
 ```
 
-## Quick Start
-
-```bash
-code-scalpel policy validate
-code-scalpel policy test --category architecture
-```
-
-## Policies
-
-### `layered_architecture.rego`
-
-Enforces clean separation between presentation, application, and domain layers using path patterns:
-
-- **presentation** — `*/ui/*`, `*/views/*`, `*/controllers/*`, `*/pages/*`, `*/components/*`, `*/routes/*`, `*/middleware/*`
-- **application** — `*/services/*`, `*/usecases/*`, `*/application/*`, `*/handlers/*`, `*/commands/*`, `*/queries/*`
-- **domain** — the core; nothing above it may reach past its own layer
-
-A dependency that skips a layer (presentation → domain) or flows upward (domain → presentation) is flagged. Rego package: `code_scalpel.architecture`.
-
-## Enable
-
-In `.code-scalpel/policy.yaml`:
+## Quick start
 
 ```yaml
+# .code-scalpel/policy.yaml
 policies:
   architecture:
     - name: layered-architecture
@@ -47,8 +41,15 @@ policies:
       action: DENY
 ```
 
-Use `action: WARN` while rolling out to an existing codebase, then tighten to `DENY` once the violations are burned down.
+```bash
+code-scalpel policy validate
+code-scalpel policy test --category architecture
+```
 
-## License and security
+## Tuning
 
-Part of Code Scalpel v3.1+ Policy Engine. Layer rules are only as good as your directory naming — if a new top-level area doesn't match the layer patterns, extend the pattern sets in the `.rego` file rather than letting it slip through unclassified.
+Open `layered_architecture.rego` and adjust the layer definitions to match your codebase's actual module layout — the template's layer names are placeholders, not gospel. Run at `action: WARN` first; promote to `DENY` when the violations it finds are real.
+
+## License & security
+
+MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). A `DENY` architecture rule blocks real commits — review policy edits like production code. Decisions are logged to the Code Scalpel audit trail (`../../audit.log`).

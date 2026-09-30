@@ -1,65 +1,56 @@
-# Zed Server
+<div align="right">
 
-This crate is what we run at https://collab.zed.dev.
+[![license](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-part%20of-blueviolet?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-It contains our back-end logic for collaboration, to which we connect from the Zed client via a websocket after authenticating via https://zed.dev, which is a separate repo running on Vercel.
+</div>
 
-# Local Development
+# `collab` — the Zed collaboration server
 
-## Database setup
+**The backend that makes Zed multiplayer.** A Rust service over WebSocket/QUIC that hosts the shared-state primitives: channels, rooms with live calls, project sharing, shared threads, notification and contact systems, and the buffering/telemetry pipeline.
 
-Before you can run the collab server locally, you'll need to set up a zed Postgres database. Follow the steps sequentially:
+## Why should I care?
 
-1. Ensure you have postgres installed. If not, install with `brew install postgresql@15`.
-2. Follow the steps on Brew's formula and verify your `$PATH` contains `/opt/homebrew/opt/postgresql@15/bin`.
-3. If you hadn't done it before, create the `postgres` user with `createuser -s postgres`.
-4. You are now ready to run the `bootstrap` script:
+- **Real-time collaboration primitives** — channels, rooms, project sharing, and shared agent threads over a single server
+- **Ephemeral call infra** — livekit.io for voice/video/screenshare; ephemeral users are minted from the collab server itself
+- **Postgres-backed persistence** — database migrations run automatically at startup via `crates/collab`
+
+```mermaid
+flowchart TD
+    E[Zed editors] -->|WebSocket/QUIC| C[collab server]
+    C --> DB[(Postgres)]
+    C --> CH[channels + rooms]
+    C --> PS[project sharing]
+    C --> ST[shared threads]
+    C --> LK["livekit.io<br/>voice/video/screenshare"]
+    C --> N[notifications + contacts]
+```
+
+## Quick start
 
 ```sh
-script/bootstrap
+# boot the collab stack via docker compose, then run the server
+docker compose up -d postgres
+cargo run -p collab --bin collab
 ```
 
-This script will set up the `zed` Postgres database, and populate it with some users. It requires internet access, because it fetches some users from the GitHub API.
+## License & security
 
-The script will create several _admin_ users, who you'll sign in as by default when developing locally. The GitHub logins for the default users are specified in the `seed.default.json` file.
+- Zed upstream code is **GPL-3.0-or-later**; this fork ships inside the sovereign-projects monorepo ([MIT](https://github.com/toxicwind/sovereign-projects#license) for sovereign-authored files).
+- The collab server handles authentication tokens and user data — deploy it behind TLS with Postgres credentials scoped to the service, and follow the same secrets discipline as any production backend.
 
-To use a different set of admin users, create `crates/collab/seed.json`.
+## Development
 
-```json
-{
-  "admins": ["yourgithubhere"],
-  "channels": ["zed"]
-}
-```
+### Requirements
 
-## Testing collaborative features locally
+- [Postgres](https://www.postgresql.org/download/) 16+
+- [LiveKit](https://livekit.io/) (for voice/video)
 
-In one terminal, run Zed's collaboration server and the livekit dev server:
+### Running the server
 
 ```sh
-foreman start
+docker compose up -d postgres
+cargo run -p collab
 ```
 
-In a second terminal, run two or more instances of Zed.
-
-```sh
-script/zed-local -2
-```
-
-This script starts one to four instances of Zed, depending on the `-2`, `-3` or `-4` flags. Each instance will be connected to the local `collab` server, signed in as a different user from `seed.json` or `seed.default.json`.
-
-# Deployment
-
-We run two instances of collab:
-
-- Staging (https://staging-collab.zed.dev)
-- Production (https://collab.zed.dev)
-
-Both of these run on the Kubernetes cluster hosted in Digital Ocean.
-
-Deployment is triggered by pushing to the `collab-staging` (or `collab-production`) tag in GitHub. The best way to do this is:
-
-- `./script/deploy-collab staging`
-- `./script/deploy-collab production`
-
-You can tell what is currently deployed with `./script/what-is-deployed`.
+Database migrations run automatically on startup. The LiveKit integration uses ephemeral users minted by this server — no separate LiveKit user management needed.

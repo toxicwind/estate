@@ -1,36 +1,38 @@
-This contains the code for Zed's Vim emulation mode.
+<div align="right">
 
-Vim mode in Zed is supposed to primarily "do what you expect": it mostly tries to copy vim exactly, but will use Zed-specific functionality when available to make things smoother. This means Zed will never be 100% vim compatible, but should be 100% vim familiar!
+[![license](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-part%20of-blueviolet?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-The backlog is maintained in the `#vim` channel notes.
+</div>
 
-## Testing against Neovim
+# `vim` — Vim emulation for Zed
 
-If you are making a change to make Zed's behavior more closely match vim/nvim, you can create a test using the `NeovimBackedTestContext`.
+**Real Vim bindings, native speed.** Full Vim emulation mode for Zed: normal/insert/visual modes, motions, operators, text objects, registers, marks, and ex commands — wired into the editor's keymap system rather than bolted on.
 
-For example, the following test checks that Zed and Neovim have the same behavior when running `*` in visual mode:
+## Why should I care?
 
-```rust
-#[gpui::test]
-async fn test_visual_star_hash(cx: &mut gpui::TestAppContext) {
-    let mut cx = NeovimBackedTestContext::new(cx).await;
+- **Deep emulation** — motions, operators, text objects, macros, registers, and marks, not just hjkl
+- **Native integration** — participates in Zed's keymap/context system, so bindings compose with editor features
+- **Toggle per-project** — enable Vim mode globally or per workspace in settings
 
-    cx.set_shared_state("ˇa.c. abcd a.c. abcd").await;
-    cx.simulate_shared_keystrokes(["v", "3", "l", "*"]).await;
-    cx.assert_shared_state("a.c. abcd ˇa.c. abcd").await;
+```mermaid
+flowchart LR
+    KEYS[key presses] --> KM[keymap + context]
+    KM --> VIM[vim state machine<br/>mode · operator · motion]
+    VIM --> ED[editor actions]
+    ED -->|mode change| KEYS
+```
+
+## Quick start
+
+```jsonc
+// ~/.config/zed/settings.json
+{
+  "vim_mode": true
 }
 ```
 
-To keep CI runs fast, by default the neovim tests use a cached JSON file that records what neovim did (see crates/vim/test_data),
-but while developing this test you'll need to run it with the neovim flag enabled:
+## License & security
 
-```sh
-cargo test -p vim --features neovim test_visual_star_hash
-```
-
-This will run your keystrokes against a headless neovim and cache the results in the test_data directory. Note that neovim must be installed and reachable on your $PATH in order to run the feature.
-
-
-## Testing zed-only behavior
-
-Zed does more than vim/neovim in their default modes. The `VimTestContext` can be used instead. This lets you test integration with the language server and other parts of zed's UI that don't have a NeoVim equivalent.
+- Zed upstream code is **GPL-3.0-or-later**; this fork ships inside the sovereign-projects monorepo ([MIT](https://github.com/toxicwind/sovereign-projects#license) for sovereign-authored files).
+- Keybindings are user configuration — no network or privilege surface beyond what the editor already has.

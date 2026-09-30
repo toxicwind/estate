@@ -1,31 +1,36 @@
 # squawk
 
-![sovereign](https://img.shields.io/badge/sovereign--projects-2E86DE?style=for-the-badge)
-![python](https://img.shields.io/badge/python-stdlib-3776AB?style=for-the-badge)
-![license](https://img.shields.io/badge/license-Apache--2.0-green?style=for-the-badge)
+**File-based multi-agent chat with no daemon, no sockets, no HTTP — just a folder of Markdown files.** The fleet's voice: HMAC-signed, Lamport-stamped, DAG-linked, end-to-end-encrypted-capable agent chat. Forked from `n24q02m/agent-chat-plugin` (Apache-2.0), then maximally merged with the working mechanisms of six other agent-chat repositories and ten distributed-systems papers. Every claim in this README is traceable to code: module docstrings carry the provenance, and the behaviors listed under "Verified" were exercised, not assumed.
 
-**File-based multi-agent chat with no daemon, no sockets, no HTTP — just a folder of Markdown files.** Forked from `n24q02m/agent-chat-plugin` (Apache-2.0), then maximally merged with the working mechanisms of six other agent-chat repositories and ten distributed-systems papers. Every claim in this README is traceable to code: module docstrings carry the provenance, and the behaviors listed under "Verified" were exercised, not assumed.
+<div align="right">
 
-Target deployment: `/home/toxic/.shingle/chat` on awrawr-pc. The WhatsApp-side agent can only read/write files there — so the core stays file-based. Nothing in the hot path needs a network port, a server, or an MCP bridge.
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-## Architecture in 60 seconds
+</div>
+
+## Why this exists
+
+Agents need to talk to each other without a server to babysit. The WhatsApp-side agent has a filesystem and nothing else — so the core stays file-based. Nothing in the hot path needs a network port, a server, or an MCP bridge. Messages are Markdown files (human-readable, grep-able, diff-able); every derived index is rebuildable from them.
 
 ```mermaid
-flowchart TD
-    A[chat.py<br/>stdlib-only core] --> SEQ[atomic seq allocation<br/>mkdir lock]
-    A --> CUR[per-agent cursors]
-    A --> WAIT[zero-token wait<br/>inotify fast path]
-    SEQ --> MSG["&lt;channel&gt;/NNNN-&lt;from&gt;-&lt;slug&gt;.md<br/>the messages — source of truth"]
-    MSG --> IDX[derived, rebuildable indexes<br/>log.jsonl · .ops.jsonl · vectors · traces]
-    A --> MODS[fleet_*.py modules]
-    MODS --> GOS[fleet_gossip<br/>anti-entropy]
-    MODS --> TIME[fleet_time<br/>Lamport clocks]
-    MODS --> PRES[fleet_presence<br/>SWIM liveness]
-    MODS --> E2EE[fleet_e2ee<br/>priv-* encryption]
-    MODS --> DAG[fleet_dag<br/>hash-linked threads]
-    MODS --> BIDS[fleet_bids<br/>bid-then-consensus tasks]
-    MODS --> CRDT[fleet_crdt<br/>commutative op log]
+flowchart TB
+    subgraph root["<chat-root>/ — the whole system"]
+        MSG["<channel>/NNNN-<from>-<slug>.md<br/>messages — the source of truth"]
+        IDX["log.jsonl · .ops.jsonl · .vectors/<br/>derived indexes — rebuildable"]
+        SEC[".clocks/ · .peers/ · .cursors/<br/>time, presence, read state"]
+    end
+    A[agent alice] -->|post: HMAC-sign| MSG
+    MSG -->|read: HMAC-verify| B[agent bob]
+    MSG -.->|gossip --repair| IDX
 ```
+
+Target deployment: `/home/toxic/.shingle/chat` on awrawr-pc. The
+WhatsApp-side agent can only read/write files there — so the core stays
+file-based. Nothing in the hot path needs a network port, a server, or an
+MCP bridge.
+
+## Architecture in 60 seconds
 
 ```
 <chat-root>/
@@ -43,30 +48,39 @@ flowchart TD
   .cursors/<agent>                  # read cursors (chat.py, fleet_delta)
 ```
 
-One Python file (`chat.py`, stdlib only) plus `fleet_*.py` modules, stdlib only with one exception: `fleet_e2ee.py` needs the third-party `cryptography` package for `priv-*` channels (declared in `pyproject.toml`; `pip install cryptography` if it isn't importable). The base's guarantees are kept: atomic seq allocation under a mkdir lock, zero-token `wait` (inotify fast path via `fleet_wait`, poll fallback), per-agent cursors, and Markdown files as the source of truth. Every fleet index (`log.jsonl`, `.ops.jsonl`, vectors, traces) is a *derived, rebuildable* structure — delete any of them and the chat still reads.
+One Python file (`chat.py`, stdlib only) plus `fleet_*.py` modules, stdlib
+only with one exception: `fleet_e2ee.py` needs the third-party
+`cryptography` package for `priv-*` channels (declared in
+`pyproject.toml`; `pip install cryptography` if it isn't importable).
+The base's guarantees are kept: atomic seq allocation under a
+mkdir lock, zero-token `wait` (inotify fast path via `fleet_wait`, poll
+fallback), per-agent cursors, and Markdown files as the source of truth.
+Every fleet index (`log.jsonl`, `.ops.jsonl`, vectors, traces) is a
+*derived, rebuildable* structure — delete any of them and the chat still
+reads.
 
-## Quick Start
+## Quick start
 
 ```bash
 export AGENT_CHAT_ROOT=/home/toxic/.shingle/chat
 python3 chat.py init ops                    # create a channel
-python3 chat.py keygen alice                # mint alice's HMAC identity key
+python3 chat.py keygen alice                  # mint alice's HMAC identity key
 python3 chat.py post ops --from alice --title hello --body "hi"
+python3 chat.py read ops --as bob            # bob reads (HMAC-verified)
+python3 chat.py wait ops --as bob --timeout 60   # zero-token block for replies
 ```
 
-Identity is mandatory once keys exist: posts are HMAC-SHA256 signed (`fleet_identity`), and readers reject forged, unsigned, or revoked senders. Keys live **outside** the chat root (`~/.shingle/keys/`, or `$FLEET_KEYS_DIR`).
-
-```bash
-python3 chat.py read ops --as bob              # bob reads (HMAC-verified)
-python3 chat.py wait ops --as bob --timeout 60 # zero-token block for replies
-```
+Identity is mandatory once keys exist: posts are HMAC-SHA256 signed
+(`fleet_identity`), and readers reject forged, unsigned, or revoked
+senders. Keys live **outside** the chat root (`~/.shingle/keys/`, or
+`$FLEET_KEYS_DIR`).
 
 ## Command reference
 
 | Command | What it does |
 |---|---|
 | `init` / `channels` / `roster` | channel lifecycle, discovery, membership |
-| `post --from --title [--to] [--reply] [--body]` | signed, Lamport-stamped, DAG-linked message |
+| `post --from --title [--to] [--body]` | signed, Lamport-stamped, DAG-linked message |
 | `read --as` / `peek` / `wait --as` | verified read; cursor-advancing read; zero-token block |
 | `digest --as` | slow-path "what's new" across channels (delta vectors) |
 | `gossip [--repair]` | anti-entropy: scan seq gaps, backfill from `log.jsonl` |
@@ -80,13 +94,23 @@ python3 chat.py wait ops --as bob --timeout 60 # zero-token block for replies
 | `mark-ephemeral` / `gc` | TTL channels: archive-then-reap |
 | `squawk_seal.py keygen` / `seal` / `unseal` | sealed secrets: NaCl sealed-box encrypt to a recipient's public key; ciphertext-only on the channel |
 
-Private channels (`priv-*`) are end-to-end encrypted: `init` provisions a Fernet channel key, `post` encrypts before HMAC-signing, and `read`/`wait`/`peek` verify-then-decrypt. Ciphertext is what's at rest; tampering fails closed at the HMAC layer before decryption is attempted.
+Private channels (`priv-*`) are end-to-end encrypted: `init` provisions a
+Fernet channel key, `post` encrypts before HMAC-signing, and `read`/`wait`/
+`peek` verify-then-decrypt. Ciphertext is what's at rest; tampering fails
+closed at the HMAC layer before decryption is attempted.
 
-Prerequisite: `pip install cryptography` (also declared in `pyproject.toml`). Without it, every `priv-*` operation fails closed with an actionable error — it never degrades to plaintext.
+Prerequisite: `pip install cryptography` (also declared in
+`pyproject.toml`). Without it, every `priv-*` operation fails closed with
+an actionable error — it never degrades to plaintext.
 
 ### Sealed secret transmission (`squawk_seal.py`)
 
-API keys and credentials can transit the chat without ever appearing as plaintext in channel logs, transcripts, or audit trails. The sender encrypts to the *recipient's* public key (NaCl sealed box, X25519); only ciphertext is posted. The envelope lives entirely in the message body, so the signed/HMAC/Lamport/DAG path is untouched — chat.py signs the ciphertext exactly like any other message.
+API keys and credentials can transit the chat without ever appearing as
+plaintext in channel logs, transcripts, or audit trails. The sender
+encrypts to the *recipient's* public key (NaCl sealed box, X25519); only
+ciphertext is posted. The envelope lives entirely in the message body,
+so the signed/HMAC/Lamport/DAG path is untouched — chat.py signs the
+ciphertext exactly like any other message.
 
 ```bash
 # one-time: mint a seal keypair per agent (private key 0600, never leaves the box)
@@ -102,15 +126,40 @@ printf '%s' "$NVIDIA_API_KEY" | python3 squawk_seal.py seal \
 python3 squawk_seal.py unseal --as breaker --channel fleet --seq 12 --out ~/.secrets/nvidia.key
 ```
 
-- `keygen <agent>` writes `<agent>.seal.key` (0600, private) and `<agent>.seal.pub` (0644, public) under `/home/toxic/.shingle/keys` (`FLEET_KEYS_DIR` overrides). Share the `.pub` freely; `pubkey <agent>` prints it. Verify a recipient's public key out of band before sealing high-value credentials (first fetch is trust-on-first-use).
-- `seal` refuses to post when the recipient has no public key. The message is an ordinary signed post (`--status sealed`, `--to` the recipient); anyone reading the channel sees only sender, recipient, timestamp, and ciphertext size.
-- `unseal` refuses envelopes addressed to someone else and fails closed on tamper/wrong key. `--burn` (set by the sender at seal time) tombstones the message body after a successful decrypt: frontmatter, seq, and DAG links stay intact, the ciphertext is destroyed, and the message then fails HMAC verification *by design*.
-- Threat model: protects secret *values* at rest. Does not hide metadata, has no forward secrecy (a compromised recipient private key opens that recipient's history), and adds no sender authentication beyond the chat's own HMAC signature — verify message signatures as usual. On `priv-*` channels the envelope gets the channel-key layer too (defense in depth); `unseal` strips it automatically.
-- Relay hook: the Squawk relay detects the `-----BEGIN SQUAWK SEALED MESSAGE-----` marker and routes sealed payloads to the relay identity's `unseal` path instead of the text digest.
+- `keygen <agent>` writes `<agent>.seal.key` (0600, private) and
+  `<agent>.seal.pub` (0644, public) under `/home/toxic/.shingle/keys`
+  (`FLEET_KEYS_DIR` overrides). Share the `.pub` freely; `pubkey <agent>`
+  prints it. Verify a recipient's public key out of band before sealing
+  high-value credentials (first fetch is trust-on-first-use).
+- `seal` refuses to post when the recipient has no public key. The
+  message is an ordinary signed post (`--status sealed`, `--to` the
+  recipient); anyone reading the channel sees only sender, recipient,
+  timestamp, and ciphertext size.
+- `unseal` refuses envelopes addressed to someone else and fails closed
+  on tamper/wrong key. `--burn` (set by the sender at seal time)
+  tombstones the message body after a successful decrypt: frontmatter,
+  seq, and DAG links stay intact, the ciphertext is destroyed, and the
+  message then fails HMAC verification *by design*.
+- Threat model: protects secret *values* at rest. Does not hide
+  metadata, has no forward secrecy (a compromised recipient private key
+  opens that recipient's history), and adds no sender authentication
+  beyond the chat's own HMAC signature — verify message signatures as
+  usual. On `priv-*` channels the envelope gets the channel-key layer
+  too (defense in depth); `unseal` strips it automatically.
+- Relay hook: the Squawk relay detects the
+  `-----BEGIN SQUAWK SEALED MESSAGE-----` marker and routes sealed
+  payloads to the relay identity's `unseal` path instead of the text
+  digest.
 
 ## Provenance I — the seven repositories
 
-The fork was chosen after a read-only, code-level comparison of seven agent-chat repositories. The base won because its README survived contact with its source: agents really do `mkdir` their own channels, discovery really is a directory scan, `wait` really is sleep with zero model calls, and there is no server, daemon, socket, or subprocess in the runtime path. The other six each contributed exactly one working mechanism — the concept, re-implemented file-based, never the dependency stack.
+The fork was chosen after a read-only, code-level comparison of seven
+agent-chat repositories. The base won because its README survived contact
+with its source: agents really do `mkdir` their own channels, discovery
+really is a directory scan, `wait` really is sleep with zero model calls,
+and there is no server, daemon, socket, or subprocess in the runtime path.
+The other six each contributed exactly one working mechanism — the concept,
+re-implemented file-based, never the dependency stack.
 
 | Repository | What was taken | Where it lives |
 |---|---|---|
@@ -122,13 +171,19 @@ The fork was chosen after a read-only, code-level comparison of seven agent-chat
 | `michaelwang123/arthas` | room-key model: one symmetric key per room, held by every member, encrypt-before-write | `fleet_e2ee.py` — relay server, web client, Docker all stripped |
 | `kotinder/roomcomm` | lifecycle/janitor: `create_room` (`app/main.py:372-428`), wall-clock expiry in an explicit maintenance pass (`app/main.py:244-248`), bounded rooms (`app/main.py:161`) | `fleet_ephemeral.py` — `mark-ephemeral`, `gc` archives-then-reaps; hosted REST not used |
 
-All `src/`, `cmd/`, `internal/`, `app/`, and `scripts/` paths in the table above live in the *donor* repositories, not in this one — this repo is Python-only (`chat.py`, `fleet_*.py`).
+All `src/`, `cmd/`, `internal/`, `app/`, and `scripts/` paths in the table
+above live in the *donor* repositories, not in this one — this repo is
+Python-only (`chat.py`, `fleet_*.py`).
 
-What was *not* taken, on purpose: every server, WebSocket, REST API, Docker setup, Node runtime, and turn-taking/arbiter model in the six donors. The WhatsApp-side agent has a filesystem and nothing else.
+What was *not* taken, on purpose: every server, WebSocket, REST API, Docker
+setup, Node runtime, and turn-taking/arbiter model in the six donors. The
+WhatsApp-side agent has a filesystem and nothing else.
 
 ## Provenance II — the ten papers
 
-A paper hunt screened dozens of candidates; ten were implemented as working, tested code below. Each module docstring names its paper and states what was stolen and what was left behind.
+A paper hunt screened dozens of candidates; ten were implemented
+as working, tested code below. Each module docstring names its paper and
+states what was stolen and what was left behind.
 
 | Paper | Mechanism stolen | Module |
 |---|---|---|
@@ -143,20 +198,40 @@ A paper hunt screened dozens of candidates; ten were implemented as working, tes
 | Wang et al. 2022 (bid-then-consensus) | suitability bids in `[0,1]`; deterministic winner (score, agent id, timestamp); winner-only claim gate over the existing lease store | `fleet_bids.py` |
 | Shapiro et al. 2011, "A comprehensive study of Convergent and Commutative Replicated Data Types" | op-based log: commutative, associative, idempotent merge; order-independent materialization | `fleet_crdt.py` |
 
-Deliberate deviations, stated so nobody has to discover them: the CRDT merge is trivial today (one shared filesystem = one log); its value is the proven algebra for the day a member works from a replica. Historical HMAC-v1 messages verify as v1 without Lamport/parent authentication — migration compatibility, not a downgrade path (stripping v2 fields fails). Presence never authorizes; the roster does. Role suggestions are never enforced.
+Deliberate deviations, stated so nobody has to discover them: the CRDT
+merge is trivial today (one shared filesystem = one log); its value is the
+proven algebra for the day a member works from a replica. Historical
+HMAC-v1 messages verify as v1 without Lamport/parent authentication —
+migration compatibility, not a downgrade path (stripping v2 fields fails).
+Presence never authorizes; the roster does. Role suggestions are never
+enforced.
 
 ## Verified behaviors
 
 Exercised 2026-09-14, not asserted:
 
-- **E2EE:** key provisioning, encrypted post accepted, no plaintext in `.md` or `log.jsonl`, digest shows decrypted snippet, read verify-then-decrypt, ciphertext tampering rejected at HMAC, keyless post refused with no plaintext fallback.
-- **Sealed secrets:** keygen roundtrip, seal→post→unseal returns the exact secret, channel file and `log.jsonl` hold ciphertext only (plaintext grep: zero hits), wrong-recipient unseal refused, tampered ciphertext rejected, burn-after-read tombstones the body while seq/frontmatter/DAG survive, intact sealed messages still HMAC-verify.
-- **HMAC v2:** new posts verify as v2; Lamport/parent tampering or stripping rejected; legacy v1 and transitional messages still verify as v1; DAG message IDs stable across the upgrade.
-- **Anti-entropy:** post → delete `.md` → `gossip --repair` → recovered file byte-identical except `recovered_from: log.jsonl`, HMAC-verified.
-- **Wait:** irrelevant traffic no longer ends a wait (regression fixed); timeout exits without consuming unseen messages.
-- **Bidding:** non-winner claim rejected with the ranked consensus; winner claims; round archived; claim trace feeds `suggest-role`.
-- **CRDT:** merge commutativity/associativity/idempotence and order-independent materialization proven in `fleet_crdt.selftest()`.
-- **Two-agent post/wait/read:** the base contract, re-run after every merge.
+- **E2EE:** key provisioning, encrypted post accepted, no plaintext
+  in `.md` or `log.jsonl`, digest shows decrypted snippet, read
+  verify-then-decrypt, ciphertext tampering rejected at HMAC, keyless post
+  refused with no plaintext fallback.
+- **Sealed secrets:** keygen roundtrip, seal→post→unseal returns the exact
+  secret, channel file and `log.jsonl` hold ciphertext only (plaintext
+  grep: zero hits), wrong-recipient unseal refused, tampered ciphertext
+  rejected, burn-after-read tombstones the body while seq/frontmatter/DAG
+  survive, intact sealed messages still HMAC-verify.
+- **HMAC v2:** new posts verify as v2; Lamport/parent tampering or
+  stripping rejected; legacy v1 and transitional messages still verify as
+  v1; DAG message IDs stable across the upgrade.
+- **Anti-entropy:** post → delete `.md` → `gossip --repair` → recovered
+  file byte-identical except `recovered_from: log.jsonl`, HMAC-verified.
+- **Wait:** irrelevant traffic no longer ends a wait (regression fixed);
+  timeout exits without consuming unseen messages.
+- **Bidding:** non-winner claim rejected with the ranked consensus;
+  winner claims; round archived; claim trace feeds `suggest-role`.
+- **CRDT:** merge commutativity/associativity/idempotence and
+  order-independent materialization proven in `fleet_crdt.selftest()`.
+- **Two-agent post/wait/read:** the base contract, re-run after every
+  merge.
 
 ## Layout of a channel
 
@@ -172,7 +247,13 @@ Exercised 2026-09-14, not asserted:
   .cursors/<agent>        # read cursors
 ```
 
-## License & Security
+## License & security
 
-- **License:** base `chat.py` is Apache-2.0 (`n24q02m/agent-chat-plugin`; see `LICENSE`). Fleet modules are original implementations of stolen *concepts*; see each module docstring for its provenance.
-- **Security:** identity is HMAC-SHA256, mandatory once keys exist — forged, unsigned, or revoked senders are rejected. `priv-*` channels are end-to-end encrypted (Fernet channel key; verify-then-decrypt; no plaintext fallback without `cryptography`). Secrets transit only as NaCl sealed-box envelopes (`squawk_seal.py`); ciphertext-only on the channel, `--burn` tombstones the body after decrypt. Presence (SWIM) never authorizes — the roster does. Keys live outside the chat root (`~/.shingle/keys/`, 0600 privates). Credential-shaped values in channel logs are canaries: verify, never exfiltrate.
+MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). Base `chat.py` is Apache-2.0 (`n24q02m/agent-chat-plugin`); fleet modules are original implementations of stolen *concepts* — see each module docstring for its provenance.
+
+Security posture, stated plainly:
+
+- **Identity is cryptographic or it doesn't exist.** Posts are HMAC-SHA256 signed; readers reject forged, unsigned, or revoked senders. Keys live **outside** the chat root (`~/.shingle/keys/`, `$FLEET_KEYS_DIR` override) — never commit them.
+- **Private channels are E2E** (`priv-*`): encrypt-before-write with a per-channel Fernet key; tampering fails closed at HMAC before decryption. Without the `cryptography` package, `priv-*` ops fail closed — never plaintext.
+- **Sealed secrets** (`squawk_seal.py`) protect secret *values* at rest (NaCl sealed box, X25519). Metadata (sender, recipient, timestamp, ciphertext size) is visible; no forward secrecy; `--burn` destroys the ciphertext after decrypt *by design*, breaking HMAC on purpose.
+- **Presence never authorizes; the roster does.** Heartbeats are liveness hints, not identity.

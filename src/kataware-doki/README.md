@@ -1,106 +1,99 @@
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
-![bun](https://img.shields.io/badge/bun-runtime-f9f1e1?style=for-the-badge&logo=bun&logoColor=black)
-![typescript](https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![llama-cpp](https://img.shields.io/badge/llama.cpp-direct--http-purple?style=for-the-badge)
+<div align="right">
 
-# kataware-doki — llama-server as a first-class, self-healing mesh provider
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-NOT an Ollama wrapper. Direct llama.cpp HTTP API, wrapped in a distributed node mesh: when one llama-server dies, requests automatically route to the next available node. No single point of failure.
+</div>
 
-- **Core primitive: llama swap** — distributed node failover, transparent to the caller.
-- **Mesh lifecycle** — workers register over WebSocket; the coordinator tracks latency, VRAM, model, and slots per node.
-- **Heartbeat 30s / eviction 120s** — dead nodes are pruned automatically (configurable in `llama-server.ts`).
-- **Lowest-latency routing** — each request goes to the lowest-latency idle node; failures retry on the next node.
-- **Tuned for RTX 3090 24GB** — model registry with VRAM-budgeted model/drafter pairings.
+# llama-server — First Class Provider
+
+> Direct llama.cpp HTTP API — not an Ollama wrapper.
+
+> **Why care? Inference without a single point of failure: workers run llama-server, register with a coordinator over WebSocket, and requests swap to the lowest-latency idle node automatically. A dead node is a retry, not an outage.**
+
+- **llama swap — distributed node failover, transparent to the caller**
+- **Direct llama.cpp HTTP — `/completion`, `/v1/chat/completions`, `/tokenize`, `/embedding`, `/props`, `/health`**
+- **Coordinator-tracked — latency, VRAM, model, slots per node; 30s heartbeat, 120s eviction**
+- **RTX 3090-tuned registry — Qwen 3.6 27B + drafter, Llama 4 Maverick, edge models for CDP nodes**
+- **WebGPU edge — Phi-3 Mini / Gemma 2B in Chrome tabs**
 
 ```mermaid
 flowchart LR
-    REQ[client request] --> CO[coordinator.ts :9223<br/>WebSocket registry]
-    CO --> W1[worker → llama-server<br/>node A]
-    CO --> W2[worker → llama-server<br/>node B]
-    CO --> W3[worker → llama-server<br/>edge / WebGPU]
-    W1 -.->|dies| CO
-    CO -->|llama swap| W2
-    style W1 stroke-dasharray: 5 5
+    REQ[request] --> COORD[coordinator]
+    COORD -->|lowest-latency idle| N1[node 1: llama-server]
+    COORD --> N2[node 2: llama-server]
+    N1 & N2 -->|30s heartbeat| COORD
+    N1 -.->|dies| RETRY[transparent retry on next node]
 ```
 
 ## Quick start
 
 ```bash
-# Terminal 1: start llama-server
-llama-server -m ~/models/Qwen3.6-27B-Q5_K_S.gguf \
-  --port 8080 --flash-attn --cache-type-k f16 \
-  --chat-template qwen --parallel 4
-
-# Terminal 2: start coordinator
+llama-server -m ~/models/Qwen3.6-27B-Q5_K_S.gguf --port 8080 --flash-attn --chat-template qwen --parallel 4
 bun run coordinator.ts
-
-# Terminal 3: start worker
 LLAMA_BASE_URL=http://localhost:8080 LLAMA_MODEL=qwen3.6-27b-q5 bun run worker.ts
 ```
 
-Send a request:
+## License & security
 
-```bash
-curl http://localhost:9223/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -d '{"model":"qwen3.6-27b-q5","messages":[{"role":"user","content":"hi"}]}'
-```
+- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
+- **Security:** Mesh-internal endpoints — keep the coordinator and workers on localhost/Tailscale. The heartbeat/eviction loop assumes a trusted network; don't expose the mesh port publicly.
 
-## Endpoints used (direct llama.cpp HTTP API)
+---
 
-| Endpoint | Purpose |
-|---|---|
-| `/completion` | Raw text generation (prompt → content) |
+NOT an Ollama wrapper. Direct llama.cpp HTTP API.
+
+## Core Primitive: llama swap
+
+Distributed node failover. When one llama-server dies, requests automatically
+route to the next available node. No single point of failure.
+
+## Endpoints Used
+
+| Endpoint               | Purpose                                     |
+| ---------------------- | ------------------------------------------- |
+| `/completion`          | Raw text generation (prompt -> content)     |
 | `/v1/chat/completions` | OpenAI-compatible chat (if --chat-template) |
-| `/tokenize` | Token counting |
-| `/detokenize` | Token → text |
-| `/embedding` | Vector embeddings |
-| `/props` | Server metadata (model, n_ctx, n_parallel) |
-| `/health` | Health check |
+| `/tokenize`            | Token counting                              |
+| `/detokenize`          | Token -> text                               |
+| `/embedding`           | Vector embeddings                           |
+| `/props`               | Server metadata (model, n_ctx, n_parallel)  |
+| `/health`              | Health check                                |
 
-## Mesh lifecycle
+## Mesh Lifecycle
 
-1. Worker starts llama-server with `--model`.
-2. Worker registers with the coordinator via WebSocket (`ws://127.0.0.1:9223/ws`, env `KATAWARE_COORDINATOR`).
-3. Coordinator tracks nodes: latency, VRAM, model, slots.
-4. Heartbeat every 30s, eviction after 120s dead (`heartbeatMs`/`evictionMs` in `llama-server.ts`).
-5. Request arrives → swap to lowest-latency idle node.
-6. Node fails → retry on next node (transparent to caller).
+1. Worker starts llama-server with --model
+2. Worker registers with coordinator via WebSocket
+3. Coordinator tracks nodes: latency, VRAM, model, slots
+4. Heartbeat every 30s, eviction after 120s dead
+5. Request arrives -> swap to lowest-latency idle node
+6. Node fails -> retry on next node (transparent to caller)
 
-## Model registry (RTX 3090 24GB)
+## Model Registry
+
+Pre-configured for RTX 3090 24GB:
 
 - Qwen 3.6 27B Q5_K_S (14GB) + DFlash drafter Q4_K_M (4GB) = 18GB total
 - Llama 4 Maverick 17B 128E Q4_K_M (12GB)
 - Llama 3.2 3B Q8_0 (3.5GB) — edge/CDP nodes
 - Phi-3 Mini, Gemma 2B — WebGPU in Chrome tabs
 
-## Architecture
+## Quick Start
 
-| File | Role |
-|---|---|
-| `llama-server.ts` | First-class provider: `LlamaServerConfig`, `LlamaNode`, self-healing mesh (`evict()` on a 30s interval, 120s timeout) |
-| `coordinator.ts` | Mesh coordinator on port 9223 — WebSocket registry, `register`/`heartbeat` message types, magic-auth |
-| `worker.ts` | Worker: env `LLAMA_BASE_URL` (default `http://127.0.0.1:8080`), `LLAMA_MODEL` (default `qwen3.6-27b-q5`), coordinator WS |
-| `models.ts` | Model registry / IDs |
-| `register.ts` | Registration helpers |
-| `cdp-node.ts` | CDP/WebGPU edge node support |
+```bash
+# Terminal 1: Start llama-server
+llama-server -m ~/models/Qwen3.6-27B-Q5_K_S.gguf \
+  --port 8080 --flash-attn --cache-type-k f16 \
+  --chat-template qwen --parallel 4
 
-## Config
+# Terminal 2: Start coordinator
+bun run coordinator.ts
 
-| Knob | Default | Notes |
-|---|---|---|
-| `LLAMA_BASE_URL` | `http://127.0.0.1:8080` | worker → its llama-server |
-| `LLAMA_MODEL` | `qwen3.6-27b-q5` | model ID (must match `--model` on the server) |
-| `KATAWARE_COORDINATOR` | `ws://127.0.0.1:9223/ws` | worker → coordinator |
-| `heartbeatMs` / `evictionMs` | `30000` / `120000` | in `llama-server.ts` |
+# Terminal 3: Start worker
+LLAMA_BASE_URL=http://localhost:8080 LLAMA_MODEL=qwen3.6-27b-q5 bun run worker.ts
 
-## Dev / contributing
-
-- Run with `bun` — no build step.
-- Add a model: extend `models.ts` with the VRAM budget and quantization, matching the registry table above.
-- The coordinator's port (9223) is the mesh's public surface; keep node HTTP (`:8080` etc.) on loopback.
-
-## License + security
-
-Stack glue: MIT where marked. The mesh is a **loopback service** — keep the coordinator and node HTTP ports on `127.0.0.1`; never expose them without your own auth gate. Model files under `~/models/` are large binaries and live outside git.
+# Terminal 4: Send request
+curl http://localhost:9223/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"qwen3.6-27b-q5","messages":[{"role":"user","content":"hi"}]}'
+```

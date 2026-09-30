@@ -1,70 +1,81 @@
 # tmux-mcp v2.0
 
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
-![bun](https://img.shields.io/badge/bun-black?style=for-the-badge&logo=bun)
-![typescript](https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+<div align="right">
 
-**MCP server for tmux session inspection and control.** Lets agents list sessions, capture pane scrollback, and send keys — across *all* discovered tmux sockets, not just the default. Hardened for multi-socket estates where different lanes run on different sockets (e.g. `tauhyperfix`).
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-## Why
+</div>
 
-Agents live in tmux: experiment panes, long-running daemons, parallel probes. An agent that can't see its own panes is blind, and one that only sees the default socket misses half the estate. tmux-mcp exposes tmux over MCP stdio with a strict safety model — reads are free, sends are destructive-gated behind an explicit `confirm:true` so no keystroke is ever accidental.
+MCP server for tmux session inspection and control — hardened for
+multi-socket estates. Agents can see what's running in every tmux session
+(`tmux_list`, `tmux_capture`); sending keystrokes (`tmux_send`) is gated
+behind explicit confirmation so it can never happen by accident.
 
-## Features
-
-- **Multi-socket discovery** — scans `/tmp/tmux-<uid>/` (or `$TMUX_TMPDIR`); enumerates the default socket *plus* named sockets like `tauhyperfix` (v1 only saw the default)
-- **Read-only inspection** — `tmux_list` sessions, `tmux_capture` pane scrollback (last 100 lines)
-- **Destructive-send gating** — `tmux_send` requires explicit `confirm:true` in the call; refused otherwise, and every confirmed send is logged to stderr
-- **Safe by schema** — the gate is in the tool schema itself, not in a prompt or convention
+```mermaid
+flowchart LR
+    agent[agent] -->|MCP| srv[tmux-mcp server.ts]
+    srv -->|scan| socks[sockets · /tmp/tmux-<uid>/]
+    socks --> s1[default socket]
+    socks --> s2[named · tauhyperfix]
+    srv -->|read-only| ro[tmux_list · tmux_capture]
+    srv -->|confirm:true required| send[tmux_send · logged]
+```
 
 ## Tools
 
 | Tool | Access | Description |
-|------|--------|-------------|
+| --- | --- | --- |
 | `tmux_list` | Read-only | Lists sessions across **all** discovered tmux sockets (default + named like `tauhyperfix`) |
 | `tmux_capture` | Read-only | Captures pane scrollback (last 100 lines). `target` like `session:window.pane`, optional `socket` |
 | `tmux_send` | **Destructive-gated** | Sends keys to a pane. Requires explicit `confirm:true` — refused otherwise |
 
-## How it works
+## Features
 
-```mermaid
-flowchart LR
-    M[MCP client] -->|stdio| S["server.ts<br/>tmux-mcp"]
-    S --> D{discover sockets}
-    D -->|/tmp/tmux-uid/| S0[default socket]
-    D -->|named| S1["tauhyperfix, ..."]
-    S0 --> T[tmux sessions]
-    S1 --> T
-    S -->|confirm:true required| K["tmux_send → keys to pane"]
-    K -->|stderr| LOG[audit log]
-```
+- **Multi-socket discovery** — scans `/tmp/tmux-<uid>/` (or `$TMUX_TMPDIR`)
+  for socket files; enumerates the default socket plus named ones (e.g.
+  `tauhyperfix`). v1 only saw the default socket.
+- **Destructive-send gating** — `tmux_send` is never accidental: the schema
+  requires `confirm:true`, and the server logs every confirmed send to
+  stderr.
 
-## Quick Start
+## Quick start
 
 ```bash
 /home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/tmux-mcp/server.ts
 ```
 
-Registered in the shep gateway (`projects/range/ranch/barn/shep/mcp_config.json`) as `tmux` (currently disabled pending deployment review).
+Registered in the shep gateway (`projects/range/ranch/barn/shep/mcp_config.json`) as `tmux`
+(currently disabled pending deployment review).
 
 ## Architecture
 
-```
-tools/tmux-mcp/
-├── server.ts   — MCP stdio server (Bun + TypeScript)
-└── README.md   — this file
-```
+Single Bun script (`server.ts`). Socket scan → session enumeration →
+per-tool handlers. Reads are free; sends are schema-gated and stderr-logged.
 
-Single-file server. Socket discovery runs per-call so newly created sockets appear without a restart.
+## Config
 
-## Configuration
+| Env / arg | Purpose |
+| --- | --- |
+| `$TMUX_TMPDIR` | override socket scan dir (default `/tmp/tmux-<uid>/`) |
+| `target` | `session:window.pane` for capture/send |
+| `confirm:true` | required for `tmux_send` |
 
-Env: `TMUX_TMPDIR` overrides the socket dir scan (default `/tmp/tmux-<uid>/`). No config file.
+## See also
 
-## Dev
+- [Fleet Knowledgebase](../../docs/fleet-knowledgebase.md) — crew `tau-tmux-mcp`
+- [Mesh gateway](../../projects/mesh/gateway/) — canonical MCP config
 
-Contributions: the destructive-send gate is load-bearing — any new write-capable tool must require an explicit confirmation field in its schema and log the confirmed action to stderr. Never send to interactive shells without the user's informed intent.
+## Dev / contributing
 
-## License & Security
+Keep the gating: any new write-capable tool gets the same `confirm:true`
+schema requirement and stderr audit line as `tmux_send`.
 
-Part of the [sovereign monorepo](../../README.md#license) — stack glue is MIT where marked. Security model: reads are unrestricted, sends are gated by schema-required `confirm:true` and audit-logged to stderr. It executes `tmux` commands as the hosting user — scope exposure through the MCP client config (e.g. the shep gateway registration), not through this server.
+## License & security
+
+MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+
+- Never send to interactive shells without the user's informed intent —
+  `tmux_send` is destructive-gated for exactly this reason.
+- Pane scrollback may contain secrets; treat `tmux_capture` output like a
+  terminal screenshot.

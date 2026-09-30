@@ -1,29 +1,49 @@
-# @cakriwut/omp-model-router
+# omp-model-router
 
-![omp-model-router](https://img.shields.io/badge/omp--model--router-E67E22?style=for-the-badge) ![typescript](https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![bun](https://img.shields.io/badge/bun-000000?style=for-the-badge&logo=bun&logoColor=white) ![MIT](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
+<div align="right">
 
-> Stop paying flagship prices for "summarize this changelog" — route every prompt to the cheapest model that can actually handle it, and watch the spend per session.
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![npm](https://img.shields.io/badge/npm-%40cakriwut%2Fomp--model--router-cb3837?style=for-the-badge)](https://www.npmjs.com/package/@cakriwut/omp-model-router)
 
-Cost-optimized model routing for [Oh-My-Pi](https://github.com/can1357/oh-my-pi): classifies each prompt as high/medium/low complexity and serves it through the matching tier. Tracks per-turn and session costs with a live budget, and integrates with RTK (Rust Token Killer) for 60–90% token savings on tool outputs.
+</div>
+
+Stop paying flagship prices for one-line answers. **omp-model-router** is a
+cost-optimized routing layer for [Oh-My-Pi](https://github.com/can1357/oh-my-pi):
+every prompt is classified as high / medium / low complexity and sent to the
+right-priced model — with session budgets, real-time cost dashboards, and an
+optional LLM classifier that learns your misclassification patterns.
+Integrates with RTK (Rust Token Killer) for 60–90% token savings on tool outputs.
+
+> **Note**: this is a TypeScript source package for Oh-My-Pi extensions. You
+> need the OMP environment with `@oh-my-pi/pi-coding-agent` installed.
 
 ```mermaid
-flowchart TD
-    P[prompt] --> H[heuristic classifier]
-    H -->|ambiguous| C{LLM classifier}
-    C -->|telemetry| H
-    C -->|adaptive| T[tier decision]
-    H --> T
-    T --> R[rule match? keyword → tier]
-    R --> PIN[pinned?]
-    PIN --> M[profile: high / medium / low model]
-    M --> B{budget exceeded?}
-    B -->|yes| D[downgrade tier]
-    B -->|no| S[serve via pi-ai streamSimple]
-    D --> S
-    S --> U[/router usage: cost + tier stats]
+flowchart LR
+    prompt[user prompt] --> clf{complexity}
+    clf -->|high| H[flagship model]
+    clf -->|medium| M[mid model]
+    clf -->|low| L[cheap model]
+    pit[pitfalls harness] -.->|known misclassifications| clf
+    budget[session budget] -.->|over budget? downgrade| clf
+    H & M & L --> track[usage + cost tracking]
 ```
 
-## Quick Start
+## Features
+
+- 🎯 **Intelligent routing** — tier-based selection (High/Medium/Low), adaptive
+  LLM-powered calibration, manual tier pinning, heuristic refinement
+  (clarifications, code edits, planning, explicit speed requests), and
+  keyword rule overrides (e.g. `"production" → high`).
+- 🧠 **Classifier pitfalls harness** — markdown files that teach the
+  classifier known misclassification patterns; no training data required.
+- 💰 **Cost optimization** — session budget tracking, automatic downgrade when
+  over budget, real-time per-model usage/cost via `/router usage`.
+- 🔍 **Observability** — live status widget, detailed usage reports, debug
+  mode with session-persisted routing-decision logs.
+- ⚙️ **Profiles** — Auto, Deep, Cheap, Hybrid, OSS (bring your own).
+
+## Quick start
 
 ```bash
 omp plugin install @cakriwut/omp-model-router
@@ -36,48 +56,10 @@ Then in your next OMP session:
 /router status
 ```
 
-## Features
+To update: `omp plugin install @cakriwut/omp-model-router --force`
+(or in-session: `/router update`).
 
-### 🎯 Intelligent routing
-
-- **Tier-based selection** — automatically classifies prompts as high/medium/low complexity
-- **Adaptive calibration** — optional LLM-powered classifier for routing decisions (see [Calibration modes](#calibration-modes))
-- **Classifier pitfalls harness** — markdown files that teach the classifier known misclassification patterns, no training data required (see [Classifier pitfalls harness](#classifier-pitfalls-harness))
-- **Configurable profiles** — auto, deep, cheap, hybrid, OSS (bring your own!)
-- **Manual overrides** — pin a tier when you need control
-- **Heuristic refinement** — detects clarifications, code edits, planning, explicit speed requests
-- **Rule-based routing** — match keywords to force tiers (e.g. `"production"` → high tier)
-
-### 💰 Cost optimization
-
-- **Session budget tracking** — enforce max spend per session
-- **Automatic downgrade** — budget exceeded? the router demotes to cheaper tiers
-- **Real-time usage display** — per-model usage and cost breakdowns via `/router usage`
-
-### 🔍 Observability
-
-- **Status widget** — live display of current profile, tier, and model
-- **Usage reports** — detailed per-model usage and cost metrics
-- **Debug mode** — session-persisted logs for routing decisions
-- **Cost tracking** — accumulated session cost vs budget with a visual progress bar
-
-## Installation
-
-### Via OMP plugin (recommended)
-
-```bash
-omp plugin install @cakriwut/omp-model-router
-```
-
-To update:
-
-```bash
-omp plugin install @cakriwut/omp-model-router --force
-```
-
-Or in-session: `/router update`
-
-### From source (development)
+From source (development):
 
 ```bash
 git clone https://github.com/cakriwut/omp-model-router.git
@@ -86,76 +68,39 @@ bun install
 bun run deploy:dev
 ```
 
-Then in OMP: `/reload`, then `/router help`.
+Then `/reload` in OMP. (Source installs use `file:` dependencies and don't
+support `/router update` — use the plugin install for production.)
 
-> Source installs use `file:` dependencies and won't support `/router update`. For production use, install via the OMP plugin command above.
-
-## Configuration
-
-Create or edit `~/.omp/agent/model-router.json` (a starter lives at `model-router.example.json` in this repo):
-
-```json
-{
-  "routerEnabled": true,
-  "defaultProfile": "auto",
-  "debug": false,
-  "maxSessionBudget": 2.0,
-  "rules": [
-    {
-      "matches": ["deploy", "production", "release"],
-      "tier": "high",
-      "reason": "Safety check for production tasks"
-    },
-    {
-      "matches": "changelog",
-      "tier": "low"
-    }
-  ],
-  "calibration": {
-    "enabled": false,
-    "mode": "telemetry",
-    "classifierModel": "anthropic/claude-3-haiku-20240307",
-    "warmupTurns": 5,
-    "traceEnabled": false
-  },
-  "profiles": {
-    "auto": {
-      "high": { "model": "anthropic/claude-sonnet-4-5", "thinking": "high" },
-      "medium": { "model": "anthropic/claude-sonnet-4-5", "thinking": "medium" },
-      "low": { "model": "anthropic/claude-haiku-4-5", "thinking": "low" }
-    }
-  }
-}
-```
-
-### Key options
-
-| Field | Description | Default |
-|---|---|---|
-| `routerEnabled` | Enable/disable router | `true` |
-| `defaultProfile` | Active profile on start | `"auto"` |
-| `debug` | Debug logging to session JSONL | `false` |
-| `maxSessionBudget` | Max $ spend per session (triggers downgrade) | `5.0` |
-| `calibration.enabled` | Enable calibration system | `false` |
-| `calibration.mode` | `"telemetry"` (data only) or `"adaptive"` (controls routing) | `"telemetry"` |
-| `calibration.classifierModel` | Model for the LLM classifier | — |
-| `rules` | Keyword → tier mappings | `[]` |
-| `pitfallsPath` | Explicit path to the classifier pitfalls file | — |
-
-## Usage
+## Architecture
 
 ```
-/router                     # show current router status
-/router usage               # model usage and cost
-/router profile hybrid      # switch profile
-/router pin high            # force high tier until unpinned
-/router pin off             # remove tier pin
-/router set thinking high min  # thinking-level override for high tier
-/router set budget 3.0      # session budget to $3.00
-/router reset               # reset to config defaults (clears pins, overrides)
-/router widget on           # show status widget
-/router help                # all subcommands
+src/
+├── index.ts       # Extension entry point + lifecycle hooks
+├── commands/      # /router subcommands (usage, profile, pin, …)
+├── config.ts      # Config loading + validation
+├── routing/       # Classification heuristic (High/Medium/Low)
+├── provider.ts    # Model provider integration
+├── state/         # Session state + budget tracking
+├── ui/            # Status widget + usage reports
+├── calibration/   # LLM classifier + calibration matrix
+├── utils/         # Shared utilities
+├── constants.ts / types.ts
+test/              # Test suite (~370 tests, bun test)
+docs/              # Implementation docs
 ```
+
+## Commands
+
+| Command | Effect |
+| --- | --- |
+| `/router` | Show current router status |
+| `/router usage` | Model usage and cost breakdown |
+| `/router profile <name>` | Switch profile (auto/deep/cheap/hybrid/oss) |
+| `/router pin high` | Force high tier until unpinned |
+| `/router pin off` | Remove tier pin |
+| `/router set budget 3.0` | Set session budget to $3.00 |
+| `/router reset` | Reset to config defaults |
+| `/router widget on` | Show status widget |
 
 Example `/router usage` output:
 
@@ -171,143 +116,82 @@ Router: auto                       $0.1234 / $2.00
 Last: medium → anthropic/claude-sonnet-4-5 (thinking: medium)
 ```
 
-## Calibration modes
+## Config
 
-The calibration system lets an LLM classifier drive routing decisions instead of the heuristic.
-
-### Telemetry mode (default)
+Create or edit `~/.omp/agent/model-router.json`:
 
 ```json
-{ "calibration": { "enabled": true, "mode": "telemetry", "classifierModel": "anthropic/claude-3-haiku-20240307" } }
+{
+  "routerEnabled": true,
+  "defaultProfile": "auto",
+  "debug": false,
+  "maxSessionBudget": 2.0,
+  "rules": [
+    { "matches": ["deploy", "production", "release"], "tier": "high",
+      "reason": "Safety check for production tasks" },
+    { "matches": "changelog", "tier": "low" }
+  ],
+  "calibration": {
+    "enabled": false,
+    "mode": "telemetry",
+    "classifierModel": "anthropic/claude-3-haiku-20240307",
+    "warmupTurns": 5
+  }
+}
 ```
 
-- Classifier runs in the background for **data collection only**
-- Heuristic routing decisions are used for actual routing
-- Use this to observe classifier behaviour before committing
+| Field | Description | Default |
+| --- | --- | --- |
+| `routerEnabled` | Enable/disable router | `true` |
+| `defaultProfile` | Active profile on start | `"auto"` |
+| `debug` | Debug logging to session JSONL | `false` |
+| `maxSessionBudget` | Max $ per session (triggers downgrade) | `5.0` |
+| `calibration.mode` | `"telemetry"` (data only) or `"adaptive"` (controls routing) | `"telemetry"` |
+| `calibration.classifierModel` | Model for the LLM classifier (single string or fallback array) | — |
+| `rules` | Keyword → tier mappings | `[]` |
 
-### Adaptive mode
+### Classifier pitfalls harness
 
-```json
-{ "calibration": { "enabled": true, "mode": "adaptive", "classifierModel": "anthropic/claude-3-haiku-20240307" } }
-```
+When a classifier is active, the router injects a pitfalls file (known
+misclassification patterns) into the classifier prompt:
 
-- Classifier **controls routing decisions** — its verdict is the final tier
-- Bypassed when tier is pinned, context-triggered, or rule-matched
-- When the classifier fails (rate-limit, model unavailable), the heuristic is used automatically
-- Use a cheap fast model (Haiku, Nano, Nova Micro) to keep overhead near zero
+1. `pitfallsPath` config field (explicit override),
+2. `model-router-pitfalls.md` in the project directory,
+3. `~/.omp/agent/model-router/pitfalls.md` (global; starter file with 10
+   common pitfalls installed automatically — see `pitfalls.example.md`).
 
-### Classifier fallback chain
+Plain markdown, `##` headings per pitfall, two to three lines each. Cached
+in-process after first read; changes take effect on `/reload`.
 
-`classifierModel` accepts a single string or an array. Entries are tried in order until one succeeds; if all fail, the heuristic is used with no hard error:
-
-```json
-"classifierModel": [
-  "anthropic/claude-3-haiku-20240307",
-  "openai/gpt-4.1-nano",
-  "amazon-bedrock/amazon.nova-micro-v1:0"
-]
-```
-
-## Classifier pitfalls harness
-
-The pitfalls harness injects known misclassification patterns directly into the classifier prompt — you describe the pitfall once in a markdown file and the classifier sees it on every routing decision. No training data required.
-
-### How it works
-
-When a classifier model is active, the router looks for a pitfalls file in this order:
-
-1. `pitfallsPath` config field (explicit override)
-2. `model-router-pitfalls.md` in the current project directory
-3. `~/.omp/agent/model-router/pitfalls.md` (global, applies everywhere)
-
-The file contents are injected between the tier definitions and the conversation history in the classifier prompt, so the LLM sees ground truth before evaluating.
-
-### File format
-
-Plain markdown. Use `##` headings to name each pitfall — two to three lines per entry is enough:
-
-```markdown
-## Pitfall: Changelog or release notes
-Short summaries and version bumps are mechanical text assembly.
-Correct: **low**. Common misclass: medium.
-
-## Pitfall: Architecture decision or tradeoff analysis
-Even a short "should we use X or Y" prompt demands weighing trade-offs.
-Correct: **high**. Common misclass: medium (short prompt ≠ simple task).
-
-## Pitfall: Debugging across unfamiliar code with no repro
-Requires hypothesis generation and broad search — high cognitive load even for small fixes.
-Correct: **high**. Common misclass: medium (eventual fix may be a one-liner).
-```
-
-### Project-local pitfalls
-
-Drop a `model-router-pitfalls.md` in your project root (the directory OMP runs from). It takes precedence over the global file and lets you encode domain-specific routing signals — e.g. "deploying to staging counts as low, not high, in this project".
-
-### Caching and debug
-
-The file is read once on the first routing decision that needs a classifier and cached in-process. Changes take effect on the next process start or `/reload`. With `debug: true`, calibration emits lines like:
-
-```
-[calibration] Initialized (mode: adaptive, warmup: 5)
-[calibration] h=medium, llm=high ✗ (42 comparisons, 1200ms)
-```
-
-To hide these: set `"debug": false` and run `/reload`.
-
-## Architecture
-
-```
-src/
-├── index.ts              # extension entry point + lifecycle hooks
-├── cli-detect.ts         # CLI environment detection
-├── cli/                  # CLI helpers
-├── commands/             # /router subcommands (usage, profile, pin, ...)
-├── config.ts             # config loading + validation
-├── constants.ts          # shared constants
-├── embargo.ts            # embargo / gating logic
-├── provider.ts           # model provider integration (pi-ai streamSimple)
-├── routing/              # classification: heuristic.ts, compose.ts (resolveRouting), pin.ts, text.ts
-├── calibration/          # LLM classifier + calibration matrix + pitfalls harness
-├── rtk-integration.ts    # RTK token-optimization integration
-├── state/                # session state + budget tracking
-├── tui/                  # TUI components
-├── ui/                   # status widget rendering + usage reports
-├── utils/                # shared helpers
-└── version-check.ts      # update checks
-```
-
-Routing pipeline per prompt: **heuristic → context promotion → adaptive classifier attempt → image upgrade → tier mapping** (`resolveRouting` in `src/routing/compose.ts`), then the tier's profile model serves through the same provider path as a direct call. Rule matches, pins, and budget downgrades can override the classifier at each step.
-
-## Development
+## Dev / contributing
 
 ```bash
 bun install
-bun run test                # summary output; full failure details on any failure
-bun run test:verbose        # dots reporter + all console output
-bun run deploy:dev          # deploy to ~/.omp/agent/extensions/model-router
+bun run test          # summary output when green (recommended)
+bun run test:verbose  # dots reporter, full traceability
+bun run deploy:dev    # deploy to ~/.omp/agent/extensions/model-router
 ```
 
-After deploying, run `/reload` in OMP to pick up changes.
+Then `/reload` in OMP. Releases: `bun run release:patch|minor|major`
+(runs tests, bumps version, tags, triggers the GitHub Actions
+publish workflow — one-time setup: NPM automation token in the
+`NPM_TOKEN` repo secret). Manual fallback:
+`npm publish --access public && gh release create vX.Y.Z --generate-notes`.
 
-### Publishing
-
-Release flow: `bun run release:patch|minor|major` runs the test suite, bumps `package.json`, commits, pushes, tags — and a GitHub Actions workflow on `v*.*.*` tags runs CI, verifies the version matches the tag, publishes to NPM, and creates the GitHub release. One-time setup: an NPM automation token stored as the `NPM_TOKEN` GitHub secret. Manual fallback: `npm login && npm publish --access public && gh release create vX.Y.Z --generate-notes`.
+Related docs: `docs/FALLBACK_TESTING_GUIDE.md`,
+`docs/BEST_PRACTICES_AUDIT.md`, `docs/RTK_INTEGRATION.md`,
+`docs/CALIBRATION_DESIGN.md`.
 
 ## Troubleshooting
 
-**"Router not active"**
+**"Router not active"** — check `routerEnabled: true`, config file exists at
+`~/.omp/agent/model-router.json`, run `/router`, then `/reload`.
 
-1. Check `routerEnabled: true` in `~/.omp/agent/model-router.json`
-2. Run `/router` to see current status
-3. Try `/reload` to re-initialize the extension
-
-## License and security
+## License & security
 
 MIT © Riwut Libinuko — see [LICENSE](./LICENSE).
 
-Security notes:
-
-- The config file can pin models and API-bearing provider paths — keep `~/.omp/agent/` at 0700.
-- Debug logs persist routing decisions to the session JSONL; disable `debug` if sessions may contain sensitive prompts.
-- The classifier fallback chain never hard-fails: if every classifier model errors, the heuristic takes over rather than blocking the session.
+- The router never sends your prompts anywhere except the models you
+  configured; the classifier model only ever sees the prompt for tiering.
+- Debug logs (`debug: true`) may contain prompt text — keep session JSONL
+  out of shared repos.

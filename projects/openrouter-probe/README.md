@@ -1,101 +1,82 @@
-# openrouter-probe — GuideLLM quality-first eval stack
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge) ![python](https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+<div align="right">
 
-Deterministic instruction-following evaluation of provider-free OpenRouter
-models, run **through the GuideLLM fork** (`toxicwind/guidellm`), not a parallel
-harness. Ranking rule: **quality first, provider-free status second,
-GuideLLM-measured performance third.**
+[![license](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-part%20of-blueviolet?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-## Why this exists
+</div>
 
-Free-tier leaderboards are mostly vibes and uptime lotteries. This stack
-measures one thing deterministically — can the model follow an exact
-instruction? — with a fixed sentinel, a real per-model tokenizer, and scoring
-semantics that treat silence and exceptions as data instead of aborting the run.
-The rankings feed the estate's router decisions.
+# openrouter-probe — quality-first eval stack
 
-## Features
+**Stop trusting provider labels. Measure which free models actually follow instructions.** A deterministic evaluation harness that ranks OpenRouter's free models by measured instruction-following quality — run through the sovereign **GuideLLM fork** (`toxicwind/guidellm`), not a parallel harness.
 
-- **Deterministic instrument** — 6 synchronous GuideLLM requests per model with
-  the `instruction_following` scorer, sentinel `ABSTRACT-7X3Q`, thinking-strip on
-- **Real tokenizers** — per-model real HF tokenizers from `models-bench.json`;
-  `openrouter/free` has no stable tokenizer (explicitly labelled `gpt2`
-  fallback, never ranked, never counted in `results`) — it sits in a separate
-  fallback tier
-- **Honest scoring semantics** — empty output scores `0.0` (model silence is
-  data); scorer exceptions record `0.0` + error metadata, never abort the run;
-  quality aggregates cover **completed requests only** (429/overload/
-  ResourceExhausted is reliability signal, not instruction-following signal);
-  LLM-as-judge is out of scope for this tier
-- **Self-describing reports** — every aggregate names its instrument: scorer,
-  semantics, tokenizer policy, scope, formality tier, prompt, timestamp
+**Ranking rule: quality first, provider-free status second, GuideLLM-measured performance third.**
 
-```mermaid
-flowchart TD
-    CAT["OpenRouter catalogue<br/>live provider-free models"] --> DISC["eval_runner.py<br/>discover + liveness-probe"]
-    DISC --> MAN["models-bench.json<br/>model → HF tokenizer manifest"]
-    MAN --> RUN["6 GuideLLM requests/model<br/>instruction_following scorer<br/>sentinel ABSTRACT-7X3Q"]
-    RUN --> RAW["eval-<ts>-<model>.json<br/>per-request scores/score_details"]
-    RAW --> AGG["ranking-eval-<ts>.json<br/>RANKING-eval-<ts>.md<br/>aggregate, instrument named"]
-    AGG --> LATEST["RANKING-eval-20260920-170706.md<br/>leader: cohere/north-mini-code:free<br/>(quality 2.0, fastest p50)"]
-```
+## Why should I care?
+
+- **Deterministic instrument** — sentinel `ABSTRACT-7X3Q` scoring (exact = 2.0, contains = 1.0, missing = 0.0); no LLM-as-judge noise
+- **Real tokenizers** — per-model HF tokenizers, so token stats are comparable (fallback models sit in a separate tier, never ranked)
+- **Semantics that hold up** — quality aggregates cover *completed* requests only; provider/transport failures (429, overload, `ResourceExhausted`) are reliability signal and never move quality means
 
 ## Components
 
 | File | Role |
-| ---- | ---- |
-| `eval_runner.py` | **The runner (permanent).** Discovers live provider-free models from the OpenRouter catalogue, liveness-probes each, runs the eval, writes raw per-model JSON + aggregate ranking JSON/Markdown |
-| `models-bench.json` | OpenRouter model → HF tokenizer repo manifest |
-| `ranking-eval-<ts>.json` / `RANKING-eval-<ts>.md` | Aggregate reports, each naming its instrument |
-| `eval-<ts>-<model>.json` | Raw per-model GuideLLM reports (`scores`/`score_details`, `quality`/`quality_instrument`) |
-| `probe_abstract.py` | Original abstract probe. Semantics borrowed by the fork's scorer (exact `ABSTRACT-7X3Q` = 2.0, contains = 1.0, missing/empty = 0.0). Kept as reference |
-| `ranking_lib.py` | Ranking tier contract shared by the eval tooling |
-| `probe_all.py`, `deep_pass.py`, `guidellm_sweep.sh`, `guidellm_herd_sweep.sh` | Legacy sweep tooling (key: `OPENROUTER_API_KEY_FREE`) |
-| `ROUTER_PROOF.md`, `RANKING.md` | Router-facing proof and standing ranking notes |
+|---|---|
+| `eval_runner.py` | **The runner (permanent).** Discovers live provider-free models from the OpenRouter catalogue, liveness-probes each, runs 6 synchronous GuideLLM requests per model with the deterministic `instruction_following` scorer and per-model real HF tokenizers, then writes raw per-model JSON + aggregate ranking JSON/Markdown. |
+| `models-bench.json` | OpenRouter model → HF tokenizer repo manifest. `openrouter/free` has no stable tokenizer (explicitly labelled `gpt2` fallback, not tokenizer-comparable). |
+| `ranking-eval-<ts>.json` / `RANKING-eval-<ts>.md` | Aggregate reports. Each names its instrument: scorer, semantics, tokenizer policy, scope, formality tier, prompt, timestamp. |
+| `eval-<ts>-<model>.json` | Raw per-model GuideLLM reports (`scores`/`score_details` per request, `quality`/`quality_instrument` at benchmark level). |
+| `probe_abstract.py` | Original abstract probe. Semantics borrowed by the fork's scorer. Kept as reference. |
+| `probe_all.py`, `deep_pass.py` | Legacy sweep tooling; `guidellm_sweep.sh` moved to `../range/ranch/guidellm/sweeps/` (key: `OPENROUTER_API_KEY_FREE`). |
+
+## Pipeline
+
+```mermaid
+flowchart LR
+    C[OpenRouter catalogue] --> D[discover free models]
+    D --> L[liveness probe]
+    L --> E["eval_runner.py — 6 sync GuideLLM requests/model"]
+    E --> S["instruction_following scorer<br/>sentinel ABSTRACT-7X3Q"]
+    S --> R["ranking JSON + RANKING-*.md"]
+```
 
 ## Quick start
 
 ```bash
-/home/toxic/.venv-guidellm/bin/python3 eval_runner.py
+# yote, from this directory:
+/home/toxic/.venv-guidellm/bin/python3 eval_runner.py            # all manifest models
 /home/toxic/.venv-guidellm/bin/python3 eval_runner.py --models "a/b:free,c/d:free" --n 6
-# superseded rankings kept: RANKING-eval-20260920-final.md, RANKING-eval-20260920-163541.md
 ```
 
-Run from this directory on yote. The runner reads `OPENROUTER_API_KEY_FREE`
-from the environment (never logged). GuideLLM source:
-`/home/toxic/sovereign/projects/guidellm` (remote `toxicwind/guidellm`).
-
-## Latest ranking
-
-`RANKING-eval-20260920-170706.md` — one clean run through committed code
-(ranking_lib tier contract), 6 requests/model, prompt
-`Output exactly: ABSTRACT-7X3Q. No other text.`
-Ranking: 9 tokenizer-valid models quality-first; leader
-`cohere/north-mini-code:free` (quality 2.0, fastest p50).
-`openrouter/free` sits in a separate fallback tier (gpt2 fallback tokenizer —
-never ranked or counted in `results`). Supersedes
-`RANKING-eval-20260920-final.md`.
-
-## Links
-
-- Fork: [toxicwind/guidellm](https://github.com/toxicwind/guidellm) —
-  pluggable scoring (`src/guidellm/benchmark/scoring/`), README documents the scoring feature
-- Upstream: [vllm-project/guidellm](https://github.com/vllm-project/guidellm)
-- Eval plan: `GUIDELLM_EVAL_PLAN.md` (in this directory)
-- Fleet knowledgebase: `docs/fleet-knowledgebase.md`
-  ([canonical](https://github.com/toxicwind/sovereign-projects/blob/main/docs/fleet-knowledgebase.md))
-- Papers: Zheng et al. arXiv `2306.05685`; *LLM Judges Have Dark Current*
-  arXiv `2606.15610`; *Judging LLM-as-a-Judge* arXiv `2609.02942`;
-  *Evaluation Scores Are Perishable Knowledge Claims* arXiv `2607.26191`;
-  *RouteBalance* arXiv `2606.17949`; *RouterWise* arXiv `2604.10907`
+The runner reads `OPENROUTER_API_KEY_FREE` from the environment (never logged). GuideLLM source: `/home/toxic/sovereign/projects/range/ranch/guidellm/fork` (remote `toxicwind/guidellm`).
 
 ## License & security
 
-Unlicensed — internal estate research in the private
-[toxicwind/sovereign-projects](https://github.com/toxicwind/sovereign-projects) repo.
-Security: `OPENROUTER_API_KEY_FREE` comes from the environment only — never
-logged, never committed, never pasted into reports. Eval JSONs contain scores
-and prompts, not keys.
+- [MIT](https://github.com/toxicwind/sovereign-projects#license).
+- API keys are read from the environment and never logged or written to reports.
 
----
-*Up: [projects/](../README.md) · [fleet knowledgebase](../../docs/fleet-knowledgebase.md)*
+## Latest ranking
+
+`RANKING-eval-20260920-170706.md` — one clean run through committed code (ranking_lib tier contract), 6 requests/model, prompt `Output exactly: ABSTRACT-7X3Q. No other text.`
+Ranking: 9 tokenizer-valid models quality-first; leader `cohere/north-mini-code:free` (quality 2.0, fastest p50).
+`openrouter/free` sits in a separate fallback tier (gpt2 fallback tokenizer — never ranked or counted in `results`).
+Supersedes `RANKING-eval-20260920-final.md`.
+
+## Semantics (quality policy)
+
+- Every terminal request is scored for its per-request record.
+- Completed requests with empty output score `0.0` (model silence is data).
+- Scorer exceptions record `0.0` + error metadata, never abort the run.
+- **Quality aggregates cover completed requests only.** Provider/transport failures are reliability signal, not instruction-following signal.
+- Deterministic instrument only; LLM-as-judge is out of scope for this tier.
+
+## Architecture & links
+
+- Fork: [toxicwind/guidellm](https://github.com/toxicwind/guidellm) — pluggable scoring (`src/guidellm/benchmark/scoring/`), README documents the scoring feature.
+- Upstream: [vllm-project/guidellm](https://github.com/vllm-project/guidellm)
+- Eval plan: `GUIDELLM_EVAL_PLAN.md` (in this directory)
+- Fleet knowledgebase: [canonical](https://github.com/toxicwind/sovereign-projects/blob/main/docs/fleet-knowledgebase.md)
+- Papers: Zheng et al. arXiv `2306.05685`; *LLM Judges Have Dark Current* arXiv `2606.15610`; *Judging LLM-as-a-Judge* arXiv `2609.02942`; *Evaluation Scores Are Perishable Knowledge Claims* arXiv `2607.26191`; *RouteBalance* arXiv `2606.17949`; *RouterWise* arXiv `2604.10907`
+
+## Contribute
+
+Standing rules (Chris, 2026-09-20): **no monkeypatching, permanence rule.** The runner is the deliverable; a ranking run is just proof. Keep scorer semantics documented in the report metadata (instrument, tokenizer policy, scope, formality tier, prompt, timestamp).

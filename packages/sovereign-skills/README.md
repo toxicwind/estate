@@ -1,61 +1,51 @@
-# sovereign-skills (packages mirror)
+# sovereign-skills
+
+Skill definitions, agent recipes, and behavioral conventions for the Sovereign ecosystem — consumed by Pi, Tau, and subagents. Keep definitions atomic, self-contained, and deterministic.
 
 <div align="right">
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge) ![typescript](https://img.shields.io/badge/typescript-engine--audit-3178C6?style=for-the-badge) ![kind](https://img.shields.io/badge/kind-workspace_mirror-purple?style=for-the-badge)
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
 </div>
 
-*Workspace mirror of the `sovereign-skills` agent-skill definitions — skill recipes and behavioral conventions consumed by Pi, Tau, and subagents. Same contents as the top-level `sovereign-skills/` directory (verified identical); the full story lives in [the canonical README](../../sovereign-skills/README.md).*
+## Why this exists
 
-## Contents
+Agents across the estate (Pi, Tau, subagents) need the same behavioral contracts: how to audit an engine fork, what the repo rules are, how to fail. Skills are those contracts as files — atomic, self-contained, deterministic — versioned in one place instead of scattered across prompts and memories.
+
+## What's here
 
 | Path | What it is |
 |---|---|
 | `engine-audit.ts` | Audits the Tau engine fork against upstream oh-my-pi; emits structured diff dataframes |
 | `AGENTS.md` | Contributor rules for this repo |
 
-Repo rules: verify live before claiming, fail loud (never silence errors), prefer `fd`/`rg` over `find`/`grep`.
-
-```bash
-# Audit the Tau engine vs upstream
-bun run packages/sovereign-skills/engine-audit.ts
-```
-
-## Mirror relationship
-
 ```mermaid
-flowchart LR
-    ROOT["sovereign-skills/<br/>(top level)"] --> MIRROR["packages/sovereign-skills/<br/>workspace mirror"]
-    PI["Pi agent"] --> MIRROR
-    TAU["Tau engine"] --> MIRROR
-    SUB["subagents"] --> MIRROR
-    MIRROR --> EA["engine-audit.ts<br/>tau fork vs oh-my-pi"]
+flowchart TB
+    AG[AGENTS.md<br/>repo rules:<br/>verify live · fail loud · fd/rg] --> SK[skill definitions]
+    EA[engine-audit.ts<br/>tau fork vs upstream oh-my-pi] --> DF[structured diff dataframes]
+    SK --> PI[Pi]
+    SK --> TAU[Tau]
+    SK --> SUB[subagents]
 ```
 
-Skills flow one way: definitions here, consumers everywhere. This mirror exists so workspace consumers resolve skills under `packages/`; keep it in sync with the top-level directory — don't let the two drift.
-
-## Quick Start
+## Quick start
 
 ```bash
-bun run packages/sovereign-skills/engine-audit.ts
-ls packages/sovereign-skills/
-sed -n '1,40p' packages/sovereign-skills/AGENTS.md
+# audit the Tau engine vs upstream
+bun run sovereign-skills/engine-audit.ts
 ```
 
 ## Adding a skill
 
 1. Create `skills/<name>/SKILL.md` — atomic, self-contained, deterministic
 2. Add `references/` for routing tables
+3. Register in `skills.json`
 
-Write it so a fresh subagent with no context can execute it cold — if it asks a clarifying question, the skill is incomplete.
+## Conventions
 
-## Configuration
+See `AGENTS.md` for the repo rules: verify live before claiming, fail loud (never silence errors), prefer `fd`/`rg` over `find`/`grep`.
 
-Skills are markdown + references, not services — no port, no daemon, no env. The one executable here is `engine-audit.ts`, run directly with bun.
+## License & security
 
-## Dev & contributing
-
-Keep definitions atomic (one skill, one job), self-contained, and deterministic. Mirror discipline: this directory tracks the top-level `sovereign-skills/` — change one, carry it to the other.
-
-## License & Security
-
-Internal agent-behavior definitions — part of the sovereign projects, not published for external use. Skills shape what agents do, so they get the same scrutiny as code: review additions, keep them deterministic, and never encode credentials or bearer tokens in a SKILL.md.
+MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). Skills shape agent behavior estate-wide — a skill edit is a behavior change for every consumer. Review them like code, and keep them deterministic: a skill that behaves differently on each read isn't a contract.

@@ -1,63 +1,56 @@
-# ops/durability 🛡️
+# ops/durability — estate durability guard
 
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
-![bash](https://img.shields.io/badge/bash-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white)
-![anti-monkeypatch](https://img.shields.io/badge/anti--monkeypatch-2E7D32?style=for-the-badge)
+The permanent mechanism behind "no monkeypatching": hunts the recurring monkey-patch classes on this box and alerts to fleet **only when findings exist**. Alert on conditions, not on a timer.
 
-> **The estate durability guard — the permanent mechanism behind "no
-> monkeypatching".** `durability-audit.sh` hunts the recurring
-> monkey-patch classes on this box and alerts to the squawk `fleet`
-> channel **only when findings exist** (alert on conditions, not on a
-> timer). Exit 0 = clean, 2 = findings.
+<div align="right">
 
-## Features
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-- 🔍 **Six monkey-patch classes**, one audit: processes anchored in ephemeral paths, uncovered listening ports, daemon logic in shell profiles, cron/systemd units pointing at ephemeral paths, uncommitted live edits in the repo, dirty submodules
-- 🔇 **Silent when clean** — alerts to squawk `fleet` only on findings, never timer-noise
-- 📋 **`allowlist.txt`** — cmdline substrings known-OK in ephemeral paths (session tooling, not services); kept tight
-- 🖥️ **Host-agnostic** — `SOVEREIGN_REPO` env overrides the repo path
-- ⏰ **Daily systemd timer** (04:30, `Persistent=true`), installed as symlinks so the repo stays the source of truth
+</div>
 
-## Architecture
+## Why this exists
+
+"No monkeypatching" is a standing rule, but rules without enforcement are wishes. Runtime-only patches, daemons anchored in `/tmp`, uncommitted live edits — they all *work* until a restart proves they don't. This audit makes the rule machine-checkable: six hunt classes, one script, exit 2 when something smells. Every fix that survives this audit survives a reboot.
+
+## What it hunts
+
+`durability-audit.sh` checks six recurring monkey-patch classes:
+
+1. Processes anchored in ephemeral paths (`/tmp`, `/dev/shm`) doing real jobs
+2. Listening TCP ports with no `pitchfork.toml` daemon coverage
+3. Shell profiles (`.bashrc`/`.profile`) containing daemon logic
+4. Cron files / systemd units referencing ephemeral paths
+5. Uncommitted live edits in `/home/toxic/sovereign` (state paths excluded)
+6. Dirty submodules (bulk ops must be submodule-aware)
 
 ```mermaid
-flowchart TB
-    A[durability-audit.sh] --> C1[procs in /tmp, /dev/shm]
-    A --> C2[listening ports w/o pitchfork.toml coverage]
-    A --> C3[daemon logic in .bashrc/.profile]
-    A --> C4[cron/systemd units → ephemeral paths]
-    A --> C5[uncommitted live edits in repo]
-    A --> C6[dirty submodules]
-    C1 & C2 & C3 & C4 & C5 & C6 --> D{findings?}
-    D -->|yes| F[squawk fleet alert]
-    D -->|no| S[silent — exit 0]
-    AL[allowlist.txt<br/>known-OK substrings] -.->|filters| A
+flowchart LR
+    AUDIT[durability-audit.sh] --> C1[procs in /tmp /dev/shm]
+    AUDIT --> C2[ports w/o pitchfork coverage]
+    AUDIT --> C3[daemon logic in shell profiles]
+    AUDIT --> C4[cron/systemd → ephemeral paths]
+    AUDIT --> C5[uncommitted live edits]
+    AUDIT --> C6[dirty submodules]
+    C1 & C2 & C3 & C4 & C5 & C6 --> DEC{findings?}
+    DEC -->|none| CLEAN[exit 0 — clean]
+    DEC -->|yes| ALERT[exit 2 — fleet alert]
 ```
-
-## Quick Start
-
-```bash
-/home/toxic/sovereign/ops/durability/durability-audit.sh           # print only
-/home/toxic/sovereign/ops/durability/durability-audit.sh --alert   # print + fleet alert
-systemctl --user start durability-audit.service                     # prove the unit works
-```
-
-## What it checks
-
-`durability-audit.sh` hunts the recurring monkey-patch classes on this box:
-
-1. processes anchored in ephemeral paths (`/tmp`, `/dev/shm`) doing real jobs
-2. listening TCP ports with no `pitchfork.toml` daemon coverage
-3. shell profiles (`.bashrc`/`.profile`) containing daemon logic
-4. cron files / systemd units referencing ephemeral paths
-5. uncommitted live edits in `/home/toxic/sovereign` (state paths excluded)
-6. dirty submodules (bulk ops must be submodule-aware)
 
 ## Layout
 
-- `durability-audit.sh` — the audit (host-agnostic; `SOVEREIGN_REPO` env overrides repo path)
-- `allowlist.txt` — cmdline substrings known-OK in ephemeral paths (session tooling, not services). Keep tight.
-- `systemd/` — `durability-audit.service` + `durability-audit.timer`; installed as symlinks in `~/.config/systemd/user/` so the repo stays the source of truth. Runs daily at 04:30, `Persistent=true`.
+| File | Role |
+|---|---|
+| `durability-audit.sh` | The audit (host-agnostic; `SOVEREIGN_REPO` env overrides repo path) |
+| `allowlist.txt` | Cmdline substrings known-OK in ephemeral paths (session tooling, not services). Keep tight. |
+| `systemd/` | `durability-audit.service` + `durability-audit.timer`; installed as symlinks in `~/.config/systemd/user/` so the repo stays the source of truth. Runs daily at 04:30, `Persistent=true`. |
+
+## Quick start
+
+```bash
+/home/toxic/sovereign/ops/durability/durability-audit.sh          # print only
+/home/toxic/sovereign/ops/durability/durability-audit.sh --alert  # print + fleet alert
+```
 
 ## Install / reinstall
 
@@ -78,12 +71,6 @@ journalctl --user -u durability-audit.service -n 20
 
 - 2026-09-20 (anvil): created during the estate durability sweep. First findings: retired a vestigial nginx on :8901 (config in /tmp, served a nonexistent kodi-fleet/releases root, zero legitimate traffic) and killed a leftover inotify diagnostic (`/tmp/dir-trap.py`).
 
-## License & Security
+## License & security
 
-Part of the sovereign estate (see repo root). **Security posture:** the
-audit is read-only — it reports findings and exits 2, never remediates on
-its own; every alert names the offending process/path so a human decides the
-disposition. The allowlist is deliberately tight: anything in an ephemeral
-path doing a real job is guilty until allowlisted. State lives in the repo
-(the timer is a symlink), so the guard itself is as durable as the rule it
-enforces.
+MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). The audit is read-only — it finds and reports, never fixes. Findings are evidence for a human decision, not an auto-remediation trigger: a daemon in `/tmp` might be a legit diagnostic. `allowlist.txt` is the known-good list — keep it tight, review additions.

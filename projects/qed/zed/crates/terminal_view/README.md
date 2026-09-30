@@ -1,37 +1,37 @@
-# Terminal View
+<div align="right">
 
-## Design Notes
+[![license](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-part%20of-blueviolet?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-This crate is split into two conceptual halves:
-- The terminal.rs file and the src/mappings/ folder, these contain the code for interacting with terminal emulator backends and maintaining the pty event loop. Some behavior in this file is constrained by terminal protocols and standards. The Zed init function is also placed here.
-- Everything else. These other files integrate the `Terminal` struct created in terminal.rs into the rest of GPUI. The main entry point for GPUI is the terminal_view.rs file and the modal.rs file.
+</div>
 
-ttys are created externally, and so can fail in unexpected ways. However, GPUI currently does not have an API for models than can fail to instantiate. `TerminalBuilder` solves this by using Rust's type system to split tty instantiation into a 2 step process: first attempt to create the file handles with `TerminalBuilder::new()`, check the result, then call `TerminalBuilder::subscribe(cx)` from within a model context.
+# `terminal_view` — the integrated terminal
 
-The TerminalView struct abstracts over failed and successful terminals, passing focus through to the associated view and allowing clients to build a terminal without worrying about errors.
+**A real terminal inside the editor.** GPUI-integrated terminal emulation: PTY management, shell integration, and rendering — the terminal panel you get with `` Ctrl+` `` in Zed.
 
-## Backend Boundary
+## Why should I care?
 
-`terminal.rs` exposes backend-neutral domain types such as terminal content, cells, modes, points, ranges, scroll commands, vi motions, hyperlinks, and search matches. UI code should depend on those types instead of importing backend-specific terminal types directly.
+- **GPU-rendered terminal** — scrollback, selection, and ligatures at editor speed
+- **Shell integration** — working directory tracking, command detection, task integration
+- **First-class citizen** — tasks, the agent's terminal tool, and the debugger all target this surface
 
-The current implementation is still Alacritty-backed, but the abstraction boundary keeps backend details concentrated in the terminal crate:
+```mermaid
+flowchart LR
+    PTY[pty process] --> EM[terminal emulator]
+    EM --> VIEW[terminal_view<br/>GPUI integration]
+    VIEW --> RENDER[GPU render]
+    VIEW --> TASKS[tasks + agent terminal tool]
+```
 
-- `terminal_view` renders `TerminalContent` and dispatches backend-neutral actions.
-- Panels and tools use terminal-domain types for mode, cursor, range, hyperlink, and search behavior.
-- Backend-specific conversions stay near the terminal event loop and render snapshot code.
+## Quick start
 
-This keeps the user-facing terminal behavior unchanged while making future backend experiments reviewable as backend implementations instead of UI-wide refactors.
+```sh
+# open Zed and hit the terminal keybinding, or programmatically:
+cargo run -p zed
+# Ctrl+` toggles the integrated terminal
+```
 
-## Input
+## License & security
 
-There are currently many distinct paths for getting keystrokes to the terminal:
-
-1. Terminal specific characters and bindings. Things like ctrl-a mapping to ASCII control character 1, ANSI escape codes associated with the function keys, etc. These are caught with a raw key-down handler in the element and are processed immediately. This is done with the `try_keystroke()` method on Terminal
-
-2. GPU Action handlers. GPUI clobbers a few vital keys by adding bindings to them in the global context. These keys are synthesized and then dispatched through the same `try_keystroke()` API as the above mappings
-
-3. IME text. When the special character mappings fail, we pass the keystroke back to GPUI to hand it to the IME system. This comes back to us in the `View::replace_text_in_range()` method, and we then send that to the terminal directly, bypassing `try_keystroke()`.
-
-4. Pasted text has a separate pathway.
-
-Generally, there's a distinction between 'keystrokes that need to be mapped' and 'strings which need to be written'. I've attempted to unify these under the '.try_keystroke()' API and the `.input()` API (which try_keystroke uses) so we have consistent input handling across the terminal
+- Zed upstream code is **GPL-3.0-or-later**; this fork ships inside the sovereign-projects monorepo ([MIT](https://github.com/toxicwind/sovereign-projects#license) for sovereign-authored files).
+- The terminal runs real shell processes with your user's privileges — same trust model as any terminal emulator; the agent's terminal tool is additionally gated by the [sandbox policy](../sandbox/README.md).

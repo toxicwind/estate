@@ -1,40 +1,131 @@
-# deploy/relay — iroh-relay multi-instance deployment
-
 <div align="right">
 
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
-![docker](https://img.shields.io/badge/docker-2496ED?style=for-the-badge)
-![aws](https://img.shields.io/badge/aws-FF9900?style=for-the-badge)
-![gcp](https://img.shields.io/badge/gcp-4285F4?style=for-the-badge)
-![quic](https://img.shields.io/badge/quic--udp-7B2DFF?style=for-the-badge)
+[![license](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-part%20of-blueviolet?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
 </div>
 
-**Self-hosted `iroh-relay` on cloud compute — so Zedra's P2P tunnel has somewhere to fall back to.** When direct hole-punching fails behind symmetric NAT or CGNAT, the phone and desktop meet at a relay instead of a vendor's server. Three small ARM instances across three regions, ~$40/mo on AWS at 1,000 DAU, and the whole fleet deploys from one script. If you run Zedra outside your LAN, this is the infrastructure that keeps it working.
+# deploy/relay — iroh-relay multi-instance deployment
+
+**Self-hosted `iroh-relay` on cloud compute.** Three instances across regions so Zedra clients can always reach a relay when direct P2P hole-punching fails. One `deploy.sh` builds, streams, and brings up everything — no container registry, no click-ops.
+
+## Why should I care?
+
+- **Registry-free deploys** — `docker save | gzip | ssh` streams arch-suffixed images straight to hosts; mixed ARM/x64 batches build once per platform
+- **Cost is a first-class citizen** — per-DAU traffic models, free-egress break-evens (AWS: ~794 DAU at $0 egress), and budget guardrails are documented here, not discovered in the invoice
+- **Production checklist included** — pre-deploy, post-deploy, and ongoing health steps with exact verification commands
+
+```mermaid
+flowchart TD
+    LAP[your laptop<br/>deploy.sh] -->|docker save \| gzip \| ssh| AP1[ap1 · Singapore]
+    LAP -->|docker save \| gzip \| ssh| US1[us1 · Iowa/N. Virginia]
+    LAP -->|docker save \| gzip \| ssh| EU1[eu1 · Netherlands/Frankfurt]
+    AP1 --> R1["zedra-relay<br/>:443 WSS · :80 ACME · :7842/udp QUIC"]
+    AP1 --> M1["zedra-monitor<br/>Discord alerts"]
+    US1 --> R2["zedra-relay"]
+    EU1 --> R3["zedra-relay"]
+    CL[Zedra clients] -->|~70% relayed traffic| R1
+    CL --> R2
+    CL --> R3
+```
+
+## Quick start
+
+```bash
+./deploy/relay/deploy.sh --instance ap1           # build + stream + bring up one instance
+curl -I http://ap1.relay.zedra.dev/generate_204   # expect HTTP 204
+```
+
+## License & security
+
+- This repo's own files are [MIT](https://github.com/toxicwind/sovereign-projects#license). The relay binary is `iroh-relay` (upstream license); base images are Debian slim.
+- **Secrets live in `deploy/relay/.env` (gitignored)** — at minimum `DISCORD_WEBHOOK`. Never commit it; `deploy.sh` merges and uploads it per-instance. SSH keys stay in your local `~/.ssh/`.
+- The relay only forwards traffic it is configured to forward; it never stores payloads. Budget alerts are notification-only on both providers — they don't stop instances, so treat runaway egress as an incident, not a bill.
+
+---
 
 ## Instances
 
 | Instance | Region | Hostname |
-|---|---|---|
+| -------- | ------ | -------- |
 | **ap1** | Asia Pacific (Singapore) | `ap1.relay.zedra.dev` |
 | **us1** | US (Iowa / N. Virginia) | `us1.relay.zedra.dev` |
 | **eu1** | Europe (Netherlands / Frankfurt) | `eu1.relay.zedra.dev` |
 
-## Architecture
+## Provider Quick-Reference
 
-```mermaid
-flowchart LR
-    PHONE["phone\nZedra app"] -->|direct P2P fails| RELAY["iroh-relay :443\nWebSocket relay"]
-    DESK["desktop daemon"] -->|direct P2P fails| RELAY
-    subgraph deploy["deploy.sh"]
-        BUILD["build arch images\nlocally, once per platform"] --> STREAM["docker save | gzip | ssh\ndocker load — no registry"]
-        STREAM --> UP["docker compose up -d\nper instance"]
-    end
-    deploy --> AP1["ap1 · Singapore"]
-    deploy --> US1["us1 · US"]
-    deploy --> EU1["eu1 · Europe"]
-    MON["zedra-monitor sidecar"] -.->|Discord alerts| DISC["Discord webhook"]
-```
+Both AWS and GCP are supported. Use whichever has active credits.
+
+| | AWS | GCP |
+|---|-----|-----|
+| **Instance** | t4g.small (Graviton2, ARM64) | t2a-standard-1 (Ampere Altra, ARM64) |
+| **vCPU / RAM** | 2 vCPU / 2 GB | 1 vCPU / 4 GB |
+| **Network** | up to 5 Gbps burst | flat 10 Gbps |
+| **Per-node/mo** | ~$13 (us-east-1) | ~$23 (us-central1) |
+| **ARM Docker** | native (no `--platform`) | native (no `--platform`) |
+| **SSH** | PEM key + `ubuntu@` host | `gcloud compute ssh` or OS Login |
+| **Firewall** | Security Group | Firewall rule + network tag |
+| **Static IP** | Elastic IP | Reserved address |
+| **Billing stop** | Delete or stop instance (EBS still charged when stopped) | Delete or stop (disk still charged when stopped) |
+
+Both use the same `deploy.sh`, `docker-compose.yml`, and OS setup steps.
+
+## Free Egress Allowances
+
+Egress is the main variable cost for the relay. Both providers include a free monthly egress allowance — understanding the limits prevents surprise bills.
+
+### GCP — Always Free Egress
+
+| Destination | Free/month | Rate beyond free |
+| ----------- | ---------- | ---------------- |
+| North America (from any region) | **1 GB** | $0.08/GB |
+| Within same region | Unlimited | $0.00/GB |
+| Between GCP regions | — | $0.01–0.08/GB |
+
+1 GB free egress = ~**8 DAU** at moderate usage (0.126 GB/DAU/mo). Essentially zero headroom for a real relay — treat GCP egress as fully paid from day one.
+
+New GCP accounts also receive **$300 credit valid for 90 days** — covers ~3,750 GB of egress, or roughly 30,000 DAU-months of moderate traffic. Burn rate at 1,000 DAU moderate: ~$10.50/mo egress → credits last ~28 months equivalent, but the 90-day wall hits first.
+
+### AWS — Free Egress
+
+| Tier | Free/month | Applies to |
+| ---- | ---------- | ---------- |
+| New accounts (first 12 months) | **15 GB** | All outbound to internet |
+| Always free (all accounts) | **100 GB** | Outbound to internet (announced 2021) |
+| CloudFront origin pull | Unlimited | From EC2/S3 to CloudFront |
+
+> **100 GB always free** is the key number. This applies permanently regardless of account age.
+
+100 GB free = ~**794 DAU** at moderate usage. A relay at ≤800 DAU pays **$0 in egress** on AWS. Beyond that, $0.09/GB.
+
+### Egress Free Allowance in Context
+
+| Provider | Free egress/mo | Break-even DAU (moderate) | Beyond free |
+| -------- | -------------- | ------------------------- | ----------- |
+| **AWS** | 100 GB | **~794 DAU** | $0.09/GB |
+| **GCP** | 1 GB | ~8 DAU | $0.08/GB |
+
+**Implication**: for a relay under ~800 DAU, AWS egress is effectively free. GCP has negligible free egress — budget for full egress cost from the start.
+
+### Egress Cost by DAU (3 nodes combined, moderate usage)
+
+| DAU | GB/mo total | AWS egress cost | GCP egress cost |
+| --- | ----------- | --------------- | --------------- |
+| 500 | 18.9 GB | **$0** (within 100 GB free) | $1.51 |
+| 794 | 30 GB | **$0** (at free limit) | $2.40 |
+| 1,000 | 37.8 GB | $0 (still free) | $3.02 |
+| 2,000 | 75.6 GB | $0 (still free) | $6.05 |
+| 3,000 | 113.4 GB | $1.21 | $9.07 |
+| 5,000 | 189 GB | $8.01 | $15.12 |
+| 10,000 | 378 GB | $25.02 | $30.24 |
+| 25,000 | 945 GB | $76.05 | $75.60 |
+| 50,000 | 1,890 GB | $161.10 | $151.20 |
+
+> AWS and GCP converge around 25K DAU — AWS's 100 GB free advantage narrows as volume grows.
+
+---
+
+## Architecture
 
 - **Instance**: ARM64 (AWS t4g / GCP t2a) or x64 — Ubuntu 24.04
 - **Runtime**: Docker Compose (`zedra-relay` + `zedra-monitor`) from locally-built images
@@ -42,17 +133,7 @@ flowchart LR
 - **TLS**: Let's Encrypt via iroh-relay built-in ACME, certs in Docker volume `zedra-relay-certs`
 - **Image build**: Multi-stage (Rust builder → Debian slim), target platform detected from the host, arch-suffixed images streamed to server via `docker save | gzip | ssh`
 
-## Quick Start
-
-```bash
-./deploy/relay/deploy.sh --instance ap1
-curl http://ap1.relay.zedra.dev/generate_204
-ssh zedra-relay-ap1 "docker logs -f zedra-relay"
-```
-
-(Assumes SSH aliases from the Deploy section below and DNS already pointing at the instance.)
-
-## Directory structure
+## Directory Structure
 
 ```
 deploy/relay/
@@ -61,57 +142,40 @@ deploy/relay/
   relay.toml          # iroh-relay config template (__HOSTNAME__ substituted at runtime)
   entrypoint.sh       # injects RELAY_HOSTNAME into relay.toml at container start
   deploy.sh           # build + stream images + bring up compose
+  .env.example        # template → copy to .env (secrets, gitignored)
 
-packages/relay-check/ # local-only: SSH health daemon + CLI (INSTANCES=...) — not in the deploy bundle
+packages/relay-check/ # local-only: SSH health daemon + CLI (`INSTANCES=...`) — not in the deploy bundle
 ```
 
 ## Deploy
 
-### Provider quick-reference
-
-Both AWS and GCP are supported. Use whichever has active credits.
-
-| | AWS | GCP |
-|---|---|---|
-| **Instance** | t4g.small (Graviton2, ARM64) | t2a-standard-1 (Ampere Altra, ARM64) |
-| **vCPU / RAM** | 2 vCPU / 2 GB | 1 vCPU / 4 GB |
-| **Network** | up to 5 Gbps burst | flat 10 Gbps |
-| **Per-node/mo** | ~$13 (us-east-1) | ~$23 (us-central1) |
-| **ARM Docker** | native (no `--platform`) | native (no `--platform`) |
-| **SSH** | PEM key + `ubuntu@<ip>` | `gcloud compute ssh` or OS Login |
-| **Firewall** | Security Group | Firewall rule + network tag |
-| **Static IP** | Elastic IP | Reserved address |
-| **Billing stop** | Delete or stop instance (EBS still charged when stopped) | Delete or stop (disk still charged when stopped) |
-
-Both use the same `deploy.sh`, `docker-compose.yml`, and OS setup steps.
-
 ### Prerequisites
 
-Add SSH aliases to `~/.ssh/config` for each instance (adjust `HostName` and `IdentityFile` per provider):
+Add SSH aliases to `~/.ssh/config` for each instance. The example IPs below are RFC 5737 documentation addresses — substitute your instances' real public IPs:
 
 ```
 Host zedra-relay-ap1
-  HostName <AP1_PUBLIC_IP>
-  User <your-username>              # AWS: ubuntu; GCP: your Google username
-  IdentityFile ~/.ssh/<your-key>    # AWS: .pem file; GCP: google_compute_engine
+  HostName 203.0.113.10    # your ap1 instance's public IP
+  User ubuntu               # AWS Ubuntu AMIs; on GCP use `gcloud compute ssh` or your OS Login username
+  IdentityFile ~/.ssh/zedra-relay.pem   # your key file (AWS: the .pem for the key pair you launched with)
 
 Host zedra-relay-us1
-  HostName <US1_PUBLIC_IP>
-  User <your-username>
-  IdentityFile ~/.ssh/<your-key>
+  HostName 203.0.113.20    # your us1 instance's public IP
+  User ubuntu
+  IdentityFile ~/.ssh/zedra-relay.pem
 
 Host zedra-relay-eu1
-  HostName <EU1_PUBLIC_IP>
-  User <your-username>
-  IdentityFile ~/.ssh/<your-key>
+  HostName 203.0.113.30    # your eu1 instance's public IP
+  User ubuntu
+  IdentityFile ~/.ssh/zedra-relay.pem
 ```
 
-> **GCP**: User is typically your Google account username. `gcloud compute ssh INSTANCE_NAME --zone=ZONE` manages keys automatically — no `~/.ssh/config` entry needed.
+> **GCP**: `gcloud compute ssh INSTANCE_NAME --zone=ZONE` manages keys automatically — no `~/.ssh/config` entry needed.
 > **AWS**: User is `ubuntu` for Ubuntu AMIs.
 
-**Secrets (local):** create `deploy/relay/.env` (gitignored — the root `.gitignore` ignores `.env` everywhere) and set at least `DISCORD_WEBHOOK`.
+**Secrets (local):** copy `deploy/relay/.env.example` to `deploy/relay/.env` and set at least `DISCORD_WEBHOOK`. The root `.gitignore` ignores `.env` everywhere.
 
-> **How `.env` works:** `deploy.sh` merges your local `deploy/relay/.env` with injected `INSTANCE=<name>` and arch-specific `RELAY_IMAGE` / `MONITOR_IMAGE`, uploads to `/opt/zedra/deploy/relay/.env.local`, then copies to `.env` for Compose. `INSTANCE=` / `INSTANCES=` / image lines in your local file are ignored. The relay uses `INSTANCE` for hostname (`${INSTANCE}.relay.zedra.dev`). The **Docker** `relay-monitor` sidecar uses **`INSTANCE` only**. **Multi-host SSH checks from your laptop** use **`packages/relay-check`** (`INSTANCES=sg1,us1,eu1 bun monitor.ts` or `bun cli.ts`).
+> **How `.env` works:** `deploy.sh` merges your local `deploy/relay/.env` with injected `INSTANCE` (e.g. `ap1`) and arch-specific `RELAY_IMAGE` / `MONITOR_IMAGE`, uploads to `/opt/zedra/deploy/relay/.env.local`, then copies to `.env` for Compose. `INSTANCE=` / `INSTANCES=` / image lines in your local file are ignored. The relay uses `INSTANCE` for hostname (`${INSTANCE}.relay.zedra.dev`). The **Docker** `relay-monitor` sidecar uses **`INSTANCE` only**. **Multi-host SSH checks from your laptop** use **`packages/relay-check`** (`INSTANCES=sg1,us1,eu1 bun monitor.ts` or `bun cli.ts`).
 
 ### Deploy one instance
 
@@ -139,9 +203,8 @@ Use `--service relay` or `--service monitor` to rebuild and restart only one con
 ```
 
 When `--service` is set:
-
 - Only the relevant Docker image is built for each detected platform and streamed to matching hosts
-- `docker compose up -d --no-deps <service>` restarts that container only — the other keeps running
+- `docker compose up -d --no-deps relay` restarts that container only — the other keeps running
 
 ### Build without deploying
 
@@ -157,8 +220,8 @@ Use `--skip-deploy` to detect target platforms, build the arch-suffixed images, 
 1. Detects each target host platform with `uname -s` / `uname -m`
 2. Groups instances by Docker platform, such as `linux/arm64` or `linux/amd64`
 3. Builds arch-suffixed images locally once per platform, such as `zedra-relay:arm64` or `zedra-monitor:amd64`, with Docker `--platform` (skips images not relevant to `--service`)
-4. `docker save | gzip | ssh <host> docker load` — streams each platform image to matching hosts without a registry
-5. Uploads `docker-compose.yml`, merges local `deploy/relay/.env` with injected `INSTANCE`, `RELAY_IMAGE`, and `MONITOR_IMAGE` to `.env.local` and `.env` on the host, runs `docker compose up -d` (or `--no-deps <service>` when targeting a single service)
+4. `docker save | gzip | ssh` into each matching host, piped to `docker load` — streams each platform image to matching hosts without a registry
+5. Uploads `docker-compose.yml`, merges local `deploy/relay/.env` with injected `INSTANCE`, `RELAY_IMAGE`, and `MONITOR_IMAGE` to `.env.local` and `.env` on the host, runs `docker compose up -d` (or `--no-deps relay` / `--no-deps monitor` when targeting a single service)
 
 When `--skip-deploy` is set, steps 4 and 5 are skipped.
 
@@ -172,7 +235,9 @@ The deploy script supports mixed ARM/x64 remote batches. It builds and deploys o
 ./deploy/relay/deploy.sh --instance ap1,us1,eu1,vn1
 ```
 
-## Instance setup — GCP
+---
+
+## Instance Setup — GCP
 
 ### Provision instances
 
@@ -227,7 +292,9 @@ gcloud compute addresses create zedra-relay-us1-ip --region=us-central1
 gcloud compute addresses create zedra-relay-eu1-ip --region=europe-west4
 ```
 
-## Instance setup — AWS
+---
+
+## Instance Setup — AWS
 
 ### Provision instances
 
@@ -235,33 +302,38 @@ gcloud compute addresses create zedra-relay-eu1-ip --region=europe-west4
 # ap1 — Singapore (ap-southeast-1)
 aws ec2 run-instances \
   --region ap-southeast-1 \
-  --image-id ami-0c1907b6d738188e5 \   # Ubuntu 24.04 arm64 — verify current AMI
+  --image-id ami-0c1907b6d738188e5 \
   --instance-type t4g.small \
   --key-name zedra-relay-ap1 \
-  --security-group-ids <SG_ID> \
+  --security-group-ids $SECURITY_GROUP_ID \
   --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=zedra-relay-ap1}]'
 
 # us1 — N. Virginia (us-east-1)
 aws ec2 run-instances \
   --region us-east-1 \
-  --image-id ami-0a7a4e87939439934 \   # Ubuntu 24.04 arm64 — verify current AMI
+  --image-id ami-0a7a4e87939439934 \
   --instance-type t4g.small \
   --key-name zedra-relay-us1 \
-  --security-group-ids <SG_ID> \
+  --security-group-ids $SECURITY_GROUP_ID \
   --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=zedra-relay-us1}]'
 
 # eu1 — Frankfurt (eu-central-1)
 aws ec2 run-instances \
   --region eu-central-1 \
-  --image-id ami-01e444924a2233b07 \   # Ubuntu 24.04 arm64 — verify current AMI
+  --image-id ami-01e444924a2233b07 \
   --instance-type t4g.small \
   --key-name zedra-relay-eu1 \
-  --security-group-ids <SG_ID> \
+  --security-group-ids $SECURITY_GROUP_ID \
   --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=zedra-relay-eu1}]'
 ```
 
-> **AMI IDs change per region and over time.** Find the current Ubuntu 24.04 arm64 AMI:
-> `aws ec2 describe-images --owners 099710829440 --filters "Name=name,Values=ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-arm64-server-*" --query 'sort_by(Images,&CreationDate)[-1].ImageId' --output text --region <REGION>`
+Set `SECURITY_GROUP_ID` to your security group before running. The AMI IDs above are Ubuntu 24.04 arm64 at the time of writing — **AMI IDs change per region and over time**, so verify with:
+
+```bash
+aws ec2 describe-images --owners 099720109477 \
+  --filters "Name=name,Values=ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-arm64-server-*" \
+  --query 'sort_by(Images,&CreationDate)[-1].ImageId' --output text --region ap-southeast-1
+```
 
 ### Security group inbound rules (per region)
 
@@ -278,8 +350,8 @@ UDP 7842  — QUIC addr discovery
 aws ec2 allocate-address --region ap-southeast-1
 aws ec2 allocate-address --region us-east-1
 aws ec2 allocate-address --region eu-central-1
-# Then associate each with its instance
-aws ec2 associate-address --region <REGION> --instance-id <ID> --allocation-id <ALLOC_ID>
+# Then associate each with its instance, using the IDs from the allocate-address output
+aws ec2 associate-address --region ap-southeast-1 --instance-id $INSTANCE_ID --allocation-id $ALLOCATION_ID
 ```
 
 ### Stopping vs deleting on AWS
@@ -287,7 +359,9 @@ aws ec2 associate-address --region <REGION> --instance-id <ID> --allocation-id <
 - **Stop**: instance compute is free; EBS disk (~$0.08/GB/mo) and Elastic IP (~$7.20/mo if unattached) are still charged.
 - **Terminate (delete)**: all charges stop. Release Elastic IPs separately.
 
-## Common OS setup (both providers)
+---
+
+## Common OS Setup (both providers)
 
 Run on each instance after first SSH in.
 
@@ -352,86 +426,40 @@ sudo systemctl restart docker
 
 `live-restore: true` keeps containers running across Docker daemon restarts.
 
+---
+
 ## DNS
 
 Point each hostname to its public IP (A record, TTL 60):
 
 ```
-ap1.relay.zedra.dev  →  <AP1_IP>
-us1.relay.zedra.dev  →  <US1_IP>
-eu1.relay.zedra.dev  →  <EU1_IP>
+ap1.relay.zedra.dev  →  your ap1 instance's public IP
+us1.relay.zedra.dev  →  your us1 instance's public IP
+eu1.relay.zedra.dev  →  your eu1 instance's public IP
 ```
 
-## iroh-relay version
+## iroh-relay Version
 
-Pinned to iroh git commit `82e0695` (post-v0.96.1, includes TCP_NODELAY fix from PR #3995). Once iroh v0.98 ships on crates.io, update the `Dockerfile` builder stage to:
+Pinned to iroh git commit `82e0695` (post-v0.96.1, includes TCP_NODELAY fix from PR #3995).
+Once iroh v0.98 ships on crates.io, update the `Dockerfile` builder stage to:
 
 ```dockerfile
 cargo install iroh-relay --version 0.98 --features server --locked
 ```
 
-## Budget guardrails
+---
+
+## Budget Guardrails
 
 Set these up **before** deploying. The relay's egress cost scales linearly with traffic — a billing alert catches runaway costs early.
 
-### Free egress allowances
-
-Egress is the main variable cost. Both providers include free monthly egress — understanding the limits prevents surprise bills.
-
-**GCP — Always Free Egress**
-
-| Destination | Free/month | Rate beyond free |
-|---|---|---|
-| North America (from any region) | **1 GB** | $0.08/GB |
-| Within same region | Unlimited | $0.00/GB |
-| Between GCP regions | — | $0.01–0.08/GB |
-
-1 GB free egress = ~**8 DAU** at moderate usage (0.126 GB/DAU/mo). Essentially zero headroom for a real relay — treat GCP egress as fully paid from day one.
-
-New GCP accounts also receive **$300 credit valid for 90 days** — covers ~3,750 GB of egress, or roughly 30,000 DAU-months of moderate traffic. Burn rate at 1,000 DAU moderate: ~$10.50/mo egress → credits last ~28 months equivalent, but the 90-day wall hits first.
-
-**AWS — Free Egress**
-
-| Tier | Free/month | Applies to |
-|---|---|---|
-| New accounts (first 12 months) | **15 GB** | All outbound to internet |
-| Always free (all accounts) | **100 GB** | Outbound to internet (announced 2021) |
-| CloudFront origin pull | Unlimited | From EC2/S3 to CloudFront |
-
-> **100 GB always free** is the key number. This applies permanently regardless of account age.
-
-100 GB free = ~**794 DAU** at moderate usage. A relay at ≤800 DAU pays **$0 in egress** on AWS. Beyond that, $0.09/GB.
-
-| Provider | Free egress/mo | Break-even DAU (moderate) | Beyond free |
-|---|---|---|---|
-| **AWS** | 100 GB | **~794 DAU** | $0.09/GB |
-| **GCP** | 1 GB | ~8 DAU | $0.08/GB |
-
-**Implication**: for a relay under ~800 DAU, AWS egress is effectively free. GCP has negligible free egress — budget for full egress cost from the start.
-
-### Egress cost by DAU (3 nodes combined, moderate usage)
-
-| DAU | GB/mo total | AWS egress cost | GCP egress cost |
-|---|---|---|---|
-| 500 | 18.9 GB | **$0** (within 100 GB free) | $1.51 |
-| 794 | 30 GB | **$0** (at free limit) | $2.40 |
-| 1,000 | 37.8 GB | $0 (still free) | $3.02 |
-| 2,000 | 75.6 GB | $0 (still free) | $6.05 |
-| 3,000 | 113.4 GB | $1.21 | $9.07 |
-| 5,000 | 189 GB | $8.01 | $15.12 |
-| 10,000 | 378 GB | $25.02 | $30.24 |
-| 25,000 | 945 GB | $76.05 | $75.60 |
-| 50,000 | 1,890 GB | $161.10 | $151.20 |
-
-> AWS and GCP converge around 25K DAU — AWS's 100 GB free advantage narrows as volume grows.
-
-### GCP — budget alert
+### GCP — Budget Alert
 
 ```bash
 # Via console: Billing → Budgets & Alerts → Create Budget
 # Or via CLI:
 gcloud billing budgets create \
-  --billing-account=BILLING_ACCOUNT_ID \
+  --billing-account=$BILLING_ACCOUNT_ID \
   --display-name="zedra-relay monthly" \
   --budget-amount=50USD \
   --threshold-rule=percent=50,basis=CURRENT_SPEND \
@@ -443,15 +471,14 @@ Find your billing account ID: `gcloud billing accounts list`
 
 GCP does **not** auto-stop instances at budget — alerts are notification-only. To auto-stop, add a Pub/Sub notification + Cloud Function trigger.
 
-### AWS — budget alert
+### AWS — Budget Alert
 
 ```bash
 # Via console: Billing → Budgets → Create Budget → Cost Budget
 # Set monthly budget, alert at 80% actual + 100% forecasted
 ```
 
-Or via CLI:
-
+Or via CLI (set `ALERT_EMAIL` to your on-call address first):
 ```bash
 aws budgets create-budget \
   --account-id $(aws sts get-caller-identity --query Account --output text) \
@@ -469,41 +496,49 @@ aws budgets create-budget \
         "Threshold": 80,
         "ThresholdType": "PERCENTAGE"
       },
-      "Subscribers": [{"SubscriptionType": "EMAIL", "Address": "you@example.com"}]
+      "Subscribers": [{"SubscriptionType": "EMAIL", "Address": "'"$ALERT_EMAIL"'"}]
     }
   ]'
 ```
 
 AWS also does **not** auto-stop instances at budget — alerts are notification-only by default.
 
-### Cost watchpoints
+### Cost Watchpoints
 
 The relay has two cost drivers: **compute** (fixed) and **egress** (variable). Monitor both.
 
 | Signal | Action |
-|---|---|
+| ------ | ------ |
 | Monthly egress > $30 on a single node | Check if traffic is legitimate; consider upgrading instance |
 | CPUCreditBalance (AWS t4g) < 20 | Instance CPU is sustained above baseline — upgrade to t4g.medium |
 | e2-micro CPU > 80% sustained (GCP) | Upgrade to t2a-standard-1 |
 | Budget alert at 80% before mid-month | Investigate unexpected egress spike |
 | Budget alert at 100% | Stop non-critical nodes immediately; review traffic |
 
-**Stay within free egress (GCP)** — free egress is only **1 GB/month** to North America; treat it as zero and budget for full egress costs. Monitor: GCP Console → Billing → Reports → filter by SKU `Network Internet Egress`. Set a separate sub-budget for egress only (`gcloud billing budgets create` with label filter on network SKUs). Use the `$300` new-account credits aggressively for the first 90 days; set a hard reminder to review spend at day 60.
+### Stay Within Free Egress (GCP)
 
-**Stay within free egress (AWS)** — **100 GB/month free egress is always-free** (no expiry, no account age requirement). At ≤800 DAU moderate usage, egress is $0. Confirm you haven't crossed the threshold:
+- GCP free egress is only **1 GB/month** to North America — treat it as zero; budget for full egress costs
+- Monitor: GCP Console → Billing → Reports → filter by SKU `Network Internet Egress`
+- Set a separate sub-budget for egress only: `gcloud billing budgets create` with label filter on network SKUs
+- Use `$300` new-account credits aggressively for first 90 days; set a hard reminder to review spend at day 60
 
-```bash
-# AWS Cost Explorer CLI — egress spend this month
-aws ce get-cost-and-usage \
-  --time-period Start=$(date +%Y-%m-01),End=$(date +%Y-%m-%d) \
-  --granularity MONTHLY \
-  --filter '{"Dimensions":{"Key":"USAGE_TYPE_GROUP","Values":["EC2: Data Transfer - Internet (Out)"]}}' \
-  --metrics BlendedCost
-```
+### Stay Within Free Egress (AWS)
 
-Enable Free Tier Usage Alerts: AWS Console → Billing → Billing Preferences → Free Tier Usage Alerts.
+- **100 GB/month free egress is always-free** — no expiry, no account age requirement
+- At ≤800 DAU moderate usage, egress is $0. Confirm you haven't crossed the threshold:
+  ```bash
+  # AWS Cost Explorer CLI — egress spend this month
+  aws ce get-cost-and-usage \
+    --time-period Start=$(date +%Y-%m-01),End=$(date +%Y-%m-%d) \
+    --granularity MONTHLY \
+    --filter '{"Dimensions":{"Key":"USAGE_TYPE_GROUP","Values":["EC2: Data Transfer - Internet (Out)"]}}' \
+    --metrics BlendedCost
+  ```
+- Enable Free Tier Usage Alerts: AWS Console → Billing → Billing Preferences → Free Tier Usage Alerts
 
-## Production checklist
+---
+
+## Production Checklist
 
 Run through this before and after every first-time deployment or infrastructure change.
 
@@ -592,9 +627,13 @@ ssh zedra-relay-us1 "docker logs -f zedra-relay"
 ssh zedra-relay-eu1 "docker logs -f zedra-relay"
 ```
 
-## Cost estimate
+---
 
-iroh-relay is stateless and lightweight — it only relays when direct P2P hole-punching fails. CPU and memory usage are minimal; bandwidth is the main variable cost. Both AWS and GCP bill **per second** (1-minute minimum) — charges stop when instance is stopped/deleted.
+## Cost Estimate
+
+iroh-relay is stateless and lightweight — it only relays when direct P2P hole-punching fails.
+CPU and memory usage are minimal; bandwidth is the main variable cost.
+Both AWS and GCP bill **per second** (1-minute minimum) — charges stop when instance is stopped/deleted.
 
 ### Traffic assumptions
 
@@ -605,7 +644,7 @@ iroh-relay is stateless and lightweight — it only relays when direct P2P hole-
 ### Per-DAU monthly traffic model
 
 | Usage pattern | Session/day | Terminal I/O | Raw/session | × 70% relay | × 30 days | GB/DAU/mo |
-|---|---|---|---|---|---|---|
+| ------------- | ----------- | ------------ | ----------- | ----------- | --------- | --------- |
 | Light — file browse, quick commands | 1 hr | 1 MB/hr | 1 MB | 0.7 MB | ×30 | **0.021 GB** |
 | Moderate — active coding, terminal | 2 hr | 3 MB/hr | 6 MB | 4.2 MB | ×30 | **0.126 GB** |
 | Heavy — log streaming, large builds | 3 hr | 10 MB/hr | 30 MB | 21 MB | ×30 | **0.630 GB** |
@@ -615,19 +654,20 @@ iroh-relay is stateless and lightweight — it only relays when direct P2P hole-
 **Memory model per node** (from iroh-relay source, v0.96):
 
 | Component | Size |
-|---|---|
+| --------- | ---- |
 | Process baseline | ~50 MB |
 | Key cache (1M endpoint IDs × 32 B, fixed) | ~32 MB |
 | Per idle WebSocket connection: TLS buffers + tokio task + 2× MPSC channel | **~40–50 KB** |
 
-Fixed overhead: **~82 MB**. Packets dropped (not buffered) when send queue full — memory is bounded. Dead connections cleaned up by ping every 15s / pong timeout 5s.
+Fixed overhead: **~82 MB**. Packets dropped (not buffered) when send queue full — memory is bounded.
+Dead connections cleaned up by ping every 15s / pong timeout 5s.
 
 **OS file descriptor limit:** 1 connection = 1 fd. Linux default is 1024 — must be raised. See OS setup above.
 
 Peak concurrent connections = DAU × 15% online × 70% relay = **DAU × 0.105**
 
 | DAU | Peak concurrent | RAM needed | Instance (AWS) | Instance (GCP) | Per-node/mo (AWS) | Per-node/mo (GCP) |
-|---|---|---|---|---|---|---|
+| --- | --------------- | ---------- | -------------- | -------------- | ----------------- | ----------------- |
 | ≤120,000 | ≤12,600 | ≤714 MB | **t4g.small** (2 GB) | **t2a-standard-1** (4 GB) | ~$13 | ~$24 |
 | 120K–500K | ≤52,500 | ≤2,707 MB | **t4g.large** (8 GB) | **t2a-standard-2** (8 GB) | ~$52 | ~$48 |
 
@@ -636,7 +676,7 @@ Peak concurrent connections = DAU × 15% online × 70% relay = **DAU × 0.105**
 ### 3-node total by DAU (moderate usage, on-demand)
 
 | DAU | AWS fixed (t4g.small×3) | GCP fixed (t2a-standard-1×3) | Data/mo | AWS total | GCP total |
-|---|---|---|---|---|---|
+| --- | ----------------------- | ---------------------------- | ------- | --------- | --------- |
 | 100 | $39 | $74 | $1.05 | **~$40** | **~$75** |
 | 1,000 | $39 | $74 | $10.50 | **~$50** | **~$85** |
 | 5,000 | $39 | $74 | $52.50 | **~$92** | **~$127** |
@@ -650,7 +690,7 @@ Peak concurrent connections = DAU × 15% online × 70% relay = **DAU × 0.105**
 **AWS 1yr No-Upfront Reserved (~40% off compute)**:
 
 | Instance | On-demand/mo | Reserved/mo |
-|---|---|---|
+| -------- | ------------ | ----------- |
 | t4g.small us-east-1 | $12.26 | $7.36 |
 | t4g.small eu-central-1 | $13.43 | $8.06 |
 | t4g.small ap-southeast-1 | $13.43 | $8.06 |
@@ -660,7 +700,7 @@ Reserved (t4g.small × 3): **~$23.48/mo** · With 1,000 DAU moderate: **~$34/mo 
 **GCP 1yr Committed Use Discount (~37% off compute)**:
 
 | Instance | On-demand/mo | 1yr CUD/mo |
-|---|---|---|
+| -------- | ------------ | ---------- |
 | t2a-standard-1 us-central1 | ~$22.70 | ~$14.26 |
 | t2a-standard-1 europe-west4 | ~$24.82 | ~$15.59 |
 | t2a-standard-1 asia-southeast1 | ~$26.28 | ~$16.51 |
@@ -672,7 +712,7 @@ CUD (t2a-standard-1 × 3): **~$46.36/mo** · With 1,000 DAU moderate: **~$57/mo 
 At scale, flat-rate bandwidth providers are dramatically cheaper:
 
 | DAU | AWS (moderate) | GCP (moderate) | Fly.io | Hetzner + Vultr AP |
-|---|---|---|---|---|
+| --- | -------------- | -------------- | ------ | ------------------ |
 | 25,000 | ~$302/mo | ~$337/mo | ~$77/mo | ~$30/mo |
 | 50,000 | ~$564/mo | ~$599/mo | ~$150/mo | ~$35/mo |
 | 100,000 | ~$1,089/mo | ~$1,124/mo | ~$250/mo | ~$60/mo |
@@ -684,7 +724,8 @@ At scale, flat-rate bandwidth providers are dramatically cheaper:
 200K+ DAU   →  Hetzner (EU/US) + Vultr (AP)               10–20× cheaper
 ```
 
-Hetzner CAX11 (ARM, 20 TB/mo included): ~€3.29/mo — no Singapore region. Pair with Vultr Singapore (~$6/mo, 4 TB included) for APAC coverage.
+Hetzner CAX11 (ARM, 20 TB/mo included): ~€3.29/mo — no Singapore region.
+Pair with Vultr Singapore (~$6/mo, 4 TB included) for APAC coverage.
 
 ### Notes
 
@@ -694,15 +735,3 @@ Hetzner CAX11 (ARM, 20 TB/mo included): ~€3.29/mo — no Singapore region. Pai
 - T2A (GCP) is ARM64 only — available in `us-central1`, `europe-west4`, `asia-southeast1`.
 - t4g (AWS) is ARM64 (Graviton2) — available in all major AWS regions.
 - Apple Silicon Mac → both ARM instances: Docker images build and run natively without `--platform`.
-
-## Dev / Contributing
-
-- `deploy.sh` is the only supported deploy path — it builds per-platform images locally and streams them over SSH, so no container registry is needed or used.
-- iroh is pinned to a git commit in the `Dockerfile` (`82e0695`); bump the pin deliberately and re-run the `--skip-deploy` plan first.
-- Observability companions: [`packages/relay-check`](../../packages/relay-check/README.md) (SSH health CLI from your laptop) and [`packages/relay-monitor`](../../packages/relay-monitor/README.md) (Docker sidecar on each VM).
-
-## License + Security
-
-MIT (see [`LICENSE`](../../LICENSE)).
-
-**Security posture:** the relay only forwards packets for endpoints that already authenticated via iroh's keyed handshake — it never sees plaintext (all payload traffic is TLS 1.3 end-to-end between phone and desktop). ACME is the only inbound-80 surface, and it exists solely for certificate issuance. Secrets (`DISCORD_WEBHOOK`, SSH keys) live in your local gitignored `.env` and `~/.ssh/config` — never in this directory. Budget alerts are a security control here too: a compromised or runaway relay shows up first as an egress spike, which is why the guardrails above come before the deploy steps.

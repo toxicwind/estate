@@ -1,67 +1,85 @@
 # tau-kimi-auto
 
-![tau-kimi-auto](https://img.shields.io/badge/tau--kimi--auto-9B59B6?style=for-the-badge) ![typescript](https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![bun](https://img.shields.io/badge/bun-000000?style=for-the-badge&logo=bun&logoColor=white) ![MIT](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)
+<div align="right">
 
-> One model name in Tau, always the best healthy Kimi behind it — and never a silent non-Kimi substitution.
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/tau-extensions/blob/main/LICENSE)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![npm](https://img.shields.io/badge/npm-%40toxicwind%2Ftau--kimi--auto-1.0.0-cb3837?style=for-the-badge)](https://github.com/toxicwind/tau-extensions/tree/main/packages/tau-kimi-auto)
 
-Part of [`toxicwind/tau-extensions`](https://github.com/toxicwind/tau-extensions). A Tau extension registering the `kimi-auto` virtual model. `kimi-auto` is a herd-side alias (see `toxicwind/kimi-auto`): the herd shim resolves it to the best available Kimi model on every request. It is Kimi-only by design — when no Kimi candidate is healthy the shim answers **503** instead of silently routing to a non-Kimi model. This extension makes that alias selectable as a first-class model inside Tau/`omp` sessions.
+</div>
+
+Part of [`toxicwind/tau-extensions`](https://github.com/toxicwind/tau-extensions) —
+a monorepo of Tau/omp extensions.
+
+A Tau extension (`@toxicwind/tau-kimi-auto` v1.0.0) that registers the
+`kimi-auto` virtual model as a first-class, selectable model inside
+Tau/omp sessions. `kimi-auto` is a herd-side alias (see
+[`toxicwind/kimi-auto`](https://github.com/toxicwind/kimi-auto)): the herd
+shim resolves it to the **best available Kimi model per request**. It is
+Kimi-only by design — when no Kimi candidate is healthy the shim answers
+503 instead of silently routing you to a non-Kimi model.
 
 ```mermaid
 flowchart LR
-    subgraph estate[kimi-auto estate]
-        R[resolver.py<br/>15-min audit loop<br/>pitchfork-managed]
-        S[shim.py<br/>herd sidecar<br/>--config-dir fragment]
-        R -->|state.json| S
-    end
-    subgraph session[omp session]
-        X[tau-kimi-auto<br/>thin OpenAI-compatible provider]
-        V[state reader]
-    end
-    S -->|kimi-auto route| X
-    X -->|selectable model| M[kimi-auto]
-    R -.->|observability| V
+    tau[tau/omp session] --> ext[kimi-auto model]
+    ext --> herd[herd :25100]
+    herd --> res[resolver · 15-min audit loop]
+    res --> shim[shim · route to best Kimi]
+    shim -->|healthy| K1[kimi-k2.6]
+    shim -->|healthy| K2[kimi-k2.7-code]
+    shim -->|none healthy| E503[503 · no silent fallback]
 ```
 
-## Quick Start
+## Features
+
+- **Virtual model registration** — `kimi-auto` appears in the model picker
+  like any other model; no per-request flags.
+- **Herd-side resolution** — the actual pick happens on the herd shim, so
+  every session benefits from the resolver's health data automatically.
+- **Fail-loud, not fail-silent** — 503 when no Kimi candidate is healthy,
+  never a quiet reroute to a different provider.
+- **Observability** — the extension includes a state reader over the
+  resolver's state file (`KIMI_AUTO_STATE`).
+
+## Quick start
 
 ```bash
-cd tau-extensions/packages/tau-kimi-auto && bun install
-bun run typecheck
-omp plugin link .
+# from the monorepo
+cd packages/tau-kimi-auto && bun install
+omp --extension .
 ```
 
-Then select `kimi-auto` as the session model. The extension points at herd via `KIMI_AUTO_HERD` (default `http://127.0.0.1:25100`).
+Requires `@oh-my-pi/pi-coding-agent` (peer, `^18.0.11`).
 
-## How it works
+## Architecture
 
-- **Model selection** lives in `resolver.py` — a 15-minute audit loop (pitchfork-managed) that scores Kimi candidates and writes `state.json`.
-- **Routing** lives in `shim.py` — a herd sidecar started via a `--config-dir` fragment, serving the `kimi-auto` route.
-- **This extension** is a thin OpenAI-compatible provider pointing at herd's `kimi-auto` route, plus a state reader so the session can see which Kimi model is currently winning.
+Model selection lives in `resolver.py` (15-min audit loop, pitchfork-managed);
+routing lives in `shim.py` (herd sidecar, started via a `--config-dir`
+fragment). This package is deliberately thin: an OpenAI-compatible provider
+pointed at herd's `kimi-auto` route, plus the state reader for observability.
+The extension entry is `./src/extension.ts` (declared in `package.json`
+under `tau.extensions`).
 
-The 503-on-no-healthy-Kimi contract is enforced herd-side: the extension never sees a non-Kimi model, so a session on `kimi-auto` can't silently degrade to a different provider's model mid-conversation.
-
-## Configuration
+## Config
 
 | Env var | Default | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `KIMI_AUTO_HERD` | `http://127.0.0.1:25100` | Herd base URL |
-| `KIMI_AUTO_STATE` | `~/.local/share/kimi-auto/state.json` | Resolver state file (read by the state reader) |
+| `KIMI_AUTO_STATE` | `~/.local/share/kimi-auto/state.json` | Resolver state file |
 
-## Development
+## Dev / contributing
 
 ```bash
 bun install
-bun run typecheck   # tsc --noEmit
 bun test
+bun run typecheck
 ```
 
-Package metadata (name `@toxicwind/tau-kimi-auto`, Tau entry point, peer dep `@oh-my-pi/pi-coding-agent ^18.0.11`) lives in `package.json`.
+## License & security
 
-## License and security
+MIT — see [LICENSE](../LICENSE).
 
-MIT — part of [`toxicwind/tau-extensions`](https://github.com/toxicwind/tau-extensions).
-
-Security notes:
-
-- The extension talks to herd over HTTP on localhost by default; if `KIMI_AUTO_HERD` points at a remote herd, use TLS — model traffic includes your prompts.
-- `state.json` is read-only observability surface; the extension never writes resolver state.
+- The extension points at your own herd instance; it adds no new network
+  surface and carries no credentials.
+- A 503 from `kimi-auto` means *no healthy Kimi* — that is the contract
+  working, not an outage to route around.
