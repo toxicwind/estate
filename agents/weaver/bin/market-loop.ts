@@ -860,9 +860,9 @@ class InProcessExecutor implements BidderBackend {
       // Generic tasks (no exec block): record real environment facts as the
       // evidence baseline. A future bidder backend replaces this branch.
       const uname = Bun.spawnSync(['uname', '-a'], { stdout: 'pipe' });
-      log.push(`ENV uname: ${new Response(uname.stdout).text().trim()}`);
+      log.push(`ENV uname: ${uname.stdout.toString().trim()}`);
       const ls = Bun.spawnSync(['ls', '-la', workdir], { stdout: 'pipe' });
-      log.push(`ENV workdir listing:\n${new Response(ls.stdout).text().trim()}`);
+      log.push(`ENV workdir listing:\n${ls.stdout.toString().trim()}`);
     }
 
     const resultMd = [
