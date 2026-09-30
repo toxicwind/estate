@@ -29,7 +29,7 @@ restart = "pitchfork restart -q --group core"
 logs = "pitchfork logs --raw -n 100"
 "logs-tail" = "pitchfork logs --raw --follow"
 "logs-json" = "pitchfork logs --json -n 100"
-"build-vansrouter" = "node projects/range/ranch/stockyard/vansrouter/cli/scripts/build-cli.js"
+"build-vansrouter" = "node projects/range/ranch/vansrouter/cli/scripts/build-cli.js"
 
 "up-mesh" = "pitchfork start -q mesh"
 "up-mesh-hub" = "pitchfork start -q mesh-hub"
@@ -63,6 +63,7 @@ logs = "pitchfork logs --raw -n 100"
 "up-squawk-feed" = "pitchfork start -q squawk-feed"
 "up-keypool" = "pitchfork start -q keypool"
 "up-boundless" = "pitchfork start -q boundless"
+"up-windmill" = "pitchfork start -q windmill"
 
 "down-mesh" = "pitchfork stop mesh"
 "down-mesh-hub" = "pitchfork stop mesh-hub"
@@ -96,6 +97,7 @@ logs = "pitchfork logs --raw -n 100"
 "down-squawk-feed" = "pitchfork stop squawk-feed"
 "down-keypool" = "pitchfork stop keypool"
 "down-boundless" = "pitchfork stop boundless"
+"down-windmill" = "pitchfork stop windmill"
 
 "restart-mesh" = "pitchfork restart -q mesh"
 "restart-mesh-hub" = "pitchfork restart -q mesh-hub"
@@ -128,6 +130,7 @@ logs = "pitchfork logs --raw -n 100"
 "restart-squawk-feed" = "pitchfork restart -q squawk-feed"
 "restart-keypool" = "pitchfork restart -q keypool"
 "restart-boundless" = "pitchfork restart -q boundless"
+"restart-windmill" = "pitchfork restart -q windmill"
 
 
 # ─── Health checks ───
@@ -164,6 +167,7 @@ logs = "pitchfork logs --raw -n 100"
 "health-hindsight-cp" = "curl -sf --max-time 5 http://127.0.0.1:25118/"
 "health-matter-server" = "ss -ltn 'sport = :5580' | grep -q LISTEN"
 "health-tau" = "pgrep -f tau > /dev/null"
+"health-windmill" = "curl -sf --max-time 5 http://127.0.0.1:25219/api/status"
 
 # ─── Utilities ───
 # The trailing loop reports the three services that have a config/ports.env
@@ -211,3 +215,7 @@ run = "python3 -m keypool --selftest"
 run = "curl -s http://127.0.0.1:25109/status | jq -r '.pools | to_entries[] | \"\\(.key): \" + ([.value.keys[] | \"\\(.name)=\\(.state)\"] | join(\" \"))'"
 [tasks."keypool-logs"]
 run = "pitchfork logs keypool -n 100"
+
+[tasks."up-cellfiles-ui"]
+description = "Cell-files hot-reload explorer UI (bun --hot, SSE auto-refresh)"
+run = "bun --hot /home/toxic/hatch/cell-files/packages/cell-files/ui/server.ts"
