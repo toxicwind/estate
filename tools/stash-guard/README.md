@@ -1,76 +1,94 @@
 # stash-guard
 
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
-![python](https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+<div align="right">
 
-**Autonomous WIP flight-recorder + drop-proof stash vault.** Snapshots dirty worktrees non-destructively every `--interval` seconds, pins every live stash entry so `git stash drop` can't lose work, pushes guard refs to an archive remote, and logs everything to an append-only SQLite flight recorder. Covers the sovereign/tau monorepo — and, in `--deep` mode, every git repo on the box.
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-## Why
+</div>
 
-Agents do real work in dirty worktrees, then a `git stash clear`, a rebase gone wrong, or a sweeper script eats it. The fix is structural, not procedural: a daemon that continuously snapshots WIP into git refs no one can accidentally drop, vaults the stash entries themselves, and pushes it all to an off-box archive remote. Your uncommitted work becomes recoverable by default.
+Autonomous WIP flight-recorder + drop-proof stash vault for the
+sovereign/tau monorepo (and, in `--deep` mode, every git repo on the box).
+`git stash drop` and `git stash clear` can no longer lose work — every live
+stash entry is pinned at a guard ref that survives.
+
+```mermaid
+flowchart LR
+    wt[dirty worktree] -->|git stash create · non-destructive| snap[refs/guard/wt/<slug>/<ts>]
+    stash[stash@{n}] -->|pin| vault[refs/guard/stash/<sha12>]
+    untracked[untracked files] -->|plumbing snapshot| snap
+    vault & snap --> push[push guard refs → archive remote]
+    push --> log[events.db · flight recorder]
+```
 
 ## Features
 
-- **Non-destructive snapshots** — `git stash create` builds a commit of tracked modifications *without touching the worktree*; untracked files snapshotted via plumbing (`hash-object`/`mktree`/`commit-tree`) honoring `.stashguardignore` + built-in excludes (`builds/`, `bench-*/`, `.broken-git-backup/`, `*.pcap`, …)
-- **Drop-proof vault** — every live `stash@{n}` pinned at `refs/guard/stash/<sha12>`; `git stash drop` / `git stash clear` can no longer lose work
-- **Archive push** — guard refs pushed to the `archive` remote (`toxicwind/local-work-archive`) with `--prune` so retention applies remotely too
-- **Flight recorder** — every snapshot/vault/push lands in `~/.local/state/stash-guard/events.db` (SQLite, append-only)
-- **Retention** — last `--keep` (default 24) snapshots per worktree; older refs pruned
-- **Safe by default** — never touches worktree files, index, HEAD, or branches. Only creates git objects + `refs/guard/*` refs. The only mutating mode is `restore --apply --to <worktree>`, which is explicit.
+- **Snapshots dirty worktrees** — non-destructively. `git stash create`
+  builds a commit of tracked modifications *without touching the worktree*;
+  untracked files are snapshotted via plumbing (`hash-object`/`mktree`/
+  `commit-tree`) honoring `.stashguardignore` + built-in excludes
+  (`builds/`, `bench-*/`, `.broken-git-backup/`, `*.pcap`, …).
+- **Vaults stash entries** — every live `stash@{n}` pinned at
+  `refs/guard/stash/<sha12>`; drops and clears can't lose work.
+- **Pushes guard refs** to the `archive` remote
+  (`toxicwind/local-work-archive`), with `--prune` so retention applies
+  remotely too.
+- **Flight-recorder log** — every snapshot/vault/push lands in
+  `~/.local/state/stash-guard/events.db` (SQLite, append-only).
 
-## How it works
+Retention: last `--keep` (default 24) snapshots per worktree; older refs pruned.
 
-```mermaid
-flowchart TB
-    T["every --interval seconds<br/>(default 90)"] --> S["snapshot dirty worktrees"]
-    S -->|git stash create<br/>+ plumbing for untracked| R1["refs/guard/wt/<slug>/<YYYYMMDD-HHMMSS>[-untracked]"]
-    S --> V["vault live stash entries"]
-    V --> R2["refs/guard/stash/<sha12>"]
-    R1 --> P["push archive remote<br/>toxicwind/local-work-archive"]
-    R2 --> P
-    S --> E["~/.local/state/stash-guard/events.db"]
-    V --> E
-    P --> E
-```
-
-## Quick Start
+## Quick start
 
 ```bash
+# one-shot scan (safe to run any time)
 python3 tools/stash-guard/stash-guard.py --once
-python3 tools/stash-guard/stash-guard.py list
-python3 tools/stash-guard/stash-guard.py restore refs/guard/stash/abc123def456 --apply --to /home/toxic/sovereign
-```
 
-Daemon (as run by pitchfork):
-
-```bash
+# daemon (as run by pitchfork)
 python3 tools/stash-guard/stash-guard.py --repo /home/toxic/sovereign \
     --deep --interval 90 \
     --extra-repos /home/toxic/sovereign/projects/tau-extensions,/home/toxic/sovereign/projects/tau-occupied-20260916
+
+# inspect
+python3 tools/stash-guard/stash-guard.py list
+python3 tools/stash-guard/stash-guard.py restore refs/guard/stash/abc123def456
 ```
-
-## pitchfork
-
-`[daemons.stash-guard]` in the repo-root `pitchfork.toml`, also listed in `[groups.all]`. `boot_start = true`, `retry = true`.
 
 ## Architecture
 
-```
-tools/stash-guard/
-├── stash-guard.py  — snapshotter + vault + pusher + flight recorder (stdlib only)
-└── README.md       — this file
-```
+Refs: `refs/guard/wt/<worktree-slug>/<YYYYMMDD-HHMMSS>[-untracked]` for
+snapshots, `refs/guard/stash/<sha12>` for vaulted stashes. Only git objects
++ `refs/guard/*` refs are created — the daemon never touches worktree
+files, index, HEAD, or branches.
 
-One file, stdlib-only Python. Guard refs follow a fixed namespace (`refs/guard/wt/...`, `refs/guard/stash/...`) so retention, restore, and remote prune all operate on the same predictable tree.
+## Config
 
-## Configuration
+| flag | default | purpose |
+| --- | --- | --- |
+| `--interval` | `90` s | snapshot cadence |
+| `--keep` | `24` | snapshots retained per worktree |
+| `--deep` | off | cover every git repo on the box |
+| `--extra-repos` | — | additional repos to guard |
 
-CLI flags: `--repo`, `--deep`, `--interval` (default 90), `--keep` (default 24), `--extra-repos`. The archive remote (`archive` → `toxicwind/local-work-archive`) must exist on each covered repo. `.stashguardignore` opts paths out of untracked snapshots.
+Pitchfork: `[daemons.stash-guard]` in the repo-root `pitchfork.toml`, also
+in `[groups.all]`. `boot_start = true`, `retry = true`.
 
-## Dev
+## Safety
 
-Contributions: keep the non-destructive invariant — the daemon must never modify worktree files, index, HEAD, or branches in any mode except explicit `restore --apply --to`. New snapshot sources get their own `refs/guard/` namespace, never the stash namespace.
+The only mutating mode is `restore --apply --to <worktree>`, which is
+explicit. Everything else is create-only.
 
-## License & Security
+## Dev / contributing
 
-Part of the [sovereign monorepo](../../README.md#license) — stack glue is MIT where marked. Security posture: read-mostly by design — it creates git objects and pushes refs to a remote you configured. The `restore --apply` path is the only writer to a worktree and requires an explicit ref + target. Secrets are never snapshotted deliberately; `.stashguardignore` and the built-in excludes keep build artifacts and captures out.
+Keep the create-only invariant: a guard that can mutate the worktree it
+protects is a liability. Extend excludes via `.stashguardignore` per repo.
+
+## License & security
+
+MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+
+- Guard refs hold copies of your uncommitted work — including anything
+  sensitive in the tree. The `archive` remote must be as trusted as the
+  source repos.
+- `restore --apply` overwrites worktree files: it is deliberately
+  explicit-only.

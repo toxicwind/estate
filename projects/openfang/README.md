@@ -1,38 +1,50 @@
-# OpenFang — Agent Operating System
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge) ![rust](https://img.shields.io/badge/rust-000000?style=for-the-badge&logo=rust&logoColor=white) ![typescript](https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+<div align="right">
 
-**OpenFang** is an open-source **Agent Operating System** written in Rust by
-[RightNow-AI](https://github.com/RightNow-AI/openfang) — a full OS for
-autonomous agents that work on schedules, 24/7: building knowledge graphs,
-monitoring targets, generating leads, managing social media, and reporting to
-a dashboard. Not a chatbot framework, not a Python wrapper around an LLM.
+[![license](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-part%20of-blueviolet?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
+# OpenFang — the Agent Operating System
+
+**An open-source Agent OS in Rust.** Not a chatbot framework, not a Python wrapper around an LLM — a full operating system for autonomous agents that work on schedules, 24/7: building knowledge graphs, monitoring targets, generating leads, managing social media, and reporting to a dashboard.
 
 - **Upstream:** <https://github.com/RightNow-AI/openfang>
-- **Our mirror:** <https://github.com/toxicwind/openfang> (private)
 - **Docs:** <https://openfang.sh/docs>
 
-## Why this workspace exists
+## Why should I care?
 
-The OpenFang source lives upstream and in our private mirror — **no OpenFang
-source is checked in here**. This directory is the estate's workspace for the
-OpenFang deployment: how the daemon is served, how it reaches the herd, and how
-our autonomous agent (`coyote`) runs on top of it. The code of record for the
-deployment glue lives in the repo tree, not this folder.
+- **Agents that work while you sleep** — scheduled, always-on, with a real dashboard
+- **Rust-grade reliability** — the agent runtime is infrastructure, not a demo
+- **On this estate** — fronted by the sovereign services stack (`axiom` service on `:25103`, `coyote` inference engine on `:25143` routing through herd across 14 providers)
 
-## Live estate
+## Features
 
-- `sovereign-projects/openfang/` — workspace checkout (this directory)
-- pitchfork **`axiom`** daemon → `stack/services/openfang.sh` → `src/services/openfang.ts` on **:25103**
-- pitchfork **`coyote`** daemon — autonomous agent inference engine on **:25143**,
-  an OpenFang agent with Yote integration, routing through herd (`:25100`) across 14 providers
+- **Scheduled autonomous agents** — recurring missions with reports, not one-shot prompts
+- **Knowledge graphs** — agents build and query persistent knowledge
+- **Target monitoring** — watch lists with alerting
+- **Lead generation + social media management** — long-horizon operational work
+- **Live dashboard** — every agent's state visible at a glance
+
+## Architecture
 
 ```mermaid
 flowchart LR
-    UP["upstream<br/>RightNow-AI/openfang<br/>(Rust Agent OS)"] --> MIR["our mirror<br/>toxicwind/openfang<br/>(private)"]
-    MIR --> WS["this workspace<br/>sovereign-projects/openfang/"]
-    WS --> AX["pitchfork axiom<br/>stack/services/openfang.sh<br/>src/services/openfang.ts<br/>:25103"]
-    WS --> CY["pitchfork coyote<br/>autonomous agent<br/>:25143"]
-    CY --> HERD["herd :25100<br/>14 providers"]
+    subgraph openfang["OpenFang Agent OS"]
+        A[Scheduler] --> W[Agent workers]
+        W --> K[(Knowledge graph)]
+        W --> M[Monitors / targets]
+        W --> R[Reports]
+    end
+    subgraph sovereign["Sovereign estate"]
+        S[axiom service :25103]
+        C[coyote inference :25143]
+        H[herd :25100 — 14 providers]
+        C --> H
+    end
+    S --> A
+    C --> W
+    R --> D[Dashboard]
 ```
 
 ## Quick start (upstream)
@@ -41,31 +53,25 @@ flowchart LR
 curl -fsSL https://openfang.sh/install | sh
 openfang init
 openfang start
+# Dashboard live at http://localhost:4200
 ```
-
-Dashboard live at `http://localhost:4200`.
-
-> **Correction (2026-09-14):** an earlier version of this README described
-> OpenFang as a C++ inference-engine fork behind herd with beellama.cpp /
-> llama-cpp-turboquant / ik_llama.cpp. That was wrong — those are llama.cpp
-> engine builds used by herd's backends. OpenFang is the Rust Agent OS above.
-
-## Contributing
-
-Deployment glue changes go in `stack/services/openfang.sh` and
-`src/services/openfang.ts` in the repo root tree — this workspace README just
-documents the layout. Daemon changes ride the pitchfork restart path; never
-hand-start `axiom` or `coyote` outside the supervisor.
 
 ## License & security
 
-OpenFang upstream is open source under its own license (see
-[RightNow-AI/openfang](https://github.com/RightNow-AI/openfang)); our mirror
-is private. Estate deployment glue is unlicensed internal code in
-[toxicwind/sovereign-projects](https://github.com/toxicwind/sovereign-projects).
-Security: `coyote` routes inference through herd with the estate's provider
-keys from `/home/toxic/.secrets` — never hardcode keys in service files or
-commit them to the mirror.
+- OpenFang upstream is open source — see [upstream repo](https://github.com/RightNow-AI/openfang) for its license.
+- This monorepo's own files are [MIT](https://github.com/toxicwind/sovereign-projects#license).
 
----
-*Up: [projects/](../README.md) · [fleet knowledgebase](../../docs/fleet-knowledgebase.md)*
+## This directory
+
+This directory holds the estate-side notes only — **no OpenFang source is checked in here**. The live work:
+
+- `openfang/` (repo root) — workspace checkout
+- [`stack/services/openfang.sh`](../../stack/services/openfang.sh) → [`src/services/openfang.ts`](../../src/services/openfang.ts) — pitchfork **`axiom`** daemon on **:25103**
+- pitchfork **`coyote`** daemon — autonomous agent inference engine on **:25143**, an OpenFang agent with Yote integration, routing through herd (`:25100`) across 14 providers
+
+> **Correction (2026-09-14):** an earlier version of this README described OpenFang as a C++ inference-engine fork behind herd with beellama.cpp / llama-cpp-turboquant / ik_llama.cpp. That was wrong — those are llama.cpp engine builds used by herd's backends. OpenFang is the Rust Agent OS described above.
+
+## Contribute
+
+- Issues / PRs go to [upstream](https://github.com/RightNow-AI/openfang).
+- Estate integration notes go in this directory; follow the repo's [fleet knowledgebase](../../docs/fleet-knowledgebase.md).

@@ -1,76 +1,89 @@
 # Kimi File Downloader
 
 <div align="right">
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge) ![python](https://img.shields.io/badge/python-3.8+-3776AB?style=for-the-badge) ![deps](https://img.shields.io/badge/deps-stdlib_only-green?style=for-the-badge)
+
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
 </div>
 
-*Pull every file out of a Kimi web session — from a browser HAR export, the live API, or both — with concurrent workers, SHA256 dedup, and resume. One script, zero dependencies.*
-
-You chatted with Kimi in the browser, files were shared, and now they're scattered across signed URLs that expire. Point this at the HAR archive (or a JWT for the live API) and it harvests everything: previews, attachments, and files the HAR never captured.
-
-## Features
-
-- **Concurrent downloads** with configurable workers (default 8)
-- **Checksum verification** (SHA256) — already-downloaded files are skipped, not re-fetched
-- **Resume support** — partial downloads continue where they stopped
-- **HAR parsing** — extracts `signUrl`/`previewUrl` entries from browser archives
-- **API pagination** — walks every feed page automatically when using `--api`
-- **Filename extraction** — parses clean names from URL query params
-- **Duplicate handling** — appends a checksum prefix on name collisions
-- **List-only dry run** — see exactly what would download before spending bandwidth
-
-## Architecture
+Fast concurrent file downloader for Kimi API/HAR archives. Point it at a
+browser HAR export (or the live Kimi API) and it pulls every file out —
+checksummed, deduplicated, resumable — with zero dependencies beyond the
+Python standard library.
 
 ```mermaid
 flowchart LR
-    HAR["HAR archive<br/>(signUrl / previewUrl)"] --> DL["kimi-file-downloader.py<br/>--workers 8"]
-    API["live Kimi API<br/>(--api --jwt)"] --> DL
-    DL --> V{"SHA256<br/>known?"}
-    V -- "yes" --> SKIP["skip"]
-    V -- "no / partial" --> GET["download + resume"]
-    GET --> OUT["./kimi_files/<br/>sanitized filenames"]
+    har[HAR archive] --> parse[parse signUrl/previewUrl]
+    api[live Kimi API · optional] --> parse
+    parse --> dl[worker pool · N concurrent]
+    dl --> sha[SHA256 verify · dedupe · resume]
+    sha --> out[./kimi_files/]
 ```
 
-Single-file Python, standard library only. No pip install, no virtualenv, no excuses.
+## Features
 
-## Quick Start
+- **Concurrent downloads** with configurable worker count
+- **Checksum verification** (SHA256) — skips already-downloaded files
+- **Resume support** — continues partial downloads
+- **HAR parsing** — extracts `signUrl`/`previewUrl` from browser archives
+- **API pagination** — fetches all feed pages automatically
+- **Filename extraction** — parses clean names from URL query params
+- **Duplicate handling** — appends checksum prefix for collisions
+
+## Quick start
 
 ```bash
-python3 tools/kimi-file-downloader.py --har "session.har.txt" --list-only
-python3 tools/kimi-file-downloader.py --har "session.har.txt" --output ./kimi_files --workers 8
-python3 tools/kimi-file-downloader.py --har "session.har.txt" --api --jwt "$KIMI_JWT" --output ./kimi_files
+# 1. list-only: see what would be downloaded
+python3 kimi-file-downloader.py \
+  --har "www.kimi.com_Archive [26-08-12 18-48-34].har.txt" \
+  --list-only
+
+# 2. download everything from the HAR
+python3 kimi-file-downloader.py \
+  --har "www.kimi.com_Archive [26-08-12 18-48-34].har.txt" \
+  --output ./kimi_files \
+  --workers 8
+
+# 3. HAR + live API (discover files not captured in the HAR)
+python3 kimi-file-downloader.py \
+  --har "www.kimi.com_Archive [26-08-12 18-48-34].har.txt" \
+  --api --jwt "eyJhbGciOiJIUzUxMi..." \
+  --output ./kimi_files \
+  --workers 8
 ```
 
-1. **List-only** — see what would be downloaded, download nothing.
-2. **HAR download** — everything captured in the browser archive, 8 workers.
-3. **HAR + live API** — also discovers files the HAR never captured (needs a JWT).
+## Architecture
 
-## Options
+Single stdlib-only script (`tools/kimi-file-downloader.py`, this README
+is its doc file `tools/kimi-file-downloader.README.md`). HAR → URL
+extraction → thread-pool download → SHA256 verify → sanitized filenames
+(special chars replaced).
+
+## Config
 
 | Option | Description |
-|---|---|
+| --- | --- |
 | `--har` | Path to HAR archive file |
-| `--jwt` | JWT token (defaults to built-in) |
+| `--jwt` | JWT token (defaults to built-in; may expire — pass a fresh one) |
 | `--output` | Output directory (default: `./kimi_downloads`) |
 | `--api` | Also fetch from live API feeds |
 | `--workers` | Concurrent downloads (default: 8) |
 | `--list-only` | Only list URLs, don't download |
 
-## Requirements
+HAR files exported from browser dev tools work best.
 
-- Python 3.8+
-- Standard library only — no external dependencies
+## Dev / contributing
 
-## Notes
+Python 3.8+, stdlib only — keep it that way. The download pipeline is
+list → verify → write; new sources (feeds, endpoints) slot in before the
+pool.
 
-- The built-in JWT may expire. Pass `--jwt` with a fresh token from your Kimi session if downloads start failing.
-- HAR files exported from browser dev tools (Network tab → Export HAR) work best.
-- Files are saved with sanitized names (special characters replaced); collisions get a checksum prefix.
+## License & security
 
-## Dev & contributing
+MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
 
-It's one file (`tools/kimi-file-downloader.py`) — edit it directly. Keep it stdlib-only; that constraint is the feature. Test new flags against a small HAR with `--list-only` first.
-
-## License & Security
-
-Internal estate utility — part of the sovereign projects, not published for external use. The JWT is a bearer credential for your Kimi account: pass it via `--jwt` or the environment, never commit it, and prefer `--list-only` dry runs against untrusted HAR files before downloading.
+- The built-in JWT is a convenience, not a secret to share — pass your own
+  `--jwt` and keep tokens out of chat/repos.
+- Downloaded files are written under `--output` with sanitized names;
+  review them before executing anything from an archive you didn't create.

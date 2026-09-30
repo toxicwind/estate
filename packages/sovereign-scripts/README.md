@@ -1,17 +1,24 @@
-# sovereign-scripts (packages mirror)
+# sovereign-scripts
+
+Python automation toolkit for Sovereign infrastructure — GitHub API ops, repo audits, archiving, sandboxing, and health checks. One directory of sharp tools, each doing one job.
 
 <div align="right">
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge) ![python](https://img.shields.io/badge/python-toolkit-3776AB?style=for-the-badge) ![kind](https://img.shields.io/badge/kind-workspace_mirror-green?style=for-the-badge)
+
+[![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-main-6e56cf?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
 </div>
 
-*Workspace mirror of the `sovereign-scripts` Python automation toolkit — GitHub API ops, repo audits, archiving, sandboxing, and health checks. Same scripts, same conventions as the top-level `sovereign-scripts/` directory (contents verified identical); the full story lives in [the canonical README](../../sovereign-scripts/README.md).*
+## Why this exists
+
+Ops work is a long tail of small jobs — check a port, push a file, extract commits, audit a namespace. This package collects the ones that proved themselves into a toolkit with shared conventions: async and parallel where it matters, rate-limited against APIs, and documented per-script instead of in someone's shell history.
 
 ## Scripts
 
 | Script | What it does |
 |---|---|
 | `sovereign_helper.py` | Master hook for GitHub API ops — async, parallel, rate-limited |
-| `health_check.py` | Port/socket health checks for the sovereign environment |
+| `health_check.py` | Port/socket health checks for the Sovereign environment |
 | `git-push-one.py` | Push one file to a GitHub repo with per-repo identity |
 | `commit_extractor.py` | Bulk GitHub commit extraction with resumable state |
 | `archivefs_v3.py` | Mount-like binary archive with 90MB chunking |
@@ -23,34 +30,36 @@
 | `mitm-proxy/` | MITM proxy helpers (`playwright_mitm.py`, `race_aware_loader.sh`) |
 | `patches/` | Patch scripts (`browser_guard.py`) |
 
-See `AGENTS.md` in this directory for repo conventions.
-
-## Mirror relationship
-
 ```mermaid
-flowchart LR
-    ROOT["sovereign-scripts/<br/>toolkit (top level)"] --> MIRROR["packages/sovereign-scripts/<br/>workspace mirror"]
-    MIRROR --> SAME["same scripts<br/>same AGENTS.md<br/>same conventions"]
+flowchart TB
+    subgraph gh[GitHub ops]
+        SH[sovereign_helper.py<br/>async · parallel · rate-limited]
+        GP[git-push-one.py<br/>per-repo identity]
+        CE[commit_extractor.py<br/>resumable]
+    end
+    subgraph box[box ops]
+        HC[health_check.py<br/>ports/sockets]
+        NP[namespace_probe.py<br/>namespaces + capabilities]
+        UR[unshare-root.py<br/>user-namespace root]
+    end
+    subgraph data[archive]
+        A3[archivefs_v3.py<br/>90MB chunks]
+        AC[arfs-cat.py<br/>read without extract]
+    end
 ```
 
-This directory mirrors the top-level toolkit so workspace consumers get the scripts where they expect them. Changes belong in one place and get carried to the other — don't let the two drift.
-
-## Quick Start
+## Quick start
 
 ```bash
-python3 packages/sovereign-scripts/health_check.py
-python3 packages/sovereign-scripts/git-push-one.py --help
-python3 packages/sovereign-scripts/commit_extractor.py --owner toxicwind --output ./commits
+python3 health_check.py
+python3 git-push-one.py --help
+python3 commit_extractor.py --owner toxicwind --output ./commits
 ```
 
-## Configuration
+## Conventions
 
-Per-script flags (`--help` is the contract); GitHub-API scripts read credentials from the environment. `archivefs_v3.py` chunks at 90MB; `arfs-cat.py` reads archives without extracting.
+See `AGENTS.md` in this directory for repo conventions (per the original: repo rules live there).
 
-## Dev & contributing
+## License & security
 
-Follow `AGENTS.md`: verify live before claiming, fail loud (never silence errors), prefer `fd`/`rg` over `find`/`grep`. Keep the mirror in sync with the top-level directory.
-
-## License & Security
-
-Internal estate tooling — part of the sovereign projects, not published for external use. GitHub tokens stay in the environment, never in the repo. `mitm-proxy/` and `cache_timing.py` are dual-use (proxy tooling, timing probes) — built for auditing our own estate only.
+MIT where marked — [LICENSE](https://github.com/toxicwind/sovereign-projects#license). Several scripts here are dual-use by nature (`cache_timing.py`, `mitm-proxy/`, `unshare-root.py`) — they're audit and research tooling for the estate's own boxes. Run them against your own infrastructure only. `git-push-one.py` uses per-repo identity — check which identity you're pushing as before you push.

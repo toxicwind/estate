@@ -1,40 +1,28 @@
 # ml-serve client (Bun/TypeScript)
 
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
-![typescript](https://img.shields.io/badge/typescript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![bun](https://img.shields.io/badge/bun-runtime-fbf0df?style=for-the-badge&logo=bun&logoColor=black)
-![deps](https://img.shields.io/badge/deps-zero-green?style=for-the-badge)
+<div align="right">
 
-> A dependency-free Bun client for the ml-serve inference daemon — plain `fetch`, no npm packages, no build step. Drop it into any Bun tree and rank wallpapers on native e621 tags.
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
-## Hero
+</div>
 
-`ml-serve-client.ts` is the typed Bun client for the [ml-serve daemon](../README.md). Tags are e621 native (md5 lookup, daemon-side cached). There is no local tagger and no `tag()` call — use `lookup()` for a file's native tags, `segment()` for subject geometry, `pick()` to rank a directory.
+Dependency-free client for the [ml-serve](../README.md) resident inference
+daemon. Plain `fetch` only — no npm packages, no build step. Drop
+`ml-serve-client.ts` into any Bun tree and start ranking wallpapers.
+
+Tags are e621 native (md5 lookup, daemon-side cached). There is no local
+tagger and no `tag()` call — use `lookup()` for a file's native tags.
 
 ```mermaid
 flowchart LR
-    YOU["quickshell\nwallpaper picker"] --> CLIENT["mlServe\n(default export)"]
-    CLIENT -->|GET /health| H["health()\nwaitReady()"]
-    CLIENT -->|POST /lookup| L["lookup(path)\nmd5 → native e621 tags"]
-    CLIENT -->|POST /segment| S["segment(path)\nbbox/centroid/coverage"]
-    CLIENT -->|POST /pick| P["pick(dir, opts)\nbest pick, lowest score wins"]
-    H & L & S & P --> DAEMON["ml-serve daemon\n127.0.0.1:25180"]
+    app[your Bun app] -->|import| client[ml-serve-client.ts]
+    client -->|fetch| daemon[ml-serve :25180]
+    daemon --> onnx[ONNX seg · resident]
+    daemon --> e621[e621 native tags · cached]
 ```
 
-## Quick Start
-
-```ts
-import { mlServe } from "<path-to>/ml-serve-client";
-
-await mlServe.waitReady();
-const { best } = await mlServe.pick("/home/toxic/Pictures/Wallpapers", {
-  furry_boost: 3.0,
-  target_aspect: 16 / 9,
-});
-if (best) applyWallpaper(best.path);
-```
-
-## Use from the quickshell wallpaper picker
+## Quick start
 
 ```ts
 import { mlServe } from "<path-to>/ml-serve-client";
@@ -59,19 +47,30 @@ if (s.bbox) placeCropWindow(s.bbox, s.centroid);
 ## API
 
 | method | daemon route | returns |
-|---|---|---|
+| --- | --- | --- |
 | `health()` | `GET /health` | providers, models, e621 cache stats, timings |
-| `waitReady(timeoutMs?)` | polls `/health` | resolves when the daemon is up (default 30s timeout) |
+| `waitReady(timeoutMs?)` | polls `/health` | resolves when the daemon is up |
 | `lookup(path)` | `POST /lookup` | md5 + native e621 `tag_string` (cached) |
 | `segment(path)` | `POST /segment` | bbox/centroid/coverage in original px |
 | `pick(dir, opts?)` | `POST /pick` | best pick (lowest score wins) |
 
-`new MlServeClient("http://127.0.0.1:25180")` for a custom address; the default export `mlServe` points at the standard daemon port. Failures throw `MlServeError` (status + message).
+`new MlServeClient("http://127.0.0.1:25180")` for a custom address; the
+default export `mlServe` points at the standard daemon port.
+
+## Architecture
+
+One file, zero deps. The client is a typed `fetch` wrapper — all inference,
+caching, and scoring live daemon-side. Use `waitReady()` before first use
+in long-lived apps; the daemon loads the model lazily.
 
 ## Dev / contributing
 
-Single file, zero dependencies — keep it that way. The client mirrors the daemon's routes 1:1; when the daemon gains a route, add the method here with the same name. Typecheck with `bunx tsc --noEmit`.
+Keep it dependency-free. Method signatures mirror the daemon routes
+one-to-one; if the daemon gains an endpoint, add the method here.
 
 ## License & security
 
-Internal sovereign tooling — part of `toxicwind/sovereign-projects`, not published as a package. Plain `fetch` to a loopback daemon; no credentials, no persistence. The client sends absolute filesystem paths to the daemon — only use it against a daemon you trust on the same machine.
+MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+
+Client-side only: no credentials, no secrets. Point it at a daemon you
+trust — it sends absolute file paths.

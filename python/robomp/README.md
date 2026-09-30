@@ -1,4 +1,13 @@
+<div align="right">
+
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/part_of-sovereign--projects-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+
+</div>
+
 # roboomp
+
+> **Self-hosted GitHub triage bot — classify on open, fix bugs with PRs, auto-close stale questions.**
 
 Self-hosted GitHub triage bot. Drives [`omp --mode rpc`](https://github.com/can1357/oh-my-pi)
 as a subprocess against a per-issue git worktree, then writes back to GitHub
@@ -25,6 +34,18 @@ Completed `workflow_run` events can also drive the default-off release sentinel:
 it diagnoses failed release CI in a reusable `main` worktree, atomically pushes
 the repair commit and existing release tag, then resumes the same session on
 the next verdict until every run and the GitHub Release are green.
+
+```mermaid
+flowchart TD
+    open[issues.opened<br/>allowlisted repo] --> classify[classify issue]
+    classify -->|bug / documentation| fix[reproduce + fix<br/>fresh branch]
+    fix --> pr[open PR<br/>Repro / Cause / Fix / Verification]
+    classify -->|question| q[one comment<br/>👎-to-keep-open prompt]
+    q -->|no reaction in N hours| close[auto-close completed]
+    classify -->|enhancement / proposal| c1[one comment]
+    classify -->|invalid / duplicate| c2[one brief comment]
+    follow[follow-up comments] --> resume[resume omp session<br/>--continue on JSONL]
+```
 
 ## Architecture
 
@@ -255,5 +276,7 @@ web/                 vite + solid dashboard, built into src/static/
 ```
 
 ## License
+
+MIT where marked — [license](https://github.com/toxicwind/sovereign-projects#license).
 
 MIT.

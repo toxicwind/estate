@@ -1,62 +1,72 @@
-# relay-check
-
 <div align="right">
 
-![sovereign](https://img.shields.io/badge/sovereign--projects-blue?style=for-the-badge)
-![bun](https://img.shields.io/badge/bun-000000?style=for-the-badge)
-![typescript](https://img.shields.io/badge/typescript-3178C6?style=for-the-badge)
-![ssh](https://img.shields.io/badge/ssh-2D2D2D?style=for-the-badge)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
+[![sovereign-projects](https://img.shields.io/badge/part_of-sovereign--projects-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
 </div>
 
-**Run on your machine — SSH to the relay VMs and print live metrics or history.** The relay fleet lives on cloud instances; this is the laptop-side CLI that reaches into each one over SSH and shows you what's happening right now (or the last 24h from the metrics log). History is written by the [`relay-monitor`](../relay-monitor/README.md) sidecar.
+# relay-check
 
-## Architecture
+> **SSH into the Zedra relay VMs and read their pulse — live metrics or 24h history, from your laptop.**
+
+The laptop-side half of Zedra's relay observability. `relay-check` opens SSH to every relay instance and prints the metrics written by the [`relay-monitor`](../relay-monitor/README.md) sidecar — current load right now, or the trailing history from its `metrics.jsonl` log.
+
+## Features
+
+- 🔌 **One command, all relays** — `INSTANCES=sg1,us1,eu1` fans out over SSH in parallel
+- 📊 **Live mode** — current metrics per instance, side by side
+- 🕰️ **History mode** — `--history [hours]` replays the sidecar's JSONL log (default: last 24h)
+- 🎯 **Targeted checks** — pass an instance name to check just one relay
+- 🧩 **Zero config beyond SSH** — instances resolve as `zedra-relay-<instance>` in `~/.ssh/config`
+
+## How it fits together
 
 ```mermaid
 flowchart LR
-    CLI["bun cli.ts\nthis package"] -->|SSH| AP1["zedra-relay-ap1"]
-    CLI -->|SSH| US1["zedra-relay-us1"]
-    CLI -->|SSH| EU1["zedra-relay-eu1"]
-    AP1 --> M1["metrics.jsonl\n(written by relay-monitor)"]
-    US1 --> M2["metrics.jsonl"]
-    EU1 --> M3["metrics.jsonl"]
+    you[your laptop] -->|ssh zedra-relay-sg1| cli[relay-check cli.ts]
+    cli --> m1[sg1: metrics.jsonl]
+    cli --> m2[us1: metrics.jsonl]
+    cli --> m3[eu1: metrics.jsonl]
+    mon[relay-monitor sidecar] -.writes.-> m1
+    mon -.writes.-> m2
+    mon -.writes.-> m3
 ```
 
-Each instance must resolve as SSH host `zedra-relay-<instance>` in `~/.ssh/config` (see [`deploy/relay/README.md`](../../deploy/relay/README.md) for the alias setup).
-
-## Quick Start
+## Quick start
 
 ```bash
+# live metrics from every instance
 INSTANCES=sg1,us1,eu1 bun cli.ts
+
+# live metrics, one instance
 INSTANCES=sg1,us1,eu1 bun cli.ts ap1
+
+# last 24h of history, all instances
 INSTANCES=sg1,us1,eu1 bun cli.ts --history
 ```
 
-## Usage
+## License & security
 
-```bash
-INSTANCES=sg1,us1,eu1 bun cli.ts          # live metrics, all instances
-INSTANCES=sg1,us1,eu1 bun cli.ts ap1      # live metrics, one instance
-INSTANCES=sg1,us1,eu1 bun cli.ts --history       # last 24h from metrics.jsonl
-INSTANCES=sg1,us1,eu1 bun cli.ts ap1 --history 6 # last 6h, one instance
-```
+MIT — see the [canonical LICENSE](https://github.com/toxicwind/sovereign-projects#license). This tool only *reads* metrics over your own SSH sessions; it deploys nothing and changes nothing on the relays.
 
-## Config
+## Usage reference
 
-| Env / arg | Purpose |
+| Command | What it shows |
 |---|---|
-| `INSTANCES` | Comma-separated instance list (`sg1,us1,eu1`); each becomes SSH host `zedra-relay-<instance>` |
-| `<instance>` positional | Check a single instance |
-| `--history [hours]` | Read `metrics.jsonl` history instead of live metrics (default 24h) |
+| `bun cli.ts` | Live metrics, all instances in `INSTANCES` |
+| `bun cli.ts <instance>` | Live metrics, one instance |
+| `bun cli.ts --history` | Trailing history, all instances (default window: 24h) |
+| `bun cli.ts <instance> --history <h>` | Trailing `<h>` hours, one instance |
 
-## Dev / Contributing
+Each instance must resolve as SSH host `zedra-relay-<instance>` in `~/.ssh/config`.
 
-- Bun + TypeScript (`cli.ts`, `package.json`, `tsconfig.json` in this package).
-- Keep this package laptop-only — it must never end up in the deploy bundle (see `deploy/relay/README.md` directory structure).
+## Architecture
 
-## License + Security
+- [`cli.ts`](./cli.ts) — the CLI: SSH fan-out, output formatting, history replay
+- [`package.json`](./package.json) — Bun package manifest
+- [`tsconfig.json`](./tsconfig.json) — TypeScript config
+- [`../relay-monitor/`](../relay-monitor/README.md) — the Docker-side poller that *writes* the metrics this tool reads
 
-MIT (see [`LICENSE`](../../LICENSE)).
+## Contributing
 
-**Security posture:** this tool only *reads* — SSH in, print metrics, leave. It uses your existing `~/.ssh/config` identities and never stores credentials. The instances it touches are the same ones `deploy/relay/deploy.sh` manages.
+Keep the CLI dependency-free and fast — it's a laptop tool. Match the existing `bun cli.ts` invocation style; history parsing must tolerate a truncated last line in `metrics.jsonl`.
