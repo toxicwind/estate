@@ -200,6 +200,9 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | polling-audit | Estate-wide polling audit: every timer/sleep/poll-loop on hatch + yote, classified LEGIT vs CONVERT (event-driven alternatives) | Shrew (Ember's crew) | DONE (2026-09-21) -- report docs/polling-audit-2026-09-21.md, commit ce3f867754821f132709163470ac394603e297a8; 7 CONVERT / 17 LEGIT / 10 already-event-driven / 2 ambiguous; top converts: paper-poller 30s->inotify, stash-guard 90s->inotify, squawk-monitor 5m->subscribe |
 
 | bookworm-chatnative | Chat-native agent research: paper-backed buildable design for event-driven squawk agents (no polling). Ships @fleet/chat-native Bun/TS module: recursive long-poll subscribe, tiered attention, TASK directives, AsyncQueue handoff; OpenFang verdict (stays as runtime, squawk adapter is future work); Solace pattern borrow (reference only) | Bookworm (Ember's crew) | DONE (2026-09-21) -- commit 3bb32fe7907a7f0081b9f0353e09bf227e421b35, origin/main verified via git ls-remote |
+
+| bramble | readme maximalization batch b8: 9 toxicwind repos (tau-extensions, toxic-vault-mind, universal-search-fuzzer, vaultfs, web3-sec-workspace, wii-meta-client, wii-stream-pack, wllama-forge, youtube-403-bypass) | 72ff4aa9-c62a-4881-8f70-c6fa220e7383 | RUNNING (2026-09-29) |
+
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
 
