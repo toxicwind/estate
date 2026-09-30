@@ -13,7 +13,9 @@
 set -euo pipefail
 
 PROFILE=/home/toxic/.config/chromium
-LOG=/tmp/bridge-open.log
+# Not /tmp: cell /tmp is a 512M tmpfs with a janitor (Chris 2026-09-30).
+LOG="${BRIDGE_OPEN_LOG:-/home/toxic/.cache/bridge-open.log}"
+mkdir -p "$(dirname "$LOG")"
 
 [ $# -ge 1 ] || { echo "usage: bridge-open <url> [url...]" >&2; exit 2; }
 
