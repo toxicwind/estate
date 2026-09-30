@@ -936,15 +936,3 @@ health_http = { url = "http://127.0.0.1:25104/health", interval = "30s", timeout
 depends = ["keypool"]
 env = { SOVEREIGN_ROUTER_PORT = "25104" }
 auto = ["start"]
-
-# yote-embed — local embedding server for OpenFang memory (yote RTX 3090).
-# Added 2026-09-29 (onyx): nomic-embed-text-v1.5 Q8_0 via beellama llama-server.
-# OpenFang embeddings run on yote hardware, not external GPU APIs (Chris 2026-09-29).
-[daemons.yote-embed]
-port = 25200
-run = "exec /home/toxic/sovereign/ops/yote-embed-run.sh"
-dir = "/home/toxic"
-retry = true
-ready_http = "http://127.0.0.1:25200/health"
-health_http = { url = "http://127.0.0.1:25200/health", interval = "30s", timeout = "5s", retries = 3 }
-auto = ["start"]

@@ -9,12 +9,14 @@
 api_listen = "127.0.0.1:25196"
 
 [memory]
-# Embeddings: yote on-box hardware (RTX 3090), NOT external GPU APIs.
-# Chris 2026-09-29: no external GPU (NIM API, GPU clouds) for embeddings;
-# use yote's own iron. yote-embed daemon (:25200) serves nomic-embed-text-v1.5.
-# (embedding_model intentionally unset: the kernel maps the "all-MiniLM-L6-v2"
-# default to nomic-embed-text for provider "yote". No API key: yote-local.)
-embedding_provider = "yote"
+# Embeddings: explicit provider. Auto-detect previously chose groq (GROQ_API_KEY
+# is set) but Groq exposes no embedding endpoint, so every memory_store /
+# memory_recall embedding 401'd and silently fell back to text search.
+# mistral-embed via MISTRAL_API_KEY verified alive 2026-09-21. (embedding_model
+# intentionally unset: the kernel maps the "all-MiniLM-L6-v2" default to
+# mistral-embed for provider "mistral".)
+embedding_provider = "mistral"
+embedding_api_key_env = "MISTRAL_API_KEY"
 
 # Default model route for auto-spawned agents (2026-09-21 full audit).
 # The kernel OVERWRITES the auto-spawned "assistant" manifest from
