@@ -37,7 +37,7 @@ if main is None:
         "herd-keypool: FATAL: cannot import keypool.__main__.main\n"
         + "".join(f"  [{b}] {e}\n" for b, e in _errors)
         + "Hint: verify ~/sovereign/keypool/__main__.py exists and is readable,\n"
-        + "      or run `estate-reconcile --apply` to restore from a trusted source.\n"
+        + "      Manual intervention required: the warden is alert-only, restores are disabled.\n"
     )
     raise SystemExit(3)
 
