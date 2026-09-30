@@ -13,6 +13,7 @@
 | ---- | ---------- |
 | [`agents/ember/`](agents/ember/) | Ember's operational home (moved from `/home/toxic/shingle`): task lists, directives, squawk chat + relay, fleet CLIs |
 | [`docs/`](docs/) | Consolidated hatch/bridge/cell documentation (runtime cell, connector routing, exec audits) |
+| [`cell-files/`](cell-files/) | Cell-files hot-reload explorer: Bun/TS web UI (WS/SSE hyper-race HMR) over the 211k-row cell filesystem inventory — nested toxicwind/Deuz-SDK checkout |
 | [`bin/`](bin/) | Canonical hatch-side swarm tooling: `swarm-watchdog`, `swarm-pause`/`swarm-resume`, `swarm-eject`, `progress-watchdog`, `squawk`, `squawk-fleet`, `fleet/`, `fleet-code`, `agent-reaper`, `race_exec`, jarvis audit tooling — deployed copies in `~/workspace/bin/` on the cell are synced from here |
 
 > [!NOTE]
