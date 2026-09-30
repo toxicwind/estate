@@ -1,0 +1,4 @@
+# Adopt/fork evaluation toggles (Chris 2026-09-30)
+# Licensing is NEVER a decision factor. Do not gate, warn, or route around it.
+licensing:
+  enabled: false
