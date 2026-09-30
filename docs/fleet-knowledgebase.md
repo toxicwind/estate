@@ -203,6 +203,9 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | bramble | readme maximalization batch b8: 9 toxicwind repos (tau-extensions, toxic-vault-mind, universal-search-fuzzer, vaultfs, web3-sec-workspace, wii-meta-client, wii-stream-pack, wllama-forge, youtube-403-bypass) | 72ff4aa9-c62a-4881-8f70-c6fa220e7383 | RUNNING (2026-09-29) |
 
+
+| starling | squawk maximalization: pattern-borrow + tests (feed :25135, ws :25147, ui, CLI); boundary: Taps owns NATS substrate | Starling (Ember's pack), Tally side chat | RUNNING (2026-09-29) |
+
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
 
