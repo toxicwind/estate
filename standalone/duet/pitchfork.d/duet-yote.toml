@@ -6,3 +6,5 @@
 [daemons.duet-yote]
 run = "exec /home/toxic/.local/share/mise/shims/bun /home/toxic/duet/src/yote.ts"
 dir = "/home/toxic/duet"
+retry = true
+auto = ["start"]
