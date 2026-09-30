@@ -9,8 +9,8 @@ TOML = Path("/home/toxic/sovereign/pitchfork.toml")
 text = TOML.read_text()
 
 SINK = '''[daemons.squawk-relay-sink]
-run = "exec /home/toxic/.shingle/squawk-relay/run-sink.sh"
-dir = "/home/toxic/.shingle/squawk-relay"
+run = "exec /home/toxic/.fleet-bus/squawk-relay/run-sink.sh"
+dir = "/home/toxic/.fleet-bus/squawk-relay"
 mise = false
 retry = true
 boot_start = true
@@ -18,8 +18,8 @@ auto = ["start"]
 '''
 
 FORWARD = '''[daemons.squawk-relay-forward]
-run = "exec /home/toxic/.shingle/squawk-relay/run-forward.sh"
-dir = "/home/toxic/.shingle/squawk-relay"
+run = "exec /home/toxic/.fleet-bus/squawk-relay/run-forward.sh"
+dir = "/home/toxic/.fleet-bus/squawk-relay"
 mise = false
 retry = true
 boot_start = true

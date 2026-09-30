@@ -10,7 +10,7 @@ measurements: every probe is marked unexecuted.
 import json, os, time
 
 WORK = os.path.dirname(os.path.abspath(__file__))
-SEEDS = "/home/toxic/.shingle/coord/work/seeds"
+SEEDS = "/home/toxic/.fleet-bus/coord/work/seeds"
 
 toks = json.load(open(os.path.join(SEEDS, "offending_tokens.json")))["offending_tokens"][:20]
 top = [t["token"].strip() for t in toks if t["token"].strip()][:12]

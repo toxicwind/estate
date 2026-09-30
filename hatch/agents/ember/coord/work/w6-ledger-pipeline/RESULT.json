@@ -8,7 +8,7 @@
  "evidence": {
   "test_log": [
    "fixture turns=6 storm=2 echo_chain_detected=True",
-   "regen stdout: wrote /home/toxic/.shingle/coord/work/w6-ledger-pipeline/fixture_seed.json: 6 turns, 2 storm"
+   "regen stdout: wrote /home/toxic/.fleet-bus/coord/work/w6-ledger-pipeline/fixture_seed.json: 6 turns, 2 storm"
   ]
  },
  "proof_files": [
