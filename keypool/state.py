@@ -16,6 +16,7 @@ class KeyState:
     fp: str = field(init=False)
     state: str = "unknown"       # unknown | healthy | down
     down_until: float = 0.0      # monotonic
+    last_probe_at: float = 0.0   # monotonic; 0 = never probed
     last_error: str = ""
     latency: scoring.LatencyTracker = field(default_factory=scoring.LatencyTracker)
 
@@ -29,11 +30,21 @@ class KeyState:
         self.state = "down"
         self.down_until = clock.mono() + seconds
         self.last_error = why
+        self.last_probe_at = clock.mono()
 
     def revive(self):
         self.state = "healthy"
         self.down_until = 0.0
         self.last_error = ""
+        self.last_probe_at = clock.mono()
+
+    def needs_revalidation(self, ttl_s: float) -> bool:
+        """True if this healthy key's last probe is older than ttl_s."""
+        return (
+            self.state == "healthy"
+            and self.last_probe_at > 0
+            and clock.mono() - self.last_probe_at >= ttl_s
+        )
 
     def public(self) -> dict:
         return {
