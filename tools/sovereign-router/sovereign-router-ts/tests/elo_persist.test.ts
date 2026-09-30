@@ -23,10 +23,14 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 
-// Must be set before the router modules are imported (DB_PATH is read once).
+// Must be set before the router modules are imported (DB_PATH and the
+// catalog state path are read once at import). The catalog path is unique
+// per run so no persisted quarantine leaks between runs.
 // The module-level `state` singleton uses this; the tests below construct
 // their own Matrix instances on per-test temp DBs.
 process.env.SOVEREIGN_DB = "/tmp/sovereign_router_elo_persist_module.db";
+process.env.SOVEREIGN_CATALOG_STATE =
+  `/tmp/sovereign_router_elo_persist_test.catalog.${process.pid}.json`;
 
 const { Matrix } = await import("../router_matrix");
 const { PROVIDERS } = await import("../router_config");
