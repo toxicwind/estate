@@ -27,31 +27,13 @@ auto = ["start"]
 
 
 
-[daemons.tau]
-# omp acp exposed as TCP daemon via chute (stdio→TCP + mcpServers normalization)
-port = 25111
-run = "exec /home/toxic/sovereign/projects/range/ranch/barn/chute/chute.mjs --port 25111 -- /home/toxic/sovereign/projects/range/ranch/tau/packages/coding-agent/dist/omp acp -e /home/toxic/.tau/extensions/vansrouter.ts"
-dir = "/home/toxic"
-mise = false
-retry = true
-ready_cmd = "/home/toxic/sovereign/bin/tcp-probe 25111"
-health_port = { port = 25111, interval = "30s", timeout = "5s", retries = 3 }
-depends = ["gatehouse"]
-# Every var here was checked against a `grep -rl` over the whole tau monorepo
-# (node_modules excluded) plus config/tau/extensions. Three of the original
-# eight were read by NOTHING and are gone:
-#   PI_AGENT_DIR         0 readers. The real name is PI_CODING_AGENT_DIR
-#                        (76 readers). It was silently a no-op.
-#   PI_REASONING_LEVEL   0 readers. Thinking level comes from the
-#                        `defaultThinkingLevel` config key, not the env.
-#   PI_SUBAGENT_MODEL    0 readers — so `thinkingmachines/inkling` NEVER took
-#                        effect on any subagent this daemon spawned.
-# PI_CODING_AGENT_DIR is set here explicitly because it is the one var that
-# decides which config.yml the engine reads (settings.ts:601), and a login
-# shell that exports the config root instead of the agent dir loses the whole
-# modelRoles/retry/extensions file. See ~/.bashrc for the full reasoning.
-env = { PI_CONFIG_DIR = "/home/toxic/.tau", PI_CODING_AGENT_DIR = "/home/toxic/.tau/agent", PI_CODING_AGENT = "true", PI_OPENAI_STREAM_IDLE_TIMEOUT_MS = "120000", VANSROUTER_API_KEY = "local-sovereign" }
-auto = ["start"]
+# SUPERSEDED 2026-09-30 (peregrine, deploy-manifest audit): tau daemon parked.
+# ranch/tau/ no longer exists on disk (deprecated 2026-09-24); the omp backend
+# binary is gone, so the chute on :25111 was running hollow (no children, no
+# backend to spawn). Nothing references :25111 except this file. Do not
+# re-enable without restoring a working omp backend and updating the run path.
+# CLI launcher /home/toxic/.local/bin/omp is untouched.
+
 [daemons.mesh-hub]
 port = 25115
 run = "exec bun run src/services/mesh-hub.ts"
