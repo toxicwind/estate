@@ -9,7 +9,7 @@
 # Declared-vs-runtime contract:
 #   declared = this file + declared_configs below + pitchfork.toml: intent.
 #             Changes ONLY via commits or the content-hash-gated deploy scripts
-#             (bin/herd-deploy, bin/estate-reconcile --apply). A daemon or agent
+#             (bin/herd-deploy). A daemon or agent
 #             rewriting declared state by hand is drift, not an edit.
 #   runtime  = process table, /proc/*/exe, runtime_paths below: fact. The
 #             reconciler reads it; it never converges toward it. Daemons may
@@ -18,13 +18,10 @@
 #             openfang-health rewrite of agent.toml impossible: declared TOML,
 #             runtime JSON in different places).
 #
-# Restore rules (estate-reconcile --apply):
-#   - binary with immutable_copy: restored atomically (tmp + rename) from the
-#     immutable copy, only if the copy's sha256 matches the declared sha256.
-#   - binary with git_path (repo-tracked script): restored from git HEAD only
-#     if `git verify-commit HEAD` passes AND git's copy matches declared sha.
-#     Unsigned HEAD -> alert only, no restore (unsigned-HEAD test).
-#   - binary with neither: CHECK ONLY (alert). Rebuild, re-record, redeploy.
+# Restore rules: NONE. Restoration is HARD-DISABLED in this workstream
+# (Chris 2026-09-30: the warden restores NOTHING). estate-reconcile is
+# alert-only on every path: check and watch report drift; a human decides
+# rebuild, bless, or trusted-copy. Nothing here auto-restores.
 #   - declared_configs are REPORT-ONLY in this workstream: the tree is shared
 #     with ~198 dirty files from other crews, so auto-restoring configs from
 #     git would nuke live WIP. estate-reconcile check lists them as DIRTY
@@ -44,9 +41,9 @@ binaries:
     note: live path is a symlink to the immutable versioned file (herd-deploy)
   herd-keypool:
     path: /home/toxic/sovereign/bin/herd-keypool.py
-    sha256: "3fe304d471e5c1c6ff898d75f09dafd59a815fe553f17e531cae5322451ab2c5"
+    sha256: "432c60f839be5fe4823461b103cb53b808d41d6d73283cc7702103506a6a92b2"
     source: toxicwind/sovereign-projects
-    commit: 7f4e5c8c65643b007b80a4274304052746389a4e
+    commit: 020f479aa899a5c6dc4226fdec690420540c20f9
     git_path: bin/herd-keypool.py
     daemon: keypool
     immutable_copy: /home/toxic/sovereign/bin/herd-keypool.py.20260929-234239

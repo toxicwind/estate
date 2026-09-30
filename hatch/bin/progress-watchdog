@@ -25,6 +25,10 @@ no "still ongoing" reminders):
     alert_outbox.jsonl and flush_outbox() replays them on the next
     healthy run, before the cleared-notes. An alert that fires into a
     dead bridge is no longer silently lost.
+  - funnel differential (2026-09-22): when the exec lane fails, the
+    watchdog probes the yote funnel paths directly (no bridge needed) and
+    the bridge:exec alert names exactly which backends are down vs the
+    whole box being gone.
 Healthy state is silence. Hearth speaks only when something changed.
 
 State is written atomically (write-temp + fsync + rename); every run
@@ -88,6 +92,26 @@ OUTBOX = WDIR / "alert_outbox.jsonl"   # queued fleet msgs, bridge-down
 OUTBOX_SENDING = WDIR / "alert_outbox.sending"  # claimed batch (crash-safe)
 OUTBOX_MAX = 100       # cap queued messages; oldest dropped first
 ME = "hearth"          # persona sign-off (sent via ember identity)
+
+FUNNEL_BASE = "https://github-mcp-host.tailc9ac71.ts.net"
+# funnel path -> backend label. Probed WITHOUT the bridge (plain curl through
+# the egress proxy) so a dead exec lane still yields a differential diagnosis:
+# which yote backends are actually down vs the whole box being gone.
+# (Added 2026-09-22: the 02:12 outage killed only the exec-path backends while
+# squawk-feed, mesh-mcp and tailscaled stayed up — bare "bridge-unreachable"
+# hid that and misdirected the response.)
+FUNNEL_PROBE = {
+    "/": "root:25201",
+    "/status": "status:25207",
+    "/mcp": "mcp:25198",
+    "/exec-ws": "exec-ws:25204",
+    "/gemini-mcp": "gemini-mcp:25202",
+    "/files": "files:34567",
+    "/whatsapp-webhook": "wa:25146",
+    "/mesh-mcp": "mesh-mcp:25127",
+    "/squawk-ws": "squawk-ws:25147",
+    "/squawk-feed/seq": "squawk-feed:25135",
+}
 
 WDIR.mkdir(parents=True, exist_ok=True)
 
@@ -259,6 +283,94 @@ def bridge_exec(cmd, timeout=120):
         return raw  # raw snapshot JSON straight from the WS lane
     except Exception:  # noqa: BLE001
         return None
+
+
+def probe_yote_pids(pids):
+    """Bridge-verified /proc states for yote pids: {pid: state_char|None}.
+
+    One batched yote-conn exec (shell loop, no new yote-side files); state
+    is read with `sed 's/.*) //'` so comm-with-spaces can't shift the
+    field. Each pid emits exactly one line ("<pid> <state>" or "<pid>
+    GONE") so dead pids can't merge into a neighbour's line. Raises on
+    bridge failure — the caller then treats the pause state as
+    unverifiable instead of asserting STALE from a failed read. Only
+    invoked when a pause-state file with yote_pids actually exists
+    (rare), so the common case costs zero extra bridge calls.
+    (2026-09-30: added with the yote_pids fix in check_pause_state_consistent —
+    the old check declared every yote-only swarm-paused.json STALE blind,
+    without ever looking at yote.)"""
+    want = [int(p) for p in pids]
+    plist = " ".join(str(p) for p in want)
+    raw = bridge_exec(
+        "for p in %s; do s=$(sed 's/.*) //' /proc/$p/stat 2>/dev/null "
+        "| cut -d' ' -f1); echo \"$p ${s:-GONE}\"; done" % plist,
+        timeout=60)
+    if not raw:
+        raise RuntimeError("bridge returned empty response")
+    states = {}
+    for line in raw.splitlines():
+        parts = line.split()
+        if len(parts) == 2 and parts[0].isdigit():
+            states[int(parts[0])] = None if parts[1] == "GONE" else parts[1]
+    return states
+
+
+def _probe_one(args):
+    path, label, timeout = args
+    try:
+        p = subprocess.run(
+            ["curl", "-s", "-m", str(timeout), "-o", "/dev/null",
+             "-w", "%{http_code}", FUNNEL_BASE + path],
+            capture_output=True, text=True, timeout=timeout + 5)
+        return label, (p.stdout or "").strip()
+    except Exception:  # noqa: BLE001
+        return label, ""
+
+
+def _tcp_reachable(host="github-mcp-host.tailc9ac71.ts.net", port=443, timeout=5):
+    """TCP-level reachability of yote:443 through the egress proxy.
+
+    Returns True when the proxy's CONNECT succeeds (yote's tailnet stack
+    accepted TCP) even if TLS dies right after. Distinguishes a wedged
+    serve layer (TCP up, TLS closed) from a dead box / dead path (TCP
+    never connects). Single probe, short timeout — never retry-spins.
+    (Added 2026-09-22: the 13:12 outage showed TCP connect OK + TLS dead,
+    which the funnel differential misread as 'yote down'.)
+    """
+    try:
+        p = subprocess.run(
+            ["curl", "-sv", "-m", str(timeout), "-o", "/dev/null",
+             f"https://{host}:{port}/"],
+            capture_output=True, text=True, timeout=timeout + 5)
+        return "connection established" in (p.stderr or "").lower()
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def funnel_probe(timeout=5):
+    """Bridge-independent yote funnel differential (2026-09-22).
+
+    Returns (funnel_up, dead, alive). funnel_up False means not even the
+    funnel answered (yote down or tailnet path dead from here). Otherwise
+    dead/alive name backends by label with the observed HTTP code. A
+    backend counts alive on any non-502 answer (200/403/404 = the backend
+    itself responded; 502 = funnel up but backend down). One parallel
+    pass, short timeouts — never retry-spins.
+    """
+    from concurrent.futures import ThreadPoolExecutor
+    dead, alive = [], []
+    funnel_up = False
+    with ThreadPoolExecutor(max_workers=len(FUNNEL_PROBE)) as ex:
+        results = list(ex.map(
+            _probe_one,
+            [(path, label, timeout) for path, label in FUNNEL_PROBE.items()]))
+    for label, code in results:
+        if code and code != "000":
+            funnel_up = True
+            (alive if code != "502" else dead).append(f"{label}[{code}]")
+        else:
+            dead.append(f"{label}[unreachable]")
+    return funnel_up, dead, alive
 
 
 def yote_snapshot():
@@ -491,7 +603,8 @@ def run():
         ("progress_state.json",
          wl.check_json_state(STATE, list(STATE_DEFAULTS))),
         ("swarm-paused.json",
-         wl.check_pause_state_consistent(PAUSE_STATE)),
+         wl.check_pause_state_consistent(PAUSE_STATE,
+                                         yote_probe=probe_yote_pids)),
     ])
     findings = list(sc["findings"])
     for rid in wl.ledger_find_lost(RUN_LEDGER):
@@ -557,10 +670,28 @@ def run():
                       "local connector alive, no restart needed", flush=True)
             snapshot_ok = True
         else:
+            # Bridge is genuinely unreachable: run the bridge-independent
+            # funnel differential (2026-09-22) so the alert names exactly
+            # what died on yote instead of just "bridge-unreachable".
+            funnel_up, fdead, falive = funnel_probe()
+            if funnel_up:
+                fdiag = (f"yote is UP (funnel answered) but backends are "
+                         f"down: {', '.join(fdead)}. "
+                         f"Still alive: {', '.join(falive) if falive else 'none'}.")
+            else:
+                if _tcp_reachable():
+                    fdiag = ("yote's tailnet stack is UP (TCP :443 connects) "
+                             "but the TLS serve layer closes connections "
+                             "immediately — tailscale serve / funnel wedged "
+                             "on yote. Needs a box-side serve restart; "
+                             "nothing fixable from here.")
+                else:
+                    fdiag = ("funnel didn't answer at all — yote down or the "
+                             "tailnet path from here is dead.")
             cond("bridge:exec", f"err={snap['_error'][:80]}",
                  f"\U0001F43A Hearth here — I can't reach yote at all "
-                 f"({snap['_error'][:120]}). My eyes are closed, pack — "
-                 f"someone check the bridge!")
+                 f"({snap['_error'][:120]}). Differential: {fdiag} "
+                 f"My eyes are closed, pack — someone check the bridge!")
             save_state(state)
             return ("bridge-unreachable", {"fired": fired})
     else:
@@ -627,9 +758,17 @@ def run():
                  f"something's off. Flagging for Ember, not touching it.")
 
     # --- bidders ---
+    # 2026-09-29: pitchfork status can desync (no-op idempotent launcher
+    # exits 0 while a live bidder from an older generation still holds
+    # the flock -> pitchfork "stopped", process alive). pgrep ground
+    # truth (proc_running, from the yote snapshot) wins: restart only
+    # when neither pitchfork nor the process shows it alive.
     bidders = snap.get("bidders", [])
-    alive_b = sum(1 for b in bidders if b["status"] == "running")
+    alive_b = sum(1 for b in bidders
+                  if b["status"] == "running" or b.get("proc_running"))
     for b in bidders:
+        if b["status"] != "running" and b.get("proc_running"):
+            continue  # pitchfork desync; the bidder is alive. Stay silent.
         if b["status"] != "running":
             ok, tail = restart_bidder(b["name"])
             if ok:
