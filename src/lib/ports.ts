@@ -78,11 +78,24 @@ const ENV_LAYERS: EnvLayer[] = [
   { resolve: () => resolve(homedir(), ".secrets"), precedence: 2 },
 ];
 
+// Placeholder values Bun auto-loads from a cwd dotfile. An explicitly-set
+// env var must win over the layered files; a placeholder must lose.
+function isPlaceholder(v: string | undefined): boolean {
+  return v === undefined || v === "" || v === "<redacted>";
+}
+
 export function loadSovereignPorts(): void {
   const layers = [...ENV_LAYERS].sort((a, b) => a.precedence - b.precedence);
+  const fromLayers = new Set<string>();
   for (const layer of layers) {
     for (const [k, v] of Object.entries(parseEnvFile(layer.resolve()))) {
-      process.env[k] = v;
+      // Higher-precedence layers win over lower layers, but an explicitly-set
+      // (non-placeholder) env var wins over all layers. This preserves the
+      // vault-over-placeholder behavior without clobbering caller exports.
+      if (fromLayers.has(k) || isPlaceholder(process.env[k])) {
+        process.env[k] = v;
+        fromLayers.add(k);
+      }
     }
   }
 }
