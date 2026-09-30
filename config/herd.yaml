@@ -844,24 +844,30 @@ peers:
         403-refused: 1.5
         429-throttled: 0.5
         200-empty: 1.5
-  # --- mistral: Mistral AI direct (added 2026-09-20) ---
+  # --- mistral: Mistral AI via keypool (added 2026-09-20, re-wired 2026-09-29) ---
   # Model IDs verbatim from https://api.mistral.ai/v1/models (46 models; chat-capable subset).
+  # RE-WIRED 2026-09-29 (kestrel/GuideLLM audit): MISTRAL_API_KEY verified LIVE
+  # (/v1/models -> 200, 46 models; chat completions -> 200). The 2026-09-29
+  # "key absent" note was wrong -- the key was in /home/toxic/.secrets all along.
+  # Auth now flows through the keypool (config/keypools.yaml: mistral pool);
+  # do NOT re-add a hardcoded apiKey (estate doctrine 2026-09-20).
+  # Model list pruned to key-entitled IDs only: mistral-medium-*/magistral-*/
+  # mistral-small-* are HTTP 429 at 0 req/min on this key (no entitlement);
+  # mistral-large-latest is HTTP 403 (not entitled). Re-probe before adding.
   mistral:
     # NOTE: proxy has no /v1 suffix -- the router joins the proxy with the
     # request path (/v1/chat/completions); a /v1 suffix would double it.
-    proxy: https://api.mistral.ai
-    # apiKey intentionally OMITTED 2026-09-29 (lumen): MISTRAL_API_KEY absent from estate
-    # (.secrets re-rendered 2026-09-28 22:21; no backup copy found). Peer 401s at
-    # runtime until the token is re-installed. Re-add: apiKey: ${env.MISTRAL_API_KEY} + MISTRAL_API_KEY in .secrets.
+    # Keypool route: http://127.0.0.1:25109/mistral + /v1/chat/completions
+    # -> https://api.mistral.ai/v1/chat/completions with Bearer <redacted> injected.
+    proxy: http://127.0.0.1:25109/mistral
+    # apiKey omitted: auth injected per-call by the key-pool sidecar from its
+    # health-checked MISTRAL_API_KEY. Do NOT re-add a hardcoded key.
     models:
-      - mistral-medium-3.5
-      - magistral-medium-latest
-      - mistral-medium-latest
-      - mistral-small-latest
       - codestral-latest
       - ministral-14b-latest
       - ministral-8b-latest
       - ministral-3b-latest
+      - mistral-code-latest
     timeouts:
       connect: 30
       keepalive: 30

@@ -7,6 +7,8 @@ import {
   QUARANTINE_BASE_S,
   QUARANTINE_MAX_S,
   QUARANTINE_PROBE_MS,
+  catalog,
+  persistCatalog,
 } from "./router_config.ts";
 import * as fs from "node:fs";
 
@@ -725,7 +727,9 @@ export class Matrix {
   /**
    * noteEntitlement404 — LOUD permanent bench for a 404'd model id.
    * Logs to stderr (pitchfork logs) and records a healing event so the
-   * bench is visible in /status and the DB, not silent.
+   * bench is visible in /status and the DB, not silent. Also quarantines
+   * the id in the unified catalog (persisted) so it stops being served
+   * immediately — a later re-listing re-admits it automatically.
    */
   noteEntitlement404(prov: string, model: string): void {
     const key = `${prov}:${model}`;
@@ -741,11 +745,31 @@ export class Matrix {
       "entitlement_benched",
       "404 not-entitled/delisted: model benched for process lifetime, zero retries",
     );
+    catalog.noteServe404(prov, model);
+    persistCatalog();
   }
 
-  /** True when the model id was benched by a 404 (fail-fast, no attempts). */
+  /**
+   * True when the model id was benched by a 404 (fail-fast, no attempts).
+   * The bench clears automatically when the unified catalog re-admits the
+   * model into its serving set (a later re-listing): the catalog is the
+   * source of truth. Ids never in the catalog (test fakes, unknown
+   * providers) keep the bench — there is no re-admission to observe.
+   */
   isEntitlementDead(prov: string, model: string): boolean {
-    return this.entitlementDead.has(`${prov}:${model}`);
+    const key = `${prov}:${model}`;
+    if (!this.entitlementDead.has(key)) return false;
+    // Re-admission: if the catalog now serves this id, the bench is stale —
+    // clear it so the model routes again without a restart.
+    try {
+      if (catalog.servingModels(prov).includes(model)) {
+        this.entitlementDead.delete(key);
+        return false;
+      }
+    } catch {
+      // Catalog lookup failed; keep the bench (fail-closed).
+    }
+    return true;
   }
 }
 
