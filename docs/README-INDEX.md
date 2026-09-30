@@ -1,550 +1,328 @@
-# README index — every README in this repo
+# Sovereign Documentation Knowledge Graph (11ty-Style Collections Index)
 
-> 445 README files, generated 2026-09-20. Relative links — click through from the GitHub tree or any clone.
+> **Automated Relational Knowledge Graph** generated on `2026-09-27T09:22:52.066Z` across **244 modular documents** in `sovereign/docs/`.
 
-Master map: [root README](../README.md) · [fleet knowledgebase](fleet-knowledgebase.md)
+## Tagged Collections Index
 
-## Contents
+| Tag / Collection | Document Count | Deep Permalinks |
+|---|---|---|
+| **`#ports`** | 200 | [`free-pollinations-herd-hotfix-plan.md`](plans/free-pollinations-herd-hotfix-plan.md) · [`wezterm-shell-integration-plan.md`](plans/wezterm-shell-integration-plan.md) · [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) · [`REORG-PLAN.md`](plans/master/REORG-PLAN.md) *(+196 more)* |
+| **`#general`** | 126 | [`ARCHITECTURE.md`](ARCHITECTURE.md) · [`ARXIV_EMERGENCE_SURVEY.md`](ARXIV_EMERGENCE_SURVEY.md) · [`CONTROL_PLANE.md`](CONTROL_PLANE.md) · [`GPU_COOLING.md`](GPU_COOLING.md) *(+122 more)* |
+| **`#router`** | 63 | [`free-pollinations-herd-hotfix-plan.md`](plans/free-pollinations-herd-hotfix-plan.md) · [`wezterm-shell-integration-plan.md`](plans/wezterm-shell-integration-plan.md) · [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) · [`REORG-PLAN.md`](plans/master/REORG-PLAN.md) *(+59 more)* |
+| **`#mcp`** | 60 | [`free-pollinations-herd-hotfix-plan.md`](plans/free-pollinations-herd-hotfix-plan.md) · [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) · [`REORG-PLAN.md`](plans/master/REORG-PLAN.md) · [`TASKS.md`](plans/master/TASKS.md) *(+56 more)* |
+| **`#audit`** | 51 | [`runtime-cell.md`](Meta/Muse AI/runtime-cell.md) · [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) · [`REORG-PLAN.md`](plans/master/REORG-PLAN.md) · [`TASKS.md`](plans/master/TASKS.md) *(+47 more)* |
+| **`#fleet`** | 39 | [`README.md`](fleet/personas/README.md) · [`AGENTS.md`](fleet/personas/cinder/AGENTS.md) · [`IDENTITY.md`](fleet/personas/cinder/IDENTITY.md) · [`SOUL.md`](fleet/personas/cinder/SOUL.md) *(+35 more)* |
+| **`#personas`** | 38 | [`README.md`](fleet/personas/README.md) · [`AGENTS.md`](fleet/personas/cinder/AGENTS.md) · [`IDENTITY.md`](fleet/personas/cinder/IDENTITY.md) · [`SOUL.md`](fleet/personas/cinder/SOUL.md) *(+34 more)* |
+| **`#tools`** | 33 | [`ask.md`](tools/ask.md) · [`ast-edit.md`](tools/ast-edit.md) · [`ast-grep.md`](tools/ast-grep.md) · [`bash.md`](tools/bash.md) *(+29 more)* |
+| **`#pitchfork`** | 31 | [`free-pollinations-herd-hotfix-plan.md`](plans/free-pollinations-herd-hotfix-plan.md) · [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) · [`REORG-PLAN.md`](plans/master/REORG-PLAN.md) · [`TASKS.md`](plans/master/TASKS.md) *(+27 more)* |
+| **`#toolconv`** | 12 | [`anthropic.md`](toolconv/anthropic.md) · [`deepseek.md`](toolconv/deepseek.md) · [`gemini.md`](toolconv/gemini.md) · [`gemma.md`](toolconv/gemma.md) *(+8 more)* |
+| **`#audits`** | 9 | [`bedf89a9-post-recovery-audit-bid.md`](audits/bedf89a9-post-recovery-audit-bid.md) · [`nim-oracle-research.md`](audits/nim-oracle-research.md) · [`pi-conversion-summary.md`](audits/pi-conversion-summary.md) · [`MCP_AUDIT.md`](audits/2026-09-20/MCP_AUDIT.md) *(+5 more)* |
+| **`#plans`** | 8 | [`free-pollinations-herd-hotfix-plan.md`](plans/free-pollinations-herd-hotfix-plan.md) · [`mesh-tau-verified-plan.md`](plans/mesh-tau-verified-plan.md) · [`wezterm-shell-integration-plan.md`](plans/wezterm-shell-integration-plan.md) · [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) *(+4 more)* |
+| **`#skills`** | 6 | [`README.md`](skills/examples/hello-extension/README.md) · [`README.md`](skills/examples/mini-marketplace/README.md) · [`README.md`](skills/examples/safety-hook/README.md) · [`authoring-extensions.md`](skills/authoring-extensions.md) *(+2 more)* |
+| **`#Meta`** | 3 | [`open-questions.md`](Meta/Muse AI/open-questions.md) · [`runtime-cell.md`](Meta/Muse AI/runtime-cell.md) · [`README.md`](Meta/Muse AI/README.md) |
+| **`#Muse AI`** | 3 | [`open-questions.md`](Meta/Muse AI/open-questions.md) · [`runtime-cell.md`](Meta/Muse AI/runtime-cell.md) · [`README.md`](Meta/Muse AI/README.md) |
+| **`#master`** | 3 | [`MASTER_PLAN.md`](plans/master/MASTER_PLAN.md) · [`REORG-PLAN.md`](plans/master/REORG-PLAN.md) · [`TASKS.md`](plans/master/TASKS.md) |
+| **`#examples`** | 3 | [`README.md`](skills/examples/hello-extension/README.md) · [`README.md`](skills/examples/mini-marketplace/README.md) · [`README.md`](skills/examples/safety-hook/README.md) |
+| **`#2026-09-14`** | 2 | [`AUDIT.md`](audits/2026-09-14/AUDIT.md) · [`FORKS_AUDIT.md`](audits/2026-09-14/FORKS_AUDIT.md) |
+| **`#2026-09-22`** | 2 | [`bedf89a9-post-recovery-audit-bid.md`](audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md) · [`pi-conversion-summary.md`](audits/2026-09-22/pi-conversion-summary.md) |
+| **`#chat-native-agents`** | 2 | [`PAPER-TRAIL.md`](chat-native-agents/PAPER-TRAIL.md) · [`DESIGN.md`](chat-native-agents/DESIGN.md) |
+| **`#operations`** | 2 | [`ENV_OWNERSHIP.md`](operations/security-and-guards/ENV_OWNERSHIP.md) · [`FIX.md`](operations/security-and-guards/FIX.md) |
+| **`#security-and-guards`** | 2 | [`ENV_OWNERSHIP.md`](operations/security-and-guards/ENV_OWNERSHIP.md) · [`FIX.md`](operations/security-and-guards/FIX.md) |
+| **`#migrations`** | 1 | [`wezterm-shell-integration-plan.md`](plans/migrations/wezterm-shell-integration-plan.md) |
+| **`#verified`** | 1 | [`mesh-tau-verified-plan.md`](plans/verified/mesh-tau-verified-plan.md) |
+| **`#2026-09-20`** | 1 | [`MCP_AUDIT.md`](audits/2026-09-20/MCP_AUDIT.md) |
+| **`#2026-09-21`** | 1 | [`polling-audit-2026-09-21.md`](audits/2026-09-21/polling-audit-2026-09-21.md) |
+| **`#knowledgebase`** | 1 | [`fleet-knowledgebase.md`](fleet/knowledgebase/fleet-knowledgebase.md) |
+| **`#architecture`** | 1 | [`socket-stream-cognitive-ekg.md`](architecture/socket-stream-cognitive-ekg.md) |
+| **`#research`** | 1 | [`nim-oracle-research.md`](research/surveys-and-preprints/nim-oracle-research.md) |
+| **`#surveys-and-preprints`** | 1 | [`nim-oracle-research.md`](research/surveys-and-preprints/nim-oracle-research.md) |
+| **`#upstream`** | 1 | [`porting-from-oh-my-pi.md`](upstream/porting-from-oh-my-pi.md) |
+| **`#agents`** | 1 | [`CONVENTION.md`](agents/CONVENTION.md) |
 
-- [(root)](#(root)) (1)
-- [.code-scalpel](#code-scalpel) (8)
-- [AI](#ai) (1)
-- [agent-config](#agent-config) (1)
-- [agents](#agents) (1)
-- [bridge](#bridge) (1)
-- [completion-audit](#completion-audit) (1)
-- [docs](#docs) (2)
-- [hatch](#hatch) (5)
-- [killer-features](#killer-features) (4)
-- [ops](#ops) (3)
-- [packages](#packages) (3)
-- [pi-conversion](#pi-conversion) (1)
-- [projects](#projects) (347)
-- [readme-fix-sovereign-1789408144](#readme-fix-sovereign-1789408144) (1)
-- [research](#research) (1)
-- [scratch](#scratch) (27)
-- [skills](#skills) (4)
-- [sovereign-scripts](#sovereign-scripts) (1)
-- [sovereign-skills](#sovereign-skills) (1)
-- [src](#src) (2)
-- [tailscale](#tailscale) (1)
-- [tau-extensions](#tau-extensions) (5)
-- [tools](#tools) (24)
+## Relational Category Hierarchy
 
-## (root)
+### 📁 `Meta/`
 
-- [README.md](../README.md)
+- **[Meta / Muse AI](Meta/Muse AI/README.md)** `(Meta/Muse AI/README.md)` ── *(2 outgoing links)*
+- **[Open questions](Meta/Muse AI/open-questions.md)** `(Meta/Muse AI/open-questions.md)`
+- **[The runtime cell](Meta/Muse AI/runtime-cell.md)** `(Meta/Muse AI/runtime-cell.md)`
 
-## .code-scalpel
+### 📁 `agents/`
 
-- [.code-scalpel/HOOKS_README.md](../.code-scalpel/HOOKS_README.md)
-- [.code-scalpel/README.md](../.code-scalpel/README.md)
-- [.code-scalpel/license/README.md](../.code-scalpel/license/README.md)
-- [.code-scalpel/policies/README.md](../.code-scalpel/policies/README.md)
-- [.code-scalpel/policies/architecture/README.md](../.code-scalpel/policies/architecture/README.md)
-- [.code-scalpel/policies/devops/README.md](../.code-scalpel/policies/devops/README.md)
-- [.code-scalpel/policies/devsecops/README.md](../.code-scalpel/policies/devsecops/README.md)
-- [.code-scalpel/policies/project/README.md](../.code-scalpel/policies/project/README.md)
+- **[Sovereign Guidance Triad — Universal AGENTS.md Convention v1](agents/CONVENTION.md)** `(agents/CONVENTION.md)`
 
-## AI
+### 📁 `architecture/`
 
-- [AI/README.md](../AI/README.md)
+- **[Socket Stream & Cognitive EKG Architecture](architecture/socket-stream-cognitive-ekg.md)** `(architecture/socket-stream-cognitive-ekg.md)`
 
-## agent-config
+### 📁 `audits/`
 
-- [agent-config/README.md](../agent-config/README.md)
+- **[AUDIT.md — sovereign-projects (`~/projects/sovereign-projects`)](audits/2026-09-14/AUDIT.md)** `(audits/2026-09-14/AUDIT.md)`
+- **[Sovereign Ecosystem — Deep Fork & Repository Audit](audits/2026-09-14/FORKS_AUDIT.md)** `(audits/2026-09-14/FORKS_AUDIT.md)`
+- **[MCP Infrastructure Audit Report](audits/2026-09-20/MCP_AUDIT.md)** `(audits/2026-09-20/MCP_AUDIT.md)`
+- **[Estate Polling Audit — 2026-09-21](audits/2026-09-21/polling-audit-2026-09-21.md)** `(audits/2026-09-21/polling-audit-2026-09-21.md)`
+- **[POST-RECOVERY ADDITIONS AUDIT — debate bedf89a9 (bid)](audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md)** `(audits/2026-09-22/bedf89a9-post-recovery-audit-bid.md)`
+- **[npm-to-bun Migration Summary](audits/2026-09-22/pi-conversion-summary.md)** `(audits/2026-09-22/pi-conversion-summary.md)`
+- **[POST-RECOVERY ADDITIONS AUDIT — debate bedf89a9 (bid)](audits/bedf89a9-post-recovery-audit-bid.md)** `(audits/bedf89a9-post-recovery-audit-bid.md)`
+- **[NVIDIA NIM Model Research for Super-Ralph Oracle](audits/nim-oracle-research.md)** `(audits/nim-oracle-research.md)`
+- **[npm-to-bun Migration Summary](audits/pi-conversion-summary.md)** `(audits/pi-conversion-summary.md)`
 
-## agents
+### 📁 `chat-native-agents/`
 
-- [agents/oracle-market/README.md](../agents/oracle-market/README.md)
+- **[Chat-native agents: buildable design (no polling)](chat-native-agents/DESIGN.md)** `(chat-native-agents/DESIGN.md)`
+- **[Paper trail + build-vs-borrow verdict](chat-native-agents/PAPER-TRAIL.md)** `(chat-native-agents/PAPER-TRAIL.md)`
 
-## bridge
+### 📁 `fleet/`
 
-- [bridge/README.md](../bridge/README.md)
+- **[Fleet Knowledgebase](fleet/knowledgebase/fleet-knowledgebase.md)** `(fleet/knowledgebase/fleet-knowledgebase.md)` ── *(1 outgoing links)*
+- **[Fleet roster](fleet/personas/INDEX.md)** `(fleet/personas/INDEX.md)`
+- **[Persona folders](fleet/personas/README.md)** `(fleet/personas/README.md)`
+- **[Cinder — operating notes](fleet/personas/cinder/AGENTS.md)** `(fleet/personas/cinder/AGENTS.md)`
+- **[Cinder](fleet/personas/cinder/IDENTITY.md)** `(fleet/personas/cinder/IDENTITY.md)`
+- **[Cinder — memory](fleet/personas/cinder/MEMORY.md)** `(fleet/personas/cinder/MEMORY.md)`
+- **[Cinder — soul](fleet/personas/cinder/SOUL.md)** `(fleet/personas/cinder/SOUL.md)`
+- **[Forge — operating notes](fleet/personas/forge/AGENTS.md)** `(fleet/personas/forge/AGENTS.md)`
+- **[Forge](fleet/personas/forge/IDENTITY.md)** `(fleet/personas/forge/IDENTITY.md)`
+- **[Forge — memory](fleet/personas/forge/MEMORY.md)** `(fleet/personas/forge/MEMORY.md)`
+- **[Forge — soul](fleet/personas/forge/SOUL.md)** `(fleet/personas/forge/SOUL.md)`
+- **[Gavel — operating notes](fleet/personas/gavel/AGENTS.md)** `(fleet/personas/gavel/AGENTS.md)`
+- **[Gavel](fleet/personas/gavel/IDENTITY.md)** `(fleet/personas/gavel/IDENTITY.md)`
+- **[Gavel — memory](fleet/personas/gavel/MEMORY.md)** `(fleet/personas/gavel/MEMORY.md)`
+- **[Gavel — soul](fleet/personas/gavel/SOUL.md)** `(fleet/personas/gavel/SOUL.md)`
+- **[Hearth — operating notes](fleet/personas/hearth/AGENTS.md)** `(fleet/personas/hearth/AGENTS.md)`
+- **[Hearth](fleet/personas/hearth/IDENTITY.md)** `(fleet/personas/hearth/IDENTITY.md)`
+- **[Hearth — memory](fleet/personas/hearth/MEMORY.md)** `(fleet/personas/hearth/MEMORY.md)`
+- **[Hearth — soul](fleet/personas/hearth/SOUL.md)** `(fleet/personas/hearth/SOUL.md)`
+- **[Rivet — operating notes](fleet/personas/rivet/AGENTS.md)** `(fleet/personas/rivet/AGENTS.md)`
+- **[Rivet](fleet/personas/rivet/IDENTITY.md)** `(fleet/personas/rivet/IDENTITY.md)`
+- **[Rivet — memory](fleet/personas/rivet/MEMORY.md)** `(fleet/personas/rivet/MEMORY.md)`
+- **[Rivet — soul](fleet/personas/rivet/SOUL.md)** `(fleet/personas/rivet/SOUL.md)`
+- **[Sable — operating notes](fleet/personas/sable/AGENTS.md)** `(fleet/personas/sable/AGENTS.md)`
+- **[Sable](fleet/personas/sable/IDENTITY.md)** `(fleet/personas/sable/IDENTITY.md)`
+- **[Sable — memory](fleet/personas/sable/MEMORY.md)** `(fleet/personas/sable/MEMORY.md)`
+- **[Sable — soul](fleet/personas/sable/SOUL.md)** `(fleet/personas/sable/SOUL.md)`
+- **[Tally — operating notes](fleet/personas/tally/AGENTS.md)** `(fleet/personas/tally/AGENTS.md)`
+- **[Tally](fleet/personas/tally/IDENTITY.md)** `(fleet/personas/tally/IDENTITY.md)`
+- **[Tally — memory](fleet/personas/tally/MEMORY.md)** `(fleet/personas/tally/MEMORY.md)`
+- **[Tally — soul](fleet/personas/tally/SOUL.md)** `(fleet/personas/tally/SOUL.md)`
+- **[Vesper — operating notes](fleet/personas/vesper/AGENTS.md)** `(fleet/personas/vesper/AGENTS.md)`
+- **[Vesper](fleet/personas/vesper/IDENTITY.md)** `(fleet/personas/vesper/IDENTITY.md)`
+- **[Vesper — memory](fleet/personas/vesper/MEMORY.md)** `(fleet/personas/vesper/MEMORY.md)`
+- **[Vesper — soul](fleet/personas/vesper/SOUL.md)** `(fleet/personas/vesper/SOUL.md)`
+- **[Warden — operating notes](fleet/personas/warden/AGENTS.md)** `(fleet/personas/warden/AGENTS.md)`
+- **[Warden](fleet/personas/warden/IDENTITY.md)** `(fleet/personas/warden/IDENTITY.md)`
+- **[Warden — memory](fleet/personas/warden/MEMORY.md)** `(fleet/personas/warden/MEMORY.md)`
+- **[Warden — soul](fleet/personas/warden/SOUL.md)** `(fleet/personas/warden/SOUL.md)`
 
-## completion-audit
+### 📁 `general/`
 
-- [completion-audit/README.md](../completion-audit/README.md)
+- **[Sovereign Architecture — Single Source of Truth](ARCHITECTURE.md)** `(ARCHITECTURE.md)`
+- **[ArXiv Emergence Survey — Synthesis (Sovereign Registry)](ARXIV_EMERGENCE_SURVEY.md)** `(ARXIV_EMERGENCE_SURVEY.md)`
+- **[Autopoiesis Research Constitution — Phase 0](AUTOPOIESIS_RESEARCH.md)** `(AUTOPOIESIS_RESEARCH.md)`
+- **[Sovereign Control Plane](CONTROL_PLANE.md)** `(CONTROL_PLANE.md)`
+- **[ERRATA — GPT-5 Harmony-Header Leakage](ERRATA-GPT5-HARMONY.md)** `(ERRATA-GPT5-HARMONY.md)`
+- **[RTX 3090 cooling · LACT · undervolt notes](GPU_COOLING.md)** `(GPU_COOLING.md)`
+- **[Hardware Audit Classification — awrawr-pc — 2026-09-14](HARDWARE_AUDIT_20260914.md)** `(HARDWARE_AUDIT_20260914.md)`
+- **[Sovereign Hindsight & Tau Long-Term Memory Architecture](HINDSIGHT_TAU_INTEGRATION.md)** `(HINDSIGHT_TAU_INTEGRATION.md)`
+- **[Kernelopts LLM Tuning & Algorithmic Ranking Reference](KERNELOPTS_LLM_TUNING_AND_RANKING.md)** `(KERNELOPTS_LLM_TUNING_AND_RANKING.md)`
+- **[Kimi Code Fork Feasibility Research](KIMI_CODE_FORK_RESEARCH.md)** `(KIMI_CODE_FORK_RESEARCH.md)`
+- **[The Anna-Senpai Question: A Memetic Forensics Analysis](MANIFESTO.md)** `(MANIFESTO.md)`
+- **[Morphe Patching — Research SSOT (never redo)](MORPHE_PATCHING.md)** `(MORPHE_PATCHING.md)`
+- **[NVIDIA NIM API Documentation — Complete Reference](NVIDIA_NIM_API_DOCS.md)** `(NVIDIA_NIM_API_DOCS.md)`
+- **[Sovereign Pre-Release Integration Engine](PRE_RELEASE_INTEGRATION_ENGINE.md)** `(PRE_RELEASE_INTEGRATION_ENGINE.md)`
+- **[Provider Secret Audit — 2026-09-21](PROVIDER_SECRET_AUDIT_20260921.md)** `(PROVIDER_SECRET_AUDIT_20260921.md)`
+- **[Reasoning Suppression Test — Verdict](REASONING_SUPPRESSION_TEST.md)** `(REASONING_SUPPRESSION_TEST.md)`
+- **[RIDICULOUS MULTI-PROFILE SETUP — Sovereign Model Router](RIDICULOUS_MULTI_PROFILE.md)** `(RIDICULOUS_MULTI_PROFILE.md)`
+- **[Sovereign Storage Tiering & Cache Architecture](STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md)** `(STORAGE_TIERING_AND_CACHE_ARCHITECTURE.md)`
+- **[Sovereign Swap Architecture — zram / zswap / NVMe Tiering](SWAP_OPTIMIZATION.md)** `(SWAP_OPTIMIZATION.md)`
+- **[Swap Architecture Quick Reference](SWAP_QUICKREF.md)** `(SWAP_QUICKREF.md)`
+- **[Universal Architecture — Polyglot Sovereign Stack (August 2026)](UNIVERSAL_ARCHITECTURE.md)** `(UNIVERSAL_ARCHITECTURE.md)`
+- **[Adding a provider](adding-a-provider.md)** `(adding-a-provider.md)`
+- **[Advisor, WATCHDOG.md, and WATCHDOG.yml](advisor-watchdog.md)** `(advisor-watchdog.md)` ── *(4 outgoing links)*
+- **[Agent Hub](agent-hub.md)** `(agent-hub.md)` ── *(3 outgoing links)*
+- **[AI tool-schema normalization](ai-schema-normalize.md)** `(ai-schema-normalize.md)`
+- **[Tool approval mode](approval-mode.md)** `(approval-mode.md)` ── *(2 outgoing links)*
+- **[Auth Broker and Auth Gateway](auth-broker-gateway.md)** `(auth-broker-gateway.md)` ── *(3 outgoing links)*
+- **[Bash tool runtime](bash-tool-runtime.md)** `(bash-tool-runtime.md)` ── *(1 outgoing links)*
+- **[Blob and artifact storage architecture](blob-artifact-architecture.md)** `(blob-artifact-architecture.md)`
+- **[CLI reference](cli-reference.md)** `(cli-reference.md)` ── *(35 outgoing links)*
+- **[Collab: Live Session Sharing](collab.md)** `(collab.md)` ── *(1 outgoing links)*
+- **[Compaction and Branch Summaries](compaction.md)** `(compaction.md)`
+- **[Scriptable computer use](computer-use.md)** `(computer-use.md)` ── *(2 outgoing links)*
+- **[Config naming conventions (sovereign)](config-naming-conventions.md)** `(config-naming-conventions.md)`
+- **[Configuration Discovery and Resolution](config-usage.md)** `(config-usage.md)` ── *(1 outgoing links)*
+- **[Context files](context-files.md)** `(context-files.md)` ── *(6 outgoing links)*
+- **[Cross-box router (ember)](cross-box-router.md)** `(cross-box-router.md)` ── *(3 outgoing links)*
+- **[Custom Tools](custom-tools.md)** `(custom-tools.md)`
+- **[edge-additions — September-2026 cutting-edge additions (2026-09-20)](edge-additions-20260920.md)** `(edge-additions-20260920.md)`
+- **[Sovereign / Ranch Fork Environment Variables Reference](env-reference-fork.md)** `(env-reference-fork.md)`
+- **[OMP & Tau Sovereign Environment Variables Reference](env-reference-upstream.md)** `(env-reference-upstream.md)`
+- **[Environment Variables (Current Runtime Reference)](environment-variables.md)** `(environment-variables.md)` ── *(1 outgoing links)*
+- **[Extension Loading (TypeScript/JavaScript Modules)](extension-loading.md)** `(extension-loading.md)` ── *(4 outgoing links)*
+- **[Extensions](extensions.md)** `(extensions.md)` ── *(4 outgoing links)*
+- **[Fleet Culture — how the den talks](fleet-culture.md)** `(fleet-culture.md)` ── *(1 outgoing links)*
+- **[Sovereign fleet inventory + completion reconciliation — 2026-09-14 ~18:20 MDT](fleet-inventory-20260914.md)** `(fleet-inventory-20260914.md)`
+- **[Fleet Knowledgebase](fleet-knowledgebase.md)** `(fleet-knowledgebase.md)` ── *(1 outgoing links)*
+- **[Free-Tier Model Routing — Ground Truth (2026-09-14)](free-tier-models.md)** `(free-tier-models.md)`
+- **[Filesystem scan cache architecture contract](fs-scan-cache-architecture.md)** `(fs-scan-cache-architecture.md)`
+- **[Gemini Manifest Extensions (`gemini-extension.json`)](gemini-manifest-extensions.md)** `(gemini-manifest-extensions.md)` ── *(1 outgoing links)*
+- **[Purpose](gemini-tool-retrieval-reference.md)** `(gemini-tool-retrieval-reference.md)`
+- **[Gemini API Tool Retrieval EAP — integration brief](gemini-tool-retrieval.md)** `(gemini-tool-retrieval.md)`
+- **[`/handoff` generation pipeline](handoff-generation-pipeline.md)** `(handoff-generation-pipeline.md)`
+- **[Hooks](hooks.md)** `(hooks.md)` ── *(1 outgoing links)*
+- **[Install ID](install-id.md)** `(install-id.md)` ── *(2 outgoing links)*
+- **[Keybindings](keybindings.md)** `(keybindings.md)` ── *(1 outgoing links)*
+- **[Local Model Catalog and Experiments](local-models.md)** `(local-models.md)`
+- **[LSP configuration in OMP](lsp-config.md)** `(lsp-config.md)`
+- **[macOS signing & notarization](macos-signing-notarization.md)** `(macos-signing-notarization.md)`
+- **[Magic keywords](magic-keywords.md)** `(magic-keywords.md)` ── *(1 outgoing links)*
+- **[Marketplace plugin system](marketplace.md)** `(marketplace.md)`
+- **[MCP configuration in OMP](mcp-config.md)** `(mcp-config.md)` ── *(1 outgoing links)*
+- **[MCP Protocol and Transport Internals](mcp-protocol-transports.md)** `(mcp-protocol-transports.md)`
+- **[MCP runtime lifecycle](mcp-runtime-lifecycle.md)** `(mcp-runtime-lifecycle.md)`
+- **[MCP server and tool authoring](mcp-server-tool-authoring.md)** `(mcp-server-tool-authoring.md)`
+- **[Autonomous Memory](memory.md)** `(memory.md)` ── *(2 outgoing links)*
+- **[Mnemopi memory backend](mnemosyne-memory-backend.md)** `(mnemosyne-memory-backend.md)`
+- **[Model and Provider Configuration (`models.yml` / `models.yaml`)](models.md)** `(models.md)` ── *(4 outgoing links)*
+- **[Sovereign Model Naming Grammar (canonical, 2026-09-20)](naming-grammar.md)** `(naming-grammar.md)`
+- **[Naming Rename Plan (2026-09-20, naming-auditor)](naming-rename-plan.md)** `(naming-rename-plan.md)`
+- **[Native Crates](native-crates.md)** `(native-crates.md)` ── *(10 outgoing links)*
+- **[Natives Addon Loader Runtime](natives-addon-loader-runtime.md)** `(natives-addon-loader-runtime.md)`
+- **[Natives Architecture](natives-architecture.md)** `(natives-architecture.md)` ── *(2 outgoing links)*
+- **[Natives Binding Contract (JavaScript/TypeScript Side)](natives-binding-contract.md)** `(natives-binding-contract.md)`
+- **[Natives Build, Release, and Debugging Runbook](natives-build-release-debugging.md)** `(natives-build-release-debugging.md)`
+- **[Natives media + system utilities](natives-media-system-utils.md)** `(natives-media-system-utils.md)`
+- **[Native Rust task execution and cancellation (`pi-natives`)](natives-rust-task-cancellation.md)** `(natives-rust-task-cancellation.md)`
+- **[Natives Shell, PTY, Process, and Key Internals](natives-shell-pty-process.md)** `(natives-shell-pty-process.md)`
+- **[Natives Text/Search Pipeline](natives-text-search-pipeline.md)** `(natives-text-search-pipeline.md)`
+- **[Non-compaction auto-retry policy](non-compaction-retry-policy.md)** `(non-compaction-retry-policy.md)` ── *(1 outgoing links)*
+- **[Notebook file runtime internals](notebook-tool-runtime.md)** `(notebook-tool-runtime.md)`
+- **[NVIDIA API Access Map — NVCF-DIG (2026-09-21)](nvidia-access-map.md)** `(nvidia-access-map.md)`
+- **[omptype Guide (schema authoring in this repo)](omptype-guide.md)** `(omptype-guide.md)`
+- **[OpenFang execution + persistence proof (2026-09-20, ~21:50–22:00 MDT)](openfang-proof-2026-09-20.md)** `(openfang-proof-2026-09-20.md)`
+- **[Plugin manager and installer plumbing](plugin-manager-installer-plumbing.md)** `(plugin-manager-installer-plumbing.md)`
+- **[Estate Polling Audit — 2026-09-21](polling-audit-2026-09-21.md)** `(polling-audit-2026-09-21.md)`
+- **[Port SSOT — `config/ports.env`](port-ssot.md)** `(port-ssot.md)`
+- **[Porting From pi-mono: A Practical Merge Guide](porting-from-pi-mono.md)** `(porting-from-pi-mono.md)`
+- **[Porting Hot Paths to `pi-natives`](porting-to-natives.md)** `(porting-to-natives.md)`
+- **[PostgreSQL Ownership — Decision (2026-09-14)](postgres-ownership.md)** `(postgres-ownership.md)`
+- **[Prewalk](prewalk.md)** `(prewalk.md)` ── *(1 outgoing links)*
+- **[Provider compat reference: OpenAI compat flags, reasoning levels, and tool handling](provider-compat-reference.md)** `(provider-compat-reference.md)` ── *(4 outgoing links)*
+- **[Provider endpoint constraints](provider-endpoint-constraints.md)** `(provider-endpoint-constraints.md)` ── *(6 outgoing links)*
+- **[Provider quirks: special casings, streams, auth, and catalog handling](provider-quirks.md)** `(provider-quirks.md)` ── *(7 outgoing links)*
+- **[Provider streaming internals](provider-streaming-internals.md)** `(provider-streaming-internals.md)`
+- **[Providers](providers.md)** `(providers.md)` ── *(17 outgoing links)*
+- **[push-guard secret scan: ignore memory + placeholder auto-clear](push-guard.md)** `(push-guard.md)`
+- **[Eval Tool Python Backend](python-repl.md)** `(python-repl.md)`
+- **[Resolution devices runtime](resolve-tool-runtime.md)** `(resolve-tool-runtime.md)`
+- **[RPC Protocol Reference](rpc.md)** `(rpc.md)` ── *(1 outgoing links)*
+- **[Rulebook Matching Pipeline](rulebook-matching-pipeline.md)** `(rulebook-matching-pipeline.md)`
+- **[SDK](sdk.md)** `(sdk.md)` ── *(1 outgoing links)*
+- **[Secret Obfuscation](secrets.md)** `(secrets.md)` ── *(1 outgoing links)*
+- **[Session Operations: export, dump, share, fresh, clear, fork, resume/continue](session-operations-export-share-fork-resume.md)** `(session-operations-export-share-fork-resume.md)` ── *(1 outgoing links)*
+- **[Session switching and recent session listing](session-switching-and-recent-listing.md)** `(session-switching-and-recent-listing.md)` ── *(1 outgoing links)*
+- **[Session tree architecture (current)](session-tree-plan.md)** `(session-tree-plan.md)` ── *(1 outgoing links)*
+- **[Session Storage and Entry Model](session.md)** `(session.md)`
+- **[Settings](settings.md)** `(settings.md)` ── *(35 outgoing links)*
+- **[Skills](skills.md)** `(skills.md)`
+- **[Slash command internals](slash-command-internals.md)** `(slash-command-internals.md)`
+- **[Spawn Brief Template (canonical)](spawn-brief-template.md)** `(spawn-brief-template.md)`
+- **[Stream: Livestream Your Terminal](stream.md)** `(stream.md)` ── *(1 outgoing links)*
+- **[System Prompt Customization](system-prompt-customization.md)** `(system-prompt-customization.md)` ── *(1 outgoing links)*
+- **[systemd substrate migration contract](systemd-migration.md)** `(systemd-migration.md)`
+- **[Task Agent Discovery and Selection](task-agent-discovery.md)** `(task-agent-discovery.md)` ── *(3 outgoing links)*
+- **[Tau & OMP Version Specification](tau-version.md)** `(tau-version.md)`
+- **[Theming Reference](theme.md)** `(theme.md)`
+- **[`/tree` Command Reference](tree.md)** `(tree.md)`
+- **[TTSR Injection Lifecycle](ttsr-injection-lifecycle.md)** `(ttsr-injection-lifecycle.md)` ── *(2 outgoing links)*
+- **[TUI core renderer — explicit history and viewport contract](tui-core-renderer.md)** `(tui-core-renderer.md)`
+- **[TUI runtime internals](tui-runtime-internals.md)** `(tui-runtime-internals.md)` ── *(1 outgoing links)*
+- **[TUI integration for extensions and custom tools](tui.md)** `(tui.md)` ── *(1 outgoing links)*
+- **[Unreliable Narrator Doctrine (standing, 2026-09-20)](unreliable-narrator-doctrine.md)** `(unreliable-narrator-doctrine.md)`
+- **[Upstream Autonomy & Fork Synchronization Architecture](upstream-autonomy.md)** `(upstream-autonomy.md)`
+- **[User-Facing Packages](user-facing-packages.md)** `(user-facing-packages.md)` ── *(13 outgoing links)*
+- **[Vibe mode](vibe-mode.md)** `(vibe-mode.md)`
 
-## docs
+### 📁 `operations/`
 
-- [docs/Meta/Muse](../docs/Meta/Muse)
-- [docs/README.md](../docs/README.md)
+- **[mise + direnv coexistence — final design](operations/security-and-guards/ENV_OWNERSHIP.md)** `(operations/security-and-guards/ENV_OWNERSHIP.md)`
+- **[Sovereign Mesh — FIX.md (Live Mutable Checklist)](operations/security-and-guards/FIX.md)** `(operations/security-and-guards/FIX.md)`
 
-## hatch
+### 📁 `plans/`
 
-- [hatch/README.md](../hatch/README.md)
-- [hatch/agents/ember/README.md](../hatch/agents/ember/README.md)
-- [hatch/agents/ember/chat/README.md](../hatch/agents/ember/chat/README.md)
-- [hatch/agents/ember/squawk-relay/README.md](../hatch/agents/ember/squawk-relay/README.md)
-- [hatch/bin/README.md](../hatch/bin/README.md)
+- **[Free Pollinations via Herd — Maximal Hotfix Plan (Tester + Live)](plans/free-pollinations-herd-hotfix-plan.md)** `(plans/free-pollinations-herd-hotfix-plan.md)`
+- **[Sovereign Pi Fork — Master Execution Plan](plans/master/MASTER_PLAN.md)** `(plans/master/MASTER_PLAN.md)`
+- **[SOVEREIGN REORG PLAN — shingle → hatch/agents/ember, shingle-workspace collision resolved](plans/master/REORG-PLAN.md)** `(plans/master/REORG-PLAN.md)`
+- **[Sovereign Fix Tasks - Live Tracker](plans/master/TASKS.md)** `(plans/master/TASKS.md)`
+- **[mesh-tau-verified-plan.md](plans/mesh-tau-verified-plan.md)** `(plans/mesh-tau-verified-plan.md)`
+- **[WezTerm Shell Integration Plan](plans/migrations/wezterm-shell-integration-plan.md)** `(plans/migrations/wezterm-shell-integration-plan.md)`
+- **[mesh-tau-verified-plan.md](plans/verified/mesh-tau-verified-plan.md)** `(plans/verified/mesh-tau-verified-plan.md)`
+- **[WezTerm Shell Integration Plan](plans/wezterm-shell-integration-plan.md)** `(plans/wezterm-shell-integration-plan.md)`
 
-## killer-features
+### 📁 `research/`
 
-- [killer-features/bid-market/bidder/README.md](../killer-features/bid-market/bidder/README.md)
-- [killer-features/bid-market/e2e/README.md](../killer-features/bid-market/e2e/README.md)
-- [killer-features/code-racer/README.md](../killer-features/code-racer/README.md)
-- [killer-features/code-racer/tasks/README.md](../killer-features/code-racer/tasks/README.md)
+- **[NVIDIA NIM Model Research for Super-Ralph Oracle](research/surveys-and-preprints/nim-oracle-research.md)** `(research/surveys-and-preprints/nim-oracle-research.md)`
 
-## ops
+### 📁 `skills/`
 
-- [ops/bg-tracker/bg-tracker/README.md](../ops/bg-tracker/bg-tracker/README.md)
-- [ops/durability/README.md](../ops/durability/README.md)
-- [ops/openfang-health/README.md](../ops/openfang-health/README.md)
+- **[Authoring Extensions](skills/authoring-extensions.md)** `(skills/authoring-extensions.md)` ── *(1 outgoing links)*
+- **[Authoring Hooks](skills/authoring-hooks.md)** `(skills/authoring-hooks.md)`
+- **[Authoring Marketplaces](skills/authoring-marketplaces.md)** `(skills/authoring-marketplaces.md)`
+- **[hello-extension](skills/examples/hello-extension/README.md)** `(skills/examples/hello-extension/README.md)`
+- **[mini-marketplace](skills/examples/mini-marketplace/README.md)** `(skills/examples/mini-marketplace/README.md)`
+- **[safety-hook](skills/examples/safety-hook/README.md)** `(skills/examples/safety-hook/README.md)`
 
-## packages
+### 📁 `toolconv/`
 
-- [packages/gayxxx-sovereign/README.md](../packages/gayxxx-sovereign/README.md)
-- [packages/sovereign-scripts/README.md](../packages/sovereign-scripts/README.md)
-- [packages/sovereign-skills/README.md](../packages/sovereign-skills/README.md)
+- **[Anthropic Claude tool use (Messages API content blocks)](toolconv/anthropic.md)** `(toolconv/anthropic.md)`
+- **[DeepSeek tool-calling wire format](toolconv/deepseek.md)** `(toolconv/deepseek.md)`
+- **[Gemini Pythonic tool-calling format (`tool_code` / `default_api`)](toolconv/gemini.md)** `(toolconv/gemini.md)`
+- **[Gemma 4 tool-calling format (token-delimited `call:NAME{…}`)](toolconv/gemma.md)** `(toolconv/gemma.md)`
+- **[GLM-4.5 / GLM-4.6 tool-calling format](toolconv/glm-4.5.md)** `(toolconv/glm-4.5.md)`
+- **[OpenAI Harmony response format](toolconv/harmony.md)** `(toolconv/harmony.md)`
+- **[Hermes tool-calling format](toolconv/hermes.md)** `(toolconv/hermes.md)` ── *(7 outgoing links)*
+- **[Kimi K2 tool-calling format](toolconv/kimi-k2.md)** `(toolconv/kimi-k2.md)`
+- **[MiniMax owned tool-calling format (`<minimax:tool_call>`)](toolconv/minimax.md)** `(toolconv/minimax.md)` ── *(1 outgoing links)*
+- **[pi-native auth-gateway transport](toolconv/pi-native.md)** `(toolconv/pi-native.md)`
+- **[Qwen3 tool-calling format (Hermes convention)](toolconv/qwen3.md)** `(toolconv/qwen3.md)` ── *(1 outgoing links)*
+- **[Generic XML owned tool-calling format (`<invoke>` / `<tool_response>`)](toolconv/xml.md)** `(toolconv/xml.md)` ── *(1 outgoing links)*
 
-## pi-conversion
+### 📁 `tools/`
 
-- [pi-conversion/README.md](../pi-conversion/README.md)
+- **[ask](tools/ask.md)** `(tools/ask.md)`
+- **[ast_edit](tools/ast-edit.md)** `(tools/ast-edit.md)` ── *(1 outgoing links)*
+- **[ast_grep](tools/ast-grep.md)** `(tools/ast-grep.md)`
+- **[bash](tools/bash.md)** `(tools/bash.md)`
+- **[Browser Eval prelude](tools/browser.md)** `(tools/browser.md)` ── *(1 outgoing links)*
+- **[checkpoint](tools/checkpoint.md)** `(tools/checkpoint.md)`
+- **[computer Eval prelude](tools/computer.md)** `(tools/computer.md)` ── *(2 outgoing links)*
+- **[context_notes](tools/context-notes.md)** `(tools/context-notes.md)` ── *(2 outgoing links)*
+- **[debug](tools/debug.md)** `(tools/debug.md)`
+- **[edit](tools/edit.md)** `(tools/edit.md)`
+- **[eval](tools/eval.md)** `(tools/eval.md)`
+- **[find](tools/find.md)** `(tools/find.md)`
+- **[generate_image](tools/generate_image.md)** `(tools/generate_image.md)`
+- **[github](tools/github.md)** `(tools/github.md)`
+- **[glob](tools/glob.md)** `(tools/glob.md)`
+- **[grep](tools/grep.md)** `(tools/grep.md)`
+- **[learn](tools/learn.md)** `(tools/learn.md)`
+- **[lsp](tools/lsp.md)** `(tools/lsp.md)` ── *(1 outgoing links)*
+- **[manage_skill](tools/manage_skill.md)** `(tools/manage_skill.md)`
+- **[memory_edit](tools/memory_edit.md)** `(tools/memory_edit.md)`
+- **[new_context](tools/new-context.md)** `(tools/new-context.md)` ── *(2 outgoing links)*
+- **[read](tools/read.md)** `(tools/read.md)` ── *(1 outgoing links)*
+- **[recall](tools/recall.md)** `(tools/recall.md)`
+- **[reflect](tools/reflect.md)** `(tools/reflect.md)`
+- **[retain](tools/retain.md)** `(tools/retain.md)`
+- **[rewind](tools/rewind.md)** `(tools/rewind.md)`
+- **[security_scan](tools/security_scan.md)** `(tools/security_scan.md)`
+- **[task](tools/task.md)** `(tools/task.md)` ── *(1 outgoing links)*
+- **[todo](tools/todo.md)** `(tools/todo.md)`
+- **[tts](tools/tts.md)** `(tools/tts.md)`
+- **[wait](tools/wait.md)** `(tools/wait.md)`
+- **[web_search](tools/web_search.md)** `(tools/web_search.md)`
+- **[write](tools/write.md)** `(tools/write.md)`
 
-## projects
+### 📁 `upstream/`
 
-- [projects/README.md](../projects/README.md)
-- [projects/android-fleet/README.md](../projects/android-fleet/README.md)
-- [projects/bridge/README.md](../projects/bridge/README.md)
-- [projects/hatch-decode/README.md](../projects/hatch-decode/README.md)
-- [projects/herd/README.md](../projects/herd/README.md)
-- [projects/herd/cmd/misc/test-rerank/README.md](../projects/herd/cmd/misc/test-rerank/README.md)
-- [projects/herd/cmd/wol-proxy/README.md](../projects/herd/cmd/wol-proxy/README.md)
-- [projects/herd/docker/unified/README.md](../projects/herd/docker/unified/README.md)
-- [projects/herd/docs/examples/README.md](../projects/herd/docs/examples/README.md)
-- [projects/herd/docs/examples/aider-qwq-coder/README.md](../projects/herd/docs/examples/aider-qwq-coder/README.md)
-- [projects/herd/docs/examples/benchmark-snakegame/README.md](../projects/herd/docs/examples/benchmark-snakegame/README.md)
-- [projects/herd/docs/examples/restart-on-config-change/README.md](../projects/herd/docs/examples/restart-on-config-change/README.md)
-- [projects/herd/docs/examples/speculative-decoding/README.md](../projects/herd/docs/examples/speculative-decoding/README.md)
-- [projects/herd/docs/flock/README.md](../projects/herd/docs/flock/README.md)
-- [projects/herd/internal/event/README.md](../projects/herd/internal/event/README.md)
-- [projects/herd/mesh/README.md](../projects/herd/mesh/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/env_dump/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/env_dump/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/llm_client/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/llm_client/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/orchestrator/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/orchestrator/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/switchover/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/switchover/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/free_zed_gateway/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/free_zed_gateway/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/env_dump/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/env_dump/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/llm_client/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/llm_client/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/orchestrator/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/orchestrator/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/switchover/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/switchover/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/cert_extract/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/cert_extract/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/chunker/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/chunker/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/env_dump/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/env_dump/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/file_scan/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/file_scan/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/k8s_client/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/k8s_client/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/llm_client/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/llm_client/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/net_map/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/net_map/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/orchestrator/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/orchestrator/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/organizer/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/organizer/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/proc_mon/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/proc_mon/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/prompts/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/prompts/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/recon/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/recon/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/simhash/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/simhash/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/switchover/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/switchover/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/sys_mon/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/sys_mon/README.md)
-- [projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/ts_core/README.md](../projects/herd/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/ts_core/README.md)
-- [projects/herd/mesh/gateway/README.md](../projects/herd/mesh/gateway/README.md)
-- [projects/herd/mesh/gateway/bench/README.md](../projects/herd/mesh/gateway/bench/README.md)
-- [projects/herd/mesh/gateway/contrib/linux-repos/README.md](../projects/herd/mesh/gateway/contrib/linux-repos/README.md)
-- [projects/herd/mesh/research/ultimate_extract/cert_extract/README.md](../projects/herd/mesh/research/ultimate_extract/cert_extract/README.md)
-- [projects/herd/mesh/research/ultimate_extract/chunker/README.md](../projects/herd/mesh/research/ultimate_extract/chunker/README.md)
-- [projects/herd/mesh/research/ultimate_extract/env_dump/README.md](../projects/herd/mesh/research/ultimate_extract/env_dump/README.md)
-- [projects/herd/mesh/research/ultimate_extract/file_scan/README.md](../projects/herd/mesh/research/ultimate_extract/file_scan/README.md)
-- [projects/herd/mesh/research/ultimate_extract/k8s_client/README.md](../projects/herd/mesh/research/ultimate_extract/k8s_client/README.md)
-- [projects/herd/mesh/research/ultimate_extract/llm_client/README.md](../projects/herd/mesh/research/ultimate_extract/llm_client/README.md)
-- [projects/herd/mesh/research/ultimate_extract/net_map/README.md](../projects/herd/mesh/research/ultimate_extract/net_map/README.md)
-- [projects/herd/mesh/research/ultimate_extract/orchestrator/README.md](../projects/herd/mesh/research/ultimate_extract/orchestrator/README.md)
-- [projects/herd/mesh/research/ultimate_extract/organizer/README.md](../projects/herd/mesh/research/ultimate_extract/organizer/README.md)
-- [projects/herd/mesh/research/ultimate_extract/proc_mon/README.md](../projects/herd/mesh/research/ultimate_extract/proc_mon/README.md)
-- [projects/herd/mesh/research/ultimate_extract/prompts/README.md](../projects/herd/mesh/research/ultimate_extract/prompts/README.md)
-- [projects/herd/mesh/research/ultimate_extract/recon/README.md](../projects/herd/mesh/research/ultimate_extract/recon/README.md)
-- [projects/herd/mesh/research/ultimate_extract/simhash/README.md](../projects/herd/mesh/research/ultimate_extract/simhash/README.md)
-- [projects/herd/mesh/research/ultimate_extract/switchover/README.md](../projects/herd/mesh/research/ultimate_extract/switchover/README.md)
-- [projects/herd/mesh/research/ultimate_extract/sys_mon/README.md](../projects/herd/mesh/research/ultimate_extract/sys_mon/README.md)
-- [projects/herd/mesh/research/ultimate_extract/ts_core/README.md](../projects/herd/mesh/research/ultimate_extract/ts_core/README.md)
-- [projects/herd/mesh/router/README.md](../projects/herd/mesh/router/README.md)
-- [projects/herd/mesh/router/flock-py/README.md](../projects/herd/mesh/router/flock-py/README.md)
-- [projects/herd/mesh/router/flock-py/lib/env_dump/README.md](../projects/herd/mesh/router/flock-py/lib/env_dump/README.md)
-- [projects/herd/mesh/router/flock-py/lib/llm_client/README.md](../projects/herd/mesh/router/flock-py/lib/llm_client/README.md)
-- [projects/herd/mesh/router/flock-py/lib/orchestrator/README.md](../projects/herd/mesh/router/flock-py/lib/orchestrator/README.md)
-- [projects/herd/mesh/router/flock-py/lib/switchover/README.md](../projects/herd/mesh/router/flock-py/lib/switchover/README.md)
-- [projects/herd/mesh/router/free_zed_gateway/README.md](../projects/herd/mesh/router/free_zed_gateway/README.md)
-- [projects/herd/mesh/router/sovereign-ast-router/README.md](../projects/herd/mesh/router/sovereign-ast-router/README.md)
-- [projects/herd/mesh/router/sovereign-ast-router/env_dump/README.md](../projects/herd/mesh/router/sovereign-ast-router/env_dump/README.md)
-- [projects/herd/mesh/router/sovereign-ast-router/llm_client/README.md](../projects/herd/mesh/router/sovereign-ast-router/llm_client/README.md)
-- [projects/herd/mesh/router/sovereign-ast-router/orchestrator/README.md](../projects/herd/mesh/router/sovereign-ast-router/orchestrator/README.md)
-- [projects/herd/mesh/router/sovereign-ast-router/switchover/README.md](../projects/herd/mesh/router/sovereign-ast-router/switchover/README.md)
-- [projects/herd/models/README.md](../projects/herd/models/README.md)
-- [projects/herd/race/README.md](../projects/herd/race/README.md)
-- [projects/kodi-fleet/README.md](../projects/kodi-fleet/README.md)
-- [projects/mesh/README.md](../projects/mesh/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/env_dump/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/env_dump/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/llm_client/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/llm_client/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/orchestrator/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/orchestrator/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/switchover/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/switchover/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/free_zed_gateway/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/free_zed_gateway/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/env_dump/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/env_dump/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/llm_client/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/llm_client/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/orchestrator/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/orchestrator/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/switchover/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/sovereign-ast-router/switchover/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/cert_extract/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/cert_extract/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/chunker/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/chunker/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/env_dump/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/env_dump/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/file_scan/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/file_scan/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/k8s_client/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/k8s_client/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/llm_client/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/llm_client/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/net_map/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/net_map/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/orchestrator/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/orchestrator/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/organizer/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/organizer/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/proc_mon/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/proc_mon/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/prompts/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/prompts/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/recon/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/recon/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/simhash/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/simhash/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/switchover/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/switchover/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/sys_mon/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/sys_mon/README.md)
-- [projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/ts_core/README.md](../projects/mesh/flock-pkg/sovereign_complete_pkg/ultimate_extract/ts_core/README.md)
-- [projects/mesh/gateway/README.md](../projects/mesh/gateway/README.md)
-- [projects/mesh/gateway/bench/README.md](../projects/mesh/gateway/bench/README.md)
-- [projects/mesh/gateway/contrib/linux-repos/README.md](../projects/mesh/gateway/contrib/linux-repos/README.md)
-- [projects/mesh/research/ultimate_extract/cert_extract/README.md](../projects/mesh/research/ultimate_extract/cert_extract/README.md)
-- [projects/mesh/research/ultimate_extract/chunker/README.md](../projects/mesh/research/ultimate_extract/chunker/README.md)
-- [projects/mesh/research/ultimate_extract/env_dump/README.md](../projects/mesh/research/ultimate_extract/env_dump/README.md)
-- [projects/mesh/research/ultimate_extract/file_scan/README.md](../projects/mesh/research/ultimate_extract/file_scan/README.md)
-- [projects/mesh/research/ultimate_extract/k8s_client/README.md](../projects/mesh/research/ultimate_extract/k8s_client/README.md)
-- [projects/mesh/research/ultimate_extract/llm_client/README.md](../projects/mesh/research/ultimate_extract/llm_client/README.md)
-- [projects/mesh/research/ultimate_extract/net_map/README.md](../projects/mesh/research/ultimate_extract/net_map/README.md)
-- [projects/mesh/research/ultimate_extract/orchestrator/README.md](../projects/mesh/research/ultimate_extract/orchestrator/README.md)
-- [projects/mesh/research/ultimate_extract/organizer/README.md](../projects/mesh/research/ultimate_extract/organizer/README.md)
-- [projects/mesh/research/ultimate_extract/proc_mon/README.md](../projects/mesh/research/ultimate_extract/proc_mon/README.md)
-- [projects/mesh/research/ultimate_extract/prompts/README.md](../projects/mesh/research/ultimate_extract/prompts/README.md)
-- [projects/mesh/research/ultimate_extract/recon/README.md](../projects/mesh/research/ultimate_extract/recon/README.md)
-- [projects/mesh/research/ultimate_extract/simhash/README.md](../projects/mesh/research/ultimate_extract/simhash/README.md)
-- [projects/mesh/research/ultimate_extract/switchover/README.md](../projects/mesh/research/ultimate_extract/switchover/README.md)
-- [projects/mesh/research/ultimate_extract/sys_mon/README.md](../projects/mesh/research/ultimate_extract/sys_mon/README.md)
-- [projects/mesh/research/ultimate_extract/ts_core/README.md](../projects/mesh/research/ultimate_extract/ts_core/README.md)
-- [projects/mesh/router/README.md](../projects/mesh/router/README.md)
-- [projects/mesh/router/flock-py/README.md](../projects/mesh/router/flock-py/README.md)
-- [projects/mesh/router/flock-py/lib/env_dump/README.md](../projects/mesh/router/flock-py/lib/env_dump/README.md)
-- [projects/mesh/router/flock-py/lib/llm_client/README.md](../projects/mesh/router/flock-py/lib/llm_client/README.md)
-- [projects/mesh/router/flock-py/lib/orchestrator/README.md](../projects/mesh/router/flock-py/lib/orchestrator/README.md)
-- [projects/mesh/router/flock-py/lib/switchover/README.md](../projects/mesh/router/flock-py/lib/switchover/README.md)
-- [projects/mesh/router/flock-router/README.md](../projects/mesh/router/flock-router/README.md)
-- [projects/mesh/router/flock-router/env_dump/README.md](../projects/mesh/router/flock-router/env_dump/README.md)
-- [projects/mesh/router/flock-router/llm_client/README.md](../projects/mesh/router/flock-router/llm_client/README.md)
-- [projects/mesh/router/flock-router/orchestrator/README.md](../projects/mesh/router/flock-router/orchestrator/README.md)
-- [projects/mesh/router/flock-router/switchover/README.md](../projects/mesh/router/flock-router/switchover/README.md)
-- [projects/mesh/router/free_zed_gateway/README.md](../projects/mesh/router/free_zed_gateway/README.md)
-- [projects/mesh/squawk/README.md](../projects/mesh/squawk/README.md)
-- [projects/mesh/squawk/outbox-relay/README.md](../projects/mesh/squawk/outbox-relay/README.md)
-- [projects/mesh/squawk/relay/README.md](../projects/mesh/squawk/relay/README.md)
-- [projects/meta-research-toolkit/README.md](../projects/meta-research-toolkit/README.md)
-- [projects/model-max/README.md](../projects/model-max/README.md)
-- [projects/openfang/README.md](../projects/openfang/README.md)
-- [projects/openrouter-probe/README.md](../projects/openrouter-probe/README.md)
-- [projects/ops/README.md](../projects/ops/README.md)
-- [projects/ops/bg-tracker/README.md](../projects/ops/bg-tracker/README.md)
-- [projects/ops/bin/README.md](../projects/ops/bin/README.md)
-- [projects/ops/stall-detect/README.md](../projects/ops/stall-detect/README.md)
-- [projects/pack-fix/README.md](../projects/pack-fix/README.md)
-- [projects/qed/README.md](../projects/qed/README.md)
-- [projects/qed/zed/.cloudflare/README.md](../projects/qed/zed/.cloudflare/README.md)
-- [projects/qed/zed/README.md](../projects/qed/zed/README.md)
-- [projects/qed/zed/crates/agent_skills/README.md](../projects/qed/zed/crates/agent_skills/README.md)
-- [projects/qed/zed/crates/cli/README.md](../projects/qed/zed/crates/cli/README.md)
-- [projects/qed/zed/crates/collab/README.md](../projects/qed/zed/crates/collab/README.md)
-- [projects/qed/zed/crates/db/README.md](../projects/qed/zed/crates/db/README.md)
-- [projects/qed/zed/crates/eval_cli/README.md](../projects/qed/zed/crates/eval_cli/README.md)
-- [projects/qed/zed/crates/eval_cli/zed_eval/README.md](../projects/qed/zed/crates/eval_cli/zed_eval/README.md)
-- [projects/qed/zed/crates/eval_utils/README.md](../projects/qed/zed/crates/eval_utils/README.md)
-- [projects/qed/zed/crates/extension_api/README.md](../projects/qed/zed/crates/extension_api/README.md)
-- [projects/qed/zed/crates/gpui/README.md](../projects/qed/zed/crates/gpui/README.md)
-- [projects/qed/zed/crates/gpui/examples/README.md](../projects/qed/zed/crates/gpui/examples/README.md)
-- [projects/qed/zed/crates/icons/README.md](../projects/qed/zed/crates/icons/README.md)
-- [projects/qed/zed/crates/inspector_ui/README.md](../projects/qed/zed/crates/inspector_ui/README.md)
-- [projects/qed/zed/crates/livekit_api/vendored/protocol/README.md](../projects/qed/zed/crates/livekit_api/vendored/protocol/README.md)
-- [projects/qed/zed/crates/sandbox/README.md](../projects/qed/zed/crates/sandbox/README.md)
-- [projects/qed/zed/crates/schema_generator/README.md](../projects/qed/zed/crates/schema_generator/README.md)
-- [projects/qed/zed/crates/terminal_view/README.md](../projects/qed/zed/crates/terminal_view/README.md)
-- [projects/qed/zed/crates/theme_importer/README.md](../projects/qed/zed/crates/theme_importer/README.md)
-- [projects/qed/zed/crates/vim/README.md](../projects/qed/zed/crates/vim/README.md)
-- [projects/qed/zed/crates/zlog/README.md](../projects/qed/zed/crates/zlog/README.md)
-- [projects/qed/zed/docs/README.md](../projects/qed/zed/docs/README.md)
-- [projects/qed/zed/extensions/README.md](../projects/qed/zed/extensions/README.md)
-- [projects/qed/zed/extensions/test-extension/README.md](../projects/qed/zed/extensions/test-extension/README.md)
-- [projects/qed/zed/nix/livekit-libwebrtc/README.md](../projects/qed/zed/nix/livekit-libwebrtc/README.md)
-- [projects/qed/zed/tooling/lints/README.md](../projects/qed/zed/tooling/lints/README.md)
-- [projects/qed/zedra/README.md](../projects/qed/zedra/README.md)
-- [projects/qed/zedra/crates/zedra/assets/fonts/JetBrainsMono/README.md](../projects/qed/zedra/crates/zedra/assets/fonts/JetBrainsMono/README.md)
-- [projects/qed/zedra/deploy/relay/README.md](../projects/qed/zedra/deploy/relay/README.md)
-- [projects/qed/zedra/examples/webview-tunnel/README.md](../projects/qed/zedra/examples/webview-tunnel/README.md)
-- [projects/qed/zedra/packages/relay-check/README.md](../projects/qed/zedra/packages/relay-check/README.md)
-- [projects/qed/zedra/packages/relay-monitor/README.md](../projects/qed/zedra/packages/relay-monitor/README.md)
-- [projects/shell/README.md](../projects/shell/README.md)
-- [projects/shell/quarantine/README.md](../projects/shell/quarantine/README.md)
-- [projects/tau/README.md](../projects/tau/README.md)
-- [projects/tau/archive/README.md](../projects/tau/archive/README.md)
-- [projects/tau/archive/from-oh-my-pi/packages/hashline/README.md](../projects/tau/archive/from-oh-my-pi/packages/hashline/README.md)
-- [projects/tau/archive/from-omp-extensions/README.md](../projects/tau/archive/from-omp-extensions/README.md)
-- [projects/tau/archive/from-omp-extensions/branches/feat/initial-omp-kafka/README.md](../projects/tau/archive/from-omp-extensions/branches/feat/initial-omp-kafka/README.md)
-- [projects/tau/archive/from-omp-extensions/branches/feat/initial-omp-kafka/packages/omp-kafka/README.md](../projects/tau/archive/from-omp-extensions/branches/feat/initial-omp-kafka/packages/omp-kafka/README.md)
-- [projects/tau/archive/from-omp-extensions/branches/feat/omp-edit-committer/README.md](../projects/tau/archive/from-omp-extensions/branches/feat/omp-edit-committer/README.md)
-- [projects/tau/archive/from-omp-extensions/branches/feat/omp-edit-committer/packages/omp-edit-committer/README.md](../projects/tau/archive/from-omp-extensions/branches/feat/omp-edit-committer/packages/omp-edit-committer/README.md)
-- [projects/tau/archive/from-omp-extensions/branches/feat/omp-edit-committer/packages/omp-kafka/README.md](../projects/tau/archive/from-omp-extensions/branches/feat/omp-edit-committer/packages/omp-kafka/README.md)
-- [projects/tau/archive/from-omp-extensions/branches/fix/add-kafkajs-dep/README.md](../projects/tau/archive/from-omp-extensions/branches/fix/add-kafkajs-dep/README.md)
-- [projects/tau/archive/from-omp-extensions/branches/fix/add-kafkajs-dep/packages/omp-edit-committer/README.md](../projects/tau/archive/from-omp-extensions/branches/fix/add-kafkajs-dep/packages/omp-edit-committer/README.md)
-- [projects/tau/archive/from-omp-extensions/branches/fix/add-kafkajs-dep/packages/omp-kafka/README.md](../projects/tau/archive/from-omp-extensions/branches/fix/add-kafkajs-dep/packages/omp-kafka/README.md)
-- [projects/tau/archive/from-omp-extensions/packages/omp-edit-committer/README.md](../projects/tau/archive/from-omp-extensions/packages/omp-edit-committer/README.md)
-- [projects/tau/archive/from-omp-extensions/packages/omp-kafka/README.md](../projects/tau/archive/from-omp-extensions/packages/omp-kafka/README.md)
-- [projects/tau/archive/from-sovereign-swap/README.md](../projects/tau/archive/from-sovereign-swap/README.md)
-- [projects/tau/archive/from-sovereign-swap/cmd/vllm-wrapper/README.md](../projects/tau/archive/from-sovereign-swap/cmd/vllm-wrapper/README.md)
-- [projects/tau/archive/from-sovereign-swap/cmd/wol-proxy/README.md](../projects/tau/archive/from-sovereign-swap/cmd/wol-proxy/README.md)
-- [projects/tau/archive/from-sovereign-swap/docker/unified/README.md](../projects/tau/archive/from-sovereign-swap/docker/unified/README.md)
-- [projects/tau/archive/from-sovereign-swap/docs/README.md](../projects/tau/archive/from-sovereign-swap/docs/README.md)
-- [projects/tau/archive/from-sovereign-swap/docs/kb/README.md](../projects/tau/archive/from-sovereign-swap/docs/kb/README.md)
-- [projects/tau/archive/from-sovereign-swap/evals/docs-agent/README.md](../projects/tau/archive/from-sovereign-swap/evals/docs-agent/README.md)
-- [projects/tau/archive/from-sovereign-swap/internal/hw/README.md](../projects/tau/archive/from-sovereign-swap/internal/hw/README.md)
-- [projects/tau/archive/from-sovereign-zed/README.md](../projects/tau/archive/from-sovereign-zed/README.md)
-- [projects/tau/archive/from-sovereign-zed/crates/sandbox/README.md](../projects/tau/archive/from-sovereign-zed/crates/sandbox/README.md)
-- [projects/tau/archive/from-sovereign-zed/extensions/ghas-external-access/README.md](../projects/tau/archive/from-sovereign-zed/extensions/ghas-external-access/README.md)
-- [projects/tau/archive/from-tau/packages/hashline/README.md](../projects/tau/archive/from-tau/packages/hashline/README.md)
-- [projects/tau/crates/pi-builtins/README.md](../projects/tau/crates/pi-builtins/README.md)
-- [projects/tau/crates/vendor/brush-core/README.md](../projects/tau/crates/vendor/brush-core/README.md)
-- [projects/tau/docs/skills/examples/hello-extension/README.md](../projects/tau/docs/skills/examples/hello-extension/README.md)
-- [projects/tau/docs/skills/examples/mini-marketplace/README.md](../projects/tau/docs/skills/examples/mini-marketplace/README.md)
-- [projects/tau/docs/skills/examples/safety-hook/README.md](../projects/tau/docs/skills/examples/safety-hook/README.md)
-- [projects/tau/engine/README.md](../projects/tau/engine/README.md)
-- [projects/tau/engine/crates/pi-builtins/README.md](../projects/tau/engine/crates/pi-builtins/README.md)
-- [projects/tau/engine/crates/pi-edit/tests/fixtures/apply_patch/scenarios/README.md](../projects/tau/engine/crates/pi-edit/tests/fixtures/apply_patch/scenarios/README.md)
-- [projects/tau/engine/crates/vendor/brush-core/README.md](../projects/tau/engine/crates/vendor/brush-core/README.md)
-- [projects/tau/engine/docs/skills/examples/hello-extension/README.md](../projects/tau/engine/docs/skills/examples/hello-extension/README.md)
-- [projects/tau/engine/docs/skills/examples/mini-marketplace/README.md](../projects/tau/engine/docs/skills/examples/mini-marketplace/README.md)
-- [projects/tau/engine/docs/skills/examples/safety-hook/README.md](../projects/tau/engine/docs/skills/examples/safety-hook/README.md)
-- [projects/tau/engine/infra/docs/README.md](../projects/tau/engine/infra/docs/README.md)
-- [projects/tau/engine/packages/agent/README.md](../projects/tau/engine/packages/agent/README.md)
-- [projects/tau/engine/packages/ai/README.md](../projects/tau/engine/packages/ai/README.md)
-- [projects/tau/engine/packages/browser-relay/README.md](../projects/tau/engine/packages/browser-relay/README.md)
-- [projects/tau/engine/packages/catalog/README.md](../projects/tau/engine/packages/catalog/README.md)
-- [projects/tau/engine/packages/catalog/src/compat/rules/README.md](../projects/tau/engine/packages/catalog/src/compat/rules/README.md)
-- [projects/tau/engine/packages/coding-agent/README.md](../projects/tau/engine/packages/coding-agent/README.md)
-- [projects/tau/engine/packages/coding-agent/examples/README.md](../projects/tau/engine/packages/coding-agent/examples/README.md)
-- [projects/tau/engine/packages/coding-agent/examples/custom-tools/README.md](../projects/tau/engine/packages/coding-agent/examples/custom-tools/README.md)
-- [projects/tau/engine/packages/coding-agent/examples/extensions/README.md](../projects/tau/engine/packages/coding-agent/examples/extensions/README.md)
-- [projects/tau/engine/packages/coding-agent/examples/hooks/README.md](../projects/tau/engine/packages/coding-agent/examples/hooks/README.md)
-- [projects/tau/engine/packages/coding-agent/examples/sdk/README.md](../projects/tau/engine/packages/coding-agent/examples/sdk/README.md)
-- [projects/tau/engine/packages/coding-agent/test/fixtures/security/seeded-repository/README.md](../projects/tau/engine/packages/coding-agent/test/fixtures/security/seeded-repository/README.md)
-- [projects/tau/engine/packages/collab-web/README.md](../projects/tau/engine/packages/collab-web/README.md)
-- [projects/tau/engine/packages/metaharness/README.md](../projects/tau/engine/packages/metaharness/README.md)
-- [projects/tau/engine/packages/mnemopi/README.md](../projects/tau/engine/packages/mnemopi/README.md)
-- [projects/tau/engine/packages/natives/README.md](../projects/tau/engine/packages/natives/README.md)
-- [projects/tau/engine/packages/omptype/README.md](../projects/tau/engine/packages/omptype/README.md)
-- [projects/tau/engine/packages/snapcompact/README.md](../projects/tau/engine/packages/snapcompact/README.md)
-- [projects/tau/engine/packages/stats/README.md](../projects/tau/engine/packages/stats/README.md)
-- [projects/tau/engine/packages/tui/README.md](../projects/tau/engine/packages/tui/README.md)
-- [projects/tau/engine/packages/utils/README.md](../projects/tau/engine/packages/utils/README.md)
-- [projects/tau/engine/packages/wire/README.md](../projects/tau/engine/packages/wire/README.md)
-- [projects/tau/engine/python/omp-rpc/README.md](../projects/tau/engine/python/omp-rpc/README.md)
-- [projects/tau/engine/python/robomp/README.md](../projects/tau/engine/python/robomp/README.md)
-- [projects/tau/engine/scripts/session-stats/README.md](../projects/tau/engine/scripts/session-stats/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/README.md](../projects/tau/engine/vendor/oh-my-pi/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/crates/pi-builtins/README.md](../projects/tau/engine/vendor/oh-my-pi/crates/pi-builtins/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/crates/pi-edit/tests/fixtures/apply_patch/scenarios/README.md](../projects/tau/engine/vendor/oh-my-pi/crates/pi-edit/tests/fixtures/apply_patch/scenarios/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/crates/vendor/brush-core/README.md](../projects/tau/engine/vendor/oh-my-pi/crates/vendor/brush-core/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/docs/skills/examples/hello-extension/README.md](../projects/tau/engine/vendor/oh-my-pi/docs/skills/examples/hello-extension/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/docs/skills/examples/mini-marketplace/README.md](../projects/tau/engine/vendor/oh-my-pi/docs/skills/examples/mini-marketplace/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/docs/skills/examples/safety-hook/README.md](../projects/tau/engine/vendor/oh-my-pi/docs/skills/examples/safety-hook/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/infra/docs/README.md](../projects/tau/engine/vendor/oh-my-pi/infra/docs/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/agent/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/agent/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/ai/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/ai/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/browser-relay/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/browser-relay/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/catalog/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/catalog/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/catalog/src/compat/rules/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/catalog/src/compat/rules/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/coding-agent/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/coding-agent/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/coding-agent/examples/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/coding-agent/examples/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/coding-agent/examples/custom-tools/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/coding-agent/examples/custom-tools/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/coding-agent/examples/extensions/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/coding-agent/examples/extensions/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/coding-agent/examples/hooks/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/coding-agent/examples/hooks/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/coding-agent/examples/sdk/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/coding-agent/examples/sdk/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/coding-agent/test/fixtures/security/seeded-repository/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/coding-agent/test/fixtures/security/seeded-repository/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/collab-web/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/collab-web/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/metaharness/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/metaharness/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/mnemopi/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/mnemopi/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/natives/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/natives/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/omptype/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/omptype/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/snapcompact/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/snapcompact/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/stats/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/stats/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/tui/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/tui/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/utils/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/utils/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/packages/wire/README.md](../projects/tau/engine/vendor/oh-my-pi/packages/wire/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/python/omp-rpc/README.md](../projects/tau/engine/vendor/oh-my-pi/python/omp-rpc/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/python/robomp/README.md](../projects/tau/engine/vendor/oh-my-pi/python/robomp/README.md)
-- [projects/tau/engine/vendor/oh-my-pi/scripts/session-stats/README.md](../projects/tau/engine/vendor/oh-my-pi/scripts/session-stats/README.md)
-- [projects/tau/extensions/README.md](../projects/tau/extensions/README.md)
-- [projects/tau/extensions/ffs/README.md](../projects/tau/extensions/ffs/README.md)
-- [projects/tau/extensions/flock/README.md](../projects/tau/extensions/flock/README.md)
-- [projects/tau/extensions/kimi/README.md](../projects/tau/extensions/kimi/README.md)
-- [projects/tau/extensions/packages/kimi-auto/README.md](../projects/tau/extensions/packages/kimi-auto/README.md)
-- [projects/tau/extensions/packages/omp-edit-committer/README.md](../projects/tau/extensions/packages/omp-edit-committer/README.md)
-- [projects/tau/extensions/packages/omp-kafka/README.md](../projects/tau/extensions/packages/omp-kafka/README.md)
-- [projects/tau/infra/docs/README.md](../projects/tau/infra/docs/README.md)
-- [projects/tau/launcher/README.md](../projects/tau/launcher/README.md)
-- [projects/tau/python/omp-rpc/README.md](../projects/tau/python/omp-rpc/README.md)
-- [projects/tau/python/robomp/README.md](../projects/tau/python/robomp/README.md)
-- [projects/tau/upstream-changes/README.md](../projects/tau/upstream-changes/README.md)
-- [projects/tau/vendor/oh-my-pi/README.md](../projects/tau/vendor/oh-my-pi/README.md)
-- [projects/tau/vendor/oh-my-pi/crates/pi-builtins/README.md](../projects/tau/vendor/oh-my-pi/crates/pi-builtins/README.md)
-- [projects/tau/vendor/oh-my-pi/crates/pi-edit/tests/fixtures/apply_patch/scenarios/README.md](../projects/tau/vendor/oh-my-pi/crates/pi-edit/tests/fixtures/apply_patch/scenarios/README.md)
-- [projects/tau/vendor/oh-my-pi/crates/pi-natives/data/README.md](../projects/tau/vendor/oh-my-pi/crates/pi-natives/data/README.md)
-- [projects/tau/vendor/oh-my-pi/crates/vendor/brush-core/README.md](../projects/tau/vendor/oh-my-pi/crates/vendor/brush-core/README.md)
-- [projects/tau/vendor/oh-my-pi/docs/skills/examples/hello-extension/README.md](../projects/tau/vendor/oh-my-pi/docs/skills/examples/hello-extension/README.md)
-- [projects/tau/vendor/oh-my-pi/docs/skills/examples/mini-marketplace/README.md](../projects/tau/vendor/oh-my-pi/docs/skills/examples/mini-marketplace/README.md)
-- [projects/tau/vendor/oh-my-pi/docs/skills/examples/safety-hook/README.md](../projects/tau/vendor/oh-my-pi/docs/skills/examples/safety-hook/README.md)
-- [projects/tau/vendor/oh-my-pi/infra/docs/README.md](../projects/tau/vendor/oh-my-pi/infra/docs/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/agent/README.md](../projects/tau/vendor/oh-my-pi/packages/agent/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/ai/README.md](../projects/tau/vendor/oh-my-pi/packages/ai/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/browser-relay/README.md](../projects/tau/vendor/oh-my-pi/packages/browser-relay/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/catalog/README.md](../projects/tau/vendor/oh-my-pi/packages/catalog/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/catalog/src/compat/rules/README.md](../projects/tau/vendor/oh-my-pi/packages/catalog/src/compat/rules/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/coding-agent/README.md](../projects/tau/vendor/oh-my-pi/packages/coding-agent/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/coding-agent/examples/README.md](../projects/tau/vendor/oh-my-pi/packages/coding-agent/examples/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/coding-agent/examples/custom-tools/README.md](../projects/tau/vendor/oh-my-pi/packages/coding-agent/examples/custom-tools/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/coding-agent/examples/extensions/README.md](../projects/tau/vendor/oh-my-pi/packages/coding-agent/examples/extensions/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/coding-agent/examples/hooks/README.md](../projects/tau/vendor/oh-my-pi/packages/coding-agent/examples/hooks/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/coding-agent/examples/sdk/README.md](../projects/tau/vendor/oh-my-pi/packages/coding-agent/examples/sdk/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/coding-agent/test/fixtures/security/seeded-repository/README.md](../projects/tau/vendor/oh-my-pi/packages/coding-agent/test/fixtures/security/seeded-repository/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/collab-web/README.md](../projects/tau/vendor/oh-my-pi/packages/collab-web/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/metaharness/README.md](../projects/tau/vendor/oh-my-pi/packages/metaharness/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/mnemopi/README.md](../projects/tau/vendor/oh-my-pi/packages/mnemopi/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/natives/README.md](../projects/tau/vendor/oh-my-pi/packages/natives/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/omptype/README.md](../projects/tau/vendor/oh-my-pi/packages/omptype/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/snapcompact/README.md](../projects/tau/vendor/oh-my-pi/packages/snapcompact/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/stats/README.md](../projects/tau/vendor/oh-my-pi/packages/stats/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/tui/README.md](../projects/tau/vendor/oh-my-pi/packages/tui/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/utils/README.md](../projects/tau/vendor/oh-my-pi/packages/utils/README.md)
-- [projects/tau/vendor/oh-my-pi/packages/wire/README.md](../projects/tau/vendor/oh-my-pi/packages/wire/README.md)
-- [projects/tau/vendor/oh-my-pi/python/omp-rpc/README.md](../projects/tau/vendor/oh-my-pi/python/omp-rpc/README.md)
-- [projects/tau/vendor/oh-my-pi/python/robomp/README.md](../projects/tau/vendor/oh-my-pi/python/robomp/README.md)
-- [projects/tau/vendor/oh-my-pi/scripts/session-stats/README.md](../projects/tau/vendor/oh-my-pi/scripts/session-stats/README.md)
-- [projects/tau/vendors/kimi-code/.changeset/README.md](../projects/tau/vendors/kimi-code/.changeset/README.md)
-- [projects/tau/vendors/kimi-code/README.md](../projects/tau/vendors/kimi-code/README.md)
-- [projects/tau/vendors/kimi-code/apps/kimi-code/README.md](../projects/tau/vendors/kimi-code/apps/kimi-code/README.md)
-- [projects/tau/vendors/kimi-code/apps/kimi-inspect/README.md](../projects/tau/vendors/kimi-code/apps/kimi-inspect/README.md)
-- [projects/tau/vendors/kimi-code/apps/vscode/README.md](../projects/tau/vendors/kimi-code/apps/vscode/README.md)
-- [projects/tau/vendors/kimi-code/packages/kaos/README.md](../projects/tau/vendors/kimi-code/packages/kaos/README.md)
-- [projects/tau/vendors/kimi-code/packages/klient/README.md](../projects/tau/vendors/kimi-code/packages/klient/README.md)
-- [projects/tau/vendors/kimi-code/packages/kosong/README.md](../projects/tau/vendors/kimi-code/packages/kosong/README.md)
-- [projects/tau/vendors/kimi-code/packages/minidb/README.md](../projects/tau/vendors/kimi-code/packages/minidb/README.md)
-- [projects/tau/vendors/kimi-code/packages/node-sdk/README.md](../projects/tau/vendors/kimi-code/packages/node-sdk/README.md)
-- [projects/tau/vendors/kimi-code/packages/oauth/README.md](../projects/tau/vendors/kimi-code/packages/oauth/README.md)
-- [projects/tau/vendors/kimi-code/packages/pi-tui/README.md](../projects/tau/vendors/kimi-code/packages/pi-tui/README.md)
-- [projects/tau/vendors/kimi-code/packages/pi-tui/native/darwin/README.md](../projects/tau/vendors/kimi-code/packages/pi-tui/native/darwin/README.md)
-- [projects/tau/vendors/kimi-code/packages/pi-tui/native/win32/README.md](../projects/tau/vendors/kimi-code/packages/pi-tui/native/win32/README.md)
-- [projects/tau/vendors/kimi-code/packages/telemetry/README.md](../projects/tau/vendors/kimi-code/packages/telemetry/README.md)
-- [projects/tau/vendors/kimi-code/packages/tree-sitter-bash/README.md](../projects/tau/vendors/kimi-code/packages/tree-sitter-bash/README.md)
-- [projects/tau/vendors/kimi-code/packages/tree-sitter-bash/test/fixtures/README.md](../projects/tau/vendors/kimi-code/packages/tree-sitter-bash/test/fixtures/README.md)
-- [projects/tau/vendors/kimi-code/packages/tree-sitter-bash/test/fixtures/corpus/README.md](../projects/tau/vendors/kimi-code/packages/tree-sitter-bash/test/fixtures/corpus/README.md)
-- [projects/toolcall-agent/README.md](../projects/toolcall-agent/README.md)
-- [projects/yote/README.md](../projects/yote/README.md)
-- [projects/yote/rust-gateway/README.md](../projects/yote/rust-gateway/README.md)
-
-## readme-fix-sovereign-1789408144
-
-- [readme-fix-sovereign-1789408144/README.md](../readme-fix-sovereign-1789408144/README.md)
-
-## research
-
-- [research/pi-per-model-prompt/package/README.md](../research/pi-per-model-prompt/package/README.md)
-
-## scratch
-
-- [scratch/README.md](../scratch/README.md)
-- [scratch/archive_readme.md](../scratch/archive_readme.md)
-- [scratch/buildsrv-src/README.md](../scratch/buildsrv-src/README.md)
-- [scratch/readme-rewrite/herd-README.md](../scratch/readme-rewrite/herd-README.md)
-- [scratch/readme-rewrite/mesh-README.md](../scratch/readme-rewrite/mesh-README.md)
-- [scratch/readme-rewrite/openfang-README.md](../scratch/readme-rewrite/openfang-README.md)
-- [scratch/readme-rewrite/pi-conversion-README.md](../scratch/readme-rewrite/pi-conversion-README.md)
-- [scratch/readme-rewrite/qed-README.md](../scratch/readme-rewrite/qed-README.md)
-- [scratch/readme-rewrite/skills-README.md](../scratch/readme-rewrite/skills-README.md)
-- [scratch/readmefix-herd/README.md](../scratch/readmefix-herd/README.md)
-- [scratch/swarm-merge/work/README.md](../scratch/swarm-merge/work/README.md)
-- [scratch/swarm-merge/work/nim/README.md](../scratch/swarm-merge/work/nim/README.md)
-- [scratch/tau-ext-forks/README.md](../scratch/tau-ext-forks/README.md)
-- [scratch/tau-ext-forks/packages/gsd-omp/README.md](../scratch/tau-ext-forks/packages/gsd-omp/README.md)
-- [scratch/tau-ext-forks/packages/omp-best-of/README.md](../scratch/tau-ext-forks/packages/omp-best-of/README.md)
-- [scratch/tau-ext-forks/packages/omp-best-of/bench/README.md](../scratch/tau-ext-forks/packages/omp-best-of/bench/README.md)
-- [scratch/tau-ext-forks/packages/omp-edit-committer/README.md](../scratch/tau-ext-forks/packages/omp-edit-committer/README.md)
-- [scratch/tau-ext-forks/packages/omp-kafka/README.md](../scratch/tau-ext-forks/packages/omp-kafka/README.md)
-- [scratch/tau-ext-forks/packages/omp-model-router/README.md](../scratch/tau-ext-forks/packages/omp-model-router/README.md)
-- [scratch/tau-ext-forks/packages/omp-undo-redo/README.md](../scratch/tau-ext-forks/packages/omp-undo-redo/README.md)
-- [scratch/tau-ext-forks/packages/pi-agent-browser-native/README.md](../scratch/tau-ext-forks/packages/pi-agent-browser-native/README.md)
-- [scratch/tau-ext-forks/packages/pi-tasks/README.md](../scratch/tau-ext-forks/packages/pi-tasks/README.md)
-- [scratch/tau-ext-forks/packages/pi-workflow/README.md](../scratch/tau-ext-forks/packages/pi-workflow/README.md)
-- [scratch/tau-ext-forks/packages/pi-workflow/skills/workflow-guide/scaffolds/README.md](../scratch/tau-ext-forks/packages/pi-workflow/skills/workflow-guide/scaffolds/README.md)
-- [scratch/tau-ext-forks/packages/pi-workflow/workflows/README.md](../scratch/tau-ext-forks/packages/pi-workflow/workflows/README.md)
-- [scratch/tau-extensions-readme/README.md](../scratch/tau-extensions-readme/README.md)
-- [scratch/whatsapp-mcp-staging/README.md](../scratch/whatsapp-mcp-staging/README.md)
-
-## skills
-
-- [skills/README.md](../skills/README.md)
-- [skills/git-mutator/README.md](../skills/git-mutator/README.md)
-- [skills/tau-session-audit/README.md](../skills/tau-session-audit/README.md)
-- [skills/tau-tmux/README.md](../skills/tau-tmux/README.md)
-
-## sovereign-scripts
-
-- [sovereign-scripts/README.md](../sovereign-scripts/README.md)
-
-## sovereign-skills
-
-- [sovereign-skills/README.md](../sovereign-skills/README.md)
-
-## src
-
-- [src/kataware-doki/README.md](../src/kataware-doki/README.md)
-- [src/maximal-sovereign-agentic-audit/README.md](../src/maximal-sovereign-agentic-audit/README.md)
-
-## tailscale
-
-- [tailscale/README.md](../tailscale/README.md)
-
-## tau-extensions
-
-- [tau-extensions/README.md](../tau-extensions/README.md)
-- [tau-extensions/omp-model-router/README.md](../tau-extensions/omp-model-router/README.md)
-- [tau-extensions/packages/omp-edit-committer/README.md](../tau-extensions/packages/omp-edit-committer/README.md)
-- [tau-extensions/packages/omp-kafka/README.md](../tau-extensions/packages/omp-kafka/README.md)
-- [tau-extensions/packages/tau-kimi-auto/README.md](../tau-extensions/packages/tau-kimi-auto/README.md)
-
-## tools
-
-- [tools/ast-grep-rules/agent-stack/README.md](../tools/ast-grep-rules/agent-stack/README.md)
-- [tools/bench-radar/README.md](../tools/bench-radar/README.md)
-- [tools/bugbounty/README.md](../tools/bugbounty/README.md)
-- [tools/buildsrv/README.md](../tools/buildsrv/README.md)
-- [tools/fanout/README.md](../tools/fanout/README.md)
-- [tools/fast-race/README.md](../tools/fast-race/README.md)
-- [tools/fleet-chat/README.md](../tools/fleet-chat/README.md)
-- [tools/fleet-ops/README.md](../tools/fleet-ops/README.md)
-- [tools/fleet-ops/cron-mirror/README.md](../tools/fleet-ops/cron-mirror/README.md)
-- [tools/fleet-ops/fleet-watchdog/README.md](../tools/fleet-ops/fleet-watchdog/README.md)
-- [tools/host-proof/README.md](../tools/host-proof/README.md)
-- [tools/huggingface-mcp-server/README.md](../tools/huggingface-mcp-server/README.md)
-- [tools/keep/README.md](../tools/keep/README.md)
-- [tools/kimi-file-downloader.README.md](../tools/kimi-file-downloader.README.md)
-- [tools/ml-serve/README.md](../tools/ml-serve/README.md)
-- [tools/ml-serve/client/README.md](../tools/ml-serve/client/README.md)
-- [tools/null-g-proxy/README.md](../tools/null-g-proxy/README.md)
-- [tools/routing-score/README.md](../tools/routing-score/README.md)
-- [tools/saturation-guard/README.md](../tools/saturation-guard/README.md)
-- [tools/sovereign-chat/README.md](../tools/sovereign-chat/README.md)
-- [tools/squawk-watchdog/README.md](../tools/squawk-watchdog/README.md)
-- [tools/stash-guard/README.md](../tools/stash-guard/README.md)
-- [tools/tmux-mcp/README.md](../tools/tmux-mcp/README.md)
-- [tools/websearch-mcp/README.md](../tools/websearch-mcp/README.md)
+- **[Porting From oh-my-pi: A Practical Merge Guide](upstream/porting-from-oh-my-pi.md)** `(upstream/porting-from-oh-my-pi.md)`

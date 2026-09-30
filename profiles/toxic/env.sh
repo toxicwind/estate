@@ -6,7 +6,10 @@ export SOVEREIGN_PROFILE="toxic"
 # ==============================================================================
 
 # 1. Inference & Subagent Models
-export PI_SUBAGENT_MODEL="thinkingmachines/inkling"
+# PI_SUBAGENT_MODEL ("thinkingmachines/inkling") was here and is gone: 0 source
+# files in the tau monorepo read it, so it never selected a subagent model.
+# Subagent routing comes from the `subagents:` / `modelRoles:` keys in the
+# agent config (config/tau/agent/config.yml), not from the environment.
 export SCOUT_MODEL="local-fast"
 export SCOUT_BASE_URL="http://127.0.0.1:25100/v1"
 export SCOUT_API_KEY="llama-swap"
@@ -16,7 +19,8 @@ export LLAMA_SWAP_MODEL="beellama/qwen-flash-64k"
 # 2. Local Mesh & Gateway Ports (Aligned with sovereign/config/ports.env)
 export LLAMA_SWAP_PORT="25100"
 export HERD_PORT="25100"
-export RUST_WEB_PORT="25101"
+export RUST_WEB_PORT="25201"
+export MODEL_GUARD_PORT="25101"
 export OPENFANG_PORT="25103"
 export HF_DOWNLOADER_PORT="25106"
 export WATCHDOG_PORT="25108"

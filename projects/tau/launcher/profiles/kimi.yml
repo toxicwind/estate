@@ -1,7 +1,0 @@
-schema_version: 2
-# Kimi backend profile
-llm:
-  backend: kimi
-  model: kimi-k2-0711-preview
-engine:
-  args: []

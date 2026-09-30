@@ -13,7 +13,7 @@
 #
 # Environment:
 #   ESTATE_ROOT   sovereign worktree (default /home/toxic/sovereign)
-#   SQUAWK_ROOT   squawk root (default /home/toxic/.shingle/squawk-root);
+#   SQUAWK_ROOT   squawk root (default /home/toxic/.fleet-bus/squawk-root);
 #                 unset/no-fleet-dir => squawk alerts no-op (sandbox-safe)
 #
 # Restore rules: see deploy/manifest.yaml header. Binaries restore atomically
@@ -35,7 +35,7 @@ _out()  { printf '%s\n' "$*"; }
 # ops/openfang-health/openfang-health.sh's proven pattern).
 _squawk() {
   local title="$1" body="$2"
-  local root="${SQUAWK_ROOT:-/home/toxic/.shingle/squawk-root}"
+  local root="${SQUAWK_ROOT:-/home/toxic/.fleet-bus/squawk-root}"
   [ -d "$root/fleet" ] || return 0
   (
     flock -x 200

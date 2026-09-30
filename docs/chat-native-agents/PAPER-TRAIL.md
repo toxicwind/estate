@@ -99,7 +99,7 @@ and it works for *any* agent process, OpenFang-hosted or not.
   `ChannelAdapter`/`BridgeManager` shape if a squawk adapter is ever written; GCAgent's
   dialogue-manager participation decision; ActiveGraph's log-as-truth (already ours).
 - **Build:** `@fleet/chat-native` (~300 lines, zero-dependency Bun/TypeScript module at
-  `projects/mesh/squawk/chat-native/`) — the one import. Small because the server
+  `projects/range/ranch/squawk/chat-native/`) — the one import. Small because the server
   already did the hard part (inotify-parked long-poll). Python ports of borrowed code
   (e.g. Solace's agent mesh) are reference only — everything we ship is Bun/TS.
 - **Paper-search skill note:** the skill worked as designed (PAPER-TASK → raced legs).
