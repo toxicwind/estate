@@ -1,7 +1,17 @@
 // Deterministic tests for the model-pressure governor port
 // (flock proxy/src/governor.rs -> router_matrix.ts Governor).
 // Run: bun governor_test.ts
-import { Governor, ModelPermit, isWorkerExhausted } from "./router_matrix.ts";
+
+// Must be set before the router modules are imported (DB_PATH and the
+// catalog state path are read once at import). A static import would hoist
+// above this assignment, so the values come in via dynamic import; the
+// type-only import is erased at runtime and stays static.
+process.env.SOVEREIGN_DB = "/tmp/sovereign_router_governor_test.db";
+process.env.SOVEREIGN_CATALOG_STATE =
+  `/tmp/sovereign_router_governor_test.catalog.${process.pid}.json`;
+
+import type { ModelPermit } from "./router_matrix.ts";
+const { Governor, isWorkerExhausted } = await import("./router_matrix.ts");
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
