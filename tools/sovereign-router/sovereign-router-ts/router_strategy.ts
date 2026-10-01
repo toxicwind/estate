@@ -2,7 +2,7 @@ import type { ChatBody, RouteResult } from "./router_types.ts";
 import { state, isWorkerExhausted } from "./router_matrix.ts";
 import { PROVIDERS, PROVIDER_MODELS, catalogModelsFor, modelFree, LOCAL_ROLES, CODING, MAX_PARALLEL, FIFO_MAX, STRATEGY, UA, AST_RE, getKey, keyOk, firstModelFor, resolveModel, isLocalSwapModelId, isAst, isExplicit, json, normalizeModelSpec, CONNECT_MS, TTFT_MS, ATTEMPT_MS, ATTEMPT_STREAM_MS, HEDGE_MS } from "./router_config.ts";
 // 📒 ledger — the ranch account book: durable Gemini cost accounting.
-import { recordUsage } from "../../../projects/range/ranch/ledger/ledger.ts";
+import { recordUsage } from "./ledger.ts";
 
 // ---------------------------------------------------------------------------
 // Substance guard: a completion is servable only if it carries non-empty
