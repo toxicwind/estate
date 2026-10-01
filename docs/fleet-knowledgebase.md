@@ -62,7 +62,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | Port | Service |
 |---|---|
 | 25104 | Sovereign router (`sovereign/free`) |
-| 25148 | buildsrv (fleet build server, see section 7) |
+| 25148 | flicker (ranch build daemon — replaced brand/buildsrv 2026-09-30; see §7) |
 | 25193 | Flock router |
 | 25126 | kimi-auto-shim |
 | 25152 | toolcall-llm |
@@ -73,6 +73,41 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | 6080 | noVNC agent-viewer (browser isolation) |
 | 9223 | Keeper browser CDP |
 | 25130 | browserless-mcp |
+
+**Additional live services (verified 2026-10-01, cartographer):** `pitchfork list` is the authoritative daemon source (77 daemons running 2026-10-01; bidder-forge and bidder-scout retired/stopped). The port→process map below was verified live via `ss -ltnp` + `/proc/<pid>/cmdline` + cwd on yote.
+| Port | Service |
+|---|---|
+| 25102 | yote/openfang-bridge (`projects/yote` src/yote.ts — OpenFang HTTP API integration) |
+| 25105 / 25106 / 25110 | mesh-front proxies → prometheus / hf-downloader / grafana (`src/services/mesh-front.ts --service <name>`) |
+| 25107 | null-g-proxy (`tools/null-g-proxy`) |
+| 25111 | chute (`projects/range/ranch/barn/chute/chute.mjs`) |
+| 25113 | sovereign-github-search MCP (`sovereign-github-search/apps/mcp`) |
+| 25114 | sovereign-github-search frontend (next-server) |
+| 25115 | mesh-hub (`src/services/mesh-hub.ts`) |
+| 25116 | kimi-token-audit dashboard (bun --hot) |
+| 25117 | hindsight-api |
+| 25118 | control-plane (/app/control-plane, next-server) |
+| 25120 | sovereign-chat (bun chat.ts; tailnet + loopback) |
+| 25121 | byte-vision-mock (health stub) |
+| 25127 | gatehouse (MCP gateway; also the /mesh-mcp funnel backend) |
+| 25133 / 25134 | qdrant |
+| 25137 | bedrock web (`/home/toxic/projects/bedrock/web/server.ts`; tailnet) |
+| 25142 | cell-files UI (bun --hot) |
+| 25143 | coyote-loop (OpenFang agent loop → :25100) |
+| 25149 / 25150 | paper-poller + watchdog (`/home/toxic/deep-paper-reader/paper-poller`) |
+| 25151 | oracle-core (oracle-as-approval `POST /ask`) |
+| 25153 | kimi-auto-shim |
+| 25194 | ralph-dashboard backend (uvicorn) |
+| 25195 | codebase-memory |
+| 25197 | boundless (uvicorn) |
+| 25199 | valkey (redis) |
+| 25205 | prometheus |
+| 25208 | nginx |
+| 25210 | grafana (binary; :25110 is the mesh-front proxy) |
+| 25215 | sovereign-stream-broker |
+| 25219 | windmill |
+| 25220 | lookout (`/home/toxic/projects/lookout`) |
+| 25240 | flicker/woodpecker gRPC |
 
 **Routing-audit notes 2026-09-30 (corvid, corrected):** the old `8377 / 8378 / 8379` row was stale — nothing listens on those ports and neither pitchfork.toml nor funnel-map.sh references them; the live funnel backends are the 25xxx ports above. Correction to the first version of this note: an unprivileged `tailscale serve status` shows a PARTIAL view (tailscaled state is root-only) — it hid `/gemini-mcp`, `/whatsapp-webhook`, `/squawk-ws`, `/squawk-feed/seq`, `/mesh-health`, and the `[serve:8443]` tailnet mount. `sudo funnel-map.sh --check` is the authoritative check and it passes: all mounts present, including `[serve:8443] /agent-browser -> 127.0.0.1:6080`, `/gemini-mcp -> 127.0.0.1:25202/mcp`, `/whatsapp-webhook -> 127.0.0.1:25146/webhook`. Lesson: verify serve state as root, never via the unprivileged CLI.
 
@@ -111,6 +146,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | lane-goals | Goals-lane maximal triage: all 17 goal dirs to final verdicts; mcpproxy-go merged build (ad8b0a26); fleet-code collaborative-coding tool (1db0060d); bridge auto-racer (fd3f91de); config naming cleanup (5b75abdb) | lane-goals (Ember's crew) | DONE (2026-09-21) -- 4 pushed SHAs, all ls-remote verified |
 | tau-tmux-mcp | Tau/tmux/MCP audit+repair: tau health, tmux session map, 33-server MCP gateway inventory, repair 8 error servers, tmux-mcp hardening | Ember | DONE (2026-09-20) -- commits d2145a9df5 (tmux-mcp v2.0: socket discovery + destructive-send gating), c9fc75f6ce (websearch-mcp stdlib wrapper), 92fafc3f26 (8 quarantined servers repaired: paths/pins/env), 995dd1924b + c7e24ee791 (READMEs); verified: tpc 9 tools, orchestration 35 tools, sqlite 6 tools, qdrant 4 tools, filesystem v1.3.0, all handshakes OK; shep restarted healthy |
 | repo-integrator-max | Orphan integration -> correct repos; README/deep-link pass; permanent scripts/skills/integrations | Ember (main chat) | DONE (2026-09-20) -- KB live (f9f2ef74fe); orphan-hatch DONE (12 commits sovereign-projects + 2 hatch-docs, main 66cc227a86/eeae7b4a76); orphan-yote DONE (5 repos: rig 6b6742c, gear 3afd4a0, herd 6528c7a, media fb95ee2f3f, herd-phase3-retire dea49bf archived); readme-linker DONE (main 31f5ab6ec2); orphan-yote-2 DONE (quarry feed consumed, main 4eabd325f2) |
+| slate | TAU audit+repair lane - full audit suite, session-corruption check, strace config verification, fix failures in real files | Ember | DONE 2026-10-01 - audits green 15-15 7-7 69-69, zero session corruption, strace-verified engine reads only agent-config.yml, no fixes needed, nothing committed. Open: log-dir path doubling since 2026-09-26. |
 | thistle | TAU lane: run the full tau audit suite on yote (tau-audit.sh 15 checks, tau-tmux audit.ts 7 checks, frontmatter-audit.sh 69 checks) and repair every failing check with durable committed fixes | Ember | DONE (2026-10-01) -- full TAU audit suite green: tau-audit.sh 15/15, tau-tmux audit.ts 7/7, frontmatter 69/69. Live TAU config repairs committed + pushed: 81834f233d3342f07a1cf3ca9716b4576c4fb023 (skills.customDirectories in live agent/config.yml, dead-config NOTE, crew registration) |
 | orphan-yote-2 | Quarry feed seq 11332+11339 orphan integration (worker under repo-integrator-max) | Ember (spawned subagent) | DONE (2026-09-20) — 11332: orphan-commit merge `1819f344aa`, PID cleanup `7eb29895b4`, phase3-operator-rename merge `9aa2e0c046`, eval-wt merge `8a9dda8287` (2 unique commits + 4 RANKING mds), ctm-mode-fix worktree removed, stashes 0-2 dropped (hashes recorded), sovereign-history deleted (objects in .git.bak-20260913); 11339: session-burn-radar→local-work-archive `d7ebc8b26a`, 4/6 no-remote repos already integrated, crew-b-f844 left (fleet experiment), kimi-auto duplicate resolved, /home/toxic/squawk LIVE (not touched), 24 husks audited (7 active, 16 stale real projects, none deleted) |
 | orphan-hatch | Hatch orphan integration (worker under repo-integrator-max) | Ember (spawned subagent) | DONE (2026-09-20) — sovereign-projects main c33e91ae51 (12 commits): resurrect-probe, debate-oracle audit, bid-market E2E, bin manifest, bg-tracker, oracle spec, stale-hunter+websearch, awrawr-mcp HFT, cross-box router, debate E2E, fleet-health fix, monkeypatch-detect fix; hatch-docs main eeae7b4 (product docs + personas); nvidia-alive 2484ed56 (verified); 100+ ledger entries, 43 workspace items classified |
@@ -205,7 +241,6 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | polling-audit | Estate-wide polling audit: every timer/sleep/poll-loop on hatch + yote, classified LEGIT vs CONVERT (event-driven alternatives) | Shrew (Ember's crew) | DONE (2026-09-21) -- report docs/polling-audit-2026-09-21.md, commit ce3f867754821f132709163470ac394603e297a8; 7 CONVERT / 17 LEGIT / 10 already-event-driven / 2 ambiguous; top converts: paper-poller 30s->inotify, stash-guard 90s->inotify, squawk-monitor 5m->subscribe |
 | bookworm-chatnative | Chat-native agent research: paper-backed buildable design for event-driven squawk agents (no polling). Ships @fleet/chat-native Bun/TS module: recursive long-poll subscribe, tiered attention, TASK directives, AsyncQueue handoff; OpenFang verdict (stays as runtime, squawk adapter is future work); Solace pattern borrow (reference only) | Bookworm (Ember's crew) | DONE (2026-09-21) -- commit 3bb32fe7907a7f0081b9f0353e09bf227e421b35, origin/main verified via git ls-remote |
 | bramble | readme maximalization batch b8 (narrowed to 6): toxic-vault-mind f2d08c0, wii-meta-client b1d6471, wii-stream-pack a756004, wllama-forge 63a9837, youtube-403-bypass dda9669 -- all pushed + remote-verified, no open PRs; universal-search-fuzzer BLOCKED (repo archived, push 403, README commit a05cddaa kept locally); cut per dedup: tau-extensions, vaultfs, web3-sec-workspace (untouched, verified no push) | 72ff4aa9-c62a-4881-8f70-c6fa220e7383 | DONE (2026-09-29) |
-| slate | SQUAWK CLI + WARDEN (stream-C): fail-open CLI reads — cell-local last-good cache lane on total bridge loss + load_profiles stale-cache fallback; ferrous-warden (estate-reconcile) alert dedupe/coalescing so the 9/25 ~70-posts/90s flood can never repeat; _squawk seq via seq_alloc.py | ember | DONE (2026-09-30) -- commits 9eb22036d7 (kb register) + 365fa3ecc9 (squawk CLI fail-open cache lane) + f97e987e23 (ferrous-warden dedupe); origin/main verified via git ls-remote; warden watch daemon hot-deployed+restarted |
 | starling | squawk maximalization: pattern-borrow + tests (feed :25135, ws :25147, ui, CLI); boundary: Taps owns NATS substrate | Starling (Ember's pack), Tally side chat | RUNNING (2026-09-29) |
 | kestrel | Mistral key proof + GuideLLM audit of Mistral chat models via corral (direct Mistral API, not herd/flock); pattern-borrow useful Mistral integrations | kestrel (Ember crew) | active |
 | clawde | metaclaw-runtime: .gitignore hardening, synthetic JWT test fixture, private publish to toxicwind/metaclaw-runtime, Sparkfall quarantine-resolved registry update | Ember | DONE (2026-09-30) -- repo e7c74c5, ranch registry 7840ec1 |
@@ -368,11 +403,24 @@ runtime_paths freely; those paths are EXEMPT from drift detection by constructio
   2026-09-20: ~/.openfang/openfang.db was 0 bytes -- the exact silent-data-loss
   case this catches.
 
-## 7. Build server = brand (2026-09-21)
+## 7. Build server = flicker (2026-10-01; was brand)
 
-brand IS the fleet build server -- a literal build daemon on yote, not a
-concept. Canonical source: branding/ in toxicwind/ranch (moved 2026-09-30 from tools/buildsrv in this repo). Service:
-127.0.0.1:25148 (pitchfork daemons: brand, brand-watchdog).
+flicker IS the fleet build daemon -- a literal build server on yote, not a
+concept. Canonical source: `projects/range/ranch/flicker/` in toxicwind/ranch.
+Service: :25148 (pitchfork daemons: flicker, flicker-agent), binary
+`ranch/flicker/bin/flicker-server` (Woodpecker-based: gRPC on :25240,
+`FLICKER_ROOT=/home/toxic/flicker`). API: `POST /api/jobs`; content-hash
+caching (identical specs short-circuit as CACHED). Verified live 2026-10-01:
+`GET /` serves the flicker landing page ("The ranch build daemon").
+
+History: brand was the build server from 2026-09-21 (canonical source
+branding/ in toxicwind/ranch, moved 2026-09-30 from tools/buildsrv in this
+repo; pitchfork daemons brand + brand-watchdog on :25148). Replaced by
+flicker 2026-09-30 (sparrow: "flicker and flicker-agent verified live on
+:25148 and migrated with ranch/flicker"). No brand daemon in `pitchfork list`
+2026-10-01; `/home/toxic/brand` absent. The remaining §7 notes below (cache
+env, workers=2, observability) describe the build-daemon role as built for
+brand — re-verify each path against the flicker fragment before relying on it.
 
 Lifecycle: queue JSON -> active JSON -> results JSON under
 /home/toxic/brand/. Successful identical specs short-circuit as CACHED,
