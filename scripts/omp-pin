@@ -1,18 +1,29 @@
 #!/usr/bin/env bash
+# omp-pin: pinned launcher for the tau/omp/pi commands.
+# Resolves ONE fixed binary and never falls through to PATH, so a stray or
+# hostile omp on PATH can never shadow the known-good install.
+# History: previously pointed at the ~/sovereign/projects/tau fork
+# (packages/coding-agent/scripts/omp), which no longer exists on disk.
+# Now pins the bun-global @oh-my-pi/pi-coding-agent install (18.3.0).
 set -euo pipefail
-FORK_ROOT="$HOME/sovereign/projects/tau"
-REAL="$FORK_ROOT/packages/coding-agent/scripts/omp"
+
+PKG_ROOT="$HOME/.bun/install/global/node_modules/@oh-my-pi/pi-coding-agent"
+REAL="$PKG_ROOT/dist/cli.js"
 
 if [ ! -x "$REAL" ]; then
-  echo "omp-pin: fork binary missing or not executable: $REAL" >&2
+  echo "omp-pin: pinned binary missing or not executable: $REAL" >&2
   echo "omp-pin: refusing to fall through to any other omp on PATH." >&2
   exit 127
 fi
 
 RESOLVED="$(realpath "$REAL")"
 case "$RESOLVED" in
-  "$FORK_ROOT"/*) : ;;
-  *) echo "omp-pin: resolved binary escapes fork root: $RESOLVED" >&2; exit 127 ;;
+  "$PKG_ROOT"/*)
+    ;;
+  *)
+    echo "omp-pin: resolved binary escapes the pinned package root: $RESOLVED" >&2
+    exit 127
+    ;;
 esac
 
 exec "$RESOLVED" "$@"
