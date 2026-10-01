@@ -246,6 +246,9 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | juniper | effusion-labs maximalization: CSS/JS killshot fix, framework, LFS, pages, reorg | Ember | DONE 2026-09-30 (deployed 21006142) |
 
+| pip | minus1: verify metaaivm-profile end to end | Ember | DONE (2026-09-30) — verify-only-12of12 |
+
+
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
 
