@@ -995,12 +995,20 @@ export async function buildBodybuilderRequests(
   opts: { maxRequests?: number; sid?: string } = {},
 ): Promise<{ requests: Array<Record<string, unknown>> }> {
   const maxRequests = Math.min(Math.max(opts.maxRequests ?? 4, 1), 16);
+  // Live model allow-list (Chris 2026-10-01): the decomposer LLM hallucinates
+  // model IDs from training data (e.g. openai/gpt-4o) when unconstrained.
+  // Constrain it to the live free pool AND sanitize the parsed output, so
+  // every emitted body routes to a real estate model.
+  const pool = freeCandidates();
+  const allowIds = pool.map(([p, m]) => `${p}/${m}`);
+  const allowSet = new Set(allowIds);
   const sys =
     "You decompose a multi-model job into parallel LLM request bodies. " +
     "Reply with ONLY a JSON object of the form " +
     '{"requests":[{"model":"<provider/model id>","messages":[{"role":"user","content":"<self-contained sub-task>"}],' +
     '"temperature":0.7,"max_tokens":2000}]}. ' +
     "Each request must be self-contained (no cross-references between requests). " +
+    `The "model" field MUST be one of these exact IDs, verbatim - never invent a model ID: ${allowIds.join(", ")}. ` +
     `Produce between 1 and ${maxRequests} requests. No prose, no markdown fences, JSON only.`;
   const body = {
     model: "auto",
@@ -1025,7 +1033,19 @@ export async function buildBodybuilderRequests(
         .replace(/\s*```\s*$/, "");
       const parsed = JSON.parse(cleaned);
       const reqs = Array.isArray(parsed?.requests) ? parsed.requests : [];
-      if (reqs.length > 0) return { requests: reqs.slice(0, maxRequests) };
+      if (reqs.length > 0) {
+        // Sanitize: rewrite any hallucinated model ID to a live pool member
+        // (round-robin) rather than emitting a body that routes nowhere.
+        const clean = reqs.slice(0, maxRequests).map((r, i) => {
+          const rec = r as Record<string, unknown>;
+          const mid = String(rec.model ?? "");
+          if (!allowSet.has(mid) && allowIds.length) {
+            rec.model = allowIds[i % allowIds.length];
+          }
+          return rec;
+        });
+        return { requests: clean };
+      }
     } catch {
       // fall through to deterministic fan-out
     }
@@ -1033,7 +1053,7 @@ export async function buildBodybuilderRequests(
   // Deterministic fallback: small free models often answer the job instead
   // of emitting the decomposition JSON. Fan out N parallel requests across
   // the live free pool, each carrying the full job text.
-  const cands = freeCandidates();
+  const cands = pool;
   if (!cands.length) return { requests: [] };
   const requests: Array<Record<string, unknown>> = [];
   for (let i = 0; i < maxRequests; i++) {
