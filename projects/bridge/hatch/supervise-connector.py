@@ -86,10 +86,20 @@ def _on_sigterm(signum, frame):
     _shutdown = True
 
 
-def port_free():
+def port_serving():
+    """True if something is actually listening on HOST:PORT.
+
+    Connect-based, not bind-based: a bind probe without SO_REUSE_ADDRESS
+    reports "bound" for a port lingering in TIME_WAIT after a SIGKILLed
+    child, even though a real server (SO_REUSE_ADDRESS) binds it fine.
+    That false positive made the supervisor exit instead of respawning
+    (observed 2026-10-01). A connect succeeds only when a live listener
+    answers.
+    """
     s = socket.socket()
+    s.settimeout(2)
     try:
-        s.bind((HOST, PORT))
+        s.connect((HOST, PORT))
         return True
     except OSError:
         return False
@@ -155,10 +165,10 @@ def main():
         if _shutdown:
             slog("received SIGTERM -- exiting without respawn")
             return 0
-        if not port_free():
+        if port_serving():
             # Someone else owns the slot (fresh deploy, manual start).
             # Exit rather than shadow it.
-            slog("port %s:%d already bound -- another owner holds the slot, "
+            slog("port %s:%d is serving -- another owner holds the slot, "
                  "exiting without respawn" % (HOST, PORT))
             return 0
         proc = spawn_child()

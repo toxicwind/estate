@@ -32,7 +32,7 @@ for arrival time, not just truth.
    blocked (rate limit, dead mirror, stale DNS, hanging proxy), the alternatives
    are already in flight. The race is the retry policy.
 2. **Fail fast per attempt.** Every attempt gets a short ceiling (seconds, not
-   minutes). Slow is a kind of wrong: kill the loser, record its latency, never
+   minutes). Slow is a kind of wrong: stop waiting on the loser, record its latency, never
    await it. Losers are data, not failures.
 3. **Measure everything.** Every attempt is timed at microsecond precision and
    the timings are reported first-class, never buried. What gets measured gets

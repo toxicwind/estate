@@ -137,7 +137,7 @@ In read loop:
 
 - each parsed JSONL line is passed to `#handleMessage` in `try/catch`
 - malformed/invalid message handling exceptions are dropped (`Skip malformed lines` comment)
-- loop continues, so one bad message does not kill the connection
+- loop continues, so one bad message does not drop the connection
 
 If the underlying stream parser throws, `onError` is invoked (when still connected), then connection closes.
 

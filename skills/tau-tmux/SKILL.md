@@ -31,7 +31,7 @@ tmux wait-for -S done &  # in the pane: <cmd>; tmux wait-for -S done
 
 Parallel experiment pattern: one pane per variable (different `--skills`
 filter, different `--profile`, different model role). Compare
-`capture-pane` outputs. Keep what works, kill the session when done
+`capture-pane` outputs. Keep what works, close the session when done
 (`tmux kill-session -t tau-lab`).
 
 ## Skill flags that actually exist
