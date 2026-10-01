@@ -1067,6 +1067,103 @@ export async function buildBodybuilderRequests(
   }
   return { requests };
 }
+// ---------------------------------------------------------------------------
+// runBodybuilderAutonomous — the whole bodybuilder workflow with no human in
+// the loop. Builds the request bodies (buildBodybuilderRequests) and then
+// executes each one in parallel through pin-aware internal dispatch, so the
+// caller only ever sends the original prompt and gets answers back.
+// (Chris 2026-10-01: "the human wants little to do but the original prompt".)
+//
+// Pin fidelity: buildBodybuilderRequests deliberately chooses live-pool
+// models per body. The default `auto` strategy's free lane would drop those
+// pins on the floor (routeFree passes a candidate override into routeAstRace,
+// which skips its direct-addressable fast path). dispatchBodybuilderBody
+// honors the pin — direct callOne to the chosen provider/model with full
+// race failover — exactly as routeAstRace documents.
+// ---------------------------------------------------------------------------
+export interface BodybuilderExecution {
+  model: string;
+  ok: boolean;
+  text?: string;
+  error?: string;
+  latency_ms?: number;
+  routed_via?: string;
+}
+
+function bodybuilderResultText(r: RouteResult): string {
+  try {
+    const raw =
+      typeof r.data === "string"
+        ? r.data
+        : new TextDecoder().decode(r.data as Uint8Array);
+    const c = JSON.parse(raw)?.choices?.[0]?.message?.content;
+    return typeof c === "string" ? c : "";
+  } catch {
+    return "";
+  }
+}
+
+async function dispatchBodybuilderBody(
+  body: ChatBody,
+  sid: string,
+): Promise<RouteResult> {
+  // Mirror the /v1/chat/completions openfang shim: canonicalize
+  // "provider/model" -> "provider:model" before routing.
+  const want = String(body.model || "auto");
+  const norm = normalizeModelSpec(want);
+  const b: ChatBody =
+    norm.provider && `${norm.provider}:${norm.model}` !== want
+      ? { ...body, model: `${norm.provider}:${norm.model}` }
+      : { ...body };
+  b.stream = false;
+  if (isRoutableModelId(String(b.model || "auto"))) return routeAstRace(b, sid);
+  return routeAuto(b, sid);
+}
+
+export async function runBodybuilderAutonomous(
+  job: string,
+  opts: { maxRequests?: number; sid?: string } = {},
+): Promise<{ requests: Array<Record<string, unknown>>; results: BodybuilderExecution[] }> {
+  const built = await buildBodybuilderRequests(job, opts);
+  const sid = opts.sid || `bb-auto-${Date.now()}`;
+  const results = await Promise.all(
+    built.requests.map(async (req): Promise<BodybuilderExecution> => {
+      const want = String(req.model || "auto");
+      const t0 = Date.now();
+      try {
+        const r = await dispatchBodybuilderBody(req as ChatBody, sid);
+        const ms = Date.now() - t0;
+        if (r.ok) {
+          const text = bodybuilderResultText(r);
+          if (text.trim()) {
+            return {
+              model: want,
+              ok: true,
+              text,
+              latency_ms: ms,
+              routed_via: `${r.provider}/${r.model}`,
+            };
+          }
+          return { model: want, ok: false, error: "empty_completion", latency_ms: ms };
+        }
+        return {
+          model: want,
+          ok: false,
+          error: r.err || "exhausted",
+          latency_ms: ms,
+        };
+      } catch (e) {
+        return {
+          model: want,
+          ok: false,
+          error: String((e as Error)?.message || e),
+          latency_ms: Date.now() - t0,
+        };
+      }
+    }),
+  );
+  return { requests: built.requests, results };
+}
 
 export const ROUTERS: Record<
   string,
