@@ -54,6 +54,21 @@ class TestAESGCMSuite(unittest.TestCase):
         )
         self.assertEqual(ct, canonical)
 
+    def test_gateway_nonce_layout_big_endian_at_counter_one(self):
+        # Counter zero cannot distinguish BE from LE (both encode as 12
+        # zero bytes), so the layout test above is vacuous. Encrypt twice:
+        # the second message uses counter 1, where BE and LE diverge.
+        s = SymmetricState(PROTOCOL_NAME_AESGCM)
+        key = os.urandom(32)
+        s.cipher_state.set_key(key)
+        s.cipher_state.encrypt_with_ad(b"ad", b"first")
+        ct = s.cipher_state.encrypt_with_ad(b"ad", b"second")
+        n_be = b"\x00\x00\x00\x00" + struct.pack(">Q", 1)
+        n_le = b"\x00\x00\x00\x00" + struct.pack("<Q", 1)
+        self.assertNotEqual(n_be, n_le)
+        self.assertEqual(ct, AESGCM(key).encrypt(n_be, b"second", b"ad"))
+        self.assertNotEqual(ct, AESGCM(key).encrypt(n_le, b"second", b"ad"))
+
     def test_meta_msg3_variant_interop(self):
         # Default AESGCM handshake uses the msg3 variant (fresh e2); the
         # reader side is wire-identical to textbook XX, so the handshake
