@@ -1,5 +1,6 @@
 # Tau provider catalog -- CANONICAL SOURCE (tracked in sovereign-projects).
-# Deployed to ~/.tau/agent/models.yml on yote (byte-identical).
+# Reference catalog only: the engine reads providers from ~/.tau/config.yml
+# (no ~/.tau/agent/models.yml is deployed; verified 2026-10-01).
 # NOTE 2026-09-20 tau-hyperfix: the engine does NOT expand ${VAR:-default}
 # (verified: no env expansion in config-file.ts) -- baseUrls MUST be
 # literals or every call through the provider fails with

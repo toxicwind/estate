@@ -1,3 +1,9 @@
+---
+name: fleet-push
+description: >
+  Event-driven fleet push bus: inotifywait on the Yote squawk fleet lane wakes a forwarder that classifies events and emits deterministic dispatches. Triggers on: fleet push, event bus.
+---
+
 # fleet-push
 
 Event-driven fleet push bus: `inotifywait` on the Yote squawk fleet lane wakes a
