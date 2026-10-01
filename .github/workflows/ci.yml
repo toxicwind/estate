@@ -25,7 +25,7 @@ jobs:
 
       - name: Verify Topology Structure
         run: |
-          for dir in tau qed herd mesh yote openfang shell; do
+          for dir in qed herd mesh yote openfang shell; do
             if [ ! -d "$dir" ]; then
               echo "❌ Missing core workspace directory: $dir"
               exit 1
