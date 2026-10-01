@@ -1,4 +1,4 @@
-"""Tests for hatch_core/noise_protocol.py — Noise_XX_25519_ChaChaPoly_SHA256."""
+"""Tests for hatch_core/noise_protocol.py — Noise_XX_25519_AESGCM_SHA256."""
 import os
 import sys
 import unittest
@@ -95,18 +95,19 @@ class TestCipherState(unittest.TestCase):
         with self.assertRaises(ValueError):
             c.set_key(b"short")
 
-    def test_nonce_layout_matches_noise_spec_12_3(self):
-        # Noise §12.3: 96-bit nonce = 32 bits of zeros followed by
-        # little-endian n. Ciphertext must equal an independent
-        # ChaCha20Poly1305 computed with the canonical nonce bytes.
+    def test_nonce_layout_matches_gateway_wire_format(self):
+        # Gateway wire format (731b34d: AES-256-GCM, NOT ChaChaPoly):
+        # 12-byte nonce = 32 zero bits + big-endian 64-bit counter.
+        # Ciphertext must equal an independent AESGCM computed with the
+        # canonical nonce bytes.
         import struct
-        from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
+        from cryptography.hazmat.primitives.ciphers.aead import AESGCM
         key = os.urandom(32)
         c = CipherState()
         c.set_key(key)
         ct = c.encrypt_with_ad(b"ad", b"vector")
-        canonical = ChaCha20Poly1305(key).encrypt(
-            b"\x00\x00\x00\x00" + struct.pack("<Q", 0), b"vector", b"ad"
+        canonical = AESGCM(key).encrypt(
+            b"\x00\x00\x00\x00" + struct.pack(">Q", 0), b"vector", b"ad"
         )
         self.assertEqual(ct, canonical)
 
