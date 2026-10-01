@@ -28,6 +28,7 @@ import {
   log,
 } from "./router_config.ts";
 import { discover } from "../../../packages/providers/src/index.ts";
+import { applySigmaBackfill, sigmaCatalogInfo } from "./sigma-enrich.ts";
 
 const META_STATE_PATH = "/home/toxic/sovereign/.state/live-models.json";
 // No timer: refresh is event-driven (startup, admin, SIGHUP, request-triggered).
@@ -145,12 +146,17 @@ async function refreshLiveModelsInner(): Promise<void> {
       log(`live-models ${p} failed:`, String(e).slice(0, 120));
     }
   }
+  const sigmaN = applySigmaBackfill(LIVE_MODEL_META);
+  if (sigmaN > 0) log(`live-models sigma backfill enriched ${sigmaN} models`);
   persistCatalog();
   persistMeta();
 }
 
 export function startLiveDiscovery(): void {
   loadPersistedMeta();
+  const info = sigmaCatalogInfo();
+  const n = applySigmaBackfill(LIVE_MODEL_META);
+  log(`live-models sigma catalog ${info.snapshot} (${info.rows} rows): backfilled ${n} models`);
   // non-blocking: serve from seeds + persisted catalog state immediately
   refreshLiveModels().catch((e) => log("live-models initial refresh failed:", e));
   // Event-driven refresh triggers (no timers):
