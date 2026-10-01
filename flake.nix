@@ -108,7 +108,10 @@
             cd source
             mv nix/bun.nix nix/bun.expected.nix
             bun2nix -l bun.lock -c ../ -o nix/bun.nix
-            sed -i -e '$a\\' nix/bun.nix
+            # Normalize to exactly one trailing newline. (The sed append idiom
+            # behaves inconsistently across GNU sed versions, so avoid it.)
+            printf '%s\n' "$(cat nix/bun.nix)" > nix/bun.nix.tmp
+            mv nix/bun.nix.tmp nix/bun.nix
             diff -u nix/bun.expected.nix nix/bun.nix
             touch "$out"
           '';
