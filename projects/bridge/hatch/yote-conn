@@ -3,7 +3,11 @@
 
 The exec subcommand takes the unix-socket fast path (ws_daemon, same
 protocol as yote-conn-fast) when available, falling back to the HTTP
-daemon transparently. All other subcommands use the daemon directly.
+daemon transparently -- including when the daemon reports its bridge down
+("bridge not connected", pre-dispatch, safe to re-dispatch). Errors that
+may have executed remotely ("bridge response timeout", "bridge
+reconnecting") stay final: no double-exec. All other subcommands use the
+daemon directly.
 
 Usage:
   yote-conn health
@@ -86,7 +90,15 @@ def exec_fast(spec):
                         print("error: %s" % doc["error"], file=sys.stderr)
                     return doc.get("code", 1)
                 elif t == "error":
-                    print("bridge error: %s" % doc.get("message"),
+                    msg = doc.get("message") or ""
+                    if msg.startswith("bridge not connected"):
+                        # Pre-dispatch bridge-down: the daemon never sent the
+                        # frame, so the command did not execute remotely.
+                        # The daemon fails fast precisely so callers fall
+                        # back to the old HTTP daemon path -- honor that by
+                        # reporting the fast path unavailable (None).
+                        return None
+                    print("bridge error: %s" % msg,
                           file=sys.stderr)
                     return 1
     except OSError:
