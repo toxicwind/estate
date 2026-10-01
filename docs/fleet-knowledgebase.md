@@ -248,6 +248,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 
 | pip | minus1: verify metaaivm-profile end to end | Ember | DONE (2026-09-30) — verify-only-12of12 |
+| rowan | fleet-kb: reconcile Pip minus1 KB row + fix fleet-onboard overlap-check DONE false positive | Ember (main chat) | DONE (2026-09-30) — b27d806a2 (pip row) + 1868bdcc6 (onboard fix), both ls-remote verified |
 
 
 | torr | metaaivm-fork: maximalize toxicwind/muse-cli, land on main | Ember (main chat) | DONE (2026-09-30) — 628fa52 |
