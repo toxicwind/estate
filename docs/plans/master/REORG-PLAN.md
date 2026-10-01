@@ -146,7 +146,7 @@ pitchfork-supervised yote service inside the cell-material tree, confusing the n
 - **pitchfork `awrawr-ws-exec` is in a respawn storm (observed 2026-09-20):** supervisor marks the daemon `errored`
   and spawns a doomed copy every ~10–20s, each dying instantly with `EADDRINUSE` because a live holder
   (pitchfork child, serves the bridge fine) owns `127.0.0.1:8379`. The cutover restart must be verified live;
-  fallback is killing the stale holder PID via a fresh bridge call — the next respawn then binds cleanly.
+  fallback is terminating the stale holder PID via a fresh bridge call — the next respawn then binds cleanly.
 - **`systemd-run --user` is broken on yote (verified 2026-09-20):** user manager reports `degraded`; a probe timer
   fired but its transient service unit never materialized (no-op). The delayed-restart design is therefore
   REPLACED: the bridge cutover is operator-driven from hatch after the script's bridge call returns (§4 Phase 7, §6).
@@ -311,7 +311,7 @@ operation. Rollback (mechanical, reverse order):
    *Mitigation (2026-09-20):* path corrected, exclude updated, `pitchfork restart sovereign/stash-guard` added.
 9. **Pitchfork respawn storm on the bridge daemon.** *Mode:* supervisor marks `awrawr-ws-exec` errored while a live
    holder owns `:8379`; it spawns doomed EADDRINUSE copies every ~20 s. A naive `pitchfork restart` may not clear
-   the wedge. *Mitigation:* verify 101 after restart; fallback is killing the stale holder PID via a fresh bridge
+   the wedge. *Mitigation:* verify 101 after restart; fallback is terminating the stale holder PID via a fresh bridge
    call and letting the next respawn bind cleanly.
 10. **Blind `git add -A` trips the secret-entropy hook.** *Mode:* with ~8 workers sharing the tree, a full-tree add
    sweeps in other tracks' in-flight lockfiles and secret-bearing logs (observed 2026-09-20: kimi JWTs in a
