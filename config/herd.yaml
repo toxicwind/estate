@@ -710,14 +710,18 @@ peers:
     proxy: https://gen.pollinations.ai
     # apiKey omitted -> anonymous: no auth headers sent (sovereign-swap rebuild 2026-09-21, commit 7fc2528)
     models:
-      - openai
-      - gemma-4-31b
-      - gpt-oss
-      - qwen3.8-27b
-      - muse-glimmer
-      - muse-spark-1.2
-      - kimi-k3
-      - nemotron-3.5-lightning
+      - gpt-oss  # live 2026-10-01 (quill)
+      - kimi-k3  # live 2026-10-01 (quill); free-Kimi via Fireworks backend
+      # AUDIT 2026-10-01 (quill, herd maximalization): Pollinations now
+      # 401s "A valid API key is required" on the rest -- pruned, no
+      # POLLINATIONS key in .secrets (key install is Chris's call).
+      # Re-add when a key exists:
+      # - openai
+      # - gemma-4-31b
+      # - qwen3.8-27b
+      # - muse-glimmer
+      # - muse-spark-1.2
+      # - nemotron-3.5-lightning
       # Free Kimi note (verified 2026-09-14 free-tier fuzz):
       # moonshotai/kimi-k3, kimi-k2.6, kimi-k2.7-code all serve HTTP 200
       # free on Pollinations (no-auth and with the injected dummy bearer,
@@ -748,11 +752,11 @@ peers:
     # recognize -- config failed validation ("proxy is required") and herd
     # died on its first reload/restart after the block was added.)
     proxy: https://router.huggingface.co
-    # apiKey intentionally OMITTED 2026-09-29 (lumen): HF_TOKEN absent from estate
-    # (/home/toxic/.secrets re-rendered 2026-09-28 22:21 without it; no backup copy
-    # found anywhere). llama-swap fails hard on ${env.MISSING}; omitting the key lets
-    # the config load and the peer 401s at runtime until the token is re-installed.
-    # Re-add: apiKey: ${env.HF_TOKEN} + HF_TOKEN in .secrets.
+    apiKey: ${env.HF_TOKEN}
+    # RESTORED 2026-10-01 (quill, herd maximalization): HF_TOKEN is present in
+    # /home/toxic/.secrets (re-rendered 2026-09-30 07:55) and in the herd
+    # daemon's environment. Terminal fallback of the free-Kimi chains
+    # (kimi, kimi-k2, kimi-code, kimi-auto) -- was 401ing at runtime.
     models:
       - moonshotai/Kimi-K3
 
