@@ -6,9 +6,11 @@ installs them to the managed cell paths, verifies SHA256, and restarts the
 connector.
 
 Canonical sources (toxicwind/sovereign-projects on yote):
-  projects/bridge/hatch/connector.py  -> ~/workspace/yote-connector/connector.py
-  gear/awrawr-mcp/bin/exec.py          -> ~/workspace/awrawr-bridge/exec.py
-  projects/bridge/hatch/yote-conn      -> ~/workspace/bin/yote-conn
+  projects/bridge/hatch/connector.py           -> ~/workspace/yote-connector/connector.py
+  projects/bridge/hatch/supervise-connector.py  -> ~/workspace/yote-connector/supervise-connector.py
+  projects/bridge/hatch/start-detached.py       -> ~/workspace/yote-connector/start-detached.py
+  gear/awrawr-mcp/bin/exec.py                   -> ~/workspace/awrawr-bridge/exec.py
+  projects/bridge/hatch/yote-conn               -> ~/workspace/bin/yote-conn
 
 The cell-side ~/workspace/awrawr-bridge/exec.py is a MANAGED DEPLOYED ARTIFACT.
 Its canonical source is gear/awrawr-mcp/bin/exec.py. Do not edit it on the
@@ -32,6 +34,10 @@ YOTE_CONN = os.path.expanduser("~/workspace/bin/yote-conn")
 FILES = [
     ("/home/toxic/sovereign/projects/bridge/hatch/connector.py",
      os.path.expanduser("~/workspace/yote-connector/connector.py")),
+    ("/home/toxic/sovereign/projects/bridge/hatch/supervise-connector.py",
+     os.path.expanduser("~/workspace/yote-connector/supervise-connector.py")),
+    ("/home/toxic/sovereign/projects/bridge/hatch/start-detached.py",
+     os.path.expanduser("~/workspace/yote-connector/start-detached.py")),
     ("/home/toxic/sovereign/gear/awrawr-mcp/bin/exec.py",
      os.path.expanduser("~/workspace/awrawr-bridge/exec.py")),
     ("/home/toxic/sovereign/projects/bridge/hatch/yote-conn",
