@@ -55,6 +55,11 @@ providers:
   openrouterVariant: default
   fetch: auto
 modelRoles:
+  # Estate sovereign router (127.0.0.1:25104) 2026-10-01: X-Sovereign-Strategy
+  # "auto" (AST-shaped -> ast_race, else free-model race, else hybrid
+  # fallback); 2M-context tier pins x-ai/grok-4.20 above 1M est tokens;
+  # POST /v1/bodybuilder decomposes a natural-language job into parallel
+  # request bodies on the free lane.
   # Verified live against openrouter.ai/api/v1 on 2026-09-27.
   # The previous default, google-antigravity/gemini-3.8-flash:high, answers
   # 402 "Insufficient credits", so every untargeted turn and every subagent
