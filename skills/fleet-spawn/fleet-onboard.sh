@@ -107,6 +107,9 @@ while IFS= read -r row; do
   scope="$(echo "$row" | awk -F'|' '{gsub(/^ +| +$/,"",$3); print $3}')"
   owner="$(echo "$row" | awk -F'|' '{gsub(/^ +| +$/,"",$4); print $4}')"
   status="$(echo "$row" | awk -F'|' '{gsub(/^ +| +$/,"",$5); print $5}')"
+  # DONE crews are not live — they never trigger the overlap check.
+  # (false-positive repair 2026-09-30: lumen-md-race DONE since 2026-09-21 kept flagging new crews)
+  case "$status" in DONE*|done*) continue;; esac
   # skip this agent's own (re)registration
   [ "$(echo "$crew" | tr '[:upper:]' '[:lower:]')" = "$(echo "$NAME" | tr '[:upper:]' '[:lower:]')" ] && continue
   score=0
