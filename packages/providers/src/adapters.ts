@@ -54,20 +54,33 @@ function authHeaders(
   return { headers, query };
 }
 
-function idsFromDataArray(adapter: AdapterId, body: unknown): string[] {
+function modelsFromDataArray(
+  adapter: AdapterId,
+  body: unknown,
+): { ids: string[]; byId: Record<string, Record<string, unknown>> } {
   if (typeof body !== "object" || body === null)
     throw new AdapterParseError(adapter, "body is not an object");
   const data = (body as { data?: unknown }).data;
   if (!Array.isArray(data))
     throw new AdapterParseError(adapter, 'missing "data" array');
   const ids: string[] = [];
+  const byId: Record<string, Record<string, unknown>> = {};
   for (const item of data) {
     if (typeof item === "object" && item !== null) {
       const id = (item as { id?: unknown }).id;
-      if (typeof id === "string" && id.length > 0) ids.push(id);
+      if (typeof id === "string" && id.length > 0) {
+        ids.push(id);
+        // Keep the provider's per-model metadata (pricing, context_length,
+        // architecture...); the router's slimMeta drops the prose later.
+        byId[id] = item as Record<string, unknown>;
+      }
     }
   }
-  return ids;
+  return { ids, byId };
+}
+
+function idsFromDataArray(adapter: AdapterId, body: unknown): string[] {
+  return modelsFromDataArray(adapter, body).ids;
 }
 
 const openaiAdapter: ModelsAdapter = {
@@ -82,7 +95,10 @@ const openaiAdapter: ModelsAdapter = {
   parse(body) {
     // { data: [{ id, ... }] } — a well-formed EMPTY data array is a valid
     // zero-model listing, not an error (never fall back to stale data).
-    return { ids: idsFromDataArray("openai", body), meta: { adapter: "openai" } };
+    // Per-model objects flow into meta keyed by id so live metadata
+    // (pricing, context_length) reaches /v1/models and modelFree.
+    const { ids, byId } = modelsFromDataArray("openai", body);
+    return { ids, meta: { adapter: "openai", ...byId } };
   },
 };
 
@@ -105,7 +121,8 @@ const mistralAdapter: ModelsAdapter = {
       (body as { object?: unknown }).object !== "list"
     )
       throw new AdapterParseError("mistral", 'unexpected "object" discriminator');
-    return { ids: idsFromDataArray("mistral", body), meta: { adapter: "mistral" } };
+    const { ids, byId } = modelsFromDataArray("mistral", body);
+    return { ids, meta: { adapter: "mistral", ...byId } };
   },
 };
 
