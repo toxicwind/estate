@@ -531,29 +531,29 @@ def connector_healthy(timeout=10):
 def restart_local_connector():
     """Self-heal the hatch-side connector (it dies on every cell
     re-provision; nothing else restarts it). Kills stale connector.py
-    procs, relaunches via the supervised launcher, and re-probes.
+    procs, relaunches via the guarded launcher, and re-probes.
     Returns True if the connector answers /health afterwards."""
     try:
         subprocess.run(["pkill", "-f", "[c]onnector.py"],
                        capture_output=True, timeout=15)
     except Exception:  # noqa: BLE001
         pass
+    time.sleep(2)  # let sockets close; the launcher refuses if still bound
     try:
-        # Launch per the supervisor docstring: detached, own session, logs
-        # preserved. Popen (not run): the supervisor blocks in wait() on
-        # the child, so run() would hang until timeout and look like a
-        # failure. workdir set so log files land in CONNECTOR_DIR.
-        logf = open(os.path.join(CONNECTOR_DIR, "supervisor.log"), "a")
-        subprocess.Popen(
-            ["setsid", "nohup", "python3", "supervise-connector.py"],
+        # Guarded launcher (start-detached.py): refuses when 18301 is still
+        # bound (no EADDRINUSE race -- the old raw setsid/nohup path could
+        # launch into a dying holder and die with status 1), verifies
+        # /health, and confirms PPID 1 / own SID. run() is safe here: the
+        # launcher exits after its --wait window instead of blocking.
+        r = subprocess.run(
+            ["python3", "start-detached.py", "--wait", "10"],
             cwd=str(CONNECTOR_DIR),
             stdin=subprocess.DEVNULL,
-            stdout=logf, stderr=subprocess.STDOUT,
-            start_new_session=True, close_fds=True)
-        logf.close()  # child holds its own fd; parent must not leak
+            capture_output=True, text=True, timeout=60)
+        if r.returncode != 0:
+            return False
     except Exception:  # noqa: BLE001
         return False
-    time.sleep(4)
     return connector_healthy()
 
 
