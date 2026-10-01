@@ -194,7 +194,7 @@ then `mv shingle-workspace scratch` + `ln -s scratch shingle-workspace`.
 (user manager `degraded`; transient units vanish — verified 2026-09-20), so the script schedules NOTHING. After the
 script's bridge call returns, the hatch operator runs `pitchfork restart sovereign/awrawr-ws-exec` as a separate,
 fire-and-forget bridge call (the response dies with the server — expected), then verifies 101 + `echo BRIDGE-LIVE`.
-Fallback: if the port stays wedged, kill the stale holder PID via a fresh bridge call; the supervisor's ~20 s
+Fallback: if the port stays wedged, terminate the stale holder PID via a fresh bridge call; the supervisor's ~20 s
 respawn loop binds the next copy cleanly. Copy-first (Phase 4) guarantees the toml never points at a missing file.
 
 **Phase 8 — post-restart (from hatch, after 101 verified):** swap the stale copy for the compat symlink:

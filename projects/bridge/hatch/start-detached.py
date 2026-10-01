@@ -37,10 +37,18 @@ HOST, PORT = "127.0.0.1", 18301
 HEALTH_URL = "http://%s:%d/health" % (HOST, PORT)
 
 
-def port_free():
+def port_serving():
+    """True if something is actually listening on HOST:PORT.
+
+    Connect-based, not bind-based: a bind probe without SO_REUSE_ADDRESS
+    reports "bound" for a port lingering in TIME_WAIT, even though a real
+    server (SO_REUSE_ADDRESS) binds it fine. A connect succeeds only when
+    a live listener answers.
+    """
     s = socket.socket()
+    s.settimeout(2)
     try:
-        s.bind((HOST, PORT))
+        s.connect((HOST, PORT))
         return True
     except OSError:
         return False
@@ -74,9 +82,9 @@ def main():
         except (IndexError, ValueError):
             print("bad --wait value", file=sys.stderr)
             return 2
-    if not port_free():
+    if port_serving():
         print(
-            "REFUSE: %s:%d already bound — a stale holder may exist. "
+            "REFUSE: %s:%d is serving — a live holder owns the slot. "
             "Kill it with exact-PID discipline (verify /proc/<pid>/cmdline "
             "names connector.py and cwd is the connector dir), never pkill -f. "
             "Refusing to race into EADDRINUSE." % (HOST, PORT),
