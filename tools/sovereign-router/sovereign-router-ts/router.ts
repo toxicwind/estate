@@ -18,7 +18,7 @@ import { CODING, PROVIDERS, keyOk, getKey, STRATEGY, MAX_PARALLEL, PORT, json, l
 import { LIVE_MODEL_META, modelFree } from "./router_config.ts";
 import { startLiveDiscovery, refreshLiveModels, LIVE_STATUS } from "./router_live_models.ts";
 import { state, startQuarantineProber } from "./router_matrix.ts";
-import { ROUTERS, routeHybrid, callOne, pickWeighted, isRoutableModelId, tryLongctxPin, tryLongctx2MPin, buildBodybuilderRequests, substantive } from "./router_strategy.ts";
+import { ROUTERS, routeHybrid, callOne, pickWeighted, isRoutableModelId, tryLongctxPin, tryLongctx2MPin, buildBodybuilderRequests, runBodybuilderAutonomous, substantive } from "./router_strategy.ts";
 import { uiData, ROUTER_UI_HTML } from "./router_ui.ts";
 import {
   loadAuthFromEnv,
@@ -490,12 +490,17 @@ strategy_detail: STRATEGY === "auto" ? "auto: ast_race (code-shaped) -> free rac
       }
       const job = String(b.job || "");
       if (!job) return json({ error: "missing job" }, 400);
-      const out = await buildBodybuilderRequests(job, {
+      const bbOpts = {
         maxRequests:
           typeof b.max_requests === "number" ? b.max_requests : undefined,
         sid: sessionId(req, b as never),
-      });
-      return json(out);
+      };
+      // Autonomous by default (Chris 2026-10-01): the caller sends the prompt
+      // and gets answers. execute:false restores bodies-only for callers that
+      // run the fan-out themselves.
+      if (b.execute === false)
+        return json(await buildBodybuilderRequests(job, bbOpts));
+      return json(await runBodybuilderAutonomous(job, bbOpts));
     }
 
     if (req.method === "POST" && path.includes("/chat/completions")) {
