@@ -84,14 +84,21 @@ async function fetchDynamicModels(apiKey: string | undefined): Promise<readonly 
 }
 
 function registerVansRouter(pi: ExtensionAPI): void {
-	const key = process.env[VR_KEY_ENV] || VR_KEY_FALLBACK;
+	// Empty-string keys fail the engine provider-definition check
+	// ("apiKey" or "oauth" is required when defining models), which crashed
+	// `omp models`. This router serves keyless: register a placeholder and
+	// suppress the auth header unless a real key exists, so no bogus
+	// credential is ever sent. Verified against engine validation in
+	// @oh-my-pi/pi-coding-agent 18.3.0 dist/cli.js (authHeader===true &&
+	// apiKey!==undefined gates header emission).
+	const key = process.env[VR_KEY_ENV] || VR_KEY_FALLBACK || undefined;
 	const config: ProviderConfig = {
 		baseUrl: `${VR_BASE}/v1`,
-		apiKey: key || "",
+		apiKey: key ?? "keyless",
 		api: "openai-completions",
-		authHeader: true,
+		authHeader: key !== undefined,
 		models: SEED_MODELS,
-		fetchDynamicModels,
+		fetchDynamicModels: () => fetchDynamicModels(key),
 	};
 	pi.registerProvider("vansrouter", config);
 }
