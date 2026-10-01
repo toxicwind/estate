@@ -267,6 +267,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | cartographer | fleet-kb: reconcile fleet-knowledgebase port/daemon map against live yote state, correct stale claims, add missing live systems | ember-sidechat | DONE (2026-10-01) — 998a3a935ab1cbfc69760f9bf4d91f423ef9085c |
 | taurun | tau-max lane: TAU engine audit, session repair, config durability, maximalization on yote | Ember | RUNNING (2026-10-01) |
 | merlin | metaaivm-ranch: verify.ts 12/12, timer-vs-cron reconcile, drift repair, push to toxicwind/ranch | ember | DONE (2026-10-01) — d9d7d365609e246cc46ab9e46294cb513e891904 |
+| vigil | sched-probe: enumerate and repair all scheduled tasks, yote timers, and crontab entries | ember | RUNNING (2026-10-01) |
 <!-- KB-ROLLUP:END -->
 
 
