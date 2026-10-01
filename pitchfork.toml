@@ -1271,7 +1271,11 @@ auto = ["start"]
 [daemons.tau]
 # omp acp exposed as TCP daemon via chute (stdio→TCP + mcpServers normalization)
 port = 25111
-run = "exec /home/toxic/sovereign/projects/range/ranch/barn/chute/chute.mjs --port 25111 -- /home/toxic/sovereign/projects/range/ranch/tau/packages/coding-agent/dist/omp acp -e /home/toxic/.tau/extensions/vansrouter.ts"
+run = "exec /home/toxic/sovereign/projects/range/ranch/barn/chute/chute.mjs --port 25111 -- /home/toxic/.local/bin/tau acp -e /home/toxic/.tau/extensions/vansrouter.ts"
+# 2026-10-01 taurun: dist/omp deleted (ranch/tau tree rm -rf 02:17 MDT); fork cannot
+# rebuild here (missing @ranch/tack monorepo sibling). Pinned launcher (upstream
+# 18.3.0, same pin as ~/.local/bin/tau) restores the daemon. Revert to dist/omp
+# when the fork builds again.
 dir = "/home/toxic"
 mise = false
 retry = true
@@ -1322,31 +1326,3 @@ run = "exec /home/toxic/.local/share/mise/shims/bun /home/toxic/duet/src/yote.ts
 dir = "/home/toxic/duet"
 retry = true
 auto = ["start"]
-
-# ---- project: ranch/task-launch (1 daemon) ----
-# ranch/task-launch — project-owned daemon manifest. Source of truth for task-launch.
-# Owned by the ranch project; the parent only composes it.
-# Event-driven (inotify watch on the queue dir); no timers, no polling.
-# Executes tasks the platform scheduled-task safety review refuses, yote-side.
-
-[daemons.task-launch]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/projects/range/ranch/task-launch/src/daemon.ts"
-dir = "/home/toxic/sovereign/projects/range/ranch/task-launch"
-mise = false
-retry = true
-auto = ["start"]
-ready_cmd = "pgrep -f '[t]ask-launch/src/daemon.ts' >/dev/null"
-
-# ---- project: ranch/mission-control (1 daemon) ----
-# ranch/mission-control — project-owned daemon manifest. Source of truth for mission-control.
-# Owned by the ranch project; the parent only composes it.
-# Event-driven (fs.watch on state/missions/*/events + startup replay); no timers, no polling.
-# Watches mission event dirs; classifies terminal failures and emits continuation directives.
-
-[daemons.mission-control]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/projects/range/ranch/mission-control/src/controller.ts"
-dir = "/home/toxic/sovereign/projects/range/ranch/mission-control"
-mise = false
-retry = true
-auto = ["start"]
-ready_cmd = "pgrep -f '[m]ission-control/src/controller.ts' >/dev/null"
