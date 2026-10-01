@@ -17,9 +17,9 @@ pub mod nvidia;
 pub mod ollama;
 pub mod open_ai;
 pub mod open_ai_compatible;
+pub mod open_router;
 pub mod openai_mcpproxy;
 pub mod openai_mcpproxy_nvidia;
-pub mod open_router;
 pub mod openai_subscribed;
 pub mod opencode;
 

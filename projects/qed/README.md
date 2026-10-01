@@ -20,7 +20,7 @@
 ```mermaid
 flowchart LR
     Q[qed/]
-    Q --> Z[zed/ — toxicwind/zed fork<br/>241 Rust crates, GPUI]
+    Q --> Z[zed/ — toxicwind/sovereign-zed fork<br/>241 Rust crates, GPUI]
     Q --> R[zedra/ — remote substrate<br/>mobile + desktop daemon, P2P QUIC/UDP]
     Z --> P["providers: NIM direct · sovereign :25104<br/>MCP-proxy hardened · schema normalizers"]
     R --> D[deploy/relay/ — self-hosted iroh-relay]
@@ -28,7 +28,7 @@ flowchart LR
 
 ```text
 qed/
-├── zed/     # toxicwind/zed fork — 241 Rust crates, GPUI rendering
+├── zed/     # toxicwind/sovereign-zed fork — 241 Rust crates, GPUI rendering
 │            # custom providers: NVIDIA NIM (direct), MCP-proxy-hardened
 │            # OpenAI-compatible providers, tool-schema normalizers
 └── zedra/   # remote substrate — mobile editor + desktop daemon with
