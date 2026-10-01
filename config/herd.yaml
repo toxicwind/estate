@@ -789,6 +789,10 @@ peers:
   #       - moonshotai/kimi-k2.6:free
   #       - moonshotai/kimi-k2-thinking:free
   #       - moonshotai/kimi-k2.7-code:free
+      # AUDIT 2026-10-01 (bristle): pruned 6 stale :free IDs (upstream 404
+      # 'unavailable for free' or absent from /models) + removed duplicated
+      # kimi tier block. Kept TIER 5 kimi IDs as documented fallback; they
+      # re-serve automatically when OpenRouter re-enables them.
   #       - moonshotai/kimi-k2:free
   #     timeouts:
   #       connect: 30
@@ -813,9 +817,10 @@ peers:
     # OPENROUTER_* key rotation. Do NOT re-add a hardcoded key — a
     # 401/402/429 is a routing signal, not a config rewrite.
     models:
-      - inclusionai/ling-3.0-flash-vl:free
-      - inclusionai/ling-3.0-flash-fin:free
       - inclusionai/ling-3.0-flash-sante:free
+      # AUDIT 2026-10-01 (bristle): vl/fin removed -- no longer in
+      # OpenRouter /models :free list (upstream 404). sante:free verified
+      # live this date.
     timeouts:
       connect: 30
       keepalive: 30
@@ -995,12 +1000,8 @@ peers:
     models:
       # TIER 1 -- proven exact-output, p50 ascending (v3) then census rank
       - cohere/north-mini-code:free  # v3 3/3 exact, p50 557ms -- fastest AND most reliable (reasoning-first: needs token headroom)
-      - nex-agi/nex-n2.5-pro:free  # v3 3/3 exact, p50 583ms; census #3
-      - nex-agi/nex-n2.5-mini:free  # v3 3/3 exact, p50 609ms (census 7/10: fast but sloppy on prose)
       - inclusionai/ling-3.0-flash-sante:free  # v3 3/3 exact, p50 941ms; census #5
       - nvidia/nemotron-3-super-120b-a12b:free  # v3 3/3 exact, p50 1349ms
-      - inclusionai/ling-3.0-flash-fin:free  # RESTORED 2026-09-20: census #2 10/10; exact at max_tokens=2000 (v3 200-empty was the 100-token artifact)
-      - inclusionai/ling-3.0-flash-vl:free  # RESTORED 2026-09-20: census #4 10/10; exact at max_tokens=2000
       - dots-studio/dots-3-note-preview:free  # RESTORED 2026-09-20: census #9; exact at max_tokens=2000
       - nvidia/nemotron-3-ultra-550b-a55b:free  # v3 3/3 exact, p50 6088ms; WILD variance (min 1352/max 75324) -- capacity-constrained
       # TIER 2 -- partial or single-verify: usable with failover; keypool cooldown absorbs misses
@@ -1008,14 +1009,12 @@ peers:
       - poolside/laguna-s-2.1:free  # v3 2/3 exact, 1x http-529
       - liquid/lfm-2.5-2.6b:free  # RESTORED 2026-09-20: exact once at max_tokens=2000 (census 2/10 prose); needs more trials before tier 1
       # TIER 3 -- marginal: auto-router, exact 1/3, throttled 1/3
-      - openrouter/free  # v3 1/3 exact (p50 600ms when it answers), 1x 429, 1x contains-only
       # TIER 4 (throttled-elite) -- 429 on ALL v3 passes; fallback only.
       # Keypool respects down_until/cooldown and auto-recovers, so these engage
       # only when cooldowns clear. Re-probe before promoting.
       - google/gemma-4-31b-it:free  # v3: 429 x3
       - google/gemma-4-26b-a4b-it:free  # v3: 429 x3
       - qwen/qwen3.8-27b:free  # v3: 429 x3
-      - z-ai/glm-5.2:free  # v3: 429 x3
       # TIER 5 -- Kimi free variants (maximal free-Kimi routing, 2026-09-21,
       # ember-kimi-route): OpenRouter rotates free Kimi availability; all 404
       # "unavailable for free" as of 2026-09-21. Listed as fallback tier --
@@ -1033,10 +1032,6 @@ peers:
       #   (emits thinking). Unusable for exact-output tasks.
       # - nvidia/nemotron-3.5-content-safety:free: refuses by design (safety
       #   classifier, not a general LLM).
-      - moonshotai/kimi-k3:free  # free Kimi (ember-kimi-route 2026-09-21)
-      - moonshotai/kimi-k2.6:free  # free Kimi (ember-kimi-route 2026-09-21)
-      - moonshotai/kimi-k2.5:free  # free Kimi (ember-kimi-route 2026-09-21)
-      - moonshotai/kimi-k2.7-code:free  # free Kimi (ember-kimi-route 2026-09-21)
     timeouts:
       connect: 30
       keepalive: 30
