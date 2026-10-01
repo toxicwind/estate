@@ -18,7 +18,7 @@ import { CODING, PROVIDERS, keyOk, getKey, STRATEGY, MAX_PARALLEL, PORT, json, l
 import { LIVE_MODEL_META, modelFree } from "./router_config.ts";
 import { startLiveDiscovery, refreshLiveModels, LIVE_STATUS } from "./router_live_models.ts";
 import { state, startQuarantineProber } from "./router_matrix.ts";
-import { ROUTERS, routeHybrid, callOne, pickWeighted, isRoutableModelId, tryLongctxPin, substantive } from "./router_strategy.ts";
+import { ROUTERS, routeHybrid, callOne, pickWeighted, isRoutableModelId, tryLongctxPin, tryLongctx2MPin, buildBodybuilderRequests, substantive } from "./router_strategy.ts";
 import { uiData, ROUTER_UI_HTML } from "./router_ui.ts";
 import {
   loadAuthFromEnv,
@@ -86,6 +86,29 @@ async function handleStream(
   sid: string,
   _strat: string,
 ): Promise<Response> {
+  // 2M-context tier (2026-10-01): >1M est tokens -> direct keyed
+  // openrouter lane (x-ai/grok-4.20, 2M context), skipping the race.
+  // Ineligible or pinned failure falls through to the 1M pin below.
+  const pinned2mStream = await tryLongctx2MPin(body, sid, true);
+  if (pinned2mStream?.ok && pinned2mStream.stream) {
+    const pst2 = pinned2mStream.timings;
+    return new Response(pinned2mStream.stream, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+        "X-Routed-Via": `${pinned2mStream.provider}/${pinned2mStream.model}`,
+        "X-Longctx-Pin": "2m",
+        ...(pst2
+          ? {
+              "X-Sovereign-Timings": `connect_ms=${pst2.connect_ms};ttft_ms=${pst2.ttft_ms ?? "-"};total_ms=${pst2.total_ms}`,
+            }
+          : {}),
+      },
+    });
+  }
+
   // 1M-context pin (DECISION 12187): >200k est tokens -> direct keyed
   // nvidia lane, skipping the race. Ineligible or pinned failure falls
   // through to the normal stream logic below (single race fallback).
@@ -453,6 +476,27 @@ const server = Bun.serve({
       }
     }
 
+    // Estate-owned openrouter/bodybuilder equivalent: natural-language
+    // multi-model job -> structured {requests:[...]} fan-out bodies for the
+    // caller to execute in parallel. Generation is free (free-race lane);
+    // execution stays with the caller.
+    if (req.method === "POST" && path === "/v1/bodybuilder") {
+      let b: Record<string, unknown>;
+      try {
+        b = (await req.json()) as Record<string, unknown>;
+      } catch {
+        return json({ error: "invalid_json" }, 400);
+      }
+      const job = String(b.job || "");
+      if (!job) return json({ error: "missing job" }, 400);
+      const out = await buildBodybuilderRequests(job, {
+        maxRequests:
+          typeof b.max_requests === "number" ? b.max_requests : undefined,
+        sid: sessionId(req, b as never),
+      });
+      return json(out);
+    }
+
     if (req.method === "POST" && path.includes("/chat/completions")) {
       let body: ChatBody;
       try {
@@ -477,6 +521,30 @@ const server = Bun.serve({
 
       if (body.stream) {
         return handleStream(body, sid, strat);
+      }
+
+      // 2M-context tier (2026-10-01): est tokens >1M -> direct keyed
+      // openrouter lane (x-ai/grok-4.20, 2M context), skipping the race.
+      // Ineligible or pinned failure falls through to the 1M pin, then the
+      // normal strategy dispatch.
+      const pinned2m = await tryLongctx2MPin(body, sid, false);
+      if (pinned2m && substantive(pinned2m)) {
+        const t2 = pinned2m.timings;
+        return new Response(pinned2m.data as BodyInit, {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "X-Routed-Via": `${pinned2m.provider}/${pinned2m.model}`,
+            "X-Latency": String(Math.round((pinned2m.lat || 0) * 1000) / 1000),
+            "X-Strategy": strat,
+            "X-Longctx-Pin": "2m",
+            ...(t2
+              ? {
+                  "X-Sovereign-Timings": `connect_ms=${t2.connect_ms};ttft_ms=${t2.ttft_ms ?? "-"};total_ms=${t2.total_ms}`,
+                }
+              : {}),
+          },
+        });
       }
 
       // 1M-context pin (DECISION 12187): est tokens >200k -> direct keyed
