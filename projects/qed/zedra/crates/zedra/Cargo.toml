@@ -69,13 +69,15 @@ base64 = "0.22"
 chrono.workspace = true
 
 [target.'cfg(target_os = "android")'.dependencies]
-# NOTE (zed-qed 2026-09-20): the mobile gpui crates below (gpui_android,
-# gpui_wgpu, gpui_ios) exist in no zed tree on this estate -- neither the
-# canonical projects/qed/zed (1.13.0) nor toxicwind/sovereign-zed (1.17.0)
-# carries them. They are commented out so host (linux/macos) builds resolve.
-# Re-enable with a vendor/zed checkout of a mobile-capable zed when doing
-# Android/iOS builds.
-# gpui_android = { path = "../../vendor/zed/crates/gpui_android" }
+# NOTE (zed-qed 2026-10-01): the mobile gpui crates gpui_wgpu and gpui_ios
+# exist in no zed tree on this estate -- neither the canonical
+# projects/qed/zed (1.13.0) nor toxicwind/sovereign-zed (1.17.0) carries
+# them; they stay disabled so host (linux/macos) builds resolve. gpui_android
+# now lives in-tree as a structural crate at crates/gpui_android: API-complete
+# against the Android entry code, compiling for aarch64-linux-android, with
+# the on-device runtime (JNI lifecycle, Choreographer frames, wgpu/Vulkan
+# surface) as the next lane.
+gpui_android = { path = "../gpui_android" }
 # gpui_wgpu = { path = "../../vendor/zed/crates/gpui_wgpu" }
 android_logger = "0.15.1"
 jni = "0.21.1"
