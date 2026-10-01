@@ -29,3 +29,6 @@ retry:
 extensions:
   - /home/toxic/.bun/install/global/node_modules/billion-context/dist/agent/omp-native.js
 setupVersion: 2
+skills:
+  customDirectories:
+  - /home/toxic/sovereign/skills
