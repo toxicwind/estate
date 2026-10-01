@@ -569,6 +569,9 @@ goal:
 title:
   refreshOnReplan: true
 skills:
+  # NOTE 2026-10-01: this file (~/.tau/config.yml) is NOT read by the engine.
+  # strace shows the engine opens only ~/.tau/agent/config.yml (PI_CONFIG_DIR=$HOME/.tau,
+  # agent dir = $PI_CONFIG_DIR/agent). The live skills.customDirectories now lives there.
   enableSkillCommands: true
   customDirectories:
   - /home/toxic/sovereign/skills
