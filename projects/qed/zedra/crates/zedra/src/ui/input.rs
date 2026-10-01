@@ -46,9 +46,10 @@ impl Element for MultilineInputText {
         window: &mut Window,
         cx: &mut App,
     ) -> (LayoutId, Self::RequestLayoutState) {
-        let state = TextLayout::default();
-        let layout_id = state.uniform_request_layout(self.text.clone(), window, cx);
-        (layout_id, state)
+        // Old gpui keeps TextLayout's layout routine private; delegate to the
+        // SharedString element, whose layout state IS TextLayout.
+        let mut text = self.text.clone();
+        <SharedString as Element>::request_layout(&mut text, _id, _inspector_id, window, cx)
     }
 
     fn prepaint(
@@ -57,10 +58,19 @@ impl Element for MultilineInputText {
         _inspector_id: Option<&InspectorElementId>,
         bounds: Bounds<Pixels>,
         text_layout: &mut Self::RequestLayoutState,
-        _window: &mut Window,
-        _cx: &mut App,
+        window: &mut Window,
+        cx: &mut App,
     ) -> Self::PrepaintState {
-        text_layout.uniform_prepaint(bounds, self.text.as_ref());
+        let mut text = self.text.clone();
+        <SharedString as Element>::prepaint(
+            &mut text,
+            _id,
+            _inspector_id,
+            bounds,
+            text_layout,
+            window,
+            cx,
+        )
     }
 
     fn paint(
@@ -73,7 +83,17 @@ impl Element for MultilineInputText {
         window: &mut Window,
         cx: &mut App,
     ) {
-        text_layout.uniform_paint(self.text.as_ref(), window, cx);
+        let mut text = self.text.clone();
+        <SharedString as Element>::paint(
+            &mut text,
+            _id,
+            _inspector_id,
+            bounds,
+            text_layout,
+            &mut (),
+            window,
+            cx,
+        );
         if !self.draw_caret {
             return;
         }
@@ -198,10 +218,16 @@ pub struct Input {
     /// Whether to obscure text (for passwords)
     secure: bool,
     /// Whether to ask the platform keyboard for native inline suggestions.
+    /// (No-op on this gpui: kept for API compatibility with callers.)
+    #[allow(dead_code)]
     native_suggestions: bool,
     /// When true, pressing the focused input toggles the software keyboard.
+    /// (No-op on this gpui: kept for API compatibility with callers.)
+    #[allow(dead_code)]
     toggle_keyboard_on_press: bool,
     /// When true, submit hides the software keyboard without blurring the input.
+    /// (No-op on this gpui: kept for API compatibility with callers.)
+    #[allow(dead_code)]
     hide_keyboard_on_submit: bool,
     /// Focus handle for GPUI focus management
     focus_handle: FocusHandle,
@@ -288,14 +314,6 @@ impl Input {
     pub fn hide_keyboard_on_submit(mut self, hide_keyboard_on_submit: bool) -> Self {
         self.hide_keyboard_on_submit = hide_keyboard_on_submit;
         self
-    }
-
-    fn text_input_traits_policy(native_suggestions: bool, secure: bool) -> PlatformTextInputTraits {
-        if native_suggestions && !secure {
-            PlatformTextInputTraits::keyboard_suggestions()
-        } else {
-            PlatformTextInputTraits::default()
-        }
     }
 
     /// Use a smaller, denser layout for compact toolbars and sidebars.
@@ -476,48 +494,6 @@ impl Input {
         cx.notify();
     }
 
-    fn begin_dictation(&mut self, cx: &mut Context<Self>) {
-        self.dictation_active = true;
-        self.committed_dictation_cleanup_range = None;
-        if self.marked_range.is_none() {
-            let cursor = self.cursor_byte();
-            self.marked_range = Some(cursor..cursor);
-            self.selected_range = Some(cursor..cursor);
-        }
-        cx.notify();
-    }
-
-    fn insert_live_dictation_text(&mut self, text: &str, cx: &mut Context<Self>) {
-        if !self.dictation_active {
-            self.begin_dictation(cx);
-        }
-        let range = self.active_replacement_range(None);
-        let selected = text.encode_utf16().count();
-        self.replace_range_with_marked_text(range, text, Some(selected..selected), cx);
-    }
-
-    fn finish_dictation(&mut self, cx: &mut Context<Self>) {
-        if !self.dictation_active {
-            return;
-        }
-
-        self.dictation_active = false;
-        // Critical: UIKit deletes its committed hypothesis after dictation ends.
-        // Preserve the visible value and consume that synthetic delete later.
-        self.committed_dictation_cleanup_range = self.marked_range.clone();
-        cx.notify();
-    }
-
-    fn cancel_dictation(&mut self, cx: &mut Context<Self>) {
-        self.dictation_active = false;
-        self.committed_dictation_cleanup_range = None;
-        if let Some(range) = self.marked_range.take() {
-            self.replace_range_with_text(range, "", cx);
-        } else {
-            cx.notify();
-        }
-    }
-
     fn consume_or_reconcile_dictation_cleanup(
         &mut self,
         range_utf16: Option<Range<usize>>,
@@ -572,24 +548,18 @@ impl Input {
         false
     }
 
-    fn handle_press(&mut self, _event: &PressEvent, window: &mut Window, cx: &mut Context<Self>) {
-        if self.focus_handle.is_focused(window) && self.toggle_keyboard_on_press {
-            if window.is_soft_keyboard_visible() {
-                window.hide_soft_keyboard();
-            } else {
-                window.show_soft_keyboard();
-            }
-        } else {
-            self.focus_handle.focus(window, cx);
-            window.show_soft_keyboard();
-        }
+    fn handle_press(
+        &mut self,
+        _event: &MouseDownEvent,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        // No soft-keyboard API on this gpui: press focuses the input.
+        self.focus_handle.focus(window, cx);
         cx.notify();
     }
 
-    fn submit(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        if self.hide_keyboard_on_submit {
-            window.hide_soft_keyboard();
-        }
+    fn submit(&mut self, _window: &mut Window, cx: &mut Context<Self>) {
         cx.emit(InputSubmit {
             value: self.value.clone(),
         });
@@ -764,7 +734,7 @@ impl EntityInputHandler for Input {
         Some(self.value[start..end].to_string())
     }
 
-    fn text_len_utf16(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> Option<usize> {
+    fn text_length_utf16(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> Option<usize> {
         Some(self.value.encode_utf16().count())
     }
 
@@ -871,39 +841,6 @@ impl EntityInputHandler for Input {
         self.replace_range_with_marked_text(range, marked_text, selected_range_utf16, cx);
     }
 
-    fn insert_dictation_result_placeholder(
-        &mut self,
-        _window: &mut Window,
-        cx: &mut Context<Self>,
-    ) {
-        self.begin_dictation(cx);
-    }
-
-    fn remove_dictation_result_placeholder(
-        &mut self,
-        will_insert_result: bool,
-        _window: &mut Window,
-        cx: &mut Context<Self>,
-    ) {
-        if !will_insert_result {
-            self.finish_dictation(cx);
-        }
-    }
-
-    fn insert_dictation_result(
-        &mut self,
-        text: &str,
-        _window: &mut Window,
-        cx: &mut Context<Self>,
-    ) {
-        self.insert_live_dictation_text(text, cx);
-        self.finish_dictation(cx);
-    }
-
-    fn dictation_recognition_failed(&mut self, _window: &mut Window, cx: &mut Context<Self>) {
-        self.cancel_dictation(cx);
-    }
-
     fn bounds_for_range(
         &mut self,
         _range_utf16: Range<usize>,
@@ -922,14 +859,6 @@ impl EntityInputHandler for Input {
     ) -> Option<usize> {
         Some(self.byte_to_utf16_offset(self.cursor_byte()))
     }
-
-    fn text_input_traits(
-        &self,
-        _window: &mut Window,
-        _cx: &mut Context<Self>,
-    ) -> PlatformTextInputTraits {
-        Self::text_input_traits_policy(self.native_suggestions, self.secure)
-    }
 }
 
 impl Focusable for Input {
@@ -941,47 +870,7 @@ impl Focusable for Input {
 #[cfg(test)]
 mod tests {
     use super::Input;
-    use gpui::{
-        AppContext as _, PlatformTextAutocapitalization, PlatformTextInputTrait,
-        PlatformTextInputTraits, TestAppContext,
-    };
-
-    fn assert_mutating_traits_disabled(traits: PlatformTextInputTraits) {
-        assert_eq!(
-            traits.autocapitalization,
-            PlatformTextAutocapitalization::None
-        );
-        assert_eq!(traits.spell_checking, PlatformTextInputTrait::Disabled);
-        assert_eq!(traits.smart_quotes, PlatformTextInputTrait::Disabled);
-        assert_eq!(traits.smart_dashes, PlatformTextInputTrait::Disabled);
-        assert_eq!(traits.smart_insert_delete, PlatformTextInputTrait::Disabled);
-    }
-
-    #[test]
-    fn input_text_input_traits_default_to_disabled() {
-        assert_eq!(
-            Input::text_input_traits_policy(false, false),
-            PlatformTextInputTraits::default()
-        );
-    }
-
-    #[test]
-    fn input_native_suggestions_opt_in_to_keyboard_suggestions() {
-        let traits = Input::text_input_traits_policy(true, false);
-
-        assert_eq!(traits, PlatformTextInputTraits::keyboard_suggestions());
-        assert_eq!(traits.inline_prediction, PlatformTextInputTrait::Enabled);
-        assert_eq!(traits.autocorrection, PlatformTextInputTrait::Enabled);
-        assert_mutating_traits_disabled(traits);
-    }
-
-    #[test]
-    fn secure_input_disables_native_suggestions_even_when_requested() {
-        assert_eq!(
-            Input::text_input_traits_policy(true, true),
-            PlatformTextInputTraits::default()
-        );
-    }
+    use gpui::{AppContext as _, TestAppContext};
 
     #[test]
     fn utf16_offsets_round_to_valid_utf8_boundaries() {
@@ -1075,102 +964,7 @@ mod tests {
         });
     }
 
-    #[test]
-    fn committed_dictation_cleanup_delete_does_not_clear_input() {
-        let mut cx = TestAppContext::single();
-        let input = cx.update(|cx| cx.new(Input::new));
 
-        input.update(&mut cx, |input, cx| {
-            input.begin_dictation(cx);
-            input.insert_live_dictation_text("Hello", cx);
-            input.finish_dictation(cx);
-
-            assert_eq!(input.value, "Hello");
-            assert_eq!(input.marked_range, Some(0.."Hello".len()));
-            assert_eq!(
-                input.committed_dictation_cleanup_range,
-                Some(0.."Hello".len())
-            );
-
-            assert!(input.consume_or_reconcile_dictation_cleanup(Some(0..5), "", cx));
-            assert_eq!(input.value, "Hello");
-            assert_eq!(input.marked_range, None);
-            assert_eq!(input.committed_dictation_cleanup_range, None);
-        });
-    }
-
-    #[test]
-    fn committed_dictation_reconciles_late_final_text_before_cleanup_delete() {
-        let mut cx = TestAppContext::single();
-        let input = cx.update(|cx| cx.new(Input::new));
-
-        input.update(&mut cx, |input, cx| {
-            input.begin_dictation(cx);
-            input.insert_live_dictation_text("hello worl", cx);
-            input.finish_dictation(cx);
-
-            assert!(input.consume_or_reconcile_dictation_cleanup(
-                Some(0.."hello worl".encode_utf16().count()),
-                "hello world",
-                cx,
-            ));
-            assert_eq!(input.value, "hello world");
-            assert_eq!(input.marked_range, Some(0.."hello world".len()));
-            assert_eq!(
-                input.committed_dictation_cleanup_range,
-                Some(0.."hello world".len())
-            );
-
-            assert!(input.consume_or_reconcile_dictation_cleanup(
-                Some(0.."hello world".encode_utf16().count()),
-                "",
-                cx,
-            ));
-            assert_eq!(input.value, "hello world");
-            assert_eq!(input.committed_dictation_cleanup_range, None);
-        });
-    }
-
-    #[test]
-    fn typing_after_dictation_commit_appends_instead_of_replacing_hypothesis() {
-        let mut cx = TestAppContext::single();
-        let input = cx.update(|cx| cx.new(Input::new));
-
-        input.update(&mut cx, |input, cx| {
-            input.begin_dictation(cx);
-            input.insert_live_dictation_text("hello", cx);
-            input.finish_dictation(cx);
-
-            assert!(!input.consume_or_reconcile_dictation_cleanup(None, "!", cx));
-            let range = input.active_replacement_range(None);
-            input.replace_range_with_text(range, "!", cx);
-
-            assert_eq!(input.value, "hello!");
-            assert_eq!(input.marked_range, None);
-            assert_eq!(input.committed_dictation_cleanup_range, None);
-        });
-    }
-
-    #[test]
-    fn cancelled_dictation_removes_uncommitted_hypothesis() {
-        let mut cx = TestAppContext::single();
-        let input = cx.update(|cx| cx.new(Input::new));
-
-        input.update(&mut cx, |input, cx| {
-            input.value = "prefix ".to_string();
-            input.refresh_display_value();
-            input.cursor_byte = input.value.len();
-
-            input.begin_dictation(cx);
-            input.insert_live_dictation_text("draft", cx);
-            assert_eq!(input.value, "prefix draft");
-
-            input.cancel_dictation(cx);
-            assert_eq!(input.value, "prefix ");
-            assert_eq!(input.marked_range, None);
-            assert_eq!(input.committed_dictation_cleanup_range, None);
-        });
-    }
 }
 
 impl Render for Input {
@@ -1219,10 +1013,10 @@ impl Render for Input {
             .id(("input", cx.entity_id()))
             .relative()
             .track_focus(&self.focus_handle)
-            .on_pointer_down(|_, _, cx| {
+            .on_mouse_down(MouseButton::Left, |_, _, cx| {
                 cx.stop_propagation();
             })
-            .on_press(cx.listener(Self::handle_press))
+            .on_mouse_down(MouseButton::Left, cx.listener(Self::handle_press))
             .on_key_down(cx.listener(Self::handle_key_down))
             .pl(px(horizontal_padding))
             .pr(px(horizontal_padding + self.trailing_gutter))

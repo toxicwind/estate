@@ -991,7 +991,7 @@ impl DeltaClient {
     }
 
     /// Send a push notification to the last connected signed-in mobile client.
-    pub async fn send_notification_to_client(
+    pub(crate) async fn send_notification_to_client(
         &self,
         title: String,
         body: Option<String>,

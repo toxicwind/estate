@@ -156,7 +156,7 @@ impl Workspaces {
         workspace.update(cx, |ws, cx| ws.reveal_connecting_view(window, cx));
     }
 
-    pub fn open_connecting_for_state(
+    pub(crate) fn open_connecting_for_state(
         &mut self,
         state_index: usize,
         window: &mut Window,

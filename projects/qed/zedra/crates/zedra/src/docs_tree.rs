@@ -333,7 +333,7 @@ impl DocsTree {
                 .items_center()
                 .gap(px(7.0))
                 .cursor_pointer()
-                .on_press(cx.listener(move |this, _event, _window, cx| {
+                .on_mouse_down(MouseButton::Left, cx.listener(move |this, _event, _window, cx| {
                     this.toggle_dir(&collapse_key, cx);
                 }))
                 .child(
@@ -374,7 +374,7 @@ impl DocsTree {
             .items_center()
             .gap(px(7.0))
             .cursor_pointer()
-            .on_press(cx.listener(move |_this, _event, window, cx| {
+            .on_mouse_down(MouseButton::Left, cx.listener(move |_this, _event, window, cx| {
                 window.dispatch_action(
                     workspace_action::OpenFile { path: path.clone() }.boxed_clone(),
                     cx,
@@ -438,7 +438,7 @@ impl DocsTree {
             .items_center()
             .h(px(theme::PANEL_ITEM_HEIGHT))
             .cursor_pointer()
-            .on_press(cx.listener(|this, _event, _window, cx| {
+            .on_mouse_down(MouseButton::Left, cx.listener(|this, _event, _window, cx| {
                 platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
                 this.load_more(cx);
             }))
@@ -508,10 +508,10 @@ impl DocsTree {
         if !is_building {
             button = button
                 .cursor_pointer()
-                .on_pointer_down(|_, _, cx| {
+                .on_mouse_down(MouseButton::Left, |_, _, cx| {
                     cx.stop_propagation();
                 })
-                .on_press(cx.listener(|this, _event, _window, _cx| {
+                .on_mouse_down(MouseButton::Left, cx.listener(|this, _event, _window, _cx| {
                     this.request_rebuild_confirmation();
                 }));
         }
@@ -661,7 +661,7 @@ impl Render for DocsTree {
                 )
                 .track_scroll(&self.scroll_handle)
                 .size_full()
-                .flex_grow(),
+                .flex_grow(1.0),
             )
     }
 }

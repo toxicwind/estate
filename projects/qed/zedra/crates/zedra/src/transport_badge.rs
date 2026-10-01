@@ -32,7 +32,7 @@ pub(crate) fn transport_badge(
             };
             let rtt = transport.map(|t| t.rtt_ms).unwrap_or(0);
             let label = match (relay, rtt) {
-                (Some(r), ms) if ms > 0 => format!("{conn_type} \u{00b7} {ms}ms"),
+                (Some(_r), ms) if ms > 0 => format!("{conn_type} \u{00b7} {ms}ms"),
                 (None, ms) if ms > 0 => format!("{conn_type} \u{00b7} {ms}ms"),
                 _ => conn_type.to_string(),
             };
@@ -89,9 +89,8 @@ fn phase_indicator_blinks(palette: &ThemePalette, phase: &ConnectPhase) -> bool 
 const STATUS_PULSE_MS: u64 = 1800;
 const STATUS_PULSE_MIN_OPACITY: f32 = 0.35;
 const STATUS_PULSE_MAX_SCALE: f32 = 1.3;
-const STATUS_HIT_SLOP: f32 = 20.0;
 
-type ConnectionStatusPressHandler = Arc<dyn Fn(&PressEvent, &mut Window, &mut App) + 'static>;
+type ConnectionStatusPressHandler = Arc<dyn Fn(&MouseDownEvent, &mut Window, &mut App) + 'static>;
 
 #[derive(Clone, IntoElement)]
 pub(crate) struct ConnectionStatusIndicator {
@@ -132,7 +131,7 @@ impl ConnectionStatusIndicator {
     /// Press handler compatible with [`Context::listener`].
     pub(crate) fn on_press(
         mut self,
-        handler: impl Fn(&PressEvent, &mut Window, &mut App) + 'static,
+        handler: impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static,
     ) -> Self {
         self.on_press = Some(Arc::new(handler));
         self
@@ -181,9 +180,8 @@ impl RenderOnce for ConnectionStatusIndicator {
                 .justify_center()
                 .flex_shrink_0()
                 .cursor_pointer()
-                .hit_slop(px(STATUS_HIT_SLOP))
-                .on_pointer_down(|_, _, cx| cx.stop_propagation())
-                .on_press(move |event, window, cx| {
+                .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+                .on_mouse_down(MouseButton::Left, move |event, window, cx| {
                     cx.stop_propagation();
                     platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
                     on_press(event, window, cx);

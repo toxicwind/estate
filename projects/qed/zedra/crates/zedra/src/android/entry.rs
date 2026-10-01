@@ -9,7 +9,7 @@
 //!   1. Set up logging, panic hook, telemetry.
 //!   2. Register the `AndroidBridge` `PlatformBridge` impl.
 //!   3. Construct `AndroidPlatform` via `gpui_android::create_platform()`.
-//!   4. Build the GPUI `AppCell` and store it in a thread-local.
+//!   4. Build the GPUI `Application` and store its handle in a thread-local.
 //!   5. Register the finish-launching callback that opens the root Zedra
 //!      window. The callback fires later when `gpuiDidFinishLaunching` runs
 //!      from Kotlin.
@@ -26,7 +26,7 @@ use crate::{app, platform_bridge};
 
 thread_local! {
     /// Kept alive so the GPUI runtime survives across Choreographer ticks.
-    static ANDROID_APP_CELL: RefCell<Option<Rc<AppCell>>> = const { RefCell::new(None) };
+    static ANDROID_APP: RefCell<Option<ApplicationHandle>> = const { RefCell::new(None) };
     static ANDROID_WINDOW: RefCell<Option<AnyWindowHandle>> = const { RefCell::new(None) };
 }
 
@@ -41,12 +41,11 @@ pub extern "system" fn Java_dev_zedra_app_MainActivity_zedraLaunchGpui(
     tracing::info!("Zedra Android: creating GPUI application with AndroidPlatform");
 
     let platform: Rc<dyn Platform> = gpui_android::create_platform();
-    let app_cell = app::init_platform_app(platform.clone(), AndroidBridge);
+    let application = app::init_platform_app(platform.clone(), AndroidBridge);
 
-    let app_cell_for_callback = app_cell.clone();
-    platform.run(Box::new(move || {
+    let handle = application.run_embedded(|cx| {
+        gpui_tokio::init(cx);
         tracing::info!("Zedra Android: finish-launching — opening root window");
-        let cx = &mut *app_cell_for_callback.borrow_mut();
 
         let scale = platform_bridge::bridge().density();
         let window_options = WindowOptions {
@@ -71,20 +70,20 @@ pub extern "system" fn Java_dev_zedra_app_MainActivity_zedraLaunchGpui(
             }
             Err(error) => tracing::error!("Zedra Android: open_zedra_window failed: {error:?}"),
         }
-    }));
+    });
 
-    ANDROID_APP_CELL.with(|cell| *cell.borrow_mut() = Some(app_cell));
+    ANDROID_APP.with(|cell| *cell.borrow_mut() = Some(handle));
 }
 
-/// Returns the root `AppCell` if `zedra_launch_gpui` has run on this thread.
-pub(crate) fn app_cell() -> Option<Rc<AppCell>> {
-    ANDROID_APP_CELL.with(|cell| cell.borrow().clone())
+/// Run `f` with the `App` if `zedra_launch_gpui` has run on this thread.
+pub(crate) fn with_app<R>(f: impl FnOnce(&mut App) -> R) -> Option<R> {
+    ANDROID_APP.with(|cell| {
+        let borrow = cell.borrow();
+        borrow.as_ref().map(|handle| handle.update(f))
+    })
 }
 
 pub(crate) fn handle_system_back() -> bool {
-    let Some(app_cell) = app_cell() else {
-        return false;
-    };
     let Some(any_window) = ANDROID_WINDOW.with(|window| *window.borrow()) else {
         return false;
     };
@@ -92,9 +91,10 @@ pub(crate) fn handle_system_back() -> bool {
         return false;
     };
 
-    let mut app = app_cell.borrow_mut();
-    let cx: &mut App = &mut app;
-    window
-        .update(cx, |view, window, cx| view.handle_system_back(window, cx))
-        .unwrap_or(false)
+    with_app(|cx| {
+        window
+            .update(cx, |view, window, cx| view.handle_system_back(window, cx))
+            .unwrap_or(false)
+    })
+    .unwrap_or(false)
 }

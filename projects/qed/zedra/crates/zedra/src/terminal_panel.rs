@@ -74,7 +74,7 @@ impl Render for TerminalPanel {
                         on_close: Some(on_close),
                     },
                 )
-                .on_press(cx.listener(move |_this, _event, window, cx| {
+                .on_mouse_down(MouseButton::Left, cx.listener(move |_this, _event, window, cx| {
                     window.dispatch_action(
                         workspace_action::OpenTerminal {
                             id: tid_tap.clone(),
@@ -108,7 +108,7 @@ pub fn toolbar_button<V: 'static, A: Action>(
         .items_center()
         .justify_center()
         .cursor_pointer()
-        .on_press(cx.listener(move |_this, _event, window, cx| {
+        .on_mouse_down(MouseButton::Left, cx.listener(move |_this, _event, window, cx| {
             platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
             window.dispatch_action(action.boxed_clone(), cx);
         }))

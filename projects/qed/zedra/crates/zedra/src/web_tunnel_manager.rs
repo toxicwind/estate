@@ -220,8 +220,7 @@ fn stop_button(port: u16, host: String, cx: &mut Context<WebTunnelManager>) -> i
         .text_color(rgb(theme::accent_red(cx)))
         .text_size(px(theme::FONT_BODY))
         .cursor_pointer()
-        .hit_slop(px(8.0))
-        .on_press(cx.listener(move |this, _event, _window, cx| {
+        .on_mouse_down(MouseButton::Left, cx.listener(move |this, _event, _window, cx| {
             this.confirm_stop(port, host.clone(), cx);
         }))
         .child("Stop")

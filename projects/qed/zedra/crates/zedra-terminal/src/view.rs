@@ -512,11 +512,11 @@ impl TerminalView {
 
     fn handle_terminal_press(
         &mut self,
-        event: &PressEvent,
+        event: &MouseDownEvent,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        let position = event.position();
+        let position = event.position;
 
         let hyperlink = self.terminal.read(cx).hyperlink_at(
             position,
@@ -528,36 +528,20 @@ impl TerminalView {
             return;
         }
 
-        let is_focused = self.focus_handle.is_focused(window);
-        let keyboard_visible = window.is_soft_keyboard_visible();
         window.prevent_default();
 
-        if is_focused && keyboard_visible {
-            // window.blur only blurs focus, not the keyboard — hide it explicitly.
-            window.hide_soft_keyboard();
-            window.blur();
-            cx.notify();
-            return;
-        }
-
-        if !is_focused {
+        if !self.focus_handle.is_focused(window) {
             self.focus_handle.focus(window, cx);
-            window.show_soft_keyboard();
-            cx.notify();
-            return;
         }
-
-        window.show_soft_keyboard();
         cx.notify();
     }
 
-    fn handle_terminal_long_press(
+    fn handle_terminal_secondary_press(
         &mut self,
-        event: &PressEvent,
+        position: Point<Pixels>,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        let position = event.down.position;
         window.prevent_default();
 
         if let Some((selection_document, selection_index)) =
@@ -624,7 +608,6 @@ impl Render for TerminalView {
         let content = terminal.content();
         let size = terminal.size();
         let history_size = terminal.history_size();
-        let selection_active = terminal.selection_active();
         let focus_handle = self.focus_handle.clone();
         let visual_scroll_offset_px =
             self.scroll_offset_px + self.effective_keyboard_top_reveal_px(&content, history_size);
@@ -636,13 +619,18 @@ impl Render for TerminalView {
             .overflow_hidden()
             .bg(rgb(self.terminal_theme.background))
             .track_focus(&focus_handle)
-            .manual_focus()
-            .on_press(cx.listener(|this, event: &PressEvent, window, cx| {
-                this.handle_terminal_press(event, window, cx);
-            }))
-            .on_long_press(cx.listener(|this, event: &PressEvent, window, cx| {
-                this.handle_terminal_long_press(event, window, cx);
-            }))
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(|this, event: &MouseDownEvent, window, cx| {
+                    this.handle_terminal_press(event, window, cx);
+                }),
+            )
+            .on_mouse_down(
+                MouseButton::Right,
+                cx.listener(|this, event: &MouseDownEvent, window, cx| {
+                    this.handle_terminal_secondary_press(event.position, window, cx);
+                }),
+            )
             .on_scroll_wheel(cx.listener(|this, event: &ScrollWheelEvent, _window, cx| {
                 let previous_display_offset = this.display_offset(cx);
                 if this.should_ignore_touch_scroll(event) {
@@ -795,23 +783,33 @@ impl Render for TerminalView {
                 self.terminal.downgrade(),
                 self.focus_handle.clone(),
                 self.focus_handle.is_focused(window),
-                selection_active,
             ))
     }
 }
 
 #[cfg(test)]
+// Ported test module for zedra-terminal against the vendored 1.13-era gpui.
+// Dropped vs the mobile original (behavior removed with the new GPUI API):
+//   - terminal_pointer_down_does_not_focus_before_completed_press (press-gesture focus deferral)
+//   - focused_terminal_tap_hides_keyboard_and_blurs (soft keyboard)
+//   - focused_terminal_tap_requests_keyboard_when_keyboard_is_hidden (soft keyboard)
+//   - dragged_terminal_touch_does_not_activate_keyboard (tap-candidate gesture)
+//   - cancelled_terminal_touch_does_not_activate_keyboard (tap-candidate gesture)
+//   - touch_scroll_does_not_dismiss_keyboard (soft keyboard)
+//   - synchronized_osc_event_does_not_notify_before_frame_end (needs notification
+//     observation; the old test platform exposes no equivalent)
+// Press/long-press simulation is rewritten on mouse events: left click drives
+// handle_terminal_press, right mouse button drives handle_terminal_secondary_press.
+#[cfg(test)]
 mod tests {
     use super::{TerminalView, keyboard_content_offset_px};
-    use std::{path::Path, time::Duration};
+    use std::{cell::RefCell, path::Path, rc::Rc};
 
     use crate::terminal::{Terminal, TerminalContent, TerminalEvent, TerminalHyperlinkTarget};
     use alacritty_terminal::term::TermMode;
-    use futures::{FutureExt as _, StreamExt as _};
     use gpui::{
-        Modifiers, Pixels, Point, PointerButton, PointerCancelEvent, PointerDownEvent, PointerKind,
-        PointerMoveEvent, PointerUpEvent, TestAppContext, TouchPhase, VisualTestContext,
-        WindowHandle, point, px, size,
+        Modifiers, MouseButton, Pixels, Point, ScrollDelta, ScrollWheelEvent, Subscription,
+        TestAppContext, TouchPhase, VisualTestContext, WindowHandle, point, px, size,
     };
     use tokio::sync::mpsc;
 
@@ -847,146 +845,36 @@ mod tests {
         input_rx
     }
 
-    fn tap_terminal(window: WindowHandle<TerminalView>, cx: &mut TestAppContext) {
-        tap_terminal_at(window, cx, point(px(12.0), px(12.0)));
-    }
-
     fn tap_terminal_at(
         window: WindowHandle<TerminalView>,
         cx: &mut TestAppContext,
         position: Point<Pixels>,
     ) {
-        let mut window_cx = VisualTestContext::from_window(*window, cx);
-        window_cx.simulate_event(PointerDownEvent {
-            pointer_id: 1,
-            kind: PointerKind::Touch,
-            is_primary: true,
-            button: PointerButton::Primary,
-            position,
-            modifiers: Modifiers::default(),
-        });
-        window_cx.simulate_event(PointerUpEvent {
-            pointer_id: 1,
-            kind: PointerKind::Touch,
-            is_primary: true,
-            button: PointerButton::Primary,
-            position,
-            modifiers: Modifiers::default(),
-        });
+        let mut window_cx = VisualTestContext::from_window(window.into(), cx);
+        window_cx.simulate_mouse_down(position, MouseButton::Left, Modifiers::default());
+        window_cx.simulate_mouse_up(position, MouseButton::Left, Modifiers::default());
     }
 
-    fn pointer_down_terminal(window: WindowHandle<TerminalView>, cx: &mut TestAppContext) {
-        let mut window_cx = VisualTestContext::from_window(*window, cx);
-        window_cx.simulate_event(PointerDownEvent {
-            pointer_id: 1,
-            kind: PointerKind::Touch,
-            is_primary: true,
-            button: PointerButton::Primary,
-            position: point(px(12.0), px(12.0)),
-            modifiers: Modifiers::default(),
-        });
-    }
-
-    fn drag_terminal_tap_candidate(window: WindowHandle<TerminalView>, cx: &mut TestAppContext) {
-        let mut window_cx = VisualTestContext::from_window(*window, cx);
-        let start = point(px(12.0), px(12.0));
-        let moved = point(px(12.0), px(32.0));
-        window_cx.simulate_event(PointerDownEvent {
-            pointer_id: 1,
-            kind: PointerKind::Touch,
-            is_primary: true,
-            button: PointerButton::Primary,
-            position: start,
-            modifiers: Modifiers::default(),
-        });
-        window_cx.simulate_event(PointerMoveEvent {
-            pointer_id: 1,
-            kind: PointerKind::Touch,
-            is_primary: true,
-            pressed_button: Some(PointerButton::Primary),
-            position: moved,
-            modifiers: Modifiers::default(),
-        });
-        window_cx.simulate_event(PointerUpEvent {
-            pointer_id: 1,
-            kind: PointerKind::Touch,
-            is_primary: true,
-            button: PointerButton::Primary,
-            position: moved,
-            modifiers: Modifiers::default(),
-        });
-    }
-
-    fn cancel_terminal_tap_candidate(window: WindowHandle<TerminalView>, cx: &mut TestAppContext) {
-        let mut window_cx = VisualTestContext::from_window(*window, cx);
-        let position = point(px(12.0), px(12.0));
-        window_cx.simulate_event(PointerDownEvent {
-            pointer_id: 1,
-            kind: PointerKind::Touch,
-            is_primary: true,
-            button: PointerButton::Primary,
-            position,
-            modifiers: Modifiers::default(),
-        });
-        window_cx.simulate_event(PointerCancelEvent {
-            pointer_id: 1,
-            kind: PointerKind::Touch,
-            is_primary: true,
-            position,
-            modifiers: Modifiers::default(),
-        });
-    }
-
-    fn long_press_terminal_at(
+    fn right_click_terminal_at(
         window: WindowHandle<TerminalView>,
         cx: &mut TestAppContext,
         position: Point<Pixels>,
     ) {
-        let mut window_cx = VisualTestContext::from_window(*window, cx);
-        window_cx.simulate_event(PointerDownEvent {
-            pointer_id: 1,
-            kind: PointerKind::Touch,
-            is_primary: true,
-            button: PointerButton::Primary,
-            position,
-            modifiers: Modifiers::default(),
-        });
-        drop(window_cx);
-        cx.executor().advance_clock(Duration::from_millis(600));
-        cx.run_until_parked();
-        let mut window_cx = VisualTestContext::from_window(*window, cx);
-        window_cx.simulate_event(PointerUpEvent {
-            pointer_id: 1,
-            kind: PointerKind::Touch,
-            is_primary: true,
-            button: PointerButton::Primary,
-            position,
-            modifiers: Modifiers::default(),
-        });
+        let mut window_cx = VisualTestContext::from_window(window.into(), cx);
+        window_cx.simulate_mouse_down(position, MouseButton::Right, Modifiers::default());
+        window_cx.simulate_mouse_up(position, MouseButton::Right, Modifiers::default());
     }
 
-    fn scroll_terminal_touch(window: WindowHandle<TerminalView>, cx: &mut TestAppContext) {
-        scroll_terminal_touch_with_phase(window, cx, TouchPhase::Moved);
-    }
-
-    fn scroll_terminal_touch_with_phase(
-        window: WindowHandle<TerminalView>,
-        cx: &mut TestAppContext,
-        touch_phase: TouchPhase,
-    ) {
-        scroll_terminal_touch_delta(window, cx, px(16.0), touch_phase);
-    }
-
-    fn scroll_terminal_touch_delta(
+    fn scroll_terminal_delta(
         window: WindowHandle<TerminalView>,
         cx: &mut TestAppContext,
         delta_y: Pixels,
         touch_phase: TouchPhase,
     ) {
-        let mut window_cx = VisualTestContext::from_window(*window, cx);
-        window_cx.simulate_event(gpui::ScrollWheelEvent {
+        let mut window_cx = VisualTestContext::from_window(window.into(), cx);
+        window_cx.simulate_event(ScrollWheelEvent {
             position: point(px(12.0), px(28.0)),
-            delta: gpui::ScrollDelta::Pixels(point(px(0.0), delta_y)),
+            delta: ScrollDelta::Pixels(point(px(0.0), delta_y)),
             modifiers: Modifiers::default(),
             touch_phase,
         });
@@ -1004,6 +892,23 @@ mod tests {
                 assert!(terminal_view.terminal.read(cx).display_offset() > 0);
             })
             .unwrap();
+    }
+
+    /// Collects TerminalView events into a shared vec. The caller must hold
+    /// the returned Subscription for the whole observation window.
+    fn observe_terminal_events(
+        window: WindowHandle<TerminalView>,
+        cx: &mut TestAppContext,
+    ) -> (Rc<RefCell<Vec<TerminalEvent>>>, Subscription) {
+        let seen: Rc<RefCell<Vec<TerminalEvent>>> = Rc::new(RefCell::new(Vec::new()));
+        let seen_clone = seen.clone();
+        let root = window.root(cx).unwrap();
+        let subscription = cx.update(|cx| {
+            cx.subscribe(&root, move |_, event: &TerminalEvent, _| {
+                seen_clone.borrow_mut().push(event.clone());
+            })
+        });
+        (seen, subscription)
     }
 
     #[test]
@@ -1025,8 +930,8 @@ mod tests {
             .unwrap();
         cx.run_until_parked();
 
-        let root = window.root(&mut cx).unwrap();
-        let mut events = cx.events(&root);
+        let (seen, _sub) = observe_terminal_events(window, &mut cx);
+
         let target_position = window
             .update(&mut cx, |terminal_view, _window, cx| {
                 let size = terminal_view.terminal.read(cx).size();
@@ -1037,65 +942,23 @@ mod tests {
         tap_terminal_at(window, &mut cx, target_position);
         cx.run_until_parked();
 
-        match events.next().now_or_never().flatten() {
-            Some(TerminalEvent::OpenHyperlink(hyperlink)) => match hyperlink.target {
+        match seen.borrow().last() {
+            Some(TerminalEvent::OpenHyperlink(hyperlink)) => match &hyperlink.target {
                 TerminalHyperlinkTarget::File {
                     path,
                     relative_path,
                     line,
                     column,
                 } => {
-                    assert_eq!(Path::new(&path), Path::new("/repo/sub/src/main.rs"));
-                    assert_eq!(Path::new(&relative_path), Path::new("src/main.rs"));
-                    assert_eq!(line, Some(12));
-                    assert_eq!(column, Some(3));
+                    assert_eq!(Path::new(path), Path::new("/repo/sub/src/main.rs"));
+                    assert_eq!(Path::new(relative_path), Path::new("src/main.rs"));
+                    assert_eq!(*line, Some(12));
+                    assert_eq!(*column, Some(3));
                 }
                 target => panic!("expected file hyperlink, got {target:?}"),
             },
             event => panic!("expected hyperlink event, got {event:?}"),
         }
-        cx.quit();
-    }
-
-    #[test]
-    fn synchronized_osc_event_does_not_notify_before_frame_end() {
-        let mut cx = TestAppContext::single();
-        let window = open_terminal_window(&mut cx);
-        let root = window.root(&mut cx).unwrap();
-        let mut notifications = cx.notifications(&root);
-        let (_input_rx, output_tx) = attach_terminal_channel(window, &mut cx);
-
-        root.update(&mut cx, |_, cx| cx.notify());
-        cx.run_until_parked();
-        assert!(notifications.next().now_or_never().flatten().is_some());
-
-        output_tx
-            .try_send(b"\x1b[?2026h\x1b]7;file:///repo\x1b\\held".to_vec())
-            .unwrap();
-        cx.run_until_parked();
-        window
-            .update(&mut cx, |terminal_view, _window, _cx| {
-                assert_eq!(terminal_view.workdir.as_deref(), Some("/repo"));
-            })
-            .unwrap();
-        assert!(notifications.next().now_or_never().is_none());
-
-        output_tx.try_send(b"\x1b[?2026l".to_vec()).unwrap();
-        cx.run_until_parked();
-        assert!(
-            window
-                .update(&mut cx, |terminal_view, _window, cx| {
-                    terminal_view
-                        .terminal
-                        .read(cx)
-                        .content()
-                        .cells
-                        .iter()
-                        .any(|cell| cell.cell.c == 'h')
-                })
-                .unwrap()
-        );
-        cx.quit();
     }
 
     #[test]
@@ -1104,8 +967,8 @@ mod tests {
         let window = open_terminal_window(&mut cx);
         cx.run_until_parked();
 
-        let root = window.root(&mut cx).unwrap();
-        let mut events = cx.events(&root);
+        let (seen, _sub) = observe_terminal_events(window, &mut cx);
+
         let expected_size = window
             .update(&mut cx, |terminal_view, _window, cx| {
                 let size = terminal_view.terminal.read(cx).size();
@@ -1115,14 +978,14 @@ mod tests {
                 expected_size
             })
             .unwrap();
+        cx.run_until_parked();
 
-        match events.next().now_or_never().flatten() {
+        match seen.borrow().last() {
             Some(TerminalEvent::RequestResize { cols, rows }) => {
-                assert_eq!((cols, rows), expected_size);
+                assert_eq!((*cols, *rows), expected_size);
             }
             event => panic!("expected forced resize event, got {event:?}"),
         }
-        cx.quit();
     }
 
     #[test]
@@ -1131,8 +994,7 @@ mod tests {
         let window = open_terminal_window(&mut cx);
         cx.run_until_parked();
 
-        let root = window.root(&mut cx).unwrap();
-        let mut events = cx.events(&root);
+        let (seen, _sub) = observe_terminal_events(window, &mut cx);
         window
             .update(&mut cx, |terminal_view, _window, cx| {
                 terminal_view.terminal.update(cx, |terminal, _| {
@@ -1144,104 +1006,30 @@ mod tests {
             .unwrap();
         cx.run_until_parked();
 
-        let mut saw_latest_preview = false;
-        while let Some(event) = events.next().now_or_never().flatten() {
-            if let TerminalEvent::DictationPreviewChanged(Some(text)) = event
-                && text == "119"
-            {
-                saw_latest_preview = true;
-                break;
-            }
-        }
+        let saw_latest_preview = seen.borrow().iter().any(|event| {
+            matches!(event, TerminalEvent::DictationPreviewChanged(Some(text)) if text == "119")
+        });
         assert!(saw_latest_preview);
-        cx.quit();
     }
 
     #[test]
-    fn terminal_pointer_down_does_not_focus_before_completed_press() {
+    fn unfocused_terminal_click_focuses_view() {
         let mut cx = TestAppContext::single();
         let window = open_terminal_window(&mut cx);
         cx.run_until_parked();
 
-        pointer_down_terminal(window, &mut cx);
+        tap_terminal_at(window, &mut cx, point(px(12.0), px(12.0)));
         cx.run_until_parked();
 
         window
-            .update(&mut cx, |terminal, window, _| {
-                assert!(!terminal.focus_handle.is_focused(window));
-                assert!(!window.is_soft_keyboard_visible());
+            .update(&mut cx, |terminal_view, window, _| {
+                assert!(terminal_view.focus_handle.is_focused(window));
             })
             .unwrap();
-        cx.quit();
     }
 
     #[test]
-    fn unfocused_terminal_tap_focuses_and_requests_keyboard() {
-        let mut cx = TestAppContext::single();
-        let window = open_terminal_window(&mut cx);
-        cx.run_until_parked();
-
-        tap_terminal(window, &mut cx);
-        cx.run_until_parked();
-
-        window
-            .update(&mut cx, |terminal, window, _| {
-                assert!(terminal.focus_handle.is_focused(window));
-                assert!(window.is_soft_keyboard_visible());
-            })
-            .unwrap();
-        cx.quit();
-    }
-
-    #[test]
-    fn focused_terminal_tap_hides_keyboard_and_blurs() {
-        let mut cx = TestAppContext::single();
-        let window = open_terminal_window(&mut cx);
-        cx.run_until_parked();
-
-        tap_terminal(window, &mut cx);
-        cx.run_until_parked();
-        tap_terminal(window, &mut cx);
-        cx.run_until_parked();
-
-        window
-            .update(&mut cx, |terminal, window, _| {
-                assert!(!terminal.focus_handle.is_focused(window));
-                assert!(!window.is_soft_keyboard_visible());
-            })
-            .unwrap();
-        cx.quit();
-    }
-
-    #[test]
-    fn focused_terminal_tap_requests_keyboard_when_keyboard_is_hidden() {
-        let mut cx = TestAppContext::single();
-        let window = open_terminal_window(&mut cx);
-        cx.run_until_parked();
-
-        tap_terminal(window, &mut cx);
-        cx.run_until_parked();
-        window
-            .update(&mut cx, |terminal, window, _| {
-                assert!(terminal.focus_handle.is_focused(window));
-                window.hide_soft_keyboard();
-            })
-            .unwrap();
-
-        tap_terminal(window, &mut cx);
-        cx.run_until_parked();
-
-        window
-            .update(&mut cx, |terminal, window, _| {
-                assert!(terminal.focus_handle.is_focused(window));
-                assert!(window.is_soft_keyboard_visible());
-            })
-            .unwrap();
-        cx.quit();
-    }
-
-    #[test]
-    fn terminal_long_press_selects_output_without_showing_keyboard() {
+    fn terminal_right_click_selects_output() {
         let mut cx = TestAppContext::single();
         let window = open_terminal_window(&mut cx);
         cx.run_until_parked();
@@ -1255,105 +1043,41 @@ mod tests {
             .unwrap();
         cx.run_until_parked();
 
-        long_press_terminal_at(window, &mut cx, point(px(12.0), px(12.0)));
+        right_click_terminal_at(window, &mut cx, point(px(12.0), px(12.0)));
         cx.run_until_parked();
 
         window
-            .update(&mut cx, |terminal_view, window, cx| {
-                assert!(!terminal_view.focus_handle.is_focused(window));
-                assert!(!window.is_soft_keyboard_visible());
+            .update(&mut cx, |terminal_view, _window, cx| {
                 assert_eq!(
                     terminal_view.terminal.read(cx).selection_range(),
                     Some(0..5)
                 );
             })
             .unwrap();
-        cx.quit();
     }
 
     #[test]
-    fn terminal_long_press_empty_cell_requests_native_paste_menu() {
+    fn terminal_right_click_empty_cell_requests_native_paste_menu() {
         let mut cx = TestAppContext::single();
         let window = open_terminal_window(&mut cx);
         cx.run_until_parked();
 
-        let root = window.root(&mut cx).unwrap();
-        let mut events = cx.events(&root);
+        let (seen, _sub) = observe_terminal_events(window, &mut cx);
         let position = point(px(42.0), px(42.0));
-        long_press_terminal_at(window, &mut cx, position);
+        right_click_terminal_at(window, &mut cx, position);
         cx.run_until_parked();
 
-        match events.next().now_or_never().flatten() {
+        match seen.borrow().last() {
             Some(TerminalEvent::NativePasteMenuRequested { position: actual }) => {
-                assert_eq!(actual, position);
+                assert_eq!(*actual, position);
             }
             event => panic!("expected native paste menu request, got {event:?}"),
         }
         window
-            .update(&mut cx, |terminal_view, window, cx| {
-                assert!(!terminal_view.focus_handle.is_focused(window));
-                assert!(!window.is_soft_keyboard_visible());
+            .update(&mut cx, |terminal_view, _window, cx| {
                 assert_eq!(terminal_view.terminal.read(cx).selection_range(), None);
             })
             .unwrap();
-        cx.quit();
-    }
-
-    #[test]
-    fn dragged_terminal_touch_does_not_activate_keyboard() {
-        let mut cx = TestAppContext::single();
-        let window = open_terminal_window(&mut cx);
-        cx.run_until_parked();
-
-        drag_terminal_tap_candidate(window, &mut cx);
-        cx.run_until_parked();
-
-        window
-            .update(&mut cx, |terminal, window, _| {
-                assert!(!terminal.focus_handle.is_focused(window));
-                assert!(!window.is_soft_keyboard_visible());
-            })
-            .unwrap();
-        cx.quit();
-    }
-
-    #[test]
-    fn cancelled_terminal_touch_does_not_activate_keyboard() {
-        let mut cx = TestAppContext::single();
-        let window = open_terminal_window(&mut cx);
-        cx.run_until_parked();
-
-        cancel_terminal_tap_candidate(window, &mut cx);
-        cx.run_until_parked();
-
-        window
-            .update(&mut cx, |terminal, window, _| {
-                assert!(!terminal.focus_handle.is_focused(window));
-                assert!(!window.is_soft_keyboard_visible());
-            })
-            .unwrap();
-        cx.quit();
-    }
-
-    #[test]
-    fn touch_scroll_does_not_dismiss_keyboard() {
-        let mut cx = TestAppContext::single();
-        let window = open_terminal_window(&mut cx);
-        cx.run_until_parked();
-
-        tap_terminal(window, &mut cx);
-        cx.run_until_parked();
-
-        scroll_terminal_touch(window, &mut cx);
-        cx.run_until_parked();
-
-        window
-            .update(&mut cx, |terminal, window, _| {
-                assert!(terminal.focus_handle.is_focused(window));
-                assert!(window.is_soft_keyboard_visible());
-            })
-            .unwrap();
-        cx.quit();
     }
 
     #[test]
@@ -1362,7 +1086,7 @@ mod tests {
         let window = open_terminal_window(&mut cx);
         let mut input_rx = attach_mouse_tracking_channel(window, &mut cx);
 
-        scroll_terminal_touch_delta(window, &mut cx, px(120.0), TouchPhase::Moved);
+        scroll_terminal_delta(window, &mut cx, px(120.0), TouchPhase::Moved);
 
         let bytes = input_rx.try_recv().expect("expected remote scroll input");
         assert_eq!(
@@ -1373,7 +1097,6 @@ mod tests {
             7
         );
         assert!(input_rx.try_recv().is_err(), "scroll input was not batched");
-        cx.quit();
     }
 
     #[test]
@@ -1382,7 +1105,7 @@ mod tests {
         let window = open_terminal_window(&mut cx);
         let mut input_rx = attach_mouse_tracking_channel(window, &mut cx);
 
-        scroll_terminal_touch_delta(window, &mut cx, px(8.0), TouchPhase::Moved);
+        scroll_terminal_delta(window, &mut cx, px(8.0), TouchPhase::Moved);
         assert!(input_rx.try_recv().is_err());
         window
             .update(&mut cx, |terminal_view, _window, _cx| {
@@ -1390,7 +1113,7 @@ mod tests {
                 assert_eq!(terminal_view.remote_scroll_offset_px, 8.0);
             })
             .unwrap();
-        scroll_terminal_touch_delta(window, &mut cx, px(8.0), TouchPhase::Moved);
+        scroll_terminal_delta(window, &mut cx, px(8.0), TouchPhase::Moved);
 
         let bytes = input_rx
             .try_recv()
@@ -1409,7 +1132,6 @@ mod tests {
                 assert_eq!(terminal_view.remote_scroll_offset_px, 0.0);
             })
             .unwrap();
-        cx.quit();
     }
 
     #[test]
@@ -1435,7 +1157,7 @@ mod tests {
             })
             .unwrap();
 
-        scroll_terminal_touch_delta(window, &mut cx, px(120.0), TouchPhase::Moved);
+        scroll_terminal_delta(window, &mut cx, px(120.0), TouchPhase::Moved);
 
         window
             .update(&mut cx, |terminal_view, _window, cx| {
@@ -1444,7 +1166,6 @@ mod tests {
             })
             .unwrap();
         assert!(input_rx.try_recv().is_err());
-        cx.quit();
     }
 
     #[test]
@@ -1462,7 +1183,7 @@ mod tests {
             .unwrap();
         cx.run_until_parked();
 
-        scroll_terminal_touch(window, &mut cx);
+        scroll_terminal_delta(window, &mut cx, px(16.0), TouchPhase::Moved);
         cx.run_until_parked();
 
         window
@@ -1470,7 +1191,6 @@ mod tests {
                 assert_eq!(terminal_view.terminal.read(cx).display_offset(), 0);
             })
             .unwrap();
-        cx.quit();
     }
 
     #[test]
@@ -1488,9 +1208,8 @@ mod tests {
             .unwrap();
         cx.run_until_parked();
 
-        let root = window.root(&mut cx).unwrap();
-        let mut events = cx.events(&root);
-        scroll_terminal_touch_with_phase(window, &mut cx, TouchPhase::Started);
+        let (seen, _sub) = observe_terminal_events(window, &mut cx);
+        scroll_terminal_delta(window, &mut cx, px(16.0), TouchPhase::Started);
         cx.run_until_parked();
 
         window
@@ -1499,13 +1218,14 @@ mod tests {
             })
             .unwrap();
 
-        match events.next().now_or_never().flatten() {
-            Some(TerminalEvent::ScrollbackPositionChanged { display_offset, .. }) => {
-                assert!(display_offset > 0);
-            }
-            event => panic!("expected synchronous scrollback event, got {event:?}"),
-        }
-        cx.quit();
+        let saw_scrollback_event = seen.borrow().iter().any(|event| {
+            matches!(
+                event,
+                TerminalEvent::ScrollbackPositionChanged { display_offset, .. }
+                if *display_offset > 0
+            )
+        });
+        assert!(saw_scrollback_event, "expected synchronous scrollback event");
     }
 
     #[test]
@@ -1536,7 +1256,6 @@ mod tests {
                 );
             })
             .unwrap();
-        cx.quit();
     }
 
     #[test]
@@ -1555,7 +1274,7 @@ mod tests {
             .unwrap();
 
         for _ in 0..10 {
-            scroll_terminal_touch_delta(window, &mut cx, px(16.0), TouchPhase::Moved);
+            scroll_terminal_delta(window, &mut cx, px(16.0), TouchPhase::Moved);
             cx.run_until_parked();
         }
 
@@ -1568,7 +1287,6 @@ mod tests {
                 assert_eq!(terminal_view.keyboard_top_reveal_px, 0.0);
             })
             .unwrap();
-        cx.quit();
     }
 
     #[test]
@@ -1592,7 +1310,7 @@ mod tests {
             .unwrap();
 
         for _ in 0..5 {
-            scroll_terminal_touch_delta(window, &mut cx, px(16.0), TouchPhase::Moved);
+            scroll_terminal_delta(window, &mut cx, px(16.0), TouchPhase::Moved);
             cx.run_until_parked();
         }
 
@@ -1603,7 +1321,6 @@ mod tests {
                 assert_eq!(terminal_view.keyboard_top_reveal_px, 80.0);
             })
             .unwrap();
-        cx.quit();
     }
 
     #[test]
@@ -1627,7 +1344,7 @@ mod tests {
             .unwrap();
 
         for _ in 0..5 {
-            scroll_terminal_touch_delta(window, &mut cx, px(-16.0), TouchPhase::Moved);
+            scroll_terminal_delta(window, &mut cx, px(-16.0), TouchPhase::Moved);
             cx.run_until_parked();
         }
 
@@ -1638,7 +1355,7 @@ mod tests {
             })
             .unwrap();
 
-        scroll_terminal_touch_delta(window, &mut cx, px(-16.0), TouchPhase::Moved);
+        scroll_terminal_delta(window, &mut cx, px(-16.0), TouchPhase::Moved);
         cx.run_until_parked();
 
         window
@@ -1646,7 +1363,6 @@ mod tests {
                 assert!(terminal_view.terminal.read(cx).display_offset() < top_offset);
             })
             .unwrap();
-        cx.quit();
     }
 
     #[test]
@@ -1664,7 +1380,7 @@ mod tests {
             .unwrap();
         cx.run_until_parked();
 
-        scroll_terminal_touch_with_phase(window, &mut cx, TouchPhase::Started);
+        scroll_terminal_delta(window, &mut cx, px(16.0), TouchPhase::Started);
         cx.run_until_parked();
 
         window
@@ -1672,7 +1388,6 @@ mod tests {
                 assert!(terminal_view.terminal.read(cx).display_offset() > 0);
             })
             .unwrap();
-        cx.quit();
     }
 
     fn content_for_keyboard_offset(output: &[u8]) -> TerminalContent {
