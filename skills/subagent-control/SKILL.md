@@ -1,3 +1,9 @@
+---
+name: subagent-control
+description: >
+  Control agent swarms without cancelling running tasks: reversible steering, throttling, and freezing. Triggers on: swarm control, steer agents, throttle.
+---
+
 # subagent-control
 
 Fruitful control of agent swarms WITHOUT cancelling running tasks. Steering,
