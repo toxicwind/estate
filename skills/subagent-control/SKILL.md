@@ -73,9 +73,9 @@ is how v1 of the watchdog froze innocent workers.
 5. **swarm-watchdog (v2, cron).** The interlock: freezes ONLY on container
    cgroupv2 PSI (cpu some>30%, mem full>10%, io some>50%), auto-resumes on
    settle. Host metrics are alert context, never triggers. Silent when fine.
-6. **swarm-eject.** The big red button: STOP (default, reversible) or
-   `--kill` the agent tool tree on hatch AND yote runaways. For runaway
-   processes, not for busy workers.
+6. **swarm-eject.** Last-resort control: STOP (default, reversible) or
+   `--kill` the agent tool tree on hatch plus runaway processes on yote.
+   For runaway processes, not for busy workers.
 
 ## Restarting an agent WITHOUT losing work
 
