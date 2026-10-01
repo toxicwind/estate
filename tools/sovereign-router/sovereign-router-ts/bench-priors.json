@@ -1,5 +1,5 @@
 {
-  "generated_ts": "2026-09-30T02:32:02.020Z",
+  "generated_ts": "2026-10-01T19:15:01.420Z",
   "sources": {
     "guidellm": {
       "path": "projects/openrouter-probe/ranking-eval-20260920-final.json",
@@ -24,12 +24,12 @@
     "provider_bench": {
       "runs_dir": "bench-runs",
       "runs": [
-        "groq@2026-09-30",
-        "mistral@2026-09-30",
-        "nvidia@2026-09-30",
-        "cerebras@2026-09-30",
-        "google@2026-09-30",
-        "nim-local@2026-09-30"
+        "groq@2026-10-01",
+        "mistral@2026-10-01",
+        "nvidia@2026-10-01",
+        "cerebras@2026-10-01",
+        "google@2026-10-01",
+        "nim-local@2026-10-01"
       ],
       "instrument": "liveness: 1 real completion/model (semantic-failure aware); quality: deterministic instruction-following exact=2/contains=1/empty=0, N reqs/model; latency p50; fail-fast, no retries"
     }
@@ -66,11 +66,11 @@
       "basis": "model-max+router-proof"
     },
     "nim-local": {
-      "elo": 1080,
-      "quality_mean": 2,
+      "elo": 1071,
+      "quality_mean": 1.889,
       "healthy_frac": 1,
       "healthy_n": 3,
-      "latency_p50_ms": 1574,
+      "latency_p50_ms": 1549,
       "n_models": 3,
       "models": [
         "nvidia/nemotron-3-super-120b-a12b",
@@ -88,7 +88,7 @@
       "quality_mean": 1.667,
       "healthy_frac": 0.5,
       "healthy_n": 2,
-      "latency_p50_ms": 2087,
+      "latency_p50_ms": 1456,
       "n_models": 4,
       "models": [
         "nvidia/nemotron-3-super-120b-a12b",
@@ -99,11 +99,11 @@
       "basis": "provider-bench"
     },
     "groq": {
-      "elo": 1062,
-      "quality_mean": 1.778,
+      "elo": 1080,
+      "quality_mean": 2,
       "healthy_frac": 1,
       "healthy_n": 3,
-      "latency_p50_ms": 274,
+      "latency_p50_ms": 310,
       "n_models": 3,
       "models": [
         "qwen/qwen3.8-27b",
@@ -116,14 +116,14 @@
       "elo": 1000,
       "n_models": 2,
       "healthy_frac": 0,
-      "basis": "provider-bench (outage: no healthy completion (first failure: http 402: {\"message\":\"Payment required to access this resource. Visit your billing tab.\",\"type\":\"payment_required_error\"), 2026-09-30)"
+      "basis": "provider-bench (outage: no healthy completion (first failure: http 402: {\"message\":\"Payment required to access this resource. Visit your billing tab.\",\"type\":\"payment_required_error\"), 2026-10-01)"
     },
     "google": {
-      "elo": 947,
-      "quality_mean": 0.334,
-      "healthy_frac": 0.667,
-      "healthy_n": 2,
-      "latency_p50_ms": 4851,
+      "elo": 973,
+      "quality_mean": 0.667,
+      "healthy_frac": 0.333,
+      "healthy_n": 1,
+      "latency_p50_ms": 2785,
       "n_models": 3,
       "models": [
         "models/gemini-3.8-flash",
@@ -136,7 +136,7 @@
       "elo": 1000,
       "n_models": 4,
       "healthy_frac": 0,
-      "basis": "provider-bench (outage: rate-limited during bench run, 2026-09-30)"
+      "basis": "provider-bench (outage: rate-limited during bench run, 2026-10-01)"
     }
   },
   "elo_rule": "quality_mean(0-2)->1000+(q-1)*80; local-lane healthy_frac->1000+(hf-0.5)*120; router-proof local-lane availability +10; latency excluded from priors (live candidateScore owns it); live outcomes keep updating Elo; provider-bench quality_mean(0-2)->1000+(q-1)*80; outage runs keep flat 1000 with basis text"
