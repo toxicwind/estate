@@ -2,11 +2,11 @@
 """bg-run.py — detached background command runner (bridge-max).
 
 Launched fully detached from the bridge exec lane, e.g.:
-    setsid nohup python3 bg-run.py <handle> <cmdb64> >launcher.log 2>&1 < /dev/null &
+    setsid nohup python3 bg-run.py <handle> <cmdb64> [workdir] [timeout_s] >launcher.log 2>&1 < /dev/null &
 
 State dir: /home/toxic/.cache/bridge-bg/<handle>/
     cmd.txt      the decoded command
-    status.json  {"state": "running"|"done", "pid", "started", "finished"?, "code"?}
+    status.json  {"state": "running"|"done"|"timeout", "pid", "started", "finished"?, "code"?, "workdir"?, "timeout_s"?}
     stdout.log / stderr.log   captured output (unbounded via files, not memory)
 
 The launcher is expected to run with cwd set to the state dir so `&` binds
@@ -15,7 +15,12 @@ does NOT daemonize itself — detachment is the launcher's job via setsid.
 
 Status writes are atomic (write tmp + os.replace) so readers never see
 a torn file. Poll-free: readers just `cat status.json`.
+
+Arg contract (2026-10-01 fix): the connector's _bg_launch forwards
+<handle> <cmdb64> <workdir> <timeout_s>. Older two-arg invocations still
+work. timeout_s=0 means no limit; exceeded -> state "timeout" (terminal).
 """
+from __future__ import annotations
 
 import base64
 import json
@@ -27,6 +32,7 @@ import time
 
 BASE = "/home/toxic/.cache/bridge-bg"
 HANDLE_RX = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
+DEFAULT_WORKDIR = "/home/toxic"
 
 
 def _wjson(path, obj):
@@ -37,13 +43,25 @@ def _wjson(path, obj):
 
 
 def main():
-    if len(sys.argv) != 3:
-        print("usage: bg-run.py <handle> <cmdb64>", file=sys.stderr)
+    if len(sys.argv) < 3 or len(sys.argv) > 5:
+        print("usage: bg-run.py <handle> <cmdb64> [workdir] [timeout_s]",
+              file=sys.stderr)
         return 2
     handle, cmdb64 = sys.argv[1], sys.argv[2]
     if not HANDLE_RX.match(handle):
         print("bad handle", file=sys.stderr)
         return 2
+    workdir = sys.argv[3] if len(sys.argv) > 3 and sys.argv[3] else DEFAULT_WORKDIR
+    try:
+        timeout_s = float(sys.argv[4]) if len(sys.argv) > 4 else 0.0
+    except (TypeError, ValueError):
+        print("bad timeout_s", file=sys.stderr)
+        return 2
+    if timeout_s < 0:
+        timeout_s = 0.0
+    if not os.path.isdir(workdir):
+        workdir = DEFAULT_WORKDIR
+
     d = os.path.join(BASE, handle)
     os.makedirs(d, exist_ok=True)
     try:
@@ -57,23 +75,35 @@ def main():
     st_path = os.path.join(d, "status.json")
     started = time.time()
     _wjson(st_path, {"state": "running", "pid": os.getpid(),
-                     "started": started, "cmd": cmd[:500]})
+                     "started": started, "cmd": cmd[:500],
+                     "workdir": workdir,
+                     "timeout_s": timeout_s or None})
 
     code = 1
+    state = "done"
     try:
         with open(os.path.join(d, "stdout.log"), "wb") as out, \
              open(os.path.join(d, "stderr.log"), "wb") as err:
-            p = subprocess.run(cmd, shell=True, cwd="/home/toxic",
-                               stdout=out, stderr=err)
+            p = subprocess.run(cmd, shell=True, cwd=workdir,
+                               stdout=out, stderr=err,
+                               timeout=timeout_s if timeout_s > 0 else None)
             code = p.returncode
+    except subprocess.TimeoutExpired:
+        state = "timeout"
+        with open(os.path.join(d, "stderr.log"), "ab") as err:
+            err.write(("bg-run: timeout after %ss (timeout_s=%s); "
+                       "process group killed\n" % (timeout_s, timeout_s))
+                      .encode())
     except Exception as e:
         with open(os.path.join(d, "stderr.log"), "ab") as err:
             err.write(("bg-run failed: %s: %s\n"
                        % (type(e).__name__, e)).encode())
     finally:
-        _wjson(st_path, {"state": "done", "pid": os.getpid(),
+        _wjson(st_path, {"state": state, "pid": os.getpid(),
                          "started": started, "finished": time.time(),
-                         "code": code, "cmd": cmd[:500]})
+                         "code": code, "cmd": cmd[:500],
+                         "workdir": workdir,
+                         "timeout_s": timeout_s or None})
     return 0
 
 

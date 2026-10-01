@@ -11,8 +11,13 @@ daemon directly.
 
 Usage:
   yote-conn health
-  yote-conn exec "<cmd>" [workdir] [timeout_s]
-  yote-conn multi <cmds.json | ->     # JSON array of {cmd, workdir?, timeout?, tag?}
+  yote-conn exec "<cmd>" [workdir] [timeout_s] [--bg]
+                                     # --bg: dispatch detached, print handle, return immediately
+  yote-conn run "<cmd>" [workdir]    # auto-backgrounding: dispatch detached, then stream
+                                     # output until the remote job reaches a terminal
+                                     # state. No timeout ceiling. Fail-fast on dispatch
+                                     # errors; the remote exit code propagates.
+  yote-conn multi <cmds.json | ->    # JSON array of {cmd, workdir?, timeout?, tag?}
   yote-conn bg "long-cmd" [workdir] [timeout_s]
                                      # detached background dispatch -> handle
   yote-conn bg-status <handle>        # live status + log tails
@@ -137,19 +142,30 @@ def main():
         return 0
     if cmd == "exec":
         if len(sys.argv) < 3:
-            print("usage: yote-conn exec \"<cmd>\" [workdir] [timeout_s]",
+            print("usage: yote-conn exec \"<cmd>\" [workdir] [timeout_s] [--bg]",
                   file=sys.stderr)
             return 2
-        spec = {"cmd": sys.argv[2]}
-        if len(sys.argv) > 3:
-            spec["workdir"] = sys.argv[3]
-        if len(sys.argv) > 4:
+        # --bg anywhere in the args: dispatch detached, print handle, return.
+        bg_only = "--bg" in sys.argv[2:]
+        args = [a for a in sys.argv[2:] if a != "--bg"]
+        spec = {"cmd": args[0]}
+        if len(args) > 1:
+            spec["workdir"] = args[1]
+        if len(args) > 2:
             try:
-                spec["timeout"] = int(sys.argv[4])
+                spec["timeout"] = int(args[2])
             except ValueError:
                 print("timeout must be an integer number of seconds",
                       file=sys.stderr)
                 return 2
+        if bg_only:
+            code, body = req("POST", "/exec-bg", json.dumps(spec).encode())
+            d = json.loads(body.decode())
+            if d.get("handle"):
+                print(d["handle"])
+                return 0
+            print("dispatch failed: %s" % d.get("error"), file=sys.stderr)
+            return 1
         with bridge_slot():
             fast_code = exec_fast(spec)
             if fast_code is not None:
@@ -326,6 +342,81 @@ def main():
         if d.get("error"):
             print("error    : %s" % d.get("error"), file=sys.stderr)
         return 0 if d.get("signaled") else 1
+    if cmd == "run":
+        # Auto-backgrounding entrypoint for long runners.
+        # Dispatches fully detached (survives this process dying), then
+        # streams output incrementally until the remote job reaches a
+        # terminal state. NO timeout ceiling: the loop waits as long as
+        # the job takes. Fail-fast: dispatch errors exit immediately.
+        # The remote exit code propagates (timeout state -> exit 1).
+        if len(sys.argv) < 3:
+            print("usage: yote-conn run \"<cmd>\" [workdir]", file=sys.stderr)
+            return 2
+        import base64 as _b64
+        import time as _time
+        spec = {"cmd": sys.argv[2]}
+        if len(sys.argv) > 3:
+            spec["workdir"] = sys.argv[3]
+        code, body = req("POST", "/exec-bg", json.dumps(spec).encode())
+        d = json.loads(body.decode())
+        handle = d.get("handle")
+        if not handle:
+            print("run: dispatch failed: %s" % d.get("error"),
+                  file=sys.stderr)
+            return 1
+        print("run: backgrounded as %s" % handle, file=sys.stderr)
+        soff, eoff = 0, 0
+        final_code = 1
+        while True:
+            code, body = req("GET", "/bg/%s?soff=%d&eoff=%d"
+                             % (handle, soff, eoff))
+            try:
+                d = json.loads(body.decode())
+            except ValueError:
+                print("run: bad status frame from connector",
+                      file=sys.stderr)
+                return 1
+            state = d.get("state")
+            if state in ("unknown", "bad-handle"):
+                print("run: status error: %s" % d.get("error"),
+                      file=sys.stderr)
+                return 1
+            so = d.get("stdout_b64") or ""
+            eo = d.get("stderr_b64") or ""
+            if so:
+                nso = d.get("stdout_soff")
+                sys.stdout.write(
+                    _b64.b64decode(so.encode()).decode("utf-8", "replace"))
+                sys.stdout.flush()
+                if nso is not None:
+                    soff = nso
+                else:
+                    soff += len(_b64.b64decode(so.encode()))
+            if eo:
+                neo = d.get("stderr_eoff")
+                sys.stderr.write(
+                    _b64.b64decode(eo.encode()).decode("utf-8", "replace"))
+                sys.stderr.flush()
+                if neo is not None:
+                    eoff = neo
+                else:
+                    eoff += len(_b64.b64decode(eo.encode()))
+            if state in ("done", "timeout", "stale"):
+                if state == "timeout":
+                    print("run: remote job timed out (timeout_s set at "
+                          "dispatch)", file=sys.stderr)
+                elif state == "stale":
+                    print("run: remote runner died without final status "
+                          "(stale)", file=sys.stderr)
+                final_code = d.get("code")
+                try:
+                    final_code = int(final_code)
+                except (TypeError, ValueError):
+                    final_code = 1
+                print("run: %s (exit %d)" % (state, final_code),
+                      file=sys.stderr)
+                return final_code
+            _time.sleep(2)
     if cmd in ("herd", "flock"):
         if len(sys.argv) < 4:
             print("usage: yote-conn %s <METHOD> <path> [body]" % cmd,
