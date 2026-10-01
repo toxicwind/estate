@@ -7,25 +7,44 @@ fn main() {
         // Android-specific build configuration
         println!("cargo:rustc-link-lib=log");
 
-        // Set up paths for Android NDK
+        // Set up paths for Android NDK (r25+ sysroot layout:
+        // toolchains/llvm/prebuilt/<host>/sysroot/usr/lib/<triple>/<api>/)
         let ndk_home = env::var("ANDROID_NDK_HOME")
             .or_else(|_| env::var("NDK_HOME"))
             .expect("ANDROID_NDK_HOME or NDK_HOME must be set");
 
-        let target_arch = if target.contains("aarch64") {
-            "arm64-v8a"
+        let target_triple = if target.contains("aarch64") {
+            "aarch64-linux-android"
         } else if target.contains("armv7") {
-            "armeabi-v7a"
+            "arm-linux-androideabi"
         } else if target.contains("i686") {
-            "x86"
+            "i686-linux-android"
         } else {
-            "x86_64"
+            "x86_64-linux-android"
         };
 
-        println!(
-            "cargo:rustc-link-search=native={}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/{}",
-            ndk_home, target_arch
+        let lib_base = format!(
+            "{}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/{}",
+            ndk_home, target_triple
         );
+        // Pick the highest API level the NDK ships for this triple so the
+        // link search keeps working across NDK upgrades.
+        let api: u32 = std::fs::read_dir(&lib_base)
+            .unwrap_or_else(|e| panic!("read NDK sysroot lib dir {lib_base}: {e}"))
+            .filter_map(|e| e.ok())
+            .filter_map(|e| {
+                e.file_type()
+                    .ok()
+                    .filter(|t| t.is_dir())
+                    .and_then(|_| e.file_name().into_string().ok())
+            })
+            .filter_map(|n| n.parse::<u32>().ok())
+            .max()
+            .expect("no API level dirs in NDK sysroot lib dir");
+
+        println!("cargo:rustc-link-search=native={lib_base}/{api}");
+        println!("cargo:rerun-if-env-changed=ANDROID_NDK_HOME");
+        println!("cargo:rerun-if-env-changed=NDK_HOME");
     }
 
     if target.contains("apple-ios") {
