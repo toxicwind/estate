@@ -1,6 +1,6 @@
 // Docker sidecar: polls relay + host stats, persists metrics, Discord alerts, serves REST API.
 import { appendFileSync, mkdirSync, readFileSync, statfsSync } from "node:fs";
-import { type MetricRecord, type NodeMetrics, fmtMB, pct } from "./lib.ts";
+import { fmtMB, type MetricRecord, type NodeMetrics, pct } from "./lib.ts";
 
 // ── Format ───────────────────────────────────────────────────────────────────
 
