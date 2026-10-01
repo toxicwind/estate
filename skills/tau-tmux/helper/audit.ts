@@ -25,26 +25,25 @@ function sh(cmd: string, args: string[], timeoutMs = 15000): string {
   }
 }
 
-// 1. tau on PATH is the launcher and the chain resolves
+// 1. tau on PATH is the pinned launcher and the chain executes
 try {
   const which = sh("sh", ["-c", "command -v tau"]);
-  // tau is a compiled ELF binary, not a script — check file type instead
-  const fileType = sh("file", ["-b", which]);
-  const isBinary = fileType.includes("ELF") || fileType.includes("executable");
-  let resolved = "unresolved";
-  if (isBinary) {
-    const distBin = join(SOVEREIGN, "projects/tau/engine/packages/coding-agent/dist/tau");
-    if (existsSync(distBin)) resolved = `tau (dist/tau -> ${which})`;
-    else resolved = "bun src fallback";
-  }
-  check("tau launcher resolves", isBinary && resolved !== "unresolved", `${which} -> ${resolved}`);
-} catch (e: any) { check("tau launcher resolves", false, e.message); }
+  const expected = join(HOME, ".local/bin/tau");
+  const ver = sh("tau", ["--version"], 30000).split("\n")[0];
+  const ok = which === expected && /omp\/\d+\.\d+\.\d+/.test(ver);
+  check("tau launcher resolves", ok, `${which} -> ${ver}`);
+} catch (e: any) { check("tau launcher resolves", false, e.message.slice(0, 160)); }
 
-// 2. Engine version
+// 2. Engine version >= 18.2.6 (semver compare; 18.3.x passes)
 try {
-  const ver = sh("tau", ["--version"], 30000);
-  check("tau engine version", /18\.2\.\d+/.test(ver), ver.split("\n")[0]);
-} catch (e: any) { check("tau engine version", false, e.message.slice(0, 120)); }
+  const ver = sh("tau", ["--version"], 30000).split("\n")[0];
+  const m = ver.match(/(\d+)\.(\d+)\.(\d+)/);
+  const parts = m ? [+m[1], +m[2], +m[3]] : [0, 0, 0];
+  const min = [18, 2, 6];
+  const ok = parts[0] > min[0] ||
+    (parts[0] === min[0] && (parts[1] > min[1] || (parts[1] === min[1] && parts[2] >= min[2])));
+  check("tau engine version >= 18.2.6", ok, ver);
+} catch (e: any) { check("tau engine version >= 18.2.6", false, e.message.slice(0, 120)); }
 
 // 3. PI_CONFIG_DIR honored
 {
