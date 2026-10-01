@@ -106,7 +106,6 @@ impl FileSearchPanel {
             .update(cx, |input, _cx| input.set_value(""));
         let input_focus = self.search_input.read(cx).focus_handle(cx);
         input_focus.focus(window, cx);
-        window.show_soft_keyboard();
         cx.notify();
     }
 
@@ -210,8 +209,7 @@ impl FileSearchPanel {
             .items_start()
             .gap(px(8.0))
             .cursor_pointer()
-            .on_press(cx.listener(move |_this, _event, window, cx| {
-                window.hide_soft_keyboard();
+            .on_mouse_down(MouseButton::Left, cx.listener(move |_this, _event, window, cx| {
                 window.dispatch_action(
                     workspace_action::RevealInFileExplorer { path: path.clone() }.boxed_clone(),
                     cx,
@@ -318,7 +316,6 @@ impl FileSearchPanel {
             .update(cx, |input, _cx| input.set_value(""));
         let input_focus = self.search_input.read(cx).focus_handle(cx);
         input_focus.focus(window, cx);
-        window.show_soft_keyboard();
         cx.notify();
     }
 }
@@ -384,7 +381,7 @@ impl Render for FileSearchPanel {
             .border_color(rgb(theme::border_subtle(cx)))
             .overflow_hidden()
             // Stop taps inside the panel from reaching the dismiss backdrop.
-            .on_pointer_down(|_, _, cx| cx.stop_propagation())
+            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .child(
                 div()
                     .relative()
@@ -411,8 +408,8 @@ impl Render for FileSearchPanel {
                                 .items_center()
                                 .justify_center()
                                 .cursor_pointer()
-                                .on_pointer_down(|_, _, cx| cx.stop_propagation())
-                                .on_press(cx.listener(|this, _event, window, cx| {
+                                .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+                                .on_mouse_down(MouseButton::Left, cx.listener(|this, _event, window, cx| {
                                     this.clear_query(window, cx);
                                 }))
                                 .child(

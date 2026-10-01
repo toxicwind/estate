@@ -22,7 +22,7 @@ thread_local! {
 static NEXT_SHEET_WINDOW_HANDLE: AtomicU64 = AtomicU64::new(1);
 
 pub(crate) fn handle_surface_created(native_window: NativeWindow, width: u32, height: u32) {
-    let Some(app_cell) = entry::app_cell() else {
+    if entry::with_app(|_| {}).is_none() {
         tracing::error!("sheet: surface created without AppCell");
         return;
     };
@@ -40,16 +40,18 @@ pub(crate) fn handle_surface_created(native_window: NativeWindow, width: u32, he
     }
 
     let pending_sheet_view = platform_bridge::take_pending_custom_sheet_view();
-    let mut app = app_cell.borrow_mut();
 
-    let existing = SHEET_WINDOW.with(|cell| cell.borrow().clone());
-    if let Some(handle) = existing {
-        if let Some(sheet_view) = pending_sheet_view {
-            let _ = handle.update(&mut **app, |host, _window, cx| {
-                host.set_content(sheet_view, cx);
-            });
-        }
-    } else if let Some(sheet_view) = pending_sheet_view {
+    // The with_app borrow ends here, before the platform calls below
+    // (mirrors the original explicit drop(app)).
+    entry::with_app(|app| {
+        let existing = SHEET_WINDOW.with(|cell| cell.borrow().clone());
+        if let Some(handle) = existing {
+            if let Some(sheet_view) = pending_sheet_view {
+                let _ = handle.update(app, |host, _window, cx| {
+                    host.set_content(sheet_view, cx);
+                });
+            }
+        } else if let Some(sheet_view) = pending_sheet_view {
         let scale = platform_bridge::bridge().density();
         let window_options = WindowOptions {
             window_bounds: Some(WindowBounds::Windowed(Bounds {
@@ -79,8 +81,7 @@ pub(crate) fn handle_surface_created(native_window: NativeWindow, width: u32, he
     } else {
         tracing::error!("sheet: surface created without pending sheet view");
     }
-
-    drop(app);
+    });
 
     gpui_android::with_platform(|platform| {
         if let Err(error) = platform.handle_sheet_surface_resize(width, height) {

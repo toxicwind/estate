@@ -182,7 +182,7 @@ impl Render for SessionPanel {
                 .justify_between()
                 .gap(px(theme::SPACING_MD))
                 .cursor_pointer()
-                .on_press(cx.listener(|_this, _event, window, cx| {
+                .on_mouse_down(MouseButton::Left, cx.listener(|_this, _event, window, cx| {
                     window.dispatch_action(workspace_action::ShowConnecting.boxed_clone(), cx);
                 }))
                 .child(
@@ -242,8 +242,7 @@ fn disconnect_button(cx: &mut Context<SessionPanel>) -> impl IntoElement {
         .p(px(6.0))
         .rounded(px(6.0))
         .cursor_pointer()
-        .hit_slop(px(8.0))
-        .on_press(cx.listener(|_this, _event, window, cx| {
+        .on_mouse_down(MouseButton::Left, cx.listener(|_this, _event, window, cx| {
             window.dispatch_action(workspace_action::RequestDisconnect.boxed_clone(), cx);
         }))
         .child(
@@ -305,8 +304,7 @@ fn open_webview_row(cx: &mut Context<SessionPanel>) -> impl IntoElement {
         .items_center()
         .gap(px(theme::SPACING_SM))
         .cursor_pointer()
-        .hit_slop(px(4.0))
-        .on_press(cx.listener(|this, _event, _window, cx| this.open_manual(cx)))
+        .on_mouse_down(MouseButton::Left, cx.listener(|this, _event, _window, cx| this.open_manual(cx)))
         .child(
             svg()
                 .path("icons/plus.svg")
@@ -340,11 +338,10 @@ fn tunnel_row(
         .justify_between()
         .gap(px(theme::SPACING_MD))
         .cursor_pointer()
-        .hit_slop(px(4.0))
-        .on_press(cx.listener(move |this, _event, _window, cx| {
+        .on_mouse_down(MouseButton::Left, cx.listener(move |this, _event, _window, cx| {
             this.open_tunnel(on_open.clone(), cx);
         }))
-        .on_long_press(cx.listener(move |this, _event, _window, cx| {
+        .on_mouse_down(MouseButton::Right, cx.listener(move |this, _event, _window, cx| {
             this.long_press_tunnel(on_long.clone(), cx);
         }))
         .child(

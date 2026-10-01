@@ -318,8 +318,7 @@ impl Render for HomeView {
                             .id("home-website-link")
                             .underline()
                             .cursor_pointer()
-                            .hit_slop(px(10.0))
-                            .on_press(cx.listener(|_this, _event, _window, _cx| {
+                            .on_mouse_down(MouseButton::Left, cx.listener(|_this, _event, _window, _cx| {
                                 platform_bridge::bridge().open_url(WEBSITE_URL);
                             }))
                             .child("zedra.dev"),
@@ -334,8 +333,7 @@ impl Render for HomeView {
             .right(px(12.0))
             .cursor_pointer()
             .gap(px(6.0))
-            .hit_slop(px(10.0))
-            .on_press(cx.listener(|_this, _event, _window, cx| {
+            .on_mouse_down(MouseButton::Left, cx.listener(|_this, _event, _window, cx| {
                 platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
                 cx.emit(HomeEvent::NavigateToSettings);
             }))
@@ -416,7 +414,7 @@ impl Render for HomeView {
         content = content.child(
             outline_button(cx, "home-scan-qr", "Scan QR Code")
                 .w(px(theme::HOME_CARD_WIDTH))
-                .on_press(cx.listener(|this, _event, _window, _cx| {
+                .on_mouse_down(MouseButton::Left, cx.listener(|this, _event, _window, _cx| {
                     this.handle_scan_qr();
                 })),
         );
@@ -775,7 +773,7 @@ fn install_guide(selected_tab: GuideTab, cx: &mut Context<HomeView>) -> impl Int
                 .px(px(theme::SPACING_SM))
                 .pb(px(theme::SPACING_SM))
                 .child(tab_list)
-                .child(selection_area(guide_body)),
+                .child(guide_body),
         )
 }
 
@@ -798,8 +796,7 @@ fn guide_tab_button(
         } else {
             theme::bg_card(cx)
         }))
-        .hit_slop(px(10.0))
-        .on_press(cx.listener(move |this, _event, _window, cx| {
+        .on_mouse_down(MouseButton::Left, cx.listener(move |this, _event, _window, cx| {
             this.select_guide_tab(spec.tab, cx);
         }))
         .child(
@@ -819,14 +816,11 @@ fn guide_line(
     block_ix: usize,
     line_ix: usize,
     line: &'static GuideLine,
-    selection_order: u64,
-    is_last_line: bool,
+    _selection_order: u64,
+    _is_last_line: bool,
     cx: &mut Context<HomeView>,
 ) -> AnyElement {
-    let text = StyledText::new(line.text)
-        .selectable()
-        .selection_order(selection_order)
-        .selection_separator_after(if is_last_line { "" } else { "\n" });
+    let text = StyledText::new(line.text);
 
     let row = div()
         .id(SharedString::from(format!(
@@ -876,11 +870,11 @@ fn workspace_card(
         .border_color(rgb(theme::border_subtle(cx)))
         .p(px(12.0))
         .cursor_pointer()
-        .on_press(cx.listener(move |this, _event, window, cx| {
+        .on_mouse_down(MouseButton::Left, cx.listener(move |this, _event, window, cx| {
             platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
             this.handle_workspace_tap(index, window, cx);
         }))
-        .on_long_press(cx.listener(move |this, _event, _window, cx| {
+        .on_mouse_down(MouseButton::Right, cx.listener(move |this, _event, _window, cx| {
             platform_bridge::trigger_haptic(HapticFeedback::ImpactMedium);
             this.handle_workspace_long_press(index, cx);
         }))
@@ -939,11 +933,10 @@ fn social_button(
     div()
         .id(id)
         .flex()
-        .hit_slop(px(10.0))
         .items_center()
         .justify_center()
         .cursor_pointer()
-        .on_press(cx.listener(move |_this, _event, _window, _cx| {
+        .on_mouse_down(MouseButton::Left, cx.listener(move |_this, _event, _window, _cx| {
             platform_bridge::bridge().open_url(url);
         }))
         .child(

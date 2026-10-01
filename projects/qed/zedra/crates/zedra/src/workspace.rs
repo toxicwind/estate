@@ -167,7 +167,7 @@ struct ConnectionRequest {
 }
 
 #[derive(Clone)]
-struct AddToChatTarget {
+pub(crate) struct AddToChatTarget {
     tid: String,
     slug: String,
     title: Option<String>,
@@ -1735,11 +1735,10 @@ impl Workspace {
     fn handle_open_quick_action(
         &mut self,
         _action: &OpenQuickAction,
-        window: &mut Window,
+        _window: &mut Window,
         cx: &mut Context<Self>,
     ) {
         info!("handle OpenQuickAction from workspace");
-        window.hide_soft_keyboard();
         cx.emit(WorkspaceEvent::OpenQuickAction);
     }
 
@@ -1774,7 +1773,6 @@ impl Workspace {
     /// workspace action dispatch (e.g. reopening search) keeps working.
     fn dismiss_file_search(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let prev = self.file_search_prev_focus.take();
-        window.hide_soft_keyboard();
         self.close_file_search(cx);
         if let Some(handle) = prev {
             window.focus(&handle, cx);
@@ -1784,11 +1782,10 @@ impl Workspace {
     fn handle_request_disconnect(
         &mut self,
         _action: &RequestDisconnect,
-        window: &mut Window,
+        _window: &mut Window,
         _cx: &mut Context<Self>,
     ) {
         info!("handle RequestDisconnect from workspace");
-        window.hide_soft_keyboard();
 
         let pending_platform_action = self.pending_platform_action.clone();
         platform_bridge::show_alert(
@@ -1865,11 +1862,10 @@ impl Workspace {
     fn handle_hide_connecting(
         &mut self,
         _action: &HideConnecting,
-        window: &mut Window,
+        _window: &mut Window,
         cx: &mut Context<Self>,
     ) {
         info!("handle HideConnecting from workspace");
-        window.hide_soft_keyboard();
         self.content.update(cx, |c, cx| c.hide_connecting_view(cx));
         self.record_current_view(cx);
     }
@@ -1877,11 +1873,10 @@ impl Workspace {
     fn handle_restart_connection(
         &mut self,
         _action: &RestartConnection,
-        window: &mut Window,
+        _window: &mut Window,
         cx: &mut Context<Self>,
     ) {
         info!("handle RestartConnection from workspace");
-        window.hide_soft_keyboard();
         self.restart_connection(true, cx);
     }
 
@@ -1904,7 +1899,6 @@ impl Workspace {
 
     fn handle_open_file(&mut self, action: &OpenFile, window: &mut Window, cx: &mut Context<Self>) {
         info!("handle OpenFile from workspace");
-        window.clear_read_only_selection_cache();
         self.drawer_host
             .update(cx, |host, cx| host.close_with_window(&mut *window, cx));
 
@@ -2094,7 +2088,6 @@ impl Workspace {
         };
 
         // Selection lives in this (main) window; the sheet path clears its own.
-        window.clear_read_only_selection_cache();
         self.present_add_to_chat(selection, cx);
     }
 
@@ -2266,7 +2259,7 @@ impl Workspace {
     fn handle_git_commit(
         &mut self,
         action: &GitCommit,
-        window: &mut Window,
+        _window: &mut Window,
         cx: &mut Context<Self>,
     ) {
         info!("handle GitCommit from workspace");
@@ -2286,7 +2279,6 @@ impl Workspace {
         let handle = self.session.handle().clone();
         // 'static platform callback has no executor; capture the runtime handle.
         let runtime = Tokio::handle(cx);
-        window.hide_soft_keyboard();
         platform_bridge::show_alert(
             "",
             &confirm_message,
@@ -2655,11 +2647,10 @@ impl Workspace {
     fn handle_close_terminal(
         &mut self,
         action: &CloseTerminal,
-        window: &mut Window,
+        _window: &mut Window,
         _cx: &mut Context<Self>,
     ) {
         info!("handle CloseTerminal from workspace");
-        window.hide_soft_keyboard();
 
         self.request_terminal_delete_confirmation(action.id.clone());
     }
@@ -3020,7 +3011,7 @@ impl Render for Workspace {
                                 theme::overlay_backdrop(cx),
                                 0.4,
                             ))
-                            .on_pointer_down(cx.listener(|this, _event, window, cx| {
+                            .on_mouse_down(MouseButton::Left, cx.listener(|this, _event, window, cx| {
                                 this.dismiss_file_search(window, cx);
                             }))
                             .child(
@@ -3663,7 +3654,7 @@ fn render_gitdiff_subtitle(
         .child(
             div()
                 .min_w_0()
-                .flex_shrink()
+                .flex_shrink(1.0)
                 .truncate()
                 .text_center()
                 .text_color(rgb(theme::text_secondary(cx)))
@@ -3885,8 +3876,7 @@ impl Render for WorkspaceContent {
                             .items_center()
                             .justify_center()
                             .cursor_pointer()
-                            .hit_slop(px(20.0))
-                            .on_press(cx.listener(|_this, _event, window, cx| {
+                            .on_mouse_down(MouseButton::Left, cx.listener(|_this, _event, window, cx| {
                                 platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
                                 window.dispatch_action(
                                     workspace_action::ToggleDrawer.boxed_clone(),
@@ -3956,8 +3946,7 @@ impl Render for WorkspaceContent {
                             .items_center()
                             .justify_center()
                             .cursor_pointer()
-                            .hit_slop(px(20.0))
-                            .on_press(cx.listener(|_this, _event, window, cx| {
+                            .on_mouse_down(MouseButton::Left, cx.listener(|_this, _event, window, cx| {
                                 platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
                                 window.dispatch_action(
                                     workspace_action::OpenQuickAction.boxed_clone(),

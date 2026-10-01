@@ -92,9 +92,7 @@ impl FilePreviewView {
             warn!("agent: add selection to chat (preview) missing selection");
             return;
         };
-        // The selection lives in this sheet window; clear it here, then route to
-        // the foreground workspace's agent-target picker via ambient context.
-        window.clear_read_only_selection_cache();
+        // Route to the foreground workspace's agent-target picker via ambient context.
         let Some(workspace) = ActiveWorkspace::get(cx) else {
             return;
         };

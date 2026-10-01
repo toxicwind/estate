@@ -325,7 +325,7 @@ impl GitSidebar {
             .h(px(theme::PANEL_ITEM_HEIGHT))
             .px(px(theme::DRAWER_PADDING))
             .cursor_pointer()
-            .on_press(cx.listener(move |this, _, _, cx| {
+            .on_mouse_down(MouseButton::Left, cx.listener(move |this, _, _, cx| {
                 this.toggle_section(section_idx, cx);
             }))
             .child(
@@ -395,7 +395,7 @@ impl GitSidebar {
             .h(px(theme::PANEL_ITEM_HEIGHT))
             .px(px(theme::DRAWER_PADDING))
             .cursor_pointer()
-            .on_press({
+            .on_mouse_down(MouseButton::Left, {
                 let path = path.clone();
                 cx.listener(move |_this, _, _, cx| {
                     cx.emit(GitFileSelected {
@@ -404,7 +404,7 @@ impl GitSidebar {
                     });
                 })
             })
-            .on_long_press({
+            .on_mouse_down(MouseButton::Right, {
                 let path = path.clone();
                 cx.listener(move |_this, _, _, cx| {
                     cx.emit(GitFileLongPressed {
@@ -499,10 +499,10 @@ impl GitSidebar {
                 0.35
             })
             .cursor_pointer()
-            .on_pointer_down(|_, _, cx| {
+            .on_mouse_down(MouseButton::Left, |_, _, cx| {
                 cx.stop_propagation();
             })
-            .on_press(cx.listener(|this, _, _, cx| {
+            .on_mouse_down(MouseButton::Left, cx.listener(|this, _, _, cx| {
                 this.request_commit(cx);
             }))
             .child(
@@ -594,9 +594,6 @@ impl Render for GitSidebar {
 
         div()
             .track_focus(&self.focus_handle)
-            .on_pointer_down(|_, window, _cx| {
-                window.hide_soft_keyboard();
-            })
             .flex()
             .flex_col()
             .size_full()

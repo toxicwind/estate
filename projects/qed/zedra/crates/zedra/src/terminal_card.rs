@@ -4,8 +4,8 @@
 ///
 /// ```rust
 /// render_terminal_card(props)
-///     .on_press(cx.listener(...))
-///     .on_long_press(cx.listener(...))
+///     .on_mouse_down(gpui::MouseButton::Left, cx.listener(...))
+///     .on_mouse_down(gpui::MouseButton::Right, cx.listener(...))
 /// ```
 ///
 /// Used in the workspace drawer terminal tab and the quick-action panel.
@@ -27,7 +27,7 @@ pub struct TerminalCardProps {
     pub agent_state: AgentState,
     pub shell_state: ShellState,
     pub last_exit_code: Option<i32>,
-    pub on_close: Option<Box<dyn Fn(&PressEvent, &mut Window, &mut App) + 'static>>,
+    pub on_close: Option<Box<dyn Fn(&MouseDownEvent, &mut Window, &mut App) + 'static>>,
 }
 
 /// Diameter of the live agent-state dot overlaid on the terminal icon.
@@ -81,8 +81,9 @@ pub fn strip_ps1_prefix(title: &str) -> &str {
 
 /// Render a terminal card element.
 ///
-/// Returns a `Div` — chain `.on_press()` and `.on_long_press()` for tap and
-/// long-press actions respectively.
+/// Returns a `Div` — chain `.on_mouse_down(gpui::MouseButton::Left, ...)` and
+/// `.on_mouse_down(gpui::MouseButton::Right, ...)` for tap and long-press
+/// actions respectively.
 pub fn render_terminal_card(cx: &App, props: TerminalCardProps) -> Stateful<Div> {
     // Primary label: OSC 2 title (stripped of user@host: prefix) — the most
     // dynamic source, updated each prompt and with each command via preexec.
@@ -127,8 +128,7 @@ pub fn render_terminal_card(cx: &App, props: TerminalCardProps) -> Stateful<Div>
             .items_center()
             .justify_center()
             .cursor_pointer()
-            .hit_slop(px(12.0))
-            .on_press(move |event, window, cx| {
+            .on_mouse_down(MouseButton::Left, move |event, window, cx| {
                 close_fn(event, window, cx);
                 cx.stop_propagation();
             })

@@ -11,7 +11,6 @@ use itertools::Itertools;
 
 use crate::MONO_FONT_FAMILY;
 use crate::input::TerminalInputHandler;
-use crate::selection::TerminalSelectionDocument;
 use crate::terminal::*;
 use crate::theme::TerminalTheme;
 use crate::view::TerminalView;
@@ -187,7 +186,6 @@ pub struct TerminalElement {
     terminal: WeakEntity<Terminal>,
     focus_handle: FocusHandle,
     focused: bool,
-    selection_active: bool,
 }
 
 impl TerminalElement {
@@ -202,7 +200,6 @@ impl TerminalElement {
         terminal: WeakEntity<Terminal>,
         focus_handle: FocusHandle,
         focused: bool,
-        selection_active: bool,
     ) -> Self {
         Self {
             content,
@@ -215,7 +212,6 @@ impl TerminalElement {
             terminal,
             focus_handle,
             focused,
-            selection_active,
         }
     }
 
@@ -655,15 +651,12 @@ impl Element for TerminalElement {
             grid_origin.x,
             grid_origin.y + px(self.scroll_offset_px) - self.keyboard_content_offset,
         );
-        let selection_enabled = self.selection_active
-            || TerminalSelectionDocument::has_selectable_text(&layout.content);
         let input_handler = TerminalInputHandler::new(
             self.terminal.clone(),
             bounds,
             origin,
             cell_width,
             line_height,
-            selection_enabled,
         );
         window.handle_input(&self.focus_handle, input_handler, cx);
 

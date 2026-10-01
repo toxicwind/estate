@@ -21,7 +21,7 @@ pub struct AgentPicker {
 }
 
 impl AgentPicker {
-    pub fn new(
+    pub(crate) fn new(
         session_handle: SessionHandle,
         pending_action: SharedPendingSlot<PendingWorkspaceAction>,
     ) -> Self {
