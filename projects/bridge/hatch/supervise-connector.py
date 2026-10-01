@@ -11,12 +11,19 @@ inside". This supervisor wait()s on the child and records HOW it died:
   - exited with code N  -> the connector process itself ended (internal)
 
 The supervisor does NOT respawn the child itself: the 5-minute
-yote-connector-watch cron owns restarts. After logging the death it exits,
-so a stale supervisor can never shadow a fresh one.
+progress-watchdog owns restarts (its bridge:exec path calls
+restart_local_connector() on a failed snapshot). After logging the death
+it exits, so a stale supervisor can never shadow a fresh one.
+(RETIRED 2026-09-21: the old yote-connector-watch cron that used to own
+restarts is archived in workspace/cron.d/_archive.)
 
-Launch (log-preserving, detached):
-  cd /home/hatch/workspace/yote-connector && \
-  setsid nohup python3 supervise-connector.py >>supervisor.log 2>&1 < /dev/null &
+Launch (log-preserving, detached) — use the dedicated launcher:
+  python3 /home/hatch/workspace/yote-connector/start-detached.py --wait 8
+The old `cd DIR && setsid nohup ... &` shell pattern is RETIRED: the `&`
+bound the whole `cd && ...` chain, leaving the daemon in a subshell tied
+to the launching exec session (reaped between watchdog runs). The launcher
+uses Popen(start_new_session=True) with no shell backgrounding, guards
+against EADDRINUSE, and verifies /health plus PPID 1 / own SID.
 
 The connector child still writes its own connector.pid (see connector.py
 main()), so watchdog pid checks keep working against the child process.
@@ -63,8 +70,8 @@ def main():
         )
     else:
         slog("child pid=%d exited with status %d" % (proc.pid, rc))
-    # Do not respawn; the watchdog cron owns restarts. Exit so a stale
-    # supervisor can never hold the slot.
+    # Do not respawn; the progress-watchdog owns restarts (see its
+    # bridge:exec path). Exit so a stale supervisor can never hold the slot.
     sys.exit(0)
 
 
