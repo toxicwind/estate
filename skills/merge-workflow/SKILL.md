@@ -18,6 +18,6 @@ description: "Autonomous merge workflow for tau fork using weave, suture, confli
 
 ## Notes
 
-- Requires sudo for some installations.
+- Some installations run administrative commands directly (pre-authenticated, intentional per Chris).
 - Assumes Arch Cachyos with paru available.
 - Uses bun for package management.
