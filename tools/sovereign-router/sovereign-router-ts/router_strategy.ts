@@ -872,6 +872,182 @@ export async function tryLongctxPin(
   return r;
 }
 
+// ---------------------------------------------------------------------------
+// 2M-context tier (2026-10-01): est tokens >1M -> a lane whose live catalog
+// advertises >=2M context, skipping the race. OpenRouter's public catalog
+// (verified 2026-10-01: 462 models) lists x-ai/grok-4.20,
+// x-ai/grok-4.20-multi-agent, openrouter/pareto-code, openrouter/auto and
+// openrouter/auto-beta at 2_000_000 tokens. The pin uses the keyed openrouter
+// lane with x-ai/grok-4.20; ineligible or pinned failure falls through to the
+// 1M pin, then the normal strategy dispatch.
+// Operational kill switch: SOVEREIGN_LONGCTX_2M=0 disables the tier.
+// ---------------------------------------------------------------------------
+export const LONGCTX_2M_PROVIDER = "openrouter";
+export const LONGCTX_2M_MODEL = "x-ai/grok-4.20";
+export const LONGCTX_2M_GATE_TOKENS = 1_000_000;
+export const LONGCTX_2M_DAILY_CAP = 5;
+const LONGCTX_2M_STRATEGY = "longctx-2m";
+
+export function longctx2MEnabled(): boolean {
+  return process.env.SOVEREIGN_LONGCTX_2M !== "0";
+}
+
+/**
+ * longctx2MPinEligible — same eligibility shape as the 1M pin: default/auto
+ * path only (explicit model requests keep their lane), circuit closed, key
+ * present, daily budget not exhausted. Gate is 1M est tokens.
+ */
+export function longctx2MPinEligible(body: ChatBody): LongctxPinVerdict {
+  const estTokens = estPromptTokens(body);
+  if (!longctx2MEnabled()) return { ok: false, reason: "disabled", estTokens };
+  if (estTokens <= LONGCTX_2M_GATE_TOKENS)
+    return { ok: false, reason: "under_gate", estTokens };
+  if (isRoutableModelId(String(body.model || "auto")))
+    return { ok: false, reason: "explicit_model", estTokens };
+  if (!state.circuitOk(LONGCTX_2M_PROVIDER))
+    return { ok: false, reason: "circuit_open", estTokens };
+  if (!keyOk(LONGCTX_2M_PROVIDER))
+    return { ok: false, reason: "no_key", estTokens };
+  if (
+    state.health.countStrategyToday(LONGCTX_2M_STRATEGY) >=
+    LONGCTX_2M_DAILY_CAP
+  )
+    return { ok: false, reason: "budget_exhausted", estTokens };
+  return { ok: true, reason: "eligible", estTokens };
+}
+
+/**
+ * tryLongctx2MPin — fire the 2M pin: direct callOne to the keyed openrouter
+ * lane with x-ai/grok-4.20. Returns null when not eligible (caller falls
+ * through to the 1M pin, then the normal race). Every pinned attempt is
+ * logged under strategy='longctx-2m' with est tokens + latency, ok or not.
+ */
+export async function tryLongctx2MPin(
+  body: ChatBody,
+  sid: string,
+  stream = false,
+): Promise<RouteResult | null> {
+  const v = longctx2MPinEligible(body);
+  if (!v.ok) return null;
+  const r = await callOne(LONGCTX_2M_PROVIDER, LONGCTX_2M_MODEL, body, stream);
+  state.record(
+    LONGCTX_2M_MODEL,
+    LONGCTX_2M_PROVIDER,
+    r.status || (r.ok ? 200 : 500),
+    r.lat || 0,
+    r.ok ? 1 : 0,
+    LONGCTX_2M_STRATEGY,
+    sid,
+    v.estTokens,
+  );
+  return r;
+}
+
+/**
+ * routeAuto — the automatic main router (estate-owned openrouter/auto
+ * equivalent). Prompt-aware per-request strategy switching: AST race for
+ * code-shaped traffic, free race for the default path, hybrid fallback when
+ * the free pool is empty. (The 2M/1M context pins run BEFORE strategy
+ * dispatch in router.ts, so routeAuto never double-fires them.) Set
+ * SOVEREIGN_STRATEGY=auto to make it the main router; it auto-switches the
+ * lane every request with no per-request env change.
+ */
+// Last user-visible text in the prompt, newest message first. Used by
+// routeAuto for AST-shape detection (mirrors estPromptTokens' traversal).
+export function bodyPromptText(body: ChatBody): string {
+  const msgs = (body as { messages?: unknown[] }).messages;
+  if (Array.isArray(msgs)) {
+    for (let i = msgs.length - 1; i >= 0; i--) {
+      const c = (msgs[i] as { content?: unknown })?.content;
+      if (typeof c === "string" && c) return c;
+      if (Array.isArray(c)) {
+        const t = c
+          .map((part) => (part as { text?: unknown })?.text)
+          .filter((t) => typeof t === "string")
+          .join("\n");
+        if (t) return t;
+      }
+    }
+  }
+  return "";
+}
+
+export async function routeAuto(
+  body: ChatBody,
+  session: string,
+): Promise<RouteResult> {
+  if (isAst(bodyPromptText(body))) return routeAstRace(body, session);
+  const free = await routeFree(body, session);
+  if (free.ok) return free;
+  return routeHybrid(body, session);
+}
+
+/**
+ * buildBodybuilderRequests — estate-owned openrouter/bodybuilder equivalent.
+ * Takes a natural-language multi-model job description and returns the
+ * structured {requests:[...]} fan-out bodies for the CALLER to execute in
+ * parallel (generation is the router's job; execution stays with the caller —
+ * the same split as openrouter/bodybuilder, whose generate step is free).
+ * Decomposition itself runs on the free race, so bodybuilding costs nothing.
+ */
+export async function buildBodybuilderRequests(
+  job: string,
+  opts: { maxRequests?: number; sid?: string } = {},
+): Promise<{ requests: Array<Record<string, unknown>> }> {
+  const maxRequests = Math.min(Math.max(opts.maxRequests ?? 4, 1), 16);
+  const sys =
+    "You decompose a multi-model job into parallel LLM request bodies. " +
+    "Reply with ONLY a JSON object of the form " +
+    '{"requests":[{"model":"<provider/model id>","messages":[{"role":"user","content":"<self-contained sub-task>"}],' +
+    '"temperature":0.7,"max_tokens":2000}]}. ' +
+    "Each request must be self-contained (no cross-references between requests). " +
+    `Produce between 1 and ${maxRequests} requests. No prose, no markdown fences, JSON only.`;
+  const body = {
+    model: "auto",
+    messages: [
+      { role: "system", content: sys },
+      { role: "user", content: `JOB:\n${job}` },
+    ],
+    temperature: 0.3,
+    max_tokens: 4000,
+  } as ChatBody;
+  const r = await routeFree(body, opts.sid || "bodybuilder");
+  if (r.ok) {
+    try {
+      const raw =
+        typeof r.data === "string"
+          ? r.data
+          : new TextDecoder().decode(r.data as Uint8Array);
+      const text: string =
+        JSON.parse(raw)?.choices?.[0]?.message?.content ?? "";
+      const cleaned = text
+        .replace(/^```(?:json)?\s*/i, "")
+        .replace(/\s*```\s*$/, "");
+      const parsed = JSON.parse(cleaned);
+      const reqs = Array.isArray(parsed?.requests) ? parsed.requests : [];
+      if (reqs.length > 0) return { requests: reqs.slice(0, maxRequests) };
+    } catch {
+      // fall through to deterministic fan-out
+    }
+  }
+  // Deterministic fallback: small free models often answer the job instead
+  // of emitting the decomposition JSON. Fan out N parallel requests across
+  // the live free pool, each carrying the full job text.
+  const cands = freeCandidates();
+  if (!cands.length) return { requests: [] };
+  const requests: Array<Record<string, unknown>> = [];
+  for (let i = 0; i < maxRequests; i++) {
+    const [provider, mid] = cands[i % cands.length];
+    requests.push({
+      model: `${provider}/${mid}`,
+      messages: [{ role: "user", content: job }],
+      temperature: 0.7,
+      max_tokens: 2000,
+    });
+  }
+  return { requests };
+}
+
 export const ROUTERS: Record<
   string,
   (body: ChatBody, session: string) => Promise<RouteResult>
@@ -886,6 +1062,7 @@ export const ROUTERS: Record<
   hybrid: routeHybrid,
   free: routeFree,
   cascade: routeCascade,
+  auto: routeAuto,
 };
 
 // freeCandidates: the free pool is derived from LIVE catalog metadata, not a

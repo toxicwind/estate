@@ -2,10 +2,12 @@
   "generated_ts": "2026-09-30T02:32:02.020Z",
   "sources": {
     "guidellm": {
-      "path": "projects/openrouter-probe/ranking-eval-20260920-170706.json",
+      "path": "projects/openrouter-probe/ranking-eval-20260920-final.json",
       "run_ts": "20260920-170706",
       "n_models": 9,
-      "instrument": "deterministic instruction-following (exact=2/contains=1/empty=0), 6 req/model"
+      "instrument": "deterministic instruction-following (exact=2/contains=1/empty=0), 6 req/model",
+      "note": "guidellm renamed to roundup 2026-09-30 (projects/range/ranch/roundup); cited -170706 file no longer exists, repointed to surviving -final ranking",
+      "repointed_ts": "2026-10-01"
     },
     "model_max": {
       "path": "projects/model-max/phase1.json",
