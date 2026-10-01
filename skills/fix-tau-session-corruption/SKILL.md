@@ -37,7 +37,7 @@ When tau session JSONL files contain corrupted paths like `$HOME/.local/home/tox
      echo "Fixing: $f"
      
      # Fix the double-replaced path using word boundaries to prevent re-corruption
-     sed -i -E 's:(HOME/\.local)/home/toxic/\.local/bin/tau:\1/.local/bin/tau:g' "$f"
+     sed -i -E 's:(HOME/\.local)/home/toxic/\.local/bin/tau:\1/bin/tau:g' "$f"
      
      # Verify fix
      BAD=$(grep -c 'HOME/.local/home/toxic' "$f" 2>/dev/null || echo 0)
