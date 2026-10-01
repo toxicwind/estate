@@ -220,10 +220,10 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | tongs | Flock maximal merge deferred phases D/E/F: Phase D attempts ledger (RoutingDecision bounded per-attempt ledger + DecisionEmit drop-guard tracing), Phase E probe isolation (single half-open probe lease + streaming first-chunk commit semantics + commit counter), Phase F VansRouter provider model-ID audit (9 missing IDs + new dashscope provider def, regenerated all artifacts) | tongs (Ember crew, flock deferred-phase lane) | DONE (2026-09-30) -- ranch a37a9b1 (10 files: proxy decision/circuit/proxy/router.rs, roost_providers.rs, roost data.ts + generated providers.go/json/rs, herd consumer copy) + 04557df (MERGE.md marks D/E/F complete); cargo test 129 passed + 1 ignored 0 failed (8 new tests), roost bun test 69/69 |
 | quarry-hashline | stream A: hashline first-class edit tool — skill, project docs, daemon, KB rule 18, gatehouse MCP registration | f75585bc-fd3c-4e54-9814-6c4cf7f53b51 | DONE (2026-09-30) -- sovereign-projects ff7b6fbe375d |
 | ripple | Portainer replacement research: pattern-borrow + paper-search + web recon; ranked agentic control-plane shortlist | parent orchestrator (Ember crew) | DONE (2026-09-30) — e97c964619 |
-| quill-tns-dig | TNS/author deep-dive: Ember-1 coverage — Wachtel full archive (WP REST author=1977), benchmark series accuracy/corrections, Insight Partners AI-infra portfolio + auto-disclosure mechanics, TNS ad/tracker stack + sponsored labeling, stealth-edit/deleted-post weirdness hunt; report to ~/workspace/ember-kimi-audit/hidden/author-dig.md | Quill (Ember crew) | DONE (2026-09-30) — 3c87bdc08 |
+| quill-tns-dig | TNS/author deep-dive: Ember-1 coverage — Wachtel full archive (WP REST author=1977), benchmark series accuracy/corrections, Insight Partners AI-infra portfolio + auto-disclosure mechanics, TNS ad/tracker stack + sponsored labeling, stealth-edit/deleted-post weirdness hunt; report to ~/workspace/ember-kimi-audit/hidden/author-dig.md | Quill (Ember crew) | RUNNING (2026-09-30) |
 | skimmer | Star-repo maximalization: Pixel Screenshots APK (com.google.android.apps.pixel.agent) intent-control project — exported-component inventory, intent catalog, Bun CLI, README/docs/CI, pushed to a new toxicwind public repo | Skimmer (Ember crew) | RUNNING (2026-09-30) |
 | grackle-ii | Overnight yote-ops watch: probe estate health (bridge exec, squawk ws/feed, pitchfork daemons, herd, sovereign router, browserless/CDP, noVNC), log anomalies for the 09:11 MDT morning brief | Grackle-II (Ember crew) | RUNNING (2026-09-30) |
-| juniper | effusion-labs maximalization — CSS/JS killshot fix, framework decision, LFS repair, gone-pages recovery, folder reorg | Ember | DONE 2026-09-30 (deployed 21006142) |
+| juniper | effusion-labs maximalization — CSS/JS killshot fix, framework decision, LFS repair, gone-pages recovery, folder reorg | Ember | RUNNING |
 | rowan | classifier-safe doc sweep: repair trigger-shaped phrasing across estate docs | Ember (main) | DONE (2026-09-30) — 3737cf746 + 89a6cc8a7, origin/main = 473003fdc verified via git ls-remote |
 <!-- KB-ROLLUP:END -->
 
@@ -246,8 +246,14 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 | juniper | effusion-labs maximalization: CSS/JS killshot fix, framework, LFS, pages, reorg | Ember | DONE 2026-09-30 (deployed 21006142) |
 
+
 | pip | minus1: verify metaaivm-profile end to end | Ember | DONE (2026-09-30) — verify-only-12of12 |
 
+
+| torr | metaaivm-fork: maximalize toxicwind/muse-cli, land on main | Ember (main chat) | DONE (2026-09-30) — 628fa52 |
+
+
+| rusty | connector-repair: durable yote-connector launcher + lane verification | ember-sidechat | RUNNING (2026-09-30) |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
