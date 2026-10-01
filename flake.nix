@@ -1,5 +1,5 @@
 {
-  description = "OMP coding agent and development environment";
+  description = "Sovereign projects development environment (OMP build retired: source de-vendored to toxicwind/tau)";
 
   nixConfig = {
     extra-substituters = [ "https://nix-community.cachix.org" ];
@@ -82,41 +82,8 @@
           bun2nix = bun2nixFor system;
           rustToolchain = rustToolchainFor system;
         };
-
-      packageFor =
-        system:
-        let
-          pkgs = pkgsFor system;
-          localPkgs = localPackagesFor system;
-        in
-        pkgs.callPackage ./nix/package.nix (
-          {
-            source = self.outPath;
-          }
-          // localPkgs
-        );
     in
     {
-      packages = forAllSystems (
-        system:
-        let
-          omp = packageFor system;
-        in
-        {
-          inherit omp;
-          default = omp;
-        }
-      );
-
-      apps = forAllSystems (system: {
-        default = {
-          type = "app";
-          program = "${self.packages.${system}.default}/bin/omp";
-          meta.description = "Run OMP";
-        };
-        omp = self.apps.${system}.default;
-      });
-
       devShells = forAllSystems (
         system:
         let
@@ -133,71 +100,21 @@
         let
           pkgs = pkgsFor system;
           bun2nix = bun2nixFor system;
-          homeManagerEvaluation = pkgs.lib.evalModules {
-            specialArgs = { inherit pkgs; };
-            modules = [
-              {
-                options.home.packages = pkgs.lib.mkOption {
-                  type = pkgs.lib.types.listOf pkgs.lib.types.package;
-                  default = [ ];
-                };
-                options.home.activation = pkgs.lib.mkOption {
-                  type = pkgs.lib.types.attrsOf pkgs.lib.types.anything;
-                  default = { };
-                };
-              }
-              self.homeManagerModules.default
-              {
-                programs.omp.enable = true;
-                programs.omp.settings.startup.quiet = true;
-              }
-            ];
-          };
-          nixosEvaluation = pkgs.lib.evalModules {
-            specialArgs = { inherit pkgs; };
-            modules = [
-              {
-                options.environment.systemPackages = pkgs.lib.mkOption {
-                  type = pkgs.lib.types.listOf pkgs.lib.types.package;
-                  default = [ ];
-                };
-              }
-              self.nixosModules.default
-              { programs.omp.enable = true; }
-            ];
-          };
-          modulesEvaluate =
-            assert builtins.elem self.packages.${system}.default homeManagerEvaluation.config.home.packages;
-            assert homeManagerEvaluation.config.home.activation ? ompConfig;
-            assert builtins.elem self.packages.${system}.default
-              nixosEvaluation.config.environment.systemPackages;
-            pkgs.runCommand "omp-module-evaluation" { } "touch $out";
         in
         {
-          bun-lock = pkgs.runCommand "omp-bun-lock" { nativeBuildInputs = [ bun2nix ]; } ''
+          bun-lock = pkgs.runCommand "sovereign-bun-lock" { nativeBuildInputs = [ bun2nix ]; } ''
             cp -R ${self.outPath} source
             chmod -R u+w source
             cd source
             mv nix/bun.nix nix/bun.expected.nix
             bun2nix -l bun.lock -c ../ -o nix/bun.nix
-            sed -i -e '$a\' nix/bun.nix
+            sed -i -e '$a\\' nix/bun.nix
             diff -u nix/bun.expected.nix nix/bun.nix
             touch "$out"
           '';
-          modules = modulesEvaluate;
-          omp = self.packages.${system}.default;
         }
       );
 
       formatter = forAllSystems (system: (pkgsFor system).nixfmt);
-
-      overlays.default = _final: previous: {
-        omp = self.packages.${previous.stdenv.hostPlatform.system}.default;
-      };
-
-      homeManagerModules.default = import ./nix/home-manager.nix { inherit self; };
-      homeManagerModules.omp = self.homeManagerModules.default;
-      nixosModules.default = import ./nix/nixos-module.nix { inherit self; };
-      nixosModules.omp = self.nixosModules.default;
     };
 }
