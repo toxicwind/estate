@@ -145,3 +145,50 @@ Everything else is reference, snapshot, or frozen archive.
 | mistral | 4 | 46 | 47 |
 
 `cerebras` was hardcoded to **zero** models before live discovery.
+
+## Estate auto/bodybuilder vs official OpenRouter routers (2026-10-01)
+
+Official docs read 2026-10-01:
+
+- Auto Router: https://openrouter.ai/docs/guides/routing/routers/auto-router
+- Body Builder: https://openrouter.ai/docs/guides/routing/routers/body-builder
+
+### Auto Router
+
+Official `openrouter/auto`: "automatically selects the best model for your prompt" —
+powered by the market (aggregate spend of millions of OpenRouter users over a
+trailing 7-day window per task type, ~30 fine-grained task types), cost tiers
+low/medium/high/xhigh/max, session stickiness, no additional fee. The response
+`model` field shows which model was actually used.
+
+Estate `routeAuto` (default STRATEGY since a005d6f22): prompt-aware per-request
+switching — AST race for code-shaped traffic, free race as the default path,
+hybrid fallback when the free pool is empty. 2M/1M context pins run before
+strategy dispatch. Per-request `X-Sovereign-Strategy` override; `X-Strategy`
+and `X-Routed-Via` response headers show the chosen lane.
+
+Differences: official routes on market spend-share with session stickiness
+(stickiness is a separate estate strategy, `sticky_affinity`); estate routes on
+prompt shape + cost (free-first) across its own keyed providers, no market
+signal, no per-request cost tier.
+
+### Body Builder
+
+Official `openrouter/bodybuilder`: "transforms natural language prompts into
+structured OpenRouter API requests, enabling you to easily run the same task
+across multiple models in parallel." Free to use; returns a JSON object
+containing an array of ready-to-execute request bodies; the caller executes
+them in parallel.
+
+Estate `POST /v1/bodybuilder` (`buildBodybuilderRequests`): same split —
+generation is the router's job, execution stays with the caller. Decomposition
+itself runs on the free race, so generation costs nothing. Returns
+`{requests:[...]}`, 1-16 self-contained bodies, JSON only. Verified live
+2026-10-01: 2 generated bodies submitted through `/v1/chat/completions` ->
+HTTP 200, `X-Strategy: auto`.
+
+Differences: official bodybuilder is a hosted model with access to all OpenRouter
+models and model-alias resolution ("Claude Sonnet" -> `anthropic/claude-sonnet-4.5`);
+estate's decomposes with a system prompt on its own free race and emits the
+model ids the decomposer chooses (observed: `openai/gpt-4o`, which the
+router then re-routed per its own logic).
