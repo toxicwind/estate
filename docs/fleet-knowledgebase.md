@@ -261,7 +261,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | ripple | Portainer replacement research: pattern-borrow + paper-search + web recon; ranked agentic control-plane shortlist | parent orchestrator (Ember crew) | DONE (2026-09-30) — e97c964619 |
 | quill-tns-dig | TNS/author deep-dive: Ember-1 coverage — Wachtel full archive (WP REST author=1977), benchmark series accuracy/corrections, Insight Partners AI-infra portfolio + auto-disclosure mechanics, TNS ad/tracker stack + sponsored labeling, stealth-edit/deleted-post weirdness hunt; report to ~/workspace/ember-kimi-audit/hidden/author-dig.md | Quill (Ember crew) | DONE (2026-09-30) — 3c87bdc08 |
 | skimmer | Star-repo maximalization: Pixel Screenshots APK (com.google.android.apps.pixel.agent) intent-control project — exported-component inventory, intent catalog, Bun CLI, README/docs/CI, pushed to a new toxicwind public repo | Skimmer (Ember crew) | RUNNING (2026-09-30) |
-| "vanta" | "Marquee lane: star-grade maximalization of a selected existing estate repo (survey -> audit -> fix -> verify -> ship). Distinct from skimmer APK project." | "Ember" | "RUNNING (2026-10-01)" |
+| "vanta" | "Marquee lane: star-grade maximalization of toxicwind/duet (survey -> audit -> fix -> verify -> ship). Distinct from skimmer APK project." | "Ember" | "DONE (2026-10-01) — commit de627069" |
 | grackle-ii | Overnight yote-ops watch: probe estate health (bridge exec, squawk ws/feed, pitchfork daemons, herd, sovereign router, browserless/CDP, noVNC), log anomalies for the 09:11 MDT morning brief | Grackle-II (Ember crew) | RUNNING (2026-09-30) |
 | juniper | effusion-labs maximalization — CSS/JS killshot fix, framework decision, LFS repair, gone-pages recovery, folder reorg | Ember | RUNNING |
 | rowan-ranch | metaaivm-ranch lane (continuer): yote verify+commit after bridge restore. verify.ts 12/12, bun test 4/4, moon run metaaivm-profile:test 4/4 green; moon workspace registration confirmed (glob */moon.yml, 22 projects incl. metaaivm-profile). Committed bun.lock sync (29de03c) + moon schema repairs unblocking workspace parse (117b689); pushed toxicwind/ranch main. Timer metaaivm-profile-verify.timer is disabled; event-driven metaaivm-profile-verify.path unit is enabled (watches profile.json + corpus). Posts as Rowan -- red-panda fursona. | Rowan (Ember's crew) | DONE (2026-10-01) -- commits 29de03c + 117b689 on toxicwind/ranch main, ls-remote verified 117b689392d40b373ee58c36af978dc3179f4aaf |
@@ -269,6 +269,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | taurun | tau-max lane: TAU engine audit, session repair, config durability, maximalization on yote | Ember | RUNNING (2026-10-01) |
 | merlin | metaaivm-ranch: verify.ts 12/12, timer-vs-cron reconcile, drift repair, push to toxicwind/ranch | ember | DONE (2026-10-01) — d9d7d365609e246cc46ab9e46294cb513e891904 |
 | vigil | sched-probe: enumerate and repair all scheduled tasks, yote timers, and crontab entries | ember | RUNNING (2026-10-01) |
+| bolt | emergent scout: paper-finder + pattern-borrow sweep to pick and build one cutting-edge estate capability (wave-3 orthogonal lane, coord in f | bolt | RUNNING (2026-10-01) |
 <!-- KB-ROLLUP:END -->
 
 
