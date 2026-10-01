@@ -98,7 +98,7 @@ export const STICKY_TTL = 1800;
 
 export const FIFO_MAX = 64;
 
-export const STRATEGY = process.env.SOVEREIGN_STRATEGY || "hybrid";
+export const STRATEGY = process.env.SOVEREIGN_STRATEGY || "auto";
 
 export const UA = "Mozilla/5.0 (compatible; Sovereign-Flock/3.1)";
 
