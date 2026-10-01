@@ -590,25 +590,22 @@ fn screen_after_workspace_disconnect() -> AppScreen {
 }
 
 /// Shared platform bootstrap (both `ios/app.rs` and `android/entry.rs`): register
-/// the bridge, build the `App`, and init the gpui_tokio runtime that owns all
-/// session/network work.
+/// the bridge and build the `Application`. Callers drive it with
+/// [`gpui::Application::run`], calling `gpui_tokio::init(cx)` first inside the
+/// launch callback (the old gpui keeps `App::new_app` private).
 pub fn init_platform_app(
     platform: std::rc::Rc<dyn Platform>,
     bridge: impl platform_bridge::PlatformBridge,
-) -> std::rc::Rc<AppCell> {
+) -> gpui::Application {
     platform_bridge::set_bridge(bridge);
 
     // App construction records AppOpen, so finalize the telemetry gate first.
     crate::telemetry::apply_persisted_optout();
     crate::install_panic_hook();
 
-    let app_cell = App::new_app(
-        platform,
-        std::sync::Arc::new(crate::ZedraAssets),
-        std::sync::Arc::new(http_client::BlockedHttpClient),
-    );
-    gpui_tokio::init(&mut app_cell.borrow_mut());
-    app_cell
+    gpui::Application::with_platform(platform)
+        .with_assets(crate::ZedraAssets)
+        .with_http_client(std::sync::Arc::new(http_client::BlockedHttpClient))
 }
 
 pub fn open_zedra_window(app: &mut App, window_options: WindowOptions) -> Result<AnyWindowHandle> {

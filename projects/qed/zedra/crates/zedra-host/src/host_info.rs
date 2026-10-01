@@ -127,6 +127,7 @@ fn collect_batteries() -> Vec<HostBatteryInfo> {
 }
 
 #[cfg(any(target_os = "macos", target_os = "linux"))]
+#[allow(dead_code)]
 fn parse_charge_percent(value: &str) -> Option<u8> {
     let percent_index = value.find('%')?;
     let prefix = &value[..percent_index];

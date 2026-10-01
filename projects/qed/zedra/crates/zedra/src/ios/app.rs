@@ -2,7 +2,7 @@
 ///
 /// Lifecycle (called from Obj-C app delegate in main.m):
 ///   1. gpui_ios_initialize()         — set up GPUI FFI state
-///   2. zedra_launch_gpui()           — create AppCell + register window callback
+///   2. zedra_launch_gpui()           — create Application + register window callback
 ///   3. gpui_ios_did_finish_launching — invokes callback → opens Metal window
 ///   4. gpui_ios_get_window()         — get window pointer for CADisplayLink
 ///   5. gpui_ios_request_frame()      — called each frame by CADisplayLink
@@ -16,7 +16,7 @@ use crate::{app, native_presentation, platform_bridge, sheet_host_view::SheetHos
 
 thread_local! {
     /// Kept alive so window.refresh() can be called from zedra_ios_check_pending_frame.
-    static IOS_APP_CELL: RefCell<Option<Rc<AppCell>>> = const { RefCell::new(None) };
+    static IOS_APP: RefCell<Option<ApplicationHandle>> = const { RefCell::new(None) };
     static IOS_WINDOW: RefCell<Option<AnyWindowHandle>> = const { RefCell::new(None) };
     static IOS_SHEET_WINDOW: RefCell<Option<WindowHandle<SheetHostView>>> = const { RefCell::new(None) };
     static IOS_SHEET_WINDOW_PTR: RefCell<*mut std::ffi::c_void> = const { RefCell::new(std::ptr::null_mut()) };
@@ -49,49 +49,43 @@ pub extern "C" fn zedra_ios_check_pending_frame() -> bool {
 }
 
 pub(crate) fn notify_main_window() {
-    IOS_APP_CELL.with(|cell| {
-        IOS_WINDOW.with(|window| {
-            let Some(app_cell) = cell.borrow().as_ref().cloned() else {
-                return;
-            };
-            let Some(window) = *window.borrow() else {
-                return;
-            };
+    IOS_WINDOW.with(|window| {
+        let Some(window) = *window.borrow() else {
+            return;
+        };
 
-            let Ok(mut app) = app_cell.try_borrow_mut() else {
-                return;
-            };
-            let cx: &mut App = &mut app;
-            let _ = window.update(cx, |view, _window, cx| {
+        let _ = with_app(|cx| {
+            window.update(cx, |view, _window, cx| {
                 cx.notify(view.entity_id());
-            });
+            })
         });
     });
+}
+
+/// Run `f` with the `App` if `zedra_launch_gpui` has run on this thread.
+pub(crate) fn with_app<R>(f: impl FnOnce(&mut App) -> R) -> Option<R> {
+    IOS_APP.with(|cell| {
+        let borrow = cell.borrow();
+        borrow.as_ref().map(|handle| handle.update(f))
+    })
 }
 
 pub(crate) fn close_active_transports_for_lifecycle(reason: &'static [u8]) {
     zedra_session::close_all_active_connections_for_lifecycle(reason);
 
-    IOS_APP_CELL.with(|cell| {
-        IOS_WINDOW.with(|window| {
-            let Some(app_cell) = cell.borrow().as_ref().cloned() else {
-                return;
-            };
-            let Some(window) = *window.borrow() else {
-                return;
-            };
+    IOS_WINDOW.with(|window| {
+        let Some(window) = *window.borrow() else {
+            return;
+        };
 
-            let Some(window) = window.downcast::<app::ZedraApp>() else {
-                tracing::warn!("Zedra iOS: root window is not ZedraApp during lifecycle close");
-                return;
-            };
-            let Ok(mut app) = app_cell.try_borrow_mut() else {
-                return;
-            };
-            let cx: &mut App = &mut app;
-            let _ = window.update(cx, |view, _window, cx| {
+        let Some(window) = window.downcast::<app::ZedraApp>() else {
+            tracing::warn!("Zedra iOS: root window is not ZedraApp during lifecycle close");
+            return;
+        };
+        let _ = with_app(|cx| {
+            window.update(cx, |view, _window, cx| {
                 view.close_transports_for_lifecycle(reason, cx);
-            });
+            })
         });
     });
 }
@@ -108,32 +102,14 @@ pub extern "C" fn zedra_ios_system_back() -> bool {
 
 #[unsafe(no_mangle)]
 pub extern "C" fn zedra_ios_native_floating_button_pressed(callback_id: u32) {
-    IOS_APP_CELL.with(|cell| {
-        let Some(app_cell) = cell.borrow().as_ref().cloned() else {
-            return;
-        };
-
-        let Ok(mut app) = app_cell.try_borrow_mut() else {
-            return;
-        };
-
-        let cx: &mut App = &mut app;
+    with_app(|cx| {
         platform_bridge::dispatch_native_floating_button_press(callback_id, cx);
     });
 }
 
 #[unsafe(no_mangle)]
 pub extern "C" fn zedra_ios_dictation_preview_dismiss(preview_id: u32) {
-    IOS_APP_CELL.with(|cell| {
-        let Some(app_cell) = cell.borrow().as_ref().cloned() else {
-            return;
-        };
-
-        let Ok(mut app) = app_cell.try_borrow_mut() else {
-            return;
-        };
-
-        let cx: &mut App = &mut app;
+    with_app(|cx| {
         platform_bridge::dispatch_native_dictation_preview_dismiss(preview_id, cx);
     });
 }
@@ -144,16 +120,7 @@ pub extern "C" fn zedra_ios_native_edit_menu_result(callback_id: u32, item_index
         return;
     }
 
-    IOS_APP_CELL.with(|cell| {
-        let Some(app_cell) = cell.borrow().as_ref().cloned() else {
-            return;
-        };
-
-        let Ok(mut app) = app_cell.try_borrow_mut() else {
-            return;
-        };
-
-        let cx: &mut App = &mut app;
+    with_app(|cx| {
         platform_bridge::dispatch_native_edit_menu_result(callback_id, item_index as usize, cx);
     });
 }
@@ -176,16 +143,16 @@ pub extern "C" fn zedra_launch_gpui() {
     tracing::info!("Zedra iOS: Creating GPUI application with IosPlatform");
 
     let platform: Rc<dyn Platform> = Rc::new(IosPlatform::new());
-    let app_cell = app::init_platform_app(platform.clone(), super::bridge::IosBridge);
+    let application = app::init_platform_app(platform.clone(), super::bridge::IosBridge);
 
-    // Register the finish-launching callback via platform.run().
+    // Register the finish-launching callback via run_embedded (which calls
+    // platform.run() internally).
     // On iOS this does NOT block — it stores the callback in the FFI layer.
     // When main.m calls gpui_ios_did_finish_launching(), the callback fires
     // and opens the Metal window with ZedraApp.
-    let app_cell_for_callback = app_cell.clone();
-    platform.run(Box::new(move || {
+    let handle = application.run_embedded(|cx| {
+        gpui_tokio::init(cx);
         tracing::info!("Zedra iOS: finish-launching callback — opening window");
-        let cx = &mut *app_cell_for_callback.borrow_mut();
 
         let window_options = WindowOptions {
             focus: true,
@@ -200,14 +167,14 @@ pub extern "C" fn zedra_launch_gpui() {
             }
             Err(err) => tracing::error!("Zedra iOS: Failed to open window: {:?}", err),
         }
-    }));
+    });
 
     tracing::info!("Zedra iOS: Callback registered, waiting for didFinishLaunching");
 
-    // Store the AppCell in a thread-local so window.refresh() can be called from
+    // Store the app handle in a thread-local so window.refresh() can be called from
     // zedra_ios_check_pending_frame(). UIKit owns the run loop on iOS; keeping it
     // in a thread-local (rather than std::mem::forget) lets us access it each frame.
-    IOS_APP_CELL.with(|cell| *cell.borrow_mut() = Some(app_cell));
+    IOS_APP.with(|cell| *cell.borrow_mut() = Some(handle));
 }
 
 #[unsafe(no_mangle)]
@@ -220,17 +187,11 @@ pub extern "C" fn zedra_ios_mount_custom_sheet_content(
         return std::ptr::null_mut();
     }
 
-    IOS_APP_CELL.with(|cell| {
-        let Some(app_cell) = cell.borrow().as_ref().cloned() else {
-            return std::ptr::null_mut();
-        };
+    with_app(|cx| {
         let Some(sheet_view) = platform_bridge::take_pending_custom_sheet_view() else {
             tracing::error!("Zedra iOS: no pending custom sheet GPUI view");
             return std::ptr::null_mut();
         };
-
-        let mut app = app_cell.borrow_mut();
-        let cx: &mut App = &mut app;
 
         if let Some(window_ptr) = IOS_SHEET_WINDOW_PTR.with(|ptr| {
             let ptr = *ptr.borrow();
@@ -272,6 +233,7 @@ pub extern "C" fn zedra_ios_mount_custom_sheet_content(
             }
         }
     })
+    .unwrap_or(std::ptr::null_mut())
 }
 
 #[unsafe(no_mangle)]

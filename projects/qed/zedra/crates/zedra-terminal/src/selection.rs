@@ -2,7 +2,6 @@ use std::ops::Range;
 
 use alacritty_terminal::term::cell::Flags as CellFlags;
 use gpui::{Bounds, Pixels, Point, point, px, size};
-use smallvec::SmallVec;
 
 use crate::terminal::{IndexedCell, TerminalContent, is_blank};
 
@@ -25,7 +24,6 @@ struct TerminalSelectionChar {
 #[derive(Clone, Debug)]
 struct TerminalSelectionLine {
     start_utf16: usize,
-    content_end_utf16: usize,
     separator_end_utf16: usize,
     cells: Vec<TerminalSelectionCell>,
     x: Pixels,
@@ -48,15 +46,6 @@ impl TerminalSelectionDocument {
             chars: Vec::new(),
             lines: Vec::new(),
         }
-    }
-
-    pub fn has_selectable_text(content: &TerminalContent) -> bool {
-        content.cells.iter().any(|cell| {
-            let visible_row = cell.point.line.0 + content.display_offset as i32;
-            visible_row >= 0
-                && visible_row < content.grid_rows as i32
-                && selectable_nonblank_cell(cell)
-        })
     }
 
     pub fn new(
@@ -160,7 +149,6 @@ impl TerminalSelectionDocument {
 
             lines.push(TerminalSelectionLine {
                 start_utf16: line_start,
-                content_end_utf16,
                 separator_end_utf16: len_utf16,
                 cells,
                 x: origin.x,
@@ -234,61 +222,12 @@ impl TerminalSelectionDocument {
         result
     }
 
-    pub fn rects_for_range(&self, range_utf16: Range<usize>) -> SmallVec<[Bounds<Pixels>; 4]> {
-        let range = self.clamp_range(range_utf16);
-        if range.is_empty() {
-            return SmallVec::new();
-        }
-
-        let mut rects = SmallVec::new();
-        for line in &self.lines {
-            let mut line_bounds = None;
-            for cell in &line.cells {
-                if cell.end_utf16 <= range.start || cell.start_utf16 >= range.end {
-                    continue;
-                }
-                line_bounds = Some(line_bounds.map_or(cell.bounds, |bounds: Bounds<Pixels>| {
-                    bounds.union(&cell.bounds)
-                }));
-            }
-            if let Some(bounds) = line_bounds {
-                rects.push(bounds);
-            }
-        }
-        rects
-    }
-
     pub fn character_index_for_point(&self, point: Point<Pixels>) -> Option<usize> {
         let line = self.line_for_y(point.y)?;
         let cell = cell_for_x(line, point.x)?;
         cell.bounds
             .contains(&point)
             .then(|| cell.index_for_x(point.x))
-    }
-
-    pub fn nearest_character_index_for_point(&self, point: Point<Pixels>) -> Option<usize> {
-        let line = self.nearest_line_for_y(point.y)?;
-
-        let Some(first_cell) = line.cells.first() else {
-            return Some(line.start_utf16);
-        };
-        if point.x <= first_cell.bounds.origin.x {
-            return Some(line.start_utf16);
-        }
-
-        let Some(last_cell) = line.cells.last() else {
-            return Some(line.start_utf16);
-        };
-        let last_cell_right = last_cell.bounds.origin.x + last_cell.bounds.size.width;
-        if point.x >= last_cell_right {
-            return Some(line.content_end_utf16);
-        }
-
-        if let Some(cell) = cell_for_x(line, point.x).filter(|cell| cell.bounds.contains(&point)) {
-            return Some(cell.index_for_x(point.x));
-        }
-
-        Some(line.content_end_utf16.min(line.separator_end_utf16))
     }
 
     pub(crate) fn clamp_range(&self, range: Range<usize>) -> Range<usize> {
@@ -365,18 +304,6 @@ impl TerminalSelectionDocument {
         self.lines
             .get(index)
             .filter(|line| y >= line.y && y < line.bottom())
-    }
-
-    fn nearest_line_for_y(&self, y: Pixels) -> Option<&TerminalSelectionLine> {
-        if let Some(line) = self.line_for_y(y) {
-            return Some(line);
-        }
-
-        let first = self.lines.first()?;
-        if y < first.y {
-            return Some(first);
-        }
-        self.lines.last()
     }
 }
 
@@ -481,35 +408,7 @@ mod tests {
         assert_eq!(document.text_for_range(0..1), (0..0, String::new()));
     }
 
-    #[test]
-    fn selectable_text_flag_is_false_for_empty_or_blank_output() {
-        let mut terminal = Terminal::new(20, 4, px(10.0), px(20.0));
-        assert!(!TerminalSelectionDocument::has_selectable_text(
-            &terminal.content()
-        ));
 
-        terminal.advance_bytes(b"     ");
-        assert!(!TerminalSelectionDocument::has_selectable_text(
-            &terminal.content()
-        ));
-    }
-
-    #[test]
-    fn selectable_text_flag_tracks_visible_terminal_output() {
-        let mut terminal = Terminal::new(20, 4, px(10.0), px(20.0));
-        terminal.advance_bytes("🙂 hello\r\n".as_bytes());
-        assert!(TerminalSelectionDocument::has_selectable_text(
-            &terminal.content()
-        ));
-
-        for line in 0..20 {
-            terminal.advance_bytes(format!("line {line}\r\n").as_bytes());
-        }
-        terminal.scroll(20);
-        assert!(TerminalSelectionDocument::has_selectable_text(
-            &terminal.content()
-        ));
-    }
 
     #[test]
     fn text_for_range_uses_utf16_offsets() {

@@ -78,8 +78,7 @@ fn render_close_button(cx: &mut Context<WorkspaceConnecting>) -> Stateful<Div> {
         .items_center()
         .justify_center()
         .cursor_pointer()
-        .hit_slop(px(20.0))
-        .on_press(cx.listener(|_this, _event, window, cx| {
+        .on_mouse_down(MouseButton::Left, cx.listener(|_this, _event, window, cx| {
             window.dispatch_action(workspace_action::HideConnecting.boxed_clone(), cx);
         }))
         .child(
@@ -110,7 +109,7 @@ fn render_details_toggle(expanded: bool, cx: &mut Context<WorkspaceConnecting>) 
         .items_center()
         .gap(px(4.0))
         .mb(px(theme::SPACING_SM))
-        .on_press(cx.listener(|this, _event, _window, cx| {
+        .on_mouse_down(MouseButton::Left, cx.listener(|this, _event, _window, cx| {
             this.details_expanded = !this.details_expanded;
             cx.notify();
         }))
@@ -224,8 +223,7 @@ fn render_restart_button(
         .items_center()
         .justify_center()
         .rounded(px(6.0))
-        .hit_slop(px(10.0))
-        .on_press(cx.listener(|this, _event, window, cx| {
+        .on_mouse_down(MouseButton::Left, cx.listener(|this, _event, window, cx| {
             this.restart_animation_id = this.restart_animation_id.wrapping_add(1);
             platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
             window.dispatch_action(workspace_action::RestartConnection.boxed_clone(), cx);
@@ -289,7 +287,7 @@ fn render_discovery_rows(cx: &App, snap: &ConnectSnapshot) -> Div {
                 .flex_row()
                 .gap(px(6.0))
                 .cursor_pointer()
-                .on_press(move |_, _, _| {
+                .on_mouse_down(MouseButton::Left, move |_, _, _| {
                     if direct_addrs.is_empty() {
                         return;
                     }

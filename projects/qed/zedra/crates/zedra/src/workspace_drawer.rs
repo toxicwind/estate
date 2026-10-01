@@ -254,9 +254,8 @@ impl WorkspaceDrawer {
             .justify_center()
             .rounded(px(6.0))
             .cursor_pointer()
-            .hit_slop(px(10.0))
             .bg(fill)
-            .on_press(cx.listener(move |this, _event, _window, cx| {
+            .on_mouse_down(MouseButton::Left, cx.listener(move |this, _event, _window, cx| {
                 platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
                 this.set_current_tab(tab, cx);
             }))
@@ -294,9 +293,8 @@ impl WorkspaceDrawer {
             .items_center()
             .justify_center()
             .cursor_pointer()
-            .hit_slop(px(8.0))
-            .on_pointer_down(|_, _, cx| cx.stop_propagation())
-            .on_press(cx.listener(move |this, _event, _window, cx| {
+            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .on_mouse_down(MouseButton::Left, cx.listener(move |this, _event, _window, cx| {
                 this.set_file_display_mode(mode, cx);
                 cx.stop_propagation();
             }))
@@ -318,9 +316,8 @@ impl WorkspaceDrawer {
             .items_center()
             .justify_center()
             .cursor_pointer()
-            .hit_slop(px(8.0))
-            .on_pointer_down(|_, _, cx| cx.stop_propagation())
-            .on_press(cx.listener(|_this, _event, window, cx| {
+            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+            .on_mouse_down(MouseButton::Left, cx.listener(|_this, _event, window, cx| {
                 platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
                 window.dispatch_action(workspace_action::OpenFileSearch.boxed_clone(), cx);
                 cx.stop_propagation();
@@ -342,7 +339,7 @@ impl WorkspaceDrawer {
             .pb_1()
             .bg(rgb(theme::bg_surface(cx)))
             .occlude()
-            .on_pointer_down(|_, _, cx| cx.stop_propagation())
+            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .rounded_bl(px(6.0))
             .border_b_1()
             .border_l_1()
@@ -406,8 +403,7 @@ impl Render for WorkspaceDrawer {
                             .items_center()
                             .justify_center()
                             .cursor_pointer()
-                            .hit_slop(px(10.0))
-                            .on_press(cx.listener(|_this, _event, window, cx| {
+                            .on_mouse_down(MouseButton::Left, cx.listener(|_this, _event, window, cx| {
                                 platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
                                 window.dispatch_action(workspace_action::GoHome.boxed_clone(), cx);
                             }))

@@ -518,7 +518,6 @@ impl WorkspaceTerminal {
         for window in cx.windows() {
             let container_focus = self.container_focus.clone();
             let _ = window.update(cx, move |_, window, cx| {
-                window.hide_soft_keyboard();
                 window.focus(&container_focus, cx);
             });
         }
@@ -602,9 +601,7 @@ impl WorkspaceTerminal {
 
 impl Render for WorkspaceTerminal {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let terminal_owns_keyboard = self.terminal_view.read(cx).is_focused(window)
-            && window.is_soft_keyboard_visible()
-            && window.has_active_keyboard_accessory();
+        let terminal_owns_keyboard = self.terminal_view.read(cx).is_focused(window);
         let keyboard_inset = if terminal_owns_keyboard {
             Self::keyboard_inset()
         } else {

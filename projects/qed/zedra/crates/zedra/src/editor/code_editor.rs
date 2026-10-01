@@ -10,7 +10,6 @@ use super::text_buffer::Buffer;
 use crate::fonts;
 use crate::platform_bridge;
 use crate::theme::{self, EditorTheme};
-use crate::workspace_action::AddSelectionToChat;
 
 const LINE_HEIGHT: f32 = theme::EDITOR_LINE_HEIGHT;
 const GUTTER_WIDTH: f32 = theme::EDITOR_GUTTER_WIDTH;
@@ -384,7 +383,6 @@ impl Render for EditorView {
                 }),
             )
             .child(
-                selection_area(
                     uniform_list("editor-lines", line_count + extra_items, {
                         let text_style = text_style.clone();
                         move |range: Range<usize>, _window: &mut Window, _cx: &mut App| {
@@ -409,14 +407,7 @@ impl Render for EditorView {
                                     } else {
                                         StyledText::new(cached.text.clone())
                                             .with_default_highlights(&text_style, highlights)
-                                    }
-                                    .selectable()
-                                    .selection_order(line as u64)
-                                    .selection_separator_after(if line + 1 < line_count {
-                                        "\n"
-                                    } else {
-                                        ""
-                                    });
+                                    };
 
                                     div()
                                         .flex()
@@ -462,9 +453,6 @@ impl Render for EditorView {
                     })
                     .track_scroll(&self.scroll_handle)
                     .flex_1(),
-                )
-                .id(CODE_EDITOR_SELECTION_AREA_ID)
-                .action_with_image("Add to Chat", "zedra", AddSelectionToChat),
             )
     }
 }

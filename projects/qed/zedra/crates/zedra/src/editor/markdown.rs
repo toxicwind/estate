@@ -13,13 +13,11 @@ use crate::fonts;
 use crate::platform_bridge;
 use crate::settings::{ThemeStateEvent, theme_state};
 use crate::theme::{self, ThemePreference};
-use crate::workspace_action::AddSelectionToChat;
 
 // Enough offscreen content to keep fast mobile scrolls smooth without
 // measuring the full markdown document.
 const MARKDOWN_LIST_OVERDRAW_PX: f32 = 1200.0;
 const MARKDOWN_BOTTOM_INSET_MIN: f32 = 100.0;
-const MARKDOWN_LINK_HIT_SLOP: f32 = 8.0;
 const CODE_BLOCK_FONT_SIZE: f32 = theme::EDITOR_FONT_SIZE;
 const CODE_BLOCK_LINE_HEIGHT: f32 = theme::EDITOR_LINE_HEIGHT;
 const CODE_BLOCK_CHAR_WIDTH_FACTOR: f32 = 0.6;
@@ -265,6 +263,7 @@ enum Block {
         items: Vec<Vec<Block>>,
     },
     CodeBlock {
+        #[allow(dead_code)]
         language: Option<String>,
         text: String,
     },
@@ -422,17 +421,12 @@ impl Render for MarkdownView {
             .min_h_0()
             // Empty markdown taps should move focus and dismiss read-only selection.
             .track_focus(&focus_handle)
-            .on_press(move |event, window, cx| {
-                if event.completed() && window.active_read_only_selection().is_some() {
-                    window.blur();
-                    press_focus_handle.focus(window, cx);
-                }
+            .on_mouse_down(MouseButton::Left, move |_event, window, cx| {
+                window.blur();
+                press_focus_handle.focus(window, cx);
             })
             .child(
-                selection_area(markdown_list)
-                    .id(MARKDOWN_SELECTION_AREA_ID)
-                    .action_with_image("Add to Chat", "zedra", AddSelectionToChat)
-                    .into_any_element(),
+                markdown_list.into_any_element(),
             )
     }
 }
@@ -2173,9 +2167,8 @@ fn render_frontmatter_url(text: &str, key: String, cx: &App) -> AnyElement {
                 .into_iter()
                 .map(|r| (r.range, r.style))
                 .collect(),
-        ))
-        .selectable()
-        .selection_separator_after("\n");
+        ));
+
     let link_urls = buf.links.iter().map(|l| l.url.clone()).collect::<Vec<_>>();
     let link_ranges = buf
         .links
@@ -2186,7 +2179,6 @@ fn render_frontmatter_url(text: &str, key: String, cx: &App) -> AnyElement {
         styled.into_any_element()
     } else {
         InteractiveText::new(key, styled)
-            .hit_slop(px(MARKDOWN_LINK_HIT_SLOP))
             .on_click(link_ranges, move |ix, _window, _cx| {
                 if let Some(url) = link_urls.get(ix) {
                     platform_bridge::bridge().open_url(url);
@@ -2371,9 +2363,8 @@ fn add_display_text_columns(text: &str, current: &mut usize, max: &mut usize) {
     }
 }
 
-fn markdown_text(text: StyledText, selection_separator_after: &'static str) -> StyledText {
-    text.selectable()
-        .selection_separator_after(selection_separator_after)
+fn markdown_text(text: StyledText, _selection_separator_after: &'static str) -> StyledText {
+    text
 }
 
 #[derive(Clone, Copy)]
@@ -2420,7 +2411,6 @@ fn render_inline_block(
         styled.into_any_element()
     } else {
         InteractiveText::new(key, styled)
-            .hit_slop(px(MARKDOWN_LINK_HIT_SLOP))
             .on_click(link_ranges, move |ix, _window, _cx| {
                 if let Some(url) = link_urls.get(ix) {
                     platform_bridge::bridge().open_url(url);

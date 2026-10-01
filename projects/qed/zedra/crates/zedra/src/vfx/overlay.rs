@@ -30,7 +30,7 @@ pub struct DropletOverlay {
     velocity: Point<f32>,
     target: Point<f32>,
     trail: [Point<f32>; TRAIL_LEN],
-    drag_pointer: Option<PointerId>,
+    dragging: bool,
     animating: bool,
     last_tick: Option<Instant>,
     scale_factor: f32,
@@ -74,7 +74,7 @@ impl DropletOverlay {
             velocity: point(0.0, 0.0),
             target: start,
             trail: [start; TRAIL_LEN],
-            drag_pointer: None,
+            dragging: false,
             animating: false,
             last_tick: None,
             scale_factor: window.scale_factor(),
@@ -92,7 +92,7 @@ impl DropletOverlay {
             return;
         }
         self.enabled = enabled;
-        self.drag_pointer = None;
+        self.dragging = false;
         self.velocity = point(0.0, 0.0);
         self.target = self.position;
         self.trail = [self.position; TRAIL_LEN];
@@ -145,7 +145,7 @@ impl DropletOverlay {
         self.position += self.velocity * dt;
 
         // Swell while touched, relax on release.
-        let target_scale = if self.drag_pointer.is_some() {
+        let target_scale = if self.dragging {
             PRESSED_SCALE
         } else {
             1.0
@@ -163,7 +163,7 @@ impl DropletOverlay {
         }
 
         let length = |p: Point<f32>| (p.x * p.x + p.y * p.y).sqrt();
-        let settled = self.drag_pointer.is_none()
+        let settled = !self.dragging
             && length(self.velocity) < SETTLE_SPEED
             && length(displacement) < SETTLE_DISTANCE
             && length(self.trail[TRAIL_LEN - 1] - self.position) < SETTLE_DISTANCE
@@ -185,33 +185,31 @@ impl DropletOverlay {
         }
     }
 
-    fn handle_pointer_down(
+    fn handle_mouse_down(
         &mut self,
-        event: &PointerDownEvent,
+        event: &MouseDownEvent,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        if self.drag_pointer.is_some() {
+        if self.dragging {
             return;
         }
         // The droplet claims this touch; nothing beneath should react to it.
         cx.stop_propagation();
-        self.drag_pointer = Some(event.pointer_id);
+        self.dragging = true;
         self.target = point(f32::from(event.position.x), f32::from(event.position.y));
         platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
         self.start_animation(window, cx);
     }
 
-    fn handle_pointer_move(&mut self, event: &PointerMoveEvent) {
-        if self.drag_pointer == Some(event.pointer_id) {
+    fn handle_mouse_move(&mut self, event: &MouseMoveEvent) {
+        if self.dragging {
             self.target = point(f32::from(event.position.x), f32::from(event.position.y));
         }
     }
 
-    fn handle_pointer_release(&mut self, pointer_id: PointerId) {
-        if self.drag_pointer == Some(pointer_id) {
-            self.drag_pointer = None;
-        }
+    fn handle_mouse_release(&mut self) {
+        self.dragging = false;
     }
 }
 
@@ -231,28 +229,26 @@ impl Render for DropletOverlay {
                         .rounded_full()
                         // Suppress hover/press/scroll for UI under the hit circle.
                         .occlude()
-                        .on_pointer_down(cx.listener(|this, event, window, cx| {
-                            this.handle_pointer_down(event, window, cx);
-                        })),
+                        .on_mouse_down(
+                            MouseButton::Left,
+                            cx.listener(|this, event: &MouseDownEvent, window, cx| {
+                                this.handle_mouse_down(event, window, cx);
+                            }),
+                        ),
                 )
             })
-            .when(self.enabled && self.drag_pointer.is_some(), |el| {
+            .when(self.enabled && self.dragging, |el| {
                 el.child(
                     div()
                         .absolute()
                         .inset_0()
                         .occlude()
-                        .on_pointer_move(cx.listener(|this, event: &PointerMoveEvent, _, _cx| {
-                            this.handle_pointer_move(event);
+                        .on_mouse_move(cx.listener(|this, event: &MouseMoveEvent, _, _cx| {
+                            this.handle_mouse_move(event);
                         }))
-                        .on_pointer_up(cx.listener(|this, event: &PointerUpEvent, _, _cx| {
-                            this.handle_pointer_release(event.pointer_id);
-                        }))
-                        .on_pointer_cancel(cx.listener(
-                            |this, event: &PointerCancelEvent, _, _cx| {
-                                this.handle_pointer_release(event.pointer_id);
-                            },
-                        )),
+                        .on_mouse_up(MouseButton::Left, cx.listener(|this, _event: &MouseUpEvent, _, _cx| {
+                            this.handle_mouse_release();
+                        })),
                 )
             })
     }

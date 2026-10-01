@@ -240,7 +240,7 @@ impl AgentDetail {
         if !file.missing {
             row = row
                 .cursor_pointer()
-                .on_press(cx.listener(move |this, _event, _window, cx| {
+                .on_mouse_down(MouseButton::Left, cx.listener(move |this, _event, _window, cx| {
                     platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
                     if let Some(file) = this.files.get(index).cloned() {
                         this.open_file_preview(file, cx);

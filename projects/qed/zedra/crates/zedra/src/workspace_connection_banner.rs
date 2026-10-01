@@ -157,7 +157,7 @@ impl ConnectionBanner {
             .border_b_1()
             .border_color(rgb(theme::border_subtle(cx)))
             .cursor_pointer()
-            .on_press(cx.listener(|_this, _event, _window, cx| {
+            .on_mouse_down(MouseButton::Left, cx.listener(|_this, _event, _window, cx| {
                 cx.emit(BannerEvent::OpenDetail);
             }))
             .child(
@@ -221,9 +221,8 @@ fn render_refresh_button(cx: &mut Context<ConnectionBanner>) -> Stateful<Div> {
         .justify_center()
         .rounded(px(6.0))
         .flex_shrink_0()
-        .hit_slop(px(10.0))
-        .on_pointer_down(|_, _, cx| cx.stop_propagation())
-        .on_press(cx.listener(|_this, _event, _window, cx| {
+        .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+        .on_mouse_down(MouseButton::Left, cx.listener(|_this, _event, _window, cx| {
             cx.stop_propagation();
             platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
             cx.emit(BannerEvent::Refresh);

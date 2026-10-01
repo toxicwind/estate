@@ -431,7 +431,7 @@ pub fn render_session_card<C: 'static>(
         .items_center()
         .gap(px(10.0))
         .when(props.resume_on_tap && can_resume, |el| {
-            el.cursor_pointer().on_press(cx.listener({
+            el.cursor_pointer().on_mouse_down(MouseButton::Left, cx.listener({
                 let session_id = session_id.clone();
                 let slug = slug.clone();
                 move |_this, _event, window, cx| {

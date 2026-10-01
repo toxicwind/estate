@@ -994,7 +994,7 @@ impl Render for FileExplorer {
         )
         .track_scroll(&self.scroll_handle)
         .size_full()
-        .flex_grow();
+        .flex_grow(1.0);
 
         div()
             .track_focus(&self.focus_handle)
@@ -1043,7 +1043,7 @@ impl FileExplorer {
                 .pl(px(12.0 + indent))
                 .pr(px(8.0))
                 .cursor_pointer()
-                .on_press(cx.listener(move |this, _event, _window, cx| {
+                .on_mouse_down(MouseButton::Left, cx.listener(move |this, _event, _window, cx| {
                     this.load_more_entries(load_more_for.clone(), cx);
                 }))
                 .child(
@@ -1104,7 +1104,7 @@ impl FileExplorer {
             .pl(px(12.0 + indent))
             .pr(px(8.0))
             .cursor_pointer()
-            .on_press(cx.listener(move |this, _event, window, cx| {
+            .on_mouse_down(MouseButton::Left, cx.listener(move |this, _event, window, cx| {
                 if is_dir {
                     this.toggle_dir(&index_path_for_toggle, cx);
                 } else if !row_path.is_empty() {

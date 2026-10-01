@@ -18,13 +18,10 @@ enum DragOrigin {
 enum GestureState {
     Idle,
     Pending {
-        pointer_id: PointerId,
         start: Point<Pixels>,
         origin: DragOrigin,
     },
-    Dragging {
-        pointer_id: PointerId,
-    },
+    Dragging,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -168,7 +165,7 @@ impl DrawerHost {
     }
 
     pub fn is_dragging(&self) -> bool {
-        matches!(self.gesture_state, GestureState::Dragging { .. })
+        matches!(self.gesture_state, GestureState::Dragging)
     }
 
     fn is_snap_animating(&self) -> bool {
@@ -192,29 +189,14 @@ impl DrawerHost {
         }
     }
 
-    fn hide_soft_keyboard(window: Option<&mut Window>) {
-        if let Some(window) = window {
-            window.hide_soft_keyboard();
-        }
-    }
-
-    fn set_pending_gesture(
-        &mut self,
-        pointer_id: PointerId,
-        start: Point<Pixels>,
-        origin: DragOrigin,
-    ) {
+    fn set_pending_gesture(&mut self, start: Point<Pixels>, origin: DragOrigin) {
         if self.is_snap_animating() {
             return;
         }
 
-        // A new primary pointer down means the previous touch stream ended from
-        // the platform's point of view, even if GPUI missed its release/cancel.
-        self.gesture_state = GestureState::Pending {
-            pointer_id,
-            start,
-            origin,
-        };
+        // A new press means any previous gesture ended from the platform's point
+        // of view, even if GPUI missed its release.
+        self.gesture_state = GestureState::Pending { start, origin };
     }
 
     fn clear_gesture_for_snap(&mut self) {
@@ -223,66 +205,47 @@ impl DrawerHost {
         }
     }
 
-    /// Dispatches a pointer move to the active gesture, if any.
-    fn handle_pointer_move(
+    /// Dispatches a mouse move to the active gesture, if any.
+    fn handle_mouse_move(
         &mut self,
-        pointer_id: PointerId,
         position: Point<Pixels>,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
         match self.gesture_state {
-            GestureState::Pending {
-                pointer_id: pid, ..
-            } if pid == pointer_id => self.update_pending_drag(pointer_id, position, window, cx),
-            GestureState::Dragging { pointer_id: pid } if pid == pointer_id => {
+            GestureState::Pending { .. } => self.update_pending_drag(position, window, cx),
+            GestureState::Dragging => {
                 window.prevent_default();
                 self.update_direct_drag(f32::from(position.x), cx)
             }
-            _ => {}
+            GestureState::Idle => {}
         }
     }
 
-    /// Dispatches pointer up or cancel to the active gesture, if any.
-    fn handle_pointer_release(
-        &mut self,
-        pointer_id: PointerId,
-        window: &mut Window,
-        cx: &mut Context<Self>,
-    ) {
+    /// Dispatches mouse up to the active gesture, if any.
+    fn handle_mouse_release(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         match self.gesture_state {
-            GestureState::Pending {
-                pointer_id: pid, ..
-            } if pid == pointer_id => {
+            GestureState::Pending { .. } => {
                 self.gesture_state = GestureState::Idle;
                 cx.notify();
             }
-            GestureState::Dragging { pointer_id: pid } if pid == pointer_id => {
+            GestureState::Dragging => {
                 window.prevent_default();
                 self.end_direct_drag(window, cx)
             }
-            _ => {}
+            GestureState::Idle => {}
         }
     }
 
     fn update_pending_drag(
         &mut self,
-        pointer_id: PointerId,
         position: Point<Pixels>,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        let GestureState::Pending {
-            pointer_id: pending_id,
-            start,
-            origin,
-        } = self.gesture_state
-        else {
+        let GestureState::Pending { start, origin } = self.gesture_state else {
             return;
         };
-        if pending_id != pointer_id {
-            return;
-        }
 
         let dx = f32::from(position.x - start.x);
         let dy = f32::from(position.y - start.y);
@@ -310,22 +273,20 @@ impl DrawerHost {
         };
 
         if promote {
-            self.begin_direct_drag(pointer_id, f32::from(start.x), window, cx);
+            self.begin_direct_drag(f32::from(start.x), window, cx);
             self.update_direct_drag(f32::from(position.x), cx);
         }
     }
 
     fn begin_direct_drag(
         &mut self,
-        pointer_id: PointerId,
         position_x: f32,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
         window.prevent_default();
         self.focus_handle.focus(window, cx);
-        window.hide_soft_keyboard();
-        self.gesture_state = GestureState::Dragging { pointer_id };
+        self.gesture_state = GestureState::Dragging;
         self.last_drag_x = position_x;
         self.last_drag_dx = 0.0;
     }
@@ -368,7 +329,7 @@ impl DrawerHost {
         }
     }
 
-    fn start_snap(&mut self, target: f32, window: Option<&mut Window>, cx: &mut Context<Self>) {
+    fn start_snap(&mut self, target: f32, _window: Option<&mut Window>, cx: &mut Context<Self>) {
         if self.is_snap_animating() {
             return;
         }
@@ -390,7 +351,6 @@ impl DrawerHost {
             return;
         }
 
-        Self::hide_soft_keyboard(window);
         self.snap_from = current_offset;
         self.snap_target = Some(target);
         self.snap_started_at = Some(std::time::Instant::now());
@@ -438,7 +398,7 @@ impl Render for DrawerHost {
         let drawer_width = f32::from(self.drawer_width);
         let drawer_offset = self.drawer_offset;
         let max_opacity = self.backdrop_opacity;
-        let is_dragging = matches!(self.gesture_state, GestureState::Dragging { .. });
+        let is_dragging = matches!(self.gesture_state, GestureState::Dragging);
         let snap_target = self.snap_target;
         let snap_from = self.snap_from;
         let animation_id = self.animation_id;
@@ -454,17 +414,15 @@ impl Render for DrawerHost {
         // so the backdrop and panel each carry their own copies of these handlers.
         macro_rules! gesture_handlers {
             ($el:expr) => {
-                $el.on_pointer_move(cx.listener(|this, e: &PointerMoveEvent, window, cx| {
-                    this.handle_pointer_move(e.pointer_id, e.position, window, cx);
+                $el.on_mouse_move(cx.listener(|this, e: &MouseMoveEvent, window, cx| {
+                    this.handle_mouse_move(e.position, window, cx);
                 }))
-                .on_pointer_up(cx.listener(|this, e: &PointerUpEvent, window, cx| {
-                    this.handle_pointer_release(e.pointer_id, window, cx);
-                }))
-                .on_pointer_cancel(cx.listener(
-                    |this, e: &PointerCancelEvent, window, cx| {
-                        this.handle_pointer_release(e.pointer_id, window, cx);
-                    },
-                ))
+                .on_mouse_up(
+                    MouseButton::Left,
+                    cx.listener(|this, _, window, cx| {
+                        this.handle_mouse_release(window, cx);
+                    }),
+                )
             };
         }
 
@@ -477,7 +435,8 @@ impl Render for DrawerHost {
             .child(div().id("drawer-content").size_full().child(content))
             .when(show_overlay, |el| {
                 let backdrop_base =
-                    gesture_handlers!(div().absolute().inset_0().occlude().on_pointer_down(
+                    gesture_handlers!(div().absolute().inset_0().occlude().on_mouse_down(
+                        MouseButton::Left,
                         cx.listener(|this, _, window, cx| {
                             if this.is_snap_animating() {
                                 return;
@@ -499,13 +458,12 @@ impl Render for DrawerHost {
                         .overflow_hidden()
                         .occlude()
                         .id("drawer-panel")
-                        .on_pointer_down(cx.listener(|this, event: &PointerDownEvent, _, _cx| {
-                            this.set_pending_gesture(
-                                event.pointer_id,
-                                event.position,
-                                DragOrigin::Panel,
-                            );
-                        }))
+                        .on_mouse_down(
+                            MouseButton::Left,
+                            cx.listener(|this, event: &MouseDownEvent, _, _cx| {
+                                this.set_pending_gesture(event.position, DragOrigin::Panel);
+                            }),
+                        )
                 )
                 .child(drawer);
 
@@ -594,13 +552,12 @@ impl Render for DrawerHost {
                     .w(px(edge_inset))
                     .when(side == DrawerSide::Left, |el| el.left_0())
                     .when(side == DrawerSide::Right, |el| el.right_0())
-                    .on_pointer_down(cx.listener(|this, event: &PointerDownEvent, _, _cx| {
-                        this.set_pending_gesture(
-                            event.pointer_id,
-                            event.position,
-                            DragOrigin::Edge,
-                        );
-                    })),
+                    .on_mouse_down(
+                        MouseButton::Left,
+                        cx.listener(|this, event: &MouseDownEvent, _, _cx| {
+                            this.set_pending_gesture(event.position, DragOrigin::Edge);
+                        }),
+                    ),
             )
     }
 }
@@ -609,12 +566,12 @@ impl Render for DrawerHost {
 mod tests {
     use super::{DragOrigin, DrawerHost, DrawerSide, DrawerState, GestureState};
     use gpui::{
-        AppContext as _, Empty, Modifiers, PlatformInput, PointerButton, PointerDownEvent,
-        PointerKind, PointerMoveEvent, TestAppContext, point, px,
+        AppContext as _, Empty, Modifiers, MouseButton, MouseDownEvent, MouseMoveEvent,
+        PlatformInput, TestAppContext, point, px,
     };
 
     #[test]
-    fn direct_drag_claims_focus_and_hides_keyboard() {
+    fn direct_drag_claims_focus() {
         let mut cx = TestAppContext::single();
         let window = cx.update(|cx| {
             cx.open_window(Default::default(), |_, cx| {
@@ -629,23 +586,20 @@ mod tests {
             .update(&mut cx, |drawer_host, window, cx| {
                 let previous_focus = cx.focus_handle();
                 previous_focus.focus(window, cx);
-                window.show_soft_keyboard();
 
                 assert!(previous_focus.is_focused(window));
-                assert!(window.is_soft_keyboard_visible());
 
-                drawer_host.begin_direct_drag(1, 0.0, window, cx);
+                drawer_host.begin_direct_drag(0.0, window, cx);
 
                 assert!(drawer_host.focus_handle.is_focused(window));
                 assert!(!previous_focus.is_focused(window));
-                assert!(!window.is_soft_keyboard_visible());
             })
             .unwrap();
         cx.quit();
     }
 
     #[test]
-    fn horizontal_edge_drag_prevents_default_touch_scroll() {
+    fn horizontal_edge_drag_prevents_default_scroll() {
         let mut cx = TestAppContext::single();
         let window = cx.update(|cx| {
             cx.open_window(Default::default(), |_, cx| {
@@ -661,25 +615,21 @@ mod tests {
             window.draw(cx).clear();
 
             window.dispatch_event(
-                PlatformInput::PointerDown(PointerDownEvent {
-                    pointer_id: 1,
-                    kind: PointerKind::Touch,
-                    is_primary: true,
-                    button: PointerButton::Primary,
+                PlatformInput::MouseDown(MouseDownEvent {
+                    button: MouseButton::Left,
                     position: point(px(1.0), px(100.0)),
                     modifiers: Modifiers::default(),
+                    click_count: 1,
+                    first_mouse: false,
                 }),
                 cx,
             );
 
             let result = window.dispatch_event(
-                PlatformInput::PointerMove(PointerMoveEvent {
-                    pointer_id: 1,
-                    kind: PointerKind::Touch,
-                    is_primary: true,
-                    pressed_button: Some(PointerButton::Primary),
+                PlatformInput::MouseMove(MouseMoveEvent {
                     position: point(px(40.0), px(102.0)),
                     modifiers: Modifiers::default(),
+                    pressed_button: Some(MouseButton::Left),
                 }),
                 cx,
             );
@@ -692,7 +642,7 @@ mod tests {
     }
 
     #[test]
-    fn vertical_edge_pan_keeps_touch_scroll_available() {
+    fn vertical_edge_drag_keeps_scroll_available() {
         let mut cx = TestAppContext::single();
         let window = cx.update(|cx| {
             cx.open_window(Default::default(), |_, cx| {
@@ -708,25 +658,21 @@ mod tests {
             window.draw(cx).clear();
 
             window.dispatch_event(
-                PlatformInput::PointerDown(PointerDownEvent {
-                    pointer_id: 1,
-                    kind: PointerKind::Touch,
-                    is_primary: true,
-                    button: PointerButton::Primary,
+                PlatformInput::MouseDown(MouseDownEvent {
+                    button: MouseButton::Left,
                     position: point(px(1.0), px(100.0)),
                     modifiers: Modifiers::default(),
+                    click_count: 1,
+                    first_mouse: false,
                 }),
                 cx,
             );
 
             let result = window.dispatch_event(
-                PlatformInput::PointerMove(PointerMoveEvent {
-                    pointer_id: 1,
-                    kind: PointerKind::Touch,
-                    is_primary: true,
-                    pressed_button: Some(PointerButton::Primary),
+                PlatformInput::MouseMove(MouseMoveEvent {
                     position: point(px(3.0), px(130.0)),
                     modifiers: Modifiers::default(),
+                    pressed_button: Some(MouseButton::Left),
                 }),
                 cx,
             );
@@ -755,7 +701,7 @@ mod tests {
                 let width = f32::from(drawer_host.drawer_width);
                 drawer_host.drawer_offset = width;
                 drawer_host.drawer_state = DrawerState::Opened;
-                drawer_host.set_pending_gesture(1, point(px(255.0), px(212.0)), DragOrigin::Panel);
+                drawer_host.set_pending_gesture(point(px(255.0), px(212.0)), DragOrigin::Panel);
 
                 assert!(matches!(
                     drawer_host.gesture_state,
@@ -773,7 +719,7 @@ mod tests {
     }
 
     #[test]
-    fn new_pointer_down_replaces_stale_pending_gesture() {
+    fn new_press_replaces_stale_pending_gesture() {
         let mut cx = TestAppContext::single();
         let window = cx.update(|cx| {
             cx.open_window(Default::default(), |_, cx| {
@@ -786,18 +732,12 @@ mod tests {
 
         window
             .update(&mut cx, |drawer_host, _window, _cx| {
-                drawer_host.set_pending_gesture(1, point(px(255.0), px(212.0)), DragOrigin::Panel);
-                drawer_host.set_pending_gesture(2, point(px(4.0), px(436.0)), DragOrigin::Edge);
+                drawer_host.set_pending_gesture(point(px(255.0), px(212.0)), DragOrigin::Panel);
+                drawer_host.set_pending_gesture(point(px(4.0), px(436.0)), DragOrigin::Edge);
 
-                let GestureState::Pending {
-                    pointer_id,
-                    start,
-                    origin,
-                } = drawer_host.gesture_state
-                else {
+                let GestureState::Pending { start, origin } = drawer_host.gesture_state else {
                     panic!("expected pending replacement");
                 };
-                assert_eq!(pointer_id, 2);
                 assert_eq!(start, point(px(4.0), px(436.0)));
                 assert_eq!(origin, DragOrigin::Edge);
             })
