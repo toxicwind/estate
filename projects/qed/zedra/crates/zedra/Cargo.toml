@@ -16,7 +16,8 @@ no-telemetry = []
 debug-telemetry = []
 # Set log level to Debug (default is Info). Enables verbose iroh/quinn logs and tracing subscriber.
 debug-logs = ["tracing-subscriber"]
-# devtool = ["gpui_android/devtool", "gpui_ios/devtool"]  # see NOTE above: needs mobile-capable zed vendor tree
+# Debug web-tunnel driver (devtool.sh). Empty: the vendored zed tree predates the mobile devtool hooks.
+devtool = []
 
 [dependencies]
 gpui = { path = "../../../zed/crates/gpui", default-features = false }

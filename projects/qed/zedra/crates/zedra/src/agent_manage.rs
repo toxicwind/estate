@@ -223,7 +223,7 @@ fn render_list_body(agents: &[AgentSummary], cx: &mut Context<AgentManage>) -> i
         list = list.child(
             render_agent_card(cx, AgentCardProps { agent })
                 .cursor_pointer()
-                .on_press(cx.listener(move |_this, _event, window, cx| {
+                .on_mouse_down(MouseButton::Left, cx.listener(move |_this, _event, window, cx| {
                     platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
                     window.dispatch_action(
                         workspace_action::OpenAgentDetail { slug: slug.clone() }.boxed_clone(),

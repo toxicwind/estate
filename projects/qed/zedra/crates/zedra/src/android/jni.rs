@@ -404,14 +404,13 @@ pub extern "system" fn Java_dev_zedra_app_MainActivity_nativeEditMenuResult(
     if callback_id <= 0 || item_index < 0 {
         return;
     }
-    if let Some(app_cell) = crate::android::entry::app_cell() {
-        let mut app = app_cell.borrow_mut();
+    crate::android::entry::with_app(|cx| {
         platform_bridge::dispatch_native_edit_menu_result(
             callback_id as u32,
             item_index as usize,
-            &mut **app,
+            cx,
         );
-    }
+    });
 }
 
 #[unsafe(no_mangle)]
@@ -523,10 +522,9 @@ pub extern "system" fn Java_dev_zedra_app_MainActivity_nativeFloatingButtonPress
     if callback_id <= 0 {
         return;
     }
-    if let Some(app_cell) = crate::android::entry::app_cell() {
-        let mut app = app_cell.borrow_mut();
-        platform_bridge::dispatch_native_floating_button_press(callback_id as u32, &mut **app);
-    }
+    crate::android::entry::with_app(|cx| {
+        platform_bridge::dispatch_native_floating_button_press(callback_id as u32, cx);
+    });
 }
 
 #[unsafe(no_mangle)]
@@ -538,10 +536,9 @@ pub extern "system" fn Java_dev_zedra_app_MainActivity_nativeDictationPreviewDis
     if preview_id <= 0 {
         return;
     }
-    if let Some(app_cell) = crate::android::entry::app_cell() {
-        let mut app = app_cell.borrow_mut();
-        platform_bridge::dispatch_native_dictation_preview_dismiss(preview_id as u32, &mut **app);
-    }
+    crate::android::entry::with_app(|cx| {
+        platform_bridge::dispatch_native_dictation_preview_dismiss(preview_id as u32, cx);
+    });
 }
 
 #[unsafe(no_mangle)]

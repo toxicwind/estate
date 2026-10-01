@@ -73,13 +73,15 @@ use rust_embed::RustEmbed;
 
 #[derive(RustEmbed)]
 #[folder = "assets"]
-#[include = "icons/*.svg"]
 pub struct ZedraAssets;
 
 /// GPUI's SVG renderer loads these paths when rasterizing diagram labels.
+/// Zed's bundled fonts, served under the same `fonts/...` paths GPUI expects.
+/// rust-embed 8.x here lacks the `include-exclude` feature, so instead of
+/// `#[include = "fonts/**"]` the folder points straight at the fonts dir and
+/// the `fonts/` prefix is translated in `load`/`list` below.
 #[derive(RustEmbed)]
-#[folder = "../../vendor/zed/assets"]
-#[include = "fonts/**"]
+#[folder = "../../../zed/assets/fonts"]
 struct ZedraSvgFonts;
 
 impl gpui::AssetSource for ZedraAssets {
@@ -87,19 +89,21 @@ impl gpui::AssetSource for ZedraAssets {
         if let Some(bytes) = editor::mermaid::load_mermaid_svg(path) {
             return Ok(Some(std::borrow::Cow::Owned(bytes.to_vec())));
         }
-        if let Some(file) = Self::get(path) {
+        if let Some(file) = <ZedraAssets as RustEmbed>::get(path) {
             return Ok(Some(file.data));
         }
-        Ok(ZedraSvgFonts::get(path).map(|file| file.data))
+        let font_path = path.strip_prefix("fonts/").unwrap_or(path);
+        Ok(<ZedraSvgFonts as RustEmbed>::get(font_path).map(|file| file.data))
     }
 
     fn list(&self, path: &str) -> gpui::Result<Vec<gpui::SharedString>> {
-        let mut names = Self::iter()
+        let mut names = <ZedraAssets as RustEmbed>::iter()
             .filter(|name| name.starts_with(path))
             .map(|name| name.into())
             .collect::<Vec<_>>();
         names.extend(
-            ZedraSvgFonts::iter()
+            <ZedraSvgFonts as RustEmbed>::iter()
+                .map(|name| format!("fonts/{name}"))
                 .filter(|name| name.starts_with(path))
                 .map(|name| name.into()),
         );

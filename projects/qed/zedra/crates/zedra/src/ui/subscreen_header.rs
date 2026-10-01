@@ -7,7 +7,7 @@ use crate::theme;
 pub fn chevron_back_button<C>(
     id: impl Into<ElementId>,
     cx: &mut Context<C>,
-    on_press: impl Fn(&mut C, &PressEvent, &mut Window, &mut Context<C>) + 'static,
+    on_press: impl Fn(&mut C, &MouseDownEvent, &mut Window, &mut Context<C>) + 'static,
 ) -> Stateful<Div>
 where
     C: 'static,
@@ -16,8 +16,7 @@ where
         .id(id)
         .flex_shrink_0()
         .cursor_pointer()
-        .hit_slop(px(32.0))
-        .on_press(cx.listener(on_press))
+        .on_mouse_down(MouseButton::Left, cx.listener(on_press))
         .child(
             svg()
                 .path("icons/chevron-left.svg")
@@ -29,7 +28,7 @@ where
 pub fn subscreen_refresh_button<C>(
     id: impl Into<ElementId>,
     cx: &mut Context<C>,
-    on_press: impl Fn(&mut C, &PressEvent, &mut Window, &mut Context<C>) + 'static,
+    on_press: impl Fn(&mut C, &MouseDownEvent, &mut Window, &mut Context<C>) + 'static,
 ) -> Stateful<Div>
 where
     C: 'static,
@@ -40,8 +39,7 @@ where
         .top_2()
         .right_0()
         .cursor_pointer()
-        .hit_slop(px(28.0))
-        .on_press(cx.listener(move |this, event, window, cx| {
+        .on_mouse_down(MouseButton::Left, cx.listener(move |this, event, window, cx| {
             platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
             on_press(this, event, window, cx);
         }))

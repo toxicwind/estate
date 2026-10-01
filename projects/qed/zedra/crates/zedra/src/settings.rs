@@ -79,6 +79,7 @@ impl ThemeState {
         }
     }
 
+    #[allow(dead_code)]
     pub(crate) fn preference_from_system() -> ThemePreference {
         match crate::platform_bridge::bridge().system_prefers_theme() {
             crate::platform_bridge::SystemTheme::Dark => ThemePreference::Dark,

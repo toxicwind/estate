@@ -230,8 +230,7 @@ impl Render for QuickActionPanel {
                             .items_center()
                             .justify_center()
                             .cursor_pointer()
-                            .hit_slop(px(10.0))
-                            .on_press(cx.listener(|_this, _event, _window, cx| {
+                            .on_mouse_down(MouseButton::Left, cx.listener(|_this, _event, _window, cx| {
                                 platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
                                 cx.emit(QuickActionEvent::Close);
                                 cx.emit(QuickActionEvent::GoHome);
@@ -262,8 +261,7 @@ impl Render for QuickActionPanel {
                             .items_center()
                             .justify_center()
                             .cursor_pointer()
-                            .hit_slop(px(10.0))
-                            .on_press(cx.listener(|_this, _event, _window, cx| {
+                            .on_mouse_down(MouseButton::Left, cx.listener(|_this, _event, _window, cx| {
                                 platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
                                 cx.emit(QuickActionEvent::Close);
                             }))
@@ -306,7 +304,7 @@ impl Render for QuickActionPanel {
                     .px(px(16.0))
                     .pt(px(12.0))
                     .pb(px(6.0))
-                    .on_press(cx.listener(move |this, _event, _window, cx| {
+                    .on_mouse_down(MouseButton::Left, cx.listener(move |this, _event, _window, cx| {
                         this.handle_switch_workspace(index, cx);
                     }))
                     .child(
@@ -365,9 +363,8 @@ impl Render for QuickActionPanel {
                             .flex()
                             .items_center()
                             .justify_center()
-                            .hit_slop(px(10.0))
-                            .on_pointer_down(|_, _, cx| cx.stop_propagation())
-                            .on_press(cx.listener(move |this, _event, _window, cx| {
+                            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+                            .on_mouse_down(MouseButton::Left, cx.listener(move |this, _event, _window, cx| {
                                 platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
                                 this.handle_show_quick_action_picker(index, cx);
                                 cx.stop_propagation();
@@ -413,7 +410,7 @@ impl Render for QuickActionPanel {
                             on_close: Some(on_close),
                         },
                     )
-                    .on_press(cx.listener(move |this, _event, _window, cx| {
+                    .on_mouse_down(MouseButton::Left, cx.listener(move |this, _event, _window, cx| {
                         this.handle_switch_terminal(index, tid_click.clone(), cx);
                     }));
 
@@ -445,7 +442,7 @@ impl Render for QuickActionPanel {
             crate::button::outline_button(cx, "quick-action-scan-qr", "Scan QR Code")
                 .mx(px(16.0))
                 .mt(px(12.0))
-                .on_press(cx.listener(|this, _event, _window, cx| {
+                .on_mouse_down(MouseButton::Left, cx.listener(|this, _event, _window, cx| {
                     this.handle_scan_qr(cx);
                 })),
         );

@@ -621,9 +621,8 @@ impl Render for SettingsView {
                             .child(
                                 div()
                                     .id("settings-back-button")
-                                    .hit_slop(px(10.0))
                                     .cursor_pointer()
-                                    .on_press(cx.listener(|_this, _event, _window, cx| {
+                                    .on_mouse_down(MouseButton::Left, cx.listener(|_this, _event, _window, cx| {
                                         cx.emit(SettingsEvent::NavigateHome);
                                     }))
                                     .child(
@@ -679,7 +678,7 @@ impl Render for SettingsView {
                                         sign_in_title,
                                         sign_in_summary,
                                     )
-                                    .on_press(cx.listener(|this, _event, _window, cx| {
+                                    .on_mouse_down(MouseButton::Left, cx.listener(|this, _event, _window, cx| {
                                         this.show_sign_in_methods(cx);
                                     })),
                                 )
@@ -692,7 +691,7 @@ impl Render for SettingsView {
                                     "Enable Notifications",
                                     push_summary,
                                 )
-                                .on_press(cx.listener(|this, _event, _window, cx| {
+                                .on_mouse_down(MouseButton::Left, cx.listener(|this, _event, _window, cx| {
                                     this.request_push_token(cx);
                                 })),
                             )
@@ -737,7 +736,7 @@ impl Render for SettingsView {
                                     "Telemetry docs",
                                     "zedra.dev/docs/telemetry",
                                 )
-                                .on_press(cx.listener(|this, _event, _window, _cx| {
+                                .on_mouse_down(MouseButton::Left, cx.listener(|this, _event, _window, _cx| {
                                     this.open_telemetry_docs();
                                 })),
                             )
@@ -748,7 +747,7 @@ impl Render for SettingsView {
                                     "Privacy policy",
                                     "zedra.dev/privacy",
                                 )
-                                .on_press(cx.listener(|this, _event, _window, _cx| {
+                                .on_mouse_down(MouseButton::Left, cx.listener(|this, _event, _window, _cx| {
                                     this.open_privacy_policy();
                                 })),
                             )
@@ -762,7 +761,7 @@ impl Render for SettingsView {
                                             "Native Alert",
                                             "Native confirmation/failure prompts",
                                         )
-                                        .on_press(cx.listener(|this, _event, _window, _cx| {
+                                        .on_mouse_down(MouseButton::Left, cx.listener(|this, _event, _window, _cx| {
                                             this.show_test_alert();
                                         })),
                                     )
@@ -773,7 +772,7 @@ impl Render for SettingsView {
                                             "Native Selection",
                                             "Action sheet selection and behavior",
                                         )
-                                        .on_press(cx.listener(|this, _event, _window, _cx| {
+                                        .on_mouse_down(MouseButton::Left, cx.listener(|this, _event, _window, _cx| {
                                             this.show_test_selection();
                                         })),
                                     )
@@ -784,7 +783,7 @@ impl Render for SettingsView {
                                             "Custom Sheet",
                                             "Native sheet with GPUI-rendered content",
                                         )
-                                        .on_press(cx.listener(|this, _event, _window, cx| {
+                                        .on_mouse_down(MouseButton::Left, cx.listener(|this, _event, _window, cx| {
                                             this.show_test_custom_sheet(cx);
                                         })),
                                     )
@@ -795,7 +794,7 @@ impl Render for SettingsView {
                                             "Webview",
                                             "JS messaging, eval, and navigation interception",
                                         )
-                                        .on_press(cx.listener(|this, _event, _window, _cx| {
+                                        .on_mouse_down(MouseButton::Left, cx.listener(|this, _event, _window, _cx| {
                                             this.show_test_webview();
                                         })),
                                     )
@@ -806,7 +805,7 @@ impl Render for SettingsView {
                                             "Web tunnel",
                                             "Manage localhost listeners bound on this device",
                                         )
-                                        .on_press(cx.listener(|_this, _event, _window, cx| {
+                                        .on_mouse_down(MouseButton::Left, cx.listener(|_this, _event, _window, cx| {
                                             cx.emit(SettingsEvent::OpenWebTunnel);
                                         })),
                                     )
@@ -845,8 +844,8 @@ fn section_header(cx: &App, title: &'static str) -> Div {
 fn appearance_theme_toggle(
     cx: &App,
     preference: ThemePreference,
-    on_dark: impl Fn(&PressEvent, &mut Window, &mut App) + 'static,
-    on_light: impl Fn(&PressEvent, &mut Window, &mut App) + 'static,
+    on_dark: impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static,
+    on_light: impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static,
 ) -> impl IntoElement {
     let is_dark = preference == ThemePreference::Dark;
 
@@ -912,7 +911,7 @@ fn theme_toggle_segment(
     id: &'static str,
     icon_path: &'static str,
     selected: bool,
-    on_press: impl Fn(&PressEvent, &mut Window, &mut App) + 'static,
+    on_press: impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static,
 ) -> Stateful<Div> {
     let mut segment = div()
         .id(id)
@@ -922,8 +921,7 @@ fn theme_toggle_segment(
         .items_center()
         .justify_center()
         .cursor_pointer()
-        .hit_slop(px(6.0))
-        .on_press(on_press);
+        .on_mouse_down(MouseButton::Left, on_press);
 
     if selected {
         segment = segment.bg(rgb(theme::bg_card(cx)));
@@ -945,8 +943,8 @@ fn theme_toggle_segment(
 fn telemetry_toggle(
     cx: &App,
     enabled: bool,
-    on_enable: impl Fn(&PressEvent, &mut Window, &mut App) + 'static,
-    on_disable: impl Fn(&PressEvent, &mut Window, &mut App) + 'static,
+    on_enable: impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static,
+    on_disable: impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static,
 ) -> impl IntoElement {
     if cfg!(feature = "no-telemetry") {
         let control = div()
@@ -1001,8 +999,8 @@ fn telemetry_toggle(
 fn droplet_toggle(
     cx: &App,
     enabled: bool,
-    on_enable: impl Fn(&PressEvent, &mut Window, &mut App) + 'static,
-    on_disable: impl Fn(&PressEvent, &mut Window, &mut App) + 'static,
+    on_enable: impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static,
+    on_disable: impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static,
 ) -> impl IntoElement {
     let control = segmented_toggle(
         cx,
@@ -1027,8 +1025,8 @@ fn segmented_toggle(
     on_id: &'static str,
     off_id: &'static str,
     enabled: bool,
-    on_enable: impl Fn(&PressEvent, &mut Window, &mut App) + 'static,
-    on_disable: impl Fn(&PressEvent, &mut Window, &mut App) + 'static,
+    on_enable: impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static,
+    on_disable: impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static,
 ) -> AnyElement {
     div()
         .flex_none()
@@ -1099,7 +1097,7 @@ fn toggle_segment(
     id: &'static str,
     label: &'static str,
     selected: bool,
-    on_press: impl Fn(&PressEvent, &mut Window, &mut App) + 'static,
+    on_press: impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static,
 ) -> Stateful<Div> {
     let mut segment = div()
         .id(id)
@@ -1109,8 +1107,7 @@ fn toggle_segment(
         .items_center()
         .justify_center()
         .cursor_pointer()
-        .hit_slop(px(6.0))
-        .on_press(on_press);
+        .on_mouse_down(MouseButton::Left, on_press);
 
     if selected {
         segment = segment.bg(rgb(theme::bg_card(cx)));
@@ -1201,7 +1198,7 @@ fn profile_info_row(
     initials: impl Into<SharedString>,
     title: impl Into<SharedString>,
     description: impl Into<SharedString>,
-    on_logout: Option<impl Fn(&PressEvent, &mut Window, &mut App) + 'static>,
+    on_logout: Option<impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static>,
 ) -> Stateful<Div> {
     let initials = initials.into();
     let title = title.into();
@@ -1265,7 +1262,7 @@ fn profile_info_row(
 
 fn logout_button(
     cx: &App,
-    on_press: impl Fn(&PressEvent, &mut Window, &mut App) + 'static,
+    on_press: impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static,
 ) -> Stateful<Div> {
     div()
         .id("settings-delta-logout")
@@ -1275,8 +1272,7 @@ fn logout_button(
         .items_center()
         .justify_center()
         .cursor_pointer()
-        .hit_slop(px(14.0))
-        .on_press(on_press)
+        .on_mouse_down(MouseButton::Left, on_press)
         .child(
             svg()
                 .path("icons/log-out.svg")

@@ -71,8 +71,7 @@ impl Render for WorkspaceStart {
                     .items_center()
                     .gap(px(theme::SPACING_LG))
                     .cursor_pointer()
-                    .hit_slop(px(theme::SPACING_SM))
-                    .on_press(move |_event, window, cx| {
+                    .on_mouse_down(MouseButton::Left, move |_event, window, cx| {
                         platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
                         window.dispatch_action(action.boxed_clone(), cx);
                     })

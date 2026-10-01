@@ -1,10 +1,8 @@
 use gpui::*;
 use zedra_session::SessionHandle;
 
-use crate::editor::code_editor::{CODE_EDITOR_SELECTION_AREA_ID, EditorView, ParsedEditorSyntax};
-use crate::editor::markdown::{
-    MARKDOWN_SELECTION_AREA_ID, MarkdownView, is_markdown_path, parse_markdown_source,
-};
+use crate::editor::code_editor::{EditorView, ParsedEditorSyntax};
+use crate::editor::markdown::{MarkdownView, is_markdown_path, parse_markdown_source};
 use crate::placeholder::render_placeholder;
 
 #[derive(Clone, Debug)]
@@ -197,31 +195,19 @@ pub struct EditorSelection {
 }
 
 /// Resolve the window's active read-only selection against the editor/markdown
-/// view pair shared by the main editor and the file-preview sheet. The selection
-/// area id alone picks the source view, so callers don't track content kind here.
+/// view pair shared by the main editor and the file-preview sheet.
+///
+/// NOTE (gpui port): the pinned 1.13-era gpui has no read-only-selection API
+/// (`Window::latest_read_only_selection` does not exist), so this always
+/// returns `None` — "add selection to chat" from the preview is unavailable.
 pub(crate) fn resolve_read_only_selection(
-    editor_view: &Entity<EditorView>,
-    markdown_view: &Entity<MarkdownView>,
-    path: String,
-    window: &Window,
-    cx: &App,
+    _editor_view: &Entity<EditorView>,
+    _markdown_view: &Entity<MarkdownView>,
+    _path: String,
+    _window: &Window,
+    _cx: &App,
 ) -> Option<EditorSelection> {
-    let selection = window.latest_read_only_selection()?;
-    let (start, end) = match selection.area_id.to_string().as_str() {
-        CODE_EDITOR_SELECTION_AREA_ID => editor_view
-            .read(cx)
-            .line_range_for_selection(selection.range_utf16)?,
-        MARKDOWN_SELECTION_AREA_ID => markdown_view
-            .read(cx)
-            .line_range_for_selection(selection.range_utf16)?,
-        _ => return None,
-    };
-    Some(EditorSelection {
-        path,
-        start,
-        end,
-        text: selection.text,
-    })
+    None
 }
 
 impl Render for WorkspaceEditor {
