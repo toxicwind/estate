@@ -1,15 +1,29 @@
 #!/usr/bin/env bash
 # fleet-mirror-flush — complete yote-journaled fleet messages.
 #
-# Sweeps /home/toxic/hatch/fleet-outbox/pending/*.json — the write-ahead
-# journal that fleet-post (hatch cell) writes concurrently with its delivery
-# race. For each record:
+# Sweeps TWO yote-side stores:
+#  1. /home/toxic/hatch/fleet-outbox/pending/*.json — the write-ahead
+#     journal that fleet-post (hatch cell) writes concurrently with its delivery
+#     race.
+#  2. /home/toxic/workspace/fleet-outbox/*.json — the yote-local spool that the
+#     yote copy of fleet-post writes when its cell-shaped delivery paths fail
+#     on yote. Observed 2026-10-01: market-loop's fleet-post calls always spool
+#     here (path A ~/workspace/bin/squawk and path B ~/workspace/bin/yote-conn
+#     do not exist under HOME=/home/toxic), then market-loop's yote-native
+#     fallback delivers — but nothing ever drained the spool, stranding 39
+#     orphans (38 already delivered, 1 lost test probe).
+# (The cell spool ~/workspace/fleet-outbox on the hatch cell — the bridge-DOWN
+# last resort — is swept by the Hatch platform cron "fleet-outbox-flush".
+# The three stores are disjoint by construction.)
+#
+# For each record:
 #   - if its uuid is already present in the fleet channel -> delete the
 #     record (already delivered; this also repairs a journalDelete that raced
 #     a late-arriving journal write).
 #   - else if the same (sender, message body) is already present in the
-#     channel (posted via `squawk send`, which carries no uuid) -> delete
-#     the record (already delivered; no double-post).
+#     channel (posted via `squawk send` or the yote-native fallback, which
+#     carry a different uuid) -> delete the record (already delivered;
+#     no double-post).
 #   - else -> post the message by direct file write into the channel dir
 #     (same frontmatter format as fleet-post path B, same uuid) and delete
 #     the record.
@@ -18,43 +32,38 @@
 # the uuid NOWHERE — only path B's frontmatter carries it. A uuid-only
 # already-delivered check therefore misses every path-A delivery and
 # double-posts (observed 2026-09-30: 7 duplicates in one sweep). The
-# (sender, body) check over files with mtime near the journal's own mtime
+# (sender, body) check over files with mtime near the record's own mtime
 # closes that gap. Both checks are idempotent: a crash between post and
 # delete is repaired on the next run.
-#
-# SCOPE: this sweeps ONLY the yote mirror. The cell spool
-# (~/workspace/fleet-outbox on the hatch cell — the bridge-DOWN last resort)
-# is swept by the Hatch platform cron "fleet-outbox-flush". The two stores
-# are disjoint by construction (a message is journaled to exactly one,
-# depending on whether the journal write landed), so there is no double-fire.
 set -u
 PENDING="${PENDING:-/home/toxic/hatch/fleet-outbox/pending}"
+YOTE_SPOOL="${YOTE_SPOOL:-/home/toxic/workspace/fleet-outbox}"
 LOG="${LOG:-/home/toxic/hatch/fleet-outbox/flush.log}"
 LOCK="${LOCK:-/home/toxic/hatch/fleet-outbox/flush.lock}"
 SQUAWK_ROOT="${SQUAWK_ROOT:-/home/toxic/.fleet-bus/squawk-root}"
 
 log() { printf '%s %s\n' "$(date -u +%FT%TZ)" "$*" >> "$LOG"; }
 
-[ -d "$PENDING" ] || exit 0
 exec 9>"$LOCK" || exit 0
 flock -n 9 || exit 0   # another run holds the lock; skip quietly
 
 shopt -s nullglob
-records=( "$PENDING"/*.json )
-[ ${#records[@]} -eq 0 ] && exit 0
-
 n_already=0
 n_completed=0
 n_bad=0
-for rec in "${records[@]}"; do
+
+sweep_one() { # $1 = record path, $2 = store label
+  local rec="$1" label="$2" result
   result="$(python3 - "$rec" "$SQUAWK_ROOT" <<'PYEOF'
 import json, os, re, sys, time
 
 rec_path, squawk_root = sys.argv[1], sys.argv[2]
 fname = os.path.basename(rec_path)
-if not re.fullmatch(r"[a-f0-9-]{8,40}\.json", fname):
+# mirror journal: <uuid>.json ; yote-local spool: <ts>-fleet-<uuid>.json
+m = re.fullmatch(r"(?:\d+-fleet-)?([a-f0-9-]{8,40})\.json", fname)
+if not m:
     print("BAD filename"); sys.exit(0)
-uuid = fname[:-5]
+uuid = m.group(1)
 try:
     with open(rec_path) as f:
         r = json.load(f)
@@ -71,8 +80,9 @@ def delivered_already(chan_dir, uuid, sender, message, rec_mtime):
     """True if the channel already holds this message.
     (1) uuid match anywhere in frontmatter head — catches path-B posts and
         this flusher's own earlier completions.
-    (2) (sender, body) match on files with mtime near the journal's mtime —
-        catches path-A (`squawk send`) posts, which carry no uuid."""
+    (2) (sender, body) match on files with mtime near the record's mtime —
+        catches path-A (`squawk send`) and yote-native fallback posts, which
+        carry a different uuid."""
     uuid_b = ("uuid: " + uuid).encode()
     want_body = message.strip()
     try:
@@ -91,7 +101,7 @@ def delivered_already(chan_dir, uuid, sender, message, rec_mtime):
             continue
         if uuid_b in head:
             return True
-    # Pass 2: (sender, body) over files written near the journal record.
+    # Pass 2: (sender, body) over files written near the record.
     for name in names:
         if not name.endswith(".md"):
             continue
@@ -127,7 +137,7 @@ def delivered_already(chan_dir, uuid, sender, message, rec_mtime):
 chan_dir = os.path.join(squawk_root, channel)
 os.makedirs(chan_dir, exist_ok=True)
 # already delivered? (repairs journalDelete/delete races + crash windows;
-# also catches path-A posts via the (sender, body) check)
+# also catches path-A and yote-native posts via the (sender, body) check)
 try:
     rec_mtime = os.path.getmtime(rec_path)
 except OSError:
@@ -154,11 +164,14 @@ PYEOF
 )"
   case "$result" in
     ALREADY*) n_already=$((n_already+1)) ;;
-    COMPLETED*) n_completed=$((n_completed+1)); log "completed $result uuid=$(basename "$rec" .json)" ;;
-    BAD*) n_bad=$((n_bad+1)); log "bad record $result: $rec" ;;
-    *) log "unexpected result for $rec: $result" ;;
+    COMPLETED*) n_completed=$((n_completed+1)); log "completed [$label] $result" ;;
+    BAD*) n_bad=$((n_bad+1)); log "bad record [$label] $result: $rec" ;;
+    *) log "unexpected result [$label] for $rec: $result" ;;
   esac
-done
+}
+
+[ -d "$PENDING" ] && for rec in "$PENDING"/*.json; do sweep_one "$rec" "mirror"; done
+[ -d "$YOTE_SPOOL" ] && for rec in "$YOTE_SPOOL"/*.json; do sweep_one "$rec" "yote-spool"; done
 
 if [ "$n_completed" -gt 0 ] || [ "$n_bad" -gt 0 ] || [ "$n_already" -gt 0 ]; then
   log "sweep done: completed=$n_completed already_delivered=$n_already bad=$n_bad"

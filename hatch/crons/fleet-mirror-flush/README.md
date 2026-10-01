@@ -12,16 +12,17 @@ timer completes the post — so a message survives even if the cell dies
 mid-race. If the journal write also fails (bridge down),  falls
 back to the cell spool , exactly as before.
 
-## The two stores are disjoint — no double-fire
+## The three stores are disjoint — no double-fire
 
 | Store | Written when | Swept by |
 |---|---|---|
 |  (yote mirror) | journal write landed (bridge up at post time) | this timer () |
 |  (cell spool) | journal AND both delivery paths failed (bridge down) | Hatch platform cron  |
+|  (yote-local spool) | yote fleet-post cell-shaped paths fail on yote (market-loop posts) | this timer (added 2026-10-01; 39 orphans drained) |
 
 A message is journaled to **exactly one** store, decided by whether the journal
 write landed. The Hatch cron never sees mirror records; this timer never sees
-the cell spool. Both must keep running — disabling either one strands its
+the cell spool. All three sweepers must keep running — disabling one strands its
 store's messages. "Never leave both running" applies to duplicate coverage of
 the *same* source; here the sources are disjoint by construction.
 
