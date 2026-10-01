@@ -253,7 +253,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | torr | metaaivm-fork: maximalize toxicwind/muse-cli, land on main | Ember (main chat) | DONE (2026-09-30) — 628fa52 |
 
 
-| rusty | connector-repair: durable yote-connector launcher + lane verification | ember-sidechat | RUNNING (2026-09-30) |
+| rusty | connector-repair: durable yote-connector launcher + lane verification | ember-sidechat | DONE (2026-09-30) — 11906ae474776cfb27ccfe78632431ec73d2563a |
 
 Retired/completed crews stay listed here with status DONE and their final commit SHAs — history is how we avoid redoing work.
 ## 3. Repo index (canonical remotes)
