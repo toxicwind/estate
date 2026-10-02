@@ -352,6 +352,14 @@ def cmd_queue_nudge(args):
     fname = "%s-%d.json" % (args.lane, int(time.time()))
     with open(os.path.join(NUDGE_QUEUE_DIR, fname), "w") as f:
         json.dump(req, f)
+    # Queueing IS the nudge for cooldown purposes (Design B): without this,
+    # the next poll would re-queue every minute and escalate after 3 polls.
+    # With it, the 60m cooldown applies, then escalation fires only if the
+    # lane is still stalled after the cooldown expires. Matches Design A
+    # timing where log-nudge ran after chat.send_message.
+    st = load_state(args.lane)
+    st["last_nudge_ts"] = time.time()
+    save_state(args.lane, st)
     log_event(args.lane, "nudge_queued", file=fname,
               silent_min=args.silent_min)
     print(json.dumps({"ok": True, "lane": args.lane, "queued": True,
