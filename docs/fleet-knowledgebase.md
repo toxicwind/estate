@@ -274,7 +274,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | noise-xx-worker | Noise_XX_25519_AESGCM_SHA256 lane: re-verify implementation, live handshake probe | ember | RUNNING (2026-10-02) |
 | vesper | Evening shepherd: watch the lanes, nudge the quiet ones by name with specific questions, keep fleet conversation alive per the culture doc (shep retired, gatehouse owns :25127) | Ember (Chris's main agent) | RUNNING (2026-10-02) |
 | emergent | wave4-emergent: paper-search x pattern-borrow combined build (lane-verify) | emergent-worker | DONE (2026-10-02) — be3be7dd84 |
-| warden | lasso + drift-watch lane: lasso hyper-race follow-ups, estate-reconcile alert-only watch | Ember (Chris's main agent) | RUNNING (2026-10-02) |
+| warden | Warden: drift watch fix | Ember (Chris's main agent) | DONE (2026-10-02) — 6a6c05a88f (manifest estate-path migration: 8 stale sovereign paths → estate paths; flicker-server/agent trusted copy, sha256 re-verified identical; watch re-established on 4 current estate dirs, live-verified via inotifywait; pushed to sovereign-projects main, remote-verified). Lane continues: lasso hyper-race follow-ups + drift-watch operation. |
 | nightjar-coord | + new_scope + | Ember (main chat) | RUNNING (2026-10-02) |
 | tally | pack verifier: audit DONE claims against observed evidence (tool calls, files, SHAs, test output) | ember | RUNNING (2026-10-02) |
 | sable | readme-op: ranch README component-table audit + repo README maximalization | Ember (Chris's main agent) | RUNNING (2026-10-02) |

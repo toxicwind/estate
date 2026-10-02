@@ -1,8 +1,8 @@
 ---
 crew: 'warden'
-scope: 'lasso + drift-watch lane: lasso hyper-race follow-ups, estate-reconcile alert-only watch'
+scope: 'Warden: drift watch fix'
 owner: 'Ember (Chris''s main agent)'
-status: 'RUNNING (2026-10-02)'
+status: 'DONE (2026-10-02) — 6a6c05a88f (manifest estate-path migration: 8 stale sovereign paths → estate paths; flicker-server/agent trusted copy, sha256 re-verified identical; watch re-established on 4 current estate dirs, live-verified via inotifywait; pushed to sovereign-projects main, remote-verified). Lane continues: lasso hyper-race follow-ups + drift-watch operation.'
 order: 1000000009
 registered: '2026-10-02'
 updated: '2026-10-02'
