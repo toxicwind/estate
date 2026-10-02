@@ -57,7 +57,15 @@ is how v1 of the watchdog froze innocent workers.
    - `worker-queue start <id> --agent-id <aid>` / `complete <id>` / `fail <id>` — lifecycle
    - `worker-queue config --max-workers N` — persistent cap (default: 8)
    - Queue lives in `~/workspace/queue/` (JSON files) — survives restarts
-   - Dispatcher cron (`worker-queue-dispatch`, every 5m) alerts via squawk when dispatch is ready
+   - Dispatch signaling is event-driven, not polled: `~/workspace/bin/worker-queue-watch.ts`
+     (`watch` daemon) fires a squawk signal synchronously on submit/complete/fail/retry/start
+     when work becomes dispatchable (pending>0 && slots free), and covers external file
+     mutations + heartbeat staleness. Verify with `ps` before assuming it's alive.
+   - Circuit-breaker backstop cron `worker-queue-dispatch` (every 5m) exists DISABLED
+     by standing decision (2026-09-30: scheduled-task inventory audit — event-driven path
+     is authoritative; re-enabling cron agents adds cell tool-path load). It flags only
+     time-revealed conditions: backlog >2x max workers, failed items, stuck workers
+     (active >2h by heartbeat). Re-enable only if the watch daemon is dead.
    - **Rule: check `worker-queue status` before spawning. If at cap, submit to queue.**
 2. **Send, don't spawn.** `subagent.send` steers a live worker's next steps
    without restarting it. Use for throttling directives ("cap parallel

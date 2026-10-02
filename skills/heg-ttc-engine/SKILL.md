@@ -1,6 +1,7 @@
 ---
 name: heg-ttc-engine
-description: Hierarchical Entropy-Guided Test-Time Compute (HEG-TTC) Engine for autonomous software engineering.
+description: >
+  Test-time compute allocation for autonomous coding. Entropy-based compute budgeting, UCT Monte Carlo Tree Search rollouts, AST symbol indexing and nanosecond patch racing for SWE-bench style search. Triggers on: "test-time compute", "mcts", "entropy budget", "rollouts".
 ---
 # HEG-TTC Engine
 

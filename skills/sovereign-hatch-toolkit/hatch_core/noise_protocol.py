@@ -2,9 +2,24 @@
 Noise Protocol & Notary Endorsement Implementation.
 Reverse-engineered from Meta AI / Hatch Gateway network telemetry.
 
-Implements Noise_XX_25519_AESGCM_SHA256 with the muse.ai client's custom
-msg3 variant (second ephemeral instead of static key) and non-standard
-nonce construction. Plus Ed25519 Notary Endorsement token parser.
+Implements Noise_XX_25519_AESGCM_SHA256 in two handshake modes:
+
+* ``custom`` (default, backwards compatible): the muse.ai client's RE'd
+  variant -- msg3 carries a second ephemeral instead of the static key,
+  and the nonce is non-standard big-endian
+  (``[0x00]*4 || u32be(n >> 32) || u32be(n & 0xffffffff)``).
+* ``standard``: Noise XX per the framework spec -- msg3 carries the static
+  key (``-> s, se``) and the stock nonce (4 zero bytes + u64 little-endian).
+
+Mode evidence (2026-10-02): this module's original telemetry RE says the
+client uses the custom msg3 variant; nikships/muse-cli docs/PROTOCOL.md
+(derived from the web client's own bundle, verified live) says "standard
+Noise XX ... standard mode (empty msg3)". The two sources disagree, so the
+mode is selectable instead of asserted. ``gateway_rpc.GatewayClient``
+defaults to ``standard`` per the independently verified doc; a credentialed
+live handshake (Chris's call) settles it.
+
+Plus Ed25519 Notary Endorsement token parser.
 
 CORRECTION (2026-09-30): two independent REs (nikships/muse-cli,
 bytehola/muse-guardian) confirm AES-256-GCM, not ChaChaPoly.
@@ -110,14 +125,23 @@ class NotaryEndorsement:
 class CipherState:
     """AES-256-GCM CipherState with 64-bit counter.
 
-    Nonce is NON-STANDARD (replicated byte-for-byte from the muse.ai client):
-        nonce12(n) = [0x00]*4 || u32be(n >> 32) || u32be(n & 0xffffffff)
-    A stock Noise implementation (4 zero bytes + 64-bit little-endian) will
-    NOT interoperate.
+    Two nonce constructions, selected by ``nonce_style``:
+
+    * ``custom`` (default, backwards compatible): replicated byte-for-byte
+      from the muse.ai client:
+      ``nonce12(n) = [0x00]*4 || u32be(n >> 32) || u32be(n & 0xffffffff)``
+    * ``standard``: stock Noise (4 zero bytes + 64-bit little-endian).
+
+    A stock Noise implementation will NOT interoperate with ``custom``
+    and vice versa -- the style must match the peer.
     """
 
-    def __init__(self, key: Optional[bytes] = None):
+    def __init__(self, key: Optional[bytes] = None,
+                 nonce_style: str = "custom"):
+        if nonce_style not in ("custom", "standard"):
+            raise ValueError("nonce_style must be 'custom' or 'standard'")
         self.key = key
+        self.nonce_style = nonce_style
         self.nonce = 0
 
     def has_key(self) -> bool:
@@ -130,7 +154,9 @@ class CipherState:
         self.nonce = 0
 
     @staticmethod
-    def _nonce_bytes(n: int) -> bytes:
+    def _nonce_bytes(n: int, nonce_style: str = "custom") -> bytes:
+        if nonce_style == "standard":
+            return b"\x00\x00\x00\x00" + struct.pack("<Q", n & 0xFFFFFFFFFFFFFFFF)
         return b"\x00\x00\x00\x00" + struct.pack(">I", (n >> 32) & 0xFFFFFFFF) + struct.pack(">I", n & 0xFFFFFFFF)
 
     def encrypt_with_ad(self, ad: bytes, plaintext: bytes) -> bytes:
@@ -155,8 +181,10 @@ class CipherState:
 class SymmetricState:
     """Manages chaining key, handshake hash, and cipher state."""
 
-    def __init__(self, protocol_name: bytes = PROTOCOL_NAME):
-        self.cipher_state = CipherState()
+    def __init__(self, protocol_name: bytes = PROTOCOL_NAME,
+                 nonce_style: str = "custom"):
+        self.nonce_style = nonce_style
+        self.cipher_state = CipherState(nonce_style=nonce_style)
         self.ck = b""
         self.h = b""
         self.initialize_symmetric(protocol_name)
@@ -202,24 +230,36 @@ class SymmetricState:
         prk = hmac.new(self.ck, b"", hashlib.sha256).digest()
         t1 = hmac.new(prk, b"\x01", hashlib.sha256).digest()
         t2 = hmac.new(prk, t1 + b"\x02", hashlib.sha256).digest()
-        c1 = CipherState(t1[:32])
-        c2 = CipherState(t2[:32])
+        c1 = CipherState(t1[:32], nonce_style=self.nonce_style)
+        c2 = CipherState(t2[:32], nonce_style=self.nonce_style)
         return c1, c2
 
 
 class NoiseHandshakeState:
     """
-    Noise_XX Handshake State Machine (muse.ai custom variant):
+    Noise_XX Handshake State Machine, two modes (see module docstring):
+
+    custom (default):
       -> e
       <- e, ee, s, es
       -> e2 (second ephemeral), DH(e2, re)     # NOT standard -> s, se
+
+    standard (Noise XX per the framework spec):
+      -> e
+      <- e, ee, s, es
+      -> s, se
     """
 
-    def __init__(self, is_initiator: bool, static_key: Optional[x25519.X25519PrivateKey] = None):
+    def __init__(self, is_initiator: bool, static_key: Optional[x25519.X25519PrivateKey] = None,
+                 mode: str = "custom"):
+        if mode not in ("custom", "standard"):
+            raise ValueError("mode must be 'custom' or 'standard'")
         self.is_initiator = is_initiator
+        self.mode = mode
         self.static_key = static_key or x25519.X25519PrivateKey.generate()
         self.ephemeral_key = x25519.X25519PrivateKey.generate()
-        self.symmetric_state = SymmetricState()
+        nonce_style = "standard" if mode == "standard" else "custom"
+        self.symmetric_state = SymmetricState(nonce_style=nonce_style)
         self.remote_static: Optional[bytes] = None
         self.remote_ephemeral: Optional[bytes] = None
         self.stage = 0
@@ -296,6 +336,13 @@ class NoiseHandshakeState:
         return payload
 
     def write_msg3(self, payload: bytes = b"") -> Tuple[bytes, Tuple[CipherState, CipherState]]:
+        """Initiator sends msg3 and splits ciphers. Dispatches on mode:
+        custom -> second ephemeral e2 + DH(e2, re); standard -> s, se."""
+        if self.mode == "standard":
+            return self.write_msg3_standard(payload)
+        return self.write_msg3_custom(payload)
+
+    def write_msg3_custom(self, payload: bytes = b"") -> Tuple[bytes, Tuple[CipherState, CipherState]]:
         """Initiator sends custom msg3: second ephemeral e2, DH(e2, re).
 
         DEVIATION FROM STANDARD NOISE XX: the muse.ai client does NOT send
@@ -320,7 +367,37 @@ class NoiseHandshakeState:
         c_send, c_recv = self.symmetric_state.split()
         return e2_enc + payload_enc, (c_send, c_recv)
 
+    def write_msg3_standard(self, payload: bytes = b"") -> Tuple[bytes, Tuple[CipherState, CipherState]]:
+        """Initiator sends standard Noise XX msg3: -> s, se.
+
+        Encrypts the static public key, mixes DH(static_priv, remote_eph),
+        encrypts the payload. Completes handshake and splits ciphers.
+        """
+        if not self.is_initiator or self.stage != 2:
+            raise RuntimeError("write_msg3_standard only valid for initiator at stage 2")
+        if self.remote_ephemeral is None:
+            raise RuntimeError("remote ephemeral unknown: read_msg2 first")
+        s_pub = self.static_key.public_key().public_bytes(Encoding.Raw, PublicFormat.Raw)
+        s_enc = self.symmetric_state.encrypt_and_hash(s_pub)
+
+        # se: DH(s, re)
+        dh_se = self.static_key.exchange(
+            x25519.X25519PublicKey.from_public_bytes(self.remote_ephemeral))
+        self.symmetric_state.mix_key(dh_se)
+
+        payload_enc = self.symmetric_state.encrypt_and_hash(payload)
+        self.stage = 3
+        self.completed = True
+        c_send, c_recv = self.symmetric_state.split()
+        return s_enc + payload_enc, (c_send, c_recv)
+
     def read_msg3(self, msg: bytes) -> Tuple[bytes, Tuple[CipherState, CipherState]]:
+        """Responder reads msg3 and splits ciphers. Dispatches on mode."""
+        if self.mode == "standard":
+            return self.read_msg3_standard(msg)
+        return self.read_msg3_custom(msg)
+
+    def read_msg3_custom(self, msg: bytes) -> Tuple[bytes, Tuple[CipherState, CipherState]]:
         """Responder reads custom msg3: decrypt e2_pub, DH(s, e2_pub).
 
         Completes handshake and splits ciphers.
@@ -334,6 +411,29 @@ class NoiseHandshakeState:
         # DH(e_priv, e2_pub) — matches initiator's DH(e2_priv, re_pub)
         dh_e2re = self.ephemeral_key.exchange(x25519.X25519PublicKey.from_public_bytes(e2_pub))
         self.symmetric_state.mix_key(dh_e2re)
+
+        payload = self.symmetric_state.decrypt_and_hash(msg[48:])
+        self.stage = 3
+        self.completed = True
+        c_recv, c_send = self.symmetric_state.split()
+        return payload, (c_send, c_recv)
+
+    def read_msg3_standard(self, msg: bytes) -> Tuple[bytes, Tuple[CipherState, CipherState]]:
+        """Responder reads standard Noise XX msg3: decrypt s, DH(e, rs).
+
+        Completes handshake and splits ciphers.
+        """
+        if self.is_initiator or self.stage != 2:
+            raise RuntimeError("read_msg3_standard only valid for responder at stage 2")
+        if len(msg) < 48:  # 32 (s) + 16 (tag); payload follows
+            raise ValueError("Message 3 too short")
+        rs_pub = self.symmetric_state.decrypt_and_hash(msg[:48])
+        self.remote_static = rs_pub
+
+        # se: DH(e, rs)
+        dh_se = self.ephemeral_key.exchange(
+            x25519.X25519PublicKey.from_public_bytes(rs_pub))
+        self.symmetric_state.mix_key(dh_se)
 
         payload = self.symmetric_state.decrypt_and_hash(msg[48:])
         self.stage = 3

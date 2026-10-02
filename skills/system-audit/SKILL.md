@@ -1,3 +1,9 @@
+---
+name: system-audit
+description: >
+  System context capture before any latency or packet-trace audit. Records what the box is, what normal looks like for it, and what is competing for CPU, GPU, memory and IO at that moment, so a profile is never read without context. Triggers on: "system audit", "latency audit", "pcap", "system context".
+---
+
 # system-audit
 
 Run BEFORE any perf/latency audit on awrawr-pc. A packet trace or profile
