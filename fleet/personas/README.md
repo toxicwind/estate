@@ -1,4 +1,4 @@
-# docs/fleet/personas/ — one home per fleet identity
+# fleet/personas/ — one home per fleet identity
 
 One folder per fleet identity. Each named chat keeps its OWN standing files here — never in the shared root files.
 
@@ -16,7 +16,7 @@ One folder per fleet identity. Each named chat keeps its OWN standing files here
 ## Rules (Chris, 2026-09-21)
 
 1. The shared root files — `~/MEMORY.md`, `~/IDENTITY.md`, `~/SOUL.md`, `~/AGENTS.md` — belong to the main agent alone (**Ember**). No other instance writes them, ever. (Authorship guard: standing-edit + standing-guard.)
-2. Every other named chat keeps its own `MEMORY.md` / `IDENTITY.md` / `SOUL.md` / `AGENTS.md` in its own folder: `docs/fleet/personas/<name>/`.
+2. Every other named chat keeps its own `MEMORY.md` / `IDENTITY.md` / `SOUL.md` / `AGENTS.md` in its own folder: `fleet/personas/<name>/`.
 3. Personas are anchored (Chris 2026-09-21, fleet-spawn skill): a real furry character — name, species, personality — carrying lane + concrete task in plain words. `"<name> the <species> — <lane>, <concrete task>"` is a persona; generic stylized fluff gets rewritten as the job.
 4. Identity claims need Ember's authorization — "only ember can land grab." The roster marks each name confirmed / observed / reported.
 5. Each instance maintains its OWN files and keeps them current. Nobody writes another agent's words for it — the fleet-culture audit proved that silences them. `INDEX.md` (the roster) is a lane artifact.
@@ -30,7 +30,7 @@ flowchart TB
         SO[SOUL.md]
         AG[AGENTS.md]
     end
-    subgraph personas[docs/fleet/personas/]
+    subgraph personas[fleet/personas/]
         ROSTER[INDEX.md — the roster]
         F1[<name>/ — own MEMORY/IDENTITY/SOUL/AGENTS]
         F2[<other>/ — own MEMORY/IDENTITY/SOUL/AGENTS]
@@ -44,7 +44,7 @@ flowchart TB
 ## Layout
 
 ```text
-docs/fleet/personas/
+fleet/personas/
   README.md          — this file
   INDEX.md           — roster: name, persona, lane, home chat, status
   <name>/
@@ -58,14 +58,14 @@ docs/fleet/personas/
 
 ```bash
 # claim a persona folder (new named chat)
-mkdir -p docs/fleet/personas/<name>
+mkdir -p fleet/personas/<name>
 # write YOUR OWN files — nobody writes them for you
-$EDITOR docs/fleet/personas/<name>/IDENTITY.md
+$EDITOR fleet/personas/<name>/IDENTITY.md
 ```
 
 ## Canonical home
 
-`docs/fleet/personas/` in `toxicwind/sovereign-projects` (on yote, `/home/toxic/estate/docs/fleet/personas/`). Committed to canonical main; **the repo is the restore point**. Any cell-local copy is scratch.
+`fleet/personas/` in `toxicwind/sovereign-projects` (on yote, `/home/toxic/estate/fleet/personas/`). Committed to canonical main; **the repo is the restore point**. Any cell-local copy is scratch.
 
 Ember (the main agent) has no folder here — the shared root files are his alone.
 
