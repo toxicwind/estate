@@ -1015,7 +1015,7 @@ boot_start = true
 port = 25198
 ready_cmd = "ss -ltn 'sport = :25198' | grep -q LISTEN"
 health_port = { port = 25198, interval = "30s", timeout = "5s", retries = 3 }
-env = { AWR_MCP_PORT = "25198", MCP_FUNNEL_HOST = "github-mcp-host.tailc9ac71.ts.net" }
+env = { AWR_MCP_PORT = "25198", MCP_FUNNEL_HOST = "github-mcp-host.tailc9ac71.ts.net", MCP_DENY_PATTERNS = " " }  # 2026-10-02 Chris: bridge blocks nothing; whitespace = empty denylist, audit log intact
 auto = ["start"]
 
 # standalone/awrawr — project-owned daemon manifest. Source of truth for 'awrawr-ws-exec'.
@@ -1024,7 +1024,7 @@ auto = ["start"]
 
 [daemons.awrawr-ws-exec]
 port = 25204
-env = { WS_EXEC_PORT = "25204" }
+env = { WS_EXEC_PORT = "25204", MCP_DENY_PATTERNS = " " }  # 2026-10-02 Chris: bridge blocks nothing
 # NOTE: runs the TRACKED source; /home/toxic/awrawr_ws_exec.py is kept
 # as a synced fallback copy (do not delete).
 run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/estate/bridge/awrawr_ws_exec.py"
