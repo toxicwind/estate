@@ -177,7 +177,7 @@ across 3 project dirs vs D1's 3 shared-file edits.
   tables) parses; composition works (72.89 ms merge).
 - **Caveat:** D3 relies on mise *ignoring* unknown tables — true today, but it's
   coupling to leniency. And one-mise.toml-per-project is **not** current reality:
-  exactly one project (`tools/nuvio-platform`) has its own mise.toml; everything
+  exactly one project (`ranch/android-fleet/nuvio/nuvio-platform`) has its own mise.toml; everything
   else is parent-only (`/home/toxic/sovereign/mise.toml`).
 - Recommendation: **do not embed daemon stanzas in mise.toml.** If per-project
   mise files ever happen, keep daemon definitions in the adjacent

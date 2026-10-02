@@ -5,7 +5,7 @@
 ### 0.1 Prerequisites
 
 - [ ] Fork max level (streaming, MCP, pitchfork, boot all fixed)
-- [ ] Review Nuvio UX in tools/nuvio-platform/
+- [ ] Review Nuvio UX in ranch/android-fleet/nuvio/nuvio-platform/
 - [ ] Install WebOS SDK + ares-cli on toxic host
 - [ ] LG TV in developer mode and paired
 

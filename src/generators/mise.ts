@@ -100,23 +100,26 @@ export const miseGenerator: Generator = {
     lines.push('sshx = "sshx"');
     lines.push("");
 
-    // Nuvio platform tasks
-    lines.push("# ─── Nuvio Platform (webOS app) ───");
+    // Nuvio platform tasks. The tree moved to ranch/android-fleet/nuvio/ — it
+    // belongs with Chris's other screens, not loose in tools/.
     lines.push(
-      'nv-build = { run = "cd tools/nuvio-platform && npm run build:webos", dir = "tools/nuvio-platform" }',
+      "# ─── Nuvio Platform (webOS app) — lives with the rest of Chris's screens,",
+    );
+    lines.push("# under ranch/android-fleet/. See ranch/android-fleet/nuvio/README.md.");
+    const nvDir = "ranch/android-fleet/nuvio/nuvio-platform";
+    lines.push(
+      `nv-build = { run = "cd ${nvDir} && npm run build:webos", dir = "${nvDir}" }`,
     );
     lines.push(
-      'nv-test = { run = "cd tools/nuvio-platform && npm run test:coverage", dir = "tools/nuvio-platform" }',
+      `nv-test = { run = "cd ${nvDir} && npm run test:coverage", dir = "${nvDir}" }`,
     );
     lines.push(
-      'nv-package = { run = "cd tools/nuvio-platform && npm run package:webos", dir = "tools/nuvio-platform", depends = ["nv-build"] }',
+      `nv-package = { run = "cd ${nvDir} && npm run package:webos", dir = "${nvDir}", depends = ["nv-build"] }`,
     );
     lines.push(
       'health-notify = "mise run svc-check || curl -s -X POST -d Stack_degraded https://ntfy.sh/sovereign-alerts"',
     );
-    lines.push(
-      'nv-dev = { run = "cd tools/nuvio-platform && npm run dev", dir = "tools/nuvio-platform" }',
-    );
+    lines.push(`nv-dev = { run = "cd ${nvDir} && npm run dev", dir = "${nvDir}" }`);
     lines.push("");
 
     // Test tasks

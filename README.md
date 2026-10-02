@@ -82,7 +82,7 @@ Plus the agent layer: [`hatch/agents/ember`](hatch/agents/ember) (Ember's operat
 | `projects/shell/ii/` | `toxicwind/sovereign-end4` | Checked out. |
 | `tau/vendors` | `MoonshotAI/kimi-cli` | Root `tau/`, not `projects/tau`. Not initialized. |
 
-**Tier 4, vendored third-party, about 45 repos, never edit:** `projects/nim-repos/*` (26 NVIDIA-NIM community routers), `killer-features/*/vendor/*` (9 debate and auction research repos), `engines/herd/*` (3 llama.cpp forks: `beellama.cpp`, `ik_llama.cpp`, `llama-cpp-turboquant`), `projects/AURKA`, `projects/extagents`, `projects/llm-mapreduce`, `projects/deprecated/9router`, and 11 vendored submodules under `tools/nuvio-platform/submodules/`.
+**Tier 4, vendored third-party, about 45 repos, never edit:** `projects/nim-repos/*` (26 NVIDIA-NIM community routers), `killer-features/*/vendor/*` (9 debate and auction research repos), `engines/herd/*` (3 llama.cpp forks: `beellama.cpp`, `ik_llama.cpp`, `llama-cpp-turboquant`), `projects/AURKA`, `projects/extagents`, `projects/llm-mapreduce`, `projects/deprecated/9router`, and 11 vendored submodules under `ranch/android-fleet/nuvio/nuvio-platform/submodules/`.
 
 **Three name collisions to keep straight.**
 
