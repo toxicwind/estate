@@ -11,9 +11,6 @@ modelRoles:
   tiny: openrouter/liquid/lfm-2.5-2.6b:free
   memory: openrouter/liquid/lfm-2.5-2.6b:free
   verification: openrouter/liquid/lfm-2.5-2.6b:free
-  # Measured 200 latencies: lightning 571ms, nemotron-3-super 372ms,
-  # lfm-2.5 875ms. Never put a retired :free slug here — one 404 burns a
-  # doomed retry and surfaces a provider error instead of a model name.
   fallback: openrouter/nvidia/nemotron-3-super-120b-a12b:free
   web: web/exa
 defaultThinkingLevel: auto

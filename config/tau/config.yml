@@ -15,7 +15,6 @@ plugins:
   merged:
   - router-legacy
   - stockyard-flock-router
-  - sovereign-router
   privileged: true
 - name: barn-browser
   source: ./projects/range/ranch/barn/browserless
@@ -55,7 +54,6 @@ providers:
   openrouterVariant: default
   fetch: auto
 modelRoles:
-  # Estate sovereign router (127.0.0.1:25104) 2026-10-01: X-Sovereign-Strategy
   # "auto" (AST-shaped -> ast_race, else free-model race, else hybrid
   # fallback); 2M-context tier pins x-ai/grok-4.20 above 1M est tokens;
   # POST /v1/bodybuilder decomposes a natural-language job into parallel
@@ -116,7 +114,6 @@ subagents:
   - explorer
   - analyst
   - debugger
-  # Was sovereign/free — provider baseUrl http://127.0.0.1:25104/v1, which has
   # no daemon in pitchfork.toml at all and nothing listening. Every subagent
   # dispatch resolved to a dead endpoint. Same live default as modelRoles.
   defaultModel: openrouter/nvidia/nemotron-3.5-lightning:free
@@ -288,7 +285,6 @@ retry:
     - openrouter/liquid/lfm-2.5-2.6b:free
     - openrouter/nvidia/nemotron-3-super-120b-a12b:free
     - openrouter/nvidia/nemotron-3.5-lightning:free
-    # sovereign/free (:25104) and herd/qwen-flash-da-128k (:25100) are both
     # down — herd's dependency gatehouse aborts startup on a missing
     # projects/range/ranch/barn/gatehouse/bin/github-mcp.sh. These two are verified
     # 200 against openrouter and restore the chain's whole point.
