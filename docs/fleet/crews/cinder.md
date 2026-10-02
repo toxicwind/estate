@@ -4,7 +4,7 @@ scope: 'subagent-control plane (2026-10-02 clean-slate relaunch): fail-closed re
 owner: 'Ember (Chris''s main agent)'
 order: 83
 registered: '2026-09-21'
-status: 'DONE (2026-10-02) -- Cinder: checkpoint/resume hardening complete. Dead-mid-turn lanes now resume from checkpoint: recover cmd (kill classification, fail-closed <10m guard, v3 checkpoints, kill-aware brief), lane-resume driver, stale-heartbeat auto-capture (event-driven). E2E proven live, 26+19 tests green. Commits: ranch e1f4cda, estate 4e158617ee + 56b32bd665. Push pending Chris: GitHub creds dead since 2026-10-02 ~06:30 MDT.'
+status: 'RUNNING (2026-10-02) -- Cinder: lane-resume follow-on. Closing the gaps the drill exposed: (1) spawn registry so recover resolves real lane/persona/brief instead of deriving agent-fb3225ee from thin metadata, (2) estate-wide death sweep beyond the worker queue (side-chat lanes killed outside the queue have no coverage), (3) box-aware agent/checkpoint paths. Chris bar: find the work, don\'t wait for it.'
 updated: '2026-10-02'
 ---
 
