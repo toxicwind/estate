@@ -1,6 +1,6 @@
 ---
 crew: 'tally'
-scope: 'pack verifier: audit DONE claims against observed evidence (tool calls, files, SHAs, test output)'
+scope: 'Tally: wave4 verification — audit wave4 lane completion claims against observed evidence (files, commit SHAs, test output)'
 owner: 'ember'
 status: 'RUNNING (2026-10-02)'
 order: 1000000011
