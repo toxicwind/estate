@@ -293,10 +293,23 @@ cmd_watch() {
     d="$(dirname "$path")"
     case " ${dirs[*]} " in *" $d "*) : ;; *) dirs+=("$d") ;; esac
   done
-  _log "watch started on: ${dirs[*]}"
-  _out "watching: ${dirs[*]}"
+  # Degraded-watch (2026-10-02, warden): declared paths can go stale (estate
+  # migration moved ranch). A missing dir must not kill the whole watch loop --
+  # skip it LOUDLY and keep watching the rest. The manifest (declared intent)
+  # is untouched here; the stale declared path still shows as drift in `check`.
+  local live_dirs=() missing=()
+  for d in "${dirs[@]}"; do
+    if [ -d "$d" ]; then live_dirs+=("$d"); else missing+=("$d"); fi
+  done
+  if [ "${#missing[@]}" -gt 0 ]; then
+    _log "WATCH-DEGRADED missing watch dirs: ${missing[*]} (declared paths stale?)"
+    _squawk "estate-reconcile watch DEGRADED" "Watch directories missing - declared manifest paths stale after the estate migration: ${missing[*]}. Watch continues on: ${live_dirs[*]}. Manifest declared-path fix needs a human/oracle decision (rebuild, bless, or trusted copy)."
+  fi
+  _log "watch started on: ${live_dirs[*]}"
+  _out "watching: ${live_dirs[*]}"
+  [ "${#live_dirs[@]}" -eq 0 ] && { _out "FATAL: no watch directories exist"; exit 1; }
   inotifywait -m -q -e modify,attrib,move,delete,moved_to,moved_from,create \
-    --format '%w%f %e' "${dirs[@]}" 2>/dev/null | while read -r evpath ev; do
+    --format '%w%f %e' "${live_dirs[@]}" 2>/dev/null | while read -r evpath ev; do
     sleep 1   # debounce burst writes
     # Self-exclusion (2026-09-30, torque): events on the warden's own binary,
     # log, ledger, locks, or dedupe state are deploys/housekeeping, not drift.
