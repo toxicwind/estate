@@ -1,104 +1,68 @@
-# code-racer-swe
+# code-racer-swe {badges}
 
-[![CI](https://github.com/toxic/estate/skills/code-racer-swe/actions/workflows/ci.yml/badge.svg)]
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)]
+<!-- badges: start -->
+<a href="https://github.com/toxicwind/sovereign-projects">
+  <img src="https://img.shields.io/badge/github-toxicwind/sovereign--projects-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub repo">
+</a>
+<a href="https://bun.sh">
+  <img src="https://img.shields.io/badge/bun-js_runtime-7f5af0?style=for-the-badge&logo=bun&logoColor=white" alt="Bun">
+</a>
+<!-- badges: end -->
 
-A universal code racer and dynamic AST engine for autonomous software engineering agents. code-racer-swe enables agents to race multiple code implementations, compare performance, and select optimal solutions.
+## Universal Code Racer and Dynamic AST Engine for autonomous software engineering agents.
 
-## Hero
+**What**: Integrates the `universal-code-racer` benchmarking paradigm directly into the autonomous agent loop. Dynamically benchmarks competing retrieval routes and candidate patch fixes under strict garbage collection isolation and nanosecond timing.
 
-Accelerate software development by automatically racing code implementations and choosing the fastest, most efficient solution.
+**Why**: Enables empirical multi-route symbol indexing and candidate patch benchmarking — critical for evaluating the performance and correctness of code modifications in autonomous agents.
 
-## Features
+**Who**: Provides high-precision timing and candidate ranking for software engineering tasks involving retrieval and patch generation.
 
-- **Multi-impl Racing** — simultaneously execute and compare different code implementations
-- **Dynamic AST Analysis** — parse, optimize, and profile code structures in real-time
-- **Performance Benchmarking** — measure execution speed, memory usage, and resource consumption
-- **Optimization Suggestions** — receive actionable refactoring recommendations
-- **Agent Orchestration** — coordinate multiple agents for distributed testing
+## Feature bullets
 
-## Quick Start
+- **Code Racer**: `scripts/code_racer.py` — High-precision monotonic timing and candidate ranking engine
+- **AST Indexer**: `scripts/ast_indexer.py` — Dual-pass regex/AST scanner for instant sync and async symbol indexing
+- **Circuit Breaker**: `scripts/circuit_breaker.py` — Task budget manager and automated git rollback controller
+- **Resources**: `resources/code_racing_protocol.md` — Step-by-step instructions for candidate patch racing inside `/workspace`
+- **Garbage collection isolation**: Strict isolation for reliable benchmarking
+- **Nanosecond timing**: High-precision monotonic timing for candidate evaluation
+- **Multi-route benchmarking**: Competing retrieval routes benchmarked concurrently
+- **Candidate patch fixing**: Benchmarks different approaches to patch generation
 
-```bash
-# Install code-racer-swe
-pip install code-racer-swe
-
-# Race two implementations
-code-racer-swe race hello_world.c impl1.c impl2.c
-
-# Compare performance
-code-racer-swe profile --benchmark app.py
-
-# Get optimization suggestions
-code-racer-swe suggest --target function.py
-```
-
-## Architecture
-
-Code-racer-swe follows a three-stage pipeline:
-
-1. **Parser** — extracts AST and metadata from source files
-2. **Racer** — executes implementations in sandboxed environments
-3. **Analyzer** — compares results and generates optimization reports
-
-Key components:
-- **AST Engine** — structural refactoring and optimization passes
-- **Race Controller** — manages concurrent execution and timing
-- **Benchmark Suite** — standardized performance measurement protocols
-- **Suggestion Engine** — generates code improvements based on benchmarks
-
-## Configuration
-
-Configuration is managed via `config/racer.yaml`:
-
-```yaml
-races:
-  enabled: true
-  max_implementations: 5
-  timeout_per_impl: 300
-  parallelism: 4
-
-metrics:
-  warmup_runs: 3
-  sample_size: 100
-  sampling_interval: 10ms
-
-suggestions:
-  enable_refactoring: true
-  priority: high
-  output_format: json
-```
-
-## Optional Services
-
-- **Distributed Racer** — scales across multiple machines for massive parallelism
-- **Cloud Integration** — connects to cloud functions for offloading heavy computations
-- **Integration SDK** — plugins for IDEs and CI/CD pipelines
-
-## Development
+## Quick start
 
 ```bash
-# Clone the repository
-git clone https://github.com/toxic/estate/skills/code-racer-swe
-cd code-racer-swe
+# High-precision timing and candidate ranking
+python scripts/code_racer.py --help
 
-# Install dependencies
-pip install -e .
+# Dual-pass regex/AST symbol indexing
+python scripts/ast_indexer.py --help
 
-# Run the test suite
-pytest
+# Task budget management and git rollback
+python scripts/circuit_breaker.py --help
 
-# Start the racer daemon
-code-racer-swe daemon --config config/racer.yaml
+# Code racing protocol (step-by-step instructions)
+cat resources/code_racing_protocol.md
 ```
 
-## License
+## Config / optional services
 
-MIT License.
+- **Garbage collection isolation**: Strict GC isolation for reliable benchmarking results
+- **Nanosecond timing**: Monotonic timing engine for nanosecond precision
+- **Dual-pass AST indexing**: Instant sync and async symbol indexing via regex/AST scanning
+- **Task budget management**: Prevents runaway execution times with automated rollback
+- **Code racing protocol**: `resources/code_racing_protocol.md` for operational guidance
 
-## Security
+## Dev / contributing
 
-- Sandboxed execution prevents malicious code from harming the host
-- Resource limits prevent infinite loops or excessive CPU usage
-- All race results are cryptographically signed
-- Secure communication channels for distributed races
+- **Universal-code-racer paradigm**: Integrated directly into the autonomous agent loop
+- **Strict garbage collection isolation**: Ensures reliable, reproducible benchmarking
+- **Nanosecond timing**: High-precision monotonic timing for candidate evaluation
+- **Multi-route symbol indexing**: Empirical evaluation of competing retrieval approaches
+- **Candidate patch benchmarking**: Objective comparison of different fix strategies
+- **Automated git rollback**: Circuit breaker prevents repository corruption from bad patches
+- **No artificial sleeps, polling loops, or timeouts-as-delays**: Event-driven where applicable
+
+## License + security
+
+- **License**: Open Claw source (see `skill.toml`)
+- **Security**: Strict garbage collection isolation prevents side effects between benchmarks. Automated git rollback protects repository state. Nanosecond timing is monotonic and isolated — no shared state between runs.

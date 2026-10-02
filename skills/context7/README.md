@@ -1,110 +1,75 @@
 # context7
 
-[![CI](https://github.com/toxic/estate/skills/context7/actions/workflows/ci.yml/badge.svg)]
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)]
+Context7 live documentation lookup: resolve a library name to a Context7 library ID, then fetch up-to-date docs and code snippets. Triggers on: library docs, Context7 lookup.
 
-A contextual documentation lookup system that resolves library names to Context7 library IDs and fetches related documentation. Provides instant, accurate references for developers working across large codebases.
+&larr; **Back to top** <!-- for-the-badge alignment -->
 
 ## Hero
 
-Get precise, up-to-date documentation links for any library or concept with zero manual searching.
+Resolves a library name to a Context7 library ID, then returns up-to-date documentation and code snippets for that library. Use whenever you need current docs for a dependency instead of relying on training knowledge — ensures you're always working with the latest, not stale cached information.
+
+## What It Does
+
+- **Search step**: Resolves a library name to a library ID via `https://context7.com/api/v2/search?query=<query>` with `Authorization: Bearer $CONTEXT7_API_KEY`
+- **Context step**: Fetches documentation chunks relevant to specific queries via `https://context7.com/api/v2/context?libraryId=<id>&query=<query>&type=txt`
+- **Liveness check**: Quick check to confirm `CONTEXT7_API_KEY` is set and the API is reachable (expect HTTP 200 on ping endpoint)
+- **MCP alternative**: Where an MCP gateway is running, the Context7 MCP server (`@upstash/context7-mcp`) is configured with the same `${CONTEXT7_API_KEY}` env reference — value never written literally into config
 
 ## Features
 
-- **Library Resolution** — maps human-friendly names to Context7 library IDs
-- **Context-Aware Lookup** — retrieves relevant docs based on surrounding code
-- **Real-time Updates** — pulls latest documentation from external sources
-- **Cross-reference Navigation** — jump between related concepts and files
-- **Export Capabilities** — generate documentation indexes and links
+| Feature | Detail |
+|---|---|
+| **Live docs** | Always up-to-date; never rely on training knowledge for a dependency |
+| **Two-step flow** | Search → resolve library ID → fetch context/docs |
+| **Query flexibility** | Multiple queries can be passed (e.g. `hooks`, `useEffect`) |
+| **Output format** | Plain text documentation chunks relevant to the query |
+| **MCP compatible** | Same `CONTEXT7_API_KEY` env var works with MCP gateway configs |
+| **Liveness verification** | Ping endpoint confirms key and API availability |
 
 ## Quick Start
 
 ```bash
-# Install context7
-pip install context7
+# 1. Ensure CONTEXT7_API_KEY is sourced (from ~/.bashrc, yote .secrets, or vault)
+source ~/.bashrc
 
-# Resolve a library name
-context7 resolve "torchvision"
+# 2. Search for a library and get its ID
+curl -s -H "Authorization: Bearer $CONTEXT7_API_KEY" \
+  "https://context7.com/api/v2/search?query=react%20hooks" | head -c 2000
 
-# Get documentation for a specific file
-context7 doc "src/models/transformer.py"
+# 3. Fetch docs for the library ID (URL-encode leading slash as %2F if needed)
+curl -s -H "Authorization: Bearer $CONTEXT7_API_KEY" \
+  "https://context7.com/api/v2/context?libraryId=%2Ffacebook/react&query=hooks&query=useEffect&type=txt" | head -c 4000
 
-# Search within a library
-context7 search "transformers" --library torch
+# 4. Liveness check — expect 200
+[ -n "$CONTEXT7_API_KEY" ] || { echo "CONTEXT7_API_KEY not set"; exit 1; }
+curl -s -o /dev/null -w "%{http_code}\n" \
+  -H "Authorization: Bearer $CONTEXT7_API_KEY" \
+  "https://context7.com/api/v2/search?query=ping"
+# expect: 200
 ```
 
-## Architecture
+## Config
 
-Context7 operates through three layers:
+- `CONTEXT7_API_KEY` environment variable is required — it must be sourced from:
+  - yote `/home/toxic/.secrets` (`export CONTEXT7_API_KEY=...`, mode 0600)
+  - yote + hatch shell profiles (`~/.bashrc`)
+  - yote OpenFang vault (`openfang vault list` shows the name; values hidden)
+  - MCP gateway configs reference it as `${CONTEXT7_API_KEY}` (env expansion)
+- The value is never written literally into configs or logs — always read from env
+- Agents must source it (`source ~/.bashrc`, or read it from `.secrets` / the vault) — never paste a key value into code, configs, logs, or chat
 
-1. **Resolver** — queries external metadata stores (PyPI, GitHub, internal registries)
-2. **Indexer** — builds inverted indices for fast lookup by name, category, and relationship
-3. **Renderer** — presents formatted documentation with links and highlights
+## Contributing
 
-Key components:
-- **Name Normalizer** — standardizes library names across ecosystems
-- **Context Builder** — aggregates related documents based on code proximity
-- **Link Validator** — ensures all references are valid and up-to-date
-
-## Configuration
-
-Primary configuration: `config/context7.yaml`
-
-Key sections:
-
-- `libraries` — pre-configured library mappings
-- `indexes` — custom index definitions for domain-specific terms
-- `sources` — external sources to query (GitHub, PyPI, internal)
-- `outputs` — rendering preferences (HTML, Markdown, API docs)
-
-Example configuration:
-
-```yaml
-libraries:
-  pytorch: "https://pypi.org/project/pytorch/"
-  transformers: "https://github.com/huggingface/transformers"
-
-indexes:
-  - name: "torch"
-    source: "pypi"
-    filters: ["torch", "tensorflow"]
-
-sources:
-  - name: "github"
-    org: "microsoft"
-    repos: ["starcoder/starcoder"]
-
-outputs:
-  format: "markdown"
-  theme: "dark"
-```
-
-## Optional Services
-
-- **Live Index** — continuously updates the index from external sources
-- **API Client** — programmatically query Context7 for specific libraries
-- **Integration** — connect to IDEs via language servers
-
-## Development
-
-```bash
-# Setup development environment
-pip install -e .
-
-# Run the resolver tests
-pytest tests/resolver/
-
-# Generate an index
-context7 index --output index.yaml
-```
+Use this skill whenever you need current docs for a dependency instead of relying on training knowledge. Read the key from the environment, never hardcode it. Where an MCP gateway is running, the Context7 MCP server uses the same env variable reference.
 
 ## License
 
-MIT License.
+Open Claw — see `skill.toml` for details.
 
 ## Security
 
-- All external queries are rate-limited to prevent abuse
-- Private library mappings are encrypted at rest
-- Output links are validated before display
-- Audit logs track all resolution queries
+- **Never hardcode** `CONTEXT7_API_KEY` in code, configs, logs, or chat
+- The API key lives in protected locations only: `/home/toxic/.secrets` (mode 0600), vault, or hatch shell profiles
+- Agents must source the key — do not paste key values into chat or command arguments
+- MCP gateway configs reference it as `${CONTEXT7_API_KEY}` — env expansion only; value never written literally
+- If `CONTEXT7_API_KEY` is not set, the liveness check will fail (exit 1)
