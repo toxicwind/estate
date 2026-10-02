@@ -3,7 +3,7 @@
 
 
 [daemons.codebase-memory]
-run = "exec /home/toxic/sovereign/tools/codebase-memory/run.sh"
+run = "exec /home/toxic/estate/tools/codebase-memory/run.sh"
 dir = "/home/toxic"
 mise = false
 retry = true

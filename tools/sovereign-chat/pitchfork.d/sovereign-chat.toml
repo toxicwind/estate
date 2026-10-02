@@ -22,3 +22,8 @@ auto = ["start"]
 # This track (github.com/toxicwind/chat-coord, was :25152) is retired per the
 # consolidation order; repo kept as pushed for history. Do not re-enable
 # without a main-chat verdict.
+
+# Sovereign Router (bun router.ts v3.2) -- intelligent free-pool routing behind
+# the fleet default model sovereign/free (:25104). Restored 2026-09-27: this
+# daemon never had a pitchfork entry, so the 2026-09-21 ad-hoc deploy died
+# silently in the 9/26 yote flaps. Owned by pitchfork now, auto-started.

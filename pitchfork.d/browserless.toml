@@ -6,7 +6,6 @@ dir = "."
 run = "exec /home/toxic/estate/ranch/barn/browserless/server/run.sh"
 ready_port = 25130
 depends = ["gatehouse"]
-env = { SOVEREIGN_ROUTER_PORT = "25104" }
 auto = ["start"]
 
 # WhatsApp Cloud API MCP server + inbound webhook (2026-09-14).

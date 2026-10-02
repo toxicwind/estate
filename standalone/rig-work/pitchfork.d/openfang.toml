@@ -5,7 +5,7 @@
 [daemons.openfang]
 env = { OPENFANG_KERNEL_PORT = "25196" }
 port = 25196
-run = "exec /home/toxic/sovereign/ops/openfang-run.sh"
+run = "exec /home/toxic/estate/ops/openfang-run.sh"
 dir = "/home/toxic/projects/rig-work"
 mise = false
 retry = true

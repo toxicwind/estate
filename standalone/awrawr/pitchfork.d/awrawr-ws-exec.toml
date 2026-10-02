@@ -7,7 +7,7 @@ port = 25204
 env = { WS_EXEC_PORT = "25204" }
 # NOTE: runs the TRACKED source; /home/toxic/awrawr_ws_exec.py is kept
 # as a synced fallback copy (do not delete).
-run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/sovereign/bridge/awrawr_ws_exec.py"
+run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/estate/bridge/awrawr_ws_exec.py"
 dir = "/home/toxic"
 mise = false
 retry = true
