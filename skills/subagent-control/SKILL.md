@@ -140,6 +140,29 @@ never corrupt it, because commits are the only thing that counts.
    continuity as "<name> (continued from <old-id>)". Replay from the last
    verified commit point; completed steps are never redone.
 
+4. **Recover a dead lane (killed mid-turn — no checkpoint was captured):**
+   When a lane dies mid-turn (pi_check classifier kill, runtime kill, stale
+   heartbeat) and there was never a chance to `capture`, do NOT start over.
+   `lane-resume` classifies the death from the session tail, captures a
+   post-mortem checkpoint, and prints the kill-aware respawn brief:
+   ```
+   lane-resume scan                      # who died mid-turn and how
+   lane-resume recover <agent-id> --force  # checkpoint + respawn brief
+   # paste the brief into subagent.spawn
+   ```
+   Kill kinds: `runtime-kill` (unanswered calls / aborted in-flight result →
+   resume as-is, no rephrasing), `refusal-kill` (classifier signature in the
+   death window → the brief demands a BEHAVIORAL rephrase of the refused
+   step before redoing it; a refusal is never a verdict), `completed` (no
+   checkpoint — the lane finished), `unknown` (not enough evidence).
+   Fail-closed: `recover` refuses agents whose session was modified <10m ago
+   (probably still alive — recovering one would fork the lane); `--force`
+   only for known-dead agents. Checkpoints are version 3 and carry the kill
+   metadata (`kill_kind`, `last_verified_step`, `rephrase_required`).
+   The stale-heartbeat path in `worker-queue-watch.ts` auto-captures: a
+   queued worker whose heartbeat goes stale gets a checkpoint + a fleet
+   alert with the resume command, event-driven (no polling).
+
 **Fail-closed rule:** no checkpoint file → no restart. A restart without
 a checkpoint is how duplicate fleet posts and double KB rows happen.
 
