@@ -1,0 +1,13 @@
+{
+  "name": "@toxicwind/phone-backup",
+  "version": "2026.9.30",
+  "description": "μ-speed phone backup: hybrid parallel ADB pull with SQLite incremental manifest",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "bun src/index.ts",
+    "pull": "bun src/index.ts pull",
+    "verify": "bun src/index.ts verify",
+    "clean": "bun src/index.ts clean"
+  }
+}

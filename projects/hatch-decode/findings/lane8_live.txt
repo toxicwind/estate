@@ -1,0 +1,32 @@
+== cmdline ==
+/opt/hatch/bin/hatch daemon --runtime-cell-leader=1960 
+
+== status ==
+State:	S (sleeping)
+PPid:	0
+VmRSS:	 1578548 kB
+Threads:	17
+
+== wchan ==
+0
+
+== maps: shared libs ==
+
+== fd count ==
+210
+
+== hatch sockets ==
+u_str LISTEN 0      4096      /run/hatch/sandbox/space-inference.sock 28218              * 0          
+u_str LISTEN 0      4096     /run/hatch/sandbox/space-web-search.sock 28219              * 0          
+u_str LISTEN 0      4096     /run/hatch/sandbox/space-privileged.sock 28220              * 0          
+u_str LISTEN 0      4096          /run/hatch/sandbox/space-media.sock 28221              * 0          
+u_str LISTEN 0      4096              /run/hatch/sandbox-api/api.sock 28222              * 0          
+u_str LISTEN 0      100      /home/hatch/.cache/awrawr-ws-bridge.sock 2093902            * 0          
+
+== /etc/hatch mtimes ==
+2026-09-20 19:26:28.792192998 -0600 1962 /etc/hatch/env
+2026-09-20 19:26:28.802192999 -0600 1 /etc/hatch/env.override
+
+== env.override content ==
+
+(end)

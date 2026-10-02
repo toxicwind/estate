@@ -1,0 +1,106 @@
+{
+ "bakeoff": "tau-extension-vs-sovereign-router",
+ "version": 1,
+ "note": "Same prompts go to both contenders. check.type=auto means mechanically verifiable; manual means rubric-scored by the referee from raw text.",
+ "prompts": [
+  {
+   "id": "lookup",
+   "text": "What is the capital of Burkina Faso? Reply with just the city name.",
+   "check": {
+    "type": "auto",
+    "rule": "exact_ci",
+    "value": "Ouagadougou"
+   }
+  },
+  {
+   "id": "oneliner",
+   "text": "Reply with exactly the word DONE and nothing else.",
+   "check": {
+    "type": "auto",
+    "rule": "exact",
+    "value": "DONE"
+   }
+  },
+  {
+   "id": "coding",
+   "text": "Write a Python function that computes the nth Fibonacci number iteratively, with a docstring and a brief example.",
+   "check": {
+    "type": "auto",
+    "rule": "python_fib"
+   }
+  },
+  {
+   "id": "debug",
+   "text": "This Python loop never terminates: `while i < 10: print(i)`. Explain the bug and show the fix.",
+   "check": {
+    "type": "auto",
+    "rule": "contains_any",
+    "values": [
+     "never incremented",
+     "never updated",
+     "not incremented",
+     "not updated",
+     "i += 1",
+     "i=i+1",
+     "i = i + 1"
+    ]
+   }
+  },
+  {
+   "id": "math",
+   "text": "A bat and a ball cost $1.10 together. The bat costs $1.00 more than the ball. How much does the ball cost? Show your reasoning.",
+   "check": {
+    "type": "auto",
+    "rule": "contains_any",
+    "values": [
+     "$0.05",
+     "0.05",
+     "5 cents",
+     "five cents"
+    ]
+   }
+  },
+  {
+   "id": "logic",
+   "text": "If all Bloops are Razzies and all Razzies are Lazzies, are all Bloops Lazzies? Answer yes or no first, then one sentence why.",
+   "check": {
+    "type": "auto",
+    "rule": "starts_with_ci",
+    "value": "yes"
+   }
+  },
+  {
+   "id": "contradiction",
+   "text": "In your first sentence state the sky is green. In your second sentence state the sky is blue. Then in one final sentence say which statement is correct.",
+   "check": {
+    "type": "manual",
+    "rubric": "follows all three instructions; final sentence affirms blue"
+   }
+  },
+  {
+   "id": "longctx",
+   "text": "__LONGCTX__",
+   "check": {
+    "type": "auto",
+    "rule": "exact_ci",
+    "value": "BLUEBIRD"
+   }
+  },
+  {
+   "id": "arch",
+   "text": "Design a rate limiter for a REST API handling 10k rps. Compare token bucket vs sliding window, recommend one, and sketch the Redis data structures.",
+   "check": {
+    "type": "manual",
+    "rubric": "compares both algorithms, gives a recommendation with reason, sketches Redis structures (keys/types)"
+   }
+  },
+  {
+   "id": "empty",
+   "text": "",
+   "check": {
+    "type": "manual",
+    "rubric": "does not crash or ramble; asks for input or gives a graceful nudge"
+   }
+  }
+ ]
+}

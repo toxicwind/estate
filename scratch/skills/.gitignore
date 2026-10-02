@@ -1,0 +1,46 @@
+# Local secrets — NEVER commit. Copy the sibling .env.example and fill in your own values.
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*credentials*.json
+*token*.json
+secrets.yaml
+.secrets
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+
+# Node
+node_modules/
+
+# Logs and OS junk
+*.log
+.DS_Store
+Thumbs.db
+
+# Regenerable skill staging (rebuild via each skill's build/setup step)
+portable-binfs/.local/
+
+# Runtime state — re-syncable, never source of truth
+encrypted-github-fs/store/
+
+# Large local bundle cache — canonical source is the Google Drive folder
+# documented in env-log-debugger/SKILL.md; re-download, do not commit
+/env-log-debugger/awrawr-pc-portable-bundle.zip
+
+# token-scrub 2026-09-14: never commit secret-shaped files
+*.pat
+github_*_pat.json
+.env*
+*secret*

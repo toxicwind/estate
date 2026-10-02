@@ -1,0 +1,46 @@
+#!/bin/bash
+# qs-launch — canonical quickshell launcher (sovereign/projects/shell).
+# Usage: qs-launch [-c CONFIG] [--systemd] [quickshell args...]
+#   default: single-instance guarded, env auto-detected, detached via setsid,
+#            logs to ~/.local/state/quickshell/launch.log, DP-1/DP-2 sanity check.
+#   --systemd: foreground mode for the quickshell-ii.service unit (no detach,
+#            no pgrep guard — systemd is the supervisor); execs quickshell.
+set -u
+QS_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+. "$QS_HOME/lib/qs-common.sh"
+
+CONFIG="$QS_CONFIG_NAME"
+SYSTEMD=0
+ARGS=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -c) CONFIG="${2:-$QS_CONFIG_NAME}"; ARGS+=("$1" "$2"); shift 2 ;;
+    --systemd) SYSTEMD=1; shift ;;
+    *) ARGS+=("$1"); shift ;;
+  esac
+done
+
+qs_detect_env
+
+if [ "$SYSTEMD" = "1" ]; then
+  qs_log "systemd mode: exec quickshell -c $CONFIG (display=$WAYLAND_DISPLAY his=${HYPRLAND_INSTANCE_SIGNATURE:-unset})"
+  exec /usr/bin/quickshell "${ARGS[@]}"
+fi
+
+if [ -n "$(qs_pids)" ]; then
+  echo "quickshell already running (pids: $(qs_pids | tr '\n' ' ')); use qs-restart to bounce it"
+  exit 0
+fi
+
+if command -v hyprctl >/dev/null 2>&1 && [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+  MONS="$(hyprctl monitors 2>/dev/null)"
+  MISSING=""
+  for m in DP-1 DP-2; do
+    echo "$MONS" | grep -q "^Monitor $m (" || MISSING="$MISSING $m"
+  done
+  [ -n "$MISSING" ] && echo "WARN: expected monitors not active:$MISSING (launching anyway)"
+fi
+
+qs_log "=== launch config=$CONFIG display=$WAYLAND_DISPLAY his=${HYPRLAND_INSTANCE_SIGNATURE:-unset} ==="
+setsid nohup /usr/bin/quickshell "${ARGS[@]}" >>"$QS_LAUNCH_LOG" 2>&1 < /dev/null &
+echo "launched quickshell pid $! (config=$CONFIG)"

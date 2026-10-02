@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+"""buildsrvd — the fleet's continuous-modification engine.
+
+A pitchfork-managed build daemon (stdlib-only Python). It watches a
+disk-backed job queue, runs builds through the user's login shell
+(`bash -lc`, so mise toolchains resolve exactly as they do for Chris),
+streams logs to per-job files, and caches artifacts keyed by content hash
+of the job spec.
+
+Job semantics (forward-only):
+  * The daemon NEVER touches the working tree — no git checkout, stash,
+    or revert. The build command sees the tree exactly as it is.
+  * Jobs iterate forward on the tree; re-submitting an identical job is
+    a cache-hit no-op that returns the previous result.
+  * Interrupted jobs (daemon restart mid-run) are re-queued cleanly;
+    nothing is ever half-applied because nothing is applied at all —
+    only the build command runs.
+
+Layout under $BUILDSRV_ROOT (default /home/toxic/buildsrv):
+  queue/      pending job specs: <id>.json
+  active/     claimed by this daemon (moved back to queue/ on boot)
+  logs/       <id>.log — streamed while the build runs, tail-able
+  results/    <id>.json — terminal result record
+  artifacts/  <jobhash>/ — copied build outputs + manifest.json
+  state.json  job ledger (status, attempts, hashes, timings)
+
+Health: http://127.0.0.1:$BUILDSRV_PORT/health
+"""
+import hashlib
+import json
+import os
+import shutil
+import signal
+import subprocess
+import sys
+import threading
+import time
+from datetime import datetime, timezone
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from pathlib import Path
+
+ROOT = Path(os.environ.get("BUILDSRV_ROOT", "/home/toxic/buildsrv"))
+QUEUE = ROOT / "queue"
+ACTIVE = ROOT / "active"
+LOGS = ROOT / "logs"
+RESULTS = ROOT / "results"
+ARTIFACTS = ROOT / "artifacts"
+STATE_FILE = ROOT / "state.json"
+PID_FILE = ROOT / "buildsrvd.pid"
+
+PORT = int(os.environ.get("BUILDSRV_PORT", "25148"))
+MAX_WORKERS = int(os.environ.get("BUILDSRV_WORKERS", "2"))
+POLL_INTERVAL = float(os.environ.get("BUILDSRV_POLL", "2"))
+
+# toolchain -> primary binary the daemon preflights via the login shell
+# (mise shims live on the login PATH, so this also proves mise resolution).
+TOOLCHAIN_BINS = {
+    "rust": "cargo", "cargo": "cargo",
+    "go": "go",
+    "bun": "bun",
+    "node": "node",
+    "python": "python3", "python3": "python3",
+    "tsc": "bun",
+}
+
+TERMINAL = {"succeeded", "failed", "cached"}
+
+
+def now_iso():
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def log(msg):
+    print(f"[buildsrvd {time.strftime('%H:%M:%S')}] {msg}", flush=True)
+
+
+for d in (QUEUE, ACTIVE, LOGS, RESULTS, ARTIFACTS):
+    d.mkdir(parents=True, exist_ok=True)
+
+state_lock = threading.Lock()
+state = {"jobs": {}, "counters": {"succeeded": 0, "failed": 0}}
+shutdown = threading.Event()
+active_threads = 0
+boot_time = time.time()
+
+
+def load_state():
+    global state
+    try:
+        with open(STATE_FILE) as f:
+            loaded = json.load(f)
+        if isinstance(loaded, dict) and "jobs" in loaded:
+            state = loaded
+            log(f"loaded state: {len(state['jobs'])} jobs on record")
+    except FileNotFoundError:
+        log("no state file yet — starting fresh")
+    except Exception as e:
+        log(f"WARN: state file unreadable ({e}) — starting fresh")
+
+
+def save_state():
+    tmp = STATE_FILE.with_suffix(".tmp")
+    with state_lock:
+        payload = json.dumps(state, indent=1, sort_keys=True)
+    tmp.write_text(payload)
+    tmp.replace(STATE_FILE)
+
+
+def job_hash(job):
+    canon = {
+        "repo": job.get("repo"),
+        "workdir": job.get("workdir"),
+        "toolchain": job.get("toolchain"),
+        "cmd": job.get("cmd"),
+        "env": job.get("env") or {},
+        "artifacts": job.get("artifacts") or [],
+    }
+    return hashlib.sha256(
+        json.dumps(canon, sort_keys=True).encode()
+    ).hexdigest()
+
+
+def preflight(job):
+    """Fail fast with a clear message if the toolchain is missing."""
+    tc = (job.get("toolchain") or "").lower()
+    binary = TOOLCHAIN_BINS.g

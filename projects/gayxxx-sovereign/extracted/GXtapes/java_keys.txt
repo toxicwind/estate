@@ -1,0 +1,3 @@
+"getHasChromecastSupport"
+"getHasDownloadSupport"
+"hasChromecastSupport"

@@ -1,0 +1,67 @@
+{
+  "name": "subhan-skills",
+  "owner": {
+    "name": "Subhan Mahmood",
+    "url": "https://github.com/subhan-io"
+  },
+  "description": "Personal agent skills, installable on any machine",
+  "plugins": [
+    {
+      "name": "ship-issue",
+      "source": "./",
+      "skills": [
+        "./plugins/ship-issue/skills/ship-issue",
+        "./plugins/ship-issue/skills/ship-epic"
+      ],
+      "strict": false,
+      "description": "Take one GitHub issue or adhoc task to a finished PR: confirm criteria and a planning tier, plan in token-sized chunks (splitting the issue past two chunks), implement each chunk in a fresh Codex session, one review round, a usage ledger per run — the human merges.",
+      "author": { "name": "Subhan Mahmood" },
+      "keywords": ["github", "issues", "codex", "code-review", "agents"]
+    },
+    {
+      "name": "plan-explainer",
+      "source": "./",
+      "skills": ["./plugins/plan-explainer/skills/plan-explainer"],
+      "strict": false,
+      "description": "Build and publish a self-contained HTML explainer page — UI mocks from real design tokens, decision forks as selectable cards, a Copy-answers button — for plan approval and visual questions.",
+      "author": { "name": "Subhan Mahmood" },
+      "keywords": ["planning", "html", "mocks", "review"]
+    },
+    {
+      "name": "ui-evidence",
+      "source": "./",
+      "skills": ["./plugins/ui-evidence/skills/ui-evidence"],
+      "strict": false,
+      "description": "Capture and publish screenshots or video that prove a UI change — accurate shell and commit, permanent URLs for the PR body, with an un-capturable convention so shots never quietly go missing.",
+      "author": { "name": "Subhan Mahmood" },
+      "keywords": ["screenshots", "playwright", "pull-requests"]
+    },
+    {
+      "name": "codex-review",
+      "source": "./",
+      "skills": ["./plugins/codex-review/skills/codex-review"],
+      "strict": false,
+      "description": "Drive one Codex review round on a GitHub PR — request, wait until actually settled, read the head commit's findings, and track resolution markers across rounds.",
+      "author": { "name": "Subhan Mahmood" },
+      "keywords": ["codex", "code-review", "github", "pull-requests"]
+    },
+    {
+      "name": "pr-media-upload",
+      "source": "./",
+      "skills": ["./plugins/pr-media-upload/skills/pr-media-upload"],
+      "strict": false,
+      "description": "Upload a screenshot, GIF or screen recording to a public S3 bucket and get a permanent URL to embed in a GitHub PR description, issue or comment.",
+      "author": { "name": "Subhan Mahmood" },
+      "keywords": ["github", "screenshots", "s3", "pull-requests"]
+    },
+    {
+      "name": "update-skills",
+      "source": "./",
+      "skills": ["./plugins/update-skills/skills/update-skills"],
+      "strict": false,
+      "description": "Update every subhan-skills plugin to the latest marketplace version in both Claude Code and Codex, via each CLI's native plugin commands.",
+      "author": { "name": "Subhan Mahmood" },
+      "keywords": ["plugins", "marketplace", "update", "claude", "codex"]
+    }
+  ]
+}

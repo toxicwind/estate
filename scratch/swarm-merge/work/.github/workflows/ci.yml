@@ -1,0 +1,36 @@
+name: ARC-AGI Swarm CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 */6 * * *"
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install aiohttp requests python-dotenv
+      - run: python -m py_compile swarm/*.py lens/*.py nim/*.py launcher.py loader.py swarm_maximal.py osint_runner.py
+      # NOTE: src/iptv_discovery, src/benchmarks do not exist in this repo;
+      # benchmark job kept as a placeholder until a real runner lands.
+
+  benchmark:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install aiohttp requests
+      - run: python src/benchmarks/runner.py || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: data/benchmarks/latest.json

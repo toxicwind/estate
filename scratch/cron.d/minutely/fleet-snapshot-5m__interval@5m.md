@@ -1,0 +1,27 @@
+---
+id: fleet-snapshot-5m
+title: Fleet snapshot (5m)
+enabled: true
+mode: task
+schedule:
+  kind: interval
+  timezone: America/Denver
+  at: 2026-09-14T13:13:27
+  every: 5m
+timeout_secs: 180
+delivery:
+  - surface: side_chat
+    to: 0fcb5f23-25d7-44de-9a7d-76342c7b4dd8
+metadata:
+  originating_channel_context_json: '{"originating_channel":"side_chat","chat_kind":"direct","conversation_id":"0fcb5f23-25d7-44de-9a7d-76342c7b4dd8","delivery_channel":"side_chat","delivery_target_id":"0fcb5f23-25d7-44de-9a7d-76342c7b4dd8","event_kind":"message","require_mention":false}'
+  presentation_locale: en-US
+---
+Fleet snapshot digest — the user explicitly asked for this every 5 minutes, on top of immediate completion/failure pings.
+
+Run this exact read-only query with the database tool (single SELECT, no schema file needed):
+
+SELECT child_agent_id, parent_agent_id, status, created_at, completed_at, LEFT(prompt,120) AS preview, LEFT(final_response,300) AS outcome FROM agent.subagent_spawns WHERE status='running' OR (completed_at IS NOT NULL AND completed_at > EXTRACT(epoch FROM now())::bigint - 1800) ORDER BY created_at DESC LIMIT 25
+
+Compose a COMPACT digest: one short line per running agent (task name, age), one line per recently finished (done/failed + one-line outcome). Note anything that looks stuck (running for hours with no progress) or failed. If the query returns zero rows, reply with a single "no changes" line.
+
+Keep it tight and phone-readable. Read-only: do not start, stop, resume, close, or message any agent, and do not edit any files. If the database tool is unavailable in this run, say "snapshot unavailable: no db access" rather than guessing.

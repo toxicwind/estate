@@ -1,0 +1,1 @@
+{"groups": [{"file": "upstream_config_test.go", "funcs": ["TestUpstreamDaemonDetection_NoDaemon", "TestGetLogDirectory", "TestSocketDetection", "TestLoadUpstreamConfig", "TestCreateUpstreamLogger", "TestRunUpstreamListFromConfig", "TestValidateServerName"], "helpers": ["jsonEscapePath"]}]}

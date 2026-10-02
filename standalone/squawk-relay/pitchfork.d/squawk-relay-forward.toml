@@ -1,0 +1,12 @@
+# standalone/squawk-relay — project-owned daemon manifest. Source of truth for 'squawk-relay-forward'.
+# Owned by the standalone/squawk-relay project; the parent only composes it.
+
+
+[daemons.squawk-relay-forward]
+run = "exec /home/toxic/.fleet-bus/squawk-relay/run-forward.sh"
+dir = "/home/toxic/.fleet-bus/squawk-relay"
+mise = false
+retry = true
+boot_start = true
+env = { SQUAWK_CODE_DIR = "/home/toxic/sovereign/hatch/agents/ember/chat" }
+auto = ["start"]

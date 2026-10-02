@@ -30,7 +30,7 @@ daemons = []
 
 
 [groups.all]
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "fleet-ui", "flicker", "flicker-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "fleet-ui", "flicker", "flicker-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash", "sovereign-router"]
 
 # ---- project: sovereign (37 daemons) ----
 # sovereign — project-owned daemon manifest. Source of truth for 'agent-display'.
@@ -951,6 +951,38 @@ auto = ["start"]
 # consolidation order; repo kept as pushed for history. Do not re-enable
 # without a main-chat verdict.
 
+# Sovereign Router (bun router.ts v3.2) -- intelligent free-pool routing behind
+# the fleet default model sovereign/free (:25104). Restored 2026-09-27: this
+# daemon never had a pitchfork entry, so the 2026-09-21 ad-hoc deploy died
+# silently in the 9/26 yote flaps. Owned by pitchfork now, auto-started.
+
+# ---- project: tools/sovereign-router (1 daemon) ----
+# tools/sovereign-router -- project-owned daemon manifest.
+
+[daemons.sovereign-router]
+port = 25104
+run = "exec bun router.ts"
+dir = "/home/toxic/estate/tools/sovereign-router/sovereign-router-ts"
+retry = true
+ready_http = "http://127.0.0.1:25104/health"
+health_http = { url = "http://127.0.0.1:25104/health", interval = "30s", timeout = "5s", retries = 3 }
+# gatehouse dropped 2026-09-29: router has no runtime dep on it (zero refs in router source); gatehouse MCPPROXY_API_KEY minted into ~/.secrets 2026-09-29 per Chris; old leaked key rotated out of mcp_config.json
+depends = ["keypool"]
+env = { SOVEREIGN_ROUTER_PORT = "25104" }
+auto = ["start"]
+
+# ranch/task-launch — project-owned daemon manifest. Source of truth for 'task-launch'.
+# Owned by the ranch/task-launch project; the parent only composes it.
+
+[daemons.task-launch]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/task-launch/src/daemon.ts"
+dir = "/home/toxic/estate/ranch/task-launch"
+mise = false
+retry = true
+auto = ["start"]
+ready_cmd = "pgrep -f '[t]ask-launch/src/daemon.ts' >/dev/null"
+
+
 # market-loop — autonomous market-loop daemon for weaver's emergent task
 # market (trading-post/src/market). Event-driven: inotify on weaver's
 # intake/ dir, first-eligible-bid close, watchdog sweep on every ledger
@@ -965,7 +997,7 @@ auto = ["start"]
 health_http = { url = "http://127.0.0.1:25102/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25102
 run = "exec bun run src/yote.ts"
-dir = "ranch/yote"
+dir = "projects/yote"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25102/health"

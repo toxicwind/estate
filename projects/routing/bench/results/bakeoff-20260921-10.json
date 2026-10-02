@@ -1,0 +1,869 @@
+{
+ "bakeoff": "tau-extension-vs-sovereign-router",
+ "startedAt": "2026-09-21T20:19:05.427Z",
+ "config": {
+  "legs": [
+   "tau",
+   "sovereign"
+  ],
+  "retries": 3,
+  "maxTokens": 600,
+  "profile": {
+   "high": {
+    "model": "herd/gemini/gemini-3-flash-preview",
+    "thinking": "off"
+   },
+   "medium": {
+    "model": "herd/beellama/qwen-flash-128k",
+    "thinking": "off"
+   },
+   "low": {
+    "model": "herd/beellama/exaone-4-0-1-2b-iq4xs",
+    "thinking": "off"
+   }
+  }
+ },
+ "trials": [
+  {
+   "promptId": "lookup",
+   "prompt": "What is the capital of Burkina Faso? Reply with just the city name.",
+   "check": {
+    "type": "auto",
+    "rule": "exact_ci",
+    "value": "Ouagadougou"
+   },
+   "tau": {
+    "tier": "medium",
+    "targetProvider": "herd",
+    "targetModel": "beellama/qwen-flash-128k",
+    "isHeuristic": true,
+    "reasoning": "Classifier unavailable, using heuristic: Defaulted to medium tier for general coding work.",
+    "routeMs": 10006,
+    "routeError": null,
+    "serveMs": 4278,
+    "firstTokenMs": 4233,
+    "text": "Ouagadougou",
+    "usage": {
+     "input": 27,
+     "output": 210,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "totalTokens": 237,
+     "reasoningTokens": 203,
+     "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "total": 0
+     }
+    },
+    "serveError": null
+   },
+   "sovereign": {
+    "attempts": [
+     {
+      "attempt": 0,
+      "http": 200,
+      "ms": 6118,
+      "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+      "text": "Abjara",
+      "usage": {
+       "completion_tokens": 4,
+       "prompt_tokens": 29,
+       "total_tokens": 33,
+       "prompt_tokens_details": {
+        "cached_tokens": 0
+       },
+       "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "visible_tokens": 4
+       }
+      },
+      "errBody": null
+     }
+    ],
+    "final": {
+     "attempt": 0,
+     "http": 200,
+     "ms": 6118,
+     "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+     "text": "Abjara",
+     "usage": {
+      "completion_tokens": 4,
+      "prompt_tokens": 29,
+      "total_tokens": 33,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 0,
+       "visible_tokens": 4
+      }
+     },
+     "errBody": null
+    }
+   }
+  },
+  {
+   "promptId": "oneliner",
+   "prompt": "Reply with exactly the word DONE and nothing else.",
+   "check": {
+    "type": "auto",
+    "rule": "exact",
+    "value": "DONE"
+   },
+   "tau": {
+    "tier": "low",
+    "targetProvider": "herd",
+    "targetModel": "beellama/exaone-4-0-1-2b-iq4xs",
+    "isHeuristic": true,
+    "reasoning": "Classifier unavailable, using heuristic: Detected a short bounded request.",
+    "routeMs": 4134,
+    "routeError": null,
+    "serveMs": 7712,
+    "firstTokenMs": 7704,
+    "text": "DONE",
+    "usage": {
+     "input": 20,
+     "output": 3,
+     "cacheRead": 2,
+     "cacheWrite": 0,
+     "totalTokens": 25,
+     "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "total": 0
+     }
+    },
+    "serveError": null
+   },
+   "sovereign": {
+    "attempts": [
+     {
+      "attempt": 0,
+      "http": 503,
+      "ms": 8331,
+      "model": null,
+      "text": null,
+      "usage": null,
+      "errBody": "{\"error\":\"{\\\"object\\\":\\\"error\\\",\\\"message\\\":\\\"Rate limit exceeded\\\",\\\"type\\\":\\\"rate_limited\\\",\\\"param\\\":null,\\\"code\\\":\\\"1300\\\",\\\"raw_status_code\\\":429}\",\"status\":503}"
+     },
+     {
+      "attempt": 1,
+      "http": 503,
+      "ms": 8231,
+      "model": null,
+      "text": null,
+      "usage": null,
+      "errBody": "{\"error\":\"connect_timeout\",\"status\":503}"
+     },
+     {
+      "attempt": 2,
+      "http": 200,
+      "ms": 7544,
+      "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+      "text": "DONE",
+      "usage": {
+       "completion_tokens": 3,
+       "prompt_tokens": 22,
+       "total_tokens": 25,
+       "prompt_tokens_details": {
+        "cached_tokens": 0
+       },
+       "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "visible_tokens": 3
+       }
+      },
+      "errBody": null
+     }
+    ],
+    "final": {
+     "attempt": 2,
+     "http": 200,
+     "ms": 7544,
+     "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+     "text": "DONE",
+     "usage": {
+      "completion_tokens": 3,
+      "prompt_tokens": 22,
+      "total_tokens": 25,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 0,
+       "visible_tokens": 3
+      }
+     },
+     "errBody": null
+    }
+   }
+  },
+  {
+   "promptId": "coding",
+   "prompt": "Write a Python function that computes the nth Fibonacci number iteratively, with a docstring and a brief example.",
+   "check": {
+    "type": "auto",
+    "rule": "python_fib"
+   },
+   "tau": {
+    "tier": "low",
+    "targetProvider": "herd",
+    "targetModel": "beellama/exaone-4-0-1-2b-iq4xs",
+    "isHeuristic": true,
+    "reasoning": "Classifier unavailable, using heuristic: Detected an explicit request for a faster or lighter response.",
+    "routeMs": 3827,
+    "routeError": null,
+    "serveMs": 8471,
+    "firstTokenMs": 7522,
+    "text": "Here's a Python function that computes the nth Fibonacci number iteratively, along with a docstring and an example:\n\n```python\ndef fibonacci_iterative(n):\n    \"\"\"\n    Compute the nth Fibonacci number iteratively.\n\n    Args:\n        n (int): The index of the Fibonacci number to compute (must be non-negative).\n\n    Returns:\n        int: The nth Fibonacci number.\n\n    Example:\n        >>> fibonacci_iterative(10)\n        55\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a\n```\n\n### Explanation:\n1. **Docstring**: The function includes a clear docstring that describes its purpose, arguments, return value, and includes an example.\n2. **Edge Case Handling**: Checks if `n` is negative and raises a `ValueError` if so.\n3. **Iterative Approach**: Uses two variables `a` and `b` to keep track of the last two Fibonacci numbers, updating them in each iteration until it reaches the desired `n`.\n4. **Efficiency**: This approach runs in O(n) time with O(1) space complexity, making it efficient for large `n`.",
+    "usage": {
+     "input": 32,
+     "output": 314,
+     "cacheRead": 2,
+     "cacheWrite": 0,
+     "totalTokens": 348,
+     "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "total": 0
+     }
+    },
+    "serveError": null
+   },
+   "sovereign": {
+    "attempts": [
+     {
+      "attempt": 0,
+      "http": 503,
+      "ms": 8327,
+      "model": null,
+      "text": null,
+      "usage": null,
+      "errBody": "{\"error\":\"{\\\"object\\\":\\\"error\\\",\\\"message\\\":\\\"Rate limit exceeded\\\",\\\"type\\\":\\\"rate_limited\\\",\\\"param\\\":null,\\\"code\\\":\\\"1300\\\",\\\"raw_status_code\\\":429}\",\"status\":503}"
+     },
+     {
+      "attempt": 1,
+      "http": 200,
+      "ms": 10338,
+      "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+      "text": "Here's a Python function that computes the nth Fibonacci number iteratively, including a docstring and an example:\n\n```python\ndef fibonacci(n):\n    \"\"\"Compute the nth Fibonacci number iteratively.\n    \n    Args:\n        n (int): The index of the Fibonacci number to compute (must be non-negative).\n    \n    Returns:\n        int: The nth Fibonacci number.\n    \n    Example:\n        >>> fibonacci(5)\n        5\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"Input must be a non-negative integer\")\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a\n```\n\n### Example usage:\n```python\nprint(fibonacci(10))  # Output: 55\n```\n\n### Explanation:\n1. The function checks if `n` is non-negative (Fibonacci is defined for `n >= 0`).\n2. It initializes two variables `a` and `b` to represent the first two Fibonacci numbers (`0` and `1`).\n3. The loop runs `n` times, updating `a` and `b` to the next pair in the sequence.\n4. After the loop, `a` holds the nth Fibonacci number.",
+      "usage": {
+       "completion_tokens": 306,
+       "prompt_tokens": 34,
+       "total_tokens": 340,
+       "prompt_tokens_details": {
+        "cached_tokens": 0
+       },
+       "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "visible_tokens": 306
+       }
+      },
+      "errBody": null
+     }
+    ],
+    "final": {
+     "attempt": 1,
+     "http": 200,
+     "ms": 10338,
+     "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+     "text": "Here's a Python function that computes the nth Fibonacci number iteratively, including a docstring and an example:\n\n```python\ndef fibonacci(n):\n    \"\"\"Compute the nth Fibonacci number iteratively.\n    \n    Args:\n        n (int): The index of the Fibonacci number to compute (must be non-negative).\n    \n    Returns:\n        int: The nth Fibonacci number.\n    \n    Example:\n        >>> fibonacci(5)\n        5\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"Input must be a non-negative integer\")\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a\n```\n\n### Example usage:\n```python\nprint(fibonacci(10))  # Output: 55\n```\n\n### Explanation:\n1. The function checks if `n` is non-negative (Fibonacci is defined for `n >= 0`).\n2. It initializes two variables `a` and `b` to represent the first two Fibonacci numbers (`0` and `1`).\n3. The loop runs `n` times, updating `a` and `b` to the next pair in the sequence.\n4. After the loop, `a` holds the nth Fibonacci number.",
+     "usage": {
+      "completion_tokens": 306,
+      "prompt_tokens": 34,
+      "total_tokens": 340,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 0,
+       "visible_tokens": 306
+      }
+     },
+     "errBody": null
+    }
+   }
+  },
+  {
+   "promptId": "debug",
+   "prompt": "This Python loop never terminates: `while i < 10: print(i)`. Explain the bug and show the fix.",
+   "check": {
+    "type": "auto",
+    "rule": "contains_any",
+    "values": [
+     "never incremented",
+     "never updated",
+     "not incremented",
+     "not updated",
+     "i += 1",
+     "i=i+1",
+     "i = i + 1"
+    ]
+   },
+   "tau": {
+    "tier": "medium",
+    "targetProvider": "herd",
+    "targetModel": "beellama/qwen-flash-128k",
+    "isHeuristic": true,
+    "reasoning": "Classifier unavailable, using heuristic: Detected implementation-oriented work with bounded execution scope.",
+    "routeMs": 4958,
+    "routeError": null,
+    "serveMs": 11986,
+    "firstTokenMs": 10686,
+    "text": "The loop runs forever because the variable `i` is never updated inside the loop. If `i` starts at a value less than 10, the condition `i < 10` remains true forever, causing an infinite loop.\n\n**Fix:** Increment `i` each iteration, for example:\n\n```python\ni = 0  # initialize i\nwhile i < 10:\n    print(i)\n    i += 1  # update i\n```\n\nAlternatively, you could use a `for` loop, which handles iteration automatically:\n\n```python\nfor i in range(10):\n    print(i)\n```\n\nBoth approaches ensure the loop terminates after 10 iterations.",
+    "usage": {
+     "input": 36,
+     "output": 477,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "totalTokens": 513,
+     "reasoningTokens": 326,
+     "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "total": 0
+     }
+    },
+    "serveError": null
+   },
+   "sovereign": {
+    "attempts": [
+     {
+      "attempt": 0,
+      "http": 200,
+      "ms": 2499,
+      "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+      "text": "The issue with the loop `while i < 10: print(i)` is that it never terminates. Here's why:\n\n### Bug Explanation:\n1. The loop condition `i < 10` will keep evaluating the condition `True` for all values of `i` from `0` up to `9` (inclusive).\n2. Python doesn't automatically increment `i` by default. If `i` is not initialized, Python will start it at `0`. Even if `i` is initialized to a value less than `10`, the loop will run indefinitely because no new increment is happening.\n\n### Fix:\nTo ensure the loop terminates, either:\n1. Increment `i` manually, or\n2. Use a default starting value for `i`.\n\n#### Example Fix 1 (Manual Increment):\n```python\ni = 0  # Initialize i to start at 0\nwhile i < 10:\n    print(i)\n    i += 1  # Increment i explicitly\n```\n\n#### Example Fix 2 (Default Starting Value):\n```python\ni = 0  # Loop starts at 0\nwhile i < 10:\n    print(i)\n    i += 1\n```\n\n### Output (After Fix):\nThe loop will now print numbers from `0` to `9` and terminate. For example:\n```\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n```",
+      "usage": {
+       "completion_tokens": 330,
+       "prompt_tokens": 39,
+       "total_tokens": 369,
+       "prompt_tokens_details": {
+        "cached_tokens": 0
+       },
+       "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "visible_tokens": 330
+       }
+      },
+      "errBody": null
+     }
+    ],
+    "final": {
+     "attempt": 0,
+     "http": 200,
+     "ms": 2499,
+     "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+     "text": "The issue with the loop `while i < 10: print(i)` is that it never terminates. Here's why:\n\n### Bug Explanation:\n1. The loop condition `i < 10` will keep evaluating the condition `True` for all values of `i` from `0` up to `9` (inclusive).\n2. Python doesn't automatically increment `i` by default. If `i` is not initialized, Python will start it at `0`. Even if `i` is initialized to a value less than `10`, the loop will run indefinitely because no new increment is happening.\n\n### Fix:\nTo ensure the loop terminates, either:\n1. Increment `i` manually, or\n2. Use a default starting value for `i`.\n\n#### Example Fix 1 (Manual Increment):\n```python\ni = 0  # Initialize i to start at 0\nwhile i < 10:\n    print(i)\n    i += 1  # Increment i explicitly\n```\n\n#### Example Fix 2 (Default Starting Value):\n```python\ni = 0  # Loop starts at 0\nwhile i < 10:\n    print(i)\n    i += 1\n```\n\n### Output (After Fix):\nThe loop will now print numbers from `0` to `9` and terminate. For example:\n```\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n```",
+     "usage": {
+      "completion_tokens": 330,
+      "prompt_tokens": 39,
+      "total_tokens": 369,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 0,
+       "visible_tokens": 330
+      }
+     },
+     "errBody": null
+    }
+   }
+  },
+  {
+   "promptId": "math",
+   "prompt": "A bat and a ball cost $1.10 together. The bat costs $1.00 more than the ball. How much does the ball cost? Show your reasoning.",
+   "check": {
+    "type": "auto",
+    "rule": "contains_any",
+    "values": [
+     "$0.05",
+     "0.05",
+     "5 cents",
+     "five cents"
+    ]
+   },
+   "tau": {
+    "tier": "medium",
+    "targetProvider": "herd",
+    "targetModel": "beellama/qwen-flash-128k",
+    "isHeuristic": true,
+    "reasoning": "Classifier unavailable, using heuristic: Defaulted to medium tier for general coding work.",
+    "routeMs": 3874,
+    "routeError": null,
+    "serveMs": 14296,
+    "firstTokenMs": 12398,
+    "text": "The ball costs **5 cents**.\n\n### Reasoning:\nLet the cost of the ball be \\( x \\) dollars.  \nThe bat costs $1.00 more than the ball, so its cost is \\( x + 1 \\) dollars.  \nTogether, they cost $1.10, so we can write the equation:\n\n\\[\nx + (x + 1) = 1.10\n\\]\n\nSimplify:\n\n\\[\n2x + 1 = 1.10\n\\]\n\nSubtract 1 from both sides:\n\n\\[\n2x = 0.10\n\\]\n\nDivide by 2:\n\n\\[\nx = 0.05\n\\]\n\nSo the ball costs $0.05 (5 cents).  \nCheck: If the ball is 5 cents, the bat is $1.05, and together they are $1.10. The bat is exactly $1.00 more than the ball.",
+    "usage": {
+     "input": 47,
+     "output": 441,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "totalTokens": 488,
+     "reasoningTokens": 226,
+     "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "total": 0
+     }
+    },
+    "serveError": null
+   },
+   "sovereign": {
+    "attempts": [
+     {
+      "attempt": 0,
+      "http": 200,
+      "ms": 3333,
+      "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+      "text": "Alright, let's tackle this problem step by step. I'll try to understand what's given and then figure out how to find the cost of the ball.\n\n### Understanding the Problem\n\nWe have two items: a bat and a ball. Together, they cost $1.10. Additionally, the bat costs $1.00 more than the ball. We need to find out how much the ball costs.\n\nLet's denote:\n- The cost of the ball as \\( B \\) dollars.\n- The cost of the bat as \\( T \\) dollars.\n\nFrom the problem, we can write two equations based on the given information.\n\n### Setting Up the Equations\n\n1. **Total cost**: The bat and the ball together cost $1.10.\n   \\[\n   B + T = 1.10\n   \\]\n   \n2. **Difference in cost**: The bat costs $1.00 more than the ball.\n   \\[\n   T = B + 1.00\n   \\]\n\nNow, we have two equations:\n\\[\n\\begin{cases}\nB + T = 1.10 \\\\\nT = B + 1.00\n\\end{cases}\n\\]\n\n### Solving the Equations\n\nSince the second equation expresses \\( T \\) in terms of \\( B \\), we can substitute \\( T \\) from the second equation into the first equation.\n\nSubstitute \\( T = B + 1.00 \\) into \\( B + T = 1.10 \\):\n\\[\nB + (B + 1.00) = 1.10\n\\]\nCombine like terms:\n\\[\n2B + 1.00 = 1.10\n\\]\n\nNow, subtract $1.00 from both sides to isolate the term with \\( B \\):\n\\[\n2B = 1.10 - 1.00 \\\\\n2B = 0.10\n\\]\n\nFinally, divide both sides by 2 to solve for \\( B \\):\n\\[\nB = \\frac{0.10}{2} \\\\\nB = 0.05\n\\]\n\nSo, the ball costs $0.05, which is 5 cents.\n\n### Verifying the Solution\n\nLet's check if this makes sense.\n\n- Cost of the ball (\\( B \\)) = $0.05\n- Cost of the bat (\\( T \\)) = $B + $1.00 = $0.05 + $1.00 = $1.05\n\nNow, add them together:\n\\[\nB + T = 0.05 + 1.0",
+      "usage": {
+       "completion_tokens": 600,
+       "prompt_tokens": 49,
+       "total_tokens": 649,
+       "prompt_tokens_details": {
+        "cached_tokens": 0
+       },
+       "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "visible_tokens": 600
+       }
+      },
+      "errBody": null
+     }
+    ],
+    "final": {
+     "attempt": 0,
+     "http": 200,
+     "ms": 3333,
+     "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+     "text": "Alright, let's tackle this problem step by step. I'll try to understand what's given and then figure out how to find the cost of the ball.\n\n### Understanding the Problem\n\nWe have two items: a bat and a ball. Together, they cost $1.10. Additionally, the bat costs $1.00 more than the ball. We need to find out how much the ball costs.\n\nLet's denote:\n- The cost of the ball as \\( B \\) dollars.\n- The cost of the bat as \\( T \\) dollars.\n\nFrom the problem, we can write two equations based on the given information.\n\n### Setting Up the Equations\n\n1. **Total cost**: The bat and the ball together cost $1.10.\n   \\[\n   B + T = 1.10\n   \\]\n   \n2. **Difference in cost**: The bat costs $1.00 more than the ball.\n   \\[\n   T = B + 1.00\n   \\]\n\nNow, we have two equations:\n\\[\n\\begin{cases}\nB + T = 1.10 \\\\\nT = B + 1.00\n\\end{cases}\n\\]\n\n### Solving the Equations\n\nSince the second equation expresses \\( T \\) in terms of \\( B \\), we can substitute \\( T \\) from the second equation into the first equation.\n\nSubstitute \\( T = B + 1.00 \\) into \\( B + T = 1.10 \\):\n\\[\nB + (B + 1.00) = 1.10\n\\]\nCombine like terms:\n\\[\n2B + 1.00 = 1.10\n\\]\n\nNow, subtract $1.00 from both sides to isolate the term with \\( B \\):\n\\[\n2B = 1.10 - 1.00 \\\\\n2B = 0.10\n\\]\n\nFinally, divide both sides by 2 to solve for \\( B \\):\n\\[\nB = \\frac{0.10}{2} \\\\\nB = 0.05\n\\]\n\nSo, the ball costs $0.05, which is 5 cents.\n\n### Verifying the Solution\n\nLet's check if this makes sense.\n\n- Cost of the ball (\\( B \\)) = $0.05\n- Cost of the bat (\\( T \\)) = $B + $1.00 = $0.05 + $1.00 = $1.05\n\nNow, add them together:\n\\[\nB + T = 0.05 + 1.0",
+     "usage": {
+      "completion_tokens": 600,
+      "prompt_tokens": 49,
+      "total_tokens": 649,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 0,
+       "visible_tokens": 600
+      }
+     },
+     "errBody": null
+    }
+   }
+  },
+  {
+   "promptId": "logic",
+   "prompt": "If all Bloops are Razzies and all Razzies are Lazzies, are all Bloops Lazzies? Answer yes or no first, then one sentence why.",
+   "check": {
+    "type": "auto",
+    "rule": "starts_with_ci",
+    "value": "yes"
+   },
+   "tau": {
+    "tier": "low",
+    "targetProvider": "herd",
+    "targetModel": "beellama/exaone-4-0-1-2b-iq4xs",
+    "isHeuristic": true,
+    "reasoning": "Classifier unavailable, using heuristic: Detected an explicit request for a faster or lighter response.",
+    "routeMs": 3874,
+    "routeError": null,
+    "serveMs": 7545,
+    "firstTokenMs": 7433,
+    "text": "yes  \n\nBecause if all Bloops are Razzies and all Razzies are Lazzies, by transitivity, all Bloops must be Lazzies.",
+    "usage": {
+     "input": 47,
+     "output": 37,
+     "cacheRead": 2,
+     "cacheWrite": 0,
+     "totalTokens": 86,
+     "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "total": 0
+     }
+    },
+    "serveError": null
+   },
+   "sovereign": {
+    "attempts": [
+     {
+      "attempt": 0,
+      "http": 200,
+      "ms": 8969,
+      "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+      "text": "yes  \n\nBecause if all Bloops are Razzies and all Razzies are Lazzies, by transitivity, all Bloops must also be Lazzies.",
+      "usage": {
+       "completion_tokens": 38,
+       "prompt_tokens": 49,
+       "total_tokens": 87,
+       "prompt_tokens_details": {
+        "cached_tokens": 0
+       },
+       "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "visible_tokens": 38
+       }
+      },
+      "errBody": null
+     }
+    ],
+    "final": {
+     "attempt": 0,
+     "http": 200,
+     "ms": 8969,
+     "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+     "text": "yes  \n\nBecause if all Bloops are Razzies and all Razzies are Lazzies, by transitivity, all Bloops must also be Lazzies.",
+     "usage": {
+      "completion_tokens": 38,
+      "prompt_tokens": 49,
+      "total_tokens": 87,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 0,
+       "visible_tokens": 38
+      }
+     },
+     "errBody": null
+    }
+   }
+  },
+  {
+   "promptId": "contradiction",
+   "prompt": "In your first sentence state the sky is green. In your second sentence state the sky is blue. Then in one final sentence say which statement is correct.",
+   "check": {
+    "type": "manual",
+    "rubric": "follows all three instructions; final sentence affirms blue"
+   },
+   "tau": {
+    "tier": "medium",
+    "targetProvider": "herd",
+    "targetModel": "beellama/qwen-flash-128k",
+    "isHeuristic": true,
+    "reasoning": "Classifier unavailable, using heuristic: Defaulted to medium tier for general coding work.",
+    "routeMs": 4044,
+    "routeError": null,
+    "serveMs": 13986,
+    "firstTokenMs": 13848,
+    "text": "The sky is green. The sky is blue. The second statement is correct.",
+    "usage": {
+     "input": 41,
+     "output": 573,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "totalTokens": 614,
+     "reasoningTokens": 555,
+     "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "total": 0
+     }
+    },
+    "serveError": null
+   },
+   "sovereign": {
+    "attempts": [
+     {
+      "attempt": 0,
+      "http": 200,
+      "ms": 1615,
+      "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+      "text": "The sky is green. The sky is blue. The statement that the sky is blue is correct.",
+      "usage": {
+       "completion_tokens": 21,
+       "prompt_tokens": 43,
+       "total_tokens": 64,
+       "prompt_tokens_details": {
+        "cached_tokens": 0
+       },
+       "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "visible_tokens": 21
+       }
+      },
+      "errBody": null
+     }
+    ],
+    "final": {
+     "attempt": 0,
+     "http": 200,
+     "ms": 1615,
+     "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+     "text": "The sky is green. The sky is blue. The statement that the sky is blue is correct.",
+     "usage": {
+      "completion_tokens": 21,
+      "prompt_tokens": 43,
+      "total_tokens": 64,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 0,
+       "visible_tokens": 21
+      }
+     },
+     "errBody": null
+    }
+   }
+  },
+  {
+   "promptId": "longctx",
+   "prompt": "<longctx needle prompt>",
+   "check": {
+    "type": "auto",
+    "rule": "exact_ci",
+    "value": "BLUEBIRD"
+   },
+   "tau": {
+    "tier": "low",
+    "targetProvider": "herd",
+    "targetModel": "beellama/exaone-4-0-1-2b-iq4xs",
+    "isHeuristic": true,
+    "reasoning": "Classifier unavailable, using heuristic: Detected an explicit request for a faster or lighter response.",
+    "routeMs": 4008,
+    "routeError": null,
+    "serveMs": 7566,
+    "firstTokenMs": 7549,
+    "text": "BLUEBIRD",
+    "usage": {
+     "input": 2052,
+     "output": 5,
+     "cacheRead": 2,
+     "cacheWrite": 0,
+     "totalTokens": 2059,
+     "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "total": 0
+     }
+    },
+    "serveError": null
+   },
+   "sovereign": {
+    "attempts": [
+     {
+      "attempt": 0,
+      "http": 200,
+      "ms": 8913,
+      "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+      "text": "BLUEBIRD",
+      "usage": {
+       "completion_tokens": 5,
+       "prompt_tokens": 2054,
+       "total_tokens": 2059,
+       "prompt_tokens_details": {
+        "cached_tokens": 0
+       },
+       "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "visible_tokens": 5
+       }
+      },
+      "errBody": null
+     }
+    ],
+    "final": {
+     "attempt": 0,
+     "http": 200,
+     "ms": 8913,
+     "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+     "text": "BLUEBIRD",
+     "usage": {
+      "completion_tokens": 5,
+      "prompt_tokens": 2054,
+      "total_tokens": 2059,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 0,
+       "visible_tokens": 5
+      }
+     },
+     "errBody": null
+    }
+   }
+  },
+  {
+   "promptId": "arch",
+   "prompt": "Design a rate limiter for a REST API handling 10k rps. Compare token bucket vs sliding window, recommend one, and sketch the Redis data structures.",
+   "check": {
+    "type": "manual",
+    "rubric": "compares both algorithms, gives a recommendation with reason, sketches Redis structures (keys/types)"
+   },
+   "tau": {
+    "tier": "high",
+    "targetProvider": "herd",
+    "targetModel": "gemini/gemini-3-flash-preview",
+    "isHeuristic": true,
+    "reasoning": "Classifier unavailable, using heuristic: Detected planning keyword corroborated by prompt length, context, or multiple signals.",
+    "routeMs": 3956,
+    "routeError": null,
+    "serveMs": 4033,
+    "firstTokenMs": 3997,
+    "text": "To design a rate limiter for a system handling **10,000 Requests Per Second (RPS)**,",
+    "usage": {
+     "input": 34,
+     "output": 24,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "totalTokens": 58,
+     "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "total": 0
+     }
+    },
+    "serveError": null
+   },
+   "sovereign": {
+    "attempts": [
+     {
+      "attempt": 0,
+      "http": 200,
+      "ms": 4792,
+      "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+      "text": "# Rate Limiter Design for 10k rps REST API\n\n## Comparison: Token Bucket vs Sliding Window\n\n### Token Bucket Algorithm\n- **Pros**:\n  - Simple and easy to understand\n  - Naturally handles burst patterns (can throttle requests during high load)\n  - Good for streaming workloads with variable rates\n  - O(1) time complexity for checks\n- **Cons**:\n  - Requires storing bucket capacity and refill time\n  - May still suffer from \"water jug\" problem with unpredictable bursts\n\n### Sliding Window Algorithm\n- **Pros**:\n  - More accurate rate limiting with fixed window precision\n  - Better at detecting and handling sustained bursts\n  - Can implement adaptive window sizes based on traffic patterns\n- **Cons**:\n  - Requires storing history of requests (memory intensive)\n  - More complex implementation with circular buffers\n\n## Recommendation: Token Bucket with Redis\n\nFor a 10k rps API, I recommend the token bucket approach because:\n1. At 10k requests/sec, sliding window would require significant memory (~240MB for 20-second window)\n2. Token bucket's throttling behavior provides better API stability\n3. Redis can efficiently manage the bucket state\n4. Easier to scale horizontally across multiple instances if needed\n\n## Redis Data Structures\n\n### Core Structure\n- **TokenBucket State**:\n  ```rdb\n  [0] timestamp\n  [1] bucket_capacity\n  [2] bucket_fill_rate\n  ```\n\n- **Request Queue** (circular buffer):\n  ```rdb\n  [0] request_id\n  [1] timestamp\n  [2] ip_address\n  [3] payload_hash\n  [4] quota_remaining\n  ```\n\n### Additional Structures\n- **Limited Access List** (for rate limiting users):\n  ```rdb\n  [0] user_id\n  [1] last_used_timestamp\n  [2] allowed_quota\n  ```\n\n- **Monitoring Metrics**:\n  ```rdb\n  [0] timestamp\n  [1] req_count\n  [2] processed_count\n  [3] rejected_count\n  ```\n\n### Example Initialization\n```python\n# Start with 1000 requests/sec limit\ntoken_bucket = redis.RPOP(r\"TOKEN_BUCKET\")\ntoken_bucket['capacity'] = 1000\ntoken_bucket['fill_rate'] = 100\n\nqueue = redis.LRU(r\"REQUEST_QUEUE\")\n```\n\n## Implementation Considerations\n\n1. **Eviction Policy**: Implement TTL",
+      "usage": {
+       "completion_tokens": 600,
+       "prompt_tokens": 46,
+       "total_tokens": 646,
+       "prompt_tokens_details": {
+        "cached_tokens": 0
+       },
+       "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "visible_tokens": 600
+       }
+      },
+      "errBody": null
+     }
+    ],
+    "final": {
+     "attempt": 0,
+     "http": 200,
+     "ms": 4792,
+     "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+     "text": "# Rate Limiter Design for 10k rps REST API\n\n## Comparison: Token Bucket vs Sliding Window\n\n### Token Bucket Algorithm\n- **Pros**:\n  - Simple and easy to understand\n  - Naturally handles burst patterns (can throttle requests during high load)\n  - Good for streaming workloads with variable rates\n  - O(1) time complexity for checks\n- **Cons**:\n  - Requires storing bucket capacity and refill time\n  - May still suffer from \"water jug\" problem with unpredictable bursts\n\n### Sliding Window Algorithm\n- **Pros**:\n  - More accurate rate limiting with fixed window precision\n  - Better at detecting and handling sustained bursts\n  - Can implement adaptive window sizes based on traffic patterns\n- **Cons**:\n  - Requires storing history of requests (memory intensive)\n  - More complex implementation with circular buffers\n\n## Recommendation: Token Bucket with Redis\n\nFor a 10k rps API, I recommend the token bucket approach because:\n1. At 10k requests/sec, sliding window would require significant memory (~240MB for 20-second window)\n2. Token bucket's throttling behavior provides better API stability\n3. Redis can efficiently manage the bucket state\n4. Easier to scale horizontally across multiple instances if needed\n\n## Redis Data Structures\n\n### Core Structure\n- **TokenBucket State**:\n  ```rdb\n  [0] timestamp\n  [1] bucket_capacity\n  [2] bucket_fill_rate\n  ```\n\n- **Request Queue** (circular buffer):\n  ```rdb\n  [0] request_id\n  [1] timestamp\n  [2] ip_address\n  [3] payload_hash\n  [4] quota_remaining\n  ```\n\n### Additional Structures\n- **Limited Access List** (for rate limiting users):\n  ```rdb\n  [0] user_id\n  [1] last_used_timestamp\n  [2] allowed_quota\n  ```\n\n- **Monitoring Metrics**:\n  ```rdb\n  [0] timestamp\n  [1] req_count\n  [2] processed_count\n  [3] rejected_count\n  ```\n\n### Example Initialization\n```python\n# Start with 1000 requests/sec limit\ntoken_bucket = redis.RPOP(r\"TOKEN_BUCKET\")\ntoken_bucket['capacity'] = 1000\ntoken_bucket['fill_rate'] = 100\n\nqueue = redis.LRU(r\"REQUEST_QUEUE\")\n```\n\n## Implementation Considerations\n\n1. **Eviction Policy**: Implement TTL",
+     "usage": {
+      "completion_tokens": 600,
+      "prompt_tokens": 46,
+      "total_tokens": 646,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 0,
+       "visible_tokens": 600
+      }
+     },
+     "errBody": null
+    }
+   }
+  },
+  {
+   "promptId": "empty",
+   "prompt": "",
+   "check": {
+    "type": "manual",
+    "rubric": "does not crash or ramble; asks for input or gives a graceful nudge"
+   },
+   "tau": {
+    "tier": "low",
+    "targetProvider": "herd",
+    "targetModel": "beellama/exaone-4-0-1-2b-iq4xs",
+    "isHeuristic": true,
+    "reasoning": "Classifier unavailable, using heuristic: Detected a short bounded request.",
+    "routeMs": 3757,
+    "routeError": null,
+    "serveMs": 7489,
+    "firstTokenMs": 7470,
+    "text": "What was it to do?",
+    "usage": {
+     "input": 8,
+     "output": 7,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "totalTokens": 15,
+     "cost": {
+      "input": 0,
+      "output": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "total": 0
+     }
+    },
+    "serveError": null
+   },
+   "sovereign": {
+    "attempts": [
+     {
+      "attempt": 0,
+      "http": 200,
+      "ms": 9023,
+      "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+      "text": "It looks like you're asking about something without specifying what exactly you need. Could you clarify:  \n\n1. What topic or subject you're interested in (e.g., science, history, technology)?  \n2. What you'd like help with (e.g., solving a problem, learning a skill, finding resources)?  \n\nLet me know so I can assist you better! 😊",
+      "usage": {
+       "completion_tokens": 90,
+       "prompt_tokens": 12,
+       "total_tokens": 102,
+       "prompt_tokens_details": {
+        "cached_tokens": 0
+       },
+       "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "visible_tokens": 90
+       }
+      },
+      "errBody": null
+     }
+    ],
+    "final": {
+     "attempt": 0,
+     "http": 200,
+     "ms": 9023,
+     "model": "/home/toxic/models/EXAONE-4.0-1.2B-IQ4_XS.gguf",
+     "text": "It looks like you're asking about something without specifying what exactly you need. Could you clarify:  \n\n1. What topic or subject you're interested in (e.g., science, history, technology)?  \n2. What you'd like help with (e.g., solving a problem, learning a skill, finding resources)?  \n\nLet me know so I can assist you better! 😊",
+     "usage": {
+      "completion_tokens": 90,
+      "prompt_tokens": 12,
+      "total_tokens": 102,
+      "prompt_tokens_details": {
+       "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+       "reasoning_tokens": 0,
+       "visible_tokens": 90
+      }
+     },
+     "errBody": null
+    }
+   }
+  }
+ ],
+ "finishedAt": "2026-09-21T20:23:03.993Z"
+}

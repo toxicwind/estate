@@ -1,0 +1,15 @@
+# standalone/whatsapp-mcp — project-owned daemon manifest. Source of truth for 'whatsapp-mcp'.
+# Owned by the standalone/whatsapp-mcp project; the parent only composes it.
+
+[daemons.whatsapp-mcp]
+port = 25146
+run = "bash -c 'set -a; source /home/toxic/.config/pitchfork-secrets/whatsapp-mcp.env; set +a; exec /home/toxic/.whatsapp-mcp-venv/bin/python /home/toxic/whatsapp-mcp/server.py'"
+dir = "/home/toxic/whatsapp-mcp"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25146/health"
+auto = ["start"]
+env = { WHATSAPP_MCP_PORT = "25146" }
+
+# Squawk websocket push feed (2026-09-14): stdlib asyncio ws server, inotify on
+# channel files + zipfs-vault, bearer-token auth. Replaces polling.

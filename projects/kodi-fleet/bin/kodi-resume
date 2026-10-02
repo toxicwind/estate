@@ -1,0 +1,301 @@
+#!/usr/bin/env python3
+"""kodi-resume: cross-box playback resume for the Kodi fleet.
+
+Kodi only keeps resume bookmarks for library items, but both fleet boxes
+stream mostly via addons (their video libraries are empty), so "continue in
+the other room" dies at the door. kodi-resume fixes that with a tiny state
+file on awrawr-pc: snapshot what is playing where, then later open the newest
+session from the *other* box at the exact saved position.
+
+Safety posture (matches kodi-handoff):
+  - record/status/selftest are read-only (JSON-RPC getters only).
+  - continue NEVER clobbers live playback: it refuses if the target box has
+    an active video player.
+  - continue defaults to dry-run; --apply performs the open+seek.
+  - Only ever opens streams and seeks; nothing is stopped, deleted, or
+    un-watched anywhere.
+
+Usage:
+  kodi-resume record                        # snapshot active players -> state
+  kodi-resume status                        # list saved sessions
+  kodi-resume continue <246|225> [--apply] [--play]
+                                            # resume newest other-box session
+                                            # on <box>; paused unless --play.
+                                            # Default is --dry-run (prints RPCs).
+  kodi-resume prune [--keep N]              # keep newest N sessions (default 20)
+  kodi-resume --selftest <ip>               # read-only RPC path check on <ip>
+
+State: $KODI_FLEET_STATE_DIR/resume.json, else
+       $XDG_DATA_HOME/kodi-fleet/resume.json (~/.local/share/kodi-fleet/).
+"""
+import json
+import os
+import sys
+import time
+import urllib.request
+from datetime import datetime, timezone
+
+BOXES = {"246": "10.0.0.246", "225": "10.0.0.225"}
+
+STATE_DIR = os.environ.get("KODI_FLEET_STATE_DIR") or os.path.join(
+    os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share")),
+    "kodi-fleet",
+)
+STATE_FILE = os.path.join(STATE_DIR, "resume.json")
+
+MIN_POSITION_SEC = 30     # ignore sessions that barely started
+DEDUPE_WINDOW_SEC = 60    # same box+file re-recorded within this -> update
+SEEK_TOLERANCE_PCT = 1.0
+SEEK_RETRIES = 5
+DEFAULT_KEEP = 20
+
+
+def rpc(host, method, params=None):
+    req = {"jsonrpc": "2.0", "id": 1, "method": method}
+    if params:
+        req["params"] = params
+    r = urllib.request.Request(
+        f"http://{host}:8080/jsonrpc",
+        data=json.dumps(req).encode(),
+        headers={"Content-Type": "application/json"},
+    )
+    body = json.loads(urllib.request.urlopen(r, timeout=10).read())
+    if "error" in body:
+        raise RuntimeError(f"{method} on {host}: {body['error']}")
+    return body["result"]
+
+
+def to_sec(t):
+    return (t.get("hours", 0) * 3600 + t.get("minutes", 0) * 60
+            + t.get("seconds", 0) + t.get("milliseconds", 0) / 1000.0)
+
+
+def now_iso():
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def load_state():
+    try:
+        with open(STATE_FILE) as f:
+            data = json.load(f)
+        return data if isinstance(data, list) else []
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+
+def save_state(sessions):
+    os.makedirs(STATE_DIR, exist_ok=True)
+    tmp = STATE_FILE + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(sessions, f, indent=2)
+    os.replace(tmp, STATE_FILE)
+
+
+def video_playerid(host):
+    players = rpc(host, "Player.GetActivePlayers")
+    vids = [p for p in players if p.get("type") == "video"]
+    return vids[0]["playerid"] if vids else None
+
+
+def scan_box(box):
+    """Read-only snapshot of box's active video playback. None if idle."""
+    host = BOXES[box]
+    pid = video_playerid(host)
+    if pid is None:
+        return None
+    props = rpc(host, "Player.GetProperties",
+                {"playerid": pid, "properties": ["time", "totaltime"]})
+    item = rpc(host, "Player.GetItem",
+               {"playerid": pid,
+                "properties": ["file", "title", "showtitle"]}).get("item", {})
+    pos = to_sec(props.get("time", {}))
+    total = to_sec(props.get("totaltime", {}))
+    if pos < MIN_POSITION_SEC:
+        return None
+    title = item.get("title") or item.get("showtitle") or item.get("label") or "?"
+    return {
+        "box": box,
+        "title": title,
+        "file": item.get("file", ""),
+        "position_sec": round(pos, 1),
+        "total_sec": round(total, 1),
+        "saved_at": now_iso(),
+    }
+
+
+def merge_session(sessions, new):
+    """Add or in-place update a session. Returns (sessions, action)."""
+    for s in sessions:
+        if (s["box"] == new["box"] and s["file"] == new["file"]
+                and abs(new["position_sec"] - s["position_sec"]) < DEDUPE_WINDOW_SEC):
+            s.update(new)
+            return sessions, "updated"
+    sessions.append(new)
+    return sessions, "recorded"
+
+
+def pick_session(sessions, target_box):
+    """Newest session that did NOT originate on target_box. None if empty."""
+    others = [s for s in sessions if s.get("box") != target_box and s.get("file")]
+    if not others:
+        return None
+    return max(others, key=lambda s: s.get("saved_at", ""))
+
+
+def seek_pct(position_sec, total_sec):
+    if total_sec <= 0:
+        return None
+    return max(0.0, min(99.5, position_sec / total_sec * 100.0))
+
+
+def record():
+    sessions = load_state()
+    t0 = time.time()
+    for box in sorted(BOXES):
+        b0 = time.time()
+        try:
+            snap = scan_box(box)
+        except Exception as e:
+            print(f"record {box}: ERROR {e}")
+            continue
+        ms = (time.time() - b0) * 1000
+        if snap is None:
+            print(f"record {box}: idle (scan {ms:.0f}ms)")
+            continue
+        sessions, action = merge_session(sessions, snap)
+        print(f"record {box}: {action} '{snap['title']}' "
+              f"@{snap['position_sec']:.0f}s/{snap['total_sec']:.0f}s "
+              f"(scan {ms:.0f}ms)")
+    save_state(sessions)
+    print(f"state: {len(sessions)} session(s) in {STATE_FILE} "
+          f"({(time.time() - t0) * 1000:.0f}ms total)")
+
+
+def status():
+    sessions = load_state()
+    if not sessions:
+        print("no saved sessions")
+        return
+    for s in sorted(sessions, key=lambda x: x.get("saved_at", "")):
+        pos, total = s["position_sec"], s["total_sec"]
+        pct = f"{pos / total * 100:.0f}%" if total > 0 else "live"
+        print(f"[{s['box']}] {s['title']} @ {pos:.0f}s/{total:.0f}s ({pct}) "
+              f"saved {s['saved_at']}")
+
+
+def open_and_seek(host, session, play=False, dry_run=True):
+    """Open session['file'] on host, seek to saved position, pause (or play)."""
+    pct = seek_pct(session["position_sec"], session["total_sec"])
+    open_params = {"item": {"file": session["file"]}}
+    if dry_run:
+        print(f"DRY-RUN Player.Open on {host}:")
+        print(f"  {json.dumps(open_params)}")
+        if pct is None:
+            print("DRY-RUN: live/unknown duration -> no seek after open")
+        else:
+            print(f"DRY-RUN Player.Seek -> {pct:.1f}% "
+                  f"({session['position_sec']:.0f}s of {session['total_sec']:.0f}s)")
+            print("DRY-RUN: then " + ("Player.PlayPause (leave playing)"
+                                     if play else "Player.PlayPause (leave paused)"))
+        return
+    rpc(host, "Player.Open", open_params)
+    time.sleep(1.5)  # addon streams need resolve time
+    pid = video_playerid(host)
+    if pid is None:
+        raise RuntimeError(f"no video player on {host} after open")
+    if pct is not None:
+        for _ in range(SEEK_RETRIES):
+            rpc(host, "Player.Seek",
+                {"playerid": pid, "value": {"percentage": pct}})
+            time.sleep(1.0)
+            props = rpc(host, "Player.GetProperties",
+                        {"playerid": pid, "properties": ["time", "totaltime"]})
+            cur = to_sec(props.get("time", {}))
+            tot = to_sec(props.get("totaltime", {}))
+            cur_pct = cur / tot * 100 if tot > 0 else 0
+            if abs(cur_pct - pct) < SEEK_TOLERANCE_PCT:
+                break
+        print(f"seeked to {pct:.1f}% (now at {cur_pct:.1f}%)")
+    else:
+        print("live/unknown duration: opened without seek")
+    if not play:
+        rpc(host, "Player.PlayPause", {"playerid": pid})
+        print("paused (use --play to leave playing)")
+
+
+def continue_on(box, apply=False, play=False):
+    if box not in BOXES:
+        sys.exit(f"unknown box '{box}'; want 246 or 225")
+    host = BOXES[box]
+    sessions = load_state()
+    session = pick_session(sessions, box)
+    if session is None:
+        sys.exit(f"no saved sessions from the other box to continue on {box}")
+    if video_playerid(host) is not None:
+        sys.exit(f"refusing: {box} already has active video playback "
+                 f"(would clobber it). Stop it first, then retry.")
+    print(f"continuing on {box}: '{session['title']}' "
+          f"(recorded on {session['box']} at {session['saved_at']})")
+    open_and_seek(host, session, play=play, dry_run=not apply)
+
+
+def prune(keep=DEFAULT_KEEP):
+    sessions = load_state()
+    sessions.sort(key=lambda s: s.get("saved_at", ""))
+    dropped = len(sessions) - keep
+    if dropped > 0:
+        sessions = sessions[dropped:]
+        save_state(sessions)
+    print(f"pruned {max(0, dropped)} session(s); {len(sessions)} kept")
+
+
+def selftest(ip):
+    """Read-only RPC path check: ping, players, and item/props if playing."""
+    print(f"ping: {rpc(ip, 'JSONRPC.Ping')}")
+    players = rpc(ip, "Player.GetActivePlayers")
+    print(f"active players: {players}")
+    pid = next((p["playerid"] for p in players if p.get("type") == "video"), None)
+    if pid is None:
+        print("no video player: nothing further to probe (OK)")
+        return
+    item = rpc(ip, "Player.GetItem",
+               {"playerid": pid, "properties": ["file", "title"]})["item"]
+    props = rpc(ip, "Player.GetProperties",
+                {"playerid": pid, "properties": ["time", "totaltime"]})
+    print(f"item: title={item.get('title')!r} file={item.get('file', '')[:80]!r}")
+    print(f"pos: {to_sec(props['time']):.0f}s / {to_sec(props['totaltime']):.0f}s")
+    print("selftest OK")
+
+
+def usage():
+    sys.exit(__doc__)
+
+
+def main(argv):
+    if not argv or argv[0] in ("-h", "--help"):
+        usage()
+    cmd = argv[0]
+    if cmd == "record":
+        record()
+    elif cmd == "status":
+        status()
+    elif cmd == "continue":
+        if len(argv) < 2:
+            sys.exit("usage: kodi-resume continue <246|225> [--apply] [--play]")
+        box = argv[1]
+        continue_on(box, apply="--apply" in argv[2:], play="--play" in argv[2:])
+    elif cmd == "prune":
+        keep = DEFAULT_KEEP
+        if "--keep" in argv:
+            keep = int(argv[argv.index("--keep") + 1])
+        prune(keep)
+    elif cmd == "--selftest":
+        if len(argv) < 2:
+            sys.exit("usage: kodi-resume --selftest <ip>")
+        selftest(argv[1])
+    else:
+        usage()
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

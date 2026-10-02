@@ -1,0 +1,7 @@
+
+## 2026-09-14 18:32 MDT — GITHUB/PAT STATUS (side-chat Shingle, per Chris)
+1. "GitHub proxy down": GitHub is FINE from awrawr-pc (api.github.com 200 in 0.19s, gh authed as toxicwind). Dead ONLY from cells — ALL cell egress is down right now (direct + proxy_fwd; upstream hatch-egress-proxy:3128 not answering). Not a token problem. Cell GitHub/arxiv/everything failures are the egress outage.
+2. "Did you commit the PAT and push": NO. Verified across gear + sovereign + sovereign-projects history — github_pat_ hits are docs mentions and fake fixtures in tau secrets-obfuscator tests (sequential-alphabet fakes). Zero real token-shaped values in any pushed history.
+3. FIXED GLOBALLY: stripped embedded creds from 7 moonbox-live/.git_repos mirror configs (raw github_pat_ and oauth: remote URLs -> clean https). Mirror fetches now ride gh auth.
+4. ACTION FOR CHRIS: the pasted PAT is in chat transcript now — ROTATE it: github.com -> Settings -> Developer settings -> Personal access tokens -> find it -> Regenerate/Delete. Treat as compromised regardless of the above.
+5. Redaction gap found: tool-output scrubber catches oauth: but NOT github_pat_ in URLs — raw values were visible in tool output. Verified 0 token-shaped values persisted in ~/.awrawr_mcp_audit.jsonl (only my grep patterns logged). Platform-level scrub fix still needed.

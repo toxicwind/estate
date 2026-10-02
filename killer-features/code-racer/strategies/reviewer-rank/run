@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+"""reviewer-rank: CoderReviewer-style scalar reranking (REIMPLEMENTED, not derived).
+
+The coder_reviewer_reranking vendor repo is CC-BY-NC 4.0 (reference only), so
+this adapter reimplements the published idea with our own code:
+  1. sample N=3 candidates from the tool model (t=0.7)
+  2. the tool model acts as REVIEWER and scores each candidate 1-10 against
+     the spec (correctness, edge cases, spec adherence)
+  3. emit the highest-scoring candidate
+Selection is by scalar model scoring -- distinct from oracle-consensus
+(binary A/B verdict) and evolve (real test execution).
+Ceiling: 480s.
+"""
+import os, re, sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "lib"))
+from cr import *
+
+CEILING = 480
+N = 3
+
+REVIEWER_SYS = ("You are a strict code reviewer. Score the candidate solution "
+                "against the task spec on a 1-10 scale (10 = perfect). Reply "
+                "with ONLY the integer score, nothing else.")
+
+def score_candidate(spec, lang, code):
+    prompt = (f"Task: {spec.get('title', spec.get('id',''))}\n\n"
+              f"{spec.get('description','')}\n\n"
+              f"Candidate solution:\n```{lang}\n{code}\n```\n\n"
+              "Score this solution 1-10 for correctness, edge-case handling, "
+              "and spec adherence. Reply with ONLY the integer.")
+    try:
+        out = chat(TOOL_URL, TOOL_MODEL, prompt, max_tokens=8, temperature=0.0,
+                   timeout=60, system=REVIEWER_SYS)
+        m = re.search(r"\b(10|[1-9])\b", out)
+        return int(m.group(1)) if m else 0
+    except Exception as e:
+        log(f"review failed: {e}")
+        return 0
+
+def main(task_dir, output_path):
+    arm_timeout(CEILING)
+    spec = read_task(task_dir)
+    lang = spec.get("language", "python")
+    prompt = spec_prompt(spec)
+    cands = []
+    for i in range(N):
+        check_deadline("sample")
+        log(f"reviewer-rank: sample {i+1}/{N}")
+        try:
+            cands.append(extract_code(chat(TOOL_URL, TOOL_MODEL, prompt,
+                                           max_tokens=4096, temperature=0.7,
+                                           timeout=170), lang))
+        except Exception as e:
+            log(f"sample {i+1} failed: {e}")
+    cands = [c for c in cands if c]
+    if not cands:
+        log("no candidates"); return 1
+    scored = []
+    for i, code in enumerate(cands):
+        check_deadline("review")
+        s = score_candidate(spec, lang, code)
+        log(f"reviewer-rank: candidate {i+1} scored {s}/10")
+        scored.append((s, i, code))
+    scored.sort(key=lambda t: (-t[0], t[1]))
+    best = scored[0][2]
+    log(f"winner: candidate {scored[0][1]+1} with {scored[0][0]}/10")
+    write_solution(output_path, f"solution.{lang}", best)
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1], sys.argv[2]))

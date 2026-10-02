@@ -1,0 +1,6952 @@
+{
+ "sovereign-swap": {
+  "entries": [
+   {
+    "path": ".github/workflows/ui-tests.yml",
+    "sha": "c1bb38587022338ee5e4e24a07f5543170f90524",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/unified-docker-backend.yml",
+    "sha": "ed4fc40d8b7b20b127f2442f5f46b57df827f401",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/unified-docker.yml",
+    "sha": "9801dc588b2ae2153efa4f33184593ee72b82e9a",
+    "mode": "100644"
+   },
+   {
+    "path": ".gitignore",
+    "sha": "0160818ef4888a97d57a7b850347785e591fec6a",
+    "mode": "100644"
+   },
+   {
+    "path": "AGENTS.md",
+    "sha": "82a992f2ebc4c0b2a3acca3b16c6ed5dabfa8ab6",
+    "mode": "100644"
+   },
+   {
+    "path": "CONTRIBUTING.md",
+    "sha": "8ba98d4281c834b3826fbaa93e94f144679b76f2",
+    "mode": "100644"
+   },
+   {
+    "path": "LICENSE.md",
+    "sha": "6dbacecf76aeb0b0006d4841932983c9944ecab8",
+    "mode": "100644"
+   },
+   {
+    "path": "Makefile",
+    "sha": "8cb7d22ba8b84b038ae60b266efaf7c2ce56d6cf",
+    "mode": "100644"
+   },
+   {
+    "path": "README.md",
+    "sha": "32671255431aa2fe32f605693b48791d4652aed4",
+    "mode": "100644"
+   },
+   {
+    "path": "cmd/vllm-wrapper/README.md",
+    "sha": "f2a505009b174fa3c85ea3f4a5abb6547211a423",
+    "mode": "100644"
+   },
+   {
+    "path": "cmd/vllm-wrapper/main.go",
+    "sha": "81536c6fd6e3204d12647c5cd489c9c278ee851a",
+    "mode": "100644"
+   },
+   {
+    "path": "cmd/vllm-wrapper/main_test.go",
+    "sha": "65ddf9e8cbe98b9b7077c669806c8407f5b224d9",
+    "mode": "100644"
+   },
+   {
+    "path": "cmd/wol-proxy/README.md",
+    "sha": "5f8e3aec2ef977d4d2c58c74858a3ee7caa975d5",
+    "mode": "100644"
+   },
+   {
+    "path": "cmd/wol-proxy/wol-proxy.go",
+    "sha": "956954e42b473df8d97706886778d1eb6986011d",
+    "mode": "100644"
+   },
+   {
+    "path": "config-schema.json",
+    "sha": "31691317d92ec7536b08d0e67281b8896bf1ee53",
+    "mode": "100644"
+   },
+   {
+    "path": "config.example.yaml",
+    "sha": "46a6031e30e97ec823d52f6ad42371682e5d2b1b",
+    "mode": "100644"
+   },
+   {
+    "path": "docker/build-container.sh",
+    "sha": "38206f99c787d3073c47b0358bbb0eb9a323547c",
+    "mode": "100755"
+   },
+   {
+    "path": "docker/llama-swap.Containerfile",
+    "sha": "b07209ec7aba911577536a6b7004dbca07256055",
+    "mode": "100644"
+   },
+   {
+    "path": "docker/unified/README.md",
+    "sha": "0d8ef7fa5c8c520aa2a290583a24abbe0a12e46a",
+    "mode": "100644"
+   },
+   {
+    "path": "docker/unified/audio.Dockerfile",
+    "sha": "398a43b5d62d2b968be0c00075e1b6336a65e377",
+    "mode": "100644"
+   },
+   {
+    "path": "docker/unified/audiocpp-server.example.json",
+    "sha": "7f49d1aee01baec793657c46b0467d5a393727fc",
+    "mode": "100644"
+   },
+   {
+    "path": "docker/unified/base-cuda.Dockerfile",
+    "sha": "8403ec04cb9293d6973a868ee660a82ec44982d7",
+    "mode": "100644"
+   },
+   {
+    "path": "docker/unified/base-vulkan.Dockerfile",
+    "sha": "5b736808e0b30d384dab144a09c306b4aefc3fb6",
+    "mode": "100644"
+   },
+   {
+    "path": "docker/unified/build-image.sh",
+    "sha": "df66dcd1bd91976b9e4396ea28f3df1e03b0ea5e",
+    "mode": "100755"
+   },
+   {
+    "path": "docker/unified/config.example.yaml",
+    "sha": "8a458ad5ea37d630072d31fbc2040522798ef9cf",
+    "mode": "100644"
+   },
+   {
+    "path": "docker/unified/ik-llama.Dockerfile",
+    "sha": "88397678f5dbf5ab891394126f8ef8656550b400",
+    "mode": "100644"
+   },
+   {
+    "path": "docker/unified/install-audio.sh",
+    "sha": "4e13930ebb4d4d9645290a0deb20d937bb4b3d82",
+    "mode": "100755"
+   },
+   {
+    "path": "docker/unified/install-ik-llama.sh",
+    "sha": "c772fe49d385b54f0cdb0f5f7b6c296ae2d2dec7",
+    "mode": "100644"
+   },
+   {
+    "path": "docker/unified/install-llama.sh",
+    "sha": "7c6ff8ba581be8f6454733c1609fb16b797b55b7",
+    "mode": "100755"
+   },
+   {
+    "path": "docker/unified/install-sd.sh",
+    "sha": "7bf01694ca9d6a90caf6bd6fbefaee3fc7725573",
+    "mode": "100755"
+   },
+   {
+    "path": "docker/unified/install-vllm-wrapper.sh",
+    "sha": "509bb6367973e23e9e07beaecc8053ce1e8ad5a0",
+    "mode": "100755"
+   },
+   {
+    "path": "docker/unified/llama.Dockerfile",
+    "sha": "6f5b1918a7e515c939d29886dfb87d8e7598f088",
+    "mode": "100644"
+   },
+   {
+    "path": "docker/unified/runtime.Dockerfile",
+    "sha": "02a2637d1923a5179c676e94b31c992e4b03b063",
+    "mode": "100644"
+   },
+   {
+    "path": "docker/unified/sd.Dockerfile",
+    "sha": "0273b2c468d7e9879c3467b10112edb84b9241ec",
+    "mode": "100644"
+   },
+   {
+    "path": "docker/unified/whisper.Dockerfile",
+    "sha": "cba276e916ca9cfa650cb02797d66c39997c033b",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/README.md",
+    "sha": "672c7bccacb437efdc140c1284486f91ef8cc196",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/config.example.yaml",
+    "sha": "46a6031e30e97ec823d52f6ad42371682e5d2b1b",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/embed.go",
+    "sha": "a3b1658a799754de3696a2ade89506d4e71b884b",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/README.md",
+    "sha": "7799c32822a7e5a753098b6195befb1707a7640f",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/examples/peers-and-multi-host.md",
+    "sha": "10b4a603d04ec81849b844aa368a84b5f5436638",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/examples/speculative-decoding.md",
+    "sha": "58c5c68eacf9b28db49cfec4b0de6285d6afb854",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/api-integration/api-keys-and-auth.md",
+    "sha": "88c49ea97715df89abe9780dedc3fcf4457c724f",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/api-integration/filters-and-request-rewriting.md",
+    "sha": "d160676224da0755d673621c5ece0bf45fd10c22",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/api-integration/mcp-endpoint.md",
+    "sha": "3beff25d99cb332e12e896e77751b68e3acb4e9d",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/configuration/macros.md",
+    "sha": "5bcfdc3ca09baa13767a08e31789f5010d045100",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/connectivity/proxy-timeouts.md",
+    "sha": "8d390ab8bb7cf7954365f10be00ecacb69a99fe5",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/connectivity/remote-peers.md",
+    "sha": "333e56474c16be67c688b626717a713505b91409",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/connectivity/upstream-passthrough.md",
+    "sha": "eeb9ea05df9b8913f6af172ec66975507ada5b81",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/model-runtime/capabilities-and-model-listings.md",
+    "sha": "11a6d236b27b9bf6b910a5a4b7ed47132d3c36eb",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/model-runtime/client-compatibility-and-loading-feedback.md",
+    "sha": "f77564433320330bc6d42825cbf5d24d3ed00466",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/model-runtime/troubleshooting-model-wont-load.md",
+    "sha": "fff725888a150d9c4a568bc6d8c60975bf36bdf8",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/model-runtime/ttl-and-unloading.md",
+    "sha": "aac873c39e0121d3e30fa6bb14edb2d451287288",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/model-runtime/writing-cmd.md",
+    "sha": "aa77f62bf34ac10f6f15eb802c91ee6bdfcf9e81",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/operations/container-security.md",
+    "sha": "b1b46a47637ae6b5b7e67387c1eccb8ba1343d63",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/operations/observability-storage-and-activity.md",
+    "sha": "f2d5e68a38f9da3b9fad9ac595ba115030d95d84",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/operations/startup-preloading-and-hooks.md",
+    "sha": "655f8e291a17713d2662283d8cd90f5e4ac36030",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/routing/capacity-and-queues.md",
+    "sha": "78fb2e984d57ca6406eb3cf5d4d1f6d843f21312",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/routing/groups-and-matrix.md",
+    "sha": "72b92d089c7e840fb6b9d1965cd70db224dd3323",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/kb/guides/routing/profiles-and-selectors.md",
+    "sha": "f35c5302d0f3693691a2234e937eb8d6c60d966e",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/config.yaml.example",
+    "sha": "d2e2026dd08f41109ab12504aab8e6a996486af9",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/README.md",
+    "sha": "1ab96963d10c49267fd51dce494d3fd4ecbea7b2",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases-holdout/connectivity/new-guides.yaml",
+    "sha": "e43df54f8e843069598a1e2791206acdec06e04b",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases-holdout/model-runtime/holdout.yaml",
+    "sha": "9aee1c7acddb8063ce86dcb7823745988844b1ed",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases-holdout/model-runtime/new-guides.yaml",
+    "sha": "ca25fbb6bb5b4bb53f455461896afde3029a148f",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases-holdout/operations/new-guides.yaml",
+    "sha": "a822db9cd0e010cdd776d36028daf1cce4a8dab9",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases-holdout/routing/new-guides.yaml",
+    "sha": "721e15d6c8cf86c783d0a5d0aa6025961bcfffbd",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases/api-integration/hard.yaml",
+    "sha": "a5f9aee668ef11777375385e84f3065aa8ec84a8",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases/api-integration/tools-and-api.yaml",
+    "sha": "0f38439f6742c6de5e17de6b6b2fdc598c922038",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases/configuration/hard.yaml",
+    "sha": "8baea550f6288ecfa1ab9108372f8e9be04caeeb",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases/configuration/macros.yaml",
+    "sha": "08d20494b620dabd060150f3ec73c7d23649a5f1",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases/connectivity/guides.yaml",
+    "sha": "39c4f0f2379ec96da09dc68cf0dd46dc63ebb70b",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases/connectivity/hard.yaml",
+    "sha": "a77da12521b4f354d6e2e711ab6425ad0b6ac62d",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases/model-runtime/capabilities-hard.yaml",
+    "sha": "60560000340adabd4584ec65f3c8febaef566d41",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases/model-runtime/capabilities.yaml",
+    "sha": "28c5d5c5c809d873b9db27045df573f16de66ec4",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases/model-runtime/cmd-and-proxy.yaml",
+    "sha": "d1000d8c433b16ed47a07885a78aff1daaf9bff5",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases/model-runtime/hard.yaml",
+    "sha": "c835621192d64270317e38cc4d87f0dd771befad",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases/model-runtime/troubleshooting.yaml",
+    "sha": "243e3e8bd81f9502bb6b1ea30d12e4fe2d3bec38",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases/model-runtime/ttl.yaml",
+    "sha": "b3b2a13751d48c8dfd9aabcf7d300606f83cb09a",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases/operations/guides.yaml",
+    "sha": "712bed7d6f497926d2c9ffc03915e1839e5dc0cf",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases/routing/advanced.yaml",
+    "sha": "d98f1193c373da9bfa719e2278cbc7d931fb4408",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases/routing/hard.yaml",
+    "sha": "c988bd5be7c616dee6a4151102cb3b8291fbe4fa",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases/routing/routing.yaml",
+    "sha": "14dcd693cdac32943f2b821de6473273aefca635",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/cases/safety/negative.yaml",
+    "sha": "05c073b1b245baea76412bd66b827ae7a841a0d3",
+    "mode": "100644"
+   },
+   {
+    "path": "evals/docs-agent/run.sh",
+    "sha": "b5476e488dda8444f378caa34ed12747303ebd50",
+    "mode": "100755"
+   },
+   {
+    "path": "go.mod",
+    "sha": "2a5e887017344ca964795f36877c25f625b92db9",
+    "mode": "100644"
+   },
+   {
+    "path": "go.sum",
+    "sha": "4ed0b5e37a983071a76c43c478402ebc46cd8a3a",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/astmatrix/circuit.go",
+    "sha": "e17d35d9bf45c8abcd051cab06957490af557c8e",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/astmatrix/config.go",
+    "sha": "c4f91593a61903f5dbd5993b5d6afb9575b3ebf0",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/astmatrix/healthdb.go",
+    "sha": "385359b2dc5195a2d3d3c91116f1c16ac0e76ee9",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/astmatrix/matrix.go",
+    "sha": "5ea03db87d688e85d70b54409156b33a7610f86c",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/astmatrix/metrics.go",
+    "sha": "56c1ed5a1c9026a8aa310d2e847960ebed522bcf",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/astmatrix/providers.go",
+    "sha": "23bee8aaa807058928c08ac40a5d2ef4538c303c",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/astmatrix/ratelimit.go",
+    "sha": "666bbe211065e6731f0434205026e58ee1903df7",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/astmatrix/ratelimit_test.go",
+    "sha": "ccdf161c00d03e2f6bcda4ae371f732ae2682575",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/astmatrix/router.go",
+    "sha": "b177906b0c19e081e8e911b552d1e6f5a0e61c20",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/commands.go",
+    "sha": "066228b7be57c36a01aec378c8b2d87e4e21e0e4",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/config.go",
+    "sha": "f64fe7e8ac30915576aae495c083ace41b32c692",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/config_posix_test.go",
+    "sha": "bc23c335c9cb563bb14ac569dee193f21a4e2a23",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/config_schema_test.go",
+    "sha": "055e73343dea39c14afe2acf60082a9b0d71d22a",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/config_test.go",
+    "sha": "05c77afc8b3226be7862801b36aa5e98c78e1a06",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/config_windows_test.go",
+    "sha": "d6b569ec50b6c6e3d2cc12eda7cbffcb6f38e361",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/filters.go",
+    "sha": "cbcec57d19c530b146ec12c30648efcb2ed254ab",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/filters_test.go",
+    "sha": "83b5f46d72b226471e31ac2cc79cc1bcee4d6ec0",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/load.go",
+    "sha": "20f3273bdccad08172ff0deef6c83e90f3ab5551",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/load_posix.go",
+    "sha": "58863e7eadc51e92ba9d2ddb6385c97b763862c0",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/load_windows.go",
+    "sha": "9e0470010c1961d62e767ddf81d3497f2a11665a",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/macro_in_macro_test.go",
+    "sha": "38c695753e59517de60791d40929aa7c21f49337",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/macro_test.go",
+    "sha": "90ef8b71b763996183c4db7b92b6614f73c3126b",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/macros.go",
+    "sha": "d8135843f8987b5bbbb63dc90596a34f6add2ada",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/macros_refactor_test.go",
+    "sha": "bdfaacd66a38ab5bc88cba02963fb01f53201e02",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/matrix.go",
+    "sha": "d4ee9cfc486d46aa1e7a8563bc90b9fe1c3ee27b",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/matrix_bench_test.go",
+    "sha": "ae9f07efa699116dd870945d69d0f95bcff37eed",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/matrix_test.go",
+    "sha": "56addf207bbc2b910ab620498daa843c27045e11",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/mcpprovider.go",
+    "sha": "010d7a6099e0673524979489f084107112acf5c0",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/mcpprovider_test.go",
+    "sha": "676dbb0e5e1bca03b8af9d6b6736d253f026f140",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/merge.go",
+    "sha": "ce5f405a94ac5f47ccc91ac2a663326329ad72a2",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/merge_test.go",
+    "sha": "e74ba10e3d501f059fe26cddd6b893552db661cb",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/model_config.go",
+    "sha": "227539e4480dabeb63cd64b781bced3b9d400c3d",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/model_config_anchor_test.go",
+    "sha": "505af2848f6cc18240c4e43b19fbfed1ee227ed1",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/model_config_test.go",
+    "sha": "00922d1d9c3a5f99d97de06e29bc9e58431dc54a",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/peer.go",
+    "sha": "e19ac1384a1e123ed6d09ca385264229b37c5ba7",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/peer_test.go",
+    "sha": "64d8f266d567dd6e2d9197214b2f0bf0b102b1ec",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/performance.go",
+    "sha": "4d4155e303b17f4373cc62971bcd30b912d27983",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/performance_test.go",
+    "sha": "b54cf1e97750334a397df214b105e204e1000ea1",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/profile_test.go",
+    "sha": "9d1fdaa6a2ac6d7a2a4a301f1c95782e81eca057",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/redact.go",
+    "sha": "5be830e0d392d66848233e86459d02c8bc97cf5a",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/redact_test.go",
+    "sha": "d9c2e8e81e68cee3f1c43ab04869ba33743353d7",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/selectors.go",
+    "sha": "ee6d74e47282cc9179edf73c0bca1daa57fc6505",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/selectors_test.go",
+    "sha": "64ab2f846def05b7cda2a8050501bda032a97cab",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/ui_test.go",
+    "sha": "390fa0d80c30c67ae15433776906554c37f675b3",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/upstream.go",
+    "sha": "a3371a3daf8ce92f5bf2ea7714bea41532b97f6d",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/config/upstream_test.go",
+    "sha": "19b61eb53513680ae5f4facb6f0c71d0b633b78a",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/docagent/configdoc.go",
+    "sha": "407fdbadaedef9a6eceb93e8e18ba8c93a8e34e9",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/docagent/configdoc_test.go",
+    "sha": "6eba38cedd53c5dd6021bdc09747a3da8bd718d3",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/docagent/golden_test.go",
+    "sha": "d42537ed097533fbd09c7c121b177a4f9ab4a7a4",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/docagent/kb.go",
+    "sha": "dec0d16f3bfdcdc000ac0242e377fa1f47e59d8e",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/docagent/kb_test.go",
+    "sha": "7cd29a9ae6f6ac22f86eeb47eedc3afda46f6ae5",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/docagent/mcpprovider.go",
+    "sha": "825fe2d328674362e1e7cbd3225fa456163ce3b9",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/docagent/reference.go",
+    "sha": "0309f363db49cd893502a488666dd1faacf9bb3d",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/docagent/reference_test.go",
+    "sha": "c5cd2299627c0a6a98a2a814b647e130cf8828ae",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/docagent/schema.go",
+    "sha": "9f7791a86b0145b88053852c2656f28d1b3bb625",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/docagent/schema_test.go",
+    "sha": "e615cf8a4922a448a99e9d121cc577adbc291f15",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/docagent/search.go",
+    "sha": "949d6b30eff4db6434e85399a0d9e8fa8dc06f97",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/docagent/search_test.go",
+    "sha": "19141f8c3c8675b21708c166757d2e715d62d4ee",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/freeproxy/cache_global.go",
+    "sha": "0059abc9c29a3eeb9ba53f2d0563cca3b6711382",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/freeproxy/cloudflare.go",
+    "sha": "c79b1733b90ebf25fe9f7885a0352fcf2d8fcd05",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/freeproxy/openrouter.go",
+    "sha": "34d34c885e7072dd33b401937af0e20ee039deb7",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/freeproxy/ovh.go",
+    "sha": "804de9be0064d19c96c62acae0c3b86cc40ae092",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/freeproxy/pollinations.go",
+    "sha": "fb9aac74adcd7454ac255ee988ed5e40168ab870",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/freeproxy/provider.go",
+    "sha": "f84e01109ce6909319c3fd73e678bb78fe904e1b",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/freeproxy/registry.go",
+    "sha": "696f5bf26ec5eb61a9244158cfacdbd8cac4c56e",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/hw/README.md",
+    "sha": "e068d8d7c5562c6bcf56f2ac3851f61a71e53977",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/hw/amd_linux.go",
+    "sha": "c486e1087c94755d8c5422aa2d2d7ae86fb7abf5",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/hw/detect.go",
+    "sha": "8afc23784893efdb11f7eea30f4b264f99f3f90a",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/hw/detect_darwin.go",
+    "sha": "2d58e00aab45ad6c1e3653469465dc053fd4b089",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/hw/detect_linux.go",
+    "sha": "f860c0144ffb15d2d02338f768a37159b740dc70",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/hw/detect_other.go",
+    "sha": "c4728151300f5368f37f429e79a82086d0d625e4",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/hw/detect_windows.go",
+    "sha": "462e6e9fe8b4074a48f0755abb1bae88be672b2a",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/hw/dxgi_windows.go",
+    "sha": "2b024483c87432cb8c9fdb1dd5d0035971d31e70",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/hw/dxgi_windows_other.go",
+    "sha": "012383db1b3056799e3ad9aa0b7117a7818af420",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/hw/hardware_darwin_test.go",
+    "sha": "99ddb8abd93053379b9d7425a7a91e762b786ba4",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/hw/hardware_linux_test.go",
+    "sha": "22f64a7a5f873e2820018d8e53069e5f7303f660",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/hw/hardware_test.go",
+    "sha": "f5e2e578f5383e74db7b01c2103b52412ba4d6b8",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/hw/hardware_windows_test.go",
+    "sha": "c93e1c841dcb444785e4cb5d485be88f3e2f5cc5",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/hw/nvidia.go",
+    "sha": "7e733128ef947e89a3ac49a84eb6fd96a975ef15",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/hw/types.go",
+    "sha": "2ef169d382212616ed0aa319715e9fb434cac093",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/hw/validate.go",
+    "sha": "6e0cfa29515af9a3fce7312afed38769866467c6",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/matrix/doc.go",
+    "sha": "1311c76a981a038db4225d5e5a492152185cea38",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/matrix/dsl.go",
+    "sha": "8ca4288dcd9535b38c24d0d3bc28671ca8b86ceb",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/matrix/dsl_test.go",
+    "sha": "c2ea04b13ceb6deabb57b2c06f264d42e34692c4",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/matrix/program.go",
+    "sha": "0418335bedec489705c9e9c3d1a0b3c3ff83f88c",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/matrix/program_bench_test.go",
+    "sha": "0a694b567e89f3ec5c8b6c799284020d6741f9aa",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/mcptools/helpers.go",
+    "sha": "f0803b5a6e8ba6dafb069236f0c46db59560825f",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/mcptools/provider.go",
+    "sha": "836d6fd871245ad6115c6490873daf2011452f8a",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/mcptools/registry.go",
+    "sha": "85dbbbe067cd7fdee58b58f18b47a9f1ccd32d9d",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/mcptools/registry_test.go",
+    "sha": "ec453520caf4f8066981161de0d441dbeaa8b513",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/mcptools/sys.go",
+    "sha": "cf07eeceddb8f9e20b669721042e5bafce9ba1bd",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/mcptools/sys_test.go",
+    "sha": "a64f46d2db089ebec295483596cf23d754fade05",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/perf/monitor_unix.go",
+    "sha": "a12fa1d1883c7fe780ed1f9d2d12b04e10f2dfc3",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/perf/monitor_unix_test.go",
+    "sha": "4cda12c28373a514295d751673786102daba7f6f",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/process/process.go",
+    "sha": "a43a418813d8ac651292b8795b4ab7b1cae5d690",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/process/process_command.go",
+    "sha": "dd6c4a80c448d05924bc7c2b1477190978c3e05f",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/process/process_command_test.go",
+    "sha": "9aa7c6b1af814c6fbedd37dbea3e236e6d909050",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/process/process_events_test.go",
+    "sha": "bb8477e7cb57a065459cd24f8ea2305455c572ad",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/process/proxy_error_test.go",
+    "sha": "978badf7f990b6bdba10c813f9e608d56946d366",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/router/base.go",
+    "sha": "c903f7aca7e72283fb201f248dbbe6ec3ca9e2e4",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/router/base_test.go",
+    "sha": "a845af26bf3a4e97ca9f1b314d186cf98f2c2e1e",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/router/design.md",
+    "sha": "3ba0337e7b956770ef8970c9826fafd724171a79",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/router/helpers_test.go",
+    "sha": "4d7e6a5694f77af807ed29323b21c6e60fe34e4e",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/router/loading.go",
+    "sha": "f3fa704ff0fb2b6fda7fe3db26fa2c434c5bb6ea",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/router/loading_test.go",
+    "sha": "f8549d9b29dca71762e661bb538abe1492d1703d",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/router/matrix.go",
+    "sha": "caa1116b4437d3bbd78f7f01a2b0475eab05854e",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/router/matrix_bench_test.go",
+    "sha": "d7aa50b94efc2926278fbb8d228d97ae737661a0",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/router/matrix_solver.go",
+    "sha": "d1ec7a47d63599ec720f9b58416e65661595fda4",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/router/matrix_test.go",
+    "sha": "631f6175d13d3924cb5d2c95bd354e9c7acb61fb",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/router/peer.go",
+    "sha": "c47b28780a47745afd5337931515a520a3221b0e",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/router/peer_test.go",
+    "sha": "8273dc47928fcb3e59e6e6f6778d0ef0db027d7e",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/router/router.go",
+    "sha": "d994a19816157f3b76f3f2c54d3ab21b9dd66aee",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/router/scheduler/fifo.go",
+    "sha": "dd20bd5dcf32bd5e7c26d6afca9ead8eae598891",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/router/scheduler/fifo_test.go",
+    "sha": "ef5d7e33c4d787294f0dfadf92a8fa954c7697b5",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/router/scheduler/scheduler.go",
+    "sha": "9fef6ee99fb21957ffa3f07fdfdaf7b1f1f6cffb",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/api.go",
+    "sha": "84c3016e91dd547583d2cf04ce50d16a6803c758",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/api_test.go",
+    "sha": "734ae8f7d1cc906a2136420aa1da3be65f97433a",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/apigroup.go",
+    "sha": "4710a3b7fd2d0438bd0681507b673171eb37455b",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/apigroup_test.go",
+    "sha": "f4f14b9e1cdae8c0983b604ded91f0645040dcac",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/apimcp.go",
+    "sha": "e71d6ea26ed0c044f1b1d394862f7aa786c59f3d",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/apimcp_test.go",
+    "sha": "7dfc5f93a77a7497b596252a5a5b16eb760ceee2",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/auth.go",
+    "sha": "87d6f75775a3c838505018a258cc8d2c8696e03f",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/extras_test.go",
+    "sha": "57ffdc9e7b523cf58087d0a0dd1ab2e2e73ff18c",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/filters.go",
+    "sha": "60d5ca78c4c5c303098930ac1d4cbe1c0022c0fa",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/filters_test.go",
+    "sha": "848ac521fddbdb055ff73fdde40c66dc75b354ab",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/inflight.go",
+    "sha": "9b8f88993d26a63f3655a84ad31fd6097f836228",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/log.go",
+    "sha": "33110bb77c7cc774e85dd44df652f47e4f01b4f1",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/log_test.go",
+    "sha": "dc380f9958d9cdcd647da869983653790ea0e764",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/metrics.go",
+    "sha": "ea2d20b5eb5c2979c6a64b9c658fdc4f0bded7ee",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/metrics_middleware.go",
+    "sha": "d323619501e403583b8e4bf0978576b6d38d1217",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/metrics_test.go",
+    "sha": "70ab93c87fd1b7f7c473bfd779d2f2124199368f",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/models_sse.go",
+    "sha": "449a5651aba24a7ccf447491f613b0a469f2f32d",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/models_sse_e2e_test.go",
+    "sha": "a84b36136c46b73c4b77431b873728eeb297349e",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/models_sse_test.go",
+    "sha": "cd1e7ced8243151c195c48fd74c49af54fd1b5dc",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/profiles.go",
+    "sha": "2a4da5d4a7c69f2ecafdecc39cfcc10e772985ce",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/profiles_test.go",
+    "sha": "018d6eb4bb1cbc4ec601661f573a6d83df30109b",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/selector.go",
+    "sha": "5fe6076755cb727eb1827a28cdf5e025c30c2e7d",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/selector_test.go",
+    "sha": "6cb2ed03d69fa084e7c4f01f662881a8e3268d9c",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/server.go",
+    "sha": "727d97fc084a17bedf5cadf94e9e7016898a39b4",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/server_test.go",
+    "sha": "b9be82f5219078dc1aac48a6736260e621b323d2",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/suppress.go",
+    "sha": "4a6244cde0ac2253e4a403e3404ee7123fb38736",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/server/suppress_test.go",
+    "sha": "ab25cbd658de5577e3a217c3a142c1ef4da23c9b",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/store/store.go",
+    "sha": "d85af31ebfc114538edab190a50ac71814e6aced",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/store/store_test.go",
+    "sha": "8dfaa06f6a9ee391370a537e83ff66934f1376a1",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/swaputil/events.go",
+    "sha": "4f6adaabee3eecbbcd5f97a6d1ea0079c037d4e5",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/swaputil/http.go",
+    "sha": "d218436a8b4bbdce42dc407d16232ca8815678e3",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/swaputil/http_test.go",
+    "sha": "00cce9aedaf029e774a6a726f2eb37f1d66e990f",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/swaputil/httperror.go",
+    "sha": "399b48b4d9bd5905a4f9f318fb1279c27ec2944f",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/swaputil/httperror_test.go",
+    "sha": "dda4ac47a45e5f62fbd62cc64642cb881c6da3b7",
+    "mode": "100644"
+   },
+   {
+    "path": "internal/swaputil/loopback.go",
+    "sha": "e8526cb018cb41eae0130b0ae5066554fabc28a8",
+    "mode": "100644"
+   },
+   {
+    "path": "llama-swap.go",
+    "sha": "cdbef65ad082f5955456c5a87bfa022adc668168",
+    "mode": "100644"
+   },
+   {
+    "path": "llama-swap_test.go",
+    "sha": "ed5b118c89a05a90291dc27b356a7169060ff960",
+    "mode": "100644"
+   },
+   {
+    "path": "models/README.md",
+    "sha": "a2aa8564e9653260b031f29d3a5dfd1e241a216e",
+    "mode": "100644"
+   },
+   {
+    "path": "patches/astmatrix-v2/config.go.new",
+    "sha": "b231f1d911cdc1c1aa2d7cfce40a4446b2b88ef8",
+    "mode": "100644"
+   },
+   {
+    "path": "patches/astmatrix-v2/server.go.new",
+    "sha": "ae24cdabc023c514e78914f6d0bf4f36ec5b3003",
+    "mode": "100644"
+   },
+   {
+    "path": "plans/free-pollinations-hotfix-plan.md",
+    "sha": "5336965d3206fa1c4e8395a934e60479c2ff97e9",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/bun.lock",
+    "sha": "bedf99c1a25b555c2847859cd75bf372fe60c44e",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/package-lock.json",
+    "sha": "491b9e563ac06716bdea9d28597692a610ce2e5c",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/package.json",
+    "sha": "0880e6555fc98f57120494a7e9fb4729e83f70b2",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/App.svelte",
+    "sha": "cd1e13575567272fbba50bf93550a0323d48af30",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/cli/cases.test.ts",
+    "sha": "b7c113f1648da047ff73fc6d065bde4411e20bf2",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/cli/cases.ts",
+    "sha": "73c2fb0cd4c8722a7fd961e451c56b733e5d6c9e",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/cli/docsAgent.ts",
+    "sha": "5bdf2705fa766740b045e790fc7b8f2b3cf3509e",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/cli/fetchBase.test.ts",
+    "sha": "1e58b8f593d75fa5034eea993d4d785c82917067",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/cli/fetchBase.ts",
+    "sha": "b4a3a9f8b6fa78240dc5354a137376097e097b0a",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/cli/grade.test.ts",
+    "sha": "e2fae4c172f501cb3e47362385bdb1a761f3ebef",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/cli/grade.ts",
+    "sha": "5ef86ae654ce46b37bf453357c0c217a308b059d",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/cli/history.test.ts",
+    "sha": "ab883a6ca276fafad24aa4b614c654c551a13a59",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/cli/history.ts",
+    "sha": "18557e07b4a038f9ebe6629985ff23824fb41c9a",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/cli/judge.ts",
+    "sha": "a4dc988c9133f2851de9e4e2e08dd2559c155207",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/cli/report.ts",
+    "sha": "7109c7b7ae66d57d20eb9b53a412e98da9adf3fb",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/ActivityTable.svelte",
+    "sha": "c4a343dfb31ef3ad03fd83277d20efe21564f19d",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/AppSidebar.svelte",
+    "sha": "5910b162806e8f93a8089463066416c421ef092d",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/CaptureDialog.svelte",
+    "sha": "1d3b8186ee31e562958a9fbb8e7bd2f62355a1f1",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/LogPanel.svelte",
+    "sha": "edf435ad264441767bee820e6fb78a200cf39b31",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/activity-table/ExportDialog.svelte",
+    "sha": "d5e85beeceadc4a09c64770e562e19fa59fc7656",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/activity-table/FilterDrawer.svelte",
+    "sha": "25930b6c8126808086f8ce40730eb0744850084f",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/model/ModelActivityTab.svelte",
+    "sha": "ab9f676af701507ae4c228013200ebd6861d5515",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/model/ModelDetailsTab.svelte",
+    "sha": "b224e6c93643f8f482fadbc5ff5789220df0d22f",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/playground/AgentWork.svelte",
+    "sha": "757db5decef3f3d942569585d441c2049281fcec",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/playground/AudioInterface.svelte",
+    "sha": "2e74a493b93aac497678055e759744b1a07a011a",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/playground/ChatInterface.svelte",
+    "sha": "086d21371f00a24a0d665751493ad5f83a61c273",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/playground/ChatMessage.svelte",
+    "sha": "7823b6d1323eeb9fb1d9f507be5e26d079ccc295",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/playground/ConcurrencyInterface.svelte",
+    "sha": "a80d4f918240c0f520fc14cfa2b115565a3b792d",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/playground/DocsInterface.svelte",
+    "sha": "8b7d91e36cc42c65e886c9bc0873f0460151e806",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/playground/ImageInterface.svelte",
+    "sha": "a3692b2566f7d14c6e9434244f94660e3b4e445c",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/playground/ModelSelector.svelte",
+    "sha": "df223ca042ed538f80e1b2c1d06dd321d398bfa3",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/playground/RerankInterface.svelte",
+    "sha": "355ac1d38dfb7121670152ec4120a822cb1566f7",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/playground/SpeechInterface.svelte",
+    "sha": "1327cd531aaf17024c435c27a818208d9b1c0405",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/components/playground/ToolCallCard.svelte",
+    "sha": "6da3087900eabf5b25596acf3c2353f365f4b792",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/activityExport.test.ts",
+    "sha": "9fa4ad13c742ffea8cf1db24bba430743615ee71",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/activityExport.ts",
+    "sha": "25fae9675350b4d7c06e581bc32b6406d247fe84",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/activityFilters.test.ts",
+    "sha": "112e1ead09fd2de51685393e2873fd8c61a2ee5a",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/activityFilters.ts",
+    "sha": "71419e3765011f2e86283c8e1c96c31a78490d4b",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/agentLoop.test.ts",
+    "sha": "4fadb9146bd28e7c4ae89c2dccdb72656a7f2f05",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/agentLoop.ts",
+    "sha": "63fa7dbb98f26a79cafd50127b3d15724c0ee365",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/agentTools.test.ts",
+    "sha": "195190570884fa5da5332d6fc0b865fda39443ca",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/agentTools.ts",
+    "sha": "194d3f23c852c8398727e95841dc746f0c4d5a05",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/ansi.test.ts",
+    "sha": "587b2e5bfbac76a172871cfcf0770cd59aab519c",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/ansi.ts",
+    "sha": "d94859daa16ed1f09e0623292cdf58fbd92cea74",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/capabilities.test.ts",
+    "sha": "b49be6e3b20faca9932b630e6302e431555ac325",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/capabilities.ts",
+    "sha": "9210f4ad25d15ae8c8d79e7159c09134f16168bb",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/chatApi.test.ts",
+    "sha": "b95b2850b4491c89ad916955d407895213ecb66b",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/chatApi.ts",
+    "sha": "09f11b6bee12cc0ed655488773c5a12df5460ff5",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/clipboard.ts",
+    "sha": "379d5b6a9a6f663b61d83e753b0c989832d334f2",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/format.test.ts",
+    "sha": "eb309a06da9ef11c38439acd166211c17c275d03",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/format.ts",
+    "sha": "088f8b7bcf07c70e2b8790c5dabe3a7428244bcf",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/ime.test.ts",
+    "sha": "e34be62b6a01feb7076b356a8c228166d739e8fc",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/ime.ts",
+    "sha": "6be452a2acbe6e1fce0e7f43c3ff94445981034c",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/modelUtils.test.ts",
+    "sha": "695c572355767d32d0b181e38de8349732a2d9e6",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/modelUtils.ts",
+    "sha": "ef130a2c2bc8917d5c66f8422e3526d372574aec",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/prompts/docsAgent.ts",
+    "sha": "69e0c9bb20a2bda33a60a5fdc9a094242aec8119",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/types.test.ts",
+    "sha": "7ca19e2c8ec6893f3092bb51a43106d27d7ae74d",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/lib/types.ts",
+    "sha": "3e58108974b66ddd450c4e27bea6f8b27189d601",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/routes/Activity.svelte",
+    "sha": "d5988dc1a8029f22214c80b113ac28712959b7d3",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/routes/Hardware.svelte",
+    "sha": "0507b8996e06f52deda2989926674f065c46b2ca",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/routes/ModelDetail.svelte",
+    "sha": "f465fe63f6c8c069284487d8d46e10c842b5c00d",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/routes/ModelsDash.svelte",
+    "sha": "a68d2306a2884732cb29c76ec6ddc5cbd50b9760",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/routes/Playground.svelte",
+    "sha": "c06ab2084567d531d612651e5d3149814a33d229",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/routes/Settings.svelte",
+    "sha": "4062a7413dddb17ada27a6a599f6a2cd70f8965f",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/stores/api.test.ts",
+    "sha": "a83c77230264cde7883d1251b279462b71b59b3d",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/stores/api.ts",
+    "sha": "f3c8ca8fe99b053714c5efa6c6532a4678c47553",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/stores/modelDisplay.ts",
+    "sha": "62e8c62655101f7dfe4d90d0acca632f6477fd43",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/stores/playground.ts",
+    "sha": "677c026740d50ca4c79f491009da2fc60c79208f",
+    "mode": "100644"
+   },
+   {
+    "path": "ui/src/stores/playgroundActivity.ts",
+    "sha": "a50b3e424174b6bd8ccdc9e0ed667b4fb1de5946",
+    "mode": "100644"
+   }
+  ],
+  "mismatches": []
+ },
+ "sovereign-zed": {
+  "entries": [
+   {
+    "path": ".agent-orchestration/orchestrator.db-shm",
+    "sha": "effcef4cc7779f0f3b8302fab91789977f81c6ad",
+    "mode": "100644"
+   },
+   {
+    "path": ".agent-orchestration/orchestrator.db-wal",
+    "sha": "df628af9b00fee037e589e888ec52f02b6e07c7d",
+    "mode": "100644"
+   },
+   {
+    "path": ".cargo/ci-config.toml",
+    "sha": "6a5feece648a39be39e99fa3eb5807713b911348",
+    "mode": "100644"
+   },
+   {
+    "path": ".cargo/collab-config.toml",
+    "sha": "74603802d8e5d6a04cdb3a4492111520ce7d203f",
+    "mode": "100644"
+   },
+   {
+    "path": ".cargo/config.toml",
+    "sha": "2955d4e7bd59cfecec3d59632d6c7eee30f6c7eb",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/actions/run_tests/action.yml",
+    "sha": "49022915ee42078e1723dc9bb3e5fc72b9b99463",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/actions/run_tests_windows/action.yml",
+    "sha": "d1a5219144e89f4fc8758a6d2c8fa1fd00fbeb2f",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/add_commented_closed_issue_to_project.yml",
+    "sha": "47877b6b11a47b8e28d66b731ed92551fc90dc23",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/autofix_pr.yml",
+    "sha": "1b05da608571a66ec8babcbb44d177b1313e659a",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/bump_patch_version.yml",
+    "sha": "b2ef7349f4b2213aeb0eaa50455b7bcd301de874",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/bump_zed_version.yml",
+    "sha": "9ff390ac5db373b3b73390a5b533117d804830aa",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/catch_blank_issues.yml",
+    "sha": "15a61a50cfcaee55545d2b67e02f61f6510ccf14",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/cherry_pick.yml",
+    "sha": "4ff5b9bcf80b7df73ffd4ca45cdc3894e86c022c",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/comment_on_potential_duplicate_issues.yml",
+    "sha": "613279613ad05b6884ee5a4fcae1c5ede5ef9206",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/community_pr_board.yml",
+    "sha": "16d4a4f8f733b6948ba48840169687567fbabeb7",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/community_pr_board_refresh.yml",
+    "sha": "f4b0c293cf657a209d60fae21d0b011ec7ee7576",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/danger.yml",
+    "sha": "22ffdc6f34552a2bc2fa3f7429b0f3003e0d35d8",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/deploy_collab.yml",
+    "sha": "c9624eaa65228c00fefdb9f7497190933622693b",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/docs_suggestions.yml",
+    "sha": "1509e79ad92ac7c4d520faf3af9ba20eb71449a5",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/extension_bump.yml",
+    "sha": "40f8387e59f154c39376726197bf740276c2267a",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/extension_tests.yml",
+    "sha": "885ef12b3d2015a437b2f017cd35dea0a2af081b",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/extension_workflow_rollout.yml",
+    "sha": "d4cba07bf2ff370c6f4f8e8ba7a08d2d56418744",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/guild_assignment_status.yml",
+    "sha": "c91c05bb5442912c90b173501ebf87afed854bd8",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/guild_new_pr_notify.yml",
+    "sha": "52b4107bb255d462ad248d051097f2d293bf72d8",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/guild_stale_assignments.yml",
+    "sha": "81a7f0c0ff39310fb640bcf2c910c899cd46aad5",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/guild_weekly_shipped.yml",
+    "sha": "1f3bf71feaf67c8cec750c5c6c835dff2797259c",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/pr_issue_labeler.yml",
+    "sha": "1440e687bf38776eb62ff930264842b27bb291a7",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/publish_extension_cli.yml",
+    "sha": "6c1c295e289fa4fab9ca814b16328bf6157faab0",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/release.yml",
+    "sha": "0e59362fddc7aef23152dacc0769167e6460ffe2",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/release_nightly.yml",
+    "sha": "75f5708fe1f0b5aa4976bc8e5438ed8466c4582e",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/run_bundling.yml",
+    "sha": "a16651db4b4abe7b43d8c4b86b23344eeb7c2336",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/run_tests.yml",
+    "sha": "aa4ca894f073a5068357ec18ebbd00fc57b0d130",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/slack_notify_community_automation_failure.yml",
+    "sha": "10fc16fe16e7ca0af0e972b87c6ad3ceea48bad9",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/slack_notify_first_responders.yml",
+    "sha": "a15c7b9c0f04ee6e2a40dcb17335194d33c45b40",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/track_duplicate_bot_effectiveness.yml",
+    "sha": "b72f08d47e42696ebceb3572e4d8547e582de758",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/triage_project_sync.yml",
+    "sha": "9b8500db982c1c67efe0bb356745d72329feb849",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/workflows/triage_queue_board.yml",
+    "sha": "db80b4a22b83b79f445ea5ad77b018aa337d3a33",
+    "mode": "100644"
+   },
+   {
+    "path": ".github/zizmor.yml",
+    "sha": "550e33a7cc5d3fe511a64b67668bebdccb9d6ff2",
+    "mode": "100644"
+   },
+   {
+    "path": ".gitignore",
+    "sha": "c331f1af2f217bddc074c7b2e77b5b64531ba8ed",
+    "mode": "100644"
+   },
+   {
+    "path": ".rules",
+    "sha": "c3fc1ed149736559e843a348db804f37ece31bb7",
+    "mode": "100644"
+   },
+   {
+    "path": ".wezel/.gitignore",
+    "sha": "14a8cd73b5bd3b3a66b05e0b52c0b43cc51f0319",
+    "mode": "100644"
+   },
+   {
+    "path": ".wezel/config.toml",
+    "sha": "ffe52f025c5ec9c541188de0e1782b9e7da6877c",
+    "mode": "100644"
+   },
+   {
+    "path": ".wezel/experiments/incremental-editor/editor-doc-comment.patch",
+    "sha": "42839fdf71a6fa65485ca3cf3d98ac4b873b2c87",
+    "mode": "100644"
+   },
+   {
+    "path": ".wezel/experiments/incremental-editor/experiment.toml",
+    "sha": "1d664fa18f74762e3e01fb5f0bd530b6f4a44218",
+    "mode": "100644"
+   },
+   {
+    "path": ".wezel/schema.json",
+    "sha": "e95c3d9e9dff6cfd4ae84ff8f5151b4967e733f1",
+    "mode": "100644"
+   },
+   {
+    "path": ".wezel/wezel.lock",
+    "sha": "c4c1d9ed270246f7db0d543e436b3140d63d3c9f",
+    "mode": "100644"
+   },
+   {
+    "path": "AGENTS.md",
+    "sha": "8a63b64bdb0afcda986ba715cb39849ac574e096",
+    "mode": "120000"
+   },
+   {
+    "path": "CLAUDE.md",
+    "sha": "8a63b64bdb0afcda986ba715cb39849ac574e096",
+    "mode": "120000"
+   },
+   {
+    "path": "CONTRIBUTING.md",
+    "sha": "62d0d1337f5d8c6d7b02071214d3eba3fabebfd3",
+    "mode": "100644"
+   },
+   {
+    "path": "Cargo.lock",
+    "sha": "91983392bdd09f608d8e673d7173f9bdc5200fd7",
+    "mode": "100644"
+   },
+   {
+    "path": "Cargo.toml",
+    "sha": "0047ca0015649943d0a4e914847f1207c8571efe",
+    "mode": "100644"
+   },
+   {
+    "path": "Dockerfile-collab",
+    "sha": "5250f521026510b945b11a922288348919bfb05b",
+    "mode": "100644"
+   },
+   {
+    "path": "GEMINI.md",
+    "sha": "8a63b64bdb0afcda986ba715cb39849ac574e096",
+    "mode": "120000"
+   },
+   {
+    "path": "README.md",
+    "sha": "b3b027c08b7d89e9c4c57993865937ab83324f1d",
+    "mode": "100644"
+   },
+   {
+    "path": "assets/icons/ai_open_ai_gpt_sub.svg",
+    "sha": "49ebd96a6a2901c1fc5a6c483668d90ef2d79d2a",
+    "mode": "100644"
+   },
+   {
+    "path": "assets/icons/on_call.svg",
+    "sha": "2e86c5d6605701ff6111398d62c15fa4f6a33b6a",
+    "mode": "100644"
+   },
+   {
+    "path": "assets/icons/table.svg",
+    "sha": "a55be5624f8d7e03d23272554654cd30610bd825",
+    "mode": "100644"
+   },
+   {
+    "path": "assets/keymaps/default-linux.json",
+    "sha": "239129d9d4aab6461ee51cce361a4789ec9800a5",
+    "mode": "100644"
+   },
+   {
+    "path": "assets/keymaps/default-macos.json",
+    "sha": "e2048107f6dad840636a6ef85bbf3c41a5c53d81",
+    "mode": "100644"
+   },
+   {
+    "path": "assets/keymaps/default-windows.json",
+    "sha": "3de7be2cf45268d6a47dd60b279ad70c93cc632f",
+    "mode": "100644"
+   },
+   {
+    "path": "assets/keymaps/linux/emacs.json",
+    "sha": "68df92d2841a59ce9f0c683f7f55aab0b2fb112f",
+    "mode": "100755"
+   },
+   {
+    "path": "assets/keymaps/linux/jetbrains.json",
+    "sha": "eb6b6df1809016d173741ce92dcef5b30d687f4d",
+    "mode": "100644"
+   },
+   {
+    "path": "assets/keymaps/linux/vscode.json",
+    "sha": "a333e19ff9acf3c661040fd2bb97c1a88d5d634e",
+    "mode": "100644"
+   },
+   {
+    "path": "assets/keymaps/macos/jetbrains.json",
+    "sha": "5a2f5db448bd3a227cc3d1a3f4476322f822c773",
+    "mode": "100644"
+   },
+   {
+    "path": "assets/keymaps/macos/vscode.json",
+    "sha": "532671e5080d50edfb2f59ee32fae0383466519d",
+    "mode": "100644"
+   },
+   {
+    "path": "assets/keymaps/vim.json",
+    "sha": "eb3ec16d0186001825e14758002997eeff900fa5",
+    "mode": "100644"
+   },
+   {
+    "path": "assets/settings/default.json",
+    "sha": "083bce0631e43616c3fb83474553e7d031dfac8d",
+    "mode": "100644"
+   },
+   {
+    "path": "assets/settings/initial_tasks.json",
+    "sha": "416383e0f7eaac75776284ab289e1a4a59dc15e4",
+    "mode": "100644"
+   },
+   {
+    "path": "assets/settings/initial_worktree_setup_tasks.json",
+    "sha": "5a3c5a45078ce5d7084cb6f4c8e0a16b9ada7f1a",
+    "mode": "100644"
+   },
+   {
+    "path": "assets/themes/gruvbox/gruvbox.json",
+    "sha": "144be5bbab77f029ef3c1b96136188091b15b618",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/acp_thread/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/acp_thread/src/acp_thread.rs",
+    "sha": "6091c475610a2885582800cac25ae09f03173972",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/acp_thread/src/diff.rs",
+    "sha": "72f310f7f317d984a39f1ce16cd2f68fc76828e8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/acp_thread/src/mention.rs",
+    "sha": "f52e281212eafb3847a80ac3d8a32b4ff08466a0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/acp_thread/src/terminal.rs",
+    "sha": "c3e8653fba5c3e7343dff1e0500689dc6792035e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/acp_tools/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/action_log/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/action_log/src/action_log.rs",
+    "sha": "f9588c155f1950c8449c16a8e61332578e4e75ed",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/activity_indicator/Cargo.toml",
+    "sha": "df4c4a0db6e671761ea9e69906222c7b7d84390b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/activity_indicator/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/activity_indicator/src/activity_indicator.rs",
+    "sha": "d16b9db634cbdc52bb05154226fcb2b69efc6fc9",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/agent/src/agent.rs",
+    "sha": "00fcd67c11b0efc38844c0e8b41de39335dbae31",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/db.rs",
+    "sha": "0dd91bfdea5345e487c16c2591844f002c63818e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/sandboxing.rs",
+    "sha": "da160b27502960d788ee32f31b542218b73d8969",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/templates.rs",
+    "sha": "9384d07a2fac41c4ee813f84d8243d5ed9ce737c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/templates/system_prompt.hbs",
+    "sha": "b0341793dd706a2660bb8f195175044b4a4c3c7a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/tests/mod.rs",
+    "sha": "3f50789786f507b0da099f865a3c942ebb87ad0f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/thread.rs",
+    "sha": "956f9f5edda2e2632924fcd9cafeb873c2b1f667",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/tool_permissions.rs",
+    "sha": "601c24d73af2c02dbb0a00888f129a03bbc8443d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/tools.rs",
+    "sha": "08b66aec2ca9d74cff9805e9db9c1fd42f8c1de1",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/tools/create_directory_tool.rs",
+    "sha": "9871d2bf77b65a6801d25ec5eba808129c3ad970",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/tools/create_thread_tool.rs",
+    "sha": "6d7dfdb99b88c904428f532b30a6d5fb38ba0fae",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/tools/edit_file_tool.rs",
+    "sha": "64f6af0a49c592eac7b3c82c33dd59f9fe9cb44c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/tools/edit_session.rs",
+    "sha": "f96f84c7f6822012bc1fa13650cc73dcf00e56f2",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/tools/edit_session/streaming_fuzzy_matcher.rs",
+    "sha": "321fb1c3530d91ee07d40a1610fa0db7bbced7e3",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/tools/edit_session/streaming_parser.rs",
+    "sha": "62b5c5e3706f2c9f817e0560ca4941663f2434e5",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/tools/fetch_tool.rs",
+    "sha": "028f1279d41ccc9e4fd02b6069559496212284bd",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/tools/list_directory_tool.rs",
+    "sha": "fa61ac4d1bf8a4489b3024808cb8c5a8e133f10f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/tools/read_file_tool.rs",
+    "sha": "df48508fbde9902d3f4a35172d0a419bf2778110",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/tools/spawn_agent_tool.rs",
+    "sha": "bc871a2f2c717190962b5aacdc8699e91d979a11",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/tools/terminal_tool.rs",
+    "sha": "4ea8a5122b3d0bf6d9d8e089237818ae297d6a4e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent/src/tools/write_file_tool.rs",
+    "sha": "5956155694710baabdd5b8b174fff34daaacb97c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_servers/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/agent_servers/src/acp.rs",
+    "sha": "4789ec012c42dd24e17c063e70bf8e95437a64e6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_settings/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/agent_settings/src/agent_settings.rs",
+    "sha": "b30751f5db328bdf352e5848557b6cde07b3e74e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_skills/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/agent_ui/Cargo.toml",
+    "sha": "97ffc8edcb9edca31290c69b8ecba082a29580e2",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/agent_ui/src/agent_configuration/configure_context_server_modal.rs",
+    "sha": "1ae1ab1f36abc3bade0bf3b96f207a4ceaf4cac0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/agent_configuration/manage_profiles_modal.rs",
+    "sha": "d38db4a085555faa1f84b67a1d7cb4102c24dade",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/agent_diff.rs",
+    "sha": "9995be316ab3705cc7a803ca23c704aa36a34b59",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/agent_panel.rs",
+    "sha": "036482afe8255f3589fc6fc5af1733037d3f6670",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/agent_registry_ui.rs",
+    "sha": "72fb346391985503cf55c6c028dc72f6ec0acb68",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/agent_ui.rs",
+    "sha": "1570315f888f2f4330600ba41fe878c3d582394a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/completion_provider.rs",
+    "sha": "6b6196c43829adc0b9eec6fbe4ebcfecdefc1729",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/config_options.rs",
+    "sha": "cbefa713c2b66572e691086b48ba7f81dc83a866",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/context_server_configuration.rs",
+    "sha": "3614aef36965a3a368b6edaec77ae05a9209e53e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/conversation_view.rs",
+    "sha": "281e4797ab379d6c6bb0a735b42ab90c3a6ca337",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/conversation_view/elicitation.rs",
+    "sha": "6260d46893b11e66d05388036ea220352ed35c24",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/conversation_view/thread_view.rs",
+    "sha": "3a6ea2118f1a5d826b32f09d7b8d0618c0dc4a5f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/entry_view_state.rs",
+    "sha": "092450b0fb96ca6e75d996ad84fecb7439f86163",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/inline_assistant.rs",
+    "sha": "8f96989ac8979b96abbbe3bfd4b3bcd504ca9f8e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/inline_prompt_editor.rs",
+    "sha": "9d506aa5e4dcbb6fdba395e84f9192eda2c33da6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/language_model_selector.rs",
+    "sha": "2c19e1115714cccbc569be036a70ade6eb3b8e4f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/mention_set.rs",
+    "sha": "3ab2f10060b1dad71abfa9836a25bdb37d266d87",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/message_editor.rs",
+    "sha": "fe10a36cb953b5de42b776155a1358c97c5674cb",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/profile_selector.rs",
+    "sha": "ea4d8b8cf1f96c7aa112d8a22acd2a805031444a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/test_support.rs",
+    "sha": "bdce2da8da77bc5969cca5bc150cd7a06e2d6885",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/thread_import.rs",
+    "sha": "ca601cc59278b3ad0491944def97d6f8a1719d60",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/thread_worktree_archive.rs",
+    "sha": "a01895ae9b204771ae49cfdfc686bb73eb2016d2",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/threads_archive_view.rs",
+    "sha": "fe97859f0a03cbf9df1db1eea128c3ce2c727a5d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/ui/model_selector_components.rs",
+    "sha": "34e01d7ec16e8eaceb1f79f8a105a22ad16313fc",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/agent_ui/src/ui/sandbox_status_tooltip.rs",
+    "sha": "659a489a17782c13a1ebe7feaf882cdf8fdf1d5e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ai_onboarding/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/ai_onboarding/src/ai_onboarding.rs",
+    "sha": "dce3264cc23702177a32648de4fb429813570960",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/anthropic/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/anthropic/src/anthropic.rs",
+    "sha": "52f528aaa4913de5cc116f87e4afe859edc5ee6f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/anthropic/src/completion.rs",
+    "sha": "6c0b65114b0fc32cc0456421991f81bd53cdace8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/askpass/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/askpass/src/askpass.rs",
+    "sha": "8092e36f3fa5f5cf74e559edd51d25f756576797",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/assets/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/audio/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/auto_update/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/auto_update_helper/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/auto_update_ui/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/aws_http_client/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/bedrock/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/bedrock/src/bedrock.rs",
+    "sha": "9df36df46f02e692459b1af60a185783da60ea0c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/bedrock/src/models.rs",
+    "sha": "75a3096986b2f6085fdc61e507079c59a8db86b7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/benchmarks/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/breadcrumbs/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/buffer_diff/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/buffer_diff/src/buffer_diff.rs",
+    "sha": "aa0ffe4e70cf92b4258b74d25cfc862c0cd9543e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/call/Cargo.toml",
+    "sha": "eafb713d7e80f309266d60626a48302ad8f2de42",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/call/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/call/src/call_impl/diagnostics.rs",
+    "sha": "9410151049cbff6e0d6df112d2a0d0ba97709eec",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/call/src/call_impl/mod.rs",
+    "sha": "f7fa9d3b7dd35cebc44dbabb48f01d383c87700e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/call/src/call_impl/room.rs",
+    "sha": "0c9667bd0e90b505da559e99f6ac31c5eb0c3d96",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/channel/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/cli/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/client/Cargo.toml",
+    "sha": "f2892ba6114c04f1fc985522e0fd5bd355187c33",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/client/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/client/src/client.rs",
+    "sha": "c12ea19e39c255d93e658a16bc08164c48d993a0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/client/src/proxy.rs",
+    "sha": "53328b6e096e51700e258d76299a261339a52017",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/client/src/telemetry.rs",
+    "sha": "a08dfb44bd60986294c4c78ae03f1944ac0ab979",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/clock/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/cloud_api_client/Cargo.toml",
+    "sha": "632cb9d5f356f5a195acd226eb478673cc4ed4a8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/cloud_api_client/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/cloud_api_client/src/cloud_api_client.rs",
+    "sha": "b98b6c60c8fd0539ea7299ecb43a39d909713a53",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/cloud_api_client/src/websocket.rs",
+    "sha": "9f4c200ed7e5eb2f18ead042d2dcba494b295ff5",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/cloud_api_client/src/websocket/native.rs",
+    "sha": "d19da9f0027e64392a0123e8783ad68dc4630eba",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/cloud_api_client/src/websocket/web.rs",
+    "sha": "223791cb9a270067b48a94e3ffa5d16a761004ba",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/cloud_api_types/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/cloud_api_types/src/extension.rs",
+    "sha": "a62fc16ecf5d07235270a1af73b3a914239b3f55",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/cloud_llm_client/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/codestral/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/collab/.env.toml",
+    "sha": "d0b7376f0c6f1a23ec7fc1594a267b31be2dbba0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab/Cargo.toml",
+    "sha": "c21847d64bdcf3999a67b58c501f37ecb60ba031",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/collab/migrations.sqlite/20221109000000_test_schema.sql",
+    "sha": "e73caced24a369a34284bd676a8e597b62005a3a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab/migrations/20251208000000_test_schema.sql",
+    "sha": "62ce75d86a14d88eaa51d11c95273c6014954d39",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab/src/db/queries/channels.rs",
+    "sha": "d54b4f6df1b73c945d5f65bc23580471694d88cf",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab/src/db/queries/projects.rs",
+    "sha": "36cceb2e65da5b590ced27794cb8a89f1d62233b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab/src/db/queries/rooms.rs",
+    "sha": "91bc81b24e0b11daa610ad3a737972482aacbc69",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab/src/db/tables/worktree_entry.rs",
+    "sha": "945a231ee674c8288a801b9726b02a2df4a0e839",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab/src/lib.rs",
+    "sha": "ac8bbd77b849a630187dfe47c5e3acd1acef4e59",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab/src/rpc.rs",
+    "sha": "96e051a6bc4dacfd24350e46e08099ed2a4c0af0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab/src/services/user_service.rs",
+    "sha": "8dfa930dcd48a00adefcacc7bdd85de2be851505",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab/tests/integration/editor_tests.rs",
+    "sha": "3b16f57d04a1ff075cbb26cea950f681098c8c33",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab/tests/integration/following_tests.rs",
+    "sha": "90370b55e6f7389c8d00d878baddeef57ae9146f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab/tests/integration/git_tests.rs",
+    "sha": "1397bd271b137147514af398f4e10f579f0b461b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab/tests/integration/integration_tests.rs",
+    "sha": "165ffa94cfa785f01cccd1b933a34794e7a1cbc7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab/tests/integration/random_project_collaboration_tests.rs",
+    "sha": "92fef2f79e2a431d3f65598f087ae11ce4945667",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab/tests/integration/remote_editing_collaboration_tests.rs",
+    "sha": "d039bce3b39fddbfc4eaa13ce6dd24ccc916b033",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab_ui/Cargo.toml",
+    "sha": "80ade0d74a346efabd11ce361eba56d4b0a9daa0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab_ui/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/collab_ui/src/call_stats_modal.rs",
+    "sha": "99293bcd7f418f6ce215f762b58f40a9c008887a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab_ui/src/channel_view.rs",
+    "sha": "c77846d6db2457dc9ee2f9e62cf70d7881a51e46",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab_ui/src/collab_panel.rs",
+    "sha": "655c35abb4f7dab6958e201fd7efe042e6727846",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab_ui/src/collab_panel/channel_modal.rs",
+    "sha": "163e463e59030587344c7e054e41f231c56eb7f5",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collab_ui/src/collab_panel/contact_finder.rs",
+    "sha": "5349a79cd6b56168d44ea3e7dd17d90046927ded",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/collections/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/command_palette/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/command_palette/src/command_palette.rs",
+    "sha": "c19c6130cc3d3f16961a5da1fa83526a56b756e9",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/command_palette_hooks/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/component/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/component_preview/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/context_server/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/context_server/src/client.rs",
+    "sha": "1c33f8739d33f529ded61e08456d3291128f418a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/context_server/src/listener.rs",
+    "sha": "0a3f4bcc31979d91369098cd0c52c4cbfdfaf309",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/context_server/src/transport/http.rs",
+    "sha": "6e2ef73475b85164fedfd151f9d79687203547af",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/copilot/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/copilot/src/copilot.rs",
+    "sha": "fed2f4bc9a765f7cf02cfb376a643140ddb17467",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/copilot_chat/Cargo.toml",
+    "sha": "87ded3a486e1ae83b0041c8e9c729fdefa2a11ac",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/copilot_chat/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/copilot_chat/src/copilot_chat.rs",
+    "sha": "a690333e0c1599f39d96b1e5805c5614222343e7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/copilot_chat/src/copilot_oauth.rs",
+    "sha": "5f85a9be12a7275e976066370cdf06f5b23faceb",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/copilot_chat/src/model.rs",
+    "sha": "eb0f9d2eef90749ef2571bbbda1e6fd0b1837525",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/copilot_chat/src/responses.rs",
+    "sha": "5cb8cf0af4a11f8fe9690f55ee74f8dfbbb2a9e6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/copilot_ui/Cargo.toml",
+    "sha": "315831525de915deaa2c49edc1cfdbcdadc2a5a4",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/copilot_ui/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/copilot_ui/src/sign_in.rs",
+    "sha": "ea1d1388e936608b5fe13f4302d46bc7f9614711",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/crashes/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/credentials_provider/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/csv_preview/Cargo.toml",
+    "sha": "bada16f1f503974d8224f88f36b648a403430bc5",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/csv_preview/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/csv_preview/src/csv_preview.rs",
+    "sha": "11525da35cb314335145beb7fd4eb8869e84025b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/csv_preview/src/parser.rs",
+    "sha": "8ce4c5ee13f9fced5c6af3fee605c8e6a4f8e19f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/csv_preview/src/renderer/table_cell.rs",
+    "sha": "2678497711f9cdb9a281ab64e329ac788bd494a6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/csv_preview/src/renderer/table_header.rs",
+    "sha": "9c0f41ebdd30439636d3da0b7ad56f9ec0448a44",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/csv_preview/src/table_data_engine.rs",
+    "sha": "98b4ee45d0cd83e344e89a92bb534beace7909f5",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/csv_preview/src/table_data_engine/filtering_by_column.rs",
+    "sha": "6c339d901ef863f7e2b35f3535e85226c5a20650",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/dap/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/dap/src/adapters.rs",
+    "sha": "70cf30878ae14d7f8212122ce14821be02c12511",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/dap/src/transport.rs",
+    "sha": "46831951d0ad46e9f997a4e381d9c7b03a9aeda6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/dap_adapters/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/db/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/debug_adapter_extension/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/debugger_tools/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/debugger_ui/Cargo.toml",
+    "sha": "0a7857152b425c7b501fdb23b9a9d4e38628573f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/debugger_ui/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/debugger_ui/src/debugger_panel.rs",
+    "sha": "0a9147fb63785c752752b848ca281abac5db16d4",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/debugger_ui/src/new_process_modal.rs",
+    "sha": "2254f2bb4303fb5526882169054a2863dc6c1f2e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/debugger_ui/src/session/running.rs",
+    "sha": "f0e1b471f156ffaa14199a305c8a294762cd545b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/debugger_ui/src/session/running/breakpoint_list.rs",
+    "sha": "32e22215a2ae89a5be915c53630f9c6150d956e0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/debugger_ui/src/session/running/variable_list.rs",
+    "sha": "6e8315c7f5e336ca7c58c8090a62268e32cad134",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/debugger_ui/src/tests/inline_values.rs",
+    "sha": "713d2930ef6aa2b7b1be0a454b094c56dcf85cf9",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/deepseek/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/deepseek/src/deepseek.rs",
+    "sha": "95cb4523dfcf7c7344a434718a3ce31c5d5cfd63",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/dev_container/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/dev_container/src/devcontainer_api.rs",
+    "sha": "acd5a70b115ffc6c8d426da0e4c015a057074dd1",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/dev_container/src/devcontainer_json.rs",
+    "sha": "42ee6a3b906ed5009069350c55c508a1a76be634",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/dev_container/src/devcontainer_manifest.rs",
+    "sha": "cd4f24dabe042718e9e20a84cab20ec302164c47",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/dev_container/src/docker.rs",
+    "sha": "089564178d2099363d461a311304d517a67a2417",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/dev_container/src/features.rs",
+    "sha": "e3b865b29a5aa03f2b2509fec1b26815612c5a3e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/dev_container/src/lib.rs",
+    "sha": "38e672ffd3e6d53e36c6c803192998e9bbf0a825",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/diagnostics/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/docs_preprocessor/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/docs_preprocessor/src/main.rs",
+    "sha": "b1f18250bd43a2a7e7bec523ca583248a19d9d14",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/edit_prediction/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/edit_prediction/src/cursor_excerpt.rs",
+    "sha": "743095eab920a88f4429c8adc02b1ca7497dc76c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/edit_prediction/src/edit_prediction.rs",
+    "sha": "82f94028be85bbc0aa599470c7b1549873c1e3e6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/edit_prediction/src/edit_prediction_tests.rs",
+    "sha": "bdc268ea2d74cc93128f7ff521f7d4ece58415f9",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/edit_prediction/src/sweep_prompt.rs",
+    "sha": "f2a94b09e77efcfbfaa3c132c0cc6e4b8685131b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/edit_prediction/src/udiff.rs",
+    "sha": "2a9a0704e52bde165c19e1f0fba78976e70214f0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/edit_prediction_cli/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/edit_prediction_cli/src/example.rs",
+    "sha": "ae90f23a709b483a59d06903b89c448f71de0693",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/edit_prediction_cli/src/openai_client.rs",
+    "sha": "b1bb44fa409ffa85730f24b5d508c4190541b6c0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/edit_prediction_cli/src/reorder_patch.rs",
+    "sha": "cdee444e3421190aa5da75b8e8a13e8abed5a81a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/edit_prediction_cli/src/repair.rs",
+    "sha": "8034c206a3a94def0481f84dbafecda60574d527",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/edit_prediction_context/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/edit_prediction_metrics/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/edit_prediction_types/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/edit_prediction_ui/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/edit_prediction_ui/src/edit_prediction_button.rs",
+    "sha": "a2a6eec48d49e5dd3bf037c91bf7a5fea30f8f15",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/edit_prediction_ui/src/rate_prediction_modal.rs",
+    "sha": "6f408069120b0de508328e52cbb62bb96f3d339b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/Cargo.toml",
+    "sha": "b6df4a370fc87af22c05eea99f79761e9f3f62d4",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/editor/src/actions.rs",
+    "sha": "7002e337f19c0583d87e65deb091f07cc0855b17",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/bracket_colorization.rs",
+    "sha": "cfca232faa7c7c8c719425a6c253663d4e7c02ed",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/clipboard.rs",
+    "sha": "35977107376af0df850466c383937393e4a471d1",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/code_actions.rs",
+    "sha": "2c64b1e3571ce2e9b74e4360a733269e5604481c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/code_completion_tests.rs",
+    "sha": "27062801efbf9bb5ec2ca5787011c38b9ed564f0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/code_context_menus.rs",
+    "sha": "209fdf13bd78ead5d2abc0ff787e4071626a6a1f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/code_lens.rs",
+    "sha": "d8bd285e1597429da0391d296c7090e70690e6b0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/completions.rs",
+    "sha": "c4dec3697325b988300560a0bca4955063848a60",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/config.rs",
+    "sha": "6676a790a0530c7d4f9b4aeb249800de4f893e63",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/diagnostics.rs",
+    "sha": "3e988781eb7f670f7921643c207b67228a1db97d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/display_map.rs",
+    "sha": "e633ecc21b3ae030b0c9f33dd2bf857026702496",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/display_map/custom_highlights.rs",
+    "sha": "828d86edd5090013108c3279e26f801598980ad9",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/display_map/invisibles.rs",
+    "sha": "20f112512f08d8fd9d6252331b2462635d4c488b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/display_map/tab_map.rs",
+    "sha": "611be1518b41a2ea9fac5951ec8e70efec4a4d68",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/display_map/wrap_map.rs",
+    "sha": "7eeb1be3946bee2e26ade4246c009edc300810b2",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/document_symbols.rs",
+    "sha": "3a2f488db8d980b11bbb04041f7a23b7d26d4234",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/edit_prediction.rs",
+    "sha": "68a9ac67cd84e89b0fbf65b13aa37470dc703ea1",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/editor.rs",
+    "sha": "a720ce515196ee2151ee7eefa05aa13a5775006e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/editor_settings.rs",
+    "sha": "f6fdd6c16d20b26c9e44da192aa85567b7462201",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/editor_tests.rs",
+    "sha": "ad84ff1dc5299376c20854ac1e6a239b2a44879e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/element.rs",
+    "sha": "07e81acc8210d5a55b099181eaa1fb890737e82b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/element/header.rs",
+    "sha": "99561413790b3af8f30f412654c4b69efd49b3b5",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/element/mouse.rs",
+    "sha": "a5fc7b969ab2065609f17817118de24c8b40e9df",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/git.rs",
+    "sha": "e6552a1d33eea1908944f9ad3c11cf3330f5a62b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/git/blame.rs",
+    "sha": "7a4b09775925eec24b01b5811eaa7c3de5ca2759",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/highlight_matching_bracket.rs",
+    "sha": "a0b0ee37b98e1fdc3ddbbaeda096c17c997bf506",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/hover_links.rs",
+    "sha": "0190aa788a2f46989ec8aaa7efea34ac53472ab9",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/hover_popover.rs",
+    "sha": "861016c6ffff9c46144541752a35b98b3f6b895e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/inlays/inlay_hints.rs",
+    "sha": "05c52d429ac1367e996a317585e5519281b3260a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/input.rs",
+    "sha": "14d3cae720c18f4d876c58566079a691afad76ea",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/items.rs",
+    "sha": "9edfc3f587930767351b037502050ffb6efd9b4a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/jsx_tag_auto_close.rs",
+    "sha": "b6f79cc33aae7616359627ff95fab5c754ab9d77",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/mouse_context_menu.rs",
+    "sha": "1e45ea4f07204eac80dd4623480e9037f99350bb",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/movement.rs",
+    "sha": "5384c9c40560603d7a6760b9b55ca7fb9d2b1118",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/navigation.rs",
+    "sha": "737227777c67efb0e0f6932517c89dea1ef47b07",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/runnables.rs",
+    "sha": "7ccecf101f52722df44f38b36ed3fdbcdfc2d0b0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/scroll.rs",
+    "sha": "41833650a2bc5f12eab1c4f2af7a2bf1b886e8c1",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/scroll/actions.rs",
+    "sha": "53c3900a39b95f1f29e603844625244adb4d55fb",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/scroll/autoscroll.rs",
+    "sha": "5b6cff71c7b6fbc67483d48ab829804305534881",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/selection.rs",
+    "sha": "11cd7e3826b588bf8faf11aaf20575e2307a4da0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/selections_collection.rs",
+    "sha": "b2e32fd4c752a9936483588f4b862fae56073740",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/semantic_tokens.rs",
+    "sha": "b15ec323a340084dbc16c8f4b3e0195c778fe6cd",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/split.rs",
+    "sha": "2d2a72a43e7b3a800d7a2b9d843c17dc9cc21095",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor/src/test/editor_lsp_test_context.rs",
+    "sha": "b248c090e1d2a03a4366f076e15586ab462f2951",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/editor_benchmarks/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/encoding_selector/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/env_var/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/etw_tracing/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/eval_cli/Dockerfile",
+    "sha": "69a1646177513720110a2b9ac54062fe45fb0592",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/eval_cli/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/eval_utils/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/explorer_command_injector/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/extension/Cargo.toml",
+    "sha": "776e84490cbae1ca0ed50583cfa8750567086b2d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/extension/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/extension/src/extension_builder.rs",
+    "sha": "3049a785ff322f9b17f584138c32db174497c8b2",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/extension/src/extension_host_proxy.rs",
+    "sha": "1329dd4fe49c93e182af94a663cdf654313aff32",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/extension_api/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/extension_cli/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/extension_host/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/extension_host/src/extension_host.rs",
+    "sha": "21f5b3d369b60cc33c366f0cb37274375ac48c67",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/extension_host/src/extension_store_test.rs",
+    "sha": "68b799c4fc431f84cbeb9cb0a8900cc5bbc528e0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/extensions_ui/Cargo.toml",
+    "sha": "4729bf9ca62b45d285c691f57e04a256cf36d7e2",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/extensions_ui/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/extensions_ui/src/components.rs",
+    "sha": "92f9c3cdfed5f15b57b8464c0c37799acc116c16",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/extensions_ui/src/components/extension_card.rs",
+    "sha": "282dbd6677bf488c88ec7ee214097bcc0d9a30b8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/extensions_ui/src/extension_suggest.rs",
+    "sha": "9400a197b20221d8f5e15a6851826bb31d3d8da7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/extensions_ui/src/extensions_ui.rs",
+    "sha": "dbae10cbdd8a0bd8f422af14a538da79fe4e3f4d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/feature_flags/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/feature_flags/src/flags.rs",
+    "sha": "6a10534c0f1d202b673b8ec352f00ebeeecf9ac1",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/feature_flags_macros/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/feedback/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/file_finder/Cargo.toml",
+    "sha": "284bd61a8dc5b3d5adea67499a67f3b7f0dec43f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/file_finder/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/file_finder/src/file_finder.rs",
+    "sha": "4f8b5be5e4f0ba94f663f8a381d7621cda4c8d81",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/file_finder/src/file_finder_tests.rs",
+    "sha": "7a31da1374ad664f99db07c030f1404910833025",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/file_icons/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/fs/Cargo.toml",
+    "sha": "4d618e065da78a0ea30887d1bce58f8e88909abe",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/fs/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/fs/src/fake_git_repo.rs",
+    "sha": "543a11a9c2f742335606be50fdd00e510071a515",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/fs/src/fs.rs",
+    "sha": "711aa53f279098dd5653e8ecd353e25ca3de6bbe",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/fs/src/fs_watcher.rs",
+    "sha": "59ee6ac9847b47dc7c5a5f06ccf2b5c4a05c2e76",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/fs/tests/integration/fs_tests.rs",
+    "sha": "06e9facb987af6aa0320d29a45c5fa02fb1fd2a6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/fs_benchmarks/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/fuzzy/Cargo.toml",
+    "sha": "7bbad6786df043d2874fc40d3687154de3f2c699",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/fuzzy/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/fuzzy/src/matcher.rs",
+    "sha": "44f467f15bed5057f82a7b2690ae0ebf81dd9b5c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/fuzzy/src/paths.rs",
+    "sha": "e16639f9e13e8c055dfcc89bbd2349a04b45fb52",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/fuzzy/src/strings.rs",
+    "sha": "e8921950c54c9fc446538f2853a6424600f31631",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/fuzzy_nucleo/Cargo.toml",
+    "sha": "4ca74860b469139ef6bd3deb03be72ebffc1d886",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/fuzzy_nucleo/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/fuzzy_nucleo/benches/match_benchmark.rs",
+    "sha": "da74af15f5a12674293272b762c83fbf70f7a5cc",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/fuzzy_nucleo/src/paths.rs",
+    "sha": "b0a0fa5e4757a6347e2b5df4aca75ab35d9fa4ad",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/fuzzy_nucleo/src/strings.rs",
+    "sha": "2486afb7ce060e800fabd3563feed8ca113167df",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/git/src/blame.rs",
+    "sha": "85c8f8a4ac0d0aebdd90491edca401aa696afa47",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git/src/git.rs",
+    "sha": "9d8f658a6b2729a843999a150d4be2f786444c6a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git/src/repository.rs",
+    "sha": "7cddc70b1a5ea422b115ccb3af6515b06eb07f6a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git/src/status.rs",
+    "sha": "28178bfaedd35d4fd91ce4ebc608613a05a30856",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_hosting_providers/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/git_hosting_providers/src/providers/chromium.rs",
+    "sha": "3ab6e557f1b37210428d2b3280032dec75b8b272",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/Cargo.toml",
+    "sha": "528c609b59b9bb22d0a5705ce0f22e6f168edb34",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/git_ui/src/blame_ui.rs",
+    "sha": "7413f40c7fb6dcc27dfbff64ec0ba24562b29b11",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/src/branch_diff.rs",
+    "sha": "685acea448cd3d670a8700d125de4df46b7000f2",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/src/branch_picker.rs",
+    "sha": "d9272e5fdf93d7744287d0bb06540442f8933045",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/src/commit_context_menu.rs",
+    "sha": "d7c8142a35e0dc8085cd2cd5e2ffe043c491d5af",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/src/commit_modal.rs",
+    "sha": "d36bc8400047d255547b75ad335b87fc487272ee",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/src/commit_view.rs",
+    "sha": "009aa368add0c98b87fcb75c7914b8bb9b4ff46a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/src/conflict_view.rs",
+    "sha": "88ee12fa1be6130db18424b25dfb1a64db8eac85",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/src/git_graph.rs",
+    "sha": "1003541824b3b00b7298019b477a72a71a2e7831",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/src/git_panel.rs",
+    "sha": "1f880c59d356370af1802a9caadcc88a160b3e38",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/src/git_ui.rs",
+    "sha": "e33871266ef621538d3cbd1b1884d2e1e5648580",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/src/multi_diff_view.rs",
+    "sha": "46e4b2b637237511f33683f308a72de6bc939f0c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/src/project_diff.rs",
+    "sha": "55fb5f40fa997654bacb48ba162e794557be9cc7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/src/solo_diff_view.rs",
+    "sha": "0ccb2183ba252ef03f479d91badb75cf5a9f55ae",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/src/staged_diff.rs",
+    "sha": "c99ed2a58ce629ca3d15c829f26efbd69dae8830",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/src/stash_picker.rs",
+    "sha": "bdd8e0a03e1c0359333491cf9101ec45b481d2ca",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/src/text_diff_view.rs",
+    "sha": "5cb3360ba9389693a0298bd3eca5baa833ed2327",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui/src/unstaged_diff.rs",
+    "sha": "e4a5165bb879c3ccb7419dcd592c56ca68055ee8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui_core/Cargo.toml",
+    "sha": "9538fec421ba58a2b0bdd1905e8d8958c6befc23",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui_core/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/git_ui_core/src/askpass_modal.rs",
+    "sha": "1e63a0d03e3c1671e9cdc1e545ad621a6aaf9728",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui_core/src/file_diff_view.rs",
+    "sha": "1d61075bcc3611badd12c042653c9da7fb43061a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui_core/src/git_ui_core.rs",
+    "sha": "4c89fcd352ad18421e50ee23aa6857f63dba1b8c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui_core/src/notifications.rs",
+    "sha": "5fc293260789b3daaadbbaaf794f9fa41a534825",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui_core/src/worktree_picker.rs",
+    "sha": "9cf6f84f56c328cb7ffabdd07bd46217a172e917",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/git_ui_core/src/worktree_service.rs",
+    "sha": "fa5c1764ddb4d09eb7f45dace6b56e498e483501",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/go_to_line/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/go_to_line/src/go_to_line.rs",
+    "sha": "48017a6e6a6b75e283020c077439fba716897b43",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/google_ai/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/google_ai/src/google_ai.rs",
+    "sha": "fb88d2ecb5c3ea52f1bf9c5866d4aebb8fc5b422",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/Cargo.toml",
+    "sha": "f86c16830ffbe0ac38c88d2baabf446a0ef88ba0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/gpui/examples/hello_world.rs",
+    "sha": "aa67ada33ffb8db68a54e39bf313bd27c0737961",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/examples/image/image.rs",
+    "sha": "2a885714c8d88591448b688fe9082c2ddec511b7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/examples/image_gallery.rs",
+    "sha": "b4c288775501a59c2ecec3fe4981b622eda39c37",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/examples/mouse_pressure.rs",
+    "sha": "d3519b2a5494287afaa998f8cb023f9c864b06a4",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/examples/move_entity_between_windows.rs",
+    "sha": "eaefabfe2968ec99ca44fd47c3a6dc40c50aa661",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/app.rs",
+    "sha": "5e09d6905aec937e94a89414b124fbf3783619f5",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/app/bench_context.rs",
+    "sha": "7a74bcee1f5e7f34e123f4b5c75f1f1b25b6a590",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/color.rs",
+    "sha": "3bd893f99357051e1936f52e22c4c40d6dd24887",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/elements/animation.rs",
+    "sha": "4cab1fbca2cbd3ff013dbfb37531defcaabbcfde",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/elements/div.rs",
+    "sha": "308263e15d21b838e99f783e190f234c809a4bc1",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/elements/img.rs",
+    "sha": "2c77e5f32ad12a8fafb88305ba208ca74a80cdac",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/elements/list.rs",
+    "sha": "fa21d107062ab9ce56cf6bb4f90342bf053ab0e3",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/elements/svg.rs",
+    "sha": "176072f1c88a5635d1b8d703ac0eab5237e43a6d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/executor.rs",
+    "sha": "785a58e95d89ca55d2940d1f6fb2aff5af0b3d57",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/gestures.rs",
+    "sha": "99f0efc4a2b135ba911b39fe8c02d180f99ecb65",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/gpui.rs",
+    "sha": "1cb41d46f7fb0bbf9ec44c1b1a028af2c667a0ae",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/interactive.rs",
+    "sha": "ac5210a11d6cdde9f38c03d5d4bbfe0bf994008e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/key_dispatch.rs",
+    "sha": "7b18d41304874e77b2afbec5596aa9a2bcc611d7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/keymap.rs",
+    "sha": "bef0d03a2b951805ff6b966b57070055049200cd",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/platform.rs",
+    "sha": "805ed375ce2a112d6eadd7949da4afb13fd79e45",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/platform/test/window.rs",
+    "sha": "dc96e43dfeeb79beae03f94f876d7ca31265825d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/platform/threaded_dispatcher.rs",
+    "sha": "ff45e1c88b396874d1cd50e0946293d0a3033271",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/profiler.rs",
+    "sha": "e850901330ed7f2f01e3421e1fe98b0fc4c0af38",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/profiler/actions.rs",
+    "sha": "efa9b756db60d8504371df28555a898b068f4600",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/queue.rs",
+    "sha": "76f6d67a01922a4812f69ceabbd44c16a31fd73e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/style.rs",
+    "sha": "9150fdded91b817305454f18beb0a0b7d6c5966a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/styled.rs",
+    "sha": "a24982a6acb6071701d2258e47a5f25a86d1ee89",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/svg_renderer.rs",
+    "sha": "d42942b3fbad2dc4e71c34f00bfb747cf9386c93",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/taffy.rs",
+    "sha": "13d3bc4079b3177e1f310a8b4de57425f3718f6e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui/src/window.rs",
+    "sha": "3bb89308eb435e8dde507d6543f507d7a868c5a6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_apple/Cargo.toml",
+    "sha": "fb5f07a2cdaecba20fb650c492798ccf83a8c810",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_apple/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/gpui_apple/build.rs",
+    "sha": "aee655fe50e9e0f689b59efc2faced18c6e28a13",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_apple/src/gpui_apple.rs",
+    "sha": "208d297ea1062a677cc38ba7f3a71942ea2e810a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_apple/src/metal_atlas.rs",
+    "sha": "9cfd445ba805df1beecb9ace80af5928d83d0fc6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_apple/src/metal_renderer.rs",
+    "sha": "0f41297297cc9b85e60cc3953ddd6650d8b160b2",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_linux/Cargo.toml",
+    "sha": "9d7360c81683dfbdfb494b05b984e905a2628e17",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_linux/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/gpui_linux/src/linux/wayland/client.rs",
+    "sha": "3d5f9029aa56e7ad367b30ea5d7f244792a8d271",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_linux/src/linux/wayland/clipboard.rs",
+    "sha": "57ecd9345bf8c169059adaa337e9b02a5c242963",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_linux/src/linux/wayland/serial.rs",
+    "sha": "9f5372a8a6723f3c7d569b1f0b3c50e317f302ca",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_linux/src/linux/wayland/window.rs",
+    "sha": "75315710f6b301b9e35e30602718da7d7be9c1f8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_linux/src/linux/x11/client.rs",
+    "sha": "a543cd66cdc2303600eb73df25dc29b064d15228",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_macos/Cargo.toml",
+    "sha": "ff10902a37c69a68324332e09b3f1fca33432901",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_macos/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/gpui_macos/src/gpui_macos.rs",
+    "sha": "1ee187299449c9c91f85edacbe6793d43458eace",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_macos/src/pasteboard.rs",
+    "sha": "92a3c10af54877638b2ad842d7bb990691548d2d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_macos/src/platform.rs",
+    "sha": "c9bd3076006788b1fdffea2977fe396bf7bff3c6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_macos/src/window.rs",
+    "sha": "99c9544736da23674274841f6a866fb20f25dc5a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_macros/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/gpui_platform/Cargo.toml",
+    "sha": "a41cb1767227812d1fa21d59452a7db6a623152b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_platform/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/gpui_platform/src/gpui_platform.rs",
+    "sha": "91d336ad169f0e23970b75864762435dde36ab3a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_shared_string/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/gpui_shared_string/gpui_shared_string.rs",
+    "sha": "8449c065ad20b96e1c09c5b7580b63805e112cd7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_tokio/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/gpui_util/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/gpui_util/src/lib.rs",
+    "sha": "4463712391235e4dcf134a716da57edc7d0c390c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_web/Cargo.toml",
+    "sha": "917bc14267daf6939e7ac69db62afedf70685583",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_web/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/gpui_web/examples/hello_web/.cargo/config.toml",
+    "sha": "de4cb1a897249f8f2f8e27025ccb6d1a54f01c34",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_web/examples/hello_web/Cargo.toml",
+    "sha": "925f47c71e4a54cdd47795b031b3662da5c7762b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_web/examples/hello_web/LICENSE-APACHE",
+    "sha": "15824831a24d7753b6e945b8190dd7d15413aed1",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/gpui_web/examples/hello_web/main.rs",
+    "sha": "605fdf090e6227810a0d1aaac60120278911a5f2",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_web/src/dispatcher.rs",
+    "sha": "37ba891f70e927f8509237e3e920d4208b33e212",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_web/src/display.rs",
+    "sha": "aaf70c67b5f167cf0fb667cdf889bf16219beff5",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_web/src/events.rs",
+    "sha": "471732671e10fb0e4bed0ce4a26664205f678507",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_web/src/gpui_web.rs",
+    "sha": "72c56f95d9e53e9f6de61cd8f076a5f766107a6a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_web/src/http_client.rs",
+    "sha": "6e585682a00d3dad7305705d3a78cd8f4e135506",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_web/src/keyboard.rs",
+    "sha": "51ed113c8c42fceb6e2cff1a4b54ddd88d3877ec",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_web/src/logging.rs",
+    "sha": "09aaab08d511088bc177e72e5ef9b5e6a83808c2",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_web/src/platform.rs",
+    "sha": "ecf2736ceee636c35bf5bea58c9556796820dc21",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_web/src/window.rs",
+    "sha": "6261b954d3f352a807c354c07615bbf4ca58e9bc",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_wgpu/Cargo.toml",
+    "sha": "280c64ddf8fa6e44250af32aa89f9d899d8c5b9f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_wgpu/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/gpui_wgpu/benches/layout_line.rs",
+    "sha": "6d66a7a2d556aa1685f868ef6bf46d6a29fef712",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_wgpu/src/cosmic_text_system.rs",
+    "sha": "19064867bc8810ca882474310e7175500673804c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_wgpu/src/shaders.wgsl",
+    "sha": "718cb7595d86f73cd91a65bcbf42682004dbba4d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_wgpu/src/shaders_storage.wgsl",
+    "sha": "55b80802e6c0ccbd2b871ac36135ab921bd11e10",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_wgpu/src/shaders_webgl.wgsl",
+    "sha": "0c9c217a69d70d5df3d964a3af0994cac6bf5013",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_wgpu/src/wgpu_context.rs",
+    "sha": "7e744e80d6c453aa4605486a007d68df52f34928",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_wgpu/src/wgpu_renderer.rs",
+    "sha": "b0cd40a767e7a9c133b3c70144b6c0b52a447780",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_windows/Cargo.toml",
+    "sha": "2baa3c7b172078d91f548da21b380a633e2d56db",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_windows/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/gpui_windows/src/directx_renderer.rs",
+    "sha": "5719c12f2d5fc509376bd0843b16388194ed94bc",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_windows/src/events.rs",
+    "sha": "1bd18493d0b98e97c1212c64285259e2ad456e53",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_windows/src/platform.rs",
+    "sha": "d3bb150407e665eaa7aa8f0ea3934d09e5fadf08",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_windows/src/shaders.hlsl",
+    "sha": "d20cb317dbfc16a28bf1cf0cee9e6a4e9b8438b0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/gpui_windows/src/window.rs",
+    "sha": "af240716c90af97e4db77ff9aa2cc441028f864a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/grammars/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/grammars/src/c/config.toml",
+    "sha": "aae8cf5a8fbeef97082d7a1b662d6a33fc114b5a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/grammars/src/cpp/config.toml",
+    "sha": "dd437ddffb2df39018e1e0d13b4b01b99719df3c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/grammars/src/javascript/config.toml",
+    "sha": "5b8eaaf49dff24e8e66b57225354f0fe2f191312",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/grammars/src/javascript/highlights.scm",
+    "sha": "5835e7106151138577412fc1da41ad34ac4200b8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/grammars/src/javascript/overrides.scm",
+    "sha": "62000db0c8b76db2e31eecbc44053ec71227cd81",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/grammars/src/python/highlights.scm",
+    "sha": "7641cef117998ed0ad401f579cf66c7d458f87e5",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/grammars/src/rust/config.toml",
+    "sha": "39ab34b678c2f9106e6958371590e8740e62a247",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/grammars/src/tsx/config.toml",
+    "sha": "72a0e55aaf5d941432d9fbd2c3f6de0efb54eea2",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/grammars/src/tsx/highlights.scm",
+    "sha": "899737b6a6d924da84838d1f22c3d27fe866292d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/grammars/src/tsx/overrides.scm",
+    "sha": "b63416ba1b6b6bef4c0e185f41ae72122e6ce673",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/grammars/src/typescript/highlights.scm",
+    "sha": "58e26794487f0f81669d1c848ab8885f9abd5fdb",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/html_to_markdown/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/http_client/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/http_client/src/github.rs",
+    "sha": "6cb2b794ea03a0d1239fa09c16333eb2f88de3f6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/http_client/src/github_download.rs",
+    "sha": "bbb85c524912b6c427bc06180f97ba3b1c87abcf",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/http_client/src/http_client.rs",
+    "sha": "fe2a3d0069d259b6db06c0d8196eaa5c9b0dafbd",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/http_client_tls/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/http_proxy/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/icons/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/icons/src/icons.rs",
+    "sha": "61e12814bc914746938cfb115fa2431275287145",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/image_viewer/Cargo.toml",
+    "sha": "f200641e573abb0ee33aec69cebbd4e8f8aafa72",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/image_viewer/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/image_viewer/src/image_viewer.rs",
+    "sha": "623ee0f9e3b55a54f14d4fea5cee3c7f96972340",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/input_latency_ui/Cargo.toml",
+    "sha": "67322ccb37db1bb2ac60ad758307cba8e9e4d13a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/input_latency_ui/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/input_latency_ui/src/input_latency_ui.rs",
+    "sha": "e63afd288a631d9a7a70e478aa454dfde1d7ab8a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/inspector_ui/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/inspector_ui/src/div_inspector.rs",
+    "sha": "b78df2254e8abe3fe8cd3be47c7b22fcaab6ddde",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/install_cli/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/journal/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/json_schema_store/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/keymap_editor/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/keymap_editor/src/keymap_editor.rs",
+    "sha": "dfa4d9bdcf4501d4a5760c414265f1cf991556e3",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/keymap_editor/src/ui_components/keystroke_input.rs",
+    "sha": "c17eecdedb612445e56cbdba0bc4ee62cbfe1e25",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language/Cargo.toml",
+    "sha": "69789da21ecb3f904e524bda69b0e94899be9817",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/language/src/available_languages.rs",
+    "sha": "236726b3185980c46f4f0d3f4237df94c08f77ba",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language/src/buffer.rs",
+    "sha": "e538fa0a036ebf2f49d3ea82a303b81691b9c18c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language/src/buffer/bracket_ranges.rs",
+    "sha": "fe38e9a034ae0fffc020b4b4fb64dbf8445414e3",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language/src/buffer/row_chunk.rs",
+    "sha": "605299f67f0c6c34ad8feb7526cde6887c2e5da3",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language/src/buffer_tests.rs",
+    "sha": "d69e19a83a0199dbbf3d22abbc67553f89a93d76",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language/src/file_content.rs",
+    "sha": "e02748257ba86b4a12f875b6fda61fde1b3ad75c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language/src/language.rs",
+    "sha": "f994959bdc96f500e7a4bb3cb9f51ff4d9a81b16",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language/src/language_registry.rs",
+    "sha": "2e4f7200a36531ad45942a655db06b6d1001c66e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language/src/language_settings.rs",
+    "sha": "3f39b8b8feef84d4794de7c6b9cd9fa3bed12703",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language/src/runnable.rs",
+    "sha": "0dbdd4ba4891373152246e5a822488677a931efb",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language/src/syntax_map.rs",
+    "sha": "d22a12879e1cbb8da9162dba89060aea89891bed",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language/src/syntax_map/syntax_map_tests.rs",
+    "sha": "f54182902e47d92cc64cc8e6bc724a9004187ead",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language/src/text_diff.rs",
+    "sha": "65a9d2dfa192fb7e208c11786e930c5dbdf476b8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_core/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/language_core/src/code_label.rs",
+    "sha": "3ef1003f6cb74ba7f5fc5b6532464e32083d6ab1",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_core/src/language_config.rs",
+    "sha": "72ab3fcf5bdde86dc7427a35dd98345590441ebd",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_core/src/language_name.rs",
+    "sha": "97ffa3166e53ed38664e6f36d51d0be990a21a8a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_extension/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/language_extension/src/language_extension.rs",
+    "sha": "89246d538b6edecbba4a48b84bc68a7dceeb8e1c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_model/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/language_model/src/language_model.rs",
+    "sha": "ba2891a9d7af5e9208a010d620f3e3b7069d4ce4",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_model/src/registry.rs",
+    "sha": "f9a00a3f460c5447d6b264af1ac1af55b1891591",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_model_core/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/language_model_core/src/language_model_core.rs",
+    "sha": "cfe70087be12f71e8ad4de4cf67a9b3ad13a2b96",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_model_core/src/request.rs",
+    "sha": "68222eff967ed08a7b3c69638debf6d717d00736",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_models/Cargo.toml",
+    "sha": "a1dd2ae73e2a39ec154a7c82c1a7654ac9dc7c95",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_models/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/language_models/src/provider/anthropic.rs",
+    "sha": "8edb4998ffdd3eb946a9283dd2eee4cdfac76e18",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_models/src/provider/anthropic_compatible.rs",
+    "sha": "c4970e699c1df94e47396ef6ae195abff427c347",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_models/src/provider/bedrock.rs",
+    "sha": "b4b503076d76e8fd2e77f1d5b5b760952c003770",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_models/src/provider/copilot_chat.rs",
+    "sha": "db39f17c68f3203d80b6c8d53b03a9b0d0b9bcc3",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_models/src/provider/deepseek.rs",
+    "sha": "2b1472fa6f8538c961ad6f41f82fc9fca2ebbf78",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_models/src/provider/mistral.rs",
+    "sha": "c3fe10aeb49d2f775592556abcde6bf0f757d540",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_models/src/provider/open_ai.rs",
+    "sha": "2e5137c4f7bc55c6ac2b48e48f046a05ec25545c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_models/src/provider/open_ai_compatible.rs",
+    "sha": "4ae926319e734859cd4737b7cfa46ec151882a5f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_models/src/provider/open_router.rs",
+    "sha": "8b8ce92e77123e98330eb5d97f493b59cb1fa78d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_models/src/provider/openai_subscribed.rs",
+    "sha": "8b645ea240d7ef0c94354e060ac50ba9b8c65089",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_models/src/provider/opencode.rs",
+    "sha": "dd25be810b0be4c308e95625562d2eae5f950a8b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_models/src/provider/vercel_ai_gateway.rs",
+    "sha": "e5d6a48d4df5c4071931c307fdc691690f961713",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_models_cloud/Cargo.toml",
+    "sha": "571d8e86ebc6db5e15eec246cc4190c4f31e3192",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_models_cloud/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/language_models_cloud/src/language_models_cloud.rs",
+    "sha": "695d4324890d4978318f9827073d85a142ca70ca",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_onboarding/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/language_selector/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/language_selector/src/language_selector.rs",
+    "sha": "52f41a330be876b5a0011713251d57c5c60b95b9",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_tools/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/language_tools/src/lsp_button.rs",
+    "sha": "6cc52556fa0cf57c16aef10c78a0409aa738f73f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/language_tools/src/lsp_log_view_tests.rs",
+    "sha": "326512d3741378f8f137261da59db9ade8d3a5b9",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/languages/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/languages/src/css.rs",
+    "sha": "cd5862d19c39dcb85fde32351ab7b0d4fcbc60af",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/languages/src/lib.rs",
+    "sha": "2f0893fda45211ee41d0a86c3b1bafea632f1ce0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/languages/src/python.rs",
+    "sha": "a25431175ece3509f3fde7f371de58ca4bb85487",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/languages/src/rust.rs",
+    "sha": "b0693f7107a7d1c5435b7f203ad89bd24cc2bdae",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/languages/src/typescript.rs",
+    "sha": "806fa372d46f572734df69f106edb215932f8929",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/languages/src/vtsls.rs",
+    "sha": "806ce7ff11d8173158d2aae725a955bb4d76973c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/line_ending_selector/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/livekit_api/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/livekit_client/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/livekit_client/examples/test_app.rs",
+    "sha": "a07d212111ecd1b476332c25bc0bf41553cead78",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/livekit_client/src/lib.rs",
+    "sha": "709db8112fb990494dfeb337ae4ad81e393d8537",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/livekit_client/src/livekit_client.rs",
+    "sha": "fbad39880b3f82a3c53f4a2044e03ca3d8004703",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/livekit_client/src/livekit_client/playback.rs",
+    "sha": "f00b64768e73a4a1959152777c408428134010f7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/livekit_client/src/mock_client.rs",
+    "sha": "fff81d341a012a215c93415f85ab18ed0c8d8384",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/livekit_client/src/mock_client/track.rs",
+    "sha": "155796792586971ddb118a406892daf7eeade385",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/llama_cpp/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/lmstudio/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/lsp/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/lsp/src/lsp.rs",
+    "sha": "f31e9fce8b38f9197eb4ce661ef940d01ac7b176",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/lsp_locations/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/lsp_locations/src/lsp_locations.rs",
+    "sha": "807856eb81a88aeac2baa27e7ce7e55274f027be",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/markdown/Cargo.toml",
+    "sha": "f123920536c2aeefd110dbb9d23926be53d230e2",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/markdown/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/markdown/src/html/html_rendering.rs",
+    "sha": "e1c2ba059914b98d70534f14c0258a2b0c1d5ab8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/markdown/src/markdown.rs",
+    "sha": "4a33f4f5e15b712244778bd00a915b930e8fa95f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/markdown/src/mermaid.rs",
+    "sha": "0d4bc76108c605a29d75f6ec7cfce73e8b89b044",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/markdown/src/parser.rs",
+    "sha": "fc9256d5abaa4aec3c696450f406ba9da8047e5c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/markdown_preview/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/markdown_preview/src/markdown_preview_view.rs",
+    "sha": "d6946a877a666c4737c7b3255857d89102d08621",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/media/Cargo.toml",
+    "sha": "7dcf7e356edb67c53f5982eae64002e9c9a733b8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/media/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/menu/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/mermaid_render/Cargo.toml",
+    "sha": "895093fbdec23677e3b8e04d8c90479c9c547cb7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/mermaid_render/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/mermaid_render/src/mermaid_render.rs",
+    "sha": "9550c2646aded24b05fd4c117a7bc8285a88d8f1",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/migrator/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/miniprofiler_ui/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/mistral/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/mistral/src/mistral.rs",
+    "sha": "0b76b1d665f514f2f5357ddc7aeaea9fd73bcbd0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/multi_buffer/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/multi_buffer/src/anchor.rs",
+    "sha": "ef80afd385be173075ff4bc9d83006621cd6cd41",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/multi_buffer/src/multi_buffer.rs",
+    "sha": "0f17aa07829a660dd728d3cf5227b8d1dc502e6e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/net/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/node_runtime/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/node_runtime/src/node_runtime.rs",
+    "sha": "dabf1538594edc65a3489c4576a5789419d53073",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/notifications/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/oauth_callback_server/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/ollama/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/onboarding/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/onboarding/src/basics_page.rs",
+    "sha": "840d930681e85f77e5c5df6c59cf679d913e5413",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/onboarding/src/onboarding.rs",
+    "sha": "34d27a02407799ed002d109b17fee0d2e035aed0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/open_ai/Cargo.toml",
+    "sha": "8b89be9bada9b0fcc9f7d3e6f38f1cb86f309dca",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/open_ai/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/open_ai/src/batches.rs",
+    "sha": "5005c3816b80b6f3a40bff42c59ef0e91002475d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/open_ai/src/chat_completion_transport_tests.rs",
+    "sha": "e35a2c6124b41a769682ab6bbf9733695cbe5227",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/open_ai/src/completion.rs",
+    "sha": "d858fc419d410b2e40534cf465cb458c1ca103a4",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/open_ai/src/open_ai.rs",
+    "sha": "8bc4af65f75883316e52281fa3dba5e48af1050d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/open_ai/src/responses.rs",
+    "sha": "6d6c903ea386f46212cc09a6791cbdf3a8e91bc8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/open_path_prompt/Cargo.toml",
+    "sha": "e635797cfbe042c327066494a36c3552f6736be1",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/open_path_prompt/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/open_path_prompt/src/open_path_prompt.rs",
+    "sha": "239edb676a01df403c1fb874a371dc1b111b65ec",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/open_router/Cargo.toml",
+    "sha": "84b08e3cf68ec92ac6e56df98a1d11cfebbeb399",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/open_router/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/open_router/src/open_router.rs",
+    "sha": "b2e6cc41c2d756ec26a8ce3251ff121a64542abf",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/openai_subscribed/Cargo.toml",
+    "sha": "4ce7c8db7f951cb5a3550cc07f4d3aa68768838a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/openai_subscribed/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/openai_subscribed/src/openai_subscribed.rs",
+    "sha": "9e258637aaf0575483d4fd765786f1fbc7850ca5",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/opencode/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/outline/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/outline_panel/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/outline_panel/src/outline_panel.rs",
+    "sha": "92ea053e83b2fad990f7992957dd594485c682c3",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/panel/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/path/Cargo.toml",
+    "sha": "e3a1c33df09bf182fecd2ebe18c10accc53682bd",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/path/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/path/src/path.rs",
+    "sha": "0b942c2e109d5058fd1cc04c6414467852626f6c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/paths/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/picker/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/picker/src/footer.rs",
+    "sha": "809df14bf69d24c2f852e4a237e8c0f3129887f3",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/picker/src/head.rs",
+    "sha": "74f99bdaad7c8b39c3cceb1841760388abbc1c4b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/picker/src/picker.rs",
+    "sha": "c1c95fba6dccd55b644e79b7a7782df0fd630705",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/picker/src/render.rs",
+    "sha": "1fb3be207a5797f8c7bc1f0728502be068e7d3e7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/picker/src/shape.rs",
+    "sha": "098e1de3d0b7d0356b93d54cda036bce1e725cb9",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/picker_preview/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/platform_title_bar/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/platform_title_bar/src/platform_title_bar.rs",
+    "sha": "d0207fd27456c2206ef3d51c17b3e7b1c1f2ddd4",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/platform_title_bar/src/platforms/platform_linux.rs",
+    "sha": "5ebf2dc60b09e3e1fe81087abdcef84ca9dd91d7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/platform_title_bar/src/platforms/platform_windows.rs",
+    "sha": "9ea9917cd7567ff9630fd253c8431dae5c7e3008",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/prettier/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/project/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/project/src/agent_registry_store.rs",
+    "sha": "67550e8108b4d3cbc123af0ceeb93aae9b7ccbf8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/agent_server_store.rs",
+    "sha": "63806e9b7cb40411f4e68db4028132b23d82a179",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/buffer_store.rs",
+    "sha": "ff49a39f761d65db219c61f8b84858cf7c19ec21",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/context_server_store.rs",
+    "sha": "85a3d822ca9cb6903a4efccf70e2441466ee5a33",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/debugger/session.rs",
+    "sha": "634feeccd9ddcc284b76ff9bf8404e1e074efa10",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/git_store.rs",
+    "sha": "c4f77c787849c9dd0069c65c926311552dfc945b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/git_store/diff_buffer_list.rs",
+    "sha": "ee0421b587fa3759dfa39c4c684ee1df446e6f9a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/image_store.rs",
+    "sha": "a667f2178874d1d989d30e7819f1bc9a0cc5b5f0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/lsp_command.rs",
+    "sha": "db7c3a0ab103069b76223409175cb4c4fe18ab5f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/lsp_store.rs",
+    "sha": "f5a826ea8fc660763e29e3a96e390a304627966f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/lsp_store/code_lens.rs",
+    "sha": "52c35e13e686dbe7f1ce27d72e5fd40d2bab39d9",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/lsp_store/document_colors.rs",
+    "sha": "e3465eba447d9bdb3f27c19f9fb12976bfb18acf",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/lsp_store/document_links.rs",
+    "sha": "323b37604dccaec4a716b77cea6a396387518fa5",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/lsp_store/document_symbols.rs",
+    "sha": "adda847c47e0ca79c23b04275075912029de5d87",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/lsp_store/dynamic_registration.rs",
+    "sha": "7df7a238e4070afc1eaee2630af02c916690e906",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/lsp_store/folding_ranges.rs",
+    "sha": "e1be0c3d57a2f89bd363bd7ef3be694b89ad79af",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/lsp_store/inlay_hints.rs",
+    "sha": "8a48992ee53670f4f97a167f106fa981bd02ec7f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/lsp_store/log_store.rs",
+    "sha": "ef798c5cb2fcb8584a2ebad7b8a5411a880cc830",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/lsp_store/semantic_tokens.rs",
+    "sha": "675ab29f76d03a86707858b376183c693cc7c59a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/project.rs",
+    "sha": "c1a8cb5f3c6750ae5cc06b7c66a176ce10b4302b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/project_search.rs",
+    "sha": "91c89d7c93dce4fc3a9bd99b1f6e4481125ccd26",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/project_settings.rs",
+    "sha": "e4c806dbe6a11c4ce38d628c4829afda5d627607",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/search.rs",
+    "sha": "d11f82d00915b505b8ee4a03314117ac9583caa9",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/src/worktree_store.rs",
+    "sha": "2445ad57b0ef50db35b405e2c9d552b662bb88fe",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/tests/integration/agent_registry_store.rs",
+    "sha": "ab8d7387cdbf552a352a4bde7abef6b35cc12f0e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/tests/integration/context_server_store.rs",
+    "sha": "e7857b9f0c7e64b1653ac4098e2b43c0bc8f2981",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/tests/integration/dynamic_registration.rs",
+    "sha": "9600b2cc4cf359845ec95d02a3d7147b15720a05",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/tests/integration/git_store.rs",
+    "sha": "4557a788bdfec973a5087f177089b0d75a83e410",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/tests/integration/lsp_store.rs",
+    "sha": "db55a563c251a3efe08ddaba138283bd5c425410",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/tests/integration/project_tests.rs",
+    "sha": "73acdc013d9ba0a67abbcb1aa22f6cc3283343ef",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project/tests/integration/search.rs",
+    "sha": "d961c87bcebd806e57e64551e2eae87c4d3e3bff",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project_benchmarks/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/project_benchmarks/src/main.rs",
+    "sha": "31b8bec2cbe25132d436e1b36f3d45fa5b328b14",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project_panel/Cargo.toml",
+    "sha": "76902a5678dd95c03a914d55bae009e1acda57ec",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project_panel/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/project_panel/benches/linux_repo_snapshot.txt",
+    "sha": "98a525af8dfbb055bbe4737bc094ac67cb1cb5c9",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project_panel/src/project_panel.rs",
+    "sha": "675d02381464c6afbf2d7e02343d3a1c77c88c91",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project_panel/src/project_panel_tests.rs",
+    "sha": "a4ff860f2eba041df798fa0d103cf3fa1e69804c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project_panel/src/tests/undo.rs",
+    "sha": "ca2ec15331bb9a840c701472e585da714b1cc9c0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project_panel/src/undo.rs",
+    "sha": "3bc552b7cf159b32fcb88c08950557c47f20066b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/project_symbols/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/project_symbols/src/project_symbols.rs",
+    "sha": "65771815693fff19bf79e06c44a5c4f96c736444",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/prompt_store/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/proto/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/proto/proto/git.proto",
+    "sha": "1d0ff18b5db2835627a8a362ab4e37aa9c743cd2",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/proto/proto/lsp.proto",
+    "sha": "4016656e0aa0acb29a3488e4e17ad0df798fb246",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/proto/proto/worktree.proto",
+    "sha": "74d126d9b5a73373101544038c473322530f42c8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/proto/proto/zed.proto",
+    "sha": "077602d479d147f205a39a278e8663a14e6896cf",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/proto/src/proto.rs",
+    "sha": "dc735c2aab986d88d5480ddbd40d3a9a65bab81b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/proxy_handshake/Cargo.toml",
+    "sha": "6ea582ab5878af8e3e69289a9f5d4c33da226041",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/proxy_handshake/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/proxy_handshake/src/futures_io.rs",
+    "sha": "dc1107ab7786bfc9e94ecb845556099503f14cc8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/proxy_handshake/src/handshake.rs",
+    "sha": "233e420d9c90f0860784771625acc78c940bc350",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/proxy_handshake/src/proxy_handshake.rs",
+    "sha": "d098086232bf992c0050e19d2df30651ad1a0063",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/proxy_handshake/src/tokio.rs",
+    "sha": "eedc4c58bbc5b2073e4c6fa81eda28e9db42175b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/recent_projects/Cargo.toml",
+    "sha": "033e47db15fc2207d4e2b6c09e618f92a8430e12",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/recent_projects/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/recent_projects/src/recent_projects.rs",
+    "sha": "c26d7537b504feb802f509c07e0bdd18d111ee42",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/recent_projects/src/remote_connections.rs",
+    "sha": "501a774c3e85807d2df88b3c1df804eea81ecb20",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/recent_projects/src/remote_servers.rs",
+    "sha": "bc61d33943628fde045735d0da9d1c53f76eff1c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/refineable/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/refineable/derive_refineable/LICENSE-APACHE",
+    "sha": "6e2b1da8755027f853c1c399de84974538ece558",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/release_channel/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/release_channel/build.rs",
+    "sha": "d87a475f1c2aad6fa68d0766e4b2b718f5830ab8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/release_channel/src/lib.rs",
+    "sha": "c79ca14b74299b4f62f2e7c860e36c366f1f09c5",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/remote/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/remote/src/remote_client.rs",
+    "sha": "f63bfa4448d614613e52653c2537c8965f7f6788",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/remote/src/transport/docker.rs",
+    "sha": "8a05ddcd15c468afa1eaa562fea1a3e74482fc0d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/remote/src/transport/ssh.rs",
+    "sha": "8c4dd8a1637886fa11f27aa9f7630710eaf60b4a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/remote/src/transport/wsl.rs",
+    "sha": "61d676bde543b8a141b08a244b7ef51e748f80f9",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/remote_connection/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/remote_connection/src/remote_connection.rs",
+    "sha": "395d241a25e395c2ff377a827edce00eefa15f2e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/remote_server/Cargo.toml",
+    "sha": "6f22970504b80432e39ea14d8fe477fc5a18e678",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/remote_server/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/remote_server/src/remote_editing_tests.rs",
+    "sha": "7948e1b6a7b27332b776f6e2d78210cca0edbc9c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/remote_server/src/server.rs",
+    "sha": "bd5bda5c268a1ff99eedef6d64b9ad11c4a8ffd6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/repl/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/repl/src/kernels/ssh_kernel.rs",
+    "sha": "0317270b2adcf49883c2882c57527d5596d97ba4",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/repl/src/notebook/cell.rs",
+    "sha": "f323b87e52c65f66596f82dd489e9140a4bd229d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/repl/src/notebook/notebook_ui.rs",
+    "sha": "c004c3ee49f8145c9b0d974e47341c3cfd6b499f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/repl/src/outputs/plain.rs",
+    "sha": "f5fa70f3e2c696b433922aafebe6d33901956938",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/repl/src/repl_sessions_ui.rs",
+    "sha": "75c059d9524f8102df136d8e0dff2d71048bce90",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/reqwest_client/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/reqwest_client/src/reqwest_client.rs",
+    "sha": "436ec60fe1f12f0a8fa02f1314a028c4b573f5c7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/rope/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/rpc/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/sandbox/Cargo.toml",
+    "sha": "a04f7b2bc23cab30f17907556babe1073775cde8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/sandbox/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/sandbox/README.md",
+    "sha": "f11a4968673273d5328306005cda1a84084345cb",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/sandbox/src/bwrap_test_helper.rs",
+    "sha": "3092cd27beb700391fadc4958d1d37cf9ad822cd",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/sandbox/src/linux_bubblewrap.rs",
+    "sha": "abac281d9ae5ccd3158e1c6028490c154923e116",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/sandbox/src/sandbox.rs",
+    "sha": "866e16a10474ee9499fc423f5d37be15367b0b5d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/sandbox/src/util.rs",
+    "sha": "429d4d832736e487466788db7372d6a02366ab51",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/sandbox/src/util/canonical_path.rs",
+    "sha": "2b820bae1635e127d4b4c4e057663aa224cbd5de",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/sandbox/src/util/host_filesystem_location.rs",
+    "sha": "8e7cc055530c1a4dd6c0bb3aa36d5376bf3eebc7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/sandbox/src/windows_wsl.rs",
+    "sha": "21158d4f1726d9762331d32ada29506084e7dd1a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/sandbox/src/wsl_sandbox_test_helper.rs",
+    "sha": "f7ab1d759dac839cb37bcaaca429d150faaac69b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/scheduler/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/scheduler/src/executor.rs",
+    "sha": "7791abfc178511c8c67602dea77834299b27ad71",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/schema_generator/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/schema_generator/src/main.rs",
+    "sha": "6386146cb6e9e328bc9761b7e9ba347d5ce53ea7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/search/Cargo.toml",
+    "sha": "60cdfa8fa965f72ebb0f98ef0c4bcf42bf91e72f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/search/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/search/src/buffer_search.rs",
+    "sha": "c883cca47b2b4e7b0d3e0c67d6bf823b4fc5b80f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/search/src/project_search.rs",
+    "sha": "909959e6db3dd3c23c9754724cc202b028990175",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/search/src/search.rs",
+    "sha": "63702a22578fe6a7b5cd9747fce2a5f3def5dea6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/search/src/text_finder.rs",
+    "sha": "c2b15fa2522bd00a12e1822be0351f656d571c83",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/search/src/text_finder/delegate.rs",
+    "sha": "292ba1c3ee96bd635465b102d86d850a215fbd7a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/session/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/settings/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/settings/src/base_keymap_setting.rs",
+    "sha": "28fc665de5f009dc9cbd1d976779df370c387080",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings/src/granted_write_path.rs",
+    "sha": "9fdc863184dab1e5ea1d6e1bedf8ed31e140fdbc",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings/src/keymap_file.rs",
+    "sha": "c448fb92d7c2e5c076b5ae69a47b6ff9d7d2e1d1",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings/src/settings.rs",
+    "sha": "b5daebdae003b585b94e4af43175e0e690260ec2",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings/src/settings_store.rs",
+    "sha": "8ef05e6fef2b73f007cf96619dace4bccbd22d50",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings/src/vscode_import.rs",
+    "sha": "19157787f7c126b6667cb6c74f1851b9af8f3b6f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_content/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/settings_content/src/agent.rs",
+    "sha": "1a90e05b675c906f5aedb40858be0eb019ff0bdb",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_content/src/editor.rs",
+    "sha": "52ff2fa10e1b42f6fa64b6cd336bbf29c73e6720",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_content/src/language.rs",
+    "sha": "45ac3c203b8692a6a9b7837d44af852127f4eaad",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_content/src/project.rs",
+    "sha": "59498358c49cade7a5bfd15604cd1f5bdb7f5ff3",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_content/src/settings_content.rs",
+    "sha": "9e9723229125075bf78e8789404c6b081f0f4c5a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_content/src/terminal.rs",
+    "sha": "338cee6d24c5510af5ec27745837af071f1d5d7c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_content/src/theme.rs",
+    "sha": "cf12cce97106fb3c3c66694d84287fe0348af598",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_content/src/title_bar.rs",
+    "sha": "74f406e8abe65de29270a20b5ac1249d0bb524a9",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_content/src/workspace.rs",
+    "sha": "e5111f4ce2ae7693dd5478d1eecb4ef5ebfb9e64",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_json/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/settings_json/src/settings_json.rs",
+    "sha": "f5194d8703697f48e6099172dd8be8f67bf0f5b0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_macros/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/settings_profile_selector/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/settings_ui/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/settings_ui/src/components/font_picker.rs",
+    "sha": "86a7afed7d3fdbcaaa63575134d871e07780094b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_ui/src/components/icon_theme_picker.rs",
+    "sha": "d3c972630ed7603d94cdcda4c539d0c93302270c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_ui/src/components/ollama_model_picker.rs",
+    "sha": "8a5af331d63650f57955100f28c188f860ae0021",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_ui/src/components/theme_picker.rs",
+    "sha": "c23dfddfb88348efad0180db4745462a65ef41a4",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_ui/src/page_data.rs",
+    "sha": "3253cc71f14595146fbefa40048693943c2a7a3b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_ui/src/pages/external_agents_page.rs",
+    "sha": "406dc35c001d501e9cbecde9adf875faa4c18ea7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_ui/src/pages/mcp_servers_page.rs",
+    "sha": "92cee7ff3a4a7b84ae6c5d52f5440ddde2435b8b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_ui/src/pages/sandbox_settings.rs",
+    "sha": "964345e768055f038d7c654d2cb829c1b4d91d58",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_ui/src/pages/skills_setup.rs",
+    "sha": "72d6188515465b23b3cb7a8fe19e42e6005fd78b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/settings_ui/src/settings_ui.rs",
+    "sha": "3dd94f5c78a661a3cc4306c2b803b9117487bb5b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/shell_command_parser/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/shell_command_parser/src/shell_command_parser.rs",
+    "sha": "01c0866a5738ed831f0311a12817364ff6a59659",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/sidebar/Cargo.toml",
+    "sha": "e15b7b339e03b8b7bc4970de63d48c97e841caa6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/sidebar/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/sidebar/src/sidebar.rs",
+    "sha": "a98997468fde8c99fb77f8e119ee64677cc45825",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/sidebar/src/sidebar_tests.rs",
+    "sha": "2bc99086ad7cdf511c4dd59f1e9b970dbc846508",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/sidebar/src/thread_switcher.rs",
+    "sha": "5ed4ced917c9d3efdec8692ffde367717a62b212",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/snippet/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/snippet/src/snippet.rs",
+    "sha": "6674834e969d3d171395a1e1121cf20eb2980232",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/snippet_provider/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/snippets_ui/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/snippets_ui/src/snippets_ui.rs",
+    "sha": "5f5a26faa4aeeb9d7e8568d220a70eb4f36d68a7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/sqlez/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/sqlez_macros/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/sqlez_macros/src/sqlez_macros.rs",
+    "sha": "0df3baca4668c73d6a2c5656692909bc39f74c2e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/streaming_diff/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/sum_tree/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/sum_tree/src/cursor.rs",
+    "sha": "06cbfd58746c29fa8b1d13f2a1ad34f50f99a005",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/svg_preview/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/syntax_theme/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/syntax_theme/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/system_specs/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/tab_switcher/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/tab_switcher/src/tab_switcher.rs",
+    "sha": "62be1daf1b31e96f4f3a195379546b98b69a3945",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/task/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/task/src/task_template.rs",
+    "sha": "e6cc357bf682c21a91d197c35561b9b3fa9a8004",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/tasks_ui/Cargo.toml",
+    "sha": "c3884252b44ecf071feb32a4325f110897eeba15",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/tasks_ui/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/tasks_ui/src/modal.rs",
+    "sha": "a4f3c241a17eeb57b1e9b41485b951b9ae39e69d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/tasks_ui/src/tasks_ui.rs",
+    "sha": "41b24dee320004a5781d30f1be1b7ec2b346f715",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/telemetry/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/telemetry_events/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/terminal/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/terminal/src/alacritty.rs",
+    "sha": "ed699075031e8ff95bd117f2cd7f9967ba402f8f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/terminal/src/alacritty/hyperlinks.rs",
+    "sha": "228f813f67288d64f7a00075c98d1c61960d7148",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/terminal/src/pty_info.rs",
+    "sha": "2370bf8218f5d58cfe4519935f63fadb4bd4118b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/terminal/src/terminal.rs",
+    "sha": "47732f5a71e7601a3fdd73c70950bf2f1c057530",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/terminal/src/terminal_settings.rs",
+    "sha": "698f60f68f249d8691601b569220a8eade5878c0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/terminal_view/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/terminal_view/src/terminal_element.rs",
+    "sha": "893e908c57cd3d3886385a8d1b58534ae4c580eb",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/terminal_view/src/terminal_panel.rs",
+    "sha": "f24561992e47b56c8fc4925822f5e66ceca6f8c6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/terminal_view/src/terminal_path_like_target.rs",
+    "sha": "573041ee6a3229e98f91896c0309a6bd73188331",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/terminal_view/src/terminal_view.rs",
+    "sha": "6ef5121136ce19ab36052d35133a547df534cce6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/text/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/text/src/patch.rs",
+    "sha": "4b72d10f3cf1e8c072eea77af11d02f7af4b9c4c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/text/src/selection.rs",
+    "sha": "a864eab205ea8980c57d2b71dd0b6c7f8bda6cf8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/text/src/text.rs",
+    "sha": "280d1bda7d3d727f0ec9102676b708e6b5ac21a4",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/theme/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/theme/src/icon_theme.rs",
+    "sha": "bdc3727a74fc6b72f537e58fa15fb1aacf02a2d1",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/theme_extension/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/theme_importer/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/theme_importer/src/vscode/converter.rs",
+    "sha": "cc7005847adeffdd7c89e4e03fdf21ff25761497",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/theme_selector/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/theme_settings/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/theme_settings/src/schema.rs",
+    "sha": "904c2167154b243c0e9eaf759519644be96c1a82",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/theme_settings/src/settings.rs",
+    "sha": "68812368d9b190c9ef04cb52deddc7c2964a023a",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/time_format/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/title_bar/Cargo.toml",
+    "sha": "02b2634f762071df6c57d885b233a2b55c953341",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/title_bar/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/title_bar/src/collab.rs",
+    "sha": "fe418bef36d044bea965cc54eca8c774f97db6f0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/title_bar/src/title_bar.rs",
+    "sha": "f50a762649c72390d246283d3c8f4be88bad26d8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/title_bar/src/title_bar_settings.rs",
+    "sha": "fac95319487bda4f316e2c1abcee0a0963d5b68f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/toolchain_selector/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/toolchain_selector/src/active_toolchain.rs",
+    "sha": "efcd65f0f9f9c73eedbb13101f3b769705ee9efe",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/Cargo.toml",
+    "sha": "656b068d3e00619fd3d11ac89b2e021e8ac4baad",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/ui/src/components/ai/skills_illustration.rs",
+    "sha": "b42f0c5d2e649296841ea1a806707747f29354ba",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/components/avatar.rs",
+    "sha": "b8a8c017ea7a0397124c8130e112f86274adb69b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/components/button/button_like.rs",
+    "sha": "bc7fb9d2fdfb599e11cc2d4dc89bef6b3371cc6b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/components/button/toggle_button.rs",
+    "sha": "4eace13b596f97700b2f12bcca1e960861850a71",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/components/context_menu.rs",
+    "sha": "7b8f734ce4a4f01f32a10df44eb66584387a5e91",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/components/count_badge.rs",
+    "sha": "ed008a9f4b9104d598ead482bbcc4f9f8461d529",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/components/data_table.rs",
+    "sha": "d7cdaf2a8d8c5c2332c8067b77b9cea7866002d3",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/components/disclosure.rs",
+    "sha": "de3d91bb14d20c276f31d11920fca3ebc3c2b10b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/components/icon.rs",
+    "sha": "26659006466d9fc8e0ced193c2d1f3046ce4094f",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/components/image.rs",
+    "sha": "8143e0ace588435f24a2a63d7f9a885b55b4884c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/components/indicator.rs",
+    "sha": "97a1fa3ed68dedf28b7c046021f8de6c338c4060",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/components/list/list_header.rs",
+    "sha": "69f4ac5212096c5e71c2c947077b1477e6fccb83",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/components/list/list_item.rs",
+    "sha": "860c78d1536f12a916373e2ec2684d3df37758e5",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/components/popover_menu.rs",
+    "sha": "06e206f30066067a0567119b553409c65d34c4ee",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/components/scrollbar.rs",
+    "sha": "e7177f4ecaab773da9a2350d9356dfc1a416ba61",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/components/tree_view_item.rs",
+    "sha": "98a4a42f0b7bda0581d6152a10b6b876f40e63db",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/styles/typography.rs",
+    "sha": "6411504d6cb4ec07d9704fcd135d31ff46152859",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/styles/units.rs",
+    "sha": "e5e22c4a4921c4299cd8d014911d88191d451e71",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui/src/traits/animation_ext.rs",
+    "sha": "64cdd4f9c9af6e70f949981a83c3b82dd196f5c7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/ui_input/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/ui_macros/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/ui_prompt/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/util/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/util/src/markdown.rs",
+    "sha": "92c3ffedc93d673d12ec807766d37d1d24141847",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/util/src/paths.rs",
+    "sha": "dec52c65d3cfb43b6c8d034859378319d1d24cc7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/util/src/shell_builder.rs",
+    "sha": "76ff3923e6250faf02fa473e706606578866be68",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/util/src/shell_env.rs",
+    "sha": "3f26ba98bd422249b3b5b5089ee49ab6f2ac2a55",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/util/src/util.rs",
+    "sha": "6b8e85f213167fbf72620b1a420b16bca2deb596",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/util_macros/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/vim/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/vim/src/command.rs",
+    "sha": "f5d4fe52668b37247d17996cc1c368f8c6851911",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/vim/src/helix.rs",
+    "sha": "9b2ecf8f5a81e4d45b06e70f59234329d3df6554",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/vim/src/helix/select.rs",
+    "sha": "abda54c189025e0f0b006ddff99a6fb444e5fbb4",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/vim/src/insert.rs",
+    "sha": "063c442c141d1f5859b55c7ddc871aadb3be7b34",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/vim/src/motion.rs",
+    "sha": "431edda71527231b7c9ad0c0dd95701181a62b7b",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/vim/src/normal.rs",
+    "sha": "7cb89a00539ecc3b8c956a1791173f23a092c9f7",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/vim/src/normal/paste.rs",
+    "sha": "610c5eb35858a356b0236aadc5aa8696b4f247a8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/vim/src/normal/scroll.rs",
+    "sha": "f47eb83dcffad503ba7a36b5fc986b5ca368cc89",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/vim/src/object.rs",
+    "sha": "e00393ddebb636e54789e5a1076ce111f1766ed1",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/vim/src/surrounds.rs",
+    "sha": "adbdbf893e2adc7fe10c69031503709edbda307c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/vim/src/test.rs",
+    "sha": "0fa0439379affb2a506c4081924dbcdc3cad07c0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/vim/src/vim.rs",
+    "sha": "6a0ebce1d7a8eafea49bb3507ebdf27ead8329d0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/vim/src/visual.rs",
+    "sha": "24e9ec0e8609236a37dea9001b327f59ab99ad2d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/vim_mode_setting/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/watch/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/web_search/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/web_search_providers/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/which_key/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/windows_resources/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/workspace/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/workspace/src/dock.rs",
+    "sha": "649cb9ccb207f1ed503e03107fadcb1058866ffd",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/workspace/src/modal_layer.rs",
+    "sha": "ec0254868b3fbf876c93f77781238e1fb7e52513",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/workspace/src/multi_workspace.rs",
+    "sha": "df49cf8fca1bdf9b2f354537e9b9b8563bd5f5f6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/workspace/src/multi_workspace_tests.rs",
+    "sha": "de65d40ab6b22d52c0e7f7642bf2a755c13f68da",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/workspace/src/notifications.rs",
+    "sha": "860ac2ad9f635baa1fa8bb04a0b02b77c84fd18d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/workspace/src/pane.rs",
+    "sha": "71075a56ddf849e451ad049fd3230b786b604d25",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/workspace/src/pane_group.rs",
+    "sha": "672190aff60a206781bc37565042f5d99014e730",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/workspace/src/path_link.rs",
+    "sha": "d451e3b2fa9b7b59ea4a4a882ec13fb0463839db",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/workspace/src/persistence.rs",
+    "sha": "f08aaba6c48ab345feee07ff06bd5ccff1493292",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/workspace/src/security_modal.rs",
+    "sha": "928bb592c0a1fb28d41fc814412e1989e7db677d",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/workspace/src/tasks.rs",
+    "sha": "7bc6420c4c7729a749db05717a717f867b0d6ef6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/workspace/src/welcome.rs",
+    "sha": "7966a3be169e580a8dc5ba1a3a9b0110cc83bf02",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/workspace/src/workspace.rs",
+    "sha": "4c0e31e72efadfa3e775e271b42a680742ec0987",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/worktree/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/worktree/src/ignore.rs",
+    "sha": "c9efd6fd4304f4692890b8bda26ebe993ad205f0",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/worktree/src/worktree.rs",
+    "sha": "d09542a45c6cc3449373c81637082120ad1aeaa8",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/worktree/src/worktree_settings.rs",
+    "sha": "c2fc915aa69912722722aef086e71ba6b6c0109e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/worktree/tests/integration/worktree_settings_tests.rs",
+    "sha": "993a095e411e092efe4b84ed147329d32ebd65a3",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/worktree/tests/integration/worktree_tests.rs",
+    "sha": "bad6c265200f7d7628a5634e6658f62fd5f8b24c",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/worktree_benchmarks/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/x_ai/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/zed/Cargo.toml",
+    "sha": "2ccdffb3f67f25ae5fc40443eccf4ed5264b9100",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/zed/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/zed/src/main.rs",
+    "sha": "971599e2acf0524e0ad6a5bdd105d2acc3783c53",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/zed/src/visual_test_runner.rs",
+    "sha": "cea858e72e5c0b37f174b6801c929d640277351e",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/zed/src/zed.rs",
+    "sha": "98831ab874b1b50166bbc4740daba3ac143fb6e2",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/zed/src/zed/app_menus.rs",
+    "sha": "8531ebb7f6000bb38fd4abeda15cd64da3e0c529",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/zed/src/zed/edit_prediction_registry.rs",
+    "sha": "4bae62948fe4674a2cd8d6e36fabaa29a4155dbe",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/zed/src/zed/open_listener.rs",
+    "sha": "754aa9eac399ed102bab8ff1f747aa2b8b0f90e9",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/zed/src/zed/quick_action_bar.rs",
+    "sha": "42e3d7e04250a3caa33dd5bc97af37840ca010d6",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/zed_actions/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/zed_actions/src/lib.rs",
+    "sha": "b082a687a23212979ec556d2a3dbdf3944e468aa",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/zed_credentials_provider/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/zed_env_vars/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/zeta_prompt/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/zeta_prompt/src/udiff.rs",
+    "sha": "a13f4952590be93fe293e3c2469e6ec679c05792",
+    "mode": "100644"
+   },
+   {
+    "path": "crates/zlog/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/zlog_settings/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/ztracing/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/ztracing/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/ztracing_macro/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "crates/ztracing_macro/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "docs/.conventions/CONVENTIONS.md",
+    "sha": "aeba1de2e40cb1f572f3214693e4e0ab576a4d34",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/.rules",
+    "sha": "865980e1d93344455889bf86b7a30be7eaa172a9",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/book.toml",
+    "sha": "60698da1cde42499ffdd6de1b5eeda7434030269",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/redirects/legacy-fragment-redirects.js",
+    "sha": "1adf41f2fbb6b0166b769e8fafc280dd76ead0f6",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/SUMMARY.md",
+    "sha": "df64eee1147ef298da0dda371aab9c56a0418c97",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/account/zed-hosted-models.md",
+    "sha": "3a5772bedc567630d7445d8964ec4d3ad872b30b",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/ai/agent-settings.md",
+    "sha": "406695f0d8afa8c705ed2ab8b32f6eb3f9d7e381",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/ai/by-company.md",
+    "sha": "aaafe4668c2a28ae253f30db360be63f8a39a631",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/ai/edit-prediction.md",
+    "sha": "61742b6d1974e0338383aa6dc34ce042cd123be1",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/ai/external-agents.md",
+    "sha": "e60dd32240d830d560da499df87368631611cb86",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/ai/sandboxing.md",
+    "sha": "2d676d75c80a15e7c09e966f3220cd5f95411490",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/appearance.md",
+    "sha": "00aff71b736ac7a7ae615ff6e23760939fff127a",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/configuring-languages.md",
+    "sha": "d37cc967eff060036071a465a9748079d3c893a3",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/development/linux.md",
+    "sha": "b92246e4f9933b870b35ce9072a6ff81875f1059",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/extensions.md",
+    "sha": "08c5056626769490f5c5342ef5b33d48b163196f",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/extensions/developing-extensions.md",
+    "sha": "44b293154fda9f19d1ab4480c84d54b7df35e8be",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/extensions/publishing/license-requirements.md",
+    "sha": "ab8e9397c6cc8eac26d398f722785f7fe860ee1e",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/extensions/publishing/overview.md",
+    "sha": "b57da89ac5f78a72ed511bb1f9905dc84d3452b5",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/extensions/publishing/prerequisites.md",
+    "sha": "4cecb49c990ad4e861c41938a1dce9dd03edc9b7",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/extensions/publishing/publishing-guide.md",
+    "sha": "90fd3654b3fc32c3d1afc49cfddd5b1e52c80507",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/git.md",
+    "sha": "4ef0b638f6f342979cd348a33c1a98f46d8f4127",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/key-bindings.md",
+    "sha": "1f02b7048fb8ee11676c0c743edcc07d5754fe25",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/languages/php.md",
+    "sha": "0377933bed6c11fc6f58b24573e4b33a42dccdd6",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/languages/typescript.md",
+    "sha": "108e6e34d47a7a6389a8a18b01db58e83e8d54f8",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/migrate/intellij.md",
+    "sha": "ca200c672573fa9c2e798addd7082d0f4d488f13",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/migrate/pycharm.md",
+    "sha": "7a6bcf9d17caf98ffecfadbff93a5c10c700818b",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/migrate/rustrover.md",
+    "sha": "077c441e82ac888508b6554cf59d36a91e39d498",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/migrate/vs-code.md",
+    "sha": "e3f14bd6cd11cf0433eb23dad167026682d1a4e5",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/migrate/webstorm.md",
+    "sha": "fc464def5c17bd186aabb99dbec8cbc4c8f09d1e",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/project-panel.md",
+    "sha": "7c382a2b0cf987d9b5eb94350d7e45fa13d81cb1",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/reference/all-settings.md",
+    "sha": "7cc8a3bc40ebe7ef621e9ad14eddfc2f27d0ad9b",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/reference/cli.md",
+    "sha": "c906b46e94dacc8de495e71e153a33c5d52a97ba",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/repl.md",
+    "sha": "9eb6428443a47d2032a6f024b65381f36d67951a",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/snippets.md",
+    "sha": "96f00700c7d74aa767a28eeb8e66c96f5e5ba220",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/telemetry.md",
+    "sha": "78d849af88ede2cc65b74bee11c51a494e3b0806",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/src/visual-customization.md",
+    "sha": "57c86caf1c2c8fc9ea4b81ee0b88180f3b0b8d81",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/theme/css/chrome.css",
+    "sha": "aaed88bd7617f03ae799d32e19d27aa8d98e4e37",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/theme/index.hbs",
+    "sha": "7a9325b1770a11f8151664e7174ad6e95b3e081d",
+    "mode": "100644"
+   },
+   {
+    "path": "docs/theme/plugins.js",
+    "sha": "a4d21adaa23e2b3704539ef82dd1f55765158603",
+    "mode": "100644"
+   },
+   {
+    "path": "extensions/ghas-external-access/README.md",
+    "sha": "f935d76e82694c5f2e4c9c350315151e4393e654",
+    "mode": "100644"
+   },
+   {
+    "path": "extensions/ghas-external-access/extension.toml",
+    "sha": "b9f57b97f7f4112b4ba33004e72e589359187a4d",
+    "mode": "100644"
+   },
+   {
+    "path": "extensions/glsl/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "extensions/html/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "extensions/proto/Cargo.toml",
+    "sha": "685b3271f5a7b4d5e4913ee449e76b3d25356f40",
+    "mode": "100644"
+   },
+   {
+    "path": "extensions/proto/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "extensions/proto/extension.toml",
+    "sha": "8ee20048833c565f74e498b5508ca497f13a7d53",
+    "mode": "100644"
+   },
+   {
+    "path": "extensions/proto/src/language_servers/buf.rs",
+    "sha": "8a2381db705014f47e1f209b9650399d2f4ad9ec",
+    "mode": "100644"
+   },
+   {
+    "path": "extensions/proto/src/language_servers/protols.rs",
+    "sha": "25787acfff7459b7ddc5ff12581104c851ba9ecd",
+    "mode": "100644"
+   },
+   {
+    "path": "extensions/test-extension/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "fix_zed_mcp.py",
+    "sha": "34ec7d4765e6bea2095f14409df99cfd3ab44edc",
+    "mode": "100644"
+   },
+   {
+    "path": "flake.lock",
+    "sha": "a0a2137505fe2ff2bfd10ced68e78e8813683f90",
+    "mode": "100644"
+   },
+   {
+    "path": "forgewatch.yml",
+    "sha": "7d3f6cbd4d28a8304f07d0007e056cbc5afc40ef",
+    "mode": "100644"
+   },
+   {
+    "path": "nix/tests/sandboxing/default.nix",
+    "sha": "75f42697e30b7d49b90fa03bdb154464976bb160",
+    "mode": "100644"
+   },
+   {
+    "path": "rust-toolchain.toml",
+    "sha": "78f34e4d694bdb099334f6273d13e06c5e6eb5fe",
+    "mode": "100644"
+   },
+   {
+    "path": "script/bundle-linux",
+    "sha": "0b1fabe98263423113efce3c0f38ecb64ec1857c",
+    "mode": "100755"
+   },
+   {
+    "path": "script/community-pr-track-mapping.json",
+    "sha": "74d5f3b4bf05729b62a62818eb075849dd2715ca",
+    "mode": "100644"
+   },
+   {
+    "path": "script/github-check-new-issue-for-duplicates.py",
+    "sha": "c1289c2156d9e0d0cf2ba03aa6fccd2a5642744c",
+    "mode": "100644"
+   },
+   {
+    "path": "script/github-track-duplicate-bot-effectiveness.py",
+    "sha": "a01a8941eb351afef128eab6f879b67440e36a5a",
+    "mode": "100644"
+   },
+   {
+    "path": "script/github-triage-queue-board.py",
+    "sha": "73738cd3024df0e46e56ce08ff206c92bfebb1a6",
+    "mode": "100644"
+   },
+   {
+    "path": "script/install.sh",
+    "sha": "f3a32b102a01473da577e9d574cb235fbeb1060c",
+    "mode": "100755"
+   },
+   {
+    "path": "script/licenses/zed-licenses.toml",
+    "sha": "7f9c865616bca8964ae8d19b95afd9e2834798ed",
+    "mode": "100644"
+   },
+   {
+    "path": "tooling/compliance/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "tooling/lints/.cargo/config.toml",
+    "sha": "93dceb69922249f590eb08678447c133c6f0871c",
+    "mode": "100644"
+   },
+   {
+    "path": "tooling/lints/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "tooling/lints/test_fixture/LICENSE-APACHE",
+    "sha": "6e2b1da8755027f853c1c399de84974538ece558",
+    "mode": "120000"
+   },
+   {
+    "path": "tooling/lints/test_fixture/consumer/LICENSE-APACHE",
+    "sha": "15824831a24d7753b6e945b8190dd7d15413aed1",
+    "mode": "120000"
+   },
+   {
+    "path": "tooling/lints/test_fixture/gpui/LICENSE-APACHE",
+    "sha": "15824831a24d7753b6e945b8190dd7d15413aed1",
+    "mode": "120000"
+   },
+   {
+    "path": "tooling/lints/test_fixture/gpui_shared_string/LICENSE-APACHE",
+    "sha": "15824831a24d7753b6e945b8190dd7d15413aed1",
+    "mode": "120000"
+   },
+   {
+    "path": "tooling/lints/test_fixture/render_consumer/LICENSE-APACHE",
+    "sha": "15824831a24d7753b6e945b8190dd7d15413aed1",
+    "mode": "120000"
+   },
+   {
+    "path": "tooling/perf/LICENSE-APACHE",
+    "sha": "1cd601d0a3affae83854be02a0afdec3b7a9ec4d",
+    "mode": "120000"
+   },
+   {
+    "path": "tooling/xtask/LICENSE-GPL",
+    "sha": "89e542f750cd3860a0598eff0dc34b56d7336dc4",
+    "mode": "120000"
+   },
+   {
+    "path": "tooling/xtask/src/tasks/workflows/bump_patch_version.rs",
+    "sha": "5ee6734a9d5424eb987795a5477857f01ce78245",
+    "mode": "100644"
+   },
+   {
+    "path": "tooling/xtask/src/tasks/workflows/bump_zed_version.rs",
+    "sha": "45cd20a3e4561c3828d5ee552e38481256d1e54a",
+    "mode": "100644"
+   },
+   {
+    "path": "tooling/xtask/src/tasks/workflows/extension_bump.rs",
+    "sha": "71225fc941d7be2f5fb7b35f2b91a1663133357f",
+    "mode": "100644"
+   },
+   {
+    "path": "tooling/xtask/src/tasks/workflows/extension_workflow_rollout.rs",
+    "sha": "de7b681f3b385867458fbdb1957e68ddfac67c8d",
+    "mode": "100644"
+   },
+   {
+    "path": "tooling/xtask/src/tasks/workflows/publish_extension_cli.rs",
+    "sha": "450b70b7f6f4cdab09dfd1295ae203c26a3e422a",
+    "mode": "100644"
+   },
+   {
+    "path": "tooling/xtask/src/tasks/workflows/release.rs",
+    "sha": "0b75268bc9c345ae53bdd19eca7d877c054c5a55",
+    "mode": "100644"
+   },
+   {
+    "path": "tooling/xtask/src/tasks/workflows/run_tests.rs",
+    "sha": "cb424ffa23c1a40f2771104935637277908123b8",
+    "mode": "100644"
+   },
+   {
+    "path": "tooling/xtask/src/tasks/workflows/steps.rs",
+    "sha": "754995d9cb1f7a44ced158ecf82775ed14a059e3",
+    "mode": "100644"
+   },
+   {
+    "path": "tooling/xtask/src/tasks/workflows/vars.rs",
+    "sha": "425ad04d27edef1288848f7c81310561aa828a24",
+    "mode": "100644"
+   },
+   {
+    "path": "tooling/xtask/src/workspace.rs",
+    "sha": "74d1fed2f47ce07489a5a9ef54a2e86312ef4b13",
+    "mode": "100644"
+   },
+   {
+    "path": "typos.toml",
+    "sha": "0a0635ea551ac09184671426a9fed1045d44df61",
+    "mode": "100644"
+   },
+   {
+    "path": "verify_fix.py",
+    "sha": "b0dec3c4d1b6ef6933cccb60a5d12bd8e25893dd",
+    "mode": "100644"
+   }
+  ],
+  "mismatches": []
+ },
+ "omp-extensions": {
+  "entries": [
+   {
+    "path": "AGENTS.md",
+    "sha": "913a381153ea644afca7ecdda14a2f58fddaacd6",
+    "mode": "100644"
+   },
+   {
+    "path": "README.md",
+    "sha": "86b8829dcf7f573b39837c5579a5287dcb284f61",
+    "mode": "100644"
+   },
+   {
+    "path": "package.json",
+    "sha": "d2615b2b3c4d6150b6b242621714861cb73645e3",
+    "mode": "100644"
+   },
+   {
+    "path": "packages/omp-edit-committer/README.md",
+    "sha": "edbf118125aafcb2b5dc459ff2d65510ff082b3a",
+    "mode": "100644"
+   },
+   {
+    "path": "packages/omp-edit-committer/src/extension.ts",
+    "sha": "906aede3ddd5b1c75c2ae05b9d7c0e2ac5ce63fd",
+    "mode": "100644"
+   },
+   {
+    "path": "packages/omp-edit-committer/src/git.ts",
+    "sha": "8dd9ec4f5c099ee91669288de354867e80f0be5a",
+    "mode": "100644"
+   },
+   {
+    "path": "packages/omp-edit-committer/src/index.ts",
+    "sha": "e4e12d4116201090cca433d889141e45d27e8420",
+    "mode": "100644"
+   },
+   {
+    "path": "packages/omp-edit-committer/src/message.test.ts",
+    "sha": "fbf6c10afba1d3f19adeea119b825cb508fb021d",
+    "mode": "100644"
+   },
+   {
+    "path": "packages/omp-edit-committer/src/message.ts",
+    "sha": "ad4ff02cf1f435ef3b3a755568067775b663f976",
+    "mode": "100644"
+   },
+   {
+    "path": "packages/omp-edit-committer/src/renderer.ts",
+    "sha": "203c4d1fbd38c7cf2d8ac7cfb75102dde9d74046",
+    "mode": "100644"
+   },
+   {
+    "path": "packages/omp-kafka/README.md",
+    "sha": "03b348fbc85900223fbee8b209e9313957bc9ead",
+    "mode": "100644"
+   },
+   {
+    "path": "packages/omp-kafka/__tests__/kafka.test.ts",
+    "sha": "e307d0d13dafe97b2eef0728a635ebd25858bbf4",
+    "mode": "100644"
+   },
+   {
+    "path": "packages/omp-kafka/src/config.ts",
+    "sha": "a795ea93b8458f8a77089372da92221ffa30045d",
+    "mode": "100644"
+   },
+   {
+    "path": "packages/omp-kafka/src/consumer.ts",
+    "sha": "24cbfc8a90ce545cc1bd7e9e304b958e9f78a9de",
+    "mode": "100644"
+   },
+   {
+    "path": "packages/omp-kafka/src/extension.ts",
+    "sha": "abd4c8618d5db5c2c6e55e6f0702ca4ed22f558b",
+    "mode": "100644"
+   },
+   {
+    "path": "packages/omp-kafka/src/index.ts",
+    "sha": "78c0df42f2ae8e6259f5172e86790ffa97f80c13",
+    "mode": "100644"
+   },
+   {
+    "path": "packages/omp-kafka/src/types.ts",
+    "sha": "647f6a1e95306528578461622d7753009a7d6d78",
+    "mode": "100644"
+   }
+  ],
+  "mismatches": []
+ }
+}

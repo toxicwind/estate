@@ -1,0 +1,107 @@
+{
+  "binary": "/opt/hatch/bin/hatch",
+  "build_id": "a733660761e017bf523cc4be3e467cddf3c4e639",
+  "names": {
+    "JARVIS_ALLOW_DIRECT_COMMAND_EXEC": {
+      "section": ".rodata.cst32",
+      "sites": [
+        {
+          "default": 32,
+          "name_len_hint": null,
+          "reader": "qword ptr [rip + 0x4f3367e]",
+          "va": "0xf5cef5d"
+        }
+      ]
+    },
+    "JARVIS_COMPACTION_HEARTBEAT_SECS": {
+      "section": ".rodata.cst32",
+      "sites": [
+        {
+          "default": 30,
+          "name_len_hint": 32,
+          "reader": "0x59f81f0",
+          "va": "0x72086d6"
+        },
+        {
+          "default": 30,
+          "name_len_hint": 32,
+          "reader": "0x59f81f0",
+          "va": "0x109da2e1"
+        }
+      ]
+    },
+    "JARVIS_DAEMON_HEALTH_DELETE_SOCK": {
+      "section": ".rodata.cst32",
+      "sites": [
+        {
+          "default": null,
+          "name_len_hint": 32,
+          "reader": "0xd729930",
+          "va": "0xdc18f1f"
+        }
+      ]
+    },
+    "JARVIS_DEFAULT_MAX_TRAINING_TIER": {
+      "section": ".rodata.cst32",
+      "sites": [
+        {
+          "default": 32,
+          "name_len_hint": null,
+          "reader": "qword ptr [rip + 0x2c60e70]",
+          "va": "0x118a1766"
+        }
+      ]
+    },
+    "JARVIS_IPNEXT_REPETITION_PENALTY": {
+      "section": ".rodata.cst32",
+      "sites": [
+        {
+          "default": null,
+          "name_len_hint": 32,
+          "reader": "0x9932ab0",
+          "va": "0x995dadc"
+        }
+      ]
+    },
+    "JARVIS_MODEL_IDENTITY_VISIBILITY": {
+      "section": ".rodata.cst32",
+      "sites": [
+        {
+          "default": 32,
+          "name_len_hint": null,
+          "reader": "qword ptr [rip + 0xabcb48d]",
+          "va": "0x993714e"
+        },
+        {
+          "default": 32,
+          "name_len_hint": null,
+          "reader": "qword ptr [rip + 0x7ea7dc5]",
+          "va": "0xc65a811"
+        }
+      ]
+    },
+    "JARVIS_VM_ENV_ID": {
+      "section": ".rodata.cst16",
+      "sites": [
+        {
+          "default": 16,
+          "name_len_hint": null,
+          "reader": "qword ptr [rip + 0x6cb4fb2]",
+          "va": "0xd84d624"
+        }
+      ]
+    },
+    "JARVIS_VOICE_GENUI_DECISION_SOCK": {
+      "section": ".rodata.cst32",
+      "sites": [
+        {
+          "default": null,
+          "name_len_hint": 32,
+          "reader": "0xd729930",
+          "va": "0xdc18efb"
+        }
+      ]
+    }
+  },
+  "shape": "E"
+}

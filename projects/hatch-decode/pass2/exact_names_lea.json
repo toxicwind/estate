@@ -1,0 +1,1111 @@
+{
+ "JARVIS_ACCEPTED_TURN_FIRST_PROGRESS_TIMEOUT_MS": {
+  "len": 46,
+  "sites": [
+   "0x65ca130"
+  ],
+  "votes": 1
+ },
+ "JARVIS_ACTIVITY_MONITOR_TIMEOUT_MS": {
+  "len": 34,
+  "sites": [
+   "0x98cb9ff"
+  ],
+  "votes": 1
+ },
+ "JARVIS_AGENT_RECOVERY_OWNER_PURGE_LIMIT": {
+  "len": 39,
+  "sites": [
+   "0xdc95a08"
+  ],
+  "votes": 1
+ },
+ "JARVIS_AGENT_RECOVERY_OWNER_RECONCILE_LIMIT": {
+  "len": 43,
+  "sites": [
+   "0xdc95a25"
+  ],
+  "votes": 1
+ },
+ "JARVIS_AGENT_RECOVERY_OWNER_RETENTION_SECS": {
+  "len": 42,
+  "sites": [
+   "0xdc955d2"
+  ],
+  "votes": 1
+ },
+ "JARVIS_ALLOW_DIRECT_COMMAND_EXEC": {
+  "len": 32,
+  "sites": [
+   "0x11241cfe"
+  ],
+  "votes": 1
+ },
+ "JARVIS_ANTHROPIC_TIMEOUT_MS": {
+  "len": 27,
+  "sites": [
+   "0x9a61949"
+  ],
+  "votes": 1
+ },
+ "JARVIS_AUDIO_TRANSCRIPTION_COLD_TIMEOUT_MS": {
+  "len": 42,
+  "sites": [
+   "0x715c579",
+   "0xb8b9d89"
+  ],
+  "votes": 2
+ },
+ "JARVIS_AUDIO_TRANSCRIPTION_PREWARM_DELAY_MS": {
+  "len": 43,
+  "sites": [
+   "0xe0ae2c9"
+  ],
+  "votes": 1
+ },
+ "JARVIS_AUDIO_TRANSCRIPTION_PREWARM_TIMEOUT_MS": {
+  "len": 45,
+  "sites": [
+   "0xf09ceaf"
+  ],
+  "votes": 1
+ },
+ "JARVIS_AUDIO_TRANSCRIPTION_TIMEOUT_MS": {
+  "len": 37,
+  "sites": [
+   "0x9676242"
+  ],
+  "votes": 1
+ },
+ "JARVIS_AUTHD_SOCK": {
+  "len": 17,
+  "sites": [
+   "0x10aebce3"
+  ],
+  "votes": 1
+ },
+ "JARVIS_AUTHD_SOCKET": {
+  "len": 19,
+  "sites": [
+   "0xe0d60a1",
+   "0xe0d60ca"
+  ],
+  "votes": 2
+ },
+ "JARVIS_AVATAR_MEDIA_ORIENTATION": {
+  "len": 31,
+  "sites": [
+   "0x6174497"
+  ],
+  "votes": 1
+ },
+ "JARVIS_AVOCADO_COMPACTION_TRIGGER_TOKENS": {
+  "len": 40,
+  "sites": [
+   "0x993705c"
+  ],
+  "votes": 1
+ },
+ "JARVIS_AVOCADO_CONTEXT_WINDOW_TOKENS": {
+  "len": 36,
+  "sites": [
+   "0x993703c"
+  ],
+  "votes": 1
+ },
+ "JARVIS_BIN_DIR": {
+  "len": 14,
+  "sites": [
+   "0xf5d0b57"
+  ],
+  "votes": 1
+ },
+ "JARVIS_CAGI_PROXY_SOCK": {
+  "len": 22,
+  "sites": [
+   "0x10dd748f"
+  ],
+  "votes": 1
+ },
+ "JARVIS_CD_CHANNEL": {
+  "len": 17,
+  "sites": [
+   "0xdff1836"
+  ],
+  "votes": 1
+ },
+ "JARVIS_CHECKOUT_SPEND_SOCK": {
+  "len": 26,
+  "sites": [
+   "0xf545f00"
+  ],
+  "votes": 1
+ },
+ "JARVIS_COMMENTARY_END_TURN_MERGE_TIMEOUT_MS": {
+  "len": 43,
+  "sites": [
+   "0x65ca0f0"
+  ],
+  "votes": 1
+ },
+ "JARVIS_COMPACTION_HEARTBEAT_SECS": {
+  "len": 32,
+  "sites": [
+   "0x10acfeee",
+   "0x80428c0"
+  ],
+  "votes": 2
+ },
+ "JARVIS_CONNECTION_PRESENCE_ACTIVE_TTL_SECS": {
+  "len": 42,
+  "sites": [
+   "0xe293557"
+  ],
+  "votes": 1
+ },
+ "JARVIS_CONVERSATION_SHARE_REVIEW_TEST_FAULT": {
+  "len": 43,
+  "sites": [
+   "0xf5286dd"
+  ],
+  "votes": 1
+ },
+ "JARVIS_CONVERSATION_SHARE_REVIEW_TEST_LIFECYCLE": {
+  "len": 47,
+  "sites": [
+   "0xf52898d"
+  ],
+  "votes": 1
+ },
+ "JARVIS_CREDIT_WATCHER_SOCK": {
+  "len": 26,
+  "sites": [
+   "0x9f6c371"
+  ],
+  "votes": 1
+ },
+ "JARVIS_CRON_MODEL_STREAM_FIRST_CHUNK_TIMEOUT_MS": {
+  "len": 47,
+  "sites": [
+   "0x65ca150"
+  ],
+  "votes": 1
+ },
+ "JARVIS_DAEMON_BROWSER_CONTROL_SOCK": {
+  "len": 34,
+  "sites": [
+   "0xf54425b"
+  ],
+  "votes": 1
+ },
+ "JARVIS_DAEMON_HEALTH_DELETE_SOCK": {
+  "len": 32,
+  "sites": [
+   "0xf545f68"
+  ],
+  "votes": 1
+ },
+ "JARVIS_DAEMON_PRESENT_WIDGET_SOCK": {
+  "len": 33,
+  "sites": [
+   "0xf545f20"
+  ],
+  "votes": 1
+ },
+ "JARVIS_DB_OPERATION_APPLICATION_NAME_TAGGING": {
+  "len": 44,
+  "sites": [
+   "0x93d145e"
+  ],
+  "votes": 1
+ },
+ "JARVIS_DEFAULT_MAX_TRAINING_TIER": {
+  "len": 32,
+  "sites": [
+   "0x1192bf16"
+  ],
+  "votes": 1
+ },
+ "JARVIS_DEFAULT_REQUEST_MODE": {
+  "len": 27,
+  "sites": [
+   "0x1192be71"
+  ],
+  "votes": 1
+ },
+ "JARVIS_DISABLE_NATIVE_FILESYSTEM_WATCHER": {
+  "len": 40,
+  "sites": [
+   "0xb03ea6e"
+  ],
+  "votes": 1
+ },
+ "JARVIS_DISABLE_SCHEDULER_LOOP": {
+  "len": 29,
+  "sites": [
+   "0xf0ae7ca"
+  ],
+  "votes": 1
+ },
+ "JARVIS_DISABLE_SELF_IMPROVEMENT_BASELINE": {
+  "len": 40,
+  "sites": [
+   "0x10cbb9b3",
+   "0x10cd110a",
+   "0x10eeb2ce",
+   "0x10eeb405",
+   "0x11229c94",
+   "0xbcf7bd4"
+  ],
+  "votes": 22
+ },
+ "JARVIS_EGRESS_APPROVAL_ADMIN_SOCK": {
+  "len": 33,
+  "sites": [
+   "0x1187b5c1"
+  ],
+  "votes": 1
+ },
+ "JARVIS_EGRESS_APPROVAL_EVENTS_SOCK": {
+  "len": 34,
+  "sites": [
+   "0xf54408d"
+  ],
+  "votes": 1
+ },
+ "JARVIS_ENV_FILE": {
+  "len": 15,
+  "sites": [
+   "0x9a6128f",
+   "0x9a66dbf"
+  ],
+  "votes": 2
+ },
+ "JARVIS_ENV_ID": {
+  "len": 13,
+  "sites": [
+   "0xf1c62ae"
+  ],
+  "votes": 1
+ },
+ "JARVIS_EVAL_REQUIRE_S2S_CONTEXT_SUMMARY": {
+  "len": 39,
+  "sites": [
+   "0x10cd10f5",
+   "0xbd1d7d5",
+   "0xd9915c8",
+   "0xf11134c"
+  ],
+  "votes": 4
+ },
+ "JARVIS_EVAL_SIDECAR": {
+  "len": 19,
+  "sites": [
+   "0xf0d8225",
+   "0xf5286a7",
+   "0xf528957"
+  ],
+  "votes": 3
+ },
+ "JARVIS_EXECD_SOCKET": {
+  "len": 19,
+  "sites": [
+   "0xf48b9e6"
+  ],
+  "votes": 1
+ },
+ "JARVIS_FQDN": {
+  "len": 11,
+  "sites": [
+   "0x116e9e31",
+   "0x116ec321"
+  ],
+  "votes": 2
+ },
+ "JARVIS_HATCHLING_ID": {
+  "len": 19,
+  "sites": [
+   "0x9fc962b"
+  ],
+  "votes": 1
+ },
+ "JARVIS_HOME": {
+  "len": 11,
+  "sites": [
+   "0x11873701"
+  ],
+  "votes": 1
+ },
+ "JARVIS_HTTP_API_SOCKET": {
+  "len": 22,
+  "sites": [
+   "0xf543c5e"
+  ],
+  "votes": 1
+ },
+ "JARVIS_IDEAS_EVENTS_RETENTION_SECS": {
+  "len": 34,
+  "sites": [
+   "0xdb0bb56"
+  ],
+  "votes": 1
+ },
+ "JARVIS_IDEA_DOCTOR_ENRICHED_EVIDENCE_ENABLED": {
+  "len": 44,
+  "sites": [
+   "0xe111fd7"
+  ],
+  "votes": 1
+ },
+ "JARVIS_IDEA_DOCTOR_INFERENCE_TIMEOUT_SECS": {
+  "len": 41,
+  "sites": [
+   "0xe021ae9"
+  ],
+  "votes": 1
+ },
+ "JARVIS_IDEA_DOCTOR_MAX_JUDGED_PER_RUN": {
+  "len": 37,
+  "sites": [
+   "0xdc83026"
+  ],
+  "votes": 1
+ },
+ "JARVIS_IDEA_RECONCILE_MAX_AGE_SECS": {
+  "len": 34,
+  "sites": [
+   "0xdc81216"
+  ],
+  "votes": 1
+ },
+ "JARVIS_IDEA_RECONCILE_REACTION_GRACE_SECS": {
+  "len": 41,
+  "sites": [
+   "0xdc812cf"
+  ],
+  "votes": 1
+ },
+ "JARVIS_INFERENCE_HOSTNAME": {
+  "len": 25,
+  "sites": [
+   "0xf1c62f8"
+  ],
+  "votes": 1
+ },
+ "JARVIS_INFERENCE_PROXY_SOCK": {
+  "len": 27,
+  "sites": [
+   "0x10bfdf23"
+  ],
+  "votes": 1
+ },
+ "JARVIS_INFERENCE_READINESS_PROBE_INTERVAL_MS": {
+  "len": 44,
+  "sites": [
+   "0xb03d78d"
+  ],
+  "votes": 1
+ },
+ "JARVIS_IPNEXT_FREQUENCY_PENALTY": {
+  "len": 31,
+  "sites": [
+   "0x9838610"
+  ],
+  "votes": 1
+ },
+ "JARVIS_IPNEXT_MIN_P": {
+  "len": 19,
+  "sites": [
+   "0x98385a9"
+  ],
+  "votes": 1
+ },
+ "JARVIS_IPNEXT_PRESENCE_PENALTY": {
+  "len": 30,
+  "sites": [
+   "0x98385f6"
+  ],
+  "votes": 1
+ },
+ "JARVIS_IPNEXT_REASONING_EFFORT": {
+  "len": 30,
+  "sites": [
+   "0x98cc14a"
+  ],
+  "votes": 1
+ },
+ "JARVIS_IPNEXT_REPETITION_PENALTY": {
+  "len": 32,
+  "sites": [
+   "0x98385dc"
+  ],
+  "votes": 1
+ },
+ "JARVIS_IPNEXT_SEED": {
+  "len": 18,
+  "sites": [
+   "0x98385c4"
+  ],
+  "votes": 1
+ },
+ "JARVIS_IPNEXT_TEMPERATURE": {
+  "len": 25,
+  "sites": [
+   "0x983854f"
+  ],
+  "votes": 1
+ },
+ "JARVIS_IPNEXT_TOP_K": {
+  "len": 19,
+  "sites": [
+   "0x983858d"
+  ],
+  "votes": 1
+ },
+ "JARVIS_IPNEXT_TOP_P": {
+  "len": 19,
+  "sites": [
+   "0x983856c"
+  ],
+  "votes": 1
+ },
+ "JARVIS_IPNEXT_TRACE_DIR": {
+  "len": 23,
+  "sites": [
+   "0x9901369"
+  ],
+  "votes": 1
+ },
+ "JARVIS_IPNEXT_TRACE_LOG": {
+  "len": 23,
+  "sites": [
+   "0x99010e7"
+  ],
+  "votes": 1
+ },
+ "JARVIS_LOCAL_CLI_REQUEST_ID": {
+  "len": 27,
+  "sites": [
+   "0x118b5b91"
+  ],
+  "votes": 1
+ },
+ "JARVIS_MAGIC_MOMENT_GK_FORCE": {
+  "len": 28,
+  "sites": [
+   "0xbb7077b"
+  ],
+  "votes": 1
+ },
+ "JARVIS_MAX_COMPANION_LIFETIME_SECS": {
+  "len": 34,
+  "sites": [
+   "0xf511269"
+  ],
+  "votes": 1
+ },
+ "JARVIS_MAX_TRAINING_TIER": {
+  "len": 24,
+  "sites": [
+   "0x11873a3b"
+  ],
+  "votes": 1
+ },
+ "JARVIS_MEDIA_PUBLIC_BASE_URL": {
+  "len": 28,
+  "sites": [
+   "0x9c7bd11"
+  ],
+  "votes": 1
+ },
+ "JARVIS_MEMORY_FLUSH_PERIODIC_THRESHOLD_TOKENS": {
+  "len": 45,
+  "sites": [
+   "0x841b3f1"
+  ],
+  "votes": 1
+ },
+ "JARVIS_MEMORY_TEST_MODELS": {
+  "len": 25,
+  "sites": [
+   "0x9f4820c"
+  ],
+  "votes": 1
+ },
+ "JARVIS_MESSAGE_EVENT_STREAM_IDLE_TIMEOUT_MS": {
+  "len": 43,
+  "sites": [
+   "0x65ca110"
+  ],
+  "votes": 1
+ },
+ "JARVIS_METRICS_SOCKET": {
+  "len": 21,
+  "sites": [
+   "0xf543eec"
+  ],
+  "votes": 1
+ },
+ "JARVIS_MODEL_IDENTITY_VISIBILITY": {
+  "len": 32,
+  "sites": [
+   "0x98c877e",
+   "0xc6c1571"
+  ],
+  "votes": 2
+ },
+ "JARVIS_MODEL_ID_OVERRIDE": {
+  "len": 24,
+  "sites": [
+   "0x98cbc55"
+  ],
+  "votes": 1
+ },
+ "JARVIS_MODEL_STREAM_CHUNK_IDLE_TIMEOUT_MS": {
+  "len": 41,
+  "sites": [
+   "0x65ca0b0",
+   "0x65ca190"
+  ],
+  "votes": 2
+ },
+ "JARVIS_MODEL_STREAM_FIRST_CHUNK_TIMEOUT_MS": {
+  "len": 42,
+  "sites": [
+   "0x65ca0d0"
+  ],
+  "votes": 1
+ },
+ "JARVIS_NAVIGATION_GK_FORCE": {
+  "len": 26,
+  "sites": [
+   "0x724a72e",
+   "0x8034a92",
+   "0xba7cc6e",
+   "0xd659d52"
+  ],
+  "votes": 4
+ },
+ "JARVIS_ONBOARDING_CURATED_IDEAS": {
+  "len": 31,
+  "sites": [
+   "0x97c8f4e"
+  ],
+  "votes": 1
+ },
+ "JARVIS_PHONE_GK_FORCE": {
+  "len": 21,
+  "sites": [
+   "0x69080f7",
+   "0x747f73e",
+   "0x81100fe",
+   "0x829dd45",
+   "0xbe6074e",
+   "0xd83e06e"
+  ],
+  "votes": 6
+ },
+ "JARVIS_POST_INFERENCE_TERMINALIZATION_TIMEOUT_MS": {
+  "len": 48,
+  "sites": [
+   "0x65ca170"
+  ],
+  "votes": 1
+ },
+ "JARVIS_POST_TOOL_CONTINUATION_TIMEOUT_MS": {
+  "len": 40,
+  "sites": [
+   "0x65ca090"
+  ],
+  "votes": 1
+ },
+ "JARVIS_PRE_INFERENCE_STEP_TIMEOUT_MS": {
+  "len": 36,
+  "sites": [
+   "0x65ca050"
+  ],
+  "votes": 1
+ },
+ "JARVIS_PROMPT_HOT_SWAP_DIR": {
+  "len": 26,
+  "sites": [
+   "0xa4e0072"
+  ],
+  "votes": 1
+ },
+ "JARVIS_PROMPT_PROFILE": {
+  "len": 21,
+  "sites": [
+   "0x119955a8"
+  ],
+  "votes": 1
+ },
+ "JARVIS_PUBLIC_BASE_URL": {
+  "len": 22,
+  "sites": [
+   "0x9c7bd85"
+  ],
+  "votes": 1
+ },
+ "JARVIS_REALTIME_SOCKET": {
+  "len": 22,
+  "sites": [
+   "0xf544219"
+  ],
+  "votes": 1
+ },
+ "JARVIS_RELEASE_ID": {
+  "len": 17,
+  "sites": [
+   "0xdfdb0c8"
+  ],
+  "votes": 1
+ },
+ "JARVIS_REQUEST_ID": {
+  "len": 17,
+  "sites": [
+   "0xe0d60f8"
+  ],
+  "votes": 1
+ },
+ "JARVIS_REQUEST_MODE": {
+  "len": 19,
+  "sites": [
+   "0x118738f1"
+  ],
+  "votes": 1
+ },
+ "JARVIS_RESUMED_TURN_INFERENCE_READINESS_TIMEOUT_MS": {
+  "len": 50,
+  "sites": [
+   "0x65ca1b0"
+  ],
+  "votes": 1
+ },
+ "JARVIS_ROOT": {
+  "len": 11,
+  "sites": [
+   "0x117d7b8a"
+  ],
+  "votes": 1
+ },
+ "JARVIS_RUNTIME_WORK_DB_PURGE_LIMIT": {
+  "len": 34,
+  "sites": [
+   "0xe0a11b9"
+  ],
+  "votes": 1
+ },
+ "JARVIS_RUNTIME_WORK_DB_TERMINAL_RETENTION_SECS": {
+  "len": 46,
+  "sites": [
+   "0xe0a21a9"
+  ],
+  "votes": 1
+ },
+ "JARVIS_RUNTIME_WORK_MODE": {
+  "len": 24,
+  "sites": [
+   "0xc5aae51"
+  ],
+  "votes": 1
+ },
+ "JARVIS_RUNTIME_WORK_STALE_AFTER_SECS": {
+  "len": 36,
+  "sites": [
+   "0xe0a1039"
+  ],
+  "votes": 1
+ },
+ "JARVIS_RUNTIME_WORK_SUPERVISOR_INTERVAL_SECS": {
+  "len": 44,
+  "sites": [
+   "0xe0a2029"
+  ],
+  "votes": 1
+ },
+ "JARVIS_RUNTIME_WORK_TERMINAL_RETENTION_SECS": {
+  "len": 43,
+  "sites": [
+   "0xe0a1ec7"
+  ],
+  "votes": 1
+ },
+ "JARVIS_RUNTIME_WORK_TOOL_DISPATCH_STALE_AFTER_SECS": {
+  "len": 50,
+  "sites": [
+   "0xe0a2329"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SAFETY_MODEL": {
+  "len": 19,
+  "sites": [
+   "0x6b8a8f7"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SANDBOX_API_SOCK": {
+  "len": 23,
+  "sites": [
+   "0xf4ac794"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SELF_IMPROVEMENT_BACKFILL_DAYS_RETENTION_SECS": {
+  "len": 52,
+  "sites": [
+   "0xdb099db"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SELF_IMPROVEMENT_CONNECTOR_AUDIT_RETENTION_SECS": {
+  "len": 54,
+  "sites": [
+   "0xdb097c2"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SELF_IMPROVEMENT_DB_PURGE_LIMIT": {
+  "len": 38,
+  "sites": [
+   "0xdb08c8e"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SELF_IMPROVEMENT_DB_TERMINAL_RETENTION_SECS": {
+  "len": 50,
+  "sites": [
+   "0xdb08cb3"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SELF_IMPROVEMENT_IDLE_ENABLED": {
+  "len": 36,
+  "sites": [
+   "0xa4d7f81"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SELF_IMPROVEMENT_IDLE_MIN_EXCHANGE_PAIRS": {
+  "len": 47,
+  "sites": [
+   "0xa4d83ca"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SELF_IMPROVEMENT_IDLE_PER_DAY_CEILING": {
+  "len": 44,
+  "sites": [
+   "0xa4d83ad"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SELF_IMPROVEMENT_IDLE_QUIET_WINDOW_SECS": {
+  "len": 46,
+  "sites": [
+   "0xa4d8254"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SELF_IMPROVEMENT_LEARNINGS_RETIRED_RETENTION_SECS": {
+  "len": 56,
+  "sites": [
+   "0xdb098cd"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SELF_IMPROVEMENT_RECORDS_RETENTION_SECS": {
+  "len": 46,
+  "sites": [
+   "0xdb096c1"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SENTINEL_HTTP_API_SOCKET": {
+  "len": 31,
+  "sites": [
+   "0x10e4c3c7",
+   "0xbce2360",
+   "0xc8ded9f",
+   "0xdcc95ef",
+   "0xdcc9690",
+   "0xdcc9751"
+  ],
+  "votes": 6
+ },
+ "JARVIS_SESSION_ID": {
+  "len": 17,
+  "sites": [
+   "0x10dd74cc"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SPACES_COMPLETION_CHECKS": {
+  "len": 31,
+  "sites": [
+   "0x827ae98"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SPACES_INTERNAL_REQUEST_QUEUE_TIMEOUT_MS": {
+  "len": 47,
+  "sites": [
+   "0xe0af67a"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SPACES_MAX_CONCURRENT_REQUESTS": {
+  "len": 37,
+  "sites": [
+   "0xe0af61e"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SPACES_MAX_QUEUED_REQUESTS": {
+  "len": 33,
+  "sites": [
+   "0xe0af642"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SPACES_USER_FACING_REQUEST_QUEUE_TIMEOUT_MS": {
+  "len": 50,
+  "sites": [
+   "0xe0af65e"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SPACES_WORKER_IDLE_TIMEOUT_SECS": {
+  "len": 38,
+  "sites": [
+   "0xe0af585"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SPACES_WORKER_REQUEST_TIMEOUT_MS": {
+  "len": 39,
+  "sites": [
+   "0xe0af5d1"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SPACES_WORKER_STARTUP_TIMEOUT_MS": {
+  "len": 39,
+  "sites": [
+   "0xe0af5a8"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SPACE_INFERENCE_SOCKET": {
+  "len": 29,
+  "sites": [
+   "0xb038a1d",
+   "0xf46654c"
+  ],
+  "votes": 2
+ },
+ "JARVIS_SPACE_MEDIA_SOCKET": {
+  "len": 25,
+  "sites": [
+   "0xb03c975",
+   "0xf46677c"
+  ],
+  "votes": 2
+ },
+ "JARVIS_SPACE_PRIVILEGED_SOCKET": {
+  "len": 30,
+  "sites": [
+   "0xb03c1b3",
+   "0xf4667ed"
+  ],
+  "votes": 2
+ },
+ "JARVIS_SPACE_SHARE_SOCKET": {
+  "len": 25,
+  "sites": [
+   "0xf54521d"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SPACE_WEB_SEARCH_SOCKET": {
+  "len": 30,
+  "sites": [
+   "0xb03ba7f",
+   "0xf46670b"
+  ],
+  "votes": 2
+ },
+ "JARVIS_STALE_COMPLETED_UNSEEN_SUBAGENT_CRON_GRACE_SECS": {
+  "len": 54,
+  "sites": [
+   "0xdafec45"
+  ],
+  "votes": 1
+ },
+ "JARVIS_STALE_COMPLETED_UNSEEN_SUBAGENT_NON_CRON_TERMINAL_GRACE_SECS": {
+  "len": 67,
+  "sites": [
+   "0xdafecc6"
+  ],
+  "votes": 1
+ },
+ "JARVIS_STALE_COMPLETED_UNSEEN_SUBAGENT_PRUNE_BATCH_LIMIT": {
+  "len": 56,
+  "sites": [
+   "0xdafed21"
+  ],
+  "votes": 1
+ },
+ "JARVIS_STALE_COMPLETED_UNSEEN_SUBAGENT_RECENT_DECISION_GRACE_SECS": {
+  "len": 65,
+  "sites": [
+   "0xdafecf5"
+  ],
+  "votes": 1
+ },
+ "JARVIS_STEFI_PROXY_SOCK": {
+  "len": 23,
+  "sites": [
+   "0x10b18457",
+   "0x10fc4d66"
+  ],
+  "votes": 2
+ },
+ "JARVIS_SUBAGENT_CONTROL_OP_TIMEOUT_MS": {
+  "len": 37,
+  "sites": [
+   "0x65ca070"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SUBPROCESS_EXECUTOR": {
+  "len": 26,
+  "sites": [
+   "0xf48b964"
+  ],
+  "votes": 1
+ },
+ "JARVIS_SUMMARIZATION_RECHECK_STALE_SECS": {
+  "len": 39,
+  "sites": [
+   "0xf59963b"
+  ],
+  "votes": 1
+ },
+ "JARVIS_TARGET_COMMITISH": {
+  "len": 23,
+  "sites": [
+   "0xdfdb0e1"
+  ],
+  "votes": 1
+ },
+ "JARVIS_TELEMETRY_PROXY_SOCK": {
+  "len": 27,
+  "sites": [
+   "0x9f81ed1"
+  ],
+  "votes": 1
+ },
+ "JARVIS_TOOL_CALL_ID": {
+  "len": 19,
+  "sites": [
+   "0x118b59a9"
+  ],
+  "votes": 1
+ },
+ "JARVIS_TOOL_DISPATCH_HEARTBEAT_SECS": {
+  "len": 35,
+  "sites": [
+   "0x64e43ed",
+   "0x7032c89",
+   "0xbd7c1f5"
+  ],
+  "votes": 3
+ },
+ "JARVIS_TOOL_DISPATCH_TIMEOUT_MS": {
+  "len": 31,
+  "sites": [
+   "0x65ca030"
+  ],
+  "votes": 1
+ },
+ "JARVIS_TOOL_SETTLE_LOCK_OBSERVE_SECS": {
+  "len": 36,
+  "sites": [
+   "0x6174ca7"
+  ],
+  "votes": 1
+ },
+ "JARVIS_TRACE_CONTEXT": {
+  "len": 20,
+  "sites": [
+   "0x118b5da6"
+  ],
+  "votes": 1
+ },
+ "JARVIS_USER_TIMEZONE": {
+  "len": 20,
+  "sites": [
+   "0x118b012d"
+  ],
+  "votes": 1
+ },
+ "JARVIS_VAR_LIB_DIR": {
+  "len": 18,
+  "sites": [
+   "0xc93aacb"
+  ],
+  "votes": 1
+ },
+ "JARVIS_VM_COMPUTE_REGION": {
+  "len": 24,
+  "sites": [
+   "0xc6a8691",
+   "0xd9e99a2"
+  ],
+  "votes": 2
+ },
+ "JARVIS_VM_DATA_REGION": {
+  "len": 21,
+  "sites": [
+   "0xc6a86b2"
+  ],
+  "votes": 1
+ },
+ "JARVIS_VM_ENV_ID": {
+  "len": 16,
+  "sites": [
+   "0xf1c6264"
+  ],
+  "votes": 1
+ },
+ "JARVIS_VOICE_GENUI_DECISION_SOCK": {
+  "len": 32,
+  "sites": [
+   "0xf545f44"
+  ],
+  "votes": 1
+ },
+ "JARVIS_VOICE_RTC_MEDIA_PORT": {
+  "len": 27,
+  "sites": [
+   "0xe133038"
+  ],
+  "votes": 1
+ },
+ "JARVIS_VOICE_TIER_BYPASS": {
+  "len": 24,
+  "sites": [
+   "0x98cc240"
+  ],
+  "votes": 1
+ },
+ "JARVIS_WASA_KEYD_SOCK": {
+  "len": 21,
+  "sites": [
+   "0x89ea654"
+  ],
+  "votes": 1
+ }
+}

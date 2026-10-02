@@ -1,0 +1,282 @@
+[
+ {
+  "name": "JARVIS_TOOL_DISPATCH_HEARTBEAT_SECS",
+  "len": 35,
+  "default": 60,
+  "reader": "call_65f2a8c",
+  "str_va": "0x2f4a491",
+  "chunk": "0x64e43ed"
+ },
+ {
+  "name": "JARVIS_TOOL_DISPATCH_TIMEOUT_MS",
+  "len": 31,
+  "default": 180000,
+  "reader": "jmp_65c9c7c",
+  "str_va": "0x2f41a36",
+  "chunk": "0x65ca030"
+ },
+ {
+  "name": "JARVIS_PRE_INFERENCE_STEP_TIMEOUT_MS",
+  "len": 36,
+  "default": 10000,
+  "reader": "jmp_65c9c7c",
+  "str_va": "0x2f41a55",
+  "chunk": "0x65ca050"
+ },
+ {
+  "name": "JARVIS_SUBAGENT_CONTROL_OP_TIMEOUT_MS",
+  "len": 37,
+  "default": 90000,
+  "reader": "jmp_65c9c7c",
+  "str_va": "0x2f418af",
+  "chunk": "0x65ca070"
+ },
+ {
+  "name": "JARVIS_POST_TOOL_CONTINUATION_TIMEOUT_MS",
+  "len": 40,
+  "default": 30000,
+  "reader": "jmp_65c9c7c",
+  "str_va": "0x2f418d4",
+  "chunk": "0x65ca090"
+ },
+ {
+  "name": "JARVIS_MODEL_STREAM_CHUNK_IDLE_TIMEOUT_MS",
+  "len": 41,
+  "default": 90000,
+  "reader": "jmp_65c9c7c",
+  "str_va": "0x2f419e2",
+  "chunk": "0x65ca0b0"
+ },
+ {
+  "name": "JARVIS_MODEL_STREAM_FIRST_CHUNK_TIMEOUT_MS",
+  "len": 42,
+  "default": 600000,
+  "reader": "jmp_65c9c7c",
+  "str_va": "0x2f41989",
+  "chunk": "0x65ca0d0"
+ },
+ {
+  "name": "JARVIS_COMMENTARY_END_TURN_MERGE_TIMEOUT_MS",
+  "len": 43,
+  "default": 60000,
+  "reader": "jmp_65c9c7c",
+  "str_va": "0x2f41a0b",
+  "chunk": "0x65ca0f0"
+ },
+ {
+  "name": "JARVIS_MESSAGE_EVENT_STREAM_IDLE_TIMEOUT_MS",
+  "len": 43,
+  "default": 90000,
+  "reader": "jmp_65c9c7c",
+  "str_va": "0x2f4195e",
+  "chunk": "0x65ca110"
+ },
+ {
+  "name": "JARVIS_ACCEPTED_TURN_FIRST_PROGRESS_TIMEOUT_MS",
+  "len": 46,
+  "default": 90000,
+  "reader": "jmp_65c9c7c",
+  "str_va": "0x2f41881",
+  "chunk": "0x65ca130"
+ },
+ {
+  "name": "JARVIS_CRON_MODEL_STREAM_FIRST_CHUNK_TIMEOUT_MS",
+  "len": 47,
+  "default": 1800000,
+  "reader": "jmp_65c9c7c",
+  "str_va": "0x2f419b3",
+  "chunk": "0x65ca150"
+ },
+ {
+  "name": "JARVIS_POST_INFERENCE_TERMINALIZATION_TIMEOUT_MS",
+  "len": 48,
+  "default": 30000,
+  "reader": "jmp_65c9c7c",
+  "str_va": "0x2f418fc",
+  "chunk": "0x65ca170"
+ },
+ {
+  "name": "JARVIS_MODEL_STREAM_CHUNK_IDLE_TIMEOUT_MS",
+  "len": 41,
+  "default": 180000,
+  "reader": "jmp_65c9c7c",
+  "str_va": "0x2f419e2",
+  "chunk": "0x65ca190"
+ },
+ {
+  "name": "JARVIS_RESUMED_TURN_INFERENCE_READINESS_TIMEOUT_MS",
+  "len": 50,
+  "default": 90000,
+  "reader": "jmp_65c9c7c",
+  "str_va": "0x2f4192c",
+  "chunk": "0x65ca1b0"
+ },
+ {
+  "name": "JARVIS_AUDIO_TRANSCRIPTION_TIMEOUT_MS",
+  "len": 37,
+  "default": 4000,
+  "reader": "call_5ac4d9c",
+  "str_va": "0x2e54012",
+  "chunk": "0x715c560"
+ },
+ {
+  "name": "JARVIS_AUDIO_TRANSCRIPTION_COLD_TIMEOUT_MS",
+  "len": 42,
+  "default": 15000,
+  "reader": "call_5ac4d9c",
+  "str_va": "0x2e54037",
+  "chunk": "0x715c579"
+ },
+ {
+  "name": "JARVIS_COMPACTION_HEARTBEAT_SECS",
+  "len": 32,
+  "default": 30,
+  "reader": "call_65f2a8c",
+  "str_va": "0x487dae0",
+  "chunk": "0x80428c0"
+ },
+ {
+  "name": "JARVIS_AUDIO_TRANSCRIPTION_TIMEOUT_MS",
+  "len": 37,
+  "default": 4000,
+  "reader": "call_5ac4d9c",
+  "str_va": "0x2e54012",
+  "chunk": "0xb8b9d70"
+ },
+ {
+  "name": "JARVIS_AUDIO_TRANSCRIPTION_COLD_TIMEOUT_MS",
+  "len": 42,
+  "default": 15000,
+  "reader": "call_5ac4d9c",
+  "str_va": "0x2e54037",
+  "chunk": "0xb8b9d89"
+ },
+ {
+  "name": "JARVIS_TOOL_DISPATCH_HEARTBEAT_SECS",
+  "len": 35,
+  "default": 60,
+  "reader": "call_65f2a8c",
+  "str_va": "0x2f4a491",
+  "chunk": "0xbd7c1f5"
+ },
+ {
+  "name": "JARVIS_STALE_COMPLETED_UNSEEN_SUBAGENT_CRON_GRACE_SECS",
+  "len": 54,
+  "default": 21600,
+  "reader": "call_e1135fc",
+  "str_va": "0x39bb524",
+  "chunk": "0xdafec45"
+ },
+ {
+  "name": "JARVIS_STALE_COMPLETED_UNSEEN_SUBAGENT_NON_CRON_TERMINAL_GRACE_SECS",
+  "len": 67,
+  "default": 604800,
+  "reader": "call_e1135fc",
+  "str_va": "0x39bb55a",
+  "chunk": "0xdafecc6"
+ },
+ {
+  "name": "JARVIS_STALE_COMPLETED_UNSEEN_SUBAGENT_RECENT_DECISION_GRACE_SECS",
+  "len": 65,
+  "default": 3600,
+  "reader": "call_e1135fc",
+  "str_va": "0x39bb59d",
+  "chunk": "0xdafecf5"
+ },
+ {
+  "name": "JARVIS_SELF_IMPROVEMENT_DB_PURGE_LIMIT",
+  "len": 38,
+  "default": 500,
+  "reader": "call_e115cec",
+  "str_va": "0x39bb823",
+  "chunk": "0xdb08c8e"
+ },
+ {
+  "name": "JARVIS_SELF_IMPROVEMENT_DB_TERMINAL_RETENTION_SECS",
+  "len": 50,
+  "default": 2592000,
+  "reader": "call_e115cec",
+  "str_va": "0x39bb849",
+  "chunk": "0xdb08cb3"
+ },
+ {
+  "name": "JARVIS_SELF_IMPROVEMENT_RECORDS_RETENTION_SECS",
+  "len": 46,
+  "default": 7776000,
+  "reader": "call_e115cec",
+  "str_va": "0x39bb87b",
+  "chunk": "0xdb096c1"
+ },
+ {
+  "name": "JARVIS_SELF_IMPROVEMENT_CONNECTOR_AUDIT_RETENTION_SECS",
+  "len": 54,
+  "default": 2592000,
+  "reader": "call_e115cec",
+  "str_va": "0x39bb8a9",
+  "chunk": "0xdb097c2"
+ },
+ {
+  "name": "JARVIS_SELF_IMPROVEMENT_LEARNINGS_RETIRED_RETENTION_SECS",
+  "len": 56,
+  "default": 7776000,
+  "reader": "call_e115cec",
+  "str_va": "0x39bb8df",
+  "chunk": "0xdb098cd"
+ },
+ {
+  "name": "JARVIS_SELF_IMPROVEMENT_BACKFILL_DAYS_RETENTION_SECS",
+  "len": 52,
+  "default": 2592000,
+  "reader": "call_e115cec",
+  "str_va": "0x39bb917",
+  "chunk": "0xdb099db"
+ },
+ {
+  "name": "JARVIS_IDEAS_EVENTS_RETENTION_SECS",
+  "len": 34,
+  "default": 15552000,
+  "reader": "call_e115cec",
+  "str_va": "0x39bb9e0",
+  "chunk": "0xdb0bb56"
+ },
+ {
+  "name": "JARVIS_AGENT_RECOVERY_OWNER_RETENTION_SECS",
+  "len": 42,
+  "default": 7776000,
+  "reader": "call_e115cec",
+  "str_va": "0x39bc425",
+  "chunk": "0xdc955d2"
+ },
+ {
+  "name": "JARVIS_AGENT_RECOVERY_OWNER_PURGE_LIMIT",
+  "len": 39,
+  "default": 500,
+  "reader": "call_e115cec",
+  "str_va": "0x39bc44f",
+  "chunk": "0xdc95a08"
+ },
+ {
+  "name": "JARVIS_AGENT_RECOVERY_OWNER_RECONCILE_LIMIT",
+  "len": 43,
+  "default": 500,
+  "reader": "call_e115cec",
+  "str_va": "0x39bc476",
+  "chunk": "0xdc95a25"
+ },
+ {
+  "name": "JARVIS_AUDIO_TRANSCRIPTION_PREWARM_TIMEOUT_MS",
+  "len": 45,
+  "default": 45000,
+  "reader": "call_5ac4d9c",
+  "str_va": "0x2e53fe5",
+  "chunk": "0xf09ceaf"
+ },
+ {
+  "name": "JARVIS_COMPACTION_HEARTBEAT_SECS",
+  "len": 32,
+  "default": 30,
+  "reader": "call_65f2a8c",
+  "str_va": "0x487dae0",
+  "chunk": "0x10acfeee"
+ }
+]

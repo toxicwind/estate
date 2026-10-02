@@ -1,0 +1,23 @@
+                        com.lagradost.cloudstream3.utils.ExtractorLinkType extractorLinkType = i3 != 0 ? com.lagradost.cloudstream3.utils.ExtractorLinkType.M3U8 : com.lagradost.cloudstream3.utils.ExtractorLinkType.VIDEO;
+                com.lagradost.cloudstream3.utils.M3u8Helper.Companion companion2 = com.lagradost.cloudstream3.utils.M3u8Helper.Companion;
+                    com.lagradost.cloudstream3.utils.M3u8Helper.Companion companion = com.lagradost.cloudstream3.utils.M3u8Helper.Companion;
+                    if (objGenerateM3u8$default != coroutine_suspended) {
+                if (objGenerateM3u8$default != coroutine_suspended) {
+                java.lang.Iterable $this$forEach$iv2 = (java.lang.Iterable) objGenerateM3u8$default;
+                    java.lang.Iterable $this$forEach$iv = (java.lang.Iterable) objGenerateM3u8$default;
+        java.lang.Object objGenerateM3u8$default;
+                java.lang.String playbackUrl3 = embedBase3 + "/api/videos/" + code3 + "/embed/playback";
+                java.lang.String url = base + "/api/videos/" + code + "/embed/details";
+        javax.crypto.Cipher cipher = javax.crypto.Cipher.getInstance("AES/GCM/NoPadding");
+        javax.crypto.spec.SecretKeySpec secretKey = new javax.crypto.spec.SecretKeySpec(keyBytes, "AES");
+    @kotlin.coroutines.jvm.internal.DebugMetadata(c = "com.Jayboys.Base64Extractor", f = "Extractors.kt", i = {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, l = {207, 251}, m = "getUrl$suspendImpl", n = {"$this", "url", "referer", "$this", "url", "referer", "document", "script", "pattern", "matchResult", "jsonArray", "encodedString", "decodedString", "videos", "externalLinkList", "video", "quality", "format", "videoUrl", "isVHQ", "i", "isM3u8"}, nl = {212, 250}, s = {"L$0", "L$1", "L$2", "L$0", "L$1", "L$2", "L$3", "L$4", "L$5", "L$6", "L$7", "L$8", "L$9", "L$10", "L$11", "L$12", "L$13", "L$14", "L$15", "I$0", "I$1", "I$3"}, v = 2)
+                objGenerateM3u8$default = $result;
+                objGenerateM3u8$default = com.lagradost.cloudstream3.utils.M3u8Helper.Companion.generateM3u8$default(companion2, refererUrl42, streamUrl, mainUrl2, (java.lang.Integer) null, headers2, (java.lang.String) null, c000112, 40, (java.lang.Object) null);
+                    objGenerateM3u8$default = com.lagradost.cloudstream3.utils.M3u8Helper.Companion.generateM3u8$default(companion, refererUrl4, streamUrl, mainUrl, (java.lang.Integer) null, headers, (java.lang.String) null, c000112, 40, (java.lang.Object) null);
+    private java.lang.String mainUrl = "https://doodstream.com";
+    private java.lang.String mainUrl = "https://filemoon.to";
+    private java.lang.String mainUrl = "https://voe.sx";
+    public PlaybackDecrypt(@org.jetbrains.annotations.NotNull java.util.List<com.Jayboys.PlaybackDecryptSource> list) {
+        return new com.Jayboys.PlaybackDecrypt(sources);
+        return "PlaybackDecrypt(sources=" + this.sources + ')';
+                            videoUrl2 = videoUrl2 + "&f=video.m3u8";

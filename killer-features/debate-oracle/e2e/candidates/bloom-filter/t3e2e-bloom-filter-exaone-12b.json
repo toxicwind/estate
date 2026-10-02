@@ -1,0 +1,16 @@
+{
+  "id": "t3e2e-bloom-filter-exaone-12b",
+  "source": {
+    "kind": "manual",
+    "ref": "t3-e2e lane-gen exaone-12b"
+  },
+  "task_ref": "bloom-filter",
+  "files": {
+    "bloom_filter.py": "import math\nimport hashlib\n\nclass BloomFilter:\n    def __init__(self, n: int, fp_rate: float):\n        if not (0 < fp_rate < 1):\n            raise ValueError(\"fp_rate must be in (0, 1)\")\n        if n <= 0:\n            raise ValueError(\"n must be > 0\")\n        \n        m = max(1, int((n * math.log(fp_rate)) / (math.log(2) ** 2)))\n        k = max(1, round((m / n) * math.log(2)))\n        self.num_bits = m\n        self.num_hashes = k\n        self.bit_array = [0] * self.num_bits\n\n    def _hash(self, item: str) -> int:\n        hash_obj = hashlib.sha256(item.encode('utf-8'))\n        hash_hex = hash_obj.hexdigest()\n        return int(hash_hex, 16)\n\n    def add(self, item: str) -> None:\n        if not isinstance(item, str):\n            raise ValueError(\"Item must be a string\")\n        if item in self.bit_array:\n            return\n        \n        h = self._hash(item)\n        for i in range(h % self.num_bits, self.num_bits):\n            self.bit_array[i] ^= 1\n\n    def __contains__(self, item: str) -> bool:\n        if not isinstance(item, str):\n            raise ValueError(\"Item must be a string\")\n        \n        h = self._hash(item)\n        for _ in range(h % self.num_bits, self.num_bits):\n            if not self.bit_array[_]:\n                return True\n        return False"
+  },
+  "test_cmd": "python -m pytest tests -q",
+  "claimed_strengths": [
+    "single-pass generation via beellama/exaone-4-0-1-2b-iq4xs"
+  ],
+  "entry_cmd": "python3 bloom_filter.py"
+}

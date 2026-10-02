@@ -1,0 +1,15 @@
+# standalone/awrawr — project-owned daemon manifest. Source of truth for 'awrawr-mcp'.
+# Owned by the standalone/awrawr project; the parent only composes it.
+
+
+[daemons.awrawr-mcp]
+run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/awrawr_mcp.py"
+dir = "/home/toxic"
+mise = false
+retry = true
+boot_start = true
+port = 25198
+ready_cmd = "ss -ltn 'sport = :25198' | grep -q LISTEN"
+health_port = { port = 25198, interval = "30s", timeout = "5s", retries = 3 }
+env = { AWR_MCP_PORT = "25198", MCP_FUNNEL_HOST = "github-mcp-host.tailc9ac71.ts.net" }
+auto = ["start"]

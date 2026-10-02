@@ -1,0 +1,5 @@
+
+## Race-borrow / HFT-like workarounds — first-class pattern (2026-09-14, Chris)
+- When a problem has several plausible approaches, RACE them concurrently — first valid result wins. Never sequential retry loops.
+- "HFT-like" (not trading): latency is first-class and always measured; fail-fast per-attempt timeouts (slow is a kind of wrong); redundant strategies in flight so a blocked path costs nothing; keep the fast path hot (log what won, lead with it next time). Maximal = try wider, not harder.
+- Skill: `code-race` (~/workspace/skills/code-race/) — finds similar/related code on GitHub by racing identifier-built queries (class/function/repo names). `bin/race.py --ident Foo --ident bar --lang python`. Borrows emergent-enrich's GitHub leg + annas-router/squawk-feed race-first-wins.

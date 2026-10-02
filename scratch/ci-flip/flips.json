@@ -1,0 +1,42 @@
+{
+ "toxicwind/ast-grep": {
+  "http": 200,
+  "private_now": false
+ },
+ "toxicwind/caddy-sovereign-auth": {
+  "http": 200,
+  "private_now": false
+ },
+ "toxicwind/qed": {
+  "http": 200,
+  "private_now": false
+ },
+ "toxicwind/zedra-sovereign": {
+  "http": 200,
+  "private_now": false
+ },
+ "toxicwind/herd": {
+  "http": 200,
+  "private_now": false
+ },
+ "toxicwind/k3-capacity-hack": {
+  "http": 200,
+  "private_now": false
+ },
+ "toxicwind/codex-desktop-linux": {
+  "http": 200,
+  "private_now": false
+ },
+ "toxicwind/ontological-atlas": {
+  "http": 200,
+  "private_now": false
+ },
+ "toxicwind/playwright-mcp": {
+  "http": 200,
+  "private_now": false
+ },
+ "toxicwind/web3-sec-workspace": {
+  "http": 200,
+  "private_now": false
+ }
+}
