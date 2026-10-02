@@ -1,0 +1,10 @@
+# Sigma rename pairs: billion-context / bili -> sigma
+# Covers: billion-context, billion_context, BillionContext, bili, Bili, BILI
+
+substr: billion-context => sigma
+substr: billion_context => sigma
+substr: BillionContext => Sigma
+substr: BILLION_CONTEXT => SIGMA
+word: bili => sigma
+substr: Bili => Sigma
+substr: BILI => SIGMA

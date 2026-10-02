@@ -1,0 +1,9 @@
+# Herd rename pairs: llama-swap -> herd
+# Rules: exact token renames for the project identity.
+# Excludes: none (llama-swap is a distinctive project name, no common-word collisions).
+
+substr: llama-swap => herd
+substr: llama_swap => herd
+substr: llamaswap => herd
+substr: LlamaSwap => Herd
+substr: LLAMA_SWAP => HERD
