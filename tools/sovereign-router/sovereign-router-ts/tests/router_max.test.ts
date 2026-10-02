@@ -61,6 +61,9 @@ describe("costTier", () => {
   test(":free suffix convention -> free (no live metadata in test env)", () => {
     expect(costTier("openrouter", "some-model:free")).toBe("free");
   });
+  test("local zero-cost lane -> free even without :free suffix", () => {
+    expect(costTier("llama-swap", "beellama/exaone-4-0-1-2b-iq4xs")).toBe("free");
+  });
   test("sigma cost <= $1/1M -> cheap", () => {
     expect(costTier("baseten", "moonshotai/Kimi-K2.6")).toBe("cheap");
   });

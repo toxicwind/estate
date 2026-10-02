@@ -504,7 +504,10 @@ export function classifyTask(text: string): TaskType {
 export type CostTier = "free" | "cheap" | "standard";
 
 export function costTier(p: string, mid: string): CostTier {
-  if (modelFree(p, mid)) return "free";
+  // Local zero-cost lanes are always free, even when live metadata carries
+  // no pricing (modelFree's ":free"-suffix fallback misses local GGUF ids).
+  if (p === "llama-swap" || PROVIDERS[p]?.no_auth || modelFree(p, mid))
+    return "free";
   const hit = sigmaLookup(p, mid);
   if (hit?.cost) {
     if (hit.cost.inputPerMillion <= 1.0) return "cheap";
