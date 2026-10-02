@@ -50,13 +50,13 @@ function adaptBody(poolName: string, model: string | null, raw: Uint8Array): Uin
 }
 
 export interface ServerDeps {
-  pools: Map<string, Pool>;
+  getPools: () => Map<string, Pool>;
   auditor: Auditor;
   raceKeys: number;
 }
 
 export function createHandler(deps: ServerDeps) {
-  const { pools, auditor, raceKeys } = deps;
+  const { getPools, auditor, raceKeys } = deps;
 
   return async (req: Request): Promise<Response> => {
     const url = new URL(req.url);
@@ -70,7 +70,7 @@ export function createHandler(deps: ServerDeps) {
     // /status
     if (path === "/status" && req.method === "GET") {
       const out: Record<string, unknown> = {};
-      for (const [name, pool] of pools) {
+      for (const [name, pool] of getPools()) {
         out[name] = {
           pool: name,
           upstream: pool.upstream,
@@ -94,7 +94,7 @@ export function createHandler(deps: ServerDeps) {
     if (!m) return Response.json({ error: "unknown keypool route" }, { status: 404 });
     const poolName = m[1];
     const rest = m[2] || "/";
-    const pool = pools.get(poolName);
+    const pool = getPools().get(poolName);
     if (!pool) {
       return Response.json({ error: "unknown keypool route" }, { status: 404 });
     }

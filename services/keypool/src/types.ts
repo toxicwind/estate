@@ -10,6 +10,7 @@ export interface KeyState {
   state: KeyStateName;
   latencyMs: number;
   downUntil: number; // epoch ms
+  lastProbeAt: number; // epoch ms of last probe (healthy-key TTL revalidation)
   lastProbeOk: boolean;
   freeOnly: boolean;
 }
