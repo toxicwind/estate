@@ -27,6 +27,28 @@ export function extractModel(body: Uint8Array | null): string | null {
     return null;
   }
 }
+/**
+ * How a given upstream expects the pool's key to be presented.
+ *
+ * The probe path learned this by inspection (an upstream ending in `/openai`
+ * takes a bearer token, Google AI takes `x-goog-api-key`). The forwarding path
+ * did not: it always sent `Authorization: Bearer`, so every Google-native pool
+ * answered 401 ACCESS_TOKEN_TYPE_UNSUPPORTED even though the same key passed
+ * `probe()` moments earlier. A pool that probes healthy but 401s on every
+ * request is the signature of that split.
+ *
+ * Both paths now resolve the header through this one function so a new
+ * upstream cannot be half-wired again.
+ */
+export function upstreamAuthHeader(upstream: string, secret: string): [string, string] {
+	if (upstream.endsWith("/openai")) {
+		return ["Authorization", `Bearer ${secret}`];
+	}
+	if (upstream.includes("generativelanguage.googleapis.com")) {
+		return ["x-goog-api-key", secret];
+	}
+	return ["Authorization", `Bearer ${secret}`];
+}
 
 export class Pool {
   readonly name: string;
@@ -38,6 +60,10 @@ export class Pool {
   readonly probeTimeoutMs: number;
   readonly requestTimeoutMs: number;
   readonly cooldown: Map<number, number>;
+  /** Wire protocol. `gemini-interactions` rewrites the request body and posts
+   *  to `interactionsPath` instead of forwarding to `upstream + rest`. */
+  readonly protocol: "gemini-interactions" | undefined;
+  readonly interactionsPath: string;
   readonly cooldownDefault: number;
   keys: KeyState[];
   private secrets: Map<string, string>;
@@ -57,6 +83,8 @@ export class Pool {
         ([k, v]) => [Number(k), v],
       ),
     );
+    this.protocol = cfg.protocol;
+    this.interactionsPath = cfg.interactions_path ?? "/v1beta/interactions";
     this.cooldownDefault = cfg.cooldown_default ?? 120;
     this.secrets = secrets;
     this.keys = cfg.keys.map((k) => {

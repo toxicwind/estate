@@ -35,6 +35,22 @@ export interface PoolConfig {
   cooldown_default?: number;
   probe_timeout?: number;
   request_timeout?: number;
+  /**
+   * Wire protocol. `gemini-interactions` rewrites the body into the Gemini
+   * Interactions API and posts to `interactions_path` instead of forwarding
+   * an OpenAI-shaped body to `upstream`. Unset means a plain pass-through
+   * proxy. Tool retrieval (defer_loading / tool_search) exists ONLY on this
+   * endpoint — generateContent and the OpenAI-compat surface reject it.
+   */
+  protocol?: "gemini-interactions";
+  interactions_path?: string;
+  /**
+   * How a request picks among eligible keys. `failover` (default) always takes
+   * the healthiest, which pins one key until it degrades. `round-robin`
+   * advances a cursor across healthy keys so per-key quota spreads evenly and
+   * a single key's rate limit cannot starve the pool.
+   */
+  rotate?: "failover" | "round-robin";
 }
 
 export interface PoolsFile {
