@@ -1,15 +1,17 @@
 # awrawr-shim — sidechat shim tools on the Awrawr Mcp connector
 
-The sidechat shim (`/home/toxic/estate/hatch/sidechat_shim.py`, owner Pry) is
-exposed as 4 MCP tools on the existing **`custom.awrawr-mcp`** connector
+The sidechat shim (`/home/toxic/hatch/sidechat_shim.py`, owner Pry) is
+exposed as 5 MCP tools on the existing **`custom.awrawr-mcp`** connector
 (yote `/home/toxic/awrawr_mcp.py`, Streamable HTTP). No new connector was
 needed — the shim rides the proven connector (2026-10-02).
 
 ## The boundary (non-negotiable)
 
-- These tools **shape, check, and verify** lane messages. They never send.
-- The actual `chat.send_message` dispatch stays in the **agent runtime**
-  (main agent) — yote has no chat tools and no HTTP path to them exists.
+- These tools **shape, check, verify, and queue** lane messages.
+- `shim_send_chat` writes to the nudge queue — the actual `chat.send_message`
+  dispatch stays in the **agent runtime** (main agent drain) — yote has no
+  chat tools and no HTTP path to them exists. Subagents can now *initiate*
+  sends via MCP; delivery still flows through the drain.
 - Nudge path: `lane_poller.py` (yote) imports `sidechat_shim` directly
   (fastest, zero network). Platform-side agents use these MCP tools.
 
@@ -25,6 +27,10 @@ needed — the shim rides the proven connector (2026-10-02).
   Canary reply must contain `canary` + today's UTC weekday, not the refusal.
 - `shim_info()` → `{"ok","source","sha256","error"}`
   Provenance: sha256 of the canonical shim source backing the answers.
+- `shim_send_chat(chat_id: string, message: string, lane?: string)` → `{"ok":true,"queued":...}`
+  Subagent-accessible chat send: formats via `format_safe`, writes to the
+  nudge queue (`hatch/pollers/nudge-queue/`) for the main-agent drain to
+  deliver. This is how non-main agents initiate side-chat messages.
 
 ## Concurrency (measured 2026-10-02)
 

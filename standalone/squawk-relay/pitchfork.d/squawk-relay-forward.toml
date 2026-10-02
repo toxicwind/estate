@@ -8,5 +8,5 @@ dir = "/home/toxic/.fleet-bus/squawk-relay"
 mise = false
 retry = true
 boot_start = true
-env = { SQUAWK_CODE_DIR = "/home/toxic/estate/hatch/agents/ember/chat" }
+env = { SQUAWK_CODE_DIR = "/home/toxic/hatch/agents/ember/chat" }
 auto = ["start"]
