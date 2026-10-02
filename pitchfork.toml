@@ -74,10 +74,10 @@ dir = "/home/toxic/estate"
 mise = false
 retry = true
 env = { BEELLAMA_PORT = "25122" }
-boot_start = false
+boot_start = true
 # NOTE 2026-09-20: literal port; pitchfork does not expand ${} in ready_http (25122 == $BEELLAMA_PORT SSOT)
 ready_http = "http://127.0.0.1:25122/health"
-auto = []
+auto = ["start"]
 
 # openfang-health — 5-min OpenFang/coyote health loop -> JSON/HTML + squawk on transitions.
 # Added 2026-09-20 (openfang recon track).
@@ -589,7 +589,7 @@ retry = 5 # 2026-09-20: was infinite; flappy daemon churned 125+ retries
 # NOTE 2026-09-20: literal port; pitchfork does not expand ${} in ready_http (25152 == $TOOLCALL_PORT SSOT)
 # NOTE 2026-09-20: literal port also in run line above; pitchfork does not expand ${} in run either (was --port stoi crash loop since 00:01)
 ready_http = "http://127.0.0.1:25152/health"
-auto = []
+auto = ["start"]
 
 # beellama-fast — exaone-4.0-1.2b-iq4xs ("fast" alias) via beellama.cpp fork
 # v0.4.6 CUDA sm_86 build. Permanent supervised OpenAI-compatible endpoint
@@ -715,6 +715,22 @@ dir = "/home/toxic/estate/projects/range/ranch/oracle"
 mise = false
 retry = true
 env = { ORACLE_INTAKE = "1" }
+auto = ["start"]
+
+# ---- project: ranch/cuttinggate (1 daemon) ----
+# ranch/cuttinggate — project-owned daemon manifest. Source of truth for 'cuttinggate'.
+# The canonical estate router. Binds :25200 via CUTTINGGATE_PORT.
+# NOTE: the baked-in config default 25194 is held by the Ralph dashboard
+# (uvicorn); 25195 is held by codebase-memory. Do not move this daemon
+# onto either without re-homing the holder first.
+
+[daemons.cuttinggate]
+run = "exec bun run src/server.ts"
+dir = "/home/toxic/estate/ranch/cuttinggate"
+retry = true
+ready_http = "http://127.0.0.1:25200/health"
+health_http = { url = "http://127.0.0.1:25200/health", interval = "30s", timeout = "5s", retries = 3 }
+env = { CUTTINGGATE_PORT = "25200", CUTTINGGATE_LOG_LEVEL = "info" }
 auto = ["start"]
 
 # ---- project: ranch/squawk (4 daemons) ----
@@ -998,7 +1014,7 @@ auto = ["start"]
 health_http = { url = "http://127.0.0.1:25102/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25102
 run = "exec bun run src/yote.ts"
-dir = "/home/toxic/estate/ranch/yote"
+dir = "projects/yote"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25102/health"
@@ -1284,10 +1300,8 @@ auto = ["start"]
 # omp acp exposed as TCP daemon via chute (stdio→TCP + mcpServers normalization)
 port = 25111
 run = "exec /home/toxic/estate/ranch/barn/chute/chute.mjs --port 25111 -- /home/toxic/.local/bin/tau acp -e /home/toxic/.tau/extensions/vansrouter.ts"
-# 2026-10-01 taurun: dist/omp deleted (ranch/tau tree rm -rf 02:17 MDT); fork cannot
-# rebuild here (missing @ranch/tack monorepo sibling). Pinned launcher (upstream
-# 18.3.0, same pin as ~/.local/bin/tau) restores the daemon. Revert to dist/omp
-# when the fork builds again.
+# 2026-10-02: dist/omp rebuilt from ranch/tau fork with tack resolution fix;
+# /home/toxic/.local/bin/tau pins this compiled binary.
 dir = "/home/toxic"
 mise = false
 retry = true
@@ -1309,7 +1323,7 @@ depends = ["gatehouse"]
 # modelRoles/retry/extensions file. See ~/.bashrc for the full reasoning.
 # 2026-10-02 tau-logpath: PI_CONFIG_DIR is a NAME relative to $HOME (tau dirs.ts joins it under os.homedir());
 # the old absolute value doubled the config root to $HOME/$HOME/.tau.
-env = { PI_CONFIG_DIR = ".tau", PI_CODING_AGENT_DIR = "/home/toxic/.tau/agent", PI_CODING_AGENT = "true", PI_OPENAI_STREAM_IDLE_TIMEOUT_MS = "120000", VANSROUTER_API_KEY = "local-sovereign" }
+env = { PI_CONFIG_DIR = ".tau", PI_CODING_AGENT_DIR = "/home/toxic/.tau/agent", PI_CODING_AGENT = "true", PI_OPENAI_STREAM_IDLE_TIMEOUT_MS = "120000", VANSROUTER_API_KEY = "local-sovereign", PI_DISABLE_UUTILS_BUILTINS = "1" }
 auto = ["start"]
 
 # ---- project: standalone/whatsapp-mcp (1 daemon) ----
