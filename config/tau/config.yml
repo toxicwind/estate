@@ -92,9 +92,12 @@ modelRoles:
   tiny: openrouter/liquid/lfm-2.5-2.6b:free
   memory: openrouter/liquid/lfm-2.5-2.6b:free
   verification: openrouter/nvidia/nemotron-3.5-lightning:free
-  # ling-3.0-flash-vl:free is gone upstream — 404 "unavailable for free. The
-  # paid version is available now". This one answers 200.
-  fallback: openrouter/inclusionai/ling-3.0-flash-fin:free
+  # ling-3.0-flash-fin:free is now 404 too — OpenRouter retired it in favour
+  # of the paid slug, and we have no credits (paid returns 402). Every place
+  # that pointed at it cost a doomed attempt plus a confusing 404 in the
+  # subagent's error text. nemotron-3-super is the fastest free model that
+  # answers 200 (372ms), so it is the fallback now.
+  fallback: openrouter/nvidia/nemotron-3-super-120b-a12b:free
   web: web/exa
   # image, speech and dictation are deliberately left unset. The free tier has
   # no image-output and no audio model at all (checked against the live
@@ -284,13 +287,13 @@ retry:
     openrouter/*:
     - openrouter/liquid/lfm-2.5-2.6b:free
     - openrouter/nvidia/nemotron-3-super-120b-a12b:free
-    - openrouter/inclusionai/ling-3.0-flash-fin:free
+    - openrouter/nvidia/nemotron-3.5-lightning:free
     # sovereign/free (:25104) and herd/qwen-flash-da-128k (:25100) are both
     # down — herd's dependency gatehouse aborts startup on a missing
     # projects/range/ranch/barn/gatehouse/bin/github-mcp.sh. These two are verified
     # 200 against openrouter and restore the chain's whole point.
     google-antigravity/*:
-    - openrouter/inclusionai/ling-3.0-flash-fin:free
+    - openrouter/nvidia/nemotron-3.5-lightning:free
     - openrouter/nvidia/nemotron-3-super-120b-a12b:free
     # Live web providers first. The four chat models that used to sit directly
     # after web/perplexity all 402 (no credits) or 400 (`claude-haiku-4-5` is

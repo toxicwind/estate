@@ -1,17 +1,20 @@
 modelRoles:
   default: openrouter/stealth/space-bunny-alpha
-  smol: openrouter/liquid/lfm-2.5-2.6b:free
   slow: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
   vision: openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
   plan: openrouter/nvidia/nemotron-3-super-120b-a12b:free
   advisor: openrouter/nvidia/nemotron-3-super-120b-a12b:free
   judge: openrouter/nvidia/nemotron-3-super-120b-a12b:free
-  task: openrouter/nvidia/nemotron-3.5-lightning:free
+  task: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  smol: openrouter/liquid/lfm-2.5-2.6b:free
   commit: openrouter/liquid/lfm-2.5-2.6b:free
   tiny: openrouter/liquid/lfm-2.5-2.6b:free
   memory: openrouter/liquid/lfm-2.5-2.6b:free
-  verification: openrouter/nvidia/nemotron-3.5-lightning:free
-  fallback: openrouter/inclusionai/ling-3.0-flash-fin:free
+  verification: openrouter/liquid/lfm-2.5-2.6b:free
+  # Measured 200 latencies: lightning 571ms, nemotron-3-super 372ms,
+  # lfm-2.5 875ms. Never put a retired :free slug here — one 404 burns a
+  # doomed retry and surfaces a provider error instead of a model name.
+  fallback: openrouter/nvidia/nemotron-3-super-120b-a12b:free
   web: web/exa
 defaultThinkingLevel: auto
 retry:
@@ -22,9 +25,9 @@ retry:
     openrouter/*:
       - openrouter/liquid/lfm-2.5-2.6b:free
       - openrouter/nvidia/nemotron-3-super-120b-a12b:free
-      - openrouter/inclusionai/ling-3.0-flash-fin:free
+      - openrouter/nvidia/nemotron-3.5-lightning:free
     google-antigravity/*:
-      - openrouter/inclusionai/ling-3.0-flash-fin:free
+      - openrouter/nvidia/nemotron-3.5-lightning:free
       - openrouter/nvidia/nemotron-3-super-120b-a12b:free
 extensions:
   - /home/toxic/.bun/install/global/node_modules/billion-context/dist/agent/omp-native.js
