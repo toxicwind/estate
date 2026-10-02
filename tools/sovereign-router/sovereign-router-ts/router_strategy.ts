@@ -1,6 +1,8 @@
 import type { ChatBody, RouteResult } from "./router_types.ts";
 import { state, isWorkerExhausted } from "./router_matrix.ts";
-import { PROVIDERS, PROVIDER_MODELS, catalogModelsFor, modelFree, modelContextWindow, LOCAL_ROLES, CODING, MAX_PARALLEL, FIFO_MAX, STRATEGY, UA, AST_RE, getKey, keyOk, firstModelFor, resolveModel, isLocalSwapModelId, isAst, isExplicit, json, normalizeModelSpec, CONNECT_MS, TTFT_MS, ATTEMPT_MS, ATTEMPT_STREAM_MS, HEDGE_MS } from "./router_config.ts";
+import { PROVIDERS, PROVIDER_MODELS, catalogModelsFor, modelFree, modelContextWindow, LOCAL_ROLES, CODING, MAX_PARALLEL, FIFO_MAX, STRATEGY, UA, AST_RE, getKey, keyOk, firstModelFor, resolveModel, isLocalSwapModelId, isAst, isExplicit, classifyTask, costTier, json, normalizeModelSpec, isChatCapable, log, CONNECT_MS, TTFT_MS, ATTEMPT_MS, ATTEMPT_STREAM_MS, HEDGE_MS } from "./router_config.ts";
+import { resolveSigmaAlias } from "./sigma-enrich.ts";
+import { benchModelBonus } from "./bench-priors.ts";
 // 📒 ledger — the ranch account book: durable Gemini cost accounting.
 import { recordUsage } from "./ledger.ts";
 
@@ -25,8 +27,15 @@ export function substantive(r: RouteResult): boolean {
   if (!r.ok) return false;
   const m = messageOf(r);
   if (!m) return false;
-  if (typeof m.content === "string" && m.content.trim() !== "") return true;
-  return Array.isArray(m.tool_calls) && m.tool_calls.length > 0;
+  if (Array.isArray(m.tool_calls) && m.tool_calls.length > 0) return true;
+  const c = typeof m.content === "string" ? m.content.trim() : "";
+  if (c === "") return false;
+  // Classifier/guard models answer with a bare scalar score (2026-10-01:
+  // llama-prompt-guard-2-86m served "0.0007095712935552001" as a chat
+  // completion). A bare number is not a chat completion -- reject it so the
+  // race treats the result as a substance failure and strikes the model.
+  if (/^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/.test(c)) return false;
+  return true;
 }
 
 function contentText(r: RouteResult): string {
@@ -390,7 +399,10 @@ export function pickWeighted(n = MAX_PARALLEL): [string, string][] {
     const mid = firstUsableModelFor(p);
     if (!mid) continue;
     const sc =
-      state.candidateScore(p) + Math.random() * 10 + modelProbeBonus(p, mid);
+      state.candidateScore(p) +
+      Math.random() * 10 +
+      modelProbeBonus(p, mid) +
+      benchModelBonus(p, mid);
     scored.push([sc, p, mid]);
   }
   scored.sort((a, b) => b[0] - a[0]);
@@ -537,13 +549,18 @@ export async function routeWeighted(
     return r;
   }
   if (r.ok) state.recordEmpty(p, mid);
-  return {
-    ok: false,
-    status: r.ok ? 502 : r.status || 502,
-    provider: p,
-    lat: r.lat,
-    err: r.ok ? "empty_completion" : r.err,
-  };
+  // Router-max: the weighted single-pick never fails the request hard —
+  // degrade into the circuit chain (ordered failover) instead of 502.
+  if (r.ok || !shouldFailover(r)) {
+    return {
+      ok: false,
+      status: r.ok ? 502 : r.status || 502,
+      provider: p,
+      lat: r.lat,
+      err: r.ok ? "empty_completion" : r.err,
+    };
+  }
+  return routeCircuitChain(body, session);
 }
 
 export async function routeCircuitChain(
@@ -922,6 +939,31 @@ export function longctx2MPinEligible(body: ChatBody): LongctxPinVerdict {
  * through to the 1M pin, then the normal race). Every pinned attempt is
  * logged under strategy='longctx-2m' with est tokens + latency, ok or not.
  */
+/** resolveLongctx2MModel — router-max: the 2M lane is DERIVED from the
+ * live catalog, not hardcoded. Highest context window >= 2M on the
+ * openrouter provider, skipping flap/entitlement-benched ids. Falls back to
+ * the LONGCTX_2M_MODEL constant when the catalog has no 2M lane (startup,
+ * discovery outage). The constant itself is live-verified (2026-10-02:
+ * x-ai/grok-4.20 in the openrouter catalog at 2_000_000 tokens).
+ */
+export function resolveLongctx2MModel(): [string, string] {
+  let best: [string, string] | null = null;
+  let bestCtx = 0;
+  for (const mid of catalogModelsFor(LONGCTX_2M_PROVIDER)) {
+    if (
+      state.flapBanned(LONGCTX_2M_PROVIDER, mid) ||
+      state.isEntitlementDead(LONGCTX_2M_PROVIDER, mid)
+    )
+      continue;
+    const ctx = modelContextWindow(LONGCTX_2M_PROVIDER, mid);
+    if (ctx >= LONGCTX_2M_GATE_TOKENS * 2 && ctx > bestCtx) {
+      best = [LONGCTX_2M_PROVIDER, mid];
+      bestCtx = ctx;
+    }
+  }
+  return best || [LONGCTX_2M_PROVIDER, LONGCTX_2M_MODEL];
+}
+
 export async function tryLongctx2MPin(
   body: ChatBody,
   sid: string,
@@ -929,10 +971,11 @@ export async function tryLongctx2MPin(
 ): Promise<RouteResult | null> {
   const v = longctx2MPinEligible(body);
   if (!v.ok) return null;
-  const r = await callOne(LONGCTX_2M_PROVIDER, LONGCTX_2M_MODEL, body, stream);
+  const [lp, lm] = resolveLongctx2MModel();
+  const r = await callOne(lp, lm, body, stream);
   state.record(
-    LONGCTX_2M_MODEL,
-    LONGCTX_2M_PROVIDER,
+    lm,
+    lp,
     r.status || (r.ok ? 200 : 500),
     r.lat || 0,
     r.ok ? 1 : 0,
@@ -997,14 +1040,121 @@ export async function routeAuto(
   session: string,
 ): Promise<RouteResult> {
   const estTokens = estPromptTokens(body);
-  if (isAst(bodyPromptText(body))) {
+  const taskType = classifyTask(bodyPromptText(body));
+  let r: RouteResult;
+  if (taskType === "code") {
+    // code-shaped: AST-priority race over the context-filtered field.
     const cands = filterByContext(pickWeighted(MAX_PARALLEL), estTokens);
-    return routeAstRace(body, session, cands);
+    r = await routeAstRace(body, session, cands);
+  } else if (taskType === "reasoning") {
+    // deliberative: ordered hybrid chain with failover.
+    r = await routeHybrid(body, session);
+  } else {
+    // default: free race first (zero cost), then ordered auto-switch chain,
+    // then the hybrid fallback — the request degrades, never fails hard.
+    const freeCands = filterByContext(freeCandidates(), estTokens);
+    const free = await routeAstRace(body, session, freeCands);
+    if (free.ok) {
+      r = free;
+    } else {
+      const chained = await sequentialFailover(
+        freeCands,
+        body,
+        session,
+        "free_chain",
+      );
+      r = chained.ok ? chained : await routeHybrid(body, session);
+    }
   }
-  const freeCands = filterByContext(freeCandidates(), estTokens);
-  const free = await routeAstRace(body, session, freeCands);
-  if (free.ok) return free;
-  return routeHybrid(body, session);
+  r.task_type = taskType;
+  if (r.provider && r.model) r.cost_tier = costTier(r.provider, r.model);
+  return r;
+}
+
+/**
+ * chunkJobText — split a job into paragraph-boundary chunks of at most
+ * maxChars (router-max 2M-aware decomposition). Every chunk keeps whole
+ * paragraphs; nothing is dropped and order is preserved.
+ */
+export function chunkJobText(job: string, maxChars: number): string[] {
+  if (job.length <= maxChars) return [job];
+  const paras = job.split(/\n{2,}/);
+  const chunks: string[] = [];
+  let cur = "";
+  for (const para of paras) {
+    if ((cur + "\n\n" + para).length > maxChars && cur) {
+      chunks.push(cur);
+      cur = para;
+    } else {
+      cur = cur ? cur + "\n\n" + para : para;
+    }
+  }
+  if (cur) chunks.push(cur);
+  // A single pathological paragraph longer than the budget: hard-split it.
+  const out: string[] = [];
+  for (const c of chunks) {
+    if (c.length <= maxChars) out.push(c);
+    else
+      for (let i = 0; i < c.length; i += maxChars)
+        out.push(c.slice(i, i + maxChars));
+  }
+  return out;
+}
+
+/**
+ * pickChunkModel — choose a pool model whose context window fits the chunk
+ * plus headroom (router-max). Free preferred; falls back to round-robin
+ * when no window is known or none fits.
+ */
+function pickChunkModel(
+  pool: [string, string][],
+  chunkEstTokens: number,
+  roundRobin: number,
+): string {
+  const need = chunkEstTokens + 8000;
+  for (const [p, mid] of pool) {
+    const ctx = modelContextWindow(p, mid);
+    if (ctx > 0 && ctx >= need && modelFree(p, mid)) return `${p}/${mid}`;
+  }
+  for (const [p, mid] of pool) {
+    const ctx = modelContextWindow(p, mid);
+    if (ctx > 0 && ctx >= need) return `${p}/${mid}`;
+  }
+  const [p, mid] = pool[roundRobin % pool.length]!;
+  return `${p}/${mid}`;
+}
+
+/**
+ * sanitizeBodybuilderRequests — rewrite decomposer-emitted request bodies
+ * into routable, safe ones (router-max). Hallucinated model ids resolve
+ * against the sigma catalog first, then round-robin across the live pool
+ * allow-list; sampling params are clamped (temperature [0,2], max_tokens
+ * [1,32000]) so a rogue decomposer can't burn the pool or 400 downstream.
+ * Exported for tests and for callers that sanitize their own fan-outs.
+ */
+export function sanitizeBodybuilderRequests(
+  reqs: Array<Record<string, unknown>>,
+  allowIds: string[],
+  maxRequests: number,
+): Array<Record<string, unknown>> {
+  const allowSet = new Set(allowIds);
+  return reqs.slice(0, maxRequests).map((r, i) => {
+    const rec = { ...(r as Record<string, unknown>) };
+    const mid = String(rec.model ?? "");
+    if (!allowSet.has(mid) && allowIds.length) {
+      const aliased = resolveSigmaAlias(mid);
+      const match =
+        aliased &&
+        allowIds.find((a) => a.endsWith("/" + aliased) || a === aliased);
+      rec.model = match || allowIds[i % allowIds.length];
+    }
+    const t = Number(rec.temperature);
+    if (Number.isFinite(t)) rec.temperature = Math.min(2, Math.max(0, t));
+    const mt = Number(rec.max_tokens);
+    if (Number.isFinite(mt))
+      rec.max_tokens = Math.min(32000, Math.max(1, Math.floor(mt)));
+    return rec;
+  });
 }
 
 /**
@@ -1020,13 +1170,48 @@ export async function buildBodybuilderRequests(
   opts: { maxRequests?: number; sid?: string } = {},
 ): Promise<{ requests: Array<Record<string, unknown>> }> {
   const maxRequests = Math.min(Math.max(opts.maxRequests ?? 4, 1), 16);
+  // Router-max 2M-aware decomposition: a job larger than the decomposer's
+  // own safe context (~200k est tokens for the free pool) would be
+  // truncated or refused by the decomposer LLM. Chunk it deterministically
+  // instead, one context-fitted request per chunk.
+  const DECOMPOSER_BUDGET_TOKENS = 200_000;
+  const jobEstTokens = job.length / 4;
+  const pool0 = freeCandidates();
+  if (jobEstTokens > DECOMPOSER_BUDGET_TOKENS && pool0.length) {
+    // chunkChars sized so the job always fits in maxRequests chunks —
+    // content is never dropped; larger chunks resolve to 2M-context models.
+    const chunkChars = Math.max(800_000, Math.ceil(job.length / maxRequests));
+    let chunks = chunkJobText(job, chunkChars);
+    while (chunks.length > maxRequests) {
+      const merged: string[] = [];
+      for (let i = 0; i < chunks.length; i += 2)
+        merged.push(chunks[i] + (chunks[i + 1] ? "\n\n" + chunks[i + 1] : ""));
+      chunks = merged;
+    }
+    return {
+      requests: chunks.map((chunk, i) => ({
+        model: pickChunkModel(pool0, chunk.length / 4, i),
+        messages: [
+          {
+            role: "user",
+            content:
+              `PART ${i + 1}/${chunks.length} of a larger job. ` +
+              `Process ONLY the segment below per the job instructions ` +
+              `embedded in it; reply with your segment's result only.\n\n` +
+              `SEGMENT:\n${chunk}`,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 2000,
+      })),
+    };
+  }
   // Live model allow-list (Chris 2026-10-01): the decomposer LLM hallucinates
   // model IDs from training data (e.g. openai/gpt-4o) when unconstrained.
   // Constrain it to the live free pool AND sanitize the parsed output, so
   // every emitted body routes to a real estate model.
   const pool = freeCandidates();
   const allowIds = pool.map(([p, m]) => `${p}/${m}`);
-  const allowSet = new Set(allowIds);
   const sys =
     "You decompose a multi-model job into parallel LLM request bodies. " +
     "Reply with ONLY a JSON object of the form " +
@@ -1059,17 +1244,9 @@ export async function buildBodybuilderRequests(
       const parsed = JSON.parse(cleaned);
       const reqs = Array.isArray(parsed?.requests) ? parsed.requests : [];
       if (reqs.length > 0) {
-        // Sanitize: rewrite any hallucinated model ID to a live pool member
-        // (round-robin) rather than emitting a body that routes nowhere.
-        const clean = reqs.slice(0, maxRequests).map((r, i) => {
-          const rec = r as Record<string, unknown>;
-          const mid = String(rec.model ?? "");
-          if (!allowSet.has(mid) && allowIds.length) {
-            rec.model = allowIds[i % allowIds.length];
-          }
-          return rec;
-        });
-        return { requests: clean };
+        return {
+          requests: sanitizeBodybuilderRequests(reqs, allowIds, maxRequests),
+        };
       }
     } catch {
       // fall through to deterministic fan-out
@@ -1080,7 +1257,39 @@ export async function buildBodybuilderRequests(
   // the live free pool, each carrying the full job text.
   const cands = pool;
   if (!cands.length) return { requests: [] };
+  // Router-max: when the job is large, chunk it (context-fitted models per
+  // chunk) instead of repeating the full job N times. chunkChars sized so
+  // the job always fits in maxRequests chunks — content is never dropped.
+  const fbChunkChars = Math.max(800_000, Math.ceil(job.length / maxRequests));
+  const chunks = chunkJobText(job, fbChunkChars);
   const requests: Array<Record<string, unknown>> = [];
+  if (chunks.length > 1) {
+    const use = [...chunks];
+    while (use.length > maxRequests) {
+      const merged: string[] = [];
+      for (let i = 0; i < use.length; i += 2)
+        merged.push(use[i] + (use[i + 1] ? "\n\n" + use[i + 1] : ""));
+      use.splice(0, use.length, ...merged);
+    }
+    for (let i = 0; i < use.length; i++) {
+      requests.push({
+        model: pickChunkModel(cands, use[i]!.length / 4, i),
+        messages: [
+          {
+            role: "user",
+            content:
+              `PART ${i + 1}/${use.length} of a larger job. ` +
+              `Process ONLY the segment below per the job instructions ` +
+              `embedded in it; reply with your segment's result only.\n\n` +
+              `SEGMENT:\n${use[i]}`,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 2000,
+      });
+    }
+    return { requests };
+  }
   for (let i = 0; i < maxRequests; i++) {
     const [provider, mid] = cands[i % cands.length];
     requests.push({
@@ -1203,6 +1412,7 @@ export const ROUTERS: Record<
   circuit_chain: routeCircuitChain,
   hybrid: routeHybrid,
   free: routeFree,
+  free_chain: routeFreeChain,
   cascade: routeCascade,
   auto: routeAuto,
 };
@@ -1231,6 +1441,10 @@ export function freeCandidates(): [string, string][] {
       // entitlement-benched (404) models sit out for the process lifetime.
       if (state.flapBanned(name, mid) || state.isEntitlementDead(name, mid))
         continue;
+      // Chat-capability filter (Chris 2026-10-02): guard, embedding,
+      // reranker, moderation, reward, and classifier models return scores
+      // or labels, not chat text -- they must never enter chat pools.
+      if (!isChatCapable(mid)) continue;
       if (modelFree(name, mid)) bucket.push([name, mid]);
     }
   }
@@ -1247,6 +1461,10 @@ export function freeCandidates(): [string, string][] {
     pool.push(["llama-swap", LOCAL_ROLES.quality]);
     pool.push(["llama-swap", LOCAL_ROLES.longctx]);
   }
+  // Router-max: order the free pool by bench-derived quality bonus so
+  // roundup benchmark data steers candidate order (tie-break scale; the
+  // Ling-first pin below still leads).
+  pool.sort((a, b) => benchModelBonus(b[0], b[1]) - benchModelBonus(a[0], a[1]));
   // Ling-first default (Chris 2026-09-17): Ling leads the free pool so the
   // `free` race prefers it. A flap-banned Ling still sits out above; the
   // substance guard still skips empty completions, falling through to the
@@ -1277,4 +1495,92 @@ export async function routeFree(
   if (!cands.length)
     return { ok: false, status: 503, err: "no_free_providers" };
   return routeAstRace(body, session, cands);
+}
+
+// ---------------------------------------------------------------------------
+// Auto-switching (router-max): per-request graceful degradation.
+// A chosen free model that 429s/5xx/timeouts (or is entitlement-benched)
+// switches mid-flight to the next candidate WITHOUT failing the request.
+// Every switch is measured (ms from failure receipt to next dispatch) and
+// logged; the count + log ride on the RouteResult (X-Sovereign-Switches).
+// Terminal failures (400 malformed) stop the chain — retrying the same body
+// everywhere would just burn the pool.
+// ---------------------------------------------------------------------------
+const FAILOVER_ERR_RE =
+  /timeout|rate_limit|rate limited|governor_limited|buckets_exhausted|fetch_error|worker.?exhaust|resource.?exhaust|temporar|entitlement_benched|circuit_open|overloaded|too many/i;
+
+export function shouldFailover(r: RouteResult): boolean {
+  if (r.ok) return false;
+  if ((r.status || 0) >= 429) return true;
+  if (r.status === 404 && /entitlement_benched/.test(r.err || "")) return true;
+  return FAILOVER_ERR_RE.test(r.err || "");
+}
+
+export async function sequentialFailover(
+  cands: [string, string][],
+  body: ChatBody,
+  session: string,
+  stratName: string,
+  callFn: typeof callOne = callOne,
+): Promise<RouteResult> {
+  // Dead-lane exclusion, same rule as hedgedChain: dead lanes sit out unless
+  // nothing else is alive.
+  let pool = cands.filter(
+    ([p]) => keyOk(p) && state.circuitOk(p) && !state.laneDead(p),
+  );
+  if (!pool.length) pool = cands.filter(([p]) => keyOk(p) && state.circuitOk(p));
+  if (!pool.length)
+    return { ok: false, status: 503, err: stratName + "_exhausted" };
+  const switchLog: string[] = [];
+  let lastErr = stratName + "_exhausted";
+  let lastStatus = 503;
+  for (let i = 0; i < pool.length; i++) {
+    const [p, mid] = pool[i]!;
+    const t0 = performance.now();
+    const r = await callFn(p, mid, body, false);
+    if (substantive(r)) {
+      state.stickySet(session, p, mid);
+      state.record(mid, p, 200, r.lat || 0, 1, stratName);
+      r.switches = switchLog.length;
+      if (switchLog.length) r.switch_log = switchLog;
+      return r;
+    }
+    if (r.ok) state.recordEmpty(p, mid);
+    lastErr = r.err || lastErr;
+    lastStatus = r.status || lastStatus;
+    const next = pool[i + 1];
+    if (next && shouldFailover(r)) {
+      const swMs = Math.round((performance.now() - t0) * 10) / 10;
+      const entry =
+        `${p}/${mid} -> ${next[0]}/${next[1]} ` +
+        `(${swMs}ms, ${r.status}/${(r.err || "").slice(0, 80)})`;
+      switchLog.push(entry);
+      log(`auto-switch #${switchLog.length} [${stratName}]: ${entry}`);
+    } else if (!shouldFailover(r)) {
+      // Terminal (400 malformed, auth): stop, do not burn the pool.
+      return {
+        ok: false,
+        status: lastStatus,
+        err: lastErr,
+        switches: switchLog.length,
+        ...(switchLog.length ? { switch_log: switchLog } : {}),
+      };
+    }
+    // else: last candidate failed failover-eligible — loop ends, report below
+  }
+  return {
+    ok: false,
+    status: lastStatus,
+    err: lastErr,
+    switches: switchLog.length,
+    ...(switchLog.length ? { switch_log: switchLog } : {}),
+  };
+}
+
+/** routeFreeChain — the free pool as an ordered auto-switch chain. */
+export async function routeFreeChain(
+  body: ChatBody,
+  session: string,
+): Promise<RouteResult> {
+  return sequentialFailover(freeCandidates(), body, session, "free_chain");
 }
