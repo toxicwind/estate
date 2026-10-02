@@ -662,13 +662,27 @@ ready_http = "http://127.0.0.1:25148/api/health"
 health_http = { url = "http://127.0.0.1:25148/api/health", interval = "30s", timeout = "5s", retries = 3 }
 env = { FLICKER_ROOT = "/home/toxic/flicker", WOODPECKER_HOST = "http://127.0.0.1:25148", WOODPECKER_GRPC_ADDR = ":25240", WOODPECKER_SERVER_ADDR = ":25148", WOODPECKER_GRPC_SECRET = "66a9f7c1d6ffbac15c447f6d3d97827ab3d152286b23c0cbeb19a9372108419b", WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224a60416faf4f" }
 
-# ---- project: ranch/oracle (4 daemons) ----
+# ---- project: ranch/oracle (6 daemons) ----
+[daemons.bidder-forge]
+run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/bidder-forge.sh"
+dir = "/home/toxic/estate/ranch/squawk/oracle"
+mise = false
+retry = true
+auto = ["start"]
+
+[daemons.bidder-scout]
+run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/bidder-scout.sh"
+dir = "/home/toxic/estate/ranch/squawk/oracle"
+mise = false
+retry = true
+auto = ["start"]
+
 # ranch/oracle — project-owned daemon manifest. Source of truth for 'market-watchdog'.
-# Owned by the ranch/squawk/oracle project; the parent only composes it.
+# Owned by the ranch/oracle project; the parent only composes it.
 
 [daemons.market-watchdog]
-run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/market-watchdog.sh"
-dir = "/home/toxic/estate/ranch/squawk/oracle"
+run = "exec /home/toxic/estate/ranch/oracle/bin/market-watchdog.sh"
+dir = "/home/toxic/estate/ranch/oracle"
 mise = false
 retry = true
 auto = ["start"]
@@ -680,34 +694,30 @@ auto = ["start"]
 # Squawks on drift/restore. Added 2026-09-21.
 
 # ranch/oracle — project-owned daemon manifest. Source of truth for 'oracle-chat'.
-# Owned by the ranch/squawk/oracle project; the parent only composes it.
+# Owned by the ranch/oracle project; the parent only composes it.
 
 
 [daemons.oracle-chat]
-run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/oracle_chat.py"
-dir = "/home/toxic/estate/ranch/squawk/oracle"
+run = "exec /home/toxic/estate/ranch/oracle/bin/oracle_chat.py"
+dir = "/home/toxic/estate/ranch/oracle"
 mise = false
 retry = true
 env = { ORACLE_CHANNEL = "/home/toxic/.fleet-bus/squawk-root/bid-market" }
 auto = ["start"]
 
 # ranch/oracle — project-owned daemon manifest. Source of truth for 'oracle-core'.
-# Owned by the ranch/squawk/oracle project; the parent only composes it.
+# Owned by the ranch/oracle project; the parent only composes it.
 
 
 [daemons.oracle-core]
 port = 25151
 ready_http = "http://127.0.0.1:25151/health"
 health_http = { url = "http://127.0.0.1:25151/health", interval = "30s", timeout = "5s", retries = 3 }
-run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/run-oracle-core.sh"
-dir = "/home/toxic/estate/ranch/squawk/oracle"
+run = "exec /home/toxic/estate/ranch/oracle/bin/run-oracle-core.sh"
+dir = "/home/toxic/estate/ranch/oracle"
 mise = false
 retry = true
 auto = ["start"]
-
-# ranch/oracle — project-owned daemon manifest. Source of truth for 'oracle-market'.
-# Owned by the ranch/squawk/oracle project; the parent only composes it.
-
 
 [daemons.oracle-market]
 run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/run.sh"
@@ -733,91 +743,6 @@ health_http = { url = "http://127.0.0.1:25200/health", interval = "30s", timeout
 env = { CUTTINGGATE_PORT = "25200", CUTTINGGATE_LOG_LEVEL = "info" }
 auto = ["start"]
 
-# ---- project: ranch/squawk (4 daemons) ----
-# ranch/squawk — project-owned daemon manifest. Source of truth for 'fleet-ui'.
-# Owned by the ranch/squawk project; the parent only composes it.
-
-
-[daemons.fleet-ui]
-# squawk fleet web UI + feed proxy (:25136). Serves BOTH lanes: funnel /fleet -> 127.0.0.1:25136
-# and tailnet-direct 100.72.199.93:25136 (binds 0.0.0.0). retry=true = correct failover.
-port = 25136
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/squawk/fleet-ui.ts"
-dir = "/home/toxic/estate/ranch/squawk"
-mise = false
-retry = true
-boot_start = true
-auto = ["start"]
-
-# ranch/squawk — project-owned daemon manifest. Source of truth for 'nats-tail'.
-# Owned by the ranch/squawk project; the parent only composes it.
-
-
-[daemons.nats-tail]
-run = "exec /home/toxic/estate/ranch/squawk/nats/run-tail.sh"
-dir = "/home/toxic/estate/ranch/squawk/nats"
-mise = false
-retry = true
-boot_start = true
-auto = ["start"]
-
-# ranch/squawk — project-owned daemon manifest. Source of truth for 'nats'.
-# Owned by the ranch/squawk project; the parent only composes it.
-
-
-[daemons.nats]
-run = "exec /usr/bin/nats-server -c /home/toxic/.local/share/nats/nats-server.conf"
-dir = "/home/toxic/.local/share/nats"
-mise = false
-retry = true
-boot_start = true
-ready_cmd = "ss -ltn 'sport = :4222' | grep -q LISTEN"
-auto = ["start"]
-
-# ranch/squawk — project-owned daemon manifest. Source of truth for 'squawk-feed'.
-# Owned by the ranch/squawk project; the parent only composes it.
-
-
-[daemons.squawk-feed]
-run = "exec /home/toxic/hatch/agents/ember/squawk-relay/run-feed.sh"
-dir = "/home/toxic/estate/ranch/squawk"
-mise = false
-retry = true
-boot_start = true
-auto = ["start"]
-
-# ---- project: ranch/squawk-ws (2 daemons) ----
-# ranch/squawk-ws — project-owned daemon manifest. Source of truth for 'squawk-ws-client'.
-# Owned by the ranch/squawk-ws project; the parent only composes it.
-
-[daemons.squawk-ws-client]
-run = "exec /usr/bin/python3 /home/toxic/estate/ranch/squawk-ws/squawk_ws_client_local.py"
-dir = "/home/toxic/estate/ranch/squawk-ws"
-mise = false
-retry = true
-boot_start = true
-depends = ["squawk-ws"]
-auto = ["start"]
-
-# 2026-09-16: event-driven supervisor for the refusal-hunt pipeline.
-# No cron, no sleep, no timers — main loop blocks in inotifywait.
-# Survives cell death (runs here, not in the cell); independent of the
-# scheduled-task safety gate (not a scheduled job).
-
-# ranch/squawk-ws — project-owned daemon manifest. Source of truth for 'squawk-ws'.
-# Owned by the ranch/squawk-ws project; the parent only composes it.
-
-
-[daemons.squawk-ws]
-port = 25147
-run = "exec /usr/bin/python3 /home/toxic/estate/ranch/squawk-ws/squawk_ws_server.py"
-dir = "/home/toxic/estate/ranch/squawk-ws"
-mise = false
-retry = true
-boot_start = true
-env = { SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/.fleet-bus/squawk-root" }
-auto = ["start"]
-
 # ---- project: ranch/stream-broker (1 daemon) ----
 # ranch/stream-broker — project-owned daemon manifest. Source of truth for 'sovereign-stream-broker'.
 # Owned by the ranch/stream-broker project; the parent only composes it.
@@ -835,8 +760,8 @@ ready_port = 25215
 [daemons.windmill]
 health_http = { url = "http://127.0.0.1:25219/api/status", interval = "10s", timeout = "5s", retries = 2 }
 port = 25219
-run = "exec bun --hot run /home/toxic/estate/projects/range/ranch/windmill/server.ts"
-dir = "/home/toxic/estate/projects/range/ranch/windmill"
+run = "exec bun --hot run /home/toxic/estate/ranch/windmill/server.ts"
+dir = "/home/toxic/estate/ranch/windmill"
 mise = false
 retry = true
 boot_start = true
@@ -1015,7 +940,7 @@ boot_start = true
 port = 25198
 ready_cmd = "ss -ltn 'sport = :25198' | grep -q LISTEN"
 health_port = { port = 25198, interval = "30s", timeout = "5s", retries = 3 }
-env = { AWR_MCP_PORT = "25198", MCP_FUNNEL_HOST = "github-mcp-host.tailc9ac71.ts.net", MCP_DENY_PATTERNS = " " }  # 2026-10-02 Chris: bridge blocks nothing; whitespace = empty denylist, audit log intact
+env = { AWR_MCP_PORT = "25198", MCP_FUNNEL_HOST = "github-mcp-host.tailc9ac71.ts.net" }
 auto = ["start"]
 
 # standalone/awrawr — project-owned daemon manifest. Source of truth for 'awrawr-ws-exec'.
@@ -1024,7 +949,7 @@ auto = ["start"]
 
 [daemons.awrawr-ws-exec]
 port = 25204
-env = { WS_EXEC_PORT = "25204", MCP_DENY_PATTERNS = " " }  # 2026-10-02 Chris: bridge blocks nothing
+env = { WS_EXEC_PORT = "25204" }
 # NOTE: runs the TRACKED source; /home/toxic/awrawr_ws_exec.py is kept
 # as a synced fallback copy (do not delete).
 run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/estate/bridge/awrawr_ws_exec.py"
