@@ -1,6 +1,0 @@
-# probe artifacts: raw sweep outputs never enter Git
-*.jsonl
-*.log
-ranking-*.json
-guidellm/*.json
-router-proof-*.json
