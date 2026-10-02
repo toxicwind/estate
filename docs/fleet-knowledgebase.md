@@ -21,7 +21,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 ### yote — the bridge box (the heavy iron)
 - All of these names are THE SAME BOX: **yote = bridge = bridge box = awrawr-pc = github-mcp-host.tailc9ac71.ts.net**
 - CachyOS/Arch, **16 cores / 62 GB RAM**, RTX 3090 24 GB. This is where heavy work runs.
-- Canonical worktree: `/home/toxic/sovereign` (origin = `toxicwind/sovereign-projects` — see §3).
+- Canonical worktree: `/home/toxic/estate` (origin = `toxicwind/sovereign-projects` — see §3). `/home/toxic/sovereign` is a deprecated symlink to it (2026-10-02 migration); old sovereign-prefixed paths below still resolve.
 - Reach it from hatch: `~/workspace/bin/yote-conn exec '<cmd>'`
 
 ### Key paths (yote)
@@ -274,6 +274,9 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | vesper | MCP gateway stewardship: gatehouse :25127 healthy; remove dead shep CLI scripts | Ember (Chris's main agent) | RUNNING (2026-10-02) |
 | emergent | wave4-emergent: paper-search x pattern-borrow combined build (lane-verify) | emergent-worker | DONE (2026-10-02) — be3be7dd84 |
 | warden | lasso + drift-watch lane: lasso hyper-race follow-ups, estate-reconcile alert-only watch | Ember (Chris's main agent) | RUNNING (2026-10-02) |
+| nightjar-coord | Night-lanes coordinator (2026-10-02 clean-slate relaunch): corral EAP + README op lane-state surveys via observable artifacts, fleet presenc | Ember (main chat) | RUNNING (2026-10-02) |
+| tally | pack verifier: audit DONE claims against observed evidence (tool calls, files, SHAs, test output) | ember | RUNNING (2026-10-02) |
+| sable | readme-op: ranch README component-table audit + repo README maximalization | Ember (Chris's main agent) | RUNNING (2026-10-02) |
 <!-- KB-ROLLUP:END -->
 
 
@@ -398,7 +401,7 @@ runtime_paths freely; those paths are EXEMPT from drift detection by constructio
   qb-manager atomic-deploy mechanics): check (read-only, exit 1 on drift),
   --apply (atomic tmp+rename restore from immutable copy or SIGNED git HEAD --
   unsigned HEAD alerts only, never restores), watch (inotify on build/bin dirs,
-  circuit breaker at 5 restores/60min, never a timer), proc-audit (declared vs
+  circuit breaker at 5 restores/60min, never a timer; 2026-10-02: watch skips missing dirs loudly (WATCH-DEGRADED log+squawk) instead of crash-looping), proc-audit (declared vs
   /proc exe, handles interpreted daemons via cmdline script path).
 - Configs are REPORT-ONLY in WS2 (shared tree holds ~198 dirty files from other
   crews -- auto-restoring from git would nuke live WIP). Signed-HEAD config
