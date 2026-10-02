@@ -6,12 +6,19 @@ description: >
 
 # Sovereign Hatch Toolkit
 
-Two subsystems, both tested (41/41 green):
+Seven subsystems, all tested (57/57 green):
 
 - **`hatch_core/noise_protocol.py`** — full `Noise_XX` handshake state machine
   (`write_msg1/read_msg1/write_msg2/read_msg2/write_msg3/read_msg3/split`),
   `CipherState`/`SymmetricState`, Ed25519 notary endorsement parsing,
-  length-prefixed framing. Only dependency: `cryptography`.
+  length-prefixed framing. Two modes: `custom` (RE'd client variant, default)
+  and `standard` (Noise XX per the framework spec); the nonce style follows
+  the mode. Only dependency: `cryptography`.
+- **`hatch_core/gateway_rpc.py`** — Noise_XX gateway RPC client: protobuf
+  `NoiseTransportFrame` chunking, `ServiceRequest`/`ServiceResponse`
+  envelopes (services daemon 0 / sentinel 1 / vault 2 / authd 3), serialized
+  reads, proxy-aware WebSocket connect, no-credentials transport diagnostic.
+  Depends on `websocket-client` + `cryptography`.
 - **`orchestrator/fsbus_engine.py`** — atomic POSIX message bus
   (`inbox/claimed/outbox/dead` + append-only `manifest.jsonl`): tmp+fsync+rename
   writes, `rename(2)` claims, lease reclamation, retry/dead-letter escalation,
@@ -30,6 +37,8 @@ Two subsystems, both tested (41/41 green):
 `config/gateway_config.json` — gateway connection parameters.
 
 Run `python3 -m unittest discover -s tests -p "test_*.py" -v` (or `make test`);
-`python3 scripts/verify_all.py` runs the six subsystem suites end to end
+`python3 scripts/verify_all.py` runs the seven subsystem suites end to end
 (noise handshake, notary, FSBus, identity parser, lesson router, MCP
-compliance). Subsystems never built are listed by the suite, not faked.
+compliance, gateway RPC). Subsystems never built are listed by the suite,
+not faked. `python3 scripts/gateway_diagnose.py` probes the gateway path
+without credentials (expected: transport OK, auth gate rejects).

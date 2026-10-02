@@ -8,7 +8,8 @@ Orchestrate, monitor, and secure your autonomous agent fleet with the sovereign-
 
 ## Features
 
-- **Hatch Core** — `Noise_XX` handshake protocol (X25519 ephemeral/static DH, SHA-256 HKDF-style key derivation) with Ed25519 notary endorsement token parsing
+- **Hatch Core** — `Noise_XX` handshake protocol (X25519 ephemeral/static DH, SHA-256 HKDF-style key derivation) with Ed25519 notary endorsement token parsing. Two handshake modes: `custom` (RE'd client variant) and `standard` (Noise XX per spec)
+- **Gateway RPC** — `hatch_core/gateway_rpc.py`: Noise_XX WebSocket client for the Hatch gateway — protobuf `NoiseTransportFrame` chunking, `ServiceRequest`/`ServiceResponse` envelopes, proxy-aware connect, no-credentials transport diagnostic (`scripts/gateway_diagnose.py`)
 - **Filesystem Bus** — Atomic POSIX filesystem message bus with immutable writes, race-free claims, and lease-expiry reclamation
 - **Identity Router** — Parses `~/IDENTITY.md` into structured identity dicts, routes lessons against ownership tables, and exposes MCP-compatible endpoints
 
@@ -66,24 +67,20 @@ identity:
 ## Optional Services
 
 - **MCP Server** — Zero-dependency stdio MCP server exposing `current_identity`, `route_lesson`, `standing_files`, `hatch_gateway_status`
-- **Gateway Connector** — Connects to external gateway services via WSS
+- **Gateway Connector** — `hatch_core/gateway_rpc.py` connects to the Hatch gateway via WSS + Noise_XX (`wss://hatch.metaaivm.com/v1/noise`); `scripts/gateway_diagnose.py` probes the path without credentials
 - **Audit Logger** — Records all operations for compliance and debugging
 
 ## Development
 
 ```bash
-# Clone the repository
-git clone https://github.com/toxic/estate/skills/sovereign-hatch-toolkit
-cd sovereign-hatch-toolkit
+# Run the test suite (57 tests)
+python3 -m unittest discover -s tests -p "test_*.py"
 
-# Install dependencies
-pip install -e .
+# Run all subsystem suites end to end (7 suites)
+python3 scripts/verify_all.py
 
-# Run the test suite
-pytest
-
-# Build the binary
-make build
+# Probe the gateway transport path (no credentials)
+python3 scripts/gateway_diagnose.py
 ```
 
 ## License
