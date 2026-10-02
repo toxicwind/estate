@@ -16,7 +16,8 @@
  *   a legacy { models } map is folded into the catalog once via the
  *   package's v1 migration path so the warm cache survives.
  *
- * Refresh runs at startup (non-blocking) and every 30 min.
+ * Refresh runs at startup (non-blocking), every 30 min on a jittered
+ * interval, and on events (SIGHUP, /admin/reload, request-triggered).
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
@@ -30,9 +31,18 @@ import {
 import { discover } from "../../../packages/providers/src/index.ts";
 import { applySigmaBackfill, sigmaCatalogInfo } from "./sigma-enrich.ts";
 
-const META_STATE_PATH = "/home/toxic/sovereign/.state/live-models.json";
-// No timer: refresh is event-driven (startup, admin, SIGHUP, request-triggered).
-// See startLiveDiscovery below.
+const META_STATE_PATHS = [
+  "/home/toxic/estate/.state/live-models.json",
+  "/home/toxic/sovereign/.state/live-models.json", // deprecated symlink path
+];
+function metaStatePath(): string {
+  for (const p of META_STATE_PATHS) {
+    try {
+      if (existsSync(p)) return p;
+    } catch { /* ignore */ }
+  }
+  return META_STATE_PATHS[0]!;
+}
 
 export const LIVE_STATUS: Record<
   string,
@@ -44,9 +54,10 @@ export const LIVE_STATUS: Record<
 // ---------------------------------------------------------------------------
 function persistMeta(): void {
   try {
-    mkdirSync(dirname(META_STATE_PATH), { recursive: true });
+    const p = metaStatePath();
+    mkdirSync(dirname(p), { recursive: true });
     writeFileSync(
-      META_STATE_PATH,
+      p,
       JSON.stringify(
         { fetchedAt: new Date().toISOString(), meta: LIVE_MODEL_META },
         null,
@@ -60,8 +71,9 @@ function persistMeta(): void {
 
 function loadPersistedMeta(): void {
   try {
-    if (!existsSync(META_STATE_PATH)) return;
-    const j = JSON.parse(readFileSync(META_STATE_PATH, "utf8"));
+    const p = metaStatePath();
+    if (!existsSync(p)) return;
+    const j = JSON.parse(readFileSync(p, "utf8"));
     if (j && typeof j.meta === "object") {
       for (const [p, meta] of Object.entries(j.meta)) {
         if (meta && typeof meta === "object")
@@ -159,7 +171,23 @@ export function startLiveDiscovery(): void {
   log(`live-models sigma catalog ${info.snapshot} (${info.rows} rows): backfilled ${n} models`);
   // non-blocking: serve from seeds + persisted catalog state immediately
   refreshLiveModels().catch((e) => log("live-models initial refresh failed:", e));
-  // Event-driven refresh triggers (no timers):
+  // Interval refresh (router-max): free-model discovery must track live
+  // provider state, not just startup. Jittered 30-min interval; the task
+  // body mandates it and the old file header always promised it.
+  // SOVEREIGN_LIVE_REFRESH=0 disables (event triggers stay).
+  if (process.env.SOVEREIGN_LIVE_REFRESH !== "0") {
+    const timer = setInterval(
+      () => {
+        log("live-models interval refresh");
+        refreshLiveModels().catch((e) =>
+          log("live-models interval refresh failed:", e),
+        );
+      },
+      30 * 60_000 + Math.floor(Math.random() * 300_000),
+    );
+    (timer as unknown as { unref?: () => void }).unref?.();
+  }
+  // Event-driven refresh triggers:
   // - SIGHUP: explicit operator signal to re-discover.
   // - /admin/reload (router.ts): already calls refreshLiveModels().
   // - Request-triggered: call refreshLiveModels() when a request observes

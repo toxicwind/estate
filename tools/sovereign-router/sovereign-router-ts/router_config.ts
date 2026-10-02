@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
+import { sigmaLookup } from "./sigma-enrich.ts";
 
 // Master providers package — the single source of truth for provider
 // definitions, live model discovery, aliases, seeds, and quarantine.
@@ -478,6 +479,53 @@ export function isAst(text: string): boolean {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Task-type classification (router-max): finer than the old isAst boolean.
+// code -> ast_race lane; reasoning -> deliberative hybrid lane; chat -> free
+// race. Keep the detector cheap and deterministic (regex, no LLM).
+// ---------------------------------------------------------------------------
+export type TaskType = "code" | "reasoning" | "chat";
+
+const REASONING_RE =
+  /(\bprove\b|\btheorem\b|\bderive\b|\bderivation\b|\bcalculate\b|\bcomputation\b|step[- ]by[- ]step|chain[- ]of[- ]thought|\bwhy does\b|\bexplain why\b|\balgorithm\b|\bcomplexity\b|trade[- ]?off|\bdesign decision\b|\boptimiz(e|ation)\b|\bdebug\b)/i;
+
+export function classifyTask(text: string): TaskType {
+  if (isAst(text)) return "code";
+  if (text && REASONING_RE.test(text.slice(0, 5000))) return "reasoning";
+  return "chat";
+}
+
+// ---------------------------------------------------------------------------
+// Cost-tier awareness (router-max): what this (provider, model) costs us.
+// free  — modelFree: live metadata prices it at 0 (or :free convention).
+// cheap — sigma cost metadata <= $1/1M input tokens.
+// standard — anything else with a price we know.
+// ---------------------------------------------------------------------------
+export type CostTier = "free" | "cheap" | "standard";
+
+export function costTier(p: string, mid: string): CostTier {
+  if (modelFree(p, mid)) return "free";
+  const hit = sigmaLookup(p, mid);
+  if (hit?.cost) {
+    if (hit.cost.inputPerMillion <= 1.0) return "cheap";
+    return "standard";
+  }
+  return "standard";
+}
+
+/**
+ * parseStickyOpt — X-Sovereign-Sticky header parsing (router-max).
+ * "1"/"true"/"yes"/"on" -> explicit opt-in; "0"/"false"/"no"/"off" ->
+ * explicit opt-out; absent/unparseable -> null (legacy behavior).
+ */
+export function parseStickyOpt(h: string | null): boolean | null {
+  if (h === null || h === undefined) return null;
+  const v = h.trim().toLowerCase();
+  if (v === "1" || v === "true" || v === "yes" || v === "on") return true;
+  if (v === "0" || v === "false" || v === "no" || v === "off") return false;
+  return null;
+}
+
 export function isExplicit(model: string): boolean {
   return (
     (model in CODING && CODING[model] != null) || isLocalSwapModelId(model)
@@ -497,4 +545,34 @@ export function json(
     status,
     headers: { "Content-Type": "application/json", ...headers },
   });
+}
+
+// ---------------------------------------------------------------------------
+// Chat-capability filter (Chris 2026-10-02).
+//
+// Guard, embedding, reranker, moderation, reward, and classifier models
+// return scores, labels, or vectors -- not chat text. On 2026-10-01
+// meta-llama/llama-prompt-guard-2-86m was selected for an ordinary
+// `model=auto` chat and its "completion" was the bare scalar
+// "0.0007095712935552001". These IDs must never enter chat candidate pools
+// (freeCandidates) and their scalar outputs must never pass the substance
+// gate. Pattern-based: live catalogs constantly add new guard/embedding
+// variants, so an explicit ID list would rot.
+const NON_CHAT_MODEL_PATTERNS: RegExp[] = [
+  /prompt-guard/i,
+  /llama-guard/i,
+  /\bguard\b/i,
+  /safeguard/i,
+  /embedding/i,
+  /embedder/i,
+  /rerank/i,
+  /moderation/i,
+  /toxicity/i,
+  /reward-model/i,
+  /\breward\b/i,
+  /classifier/i,
+  /nsfw/i,
+];
+export function isChatCapable(mid: string): boolean {
+  return !NON_CHAT_MODEL_PATTERNS.some((re) => re.test(mid));
 }

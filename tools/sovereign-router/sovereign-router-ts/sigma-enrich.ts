@@ -85,6 +85,13 @@ function loadIndex(): Map<string, SigmaModel> {
   return index;
 }
 
+/** Resolve a loose model alias against the sigma catalog variants
+ * ("grok-4.7" -> "x-ai/grok-4.7"). Returns the catalog id or null. */
+export function resolveSigmaAlias(id: string): string | null {
+  const hit = sigmaLookup("", id);
+  return hit ? hit.id : null;
+}
+
 /** Look up sigma metadata for an estate (provider, modelId) pair. */
 export function sigmaLookup(
   _provider: string,

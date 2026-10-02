@@ -581,10 +581,30 @@ export class Matrix {
     }
   }
 
+  private stickyOverride = new Map<string, { opt: boolean; at: number }>();
+
+  /** X-Sovereign-Sticky per-session override (router-max). null clears. */
+  setStickyOpt(sid: string, opt: boolean | null): void {
+    if (opt === null) this.stickyOverride.delete(sid);
+    else this.stickyOverride.set(sid, { opt, at: Date.now() });
+  }
+
+  private stickyOptedOut(sid: string): boolean {
+    const o = this.stickyOverride.get(sid);
+    if (!o) return false;
+    if (Date.now() - o.at > STICKY_TTL * 1000) {
+      this.stickyOverride.delete(sid);
+      return false;
+    }
+    return !o.opt;
+  }
+
   stickyGet(sid: string) {
+    if (this.stickyOptedOut(sid)) return [null, null] as [string | null, string | null];
     return this.health.stickyGet(sid, STICKY_TTL);
   }
   stickySet(sid: string, p: string, m: string) {
+    if (this.stickyOptedOut(sid)) return;
     this.health.stickySet(sid, p, m);
   }
 
