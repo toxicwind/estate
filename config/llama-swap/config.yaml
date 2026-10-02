@@ -20,9 +20,5 @@ models:
     aliases:
       - nemotron-lightning
     checkEndpoint: /health
-  nvidia/nemotron-3-ultra-550b-a55b:
-    proxy: http://127.0.0.1:9002
-    cmd:
-      /home/toxic/estate/tools/sovereign-router/bin/sovereign-router --port
-      9002 --model nvidia/nemotron-3-ultra-550b-a55b
-    ttl: 0
+  # RETIRED 2026-10-02: sovereign-router merged into flock :25193. The :25104
+  # daemon is gone and its binary is deleted, so this entry could never start.
