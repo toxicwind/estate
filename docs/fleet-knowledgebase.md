@@ -138,7 +138,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 
 **Rule: check this table AND `squawk read fleet` before starting work. Register yourself when you start; mark done when you finish. Coordinate, don't collide.**
 
-> **GENERATED TABLE — do not edit by hand.** Source of truth is `docs/fleet/crews/<crew>.md` (one file per crew). Regenerate with `bun projects/ops/bin/kb-rollup.ts`. Register via `fleet-onboard.sh --register`; mark done via `fleet-onboard.sh --done SHA`.
+> **GENERATED TABLE — do not edit by hand.** Source of truth is `docs/fleet/crews/<crew>.md` (one file per crew). Regenerate with `bun ranch/ops/bin/kb-rollup.ts`. Register via `fleet-onboard.sh --register`; mark done via `fleet-onboard.sh --done SHA`.
 
 <!-- KB-ROLLUP:START -->
 | Crew | Scope | Owner / coordinator | Status |
@@ -346,7 +346,7 @@ Retired/completed crews stay listed here with status DONE and their final commit
 16. **Anchored furry personas (Chris 2026-09-21).** Every agent takes its own furry persona — name, species, personality, a real character — but the persona must be ANCHORED: lane + concrete task in plain words ("Korra the snow-leopard — squawk lane, making the feed hot-reload" is a persona; "the readability relay... loudly held opinions about line-height" is generic fluff and gets rewritten as the job). Ember is the main agent's alone — no other instance uses it. Chats are living status titles: `[Your Name]: [current status]` (e.g. `Korra: making the feed hot-reload`), updated as the work moves — a stale title lies. Fleet announce format: `agent joined: <name> — <lane>/<task> (Ember's crew)`. First-class paste block: `skills/fleet-spawn/join-prompt.md`.
 17. **Cell workspace = tmp (Chris 2026-09-21).** The hatch cell workspace is transient scratch — everything on it is disposable. ALL durable files live ON THE BRIDGE (yote), inside your persona. Nothing is lost, ever: anything worth creating is worth committing — land real files in the right repo, commit, push to canonical main.
 
-18. **Per-crew KB ownership (Chris 2026-09-29).** §2 Active Crews is a GENERATED rollup — never hand-edit the table. Each crew owns `docs/fleet/crews/<crew>.md` (frontmatter: crew/scope/owner/status); register and mark-done through `fleet-onboard.sh`, which writes your file and regenerates the rollup via `bun projects/ops/bin/kb-rollup.ts`. Concurrent registrations cannot clobber each other: per-crew files merge cleanly and the table is always regenerable. If the rollup looks stale, re-run the rollup — never hand-edit §2.
+18. **Per-crew KB ownership (Chris 2026-09-29).** §2 Active Crews is a GENERATED rollup — never hand-edit the table. Each crew owns `docs/fleet/crews/<crew>.md` (frontmatter: crew/scope/owner/status); register and mark-done through `fleet-onboard.sh`, which writes your file and regenerates the rollup via `bun ranch/ops/bin/kb-rollup.ts`. Concurrent registrations cannot clobber each other: per-crew files merge cleanly and the table is always regenerable. If the rollup looks stale, re-run the rollup — never hand-edit §2.
 
 **Oracle-as-approval procedure (how to actually file one):**
 1. Frame as a dated yes/no question: `"Will <concrete outcome> by <YYYY-MM-DD>?"` For go/no-go, phrase so YES = proceed.
