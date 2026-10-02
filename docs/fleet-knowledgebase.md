@@ -77,10 +77,10 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 **Additional live services (verified 2026-10-01, cartographer):** `pitchfork list` is the authoritative daemon source (77 daemons running 2026-10-01; bidder-forge and bidder-scout retired/stopped). The port→process map below was verified live via `ss -ltnp` + `/proc/<pid>/cmdline` + cwd on yote.
 | Port | Service |
 |---|---|
-| 25102 | yote/openfang-bridge (`projects/yote` src/yote.ts — OpenFang HTTP API integration) |
+| 25102 | yote/openfang-bridge (`src/services/yote.ts` — OpenFang HTTP API integration) |
 | 25105 / 25106 / 25110 | mesh-front proxies → prometheus / hf-downloader / grafana (`src/services/mesh-front.ts --service <name>`) |
 | 25107 | null-g-proxy (`tools/null-g-proxy`) |
-| 25111 | chute (`projects/range/ranch/barn/chute/chute.mjs`) |
+| 25111 | chute (`ranch/barn/chute/chute.mjs`) |
 | 25113 | sovereign-github-search MCP (`sovereign-github-search/apps/mcp`) |
 | 25114 | sovereign-github-search frontend (next-server) |
 | 25115 | mesh-hub (`src/services/mesh-hub.ts`) |
