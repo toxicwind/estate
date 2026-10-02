@@ -1,6 +1,6 @@
 import re, subprocess, os
 
-SOV = "/home/toxic/sovereign"
+SOV = "/home/toxic/estate"
 
 # 1. Patch auth/nvidia.kdl validation model (dead 404 -> fastest alive)
 p = SOV + "/tau/engine/packages/catalog/src/compat/rules/auth/nvidia.kdl"

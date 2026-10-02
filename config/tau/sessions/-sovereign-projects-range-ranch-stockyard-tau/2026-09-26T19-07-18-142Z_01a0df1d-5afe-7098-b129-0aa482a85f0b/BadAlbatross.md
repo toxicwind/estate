@@ -1,7 +1,7 @@
 {
   "result": "readme-maximal audit complete — NEEDS UPDATE",
   "report": "/tmp/readme-maximal-report.md#02e3 (235 anchored lines, verified dry-run on /tmp/ranch-verify-full3.md)",
-  "target": "/home/toxic/sovereign/projects/range/ranch/README.md#8fc6 — 77 lines, untouched",
+  "target": "/home/toxic/estate/projects/range/ranch/README.md#8fc6 — 77 lines, untouched",
   "skill": "/home/toxic/.tau/agent/managed-skills/readme-maximal/SKILL.md#e4ca — 9-section maximal doctrine",
   "ground_truth": {
     "25100": "verified 25100/25193/25127/25111 vs mcp_config.json:2,552,554 and docs/ARCHITECTURE.md",

@@ -43,7 +43,7 @@ export interface MutateOptions {
   ensureGitignore?: boolean;
 }
 
-export const SOVEREIGN_PORT_SSOT = "/home/toxic/sovereign/config/ports.env";
+export const SOVEREIGN_PORT_SSOT = "/home/toxic/estate/config/ports.env";
 
 export const DEFAULT_GITIGNORE_PATTERNS = [
   ".env",

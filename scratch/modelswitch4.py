@@ -1,6 +1,6 @@
 import subprocess, os, json
 
-SOV = "/home/toxic/sovereign"
+SOV = "/home/toxic/estate"
 print("=== llama-swap.yaml symlink target ===")
 print(os.readlink(SOV + "/config/llama-swap.yaml"))
 print("=== sovereign-router binary? ===")

@@ -1,6 +1,6 @@
 import sys
 
-p = '/home/toxic/sovereign/pitchfork.toml'
+p = '/home/toxic/estate/pitchfork.toml'
 s = open(p).read()
 
 # (old_inner, new_inner) — inner = the ready_cmd string content (without TOML quotes)

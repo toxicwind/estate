@@ -1,5 +1,5 @@
 import json, subprocess, select, time, os, re
-MCP_SH = "/home/toxic/sovereign/projects/mesh/browserless/mcp.sh"
+MCP_SH = "/home/toxic/estate/projects/mesh/browserless/mcp.sh"
 tok = None
 try:
     for line in open("/home/toxic/.browserless/.env"):

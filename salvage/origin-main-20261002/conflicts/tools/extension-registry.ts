@@ -26,12 +26,12 @@ import { homedir } from "node:os";
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { YAML } from "bun";
 
-const SOVEREIGN_ROOT = "/home/toxic/sovereign";
-const TAU_ROOT = "/home/toxic/sovereign/projects/range/ranch/stockyard/tau";
-const AGENT_CONFIG = "/home/toxic/sovereign/config/tau/agent/config.yml";
+const SOVEREIGN_ROOT = "/home/toxic/estate";
+const TAU_ROOT = "/home/toxic/estate/projects/range/ranch/stockyard/tau";
+const AGENT_CONFIG = "/home/toxic/estate/config/tau/agent/config.yml";
 const TAU_CONFIG = "/home/toxic/.tau/config.yml";
 /** Supervisor configs, which is where `-e <ext>` flags actually live. */
-const SUPERVISOR_CONFIGS = ["/home/toxic/sovereign/pitchfork.toml", "/home/toxic/sovereign/mise.local.toml"];
+const SUPERVISOR_CONFIGS = ["/home/toxic/estate/pitchfork.toml", "/home/toxic/estate/mise.local.toml"];
 
 export interface ExtensionEntry {
 	/** The path string the loader will hand to the module loader. */
@@ -191,7 +191,7 @@ function collectSupervisorExtensions(): string[] {
 export async function buildRegistry(configuredPaths: string[] = []): Promise<Registry> {
 	const { discoverExtensionPaths } = await import(
 		/* @vite-ignore */ join(TAU_ROOT, "packages/coding-agent/src/extensibility/extensions/loader.ts")
-	) as typeof import("/home/toxic/sovereign/projects/range/ranch/stockyard/tau/packages/coding-agent/src/extensibility/extensions/loader");
+	) as typeof import("/home/toxic/estate/projects/range/ranch/stockyard/tau/packages/coding-agent/src/extensibility/extensions/loader");
 
 	const configured = [...collectConfiguredExtensions(), ...collectSupervisorExtensions(), ...configuredPaths];
 	const discovered = await discoverExtensionPaths(configured, homedir(), [], {});

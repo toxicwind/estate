@@ -1,5 +1,5 @@
 {"type":"title","v":1,"title":"","updatedAt":"2026-09-25T06:27:35.468Z","pad":"                                                                                                                                                                              "}
-{"type":"session","version":3,"id":"01a0d73f-75ac-72c2-8dbb-2c72d4f9169d","timestamp":"2026-09-25T06:27:35.468Z","cwd":"/home/toxic/sovereign","parentSession":"/home/toxic/.tau/sessions/-sovereign/2026-09-25T05-18-28-238Z_01a0d700-2d8e-732b-933e-012cdbc05c45.jsonl"}
+{"type":"session","version":3,"id":"01a0d73f-75ac-72c2-8dbb-2c72d4f9169d","timestamp":"2026-09-25T06:27:35.468Z","cwd":"/home/toxic/estate","parentSession":"/home/toxic/.tau/sessions/-sovereign/2026-09-25T05-18-28-238Z_01a0d700-2d8e-732b-933e-012cdbc05c45.jsonl"}
 {"type":"model_change","id":"13009fa7","parentId":null,"timestamp":"2026-09-25T06:27:35.650Z","model":"cerebras/zai-glm-4.6","resolvedModelIsFallback":false}
 {"type":"thinking_level_change","id":"0221c17c","parentId":"13009fa7","timestamp":"2026-09-25T06:27:35.650Z","thinkingLevel":null,"configured":null}
 {"type":"service_tier_change","id":"1185e8f3","parentId":"0221c17c","timestamp":"2026-09-25T06:27:35.650Z","serviceTier":{"openai":"auto"}}

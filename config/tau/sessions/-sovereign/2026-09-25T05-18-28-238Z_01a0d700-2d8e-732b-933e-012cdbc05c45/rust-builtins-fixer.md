@@ -102,4 +102,4 @@ let mut cmd = std::process::Command::new("/usr/bin/rg")
    - Add `#[cfg(test)]` doc comment to README about CLI fallback behavior  
    - Confirm no elevated permissions required for `/usr/bin/rg`[🚀] Resume work  
 Edit `/home/toxic/projects/tau/crates/pi-builtins/src/rg.rs` with replaced `std::env` fallback and walker logic updates.[🛠️] Edit rg.rs with corrected argument handling and walker flags[👁️] Test rg --uuu --hidden behavior in /bin  
-Run: `sudo chmod +x /usr/bin/rg`, then `/home/toxic/sovereign/projects/tau/crates/pi-builtins/src/rg --uuu --hidden --p`
+Run: `sudo chmod +x /usr/bin/rg`, then `/home/toxic/estate/projects/tau/crates/pi-builtins/src/rg --uuu --hidden --p`

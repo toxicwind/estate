@@ -29,7 +29,7 @@ export function safeSearch(options: SafeSearchOptions): {
     paths = [
       "/home/toxic/.tau",
       "/home/toxic/.config",
-      "/home/toxic/sovereign",
+      "/home/toxic/estate",
     ],
     maxLines = 100,
     timeoutMs = 5000,

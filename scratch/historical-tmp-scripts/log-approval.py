@@ -9,6 +9,6 @@ ev = {
     "note": "oracle abstained (fail-closed: CP lower bound 0.000 < 0.80, no calibration data) -> HUMAN step per escalation ladder",
     "ts": time.time(),
 }
-with open("/home/toxic/sovereign/agents/oracle-market/ledger/ledger.jsonl", "a") as f:
+with open("/home/toxic/estate/agents/oracle-market/ledger/ledger.jsonl", "a") as f:
     f.write(json.dumps(ev) + "\n")
 print("logged oracle-approval:", ev["verdict"])

@@ -77,7 +77,7 @@
 - GitHub research COMPLETE: no mature drop-in streamable-HTTP remote-exec MCP server. Only candidate `gelse/ssh-mcp` (7*, MIT, Python, streamable HTTP + header auth) — revisit in 1-2 months; `tufantunc/ssh-mcp` (726*) is a stdio SSH client, blocked for the funnel path. Recommendation: harden current bridge in place (allowlist/denylist, JSONL audit log).
 - YOLO mode: `#yolo ` prefix bypasses the denylist (still header-authenticated, audited `yolo:true`). Patch script `~/workspace/your_files/yolo_patch.py`.
 - Parquet audit live: `~/awrawr_mcp_audit_export.py` compacts `~/.awrawr_mcp_audit.jsonl` -> parquet (typed schema, snappy); daily systemd timer enabled; JSONL stays the append-safe source of truth.
-- Sovereign audit 2026-09-14 (/home/toxic/sovereign, 60G, disk 61% healthy): tau/ 34G (engine/target 16G Rust artifacts); projects/tau/ 18G = REAL dir not symlink (possible duplicate — flagged to user). Secrets hygiene: .env/.env.local/.envrc present (contents NOT read); mock_token_file.txt, test_secret_sample.txt at top level.
+- Sovereign audit 2026-09-14 (/home/toxic/estate, 60G, disk 61% healthy): tau/ 34G (engine/target 16G Rust artifacts); projects/tau/ 18G = REAL dir not symlink (possible duplicate — flagged to user). Secrets hygiene: .env/.env.local/.envrc present (contents NOT read); mock_token_file.txt, test_secret_sample.txt at top level.
 
 ## nvidia-swarm-lens sanitize (2026-09-14)
 - BLOCKED on going public until Chris revokes the exposed GitHub PAT and rotates the other API keys — committed secrets must be treated as compromised even in a private repo. Flip to public only after his confirmation.

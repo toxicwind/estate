@@ -1,13 +1,13 @@
 from pathlib import Path
-p = Path('/home/toxic/sovereign/pitchfork.toml')
+p = Path('/home/toxic/estate/pitchfork.toml')
 t = p.read_text()
 anchor = '[daemons.oracle-core]'
 assert anchor in t, 'anchor not found'
 assert 'daemons.oracle-chat' not in t, 'already present'
 block = '''
 [daemons.oracle-chat]
-run = "exec /home/toxic/sovereign/agents/oracle-market/bin/oracle_chat.py"
-dir = "/home/toxic/sovereign/agents/oracle-market"
+run = "exec /home/toxic/estate/agents/oracle-market/bin/oracle_chat.py"
+dir = "/home/toxic/estate/agents/oracle-market"
 mise = false
 retry = true
 env = { ORACLE_CHANNEL = "/home/toxic/.shingle/squawk-root/bid-market" }

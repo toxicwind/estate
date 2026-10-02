@@ -10,10 +10,10 @@ def patch(path, old, new):
         f.write(c.replace(old, new))
     print("OK", path)
 
-patch("/home/toxic/sovereign/src/coyote/coyote-loop.py",
+patch("/home/toxic/estate/src/coyote/coyote-loop.py",
       'default=os.environ.get("COYOTE_MODEL", "kimi-auto")',
       'default=os.environ.get("COYOTE_MODEL", "kimi-k3")')
-patch("/home/toxic/sovereign/stack/services/coyote.sh",
+patch("/home/toxic/estate/stack/services/coyote.sh",
       'export COYOTE_MODEL="${COYOTE_MODEL:-kimi-auto}"',
       'export COYOTE_MODEL="${COYOTE_MODEL:-kimi-k3}"')
 print("DONE")

@@ -1,6 +1,6 @@
 **Plan**
 
-**Problem**: `cargo check -p pi-builtins` fails because workspace member `crates/pi-ast` is missing its `Cargo.toml`. The workspace manifest (`/home/toxic/sovereign/Cargo.toml`) lists `crates/pi-ast` as a member, but the file system lacks `/home/toxic/sovereign/crates/pi-ast/Cargo.toml`.
+**Problem**: `cargo check -p pi-builtins` fails because workspace member `crates/pi-ast` is missing its `Cargo.toml`. The workspace manifest (`/home/toxic/estate/Cargo.toml`) lists `crates/pi-ast` as a member, but the file system lacks `/home/toxic/estate/crates/pi-ast/Cargo.toml`.
 
 **Investigation Findings**:
 - The root `Cargo.toml` shows `crates/pi-ast` is an explicit workspace member.
@@ -9,7 +9,7 @@
 
 **Execution Steps**:
 1. **Check existence and contents of `crates/pi-ast`**:
-   - Navigate to sovereign root (`/home/toxic/sovereign`).
+   - Navigate to sovereign root (`/home/toxic/estate`).
    - List `crates/` directory to confirm `pi-ast` presence.
    - If directory exists, check for `Cargo.toml`; if missing, inspect for any ignored/residual files.
 2. **Restore `pi-ast/Cargo.toml` if absent**:

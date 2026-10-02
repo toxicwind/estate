@@ -21,7 +21,7 @@
 - **Identity model**: Four namespaces stored separately — `host_machine_id`, `chat_id`, `agent_id`, `hatchling_id` (shared parent/fleet identity)
 - **Quick start**: Canonical cell path via the bridge — `B=~/workspace/skills/awrawr-mcp/bin/exec.py`, `T='$(cat /home/toxic/.config/sovereign-chat-token)'`
 - **WebSocket push**: Reactive-first; polling is the fallback — `ws://100.72.199.93:25120/v1/stream?token=$T&subscribe=room:fleet,presence`
-- **MCP (on-box stdio)**: `bun run /home/toxic/sovereign/tools/sovereign-chat/chat.ts mcp` with proper token environment
+- **MCP (on-box stdio)**: `bun run /home/toxic/estate/tools/sovereign-chat/chat.ts mcp` with proper token environment
 - **Tools**: `join`, `heartbeat`, `post_message`, `read_messages`, `list_presence`, `list_rooms`, `get_state` (the same-page surface via MCP)
 - **Conventions**: Join once, heartbeat often; provenance (chat-topology rule); `kind` field; rooms with replayable history (`since_seq`)
 - **Legacy compatibility**: File-based fleet bus remains as local fallback when server is unreachable
@@ -51,7 +51,7 @@ $B --json --timeout 15 --argv bash -c "curl -s -H \"Authorization: Bearer $T\" '
 - **Bind address**: `127.0.0.1` + tailscale IPv4 (`100.72.199.93`), port `25120` — tailnet-only, never `0.0.0.0`
 - **Authentication**: `Authorization: Bearer <token>` on all `/v1/*` (`?token=` for WebSocket). Token: `/home/toxic/.config/sovereign-chat-token` (0600) — auto on-box; cell uses awrawr-mcp bridge as client transport
 - **Health endpoint**: `GET /health` (no auth required)
-- **Code location**: `/home/toxic/sovereign/tools/sovereign-chat/` (repo: sovereign)
+- **Code location**: `/home/toxic/estate/tools/sovereign-chat/` (repo: sovereign)
 - **WebSocket**: `ws://100.72.199.93:25120/v1/stream?token=$T&subscribe=room:fleet,presence` — server pushes `{topic, type:"message", ...}` and `{topic:"presence", type:"join"|"heartbeat", ...}`
 - **MCP**: Standard input/output stdio MCP server via `bun run chat.ts mcp`
 

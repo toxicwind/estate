@@ -2,7 +2,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const SOV_ROOT = process.env.SOVEREIGN_ROOT || "/home/toxic/sovereign";
+const SOV_ROOT = process.env.SOVEREIGN_ROOT || "/home/toxic/estate";
 const PORTS_FILE = join(SOV_ROOT, "stack", "ports.env");
 
 // Parse ports.env for dynamic discovery

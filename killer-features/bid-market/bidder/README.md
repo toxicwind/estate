@@ -49,7 +49,7 @@ flowchart LR
 ## Quick start
 
 ```bash
-cd /home/toxic/sovereign/killer-features/bid-market
+cd /home/toxic/estate/killer-features/bid-market
 for p in flash mule specialist; do
   nohup python3 bidder/bidder.py --profile $p > bidder/var/bidder-$p.log 2>&1 &
 done

@@ -1,7 +1,7 @@
 # Sovereign Master Consolidation & First-Class Tooling Plan
 
 ## Context
-The workstation (CachyOS / BTRFS on NVMe, 820GB used across /home/toxic) contains overlapping git worktrees (163GB sovereign, 177GB projects), uncompressed historical cell backups (~25GB), legacy git snapshots (17GB), and scattered temporary scripts. The goal is to establish `/home/toxic/sovereign` as the single authoritative master repository, safely consolidate and prune redundant worktrees, leverage native BTRFS block-level extent deduplication (`jdupes -B` / `duperemove` via `FIDEDUPERANGE`) without reinventing the wheel, and expose a first-class unified Bun MCP server (`sovereign-mcp-server.ts`) for all agent tooling.
+The workstation (CachyOS / BTRFS on NVMe, 820GB used across /home/toxic) contains overlapping git worktrees (163GB sovereign, 177GB projects), uncompressed historical cell backups (~25GB), legacy git snapshots (17GB), and scattered temporary scripts. The goal is to establish `/home/toxic/estate` as the single authoritative master repository, safely consolidate and prune redundant worktrees, leverage native BTRFS block-level extent deduplication (`jdupes -B` / `duperemove` via `FIDEDUPERANGE`) without reinventing the wheel, and expose a first-class unified Bun MCP server (`sovereign-mcp-server.ts`) for all agent tooling.
 
 ---
 
@@ -18,21 +18,21 @@ The workstation (CachyOS / BTRFS on NVMe, 820GB used across /home/toxic) contain
 
 ### Phase 2: Sovereign Master Worktree & Repo Consolidation
 1. **Worktree Audit & Inventory**:
-   - Query all registered git worktrees using `git -C /home/toxic/sovereign worktree list`.
+   - Query all registered git worktrees using `git -C /home/toxic/estate worktree list`.
    - For each worktree (`sovereign-503`, `sovereign-clean`, `sovereign-sweep-main`, `dash-main`, `herd-healer`, `sovereign-wt-*`):
      - Check `git status --porcelain` for uncommitted changes.
      - Check `git log -1` against `origin/main` and `forge/gate-retire-final`.
 2. **Safe Merge & Prune Protocol**:
      - Stash or commit any unique branch state to sovereign backup branches (`backup/wt-*`).
-     - Remove stale worktrees cleanly with `git -C /home/toxic/sovereign worktree remove --force <path>` followed by `git worktree prune`.
-     - Retain `/home/toxic/sovereign` as the single active working tree.
+     - Remove stale worktrees cleanly with `git -C /home/toxic/estate worktree remove --force <path>` followed by `git worktree prune`.
+     - Retain `/home/toxic/estate` as the single active working tree.
 
 ### Phase 3: BTRFS Block-Level Extent Deduplication (No Reinventing the Wheel)
 1. **BTRFS Reflink Deduplication**:
    - Install/verify `jdupes` / `duperemove` via pacman (`sudo pacman -S --needed --noconfirm jdupes duperemove`).
-   - Run block-level deduplication across heavy duplicate directories (`/home/toxic/projects`, `/home/toxic/sovereign`, `/home/toxic/cell-backup-*`) using BTRFS `FIDEDUPERANGE` ioctl:
+   - Run block-level deduplication across heavy duplicate directories (`/home/toxic/projects`, `/home/toxic/estate`, `/home/toxic/cell-backup-*`) using BTRFS `FIDEDUPERANGE` ioctl:
      ```bash
-     jdupes -r -B /home/toxic/projects /home/toxic/sovereign
+     jdupes -r -B /home/toxic/projects /home/toxic/estate
      ```
    - This clones duplicate data blocks on disk without modifying or breaking any file paths or symlinks.
 2. **Archive Isolation**:
@@ -49,36 +49,36 @@ The workstation (CachyOS / BTRFS on NVMe, 820GB used across /home/toxic) contain
      - `estate_safe_rg`: Token-budgeted regex/AST code search.
      - `estate_paper_search`: Queries `race_papers.py` on arXiv / alphaXiv.
 2. **Register in `shep` Gateway (`mcp_config.json`)**:
-   - Add `sovereign-tools` upstream to `/home/toxic/sovereign/mesh/gateway/mcp_config.json`:
+   - Add `sovereign-tools` upstream to `/home/toxic/estate/mesh/gateway/mcp_config.json`:
      ```json
      {
        "name": "sovereign-tools",
        "protocol": "stdio",
        "command": "bun",
-       "args": ["/home/toxic/sovereign/helpers/sovereign-mcp-server.ts"],
+       "args": ["/home/toxic/estate/helpers/sovereign-mcp-server.ts"],
        "enabled": true
      }
      ```
-   - Restart `shep` via pitchfork: `cd /home/toxic/sovereign && pitchfork restart shep`.
+   - Restart `shep` via pitchfork: `cd /home/toxic/estate && pitchfork restart shep`.
 
 ### Phase 5: End-to-End Estate Verification
 1. **Verify Services in Pitchfork & Mise**:
-   - `mise -C /home/toxic/sovereign run health-hindsight` $\to$ Healthy (`:25117`).
-   - `mise -C /home/toxic/sovereign run health-tau` $\to$ Healthy (`:25111`).
+   - `mise -C /home/toxic/estate run health-hindsight` $\to$ Healthy (`:25117`).
+   - `mise -C /home/toxic/estate run health-tau` $\to$ Healthy (`:25111`).
    - `sovereign/awrawr-ws-exec` $\to$ Healthy (`:25204`).
 2. **Verify Tooling**:
    - `tau audit` $\to$ 13 PASS, 0 FAIL.
-   - `/home/toxic/sovereign/bin/estate-scan` $\to$ PASS (0 broken bin symlinks).
-   - `/home/toxic/sovereign/projects/mesh/bin/openfang-mesh-probe.sh` $\to$ `PROBE-PASS`.
+   - `/home/toxic/estate/bin/estate-scan` $\to$ PASS (0 broken bin symlinks).
+   - `/home/toxic/estate/projects/mesh/bin/openfang-mesh-probe.sh` $\to$ `PROBE-PASS`.
 
 ---
 
 ## Critical Files & Anchors
 - `/home/toxic/.bashrc.env`: Idempotent PATH + first-class `ffs`/`fd`/`rg` tool routing.
-- `/home/toxic/sovereign/pitchfork.toml`: Service SSOT for all 25xxx daemons.
-- `/home/toxic/sovereign/mesh/gateway/mcp_config.json`: Shep upstream configuration.
-- `/home/toxic/sovereign/helpers/sovereign-mcp-server.ts`: Unified Bun MCP server.
-- `/home/toxic/sovereign/helpers/estate-scanner.ts`: High-speed filesystem & path validator.
+- `/home/toxic/estate/pitchfork.toml`: Service SSOT for all 25xxx daemons.
+- `/home/toxic/estate/mesh/gateway/mcp_config.json`: Shep upstream configuration.
+- `/home/toxic/estate/helpers/sovereign-mcp-server.ts`: Unified Bun MCP server.
+- `/home/toxic/estate/helpers/estate-scanner.ts`: High-speed filesystem & path validator.
 
 ---
 

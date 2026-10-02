@@ -1,7 +1,7 @@
 {
   "agent": "pi-agent",
   "model": "longcat-2.0-free",
-  "brain": "/home/toxic/sovereign/brain/pi-agent/",
+  "brain": "/home/toxic/estate/brain/pi-agent/",
   "reactive_mode": {
     "enabled": true,
     "on_task_complete": "Find 10 more complex maximal tasks",
@@ -306,7 +306,7 @@
           "id": "BR11.1",
           "name": "Create brain folder",
           "status": "completed",
-          "desc": "/home/toxic/sovereign/brain/"
+          "desc": "/home/toxic/estate/brain/"
         },
         {
           "id": "BR11.2",

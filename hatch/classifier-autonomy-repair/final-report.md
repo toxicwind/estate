@@ -36,7 +36,7 @@ On 2026-09-30 Chris corrected the framework naming:
 
 The word "tasks" in the Spark specification means **internal workflow/state-machine operations**, not Google Tasks consumer CRUD. This distinction is load-bearing: the category-error detector (Section 4) exists because an internal "tasks" concept was misrouted to the Google Tasks consumer API.
 
-Correction recorded at `/home/toxic/sovereign/hatch/classifier-autonomy-repair/TERMINOLOGY.md` (SHA-256 `5b7c208d1f48241eaa04d030fd1640dc0f1a3626c5906aecdf328a7f82d55859`).
+Correction recorded at `/home/toxic/estate/hatch/classifier-autonomy-repair/TERMINOLOGY.md` (SHA-256 `5b7c208d1f48241eaa04d030fd1640dc0f1a3626c5906aecdf328a7f82d55859`).
 
 ---
 
@@ -107,7 +107,7 @@ All 13 non-system scheduled tasks carry the canonical autonomy directive at `~/w
 
 The required shared task-generation/autonomy mechanism **already existed** under ranch. Found via `/home/toxic` search before new implementation (satisfying search-first constraint).
 
-**Location:** `/home/toxic/sovereign/projects/range/ranch/task-launch/`
+**Location:** `/home/toxic/estate/projects/range/ranch/task-launch/`
 
 **Source:**
 - `src/directive.ts` — pre-agent directive layer
@@ -124,7 +124,7 @@ The required shared task-generation/autonomy mechanism **already existed** under
 
 **Runtime state (2026-09-30 15:33 MDT):**
 - Pitchfork entry `[daemons.task-launch]`
-- Queue root: `/home/toxic/sovereign/hatch/task-launch/queue/`
+- Queue root: `/home/toxic/estate/hatch/task-launch/queue/`
 - Receipt observed: `e2e-probe-1790802978311.json`
 
 **Commit:** `58617e1` — "task-launch: honest yote-side execution daemon + pre-agent directive layer"
@@ -135,7 +135,7 @@ The required shared task-generation/autonomy mechanism **already existed** under
 
 ### 4.1 New Detector: isMisattributedTaskDispatch()
 
-Added to `/home/toxic/sovereign/projects/range/ranch/classifier/src/detectors.ts`:
+Added to `/home/toxic/estate/projects/range/ranch/classifier/src/detectors.ts`:
 
 ```typescript
 export function isMisattributedTaskDispatch(tool: string, context: string): boolean {
@@ -160,7 +160,7 @@ Four new tests in `tests/regressions.test.ts`:
 ### 4.3 Integration
 
 Classifier integrated as first-class ranch Moon project:
-- **Location:** `/home/toxic/sovereign/projects/range/ranch/classifier/`
+- **Location:** `/home/toxic/estate/projects/range/ranch/classifier/`
 - **Commit:** `26149b4` — "classifier: first-class autonomy failure-mode detectors"
 - **Remote:** `26149b4e4b4fafc3452d3ff35552d436c32088d5` verified via `git ls-remote`
 
@@ -170,13 +170,13 @@ Classifier integrated as first-class ranch Moon project:
 
 ### 5.1 MetaAI Corpus Expansion
 
-**Collector:** `/home/toxic/sovereign/projects/range/ranch/metaaivm/collector.ts`
+**Collector:** `/home/toxic/estate/projects/range/ranch/metaaivm/collector.ts`
 
 **Surfaces added (2026-09-30):**
 - `/search/commits` — 40 new commits harvested
 - GraphQL discussions search — 0 results (no discussions found)
 
-**Dedup/Rank:** `/home/toxic/sovereign/projects/range/ranch/metaaivm/dedup-rank.ts`
+**Dedup/Rank:** `/home/toxic/estate/projects/range/ranch/metaaivm/dedup-rank.ts`
 
 **Results:**
 - Total: 73 items (40 commits, 24 code, 5 PRs, 4 issues, 0 repos, 0 discussions)
@@ -210,7 +210,7 @@ Classifier integrated as first-class ranch Moon project:
 
 ### 6.1 Filesystem Project
 
-**Root:** `/home/toxic/sovereign/hatch/classifier-autonomy-repair/`
+**Root:** `/home/toxic/estate/hatch/classifier-autonomy-repair/`
 
 **Contents:**
 - `TERMINOLOGY.md` — Spark/Google VM correction (SHA-256 `5b7c208d1f48241eaa04d030fd1640dc0f1a3626c5906aecdf328a7f82d55859`)
@@ -229,7 +229,7 @@ Classifier integrated as first-class ranch Moon project:
 
 ### 6.3 Executed-Code Image
 
-**File:** `/home/toxic/sovereign/hatch/classifier-autonomy-repair/failure-modes-diagram.png`
+**File:** `/home/toxic/estate/hatch/classifier-autonomy-repair/failure-modes-diagram.png`
 
 **Generation:** Python 3 + matplotlib, executed via `python3 failure-modes-diagram.py`
 

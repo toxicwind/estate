@@ -21,8 +21,8 @@ pt_block = (
     "[daemons.nim-kimi-sidecar]\n"
     'health_http = { url = "http://127.0.0.1:25163/health", interval = "30s", timeout = "5s", retries = 3 }\n'
     "port = 25163\n"
-    'run = "exec python3 /home/toxic/sovereign/bin/nim-kimi-sidecar.py"\n'
-    'dir = "/home/toxic/sovereign"\n'
+    'run = "exec python3 /home/toxic/estate/bin/nim-kimi-sidecar.py"\n'
+    'dir = "/home/toxic/estate"\n'
     "mise = false\n"
     "retry = true\n"
     "boot_start = true\n"
@@ -95,7 +95,7 @@ else:
         "  # the sidecar). Single target, no standby: failures surface loud and\n"
         "  # verbatim. NEVER repointed at another model to hide a provider failure.\n"
         "  kimi-k3-nim:\n"
-        "    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target nim-kimi/moonshotai/kimi-k3 --name kimi-k3-nim\n"
+        "    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target nim-kimi/moonshotai/kimi-k3 --name kimi-k3-nim\n"
         '    description: "Kimi K3 via NVIDIA NIM (genuine moonshotai/kimi-k3, cold-aware). Fails loudly; no fallback."\n'
         "    metadata:\n"
         "      alias_of: nim-kimi/moonshotai/kimi-k3\n"

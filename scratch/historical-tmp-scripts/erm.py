@@ -15,7 +15,7 @@ old = '''# Router-configured alias forwarder: same routing as the herd
 # never a silent fallback." Retargeted to the moonshot peer's Kimi IDs
 # in peer/<id> form (live-probed: prefixed routes directly, bare IDs
 # are unreliable -- kimi-k2.7-code bare -> 404).
-run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target moonshot/kimi-k2.6 --standby moonshot/kimi-k2.7-code --name kimi-auto"'''
+run = "exec python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target moonshot/kimi-k2.6 --standby moonshot/kimi-k2.7-code --name kimi-auto"'''
 new = '''# Router-configured alias forwarder: same routing as the herd
 # kimi-auto entry (--config-dir fragment). --target/--standby/--advance-on
 # MUST match /home/toxic/kimi-auto/herd.d/kimi-auto.yaml. Selection lives
@@ -24,7 +24,7 @@ new = '''# Router-configured alias forwarder: same routing as the herd
 # -- Kimi routes are never defaults; they route Kimi FREE models maximally.
 # Chain: openrouter-free kimi :free IDs -> hf-free Kimi-K3; advance on
 # 5xx/conn/429/402/404; 401 never advances. Paid Kimi excluded (free only).
-run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"'''
+run = "exec python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"'''
 assert old in src, "pitchfork anchor missing"
 open(P, "w").write(src.replace(old, new))
 print("pitchfork.toml updated")

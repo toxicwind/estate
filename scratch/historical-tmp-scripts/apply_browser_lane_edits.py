@@ -3,9 +3,9 @@
 # Forge 2026-09-21. Run on yote as toxic.
 import sys
 
-TOML = "/home/toxic/sovereign/pitchfork.toml"
-FUNNEL = "/home/toxic/sovereign/projects/yote/ops/funnel-map.sh"
-ROUTER = "/home/toxic/sovereign/projects/mesh/browserless/browser-router.sh"
+TOML = "/home/toxic/estate/pitchfork.toml"
+FUNNEL = "/home/toxic/estate/projects/yote/ops/funnel-map.sh"
+ROUTER = "/home/toxic/estate/projects/mesh/browserless/browser-router.sh"
 
 changed = []
 
@@ -36,7 +36,7 @@ def toml_edit(c):
 # The viewer is INTERACTIVE (Chris 2026-09-21: "user should be able to
 # interact or help"); :6080 itself stays loopback-only.
 port = 6081
-run = "exec python3 /home/toxic/sovereign/projects/mesh/browserless/viewer/agent-viewer-gate.py"
+run = "exec python3 /home/toxic/estate/projects/mesh/browserless/viewer/agent-viewer-gate.py"
 dir = "."
 mise = false
 retry = true

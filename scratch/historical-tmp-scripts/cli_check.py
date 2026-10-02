@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, "/home/toxic/sovereign/projects/mesh/squawk")
+sys.path.insert(0, "/home/toxic/estate/projects/mesh/squawk")
 from pathlib import Path
 import chat
 p = Path("/home/toxic/.shingle/squawk-root/fleet/11978-estate-reconcile.md")

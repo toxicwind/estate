@@ -1,11 +1,11 @@
 PLAN FOR MONOREPO RECONCILIATION
 
-GOAL: Remove the engine symlink and unify /home/toxic/sovereign (root) and /home/toxic/sovereign/projects/tau into a coherent monorepo, preserving all legitimate customizations.
+GOAL: Remove the engine symlink and unify /home/toxic/estate (root) and /home/toxic/estate/projects/tau into a coherent monorepo, preserving all legitimate customizations.
 
 STEPS:
 
 1. INITIAL STATE AUDIT
-   - Confirm engine symlink: engine -> /home/toxic/sovereign/projects/tau
+   - Confirm engine symlink: engine -> /home/toxic/estate/projects/tau
    - List top-level directories in root and projects/tau to understand structure
    - Identify divergent files between root and projects/tau (excluding ignored files)
 

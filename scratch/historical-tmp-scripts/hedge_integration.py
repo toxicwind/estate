@@ -7,7 +7,7 @@ production code path. Breaker state is isolated to a temp file (same
 convention as bin/test_oracle_reliability.py).
 
 Run on awrawr-pc:
-  cd /home/toxic/sovereign/agents/oracle-market && python3 /tmp/hedge_integration.py
+  cd /home/toxic/estate/agents/oracle-market && python3 /tmp/hedge_integration.py
 Exit 0 = all pass.
 """
 import importlib.util
@@ -17,7 +17,7 @@ import sys
 import tempfile
 import time
 
-BIN = "/home/toxic/sovereign/agents/oracle-market/bin"
+BIN = "/home/toxic/estate/agents/oracle-market/bin"
 sys.path.insert(0, BIN)
 import engine  # noqa: E402
 

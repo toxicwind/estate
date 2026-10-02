@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-P = "/home/toxic/sovereign/src/coyote/coyote-loop.py"
+P = "/home/toxic/estate/src/coyote/coyote-loop.py"
 src = open(P).read()
 old = '    model: str = "kimi-auto"'
 new = '    model: str = field(default_factory=lambda: os.getenv("COYOTE_MODEL", "gpt-oss"))'
@@ -15,7 +15,7 @@ src = src.replace(old2, new2)
 open(P, "w").write(src)
 print("coyote-loop.py model default now env-driven")
 
-P2 = "/home/toxic/sovereign/agents/coyote/agent.toml"
+P2 = "/home/toxic/estate/agents/coyote/agent.toml"
 s2 = open(P2).read()
 old3 = "- The AST Matrix (llama-swap :25100) with 14 providers (kimi primary, 7 free-tier fallbacks)"
 new3 = ("- The herd router (llama-swap :25100). Routing doctrine: RANKING > FREE-ON-PROVIDER > PAY. "

@@ -62,7 +62,7 @@ concurrency lock, 64 KiB default frame (race winner).
 
 ## Flags for Chris / other workers (not mine to fix)
 1. **Git metadata damage**: `.git/HEAD` vanished from BOTH
-   `/home/toxic/sovereign` and `/home/toxic/sovereign/gear` in the same
+   `/home/toxic/estate` and `/home/toxic/estate/gear` in the same
    window (both restored by me from `refs/heads/main`). Something is
    deleting HEAD files — worth hunting.
 2. **Working-tree deletions I did not make**: `git status` in both repos

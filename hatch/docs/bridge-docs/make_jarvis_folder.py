@@ -1,6 +1,6 @@
 import io, os, shutil
 
-base = '/home/toxic/sovereign/docs/Meta/Muse AI/'
+base = '/home/toxic/estate/docs/Meta/Muse AI/'
 jarvis = base + 'Jarvis/'
 os.makedirs(jarvis, exist_ok=True)
 

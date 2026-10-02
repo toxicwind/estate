@@ -8,7 +8,7 @@ Integrate upstream `sovereign-swap` and latest `llama-swap` features into `proje
    - Ensure `Config` and related structs in `projects/herd/internal/config/` include all fields required by newly merged packages (`GlobalConcurrencyLimit`, `Security`, `Tailcat`, etc.).
    - Verify `go.mod` and `go.sum` contain all required dependencies without version conflicts.
 2. **Compilation & Build**:
-   - Run `go build -o llama-swap .` inside `/home/toxic/sovereign/projects/herd`.
+   - Run `go build -o llama-swap .` inside `/home/toxic/estate/projects/herd`.
    - Fix any missing fields, package reference mismatches, or syntax errors.
 3. **Service Integration**:
    - Update `/home/toxic/projects/llama-swap` symlink if needed to point to the unified `projects/herd` directory.

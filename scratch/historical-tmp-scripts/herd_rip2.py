@@ -1,6 +1,6 @@
 import re
 
-HERD = "/home/toxic/sovereign/projects/herd"
+HERD = "/home/toxic/estate/projects/herd"
 
 # api_test.go: redirects now point at the ranch dashboard
 p = HERD + "/internal/server/api_test.go"

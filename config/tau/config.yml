@@ -1,26 +1,26 @@
 plugins:
 - name: herd
-  source: ./projects/range/ranch/stockyard/herd
+  source: ./estate/ranch/herd
   merged: sovereign-swap
   privileged: true
 - name: flock
-  source: ./projects/range/ranch/stockyard/flock
+  source: ./estate/ranch/flock
   privileged: true
 - name: gatehouse
-  source: ./projects/range/ranch/barn/gatehouse
+  source: ./estate/ranch/barn/gatehouse
   privileged: true
   role: MCP federation gateway
 - name: router
-  source: ./projects/range/ranch/stockyard/router-legacy
+  source: ./estate/tools/sovereign-router
   merged:
   - router-legacy
   - stockyard-flock-router
   privileged: true
 - name: barn-browser
-  source: ./projects/range/ranch/barn/browserless
+  source: ./estate/ranch/barn/browserless
   privileged: false
 - name: barn-gemini
-  source: ./projects/range/ranch/barn/gemini-mcp
+  source: ./estate/ranch/barn/gemini-mcp
   privileged: false
 - name: secretsmith
   source: ./projects/range/ranch/barn/secretsmith

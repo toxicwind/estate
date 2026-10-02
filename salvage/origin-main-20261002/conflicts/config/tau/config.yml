@@ -579,7 +579,7 @@ skills:
   # agent dir = $PI_CONFIG_DIR/agent). The live skills.customDirectories now lives there.
   enableSkillCommands: true
   customDirectories:
-  - /home/toxic/sovereign/skills
+  - /home/toxic/estate/skills
   # Register a flat skill repo by its root. The loader reads <dir>/<name>/SKILL.md
   # at depth 1 only, so a repo whose skills sit directly at the root works as-is.
   # Nothing is copied or symlinked: each skill keeps its own code, its relative
@@ -587,7 +587,7 @@ skills:
   # repo-aware. This is the universal rule -- any flat skill repo registers this
   # way. toxicwind/gear (486 skills) holds the *-swarm family, including
   # webapp-building-swarm, vibecoding-webapp-swarm and backend-building-swarm.
-  - /home/toxic/sovereign/projects/range/ranch/gear
+  - /home/toxic/estate/projects/range/ranch/gear
 commands:
   enableClaudeUser: true
   enableClaudeProject: true

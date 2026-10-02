@@ -4,7 +4,7 @@ import pathlib
 import sys
 
 def patch_herd_sh():
-    p = pathlib.Path("/home/toxic/sovereign/stack/services/herd.sh")
+    p = pathlib.Path("/home/toxic/estate/stack/services/herd.sh")
     t = p.read_text()
     if "Canonical secrets for provider keyEnvs" in t:
         print("herd.sh: already patched")
@@ -24,7 +24,7 @@ def patch_herd_sh():
     print("herd.sh: patched")
 
 def patch_router_ts():
-    p = pathlib.Path("/home/toxic/sovereign/tools/sovereign-router/sovereign-router-ts/router.ts")
+    p = pathlib.Path("/home/toxic/estate/tools/sovereign-router/sovereign-router-ts/router.ts")
     t = p.read_text()
     if 'base: "http://127.0.0.1:8000/v1"' in t:
         print("router.ts: already patched")

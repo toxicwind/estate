@@ -90,7 +90,7 @@ POST https://openrouter.ai/api/v1/chat/completions  (with .secrets OPENROUTER_AP
 
 ### 2.3 Sovereign orchestration latch
 - **SSOT:** `config/ports.env` (port map) + `src/services/*.ts` (service definitions) → `src/generators/pitchfork.ts` / `mise.ts` → `pitchfork.toml` / `mise.toml` (blocked from hand-edits).
-- **Herd service def:** `src/services/core.ts` / `registry.ts`: `id: herd, portKey: LLAMA_SWAP_PORT (25100), run: "exec /home/toxic/sovereign/stack/services/llama-swap.sh", dir: ".", readyHttp: "/health"`.
+- **Herd service def:** `src/services/core.ts` / `registry.ts`: `id: herd, portKey: LLAMA_SWAP_PORT (25100), run: "exec /home/toxic/estate/stack/services/llama-swap.sh", dir: ".", readyHttp: "/health"`.
 - **If we added a new standalone free-proxy daemon**, we would add a port key to `config/ports.env`, a `ServiceDef` to `src/services/peripheral.ts` or `forks.ts`, then `bun run scripts/generate.ts`. For this plan we **do not add a new daemon** — we extend herd in place via `peers:` — so no new port or service def is needed. This keeps the change to one config file + Go patch + binary rebuild, respecting latch.
 
 ---
@@ -294,7 +294,7 @@ ls -lh llama-swap   # fresh binary ~20MB
 
 ### 6.2 Deploy on sovereign home
 ```bash
-cd /home/toxic/sovereign
+cd /home/toxic/estate
 # 1. Edit config/llama-swap.yaml — add peers block (track B3)
 # Validate YAML parse via llama-swap dry run before restart
 /home/toxic/projects/llama-swap/llama-swap --config config/llama-swap.yaml --check 2>&1 | head
@@ -390,15 +390,15 @@ omp bench --model openai --prompt "hi"  # or: mesh/gateway/bench via go run ./be
 - **This plan:** `docs/plans/free-pollinations-herd-hotfix-plan.md` (sovereign) — also mirrored to `plans/free-pollinations-hotfix-plan.md` (herd).
 - **Source of truth for method:** attachment (§ Custom Providers → free backends). Corrected per probe: Pollinations model ID is `openai`, not `openai/gpt-oss-20b`; OVH anon tier currently 403.
 - **Patch target:** `/home/toxic/projects/llama-swap/internal/router/peer.go:148-188`, `/home/toxic/projects/llama-swap/internal/config/peer.go`.
-- **Runtime config:** `/home/toxic/sovereign/config/llama-swap.yaml` (add `peers:`).
-- **Launcher:** `/home/toxic/sovereign/stack/services/llama-swap.sh` → `$HOME/projects/llama-swap/llama-swap --config $SOV/config/llama-swap.yaml --listen 0.0.0.0:25100`.
+- **Runtime config:** `/home/toxic/estate/config/llama-swap.yaml` (add `peers:`).
+- **Launcher:** `/home/toxic/estate/stack/services/llama-swap.sh` → `$HOME/projects/llama-swap/llama-swap --config $SOV/config/llama-swap.yaml --listen 0.0.0.0:25100`.
 - **Generated files (DO NOT EDIT):** `pitchfork.toml`, `mise.toml` (`src/generators/*`).
 
 ---
 
 ## 12. Handoff
 
-Plan ready at `/home/toxic/sovereign/docs/plans/free-pollinations-herd-hotfix-plan.md`.
+Plan ready at `/home/toxic/estate/docs/plans/free-pollinations-herd-hotfix-plan.md`.
 
 What would you like to do next?
 

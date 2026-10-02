@@ -3,4 +3,4 @@ set -a
 [ -f "$HOME/.bashrc.env" ] && . "$HOME/.bashrc.env"
 [ -f "$HOME/.secrets" ] && . "$HOME/.secrets"
 set +a
-exec /home/toxic/sovereign/projects/range/ranch/tau/packages/coding-agent/dist/tau "$@"
+exec /home/toxic/estate/projects/range/ranch/tau/packages/coding-agent/dist/tau "$@"

@@ -712,11 +712,11 @@ echo "report: $LOG"
 audit dir: /home/toxic/damage-audit-20260922-105926
 started:   2026-09-22T10:59:26-06:00
 ========== [1] Blast-radius paths ==========
-SYMLINK_OK   /home/toxic/.ripgreprc -> /home/toxic/sovereign/projects/shell/ii/dots/.ripgreprc
+SYMLINK_OK   /home/toxic/.ripgreprc -> /home/toxic/estate/projects/shell/ii/dots/.ripgreprc
 FILE         /home/toxic/.gitignore  (1188 B,
 mtime 2026-09-13 11:54:54)
 FILE         /home/toxic/.bashrc  (7784 B, mtime 2026-09-22 10:31:36)
-SYMLINK_OK   /home/toxic/.bashrc.env -> /home/toxic/sovereign/projects/shell/ii/dots/.bashrc.env
+SYMLINK_OK   /home/toxic/.bashrc.env -> /home/toxic/estate/projects/shell/ii/dots/.bashrc.env
 FILE         /home/toxic/.local/nimstats/client.ts  (90 B, mtime 2026-09-13 13:52:54)
 FILE         /home/toxic/.local/bin/claude-wrapper.sh  (504 B, mtime 2026-09-13 19:13:50)
 FILE         /home/toxic/.config/claude/env  (764 B, mtime 2026-09-13 23:55:21)
@@ -731,23 +731,23 @@ MISSING      /home/toxic/.agent/pipeline.toml
 MISSING      /home/toxic/.agent/artifacts.tomlMISSING      /home/toxic/.agent/checkpoint.json
 FILE         /home/toxic/.agent/ralph-workflow.toml  (2059 B, mtime 2026-09-13 19:13:50)
 FILE         /home/toxic/.agent/mcp.toml  (1209 B, mtime 2026-09-13 19:13:50)
-MISSING      /home/toxic/sovereign/tau/engine/.agent/checkpoint.json
-MISSING      /home/toxic/sovereign/tau/engine/.agent/ralph-workflow.toml
-MISSING      /home/toxic/sovereign/tau/engine/.agent/mcp.toml
-DIR          /home/toxic/sovereign/tau/engine/.agent/tmp  (0 entries, mtime 2026-09-13 19:13:50)
-MISSING      /home/toxic/sovereign/tau/engine/checkpoint.json
-MISSING      /home/toxic/sovereign/tau/engine/PROMPT.md
+MISSING      /home/toxic/estate/tau/engine/.agent/checkpoint.json
+MISSING      /home/toxic/estate/tau/engine/.agent/ralph-workflow.toml
+MISSING      /home/toxic/estate/tau/engine/.agent/mcp.toml
+DIR          /home/toxic/estate/tau/engine/.agent/tmp  (0 entries, mtime 2026-09-13 19:13:50)
+MISSING      /home/toxic/estate/tau/engine/checkpoint.json
+MISSING      /home/toxic/estate/tau/engine/PROMPT.md
 MISSING      /home/toxic/PROMPT.md
-MISSING      /home/toxic/sovereign/mesh/ui
-SYMLINK_OK   /home/toxic/projects/sovereign-projects -> /home/toxic/sovereign
+MISSING      /home/toxic/estate/mesh/ui
+SYMLINK_OK   /home/toxic/projects/sovereign-projects -> /home/toxic/estate
 FILE         /home/toxic/.mcpproxy/mcp_config.json  (6553 B, mtime 2026-09-21 07:09:00)
-SYMLINK_OK   /home/toxic/.local/bin/omp -> /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/dist/omp
+SYMLINK_OK   /home/toxic/.local/bin/omp -> /home/toxic/estate/projects/tau/engine/packages/coding-agent/dist/omp
 FILE         /home/toxic/.local/bin/tau  (9178 B, mtime 2026-09-21 10:54:01)
 MISSING      /home/toxic/.local/bin/omp-tau-unified
-FILE         /home/toxic/sovereign/agent  (3455 B, mtime 2026-09-22 10:43:25)
+FILE         /home/toxic/estate/agent  (3455 B, mtime 2026-09-22 10:43:25)
 FILE         /home/toxic/.config/wezterm/wezterm.lua  (2520 B, mtime 2026-09-22 10:35:54)
-SYMLINK_OK   /home/toxic/.config/wezterm/shell-integration.sh -> /home/toxic/sovereign/projects/shell/ii/dots/.config/wezterm/shell-integration.sh
-SYMLINK_OK   /home/toxic/.config/wezterm/plugins/wezterm-cmdpicker -> /home/toxic/sovereign/projects/shell/ii/dots/.config/wezterm/plugins/wezterm-cmdpicker
+SYMLINK_OK   /home/toxic/.config/wezterm/shell-integration.sh -> /home/toxic/estate/projects/shell/ii/dots/.config/wezterm/shell-integration.sh
+SYMLINK_OK   /home/toxic/.config/wezterm/plugins/wezterm-cmdpicker -> /home/toxic/estate/projects/shell/ii/dots/.config/wezterm/plugins/wezterm-cmdpicker
 FILE         /home/toxic/.local/bin/ast-grep
 (52360880 B, mtime 2026-09-18 23:11:32)
 ========== [2] .bak-* files (undo anchors) ==========
@@ -975,176 +975,176 @@ FILE         /home/toxic/.local/bin/ast-grep
   DANGLING /home/toxic/.local/share/blesh/out/contrib/fzf-git.bash -> integration/fzf-git.bash
   DANGLING /home/toxic/.local/share/blesh/out/contrib/fzf-initialize.bash -> integration/fzf-initialize.bash
   DANGLING /home/toxic/.local/share/blesh/out/contrib/fzf-key-bindings.bash -> integration/fzf-key-bindings.bash
-  DANGLING /home/toxic/sovereign/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
-  DANGLING /home/toxic/sovereign/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
-  DANGLING /home/toxic/sovereign/node_modules/.bin/commitlint -> ../@commitlint/cli/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/color-support -> ../color-support/bin.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/husky -> ../husky/bin.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/jiti -> ../jiti/lib/jiti-cli.mjs
-  DANGLING /home/toxic/sovereign/node_modules/.bin/json5 -> ../json5/lib/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/mime -> ../mime/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/mkdirp -> ../mkdirp/bin/cmd.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/node-gyp -> ../node-gyp/bin/node-gyp.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/node-gyp-build -> ../node-gyp-build/bin.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/node-gyp-build-optional -> ../node-gyp-build/optional.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/node-gyp-build-test -> ../node-gyp-build/build-test.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/nopt -> ../nopt/bin/nopt.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/playwright -> ../playwright/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/playwright-core -> ../playwright-core/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/rimraf -> ../rimraf/bin.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/tsc -> ../typescript/bin/tsc
-  DANGLING /home/toxic/sovereign/node_modules/.bin/uglifyjs -> ../uglify-js/bin/uglifyjs
-  DANGLING /home/toxic/sovereign/node_modules/.bin/vitest -> ../vitest/vitest.mjs
-  DANGLING /home/toxic/sovereign/node_modules/.bin/yaml -> ../yaml/bin.mjs
-  DANGLING /home/toxic/sovereign/tau-skills -> /home/toxic/.tau/skills
-  DANGLING /home/toxic/sovereign/projects/tau/engine/.env.ai -> /home/toxic/.config/sovereign-ai.env
-  DANGLING /home/toxic/sovereign/projects/tau/engine.bak-20260920-021428/.env.ai -> /home/toxic/.config/sovereign-ai.env
-  DANGLING /home/toxic/sovereign/projects/tau/engine.bak-20260921-124134/.env.ai -> /home/toxic/.config/sovereign-ai.env
-  DANGLING /home/toxic/sovereign/tau-ext-forks/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
-  DANGLING /home/toxic/sovereign/tau-ext-forks/node_modules/.bin/omp -> ../@oh-my-pi/pi-coding-agent/dist/cli.js
-  DANGLING /home/toxic/sovereign/tau-ext-forks/node_modules/.bin/tsc -> ../typescript/bin/tsc
-  DANGLING /home/toxic/sovereign/tau-ext-forks/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
-  DANGLING /home/toxic/sovereign/kimi-audit-scratch-20260914/repo/tau-skills -> /home/toxic/.tau/skills
-  DANGLING /home/toxic/sovereign/tau-extensions-merge/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
-  DANGLING /home/toxic/sovereign/tau-extensions-merge/node_modules/.bin/omp -> ../@oh-my-pi/pi-coding-agent/dist/cli.js
-  DANGLING /home/toxic/sovereign/tau-extensions-merge/node_modules/.bin/tsc -> ../typescript/bin/tsc
-  DANGLING /home/toxic/sovereign/tau-extensions-merge/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
-  DANGLING /home/toxic/sovereign/readme-fix-pmcp-20260914/node_modules/.bin/playwright -> ../@playwright/test/cli.js
-  DANGLING /home/toxic/sovereign/readme-fix-pmcp-20260914/node_modules/.bin/playwright-core
+  DANGLING /home/toxic/estate/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
+  DANGLING /home/toxic/estate/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
+  DANGLING /home/toxic/estate/node_modules/.bin/commitlint -> ../@commitlint/cli/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/color-support -> ../color-support/bin.js
+  DANGLING /home/toxic/estate/node_modules/.bin/husky -> ../husky/bin.js
+  DANGLING /home/toxic/estate/node_modules/.bin/jiti -> ../jiti/lib/jiti-cli.mjs
+  DANGLING /home/toxic/estate/node_modules/.bin/json5 -> ../json5/lib/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/mime -> ../mime/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/mkdirp -> ../mkdirp/bin/cmd.js
+  DANGLING /home/toxic/estate/node_modules/.bin/node-gyp -> ../node-gyp/bin/node-gyp.js
+  DANGLING /home/toxic/estate/node_modules/.bin/node-gyp-build -> ../node-gyp-build/bin.js
+  DANGLING /home/toxic/estate/node_modules/.bin/node-gyp-build-optional -> ../node-gyp-build/optional.js
+  DANGLING /home/toxic/estate/node_modules/.bin/node-gyp-build-test -> ../node-gyp-build/build-test.js
+  DANGLING /home/toxic/estate/node_modules/.bin/nopt -> ../nopt/bin/nopt.js
+  DANGLING /home/toxic/estate/node_modules/.bin/playwright -> ../playwright/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/playwright-core -> ../playwright-core/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/rimraf -> ../rimraf/bin.js
+  DANGLING /home/toxic/estate/node_modules/.bin/tsc -> ../typescript/bin/tsc
+  DANGLING /home/toxic/estate/node_modules/.bin/uglifyjs -> ../uglify-js/bin/uglifyjs
+  DANGLING /home/toxic/estate/node_modules/.bin/vitest -> ../vitest/vitest.mjs
+  DANGLING /home/toxic/estate/node_modules/.bin/yaml -> ../yaml/bin.mjs
+  DANGLING /home/toxic/estate/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/projects/tau/engine/.env.ai -> /home/toxic/.config/sovereign-ai.env
+  DANGLING /home/toxic/estate/projects/tau/engine.bak-20260920-021428/.env.ai -> /home/toxic/.config/sovereign-ai.env
+  DANGLING /home/toxic/estate/projects/tau/engine.bak-20260921-124134/.env.ai -> /home/toxic/.config/sovereign-ai.env
+  DANGLING /home/toxic/estate/tau-ext-forks/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
+  DANGLING /home/toxic/estate/tau-ext-forks/node_modules/.bin/omp -> ../@oh-my-pi/pi-coding-agent/dist/cli.js
+  DANGLING /home/toxic/estate/tau-ext-forks/node_modules/.bin/tsc -> ../typescript/bin/tsc
+  DANGLING /home/toxic/estate/tau-ext-forks/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
+  DANGLING /home/toxic/estate/kimi-audit-scratch-20260914/repo/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/tau-extensions-merge/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
+  DANGLING /home/toxic/estate/tau-extensions-merge/node_modules/.bin/omp -> ../@oh-my-pi/pi-coding-agent/dist/cli.js
+  DANGLING /home/toxic/estate/tau-extensions-merge/node_modules/.bin/tsc -> ../typescript/bin/tsc
+  DANGLING /home/toxic/estate/tau-extensions-merge/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
+  DANGLING /home/toxic/estate/readme-fix-pmcp-20260914/node_modules/.bin/playwright -> ../@playwright/test/cli.js
+  DANGLING /home/toxic/estate/readme-fix-pmcp-20260914/node_modules/.bin/playwright-core
 -> ../playwright-core/cli.js
-  DANGLING /home/toxic/sovereign/readme-fix-sovereign-1789408144/tau-skills -> /home/toxic/.tau/skills
-  DANGLING /home/toxic/sovereign/wt-hft-hygiene-20260914/tau-skills -> /home/toxic/.tau/skills
-  DANGLING /home/toxic/sovereign/wt-hft-hygiene-20260914/config/llama-swap.yaml -> herd.yaml  DANGLING /home/toxic/sovereign/.archive-20260920/wt-herd-kimi-20260914/wt-herd-kimi-20260914/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/readme-fix-sovereign-1789408144/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/wt-hft-hygiene-20260914/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/wt-hft-hygiene-20260914/config/llama-swap.yaml -> herd.yaml  DANGLING /home/toxic/estate/.archive-20260920/wt-herd-kimi-20260914/wt-herd-kimi-20260914/tau-skills -> /home/toxic/.tau/skills
 ========== [5] Git repos (branch, HEAD, dirty
 count) ==========
-  /home/toxic/sovereign/tools/saturation-guard                       forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
+  /home/toxic/estate/tools/saturation-guard                       forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign
+  /home/toxic/estate
                        forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/projects/wezterm
+  /home/toxic/estate/projects/wezterm
                        main
  869faf81e  dirty=0     2026-09-19 02:49:13 -0600
-  /home/toxic/sovereign/projects/mesh/squawk
+  /home/toxic/estate/projects/mesh/squawk
                        forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/projects/mesh/corral
+  /home/toxic/estate/projects/mesh/corral
                        main
  f630945    dirty=0     2026-09-22 09:09:48 -0600
-  /home/toxic/sovereign/projects/tau-occupied-20260916/extensions/engram  forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25 -0600
-  /home/toxic/sovereign/projects/tau-occupied-20260916/extensions/omp-extensions___omp-kafka___0.1.0  fix/add-kafkajs-dep     41291c4    dirty=0     2026-09-17 15:38:49 -0600
-  /home/toxic/sovereign/projects/tau-occupied-20260916/extensions/semantouch  forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22
+  /home/toxic/estate/projects/tau-occupied-20260916/extensions/engram  forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25 -0600
+  /home/toxic/estate/projects/tau-occupied-20260916/extensions/omp-extensions___omp-kafka___0.1.0  fix/add-kafkajs-dep     41291c4    dirty=0     2026-09-17 15:38:49 -0600
+  /home/toxic/estate/projects/tau-occupied-20260916/extensions/semantouch  forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22
 10:43:25 -0600
-  /home/toxic/sovereign/projects/outlier-toolkit                     main
+  /home/toxic/estate/projects/outlier-toolkit                     main
  aa929a7    dirty=0     2026-09-19 04:04:01 -0600
-  /home/toxic/sovereign/projects/guidellm
+  /home/toxic/estate/projects/guidellm
                        main
  5c07936f   dirty=5     2026-09-20 17:14:42 -0600
-  /home/toxic/sovereign/projects/nim-repos/NVIDIA-NemoClaw           main
+  /home/toxic/estate/projects/nim-repos/NVIDIA-NemoClaw           main
  f2c0316    dirty=0     2026-09-20 01:31:23 -0700
-  /home/toxic/sovereign/projects/nim-repos/tibbee-pi-nvidia-nim-provider  main
+  /home/toxic/estate/projects/nim-repos/tibbee-pi-nvidia-nim-provider  main
       756fb31    dirty=0     2026-09-17 11:09:35 +0200
-  /home/toxic/sovereign/projects/nim-repos/diegovisk-pi-nvidia-nim   main
+  /home/toxic/estate/projects/nim-repos/diegovisk-pi-nvidia-nim   main
  b72302f    dirty=0     2026-08-30 14:58:51 -0400
-  /home/toxic/sovereign/projects/nim-repos/joeldg-nvidiarouter       main
+  /home/toxic/estate/projects/nim-repos/joeldg-nvidiarouter       main
  0ce3f9b    dirty=0     2026-07-09 17:50:01 -0700
-  /home/toxic/sovereign/projects/nim-repos/lizhebio-nim-qwen-model-router  main
+  /home/toxic/estate/projects/nim-repos/lizhebio-nim-qwen-model-router  main
        eadca2c    dirty=0     2026-09-12 20:10:58 +0800
-  /home/toxic/sovereign/projects/nim-repos/lucky-mandator-gocode-router  main
+  /home/toxic/estate/projects/nim-repos/lucky-mandator-gocode-router  main
      4eb5c09    dirty=0     2026-02-28 15:35:25 +0800
-  /home/toxic/sovereign/projects/nim-repos/rickeshtn-nim-code        main
+  /home/toxic/estate/projects/nim-repos/rickeshtn-nim-code        main
  3dfecd9    dirty=0     2026-06-25 08:22:58 +0800
-  /home/toxic/sovereign/projects/nim-repos/thispointon-kondi         main
+  /home/toxic/estate/projects/nim-repos/thispointon-kondi         main
  8c9cdd3    dirty=0     2026-08-07 12:50:00 -0400
-  /home/toxic/sovereign/projects/nim-repos/shaivpidadi-freeridev3    main
+  /home/toxic/estate/projects/nim-repos/shaivpidadi-freeridev3    main
  9d5ce25    dirty=0     2026-09-04 08:58:43 -0700
-  /home/toxic/sovereign/projects/nim-repos/bauka0-nvidia-nim-provider  main
+  /home/toxic/estate/projects/nim-repos/bauka0-nvidia-nim-provider  main
    1996405    dirty=0     2026-09-18 16:25:20
 +0500
-  /home/toxic/sovereign/projects/nim-repos/iammalego-keymux          main
+  /home/toxic/estate/projects/nim-repos/iammalego-keymux          main
  49d7a51    dirty=0     2026-04-17 12:38:53 -0300
-  /home/toxic/sovereign/projects/nim-repos/nezerkc-opencode-provider-nvidia-nim  master
+  /home/toxic/estate/projects/nim-repos/nezerkc-opencode-provider-nvidia-nim  master
              f987273    dirty=0     2026-09-20 04:49:55 -0300
-  /home/toxic/sovereign/projects/nim-repos/david-eve-za-nvidia-nim-mcp  main
+  /home/toxic/estate/projects/nim-repos/david-eve-za-nvidia-nim-mcp  main
     fe161a7    dirty=0     2026-08-16 20:38:03 -0500
-  /home/toxic/sovereign/projects/nim-repos/nirholas-three.ws         main
+  /home/toxic/estate/projects/nim-repos/nirholas-three.ws         main
  7cdcc607   dirty=0     2026-09-20 06:10:20 +0000
-  /home/toxic/sovereign/projects/nim-repos/Sateeshreddymaddi-Custom-Nvidia-Nim-Node  main
+  /home/toxic/estate/projects/nim-repos/Sateeshreddymaddi-Custom-Nvidia-Nim-Node  main
                  d8566a6    dirty=0     2026-06-28 17:25:23 +0530
-  /home/toxic/sovereign/projects/nim-repos/gabriel-ferraresi-NIMGEN  main
+  /home/toxic/estate/projects/nim-repos/gabriel-ferraresi-NIMGEN  main
  dabd665    dirty=0     2026-06-18 00:15:43 -0300
-  /home/toxic/sovereign/projects/nim-repos/api-evangelist-nvidia-nim  main
+  /home/toxic/estate/projects/nim-repos/api-evangelist-nvidia-nim  main
   dd2b0ef    dirty=0     2026-09-19 11:42:51 -0400
-  /home/toxic/sovereign/projects/nim-repos/olszalsik-a0-nvidia-nim   main
+  /home/toxic/estate/projects/nim-repos/olszalsik-a0-nvidia-nim   main
  6d83b69    dirty=0     2026-08-10 18:52:13 +0200
-  /home/toxic/sovereign/projects/nim-repos/h0rcrux-hermes-backup     main
+  /home/toxic/estate/projects/nim-repos/h0rcrux-hermes-backup     main
  3469625    dirty=0     2026-04-23 00:44:19 +0800
-  /home/toxic/sovereign/projects/nim-repos/Gitlawb-openclaude        main
+  /home/toxic/estate/projects/nim-repos/Gitlawb-openclaude        main
  d16318a    dirty=0     2026-09-16 07:39:28 +0800
-  /home/toxic/sovereign/projects/nim-repos/musistudio-claude-code-router  main
+  /home/toxic/estate/projects/nim-repos/musistudio-claude-code-router  main
       a034b0c    dirty=0     2026-09-17 10:02:45 +0800
-  /home/toxic/sovereign/projects/nim-repos/mschwarzmueller-pi_agent_rust  main
+  /home/toxic/estate/projects/nim-repos/mschwarzmueller-pi_agent_rust  main
       68884082   dirty=0     2026-02-20 10:29:46 +0100
-  /home/toxic/sovereign/projects/nim-repos/xRyul-pi-nvidia-nim       main
+  /home/toxic/estate/projects/nim-repos/xRyul-pi-nvidia-nim       main
  dca7731    dirty=0     2026-07-20 16:55:19 +0100
-  /home/toxic/sovereign/projects/nim-repos/furqanafridi-free-claude-code  main
+  /home/toxic/estate/projects/nim-repos/furqanafridi-free-claude-code  main
       d3a3b37    dirty=0     2026-04-30 22:01:36 -0700
-  /home/toxic/sovereign/projects/nim-repos/stillhue-claudio          main
+  /home/toxic/estate/projects/nim-repos/stillhue-claudio          main
  e89d2e9    dirty=0     2026-09-07 17:43:27 -0300
-  /home/toxic/sovereign/projects/AURKA
+  /home/toxic/estate/projects/AURKA
                        main
  57ad463    dirty=0     2025-12-23 11:32:32 +0530
-  /home/toxic/sovereign/projects/extagents
+  /home/toxic/estate/projects/extagents
                        main
  d94f351    dirty=0     2026-04-11 13:39:23 +0000
-  /home/toxic/sovereign/projects/llm-mapreduce                       main
+  /home/toxic/estate/projects/llm-mapreduce                       main
  0e93cc9    dirty=0     2026-03-05 16:45:51 +0800
-  /home/toxic/sovereign/gear
+  /home/toxic/estate/gear
                        main
  2e8b37a    dirty=1338  2026-09-14 22:25:29 -0600
-  /home/toxic/sovereign/kimi-audit-scratch-20260914/repo             kimi-extensions-complete  6e27dddd   dirty=0     2026-09-17 15:38:41
+  /home/toxic/estate/kimi-audit-scratch-20260914/repo             kimi-extensions-complete  6e27dddd   dirty=0     2026-09-17 15:38:41
 -0600
-  /home/toxic/sovereign/codeflux/forks/watchfiles                    main
+  /home/toxic/estate/codeflux/forks/watchfiles                    main
  94b0b49    dirty=0     2026-09-16 12:47:12 -0600
-  /home/toxic/sovereign/codeflux/forks/moulti
+  /home/toxic/estate/codeflux/forks/moulti
                        master
  4b6c2e7    dirty=0     2026-09-16 13:10:40 -0600
-  /home/toxic/sovereign/codeflux/forks/python-patch                  master
+  /home/toxic/estate/codeflux/forks/python-patch                  master
  17146ca    dirty=0     2026-09-17 15:38:38 -0600
-  /home/toxic/sovereign/codeflux/forks/patchling                     main
+  /home/toxic/estate/codeflux/forks/patchling                     main
  f35e136    dirty=0     2026-09-17 15:38:36 -0600
-  /home/toxic/sovereign/codeflux
+  /home/toxic/estate/codeflux
                        main
  04e54eb    dirty=0     2026-09-17 15:43:29 -0600
-  /home/toxic/sovereign/engines/herd/beellama.cpp                    forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
+  /home/toxic/estate/engines/herd/beellama.cpp                    forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/engines/herd/ik_llama.cpp                    forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
+  /home/toxic/estate/engines/herd/ik_llama.cpp                    forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/engines/herd/llama-cpp-turboquant            feature/turboquant-kv-cache  d69b48c7f  dirty=0     2026-09-17 15:38:52 -0600
-  /home/toxic/sovereign/hatch/agents/ember/chat                      forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
+  /home/toxic/estate/engines/herd/llama-cpp-turboquant            feature/turboquant-kv-cache  d69b48c7f  dirty=0     2026-09-17 15:38:52 -0600
+  /home/toxic/estate/hatch/agents/ember/chat                      forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/killer-features/debate-oracle/vendor/ChatEval  main
+  /home/toxic/estate/killer-features/debate-oracle/vendor/ChatEval  main
    56b320c    dirty=0     2024-10-19 16:15:42
 +0800
-  /home/toxic/sovereign/killer-features/debate-oracle/vendor/debate-or-vote  main
+  /home/toxic/estate/killer-features/debate-oracle/vendor/debate-or-vote  main
          82c929e    dirty=0     2025-10-15 14:52:32 -0500
-  /home/toxic/sovereign/killer-features/debate-oracle/vendor/llm_debate  main
+  /home/toxic/estate/killer-features/debate-oracle/vendor/llm_debate  main
      f9c71d1    dirty=0     2024-03-22 00:14:34 -0700
-  /home/toxic/sovereign/killer-features/debate-oracle/vendor/argus-ai-debate  main
+  /home/toxic/estate/killer-features/debate-oracle/vendor/argus-ai-debate  main
           b6860a1    dirty=0     2026-03-13 00:40:52 +0530
-  /home/toxic/sovereign/killer-features/bid-market/vendor/auction-agent11  main
+  /home/toxic/estate/killer-features/bid-market/vendor/auction-agent11  main
        aced534    dirty=0     2026-09-11 17:50:35 -0700
-  /home/toxic/sovereign/killer-features/bid-market/vendor/agora      main
+  /home/toxic/estate/killer-features/bid-market/vendor/agora      main
  bd6387a    dirty=0     2026-08-28 11:25:17 +0100
-  /home/toxic/sovereign/killer-features/bid-market/vendor/contract-net-router  main
+  /home/toxic/estate/killer-features/bid-market/vendor/contract-net-router  main
            bdfc652    dirty=0     2026-05-16 18:41:30 -0700
-  /home/toxic/sovereign/killer-features/code-racer/vendor/speed-run  main
+  /home/toxic/estate/killer-features/code-racer/vendor/speed-run  main
  3baa3d9    dirty=0     2026-04-20 13:20:49 -0500
-  /home/toxic/sovereign/killer-features/code-racer/vendor/SRank-CodeRanker  main
+  /home/toxic/estate/killer-features/code-racer/vendor/SRank-CodeRanker  main
         e4672e1    dirty=0     2024-06-09 14:59:59 +0700
-  /home/toxic/sovereign/killer-features/code-racer/vendor/RACE       main
+  /home/toxic/estate/killer-features/code-racer/vendor/RACE       main
  3b8ee59    dirty=0     2024-10-12 20:59:22 +0800
-  /home/toxic/sovereign/killer-features/code-racer/vendor/coder_reviewer_reranking  main
+  /home/toxic/estate/killer-features/code-racer/vendor/coder_reviewer_reranking  main
                 2044ef3    dirty=0     2023-02-14 11:22:12 -0800
   /home/toxic/projects/Antigravity-Mobility-CLI
             dirty=0
@@ -1958,20 +1958,20 @@ count) ==========
 ========== [6] State dirs the scripts rmtree'd ==========
   EXISTS   /home/toxic/.agent  (mtime 2026-09-13 19:13:50)
   EXISTS   /home/toxic/.agent/tmp  (mtime 2026-09-13 19:13:50)
-  GONE     /home/toxic/sovereign/tau/engine/checkpoint.json  <-- rmtree/unlink target, no backup taken
-  EXISTS   /home/toxic/sovereign/tau/engine/.agent/tmp  (mtime 2026-09-13 19:13:50)
-  GONE     /home/toxic/sovereign/tau/engine/.agent/checkpoint.json  <-- rmtree/unlink target, no backup taken
+  GONE     /home/toxic/estate/tau/engine/checkpoint.json  <-- rmtree/unlink target, no backup taken
+  EXISTS   /home/toxic/estate/tau/engine/.agent/tmp  (mtime 2026-09-13 19:13:50)
+  GONE     /home/toxic/estate/tau/engine/.agent/checkpoint.json  <-- rmtree/unlink target, no backup taken
 ========== [7] Topology: sovereign vs projects ==========
-  DIR      /home/toxic/sovereign  inode=22855172
-  SYMLINK  /home/toxic/projects/sovereign-projects -> /home/toxic/sovereign
+  DIR      /home/toxic/estate  inode=22855172
+  SYMLINK  /home/toxic/projects/sovereign-projects -> /home/toxic/estate
   -> DIFFERENT inodes (two separate copies)
 ========== [8] Suspicious running processes ==========
-   358061  355033   24431 /home/toxic/projects/sovereign-projects/sovereign-swap/build/llama-swap --config /home/toxic/sovereign/config/herd.yaml --config-dir /home/toxic/kimi-auto/herd.d --watch-config --listen 127.0.0.1:25100
+   358061  355033   24431 /home/toxic/projects/sovereign-projects/sovereign-swap/build/llama-swap --config /home/toxic/estate/config/herd.yaml --config-dir /home/toxic/kimi-auto/herd.d --watch-config --listen 127.0.0.1:25100
    530965  355033   16329 docker run --rm --pull missing --name hindsight --restart no --shm-size=1g --network host -v hindsight-data:/home/hindsight/.pg0 -e HINDSIGHT_API_PORT=25117 -e HINDSIGHT_CP_PORT=25118 -e HINDSIGHT_API_LLM_PROVIDER=openai -e HINDSIGHT_API_LLM_BASE_URL=http://127.0.0.1:25100/v1 -e HINDSIGHT_API_LLM_API_KEY=llama-swap-local-key -e HINDSIGHT_API_LLM_MODEL=beellama/qwen-flash-64k -e HINDSIGHT_API_WORKER_ID=hindsight-sovereign-node -e HINDSIGHT_API_PORT=25117 -e HINDSIGHT_CP_PORT=25118 ghcr.io/vectorize-io/hindsight:latest
    531730  355033   16303 /home/toxic/.local/share/mise/installs/pitchfork/2.25.0/pitchfork
 log-sink --daemon-id sovereign/tau --log-format text
    677131       1   11739 tmux new-session -d
--s ralph -c /home/toxic/sovereign/projects/mesh/super-ralph bash -c 'export NIM_BASE_URL=http://127.0.0.1:25104/v1 ANTHROPIC_BASE_URL=http://127.0.0.1:25104/v1; DEBUG=* LOG_LEVEL=debug ralph --skip-questions "Sovereign continuous
+-s ralph -c /home/toxic/estate/projects/mesh/super-ralph bash -c 'export NIM_BASE_URL=http://127.0.0.1:25104/v1 ANTHROPIC_BASE_URL=http://127.0.0.1:25104/v1; DEBUG=* LOG_LEVEL=debug ralph --skip-questions "Sovereign continuous
 verification"; echo "[ralph finished]"; exec bash'
   1026824       1    1761 /usr/bin/wezterm-mux-server --pid-file-fd 10
 ========== done ==========
@@ -1981,11 +1981,11 @@ report: /home/toxic/damage-audit-20260922-105926/audit.log
 audit dir: /home/toxic/damage-audit-20260922-105926
 started:   2026-09-22T10:59:26-06:00
 ========== [1] Blast-radius paths ==========
-SYMLINK_OK   /home/toxic/.ripgreprc -> /home/toxic/sovereign/projects/shell/ii/dots/.ripgreprc
+SYMLINK_OK   /home/toxic/.ripgreprc -> /home/toxic/estate/projects/shell/ii/dots/.ripgreprc
 FILE         /home/toxic/.gitignore  (1188 B,
 mtime 2026-09-13 11:54:54)
 FILE         /home/toxic/.bashrc  (7784 B, mtime 2026-09-22 10:31:36)
-SYMLINK_OK   /home/toxic/.bashrc.env -> /home/toxic/sovereign/projects/shell/ii/dots/.bashrc.env
+SYMLINK_OK   /home/toxic/.bashrc.env -> /home/toxic/estate/projects/shell/ii/dots/.bashrc.env
 FILE         /home/toxic/.local/nimstats/client.ts  (90 B, mtime 2026-09-13 13:52:54)
 FILE         /home/toxic/.local/bin/claude-wrapper.sh  (504 B, mtime 2026-09-13 19:13:50)
 FILE         /home/toxic/.config/claude/env  (764 B, mtime 2026-09-13 23:55:21)
@@ -2000,23 +2000,23 @@ MISSING      /home/toxic/.agent/pipeline.toml
 MISSING      /home/toxic/.agent/artifacts.tomlMISSING      /home/toxic/.agent/checkpoint.json
 FILE         /home/toxic/.agent/ralph-workflow.toml  (2059 B, mtime 2026-09-13 19:13:50)
 FILE         /home/toxic/.agent/mcp.toml  (1209 B, mtime 2026-09-13 19:13:50)
-MISSING      /home/toxic/sovereign/tau/engine/.agent/checkpoint.json
-MISSING      /home/toxic/sovereign/tau/engine/.agent/ralph-workflow.toml
-MISSING      /home/toxic/sovereign/tau/engine/.agent/mcp.toml
-DIR          /home/toxic/sovereign/tau/engine/.agent/tmp  (0 entries, mtime 2026-09-13 19:13:50)
-MISSING      /home/toxic/sovereign/tau/engine/checkpoint.json
-MISSING      /home/toxic/sovereign/tau/engine/PROMPT.md
+MISSING      /home/toxic/estate/tau/engine/.agent/checkpoint.json
+MISSING      /home/toxic/estate/tau/engine/.agent/ralph-workflow.toml
+MISSING      /home/toxic/estate/tau/engine/.agent/mcp.toml
+DIR          /home/toxic/estate/tau/engine/.agent/tmp  (0 entries, mtime 2026-09-13 19:13:50)
+MISSING      /home/toxic/estate/tau/engine/checkpoint.json
+MISSING      /home/toxic/estate/tau/engine/PROMPT.md
 MISSING      /home/toxic/PROMPT.md
-MISSING      /home/toxic/sovereign/mesh/ui
-SYMLINK_OK   /home/toxic/projects/sovereign-projects -> /home/toxic/sovereign
+MISSING      /home/toxic/estate/mesh/ui
+SYMLINK_OK   /home/toxic/projects/sovereign-projects -> /home/toxic/estate
 FILE         /home/toxic/.mcpproxy/mcp_config.json  (6553 B, mtime 2026-09-21 07:09:00)
-SYMLINK_OK   /home/toxic/.local/bin/omp -> /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/dist/omp
+SYMLINK_OK   /home/toxic/.local/bin/omp -> /home/toxic/estate/projects/tau/engine/packages/coding-agent/dist/omp
 FILE         /home/toxic/.local/bin/tau  (9178 B, mtime 2026-09-21 10:54:01)
 MISSING      /home/toxic/.local/bin/omp-tau-unified
-FILE         /home/toxic/sovereign/agent  (3455 B, mtime 2026-09-22 10:43:25)
+FILE         /home/toxic/estate/agent  (3455 B, mtime 2026-09-22 10:43:25)
 FILE         /home/toxic/.config/wezterm/wezterm.lua  (2520 B, mtime 2026-09-22 10:35:54)
-SYMLINK_OK   /home/toxic/.config/wezterm/shell-integration.sh -> /home/toxic/sovereign/projects/shell/ii/dots/.config/wezterm/shell-integration.sh
-SYMLINK_OK   /home/toxic/.config/wezterm/plugins/wezterm-cmdpicker -> /home/toxic/sovereign/projects/shell/ii/dots/.config/wezterm/plugins/wezterm-cmdpicker
+SYMLINK_OK   /home/toxic/.config/wezterm/shell-integration.sh -> /home/toxic/estate/projects/shell/ii/dots/.config/wezterm/shell-integration.sh
+SYMLINK_OK   /home/toxic/.config/wezterm/plugins/wezterm-cmdpicker -> /home/toxic/estate/projects/shell/ii/dots/.config/wezterm/plugins/wezterm-cmdpicker
 FILE         /home/toxic/.local/bin/ast-grep
 (52360880 B, mtime 2026-09-18 23:11:32)
 ========== [2] .bak-* files (undo anchors) ==========
@@ -2244,176 +2244,176 @@ FILE         /home/toxic/.local/bin/ast-grep
   DANGLING /home/toxic/.local/share/blesh/out/contrib/fzf-git.bash -> integration/fzf-git.bash
   DANGLING /home/toxic/.local/share/blesh/out/contrib/fzf-initialize.bash -> integration/fzf-initialize.bash
   DANGLING /home/toxic/.local/share/blesh/out/contrib/fzf-key-bindings.bash -> integration/fzf-key-bindings.bash
-  DANGLING /home/toxic/sovereign/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
-  DANGLING /home/toxic/sovereign/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
-  DANGLING /home/toxic/sovereign/node_modules/.bin/commitlint -> ../@commitlint/cli/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/color-support -> ../color-support/bin.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/husky -> ../husky/bin.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/jiti -> ../jiti/lib/jiti-cli.mjs
-  DANGLING /home/toxic/sovereign/node_modules/.bin/json5 -> ../json5/lib/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/mime -> ../mime/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/mkdirp -> ../mkdirp/bin/cmd.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/node-gyp -> ../node-gyp/bin/node-gyp.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/node-gyp-build -> ../node-gyp-build/bin.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/node-gyp-build-optional -> ../node-gyp-build/optional.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/node-gyp-build-test -> ../node-gyp-build/build-test.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/nopt -> ../nopt/bin/nopt.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/playwright -> ../playwright/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/playwright-core -> ../playwright-core/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/rimraf -> ../rimraf/bin.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/tsc -> ../typescript/bin/tsc
-  DANGLING /home/toxic/sovereign/node_modules/.bin/uglifyjs -> ../uglify-js/bin/uglifyjs
-  DANGLING /home/toxic/sovereign/node_modules/.bin/vitest -> ../vitest/vitest.mjs
-  DANGLING /home/toxic/sovereign/node_modules/.bin/yaml -> ../yaml/bin.mjs
-  DANGLING /home/toxic/sovereign/tau-skills -> /home/toxic/.tau/skills
-  DANGLING /home/toxic/sovereign/projects/tau/engine/.env.ai -> /home/toxic/.config/sovereign-ai.env
-  DANGLING /home/toxic/sovereign/projects/tau/engine.bak-20260920-021428/.env.ai -> /home/toxic/.config/sovereign-ai.env
-  DANGLING /home/toxic/sovereign/projects/tau/engine.bak-20260921-124134/.env.ai -> /home/toxic/.config/sovereign-ai.env
-  DANGLING /home/toxic/sovereign/tau-ext-forks/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
-  DANGLING /home/toxic/sovereign/tau-ext-forks/node_modules/.bin/omp -> ../@oh-my-pi/pi-coding-agent/dist/cli.js
-  DANGLING /home/toxic/sovereign/tau-ext-forks/node_modules/.bin/tsc -> ../typescript/bin/tsc
-  DANGLING /home/toxic/sovereign/tau-ext-forks/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
-  DANGLING /home/toxic/sovereign/kimi-audit-scratch-20260914/repo/tau-skills -> /home/toxic/.tau/skills
-  DANGLING /home/toxic/sovereign/tau-extensions-merge/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
-  DANGLING /home/toxic/sovereign/tau-extensions-merge/node_modules/.bin/omp -> ../@oh-my-pi/pi-coding-agent/dist/cli.js
-  DANGLING /home/toxic/sovereign/tau-extensions-merge/node_modules/.bin/tsc -> ../typescript/bin/tsc
-  DANGLING /home/toxic/sovereign/tau-extensions-merge/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
-  DANGLING /home/toxic/sovereign/readme-fix-pmcp-20260914/node_modules/.bin/playwright -> ../@playwright/test/cli.js
-  DANGLING /home/toxic/sovereign/readme-fix-pmcp-20260914/node_modules/.bin/playwright-core
+  DANGLING /home/toxic/estate/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
+  DANGLING /home/toxic/estate/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
+  DANGLING /home/toxic/estate/node_modules/.bin/commitlint -> ../@commitlint/cli/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/color-support -> ../color-support/bin.js
+  DANGLING /home/toxic/estate/node_modules/.bin/husky -> ../husky/bin.js
+  DANGLING /home/toxic/estate/node_modules/.bin/jiti -> ../jiti/lib/jiti-cli.mjs
+  DANGLING /home/toxic/estate/node_modules/.bin/json5 -> ../json5/lib/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/mime -> ../mime/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/mkdirp -> ../mkdirp/bin/cmd.js
+  DANGLING /home/toxic/estate/node_modules/.bin/node-gyp -> ../node-gyp/bin/node-gyp.js
+  DANGLING /home/toxic/estate/node_modules/.bin/node-gyp-build -> ../node-gyp-build/bin.js
+  DANGLING /home/toxic/estate/node_modules/.bin/node-gyp-build-optional -> ../node-gyp-build/optional.js
+  DANGLING /home/toxic/estate/node_modules/.bin/node-gyp-build-test -> ../node-gyp-build/build-test.js
+  DANGLING /home/toxic/estate/node_modules/.bin/nopt -> ../nopt/bin/nopt.js
+  DANGLING /home/toxic/estate/node_modules/.bin/playwright -> ../playwright/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/playwright-core -> ../playwright-core/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/rimraf -> ../rimraf/bin.js
+  DANGLING /home/toxic/estate/node_modules/.bin/tsc -> ../typescript/bin/tsc
+  DANGLING /home/toxic/estate/node_modules/.bin/uglifyjs -> ../uglify-js/bin/uglifyjs
+  DANGLING /home/toxic/estate/node_modules/.bin/vitest -> ../vitest/vitest.mjs
+  DANGLING /home/toxic/estate/node_modules/.bin/yaml -> ../yaml/bin.mjs
+  DANGLING /home/toxic/estate/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/projects/tau/engine/.env.ai -> /home/toxic/.config/sovereign-ai.env
+  DANGLING /home/toxic/estate/projects/tau/engine.bak-20260920-021428/.env.ai -> /home/toxic/.config/sovereign-ai.env
+  DANGLING /home/toxic/estate/projects/tau/engine.bak-20260921-124134/.env.ai -> /home/toxic/.config/sovereign-ai.env
+  DANGLING /home/toxic/estate/tau-ext-forks/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
+  DANGLING /home/toxic/estate/tau-ext-forks/node_modules/.bin/omp -> ../@oh-my-pi/pi-coding-agent/dist/cli.js
+  DANGLING /home/toxic/estate/tau-ext-forks/node_modules/.bin/tsc -> ../typescript/bin/tsc
+  DANGLING /home/toxic/estate/tau-ext-forks/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
+  DANGLING /home/toxic/estate/kimi-audit-scratch-20260914/repo/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/tau-extensions-merge/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
+  DANGLING /home/toxic/estate/tau-extensions-merge/node_modules/.bin/omp -> ../@oh-my-pi/pi-coding-agent/dist/cli.js
+  DANGLING /home/toxic/estate/tau-extensions-merge/node_modules/.bin/tsc -> ../typescript/bin/tsc
+  DANGLING /home/toxic/estate/tau-extensions-merge/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
+  DANGLING /home/toxic/estate/readme-fix-pmcp-20260914/node_modules/.bin/playwright -> ../@playwright/test/cli.js
+  DANGLING /home/toxic/estate/readme-fix-pmcp-20260914/node_modules/.bin/playwright-core
 -> ../playwright-core/cli.js
-  DANGLING /home/toxic/sovereign/readme-fix-sovereign-1789408144/tau-skills -> /home/toxic/.tau/skills
-  DANGLING /home/toxic/sovereign/wt-hft-hygiene-20260914/tau-skills -> /home/toxic/.tau/skills
-  DANGLING /home/toxic/sovereign/wt-hft-hygiene-20260914/config/llama-swap.yaml -> herd.yaml  DANGLING /home/toxic/sovereign/.archive-20260920/wt-herd-kimi-20260914/wt-herd-kimi-20260914/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/readme-fix-sovereign-1789408144/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/wt-hft-hygiene-20260914/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/wt-hft-hygiene-20260914/config/llama-swap.yaml -> herd.yaml  DANGLING /home/toxic/estate/.archive-20260920/wt-herd-kimi-20260914/wt-herd-kimi-20260914/tau-skills -> /home/toxic/.tau/skills
 ========== [5] Git repos (branch, HEAD, dirty
 count) ==========
-  /home/toxic/sovereign/tools/saturation-guard                       forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
+  /home/toxic/estate/tools/saturation-guard                       forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign
+  /home/toxic/estate
                        forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/projects/wezterm
+  /home/toxic/estate/projects/wezterm
                        main
  869faf81e  dirty=0     2026-09-19 02:49:13 -0600
-  /home/toxic/sovereign/projects/mesh/squawk
+  /home/toxic/estate/projects/mesh/squawk
                        forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/projects/mesh/corral
+  /home/toxic/estate/projects/mesh/corral
                        main
  f630945    dirty=0     2026-09-22 09:09:48 -0600
-  /home/toxic/sovereign/projects/tau-occupied-20260916/extensions/engram  forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25 -0600
-  /home/toxic/sovereign/projects/tau-occupied-20260916/extensions/omp-extensions___omp-kafka___0.1.0  fix/add-kafkajs-dep     41291c4    dirty=0     2026-09-17 15:38:49 -0600
-  /home/toxic/sovereign/projects/tau-occupied-20260916/extensions/semantouch  forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22
+  /home/toxic/estate/projects/tau-occupied-20260916/extensions/engram  forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25 -0600
+  /home/toxic/estate/projects/tau-occupied-20260916/extensions/omp-extensions___omp-kafka___0.1.0  fix/add-kafkajs-dep     41291c4    dirty=0     2026-09-17 15:38:49 -0600
+  /home/toxic/estate/projects/tau-occupied-20260916/extensions/semantouch  forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22
 10:43:25 -0600
-  /home/toxic/sovereign/projects/outlier-toolkit                     main
+  /home/toxic/estate/projects/outlier-toolkit                     main
  aa929a7    dirty=0     2026-09-19 04:04:01 -0600
-  /home/toxic/sovereign/projects/guidellm
+  /home/toxic/estate/projects/guidellm
                        main
  5c07936f   dirty=5     2026-09-20 17:14:42 -0600
-  /home/toxic/sovereign/projects/nim-repos/NVIDIA-NemoClaw           main
+  /home/toxic/estate/projects/nim-repos/NVIDIA-NemoClaw           main
  f2c0316    dirty=0     2026-09-20 01:31:23 -0700
-  /home/toxic/sovereign/projects/nim-repos/tibbee-pi-nvidia-nim-provider  main
+  /home/toxic/estate/projects/nim-repos/tibbee-pi-nvidia-nim-provider  main
       756fb31    dirty=0     2026-09-17 11:09:35 +0200
-  /home/toxic/sovereign/projects/nim-repos/diegovisk-pi-nvidia-nim   main
+  /home/toxic/estate/projects/nim-repos/diegovisk-pi-nvidia-nim   main
  b72302f    dirty=0     2026-08-30 14:58:51 -0400
-  /home/toxic/sovereign/projects/nim-repos/joeldg-nvidiarouter       main
+  /home/toxic/estate/projects/nim-repos/joeldg-nvidiarouter       main
  0ce3f9b    dirty=0     2026-07-09 17:50:01 -0700
-  /home/toxic/sovereign/projects/nim-repos/lizhebio-nim-qwen-model-router  main
+  /home/toxic/estate/projects/nim-repos/lizhebio-nim-qwen-model-router  main
        eadca2c    dirty=0     2026-09-12 20:10:58 +0800
-  /home/toxic/sovereign/projects/nim-repos/lucky-mandator-gocode-router  main
+  /home/toxic/estate/projects/nim-repos/lucky-mandator-gocode-router  main
      4eb5c09    dirty=0     2026-02-28 15:35:25 +0800
-  /home/toxic/sovereign/projects/nim-repos/rickeshtn-nim-code        main
+  /home/toxic/estate/projects/nim-repos/rickeshtn-nim-code        main
  3dfecd9    dirty=0     2026-06-25 08:22:58 +0800
-  /home/toxic/sovereign/projects/nim-repos/thispointon-kondi         main
+  /home/toxic/estate/projects/nim-repos/thispointon-kondi         main
  8c9cdd3    dirty=0     2026-08-07 12:50:00 -0400
-  /home/toxic/sovereign/projects/nim-repos/shaivpidadi-freeridev3    main
+  /home/toxic/estate/projects/nim-repos/shaivpidadi-freeridev3    main
  9d5ce25    dirty=0     2026-09-04 08:58:43 -0700
-  /home/toxic/sovereign/projects/nim-repos/bauka0-nvidia-nim-provider  main
+  /home/toxic/estate/projects/nim-repos/bauka0-nvidia-nim-provider  main
    1996405    dirty=0     2026-09-18 16:25:20
 +0500
-  /home/toxic/sovereign/projects/nim-repos/iammalego-keymux          main
+  /home/toxic/estate/projects/nim-repos/iammalego-keymux          main
  49d7a51    dirty=0     2026-04-17 12:38:53 -0300
-  /home/toxic/sovereign/projects/nim-repos/nezerkc-opencode-provider-nvidia-nim  master
+  /home/toxic/estate/projects/nim-repos/nezerkc-opencode-provider-nvidia-nim  master
              f987273    dirty=0     2026-09-20 04:49:55 -0300
-  /home/toxic/sovereign/projects/nim-repos/david-eve-za-nvidia-nim-mcp  main
+  /home/toxic/estate/projects/nim-repos/david-eve-za-nvidia-nim-mcp  main
     fe161a7    dirty=0     2026-08-16 20:38:03 -0500
-  /home/toxic/sovereign/projects/nim-repos/nirholas-three.ws         main
+  /home/toxic/estate/projects/nim-repos/nirholas-three.ws         main
  7cdcc607   dirty=0     2026-09-20 06:10:20 +0000
-  /home/toxic/sovereign/projects/nim-repos/Sateeshreddymaddi-Custom-Nvidia-Nim-Node  main
+  /home/toxic/estate/projects/nim-repos/Sateeshreddymaddi-Custom-Nvidia-Nim-Node  main
                  d8566a6    dirty=0     2026-06-28 17:25:23 +0530
-  /home/toxic/sovereign/projects/nim-repos/gabriel-ferraresi-NIMGEN  main
+  /home/toxic/estate/projects/nim-repos/gabriel-ferraresi-NIMGEN  main
  dabd665    dirty=0     2026-06-18 00:15:43 -0300
-  /home/toxic/sovereign/projects/nim-repos/api-evangelist-nvidia-nim  main
+  /home/toxic/estate/projects/nim-repos/api-evangelist-nvidia-nim  main
   dd2b0ef    dirty=0     2026-09-19 11:42:51 -0400
-  /home/toxic/sovereign/projects/nim-repos/olszalsik-a0-nvidia-nim   main
+  /home/toxic/estate/projects/nim-repos/olszalsik-a0-nvidia-nim   main
  6d83b69    dirty=0     2026-08-10 18:52:13 +0200
-  /home/toxic/sovereign/projects/nim-repos/h0rcrux-hermes-backup     main
+  /home/toxic/estate/projects/nim-repos/h0rcrux-hermes-backup     main
  3469625    dirty=0     2026-04-23 00:44:19 +0800
-  /home/toxic/sovereign/projects/nim-repos/Gitlawb-openclaude        main
+  /home/toxic/estate/projects/nim-repos/Gitlawb-openclaude        main
  d16318a    dirty=0     2026-09-16 07:39:28 +0800
-  /home/toxic/sovereign/projects/nim-repos/musistudio-claude-code-router  main
+  /home/toxic/estate/projects/nim-repos/musistudio-claude-code-router  main
       a034b0c    dirty=0     2026-09-17 10:02:45 +0800
-  /home/toxic/sovereign/projects/nim-repos/mschwarzmueller-pi_agent_rust  main
+  /home/toxic/estate/projects/nim-repos/mschwarzmueller-pi_agent_rust  main
       68884082   dirty=0     2026-02-20 10:29:46 +0100
-  /home/toxic/sovereign/projects/nim-repos/xRyul-pi-nvidia-nim       main
+  /home/toxic/estate/projects/nim-repos/xRyul-pi-nvidia-nim       main
  dca7731    dirty=0     2026-07-20 16:55:19 +0100
-  /home/toxic/sovereign/projects/nim-repos/furqanafridi-free-claude-code  main
+  /home/toxic/estate/projects/nim-repos/furqanafridi-free-claude-code  main
       d3a3b37    dirty=0     2026-04-30 22:01:36 -0700
-  /home/toxic/sovereign/projects/nim-repos/stillhue-claudio          main
+  /home/toxic/estate/projects/nim-repos/stillhue-claudio          main
  e89d2e9    dirty=0     2026-09-07 17:43:27 -0300
-  /home/toxic/sovereign/projects/AURKA
+  /home/toxic/estate/projects/AURKA
                        main
  57ad463    dirty=0     2025-12-23 11:32:32 +0530
-  /home/toxic/sovereign/projects/extagents
+  /home/toxic/estate/projects/extagents
                        main
  d94f351    dirty=0     2026-04-11 13:39:23 +0000
-  /home/toxic/sovereign/projects/llm-mapreduce                       main
+  /home/toxic/estate/projects/llm-mapreduce                       main
  0e93cc9    dirty=0     2026-03-05 16:45:51 +0800
-  /home/toxic/sovereign/gear
+  /home/toxic/estate/gear
                        main
  2e8b37a    dirty=1338  2026-09-14 22:25:29 -0600
-  /home/toxic/sovereign/kimi-audit-scratch-20260914/repo             kimi-extensions-complete  6e27dddd   dirty=0     2026-09-17 15:38:41
+  /home/toxic/estate/kimi-audit-scratch-20260914/repo             kimi-extensions-complete  6e27dddd   dirty=0     2026-09-17 15:38:41
 -0600
-  /home/toxic/sovereign/codeflux/forks/watchfiles                    main
+  /home/toxic/estate/codeflux/forks/watchfiles                    main
  94b0b49    dirty=0     2026-09-16 12:47:12 -0600
-  /home/toxic/sovereign/codeflux/forks/moulti
+  /home/toxic/estate/codeflux/forks/moulti
                        master
  4b6c2e7    dirty=0     2026-09-16 13:10:40 -0600
-  /home/toxic/sovereign/codeflux/forks/python-patch                  master
+  /home/toxic/estate/codeflux/forks/python-patch                  master
  17146ca    dirty=0     2026-09-17 15:38:38 -0600
-  /home/toxic/sovereign/codeflux/forks/patchling                     main
+  /home/toxic/estate/codeflux/forks/patchling                     main
  f35e136    dirty=0     2026-09-17 15:38:36 -0600
-  /home/toxic/sovereign/codeflux
+  /home/toxic/estate/codeflux
                        main
  04e54eb    dirty=0     2026-09-17 15:43:29 -0600
-  /home/toxic/sovereign/engines/herd/beellama.cpp                    forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
+  /home/toxic/estate/engines/herd/beellama.cpp                    forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/engines/herd/ik_llama.cpp                    forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
+  /home/toxic/estate/engines/herd/ik_llama.cpp                    forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/engines/herd/llama-cpp-turboquant            feature/turboquant-kv-cache  d69b48c7f  dirty=0     2026-09-17 15:38:52 -0600
-  /home/toxic/sovereign/hatch/agents/ember/chat                      forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
+  /home/toxic/estate/engines/herd/llama-cpp-turboquant            feature/turboquant-kv-cache  d69b48c7f  dirty=0     2026-09-17 15:38:52 -0600
+  /home/toxic/estate/hatch/agents/ember/chat                      forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/killer-features/debate-oracle/vendor/ChatEval  main
+  /home/toxic/estate/killer-features/debate-oracle/vendor/ChatEval  main
    56b320c    dirty=0     2024-10-19 16:15:42
 +0800
-  /home/toxic/sovereign/killer-features/debate-oracle/vendor/debate-or-vote  main
+  /home/toxic/estate/killer-features/debate-oracle/vendor/debate-or-vote  main
          82c929e    dirty=0     2025-10-15 14:52:32 -0500
-  /home/toxic/sovereign/killer-features/debate-oracle/vendor/llm_debate  main
+  /home/toxic/estate/killer-features/debate-oracle/vendor/llm_debate  main
      f9c71d1    dirty=0     2024-03-22 00:14:34 -0700
-  /home/toxic/sovereign/killer-features/debate-oracle/vendor/argus-ai-debate  main
+  /home/toxic/estate/killer-features/debate-oracle/vendor/argus-ai-debate  main
           b6860a1    dirty=0     2026-03-13 00:40:52 +0530
-  /home/toxic/sovereign/killer-features/bid-market/vendor/auction-agent11  main
+  /home/toxic/estate/killer-features/bid-market/vendor/auction-agent11  main
        aced534    dirty=0     2026-09-11 17:50:35 -0700
-  /home/toxic/sovereign/killer-features/bid-market/vendor/agora      main
+  /home/toxic/estate/killer-features/bid-market/vendor/agora      main
  bd6387a    dirty=0     2026-08-28 11:25:17 +0100
-  /home/toxic/sovereign/killer-features/bid-market/vendor/contract-net-router  main
+  /home/toxic/estate/killer-features/bid-market/vendor/contract-net-router  main
            bdfc652    dirty=0     2026-05-16 18:41:30 -0700
-  /home/toxic/sovereign/killer-features/code-racer/vendor/speed-run  main
+  /home/toxic/estate/killer-features/code-racer/vendor/speed-run  main
  3baa3d9    dirty=0     2026-04-20 13:20:49 -0500
-  /home/toxic/sovereign/killer-features/code-racer/vendor/SRank-CodeRanker  main
+  /home/toxic/estate/killer-features/code-racer/vendor/SRank-CodeRanker  main
         e4672e1    dirty=0     2024-06-09 14:59:59 +0700
-  /home/toxic/sovereign/killer-features/code-racer/vendor/RACE       main
+  /home/toxic/estate/killer-features/code-racer/vendor/RACE       main
  3b8ee59    dirty=0     2024-10-12 20:59:22 +0800
-  /home/toxic/sovereign/killer-features/code-racer/vendor/coder_reviewer_reranking  main
+  /home/toxic/estate/killer-features/code-racer/vendor/coder_reviewer_reranking  main
                 2044ef3    dirty=0     2023-02-14 11:22:12 -0800
   /home/toxic/projects/Antigravity-Mobility-CLI
             dirty=0
@@ -3227,20 +3227,20 @@ count) ==========
 ========== [6] State dirs the scripts rmtree'd ==========
   EXISTS   /home/toxic/.agent  (mtime 2026-09-13 19:13:50)
   EXISTS   /home/toxic/.agent/tmp  (mtime 2026-09-13 19:13:50)
-  GONE     /home/toxic/sovereign/tau/engine/checkpoint.json  <-- rmtree/unlink target, no backup taken
-  EXISTS   /home/toxic/sovereign/tau/engine/.agent/tmp  (mtime 2026-09-13 19:13:50)
-  GONE     /home/toxic/sovereign/tau/engine/.agent/checkpoint.json  <-- rmtree/unlink target, no backup taken
+  GONE     /home/toxic/estate/tau/engine/checkpoint.json  <-- rmtree/unlink target, no backup taken
+  EXISTS   /home/toxic/estate/tau/engine/.agent/tmp  (mtime 2026-09-13 19:13:50)
+  GONE     /home/toxic/estate/tau/engine/.agent/checkpoint.json  <-- rmtree/unlink target, no backup taken
 ========== [7] Topology: sovereign vs projects ==========
-  DIR      /home/toxic/sovereign  inode=22855172
-  SYMLINK  /home/toxic/projects/sovereign-projects -> /home/toxic/sovereign
+  DIR      /home/toxic/estate  inode=22855172
+  SYMLINK  /home/toxic/projects/sovereign-projects -> /home/toxic/estate
   -> DIFFERENT inodes (two separate copies)
 ========== [8] Suspicious running processes ==========
-   358061  355033   24431 /home/toxic/projects/sovereign-projects/sovereign-swap/build/llama-swap --config /home/toxic/sovereign/config/herd.yaml --config-dir /home/toxic/kimi-auto/herd.d --watch-config --listen 127.0.0.1:25100
+   358061  355033   24431 /home/toxic/projects/sovereign-projects/sovereign-swap/build/llama-swap --config /home/toxic/estate/config/herd.yaml --config-dir /home/toxic/kimi-auto/herd.d --watch-config --listen 127.0.0.1:25100
    530965  355033   16329 docker run --rm --pull missing --name hindsight --restart no --shm-size=1g --network host -v hindsight-data:/home/hindsight/.pg0 -e HINDSIGHT_API_PORT=25117 -e HINDSIGHT_CP_PORT=25118 -e HINDSIGHT_API_LLM_PROVIDER=openai -e HINDSIGHT_API_LLM_BASE_URL=http://127.0.0.1:25100/v1 -e HINDSIGHT_API_LLM_API_KEY=llama-swap-local-key -e HINDSIGHT_API_LLM_MODEL=beellama/qwen-flash-64k -e HINDSIGHT_API_WORKER_ID=hindsight-sovereign-node -e HINDSIGHT_API_PORT=25117 -e HINDSIGHT_CP_PORT=25118 ghcr.io/vectorize-io/hindsight:latest
    531730  355033   16303 /home/toxic/.local/share/mise/installs/pitchfork/2.25.0/pitchfork
 log-sink --daemon-id sovereign/tau --log-format text
    677131       1   11739 tmux new-session -d
--s ralph -c /home/toxic/sovereign/projects/mesh/super-ralph bash -c 'export NIM_BASE_URL=http://127.0.0.1:25104/v1 ANTHROPIC_BASE_URL=http://127.0.0.1:25104/v1; DEBUG=* LOG_LEVEL=debug ralph --skip-questions "Sovereign continuous
+-s ralph -c /home/toxic/estate/projects/mesh/super-ralph bash -c 'export NIM_BASE_URL=http://127.0.0.1:25104/v1 ANTHROPIC_BASE_URL=http://127.0.0.1:25104/v1; DEBUG=* LOG_LEVEL=debug ralph --skip-questions "Sovereign continuous
 verification"; echo "[ralph finished]"; exec bash'
   1026824       1    1761 /usr/bin/wezterm-mux-server --pid-file-fd 10
 ========== done ==========
@@ -3320,7 +3320,7 @@ for dst, content in [
     (TAU_ENGINE / ".agent/mcp.toml", mcp_toml),
 ]:
 
-Where RALPH_STATE_DIR = HOME / ".agent" and TAU_ENGINE = CANONICAL_MASTER / "tau" / "engine" = /home/toxic/sovereign/tau/engine.
+Where RALPH_STATE_DIR = HOME / ".agent" and TAU_ENGINE = CANONICAL_MASTER / "tau" / "engine" = /home/toxic/estate/tau/engine.
 
 So the script was going to write to:
 
@@ -3426,7 +3426,7 @@ WHAT'S MISSING/DELETED:
 WHAT MATTERS MOST:
 The ~/.bashrc mtime is 2026-09-22 10:31:36 — that's from TODAY, from the wezterm session. That's the file the wezterm agent was editing.
 
-The ~/.bashrc.env is a symlink to /home/toxic/sovereign/projects/shell/ii/dots/.bashrc.env — that's why the earlier attempts to edit .bashrc.env directly via ~/.bashrc.env path worked as symlink-followed writes.
+The ~/.bashrc.env is a symlink to /home/toxic/estate/projects/shell/ii/dots/.bashrc.env — that's why the earlier attempts to edit .bashrc.env directly via ~/.bashrc.env path worked as symlink-followed writes.
 
 KEY INSIGHT: All the MISSING .config/ralph-workflow*.toml files have .bak-* siblings. Those are the undo anchors. Nothing is actually lost.
 
@@ -3522,8 +3522,8 @@ The script calls them "deprecated 0.8.x split TOMLs." It intended to delete them
 Case B — the script's rmtree targets, which were ephemeral state anyway.
 text
 
-GONE     /home/toxic/sovereign/tau/engine/checkpoint.json
-GONE     /home/toxic/sovereign/tau/engine/.agent/checkpoint.json
+GONE     /home/toxic/estate/tau/engine/checkpoint.json
+GONE     /home/toxic/estate/tau/engine/.agent/checkpoint.json
 
 These are checkpoints — runtime scratch for ralph, no meaningful content. Their loss is the loss of a cache. Not recovery-worthy.
 
@@ -3533,7 +3533,7 @@ text
 MISSING  /home/toxic/.config/ralph-workflow.toml       (unified config)
 MISSING  /home/toxic/.config/ralph-workflow-mcp.toml   (unified MCP config)
 MISSING  /home/toxic/PROMPT.md
-MISSING  /home/toxic/sovereign/mesh/ui
+MISSING  /home/toxic/estate/mesh/ui
 MISSING  /home/toxic/.local/bin/omp-tau-unified
 
 These are the only real "the script was going to do this and didn't finish" cases. None of them are things you had before. They were going to be created by the script, not restored by it. So there is nothing to recover — there is only "the script stopped partway."
@@ -3577,7 +3577,7 @@ Everything else in that report is either:
 
     node_modules dangling symlinks (normal, harmless, npm does this)
 
-    the /home/toxic/sovereign/tau-skills -> /home/toxic/.tau/skills symlink (dangling because ~/.tau/skills doesn't exist — again, pre-existing)
+    the /home/toxic/estate/tau-skills -> /home/toxic/.tau/skills symlink (dangling because ~/.tau/skills doesn't exist — again, pre-existing)
 
 Nothing urgent. Nothing unrecoverable. The audit was alarming to read because a full filesystem scan always looks alarming. It isn't.
 
@@ -4037,11 +4037,11 @@ echo "report: $LOG"
 audit dir: /home/toxic/damage-audit-20260922-105926
 started:   2026-09-22T10:59:26-06:00
 ========== [1] Blast-radius paths ==========
-SYMLINK_OK   /home/toxic/.ripgreprc -> /home/toxic/sovereign/projects/shell/ii/dots/.ripgreprc
+SYMLINK_OK   /home/toxic/.ripgreprc -> /home/toxic/estate/projects/shell/ii/dots/.ripgreprc
 FILE         /home/toxic/.gitignore  (1188 B,
 mtime 2026-09-13 11:54:54)
 FILE         /home/toxic/.bashrc  (7784 B, mtime 2026-09-22 10:31:36)
-SYMLINK_OK   /home/toxic/.bashrc.env -> /home/toxic/sovereign/projects/shell/ii/dots/.bashrc.env
+SYMLINK_OK   /home/toxic/.bashrc.env -> /home/toxic/estate/projects/shell/ii/dots/.bashrc.env
 FILE         /home/toxic/.local/nimstats/client.ts  (90 B, mtime 2026-09-13 13:52:54)
 FILE         /home/toxic/.local/bin/claude-wrapper.sh  (504 B, mtime 2026-09-13 19:13:50)
 FILE         /home/toxic/.config/claude/env  (764 B, mtime 2026-09-13 23:55:21)
@@ -4056,23 +4056,23 @@ MISSING      /home/toxic/.agent/pipeline.toml
 MISSING      /home/toxic/.agent/artifacts.tomlMISSING      /home/toxic/.agent/checkpoint.json
 FILE         /home/toxic/.agent/ralph-workflow.toml  (2059 B, mtime 2026-09-13 19:13:50)
 FILE         /home/toxic/.agent/mcp.toml  (1209 B, mtime 2026-09-13 19:13:50)
-MISSING      /home/toxic/sovereign/tau/engine/.agent/checkpoint.json
-MISSING      /home/toxic/sovereign/tau/engine/.agent/ralph-workflow.toml
-MISSING      /home/toxic/sovereign/tau/engine/.agent/mcp.toml
-DIR          /home/toxic/sovereign/tau/engine/.agent/tmp  (0 entries, mtime 2026-09-13 19:13:50)
-MISSING      /home/toxic/sovereign/tau/engine/checkpoint.json
-MISSING      /home/toxic/sovereign/tau/engine/PROMPT.md
+MISSING      /home/toxic/estate/tau/engine/.agent/checkpoint.json
+MISSING      /home/toxic/estate/tau/engine/.agent/ralph-workflow.toml
+MISSING      /home/toxic/estate/tau/engine/.agent/mcp.toml
+DIR          /home/toxic/estate/tau/engine/.agent/tmp  (0 entries, mtime 2026-09-13 19:13:50)
+MISSING      /home/toxic/estate/tau/engine/checkpoint.json
+MISSING      /home/toxic/estate/tau/engine/PROMPT.md
 MISSING      /home/toxic/PROMPT.md
-MISSING      /home/toxic/sovereign/mesh/ui
-SYMLINK_OK   /home/toxic/projects/sovereign-projects -> /home/toxic/sovereign
+MISSING      /home/toxic/estate/mesh/ui
+SYMLINK_OK   /home/toxic/projects/sovereign-projects -> /home/toxic/estate
 FILE         /home/toxic/.mcpproxy/mcp_config.json  (6553 B, mtime 2026-09-21 07:09:00)
-SYMLINK_OK   /home/toxic/.local/bin/omp -> /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/dist/omp
+SYMLINK_OK   /home/toxic/.local/bin/omp -> /home/toxic/estate/projects/tau/engine/packages/coding-agent/dist/omp
 FILE         /home/toxic/.local/bin/tau  (9178 B, mtime 2026-09-21 10:54:01)
 MISSING      /home/toxic/.local/bin/omp-tau-unified
-FILE         /home/toxic/sovereign/agent  (3455 B, mtime 2026-09-22 10:43:25)
+FILE         /home/toxic/estate/agent  (3455 B, mtime 2026-09-22 10:43:25)
 FILE         /home/toxic/.config/wezterm/wezterm.lua  (2520 B, mtime 2026-09-22 10:35:54)
-SYMLINK_OK   /home/toxic/.config/wezterm/shell-integration.sh -> /home/toxic/sovereign/projects/shell/ii/dots/.config/wezterm/shell-integration.sh
-SYMLINK_OK   /home/toxic/.config/wezterm/plugins/wezterm-cmdpicker -> /home/toxic/sovereign/projects/shell/ii/dots/.config/wezterm/plugins/wezterm-cmdpicker
+SYMLINK_OK   /home/toxic/.config/wezterm/shell-integration.sh -> /home/toxic/estate/projects/shell/ii/dots/.config/wezterm/shell-integration.sh
+SYMLINK_OK   /home/toxic/.config/wezterm/plugins/wezterm-cmdpicker -> /home/toxic/estate/projects/shell/ii/dots/.config/wezterm/plugins/wezterm-cmdpicker
 FILE         /home/toxic/.local/bin/ast-grep
 (52360880 B, mtime 2026-09-18 23:11:32)
 ========== [2] .bak-* files (undo anchors) ==========
@@ -4300,176 +4300,176 @@ FILE         /home/toxic/.local/bin/ast-grep
   DANGLING /home/toxic/.local/share/blesh/out/contrib/fzf-git.bash -> integration/fzf-git.bash
   DANGLING /home/toxic/.local/share/blesh/out/contrib/fzf-initialize.bash -> integration/fzf-initialize.bash
   DANGLING /home/toxic/.local/share/blesh/out/contrib/fzf-key-bindings.bash -> integration/fzf-key-bindings.bash
-  DANGLING /home/toxic/sovereign/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
-  DANGLING /home/toxic/sovereign/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
-  DANGLING /home/toxic/sovereign/node_modules/.bin/commitlint -> ../@commitlint/cli/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/color-support -> ../color-support/bin.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/husky -> ../husky/bin.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/jiti -> ../jiti/lib/jiti-cli.mjs
-  DANGLING /home/toxic/sovereign/node_modules/.bin/json5 -> ../json5/lib/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/mime -> ../mime/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/mkdirp -> ../mkdirp/bin/cmd.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/node-gyp -> ../node-gyp/bin/node-gyp.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/node-gyp-build -> ../node-gyp-build/bin.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/node-gyp-build-optional -> ../node-gyp-build/optional.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/node-gyp-build-test -> ../node-gyp-build/build-test.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/nopt -> ../nopt/bin/nopt.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/playwright -> ../playwright/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/playwright-core -> ../playwright-core/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/rimraf -> ../rimraf/bin.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/tsc -> ../typescript/bin/tsc
-  DANGLING /home/toxic/sovereign/node_modules/.bin/uglifyjs -> ../uglify-js/bin/uglifyjs
-  DANGLING /home/toxic/sovereign/node_modules/.bin/vitest -> ../vitest/vitest.mjs
-  DANGLING /home/toxic/sovereign/node_modules/.bin/yaml -> ../yaml/bin.mjs
-  DANGLING /home/toxic/sovereign/tau-skills -> /home/toxic/.tau/skills
-  DANGLING /home/toxic/sovereign/projects/tau/engine/.env.ai -> /home/toxic/.config/sovereign-ai.env
-  DANGLING /home/toxic/sovereign/projects/tau/engine.bak-20260920-021428/.env.ai -> /home/toxic/.config/sovereign-ai.env
-  DANGLING /home/toxic/sovereign/projects/tau/engine.bak-20260921-124134/.env.ai -> /home/toxic/.config/sovereign-ai.env
-  DANGLING /home/toxic/sovereign/tau-ext-forks/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
-  DANGLING /home/toxic/sovereign/tau-ext-forks/node_modules/.bin/omp -> ../@oh-my-pi/pi-coding-agent/dist/cli.js
-  DANGLING /home/toxic/sovereign/tau-ext-forks/node_modules/.bin/tsc -> ../typescript/bin/tsc
-  DANGLING /home/toxic/sovereign/tau-ext-forks/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
-  DANGLING /home/toxic/sovereign/kimi-audit-scratch-20260914/repo/tau-skills -> /home/toxic/.tau/skills
-  DANGLING /home/toxic/sovereign/tau-extensions-merge/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
-  DANGLING /home/toxic/sovereign/tau-extensions-merge/node_modules/.bin/omp -> ../@oh-my-pi/pi-coding-agent/dist/cli.js
-  DANGLING /home/toxic/sovereign/tau-extensions-merge/node_modules/.bin/tsc -> ../typescript/bin/tsc
-  DANGLING /home/toxic/sovereign/tau-extensions-merge/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
-  DANGLING /home/toxic/sovereign/readme-fix-pmcp-20260914/node_modules/.bin/playwright -> ../@playwright/test/cli.js
-  DANGLING /home/toxic/sovereign/readme-fix-pmcp-20260914/node_modules/.bin/playwright-core
+  DANGLING /home/toxic/estate/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
+  DANGLING /home/toxic/estate/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
+  DANGLING /home/toxic/estate/node_modules/.bin/commitlint -> ../@commitlint/cli/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/color-support -> ../color-support/bin.js
+  DANGLING /home/toxic/estate/node_modules/.bin/husky -> ../husky/bin.js
+  DANGLING /home/toxic/estate/node_modules/.bin/jiti -> ../jiti/lib/jiti-cli.mjs
+  DANGLING /home/toxic/estate/node_modules/.bin/json5 -> ../json5/lib/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/mime -> ../mime/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/mkdirp -> ../mkdirp/bin/cmd.js
+  DANGLING /home/toxic/estate/node_modules/.bin/node-gyp -> ../node-gyp/bin/node-gyp.js
+  DANGLING /home/toxic/estate/node_modules/.bin/node-gyp-build -> ../node-gyp-build/bin.js
+  DANGLING /home/toxic/estate/node_modules/.bin/node-gyp-build-optional -> ../node-gyp-build/optional.js
+  DANGLING /home/toxic/estate/node_modules/.bin/node-gyp-build-test -> ../node-gyp-build/build-test.js
+  DANGLING /home/toxic/estate/node_modules/.bin/nopt -> ../nopt/bin/nopt.js
+  DANGLING /home/toxic/estate/node_modules/.bin/playwright -> ../playwright/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/playwright-core -> ../playwright-core/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/rimraf -> ../rimraf/bin.js
+  DANGLING /home/toxic/estate/node_modules/.bin/tsc -> ../typescript/bin/tsc
+  DANGLING /home/toxic/estate/node_modules/.bin/uglifyjs -> ../uglify-js/bin/uglifyjs
+  DANGLING /home/toxic/estate/node_modules/.bin/vitest -> ../vitest/vitest.mjs
+  DANGLING /home/toxic/estate/node_modules/.bin/yaml -> ../yaml/bin.mjs
+  DANGLING /home/toxic/estate/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/projects/tau/engine/.env.ai -> /home/toxic/.config/sovereign-ai.env
+  DANGLING /home/toxic/estate/projects/tau/engine.bak-20260920-021428/.env.ai -> /home/toxic/.config/sovereign-ai.env
+  DANGLING /home/toxic/estate/projects/tau/engine.bak-20260921-124134/.env.ai -> /home/toxic/.config/sovereign-ai.env
+  DANGLING /home/toxic/estate/tau-ext-forks/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
+  DANGLING /home/toxic/estate/tau-ext-forks/node_modules/.bin/omp -> ../@oh-my-pi/pi-coding-agent/dist/cli.js
+  DANGLING /home/toxic/estate/tau-ext-forks/node_modules/.bin/tsc -> ../typescript/bin/tsc
+  DANGLING /home/toxic/estate/tau-ext-forks/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
+  DANGLING /home/toxic/estate/kimi-audit-scratch-20260914/repo/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/tau-extensions-merge/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
+  DANGLING /home/toxic/estate/tau-extensions-merge/node_modules/.bin/omp -> ../@oh-my-pi/pi-coding-agent/dist/cli.js
+  DANGLING /home/toxic/estate/tau-extensions-merge/node_modules/.bin/tsc -> ../typescript/bin/tsc
+  DANGLING /home/toxic/estate/tau-extensions-merge/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
+  DANGLING /home/toxic/estate/readme-fix-pmcp-20260914/node_modules/.bin/playwright -> ../@playwright/test/cli.js
+  DANGLING /home/toxic/estate/readme-fix-pmcp-20260914/node_modules/.bin/playwright-core
 -> ../playwright-core/cli.js
-  DANGLING /home/toxic/sovereign/readme-fix-sovereign-1789408144/tau-skills -> /home/toxic/.tau/skills
-  DANGLING /home/toxic/sovereign/wt-hft-hygiene-20260914/tau-skills -> /home/toxic/.tau/skills
-  DANGLING /home/toxic/sovereign/wt-hft-hygiene-20260914/config/llama-swap.yaml -> herd.yaml  DANGLING /home/toxic/sovereign/.archive-20260920/wt-herd-kimi-20260914/wt-herd-kimi-20260914/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/readme-fix-sovereign-1789408144/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/wt-hft-hygiene-20260914/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/wt-hft-hygiene-20260914/config/llama-swap.yaml -> herd.yaml  DANGLING /home/toxic/estate/.archive-20260920/wt-herd-kimi-20260914/wt-herd-kimi-20260914/tau-skills -> /home/toxic/.tau/skills
 ========== [5] Git repos (branch, HEAD, dirty
 count) ==========
-  /home/toxic/sovereign/tools/saturation-guard                       forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
+  /home/toxic/estate/tools/saturation-guard                       forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign
+  /home/toxic/estate
                        forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/projects/wezterm
+  /home/toxic/estate/projects/wezterm
                        main
  869faf81e  dirty=0     2026-09-19 02:49:13 -0600
-  /home/toxic/sovereign/projects/mesh/squawk
+  /home/toxic/estate/projects/mesh/squawk
                        forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/projects/mesh/corral
+  /home/toxic/estate/projects/mesh/corral
                        main
  f630945    dirty=0     2026-09-22 09:09:48 -0600
-  /home/toxic/sovereign/projects/tau-occupied-20260916/extensions/engram  forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25 -0600
-  /home/toxic/sovereign/projects/tau-occupied-20260916/extensions/omp-extensions___omp-kafka___0.1.0  fix/add-kafkajs-dep     41291c4    dirty=0     2026-09-17 15:38:49 -0600
-  /home/toxic/sovereign/projects/tau-occupied-20260916/extensions/semantouch  forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22
+  /home/toxic/estate/projects/tau-occupied-20260916/extensions/engram  forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25 -0600
+  /home/toxic/estate/projects/tau-occupied-20260916/extensions/omp-extensions___omp-kafka___0.1.0  fix/add-kafkajs-dep     41291c4    dirty=0     2026-09-17 15:38:49 -0600
+  /home/toxic/estate/projects/tau-occupied-20260916/extensions/semantouch  forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22
 10:43:25 -0600
-  /home/toxic/sovereign/projects/outlier-toolkit                     main
+  /home/toxic/estate/projects/outlier-toolkit                     main
  aa929a7    dirty=0     2026-09-19 04:04:01 -0600
-  /home/toxic/sovereign/projects/guidellm
+  /home/toxic/estate/projects/guidellm
                        main
  5c07936f   dirty=5     2026-09-20 17:14:42 -0600
-  /home/toxic/sovereign/projects/nim-repos/NVIDIA-NemoClaw           main
+  /home/toxic/estate/projects/nim-repos/NVIDIA-NemoClaw           main
  f2c0316    dirty=0     2026-09-20 01:31:23 -0700
-  /home/toxic/sovereign/projects/nim-repos/tibbee-pi-nvidia-nim-provider  main
+  /home/toxic/estate/projects/nim-repos/tibbee-pi-nvidia-nim-provider  main
       756fb31    dirty=0     2026-09-17 11:09:35 +0200
-  /home/toxic/sovereign/projects/nim-repos/diegovisk-pi-nvidia-nim   main
+  /home/toxic/estate/projects/nim-repos/diegovisk-pi-nvidia-nim   main
  b72302f    dirty=0     2026-08-30 14:58:51 -0400
-  /home/toxic/sovereign/projects/nim-repos/joeldg-nvidiarouter       main
+  /home/toxic/estate/projects/nim-repos/joeldg-nvidiarouter       main
  0ce3f9b    dirty=0     2026-07-09 17:50:01 -0700
-  /home/toxic/sovereign/projects/nim-repos/lizhebio-nim-qwen-model-router  main
+  /home/toxic/estate/projects/nim-repos/lizhebio-nim-qwen-model-router  main
        eadca2c    dirty=0     2026-09-12 20:10:58 +0800
-  /home/toxic/sovereign/projects/nim-repos/lucky-mandator-gocode-router  main
+  /home/toxic/estate/projects/nim-repos/lucky-mandator-gocode-router  main
      4eb5c09    dirty=0     2026-02-28 15:35:25 +0800
-  /home/toxic/sovereign/projects/nim-repos/rickeshtn-nim-code        main
+  /home/toxic/estate/projects/nim-repos/rickeshtn-nim-code        main
  3dfecd9    dirty=0     2026-06-25 08:22:58 +0800
-  /home/toxic/sovereign/projects/nim-repos/thispointon-kondi         main
+  /home/toxic/estate/projects/nim-repos/thispointon-kondi         main
  8c9cdd3    dirty=0     2026-08-07 12:50:00 -0400
-  /home/toxic/sovereign/projects/nim-repos/shaivpidadi-freeridev3    main
+  /home/toxic/estate/projects/nim-repos/shaivpidadi-freeridev3    main
  9d5ce25    dirty=0     2026-09-04 08:58:43 -0700
-  /home/toxic/sovereign/projects/nim-repos/bauka0-nvidia-nim-provider  main
+  /home/toxic/estate/projects/nim-repos/bauka0-nvidia-nim-provider  main
    1996405    dirty=0     2026-09-18 16:25:20
 +0500
-  /home/toxic/sovereign/projects/nim-repos/iammalego-keymux          main
+  /home/toxic/estate/projects/nim-repos/iammalego-keymux          main
  49d7a51    dirty=0     2026-04-17 12:38:53 -0300
-  /home/toxic/sovereign/projects/nim-repos/nezerkc-opencode-provider-nvidia-nim  master
+  /home/toxic/estate/projects/nim-repos/nezerkc-opencode-provider-nvidia-nim  master
              f987273    dirty=0     2026-09-20 04:49:55 -0300
-  /home/toxic/sovereign/projects/nim-repos/david-eve-za-nvidia-nim-mcp  main
+  /home/toxic/estate/projects/nim-repos/david-eve-za-nvidia-nim-mcp  main
     fe161a7    dirty=0     2026-08-16 20:38:03 -0500
-  /home/toxic/sovereign/projects/nim-repos/nirholas-three.ws         main
+  /home/toxic/estate/projects/nim-repos/nirholas-three.ws         main
  7cdcc607   dirty=0     2026-09-20 06:10:20 +0000
-  /home/toxic/sovereign/projects/nim-repos/Sateeshreddymaddi-Custom-Nvidia-Nim-Node  main
+  /home/toxic/estate/projects/nim-repos/Sateeshreddymaddi-Custom-Nvidia-Nim-Node  main
                  d8566a6    dirty=0     2026-06-28 17:25:23 +0530
-  /home/toxic/sovereign/projects/nim-repos/gabriel-ferraresi-NIMGEN  main
+  /home/toxic/estate/projects/nim-repos/gabriel-ferraresi-NIMGEN  main
  dabd665    dirty=0     2026-06-18 00:15:43 -0300
-  /home/toxic/sovereign/projects/nim-repos/api-evangelist-nvidia-nim  main
+  /home/toxic/estate/projects/nim-repos/api-evangelist-nvidia-nim  main
   dd2b0ef    dirty=0     2026-09-19 11:42:51 -0400
-  /home/toxic/sovereign/projects/nim-repos/olszalsik-a0-nvidia-nim   main
+  /home/toxic/estate/projects/nim-repos/olszalsik-a0-nvidia-nim   main
  6d83b69    dirty=0     2026-08-10 18:52:13 +0200
-  /home/toxic/sovereign/projects/nim-repos/h0rcrux-hermes-backup     main
+  /home/toxic/estate/projects/nim-repos/h0rcrux-hermes-backup     main
  3469625    dirty=0     2026-04-23 00:44:19 +0800
-  /home/toxic/sovereign/projects/nim-repos/Gitlawb-openclaude        main
+  /home/toxic/estate/projects/nim-repos/Gitlawb-openclaude        main
  d16318a    dirty=0     2026-09-16 07:39:28 +0800
-  /home/toxic/sovereign/projects/nim-repos/musistudio-claude-code-router  main
+  /home/toxic/estate/projects/nim-repos/musistudio-claude-code-router  main
       a034b0c    dirty=0     2026-09-17 10:02:45 +0800
-  /home/toxic/sovereign/projects/nim-repos/mschwarzmueller-pi_agent_rust  main
+  /home/toxic/estate/projects/nim-repos/mschwarzmueller-pi_agent_rust  main
       68884082   dirty=0     2026-02-20 10:29:46 +0100
-  /home/toxic/sovereign/projects/nim-repos/xRyul-pi-nvidia-nim       main
+  /home/toxic/estate/projects/nim-repos/xRyul-pi-nvidia-nim       main
  dca7731    dirty=0     2026-07-20 16:55:19 +0100
-  /home/toxic/sovereign/projects/nim-repos/furqanafridi-free-claude-code  main
+  /home/toxic/estate/projects/nim-repos/furqanafridi-free-claude-code  main
       d3a3b37    dirty=0     2026-04-30 22:01:36 -0700
-  /home/toxic/sovereign/projects/nim-repos/stillhue-claudio          main
+  /home/toxic/estate/projects/nim-repos/stillhue-claudio          main
  e89d2e9    dirty=0     2026-09-07 17:43:27 -0300
-  /home/toxic/sovereign/projects/AURKA
+  /home/toxic/estate/projects/AURKA
                        main
  57ad463    dirty=0     2025-12-23 11:32:32 +0530
-  /home/toxic/sovereign/projects/extagents
+  /home/toxic/estate/projects/extagents
                        main
  d94f351    dirty=0     2026-04-11 13:39:23 +0000
-  /home/toxic/sovereign/projects/llm-mapreduce                       main
+  /home/toxic/estate/projects/llm-mapreduce                       main
  0e93cc9    dirty=0     2026-03-05 16:45:51 +0800
-  /home/toxic/sovereign/gear
+  /home/toxic/estate/gear
                        main
  2e8b37a    dirty=1338  2026-09-14 22:25:29 -0600
-  /home/toxic/sovereign/kimi-audit-scratch-20260914/repo             kimi-extensions-complete  6e27dddd   dirty=0     2026-09-17 15:38:41
+  /home/toxic/estate/kimi-audit-scratch-20260914/repo             kimi-extensions-complete  6e27dddd   dirty=0     2026-09-17 15:38:41
 -0600
-  /home/toxic/sovereign/codeflux/forks/watchfiles                    main
+  /home/toxic/estate/codeflux/forks/watchfiles                    main
  94b0b49    dirty=0     2026-09-16 12:47:12 -0600
-  /home/toxic/sovereign/codeflux/forks/moulti
+  /home/toxic/estate/codeflux/forks/moulti
                        master
  4b6c2e7    dirty=0     2026-09-16 13:10:40 -0600
-  /home/toxic/sovereign/codeflux/forks/python-patch                  master
+  /home/toxic/estate/codeflux/forks/python-patch                  master
  17146ca    dirty=0     2026-09-17 15:38:38 -0600
-  /home/toxic/sovereign/codeflux/forks/patchling                     main
+  /home/toxic/estate/codeflux/forks/patchling                     main
  f35e136    dirty=0     2026-09-17 15:38:36 -0600
-  /home/toxic/sovereign/codeflux
+  /home/toxic/estate/codeflux
                        main
  04e54eb    dirty=0     2026-09-17 15:43:29 -0600
-  /home/toxic/sovereign/engines/herd/beellama.cpp                    forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
+  /home/toxic/estate/engines/herd/beellama.cpp                    forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/engines/herd/ik_llama.cpp                    forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
+  /home/toxic/estate/engines/herd/ik_llama.cpp                    forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/engines/herd/llama-cpp-turboquant            feature/turboquant-kv-cache  d69b48c7f  dirty=0     2026-09-17 15:38:52 -0600
-  /home/toxic/sovereign/hatch/agents/ember/chat                      forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
+  /home/toxic/estate/engines/herd/llama-cpp-turboquant            feature/turboquant-kv-cache  d69b48c7f  dirty=0     2026-09-17 15:38:52 -0600
+  /home/toxic/estate/hatch/agents/ember/chat                      forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/killer-features/debate-oracle/vendor/ChatEval  main
+  /home/toxic/estate/killer-features/debate-oracle/vendor/ChatEval  main
    56b320c    dirty=0     2024-10-19 16:15:42
 +0800
-  /home/toxic/sovereign/killer-features/debate-oracle/vendor/debate-or-vote  main
+  /home/toxic/estate/killer-features/debate-oracle/vendor/debate-or-vote  main
          82c929e    dirty=0     2025-10-15 14:52:32 -0500
-  /home/toxic/sovereign/killer-features/debate-oracle/vendor/llm_debate  main
+  /home/toxic/estate/killer-features/debate-oracle/vendor/llm_debate  main
      f9c71d1    dirty=0     2024-03-22 00:14:34 -0700
-  /home/toxic/sovereign/killer-features/debate-oracle/vendor/argus-ai-debate  main
+  /home/toxic/estate/killer-features/debate-oracle/vendor/argus-ai-debate  main
           b6860a1    dirty=0     2026-03-13 00:40:52 +0530
-  /home/toxic/sovereign/killer-features/bid-market/vendor/auction-agent11  main
+  /home/toxic/estate/killer-features/bid-market/vendor/auction-agent11  main
        aced534    dirty=0     2026-09-11 17:50:35 -0700
-  /home/toxic/sovereign/killer-features/bid-market/vendor/agora      main
+  /home/toxic/estate/killer-features/bid-market/vendor/agora      main
  bd6387a    dirty=0     2026-08-28 11:25:17 +0100
-  /home/toxic/sovereign/killer-features/bid-market/vendor/contract-net-router  main
+  /home/toxic/estate/killer-features/bid-market/vendor/contract-net-router  main
            bdfc652    dirty=0     2026-05-16 18:41:30 -0700
-  /home/toxic/sovereign/killer-features/code-racer/vendor/speed-run  main
+  /home/toxic/estate/killer-features/code-racer/vendor/speed-run  main
  3baa3d9    dirty=0     2026-04-20 13:20:49 -0500
-  /home/toxic/sovereign/killer-features/code-racer/vendor/SRank-CodeRanker  main
+  /home/toxic/estate/killer-features/code-racer/vendor/SRank-CodeRanker  main
         e4672e1    dirty=0     2024-06-09 14:59:59 +0700
-  /home/toxic/sovereign/killer-features/code-racer/vendor/RACE       main
+  /home/toxic/estate/killer-features/code-racer/vendor/RACE       main
  3b8ee59    dirty=0     2024-10-12 20:59:22 +0800
-  /home/toxic/sovereign/killer-features/code-racer/vendor/coder_reviewer_reranking  main
+  /home/toxic/estate/killer-features/code-racer/vendor/coder_reviewer_reranking  main
                 2044ef3    dirty=0     2023-02-14 11:22:12 -0800
   /home/toxic/projects/Antigravity-Mobility-CLI
             dirty=0
@@ -5283,20 +5283,20 @@ count) ==========
 ========== [6] State dirs the scripts rmtree'd ==========
   EXISTS   /home/toxic/.agent  (mtime 2026-09-13 19:13:50)
   EXISTS   /home/toxic/.agent/tmp  (mtime 2026-09-13 19:13:50)
-  GONE     /home/toxic/sovereign/tau/engine/checkpoint.json  <-- rmtree/unlink target, no backup taken
-  EXISTS   /home/toxic/sovereign/tau/engine/.agent/tmp  (mtime 2026-09-13 19:13:50)
-  GONE     /home/toxic/sovereign/tau/engine/.agent/checkpoint.json  <-- rmtree/unlink target, no backup taken
+  GONE     /home/toxic/estate/tau/engine/checkpoint.json  <-- rmtree/unlink target, no backup taken
+  EXISTS   /home/toxic/estate/tau/engine/.agent/tmp  (mtime 2026-09-13 19:13:50)
+  GONE     /home/toxic/estate/tau/engine/.agent/checkpoint.json  <-- rmtree/unlink target, no backup taken
 ========== [7] Topology: sovereign vs projects ==========
-  DIR      /home/toxic/sovereign  inode=22855172
-  SYMLINK  /home/toxic/projects/sovereign-projects -> /home/toxic/sovereign
+  DIR      /home/toxic/estate  inode=22855172
+  SYMLINK  /home/toxic/projects/sovereign-projects -> /home/toxic/estate
   -> DIFFERENT inodes (two separate copies)
 ========== [8] Suspicious running processes ==========
-   358061  355033   24431 /home/toxic/projects/sovereign-projects/sovereign-swap/build/llama-swap --config /home/toxic/sovereign/config/herd.yaml --config-dir /home/toxic/kimi-auto/herd.d --watch-config --listen 127.0.0.1:25100
+   358061  355033   24431 /home/toxic/projects/sovereign-projects/sovereign-swap/build/llama-swap --config /home/toxic/estate/config/herd.yaml --config-dir /home/toxic/kimi-auto/herd.d --watch-config --listen 127.0.0.1:25100
    530965  355033   16329 docker run --rm --pull missing --name hindsight --restart no --shm-size=1g --network host -v hindsight-data:/home/hindsight/.pg0 -e HINDSIGHT_API_PORT=25117 -e HINDSIGHT_CP_PORT=25118 -e HINDSIGHT_API_LLM_PROVIDER=openai -e HINDSIGHT_API_LLM_BASE_URL=http://127.0.0.1:25100/v1 -e HINDSIGHT_API_LLM_API_KEY=llama-swap-local-key -e HINDSIGHT_API_LLM_MODEL=beellama/qwen-flash-64k -e HINDSIGHT_API_WORKER_ID=hindsight-sovereign-node -e HINDSIGHT_API_PORT=25117 -e HINDSIGHT_CP_PORT=25118 ghcr.io/vectorize-io/hindsight:latest
    531730  355033   16303 /home/toxic/.local/share/mise/installs/pitchfork/2.25.0/pitchfork
 log-sink --daemon-id sovereign/tau --log-format text
    677131       1   11739 tmux new-session -d
--s ralph -c /home/toxic/sovereign/projects/mesh/super-ralph bash -c 'export NIM_BASE_URL=http://127.0.0.1:25104/v1 ANTHROPIC_BASE_URL=http://127.0.0.1:25104/v1; DEBUG=* LOG_LEVEL=debug ralph --skip-questions "Sovereign continuous
+-s ralph -c /home/toxic/estate/projects/mesh/super-ralph bash -c 'export NIM_BASE_URL=http://127.0.0.1:25104/v1 ANTHROPIC_BASE_URL=http://127.0.0.1:25104/v1; DEBUG=* LOG_LEVEL=debug ralph --skip-questions "Sovereign continuous
 verification"; echo "[ralph finished]"; exec bash'
   1026824       1    1761 /usr/bin/wezterm-mux-server --pid-file-fd 10
 ========== done ==========
@@ -5306,11 +5306,11 @@ report: /home/toxic/damage-audit-20260922-105926/audit.log
 audit dir: /home/toxic/damage-audit-20260922-105926
 started:   2026-09-22T10:59:26-06:00
 ========== [1] Blast-radius paths ==========
-SYMLINK_OK   /home/toxic/.ripgreprc -> /home/toxic/sovereign/projects/shell/ii/dots/.ripgreprc
+SYMLINK_OK   /home/toxic/.ripgreprc -> /home/toxic/estate/projects/shell/ii/dots/.ripgreprc
 FILE         /home/toxic/.gitignore  (1188 B,
 mtime 2026-09-13 11:54:54)
 FILE         /home/toxic/.bashrc  (7784 B, mtime 2026-09-22 10:31:36)
-SYMLINK_OK   /home/toxic/.bashrc.env -> /home/toxic/sovereign/projects/shell/ii/dots/.bashrc.env
+SYMLINK_OK   /home/toxic/.bashrc.env -> /home/toxic/estate/projects/shell/ii/dots/.bashrc.env
 FILE         /home/toxic/.local/nimstats/client.ts  (90 B, mtime 2026-09-13 13:52:54)
 FILE         /home/toxic/.local/bin/claude-wrapper.sh  (504 B, mtime 2026-09-13 19:13:50)
 FILE         /home/toxic/.config/claude/env  (764 B, mtime 2026-09-13 23:55:21)
@@ -5325,23 +5325,23 @@ MISSING      /home/toxic/.agent/pipeline.toml
 MISSING      /home/toxic/.agent/artifacts.tomlMISSING      /home/toxic/.agent/checkpoint.json
 FILE         /home/toxic/.agent/ralph-workflow.toml  (2059 B, mtime 2026-09-13 19:13:50)
 FILE         /home/toxic/.agent/mcp.toml  (1209 B, mtime 2026-09-13 19:13:50)
-MISSING      /home/toxic/sovereign/tau/engine/.agent/checkpoint.json
-MISSING      /home/toxic/sovereign/tau/engine/.agent/ralph-workflow.toml
-MISSING      /home/toxic/sovereign/tau/engine/.agent/mcp.toml
-DIR          /home/toxic/sovereign/tau/engine/.agent/tmp  (0 entries, mtime 2026-09-13 19:13:50)
-MISSING      /home/toxic/sovereign/tau/engine/checkpoint.json
-MISSING      /home/toxic/sovereign/tau/engine/PROMPT.md
+MISSING      /home/toxic/estate/tau/engine/.agent/checkpoint.json
+MISSING      /home/toxic/estate/tau/engine/.agent/ralph-workflow.toml
+MISSING      /home/toxic/estate/tau/engine/.agent/mcp.toml
+DIR          /home/toxic/estate/tau/engine/.agent/tmp  (0 entries, mtime 2026-09-13 19:13:50)
+MISSING      /home/toxic/estate/tau/engine/checkpoint.json
+MISSING      /home/toxic/estate/tau/engine/PROMPT.md
 MISSING      /home/toxic/PROMPT.md
-MISSING      /home/toxic/sovereign/mesh/ui
-SYMLINK_OK   /home/toxic/projects/sovereign-projects -> /home/toxic/sovereign
+MISSING      /home/toxic/estate/mesh/ui
+SYMLINK_OK   /home/toxic/projects/sovereign-projects -> /home/toxic/estate
 FILE         /home/toxic/.mcpproxy/mcp_config.json  (6553 B, mtime 2026-09-21 07:09:00)
-SYMLINK_OK   /home/toxic/.local/bin/omp -> /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/dist/omp
+SYMLINK_OK   /home/toxic/.local/bin/omp -> /home/toxic/estate/projects/tau/engine/packages/coding-agent/dist/omp
 FILE         /home/toxic/.local/bin/tau  (9178 B, mtime 2026-09-21 10:54:01)
 MISSING      /home/toxic/.local/bin/omp-tau-unified
-FILE         /home/toxic/sovereign/agent  (3455 B, mtime 2026-09-22 10:43:25)
+FILE         /home/toxic/estate/agent  (3455 B, mtime 2026-09-22 10:43:25)
 FILE         /home/toxic/.config/wezterm/wezterm.lua  (2520 B, mtime 2026-09-22 10:35:54)
-SYMLINK_OK   /home/toxic/.config/wezterm/shell-integration.sh -> /home/toxic/sovereign/projects/shell/ii/dots/.config/wezterm/shell-integration.sh
-SYMLINK_OK   /home/toxic/.config/wezterm/plugins/wezterm-cmdpicker -> /home/toxic/sovereign/projects/shell/ii/dots/.config/wezterm/plugins/wezterm-cmdpicker
+SYMLINK_OK   /home/toxic/.config/wezterm/shell-integration.sh -> /home/toxic/estate/projects/shell/ii/dots/.config/wezterm/shell-integration.sh
+SYMLINK_OK   /home/toxic/.config/wezterm/plugins/wezterm-cmdpicker -> /home/toxic/estate/projects/shell/ii/dots/.config/wezterm/plugins/wezterm-cmdpicker
 FILE         /home/toxic/.local/bin/ast-grep
 (52360880 B, mtime 2026-09-18 23:11:32)
 ========== [2] .bak-* files (undo anchors) ==========
@@ -5569,176 +5569,176 @@ FILE         /home/toxic/.local/bin/ast-grep
   DANGLING /home/toxic/.local/share/blesh/out/contrib/fzf-git.bash -> integration/fzf-git.bash
   DANGLING /home/toxic/.local/share/blesh/out/contrib/fzf-initialize.bash -> integration/fzf-initialize.bash
   DANGLING /home/toxic/.local/share/blesh/out/contrib/fzf-key-bindings.bash -> integration/fzf-key-bindings.bash
-  DANGLING /home/toxic/sovereign/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
-  DANGLING /home/toxic/sovereign/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
-  DANGLING /home/toxic/sovereign/node_modules/.bin/commitlint -> ../@commitlint/cli/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/color-support -> ../color-support/bin.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/husky -> ../husky/bin.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/jiti -> ../jiti/lib/jiti-cli.mjs
-  DANGLING /home/toxic/sovereign/node_modules/.bin/json5 -> ../json5/lib/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/mime -> ../mime/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/mkdirp -> ../mkdirp/bin/cmd.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/node-gyp -> ../node-gyp/bin/node-gyp.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/node-gyp-build -> ../node-gyp-build/bin.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/node-gyp-build-optional -> ../node-gyp-build/optional.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/node-gyp-build-test -> ../node-gyp-build/build-test.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/nopt -> ../nopt/bin/nopt.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/playwright -> ../playwright/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/playwright-core -> ../playwright-core/cli.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/rimraf -> ../rimraf/bin.js
-  DANGLING /home/toxic/sovereign/node_modules/.bin/tsc -> ../typescript/bin/tsc
-  DANGLING /home/toxic/sovereign/node_modules/.bin/uglifyjs -> ../uglify-js/bin/uglifyjs
-  DANGLING /home/toxic/sovereign/node_modules/.bin/vitest -> ../vitest/vitest.mjs
-  DANGLING /home/toxic/sovereign/node_modules/.bin/yaml -> ../yaml/bin.mjs
-  DANGLING /home/toxic/sovereign/tau-skills -> /home/toxic/.tau/skills
-  DANGLING /home/toxic/sovereign/projects/tau/engine/.env.ai -> /home/toxic/.config/sovereign-ai.env
-  DANGLING /home/toxic/sovereign/projects/tau/engine.bak-20260920-021428/.env.ai -> /home/toxic/.config/sovereign-ai.env
-  DANGLING /home/toxic/sovereign/projects/tau/engine.bak-20260921-124134/.env.ai -> /home/toxic/.config/sovereign-ai.env
-  DANGLING /home/toxic/sovereign/tau-ext-forks/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
-  DANGLING /home/toxic/sovereign/tau-ext-forks/node_modules/.bin/omp -> ../@oh-my-pi/pi-coding-agent/dist/cli.js
-  DANGLING /home/toxic/sovereign/tau-ext-forks/node_modules/.bin/tsc -> ../typescript/bin/tsc
-  DANGLING /home/toxic/sovereign/tau-ext-forks/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
-  DANGLING /home/toxic/sovereign/kimi-audit-scratch-20260914/repo/tau-skills -> /home/toxic/.tau/skills
-  DANGLING /home/toxic/sovereign/tau-extensions-merge/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
-  DANGLING /home/toxic/sovereign/tau-extensions-merge/node_modules/.bin/omp -> ../@oh-my-pi/pi-coding-agent/dist/cli.js
-  DANGLING /home/toxic/sovereign/tau-extensions-merge/node_modules/.bin/tsc -> ../typescript/bin/tsc
-  DANGLING /home/toxic/sovereign/tau-extensions-merge/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
-  DANGLING /home/toxic/sovereign/readme-fix-pmcp-20260914/node_modules/.bin/playwright -> ../@playwright/test/cli.js
-  DANGLING /home/toxic/sovereign/readme-fix-pmcp-20260914/node_modules/.bin/playwright-core
+  DANGLING /home/toxic/estate/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
+  DANGLING /home/toxic/estate/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
+  DANGLING /home/toxic/estate/node_modules/.bin/commitlint -> ../@commitlint/cli/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/color-support -> ../color-support/bin.js
+  DANGLING /home/toxic/estate/node_modules/.bin/husky -> ../husky/bin.js
+  DANGLING /home/toxic/estate/node_modules/.bin/jiti -> ../jiti/lib/jiti-cli.mjs
+  DANGLING /home/toxic/estate/node_modules/.bin/json5 -> ../json5/lib/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/mime -> ../mime/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/mkdirp -> ../mkdirp/bin/cmd.js
+  DANGLING /home/toxic/estate/node_modules/.bin/node-gyp -> ../node-gyp/bin/node-gyp.js
+  DANGLING /home/toxic/estate/node_modules/.bin/node-gyp-build -> ../node-gyp-build/bin.js
+  DANGLING /home/toxic/estate/node_modules/.bin/node-gyp-build-optional -> ../node-gyp-build/optional.js
+  DANGLING /home/toxic/estate/node_modules/.bin/node-gyp-build-test -> ../node-gyp-build/build-test.js
+  DANGLING /home/toxic/estate/node_modules/.bin/nopt -> ../nopt/bin/nopt.js
+  DANGLING /home/toxic/estate/node_modules/.bin/playwright -> ../playwright/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/playwright-core -> ../playwright-core/cli.js
+  DANGLING /home/toxic/estate/node_modules/.bin/rimraf -> ../rimraf/bin.js
+  DANGLING /home/toxic/estate/node_modules/.bin/tsc -> ../typescript/bin/tsc
+  DANGLING /home/toxic/estate/node_modules/.bin/uglifyjs -> ../uglify-js/bin/uglifyjs
+  DANGLING /home/toxic/estate/node_modules/.bin/vitest -> ../vitest/vitest.mjs
+  DANGLING /home/toxic/estate/node_modules/.bin/yaml -> ../yaml/bin.mjs
+  DANGLING /home/toxic/estate/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/projects/tau/engine/.env.ai -> /home/toxic/.config/sovereign-ai.env
+  DANGLING /home/toxic/estate/projects/tau/engine.bak-20260920-021428/.env.ai -> /home/toxic/.config/sovereign-ai.env
+  DANGLING /home/toxic/estate/projects/tau/engine.bak-20260921-124134/.env.ai -> /home/toxic/.config/sovereign-ai.env
+  DANGLING /home/toxic/estate/tau-ext-forks/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
+  DANGLING /home/toxic/estate/tau-ext-forks/node_modules/.bin/omp -> ../@oh-my-pi/pi-coding-agent/dist/cli.js
+  DANGLING /home/toxic/estate/tau-ext-forks/node_modules/.bin/tsc -> ../typescript/bin/tsc
+  DANGLING /home/toxic/estate/tau-ext-forks/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
+  DANGLING /home/toxic/estate/kimi-audit-scratch-20260914/repo/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/tau-extensions-merge/node_modules/.bin/biome -> ../@biomejs/biome/bin/biome
+  DANGLING /home/toxic/estate/tau-extensions-merge/node_modules/.bin/omp -> ../@oh-my-pi/pi-coding-agent/dist/cli.js
+  DANGLING /home/toxic/estate/tau-extensions-merge/node_modules/.bin/tsc -> ../typescript/bin/tsc
+  DANGLING /home/toxic/estate/tau-extensions-merge/node_modules/.bin/tsserver -> ../typescript/bin/tsserver
+  DANGLING /home/toxic/estate/readme-fix-pmcp-20260914/node_modules/.bin/playwright -> ../@playwright/test/cli.js
+  DANGLING /home/toxic/estate/readme-fix-pmcp-20260914/node_modules/.bin/playwright-core
 -> ../playwright-core/cli.js
-  DANGLING /home/toxic/sovereign/readme-fix-sovereign-1789408144/tau-skills -> /home/toxic/.tau/skills
-  DANGLING /home/toxic/sovereign/wt-hft-hygiene-20260914/tau-skills -> /home/toxic/.tau/skills
-  DANGLING /home/toxic/sovereign/wt-hft-hygiene-20260914/config/llama-swap.yaml -> herd.yaml  DANGLING /home/toxic/sovereign/.archive-20260920/wt-herd-kimi-20260914/wt-herd-kimi-20260914/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/readme-fix-sovereign-1789408144/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/wt-hft-hygiene-20260914/tau-skills -> /home/toxic/.tau/skills
+  DANGLING /home/toxic/estate/wt-hft-hygiene-20260914/config/llama-swap.yaml -> herd.yaml  DANGLING /home/toxic/estate/.archive-20260920/wt-herd-kimi-20260914/wt-herd-kimi-20260914/tau-skills -> /home/toxic/.tau/skills
 ========== [5] Git repos (branch, HEAD, dirty
 count) ==========
-  /home/toxic/sovereign/tools/saturation-guard                       forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
+  /home/toxic/estate/tools/saturation-guard                       forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign
+  /home/toxic/estate
                        forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/projects/wezterm
+  /home/toxic/estate/projects/wezterm
                        main
  869faf81e  dirty=0     2026-09-19 02:49:13 -0600
-  /home/toxic/sovereign/projects/mesh/squawk
+  /home/toxic/estate/projects/mesh/squawk
                        forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/projects/mesh/corral
+  /home/toxic/estate/projects/mesh/corral
                        main
  f630945    dirty=0     2026-09-22 09:09:48 -0600
-  /home/toxic/sovereign/projects/tau-occupied-20260916/extensions/engram  forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25 -0600
-  /home/toxic/sovereign/projects/tau-occupied-20260916/extensions/omp-extensions___omp-kafka___0.1.0  fix/add-kafkajs-dep     41291c4    dirty=0     2026-09-17 15:38:49 -0600
-  /home/toxic/sovereign/projects/tau-occupied-20260916/extensions/semantouch  forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22
+  /home/toxic/estate/projects/tau-occupied-20260916/extensions/engram  forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25 -0600
+  /home/toxic/estate/projects/tau-occupied-20260916/extensions/omp-extensions___omp-kafka___0.1.0  fix/add-kafkajs-dep     41291c4    dirty=0     2026-09-17 15:38:49 -0600
+  /home/toxic/estate/projects/tau-occupied-20260916/extensions/semantouch  forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22
 10:43:25 -0600
-  /home/toxic/sovereign/projects/outlier-toolkit                     main
+  /home/toxic/estate/projects/outlier-toolkit                     main
  aa929a7    dirty=0     2026-09-19 04:04:01 -0600
-  /home/toxic/sovereign/projects/guidellm
+  /home/toxic/estate/projects/guidellm
                        main
  5c07936f   dirty=5     2026-09-20 17:14:42 -0600
-  /home/toxic/sovereign/projects/nim-repos/NVIDIA-NemoClaw           main
+  /home/toxic/estate/projects/nim-repos/NVIDIA-NemoClaw           main
  f2c0316    dirty=0     2026-09-20 01:31:23 -0700
-  /home/toxic/sovereign/projects/nim-repos/tibbee-pi-nvidia-nim-provider  main
+  /home/toxic/estate/projects/nim-repos/tibbee-pi-nvidia-nim-provider  main
       756fb31    dirty=0     2026-09-17 11:09:35 +0200
-  /home/toxic/sovereign/projects/nim-repos/diegovisk-pi-nvidia-nim   main
+  /home/toxic/estate/projects/nim-repos/diegovisk-pi-nvidia-nim   main
  b72302f    dirty=0     2026-08-30 14:58:51 -0400
-  /home/toxic/sovereign/projects/nim-repos/joeldg-nvidiarouter       main
+  /home/toxic/estate/projects/nim-repos/joeldg-nvidiarouter       main
  0ce3f9b    dirty=0     2026-07-09 17:50:01 -0700
-  /home/toxic/sovereign/projects/nim-repos/lizhebio-nim-qwen-model-router  main
+  /home/toxic/estate/projects/nim-repos/lizhebio-nim-qwen-model-router  main
        eadca2c    dirty=0     2026-09-12 20:10:58 +0800
-  /home/toxic/sovereign/projects/nim-repos/lucky-mandator-gocode-router  main
+  /home/toxic/estate/projects/nim-repos/lucky-mandator-gocode-router  main
      4eb5c09    dirty=0     2026-02-28 15:35:25 +0800
-  /home/toxic/sovereign/projects/nim-repos/rickeshtn-nim-code        main
+  /home/toxic/estate/projects/nim-repos/rickeshtn-nim-code        main
  3dfecd9    dirty=0     2026-06-25 08:22:58 +0800
-  /home/toxic/sovereign/projects/nim-repos/thispointon-kondi         main
+  /home/toxic/estate/projects/nim-repos/thispointon-kondi         main
  8c9cdd3    dirty=0     2026-08-07 12:50:00 -0400
-  /home/toxic/sovereign/projects/nim-repos/shaivpidadi-freeridev3    main
+  /home/toxic/estate/projects/nim-repos/shaivpidadi-freeridev3    main
  9d5ce25    dirty=0     2026-09-04 08:58:43 -0700
-  /home/toxic/sovereign/projects/nim-repos/bauka0-nvidia-nim-provider  main
+  /home/toxic/estate/projects/nim-repos/bauka0-nvidia-nim-provider  main
    1996405    dirty=0     2026-09-18 16:25:20
 +0500
-  /home/toxic/sovereign/projects/nim-repos/iammalego-keymux          main
+  /home/toxic/estate/projects/nim-repos/iammalego-keymux          main
  49d7a51    dirty=0     2026-04-17 12:38:53 -0300
-  /home/toxic/sovereign/projects/nim-repos/nezerkc-opencode-provider-nvidia-nim  master
+  /home/toxic/estate/projects/nim-repos/nezerkc-opencode-provider-nvidia-nim  master
              f987273    dirty=0     2026-09-20 04:49:55 -0300
-  /home/toxic/sovereign/projects/nim-repos/david-eve-za-nvidia-nim-mcp  main
+  /home/toxic/estate/projects/nim-repos/david-eve-za-nvidia-nim-mcp  main
     fe161a7    dirty=0     2026-08-16 20:38:03 -0500
-  /home/toxic/sovereign/projects/nim-repos/nirholas-three.ws         main
+  /home/toxic/estate/projects/nim-repos/nirholas-three.ws         main
  7cdcc607   dirty=0     2026-09-20 06:10:20 +0000
-  /home/toxic/sovereign/projects/nim-repos/Sateeshreddymaddi-Custom-Nvidia-Nim-Node  main
+  /home/toxic/estate/projects/nim-repos/Sateeshreddymaddi-Custom-Nvidia-Nim-Node  main
                  d8566a6    dirty=0     2026-06-28 17:25:23 +0530
-  /home/toxic/sovereign/projects/nim-repos/gabriel-ferraresi-NIMGEN  main
+  /home/toxic/estate/projects/nim-repos/gabriel-ferraresi-NIMGEN  main
  dabd665    dirty=0     2026-06-18 00:15:43 -0300
-  /home/toxic/sovereign/projects/nim-repos/api-evangelist-nvidia-nim  main
+  /home/toxic/estate/projects/nim-repos/api-evangelist-nvidia-nim  main
   dd2b0ef    dirty=0     2026-09-19 11:42:51 -0400
-  /home/toxic/sovereign/projects/nim-repos/olszalsik-a0-nvidia-nim   main
+  /home/toxic/estate/projects/nim-repos/olszalsik-a0-nvidia-nim   main
  6d83b69    dirty=0     2026-08-10 18:52:13 +0200
-  /home/toxic/sovereign/projects/nim-repos/h0rcrux-hermes-backup     main
+  /home/toxic/estate/projects/nim-repos/h0rcrux-hermes-backup     main
  3469625    dirty=0     2026-04-23 00:44:19 +0800
-  /home/toxic/sovereign/projects/nim-repos/Gitlawb-openclaude        main
+  /home/toxic/estate/projects/nim-repos/Gitlawb-openclaude        main
  d16318a    dirty=0     2026-09-16 07:39:28 +0800
-  /home/toxic/sovereign/projects/nim-repos/musistudio-claude-code-router  main
+  /home/toxic/estate/projects/nim-repos/musistudio-claude-code-router  main
       a034b0c    dirty=0     2026-09-17 10:02:45 +0800
-  /home/toxic/sovereign/projects/nim-repos/mschwarzmueller-pi_agent_rust  main
+  /home/toxic/estate/projects/nim-repos/mschwarzmueller-pi_agent_rust  main
       68884082   dirty=0     2026-02-20 10:29:46 +0100
-  /home/toxic/sovereign/projects/nim-repos/xRyul-pi-nvidia-nim       main
+  /home/toxic/estate/projects/nim-repos/xRyul-pi-nvidia-nim       main
  dca7731    dirty=0     2026-07-20 16:55:19 +0100
-  /home/toxic/sovereign/projects/nim-repos/furqanafridi-free-claude-code  main
+  /home/toxic/estate/projects/nim-repos/furqanafridi-free-claude-code  main
       d3a3b37    dirty=0     2026-04-30 22:01:36 -0700
-  /home/toxic/sovereign/projects/nim-repos/stillhue-claudio          main
+  /home/toxic/estate/projects/nim-repos/stillhue-claudio          main
  e89d2e9    dirty=0     2026-09-07 17:43:27 -0300
-  /home/toxic/sovereign/projects/AURKA
+  /home/toxic/estate/projects/AURKA
                        main
  57ad463    dirty=0     2025-12-23 11:32:32 +0530
-  /home/toxic/sovereign/projects/extagents
+  /home/toxic/estate/projects/extagents
                        main
  d94f351    dirty=0     2026-04-11 13:39:23 +0000
-  /home/toxic/sovereign/projects/llm-mapreduce                       main
+  /home/toxic/estate/projects/llm-mapreduce                       main
  0e93cc9    dirty=0     2026-03-05 16:45:51 +0800
-  /home/toxic/sovereign/gear
+  /home/toxic/estate/gear
                        main
  2e8b37a    dirty=1338  2026-09-14 22:25:29 -0600
-  /home/toxic/sovereign/kimi-audit-scratch-20260914/repo             kimi-extensions-complete  6e27dddd   dirty=0     2026-09-17 15:38:41
+  /home/toxic/estate/kimi-audit-scratch-20260914/repo             kimi-extensions-complete  6e27dddd   dirty=0     2026-09-17 15:38:41
 -0600
-  /home/toxic/sovereign/codeflux/forks/watchfiles                    main
+  /home/toxic/estate/codeflux/forks/watchfiles                    main
  94b0b49    dirty=0     2026-09-16 12:47:12 -0600
-  /home/toxic/sovereign/codeflux/forks/moulti
+  /home/toxic/estate/codeflux/forks/moulti
                        master
  4b6c2e7    dirty=0     2026-09-16 13:10:40 -0600
-  /home/toxic/sovereign/codeflux/forks/python-patch                  master
+  /home/toxic/estate/codeflux/forks/python-patch                  master
  17146ca    dirty=0     2026-09-17 15:38:38 -0600
-  /home/toxic/sovereign/codeflux/forks/patchling                     main
+  /home/toxic/estate/codeflux/forks/patchling                     main
  f35e136    dirty=0     2026-09-17 15:38:36 -0600
-  /home/toxic/sovereign/codeflux
+  /home/toxic/estate/codeflux
                        main
  04e54eb    dirty=0     2026-09-17 15:43:29 -0600
-  /home/toxic/sovereign/engines/herd/beellama.cpp                    forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
+  /home/toxic/estate/engines/herd/beellama.cpp                    forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/engines/herd/ik_llama.cpp                    forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
+  /home/toxic/estate/engines/herd/ik_llama.cpp                    forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/engines/herd/llama-cpp-turboquant            feature/turboquant-kv-cache  d69b48c7f  dirty=0     2026-09-17 15:38:52 -0600
-  /home/toxic/sovereign/hatch/agents/ember/chat                      forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
+  /home/toxic/estate/engines/herd/llama-cpp-turboquant            feature/turboquant-kv-cache  d69b48c7f  dirty=0     2026-09-17 15:38:52 -0600
+  /home/toxic/estate/hatch/agents/ember/chat                      forge/gate-retire-final  3a90ad5288  dirty=47    2026-09-22 10:43:25
 -0600
-  /home/toxic/sovereign/killer-features/debate-oracle/vendor/ChatEval  main
+  /home/toxic/estate/killer-features/debate-oracle/vendor/ChatEval  main
    56b320c    dirty=0     2024-10-19 16:15:42
 +0800
-  /home/toxic/sovereign/killer-features/debate-oracle/vendor/debate-or-vote  main
+  /home/toxic/estate/killer-features/debate-oracle/vendor/debate-or-vote  main
          82c929e    dirty=0     2025-10-15 14:52:32 -0500
-  /home/toxic/sovereign/killer-features/debate-oracle/vendor/llm_debate  main
+  /home/toxic/estate/killer-features/debate-oracle/vendor/llm_debate  main
      f9c71d1    dirty=0     2024-03-22 00:14:34 -0700
-  /home/toxic/sovereign/killer-features/debate-oracle/vendor/argus-ai-debate  main
+  /home/toxic/estate/killer-features/debate-oracle/vendor/argus-ai-debate  main
           b6860a1    dirty=0     2026-03-13 00:40:52 +0530
-  /home/toxic/sovereign/killer-features/bid-market/vendor/auction-agent11  main
+  /home/toxic/estate/killer-features/bid-market/vendor/auction-agent11  main
        aced534    dirty=0     2026-09-11 17:50:35 -0700
-  /home/toxic/sovereign/killer-features/bid-market/vendor/agora      main
+  /home/toxic/estate/killer-features/bid-market/vendor/agora      main
  bd6387a    dirty=0     2026-08-28 11:25:17 +0100
-  /home/toxic/sovereign/killer-features/bid-market/vendor/contract-net-router  main
+  /home/toxic/estate/killer-features/bid-market/vendor/contract-net-router  main
            bdfc652    dirty=0     2026-05-16 18:41:30 -0700
-  /home/toxic/sovereign/killer-features/code-racer/vendor/speed-run  main
+  /home/toxic/estate/killer-features/code-racer/vendor/speed-run  main
  3baa3d9    dirty=0     2026-04-20 13:20:49 -0500
-  /home/toxic/sovereign/killer-features/code-racer/vendor/SRank-CodeRanker  main
+  /home/toxic/estate/killer-features/code-racer/vendor/SRank-CodeRanker  main
         e4672e1    dirty=0     2024-06-09 14:59:59 +0700
-  /home/toxic/sovereign/killer-features/code-racer/vendor/RACE       main
+  /home/toxic/estate/killer-features/code-racer/vendor/RACE       main
  3b8ee59    dirty=0     2024-10-12 20:59:22 +0800
-  /home/toxic/sovereign/killer-features/code-racer/vendor/coder_reviewer_reranking  main
+  /home/toxic/estate/killer-features/code-racer/vendor/coder_reviewer_reranking  main
                 2044ef3    dirty=0     2023-02-14 11:22:12 -0800
   /home/toxic/projects/Antigravity-Mobility-CLI
             dirty=0
@@ -6552,15 +6552,15 @@ count) ==========
 ========== [6] State dirs the scripts rmtree'd ==========
   EXISTS   /home/toxic/.agent  (mtime 2026-09-13 19:13:50)
   EXISTS   /home/toxic/.agent/tmp  (mtime 2026-09-13 19:13:50)
-  GONE     /home/toxic/sovereign/tau/engine/checkpoint.json  <-- rmtree/unlink target, no backup taken
-  EXISTS   /home/toxic/sovereign/tau/engine/.agent/tmp  (mtime 2026-09-13 19:13:50)
-  GONE     /home/toxic/sovereign/tau/engine/.agent/checkpoint.json  <-- rmtree/unlink target, no backup taken
+  GONE     /home/toxic/estate/tau/engine/checkpoint.json  <-- rmtree/unlink target, no backup taken
+  EXISTS   /home/toxic/estate/tau/engine/.agent/tmp  (mtime 2026-09-13 19:13:50)
+  GONE     /home/toxic/estate/tau/engine/.agent/checkpoint.json  <-- rmtree/unlink target, no backup taken
 ========== [7] Topology: sovereign vs projects ==========
-  DIR      /home/toxic/sovereign  inode=22855172
-  SYMLINK  /home/toxic/projects/sovereign-projects -> /home/toxic/sovereign
+  DIR      /home/toxic/estate  inode=22855172
+  SYMLINK  /home/toxic/projects/sovereign-projects -> /home/toxic/estate
   -> DIFFERENT inodes (two separate copies)
 ========== [8] Suspicious running processes ==========
-   358061  355033   24431 /home/toxic/projects/sovereign-projects/sovereign-swap/build/llama-swap --config /home/toxic/sovereign/config/herd.yaml --config-dir /home/toxic/kimi-auto/herd.d --watch-config --listen 127.0.0.1:25100
+   358061  355033   24431 /home/toxic/projects/sovereign-projects/sovereign-swap/build/llama-swap --config /home/toxic/estate/config/herd.yaml --config-dir /home/toxic/kimi-auto/herd.d --watch-config --listen 127.0.0.1:25100
    530965  355033   16329 docker run --rm --pull missing --name hindsight --restart no --shm-size=1g --network host -v hindsight-data:/home/hindsight/.pg0 -e HINDSIGHT_API_PORT=25117 -e HINDSIGHT_CP_PORT=25118 -e HINDSIGHT_API_LLM_PROVIDER=openai -e HINDSIGHT_API_LLM_BASE_URL=http://127.0.0.1:25100/v1 -e HINDSIGHT_API_LLM_API_KEY=llama-swap-local-key -e HINDSIGHT_API_LLM_MODEL=beellama/qwen-flash-64k -e HINDSIGHT_API_WORKER_ID=hindsight-sovereign-node -e HINDSIGHT_API_PORT=25117 -e HINDSIGHT_CP_PORT=25118 ghcr.io/vectorize-io/hindsight:latest
    531730  355033   16303 /home/toxic/.local/share/mise/installs/pitchfork/2.25.0/pitchfork
     set -u
@@ -6966,7 +6966,7 @@ l='ls -CF'; alias lt='ls -alFht'
 ========== [7] Hunt for supposedly-gone files
 ==========
   --- searching for: checkpoint.json ---
-/home/toxic/sovereign/checkpoint.json
+/home/toxic/estate/checkpoint.json
   --- searching for: agents.toml ---
   --- searching for: pipeline.toml ---
   --- searching for: artifacts.toml ---
@@ -7094,11 +7094,11 @@ max_inline_bytes = 5242880
 max_image_bytes = 8388608
   --- end ---
 ========== [10] Symlink target integrity ==========
-  OK       /home/toxic/.bashrc.env -> /home/toxic/sovereign/projects/shell/ii/dots/.bashrc.env
-  OK       /home/toxic/.ripgreprc -> /home/toxic/sovereign/projects/shell/ii/dots/.ripgreprc  OK       /home/toxic/.config/wezterm/shell-integration.sh -> /home/toxic/sovereign/projects/shell/ii/dots/.config/wezterm/shell-integration.sh
-  OK       /home/toxic/.config/wezterm/plugins/wezterm-cmdpicker -> /home/toxic/sovereign/projects/shell/ii/dots/.config/wezterm/plugins/wezterm-cmdpicker
-  OK       /home/toxic/.local/bin/omp -> /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/dist/omp
-  OK       /home/toxic/projects/sovereign-projects -> /home/toxic/sovereign
+  OK       /home/toxic/.bashrc.env -> /home/toxic/estate/projects/shell/ii/dots/.bashrc.env
+  OK       /home/toxic/.ripgreprc -> /home/toxic/estate/projects/shell/ii/dots/.ripgreprc  OK       /home/toxic/.config/wezterm/shell-integration.sh -> /home/toxic/estate/projects/shell/ii/dots/.config/wezterm/shell-integration.sh
+  OK       /home/toxic/.config/wezterm/plugins/wezterm-cmdpicker -> /home/toxic/estate/projects/shell/ii/dots/.config/wezterm/plugins/wezterm-cmdpicker
+  OK       /home/toxic/.local/bin/omp -> /home/toxic/estate/projects/tau/engine/packages/coding-agent/dist/omp
+  OK       /home/toxic/projects/sovereign-projects -> /home/toxic/estate
 ========== [11] Where does ralph actually look? ==========
   ralph binary: /home/toxic/.local/bin/ralph
 [1-200 of 200] — next: --offset 200
@@ -7130,8 +7130,8 @@ max_image_bytes = 8388608
 ./damage-audit-20260922-105926/audit.log:13: MISSING      /home/toxic/.config/ralph-workflow-mcp.toml
 ./damage-audit-20260922-105926/audit.log:14: MISSING      /home/toxic/.config/ralph-workflow-agents.toml
 ./damage-audit-20260922-105926/audit.log:1578:   EXISTS   /home/toxic/.agent/tmp  (mtime 2026-09-13 19:13:50)
-./damage-audit-20260922-105926/audit.log:1580:   EXISTS   /home/toxic/sovereign/tau/engine/.agent/tmp  (mtime 2026-09-13 19:13:50)
-./damage-audit-20260922-105926/audit.log:1581:   GONE     /home/toxic/sovereign/tau/engine/.agent/checkpoint.json  <-- rmtree/unlink target, no backup taken
+./damage-audit-20260922-105926/audit.log:1580:   EXISTS   /home/toxic/estate/tau/engine/.agent/tmp  (mtime 2026-09-13 19:13:50)
+./damage-audit-20260922-105926/audit.log:1581:   GONE     /home/toxic/estate/tau/engine/.agent/checkpoint.json  <-- rmtree/unlink target, no backup taken
 ./damage-audit-20260922-105926/audit.log:15: MISSING      /home/toxic/.config/ralph-workflow-pipeline.toml
 ./damage-audit-20260922-105926/audit.log:1620:  "$HOME/.config/ralph-workflow.toml.bak-20260913-102221"
 ./damage-audit-20260922-105926/audit.log:1621:  "$HOME/.config/ralph-workflow.toml.bak-20260913-115454"
@@ -7348,7 +7348,7 @@ l='ls -CF'; alias lt='ls -alFht'
 ========== [7] Hunt for supposedly-gone files
 ==========
   --- searching for: checkpoint.json ---
-/home/toxic/sovereign/checkpoint.json
+/home/toxic/estate/checkpoint.json
   --- searching for: agents.toml ---
   --- searching for: pipeline.toml ---
   --- searching for: artifacts.toml ---
@@ -7476,11 +7476,11 @@ max_inline_bytes = 5242880
 max_image_bytes = 8388608
   --- end ---
 ========== [10] Symlink target integrity ==========
-  OK       /home/toxic/.bashrc.env -> /home/toxic/sovereign/projects/shell/ii/dots/.bashrc.env
-  OK       /home/toxic/.ripgreprc -> /home/toxic/sovereign/projects/shell/ii/dots/.ripgreprc  OK       /home/toxic/.config/wezterm/shell-integration.sh -> /home/toxic/sovereign/projects/shell/ii/dots/.config/wezterm/shell-integration.sh
-  OK       /home/toxic/.config/wezterm/plugins/wezterm-cmdpicker -> /home/toxic/sovereign/projects/shell/ii/dots/.config/wezterm/plugins/wezterm-cmdpicker
-  OK       /home/toxic/.local/bin/omp -> /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/dist/omp
-  OK       /home/toxic/projects/sovereign-projects -> /home/toxic/sovereign
+  OK       /home/toxic/.bashrc.env -> /home/toxic/estate/projects/shell/ii/dots/.bashrc.env
+  OK       /home/toxic/.ripgreprc -> /home/toxic/estate/projects/shell/ii/dots/.ripgreprc  OK       /home/toxic/.config/wezterm/shell-integration.sh -> /home/toxic/estate/projects/shell/ii/dots/.config/wezterm/shell-integration.sh
+  OK       /home/toxic/.config/wezterm/plugins/wezterm-cmdpicker -> /home/toxic/estate/projects/shell/ii/dots/.config/wezterm/plugins/wezterm-cmdpicker
+  OK       /home/toxic/.local/bin/omp -> /home/toxic/estate/projects/tau/engine/packages/coding-agent/dist/omp
+  OK       /home/toxic/projects/sovereign-projects -> /home/toxic/estate
 ========== [11] Where does ralph actually look? ==========
   ralph binary: /home/toxic/.local/bin/ralph
 [1-200 of 200] — next: --offset 200
@@ -7512,8 +7512,8 @@ max_image_bytes = 8388608
 ./damage-audit-20260922-105926/audit.log:13: MISSING      /home/toxic/.config/ralph-workflow-mcp.toml
 ./damage-audit-20260922-105926/audit.log:14: MISSING      /home/toxic/.config/ralph-workflow-agents.toml
 ./damage-audit-20260922-105926/audit.log:1578:   EXISTS   /home/toxic/.agent/tmp  (mtime 2026-09-13 19:13:50)
-./damage-audit-20260922-105926/audit.log:1580:   EXISTS   /home/toxic/sovereign/tau/engine/.agent/tmp  (mtime 2026-09-13 19:13:50)
-./damage-audit-20260922-105926/audit.log:1581:   GONE     /home/toxic/sovereign/tau/engine/.agent/checkpoint.json  <-- rmtree/unlink target, no backup taken
+./damage-audit-20260922-105926/audit.log:1580:   EXISTS   /home/toxic/estate/tau/engine/.agent/tmp  (mtime 2026-09-13 19:13:50)
+./damage-audit-20260922-105926/audit.log:1581:   GONE     /home/toxic/estate/tau/engine/.agent/checkpoint.json  <-- rmtree/unlink target, no backup taken
 ./damage-audit-20260922-105926/audit.log:15: MISSING      /home/toxic/.config/ralph-workflow-pipeline.toml
 ./damage-audit-20260922-105926/audit.log:1620:  "$HOME/.config/ralph-workflow.toml.bak-20260913-102221"
 ./damage-audit-20260922-105926/audit.log:1621:  "$HOME/.config/ralph-workflow.toml.bak-20260913-115454"
@@ -7678,7 +7678,7 @@ DEFINITIVE FINDINGS:
 
     All symlinks resolve
 
-    checkpoint.json was found at /home/toxic/sovereign/checkpoint.json (not in the path the audit said GONE, but a version exists elsewhere)
+    checkpoint.json was found at /home/toxic/estate/checkpoint.json (not in the path the audit said GONE, but a version exists elsewhere)
 
     No agents.toml, pipeline.toml, artifacts.toml anywhere under HOME (they were deleted)
 

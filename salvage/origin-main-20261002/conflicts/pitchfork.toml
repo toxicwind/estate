@@ -69,8 +69,8 @@ auto = ["start"]
 
 [daemons.beellama-fast]
 port = 25122
-run = "exec /home/toxic/sovereign/stack/services/_consolidated_herd_20260924/beellama-fast.sh"
-dir = "/home/toxic/sovereign"
+run = "exec /home/toxic/estate/stack/services/_consolidated_herd_20260924/beellama-fast.sh"
+dir = "/home/toxic/estate"
 mise = false
 retry = true
 env = { BEELLAMA_PORT = "25122" }
@@ -95,7 +95,7 @@ port = 9223
 # every omp startup paid for the failed connect. The dependency is real, so
 # it is declared here instead of being discovered again after a reboot.
 depends = ["agent-display"]
-run = "exec /home/toxic/sovereign/projects/range/ranch/barn/browserless/keeper/keeper.sh"
+run = "exec /home/toxic/estate/projects/range/ranch/barn/browserless/keeper/keeper.sh"
 dir = "."
 mise = false
 retry = true
@@ -110,7 +110,7 @@ auto = ["start"]
 
 [daemons.browserless]
 dir = "."
-run = "exec /home/toxic/sovereign/projects/range/ranch/barn/browserless/server/run.sh"
+run = "exec /home/toxic/estate/projects/range/ranch/barn/browserless/server/run.sh"
 ready_port = 25130
 depends = ["gatehouse"]
 env = { SOVEREIGN_ROUTER_PORT = "25104" }
@@ -170,15 +170,15 @@ auto = ["start"]
 # Owned by the sovereign project; the parent only composes it.
 
 [daemons.estate-reconcile-watch]
-run = "exec /home/toxic/sovereign/bin/estate-reconcile watch"
-dir = "/home/toxic/sovereign"
+run = "exec /home/toxic/estate/bin/estate-reconcile watch"
+dir = "/home/toxic/estate"
 mise = false
 retry = true
 auto = ["start"]
 
 # Pitchfork daemon fragment - merge into [daemons.browser-keeper] in
-# /home/toxic/sovereign/pitchfork.toml (owned sequence: stop -> ss-verify ->
-# clean --daemon -> start from /home/toxic/sovereign).
+# /home/toxic/estate/pitchfork.toml (owned sequence: stop -> ss-verify ->
+# clean --daemon -> start from /home/toxic/estate).
 
 # sovereign — project-owned daemon manifest. Source of truth for 'files'.
 # Owned by the sovereign project; the parent only composes it.
@@ -189,8 +189,8 @@ auto = ["start"]
 # Static file share rooted at /home/toxic/files. Built 2026-09-20 (files-medic):
 # the serve entry existed but no backend was defined anywhere in the estate.
 port = 34567
-run = "exec python3 /home/toxic/sovereign/stack/services/files-server.py"
-dir = "/home/toxic/sovereign"
+run = "exec python3 /home/toxic/estate/stack/services/files-server.py"
+dir = "/home/toxic/estate"
 mise = false
 retry = true
 env = { FILES_PORT = "34567", FILES_ROOT = "/home/toxic/files" }
@@ -205,7 +205,7 @@ auto = ["start"]
 [daemons.flock]
 health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25193
-run = "exec /home/toxic/sovereign/projects/range/ranch/flock/bin/flock-run.sh"
+run = "exec /home/toxic/estate/projects/range/ranch/flock/bin/flock-run.sh"
 dir = "."
 mise = false
 retry = true
@@ -234,7 +234,7 @@ auto = ["start"]
 [daemons.herd]
 health_http = { url = "http://127.0.0.1:25100/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25100
-run = "exec /home/toxic/sovereign/stack/services/herd.sh"
+run = "exec /home/toxic/estate/stack/services/herd.sh"
 dir = "."
 mise = false
 retry = true
@@ -290,8 +290,8 @@ auto = ["start"]
 [daemons.keypool]
 health_http = { url = "http://127.0.0.1:25109/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25109
-run = "exec python3 /home/toxic/sovereign/bin/herd-keypool.py"
-dir = "/home/toxic/sovereign"
+run = "exec python3 /home/toxic/estate/bin/herd-keypool.py"
+dir = "/home/toxic/estate"
 mise = false
 retry = true
 boot_start = true
@@ -317,8 +317,8 @@ port = 25153
 # -- Kimi routes are never defaults; they route Kimi FREE models maximally.
 # Chain: openrouter-free kimi :free IDs -> hf-free Kimi-K3; advance on
 # 5xx/conn/429/402/404; 401 never advances. Paid Kimi excluded (free only).
-run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
-dir = "/home/toxic/sovereign/config/herd.d"
+run = "exec python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
+dir = "/home/toxic/estate/config/herd.d"
 mise = false
 retry = true
 boot_start = true
@@ -330,8 +330,8 @@ auto = ["start"]
 # Owned by the sovereign project; the parent only composes it.
 
 [daemons.market-loop]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/agents/weaver/bin/market-loop.ts"
-dir = "/home/toxic/sovereign/agents/weaver"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/agents/weaver/bin/market-loop.ts"
+dir = "/home/toxic/estate/agents/weaver"
 mise = false
 retry = true
 auto = ["start"]
@@ -378,8 +378,8 @@ auto = ["start"]
 [daemons.model-guard]
 health_http = { url = "http://127.0.0.1:25101/v1/models", interval = "30s", timeout = "5s", retries = 3 }
 port = 25101
-run = "exec python3 /home/toxic/sovereign/bin/herd-model-guard.py"
-dir = "/home/toxic/sovereign"
+run = "exec python3 /home/toxic/estate/bin/herd-model-guard.py"
+dir = "/home/toxic/estate"
 mise = false
 retry = true
 boot_start = true
@@ -392,7 +392,7 @@ auto = ["start"]
 
 [daemons.nginx]
 port = 25208
-run = "exec /usr/bin/nginx -c /home/toxic/sovereign/ops/nginx/nginx.conf -g 'daemon off; pid /tmp/nginx-pitchfork.pid;'"
+run = "exec /usr/bin/nginx -c /home/toxic/estate/ops/nginx/nginx.conf -g 'daemon off; pid /tmp/nginx-pitchfork.pid;'"
 dir = "."
 mise = false
 retry = true
@@ -411,8 +411,8 @@ port = 25163
 # Bakes the K3 contract in: warmup on start, 300s upstream timeout
 # (serverless cold load ~120-220s is normal), top_p strip, identity
 # enforcement, 404/429 classification. Fails loud; never substitutes.
-run = "exec python3 /home/toxic/sovereign/bin/nim-kimi-sidecar.py"
-dir = "/home/toxic/sovereign"
+run = "exec python3 /home/toxic/estate/bin/nim-kimi-sidecar.py"
+dir = "/home/toxic/estate"
 mise = false
 retry = true
 boot_start = true
@@ -453,8 +453,8 @@ auto = ["start"]
 # Owned by the sovereign project; the parent only composes it.
 
 [daemons.openfang-health]
-run = "/home/toxic/sovereign/ops/openfang-health/loop.sh"
-dir = "/home/toxic/sovereign/ops/openfang-health"
+run = "/home/toxic/estate/ops/openfang-health/loop.sh"
+dir = "/home/toxic/estate/ops/openfang-health"
 mise = false
 retry = true
 auto = ["start"]
@@ -525,7 +525,7 @@ auto = ["start"]
 [daemons.search-api]
 port = 25112
 run = "exec bun --hot run apps/api/src/server.ts"
-dir = "/home/toxic/sovereign/sovereign-github-search"
+dir = "/home/toxic/estate/sovereign-github-search"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25112/health"
@@ -539,7 +539,7 @@ auto = ["start"]
 [daemons.search-ui]
 port = 25114
 run = "exec ./node_modules/.bin/next dev -p 25114"
-dir = "/home/toxic/sovereign/sovereign-github-search/apps/frontend"
+dir = "/home/toxic/estate/sovereign-github-search/apps/frontend"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25114/"
@@ -568,8 +568,8 @@ auto = ["start"]
 
 
 [daemons.stash-guard]
-run = "exec python3 /home/toxic/sovereign/tools/stash-guard/stash-guard.py --repo /home/toxic/sovereign --deep --interval 90"
-dir = "/home/toxic/sovereign"
+run = "exec python3 /home/toxic/estate/tools/stash-guard/stash-guard.py --repo /home/toxic/estate --deep --interval 90"
+dir = "/home/toxic/estate"
 mise = false
 retry = true
 boot_start = true
@@ -580,9 +580,9 @@ auto = ["start"]
 
 [daemons.toolcall-llm]
 port = 25152
-run = "exec /home/toxic/sovereign/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/models/qwen3.5-9b-dflash-Q5_K_M.gguf --host 127.0.0.1 --port 25152 -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
+run = "exec /home/toxic/estate/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/models/qwen3.5-9b-dflash-Q5_K_M.gguf --host 127.0.0.1 --port 25152 -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
 env = { TOOLCALL_PORT = "25152" }
-dir = "/home/toxic/sovereign/engines/llama.cpp-b11059/llama-b11059"
+dir = "/home/toxic/estate/engines/llama.cpp-b11059/llama-b11059"
 mise = false
 retry = 5 # 2026-09-20: was infinite; flappy daemon churned 125+ retries
 # NOTE 2026-09-20: literal port; pitchfork does not expand ${} in ready_http (25152 == $TOOLCALL_PORT SSOT)
@@ -603,7 +603,7 @@ auto = ["start"]
 
 [daemons.vansrouter]
 port = 20128
-run = "exec /home/toxic/sovereign/stack/services/vansrouter.sh"
+run = "exec /home/toxic/estate/stack/services/vansrouter.sh"
 dir = "."
 mise = false
 retry = true
@@ -624,8 +624,8 @@ health_http = { url = "http://127.0.0.1:25127/health", interval = "30s", timeout
 port = 25127
 # gatehouse-serve.sh self-heals: bootstraps gitignored mcp_config.json from .dist when missing,
 # injects secrets from /home/toxic/.secrets (gatehouse direct-run crash-loops without it).
-run = "exec /home/toxic/sovereign/projects/range/bin/gatehouse-serve.sh"
-dir = "/home/toxic/sovereign/projects/range/ranch/barn/gatehouse"
+run = "exec /home/toxic/estate/projects/range/bin/gatehouse-serve.sh"
+dir = "/home/toxic/estate/projects/range/ranch/barn/gatehouse"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25127/health"
@@ -636,8 +636,8 @@ auto = ["start"]
 # Owned by the ranch/flicker project; the parent only composes it.
 
 [daemons.flicker-agent]
-run = "exec /home/toxic/sovereign/projects/range/ranch/flicker/bin/flicker-agent"
-dir = "/home/toxic/sovereign/projects/range/ranch/flicker"
+run = "exec /home/toxic/estate/projects/range/ranch/flicker/bin/flicker-agent"
+dir = "/home/toxic/estate/projects/range/ranch/flicker"
 mise = false
 retry = true
 boot_start = true
@@ -652,8 +652,8 @@ auto = ["start"]
 
 [daemons.flicker]
 port = 25148
-run = "exec /home/toxic/sovereign/projects/range/ranch/flicker/bin/flicker-server"
-dir = "/home/toxic/sovereign/projects/range/ranch/flicker"
+run = "exec /home/toxic/estate/projects/range/ranch/flicker/bin/flicker-server"
+dir = "/home/toxic/estate/projects/range/ranch/flicker"
 mise = false
 retry = true
 boot_start = true
@@ -666,8 +666,8 @@ env = { FLICKER_ROOT = "/home/toxic/flicker", WOODPECKER_HOST = "http://127.0.0.
 # Owned by the ranch/oracle project; the parent only composes it.
 
 [daemons.market-watchdog]
-run = "exec /home/toxic/sovereign/projects/range/ranch/oracle/bin/market-watchdog.sh"
-dir = "/home/toxic/sovereign/projects/range/ranch/oracle"
+run = "exec /home/toxic/estate/projects/range/ranch/oracle/bin/market-watchdog.sh"
+dir = "/home/toxic/estate/projects/range/ranch/oracle"
 mise = false
 retry = true
 auto = ["start"]
@@ -683,8 +683,8 @@ auto = ["start"]
 
 
 [daemons.oracle-chat]
-run = "exec /home/toxic/sovereign/projects/range/ranch/oracle/bin/oracle_chat.py"
-dir = "/home/toxic/sovereign/projects/range/ranch/oracle"
+run = "exec /home/toxic/estate/projects/range/ranch/oracle/bin/oracle_chat.py"
+dir = "/home/toxic/estate/projects/range/ranch/oracle"
 mise = false
 retry = true
 env = { ORACLE_CHANNEL = "/home/toxic/.fleet-bus/squawk-root/bid-market" }
@@ -698,8 +698,8 @@ auto = ["start"]
 port = 25151
 ready_http = "http://127.0.0.1:25151/health"
 health_http = { url = "http://127.0.0.1:25151/health", interval = "30s", timeout = "5s", retries = 3 }
-run = "exec /home/toxic/sovereign/projects/range/ranch/oracle/bin/run-oracle-core.sh"
-dir = "/home/toxic/sovereign/projects/range/ranch/oracle"
+run = "exec /home/toxic/estate/projects/range/ranch/oracle/bin/run-oracle-core.sh"
+dir = "/home/toxic/estate/projects/range/ranch/oracle"
 mise = false
 retry = true
 auto = ["start"]
@@ -709,8 +709,8 @@ auto = ["start"]
 
 
 [daemons.oracle-market]
-run = "exec /home/toxic/sovereign/projects/range/ranch/oracle/bin/run.sh"
-dir = "/home/toxic/sovereign/projects/range/ranch/oracle"
+run = "exec /home/toxic/estate/projects/range/ranch/oracle/bin/run.sh"
+dir = "/home/toxic/estate/projects/range/ranch/oracle"
 mise = false
 retry = true
 env = { ORACLE_INTAKE = "1" }
@@ -725,8 +725,8 @@ auto = ["start"]
 # squawk fleet web UI + feed proxy (:25136). Serves BOTH lanes: funnel /fleet -> 127.0.0.1:25136
 # and tailnet-direct 100.72.199.93:25136 (binds 0.0.0.0). retry=true = correct failover.
 port = 25136
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/projects/range/ranch/squawk/fleet-ui.ts"
-dir = "/home/toxic/sovereign/projects/range/ranch/squawk"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/projects/range/ranch/squawk/fleet-ui.ts"
+dir = "/home/toxic/estate/projects/range/ranch/squawk"
 mise = false
 retry = true
 boot_start = true
@@ -737,8 +737,8 @@ auto = ["start"]
 
 
 [daemons.nats-tail]
-run = "exec /home/toxic/sovereign/projects/range/ranch/squawk/nats/run-tail.sh"
-dir = "/home/toxic/sovereign/projects/range/ranch/squawk/nats"
+run = "exec /home/toxic/estate/projects/range/ranch/squawk/nats/run-tail.sh"
+dir = "/home/toxic/estate/projects/range/ranch/squawk/nats"
 mise = false
 retry = true
 boot_start = true
@@ -749,8 +749,8 @@ auto = ["start"]
 
 
 [daemons.nats]
-run = "exec /home/toxic/sovereign/projects/range/ranch/squawk/nats/run-nats.sh"
-dir = "/home/toxic/sovereign/projects/range/ranch/squawk/nats"
+run = "exec /home/toxic/estate/projects/range/ranch/squawk/nats/run-nats.sh"
+dir = "/home/toxic/estate/projects/range/ranch/squawk/nats"
 mise = false
 retry = true
 boot_start = true
@@ -762,8 +762,8 @@ auto = ["start"]
 
 
 [daemons.squawk-feed]
-run = "exec /home/toxic/sovereign/hatch/agents/ember/squawk-relay/run-feed.sh"
-dir = "/home/toxic/sovereign/projects/range/ranch/squawk"
+run = "exec /home/toxic/estate/hatch/agents/ember/squawk-relay/run-feed.sh"
+dir = "/home/toxic/estate/projects/range/ranch/squawk"
 mise = false
 retry = true
 boot_start = true
@@ -774,8 +774,8 @@ auto = ["start"]
 # Owned by the ranch/squawk-ws project; the parent only composes it.
 
 [daemons.squawk-ws-client]
-run = "exec python3 /home/toxic/sovereign/projects/range/ranch/squawk-ws/squawk_ws_client_local.py"
-dir = "/home/toxic/sovereign/projects/range/ranch/squawk-ws"
+run = "exec python3 /home/toxic/estate/projects/range/ranch/squawk-ws/squawk_ws_client_local.py"
+dir = "/home/toxic/estate/projects/range/ranch/squawk-ws"
 mise = false
 retry = true
 boot_start = true
@@ -793,12 +793,12 @@ auto = ["start"]
 
 [daemons.squawk-ws]
 port = 25147
-run = "exec python3 /home/toxic/sovereign/projects/range/ranch/squawk-ws/squawk_ws_server.py"
-dir = "/home/toxic/sovereign/projects/range/ranch/squawk-ws"
+run = "exec python3 /home/toxic/estate/projects/range/ranch/squawk-ws/squawk_ws_server.py"
+dir = "/home/toxic/estate/projects/range/ranch/squawk-ws"
 mise = false
 retry = true
 boot_start = true
-env = { SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/sovereign/hatch/agents/ember/squawk-root" }
+env = { SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/estate/hatch/agents/ember/squawk-root" }
 auto = ["start"]
 
 # ---- project: ranch/stream-broker (1 daemon) ----
@@ -806,7 +806,7 @@ auto = ["start"]
 # Owned by the ranch/stream-broker project; the parent only composes it.
 
 [daemons.sovereign-stream-broker]
-dir = "/home/toxic/sovereign/projects/range/ranch/stream-broker"
+dir = "/home/toxic/estate/projects/range/ranch/stream-broker"
 run = "exec bun run src/index.ts"
 port = 25215
 ready_port = 25215
@@ -823,8 +823,8 @@ ready_port = 25215
 [daemons.windmill]
 health_http = { url = "http://127.0.0.1:25219/api/status", interval = "10s", timeout = "5s", retries = 2 }
 port = 25219
-run = "exec bun --hot run /home/toxic/sovereign/projects/range/ranch/windmill/server.ts"
-dir = "/home/toxic/sovereign/projects/range/ranch/windmill"
+run = "exec bun --hot run /home/toxic/estate/projects/range/ranch/windmill/server.ts"
+dir = "/home/toxic/estate/projects/range/ranch/windmill"
 mise = false
 retry = true
 boot_start = true
@@ -847,8 +847,8 @@ auto = ["start"]
 health_http = { url = "http://127.0.0.1:25207/health", interval = "30s", timeout = "5s", retries = 3 }
 env = { MESH_LANDING_PORT = "25207" }
 port = 25207
-run = "exec /usr/bin/python3 /home/toxic/sovereign/projects/range/bin/landing.py"
-dir = "/home/toxic/sovereign/projects/range"
+run = "exec /usr/bin/python3 /home/toxic/estate/projects/range/bin/landing.py"
+dir = "/home/toxic/estate/projects/range"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25207/health"
@@ -861,8 +861,8 @@ auto = ["start"]
 
 [daemons.bench-radar]
 port = 25181
-run = "exec /home/toxic/.bun/bin/bun --hot /home/toxic/sovereign/tools/bench-radar/server.ts"
-dir = "/home/toxic/sovereign/tools/bench-radar"
+run = "exec /home/toxic/.bun/bin/bun --hot /home/toxic/estate/tools/bench-radar/server.ts"
+dir = "/home/toxic/estate/tools/bench-radar"
 mise = false
 retry = true
 boot_start = true
@@ -877,8 +877,8 @@ auto = ["start"]
 
 
 [daemons.kimiclaw-a]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/kimi-claw/bridge.ts --daemon --instance a"
-dir = "/home/toxic/sovereign/tools/kimi-claw"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/tools/kimi-claw/bridge.ts --daemon --instance a"
+dir = "/home/toxic/estate/tools/kimi-claw"
 mise = false
 retry = true
 ready_cmd = "p=$(pgrep -f '[b]ridge[.]ts --daemon --instance a' | head -1); [ -n \"$p\" ] && ls -l /proc/$p/fd 2>/dev/null | grep -q inotify"
@@ -888,8 +888,8 @@ auto = ["start"]
 # Owned by the tools/kimi-claw project; the parent only composes it.
 
 [daemons.kimiclaw-b]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/kimi-claw/bridge.ts --daemon --instance b"
-dir = "/home/toxic/sovereign/tools/kimi-claw"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/tools/kimi-claw/bridge.ts --daemon --instance b"
+dir = "/home/toxic/estate/tools/kimi-claw"
 mise = false
 retry = true
 auto = ["start"]
@@ -904,8 +904,8 @@ auto = ["start"]
 
 [daemons.ml-serve]
 port = 25180
-run = "exec python3 /home/toxic/sovereign/tools/ml-serve/server.py"
-dir = "/home/toxic/sovereign/tools/ml-serve"
+run = "exec python3 /home/toxic/estate/tools/ml-serve/server.py"
+dir = "/home/toxic/estate/tools/ml-serve"
 mise = false
 retry = true
 boot_start = true
@@ -922,7 +922,7 @@ auto = ["start"]
 [daemons.null-g-proxy]
 port = 25107
 run = "exec bun run src/index.ts"
-dir = "/home/toxic/sovereign/tools/null-g-proxy"
+dir = "/home/toxic/estate/tools/null-g-proxy"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25107/health"
@@ -938,7 +938,7 @@ auto = ["start"]
 [daemons.sovereign-chat]
 port = 25120
 run = "exec bun run chat.ts"
-dir = "/home/toxic/sovereign/tools/sovereign-chat"
+dir = "/home/toxic/estate/tools/sovereign-chat"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25120/health"
@@ -963,7 +963,7 @@ auto = ["start"]
 [daemons.sovereign-router]
 port = 25104
 run = "exec bun router.ts"
-dir = "/home/toxic/sovereign/tools/sovereign-router/sovereign-router-ts"
+dir = "/home/toxic/estate/tools/sovereign-router/sovereign-router-ts"
 retry = true
 ready_http = "http://127.0.0.1:25104/health"
 health_http = { url = "http://127.0.0.1:25104/health", interval = "30s", timeout = "5s", retries = 3 }
@@ -1019,7 +1019,7 @@ port = 25204
 env = { WS_EXEC_PORT = "25204" }
 # NOTE: runs the TRACKED source; /home/toxic/awrawr_ws_exec.py is kept
 # as a synced fallback copy (do not delete).
-run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/sovereign/bridge/awrawr_ws_exec.py"
+run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/estate/bridge/awrawr_ws_exec.py"
 dir = "/home/toxic"
 mise = false
 retry = true
@@ -1067,7 +1067,7 @@ auto = ["start"]
 
 
 [daemons.codebase-memory]
-run = "exec /home/toxic/sovereign/tools/codebase-memory/run.sh"
+run = "exec /home/toxic/estate/tools/codebase-memory/run.sh"
 dir = "/home/toxic"
 mise = false
 retry = true
@@ -1097,7 +1097,7 @@ auto = ["start"]
 
 [daemons.kimi-code]
 port = 25126
-run = "exec /home/toxic/sovereign/bin/claim-port 25126 /home/toxic/kimi-code-npm/node_modules/@moonshot-ai/kimi-code/dist/main.mjs web --no-open --port 25126" # 25126 == $KIMI_CODE_PORT (SSOT); literal: ${} not expanded in run lines
+run = "exec /home/toxic/estate/bin/claim-port 25126 /home/toxic/kimi-code-npm/node_modules/@moonshot-ai/kimi-code/dist/main.mjs web --no-open --port 25126" # 25126 == $KIMI_CODE_PORT (SSOT); literal: ${} not expanded in run lines
 dir = "/home/toxic/kimi-code-npm"
 mise = true
 retry = true
@@ -1230,7 +1230,7 @@ auto = ["start"]
 [daemons.openfang]
 env = { OPENFANG_KERNEL_PORT = "25196" }
 port = 25196
-run = "exec /home/toxic/sovereign/ops/openfang-run.sh"
+run = "exec /home/toxic/estate/ops/openfang-run.sh"
 dir = "/home/toxic/projects/rig-work"
 mise = false
 retry = true
@@ -1249,7 +1249,7 @@ dir = "/home/toxic/.fleet-bus/squawk-relay"
 mise = false
 retry = true
 boot_start = true
-env = { SQUAWK_CODE_DIR = "/home/toxic/sovereign/hatch/agents/ember/chat" }
+env = { SQUAWK_CODE_DIR = "/home/toxic/estate/hatch/agents/ember/chat" }
 auto = ["start"]
 
 # standalone/squawk-relay — project-owned daemon manifest. Source of truth for 'squawk-relay-sink'.
@@ -1271,7 +1271,7 @@ auto = ["start"]
 [daemons.tau]
 # omp acp exposed as TCP daemon via chute (stdio→TCP + mcpServers normalization)
 port = 25111
-run = "exec /home/toxic/sovereign/projects/range/ranch/barn/chute/chute.mjs --port 25111 -- /home/toxic/.local/bin/tau acp -e /home/toxic/.tau/extensions/vansrouter.ts"
+run = "exec /home/toxic/estate/projects/range/ranch/barn/chute/chute.mjs --port 25111 -- /home/toxic/.local/bin/tau acp -e /home/toxic/.tau/extensions/vansrouter.ts"
 # 2026-10-01 taurun: dist/omp deleted (ranch/tau tree rm -rf 02:17 MDT); fork cannot
 # rebuild here (missing @ranch/tack monorepo sibling). Pinned launcher (upstream
 # 18.3.0, same pin as ~/.local/bin/tau) restores the daemon. Revert to dist/omp
@@ -1279,7 +1279,7 @@ run = "exec /home/toxic/sovereign/projects/range/ranch/barn/chute/chute.mjs --po
 dir = "/home/toxic"
 mise = false
 retry = true
-ready_cmd = "/home/toxic/sovereign/bin/tcp-probe 25111"
+ready_cmd = "/home/toxic/estate/bin/tcp-probe 25111"
 health_port = { port = 25111, interval = "30s", timeout = "5s", retries = 3 }
 depends = ["gatehouse"]
 # Every var here was checked against a `grep -rl` over the whole tau monorepo

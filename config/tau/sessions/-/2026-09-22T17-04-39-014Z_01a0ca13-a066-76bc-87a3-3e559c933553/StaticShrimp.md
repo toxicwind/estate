@@ -10,7 +10,7 @@
     "/home/toxic/.tau",
     "/home/toxic/.config/opencode",
     "/home/toxic/.config/claude",
-    "/home/toxic/sovereign",
+    "/home/toxic/estate",
     "/home/toxic/.tau/agent/managed-skills",
     "/home/toxic/.omp"
   ],

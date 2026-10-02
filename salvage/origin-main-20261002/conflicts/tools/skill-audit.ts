@@ -152,7 +152,7 @@ let fixed = 0;
 
 const shortRoot = (r: string) => r.split("/").filter(Boolean).slice(-1)[0] ?? r;
 
-const REPO_ROOT = "/home/toxic/sovereign";
+const REPO_ROOT = "/home/toxic/estate";
 const resolveRef = (skillDir: string, ref: string): boolean =>
 	[join(skillDir, ref), join(skillDir, "scripts", basename(ref)), join(skillDir, "references", ref),
 		join(dirname(skillDir), ref), join(dirname(dirname(skillDir)), ref), join(REPO_ROOT, ref)]

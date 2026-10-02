@@ -1,5 +1,5 @@
 {"type":"title","v":1,"title":"","updatedAt":"2026-09-26T23:15:17.108Z","pad":"                                                                                                                                                                              "}
-{"type":"session","version":3,"id":"01a0e000-63f4-740c-bdbf-b08921ec91c8","timestamp":"2026-09-26T23:15:17.108Z","cwd":"/home/toxic/sovereign/projects/range/ranch/stockyard/tau"}
+{"type":"session","version":3,"id":"01a0e000-63f4-740c-bdbf-b08921ec91c8","timestamp":"2026-09-26T23:15:17.108Z","cwd":"/home/toxic/estate/projects/range/ranch/stockyard/tau"}
 {"type":"model_change","id":"91c309bb","parentId":null,"timestamp":"2026-09-26T23:15:17.511Z","model":"openrouter/openrouter/free","resolvedModelIsFallback":false}
 {"type":"thinking_level_change","id":"9e2b3092","parentId":"91c309bb","timestamp":"2026-09-26T23:15:17.511Z","thinkingLevel":"medium","configured":null}
 {"type":"service_tier_change","id":"9066e1dd","parentId":"9e2b3092","timestamp":"2026-09-26T23:15:17.511Z","serviceTier":{"openai":"auto","anthropic":"priority","google":"flex"}}

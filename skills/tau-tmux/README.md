@@ -31,7 +31,7 @@ flowchart LR
 ```bash
 tmux new-session -d -s tau-lab -n lab
 tmux send-keys -t tau-lab:0.0 "tau -p 'reply with exactly: PANE0_OK'" C-m
-bun run /home/toxic/sovereign/skills/tau-tmux/helper/audit.ts
+bun run /home/toxic/estate/skills/tau-tmux/helper/audit.ts
 ```
 
 ## License & security
@@ -65,7 +65,7 @@ tmux kill-session -t tau-lab
 ## Audit
 
 ```bash
-bun run /home/toxic/sovereign/skills/tau-tmux/helper/audit.ts [--verbose]
+bun run /home/toxic/estate/skills/tau-tmux/helper/audit.ts [--verbose]
 ```
 
 Exit 0 = all checks pass. Checks: tau launcher collapse chain resolves,

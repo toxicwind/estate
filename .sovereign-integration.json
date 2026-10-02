@@ -1,11 +1,11 @@
 {
   "timestamp": "2026-09-08T01:50:17.542Z",
   "sovereignProjectsPath": "/home/toxic/projects/sovereign-projects",
-  "symlinkFrom": "/home/toxic/sovereign-projects",
+  "symlinkFrom": "/home/toxic/estate-projects",
   "linkedToSovereign": {
-    "healthAudit": "/home/toxic/sovereign/helpers/health-audit.ts",
-    "gitMutator": "/home/toxic/sovereign/helpers/git-mutator/cli.ts",
-    "portsEnv": "/home/toxic/sovereign/config/ports.env"
+    "healthAudit": "/home/toxic/estate/helpers/health-audit.ts",
+    "gitMutator": "/home/toxic/estate/helpers/git-mutator/cli.ts",
+    "portsEnv": "/home/toxic/estate/config/ports.env"
   },
   "subdirIntegrations": {
     "herd": {

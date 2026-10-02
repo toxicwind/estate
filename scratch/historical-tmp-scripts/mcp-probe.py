@@ -2,7 +2,7 @@ import json, subprocess, sys
 
 proc = subprocess.Popen(
     ["node", "dist/index.js"],
-    cwd="/home/toxic/sovereign/projects/mesh/browserless",
+    cwd="/home/toxic/estate/projects/mesh/browserless",
     stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
     text=True, bufsize=1)
 

@@ -12,7 +12,7 @@ _iso = tempfile.mkdtemp(prefix="nightjar-p1-")
 BPATH = os.path.join(_iso, "judge-breaker-state.json")
 os.environ["JUDGE_BREAKER_PATH"] = BPATH
 
-BIN = "/home/toxic/sovereign/agents/oracle-market/bin"
+BIN = "/home/toxic/estate/agents/oracle-market/bin"
 sys.path.insert(0, BIN)
 _spec = importlib.util.spec_from_file_location(
     "oracle_ask_p1", os.path.join(BIN, "oracle_ask.py"))

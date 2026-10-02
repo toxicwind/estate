@@ -138,7 +138,7 @@ Rules:
 ### D6 — Winners ledger: task-specific + global mirror
 
 - **Task ledger** (rich schema):
-  `/home/toxic/sovereign/killer-features/code-racer/winners.jsonl`
+  `/home/toxic/estate/killer-features/code-racer/winners.jsonl`
   ```json
   {"ts": 1726800000.0, "task_id": "fizzbuzz-01", "winner": "kimi-k2-cot",
    "strategies": [{"name": "kimi-k2-cot", "class": "llm-cloud",
@@ -230,7 +230,7 @@ the ledger → ranker path.
 - Never kill squawk processes. `code_race.py` kills **only its own children**
   (track PIDs at spawn; kill by explicit PID, never by name/port).
 - Never touch port 443 (tailscaled), never touch the bridge
-  (`/home/toxic/sovereign/bridge/awrawr_ws_exec.py`, pitchfork-managed).
+  (`/home/toxic/estate/bridge/awrawr_ws_exec.py`, pitchfork-managed).
 - GitHub push from yote is broken (stale auth) — commit locally, never block on push.
 - Judge runs untrusted LLM output: `unshare -n` (no network), fresh tmpdir,
   `timeout`, no writes outside tmpdir.

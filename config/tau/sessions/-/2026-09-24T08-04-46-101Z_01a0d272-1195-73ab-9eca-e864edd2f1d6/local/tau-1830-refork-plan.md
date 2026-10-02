@@ -38,7 +38,7 @@ Verify with `find /tmp/tau-preserve-1830 -type f | wc -l` (must be > 10) and `gr
 
 1. `mkdir -p ~/sovereign/projects/tau`
 2. `git -C ~/scratch/oh-my-pi-upstream archive v18.3.0 | tar -x -C ~/sovereign/projects/tau/` — pristine tree, no `.git`, no node_modules, no build output.
-3. Verify: `test -f ~/sovereign/projects/tau/package.json && test -f ~/sovereign/projects/tau/docs/porting-from-pi-mono.md && test ! -e ~/sovereign/projects/tau/.git && echo FORK_OK` must print `FORK_OK`; `python3 -c "import json;d=json.load(open('/home/toxic/sovereign/projects/tau/package.json'));print(d['name'])"` must print `omp`.
+3. Verify: `test -f ~/sovereign/projects/tau/package.json && test -f ~/sovereign/projects/tau/docs/porting-from-pi-mono.md && test ! -e ~/sovereign/projects/tau/.git && echo FORK_OK` must print `FORK_OK`; `python3 -c "import json;d=json.load(open('/home/toxic/estate/projects/tau/package.json'));print(d['name'])"` must print `omp`.
 
 ### Step 5 — Restore preserved tau-owned files into the fresh tree
 
@@ -50,14 +50,14 @@ Copy each preserved path from `/tmp/tau-preserve-1830/` back to the same relativ
 
 1. Line 9 `fork_point_tag: v18.1.18` → `fork_point_tag: v18.3.0`.
 2. Line 10 `current_version: "18.2.8"` → `current_version: "18.3.0"`.
-3. Line 19 `dir: /home/toxic/sovereign/projects/tau/engine` → `dir: /home/toxic/sovereign/projects/tau`.
+3. Line 19 `dir: /home/toxic/estate/projects/tau/engine` → `dir: /home/toxic/estate/projects/tau`.
 4. Line 4 comment `Verified fork point: upstream tag v18.1.18 (MIRROR-DIFF-vs-upstream.md §2).` → `Verified fork point: upstream tag v18.3.0 (nightly re-fork 2026-09-24; prior v18.1.18 in MIRROR-DIFF-vs-upstream.md §2).`
 
-`merge.sh` (`upstream-changes/scripts/merge.sh`): line 15 `ENGINE=/home/toxic/sovereign/projects/tau/engine` → `ENGINE=/home/toxic/sovereign/projects/tau`; line 17 `BASE_TAG=v18.1.18` → `BASE_TAG=v18.3.0`; in the rsync block add `--exclude='upstream-changes/' --exclude='launcher/' --exclude='MIRROR-DIFF-vs-upstream.md' --exclude='README-FORK.md'` so future overlays don't feed tau-owned scaffolding into the worktree as pseudo-delta.
+`merge.sh` (`upstream-changes/scripts/merge.sh`): line 15 `ENGINE=/home/toxic/estate/projects/tau/engine` → `ENGINE=/home/toxic/estate/projects/tau`; line 17 `BASE_TAG=v18.1.18` → `BASE_TAG=v18.3.0`; in the rsync block add `--exclude='upstream-changes/' --exclude='launcher/' --exclude='MIRROR-DIFF-vs-upstream.md' --exclude='README-FORK.md'` so future overlays don't feed tau-owned scaffolding into the worktree as pseudo-delta.
 
-`ingest.sh` (`upstream-changes/scripts/ingest.sh`): line 14 `ENGINE=/home/toxic/sovereign/projects/tau/engine` → `ENGINE=/home/toxic/sovereign/projects/tau`; line 15 `BASE_TAG=v18.1.18` → `BASE_TAG=v18.3.0`; in the python skip tuple add `'/upstream-changes/'`, `'/launcher/'`.
+`ingest.sh` (`upstream-changes/scripts/ingest.sh`): line 14 `ENGINE=/home/toxic/estate/projects/tau/engine` → `ENGINE=/home/toxic/estate/projects/tau`; line 15 `BASE_TAG=v18.1.18` → `BASE_TAG=v18.3.0`; in the python skip tuple add `'/upstream-changes/'`, `'/launcher/'`.
 
-`promote.sh` (`upstream-changes/scripts/promote.sh`): line 12 `ENGINE=/home/toxic/sovereign/projects/tau/engine` → `ENGINE=/home/toxic/sovereign/projects/tau`; in the adopt rsync block add `--exclude='upstream-changes/' --exclude='launcher/' --exclude='MIRROR-DIFF-vs-upstream.md' --exclude='README-FORK.md'`.
+`promote.sh` (`upstream-changes/scripts/promote.sh`): line 12 `ENGINE=/home/toxic/estate/projects/tau/engine` → `ENGINE=/home/toxic/estate/projects/tau`; in the adopt rsync block add `--exclude='upstream-changes/' --exclude='launcher/' --exclude='MIRROR-DIFF-vs-upstream.md' --exclude='README-FORK.md'`.
 
 ### Step 7 — Re-apply tau divergences from the deprecated copy (guarded)
 

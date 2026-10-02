@@ -7,7 +7,7 @@ new = (
     "# daemons.openfang on :25196. See src/services/openfang.ts.)\n"
     '[daemons.openfang-front]\nport = 25103\nrun = "exec ./stack/services/openfang.sh"'
 )
-p = "/home/toxic/sovereign/pitchfork.toml"
+p = "/home/toxic/estate/pitchfork.toml"
 s = open(p).read()
 assert s.count(old) == 1, "axiom section not found exactly once"
 open(p, "w").write(s.replace(old, new))

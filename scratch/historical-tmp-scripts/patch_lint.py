@@ -1,4 +1,4 @@
-p = "/home/toxic/sovereign/bin/daemon-lint"
+p = "/home/toxic/estate/bin/daemon-lint"
 src = open(p).read()
 
 old = '''#   (2) node/bun daemon dirs (dir containing package.json): REJECT if there is

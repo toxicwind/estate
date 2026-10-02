@@ -7,7 +7,7 @@ No rewriting: only relocation + import/export bookkeeping.
 """
 import re, os, sys
 
-SRC = "/home/toxic/sovereign/tau/engine/packages/ai/src"
+SRC = "/home/toxic/estate/tau/engine/packages/ai/src"
 PATH = os.path.join(SRC, "auth-storage.ts")
 lines = open(PATH).read().split("\n")
 

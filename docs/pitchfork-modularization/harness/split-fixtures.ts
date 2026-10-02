@@ -58,7 +58,7 @@ function projectOf(lines: string[]): string {
   if (runM) {
     // scan every token: prefer one rooted at the sovereign tree
     for (const tok of runM[1].replace(/^exec\s+/, "").split(/\s+/)) {
-      if (tok.includes("/home/toxic/sovereign/")) candidates.push(tok);
+      if (tok.includes("/home/toxic/estate/")) candidates.push(tok);
     }
     if (candidates.length === 0) {
       const tok0 = runM[1].replace(/^exec\s+/, "").split(/\s+/)[0] ?? "";

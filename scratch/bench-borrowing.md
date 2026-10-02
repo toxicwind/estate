@@ -193,7 +193,7 @@ Point it at herd (`127.0.0.1:25100`) with `--endpoint-type chat` and it measures
 
 ## 7. Proposal: per-route latency memory for herd
 
-**Status quo:** herd (`127.0.0.1:25100`, `/home/toxic/sovereign/herd/`, llama-swap
+**Status quo:** herd (`127.0.0.1:25100`, `/home/toxic/estate/herd/`, llama-swap
 lineage) has **no per-route latency memory**. Router lives in
 `internal/router/` (`base.go`, `group.go`, `peer.go`, `matrix*.go`, `scheduler/`);
 persistence in `internal/store/` (SQLite via goose migrations — `store.go` already

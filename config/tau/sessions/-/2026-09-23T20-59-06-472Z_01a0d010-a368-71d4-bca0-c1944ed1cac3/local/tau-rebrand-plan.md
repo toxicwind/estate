@@ -12,18 +12,18 @@ The repository is a fork of an upstream project (oh-my-pi) but still carries ups
 6. Verify changes by building the binary and checking its output.
 
 ## Critical files & anchors
-- /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/package.json — defines binary name and version
-- /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/src/cli.ts — contains APP_NAME, VERSION imports, and help/version logic
-- /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/src/cli/help-extra.ts — likely contains help text
-- /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/scripts/build-binary.ts — determines binary output name
-- /home/toxic/sovereign/projects/tau/.tau/agent/config.yml — may contain model roles or other references
+- /home/toxic/estate/projects/tau/engine/packages/coding-agent/package.json — defines binary name and version
+- /home/toxic/estate/projects/tau/engine/packages/coding-agent/src/cli.ts — contains APP_NAME, VERSION imports, and help/version logic
+- /home/toxic/estate/projects/tau/engine/packages/coding-agent/src/cli/help-extra.ts — likely contains help text
+- /home/toxic/estate/projects/tau/engine/packages/coding-agent/scripts/build-binary.ts — determines binary output name
+- /home/toxic/estate/projects/tau/.tau/agent/config.yml — may contain model roles or other references
 
 ## Verification
-- Build the binary: `cd /home/toxic/sovereign/projects/tau && ./launcher/tau vendor build`
-- Check binary name and version: `/home/toxic/sovereign/projects/tau/engine/packages/coding-agent/dist/tau --version` should output something like `tau/<version>-toxicwind` or similar showing toxicwind identity.
+- Build the binary: `cd /home/toxic/estate/projects/tau && ./launcher/tau vendor build`
+- Check binary name and version: `/home/toxic/estate/projects/tau/engine/packages/coding-agent/dist/tau --version` should output something like `tau/<version>-toxicwind` or similar showing toxicwind identity.
 - Check help output: same binary `--help` should not contain "oh-my-pi" or "omp" as the tool name; should show "tau".
-- Scan source for remaining upstream identity: `rg -i "oh-my-pi|omp" /home/toxic/sovereign/projects/tau/engine/packages --glob '!node_modules/*' --glob '!*.git/*'` should return only harmless matches (e.g., in documentation or comments) or none.
-- Ensure no symlinks exist in the dist directory: `find /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/dist -type l` should return empty.
+- Scan source for remaining upstream identity: `rg -i "oh-my-pi|omp" /home/toxic/estate/projects/tau/engine/packages --glob '!node_modules/*' --glob '!*.git/*'` should return only harmless matches (e.g., in documentation or comments) or none.
+- Ensure no symlinks exist in the dist directory: `find /home/toxic/estate/projects/tau/engine/packages/coding-agent/dist -type l` should return empty.
 
 ## Assumptions & contingencies
 - If the version string is not easily changed without breaking the build, we can embed a custom version via a build-time environment variable or by modifying the VERSION import in pi-utils/dirs.ts (if we create a fork of pi-utils).

@@ -1,6 +1,6 @@
 import subprocess, tomllib
 
-pf = '/home/toxic/sovereign/pitchfork.toml'
+pf = '/home/toxic/estate/pitchfork.toml'
 s = open(pf).read()
 old = 'env = {\n  BROWSERLESS_PORT = "25130",\n}'
 new = 'env = { BROWSERLESS_PORT = "25130", }'
@@ -17,7 +17,7 @@ assert 'nim-proxy' in d['daemons']
 print('all three native daemons present')
 
 def git(*args):
-    return subprocess.run(['git'] + list(args), cwd='/home/toxic/sovereign',
+    return subprocess.run(['git'] + list(args), cwd='/home/toxic/estate',
                           capture_output=True, text=True)
 print(git('add', 'pitchfork.toml').returncode, 'add')
 r = git('-c', 'user.name=toxicwind', '-c', 'user.email=toxicwind@gmail.com',

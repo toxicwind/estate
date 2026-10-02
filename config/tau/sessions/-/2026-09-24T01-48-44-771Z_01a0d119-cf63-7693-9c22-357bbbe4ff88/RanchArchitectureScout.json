@@ -1,29 +1,29 @@
 {
-  "summary": "Completed investigation of /home/toxic/sovereign/projects/range/ and its ranch monorepo. Documented the mesh-to-ranch transition, subsystem responsibilities (stockyard, barn, corral, squawk, research, ui), and fleet integration.",
+  "summary": "Completed investigation of /home/toxic/estate/projects/range/ and its ranch monorepo. Documented the mesh-to-ranch transition, subsystem responsibilities (stockyard, barn, corral, squawk, research, ui), and fleet integration.",
   "report": "### Comprehensive Ranch Architecture & Mesh Transition Report\n\n#### 1. Background & The Mesh-to-Ranch Transition\nHistorically, the Sovereign estate relied on \"Sovereign Mesh,\" an amalgamation of disparate tools, prototypes, and standalone daemons:\n- `shep` (originally `mcpproxy`) was deployed as an isolated MCP client aggregator.\n- `sovereign-router-ts` ran as an ad-hoc Bun TypeScript process on port 25104.\n- `herd` (llama-swap) was run as a detached Go binary on port 25100 with duplicated AST provider matrices.\n- `super-ralph` lived separately as a fragile 3-loop task executor.\n- Fleet communication tools (`squawk`, `squawk-ws`) were scattered across user home root paths (`~/.shingle/squawk-root`, `~/squawk`).\n\nThe **Ranch** monorepo (`projects/range/ranch/`) formally subsumes the legacy mesh concept:\n1. **Single Source of Truth:** Establishes a unified structural map for inference, tools, and multi-agent coordination under `projects/range/`.\n2. **Clear Division of Inference Concerns:**\n   - **herd** is strictly LOCAL: serves on-box GGUFs via llama.cpp engines at `:25100`.\n   - **flock** is strictly EXTERNAL: cloud router proxy in Rust (`toxicwind/flock`) at `:25193`.\n   - Strategy directives (`free`, `hybrid`, `ast_race`) are routing directives rather than literal model identifiers.\n3. **Federated Tool Serving:** Reclassifies `shep` (`:25127`) as a peer MCP gateway rather than a parent or ad-hoc shim, centralizing all upstream server definitions (`mcp_config.json`).\n4. **Relocation & Consolidation:** Moves squawk, agent frameworks, research scripts, and UI dashboards into dedicated, co-located directories.\n\n#### 2. Subsystem Breakdown\n- **`stockyard/` (Model & Inference Routing)**\n  - `herd/`: Pointer to `sovereign-projects/projects/herd`, the local llama-swap fork in Go (`:25100`).\n  - `flock/`: Pointer to `/home/toxic/projects/flock` (`toxicwind/flock`), routing external providers (NVIDIA NIM, OpenRouter, Groq, Cerebras) on `:25193`.\n  - `paddock/`: Unified provider combo gateway, translation layer, and fallback mechanisms.\n  - `router-legacy/`: Houses historical TypeScript router implementations (`sovereign-router-ts` on `:25104`) with Elo-scoring and AST racing.\n- **`barn/` (Tool & Gateway Infrastructure)**\n  - `shep/`: MCP proxy federation daemon (`:25127`) managing 30+ upstream MCP servers with quarantine boundaries and BM25 tool search.\n  - `browserless/`: Browser automation service, CDP instrumentation, and persistent browser management.\n  - `gemini-mcp/`: Gemini Tool Retrieval Early Access Program (EAP) bridge supporting server-side deferred tool loading.\n- **`corral/` (Agent Execution Enclosure)**\n  - `@sovereign/corral` (diverged from `super-ralph`): Orchestrates task execution graphs via Smithers with single outer loop finite convergence, telemetric EKG cognitive supervision, and speculative JJ/Git merge queues.\n- **`squawk/` & `squawk-ws/` (Agent Communications)**\n  - `squawk/`: Pure file-based multi-agent coordination protocol using Lamport timestamps, HMAC signed markdown posts, and NaCl sealed box encryption.\n  - `squawk-ws/`: WebSocket event bridge (`:25147`) and fleet relay server (`:25135`).\n- **`research/` & `ultimate_extract/`**\n  - Tooling for environment introspection, runtime process snooping, k8s scaffold discovery, and dynamic model discovery.\n- **`ui/`**\n  - Vite + Svelte web frontend for viewing and monitoring ranch operations.\n\n#### 3. Sovereign Fleet Connectivity & Supervision\n- Managed under Pitchfork (`pitchfork.toml`), primarily inside the `[groups.mesh]` and `[groups.all]` supervisor groups.\n- Connects to downstream agent systems (such as `tau` on `:25111`, `coyote` on `:25143`, and `openfang` on `:25196`) through uniform HTTP/OpenAI endpoints and shep MCP discovery.",
   "files": [
     {
-      "path": "/home/toxic/sovereign/projects/range/README.md",
+      "path": "/home/toxic/estate/projects/range/README.md",
       "description": "Range tool federation domain layer documentation, port mappings, and shep/router details"
     },
     {
-      "path": "/home/toxic/sovereign/projects/range/config.yml",
+      "path": "/home/toxic/estate/projects/range/config.yml",
       "description": "Range unified configuration: provider order, model roles, subagents, and memory settings"
     },
     {
-      "path": "/home/toxic/sovereign/projects/range/ranch/README.md",
+      "path": "/home/toxic/estate/projects/range/ranch/README.md",
       "description": "Ranch monorepo overview, inference stack contracts, and animal responsibilities (herd vs flock)"
     },
     {
-      "path": "/home/toxic/sovereign/projects/range/ranch/docs/ARCHITECTURE.md",
+      "path": "/home/toxic/estate/projects/range/ranch/docs/ARCHITECTURE.md",
       "description": "Formal architecture contract defining local vs external execution, ports, and routing rules"
     },
     {
       "description": "Multi-agent engineering engine specification and loop architecture",
-      "path": "/home/toxic/sovereign/projects/range/ranch/corral/README.md"
+      "path": "/home/toxic/estate/projects/range/ranch/corral/README.md"
     },
     {
-      "path": "/home/toxic/sovereign/projects/range/ranch/squawk/README.md",
+      "path": "/home/toxic/estate/projects/range/ranch/squawk/README.md",
       "description": "File-based multi-agent messaging, HMAC signing, CRDT logs, and sealed secrets specification"
     }
   ],

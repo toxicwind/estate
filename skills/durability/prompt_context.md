@@ -32,7 +32,7 @@ once is just proof.
 ## The sweep (run before declaring any service work done)
 
 ```bash
-/home/toxic/sovereign/ops/durability/durability-audit.sh
+/home/toxic/estate/ops/durability/durability-audit.sh
 ```
 
 It checks: procs anchored in `/tmp`/`/dev/shm`; listening ports with no

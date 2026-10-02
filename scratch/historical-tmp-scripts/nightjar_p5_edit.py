@@ -10,7 +10,7 @@ import io
 import shutil
 import sys
 
-P = '/home/toxic/sovereign/agents/oracle-market/bin/oracle_ask.py'
+P = '/home/toxic/estate/agents/oracle-market/bin/oracle_ask.py'
 BAK = P + '.bak-nightjar-p5log'
 
 shutil.copy2(P, BAK)

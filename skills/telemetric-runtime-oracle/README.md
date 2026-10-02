@@ -39,18 +39,18 @@ Platform engineers, SREs, and developers working with the Super Ralph agent syst
 ## Quick Start
 ```bash
 # Run non-invasive evaluation on any live session
-tmux capture-pane -pt ralph | bun /home/toxic/sovereign/helpers/telemetric-oracle.ts
+tmux capture-pane -pt ralph | bun /home/toxic/estate/helpers/telemetric-oracle.ts
 ```
 
 ## Configuration
-- **Helper Script**: `/home/toxic/sovereign/helpers/telemetric-oracle.ts` (Bun script)
+- **Helper Script**: `/home/toxic/estate/helpers/telemetric-oracle.ts` (Bun script)
 - **Target Session**: Replace `pt ralph` with your tmux pane target
 - **Database Path**: `.super-ralph/workflow.db` (relative to session directory)
 - **Telemetry Vector**: 7-dimensional $\mathbf{\tau}(t)$ as defined above
 - **Timeout Bound**: $\tau \le 300\text{s}$ (session elapsed time measurement)
 
 ## Development
-Modify the Bun helper script at `/home/toxic/sovereign/helpers/telemetric-oracle.ts` to adjust:
+Modify the Bun helper script at `/home/toxic/estate/helpers/telemetric-oracle.ts` to adjust:
 - Telemetry vector calculation and formatting
 - SQL queries for database grounding
 - Output formatting and observable metrics

@@ -102,7 +102,7 @@ const simMonolithOverlap = (async () => {
   await sh(["git", "commit", "-qam", "e1: flock port"], d);
   await sh(["git", "checkout", "-q", "main"], d);
   await sh(["git", "checkout", "-qb", "e2"], d);
-  await editDaemonKey(`${d}/pitchfork.toml`, "flock", "run", '"exec /home/toxic/sovereign/projects/range/ranch/flock/bin/flock-run.sh --trace"'); // agent 2: flock run
+  await editDaemonKey(`${d}/pitchfork.toml`, "flock", "run", '"exec /home/toxic/estate/projects/range/ranch/flock/bin/flock-run.sh --trace"'); // agent 2: flock run
   await sh(["git", "commit", "-qam", "e2: flock run"], d);
   await sh(["git", "checkout", "-q", "e1"], d);
   return { case: "monolith: two agents edit SAME section [daemons.flock]", ...(await tryMerge(d)) };
@@ -153,7 +153,7 @@ const simModularSameFile = (async () => {
   await sh(["git", "commit", "-qam", "e1"], d);
   await sh(["git", "checkout", "-q", "main"], d);
   await sh(["git", "checkout", "-qb", "e2"], d);
-  await editDaemonKey(flockF, "flock", "run", '"exec /home/toxic/sovereign/projects/range/ranch/flock/bin/flock-run.sh --trace"');
+  await editDaemonKey(flockF, "flock", "run", '"exec /home/toxic/estate/projects/range/ranch/flock/bin/flock-run.sh --trace"');
   await sh(["git", "commit", "-qam", "e2"], d);
   await sh(["git", "checkout", "-q", "e1"], d);
   return { case: "modular (A): two agents edit the SAME daemon file", ...(await tryMerge(d)) };

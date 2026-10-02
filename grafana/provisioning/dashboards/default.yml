@@ -8,5 +8,5 @@ providers:
     disableDeletion: false
     editable: true
     options:
-      path: /home/toxic/sovereign/grafana/dashboards
+      path: /home/toxic/estate/grafana/dashboards
       foldersFromFilesStructure: false

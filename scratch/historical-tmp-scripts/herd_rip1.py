@@ -1,6 +1,6 @@
 import re
 
-HERD = "/home/toxic/sovereign/projects/herd"
+HERD = "/home/toxic/estate/projects/herd"
 
 # server.go: remove embedded UI routes
 p = HERD + "/internal/server/server.go"

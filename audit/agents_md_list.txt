@@ -349,7 +349,7 @@
 /home/toxic/projects/zedra-virtual0ps/crates/zedra-session/AGENTS.md
 /home/toxic/projects/zedra-virtual0ps/crates/zedra-terminal/AGENTS.md
 /home/toxic/projects/zedra-virtual0ps/docs/MANAGED_AGENTS.md
-/home/toxic/sovereign/tools/nuvio-platform/submodules/llm-subtrans/AGENTS.md
+/home/toxic/estate/tools/nuvio-platform/submodules/llm-subtrans/AGENTS.md
 /home/toxic/tpc-server/AGENTS.md
 /home/toxic/.vscode-insiders/agent-plugins/github.com/github/awesome-copilot/AGENTS.md
 /home/toxic/.vscode-insiders/extensions/jjjermiah.pixi-vscode-1.0.5/AGENTS.md

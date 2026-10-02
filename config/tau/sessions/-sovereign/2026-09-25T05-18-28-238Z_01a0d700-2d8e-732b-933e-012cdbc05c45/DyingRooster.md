@@ -1,6 +1,6 @@
 **Plan**
 
-Already completed: changed to `/home/toxic/sovereign/projects/range/ranch/stockyard/tau` and ran `cargo check -p pi-builtins`, which finished successfully (dev profile, 0.15s).
+Already completed: changed to `/home/toxic/estate/projects/range/ranch/stockyard/tau` and ran `cargo check -p pi-builtins`, which finished successfully (dev profile, 0.15s).
 
 Remaining verification steps to ensure the `pi-builtins` crate is in good health:
 

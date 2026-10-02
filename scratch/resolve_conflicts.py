@@ -2,7 +2,7 @@
 """Resolve the three stash@{0} apply conflicts per maximal-merge policy."""
 import re
 
-ROOT = "/home/toxic/sovereign"
+ROOT = "/home/toxic/estate"
 
 def resolve(path, chooser):
     full = f"{ROOT}/{path}"

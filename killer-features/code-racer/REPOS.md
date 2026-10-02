@@ -3,7 +3,7 @@
 Surveyed ~70 GitHub hits across "ensemble code generation", "code generation
 reranking", "multi-sample code", "pass@k", "code candidate selection",
 "llm code race". Cloned the 4 most reusable to `vendor/` on yote:
-`/home/toxic/sovereign/killer-features/code-racer/vendor/`.
+`/home/toxic/estate/killer-features/code-racer/vendor/`.
 
 ## CLONED
 

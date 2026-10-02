@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /home/toxic/sovereign
+cd /home/toxic/estate
 echo "=== modified/deleted-tracked files with content NOT in origin/main ==="
 git status --porcelain | while read st p; do
   case "$st" in

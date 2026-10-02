@@ -449,7 +449,7 @@
     "name": "Ember",
     "email": "ember@hatch.local"
    },
-   "message": "metaaivm-profile: first-class Moon project for Meta AI VM agent profile\n\n- moon.yml (layer system) with verify task\n- verify.ts: 12 local checks on profile.json identifiers, gateway, corpus layout\n- profile applies to agents carrying hatch-autoloaded or ipnext identifiers\n- corpus: /home/toxic/sovereign/hatch/metaaivm-corpus (4 deduped repos)\n- fork: toxicwind/muse-cli (nikships/muse-cli)",
+   "message": "metaaivm-profile: first-class Moon project for Meta AI VM agent profile\n\n- moon.yml (layer system) with verify task\n- verify.ts: 12 local checks on profile.json identifiers, gateway, corpus layout\n- profile applies to agents carrying hatch-autoloaded or ipnext identifiers\n- corpus: /home/toxic/estate/hatch/metaaivm-corpus (4 deduped repos)\n- fork: toxicwind/muse-cli (nikships/muse-cli)",
    "tree": {
     "url": "https://api.github.com/repos/toxicwind/ranch/git/trees/5bf72690f3f91fcef652b47d067c4b4cff2976ff",
     "sha": "5bf72690f3f91fcef652b47d067c4b4cff2976ff"

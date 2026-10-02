@@ -13,7 +13,7 @@ row = (
 )
 
 kb = subprocess.run(
-    ["git", "-C", "/home/toxic/sovereign", "show", sha + ":docs/fleet-knowledgebase.md"],
+    ["git", "-C", "/home/toxic/estate", "show", sha + ":docs/fleet-knowledgebase.md"],
     capture_output=True, text=True, check=True,
 ).stdout
 

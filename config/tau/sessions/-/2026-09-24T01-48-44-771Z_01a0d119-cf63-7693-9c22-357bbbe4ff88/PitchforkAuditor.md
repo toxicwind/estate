@@ -2,11 +2,11 @@
   "architecture": "Sovereign estate orchestration combines Pitchfork as the process supervisor (configured via pitchfork.toml) with config/ports.env serving as the numeric single source of truth (SSOT) across the 25xxx port space. Daemons fall into mesh services, core background servers, telemetry/exporters, and local LLM/inference endpoints. Systemd user units and Pitchfork daemons require strict single-supervisor boundaries to avoid EADDRINUSE collisions.",
   "files": [
     {
-      "path": "/home/toxic/sovereign/pitchfork.toml",
+      "path": "/home/toxic/estate/pitchfork.toml",
       "description": "Process supervisor configuration defining 53 daemons, lifecycle policies, working directories, and health checks"
     },
     {
-      "path": "/home/toxic/sovereign/config/ports.env",
+      "path": "/home/toxic/estate/config/ports.env",
       "description": "Single source of truth (SSOT) defining assigned port numbers across the 25xxx range"
     }
   ],

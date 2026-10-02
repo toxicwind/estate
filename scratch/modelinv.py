@@ -3,14 +3,14 @@ import subprocess, json, os, re
 OUT = "/home/toxic/model-inventory-20260914.json"
 
 roots = []
-for r in ["/home/toxic/sovereign/tau/engine",
-          "/home/toxic/sovereign/config",
-          "/home/toxic/sovereign/stack",
+for r in ["/home/toxic/estate/tau/engine",
+          "/home/toxic/estate/config",
+          "/home/toxic/estate/stack",
           "/home/toxic/herd"]:
     if os.path.isdir(r):
         roots.append(r)
 # locate openfang / coyote checkouts
-for base in ["/home/toxic/sovereign/projects", "/home/toxic/sovereign",
+for base in ["/home/toxic/estate/projects", "/home/toxic/estate",
              "/home/toxic/projects", "/home/toxic/repos", "/home/toxic/github"]:
     if not os.path.isdir(base):
         continue

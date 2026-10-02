@@ -89,7 +89,7 @@ export const extendedTests: ExtendedServiceTest[] = [
           cmd: [
             "test",
             "-f",
-            "/home/toxic/sovereign/stack/services/openfang.sh",
+            "/home/toxic/estate/stack/services/openfang.sh",
           ],
           stdout: "pipe",
         });
@@ -154,7 +154,7 @@ export const extendedTests: ExtendedServiceTest[] = [
           cmd: [
             "bash",
             "-c",
-            "grep -q '^flock:' /home/toxic/sovereign/config/herd.yaml && echo FOUND || echo MISSING",
+            "grep -q '^flock:' /home/toxic/estate/config/herd.yaml && echo FOUND || echo MISSING",
           ],
           stdout: "pipe",
           stderr: "pipe",

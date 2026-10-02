@@ -73,6 +73,6 @@ code): 36 passed, 0 failed.
 - `ack --consumer e2e-watcher --seq 2` -> acked=2; `lag` -> lag=0
 
 Note: `/home/toxic/.shingle` resolves (realpath) to
-`/home/toxic/sovereign/hatch/agents/ember/squawk-root` on yote — the engine
+`/home/toxic/estate/hatch/agents/ember/squawk-root` on yote — the engine
 canonicalizes via realpath, so symlinked and real paths agree. Scratch
 channel removed after the run (`ls | grep -c e2e` -> 0).

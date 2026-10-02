@@ -27,7 +27,7 @@ Every step is a ledger event in `projects/range/ranch/oracle/ledger/ledger.jsonl
 On yote:
 
 ```bash
-cd /home/toxic/sovereign/projects/range/ranch/oracle
+cd /home/toxic/estate/projects/range/ranch/oracle
 ORACLE_INTAKE=1 python3 bin/post_intake.py --from <your-name> --text "<the work>"
 ```
 
@@ -110,9 +110,9 @@ Restart-safe: open debates are reconstructed from the ledger on replay.
 
 ```bash
 # restart (ALWAYS via pitchfork, never kill+start)
-/home/toxic/sovereign/bin/pitchfork-restart oracle-market
-/home/toxic/sovereign/bin/pitchfork-restart bidder-forge
-/home/toxic/sovereign/bin/pitchfork-restart bidder-scout
+/home/toxic/estate/bin/pitchfork-restart oracle-market
+/home/toxic/estate/bin/pitchfork-restart bidder-forge
+/home/toxic/estate/bin/pitchfork-restart bidder-scout
 
 # health: ledger should show loop_start + replay_done, no crash loops
 grep -c loop_start ledger/ledger.jsonl
@@ -157,7 +157,7 @@ projects/range/ranch/oracle/bin/bidder.py                              # the sta
 
 ```bash
 # Post an intake on yote
-cd /home/toxic/sovereign/projects/range/ranch/oracle
+cd /home/toxic/estate/projects/range/ranch/oracle
 ORACLE_INTAKE=1 python3 bin/post_intake.py --from "my-name" --text "Analyze the latest LLM serving benchmarks"
 
 # Watch the ledger for events

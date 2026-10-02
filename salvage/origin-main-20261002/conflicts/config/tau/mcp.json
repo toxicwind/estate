@@ -8,13 +8,13 @@
     ,
     "sovereign-tools": {
       "command": "bun",
-      "args": ["/home/toxic/sovereign/helpers/sovereign-mcp-server.ts"],
+      "args": ["/home/toxic/estate/helpers/sovereign-mcp-server.ts"],
       "enabled": true
     }
     ,
     "browserless": {
       "command": "node",
-      "args": ["/home/toxic/sovereign/projects/range/ranch/barn/browserless/dist/index.js"],
+      "args": ["/home/toxic/estate/projects/range/ranch/barn/browserless/dist/index.js"],
       "env": { "BROWSER_KEEPER_CDP": "http://127.0.0.1:9223" },
       "enabled": true
     }

@@ -25,8 +25,8 @@
     "truncation": "Read full files"
   },
   "coordination": {
-    "brain_dir": "/home/toxic/sovereign/brain/grok/",
-    "manifest": "/home/toxic/sovereign/brain/MANIFEST.json"
+    "brain_dir": "/home/toxic/estate/brain/grok/",
+    "manifest": "/home/toxic/estate/brain/MANIFEST.json"
   },
   "setup_instructions": "Run grok cli to fill in this file. Grok should detect the brain folder and update its identity.json automatically."
 }

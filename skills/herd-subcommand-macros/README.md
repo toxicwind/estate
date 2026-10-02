@@ -16,23 +16,23 @@ Automates the process of extracting flags/subcommands from llama-server binaries
 
 1. **Ensure the script is present and executable**:
    ```bash
-   ls -l /home/toxic/sovereign/projects/range/ranch/stockyard/herd/scripts/generate-subcommand-macros.py
+   ls -l /home/toxic/estate/projects/range/ranch/stockyard/herd/scripts/generate-subcommand-macros.py
    ```
 
 2. **Run the macro generator**:
    ```bash
-   python3 /home/toxic/sovereign/projects/range/ranch/stockyard/herd/scripts/generate-subcommand-macros.py \
-     --binary /home/toxic/sovereign/engines/herd/beellama.cpp/build-cuda86/bin/llama-server \
-     --config /home/toxic/sovereign/config/herd.yaml
+   python3 /home/toxic/estate/projects/range/ranch/stockyard/herd/scripts/generate-subcommand-macros.py \
+     --binary /home/toxic/estate/engines/herd/beellama.cpp/build-cuda86/bin/llama-server \
+     --config /home/toxic/estate/config/herd.yaml
    ```
 
 3. **Verify the update**:
    ```bash
    # Check that AUTO_SUBCOMMAND_MACROS block exists
-   grep -n "AUTO_SUBCOMMAND_MACROS" /home/toxic/sovereign/config/herd.yaml
+   grep -n "AUTO_SUBCOMMAND_MACROS" /home/toxic/estate/config/herd.yaml
 
    # Count generated macros
-   grep -A 1000 "AUTO_SUBCOMMAND_MACROS:" /home/toxic/sovereign/config/herd.yaml | grep -E "^  ARG_" | wc -l
+   grep -A 1000 "AUTO_SUBCOMMAND_MACROS:" /home/toxic/estate/config/herd.yaml | grep -E "^  ARG_" | wc -l
 
    # Verify herd runtime
    curl -s http://127.0.0.1:25100/v1/models | jq '.data | length'
@@ -40,11 +40,11 @@ Automates the process of extracting flags/subcommands from llama-server binaries
 
 ### Script Location
 
-`/home/toxic/sovereign/projects/range/ranch/stockyard/herd/scripts/generate-subcommand-macros.py`
+`/home/toxic/estate/projects/range/ranch/stockyard/herd/scripts/generate-subcommand-macros.py`
 
 ### Configuration Updated
 
-`/home/toxic/sovereign/config/herd.yaml` - adds/updates `AUTO_SUBCOMMAND_MACROS` mapping
+`/home/toxic/estate/config/herd.yaml` - adds/updates `AUTO_SUBCOMMAND_MACROS` mapping
 
 ### Notes
 
@@ -58,15 +58,15 @@ Automates the process of extracting flags/subcommands from llama-server binaries
 
 ```bash
 # Generate subcommand macros from llama-server
-python3 /home/toxic/sovereign/projects/range/ranch/stockyard/herd/scripts/generate-subcommand-macros.py \
-  --binary /home/toxic/sovereign/engines/herd/beellama.cpp/build-cuda86/bin/llama-server \
-  --config /home/toxic/sovereign/config/herd.yaml
+python3 /home/toxic/estate/projects/range/ranch/stockyard/herd/scripts/generate-subcommand-macros.py \
+  --binary /home/toxic/estate/engines/herd/beellama.cpp/build-cuda86/bin/llama-server \
+  --config /home/toxic/estate/config/herd.yaml
 
 # Verify the macros were generated
-grep -n "AUTO_SUBCOMMAND_MACROS" /home/toxic/sovereign/config/herd.yaml
+grep -n "AUTO_SUBCOMMAND_MACROS" /home/toxic/estate/config/herd.yaml
 
 # Count the generated macros
-grep -A 1000 "AUTO_SUBCOMMAND_MACROS:" /home/toxic/sovereign/config/herd.yaml | grep -E "^  ARG_" | wc -l
+grep -A 1000 "AUTO_SUBCOMMAND_MACROS:" /home/toxic/estate/config/herd.yaml | grep -E "^  ARG_" | wc -l
 ```
 
 ### Architecture
@@ -75,8 +75,8 @@ The script parses `llama-server --help` output, extracting all `--flag` patterns
 
 ### Config / optional services
 
-- `--binary <path>` — path to llama-server binary (default: `/home/toxic/sovereign/engines/herd/beellama.cpp/build-cuda86/bin/llama-server`)
-- `--config <path>` — path to herd.yaml config (default: `/home/toxic/sovereign/config/herd.yaml`)
+- `--binary <path>` — path to llama-server binary (default: `/home/toxic/estate/engines/herd/beellama.cpp/build-cuda86/bin/llama-server`)
+- `--config <path>` — path to herd.yaml config (default: `/home/toxic/estate/config/herd.yaml`)
 - Flag pattern: `--?[a-zA-Z0-9_-]+` from `llama-server --help`
 - Macro format: `ARG_<FLAG_NAME>` (e.g., `--model` → `ARG_MODEL: --model`)
 

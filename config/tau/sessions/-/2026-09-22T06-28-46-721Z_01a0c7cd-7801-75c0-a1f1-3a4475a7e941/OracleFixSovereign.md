@@ -80,9 +80,9 @@ We'll grep for herd in state.toml.
 
 Great! We see that the herd daemon is defined in the state.toml. The command for the herd daemon is:
 
-cmd = ["exec", "/home/toxic/sovereign/stack/services/herd.sh"]
+cmd = ["exec", "/home/toxic/estate/stack/services/herd.sh"]
 
-So the herd daemon is started by a shell script at /home/toxic/sovereign/stack/services/herd.sh.
+So the herd daemon is started by a shell script at /home/toxic/estate/stack/services/herd.sh.
 
 Now, when we run `pitchfork start sovereign/herd`, pitchfork should look up the daemon in its state.toml and execute the command. However, we got "not found in config or state". But we see it in the state.toml.
 
@@ -146,7 +146,7 @@ Let's try to run the herd.sh script in the background and see if it starts succe
 
 We'll do:
 
-HERD_PORT=25100 /home/toxic/sovereign/stack/services/herd.sh
+HERD_PORT=25100 /home/toxic/estate/stack/services/herd.sh
 
 But we need to be careful because it will exec the llama-swap binary and replace the shell. We can run it in a background subshell.
 
@@ -167,13 +167,13 @@ We'll do a timeout.
 
 We need to run the command correctly. Let's do:
 
-HERD_PORT=25100 timeout 5 /home/toxic/sovereign/stack/services/herd.sh 2>&1
+HERD_PORT=25100 timeout 5 /home/toxic/estate/stack/services/herd.sh 2>&1
 
 But timeout might not be available? It is.
 
 Let's do:
 
-timeout 5 sh -c "HERD_PORT=25100 /home/toxic/sovereign/stack/services/herd.sh" 2>&1
+timeout 5 sh -c "HERD_PORT=25100 /home/toxic/estate/stack/services/herd.sh" 2>&1
 
 We'll do that.
 

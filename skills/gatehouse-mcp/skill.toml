@@ -81,7 +81,7 @@ Server requirements:
 
 ## 5. Register in Gatehouse
 
-Canonical source: `/home/toxic/sovereign/projects/range/ranch/barn/gatehouse`
+Canonical source: `/home/toxic/estate/projects/range/ranch/barn/gatehouse`
 - Live config: `mcp_config.json` (gitignored — the running truth)
 - Durable template: `mcp_config.json.dist` (the bootstrap source; the
   serve script copies it when the live config is missing)
@@ -95,7 +95,7 @@ Canonical source: `/home/toxic/sovereign/projects/range/ranch/barn/gatehouse`
 ## 6. Restart (Gatehouse only)
 
 ```sh
-cd /home/toxic/sovereign && ./bin/pitchfork-restart sovereign/gatehouse
+cd /home/toxic/estate && ./bin/pitchfork-restart sovereign/gatehouse
 ```
 
 Never kill+start in one remote command; never `--help` the wrapper (it

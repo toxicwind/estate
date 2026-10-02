@@ -96,7 +96,7 @@ Client config:
 ```json
 { "mcpServers": { "fleet-chat": {
   "command": "bun",
-  "args": ["/home/toxic/sovereign/tools/fleet-chat/cli.ts"],
+  "args": ["/home/toxic/estate/tools/fleet-chat/cli.ts"],
   "env": { "FLEET_CHAT_URL": "http://100.72.199.93:25122" }
 } } }
 ```
@@ -111,7 +111,7 @@ Pitchfork stanza `[daemons.fleet-chat]`:
 ```toml
 [daemons.fleet-chat]
 run = "exec bun run server.ts"
-dir = "/home/toxic/sovereign/tools/fleet-chat"
+dir = "/home/toxic/estate/tools/fleet-chat"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25122/health"

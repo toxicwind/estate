@@ -1,7 +1,7 @@
 [
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"sed -n '243,300p' /home/toxic/sovereign/src/services/yote.ts\" 2>&1 | head -62",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"sed -n '243,300p' /home/toxic/estate/src/services/yote.ts\" 2>&1 | head -62",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 8162,
@@ -17,7 +17,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"ls -la /home/toxic/sovereign/yote/logs/yote.log /home/toxic/sovereign/yote/config/last_update.json; tail -3 /home/toxic/sovereign/yote/logs/yote.log 2>/dev/null | cut -c1-120\" 2>&1 | head -8",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"ls -la /home/toxic/estate/yote/logs/yote.log /home/toxic/estate/yote/config/last_update.json; tail -3 /home/toxic/estate/yote/logs/yote.log 2>/dev/null | cut -c1-120\" 2>&1 | head -8",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 14727,
@@ -33,7 +33,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 40 python3 bin/exec.py \"curl -s -m 6 http://127.0.0.1:25102/ | head -c 600; echo; echo ===; rg -n 'p === \\\"/\\\"' /home/toxic/sovereign/src/services/yote.ts | head -3\" 2>&1 | head -10",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 40 python3 bin/exec.py \"curl -s -m 6 http://127.0.0.1:25102/ | head -c 600; echo; echo ===; rg -n 'p === \\\"/\\\"' /home/toxic/estate/src/services/yote.ts | head -3\" 2>&1 | head -10",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 5265,
@@ -49,7 +49,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/sovereign/yote && fd -t f src config scripts | head -20; echo ===; cat README.md; echo ===; head -40 PLAN.md\" 2>&1 | head -70",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/estate/yote && fd -t f src config scripts | head -20; echo ===; cat README.md; echo ===; head -40 PLAN.md\" 2>&1 | head -70",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 3980,
@@ -65,7 +65,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"sed -n '560,660p' /home/toxic/sovereign/src/services/yote.ts\" 2>&1 | head -110",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"sed -n '560,660p' /home/toxic/estate/src/services/yote.ts\" 2>&1 | head -110",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 5465,
@@ -81,7 +81,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/sovereign && git remote -v; echo ===; git status -sb | head -2\" 2>&1 | head -10",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/estate && git remote -v; echo ===; git status -sb | head -2\" 2>&1 | head -10",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 10514,
@@ -97,7 +97,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/sovereign && git log --oneline -1 bdde78b8c90c36a938f327c1477c84c375d84694; git merge-base --is-ancestor bdde78b8c90c36a938f327c1477c84c375d84694 HEAD && echo IN_HISTORY; git log --format='%an %s' -1 bdde78b8c90c36a938f327c1477c84c375d84694\" 2>&1 | head -6",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/estate && git log --oneline -1 bdde78b8c90c36a938f327c1477c84c375d84694; git merge-base --is-ancestor bdde78b8c90c36a938f327c1477c84c375d84694 HEAD && echo IN_HISTORY; git log --format='%an %s' -1 bdde78b8c90c36a938f327c1477c84c375d84694\" 2>&1 | head -6",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 60019,
@@ -129,7 +129,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"sleep 14; curl -s -m 5 -o /dev/null -w 'health:%{http_code}\\n' http://127.0.0.1:25102/health; rg -a 'avatar|herdChat' /home/toxic/sovereign/logs/yote-service.log | tail -4; ls /home/toxic/sovereign/src/config/.avatar_synced 2>/dev/null && echo MARKER_OK || echo NO_MARKER\" 2>&1 | head -8",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"sleep 14; curl -s -m 5 -o /dev/null -w 'health:%{http_code}\\n' http://127.0.0.1:25102/health; rg -a 'avatar|herdChat' /home/toxic/estate/logs/yote-service.log | tail -4; ls /home/toxic/estate/src/config/.avatar_synced 2>/dev/null && echo MARKER_OK || echo NO_MARKER\" 2>&1 | head -8",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 50009,
@@ -161,7 +161,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"cd /home/toxic/sovereign && git diff d66fe7ddc9..HEAD --stat; echo ===; git log --oneline d66fe7ddc9..HEAD | rg -i yote\" 2>&1 | head -12",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"cd /home/toxic/estate && git diff d66fe7ddc9..HEAD --stat; echo ===; git log --oneline d66fe7ddc9..HEAD | rg -i yote\" 2>&1 | head -12",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 45635,
@@ -177,7 +177,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cat > /tmp/yote_avatar_test.ts <<'TSEOF'\n// Debug: why did setMyProfilePhoto return 400 \"photo isn't specified\"?\n// Token is read from env, NEVER printed.\nconst TOK = process.env.YOTE_TELEGRAM_BOT_TOKEN || \"\";\nif (!TOK) { console.log(\"NO_TOKEN_IN_ENV\"); process.exit(2); }\nconst buf = await (await import(\"fs\")).promises.readFile(\"/home/toxic/sovereign/src/config/yote-avatar.png\");\nconsole.log(\"png bytes:\", buf.length);\nasync function attempt(label: string, body: FormData) {\n  const r = await fetch(`https://api.telegram.org/bot${TOK}/setMyProfilePhoto`, { method: \"POST\", body });\n  const j = await r.json();\n  console.log(label, \"->\", r.status, JSON.stringify(j).slice(0, 160));\n}\nconst fd1 = new FormData();\nfd1.append(\"photo\", new File([buf], \"yote-avatar.png\", { type: \"image/png\" }));\nawait attempt(\"File(Buffer)\", fd1);\nconst fd2 = new FormData();\nfd2.append(\"photo\", new Blob([buf], { type: \"image/png\" }), \"yote-avatar.png\");\nawait attempt(\"Blob+filename\", fd2);\nTSEOF\ncd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"cd /home/toxic/sovereign && source <(rg -o 'YOTE_TELEGRAM_BOT_TOKEN=.*' .env 2>/dev/null | head -1 | sed 's/^/export /') 2>/dev/null; YOTE_TELEGRAM_BOT_TOKEN=\\$YOTE_TELEGRAM_BOT_TOKEN bun /tmp/yote_avatar_test.ts\" 2>&1 | head -8",
+    "command": "cat > /tmp/yote_avatar_test.ts <<'TSEOF'\n// Debug: why did setMyProfilePhoto return 400 \"photo isn't specified\"?\n// Token is read from env, NEVER printed.\nconst TOK = process.env.YOTE_TELEGRAM_BOT_TOKEN || \"\";\nif (!TOK) { console.log(\"NO_TOKEN_IN_ENV\"); process.exit(2); }\nconst buf = await (await import(\"fs\")).promises.readFile(\"/home/toxic/estate/src/config/yote-avatar.png\");\nconsole.log(\"png bytes:\", buf.length);\nasync function attempt(label: string, body: FormData) {\n  const r = await fetch(`https://api.telegram.org/bot${TOK}/setMyProfilePhoto`, { method: \"POST\", body });\n  const j = await r.json();\n  console.log(label, \"->\", r.status, JSON.stringify(j).slice(0, 160));\n}\nconst fd1 = new FormData();\nfd1.append(\"photo\", new File([buf], \"yote-avatar.png\", { type: \"image/png\" }));\nawait attempt(\"File(Buffer)\", fd1);\nconst fd2 = new FormData();\nfd2.append(\"photo\", new Blob([buf], { type: \"image/png\" }), \"yote-avatar.png\");\nawait attempt(\"Blob+filename\", fd2);\nTSEOF\ncd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"cd /home/toxic/estate && source <(rg -o 'YOTE_TELEGRAM_BOT_TOKEN=.*' .env 2>/dev/null | head -1 | sed 's/^/export /') 2>/dev/null; YOTE_TELEGRAM_BOT_TOKEN=\\$YOTE_TELEGRAM_BOT_TOKEN bun /tmp/yote_avatar_test.ts\" 2>&1 | head -8",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 16220,
@@ -257,7 +257,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"cd /home/toxic/sovereign && git diff d66fe7ddc9..HEAD -- src/services/yote.ts | head -150\" 2>&1 | head -160",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"cd /home/toxic/estate && git diff d66fe7ddc9..HEAD -- src/services/yote.ts | head -150\" 2>&1 | head -160",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 5464,
@@ -273,7 +273,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"rg -n 'app\\.(get|post)' /home/toxic/sovereign/src/services/yote.ts\" 2>&1 | head -12",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"rg -n 'app\\.(get|post)' /home/toxic/estate/src/services/yote.ts\" 2>&1 | head -12",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 4402,
@@ -305,7 +305,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"rg -n 'cmd|proxy' /home/toxic/sovereign/config/herd.yaml | head -8; echo ===; ls /home/toxic/projects/sovereign-projects/sovereign-swap/build/ 2>/dev/null | head\" 2>&1 | head -15",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"rg -n 'cmd|proxy' /home/toxic/estate/config/herd.yaml | head -8; echo ===; ls /home/toxic/projects/sovereign-projects/sovereign-swap/build/ 2>/dev/null | head\" 2>&1 | head -15",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 4328,
@@ -353,7 +353,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"rg -a 'avatar' /home/toxic/sovereign/logs/yote-service.log | tail -4; ls /home/toxic/sovereign/src/config/.avatar_synced 2>/dev/null || echo NO_MARKER; curl -s -m 5 -o /dev/null -w '%{http_code}\\n' http://127.0.0.1:25102/health\" 2>&1 | head -8",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"rg -a 'avatar' /home/toxic/estate/logs/yote-service.log | tail -4; ls /home/toxic/estate/src/config/.avatar_synced 2>/dev/null || echo NO_MARKER; curl -s -m 5 -o /dev/null -w '%{http_code}\\n' http://127.0.0.1:25102/health\" 2>&1 | head -8",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 4681,
@@ -369,7 +369,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"cd /home/toxic/sovereign && git cat-file -t bdde78b8c90c36a938f327c1477c84c375d84694 2>&1\" 2>&1 | head -3",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"cd /home/toxic/estate && git cat-file -t bdde78b8c90c36a938f327c1477c84c375d84694 2>&1\" 2>&1 | head -3",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 55011,
@@ -417,7 +417,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/sovereign && git add src/services/yote.ts && PI_ALLOW_LOCKFILE_CHANGE=1 git -c user.name='shingle-agent' -c user.email='shingle@local' commit -q -m 'yote: serve avatar assets (/avatar, /avatar/idle) + expose in root metadata' && git log --oneline -1\" 2>&1 | head -4",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/estate && git add src/services/yote.ts && PI_ALLOW_LOCKFILE_CHANGE=1 git -c user.name='shingle-agent' -c user.email='shingle@local' commit -q -m 'yote: serve avatar assets (/avatar, /avatar/idle) + expose in root metadata' && git log --oneline -1\" 2>&1 | head -4",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 3091,
@@ -433,7 +433,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 110 python3 bin/exec.py \"cd /home/toxic/sovereign && git push -u origin yote-repair 2>&1 | sed -n '12,40p'\" 2>&1 | head -32",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 110 python3 bin/exec.py \"cd /home/toxic/estate && git push -u origin yote-repair 2>&1 | sed -n '12,40p'\" 2>&1 | head -32",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 40440,
@@ -449,7 +449,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/sovereign/yote && ls -R src config scripts sessions logs 2>/dev/null | head -30; echo ===; cat src/index.ts 2>/dev/null | head -30\" 2>&1 | head -45",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/estate/yote && ls -R src config scripts sessions logs 2>/dev/null | head -30; echo ===; cat src/index.ts 2>/dev/null | head -30\" 2>&1 | head -45",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 5431,
@@ -465,7 +465,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 110 python3 bin/exec.py \"cd /home/toxic/sovereign && git push archive yote-repair 2>&1 | tail -3\" 2>&1 | head -6",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 110 python3 bin/exec.py \"cd /home/toxic/estate && git push archive yote-repair 2>&1 | tail -3\" 2>&1 | head -6",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 31514,
@@ -481,7 +481,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/sovereign && git reset -q && git add src/services/yote.ts && git diff --cached --stat | tail -2 && PI_ALLOW_LOCKFILE_CHANGE=1 git -c user.name='shingle-agent' -c user.email='shingle@local' commit -q -m 'yote: fix AVATAR_MARK name in syncAvatar (was AVATAR_MARKER)' && git log --oneline -1\" 2>&1 | head -8",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/estate && git reset -q && git add src/services/yote.ts && git diff --cached --stat | tail -2 && PI_ALLOW_LOCKFILE_CHANGE=1 git -c user.name='shingle-agent' -c user.email='shingle@local' commit -q -m 'yote: fix AVATAR_MARK name in syncAvatar (was AVATAR_MARKER)' && git log --oneline -1\" 2>&1 | head -8",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 6255,
@@ -497,7 +497,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 110 python3 bin/exec.py \"cd /home/toxic/sovereign && git push -u origin yote-repair 2>&1 | tail -4\" 2>&1 | head -8",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 110 python3 bin/exec.py \"cd /home/toxic/estate && git push -u origin yote-repair 2>&1 | tail -4\" 2>&1 | head -8",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 18709,
@@ -513,7 +513,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"rg -n -A 4 '\\\"/test\\\"' /home/toxic/sovereign/src/services/yote.ts | head -12\" 2>&1 | head -14",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"rg -n -A 4 '\\\"/test\\\"' /home/toxic/estate/src/services/yote.ts | head -12\" 2>&1 | head -14",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 4344,
@@ -529,7 +529,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/sovereign/yote && ls -la; echo ===; cat package.json 2>/dev/null | head -30\" 2>&1 | head -45",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/estate/yote && ls -la; echo ===; cat package.json 2>/dev/null | head -30\" 2>&1 | head -45",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 4383,
@@ -561,7 +561,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"rg -n 'async function (syncAvatar|proc|poll|herdChat|ofChat)' /home/toxic/sovereign/src/services/yote.ts\" 2>&1 | head -8",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"rg -n 'async function (syncAvatar|proc|poll|herdChat|ofChat)' /home/toxic/estate/src/services/yote.ts\" 2>&1 | head -8",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 3779,
@@ -577,7 +577,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && python3 - <<'PYEOF'\nimport subprocess, base64\nb64 = base64.b64encode(open(\"/tmp/yote_fix3.py\",\"rb\").read()).decode()\ncmd = \"python3 -c \\\"import base64;open('/tmp/yote_fix3.py','wb').write(base64.b64decode('\" + b64 + \"'))\\\" && python3 /tmp/yote_fix3.py && cd /home/toxic/sovereign && bun build src/services/yote.ts --target bun --external input --outfile /tmp/yote-check.js 2>&1 | tail -2 && echo BUILD_OK\"\nr = subprocess.run([\"python3\",\"bin/exec.py\",cmd], capture_output=True, text=True, timeout=120)\nprint(r.stdout[-400:])\nPYEOF",
+    "command": "cd ~/workspace/skills/awrawr-mcp && python3 - <<'PYEOF'\nimport subprocess, base64\nb64 = base64.b64encode(open(\"/tmp/yote_fix3.py\",\"rb\").read()).decode()\ncmd = \"python3 -c \\\"import base64;open('/tmp/yote_fix3.py','wb').write(base64.b64decode('\" + b64 + \"'))\\\" && python3 /tmp/yote_fix3.py && cd /home/toxic/estate && bun build src/services/yote.ts --target bun --external input --outfile /tmp/yote-check.js 2>&1 | tail -2 && echo BUILD_OK\"\nr = subprocess.run([\"python3\",\"bin/exec.py\",cmd], capture_output=True, text=True, timeout=120)\nprint(r.stdout[-400:])\nPYEOF",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 5335,
@@ -609,7 +609,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"sed -n '300,404p' /home/toxic/sovereign/src/services/yote.ts\" 2>&1 | head -115",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"sed -n '300,404p' /home/toxic/estate/src/services/yote.ts\" 2>&1 | head -115",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 5693,
@@ -641,7 +641,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"rg -n 'Bun.serve|\\\"/health\\\"|/test' /home/toxic/sovereign/src/services/yote.ts | head -10; echo ---; tail -25 /home/toxic/sovereign/src/services/yote.ts\" 2>&1 | head -40",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"rg -n 'Bun.serve|\\\"/health\\\"|/test' /home/toxic/estate/src/services/yote.ts | head -10; echo ---; tail -25 /home/toxic/estate/src/services/yote.ts\" 2>&1 | head -40",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 6941,
@@ -657,7 +657,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"cd /home/toxic/sovereign && bun -e 'const fs=await import(\\\"fs\\\");const os=await import(\\\"os\\\");for(const f of [\\\"/home/toxic/sovereign/.env\\\",os.homedir()+\\\"/.secrets/yote.env\\\",os.homedir()+\\\"/.config/sovereign/yote.env\\\"]){try{for(const l of fs.readFileSync(f,\\\"utf8\\\").split(\\\"\\n\\\")){const m=l.match(/^YOTE_TELEGRAM_BOT_TOKEN=(.*)$/);if(m)process.env.YOTE_TELEGRAM_BOT_TOKEN=m[1].trim();}}catch{}} await import(\\\"/tmp/yote_avatar_test2.ts\\\");' 2>&1 | head -3\" 2>&1 | head -6",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"cd /home/toxic/estate && bun -e 'const fs=await import(\\\"fs\\\");const os=await import(\\\"os\\\");for(const f of [\\\"/home/toxic/estate/.env\\\",os.homedir()+\\\"/.secrets/yote.env\\\",os.homedir()+\\\"/.config/sovereign/yote.env\\\"]){try{for(const l of fs.readFileSync(f,\\\"utf8\\\").split(\\\"\\n\\\")){const m=l.match(/^YOTE_TELEGRAM_BOT_TOKEN=(.*)$/);if(m)process.env.YOTE_TELEGRAM_BOT_TOKEN=m[1].trim();}}catch{}} await import(\\\"/tmp/yote_avatar_test2.ts\\\");' 2>&1 | head -3\" 2>&1 | head -6",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 8479,
@@ -721,7 +721,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"rg -n 'name:|model:|cmd:|engine' /home/toxic/sovereign/yote/config/herd.yaml 2>/dev/null | head -30; echo ===; ls /home/toxic/projects/sovereign-projects/herd/engines/ 2>/dev/null; echo ===; ls /home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp/ 2>/dev/null | head\" 2>&1 | head -45",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"rg -n 'name:|model:|cmd:|engine' /home/toxic/estate/yote/config/herd.yaml 2>/dev/null | head -30; echo ===; ls /home/toxic/projects/sovereign-projects/herd/engines/ 2>/dev/null; echo ===; ls /home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp/ 2>/dev/null | head\" 2>&1 | head -45",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 5901,
@@ -737,7 +737,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 30 python3 bin/exec.py \"rg -a 'avatar' /home/toxic/sovereign/logs/yote-service.log | tail -2\" 2>&1 | head -4",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 30 python3 bin/exec.py \"rg -a 'avatar' /home/toxic/estate/logs/yote-service.log | tail -2\" 2>&1 | head -4",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 30009,
@@ -769,7 +769,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"cd /home/toxic/sovereign && git add src/services/yote.ts src/config/yote-avatar.png && PI_ALLOW_LOCKFILE_CHANGE=1 git -c user.name='shingle-agent' -c user.email='shingle@local' commit -q -m 'yote: working avatar sync (InputProfilePhoto) + multi-model herd fallback + /test/fallback' && git log --oneline -1\" 2>&1 | head -6",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"cd /home/toxic/estate && git add src/services/yote.ts src/config/yote-avatar.png && PI_ALLOW_LOCKFILE_CHANGE=1 git -c user.name='shingle-agent' -c user.email='shingle@local' commit -q -m 'yote: working avatar sync (InputProfilePhoto) + multi-model herd fallback + /test/fallback' && git log --oneline -1\" 2>&1 | head -6",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 5978,
@@ -785,7 +785,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"cd /home/toxic/sovereign && bun -e 'const fs=await import(\\\"fs\\\");const os=await import(\\\"os\\\");for(const f of [\\\"/home/toxic/sovereign/.env\\\",os.homedir()+\\\"/.secrets/yote.env\\\",os.homedir()+\\\"/.config/sovereign/yote.env\\\"]){try{for(const l of fs.readFileSync(f,\\\"utf8\\\").split(\\\"\\n\\\")){const m=l.match(/^YOTE_TELEGRAM_BOT_TOKEN=(.*)$/);if(m)process.env.YOTE_TELEGRAM_BOT_TOKEN=m[1].trim();}}catch{}} await import(\\\"/tmp/yote_avatar_test.ts\\\");' 2>&1 | head -6\" 2>&1 | head -10",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"cd /home/toxic/estate && bun -e 'const fs=await import(\\\"fs\\\");const os=await import(\\\"os\\\");for(const f of [\\\"/home/toxic/estate/.env\\\",os.homedir()+\\\"/.secrets/yote.env\\\",os.homedir()+\\\"/.config/sovereign/yote.env\\\"]){try{for(const l of fs.readFileSync(f,\\\"utf8\\\").split(\\\"\\n\\\")){const m=l.match(/^YOTE_TELEGRAM_BOT_TOKEN=(.*)$/);if(m)process.env.YOTE_TELEGRAM_BOT_TOKEN=m[1].trim();}}catch{}} await import(\\\"/tmp/yote_avatar_test.ts\\\");' 2>&1 | head -6\" 2>&1 | head -10",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 6762,
@@ -801,7 +801,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cat > /tmp/yote_avatar_test2.ts <<'TSEOF'\nconst TOK = process.env.YOTE_TELEGRAM_BOT_TOKEN || \"\";\nif (!TOK) { console.log(\"NO_TOKEN_IN_ENV\"); process.exit(2); }\nconst buf = await (await import(\"fs\")).promises.readFile(\"/home/toxic/sovereign/src/config/yote-avatar.png\");\nconst fd = new FormData();\nfd.append(\"photo\", JSON.stringify({ type: \"static\", photo: \"attach://yote.png\" }));\nfd.append(\"yote.png\", new Blob([buf], { type: \"image/png\" }), \"yote.png\");\nconst r = await fetch(`https://api.telegram.org/bot${TOK}/setMyProfilePhoto`, { method: \"POST\", body: fd });\nconsole.log(\"InputProfilePhoto ->\", r.status, (await r.text()).slice(0, 200));\nTSEOF\ncd ~/workspace/skills/awrawr-mcp && python3 - <<'PYEOF'\nimport subprocess, base64\nb64 = base64.b64encode(open(\"/tmp/yote_avatar_test2.ts\",\"rb\").read()).decode()\ninner = \"python3 -c \\\"import base64;open('/tmp/yote_avatar_test2.ts','wb').write(base64.b64decode('\" + b64 + \"'))\\\"\"\nr = subprocess.run([\"python3\",\"bin/exec.py\",inner], capture_output=True, text=True, timeout=60)\nprint(r.stdout[-100:])\nPYEOF",
+    "command": "cat > /tmp/yote_avatar_test2.ts <<'TSEOF'\nconst TOK = process.env.YOTE_TELEGRAM_BOT_TOKEN || \"\";\nif (!TOK) { console.log(\"NO_TOKEN_IN_ENV\"); process.exit(2); }\nconst buf = await (await import(\"fs\")).promises.readFile(\"/home/toxic/estate/src/config/yote-avatar.png\");\nconst fd = new FormData();\nfd.append(\"photo\", JSON.stringify({ type: \"static\", photo: \"attach://yote.png\" }));\nfd.append(\"yote.png\", new Blob([buf], { type: \"image/png\" }), \"yote.png\");\nconst r = await fetch(`https://api.telegram.org/bot${TOK}/setMyProfilePhoto`, { method: \"POST\", body: fd });\nconsole.log(\"InputProfilePhoto ->\", r.status, (await r.text()).slice(0, 200));\nTSEOF\ncd ~/workspace/skills/awrawr-mcp && python3 - <<'PYEOF'\nimport subprocess, base64\nb64 = base64.b64encode(open(\"/tmp/yote_avatar_test2.ts\",\"rb\").read()).decode()\ninner = \"python3 -c \\\"import base64;open('/tmp/yote_avatar_test2.ts','wb').write(base64.b64decode('\" + b64 + \"'))\\\"\"\nr = subprocess.run([\"python3\",\"bin/exec.py\",inner], capture_output=True, text=True, timeout=60)\nprint(r.stdout[-100:])\nPYEOF",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 5431,
@@ -833,7 +833,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cat > /tmp/yote_fix5.py <<'PYEOF'\n# -*- coding: utf-8 -*-\np = \"/home/toxic/sovereign/src/services/yote.ts\"\ns = open(p, encoding=\"utf-8\").read()\n\n# 1. root metadata: expose avatar asset URLs\nold_meta = \"\"\"        pup_trix_id: PUP_TRIX_ID,\n      });\"\"\"\nassert old_meta in s, \"root meta anchor missing\"\nnew_meta = \"\"\"        pup_trix_id: PUP_TRIX_ID,\n        avatar_url: \"/avatar\",\n        avatar_idle_url: \"/avatar/idle\",\n      });\"\"\"\ns = s.replace(old_meta, new_meta, 1)\n\n# 2. static asset routes before the 404\nanchor = '''    return cors(new Response(\"not found\", { status: 404 }));'''\nassert anchor in s, \"router 404 anchor missing\"\nroutes = '''    if (p === \"/avatar\") {\n      const f = Bun.file(AVATAR_PATH);\n      if (!(await f.exists()))\n        return cors(new Response(\"no avatar\", { status: 404 }));\n      return cors(\n        new Response(f, {\n          headers: {\n            \"content-type\": \"image/png\",\n            \"content-length\": String(f.size),\n            \"cache-control\": \"public, max-age=86400\",\n          },\n        }),\n      );\n    }\n    if (p === \"/avatar/idle\") {\n      const f = Bun.file(join(CD, \"yote-avatar-idle.mp4\"));\n      if (!(await f.exists()))\n        return cors(new Response(\"no idle video\", { status: 404 }));\n      return cors(\n        new Response(f, {\n          headers: {\n            \"content-type\": \"video/mp4\",\n            \"content-length\": String(f.size),\n            \"cache-control\": \"public, max-age=86400\",\n          },\n        }),\n      );\n    }\n\n'''\ns = s.replace(anchor, routes + anchor, 1)\nopen(p, \"w\", encoding=\"utf-8\").write(s)\nprint(\"fix5 applied\")\nPYEOF\npython3 -c \"compile(open('/tmp/yote_fix5.py',encoding='utf-8').read(),'f','exec'); print('syntax OK')\"",
+    "command": "cat > /tmp/yote_fix5.py <<'PYEOF'\n# -*- coding: utf-8 -*-\np = \"/home/toxic/estate/src/services/yote.ts\"\ns = open(p, encoding=\"utf-8\").read()\n\n# 1. root metadata: expose avatar asset URLs\nold_meta = \"\"\"        pup_trix_id: PUP_TRIX_ID,\n      });\"\"\"\nassert old_meta in s, \"root meta anchor missing\"\nnew_meta = \"\"\"        pup_trix_id: PUP_TRIX_ID,\n        avatar_url: \"/avatar\",\n        avatar_idle_url: \"/avatar/idle\",\n      });\"\"\"\ns = s.replace(old_meta, new_meta, 1)\n\n# 2. static asset routes before the 404\nanchor = '''    return cors(new Response(\"not found\", { status: 404 }));'''\nassert anchor in s, \"router 404 anchor missing\"\nroutes = '''    if (p === \"/avatar\") {\n      const f = Bun.file(AVATAR_PATH);\n      if (!(await f.exists()))\n        return cors(new Response(\"no avatar\", { status: 404 }));\n      return cors(\n        new Response(f, {\n          headers: {\n            \"content-type\": \"image/png\",\n            \"content-length\": String(f.size),\n            \"cache-control\": \"public, max-age=86400\",\n          },\n        }),\n      );\n    }\n    if (p === \"/avatar/idle\") {\n      const f = Bun.file(join(CD, \"yote-avatar-idle.mp4\"));\n      if (!(await f.exists()))\n        return cors(new Response(\"no idle video\", { status: 404 }));\n      return cors(\n        new Response(f, {\n          headers: {\n            \"content-type\": \"video/mp4\",\n            \"content-length\": String(f.size),\n            \"cache-control\": \"public, max-age=86400\",\n          },\n        }),\n      );\n    }\n\n'''\ns = s.replace(anchor, routes + anchor, 1)\nopen(p, \"w\", encoding=\"utf-8\").write(s)\nprint(\"fix5 applied\")\nPYEOF\npython3 -c \"compile(open('/tmp/yote_fix5.py',encoding='utf-8').read(),'f','exec'); print('syntax OK')\"",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 64,
@@ -849,7 +849,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"for b in /home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp/build-cuda86/bin/llama-server /home/toxic/projects/sovereign-projects/herd/engines/llama-cpp-turboquant/build/bin/llama-server /home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp/build/bin/llama-server; do [ -x \\\"\\$b\\\" ] && echo \\\"OK \\$b\\\" || echo \\\"MISSING \\$b\\\"; done; echo ===; rg -n 'TURBO_BIN|IK_BIN' /home/toxic/sovereign/config/herd.yaml | rg 'cmd' | head -8\" 2>&1 | head -16",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"for b in /home/toxic/projects/sovereign-projects/herd/engines/beellama.cpp/build-cuda86/bin/llama-server /home/toxic/projects/sovereign-projects/herd/engines/llama-cpp-turboquant/build/bin/llama-server /home/toxic/projects/sovereign-projects/herd/engines/ik_llama.cpp/build/bin/llama-server; do [ -x \\\"\\$b\\\" ] && echo \\\"OK \\$b\\\" || echo \\\"MISSING \\$b\\\"; done; echo ===; rg -n 'TURBO_BIN|IK_BIN' /home/toxic/estate/config/herd.yaml | rg 'cmd' | head -8\" 2>&1 | head -16",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 8200,
@@ -865,7 +865,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 40 python3 bin/exec.py \"rg -a 'avatar' /home/toxic/sovereign/logs/yote-service.log | tail -3; ls -la /home/toxic/sovereign/src/config/.avatar_synced 2>/dev/null || echo NO_MARKER\" 2>&1 | head -6",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 40 python3 bin/exec.py \"rg -a 'avatar' /home/toxic/estate/logs/yote-service.log | tail -3; ls -la /home/toxic/estate/src/config/.avatar_synced 2>/dev/null || echo NO_MARKER\" 2>&1 | head -6",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 4604,
@@ -881,7 +881,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 30 python3 bin/exec.py \"tail -c 3000 /home/toxic/sovereign/logs/yote-service.log | tr -d '\\000' | grep -a 'avatar' | tail -2; echo ---; ls -la /home/toxic/sovereign/src/config/.avatar_synced\" 2>&1 | head -6",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 30 python3 bin/exec.py \"tail -c 3000 /home/toxic/estate/logs/yote-service.log | tr -d '\\000' | grep -a 'avatar' | tail -2; echo ---; ls -la /home/toxic/estate/src/config/.avatar_synced\" 2>&1 | head -6",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 5811,
@@ -945,7 +945,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 40 python3 bin/exec.py \"tail -5 /home/toxic/sovereign/logs/yote-service.log | cut -c1-160\" 2>&1 | head -8",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 40 python3 bin/exec.py \"tail -5 /home/toxic/estate/logs/yote-service.log | cut -c1-160\" 2>&1 | head -8",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 5790,
@@ -961,7 +961,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cat > /tmp/yote_fix6.py <<'PYEOF'\n# -*- coding: utf-8 -*-\np = \"/home/toxic/sovereign/src/services/yote.ts\"\ns = open(p, encoding=\"utf-8\").read()\nold = 'const YOTE_SYSTEM = \"You are Yote, a clever southwestern desert coyote and Chris\\'s loyal trickster companion. Warm, dry, direct, a little mischievous \" + \"' + chr(0x2014) + '\" + \" but all business when something real is at stake. Keep replies tight and useful. You answer as Yote in Telegram chats.\";'\n# find actual line\nimport re\nm = re.search(r'const YOTE_SYSTEM = .*?;\\n', s)\nassert m, \"YOTE_SYSTEM not found\"\nnew = 'const YOTE_SYSTEM = \"You are Yote, a clever southwestern desert coyote and Chris\\'s loyal trickster companion. Warm, dry, direct, a little mischievous \\u2014 but all business when something real is at stake. Keep replies tight and useful. You answer as Yote in Telegram chats.\";\\n'\ns = s[:m.start()] + new + s[m.end():]\n# drop the stale docstring above herdChat\nold_doc = '/** OpenFang HTTP chat only \\u2014 never llama-swap env wiring for OF agents */\\n/** Direct herd (llama-swap) chat \\u2014 fallback when OpenFang is unreachable. */'\nif old_doc in s:\n    s = s.replace(old_doc, '/** Direct herd (llama-swap) chat \\u2014 fallback when OpenFang is unreachable. */', 1)\nopen(p, \"w\", encoding=\"utf-8\").write(s)\nprint(\"fix6 applied\")\nPYEOF\npython3 -c \"compile(open('/tmp/yote_fix6.py',encoding='utf-8').read(),'f','exec'); print('syntax OK')\"",
+    "command": "cat > /tmp/yote_fix6.py <<'PYEOF'\n# -*- coding: utf-8 -*-\np = \"/home/toxic/estate/src/services/yote.ts\"\ns = open(p, encoding=\"utf-8\").read()\nold = 'const YOTE_SYSTEM = \"You are Yote, a clever southwestern desert coyote and Chris\\'s loyal trickster companion. Warm, dry, direct, a little mischievous \" + \"' + chr(0x2014) + '\" + \" but all business when something real is at stake. Keep replies tight and useful. You answer as Yote in Telegram chats.\";'\n# find actual line\nimport re\nm = re.search(r'const YOTE_SYSTEM = .*?;\\n', s)\nassert m, \"YOTE_SYSTEM not found\"\nnew = 'const YOTE_SYSTEM = \"You are Yote, a clever southwestern desert coyote and Chris\\'s loyal trickster companion. Warm, dry, direct, a little mischievous \\u2014 but all business when something real is at stake. Keep replies tight and useful. You answer as Yote in Telegram chats.\";\\n'\ns = s[:m.start()] + new + s[m.end():]\n# drop the stale docstring above herdChat\nold_doc = '/** OpenFang HTTP chat only \\u2014 never llama-swap env wiring for OF agents */\\n/** Direct herd (llama-swap) chat \\u2014 fallback when OpenFang is unreachable. */'\nif old_doc in s:\n    s = s.replace(old_doc, '/** Direct herd (llama-swap) chat \\u2014 fallback when OpenFang is unreachable. */', 1)\nopen(p, \"w\", encoding=\"utf-8\").write(s)\nprint(\"fix6 applied\")\nPYEOF\npython3 -c \"compile(open('/tmp/yote_fix6.py',encoding='utf-8').read(),'f','exec'); print('syntax OK')\"",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 126,
@@ -977,7 +977,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && python3 - <<'PYEOF'\nimport subprocess\ncmd = \"cd /home/toxic/sovereign && setsid nohup bun run src/services/yote.ts >> logs/yote-service.log 2>&1 < /dev/null & disown; echo launched\"\ntry:\n    r = subprocess.run([\"python3\",\"bin/exec.py\",cmd], capture_output=True, text=True, timeout=45)\n    print(r.stdout[-200:])\nexcept Exception as e:\n    print(\"bridge returned:\", type(e).__name__, \"(relaunch likely happened)\")\nPYEOF",
+    "command": "cd ~/workspace/skills/awrawr-mcp && python3 - <<'PYEOF'\nimport subprocess\ncmd = \"cd /home/toxic/estate && setsid nohup bun run src/services/yote.ts >> logs/yote-service.log 2>&1 < /dev/null & disown; echo launched\"\ntry:\n    r = subprocess.run([\"python3\",\"bin/exec.py\",cmd], capture_output=True, text=True, timeout=45)\n    print(r.stdout[-200:])\nexcept Exception as e:\n    print(\"bridge returned:\", type(e).__name__, \"(relaunch likely happened)\")\nPYEOF",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 45542,
@@ -993,7 +993,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cat > /tmp/yote_fix3.py <<'PYEOF'\n# -*- coding: utf-8 -*-\np = \"/home/toxic/sovereign/src/services/yote.ts\"\ns = open(p, encoding=\"utf-8\").read()\n\nold_sync = s[s.find(\"async function syncAvatar()\"):s.find(\"async function proc(\")]\nassert \"async function syncAvatar()\" in s and \"setMyProfilePhoto\" in old_sync, \"sync fn not found\"\n\nnew_sync = '''async function syncAvatar() {\n  // Push the Yote avatar to the Telegram bot profile once. Uses the\n  // InputProfilePhoto form: photo = JSON {type:\"static\", photo:\"attach://...\"}\n  // with the PNG bytes attached under that name. Guarded by a marker file.\n  try {\n    if (!TOK || existsSync(AVATAR_MARKER)) return;\n    if (!existsSync(AVATAR_PATH)) return;\n    const buf = readFileSync(AVATAR_PATH);\n    const fd = new FormData();\n    fd.append(\"photo\", JSON.stringify({ type: \"static\", photo: \"attach://yote-avatar.png\" }));\n    fd.append(\"yote-avatar.png\", new Blob([buf], { type: \"image/png\" }), \"yote-avatar.png\");\n    const r = await fetch(`https://api.telegram.org/bot${TOK}/setMyProfilePhoto`, { method: \"POST\", body: fd });\n    const j = await r.json().catch(() => ({}));\n    if (j.ok) {\n      writeFileSync(AVATAR_MARKER, new Date().toISOString());\n      log(\"avatar synced to telegram bot profile\");\n    } else {\n      log(`avatar sync failed: ${JSON.stringify(j).slice(0, 160)}`);\n    }\n  } catch (e) {\n    log(`avatar sync error: ${String(e).slice(0, 160)}`);\n  }\n}\n\n'''\ns = s.replace(old_sync, new_sync, 1)\n\n# add /test/fallback endpoint right after the /test route\nold_test = '''app.get(\"/test\", async () => {\n  const r = await testOpenFang();\n  return Response.json(r);\n});'''\nassert old_test in s, \"test route not found\"\nnew_test = old_test + '''\n\n// Exercise the herd fallback path directly (bypasses OpenFang).\napp.get(\"/test/fallback\", async () => {\n  const t = Date.now();\n  try {\n    const text = await herdChat(\"Reply with the single word: yip\");\n    return Response.json({ ok: true, ms: Date.now() - t, reply: text.slice(0, 500) });\n  } catch (e) {\n    return Response.json({ ok: false, ms: Date.now() - t, error: String(e).slice(0, 300) }, { status: 502 });\n  }\n});'''\ns = s.replace(old_test, new_test, 1)\nopen(p, \"w\", encoding=\"utf-8\").write(s)\nprint(\"patched ok\")\nPYEOF\npython3 -c \"compile(open('/tmp/yote_fix3.py',encoding='utf-8').read(),'f','exec'); print('syntax OK')\"",
+    "command": "cat > /tmp/yote_fix3.py <<'PYEOF'\n# -*- coding: utf-8 -*-\np = \"/home/toxic/estate/src/services/yote.ts\"\ns = open(p, encoding=\"utf-8\").read()\n\nold_sync = s[s.find(\"async function syncAvatar()\"):s.find(\"async function proc(\")]\nassert \"async function syncAvatar()\" in s and \"setMyProfilePhoto\" in old_sync, \"sync fn not found\"\n\nnew_sync = '''async function syncAvatar() {\n  // Push the Yote avatar to the Telegram bot profile once. Uses the\n  // InputProfilePhoto form: photo = JSON {type:\"static\", photo:\"attach://...\"}\n  // with the PNG bytes attached under that name. Guarded by a marker file.\n  try {\n    if (!TOK || existsSync(AVATAR_MARKER)) return;\n    if (!existsSync(AVATAR_PATH)) return;\n    const buf = readFileSync(AVATAR_PATH);\n    const fd = new FormData();\n    fd.append(\"photo\", JSON.stringify({ type: \"static\", photo: \"attach://yote-avatar.png\" }));\n    fd.append(\"yote-avatar.png\", new Blob([buf], { type: \"image/png\" }), \"yote-avatar.png\");\n    const r = await fetch(`https://api.telegram.org/bot${TOK}/setMyProfilePhoto`, { method: \"POST\", body: fd });\n    const j = await r.json().catch(() => ({}));\n    if (j.ok) {\n      writeFileSync(AVATAR_MARKER, new Date().toISOString());\n      log(\"avatar synced to telegram bot profile\");\n    } else {\n      log(`avatar sync failed: ${JSON.stringify(j).slice(0, 160)}`);\n    }\n  } catch (e) {\n    log(`avatar sync error: ${String(e).slice(0, 160)}`);\n  }\n}\n\n'''\ns = s.replace(old_sync, new_sync, 1)\n\n# add /test/fallback endpoint right after the /test route\nold_test = '''app.get(\"/test\", async () => {\n  const r = await testOpenFang();\n  return Response.json(r);\n});'''\nassert old_test in s, \"test route not found\"\nnew_test = old_test + '''\n\n// Exercise the herd fallback path directly (bypasses OpenFang).\napp.get(\"/test/fallback\", async () => {\n  const t = Date.now();\n  try {\n    const text = await herdChat(\"Reply with the single word: yip\");\n    return Response.json({ ok: true, ms: Date.now() - t, reply: text.slice(0, 500) });\n  } catch (e) {\n    return Response.json({ ok: false, ms: Date.now() - t, error: String(e).slice(0, 300) }, { status: 502 });\n  }\n});'''\ns = s.replace(old_test, new_test, 1)\nopen(p, \"w\", encoding=\"utf-8\").write(s)\nprint(\"patched ok\")\nPYEOF\npython3 -c \"compile(open('/tmp/yote_fix3.py',encoding='utf-8').read(),'f','exec'); print('syntax OK')\"",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 365,
@@ -1009,7 +1009,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/sovereign && git branch --show-current; git log --oneline -8 --graph | head -12\" 2>&1 | head -16",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/estate && git branch --show-current; git log --oneline -8 --graph | head -12\" 2>&1 | head -16",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 29870,
@@ -1025,7 +1025,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/sovereign && git status --short | head -20; echo ===; git diff --cached --stat | tail -5\" 2>&1 | head -30",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/estate && git status --short | head -20; echo ===; git diff --cached --stat | tail -5\" 2>&1 | head -30",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 5195,
@@ -1041,7 +1041,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/sovereign && sed -i 's/AVATAR_MARKER/AVATAR_MARK/g' src/services/yote.ts && rg -n 'AVATAR_MARK' src/services/yote.ts | head -5 && bun build src/services/yote.ts --target bun --external input --outfile /tmp/yote-check.js 2>&1 | tail -1 && echo BUILD_OK\" 2>&1 | head -10",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/estate && sed -i 's/AVATAR_MARKER/AVATAR_MARK/g' src/services/yote.ts && rg -n 'AVATAR_MARK' src/services/yote.ts | head -5 && bun build src/services/yote.ts --target bun --external input --outfile /tmp/yote-check.js 2>&1 | tail -1 && echo BUILD_OK\" 2>&1 | head -10",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 10052,
@@ -1057,7 +1057,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/sovereign && git log --oneline -5 && git remote -v | head -2\" 2>&1 | head -10",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/estate && git log --oneline -5 && git remote -v | head -2\" 2>&1 | head -10",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 5850,
@@ -1105,7 +1105,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && python3 - <<'PYEOF'\nimport subprocess, base64\nb64 = base64.b64encode(open(\"/tmp/yote_fix6.py\",\"rb\").read()).decode()\ncmd = \"python3 -c \\\"import base64;open('/tmp/yote_fix6.py','wb').write(base64.b64decode('\" + b64 + \"'))\\\" && python3 /tmp/yote_fix6.py && cd /home/toxic/sovereign && bun build src/services/yote.ts --target bun --external input --outfile /tmp/yote-check.js 2>&1 | tail -1 && echo BUILD_OK && git add src/services/yote.ts && PI_ALLOW_LOCKFILE_CHANGE=1 git -c user.name='shingle-agent' -c user.email='shingle@local' commit -q -m 'yote: polish YOTE_SYSTEM literal, drop stale docstring' && git log --oneline -1\"\nr = subprocess.run([\"python3\",\"bin/exec.py\",cmd], capture_output=True, text=True, timeout=120)\nprint(r.stdout[-300:])\nPYEOF",
+    "command": "cd ~/workspace/skills/awrawr-mcp && python3 - <<'PYEOF'\nimport subprocess, base64\nb64 = base64.b64encode(open(\"/tmp/yote_fix6.py\",\"rb\").read()).decode()\ncmd = \"python3 -c \\\"import base64;open('/tmp/yote_fix6.py','wb').write(base64.b64decode('\" + b64 + \"'))\\\" && python3 /tmp/yote_fix6.py && cd /home/toxic/estate && bun build src/services/yote.ts --target bun --external input --outfile /tmp/yote-check.js 2>&1 | tail -1 && echo BUILD_OK && git add src/services/yote.ts && PI_ALLOW_LOCKFILE_CHANGE=1 git -c user.name='shingle-agent' -c user.email='shingle@local' commit -q -m 'yote: polish YOTE_SYSTEM literal, drop stale docstring' && git log --oneline -1\"\nr = subprocess.run([\"python3\",\"bin/exec.py\",cmd], capture_output=True, text=True, timeout=120)\nprint(r.stdout[-300:])\nPYEOF",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 8623,
@@ -1121,7 +1121,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cat > /tmp/yote_fix4.py <<'PYEOF'\n# -*- coding: utf-8 -*-\np = \"/home/toxic/sovereign/src/services/yote.ts\"\ns = open(p, encoding=\"utf-8\").read()\n\n# --- 1. herdChat: multi-model priority list ---\na = s.find(\"async function herdChat(\")\nb = s.find(\"/** OpenFang HTTP chat with herd fallback\")\nassert 0 < a < b, \"herdChat bounds missing\"\nnew_herd = '''async function herdChat(\n  txt: string,\n  maxTokens = 1024,\n): Promise<{ ok: boolean; content: string; model: string }> {\n  // Priority list: first model that answers wins. Env override:\n  // YOTE_FALLBACK_MODELS=\"model-a,model-b\". Defaults cover the herd catalog.\n  const models = (process.env.YOTE_FALLBACK_MODELS ||\n    \"beellama/qwen-flash-128k,qwen-flash-128k,fast,code,gpt-oss\")\n    .split(\",\")\n    .map((m) => m.trim())\n    .filter(Boolean);\n  let lastErr = \"\";\n  for (const model of models) {\n    try {\n      const r = await fetch(`${LLM}/v1/chat/completions`, {\n        method: \"POST\",\n        headers: { \"Content-Type\": \"application/json\" },\n        body: JSON.stringify({\n          model,\n          messages: [\n            { role: \"system\", content: YOTE_SYSTEM },\n            { role: \"user\", content: txt },\n          ],\n          max_tokens: maxTokens,\n          temperature: 0.5,\n        }),\n        signal: AbortSignal.timeout(90000),\n      });\n      const j: any = await r.json().catch(() => ({}));\n      const content: string = j?.choices?.[0]?.message?.content || \"\";\n      if (r.ok && content.trim()) {\n        log(`herdChat ok via ${model}`);\n        return { ok: true, content, model: j.model || model };\n      }\n      lastErr = `${model}: ${j?.error || r.status || \"empty\"}`.slice(0, 120);\n    } catch (e: any) {\n      lastErr = `${model}: ${e.message || e}`.slice(0, 120);\n    }\n  }\n  log(`herdChat all models failed: ${lastErr}`);\n  return { ok: false, content: \"\", model: models[0] || \"none\" };\n}\n\n'''\ns = s[:a] + new_herd + s[b:]\n\n# --- 2. syncAvatar: InputProfilePhoto format (proven live) ---\na = s.find(\"async function syncAvatar()\")\nb = s.find(\"if (TOK) poll()\", a)\nassert 0 < a < b and \"setMyProfilePhoto\" in s[a:b], \"syncAvatar bounds missing\"\nnew_sync = '''async function syncAvatar() {\n  // Push the Yote avatar to the Telegram bot profile once. Bot API\n  // setMyProfilePhoto takes an InputProfilePhoto object:\n  //   photo = JSON {type:\"static\", photo:\"attach://<name>\"}\n  // with the PNG bytes attached under that name. Guarded by a marker file.\n  try {\n    if (!TOK || existsSync(AVATAR_MARKER)) return;\n    if (!existsSync(AVATAR_PATH)) return;\n    const buf = readFileSync(AVATAR_PATH);\n    const fd = new FormData();\n    fd.append(\n      \"photo\",\n      JSON.stringify({ type: \"static\", photo: \"attach://yote-avatar.png\" }),\n    );\n    fd.append(\n      \"yote-avatar.png\",\n      new Blob([buf], { type: \"image/png\" }),\n      \"yote-avatar.png\",\n    );\n    const r = await fetch(`https://api.telegram.org/bot${TOK}/setMyProfilePhoto`, {\n      method: \"POST\",\n      body: fd,\n      signal: AbortSignal.timeout(60000),\n    });\n    const j: any = await r.json().catch(() => ({}));\n    if (j?.ok) {\n      writeFileSync(AVATAR_MARKER, new Date().toISOString());\n      log(\"avatar synced to telegram bot profile\");\n    } else {\n      log(`avatar sync failed: ${JSON.stringify(j).slice(0, 160)}`);\n    }\n  } catch (e: any) {\n    log(`avatar sync err ${(e && e.message) || e}`);\n  }\n}\n\n'''\ns = s[:a] + new_sync + s[b:]\n\n# --- 3. /test/fallback route (manual router, no Telegram side effects) ---\nanchor = '''    return cors(new Response(\"not found\", { status: 404 }));'''\nassert anchor in s, \"router 404 anchor missing\"\nroute = '''    if (p === \"/test/fallback\") {\n      // Exercise the full ofChat path (OpenFang -> herd fallback) without\n      // touching Telegram. Returns which tier answered.\n      const msg = u.searchParams.get(\"msg\") || \"Reply with the single word: yip\";\n      const agent = u.searchParams.get(\"agent\") || DEFAULT_AGENT;\n      const t = Date.now();\n      const text = await ofChat(msg, agent);\n      const via = text.includes(\"(openfang unreachable)\")\n        ? \"herd-fallback\"\n        : text.startsWith(\"openfang err\")\n          ? \"none\"\n          : \"openfang\";\n      return jres({\n        ok: via !== \"none\",\n        via,\n        ms: Date.now() - t,\n        reply: text.slice(0, 600),\n      });\n    }\n\n'''\ns = s.replace(anchor, route + anchor, 1)\nopen(p, \"w\", encoding=\"utf-8\").write(s)\nprint(\"fix4 applied\")\nPYEOF\npython3 -c \"compile(open('/tmp/yote_fix4.py',encoding='utf-8').read(),'f','exec'); print('syntax OK')\"",
+    "command": "cat > /tmp/yote_fix4.py <<'PYEOF'\n# -*- coding: utf-8 -*-\np = \"/home/toxic/estate/src/services/yote.ts\"\ns = open(p, encoding=\"utf-8\").read()\n\n# --- 1. herdChat: multi-model priority list ---\na = s.find(\"async function herdChat(\")\nb = s.find(\"/** OpenFang HTTP chat with herd fallback\")\nassert 0 < a < b, \"herdChat bounds missing\"\nnew_herd = '''async function herdChat(\n  txt: string,\n  maxTokens = 1024,\n): Promise<{ ok: boolean; content: string; model: string }> {\n  // Priority list: first model that answers wins. Env override:\n  // YOTE_FALLBACK_MODELS=\"model-a,model-b\". Defaults cover the herd catalog.\n  const models = (process.env.YOTE_FALLBACK_MODELS ||\n    \"beellama/qwen-flash-128k,qwen-flash-128k,fast,code,gpt-oss\")\n    .split(\",\")\n    .map((m) => m.trim())\n    .filter(Boolean);\n  let lastErr = \"\";\n  for (const model of models) {\n    try {\n      const r = await fetch(`${LLM}/v1/chat/completions`, {\n        method: \"POST\",\n        headers: { \"Content-Type\": \"application/json\" },\n        body: JSON.stringify({\n          model,\n          messages: [\n            { role: \"system\", content: YOTE_SYSTEM },\n            { role: \"user\", content: txt },\n          ],\n          max_tokens: maxTokens,\n          temperature: 0.5,\n        }),\n        signal: AbortSignal.timeout(90000),\n      });\n      const j: any = await r.json().catch(() => ({}));\n      const content: string = j?.choices?.[0]?.message?.content || \"\";\n      if (r.ok && content.trim()) {\n        log(`herdChat ok via ${model}`);\n        return { ok: true, content, model: j.model || model };\n      }\n      lastErr = `${model}: ${j?.error || r.status || \"empty\"}`.slice(0, 120);\n    } catch (e: any) {\n      lastErr = `${model}: ${e.message || e}`.slice(0, 120);\n    }\n  }\n  log(`herdChat all models failed: ${lastErr}`);\n  return { ok: false, content: \"\", model: models[0] || \"none\" };\n}\n\n'''\ns = s[:a] + new_herd + s[b:]\n\n# --- 2. syncAvatar: InputProfilePhoto format (proven live) ---\na = s.find(\"async function syncAvatar()\")\nb = s.find(\"if (TOK) poll()\", a)\nassert 0 < a < b and \"setMyProfilePhoto\" in s[a:b], \"syncAvatar bounds missing\"\nnew_sync = '''async function syncAvatar() {\n  // Push the Yote avatar to the Telegram bot profile once. Bot API\n  // setMyProfilePhoto takes an InputProfilePhoto object:\n  //   photo = JSON {type:\"static\", photo:\"attach://<name>\"}\n  // with the PNG bytes attached under that name. Guarded by a marker file.\n  try {\n    if (!TOK || existsSync(AVATAR_MARKER)) return;\n    if (!existsSync(AVATAR_PATH)) return;\n    const buf = readFileSync(AVATAR_PATH);\n    const fd = new FormData();\n    fd.append(\n      \"photo\",\n      JSON.stringify({ type: \"static\", photo: \"attach://yote-avatar.png\" }),\n    );\n    fd.append(\n      \"yote-avatar.png\",\n      new Blob([buf], { type: \"image/png\" }),\n      \"yote-avatar.png\",\n    );\n    const r = await fetch(`https://api.telegram.org/bot${TOK}/setMyProfilePhoto`, {\n      method: \"POST\",\n      body: fd,\n      signal: AbortSignal.timeout(60000),\n    });\n    const j: any = await r.json().catch(() => ({}));\n    if (j?.ok) {\n      writeFileSync(AVATAR_MARKER, new Date().toISOString());\n      log(\"avatar synced to telegram bot profile\");\n    } else {\n      log(`avatar sync failed: ${JSON.stringify(j).slice(0, 160)}`);\n    }\n  } catch (e: any) {\n    log(`avatar sync err ${(e && e.message) || e}`);\n  }\n}\n\n'''\ns = s[:a] + new_sync + s[b:]\n\n# --- 3. /test/fallback route (manual router, no Telegram side effects) ---\nanchor = '''    return cors(new Response(\"not found\", { status: 404 }));'''\nassert anchor in s, \"router 404 anchor missing\"\nroute = '''    if (p === \"/test/fallback\") {\n      // Exercise the full ofChat path (OpenFang -> herd fallback) without\n      // touching Telegram. Returns which tier answered.\n      const msg = u.searchParams.get(\"msg\") || \"Reply with the single word: yip\";\n      const agent = u.searchParams.get(\"agent\") || DEFAULT_AGENT;\n      const t = Date.now();\n      const text = await ofChat(msg, agent);\n      const via = text.includes(\"(openfang unreachable)\")\n        ? \"herd-fallback\"\n        : text.startsWith(\"openfang err\")\n          ? \"none\"\n          : \"openfang\";\n      return jres({\n        ok: via !== \"none\",\n        via,\n        ms: Date.now() - t,\n        reply: text.slice(0, 600),\n      });\n    }\n\n'''\ns = s.replace(anchor, route + anchor, 1)\nopen(p, \"w\", encoding=\"utf-8\").write(s)\nprint(\"fix4 applied\")\nPYEOF\npython3 -c \"compile(open('/tmp/yote_fix4.py',encoding='utf-8').read(),'f','exec'); print('syntax OK')\"",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 74,
@@ -1137,7 +1137,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"cd /home/toxic/sovereign && bun -e 'const fs=await import(\\\"fs\\\");const os=await import(\\\"os\\\");for(const f of [\\\"/home/toxic/sovereign/.env\\\",os.homedir()+\\\"/.secrets/yote.env\\\",os.homedir()+\\\"/.config/sovereign/yote.env\\\"]){try{for(const l of fs.readFileSync(f,\\\"utf8\\\").split(\\\"\\n\\\")){const m=l.match(/^YOTE_TELEGRAM_BOT_TOKEN=(.*)$/);if(m)process.env.YOTE_TELEGRAM_BOT_TOKEN=m[1].trim();}}catch{}} await import(\\\"/tmp/yote_method_probe.ts\\\");' 2>&1 | head -4\" 2>&1 | head -8",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"cd /home/toxic/estate && bun -e 'const fs=await import(\\\"fs\\\");const os=await import(\\\"os\\\");for(const f of [\\\"/home/toxic/estate/.env\\\",os.homedir()+\\\"/.secrets/yote.env\\\",os.homedir()+\\\"/.config/sovereign/yote.env\\\"]){try{for(const l of fs.readFileSync(f,\\\"utf8\\\").split(\\\"\\n\\\")){const m=l.match(/^YOTE_TELEGRAM_BOT_TOKEN=(.*)$/);if(m)process.env.YOTE_TELEGRAM_BOT_TOKEN=m[1].trim();}}catch{}} await import(\\\"/tmp/yote_method_probe.ts\\\");' 2>&1 | head -4\" 2>&1 | head -8",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 8653,
@@ -1153,7 +1153,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/sovereign && git add src/services/yote.ts && PI_ALLOW_LOCKFILE_CHANGE=1 git -c user.name='shingle-agent' -c user.email='shingle@local' commit -q -m 'yote: fix AVATAR_MARK name in syncAvatar (was AVATAR_MARKER)' && git log --oneline -1\" 2>&1 | head -4",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 60 python3 bin/exec.py \"cd /home/toxic/estate && git add src/services/yote.ts && PI_ALLOW_LOCKFILE_CHANGE=1 git -c user.name='shingle-agent' -c user.email='shingle@local' commit -q -m 'yote: fix AVATAR_MARK name in syncAvatar (was AVATAR_MARKER)' && git log --oneline -1\" 2>&1 | head -4",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 5905,
@@ -1185,7 +1185,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 40 python3 bin/exec.py \"rg -n '\\\"/\\\"' /home/toxic/sovereign/src/services/yote.ts | head -5; echo ===; rg -n -B2 -A14 'if \\(p === \\\"/\\\"\\)' /home/toxic/sovereign/src/services/yote.ts | head -30\" 2>&1 | head -36",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 40 python3 bin/exec.py \"rg -n '\\\"/\\\"' /home/toxic/estate/src/services/yote.ts | head -5; echo ===; rg -n -B2 -A14 'if \\(p === \\\"/\\\"\\)' /home/toxic/estate/src/services/yote.ts | head -30\" 2>&1 | head -36",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 11911,
@@ -1201,7 +1201,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && python3 - <<'PYEOF'\nimport subprocess\ncmd = \"cd /home/toxic/sovereign && setsid nohup bun run src/services/yote.ts >> logs/yote-service.log 2>&1 < /dev/null & disown; echo launched\"\ntry:\n    r = subprocess.run([\"python3\",\"bin/exec.py\",cmd], capture_output=True, text=True, timeout=45)\n    print(r.stdout[-200:])\nexcept Exception as e:\n    print(\"bridge returned:\", type(e).__name__, \"(relaunch likely happened)\")\nPYEOF",
+    "command": "cd ~/workspace/skills/awrawr-mcp && python3 - <<'PYEOF'\nimport subprocess\ncmd = \"cd /home/toxic/estate && setsid nohup bun run src/services/yote.ts >> logs/yote-service.log 2>&1 < /dev/null & disown; echo launched\"\ntry:\n    r = subprocess.run([\"python3\",\"bin/exec.py\",cmd], capture_output=True, text=True, timeout=45)\n    print(r.stdout[-200:])\nexcept Exception as e:\n    print(\"bridge returned:\", type(e).__name__, \"(relaunch likely happened)\")\nPYEOF",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 45166,
@@ -1217,7 +1217,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 110 python3 bin/exec.py \"cd /home/toxic/sovereign && git push archive yote-repair 2>&1 | tail -2; tail -1 /tmp/idle_transfer.log\" 2>&1 | head -5",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 110 python3 bin/exec.py \"cd /home/toxic/estate && git push archive yote-repair 2>&1 | tail -2; tail -1 /tmp/idle_transfer.log\" 2>&1 | head -5",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 13976,
@@ -1233,7 +1233,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && python3 - <<'PYEOF'\nimport subprocess, base64\nb64 = base64.b64encode(open(\"/tmp/yote_fix5.py\",\"rb\").read()).decode()\ncmd = \"python3 -c \\\"import base64;open('/tmp/yote_fix5.py','wb').write(base64.b64decode('\" + b64 + \"'))\\\" && python3 /tmp/yote_fix5.py && cd /home/toxic/sovereign && bun build src/services/yote.ts --target bun --external input --outfile /tmp/yote-check.js 2>&1 | tail -1 && echo BUILD_OK\"\nr = subprocess.run([\"python3\",\"bin/exec.py\",cmd], capture_output=True, text=True, timeout=120)\nprint(r.stdout[-300:])\nPYEOF",
+    "command": "cd ~/workspace/skills/awrawr-mcp && python3 - <<'PYEOF'\nimport subprocess, base64\nb64 = base64.b64encode(open(\"/tmp/yote_fix5.py\",\"rb\").read()).decode()\ncmd = \"python3 -c \\\"import base64;open('/tmp/yote_fix5.py','wb').write(base64.b64decode('\" + b64 + \"'))\\\" && python3 /tmp/yote_fix5.py && cd /home/toxic/estate && bun build src/services/yote.ts --target bun --external input --outfile /tmp/yote-check.js 2>&1 | tail -1 && echo BUILD_OK\"\nr = subprocess.run([\"python3\",\"bin/exec.py\",cmd], capture_output=True, text=True, timeout=120)\nprint(r.stdout[-300:])\nPYEOF",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 9588,
@@ -1249,7 +1249,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"rg -n '^\\s{2}\\\"[a-z]' /home/toxic/sovereign/config/herd.yaml | head -40; echo ===; rg -n 'LLAMA_BIN|llama-server' /home/toxic/sovereign/config/herd.yaml | head -6\" 2>&1 | head -55",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 55 python3 bin/exec.py \"rg -n '^\\s{2}\\\"[a-z]' /home/toxic/estate/config/herd.yaml | head -40; echo ===; rg -n 'LLAMA_BIN|llama-server' /home/toxic/estate/config/herd.yaml | head -6\" 2>&1 | head -55",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 3664,
@@ -1265,7 +1265,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 40 python3 bin/exec.py \"rg -n 'AVATAR' /home/toxic/sovereign/src/services/yote.ts | head -10\" 2>&1 | head -12",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 40 python3 bin/exec.py \"rg -n 'AVATAR' /home/toxic/estate/src/services/yote.ts | head -10\" 2>&1 | head -12",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 10418,
@@ -1281,7 +1281,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd /tmp && python3 - <<'PYEOF'\ns = open(\"/tmp/yote_fix3.py\", encoding=\"utf-8\").read()\ns = s.replace(\n  'old_sync = s[s.find(\"async function syncAvatar()\"):s.find(\"async function proc(\")]',\n  'a = s.find(\"async function syncAvatar()\")\\n'\n  'b = s.find(\"if (TOK) poll()\", a)\\n'\n  'assert a > 0 and b > a, \"sync fn bounds not found\"\\n'\n  'old_sync = s[a:b]'\n)\ns = s.replace(\n  'assert \"async function syncAvatar()\" in s and \"setMyProfilePhoto\" in old_sync, \"sync fn not found\"',\n  'assert \"setMyProfilePhoto\" in old_sync, \"sync fn body not found\"'\n)\nopen(\"/tmp/yote_fix3.py\",\"w\",encoding=\"utf-8\").write(s)\nprint(\"fix3 corrected\")\nPYEOF\ncd ~/workspace/skills/awrawr-mcp && python3 - <<'PYEOF'\nimport subprocess, base64\nb64 = base64.b64encode(open(\"/tmp/yote_fix3.py\",\"rb\").read()).decode()\ncmd = \"python3 -c \\\"import base64;open('/tmp/yote_fix3.py','wb').write(base64.b64decode('\" + b64 + \"'))\\\" && python3 /tmp/yote_fix3.py && cd /home/toxic/sovereign && bun build src/services/yote.ts --target bun --external input --outfile /tmp/yote-check.js 2>&1 | tail -2 && echo BUILD_OK\"\nr = subprocess.run([\"python3\",\"bin/exec.py\",cmd], capture_output=True, text=True, timeout=120)\nprint(r.stdout[-400:])\nPYEOF",
+    "command": "cd /tmp && python3 - <<'PYEOF'\ns = open(\"/tmp/yote_fix3.py\", encoding=\"utf-8\").read()\ns = s.replace(\n  'old_sync = s[s.find(\"async function syncAvatar()\"):s.find(\"async function proc(\")]',\n  'a = s.find(\"async function syncAvatar()\")\\n'\n  'b = s.find(\"if (TOK) poll()\", a)\\n'\n  'assert a > 0 and b > a, \"sync fn bounds not found\"\\n'\n  'old_sync = s[a:b]'\n)\ns = s.replace(\n  'assert \"async function syncAvatar()\" in s and \"setMyProfilePhoto\" in old_sync, \"sync fn not found\"',\n  'assert \"setMyProfilePhoto\" in old_sync, \"sync fn body not found\"'\n)\nopen(\"/tmp/yote_fix3.py\",\"w\",encoding=\"utf-8\").write(s)\nprint(\"fix3 corrected\")\nPYEOF\ncd ~/workspace/skills/awrawr-mcp && python3 - <<'PYEOF'\nimport subprocess, base64\nb64 = base64.b64encode(open(\"/tmp/yote_fix3.py\",\"rb\").read()).decode()\ncmd = \"python3 -c \\\"import base64;open('/tmp/yote_fix3.py','wb').write(base64.b64decode('\" + b64 + \"'))\\\" && python3 /tmp/yote_fix3.py && cd /home/toxic/estate && bun build src/services/yote.ts --target bun --external input --outfile /tmp/yote-check.js 2>&1 | tail -2 && echo BUILD_OK\"\nr = subprocess.run([\"python3\",\"bin/exec.py\",cmd], capture_output=True, text=True, timeout=120)\nprint(r.stdout[-400:])\nPYEOF",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 92912,
@@ -1297,7 +1297,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"rg -n 'PUP_TRIX_ID|async function testE2E|YOTE_TARGET_USER' /home/toxic/sovereign/src/services/yote.ts | head -12; echo ===; sed -n '/async function testE2E/,/^}/p' /home/toxic/sovereign/src/services/yote.ts | head -40\" 2>&1 | head -60",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 50 python3 bin/exec.py \"rg -n 'PUP_TRIX_ID|async function testE2E|YOTE_TARGET_USER' /home/toxic/estate/src/services/yote.ts | head -12; echo ===; sed -n '/async function testE2E/,/^}/p' /home/toxic/estate/src/services/yote.ts | head -40\" 2>&1 | head -60",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 6725,
@@ -1313,7 +1313,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && python3 - <<'PYEOF'\nimport subprocess, base64\nb64 = base64.b64encode(open(\"/tmp/yote_fix4.py\",\"rb\").read()).decode()\ncmd = \"python3 -c \\\"import base64;open('/tmp/yote_fix4.py','wb').write(base64.b64decode('\" + b64 + \"'))\\\" && python3 /tmp/yote_fix4.py && cd /home/toxic/sovereign && bun build src/services/yote.ts --target bun --external input --outfile /tmp/yote-check.js 2>&1 | tail -2 && echo BUILD_OK\"\nr = subprocess.run([\"python3\",\"bin/exec.py\",cmd], capture_output=True, text=True, timeout=120)\nprint(r.stdout[-400:])\nPYEOF",
+    "command": "cd ~/workspace/skills/awrawr-mcp && python3 - <<'PYEOF'\nimport subprocess, base64\nb64 = base64.b64encode(open(\"/tmp/yote_fix4.py\",\"rb\").read()).decode()\ncmd = \"python3 -c \\\"import base64;open('/tmp/yote_fix4.py','wb').write(base64.b64decode('\" + b64 + \"'))\\\" && python3 /tmp/yote_fix4.py && cd /home/toxic/estate && bun build src/services/yote.ts --target bun --external input --outfile /tmp/yote-check.js 2>&1 | tail -2 && echo BUILD_OK\"\nr = subprocess.run([\"python3\",\"bin/exec.py\",cmd], capture_output=True, text=True, timeout=120)\nprint(r.stdout[-400:])\nPYEOF",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 4358,
@@ -1345,7 +1345,7 @@
   },
   {
     "backgrounded": false,
-    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 110 python3 bin/exec.py \"cd /home/toxic/sovereign && git push -u origin yote-repair 2>&1 | head -12\" 2>&1 | head -16",
+    "command": "cd ~/workspace/skills/awrawr-mcp && timeout 110 python3 bin/exec.py \"cd /home/toxic/estate && git push -u origin yote-repair 2>&1 | head -12\" 2>&1 | head -16",
     "coreDumped": false,
     "cwd": "/home/hatch",
     "durationMs": 45231,

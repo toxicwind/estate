@@ -1,4 +1,4 @@
-# AGENTS.md — Sovereign Control Plane (`/home/toxic/sovereign`)
+# AGENTS.md — Sovereign Control Plane (`/home/toxic/estate`)
 
 **Role**: Core control plane & orchestration layer for the Sovereign ecosystem.
 **Stack**: TypeScript (Bun), Python, mise, pitchfork, Kafka, Qdrant, Prometheus/Grafana.
@@ -146,7 +146,7 @@ opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable
 
 ## 🔌 Port SSOT
 
-`/home/toxic/sovereign/config/ports.env` — all 25xxx, never invent.
+`/home/toxic/estate/config/ports.env` — all 25xxx, never invent.
 
 ---
 

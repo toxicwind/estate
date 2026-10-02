@@ -23,13 +23,13 @@ export async function localAudit(
     try {
       const stats = statSync(dir);
       if (!stats.isDirectory()) {
-        allRecords.push({ name: dir.split("/").pop() || "unknown", path: dir, area: dir.startsWith("/home/toxic/sovereign") ? "sovereign" : "projects", isGit: false, status: "missing", symlinks: [], issues: [] });
+        allRecords.push({ name: dir.split("/").pop() || "unknown", path: dir, area: dir.startsWith("/home/toxic/estate") ? "sovereign" : "projects", isGit: false, status: "missing", symlinks: [], issues: [] });
         continue;
       }
-      const area = dir.startsWith("/home/toxic/sovereign") ? "sovereign" : "projects";
+      const area = dir.startsWith("/home/toxic/estate") ? "sovereign" : "projects";
       allRecords = [...allRecords, ...scanDirSync(dir, area)];
     } catch {
-      allRecords.push({ name: dir.split("/").pop() || "unknown", path: dir, area: dir.startsWith("/home/toxic/sovereign") ? "sovereign" : "projects", isGit: false, status: "missing", symlinks: [], issues: [] });
+      allRecords.push({ name: dir.split("/").pop() || "unknown", path: dir, area: dir.startsWith("/home/toxic/estate") ? "sovereign" : "projects", isGit: false, status: "missing", symlinks: [], issues: [] });
     }
   }
 

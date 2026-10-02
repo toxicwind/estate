@@ -43,7 +43,7 @@ const DAEMONS: Daemon[] = [
   {
     id: "yote",
     health: "http://127.0.0.1:25102/health",
-    touch: "/home/toxic/sovereign/yote/src/yote.ts",
+    touch: "/home/toxic/estate/yote/src/yote.ts",
     mechanism: "bun-hot",
   },
   {
@@ -54,13 +54,13 @@ const DAEMONS: Daemon[] = [
   {
     id: "llama-swap",
     health: "http://127.0.0.1:25100/health",
-    touch: "/home/toxic/sovereign/tools/llama-swap/llama-swap-ts/router.ts",
+    touch: "/home/toxic/estate/tools/llama-swap/llama-swap-ts/router.ts",
     mechanism: "bun-hot",
   },
   {
     id: "null-g-proxy",
     health: "http://127.0.0.1:25107/health",
-    touch: "/home/toxic/sovereign/tools/null-g-proxy/src/index.ts",
+    touch: "/home/toxic/estate/tools/null-g-proxy/src/index.ts",
     mechanism: "bun-hot",
   },
   {
@@ -83,7 +83,7 @@ const DAEMONS: Daemon[] = [
   {
     id: "mesh-hub",
     health: "http://127.0.0.1:25115/health",
-    touch: "/home/toxic/sovereign/src/services/mesh-hub.ts",
+    touch: "/home/toxic/estate/src/services/mesh-hub.ts",
     mechanism: "bun-hot",
   },
   {
@@ -199,7 +199,7 @@ for (const d of DAEMONS) {
 
   if (d.mechanism === "prom-reload") {
     // touch prometheus.yml and POST reload on backend
-    const yml = "/home/toxic/sovereign/prometheus.yml";
+    const yml = "/home/toxic/estate/prometheus.yml";
     if (existsSync(yml)) {
       const t = readFileSync(yml, "utf8");
       writeFileSync(
@@ -243,13 +243,13 @@ for (const d of DAEMONS) {
 
   // pitchfork-restart
   Bun.spawnSync(["pitchfork", "stop", d.id], {
-    cwd: "/home/toxic/sovereign",
+    cwd: "/home/toxic/estate",
     stdout: "pipe",
     stderr: "pipe",
   });
   await Bun.sleep(400);
   const start = Bun.spawnSync(["pitchfork", "start", d.id], {
-    cwd: "/home/toxic/sovereign",
+    cwd: "/home/toxic/estate",
     stdout: "pipe",
     stderr: "pipe",
   });

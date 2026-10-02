@@ -139,6 +139,6 @@ sovereign (`pitchfork start mcpproxy` / `mise run restart-mcpproxy` -> `mcpproxy
 
 ## 🔌 Port SSOT
 
-`/home/toxic/sovereign/config/ports.env` — all 25xxx, never invent.
+`/home/toxic/estate/config/ports.env` — all 25xxx, never invent.
 
 ---

@@ -6,7 +6,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/bin/bash /home/toxic/sovereign/tools/fleet-ops/fleet-watchdog/sweepd.sh
+ExecStart=/bin/bash /home/toxic/estate/tools/fleet-ops/fleet-watchdog/sweepd.sh
 Restart=always
 RestartSec=10
 # sweepd.sh loops sweep.py every 60s (sovereign-chat presence TTL is 120s,

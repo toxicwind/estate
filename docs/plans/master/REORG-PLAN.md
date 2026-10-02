@@ -34,7 +34,7 @@ Ember agent home and `docs/` for hatch/bridge/cell docs), `scratch/` (explicitly
 ## 1. Target tree
 
 ```
-/home/toxic/sovereign/
+/home/toxic/estate/
 ├── hatch/                              # NEW — hatch (cell) side of the world, material that lives on yote
 │   ├── agents/
 │   │   └── ember/                      # ← /home/toxic/shingle MOVED here (the Ember operational home)
@@ -83,17 +83,17 @@ pitchfork-supervised yote service inside the cell-material tree, confusing the n
 
 | # | Source | Dest | Kind |
 |---|--------|------|------|
-| 1 | `/home/toxic/shingle` (whole tree) | `/home/toxic/sovereign/hatch/agents/ember` | `mv` (rename(2)) |
+| 1 | `/home/toxic/shingle` (whole tree) | `/home/toxic/estate/hatch/agents/ember` | `mv` (rename(2)) |
 | 1a | *(inside row 1's tree — rides along, verified 2026-09-20)* runner-profiles shipment: `squawk-root/runners.yml` (v1, 6 profiles), `bin/squawk-profile`, `bin/squawk-trace`, `bin/squawk-follow`, 5 new `0600` keys in `squawk-root/keys/`, updated `bin/squawk` (`--profile`, `FLEET_KEYS_DIR=$ROOT/keys` bugfix) | same relative paths under ember home | rides in the atomic `mv`; all paths resolve via `$SQUAWK_ROOT` + `readlink -f`/`realpath` (reorg-safe by design) |
-| 2 | *(new)* `/home/toxic/shingle` | symlink → `/home/toxic/sovereign/hatch/agents/ember` | compat |
-| 3 | `/home/toxic/sovereign/shingle-workspace/awrawr_ws_exec.py` | `/home/toxic/sovereign/bridge/awrawr_ws_exec.py` | `cp -p` first (see §6), header note updated |
-| 4 | `/home/toxic/sovereign/shingle-workspace/bin/*` (7 tools, zero external refs — verified 2026-09-19) | `/home/toxic/sovereign/bin/` | `mv` per file (collision-checked) |
-| 5 | `/home/toxic/sovereign/shingle-workspace/bridge-docs/` | `/home/toxic/sovereign/hatch/docs/bridge-docs/` | `mv` |
-| 6 | `/home/toxic/sovereign/shingle-workspace` (remainder) | `/home/toxic/sovereign/scratch` | `mv` (rename(2)) |
-| 7 | *(new)* `/home/toxic/sovereign/shingle-workspace` | symlink → `scratch` | compat |
-| 8 | `/home/toxic/sovereign/docs/ws-exec-8379-audit-20260914.md` | `/home/toxic/sovereign/hatch/docs/` | `git mv` |
-| 9 | `/home/toxic/sovereign/docs/connector-bridge-routing-d4734168.md` | `/home/toxic/sovereign/hatch/docs/` | `git mv` |
-| 10 | `/home/toxic/sovereign/docs/Meta/Muse AI/Jarvis/runtime-cell.md` | `/home/toxic/sovereign/hatch/docs/runtime-cell.md` | `git mv` |
+| 2 | *(new)* `/home/toxic/shingle` | symlink → `/home/toxic/estate/hatch/agents/ember` | compat |
+| 3 | `/home/toxic/estate/shingle-workspace/awrawr_ws_exec.py` | `/home/toxic/estate/bridge/awrawr_ws_exec.py` | `cp -p` first (see §6), header note updated |
+| 4 | `/home/toxic/estate/shingle-workspace/bin/*` (7 tools, zero external refs — verified 2026-09-19) | `/home/toxic/estate/bin/` | `mv` per file (collision-checked) |
+| 5 | `/home/toxic/estate/shingle-workspace/bridge-docs/` | `/home/toxic/estate/hatch/docs/bridge-docs/` | `mv` |
+| 6 | `/home/toxic/estate/shingle-workspace` (remainder) | `/home/toxic/estate/scratch` | `mv` (rename(2)) |
+| 7 | *(new)* `/home/toxic/estate/shingle-workspace` | symlink → `scratch` | compat |
+| 8 | `/home/toxic/estate/docs/ws-exec-8379-audit-20260914.md` | `/home/toxic/estate/hatch/docs/` | `git mv` |
+| 9 | `/home/toxic/estate/docs/connector-bridge-routing-d4734168.md` | `/home/toxic/estate/hatch/docs/` | `git mv` |
+| 10 | `/home/toxic/estate/docs/Meta/Muse AI/Jarvis/runtime-cell.md` | `/home/toxic/estate/hatch/docs/runtime-cell.md` | `git mv` |
 | 11 | `pitchfork.toml` (in place) | 3 path updates + header fix (§6) | hand-edit (generator retired) |
 | 12 | `tools/fleet-ops/cron-mirror/README.md` historical note, `xfer-report-20260915/REPORT.md` | — | left as history; still resolves via symlink |
 | 13 | `bench-wt-tau/pitchfork.toml` (stale worktree copy, `.shingle` refs) | — | left; non-live worktree artifact |
@@ -114,7 +114,7 @@ pitchfork-supervised yote service inside the cell-material tree, confusing the n
 
 ## 3. Survey findings (what the plan is built on — verified live 2026-09-19)
 
-- **Supervisor:** `pitchfork supervisor run --boot` (PID 1006), unit `pitchfork.service` with `WorkingDirectory=/home/toxic/sovereign` → every `dir = "."` in pitchfork.toml = `/home/toxic/sovereign`. Relative `dir`s (e.g. `projects/yote`) resolve under it.
+- **Supervisor:** `pitchfork supervisor run --boot` (PID 1006), unit `pitchfork.service` with `WorkingDirectory=/home/toxic/estate` → every `dir = "."` in pitchfork.toml = `/home/toxic/estate`. Relative `dir`s (e.g. `projects/yote`) resolve under it.
 - **Live `.shingle` references (production):**
   - `pitchfork.toml:290` — `[daemons.squawk-feed]` `run = "exec /home/toxic/.shingle/squawk-relay/run-feed.sh"`
   - `pitchfork.toml:350` — `[daemons.squawk-ws]` `env SQUAWK_CHAT_ROOT="/home/toxic/.shingle/squawk-root"`
@@ -127,7 +127,7 @@ pitchfork-supervised yote service inside the cell-material tree, confusing the n
   - hatch-side `~/workspace/bin/squawk:19` — `SQUAWK_ROOT = "/home/toxic/.shingle/squawk-root"` (publishes via bridge; unaffected, resolves through symlink)
   - `shingle/squawk-health.sh`, `shingle/directives.md`, `shingle/todos.md`, `shingle/coord/work/*` — internal self-refs (append-only logs; left as history)
 - **Live `shingle-workspace` references (production):**
-  - `pitchfork.toml:367` — `[daemons.awrawr-ws-exec]` `run = "... /home/toxic/sovereign/shingle-workspace/awrawr_ws_exec.py"`
+  - `pitchfork.toml:367` — `[daemons.awrawr-ws-exec]` `run = "... /home/toxic/estate/shingle-workspace/awrawr_ws_exec.py"`
   - `tools/stash-guard/stash-guard.py:82` — exclude list contains `"shingle-workspace/"` (gitignore-style patterns
     matched against `git status` paths, NOT an inotify watch; real path is `tools/stash-guard/`, the plan's
     `tools/fleet-ops/` prefix was wrong — corrected 2026-09-20)
@@ -140,7 +140,7 @@ pitchfork-supervised yote service inside the cell-material tree, confusing the n
 - **Cron:** no cron daemon on yote (`crontab` not installed); scheduling is systemd user timers + hatch-side crons
   (bridge-watchdog 5m, squawk-monitor 5m). `squawk-watchdog.timer` runs `/home/toxic/.local/share/squawk-watchdog/squawk-watchdog.sh`
   (no `.shingle` refs — verified).
-- **Git:** `/home/toxic/sovereign` is a git repo with uncommitted changes, including `M shingle-workspace/awrawr_ws_exec.py`
+- **Git:** `/home/toxic/estate` is a git repo with uncommitted changes, including `M shingle-workspace/awrawr_ws_exec.py`
   (the live bridge). `docs/Meta/Muse AI/Jarvis/runtime-cell.md` is UNTRACKED (`git mv` refuses untracked sources —
   the script uses a track-aware move helper). Baseline commit+push is step 1 of execution.
 - **pitchfork `awrawr-ws-exec` is in a respawn storm (observed 2026-09-20):** supervisor marks the daemon `errored`
@@ -171,7 +171,7 @@ then commit + push (push may WARN-fail if yote git auth is down -- commits stay 
 **Phase 2 — build new homes:** `mkdir -p hatch/agents hatch/docs bridge`; drop `README.md` in each.
 
 **Phase 3 — Ember move (atomic rename):** `mv /home/toxic/shingle hatch/agents/ember` then
-`ln -s /home/toxic/sovereign/hatch/agents/ember /home/toxic/shingle`. Verify inode manifest: every pre-move path
+`ln -s /home/toxic/estate/hatch/agents/ember /home/toxic/shingle`. Verify inode manifest: every pre-move path
 keeps its inode (concurrent additions tolerated — 8 workers append to these trees). The runner-profiles shipment
 (§2 row 1a) rides along in this `mv`; its `readlink -f`/`realpath` resolution keeps working through the symlink chain.
 
@@ -208,12 +208,12 @@ the restart it scheduled hasn't fired yet when the script exits.
 
 | Old path (must keep working) | Resolves to | Mechanism |
 |---|---|---|
-| `/home/toxic/shingle` | `/home/toxic/sovereign/hatch/agents/ember` | new symlink (replaces moved dir) |
+| `/home/toxic/shingle` | `/home/toxic/estate/hatch/agents/ember` | new symlink (replaces moved dir) |
 | `/home/toxic/.shingle` | → `shingle` → ember home | existing relative symlink, untouched |
 | `/home/toxic/.shingle/squawk-root` | `…/hatch/agents/ember/squawk-root` | via chain above |
 | `/home/toxic/.shingle/squawk-relay/run-feed.sh` | `…/hatch/agents/ember/squawk-relay/run-feed.sh` | via chain above |
-| `/home/toxic/sovereign/shingle-workspace` | `/home/toxic/sovereign/scratch` | new symlink |
-| `/home/toxic/sovereign/shingle-workspace/awrawr_ws_exec.py` | `/home/toxic/sovereign/bridge/awrawr_ws_exec.py` | dir symlink → `scratch/awrawr_ws_exec.py` → file symlink `../bridge/…` (installed Phase 8) |
+| `/home/toxic/estate/shingle-workspace` | `/home/toxic/estate/scratch` | new symlink |
+| `/home/toxic/estate/shingle-workspace/awrawr_ws_exec.py` | `/home/toxic/estate/bridge/awrawr_ws_exec.py` | dir symlink → `scratch/awrawr_ws_exec.py` → file symlink `../bridge/…` (installed Phase 8) |
 | hatch-side `~/workspace/bin/squawk` default `SQUAWK_ROOT` | unchanged path, resolves via chain | no change needed |
 
 ---
@@ -240,9 +240,9 @@ There is no window where the daemon points at a missing file: at every instant, 
 ## 7. Verification checklist
 
 **On yote (script does these):**
-- [ ] `realpath /home/toxic/shingle` = `/home/toxic/sovereign/hatch/agents/ember`
+- [ ] `realpath /home/toxic/shingle` = `/home/toxic/estate/hatch/agents/ember`
 - [ ] `realpath /home/toxic/.shingle/squawk-root` = `…/hatch/agents/ember/squawk-root`
-- [ ] `realpath /home/toxic/sovereign/shingle-workspace` = `/home/toxic/sovereign/scratch`
+- [ ] `realpath /home/toxic/estate/shingle-workspace` = `/home/toxic/estate/scratch`
 - [ ] inode manifest: `squawk-root/` and channel file inodes identical before/after (inotify continuity)
 - [ ] `python3 -c "import tomllib; tomllib.load(open('pitchfork.toml','rb'))"` clean
 - [ ] `pitchfork list` shows `awrawr-ws-exec`, `squawk-ws`, `squawk-feed` (ids as before)
@@ -252,7 +252,7 @@ There is no window where the daemon points at a missing file: at every instant, 
 - [ ] `pitchfork restart sovereign/awrawr-ws-exec` issued as its own bridge call AFTER the script returned (fire-and-forget)
 - [ ] WS handshake to `https://github-mcp-host.tailc9ac71.ts.net/exec-ws` → **101** (bridge live on new path)
 - [ ] `exec.py 'echo BRIDGE-LIVE'` succeeds (proves the new canonical path executes)
-- [ ] `exec.py 'md5sum /home/toxic/sovereign/bridge/awrawr_ws_exec.py'` matches the committed blob
+- [ ] `exec.py 'md5sum /home/toxic/estate/bridge/awrawr_ws_exec.py'` matches the committed blob
 - [ ] squawk publish round-trip: `squawk send fleet` (hatch CLI) → message file appears under new ember home; `squawk read fleet` returns it (proves symlink chain + inotify)
 - [ ] runner-profiles: `exec.py '/home/toxic/shingle/bin/squawk profiles'` lists 6 profiles; `runners.yml` resolves via `readlink -f` at `…/hatch/agents/ember/squawk-root/runners.yml`; `FLEET_KEYS_DIR` = ember-home `squawk-root/keys`; a `--profile` post signs correctly (the wrapper's keys-dir bugfix survives the move)
 - [ ] `exec.py 'systemctl --user is-active pitchfork'` and `pitchfork` daemon statuses green; `:25147` (squawk-ws) and `:8379` listening
@@ -262,7 +262,7 @@ There is no window where the daemon points at a missing file: at every instant, 
 
 ## 8. Rollback plan
 
-Every step is a rename(2) or symlink; the script writes `/home/toxic/sovereign/REORG-MANIFEST.txt` listing each
+Every step is a rename(2) or symlink; the script writes `/home/toxic/estate/REORG-MANIFEST.txt` listing each
 operation. Rollback (mechanical, reverse order):
 1. If the bridge was already restarted on the new path: revert the toml `run` line, `pitchfork restart` again (from a
    non-bridge context — i.e. a separate bridge call issued after the previous one returned, or Chris's local shell),
@@ -322,7 +322,7 @@ operation. Rollback (mechanical, reverse order):
 
 ## 10. Execution needs (for the parent/coordinator)
 
-- Run `REORG-EXECUTE.sh` **on yote as `toxic` via the bridge** (`exec.py 'bash /home/toxic/sovereign/REORG-EXECUTE.sh'`),
+- Run `REORG-EXECUTE.sh` **on yote as `toxic` via the bridge** (`exec.py 'bash /home/toxic/estate/REORG-EXECUTE.sh'`),
   or from Chris's local yote shell. Expected wall time: < 5 min (dominated by git push).
 - After the script exits: run the hatch-side half of §7 — FIRST the operator-driven `pitchfork restart`
   (its own bridge call), then 101 handshake, `echo BRIDGE-LIVE`, squawk round-trip, runner-profile checks, Phase 8 swap.

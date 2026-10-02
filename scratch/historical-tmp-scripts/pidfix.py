@@ -1,5 +1,5 @@
 import os, sys
-p = "/home/toxic/sovereign/projects/bridge/hatch/connector.py"
+p = "/home/toxic/estate/projects/bridge/hatch/connector.py"
 old = '''def main():
     # Self-maintained pidfile: launcher $! capture is unreliable across
     # subshell/setsid boundaries (goes stale, watchdogs then kill the wrong

@@ -1,5 +1,5 @@
 import sys, json, os
-sys.path.insert(0, "/home/toxic/sovereign/agents/oracle-market/bin")
+sys.path.insert(0, "/home/toxic/estate/agents/oracle-market/bin")
 import oracle_ask as oa, engine
 
 calls = []

@@ -4,7 +4,7 @@
 
 | Repo / location | Role | Relationship to this merge |
 |---|---|---|
-| `toxicwind/sovereign` | **Control plane** (awrawr-pc `/home/toxic/sovereign`): llama-swap `:25100` OpenAI front door, yote `:25102`, openfang `:25103`, sovereign-router `:25104`, MCP gateway… | Untouched. This merge changes nothing operational. |
+| `toxicwind/sovereign` | **Control plane** (awrawr-pc `/home/toxic/estate`): llama-swap `:25100` OpenAI front door, yote `:25102`, openfang `:25103`, sovereign-router `:25104`, MCP gateway… | Untouched. This merge changes nothing operational. |
 | `toxicwind/sovereign-projects` | **Workspaces monorepo**: yote/, openfang/, tau/, herd/, mesh/, qed/, shell/, boundless/ | Topology reference (below). |
 | `toxicwind/sovereign-projects/tau/engine` | Canonical Tau agent engine; NVIDIA provider via `packages/catalog/src/compat/rules/providers/nvidia.kdl` + `auth/nvidia.kdl` | **Convergence target** — see below. |
 | `toxicwind/nvidia-swarm-lens` (**this repo**) | NVIDIA NIM + swarm merger, lens profiles, async DAG | Merge subject. Conceptually **herd-adjacent**: an inference-consumer / agent-orchestration layer near the NIM API. |

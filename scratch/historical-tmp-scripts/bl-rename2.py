@@ -27,6 +27,6 @@ sub('projects/mesh/README.md', [
 sub('pitchfork.toml', G)
 sub('src/services/peripheral.ts', [
     ('"itvx-browserless"', '"browserless"'),
-    ('exec /home/toxic/.browserless/run.sh', 'exec /home/toxic/sovereign/projects/mesh/browserless/server/run.sh'),
+    ('exec /home/toxic/.browserless/run.sh', 'exec /home/toxic/estate/projects/mesh/browserless/server/run.sh'),
 ])
 print('ALL EDITS APPLIED')

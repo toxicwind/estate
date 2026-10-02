@@ -20,7 +20,7 @@ Gatehouse acts as a central hub for MCP (Model Context Protocol) tools. Adding n
 - **Discovery-first approach**: Searches yote, GitHub, and web for existing implementations before building from scratch.
 - **Ancestry-preserving forks**: Creates toxicwind forks that inherit upstream history, avoiding unnecessary rewrites.
 - **Rigorous testing**: Compilation, protocol smoke tests (framed and lines modes), and end-to-end calls before registration.
-- **Secure registration**: Canonical source from `/home/toxic/sovereign/projects/range/ranch/barn/gatehouse`, live config in `mcp_config.json`, and durable template in `mcp_config.json.dist`.
+- **Secure registration**: Canonical source from `/home/toxic/estate/projects/range/ranch/barn/gatehouse`, live config in `mcp_config.json`, and durable template in `mcp_config.json.dist`.
 - **Operational readiness**: Clear restart procedure via Gatehouse's pitchfork, health-check monitoring, and secret hygiene enforcement.
 
 ## Quick Start
@@ -43,7 +43,7 @@ find /home/toxic -type d -name "*rsync*" -o -name "*sync*" -o -name "*file*" | h
 #    - Commit + push to toxicwind/<name> main
 
 # 5. Restart Gatehouse
-cd /home/toxic/sovereign && ./bin/pitchfork-restart sovereign/gatehouse
+cd /home/toxic/estate && ./bin/pitchfork-restart sovereign/gatehouse
 
 # 6. Verify
 #    - Check server logs for health status
@@ -55,7 +55,7 @@ cd /home/toxic/sovereign && ./bin/pitchfork-restart sovereign/gatehouse
 
 - **`mcp_config.json`** (live config): Registered MCP server entry with fields `name`, `command`, `args`, `env`, `protocol: "stdio"`, `enabled: true`, `health_check_interval: "15s"`, `tool_discovery_interval: "2m0s"`, `isolation: {enabled:false,mode:"none"}`, `quarantined: false`.
 - **`mcp_config.json.dist`** (durable template): Bootstrap source copied when live config is missing; includes the same field structure.
-- **Source**: Canonical implementation at `/home/toxic/sovereign/projects/range/ranch/barn/gatehouse`.
+- **Source**: Canonical implementation at `/home/toxic/estate/projects/range/ranch/barn/gatehouse`.
 
 ## Procedure Overview
 
@@ -77,7 +77,7 @@ cd /home/toxic/sovereign && ./bin/pitchfork-restart sovereign/gatehouse
 ## Security & Licensing
 
 - **Security**: The skill enforces no secrets in code/configs/logs/commits/reports, uses sandboxed paths, and requires confirmation for destructive operations.
-- **License**: The canonical source (`/home/toxic/sovereign/projects/range/ranch/barn/gatehouse`) carries its own licensing terms; the skill does not impose additional restrictions.
+- **License**: The canonical source (`/home/toxic/estate/projects/range/ranch/barn/gatehouse`) carries its own licensing terms; the skill does not impose additional restrictions.
 
 ## References
 

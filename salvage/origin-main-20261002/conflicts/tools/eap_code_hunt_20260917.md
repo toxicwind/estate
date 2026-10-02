@@ -100,10 +100,10 @@ Public Interactions API surface in `_gaos/` (Speakeasy-generated):
 
 All unrelated to the Gemini EAP:
 
-- `/home/toxic/sovereign/projects/tau-occupied-20260916/engine/vendor/oh-my-pi/packages/ai/src/providers/anthropic.ts:3552,3723,3756,3796,5068`
+- `/home/toxic/estate/projects/tau-occupied-20260916/engine/vendor/oh-my-pi/packages/ai/src/providers/anthropic.ts:3552,3723,3756,3796,5068`
   and `anthropic-wire.ts:220` — `defer_loading` is Anthropic's own tool
   deferral in the vendored oh-my-pi provider. Same field name, different API.
-- `/home/toxic/sovereign/bench-wt-tau/tau/...`, `/home/toxic/sovereign/projects/tau/...`
+- `/home/toxic/estate/bench-wt-tau/tau/...`, `/home/toxic/estate/projects/tau/...`
   (multiple copies) — same vendored Anthropic `deferLoading` ↔ `defer_loading`
   mapping; tests at `test/auth-gateway-anthropic-messages.test.ts:212`.
 - `/home/toxic/projects/pi-upstream/packages/ai/src/api/openai-responses-shared.ts:131,344,376,389`
@@ -120,7 +120,7 @@ All unrelated to the Gemini EAP:
   types. Same vocabulary, different vendor; not Gemini EAP.
 - `/home/toxic/projects/antigravity-gateway-master/.../strings_all.txt:260910`
   — `retrievalConfig` in a protobuf strings dump; unrelated.
-- Tau branch `wt-kimi-free-20260914` (`/home/toxic/sovereign/projects/tau`):
+- Tau branch `wt-kimi-free-20260914` (`/home/toxic/estate/projects/tau`):
   `git grep` for all terms → zero hits.
 - `/home/toxic/super-ralph`: zero hits for all terms.
 - `~/Downloads`: zero hits (only legacy `[mcp_servers.*]` TOML in old
@@ -129,10 +129,10 @@ All unrelated to the Gemini EAP:
 
 ## 4. Our own artifacts (not upstream code)
 
-- `/home/toxic/sovereign/docs/gemini-tool-retrieval.md`,
+- `/home/toxic/estate/docs/gemini-tool-retrieval.md`,
   `docs/gemini-tool-retrieval-reference.md` — request/response shapes transcribed
   from the EAP material Chris supplied, plus the 429 billing probe result.
-- `/home/toxic/sovereign/tools/probe_gemini_eap.py` — probe built from that
+- `/home/toxic/estate/tools/probe_gemini_eap.py` — probe built from that
   spec (exit 2 = billing blocked).
 
 ## Bottom line for the router work

@@ -2,8 +2,8 @@
 # Owned by the sovereign project; the parent only composes it.
 
 [daemons.openfang-health]
-run = "/home/toxic/sovereign/ops/openfang-health/loop.sh"
-dir = "/home/toxic/sovereign/ops/openfang-health"
+run = "/home/toxic/estate/ops/openfang-health/loop.sh"
+dir = "/home/toxic/estate/ops/openfang-health"
 mise = false
 retry = true
 auto = ["start"]

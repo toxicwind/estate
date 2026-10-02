@@ -11,7 +11,7 @@ port = 9223
 # every omp startup paid for the failed connect. The dependency is real, so
 # it is declared here instead of being discovered again after a reboot.
 depends = ["agent-display"]
-run = "exec /home/toxic/sovereign/projects/range/ranch/barn/browserless/keeper/keeper.sh"
+run = "exec /home/toxic/estate/projects/range/ranch/barn/browserless/keeper/keeper.sh"
 dir = "."
 mise = false
 retry = true

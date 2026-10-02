@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """tern 2026-09-21: mark KB row DONE."""
 import re
-P = "/home/toxic/sovereign/docs/fleet-knowledgebase.md"
+P = "/home/toxic/estate/docs/fleet-knowledgebase.md"
 src = open(P, encoding="utf-8").read()
 lines = src.split("\n")
 for i, l in enumerate(lines):

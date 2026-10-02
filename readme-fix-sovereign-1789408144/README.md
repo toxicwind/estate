@@ -30,7 +30,7 @@ flowchart LR
 ## Quick start
 
 ```bash
-cd /home/toxic/sovereign
+cd /home/toxic/estate
 mise install && mise run up
 mise run health
 ```
@@ -55,7 +55,7 @@ There is **no Caddy** and **no separate “landing” service**. Ops UI is **rus
 ## Quick start
 
 ```bash
-cd /home/toxic/sovereign
+cd /home/toxic/estate
 mise install
 mise run up       # owned hot-reload modules
 mise run health

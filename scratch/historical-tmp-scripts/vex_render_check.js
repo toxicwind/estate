@@ -1,7 +1,7 @@
 // Vex lane: renderer proof — extract md()/mdInline()/mdText()/esc from the
 // SERVED ui.html on yote and assert first-class HTML + intact markdown.
 const fs = require('fs');
-const html = fs.readFileSync('/home/toxic/sovereign/projects/mesh/squawk/ui.html', 'utf8');
+const html = fs.readFileSync('/home/toxic/estate/projects/mesh/squawk/ui.html', 'utf8');
 const start = html.indexOf('const esc =');
 const end = html.indexOf('\nfunction badges(m) {');
 if (start === -1 || end === -1 || start >= end) { console.error('EXTRACTION FAILED'); process.exit(2); }

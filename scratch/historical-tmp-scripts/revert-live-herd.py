@@ -1,5 +1,5 @@
 import yaml
-p = "/home/toxic/sovereign/config/herd.yaml"
+p = "/home/toxic/estate/config/herd.yaml"
 s = open(p).read()
 # REVERT 2026-09-21: bare peer model IDs do NOT reliably route.
 # Live probe proved: moonshot/kimi-k2.6 -> 429 (routes), kimi-k2.6 -> 429,
@@ -7,32 +7,32 @@ s = open(p).read()
 # The prefixed peer/model form is what's advertised in /v1/models and routes
 # directly to the peer. Bare IDs hit the dedup'd global map unreliably.
 old_block = """  kimi:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target kimi-k2.6
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target kimi-k2.6
     description: "Kimi (alias -> kimi-k2.6)"
     metadata:
       alias_of: kimi-k2.6
   kimi-k2:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target kimi-k2.6
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target kimi-k2.6
     description: "Kimi K2 (alias -> kimi-k2.6)"
     metadata:
       alias_of: kimi-k2.6
   kimi-code:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target kimi-k2.7-code
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target kimi-k2.7-code
     description: "Kimi code specialist (alias -> kimi-k2.7-code)"
     metadata:
       alias_of: kimi-k2.7-code"""
 new_block = """  kimi:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
     description: "Kimi (alias -> moonshot/kimi-k2.6)"
     metadata:
       alias_of: moonshot/kimi-k2.6
   kimi-k2:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
     description: "Kimi K2 (alias -> moonshot/kimi-k2.6)"
     metadata:
       alias_of: moonshot/kimi-k2.6
   kimi-code:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.7-code
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.7-code
     description: "Kimi code specialist (alias -> moonshot/kimi-k2.7-code)"
     metadata:
       alias_of: moonshot/kimi-k2.7-code"""

@@ -20,7 +20,7 @@ Config surgery where a wrong edit is worse than no edit.
 - `bin/surgical-edit` — the editor. Takes a JSON patch spec:
   ```json
   {
-    "file": "/home/toxic/sovereign/config/herd.yaml",
+    "file": "/home/toxic/estate/config/herd.yaml",
     "edits": [
       {"old": "  # --- moonshot: Moonshot AI direct (PARKED 2026-09-20) ---",
        "new": "  # --- moonshot: Moonshot AI direct (RESTORED 2026-09-20) ---",
@@ -46,8 +46,8 @@ Config surgery where a wrong edit is worse than no edit.
 
 ## Deep links
 
-- Master README: `/home/toxic/sovereign/README.md`
-- Herd config docs: `/home/toxic/sovereign/config/` (herd.yaml, model_constraints.yaml)
+- Master README: `/home/toxic/estate/README.md`
+- Herd config docs: `/home/toxic/estate/config/` (herd.yaml, model_constraints.yaml)
 - Bridge transfer pattern: `~/TOOLS.md` ("Bridge exec: no large heredocs")
 - Provenance: moonshot peer restore, 2026-09-20 (`projects/audits/moonshot-parked-audit-2026-09-20.md` §8)"""
 

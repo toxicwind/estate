@@ -53,7 +53,7 @@ flowchart LR
 ## Quick start (on yote)
 
 ```bash
-cd /home/toxic/sovereign/killer-features/bid-market/e2e
+cd /home/toxic/estate/killer-features/bid-market/e2e
 python3 run_e2e.py selftest --run-dir /tmp/e2e-selftest
 python3 run_e2e.py market --run-dir /tmp/e2e-market --batch e2e1
 python3 run_e2e.py report --market /tmp/e2e-market/ledger.json \

@@ -25,7 +25,7 @@ import urllib.request
 from datetime import datetime, timezone
 
 TOKEN_FILE = "/home/toxic/.config/sovereign-chat-token"
-DEFAULT_STATE_DIR = "/home/toxic/sovereign/tools/sovereign-chat/state"
+DEFAULT_STATE_DIR = "/home/toxic/estate/tools/sovereign-chat/state"
 HEARTBEAT_DEAD_S = 300
 
 

@@ -4,7 +4,7 @@
 # recent log errors, config sanity (live vs SSOT), staleness signals.
 # Exit: 0 = healthy, 1 = warnings, 2 = critical.
 set -u
-SOV=/home/toxic/sovereign
+SOV=/home/toxic/estate
 WS=$SOV/shingle-workspace
 PF=/home/toxic/.local/share/mise/installs/pitchfork/2.25.0/pitchfork
 CRIT=0

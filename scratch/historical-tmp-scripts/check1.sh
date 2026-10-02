@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /home/toxic/sovereign
+cd /home/toxic/estate
 echo "=== patches on origin/main ==="
 git ls-tree origin/main --name-only -- projects/tau/upstream-changes/patches/ | head -10
 echo "=== patch count/size on main ==="

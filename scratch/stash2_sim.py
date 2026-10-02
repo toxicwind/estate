@@ -3,7 +3,7 @@
 import os, subprocess, json
 from difflib import SequenceMatcher
 
-ROOT = "/home/toxic/sovereign"
+ROOT = "/home/toxic/estate"
 r = json.load(open("/home/toxic/stash-merge-20260914/stash2-audit.json"))
 paths = r["different"]
 

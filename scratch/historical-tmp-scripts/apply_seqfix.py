@@ -79,7 +79,7 @@ PATCHES = {
             "try:\n"
             "    import seq_alloc\n"
             "except ImportError:  # canonical allocator lives in the mesh squawk sources\n"
-            '    sys.path.insert(0, "/home/toxic/sovereign/projects/mesh/squawk")\n'
+            '    sys.path.insert(0, "/home/toxic/estate/projects/mesh/squawk")\n'
             "    import seq_alloc\n"
             "\n"
             "from fleet_addr import addressed_wait_filter\n",

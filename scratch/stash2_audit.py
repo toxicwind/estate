@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Stash-vs-worktree overlap audit for stash@{2} in /home/toxic/sovereign."""
+"""Stash-vs-worktree overlap audit for stash@{2} in /home/toxic/estate."""
 import os, subprocess, hashlib, json, sys
 
-ROOT = "/home/toxic/sovereign"
+ROOT = "/home/toxic/estate"
 OUT = "/home/toxic/stash-merge-20260914/stash2-audit.json"
 
 def run(*a):

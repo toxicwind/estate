@@ -1,5 +1,5 @@
 {"type":"title","v":1,"title":"","updatedAt":"2026-09-26T06:08:53.728Z","pad":"                                                                                                                                                                              "}
-{"type":"session","version":3,"id":"01a0dc54-b3e0-76e2-b102-098a7d56ae7e","timestamp":"2026-09-26T06:08:53.728Z","cwd":"/home/toxic/sovereign"}
+{"type":"session","version":3,"id":"01a0dc54-b3e0-76e2-b102-098a7d56ae7e","timestamp":"2026-09-26T06:08:53.728Z","cwd":"/home/toxic/estate"}
 {"type":"model_change","id":"021615c7","parentId":null,"timestamp":"2026-09-26T06:08:53.911Z","model":"groq/qwen/qwen3.8-27b","resolvedModelIsFallback":false}
 {"type":"thinking_level_change","id":"30e8fefa","parentId":"021615c7","timestamp":"2026-09-26T06:08:53.911Z","thinkingLevel":"off","configured":null}
 {"type":"service_tier_change","id":"c2ca5069","parentId":"30e8fefa","timestamp":"2026-09-26T06:08:53.911Z","serviceTier":{"openai":"auto","anthropic":"priority","google":"flex"}}

@@ -12,7 +12,7 @@ Prototypes raced against the real 82-daemon `pitchfork.toml` (995 lines, sandbox
 should belong in range and some in ranch, and EACH PROJECT SHOULD HAVE ONE."*
 Round 1 raced file-splitting strategies; round 2 races **per-project ownership**:
 each project (ranch animal, range component, standalone repo) owns its daemon
-manifest(s); the parent at `/home/toxic/sovereign` **composes** — it does not own
+manifest(s); the parent at `/home/toxic/estate` **composes** — it does not own
 60 daemon stanzas.
 
 ---
@@ -178,7 +178,7 @@ across 3 project dirs vs D1's 3 shared-file edits.
 - **Caveat:** D3 relies on mise *ignoring* unknown tables — true today, but it's
   coupling to leniency. And one-mise.toml-per-project is **not** current reality:
   exactly one project (`tools/nuvio-platform`) has its own mise.toml; everything
-  else is parent-only (`/home/toxic/sovereign/mise.toml`).
+  else is parent-only (`/home/toxic/estate/mise.toml`).
 - Recommendation: **do not embed daemon stanzas in mise.toml.** If per-project
   mise files ever happen, keep daemon definitions in the adjacent
   `pitchfork.d/` dir (D2) — zero coupling to mise's schema evolution. D2 answers
@@ -211,7 +211,7 @@ better answered by adjacency than embedding.
 Why not A alone: 0/82 ownership clarity; every project change is a parent-repo
 edit — exactly the "60 daemons in one file is insanity" Chris rejected.
 
-The parent at `/home/toxic/sovereign` keeps: `parent.toml` (preamble/groups/env),
+The parent at `/home/toxic/estate` keeps: `parent.toml` (preamble/groups/env),
 `projects.toml` (registry), its own 37 sovereign daemons — and the composer.
 Everything else lives with its project, including inside nested repos
 (ranch/* manifests would commit to `toxicwind/ranch`, not sovereign).
@@ -233,7 +233,7 @@ Everything else lives with its project, including inside nested repos
    registry references them by path; daemon changes then flow through the
    project's own repo workflow.
 5. **Sink**: feed the composed output to pitchfork 2.25.0 via native
-   `pitchfork config add` — parent stays the entrypoint at `/home/toxic/sovereign`.
+   `pitchfork config add` — parent stays the entrypoint at `/home/toxic/estate`.
 6. **Reload**: compose → diff → `bin/pitchfork-restart sovereign/<name>` for
    changed daemons only (L1 proven: 1 daemon in, 1 daemon out).
 7. **Retire the 5 stale**: delete from their owning projects' `pitchfork.d/`
@@ -265,4 +265,4 @@ Everything else lives with its project, including inside nested repos
 - `work/race/results.json`, `work/race2/results.json` — raw measurement data
   (regenerate with `bun race.ts` / `bun setup-d.ts && bun race2.ts`)
 
-Live `/home/toxic/sovereign/pitchfork.toml` was not modified at any point.
+Live `/home/toxic/estate/pitchfork.toml` was not modified at any point.

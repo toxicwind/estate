@@ -4,7 +4,7 @@ would normally issue attempt-2 (alt provider) + fallback."""
 import sys
 import time
 
-sys.path.insert(0, "/home/toxic/sovereign/agents/oracle-market/bin")
+sys.path.insert(0, "/home/toxic/estate/agents/oracle-market/bin")
 import oracle_ask as oa
 import engine
 

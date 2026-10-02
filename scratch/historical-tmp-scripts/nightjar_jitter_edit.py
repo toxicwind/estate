@@ -2,7 +2,7 @@
 """Nightjar lane: add bounded jittered backoff before same-alias judge retries.
 
 Applies a 3-effective-line change to
-/home/toxic/sovereign/agents/oracle-market/bin/oracle_ask.py:
+/home/toxic/estate/agents/oracle-market/bin/oracle_ask.py:
 
   1. import random (one line)
   2. time.sleep(random.uniform(0.25, 1.0)) before each same-alias
@@ -21,7 +21,7 @@ import re
 import shutil
 import sys
 
-PATH = "/home/toxic/sovereign/agents/oracle-market/bin/oracle_ask.py"
+PATH = "/home/toxic/estate/agents/oracle-market/bin/oracle_ask.py"
 BAK = PATH + ".bak-nightjar-jitter"
 
 with open(PATH) as f:

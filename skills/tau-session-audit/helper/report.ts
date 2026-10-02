@@ -126,10 +126,10 @@ export function generateMarkdownReport(sessions: AuditedSession[], options: { ve
   lines.push("### 1. Workspace Misalignment");
   lines.push("- Root [`package.json`](" + GITHUB_BLOB_BASE + "package.json) defines: `workspaces: ['herd', 'herd/ui-svelte', 'packages/*', 'services/*']`.");
   lines.push("- `projects/*` is **not** included in the root workspace declaration.");
-  lines.push("- Intermediate `projects/tsconfig.json` was missing, causing child builds in `projects/toxicwind/*` to fail with `error TS5083: Cannot read file '/home/toxic/sovereign/projects/tsconfig.json'`.");
+  lines.push("- Intermediate `projects/tsconfig.json` was missing, causing child builds in `projects/toxicwind/*` to fail with `error TS5083: Cannot read file '/home/toxic/estate/projects/tsconfig.json'`.");
   lines.push("");
   lines.push("### 2. The `projects/toxicwind` Misnaming");
-  lines.push("- Models misinterpreted the user's GitHub username (`@toxicwind`) as a package prefix and created an untracked root directory `/home/toxic/sovereign/projects/toxicwind/`.");
+  lines.push("- Models misinterpreted the user's GitHub username (`@toxicwind`) as a package prefix and created an untracked root directory `/home/toxic/estate/projects/toxicwind/`.");
   lines.push("- Modules created inside: `capabilities/` (`@toxicwind/capabilities`), `policy/` (`@toxicwind/policy`), `registry-baseline/`, `repair/`.");
   lines.push("- **Resolution**: These utilities belong under the sovereign umbrella as `packages/sovereign-utils` or inside `packages/utils`, which is already registered in Bun workspaces.");
   lines.push("");

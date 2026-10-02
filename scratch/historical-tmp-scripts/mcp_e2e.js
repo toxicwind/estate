@@ -2,7 +2,7 @@
 // MCP stdio e2e test: initialize, list tools, call persistent_status + persistent_navigate.
 const { spawn } = require('child_process');
 
-const child = spawn('node', ['/home/toxic/sovereign/projects/mesh/browserless/dist/index.js'], {
+const child = spawn('node', ['/home/toxic/estate/projects/mesh/browserless/dist/index.js'], {
   stdio: ['pipe', 'pipe', 'inherit'],
   env: { ...process.env, BROWSER_KEEPER_CDP: 'http://127.0.0.1:9223' },
 });

@@ -18,7 +18,7 @@ mkdir -p "$STATE_DIR"
 exec 9>"$LOCK"
 flock -n 9 || exit 0  # another run in flight; skip quietly
 
-cd /home/toxic/sovereign
+cd /home/toxic/estate
 
 # Resolve the pitchfork binary from the LIVE supervisor so CLI and
 # supervisor can never skew versions (2.16.0 vs 2.25.0 is a known hazard).

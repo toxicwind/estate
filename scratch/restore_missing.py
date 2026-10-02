@@ -2,7 +2,7 @@
 """Restore the 696 missing files from stash@{2} into the working tree."""
 import json, subprocess
 
-ROOT = "/home/toxic/sovereign"
+ROOT = "/home/toxic/estate"
 r = json.load(open("/home/toxic/stash-merge-20260914/stash2-audit.json"))
 missing = r["missing"]
 print("missing count:", len(missing))

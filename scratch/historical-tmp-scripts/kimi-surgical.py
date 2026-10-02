@@ -2,7 +2,7 @@ import shutil
 WT = '/tmp/kimi-push-wt'
 
 # 1. sidecar (new file, with BrokenPipe fix) from the branch worktree
-shutil.copy('/home/toxic/sovereign/bin/nim-kimi-sidecar.py', WT + '/bin/nim-kimi-sidecar.py')
+shutil.copy('/home/toxic/estate/bin/nim-kimi-sidecar.py', WT + '/bin/nim-kimi-sidecar.py')
 print("sidecar copied")
 
 # 2. ports.env
@@ -25,7 +25,7 @@ alias = """  # kimi-k3-nim: genuine Kimi K3 via NVIDIA NIM (2026-09-21).
   # after idle takes ~120-220s (serverless hot-load); SHIM_CONNECT_TIMEOUT
   # covers the header wait.
   kimi-k3-nim:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target nim-kimi/moonshotai/kimi-k3 --name kimi-k3-nim
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target nim-kimi/moonshotai/kimi-k3 --name kimi-k3-nim
     env:
       - SHIM_CONNECT_TIMEOUT=240
     description: "Kimi K3 via NVIDIA NIM (genuine moonshotai/kimi-k3, cold-aware). Fails loudly; no fallback."
@@ -91,8 +91,8 @@ port = 25163
 # Bakes the K3 contract in: warmup on start, 300s upstream timeout
 # (serverless cold load ~120-220s is normal), top_p strip, identity
 # enforcement, 404/429 classification. Fails loud; never substitutes.
-run = "exec python3 /home/toxic/sovereign/bin/nim-kimi-sidecar.py"
-dir = "/home/toxic/sovereign"
+run = "exec python3 /home/toxic/estate/bin/nim-kimi-sidecar.py"
+dir = "/home/toxic/estate"
 mise = false
 retry = true
 boot_start = true

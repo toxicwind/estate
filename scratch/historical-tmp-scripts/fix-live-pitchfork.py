@@ -1,10 +1,10 @@
 import tomllib
-p = "/home/toxic/sovereign/pitchfork.toml"
+p = "/home/toxic/estate/pitchfork.toml"
 s = open(p).read()
-old_run = ("run = \"exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py"
+old_run = ("run = \"exec python3 /home/toxic/estate/config/herd.d/alias-shim.py"
            " --port ${KIMI_AUTO_SHIM_PORT} --target ministral-14b-latest"
            " --standby qwen3.5-9b-tool --name kimi-auto\"")
-new_run = ("run = \"exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py"
+new_run = ("run = \"exec python3 /home/toxic/estate/config/herd.d/alias-shim.py"
            " --port ${KIMI_AUTO_SHIM_PORT} --target kimi-k2.6"
            " --standby kimi-k2.7-code --name kimi-auto\"")
 assert old_run in s, "kimi-auto-shim run line not found"

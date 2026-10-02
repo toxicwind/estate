@@ -6,7 +6,7 @@ Run on awrawr-pc. Idempotent guard: refuses to run twice.
 """
 import sys
 
-P = "/home/toxic/sovereign/agents/oracle-market/bin/oracle_ask.py"
+P = "/home/toxic/estate/agents/oracle-market/bin/oracle_ask.py"
 src = open(P).read()
 
 if "HEDGE_ENABLED" in src:

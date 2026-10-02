@@ -7,8 +7,8 @@ set -euo pipefail
 # Configuration
 MODELS_DIR="/home/toxic/projects/models"
 HF_CACHE_DIR="/home/toxic/.cache/huggingface/hub"
-CONFIG_TEMPLATE="/home/toxic/sovereign/tools/llama-swap/config.yaml"
-CONFIG_OUTPUT="/home/toxic/sovereign/tools/llama-swap/config.yaml"
+CONFIG_TEMPLATE="/home/toxic/estate/tools/llama-swap/config.yaml"
+CONFIG_OUTPUT="/home/toxic/estate/tools/llama-swap/config.yaml"
 AUTOSCAN_STATE="/home/toxic/.local/share/llama-swap/autoscan-state.json"
 
 # Colors

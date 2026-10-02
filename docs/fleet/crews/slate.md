@@ -10,4 +10,4 @@ updated: 2026-10-01
 
 # slate
 
-TAU audit+repair lane. Full audit log: /home/toxic/sovereign/hatch/tau-audit-slate-20261001.log
+TAU audit+repair lane. Full audit log: /home/toxic/estate/hatch/tau-audit-slate-20261001.log

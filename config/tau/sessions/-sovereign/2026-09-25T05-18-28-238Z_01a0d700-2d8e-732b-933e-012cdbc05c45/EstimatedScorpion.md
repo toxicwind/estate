@@ -1,27 +1,27 @@
 **Complete Plan**
 
 **Already done:**
-- Searched for `acp-install.mjs` in `/home/toxic/sovereign` using `find`; no matches found.
+- Searched for `acp-install.mjs` in `/home/toxic/estate` using `find`; no matches found.
 
 **Remaining execution-order steps:**
 
 1. **Broaden file search for similar names/extensions**  
-   - Command: `find /home/toxic/sovereign -type f -name "acp-install.*" 2>/dev/null`  
+   - Command: `find /home/toxic/estate -type f -name "acp-install.*" 2>/dev/null`  
    - Expected output: List of files like `acp-install.js`, `acp-install.ts`, etc., if any exist.  
    - Verification: If found, note paths and examine content; if not, proceed to step 2.
 
 2. **Search for textual references to "acp-install"**  
-   - Command: `grep -r "acp-install" /home/toxic/sovereign --include="*.js" --include="*.mjs" --include="*.ts" --include="*.json" --include="*.md" 2>/dev/null | head -30`  
+   - Command: `grep -r "acp-install" /home/toxic/estate --include="*.js" --include="*.mjs" --include="*.ts" --include="*.json" --include="*.md" 2>/dev/null | head -30`  
    - Expected output: Lines showing where "acp-install" appears (e.g., in scripts, configs, docs).  
    - Verification: Analyze context to infer purpose (installation script, package name, etc.); if no references, consider alternative naming (e.g., "install-acp").
 
 3. **Inspect project manifest and lock files**  
-   - Command: `ls -la /home/toxic/sovereign/{package.json,package-lock.json,yarn.lock,pnpm-lock.yaml} 2>/dev/null`  
+   - Command: `ls -la /home/toxic/estate/{package.json,package-lock.json,yarn.lock,pnpm-lock.yaml} 2>/dev/null`  
    - Expected output: Existence of manifest files.  
    - Verification: If `package.json` exists, read it to identify ACP-related dependencies or scripts (e.g., `"scripts": { "install-acp": "..." }`).
 
 4. **Review installation/documentation files**  
-   - Command: `find /home/toxic/sovereign -maxdepth 3 -type f \( -name "README*" -o -name "INSTALL*" -o -name "docs/*" -o -name "*.md" \) 2>/dev/null | head -10`  
+   - Command: `find /home/toxic/estate -maxdepth 3 -type f \( -name "README*" -o -name "INSTALL*" -o -name "docs/*" -o -name "*.md" \) 2>/dev/null | head -10`  
    - Expected output: List of documentation files.  
    - Verification: Skim relevant files (e.g., `README.md`) for instructions on installing ACP or running `acp-install.mjs`.
 
@@ -52,19 +52,19 @@ Use `todo` tool to capture concrete, verifiable actions (5–9 items) for execut
 Initialized with concrete targets and verification criteria:  
 
 1. **Search for acp-install.* files**  
-   - Command: `find /home/toxic/sovereign -type f -name "acp-install.*" 2>/dev/null`  
+   - Command: `find /home/toxic/estate -type f -name "acp-install.*" 2>/dev/null`  
    - Verify: Output lists candidate files; if none, proceed to step 2.  
 
 2. **Search for textual references to "acp-install"**  
-   - Command: `grep -r "acp-install" /home/toxic/sovereign --include="*.js" --include="*.mjs" --include="*.ts" --include="*.json" --include="*.md" 2>/dev/null | head -30`  
+   - Command: `grep -r "acp-install" /home/toxic/estate --include="*.js" --include="*.mjs" --include="*.ts" --include="*.json" --include="*.md" 2>/dev/null | head -30`  
    - Verify: Output shows context (e.g., file paths and surrounding lines); if empty, consider alternative search terms.  
 
 3. **Examine package.json for ACP-related scripts**  
-   - Command: `cat /home/toxic/sovereign/package.json 2>/dev/null`  
+   - Command: `cat /home/toxic/estate/package.json 2>/dev/null`  
    - Verify: If file exists, inspect `"scripts"` and `"dependencies"` for ACP; note any relevant entries.  
 
 4. **Check for installation documentation**  
-   - Command: `grep -i "acp\|install" /home/toxic/sovereign/README.md 2>/dev/null | head -10`  
+   - Command: `grep -i "acp\|install" /home/toxic/estate/README.md 2>/dev/null | head -10`  
    - Verify: Output contains actionable steps or references to acp-install.mjs.  
 
 5. **Determine and verify the install script location**  

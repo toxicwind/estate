@@ -7,10 +7,10 @@
 p = "config/herd.yaml"
 s = open(p).read()
 old = """  kimi-k3-nim:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target nim-kimi/moonshotai/kimi-k3 --name kimi-k3-nim
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target nim-kimi/moonshotai/kimi-k3 --name kimi-k3-nim
 """
 new = """  kimi-k3-nim:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target nim-kimi/moonshotai/kimi-k3 --name kimi-k3-nim
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target nim-kimi/moonshotai/kimi-k3 --name kimi-k3-nim
     env:
       - SHIM_CONNECT_TIMEOUT=240
 """
@@ -24,8 +24,8 @@ print("herd.yaml: kimi-k3-nim SHIM_CONNECT_TIMEOUT=240")
 #    (must match herd.d/kimi-auto.yaml) + SHIM_CONNECT_TIMEOUT.
 p = "pitchfork.toml"
 s = open(p).read()
-old_run = 'run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"'
-new_run = 'run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"'
+old_run = 'run = "exec python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"'
+new_run = 'run = "exec python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"'
 assert old_run in s, "kimi-auto-shim run anchor missing"
 assert "nim-kimi/moonshotai/kimi-k3 --advance-on" not in s, "already patched"
 s = s.replace(old_run, new_run, 1)

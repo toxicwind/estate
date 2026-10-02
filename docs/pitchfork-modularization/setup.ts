@@ -36,7 +36,7 @@ function splitBlocks(src: string): { preamble: string; blocks: Block[] } {
 }
 
 function projectOf(dir: string): string {
-  if (dir === "." || dir === "/home/toxic/sovereign") return "10-root";
+  if (dir === "." || dir === "/home/toxic/estate") return "10-root";
   if (dir.includes("/ranch/")) return "20-ranch";
   if (dir.includes("/tools/")) return "30-tools";
   return "40-home";

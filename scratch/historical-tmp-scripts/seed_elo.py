@@ -9,7 +9,7 @@ import sqlite3
 import time
 import urllib.request
 
-DB = "/home/toxic/sovereign/data/sovereign_router.db"
+DB = "/home/toxic/estate/data/sovereign_router.db"
 
 st = json.load(urllib.request.urlopen("http://127.0.0.1:25104/status", timeout=15))
 elos = {p: float(v["elo"]) for p, v in st["providers"].items()}

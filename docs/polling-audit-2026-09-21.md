@@ -114,10 +114,10 @@ timer suspects read line-by-line, live PIDs + CPU verified)
    violation. Payoff is latency, not CPU: PAPER-TASK pickup goes 30s → instant,
    compounding with the lane's HFT race rules.
 2. **stash-guard fast path — every 90s** —
-   `/home/toxic/sovereign/tools/stash-guard/stash-guard.py` L599–609:
+   `/home/toxic/estate/tools/stash-guard/stash-guard.py` L599–609:
    `while True: once(); time.sleep(args.interval)`, interval=90s (L48, daemon
    runs `--deep --interval 90`, live PID 190776). `once()` full-scans
-   `/home/toxic/sovereign` + all worktrees for dirty state every 90s — the most
+   `/home/toxic/estate` + all worktrees for dirty state every 90s — the most
    expensive periodic job in the fleet. **Replacement:** recursive inotify on the
    watched dirs with ~60s debounce → run `once()` only when files changed; keep
    the hourly `--deep` scan as the LEGIT backstop. Snapshots become
@@ -132,7 +132,7 @@ timer suspects read line-by-line, live PIDs + CPU verified)
    L202–216: same pattern (the 5s `ino.wait(5.0)` wake does no work unless
    events fired). **Replacement:** same as forward.py; convert the pair together.
 5. **bench-radar — 10s stat poll fallback** —
-   `/home/toxic/sovereign/tools/bench-radar/server.ts` L529–557:
+   `/home/toxic/estate/tools/bench-radar/server.ts` L529–557:
    `fs.watch` (inotify-backed) is primary, but `setInterval(..., POLL_MS)`
    with POLL_MS=10000 (L29) stat-checks the log every 10s.
    **Replacement:** drop the setInterval; keep fs.watch + initial `scan(true)`.

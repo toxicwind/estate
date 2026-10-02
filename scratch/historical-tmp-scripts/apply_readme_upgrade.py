@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Apply the oracle-derived README hero + architecture-composition upgrade.
 
-Edits /home/toxic/sovereign/README.md in place. Idempotent: skips steps
+Edits /home/toxic/estate/README.md in place. Idempotent: skips steps
 whose anchors are already in the target state.
 """
 import re
 import sys
 
-P = "/home/toxic/sovereign/README.md"
+P = "/home/toxic/estate/README.md"
 
 NEW_HERO = (
     "> **Sovereign is the self-hosted operating environment where a working agent fleet lives**"

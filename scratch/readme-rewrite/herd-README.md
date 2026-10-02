@@ -36,7 +36,7 @@ IDE copilots) need:
 
 ```bash
 # via sovereign stack
-cd /home/toxic/sovereign && mise run up     # includes llama-swap module
+cd /home/toxic/estate && mise run up     # includes llama-swap module
 mise run restart-llama
 mise run health
 
@@ -56,6 +56,6 @@ Health: `curl -sS http://127.0.0.1:25100/health` → `OK`
 
 ## Related
 
-- Stack rules: `/home/toxic/sovereign/AGENTS.md` — **no vLLM**
+- Stack rules: `/home/toxic/estate/AGENTS.md` — **no vLLM**
 - Ops dashboard (rust-web): `http://127.0.0.1:25101/` — APIs under `/ops/api/*`
 - AST Matrix details: `README_ASTMATRIX_V2.md` (in this directory)

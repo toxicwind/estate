@@ -7,7 +7,7 @@ and node summary were sliced away -- the returned output was no longer
 clearly marked partial. Fix: reserve headroom for the marker so it can
 never be lost.
 """
-P = "/home/toxic/sovereign/agents/oracle-market/bin/bidder.py"
+P = "/home/toxic/estate/agents/oracle-market/bin/bidder.py"
 src = open(P, encoding="utf-8").read()
 
 old = '''            out_full = ("[PARTIAL - super-ralph timed out after %.0fs; "

@@ -14,7 +14,7 @@ Critical files & anchors:
 - `/home/toxic/squawk-ws/server.log`, `squawk_ws_server.py` (server health)
 - `/home/toxic/squawk/squawk_feed.py` (feed daemon; running `--channel fleet --bind 127.0.0.1 --port 25135`)
 - `/home/toxic/.shingle/squawk-root/fleet` (backed message store; watched by inotify)
-- `/home/toxic/sovereign/projects/wezterm/term/src/terminalstate/kitty_unicode.rs` (latest failure site)
+- `/home/toxic/estate/projects/wezterm/term/src/terminalstate/kitty_unicode.rs` (latest failure site)
 
 Verification: failure tally = N categories; server.log shows healthy subscribe/broadcast with no `rejected unauthorized` spikes after fix; re-run of one failed job → `status=done` in its `result.json`.
 

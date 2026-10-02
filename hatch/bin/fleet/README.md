@@ -46,7 +46,7 @@ flowchart LR
 | `hatch/bin/squawk-fleet` | cell-side CLI: wraps fleet.py over yote-conn, mirrors `squawk` style. Deployed copy: `~/workspace/bin/squawk-fleet`. |
 
 Yote deploy path: `/home/toxic/squawk-fleet/fleet.py` (plain dir, outside any
-git tree — yote's `/home/toxic/sovereign` checkout sits on probe branches
+git tree — yote's `/home/toxic/estate` checkout sits on probe branches
 with WIP, so the engine is NOT installed there; the repo stays canonical).
 Seeded by base64 drop + sha256 verify. `SQUAWK_FLEET_PY` env overrides it.
 

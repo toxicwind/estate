@@ -54,7 +54,7 @@ code-racer/
 ## Quick start
 
 ```bash
-cd /home/toxic/sovereign/killer-features/code-racer
+cd /home/toxic/estate/killer-features/code-racer
 ./race-task tasks/smoke-two-sum --strategies all
 ```
 

@@ -2,7 +2,7 @@
 """Hardcore-demote Docker in herd: README restructure + warning callouts + build fix."""
 import sys
 
-REPO = '/home/toxic/sovereign/herd'
+REPO = '/home/toxic/estate/herd'
 
 # ---------- 1. README.md ----------
 p = REPO + '/README.md'

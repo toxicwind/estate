@@ -1,6 +1,6 @@
 # Merge Decisions — ~/sovereign
 
-Repo: `/home/toxic/sovereign`
+Repo: `/home/toxic/estate`
 Merge A (-X ours re-do): `3a90ad5288`
 Merge B (original pre-reset merge): `6adf64b4d3`
 Resulting Commit: `60c4b98491` (tagged as `refs/recovery/maximal-merge`)

@@ -33,7 +33,7 @@ say "--- phase 2: nim-proxy (flock) :25193 ---"
 if ! listening 25193; then
   warn ":25193 down - reviving flock"
   h=$(holder_pid 25193); [ -n "$h" ] && { warn "stale holder pid $h"; kill -9 "$h" 2>/dev/null; sleep 2; }
-  cd /home/toxic/sovereign 2>/dev/null || warn "no sovereign dir"
+  cd /home/toxic/estate 2>/dev/null || warn "no sovereign dir"
   ./bin/pitchfork-restart flock 2>&1 | tail -3
   sleep 6
 fi
@@ -42,8 +42,8 @@ listening 25193 && ok ":25193 listening (nim-proxy alive)" || warn ":25193 STILL
 say "--- phase 3: durable units ---"
 mkdir -p /home/toxic/.config/systemd/user
 VENV=/home/toxic/.awrawr-mcp-venv/bin/python
-MCP_SCRIPT=/home/toxic/sovereign/projects/bridge/yote/awrawr_mcp.py
-WS_SCRIPT=/home/toxic/sovereign/bridge/awrawr_ws_exec.py
+MCP_SCRIPT=/home/toxic/estate/projects/bridge/yote/awrawr_mcp.py
+WS_SCRIPT=/home/toxic/estate/bridge/awrawr_ws_exec.py
 make_unit() {
   local u=$1 desc=$2 script=$3 dir unitf
   dir=$(dirname "$script"); unitf=/home/toxic/.config/systemd/user/$u.service
@@ -140,7 +140,7 @@ listening 25147 && ok "squawk-ws :25147 alive" || warn "squawk-ws DOWN (verify-o
 listening 25135 && ok "squawk-feed :25135 alive" || warn "squawk-feed DOWN (verify-only, not touching)"
 
 say "--- phase 7: pitchfork stopped daemons ---"
-cd /home/toxic/sovereign 2>/dev/null || warn "no sovereign dir"
+cd /home/toxic/estate 2>/dev/null || warn "no sovereign dir"
 if pitchfork list >/dev/null 2>&1; then
   STOPPED=$(pitchfork list 2>/dev/null | grep -i 'stopped' | awk '{print $1}' || true)
   if [ -z "$STOPPED" ]; then ok "no stopped daemons";

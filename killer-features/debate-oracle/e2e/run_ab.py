@@ -17,7 +17,7 @@ The debate arm waits for t3-impl-orchestrator's bin/debate-run; run with
 import argparse, json, os, subprocess, sys, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-VENV_PY = "/home/toxic/sovereign/killer-features/debate-oracle/e2e-venv/bin/python"
+VENV_PY = "/home/toxic/estate/killer-features/debate-oracle/e2e-venv/bin/python"
 SINGLE_LANE = "mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m"
 TASKS = ["token-bucket", "toposort", "lru-cache", "expr-eval", "bloom-filter"]
 

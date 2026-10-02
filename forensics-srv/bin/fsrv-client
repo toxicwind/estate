@@ -2,7 +2,7 @@
 """fsrv-client: awrawr-pc-side HTTP client for forensics-srv.
 
 Called from the cell via the awrawr-mcp bridge:
-  exec.py --argv /home/toxic/sovereign/forensics-srv/bin/fsrv-client <METHOD> <PATH> [json-body]
+  exec.py --argv /home/toxic/estate/forensics-srv/bin/fsrv-client <METHOD> <PATH> [json-body]
 
 Reads the bearer token from the server's .token file (0600) on this box, so
 the token never leaves awrawr-pc. Prints the response body to stdout.

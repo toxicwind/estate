@@ -4,7 +4,7 @@
     "projects/range/ranch (supersedes legacy mesh)"
   ],
   "files_updated": [
-    "/home/toxic/sovereign/AGENTS.md",
+    "/home/toxic/estate/AGENTS.md",
     "/home/toxic/.tau/agent/AGENTS.md"
   ],
   "buildsrv_documented": true,

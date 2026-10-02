@@ -12,7 +12,7 @@ def sub(path, pairs):
 G = [('itvx-browserless', 'browserless')]
 sub('projects/mesh/browserless/server/pitchfork.fragment.toml', G + [
     ('merged into the [daemons.browserless] section', 'merged into the [daemons.browserless] section'),
-    ('dir = "/home/toxic/sovereign/projects/mesh/browserless/server"', 'dir = "."'),
+    ('dir = "/home/toxic/estate/projects/mesh/browserless/server"', 'dir = "."'),
 ])
 sub('projects/mesh/browserless/server/run.sh', [
     ('# browserless native launcher (sovereign mesh) \u2014 itvx deployment pattern.', '# browserless native launcher (sovereign mesh).'),
@@ -38,6 +38,6 @@ sub('projects/mesh/README.md', [
 sub('pitchfork.toml', G)
 sub('src/services/peripheral.ts', [
     ('"itvx-browserless"', '"browserless"'),
-    ('exec /home/toxic/.browserless/run.sh', 'exec /home/toxic/sovereign/projects/mesh/browserless/server/run.sh'),
+    ('exec /home/toxic/.browserless/run.sh', 'exec /home/toxic/estate/projects/mesh/browserless/server/run.sh'),
 ])
 print('ALL EDITS APPLIED')

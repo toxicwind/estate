@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document provides a comprehensive structural audit of all 14 custom forks across `/home/toxic/projects/` and `/home/toxic/sovereign`. Each fork's upstream origin, custom architectural additions, build toolchains, and inter-dependencies are documented to prevent configuration drift and regression.
+This document provides a comprehensive structural audit of all 14 custom forks across `/home/toxic/projects/` and `/home/toxic/estate`. Each fork's upstream origin, custom architectural additions, build toolchains, and inter-dependencies are documented to prevent configuration drift and regression.
 
 ---
 
@@ -20,7 +20,7 @@ This document provides a comprehensive structural audit of all 14 custom forks a
 | **`kimi-code`**       | `/home/toxic/projects/kimi-code-sovereign`        | `MoonshotAI/kimi-code`                 | Bun / TS / Vue   | Multi-kernel agent runtime, tree-sitter bash service, structured OAuth usage, modern Web UI.                                                                                            |
 | **`antigravity-gw`**  | `/home/toxic/projects/antigravity-gateway-master` | `toxicwind/antigravity-gateway`        | Next.js / TS     | Single-port Next.js + API + WebSocket gateway on `:25128`, active server discovery.                                                                                                     |
 | **`zedra`**           | `/home/toxic/projects/zedra-tanlethanh`           | `tanlethanh/zedra`                     | Rust (Cargo)     | Mobile & remote Zed agent host (`zedra-host` on `:25130`), GPUI bindings.                                                                                                               |
-| **`sovereign`**       | `/home/toxic/sovereign`                           | `toxicwind/sovereign`                  | Bun / TS         | Master control plane: ports SSOT (`config/ports.env`), `pitchfork.toml` / `mise.toml` generation, stack orchestration (`core`, `main`, `agents`, `search`, `mcp`, `monitoring`, `all`). |
+| **`sovereign`**       | `/home/toxic/estate`                           | `toxicwind/sovereign`                  | Bun / TS         | Master control plane: ports SSOT (`config/ports.env`), `pitchfork.toml` / `mise.toml` generation, stack orchestration (`core`, `main`, `agents`, `search`, `mcp`, `monitoring`, `all`). |
 | **`caddy-auth`**      | `/home/toxic/projects/caddy-sovereign-auth`       | `caddyserver/caddy`                    | Go               | Tailscale identity extraction and API key auth middleware.                                                                                                                              |
 | **`greprip`**         | `/home/toxic/projects/greprip`                    | `toxicwind/greprip`                    | Python / Rust    | Fast ERE/BRE pattern translation with SIGPIPE suppression.                                                                                                                              |
 | **`process-compose`** | `/home/toxic/projects/process-compose`            | `F1bonacc1/process-compose`            | Go               | TUI supervisor with MCP SSE security origin filtering and cross-namespace dependency pruning.                                                                                           |
@@ -31,7 +31,7 @@ This document provides a comprehensive structural audit of all 14 custom forks a
 
 ```
                                 [Sovereign Control Plane]
-                                (/home/toxic/sovereign)
+                                (/home/toxic/estate)
                                            │
           ┌────────────────────────────────┼────────────────────────────────┐
           ▼                                ▼                                ▼

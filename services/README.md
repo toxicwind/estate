@@ -68,7 +68,7 @@ cd services/<name>
 #    fill sovereign.port / sovereign.portEnv / sovereign.daemon
 # 2. src/index.ts: replace TEMPLATE_PORT + SERVICE, implement
 # 3. config/ports.env: add <NAME>_PORT=<free port> (check: no duplicates)
-# 4. pitchfork.toml: add [daemons.<name>] with run = "exec /home/toxic/sovereign/services/<name>/dist/<name>"
+# 4. pitchfork.toml: add [daemons.<name>] with run = "exec /home/toxic/estate/services/<name>/dist/<name>"
 #    and env = { <NAME>_PORT = "<port>" }  (or source ports.env)
 # 5. bun install && bun run --filter @sovereign/<name> typecheck
 ```

@@ -6,29 +6,29 @@ task: toposort-shakedown-01 | rounds: 3 | total 2.48s | ok 1 / cut 0
 
 ### C1 [error] (model None, wall Nonems, ttft Nonems)
 
-(error: lane-crash: [Errno 2] No such file or directory: '/home/toxic/sovereign/killer-features/debate-oracle/prompts/debater.md')
+(error: lane-crash: [Errno 2] No such file or directory: '/home/toxic/estate/killer-features/debate-oracle/prompts/debater.md')
 
 ### C2 [error] (model None, wall Nonems, ttft Nonems)
 
-(error: lane-crash: [Errno 2] No such file or directory: '/home/toxic/sovereign/killer-features/debate-oracle/prompts/debater.md')
+(error: lane-crash: [Errno 2] No such file or directory: '/home/toxic/estate/killer-features/debate-oracle/prompts/debater.md')
 
 ### C3 [error] (model None, wall Nonems, ttft Nonems)
 
-(error: lane-crash: [Errno 2] No such file or directory: '/home/toxic/sovereign/killer-features/debate-oracle/prompts/debater.md')
+(error: lane-crash: [Errno 2] No such file or directory: '/home/toxic/estate/killer-features/debate-oracle/prompts/debater.md')
 
 ## Round 2 — rebuttal (0.0s)
 
 ### C1 [error] (model None, wall Nonems, ttft Nonems)
 
-(error: lane-crash: [Errno 2] No such file or directory: '/home/toxic/sovereign/killer-features/debate-oracle/prompts/rebuttal.md')
+(error: lane-crash: [Errno 2] No such file or directory: '/home/toxic/estate/killer-features/debate-oracle/prompts/rebuttal.md')
 
 ### C2 [error] (model None, wall Nonems, ttft Nonems)
 
-(error: lane-crash: [Errno 2] No such file or directory: '/home/toxic/sovereign/killer-features/debate-oracle/prompts/rebuttal.md')
+(error: lane-crash: [Errno 2] No such file or directory: '/home/toxic/estate/killer-features/debate-oracle/prompts/rebuttal.md')
 
 ### C3 [error] (model None, wall Nonems, ttft Nonems)
 
-(error: lane-crash: [Errno 2] No such file or directory: '/home/toxic/sovereign/killer-features/debate-oracle/prompts/rebuttal.md')
+(error: lane-crash: [Errno 2] No such file or directory: '/home/toxic/estate/killer-features/debate-oracle/prompts/rebuttal.md')
 
 ## Round 3 — close (2.48s)
 

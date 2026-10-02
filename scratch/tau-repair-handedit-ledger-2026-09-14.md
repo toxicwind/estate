@@ -11,7 +11,7 @@ Conventions: `dir` is the working directory; paths below are absolute unless not
 ## 1. dnsmasq (NEW — added 2026-09-14)
 
 - **Start command:** `exec ./stack/services/dnsmasq.sh`
-- **Working dir:** `/home/toxic/sovereign` (script: `stack/services/dnsmasq.sh`, mode 0755)
+- **Working dir:** `/home/toxic/estate` (script: `stack/services/dnsmasq.sh`, mode 0755)
 - **What the script does:** `exec sudo /usr/bin/dnsmasq -k -C /etc/dnsmasq.conf`
 - **Ports bound:** 53/tcp+udp on 10.0.0.218 and 127.0.0.1 (per /etc/dnsmasq.conf:
   `interface=enp12s0`, `listen-address=10.0.0.218,127.0.0.1`, `bind-interfaces`)
@@ -29,7 +29,7 @@ Conventions: `dir` is the working directory; paths below are absolute unless not
 ## 2. kafka (REPAIRED 2026-09-14 — was failed since 2026-09-10)
 
 - **Start command:** `exec ./stack/services/kafka.sh`
-- **Working dir:** `/home/toxic/sovereign` (script: `stack/services/kafka.sh`, mode 0755)
+- **Working dir:** `/home/toxic/estate` (script: `stack/services/kafka.sh`, mode 0755)
 - **What the script does:** kills stale listeners on 25144/9093, then
   `exec sudo -E -u kafka env JAVA_HOME=/usr/lib/jvm/java-25-graalvm \
   KAFKA_LOG4J_OPTS="-Dkafka.logs.dir=/var/log/kafka" \
@@ -67,7 +67,7 @@ Conventions: `dir` is the working directory; paths below are absolute unless not
 ## 4. nginx (added by sysd-migrate sibling; CONFIG CLEANED by tau 2026-09-14)
 
 - **Start command:** `exec /usr/bin/nginx -c /etc/nginx/nginx.conf -g 'daemon off; pid /tmp/nginx-pitchfork.pid;'`
-- **Working dir:** `/home/toxic/sovereign` (dir=".")
+- **Working dir:** `/home/toxic/estate` (dir=".")
 - **Ports bound:** 62200/tcp
 - **Env vars:** none (`NGINX_PORT=62200` in ports.env is informational)
 - **Readiness:** `ss -ltn 'sport = :62200' | grep -q LISTEN`
@@ -85,7 +85,7 @@ Conventions: `dir` is the working directory; paths below are absolute unless not
 ## 5. qdrant (BINARY RESTORED 2026-09-14 — was running from deleted inode)
 
 - **Start command:** `exec /home/toxic/.cargo/bin/qdrant-server --config-path ./qdrant-config.yaml`
-- **Working dir:** `/home/toxic/sovereign`
+- **Working dir:** `/home/toxic/estate`
 - **Ports bound:** 25133/tcp (HTTP), 6334 internal (per qdrant-config.yaml)
 - **Env vars:** `QDRANT_PORT=25133`
 - **Readiness:** HTTP `http://127.0.0.1:25133/`
@@ -94,14 +94,14 @@ Conventions: `dir` is the working directory; paths below are absolute unless not
 - **mise:** false
 - **Groups:** core, main, all, sovereign-core
 - **Note:** binary was missing; restored 2026-09-14 with official static build 1.19.1.
-  Data dir `/home/toxic/sovereign/qdrant_data` intact.
+  Data dir `/home/toxic/estate/qdrant_data` intact.
 
 ## 6. tau daemon (BROKEN — do NOT migrate as-is)
 
 - **Current (broken):** `exec bun run /home/toxic/projects/sovereign-projects/tau/packages/coding-agent/src/cli.ts`
   — file does not exist (repo restructured to `engine/packages/coding-agent/src/cli/*.ts`).
 - **Status 2026-09-14:** stopped + disabled after error-loop. Needs tau maintainer to pick
-  the correct entrypoint. Stale copy with old layout: `/home/toxic/sovereign/tau/...`.
+  the correct entrypoint. Stale copy with old layout: `/home/toxic/estate/tau/...`.
 
 ---
 
@@ -120,7 +120,7 @@ Conventions: `dir` is the working directory; paths below are absolute unless not
 
 - Running: pitchfork 2.16.0 supervisor (PID 473253, started ~04:37 MDT) from
   `/home/toxic/.local/share/mise/installs/pitchfork/2.16.0/pitchfork supervisor run`,
-  cwd `/home/toxic/sovereign`. Old supervisor (dead IPC) killed.
+  cwd `/home/toxic/estate`. Old supervisor (dead IPC) killed.
 - Live: dnsmasq, kafka, herd, redis, qdrant, prometheus, grafana, mesh-hub.
 - Known-bad: `mesh` (mcpproxy-go binary missing, no go.mod — needs rebuild decision).
 

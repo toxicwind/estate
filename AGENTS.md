@@ -1,4 +1,4 @@
-# AGENTS.md — Sovereign Control Plane (`/home/toxic/sovereign`)
+# AGENTS.md — Sovereign Control Plane (`/home/toxic/estate`)
 
 **Role**: Core control plane & orchestration layer for the Sovereign ecosystem.
 **Stack**: TypeScript (Bun), Python, mise, pitchfork, Kafka, Qdrant, Prometheus/Grafana.
@@ -149,7 +149,7 @@ opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable
 
 ## 🏗️ Build Server (brand - :25148)
 
-- **Daemon**: Running on port `25148` managed via Pitchfork (`/home/toxic/sovereign/tools/brand/brandd.py`).
+- **Daemon**: Running on port `25148` managed via Pitchfork (`/home/toxic/estate/tools/brand/brandd.py`).
 - **Heavy Builds**: Use `brand submit --name <name> --repo <dir> --toolchain <bun|rust|go|python> --cmd "<cmd>"` for heavy builds rather than running long compilation in turn shell.
 - **Worker & Cache Architecture**:
   - 2-worker concurrent queue preventing resource exhaustion.
@@ -159,7 +159,7 @@ opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable
 
 ## 🔌 Port SSOT
 
-`/home/toxic/sovereign/config/ports.env` — all 25xxx, never invent.
+`/home/toxic/estate/config/ports.env` — all 25xxx, never invent.
 
 ---
 

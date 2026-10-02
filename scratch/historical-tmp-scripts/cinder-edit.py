@@ -1,6 +1,6 @@
 
 import json
-L="/home/toxic/sovereign/hatch/agents/ember/coord/lanes"
+L="/home/toxic/estate/hatch/agents/ember/coord/lanes"
 now="2026-09-22T04:45:00Z"
 jobs=[
  ("bridge-bootstrap-v2.json","done","Deliverable verified on box: coord/work/bridge-bootstrap-v2-design.md (written 2026-09-21, sha256 ok). Owner pre-restart, no live worker. Closed; re-open if coordinator re-staffs."),

@@ -22,7 +22,7 @@ import concurrent.futures as cf
 import sys
 import time
 
-sys.path.insert(0, "/home/toxic/sovereign/agents/oracle-market/bin")
+sys.path.insert(0, "/home/toxic/estate/agents/oracle-market/bin")
 import engine
 
 HEDGE_DELAY_S = 0.25  # scaled stand-in for the 40s production tail gate

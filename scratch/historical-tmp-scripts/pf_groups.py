@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-p = "/home/toxic/sovereign/pitchfork.toml"
+p = "/home/toxic/estate/pitchfork.toml"
 s = open(p).read()
 old = '"search-ui", "axiom", "rust-web"'
 new = '"search-ui", "openfang-front", "rust-web"'

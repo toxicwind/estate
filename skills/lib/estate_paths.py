@@ -9,7 +9,7 @@ Resolution order for each root:
   3. $HOME/<name>                    (the awrawr-pc default)
 
 Every returned path is resolved, so the compat symlinks
-(/home/toxic/sovereign -> estate, /home/toxic/projects -> estate/ranch)
+(/home/toxic/estate -> estate, /home/toxic/projects -> estate/ranch)
 never leak into a report or a comparison.
 
     from estate_paths import ESTATE, RANCH, SKILLS, VENDORED, PORTS_ENV

@@ -35,7 +35,7 @@ def buildsrv_submit(name: str, cmd: str, repo: str = "",
         argv += ["--toolchain", toolchain]
     return _buildsrv_run(argv)'''
 
-NEW_SUBMIT = '''_BUILDSRV_DEFAULT_REPO = "/home/toxic/sovereign/tools/buildsrv"
+NEW_SUBMIT = '''_BUILDSRV_DEFAULT_REPO = "/home/toxic/estate/tools/buildsrv"
 
 
 @mcp.tool()
@@ -72,12 +72,12 @@ def buildsrv_submit(name: str, cmd: str, toolchain: str,
         argv += ["--workdir", workdir.strip()]
     return _buildsrv_run(argv)'''
 
-with open('/home/toxic/sovereign/projects/bridge/yote/awrawr_mcp.py') as f:
+with open('/home/toxic/estate/projects/bridge/yote/awrawr_mcp.py') as f:
     src = f.read()
 
 assert OLD_SUBMIT in src, "OLD_SUBMIT block not found - file changed?"
 src = src.replace(OLD_SUBMIT, NEW_SUBMIT)
 
-with open('/home/toxic/sovereign/projects/bridge/yote/awrawr_mcp.py', 'w') as f:
+with open('/home/toxic/estate/projects/bridge/yote/awrawr_mcp.py', 'w') as f:
     f.write(src)
 print("patched OK")

@@ -1,7 +1,7 @@
 """One-shot patch of bench/test_core.py for the oracle-market reliability redesign."""
 import re
 
-p = "/home/toxic/sovereign/agents/oracle-market/bench/test_core.py"
+p = "/home/toxic/estate/agents/oracle-market/bench/test_core.py"
 src = open(p).read()
 
 # 1) RefusalGate (removed) -> emission-gate honesty checks.

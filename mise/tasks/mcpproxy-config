@@ -46,7 +46,7 @@ case "${1:-}" in
 
   max-yolo)
     echo "Applying code-audited max-yolo config to $MCPPROXY_CONFIG ..."
-    python3 /home/toxic/sovereign/tools/mcpproxy-max-yolo-v2.py
+    python3 /home/toxic/estate/tools/mcpproxy-max-yolo-v2.py
     echo "Done. Run 'mise run mcpproxy-config restart' to apply."
     ;;
 
@@ -118,7 +118,7 @@ case "${1:-}" in
 
   restart)
     echo "Restarting mcpproxy..."
-    cd /home/toxic/sovereign
+    cd /home/toxic/estate
     pitchfork stop mcpproxy 2>/dev/null || true
     sleep 2
     pitchfork start mcpproxy

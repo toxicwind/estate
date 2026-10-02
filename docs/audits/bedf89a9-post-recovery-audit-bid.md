@@ -9,7 +9,7 @@
 ## 1. Live state (verified 2026-09-19 01:46:24 UTC via bridge)
 
 - **Yote UP:** 25102 LISTEN (bun pid 796770, started 01:38:44Z), /health 200 (0.2ms)
-- **Recovery timestamp:** 2026-09-19T01:38:44.708Z (from `/home/toxic/sovereign/projects/yote/logs/yote.log`)
+- **Recovery timestamp:** 2026-09-19T01:38:44.708Z (from `/home/toxic/estate/projects/yote/logs/yote.log`)
 - **Recovery was TARGETED, not systemic:** `pitchfork list` shows:
   - sovereign/yote → **running**
   - sovereign/herd → **stopped**
@@ -17,7 +17,7 @@
   - sovereign/sovereign-router → **stopped**
   - sovereign/shep → running
 - **Config unchanged:** `[daemons.yote]` still `depends=["shep"]`, `retry=true`, `auto=["start"]`. No hardening applied.
-- **Supervisor blind:** `/home/toxic/sovereign/logs/pitchfork-supervisor.log` contains ZERO yote lines. The recovery is invisible in supervisor logging.
+- **Supervisor blind:** `/home/toxic/estate/logs/pitchfork-supervisor.log` contains ZERO yote lines. The recovery is invisible in supervisor logging.
 
 ---
 

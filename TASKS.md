@@ -196,8 +196,8 @@ Currently, `mise run up` outputs cryptic messages like `Starting core daemon gro
 ## Actions
 
 1. **Create Scripts for Better Logging**
-   - Create `start_services.sh` in `/home/toxic/sovereign/scripts/` to provide detailed, step-by-step output when starting services.
-   - Create `check_services.sh` in `/home/toxic/sovereign/scripts/` to provide detailed health checks.
+   - Create `start_services.sh` in `/home/toxic/estate/scripts/` to provide detailed, step-by-step output when starting services.
+   - Create `check_services.sh` in `/home/toxic/estate/scripts/` to provide detailed health checks.
 
 2. **Update `mise.toml`**
    - Modify the `up` task to use `start_services.sh` instead of the default `pitchfork start` command.

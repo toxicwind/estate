@@ -10,14 +10,14 @@ def sh(cmd):
 out = {}
 out["listener"] = sh("ss -tlnp 2>/dev/null | grep ':25379' || echo NO_LISTENER_25379")
 try:
-    txt = open("/home/toxic/sovereign/pitchfork.toml").read()
+    txt = open("/home/toxic/estate/pitchfork.toml").read()
     m = re.search(r"\[daemons\.ws-exec-tunnel\].*?(?=\n\[|\Z)", txt, re.S)
     out["toml_section"] = (m.group(0).strip() if m else "SECTION_NOT_FOUND")[:800]
 except Exception as e:
     out["toml_section"] = "ERR %s" % e
-out["refs_25379"] = sh("grep -rn '25379' /home/toxic/sovereign/pitchfork.toml /home/toxic/sovereign/config/ports.env 2>/dev/null | head -8")
-out["git_history"] = sh("cd /home/toxic/sovereign && git log --oneline -8 -S 'ws-exec-tunnel' -- pitchfork.toml")
-out["pitchfork_state"] = sh("cd /home/toxic/sovereign && pitchfork list 2>/dev/null | grep -i 'ws-exec-tunnel' || echo NOT_IN_PITCHFORK_LIST")
+out["refs_25379"] = sh("grep -rn '25379' /home/toxic/estate/pitchfork.toml /home/toxic/estate/config/ports.env 2>/dev/null | head -8")
+out["git_history"] = sh("cd /home/toxic/estate && git log --oneline -8 -S 'ws-exec-tunnel' -- pitchfork.toml")
+out["pitchfork_state"] = sh("cd /home/toxic/estate && pitchfork list 2>/dev/null | grep -i 'ws-exec-tunnel' || echo NOT_IN_PITCHFORK_LIST")
 
 has_listener = "NO_LISTENER_25379" not in out["listener"]
 in_toml = "SECTION_NOT_FOUND" not in out["toml_section"] and "ERR" not in out["toml_section"]

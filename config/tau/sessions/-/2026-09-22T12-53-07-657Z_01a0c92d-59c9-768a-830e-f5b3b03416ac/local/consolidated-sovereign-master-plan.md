@@ -1,6 +1,6 @@
 # Consolidated Sovereign Master Execution & Architecture Plan
 
-Synthesized from all session directives, user fragments, and completed architectural repairs across the `/home/toxic/sovereign` estate.
+Synthesized from all session directives, user fragments, and completed architectural repairs across the `/home/toxic/estate` estate.
 
 ---
 
@@ -9,7 +9,7 @@ Synthesized from all session directives, user fragments, and completed architect
 ```mermaid
 flowchart TD
     subgraph StorageAndFS["1. Storage, Git SSOT & Deduplication"]
-        Master["/home/toxic/sovereign\n(Sole Master Repository · 32 Stale Worktrees Pruned)"]
+        Master["/home/toxic/estate\n(Sole Master Repository · 32 Stale Worktrees Pruned)"]
         Fclones["BTRFS Extent Deduplication (fclones)\n18,078 Redundant Files · ~4.8 GB Reclaimed"]
         Cold["/home/toxic/cold-storage/\n(Isolated Cell Backups, Gists, 448 Tau Logs)"]
     end
@@ -80,7 +80,7 @@ flowchart TD
 
 ```bash
 # 1. Verify filesystem health & PATH bin symlinks
-bun /home/toxic/sovereign/helpers/estate-scanner.ts
+bun /home/toxic/estate/helpers/estate-scanner.ts
 
 # 2. Pre-flight sub-millisecond AST/syntax validation (Python, TS, JSON, Bash)
 syntax-guard <file_path>
@@ -89,10 +89,10 @@ syntax-guard <file_path>
 tau audit
 
 # 4. Super Ralph unit & integration suite
-cd /home/toxic/sovereign/projects/mesh/super-ralph && bun test
+cd /home/toxic/estate/projects/mesh/super-ralph && bun test
 
 # 5. Rebuild documentation graph & 11ty-style tagged collections index
-bun /home/toxic/sovereign/helpers/doc-graph-builder.ts
+bun /home/toxic/estate/helpers/doc-graph-builder.ts
 
 # 6. High-speed research paper search across arXiv / alphaXiv
 python3 /home/toxic/deep-paper-reader/paper-poller/bin/race_papers.py "<query>" --maxn 6

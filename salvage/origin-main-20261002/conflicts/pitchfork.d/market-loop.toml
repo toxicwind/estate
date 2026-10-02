@@ -2,8 +2,8 @@
 # Owned by the sovereign project; the parent only composes it.
 
 [daemons.market-loop]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/agents/weaver/bin/market-loop.ts"
-dir = "/home/toxic/sovereign/agents/weaver"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/agents/weaver/bin/market-loop.ts"
+dir = "/home/toxic/estate/agents/weaver"
 mise = false
 retry = true
 auto = ["start"]

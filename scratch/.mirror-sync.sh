@@ -1,5 +1,5 @@
 #!/bin/bash
-# .mirror-sync.sh — cell ~/workspace -> /home/toxic/sovereign/shingle-workspace
+# .mirror-sync.sh — cell ~/workspace -> /home/toxic/estate/shingle-workspace
 # Method: tar (with regenerable-bulk excludes) -> base64 -> 118KB pieces ->
 #   awrawr-mcp exec.py printf-append -> bridge reassemble + sha256 verify -> unpack.
 # Transport ceiling (measured 2026-09-14): the bridge serializes large commands
@@ -23,15 +23,15 @@
 #        && sha256sum /home/toxic/.mirror-in/mirror.tar.gz'   # compare with local
 #      exec.py 'tar -tzf /home/toxic/.mirror-in/mirror.tar.gz > /dev/null && echo TAROK'
 #   4. Unpack (ADDITIVE — never touch /home/toxic/workspace, never overwrite sovereign/):
-#      exec.py 'tar -xzf /home/toxic/.mirror-in/mirror.tar.gz -C /home/toxic/sovereign/shingle-workspace'
+#      exec.py 'tar -xzf /home/toxic/.mirror-in/mirror.tar.gz -C /home/toxic/estate/shingle-workspace'
 #   5. Verify: compare `find <dir> -type f | wc -l` and `du -sb` cell-vs-bridge.
 #
 # Safety: additive only. /home/toxic/workspace is a DIFFERENT repo
 # (toxicwind/local-work-archive) — never write there. Never overwrite existing
-# files under /home/toxic/sovereign/.
+# files under /home/toxic/estate/.
 #
 # PROPOSAL (not installed): run deltas via cron on the cell, e.g.
-#   hatch-cron: 0 4 * * * : /home/toxic/sovereign/shingle-workspace/.mirror-sync.sh --delta
+#   hatch-cron: 0 4 * * * : /home/toxic/estate/shingle-workspace/.mirror-sync.sh --delta
 # --delta would rsync-style diff (tar --newer) and ship only changed files.
 # Needs Chris's approval before installing any schedule.
 echo "See header comments for the mirror method. Nothing executed."

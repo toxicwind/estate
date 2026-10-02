@@ -253,7 +253,7 @@ const llamaMcp = await runMcp(
   [
     "/home/toxic/.bun/bin/bun",
     "run",
-    "/home/toxic/sovereign/src/mcp/llama_swap.ts",
+    "/home/toxic/estate/src/mcp/llama_swap.ts",
   ],
   "llama_swap_health",
   {},
@@ -265,7 +265,7 @@ const llamaModels = await runMcp(
   [
     "/home/toxic/.bun/bin/bun",
     "run",
-    "/home/toxic/sovereign/src/mcp/llama_swap.ts",
+    "/home/toxic/estate/src/mcp/llama_swap.ts",
   ],
   "llama_swap_models",
   {},

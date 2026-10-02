@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """forge: update live-tree manifest herd entry to the fixed binary."""
-p = "/home/toxic/sovereign/deploy/manifest.yaml"
+p = "/home/toxic/estate/deploy/manifest.yaml"
 L = open(p).readlines()
 i = next(i for i, l in enumerate(L) if l.rstrip("\n") == "  herd:")
 L[i + 2] = '    sha256: "98978a2612445ff59b07abb51797d453368bb494f9c4fb28ed57c6092d2281f6"\n'

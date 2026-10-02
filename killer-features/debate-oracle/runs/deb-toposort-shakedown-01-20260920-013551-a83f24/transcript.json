@@ -53,7 +53,7 @@
      "lane": "C1",
      "status": "error",
      "argument": "",
-     "error": "lane-crash: [Errno 2] No such file or directory: '/home/toxic/sovereign/killer-features/debate-oracle/prompts/debater.md'",
+     "error": "lane-crash: [Errno 2] No such file or directory: '/home/toxic/estate/killer-features/debate-oracle/prompts/debater.md'",
      "ttft_ms": null,
      "wall_ms": null,
      "tokens": {}
@@ -62,7 +62,7 @@
      "lane": "C2",
      "status": "error",
      "argument": "",
-     "error": "lane-crash: [Errno 2] No such file or directory: '/home/toxic/sovereign/killer-features/debate-oracle/prompts/debater.md'",
+     "error": "lane-crash: [Errno 2] No such file or directory: '/home/toxic/estate/killer-features/debate-oracle/prompts/debater.md'",
      "ttft_ms": null,
      "wall_ms": null,
      "tokens": {}
@@ -71,7 +71,7 @@
      "lane": "C3",
      "status": "error",
      "argument": "",
-     "error": "lane-crash: [Errno 2] No such file or directory: '/home/toxic/sovereign/killer-features/debate-oracle/prompts/debater.md'",
+     "error": "lane-crash: [Errno 2] No such file or directory: '/home/toxic/estate/killer-features/debate-oracle/prompts/debater.md'",
      "ttft_ms": null,
      "wall_ms": null,
      "tokens": {}
@@ -90,7 +90,7 @@
      "lane": "C1",
      "status": "error",
      "argument": "",
-     "error": "lane-crash: [Errno 2] No such file or directory: '/home/toxic/sovereign/killer-features/debate-oracle/prompts/rebuttal.md'",
+     "error": "lane-crash: [Errno 2] No such file or directory: '/home/toxic/estate/killer-features/debate-oracle/prompts/rebuttal.md'",
      "ttft_ms": null,
      "wall_ms": null,
      "tokens": {}
@@ -99,7 +99,7 @@
      "lane": "C2",
      "status": "error",
      "argument": "",
-     "error": "lane-crash: [Errno 2] No such file or directory: '/home/toxic/sovereign/killer-features/debate-oracle/prompts/rebuttal.md'",
+     "error": "lane-crash: [Errno 2] No such file or directory: '/home/toxic/estate/killer-features/debate-oracle/prompts/rebuttal.md'",
      "ttft_ms": null,
      "wall_ms": null,
      "tokens": {}
@@ -108,7 +108,7 @@
      "lane": "C3",
      "status": "error",
      "argument": "",
-     "error": "lane-crash: [Errno 2] No such file or directory: '/home/toxic/sovereign/killer-features/debate-oracle/prompts/rebuttal.md'",
+     "error": "lane-crash: [Errno 2] No such file or directory: '/home/toxic/estate/killer-features/debate-oracle/prompts/rebuttal.md'",
      "ttft_ms": null,
      "wall_ms": null,
      "tokens": {}

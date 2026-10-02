@@ -18,7 +18,7 @@ AI agents and developers performing automated git operations who need protection
 - **Secret Boundary Verification** - Blocks commits if token patterns detected in tracked files
 - **Credential Safety** - Uses git credential helper or SSH only (never token-in-URL)
 - **Agentic Audit** - Scans for completion UUIDs, .claude/.codex/.cursor artifacts, and secret leaks
-- **SSOT Respect** - Excludes `/home/toxic/sovereign/config/ports.env` from secret scanning
+- **SSOT Respect** - Excludes `/home/toxic/estate/config/ports.env` from secret scanning
 - **Dry-run Mode** - `--dry-run` previews operations without executing
 - **Conventional Commits** - Enforces conventional commit format (feat:, fix:, chore:, etc.)
 - **Automatic .gitignore** - Adds `.bak.` files to .gitignore automatically
@@ -45,12 +45,12 @@ bun helpers/git-mutator/cli.ts diff-configs config/herd.yaml config/llama-swap.y
 ```
 
 ## Configuration
-- **Location**: `/home/toxic/sovereign/helpers/git-mutator/` (modular Bun/TS helper - 6 files)
-- **Port SSOT**: `/home/toxic/sovereign/config/ports.env` (excluded from secret scanning)
-- **Git Ignore**: `/home/toxic/sovereign/.gitinnie` (security boundaries)
+- **Location**: `/home/toxic/estate/helpers/git-mutator/` (modular Bun/TS helper - 6 files)
+- **Port SSOT**: `/home/toxic/estate/config/ports.env` (excluded from secret scanning)
+- **Git Ignore**: `/home/toxic/estate/.gitinnie` (security boundaries)
 
 ## Development
-Modify the TypeScript source in `/home/toxic/sovereign/helpers/git-mutator/`:
+Modify the TypeScript source in `/home/toxic/estate/helpers/git-mutator/`:
 - `cli.ts` - Command-line interface
 - `git.ts` - Core git operations
 - `api.ts` - API definitions

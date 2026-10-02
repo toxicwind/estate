@@ -79,7 +79,7 @@ the reusable pipeline logic (programmable, containerized, cached, traced).
 ## pitchfork Daemon Definition (draft)
 
 ```toml
-# /home/toxic/sovereign/pitchfork.toml — append
+# /home/toxic/estate/pitchfork.toml — append
 
 [daemons."build-runner"]
 command = "/home/toxic/actions-runner-nsl/run.sh"

@@ -148,7 +148,7 @@ describe("generated-artifact sync", () => {
     const candidates = [
       process.env.HERD_ASTMATRIX_DIR,
       "/home/toxic/.worktrees/ranch-providers/stockyard/herd/internal/astmatrix",
-      "/home/toxic/sovereign/projects/range/ranch/stockyard/herd/internal/astmatrix",
+      "/home/toxic/estate/projects/range/ranch/stockyard/herd/internal/astmatrix",
     ].filter((p): p is string => typeof p === "string" && p.length > 0);
     let consumerPath = "";
     let consumer = "";

@@ -3,7 +3,7 @@
 as committed config. Run on yote. Idempotent: skips if aliases: already present."""
 import sys
 
-p = sys.argv[1] if len(sys.argv) > 1 else '/home/toxic/sovereign/config/herd.yaml'
+p = sys.argv[1] if len(sys.argv) > 1 else '/home/toxic/estate/config/herd.yaml'
 s = open(p).read()
 if '\naliases:\n' in s:
     print('aliases: section already present, nothing to do')

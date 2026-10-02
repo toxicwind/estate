@@ -7,7 +7,7 @@ both boxes: hatch /tmp was wiped, and yote /tmp/kimiclaw-repair/ does not
 exist (yote uptime 1d17h — not a reboot; the staging was on hatch only).
 
 ## What was reconstructed (this tree)
-Source of truth for the rebuild: `/home/toxic/sovereign/tools/kimi-claw/`
+Source of truth for the rebuild: `/home/toxic/estate/tools/kimi-claw/`
 - `dist/` (the real KimiClaw port: dist/src/config.js connector semantics,
   dist/src/session-routing.js session keys, dist/src/im/ transports)
 - `openclaw.plugin.json` (connector fields: bridge{url,userId,token,

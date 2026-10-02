@@ -1,7 +1,7 @@
 # Phase 1 — Paper & docs findings: modularizing pitchfork.toml
 
 Research worker: **Wren** (Ember's crew), 2026-09-30.
-Target: /home/toxic/sovereign/pitchfork.toml on yote — 995 lines, 82 `[daemons.*]` sections, pitchfork 2.25.0.
+Target: /home/toxic/estate/pitchfork.toml on yote — 995 lines, 82 `[daemons.*]` sections, pitchfork 2.25.0.
 Key local fact (from the file's own header comment, verified read-only): **pitchfork does NOT
 hot-reload this file.** Editing a `[daemons.*]` section changes nothing until
 `bin/pitchfork-restart sovereign/<name>` re-registers the daemon. Any modularization must

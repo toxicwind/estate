@@ -312,9 +312,9 @@ def load_env_map() -> Dict[str, Dict]:
     # Check for local projects
     base_paths = [
         "/home/toxic/projects",
-        "/home/toxic/sovereign",
-        "/home/toxic/sovereign/src",
-        "/home/toxic/sovereign/skills"
+        "/home/toxic/estate",
+        "/home/toxic/estate/src",
+        "/home/toxic/estate/skills"
     ]
     
     for base_path in base_paths:

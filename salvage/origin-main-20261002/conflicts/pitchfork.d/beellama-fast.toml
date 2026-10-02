@@ -3,8 +3,8 @@
 
 [daemons.beellama-fast]
 port = 25122
-run = "exec /home/toxic/sovereign/stack/services/_consolidated_herd_20260924/beellama-fast.sh"
-dir = "/home/toxic/sovereign"
+run = "exec /home/toxic/estate/stack/services/_consolidated_herd_20260924/beellama-fast.sh"
+dir = "/home/toxic/estate"
 mise = false
 retry = true
 env = { BEELLAMA_PORT = "25122" }

@@ -8,7 +8,7 @@ Automated CI/CD push building via brand and git hooks with semantic versioning. 
 
 ### Features
 
-- **Push build dispatch script**: `/home/toxic/sovereign/helpers/push-build.sh` — dispatches versioned builds to brand
+- **Push build dispatch script**: `/home/toxic/estate/helpers/push-build.sh` — dispatches versioned builds to brand
 - **Automatic version extraction**: Extracts version from `packages/coding-agent/package.json` or root `package.json` (e.g. `v18.3.0`)
 - **Toolchain detection**: Automatically detects toolchain (`bun`, `rust`, `go`, `python`) and submits JSON payload to `/home/toxic/brand/queue/`
 - **Git post-commit hook**: Triggers build automatically on commit
@@ -18,10 +18,10 @@ Automated CI/CD push building via brand and git hooks with semantic versioning. 
 ```bash
 # Ensure the post-commit hook is active (installed via git template)
 # On commit, the hook automatically runs:
-/home/toxic/sovereign/helpers/push-build.sh
+/home/toxic/estate/helpers/push-build.sh
 
 # Or manually trigger a build:
-/home/toxic/sovereign/helpers/push-build.sh
+/home/toxic/estate/helpers/push-build.sh
 
 # Check the brand queue status
 curl http://127.0.0.1:25148/queue
@@ -29,7 +29,7 @@ curl http://127.0.0.1:25148/queue
 
 ### Architecture
 
-The git `post-commit` hook is configured at clone time and runs `/home/toxic/sovereign/helpers/push-build.sh` on every commit. The script:
+The git `post-commit` hook is configured at clone time and runs `/home/toxic/estate/helpers/push-build.sh` on every commit. The script:
 1. Extracts the version from package.json (or root package.json)
 2. Detects the toolchain in use
 3. Submits a JSON payload to the brand queue at port 25148
@@ -39,7 +39,7 @@ Brand then processes the queue and dispatches builds to the appropriate build ag
 
 ### Config / optional services
 
-- `/home/toxic/sovereign/helpers/push-build.sh` — dispatch script (required)
+- `/home/toxic/estate/helpers/push-build.sh` — dispatch script (required)
 - Brand queue at port 25148 — receives JSON payloads
 - `packages/coding-agent/package.json` or root `package.json` — version source
 - Toolchain auto-detection for: bun, rust, go, python
