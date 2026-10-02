@@ -1,5 +1,0 @@
-RESUME NOTE (2026-09-29, stood down by watchdog throttle)
-- emergent-august/README.md on disk is UNCHANGED (old content, git clean).
-- emergent-august-README.b64.partial = first 2414 of 3620 base64 chars of the new README (chunks 1-2 of 3).
-- FULL new README is verified on hatch at /home/hatch/workspace/readme-op/flint/emergent-august-README.md (sha256 a2453e8c0753318e5ece0dd228444657fd740c94bda710a448ec5a9496323736).
-- Resume: get missing chunk 3 (last 1206 chars), append, base64 -d > README.md, verify sha256, commit, push to main.

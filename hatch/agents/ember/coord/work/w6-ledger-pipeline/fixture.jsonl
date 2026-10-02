@@ -1,6 +1,0 @@
-{"type": "item", "seq": 0, "item": {"type": "message", "role": "user", "text": "hello world benign turn one"}}
-{"type": "item", "seq": 1, "item": {"type": "message", "role": "assistant", "text": "hi there"}}
-{"type": "item", "seq": 2, "item": {"type": "message", "role": "user", "text": "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ"}}
-{"type": "item", "seq": 3, "item": {"type": "message", "role": "assistant", "text": "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"}}
-{"type": "item", "seq": 4, "item": {"type": "message", "role": "user", "text": "another benign turn here"}}
-{"type": "item", "seq": 5, "item": {"type": "message", "role": "assistant", "text": "sure thing"}}
