@@ -1,1 +1,0 @@
-    private java.lang.String mainUrl = "https://doodstream.com";
