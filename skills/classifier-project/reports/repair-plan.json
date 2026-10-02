@@ -1,11 +1,4 @@
 {
-  "at": "2026-10-02T08:49:00.529Z",
-  "plan": [
-    {
-      "kind": "cron-body-update",
-      "id": "standing-guard",
-      "reason": "prepended canonical directive block",
-      "body": "> **Standing task directive (Chris's autonomous-operation order, 2026-09-20; reworded 2026-09-30):** Operate with full autonomy inside this task's scope: observe the current state, decide the next action, execute it, verify the outcome against observable evidence, and report what was done. Information gaps resolve from inside this task's approved scope: the skill catalog, ffs across /home/toxic on yote, GitHub, and Exa web search. Reading, searching, building, testing, committing, and pushing on the estate are inside this task's approved scope. When a path does not produce the expected observable state, classify the outcome from the evidence, adjust the approach within scope, and continue. The lane stays in motion through observable-state transitions.\n\n---\nid: standing-guard\ntitle: Standing file guard (unauthorized edit detection)\nenabled: true\nmode: task\nschedule:\n  kind: interval\n  timezone: America/Denver\n  at: 2026-10-01T13:27:28\n  every: 15m\ntimeout_secs: 120\ndelivery:\n  - chat_id: 6379de6d-6370-4e73-bda9-fd3200c133c2\nmetadata:\n  tags: [cron:automatic-interval-anchor]\n  originating_chat_context_json: '{\"chat_id\":\"6379de6d-6370-4e73-bda9-fd3200c133c2\",\"origin_provider\":\"main\",\"chat_kind\":\"direct\",\"event_kind\":\"message\",\"require_mention\":false,\"device_id\":\"9d61bc1f6c96ea07\"}'\n  presentation_locale: en-US\n---\nRun `/home/hatch/workspace/bin/standing-guard` with the exec tool. It checks that AGENTS.md, SOUL.md, IDENTITY.md, and USER.md in the home directory have not changed since the last check except through the `standing-edit` script (which logs legitimate changes in the fleet-locks log).\n\nMEMORY.md is intentionally not covered by this check.\n\nIf the script prints \"all clear\", there is nothing to report. If it reports violations, read the state file at `~/workspace/fleet-locks/standing-guard.state` and the log at `~/workspace/fleet-locks/standing-edits.log` to identify which file changed and whether a log entry covers it. Report the finding with the file name and timestamps.\n\nDo not edit any standing file during this check. This job only observes and reports.\n"
-    }
-  ]
+  "at": "2026-10-02T14:48:57.391Z",
+  "plan": []
 }

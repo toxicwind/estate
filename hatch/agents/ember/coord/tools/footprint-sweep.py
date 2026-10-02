@@ -14,7 +14,7 @@ import os
 import re
 import sys
 
-COORD = sys.argv[1] if len(sys.argv) > 1 else "/home/toxic/sovereign/hatch/agents/ember/coord"
+COORD = sys.argv[1] if len(sys.argv) > 1 else "/home/toxic/estate/hatch/agents/ember/coord"
 PORT_RE = re.compile(r":(\d{4,5})\b")
 LIVE = {"active", "in-progress", "blocked", "running"}
 

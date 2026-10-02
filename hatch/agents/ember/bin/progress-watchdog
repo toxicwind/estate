@@ -49,9 +49,9 @@ RUN_LEDGER = WDIR / "progress_runs.jsonl"
 WATCHLIST = WDIR / "hatch_agents.txt"
 SQUAWK = str(HOME / "workspace" / "bin" / "squawk")
 EXEC = str(HOME / "workspace" / "awrawr-bridge" / "exec.py")
-YOTE_SCRIPT = "/home/toxic/sovereign/bin/progress-watchdog.py"
-PF_RESTART = "/home/toxic/sovereign/bin/pitchfork-restart"
-CHANNEL = "/home/toxic/sovereign/hatch/agents/ember/squawk-root/bid-market"
+YOTE_SCRIPT = "/home/toxic/estate/bin/progress-watchdog.py"
+PF_RESTART = "/home/toxic/estate/bin/pitchfork-restart"
+CHANNEL = "/home/toxic/estate/hatch/agents/ember/squawk-root/bid-market"
 PAUSE_STATE = HOME / ".cache" / "shingle" / "swarm-paused.json"
 
 HEARTBEAT_S = 1800

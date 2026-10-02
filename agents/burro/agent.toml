@@ -4,13 +4,24 @@ description = "ranch monorepo: ranch monorepo restructure: bun workspaces + moon
 author = "toxicwind"
 module = "builtin:chat"
 schedule = "reactive"
+fallback_models = []
+priority = "Normal"
+skills = []
+mcp_servers = []
+tags = [
+    "fleet",
+    "ranch monorepo",
+]
 workspace = "/home/toxic/.openfang/workspaces/burro"
+state_dir = "/home/toxic/.openfang/workspaces/burro"
 generate_identity_files = true
-tags = ["fleet", "ranch monorepo"]
+tool_allowlist = []
+tool_blocklist = []
+cache_context = false
 
 [model]
 provider = "llama-swap"
-model = "qwen3.5-9b-tool"
+model = "meta/llama-3.2-11b-vision-instruct"
 max_tokens = 131072
 temperature = 0.7
 system_prompt = """
@@ -32,21 +43,46 @@ max_memory_bytes = 268435456
 max_cpu_time_ms = 30000
 max_tool_calls_per_minute = 60
 max_llm_tokens_per_hour = 500000
-max_cost_per_hour_usd = 0
+max_network_bytes_per_hour = 104857600
+max_cost_per_hour_usd = 0.0
+max_cost_per_day_usd = 0.0
+max_cost_per_month_usd = 0.0
 
 [capabilities]
-network = ["127.0.0.1:*", "localhost:*", "*.github.com"]
-tools = ["file_read", "file_list", "file_write", "web_fetch", "web_search", "memory_store", "memory_recall", "agent_spawn", "mcp_call", "channel_send"]
+network = [
+    "127.0.0.1:*",
+    "localhost:*",
+    "*.github.com",
+]
+tools = [
+    "file_read",
+    "file_list",
+    "file_write",
+    "web_fetch",
+    "web_search",
+    "memory_store",
+    "memory_recall",
+    "agent_spawn",
+    "mcp_call",
+    "channel_send",
+]
 memory_read = ["*"]
-memory_write = ["self.*", "burro.*"]
+memory_write = [
+    "self.*",
+    "burro.*",
+]
 agent_spawn = true
+agent_message = []
+shell = []
+ofp_discover = false
+ofp_connect = []
 
 [tools]
 
 [metadata]
 fleet_born = true
-join_lane = "template-render"
 joined_at = "2026-09-30T08:54:29.096Z"
+join_lane = "template-render"
 
 [persona]
 name = "Burro"

@@ -1,118 +1,203 @@
-# pd-mcp
+<div align="center">
 
-Star-grade ProjectDiscovery MCP server (Bun/TypeScript). Wraps the estate's
-PD Go binaries as MCP tools over stdio JSON-RPC with `Content-Length` framing —
-same protocol conventions as `tools/tmux-mcp/server.ts`
-(`initialize` → `tools/list` → `tools/call`).
+[![license](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![stars](https://img.shields.io/github/stars/toxicwind/pd-mcp?style=flat)](https://github.com/toxicwind/pd-mcp/stargazers)
+[![bun](https://img.shields.io/badge/bun-1.4-f9f1e1?logo=bun)](https://bun.sh)
+[![mcp](https://img.shields.io/badge/MCP-stdio-7c3aed)](https://modelcontextprotocol.io)
+[![projectdiscovery](https://img.shields.io/badge/tools-8-00ADD8)](https://projectdiscovery.io)
 
-Runs **on yote**, where the binaries live. It never runs on the cell.
+# 🔭 pd-mcp
 
-## Tools
+**Every ProjectDiscovery recon tool behind one MCP server your agent can call.**
+subfinder · dnsx · naabu · httpx · katana · nuclei · tlsx · shuffledns — plus a
+`bug_bounty_workflow` composite — over MCP stdio, with no-shell spawns, hard timeouts,
+and input validation at every tool boundary.
 
-| Tool | Binary | What it does | Heavy? |
-|------|--------|--------------|--------|
-| `pd_httpx` | `/home/toxic/.pdtm/go/bin/httpx` | HTTP probing: status, title, tech detect | — |
-| `pd_dnsx` | `/home/toxic/.pdtm/go/bin/dnsx` | DNS recon: A/AAAA/CNAME/TXT/MX/NS/SRV/PTR/SOA/CAA | — |
-| `pd_shuffledns` | `/home/toxic/go/bin/shuffledns` | Mass subdomain bruteforce (needs wordlist + resolvers file; bruteforce mode needs `massdns` on PATH) | ⚠︎ |
-| `pd_subfinder` | `/home/toxic/.pdtm/go/bin/subfinder` | Passive subdomain enumeration | — |
-| `pd_naabu` | `/home/toxic/.pdtm/go/bin/naabu` | Port scan (unprivileged connect scan; `-scan-type c`) | ⚠︎ |
-| `pd_nuclei` | `/home/toxic/.pdtm/go/bin/nuclei` | Vulnerability scan — **DESTRUCTIVE-GATED: requires `confirm: true`** | ⚠︎ |
-| `pd_katana` | `/home/toxic/.pdtm/go/bin/katana` | Web crawler (needs `http(s)://` seed URL) | — |
-| `pd_tlsx` | `/home/toxic/.pdtm/go/bin/tlsx` | TLS recon: cert, cipher, expiry for `host[:port]` | — |
+[Report Bug](https://github.com/toxicwind/pd-mcp/issues/new?labels=bug&template=bug_report.md) · [Request Feature](https://github.com/toxicwind/pd-mcp/issues/new?labels=enhancement&template=feature_request.md)
 
-Heavy tools (⚠︎: `pd_naabu`, `pd_nuclei`, `pd_shuffledns`) share a **max-2
-concurrent** gate. Extra heavy calls queue until a slot frees.
+</div>
 
-## Parameters
+<details>
+<summary><b>Table of Contents</b></summary>
+<ol>
+<li><a href="#-about">About</a></li>
+<li><a href="#-tools">Tools</a></li>
+<li><a href="#-getting-started">Getting started</a></li>
+<li><a href="#-30-second-proof">30-second proof</a></li>
+<li><a href="#%EF%B8%8F-configuration">Configuration</a></li>
+<li><a href="#-what-changed-from-upstream">What changed from upstream</a></li>
+<li><a href="#-roadmap">Roadmap</a></li>
+<li><a href="#-contributing">Contributing</a></li>
+<li><a href="#-license">License</a></li>
+<li><a href="#-contact">Contact</a></li>
+<li><a href="#-acknowledgments">Acknowledgments</a></li>
+</ol>
+</details>
 
-Every tool accepts `timeout_sec` (sane per-tool defaults: httpx/dnsx/tlsx 60,
-subfinder 120, naabu 180, katana/shuffledns 300, nuclei 600; hard max 3600).
+---
 
-- `pd_httpx`: `target` (URL or host/IP), `include_title` (default true),
-  `tech_detect` (default true).
-- `pd_dnsx`: `target` (domain), `types` (default `[A,AAAA,CNAME,TXT,MX]`),
-  `resolver` (optional IPv4).
-- `pd_shuffledns`: `domain`, `wordlist` (existing file), `resolvers`
-  (existing file, one IP/line), `mode` = `bruteforce` (default) | `resolve`.
-- `pd_subfinder`: `domain`.
-- `pd_naabu`: `target`, `ports` (default top 100; e.g. `"80,443"` or `"1-1000"`).
-- `pd_nuclei`: `target`, `confirm: true` (**required**), `templates` (optional
-  `-t` path), `severity` (default `"critical,high"`), `rate_limit` (default 150).
-- `pd_katana`: `target` (http(s) URL), `depth` (1–10, default 3).
-- `pd_tlsx`: `target` (`host` or `host:port`).
+## 🔭 About
 
-## Hardening
+An MCP (Model Context Protocol) server that gives coding agents and chat clients direct,
+structured access to [ProjectDiscovery](https://projectdiscovery.io)'s recon toolkit —
+subdomain enumeration, DNS probing, port scanning, HTTP fingerprinting, crawling, vulnerability
+scanning, TLS probing, and active subdomain brute-forcing — without shelling out, without
+hanging the client, and without trusting agent-supplied input.
 
-- **No shell, ever.** Binaries are spawned via argv arrays — no shell string
-  interpolation, no injection surface.
-- **Input validation** on every tool: empty targets rejected; domains/hosts/IPs
-  checked against regex; URLs must be `http(s)://`; port specs, severity
-  strings, depth, and resolver IPs are format-checked.
-- **Timeouts** on every invocation; timed-out processes are SIGKILLed and
-  reported as `-32603`.
-- **Structured errors**: `-32601` unknown tool/method, `-32602` invalid params
-  (including missing `confirm:true` on `pd_nuclei`), `-32603` execution failure
-  with an stderr excerpt.
-- **Startup check**: every binary is probed for execute permission at launch;
-  the server exits 1 with a clear message naming the missing binary instead of
-  failing mid-call.
-- **Logging**: all diagnostics go to stderr with a `[pd-mcp]` prefix. stdout
-  carries only framed RPC replies (a stray byte on stdout breaks the framing).
-- Large outputs are capped at 120k chars with a truncation note.
+This is an **estate-hardened fork** of [`intelligent-ears/pd-tools-mcp`](https://github.com/intelligent-ears/pd-tools-mcp):
+every executor goes through one timeout-guarded runner that spawns binaries directly (no shell),
+resolves them from absolute paths, validates domains/hosts/ports at the tool boundary, and
+caps runaway input. If your agent runs recon, this is the shape of the answer.
 
-## Run it
+### Built with
+
+- [Bun](https://bun.sh) + [TypeScript](https://www.typescriptlang.org)
+- [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/typescript-sdk) (stdio transport)
+- [zod](https://zod.dev) for input validation
+- [ProjectDiscovery](https://projectdiscovery.io) binaries: subfinder, dnsx, naabu, httpx, katana, nuclei, tlsx, shuffledns
+
+---
+
+## 🛠️ Tools
+
+| Tool | Binary | What it does |
+|---|---|---|
+| `subfinder` | subfinder | Passive subdomain enumeration |
+| `dnsx` | dnsx | Fast DNS probing and resolution |
+| `naabu` | naabu | Port scanning (`scanType`: `"c"` connect scan unprivileged default, `"s"` SYN scan needs `CAP_NET_RAW`) |
+| `httpx` | httpx | HTTP probing + tech detection (wappalyzer) |
+| `katana` | katana | Web crawling and endpoint discovery |
+| `nuclei` | nuclei | Vulnerability scanning -- **destructive-gated** (`confirm: true` required); template selection via `-id`, `-duc` always on; findings no longer reported as errors |
+| `tlsx` | tlsx | TLS probing |
+| `shuffledns` | shuffledns | Active subdomain brute-force with a wordlist |
+| `bug_bounty_workflow` | composite | Chained recon workflow (now timeout-safe) |
+
+All 9 tools verified live via `tools/list` + one live `tools/call` per binary (`bun driver.ts`).
+
+---
+
+## 🚀 Getting started
+
+### Prerequisites
+
+- [Bun](https://bun.sh) ≥ 1.4
+- The ProjectDiscovery binaries — install via [`pdtm`](https://github.com/projectdiscovery/pdtm) (`pdtm -ia`) or your package manager, then point the server at them
+
+### Installation
 
 ```sh
-cd /home/toxic/estate/tools/pd-mcp
-bun run server.ts
+git clone https://github.com/toxicwind/pd-mcp.git
+cd pd-mcp
+bun install
+export PD_TOOLS_DIR="$HOME/.pdtm/go/bin"   # where your PD binaries live
 ```
 
-Minimal stdio probe (bash):
+### Run
 
 ```sh
-req() { local m="$1"; local n=$(( ${#m} )); printf 'Content-Length: %d\r\n\r\n%s' "$n" "$m"; }
-{
-  req '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}'
-  req '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}'
-  req '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"pd_tlsx","arguments":{"target":"pollinations.ai"}}}'
-} | bun run server.ts | tr '\r' '\n' | grep -v '^$'
+bun src/index.ts        # stdio MCP server — plug into any MCP client
 ```
 
-## MCP client config
+Claude Code / Claude Desktop MCP config:
 
 ```json
 {
   "mcpServers": {
-    "pd": {
+    "pd-mcp": {
       "command": "bun",
-      "args": ["run", "/home/toxic/estate/tools/pd-mcp/server.ts"]
+      "args": ["/path/to/pd-mcp/src/index.ts"],
+      "env": { "PD_TOOLS_DIR": "/home/you/.pdtm/go/bin" }
     }
   }
 }
 ```
 
-## Examples
+---
 
-Probe a host over HTTPS:
+## ⚡ 30-second proof
 
-```json
-{"jsonrpc":"2.0","id":3,"method":"tools/call",
- "params":{"name":"pd_httpx",
-  "arguments":{"target":"https://gen.pollinations.ai","tech_detect":true}}}
+```sh
+# server answers tools/list over stdio (9 tools)
+printf '%s\n' \
+ '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"probe","version":"0"}}}' \
+ '{"jsonrpc":"2.0","method":"notifications/initialized"}' \
+ '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' \
+ | timeout 25 bun src/index.ts | grep -o '"name":"[a-z_]*"' | sort -u
+# "name":"bug_bounty_workflow" "name":"dnsx" "name":"httpx" "name":"katana"
+# "name":"naabu" "name":"nuclei" "name":"shuffledns" "name":"subfinder" "name":"tlsx"
+
+# one live call per binary, end to end
+bun driver.ts           # exits non-zero on any failure
 ```
 
-A-record lookup:
+---
 
-```json
-{"jsonrpc":"2.0","id":4,"method":"tools/call",
- "params":{"name":"pd_dnsx",
-  "arguments":{"target":"pollinations.ai","types":["A","MX","TXT"]}}}
-```
+## ⚙️ Configuration
 
-Gated nuclei scan (refused without `confirm:true`):
+| Variable | Default | What it does |
+|---|---|---|
+| `PD_TOOLS_DIR` | `/home/toxic/.pdtm/go/bin` | Directory containing the PD binaries |
+| `SHUFFLEDNS_BIN` | `/home/toxic/go/bin/shuffledns` | shuffledns lives outside pdtm's dir |
+| `PD_<NAME>_BIN` | — | Per-binary override, e.g. `PD_HTTPX_BIN=/custom/path/httpx` |
 
-```json
-{"jsonrpc":"2.0","id":5,"method":"tools/call",
- "params":{"name":"pd_nuclei",
-  "arguments":{"target":"https://example.com","confirm":true,"severity":"critical,high"}}}
-```
+Timeouts are per-tool and non-negotiable: subfinder/dnsx/httpx/tlsx 5 min, katana/naabu/shuffledns 10 min, nuclei 15 min.
+
+---
+
+## 🧬 What changed from upstream
+
+Fork of [`intelligent-ears/pd-tools-mcp`](https://github.com/intelligent-ears/pd-tools-mcp) (MIT):
+
+- **Estate binary resolution** — absolute paths via `PD_TOOLS_DIR`/`SHUFFLEDNS_BIN`/`PD_<NAME>_BIN`; clear error when a binary is missing
+- **No-shell spawns with timeouts** — one shared timeout-guarded runner; no more hanging the MCP client
+- **Input validation** — domains/hosts/ports validated and capped at the tool boundary; stdin payloads deduplicated and newline-stripped
+- **New tools**: `tlsx` (TLS probing), `shuffledns` (active subdomain brute-force)
+- **naabu**: `scanType` param (`"c"` connect / `"s"` SYN)
+- **nuclei**: `-id` template selection, `-duc` always on, findings ≠ errors
+- **httpx**: headless-chrome `screenshot` flag replaced with `techDetect` (wappalyzer)
+- Kept upstream's `bug_bounty_workflow` composite (now timeout-safe)
+- Configurable rate limiting
+- **Nuclei destructive gate** -- `nuclei` requires `confirm: true` in the tool arguments; without it the call is refused with a clear error. Vulnerability scanning is active and potentially intrusive -- the gate forces explicit opt-in on every invocation
+- **Heavy-scan concurrency gate** -- `naabu`, `nuclei`, and `shuffledns` share a 2-slot semaphore; extra heavy scans queue instead of stampeding the host
+- **Startup binary check** -- the server validates all 8 binaries at launch and exits with a clear message naming what is missing, instead of failing mid-call
+
+---
+
+## 🗺️ Roadmap
+
+- [x] 8 PD tools + composite behind MCP stdio
+- [x] No-shell timeout-guarded runner, input validation, absolute binary resolution
+- [x] tlsx + shuffledns tools, nuclei/naabu/httpx hardening
+- [ ] uncover (Shodan-style) tool
+- [ ] Streaming progress for long scans (nuclei/katana)
+- [ ] SSE/HTTP transport alongside stdio
+
+---
+
+## 🤝 Contributing
+
+Keep the contract: no shell spawns (everything through `src/tools/runner.ts`), every new tool gets input validation + a timeout + a `driver.ts` case. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+---
+
+## 📄 License
+
+Distributed under the **MIT License**. See [LICENSE](LICENSE) for more information.
+Upstream: [`intelligent-ears/pd-tools-mcp`](https://github.com/intelligent-ears/pd-tools-mcp) (MIT).
+
+---
+
+## 📬 Contact
+
+toxicwind — [@toxicwind](https://github.com/toxicwind). Bugs and feature requests via [issues](https://github.com/toxicwind/pd-mcp/issues).
+
+---
+
+## 🙏 Acknowledgments
+
+- [intelligent-ears/pd-tools-mcp](https://github.com/intelligent-ears/pd-tools-mcp) — the upstream this forks
+- [ProjectDiscovery](https://projectdiscovery.io) — the toolkit this serves
+
+---
+
+⭐ If your agents do recon, give it a star!

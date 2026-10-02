@@ -9,6 +9,6 @@ export SQUAWK_RELAY_IDENTITY="${SQUAWK_RELAY_IDENTITY:-relay}"
 # The stale range checkout (sovereign/projects/range/ranch/squawk) signs a v3
 # canonical form that canonical verify_on_read rejects -- pointing this
 # at the mesh checkout fail-closed fleet reads. Never revert to /home/toxic/squawk.
-export SQUAWK_CODE_DIR="${SQUAWK_CODE_DIR:-/home/toxic/sovereign/hatch/agents/ember/chat}"
+export SQUAWK_CODE_DIR="${SQUAWK_CODE_DIR:-/home/toxic/estate/hatch/agents/ember/chat}"
 export SQUAWK_RELAY_DEST="${SQUAWK_RELAY_DEST:-fleet}"
 exec python3 "$SQUAWK_RELAY_DIR/forward.py"

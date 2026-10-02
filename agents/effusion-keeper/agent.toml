@@ -1,26 +1,30 @@
-# Canonical source: sovereign/agents/effusion-keeper/agent.toml
-# Live copy: ~/.openfang/agents/effusion-keeper/agent.toml (kernel re-seeds from disk on boot)
 name = "effusion-keeper"
 version = "1.0.0"
 description = "Autonomous curator of the Effusion Labs knowledge organism. Watches the lens consensus, tends the manifest, and answers questions about the site content through the lens MCP."
 author = "toxicwind"
 module = "builtin:chat"
 schedule = "reactive"
+fallback_models = []
 priority = "Normal"
 skills = []
-tags = ["effusion", "knowledge", "lens", "curator", "organism"]
+mcp_servers = ["lens"]
+tags = [
+    "effusion",
+    "knowledge",
+    "lens",
+    "curator",
+    "organism",
+]
 workspace = "/home/toxic/projects/effusion-labs"
+state_dir = "/home/toxic/.openfang/workspaces/effusion-keeper"
 generate_identity_files = true
 tool_allowlist = []
 tool_blocklist = []
 cache_context = false
 
-mcp_servers = ["lens"]
-
 [model]
 provider = "llama-swap"
-model = "openrouter-free/inclusionai/ling-3.0-flash-sante:free"
-fallback_models = [{ provider = "llama-swap", model = "gemini/gemini-3-flash-preview" }]
+model = "meta/llama-3.2-11b-vision-instruct"
 max_tokens = 131072
 temperature = 0.3
 system_prompt = """
@@ -71,9 +75,7 @@ memory_write = [
 ]
 agent_spawn = false
 agent_message = []
-shell = [
-    "bun",
-]
+shell = ["bun"]
 ofp_discover = false
 ofp_connect = []
 
@@ -81,7 +83,9 @@ ofp_connect = []
 
 [metadata]
 
-[persona]
-
 [autonomous]
 max_iterations = 100
+max_restarts = 10
+heartbeat_interval_secs = 30
+
+[persona]
