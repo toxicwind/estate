@@ -779,7 +779,7 @@ auto = ["start"]
 
 
 [daemons.squawk-feed]
-run = "exec /home/toxic/estate/hatch/agents/ember/squawk-relay/run-feed.sh"
+run = "exec /home/toxic/hatch/agents/ember/squawk-relay/run-feed.sh"
 dir = "/home/toxic/estate/ranch/squawk"
 mise = false
 retry = true
@@ -815,7 +815,7 @@ dir = "/home/toxic/estate/ranch/squawk-ws"
 mise = false
 retry = true
 boot_start = true
-env = { SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/estate/hatch/agents/ember/squawk-root" }
+env = { SQUAWK_WS_PORT = "25147", SQUAWK_CHAT_ROOT = "/home/toxic/.fleet-bus/squawk-root" }
 auto = ["start"]
 
 # ---- project: ranch/stream-broker (1 daemon) ----
@@ -1257,7 +1257,7 @@ dir = "/home/toxic/.fleet-bus/squawk-relay"
 mise = false
 retry = true
 boot_start = true
-env = { SQUAWK_CODE_DIR = "/home/toxic/estate/hatch/agents/ember/chat" }
+env = { SQUAWK_CODE_DIR = "/home/toxic/hatch/agents/ember/chat" }
 auto = ["start"]
 
 # standalone/squawk-relay — project-owned daemon manifest. Source of truth for 'squawk-relay-sink'.

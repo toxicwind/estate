@@ -23,7 +23,7 @@ import urllib.request
 import urllib.error
 
 TOKEN_FILE = "/home/toxic/.config/sovereign-chat-token"
-DEFAULT_DIRECTIVES = "/home/toxic/estate/hatch/agents/ember/directives.md"
+DEFAULT_DIRECTIVES = "/home/toxic/hatch/agents/ember/directives.md"
 
 
 def token():

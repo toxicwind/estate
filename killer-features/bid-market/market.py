@@ -20,8 +20,8 @@ CHANNEL = "market"
 BASE = Path("/home/toxic/estate/killer-features/bid-market")
 
 CHAT_CODE = Path(os.environ.get(
-    "SQUAWK_CODE_DIR", "/home/toxic/estate/hatch/agents/ember/chat"))
-RELAY_CODE = Path("/home/toxic/estate/hatch/agents/ember/squawk-relay")
+    "SQUAWK_CODE_DIR", "/home/toxic/hatch/agents/ember/chat"))
+RELAY_CODE = Path("/home/toxic/hatch/agents/ember/squawk-relay")
 CHAT_ROOT = Path(os.environ.get(
     "SQUAWK_CHAT_ROOT", "/home/toxic/.shingle/squawk-root"))
 MARKET_DIR = CHAT_ROOT / CHANNEL

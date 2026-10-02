@@ -108,13 +108,13 @@ The estate's work is split across three GitHub repos. All three `main` SHAs belo
 
 | Repo | Visibility | `main` (verified) | What it is |
 |---|---|---|---|
-| [toxicwind/estate](https://github.com/toxicwind/estate) | PUBLIC | `a52d28be3a` | This repo — the control plane. |
+| [toxicwind/estate](https://github.com/toxicwind/estate) | PUBLIC | `4bd380beab` | This repo — the control plane. |
 | [toxicwind/ranch](https://github.com/toxicwind/ranch) | PUBLIC | `4323dda` | The workshop — nested in the checkout at `ranch/` (gitignored here, own repo, own history). |
-| [toxicwind/hatch](https://github.com/toxicwind/hatch) | PRIVATE | `b3b0630` | The control-cell split — `hatch/` as its own repo (see below). |
+| [toxicwind/hatch](https://github.com/toxicwind/hatch) | PRIVATE | `5051e8e` | The control-cell repo — split out of this repo's former `hatch/` tree with full history (see below). Checked out live at `/home/toxic/hatch` on yote; tracked/referenced by the estate but no longer inside it. |
 
-**The hatch split.** The `hatch/` control-cell tree was split out into `toxicwind/hatch` at [`b3b0630dad4f6b6b8708008e4e1db6e7c9603086`](https://github.com/toxicwind/hatch/commit/b3b0630dad4f6b6b8708008e4e1db6e7c9603086) — 167 commits, 573 files (agents, bin, cell-files, crons, docs, pollers, task-launch, the sidechat shim, …). The hatch repo is PRIVATE: control-cell internals stay behind the fence.
+**The hatch split.** The `hatch/` control-cell tree was split out into `toxicwind/hatch` with full history ([final split `d050f680`](https://github.com/toxicwind/hatch/commit/d050f680c51f8da9949f73161a11c6ed626883c7) — 171 commits, 593 files: agents, bin, cell-files, crons, docs, pollers, task-launch, the sidechat shim, …). The hatch repo is PRIVATE: control-cell internals stay behind the fence. On 2026-10-02 (Chris's direct order) `hatch/` was removed from this repo entirely — the live checkout is `/home/toxic/hatch` on yote, and the estate references it (reshim cron, pollers, docs) without containing it.
 
-**⚠️ Pending — Q1 unresolved.** `hatch/` is still physically present in this repo. The open question is whether the estate should keep it as a submodule reference or remove it entirely — the oracle debate (Q1) that was supposed to settle this is orphaned while the oracle daemon is mid-migration and cannot settle debates right now. So this README documents the *current* state (split done, `hatch/` still in-tree, Q1 pending) — not a resolution. Don't treat either option as decided.
+**Q1 resolved — `hatch/` removed.** On 2026-10-02 Chris ordered the move completed: `hatch/` was removed from the estate tree in commit [`4bd380beab`](https://github.com/toxicwind/estate/commit/4bd380beab01db1c0cda054a3f2ac75fa18acd9d) ("Remove hatch/ — moved to toxicwind/hatch (PRIVATE)"). No submodule, no in-tree copy — the estate references `toxicwind/hatch` (live at `/home/toxic/hatch` on yote) and does not contain it.
 
 ### Top-level repo map
 
@@ -122,7 +122,6 @@ What lives where in this repo, at the top level (all verified present 2026-10-02
 
 | Path | Role |
 |---|---|
-| `hatch/` | Control-cell tree — being split out to `toxicwind/hatch` (see above). |
 | `ranch/` | Nested project monorepo ([toxicwind/ranch](https://github.com/toxicwind/ranch)) — gitignored here, own history. |
 | `bin/` | Estate-wide operational scripts (`estate-reconcile`, `estate-scan`, `audit-estate.sh`, …). |
 | `docs/` | Estate docs — start with [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). |
@@ -199,14 +198,14 @@ curl -s http://127.0.0.1:25120/health
 ## 🗺️ Roadmap
 
 - [x] Estate repo public, ranch public, hatch private — visibility policy set 2026-10-02
-- [x] hatch split — `hatch/` split out to [toxicwind/hatch](https://github.com/toxicwind/hatch) at `b3b0630` (167 commits, 573 files)
+- [x] hatch split — `hatch/` split out to [toxicwind/hatch](https://github.com/toxicwind/hatch) (final split `d050f680`, 171 commits, 593 files)
 - [x] 82 daemons under pitchfork supervision with health checks
 - [x] herd/flock/sovereign-router three-layer model routing, live
 - [ ] **Cuttinggate**: permissionless, health-gated cutover off `:25104` — gates green means anyone may cut over
 - [ ] **Compression proxy**: one Sigma-owned runtime (retire the redundant pair)
 - [ ] **Oracle proof**: real dated yes/no verdict before the cutover leans on it
 - [ ] **Per-lane pollers**: one cheap heartbeat poller per agent lane
-- [ ] **hatch Q1** — `hatch/` is still in-tree here: submodule reference or remove entirely? The oracle debate (Q1) is orphaned while the oracle daemon is mid-migration — pending, documented not resolved
+- [x] **hatch Q1 resolved** — `hatch/` removed from the estate tree (estate `4bd380beab`, 2026-10-02, Chris's direct order); repo lives at [toxicwind/hatch](https://github.com/toxicwind/hatch), live checkout `/home/toxic/hatch` on yote
 
 ## 🤝 Contributing
 

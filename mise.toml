@@ -219,4 +219,4 @@ run = "pitchfork logs keypool -n 100"
 
 # cell-files hot-reload explorer UI (bun --hot, WS/SSE hyper-race HMR)
 [tasks."up-cellfiles-ui"]
-run = "bun --hot /home/toxic/estate/hatch/cell-files/cell-files/packages/cell-files/ui/server.ts"
+run = "bun --hot /home/toxic/hatch/cell-files/cell-files/packages/cell-files/ui/server.ts"
