@@ -4,13 +4,14 @@ Master Verification Suite for Sovereign Hatch Toolkit.
 
 Tests ONLY subsystems that exist in this tree:
   hatch_core/noise_protocol.py      (Noise_XX handshake, notary, framing)
+  hatch_core/gateway_rpc.py         (Noise_XX gateway RPC client, protobuf frames)
   orchestrator/fsbus_engine.py      (atomic POSIX message bus)
   identity_router/identity_parser.py (IDENTITY.md parsing)
   identity_router/router.py          (lesson -> standing-file routing)
   identity_router/mcp_server.py      (MCP stdio server, via compliance suite)
 
 Not yet built (explicitly out of scope — not tested, not faked):
-  gateway_rpc, session_vault, telemetry_qpl, procedural_dag,
+  session_vault, telemetry_qpl, procedural_dag,
   direct_socket_runner. Refusal/evasion modeling is out of scope by doctrine.
 """
 from __future__ import annotations
@@ -33,9 +34,9 @@ from hatch_core.noise_protocol import (
 from orchestrator.fsbus_engine import FSBusEngine
 from identity_router.identity_parser import parse_identity_file
 from identity_router.router import LessonRouter, OWNERSHIP_TABLE
+from hatch_core import gateway_rpc as _gr
 
 NOT_BUILT = [
-    "hatch_core.gateway_rpc",
     "hatch_core.session_vault",
     "hatch_core.telemetry_qpl",
     "orchestrator.procedural_dag",
@@ -147,6 +148,37 @@ def test_lesson_router():
     print("  [PASS] Lesson Router (USER.md / SOUL.md contracts + ownership table)")
 
 
+def test_gateway_rpc():
+    # protobuf codec vectors (protobuf spec encoding rules)
+    assert _gr.pb_encode_varint(300) == b"\xac\x02"
+    assert _gr.pb_encode_field(1, 0, 150) == b"\x08\x96\x01"
+    # NoiseTransportFrame round-trip
+    enc = _gr.frame_encode(42, 1, 3, b"payload-bytes")
+    assert _gr.frame_decode(enc) == (42, 1, 3, b"payload-bytes")
+    # both handshake modes interop in-process (initiator <-> responder)
+    for mode in ("custom", "standard"):
+        a = NoiseHandshakeState(is_initiator=True, mode=mode)
+        b = NoiseHandshakeState(is_initiator=False, mode=mode)
+        b.read_msg1(a.write_msg1(b""))
+        a.read_msg2(b.write_msg2(b""))
+        m3, (cs, cr) = a.write_msg3(b"")
+        _, (ss, sr) = b.read_msg3(m3)
+        assert a.completed and b.completed
+        assert sr.decrypt_with_ad(b"", cs.encrypt_with_ad(b"", b"z")) == b"z"
+        assert cr.decrypt_with_ad(b"", ss.encrypt_with_ad(b"", b"z")) == b"z"
+    # service envelope round-trip
+    req = _gr.service_request_encode(3, 7, _gr.app_request_encode(
+        "POST", "/api/auth/check", b"", b"{}"))
+    sid, app = _gr.service_response_decode(
+        _gr.pb_encode_field(1, 2, _gr.pb_encode_field(1, 0, 7)
+                            + _gr.pb_encode_field(3, 2, _gr.pb_encode_field(
+                                1, 0, 200) + _gr.pb_encode_field(4, 0, 1))))
+    assert sid == 7
+    status, _, _, end = _gr.app_response_decode(app)
+    assert (status, end) == (200, 1)
+    print("  [PASS] Gateway RPC (protobuf codec, dual-mode handshake, envelopes)")
+
+
 def test_mcp_compliance():
     suite = Path(__file__).parent / "test_mcp_compliance.py"
     proc = subprocess.run(
@@ -165,7 +197,8 @@ def main():
     test_identity_parser()
     test_lesson_router()
     test_mcp_compliance()
-    print("\nALL 6 SUBSYSTEM SUITES PASSED.")
+    test_gateway_rpc()
+    print("\nALL 7 SUBSYSTEM SUITES PASSED.")
     print("Not built (not tested, not faked): " + ", ".join(NOT_BUILT))
 
 

@@ -163,7 +163,7 @@ class CipherState:
         if not self.has_key():
             return plaintext
         cipher = AESGCM(self.key)
-        nonce_bytes = self._nonce_bytes(self.nonce)
+        nonce_bytes = self._nonce_bytes(self.nonce, self.nonce_style)
         ciphertext = cipher.encrypt(nonce_bytes, plaintext, ad)
         self.nonce += 1
         return ciphertext
@@ -172,7 +172,7 @@ class CipherState:
         if not self.has_key():
             return ciphertext
         cipher = AESGCM(self.key)
-        nonce_bytes = self._nonce_bytes(self.nonce)
+        nonce_bytes = self._nonce_bytes(self.nonce, self.nonce_style)
         plaintext = cipher.decrypt(nonce_bytes, ciphertext, ad)
         self.nonce += 1
         return plaintext

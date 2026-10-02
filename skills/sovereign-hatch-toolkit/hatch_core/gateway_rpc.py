@@ -29,13 +29,21 @@ here: a credentialed handshake needs the account auth token, which is
 Chris's to provide -- see ``scripts/gateway_diagnose.py`` for the
 no-credentials transport probe that establishes how far the path goes.
 
-MITM finding (2026-10-02, verified live from the hatch cell): all egress
-TLS goes through the sandbox egress proxy, which terminates TLS and
-presents its own CA (``CN=Hatch Sandbox Egress CA``). The Noise_XX handshake
-runs *inside* the TLS tunnel at the WebSocket layer, so its bytes are
-unaffected -- but the client MUST trust the proxy CA at the TLS layer
-(system trust store, which includes it) and MUST tunnel via HTTP CONNECT.
-``websocket-client`` is configured accordingly below.
+MITM finding (2026-10-02, verified live from the hatch cell): egress TLS
+goes through the sandbox egress proxy, which MITMs most hosts (presents
+``CN=Hatch Sandbox Egress CA`` -- confirmed for example.com, github.com,
+google.com via both curl and Python). BUT connections from a Python ssl
+stack to ``hatch.metaaivm.com`` pass through UNINTERCEPTED (real DigiCert
+cert, confirmed with and without ALPN) -- the proxy allowlists by
+destination and/or TLS fingerprint: curl to the same host DOES get the
+MITM cert. Consequence: this client (Python ssl via websocket-client) gets
+end-to-end TLS to the gateway, and the Noise_XX handshake inside the
+tunnel is unaffected by the proxy either way. The client trusts the system
+CA store (which includes the egress CA) so it also works if the proxy
+ever intercepts, and it tunnels via HTTP CONNECT from the proxy env.
+Note: a curl-impersonated browser fingerprint (as muse-cli uses for the
+muse.ai HTTPS API) WOULD be intercepted through this proxy -- do not use
+that stack for the Noise channel.
 
 Threading (from PROTOCOL.md): concurrent frame reads from two threads split
 frames and corrupt the stateful Noise decrypt (fatal BAD_DECRYPT). All
@@ -213,8 +221,7 @@ def service_response_decode(buf: bytes) -> Tuple[int, bytes]:
     d = {n: v for n, w, v in pb_decode_fields(buf)}
     frame = {n: v for n, w, v in pb_decode_fields(bytes(d[1]))}
     stream_id = int(frame[1])
-    resp_fields = {n: v for n, w, v in pb_decode_fields(bytes(frame[3]))}
-    return stream_id, bytes(resp_fields[3]) if 3 in resp_fields else b""
+    return stream_id, bytes(frame[3])
 
 
 # ---------------------------------------------------------------------------
