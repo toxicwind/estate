@@ -92,6 +92,25 @@ def read_token():
         return ""
 
 
+# Connector tokens (2026-10-02): per-connector bearer tokens for the custom
+# connectors (custom.yote, custom.shim). Files are 0600, re-read on EVERY
+# handshake so rotation needs no restart. Any listed token authorizes.
+CONNECTOR_TOKEN_FILES = ("~/.yote_connector_token", "~/.shim_connector_token")
+
+
+def read_tokens():
+    toks = set()
+    for path in (TOKEN_FILE,) + CONNECTOR_TOKEN_FILES:
+        try:
+            with open(os.path.expanduser(path)) as fh:
+                t = fh.read().strip()
+                if t:
+                    toks.add(t)
+        except OSError:
+            pass
+    return toks
+
+
 # --- websocket framing (borrowed from squawk-ws) ---------------------------
 async def read_frame(reader):
     hdr = await reader.readexactly(2)
@@ -622,10 +641,11 @@ async def handle_client(reader, writer):
             await writer.drain()
             writer.close()
             return
-        token = read_token()
+        tokens = read_tokens()
         provided = headers.get("x-mcp-token", "")
-        if not token or not hmac.compare_digest(provided.encode(),
-                                                token.encode()):
+        ok_token = any(hmac.compare_digest(provided.encode(), t.encode())
+                       for t in tokens)
+        if not ok_token:
             writer.write(b"HTTP/1.1 401 Unauthorized\r\nContent-Length: 0\r\n"
                          b"Connection: close\r\n\r\n")
             await writer.drain()

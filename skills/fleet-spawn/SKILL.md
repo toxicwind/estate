@@ -62,8 +62,8 @@ The prompt's four demands, briefly:
 ## The fleet knowledgebase (REQUIRED READING — hard requirement)
 
 - Yote path: `/home/toxic/estate/docs/fleet-knowledgebase.md`
-- GitHub: https://github.com/toxicwind/sovereign-projects/blob/main/docs/fleet-knowledgebase.md
-- Raw (for scripts): https://raw.githubusercontent.com/toxicwind/sovereign-projects/main/docs/fleet-knowledgebase.md
+- GitHub: https://github.com/toxicwind/estate/blob/main/docs/fleet-knowledgebase.md
+- Raw (for scripts): https://raw.githubusercontent.com/toxicwind/estate/main/docs/fleet-knowledgebase.md
 
 **No brief goes out without this.** Every spawn brief MUST embed the
 knowledgebase pointer and the docs index, with the hard requirement:
@@ -98,7 +98,7 @@ What it does (permanent script, not guidance):
    what would have caught the repo-integrator-max collision.
    `--advisory` softens it to a warning (default is hard).
 3. **Registers you** (`--register`; needs `--owner`): creates your
-   per-crew file `docs/fleet/crews/<you>.md` (the source of truth for your
+   per-crew file `fleet/crews/<you>.md` (the source of truth for your
    row) and regenerates the §2 rollup via `bun projects/ops/bin/kb-rollup.ts`
    under flock. Refuses to double-register. `--done <sha>` later marks your
    per-crew file DONE with the final commit SHA and regenerates §2.
@@ -207,7 +207,7 @@ is wrong; rewrite it as the job.
 
 REQUIRED READING (hard — read before acting):
 - Fleet knowledgebase: /home/toxic/estate/docs/fleet-knowledgebase.md
-  (GitHub: https://github.com/toxicwind/sovereign-projects/blob/main/docs/fleet-knowledgebase.md)
+  (GitHub: https://github.com/toxicwind/estate/blob/main/docs/fleet-knowledgebase.md)
 - Docs index: knowledgebase §5. Repo index: §3. Standing rules: §4.
 
 FLEET PROTOCOL (non-negotiable, from the fleet-spawn skill):

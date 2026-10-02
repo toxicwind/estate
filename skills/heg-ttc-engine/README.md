@@ -1,7 +1,7 @@
 # heg-ttc-engine {badges}
 
 <!-- badges: start -->
-<a href="https://github.com/toxicwind/sovereign-projects">
+<a href="https://github.com/toxicwind/estate">
   <img src="https://img.shields.io/badge/github-toxicwind/sovereign--projects-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub repo">
 </a>
 <!-- badges: end -->

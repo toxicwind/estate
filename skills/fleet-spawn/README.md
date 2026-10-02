@@ -1,7 +1,7 @@
 # fleet-spawn {badges}
 
 <!-- badges: start -->
-<a href="https://github.com/toxicwind/sovereign-projects">
+<a href="https://github.com/toxicwind/estate">
   <img src="https://img.shields.io/badge/github-toxicwind/sovereign--projects-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub repo">
 </a>
 <a href="https://bun.sh">
@@ -49,8 +49,8 @@ fleet-onboard --name <name> --task "<one-line task description>" --register
 
 - **Fleet knowledgebase (REQUIRED READING)**:
   - Yote path: `/home/toxic/estate/docs/fleet-knowledgebase.md`
-  - GitHub: https://github.com/toxicwind/sovereign-projects/blob/main/docs/fleet-knowledgebase.md
-  - Raw (for scripts): https://raw.githubusercontent.com/toxicwind/sovereign-projects/main/docs/fleet-knowledgebase.md
+  - GitHub: https://github.com/toxicwind/estate/blob/main/docs/fleet-knowledgebase.md
+  - Raw (for scripts): https://raw.githubusercontent.com/toxicwind/estate/main/docs/fleet-knowledgebase.md
 - **Docs index**: knowledgebase §5. Repo index: §3. Standing rules: §4.
 - **fleet-onboard script**: Overlap-checks §2 Active Crews, registers, shows room, hands hello template
 - **Registry**: `~/workspace/fleet-push/registry.json` (schema v2: bus `chat_id`, per-agent `name`, `chat_id`, `lanes`, `relay_chat_id`, `relay_created_at`)

@@ -13,6 +13,7 @@ get a real AST from `Bun.Transpiler.scan()`; Python uses a lexical extractor.
 
 ```
 forge retrieve --root <dir> --query "<q>"   # find code we half-remember
+forge audit --root <dir> --claim "<claim>"  # VERIFY a claim against the AST
 forge race --strategies s.json --hedge-ms N # race implementations, first valid wins
 forge bench --candidates c.json             # nanosecond leaderboard
 forge borrow "<query>"                      # mine papers + GitHub for prior art
@@ -32,6 +33,7 @@ compounding. Merging them makes the shared doctrine legible in one place:
 | Leg | Absorbed from | What it does |
 |---|---|---|
 | `retrieve` | `ast-bm25-racer`, `ast_indexer.py` | Hybrid AST + BM25 over the estate |
+| `audit` | ast-grep (GitHub merge, 2026-10-02) | Verify claims against the AST — file:line:node evidence |
 | `race` | `hft-latency/bin/race.py` | Concurrent, hedged, first-valid-wins |
 | `bench` | `code_racer.py` (×2 copies) | Nanosecond candidate leaderboard |
 | `borrow` | `emergent-enrich/bin/route.py`, `race-borrow.ts` | 7 sources in parallel, ranked |
@@ -152,6 +154,26 @@ forge subgraph --root /home/toxic/estate/ranch/tau --trace tb.txt --depth 3
 ```
 
 Marks traceback frames with `*`, walks imports to depth N, reports fan-in.
+
+## Leg 7 — audit
+
+Claims about code get verified against the AST — not curl, not ls. Merged
+2026-10-02 from the global GitHub AST-audit search (winner: ast-grep).
+
+```bash
+forge audit --root /home/toxic/estate/tools/sovereign-router \
+  --claim "sovereign router listens on port 25104"
+# === audit: "..." [port-bind (port 25104)] -> VERIFIED (confidence: high) ===
+#   router.ts:87:2-87:31  Bun.serve({ port: 25104, ... })
+#     captures: $PORT="25104"
+```
+
+Claim shapes: port-bind ("X listens on port N"), call-edge ("X calls Y",
+two-pass: find X's definition range, then Y() inside it), import-edge
+("A imports B"), symbol-definition ("function|class X"). Anything else:
+`--pattern '<ast-grep pattern>' --lang ts` or `--rule rules/foo.yml`.
+Exit codes: 0 VERIFIED, 1 NOT-FOUND, 2 INCONCLUSIVE. Full workflow, recipes,
+and pitfalls live in the `ast-audit` skill.
 
 ## Honest limits
 
