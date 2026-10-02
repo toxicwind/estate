@@ -1,6 +1,6 @@
 ---
 crew: 'nightjar-coord'
-scope: 'Night-lanes coordinator (2026-10-02 clean-slate relaunch): corral EAP + README op lane-state surveys via observable artifacts, fleet presenc'
+scope:  + new_scope + 
 owner: 'Ember (main chat)'
 status: 'RUNNING (2026-10-02)'
 order: 1000000010
