@@ -29,6 +29,11 @@ COMMANDS
   log-nudge --lane L --submission ID   record a sent nudge
   log-reply --lane L --quarantined B   record lane reply; non-quarantined resets stall
   escalate-reset --lane L              record a fleet escalation, reset counters
+  queue-nudge --lane L --silent-min N  Design B: write shim-shaped nudge request
+                                       to nudge-queue/ for the main agent to drain
+                                       (cron workers hold no chat tools)
+  drain-queue                          list pending nudge requests (main agent)
+  ack-nudge --file F                   mark a queued nudge sent (main agent)
   self-test                            pure checks, no side effects beyond tmp state
 
 EXIT CODES: 0 ok (verdicts included), 2 usage error, 3 shim unavailable.
@@ -49,6 +54,16 @@ FILE_FALLBACK_MINUTES = 30    # same threshold applied to agent-dir mtimes
 BASE = os.path.dirname(os.path.abspath(__file__))
 STATE_DIR = os.path.join(BASE, "state")
 AGENTS_DIR = "/home/toxic/estate/hatch/agents"
+LANES_JSON = os.path.join(BASE, "lanes.json")
+NUDGE_QUEUE_DIR = os.path.join(BASE, "nudge-queue")
+
+
+def load_lanes():
+    try:
+        with open(LANES_JSON) as f:
+            return json.load(f).get("lanes", {})
+    except Exception:
+        return {}
 SHIM_DIR = "/home/toxic/estate/hatch"
 
 # ---- shim import (hard dependency: no shim => no nudges) ------------------
@@ -308,6 +323,79 @@ def cmd_escalate_reset(args):
     return 0
 
 
+def cmd_queue_nudge(args):
+    """Design B nudge queueing. The cron worker holds no chat tools (proven
+    2026-10-02: chat namespace unavailable in every worker runtime), so it
+    cannot send the nudge itself. It writes the shim-shaped request here;
+    the main agent drains the queue with chat.send_message. Dedupes: one
+    pending request per lane at a time."""
+    nudge, err = build_nudge(args.lane, args.silent_min)
+    if nudge is None:
+        print("ERROR: " + err, file=sys.stderr)
+        return 3
+    os.makedirs(NUDGE_QUEUE_DIR, exist_ok=True)
+    existing = sorted(f for f in os.listdir(NUDGE_QUEUE_DIR)
+                      if f.startswith(args.lane + "-") and f.endswith(".json"))
+    if existing:
+        print(json.dumps({"ok": True, "lane": args.lane, "queued": False,
+                          "reason": "already_pending", "file": existing[0]}))
+        return 0
+    lanes = load_lanes()
+    req = {
+        "lane": args.lane,
+        "chat_id": (lanes.get(args.lane) or {}).get("chat_id"),
+        "nudge_text": nudge,
+        "silent_min": args.silent_min,
+        "queued_at": time.time(),
+        "shim": "sidechat_shim.format_safe",
+    }
+    fname = "%s-%d.json" % (args.lane, int(time.time()))
+    with open(os.path.join(NUDGE_QUEUE_DIR, fname), "w") as f:
+        json.dump(req, f)
+    log_event(args.lane, "nudge_queued", file=fname,
+              silent_min=args.silent_min)
+    print(json.dumps({"ok": True, "lane": args.lane, "queued": True,
+                      "file": fname}))
+    return 0
+
+
+def cmd_drain_queue(_args):
+    """List pending nudge requests for the main agent to send."""
+    if not os.path.isdir(NUDGE_QUEUE_DIR):
+        print(json.dumps({"pending": []}))
+        return 0
+    out = []
+    for fname in sorted(os.listdir(NUDGE_QUEUE_DIR)):
+        if not fname.endswith(".json"):
+            continue
+        try:
+            with open(os.path.join(NUDGE_QUEUE_DIR, fname)) as f:
+                req = json.load(f)
+            req["file"] = fname
+            out.append(req)
+        except Exception:
+            continue
+    print(json.dumps({"pending": out}))
+    return 0
+
+
+def cmd_ack_nudge(args):
+    """Mark a queued nudge as sent (main agent, after chat.send_message)."""
+    base = os.path.basename(args.file)
+    target = os.path.join(NUDGE_QUEUE_DIR, base)
+    lane = base.split("-")[0]
+    try:
+        os.remove(target)
+    except FileNotFoundError:
+        pass
+    st = load_state(lane)
+    st["last_nudge_ts"] = time.time()
+    save_state(lane, st)
+    log_event(lane, "nudge_sent_via_queue", file=base)
+    print(json.dumps({"ok": True, "file": base}))
+    return 0
+
+
 def cmd_self_test(_args):
     fails = []
 
@@ -437,6 +525,18 @@ def main(argv=None):
     p = sub.add_parser("escalate-reset")
     p.add_argument("--lane", required=True)
     p.set_defaults(fn=cmd_escalate_reset)
+
+    p = sub.add_parser("queue-nudge")
+    p.add_argument("--lane", required=True)
+    p.add_argument("--silent-min", type=float, default=45)
+    p.set_defaults(fn=cmd_queue_nudge)
+
+    p = sub.add_parser("drain-queue")
+    p.set_defaults(fn=cmd_drain_queue)
+
+    p = sub.add_parser("ack-nudge")
+    p.add_argument("--file", required=True)
+    p.set_defaults(fn=cmd_ack_nudge)
 
     p = sub.add_parser("self-test")
     p.set_defaults(fn=cmd_self_test)
