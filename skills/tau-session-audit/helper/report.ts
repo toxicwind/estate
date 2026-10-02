@@ -17,7 +17,7 @@ export interface AuditedSession {
   types: Map<string, number>;
 }
 
-const GITHUB_BLOB_BASE = "https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/";
+const GITHUB_BLOB_BASE = "https://github.com/toxicwind/estate/blob/forge/gate-retire-final/";
 
 export function generateMarkdownReport(sessions: AuditedSession[], options: { verbose?: boolean } = {}): string {
   const totalFiles = sessions.length;

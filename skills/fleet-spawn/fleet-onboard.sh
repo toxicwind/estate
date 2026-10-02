@@ -9,7 +9,7 @@
 #   2. Overlap-checks §2 Active Crews against your task. On overlap it prints
 #      the colliding crews and exits 2 — coordinate in fleet BEFORE announcing.
 #      (--advisory softens to a warning.)
-#   3. --register: creates your per-crew file (docs/fleet/crews/<crew>.md) and
+#   3. --register: creates your per-crew file (fleet/crews/<crew>.md) and
 #      regenerates the §2 rollup via `bun ranch/ops/bin/kb-rollup.ts`.
 #      --done SHA: marks your per-crew file DONE and regenerates §2.
 #      §2 Active Crews is a GENERATED rollup (Alternative A, Chris 2026-09-29):
@@ -18,12 +18,12 @@
 #   5. Prints your hello template. It does NOT write your hello for you —
 #      your first words in fleet must be your own voice + one genuine question.
 #
-# Lives in: skills/fleet-spawn/fleet-onboard.sh (toxicwind/sovereign-projects).
+# Lives in: skills/fleet-spawn/fleet-onboard.sh (toxicwind/estate).
 # Documented in: skills/fleet-spawn/SKILL.md (the spawn protocol).
 set -euo pipefail
 
 KB_DEFAULT="/home/toxic/estate/docs/fleet-knowledgebase.md"
-KB_RAW_URL="https://raw.githubusercontent.com/toxicwind/sovereign-projects/main/docs/fleet-knowledgebase.md"
+KB_RAW_URL="https://raw.githubusercontent.com/toxicwind/estate/main/docs/fleet-knowledgebase.md"
 SQUAWK_ROOT_DEFAULT="/home/toxic/.fleet-bus/squawk-root"
 
 NAME=""; TASK=""; KB=""; OWNER=""; DONE_SHA=""; ADVISORY=0; DO_REGISTER=0; FLEET_N=10
@@ -144,7 +144,7 @@ fi
 
 # --- 3. registration: per-crew file + generated §2 rollup ------------------
 # §2 Active Crews is a GENERATED rollup (Alternative A, Chris 2026-09-29).
-# Source of truth: docs/fleet/crews/<crew>.md — one file per crew, frontmatter
+# Source of truth: fleet/crews/<crew>.md — one file per crew, frontmatter
 # (crew/scope/owner/status). kb-rollup.ts writes the file and regenerates §2
 # under flock, so concurrent registrations can't clobber each other.
 # Never hand-edit the §2 table.

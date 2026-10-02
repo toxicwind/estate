@@ -15,12 +15,12 @@
 
 | Pattern Name | Severity | Detections | Description |
 |---|:---:|:---:|---|
-| **Rapid Consecutive Todo Done Flurry Without Intervening Work** | 🔴 CRITICAL | `22` | Documented in [`patterns/`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/skills/tau-session-audit/patterns/) |
-| **Message with No Execution Tools Followed by Todo Done** | 🔴 CRITICAL | `5` | Documented in [`patterns/`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/skills/tau-session-audit/patterns/) |
-| **Repeated Tool Failure Loop** | 🟠 HIGH | `44` | Documented in [`patterns/`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/skills/tau-session-audit/patterns/) |
-| **High Model Churn Session** | 🟠 HIGH | `22` | Documented in [`patterns/`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/skills/tau-session-audit/patterns/) |
-| **Defensive Completion Escape After User Brain-Dump / Clarifications** | 🟠 HIGH | `11` | Documented in [`patterns/`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/skills/tau-session-audit/patterns/) |
-| **Unexecuted Scratchpad or Pseudo-Tool Syntax in Chat** | 🟠 HIGH | `6` | Documented in [`patterns/`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/skills/tau-session-audit/patterns/) |
+| **Rapid Consecutive Todo Done Flurry Without Intervening Work** | 🔴 CRITICAL | `22` | Documented in [`patterns/`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/skills/tau-session-audit/patterns/) |
+| **Message with No Execution Tools Followed by Todo Done** | 🔴 CRITICAL | `5` | Documented in [`patterns/`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/skills/tau-session-audit/patterns/) |
+| **Repeated Tool Failure Loop** | 🟠 HIGH | `44` | Documented in [`patterns/`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/skills/tau-session-audit/patterns/) |
+| **High Model Churn Session** | 🟠 HIGH | `22` | Documented in [`patterns/`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/skills/tau-session-audit/patterns/) |
+| **Defensive Completion Escape After User Brain-Dump / Clarifications** | 🟠 HIGH | `11` | Documented in [`patterns/`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/skills/tau-session-audit/patterns/) |
+| **Unexecuted Scratchpad or Pseudo-Tool Syntax in Chat** | 🟠 HIGH | `6` | Documented in [`patterns/`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/skills/tau-session-audit/patterns/) |
 
 ### 1. The Phantom Todo Completion (Primary Smoking Gun)
 
@@ -33,16 +33,16 @@ Models repeatedly demonstrated the following failure mode:
 
 | Session File | Model | Max Consecutive Todos | Total Tools | Details |
 |---|---|:---:|:---:|---|
-| [`-/2026-09-24T00-56-17-937Z_01a0d0e9-cb11-775d-8e6c-1dcbd77053ba.jsonl`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-24T00-56-17-937Z_01a0d0e9-cb11-775d-8e6c-1dcbd77053ba.jsonl) | `anthropic/claude-opus-4-8` | **24** | 750 | Intent: *General agent work* |
-| [`-/2026-09-22T20-06-56-767Z_01a0caba-85ff-7346-a2b0-60399834875d.jsonl`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-22T20-06-56-767Z_01a0caba-85ff-7346-a2b0-60399834875d.jsonl) | `google-antigravity/gemini-3.8-flash` | **23** | 2172 | Intent: *General agent work* |
-| [`-/2026-09-22T19-17-14-867Z_01a0ca8d-05f3-75d7-bd19-117c53bf6a8e.jsonl`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-22T19-17-14-867Z_01a0ca8d-05f3-75d7-bd19-117c53bf6a8e.jsonl) | `google-antigravity/gemini-3.8-flash` | **16** | 1160 | Intent: *General agent work* |
-| [`-/2026-09-22T18-55-23-027Z_01a0ca79-0193-7476-b998-8ccca2530e8c.jsonl`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-22T18-55-23-027Z_01a0ca79-0193-7476-b998-8ccca2530e8c.jsonl) | `cerebras/zai-glm-4.6` | **13** | 280 | Intent: *General agent work* |
-| [`-/2026-09-22T11-24-03-358Z_01a0c8db-cd9e-73d5-8e1c-7de53c93d257.jsonl`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-22T11-24-03-358Z_01a0c8db-cd9e-73d5-8e1c-7de53c93d257.jsonl) | `herd/kimi-k3-nim` | **9** | 1061 | Intent: *General agent work* |
-| [`-/2026-09-22T15-43-01-828Z_01a0c9c8-e6c4-77f6-808e-4c200871451a.jsonl`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-22T15-43-01-828Z_01a0c9c8-e6c4-77f6-808e-4c200871451a.jsonl) | `mistral/zai-glm-5-3` | **8** | 1115 | Intent: *Bashrc aliases setup* |
-| [`-/2026-09-17T22-56-14-277Z_01a0b195-b7c5-754b-a261-a17285af72e6.jsonl`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-17T22-56-14-277Z_01a0b195-b7c5-754b-a261-a17285af72e6.jsonl) | `nvidia/nvidia/nvidia-nemotron-nano-9b-v2` | **8** | 948 | Intent: *NVIDIA config / model setup* |
-| [`-/2026-09-23T20-59-06-472Z_01a0d010-a368-71d4-bca0-c1944ed1cac3.jsonl`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-23T20-59-06-472Z_01a0d010-a368-71d4-bca0-c1944ed1cac3.jsonl) | `cloudflare-ai-gateway/workers-ai/@cf/moonshotai/kimi-k2.6` | **8** | 886 | Intent: *General agent work* |
-| [`-/2026-09-15T02-41-01-039Z_01a0a2f0-6e6f-7479-8d13-5ccc98ddbe7e.jsonl`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-15T02-41-01-039Z_01a0a2f0-6e6f-7479-8d13-5ccc98ddbe7e.jsonl) | `openrouter/dots-studio/dots-3-note-preview:free` | **6** | 500 | Intent: *Audit / verification* |
-| [`-/2026-09-22T12-53-07-657Z_01a0c92d-59c9-768a-830e-f5b3b03416ac.jsonl`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-22T12-53-07-657Z_01a0c92d-59c9-768a-830e-f5b3b03416ac.jsonl) | `google-antigravity/gemini-3.7-flash` | **4** | 1507 | Intent: *General agent work* |
+| [`-/2026-09-24T00-56-17-937Z_01a0d0e9-cb11-775d-8e6c-1dcbd77053ba.jsonl`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-24T00-56-17-937Z_01a0d0e9-cb11-775d-8e6c-1dcbd77053ba.jsonl) | `anthropic/claude-opus-4-8` | **24** | 750 | Intent: *General agent work* |
+| [`-/2026-09-22T20-06-56-767Z_01a0caba-85ff-7346-a2b0-60399834875d.jsonl`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-22T20-06-56-767Z_01a0caba-85ff-7346-a2b0-60399834875d.jsonl) | `google-antigravity/gemini-3.8-flash` | **23** | 2172 | Intent: *General agent work* |
+| [`-/2026-09-22T19-17-14-867Z_01a0ca8d-05f3-75d7-bd19-117c53bf6a8e.jsonl`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-22T19-17-14-867Z_01a0ca8d-05f3-75d7-bd19-117c53bf6a8e.jsonl) | `google-antigravity/gemini-3.8-flash` | **16** | 1160 | Intent: *General agent work* |
+| [`-/2026-09-22T18-55-23-027Z_01a0ca79-0193-7476-b998-8ccca2530e8c.jsonl`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-22T18-55-23-027Z_01a0ca79-0193-7476-b998-8ccca2530e8c.jsonl) | `cerebras/zai-glm-4.6` | **13** | 280 | Intent: *General agent work* |
+| [`-/2026-09-22T11-24-03-358Z_01a0c8db-cd9e-73d5-8e1c-7de53c93d257.jsonl`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-22T11-24-03-358Z_01a0c8db-cd9e-73d5-8e1c-7de53c93d257.jsonl) | `herd/kimi-k3-nim` | **9** | 1061 | Intent: *General agent work* |
+| [`-/2026-09-22T15-43-01-828Z_01a0c9c8-e6c4-77f6-808e-4c200871451a.jsonl`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-22T15-43-01-828Z_01a0c9c8-e6c4-77f6-808e-4c200871451a.jsonl) | `mistral/zai-glm-5-3` | **8** | 1115 | Intent: *Bashrc aliases setup* |
+| [`-/2026-09-17T22-56-14-277Z_01a0b195-b7c5-754b-a261-a17285af72e6.jsonl`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-17T22-56-14-277Z_01a0b195-b7c5-754b-a261-a17285af72e6.jsonl) | `nvidia/nvidia/nvidia-nemotron-nano-9b-v2` | **8** | 948 | Intent: *NVIDIA config / model setup* |
+| [`-/2026-09-23T20-59-06-472Z_01a0d010-a368-71d4-bca0-c1944ed1cac3.jsonl`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-23T20-59-06-472Z_01a0d010-a368-71d4-bca0-c1944ed1cac3.jsonl) | `cloudflare-ai-gateway/workers-ai/@cf/moonshotai/kimi-k2.6` | **8** | 886 | Intent: *General agent work* |
+| [`-/2026-09-15T02-41-01-039Z_01a0a2f0-6e6f-7479-8d13-5ccc98ddbe7e.jsonl`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-15T02-41-01-039Z_01a0a2f0-6e6f-7479-8d13-5ccc98ddbe7e.jsonl) | `openrouter/dots-studio/dots-3-note-preview:free` | **6** | 500 | Intent: *Audit / verification* |
+| [`-/2026-09-22T12-53-07-657Z_01a0c92d-59c9-768a-830e-f5b3b03416ac.jsonl`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/.tau/sessions/-/2026-09-22T12-53-07-657Z_01a0c92d-59c9-768a-830e-f5b3b03416ac.jsonl) | `google-antigravity/gemini-3.7-flash` | **4** | 1507 | Intent: *General agent work* |
 
 ---
 
@@ -78,7 +78,7 @@ Which models were most prone to phantom completions and syntax leaks:
 ## 🏛️ Monorepo Convention & Workspace Architecture Audit
 
 ### 1. Workspace Misalignment
-- Root [`package.json`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/package.json) defines: `workspaces: ['herd', 'herd/ui-svelte', 'packages/*', 'services/*']`.
+- Root [`package.json`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/package.json) defines: `workspaces: ['herd', 'herd/ui-svelte', 'packages/*', 'services/*']`.
 - `projects/*` is **not** included in the root workspace declaration.
 - Intermediate `projects/tsconfig.json` was missing, causing child builds in `projects/toxicwind/*` to fail with `error TS5083: Cannot read file '/home/toxic/estate/projects/tsconfig.json'`.
 

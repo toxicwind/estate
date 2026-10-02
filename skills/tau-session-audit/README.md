@@ -1,7 +1,7 @@
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/part_of-sovereign--projects-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate#license)
+[![sovereign-projects](https://img.shields.io/badge/part_of-sovereign--projects-blue?style=for-the-badge)](https://github.com/toxicwind/estate)
 
 </div>
 
@@ -82,14 +82,14 @@ During the audit of recent sessions (`2026-09-24T00-56-17` and `2026-09-23T20-59
 
 ## 🏛️ Monorepo Convention Findings
 
-- **Workspace Root**: [`/home/toxic/estate/package.json`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/package.json)
+- **Workspace Root**: [`/home/toxic/estate/package.json`](https://github.com/toxicwind/estate/blob/forge/gate-retire-final/package.json)
   - Workspaces configured: `['herd', 'herd/ui-svelte', 'packages/*', 'services/*']`.
   - Intended home for shared utilities: `packages/sovereign-utils` or `packages/utils` (already registered in workspace).
 - **Binary Distribution SSOT**:
   - Compiled binary: `projects/toxicwind/core/engine/packages/coding-agent/dist/tau` (242 MiB).
   - Production launcher: `~/.local/bin/tau` (Bun ELF binary).
 - **Remotes**:
-  - `origin`: `https://github.com/toxicwind/sovereign-projects.git`
+  - `origin`: `https://github.com/toxicwind/estate.git`
   - `ranch`: `https://github.com/toxicwind/ranch.git`
   - `vendor`: `https://github.com/can1357/oh-my-pi.git`
   - `archive`: `https://github.com/toxicwind/local-work-archive.git`
@@ -106,4 +106,4 @@ All 32 unit tests pass covering intent inference, anomaly scoring, and pattern d
 
 ## License & Security
 
-MIT where marked — [license](https://github.com/toxicwind/sovereign-projects#license). Audit reports may quote session content: treat any credential-shaped string in logs as untrusted until verified, never paste real secrets into reports.
+MIT where marked — [license](https://github.com/toxicwind/estate#license). Audit reports may quote session content: treat any credential-shaped string in logs as untrusted until verified, never paste real secrets into reports.

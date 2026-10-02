@@ -73,7 +73,7 @@ Bid body shape (bidders: this is mandatory):
 Rules:
 - `kb_sha` must be the **commit SHA** of the knowledgebase file (40 hex),
   not a branch name. Fetch it live:
-  `https://api.github.com/repos/toxicwind/sovereign-projects/commits?path=docs/fleet-knowledgebase.md&sha=main&per_page=1`
+  `https://api.github.com/repos/toxicwind/estate/commits?path=docs/fleet-knowledgebase.md&sha=main&per_page=1`
 - `checked_crews` must be non-empty and name the crews you actually checked.
 - `no_overlap` must be a non-blank statement, not boilerplate.
 - The standing bidders do this automatically (`bin/bidder.py` fetches the

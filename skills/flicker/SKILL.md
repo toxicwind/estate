@@ -89,13 +89,14 @@ If an identical job (same content hash) was previously successful, POST /api/job
 
 The hash covers: command/script, workdir, env (sorted), cache_key, artifacts (sorted).
 
-## Migration from buildsrv/brand
+## Migration from buildsrv
 
-Flicker replaces the Python buildsrv/brand daemon. Key differences:
+Flicker replaces the old Python buildsrv daemon (briefly renamed "brand" on 2026-09-30, then deleted — the name was a mistake and all brand folders are gone). Key differences:
 - **Port**: Same (25148) — drop-in replacement.
 - **API**: `/api/jobs` instead of buildsrv's endpoints. Simpler, no auth.
 - **Execution**: Direct local bash (not Python subprocess with custom caching).
-- **State**: Migrated from `/home/toxic/brand/` to `/home/toxic/flicker/migrated-brand/`.
+- **State**: `/home/toxic/flicker/` on yote.
+- **Source**: `ranch/flicker/` (Woodpecker v3 Go fork).
 
 ## Daemons
 
@@ -105,7 +106,7 @@ Pitchfork supervises:
 
 ## CLI
 
-The `flicker` CLI (at `/home/toxic/estate/projects/range/ranch/flicker/bin/flicker`) provides:
+The `flicker` CLI (at `/home/toxic/.local/bin/flicker`) provides:
 - `flicker submit` — submit a job
 - `flicker status` — check job status
 - `flicker logs` — fetch logs

@@ -8,6 +8,7 @@
  *   borrow    free-first literature + code search  (emergent-enrich route.py)
  *   mcts      search patch candidates              (mcts_engine.py)
  *   subgraph  traceback -> files that matter       (dynamic_subgraph_inducer.py)
+ *   audit     verify claims against the AST          (ast-grep; merged 2026-10-02)
  *   paths     what this build resolves to          (non-hardcoded path proof)
  *   doctor    verify every leg still runs
  */
@@ -22,6 +23,7 @@ import { CircuitBreaker } from "./circuit-breaker";
 import { SWEMcts, type PatchAction } from "./mcts";
 import { DynamicSubgraphInducer, extractTracebackFrames } from "./subgraph";
 import { borrow, renderBorrow, type SourceName } from "./borrow";
+import { audit, renderAudit, resolveAstGrep, type AuditOptions } from "./audit";
 import { leadWithWinner, loadStrategies, logWinners, runRace, setEmitter, type Strategy } from "./concurrent";
 import { CodeItem, PaperItem } from "./providers";
 import * as P from "./paths";
@@ -228,6 +230,22 @@ async function cmdMcts(args: Args): Promise<number> {
   return 0;
 }
 
+async function cmdAudit(args: Args): Promise<number> {
+  const opts: AuditOptions = {
+    root: args.flags.get("root") as string || process.cwd(),
+    globs: list(args.flags, "globs"),
+    top: num(args.flags, "top", 10),
+    claim: args.flags.get("claim") as string | undefined,
+    pattern: args.flags.get("pattern") as string | undefined,
+    lang: args.flags.get("lang") as string | undefined,
+    rule: args.flags.get("rule") as string | undefined,
+  };
+  const result = audit(opts);
+  const rendered = renderAudit(result);
+  writeOut(args.flags, result, rendered);
+  return result.verdict === "VERIFIED" ? 0 : result.verdict === "NOT-FOUND" ? 1 : 2;
+}
+
 /** Reward from a real verification command; -1 when the command fails. */
 async function runRealTest(actionId: string): Promise<number> {
   const cmd = actionId.split(/\s+/).filter(Boolean);
@@ -277,6 +295,9 @@ async function cmdDoctor(args: Args): Promise<number> {
 
   checks.push({ name: "paths", ok: existsSync(P.ESTATE), detail: `ESTATE=${P.ESTATE}` });
 
+  const sgBin = resolveAstGrep();
+  checks.push({ name: "audit (ast-grep)", ok: sgBin !== null, detail: sgBin ?? "ast-grep missing from PATH (set AST_GREP_BIN)" });
+
   if (args.flags.get("borrow") === true) {
     const borrowed = await borrow("mcts planning", { perSource: 1, skip: new Set(["exa"]) });
     const okCount = Object.values(borrowed.sources).filter((s) => s?.ok).length;
@@ -301,6 +322,9 @@ const HELP = `forge — pattern-forge: retrieve, race, borrow, search. Pure Bun.
   forge borrow <query> [--per-source N] [--skip a,b] [--top N] [--exa-key K] [--skip a,b]
   forge mcts --candidates a,b,c [--depth N] [--timeout S] [--real]
   forge subgraph --root <dir> --trace <file> [--depth N]
+  forge audit --root <dir> --claim "<claim>" [--globs a,b] [--top N]
+  forge audit --root <dir> --pattern '<ast-grep pattern>' [--lang ts] [--globs a,b]
+  forge audit --root <dir> --rule <rule.yml>
   forge paths
   forge doctor [--borrow]
 
@@ -323,6 +347,7 @@ async function main(argv: readonly string[]): Promise<number> {
     case "borrow": return cmdBorrow(args);
     case "mcts": return cmdMcts(args);
     case "subgraph": return cmdSubgraph(args);
+    case "audit": return cmdAudit(args);
     case "paths": return cmdPaths(args);
     case "doctor": return cmdDoctor(args);
     case "help":

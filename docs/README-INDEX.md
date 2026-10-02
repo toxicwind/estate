@@ -90,7 +90,7 @@ flowchart LR
 
 ## docs
 
-- [docs/fleet/personas/README.md](../docs/fleet/personas/README.md)
+- [fleet/personas/README.md](../fleet/personas/README.md)
 - [docs/Meta/Muse AI/README.md](../docs/Meta/Muse AI/README.md)
 - [docs/README.md](../docs/README.md)
 
