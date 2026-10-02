@@ -17,7 +17,7 @@ parseable into these layers. If it isn't, it's a bug — run the validator.
 | 3 | **Identity** (upstream model) | The model family, no provider prefix | `exaone-4.0-1.2b`, `qwen3.5-9b-deepseek-v4-flash`, `gemma-4-12b`, `qwen-flash`, `ministral-8b-latest`, `kimi-k2.6` |
 | 4 | **Variant** (quant+ctx+build) | Quantization, context window, build flags | `iq4xs-32k`, `q4km-64k`, `da-128k`, `uncensored`, `i1` |
 | 5 | **Policy alias** (DEPRECATED) | Generic words kept ONLY as compat aliases | `fast`, `tiny`, `small`, `medium`, `code`, `long`, `uncensored` |
-| 6 | **Metadata** (never in the ID) | Health, RPM, TTFT, pricing | Lives in `/home/toxic/estate/data/model-health.json` ONLY |
+| 6 | **Metadata** (never in the ID) | Health, RPM, TTFT, pricing | Lives in `/home/toxic/estate/var/data/model-health.json` ONLY |
 
 ## Canonical patterns
 
