@@ -526,6 +526,12 @@ models:
     aliases:
       - gemma-96k
       - oracle-judge-local
+      # `classify` — skill-cluster classifier. Lives HERE, not in the
+      # top-level `aliases:` block: herd's parser has no field for that
+      # block, so an entry there is silently dropped and never served
+      # (small/medium/code/long only resolve because models: re-declares
+      # them below). See the note above the dead block.
+      - classify
     env:
       - LD_LIBRARY_PATH=${BEELLAMA_LD}
       - ${CUDA_ENV}
@@ -606,27 +612,39 @@ models:
 # =============================================================================
 # Local size-tier aliases (committed 2026-09-21 modelmap-r2): these were
 # worktree-only WIP and were wiped by an unrelated config rewrite at
+# ---- DEAD BLOCK, DO NOT ADD MODELS HERE -------------------------------
+# This top-level `aliases:` block is NOT read by herd. Its Config struct
+# (internal/config/config.go) has fields for models/profiles/selectors/
+# peers, but none for a top-level alias map; the only `yaml:"aliases"` tag
+# in the tree is on ModelConfig, i.e. the per-model list at
+# models.<id>.aliases. Entries added here parse as valid YAML and are
+# then discarded at load with no error.
+#
+# `small`, `medium`, `code` and `long` resolve anyway ONLY because three
+# models: entries re-declare them in their own aliases: list
+# (mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m, gemma-4-12b-unified,
+# beellama/qwen-flash-256k). Nothing here is doing any work.
+#
+# To add an alias, put it in the owning model's aliases: list. `classify`
+# was added here first and was never served, for exactly this reason.
+# Verified with a YAML-library parse of this file plus a live /v1/models diff.
 # 2026-09-21 06:26 MDT; restored here durably. Each entry is a full cmd
 # model (distinct ctx/reasoning params per tier) -- the estate's
 # sovereign-swap fork serves cmd blocks under top-level `aliases:`.
 # Model files come from the macros: section (MODEL_DIR, QWEN35_9B_FLASH_IQ4XS,
 # GEMMA_12B_BASE_Q4KM); both gguf files verified on disk 2026-09-21.
 # Router config owns selection: retarget by editing the --model macros.
-aliases:
-  small:
-    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_ON} ${SPEC_NONE}
-  medium:
-    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_BASE_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_ON} ${SPEC_NONE}
-  code:
-    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_BASE_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_ON} ${SPEC_NONE}
-  long:
-    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_256K} ${KV_Q8} ${REASONING_ON} ${SPEC_NONE}
-  # Skill-cluster classifier (2026-10-02). Chosen by measured gold-set
-  # accuracy, not by name: zero-shot NLI encoders under transformers.js
-  # top out at 0.618 (Horizon-Labs/multilingual-zeroshot-base, 922ms/skill),
-  # while gemma-4-12b reads a 9-way list and returns one ID directly.
-  # gemma already serves as `medium`; this entry exists so the classifier
-  # workload can be retargeted independently when a better local model
-  # lands, without touching the `medium` route.
-  classify:
-    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_BASE_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+# ---- REMOVED: top-level `aliases:` block -------------------------------
+# This block was dead config. herd's Config struct has no top-level alias
+# map; the only yaml:"aliases" tag in the tree is on ModelConfig, i.e. the
+# per-model list at models.<id>.aliases. yaml.v3 dropped the block silently
+# at every load - valid YAML, no error, nothing served.
+#
+# small/medium/code/long resolved anyway ONLY because three models: entries
+# declare them in their own aliases: list (mradermacher/qwen3.5-9b-deepseek-
+# v4-flash-i1-q4_k_m, gemma-4-12b-unified, beellama/qwen-flash-256k).
+# `classify` was added here first and never served, for the same reason; it
+# now lives on gemma-4-12b-unified.
+#
+# To add an alias, put it in the owning model's aliases: list. herd now
+# rejects unknown top-level keys at load instead of ignoring them.
