@@ -223,7 +223,7 @@ as tabs (several are already in the registry, some are not yet):
 (robomp ops console, served by its FastAPI app), `rust_algo_web/frontend`
 (effusionlabs-os, → `rust-web` :25201), `wt-hft-hygiene-build/upstream/frontend`
 (mcpproxy-frontend, Vue, gatehouse's control panel), `sovereign-github-search/apps/frontend`
-(Next.js), `tools/nuvio-platform/.../app/frontend` (srt-translator), plus the
+(Next.js), `ranch/android-fleet/nuvio/nuvio-platform/submodules/subtitle-translator/app/frontend` (srt-translator), plus the
 static `scratch/squawk-ui/ui.html` and
 `hatch/agents/ember/var/openfang-health/openfang-health.html`.
 

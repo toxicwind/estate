@@ -12,8 +12,8 @@ Bulk backup and storage triage for Chris's Pixel 9 Pro XL via ADB on yote. Bench
 |---|---|
 | ADB binary | `/usr/bin/adb` on yote |
 | Phone endpoint | `10.0.0.77:<port>` — **port rotates**; keepalive daemon rediscovers it |
-| Keepalive | `sovereign/projects/android-fleet/bin/pixel-adb-keepalive.sh` (pitchfork) |
-| Canonical project | `sovereign/projects/android-fleet/phone-backup/` |
+| Keepalive | `sovereign/ranch/android-fleet/bin/pixel-adb-keepalive.sh` (pitchfork) |
+| Canonical project | `sovereign/ranch/android-fleet/phone-backup/` |
 | Fast pull script | `.../phone-backup/bin/fast-pull.sh` |
 | Speed shootout | `.../phone-backup/bin/speed-race.sh` (8 methods, keeps the winner) |
 | Archive root | `/mnt/8TB/phone-archive/` (7.3T drive, was 13% used 2026-09-30) |
@@ -58,10 +58,10 @@ Large file (300MB incompressible blob):
 
 ```bash
 # One-shot, default source set (~20GB code/archives/repos/docs)
-/home/toxic/sovereign/projects/android-fleet/phone-backup/bin/fast-pull.sh /mnt/8TB/phone-archive
+/home/toxic/sovereign/ranch/android-fleet/phone-backup/bin/fast-pull.sh /mnt/8TB/phone-archive
 
 # Re-run the 8-method speed shootout
-/home/toxic/sovereign/projects/android-fleet/phone-backup/bin/speed-race.sh ${TMPDIR:-$HOME/.cache}/speed-race
+/home/toxic/sovereign/ranch/android-fleet/phone-backup/bin/speed-race.sh ${TMPDIR:-$HOME/.cache}/speed-race
 ```
 
 Each run writes a timestamped manifest (`pull-manifest-*.txt`) with per-dir OK/FAIL, sizes, and file counts. **Never delete from the phone until the manifest is verified** (spot-check sizes + open a few archives).

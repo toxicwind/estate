@@ -187,12 +187,13 @@ zellij = "zellij"
 ttyd = "ttyd -p 25137 bash"
 sshx = "sshx"
 
-# ─── Nuvio Platform (webOS app) ───
-nv-build = { run = "cd tools/nuvio-platform && npm run build:webos", dir = "tools/nuvio-platform" }
-nv-test = { run = "cd tools/nuvio-platform && npm run test:coverage", dir = "tools/nuvio-platform" }
-nv-package = { run = "cd tools/nuvio-platform && npm run package:webos", dir = "tools/nuvio-platform", depends = ["nv-build"] }
+# ─── Nuvio Platform (webOS app) — lives with the rest of Chris's screens,
+# under ranch/android-fleet/. See ranch/android-fleet/nuvio/README.md.
+nv-build = { run = "cd ranch/android-fleet/nuvio/nuvio-platform && npm run build:webos", dir = "ranch/android-fleet/nuvio/nuvio-platform" }
+nv-test = { run = "cd ranch/android-fleet/nuvio/nuvio-platform && npm run test:coverage", dir = "ranch/android-fleet/nuvio/nuvio-platform" }
+nv-package = { run = "cd ranch/android-fleet/nuvio/nuvio-platform && npm run package:webos", dir = "ranch/android-fleet/nuvio/nuvio-platform", depends = ["nv-build"] }
 health-notify = "mise run svc-check || curl -s -X POST -d Stack_degraded https://ntfy.sh/sovereign-alerts"
-nv-dev = { run = "cd tools/nuvio-platform && npm run dev", dir = "tools/nuvio-platform" }
+nv-dev = { run = "cd ranch/android-fleet/nuvio/nuvio-platform && npm run dev", dir = "ranch/android-fleet/nuvio/nuvio-platform" }
 
 # ─── Test suite ───
 test = "bun test"

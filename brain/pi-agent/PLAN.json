@@ -24,7 +24,7 @@
           "id": "N0.2",
           "name": "Review Nuvio UX",
           "status": "pending",
-          "desc": "Review tools/nuvio-platform/"
+          "desc": "Review ranch/android-fleet/nuvio/nuvio-platform/"
         },
         {
           "id": "N0.3",
