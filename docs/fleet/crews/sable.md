@@ -1,7 +1,7 @@
 ---
 crew: 'sable'
 scope: 'estate staleness hunter: docs audit DONE, now finding+fixing live drift (fleet-onboard, tau plugins, honest doc paths)'
-owner: 'Ember (Chris''s main agent)'
+owner: 'Sable'
 status: 'RUNNING (2026-10-02) — staleness hunter'
 order: 1000000012
 registered: '2026-10-02'
