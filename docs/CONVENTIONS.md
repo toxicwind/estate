@@ -250,3 +250,34 @@ HOSTNAME=awrawr-pc
 ```
 
 Declared at the top of `estate/.env`.
+## 15. Forked upstream code
+
+We fork upstream projects. The fork lives **twice**, and the duplication is
+deliberate — do not "deduplicate" it:
+
+- the **standalone repo** carries the real history and the `upstream` remote;
+  it is the only place a merge can happen
+- the **in-tree copy** is committed as real tracked files in the monorepo, so a
+  fresh clone gets a working tool with no submodule and no second checkout
+
+**Rule 15.1 — Never rebase, squash, or force-push a fork's `main`.** Our
+commits are the audit trail; audits cite them by hash and the citation must keep
+resolving. When upstream takes our work, merge their changes back as a **merge
+commit** so the histogram shows both sides happened.
+
+**Rule 15.2 — Never nest a repo inside the monorepo copy.** If a sync creates
+`.git` in the in-tree copy, the tree is silently a submodule again. Refuse the
+sync and clean up.
+
+**Rule 15.3 — Every merge gets a recorded decision.** Append the decision block
+(processed / resulting commit / tag) to the fork's `MERGE-DECISIONS.md`. An
+unrecorded merge is a merge we cannot explain later.
+
+**Rule 15.4 — Opening upstream PRs is Chris's call, not an agent's.** Agents
+audit and prepare; they do not speak for toxicwind to an external maintainer
+group.
+
+The reference implementation of all four rules is `ranch/roundup/` — a fork of
+`vllm-project/guidellm`, with the full procedure in
+`ranch/roundup/docs/UPSTREAM-MERGE.md` and the mechanism in
+`ranch/roundup/scripts/upstream-merge.sh`.
