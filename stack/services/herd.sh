@@ -26,13 +26,13 @@ PORT="$HERD_PORT"
 # time var/ is swept). The var/llama-swap-backups copy is the last-known-good
 # restore point if the in-tree build is ever lost.
 for BIN in \
-  "$SOV/ranch/herd/llama-swap" \
-  "$SOV/var/llama-swap-backups/herd/llama-swap"
+  "$SOV/ranch/herd/herd" \
+  "$SOV/var/herd-backups/herd/herd"
 do
   [[ -x "$BIN" ]] && break
   BIN=""
 done
-[[ -n "$BIN" ]] || { echo "herd (llama-swap) bin not found in ranch/herd or var/llama-swap-backups/herd" >&2; exit 1; }
+[[ -n "$BIN" ]] || { echo "herd bin not found in ranch/herd or var/llama-swap-backups/herd" >&2; exit 1; }
 CONF="$SOV/config/herd.yaml"
 [[ -f "$CONF" ]] || CONF="$SOV/config/llama-swap.yaml"
 [[ -f "$CONF" ]] || { echo "herd config not found at $CONF" >&2; exit 1; }
