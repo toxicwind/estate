@@ -18,7 +18,7 @@ kind = "dir"
 
 [[project]]
 key = "ranch/oracle"
-manifest = "ranch/oracle/pitchfork.d"
+manifest = "ranch/squawk/oracle/pitchfork.d"
 kind = "dir"
 
 [[project]]
@@ -26,15 +26,7 @@ key = "ranch/cuttinggate"
 manifest = "ranch/cuttinggate/pitchfork.d"
 kind = "dir"
 
-[[project]]
-key = "ranch/squawk"
-manifest = "ranch/squawk/pitchfork.d"
-kind = "dir"
 
-[[project]]
-key = "ranch/squawk-ws"
-manifest = "ranch/squawk-ws/pitchfork.d"
-kind = "dir"
 
 [[project]]
 key = "ranch/stream-broker"
