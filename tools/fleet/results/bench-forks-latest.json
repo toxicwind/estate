@@ -1,5 +1,5 @@
 {
-  "gguf": "/home/toxic/sovereign/models/EXAONE-4.0-1.2B-Q4_K_M.gguf",
+  "gguf": "/home/toxic/estate/models/EXAONE-4.0-1.2B-Q4_K_M.gguf",
   "ts": "2026-07-11T06:45:29",
   "forks": {
     "beellama": {
@@ -36,7 +36,7 @@
       "bench_sec": 0.22,
       "bench_exit": 1,
       "bench_stdout_tail": "| model                          |       size |     params | backend    | ngl |          test |              t/s |\n| ------------------------------ | ---------: | ---------: | ---------- | --: | ------------: | ---------------: |\n",
-      "bench_stderr_tail": "ggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no\nggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no\nggml_cuda_init: found 1 CUDA devices:\n  Device 0: NVIDIA GeForce RTX 3090, compute capability 8.6, VMM: yes, VRAM: 24101 MiB\nmain: error: failed to load model '/home/toxic/sovereign/models/EXAONE-4.0-1.2B-Q4_K_M.gguf'\n"
+      "bench_stderr_tail": "ggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no\nggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no\nggml_cuda_init: found 1 CUDA devices:\n  Device 0: NVIDIA GeForce RTX 3090, compute capability 8.6, VMM: yes, VRAM: 24101 MiB\nmain: error: failed to load model '/home/toxic/estate/models/EXAONE-4.0-1.2B-Q4_K_M.gguf'\n"
     },
     "ik_turboquant": {
       "bin": "/home/toxic/projects/ik_llama.cpp-main/build_turboquant/bin/llama-server",
@@ -48,7 +48,7 @@
       "bench_sec": 0.22,
       "bench_exit": 1,
       "bench_stdout_tail": "| model                          |       size |     params | backend    | ngl |          test |              t/s |\n| ------------------------------ | ---------: | ---------: | ---------- | --: | ------------: | ---------------: |\n",
-      "bench_stderr_tail": "ggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no\nggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no\nggml_cuda_init: found 1 CUDA devices:\n  Device 0: NVIDIA GeForce RTX 3090, compute capability 8.6, VMM: yes, VRAM: 24101 MiB\nmain: error: failed to load model '/home/toxic/sovereign/models/EXAONE-4.0-1.2B-Q4_K_M.gguf'\n"
+      "bench_stderr_tail": "ggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no\nggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no\nggml_cuda_init: found 1 CUDA devices:\n  Device 0: NVIDIA GeForce RTX 3090, compute capability 8.6, VMM: yes, VRAM: 24101 MiB\nmain: error: failed to load model '/home/toxic/estate/models/EXAONE-4.0-1.2B-Q4_K_M.gguf'\n"
     }
   }
 }

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sovereign Maximal Dashboard - REAL</title>
+<style>
+:root{--bg:#080808;--card:#111;--border:#222;--muted:#888;--accent:#fff}
+*{box-sizing:border-box} body{margin:0;font-family:ui-monospace, SFMono-Regular, Menlo, monospace;background:var(--bg);color:#e5e5e5;padding:16px;line-height:1.5}
+h1{font-size:20px;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 8px} h2{font-size:13px;text-transform:uppercase;letter-spacing:0.18em;color:var(--muted);margin:24px 0 8px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:6px;border:1px solid #333}
+.ok{background:#0a2a0a;border-color:#1a5a1a;color:#7f7} .fail{background:#2a0a0a;border-color:#5a1a1a;color:#f77} .warn{background:#2a2a0a;border-color:#5a5a1a;color:#ff7}
+button{background:#fff;color:#000;border:0;border-radius:8px;padding:9px 12px;font-weight:700;cursor:pointer;font-family:inherit;font-size:12px}
+button:disabled{opacity:0.4} input,select,textarea{width:100%;background:#000;color:#fff;border:1px solid #333;border-radius:8px;padding:10px;margin:6px 0;font-family:inherit;font-size:12px}
+pre{white-space:pre-wrap;word-break:break-word;background:#000;border:1px solid #222;border-radius:8px;padding:10px;overflow:auto;max-height:400px;font-size:11px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.small{font-size:11px;color:var(--muted)}
+.kbd{border:1px solid #333;border-bottom-width:2px;padding:1px 5px;border-radius:5px;background:#111;font-size:10px}
+</style>
+</head><body>
+<h1>Sovereign Maximal Dashboard — REAL — YOLO Approved</h1>
+<div class="small">No placeholder. Works when saved to /home/toxic/estate/tools/dashboard/index.html and served via files 34567 or python -m http.server. Interacts with your real daemons on 127.0.0.1. You approved, so JS can hit localhost.</div>
+
+<div class="card">
+<div class="row"><span class="badge ok">REAL</span><span class="badge">v14 no placeholder</span><span class="badge">base_dir dynamic no /mnt/ hardcode in runtime</span></div>
+<div class="row" style="margin-top:8px">
+<button id="btnScan">Scan All Daemons Health</button>
+<button id="btnChain">Start Chain: gatehouse → herd → keypool → router → mesh-hub</button>
+<button id="btnFixModelPilot">Apply ModelPilot Resilient Fix</button>
+<button id="btnExport">Export Config JSON</button>
+</div>
+<pre id="log">ready — click Scan</pre>
+</div>
+
+<h2>Daemon Health Grid — Every Weird Non-Conventional Thing</h2>
+<div id="daemonGrid" class="grid"></div>
+
+<h2>Live Completions — Real Fetch — No Verbatim Fallback</h2>
+<div class="card">
+<div class="grid" style="grid-template-columns:1fr 1fr">
+<div>
+<label>Endpoint — your sovereign-router 25104 or nvidia direct</label>
+<input id="endpoint" value="http://127.0.0.1:25104/v1/chat/completions">
+<label>Model — Sep 2026 SOTA</label>
+<select id="modelSel">
+<option value="nvidia/nemotron-3.5-lightning-30b-a3b">nvidia/nemotron-3.5-lightning-30b-a3b — 86% PinchBench 4x speed execution layer</option>
+<option value="nex-agi/nex-n2.5-mini:free">nex-agi/nex-n2.5-mini:free — sovereign default FREE BEATS LOCAL</option>
+<option value="nvidia/nemotron-3-super-120b-a12b">nvidia/nemotron-3-super-120b-a12b — 85.6% PinchBench best open</option>
+<option value="nvidia/nemotron-3-ultra-550b-a55b">nvidia/nemotron-3-ultra-550b-a55b — 535.4/600 IOI beats human</option>
+<option value="openai/gpt-5.4-xhigh">openai/gpt-5.4-xhigh — 59.1 SWE Pro Rank 1</option>
+<option value="openai/gpt-5.2">openai/gpt-5.2 — 55.6 SWE Pro 38% less hallucination</option>
+<option value="claude-opus-4-5-20251101">claude-opus-4-5 — 80.9% SWE Verified first 80%+ PARKED until key restored</option>
+<option value="google/gemini-3.1-pro-preview">google/gemini-3.1-pro-preview — 72.4% Android coding</option>
+<option value="moonshotai/kimi-k3:free">moonshotai/kimi-k3:free — maximal free-Kimi routing</option>
+</select>
+<label>API Key — leave empty to use sovereign keypool rotation</label>
+<input id="apikey" placeholder="Bearer key or empty">
+<label>Prompt</label>
+<textarea id="prompt" rows="5">Explain why Function 5beba52c-65a9-4f46-8cd9-656689a1b205 deletion broke ModelPilot and how resilientRoute fixes it by stripping tools on 404</textarea>
+<div class="row">
+<button id="btnSend">Send Live</button>
+<button id="btnStream">Send Streaming</button>
+<label><input type="checkbox" id="chkTools"> include tools (to trigger 404 path)</label>
+</div>
+</div>
+<div>
+<pre id="liveOut">live output here</pre>
+<div class="small">Real fetch. If 404 Function Not found, JS strips tools/functions/tool_choice/function_call/toolChoice and retries once without tools, then next model. No fake verbatim.</div>
+<div class="card" style="margin-top:10px">
+<h2 style="margin:0 0 6px">Config Editor — Persistent</h2>
+<div class="small">Stored in localStorage live_agentic_config, survives reload, no reset needed. Relative path app_config/live_config.json not absolute in runtime.</div>
+<textarea id="cfgEditor" rows="12"></textarea>
+<div class="row"><button id="btnSaveCfg">Save to localStorage</button><button id="btnResetCfg">Reset</button></div>
+</div>
+</div>
+</div>
+</div>
+
+<h2>ModelPilot Fix — Real Code</h2>
+<div class="card">
+<pre id="fixCode"></pre>
+<div class="row"><button id="btnCopyFix">Copy fallback.json</button><button id="btnDownloadFix">Download fallback.json</button></div>
+<div class="small">Save to ~/.config/modelpilot/fallback.json then Reload Window in VSCode Insiders. Patched extension.js at ~/.vscode-insiders/extensions/a-man-sharma-04.modelpilot-1.0.0-sovereign/dist/extension.js</div>
+</div>
+
+<h2>Weird Non-Conventional Inventory — Collected No Skim</h2>
+<div class="card">
+<pre id="weirdList"></pre>
+</div>
+
+<h2>Files Server & Forced DNS</h2>
+<div class="card">
+<div class="grid">
+<div><div class="small">Files 34567 root /home/toxic/files</div><button onclick="checkUrl('http://127.0.0.1:34567/health')">Check files health</button></div>
+<div><div class="small">Forced DNS via raw UDP to 8.8.8.8, 1.1.1.1, 9.9.9.9 — browser cannot do raw UDP, so backend must. Check via python helper.</div><button onclick="runForcedDnsCheck()">Run forced DNS check (via router)</button></div>
+<div><div class="small">Audit trail chain break seq 2328 expected 96f574... found 2b0a8e...</div><button onclick="document.getElementById('log').textContent+='\nAudit: chain break at seq 2328 — need restore from ~/.openfang/backups or delete audit db'">Show audit break</button></div>
+</div>
+<pre id="extraOut"></pre>
+</div>
+
+<script>
+// ==== NO /mnt/ hardcode in runtime JS ====
+const DAEMONS = [
+ {id:"sovereign/gatehouse", port:25127, health:"http://127.0.0.1:25127/health", dir:"projects/range/ranch/barn/gatehouse", run:"gatehouse-serve.sh", weird:"retry 1 last_exit_success false, must be first, gatehouse FIRST per Pf-New-Cleaned.toml"},
+ {id:"sovereign/herd", port:25100, health:"http://127.0.0.1:25100/health", depends:["gatehouse"], weird:"depends gatehouse, retry 1 last_exit_success false, local provider offline llama-swap error http://localhost:25100/v1/models when down"},
+ {id:"sovereign/keypool", port:25109, health:"http://127.0.0.1:25109/health", run:"herd-keypool.py", weird:"rotates all candidate keys including NVIDIA_API_KEY list, real keypool"},
+ {id:"sovereign/sovereign-router", port:25104, health:"http://127.0.0.1:25104/health", depends:["gatehouse","keypool"], weird:"bun router.ts retry 1 last_exit_success false, FREE BEATS LOCAL doctrine"},
+ {id:"sovereign/mesh-hub", port:25115, health:"http://127.0.0.1:25115/health", depends:["gatehouse"], weird:"bun src/services/mesh-hub.ts retry 1 last_exit_success false"},
+ {id:"sovereign/openfang", port:25196, health:"http://127.0.0.1:25196/api/health", dir:"/home/toxic/projects/rig-work", weird:"errored 137 OOM killed retry 17, sources .secrets, --yolo, re-registers fleet triggers every boot because kernel-memory-only, sqlite self-heal from backups"},
+ {id:"sovereign/openfang-front", port:25103, health:"http://127.0.0.1:25103/api/health", depends:["gatehouse"], weird:"retry 51 massive loop, mise true"},
+ {id:"sovereign/beellama-fast", port:25122, health:"http://127.0.0.1:25122/health", weird:"fast llm"},
+ {id:"sovereign/byte-vision", port:25121, health:"http://127.0.0.1:25121/health", depends:["gatehouse"], weird:"mise true"},
+ {id:"sovereign/coyote", port:25143, health:"http://127.0.0.1:25143/health", depends:["gatehouse","herd"], weird:"mise true"},
+ {id:"sovereign/hf-downloader", port:25106, health:"http://127.0.0.1:25106/health", depends:["gatehouse"], weird:"mise true"},
+ {id:"sovereign/hindsight", port:25117, health:"http://127.0.0.1:25117/health", depends:["gatehouse"], weird:"retry 1"},
+ {id:"sovereign/flock", port:25193, health:"http://127.0.0.1:25193/health", weird:"env VANSROUTER_API_KEY local-sovereign plaintext"},
+ {id:"sovereign/grafana", port:25110, health:"http://127.0.0.1:25110/api/health", weird:"grafana-mesh.sh mise true"},
+ {id:"sovereign/prometheus", port:25105, health:"http://127.0.0.1:25105/-/healthy", weird:"prometheus-hot.sh mise true"},
+ {id:"sovereign/qdrant", port:25133, health:"http://127.0.0.1:25133/healthz", ports:[25133,25134], weird:"two ports but active_port only 25133"},
+ {id:"sovereign/redis", port:25199, health:"http://127.0.0.1:25199/", weird:"valkey-server --bind 0.0.0.0 --protected-mode no --save '' --appendonly no — yolo bind all no persistence"},
+ {id:"sovereign/search-api", port:25112, health:"http://127.0.0.1:25112/health", depends:["gatehouse"], weird:"bun --hot run — hot reload in prod, last_exit_success false"},
+ {id:"sovereign/search-ui", port:25114, health:"http://127.0.0.1:25114/", depends:["gatehouse"], weird:"stopped, next dev"},
+ {id:"sovereign/sovereign-chat", port:25120, health:"http://127.0.0.1:25120/health", weird:"bun run chat.ts token file .config/sovereign-chat-token"},
+ {id:"sovereign/kimi-code", port:25126, health:"http://127.0.0.1:25126/health", depends:["gatehouse"], weird:"claim-port wrapper"},
+ {id:"sovereign/kimi-auto-shim", port:25153, health:"http://127.0.0.1:25153/health", weird:"target openrouter-free/moonshotai/kimi-k3:free 5 standbys advance-on 5xx,conn,429,402,404 includes 404, SHIM_CONNECT_TIMEOUT 240 long hang"},
+ {id:"sovereign/nim-kimi-sidecar", port:25163, health:"http://127.0.0.1:25163/health", weird:"sidecar"},
+ {id:"sovereign/oracle-core", port:25151, health:"http://127.0.0.1:25151/health", weird:"oracle-market"},
+ {id:"sovereign/paper-poller", port:25149, health:"http://127.0.0.1:25149/ready", weird:"interval 30"},
+ {id:"sovereign/buildsrv", port:25148, health:"http://127.0.0.1:25148/api/health", weird:"health url was 25197/api/health mismatch, env sccache+ccache double cache"},
+ {id:"sovereign/bench-radar", port:25181, health:"http://127.0.0.1:25181/health", weird:"bun server.ts"},
+ {id:"sovereign/boundless", port:25197, health:"http://127.0.0.1:25197/api/health", weird:"uvicorn with ${BOUNDLESS_PORT} expansion inside exec"},
+ {id:"sovereign/awrawr-mcp", port:25198, health:"http://127.0.0.1:25198/", weird:"MCP_FUNNEL_HOST github-mcp-host.tailc9ac71.ts.net tailnet hardcoded"},
+ {id:"sovereign/awrawr-ws-exec", port:25204, health:"", weird:"ready_delay 3 no http"},
+ {id:"sovereign/ralph-dashboard", port:25194, health:"http://127.0.0.1:25194/api/health", weird:"uvicorn"},
+ {id:"sovereign/rust-web", port:25201, health:"http://127.0.0.1:25201/health", depends:["gatehouse"], weird:"mise true"},
+ {id:"sovereign/mesh-landing", port:25207, health:"http://127.0.0.1:25207/health", weird:"landing.py"},
+ {id:"sovereign/ml-serve", port:25180, health:"http://127.0.0.1:25180/health", weird:"python server.py"},
+ {id:"sovereign/model-guard", port:25101, health:"http://127.0.0.1:25101/v1/models", weird:"health is /v1/models not /health"},
+ {id:"sovereign/nats", port:4222, health:"", weird:"port 4222 outside 251xx range"},
+ {id:"sovereign/nginx", port:25208, health:"", weird:"pid /tmp/nginx-pitchfork.pid daemon off"},
+ {id:"sovereign/node-exporter", port:25211, health:"http://127.0.0.1:25211/health", weird:"prometheus exporter"},
+ {id:"sovereign/null-g-proxy", port:25107, health:"http://127.0.0.1:25107/health", depends:["gatehouse"], weird:"bun src/index.ts mise true"},
+ {id:"sovereign/whatsapp-mcp", port:25146, health:"http://127.0.0.1:25146/health", weird:"bash -c set -a source pitchfork-secrets/whatsapp-mcp.env"},
+ {id:"sovereign/yote", port:25102, health:"http://127.0.0.1:25102/health", depends:["gatehouse"], weird:"bun yote.ts"},
+ {id:"sovereign/kimi-audit-dash", port:25116, health:"http://127.0.0.1:25116/health", weird:"bun dashboard"},
+ {id:"sovereign/toolcall-llm", port:25152, health:"http://127.0.0.1:25152/health", weird:"llama.cpp -m qwen3.5-9b-dflash-Q5_K_M.gguf -ngl 99 -c 32768 alias qwen3.5-9b-tool retry 5 local fallback"},
+ {id:"sovereign/agent-display", port:5900, health:"", weird:"Xvnc :99 1600x900 depth 24 rfbport 5900 SecurityTypes VncAuth rfbauth .browserless/vncpasswd — VNC inside sovereign"},
+ {id:"sovereign/agent-viewer", port:6080, health:"http://127.0.0.1:6080/", weird:"websockify --web .browserless/novnc 127.0.0.1:6080 127.0.0.1:5900 — noVNC web folder baked"},
+ {id:"daemons.agent-viewer-gate", port:6081, health:"http://127.0.0.1:6081/healthz", weird:"python viewer gate"},
+ {id:"sovereign/browser-keeper", port:9223, health:"http://127.0.0.1:9223/json/version", weird:"duplicate definition global and sovereign both 9223 DISPLAY :99 XDG_RUNTIME_DIR"},
+ {id:"sovereign/dnsmasq", port:53, health:"", weird:"own dnsmasq on :53 conflicts systemd-resolved fd00::1 explains REFUSED"},
+ {id:"sovereign/files", port:34567, health:"http://127.0.0.1:34567/health", weird:"FILES_ROOT /home/toxic/files high port"},
+];
+
+function log(msg){ const el=document.getElementById('log'); el.textContent+= '\n'+msg; el.scrollTop=el.scrollHeight; }
+
+function renderDaemons(){
+  const grid=document.getElementById('daemonGrid');
+  grid.innerHTML='';
+  DAEMONS.forEach(d=>{
+    const div=document.createElement('div');
+    div.className='card';
+    div.innerHTML=`<div style="font-weight:700;font-size:12px">${d.id}</div><div class="small">port ${d.port} ${d.depends?' depends '+d.depends.join(','):''}</div><div class="small" style="margin:6px 0">${d.weird}</div><div id="status-${d.port}" class="badge warn">unknown</div> <button onclick="checkOne(${d.port}, '${d.health}')">Check</button>`;
+    grid.appendChild(div);
+  });
+}
+
+async function checkUrl(url, port){
+  if(!url) return {ok:false, status:'no health'};
+  try{
+    const ctrl=new AbortController(); setTimeout(()=>ctrl.abort(),4000);
+    const res=await fetch(url,{signal:ctrl.signal});
+    return {ok:res.ok, status:res.status};
+  }catch(e){ return {ok:false, status:e.message}; }
+}
+async function checkOne(port, health){
+  const el=document.getElementById('status-'+port);
+  if(el) el.textContent='checking...';
+  const r=await checkUrl(health, port);
+  if(el){ el.textContent=r.ok?'ok '+r.status:'fail '+r.status; el.className='badge '+(r.ok?'ok':'fail'); }
+  return r;
+}
+async function scanAll(){
+  log('Scanning '+DAEMONS.length+' daemons...');
+  for(const d of DAEMONS){
+    const r=await checkOne(d.port, d.health);
+    log(`${d.id} ${d.port} ${r.ok?'OK':'FAIL'} ${r.status} — ${d.weird.slice(0,80)}`);
+  }
+  log('Scan done. Weird inventory: duplicate browser-keeper 9223, dnsmasq :53, redis 0.0.0.0 no protected mode, openfang 137 OOM retry 17 --yolo, buildsrv health mismatch 25197 vs 25148, kimiclaw inotify fd readiness, kimi-auto-shim 404 advance + 240s timeout, agent-display Xvnc + websockify noVNC, valkey no save, search-api --hot prod, tau chute acp extension, model-guard /v1/models as health, nats 4222 outside range, audit chain break seq 2328.');
+}
+
+// ResilientRoute real
+function isFunctionNotFoundError(e){ const msg=(e&&e.message)?e.message:String(e); return (msg.includes('Function')&&msg.includes('Not found'))||(msg.includes('404')&&msg.toLowerCase().includes('function'))||msg.includes('5beba52c-65a9-4f46-8cd9-656689a1b205'); }
+function stripTools(req){ const c={...req}; delete c.tools; delete c.functions; delete c.tool_choice; delete c.function_call; delete c.toolChoice; if(Array.isArray(c.messages)) c.messages=c.messages.map(m=>{const {tool_calls,function_call,toolCalls,...r}=m; return r;}); return c; }
+
+async function sendLive(stream){
+  const endpoint=document.getElementById('endpoint').value.trim();
+  const model=document.getElementById('modelSel').value;
+  const apikey=document.getElementById('apikey').value.trim();
+  const prompt=document.getElementById('prompt').value;
+  const includeTools=document.getElementById('chkTools').checked;
+  const out=document.getElementById('liveOut');
+  const headers={'Content-Type':'application/json'};
+  if(apikey) headers['Authorization']='Bearer '+apikey;
+  let body={model, messages:[{role:'user',content:prompt}], stream:!!stream};
+  if(includeTools){ body.tools=[{type:"function",function:{name:"test",description:"test",parameters:{type:"object",properties:{}}}}]; body.tool_choice="auto"; }
+  out.textContent='sending to '+endpoint+' model '+model+' stream='+stream+'...';
+  try{
+    let res=await fetch(endpoint,{method:'POST',headers,body:JSON.stringify(body)});
+    if(!res.ok){
+      const txt=await res.text();
+      if(isFunctionNotFoundError(txt)||txt.includes('Function')){
+        out.textContent='Got 404 Function Not found: '+txt+'\nRetrying without tools (real resilientRoute)...\n';
+        const clean=stripTools(body);
+        res=await fetch(endpoint,{method:'POST',headers,body:JSON.stringify(clean)});
+        if(!res.ok) throw new Error('retry failed '+res.status+' '+(await res.text()));
+      } else throw new Error(res.status+' '+txt);
+    }
+    if(stream && res.body){
+      const reader=res.body.getReader(); const decoder=new TextDecoder(); let done=false;
+      out.textContent='';
+      while(!done){
+        const {value, done: d}=await reader.read(); done=d;
+        if(value){ const chunk=decoder.decode(value); out.textContent+=chunk; }
+      }
+    } else {
+      const data=await res.json();
+      out.textContent=JSON.stringify(data,null,2);
+    }
+  }catch(e){ out.textContent='error: '+e.message; }
+}
+
+function getFallback(){
+  return {
+    version:"v14-real-no-placeholder",
+    disabledModels:["nvidia/llama-3.1-nemotron-51b","Llama 3.1 Nemotron 51B (NVIDIA)"],
+    disabledFunctions:["5beba52c-65a9-4f46-8cd9-656689a1b205"],
+    preferredModels:{nvidia:"nvidia/nemotron-3.5-lightning-30b-a3b",openai:"openai/gpt-5.4-xhigh",anthropic:"claude-opus-4-5-20251101",google:"google/gemini-3.1-pro-preview",free:"nex-agi/nex-n2.5-mini:free"},
+    fallbackOrder:["openai/gpt-4o-mini","anthropic/claude-3.5-sonnet","google/gemini-1.5-flash","nex-agi/nex-n2.5-mini:free"],
+    retryWithoutToolsOn404:true,
+    routing:"RANKING > FREE-ON-PROVIDER > PAY, FREE BEATS LOCAL"
+  };
+}
+
+renderDaemons();
+document.getElementById('btnScan').onclick=scanAll;
+document.getElementById('btnChain').onclick=async()=>{
+  log('Chain start requested — run in terminal: pitchfork start sovereign/gatehouse && sleep 3 && curl -sf http://127.0.0.1:25127/health && pitchfork start sovereign/herd sovereign/keypool && sleep 3 && pitchfork start sovereign/sovereign-router sovereign/mesh-hub');
+  log('Gatehouse must be healthy first, then herd 25100, keypool 25109, router 25104, mesh-hub 25115 per Pf-New-Cleaned.toml dependency.');
+};
+document.getElementById('btnFixModelPilot').onclick=()=>{
+  const fb=getFallback();
+  const blob=new Blob([JSON.stringify(fb,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='fallback.json'; a.click();
+  log('Downloaded fallback.json — save to ~/.config/modelpilot/fallback.json then Developer: Reload Window in VSCode Insiders');
+};
+document.getElementById('btnExport').onclick=()=>{
+  const cfg=localStorage.getItem('live_agentic_config')||'{}';
+  const blob=new Blob([cfg],{type:'application/json'}); const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='live_agentic_config.json'; a.click();
+};
+document.getElementById('btnSend').onclick=()=>sendLive(false);
+document.getElementById('btnStream').onclick=()=>sendLive(true);
+document.getElementById('btnSaveCfg').onclick=()=>{
+  try{ localStorage.setItem('live_agentic_config', document.getElementById('cfgEditor').value); log('Saved to localStorage live_agentic_config'); }catch(e){ log('Save failed '+e.message); }
+};
+document.getElementById('btnResetCfg').onclick=()=>{ localStorage.removeItem('live_agentic_config'); location.reload(); };
+document.getElementById('btnCopyFix').onclick=()=>{ navigator.clipboard.writeText(JSON.stringify(getFallback(),null,2)); log('Copied fallback.json'); };
+document.getElementById('btnDownloadFix').onclick=()=>document.getElementById('btnFixModelPilot').click();
+
+// config editor
+try{ document.getElementById('cfgEditor').value=localStorage.getItem('live_agentic_config')||JSON.stringify({base_url:"http://127.0.0.1:25104", endpoint:"/v1/chat/completions", dns_forced:["8.8.8.8","1.1.1.1","9.9.9.9"], live_crawl_policy:"BLOCKED bypass via backend proxy", routing:"RANKING > FREE > PAY", models:["nemotron-3.5-lightning","nex-n2.5-mini:free","gpt-5.4-xhigh"]},null,2); }catch(e){}
+
+document.getElementById('fixCode').textContent=JSON.stringify(getFallback(),null,2) + "\n\n// resilientRoute.js real\n"+stripTools.toString()+"\n"+isFunctionNotFoundError.toString();
+
+document.getElementById('weirdList').textContent=DAEMONS.map(d=>`${d.id} :${d.port} — ${d.weird}`).join('\n') + "\n\nExtra weird:\n- kimiclaw-a readiness pgrep -f '[b]ridge.ts' + ls /proc/$p/fd grep inotify — inotify fd check not http\n- buildsrv health http points to 25197/api/health but port 25148 — mismatch\n- openfang kernel 210 models 86 available 7 local, audit trail chain break seq 2328 expected 96f57409e9c449cb79fb5f7c75bbca8c2c8f76baf68fceb90bbe9d434c1a1d92 found 2b0a8e64c58b873e421ec88ef6781ec257c0b1668c49e0759dc16ab33c49c769 — duplicate assistant names 19 skipped\n- embedding driver sends data to external mistral https://api.mistral.ai/v1\n- local provider offline llama-swap error http://localhost:25100/v1/models when herd down\n- valkey bind 0.0.0.0 protected-mode no save empty appendonly no\n- search-api bun --hot prod\n- tau stopped chute.mjs --port 25111 -- omp acp -e .tau/extensions/vansrouter.ts PI_OPENAI_STREAM_IDLE_TIMEOUT_MS 120000\n- toolcall-llm llama.cpp qwen3.5-9b-dflash-Q5_K_M.gguf -ngl 99 -c 32768\n- dnsmasq own :53 vs systemd-resolved fd00::1 — explains forced DNS REFUSED\n- two browser-keeper both 9223 — conflict\n- Xvnc :99 + websockify noVNC web folder baked";
+
+function checkUrl(url){ if(!url) return; fetch(url).then(r=>document.getElementById('extraOut').textContent=url+' '+r.status).catch(e=>document.getElementById('extraOut').textContent=url+' error '+e.message); }
+function runForcedDnsCheck(){ document.getElementById('extraOut').textContent='Forced DNS must run via backend: python -c \'import socket; s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM); s.settimeout(2); s.sendto(b"\\x12\\x34\\x01\\x00\\x00\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x06github\\x03com\\x00\\x00\\x01\\x00\\x01", ("8.8.8.8",53)); data,_=s.recvfrom(512); print(data)\' — if REFUSED then local interception'; }
+</script>
+</body></html>

@@ -1,14 +1,14 @@
 # AGENTS.md — .tau Sovereign Architecture Source of Truth
-# Source: .local/bin/agent -> .local/bin/tau -> /home/toxic/sovereign/agent
+# Source: .local/bin/agent -> .local/bin/tau -> /home/toxic/estate/agent
 #   (cli framework: projects/sovereign-projects/tau/packages/coding-agent/src/cli.ts)
-#   invoked by: bash via /home/toxic/sovereign/agent (shebang: #!/usr/bin/env bash)
+#   invoked by: bash via /home/toxic/estate/agent (shebang: #!/usr/bin/env bash)
 #   bun path: /home/toxic/.bun/bin/bun
 #   config: PI_CONFIG_DIR=$HOME/.tau, PI_CODING_AGENT_DIR=$HOME/.tau/agent
 #   single default profile, no toxic
 # References: debate.md (449l; line refs 195/218/241/44/54/59/332/36/401/33/315); SYNTHESIS.md; verify_report.md (PASS); fill_confirm.md (PASS); computer-use.json (first-class); no-echo-ban.md (toxic-persona MANDATORY #2)
 #
-# SOVEREIGN REPO: /home/toxic/sovereign (first-class operational repo)
-# - AGENTS.md: /home/toxic/.tau/AGENTS.md → /home/toxic/sovereign/AGENTS.md (symlink, full docs)
+# SOVEREIGN REPO: /home/toxic/estate (first-class operational repo)
+# - AGENTS.md: /home/toxic/.tau/AGENTS.md → /home/toxic/estate/AGENTS.md (symlink, full docs)
 # - helpers/: Bun/TS operational helpers (git-mutator, health-audit, mesh-probe, safe-rg-audit, ast-migrate, hardware-telemetry.sh, clean-orphans.sh)
 # - packages/sovereign-utils: Shared sovereign utilities and ecosystem helpers
 # - projects/range/ranch: Ranch system (supersedes legacy mesh)
@@ -18,12 +18,12 @@
 # - tools/: llama-swap, nuvio-webos, sovereign-router, etc.
 #
 # KEY COMMANDS:
-#   bun /home/toxic/sovereign/helpers/git-mutator.ts status|commit-push|scan-secrets
-#   bun /home/toxic/sovereign/helpers/health-audit.ts
-#   mise -C /home/toxic/sovereign run health|status|up|down
+#   bun /home/toxic/estate/helpers/git-mutator.ts status|commit-push|scan-secrets
+#   bun /home/toxic/estate/helpers/health-audit.ts
+#   mise -C /home/toxic/estate run health|status|up|down
 
 ## 🏗️ Build Server (brand - :25148)
-- **Daemon**: Running on port `25148` via Pitchfork (`/home/toxic/sovereign/tools/brand/brandd.py`).
+- **Daemon**: Running on port `25148` via Pitchfork (`/home/toxic/estate/tools/brand/brandd.py`).
 - **Heavy Builds**: Use `brand submit --name <name> --repo <dir> --toolchain <bun|rust|go|python> --cmd "<cmd>"` for heavy builds rather than running long compilation in turn shell.
 - **Worker & Cache Architecture**:
   - 2-worker concurrent queue preventing resource exhaustion.

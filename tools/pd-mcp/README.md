@@ -63,7 +63,7 @@ subfinder 120, naabu 180, katana/shuffledns 300, nuclei 600; hard max 3600).
 ## Run it
 
 ```sh
-cd /home/toxic/sovereign/tools/pd-mcp
+cd /home/toxic/estate/tools/pd-mcp
 bun run server.ts
 ```
 
@@ -85,7 +85,7 @@ req() { local m="$1"; local n=$(( ${#m} )); printf 'Content-Length: %d\r\n\r\n%s
   "mcpServers": {
     "pd": {
       "command": "bun",
-      "args": ["run", "/home/toxic/sovereign/tools/pd-mcp/server.ts"]
+      "args": ["run", "/home/toxic/estate/tools/pd-mcp/server.ts"]
     }
   }
 }

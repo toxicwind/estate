@@ -1,0 +1,13 @@
+# ── Layout tiers ────────────────────────────────────────────────────────
+# estate/ is the control plane. Everything with its own history or its own
+# vendored upstream lives in a sibling tier and is NOT indexed here.
+# Commit project work inside ranch/, control-plane work in this repo.
+
+# project monorepo — own git repo, github.com/toxicwind/ranch
+ranch/
+
+# third-party checkouts (Hyprland, WhiteSur, ansible, ...) — own remotes
+vendored/
+
+# runtime state: archives, reconciliation snapshots, legacy, scratch
+var/

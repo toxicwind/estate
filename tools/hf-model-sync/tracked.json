@@ -3,7 +3,7 @@
   "huggingface_token_env": "HF_TOKEN",
   "model_dir": "/home/toxic/projects/models",
   "repos_dir": "/home/toxic/projects/models/repos",
-  "llama_swap_config": "/home/toxic/sovereign/tools/llama-swap/config.yaml",
+  "llama_swap_config": "/home/toxic/estate/tools/llama-swap/config.yaml",
   "opencode_json": "/home/toxic/.config/opencode/opencode.json",
   "tracked": [
     {

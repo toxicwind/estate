@@ -1,0 +1,9 @@
+# mise.local.toml — local overrides (2026-09-20: cleaned).
+# REMOVED 2026-09-20: up-core-manual / down-core-manual (referenced daemons
+# mcpproxy-go, ghas-mcp, pi-agent which do not exist in pitchfork.toml;
+# only kimi-code was real). See .bak-restartfix-20260920.
+
+[tasks.fix-socket]
+# Recover when pitchfork IPC is wedged. No hardcoded socket path (the old
+# /tmp/pitchfork.sock no longer exists); poll for supervisor liveness instead.
+run = "pitchfork list >/dev/null 2>&1 || { pitchfork supervisor start && { pitchfork list || echo '[fix-socket] supervisor still binding; re-run this task in a moment' >&2; }; }"

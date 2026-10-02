@@ -1,0 +1,1610 @@
+{
+  "phase": "planning",
+  "previous_phase": "planning",
+  "review_outcome": null,
+  "phase_chains": {
+    "planning": {
+      "agents": [
+        "claude",
+        "opencode"
+      ],
+      "current_index": 1,
+      "retries": 0
+    },
+    "planning_analysis": {
+      "agents": [
+        "claude",
+        "opencode"
+      ],
+      "current_index": 0,
+      "retries": 0
+    },
+    "development": {
+      "agents": [
+        "claude",
+        "opencode"
+      ],
+      "current_index": 0,
+      "retries": 0
+    },
+    "development_commit_cleanup": {
+      "agents": [
+        "claude",
+        "opencode"
+      ],
+      "current_index": 0,
+      "retries": 0
+    },
+    "development_commit": {
+      "agents": [
+        "claude",
+        "opencode"
+      ],
+      "current_index": 0,
+      "retries": 0
+    },
+    "development_analysis": {
+      "agents": [
+        "claude",
+        "opencode"
+      ],
+      "current_index": 0,
+      "retries": 0
+    },
+    "development_final_commit_cleanup": {
+      "agents": [
+        "claude",
+        "opencode"
+      ],
+      "current_index": 0,
+      "retries": 0
+    },
+    "development_final_commit": {
+      "agents": [
+        "claude",
+        "opencode"
+      ],
+      "current_index": 0,
+      "retries": 0
+    },
+    "complete": {
+      "agents": [],
+      "current_index": 0,
+      "retries": 0
+    },
+    "failed_terminal": {
+      "agents": [],
+      "current_index": 0,
+      "retries": 0
+    }
+  },
+  "loop_iterations": {
+    "planning_analysis_iteration": 3
+  },
+  "budget_caps": {
+    "iteration": 1
+  },
+  "outer_progress": {},
+  "rebase": {
+    "pending": false,
+    "in_progress": false,
+    "completed": false,
+    "last_action": "skipped",
+    "last_reason": "no commits beyond target",
+    "last_target": "main",
+    "fast_forwarded": false,
+    "last_refresh": "local ahead of remote",
+    "freshness_verdict": "verified",
+    "freshness_source": "fetch",
+    "freshness_safe": true,
+    "freshness_target_sha": "85f823d09297fea2511180b6df3c800fe7e572ed",
+    "reclaimed_worktree_path": null,
+    "reclaim_snapshot_ref": null,
+    "reclaim_discarded_path_count": 0,
+    "last_push": null,
+    "last_remote_sync": "local ahead",
+    "last_remote": "origin",
+    "last_push_status": null,
+    "consecutive_conflicts": 0,
+    "last_conflict_feature_sha": null,
+    "last_conflict_target_sha": null,
+    "last_conflict_paths": [],
+    "last_conflict_stage_oids": [],
+    "last_conflict_scope": "",
+    "recovery_record_retained": false,
+    "resolution_exhausted": false,
+    "resolution_exhaustion_reason": null,
+    "unresolved_integration_carried": false,
+    "legacy_checkpoint_blocked": false,
+    "legacy_phase": null,
+    "legacy_conflicted_files": [],
+    "legacy_resolved_files": [],
+    "legacy_error_count": 0,
+    "legacy_timestamp": null,
+    "legacy_source": null
+  },
+  "commit": {
+    "message_prepared": false,
+    "diff_prepared": false,
+    "agent_invoked": false
+  },
+  "metrics": {
+    "total_agent_calls": 0,
+    "total_continuations": 0,
+    "total_fallbacks": 68,
+    "total_retries": 3
+  },
+  "checkpoint_saved_count": 0,
+  "recovery_epoch": 67,
+  "interrupted_by_user": false,
+  "git_auth_configured": false,
+  "pr_created": false,
+  "pr_url": null,
+  "push_count": 0,
+  "last_error": "Agent chain exhausted in phase='planning' after 3 retries across 2 agents",
+  "last_reviewed_sha": null,
+  "policy_entry_phase": "planning",
+  "policy_format_version": 2,
+  "current_drain": "planning",
+  "post_commit_phase_override": null,
+  "pending_cycle_outcome": null,
+  "execution_cycle_charged": true,
+  "last_execution_result_status": null,
+  "cycle_timing_start_index": 0,
+  "cycle_timebox_active": false,
+  "cycle_timebox_consumed_seconds": 0.0,
+  "cycle_timebox_redirect_reason": null,
+  "cycle_timebox_redirects": 0,
+  "work_units": [],
+  "worker_states": {},
+  "phase_timings": [
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324860.17656221,
+      "elapsed": "PT0.754639S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324860.937889143,
+      "elapsed": "PT4.522031S",
+      "elapsed_seconds": 4
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324865.46673826,
+      "elapsed": "PT3.227834S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324868.701088946,
+      "elapsed": "PT3.185626S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324871.893274487,
+      "elapsed": "PT3.175362S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324875.07637612,
+      "elapsed": "PT0.353096S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324875.436051418,
+      "elapsed": "PT0.707691S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324876.150650171,
+      "elapsed": "PT1.750115S",
+      "elapsed_seconds": 1
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324877.90862176,
+      "elapsed": "PT0.352763S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324878.268543183,
+      "elapsed": "PT0.707205S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324878.982459898,
+      "elapsed": "PT3.166661S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324882.156620122,
+      "elapsed": "PT0.339895S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324882.503290856,
+      "elapsed": "PT0.741321S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324883.251071827,
+      "elapsed": "PT3.169818S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324886.430292178,
+      "elapsed": "PT0.342444S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324886.779334703,
+      "elapsed": "PT0.721565S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324887.507699547,
+      "elapsed": "PT3.176138S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324890.69111682,
+      "elapsed": "PT0.357037S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324891.055141355,
+      "elapsed": "PT0.708722S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324891.769634061,
+      "elapsed": "PT3.337741S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324895.115239732,
+      "elapsed": "PT0.342006S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324895.464493794,
+      "elapsed": "PT0.732382S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324896.203256795,
+      "elapsed": "PT3.137584S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324899.348809941,
+      "elapsed": "PT0.332899S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324899.688998463,
+      "elapsed": "PT0.720045S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324900.416576282,
+      "elapsed": "PT3.1473S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324903.571944675,
+      "elapsed": "PT0.353633S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324903.932089605,
+      "elapsed": "PT0.703726S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324904.642834134,
+      "elapsed": "PT3.191803S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324907.842123467,
+      "elapsed": "PT0.335192S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324908.184445494,
+      "elapsed": "PT0.723583S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324908.914891356,
+      "elapsed": "PT3.254978S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324912.177998266,
+      "elapsed": "PT0.360667S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324912.545411895,
+      "elapsed": "PT0.756085S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324913.308036851,
+      "elapsed": "PT3.208211S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324916.524347322,
+      "elapsed": "PT0.356663S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324916.888118462,
+      "elapsed": "PT0.724967S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324917.619823563,
+      "elapsed": "PT3.261451S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324920.88923704,
+      "elapsed": "PT0.358781S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324921.254816251,
+      "elapsed": "PT0.728268S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324921.989808797,
+      "elapsed": "PT3.16952S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324925.166955243,
+      "elapsed": "PT0.361505S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324925.535062791,
+      "elapsed": "PT0.729181S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324926.27049651,
+      "elapsed": "PT1.744171S",
+      "elapsed_seconds": 1
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324928.02289569,
+      "elapsed": "PT0.353509S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324928.382620078,
+      "elapsed": "PT0.716827S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324929.10592293,
+      "elapsed": "PT3.369857S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324932.483224543,
+      "elapsed": "PT0.356356S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324932.846467942,
+      "elapsed": "PT0.720428S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324933.57365243,
+      "elapsed": "PT3.241441S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324936.823147233,
+      "elapsed": "PT0.353082S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324937.182530487,
+      "elapsed": "PT0.712607S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324937.901757727,
+      "elapsed": "PT3.179172S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324941.0883017,
+      "elapsed": "PT0.347442S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324941.44252124,
+      "elapsed": "PT0.703955S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324942.152667831,
+      "elapsed": "PT3.195353S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324945.355905777,
+      "elapsed": "PT0.343008S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324945.706399369,
+      "elapsed": "PT0.717901S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324946.430873502,
+      "elapsed": "PT3.157706S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324949.595688129,
+      "elapsed": "PT0.356459S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324949.95886455,
+      "elapsed": "PT0.728495S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324950.693196749,
+      "elapsed": "PT3.199315S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324953.899882801,
+      "elapsed": "PT0.353399S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324954.259771746,
+      "elapsed": "PT0.712229S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324954.979294402,
+      "elapsed": "PT3.143726S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324958.130171404,
+      "elapsed": "PT0.34504S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324958.482704622,
+      "elapsed": "PT0.925436S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324959.413714446,
+      "elapsed": "PT3.353196S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324962.773879743,
+      "elapsed": "PT0.351352S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324963.132714847,
+      "elapsed": "PT0.710451S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324963.84942237,
+      "elapsed": "PT3.219491S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324967.075957863,
+      "elapsed": "PT0.331567S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324967.414533835,
+      "elapsed": "PT0.716755S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324968.136771586,
+      "elapsed": "PT3.192016S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324971.336294351,
+      "elapsed": "PT0.347489S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324971.690833696,
+      "elapsed": "PT0.725511S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324972.423244998,
+      "elapsed": "PT3.369877S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324975.804206022,
+      "elapsed": "PT0.412506S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324976.224241767,
+      "elapsed": "PT1.103984S",
+      "elapsed_seconds": 1
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324977.334226301,
+      "elapsed": "PT3.236349S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324980.578542872,
+      "elapsed": "PT0.344161S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324980.929184092,
+      "elapsed": "PT0.726002S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324981.661621875,
+      "elapsed": "PT3.190036S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324984.859262254,
+      "elapsed": "PT0.356481S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324985.222879539,
+      "elapsed": "PT0.736526S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324985.967262622,
+      "elapsed": "PT3.195684S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324989.171254986,
+      "elapsed": "PT0.352473S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324989.530809669,
+      "elapsed": "PT0.717215S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324990.25433514,
+      "elapsed": "PT3.248983S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324993.510587264,
+      "elapsed": "PT0.356486S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324993.87294542,
+      "elapsed": "PT0.705181S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324994.58517241,
+      "elapsed": "PT3.179201S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1324997.771968952,
+      "elapsed": "PT0.343389S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324998.121874386,
+      "elapsed": "PT0.712289S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1324998.840912912,
+      "elapsed": "PT3.230689S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325002.078840024,
+      "elapsed": "PT0.350906S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325002.437656958,
+      "elapsed": "PT0.7178S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325003.162655066,
+      "elapsed": "PT3.16387S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325006.333524026,
+      "elapsed": "PT0.3387S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325006.679095021,
+      "elapsed": "PT0.711211S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325007.396710272,
+      "elapsed": "PT3.21332S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325010.617954594,
+      "elapsed": "PT0.362536S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325010.98748594,
+      "elapsed": "PT0.73224S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325011.726820399,
+      "elapsed": "PT3.148215S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325014.882158629,
+      "elapsed": "PT0.358063S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325015.24724316,
+      "elapsed": "PT0.715748S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325015.969202349,
+      "elapsed": "PT3.1832S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325019.15932266,
+      "elapsed": "PT0.360033S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325019.526369959,
+      "elapsed": "PT0.720669S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325020.253425283,
+      "elapsed": "PT3.227202S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325023.487814928,
+      "elapsed": "PT0.340629S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325023.835541238,
+      "elapsed": "PT0.743295S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325024.585114998,
+      "elapsed": "PT3.174057S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325027.767161615,
+      "elapsed": "PT0.357594S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325028.131890682,
+      "elapsed": "PT0.716333S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325028.854351624,
+      "elapsed": "PT3.24812S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325032.110235003,
+      "elapsed": "PT0.353943S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325032.471333461,
+      "elapsed": "PT0.724888S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325033.202751743,
+      "elapsed": "PT3.188069S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325036.399597406,
+      "elapsed": "PT0.411711S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325036.817594846,
+      "elapsed": "PT0.764968S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325037.589390856,
+      "elapsed": "PT3.313131S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325040.911062572,
+      "elapsed": "PT0.342168S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325041.259385883,
+      "elapsed": "PT0.707786S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325041.973507233,
+      "elapsed": "PT3.312397S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325045.294989393,
+      "elapsed": "PT0.348479S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325045.650455525,
+      "elapsed": "PT0.713031S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325046.370007645,
+      "elapsed": "PT3.645285S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325050.023239893,
+      "elapsed": "PT0.352345S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325050.382826916,
+      "elapsed": "PT0.708823S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325051.098697068,
+      "elapsed": "PT3.297671S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325054.404591009,
+      "elapsed": "PT0.348715S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325054.760285757,
+      "elapsed": "PT0.962633S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325055.729094808,
+      "elapsed": "PT1.729675S",
+      "elapsed_seconds": 1
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325057.466275747,
+      "elapsed": "PT0.350408S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325057.823968692,
+      "elapsed": "PT0.715634S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325058.545642187,
+      "elapsed": "PT3.402114S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325061.954789841,
+      "elapsed": "PT0.357103S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325062.318498336,
+      "elapsed": "PT0.720494S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325063.045201538,
+      "elapsed": "PT3.179404S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325066.233095126,
+      "elapsed": "PT0.362961S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325066.603139326,
+      "elapsed": "PT0.725607S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325067.335487444,
+      "elapsed": "PT3.215001S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325070.558895829,
+      "elapsed": "PT0.355142S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325070.921163888,
+      "elapsed": "PT0.728287S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325071.656146082,
+      "elapsed": "PT3.208639S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325074.871877969,
+      "elapsed": "PT0.353523S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325075.232560704,
+      "elapsed": "PT0.721252S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325075.960415767,
+      "elapsed": "PT3.165911S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325079.134526678,
+      "elapsed": "PT0.351763S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325079.492814674,
+      "elapsed": "PT0.724158S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325080.223536629,
+      "elapsed": "PT3.206283S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325083.437190052,
+      "elapsed": "PT0.352855S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325083.797554453,
+      "elapsed": "PT0.712167S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325084.516051402,
+      "elapsed": "PT3.17358S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325087.696829753,
+      "elapsed": "PT0.335505S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325088.038885429,
+      "elapsed": "PT0.701637S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325088.746358812,
+      "elapsed": "PT3.207295S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325091.960811664,
+      "elapsed": "PT0.351695S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325092.319827607,
+      "elapsed": "PT0.720985S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325093.047617042,
+      "elapsed": "PT3.213355S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325096.269049478,
+      "elapsed": "PT0.340977S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325096.616275138,
+      "elapsed": "PT0.848106S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325097.470762794,
+      "elapsed": "PT3.226538S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325100.705153515,
+      "elapsed": "PT0.374335S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325101.086358499,
+      "elapsed": "PT0.715058S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325101.808708816,
+      "elapsed": "PT3.211599S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325105.028737786,
+      "elapsed": "PT0.337565S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325105.373123304,
+      "elapsed": "PT0.73773S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325106.116651947,
+      "elapsed": "PT3.165141S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325109.289225949,
+      "elapsed": "PT0.344547S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325109.640926145,
+      "elapsed": "PT0.708282S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325110.355564949,
+      "elapsed": "PT3.152366S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325113.515706778,
+      "elapsed": "PT0.35491S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325113.877666653,
+      "elapsed": "PT0.691267S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325114.57541136,
+      "elapsed": "PT3.17628S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325117.75952847,
+      "elapsed": "PT0.353784S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325118.120674519,
+      "elapsed": "PT0.715757S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325118.844389933,
+      "elapsed": "PT3.24081S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325122.092853103,
+      "elapsed": "PT0.357116S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325122.45770459,
+      "elapsed": "PT0.711088S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325123.17510197,
+      "elapsed": "PT3.189924S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325126.373363877,
+      "elapsed": "PT0.352654S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325126.7330386,
+      "elapsed": "PT0.707052S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325127.446109501,
+      "elapsed": "PT3.176058S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325130.630650138,
+      "elapsed": "PT0.339382S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325130.977565273,
+      "elapsed": "PT0.723713S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325131.708423499,
+      "elapsed": "PT3.156887S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325134.872753462,
+      "elapsed": "PT0.340542S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325135.221087434,
+      "elapsed": "PT0.718506S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325135.94592745,
+      "elapsed": "PT1.749095S",
+      "elapsed_seconds": 1
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325137.703060675,
+      "elapsed": "PT0.365015S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325138.07585987,
+      "elapsed": "PT0.730087S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325138.812340903,
+      "elapsed": "PT3.393836S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325142.213711582,
+      "elapsed": "PT0.351872S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325142.573324026,
+      "elapsed": "PT0.733714S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325143.313226122,
+      "elapsed": "PT3.193101S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325146.51459454,
+      "elapsed": "PT0.356311S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325146.878061041,
+      "elapsed": "PT0.724496S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325147.608919197,
+      "elapsed": "PT3.365632S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325150.982041478,
+      "elapsed": "PT0.348765S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325151.337782207,
+      "elapsed": "PT0.724783S",
+      "elapsed_seconds": 0
+    },
+    {
+      "phase": "planning",
+      "iteration": 0,
+      "started_at": 1325152.070325456,
+      "elapsed": "PT3.221216S",
+      "elapsed_seconds": 3
+    },
+    {
+      "phase": "failed_terminal",
+      "iteration": 0,
+      "started_at": 1325155.299588382,
+      "elapsed": "PT0.334568S",
+      "elapsed_seconds": 0
+    }
+  ],
+  "recovery_cycle_count": 0,
+  "fallover_history": [],
+  "last_failure_category": null,
+  "last_connectivity_state": "online",
+  "recovery_cycle_cap": 200,
+  "last_retry_delay_ms": 0,
+  "last_agent_session_id": null,
+  "agent_retry_intent": {
+    "action": null,
+    "session_id": null,
+    "reset_tool_registry": false,
+    "failure_reason": "",
+    "skip_same_agent_retries": false,
+    "failed_agent_name": null,
+    "broken_agent_reason": null,
+    "broken_agent_returncode": null,
+    "broken_agent_stderr": ""
+  },
+  "last_unavailability_reason": null,
+  "is_waiting_state": false
+}

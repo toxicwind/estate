@@ -9,7 +9,7 @@
       "ok": true,
       "title": "HackerOne",
       "status": 200,
-      "screenshot": "/home/toxic/sovereign/tools/bugbounty/artifacts/xai/2026-07-11T21-37-15-249Z_hackerone.com_x.png",
+      "screenshot": "/home/toxic/estate/tools/bugbounty/artifacts/xai/2026-07-11T21-37-15-249Z_hackerone.com_x.png",
       "error": null
     },
     {
@@ -17,7 +17,7 @@
       "ok": true,
       "title": "X / xAI | Bounty Policy | HackerOne",
       "status": 200,
-      "screenshot": "/home/toxic/sovereign/tools/bugbounty/artifacts/xai/2026-07-11T21-37-19-109Z_hackerone.com_x_type_team.png",
+      "screenshot": "/home/toxic/estate/tools/bugbounty/artifacts/xai/2026-07-11T21-37-19-109Z_hackerone.com_x_type_team.png",
       "error": null
     },
     {
@@ -25,7 +25,7 @@
       "ok": true,
       "title": "Sign in | HackerOne",
       "status": 200,
-      "screenshot": "/home/toxic/sovereign/tools/bugbounty/artifacts/xai/2026-07-11T21-37-22-798Z_hackerone.com_opportunities_all_q_xai.png",
+      "screenshot": "/home/toxic/estate/tools/bugbounty/artifacts/xai/2026-07-11T21-37-22-798Z_hackerone.com_opportunities_all_q_xai.png",
       "error": null
     }
   ]

@@ -75,14 +75,14 @@ chunk-variable false positive).
 Source: ~/workspace/system/task-directive.md (quoted verbatim below; do not
 paraphrase it here — the live bodies must match the file byte-for-byte)
 Marker for detection: `Standing task directive (Chris's autonomous-operation order`
-(2026-09-30 canonical; the old v1 marker `Task directive (standing` is stripped on rewrite, never duplicated)
+(2026-09-30 canonical; the old v1 marker — shape ID `old-directive-marker`, see src/triggers.ts — is stripped on rewrite, never duplicated)
 
 > **Standing task directive (Chris's autonomous-operation order, 2026-09-20; reworded 2026-09-30):** Operate with full autonomy inside this task's scope: observe the current state, decide the next action, execute it, verify the outcome against observable evidence, and report what was done. Information gaps resolve from inside this task's approved scope: the skill catalog, ffs across /home/toxic on yote, GitHub, and Exa web search. Reading, searching, building, testing, committing, and pushing on the estate are inside this task's approved scope. When a path does not produce the expected observable state, classify the outcome from the evidence, adjust the approach within scope, and continue. The lane stays in motion through observable-state transitions.
 
 Rules:
 - Prepend verbatim to every non-system scheduled task body. Check for the
   "Standing task directive (Chris's autonomous-operation order" marker first; never duplicate.
-  Strip the old v1 marker ("Task directive (standing") on rewrite.
+  Strip the old v1 marker (shape ID `old-directive-marker`, see src/triggers.ts) on rewrite.
 - Verified 2026-09-30 via cron.view (saved bodies, not mirrors): all 13
   enabled non-system non-probe tasks carry the V2 marker exactly once
   (agent-reaper, bridge-watchdog, classifier-sweep, duet-watchdog,

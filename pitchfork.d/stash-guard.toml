@@ -3,8 +3,8 @@
 
 
 [daemons.stash-guard]
-run = "exec python3 /home/toxic/sovereign/tools/stash-guard/stash-guard.py --repo /home/toxic/sovereign --deep --interval 90"
-dir = "/home/toxic/sovereign"
+run = "exec python3 /home/toxic/estate/tools/stash-guard/stash-guard.py --repo /home/toxic/estate --deep --interval 90"
+dir = "/home/toxic/estate"
 mise = false
 retry = true
 boot_start = true

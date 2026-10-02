@@ -7,7 +7,7 @@
 # Lifecycle is owned by pitchfork (supervisor); this script does NOT kill or
 # steal the port — if the bind fails, pitchfork sees the failure and retries.
 set -euo pipefail
-SOV="$HOME/sovereign"
+SOV="/home/toxic/estate"
 source "$SOV/stack/lib-ports.sh"
 require_env HERD_PORT
 # Canonical secrets for provider keyEnvs (FLOCK_API_KEY, OPENROUTER_API_KEY, ...).

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Prometheus on backend port + mesh-front on public PROMETHEUS_PORT; yml reload still works via backend.
 set -euo pipefail
-SOV="${SOVEREIGN_ROOT:-/home/toxic/sovereign}"
+SOV="${SOVEREIGN_ROOT:-/home/toxic/estate}"
 cd "$SOV"
 # shellcheck source=../lib-ports.sh
 source "$(dirname "$0")/../lib-ports.sh"

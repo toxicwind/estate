@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # byte-vision service — Sovereign stack
 set -euo pipefail
-SOV="${SOVEREIGN_ROOT:-$HOME/sovereign}"
+SOV="${SOVEREIGN_ROOT:-/home/toxic/estate}"
 source "$SOV/stack/lib-ports.sh" 2>/dev/null || true
 PORT="${BYTE_VISION_PORT:-25121}"
 

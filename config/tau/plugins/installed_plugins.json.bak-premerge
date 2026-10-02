@@ -1,0 +1,86 @@
+{
+  "version": 2,
+  "plugins": {
+    "compound-engineering@compound-engineering-plugin": [
+      {
+        "scope": "user",
+        "installPath": "/home/toxic/home/toxic/.tau/plugins/cache/plugins/compound-engineering-plugin___compound-engineering___3.29.0",
+        "version": "3.29.0",
+        "installedAt": "2026-09-26T15:14:00.223Z",
+        "lastUpdated": "2026-09-26T15:14:00.223Z"
+      }
+    ],
+    "omp-semantic-policy@goulinkh": [
+      {
+        "scope": "user",
+        "installPath": "/home/toxic/home/toxic/.tau/plugins/cache/plugins/goulinkh___omp-semantic-policy___0.1.0",
+        "version": "0.1.0",
+        "installedAt": "2026-09-26T15:14:01.743Z",
+        "lastUpdated": "2026-09-26T15:14:01.743Z"
+      }
+    ],
+    "omp-re@unit221b": [
+      {
+        "scope": "user",
+        "installPath": "/home/toxic/home/toxic/.tau/plugins/cache/plugins/unit221b___omp-re___0.1.2",
+        "version": "0.1.2",
+        "installedAt": "2026-09-26T15:14:03.335Z",
+        "lastUpdated": "2026-09-26T15:14:03.335Z"
+      }
+    ],
+    "ponytail-on-stimulants@ponytail-on-stimulants": [
+      {
+        "scope": "user",
+        "installPath": "/home/toxic/home/toxic/.tau/plugins/cache/plugins/ponytail-on-stimulants___ponytail-on-stimulants___0.3.0",
+        "version": "0.3.0",
+        "installedAt": "2026-09-26T15:14:05.402Z",
+        "lastUpdated": "2026-09-26T15:14:05.402Z"
+      }
+    ],
+    "omp-hyper-provider@immortal-web": [
+      {
+        "scope": "user",
+        "installPath": "/home/toxic/home/toxic/.tau/plugins/cache/plugins/immortal-web___omp-hyper-provider___0.3.0",
+        "version": "0.3.0",
+        "installedAt": "2026-09-26T15:14:06.677Z",
+        "lastUpdated": "2026-09-26T15:14:06.677Z"
+      }
+    ],
+    "cover-plugin@cover": [
+      {
+        "scope": "user",
+        "installPath": "/home/toxic/home/toxic/.tau/plugins/cache/plugins/cover___cover-plugin___0.1.0",
+        "version": "0.1.0",
+        "installedAt": "2026-09-26T15:14:08.078Z",
+        "lastUpdated": "2026-09-26T15:14:08.078Z"
+      }
+    ],
+    "airspeak@airspeak": [
+      {
+        "scope": "user",
+        "installPath": "/home/toxic/home/toxic/.tau/plugins/cache/plugins/airspeak___airspeak___1.1.5",
+        "version": "1.1.5",
+        "installedAt": "2026-09-26T15:14:09.384Z",
+        "lastUpdated": "2026-09-26T15:14:09.384Z"
+      }
+    ],
+    "zoom-out@zoom-out": [
+      {
+        "scope": "user",
+        "installPath": "/home/toxic/home/toxic/.tau/plugins/cache/plugins/zoom-out___zoom-out___1.4.0",
+        "version": "1.4.0",
+        "installedAt": "2026-09-26T15:14:11.071Z",
+        "lastUpdated": "2026-09-26T15:14:11.071Z"
+      }
+    ],
+    "omp@oh-my-paper": [
+      {
+        "scope": "user",
+        "installPath": "/home/toxic/home/toxic/.tau/plugins/cache/plugins/oh-my-paper___omp___1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-09-26T15:14:29.798Z",
+        "lastUpdated": "2026-09-26T15:14:29.798Z"
+      }
+    ]
+  }
+}

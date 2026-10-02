@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Source port SSOT for shell services. No numeric defaults in callers.
-SOV="$HOME/sovereign"
+SOV="/home/toxic/estate"
 # shellcheck disable=SC1091
 set -a
 # shellcheck source=/dev/null

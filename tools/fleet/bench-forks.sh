@@ -2,7 +2,7 @@
 # Short llama-bench per fork using LD_* from forks.json (llama-swap macros SSOT).
 # Does NOT run 27B at max context.
 set -euo pipefail
-ROOT="${SOVEREIGN_ROOT:-/home/toxic/sovereign}"
+ROOT="${SOVEREIGN_ROOT:-/home/toxic/estate}"
 FLEET="$ROOT/tools/fleet"
 SCRATCH="${SCRATCH:-/tmp/grok-goal-272520044418/implementer/bench}"
 mkdir -p "$SCRATCH" "$FLEET/results"

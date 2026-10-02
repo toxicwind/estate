@@ -13,7 +13,7 @@
 # No `sleep` binary (standing rule): pacing uses isleep (interruptible,
 # queryable). `isleep interrupt fleet-watchdog-sweep` wakes the wait early.
 set -uo pipefail
-WD=/home/toxic/sovereign/tools/fleet-ops/fleet-watchdog
+WD=/home/toxic/estate/tools/fleet-ops/fleet-watchdog
 VARDIR=/home/toxic/var/fleet-watchdog
 LOG=$VARDIR/sweepd.log
 LOCK=$VARDIR/sweepd.lock

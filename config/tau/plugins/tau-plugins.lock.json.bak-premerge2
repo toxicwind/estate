@@ -1,0 +1,32 @@
+{
+  "plugins": {
+    "pi-tool-discipline": {
+      "version": "0.2.0",
+      "enabledFeatures": null,
+      "enabled": true
+    },
+    "@ff-labs/pi-fff": {
+      "version": "0.11.0",
+      "enabledFeatures": null,
+      "enabled": true
+    },
+    "@kunolu/omp-sbtd": {
+      "version": "0.1.0-rc.2",
+      "enabledFeatures": null,
+      "enabled": true
+    },
+    "@rblaine95/omp-plugins": {
+      "version": "1.1.1",
+      "enabledFeatures": [
+        "usage-status"
+      ],
+      "enabled": true
+    },
+    "pi-mini-web-research": {
+      "version": "1.0.0",
+      "enabledFeatures": null,
+      "enabled": true
+    }
+  },
+  "settings": {}
+}

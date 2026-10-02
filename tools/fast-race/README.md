@@ -41,7 +41,7 @@ fast_race.py --ceiling 2.0              # TTFT fail-fast ceiling (s)
 echo "prompt" | fast_race.py            # stdin mode
 ```
 
-Race log: `/home/toxic/sovereign/data/fast-race.log` (JSONL, one entry per
+Race log: `/home/toxic/estate/var/data/fast-race.log` (JSONL, one entry per
 race: mode, attempts with ttft_ms/gen_tps per lane, winner).
 
 ## Measured (2026-09-20, RTX 3090, beellama v0.4.6)

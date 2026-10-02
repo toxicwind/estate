@@ -1,6 +1,6 @@
 {
-  "MODEL_DIR": "/home/toxic/sovereign/models",
-  "config": "/home/toxic/sovereign/tools/llama-swap/config.yaml",
+  "MODEL_DIR": "/home/toxic/estate/models",
+  "config": "/home/toxic/estate/tools/llama-swap/config.yaml",
   "extracted_at": "2026-07-11T12:45:29.059Z",
   "forks": {
     "beellama": {

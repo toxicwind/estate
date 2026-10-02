@@ -4,7 +4,7 @@
 
 [daemons.nginx]
 port = 25208
-run = "exec /usr/bin/nginx -c /home/toxic/sovereign/ops/nginx/nginx.conf -g 'daemon off; pid /tmp/nginx-pitchfork.pid;'"
+run = "exec /usr/bin/nginx -c /home/toxic/estate/ops/nginx/nginx.conf -g 'daemon off; pid /tmp/nginx-pitchfork.pid;'"
 dir = "."
 mise = false
 retry = true

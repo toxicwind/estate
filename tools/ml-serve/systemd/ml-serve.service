@@ -5,7 +5,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /home/toxic/sovereign/tools/ml-serve/server.py
+ExecStart=/usr/bin/python3 /home/toxic/estate/tools/ml-serve/server.py
 Restart=on-failure
 RestartSec=5
 Environment=ML_SERVE_PORT=25180

@@ -54,11 +54,11 @@ WezTerm tabs and window switching are broken due to `enable_tab_bar = false` in 
 
 ### Part 2: Sovereign Shell Permanence Controller & Submodule Unification
 1. **Move WezTerm Configuration into the Shell Submodule**:
-   - Copy `/home/toxic/.config/wezterm/wezterm.lua` into `/home/toxic/sovereign/projects/shell/ii/dots/.config/wezterm/wezterm.lua`.
+   - Copy `/home/toxic/.config/wezterm/wezterm.lua` into `/home/toxic/estate/ranch/shell/ii/dots/.config/wezterm/wezterm.lua`.
    - Ensure `plugins/wezterm-cmdpicker` and `shell-integration.sh` remain cleanly colocated in `dots/.config/wezterm/`.
 2. **Symlink ~/.config/wezterm to Sovereign Shell Dots**:
    - Remove the unmanaged directory `/home/toxic/.config/wezterm` (backing up any untracked files).
-   - Symlink `/home/toxic/.config/wezterm -> /home/toxic/sovereign/projects/shell/ii/dots/.config/wezterm`.
+   - Symlink `/home/toxic/.config/wezterm -> /home/toxic/estate/ranch/shell/ii/dots/.config/wezterm`.
 3. **Update Dotbot Installation Manifest**:
    - Edit `sovereign/projects/shell/ii/install.conf.yaml`:
    - Under `- link:` add:
@@ -90,8 +90,8 @@ WezTerm tabs and window switching are broken due to `enable_tab_bar = false` in 
 
 ### Part 4: Inference Stack & Router Fleet Audit & Remediation
 1. **Audit & Fix Daemon Definitions in `pitchfork.toml`**:
-   - **`squawk-feed`**: Update `/home/toxic/sovereign/hatch/agents/ember/squawk-relay/run-feed.sh` line 9 to execute `/home/toxic/sovereign/projects/range/ranch/squawk/squawk_feed.py` instead of the nonexistent `/home/toxic/squawk/squawk_feed.py`. Restart `sovereign/squawk-feed`.
-   - **`model-guard`**: Edit `/home/toxic/sovereign/bin/herd-model-guard.py` to catch `ConnectionResetError` and `BrokenPipeError` in request handling without crashing the server thread. Restart `sovereign/model-guard`.
+   - **`squawk-feed`**: Update `/home/toxic/estate/hatch/agents/ember/squawk-relay/run-feed.sh` line 9 to execute `/home/toxic/estate/ranch/squawk/squawk_feed.py` instead of the nonexistent `/home/toxic/squawk/squawk_feed.py`. Restart `sovereign/squawk-feed`.
+   - **`model-guard`**: Edit `/home/toxic/estate/bin/herd-model-guard.py` to catch `ConnectionResetError` and `BrokenPipeError` in request handling without crashing the server thread. Restart `sovereign/model-guard`.
    - **`sovereign-router`**: Add `auto = ["start"]` to `[daemons.sovereign-router]` in `sovereign/pitchfork.toml` and verify health on port 25104.
    - **`herd` (:25100)**: Audit status (currently running, health OK).
    - **`flock` (:25193)**: Audit status (currently running, health ok).
@@ -133,9 +133,9 @@ WezTerm tabs and window switching are broken due to `enable_tab_bar = false` in 
    - Spawn multiple WezTerm windows (`LEADER + n`).
    - Press `ALT + Tab` in Hyprland: confirm focus switches between stacked WezTerm windows even when at identical coordinates.
 2. **Sovereign Shell Permanence**:
-   - Run `ls -l ~/.config/wezterm`: verify it points to `/home/toxic/sovereign/projects/shell/ii/dots/.config/wezterm`.
-   - Run `git -C /home/toxic/sovereign/projects/shell/ii status`: verify `wezterm.lua` is tracked in git.
-   - Run `git -C /home/toxic/sovereign/projects/shell/ii remote -v`: verify both `origin` and `upstream` remotes are active.
+   - Run `ls -l ~/.config/wezterm`: verify it points to `/home/toxic/estate/ranch/shell/ii/dots/.config/wezterm`.
+   - Run `git -C /home/toxic/estate/ranch/shell/ii status`: verify `wezterm.lua` is tracked in git.
+   - Run `git -C /home/toxic/estate/ranch/shell/ii remote -v`: verify both `origin` and `upstream` remotes are active.
 3. **Router & Service Health Audit**:
    - Run `curl -fsS http://127.0.0.1:25100/health`: expect `OK` (herd).
    - Run `curl -fsS http://127.0.0.1:25193/health`: expect `ok` (flock).

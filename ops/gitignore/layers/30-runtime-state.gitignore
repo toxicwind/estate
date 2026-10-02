@@ -1,0 +1,25 @@
+# ── Runtime state ───────────────────────────────────────────────────────
+# Recreated on demand by daemons and audits. Never committed.
+
+/data/
+/log/
+/runs/
+/output/
+/coverage/
+/tmp/
+
+# audit + agent runtimes
+.scout-cache/
+.pytest_cache/
+.turbo/
+.qdrant-initialized/
+.state/
+.jj/
+.smithers/
+.super-ralph/
+.env.local
+
+# browser + app locks (transient)
+SingletonLock
+SingletonCookie
+.lock

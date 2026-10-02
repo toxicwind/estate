@@ -48,7 +48,7 @@ flowchart LR
 
 ```bash
 # manual sweep (on awrawr-pc)
-bash /home/toxic/sovereign/tools/fleet-ops/fleet-watchdog/supervise.sh
+bash /home/toxic/estate/tools/fleet-ops/fleet-watchdog/supervise.sh
 
 # sweeper status
 pgrep -af '[s]weepd.sh'; tail /home/toxic/var/fleet-watchdog/sweepd.log
@@ -57,7 +57,7 @@ pgrep -af '[s]weepd.sh'; tail /home/toxic/var/fleet-watchdog/sweepd.log
 python3 test_decide.py   # exit 0
 ```
 
-## Architecture (awrawr-pc: `/home/toxic/sovereign/tools/fleet-ops/fleet-watchdog/`)
+## Architecture (awrawr-pc: `/home/toxic/estate/tools/fleet-ops/fleet-watchdog/`)
 
 | file | role |
 | --- | --- |

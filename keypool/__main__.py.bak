@@ -1,0 +1,86 @@
+"""Entry point: python -m keypool [--selftest]"""
+import os
+import signal
+import sys
+import threading
+import time
+from http.server import ThreadingHTTPServer
+
+from . import alerts, persist, proxy, secrets as _sec, yamlparse
+from .pool import Pool
+
+
+LISTEN = (os.environ.get("KEYPOOL_HOST", "127.0.0.1"),
+          int(os.environ.get("KEYPOOL_PORT", "25109")))
+POOLS_PATH = os.environ.get("KEYPOOLS_CONFIG",
+                            os.path.expanduser("~/sovereign/config/keypools.yaml"))
+SECRETS_PATH = os.environ.get("KEYPOOL_SECRETS", os.path.expanduser("~/.secrets"))
+AUDIT_PATH = os.environ.get("KEYPOOL_AUDIT",
+                            os.path.expanduser("~/sovereign/data/keypool-audit.jsonl"))
+HEALTH_PATH = os.environ.get("KEYPOOL_HEALTH",
+                             os.path.expanduser("~/sovereign/data/keypool-health.json"))
+
+
+def log(m):
+    print(f"[keypool] {m}", file=sys.stderr, flush=True)
+
+
+def build_pools():
+    s = _sec.load(SECRETS_PATH)
+    doc = yamlparse.load(open(POOLS_PATH, encoding="utf-8").read())
+    pools = {}
+    for name, cfg in (doc.get("pools") or {}).items():
+        try:
+            pools[name] = Pool(name, cfg, s)
+            log(f"pool {name}: {len(pools[name].keys)} keys loaded")
+        except Exception as e:
+            log(f"pool {name} config error: {e}")
+    return pools, doc
+
+
+def main():
+    if "--selftest" in sys.argv:
+        from . import selftest
+        sys.exit(selftest.run())
+
+    pools, _ = build_pools()
+    proxy.POOLS = pools
+    proxy.ALERTS = alerts.Alerts(AUDIT_PATH)
+
+    def reload_all(signum=None, frame=None):
+        log("reload")
+        try:
+            fresh, _ = build_pools()
+            proxy.POOLS = fresh
+            persist.write_json(HEALTH_PATH, _snap(fresh))
+        except Exception as e:
+            log(f"reload failed: {e}")
+
+    def _snap(pools):
+        return {n: {"breaker": p.breaker.snapshot(),
+                    "affinity_size": p.affinity.size(),
+                    "keys": [k.public() for k in p.keys]}
+                for n, p in pools.items()}
+
+    signal.signal(signal.SIGHUP, reload_all)
+    signal.signal(signal.SIGUSR1, reload_all)
+
+    def bg():
+        while True:
+            try:
+                for p in pools.values():
+                    p.affinity.gc()
+                persist.write_json(HEALTH_PATH, _snap(pools))
+            except Exception as e:
+                log(f"bg error: {e}")
+            time.sleep(10)
+
+    threading.Thread(target=bg, daemon=True, name="keypool-bg").start()
+
+    srv = ThreadingHTTPServer(LISTEN, proxy.Handler)
+    log(f"listening on {LISTEN[0]}:{LISTEN[1]} (pools: {', '.join(sorted(pools))})")
+    srv.serve_forever()
+
+
+if __name__ == "__main__":
+    main()

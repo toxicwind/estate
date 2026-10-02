@@ -15,7 +15,7 @@ import time
 from collections import Counter
 
 SECRETS = "/home/toxic/.secrets"
-VAR = "/home/toxic/sovereign/var"
+VAR = "/home/toxic/estate/var"
 IN_JSONL = f"{VAR}/or-free-sweep3.jsonl"
 OUT_JSON = f"{VAR}/or-free-sweep3-results.json"
 OUT_MD = f"{VAR}/or-free-ranking.md"

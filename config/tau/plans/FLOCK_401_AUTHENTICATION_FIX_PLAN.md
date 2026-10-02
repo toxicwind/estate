@@ -26,15 +26,15 @@ The flock service is returning 401 Unauthorized errors. The issue appears to be 
 - Check for any related errors or warnings
 
 ## Critical Files & Anchors
-- `/home/toxic/sovereign/projects/herd/internal/flock/` - main flock implementation
-- `/home/toxic/sovereign/projects/herd/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/llm_client/llm_client.py` - LLM client with authentication
-- `/home/toxic/sovereign/projects/herd/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/orchestrator/orchestrator.py` - orchestration logic
-- `/home/toxic/sovereign/projects/herd/internal/flock/config.go` - configuration handling
-- `/home/toxic/sovereign/projects/herd/internal/flock/providers.go` - provider authentication
+- `/home/toxic/estate/ranch/herd/internal/flock/` - main flock implementation
+- `/home/toxic/estate/ranch/herd/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/llm_client/llm_client.py` - LLM client with authentication
+- `/home/toxic/estate/ranch/herd/mesh/flock-pkg/sovereign_complete_pkg/flock-dist/lib/orchestrator/orchestrator.py` - orchestration logic
+- `/home/toxic/estate/ranch/herd/internal/flock/config.go` - configuration handling
+- `/home/toxic/estate/ranch/herd/internal/flock/providers.go` - provider authentication
 
 ## Verification
-1. Run `ffs_find -pattern "key" -root /home/toxic/sovereign/projects/herd` to locate key configuration
-2. Run `ffs_find -pattern "401" -root /home/toxic/sovereign/projects/herd` to find error handling
+1. Run `ffs_find -pattern "key" -root /home/toxic/estate/ranch/herd` to locate key configuration
+2. Run `ffs_find -pattern "401" -root /home/toxic/estate/ranch/herd` to find error handling
 3. Read the identified configuration files to understand the current state
 4. Apply the fix and test the flock service
 

@@ -18,7 +18,7 @@
 # follow-up sweep via /v1/rooms/<room>/messages instead.
 set -u
 
-STATE_DIR="${SOVEREIGN_CHAT_STATE_DIR:-/home/toxic/sovereign/tools/sovereign-chat/state}"
+STATE_DIR="${SOVEREIGN_CHAT_STATE_DIR:-/home/toxic/estate/tools/sovereign-chat/state}"
 WM="$STATE_DIR/relay-watermark"
 TOKEN_FILE="${SOVEREIGN_CHAT_TOKEN_FILE:-/home/toxic/.config/sovereign-chat-token}"
 BASE="${SOVEREIGN_CHAT_BASE:-http://127.0.0.1:25120}"

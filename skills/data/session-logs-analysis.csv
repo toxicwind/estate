@@ -1,0 +1,7 @@
+file,type,keys,size
+1.bash-original.log,bash_log,[],1431
+11.bash-original.log,package_json,[],4313
+13.bash-original.log,bash_log,[],1126
+16.bash-original.log,json,"['type', 'name', 'version', 'description', 'homepage', 'author', 'contributors', 'license', 'repository', 'bugs', 'keywords', 'main', 'types', 'bin', 'scripts', 'dependencies', 'optionalDependencies', 'devDependencies', 'engines', 'files', 'exports']",17966
+8.bash.log,package_json,[],685191
+9.bash-original.log,package_json,[],685164

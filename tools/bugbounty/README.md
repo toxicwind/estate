@@ -31,7 +31,7 @@ flowchart LR
 ## Quick start
 
 ```bash
-cd ~/sovereign/tools/bugbounty
+cd /home/toxic/estate/tools/bugbounty
 export DISPLAY=:0
 # optional: attach CDP instead of launching
 # export BB_CDP_URL=http://127.0.0.1:9222
