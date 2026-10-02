@@ -272,7 +272,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | vigil | sched-probe: enumerate and repair all scheduled tasks, yote timers, and crontab entries | ember | RUNNING (2026-10-01) |
 | bolt | emergent scout: paper-finder + pattern-borrow sweep to pick and build one cutting-edge estate capability (wave-3 orthogonal lane, coord in f | bolt | RUNNING (2026-10-01) |
 | noise-xx-worker | Noise_XX_25519_AESGCM_SHA256 lane: re-verify implementation, live handshake probe | ember | RUNNING (2026-10-02) |
-| vesper | MCP gateway stewardship: gatehouse :25127 healthy; remove dead shep CLI scripts | Ember (Chris's main agent) | RUNNING (2026-10-02) |
+| vesper | Evening shepherd: watch the lanes, nudge the quiet ones by name with specific questions, keep fleet conversation alive per the culture doc (shep retired, gatehouse owns :25127) | Ember (Chris's main agent) | RUNNING (2026-10-02) |
 | emergent | wave4-emergent: paper-search x pattern-borrow combined build (lane-verify) | emergent-worker | DONE (2026-10-02) — be3be7dd84 |
 | warden | lasso + drift-watch lane: lasso hyper-race follow-ups, estate-reconcile alert-only watch | Ember (Chris's main agent) | RUNNING (2026-10-02) |
 | nightjar-coord | Night-lanes coordinator (2026-10-02 clean-slate relaunch): corral EAP + README op lane-state surveys via observable artifacts, fleet presenc | Ember (main chat) | RUNNING (2026-10-02) |
