@@ -64,15 +64,16 @@ curl -s http://127.0.0.1:25120/health
 
 1. [About](#-about)
 2. [The two boxes](#-the-two-boxes)
-3. [Service map](#-service-map)
-4. [The ranch](#-the-ranch)
-5. [The pack](#-the-pack--named-agents)
-6. [Operations](#-operations)
-7. [Getting started](#-getting-started)
-8. [Roadmap](#-roadmap)
-9. [Contributing](#-contributing)
-10. [License & Security](#-license--security)
-11. [Contact & Acknowledgments](#-contact--acknowledgments)
+3. [Repo topology](#-repo-topology)
+4. [Service map](#-service-map)
+5. [The ranch](#-the-ranch)
+6. [The pack](#-the-pack--named-agents)
+7. [Operations](#-operations)
+8. [Getting started](#-getting-started)
+9. [Roadmap](#-roadmap)
+10. [Contributing](#-contributing)
+11. [License & Security](#-license--security)
+12. [Contact & Acknowledgments](#-contact--acknowledgments)
 
 </details>
 
@@ -100,6 +101,36 @@ Go · Rust · Python · TypeScript (Bun) · llama.cpp · pitchfork · NATS · Qd
 | 🖥️ **yote** | 16 cores / 62 GB RAM / RTX 3090 24 GB | Everything else. All 82 daemons, all repos, all heavy work — reached from hatch through the `yote-conn` bridge, running as Chris himself with full admin. |
 
 The rule is absolute: **heavy work belongs on yote, never on hatch.** The cell saturates fast; yote swallows swarms whole.
+
+## 🗂️ Repo topology — three repos, one estate
+
+The estate's work is split across three GitHub repos. All three `main` SHAs below were verified live on 2026-10-02 (`git ls-remote`).
+
+| Repo | Visibility | `main` (verified) | What it is |
+|---|---|---|---|
+| [toxicwind/estate](https://github.com/toxicwind/estate) | PUBLIC | `a52d28be3a` | This repo — the control plane. |
+| [toxicwind/ranch](https://github.com/toxicwind/ranch) | PUBLIC | `4323dda` | The workshop — nested in the checkout at `ranch/` (gitignored here, own repo, own history). |
+| [toxicwind/hatch](https://github.com/toxicwind/hatch) | PRIVATE | `b3b0630` | The control-cell split — `hatch/` as its own repo (see below). |
+
+**The hatch split.** The `hatch/` control-cell tree was split out into `toxicwind/hatch` at [`b3b0630dad4f6b6b8708008e4e1db6e7c9603086`](https://github.com/toxicwind/hatch/commit/b3b0630dad4f6b6b8708008e4e1db6e7c9603086) — 167 commits, 573 files (agents, bin, cell-files, crons, docs, pollers, task-launch, the sidechat shim, …). The hatch repo is PRIVATE: control-cell internals stay behind the fence.
+
+**⚠️ Pending — Q1 unresolved.** `hatch/` is still physically present in this repo. The open question is whether the estate should keep it as a submodule reference or remove it entirely — the oracle debate (Q1) that was supposed to settle this is orphaned while the oracle daemon is mid-migration and cannot settle debates right now. So this README documents the *current* state (split done, `hatch/` still in-tree, Q1 pending) — not a resolution. Don't treat either option as decided.
+
+### Top-level repo map
+
+What lives where in this repo, at the top level (all verified present 2026-10-02):
+
+| Path | Role |
+|---|---|
+| `hatch/` | Control-cell tree — being split out to `toxicwind/hatch` (see above). |
+| `ranch/` | Nested project monorepo ([toxicwind/ranch](https://github.com/toxicwind/ranch)) — gitignored here, own history. |
+| `bin/` | Estate-wide operational scripts (`estate-reconcile`, `estate-scan`, `audit-estate.sh`, …). |
+| `docs/` | Estate docs — start with [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). |
+| `pitchfork.toml` | Composed daemon inventory (82 daemons) — generated, edit the project manifests. |
+| `pitchfork.d/` | Per-project daemon manifests — the source of `pitchfork.toml`. |
+| `config/ports.env` | Port SSOT. |
+| `stack/` | Service launch scripts (`stack/services/herd.sh`, …). |
+| `engines/` | llama.cpp engine checkouts backing herd. |
 
 ## 🗺️ Service map
 
@@ -168,12 +199,14 @@ curl -s http://127.0.0.1:25120/health
 ## 🗺️ Roadmap
 
 - [x] Estate repo public, ranch public, hatch private — visibility policy set 2026-10-02
+- [x] hatch split — `hatch/` split out to [toxicwind/hatch](https://github.com/toxicwind/hatch) at `b3b0630` (167 commits, 573 files)
 - [x] 82 daemons under pitchfork supervision with health checks
 - [x] herd/flock/sovereign-router three-layer model routing, live
 - [ ] **Cuttinggate**: permissionless, health-gated cutover off `:25104` — gates green means anyone may cut over
 - [ ] **Compression proxy**: one Sigma-owned runtime (retire the redundant pair)
 - [ ] **Oracle proof**: real dated yes/no verdict before the cutover leans on it
 - [ ] **Per-lane pollers**: one cheap heartbeat poller per agent lane
+- [ ] **hatch Q1** — `hatch/` is still in-tree here: submodule reference or remove entirely? The oracle debate (Q1) is orphaned while the oracle daemon is mid-migration — pending, documented not resolved
 
 ## 🤝 Contributing
 
