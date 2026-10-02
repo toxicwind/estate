@@ -1274,3 +1274,8 @@ FodyWeavers.xsd
 
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
+
+# Tau runtime state: session transcripts and vendored plugin caches are
+# regenerated on every run and belong on disk, not in history.
+config/tau/agent/sessions/
+config/tau/plugins/cache/
