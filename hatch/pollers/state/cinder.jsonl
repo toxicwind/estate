@@ -1,0 +1,3 @@
+{"ts": 1790980696.4361799, "lane": "cinder", "event": "check", "status": "stalled", "silent_min": 45.0, "source": "chat", "consecutive": 1, "escalate": false}
+{"ts": 1790980858.557736, "lane": "cinder", "event": "nudge_queued", "file": "cinder-1790980858.json", "silent_min": 45.0}
+{"ts": 1790980868.980487, "lane": "cinder", "event": "nudge_sent_via_queue", "file": "cinder-1790980858.json"}
