@@ -1,8 +1,8 @@
 ---
 crew: 'finch'
-scope: 'flock/Roost provider scouting: endpoint-verify and land new/emerging LLM inference providers into the Roost catalog'
+scope: 'Finch: provider scout sweep — sweep #2: find LLM inference providers launched/gained traction since 2026-10-02, probe /v1/models live from yote, land verified-alive into the Roost catalog (no keys minted)'
 owner: 'Ember'
-status: 'DONE (2026-10-02) — c29663a'
+status: 'RUNNING (2026-10-02)'
 order: 1000000013
 registered: '2026-10-02'
 updated: '2026-10-02'
