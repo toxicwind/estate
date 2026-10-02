@@ -1,0 +1,1 @@
+/home/toxic/estate/config/tau/extensions/mobile-autocorrect.ts
