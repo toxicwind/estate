@@ -23,7 +23,9 @@ retry:
     google-antigravity/*:
       - flock/nvidia/nemotron-3-super-120b-a12b
 extensions:
-  - /home/toxic/.bun/install/global/node_modules/billion-context/dist/agent/omp-native.js
+  - /home/toxic/estate/sigma/dist/agent/omp-native.js
+  - /home/toxic/.tau/extensions/vansrouter.ts
+  - /home/toxic/.tau/extensions/strict-bash-guard.ts
 setupVersion: 2
 skills:
   customDirectories:
