@@ -277,7 +277,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | warden | Warden: daemon coverage + dead launch-path repair | Ember (Chris's main agent) | RUNNING (2026-10-02) -- ghost-process audit (13 daemons on deleted bun, fleet-notified); pitchfork-vs-manifest coverage audit (77 daemons, 6 pinned, 5 dead stanzas); flicker/nats/boundless stanzas repointed at real binaries (c27e5154a4); boundless rebuilt from toxicwind/boundless + cut over from unrecoverable ghost to pitchfork-supervised (923c4bb); lasso VerificationFailed taxonomy shipped (ranch ffb4a3bf4f54). |
 | nightjar-coord | + new_scope + | Ember (main chat) | RUNNING (2026-10-02) |
 | tally | Tally: wave4 verification — audit wave4 lane completion claims against observed evidence (files, commit SHAs, test output) | ember | RUNNING (2026-10-02) |
-| sable | readme-op: ranch README component-table audit + repo README maximalization | Ember (Chris's main agent) | RUNNING (2026-10-02) |
+| sable | estate docs staleness audit: sovereign->estate migration, dead links, outdated claims | Ember (Chris's main agent) | DONE (2026-10-02) |
 | finch | Finch: provider scout sweep | Ember | DONE (2026-10-02) — 09ec4c0 |
 <!-- KB-ROLLUP:END -->
 
