@@ -1,8 +1,8 @@
 # Sovereign Pre-Release Integration Engine
 
 > **Architectural Law**: *"Production logic is integrated DIRECTLY in code. Pre-release staging overrides resolve via clean indirection."*
-> **Engine**: `/home/toxic/sovereign/src/lib/pre_release_integration.ts`
-> **Integration Store**: `/home/toxic/sovereign/integrations/`
+> **Engine**: `/home/toxic/estate/src/lib/pre_release_integration.ts`
+> **Integration Store**: `/home/toxic/estate/integrations/`
 ---
 
 ## 1. The Anti-Pattern vs. The Pattern
@@ -39,10 +39,10 @@ The core codebase is designed to resolve its implementation from a persistent re
 
 ## 2. Anatomy of a Deliverable Hotfix Patch
 
-Every patch in `sovereign/patches/` is a real, committed TypeScript module:
+Every patch in `estate/patches/` is a real, committed TypeScript module:
 
 ```typescript
-// sovereign/patches/services_tau.ts
+// estate/patches/services_tau.ts
 import type { ServiceDef } from "../src/types/index.ts";
 
 export const TARGET = "services.tau";
@@ -55,7 +55,7 @@ export const impl: ServiceDef = {
   id: "tau",
   name: "tau",
   portKey: "PI_AGENT_PORT",
-  run: "exec /home/toxic/sovereign/agent",
+  run: "exec /home/toxic/estate/agent",
   dir: "/home/toxic",
   readyCmd: "sleep 1 && echo ready",
   group: "agents",
@@ -78,7 +78,7 @@ export const impl: ServiceDef = {
 Core modules ask the registry rather than hardcoding mutable state:
 
 ```typescript
-// sovereign/src/services/registry.ts
+// estate/src/services/registry.ts
 import { hotfixRegistry } from "../lib/hotfix_registry.ts";
 
 export const ALL_SERVICES: ServiceDef[] = [
@@ -112,15 +112,15 @@ $ hotfix status
 ```
 
 ### Why This Is Permanent & Live:
-1. **Permanent**: Patches are written to disk in `sovereign/patches/*.ts` and survive all daemon/process restarts.
+1. **Permanent**: Patches are written to disk in `estate/patches/*.ts` and survive all daemon/process restarts.
 2. **Non-Monkey-Patch**: The core codebase intentionally consumes the registry as an extension point.
-3. **Zero-Downtime Live Reload**: The engine runs `fs.watch` on `sovereign/patches/`, dynamically importing updated code into memory without restarting Pitchfork or background daemons.
+3. **Zero-Downtime Live Reload**: The engine runs `fs.watch` on `estate/patches/`, dynamically importing updated code into memory without restarting Pitchfork or background daemons.
 
 ---
 
 ## 5. New Deliverable Hotfix — `registry.emergent_sync`
 
-**File**: `/home/toxic/sovereign/patches/emergent_registry_sync.ts`
+**File**: `/home/toxic/estate/patches/emergent_registry_sync.ts`
 **Target**: `registry.emergent_sync`
 **Purpose**: Connects Hindsight health (`port 25117`) with Pitchfork daemon lifecycle (`herd`, `hindsight`) through the registry resolution mechanism, only activating when both services report healthy.
 

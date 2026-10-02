@@ -1,35 +1,35 @@
 {
-  "generatedAt": "2026-10-02T07:57:58.477Z",
+  "generatedAt": "2026-10-02T12:28:06.942Z",
   "host": {
     "hostname": "awrawr-pc",
     "home": "/home/toxic",
-    "estateRoot": "/home/toxic/sovereign",
+    "estateRoot": "/home/toxic/estate",
     "tauConfigDir": "/home/toxic/.tau"
   },
   "repos": [
     {
       "name": "estate",
-      "path": "/home/toxic/sovereign",
+      "path": "/home/toxic/estate",
       "role": "control plane: pitchfork.toml, config/, bin/, bridge/, agents/, docs/, projects/",
       "exists": true,
       "isRepo": true,
       "gitKind": "nested",
       "remote": "https://github.com/toxicwind/sovereign-projects.git",
-      "head": "7319b1a5f",
-      "committedAt": "2026-10-01T16:13:05-06:00",
-      "dirtyPaths": 289
+      "head": "c27e5154a4",
+      "committedAt": "2026-10-02T06:27:37-06:00",
+      "dirtyPaths": 78
     },
     {
       "name": "ranch",
-      "path": "/home/toxic/sovereign/projects/range/ranch",
+      "path": "/home/toxic/estate/ranch",
       "role": "the inference estate monorepo: herd, flock, gatehouse, squawk, oracle, flicker, roost",
       "exists": true,
       "isRepo": true,
       "gitKind": "nested",
       "remote": "https://github.com/toxicwind/ranch",
-      "head": "c2e2d3c",
-      "committedAt": "2026-10-01T16:42:27-06:00",
-      "dirtyPaths": 0
+      "head": "657f3b7",
+      "committedAt": "2026-10-02T06:24:07-06:00",
+      "dirtyPaths": 328
     },
     {
       "name": "ranch",
@@ -39,9 +39,9 @@
       "isRepo": true,
       "gitKind": "nested",
       "remote": "https://github.com/toxicwind/ranch",
-      "head": "d2a0a0e",
-      "committedAt": "2026-10-01T03:15:08-06:00",
-      "dirtyPaths": 0
+      "head": "657f3b7",
+      "committedAt": "2026-10-02T06:24:07-06:00",
+      "dirtyPaths": 328
     },
     {
       "name": "tau-config",
@@ -229,10 +229,10 @@
       "daemons": [
         "browser-keeper"
       ],
-      "live": true,
-      "addr": "127.0.0.1",
-      "process": "chrome",
-      "pid": 798766
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
     },
     {
       "port": 18384,
@@ -244,15 +244,6 @@
       "pid": 525588
     },
     {
-      "port": 18787,
-      "ssot": null,
-      "daemons": [],
-      "live": true,
-      "addr": "127.0.0.1",
-      "process": "MainThread",
-      "pid": 1269861
-    },
-    {
       "port": 18788,
       "ssot": null,
       "daemons": [],
@@ -260,6 +251,15 @@
       "addr": "127.0.0.1",
       "process": "MainThread",
       "pid": 1816974
+    },
+    {
+      "port": 18789,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "MainThread",
+      "pid": 1254081
     },
     {
       "port": 18924,
@@ -302,15 +302,13 @@
       "pid": 525588
     },
     {
-      "port": 25100,
-      "ssot": "HERD_PORT",
-      "daemons": [
-        "herd"
-      ],
+      "port": 25017,
+      "ssot": null,
+      "daemons": [],
       "live": true,
       "addr": "127.0.0.1",
-      "process": "llama-swap",
-      "pid": 2000541
+      "process": "llama-server",
+      "pid": 1641709
     },
     {
       "port": 25100,
@@ -321,7 +319,18 @@
       "live": true,
       "addr": "127.0.0.1",
       "process": "llama-swap",
-      "pid": 2000541
+      "pid": 1602617
+    },
+    {
+      "port": 25100,
+      "ssot": "HERD_PORT",
+      "daemons": [
+        "herd"
+      ],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "llama-swap",
+      "pid": 1602617
     },
     {
       "port": 25101,
@@ -391,25 +400,14 @@
     },
     {
       "port": 25104,
-      "ssot": "SOVEREIGN_ROUTER_PORT",
+      "ssot": null,
       "daemons": [
         "sovereign-router"
       ],
       "live": true,
       "addr": "127.0.0.1",
       "process": "bun",
-      "pid": 1771253
-    },
-    {
-      "port": 25104,
-      "ssot": "SOVEREIGN_ROUTER_PORT",
-      "daemons": [
-        "sovereign-router"
-      ],
-      "live": true,
-      "addr": "127.0.0.1",
-      "process": "bun",
-      "pid": 1771253
+      "pid": 1250659
     },
     {
       "port": 25105,
@@ -420,7 +418,7 @@
       "live": true,
       "addr": "0.0.0.0",
       "process": "bun",
-      "pid": 261928
+      "pid": 1261461
     },
     {
       "port": 25105,
@@ -431,7 +429,7 @@
       "live": true,
       "addr": "0.0.0.0",
       "process": "bun",
-      "pid": 261928
+      "pid": 1261461
     },
     {
       "port": 25106,
@@ -503,8 +501,8 @@
       ],
       "live": true,
       "addr": "127.0.0.1",
-      "process": "python3",
-      "pid": 903827
+      "process": "bun",
+      "pid": 2581580
     },
     {
       "port": 25109,
@@ -514,8 +512,8 @@
       ],
       "live": true,
       "addr": "127.0.0.1",
-      "process": "python3",
-      "pid": 903827
+      "process": "bun",
+      "pid": 2581580
     },
     {
       "port": 25110,
@@ -548,7 +546,7 @@
       "live": true,
       "addr": "127.0.0.1",
       "process": "MainThread",
-      "pid": 2246603
+      "pid": 653790
     },
     {
       "port": 25112,
@@ -596,10 +594,10 @@
       "daemons": [
         "search-ui"
       ],
-      "live": true,
-      "addr": "*",
-      "process": "next-server (v1",
-      "pid": 1784352
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
     },
     {
       "port": 25114,
@@ -607,10 +605,10 @@
       "daemons": [
         "search-ui"
       ],
-      "live": true,
-      "addr": "*",
-      "process": "next-server (v1",
-      "pid": 1784352
+      "live": false,
+      "addr": null,
+      "process": null,
+      "pid": null
     },
     {
       "port": 25115,
@@ -816,7 +814,7 @@
       "live": true,
       "addr": "127.0.0.1",
       "process": "gatehouse",
-      "pid": 2326305
+      "pid": 1393971
     },
     {
       "port": 25127,
@@ -827,7 +825,7 @@
       "live": true,
       "addr": "127.0.0.1",
       "process": "gatehouse",
-      "pid": 2326305
+      "pid": 1393971
     },
     {
       "port": 25128,
@@ -930,7 +928,7 @@
       "live": true,
       "addr": "127.0.0.1",
       "process": "python3",
-      "pid": 1572266
+      "pid": 1558435
     },
     {
       "port": 25135,
@@ -939,7 +937,7 @@
       "live": true,
       "addr": "127.0.0.1",
       "process": "python3",
-      "pid": 1572266
+      "pid": 1558435
     },
     {
       "port": 25136,
@@ -950,7 +948,7 @@
       "live": true,
       "addr": "0.0.0.0",
       "process": "bun",
-      "pid": 4026560
+      "pid": 2943073
     },
     {
       "port": 25136,
@@ -961,7 +959,7 @@
       "live": true,
       "addr": "0.0.0.0",
       "process": "bun",
-      "pid": 4026560
+      "pid": 2943073
     },
     {
       "port": 25137,
@@ -1123,7 +1121,7 @@
       "live": true,
       "addr": "127.0.0.1",
       "process": "python3",
-      "pid": 1568133
+      "pid": 2277261
     },
     {
       "port": 25147,
@@ -1134,7 +1132,7 @@
       "live": true,
       "addr": "127.0.0.1",
       "process": "python3",
-      "pid": 1568133
+      "pid": 2277261
     },
     {
       "port": 25148,
@@ -1379,7 +1377,7 @@
     },
     {
       "port": 25192,
-      "ssot": "PI_WEB_DASHBOARD_PORT",
+      "ssot": "CUTTINGGATE_PORT",
       "daemons": [],
       "live": false,
       "addr": null,
@@ -1483,7 +1481,7 @@
       "live": true,
       "addr": "127.0.0.1",
       "process": "python",
-      "pid": 50593
+      "pid": 2501503
     },
     {
       "port": 25197,
@@ -1494,7 +1492,7 @@
       "live": true,
       "addr": "127.0.0.1",
       "process": "python",
-      "pid": 50593
+      "pid": 2501503
     },
     {
       "port": 25198,
@@ -1600,7 +1598,7 @@
       "live": true,
       "addr": "127.0.0.1",
       "process": "prometheus",
-      "pid": 261902
+      "pid": 1259592
     },
     {
       "port": 25205,
@@ -1609,7 +1607,7 @@
       "live": true,
       "addr": "127.0.0.1",
       "process": "prometheus",
-      "pid": 261902
+      "pid": 1259592
     },
     {
       "port": 25206,
@@ -1852,6 +1850,15 @@
       "pid": null
     },
     {
+      "port": 33717,
+      "ssot": null,
+      "daemons": [],
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "omp",
+      "pid": 1816058
+    },
+    {
       "port": 34213,
       "ssot": null,
       "daemons": [],
@@ -1989,7 +1996,7 @@
         "name": "gatehouse",
         "source": "./projects/range/ranch/barn/gatehouse",
         "resolved": "/home/toxic/projects/range/ranch/barn/gatehouse",
-        "exists": false
+        "exists": true
       },
       {
         "name": "router",
@@ -2001,19 +2008,19 @@
         "name": "barn-browser",
         "source": "./projects/range/ranch/barn/browserless",
         "resolved": "/home/toxic/projects/range/ranch/barn/browserless",
-        "exists": false
+        "exists": true
       },
       {
         "name": "barn-gemini",
         "source": "./projects/range/ranch/barn/gemini-mcp",
         "resolved": "/home/toxic/projects/range/ranch/barn/gemini-mcp",
-        "exists": false
+        "exists": true
       },
       {
         "name": "secretsmith",
         "source": "./projects/range/ranch/barn/secretsmith",
         "resolved": "/home/toxic/projects/range/ranch/barn/secretsmith",
-        "exists": false
+        "exists": true
       }
     ],
     "providers": [
@@ -2033,11 +2040,11 @@
       },
       {
         "name": "sovereign-tools",
-        "target": "bun /home/toxic/sovereign/helpers/sovereign-mcp-server.ts"
+        "target": "bun /home/toxic/estate/helpers/sovereign-mcp-server.ts"
       },
       {
         "name": "browserless",
-        "target": "node /home/toxic/sovereign/projects/range/ranch/barn/browserless/dist/index.js"
+        "target": "node /home/toxic/estate/ranch/barn/browserless/dist/index.js"
       }
     ],
     "creds": [
@@ -2051,8 +2058,8 @@
     {
       "severity": "high",
       "kind": "duplicate-checkout",
-      "detail": "https://github.com/toxicwind/ranch checked out 2x — newest c2e2d3c @ /home/toxic/sovereign/projects/range/ranch; /home/toxic/ranch @ d2a0a0e (2026-10-01T03:15:08-06:00)",
-      "fix": "keep /home/toxic/sovereign/projects/range/ranch; delete or archive /home/toxic/ranch"
+      "detail": "https://github.com/toxicwind/ranch checked out 2x — newest 657f3b7 @ /home/toxic/estate/ranch; /home/toxic/ranch @ 657f3b7 (2026-10-02T06:24:07-06:00)",
+      "fix": "keep /home/toxic/estate/ranch; delete or archive /home/toxic/ranch"
     },
     {
       "severity": "medium",
@@ -2159,7 +2166,7 @@
     {
       "severity": "medium",
       "kind": "port-ssot-dead",
-      "detail": "ports.env claims 25192 (PI_WEB_DASHBOARD_PORT) — no listener, no pitchfork daemon claims it",
+      "detail": "ports.env claims 25192 (CUTTINGGATE_PORT) — no listener, no pitchfork daemon claims it",
       "fix": "start the daemon or drop the SSOT entry"
     },
     {
@@ -2171,8 +2178,8 @@
     {
       "severity": "high",
       "kind": "daemon-path-dead",
-      "detail": "pitchfork daemon 'boundless' references /home/toxic/boundless/.venv/bin/python — absent",
-      "fix": "update pitchfork.toml [daemons.boundless]"
+      "detail": "pitchfork daemon 'nats-tail' references /home/toxic/estate/ranch/squawk/nats/run-tail.sh — absent",
+      "fix": "update pitchfork.toml [daemons.nats-tail]"
     },
     {
       "severity": "high",
@@ -2189,32 +2196,14 @@
     {
       "severity": "high",
       "kind": "agent-plugin-source-dead",
-      "detail": "tau plugin 'gatehouse' source ./projects/range/ranch/barn/gatehouse → /home/toxic/projects/range/ranch/barn/gatehouse does not exist",
-      "fix": "point gatehouse.source at the live path in docs/estate-map.json repos[]"
-    },
-    {
-      "severity": "high",
-      "kind": "agent-plugin-source-dead",
       "detail": "tau plugin 'router' source ./projects/range/ranch/stockyard/router-legacy → /home/toxic/projects/range/ranch/stockyard/router-legacy does not exist",
       "fix": "point router.source at the live path in docs/estate-map.json repos[]"
     },
     {
-      "severity": "high",
-      "kind": "agent-plugin-source-dead",
-      "detail": "tau plugin 'barn-browser' source ./projects/range/ranch/barn/browserless → /home/toxic/projects/range/ranch/barn/browserless does not exist",
-      "fix": "point barn-browser.source at the live path in docs/estate-map.json repos[]"
-    },
-    {
-      "severity": "high",
-      "kind": "agent-plugin-source-dead",
-      "detail": "tau plugin 'barn-gemini' source ./projects/range/ranch/barn/gemini-mcp → /home/toxic/projects/range/ranch/barn/gemini-mcp does not exist",
-      "fix": "point barn-gemini.source at the live path in docs/estate-map.json repos[]"
-    },
-    {
-      "severity": "high",
-      "kind": "agent-plugin-source-dead",
-      "detail": "tau plugin 'secretsmith' source ./projects/range/ranch/barn/secretsmith → /home/toxic/projects/range/ranch/barn/secretsmith does not exist",
-      "fix": "point secretsmith.source at the live path in docs/estate-map.json repos[]"
+      "severity": "medium",
+      "kind": "selector-provider-unwired",
+      "detail": "model-router selects 'sovereign/…' but no provider block or baseUrl in ~/.tau maps that prefix to a live port",
+      "fix": "add a 'sovereign:' provider block with a live baseUrl, or drop the selector"
     }
   ]
 }
