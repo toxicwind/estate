@@ -10,7 +10,7 @@ per file.
 | **Reached as** | `~/.tau/extensions` and `~/.omp/extensions` (both symlink here) |
 | **Loader contract** | `export default function (pi: ExtensionAPI)` |
 | **Extension API** | `@oh-my-pi/pi-coding-agent` → `ExtensionAPI` |
-| **Extensions** | 2, both active |
+| **Extensions** | 3, all active |
 | **Env source** | `~/.tau/.env` (same file as `~/.omp/.env`) |
 
 > [!NOTE]
@@ -23,6 +23,7 @@ per file.
 - [Extensions](#extensions)
   - [vansrouter](#vansrouter)
   - [strict-bash-guard](#strict-bash-guard)
+  - [mobile-autocorrect](#mobile-autocorrect)
 - [Managing extensions](#managing-extensions)
 - [Verifying](#verifying)
 - [Troubleshooting](#troubleshooting)
@@ -36,6 +37,7 @@ per file.
 |---|---|---|
 | [`vansrouter.ts`](./vansrouter.ts) | `registerProvider` + `session_start` | Registers the VansRouter OpenAI-compatible provider and syncs its live model catalog |
 | [`strict-bash-guard.ts`](./strict-bash-guard.ts) | `tool_call` | Blocks shell commands that duplicate built-in tools |
+| [`mobile-autocorrect.ts`](./mobile-autocorrect.ts) | `input` + `context` | In-process MITM mobile autocorrect repairing QWERTY touchscreen slips while preserving code & CLI tokens |
 
 ---
 
@@ -195,6 +197,25 @@ A match returns `{ block: true, reason }` and the call does not execute.
   `head -5` are allowed; `cat file` is blocked.
 - **No escape hatch.** No prefix, flag, or comment marker bypasses a rule.
 - **It only governs agent tool calls.** Your interactive shell is unaffected.
+
+---
+
+## mobile-autocorrect
+
+In-process Man-in-the-Middle (MITM) mobile autocorrect engine for Termux and
+Android touchscreen sessions. Solves the Android `NO_SUGGESTIONS` dilemma by
+intercepting user prompt text and correcting 2D QWERTY spatial slips in under
+5ms while protecting code flags, paths, URLs, identifiers, and markdown blocks.
+
+### How it works
+
+1. **Lexical Token Classifier**: Isolates prose words from protected code, CLI flags (`--noEmit`), file paths (`pool.js`), inline code (`` `diff` ``), URLs, and variable names (`authHeader`, `bg_9`).
+2. **2D QWERTY Spatial Topology**: Calculates key distances on touchscreen layout with vertical thumb-sweep penalty ($dx, dy \cdot 1.25$).
+3. **Damerau-Levenshtein Spatial Search**: Evaluates substitution, transposition, deletion, and insertion costs against an in-memory coding & conversational lexicon.
+4. **Dual Lifecycle Hooks**:
+   - `input` hook: Rectifies user prompt text immediately in interactive sessions.
+   - `context` hook: Fail-safe MITM rectification right before LLM dispatch.
+5. **Status Bar Telemetry**: Surfaces non-blocking status line message in Termux TUI (`ctx.ui.setStatus("autocorrect", ...)`).
 
 ---
 
