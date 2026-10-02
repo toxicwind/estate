@@ -114,22 +114,6 @@ SECRET_KEY=change-me-in-production
 - **Security** – No hardcoded secrets; use environment variables or vaults for sensitive data
 - **Compliance** – All projects follow the estate's security and privacy policies
 
-## Status
-
-Current version: **0.1.0**
-Last updated: 2026-10-02
-
-## Related Projects
-
-- [fix-omp-launcher](fix-omp-launcher/)
-- [fix-tau-session-corruption](fix-tau-session-corruption/)
-- [gatehouse-mcp](gatehouse-mcp/)
-- [router](router/)
-- [tau-audit](tau-audit/)
-- [tau-binary-build](tau-binary-build/)
-- [tau-fork-pinning](tau-fork-pinning/)
-- [zipfs-vault](zipfs-vault/)
-
 ## Support
 
 For questions or issues, open a ticket in the main repository or contact the core team via the established channels.
