@@ -1,6 +1,9 @@
-[submodule "shell/sovereign-end4"]
-	path = projects/shell/ii
-	url = https://github.com/toxicwind/sovereign-end4.git
-[submodule "tau/vendors"]
-	path = tau/vendors
-	url = https://github.com/MoonshotAI/kimi-cli.git
+# Submodules are declared by live path only.
+#
+# The two entries that were here pointed at projects/shell/ii and tau/vendors.
+# Both died in the 2026-10-01 restructure (projects/ was dissolved, tau moved
+# to ranch/tau) but the declarations survived, so every `git rev-list` died with
+#   fatal: exec 'rev-list': cd to 'projects/shell/ii' failed: No such file or directory
+# which made ahead/behind counts meaningless and blocked the push.
+#
+# Re-add an entry only when the checkout is actually on disk and has its own .git.
