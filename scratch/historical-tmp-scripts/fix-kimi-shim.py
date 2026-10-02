@@ -2,12 +2,12 @@
 """Fix kimi-auto-shim pitchfork run line to match the router fragment. Run on yote."""
 import sys
 
-p = '/home/toxic/sovereign/pitchfork.toml'
+p = '/home/toxic/estate/pitchfork.toml'
 s = open(p).read()
 
-old = 'run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target kimi-k2.6 --standby kimi-k2.7-code --name kimi-auto"'
+old = 'run = "exec python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target kimi-k2.6 --standby kimi-k2.7-code --name kimi-auto"'
 assert old in s, 'stale run line not found'
-new = ('run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py '
+new = ('run = "exec python3 /home/toxic/estate/config/herd.d/alias-shim.py '
        '--port ${KIMI_AUTO_SHIM_PORT} '
        '--target openrouter-free/moonshotai/kimi-k3:free '
        '--standby openrouter-free/moonshotai/kimi-k2.6:free '

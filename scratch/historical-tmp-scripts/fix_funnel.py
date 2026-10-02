@@ -3,7 +3,7 @@
 # tab, but MAP entries use TWO tabs, leaving a leading tab in the target URL
 # and making every NEW mount fail with "invalid control character in URL".
 # ${entry##*\t} (longest match) strips through the last tab. Idempotent.
-path = "/home/toxic/sovereign/projects/yote/ops/funnel-map.sh"
+path = "/home/toxic/estate/projects/yote/ops/funnel-map.sh"
 c = open(path).read()
 old = 'target="${entry#*\t}"'
 new = 'target="${entry##*\t}"'

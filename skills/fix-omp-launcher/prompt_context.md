@@ -35,14 +35,14 @@ This skill fixes the `omp` launcher script at `~/.local/bin/omp` to point to the
 
 3. Update the `tau` symlink:
    ```bash
-   ln -sf /home/toxic/sovereign/projects/range/ranch/stockyard/tau/packages/coding-agent/scripts/tau ~/.local/bin/tau
+   ln -sf /home/toxic/estate/projects/range/ranch/stockyard/tau/packages/coding-agent/scripts/tau ~/.local/bin/tau
    ```
 
 4. Ensure configuration directory symlinks point to the sovereign config:
    ```bash
    rm -f ~/.tau ~/.omp
-   ln -s /home/toxic/sovereign/config/tau ~/.tau
-   ln -s /home/toxic/sovereign/config/tau ~/.omp
+   ln -s /home/toxic/estate/config/tau ~/.tau
+   ln -s /home/toxic/estate/config/tau ~/.omp
    ```
 
 5. Verify the fix:

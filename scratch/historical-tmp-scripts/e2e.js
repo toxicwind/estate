@@ -1,8 +1,8 @@
 import { Database } from "bun:sqlite";
-const { sendValidated } = await import("/home/toxic/sovereign/projects/yote/src/lib/validated-send.ts");
-const { DeliveryLedger } = await import("/home/toxic/sovereign/projects/yote/src/lib/delivery-ledger.ts");
+const { sendValidated } = await import("/home/toxic/estate/projects/yote/src/lib/validated-send.ts");
+const { DeliveryLedger } = await import("/home/toxic/estate/projects/yote/src/lib/delivery-ledger.ts");
 const fs = await import("fs");
-const env = Object.fromEntries(fs.readFileSync("/home/toxic/sovereign/projects/yote/.env","utf8").split("\n").filter(l=>l.includes("=")&&!l.startsWith("#")).map(l=>{const i=l.indexOf("=");return [l.slice(0,i),l.slice(i+1)]}));
+const env = Object.fromEntries(fs.readFileSync("/home/toxic/estate/projects/yote/.env","utf8").split("\n").filter(l=>l.includes("=")&&!l.startsWith("#")).map(l=>{const i=l.indexOf("=");return [l.slice(0,i),l.slice(i+1)]}));
 const TOK = env.YOTE_TELEGRAM_BOT_TOKEN, CHAT = Number(env.YOTE_TARGET_USER);
 const tg = async (method, body) => { const r = await fetch("https://api.telegram.org/bot"+TOK+"/"+method,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); return r.json(); };
 const ledger = new DeliveryLedger(process.env.HOME+"/.yote/delivery-ledger.db");

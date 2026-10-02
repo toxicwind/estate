@@ -29,9 +29,9 @@ loadEnvFile(`${homedir()}/.secrets`);
 
 loadEnvFile("/home/toxic/.secrets");
 
-loadEnvFile("/home/toxic/sovereign/config/ports.env");
+loadEnvFile("/home/toxic/estate/config/ports.env");
 
-loadEnvFile("/home/toxic/sovereign/.env.local");
+loadEnvFile("/home/toxic/estate/.env.local");
 
 // Port SSOT: process-compose injects SOVEREIGN_PORT=${SOVEREIGN_ROUTER_PORT}
 export const _portRaw =
@@ -46,7 +46,7 @@ if (!_portRaw) {
 export const PORT = parseInt(_portRaw, 10);
 
 export const DB_PATH =
-  process.env.SOVEREIGN_DB || "/home/toxic/sovereign/data/sovereign_router.db";
+  process.env.SOVEREIGN_DB || "/home/toxic/estate/data/sovereign_router.db";
 
 export const MAX_PARALLEL = 4;
 
@@ -77,7 +77,7 @@ export function loadLocalRoleModels(): {
     longctx: "beellama/qwen-flash-256k",
   };
   try {
-    const p = "/home/toxic/sovereign/.state/best-models.json";
+    const p = "/home/toxic/estate/.state/best-models.json";
     if (!existsSync(p)) return defaults;
     const j = JSON.parse(readFileSync(p, "utf8"));
     return {

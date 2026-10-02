@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """tern 2026-09-21: _redact_text bytes fix (correct anchor)."""
-P = "/home/toxic/sovereign/agents/oracle-market/bin/bidder.py"
+P = "/home/toxic/estate/agents/oracle-market/bin/bidder.py"
 src = open(P, encoding="utf-8").read()
 
 old = '''    if not s:

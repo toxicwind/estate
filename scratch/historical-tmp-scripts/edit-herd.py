@@ -2,7 +2,7 @@
 """ember-kimi-route: herd.yaml edits for maximal free-Kimi routing."""
 import sys
 
-P = "/home/toxic/sovereign/config/herd.yaml"
+P = "/home/toxic/estate/config/herd.yaml"
 src = open(P).read()
 orig = src
 
@@ -18,23 +18,23 @@ old_aliases = '''  # --- Kimi short aliases (added 2026-09-20) ---
   # (moonshot/kimi-k2.6 -> 429, moonshot/kimi-k2.7-code -> 429). Bare IDs
   # hit the dedup'd global map and are unreliable (kimi-k2.7-code -> 404).
   kimi:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
     description: "Kimi (alias -> moonshot/kimi-k2.6)"
     metadata:
       alias_of: moonshot/kimi-k2.6
   kimi-k2:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.6
     description: "Kimi K2 (alias -> moonshot/kimi-k2.6)"
     metadata:
       alias_of: moonshot/kimi-k2.6
   kimi-code:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.7-code
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target moonshot/kimi-k2.7-code
     description: "Kimi code specialist (alias -> moonshot/kimi-k2.7-code)"
     metadata:
       alias_of: moonshot/kimi-k2.7-code
 '''
 
-SHIM = "python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT}"
+SHIM = "python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT}"
 CHAIN = ("--advance-on 5xx,conn,429,402,404")
 K3 = "openrouter-free/moonshotai/kimi-k3:free"
 K26 = "openrouter-free/moonshotai/kimi-k2.6:free"

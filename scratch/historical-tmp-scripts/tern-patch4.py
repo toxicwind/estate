@@ -11,7 +11,7 @@ _redact_text. Also make _canon_ralph_text and the timeout handler
 robust: they already expect str, so the decode in _redact_text plus
 decoding te.stdout/te.stderr before use covers it.
 """
-P = "/home/toxic/sovereign/agents/oracle-market/bin/bidder.py"
+P = "/home/toxic/estate/agents/oracle-market/bin/bidder.py"
 src = open(P, encoding="utf-8").read()
 
 old = '''def _redact_text(s):

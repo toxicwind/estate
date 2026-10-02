@@ -508,7 +508,7 @@ title:
 skills:
   enableSkillCommands: true
   customDirectories:
-    - /home/toxic/sovereign/skills
+    - /home/toxic/estate/skills
 commands:
   enableClaudeUser: true
   enableClaudeProject: true

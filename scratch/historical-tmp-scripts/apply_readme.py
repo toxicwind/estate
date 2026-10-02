@@ -2,10 +2,10 @@
 # apply_readme.py — doc hygiene for the interactive-viewer lane. Idempotent.
 import os
 
-KEEPER = "/home/toxic/sovereign/projects/mesh/browserless/keeper"
+KEEPER = "/home/toxic/estate/projects/mesh/browserless/keeper"
 README = os.path.join(KEEPER, "README.md")
 FRAG = os.path.join(KEEPER, "pitchfork.fragment.toml")
-VIEWER = "/home/toxic/sovereign/projects/mesh/browserless/viewer"
+VIEWER = "/home/toxic/estate/projects/mesh/browserless/viewer"
 
 # 1. Remove superseded .bak files (untracked; pre-isolation versions live in git history).
 for bak in ("keeper.sh.bak-20260921", "keeper.js.bak-20260921"):
@@ -84,8 +84,8 @@ open(README, "w").write(c)
 
 # 3. Fragment: rewrite as an accurate record of the live toml entries.
 frag = """# Pitchfork daemon record — browser lane (Forge 2026-09-21).
-# Already merged into /home/toxic/sovereign/pitchfork.toml; this file is the
-# committed record, not a merge source. Owned restart from /home/toxic/sovereign:
+# Already merged into /home/toxic/estate/pitchfork.toml; this file is the
+# committed record, not a merge source. Owned restart from /home/toxic/estate:
 #   ./bin/pitchfork-restart <agent-display|agent-viewer> --reregister
 #   pitchfork start agent-viewer-gate   (new daemons)
 
@@ -115,7 +115,7 @@ auto = ["start"]
 [daemons.agent-viewer-gate]
 # Token-gated front door for the viewer; funnel mounts :6081 at /agent-browser.
 port = 6081
-run = "exec python3 /home/toxic/sovereign/projects/mesh/browserless/viewer/agent-viewer-gate.py"
+run = "exec python3 /home/toxic/estate/projects/mesh/browserless/viewer/agent-viewer-gate.py"
 dir = "."
 mise = false
 retry = true
@@ -125,7 +125,7 @@ auto = ["start"]
 
 [daemons.browser-keeper]
 port = 9223
-run = "exec /home/toxic/sovereign/projects/mesh/browserless/keeper/keeper.sh"
+run = "exec /home/toxic/estate/projects/mesh/browserless/keeper/keeper.sh"
 dir = "."
 mise = false
 retry = true

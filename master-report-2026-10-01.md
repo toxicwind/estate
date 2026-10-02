@@ -22,11 +22,11 @@ Run-receipt: `~/workspace/router-25104-receipts-2026-10-01.md`.
 
 ## 3. Skill routing, auto-approval, Spark capabilities
 
-- Tau config precedence: Tau opened only `~/.tau/agent/config.yml`; `~/.tau/config.yml` (15KB) was never opened (0 opens in strace). Fix applied: `skills.customDirectories: [/home/toxic/sovereign/skills]` in the live config; 68 SKILL.md opens verified.
+- Tau config precedence: Tau opened only `~/.tau/agent/config.yml`; `~/.tau/config.yml` (15KB) was never opened (0 opens in strace). Fix applied: `skills.customDirectories: [/home/toxic/estate/skills]` in the live config; 68 SKILL.md opens verified.
 - Approval matrix (print-mode probes): schema default `tools.approvalMode` = `yolo`; `always-ask` blocks shell mutation; `write` and `yolo` permit; `--auto-approve` overrides `--approval-mode always-ask`. Observed precedence, not universal policy.
 - Spark default capabilities: clarified by attempt, not by documentation. `muse.db` table reads time out under cell saturation (11.4/2 vCPUs); `SELECT 1` succeeds. Ten standing-listed namespace names are not loadable in this session.
 
-Run-receipt: `~/workspace/capability-inventory-2026-10-01.md`; strace log `/home/toxic/sovereign/hatch/tau-audit-slate-20261001.log`.
+Run-receipt: `~/workspace/capability-inventory-2026-10-01.md`; strace log `/home/toxic/estate/hatch/tau-audit-slate-20261001.log`.
 
 ## 4. Section -1 independent subagent experiment
 
@@ -54,7 +54,7 @@ Run-receipt: corrected probe output 2026-10-01 14:05 MDT; backup comparison coun
 
 ## 7. Noise_XX
 
-- 58 tests pass, 0 fail (`python3 -m unittest discover -s tests`, 0.193s, `/home/toxic/sovereign-hatch-toolkit`).
+- 58 tests pass, 0 fail (`python3 -m unittest discover -s tests`, 0.193s, `/home/toxic/estate-hatch-toolkit`).
 - The `_nonce_le`/`_nonce_be` divergence: investigated, classified intentional (spec vs gateway variant). Not a bug.
 - Copy check: standalone repo and in-tree mirror differ only in `__pycache__`. No source drift.
 - Verified defects: none. Open items (live handshake, 66/166/64 framing, muse-cli/APK comparisons) are unverified behaviors, not patch targets.
@@ -69,7 +69,7 @@ Applied the audit's merge-tier absorptions to the top-11 KEEP skills:
 - `fleet-spawn` ← `fleet-push`: subscription registry, dispatch plan, chat-scope rule.
 - `hashline` ← `surgical-edit`: checks-before-writes doctrine.
 
-Sources archived to `~/workspace/skills/archive/`. The other 8 (gatehouse-mcp, context7, race, github-mcp, ast-bm25-racer, deep-research, smithers, github) had zero flagged defects; no overlay applied. Cell mirror updated; yote source tree (`/home/toxic/sovereign/skills/`) still pre-merge — sync pending.
+Sources archived to `~/workspace/skills/archive/`. The other 8 (gatehouse-mcp, context7, race, github-mcp, ast-bm25-racer, deep-research, smithers, github) had zero flagged defects; no overlay applied. Cell mirror updated; yote source tree (`/home/toxic/estate/skills/`) still pre-merge — sync pending.
 
 Run-receipt: `~/workspace/skill-improvement-overlay-2026-10-01.md`.
 

@@ -1,4 +1,4 @@
-# SOUL.md — working root (/home/toxic/sovereign)
+# SOUL.md — working root (/home/toxic/estate)
 
 Working persona record for this root; operative doctrine follows.
 

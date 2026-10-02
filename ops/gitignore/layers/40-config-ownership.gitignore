@@ -17,5 +17,5 @@ hatch/agents/ember/readme-op/work/
 #   Python.gitignore ships `lib/`, VisualStudio.gitignore ships `**/[Bb]in/*`.
 !**/lib/
 !skills/**/bin/
-!ops/bin/
+!ops/bin/**
 !projects/**/bin/

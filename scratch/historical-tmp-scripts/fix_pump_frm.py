@@ -11,7 +11,7 @@ Trust is unchanged: task_post is still control-HMAC-signed by the oracle.
 import sys
 from pathlib import Path
 
-LOOP = Path("/home/toxic/sovereign/agents/oracle-market/bin/oracle_loop.py")
+LOOP = Path("/home/toxic/estate/agents/oracle-market/bin/oracle_loop.py")
 
 OLD = '''        try:
             name = self.market.post(

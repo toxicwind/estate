@@ -1,5 +1,5 @@
 import yaml
-p = "/home/toxic/sovereign/config/herd.yaml"
+p = "/home/toxic/estate/config/herd.yaml"
 s = open(p).read()
 # The alias-shim /health gates herd's readiness wait: the target MUST appear
 # in herd /v1/models, which advertises peer models ONLY as peer/<id>.

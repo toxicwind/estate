@@ -1,5 +1,5 @@
 import sys
-p = '/home/toxic/sovereign/pitchfork.toml'
+p = '/home/toxic/estate/pitchfork.toml'
 s = open(p).read()
 old = 'env = { BUILDSRV_ROOT = "/home/toxic/buildsrv", BUILDSRV_PORT = "25148", BUILDSRV_WORKERS = "2" }'
 new = ('env = { BUILDSRV_ROOT = "/home/toxic/buildsrv", BUILDSRV_PORT = "25148", BUILDSRV_WORKERS = "2", '

@@ -38,6 +38,6 @@
 - **`reasoning-router.ts`**: orphaned file with stale refs; dead code removal is a separate cleanup, not a naming change.
 
 ## Verification
-- `validate.py`: 0 failures on final state (run: `python3 /home/toxic/sovereign/projects/naming-audit/validate.py`)
+- `validate.py`: 0 failures on final state (run: `python3 /home/toxic/estate/projects/naming-audit/validate.py`)
 - herd `/v1/models`: new aliases advertised, no dead IDs
 - `tau -p` sanity prompt via default route: OK (only if herd.yaml was touched — alias additions trigger watch-config reload)

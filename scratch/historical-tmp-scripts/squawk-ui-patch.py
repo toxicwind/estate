@@ -7,7 +7,7 @@ Idempotent: refuses to run twice.
 """
 import sys
 
-P = "/home/toxic/sovereign/projects/mesh/squawk/squawk_feed.py"
+P = "/home/toxic/estate/projects/mesh/squawk/squawk_feed.py"
 src = open(P).read()
 if "_send_ui" in src:
     print("already patched; nothing to do")

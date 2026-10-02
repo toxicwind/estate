@@ -1,5 +1,5 @@
 import json, subprocess, select, time
-MCP_SH = "/home/toxic/sovereign/projects/mesh/browserless/mcp.sh"
+MCP_SH = "/home/toxic/estate/projects/mesh/browserless/mcp.sh"
 def run_calls(calls, timeout=60):
     lines = [json.dumps({"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"b","version":"1"}}}),
              json.dumps({"jsonrpc":"2.0","method":"notifications/initialized"})]

@@ -31,7 +31,7 @@
 ## 1. Android target
 
 A structural Android platform crate was added to the QED/Zedra monorepo at
-/home/toxic/sovereign/projects/qed/zedra (remote
+/home/toxic/estate/projects/qed/zedra (remote
 https://github.com/toxicwind/sovereign-projects.git, branch android-platform).
 
 Files added: crates/gpui_android/Cargo.toml, crates/gpui_android/README.md,
@@ -56,7 +56,7 @@ Receipt: the crate sources themselves, which contain the stubs.
 
 ## 2. Noise_XX toolkit
 
-Canonical repository: /home/toxic/sovereign-hatch-toolkit (remote
+Canonical repository: /home/toxic/estate-hatch-toolkit (remote
 https://github.com/toxicwind/sovereign-hatch-toolkit.git). Live profile kept
 as observed: Noise_XX_25519_AESGCM_SHA256. The cell copy's speculative
 dual-suite API was not ported; the standalone implementation was corrected
@@ -78,7 +78,7 @@ ls-remote origin main returned the same SHA. Dropbox mirror
 /home/toxic/dropbox-mirror/organized/repos/sovereign-hatch-toolkit reset to
 verified origin/main at f62088d.
 
-The yote skill-tree copy (/home/toxic/sovereign/skills/sovereign-hatch-toolkit)
+The yote skill-tree copy (/home/toxic/estate/skills/sovereign-hatch-toolkit)
 was verified byte-identical to the canonical repo after sync (diff -q clean).
 
 ## 3. Runtime, approval, and schema surfaces
@@ -127,7 +127,7 @@ restore, indicating snapshot/cadence dependence; probe 3 (proc_189bab5d2563,
 Root cause, observed 2026-10-01: bun src/cell.ts (PID 8932 at observation),
 running from /home/hatch/workspace/duet, was the only inotify watcher on
 ~/workspace/skills. duet/src/cell.ts performs bidirectional sync between
-~/workspace/skills (cell) and /home/toxic/sovereign/skills (yote). The
+~/workspace/skills (cell) and /home/toxic/estate/skills (yote). The
 underscore directories persisted on yote, so cell-side deletion was reversed
 within one reconciliation window.
 

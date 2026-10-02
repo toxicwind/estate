@@ -13,7 +13,7 @@ description: >
 
 ## Status
 Canonical implementation: `ranch/classifier-preflight` on yote
-(`/home/toxic/sovereign/projects/range/ranch/classifier-preflight/`).
+(`/home/toxic/estate/projects/range/ranch/classifier-preflight/`).
 Committed 2026-09-30 as `bb6adf5`, pushed to `toxicwind/ranch` main,
 remote ref verified `bb6adf5f3cbeb215dcd896fcabf8cd66839b5a1c`.
 22 tests passing (`bun test`).

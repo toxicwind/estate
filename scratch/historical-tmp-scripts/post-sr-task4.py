@@ -3,7 +3,7 @@
 import importlib.util, json, sys, time
 from pathlib import Path
 
-BIN = Path("/home/toxic/sovereign/agents/oracle-market/bin")
+BIN = Path("/home/toxic/estate/agents/oracle-market/bin")
 sys.path.insert(0, str(BIN))
 
 _spec = importlib.util.spec_from_file_location("bidder", BIN / "bidder.py")

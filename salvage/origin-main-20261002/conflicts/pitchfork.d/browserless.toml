@@ -3,7 +3,7 @@
 
 [daemons.browserless]
 dir = "."
-run = "exec /home/toxic/sovereign/projects/range/ranch/barn/browserless/server/run.sh"
+run = "exec /home/toxic/estate/projects/range/ranch/barn/browserless/server/run.sh"
 ready_port = 25130
 depends = ["gatehouse"]
 env = { SOVEREIGN_ROUTER_PORT = "25104" }

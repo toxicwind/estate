@@ -11,7 +11,7 @@
 # Prints one JSON line for the driver log: either the supervisor status or
 # the full sweep result when a backstop sweep ran.
 set -uo pipefail
-WD=/home/toxic/sovereign/tools/fleet-ops/fleet-watchdog
+WD=/home/toxic/estate/tools/fleet-ops/fleet-watchdog
 VARDIR=/home/toxic/var/fleet-watchdog
 LOG=$VARDIR/sweepd.log
 STATE=$WD/state.json

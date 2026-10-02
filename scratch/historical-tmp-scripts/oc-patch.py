@@ -1,6 +1,6 @@
 import sys
 
-P = "/home/toxic/sovereign/agents/oracle-market/bin/oracle_chat.py"
+P = "/home/toxic/estate/agents/oracle-market/bin/oracle_chat.py"
 src = open(P).read()
 
 OLD = '''def extract_query(meta, body):

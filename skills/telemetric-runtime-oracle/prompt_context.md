@@ -49,7 +49,7 @@ Run non-invasive evaluation on any live session:
 
 ```bash
 # Ingest HUD output and ground against SQLite workflow state
-tmux capture-pane -pt ralph | bun /home/toxic/sovereign/helpers/telemetric-oracle.ts
+tmux capture-pane -pt ralph | bun /home/toxic/estate/helpers/telemetric-oracle.ts
 ```
 
 ### Observable Output

@@ -1,5 +1,5 @@
 import sys, os, tempfile
-sys.path.insert(0, '/home/toxic/sovereign/projects/mesh/squawk')
+sys.path.insert(0, '/home/toxic/estate/projects/mesh/squawk')
 sys.path.append('/home/toxic/squawk')
 os.environ['FLEET_KEYS_DIR'] = '/home/toxic/.shingle/squawk-root/keys'
 from pathlib import Path

@@ -2,13 +2,13 @@
 
 ## Monorepo Map
 
-### Parent: /home/toxic/sovereign
+### Parent: /home/toxic/estate
 - Git remote: `toxicwind/sovereign-projects` (origin)
 - npm workspaces: `herd`, `herd/ui-svelte`, `packages/*`
 - **Submodules**: `shell/ii` (sovereign-end4), `tau/vendors` (kimi-cli)
 - **Symlinks** (top level):
   - `config/llama-swap.yaml` → `herd.yaml`
-  - `helpers` → `/home/toxic/sovereign/skills`
+  - `helpers` → `/home/toxic/estate/skills`
   - `models` → `/home/toxic/models`
   - `tau-skills` → `/home/toxic/.tau/skills`
 

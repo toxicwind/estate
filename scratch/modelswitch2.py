@@ -1,6 +1,6 @@
 import subprocess
 
-SOV = "/home/toxic/sovereign"
+SOV = "/home/toxic/estate"
 r = subprocess.run(["git", "-C", SOV, "status", "--porcelain"],
                    capture_output=True, text=True, timeout=60)
 print("=== git status ===")

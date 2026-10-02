@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # mise run mesh-config — manage mesh (MCP gateway) server config
-# Uses config at /home/toxic/sovereign/projects/range/ranch/barn/shep/mcp_config.json
+# Uses config at /home/toxic/estate/projects/range/ranch/barn/shep/mcp_config.json
 set -euo pipefail
 
-MESH_CONFIG="${MESH_CONFIG:-/home/toxic/sovereign/projects/range/ranch/barn/shep/mcp_config.json}"
+MESH_CONFIG="${MESH_CONFIG:-/home/toxic/estate/projects/range/ranch/barn/shep/mcp_config.json}"
 
 usage() {
   cat <<EOF
@@ -111,7 +111,7 @@ case "${1:-}" in
 
   restart)
     echo "Restarting shep daemon..."
-    cd /home/toxic/sovereign
+    cd /home/toxic/estate
     pitchfork stop shep 2>/dev/null || true
     sleep 2
     pitchfork start shep

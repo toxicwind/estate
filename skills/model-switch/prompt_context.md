@@ -2,7 +2,7 @@
 
 ## Available models
 
-Scan /home/toxic/sovereign/models/ and ~/models/ for .gguf files.
+Scan /home/toxic/estate/models/ and ~/models/ for .gguf files.
 
 ## Procedure
 

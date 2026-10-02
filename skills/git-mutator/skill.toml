@@ -24,11 +24,11 @@ agentic completion auditing and secret boundary verification.
 ## Tool calls
 
 ```bash
-bun /home/toxic/sovereign/helpers/git-mutator/cli.ts status
-bun /home/toxic/sovereign/helpers/git-mutator/cli.ts agentic-audit
-bun /home/toxic/sovereign/helpers/git-mutator/cli.ts commit-push "feat: add thing"
-bun /home/toxic/sovereign/helpers/git-mutator/cli.ts diff-configs config/herd.yaml config/llama-swap.yaml
-bun /home/toxic/sovereign/helpers/git-mutator/cli.ts scan-secrets
+bun /home/toxic/estate/helpers/git-mutator/cli.ts status
+bun /home/toxic/estate/helpers/git-mutator/cli.ts agentic-audit
+bun /home/toxic/estate/helpers/git-mutator/cli.ts commit-push "feat: add thing"
+bun /home/toxic/estate/helpers/git-mutator/cli.ts diff-configs config/herd.yaml config/llama-swap.yaml
+bun /home/toxic/estate/helpers/git-mutator/cli.ts scan-secrets
 ```
 
 ## Behavior
@@ -36,7 +36,7 @@ bun /home/toxic/sovereign/helpers/git-mutator/cli.ts scan-secrets
 - **Secret boundary**: blocks commits if token patterns detected in tracked files
 - **Credential safety**: uses git credential helper or SSH only (never token-in-URL)
 - **Agentic audit**: scans for completion UUIDs, .claude/.codex/.cursor artifacts, secret leaks
-- **SSOT respect**: excludes `/home/toxic/sovereign/config/ports.env` from secret scanning
+- **SSOT respect**: excludes `/home/toxic/estate/config/ports.env` from secret scanning
 - **Dry-run mode**: `--dry-run` previews without executing
 
 ## Constraints
@@ -44,13 +44,13 @@ bun /home/toxic/sovereign/helpers/git-mutator/cli.ts scan-secrets
 - Commit messages must follow conventional commit format (`feat:`, `fix:`, `chore:`, etc.)
 - `.bak.` files are added to `.gitignore` automatically
 - `commit-push` audits first and blocks on any secret leak
-- The SOVEREIGN_PORT_SSOT (`/home/toxic/sovereign/config/ports.env`) is excluded from secret scanning
+- The SOVEREIGN_PORT_SSOT (`/home/toxic/estate/config/ports.env`) is excluded from secret scanning
 
 ## Files
 
-- `/home/toxic/sovereign/helpers/git-mutator/` — modular Bun/TS helper (6 files)
-- `/home/toxic/sovereign/config/ports.env` — port SSOT
-- `/home/toxic/sovereign/.gitignore` — security boundaries"""
+- `/home/toxic/estate/helpers/git-mutator/` — modular Bun/TS helper (6 files)
+- `/home/toxic/estate/config/ports.env` — port SSOT
+- `/home/toxic/estate/.gitignore` — security boundaries"""
 
 [skill]
 name = "git-mutator"

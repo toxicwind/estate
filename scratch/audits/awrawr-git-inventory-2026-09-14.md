@@ -13,11 +13,11 @@ No services restarted. No writes made on awrawr-pc.
   at `toxicwind/tau`, `toxicwind/oh-my-pi` (deleted today) or
   `toxicwind/sovereign-pi` (renamed today). No local checkout is orphaned from
   a deleted remote.
-- **Biggest unpushed divergence: `/home/toxic/sovereign`** — main is **+165
+- **Biggest unpushed divergence: `/home/toxic/estate`** — main is **+165
   commits ahead of origin/main** (toxicwind/sovereign-projects), plus 1 stash,
   7 modified + 20 untracked paths. The untracked paths include `tau/`,
   `projects/tau/`, `herd/`, `mesh/`, `sovereign-scripts/`, `sovereign-skills/`.
-- **`/home/toxic/sovereign/tau/` vs `projects/tau/` (RESOLVED by side chat):**
+- **`/home/toxic/estate/tau/` vs `projects/tau/` (RESOLVED by side chat):**
   neither is its own git repo — both are untracked working dirs inside the
   sovereign-projects checkout. `tau/` (35,736 source files, 20,817 touched
   since Sep 10, has `.agent/` runtime state) is the **LIVE working tree**.
@@ -26,12 +26,12 @@ No services restarted. No writes made on awrawr-pc.
   (root `bun.lock`, `engine/crates/pi-natives/tools/*`). Because both are
   untracked/ignored inside the checkout, **plain `git push` will NOT capture
   them** — preservation needs a tarball-into-archive mechanism, not a push.
-- **`/home/toxic/sovereign/tau/engine/.git` is an EMPTY stub** (only `info/`);
+- **`/home/toxic/estate/tau/engine/.git` is an EMPTY stub** (only `info/`);
   an early scan artifact attributed the parent repo's status to it — corrected.
 - **SECURITY: `/home/toxic/projects/moonbox-live/.git_repos/*.git`** (7 bare
   mirrors) have **GitHub PATs embedded in plaintext in their remote URLs**
   (2 distinct tokens). Recommend rotating and re-cloning without embedded creds.
-- **`/home/toxic/sovereign-history`** is a repo whose only remote is
+- **`/home/toxic/estate-history`** is a repo whose only remote is
   `file:///home/toxic/.git.bak-20260913` (a 2026-09-13 backup of the sovereign
   workspace git dir: branch main @ 1baf0f5f7, remote toxicwind/sovereign,
   extra branch fix/inkling-maximal fully merged, no stash).
@@ -45,10 +45,10 @@ all ~440 repos. **Nothing is orphaned from today's deletions/rename.**
 
 | Repo | Local clones | State |
 |---|---|---|
-| omp-extensions | `/home/toxic/sovereign/tau/extensions/omp-extensions___omp-kafka___0.1.0` and `/home/toxic/sovereign/projects/tau/extensions/omp-extensions___omp-kafka___0.1.0` | **RISK (both):** on branch `fix/add-kafkajs-dep` @ c3c4d27; 3 modified READMEs; local `main` **+1 ahead of upstream/RekunDzmitry** (`04efbb2 fix: add missing kafkajs dependency and tests`). Clones identical except `.git/index` |
+| omp-extensions | `/home/toxic/estate/tau/extensions/omp-extensions___omp-kafka___0.1.0` and `/home/toxic/estate/projects/tau/extensions/omp-extensions___omp-kafka___0.1.0` | **RISK (both):** on branch `fix/add-kafkajs-dep` @ c3c4d27; 3 modified READMEs; local `main` **+1 ahead of upstream/RekunDzmitry** (`04efbb2 fix: add missing kafkajs dependency and tests`). Clones identical except `.git/index` |
 | sovereign-scripts | 4 identical plain dirs (NOT repos): `sovereign/{,packages/,projects/,projects/packages/}sovereign-scripts` | untracked inside sovereign checkout; 16 files each |
 | sovereign-skills | 4 identical plain dirs (NOT repos): same 4 locations | untracked; 5 files each |
-| sovereign-swap | 1 plain dir: `/home/toxic/sovereign/sovereign-swap` (contains only `build/`) | untracked |
+| sovereign-swap | 1 plain dir: `/home/toxic/estate/sovereign-swap` (contains only `build/`) | untracked |
 | sovereign-zed | **no local clone found anywhere** | — |
 
 ## 3. Git auth on awrawr-pc
@@ -67,11 +67,11 @@ Legend: S=stash, A=ahead-of-upstream (commits), D=dirty worktree, U=untracked,
 DET=detached HEAD, NR=no remote.
 
 ### 4a. Stashes (1 repo, 1 entry)
-- `/home/toxic/sovereign`: `stash@{0}: WIP on main: dd19e6848 chore: remove
+- `/home/toxic/estate`: `stash@{0}: WIP on main: dd19e6848 chore: remove
   stale engine/ groq files, add OPENROUTER_PARAMS`
 
 ### 4b. Ahead of upstream (unpushed commits)
-- `/home/toxic/sovereign`: main **+165** vs origin/main (sovereign-projects)
+- `/home/toxic/estate`: main **+165** vs origin/main (sovereign-projects)
 - `/home/toxic/projects/morphe-patcher`: main **+43** vs origin/main
   (MorpheApp/morphe-patcher)
 - `/home/toxic/projects/super-ralph`: main **+3** vs origin/main
@@ -89,13 +89,13 @@ DET=detached HEAD, NR=no remote.
   vs upstream/main (RekunDzmitry/omp-extensions)
 
 ### 4c. Dirty worktrees of note (modified/staged)
-- `/home/toxic/sovereign`: M .gitattributes, .recursive-verified, package.json;
+- `/home/toxic/estate`: M .gitattributes, .recursive-verified, package.json;
   D 9router, audit/bun.lockb; M submodule pointers tools/nuvio-{platform,webos}
-- `/home/toxic/sovereign/herd`: M LICENSE.md, M README.md
-- `/home/toxic/sovereign/projects/shell/ii` + `/home/toxic/sovereign/shell/ii`
+- `/home/toxic/estate/herd`: M LICENSE.md, M README.md
+- `/home/toxic/estate/projects/shell/ii` + `/home/toxic/estate/shell/ii`
   (two checkouts, same repo): D 5 quickshell icon files
-- `/home/toxic/sovereign/tools/nuvio-platform`: 11 staged submodule adds, **no remote**
-- `/home/toxic/sovereign/tools/nuvio-webos`: M 9 files
+- `/home/toxic/estate/tools/nuvio-platform`: 11 staged submodule adds, **no remote**
+- `/home/toxic/estate/tools/nuvio-webos`: M 9 files
 - `/home/toxic/projects/dedi-ops`: M 13 (incl. `.env`!), R 8 renames to
   legacy/dayz-discord/
 - `/home/toxic/projects/pi-conversation-aware-audit`: **M 1096 files**

@@ -44,10 +44,10 @@ EOF
 
 chmod u+x ~/.local/bin/omp
 
-ln -sf /home/toxic/sovereign/projects/range/ranch/stockyard/tau/packages/coding-agent/scripts/tau ~/.local/bin/tau
+ln -sf /home/toxic/estate/projects/range/ranch/stockyard/tau/packages/coding-agent/scripts/tau ~/.local/bin/tau
 rm -f ~/.tau ~/.omp
-ln -s /home/toxic/sovereign/config/tau ~/.tau
-ln -s /home/toxic/sovereign/config/tau ~/.omp
+ln -s /home/toxic/estate/config/tau ~/.tau
+ln -s /home/toxic/estate/config/tau ~/.omp
 
 # Verify the fix
 omp --help
@@ -60,7 +60,7 @@ tau config path
 
 - **`~/.local/bin/omp`**: The fixed launcher script that now points to the correct tau fork binary.
 - **`~/.local/bin/tau`**: Symlinked to the tau script in the sovereign projects.
-- **`~/.tau` and `~/.omp`**: Configuration symlinks pointing to `/home/toxic/sovereign/config/tau`.
+- **`~/.tau` and `~/.omp`**: Configuration symlinks pointing to `/home/toxic/estate/config/tau`.
 
 ## Verification
 

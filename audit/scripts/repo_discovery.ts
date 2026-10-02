@@ -178,7 +178,7 @@ async function main() {
     all: sorted,
   };
   await Bun.write(
-    `/home/toxic/sovereign/audit/discovery_${topic.replace(/[^a-z0-9]/gi, "_")}.json`,
+    `/home/toxic/estate/audit/discovery_${topic.replace(/[^a-z0-9]/gi, "_")}.json`,
     JSON.stringify(output, null, 2),
   );
   console.log(

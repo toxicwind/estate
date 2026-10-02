@@ -38,7 +38,7 @@ bun run local --all --precheck
 ## License & security
 
 - **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
-- **Security:** The `.secrets` file is a first-class credential record — scanned but never committed, excluded via `.gitignore`. Requirements: Bun 1.4+, parquetjs-lite, git repos in `/home/toxic/projects/` and `/home/toxic/sovereign/`.
+- **Security:** The `.secrets` file is a first-class credential record — scanned but never committed, excluded via `.gitignore`. Requirements: Bun 1.4+, parquetjs-lite, git repos in `/home/toxic/projects/` and `/home/toxic/estate/`.
 
 ---
 
@@ -101,7 +101,7 @@ The `.secrets` file at `/home/toxic/.secrets` is treated as a first-class creden
 
 - Bun 1.4+
 - parquetjs-lite
-- Git repos in /home/toxic/projects/ and /home/toxic/sovereign/
+- Git repos in /home/toxic/projects/ and /home/toxic/estate/
 
 ## Coverage
 

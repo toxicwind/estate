@@ -1,5 +1,5 @@
 import sys
-p = '/home/toxic/sovereign/bin/nim-kimi-sidecar.py'
+p = '/home/toxic/estate/bin/nim-kimi-sidecar.py'
 src = open(p).read()
 anchor = "                return\n            except urllib.error.HTTPError as e:\n"
 assert src.count(anchor) == 1, "anchor not unique: %d" % src.count(anchor)

@@ -5,8 +5,8 @@ Exact-match replacements; every replacement asserts its expected count.
 Exits nonzero on any mismatch (no partial application)."""
 import sys
 
-ASK = "/home/toxic/sovereign/agents/oracle-market/bin/oracle_ask.py"
-TST = "/home/toxic/sovereign/agents/oracle-market/bin/test_oracle_reliability.py"
+ASK = "/home/toxic/estate/agents/oracle-market/bin/oracle_ask.py"
+TST = "/home/toxic/estate/agents/oracle-market/bin/test_oracle_reliability.py"
 
 
 def replace_once(path, old, new, expect=1):

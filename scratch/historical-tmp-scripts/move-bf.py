@@ -2,7 +2,7 @@
 """Move beellama-fast to end of aliases block (positional quirk test)."""
 import sys, yaml
 
-p = sys.argv[1] if len(sys.argv) > 1 else '/home/toxic/sovereign/config/herd.yaml'
+p = sys.argv[1] if len(sys.argv) > 1 else '/home/toxic/estate/config/herd.yaml'
 lines = open(p).read().split('\n')
 # find aliases block bounds
 start = next(i for i, l in enumerate(lines) if l == 'aliases:')

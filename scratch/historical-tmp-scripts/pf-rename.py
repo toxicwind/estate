@@ -3,7 +3,7 @@ import subprocess
 # Start from HEAD's pitchfork.toml, apply ONLY approved hunks.
 src = subprocess.run(
     ["git", "show", "HEAD:pitchfork.toml"],
-    capture_output=True, text=True, cwd="/home/toxic/sovereign",
+    capture_output=True, text=True, cwd="/home/toxic/estate",
 ).stdout
 lines = src.split("\n")
 out = []
@@ -33,7 +33,7 @@ while i < len(lines):
         continue
 
     # 3. health_http for openfang :25196 (after retry=true in openfang-run.sh block)
-    if line == 'run = "exec /home/toxic/sovereign/ops/openfang-run.sh"':
+    if line == 'run = "exec /home/toxic/estate/ops/openfang-run.sh"':
         # copy until retry=true, then add health_http
         out.append(line)
         i += 1
@@ -61,7 +61,7 @@ while i < len(lines):
         i += 1
         continue
     if line == 'run = "exec /home/toxic/.browserless/run.sh"':
-        out.append('run = "exec /home/toxic/sovereign/projects/mesh/browserless/server/run.sh"')
+        out.append('run = "exec /home/toxic/estate/projects/mesh/browserless/server/run.sh"')
         changes.append("browserless run path")
         i += 1
         continue
@@ -74,6 +74,6 @@ while i < len(lines):
     out.append(line)
     i += 1
 
-open("/home/toxic/sovereign/pitchfork.toml", "w").write("\n".join(out))
+open("/home/toxic/estate/pitchfork.toml", "w").write("\n".join(out))
 print("changes:", changes)
 print("total:", len(changes))

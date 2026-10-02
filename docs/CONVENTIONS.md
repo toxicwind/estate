@@ -38,7 +38,7 @@
 **Rule 1.2 — `hatch/` does not move.** Agents assume these paths. Leave it.
 
 **Rule 1.3 — Compat symlinks are load-bearing.** `/home/toxic/projects`,
-`/home/toxic/ranch`, `/home/toxic/sovereign` resolve into the estate. Configs
+`/home/toxic/ranch`, `/home/toxic/estate` resolve into the estate. Configs
 still spell the old paths. Do not delete one without grepping for its uses.
 
 **Rule 1.4 — Runtime state never sits at a tier root.** It goes in `var/`
@@ -62,7 +62,7 @@ own location → `$HOME` default.** Every path comes back `resolve()`d, so a com
 symlink never leaks into a report or a string comparison.
 
 **Rule 2.1 — No skill hardcodes an estate path.** If you catch
-`/home/toxic/sovereign/...` or `~/workspace/skills/...` in a script, that is a bug.
+`/home/toxic/estate/...` or `~/workspace/skills/...` in a script, that is a bug.
 The skills home moved to `estate/skills` on 2026-10-02; `~/workspace/skills` and
 `~/.tau/skills` are symlinks to it.
 
@@ -117,7 +117,7 @@ runtime config SSOT (identity, stream tuning, model names). Secrets live in
 
 > ⚠️ **Known conflicts.** `.env` sets `SCOUT_BASE_URL=…:25104/v1` while
 > `mise.toml` sets `:25100/v1`. `.env` §8 re-declares ports that `ports.env`
-> owns. `estate/.envrc` still exports `SOVEREIGN_HOME=/home/toxic/sovereign`.
+> owns. `estate/.envrc` still exports `SOVEREIGN_HOME=/home/toxic/estate`.
 > `skills/git-mutator/types.ts` still points `SOVEREIGN_PORT_SSOT` at
 > `sovereign/config/ports.env`. All four need resolution during the mise rebuild.
 

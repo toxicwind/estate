@@ -1,7 +1,7 @@
 import tomllib
-p = '/home/toxic/sovereign/pitchfork.toml'
+p = '/home/toxic/estate/pitchfork.toml'
 old = '''[daemons.tau]
-run = "exec /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/dist/omp acp"
+run = "exec /home/toxic/estate/projects/tau/engine/packages/coding-agent/dist/omp acp"
 dir = "/home/toxic"
 mise = true
 retry = true
@@ -12,11 +12,11 @@ port = 25111
 # P4 headless-TUI policy (2026-09-20): dist/omp acp is stdio-only (no --acp-port
 # TCP flag on this binary). The TCP->stdio bridge makes it an observable daemon
 # with a real TCP readiness probe instead of the pgrep liveness lie.
-run = "exec node /home/toxic/sovereign/bin/acp-tcp-bridge.mjs 25111 /home/toxic/sovereign/projects/tau/engine/packages/coding-agent/dist/omp acp"
+run = "exec node /home/toxic/estate/bin/acp-tcp-bridge.mjs 25111 /home/toxic/estate/projects/tau/engine/packages/coding-agent/dist/omp acp"
 dir = "/home/toxic"
 mise = true
 retry = true
-ready_cmd = "/home/toxic/sovereign/bin/tcp-probe 25111"
+ready_cmd = "/home/toxic/estate/bin/tcp-probe 25111"
 depends = ["shep"]'''
 src = open(p).read()
 assert src.count(old) == 1, 'anchor count=%d' % src.count(old)

@@ -51,7 +51,7 @@ resolve_pf() {
   return 1
 }
 PF="$(resolve_pf)" || { echo "[pitchfork-restart] FATAL: no usable pitchfork binary" >&2; exit 5; }
-TOML="/home/toxic/sovereign/pitchfork.toml"
+TOML="/home/toxic/estate/pitchfork.toml"
 # pitchfork resolves the project from CWD: start needs pitchfork.toml, so cd there.
 cd "$(dirname "$TOML")"
 

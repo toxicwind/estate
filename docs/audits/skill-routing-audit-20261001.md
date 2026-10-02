@@ -21,7 +21,7 @@ re-applied). Final state verified 2026-10-01 ~08:45 UTC.
 
 Deletion sites:
 - Cell: `~/workspace/skills/<hyphenated>/` — removed via `rm -rf`
-- Yote: `/home/toxic/sovereign/skills/<hyphenated>/` — removed via `rm -rf` over yote-conn
+- Yote: `/home/toxic/estate/skills/<hyphenated>/` — removed via `rm -rf` over yote-conn
 
 ### Duplicate justification (per dir, all 5 identical pattern)
 
@@ -59,7 +59,7 @@ Deletion sites:
 - Kept-copy completeness verified: file counts match cell↔yote for all 5
   dirs (7/7, 7/7, 6/6, 8/8, 3/3).
 - The deleted dirs were untracked in git on both sides (yote
-  `/home/toxic/sovereign` repo: skills dirs largely untracked), so no VCS
+  `/home/toxic/estate` repo: skills dirs largely untracked), so no VCS
   recovery is applicable or needed.
 
 ### Known residual deviation
@@ -84,7 +84,7 @@ above. The `race`/`hft-latency` divergence was resolved separately
 
 **Root cause found:** `bun src/cell.ts` (duet cell daemon, PID 8932) holds the only
 inotify watch on ~/workspace/skills and runs a bidirectional sync with
-/home/toxic/sovereign/skills on yote (10s manifest poll + event-driven push).
+/home/toxic/estate/skills on yote (10s manifest poll + event-driven push).
 The 5 underscore dirs existed on the YOTE side, so every cell-side deletion
 was pulled back within ~12-14s. Verified with 3 canary probes:
 - probe1 (2s settle): reappeared +14s

@@ -29,7 +29,7 @@ embedding_api_key_env = "MISTRAL_API_KEY"
 # model="claude-sonnet-4-20250514", api_key_env="ANTHROPIC_API_KEY" once
 # Chris supplies a fresh key. Until then the herd-free route serves.
 [default_model]
-provider = "llama-swap"
-model = "openrouter-free/inclusionai/ling-3.0-flash-sante:free"
-api_key_env = ""
-base_url = "http://127.0.0.1:25100/v1"
+provider = "openai"
+model = "meta/llama-3.2-11b-vision-instruct"
+api_key_env = "NVIDIA_API_KEY"
+base_url = "https://integrate.api.nvidia.com/v1"

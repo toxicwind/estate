@@ -14,7 +14,7 @@ deletions, no `stash`/`checkout`/`reset`/`clean` on any user repo. The only
 
 ## HIGHEST-RISK item: tau-extensions — PRESERVED
 
-`/home/toxic/sovereign/tau-extensions/` (101 files) is the intended
+`/home/toxic/estate/tau-extensions/` (101 files) is the intended
 `toxicwind/tau-extensions` extensions monorepo (omp-kafka + omp-edit-committer
 forks + omp-model-router). It was **unpushed, untracked, and no remote exists**
 (github.com/toxicwind/tau-extensions → 404) — invisible to git, backed up nowhere.
@@ -131,7 +131,7 @@ forks + omp-model-router). It was **unpushed, untracked, and no remote exists**
 - 85 `*token*`-named files excluded from the projects-tau-diff tarball are likely
   mostly false positives — repack without the name screen if he wants them.
 - Optional dedup: 3 redundant copies each of sovereign-scripts/ and sovereign-skills/
-  under `/home/toxic/sovereign/`.
+  under `/home/toxic/estate/`.
 
 Raw receipts: `/tmp/preserve/receipts.md` on awrawr-pc (110 lines; superseding
 RETRY-OK receipts appended after each FAILED line they replace).

@@ -1,6 +1,6 @@
 # Sovereign Hindsight & Tau Long-Term Memory Architecture
 
-> **Harness**: Tau Coding Agent (`/home/toxic/sovereign/agent`)
+> **Harness**: Tau Coding Agent (`/home/toxic/estate/agent`)
 > **Memory Backend**: Vectorize Hindsight (`ghcr.io/vectorize-io/hindsight:latest`)
 > **Inference Engine**: Herd (`github.com/mostlygeek/llama-swap` Go binary on port 25100)
 > **Model**: `beellama/qwen-flash-64k` (Qwen 3.5 9B DeepSeek-v4 Flash, 64K context, 119 tokens/sec)
@@ -16,7 +16,7 @@
 │                                                                         │
 │   ┌─────────────────────────────────────────────────────────────────┐   │
 │   │ Tau Coding Agent                                                │   │
-│   │ Executable: /home/toxic/sovereign/agent                         │   │
+│   │ Executable: /home/toxic/estate/agent                         │   │
 │   │ Config: ~/.tau/config.yml (memory.backend: hindsight)           │   │
 │   │ Client: /home/toxic/projects/sovereign-projects/tau/.../client.ts│  │
 │   └────────────────────────────────┬────────────────────────────────┘   │
@@ -104,5 +104,5 @@ And the symlink at `~/.tau/agent/extensions/hindsight.js`.
 4. **Host Network Binding**:
    - Docker container runs with `--network host` and `--pull missing` to allow direct access to loopback port `25100` with zero NAT overhead.
 5. **Launcher Consolidation**:
-   - `/home/toxic/sovereign/agent` is the canonical executable, with symlinks in `~/.local/bin/agent` and `~/.local/bin/tau`.
+   - `/home/toxic/estate/agent` is the canonical executable, with symlinks in `~/.local/bin/agent` and `~/.local/bin/tau`.
    - Includes a non-blocking asynchronous health check that automatically ensures Herd and Hindsight are running upon launch.

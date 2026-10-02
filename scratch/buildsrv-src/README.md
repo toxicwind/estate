@@ -26,7 +26,7 @@ flowchart LR
 ## Quick start
 
 ```bash
-buildsrv submit --name my-tool --repo /home/toxic/sovereign/tools/my-tool --toolchain bun --cmd "bunx tsc --noEmit"
+buildsrv submit --name my-tool --repo /home/toxic/estate/tools/my-tool --toolchain bun --cmd "bunx tsc --noEmit"
 ```
 
 ```bash
@@ -39,20 +39,20 @@ buildsrv status               # recent jobs table
 ```bash
 # Rust — build one crate of the tau engine workspace
 buildsrv submit --name tau-pi-ast \
-  --repo /home/toxic/sovereign/tau/engine \
+  --repo /home/toxic/estate/tau/engine \
   --toolchain rust \
   --cmd "cargo build -p pi-ast"
 
 # Go — with an artifact to cache
 buildsrv submit --name caddy-auth \
-  --repo /home/toxic/sovereign/projects/packages/caddy-sovereign-auth \
+  --repo /home/toxic/estate/projects/packages/caddy-sovereign-auth \
   --toolchain go \
   --cmd "go build ./..." \
   --artifact bin/
 
 # Python — extras: --workdir, repeatable --env KEY=VAL, repeatable --artifact, --timeout seconds
 buildsrv submit --name mysuite \
-  --repo /home/toxic/sovereign/tools/some-py-tool \
+  --repo /home/toxic/estate/tools/some-py-tool \
   --toolchain python \
   --cmd "python3 -m pytest -q" \
   --timeout 900
@@ -61,7 +61,7 @@ buildsrv submit --name mysuite \
 Idempotent resubmit — the second call never runs:
 
 ```bash
-$ buildsrv submit --name tau-pi-ast --repo /home/toxic/sovereign/tau/engine \
+$ buildsrv submit --name tau-pi-ast --repo /home/toxic/estate/tau/engine \
     --toolchain rust --cmd "cargo build -p pi-ast"
 CACHED  identical job already succeeded as b260914-175901-a1b2c3d4
         result: exit=0 duration=17.7s
@@ -97,8 +97,8 @@ pitchfork stanza (hand-added to `pitchfork.toml` — hand-edited file; the gener
 
 ```toml
 [daemons.buildsrv]
-run = "exec /usr/bin/python3 /home/toxic/sovereign/tools/buildsrv/buildsrvd.py"
-dir = "/home/toxic/sovereign/tools/buildsrv"
+run = "exec /usr/bin/python3 /home/toxic/estate/tools/buildsrv/buildsrvd.py"
+dir = "/home/toxic/estate/tools/buildsrv"
 mise = false
 retry = true
 boot_start = true
@@ -125,7 +125,7 @@ Reload/start: `pitchfork start buildsrv` · `pitchfork restart buildsrv` · `pit
 
 ## Dev / contributing
 
-- Source: `tools/buildsrv/` in `toxicwind/sovereign-projects` (also checked out at `/home/toxic/sovereign` on the box).
+- Source: `tools/buildsrv/` in `toxicwind/sovereign-projects` (also checked out at `/home/toxic/estate` on the box).
 - The CLI is `buildsrv` (symlinked into `/home/toxic/bin`, on the login PATH).
 - This directory (`scratch/buildsrv-src/`) holds the staging source tree: `buildsrv` (CLI), `buildsrvd.py` (daemon), `chunks/`.
 - Verified end-to-end 2026-09-14: Rust `cargo build -p pi-ast` (17.7s), Bun `bunx tsc --noEmit` (1.4s), Go `go build ./...` — all green through the daemon, plus cache-hit no-op and retry paths.

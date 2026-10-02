@@ -5,7 +5,7 @@
 [daemons.sovereign-chat]
 port = 25120
 run = "exec bun run chat.ts"
-dir = "/home/toxic/sovereign/tools/sovereign-chat"
+dir = "/home/toxic/estate/tools/sovereign-chat"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25120/health"

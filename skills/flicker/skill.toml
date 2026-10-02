@@ -100,7 +100,7 @@ Pitchfork supervises:
 
 ## CLI
 
-The `flicker` CLI (at `/home/toxic/sovereign/projects/range/ranch/flicker/bin/flicker`) provides:
+The `flicker` CLI (at `/home/toxic/estate/projects/range/ranch/flicker/bin/flicker`) provides:
 - `flicker submit` — submit a job
 - `flicker status` — check job status
 - `flicker logs` — fetch logs

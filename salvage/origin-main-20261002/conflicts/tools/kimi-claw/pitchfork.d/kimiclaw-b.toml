@@ -2,8 +2,8 @@
 # Owned by the tools/kimi-claw project; the parent only composes it.
 
 [daemons.kimiclaw-b]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/kimi-claw/bridge.ts --daemon --instance b"
-dir = "/home/toxic/sovereign/tools/kimi-claw"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/tools/kimi-claw/bridge.ts --daemon --instance b"
+dir = "/home/toxic/estate/tools/kimi-claw"
 mise = false
 retry = true
 auto = ["start"]

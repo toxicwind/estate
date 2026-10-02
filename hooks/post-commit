@@ -7,7 +7,7 @@
 # cannot fail the commit anyway; the trailing `exit 0` + `|| true` make the
 # guarantee explicit).
 set -u
-REPO="/home/toxic/sovereign"
+REPO="/home/toxic/estate"
 
 if git -C "$REPO" diff-tree --no-commit-id --name-only -r HEAD 2>/dev/null \
     | grep -qx 'pitchfork.toml'; then

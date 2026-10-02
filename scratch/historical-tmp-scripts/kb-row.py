@@ -2,7 +2,7 @@
 """Add modelmap-round2 DONE row to fleet KB Active Crews table. Run on yote."""
 import sys
 
-p = sys.argv[1] if len(sys.argv) > 1 else '/home/toxic/sovereign/docs/fleet-knowledgebase.md'
+p = sys.argv[1] if len(sys.argv) > 1 else '/home/toxic/estate/docs/fleet-knowledgebase.md'
 s = open(p).read()
 
 row = ("| modelmap-round2 | Model-stack round 2 (Chris: \"Fix all three of those maximally\"): "

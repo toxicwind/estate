@@ -2,11 +2,11 @@
 """Remove the re-entrant oracle-judge-local shim; add native alias. Run on yote."""
 import sys
 
-p = sys.argv[1] if len(sys.argv) > 1 else '/home/toxic/sovereign/config/herd.yaml'
+p = sys.argv[1] if len(sys.argv) > 1 else '/home/toxic/estate/config/herd.yaml'
 s = open(p).read()
 
 old_block = '''  oracle-judge-local:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target beellama/gemma-96k
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target beellama/gemma-96k
     description: "Oracle judge fallback (alias -> beellama/gemma-96k) -- local last-resort slot filler"
     metadata:
       alias_of: beellama/gemma-96k

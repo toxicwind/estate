@@ -19,7 +19,7 @@
  */
 
 const OPENFANG_API = "http://127.0.0.1:25196";
-const SOVEREIGN = "/home/toxic/sovereign";
+const SOVEREIGN = "/home/toxic/estate";
 const LIVE_AGENTS = "/home/toxic/.openfang/agents";
 const DEFAULT_MODEL = "openrouter-free/inclusionai/ling-3.0-flash-sante:free"; // herd free-tier default (Ling-first, verified live 2026-09-30)
 const HERD_BASE_URL = "http://127.0.0.1:25100/v1";

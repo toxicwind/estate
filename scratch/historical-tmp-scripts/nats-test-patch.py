@@ -1,6 +1,6 @@
 import re
 
-p = '/home/toxic/sovereign/projects/mesh/squawk/nats/test_dual_publish.py'
+p = '/home/toxic/estate/projects/mesh/squawk/nats/test_dual_publish.py'
 s = open(p).read()
 
 old = '''def squawk_send(text):

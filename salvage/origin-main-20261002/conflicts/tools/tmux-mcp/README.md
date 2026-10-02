@@ -42,7 +42,7 @@ flowchart LR
 ## Quick start
 
 ```bash
-/home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/tmux-mcp/server.ts
+/home/toxic/.bun/bin/bun /home/toxic/estate/tools/tmux-mcp/server.ts
 ```
 
 Registered in the shep gateway (`projects/range/ranch/barn/shep/mcp_config.json`) as `tmux`

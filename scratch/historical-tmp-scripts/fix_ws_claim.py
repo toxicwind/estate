@@ -1,7 +1,7 @@
 """Apply the ws_lane_claim probe-derivation fix to yote's connector.py."""
 import sys
 
-p = "/home/toxic/sovereign/projects/bridge/hatch/connector.py"
+p = "/home/toxic/estate/projects/bridge/hatch/connector.py"
 s = open(p).read()
 
 old1 = '''            # Lane flags below are claims, not truth: a connectable socket

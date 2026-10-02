@@ -1,6 +1,6 @@
 # REPOS.md — debate-oracle vendored repos (t3-repos)
 
-Cloned 2026-09-20 to `/home/toxic/sovereign/killer-features/debate-oracle/vendor/`.
+Cloned 2026-09-20 to `/home/toxic/estate/killer-features/debate-oracle/vendor/`.
 All repos public GitHub, `--depth 1` clones. License check before shipping: llm_debate (Instadeep, check LICENSE), ChatEval (Apache-2.0, THUNLP), debate-or-vote (paper repo, check LICENSE), argus-ai-debate (check LICENSE).
 Reuse doctrine: borrow protocol mechanics + prompt skeletons, do NOT inherit their deps (hydra, FastChat, agentverse, pandas DataFrame batch runners are overkill for our oracle).
 

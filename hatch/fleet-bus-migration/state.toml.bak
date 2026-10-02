@@ -3,7 +3,7 @@ disabled = []
 [daemons."sovereign/agent-display"]
 id = "sovereign/agent-display"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "Xvnc", ":99", "-geometry", "1600x900", "-depth", "24", "-rfbport", "5900", "-localhost", "-SecurityTypes", "VncAuth", "-rfbauth", "/home/toxic/.browserless/vncpasswd"]
 run = "exec Xvnc :99 -geometry 1600x900 -depth 24 -rfbport 5900 -localhost -SecurityTypes VncAuth -rfbauth /home/toxic/.browserless/vncpasswd"
 autostop = false
@@ -15,13 +15,13 @@ ready_cmd = "ss -tln | grep -q 127.0.0.1:5900"
 port = 5900
 resolved_port = [5900]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/agent-viewer"]
 id = "sovereign/agent-viewer"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "/home/toxic/.local/bin/websockify", "--web", "/home/toxic/.browserless/novnc", "127.0.0.1:6080", "127.0.0.1:5900"]
 run = "exec /home/toxic/.local/bin/websockify --web /home/toxic/.browserless/novnc 127.0.0.1:6080 127.0.0.1:5900"
 autostop = false
@@ -33,7 +33,7 @@ ready_cmd = "curl -sf http://127.0.0.1:6080/vnc.html > /dev/null"
 port = 6080
 resolved_port = [6080]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/awrawr-mcp"]
@@ -51,7 +51,7 @@ ready_cmd = "ss -ltn 'sport = :25198' | grep -q LISTEN"
 port = 25198
 resolved_port = [25198]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/awrawr-mcp".health_port]
@@ -67,9 +67,9 @@ MCP_FUNNEL_HOST = "github-mcp-host.tailc9ac71.ts.net"
 [daemons."sovereign/beellama-fast"]
 id = "sovereign/beellama-fast"
 status = "stopped"
-dir = "/home/toxic/sovereign"
-cmd = ["exec", "/home/toxic/sovereign/stack/services/beellama-fast.sh"]
-run = "exec /home/toxic/sovereign/stack/services/beellama-fast.sh"
+dir = "/home/toxic/estate"
+cmd = ["exec", "/home/toxic/estate/stack/services/beellama-fast.sh"]
+run = "exec /home/toxic/estate/stack/services/beellama-fast.sh"
 autostop = false
 last_exit_success = true
 retry = true
@@ -79,7 +79,7 @@ ready_port = 25122
 port = 25122
 resolved_port = [25122]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/beellama-fast".env]
@@ -88,9 +88,9 @@ BEELLAMA_PORT = "25122"
 [daemons."sovereign/bench-radar"]
 id = "sovereign/bench-radar"
 status = "stopped"
-dir = "/home/toxic/sovereign/tools/bench-radar"
-cmd = ["exec", "/home/toxic/.bun/bin/bun", "/home/toxic/sovereign/tools/bench-radar/server.ts"]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/bench-radar/server.ts"
+dir = "/home/toxic/estate/tools/bench-radar"
+cmd = ["exec", "/home/toxic/.bun/bin/bun", "/home/toxic/estate/tools/bench-radar/server.ts"]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/tools/bench-radar/server.ts"
 autostop = false
 last_exit_success = true
 retry = true
@@ -100,7 +100,7 @@ ready_port = 25181
 port = 25181
 resolved_port = [25181]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/bench-radar".env]
@@ -109,31 +109,31 @@ BENCH_RADAR_PORT = "25181"
 [daemons."sovereign/bidder-forge"]
 id = "sovereign/bidder-forge"
 status = "stopped"
-dir = "/home/toxic/sovereign/agents/oracle-market"
-cmd = ["exec", "/home/toxic/sovereign/agents/oracle-market/bin/bidder-forge.sh"]
-run = "exec /home/toxic/sovereign/agents/oracle-market/bin/bidder-forge.sh"
+dir = "/home/toxic/estate/agents/oracle-market"
+cmd = ["exec", "/home/toxic/estate/agents/oracle-market/bin/bidder-forge.sh"]
+run = "exec /home/toxic/estate/agents/oracle-market/bin/bidder-forge.sh"
 autostop = false
 last_exit_success = true
 retry = true
 retry_count = 0
 ready_delay = 3
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/bidder-scout"]
 id = "sovereign/bidder-scout"
 status = "stopped"
-dir = "/home/toxic/sovereign/agents/oracle-market"
-cmd = ["exec", "/home/toxic/sovereign/agents/oracle-market/bin/bidder-scout.sh"]
-run = "exec /home/toxic/sovereign/agents/oracle-market/bin/bidder-scout.sh"
+dir = "/home/toxic/estate/agents/oracle-market"
+cmd = ["exec", "/home/toxic/estate/agents/oracle-market/bin/bidder-scout.sh"]
+run = "exec /home/toxic/estate/agents/oracle-market/bin/bidder-scout.sh"
 autostop = false
 last_exit_success = true
 retry = true
 retry_count = 0
 ready_delay = 3
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/boundless"]
@@ -151,7 +151,7 @@ ready_cmd = "ss -ltn 'sport = :25197' | grep -q LISTEN"
 port = 25197
 resolved_port = [25197]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/boundless".env]
@@ -162,9 +162,9 @@ BOUNDLESS_PORT = "25197"
 [daemons."sovereign/browser-keeper"]
 id = "sovereign/browser-keeper"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
-cmd = ["exec", "/home/toxic/sovereign/projects/range/ranch/barn/browserless/keeper/keeper.sh"]
-run = "exec /home/toxic/sovereign/projects/range/ranch/barn/browserless/keeper/keeper.sh"
+dir = "/home/toxic/estate/."
+cmd = ["exec", "/home/toxic/estate/projects/range/ranch/barn/browserless/keeper/keeper.sh"]
+run = "exec /home/toxic/estate/projects/range/ranch/barn/browserless/keeper/keeper.sh"
 autostop = false
 last_exit_success = true
 retry = true
@@ -174,7 +174,7 @@ ready_cmd = "curl -sf http://127.0.0.1:9223/json/version > /dev/null"
 port = 9223
 resolved_port = [9223]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/browser-keeper".env]
@@ -184,9 +184,9 @@ XDG_RUNTIME_DIR = "/run/user/1000"
 [daemons."sovereign/browserless"]
 id = "sovereign/browserless"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
-cmd = ["exec", "/home/toxic/sovereign/projects/range/ranch/barn/browserless/server/run.sh"]
-run = "exec /home/toxic/sovereign/projects/range/ranch/barn/browserless/server/run.sh"
+dir = "/home/toxic/estate/."
+cmd = ["exec", "/home/toxic/estate/projects/range/ranch/barn/browserless/server/run.sh"]
+run = "exec /home/toxic/estate/projects/range/ranch/barn/browserless/server/run.sh"
 autostop = false
 last_exit_success = true
 retry = 0
@@ -194,7 +194,7 @@ retry_count = 0
 ready_port = 25130
 depends = ["sovereign/shep"]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/browserless".env]
@@ -203,9 +203,9 @@ SOVEREIGN_ROUTER_PORT = "25104"
 [daemons."sovereign/buildsrv"]
 id = "sovereign/buildsrv"
 status = "stopped"
-dir = "/home/toxic/sovereign/tools/buildsrv"
-cmd = ["exec", "/usr/bin/python3", "/home/toxic/sovereign/tools/buildsrv/buildsrvd.py"]
-run = "exec /usr/bin/python3 /home/toxic/sovereign/tools/buildsrv/buildsrvd.py"
+dir = "/home/toxic/estate/tools/buildsrv"
+cmd = ["exec", "/usr/bin/python3", "/home/toxic/estate/tools/buildsrv/buildsrvd.py"]
+run = "exec /usr/bin/python3 /home/toxic/estate/tools/buildsrv/buildsrvd.py"
 autostop = false
 last_exit_success = true
 retry = true
@@ -215,7 +215,7 @@ ready_port = 25148
 port = 25148
 resolved_port = [25148]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/buildsrv".health_http]
@@ -239,16 +239,16 @@ CARGO_INCREMENTAL = "0"
 [daemons."sovereign/buildsrv-watchdog"]
 id = "sovereign/buildsrv-watchdog"
 status = "stopped"
-dir = "/home/toxic/sovereign/tools/buildsrv"
-cmd = ["exec", "/usr/bin/python3", "/home/toxic/sovereign/tools/buildsrv/buildsrv-watchdog.py"]
-run = "exec /usr/bin/python3 /home/toxic/sovereign/tools/buildsrv/buildsrv-watchdog.py"
+dir = "/home/toxic/estate/tools/buildsrv"
+cmd = ["exec", "/usr/bin/python3", "/home/toxic/estate/tools/buildsrv/buildsrv-watchdog.py"]
+run = "exec /usr/bin/python3 /home/toxic/estate/tools/buildsrv/buildsrv-watchdog.py"
 autostop = false
 last_exit_success = true
 retry = true
 retry_count = 0
 ready_delay = 3
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/buildsrv-watchdog".env]
@@ -259,7 +259,7 @@ WATCHDOG_MAX_FAILS = "3"
 [daemons."sovereign/byte-vision"]
 id = "sovereign/byte-vision"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "./stack/services/byte-vision.sh"]
 run = "exec ./stack/services/byte-vision.sh"
 autostop = false
@@ -272,14 +272,14 @@ port = 25121
 resolved_port = [25121]
 depends = ["sovereign/shep"]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = true
 
 [daemons."sovereign/codebase-memory"]
 id = "sovereign/codebase-memory"
 dir = "/home/toxic"
-cmd = ["exec", "/home/toxic/sovereign/tools/codebase-memory/run.sh"]
-run = "exec /home/toxic/sovereign/tools/codebase-memory/run.sh"
+cmd = ["exec", "/home/toxic/estate/tools/codebase-memory/run.sh"]
+run = "exec /home/toxic/estate/tools/codebase-memory/run.sh"
 autostop = false
 last_exit_success = false
 retry = true
@@ -289,7 +289,7 @@ ready_cmd = "ss -ltn 'sport = :25195' | grep -q LISTEN"
 port = 25195
 resolved_port = [25195]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/codebase-memory".status]
@@ -304,7 +304,7 @@ timeout = "5s"
 [daemons."sovereign/coyote"]
 id = "sovereign/coyote"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "./stack/services/coyote.sh"]
 run = "exec ./stack/services/coyote.sh"
 autostop = false
@@ -317,13 +317,13 @@ port = 25143
 resolved_port = [25143]
 depends = ["sovereign/shep", "sovereign/herd"]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = true
 
 [daemons."sovereign/dnsmasq"]
 id = "sovereign/dnsmasq"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "./stack/services/dnsmasq.sh"]
 run = "exec ./stack/services/dnsmasq.sh"
 autostop = false
@@ -333,30 +333,30 @@ retry_count = 0
 ready_port = 53
 ready_cmd = "ss -ltn 'sport = :53' | grep -q LISTEN"
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/estate-reconcile-watch"]
 id = "sovereign/estate-reconcile-watch"
 status = "stopped"
-dir = "/home/toxic/sovereign"
-cmd = ["exec", "/home/toxic/sovereign/bin/estate-reconcile", "watch"]
-run = "exec /home/toxic/sovereign/bin/estate-reconcile watch"
+dir = "/home/toxic/estate"
+cmd = ["exec", "/home/toxic/estate/bin/estate-reconcile", "watch"]
+run = "exec /home/toxic/estate/bin/estate-reconcile watch"
 autostop = false
 last_exit_success = true
 retry = true
 retry_count = 0
 ready_delay = 3
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/files"]
 id = "sovereign/files"
 status = "stopped"
-dir = "/home/toxic/sovereign"
-cmd = ["exec", "python3", "/home/toxic/sovereign/stack/services/files-server.py"]
-run = "exec python3 /home/toxic/sovereign/stack/services/files-server.py"
+dir = "/home/toxic/estate"
+cmd = ["exec", "python3", "/home/toxic/estate/stack/services/files-server.py"]
+run = "exec python3 /home/toxic/estate/stack/services/files-server.py"
 autostop = false
 last_exit_success = true
 retry = true
@@ -366,7 +366,7 @@ ready_port = 34567
 port = 34567
 resolved_port = [34567]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/files".health_http]
@@ -382,7 +382,7 @@ FILES_ROOT = "/home/toxic/files"
 [daemons."sovereign/flock"]
 id = "sovereign/flock"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "env", "HOST=127.0.0.1", "PORT=${FLOCK_PORT}", "DATA_DIR=/home/toxic/.flock-data", "/home/toxic/.flock/flock"]
 run = "exec env HOST=127.0.0.1 PORT=${FLOCK_PORT} DATA_DIR=/home/toxic/.flock-data /home/toxic/.flock/flock"
 autostop = false
@@ -395,7 +395,7 @@ ready_cmd = "ss -ltn 'sport = :25193' | grep -q LISTEN"
 port = 25193
 resolved_port = [25193]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/flock".health_http]
@@ -411,9 +411,9 @@ FLOCK_PORT = "25193"
 [daemons."sovereign/gatehouse"]
 id = "sovereign/gatehouse"
 status = "stopped"
-dir = "/home/toxic/sovereign/projects/range/ranch/barn/gatehouse"
-cmd = ["exec", "/home/toxic/sovereign/projects/range/bin/gatehouse-serve.sh"]
-run = "exec /home/toxic/sovereign/projects/range/bin/gatehouse-serve.sh"
+dir = "/home/toxic/estate/projects/range/ranch/barn/gatehouse"
+cmd = ["exec", "/home/toxic/estate/projects/range/bin/gatehouse-serve.sh"]
+run = "exec /home/toxic/estate/projects/range/bin/gatehouse-serve.sh"
 autostop = false
 last_exit_success = true
 retry = true
@@ -423,7 +423,7 @@ ready_port = 25127
 port = 25127
 resolved_port = [25127]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/gatehouse".health_http]
@@ -435,7 +435,7 @@ retries = 3
 [daemons."sovereign/grafana"]
 id = "sovereign/grafana"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "./stack/services/grafana-mesh.sh"]
 run = "exec ./stack/services/grafana-mesh.sh"
 autostop = false
@@ -447,15 +447,15 @@ ready_port = 25110
 port = 25110
 resolved_port = [25110]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = true
 
 [daemons."sovereign/herd"]
 id = "sovereign/herd"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
-cmd = ["exec", "/home/toxic/sovereign/stack/services/herd.sh"]
-run = "exec /home/toxic/sovereign/stack/services/herd.sh"
+dir = "/home/toxic/estate/."
+cmd = ["exec", "/home/toxic/estate/stack/services/herd.sh"]
+run = "exec /home/toxic/estate/stack/services/herd.sh"
 autostop = false
 last_exit_success = true
 retry = true
@@ -466,7 +466,7 @@ port = 25100
 resolved_port = [25100]
 depends = ["sovereign/shep"]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/herd".health_http]
@@ -478,7 +478,7 @@ retries = 3
 [daemons."sovereign/hf-downloader"]
 id = "sovereign/hf-downloader"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "./stack/services/hf-downloader-mesh.sh"]
 run = "exec ./stack/services/hf-downloader-mesh.sh"
 autostop = false
@@ -491,13 +491,13 @@ port = 25106
 resolved_port = [25106]
 depends = ["sovereign/shep"]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = true
 
 [daemons."sovereign/hindsight"]
 id = "sovereign/hindsight"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "./stack/services/hindsight.sh"]
 run = "exec ./stack/services/hindsight.sh"
 autostop = false
@@ -510,7 +510,7 @@ port = 25117
 resolved_port = [25117]
 depends = ["sovereign/gatehouse"]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/hindsight".health_http]
@@ -522,7 +522,7 @@ retries = 3
 [daemons."sovereign/kafka"]
 id = "sovereign/kafka"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "./stack/services/kafka.sh"]
 run = "exec ./stack/services/kafka.sh"
 autostop = false
@@ -531,15 +531,15 @@ retry = true
 retry_count = 0
 ready_port = 25144
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = true
 
 [daemons."sovereign/keypool"]
 id = "sovereign/keypool"
 status = "stopped"
-dir = "/home/toxic/sovereign"
-cmd = ["exec", "python3", "/home/toxic/sovereign/bin/herd-keypool.py"]
-run = "exec python3 /home/toxic/sovereign/bin/herd-keypool.py"
+dir = "/home/toxic/estate"
+cmd = ["exec", "python3", "/home/toxic/estate/bin/herd-keypool.py"]
+run = "exec python3 /home/toxic/estate/bin/herd-keypool.py"
 autostop = false
 last_exit_success = true
 retry = true
@@ -549,7 +549,7 @@ ready_port = 25109
 port = 25109
 resolved_port = [25109]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/keypool".health_http]
@@ -571,7 +571,7 @@ retry_count = 0
 ready_http = "http://127.0.0.1:25116/health"
 ready_port = 25116
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = true
 
 [daemons."sovereign/kimi-audit-dash".env]
@@ -580,9 +580,9 @@ KIMI_AUDIT_DASH_PORT = "25116"
 [daemons."sovereign/kimi-auto-shim"]
 id = "sovereign/kimi-auto-shim"
 status = "stopped"
-dir = "/home/toxic/sovereign/config/herd.d"
-cmd = ["exec", "python3", "/home/toxic/sovereign/config/herd.d/alias-shim.py", "--port", "${KIMI_AUTO_SHIM_PORT}", "--target", "openrouter-free/moonshotai/kimi-k3:free", "--standby", "openrouter-free/moonshotai/kimi-k2.6:free", "--standby", "openrouter-free/moonshotai/kimi-k2.5:free", "--standby", "openrouter-free/moonshotai/kimi-k2.7-code:free", "--standby", "hf-free/moonshotai/Kimi-K3", "--standby", "nim-kimi/moonshotai/kimi-k3", "--advance-on", "5xx,conn,429,402,404", "--name", "kimi-auto"]
-run = "exec python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
+dir = "/home/toxic/estate/config/herd.d"
+cmd = ["exec", "python3", "/home/toxic/estate/config/herd.d/alias-shim.py", "--port", "${KIMI_AUTO_SHIM_PORT}", "--target", "openrouter-free/moonshotai/kimi-k3:free", "--standby", "openrouter-free/moonshotai/kimi-k2.6:free", "--standby", "openrouter-free/moonshotai/kimi-k2.5:free", "--standby", "openrouter-free/moonshotai/kimi-k2.7-code:free", "--standby", "hf-free/moonshotai/Kimi-K3", "--standby", "nim-kimi/moonshotai/kimi-k3", "--advance-on", "5xx,conn,429,402,404", "--name", "kimi-auto"]
+run = "exec python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
 autostop = false
 last_exit_success = true
 retry = true
@@ -592,7 +592,7 @@ ready_port = 25153
 port = 25153
 resolved_port = [25153]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/kimi-auto-shim".health_http]
@@ -609,8 +609,8 @@ SHIM_CONNECT_TIMEOUT = "240"
 id = "sovereign/kimi-code"
 status = "stopped"
 dir = "/home/toxic/kimi-code-npm"
-cmd = ["exec", "/home/toxic/sovereign/bin/claim-port", "25126", "/home/toxic/kimi-code-npm/node_modules/@moonshot-ai/kimi-code/dist/main.mjs", "web", "--no-open", "--port", "25126"]
-run = "exec /home/toxic/sovereign/bin/claim-port 25126 /home/toxic/kimi-code-npm/node_modules/@moonshot-ai/kimi-code/dist/main.mjs web --no-open --port 25126"
+cmd = ["exec", "/home/toxic/estate/bin/claim-port", "25126", "/home/toxic/kimi-code-npm/node_modules/@moonshot-ai/kimi-code/dist/main.mjs", "web", "--no-open", "--port", "25126"]
+run = "exec /home/toxic/estate/bin/claim-port 25126 /home/toxic/kimi-code-npm/node_modules/@moonshot-ai/kimi-code/dist/main.mjs web --no-open --port 25126"
 autostop = false
 last_exit_success = true
 retry = true
@@ -621,58 +621,58 @@ port = 25126
 resolved_port = [25126]
 depends = ["sovereign/shep"]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = true
 
 [daemons."sovereign/kimiclaw-a"]
 id = "sovereign/kimiclaw-a"
 status = "stopped"
-dir = "/home/toxic/sovereign/tools/kimi-claw"
-cmd = ["exec", "/home/toxic/.bun/bin/bun", "/home/toxic/sovereign/tools/kimi-claw/bridge.ts", "--daemon", "--instance", "a"]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/kimi-claw/bridge.ts --daemon --instance a"
+dir = "/home/toxic/estate/tools/kimi-claw"
+cmd = ["exec", "/home/toxic/.bun/bin/bun", "/home/toxic/estate/tools/kimi-claw/bridge.ts", "--daemon", "--instance", "a"]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/tools/kimi-claw/bridge.ts --daemon --instance a"
 autostop = false
 last_exit_success = true
 retry = true
 retry_count = 0
 ready_cmd = """p=$(pgrep -f '[b]ridge[.]ts --daemon --instance a' | head -1); [ -n "$p" ] && ls -l /proc/$p/fd 2>/dev/null | grep -q inotify"""
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/kimiclaw-b"]
 id = "sovereign/kimiclaw-b"
 status = "stopped"
-dir = "/home/toxic/sovereign/tools/kimi-claw"
-cmd = ["exec", "/home/toxic/.bun/bin/bun", "/home/toxic/sovereign/tools/kimi-claw/bridge.ts", "--daemon", "--instance", "b"]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/kimi-claw/bridge.ts --daemon --instance b"
+dir = "/home/toxic/estate/tools/kimi-claw"
+cmd = ["exec", "/home/toxic/.bun/bin/bun", "/home/toxic/estate/tools/kimi-claw/bridge.ts", "--daemon", "--instance", "b"]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/tools/kimi-claw/bridge.ts --daemon --instance b"
 autostop = false
 last_exit_success = true
 retry = true
 retry_count = 0
 ready_cmd = """p=$(pgrep -f '[b]ridge[.]ts --daemon --instance b' | head -1); [ -n "$p" ] && ls -l /proc/$p/fd 2>/dev/null | grep -q inotify"""
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/market-watchdog"]
 id = "sovereign/market-watchdog"
 status = "stopped"
-dir = "/home/toxic/sovereign/agents/oracle-market"
-cmd = ["exec", "/home/toxic/sovereign/agents/oracle-market/bin/market-watchdog.sh"]
-run = "exec /home/toxic/sovereign/agents/oracle-market/bin/market-watchdog.sh"
+dir = "/home/toxic/estate/agents/oracle-market"
+cmd = ["exec", "/home/toxic/estate/agents/oracle-market/bin/market-watchdog.sh"]
+run = "exec /home/toxic/estate/agents/oracle-market/bin/market-watchdog.sh"
 autostop = false
 last_exit_success = true
 retry = true
 retry_count = 0
 ready_delay = 3
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/matter-server"]
 id = "sovereign/matter-server"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "env", "STORAGE_PATH=/home/toxic/.matter_data", "BLUETOOTH_ADAPTER=0", "LOG_LEVEL=info", "node", "--enable-source-maps", "/home/toxic/.matter-server/app/node_modules/matter-server/dist/esm/MatterServer.js", "--storage-path", "/home/toxic/.matter_data", "--bluetooth-adapter", "0", "--port", "${MATTER_SERVER_PORT}"]
 run = "exec env STORAGE_PATH=/home/toxic/.matter_data BLUETOOTH_ADAPTER=0 LOG_LEVEL=info node --enable-source-maps /home/toxic/.matter-server/app/node_modules/matter-server/dist/esm/MatterServer.js --storage-path /home/toxic/.matter_data --bluetooth-adapter 0 --port ${MATTER_SERVER_PORT}"
 autostop = false
@@ -684,7 +684,7 @@ ready_cmd = "ss -ltn 'sport = :25209' | grep -q LISTEN"
 port = 25209
 resolved_port = [25209]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/matter-server".env]
@@ -693,7 +693,7 @@ MATTER_SERVER_PORT = "25209"
 [daemons."sovereign/mesh-hub"]
 id = "sovereign/mesh-hub"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "bun", "run", "src/services/mesh-hub.ts"]
 run = "exec bun run src/services/mesh-hub.ts"
 autostop = false
@@ -706,15 +706,15 @@ port = 25115
 resolved_port = [25115]
 depends = ["sovereign/shep"]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = true
 
 [daemons."sovereign/mesh-landing"]
 id = "sovereign/mesh-landing"
 status = "stopped"
-dir = "/home/toxic/sovereign/projects/range"
-cmd = ["exec", "/usr/bin/python3", "/home/toxic/sovereign/projects/range/bin/landing.py"]
-run = "exec /usr/bin/python3 /home/toxic/sovereign/projects/range/bin/landing.py"
+dir = "/home/toxic/estate/projects/range"
+cmd = ["exec", "/usr/bin/python3", "/home/toxic/estate/projects/range/bin/landing.py"]
+run = "exec /usr/bin/python3 /home/toxic/estate/projects/range/bin/landing.py"
 autostop = false
 last_exit_success = true
 retry = true
@@ -724,7 +724,7 @@ ready_port = 25207
 port = 25207
 resolved_port = [25207]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/mesh-landing".health_http]
@@ -739,9 +739,9 @@ MESH_LANDING_PORT = "25207"
 [daemons."sovereign/ml-serve"]
 id = "sovereign/ml-serve"
 status = "stopped"
-dir = "/home/toxic/sovereign/tools/ml-serve"
-cmd = ["exec", "python3", "/home/toxic/sovereign/tools/ml-serve/server.py"]
-run = "exec python3 /home/toxic/sovereign/tools/ml-serve/server.py"
+dir = "/home/toxic/estate/tools/ml-serve"
+cmd = ["exec", "python3", "/home/toxic/estate/tools/ml-serve/server.py"]
+run = "exec python3 /home/toxic/estate/tools/ml-serve/server.py"
 autostop = false
 last_exit_success = true
 retry = true
@@ -751,7 +751,7 @@ ready_port = 25180
 port = 25180
 resolved_port = [25180]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/ml-serve".env]
@@ -760,9 +760,9 @@ ML_SERVE_PORT = "25180"
 [daemons."sovereign/model-guard"]
 id = "sovereign/model-guard"
 status = "stopped"
-dir = "/home/toxic/sovereign"
-cmd = ["exec", "python3", "/home/toxic/sovereign/bin/herd-model-guard.py"]
-run = "exec python3 /home/toxic/sovereign/bin/herd-model-guard.py"
+dir = "/home/toxic/estate"
+cmd = ["exec", "python3", "/home/toxic/estate/bin/herd-model-guard.py"]
+run = "exec python3 /home/toxic/estate/bin/herd-model-guard.py"
 autostop = false
 last_exit_success = true
 retry = true
@@ -772,7 +772,7 @@ ready_port = 25101
 port = 25101
 resolved_port = [25101]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/model-guard".health_http]
@@ -784,9 +784,9 @@ retries = 3
 [daemons."sovereign/nats"]
 id = "sovereign/nats"
 status = "stopped"
-dir = "/home/toxic/sovereign/projects/range/ranch/squawk/nats"
-cmd = ["exec", "/home/toxic/sovereign/projects/range/ranch/squawk/nats/run-nats.sh"]
-run = "exec /home/toxic/sovereign/projects/range/ranch/squawk/nats/run-nats.sh"
+dir = "/home/toxic/estate/projects/range/ranch/squawk/nats"
+cmd = ["exec", "/home/toxic/estate/projects/range/ranch/squawk/nats/run-nats.sh"]
+run = "exec /home/toxic/estate/projects/range/ranch/squawk/nats/run-nats.sh"
 autostop = false
 last_exit_success = true
 retry = true
@@ -794,30 +794,30 @@ retry_count = 0
 ready_port = 4222
 ready_cmd = "ss -ltn 'sport = :4222' | grep -q LISTEN"
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/nats-tail"]
 id = "sovereign/nats-tail"
 status = "stopped"
-dir = "/home/toxic/sovereign/projects/range/ranch/squawk/nats"
-cmd = ["exec", "/home/toxic/sovereign/projects/range/ranch/squawk/nats/run-tail.sh"]
-run = "exec /home/toxic/sovereign/projects/range/ranch/squawk/nats/run-tail.sh"
+dir = "/home/toxic/estate/projects/range/ranch/squawk/nats"
+cmd = ["exec", "/home/toxic/estate/projects/range/ranch/squawk/nats/run-tail.sh"]
+run = "exec /home/toxic/estate/projects/range/ranch/squawk/nats/run-tail.sh"
 autostop = false
 last_exit_success = true
 retry = true
 retry_count = 0
 ready_delay = 3
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/nginx"]
 id = "sovereign/nginx"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
-cmd = ["exec", "/usr/bin/nginx", "-c", "/home/toxic/sovereign/ops/nginx/nginx.conf", "-g", "daemon off; pid /tmp/nginx-pitchfork.pid;"]
-run = "exec /usr/bin/nginx -c /home/toxic/sovereign/ops/nginx/nginx.conf -g 'daemon off; pid /tmp/nginx-pitchfork.pid;'"
+dir = "/home/toxic/estate/."
+cmd = ["exec", "/usr/bin/nginx", "-c", "/home/toxic/estate/ops/nginx/nginx.conf", "-g", "daemon off; pid /tmp/nginx-pitchfork.pid;"]
+run = "exec /usr/bin/nginx -c /home/toxic/estate/ops/nginx/nginx.conf -g 'daemon off; pid /tmp/nginx-pitchfork.pid;'"
 autostop = false
 last_exit_success = true
 retry = true
@@ -828,15 +828,15 @@ port = 25208
 resolved_port = [25208]
 depends = ["sovereign/shep"]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/nim-kimi-sidecar"]
 id = "sovereign/nim-kimi-sidecar"
 status = "stopped"
-dir = "/home/toxic/sovereign"
-cmd = ["exec", "python3", "/home/toxic/sovereign/bin/nim-kimi-sidecar.py"]
-run = "exec python3 /home/toxic/sovereign/bin/nim-kimi-sidecar.py"
+dir = "/home/toxic/estate"
+cmd = ["exec", "python3", "/home/toxic/estate/bin/nim-kimi-sidecar.py"]
+run = "exec python3 /home/toxic/estate/bin/nim-kimi-sidecar.py"
 autostop = false
 last_exit_success = true
 retry = true
@@ -846,7 +846,7 @@ ready_port = 25163
 port = 25163
 resolved_port = [25163]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/nim-kimi-sidecar".health_http]
@@ -858,7 +858,7 @@ retries = 3
 [daemons."sovereign/node-exporter"]
 id = "sovereign/node-exporter"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "/usr/local/bin/node_exporter", "--web.listen-address=127.0.0.1:25211"]
 run = "exec /usr/local/bin/node_exporter --web.listen-address=127.0.0.1:25211"
 autostop = false
@@ -870,13 +870,13 @@ ready_port = 25211
 port = 25211
 resolved_port = [25211]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/null-g-proxy"]
 id = "sovereign/null-g-proxy"
 status = "stopped"
-dir = "/home/toxic/sovereign/tools/null-g-proxy"
+dir = "/home/toxic/estate/tools/null-g-proxy"
 cmd = ["exec", "bun", "run", "src/index.ts"]
 run = "exec bun run src/index.ts"
 autostop = false
@@ -889,15 +889,15 @@ port = 25107
 resolved_port = [25107]
 depends = ["sovereign/shep"]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = true
 
 [daemons."sovereign/openfang"]
 id = "sovereign/openfang"
 status = "stopped"
 dir = "/home/toxic/projects/rig-work"
-cmd = ["exec", "/home/toxic/sovereign/ops/openfang-run.sh"]
-run = "exec /home/toxic/sovereign/ops/openfang-run.sh"
+cmd = ["exec", "/home/toxic/estate/ops/openfang-run.sh"]
+run = "exec /home/toxic/estate/ops/openfang-run.sh"
 autostop = false
 last_exit_success = true
 retry = true
@@ -908,7 +908,7 @@ ready_cmd = "ss -ltn 'sport = :25196' | grep -q LISTEN"
 port = 25196
 resolved_port = [25196]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/openfang".health_http]
@@ -923,7 +923,7 @@ OPENFANG_KERNEL_PORT = "25196"
 [daemons."sovereign/openfang-front"]
 id = "sovereign/openfang-front"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "./stack/services/openfang.sh"]
 run = "exec ./stack/services/openfang.sh"
 autostop = false
@@ -936,7 +936,7 @@ port = 25103
 resolved_port = [25103]
 depends = ["sovereign/shep"]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = true
 
 [daemons."sovereign/openfang-front".health_http]
@@ -948,31 +948,31 @@ retries = 3
 [daemons."sovereign/openfang-health"]
 id = "sovereign/openfang-health"
 status = "stopped"
-dir = "/home/toxic/sovereign/ops/openfang-health"
-cmd = ["/home/toxic/sovereign/ops/openfang-health/loop.sh"]
-run = "/home/toxic/sovereign/ops/openfang-health/loop.sh"
+dir = "/home/toxic/estate/ops/openfang-health"
+cmd = ["/home/toxic/estate/ops/openfang-health/loop.sh"]
+run = "/home/toxic/estate/ops/openfang-health/loop.sh"
 autostop = false
 last_exit_success = true
 retry = 0
 retry_count = 0
 ready_delay = 3
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/oracle-chat"]
 id = "sovereign/oracle-chat"
 status = "stopped"
-dir = "/home/toxic/sovereign/agents/oracle-market"
-cmd = ["exec", "/home/toxic/sovereign/agents/oracle-market/bin/oracle_chat.py"]
-run = "exec /home/toxic/sovereign/agents/oracle-market/bin/oracle_chat.py"
+dir = "/home/toxic/estate/agents/oracle-market"
+cmd = ["exec", "/home/toxic/estate/agents/oracle-market/bin/oracle_chat.py"]
+run = "exec /home/toxic/estate/agents/oracle-market/bin/oracle_chat.py"
 autostop = false
 last_exit_success = true
 retry = 0
 retry_count = 0
 ready_delay = 3
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/oracle-chat".env]
@@ -981,9 +981,9 @@ ORACLE_CHANNEL = "/home/toxic/.shingle/squawk-root/bid-market"
 [daemons."sovereign/oracle-core"]
 id = "sovereign/oracle-core"
 status = "stopped"
-dir = "/home/toxic/sovereign/agents/oracle-market"
-cmd = ["exec", "/home/toxic/sovereign/agents/oracle-market/bin/run-oracle-core.sh"]
-run = "exec /home/toxic/sovereign/agents/oracle-market/bin/run-oracle-core.sh"
+dir = "/home/toxic/estate/agents/oracle-market"
+cmd = ["exec", "/home/toxic/estate/agents/oracle-market/bin/run-oracle-core.sh"]
+run = "exec /home/toxic/estate/agents/oracle-market/bin/run-oracle-core.sh"
 autostop = false
 last_exit_success = true
 retry = true
@@ -993,7 +993,7 @@ ready_cmd = "ss -ltn 'sport = :25151' | grep -q LISTEN"
 port = 25151
 resolved_port = [25151]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/oracle-core".health_port]
@@ -1005,16 +1005,16 @@ timeout = "5s"
 [daemons."sovereign/oracle-market"]
 id = "sovereign/oracle-market"
 status = "stopped"
-dir = "/home/toxic/sovereign/agents/oracle-market"
-cmd = ["exec", "/home/toxic/sovereign/agents/oracle-market/bin/run.sh"]
-run = "exec /home/toxic/sovereign/agents/oracle-market/bin/run.sh"
+dir = "/home/toxic/estate/agents/oracle-market"
+cmd = ["exec", "/home/toxic/estate/agents/oracle-market/bin/run.sh"]
+run = "exec /home/toxic/estate/agents/oracle-market/bin/run.sh"
 autostop = false
 last_exit_success = true
 retry = 0
 retry_count = 0
 ready_delay = 3
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/oracle-market".env]
@@ -1034,7 +1034,7 @@ ready_http = "http://127.0.0.1:25149/ready"
 ready_port = 25149
 port = 25149
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/paper-poller".env]
@@ -1055,7 +1055,7 @@ ready_http = "http://127.0.0.1:25150/health"
 ready_port = 25150
 port = 25150
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/paper-poller-watchdog".env]
@@ -1065,9 +1065,9 @@ WATCHDOG_INTERVAL = "30"
 [daemons."sovereign/pcie-moe-telemetry"]
 id = "sovereign/pcie-moe-telemetry"
 status = "stopped"
-dir = "/home/toxic/sovereign/tools/pcie-moe"
-cmd = ["exec", "bun", "run", "/home/toxic/sovereign/tools/pcie-moe/server.ts"]
-run = "exec bun run /home/toxic/sovereign/tools/pcie-moe/server.ts"
+dir = "/home/toxic/estate/tools/pcie-moe"
+cmd = ["exec", "bun", "run", "/home/toxic/estate/tools/pcie-moe/server.ts"]
+run = "exec bun run /home/toxic/estate/tools/pcie-moe/server.ts"
 autostop = false
 last_exit_success = true
 retry = true
@@ -1077,7 +1077,7 @@ ready_port = 25219
 port = 25219
 resolved_port = [25219]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/pcie-moe-telemetry".health_http]
@@ -1089,7 +1089,7 @@ retries = 2
 [daemons."sovereign/prometheus"]
 id = "sovereign/prometheus"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "./stack/services/prometheus-hot.sh"]
 run = "exec ./stack/services/prometheus-hot.sh"
 autostop = false
@@ -1101,13 +1101,13 @@ ready_port = 25105
 port = 25105
 resolved_port = [25105]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = true
 
 [daemons."sovereign/qdrant"]
 id = "sovereign/qdrant"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "/home/toxic/.cargo/bin/qdrant-server", "--config-path", "./qdrant-config.yaml"]
 run = "exec /home/toxic/.cargo/bin/qdrant-server --config-path ./qdrant-config.yaml"
 autostop = false
@@ -1119,7 +1119,7 @@ ready_port = 25133
 port = [25133, 25134]
 resolved_port = [25133, 25134]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/ralph-dashboard"]
@@ -1137,7 +1137,7 @@ ready_port = 25194
 port = 25194
 resolved_port = [25194]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/ralph-dashboard".health_http]
@@ -1152,7 +1152,7 @@ RALPH_DASH_PORT = "25194"
 [daemons."sovereign/redis"]
 id = "sovereign/redis"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "valkey-server", "--port", "25199", "--bind", "0.0.0.0", "--protected-mode", "no", "--save", "", "--appendonly", "no"]
 run = "exec valkey-server --port 25199 --bind 0.0.0.0 --protected-mode no --save '' --appendonly no"
 autostop = false
@@ -1161,7 +1161,7 @@ retry = true
 retry_count = 0
 ready_port = 25199
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/refusal-watchdog"]
@@ -1176,13 +1176,13 @@ retry = true
 retry_count = 0
 ready_cmd = """p=$(pgrep -f '[r]efusal-watchdog[.]py' | head -1); [ -n "$p" ] && pgrep -P "$p" -f 'inotifywait -m' >/dev/null"""
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/rust-web"]
 id = "sovereign/rust-web"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "./stack/services/rust-web.sh"]
 run = "exec ./stack/services/rust-web.sh"
 autostop = false
@@ -1195,7 +1195,7 @@ port = 25201
 resolved_port = [25201]
 depends = ["sovereign/shep"]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = true
 
 [daemons."sovereign/search-api"]
@@ -1214,7 +1214,7 @@ port = 25112
 resolved_port = [25112]
 depends = ["sovereign/shep"]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = true
 
 [daemons."sovereign/search-ui"]
@@ -1233,7 +1233,7 @@ port = 25114
 resolved_port = [25114]
 depends = ["sovereign/shep"]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = true
 
 [daemons."sovereign/sorry-watchdog"]
@@ -1248,13 +1248,13 @@ retry = true
 retry_count = 0
 ready_cmd = """p=$(pgrep -f '[s]orry-watchdog[.]py' | head -1); [ -n "$p" ] && pgrep -P "$p" -f 'inotifywait -m' >/dev/null"""
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/sovereign-chat"]
 id = "sovereign/sovereign-chat"
 status = "stopped"
-dir = "/home/toxic/sovereign/tools/sovereign-chat"
+dir = "/home/toxic/estate/tools/sovereign-chat"
 cmd = ["exec", "bun", "run", "chat.ts"]
 run = "exec bun run chat.ts"
 autostop = false
@@ -1266,7 +1266,7 @@ ready_port = 25120
 port = 25120
 resolved_port = [25120]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = true
 
 [daemons."sovereign/sovereign-chat".env]
@@ -1276,7 +1276,7 @@ SOVEREIGN_CHAT_TOKEN_FILE = "/home/toxic/.config/sovereign-chat-token"
 [daemons."sovereign/sovereign-exporter"]
 id = "sovereign/sovereign-exporter"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
+dir = "/home/toxic/estate/."
 cmd = ["exec", "python3", "./stack/services/sovereign-exporter.py"]
 run = "exec python3 ./stack/services/sovereign-exporter.py"
 autostop = false
@@ -1288,13 +1288,13 @@ ready_port = 25213
 port = 25213
 resolved_port = [25213]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/sovereign-stream-broker"]
 id = "sovereign/sovereign-stream-broker"
 status = "stopped"
-dir = "/home/toxic/sovereign/projects/range/ranch/stockyard/stream-broker"
+dir = "/home/toxic/estate/projects/range/ranch/stockyard/stream-broker"
 cmd = ["exec", "bun", "run", "src/index.ts"]
 run = "exec bun run src/index.ts"
 autostop = false
@@ -1307,7 +1307,7 @@ ready_cmd = "ss -ltn 'sport = :25215' | grep -q LISTEN"
 port = 25215
 resolved_port = [25215]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/sovereign-stream-broker".health_http]
@@ -1319,24 +1319,24 @@ retries = 3
 [daemons."sovereign/squawk-feed"]
 id = "sovereign/squawk-feed"
 status = "stopped"
-dir = "/home/toxic/sovereign/projects/range/ranch/squawk"
-cmd = ["exec", "/home/toxic/sovereign/hatch/agents/ember/squawk-relay/run-feed.sh"]
-run = "exec /home/toxic/sovereign/hatch/agents/ember/squawk-relay/run-feed.sh"
+dir = "/home/toxic/estate/projects/range/ranch/squawk"
+cmd = ["exec", "/home/toxic/estate/hatch/agents/ember/squawk-relay/run-feed.sh"]
+run = "exec /home/toxic/estate/hatch/agents/ember/squawk-relay/run-feed.sh"
 autostop = false
 last_exit_success = true
 retry = 0
 retry_count = 0
 ready_delay = 3
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/squawk-ws"]
 id = "sovereign/squawk-ws"
 status = "stopped"
-dir = "/home/toxic/sovereign/projects/range/ranch/squawk-ws"
-cmd = ["exec", "python3", "/home/toxic/sovereign/projects/range/ranch/squawk-ws/squawk_ws_server.py"]
-run = "exec python3 /home/toxic/sovereign/projects/range/ranch/squawk-ws/squawk_ws_server.py"
+dir = "/home/toxic/estate/projects/range/ranch/squawk-ws"
+cmd = ["exec", "python3", "/home/toxic/estate/projects/range/ranch/squawk-ws/squawk_ws_server.py"]
+run = "exec python3 /home/toxic/estate/projects/range/ranch/squawk-ws/squawk_ws_server.py"
 autostop = false
 last_exit_success = true
 retry = 0
@@ -1345,7 +1345,7 @@ ready_delay = 3
 ready_cmd = "ss -ltn 'sport = :25147' | grep -q LISTEN"
 port = 25147
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/squawk-ws".health_port]
@@ -1356,55 +1356,55 @@ timeout = "5s"
 
 [daemons."sovereign/squawk-ws".env]
 SQUAWK_WS_PORT = "25147"
-SQUAWK_CHAT_ROOT = "/home/toxic/sovereign/hatch/agents/ember/squawk-root"
+SQUAWK_CHAT_ROOT = "/home/toxic/estate/hatch/agents/ember/squawk-root"
 
 [daemons."sovereign/squawk-ws-client"]
 id = "sovereign/squawk-ws-client"
 status = "stopped"
-dir = "/home/toxic/sovereign/projects/range/ranch/squawk-ws"
-cmd = ["exec", "python3", "/home/toxic/sovereign/projects/range/ranch/squawk-ws/squawk_ws_client_local.py"]
-run = "exec python3 /home/toxic/sovereign/projects/range/ranch/squawk-ws/squawk_ws_client_local.py"
+dir = "/home/toxic/estate/projects/range/ranch/squawk-ws"
+cmd = ["exec", "python3", "/home/toxic/estate/projects/range/ranch/squawk-ws/squawk_ws_client_local.py"]
+run = "exec python3 /home/toxic/estate/projects/range/ranch/squawk-ws/squawk_ws_client_local.py"
 autostop = false
 last_exit_success = true
 retry = 0
 retry_count = 0
 ready_delay = 3
-ready_cmd = "find /home/toxic/sovereign/projects/range/ranch/squawk-ws/client-heartbeat -mmin -2 | grep -q ."
+ready_cmd = "find /home/toxic/estate/projects/range/ranch/squawk-ws/client-heartbeat -mmin -2 | grep -q ."
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/stash-guard"]
 id = "sovereign/stash-guard"
 status = "stopped"
-dir = "/home/toxic/sovereign"
-cmd = ["exec", "python3", "/home/toxic/sovereign/tools/stash-guard/stash-guard.py", "--repo", "/home/toxic/sovereign", "--deep", "--interval", "90"]
-run = "exec python3 /home/toxic/sovereign/tools/stash-guard/stash-guard.py --repo /home/toxic/sovereign --deep --interval 90"
+dir = "/home/toxic/estate"
+cmd = ["exec", "python3", "/home/toxic/estate/tools/stash-guard/stash-guard.py", "--repo", "/home/toxic/estate", "--deep", "--interval", "90"]
+run = "exec python3 /home/toxic/estate/tools/stash-guard/stash-guard.py --repo /home/toxic/estate --deep --interval 90"
 autostop = false
 last_exit_success = true
 retry = true
 retry_count = 0
 ready_delay = 3
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/tau"]
 id = "sovereign/tau"
 status = "stopped"
 dir = "/home/toxic"
-cmd = ["exec", "/home/toxic/sovereign/projects/range/ranch/barn/chute/chute.mjs", "--port", "25111", "--", "/home/toxic/sovereign/projects/range/ranch/stockyard/tau/packages/coding-agent/dist/omp", "acp", "-e", "/home/toxic/.tau/extensions/vansrouter.ts"]
-run = "exec /home/toxic/sovereign/projects/range/ranch/barn/chute/chute.mjs --port 25111 -- /home/toxic/sovereign/projects/range/ranch/stockyard/tau/packages/coding-agent/dist/omp acp -e /home/toxic/.tau/extensions/vansrouter.ts"
+cmd = ["exec", "/home/toxic/estate/projects/range/ranch/barn/chute/chute.mjs", "--port", "25111", "--", "/home/toxic/estate/projects/range/ranch/stockyard/tau/packages/coding-agent/dist/omp", "acp", "-e", "/home/toxic/.tau/extensions/vansrouter.ts"]
+run = "exec /home/toxic/estate/projects/range/ranch/barn/chute/chute.mjs --port 25111 -- /home/toxic/estate/projects/range/ranch/stockyard/tau/packages/coding-agent/dist/omp acp -e /home/toxic/.tau/extensions/vansrouter.ts"
 autostop = false
 last_exit_success = true
 retry = true
 retry_count = 0
-ready_cmd = "/home/toxic/sovereign/bin/tcp-probe 25111"
+ready_cmd = "/home/toxic/estate/bin/tcp-probe 25111"
 port = 25111
 resolved_port = [25111]
 depends = ["sovereign/shep"]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/tau".health_port]
@@ -1425,9 +1425,9 @@ VANSROUTER_API_KEY = "local-sovereign"
 [daemons."sovereign/toolcall-llm"]
 id = "sovereign/toolcall-llm"
 status = "stopped"
-dir = "/home/toxic/sovereign/engines/llama.cpp-b11059/llama-b11059"
-cmd = ["exec", "/home/toxic/sovereign/engines/llama.cpp-b11059/llama-b11059/llama-server", "-m", "/home/toxic/models/qwen3.5-9b-dflash-Q5_K_M.gguf", "--host", "127.0.0.1", "--port", "25152", "-ngl", "99", "-c", "32768", "--alias", "qwen3.5-9b-tool"]
-run = "exec /home/toxic/sovereign/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/models/qwen3.5-9b-dflash-Q5_K_M.gguf --host 127.0.0.1 --port 25152 -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
+dir = "/home/toxic/estate/engines/llama.cpp-b11059/llama-b11059"
+cmd = ["exec", "/home/toxic/estate/engines/llama.cpp-b11059/llama-b11059/llama-server", "-m", "/home/toxic/models/qwen3.5-9b-dflash-Q5_K_M.gguf", "--host", "127.0.0.1", "--port", "25152", "-ngl", "99", "-c", "32768", "--alias", "qwen3.5-9b-tool"]
+run = "exec /home/toxic/estate/engines/llama.cpp-b11059/llama-b11059/llama-server -m /home/toxic/models/qwen3.5-9b-dflash-Q5_K_M.gguf --host 127.0.0.1 --port 25152 -ngl 99 -c 32768 --alias qwen3.5-9b-tool"
 autostop = false
 last_exit_success = true
 retry = 5
@@ -1437,7 +1437,7 @@ ready_port = 25152
 port = 25152
 resolved_port = [25152]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/toolcall-llm".env]
@@ -1446,9 +1446,9 @@ TOOLCALL_PORT = "25152"
 [daemons."sovereign/vansrouter"]
 id = "sovereign/vansrouter"
 status = "stopped"
-dir = "/home/toxic/sovereign/."
-cmd = ["exec", "/home/toxic/sovereign/stack/services/vansrouter.sh"]
-run = "exec /home/toxic/sovereign/stack/services/vansrouter.sh"
+dir = "/home/toxic/estate/."
+cmd = ["exec", "/home/toxic/estate/stack/services/vansrouter.sh"]
+run = "exec /home/toxic/estate/stack/services/vansrouter.sh"
 autostop = false
 last_exit_success = true
 retry = true
@@ -1458,7 +1458,7 @@ ready_port = 20128
 port = 20128
 resolved_port = [20128]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/vansrouter".health_http]
@@ -1482,7 +1482,7 @@ ready_port = 25146
 port = 25146
 resolved_port = [25146]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/whatsapp-mcp".env]
@@ -1491,7 +1491,7 @@ WHATSAPP_MCP_PORT = "25146"
 [daemons."sovereign/yote"]
 id = "sovereign/yote"
 status = "stopped"
-dir = "/home/toxic/sovereign/projects/yote"
+dir = "/home/toxic/estate/projects/yote"
 cmd = ["exec", "bun", "run", "src/yote.ts"]
 run = "exec bun run src/yote.ts"
 autostop = false
@@ -1503,7 +1503,7 @@ port = 25102
 resolved_port = [25102]
 depends = ["sovereign/shep"]
 watch_mode = "native"
-watch_base_dir = "/home/toxic/sovereign"
+watch_base_dir = "/home/toxic/estate"
 mise = false
 
 [daemons."sovereign/yote".health_http]
@@ -1516,8 +1516,8 @@ retries = 3
 id = "toxic/awrawr-ws-exec"
 status = "stopped"
 dir = "/home/toxic"
-cmd = ["exec", "/home/toxic/.awrawr-mcp-venv/bin/python", "/home/toxic/sovereign/bridge/awrawr_ws_exec.py"]
-run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/sovereign/bridge/awrawr_ws_exec.py"
+cmd = ["exec", "/home/toxic/.awrawr-mcp-venv/bin/python", "/home/toxic/estate/bridge/awrawr_ws_exec.py"]
+run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/estate/bridge/awrawr_ws_exec.py"
 autostop = false
 last_exit_success = true
 retry = true

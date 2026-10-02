@@ -1,5 +1,5 @@
 import json, time
-L = "/home/toxic/sovereign/agents/oracle-market/ledger/ledger.jsonl"
+L = "/home/toxic/estate/agents/oracle-market/ledger/ledger.jsonl"
 now = time.time()
 buckets = {"1h": (0, 0, 0), "6h": (0, 0, 0), "24h": (0, 0, 0), "all": (0, 0, 0)}
 # (success, fail, slashed)

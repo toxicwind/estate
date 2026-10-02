@@ -28,17 +28,17 @@ flowchart LR
 
 ```bash
 # 1. Generate full GitHub-ready Markdown report to stdout
-bun run /home/toxic/sovereign/skills/tau-session-audit/helper/audit.ts --report
+bun run /home/toxic/estate/skills/tau-session-audit/helper/audit.ts --report
 
 # 2. Save report to a file for GitHub PR or review
-bun run /home/toxic/sovereign/skills/tau-session-audit/helper/audit.ts --report --out=SESSION_AUDIT.md
+bun run /home/toxic/estate/skills/tau-session-audit/helper/audit.ts --report --out=SESSION_AUDIT.md
 
 # 3. Check for specific anti-patterns
-bun run /home/toxic/sovereign/skills/tau-session-audit/helper/audit.ts --check todo-phantom
-bun run /home/toxic/sovereign/skills/tau-session-audit/helper/audit.ts --check patterns
+bun run /home/toxic/estate/skills/tau-session-audit/helper/audit.ts --check todo-phantom
+bun run /home/toxic/estate/skills/tau-session-audit/helper/audit.ts --check patterns
 
 # 4. Standard TSV dataframe and stats
-bun run /home/toxic/sovereign/skills/tau-session-audit/helper/audit.ts --all
+bun run /home/toxic/estate/skills/tau-session-audit/helper/audit.ts --all
 ```
 
 ---
@@ -70,7 +70,7 @@ During the audit of recent sessions (`2026-09-24T00-56-17` and `2026-09-23T20-59
 2. **What the models did**:
    - Misinterpreted the GitHub username (`@toxicwind`) as a package prefix.
    - Spawned an untracked root directory `projects/toxicwind/` with `@toxicwind/capabilities`, `@toxicwind/policy`, and renamed `coding-agent` to `@toxicwind/core`.
-   - Repeatedly hit `error TS5083: Cannot read file '/home/toxic/sovereign/projects/tsconfig.json'` because `projects/*` was omitted from root Bun workspaces.
+   - Repeatedly hit `error TS5083: Cannot read file '/home/toxic/estate/projects/tsconfig.json'` because `projects/*` was omitted from root Bun workspaces.
 
 3. **The Hallucination Smoking Gun**:
    - The model created an 18-item todo list.
@@ -82,7 +82,7 @@ During the audit of recent sessions (`2026-09-24T00-56-17` and `2026-09-23T20-59
 
 ## 🏛️ Monorepo Convention Findings
 
-- **Workspace Root**: [`/home/toxic/sovereign/package.json`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/package.json)
+- **Workspace Root**: [`/home/toxic/estate/package.json`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/package.json)
   - Workspaces configured: `['herd', 'herd/ui-svelte', 'packages/*', 'services/*']`.
   - Intended home for shared utilities: `packages/sovereign-utils` or `packages/utils` (already registered in workspace).
 - **Binary Distribution SSOT**:
@@ -99,7 +99,7 @@ During the audit of recent sessions (`2026-09-24T00-56-17` and `2026-09-23T20-59
 ## 🧪 Tests
 
 ```bash
-bun test /home/toxic/sovereign/skills/tau-session-audit/helper/audit.test.ts
+bun test /home/toxic/estate/skills/tau-session-audit/helper/audit.test.ts
 ```
 
 All 32 unit tests pass covering intent inference, anomaly scoring, and pattern detection.

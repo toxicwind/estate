@@ -1,6 +1,6 @@
 import subprocess, random, os
 
-SOV = "/home/toxic/sovereign"
+SOV = "/home/toxic/estate"
 WT = f"/home/toxic/modelpush-{random.randint(10000,99999)}"
 KDL = "tau/engine/packages/catalog/src/compat/rules/auth/nvidia.kdl"
 

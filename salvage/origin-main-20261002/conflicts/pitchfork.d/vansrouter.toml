@@ -4,7 +4,7 @@
 
 [daemons.vansrouter]
 port = 20128
-run = "exec /home/toxic/sovereign/stack/services/vansrouter.sh"
+run = "exec /home/toxic/estate/stack/services/vansrouter.sh"
 dir = "."
 mise = false
 retry = true

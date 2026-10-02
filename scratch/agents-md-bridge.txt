@@ -21,7 +21,7 @@ Cell copy: ~/AGENTS.md (authoritative if they disagree — flag the drift).
 - Use `fd` and `rg` (10.5.0 / 15.2.0, pacman). Never `find`/`grep`.
 - Unique per-task /tmp paths (`mktemp -d`); NEVER `rm -rf` a shared hardcoded /tmp path. Nothing precious in /tmp — stage under /home/toxic/.
 - Never end a turn with a backgrounded bridge/exec call outstanding — wait for delivery (yield_ms up to 120000).
-- Services are owned by pitchfork+mise (defs in /home/toxic/sovereign/pitchfork.toml + mise.toml). No competing systemd units. NEVER touch `awrawr-mcp.service` from inside a bridge call.
+- Services are owned by pitchfork+mise (defs in /home/toxic/estate/pitchfork.toml + mise.toml). No competing systemd units. NEVER touch `awrawr-mcp.service` from inside a bridge call.
 - NEVER run `bun run scripts/generate.ts` — retired (46aa41cca2); it would destroy 15 live daemons.
 - Verify `bash -lc true` after shell changes. Two failures on one target → stop and replan.
 - Never expose, print, log, or commit credentials. Secret values stay in the vault.

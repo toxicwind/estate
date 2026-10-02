@@ -2,8 +2,8 @@
 """Audit ${VAR} references in pitchfork.toml run/probe lines vs defined vars."""
 import re, sys
 
-toml_path = "/home/toxic/sovereign/pitchfork.toml"
-ports_path = "/home/toxic/sovereign/config/ports.env"
+toml_path = "/home/toxic/estate/pitchfork.toml"
+ports_path = "/home/toxic/estate/config/ports.env"
 
 text = open(toml_path).read()
 

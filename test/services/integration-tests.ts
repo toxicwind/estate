@@ -282,7 +282,7 @@ export async function testYoteHerdFallback(): Promise<ChainResult> {
 export async function testKimiClawBridge(): Promise<ChainResult> {
   const start = Date.now();
   try {
-    const bridgePath = "/home/toxic/sovereign/tools/kimi-claw/bridge.ts";
+    const bridgePath = "/home/toxic/estate/tools/kimi-claw/bridge.ts";
     const fs = await import("node:fs");
     if (!fs.existsSync(bridgePath))
       return {

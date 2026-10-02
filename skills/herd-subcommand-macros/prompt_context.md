@@ -11,33 +11,33 @@ This skill automates the process of extracting flags/subcommands from llama-serv
 
 1. **Ensure the script is present and executable**:
    ```bash
-   ls -l /home/toxic/sovereign/projects/range/ranch/stockyard/herd/scripts/generate-subcommand-macros.py
+   ls -l /home/toxic/estate/projects/range/ranch/stockyard/herd/scripts/generate-subcommand-macros.py
    ```
 
 2. **Run the macro generator**:
    ```bash
-   python3 /home/toxic/sovereign/projects/range/ranch/stockyard/herd/scripts/generate-subcommand-macros.py \
-     --binary /home/toxic/sovereign/engines/herd/beellama.cpp/build-cuda86/bin/llama-server \
-     --config /home/toxic/sovereign/config/herd.yaml
+   python3 /home/toxic/estate/projects/range/ranch/stockyard/herd/scripts/generate-subcommand-macros.py \
+     --binary /home/toxic/estate/engines/herd/beellama.cpp/build-cuda86/bin/llama-server \
+     --config /home/toxic/estate/config/herd.yaml
    ```
 
 3. **Verify the update**:
    ```bash
    # Check that AUTO_SUBCOMMAND_MACROS block exists
-   grep -n "AUTO_SUBCOMMAND_MACROS" /home/toxic/sovereign/config/herd.yaml
+   grep -n "AUTO_SUBCOMMAND_MACROS" /home/toxic/estate/config/herd.yaml
 
    # Count generated macros
-   grep -A 1000 "AUTO_SUBCOMMAND_MACROS:" /home/toxic/sovereign/config/herd.yaml | grep -E "^  ARG_" | wc -l
+   grep -A 1000 "AUTO_SUBCOMMAND_MACROS:" /home/toxic/estate/config/herd.yaml | grep -E "^  ARG_" | wc -l
 
    # Verify herd runtime
    curl -s http://127.0.0.1:25100/v1/models | jq '.data | length'
    ```
 
 ## Script Location
-`/home/toxic/sovereign/projects/range/ranch/stockyard/herd/scripts/generate-subcommand-macros.py`
+`/home/toxic/estate/projects/range/ranch/stockyard/herd/scripts/generate-subcommand-macros.py`
 
 ## Configuration Updated
-`/home/toxic/sovereign/config/herd.yaml` - adds/updates `AUTO_SUBCOMMAND_MACROS` mapping
+`/home/toxic/estate/config/herd.yaml` - adds/updates `AUTO_SUBCOMMAND_MACROS` mapping
 
 ## Notes
 - The script extracts all flags matching `--?[a-zA-Z0-9_-]+` pattern from `llama-server --help`

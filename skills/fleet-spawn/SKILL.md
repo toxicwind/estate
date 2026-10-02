@@ -61,7 +61,7 @@ The prompt's four demands, briefly:
 
 ## The fleet knowledgebase (REQUIRED READING — hard requirement)
 
-- Yote path: `/home/toxic/sovereign/docs/fleet-knowledgebase.md`
+- Yote path: `/home/toxic/estate/docs/fleet-knowledgebase.md`
 - GitHub: https://github.com/toxicwind/sovereign-projects/blob/main/docs/fleet-knowledgebase.md
 - Raw (for scripts): https://raw.githubusercontent.com/toxicwind/sovereign-projects/main/docs/fleet-knowledgebase.md
 
@@ -82,7 +82,7 @@ fleet-onboard --name <name> --task "<one-line task description>" --register
 branch-independent — it works no matter which branch the worktree sits on).
 On the hatch cell: `~/workspace/skills/fleet-spawn/fleet-onboard.sh`.
 Source of truth is `skills/fleet-spawn/fleet-onboard.sh` in this repo; the
-repo path `/home/toxic/sovereign/skills/fleet-spawn/fleet-onboard.sh` works
+repo path `/home/toxic/estate/skills/fleet-spawn/fleet-onboard.sh` works
 as a fallback on main checkouts. After any script change, redeploy to yote:
 copy the repo file over `/home/toxic/.local/bin/fleet-onboard` (byte-exact,
 `bash -n` before chmod +x).
@@ -206,7 +206,7 @@ fluff ("the readability relay... loudly held opinions about line-height")
 is wrong; rewrite it as the job.
 
 REQUIRED READING (hard — read before acting):
-- Fleet knowledgebase: /home/toxic/sovereign/docs/fleet-knowledgebase.md
+- Fleet knowledgebase: /home/toxic/estate/docs/fleet-knowledgebase.md
   (GitHub: https://github.com/toxicwind/sovereign-projects/blob/main/docs/fleet-knowledgebase.md)
 - Docs index: knowledgebase §5. Repo index: §3. Standing rules: §4.
 
@@ -265,13 +265,13 @@ Sign-off habit: <habit>
 
 ## References
 
-- Fleet knowledgebase: `/home/toxic/sovereign/docs/fleet-knowledgebase.md`
+- Fleet knowledgebase: `/home/toxic/estate/docs/fleet-knowledgebase.md`
   (§2 Active Crews, §4 standing rules, §5 docs index, §6 required-reading
   protocol).
 - Pack join prompt (first-class paste block): `skills/fleet-spawn/join-prompt.md`.
 - Audit verdict: fleet seq 11194. Dup-crew diagnosis: Chris, 2026-09-20.
 - squawk CLI: `~/workspace/bin/squawk` (`SQUAWK_SENDER`, `--profile`).
-- Server: `/home/toxic/sovereign/shingle-workspace/squawk_ws_server.py`
+- Server: `/home/toxic/estate/shingle-workspace/squawk_ws_server.py`
   (sender := frontmatter `from:` field).
 - Distinct-actor live proof: fleet seq 11284 (`kindling (ember's pack)`).
 - This skill: `skills/fleet-spawn/SKILL.md`; onboard script:

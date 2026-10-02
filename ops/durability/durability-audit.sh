@@ -6,7 +6,7 @@
 #   2. listening TCP ports with no pitchfork.toml daemon coverage
 #   3. shell profiles containing daemon logic (belongs in pitchfork/systemd)
 #   4. cron files / systemd units referencing ephemeral paths
-#   5. uncommitted live edits in /home/toxic/sovereign (state paths excluded)
+#   5. uncommitted live edits in /home/toxic/estate (state paths excluded)
 #
 # Alerts to squawk fleet ONLY when findings exist (alert on conditions, not on
 # a timer). Exit 0 = clean, 2 = findings reported.
@@ -14,7 +14,7 @@
 # Usage: durability-audit.sh [--alert]   # --alert posts to fleet; default prints
 set -uo pipefail
 
-REPO="${SOVEREIGN_REPO:-/home/toxic/sovereign}"
+REPO="${SOVEREIGN_REPO:-/home/toxic/estate}"
 TOML="$REPO/pitchfork.toml"
 ALLOW="$REPO/ops/durability/allowlist.txt"
 SQUAWK_ROOT="${SQUAWK_ROOT:-/home/toxic/shingle/squawk-root}"

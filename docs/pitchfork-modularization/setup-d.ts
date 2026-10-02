@@ -9,7 +9,7 @@
 import { parseToml, serVal } from "./lib/toml.ts";
 
 const ORIG = "./pitchfork.toml.orig";
-const SOV = "/home/toxic/sovereign";
+const SOV = "/home/toxic/estate";
 
 interface Block { kind: "daemon" | "groups"; name: string; text: string; dir?: string }
 
@@ -37,7 +37,7 @@ function splitBlocks(src: string): { preamble: string; blocks: Block[] } {
 }
 
 // Ground-truth ownership signal: the daemon's working dir, from the real config.
-// Relative dirs resolve against /home/toxic/sovereign.
+// Relative dirs resolve against /home/toxic/estate.
 function projectKey(dir: string, daemon: string): string {
   let d = dir;
   if (!d) return "sovereign";
@@ -105,7 +105,7 @@ for (const k of order) {
   // D1: one manifest per project, original text (comments preserved — the project owns this file)
   await Bun.write(`${p1}/daemons.toml`,
     `# ${k} — project-owned daemon manifest. This file is the source of truth for ${k}'s daemons.\n` +
-    `# Owned by the ${k} project; the parent at /home/toxic/sovereign only composes it.\n\n` +
+    `# Owned by the ${k} project; the parent at /home/toxic/estate only composes it.\n\n` +
     ds.map((d) => d.text).join("\n"));
 
   // D2: per-project drop-in dir, one daemon per file

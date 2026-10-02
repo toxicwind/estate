@@ -13,7 +13,7 @@ Date: 2026-09-14. Owner: Agent 2 (openfang workstream). Status: draft for Chris/
 
 - Rig Rust daemon 0.6.9 healthy on `127.0.0.1:25203` (pid 482688). Agents: `coyote` (llama-swap/kimi-auto — **broken**: `kimi-auto` isn't a valid llama-swap alias → "no router"), `assistant` (anthropic — **dead key** in daemon env).
 - Separate TS `axiom` service on `:25103` (pitchfork-owned, distinct from the Rust daemon — architecture still needs reconciling).
-- llama-swap on `:25100` (config `/home/toxic/sovereign/config/herd.yaml`): local models + a `pollinations-free` peer. **Pollinations closed the anonymous gate** — the dummy-bearer workaround is dead, so `kimi-k3`, `gpt-oss`, `muse-spark-1.2` etc. all 401 now.
+- llama-swap on `:25100` (config `/home/toxic/estate/config/herd.yaml`): local models + a `pollinations-free` peer. **Pollinations closed the anonymous gate** — the dummy-bearer workaround is dead, so `kimi-k3`, `gpt-oss`, `muse-spark-1.2` etc. all 401 now.
 - **Agent 2 pilot: NOT green.** Spawn/persist/message/capabilities all work; the LLM path is the blocker:
   - Daemon provider keys all stale (verified from daemon env, keys never left the box): nvidia 401, anthropic invalid, groq/cerebras 403, deepseek 402 (out of credits).
   - Only local model `fast` (= exaone-1.2b-iq4xs, 1.2B) answers, and it **cannot tool-call** — the pilot agent narrated the task as a bash script instead of invoking `file_read`/`shell_exec`; no proof file created.

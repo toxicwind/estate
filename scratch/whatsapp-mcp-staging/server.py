@@ -54,7 +54,7 @@ def _config() -> tuple[str, str]:
         raise RuntimeError(
             "WHATSAPP_API_TOKEN and WHATSAPP_PHONE_NUMBER_ID are not set. "
             "Place them in the pitchfork env for daemon 'whatsapp-mcp' "
-            "(/home/toxic/sovereign/pitchfork.toml) and reload pitchfork."
+            "(/home/toxic/estate/pitchfork.toml) and reload pitchfork."
         )
     return token, phone_id
 

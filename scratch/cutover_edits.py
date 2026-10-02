@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Mise-native cutover edits for /home/toxic/sovereign (2026-09-14).
+"""Mise-native cutover edits for /home/toxic/estate (2026-09-14).
 Idempotent string replacements. Run on awrawr-pc via the bridge.
 """
 import sys
 
-SOV = "/home/toxic/sovereign"
+SOV = "/home/toxic/estate"
 
 def patch(path, old, new, count=1):
     with open(path) as f:
@@ -145,6 +145,6 @@ patch(MT,
       '"health-nim-proxy" = "bash -c \'exec 3<>/dev/tcp/127.0.0.1/8000\'"\n'
       '"health-matter-server" = "bash -c \'exec 3<>/dev/tcp/127.0.0.1/5580\'"\n'
       '# Project doctor: mise/direnv boundary check (scripts/env-boundary-check.sh)\n'
-      '"doctor-project" = "./scripts/env-boundary-check.sh /home/toxic/sovereign"\n')
+      '"doctor-project" = "./scripts/env-boundary-check.sh /home/toxic/estate"\n')
 
 print("ALL EDITS APPLIED")

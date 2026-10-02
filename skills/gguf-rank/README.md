@@ -8,7 +8,7 @@ Profiles all GGUFs in the models directory and ranks them by max stable context,
 
 ### Procedure
 
-1. Call GET http://127.0.0.1:25010/rank?dir=/home/toxic/sovereign/models
+1. Call GET http://127.0.0.1:25010/rank?dir=/home/toxic/estate/models
 2. Format results as a ranked table: model | ctx | tps | ppl | tier
 3. Recommend fast/mid/deep tier assignment per model
 
@@ -20,7 +20,7 @@ Markdown table, sorted by tokens/sec descending within each quant class.
 
 ```bash
 # Rank all GGUF models
-curl "http://127.0.0.1:25010/rank?dir=/home/toxic/sovereign/models"
+curl "http://127.0.0.1:25010/rank?dir=/home/toxic/estate/models"
 
 # Example output format
 # Model | Max Context | TPS | PPL | Tier
@@ -42,7 +42,7 @@ Results are sorted by tokens/sec descending within each quant class, then groupe
 ### Config / optional services
 
 - `GET http://127.0.0.1:25010/rank` — ranking endpoint
-- `dir=/home/toxic/sovereign/models` — directory to scan for GGUF files (required query param)
+- `dir=/home/toxic/estate/models` — directory to scan for GGUF files (required query param)
 - Tier assignment thresholds are determined by the ranker based on observed tps/ppl distribution
 
 ### Dev / contributing

@@ -1,6 +1,6 @@
 import re, hashlib, os, subprocess
 
-CANON = '/home/toxic/sovereign/pitchfork.toml'
+CANON = '/home/toxic/estate/pitchfork.toml'
 pat = re.compile(r'^\[daemons\.([^\]]+)\]', re.M)
 
 def daemons(path):

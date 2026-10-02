@@ -34,7 +34,7 @@ flowchart LR
 ## Quick start
 
 ```bash
-python3 /home/toxic/sovereign/tools/websearch-mcp/server.py
+python3 /home/toxic/estate/tools/websearch-mcp/server.py
 ```
 
 Requires the `websearch` CLI on PATH (`uvx websearch-skill` provides it).

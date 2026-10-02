@@ -2,7 +2,7 @@
 """Drop the dead beellama-fast entry (404s; duplicate of small). Keep small/medium/code/long."""
 import sys, yaml
 
-p = sys.argv[1] if len(sys.argv) > 1 else '/home/toxic/sovereign/config/herd.yaml'
+p = sys.argv[1] if len(sys.argv) > 1 else '/home/toxic/estate/config/herd.yaml'
 lines = open(p).read().split('\n')
 start = next(i for i, l in enumerate(lines) if l == 'aliases:')
 end = next(i for i, l in enumerate(lines) if l == 'peers:')

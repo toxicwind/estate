@@ -1,7 +1,7 @@
 # =============================================================================
 # LLAMA-SWAP CONFIGURATION — RTX 3090 24GB
 # =============================================================================
-# Config: /home/toxic/sovereign/config/herd.yaml (canonical; llama-swap.yaml symlinks here)
+# Config: /home/toxic/estate/config/herd.yaml (canonical; llama-swap.yaml symlinks here)
 # =============================================================================
 
 healthCheckTimeout: 300
@@ -24,9 +24,9 @@ hooks:
   on_startup:
     preload: []
   on_model_loaded:
-    exec: 'echo "[$(date)] MODEL_LOADED: $MODEL" >> /home/toxic/sovereign/data/herd-events.log'
+    exec: 'echo "[$(date)] MODEL_LOADED: $MODEL" >> /home/toxic/estate/data/herd-events.log'
   on_model_unloaded:
-    exec: 'echo "[$(date)] MODEL_UNLOADED: $MODEL" >> /home/toxic/sovereign/data/herd-events.log'
+    exec: 'echo "[$(date)] MODEL_UNLOADED: $MODEL" >> /home/toxic/estate/data/herd-events.log'
 
 # RETIRED 2026-09-17: astMatrix in-process router replaced by Flock delegation.
 # Flock (:8000) is the unified multi-provider remote-API/completions subsystem.
@@ -199,19 +199,19 @@ models:
   # which advertises peer models ONLY prefixed. Bare targets ->
   # 'unroutable' -> herd hangs waiting for ready.
   oracle-judge-a:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/nex-agi/nex-n2.5-mini:free --standby openrouter-free/nex-agi/nex-n2.5-pro:free
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/nex-agi/nex-n2.5-mini:free --standby openrouter-free/nex-agi/nex-n2.5-pro:free
     description: "Oracle judge A (alias -> nex-agi/nex-n2.5-mini:free) -- fastest exact-output free judge (489ms census)"
     metadata:
       alias_of: nex-agi/nex-n2.5-mini:free
       role: oracle-judge
   oracle-judge-b:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/nex-agi/nex-n2.5-pro:free --standby openrouter-free/poolside/laguna-s-2.1:free
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/nex-agi/nex-n2.5-pro:free --standby openrouter-free/poolside/laguna-s-2.1:free
     description: "Oracle judge B (alias -> nex-agi/nex-n2.5-pro:free) -- exact-output NEX complement (799ms census)"
     metadata:
       alias_of: nex-agi/nex-n2.5-pro:free
       role: oracle-judge
   oracle-judge-c:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/poolside/laguna-s-2.1:free --standby openrouter-free/nex-agi/nex-n2.5-mini:free
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/poolside/laguna-s-2.1:free --standby openrouter-free/nex-agi/nex-n2.5-mini:free
     description: "Oracle judge C (alias -> poolside/laguna-s-2.1:free) -- third model family (2161ms census)"
     metadata:
       alias_of: poolside/laguna-s-2.1:free
@@ -238,7 +238,7 @@ models:
   # Ordered free-Kimi chain; shim advances on 5xx/conn/429/402/404;
   # 401 never advances. Paid Kimi excluded (free only).
   kimi:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --advance-on 5xx,conn,429,402,404 --name kimi
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --advance-on 5xx,conn,429,402,404 --name kimi
     description: "Kimi (alias -> maximal free-Kimi chain)"
     metadata:
       alias_of: openrouter-free/moonshotai/kimi-k3:free
@@ -249,7 +249,7 @@ models:
   # Ordered free-Kimi chain; shim advances on 5xx/conn/429/402/404;
   # 401 never advances. Paid Kimi excluded (free only).
   kimi-k2:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --advance-on 5xx,conn,429,402,404 --name kimi-k2
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --advance-on 5xx,conn,429,402,404 --name kimi-k2
     description: "Kimi (alias -> maximal free-Kimi chain)"
     metadata:
       alias_of: openrouter-free/moonshotai/kimi-k3:free
@@ -260,7 +260,7 @@ models:
   # Ordered free-Kimi chain; shim advances on 5xx/conn/429/402/404;
   # 401 never advances. Paid Kimi excluded (free only).
   kimi-code:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --advance-on 5xx,conn,429,402,404 --name kimi-code
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --advance-on 5xx,conn,429,402,404 --name kimi-code
     description: "Kimi (alias -> maximal free-Kimi chain)"
     metadata:
       alias_of: openrouter-free/moonshotai/kimi-k3:free
@@ -274,7 +274,7 @@ models:
   # after idle takes ~120-220s (serverless hot-load); SHIM_CONNECT_TIMEOUT
   # covers the header wait.
   kimi-k3-nim:
-    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py --port ${PORT} --target nim-kimi/moonshotai/kimi-k3 --name kimi-k3-nim
+    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target nim-kimi/moonshotai/kimi-k3 --name kimi-k3-nim
     env:
       - SHIM_CONNECT_TIMEOUT=240
     description: "Kimi K3 via NVIDIA NIM (genuine moonshotai/kimi-k3, cold-aware). Fails loudly; no fallback."

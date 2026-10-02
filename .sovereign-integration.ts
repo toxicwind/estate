@@ -7,7 +7,7 @@
 import { $ } from "bun";
 
 const SOV_PROJECTS = "/home/toxic/projects/sovereign-projects";
-const SOVEREIGN = "/home/toxic/sovereign";
+const SOVEREIGN = "/home/toxic/estate";
 
 async function integrate() {
   console.log("=== SOVEREIGN-PROJECTS -> SOVEREIGN INTEGRATION ===");
@@ -24,7 +24,7 @@ async function integrate() {
   const config = {
     timestamp: new Date().toISOString(),
     sovereignProjectsPath: SOV_PROJECTS,
-    symlinkFrom: "/home/toxic/sovereign-projects",
+    symlinkFrom: "/home/toxic/estate-projects",
     linkedToSovereign: {
       healthAudit: `${SOVEREIGN}/helpers/health-audit.ts`,
       gitMutator: `${SOVEREIGN}/helpers/git-mutator/cli.ts`,

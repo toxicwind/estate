@@ -8,7 +8,7 @@
     ,
     "sovereign-tools": {
       "command": "bun",
-      "args": ["/home/toxic/sovereign/helpers/sovereign-mcp-server.ts"],
+      "args": ["/home/toxic/estate/helpers/sovereign-mcp-server.ts"],
       "enabled": true
     }
   }

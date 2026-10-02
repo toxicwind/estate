@@ -58,10 +58,10 @@ Large file (300MB incompressible blob):
 
 ```bash
 # One-shot, default source set (~20GB code/archives/repos/docs)
-/home/toxic/sovereign/ranch/android-fleet/phone-backup/bin/fast-pull.sh /mnt/8TB/phone-archive
+/home/toxic/estate/ranch/android-fleet/phone-backup/bin/fast-pull.sh /mnt/8TB/phone-archive
 
 # Re-run the 8-method speed shootout
-/home/toxic/sovereign/ranch/android-fleet/phone-backup/bin/speed-race.sh ${TMPDIR:-$HOME/.cache}/speed-race
+/home/toxic/estate/ranch/android-fleet/phone-backup/bin/speed-race.sh ${TMPDIR:-$HOME/.cache}/speed-race
 ```
 
 Each run writes a timestamped manifest (`pull-manifest-*.txt`) with per-dir OK/FAIL, sizes, and file counts. **Never delete from the phone until the manifest is verified** (spot-check sizes + open a few archives).

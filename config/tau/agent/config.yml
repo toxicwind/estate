@@ -1,17 +1,17 @@
 modelRoles:
-  default: openrouter/stealth/space-bunny-alpha
-  slow: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
-  vision: openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
-  plan: openrouter/nvidia/nemotron-3-super-120b-a12b:free
-  advisor: openrouter/nvidia/nemotron-3-super-120b-a12b:free
-  judge: openrouter/nvidia/nemotron-3-super-120b-a12b:free
-  task: openrouter/nvidia/nemotron-3-super-120b-a12b:free
-  smol: openrouter/liquid/lfm-2.5-2.6b:free
-  commit: openrouter/liquid/lfm-2.5-2.6b:free
-  tiny: openrouter/liquid/lfm-2.5-2.6b:free
-  memory: openrouter/liquid/lfm-2.5-2.6b:free
-  verification: openrouter/liquid/lfm-2.5-2.6b:free
-  fallback: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  default: google-antigravity/gemini-3.8-flash
+  slow: openrouter/stealth/space-bunny-alpha
+  vision: openrouter/stealth/space-bunny-alpha
+  plan: openrouter/stealth/space-bunny-alpha
+  advisor: openrouter/stealth/space-bunny-alpha
+  judge: openrouter/stealth/space-bunny-alpha
+  task: openrouter/stealth/space-bunny-alpha
+  smol: openrouter/stealth/space-bunny-alpha
+  commit: openrouter/stealth/space-bunny-alpha
+  tiny: openrouter/stealth/space-bunny-alpha
+  memory: openrouter/stealth/space-bunny-alpha
+  verification: openrouter/stealth/space-bunny-alpha
+  fallback: openrouter/stealth/space-bunny-alpha
   web: web/exa
 defaultThinkingLevel: auto
 retry:
@@ -20,12 +20,9 @@ retry:
   modelFallback: true
   fallbackChains:
     openrouter/*:
-      - openrouter/liquid/lfm-2.5-2.6b:free
-      - openrouter/nvidia/nemotron-3-super-120b-a12b:free
-      - openrouter/nvidia/nemotron-3.5-lightning:free
+      - openrouter/stealth/space-bunny-alpha
     google-antigravity/*:
-      - openrouter/nvidia/nemotron-3.5-lightning:free
-      - openrouter/nvidia/nemotron-3-super-120b-a12b:free
+      - openrouter/stealth/space-bunny-alpha
 extensions:
   - /home/toxic/.bun/install/global/node_modules/billion-context/dist/agent/omp-native.js
 setupVersion: 2

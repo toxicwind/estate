@@ -1,7 +1,7 @@
 # Master Merge Decisions — Root Summary
 
 Generated: 2026-09-22
-Root Repo: `/home/toxic/sovereign`
+Root Repo: `/home/toxic/estate`
 
 ---
 

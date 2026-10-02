@@ -32,7 +32,7 @@ and `readyCmd` via `ss -ltn 'sport = :PORT'`.
 |---|---|
 | `run` | `run` (ports templated via `{{ vars.* }}`) |
 | `readyCmd` | `ready_cmd` (port templated) |
-| `dir: "."` | `dir = "/home/toxic/sovereign"` (absolute; generator's "." was ambiguous) |
+| `dir: "."` | `dir = "/home/toxic/estate"` (absolute; generator's "." was ambiguous) |
 | `mise: false` | `mise = false` (unchanged) |
 | `autoStart: true` | `auto = ["start"]` (matches live `[daemons.nginx]` convention) |
 | `group: "aux"` | no native equivalent → mise task with explicit daemon list at cutover |
@@ -42,7 +42,7 @@ and `readyCmd` via `ss -ltn 'sport = :PORT'`.
 ## Cutover checklist (post tau-ledger)
 
 1. `docker stop nim-proxy matter-server` (before/at restart — name+port conflicts).
-2. Merge staged `[vars]` + `[daemons.*]` into `/home/toxic/sovereign/mise.toml`.
+2. Merge staged `[vars]` + `[daemons.*]` into `/home/toxic/estate/mise.toml`.
 3. Delete the three ServiceDefs from `src/services/peripheral.ts`; remove the
    hand-appended `[daemons.nginx]` when `pitchfork.toml` is retired.
 4. Represent group `aux` as a mise task (`mise run aux-up/down/...`).

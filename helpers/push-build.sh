@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 set -a; source "$HOME/sovereign/config/.secrets" 2>/dev/null || true; set +a
-ROOT="/home/toxic/sovereign/projects/tau"
+ROOT="/home/toxic/estate/projects/tau"
 REPO=$(basename "$ROOT")
 PKG="$ROOT/packages/coding-agent/package.json"
 VER_BASE=$(jq -r .version "$PKG" 2>/dev/null || echo "18.3.0")

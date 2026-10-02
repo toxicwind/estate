@@ -3,7 +3,7 @@
 import re
 from pathlib import Path
 
-TOML = Path("/home/toxic/sovereign/pitchfork.toml")
+TOML = Path("/home/toxic/estate/pitchfork.toml")
 text = TOML.read_text()
 
 # 1. Add to [groups.all] daemons list (idempotent)

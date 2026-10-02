@@ -2,7 +2,7 @@
 # Watch the skills root and touch a marker on change.
 #
 # This lives in skills/lib/ because it *manages* the skills tier — it used to
-# hang off ~/bin/ as a stray script and hardcoded /home/toxic/sovereign/skills,
+# hang off ~/bin/ as a stray script and hardcoded /home/toxic/estate/skills,
 # which dangled the moment the estate moved to /home/toxic/estate.
 #
 # Consumers poll the marker to know when to pull; nothing here pulls or writes.

@@ -36,7 +36,7 @@ bin/sys_audit.sh --pid 1234
 bin/sys_audit.sh --target 8.8.8.8 --target 1.1.1.1
 
 # Watch file mtime for build contention
-bin/sys_audit.sh --path /home/toxic/sovereign/dist/omp
+bin/sys_audit.sh --path /home/toxic/estate/dist/omp
 
 # Combine multiple options
 bin/sys_audit.sh --pid 5678 --target 10.0.0.1 --path /tmp/build.log

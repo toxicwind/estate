@@ -1,6 +1,6 @@
 import io
 
-r = '/home/toxic/sovereign/tau-extensions/packages/tau-kimi-auto/README.md'
+r = '/home/toxic/estate/tau-extensions/packages/tau-kimi-auto/README.md'
 t = io.open(r, encoding='utf-8').read()
 
 old_lines = [

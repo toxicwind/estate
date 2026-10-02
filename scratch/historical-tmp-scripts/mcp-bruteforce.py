@@ -2,7 +2,7 @@
 """Bruteforce every browserless-mcp tool via real MCP stdio. Read responses, then kill (server doesn't exit on stdin EOF)."""
 import json, subprocess, select, time, sys
 
-MCP_SH = "/home/toxic/sovereign/projects/mesh/browserless/mcp.sh"
+MCP_SH = "/home/toxic/estate/projects/mesh/browserless/mcp.sh"
 TEST_PAGE = "data:text/html,<html><body><h1 id='h'>hello</h1><input id='i' value=''><button id='b' onclick=\"document.getElementById('h').textContent='clicked'\">go</button></body></html>"
 results = []
 

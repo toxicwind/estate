@@ -9,7 +9,7 @@ lines = [
   json.dumps({"jsonrpc":"2.0","id":13,"method":"tools/call","params":{"name":"get_metrics","arguments":{}}}),
   json.dumps({"jsonrpc":"2.0","id":14,"method":"tools/call","params":{"name":"get_sessions","arguments":{}}}),
 ]
-p = subprocess.Popen(["node","dist/index.js"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, cwd="/home/toxic/sovereign/projects/mesh/browserless")
+p = subprocess.Popen(["node","dist/index.js"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, cwd="/home/toxic/estate/projects/mesh/browserless")
 p.stdin.write("\n".join(lines)+"\n"); p.stdin.flush()
 got={}; deadline=time.time()+40
 while time.time()<deadline and len(got)<5:

@@ -45,9 +45,9 @@ Retention: last `--keep` (default 24) snapshots per worktree; older refs pruned.
 python3 tools/stash-guard/stash-guard.py --once
 
 # daemon (as run by pitchfork)
-python3 tools/stash-guard/stash-guard.py --repo /home/toxic/sovereign \
+python3 tools/stash-guard/stash-guard.py --repo /home/toxic/estate \
     --deep --interval 90 \
-    --extra-repos /home/toxic/sovereign/projects/tau-extensions,/home/toxic/sovereign/projects/tau-occupied-20260916
+    --extra-repos /home/toxic/estate/projects/tau-extensions,/home/toxic/estate/projects/tau-occupied-20260916
 
 # inspect
 python3 tools/stash-guard/stash-guard.py list

@@ -50,7 +50,7 @@ User runs "pi"
 4. Add AST matrix mcpproxy awareness to pi-agent fork
 5. Ensure retrieve_tools shows ALL ghas endpoints
 
-See: `/home/toxic/sovereign/audit/GHAS_INTEGRATION_PLAN.md`
+See: `/home/toxic/estate/audit/GHAS_INTEGRATION_PLAN.md`
 
 ---
 
@@ -110,7 +110,7 @@ Expected: `content` response
 cd /home/toxic/projects/llama-swap-main
 go build -o llama-swap .
 go test ./internal/flock/...
-cd /home/toxic/sovereign && mise run restart llama-swap
+cd /home/toxic/estate && mise run restart llama-swap
 ```
 
 ## 📋 PHASE 7: Resume pi Session

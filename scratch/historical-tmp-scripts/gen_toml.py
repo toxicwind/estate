@@ -123,7 +123,7 @@ def main():
     out["squawk-relay"] = gen_toml(manifests["squawk-relay"])
 
     for name, text in out.items():
-        d = "/home/toxic/sovereign/agents/%s" % name
+        d = "/home/toxic/estate/agents/%s" % name
         os.makedirs(d, exist_ok=True)
         p = os.path.join(d, "agent.toml")
         with open(p, "w") as f:

@@ -53,7 +53,7 @@ The engine-vendor-diff.csv contains rows of features with columns for: feature n
 
 ### Config / optional services
 
-- `/home/toxic/sovereign/helpers/push-build.sh` — push build dispatch script
+- `/home/toxic/estate/helpers/push-build.sh` — push build dispatch script
 - Brand queue at port 25148 — receives and processes queue entries
 - `engine-vendor-diff.csv` — engine vs vendor feature diff dataset
 - pandas — for DataFrame-based diff analysis (may need `pip install pandas`)

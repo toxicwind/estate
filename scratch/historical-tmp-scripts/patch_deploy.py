@@ -1,7 +1,7 @@
 """Port exact-PID supervised restart into yote's deploy-cell.py (v2: span replace)."""
 import sys
 
-p = "/home/toxic/sovereign/projects/bridge/hatch/deploy-cell.py"
+p = "/home/toxic/estate/projects/bridge/hatch/deploy-cell.py"
 s = open(p).read()
 
 if "def stop_connector_exact" not in s:

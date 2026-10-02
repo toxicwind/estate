@@ -11,7 +11,7 @@ import shutil, datetime
 
 ts = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
-p = "/home/toxic/sovereign/pitchfork.toml"
+p = "/home/toxic/estate/pitchfork.toml"
 shutil.copy(p, "/tmp/pitchfork.toml.bak-" + ts)
 s = open(p).read()
 start = s.find("# ws-exec-tunnel (2026-09-14)")
@@ -23,7 +23,7 @@ s = s[:start] + s[end:]
 open(p, "w").write(s)
 print("removed %d chars from pitchfork.toml" % len(removed))
 
-p2 = "/home/toxic/sovereign/config/ports.env"
+p2 = "/home/toxic/estate/config/ports.env"
 shutil.copy(p2, "/tmp/ports.env.bak-" + ts)
 lines = open(p2).read().splitlines(keepends=True)
 n0 = len(lines)
@@ -35,9 +35,9 @@ print("removed WS_EXEC_TUNNEL_PORT from ports.env")
 # validate toml still parses
 try:
     import tomllib
-    tomllib.load(open("/home/toxic/sovereign/pitchfork.toml", "rb"))
+    tomllib.load(open("/home/toxic/estate/pitchfork.toml", "rb"))
     print("toml parses OK")
 except ImportError:
     import subprocess
-    r = subprocess.run(["python3", "-c", "import tomllib; tomllib.load(open('/home/toxic/sovereign/pitchfork.toml','rb')); print('toml parses OK')"], capture_output=True, text=True)
+    r = subprocess.run(["python3", "-c", "import tomllib; tomllib.load(open('/home/toxic/estate/pitchfork.toml','rb')); print('toml parses OK')"], capture_output=True, text=True)
     print(r.stdout.strip() or r.stderr.strip()[:200])

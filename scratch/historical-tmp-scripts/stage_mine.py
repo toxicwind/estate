@@ -4,7 +4,7 @@
 import subprocess
 import sys
 
-REPO = "/home/toxic/sovereign"
+REPO = "/home/toxic/estate"
 
 
 def split_hunks(diff):

@@ -16,7 +16,7 @@ interface ProjectInfo {
   deps: string[];
 }
 
-const SEARCH_DIRS = ["/home/toxic/projects", "/home/toxic/sovereign"];
+const SEARCH_DIRS = ["/home/toxic/projects", "/home/toxic/estate"];
 
 async function scanProject(dir: string): Promise<ProjectInfo | null> {
   const files = await glob("*", { cwd: dir, nodir: true });
@@ -79,7 +79,7 @@ async function main() {
   // Output JSON
   const output = { total: results.length, rust, go, bun, node };
   await Bun.write(
-    "/home/toxic/sovereign/audit/language_audit.json",
+    "/home/toxic/estate/audit/language_audit.json",
     JSON.stringify(output, null, 2),
   );
 }

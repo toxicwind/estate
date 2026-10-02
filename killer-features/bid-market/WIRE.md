@@ -5,7 +5,7 @@ Frozen by t2-architect, fleet seq 10091. Do not renegotiate — adapt to this.
 ## Channel
 
 - **`market`** — public squawk channel carrying the wire. Channel dir:
-  `/home/toxic/sovereign/hatch/agents/ember/squawk-root/market/`
+  `/home/toxic/estate/hatch/agents/ember/squawk-root/market/`
 - **`fleet`** — receives short ASSIGN / RESULT / CANCEL digests (posted by the
   auctioneer as `auctioneer`). No wire traffic on fleet.
 

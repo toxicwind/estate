@@ -42,8 +42,8 @@
     ],
     "mcp": "All mcpproxy tools via retrieve_tools \u2192 describe_tool \u2192 call_tool_destructive",
     "scripts": {
-      "rf": "/home/toxic/sovereign/tools/rf",
-      "pitchfork-llm": "/home/toxic/sovereign/stack/bin/pitchfork-llm"
+      "rf": "/home/toxic/estate/tools/rf",
+      "pitchfork-llm": "/home/toxic/estate/stack/bin/pitchfork-llm"
     }
   },
   "never_use": {
@@ -51,11 +51,11 @@
     "truncation": "Read full files unless binary or 10000+ lines"
   },
   "coordination": {
-    "brain_dir": "/home/toxic/sovereign/brain/",
-    "pi_agent_brain": "/home/toxic/sovereign/brain/pi-agent/",
-    "plan": "/home/toxic/sovereign/brain/PLAN.json",
-    "manifest": "/home/toxic/sovereign/brain/MANIFEST.json",
-    "subagents": "/home/toxic/sovereign/brain/subagents/"
+    "brain_dir": "/home/toxic/estate/brain/",
+    "pi_agent_brain": "/home/toxic/estate/brain/pi-agent/",
+    "plan": "/home/toxic/estate/brain/PLAN.json",
+    "manifest": "/home/toxic/estate/brain/MANIFEST.json",
+    "subagents": "/home/toxic/estate/brain/subagents/"
   },
   "task_zero": {
     "name": "Nuvio LG TV Deployment",

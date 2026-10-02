@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Sovereign Modular Profile Loader
-# Usage: source this file or run via /home/toxic/sovereign/.profile
+# Usage: source this file or run via /home/toxic/estate/.profile
 # ==============================================================================
 SOVEREIGN_ROOT="${SOVEREIGN_ROOT:-$HOME/sovereign}"
 SOVEREIGN_PROFILE="${SOVEREIGN_PROFILE:-toxic}"

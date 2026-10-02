@@ -27,7 +27,7 @@ Headline: the README is the **upstream llama-swap README** with a fork section b
 | Remotes: `fork https://github.com/toxicwind/llama-swap.git (this repo)` | README.md "Remotes"; API: this repo is toxicwind/herd | WRONG |
 | Build: `cd ~/projects/llama-swap-main && go build -o llama-swap .` | local path; repo clones as `herd` | STALE |
 | Quickstart: `git clone https://github.com/mostlygeek/llama-swap.git` + `make clean all` | Makefile:18,21 has all/clean; clone URL is upstream, not this repo | WRONG URL (builds upstream, not the fork) |
-| Binary symlink `/home/toxic/sovereign/tools/llama-swap/llama-swap` → `projects/llama-swap-main/llama-swap` | local-machine path, not in repo | UNVERIFIED (local-only) |
+| Binary symlink `/home/toxic/estate/tools/llama-swap/llama-swap` → `projects/llama-swap-main/llama-swap` | local-machine path, not in repo | UNVERIFIED (local-only) |
 | Docker: unified/legacy images only from `ghcr.io/mostlygeek/llama-swap` | README.md Docker section | STALE — fork publishes its own namespace (see Missing) |
 
 Mechanical notes: `mentioned-paths-exist` FAIL only on the two local-machine paths above (expected — not in repo). `versions-match-manifests` WARN on "127.0.0" is a false positive (regex hit on 127.0.0.1 IPs). `external-links-alive` WARN on the shields.io downloads badge is an egress timeout, not a dead link.

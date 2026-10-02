@@ -2,12 +2,12 @@
 """Vex lane: first-class HTML/CSS in squawk UI + CORS on the feed.
 
 Marker-anchored, idempotent. Runs ON YOTE against
-/home/toxic/sovereign/projects/mesh/squawk (== /home/toxic/squawk bind mount).
+/home/toxic/estate/projects/mesh/squawk (== /home/toxic/squawk bind mount).
 """
 import sys
 from pathlib import Path
 
-BASE = Path("/home/toxic/sovereign/projects/mesh/squawk")
+BASE = Path("/home/toxic/estate/projects/mesh/squawk")
 
 NEW_RENDERER = r'''/* markdown + FIRST-CLASS raw HTML/CSS (Chris 2026-09-21, direct order):
    raw HTML passes through untouched and renders as authored — tags, inline

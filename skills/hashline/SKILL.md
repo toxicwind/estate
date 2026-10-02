@@ -14,7 +14,7 @@ of corrupting. That fail-fast is the whole point.
 - Repo: https://github.com/quangdang46/hashline (third-party, MIT, Rust — not ours)
 - Binary: `/home/toxic/.local/bin/hashline` (on yote, on PATH) — v0.9.19 (latest 2026-09-30)
 - Config/log: `/home/toxic/.hashline/` (`hashline.log`, `update-check.json`)
-- Project: `/home/toxic/sovereign/hatch/hashline/` (README + docs/discovery.md + docs/runbook.md + docs/wiring.md)
+- Project: `/home/toxic/estate/hatch/hashline/` (README + docs/discovery.md + docs/runbook.md + docs/wiring.md)
 - Idea lineage: can1357's oh-my-pi (same root as our TAU fork)
 
 ## The workflow (always this order)

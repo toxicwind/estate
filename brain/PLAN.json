@@ -15,26 +15,26 @@
       "description": "Current assistant managing configuration and plan updates"
     },
     "pi-agent": {
-      "brain": "/home/toxic/sovereign/brain/pi-agent/PLAN.json",
+      "brain": "/home/toxic/estate/brain/pi-agent/PLAN.json",
       "model": "longcat-2.0-free",
       "status": "active"
     },
     "grok": {
-      "brain": "/home/toxic/sovereign/brain/grok/PLAN.json",
+      "brain": "/home/toxic/estate/brain/grok/PLAN.json",
       "model": "pending",
       "status": "pending_setup"
     },
     "subagents": {
       "longcat-2.0-free": {
-        "brain": "/home/toxic/sovereign/brain/subagents/longcat-2.0-free/PLAN.json",
+        "brain": "/home/toxic/estate/brain/subagents/longcat-2.0-free/PLAN.json",
         "status": "active"
       }
     }
   },
   "shared": {
-    "generator": "/home/toxic/sovereign/brain/generate.sh",
-    "tasks_dir": "/home/toxic/sovereign/brain/tasks/",
-    "coordination": "/home/toxic/sovereign/brain/MANIFEST.json"
+    "generator": "/home/toxic/estate/brain/generate.sh",
+    "tasks_dir": "/home/toxic/estate/brain/tasks/",
+    "coordination": "/home/toxic/estate/brain/MANIFEST.json"
   },
   "global_rules": {
     "reactive_mode": true,

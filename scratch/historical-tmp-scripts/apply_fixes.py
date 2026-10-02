@@ -39,8 +39,8 @@ edit(toml, 'env = { SQUAWK_WS_TOKEN_FILE = "/home/toxic/.squawk-ws-token" }\n', 
 
 # --- 4. forensics-srv: remove double-supervised section (systemd owns it) ---
 old_forensics = '''[daemons.forensics-srv]
-run = "exec /home/toxic/sovereign/forensics-srv/venv/bin/python /home/toxic/sovereign/forensics-srv/server.py"
-dir = "/home/toxic/sovereign/forensics-srv"
+run = "exec /home/toxic/estate/forensics-srv/venv/bin/python /home/toxic/estate/forensics-srv/server.py"
+dir = "/home/toxic/estate/forensics-srv"
 mise = false
 retry = true
 boot_start = true

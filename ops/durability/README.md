@@ -21,7 +21,7 @@ The permanent mechanism behind "no monkeypatching": hunts the recurring monkey-p
 2. Listening TCP ports with no `pitchfork.toml` daemon coverage
 3. Shell profiles (`.bashrc`/`.profile`) containing daemon logic
 4. Cron files / systemd units referencing ephemeral paths
-5. Uncommitted live edits in `/home/toxic/sovereign` (state paths excluded)
+5. Uncommitted live edits in `/home/toxic/estate` (state paths excluded)
 6. Dirty submodules (bulk ops must be submodule-aware)
 
 ```mermaid
@@ -48,17 +48,17 @@ flowchart LR
 ## Quick start
 
 ```bash
-/home/toxic/sovereign/ops/durability/durability-audit.sh          # print only
-/home/toxic/sovereign/ops/durability/durability-audit.sh --alert  # print + fleet alert
+/home/toxic/estate/ops/durability/durability-audit.sh          # print only
+/home/toxic/estate/ops/durability/durability-audit.sh --alert  # print + fleet alert
 ```
 
 ## Install / reinstall
 
 ```bash
 mkdir -p ~/.config/systemd/user
-ln -sf /home/toxic/sovereign/ops/durability/systemd/durability-audit.service \
+ln -sf /home/toxic/estate/ops/durability/systemd/durability-audit.service \
        ~/.config/systemd/user/durability-audit.service
-ln -sf /home/toxic/sovereign/ops/durability/systemd/durability-audit.timer \
+ln -sf /home/toxic/estate/ops/durability/systemd/durability-audit.timer \
        ~/.config/systemd/user/durability-audit.timer
 systemctl --user daemon-reload
 systemctl --user enable --now durability-audit.timer

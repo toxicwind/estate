@@ -20,20 +20,20 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 ### yote — the bridge box (the heavy iron)
 - All of these names are THE SAME BOX: **yote = bridge = bridge box = awrawr-pc = github-mcp-host.tailc9ac71.ts.net**
 - CachyOS/Arch, **16 cores / 62 GB RAM**, RTX 3090 24 GB. This is where heavy work runs.
-- Canonical worktree: `/home/toxic/sovereign` (origin = `toxicwind/sovereign-projects` — see §3).
+- Canonical worktree: `/home/toxic/estate` (origin = `toxicwind/sovereign-projects` — see §3).
 - Reach it from hatch: `~/workspace/bin/yote-conn exec '<cmd>'`
 
 ### Key paths (yote)
 | Path | What it is |
 |---|---|
-| `/home/toxic/sovereign` | Canonical shared worktree (origin `toxicwind/sovereign-projects`). May hold live dirty WIP — preserve it; use clean temp worktrees for isolated pushes. |
+| `/home/toxic/estate` | Canonical shared worktree (origin `toxicwind/sovereign-projects`). May hold live dirty WIP — preserve it; use clean temp worktrees for isolated pushes. |
 | `/home/toxic/.tau` | Tau engine config |
 | `/home/toxic/shingle` (+ `.shingle` symlink) | Shingle root; squawk lives here — BOTH are now symlinks to `sovereign/hatch/agents/ember/` in-repo (reorg 2026-09-20); squawk-root is gitignored at .gitignore:295 |
-| `/home/toxic/sovereign/shingle-workspace/` | -> `scratch/` symlink (non-production staging; production bridge home is `bridge/`) |
-| `/home/toxic/sovereign/config/herd.yaml` | Herd router config (the model herd) |
-| `/home/toxic/sovereign/skills/paper-search/` | Paper-search skill (canonical home) |
+| `/home/toxic/estate/shingle-workspace/` | -> `scratch/` symlink (non-production staging; production bridge home is `bridge/`) |
+| `/home/toxic/estate/config/herd.yaml` | Herd router config (the model herd) |
+| `/home/toxic/estate/skills/paper-search/` | Paper-search skill (canonical home) |
 | `/home/toxic/super-ralph` | Super Ralph source |
-| `/home/toxic/sovereign/agents/oracle-market/` | Oracle market loop + watchdog |
+| `/home/toxic/estate/agents/oracle-market/` | Oracle market loop + watchdog |
 
 ### Services & ports (yote)
 | Port | Service |
@@ -84,7 +84,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | edge-max | Estate-wide cutting-edge coordinator | Ember (other chat) | RUNNING |
 | edge-additions | September-2026 cutting-edge additions (edge-max worker): keypool KEYPOOL_RACE_KEYS first-valid-wins racing, hft-latency --hedge-ms hedged launch, read-only calibrated routing-score publisher, squawk history_search CLI | Ember (edge-max crew) | DONE (2026-09-20) -- branch edge-max-20260920 commits c979437f26 (docs/evidence), adaaf1e80d (keypool recovery fix), 97d88d6f48 (squawk history_search), 15acd0f15c (routing-score), 8bba83a0fc (hft-latency --hedge-ms), a03edca0e2 (keypool racing); verified: selftest x5, race sidecar x3, hft/routing/squawk suites x3 each, legacy serial OK, real-root sanity OK; remote ref verified via ls-remote |
 | oracle-max | Oracle decision-engine maximal upgrade | Ember (other chat) | RUNNING |
-| oracle-hardening | Oracle decision-engine hardening (oracle-max child): router-separation fix (aliases only, concrete IDs refused), double-calibration removal (engine owns, exact-once proven), debate re-aggregation (parallel/diverse/bounded/fail-open, finals re-enter engine half-weight), resilient judges (null-content robustness, bounded retry, honest attempt accounting), framing fail-closed, canonical verdict-hash regression | oracle-hardening (Ember's crew) | DONE (2026-09-20) -- commits cbc73330ee (core), 2324269824 (null-content), 6b41fb5930 (harness timeouts), f3f56a4ab0 (hash test), 7e9fc6e119 (alias targets), 9ed0447bf3 (floors); sovereign-projects main 9ed0447bf3 verified via ls-remote; proofs: test_core 90/90, abstention 11/11, judge return 13/15 (CP lo 0.6366 vs old 0.3596); live /ask 200 tier=DEBATE p=0.179 latency=157s cost=$0.048 hash=b1b40ff1998ab436; deployed to /home/toxic/sovereign, oracle-core restarted via pitchfork |
+| oracle-hardening | Oracle decision-engine hardening (oracle-max child): router-separation fix (aliases only, concrete IDs refused), double-calibration removal (engine owns, exact-once proven), debate re-aggregation (parallel/diverse/bounded/fail-open, finals re-enter engine half-weight), resilient judges (null-content robustness, bounded retry, honest attempt accounting), framing fail-closed, canonical verdict-hash regression | oracle-hardening (Ember's crew) | DONE (2026-09-20) -- commits cbc73330ee (core), 2324269824 (null-content), 6b41fb5930 (harness timeouts), f3f56a4ab0 (hash test), 7e9fc6e119 (alias targets), 9ed0447bf3 (floors); sovereign-projects main 9ed0447bf3 verified via ls-remote; proofs: test_core 90/90, abstention 11/11, judge return 13/15 (CP lo 0.6366 vs old 0.3596); live /ask 200 tier=DEBATE p=0.179 latency=157s cost=$0.048 hash=b1b40ff1998ab436; deployed to /home/toxic/estate, oracle-core restarted via pitchfork |
 | openfang | Agents autonomous + OpenFang-enabled | Ember | workers in, 8 kernel agents Running |
 | herd-healer | Event-driven dead-peer self-healing for the herd router (per-peer FSM, EWMA, single-flight half-open) | Ember | DONE (2026-09-20): feature 837810e422, merge abe7bbb65d; re-verified live 2026-09-20 by ember-edge-selfheal (edge-forge #3 re-dispatch — coordinator claim of "no commits" was wrong, feature already on main): live binary 2026-09-20 17:04 contains peer_circuit_open + GET /peer-health; :25100 /peer-health serving per-peer FSM (healthy, threshold 8); projects/herd/scripts/probe-peer-health.sh ALL ASSERTIONS PASSED (weighted ejection, fail-fast 503 peer_circuit_open with backend untouched, half-open probe on real traffic, readmission, 200-empty weighted re-ejection); supervised herd PID 3124908 (started 17:24) runs the feature binary |
 | plumbline | Hesitance rollback root-cause hunt → canonical spawn-brief template | Ember | DONE — commits `f9095c2665` (template + registration) |
@@ -116,7 +116,7 @@ Retired/completed crews stay listed here with status DONE and their final commit
 
 | Repo | Canonical remote | Notes |
 |---|---|---|
-| sovereign-projects | `toxicwind/sovereign-projects` (branch `main`) | **THE canonical repo.** `/home/toxic/sovereign` worktree. NEVER push to the stale `toxicwind/sovereign` trap. |
+| sovereign-projects | `toxicwind/sovereign-projects` (branch `main`) | **THE canonical repo.** `/home/toxic/estate` worktree. NEVER push to the stale `toxicwind/sovereign` trap. |
 | guidellm | `toxicwind/guidellm` (fork of `vllm-project/guidellm`) | Benchmark harness fork |
 | mcpproxy-go | `toxicwind/mcpproxy-go` (fork of `smart-mcp-proxy/mcpproxy-go`) | MCP proxy fork |
 | hatch-docs | `toxicwind/hatch-docs` (private) | Runtime/credential docs |

@@ -2,7 +2,7 @@
 
 **Lane:** pitchfork-mise-modularization/paper-finder+pattern-borrow+hyper-race
 **Date:** 2026-09-30 · **Worker:** Bram (Ember's crew)
-**Parent stays:** `/home/toxic/sovereign/pitchfork.toml` — the parent entrypoint does not move.
+**Parent stays:** `/home/toxic/estate/pitchfork.toml` — the parent entrypoint does not move.
 Modularization changes how it is *produced*, never where it *lives*.
 
 ## TL;DR
@@ -113,7 +113,7 @@ exception — conf.d is a systemd/k3s idiom.
 
 ## 4. Hyper-race results
 
-Three designs prototyped against the **real** `/home/toxic/sovereign/pitchfork.toml`
+Three designs prototyped against the **real** `/home/toxic/estate/pitchfork.toml`
 (995 lines, 82 daemons), raced on: compose latency (20 concurrent runs),
 single-daemon change propagation, git merge conflicts (edit-edit + concurrent add),
 rollback triage cost, and a validity gate (TOML parses — Bun.TOML **and** Python
@@ -151,7 +151,7 @@ Reading the table:
 ## 5. Recommended design and rationale
 
 **Ship design B: `pitchfork.d/<name>.toml` — one manifest per daemon — composed
-in-place into `/home/toxic/sovereign/pitchfork.toml` by `bin/pf`.**
+in-place into `/home/toxic/estate/pitchfork.toml` by `bin/pf`.**
 
 Rationale, in order of weight:
 
@@ -206,11 +206,11 @@ Prototypes + harness that produced the measurements: `harness/compose.ts`,
 
 ## 7. Migration plan (82 daemons)
 
-The parent stays `/home/toxic/sovereign/pitchfork.toml`. Nothing moves.
+The parent stays `/home/toxic/estate/pitchfork.toml`. Nothing moves.
 
 1. **Land the tool** (this change): `bin/pf` + `RESULT.md` → `toxicwind/sovereign-projects`
    `main`. Zero effect on the running fleet: no fragments exist yet, `pf` is inert.
-2. **Split (one-time, safe):** on yote, in `/home/toxic/sovereign`:
+2. **Split (one-time, safe):** on yote, in `/home/toxic/estate`:
    `bin/pf migrate` → creates `pitchfork.d/` (82 manifests + `.hashes`).
    It self-verifies byte-identical rebuild; `pitchfork.toml` is untouched and every
    daemon keeps running.

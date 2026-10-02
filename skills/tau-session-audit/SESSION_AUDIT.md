@@ -80,10 +80,10 @@ Which models were most prone to phantom completions and syntax leaks:
 ### 1. Workspace Misalignment
 - Root [`package.json`](https://github.com/toxicwind/sovereign-projects/blob/forge/gate-retire-final/package.json) defines: `workspaces: ['herd', 'herd/ui-svelte', 'packages/*', 'services/*']`.
 - `projects/*` is **not** included in the root workspace declaration.
-- Intermediate `projects/tsconfig.json` was missing, causing child builds in `projects/toxicwind/*` to fail with `error TS5083: Cannot read file '/home/toxic/sovereign/projects/tsconfig.json'`.
+- Intermediate `projects/tsconfig.json` was missing, causing child builds in `projects/toxicwind/*` to fail with `error TS5083: Cannot read file '/home/toxic/estate/projects/tsconfig.json'`.
 
 ### 2. The `projects/toxicwind` Misnaming
-- Models misinterpreted the user's GitHub username (`@toxicwind`) as a package prefix and created an untracked root directory `/home/toxic/sovereign/projects/toxicwind/`.
+- Models misinterpreted the user's GitHub username (`@toxicwind`) as a package prefix and created an untracked root directory `/home/toxic/estate/projects/toxicwind/`.
 - Modules created inside: `capabilities/` (`@toxicwind/capabilities`), `policy/` (`@toxicwind/policy`), `registry-baseline/`, `repair/`.
 - **Resolution**: These utilities belong under the sovereign umbrella as `packages/sovereign-utils` or inside `packages/utils`, which is already registered in Bun workspaces.
 

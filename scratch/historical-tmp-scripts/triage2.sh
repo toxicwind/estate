@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /home/toxic/sovereign
+cd /home/toxic/estate
 echo "### UNTRACKED: absent from origin/main (candidates) ###"
 git status --porcelain | grep "^??" | awk "{print \$2}" | while read p; do
   if ! git ls-tree origin/main -- "$p" >/dev/null 2>&1 || [ -z "$(git ls-tree origin/main -- "$p" 2>/dev/null)" ]; then

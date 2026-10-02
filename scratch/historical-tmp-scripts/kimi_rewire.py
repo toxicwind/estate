@@ -4,7 +4,7 @@ Proven by router-proof 2026-09-21: 56.7% exact / 63.3% code vs 16.7% / 0% pinned
 Idempotent, asserts each anchor exactly once, never touches api_key lines."""
 import sys
 
-P = "/home/toxic/sovereign/bin/kimi-code-setup"
+P = "/home/toxic/estate/bin/kimi-code-setup"
 src = open(P).read()
 
 def rep(old, new):

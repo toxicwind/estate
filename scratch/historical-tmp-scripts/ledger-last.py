@@ -1,5 +1,5 @@
 import json
-L = "/home/toxic/sovereign/agents/oracle-market/ledger/ledger.jsonl"
+L = "/home/toxic/estate/agents/oracle-market/ledger/ledger.jsonl"
 last_tid = None
 for line in open(L):
     try:

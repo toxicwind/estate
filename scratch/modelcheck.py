@@ -1,6 +1,6 @@
 import subprocess
 
-SOV = "/home/toxic/sovereign"
+SOV = "/home/toxic/estate"
 
 def sh(*a):
     r = subprocess.run(a, capture_output=True, text=True, cwd=SOV, timeout=90)

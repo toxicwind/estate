@@ -1,5 +1,5 @@
 import re
-p = "/home/toxic/sovereign/pitchfork.toml"
+p = "/home/toxic/estate/pitchfork.toml"
 t = open(p).read()
 
 # 1. Update browser-keeper env: Wayland -> Xvnc :99

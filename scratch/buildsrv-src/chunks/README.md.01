@@ -3,7 +3,7 @@ dsrv/logs/b260914-175901-a1b2c3d4.log
 
 ## pitchfork stanza
 
-Hand-added to `/home/toxic/sovereign/pitchfork.toml` (generator retired —
+Hand-added to `/home/toxic/estate/pitchfork.toml` (generator retired —
 this file is hand-edited; `scripts/generate.ts` must never run):
 
 ```toml
@@ -11,8 +11,8 @@ this file is hand-edited; `scripts/generate.ts` must never run):
 # job queue, streaming logs, content-hash artifact cache. Source:
 # tools/buildsrv in toxicwind/sovereign-projects. Submit via `buildsrv`.
 [daemons.buildsrv]
-run = "exec /usr/bin/python3 /home/toxic/sovereign/tools/buildsrv/buildsrvd.py"
-dir = "/home/toxic/sovereign/tools/buildsrv"
+run = "exec /usr/bin/python3 /home/toxic/estate/tools/buildsrv/buildsrvd.py"
+dir = "/home/toxic/estate/tools/buildsrv"
 mise = false
 retry = true
 boot_start = true

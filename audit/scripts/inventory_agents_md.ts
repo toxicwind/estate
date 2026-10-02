@@ -94,7 +94,7 @@ async function main() {
     entries: entries.sort((a, b) => a.path.localeCompare(b.path)),
   };
 
-  const outPath = "/home/toxic/sovereign/audit/agents_md_inventory.json";
+  const outPath = "/home/toxic/estate/audit/agents_md_inventory.json";
   await Bun.write(outPath, JSON.stringify(output, null, 2));
   console.log(`Wrote ${entries.length} entries to ${outPath}`);
   console.log(`Unique hashes: ${byHash.size}`);

@@ -278,7 +278,7 @@ The routing matrix is [`config/herd.yaml`](config/herd.yaml) — the canonical l
 
 ## Quickstart
 
-On the box that hosts the stack, in `/home/toxic/sovereign`:
+On the box that hosts the stack, in `/home/toxic/estate`:
 
 ```bash
 mise install          # pins python/node/bun/rust/go/pitchfork per mise.toml
@@ -308,7 +308,7 @@ already succeeded):
 ## Repo layout
 
 ```text
-sovereign-projects/                     # this repo — /home/toxic/sovereign on yote
+sovereign-projects/                     # this repo — /home/toxic/estate on yote
 ├── pitchfork.toml          # service definitions (supervisor) — hand-edited SSOT
 ├── mise.toml               # tool pins + up/down/health/log tasks
 ├── mise.local.toml         # local task overrides (fix-socket, …)

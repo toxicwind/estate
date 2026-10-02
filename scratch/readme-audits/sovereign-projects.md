@@ -71,7 +71,7 @@ Real features, renames, or config changes in recent commits with no README cover
 
 - [x] Commands exist (`mise/tasks/up|down|health|status|doctor`)
 - [~] Ports/config keys match code (mostly; :25109, :25104, :25001–25099 range, `llama-swap.ts`, `config.yaml` are stale)
-- [~] A fresh user could follow it end to end (`cd /home/toxic/sovereign` assumes local dir name; prerequisites like Bun/Rust/Go toolchains not listed; `bun test` doesn't run the full suite as claimed)
+- [~] A fresh user could follow it end to end (`cd /home/toxic/estate` assumes local dir name; prerequisites like Bun/Rust/Go toolchains not listed; `bun test` doesn't run the full suite as claimed)
 
 ## Action taken
 

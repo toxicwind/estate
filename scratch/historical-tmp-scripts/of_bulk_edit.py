@@ -16,7 +16,7 @@ def edit(path, old, new, count=1):
     EDIT_LOG.append(f"OK {path}: {old[:50]!r}...")
 
 
-SOV = "/home/toxic/sovereign"
+SOV = "/home/toxic/estate"
 
 # ---- config/ports.env (SSOT) ----
 edit(

@@ -28,7 +28,7 @@ DevOps engineers, SREs, and developers managing hand-maintained router configs (
 # Create JSON patch spec (example for herd.yaml)
 cat > patch.json <<'EOF'
 {
-  "file": "/home/toxic/sovereign/config/herd.yaml",
+  "file": "/home/toxic/estate/config/herd.yaml",
   "edits": [
     {
       "old": "  # --- moonshot: Moonshot AI direct (PARKED 2026-09-20) ---",
@@ -56,8 +56,8 @@ herd-probe moonshot/kimi-k2.6 "ABSTRACT-7X3Q"
 - **Herd Probe**: `bin/herd-probe` - Exact-token probe through herd router: `herd-probe <model>/<version> "<token>"`
 - **Bridge Transfer**: For yote/cell transfers, see `~/TOOLS.md` ("Bridge exec: no large heredocs")
 - **Deep Links**:
-  - Master README: `/home/toxic/sovereign/README.md`
-  - Herd config docs: `/home/toxic/sovereign/config/` (herd.yaml, model_constraints.yaml)
+  - Master README: `/home/toxic/estate/README.md`
+  - Herd config docs: `/home/toxic/estate/config/` (herd.yaml, model_constraints.yaml)
   - Provenance: `projects/audits/moonshot-parked-audit-2026-09-20.md` §8
 
 ## Development

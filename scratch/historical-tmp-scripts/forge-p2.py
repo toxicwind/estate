@@ -1,4 +1,4 @@
-t = open('/home/toxic/sovereign/pitchfork.toml').read()
+t = open('/home/toxic/estate/pitchfork.toml').read()
 old_env = 'env = { WAYLAND_DISPLAY = "wayland-1", XDG_RUNTIME_DIR = "/run/user/1000" }'
 new_env = 'env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000" }'
 assert t.count(old_env) == 1
@@ -29,5 +29,5 @@ boot_start = true
 auto = ["start"]
 """
 t = t.replace(anchor, new_daemons + anchor)
-open('/home/toxic/sovereign/pitchfork.toml','w').write(t)
+open('/home/toxic/estate/pitchfork.toml','w').write(t)
 print("pitchfork.toml updated cleanly")

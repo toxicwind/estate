@@ -16,7 +16,7 @@ After changing this file, run `bun ranch/ops/bin/kb-rollup.ts`.
 
 ## Docs staleness audit (2026-10-02) -- DONE
 
-Audited estate docs for stale /home/toxic/sovereign paths, dead links, outdated claims.
+Audited estate docs for stale /home/toxic/estate paths, dead links, outdated claims.
 Committed (local-only; GitHub creds dead 2026-10-02, pushes blocked pending Chris):
 
 - sovereign-projects c037d68dd3: 12 docs fixed; estate-map regenerated; dupe KB deleted

@@ -13,7 +13,7 @@ Contract (ARCHITECTURE.md section 6):
 """
 import argparse, json, os, re, shutil, subprocess, sys, time
 
-VENV_PY = "/home/toxic/sovereign/killer-features/debate-oracle/e2e-venv/bin/python"
+VENV_PY = "/home/toxic/estate/killer-features/debate-oracle/e2e-venv/bin/python"
 GATE_TIMEOUT_S = 180
 
 TASK_MODULE = {

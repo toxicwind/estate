@@ -10,7 +10,7 @@
 """
 import sys
 
-P = "/home/toxic/sovereign/projects/mesh/squawk/ui.html"
+P = "/home/toxic/estate/projects/mesh/squawk/ui.html"
 s = open(P).read()
 assert "/nats-ws" not in s, "already patched"
 

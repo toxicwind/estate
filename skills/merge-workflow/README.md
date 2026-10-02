@@ -27,7 +27,7 @@ Release engineers and maintainers responsible for merging long-lived forks (espe
 ## Quick Start
 ```bash
 # Execute full merge workflow
-bash /home/toxic/sovereign/skills/merge-workflow/run.sh
+bash /home/toxic/estate/skills/merge-workflow/run.sh
 
 # Or run individual steps:
 # 1. Install merge stack (weave, suture, conflict-tools)

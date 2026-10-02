@@ -13,26 +13,26 @@ framing), daemon mode, config/env, measured proof.
 
 ## 2. Fleet knowledgebase — exact proposed diffs (main agent applies)
 
-File: `/home/toxic/sovereign/docs/fleet-knowledgebase.md` (canonical
+File: `/home/toxic/estate/docs/fleet-knowledgebase.md` (canonical
 toxicwind/sovereign-projects, main).
 
 **A. §4 Standing rules — append as rule 18** (after rule 17, before the
 "Oracle-as-approval procedure" paragraph):
 
 ```markdown
-18. **hashline is the first-class edit tool (Chris 2026-09-30).** Every agent edits files with hashline — binary first, MCP where the harness supports it; raw str_replace/sed for content edits is the fallback, not the default (a fallback is not a rollback). Workflow: `hashline read <file>` → copy the `line:hash` anchors → `hashline patch` (`SWAP`/`DEL`/`INS.*`/block ops). Stale reads hard-fail: re-read, re-anchor, retry — never force. Structural find: `hashline find-block <file> <anchor>`. MCP: `hashline mcp` (stdio, newline-delimited JSON-RPC, 6 tools). No text-search surface exists by design — grep/rg/ffs for search, hashline for the edit. Skill: `~/workspace/skills/hashline/SKILL.md`. Project: `/home/toxic/sovereign/hatch/hashline/`.
+18. **hashline is the first-class edit tool (Chris 2026-09-30).** Every agent edits files with hashline — binary first, MCP where the harness supports it; raw str_replace/sed for content edits is the fallback, not the default (a fallback is not a rollback). Workflow: `hashline read <file>` → copy the `line:hash` anchors → `hashline patch` (`SWAP`/`DEL`/`INS.*`/block ops). Stale reads hard-fail: re-read, re-anchor, retry — never force. Structural find: `hashline find-block <file> <anchor>`. MCP: `hashline mcp` (stdio, newline-delimited JSON-RPC, 6 tools). No text-search surface exists by design — grep/rg/ffs for search, hashline for the edit. Skill: `~/workspace/skills/hashline/SKILL.md`. Project: `/home/toxic/estate/hatch/hashline/`.
 ```
 
 **B. §5 Docs index — append two lines** (after the paper-search skill line):
 
 ```markdown
 - hashline skill: `~/workspace/skills/hashline/SKILL.md` (cell) — first-class edit tool: binary CLI + MCP server
-- hashline project: `/home/toxic/sovereign/hatch/hashline/` (README, discovery, runbook, wiring)
+- hashline project: `/home/toxic/estate/hatch/hashline/` (README, discovery, runbook, wiring)
 ```
 
 ## 3. Spawn-brief template — exact paragraph (main agent applies)
 
-File: `/home/toxic/sovereign/docs/spawn-brief-template.md`, in
+File: `/home/toxic/estate/docs/spawn-brief-template.md`, in
 `### Operating rules`, as a new bullet after the "Box routing." bullet:
 
 ```markdown

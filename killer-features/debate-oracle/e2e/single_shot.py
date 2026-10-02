@@ -10,7 +10,7 @@ import argparse, json, os, shutil, subprocess, sys, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from llm import chat, extract_python, gen_prompt, GEN_SYSTEM
 
-VENV_PY = "/home/toxic/sovereign/killer-features/debate-oracle/e2e-venv/bin/python"
+VENV_PY = "/home/toxic/estate/killer-features/debate-oracle/e2e-venv/bin/python"
 TASK_MODULE = {
     "token-bucket": "token_bucket.py",
     "toposort": "toposort.py",

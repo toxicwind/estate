@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-kb = Path(sys.argv[1] if len(sys.argv) > 1 else "/home/toxic/sovereign/docs/fleet-knowledgebase.md")
+kb = Path(sys.argv[1] if len(sys.argv) > 1 else "/home/toxic/estate/docs/fleet-knowledgebase.md")
 lines = kb.read_text().splitlines(keepends=True)
 if any(l.startswith("| lumen |") for l in lines):
     print("row already present, skipping")

@@ -112,6 +112,33 @@ curl 'http://127.0.0.1:25104/openfang/resolve?spec=nvidia:foo'  # spec check
 curl -X POST http://127.0.0.1:25104/admin/reload   # hot-reload secret files
 ```
 
+## Bodybuilder (multi-model fan-out)
+
+Decompose a natural-language job into parallel LLM request bodies, then
+execute them. Autonomous by default: the caller sends the prompt and gets
+answers back. `execute:false` restores bodies-only for callers that run the
+fan-out themselves.
+
+Generation vs execution: the decomposition LLM only generates request
+bodies; in autonomous mode the router executes each body through
+pin-aware dispatch and returns per-model results.
+
+Model-ID hygiene (2026-10-01/02): the decomposer LLM hallucinates IDs
+from training data. The router constrains it with the live free-pool
+allow-list, instructs verbatim IDs, then sanitizes: unknown IDs are
+rewritten round-robin to live pool members, temperature clamped to
+[0,2], max_tokens to [1,32000]. Malformed output falls back to
+deterministic fan-out across the live free pool.
+
+## Quality gates (2026-10-02)
+
+* Chat-capability filter: guard, embedding, reranker, moderation, reward,
+  and classifier models never enter chat candidate pools (isChatCapable
+  in router_config.ts).
+* Substance gate: substantive() rejects bare scalar scores as chat
+  completions, so classifier-shaped answers feed the flap-strike circuit
+  instead of being served.
+
 ## Openfang configuration
 
 Point Openfang at the router as an OpenAI-compatible endpoint:

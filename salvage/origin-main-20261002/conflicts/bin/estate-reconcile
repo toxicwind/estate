@@ -12,7 +12,7 @@
 #   estate-reconcile proc-audit               declared vs /proc exe for the daemons
 #
 # Environment:
-#   ESTATE_ROOT   sovereign worktree (default /home/toxic/sovereign)
+#   ESTATE_ROOT   sovereign worktree (default /home/toxic/estate)
 #   SQUAWK_ROOT   squawk root (default /home/toxic/.fleet-bus/squawk-root);
 #                 unset/no-fleet-dir => squawk alerts no-op (sandbox-safe)
 #
@@ -23,7 +23,7 @@
 # crews' live WIP.
 set -euo pipefail
 
-ESTATE_ROOT="${ESTATE_ROOT:-/home/toxic/sovereign}"
+ESTATE_ROOT="${ESTATE_ROOT:-/home/toxic/estate}"
 MANIFEST_DEFAULT="$ESTATE_ROOT/deploy/manifest.yaml"
 LOG_DIR="$ESTATE_ROOT/log"
 AUDIT_DIR="$LOG_DIR/drift-audit"
@@ -55,7 +55,7 @@ DEDUPE_STATE="$LOG_DIR/.squawk-dedupe.state"
 _seq_next() {
   local root="$1" ch="$2" sa=""
   for _sa in "$ESTATE_ROOT/projects/range/ranch/squawk/seq_alloc.py" \
-             /home/toxic/sovereign/projects/range/ranch/squawk/seq_alloc.py; do
+             /home/toxic/estate/projects/range/ranch/squawk/seq_alloc.py; do
     [ -f "$_sa" ] && sa="$_sa" && break
   done
   if [ -n "$sa" ]; then

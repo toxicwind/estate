@@ -8,7 +8,7 @@
 #                            NOT yet in pitchfork.toml)
 #
 # DO NOT APPLY until the tau-ledger cutover. At cutover, merge [vars] into
-# /home/toxic/sovereign/mise.toml [vars] and the [daemons.*] sections into
+# /home/toxic/estate/mise.toml [vars] and the [daemons.*] sections into
 # its [daemons], then retire the generator sources + pitchfork.toml.
 #
 # CUTOVER ORDER (from b747b511's handoff):
@@ -33,7 +33,7 @@ MATTER_SERVER_PORT = "5580"
 
 [daemons.nginx]
 run = "exec /usr/bin/nginx -c /etc/nginx/nginx.conf -g 'daemon off; pid /tmp/nginx-pitchfork.pid;'"
-dir = "/home/toxic/sovereign"
+dir = "/home/toxic/estate"
 mise = false
 retry = true
 ready_cmd = "ss -ltn 'sport = :{{ vars.NGINX_PORT }}' | grep -q LISTEN"
@@ -43,7 +43,7 @@ env = { NGINX_PORT = "{{ vars.NGINX_PORT }}" }
 # 2026-09-17: retired — nim-proxy absorbed by flock (pitchfork sovereign/flock, :8000). Docker-era def kept for provenance.
 # [daemons.nim-proxy]
 # run = "exec docker run --rm --name nim-proxy -p 127.0.0.1:{{ vars.NIM_PROXY_PORT }}:8000 -v nim-proxy-data:/data -e DATA_DIR=/data ghcr.io/miztertea/nim-proxy:latest"
-# dir = "/home/toxic/sovereign"
+# dir = "/home/toxic/estate"
 # mise = false
 # retry = true
 # ready_cmd = "ss -ltn 'sport = :{{ vars.NIM_PROXY_PORT }}' | grep -q LISTEN"
@@ -53,7 +53,7 @@ env = { NGINX_PORT = "{{ vars.NGINX_PORT }}" }
 
 [daemons.matter-server]
 run = "exec docker run --rm --name matter-server --net host -v /home/toxic/.matter_data:/data -v /run/dbus:/run/dbus:ro -e BLUETOOTH_ADAPTER=0 -e STORAGE_PATH=/data -e LOG_LEVEL=info ghcr.io/matter-js/matterjs-server:stable --storage-path /data --bluetooth-adapter 0"
-dir = "/home/toxic/sovereign"
+dir = "/home/toxic/estate"
 mise = false
 retry = true
 ready_cmd = "ss -ltn 'sport = :{{ vars.MATTER_SERVER_PORT }}' | grep -q LISTEN"

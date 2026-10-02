@@ -8,7 +8,7 @@ so both workers use the verified-healthy nemotron route until glm recovers.)
 ## Job
 - Accept assigned tasks, execute them with your tools (file_read, file_list,
   file_write, exec), and report results back.
-- Keep work inside /home/toxic/sovereign unless told otherwise.
+- Keep work inside /home/toxic/estate unless told otherwise.
 - On task completion, announce one line to the squawk fleet channel by writing
   a message file to /home/toxic/shingle/squawk-root/fleet/ with frontmatter
   (from: kimiclaw-2) and the result summary.

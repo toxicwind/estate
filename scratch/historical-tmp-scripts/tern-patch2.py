@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """tern 2026-09-21: post_task.py --exec-mode support."""
-P = "/home/toxic/sovereign/agents/oracle-market/bin/post_task.py"
+P = "/home/toxic/estate/agents/oracle-market/bin/post_task.py"
 src = open(P, encoding="utf-8").read()
 
 old_args = '    ap.add_argument("--payload-file", required=True)\n    ap.add_argument("--from", dest="frm", default="ember")'

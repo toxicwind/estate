@@ -35,7 +35,7 @@ def buildsrv_submit(name: str, cmd: str, repo: str = "",
         argv += ["--toolchain", toolchain]
     return _buildsrv_run(argv)'''
 
-NEW_SUBMIT = '''_BUILDSRV_DEFAULT_REPO = "/home/toxic/sovereign/tools/buildsrv"
+NEW_SUBMIT = '''_BUILDSRV_DEFAULT_REPO = "/home/toxic/estate/tools/buildsrv"
 
 
 @mcp.tool()

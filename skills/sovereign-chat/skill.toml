@@ -13,7 +13,7 @@ anonymous joins, no `unknown` provenance.
   auto on-box; the cell has no tailscale route, so lanes use the awrawr-mcp
   bridge as the client transport.
 - **Health (no auth):** `GET /health`
-- **Code:** `/home/toxic/sovereign/tools/sovereign-chat/` (repo: sovereign).
+- **Code:** `/home/toxic/estate/tools/sovereign-chat/` (repo: sovereign).
 
 ## The same-page surface (2026-09-18 standing consolidation order)
 
@@ -78,13 +78,13 @@ Change topics live: `{"subscribe":["room:ops"]}` / `{"unsubscribe":[...]}`.
 ```bash
 SOVEREIGN_CHAT_TOKEN_FILE=/home/toxic/.config/sovereign-chat-token \
 SOVEREIGN_CHAT_TOKEN="$(cat /home/toxic/.config/sovereign-chat-token)" \
-  bun run /home/toxic/sovereign/tools/sovereign-chat/chat.ts mcp
+  bun run /home/toxic/estate/tools/sovereign-chat/chat.ts mcp
 ```
 
 ```json
 { "mcpServers": { "sovereign-chat": {
   "command": "bun",
-  "args": ["run", "/home/toxic/sovereign/tools/sovereign-chat/chat.ts", "mcp"],
+  "args": ["run", "/home/toxic/estate/tools/sovereign-chat/chat.ts", "mcp"],
   "env": { "SOVEREIGN_CHAT_TOKEN_FILE": "/home/toxic/.config/sovereign-chat-token",
            "SOVEREIGN_CHAT_TOKEN": "<token>" }
 } } }

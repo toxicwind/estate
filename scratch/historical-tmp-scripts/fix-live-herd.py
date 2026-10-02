@@ -1,5 +1,5 @@
 import yaml
-p = "/home/toxic/sovereign/config/herd.yaml"
+p = "/home/toxic/estate/config/herd.yaml"
 s = open(p).read()
 s2 = s.replace("--target moonshot/kimi-k2.6", "--target kimi-k2.6")
 s2 = s2.replace("--target moonshot/kimi-k2.7-code", "--target kimi-k2.7-code")

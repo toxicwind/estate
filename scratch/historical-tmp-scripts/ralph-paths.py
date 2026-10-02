@@ -1,8 +1,8 @@
 import json, datetime, os
 from collections import defaultdict
 
-LED = "/home/toxic/sovereign/agents/oracle-market/ledger/ledger.jsonl"
-WORK = "/home/toxic/sovereign/agents/oracle-market/work"
+LED = "/home/toxic/estate/agents/oracle-market/ledger/ledger.jsonl"
+WORK = "/home/toxic/estate/agents/oracle-market/work"
 
 settles = [json.loads(l) for l in open(LED)
            if json.loads(l).get("event") == "settled"]

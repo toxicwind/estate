@@ -1,4 +1,4 @@
-p = "/home/toxic/sovereign/bin/daemon-lint"
+p = "/home/toxic/estate/bin/daemon-lint"
 lines = open(p, encoding="utf-8").read().split("\n")
 
 # header: file lines 9-10 (0-indexed 8..9)

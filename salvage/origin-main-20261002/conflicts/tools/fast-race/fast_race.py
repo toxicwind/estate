@@ -26,7 +26,7 @@ import sys
 import time
 
 DEFAULT_LANES = ["127.0.0.1:25122", "127.0.0.1:25001"]
-LOG_PATH = "/home/toxic/sovereign/data/fast-race.log"
+LOG_PATH = "/home/toxic/estate/data/fast-race.log"
 STALE_CONN_ERRORS = (http.client.RemoteDisconnected, BrokenPipeError,
                      ConnectionResetError)
 

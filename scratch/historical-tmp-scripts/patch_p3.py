@@ -5,7 +5,7 @@ written only after all replacements succeed. No daemons touched."""
 import shutil
 import sys
 
-P = "/home/toxic/sovereign/agents/oracle-market/bin/oracle_ask.py"
+P = "/home/toxic/estate/agents/oracle-market/bin/oracle_ask.py"
 BAK = P + ".bak-nightjar-p3"
 
 with open(P) as f:

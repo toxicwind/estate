@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Sovereign Modular Profile System - absolute, no dynamic dirname
-export SOVEREIGN_ROOT="/home/toxic/sovereign"
+export SOVEREIGN_ROOT="/home/toxic/estate"
 export SOVEREIGN_PROFILE="${SOVEREIGN_PROFILE:-toxic}"
 PROFILE_DIR="${SOVEREIGN_ROOT}/profiles/${SOVEREIGN_PROFILE}"
 DEFAULT_DIR="${SOVEREIGN_ROOT}/profiles/default"

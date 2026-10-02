@@ -16,7 +16,7 @@ def chain_cmd(primary_first=True):
     cands = list(FREE_CHAIN)
     target, standbys = cands[0], cands[1:]
     sb = " ".join("--standby %s" % s for s in standbys)
-    return ("python3 /home/toxic/sovereign/config/herd.d/alias-shim.py "
+    return ("python3 /home/toxic/estate/config/herd.d/alias-shim.py "
             "--port ${PORT} --target %s %s %s --name %s")
 
 # --- 1. kimi / kimi-k2 / kimi-code aliases -> free-Kimi chains ---
@@ -32,7 +32,7 @@ for alias in ("kimi", "kimi-k2", "kimi-code"):
         "  # Ordered free-Kimi chain; shim advances on 5xx/conn/429/402/404;\n"
         "  # 401 never advances. Paid Kimi excluded (free only).\n"
         "  %s:\n"
-        "    cmd: python3 /home/toxic/sovereign/config/herd.d/alias-shim.py "
+        "    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py "
         "--port ${PORT} --target %s %s %s --name %s\n"
         "    description: \"Kimi (alias -> maximal free-Kimi chain)\"\n"
         "    metadata:\n"

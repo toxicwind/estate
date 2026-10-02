@@ -12,7 +12,7 @@ Fix: subtract a post buffer so the subprocess times out BEFORE the
 oracle's deadline, giving the bidder time to preserve evidence and
 post the partial result.
 """
-P = "/home/toxic/sovereign/agents/oracle-market/bin/bidder.py"
+P = "/home/toxic/estate/agents/oracle-market/bin/bidder.py"
 src = open(P, encoding="utf-8").read()
 
 old = "        ceiling = min(timeout_ms / 1000.0, RALPH_CAP_S)\n"

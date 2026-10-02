@@ -13,7 +13,7 @@ There is **no Caddy** and **no separate “landing” service**. Ops UI is **rus
 ## Quick start
 
 ```bash
-cd /home/toxic/sovereign
+cd /home/toxic/estate
 mise install
 mise run up       # core group: herd, qdrant, redis, dnsmasq, search-api, mesh-hub, prometheus, grafana, mesh
 mise run health

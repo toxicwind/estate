@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-SRC=/home/toxic/sovereign
+SRC=/home/toxic/estate
 DST=/tmp/sp-salvage
 cd "$DST"
 git fetch -q origin
@@ -14,7 +14,7 @@ for f in $FILES; do
 done
 git -c user.name=ember -c user.email=ember@hatch commit -q -m "sweep: salvage crew work stranded in stale nim-probe-20260920 tree
 
-Rescues genuinely-new content from the /home/toxic/sovereign +
+Rescues genuinely-new content from the /home/toxic/estate +
 /home/toxic/projects/sovereign-projects twins (both stuck on
 nim-probe-20260920, 324 behind main; working trees byte-identical,
 so the duplicate checkout contributed nothing extra). Each file was

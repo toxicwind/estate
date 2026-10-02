@@ -1,11 +1,11 @@
 """P4 patch: append-only JSONL failure-evidence logger for judge attempts."""
 import sys
 
-P = "/home/toxic/sovereign/agents/oracle-market/bin/oracle_ask.py"
+P = "/home/toxic/estate/agents/oracle-market/bin/oracle_ask.py"
 src = open(P).read()
 
 # --- Edit 1: module-level constants after WORK ---
-anchor1 = 'WORK = os.environ.get("ORACLE_WORK", "/home/toxic/sovereign/agents/oracle-market/work")'
+anchor1 = 'WORK = os.environ.get("ORACLE_WORK", "/home/toxic/estate/agents/oracle-market/work")'
 assert src.count(anchor1) == 1, "anchor1 count=%d" % src.count(anchor1)
 consts = anchor1 + '''
 

@@ -32,7 +32,7 @@
       {
         "child_agent_id": "0d5a1320-eb0b-4645-9152-a8baaaba2e42",
         "completed_at": 1789385209,
-        "outcome": "**Secret check complete — files not found, no scan was possible.**\n\nI searched for `mock_token_file.txt` and `test_secret_sample.txt` on awrawr-pc thoroughly and they do not exist:\n\n- `fd` for both exact names under `/home/toxic/sovereign` → no hits\n- Case-insensitive `fd` across all of `/home/toxic",
+        "outcome": "**Secret check complete — files not found, no scan was possible.**\n\nI searched for `mock_token_file.txt` and `test_secret_sample.txt` on awrawr-pc thoroughly and they do not exist:\n\n- `fd` for both exact names under `/home/toxic/estate` → no hits\n- Case-insensitive `fd` across all of `/home/toxic",
         "status": "completed"
       },
       {
@@ -62,7 +62,7 @@
       {
         "child_agent_id": "1a198f7e-047a-4e9b-8195-ed3cdf793d6c",
         "completed_at": 1789384629,
-        "outcome": "Scrub complete. Full report:\n\n## What I did\n\n**PART A — git history.** Found the yote work in `/home/toxic/sovereign` (branch `yote-repair`), not `projects/yote`. **Important correction to what was relayed earlier: `bdde78b8` is NOT local-only.** It's on GitHub via the archive remote (`toxicwind/loc",
+        "outcome": "Scrub complete. Full report:\n\n## What I did\n\n**PART A — git history.** Found the yote work in `/home/toxic/estate` (branch `yote-repair`), not `projects/yote`. **Important correction to what was relayed earlier: `bdde78b8` is NOT local-only.** It's on GitHub via the archive remote (`toxicwind/loc",
         "status": "completed"
       },
       {
@@ -380,7 +380,7 @@
       {
         "child_agent_id": "69ff14ad-ce8d-4c27-b392-d71be3589d0a",
         "completed_at": 1789379675,
-        "outcome": "All green. Final report:\n\n## Done — dotfiles audited, fixed, and consolidated for real\n\n**The \"end4\" repo:** it's `toxicwind/sovereign-end4`, cloned at `/home/toxic/sovereign/shell/ii` (dotbot-based: `dots/` + `install.conf.yaml`). It had zero shell dotfiles — home's bash config lived only in home, ",
+        "outcome": "All green. Final report:\n\n## Done — dotfiles audited, fixed, and consolidated for real\n\n**The \"end4\" repo:** it's `toxicwind/sovereign-end4`, cloned at `/home/toxic/estate/shell/ii` (dotbot-based: `dots/` + `install.conf.yaml`). It had zero shell dotfiles — home's bash config lived only in home, ",
         "status": "completed"
       },
       {

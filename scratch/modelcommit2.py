@@ -1,6 +1,6 @@
 import subprocess, base64, json, os
 
-SOV = "/home/toxic/sovereign"
+SOV = "/home/toxic/estate"
 KDL = "tau/engine/packages/catalog/src/compat/rules/auth/nvidia.kdl"
 REPO = "toxicwind/sovereign-projects"
 

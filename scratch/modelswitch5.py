@@ -1,6 +1,6 @@
 import subprocess
 
-SOV = "/home/toxic/sovereign"
+SOV = "/home/toxic/estate"
 KDL = "tau/engine/packages/catalog/src/compat/rules/auth/nvidia.kdl"
 
 def sh(*a):

@@ -7,7 +7,7 @@ with tree hierarchy, identifies duplicates, symlinks, orphans, and recent activi
 
 Usage:
     python local_audit.py --path /home/toxic/projects
-    python local_audit.py --path /home/toxic/sovereign --parquet out.parquet
+    python local_audit.py --path /home/toxic/estate --parquet out.parquet
     python local_audit.py --all --json out.json
 """
 
@@ -55,7 +55,7 @@ def scan_git_repos(path: str) -> List[Dict]:
         
         # Determine area
         abs_path = str(d.resolve())
-        if abs_path.startswith("/home/toxic/sovereign/"):
+        if abs_path.startswith("/home/toxic/estate/"):
             area = "sovereign"
         elif abs_path.startswith("/home/toxic/projects/"):
             area = "projects"
@@ -197,7 +197,7 @@ def main():
     parser.add_argument("--stream", action="store_true", help="Enable streaming output")
     args = parser.parse_args()
 
-    paths = ["/home/toxic/projects", "/home/toxic/sovereign"] if args.all else [args.path]
+    paths = ["/home/toxic/projects", "/home/toxic/estate"] if args.all else [args.path]
     
     all_rows = []
     for p in paths:

@@ -136,7 +136,7 @@ Tools: `join`, `heartbeat`, `post_message`, `read_messages`, `list_presence`,
 
 ```json
 { "mcpServers": { "sovereign-chat": {
-  "command": "bun", "args": ["run", "/home/toxic/sovereign/tools/sovereign-chat/chat.ts", "mcp"],
+  "command": "bun", "args": ["run", "/home/toxic/estate/tools/sovereign-chat/chat.ts", "mcp"],
   "env": { "SOVEREIGN_CHAT_TOKEN_FILE": "/home/toxic/.config/sovereign-chat-token",
             "SOVEREIGN_CHAT_TOKEN": "<token>" }
 } } }

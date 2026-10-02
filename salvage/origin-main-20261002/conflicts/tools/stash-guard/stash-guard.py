@@ -611,7 +611,7 @@ def cmd_run(args):
 
 def main():
     ap = argparse.ArgumentParser(description="stash-guard")
-    ap.add_argument("--repo", default="/home/toxic/sovereign")
+    ap.add_argument("--repo", default="/home/toxic/estate")
     ap.add_argument("--state-dir",
                     default=os.path.expanduser("~/.local/state/stash-guard"))
     ap.add_argument("--interval", type=int, default=DEFAULT_INTERVAL)

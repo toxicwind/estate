@@ -57,7 +57,7 @@ if printf '%s' "$natives_out" | grep -q '^CACHED'; then
 else
   natives_jid=$(printf '%s' "$natives_out" | sed -n 's/^QUEUED  \\([A-Za-z0-9-]*\\).*/\\1/p')
   [ -n "$natives_jid" ] || { echo "brand submit failed: $natives_out" >&2; exit 1; }
-  /home/toxic/sovereign/tools/brand/build-await.sh "$natives_jid" 3600
+  /home/toxic/estate/tools/brand/build-await.sh "$natives_jid" 3600
 fi
 tail -n 60 "/home/toxic/brand/logs/${natives_jid}.log"
 grep -n "alloc_error_hook" crates/pi-natives/src/lib.rs || echo "feature line not present"

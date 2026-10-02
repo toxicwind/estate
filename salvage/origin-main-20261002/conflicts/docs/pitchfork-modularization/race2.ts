@@ -231,7 +231,7 @@ const mise: any = {};
   mise.D3_mise_toml_parses = true;
   mise.D3_daemon_tables_found = Object.keys(t.daemons ?? {}).length;
   mise.D3_tools_table_present = "tools" in t;
-  mise.D3_caveat = "mise ignores unknown tables ([daemons.*]) today — D3 relies on that leniency. One mise.toml per project is NOT current reality: only tools/nuvio-platform has its own mise.toml; everything else is parent-only (/home/toxic/sovereign/mise.toml).";
+  mise.D3_caveat = "mise ignores unknown tables ([daemons.*]) today — D3 relies on that leniency. One mise.toml per project is NOT current reality: only tools/nuvio-platform has its own mise.toml; everything else is parent-only (/home/toxic/estate/mise.toml).";
   mise.D3_recommendation = "If D3 is adopted, keep daemon blocks namespaced (e.g. [pitchfork.daemons.<name>] or a separate daemon.toml) so a future mise schema-strict mode can't break composition. D2 (pitchfork.d/ per project) avoids the coupling entirely.";
   console.log(`  D3: mise.toml parses, ${mise.D3_daemon_tables_found} daemon tables, tools table present: ${mise.D3_tools_table_present}`);
   console.log(`  caveat: ${mise.D3_caveat}`);

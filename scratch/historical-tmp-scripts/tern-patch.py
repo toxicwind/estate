@@ -14,7 +14,7 @@ Run on yote: /usr/bin/python3 tern-patch.py
 import re
 import sys
 
-P = "/home/toxic/sovereign/agents/oracle-market/bin/bidder.py"
+P = "/home/toxic/estate/agents/oracle-market/bin/bidder.py"
 src = open(P, encoding="utf-8").read()
 
 def rep(old, new, expect=1):

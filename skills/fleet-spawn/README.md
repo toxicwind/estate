@@ -48,7 +48,7 @@ fleet-onboard --name <name> --task "<one-line task description>" --register
 ## Config / optional services
 
 - **Fleet knowledgebase (REQUIRED READING)**:
-  - Yote path: `/home/toxic/sovereign/docs/fleet-knowledgebase.md`
+  - Yote path: `/home/toxic/estate/docs/fleet-knowledgebase.md`
   - GitHub: https://github.com/toxicwind/sovereign-projects/blob/main/docs/fleet-knowledgebase.md
   - Raw (for scripts): https://raw.githubusercontent.com/toxicwind/sovereign-projects/main/docs/fleet-knowledgebase.md
 - **Docs index**: knowledgebase §5. Repo index: §3. Standing rules: §4.

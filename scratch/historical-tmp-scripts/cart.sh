@@ -1,6 +1,6 @@
 #!/bin/bash
 # config-cartographer: daemon-section diff vs canonical
-CANON=/home/toxic/sovereign/pitchfork.toml
+CANON=/home/toxic/estate/pitchfork.toml
 grep -F '[daemons."' "$CANON" | grep -oE 'daemons\."[^"]+"' | sed 's/daemons\.//' | tr -d '"' | sort -u > /tmp/d.canon
 echo "canonical daemon count: $(wc -l < /tmp/d.canon)"
 echo

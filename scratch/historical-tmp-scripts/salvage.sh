@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-SRC=/home/toxic/sovereign
+SRC=/home/toxic/estate
 DST=/tmp/sp-salvage
 rm -rf "$DST"
 git clone -q https://github.com/toxicwind/sovereign-projects.git "$DST" 2>&1 | tail -1

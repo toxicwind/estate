@@ -4,15 +4,15 @@
 set -euo pipefail
 
 FUNNEL_PORT="${RUST_WEB_PORT:-25101}"
-SOV_LOG="/home/toxic/sovereign/.state/logs"
+SOV_LOG="/home/toxic/estate/.state/logs"
 
 case "${1:-}" in
   up)
     mkdir -p "$SOV_LOG"
-    if [ -f /home/toxic/sovereign/config/ports.env ]; then
+    if [ -f /home/toxic/estate/config/ports.env ]; then
       set -a
       # shellcheck disable=SC1091
-      source /home/toxic/sovereign/config/ports.env
+      source /home/toxic/estate/config/ports.env
       set +a
       FUNNEL_PORT="${RUST_WEB_PORT:-25101}"
     fi

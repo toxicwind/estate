@@ -17,14 +17,14 @@ Track what the user wanted, what was completed, and make a plan for next steps. 
 tau --skill tau-session-audit
 
 # 2. Or run directly
-bun run /home/toxic/sovereign/skills/tau-session-audit/helper/audit.ts
+bun run /home/toxic/estate/skills/tau-session-audit/helper/audit.ts
 
 # 3. Or run with options
-bun run /home/toxic/sovereign/skills/tau-session-audit/helper/audit.ts --all
-bun run /home/toxic/sovereign/skills/tau-session-audit/helper/audit.ts --check plan
-bun run /home/toxic/sovereign/skills/tau-session-audit/helper/audit.ts --check completed
-bun run /home/toxic/sovereign/skills/tau-session-audit/helper/audit.ts --check intent
-bun run /home/toxic/sovereign/skills/tau-session-audit/helper/audit.ts --verbose
+bun run /home/toxic/estate/skills/tau-session-audit/helper/audit.ts --all
+bun run /home/toxic/estate/skills/tau-session-audit/helper/audit.ts --check plan
+bun run /home/toxic/estate/skills/tau-session-audit/helper/audit.ts --check completed
+bun run /home/toxic/estate/skills/tau-session-audit/helper/audit.ts --check intent
+bun run /home/toxic/estate/skills/tau-session-audit/helper/audit.ts --verbose
 ```
 
 ## Audit Checks
