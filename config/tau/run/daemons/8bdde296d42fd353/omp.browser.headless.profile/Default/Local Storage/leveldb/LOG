@@ -1,5 +1,0 @@
-2026/09/26-18:32:46.145 962aa Creating DB /home/toxic/sovereign/config/tau/run/daemons/8bdde296d42fd353/omp.browser.headless.profile/Default/Local Storage/leveldb since it was missing.
-2026/09/26-18:32:46.155 962aa Reusing MANIFEST /home/toxic/sovereign/config/tau/run/daemons/8bdde296d42fd353/omp.browser.headless.profile/Default/Local Storage/leveldb/MANIFEST-000001
-2026/09/26-19:02:46.793 962ac Level-0 table #5: started
-2026/09/26-19:02:46.799 962ac Level-0 table #5: 16704 bytes OK
-2026/09/26-19:02:46.805 962ac Delete type=0 #3
