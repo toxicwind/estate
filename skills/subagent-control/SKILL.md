@@ -146,10 +146,19 @@ never corrupt it, because commits are the only thing that counts.
    `lane-resume` classifies the death from the session tail, captures a
    post-mortem checkpoint, and prints the kill-aware respawn brief:
    ```
+   lane-resume register --agent-id <id> --name <name> --lane "lane/task" \
+     --brief "<original brief>" [--parent <pid>] [--chat <id>]
+   # ^ run this right after every subagent.spawn — recover resolves the
+   # real lane/persona/brief from the registry instead of deriving
+   # placeholders from thin session metadata.
    lane-resume scan                      # who died mid-turn and how
+   lane-resume scan --recover            # estate-wide death sweep: also
+     # auto-captures checkpoints for the dead (beyond the worker queue),
+     # skips already-recovered lanes, fail-closed guard still applies
    lane-resume recover <agent-id> --force  # checkpoint + respawn brief
    # paste the brief into subagent.spawn
    ```
+
    Kill kinds: `runtime-kill` (unanswered calls / aborted in-flight result →
    resume as-is, no rephrasing), `refusal-kill` (classifier signature in the
    death window → the brief demands a BEHAVIORAL rephrase of the refused
