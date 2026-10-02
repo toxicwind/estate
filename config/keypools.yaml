@@ -58,8 +58,14 @@ pools:
       404: 10
       429: 60
       default: 120
+    # EAP is a project-level entitlement, not a key property. Verified
+    # 2026-10-02 with @google/genai against every credential on the box:
+    # only these six, all minted on gen-lang-client-0111199472
+    # (654595778272), return `completed` on /v1beta/interactions and run the
+    # full tool_search_call > tool_search_result > function_call loop.
+    # Every other Google key 401s, including the GEMINI_API_KEY* family and
+    # the GEMINI_API_KEY_2 that .secrets.json still flagged eap=1.
     keys:
-      - GEMINI_EAP_KEY_0
       - GEMINI_EAP_KEY_1
       - GEMINI_EAP_KEY_2
       - GEMINI_EAP_KEY_3
@@ -82,14 +88,15 @@ pools:
       403: 300
       429: 60
       default: 120
+    # Same six-key EAP set: every GEMINI_API_KEY* 401s on this upstream too,
+    # so drawing from gen-lang-client is the only way this pool has members.
     keys:
-      - GEMINI_API_KEY
-      - GEMINI_API_KEY_1
-      - GEMINI_API_KEY_2
-      - GEMINI_API_KEY_3
-      - GEMINI_API_KEY_4
-      - GEMINI_API_KEY_5
-
+      - GEMINI_EAP_KEY_1
+      - GEMINI_EAP_KEY_2
+      - GEMINI_EAP_KEY_3
+      - GEMINI_EAP_KEY_4
+      - GEMINI_EAP_KEY_5
+      - GEMINI_EAP_KEY_6
   gemini-eap:
     upstream: https://generativelanguage.googleapis.com
     health:
@@ -107,8 +114,10 @@ pools:
       404: 10
       429: 60
       default: 120
+    # Single-project pool by necessity — EAP exists on exactly one project, so
+    # "rotate across projects" is not available. Rotation is across the six
+    # keys of that project instead; see docs/gemini-key-conventions.md.
     keys:
-      - GEMINI_EAP_KEY_0
       - GEMINI_EAP_KEY_1
       - GEMINI_EAP_KEY_2
       - GEMINI_EAP_KEY_3
@@ -132,8 +141,9 @@ pools:
       403: 300
       429: 60
       default: 120
+    # Liveness verified 2026-10-02; GEMINI_EAP_KEY_0 was revoked by GCP after
+    # the 2026-09-23 exposure and is excluded.
     keys:
-      - GEMINI_EAP_KEY_0
       - GEMINI_EAP_KEY_1
       - GEMINI_EAP_KEY_2
       - GEMINI_EAP_KEY_3
