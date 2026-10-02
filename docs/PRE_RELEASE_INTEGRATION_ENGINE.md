@@ -2,7 +2,7 @@
 
 > **Architectural Law**: *"Production logic is integrated DIRECTLY in code. Pre-release staging overrides resolve via clean indirection."*
 > **Engine**: `/home/toxic/estate/src/lib/pre_release_integration.ts`
-> **Integration Store**: `/home/toxic/estate/integrations/`
+> **Integration Store**: `/home/toxic/estate/integrations/` (designed location per `src/lib/pre_release_integration.ts:41` — directory not yet created)
 ---
 
 ## 1. The Anti-Pattern vs. The Pattern
