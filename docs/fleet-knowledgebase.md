@@ -273,6 +273,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | noise-xx-worker | Noise_XX_25519_AESGCM_SHA256 lane: re-verify implementation, live handshake probe | ember | RUNNING (2026-10-02) |
 | vesper | MCP gateway stewardship: gatehouse :25127 healthy; remove dead shep CLI scripts | Ember (Chris's main agent) | RUNNING (2026-10-02) |
 | emergent | wave4-emergent: paper-search x pattern-borrow combined build (lane-verify) | emergent-worker | DONE (2026-10-02) — be3be7dd84 |
+| warden | lasso + drift-watch lane: lasso hyper-race follow-ups, estate-reconcile alert-only watch | Ember (Chris's main agent) | RUNNING (2026-10-02) |
 <!-- KB-ROLLUP:END -->
 
 
