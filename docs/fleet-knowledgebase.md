@@ -27,14 +27,14 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 ### Key paths (yote)
 | Path | What it is |
 |---|---|
-| `/home/toxic/sovereign` | Canonical shared worktree (origin `toxicwind/sovereign-projects`). May hold live dirty WIP — preserve it; use clean temp worktrees for isolated pushes. |
+| `/home/toxic/estate` | Canonical shared worktree (origin `toxicwind/sovereign-projects`). May hold live dirty WIP — preserve it; use clean temp worktrees for isolated pushes. |
 | `/home/toxic/.tau` | Tau engine config |
 | `/home/toxic/shingle` (+ `.shingle` symlink) | Shingle root; squawk lives here — BOTH are now symlinks to `sovereign/hatch/agents/ember/` in-repo (reorg 2026-09-20); squawk-root is gitignored at .gitignore:295 |
-| `/home/toxic/sovereign/shingle-workspace/` | -> `scratch/` symlink (non-production staging; production bridge home is `bridge/`) |
-| `/home/toxic/sovereign/config/herd.yaml` | Herd router config (the model herd) |
-| `/home/toxic/sovereign/skills/paper-search/` | Paper-search skill (canonical home) |
+| `/home/toxic/estate/shingle-workspace/` | -> `scratch/` symlink (non-production staging; production bridge home is `bridge/`) |
+| `/home/toxic/estate/config/herd.yaml` | Herd router config (the model herd) |
+| `/home/toxic/estate/skills/paper-search/` | Paper-search skill (canonical home) |
 | `/home/toxic/super-ralph` | Super Ralph source |
-| `/home/toxic/sovereign/projects/range/ranch/oracle/` | Oracle market loop + watchdog |
+| `/home/toxic/estate/projects/range/ranch/oracle/` | Oracle market loop + watchdog |
 
 ### Services & ports (yote)
 | Port | Service |
@@ -314,7 +314,7 @@ Retired/completed crews stay listed here with status DONE and their final commit
 
 | Repo | Canonical remote | Notes |
 |---|---|---|
-| sovereign-projects | `toxicwind/sovereign-projects` (branch `main`) | **THE canonical repo.** `/home/toxic/sovereign` worktree. NEVER push to the stale `toxicwind/sovereign` trap. |
+| sovereign-projects | `toxicwind/sovereign-projects` (branch `main`) | **THE canonical repo.** `/home/toxic/estate` worktree. NEVER push to the stale `toxicwind/sovereign` trap. |
 | roundup | `toxicwind/roundup` (fork of `vllm-project/guidellm`) | Benchmark harness fork |
 | mcpproxy-go | `toxicwind/mcpproxy-go` (fork of `smart-mcp-proxy/mcpproxy-go`) | MCP proxy fork |
 | hatch-docs | `toxicwind/hatch-docs` (private) | Runtime/credential docs |
@@ -360,14 +360,14 @@ Full protocol: `projects/range/ranch/oracle/SPEC.md` § oracle-as-approval.
 
 ## 5. Docs index (deep links)
 
-- Master README: [/home/toxic/sovereign/README.md](../README.md) — every sub-README links back here.
+- Master README: [/home/toxic/estate/README.md](../README.md) — every sub-README links back here.
 - This knowledgebase: `docs/fleet-knowledgebase.md` (this file)
 - Spawn brief template: `docs/spawn-brief-template.md` — canonical template every brief is generated from; autonomy doctrine in its header (removing it is a visible diff)
-- Paper-search skill: `/home/toxic/sovereign/skills/paper-search/SKILL.md`
-- Tau engine docs: `/home/toxic/sovereign/projects/tau/engine/docs/`
-- Yote ops: `/home/toxic/sovereign/projects/yote/ops/` (yote-doctor.sh, yote-fix.sh)
-- Scheduler audit 2026-09-20: `/home/toxic/sovereign/projects/audits/scheduler-audit-2026-09-20.md`
-- Oracle market spec: `/home/toxic/sovereign/projects/range/ranch/oracle/SPEC.md` (v2.1)
+- Paper-search skill: `/home/toxic/estate/skills/paper-search/SKILL.md`
+- Tau engine docs: `/home/toxic/estate/projects/tau/engine/docs/`
+- Yote ops: `/home/toxic/estate/projects/yote/ops/` (yote-doctor.sh, yote-fix.sh)
+- Scheduler audit 2026-09-20: `/home/toxic/estate/projects/audits/scheduler-audit-2026-09-20.md`
+- Oracle market spec: `/home/toxic/estate/projects/range/ranch/oracle/SPEC.md` (v2.1)
 - Daemon-rebuild drift note 2026-09-20: `hatch/audit-jarvis/daemon-rebuild-drift-2026-09-20.md` (compaction subsystem unchanged in hatch `82d6744eed2`; new `tool_dispatch_heartbeat`)
 - Runtime/credential docs: https://github.com/toxicwind/hatch-docs/blob/main/runtime/credential-broker.md
 
@@ -558,7 +558,7 @@ When a fleet agent says "I want to join OpenFang" (or a coordinator decides
 one should), the coordinator runs:
 
 ```
-bun /home/toxic/sovereign/bin/fleet-join --name <name> --species <species> \
+bun /home/toxic/estate/bin/fleet-join --name <name> --species <species> \
     --personality <plain words> --lane <lane> --task <plain words> \
     --sigil <emoji>
 ```
