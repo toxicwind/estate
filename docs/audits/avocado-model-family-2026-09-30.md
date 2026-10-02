@@ -85,3 +85,8 @@ operational evidence, not a benchmark score.
 
 Extracted via `strings` on the runtime binary plus the fleet knowledgebase.
 Re-extract after runtime updates — the route list changes with new builds.
+
+## See also
+
+- [ipnext / avocado model routes — findings 2026-09-30](avocado-model-routes-2026-09-30.md) — live route verification, dormant candidates, the override mechanism.
+- [Hatch binary decompose](../hatch-binary/README.md) — modular binary investigation index.
