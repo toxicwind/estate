@@ -3,7 +3,7 @@
 **GENERATED FILE — do not hand-edit.** Rebuild with `bun projects/ops/bin/estate-map.ts`;
 drift-check with `bun projects/ops/bin/estate-map.ts --check`.
 
-Generated 2026-10-02T12:28:06.942Z on `awrawr-pc`. Estate root `/home/toxic/estate`.
+Generated 2026-10-02T12:36:59.931Z on `awrawr-pc`. Estate root `/home/toxic/estate`.
 
 > **One word, one referent.** `estate/` is the control-plane tree. `ranch/` is the inference
 > monorepo. The agent engine config lives in `~/.tau`. Every daemon runs out of the path
@@ -13,9 +13,9 @@ Generated 2026-10-02T12:28:06.942Z on `awrawr-pc`. Estate root `/home/toxic/esta
 
 | Repo | Path | Remote | Head | Committed | Dirty | Checkout kind |
 |---|---|---|---|---|---|---|
-| 🟢 **estate** | `/home/toxic/estate` | https://github.com/toxicwind/sovereign-projects.git | c27e5154a4 | 2026-10-02T06:27:37 | 78 | nested |
-| 🟢 **ranch** | `/home/toxic/estate/ranch` | https://github.com/toxicwind/ranch | 657f3b7 | 2026-10-02T06:24:07 | 328 | nested |
-| 🟢 **ranch** | `/home/toxic/ranch` | https://github.com/toxicwind/ranch | 657f3b7 | 2026-10-02T06:24:07 | 328 | nested |
+| 🟢 **estate** | `/home/toxic/estate` | https://github.com/toxicwind/sovereign-projects.git | 4820dfca5e | 2026-10-02T06:35:46 | 66 | nested |
+| 🟢 **ranch** | `/home/toxic/estate/ranch` | https://github.com/toxicwind/ranch | 6a4640f | 2026-10-02T06:33:45 | 320 | nested |
+| 🟢 **ranch** | `/home/toxic/ranch` | https://github.com/toxicwind/ranch | 6a4640f | 2026-10-02T06:33:45 | 320 | nested |
 | 🟢 **tau-config** | `/home/toxic/.tau` | — | — | — | 0 | none |
 
 - **estate** (`/home/toxic/estate`) — control plane: pitchfork.toml, config/, bin/, bridge/, agents/, docs/, projects/
@@ -45,7 +45,7 @@ Generated 2026-10-02T12:28:06.942Z on `awrawr-pc`. Estate root `/home/toxic/esta
 | 8222 | — | — | 🟢 | nats-server |
 | 8443 | — | — | 🟢 | — |
 | 9093 | — | — | 🟢 | — |
-| 9223 | — | browser-keeper | ⚪️ | — |
+| 9223 | — | browser-keeper | 🟢 | chrome |
 | 18384 | — | — | 🟢 | syncthing |
 | 18788 | — | — | 🟢 | MainThread |
 | 18789 | — | — | 🟢 | MainThread |
@@ -224,12 +224,12 @@ Config dir: `/home/toxic/.tau`
 
 | Plugin | Source | Resolved | Exists |
 |---|---|---|---|
-| herd | `./projects/range/ranch/stockyard/herd` | `/home/toxic/projects/range/ranch/stockyard/herd` | 🔴 DEAD |
-| flock | `./projects/range/ranch/stockyard/flock` | `/home/toxic/projects/range/ranch/stockyard/flock` | 🔴 DEAD |
-| gatehouse | `./projects/range/ranch/barn/gatehouse` | `/home/toxic/projects/range/ranch/barn/gatehouse` | 🟢 |
-| router | `./projects/range/ranch/stockyard/router-legacy` | `/home/toxic/projects/range/ranch/stockyard/router-legacy` | 🔴 DEAD |
-| barn-browser | `./projects/range/ranch/barn/browserless` | `/home/toxic/projects/range/ranch/barn/browserless` | 🟢 |
-| barn-gemini | `./projects/range/ranch/barn/gemini-mcp` | `/home/toxic/projects/range/ranch/barn/gemini-mcp` | 🟢 |
+| herd | `./estate/ranch/herd` | `/home/toxic/estate/ranch/herd` | 🟢 |
+| flock | `./estate/ranch/flock` | `/home/toxic/estate/ranch/flock` | 🟢 |
+| gatehouse | `./estate/ranch/barn/gatehouse` | `/home/toxic/estate/ranch/barn/gatehouse` | 🟢 |
+| router | `./estate/tools/sovereign-router` | `/home/toxic/estate/tools/sovereign-router` | 🟢 |
+| barn-browser | `./estate/ranch/barn/browserless` | `/home/toxic/estate/ranch/barn/browserless` | 🟢 |
+| barn-gemini | `./estate/ranch/barn/gemini-mcp` | `/home/toxic/estate/ranch/barn/gemini-mcp` | 🟢 |
 | secretsmith | `./projects/range/ranch/barn/secretsmith` | `/home/toxic/projects/range/ranch/barn/secretsmith` | 🟢 |
 
 | Provider key | baseUrl |
@@ -242,16 +242,13 @@ Config dir: `/home/toxic/.tau`
 
 ## Drift
 
-25 finding(s) — **5 high.** These are silent defects: each one is
+22 finding(s) — **2 high.** These are silent defects: each one is
 something that looks wired and is not.
 
 | Sev | Kind | Detail | Fix |
 |---|---|---|---|
-| high | `duplicate-checkout` | https://github.com/toxicwind/ranch checked out 2x — newest 657f3b7 @ /home/toxic/estate/ranch; /home/toxic/ranch @ 657f3b7 (2026-10-02T06:24:07-06:00) | keep /home/toxic/estate/ranch; delete or archive /home/toxic/ranch |
+| high | `duplicate-checkout` | https://github.com/toxicwind/ranch checked out 2x — newest 6a4640f @ /home/toxic/estate/ranch; /home/toxic/ranch @ 6a4640f (2026-10-02T06:33:45-06:00) | keep /home/toxic/estate/ranch; delete or archive /home/toxic/ranch |
 | high | `daemon-path-dead` | pitchfork daemon 'nats-tail' references /home/toxic/estate/ranch/squawk/nats/run-tail.sh — absent | update pitchfork.toml [daemons.nats-tail] |
-| high | `agent-plugin-source-dead` | tau plugin 'herd' source ./projects/range/ranch/stockyard/herd → /home/toxic/projects/range/ranch/stockyard/herd does not exist | point herd.source at the live path in docs/estate-map.json repos[] |
-| high | `agent-plugin-source-dead` | tau plugin 'flock' source ./projects/range/ranch/stockyard/flock → /home/toxic/projects/range/ranch/stockyard/flock does not exist | point flock.source at the live path in docs/estate-map.json repos[] |
-| high | `agent-plugin-source-dead` | tau plugin 'router' source ./projects/range/ranch/stockyard/router-legacy → /home/toxic/projects/range/ranch/stockyard/router-legacy does not exist | point router.source at the live path in docs/estate-map.json repos[] |
 | medium | `port-ssot-dead` | ports.env claims 5000 (FLEET_POWER_INTERVAL) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
 | medium | `port-ssot-dead` | ports.env claims 25123 (IK_LLAMA_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
 | medium | `port-ssot-dead` | ports.env claims 25124 (TURBO_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |

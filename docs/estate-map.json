@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-02T12:28:06.942Z",
+  "generatedAt": "2026-10-02T12:36:59.931Z",
   "host": {
     "hostname": "awrawr-pc",
     "home": "/home/toxic",
@@ -15,9 +15,9 @@
       "isRepo": true,
       "gitKind": "nested",
       "remote": "https://github.com/toxicwind/sovereign-projects.git",
-      "head": "c27e5154a4",
-      "committedAt": "2026-10-02T06:27:37-06:00",
-      "dirtyPaths": 78
+      "head": "4820dfca5e",
+      "committedAt": "2026-10-02T06:35:46-06:00",
+      "dirtyPaths": 66
     },
     {
       "name": "ranch",
@@ -27,9 +27,9 @@
       "isRepo": true,
       "gitKind": "nested",
       "remote": "https://github.com/toxicwind/ranch",
-      "head": "657f3b7",
-      "committedAt": "2026-10-02T06:24:07-06:00",
-      "dirtyPaths": 328
+      "head": "6a4640f",
+      "committedAt": "2026-10-02T06:33:45-06:00",
+      "dirtyPaths": 320
     },
     {
       "name": "ranch",
@@ -39,9 +39,9 @@
       "isRepo": true,
       "gitKind": "nested",
       "remote": "https://github.com/toxicwind/ranch",
-      "head": "657f3b7",
-      "committedAt": "2026-10-02T06:24:07-06:00",
-      "dirtyPaths": 328
+      "head": "6a4640f",
+      "committedAt": "2026-10-02T06:33:45-06:00",
+      "dirtyPaths": 320
     },
     {
       "name": "tau-config",
@@ -174,7 +174,7 @@
       "live": true,
       "addr": "[::1]",
       "process": "Xvnc",
-      "pid": 26182
+      "pid": 3099777
     },
     {
       "port": 6080,
@@ -229,10 +229,10 @@
       "daemons": [
         "browser-keeper"
       ],
-      "live": false,
-      "addr": null,
-      "process": null,
-      "pid": null
+      "live": true,
+      "addr": "127.0.0.1",
+      "process": "chrome",
+      "pid": 3104916
     },
     {
       "port": 18384,
@@ -928,7 +928,7 @@
       "live": true,
       "addr": "127.0.0.1",
       "process": "python3",
-      "pid": 1558435
+      "pid": 2893751
     },
     {
       "port": 25135,
@@ -937,7 +937,7 @@
       "live": true,
       "addr": "127.0.0.1",
       "process": "python3",
-      "pid": 1558435
+      "pid": 2893751
     },
     {
       "port": 25136,
@@ -1982,38 +1982,38 @@
     "plugins": [
       {
         "name": "herd",
-        "source": "./projects/range/ranch/stockyard/herd",
-        "resolved": "/home/toxic/projects/range/ranch/stockyard/herd",
-        "exists": false
+        "source": "./estate/ranch/herd",
+        "resolved": "/home/toxic/estate/ranch/herd",
+        "exists": true
       },
       {
         "name": "flock",
-        "source": "./projects/range/ranch/stockyard/flock",
-        "resolved": "/home/toxic/projects/range/ranch/stockyard/flock",
-        "exists": false
+        "source": "./estate/ranch/flock",
+        "resolved": "/home/toxic/estate/ranch/flock",
+        "exists": true
       },
       {
         "name": "gatehouse",
-        "source": "./projects/range/ranch/barn/gatehouse",
-        "resolved": "/home/toxic/projects/range/ranch/barn/gatehouse",
+        "source": "./estate/ranch/barn/gatehouse",
+        "resolved": "/home/toxic/estate/ranch/barn/gatehouse",
         "exists": true
       },
       {
         "name": "router",
-        "source": "./projects/range/ranch/stockyard/router-legacy",
-        "resolved": "/home/toxic/projects/range/ranch/stockyard/router-legacy",
-        "exists": false
+        "source": "./estate/tools/sovereign-router",
+        "resolved": "/home/toxic/estate/tools/sovereign-router",
+        "exists": true
       },
       {
         "name": "barn-browser",
-        "source": "./projects/range/ranch/barn/browserless",
-        "resolved": "/home/toxic/projects/range/ranch/barn/browserless",
+        "source": "./estate/ranch/barn/browserless",
+        "resolved": "/home/toxic/estate/ranch/barn/browserless",
         "exists": true
       },
       {
         "name": "barn-gemini",
-        "source": "./projects/range/ranch/barn/gemini-mcp",
-        "resolved": "/home/toxic/projects/range/ranch/barn/gemini-mcp",
+        "source": "./estate/ranch/barn/gemini-mcp",
+        "resolved": "/home/toxic/estate/ranch/barn/gemini-mcp",
         "exists": true
       },
       {
@@ -2058,7 +2058,7 @@
     {
       "severity": "high",
       "kind": "duplicate-checkout",
-      "detail": "https://github.com/toxicwind/ranch checked out 2x — newest 657f3b7 @ /home/toxic/estate/ranch; /home/toxic/ranch @ 657f3b7 (2026-10-02T06:24:07-06:00)",
+      "detail": "https://github.com/toxicwind/ranch checked out 2x — newest 6a4640f @ /home/toxic/estate/ranch; /home/toxic/ranch @ 6a4640f (2026-10-02T06:33:45-06:00)",
       "fix": "keep /home/toxic/estate/ranch; delete or archive /home/toxic/ranch"
     },
     {
@@ -2180,24 +2180,6 @@
       "kind": "daemon-path-dead",
       "detail": "pitchfork daemon 'nats-tail' references /home/toxic/estate/ranch/squawk/nats/run-tail.sh — absent",
       "fix": "update pitchfork.toml [daemons.nats-tail]"
-    },
-    {
-      "severity": "high",
-      "kind": "agent-plugin-source-dead",
-      "detail": "tau plugin 'herd' source ./projects/range/ranch/stockyard/herd → /home/toxic/projects/range/ranch/stockyard/herd does not exist",
-      "fix": "point herd.source at the live path in docs/estate-map.json repos[]"
-    },
-    {
-      "severity": "high",
-      "kind": "agent-plugin-source-dead",
-      "detail": "tau plugin 'flock' source ./projects/range/ranch/stockyard/flock → /home/toxic/projects/range/ranch/stockyard/flock does not exist",
-      "fix": "point flock.source at the live path in docs/estate-map.json repos[]"
-    },
-    {
-      "severity": "high",
-      "kind": "agent-plugin-source-dead",
-      "detail": "tau plugin 'router' source ./projects/range/ranch/stockyard/router-legacy → /home/toxic/projects/range/ranch/stockyard/router-legacy does not exist",
-      "fix": "point router.source at the live path in docs/estate-map.json repos[]"
     },
     {
       "severity": "medium",
