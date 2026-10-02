@@ -289,7 +289,9 @@ auto = ["start"]
 [daemons.keypool]
 health_http = { url = "http://127.0.0.1:25109/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25109
-run = "exec python3 /home/toxic/estate/bin/herd-keypool.py"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/services/keypool/src/index.ts"
+# Python fallback (pre-cutover 2026-10-02): exec python3 /home/toxic/estate/bin/herd-keypool.py
+env = { KEYPOOL_PORT = "25109" }
 dir = "/home/toxic/estate"
 mise = false
 retry = true
@@ -635,8 +637,8 @@ auto = ["start"]
 # Owned by the ranch/flicker project; the parent only composes it.
 
 [daemons.flicker-agent]
-run = "exec /home/toxic/estate/ranch/flicker/bin/flicker-agent"
-dir = "/home/toxic/estate/ranch/flicker"
+run = "exec /home/toxic/estate/var/reconciliation/flicker/bin/flicker-agent"
+dir = "/home/toxic/estate/var/reconciliation/flicker"
 mise = false
 retry = true
 boot_start = true
@@ -651,8 +653,8 @@ auto = ["start"]
 
 [daemons.flicker]
 port = 25148
-run = "exec /home/toxic/estate/ranch/flicker/bin/flicker-server"
-dir = "/home/toxic/estate/ranch/flicker"
+run = "exec /home/toxic/estate/var/reconciliation/flicker/bin/flicker-server"
+dir = "/home/toxic/estate/var/reconciliation/flicker"
 mise = false
 retry = true
 boot_start = true
@@ -748,8 +750,8 @@ auto = ["start"]
 
 
 [daemons.nats]
-run = "exec /home/toxic/estate/ranch/squawk/nats/run-nats.sh"
-dir = "/home/toxic/estate/ranch/squawk/nats"
+run = "exec /usr/bin/nats-server -c /home/toxic/.local/share/nats/nats-server.conf"
+dir = "/home/toxic/.local/share/nats"
 mise = false
 retry = true
 boot_start = true
@@ -1061,8 +1063,8 @@ auto = ["start"]
 
 [daemons.boundless]
 port = 25197
-run = "exec /home/toxic/estate/ranch/standalone/boundless/.venv/bin/python -m uvicorn web.server:app --host 127.0.0.1 --port ${BOUNDLESS_PORT}"
-dir = "/home/toxic/estate/ranch/standalone/boundless"
+run = "exec /home/toxic/boundless/.venv/bin/python -m uvicorn web.server:app --host 127.0.0.1 --port ${BOUNDLESS_PORT}"
+dir = "/home/toxic/boundless"
 mise = false
 retry = true
 boot_start = true
