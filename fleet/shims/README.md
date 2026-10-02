@@ -1,6 +1,7 @@
 # Fleet Shims
 
 Platform-specific shims and helpers for fleet device management.
+Tools live alongside their shims — no separation between abstraction and implementation.
 
 ## Why shims?
 
@@ -13,10 +14,10 @@ without caring about the underlying OS.
 
 ## Shim types
 
-- `../android/` — **ADB shim**. Android devices are managed via ADB (Android Debug Bridge).
+- `android/` — **ADB shim**. Android devices are managed via ADB (Android Debug Bridge).
   APK installation, shell commands, file transfer all go through ADB.
   Tools: `bin/pixel-adb-keepalive.sh` (Pixel wireless debugging keepalive).
-- `../kodi/` — **RPC shim**. Kodi instances expose JSON-RPC API on :8080.
+- `kodi/` — **RPC shim**. Kodi instances expose JSON-RPC API on :8080.
   Works on both CoreELEC (living room box 246) and Android TV (bedroom 225, Kodi APK).
   No SSH needed — pure HTTP JSON-RPC.
   Tools: `bin/kodi-audit`, `bin/kodi-handoff`, `bin/kodi-resume`.
@@ -26,13 +27,14 @@ without caring about the underlying OS.
 ## Layout
 
 ```
-fleet/
-├── shims/          # this folder: platform shim docs
-│   └── README.md
+fleet/shims/
+├── README.md       # this file
 ├── kodi/           # Kodi fleet: RPC-based tooling for both boxes
 │   ├── bin/        # kodi-audit, kodi-handoff, kodi-resume
 │   ├── docs/       # box-inventory, menu-latency
-│   └── addons/     # lasso, manifold-upstream
+│   ├── addons/     # lasso, manifold-upstream
+│   ├── forensics/
+│   └── tests/
 └── android/        # Android fleet: ADB-based tooling
     ├── bin/        # pixel-adb-keepalive.sh
     ├── docs/       # devices.md
@@ -41,8 +43,9 @@ fleet/
 
 ## Usage
 
-Shims are used by fleet tooling in `../kodi/` and `../android/`.
-Each shim handles platform detection and capability negotiation.
+Each platform folder is self-contained: shims + tools + docs together.
+No cross-folder imports — if you need something from another platform, that's
+a sign the abstraction is leaking.
 
-See `../kodi/README.md` for the Kodi box inventory (246=CoreELEC, 225=APK).
-See `../android/docs/devices.md` for Android device inventory.
+See `kodi/README.md` for the Kodi box inventory (246=CoreELEC, 225=APK).
+See `android/docs/devices.md` for Android device inventory.
