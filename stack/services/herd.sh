@@ -20,8 +20,19 @@ if [[ -f /home/toxic/.secrets ]]; then
   set +a
 fi
 PORT="$HERD_PORT"
-BIN="$SOV/projects/herd/llama-swap"
-[[ -x "$BIN" ]] || { echo "herd (llama-swap) bin not found at $BIN" >&2; exit 1; }
+
+# The binary lives beside its source in ranch/herd, not under var/ (var/ is
+# runtime state, and a launcher that points there means the path rots the next
+# time var/ is swept). The var/llama-swap-backups copy is the last-known-good
+# restore point if the in-tree build is ever lost.
+for BIN in \
+  "$SOV/ranch/herd/llama-swap" \
+  "$SOV/var/llama-swap-backups/herd/llama-swap"
+do
+  [[ -x "$BIN" ]] && break
+  BIN=""
+done
+[[ -n "$BIN" ]] || { echo "herd (llama-swap) bin not found in ranch/herd or var/llama-swap-backups/herd" >&2; exit 1; }
 CONF="$SOV/config/herd.yaml"
 [[ -f "$CONF" ]] || CONF="$SOV/config/llama-swap.yaml"
 [[ -f "$CONF" ]] || { echo "herd config not found at $CONF" >&2; exit 1; }
