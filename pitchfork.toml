@@ -625,8 +625,8 @@ health_http = { url = "http://127.0.0.1:25127/health", interval = "30s", timeout
 port = 25127
 # gatehouse-serve.sh self-heals: bootstraps gitignored mcp_config.json from .dist when missing,
 # injects secrets from /home/toxic/.secrets (gatehouse direct-run crash-loops without it).
-run = "exec /home/toxic/estate/ranch/mesh/bin/gatehouse-serve.sh"
-dir = "/home/toxic/estate/ranch/barn/gatehouse"
+run = "exec /home/toxic/estate/projects/range/bin/gatehouse-serve.sh"
+dir = "/home/toxic/estate/projects/range/ranch/barn/gatehouse"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25127/health"
@@ -667,8 +667,8 @@ env = { FLICKER_ROOT = "/home/toxic/flicker", WOODPECKER_HOST = "http://127.0.0.
 # Owned by the ranch/oracle project; the parent only composes it.
 
 [daemons.market-watchdog]
-run = "exec /home/toxic/estate/ranch/oracle/bin/market-watchdog.sh"
-dir = "/home/toxic/estate/ranch/oracle"
+run = "exec /home/toxic/estate/projects/range/ranch/oracle/bin/market-watchdog.sh"
+dir = "/home/toxic/estate/projects/range/ranch/oracle"
 mise = false
 retry = true
 auto = ["start"]
@@ -684,8 +684,8 @@ auto = ["start"]
 
 
 [daemons.oracle-chat]
-run = "exec /home/toxic/estate/ranch/oracle/bin/oracle_chat.py"
-dir = "/home/toxic/estate/ranch/oracle"
+run = "exec /home/toxic/estate/projects/range/ranch/oracle/bin/oracle_chat.py"
+dir = "/home/toxic/estate/projects/range/ranch/oracle"
 mise = false
 retry = true
 env = { ORACLE_CHANNEL = "/home/toxic/.fleet-bus/squawk-root/bid-market" }
@@ -699,8 +699,8 @@ auto = ["start"]
 port = 25151
 ready_http = "http://127.0.0.1:25151/health"
 health_http = { url = "http://127.0.0.1:25151/health", interval = "30s", timeout = "5s", retries = 3 }
-run = "exec /home/toxic/estate/ranch/oracle/bin/run-oracle-core.sh"
-dir = "/home/toxic/estate/ranch/oracle"
+run = "exec /home/toxic/estate/projects/range/ranch/oracle/bin/run-oracle-core.sh"
+dir = "/home/toxic/estate/projects/range/ranch/oracle"
 mise = false
 retry = true
 auto = ["start"]
@@ -710,8 +710,8 @@ auto = ["start"]
 
 
 [daemons.oracle-market]
-run = "exec /home/toxic/estate/ranch/oracle/bin/run.sh"
-dir = "/home/toxic/estate/ranch/oracle"
+run = "exec /home/toxic/estate/projects/range/ranch/oracle/bin/run.sh"
+dir = "/home/toxic/estate/projects/range/ranch/oracle"
 mise = false
 retry = true
 env = { ORACLE_INTAKE = "1" }
@@ -812,7 +812,6 @@ run = "exec bun run src/index.ts"
 port = 25215
 ready_port = 25215
 
-
 # ---- project: ranch/windmill (1 daemon) ----
 # ranch/windmill — project-owned daemon manifest. Source of truth for 'windmill'.
 # Owned by the ranch/windmill project; the parent only composes it.
@@ -820,8 +819,8 @@ ready_port = 25215
 [daemons.windmill]
 health_http = { url = "http://127.0.0.1:25219/api/status", interval = "10s", timeout = "5s", retries = 2 }
 port = 25219
-run = "exec bun --hot run /home/toxic/estate/ranch/windmill/server.ts"
-dir = "/home/toxic/estate/ranch/windmill"
+run = "exec bun --hot run /home/toxic/estate/projects/range/ranch/windmill/server.ts"
+dir = "/home/toxic/estate/projects/range/ranch/windmill"
 mise = false
 retry = true
 boot_start = true
@@ -834,6 +833,18 @@ auto = ["start"]
 # mkdir lock, races arXiv + alphaXiv legs (fail-fast, HFT rules), posts
 # PAPER-RESULT back. Source: toxicwind/paper-poller (runs from /home/toxic/paper-poller).
 # Watchdog (paper-poller-watchdog below) covers silent wedges.
+
+# ---- project: ranch/task-launch (1 daemon) ----
+# ranch/task-launch — project-owned daemon manifest. Source of truth for 'task-launch'.
+# Owned by the ranch/task-launch project; the parent only composes it.
+
+[daemons.task-launch]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/task-launch/src/daemon.ts"
+dir = "/home/toxic/estate/ranch/task-launch"
+mise = false
+retry = true
+auto = ["start"]
+ready_cmd = "pgrep -f '[t]ask-launch/src/daemon.ts' >/dev/null"
 
 # ---- project: range (1 daemon) ----
 # range — project-owned daemon manifest. Source of truth for 'mesh-landing'.
@@ -973,24 +984,12 @@ depends = ["keypool"]
 env = { SOVEREIGN_ROUTER_PORT = "25104" }
 auto = ["start"]
 
-# ranch/task-launch — project-owned daemon manifest. Source of truth for 'task-launch'.
-# Owned by the ranch/task-launch project; the parent only composes it.
-
-[daemons.task-launch]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/task-launch/src/daemon.ts"
-dir = "/home/toxic/estate/ranch/task-launch"
-mise = false
-retry = true
-auto = ["start"]
-ready_cmd = "pgrep -f '[t]ask-launch/src/daemon.ts' >/dev/null"
-
-
 # market-loop — autonomous market-loop daemon for weaver's emergent task
 # market (trading-post/src/market). Event-driven: inotify on weaver's
 # intake/ dir, first-eligible-bid close, watchdog sweep on every ledger
 # append. No timers, no polling loops. Added 2026-09-30.
 
-# ---- project: projects/yote (1 daemon) ----
+# ---- project: ranch/yote (1 daemon) ----
 # projects/yote — project-owned daemon manifest. Source of truth for 'yote'.
 # Owned by the projects/yote project; the parent only composes it.
 
