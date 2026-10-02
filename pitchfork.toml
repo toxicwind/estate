@@ -664,11 +664,11 @@ env = { FLICKER_ROOT = "/home/toxic/flicker", WOODPECKER_HOST = "http://127.0.0.
 
 # ---- project: ranch/oracle (4 daemons) ----
 # ranch/oracle — project-owned daemon manifest. Source of truth for 'market-watchdog'.
-# Owned by the ranch/oracle project; the parent only composes it.
+# Owned by the ranch/squawk/oracle project; the parent only composes it.
 
 [daemons.market-watchdog]
-run = "exec /home/toxic/estate/projects/range/ranch/oracle/bin/market-watchdog.sh"
-dir = "/home/toxic/estate/projects/range/ranch/oracle"
+run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/market-watchdog.sh"
+dir = "/home/toxic/estate/ranch/squawk/oracle"
 mise = false
 retry = true
 auto = ["start"]
@@ -680,38 +680,38 @@ auto = ["start"]
 # Squawks on drift/restore. Added 2026-09-21.
 
 # ranch/oracle — project-owned daemon manifest. Source of truth for 'oracle-chat'.
-# Owned by the ranch/oracle project; the parent only composes it.
+# Owned by the ranch/squawk/oracle project; the parent only composes it.
 
 
 [daemons.oracle-chat]
-run = "exec /home/toxic/estate/projects/range/ranch/oracle/bin/oracle_chat.py"
-dir = "/home/toxic/estate/projects/range/ranch/oracle"
+run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/oracle_chat.py"
+dir = "/home/toxic/estate/ranch/squawk/oracle"
 mise = false
 retry = true
 env = { ORACLE_CHANNEL = "/home/toxic/.fleet-bus/squawk-root/bid-market" }
 auto = ["start"]
 
 # ranch/oracle — project-owned daemon manifest. Source of truth for 'oracle-core'.
-# Owned by the ranch/oracle project; the parent only composes it.
+# Owned by the ranch/squawk/oracle project; the parent only composes it.
 
 
 [daemons.oracle-core]
 port = 25151
 ready_http = "http://127.0.0.1:25151/health"
 health_http = { url = "http://127.0.0.1:25151/health", interval = "30s", timeout = "5s", retries = 3 }
-run = "exec /home/toxic/estate/projects/range/ranch/oracle/bin/run-oracle-core.sh"
-dir = "/home/toxic/estate/projects/range/ranch/oracle"
+run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/run-oracle-core.sh"
+dir = "/home/toxic/estate/ranch/squawk/oracle"
 mise = false
 retry = true
 auto = ["start"]
 
 # ranch/oracle — project-owned daemon manifest. Source of truth for 'oracle-market'.
-# Owned by the ranch/oracle project; the parent only composes it.
+# Owned by the ranch/squawk/oracle project; the parent only composes it.
 
 
 [daemons.oracle-market]
-run = "exec /home/toxic/estate/projects/range/ranch/oracle/bin/run.sh"
-dir = "/home/toxic/estate/projects/range/ranch/oracle"
+run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/run.sh"
+dir = "/home/toxic/estate/ranch/squawk/oracle"
 mise = false
 retry = true
 env = { ORACLE_INTAKE = "1" }

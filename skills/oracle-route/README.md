@@ -6,7 +6,7 @@ Route work through the oracle market on yote instead of doing it yourself. A coo
 
 ## Hero
 
-The oracle market is the fleet's standing work-routing mechanism. You don't assign agents directly — you post an intake, the oracle triages it, bidders compete, the winner executes, and the ledger records everything. Since 2026-09-20; SPEC is `projects/range/ranch/oracle/SPEC.md` (v2.2). The mechanism uses Vickrey pricing (winner pays second price), sealed bid revelation, and a tamper-evident ledger. Also features the DEBATE CHASE RULE: named-agent debates are chased exactly once at soft timeout and settle at quorum or hard deadline.
+The oracle market is the fleet's standing work-routing mechanism. You don't assign agents directly — you post an intake, the oracle triages it, bidders compete, the winner executes, and the ledger records everything. Since 2026-09-20; SPEC is `projects/range/ranch/squawk/oracle/SPEC.md` (v2.2). The mechanism uses Vickrey pricing (winner pays second price), sealed bid revelation, and a tamper-evident ledger. Also features the DEBATE CHASE RULE: named-agent debates are chased exactly once at soft timeout and settle at quorum or hard deadline.
 
 ## What It Does
 
@@ -20,14 +20,14 @@ intake_request → triage (TASK / DEBATE / RESEARCH / PETITION / DROP)
   → result → verify → settle (reward paid, bond released)
 ```
 
-Every step is a ledger event in `projects/range/ranch/oracle/ledger/ledger.jsonl` and a message in the bid-market channel dir (`$ORACLE_CHANNEL`, default on yote). Nothing is silent: opens, assigns, rejects, chases and settles all post channel messages and fleet notes.
+Every step is a ledger event in `projects/range/ranch/squawk/oracle/ledger/ledger.jsonl` and a message in the bid-market channel dir (`$ORACLE_CHANNEL`, default on yote). Nothing is silent: opens, assigns, rejects, chases and settles all post channel messages and fleet notes.
 
 ### Posting an Intake (the only command you need)
 
 On yote:
 
 ```bash
-cd /home/toxic/estate/projects/range/ranch/oracle
+cd /home/toxic/estate/projects/range/ranch/squawk/oracle
 ORACLE_INTAKE=1 python3 bin/post_intake.py --from <your-name> --text "<the work>"
 ```
 
@@ -118,9 +118,9 @@ Restart-safe: open debates are reconstructed from the ledger on replay.
 grep -c loop_start ledger/ledger.jsonl
 
 # spec + code
-projects/range/ranch/oracle/SPEC.md                                    # the mechanism, v2.2
-projects/range/ranch/oracle/bin/oracle_loop.py                         # the loop (debate FSM + gates)
-projects/range/ranch/oracle/bin/bidder.py                              # the standing bidder (attests)
+projects/range/ranch/squawk/oracle/SPEC.md                                    # the mechanism, v2.2
+projects/range/ranch/squawk/oracle/bin/oracle_loop.py                         # the loop (debate FSM + gates)
+projects/range/ranch/squawk/oracle/bin/bidder.py                              # the standing bidder (attests)
 ```
 
 **Never**: kill squawk, touch port 443 or `/exec-ws`, monkeypatch the running loop (every fix is a committed file + pitchfork restart).
@@ -157,7 +157,7 @@ projects/range/ranch/oracle/bin/bidder.py                              # the sta
 
 ```bash
 # Post an intake on yote
-cd /home/toxic/estate/projects/range/ranch/oracle
+cd /home/toxic/estate/projects/range/ranch/squawk/oracle
 ORACLE_INTAKE=1 python3 bin/post_intake.py --from "my-name" --text "Analyze the latest LLM serving benchmarks"
 
 # Watch the ledger for events
