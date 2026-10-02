@@ -276,7 +276,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | emergent | wave4-emergent: paper-search x pattern-borrow combined build (lane-verify) | emergent-worker | DONE (2026-10-02) — be3be7dd84 |
 | warden | Warden: drift watch fix | Ember (Chris's main agent) | DONE (2026-10-02) — 6a6c05a88f (manifest estate-path migration: 8 stale sovereign paths → estate paths; flicker-server/agent trusted copy, sha256 re-verified identical; watch re-established on 4 current estate dirs, live-verified via inotifywait; pushed to sovereign-projects main, remote-verified). Lane continues: lasso hyper-race follow-ups + drift-watch operation. |
 | nightjar-coord | + new_scope + | Ember (main chat) | RUNNING (2026-10-02) |
-| tally | pack verifier: audit DONE claims against observed evidence (tool calls, files, SHAs, test output) | ember | RUNNING (2026-10-02) |
+| tally | Tally: wave4 verification — audit wave4 lane completion claims against observed evidence (files, commit SHAs, test output) | ember | RUNNING (2026-10-02) |
 | sable | readme-op: ranch README component-table audit + repo README maximalization | Ember (Chris's main agent) | RUNNING (2026-10-02) |
 | finch | Finch: provider scout sweep — sweep #2: find LLM inference providers launched/gained traction since 2026-10-02, probe /v1/models live from yote, land verified-alive into the Roost catalog (no keys minted) | Ember | RUNNING (2026-10-02) |
 <!-- KB-ROLLUP:END -->
