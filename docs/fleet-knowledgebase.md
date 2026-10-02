@@ -277,6 +277,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | nightjar-coord | Night-lanes coordinator (2026-10-02 clean-slate relaunch): corral EAP + README op lane-state surveys via observable artifacts, fleet presenc | Ember (main chat) | RUNNING (2026-10-02) |
 | tally | pack verifier: audit DONE claims against observed evidence (tool calls, files, SHAs, test output) | ember | RUNNING (2026-10-02) |
 | sable | readme-op: ranch README component-table audit + repo README maximalization | Ember (Chris's main agent) | RUNNING (2026-10-02) |
+| finch | flock/Roost provider scouting: endpoint-verify and land new/emerging LLM inference providers into the Roost catalog | Ember | DONE (2026-10-02) — c29663a |
 <!-- KB-ROLLUP:END -->
 
 
