@@ -9,7 +9,7 @@ source "$SOV/stack/lib-ports.sh"
 # 2026-09-20: default the SSOT port so a spawn without env (pitchfork retry path) cannot hit llama-server --port stoi
 BEELLAMA_PORT="${BEELLAMA_PORT:-25122}"
 require_port BEELLAMA_PORT
-ENGINE="/home/toxic/estate/projects/range/ranch/stockyard/herd/engines/beellama.cpp/build-cuda86/bin"
+ENGINE="/home/toxic/estate/engines/herd/beellama.cpp/build-cuda86/bin"
 BIN="$ENGINE/llama-server"
 [[ -x "$BIN" ]] || { echo "beellama-fast: bin not found at $BIN" >&2; exit 1; }
 MODEL="$HOME/models/EXAONE-4.0-1.2B-IQ4_XS.gguf"
