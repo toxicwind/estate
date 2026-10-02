@@ -11,20 +11,36 @@ credential. Four agent tools: search, contents, find-similar, answer.
 
 ## Tooling
 ```sh
-exa.py search <query> [--n N] [--type auto|neural|keyword] [--livecrawl always|fallback|never] [--chars N]
-exa.py contents <url>... [--chars N]
-exa.py find-similar <url> [--n N]
-exa.py answer <query>
+exa.mjs search <query> [--n N] [--type auto|neural|keyword] [--livecrawl always|fallback|never] [--chars N]
+exa.mjs contents <url>... [--chars N]
+exa.mjs find-similar <url> [--n N]
+exa.mjs answer <query>
 ```
 Output is JSON on stdout. Every call is appended to
 `~/.cache/shingle/exa_calls.jsonl` (endpoint, elapsed_ms, ok, cost_usd) for
-cost tracking.
+cost tracking. Exit 2 is a usage error, exit 3 a credential error.
+
+## Credential resolution
+Two sources, in order, and the second only when the first is *absent*:
+
+1. **authd broker** at `/run/hatch/auth/authd.sock` returns an `hsurr:*`
+   surrogate that the egress proxy swaps for the real key. The helper never
+   sees the real value.
+2. **secretsmith** resolves the key from the local `KEY=value` store when the
+   broker socket is missing — which is the case on this box. Only a genuinely
+   absent socket triggers this; a broker that answers with an error surfaces
+   that error rather than silently switching credential sources.
+
+Both paths keep the real value out of chat, argv, logs, and the call log.
+`SECRETSMITH` overrides the secretsmith binary; `JARVIS_AUTHD_SOCK` overrides
+the socket.
 
 ## Auth
 The credential is already stored; nothing here collects one. Resolve auth
-through the skill's connection flow — credential values never enter chat,
-secret environment variables, secret flags, or auth files. Only the `hsurr:*` surrogate is sent,
-and only to `api.exa.ai`; authd substitutes the real key at egress.
+through the sources above — credential values never enter chat, secret
+environment variables, secret flags, or auth files. Authenticated requests go
+only to `api.exa.ai`; the allowlist is checked before any credential is
+resolved, so a rogue host never causes a secret to be read at all.
 
 A 401 or 403 is a question about the request before it is a question about
 the key. Check that the credential was attached at all: a request built
