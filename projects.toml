@@ -8,42 +8,47 @@ kind = "dir"
 
 [[project]]
 key = "ranch/barn/gatehouse"
-manifest = "projects/range/ranch/barn/gatehouse/pitchfork.d"
+manifest = "ranch/barn/gatehouse/pitchfork.d"
 kind = "dir"
 
 [[project]]
 key = "ranch/flicker"
-manifest = "projects/range/ranch/flicker/pitchfork.d"
+manifest = "ranch/flicker/pitchfork.d"
 kind = "dir"
 
 [[project]]
 key = "ranch/oracle"
-manifest = "projects/range/ranch/oracle/pitchfork.d"
+manifest = "ranch/oracle/pitchfork.d"
 kind = "dir"
 
 [[project]]
 key = "ranch/squawk"
-manifest = "projects/range/ranch/squawk/pitchfork.d"
+manifest = "ranch/squawk/pitchfork.d"
 kind = "dir"
 
 [[project]]
 key = "ranch/squawk-ws"
-manifest = "projects/range/ranch/squawk-ws/pitchfork.d"
+manifest = "ranch/squawk-ws/pitchfork.d"
 kind = "dir"
 
 [[project]]
 key = "ranch/stream-broker"
-manifest = "projects/range/ranch/stream-broker/pitchfork.d"
+manifest = "ranch/stream-broker/pitchfork.d"
 kind = "dir"
 
 [[project]]
 key = "ranch/windmill"
-manifest = "projects/range/ranch/windmill/pitchfork.d"
+manifest = "ranch/windmill/pitchfork.d"
+kind = "dir"
+
+[[project]]
+key = "ranch/task-launch"
+manifest = "ranch/task-launch/pitchfork.d"
 kind = "dir"
 
 [[project]]
 key = "range"
-manifest = "projects/range/pitchfork.d"
+manifest = "ranch/range/pitchfork.d"
 kind = "dir"
 
 [[project]]
@@ -77,8 +82,8 @@ manifest = "tools/sovereign-router/pitchfork.d"
 kind = "dir"
 
 [[project]]
-key = "projects/yote"
-manifest = "projects/yote/pitchfork.d"
+key = "ranch/yote"
+manifest = "ranch/yote/pitchfork.d"
 kind = "dir"
 
 [[project]]
@@ -113,7 +118,7 @@ kind = "dir"
 
 [[project]]
 key = "standalone/kimi-token-audit"
-manifest = "standalone/kimi-token-audit/pitchfork.d"
+manifest = "ranch/standalone/kimi-token-audit/pitchfork.d"
 kind = "dir"
 
 [[project]]

@@ -4,7 +4,7 @@
 [daemons.tau]
 # omp acp exposed as TCP daemon via chute (stdio→TCP + mcpServers normalization)
 port = 25111
-run = "exec /home/toxic/sovereign/projects/range/ranch/barn/chute/chute.mjs --port 25111 -- /home/toxic/.local/bin/tau acp -e /home/toxic/.tau/extensions/vansrouter.ts"
+run = "exec /home/toxic/estate/ranch/barn/chute/chute.mjs --port 25111 -- /home/toxic/.local/bin/tau acp -e /home/toxic/.tau/extensions/vansrouter.ts"
 # 2026-10-01 taurun: dist/omp deleted (ranch/tau tree rm -rf 02:17 MDT); fork cannot
 # rebuild here (missing @ranch/tack monorepo sibling). Pinned launcher (upstream
 # 18.3.0, same pin as ~/.local/bin/tau) restores the daemon. Revert to dist/omp
@@ -12,7 +12,7 @@ run = "exec /home/toxic/sovereign/projects/range/ranch/barn/chute/chute.mjs --po
 dir = "/home/toxic"
 mise = false
 retry = true
-ready_cmd = "/home/toxic/sovereign/bin/tcp-probe 25111"
+ready_cmd = "/home/toxic/estate/bin/tcp-probe 25111"
 health_port = { port = 25111, interval = "30s", timeout = "5s", retries = 3 }
 depends = ["gatehouse"]
 # Every var here was checked against a `grep -rl` over the whole tau monorepo
@@ -28,8 +28,7 @@ depends = ["gatehouse"]
 # decides which config.yml the engine reads (settings.ts:601), and a login
 # shell that exports the config root instead of the agent dir loses the whole
 # modelRoles/retry/extensions file. See ~/.bashrc for the full reasoning.
-# PI_CONFIG_DIR is a NAME relative to $HOME: the engine does
-# path.join(os.homedir(), PI_CONFIG_DIR) (pi-utils/src/dirs.ts:112), so an
-# absolute value doubles the config root to $HOME/$HOME/.tau.
+# 2026-10-02 tau-logpath: PI_CONFIG_DIR is a NAME relative to $HOME (tau dirs.ts joins it under os.homedir());
+# the old absolute value doubled the config root to $HOME/$HOME/.tau.
 env = { PI_CONFIG_DIR = ".tau", PI_CODING_AGENT_DIR = "/home/toxic/.tau/agent", PI_CODING_AGENT = "true", PI_OPENAI_STREAM_IDLE_TIMEOUT_MS = "120000", VANSROUTER_API_KEY = "local-sovereign" }
 auto = ["start"]

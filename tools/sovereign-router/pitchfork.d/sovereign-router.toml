@@ -1,5 +1,4 @@
-# tools/sovereign-router — project-owned daemon manifest. Source of truth for 'sovereign-router'.
-# Owned by the tools/sovereign-router project; the parent only composes it.
+# tools/sovereign-router -- project-owned daemon manifest.
 
 [daemons.sovereign-router]
 port = 25104

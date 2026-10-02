@@ -4,7 +4,9 @@
 [daemons.keypool]
 health_http = { url = "http://127.0.0.1:25109/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25109
-run = "exec python3 /home/toxic/estate/bin/herd-keypool.py"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/services/keypool/src/index.ts"
+# Python fallback (pre-cutover 2026-10-02): exec python3 /home/toxic/estate/bin/herd-keypool.py
+env = { KEYPOOL_PORT = "25109" }
 dir = "/home/toxic/estate"
 mise = false
 retry = true
