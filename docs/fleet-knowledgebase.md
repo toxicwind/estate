@@ -278,7 +278,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | nightjar-coord | + new_scope + | Ember (main chat) | RUNNING (2026-10-02) |
 | tally | Tally: wave4 verification — audit wave4 lane completion claims against observed evidence (files, commit SHAs, test output) | ember | RUNNING (2026-10-02) |
 | sable | readme-op: ranch README component-table audit + repo README maximalization | Ember (Chris's main agent) | RUNNING (2026-10-02) |
-| finch | Finch: provider scout sweep — sweep #2: find LLM inference providers launched/gained traction since 2026-10-02, probe /v1/models live from yote, land verified-alive into the Roost catalog (no keys minted) | Ember | RUNNING (2026-10-02) |
+| finch | Finch: provider scout sweep | Ember | DONE (2026-10-02) — 09ec4c0 |
 <!-- KB-ROLLUP:END -->
 
 
