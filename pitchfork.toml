@@ -30,7 +30,7 @@ daemons = []
 
 
 [groups.all]
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "fleet-ui", "flicker", "flicker-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash", "sovereign-router"]
+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "fleet-ui", "flicker", "flicker-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
 
 # ---- project: sovereign (37 daemons) ----
 # sovereign — project-owned daemon manifest. Source of truth for 'agent-display'.
@@ -984,26 +984,6 @@ auto = ["start"]
 # the fleet default model sovereign/free (:25104). Restored 2026-09-27: this
 # daemon never had a pitchfork entry, so the 2026-09-21 ad-hoc deploy died
 # silently in the 9/26 yote flaps. Owned by pitchfork now, auto-started.
-
-# ---- project: tools/sovereign-router (1 daemon) ----
-# tools/sovereign-router -- project-owned daemon manifest.
-
-[daemons.sovereign-router]
-port = 25104
-run = "exec bun router.ts"
-dir = "/home/toxic/estate/tools/sovereign-router/sovereign-router-ts"
-retry = true
-ready_http = "http://127.0.0.1:25104/health"
-health_http = { url = "http://127.0.0.1:25104/health", interval = "30s", timeout = "5s", retries = 3 }
-# gatehouse dropped 2026-09-29: router has no runtime dep on it (zero refs in router source); gatehouse MCPPROXY_API_KEY minted into ~/.secrets 2026-09-29 per Chris; old leaked key rotated out of mcp_config.json
-depends = ["keypool"]
-env = { SOVEREIGN_ROUTER_PORT = "25104" }
-auto = ["start"]
-
-# market-loop — autonomous market-loop daemon for weaver's emergent task
-# market (trading-post/src/market). Event-driven: inotify on weaver's
-# intake/ dir, first-eligible-bid close, watchdog sweep on every ledger
-# append. No timers, no polling loops. Added 2026-09-30.
 
 # ---- project: ranch/yote (1 daemon) ----
 # projects/yote — project-owned daemon manifest. Source of truth for 'yote'.
