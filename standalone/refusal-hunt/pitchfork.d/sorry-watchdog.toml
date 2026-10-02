@@ -1,0 +1,28 @@
+# standalone/refusal-hunt — project-owned daemon manifest. Source of truth for 'sorry-watchdog'.
+# Owned by the standalone/refusal-hunt project; the parent only composes it.
+
+[daemons.sorry-watchdog]
+run = "exec python3 /home/toxic/refusal-hunt/sorry-watchdog.py"
+dir = "/home/toxic/refusal-hunt"
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
+
+# forensics-srv REMOVED 2026-09-21 (envhunt): double-supervised. The live
+# process on :25160 is owned by the systemd user unit
+# sovereign-forensics-srv.service (enabled, active, Restart=always; ppid chain
+# verified -> systemd --user). Pitchfork's copy sat "stopped" but carried
+# auto=["start"], so the next supervisor restart would wedge it on EADDRINUSE.
+# Single owner = systemd. To migrate to pitchfork: stop+disable the unit,
+# re-add this section, then `pitchfork start forensics-srv`.
+
+# pixel-adb-keepalive REMOVED 2026-09-20: superseded by phone-lane-keeper.service
+# (systemd user unit, active, event-driven, identity-validated healing,
+# ledger ~/phone-lane/ledger.jsonl). A second blind 60s reconnect loop would
+# fight the keeper over the same device. Script kept at
+# projects/android-fleet/bin/pixel-adb-keepalive.sh for reference.
+
+# sovereign-chat: first-class fleet coordination plane (2026-09-18).
+# Presence, activity, rooms, WebSocket push, MCP. Binds 127.0.0.1 + tailscale.
+# Token lives ONLY in /home/toxic/.config/sovereign-chat-token (0600).

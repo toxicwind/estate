@@ -1,26 +1,26 @@
 {
-  "ts": "2026-09-30T07:52:10.091582+00:00",
+  "ts": "2026-10-01T22:32:07.561504+00:00",
   "overall": "FAIL",
   "checks": [
     {
       "name": "supervisor",
       "status": "ok",
-      "detail": "active pid=1038 mem=27812052992B"
+      "detail": "active pid=1038 mem=22373048320B"
     },
     {
       "name": "daemons",
       "status": "fail",
-      "detail": "75/82 running; down: sovereign/bidder-forge sovereign/bidder-scout sovereign/buildsrv sovereign/buildsrv-watchdog sovereign/squawk-relay-sink sovereign/squawk-relay-forward sovereign/squawk-ws-client"
+      "detail": "79/82 running; down: sovereign/squawk-ws-client sovereign/squawk-relay-forward sovereign/squawk-relay-sink"
     },
     {
       "name": "openfang_kernel",
       "status": "fail",
-      "detail": "openfang status rc=0 after 14ms"
+      "detail": "openfang status rc=0 after 11ms"
     },
     {
       "name": "agents",
       "status": "fail",
-      "detail": "not Running: coyote shingle-pilot squawk-relay assistant (query took 12ms)"
+      "detail": "not Running: coyote shingle-pilot squawk-relay assistant (query took 15ms)"
     },
     {
       "name": "audit_chain",
@@ -30,12 +30,12 @@
     {
       "name": "llama_swap",
       "status": "ok",
-      "detail": ":25100/v1/models ok in 27ms, 116 models"
+      "detail": ":25100/v1/models ok in 23ms, 98 models"
     },
     {
       "name": "kimi_auto",
       "status": "warn",
-      "detail": "state age=813080s info=[mistral/ministral-3b-latest True 302]"
+      "detail": "state age=952278s info=[mistral/ministral-3b-latest True 302]"
     },
     {
       "name": "provider_nvidia",
@@ -75,27 +75,27 @@
     {
       "name": "yote_ep",
       "status": "ok",
-      "detail": ":25102/health reachable (200) in 6ms"
+      "detail": ":25102/health reachable (200) in 5ms"
     },
     {
       "name": "meshub_ep",
       "status": "ok",
-      "detail": ":25115 tcp open in 5ms"
+      "detail": ":25115 tcp open in 219ms"
     },
     {
       "name": "coyote_ep",
       "status": "ok",
-      "detail": ":25143/health reachable in 6ms"
+      "detail": ":25143/health reachable in 4ms"
     },
     {
       "name": "memory",
       "status": "ok",
-      "detail": "total=63893MB used=39487MB avail=24405MB"
+      "detail": "total=63893MB used=35768MB avail=28125MB"
     },
     {
       "name": "gpu",
       "status": "ok",
-      "detail": "NVIDIA GeForce RTX 3090  18 %  10405 MiB  24576 MiB"
+      "detail": "NVIDIA GeForce RTX 3090  4 %  10497 MiB  24576 MiB"
     }
   ],
   "papers": [

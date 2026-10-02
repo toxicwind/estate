@@ -1,0 +1,11 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'kafka'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.kafka]
+run = "exec ./stack/services/kafka.sh"
+dir = "."
+mise = true
+retry = true
+ready_port = 25144
+auto = ["start"]

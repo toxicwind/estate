@@ -1,0 +1,10 @@
+{
+  "id": "e2e-probe-1790802978311",
+  "surface": "scheduled-task",
+  "originRef": "e2e-probe-20260930",
+  "body": "End-to-end daemon verification probe.",
+  "enqueuedAt": "2026-09-30T21:16:18.311Z",
+  "exec": {
+    "cmd": "printf 'PROBE-OK %s' \"$(date -u +%FT%TZ)\""
+  }
+}

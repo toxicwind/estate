@@ -1,0 +1,14 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'agent-display'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.agent-display]
+# Forge 2026-09-21: isolated virtual display for the agent browser.
+port = 5900
+run = "exec Xvnc :99 -geometry 1600x900 -depth 24 -rfbport 5900 -localhost -SecurityTypes VncAuth -rfbauth /home/toxic/.browserless/vncpasswd"
+dir = "."
+mise = false
+retry = true
+ready_cmd = "ss -tln | grep -q 127.0.0.1:5900"
+boot_start = true
+auto = ["start"]

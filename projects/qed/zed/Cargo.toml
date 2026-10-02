@@ -397,7 +397,6 @@ lsp = { path = "crates/lsp" }
 lsp_locations = { path = "crates/lsp_locations" }
 markdown = { path = "crates/markdown" }
 markdown_preview = { path = "crates/markdown_preview" }
-mermaid_render = { path = "crates/mermaid_render" }
 svg_preview = { path = "crates/svg_preview" }
 media = { path = "crates/media" }
 menu = { path = "crates/menu" }
@@ -496,7 +495,6 @@ workspace = { path = "crates/workspace" }
 worktree = { path = "crates/worktree" }
 nvidia = { path = "crates/nvidia" }
 x_ai = { path = "crates/x_ai" }
-zed = { path = "crates/zed" }
 zed_actions = { path = "crates/zed_actions" }
 zed_credentials_provider = { path = "crates/zed_credentials_provider" }
 zed_env_vars = { path = "crates/zed_env_vars" }
@@ -561,12 +559,10 @@ base64 = "0.22"
 betlang = "0.1.0"
 bitflags = "2.6.0"
 block2 = "0.6"
-brotli = "8.0.2"
 bytes = "1.0"
 cargo_metadata = "0.19"
 cargo_toml = "0.21"
 brush-parser = "0.3"
-cfg-if = "1.0.3"
 chardetng = "0.1"
 chrono = { version = "0.4", features = ["serde"] }
 ciborium = "0.2"
@@ -613,7 +609,6 @@ flume = "0.12"
 futures = "0.3.32"
 futures-concurrency = "7.7.1"
 futures-lite = "1.13"
-futures-util = "0.3.32"
 gh-workflow = { git = "https://github.com/zed-industries/gh-workflow", rev = "37f3c0575d379c218a9c455ee67585184e40d43f" }
 
 globset = "0.4"
@@ -716,14 +711,12 @@ objc2-foundation = { version = "=0.3.2", default-features = false, features = [
     "std",
 ] }
 objc2-user-notifications = "0.3"
-open = "5.0.0"
 ordered-float = "2.1.1"
 palette = { version = "0.7.5", default-features = false, features = ["std"] }
 parking_lot = "0.12.1"
 partial-json-fixer = "0.5.3"
 parse_int = "0.9"
 pciid-parser = "0.8.0"
-pathdiff = "0.2"
 percent-encoding = "2.3.2"
 pet = { git = "https://github.com/microsoft/python-environment-tools.git", rev = "9e61a22af989fe54937bf07c9f9cff1bc53d9056" }
 pet-conda = { git = "https://github.com/microsoft/python-environment-tools.git", rev = "9e61a22af989fe54937bf07c9f9cff1bc53d9056" }

@@ -173,3 +173,24 @@ running loop (every fix is a committed file + pitchfork restart).
   at soft timeout → settled `no_quorum` at hard deadline, chase recorded.
 - Debate `debate-1789941742869-7690`: two real replies → settled `quorum`
   before soft timeout, no chase needed.
+
+## 8. Watchdog + settlement contract (absorbed from emergent-tasking, 2026-10-01)
+
+The market needs a supervisor with a persona, not just a mechanism.
+
+**Watchdog.** A standing watchdog agent supervises bidder liveness, re-announces
+stalled tasks, watches ledger growth, and monitors box + bridge health. Alerts go
+to squawk. Liveness rule: "alive but zero bids over N tasks" is a restart signal.
+The watchdog gets a persona too — den mother as much as guard dog. It greets,
+nudges, and celebrates in fleet; it is not an alert template.
+
+**Settlement contract.** Every settled task names its **artifacts + verification
+evidence** in the ledger entry. Code changes land as **commits with hashes**;
+pushes report remote + branch. Verification is real behavior only: live exec
+round-trips, real kill tests, real restarts — never simulated proof, never
+monkeypatched tests. A failed test is reported honestly, never papered over.
+
+**Upgrade petitions.** Any persistent agent may file an UPGRADE PETITION — what
+it wants, why (evidence from its track record), what it costs. The oracle opens
+a DEBATE on every petition (advocates, evidence, verdict in ledger); approved
+upgrades become market tasks. The swarm evolves itself instead of rotting.

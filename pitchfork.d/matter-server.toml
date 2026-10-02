@@ -1,0 +1,14 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'matter-server'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.matter-server]
+port = 25209
+run = "exec env STORAGE_PATH=/home/toxic/.matter_data BLUETOOTH_ADAPTER=0 LOG_LEVEL=info node --enable-source-maps /home/toxic/.matter-server/app/node_modules/matter-server/dist/esm/MatterServer.js --storage-path /home/toxic/.matter_data --bluetooth-adapter 0 --port ${MATTER_SERVER_PORT}"
+dir = "."
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25209/health"
+health_http = { url = "http://127.0.0.1:25209/health", interval = "30s", timeout = "5s", retries = 3 }
+env = { MATTER_SERVER_PORT = "25209" }
+auto = ["start"]

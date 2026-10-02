@@ -1,0 +1,12 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'sovereign-exporter'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.sovereign-exporter]
+port = 25213
+run = "exec python3 ./stack/services/sovereign-exporter.py"
+dir = "."
+retry = true
+ready_http = "http://127.0.0.1:25213/metrics"
+health_http = { url = "http://127.0.0.1:25213/health", interval = "30s", timeout = "5s", retries = 3 }
+auto = ["start"]

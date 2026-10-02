@@ -1,0 +1,14 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'openfang-front'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.openfang-front]
+port = 25103
+run = "exec ./stack/services/_consolidated_herd_20260924/openfang.sh"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25103/api/health"
+depends = ["gatehouse"]
+health_http = { url = "http://127.0.0.1:25103/api/health", interval = "30s", timeout = "5s", retries = 3 }
+auto = ["start"]

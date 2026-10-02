@@ -236,7 +236,7 @@ gpui = { workspace = true, features = [
     "windows-manifest",
 ] }
 
-[build-dependencies]
+[target.'cfg(windows)'.build-dependencies]
 windows_resources = { path = "../windows_resources" }
 
 [target.'cfg(any(target_os = "linux", target_os = "freebsd"))'.dependencies]

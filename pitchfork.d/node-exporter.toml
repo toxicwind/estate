@@ -1,0 +1,14 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'node-exporter'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.node-exporter]
+port = 25211
+run = "exec /usr/local/bin/node_exporter --web.listen-address=127.0.0.1:25211"
+dir = "."
+retry = true
+ready_http = "http://127.0.0.1:25211/metrics"
+health_http = { url = "http://127.0.0.1:25211/health", interval = "30s", timeout = "5s", retries = 3 }
+auto = ["start"]
+
+# ── port-dynamic 2026-09-20: orphans adopted + out-of-range ports moved ──

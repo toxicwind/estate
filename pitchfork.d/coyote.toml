@@ -1,0 +1,14 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'coyote'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.coyote]
+port = 25143
+run = "exec ./stack/services/_consolidated_herd_20260924/coyote.sh"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25143/health"
+health_http = { url = "http://127.0.0.1:25143/health", interval = "30s", timeout = "5s", retries = 3 }
+depends = ["gatehouse", "herd"]
+auto = ["start"]
