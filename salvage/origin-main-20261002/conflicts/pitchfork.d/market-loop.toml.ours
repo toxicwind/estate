@@ -1,0 +1,14 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'market-loop'.
+# Owned by the sovereign project; the parent only composes it.
+
+[daemons.market-loop]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/agents/weaver/bin/market-loop.ts"
+dir = "/home/toxic/estate/agents/weaver"
+mise = false
+retry = true
+auto = ["start"]
+ready_cmd = "pgrep -f '[m]arket-loop.ts' >/dev/null"
+# hashline serve — Unix-socket JSON-RPC daemon (first-class edit tool,
+# Chris 2026-09-30). Agents edit via the binary; MCP hosts use
+# `hashline mcp --proxy-to-daemon` against this socket. No HTTP surface —
+# readiness is the socket listening.

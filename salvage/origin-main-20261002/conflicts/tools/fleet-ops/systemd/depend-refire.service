@@ -1,0 +1,7 @@
+[Unit]
+Description=bedf89a9: dependency re-fire watcher (pitchfork stopped + deps healthy -> start)
+After=default.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/toxic/sovereign/tools/fleet-ops/depend-refire.py

@@ -1,0 +1,1056 @@
+{
+  "why": "origin/main tip is the pre-restructure checkpoint; these blobs were edited on origin and have no byte-identical counterpart at HEAD's renamed path, so keeping the restructure would drop them",
+  "origin_tip": "5c8de8ab74d0cb0062f7b825cf5b1521c550dc45",
+  "backup_ref": "backup/main-20261002",
+  "files": [
+    {
+      "origin_path": "config/tau/plugins/cache/marketplaces/ecc/ecc2/Cargo.lock",
+      "blob": "ab4d168cc80acfda87595572883bef04f0290194",
+      "new_path": "salvage/origin-main-20261002/config/tau/plugins/cache/marketplaces/ecc/ecc2/Cargo.lock"
+    },
+    {
+      "origin_path": "config/tau/plugins/cache/marketplaces/greenpt/LICENSE",
+      "blob": "de4f07160218d9575fb0cc78360dbcc1ac37a7f0",
+      "new_path": "salvage/origin-main-20261002/config/tau/plugins/cache/marketplaces/greenpt/LICENSE"
+    },
+    {
+      "origin_path": "config/tau/plugins/cache/marketplaces/i-have-adhd/LICENSE",
+      "blob": "19db5f1b0ca65e277c158bd4c4263139ccfd859c",
+      "new_path": "salvage/origin-main-20261002/config/tau/plugins/cache/marketplaces/i-have-adhd/LICENSE"
+    },
+    {
+      "origin_path": "pi-conversion/README.md",
+      "blob": "2ea2c45498e32b348fa79a4ca33a86fb665a8700",
+      "new_path": "salvage/origin-main-20261002/pi-conversion/README.md"
+    },
+    {
+      "origin_path": "projects/mesh/gateway/README.md",
+      "blob": "5628c9532587304fb851c1f1a963cb6980bea771",
+      "new_path": "salvage/origin-main-20261002/projects/mesh/gateway/README.md"
+    },
+    {
+      "origin_path": "projects/qed/zed/AUDIT.md",
+      "blob": "828bdfcdf5ee8271837e6e9d57c721e155cf35e4",
+      "new_path": "salvage/origin-main-20261002/projects/qed/zed/AUDIT.md"
+    },
+    {
+      "origin_path": "projects/tau-extensions/AGENTS.md",
+      "blob": "77acf840224bf79753583f1ea67eeb68db8b5014",
+      "new_path": "salvage/origin-main-20261002/projects/tau-extensions/AGENTS.md"
+    },
+    {
+      "origin_path": "projects/yote/tsconfig.json",
+      "blob": "79028ea3c36dbfd1655d8d83dff0f3f6988120b6",
+      "new_path": "salvage/origin-main-20261002/projects/yote/tsconfig.json"
+    },
+    {
+      "origin_path": "readme-fix-sovereign-1789408144/agent",
+      "blob": "1c516756db423c99638eefee8c68837efd95fbdf",
+      "new_path": "salvage/origin-main-20261002/readme-fix-sovereign-1789408144/agent"
+    },
+    {
+      "origin_path": "research/pi-per-model-prompt/package/README.md",
+      "blob": "ca150c435f3f1d517303ef3618163a78bd9d19e6",
+      "new_path": "salvage/origin-main-20261002/research/pi-per-model-prompt/package/README.md"
+    },
+    {
+      "origin_path": "rust_algo_web/src/gpu.rs",
+      "blob": "c1468d16bd76a9701d3a677a65af5d4370ee4be3",
+      "new_path": "salvage/origin-main-20261002/rust_algo_web/src/gpu.rs"
+    },
+    {
+      "origin_path": "rust_algo_web/src/main.rs",
+      "blob": "39f542626ba868ef0c5c02543ac34384afa378b1",
+      "new_path": "salvage/origin-main-20261002/rust_algo_web/src/main.rs"
+    },
+    {
+      "origin_path": "rust_algo_web/src/watchdog.rs",
+      "blob": "1ac801dbbf954fe10fea3bb3ee53e45d9308b47d",
+      "new_path": "salvage/origin-main-20261002/rust_algo_web/src/watchdog.rs"
+    },
+    {
+      "origin_path": "rust_algo_web/static/index.html",
+      "blob": "8a3c0f70430abfcdb7c3bbfb44d6351df794264e",
+      "new_path": "salvage/origin-main-20261002/rust_algo_web/static/index.html"
+    },
+    {
+      "origin_path": "rust_algo_web/static/portal.html",
+      "blob": "dba4e152bab42413d03c9fe9865164aaa4085f59",
+      "new_path": "salvage/origin-main-20261002/rust_algo_web/static/portal.html"
+    },
+    {
+      "origin_path": "scratch/archive5/README_current.md",
+      "blob": "0c62de31feede400bdc8175864e042c5da80a7a6",
+      "new_path": "salvage/origin-main-20261002/scratch/archive5/README_current.md"
+    },
+    {
+      "origin_path": "scratch/herd-ci/src/build-image.sh",
+      "blob": "9895faf2e0470799168d5039184937a32e1e17cd",
+      "new_path": "salvage/origin-main-20261002/scratch/herd-ci/src/build-image.sh"
+    },
+    {
+      "origin_path": "scratch/kimi-webui-staging/kimi.ts",
+      "blob": "f2eafaad79779aa21380725e322a79b0339355ea",
+      "new_path": "salvage/origin-main-20261002/scratch/kimi-webui-staging/kimi.ts"
+    },
+    {
+      "origin_path": "scratch/swarm-merge/review/lens-main/toxicwind-nvidia-swarm-lens-5593b3ea29f9cba1de648dc8e5c845835cc96f59/bin/pylibs/websockets/__main__.py",
+      "blob": "2f05ddc225577125ac018702cfe4de55a1aacd71",
+      "new_path": "salvage/origin-main-20261002/scratch/swarm-merge/review/lens-main/toxicwind-nvidia-swarm-lens-5593b3ea29f9cba1de648dc8e5c845835cc96f59/bin/pylibs/websockets/__main__.py"
+    },
+    {
+      "origin_path": "scratch/tau-ext-forks/.gitignore",
+      "blob": "d45e8100daba63bf0f0f56250894b14f2913b50b",
+      "new_path": "salvage/origin-main-20261002/scratch/tau-ext-forks/.gitignore"
+    },
+    {
+      "origin_path": "scratch/tau-ext-forks/package.json",
+      "blob": "3c45214c27e0f5a9b47850221222d88aac293444",
+      "new_path": "salvage/origin-main-20261002/scratch/tau-ext-forks/package.json"
+    },
+    {
+      "origin_path": "scratch/tau-ext-forks/packages/omp-best-of/tsconfig.json",
+      "blob": "41da6b5383feb1057fc4583c06fa43e233d97eca",
+      "new_path": "salvage/origin-main-20261002/scratch/tau-ext-forks/packages/omp-best-of/tsconfig.json"
+    },
+    {
+      "origin_path": "scratch/tau-ext-forks/packages/omp-edit-committer/README.md",
+      "blob": "1166ca5e92c332bbf246c32e59093df29a6b5d08",
+      "new_path": "salvage/origin-main-20261002/scratch/tau-ext-forks/packages/omp-edit-committer/README.md"
+    },
+    {
+      "origin_path": "scratch/tau-ext-forks/packages/omp-edit-committer/package.json",
+      "blob": "29da59bc1fe8eaab38073a9937356b6afb8496a3",
+      "new_path": "salvage/origin-main-20261002/scratch/tau-ext-forks/packages/omp-edit-committer/package.json"
+    },
+    {
+      "origin_path": "scratch/tau-ext-forks/packages/omp-edit-committer/tsconfig.json",
+      "blob": "b1bf243183b33b04f1d7846d9384f11a34316099",
+      "new_path": "salvage/origin-main-20261002/scratch/tau-ext-forks/packages/omp-edit-committer/tsconfig.json"
+    },
+    {
+      "origin_path": "scratch/tau-ext-forks/packages/omp-kafka/README.md",
+      "blob": "865cbd1d6f30138a0f27f681022d811f94836652",
+      "new_path": "salvage/origin-main-20261002/scratch/tau-ext-forks/packages/omp-kafka/README.md"
+    },
+    {
+      "origin_path": "scratch/tau-ext-forks/packages/omp-kafka/package.json",
+      "blob": "7d96721398eed016bc642203221becd7424d1167",
+      "new_path": "salvage/origin-main-20261002/scratch/tau-ext-forks/packages/omp-kafka/package.json"
+    },
+    {
+      "origin_path": "scratch/tau-ext-forks/packages/omp-model-router/README.md",
+      "blob": "0b753ea008dd53f2864d46f6241c508f3f08b0e7",
+      "new_path": "salvage/origin-main-20261002/scratch/tau-ext-forks/packages/omp-model-router/README.md"
+    },
+    {
+      "origin_path": "scratch/tau-ext-forks/packages/pi-agent-browser-native/LICENSE",
+      "blob": "2908799331c0d79f5cd473befc6dcd772566ef52",
+      "new_path": "salvage/origin-main-20261002/scratch/tau-ext-forks/packages/pi-agent-browser-native/LICENSE"
+    },
+    {
+      "origin_path": "scratch/tau-ext-forks/packages/pi-tasks/LICENSE",
+      "blob": "2921fa580ae13397f8300fe5595de93979a85b2d",
+      "new_path": "salvage/origin-main-20261002/scratch/tau-ext-forks/packages/pi-tasks/LICENSE"
+    },
+    {
+      "origin_path": "scratch/tau-ext-forks/packages/pi-workflow/LICENSE",
+      "blob": "80d493757c7f2eca7eeb2400d0f593634c200494",
+      "new_path": "salvage/origin-main-20261002/scratch/tau-ext-forks/packages/pi-workflow/LICENSE"
+    },
+    {
+      "origin_path": "sovereign-scripts/README.md",
+      "blob": "ab72d0d6f428cb57d63f2d8385660d9527be69b2",
+      "new_path": "salvage/origin-main-20261002/sovereign-scripts/README.md"
+    },
+    {
+      "origin_path": "sovereign-skills/README.md",
+      "blob": "e8462a6bc06e51fd478e6b2312ed4a2cf9d05b6b",
+      "new_path": "salvage/origin-main-20261002/sovereign-skills/README.md"
+    },
+    {
+      "origin_path": "tools/nuvio-platform",
+      "blob": "b388df22ca9c5e949ce98f5a8140fd82069cb06f",
+      "new_path": "salvage/origin-main-20261002/tools/nuvio-platform"
+    },
+    {
+      "origin_path": "tools/nuvio-webos",
+      "blob": "8aea70708ad8c69e29b7aa0b8692b39168992d62",
+      "new_path": "salvage/origin-main-20261002/tools/nuvio-webos"
+    },
+    {
+      "origin_path": "tools/sovereign-router/sovereign-router-ts/router.ts",
+      "blob": "13ef51519692218fbac244d49f11f7b4a6dbae0f",
+      "new_path": "salvage/origin-main-20261002/tools/sovereign-router/sovereign-router-ts/router.ts"
+    },
+    {
+      "origin_path": "tools/sovereign-router/sovereign-router-ts/sovereign-router-ts/router.ts",
+      "blob": "f525cff392b27b44ef2c534e1d0514b872777596",
+      "new_path": "salvage/origin-main-20261002/tools/sovereign-router/sovereign-router-ts/sovereign-router-ts/router.ts"
+    },
+    {
+      "origin_path": ".gitignore",
+      "blob": "d969202df0f120c3f11be8d481340d2ccc33afeb",
+      "new_path": "salvage/origin-main-20261002/conflicts/.gitignore",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": ".gitmodules",
+      "blob": "d0115a132cf8ee1e502d9aeb1fcbed88f10546c4",
+      "new_path": "salvage/origin-main-20261002/conflicts/.gitmodules",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "README.md",
+      "blob": "32e2934904f74151878a60fc648e5e6ed8f875bd",
+      "new_path": "salvage/origin-main-20261002/conflicts/README.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "agents/gen_toml.py",
+      "blob": "13c5ae33469b1fa964d41725fccb405d94f74302",
+      "new_path": "salvage/origin-main-20261002/conflicts/agents/gen_toml.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "agents/kimiclaw-1/system.md",
+      "blob": "2d1b2b835d81cfd82cbb7a1fa87d9350f9e6d510",
+      "new_path": "salvage/origin-main-20261002/conflicts/agents/kimiclaw-1/system.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "agents/kimiclaw-2/system.md",
+      "blob": "01051441c82bc947a94fa6d10f00056a2462ba0b",
+      "new_path": "salvage/origin-main-20261002/conflicts/agents/kimiclaw-2/system.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "agents/squawk-relay/agent.toml",
+      "blob": "53a3606c152d54d3e03de071ac41e20e16a19bff",
+      "new_path": "salvage/origin-main-20261002/conflicts/agents/squawk-relay/agent.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "agents/trailboss/agent.toml",
+      "blob": "7d85b19e62bbfdfa05ceb0bed38376a240f12d17",
+      "new_path": "salvage/origin-main-20261002/conflicts/agents/trailboss/agent.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "agents/weaver/bin/market-loop.ts",
+      "blob": "7379c12516505e401cc614f46273b917b15ed020",
+      "new_path": "salvage/origin-main-20261002/conflicts/agents/weaver/bin/market-loop.ts",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/bin-verify.sh",
+      "blob": "86e955f2040d12d67029552029fd7abdc1eb4725",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/bin-verify.sh",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/claim-port",
+      "blob": "6b79767e3ca0bfdc310f74d653eb60187143da28",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/claim-port",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/estate-reconcile",
+      "blob": "efdab7b6920a24d0b758ab16b19ec62f3caa70de",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/estate-reconcile",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/estate-scan",
+      "blob": "4519b04b8e958af91b4da0b3305d206873a63fe0",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/estate-scan",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/fleet-join.ts",
+      "blob": "b668798961c865d2ebb9937b732b6ea68e18e96e",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/fleet-join.ts",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/herd-keypool.py",
+      "blob": "a967fdc4639e77c6a24c2cdd9ad654396edd902b",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/herd-keypool.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/herd-model-guard.py",
+      "blob": "db88d909fa80f8fc59045921aaa90628704ed627",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/herd-model-guard.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/manifest.yaml",
+      "blob": "4fcb62d5e1f3f8e6e98e9a1e28a2db2423d05fa4",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/manifest.yaml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/or-free-grade.py",
+      "blob": "52b4b247514376beee53ce2d900b8744de80f433",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/or-free-grade.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/or-free-sweep2.py",
+      "blob": "64ffc5fe388a3a6d83c3ec900217ca8f452f8553",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/or-free-sweep2.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/or-free-sweep3.py",
+      "blob": "8879eeb8aa8e8b5d3b1f29b0910adf34669df1a0",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/or-free-sweep3.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/or-rejudge.py",
+      "blob": "770ec8afe4fd54c907885cd4059117ea1bb14ede",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/or-rejudge.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/pitchfork-compose",
+      "blob": "5ec70d328d4ec856e85f7ed40e2e6b539af3ff74",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/pitchfork-compose",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/pitchfork-reconcile",
+      "blob": "46ac5fce3666266420aaaadccfc569703797d149",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/pitchfork-reconcile",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/pitchfork-restart",
+      "blob": "fe920655be1e414b56ca40ac89d8964661165e5b",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/pitchfork-restart",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/pitchfork-split",
+      "blob": "e5bb838a7ab259e8021f8880aa89bd2d30c4127f",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/pitchfork-split",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/progress-watchdog.py",
+      "blob": "024c82beb278002c375f796549374b47855c788e",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/progress-watchdog.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/stale-hunter.sh",
+      "blob": "52912cc4f2400b1aa09bc60ffdaa9e3184480ef5",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/stale-hunter.sh",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "bin/tests/estate-reconcile-test.sh",
+      "blob": "a63ad83ab13f74735d8fb12e7247ec7c9d4e361d",
+      "new_path": "salvage/origin-main-20261002/conflicts/bin/tests/estate-reconcile-test.sh",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/herd.yaml",
+      "blob": "57c525f5b93d0d7396ba01cd601e23872b05b268",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/herd.yaml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/AGENTS.md",
+      "blob": "aa82b564e0839be16ea9bab8097f0cd6e196481a",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/AGENTS.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/agent/config.yml",
+      "blob": "2606998258c83101dbbe22617fa8ede17b9d9766",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/agent/config.yml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/agent/config.yml.broken-1790842903551-2048431-773f20ab-864c-44a1-8497-6438d8213d7f",
+      "blob": "3457447a70f17e3ec31d7f22fea837c261132cf9",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/agent/config.yml.broken-1790842903551-2048431-773f20ab-864c-44a1-8497-6438d8213d7f",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/config.yml",
+      "blob": "cd50babb46c5ce5ecf141d8a6049ff2c6aab126e",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/config.yml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/config.yml.merged.yq",
+      "blob": "a1f7c840c6a132e4bc3a5fc5f4a56c52899242dd",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/config.yml.merged.yq",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/extensions/README.md",
+      "blob": "d4a02a91a6776598b8e6085738ba24d3552e6268",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/extensions/README.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/mcp.json",
+      "blob": "389cbca5753f154c00e831e3833e61a0fb297b4a",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/mcp.json",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/model-router.json",
+      "blob": "2a4749e9a09731a0e1093237da1f5591759ca1a7",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/model-router.json",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/models.yml",
+      "blob": "89d645dd0ac6e57779c13cf7e191a49b780ba9c8",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/models.yml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/plans/FLOCK_401_AUTHENTICATION_FIX_PLAN.md",
+      "blob": "b76f6efc93359d1acb3789ec2e361ebffa3ad91e",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/plans/FLOCK_401_AUTHENTICATION_FIX_PLAN.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/plans/FLOCK_401_AUTH_FIX_PLAN.md",
+      "blob": "b76f6efc93359d1acb3789ec2e361ebffa3ad91e",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/plans/FLOCK_401_AUTH_FIX_PLAN.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/plans/HERD_MAXIMAL_MERGE_PLAN.md",
+      "blob": "5973cf1171e6a637a0ebb8407b88da4af8ce3062",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/plans/HERD_MAXIMAL_MERGE_PLAN.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/plans/MESH_RANCH_RECONSTITUTION_PLAN.md",
+      "blob": "a441b0c2153389cc4b3cfc62bcd53bc8598b5272",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/plans/MESH_RANCH_RECONSTITUTION_PLAN.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/plans/README_REVITALIZATION_PLAN_SHREW_PLAN.md",
+      "blob": "376d4a0284729b6c860f27c6c1d0cf7567f856fe",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/plans/README_REVITALIZATION_PLAN_SHREW_PLAN.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/plans/SOVEREIGN_MASTER_CONSOLIDATION_PLAN.md",
+      "blob": "4dc909da44c186cdb47817b5f17c22ffce6a29a5",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/plans/SOVEREIGN_MASTER_CONSOLIDATION_PLAN.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/plans/SOVEREIGN_SHELL_RANCH_TAU_PLAN.md",
+      "blob": "ecf56da2cc7ce9f0f32cc0a3235619f0b7b4008f",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/plans/SOVEREIGN_SHELL_RANCH_TAU_PLAN.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/run/daemons/81c58a838de15094/clients/1005946-cd16f428-18c0-4594-b68c-88b4ac604cff.json",
+      "blob": "955e61f542a16902a0abd80169399c4039ce980d",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/run/daemons/81c58a838de15094/clients/1005946-cd16f428-18c0-4594-b68c-88b4ac604cff.json",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/run/daemons/81c58a838de15094/clients/1055018-f24271ba-ed96-450e-999c-77f2deca5720.json",
+      "blob": "122d825da75aef9b6a0fcbbf8bd413f6db5de329",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/run/daemons/81c58a838de15094/clients/1055018-f24271ba-ed96-450e-999c-77f2deca5720.json",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/run/daemons/8bdde296d42fd353/clients/1240079-b57001df-436e-4a32-9c7b-03cce8cd157a.json",
+      "blob": "692b0b76337a434f6004458bc5c2335117796f8a",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/run/daemons/8bdde296d42fd353/clients/1240079-b57001df-436e-4a32-9c7b-03cce8cd157a.json",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/run/daemons/8bdde296d42fd353/clients/1259601-195f5d21-d4f1-4151-bb43-6a1bfdfb769d.json",
+      "blob": "f72d01c821bb63a8c0d7593b8164d98a8b53ae46",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/run/daemons/8bdde296d42fd353/clients/1259601-195f5d21-d4f1-4151-bb43-6a1bfdfb769d.json",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/run/daemons/8bdde296d42fd353/daemons/omp.browser.headless/meta.json",
+      "blob": "b0b3b8089a3582fd1a55a79e6105edca77f9c930",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/run/daemons/8bdde296d42fd353/daemons/omp.browser.headless/meta.json",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/run/daemons/8bdde296d42fd353/daemons/omp.lsp.mux/meta.json",
+      "blob": "4a97214cb8608a555d146b8e31df339c3128f450",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/run/daemons/8bdde296d42fd353/daemons/omp.lsp.mux/meta.json",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/run/daemons/8bdde296d42fd353/omp.browser.headless.profile/Default/shared_proto_db/LOG",
+      "blob": "6e5813bc7da48248af361d9a5ae60d793344152a",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/run/daemons/8bdde296d42fd353/omp.browser.headless.profile/Default/shared_proto_db/LOG",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/run/daemons/8bdde296d42fd353/omp.browser.headless.profile/Default/shared_proto_db/metadata/LOG",
+      "blob": "b4d0dce6a0b046f826c07f25ffd6014b46938318",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/run/daemons/8bdde296d42fd353/omp.browser.headless.profile/Default/shared_proto_db/metadata/LOG",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/run/daemons/8bdde296d42fd353/omp.browser.headless.profile/WidevineCdm/latest-component-updated-widevine-cdm",
+      "blob": "0c64d503d1c5ccd65462ba204e1b11ceeb621d09",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/run/daemons/8bdde296d42fd353/omp.browser.headless.profile/WidevineCdm/latest-component-updated-widevine-cdm",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/run/daemons/8bdde296d42fd353/scope.json",
+      "blob": "d7235d89b916ae567e1bbd5a3a2a210e7fc88466",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/run/daemons/8bdde296d42fd353/scope.json",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/run/daemons/b11b302aa2d63cc7/omp.browser.headless.profile/Default/shared_proto_db/LOG",
+      "blob": "3c9e1813bbe4f76b629abf7ea0cbd53f734043ec",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/run/daemons/b11b302aa2d63cc7/omp.browser.headless.profile/Default/shared_proto_db/LOG",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/run/daemons/b11b302aa2d63cc7/omp.browser.headless.profile/Default/shared_proto_db/metadata/LOG",
+      "blob": "779795be561885d8eeef23c142986d16f7faa709",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/run/daemons/b11b302aa2d63cc7/omp.browser.headless.profile/Default/shared_proto_db/metadata/LOG",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "config/tau/run/daemons/b11b302aa2d63cc7/omp.browser.headless.profile/WidevineCdm/latest-component-updated-widevine-cdm",
+      "blob": "3f916e46035a9090c4305159021a7e3d68a15659",
+      "new_path": "salvage/origin-main-20261002/conflicts/config/tau/run/daemons/b11b302aa2d63cc7/omp.browser.headless.profile/WidevineCdm/latest-component-updated-widevine-cdm",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "docs/pitchfork-modularization/RESULT-round2-per-project.md",
+      "blob": "2007d6cf5c3eec8c487e6e904fdc3a08852e8037",
+      "new_path": "salvage/origin-main-20261002/conflicts/docs/pitchfork-modularization/RESULT-round2-per-project.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "docs/pitchfork-modularization/race2.ts",
+      "blob": "e3500dc5cb733bd0e0ea5daca4b0ec34056baef6",
+      "new_path": "salvage/origin-main-20261002/conflicts/docs/pitchfork-modularization/race2.ts",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "docs/plans/master/TASKS.md",
+      "blob": "ac8789f4f1b4427ddd04a38593dd35cb981d86ec",
+      "new_path": "salvage/origin-main-20261002/conflicts/docs/plans/master/TASKS.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "hatch/agents/ember/var/openfang-health/last-post-ts",
+      "blob": "a1efab5242bee6d0c3ac1de8868039cb8740f597",
+      "new_path": "salvage/origin-main-20261002/conflicts/hatch/agents/ember/var/openfang-health/last-post-ts",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "hatch/agents/ember/var/openfang-health/openfang-health.html",
+      "blob": "df1b6e8720bafeecf09465bd0193b7c68bebe159",
+      "new_path": "salvage/origin-main-20261002/conflicts/hatch/agents/ember/var/openfang-health/openfang-health.html",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "hatch/agents/ember/var/openfang-health/openfang-health.json",
+      "blob": "67dfb8afb67eda61ebf322df71ad455a7aaad7ef",
+      "new_path": "salvage/origin-main-20261002/conflicts/hatch/agents/ember/var/openfang-health/openfang-health.json",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/beellama-fast.toml",
+      "blob": "ab68447e19adc9674dcce57ae1a7e1a48b9c31b8",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/beellama-fast.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/browser-keeper.toml",
+      "blob": "feec182e98202872e750ccea39ea877a7a4f9b1a",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/browser-keeper.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/browserless.toml",
+      "blob": "d70cf432589b8b074e798f468d11669af69259b8",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/browserless.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/estate-reconcile-watch.toml",
+      "blob": "0331ed55fe46ae94d846191b28f8117255bfefcc",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/estate-reconcile-watch.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/files.toml",
+      "blob": "ceba484d6a4d27c2aa8f0e721b358733cf5421e7",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/files.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/flock.toml",
+      "blob": "7e284ab2b3d442831c480990591a2a0dc27918cd",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/flock.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/herd.toml",
+      "blob": "4e1a146c063564a55c5dfe4e68bb9e44f2d38c9d",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/herd.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/keypool.toml",
+      "blob": "4a204067f0ef58ec1d845aa54296105787e2fc9b",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/keypool.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/kimi-auto-shim.toml",
+      "blob": "05adbc2db76b522bb0acd7e72306c17d4c3e1d00",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/kimi-auto-shim.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/market-loop.toml",
+      "blob": "2c4ae4456827c7d940078e16b47a4700d5228312",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/market-loop.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/model-guard.toml",
+      "blob": "e15f1eb44ed532236728928c8072713dbfe4cab0",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/model-guard.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/nginx.toml",
+      "blob": "ce0714feb8043088166f9aa0a681641c26e1492b",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/nginx.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/nim-kimi-sidecar.toml",
+      "blob": "c049e144851f7ec42aff0a197d1f6267b925065c",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/nim-kimi-sidecar.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/openfang-health.toml",
+      "blob": "86157b81f87d56349f2a54a061622bf98228dd71",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/openfang-health.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/search-api.toml",
+      "blob": "ddbcb3007cb74ac5192c5c147a605c739e2d3ec9",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/search-api.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/search-ui.toml",
+      "blob": "b5202136511ee0f56c3455144d6acd281ab0face",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/search-ui.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/stash-guard.toml",
+      "blob": "ebc53e2ab8515e6db561e7fb13fa15cedce8d1cf",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/stash-guard.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/toolcall-llm.toml",
+      "blob": "e714cc16ba09e87af0ac35065aa9f4ec7877cc7f",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/toolcall-llm.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.d/vansrouter.toml",
+      "blob": "ecaadf7ae6974d97489e137adc945b6d6b91d314",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.d/vansrouter.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "pitchfork.toml",
+      "blob": "9e21952e439411a8cdcdf9e0d803b331656342ac",
+      "new_path": "salvage/origin-main-20261002/conflicts/pitchfork.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "skills/README.md",
+      "blob": "a5c5abe0d0af1d96902bd9d4c48a25a51497bfda",
+      "new_path": "salvage/origin-main-20261002/conflicts/skills/README.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "skills/ast-bm25-racer/SKILL.md",
+      "blob": "3de10bd90a0c981d0cdd0e3d1d2c522506ec144b",
+      "new_path": "salvage/origin-main-20261002/conflicts/skills/ast-bm25-racer/SKILL.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "skills/classifier-project/SKILL.md",
+      "blob": "47f3a6e115638ceedaba414438b41a1670e64bfa",
+      "new_path": "salvage/origin-main-20261002/conflicts/skills/classifier-project/SKILL.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "skills/exa/SKILL.md",
+      "blob": "a4a6622f7bba55c59f94e2978fb19189d14e3547",
+      "new_path": "salvage/origin-main-20261002/conflicts/skills/exa/SKILL.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "skills/exa/skill.toml",
+      "blob": "953679f019809ebd9ed6695d3f79f3a4a03f7d9e",
+      "new_path": "salvage/origin-main-20261002/conflicts/skills/exa/skill.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "skills/git-mutator/README.md",
+      "blob": "a12029a5f7ffbdba5f7a9217878c774c7d24737e",
+      "new_path": "salvage/origin-main-20261002/conflicts/skills/git-mutator/README.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "skills/paper-search/SKILL.md",
+      "blob": "75d25ae49ee3b5657a2ee03ab4279331d2e2500f",
+      "new_path": "salvage/origin-main-20261002/conflicts/skills/paper-search/SKILL.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "skills/paper-search/prompt_context.md",
+      "blob": "8f0b05137b338263d3b4b81d082c46ed63173f1b",
+      "new_path": "salvage/origin-main-20261002/conflicts/skills/paper-search/prompt_context.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "skills/paper-search/skill.toml",
+      "blob": "4b3f8975efecfd5ffbb49b85f9b7ce2ba1fc1110",
+      "new_path": "salvage/origin-main-20261002/conflicts/skills/paper-search/skill.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "skills/scripts/health-audit.ts",
+      "blob": "3b0b5c6e7f851dcd8dac3b5cba1d7ceaff2949f4",
+      "new_path": "salvage/origin-main-20261002/conflicts/skills/scripts/health-audit.ts",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "skills/sovereign-hatch-toolkit/LICENSE",
+      "blob": "544ebefd6cf0dc70863f307fcb3f63154f96478b",
+      "new_path": "salvage/origin-main-20261002/conflicts/skills/sovereign-hatch-toolkit/LICENSE",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "skills/sovereign-hatch-toolkit/README.md",
+      "blob": "8b923252d04ab98957f018bc65527a3d83bee485",
+      "new_path": "salvage/origin-main-20261002/conflicts/skills/sovereign-hatch-toolkit/README.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "skills/tau-fork-pinning/SKILL.md",
+      "blob": "9f2e6de51a1b29ec2849235620b2cf0e0827207c",
+      "new_path": "salvage/origin-main-20261002/conflicts/skills/tau-fork-pinning/SKILL.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "stack/services/_consolidated_herd_20260924/beellama-fast.sh",
+      "blob": "99b7a92f20fe009556bedd8cb8f31c0efdecd8e8",
+      "new_path": "salvage/origin-main-20261002/conflicts/stack/services/_consolidated_herd_20260924/beellama-fast.sh",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "stack/services/_consolidated_herd_20260924/herd.sh",
+      "blob": "2fedde383eb18a51406965614442aed5924e27e4",
+      "new_path": "salvage/origin-main-20261002/conflicts/stack/services/_consolidated_herd_20260924/herd.sh",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "stack/services/_consolidated_herd_20260924/openfang.sh",
+      "blob": "4c4a9c69bfc7197657473f4b8f0379548a06c127",
+      "new_path": "salvage/origin-main-20261002/conflicts/stack/services/_consolidated_herd_20260924/openfang.sh",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "stack/services/herd.sh",
+      "blob": "2fedde383eb18a51406965614442aed5924e27e4",
+      "new_path": "salvage/origin-main-20261002/conflicts/stack/services/herd.sh",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "stack/services/sovereign-exporter.py",
+      "blob": "a1ae4000695f91c8c8da6be2b93bce0887ec1636",
+      "new_path": "salvage/origin-main-20261002/conflicts/stack/services/sovereign-exporter.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "stack/services/vansrouter.sh",
+      "blob": "7b1b8b06769071f4190c0a9102060f559517f3e4",
+      "new_path": "salvage/origin-main-20261002/conflicts/stack/services/vansrouter.sh",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/bench-radar/pitchfork.d/bench-radar.toml",
+      "blob": "106dc4bc3255b59aaa6ed16de500888b6b58f560",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/bench-radar/pitchfork.d/bench-radar.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/bili-deploy.sh",
+      "blob": "f9e2767610c46dc3b3aaa75420beeab52ae8bb34",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/bili-deploy.sh",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/e2e.py",
+      "blob": "4bae309b43287dcb497202eabc259d703a099616",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/e2e.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/e2e_live.py",
+      "blob": "14866d49c21da145afd84227399383a10833844e",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/e2e_live.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/eap_code_hunt_20260917.md",
+      "blob": "249064a132f5590498361842d159b3b3ad78a219",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/eap_code_hunt_20260917.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/extension-registry.ts",
+      "blob": "9e42641c93c104595f377d780d12f59057f3b5dd",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/extension-registry.ts",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/fast-race/README.md",
+      "blob": "0cf397519e2d6691d887a8bb682f8faad77b6ccb",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/fast-race/README.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/fast-race/fast_race.py",
+      "blob": "8f82374c7b47cd91f7235c457d25a9eee9dfafc0",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/fast-race/fast_race.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/fleet-chat/README.md",
+      "blob": "170e6106bf7c4f8c9a98cb7fa08a9dc832a29081",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/fleet-chat/README.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/fleet-ops/depend-refire.py",
+      "blob": "308d08af3cd5aba4d166ccafb450497d49c003f4",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/fleet-ops/depend-refire.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/fleet-ops/fleet-watchdog/README.md",
+      "blob": "2efddc8a5f167b94847eac52414d62a51125796b",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/fleet-ops/fleet-watchdog/README.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/fleet-ops/fleet-watchdog/driver.sh",
+      "blob": "668fe2f54f8c7814b293e9adbc8a867a96d7acd2",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/fleet-ops/fleet-watchdog/driver.sh",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/fleet-ops/fleet-watchdog/gap_test.sh",
+      "blob": "4d56777214a4c26ad8d4d33bd02dc2570750979e",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/fleet-ops/fleet-watchdog/gap_test.sh",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/fleet-ops/fleet-watchdog/supervise.sh",
+      "blob": "10aacc1fd71ea4af29cd9ac7d8302a9f683e8d79",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/fleet-ops/fleet-watchdog/supervise.sh",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/fleet-ops/fleet-watchdog/sweepd.sh",
+      "blob": "835b8fae72cbfc6a4309ebbd88584b3bdf7bff3a",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/fleet-ops/fleet-watchdog/sweepd.sh",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/fleet-ops/fleet-watchdog/systemd/fleet-watchdog-sweepd.service",
+      "blob": "bfedc51c24dfe75a70612db19332d24f8078403f",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/fleet-ops/fleet-watchdog/systemd/fleet-watchdog-sweepd.service",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/fleet-ops/fleet-watchdog/test_decide.py",
+      "blob": "c6ea5e931c017d690d30e25f2e55ace952ea70ca",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/fleet-ops/fleet-watchdog/test_decide.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/fleet-ops/shep-mcp",
+      "blob": "864cc7801df90eace8fccdb8d7b2afdc01f2b400",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/fleet-ops/shep-mcp",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/fleet-ops/systemd/depend-refire.service",
+      "blob": "3b3cdcd6239ffc35ccc8fa4bdb0665784dc28b66",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/fleet-ops/systemd/depend-refire.service",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/fleet-ops/zombie-reaper",
+      "blob": "4ab918e0bc4bf15cc31b5f053bcf5b0b30cdb675",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/fleet-ops/zombie-reaper",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/gatehouse_payload.py",
+      "blob": "67fb1fca413fc76dd6ad3d72ce7343e79bf9f10d",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/gatehouse_payload.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/herd-ranker.py",
+      "blob": "f4d3ad116e72df9c06e01c1ddcde5a4ee1ec70c0",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/herd-ranker.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/kimi-claw/RECONCILIATION.md",
+      "blob": "8f5685bd54b7aadf4376b6d39bfe7ddc71ddfc63",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/kimi-claw/RECONCILIATION.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/kimi-claw/deploy.sh",
+      "blob": "a8237dfb4932f8cd82a68ae3c109195f561a10fe",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/kimi-claw/deploy.sh",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/kimi-claw/pitchfork.d/kimiclaw-a.toml",
+      "blob": "520eb99438725d55d9684222db617c740b8e2f21",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/kimi-claw/pitchfork.d/kimiclaw-a.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/kimi-claw/pitchfork.d/kimiclaw-b.toml",
+      "blob": "e3677cdf8a6b019e378a5a809896c948923be74a",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/kimi-claw/pitchfork.d/kimiclaw-b.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/ml-serve/pitchfork.d/ml-serve.toml",
+      "blob": "66fe91fcb876c201166c1b0055ee510521411577",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/ml-serve/pitchfork.d/ml-serve.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/ml-serve/systemd/ml-serve.service",
+      "blob": "ac9ba923b0f124007e5c18eb712d35d66047708a",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/ml-serve/systemd/ml-serve.service",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/null-g-proxy/pitchfork.d/null-g-proxy.toml",
+      "blob": "f260ab83d20cab17dc99fcd849810cda7d6ee9ed",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/null-g-proxy/pitchfork.d/null-g-proxy.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/payload_builder.py",
+      "blob": "541d4140141f75648726a6426fe1cacd82478ff7",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/payload_builder.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/pd-mcp/README.md",
+      "blob": "cb23fb370166639d4ffc54120ead8e2fc66f396c",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/pd-mcp/README.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/skill-audit.ts",
+      "blob": "d2f6ca2f2b23917a6a0fcf53020790acde2b367d",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/skill-audit.ts",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/sovereign-chat/README.md",
+      "blob": "177d1a643a859a4e8623b5650008db01de41b3f1",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/sovereign-chat/README.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/sovereign-chat/pitchfork.d/sovereign-chat.toml",
+      "blob": "19954afce9e813ba358190f9de1daccd0a4536cd",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/sovereign-chat/pitchfork.d/sovereign-chat.toml",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/sovereign-chat/relay-watch.sh",
+      "blob": "2ef7120f1b160f0ca67df90805247ab26ada206a",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/sovereign-chat/relay-watch.sh",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/squawk-watchdog/squawk-watchdog.sh",
+      "blob": "d2d976b81e6cabab5153e4dfb6e323f6a82a33f2",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/squawk-watchdog/squawk-watchdog.sh",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/stash-guard/README.md",
+      "blob": "cb19b471c2da043dfeaade9d4e7b89b5771202d0",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/stash-guard/README.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/stash-guard/stash-guard.py",
+      "blob": "dff3e3ec7c5ee762211d7d07673ec9de9d7742b9",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/stash-guard/stash-guard.py",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/tmux-mcp/README.md",
+      "blob": "b9d28e3a43f3fa85bb06786413c4764a58dd7b93",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/tmux-mcp/README.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/websearch-mcp/README.md",
+      "blob": "d374efa429eb65f609689b0b45c98a46ccab8778",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/websearch-mcp/README.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    },
+    {
+      "origin_path": "tools/yote-maximal/RUNBOOK.md",
+      "blob": "635e6ec348355bc0ab32ea21c68bc1ec7fa24f90",
+      "new_path": "salvage/origin-main-20261002/conflicts/tools/yote-maximal/RUNBOOK.md",
+      "note": "both-sides-changed conflict; origin's side archived, HEAD's side kept"
+    }
+  ]
+}

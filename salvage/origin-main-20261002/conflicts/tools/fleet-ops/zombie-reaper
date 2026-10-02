@@ -1,0 +1,235 @@
+#!/usr/bin/env python3
+"""zombie-reaper: detect stuck-completion subagents (the "looks running, actually done" bug).
+
+The runtime sometimes never flips agent.subagent_spawns.status to terminal
+even though the agent row itself is already terminal (completed/shutdown/
+errored/interrupted) -- or the spawn carries terminal evidence
+(completed_at/final_response/deferred_terminal_status) with no live children.
+subagent.list then shows them "running" forever, making parallelism look wedged.
+
+muse.db is agent-tool only, so this script is an agent runbook:
+
+  Step 1:  zombie-reaper --scan
+           prints the SQL. Paste it into the muse.db tool verbatim,
+           save the returned JSON envelope to /tmp/zrows.json.
+
+  Step 2:  zombie-reaper --classify /tmp/zrows.json
+           prints per-row verdicts + the exact actions to take.
+
+Verdicts:
+  TIER1_ZOMBIE     spawn 'running' but agent row already terminal. Airtight:
+                   no live process exists. The OWNING lane may close it.
+  TIER2_SUSPECT    spawn carries terminal evidence, agent row still
+                   'running', no running children. Owner-lane eyes only.
+  COORDINATOR_LIVE running children, or fr reads as progress. DO NOT TOUCH.
+  RUNNING_CLEAN    genuinely working.
+
+RULES (hard):
+  - Never close another lane's agent yourself. For TIER1/TIER2 on other
+    lanes, append a visible flag to the fleet channel
+    (/home/toxic/.shingle/directives.md, newest-at-bottom) -- interrupts
+    are visible, never silent. The owning lane reaps.
+  - deferred_terminal_status='completed' ALONE is not proof of done:
+    observed set spuriously on live coordinators (2026-09-19).
+  - Re-read the row right before acting; final_response can update between
+    scan and action (a coordinator may deliver its report then keep working).
+
+Exit codes: 0 = clean (no actionable zombies), 2 = actionable zombies found,
+1 = usage/input error.
+"""
+import json, os, sys, time
+
+SCAN_SQL_PATH = "/home/hatch/workspace/helpers/muse-db/queries/stuck_completion_audit.sql"
+
+# Sids already verified stale by a lane (flag posted to the fleet channel).
+# classify() suppresses re-flagging for these -- the row stays 'running'
+# until its owning lane reaps it, but the fleet has already been told.
+# Shape: {"sids": {"<sid>": {"child": "<prefix8>", "by": "<lane>",
+#                             "at": "<iso-utc>", "note": "<evidence>"}}}
+#
+# Two copies, one logical store (topology fix 2026-09-19):
+#   DURABLE: /home/toxic/sovereign/tools/fleet-ops/zombie-verified.json
+#            (awrawr-pc; the backup of record; reachable from the cell ONLY
+#            via the awrawr-mcp bridge, never by a direct filesystem path)
+#   CELL:    ~/workspace/cron-honest/zombie-verified.json
+#            (cell-local hot store; always readable/writable by the worker)
+# Reads UNION both copies (durable wins on conflict) so a sid verified on
+# either machine suppresses re-flagging on both. --mark-verified writes the
+# primary store atomically (durable when directly reachable, else the cell
+# file) and, when running on the cell, best-effort mirrors to the durable
+# path via xfer so the backup of record converges.
+# A naive single-path swap to the durable path BREAKS the cell worker
+# (/home/toxic does not exist on the cell: reads would silently return {}
+# and re-flag already-verified sids) -- never do that.
+VERIFIED_DURABLE = "/home/toxic/sovereign/tools/fleet-ops/zombie-verified.json"
+VERIFIED_CELL = os.path.expanduser("~/workspace/cron-honest/zombie-verified.json")
+XFER_BIN = os.path.expanduser("~/workspace/skills/awrawr-mcp/bin/xfer.py")
+
+COMPLETION_MARKERS = ("done", "complete", "final report", "pushed", "verified",
+                      "all phases", "writing the final handoff")
+PROGRESS_MARKERS = ("initializing", "waiting on", "interim", "in progress",
+                    "still running", "fanning out")
+
+
+def scan():
+    try:
+        print(open(SCAN_SQL_PATH).read())
+    except FileNotFoundError:
+        sys.exit("zombie-reaper: scan SQL not found: %s" % SCAN_SQL_PATH)
+
+
+def load_rows(path):
+    raw = open(path).read() if path != "-" else sys.stdin.read()
+    doc = json.loads(raw)
+    if isinstance(doc, dict):
+        # muse.db envelope: {"ok":true,"result":{"rows":[...]}}
+        res = doc.get("result", doc)
+        rows = res.get("rows", [])
+    elif isinstance(doc, list):
+        rows = doc
+    else:
+        sys.exit("zombie-reaper: unrecognized JSON shape")
+    return rows
+
+
+def _atomic_write_json(path, obj):
+    """Atomic temp+rename write (fsync before rename). Never a torn file."""
+    import tempfile
+    d = os.path.dirname(path)
+    os.makedirs(d, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=d, prefix=".tmp-")
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(obj, f, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
+
+
+def _load_verified_file(path):
+    try:
+        doc = json.load(open(path))
+        sids = doc.get("sids", {}) if isinstance(doc, dict) else {}
+        return {str(k): v for k, v in sids.items()}
+    except (FileNotFoundError, ValueError, OSError):
+        return {}
+
+
+def _durable_reachable():
+    return os.path.isdir(os.path.dirname(VERIFIED_DURABLE))
+
+
+def load_verified():
+    """Union of the durable and cell verified-sid stores (durable wins on
+    conflict). A sid verified on either machine suppresses re-flagging."""
+    merged = _load_verified_file(VERIFIED_CELL)
+    merged.update(_load_verified_file(VERIFIED_DURABLE))
+    return merged
+
+
+def _mirror_to_durable():
+    """Best-effort: copy the cell store to the durable path via the bridge.
+    Runs only on the cell (where the durable path is not directly reachable).
+    Never raises: the cell write already succeeded; the durable copy converges
+    on the next successful mark."""
+    import subprocess
+    try:
+        r = subprocess.run([XFER_BIN, "put", VERIFIED_CELL, VERIFIED_DURABLE],
+                           capture_output=True, text=True, timeout=60)
+        if r.returncode != 0:
+            print("zombie-reaper: durable mirror failed: %s"
+                  % ((r.stderr or r.stdout or "xfer error")[:160]),
+                  file=sys.stderr)
+            return False
+        return True
+    except Exception as e:
+        print("zombie-reaper: durable mirror failed: %s" % str(e)[:160],
+              file=sys.stderr)
+        return False
+
+
+def classify(rows):
+    now = int(time.time())
+    verified = load_verified()
+    out = []
+    for r in rows:
+        v = (r.get("verdict") or "").upper()
+        fr = (r.get("fr_head") or "").lower()
+        kids = int(r.get("running_kids") or r.get("kids") or 0)
+        age = now - int(r.get("created") or now)
+        action, why = "LEAVE", "clean"
+        if v == "TIER1_ZOMBIE":
+            action = "FLAG_OWNER_LANE"
+            why = "agent row terminal (%s) but spawn still 'running'; no live process" % r.get("agent_status")
+        elif v == "TIER2_SUSPECT":
+            doneish = any(m in fr for m in COMPLETION_MARKERS)
+            progish = any(m in fr for m in PROGRESS_MARKERS)
+            if kids == 0 and doneish and not progish and age > 1800:
+                action, why = "FLAG_OWNER_LANE", "stale done-like report, no live children"
+            elif kids > 0 or progish:
+                action, why = "LEAVE", "live coordinator (kids=%d)" % kids
+            else:
+                action, why = "LEAVE", "ambiguous; re-scan later"
+        elif v == "COORDINATOR_LIVE":
+            action, why = "LEAVE", "has %d running children" % kids
+        sid = str(r.get("sid"))
+        if action == "FLAG_OWNER_LANE" and sid in verified:
+            vi = verified[sid] or {}
+            action = "LEAVE"
+            why = ("already verified stale by %s at %s; flag on fleet channel, "
+                   "not re-flagging" % (vi.get("by", "?"), vi.get("at", "?")))
+        out.append({
+            "sid": r.get("sid"), "child": (r.get("child") or "")[:8],
+            "parent": (r.get("parent") or "")[:8],
+            "verdict": v or "?", "kids": kids,
+            "age_s": age, "action": action, "why": why,
+        })
+    return out
+
+
+def main(argv):
+    if len(argv) == 2 and argv[1] == "--scan":
+        scan()
+        return 0
+    if len(argv) == 3 and argv[1] == "--classify":
+        rows = load_rows(argv[2])
+        res = classify(rows)
+        actionable = [x for x in res if x["action"] == "FLAG_OWNER_LANE"]
+        for x in res:
+            print("%-14s sid=%-6s child=%s parent=%s kids=%d age=%ds action=%-15s %s"
+                  % (x["verdict"], x["sid"], x["child"], x["parent"],
+                     x["kids"], x["age_s"], x["action"], x["why"]))
+        print("---")
+        print("scanned=%d actionable=%d (TIER1/TIER2 for owner lane to reap)" % (len(res), len(actionable)))
+        for x in actionable:
+            print("FLAG: zombie sid=%s child=%s parent=%s -- %s"
+                  % (x["sid"], x["child"], x["parent"], x["why"]))
+        return 2 if actionable else 0
+    if len(argv) >= 5 and argv[1] == "--mark-verified":
+        sid, lane, note = argv[2], argv[3], " ".join(argv[4:])
+        # Primary store: durable when directly reachable (awrawr-pc run),
+        # else the cell file (cell run). Atomic write, never torn.
+        primary = VERIFIED_DURABLE if _durable_reachable() else VERIFIED_CELL
+        doc = {"sids": _load_verified_file(primary)}
+        doc["sids"][str(sid)] = {
+            "by": lane, "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "note": note,
+        }
+        _atomic_write_json(primary, doc)
+        print("marked sid=%s verified by %s (%s)" % (sid, lane, primary))
+        if primary == VERIFIED_CELL:
+            # Cell run: converge the durable backup of record via the bridge.
+            if _mirror_to_durable():
+                print("mirrored to durable store")
+        return 0
+    sys.exit("usage: zombie-reaper --scan | --classify <muse.db-json-file|-> | --mark-verified <sid> <lane> <note...>")
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))

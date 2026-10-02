@@ -15,4 +15,4 @@ if curl -sf --max-time 2 "http://127.0.0.1:25135/squawk-feed/seq" >/dev/null 2>&
   exit 0
 fi
 export FLEET_KEYS_DIR="/home/toxic/.fleet-bus/squawk-root/keys"
-exec python3 /home/toxic/sovereign/projects/range/ranch/squawk/squawk_feed.py --root /home/toxic/.fleet-bus/squawk-root --channel fleet --bind 127.0.0.1 --port 25135 --identity relay
+exec python3 /home/toxic/estate/ranch/squawk/squawk_feed.py --root /home/toxic/.fleet-bus/squawk-root --channel fleet --bind 127.0.0.1 --port 25135 --identity relay

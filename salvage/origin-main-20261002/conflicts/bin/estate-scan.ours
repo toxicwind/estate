@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Sovereign Estate Path & Binary Audit Launcher
+set -euo pipefail
+SOV="${SOVEREIGN_ROOT:-/home/toxic/estate}"
+exec bun "$SOV/helpers/estate-scanner.ts" "$@"
