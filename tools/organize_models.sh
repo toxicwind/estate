@@ -106,7 +106,7 @@ download_repo_files() {
     fi
 
     local src=""
-    for search_dir in "$MODEL_DIR" "$HOME/models" "$HOME/sovereign/models"; do
+    for search_dir in "$MODEL_DIR" "$HOME/models" "/home/toxic/estate/models"; do
       if [[ -f "$search_dir/$local_name" && -s "$search_dir/$local_name" ]]; then
         src="$search_dir/$local_name"; break
       fi

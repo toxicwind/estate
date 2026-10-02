@@ -2,12 +2,12 @@
 # Owned by the sovereign project; the parent only composes it.
 
 [daemons.estate-reconcile-watch]
-run = "exec /home/toxic/sovereign/bin/estate-reconcile watch"
-dir = "/home/toxic/sovereign"
+run = "exec /home/toxic/estate/bin/estate-reconcile watch"
+dir = "/home/toxic/estate"
 mise = false
 retry = true
 auto = ["start"]
 
 # Pitchfork daemon fragment - merge into [daemons.browser-keeper] in
-# /home/toxic/sovereign/pitchfork.toml (owned sequence: stop -> ss-verify ->
-# clean --daemon -> start from /home/toxic/sovereign).
+# /home/toxic/estate/pitchfork.toml (owned sequence: stop -> ss-verify ->
+# clean --daemon -> start from /home/toxic/estate).

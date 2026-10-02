@@ -5,7 +5,7 @@
 [daemons.search-api]
 port = 25112
 run = "exec bun --hot run apps/api/src/server.ts"
-dir = "/home/toxic/sovereign/sovereign-github-search"
+dir = "/home/toxic/estate/ranch/github-search"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25112/health"

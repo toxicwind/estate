@@ -3,7 +3,7 @@
 # First-class sovereign service. OpenFang agent with Yote integration.
 # Routes through AST matrix (llama-swap :25100) with 14 providers.
 set -euo pipefail
-SOV="${SOVEREIGN_ROOT:-$HOME/sovereign}"
+SOV="${SOVEREIGN_ROOT:-/home/toxic/estate}"
 source "$SOV/stack/lib-ports.sh"
 require_env COYOTE_PORT
 PORT="$COYOTE_PORT"

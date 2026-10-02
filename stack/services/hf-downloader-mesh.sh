@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-SOV="${SOVEREIGN_ROOT:-/home/toxic/sovereign}"
+SOV="${SOVEREIGN_ROOT:-/home/toxic/estate}"
 source "$SOV/stack/lib-ports.sh"
 PORT="${HF_DOWNLOADER_PORT:?}"
 BACKEND="${HF_DOWNLOADER_BACKEND_PORT:-25206}"

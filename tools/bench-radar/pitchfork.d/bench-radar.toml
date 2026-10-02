@@ -4,8 +4,8 @@
 
 [daemons.bench-radar]
 port = 25181
-run = "exec /home/toxic/.bun/bin/bun --hot /home/toxic/sovereign/tools/bench-radar/server.ts"
-dir = "/home/toxic/sovereign/tools/bench-radar"
+run = "exec /home/toxic/.bun/bin/bun --hot /home/toxic/estate/tools/bench-radar/server.ts"
+dir = "/home/toxic/estate/tools/bench-radar"
 mise = false
 retry = true
 boot_start = true

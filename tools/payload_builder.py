@@ -10,7 +10,7 @@ So: fetch tools/list from gatehouse, convert each to a Gemini function
 declaration, add tool_search, and let Gemini do its own retrieval.
 """
 import json, sys, os
-sys.path.insert(0, os.path.expanduser("~/sovereign"))
+sys.path.insert(0, os.path.expanduser("/home/toxic/estate"))
 from tools.mcp_client import connect
 
 SYSTEM_PROMPT = """You call tools through a gatehouse MCP server.

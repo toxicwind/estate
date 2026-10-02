@@ -1,3 +1,0 @@
-solve_timeout_s: 30
-test_timeout_s: 30
-workers: 8

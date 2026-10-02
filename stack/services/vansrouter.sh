@@ -2,7 +2,7 @@
 # Source-owned VansRouter server from the Ranch stockyard checkout.
 # Lifecycle is owned by pitchfork; this wrapper never kills or steals the port.
 set -euo pipefail
-SOV="${SOVEREIGN_ROOT:-$HOME/sovereign}"
+SOV="${SOVEREIGN_ROOT:-/home/toxic/estate}"
 source "$SOV/stack/lib-ports.sh"
 require_port VANSROUTER_PORT
 

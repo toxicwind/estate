@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "mesh-gateway": {
+      "url": "http://127.0.0.1:25127/mcp",
+      "transport": "http",
+      "enabled": true
+    }
+    ,
+    "sovereign-tools": {
+      "command": "bun",
+      "args": ["/home/toxic/sovereign/helpers/sovereign-mcp-server.ts"],
+      "enabled": true
+    }
+  }
+}

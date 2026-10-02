@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 // gen-agents-md.ts — derives AGENTS.md from LIVE state, not memory.
-// Run: bun ~/sovereign/tools/gen-agents-md.ts > ~/sovereign/AGENTS.md
+// Run: bun /home/toxic/estate/tools/gen-agents-md.ts > /home/toxic/estate/AGENTS.md
 // The doc becomes a build artifact. If counts drift from reality, the doc is wrong
 // ONLY because this script is wrong — fix the script, not the prose.
 
@@ -43,7 +43,7 @@ Hands: MCPs federated through mcpproxy-go :8080. I do not ask permission. I veri
 
 ## Stack (non-negotiable)
 - LLM: llama-swap :25100 (fork ~/projects/llama-swap-main). Never vLLM :8000.
-- Orchestration: mise + process-compose + devbox in ~/sovereign.
+- Orchestration: mise + process-compose + devbox in /home/toxic/estate.
 - Proxy: mcpproxy-go :8080. Config ~/.mcpproxy/mcp_config.json.
 - Secrets: ~/.secrets 0600. Never hardcode CONTEXT7/OPENBRAIN/ANTHROPIC keys.
 - Zed: ~/.config/zed/settings.json has ONE context_server: mcpproxy-sovereign.

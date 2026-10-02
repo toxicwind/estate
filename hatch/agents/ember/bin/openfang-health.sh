@@ -1,1 +1,1 @@
-/home/toxic/sovereign/ops/openfang-health/openfang-health.sh
+/home/toxic/estate/ops/openfang-health/openfang-health.sh

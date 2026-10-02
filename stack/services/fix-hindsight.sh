@@ -16,7 +16,7 @@ fuser -k 25118/tcp 2>/dev/null || true
 echo "[fix-hindsight] Ensuring herd (25100) is running..."
 if ! curl -sf -m 2 http://127.0.0.1:25100/health >/dev/null 2>&1; then
     echo "[fix-hindsight] Starting herd..."
-    SOVEREIGN_ROOT=/home/toxic/sovereign bash /home/toxic/sovereign/stack/services/herd.sh &
+    SOVEREIGN_ROOT=/home/toxic/estate bash /home/toxic/estate/stack/services/herd.sh &
     sleep 2
 fi
 
@@ -26,7 +26,7 @@ export HINDSIGHT_API_LLM_API_KEY="llama-swap-local-key"
 export HINDSIGHT_API_LLM_BASE_URL="http://127.0.0.1:25100/v1"
 export HINDSIGHT_API_LLM_MODEL="beellama/qwen-flash-64k"
 
-(cd /home/toxic/sovereign && ./stack/services/hindsight.sh) &
+(cd /home/toxic/estate && ./stack/services/hindsight.sh) &
 echo "[fix-hindsight] Waiting 15s for startup..."
 sleep 15
 

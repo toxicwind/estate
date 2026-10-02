@@ -1,85 +1,100 @@
 <div align="right">
 
 [![license: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![bun: 1.4+](https://img.shields.io/badge/bun-1.4%2B-f0f0f0?style=for-the-badge&logo=bun)](https://bun.sh)
+[![npm deps: 0](https://img.shields.io/badge/npm%20deps-0-success?style=for-the-badge)](https://bun.sh)
+[![estate](https://img.shields.io/badge/estate-1f6feb?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
 
 </div>
 
-# Skills — Sovereign Helpers Toolkit
+# Skills — the estate's helper toolkit
 
-> First-class reusable automation: health checks, telemetry, migration tools, fleet utilities.
+> Reusable automation for the estate: live health audits, hardware telemetry, MCP handshake probes, AST codemods, assertive config surgery, and **pattern-forge** — one pure-Bun engine for finding code, racing implementations, and mining prior art.
 
-> **Why care? The estate runs on small sharp tools, not tribal knowledge. Parallel health audits across every service port, hardware telemetry, MCP handshake probes, AST codemods, assertive config surgery — all here, all runnable, Bun/POSIX with zero data loss.**
+> **Why care?** The estate runs on small sharp tools, not tribal knowledge. Seven overlapping skills once did retrieval, racing, and prior-art search separately — none referenced each other, two shipped byte-identical code, and the fastest retrieval path crawled 400 GB of build artifacts before dying. Merged into one, with a persistent winner ledger and a real AST, it indexes **26× faster, queries 127× faster**, and spends nothing without logging it.
 
-- **`health-audit.ts` — parallel live probe across all service endpoints, full untruncated JSON**
-- **`hardware-telemetry.sh` — CPU, L3, governor, swap, RTX 3090 metrics**
-- **`mesh-probe.ts` — JSON-RPC 2.0 initialize handshake probe for the MCP gateway**
-- **`ast-migrate.ts` — AST structural pattern matching and codemods via ast-grep**
-- **`surgical-edit` / `herd-probe` / `hft-latency` — assertive config surgery, exact-token model probes, strategy racing**
-
-```mermaid
-flowchart LR
-    YOU[you] --> SK[skills/]
-    SK --> HA[health-audit: all ports]
-    SK --> HT[hardware-telemetry: box]
-    SK --> MP[mesh-probe: :25127]
-    SK --> AM[ast-migrate: codemods]
-    SK --> SE[surgical-edit: config surgery]
-```
+| Tool | Runtime | What it does |
+|---|---|---|
+| **`pattern-forge`** | **Bun, zero deps** | retrieve · race · bench · borrow · mcts · subgraph — the merged master |
+| `health-audit.ts` | Bun | Parallel live probe across every service endpoint, untruncated JSON |
+| `clean-orphans.sh` | POSIX bash | Terminates runaway `cargo-watch` loops and rogue agent workers |
+| `hardware-telemetry.sh` | POSIX bash | CPU, L3 cache, governor, swap, RTX 3090 metrics |
+| `mesh-probe.ts` | Bun | JSON-RPC 2.0 `initialize` handshake probe for the MCP gateway (`:25127`) |
+| `ast-migrate.ts` | Bun | AST structural pattern matching and codemods via `ast-grep` |
+| `surgical-edit` | Python 3 stdlib | Assertive exact-text config surgery — all checks before any write, atomic |
+| `herd-probe` | Python 3 stdlib | Exact-token probe of a herd model route |
 
 ## Quick start
 
 ```bash
-bun run skills/health-audit.ts          # full parallel health audit
-bun run skills/health-audit.ts --json   # untruncated JSON for tooling
-./skills/hardware-telemetry.sh          # box + GPU metrics
+skills/pattern-forge/bin/forge doctor                                   # self-check all six legs
+skills/pattern-forge/bin/forge retrieve --root ~/estate/ranch --query "stream broker" --top 5
+skills/pattern-forge/bin/forge borrow "self-evolving training arenas"  # mine 7 sources in parallel
 ```
 
-## License & security
+## pattern-forge — the merged master
 
-- **License:** [MIT](https://github.com/toxicwind/sovereign-projects#license)
-- **Security:** Local operational tooling — `clean-orphans.sh` terminates runaway processes by design; review before running on a shared box. Symlinked as `helpers/` at the repo root.
+```mermaid
+flowchart LR
+    Q[need] --> R[retrieve<br/>AST+BM25 hybrid]
+    Q --> W[race<br/>first valid wins]
+    Q --> B[borrow<br/>7 sources parallel]
+    Q --> M[mcts<br/>verify the patch]
+    W -.-> L[(winner ledger)]
+    B -.-> L
+    R -.-> W
+```
 
----
+Eight skills collapsed into one, each leg absorbing a prior skill:
 
-First-class reusable automation for the Sovereign ecosystem: health checks,
-telemetry, migration tools, and fleet utilities. Built for Bun / POSIX, zero
-data loss. (Symlinked as `helpers/` at the repo root.)
+| Leg | Absorbed from | Doctrine |
+|---|---|---|
+| `retrieve` | `ast-bm25-racer`, `ast_indexer.py` | BM25 over path + symbols, reweighted by exact hits, async density, import centrality |
+| `race` | `hft-latency` | Concurrent, hedged, first **valid** wins; losers aborted, never orphaned |
+| `bench` | `code_racer.py` ×2 copies | Nanosecond leaderboard; a throwing candidate ranks last, not first |
+| `borrow` | `emergent-enrich`, `race-borrow.ts` | arXiv, OpenAlex, S2, DBLP, HF, GitHub, exa — all in flight at once |
+| `mcts` | `mcts_engine.py` | Choose a patch by verifying candidates, not reasoning about them |
+| `subgraph` | `dynamic_subgraph_inducer.py` | Traceback → the import neighbourhood that caused it |
 
-## Tool catalog
+**The rules that make it trustworthy.** Valid means matching *and* exit 0 — a crash is not a win. A hedge means the primary runs alone and backups launch only if nobody wins, so a fast primary costs nothing. The winner ledger records every race, so the slow path is tried less and stays warm instead of rotting. Paid sources are *audited, not gated*: exa runs whenever a key resolves and every call logs its `costUsd`.
 
-| Script                 | Runtime      | Purpose                                                                        | Usage                                              |
-| ---------------------- | ------------ | ------------------------------------------------------------------------------ | -------------------------------------------------- |
-| **`health-audit.ts`**       | Bun / TypeScript | Parallel live probe across all service endpoints, full untruncated JSON      | `bun run skills/health-audit.ts [--json]`          |
-| **`clean-orphans.sh`**      | POSIX bash   | Terminates orphan compiler loops (`cargo-watch`) and rogue agent workers       | `./skills/clean-orphans.sh`                        |
-| **`mesh-probe.ts`**         | Bun / TypeScript | JSON-RPC 2.0 initialize handshake probe for the MCP gateway (`:25127`)     | `bun run skills/mesh-probe.ts`                     |
-| **`hardware-telemetry.sh`** | POSIX bash   | CPU, L3 cache, frequency governor, swap, and RTX 3090 GPU metrics              | `./skills/hardware-telemetry.sh`                   |
-| **`ast-migrate.ts`**        | Bun / TypeScript | AST structural pattern matching and codemods via `ast-grep`                | `bun run skills/ast-migrate.ts [dir] [scan\|rewrite]` |
-| **`surgical-edit`**         | Python 3 (stdlib) | Assertive exact-text config surgery: all checks before any write, atomic  | `skills/surgical-edit/bin/surgical-edit patch.json` |
-| **`herd-probe`**            | Python 3 (stdlib) | Exact-token probe of a herd model route (verbatim output check)            | `skills/surgical-edit/bin/herd-probe <model> <expected>` |
-| **`hft-latency`**           | Python 3 (stdlib) | HFT strategy racer: concurrent first-valid-wins, fail-fast ceilings, `--hedge-ms` hedged launch | `skills/hft-latency/bin/race.py --strategies s.json --tag t [--hedge-ms 300]` |
-
-More tools live in the directory (`engine-audit.ts`, `fleet-status`, `gguf-rank`,
-`model-switch`, `repo-audit`, `tau-tmux`, …) — the table above is the core set.
-
-## Quick examples
+```json
+{"strategies":[
+  {"name":"primary", "cmd":["bun","run","a.ts"], "match":"^OK"},
+  {"name":"backup",  "cmd":["bun","run","b.ts"], "match":"^OK"}
+]}
+```
 
 ```bash
-# Full parallel health audit across all ports
-bun run skills/health-audit.ts
-
-# Untruncated JSON health data for LLMs/tooling
-bun run skills/health-audit.ts --json
-
-# Clean runaway cargo-watch watchers causing CPU spikes
-./skills/clean-orphans.sh
-
-# Probe the Mesh JSON-RPC handshake
-bun run skills/mesh-probe.ts
-
-# Hardware scaling and memory metrics
-./skills/hardware-telemetry.sh
+skills/pattern-forge/bin/forge race --strategies s.json --hedge-ms 300 --lead
+skills/pattern-forge/bin/forge bench --candidates c.json      # ns leaderboard
+skills/pattern-forge/bin/forge mcts --candidates "bun test" --real
 ```
 
+## Honest limits
+
+- Python symbol extraction is lexical, not an AST — Bun has no built-in Python parser and tree-sitter would break the zero-dependency guarantee.
+- DBLP serves a bot-check wall to our shared egress IP, and anonymous Semantic Scholar returns 429. Those are the network, not the code; both degrade without failing the run.
+- The merged sources are archived at `var/archive/skills-pre-forge/` — nothing was deleted outright.
+
+## Everything else
+
+76 skills in this directory. Also live: `fleet-status`, `gguf-rank`, `model-switch`,
+`repo-audit`, `tau-tmux`, `paper-search`, `surgical-edit`, `hashline`, `git-mutator`,
+`readme-maximal`, and `lib/estate.sh` + `lib/estate_paths.py` — the shared path
+resolvers every skill uses instead of hardcoding `/home/toxic/...`.
+
+## Security
+
+Local operational tooling. `clean-orphans.sh` terminates runaway processes by
+design — review before running on a shared box. `surgical-edit` writes atomically
+and refuses partial application. `forge borrow` makes outbound network calls and
+logs paid-source cost to `~/.cache/pattern-forge/`.
+
+## License
+
+[MIT](https://github.com/toxicwind/sovereign-projects#license) — mixed with
+upstream licenses where noted. Symlinked as `helpers/` at the estate root.
+
 ---
-*Up: [master README](../README.md) · [fleet knowledgebase](../docs/fleet-knowledgebase.md)*
+*Up: [estate README](../README.md) · [fleet knowledgebase](../docs/fleet-knowledgebase.md)*

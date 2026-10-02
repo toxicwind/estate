@@ -4,8 +4,8 @@
 
 [daemons.ml-serve]
 port = 25180
-run = "exec python3 /home/toxic/sovereign/tools/ml-serve/server.py"
-dir = "/home/toxic/sovereign/tools/ml-serve"
+run = "exec python3 /home/toxic/estate/tools/ml-serve/server.py"
+dir = "/home/toxic/estate/tools/ml-serve"
 mise = false
 retry = true
 boot_start = true

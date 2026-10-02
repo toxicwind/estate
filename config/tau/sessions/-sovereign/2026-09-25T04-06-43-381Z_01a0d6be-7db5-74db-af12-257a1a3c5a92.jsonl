@@ -1,0 +1,4 @@
+{"type":"title","v":1,"title":"","updatedAt":"2026-09-25T04:06:43.381Z","pad":"                                                                                                                                                                              "}
+{"type":"session","version":3,"id":"01a0d6be-7db5-74db-af12-257a1a3c5a92","timestamp":"2026-09-25T04:06:43.381Z","cwd":"/home/toxic/sovereign"}
+{"type":"model_change","id":"b280dd58","parentId":null,"timestamp":"2026-09-25T04:06:43.534Z","model":"sovereign/qwen/qwen3-coder-next","resolvedModelIsFallback":false}
+{"type":"service_tier_change","id":"308eb04d","parentId":"b280dd58","timestamp":"2026-09-25T04:06:43.534Z","serviceTier":{"openai":"auto","anthropic":"priority","google":"flex"}}

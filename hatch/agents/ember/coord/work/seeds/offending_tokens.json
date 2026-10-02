@@ -1,0 +1,654 @@
+{
+ "method": "turn-by-turn session JSONL; LR(t)=((c_pre+1)/(P+2))/((c_benign+1)/(B+2)); min support 5",
+ "corpus": {
+  "pre_onset_user_turns": 206,
+  "benign_user_turns": 519,
+  "pre_onset_tokens": 87142,
+  "benign_tokens": 160394,
+  "storm_turns": 206,
+  "echo_chain_rate": 0.728
+ },
+ "note": "Measured correlation only. Pre-onset = nearest user turn before each storm turn.",
+ "offending_tokens": [
+  {
+   "token": " Mult",
+   "token_id": 22950,
+   "pre_onset_count": 6,
+   "benign_count": 2,
+   "likelihood_ratio": 4.295,
+   "confidence": "medium"
+  },
+  {
+   "token": "ask",
+   "token_id": 1091,
+   "pre_onset_count": 6,
+   "benign_count": 2,
+   "likelihood_ratio": 4.295,
+   "confidence": "medium"
+  },
+  {
+   "token": " super",
+   "token_id": 2307,
+   "pre_onset_count": 6,
+   "benign_count": 2,
+   "likelihood_ratio": 4.295,
+   "confidence": "medium"
+  },
+  {
+   "token": " m",
+   "token_id": 296,
+   "pre_onset_count": 6,
+   "benign_count": 2,
+   "likelihood_ratio": 4.295,
+   "confidence": "medium"
+  },
+  {
+   "token": "cp",
+   "token_id": 4777,
+   "pre_onset_count": 6,
+   "benign_count": 2,
+   "likelihood_ratio": 4.295,
+   "confidence": "medium"
+  },
+  {
+   "token": " endpoints",
+   "token_id": 37442,
+   "pre_onset_count": 6,
+   "benign_count": 2,
+   "likelihood_ratio": 4.295,
+   "confidence": "medium"
+  },
+  {
+   "token": "se",
+   "token_id": 325,
+   "pre_onset_count": 6,
+   "benign_count": 2,
+   "likelihood_ratio": 4.295,
+   "confidence": "medium"
+  },
+  {
+   "token": " threaded",
+   "token_id": 67887,
+   "pre_onset_count": 6,
+   "benign_count": 2,
+   "likelihood_ratio": 4.295,
+   "confidence": "medium"
+  },
+  {
+   "token": " routed",
+   "token_id": 73317,
+   "pre_onset_count": 6,
+   "benign_count": 2,
+   "likelihood_ratio": 4.295,
+   "confidence": "medium"
+  },
+  {
+   "token": " cpu",
+   "token_id": 17769,
+   "pre_onset_count": 6,
+   "benign_count": 2,
+   "likelihood_ratio": 4.295,
+   "confidence": "medium"
+  },
+  {
+   "token": " mise",
+   "token_id": 57459,
+   "pre_onset_count": 6,
+   "benign_count": 2,
+   "likelihood_ratio": 4.295,
+   "confidence": "medium"
+  },
+  {
+   "token": " fleet",
+   "token_id": 26155,
+   "pre_onset_count": 14,
+   "benign_count": 6,
+   "likelihood_ratio": 3.944,
+   "confidence": "low"
+  },
+  {
+   "token": "Work",
+   "token_id": 6919,
+   "pre_onset_count": 7,
+   "benign_count": 3,
+   "likelihood_ratio": 3.681,
+   "confidence": "low"
+  },
+  {
+   "token": "database",
+   "token_id": 12494,
+   "pre_onset_count": 7,
+   "benign_count": 3,
+   "likelihood_ratio": 3.681,
+   "confidence": "low"
+  },
+  {
+   "token": " holder",
+   "token_id": 12102,
+   "pre_onset_count": 7,
+   "benign_count": 3,
+   "likelihood_ratio": 3.681,
+   "confidence": "low"
+  },
+  {
+   "token": " messages",
+   "token_id": 6743,
+   "pre_onset_count": 9,
+   "benign_count": 5,
+   "likelihood_ratio": 3.068,
+   "confidence": "low"
+  },
+  {
+   "token": "ar",
+   "token_id": 277,
+   "pre_onset_count": 17,
+   "benign_count": 10,
+   "likelihood_ratio": 3.012,
+   "confidence": "low"
+  },
+  {
+   "token": " intended",
+   "token_id": 10825,
+   "pre_onset_count": 5,
+   "benign_count": 3,
+   "likelihood_ratio": 2.761,
+   "confidence": "low"
+  },
+  {
+   "token": "It",
+   "token_id": 2181,
+   "pre_onset_count": 5,
+   "benign_count": 3,
+   "likelihood_ratio": 2.761,
+   "confidence": "low"
+  },
+  {
+   "token": "est",
+   "token_id": 478,
+   "pre_onset_count": 29,
+   "benign_count": 20,
+   "likelihood_ratio": 2.629,
+   "confidence": "low"
+  },
+  {
+   "token": " endpoint",
+   "token_id": 15233,
+   "pre_onset_count": 6,
+   "benign_count": 4,
+   "likelihood_ratio": 2.577,
+   "confidence": "low"
+  },
+  {
+   "token": "or",
+   "token_id": 269,
+   "pre_onset_count": 7,
+   "benign_count": 5,
+   "likelihood_ratio": 2.454,
+   "confidence": "low"
+  },
+  {
+   "token": " s",
+   "token_id": 274,
+   "pre_onset_count": 12,
+   "benign_count": 9,
+   "likelihood_ratio": 2.393,
+   "confidence": "low"
+  },
+  {
+   "token": "it",
+   "token_id": 275,
+   "pre_onset_count": 8,
+   "benign_count": 6,
+   "likelihood_ratio": 2.366,
+   "confidence": "low"
+  },
+  {
+   "token": " existing",
+   "token_id": 6484,
+   "pre_onset_count": 36,
+   "benign_count": 30,
+   "likelihood_ratio": 2.197,
+   "confidence": "low"
+  },
+  {
+   "token": " maximum",
+   "token_id": 7340,
+   "pre_onset_count": 36,
+   "benign_count": 30,
+   "likelihood_ratio": 2.197,
+   "confidence": "low"
+  },
+  {
+   "token": " compreh",
+   "token_id": 12963,
+   "pre_onset_count": 19,
+   "benign_count": 16,
+   "likelihood_ratio": 2.165,
+   "confidence": "low"
+  },
+  {
+   "token": " resolving",
+   "token_id": 53583,
+   "pre_onset_count": 19,
+   "benign_count": 16,
+   "likelihood_ratio": 2.165,
+   "confidence": "low"
+  },
+  {
+   "token": " likely",
+   "token_id": 4461,
+   "pre_onset_count": 23,
+   "benign_count": 20,
+   "likelihood_ratio": 2.104,
+   "confidence": "low"
+  },
+  {
+   "token": " manner",
+   "token_id": 11827,
+   "pre_onset_count": 34,
+   "benign_count": 30,
+   "likelihood_ratio": 2.078,
+   "confidence": "low"
+  },
+  {
+   "token": " crucial",
+   "token_id": 16996,
+   "pre_onset_count": 36,
+   "benign_count": 32,
+   "likelihood_ratio": 2.064,
+   "confidence": "low"
+  },
+  {
+   "token": " works",
+   "token_id": 4375,
+   "pre_onset_count": 18,
+   "benign_count": 16,
+   "likelihood_ratio": 2.057,
+   "confidence": "low"
+  },
+  {
+   "token": " which",
+   "token_id": 902,
+   "pre_onset_count": 141,
+   "benign_count": 131,
+   "likelihood_ratio": 1.98,
+   "confidence": "low"
+  },
+  {
+   "token": " hyper",
+   "token_id": 17508,
+   "pre_onset_count": 73,
+   "benign_count": 68,
+   "likelihood_ratio": 1.974,
+   "confidence": "low"
+  },
+  {
+   "token": " agents",
+   "token_id": 13307,
+   "pre_onset_count": 44,
+   "benign_count": 41,
+   "likelihood_ratio": 1.972,
+   "confidence": "low"
+  },
+  {
+   "token": " goal",
+   "token_id": 5915,
+   "pre_onset_count": 44,
+   "benign_count": 41,
+   "likelihood_ratio": 1.972,
+   "confidence": "low"
+  },
+  {
+   "token": " notice",
+   "token_id": 5406,
+   "pre_onset_count": 14,
+   "benign_count": 13,
+   "likelihood_ratio": 1.972,
+   "confidence": "low"
+  },
+  {
+   "token": " analyzing",
+   "token_id": 42118,
+   "pre_onset_count": 29,
+   "benign_count": 27,
+   "likelihood_ratio": 1.972,
+   "confidence": "low"
+  },
+  {
+   "token": " agent",
+   "token_id": 8479,
+   "pre_onset_count": 74,
+   "benign_count": 69,
+   "likelihood_ratio": 1.972,
+   "confidence": "low"
+  },
+  {
+   "token": " flaw",
+   "token_id": 26784,
+   "pre_onset_count": 14,
+   "benign_count": 13,
+   "likelihood_ratio": 1.972,
+   "confidence": "low"
+  },
+  {
+   "token": " intentional",
+   "token_id": 47964,
+   "pre_onset_count": 29,
+   "benign_count": 27,
+   "likelihood_ratio": 1.972,
+   "confidence": "low"
+  },
+  {
+   "token": "install",
+   "token_id": 12527,
+   "pre_onset_count": 14,
+   "benign_count": 13,
+   "likelihood_ratio": 1.972,
+   "confidence": "low"
+  },
+  {
+   "token": " dns",
+   "token_id": 45177,
+   "pre_onset_count": 14,
+   "benign_count": 13,
+   "likelihood_ratio": 1.972,
+   "confidence": "low"
+  },
+  {
+   "token": " solve",
+   "token_id": 11886,
+   "pre_onset_count": 14,
+   "benign_count": 13,
+   "likelihood_ratio": 1.972,
+   "confidence": "low"
+  },
+  {
+   "token": " Getting",
+   "token_id": 25531,
+   "pre_onset_count": 14,
+   "benign_count": 13,
+   "likelihood_ratio": 1.972,
+   "confidence": "low"
+  },
+  {
+   "token": " confused",
+   "token_id": 22568,
+   "pre_onset_count": 14,
+   "benign_count": 13,
+   "likelihood_ratio": 1.972,
+   "confidence": "low"
+  },
+  {
+   "token": " stance",
+   "token_id": 30031,
+   "pre_onset_count": 14,
+   "benign_count": 13,
+   "likelihood_ratio": 1.972,
+   "confidence": "low"
+  },
+  {
+   "token": " Try",
+   "token_id": 9934,
+   "pre_onset_count": 14,
+   "benign_count": 13,
+   "likelihood_ratio": 1.972,
+   "confidence": "low"
+  },
+  {
+   "token": " spindle",
+   "token_id": 99291,
+   "pre_onset_count": 14,
+   "benign_count": 13,
+   "likelihood_ratio": 1.972,
+   "confidence": "low"
+  },
+  {
+   "token": "\"It",
+   "token_id": 12348,
+   "pre_onset_count": 14,
+   "benign_count": 13,
+   "likelihood_ratio": 1.972,
+   "confidence": "low"
+  },
+  {
+   "token": " delivery",
+   "token_id": 9889,
+   "pre_onset_count": 90,
+   "benign_count": 84,
+   "likelihood_ratio": 1.971,
+   "confidence": "low"
+  },
+  {
+   "token": " addition",
+   "token_id": 5369,
+   "pre_onset_count": 60,
+   "benign_count": 56,
+   "likelihood_ratio": 1.97,
+   "confidence": "low"
+  },
+  {
+   "token": " determine",
+   "token_id": 8417,
+   "pre_onset_count": 45,
+   "benign_count": 42,
+   "likelihood_ratio": 1.969,
+   "confidence": "low"
+  },
+  {
+   "token": " provide",
+   "token_id": 3493,
+   "pre_onset_count": 45,
+   "benign_count": 42,
+   "likelihood_ratio": 1.969,
+   "confidence": "low"
+  },
+  {
+   "token": "`.",
+   "token_id": 29687,
+   "pre_onset_count": 45,
+   "benign_count": 42,
+   "likelihood_ratio": 1.969,
+   "confidence": "low"
+  },
+  {
+   "token": " algorithm",
+   "token_id": 12384,
+   "pre_onset_count": 45,
+   "benign_count": 42,
+   "likelihood_ratio": 1.969,
+   "confidence": "low"
+  },
+  {
+   "token": " operations",
+   "token_id": 7677,
+   "pre_onset_count": 45,
+   "benign_count": 42,
+   "likelihood_ratio": 1.969,
+   "confidence": "low"
+  },
+  {
+   "token": " In",
+   "token_id": 763,
+   "pre_onset_count": 45,
+   "benign_count": 42,
+   "likelihood_ratio": 1.969,
+   "confidence": "low"
+  },
+  {
+   "token": "MD",
+   "token_id": 6204,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": "frames",
+   "token_id": 24651,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": " beneficial",
+   "token_id": 24629,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": " configured",
+   "token_id": 20336,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": " genuine",
+   "token_id": 22785,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": " DNS",
+   "token_id": 28698,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": "-specific",
+   "token_id": 19440,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": " prompts",
+   "token_id": 52032,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": " Each",
+   "token_id": 9062,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": " Could",
+   "token_id": 16910,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": " technology",
+   "token_id": 5557,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": " innovative",
+   "token_id": 18699,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": " efficient",
+   "token_id": 11297,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": "sp",
+   "token_id": 2203,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": "indle",
+   "token_id": 58863,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": " \".",
+   "token_id": 6058,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": " sophisticated",
+   "token_id": 27877,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": " broad",
+   "token_id": 7353,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": " chain",
+   "token_id": 8957,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": " Specifically",
+   "token_id": 45863,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": " incorporated",
+   "token_id": 32762,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  },
+  {
+   "token": " objects",
+   "token_id": 6302,
+   "pre_onset_count": 30,
+   "benign_count": 28,
+   "likelihood_ratio": 1.968,
+   "confidence": "low"
+  }
+ ]
+}

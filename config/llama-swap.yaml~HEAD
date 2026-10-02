@@ -1,7 +1,7 @@
 # =============================================================================
 # LLAMA-SWAP CONFIGURATION — RTX 3090 24GB
 # =============================================================================
-# Config: /home/toxic/sovereign/config/llama-swap.yaml
+# Config: /home/toxic/estate/config/llama-swap.yaml
 # =============================================================================
 
 healthCheckTimeout: 300
@@ -32,7 +32,7 @@ astMatrix:
   enabled: true
   strategy: hybrid
   maxParallel: 4
-  dbPath: /home/toxic/sovereign/data/ast_matrix.db
+  dbPath: /home/toxic/estate/var/data/ast_matrix.db
   stickyTtl: 1800
   fifoMax: 64
   providers:

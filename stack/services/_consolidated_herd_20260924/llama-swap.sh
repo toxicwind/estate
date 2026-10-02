@@ -2,7 +2,7 @@
 # llama-swap direct-bind launcher — binds Go binary to 0.0.0.0:LLAMA_SWAP_PORT (25100).
 # No proxy/middleware hop. mesh-hub (25115) serves 20 GHAS /mesh/* features for the mesh.
 set -euo pipefail
-SOV="$HOME/sovereign"
+SOV="/home/toxic/estate"
 source "$SOV/stack/lib-ports.sh"
 require_port LLAMA_SWAP_PORT
 PORT="$LLAMA_SWAP_PORT"

@@ -8,7 +8,7 @@ set -euo pipefail
 # =============================================================================
 # CONFIG FILES (SSOT - Single Source of Truth)
 # =============================================================================
-export SOVEREIGN_ROOT="${SOVEREIGN_ROOT:-$HOME/sovereign}"
+export SOVEREIGN_ROOT="${SOVEREIGN_ROOT:-/home/toxic/estate}"
 export PORTS_ENV="$SOVEREIGN_ROOT/config/ports.env"
 export SECRETS_FILE="$HOME/.secrets"
 

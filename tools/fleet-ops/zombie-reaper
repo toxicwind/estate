@@ -48,7 +48,7 @@ SCAN_SQL_PATH = "/home/hatch/workspace/helpers/muse-db/queries/stuck_completion_
 #                             "at": "<iso-utc>", "note": "<evidence>"}}}
 #
 # Two copies, one logical store (topology fix 2026-09-19):
-#   DURABLE: /home/toxic/sovereign/tools/fleet-ops/zombie-verified.json
+#   DURABLE: /home/toxic/estate/tools/fleet-ops/zombie-verified.json
 #            (awrawr-pc; the backup of record; reachable from the cell ONLY
 #            via the awrawr-mcp bridge, never by a direct filesystem path)
 #   CELL:    ~/workspace/cron-honest/zombie-verified.json
@@ -61,7 +61,7 @@ SCAN_SQL_PATH = "/home/hatch/workspace/helpers/muse-db/queries/stuck_completion_
 # A naive single-path swap to the durable path BREAKS the cell worker
 # (/home/toxic does not exist on the cell: reads would silently return {}
 # and re-flag already-verified sids) -- never do that.
-VERIFIED_DURABLE = "/home/toxic/sovereign/tools/fleet-ops/zombie-verified.json"
+VERIFIED_DURABLE = "/home/toxic/estate/tools/fleet-ops/zombie-verified.json"
 VERIFIED_CELL = os.path.expanduser("~/workspace/cron-honest/zombie-verified.json")
 XFER_BIN = os.path.expanduser("~/workspace/skills/awrawr-mcp/bin/xfer.py")
 

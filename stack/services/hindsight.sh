@@ -4,7 +4,7 @@
 # Docs: https://hindsight.vectorize.io/developer/installation
 # Image: ghcr.io/vectorize-io/hindsight:latest  (~9GB, named volume for embedded pg)
 set -euo pipefail
-SOV="${SOVEREIGN_ROOT:-/home/toxic/sovereign}"
+SOV="${SOVEREIGN_ROOT:-/home/toxic/estate}"
 source "$SOV/stack/lib-ports.sh"
 require_env HINDSIGHT_API_PORT
 require_env HINDSIGHT_CP_PORT

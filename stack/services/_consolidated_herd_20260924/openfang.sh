@@ -4,7 +4,7 @@
 # lifecycle via ops/openfang-run.sh. This service never spawns the openfang
 # binary — see src/services/openfang.ts.)
 set -euo pipefail
-SOV="${SOVEREIGN_ROOT:-$HOME/sovereign}"
+SOV="${SOVEREIGN_ROOT:-/home/toxic/estate}"
 source "$SOV/stack/lib-ports.sh"
 require_port OPENFANG_PORT
 PORT="$OPENFANG_PORT"

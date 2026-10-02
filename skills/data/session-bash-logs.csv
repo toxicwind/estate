@@ -1,0 +1,7 @@
+file,size_bytes,lines,has_output
+1.bash-original.log,1431,24,False
+11.bash-original.log,4313,71,True
+13.bash-original.log,1126,22,False
+16.bash-original.log,17966,597,True
+8.bash.log,685191,159,True
+9.bash-original.log,685164,158,True

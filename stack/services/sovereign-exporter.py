@@ -21,7 +21,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 LISTEN = ("127.0.0.1", 25213)
 STATE_TOML = "/home/toxic/.local/state/pitchfork/state.toml"
-LEDGER = "/home/toxic/sovereign/agents/oracle-market/ledger/ledger.jsonl"
+LEDGER = "/home/toxic/estate/agents/oracle-market/ledger/ledger.jsonl"
 
 KNOWN_PORTS = {
     25100: "herd", 25101: "model-guard", 25102: "yote", 25103: "axiom",

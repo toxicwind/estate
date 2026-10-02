@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Kafka service — Sovereign stack
 set -euo pipefail
-SOV="${SOVEREIGN_ROOT:-$HOME/sovereign}"
+SOV="${SOVEREIGN_ROOT:-/home/toxic/estate}"
 source "$SOV/stack/lib-ports.sh" 2>/dev/null || true
 PORT="${KAFKA_PORT:-25144}"
 export JAVA_HOME=/usr/lib/jvm/java-25-graalvm

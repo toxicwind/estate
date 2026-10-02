@@ -1,0 +1,60 @@
+source_file,content_type,name,version,size,content
+1.bash-original.log,bash_output,,,1431,"On branch main
+Changes not staged for commit:
+  (use ""git add <file>..."" to update what will be committed)
+  (use ""git restore <file>..."" to discard changes in working directory)
+	modified:   engine/packages/ai/src/providers/data/nvidia.json
+	modified:   engine/packages/ai/src/registry/nvidia.ts
+	modified:   engine/packages/catalog/src/wire/gemini-headers.ts
+	modified:   kimi/packages/pi-tui/native/darwin/prebuilds/darwin-arm64/darwin-modifiers.node
+	modified:   kimi/packages/pi-tui/native/darwi"
+11.bash-original.log,bash_output,,,4313,"total 7356
+drwxr-xr-x  1 toxic toxic     306 Sep  1 21:46 runs/
+drwxr-xr-x  1 toxic toxic     148 Sep  1 18:01 bazel/
+drwxr-xr-x  1 toxic toxic      30 Sep  7 13:16 .agent-orchestration/
+drwxr-xr-x  1 toxic toxic      22 Sep  7 12:58 .cargo/
+drwxr-xr-x  1 toxic toxic      88 Sep  2 10:45 upstream-changes/
+drwxr-xr-x  1 toxic toxic      12 Sep  1 18:01 types/
+drwxr-xr-x  1 toxic toxic      18 Sep  7 13:08 .github/
+lrwxrwxrwx  1 toxic toxic      43 Sep  4 10:39 tau@ -> /home/toxic/projects/soverei"
+13.bash-original.log,bash_output,,,1126,"total 8
+drwxr-xr-x 1 toxic toxic  226 Sep  8 00:01 collab-web/
+drwxr-xr-x 1 toxic toxic  206 Sep  3 23:16 typescript-edit-benchmark/
+drwxr-xr-x 1 toxic toxic  162 Sep  1 18:01 wire/
+drwxr-xr-x 1 toxic toxic  186 Sep  3 23:16 agent/
+drwxr-xr-x 1 toxic toxic  200 Sep  3 23:16 ai/
+drwxr-xr-x 1 toxic toxic  132 Sep  8 00:01 browser-relay/
+drwxr-xr-x 1 toxic toxic  200 Sep  3 23:16 catalog/
+drwxr-xr-x 1 toxic toxic  328 Sep  3 23:16 coding-agent/
+drwxr-xr-x 1 toxic toxic  344 Sep  3 17:18 ./
+drwxr-xr"
+16.bash-original.log,bash_output,,,17966,"{
+  ""type"": ""module"",
+  ""name"": ""@oh-my-pi/pi-coding-agent"",
+  ""version"": ""18.0.8"",
+  ""description"": ""Coding agent CLI with read, bash, edit, write tools and session management"",
+  ""homepage"": ""https://omp.sh"",
+  ""author"": ""Stencil Labs, Inc."",
+  ""contributors"": [
+    ""Mario Zechner""
+  ],
+  ""license"": ""MIT"",
+  ""repository"": {
+    ""type"": ""git"",
+    ""url"": ""git+https://github.com/can1357/oh-my-pi.git"",
+    ""directory"": ""packages/coding-agent""
+  },
+  ""bugs"": {
+    ""url"": ""https://github.com/can135"
+8.bash.log,bash_output,,,685191,"diff --git a/tau/engine/packages/ai/src/providers/data/nvidia.json b/tau/engine/packages/ai/src/providers/data/nvidia.json
+index 990e7e211..663e9e26f 100644
+--- a/tau/engine/packages/ai/src/providers/data/nvidia.json
++++ b/tau/engine/packages/ai/src/providers/data/nvidia.json
+@@ -1 +1 @@
+-{""openai-completions"":{""01-ai/yi-large"":{""id"":""01-ai/yi-large"",""name"":""01-ai/yi-large"",""api"":""openai-completions"",""provider"":""nvidia"",""baseUrl"":""https://integrate.api.nvidia.com/v1"",""headers"":{""NVCF-POLL-SECOND"
+9.bash-original.log,bash_output,,,685164,"diff --git a/tau/engine/packages/ai/src/providers/data/nvidia.json b/tau/engine/packages/ai/src/providers/data/nvidia.json
+index 990e7e211..663e9e26f 100644
+--- a/tau/engine/packages/ai/src/providers/data/nvidia.json
++++ b/tau/engine/packages/ai/src/providers/data/nvidia.json
+@@ -1 +1 @@
+-{""openai-completions"":{""01-ai/yi-large"":{""id"":""01-ai/yi-large"",""name"":""01-ai/yi-large"",""api"":""openai-completions"",""provider"":""nvidia"",""baseUrl"":""https://integrate.api.nvidia.com/v1"",""headers"":{""NVCF-POLL-SECOND"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // validate-zed-config.ts — runtime rejection, not prose reminder.
 // Run BEFORE applying any Zed/settings.json change:
-//   bun ~/sovereign/tools/validate-zed-config.ts
+//   bun /home/toxic/estate/tools/validate-zed-config.ts
 // Exits 1 on the first hard failure. The agent should never claim "config is correct"
 // without this passing.
 

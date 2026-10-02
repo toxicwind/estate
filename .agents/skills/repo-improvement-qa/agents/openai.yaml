@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repo QA"
+  short_description: "Run app QA and deliver strict verdict"
+  default_prompt: "Use $repo-improvement-qa to run build/lint/runtime checks, explore core app flows, and produce a pass/fail QA report with reproducible findings."

@@ -1,0 +1,5 @@
+{"type":"title","v":1,"title":"","updatedAt":"2026-09-15T23:22:40.061Z","pad":"                                                                                                                                                                              "}
+{"type":"session","version":3,"id":"01a0a761-323d-72db-b22d-3cd0eb49dc2e","timestamp":"2026-09-15T23:22:40.061Z","cwd":"/home/toxic/.local/bin"}
+{"type":"model_change","id":"40334a05","parentId":null,"timestamp":"2026-09-15T23:22:40.136Z","model":"openrouter/thinkingmachines/inkling-small:free","resolvedModelIsFallback":false}
+{"type":"thinking_level_change","id":"6545f6de","parentId":"40334a05","timestamp":"2026-09-15T23:22:40.136Z","thinkingLevel":"medium","configured":null}
+{"type":"service_tier_change","id":"4d20b921","parentId":"6545f6de","timestamp":"2026-09-15T23:22:40.136Z","serviceTier":{"openai":"auto","anthropic":"priority","google":"flex"}}

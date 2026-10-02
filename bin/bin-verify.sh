@@ -4,7 +4,7 @@
 # Exits 0 when everything checks out, 1 with a clear FAIL list otherwise.
 # Lines: 'ok   <id>' / 'FAIL <id>: <reason>' / 'WARN <id>: <reason>'.
 set -uo pipefail
-SOV="${SOV:-/home/toxic/sovereign}"
+SOV="${SOV:-/home/toxic/estate}"
 MANIFEST="${1:-$SOV/bin/manifest.yaml}"
 exec python3 - "$MANIFEST" "$SOV" <<'PYEOF'
 import hashlib, os, shutil, subprocess, sys

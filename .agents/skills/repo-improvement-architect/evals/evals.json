@@ -1,0 +1,53 @@
+{
+  "skill": "repo-improvement-architect",
+  "description": "Trigger and output-quality cases. Run against any skills-capable agent; score by whether the skill activates and whether the JSON contract holds.",
+  "cases": [
+    {
+      "id": "audit-ci-flakes",
+      "prompt": "Audit this repo for the top improvements that reduce flaky CI without broad refactors.",
+      "should_trigger": true,
+      "expect": {
+        "json_first": true,
+        "evidence_cites_paths": true,
+        "single_bounded_change": true,
+        "has_verification_commands": true,
+        "respects_no_refactor_constraint": true
+      }
+    },
+    {
+      "id": "failing-pr-root-cause",
+      "prompt": "Given this failing PR and these logs, what is the likeliest root cause and the smallest safe fix?",
+      "should_trigger": true,
+      "expect": {
+        "json_first": true,
+        "names_root_cause": true,
+        "single_bounded_change": true,
+        "risk_field_present": true
+      }
+    },
+    {
+      "id": "no-framework-rewrite",
+      "prompt": "Create a two-sprint modernization plan for this package, but do not propose framework rewrites.",
+      "should_trigger": true,
+      "expect": {
+        "no_framework_migration_proposed": true,
+        "prioritized_list": true,
+        "has_verification": true
+      }
+    },
+    {
+      "id": "missing-context",
+      "prompt": "Improve my repo.",
+      "should_trigger": true,
+      "expect": {
+        "asks_for_scope_or_path": true
+      }
+    },
+    {
+      "id": "negative-unrelated",
+      "prompt": "Write a haiku about the ocean.",
+      "should_trigger": false,
+      "expect": {}
+    }
+  ]
+}

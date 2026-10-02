@@ -21,7 +21,7 @@ const UPSTREAM = Bun.env.MODEL_URL ?? "http://127.0.0.1:25100";
 const SCAN_DIR =
   Bun.env.MODEL_DIR ??
   Bun.env.MODEL_PATH?.split("/").slice(0, -1).join("/") ??
-  "/home/toxic/sovereign/models";
+  "/home/toxic/estate/models";
 
 // Context size is critical — never jump to 128k/max first (27B OOM → empty choices).
 const CTX_PROBES = (Bun.env.FLEET_CTX_PROBES ?? "4096,8192,16384,32768,65536")

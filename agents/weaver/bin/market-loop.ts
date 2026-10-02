@@ -111,7 +111,7 @@ const REP_PATH = join(MARKET_DIR, 'reputation.json');
 const WATCHDOG_STATE = join(MARKET_DIR, 'watchdog-state.json');
 
 const FLEET_POST = process.env.FLEET_POST
-  ?? '/home/toxic/sovereign/skills/fleet-spawn/fleet-post';
+  ?? '/home/toxic/estate/skills/fleet-spawn/fleet-post';
 const FLEET_BUS = '/home/toxic/.fleet-bus/squawk-root/fleet';
 const SENDER = process.env.MARKET_SENDER ?? 'market-loop';
 

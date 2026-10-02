@@ -19,7 +19,7 @@ Run procedures to synchronize, build, pin, and verify Tau from upstream oh-my-pi
    ```bash
    install -m 0555 ~/sovereign/scripts/omp-pin ~/.local/bin/omp
    install -m 0555 ~/sovereign/scripts/omp-pin ~/.local/bin/tau
-   sudo chattr +i ~/.local/bin/omp ~/.local/bin/tau
+   chattr +i ~/.local/bin/omp ~/.local/bin/tau
    ```
 
 3. **Verify Fork**:

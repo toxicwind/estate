@@ -9,7 +9,7 @@
       "ok": true,
       "title": "Google Bug Hunters - Google Bug Hunters",
       "status": 200,
-      "screenshot": "/home/toxic/sovereign/tools/bugbounty/artifacts/google/2026-07-11T21-37-39-214Z_bughunters.google.com_.png",
+      "screenshot": "/home/toxic/estate/tools/bugbounty/artifacts/google/2026-07-11T21-37-39-214Z_bughunters.google.com_.png",
       "error": null
     },
     {
@@ -17,7 +17,7 @@
       "ok": true,
       "title": "Report Overview | Google Bug Hunters - Google Bug Hunters",
       "status": 200,
-      "screenshot": "/home/toxic/sovereign/tools/bugbounty/artifacts/google/2026-07-11T21-37-42-497Z_bughunters.google.com_report.png",
+      "screenshot": "/home/toxic/estate/tools/bugbounty/artifacts/google/2026-07-11T21-37-42-497Z_bughunters.google.com_report.png",
       "error": null
     },
     {
@@ -25,7 +25,7 @@
       "ok": true,
       "title": "About This Section - Rules - Rules & Rewards - Google Bug Hunters",
       "status": 200,
-      "screenshot": "/home/toxic/sovereign/tools/bugbounty/artifacts/google/2026-07-11T21-37-45-669Z_bughunters.google.com_about_rules.png",
+      "screenshot": "/home/toxic/estate/tools/bugbounty/artifacts/google/2026-07-11T21-37-45-669Z_bughunters.google.com_about_rules.png",
       "error": null
     },
     {
@@ -33,7 +33,7 @@
       "ok": true,
       "title": "Opportunity Discovery Overview | HackerOne",
       "status": 200,
-      "screenshot": "/home/toxic/sovereign/tools/bugbounty/artifacts/google/2026-07-11T21-37-49-214Z_hackerone.com_opportunities_all_q_google.png",
+      "screenshot": "/home/toxic/estate/tools/bugbounty/artifacts/google/2026-07-11T21-37-49-214Z_hackerone.com_opportunities_all_q_google.png",
       "error": null
     }
   ]

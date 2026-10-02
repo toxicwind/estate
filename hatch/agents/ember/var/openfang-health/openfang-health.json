@@ -1,26 +1,26 @@
 {
-  "ts": "2026-10-01T22:32:07.561504+00:00",
+  "ts": "2026-10-02T09:35:59.777295+00:00",
   "overall": "FAIL",
   "checks": [
     {
       "name": "supervisor",
       "status": "ok",
-      "detail": "active pid=1038 mem=22373048320B"
+      "detail": "active pid=1038 mem=11003666432B"
     },
     {
       "name": "daemons",
       "status": "fail",
-      "detail": "79/82 running; down: sovereign/squawk-ws-client sovereign/squawk-relay-forward sovereign/squawk-relay-sink"
+      "detail": "76/159 running; down: estate/squawk-feed sovereign/browser-keeper sovereign/estate-reconcile-watch sovereign/search-ui estate/agent-display estate/agent-viewer estate/beellama-fast estate/browser-keeper estate/browserless estate/byte-vision estate/coyote estate/dnsmasq estate/estate-reconcile-watch estate/files estate/flock estate/grafana estate/herd estate/hf-downloader estate/hindsight estate/kafka estate/keypool estate/kimi-auto-shim estate/market-loop estate/matter-server estate/mesh-hub estate/model-guard estate/nginx estate/nim-kimi-sidecar estate/node-exporter estate/openfang-front estate/openfang-health estate/prometheus estate/qdrant estate/redis estate/rust-web estate/search-api estate/search-ui estate/sovereign-exporter estate/stash-guard estate/toolcall-llm estate/vansrouter estate/gatehouse estate/flicker-agent estate/flicker estate/market-watchdog estate/oracle-chat estate/oracle-core estate/oracle-market estate/fleet-ui estate/nats-tail estate/nats estate/squawk-ws-client estate/squawk-ws estate/sovereign-stream-broker estate/windmill estate/mesh-landing estate/bench-radar estate/kimiclaw-a estate/kimiclaw-b estate/ml-serve estate/null-g-proxy estate/sovereign-chat estate/sovereign-router estate/yote estate/awrawr-mcp estate/awrawr-ws-exec estate/bedrock-ui estate/boundless estate/codebase-memory estate/hashline estate/kimi-code estate/kimi-audit-dash estate/paper-poller-watchdog estate/paper-poller estate/ralph-dashboard estate/refusal-watchdog estate/sorry-watchdog estate/openfang estate/squawk-relay-forward estate/squawk-relay-sink estate/tau estate/whatsapp-mcp estate/duet-yote"
     },
     {
       "name": "openfang_kernel",
       "status": "fail",
-      "detail": "openfang status rc=0 after 11ms"
+      "detail": "openfang status rc=0 after 41ms"
     },
     {
       "name": "agents",
       "status": "fail",
-      "detail": "not Running: coyote shingle-pilot squawk-relay assistant (query took 15ms)"
+      "detail": "not Running: coyote shingle-pilot squawk-relay assistant (query took 36ms)"
     },
     {
       "name": "audit_chain",
@@ -30,12 +30,12 @@
     {
       "name": "llama_swap",
       "status": "ok",
-      "detail": ":25100/v1/models ok in 23ms, 98 models"
+      "detail": ":25100/v1/models ok in 57ms, 98 models"
     },
     {
       "name": "kimi_auto",
       "status": "warn",
-      "detail": "state age=952278s info=[mistral/ministral-3b-latest True 302]"
+      "detail": "state age=992109s info=[mistral/ministral-3b-latest True 302]"
     },
     {
       "name": "provider_nvidia",
@@ -75,27 +75,27 @@
     {
       "name": "yote_ep",
       "status": "ok",
-      "detail": ":25102/health reachable (200) in 5ms"
+      "detail": ":25102/health reachable (200) in 23ms"
     },
     {
       "name": "meshub_ep",
       "status": "ok",
-      "detail": ":25115 tcp open in 219ms"
+      "detail": ":25115 tcp open in 936ms"
     },
     {
       "name": "coyote_ep",
       "status": "ok",
-      "detail": ":25143/health reachable in 4ms"
+      "detail": ":25143/health reachable in 7ms"
     },
     {
       "name": "memory",
       "status": "ok",
-      "detail": "total=63893MB used=35768MB avail=28125MB"
+      "detail": "total=63893MB used=33801MB avail=30091MB"
     },
     {
       "name": "gpu",
       "status": "ok",
-      "detail": "NVIDIA GeForce RTX 3090  4 %  10497 MiB  24576 MiB"
+      "detail": "NVIDIA GeForce RTX 3090  22 %  10485 MiB  24576 MiB"
     }
   ],
   "papers": [

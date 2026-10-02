@@ -2,7 +2,7 @@
 """End-to-end: Gemini EAP ↔ gatehouse MCP, with TOON on results."""
 import json, os, sys, ssl, time
 import urllib.request, urllib.error
-sys.path.insert(0, os.path.expanduser("~/sovereign"))
+sys.path.insert(0, os.path.expanduser("/home/toxic/estate"))
 
 from tools.mcp_client import connect
 from tools.payload_builder import build as build_payload

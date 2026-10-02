@@ -23,6 +23,6 @@ models:
   nvidia/nemotron-3-ultra-550b-a55b:
     proxy: http://127.0.0.1:9002
     cmd:
-      /home/toxic/sovereign/tools/sovereign-router/bin/sovereign-router --port
+      /home/toxic/estate/tools/sovereign-router/bin/sovereign-router --port
       9002 --model nvidia/nemotron-3-ultra-550b-a55b
     ttl: 0

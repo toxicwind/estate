@@ -29,7 +29,7 @@ posting intent, not a gate.
 
 ## Doctrine (not redefined here)
 
-All latency behavior follows the **hft-latency** skill (`/home/toxic/workspace/skills/hft-latency/SKILL.md (yote); ~/workspace/skills/race/SKILL.md (cell)`):
+All latency behavior follows the **pattern-forge** skill (`/home/toxic/estate/skills/pattern-forge/SKILL.md (yote); ~/workspace/skills/race/SKILL.md (cell)`):
 race redundant legs concurrently, fail-fast per-leg timeouts, measure everything,
 keep the fast path hot via the winners JSONL, maximal = wider not harder, never
 roll back, borrow before inventing. This skill adds no new doctrine — it applies
@@ -42,7 +42,7 @@ PAPER-RESULT entry when you bring papers to a debate.
 ## Components (canonical code: `toxicwind/paper-poller`, runs at `/home/toxic/paper-poller`)
 
 - `bin/race_papers.py` — stdlib-only one-shot racer. Endpoint shapes borrowed from
-  `emergent-enrich/bin/route.py`: arXiv Atom API + `api.alphaxiv.org/v1/search/paper`
+  `pattern-forge/src/providers.ts`: arXiv Atom API + `api.alphaxiv.org/v1/search/paper`
   (public, no key — alphaXiv 403s keyed requests on public paths).
 - `bin/poller.py` — the daemon (channel poll → atomic claim → race → post result).
   `/health` + `/ready` on 127.0.0.1:25149.
