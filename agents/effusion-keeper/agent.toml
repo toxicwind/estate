@@ -1,0 +1,87 @@
+# Canonical source: sovereign/agents/effusion-keeper/agent.toml
+# Live copy: ~/.openfang/agents/effusion-keeper/agent.toml (kernel re-seeds from disk on boot)
+name = "effusion-keeper"
+version = "1.0.0"
+description = "Autonomous curator of the Effusion Labs knowledge organism. Watches the lens consensus, tends the manifest, and answers questions about the site content through the lens MCP."
+author = "toxicwind"
+module = "builtin:chat"
+schedule = "reactive"
+priority = "Normal"
+skills = []
+tags = ["effusion", "knowledge", "lens", "curator", "organism"]
+workspace = "/home/toxic/projects/effusion-labs"
+generate_identity_files = true
+tool_allowlist = []
+tool_blocklist = []
+cache_context = false
+
+mcp_servers = ["lens"]
+
+[model]
+provider = "llama-swap"
+model = "openrouter-free/inclusionai/ling-3.0-flash-sante:free"
+fallback_models = [{ provider = "llama-swap", model = "gemini/gemini-3-flash-preview" }]
+max_tokens = 131072
+temperature = 0.3
+system_prompt = """
+You are the Effusion Keeper, autonomous curator of the Effusion Labs knowledge organism.
+
+The organism is a living map of the effusionlabs.com content, seen through ten analytical lenses (ast_dependency, cryptographic, osint, probabilistic, quantum_superposition, semantic, strata_debt, stylometric, tectonic, temporal_drift). Each lens reads every content file and votes; consensus quorum (7/10) marks a file as understood.
+
+You have the lens MCP server. Its tools are namespaced mcp_lens_*. Use them to:
+1. Query the organism current state (which files have consensus, where dissent lives)
+2. Analyze new or changed content through the lenses
+3. Report drift, dissent, or gaps in the knowledge map
+
+The generated manifest lives at src/_data/lensManifest.json in your workspace. The visible organism page is at /organism/ on the site.
+
+You tend, you watch, you answer. When the lenses dissent, you investigate why. When content moves, you re-read it. You are the memory of the site made active.
+
+Speak plain. Curate with care.
+"""
+base_url = "http://127.0.0.1:25100/v1"
+
+[resources]
+max_memory_bytes = 268435456
+max_cpu_time_ms = 60000
+max_tool_calls_per_minute = 60
+max_llm_tokens_per_hour = 500000
+max_network_bytes_per_hour = 104857600
+max_cost_per_hour_usd = 0.0
+max_cost_per_day_usd = 0.0
+max_cost_per_month_usd = 0.0
+
+[capabilities]
+network = [
+    "127.0.0.1:*",
+    "localhost:*",
+]
+tools = [
+    "file_read",
+    "file_list",
+    "web_fetch",
+    "memory_store",
+    "memory_recall",
+    "channel_send",
+]
+memory_read = ["*"]
+memory_write = [
+    "self.*",
+    "effusion-keeper.*",
+]
+agent_spawn = false
+agent_message = []
+shell = [
+    "bun",
+]
+ofp_discover = false
+ofp_connect = []
+
+[tools]
+
+[metadata]
+
+[persona]
+
+[autonomous]
+max_iterations = 100

@@ -1,0 +1,17 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'files'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.files]
+# /files backend (tailnet-only): tailscale serve maps /files -> 127.0.0.1:34567.
+# Static file share rooted at /home/toxic/files. Built 2026-09-20 (files-medic):
+# the serve entry existed but no backend was defined anywhere in the estate.
+port = 34567
+run = "exec python3 /home/toxic/sovereign/stack/services/files-server.py"
+dir = "/home/toxic/sovereign"
+mise = false
+retry = true
+env = { FILES_PORT = "34567", FILES_ROOT = "/home/toxic/files" }
+ready_http = "http://127.0.0.1:34567/health"
+health_http = { url = "http://127.0.0.1:34567/health", interval = "30s", timeout = "5s", retries = 3 }
+auto = ["start"]

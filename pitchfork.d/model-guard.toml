@@ -1,0 +1,14 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'model-guard'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.model-guard]
+health_http = { url = "http://127.0.0.1:25101/v1/models", interval = "30s", timeout = "5s", retries = 3 }
+port = 25101
+run = "exec python3 /home/toxic/sovereign/bin/herd-model-guard.py"
+dir = "/home/toxic/sovereign"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25101/v1/models"
+auto = ["start"]

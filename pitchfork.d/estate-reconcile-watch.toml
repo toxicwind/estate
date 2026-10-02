@@ -1,0 +1,13 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'estate-reconcile-watch'.
+# Owned by the sovereign project; the parent only composes it.
+
+[daemons.estate-reconcile-watch]
+run = "exec /home/toxic/sovereign/bin/estate-reconcile watch"
+dir = "/home/toxic/sovereign"
+mise = false
+retry = true
+auto = ["start"]
+
+# Pitchfork daemon fragment - merge into [daemons.browser-keeper] in
+# /home/toxic/sovereign/pitchfork.toml (owned sequence: stop -> ss-verify ->
+# clean --daemon -> start from /home/toxic/sovereign).

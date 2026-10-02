@@ -1,0 +1,17 @@
+{
+  "taskId": "e2e-probe-1790802978311",
+  "surface": "scheduled-task",
+  "originRef": "e2e-probe-20260930",
+  "outcome": "executed",
+  "executedAt": "2026-09-30T21:16:18.315Z",
+  "evidence": [
+    "cmd: printf 'PROBE-OK %s' \"$(date -u +%FT%TZ)\"",
+    "cwd: /home/toxic",
+    "exitCode: 0",
+    "timedOut: false",
+    "directive injected at pre-agent layer: true"
+  ],
+  "stdout": "PROBE-OK 2026-09-30T21:16:18Z",
+  "stderr": "",
+  "exitCode": 0
+}

@@ -1,0 +1,144 @@
+# hashline — first-class edit tool
+
+**Reach for hashline first for every file edit.** It replaces fragile
+`str_replace`/`sed`-style text matching with content-hashed line anchors
+(`42:a3`, xxh32). Anchors survive nearby edits; if the file changed between
+your read and your patch, hashline **refuses** (exit 1, `ERR STALE`) instead
+of corrupting. That fail-fast is the whole point.
+
+- Repo: https://github.com/quangdang46/hashline (third-party, MIT, Rust — not ours)
+- Binary: `/home/toxic/.local/bin/hashline` (on yote, on PATH) — v0.9.19 (latest 2026-09-30)
+- Config/log: `/home/toxic/.hashline/` (`hashline.log`, `update-check.json`)
+- Project: `/home/toxic/sovereign/hatch/hashline/` (README + docs/discovery.md + docs/runbook.md + docs/wiring.md)
+- Idea lineage: can1357's oh-my-pi (same root as our TAU fork)
+
+## The workflow (always this order)
+
+1. **READ** → `[path#HASH]` header + `N:hh|content` anchored lines
+2. **PATCH** by anchor — never by retyping surrounding text
+3. `ERR STALE` → re-read, re-anchor, retry. Never force.
+
+```bash
+hashline read src/auth.js
+# src/auth.js#1A2B
+# 1:ee|function verifyToken(token) {
+# 2:c6|  const decoded = jwt.verify(token, process.env.SECRET)
+
+hashline patch src/auth.js 'SWAP 2:c6:
++  const decoded = jwt.verify(token, env.SECRET)'
+# OK src/auth.js#7f2a edits=1 changed=1
+# ~2:f9|  const decoded = jwt.verify(token, env.SECRET)
+```
+
+## Subcommand reference (all 11 — verified against --help + guide, 0.9.19)
+
+| Subcommand | Usage | Flags |
+| ---------- | ----- | ----- |
+| `read` | `hashline read <FILE>` — anchored read | `--json`, `--no-cache` (skip snapshot cache) |
+| `patch` | `hashline patch <FILE> <PATCH>` — apply patch | `--dry-run`, `--json`, `--verbose`, `--safe`, `--emit-anchors` |
+| `write` | `hashline write <FILE> <CONTENT>` — create (refuses overwrite w/o `--force`) | `--force`, `--json`, `--verbose`, `--safe` |
+| `find-block` | `hashline find-block <FILE> <ANCHOR>` — enclosing syntactic block | `--json`, `--verbose`, `--pretty` (with `--json`) |
+| `remove` | `hashline remove <FILE>` | `--json`, `--verbose` |
+| `rename` | `hashline rename <SRC> <DST>` | `--force`, `--json`, `--verbose` |
+| `serve` | daemon: JSON-RPC over Unix socket or HTTP | `--socket <SOCK>`, `--http <ADDR>`, `--detach`, `--pid-file <F>` |
+| `mcp` | stdio MCP server (6 tools) | `--proxy-to-daemon` |
+| `update` | self-update from GitHub Releases (sha256-verified, atomic) | `--check`, `--version <V>`, `--json` |
+| `guide` | interactive user guide (289 lines: ops, ranges, escapes, daemon, MCP, examples) | — |
+| `help` | help for a subcommand | — |
+
+**Patch source modes** (the patch argument takes 3 forms):
+- literal: `hashline patch f 'SWAP 3: +new'` (simple patches)
+- stdin: `hashline patch f - <<'EOF' … EOF` — **PREFERRED for multi-op** (no disk I/O)
+- file: `hashline patch f @/path/to/x.patch` — only when the patch file already exists (don't create .patch files just for hashline)
+
+**Envelope markers** (for embedding patches in text): `*** Begin Patch` … `*** End Patch`; `*** Abort` suppresses without applying.
+
+## Patch operations (complete — from `hashline guide`)
+
+| Op | Effect |
+| -- | ------ |
+| `SWAP N:` +content | replace line N |
+| `SWAP N..M:` +content | replace lines N–M |
+| `DEL N` / `DEL N:HH:` / `DEL N..M` | delete (with hash validation / range) |
+| `INS.PRE N:` / `INS.POST N:` +content | insert before / after line N |
+| `INS.HEAD:` / `INS.TAIL:` +content | insert at file start / end |
+| `SWAP.BLK N:` +content | replace entire syntactic block around N |
+| `DEL.BLK N` | delete syntactic block around N |
+| `INS.BLK.POST N:` +content | insert after syntactic block around N |
+| `CUT N..M [@name]` | capture lines into register + delete (anonymous if unnamed) |
+| `PUT [@name] <N:` | paste register before line N (bare `PUT` = file head) |
+
+**Anchor forms:** `2:89` (line:hash) · `2:89..4:9c` (range) · `A.=B` (oh-my-pi range syntax, also accepted) · bare `2` (line-number fallback).
+**Payload escapes:** `+content` normal · `++content` literal leading `+` · `+-content` literal leading `-`.
+**Block language detection** (by extension): `.rs .js .ts .go .java` brace-balanced `{}` · `.py .verse` indentation · `.rb` `def/class/end`.
+
+## Output contract
+
+- stdout = data only. **Compact default** (agent-first, token-minimal): `OK path#hash edits=N changed=N` + changed lines only. Prefixes: `~` modified, `+` inserted, `-` deleted.
+- `--verbose` = full file dump after mutation (human debugging). `--json` = structured (`{"success":true,"file":…,"hash":…,"edits_applied":N,"changed":[…]}`).
+- Errors on stderr: `ERR KIND key=val` + `HINT …`. Exit **0** = applied; exit **1** = stale-read rejection or no-op.
+- Chaining: `--emit-anchors` (or `HASHLINE_RETURN_ANCHORS=1`, or MCP `return_updated_anchors`) appends the fresh `[path#HASH]` + `N:hh|content` listing so follow-up edits skip the re-read.
+
+## MCP server
+
+```bash
+hashline mcp                       # stdio server
+hashline mcp --proxy-to-daemon     # proxy to a running `hashline serve` daemon
+# host config (claude_desktop_config.json / .cursor/mcp.json):
+# { "mcpServers": { "hashline": { "command": "hashline", "args": ["mcp"] } } }
+```
+
+**Framing (verified 2026-09-30, will bite you):** newline-delimited JSON-RPC —
+one `{"jsonrpc":"2.0",…}\n` per message, one line per reply. `Content-Length`
+headers are **silently ignored** (zero response). `initialize` returns an
+`instructions` field (v0.9.12+) so hosts auto-discover it. **No resources, no
+prompts** — tools only (verified via `resources/list` + `prompts/list`).
+
+| Tool | Required args | Optional |
+| ---- | ------------- | -------- |
+| `read` | `file` | `json` |
+| `patch` | `file`, `patch` | `dry_run`, `return_updated_anchors` |
+| `write` | `file`, `content` | `force`, `json` |
+| `find_block` | `file`, `anchor` | — |
+| `remove_file` | `file` | — |
+| `rename_file` | `file`, `new_path` | — |
+
+Note: the `read`/`patch`/`write`/`find_block` arg is **`file`**, not `path`.
+
+## Daemon mode
+
+```bash
+hashline serve --http 17300            # HTTP daemon
+hashline serve                         # Unix socket (default)
+hashline serve --http 17300 --detach   # background; --pid-file <F> for supervision
+HASHLINE_URL=http://127.0.0.1:17300 hashline read src/file
+HASHLINE_SOCKET=~/.hashline/daemon.sock hashline read src/file
+```
+
+## Config & environment
+
+- `/home/toxic/.hashline/` — `hashline.log`, `update-check.json` (24h check cache)
+- `HASHLINE_NO_UPDATE_CHECK=1` — silence the daily update notice (set this for all agent/non-interactive use)
+- `HASHLINE_RETURN_ANCHORS=1` — always emit fresh anchors after patch
+- `HASHLINE_RELEASES_BASE_URL` — mirror/test override for the update check
+- `HASHLINE_URL` / `HASHLINE_SOCKET` — point CLI at a running daemon
+- `HASHLINE_BIN` — binary path override for the pi/opencode wrapper packages
+
+## When hashline, when not
+
+- **Prefer hashline:** every content edit; multi-hunk edits; files other agents touch; `find-block` before hand-rolling brace matching; `--dry-run` before risky patches; `--safe` when a crash mid-write must not tear the file.
+- **NOT hashline:** text search / regex replace across non-hashable text — **no `grep`/`search` surface exists, by upstream design** (README: *"hashline does not support `sed s/old/new/g` — use `sed` when you need regex replacement across non-hashable text"*; confirmed absent from 0.9.19 CLI help and MCP tools). Search with `grep`/`rg`/`ffs`, then anchor the edit with hashline.
+- UTF-8 text only (`dos2unix` first for CRLF).
+
+## Agent hygiene (estate-specific)
+
+- Precedent: `/home/toxic/bin/tau-hashline-fix.sh` — probe `patch --help` → `read` for anchors → verify anchors → backup → `patch` → build → revert-on-failure via `trap`. Copy this shape for risky edits.
+- Over the yote-conn bridge: the cell's bash expands `$(…)` inside double quotes *before* sending — wrap the remote command in **single quotes** so `$(printf …)` executes on yote. Prefer the stdin `*** Begin Patch` heredoc form for multi-op patches; never nest quote layers three deep — ship a script file and run it.
+- `hashline update` replaces only the invoked executable; restart MCP sessions after; update other copies separately.
+
+## Measured proof (2026-09-30, yote scratch files)
+
+- Binary: `hashline read --json ${TMPDIR:-$HOME/.cache}/quill-hashline/t.txt` → anchors; `SWAP 2:89:` → `OK …#dabe edits=1 changed=1`, file verified changed.
+- MCP (newline-delimited stdio): `initialize` → server `hashline 0.9.19` + `instructions`; `tools/list` → 6 tools; `read`(`file`) → `[…#42c2]`; `patch` `SWAP 2:0e:` → `OK …#55b0 edits=2 changed=1`, file verified `MCP-EDITED-VIA-MCP`; `find_block`(`4:b3`) → enclosing `inner()` fn, `lang=JavaScript`.
+- `find-block` CLI: anchor `4:b3` → `OK file=… lang=JavaScript lines=7`, returned lines 3–5 (the enclosing function).
+- Runbook health check (`docs/runbook.md`) executed verbatim → `HEALTHY`.

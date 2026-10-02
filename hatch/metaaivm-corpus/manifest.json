@@ -1,0 +1,727 @@
+{
+ "generated_at": "2026-09-30T21:44:12.240Z",
+ "total_items": 73,
+ "by_surface": {
+  "repo": 0,
+  "code": 24,
+  "issue": 4,
+  "pr": 5,
+  "commit": 40,
+  "discussion": 0
+ },
+ "top_20": [
+  {
+   "surface": "commit",
+   "title": "toxicwind/ranch: task-launch: honest yote-side execution daemon + pre-agent directive layer",
+   "url": "https://github.com/toxicwind/ranch/commit/58617e13846a1497d22385fce7f579522945e213",
+   "score": 0.7,
+   "signals": {
+    "recency": 1,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "toxicwind/ranch: metaaivm-profile: layer application, bun test task over verify task",
+   "url": "https://github.com/toxicwind/ranch/commit/4a377e21b896fe1d88868210673d03a4d5d5441f",
+   "score": 0.7,
+   "signals": {
+    "recency": 1,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "toxicwind/ranch: metaaivm: incremental GitHub collector (Bun, Moon) + yote daily cron",
+   "url": "https://github.com/toxicwind/ranch/commit/96045f91bc9e20aa32934312fa39c57a07f81d24",
+   "score": 0.7,
+   "signals": {
+    "recency": 0.999,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "toxicwind/ranch: metaaivm-profile: first-class Moon project for Meta AI VM agent profile",
+   "url": "https://github.com/toxicwind/ranch/commit/41cd09e1eecd4fe72ca614da1cdd8e3d78331931",
+   "score": 0.7,
+   "signals": {
+    "recency": 0.999,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "linnux-x/surge: fix: route Meta Muse and secure VM domains through AI (#52)",
+   "url": "https://github.com/linnux-x/surge/commit/a1f1941dd47e69e28baca1240de2ee12f1efda35",
+   "score": 0.694,
+   "signals": {
+    "recency": 0.983,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "v2fly/domain-list-community: meta, category-ai-!cn: add Meta Muse domains (#4095)",
+   "url": "https://github.com/v2fly/domain-list-community/commit/2d71342eea1720da57261b55663c9d55619e9b1c",
+   "score": 0.69,
+   "signals": {
+    "recency": 0.97,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "barkleesanders/muse-endo-teardown: Add CVM attestation + Noise transport security review",
+   "url": "https://github.com/barkleesanders/muse-endo-teardown/commit/95f2a0a9a1267694b61b9792af1dbf1165bee6c7",
+   "score": 0.684,
+   "signals": {
+    "recency": 0.955,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "Zer0wAve/zer0plan: iosextra: 保留 metaaivm.com 临时规则，注释改为中性表述",
+   "url": "https://github.com/Zer0wAve/zer0plan/commit/eb564ecf63e9d8a897211863db7c8cf933185f5f",
+   "score": 0.682,
+   "signals": {
+    "recency": 0.948,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "Zer0wAve/zer0plan: iosextra(临时): route metaaivm.com to AI group ahead of GEOIP,private",
+   "url": "https://github.com/Zer0wAve/zer0plan/commit/89d474398bcfc952863dd0f6196edc370709bbf6",
+   "score": 0.682,
+   "signals": {
+    "recency": 0.948,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "Gufiye/Rule: Meta.list: 新增 Muse 分组 (muse.ai/metaaivm.com)",
+   "url": "https://github.com/Gufiye/Rule/commit/03ec108c5500e0039fc614d2ce0827ed3862082c",
+   "score": 0.681,
+   "signals": {
+    "recency": 0.945,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "geekhuashan/Proxy-Rules: fix: route Muse (Meta) login domains via huashan",
+   "url": "https://github.com/geekhuashan/Proxy-Rules/commit/0472b19a478d2a285bfb3daf606c0b234472b449",
+   "score": 0.678,
+   "signals": {
+    "recency": 0.936,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "Scu9277/Rule-Providers: Add metaaivm.com to proxy list",
+   "url": "https://github.com/Scu9277/Rule-Providers/commit/cff1437a6257beb9a9371eb822754ebb36e8076a",
+   "score": 0.672,
+   "signals": {
+    "recency": 0.92,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "zgwtm/flux: rules: add AIOther (category-ai-!cn + custom list)",
+   "url": "https://github.com/zgwtm/flux/commit/0fad281a6ff61c670c66ce0937707e47aa2511e5",
+   "score": 0.672,
+   "signals": {
+    "recency": 0.919,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "lxhifu/xiaohuojian: Add domain suffix for metaaivm.com",
+   "url": "https://github.com/lxhifu/xiaohuojian/commit/edc5267a46b0ba8d928cd688a1298e2400a4aed6",
+   "score": 0.671,
+   "signals": {
+    "recency": 0.916,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "alloflights/shadowrocket-rules: fix(muse): route metaaivm.com and hatch endpoints to MetaAI/proxy",
+   "url": "https://github.com/alloflights/shadowrocket-rules/commit/547bb48b5dafc611823d161e955aad69b43d9ff4",
+   "score": 0.665,
+   "signals": {
+    "recency": 0.901,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "mangataw/LadderTools: Update proxy_ai.list with new domain suffixes",
+   "url": "https://github.com/mangataw/LadderTools/commit/651585d78dad9e5140b119d451c85a69002ebc7e",
+   "score": 0.649,
+   "signals": {
+    "recency": 0.855,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "hirosesuzu0619/shadowrocket-rules: Route AI services through US",
+   "url": "https://github.com/hirosesuzu0619/shadowrocket-rules/commit/aba94a3a2a6b63cc73f7728ae50bc08ef75a6774",
+   "score": 0.646,
+   "signals": {
+    "recency": 0.845,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "styxiik/myrules: Add metaaivm.com to ClashProxy",
+   "url": "https://github.com/styxiik/myrules/commit/71b98a14519338af230e17a6c811ac0c78746058",
+   "score": 0.637,
+   "signals": {
+    "recency": 0.821,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "mikezhouhan/agent-fleet: Add muse-reversed: recover Muse 2.0 Endo/Hatch client core.",
+   "url": "https://github.com/mikezhouhan/agent-fleet/commit/98f8d0f10645857d8b8478773234599b47e3cbe0",
+   "score": 0.62,
+   "signals": {
+    "recency": 0.77,
+    "keyword": 1
+   }
+  },
+  {
+   "surface": "commit",
+   "title": "facebook/dns: Export ODS counters for the hatch_ssh handler",
+   "url": "https://github.com/facebook/dns/commit/418eae14c06e5aa04f1c57883be2e62ac0e7890d",
+   "score": 0.61,
+   "signals": {
+    "recency": 0.742,
+    "keyword": 1
+   }
+  }
+ ],
+ "all": [
+  {
+   "surface": "commit",
+   "key": "58617e13846a1497d22385fce7f579522945e213",
+   "title": "toxicwind/ranch: task-launch: honest yote-side execution daemon + pre-agent directive layer",
+   "url": "https://github.com/toxicwind/ranch/commit/58617e13846a1497d22385fce7f579522945e213",
+   "score": 0.7
+  },
+  {
+   "surface": "commit",
+   "key": "4a377e21b896fe1d88868210673d03a4d5d5441f",
+   "title": "toxicwind/ranch: metaaivm-profile: layer application, bun test task over verify task",
+   "url": "https://github.com/toxicwind/ranch/commit/4a377e21b896fe1d88868210673d03a4d5d5441f",
+   "score": 0.7
+  },
+  {
+   "surface": "commit",
+   "key": "96045f91bc9e20aa32934312fa39c57a07f81d24",
+   "title": "toxicwind/ranch: metaaivm: incremental GitHub collector (Bun, Moon) + yote daily cron",
+   "url": "https://github.com/toxicwind/ranch/commit/96045f91bc9e20aa32934312fa39c57a07f81d24",
+   "score": 0.7
+  },
+  {
+   "surface": "commit",
+   "key": "41cd09e1eecd4fe72ca614da1cdd8e3d78331931",
+   "title": "toxicwind/ranch: metaaivm-profile: first-class Moon project for Meta AI VM agent profile",
+   "url": "https://github.com/toxicwind/ranch/commit/41cd09e1eecd4fe72ca614da1cdd8e3d78331931",
+   "score": 0.7
+  },
+  {
+   "surface": "commit",
+   "key": "a1f1941dd47e69e28baca1240de2ee12f1efda35",
+   "title": "linnux-x/surge: fix: route Meta Muse and secure VM domains through AI (#52)",
+   "url": "https://github.com/linnux-x/surge/commit/a1f1941dd47e69e28baca1240de2ee12f1efda35",
+   "score": 0.694
+  },
+  {
+   "surface": "commit",
+   "key": "2d71342eea1720da57261b55663c9d55619e9b1c",
+   "title": "v2fly/domain-list-community: meta, category-ai-!cn: add Meta Muse domains (#4095)",
+   "url": "https://github.com/v2fly/domain-list-community/commit/2d71342eea1720da57261b55663c9d55619e9b1c",
+   "score": 0.69
+  },
+  {
+   "surface": "commit",
+   "key": "95f2a0a9a1267694b61b9792af1dbf1165bee6c7",
+   "title": "barkleesanders/muse-endo-teardown: Add CVM attestation + Noise transport security review",
+   "url": "https://github.com/barkleesanders/muse-endo-teardown/commit/95f2a0a9a1267694b61b9792af1dbf1165bee6c7",
+   "score": 0.684
+  },
+  {
+   "surface": "commit",
+   "key": "eb564ecf63e9d8a897211863db7c8cf933185f5f",
+   "title": "Zer0wAve/zer0plan: iosextra: 保留 metaaivm.com 临时规则，注释改为中性表述",
+   "url": "https://github.com/Zer0wAve/zer0plan/commit/eb564ecf63e9d8a897211863db7c8cf933185f5f",
+   "score": 0.682
+  },
+  {
+   "surface": "commit",
+   "key": "89d474398bcfc952863dd0f6196edc370709bbf6",
+   "title": "Zer0wAve/zer0plan: iosextra(临时): route metaaivm.com to AI group ahead of GEOIP,private",
+   "url": "https://github.com/Zer0wAve/zer0plan/commit/89d474398bcfc952863dd0f6196edc370709bbf6",
+   "score": 0.682
+  },
+  {
+   "surface": "commit",
+   "key": "03ec108c5500e0039fc614d2ce0827ed3862082c",
+   "title": "Gufiye/Rule: Meta.list: 新增 Muse 分组 (muse.ai/metaaivm.com)",
+   "url": "https://github.com/Gufiye/Rule/commit/03ec108c5500e0039fc614d2ce0827ed3862082c",
+   "score": 0.681
+  },
+  {
+   "surface": "commit",
+   "key": "0472b19a478d2a285bfb3daf606c0b234472b449",
+   "title": "geekhuashan/Proxy-Rules: fix: route Muse (Meta) login domains via huashan",
+   "url": "https://github.com/geekhuashan/Proxy-Rules/commit/0472b19a478d2a285bfb3daf606c0b234472b449",
+   "score": 0.678
+  },
+  {
+   "surface": "commit",
+   "key": "cff1437a6257beb9a9371eb822754ebb36e8076a",
+   "title": "Scu9277/Rule-Providers: Add metaaivm.com to proxy list",
+   "url": "https://github.com/Scu9277/Rule-Providers/commit/cff1437a6257beb9a9371eb822754ebb36e8076a",
+   "score": 0.672
+  },
+  {
+   "surface": "commit",
+   "key": "0fad281a6ff61c670c66ce0937707e47aa2511e5",
+   "title": "zgwtm/flux: rules: add AIOther (category-ai-!cn + custom list)",
+   "url": "https://github.com/zgwtm/flux/commit/0fad281a6ff61c670c66ce0937707e47aa2511e5",
+   "score": 0.672
+  },
+  {
+   "surface": "commit",
+   "key": "edc5267a46b0ba8d928cd688a1298e2400a4aed6",
+   "title": "lxhifu/xiaohuojian: Add domain suffix for metaaivm.com",
+   "url": "https://github.com/lxhifu/xiaohuojian/commit/edc5267a46b0ba8d928cd688a1298e2400a4aed6",
+   "score": 0.671
+  },
+  {
+   "surface": "commit",
+   "key": "547bb48b5dafc611823d161e955aad69b43d9ff4",
+   "title": "alloflights/shadowrocket-rules: fix(muse): route metaaivm.com and hatch endpoints to MetaAI/proxy",
+   "url": "https://github.com/alloflights/shadowrocket-rules/commit/547bb48b5dafc611823d161e955aad69b43d9ff4",
+   "score": 0.665
+  },
+  {
+   "surface": "commit",
+   "key": "651585d78dad9e5140b119d451c85a69002ebc7e",
+   "title": "mangataw/LadderTools: Update proxy_ai.list with new domain suffixes",
+   "url": "https://github.com/mangataw/LadderTools/commit/651585d78dad9e5140b119d451c85a69002ebc7e",
+   "score": 0.649
+  },
+  {
+   "surface": "commit",
+   "key": "aba94a3a2a6b63cc73f7728ae50bc08ef75a6774",
+   "title": "hirosesuzu0619/shadowrocket-rules: Route AI services through US",
+   "url": "https://github.com/hirosesuzu0619/shadowrocket-rules/commit/aba94a3a2a6b63cc73f7728ae50bc08ef75a6774",
+   "score": 0.646
+  },
+  {
+   "surface": "commit",
+   "key": "71b98a14519338af230e17a6c811ac0c78746058",
+   "title": "styxiik/myrules: Add metaaivm.com to ClashProxy",
+   "url": "https://github.com/styxiik/myrules/commit/71b98a14519338af230e17a6c811ac0c78746058",
+   "score": 0.637
+  },
+  {
+   "surface": "commit",
+   "key": "98f8d0f10645857d8b8478773234599b47e3cbe0",
+   "title": "mikezhouhan/agent-fleet: Add muse-reversed: recover Muse 2.0 Endo/Hatch client core.",
+   "url": "https://github.com/mikezhouhan/agent-fleet/commit/98f8d0f10645857d8b8478773234599b47e3cbe0",
+   "score": 0.62
+  },
+  {
+   "surface": "commit",
+   "key": "418eae14c06e5aa04f1c57883be2e62ac0e7890d",
+   "title": "facebook/dns: Export ODS counters for the hatch_ssh handler",
+   "url": "https://github.com/facebook/dns/commit/418eae14c06e5aa04f1c57883be2e62ac0e7890d",
+   "score": 0.61
+  },
+  {
+   "surface": "code",
+   "key": "toxicwind/ranch:b904cb868a5222509d6668f45fb9e30944960e50",
+   "title": "toxicwind/ranch:metaaivm/README.md",
+   "url": "https://github.com/toxicwind/ranch/blob/bb6adf5f3cbeb215dcd896fcabf8cd66839b5a1c/metaaivm/README.md",
+   "score": 0.6
+  },
+  {
+   "surface": "code",
+   "key": "toxicwind/ranch:d421a0ac37e3689f673c4925a899869bd476c1d5",
+   "title": "toxicwind/ranch:metaaivm-profile/README.md",
+   "url": "https://github.com/toxicwind/ranch/blob/bb6adf5f3cbeb215dcd896fcabf8cd66839b5a1c/metaaivm-profile/README.md",
+   "score": 0.6
+  },
+  {
+   "surface": "code",
+   "key": "toxicwind/ranch:d5cd92588ab694e3bb75256429e638ca507b1290",
+   "title": "toxicwind/ranch:metaaivm/collector.ts",
+   "url": "https://github.com/toxicwind/ranch/blob/bb6adf5f3cbeb215dcd896fcabf8cd66839b5a1c/metaaivm/collector.ts",
+   "score": 0.6
+  },
+  {
+   "surface": "code",
+   "key": "toxicwind/ranch:9f55a59bb553eb0279cb06a3a5bd9718469fb3bf",
+   "title": "toxicwind/ranch:metaaivm-profile/verify.ts",
+   "url": "https://github.com/toxicwind/ranch/blob/bb6adf5f3cbeb215dcd896fcabf8cd66839b5a1c/metaaivm-profile/verify.ts",
+   "score": 0.6
+  },
+  {
+   "surface": "pr",
+   "key": "5591828965",
+   "title": "meta, category-ai-!cn: add Meta Muse domains",
+   "url": "https://github.com/v2fly/domain-list-community/pull/4095",
+   "score": 0.467
+  },
+  {
+   "surface": "pr",
+   "key": "5640555358",
+   "title": "fix: route Meta Muse and secure VM domains through AI",
+   "url": "https://github.com/linnux-x/surge/pull/52",
+   "score": 0.416
+  },
+  {
+   "surface": "pr",
+   "key": "5590051335",
+   "title": "fix: Telegram failsafe routing, Meta Muse US exit, and airport scope locks",
+   "url": "https://github.com/liuleisail/family-proxy-manual/pull/97",
+   "score": 0.394
+  },
+  {
+   "surface": "issue",
+   "key": "5533962472",
+   "title": "白名单补充TOP500",
+   "url": "https://github.com/Johnshall/Shadowrocket-ADBlock-Rules-Forever/issues/621",
+   "score": 0.375
+  },
+  {
+   "surface": "commit",
+   "key": "8b1d0e20ae5b7c4bd153a5e2a503d58fcf3ab224",
+   "title": "baldwinkatelyn5/trnfvn-rvmwddv: (樱雪无菌消毒柜INSE)售后发布全国24小时各客服受理中心(2026年上线)(2026年09月11日全新上线)，",
+   "url": "https://github.com/baldwinkatelyn5/trnfvn-rvmwddv/commit/8b1d0e20ae5b7c4bd153a5e2a503d58fcf3ab224",
+   "score": 0.327
+  },
+  {
+   "surface": "commit",
+   "key": "ba6e42193426f5734f6b82f2410dd4564f994001",
+   "title": "baldwinkatelyn5/trnfvn-pefofic: (凡帝罗香槟冰箱)Vandelo)售后发布全国24小时各客服受理中心(2026年上线)(2026年09月11日全新上线)，",
+   "url": "https://github.com/baldwinkatelyn5/trnfvn-pefofic/commit/ba6e42193426f5734f6b82f2410dd4564f994001",
+   "score": 0.327
+  },
+  {
+   "surface": "commit",
+   "key": "a6841e7ce08b3a83af4e1c10e1a913b8bf694d9c",
+   "title": "navarromegan28/trnfvn-BZHEMW: (圆底燃气灶)yupai)宇派售后发布全国24小时各客服受理中心(2026年上线)(2026年09月11日全新上线)，",
+   "url": "https://github.com/navarromegan28/trnfvn-BZHEMW/commit/a6841e7ce08b3a83af4e1c10e1a913b8bf694d9c",
+   "score": 0.327
+  },
+  {
+   "surface": "commit",
+   "key": "f0af3dec2f0b977d7f9b97e909bebdc4706d538b",
+   "title": "navarromegan28/trnfvn-HSDMRF: (海老板防火燃气灶)ROBAM)售后发布全国24小时各客服受理中心(2026年上线)(2026年09月11日全新上线)，",
+   "url": "https://github.com/navarromegan28/trnfvn-HSDMRF/commit/f0af3dec2f0b977d7f9b97e909bebdc4706d538b",
+   "score": 0.327
+  },
+  {
+   "surface": "commit",
+   "key": "31cab82dd1c04a8660562fc34f21844e9ddf76e3",
+   "title": "thomasedward0/UJ-xvkgrlym: (多田慧眼燃气灶)taAda)售后发布全国24小时各客服受理中心(2026年上线)(2026年09月11日全新上线)，",
+   "url": "https://github.com/thomasedward0/UJ-xvkgrlym/commit/31cab82dd1c04a8660562fc34f21844e9ddf76e3",
+   "score": 0.325
+  },
+  {
+   "surface": "issue",
+   "key": "2504406471",
+   "title": "meta.ai是隶属于facebook的AI平台需要添加进规则文件",
+   "url": "https://github.com/blackmatrix7/ios_rule_script/issues/1363",
+   "score": 0.325
+  },
+  {
+   "surface": "commit",
+   "key": "34815bd4bab223a237d1c41f013e9496eb99b4c0",
+   "title": "thomasedward0/VNBF-rzgmiggms: (优选抽油烟机)RongsND)容声售后发布全国24小时各客服受理中心(2026年上线)(2026年09月11日全新上线)，",
+   "url": "https://github.com/thomasedward0/VNBF-rzgmiggms/commit/34815bd4bab223a237d1c41f013e9496eb99b4c0",
+   "score": 0.325
+  },
+  {
+   "surface": "commit",
+   "key": "43be291bc2fb29ff013353299e132fbcdd0b2c53",
+   "title": "hensonwendy6/JTZ-UwrLrE: (科大定时燃气灶KOdeAR)售后发布全国24小时各客服受理中心(2026年上线)(2026年09月10日全新上线)，",
+   "url": "https://github.com/hensonwendy6/JTZ-UwrLrE/commit/43be291bc2fb29ff013353299e132fbcdd0b2c53",
+   "score": 0.323
+  },
+  {
+   "surface": "commit",
+   "key": "75fc51e6f0ce80a92c0b30ef3d020202b824d60b",
+   "title": "cookalexander4/trnfvn-cztrRH: (金帝速燃燃气炉Kinde)售后发布全国24小时各客服受理中心(2026年上线)(2026年09月10日全新上线)，",
+   "url": "https://github.com/cookalexander4/trnfvn-cztrRH/commit/75fc51e6f0ce80a92c0b30ef3d020202b824d60b",
+   "score": 0.322
+  },
+  {
+   "surface": "commit",
+   "key": "b35a0e5487bceb4c0d1043500fe56c54c74ea5b2",
+   "title": "cookalexander4/trnfvn-cKIIhq: (闭环煤气灶)sAst)先科售后发布全国24小时各客服受理中心(2026年上线)(2026年09月10日全新上线)，",
+   "url": "https://github.com/cookalexander4/trnfvn-cKIIhq/commit/b35a0e5487bceb4c0d1043500fe56c54c74ea5b2",
+   "score": 0.322
+  },
+  {
+   "surface": "commit",
+   "key": "cf218686799ecd0cab735af895740fb9fd98cb42",
+   "title": "valdezandrew5/trnfvn-PUHHKZ: (火王HIONE)泄压煤气灶)售后发布全国24小时各客服受理中心(2026年上线)(2026年09月10日全新上线)，",
+   "url": "https://github.com/valdezandrew5/trnfvn-PUHHKZ/commit/cf218686799ecd0cab735af895740fb9fd98cb42",
+   "score": 0.321
+  },
+  {
+   "surface": "commit",
+   "key": "709d2445ecefc0354ab86a307bb97c845d901d29",
+   "title": "valdezandrew5/trnfvn-OJAERP: (森歌抗刮集成灶)Seng)售后发布全国24小时各客服受理中心(2026年上线)(2026年09月10日全新上线)，",
+   "url": "https://github.com/valdezandrew5/trnfvn-OJAERP/commit/709d2445ecefc0354ab86a307bb97c845d901d29",
+   "score": 0.321
+  },
+  {
+   "surface": "commit",
+   "key": "cb8b5f3ad91aa50ccc7472cda7e7a89fee705d57",
+   "title": "valdezandrew5/trnfvn-OJAERP: 库琪尼一体灶台(Cucine))售后发布全国24小时各客服受理中心(2026年上线)(2026年09月10日全新上线)，",
+   "url": "https://github.com/valdezandrew5/trnfvn-OJAERP/commit/cb8b5f3ad91aa50ccc7472cda7e7a89fee705d57",
+   "score": 0.321
+  },
+  {
+   "surface": "code",
+   "key": "v2fly/domain-list-community:c443a5d967c169449b27381940ddd3b2aaa67be7",
+   "title": "v2fly/domain-list-community:data/meta",
+   "url": "https://github.com/v2fly/domain-list-community/blob/2d71342eea1720da57261b55663c9d55619e9b1c/data/meta",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "v2fly/domain-list-community:3cd54092770af78566d2f4821cd23dfe180b66fb",
+   "title": "v2fly/domain-list-community:data/category-ai-!cn",
+   "url": "https://github.com/v2fly/domain-list-community/blob/2d71342eea1720da57261b55663c9d55619e9b1c/data/category-ai-!cn",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "ruijzhan/chnroute:b580827ff31b4be077c5aded69f3d182c0e6598b",
+   "title": "ruijzhan/chnroute:include_list.txt",
+   "url": "https://github.com/ruijzhan/chnroute/blob/d4236bf493babaf2d7014603b1f5b7f9759993a4/include_list.txt",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "VPSDance/ai-proxy-rules:c443a5d967c169449b27381940ddd3b2aaa67be7",
+   "title": "VPSDance/ai-proxy-rules:data/cache/17171851a9aa50de.txt",
+   "url": "https://github.com/VPSDance/ai-proxy-rules/blob/1feeed8bf7d7793351e822f1cf17bea8f4abc7db/data/cache/17171851a9aa50de.txt",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "VPSDance/ai-proxy-rules:e56ea731dc62bce9281c502a870c30adb8261592",
+   "title": "VPSDance/ai-proxy-rules:rules/loon/meta-ai.list",
+   "url": "https://github.com/VPSDance/ai-proxy-rules/blob/1feeed8bf7d7793351e822f1cf17bea8f4abc7db/rules/loon/meta-ai.list",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "VPSDance/ai-proxy-rules:4b8a58f3d4d5cacdfaf10fe140718f98e024a6a7",
+   "title": "VPSDance/ai-proxy-rules:rules/quantumult-x/meta-ai.list",
+   "url": "https://github.com/VPSDance/ai-proxy-rules/blob/1feeed8bf7d7793351e822f1cf17bea8f4abc7db/rules/quantumult-x/meta-ai.list",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "ruijzhan/chnroute:e11a9025bf8b6a83ec6a52ba93a692b39e850412",
+   "title": "ruijzhan/chnroute:gfwlist.txt",
+   "url": "https://github.com/ruijzhan/chnroute/blob/d4236bf493babaf2d7014603b1f5b7f9759993a4/gfwlist.txt",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "xOS/Config:8cf7e818b6f0189f3ede937ea85bba11f3290ff5",
+   "title": "xOS/Config:RuleSet/Ai.list",
+   "url": "https://github.com/xOS/Config/blob/409796d97312ec03eff44900985da9ff3e1b851a/RuleSet/Ai.list",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "ruijzhan/chnroute:59cd97a7fd82ae83e299edf2ad8f0b3fe641fb96",
+   "title": "ruijzhan/chnroute:gfwlist_v7.rsc",
+   "url": "https://github.com/ruijzhan/chnroute/blob/d4236bf493babaf2d7014603b1f5b7f9759993a4/gfwlist_v7.rsc",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "VPSDance/ai-proxy-rules:4487dc1eb135caee1c29252a150727ebc92f3b9a",
+   "title": "VPSDance/ai-proxy-rules:rules/loon/all.list",
+   "url": "https://github.com/VPSDance/ai-proxy-rules/blob/1feeed8bf7d7793351e822f1cf17bea8f4abc7db/rules/loon/all.list",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "VPSDance/ai-proxy-rules:e58528738a7defd27236159d4f15a386b3f58262",
+   "title": "VPSDance/ai-proxy-rules:rules/loon/global.list",
+   "url": "https://github.com/VPSDance/ai-proxy-rules/blob/1feeed8bf7d7793351e822f1cf17bea8f4abc7db/rules/loon/global.list",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "VPSDance/ai-proxy-rules:cdf81b89844efa384b7d8920ba0c5e68872571fc",
+   "title": "VPSDance/ai-proxy-rules:rules/quantumult-x/all.list",
+   "url": "https://github.com/VPSDance/ai-proxy-rules/blob/1feeed8bf7d7793351e822f1cf17bea8f4abc7db/rules/quantumult-x/all.list",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "VPSDance/ai-proxy-rules:406fcdc03a6c324f7eb6fe99d34a173818b4f849",
+   "title": "VPSDance/ai-proxy-rules:rules/quantumult-x/global.list",
+   "url": "https://github.com/VPSDance/ai-proxy-rules/blob/1feeed8bf7d7793351e822f1cf17bea8f4abc7db/rules/quantumult-x/global.list",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "nikships/muse-cli:2cb2c49febd0ebc2eb5ff0ff548a5065cd7ef827",
+   "title": "nikships/muse-cli:docs/PROTOCOL.md",
+   "url": "https://github.com/nikships/muse-cli/blob/bcd5ee14a69563fc1c328c81a9ecf052e0a97ef9/docs/PROTOCOL.md",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "VPSDance/ai-proxy-rules:c6464ca6d2aa488eebf4b802b5a92d1592652d20",
+   "title": "VPSDance/ai-proxy-rules:rules/egern/meta-ai.yaml",
+   "url": "https://github.com/VPSDance/ai-proxy-rules/blob/1feeed8bf7d7793351e822f1cf17bea8f4abc7db/rules/egern/meta-ai.yaml",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "VPSDance/ai-proxy-rules:4d2439e6301f2ddf04bb7a1d76f5ee861ebfb8ee",
+   "title": "VPSDance/ai-proxy-rules:rules/clash/meta-ai.yaml",
+   "url": "https://github.com/VPSDance/ai-proxy-rules/blob/1feeed8bf7d7793351e822f1cf17bea8f4abc7db/rules/clash/meta-ai.yaml",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "VPSDance/ai-proxy-rules:422b2c99a7a7dcd85cc220a12de0a0cb0fb5c93f",
+   "title": "VPSDance/ai-proxy-rules:rules/sing-box/meta-ai.json",
+   "url": "https://github.com/VPSDance/ai-proxy-rules/blob/1feeed8bf7d7793351e822f1cf17bea8f4abc7db/rules/sing-box/meta-ai.json",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "VPSDance/ai-proxy-rules:e976cb23edc4eb72c6e98da76c615838f600ec3c",
+   "title": "VPSDance/ai-proxy-rules:data/providers/meta-ai.yaml",
+   "url": "https://github.com/VPSDance/ai-proxy-rules/blob/1feeed8bf7d7793351e822f1cf17bea8f4abc7db/data/providers/meta-ai.yaml",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "AmintaCCCP/surge-script:5d52195b6316b7122393c55396ec46a5897bf17e",
+   "title": "AmintaCCCP/surge-script:muse.list",
+   "url": "https://github.com/AmintaCCCP/surge-script/blob/099d7e6f99126b2e16ddf219c104848cce967d02/muse.list",
+   "score": 0.32
+  },
+  {
+   "surface": "code",
+   "key": "Ground-Zerro/Geo-Aggregator:a63b0783c3d73de0cf02bdfc7db22941d3827a5a",
+   "title": "Ground-Zerro/Geo-Aggregator:source1/category-ai.txt",
+   "url": "https://github.com/Ground-Zerro/Geo-Aggregator/blob/439179304b10e4724a36c4b12facd66a856186ea/source1/category-ai.txt",
+   "score": 0.32
+  },
+  {
+   "surface": "commit",
+   "key": "0b36ccb3a53c155cc0032ba88aa626fc8b426b49",
+   "title": "smithjulie1/NGIJ-OQPXD: (蓝宝石稳压燃气灶Sapphire)售后发布全国24小时各客服受理中心(2026年上线)(2026年09月10日全新上线)，",
+   "url": "https://github.com/smithjulie1/NGIJ-OQPXD/commit/0b36ccb3a53c155cc0032ba88aa626fc8b426b49",
+   "score": 0.32
+  },
+  {
+   "surface": "commit",
+   "key": "d7bfd4dd231b14567d0a38a9815e607c2625547d",
+   "title": "smithjulie1/NGIJ-OQPXD: (完备煤气炉)SUPOR)苏泊尔售后发布全国24小时各客服受理中心(2026年上线)(2026年09月10日全新上线)，",
+   "url": "https://github.com/smithjulie1/NGIJ-OQPXD/commit/d7bfd4dd231b14567d0a38a9815e607c2625547d",
+   "score": 0.32
+  },
+  {
+   "surface": "commit",
+   "key": "b50b9559726722877a866c07fd07229e25282303",
+   "title": "smithjulie1/NORK-PDVHSGFORK: (帝伯莱新款红酒柜)dBERLAN)售后发布全国24小时各客服受理中心(2026年上线)(2026年09月10日全新上线)，",
+   "url": "https://github.com/smithjulie1/NORK-PDVHSGFORK/commit/b50b9559726722877a866c07fd07229e25282303",
+   "score": 0.319
+  },
+  {
+   "surface": "commit",
+   "key": "67ecc85ef1bf9dac579d8d8a6246db12eda66760",
+   "title": "smithjulie1/HVC-DPXD: (武火煤气灶)BOMPANI)售后发布全国24小时各客服受理中心(2026年上线)(2026年09月09日全新上线)，",
+   "url": "https://github.com/smithjulie1/HVC-DPXD/commit/67ecc85ef1bf9dac579d8d8a6246db12eda66760",
+   "score": 0.319
+  },
+  {
+   "surface": "commit",
+   "key": "d28ce8520763a008f4225ffc811debec951e0f35",
+   "title": "datkim2004/Moma_chat: feat: kiem widget tren web render JS + giam sat tu dong 0.99.0",
+   "url": "https://github.com/datkim2004/Moma_chat/commit/d28ce8520763a008f4225ffc811debec951e0f35",
+   "score": 0.298
+  },
+  {
+   "surface": "issue",
+   "key": "5598762511",
+   "title": "Gateway WebSocket connects without TLS certificate verification",
+   "url": "https://github.com/nikships/muse-cli/issues/1",
+   "score": 0.274
+  },
+  {
+   "surface": "pr",
+   "key": "5598774332",
+   "title": "Verify TLS certificate on gateway WebSocket",
+   "url": "https://github.com/kleprevost/muse-mcp/pull/1",
+   "score": 0.274
+  },
+  {
+   "surface": "commit",
+   "key": "3efe19bcd2492a2c5d0071d9dca2f1b34b2e2235",
+   "title": "Howie002/AI-Distributed-Inference-Cluster: Auto-start the control plane at boot; defuse the legacy single-box path",
+   "url": "https://github.com/Howie002/AI-Distributed-Inference-Cluster/commit/3efe19bcd2492a2c5d0071d9dca2f1b34b2e2235",
+   "score": 0.184
+  },
+  {
+   "surface": "pr",
+   "key": "3284358644",
+   "title": "Impl restart",
+   "url": "https://github.com/rubenvitt/bluelight-hub/pull/190",
+   "score": 0.18
+  },
+  {
+   "surface": "issue",
+   "key": "789908686",
+   "title": "WS6001 - Certificazione file risposta ",
+   "url": "https://github.com/italia/anpr/issues/2437",
+   "score": 0.18
+  },
+  {
+   "surface": "commit",
+   "key": "aeb7415bbe80301b03c63cbec841121b43943022",
+   "title": "theweekendprojects/ai-compiler: fix: reposition hero — 'the LLM is the CPU' not 'write intent'",
+   "url": "https://github.com/theweekendprojects/ai-compiler/commit/aeb7415bbe80301b03c63cbec841121b43943022",
+   "score": 0.145
+  },
+  {
+   "surface": "commit",
+   "key": "5b32fdf4a87ea7e5b910a9f1c1fb2ea561f48c01",
+   "title": "AIQ-Kitware/infer_stack: Add `infer-stack version` and `infer-stack config paths` commands",
+   "url": "https://github.com/AIQ-Kitware/infer_stack/commit/5b32fdf4a87ea7e5b910a9f1c1fb2ea561f48c01",
+   "score": 0.134
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'hindsight'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.hindsight]
+port = 25117
+run = "exec ./stack/services/hindsight.sh"
+dir = "."
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25117/health"
+health_http = { url = "http://127.0.0.1:25117/health", interval = "30s", timeout = "5s", retries = 3 }
+depends = ["gatehouse"]
+auto = ["start"]

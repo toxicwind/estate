@@ -1,0 +1,369 @@
+#!/usr/bin/env python3
+"""github-mcp-cli: call GitHub's remote MCP server (https://api.githubcopilot.com/mcp).
+
+Auth uses the platform connector `custom.github-mcp` via authd surrogates
+(see dynamic_credentials.py). The CLI never sees, prints, or stores the raw
+token; Sentinel swaps the surrogate for the real credential on egress.
+
+Transport hardening (ported from the battle-tested awrawr-mcp exec.py):
+- Every JSON-RPC request carries a unique id (pid + uuid); SSE responses
+  are accepted only when the response envelope's id matches. A foreign or
+  crossed response is never silently delivered as ours.
+- A local read deadline (default 150s, override with GITHUB_MCP_READ_TIMEOUT)
+  bounds the total client-side read independently of any server timeout, so
+  a stalled/broken SSE stream raises instead of hanging.
+- A lane that IncompleteReads, stalls, blows its deadline, or fails
+  correlation is marked degraded (~/.cache/github-mcp-https-down, 60s TTL):
+  the next call fails fast instead of burning another full read cycle, then
+  recovers on its own.
+
+Subcommands:
+  status                                  verify credential + show tool catalogue
+  list-tools                              MCP tools/list
+  call-tool --name N --arguments-json J   MCP tools/call (J must be a JSON object)
+"""
+import json
+import os
+import sys
+import threading
+import time
+import urllib.request
+import urllib.error
+import http.client
+import socket
+import uuid
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from dynamic_credentials import (
+    DynamicCredentialError,
+    add_surrogate_to_request,
+)
+
+CREDENTIAL_NAME = "custom.github-mcp"
+ALLOWED_HOSTS = ("*",)  # operator choice: all hosts allowed for this credential
+MCP_URL = "https://api.githubcopilot.com/mcp"
+MCP_PROTOCOL_VERSION = "2025-06-18"
+
+_DEFAULT_READ_TIMEOUT = float(os.environ.get("GITHUB_MCP_READ_TIMEOUT", "150"))
+_DOWN_FLAG = os.path.expanduser("~/.cache/github-mcp-https-down")
+_DOWN_TTL = 60
+
+# Memory bounds (defense against a misbehaving stream growing buffers
+# without limit — unbounded growth is what OOM-kills runtimes and looks
+# like "restart errors"). Generous for GitHub's API; a legit response
+# never approaches these.
+_MAX_SSE_EVENT_BYTES = 8 * 1024 * 1024    # one SSE event's data payload
+_MAX_BODY_BYTES = 32 * 1024 * 1024        # one non-SSE response body
+
+_session_id = None
+_session_lock = threading.Lock()
+
+
+def _lane_known_down():
+    """(down, reason): is the lane currently marked degraded?"""
+    try:
+        with open(_DOWN_FLAG) as f:
+            rec = json.load(f)
+        if time.time() - float(rec.get("ts", 0)) < _DOWN_TTL:
+            return True, str(rec.get("reason", "unknown"))
+    except (OSError, ValueError, TypeError):
+        pass
+    return False, ""
+
+
+def _lane_mark_down(reason):
+    try:
+        os.makedirs(os.path.dirname(_DOWN_FLAG), exist_ok=True)
+        with open(_DOWN_FLAG, "w") as f:
+            json.dump({"ts": time.time(), "reason": reason}, f)
+    except OSError:
+        pass
+
+
+def _degraded_and_raise(reason, detail):
+    """Mark the lane degraded and raise a fail-fast RuntimeError."""
+    _lane_mark_down(reason)
+    raise RuntimeError("%s (lane marked degraded: %s; retry shortly)"
+                       % (detail, reason))
+
+
+class _ReadDeadlineExceeded(RuntimeError):
+    """Local read deadline fired before the response arrived."""
+
+
+class _CorrelationFailed(RuntimeError):
+    """Stream ended with no JSON-RPC response matching our request id."""
+
+
+class _ResponseTooLarge(RuntimeError):
+    """A single event/body exceeded its memory bound; stream aborted."""
+
+
+def _new_id():
+    """Unique JSON-RPC request id per call (pid + uuid)."""
+    return "ghmcp-%d-%s" % (os.getpid(), uuid.uuid4().hex[:12])
+
+
+def _read_sse_correlated(resp, want_id, deadline):
+    """Incrementally read an SSE stream; return the matching response doc.
+
+    Spec-correct event parsing: consecutive data: lines are joined with
+    newline into one event, events dispatch on blank lines, ':' comment
+    lines (heartbeats) are ignored, and CRLF/CR/LF endings are stripped.
+    Only a JSON-RPC response envelope whose id matches want_id is
+    accepted; anything else is skipped and counted. Raises
+    _CorrelationFailed if the stream ends without a match, and
+    _ReadDeadlineExceeded if the deadline fires first. Transport-level
+    read errors propagate to the caller for degraded-lane marking.
+    """
+    foreign = 0
+    data_buf = []
+    data_bytes = 0
+
+    def dispatch():
+        """Parse the buffered event; return doc or None, counting junk."""
+        nonlocal foreign, data_bytes
+        if not data_buf:
+            return None
+        payload = "\n".join(data_buf)
+        del data_buf[:]
+        data_bytes = 0
+        try:
+            return json.loads(payload)
+        except ValueError:
+            foreign += 1  # e.g. a "[DONE]" sentinel or truncated event
+            return None
+
+    def matches(doc):
+        return (isinstance(doc, dict) and doc.get("jsonrpc") == "2.0"
+                and doc.get("id") == want_id)
+
+    while True:
+        if time.monotonic() > deadline:
+            raise _ReadDeadlineExceeded(
+                "local read deadline fired waiting for response id %r "
+                "(%d foreign event(s) skipped)" % (want_id, foreign))
+        raw = resp.readline()
+        if not raw:
+            doc = dispatch()  # trailing event without a terminating blank line
+            if doc is not None:
+                if matches(doc):
+                    return doc
+                foreign += 1
+            raise _CorrelationFailed(
+                "no JSON-RPC response matching request id %r "
+                "(%d foreign event(s) skipped)" % (want_id, foreign))
+        try:
+            text = raw.decode("utf-8", "replace")
+        except Exception:
+            continue
+        if text.endswith("\r\n"):
+            text = text[:-2]
+        elif text.endswith("\n") or text.endswith("\r"):
+            text = text[:-1]
+        if text == "":
+            doc = dispatch()
+            if doc is None:
+                continue
+            if matches(doc):
+                return doc
+            foreign += 1
+        elif text.startswith(":"):
+            continue  # comment / heartbeat
+        elif text.startswith("data:"):
+            val = text[5:]
+            if val.startswith(" "):
+                val = val[1:]
+            data_bytes += len(val) + 1
+            if data_bytes > _MAX_SSE_EVENT_BYTES:
+                raise _ResponseTooLarge(
+                    "SSE event exceeded %d bytes; aborting read "
+                    "(response id %r)" % (_MAX_SSE_EVENT_BYTES, want_id))
+            data_buf.append(val)
+        # else: event:/id:/retry: fields we don't need
+
+
+def _read_body_bounded(resp, deadline, chunk_size=65536):
+    """Read a (non-SSE) response body with a local deadline and size cap."""
+    chunks = []
+    total = 0
+    while True:
+        if time.monotonic() > deadline:
+            raise _ReadDeadlineExceeded(
+                "local read deadline fired while reading response body")
+        chunk = resp.read(chunk_size)
+        if not chunk:
+            break
+        total += len(chunk)
+        if total > _MAX_BODY_BYTES:
+            raise _ResponseTooLarge(
+                "response body exceeded %d bytes; aborting read"
+                % _MAX_BODY_BYTES)
+        chunks.append(chunk)
+    return b"".join(chunks)
+
+
+def _build_request(payload, session_id=None, timeout=60):
+    data = json.dumps(payload).encode()
+    req = urllib.request.Request(MCP_URL, data=data, method="POST")
+    req.add_header("Content-Type", "application/json")
+    req.add_header("Accept", "application/json, text/event-stream")
+    req.add_header("MCP-Protocol-Version", MCP_PROTOCOL_VERSION)
+    req.add_header("User-Agent", "github-mcp-cli/0.3")
+    if session_id:
+        req.add_header("Mcp-Session-Id", session_id)
+    try:
+        add_surrogate_to_request(
+            req, CREDENTIAL_NAME, entry_name="access_token",
+            allowed_hosts=ALLOWED_HOSTS,
+        )
+    except DynamicCredentialError as e:
+        raise RuntimeError(f"credential error: {e}")
+    return req, timeout
+
+
+def _rpc(method, params, read_timeout=_DEFAULT_READ_TIMEOUT):
+    """POST one JSON-RPC request; return the result object (correlated)."""
+    global _session_id
+    down, why = _lane_known_down()
+    if down:
+        raise RuntimeError(
+            "transport degraded (%s); failing fast, retry shortly" % why)
+    req_id = _new_id()
+    payload = {"jsonrpc": "2.0", "id": req_id, "method": method,
+               "params": params}
+    req, timeout = _build_request(payload, _session_id)
+    deadline = time.monotonic() + read_timeout
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            if resp.headers.get("Mcp-Session-Id"):
+                _session_id = resp.headers["Mcp-Session-Id"]
+            ctype = resp.headers.get("Content-Type", "")
+            try:
+                if "text/event-stream" in ctype:
+                    msg = _read_sse_correlated(resp, req_id, deadline)
+                else:
+                    raw = _read_body_bounded(resp, deadline)
+                    msg = json.loads(raw.decode("utf-8")) if raw.strip() else {}
+            except _ReadDeadlineExceeded as e:
+                _degraded_and_raise("read deadline exceeded", str(e))
+            except _CorrelationFailed as e:
+                _degraded_and_raise("correlation failed", str(e))
+            except (http.client.IncompleteRead, socket.timeout) as e:
+                _degraded_and_raise(
+                    "read stall: %s" % type(e).__name__,
+                    "transport read stall (%s: %s)" % (type(e).__name__, e))
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")[:500]
+        if e.code == 401:
+            raise RuntimeError(
+                "unauthorized (401): the request was rejected. If the credential "
+                "was attached, it may be revoked or under-scoped; see SKILL.md Auth.")
+        raise RuntimeError(f"HTTP {e.code}: {body}")
+    if isinstance(msg, dict) and "error" in msg:
+        raise RuntimeError(f"MCP error: {msg['error']}")
+    return msg
+
+
+def _post_notification(payload):
+    """POST a JSON-RPC notification; the server replies 202 with no body."""
+    global _session_id
+    req, _ = _build_request(payload, _session_id, timeout=30)
+    try:
+        with urllib.request.urlopen(req, timeout=30):
+            pass
+    except urllib.error.HTTPError as e:
+        if e.code not in (200, 202, 204):
+            body = e.read().decode("utf-8", errors="replace")[:300]
+            raise RuntimeError(f"HTTP {e.code}: {body}")
+
+
+def _ensure_session():
+    # Serialized so concurrent in-process callers share one handshake.
+    with _session_lock:
+        _rpc("initialize", {
+            "protocolVersion": MCP_PROTOCOL_VERSION,
+            "capabilities": {},
+            "clientInfo": {"name": "github-mcp-cli", "version": "0.3.0"},
+        })
+        _post_notification({"jsonrpc": "2.0", "method": "notifications/initialized"})
+
+
+def cmd_status(args):
+    try:
+        _ensure_session()
+        res = _rpc("tools/list", {})
+        tools = res.get("result", {}).get("tools", [])
+        print(json.dumps({
+            "status": "connected",
+            "credential": CREDENTIAL_NAME,
+            "tool_count": len(tools),
+            "tools": [t["name"] for t in tools],
+        }, indent=2))
+        return 0
+    except RuntimeError as e:
+        print(json.dumps({"status": "error", "detail": str(e)}))
+        return 1
+
+
+def cmd_list_tools(args):
+    _ensure_session()
+    res = _rpc("tools/list", {})
+    tools = res.get("result", {}).get("tools", [])
+    print(json.dumps([
+        {"name": t["name"], "description": t.get("description", ""),
+         "input_schema": t.get("inputSchema", {})}
+        for t in tools
+    ], indent=2))
+    return 0
+
+
+def cmd_call_tool(args):
+    name = None
+    arguments_json = None
+    i = 0
+    while i < len(args):
+        if args[i] == "--name" and i + 1 < len(args):
+            name = args[i + 1]; i += 2
+        elif args[i] == "--arguments-json" and i + 1 < len(args):
+            arguments_json = args[i + 1]; i += 2
+        else:
+            i += 1
+    if not name:
+        print("error: --name is required", file=sys.stderr)
+        return 2
+    try:
+        arguments = json.loads(arguments_json) if arguments_json else {}
+    except json.JSONDecodeError as e:
+        print(f"error: --arguments-json is not valid JSON: {e}", file=sys.stderr)
+        return 2
+    if not isinstance(arguments, dict):
+        print("error: --arguments-json must be a JSON object", file=sys.stderr)
+        return 2
+    _ensure_session()
+    res = _rpc("tools/call", {"name": name, "arguments": arguments})
+    print(json.dumps(res.get("result", res), indent=2))
+    return 0
+
+
+def main(argv):
+    if not argv or argv[0] in ("-h", "--help"):
+        print(__doc__)
+        return 0
+    cmd, rest = argv[0], argv[1:]
+    try:
+        if cmd == "status":
+            return cmd_status(rest)
+        if cmd == "list-tools":
+            return cmd_list_tools(rest)
+        if cmd == "call-tool":
+            return cmd_call_tool(rest)
+        print(f"error: unknown command: {cmd}", file=sys.stderr)
+        return 2
+    except RuntimeError as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

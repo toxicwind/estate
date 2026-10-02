@@ -276,3 +276,25 @@ Sign-off habit: <habit>
 - Distinct-actor live proof: fleet seq 11284 (`kindling (ember's pack)`).
 - This skill: `skills/fleet-spawn/SKILL.md`; onboard script:
   `skills/fleet-spawn/fleet-onboard.sh`.
+
+## Subscription registry + dispatch (absorbed from fleet-push, 2026-10-01)
+
+The event-driven delivery mechanism (`fleet-watch`/`fleet-classify`/`fleet-dispatch`
+via inotifywait) is superseded by `~/workspace/bin/fleet-post` (Bun hyper-race).
+What survives is the registry and the dispatch contract.
+
+**Registry.** `~/workspace/fleet-push/registry.json` (schema v2): bus `chat_id`,
+per-agent `name`, `chat_id`, `lanes`, `relay_chat_id`, `relay_created_at`.
+`fleet-register --add/--rm/--set-relay/--audit` manages it. Dispatches append to
+`~/workspace/fleet-push/dispatch.log` (JSONL, coordinator-appended).
+
+**Dispatch plan.** The coordinator matches events against the registry and emits
+`{"targets": [{agent_id, agent_name, relay_chat_id, payload}], "refused": [...]}`.
+Targets with no `relay_chat_id` (or cross-tree) land in `refused` — the
+coordinator `chat.create`s the missing relay chat first. Shell emits the plan;
+it never sends chats itself. The coordinator executes the last mile with
+`chat.send_message(relay_chat_id, payload)` per target.
+
+**Chat scope (standing rule).** The bus owns exactly one chat tree — the
+coordinator's. Every subscription records the agent's `chat_id`; registration
+refuses agents outside the bus chat. There is no cross-chat escape hatch.

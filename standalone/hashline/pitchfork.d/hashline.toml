@@ -1,0 +1,11 @@
+# standalone/hashline — project-owned daemon manifest. Source of truth for 'hashline'.
+# Owned by the standalone/hashline project; the parent only composes it.
+
+
+[daemons.hashline]
+run = "exec /home/toxic/.local/bin/hashline serve --socket /home/toxic/.hashline/hashline.sock --pid-file /home/toxic/.hashline/hashline.pid"
+dir = "/home/toxic"
+env = { HASHLINE_NO_UPDATE_CHECK = "1" }
+retry = true
+ready_cmd = "ss -lx | grep -q /home/toxic/.hashline/hashline.sock"
+auto = ["start"]
