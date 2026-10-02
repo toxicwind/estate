@@ -1264,6 +1264,11 @@ config/tau/natives/
 # Fleet message spool, written per-message by the squawk bus.
 hatch/agents/*/squawk-root/
 
+# Metrics runtime: Prometheus TSDB blocks/WAL and the Grafana sqlite db are
+# service state that changes on every scrape.
+.prometheus/
+grafana/data/
+
 # ── Config ownership ────────────────────────────────────────────────────
 # estate/.env IS the runtime config SSOT (ports, model names, stream tuning)
 # and is tracked on purpose. Secrets never are.
