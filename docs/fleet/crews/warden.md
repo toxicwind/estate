@@ -1,8 +1,8 @@
 ---
 crew: 'warden'
-scope: 'Warden: drift watch fix'
+scope: 'Warden: daemon coverage + dead launch-path repair'
 owner: 'Ember (Chris''s main agent)'
-status: 'DONE (2026-10-02) — 6a6c05a88f (manifest estate-path migration: 8 stale sovereign paths → estate paths; flicker-server/agent trusted copy, sha256 re-verified identical; watch re-established on 4 current estate dirs, live-verified via inotifywait; pushed to sovereign-projects main, remote-verified). Lane continues: lasso hyper-race follow-ups + drift-watch operation.'
+status: 'RUNNING (2026-10-02) -- ghost-process audit (13 daemons on deleted bun, fleet-notified); pitchfork-vs-manifest coverage audit (77 daemons, 6 pinned, 5 dead stanzas); flicker/nats/boundless stanzas repointed at real binaries (c27e5154a4); boundless rebuilt from toxicwind/boundless + cut over from unrecoverable ghost to pitchfork-supervised (923c4bb); lasso VerificationFailed taxonomy shipped (ranch ffb4a3bf4f54).'
 order: 1000000009
 registered: '2026-10-02'
 updated: '2026-10-02'
