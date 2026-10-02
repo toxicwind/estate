@@ -4,7 +4,7 @@ scope: 'subagent-control plane (2026-10-02 clean-slate relaunch): fail-closed re
 owner: 'Ember (Chris''s main agent)'
 order: 83
 registered: '2026-09-21'
-status: 'DONE (2026-10-02) -- Cinder: lane-resume follow-on complete. Spawn registry (register at spawn, recover resolves real lane/persona/brief, marks recovered w/ checkpoint path for dedup), scan --recover estate-wide death sweep (auto-captures beyond worker queue, skips recovered, fail-closed guard holds), box-aware agent paths. 51 tests green on yote. Commits: ranch fd71689, estate 0d4778ec9e. Push still pending Chris: GitHub creds dead since ~06:30 MDT.'
+status: 'DONE (2026-10-02) -- Cinder: lane-resume follow-on complete (ranch fd71689, estate 0d4778ec9e). Poller/shim repair DONE: worker-queue-watch resurrected on cell (was dead, wrong path, ENOENT crash -- mkdir fix in ranch, keepalive cron enabled); lane pollers rebuilt as Design B (no cron worker holds chat tools, proven via reshim canary) -- queue-nudge/drain-queue/ack-nudge in lane_poller.py, 10 verdict-only poller crons installed and verified live; nudge queue at hatch/pollers/nudge-queue/ awaits main-agent drain.'
 updated: '2026-10-02'
 ---
 
