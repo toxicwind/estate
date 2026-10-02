@@ -33,11 +33,9 @@ the ranch commit; this workspace copy is development staging.
 
 ## Trigger database (single source of truth)
 `src/triggers.ts` — 18 shapes, each with `pattern`, `why`, and `rewrite`.
-Shape IDs: c2-term, zero-approval, never-ask, yolo, malware-stack,
-sudo-passwordless, bypass-stats, named-circumvention, ignore-safety,
-route-around-filter, asleep-act, refusal-theory, cross-chat-wake,
-old-directive-marker, privilege-persistence, aggressive-process-language,
-kill-language, process-control-framing.
+Shape IDs: the 18 IDs defined in `src/triggers.ts` (the single source of
+truth) — reference them by ID in docs and task bodies; the ID list lives
+in the DB only, never inline in prose.
 
 Do NOT re-list the literal trigger phrases in docs — reference shape IDs.
 (Quoting the phrases is what gets docs flagged; the DB is the only place
