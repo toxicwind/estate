@@ -2,7 +2,7 @@
 crew: 'finch'
 scope: 'Finch: provider scout sweep'
 owner: 'Ember'
-status: 'DONE (2026-10-02) -- sweep-2 landed 09ec4c0 (69->75 providers); health sweep d228718 (6 baseUrl fixes)'
+status: 'DONE (2026-10-02) — 09ec4c0'
 order: 1000000013
 registered: '2026-10-02'
 updated: '2026-10-02'
