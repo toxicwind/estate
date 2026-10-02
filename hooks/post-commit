@@ -6,11 +6,15 @@
 # becomes true. Silent no-op otherwise, and NEVER fails a commit (post-commit
 # cannot fail the commit anyway; the trailing `exit 0` + `|| true` make the
 # guarantee explicit).
+#
+# 2026-10-02 fix: mkdir -p the logs dir first -- without it the >> redirect
+# failed and the reconcile never ran.
 set -u
 REPO="/home/toxic/estate"
 
 if git -C "$REPO" diff-tree --no-commit-id --name-only -r HEAD 2>/dev/null \
     | grep -qx 'pitchfork.toml'; then
+  mkdir -p "$REPO/logs"
   "$REPO/bin/pitchfork-reconcile" --apply \
     >>"$REPO/logs/reconcile-hook.log" 2>&1 || true
 fi
