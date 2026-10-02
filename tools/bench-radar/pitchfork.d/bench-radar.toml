@@ -1,0 +1,15 @@
+# tools/bench-radar — project-owned daemon manifest. Source of truth for 'bench-radar'.
+# Owned by the tools/bench-radar project; the parent only composes it.
+
+
+[daemons.bench-radar]
+port = 25181
+run = "exec /home/toxic/.bun/bin/bun --hot /home/toxic/sovereign/tools/bench-radar/server.ts"
+dir = "/home/toxic/sovereign/tools/bench-radar"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25181/health"
+health_http = { url = "http://127.0.0.1:25181/health", interval = "30s", timeout = "5s", retries = 3 }
+env = { BENCH_RADAR_PORT = "25181" }
+auto = ["start"]

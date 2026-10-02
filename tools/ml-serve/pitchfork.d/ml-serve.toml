@@ -1,0 +1,15 @@
+# tools/ml-serve — project-owned daemon manifest. Source of truth for 'ml-serve'.
+# Owned by the tools/ml-serve project; the parent only composes it.
+
+
+[daemons.ml-serve]
+port = 25180
+run = "exec python3 /home/toxic/sovereign/tools/ml-serve/server.py"
+dir = "/home/toxic/sovereign/tools/ml-serve"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25180/health"
+health_http = { url = "http://127.0.0.1:25180/health", interval = "30s", timeout = "5s", retries = 3 }
+env = { ML_SERVE_PORT = "25180" }
+auto = ["start"]

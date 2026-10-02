@@ -1,0 +1,11 @@
+# tools/kimi-claw — project-owned daemon manifest. Source of truth for 'kimiclaw-a'.
+# Owned by the tools/kimi-claw project; the parent only composes it.
+
+
+[daemons.kimiclaw-a]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/sovereign/tools/kimi-claw/bridge.ts --daemon --instance a"
+dir = "/home/toxic/sovereign/tools/kimi-claw"
+mise = false
+retry = true
+ready_cmd = "p=$(pgrep -f '[b]ridge[.]ts --daemon --instance a' | head -1); [ -n \"$p\" ] && ls -l /proc/$p/fd 2>/dev/null | grep -q inotify"
+auto = ["start"]

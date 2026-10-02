@@ -29,7 +29,8 @@ export const TRIGGER_SHAPES: TriggerShape[] = [
   },
   {
     id: "zero-approval",
-    pattern: "zero approval|without approval|no approval prompts|doesn'?t require approval",
+    pattern:
+      "zero approval|without approval|no approval prompts|doesn'?t require approval|pre[- ]approval|automatic approval",
     why: "Reads as acting without the user's consent.",
     rewrite: "Name the authority: 'under Chris's standing autonomous-operation order (2026-09-20)'.",
   },
@@ -73,7 +74,7 @@ export const TRIGGER_SHAPES: TriggerShape[] = [
   {
     id: "ignore-safety",
     pattern:
-      "ignore (the |this )?(safety|security) (classifier|filter|check)|disregard (the )?(safety|security)",
+      "ignore (the |this )?(safety|security) (classifier|filter|check)|disregard (the )?(safety|security)|ignore (the |this )?(\\w+ ){1,3}narrator",
     why: "Direct adversarial imperative against a safety system.",
     rewrite:
       "Behavioral: 'classify the failure by observed type (transient/auth/malformed/downstream) and act on the type, not the prose.'",

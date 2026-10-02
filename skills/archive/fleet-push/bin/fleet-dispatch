@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+"""fleet-dispatch — match a classified event against the registry; emit the plan.
+
+  fleet-classify <msgfile> | fleet-dispatch
+
+Prints JSON: {"targets": [{agent_id, agent_name, relay_chat_id, payload}],
+               "refused": [{agent_id, reason}]}
+Exit 0 = plan usable (possibly empty); exit 2 = some matched agents refused
+(no relay_chat_id yet, or cross-tree). The coordinator executes each target
+with chat.send_message(relay_chat_id, payload) — that is the entire last mile.
+Shell emits the plan; it never sends chats itself.
+"""
+import json
+import os
+import sys
+
+REG = os.path.expanduser("~/workspace/fleet-push/registry.json")
+
+
+def main():
+    try:
+        evt = json.load(sys.stdin)
+    except Exception as e:
+        sys.exit(f"fleet-dispatch: bad event JSON on stdin: {e}")
+    with open(REG) as f:
+        reg = json.load(f)
+    kind = evt.get("kind")
+    agents = reg.get("agents", {})
+    if kind == "broadcast":
+        matched = list(agents.items())
+    elif kind == "lane":
+        lane = evt.get("lane")
+        matched = [(aid, a) for aid, a in agents.items()
+                   if lane in (a.get("lanes") or [])]
+    else:  # info: coordinator eyes only
+        matched = []
+    targets, refused = [], []
+    for aid, a in matched:
+        if a.get("chat_id") != reg.get("chat_id"):
+            refused.append({"agent_id": aid, "reason": "cross-tree"})
+            continue
+        if not a.get("relay_chat_id"):
+            refused.append({"agent_id": aid, "agent_name": a.get("name"),
+                            "reason": "no relay_chat_id"})
+            continue
+        targets.append({"agent_id": aid,
+                        "agent_name": a.get("name"),
+                        "relay_chat_id": a["relay_chat_id"],
+                        "payload": evt})
+    print(json.dumps({"targets": targets, "refused": refused}, indent=2))
+    sys.exit(2 if refused else 0)
+
+
+main()

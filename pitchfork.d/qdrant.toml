@@ -1,0 +1,13 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'qdrant'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.qdrant]
+port = [25133, 25134]
+run = "exec /home/toxic/.cargo/bin/qdrant-server --config-path ./qdrant-config.yaml"
+dir = "."
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25133/"
+health_http = { url = "http://127.0.0.1:25133/healthz", interval = "30s", timeout = "5s", retries = 3 }
+auto = ["start"]

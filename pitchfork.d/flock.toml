@@ -1,0 +1,14 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'flock'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.flock]
+health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
+port = 25193
+run = "exec /home/toxic/sovereign/projects/range/ranch/flock/bin/flock-run.sh"
+dir = "."
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25193/health"
+env = { VANSROUTER_API_KEY = "local-sovereign", FLOCK_PORT = "25193" }
+auto = ["start"]

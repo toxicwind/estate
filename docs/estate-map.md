@@ -1,0 +1,276 @@
+# Estate Map
+
+**GENERATED FILE — do not hand-edit.** Rebuild with `bun projects/ops/bin/estate-map.ts`;
+drift-check with `bun projects/ops/bin/estate-map.ts --check`.
+
+Generated 2026-10-02T07:57:58.477Z on `awrawr-pc`. Estate root `/home/toxic/sovereign`.
+
+> **One word, one referent.** `estate/` is the control-plane tree. `ranch/` is the inference
+> monorepo. The agent engine config lives in `~/.tau`. Every daemon runs out of the path
+> pitchfork names — check `repos[]` below before editing anything.
+
+## Where things actually live
+
+| Repo | Path | Remote | Head | Committed | Dirty | Checkout kind |
+|---|---|---|---|---|---|---|
+| 🟢 **estate** | `/home/toxic/sovereign` | https://github.com/toxicwind/sovereign-projects.git | 7319b1a5f | 2026-10-01T16:13:05 | 289 | nested |
+| 🟢 **ranch** | `/home/toxic/sovereign/projects/range/ranch` | https://github.com/toxicwind/ranch | c2e2d3c | 2026-10-01T16:42:27 | 0 | nested |
+| 🟢 **ranch** | `/home/toxic/ranch` | https://github.com/toxicwind/ranch | d2a0a0e | 2026-10-01T03:15:08 | 0 | nested |
+| 🟢 **tau-config** | `/home/toxic/.tau` | — | — | — | 0 | none |
+
+- **estate** (`/home/toxic/sovereign`) — control plane: pitchfork.toml, config/, bin/, bridge/, agents/, docs/, projects/
+- **ranch** (`/home/toxic/sovereign/projects/range/ranch`) — the inference estate monorepo: herd, flock, gatehouse, squawk, oracle, flicker, roost
+- **ranch** (`/home/toxic/ranch`) — SECOND checkout of toxicwind/ranch — duplicate, not the daemon target
+- **tau-config** (`/home/toxic/.tau`) — coding-agent engine config (config.yml, models.yml, model-router.json, mcp.json)
+
+## Live services
+
+| Port | SSOT | Pitchfork daemon | Live | Process |
+|---|---|---|---|---|
+| 22 | — | — | 🟢 | — |
+| 53 | — | — | 🟢 | — |
+| 443 | — | — | 🟢 | — |
+| 631 | — | — | 🟢 | — |
+| 3000 | — | — | 🟢 | flicker-agent |
+| 4222 | — | — | 🟢 | nats-server |
+| 4223 | — | — | 🟢 | nats-server |
+| 5000 | FLEET_POWER_INTERVAL | — | ⚪️ | — |
+| 5037 | — | — | 🟢 | adb |
+| 5355 | — | — | 🟢 | — |
+| 5432 | — | — | 🟢 | — |
+| 5433 | — | — | 🟢 | postgres |
+| 5900 | — | agent-display | 🟢 | Xvnc |
+| 6080 | — | agent-viewer | 🟢 | websockify |
+| 8000 | — | — | 🟢 | — |
+| 8222 | — | — | 🟢 | nats-server |
+| 8443 | — | — | 🟢 | — |
+| 9093 | — | — | 🟢 | — |
+| 9223 | — | browser-keeper | 🟢 | chrome |
+| 18384 | — | — | 🟢 | syncthing |
+| 18787 | — | — | 🟢 | MainThread |
+| 18788 | — | — | 🟢 | MainThread |
+| 18924 | — | — | 🟢 | — |
+| 20128 | VANSROUTER_PORT | vansrouter | 🟢 | next-server (v1 |
+| 20128 | VANSROUTER_PORT | vansrouter | 🟢 | next-server (v1 |
+| 22000 | — | — | 🟢 | syncthing |
+| 25100 | HERD_PORT | herd | 🟢 | llama-swap |
+| 25100 | HERD_PORT | herd | 🟢 | llama-swap |
+| 25101 | MODEL_GUARD_PORT | model-guard | 🟢 | python3 |
+| 25101 | MODEL_GUARD_PORT | model-guard | 🟢 | python3 |
+| 25102 | YOTE_PORT | yote | 🟢 | bun |
+| 25102 | YOTE_PORT | yote | 🟢 | bun |
+| 25103 | OPENFANG_PORT | openfang-front | 🟢 | bun |
+| 25103 | OPENFANG_PORT | openfang-front | 🟢 | bun |
+| 25104 | SOVEREIGN_ROUTER_PORT | sovereign-router | 🟢 | bun |
+| 25104 | SOVEREIGN_ROUTER_PORT | sovereign-router | 🟢 | bun |
+| 25105 | PROMETHEUS_PORT | prometheus | 🟢 | bun |
+| 25105 | PROMETHEUS_PORT | prometheus | 🟢 | bun |
+| 25106 | HF_DOWNLOADER_PORT | hf-downloader | 🟢 | bun |
+| 25106 | HF_DOWNLOADER_PORT | hf-downloader | 🟢 | bun |
+| 25107 | NULL_G_PORT | null-g-proxy | 🟢 | bun |
+| 25107 | NULL_G_PORT | null-g-proxy | 🟢 | bun |
+| 25108 | WATCHDOG_PORT | — | 🟢 | sovereign_web |
+| 25108 | WATCHDOG_PORT | — | 🟢 | sovereign_web |
+| 25109 | KEYPOOL_PORT | keypool | 🟢 | python3 |
+| 25109 | KEYPOOL_PORT | keypool | 🟢 | python3 |
+| 25110 | GRAFANA_PORT | grafana | 🟢 | bun |
+| 25110 | GRAFANA_PORT | grafana | 🟢 | bun |
+| 25111 | — | tau | 🟢 | MainThread |
+| 25112 | GHAS_API_PORT | search-api | 🟢 | bun |
+| 25112 | GHAS_API_PORT | search-api | 🟢 | bun |
+| 25113 | GHAS_MCP_PORT | — | 🟢 | bun |
+| 25113 | GHAS_MCP_PORT | — | 🟢 | bun |
+| 25114 | GHAS_FRONTEND_PORT | search-ui | 🟢 | next-server (v1 |
+| 25114 | GHAS_FRONTEND_PORT | search-ui | 🟢 | next-server (v1 |
+| 25115 | MESH_HUB_PORT | mesh-hub | 🟢 | bun |
+| 25115 | MESH_HUB_PORT | mesh-hub | 🟢 | bun |
+| 25116 | KIMI_AUDIT_DASH_PORT | — | 🟢 | bun |
+| 25116 | KIMI_AUDIT_DASH_PORT | — | 🟢 | bun |
+| 25117 | HINDSIGHT_API_PORT | hindsight | 🟢 | hindsight-api |
+| 25117 | HINDSIGHT_API_PORT | hindsight | 🟢 | hindsight-api |
+| 25118 | HINDSIGHT_CP_PORT | — | 🟢 | next-server (v |
+| 25118 | HINDSIGHT_CP_PORT | — | 🟢 | next-server (v |
+| 25120 | SOVEREIGN_CHAT_PORT | sovereign-chat | 🟢 | bun |
+| 25120 | SOVEREIGN_CHAT_PORT | sovereign-chat | 🟢 | bun |
+| 25121 | BYTE_VISION_PORT | byte-vision | 🟢 | python3 |
+| 25121 | BYTE_VISION_PORT | byte-vision | 🟢 | python3 |
+| 25122 | BEELLAMA_PORT | beellama-fast | 🟢 | llama-server |
+| 25122 | BEELLAMA_PORT | beellama-fast | 🟢 | llama-server |
+| 25123 | IK_LLAMA_PORT | — | ⚪️ | — |
+| 25124 | TURBO_PORT | — | ⚪️ | — |
+| 25125 | PI_AGENT_PORT | — | ⚪️ | — |
+| 25126 | KIMI_CODE_PORT | kimi-code | 🟢 | kimi-code |
+| 25126 | KIMI_CODE_PORT | kimi-code | 🟢 | kimi-code |
+| 25127 | MCPPROXY_GO_PORT | gatehouse | 🟢 | gatehouse |
+| 25127 | MCPPROXY_GO_PORT | gatehouse | 🟢 | gatehouse |
+| 25128 | ANTIGRAVITY_GATEWAY_PORT | — | ⚪️ | — |
+| 25129 | ZED_PORT | — | ⚪️ | — |
+| 25130 | BROWSERLESS_PORT | browserless | 🟢 | MainThread |
+| 25130 | BROWSERLESS_PORT | browserless | 🟢 | MainThread |
+| 25131 | SOV_GHAS_PORT | — | ⚪️ | — |
+| 25132 | SYS_MONITOR_PORT | — | ⚪️ | — |
+| 25133 | QDRANT_HTTP_PORT | — | 🟢 | qdrant-server |
+| 25133 | QDRANT_HTTP_PORT | — | 🟢 | qdrant-server |
+| 25134 | QDRANT_GRPC_PORT | — | 🟢 | qdrant-server |
+| 25134 | QDRANT_GRPC_PORT | — | 🟢 | qdrant-server |
+| 25135 | SQUAWK_FEED_PORT | — | 🟢 | python3 |
+| 25135 | SQUAWK_FEED_PORT | — | 🟢 | python3 |
+| 25136 | ZELLIJ_PORT | fleet-ui | 🟢 | bun |
+| 25136 | ZELLIJ_PORT | fleet-ui | 🟢 | bun |
+| 25137 | TTYD_PORT | bedrock-ui | 🟢 | bun |
+| 25137 | TTYD_PORT | bedrock-ui | 🟢 | bun |
+| 25138 | SSHX_PORT | — | ⚪️ | — |
+| 25139 | MISE_PORT | — | ⚪️ | — |
+| 25140 | ANTIGRAVITY_CLI_PORT | — | ⚪️ | — |
+| 25141 | BUN_RUNTIME_PORT | — | ⚪️ | — |
+| 25142 | BUN_DEV_PORT | — | 🟢 | bun |
+| 25142 | BUN_DEV_PORT | — | 🟢 | bun |
+| 25143 | COYOTE_PORT | coyote | 🟢 | python3 |
+| 25143 | COYOTE_PORT | coyote | 🟢 | python3 |
+| 25144 | KAFKA_PORT | kafka | 🟢 | — |
+| 25144 | KAFKA_PORT | kafka | 🟢 | — |
+| 25145 | TAU_CODE_PORT | — | ⚪️ | — |
+| 25146 | WHATSAPP_MCP_PORT | whatsapp-mcp | 🟢 | python |
+| 25146 | WHATSAPP_MCP_PORT | whatsapp-mcp | 🟢 | python |
+| 25147 | SQUAWK_WS_PORT | squawk-ws | 🟢 | python3 |
+| 25147 | SQUAWK_WS_PORT | squawk-ws | 🟢 | python3 |
+| 25148 | BRAND_PORT | flicker | 🟢 | flicker-server |
+| 25148 | BRAND_PORT | flicker | 🟢 | flicker-server |
+| 25149 | PAPER_POLLER_PORT | paper-poller | 🟢 | python3 |
+| 25149 | PAPER_POLLER_PORT | paper-poller | 🟢 | python3 |
+| 25150 | PAPER_POLLER_WATCHDOG_PORT | paper-poller-watchdog | 🟢 | python3 |
+| 25150 | PAPER_POLLER_WATCHDOG_PORT | paper-poller-watchdog | 🟢 | python3 |
+| 25151 | — | oracle-core | 🟢 | python3 |
+| 25152 | TOOLCALL_PORT | toolcall-llm | 🟢 | llama-server |
+| 25152 | TOOLCALL_PORT | toolcall-llm | 🟢 | llama-server |
+| 25153 | KIMI_AUTO_SHIM_PORT | kimi-auto-shim | 🟢 | python3 |
+| 25153 | KIMI_AUTO_SHIM_PORT | kimi-auto-shim | 🟢 | python3 |
+| 25160 | FORENSICS_SRV_PORT | — | 🟢 | python |
+| 25160 | FORENSICS_SRV_PORT | — | 🟢 | python |
+| 25161 | HERD_RACE_PORT | — | ⚪️ | — |
+| 25163 | NIM_KIMI_SIDECAR_PORT | nim-kimi-sidecar | 🟢 | python3 |
+| 25163 | NIM_KIMI_SIDECAR_PORT | nim-kimi-sidecar | 🟢 | python3 |
+| 25180 | ML_SERVE_PORT | ml-serve | 🟢 | python3 |
+| 25180 | ML_SERVE_PORT | ml-serve | 🟢 | python3 |
+| 25181 | BENCH_RADAR_PORT | bench-radar | 🟢 | bun |
+| 25181 | BENCH_RADAR_PORT | bench-radar | 🟢 | bun |
+| 25189 | NIM_QUEUE_PORT | — | ⚪️ | — |
+| 25190 | REASONING_ROUTER_PORT | — | ⚪️ | — |
+| 25191 | NIM_VALIDATION_PORT | — | ⚪️ | — |
+| 25192 | PI_WEB_DASHBOARD_PORT | — | ⚪️ | — |
+| 25193 | FLOCK_PORT | flock | 🟢 | flock |
+| 25193 | FLOCK_PORT | flock | 🟢 | flock |
+| 25194 | RALPH_DASH_PORT | ralph-dashboard | 🟢 | uvicorn |
+| 25194 | RALPH_DASH_PORT | ralph-dashboard | 🟢 | uvicorn |
+| 25195 | CODEBASE_MEMORY_PORT | codebase-memory | 🟢 | codebase-memory |
+| 25195 | CODEBASE_MEMORY_PORT | codebase-memory | 🟢 | codebase-memory |
+| 25196 | OPENFANG_KERNEL_PORT | openfang | 🟢 | openfang |
+| 25196 | OPENFANG_KERNEL_PORT | openfang | 🟢 | openfang |
+| 25197 | BOUNDLESS_PORT | boundless | 🟢 | python |
+| 25197 | BOUNDLESS_PORT | boundless | 🟢 | python |
+| 25198 | AWR_MCP_PORT | awrawr-mcp | 🟢 | python |
+| 25198 | AWR_MCP_PORT | awrawr-mcp | 🟢 | python |
+| 25199 | REDIS_PORT | redis | 🟢 | valkey-server |
+| 25199 | REDIS_PORT | redis | 🟢 | valkey-server |
+| 25201 | RUST_WEB_BACKEND_PORT | rust-web | 🟢 | sovereign_web |
+| 25201 | RUST_WEB_BACKEND_PORT | rust-web | 🟢 | sovereign_web |
+| 25202 | GEMINI_MCP_PORT | — | ⚪️ | — |
+| 25204 | WS_EXEC_PORT | awrawr-ws-exec | 🟢 | python |
+| 25204 | WS_EXEC_PORT | awrawr-ws-exec | 🟢 | python |
+| 25205 | PROMETHEUS_BACKEND_PORT | — | 🟢 | prometheus |
+| 25205 | PROMETHEUS_BACKEND_PORT | — | 🟢 | prometheus |
+| 25206 | HF_DOWNLOADER_BACKEND_PORT | — | 🟢 | hfdownloader |
+| 25206 | HF_DOWNLOADER_BACKEND_PORT | — | 🟢 | hfdownloader |
+| 25207 | MESH_LANDING_PORT | mesh-landing | 🟢 | python3 |
+| 25207 | MESH_LANDING_PORT | mesh-landing | 🟢 | python3 |
+| 25208 | NGINX_PORT | nginx | 🟢 | nginx |
+| 25208 | NGINX_PORT | nginx | 🟢 | nginx |
+| 25209 | MATTER_SERVER_PORT | matter-server | 🟢 | MainThread |
+| 25209 | MATTER_SERVER_PORT | matter-server | 🟢 | MainThread |
+| 25210 | GRAFANA_BACKEND_PORT | — | 🟢 | grafana |
+| 25210 | GRAFANA_BACKEND_PORT | — | 🟢 | grafana |
+| 25211 | NODE_EXPORTER_PORT | node-exporter | 🟢 | node_exporter |
+| 25211 | NODE_EXPORTER_PORT | node-exporter | 🟢 | node_exporter |
+| 25212 | COCKPIT_PORT | — | 🟢 | — |
+| 25212 | COCKPIT_PORT | — | 🟢 | — |
+| 25213 | — | sovereign-exporter | 🟢 | python3 |
+| 25215 | — | sovereign-stream-broker | 🟢 | bun |
+| 25219 | WINDMILL_PORT | windmill | 🟢 | bun |
+| 25219 | WINDMILL_PORT | windmill | 🟢 | bun |
+| 25220 | — | — | 🟢 | bun |
+| 25240 | — | — | 🟢 | flicker-server |
+| 25995 | — | — | 🟢 | bun |
+| 25996 | — | — | 🟢 | bun |
+| 25997 | — | — | 🟢 | bun |
+| 33035 | — | — | 🟢 | — |
+| 34213 | — | — | 🟢 | — |
+| 34292 | — | — | 🟢 | MainThread |
+| 34567 | — | files | 🟢 | python3 |
+| 35017 | — | — | 🟢 | — |
+| 35789 | — | — | 🟢 | — |
+| 38141 | — | — | 🟢 | — |
+| 39481 | — | — | 🟢 | — |
+| 43000 | — | — | 🟢 | — |
+| 46077 | — | — | 🟢 | — |
+| 58050 | — | — | 🟢 | — |
+| 58051 | — | — | 🟢 | — |
+| 59818 | — | — | 🟢 | — |
+| 60955 | — | — | 🟢 | — |
+
+## Agent wiring
+
+Config dir: `/home/toxic/.tau`
+
+| Plugin | Source | Resolved | Exists |
+|---|---|---|---|
+| herd | `./projects/range/ranch/stockyard/herd` | `/home/toxic/projects/range/ranch/stockyard/herd` | 🔴 DEAD |
+| flock | `./projects/range/ranch/stockyard/flock` | `/home/toxic/projects/range/ranch/stockyard/flock` | 🔴 DEAD |
+| gatehouse | `./projects/range/ranch/barn/gatehouse` | `/home/toxic/projects/range/ranch/barn/gatehouse` | 🔴 DEAD |
+| router | `./projects/range/ranch/stockyard/router-legacy` | `/home/toxic/projects/range/ranch/stockyard/router-legacy` | 🔴 DEAD |
+| barn-browser | `./projects/range/ranch/barn/browserless` | `/home/toxic/projects/range/ranch/barn/browserless` | 🔴 DEAD |
+| barn-gemini | `./projects/range/ranch/barn/gemini-mcp` | `/home/toxic/projects/range/ranch/barn/gemini-mcp` | 🔴 DEAD |
+| secretsmith | `./projects/range/ranch/barn/secretsmith` | `/home/toxic/projects/range/ranch/barn/secretsmith` | 🔴 DEAD |
+
+| Provider key | baseUrl |
+|---|---|
+| `providers.openai-compatible` | `http://127.0.0.1:25100/v1` |
+
+- **Model-router selectors use:** `herd`, `sovereign`
+- **MCP servers:** `mesh-gateway` → http://127.0.0.1:25127/mcp · `sovereign-tools` → bun /home/toxic/sovereign/helpers/sovereign-mcp-server.ts · `browserless` → node /home/toxic/sovereign/projects/range/ranch/barn/browserless/dist/index.js
+- **Credentials present:** flock client key: yes
+
+## Drift
+
+28 finding(s) — **9 high.** These are silent defects: each one is
+something that looks wired and is not.
+
+| Sev | Kind | Detail | Fix |
+|---|---|---|---|
+| high | `duplicate-checkout` | https://github.com/toxicwind/ranch checked out 2x — newest c2e2d3c @ /home/toxic/sovereign/projects/range/ranch; /home/toxic/ranch @ d2a0a0e (2026-10-01T03:15:08-06:00) | keep /home/toxic/sovereign/projects/range/ranch; delete or archive /home/toxic/ranch |
+| high | `daemon-path-dead` | pitchfork daemon 'boundless' references /home/toxic/boundless/.venv/bin/python — absent | update pitchfork.toml [daemons.boundless] |
+| high | `agent-plugin-source-dead` | tau plugin 'herd' source ./projects/range/ranch/stockyard/herd → /home/toxic/projects/range/ranch/stockyard/herd does not exist | point herd.source at the live path in docs/estate-map.json repos[] |
+| high | `agent-plugin-source-dead` | tau plugin 'flock' source ./projects/range/ranch/stockyard/flock → /home/toxic/projects/range/ranch/stockyard/flock does not exist | point flock.source at the live path in docs/estate-map.json repos[] |
+| high | `agent-plugin-source-dead` | tau plugin 'gatehouse' source ./projects/range/ranch/barn/gatehouse → /home/toxic/projects/range/ranch/barn/gatehouse does not exist | point gatehouse.source at the live path in docs/estate-map.json repos[] |
+| high | `agent-plugin-source-dead` | tau plugin 'router' source ./projects/range/ranch/stockyard/router-legacy → /home/toxic/projects/range/ranch/stockyard/router-legacy does not exist | point router.source at the live path in docs/estate-map.json repos[] |
+| high | `agent-plugin-source-dead` | tau plugin 'barn-browser' source ./projects/range/ranch/barn/browserless → /home/toxic/projects/range/ranch/barn/browserless does not exist | point barn-browser.source at the live path in docs/estate-map.json repos[] |
+| high | `agent-plugin-source-dead` | tau plugin 'barn-gemini' source ./projects/range/ranch/barn/gemini-mcp → /home/toxic/projects/range/ranch/barn/gemini-mcp does not exist | point barn-gemini.source at the live path in docs/estate-map.json repos[] |
+| high | `agent-plugin-source-dead` | tau plugin 'secretsmith' source ./projects/range/ranch/barn/secretsmith → /home/toxic/projects/range/ranch/barn/secretsmith does not exist | point secretsmith.source at the live path in docs/estate-map.json repos[] |
+| medium | `port-ssot-dead` | ports.env claims 5000 (FLEET_POWER_INTERVAL) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25123 (IK_LLAMA_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25124 (TURBO_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25125 (PI_AGENT_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25128 (ANTIGRAVITY_GATEWAY_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25129 (ZED_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25131 (SOV_GHAS_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25132 (SYS_MONITOR_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25138 (SSHX_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25139 (MISE_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25140 (ANTIGRAVITY_CLI_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25141 (BUN_RUNTIME_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25145 (TAU_CODE_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25161 (HERD_RACE_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25189 (NIM_QUEUE_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25190 (REASONING_ROUTER_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25191 (NIM_VALIDATION_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25192 (PI_WEB_DASHBOARD_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25202 (GEMINI_MCP_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |

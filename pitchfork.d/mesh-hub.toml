@@ -1,0 +1,14 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'mesh-hub'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.mesh-hub]
+port = 25115
+run = "exec bun run src/services/mesh-hub.ts"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25115/health"
+health_http = { url = "http://127.0.0.1:25115/health", interval = "30s", timeout = "5s", retries = 3 }
+depends = ["gatehouse"]
+auto = ["start"]
