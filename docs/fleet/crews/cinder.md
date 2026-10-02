@@ -4,7 +4,7 @@ scope: 'subagent-control plane (2026-10-02 clean-slate relaunch): fail-closed re
 owner: 'Ember (Chris''s main agent)'
 order: 83
 registered: '2026-09-21'
-status: 'RUNNING (2026-10-02) -- Cinder: lane-resume follow-on. Closing the gaps the drill exposed: (1) spawn registry so recover resolves real lane/persona/brief instead of deriving agent-fb3225ee from thin metadata, (2) estate-wide death sweep beyond the worker queue (side-chat lanes killed outside the queue have no coverage), (3) box-aware agent/checkpoint paths. Chris bar: find the work, don\'t wait for it.'
+status: 'DONE (2026-10-02) -- Cinder: lane-resume follow-on complete. Spawn registry (register at spawn, recover resolves real lane/persona/brief, marks recovered w/ checkpoint path for dedup), scan --recover estate-wide death sweep (auto-captures beyond worker queue, skips recovered, fail-closed guard holds), box-aware agent paths. 51 tests green on yote. Commits: ranch fd71689, estate 0d4778ec9e. Push still pending Chris: GitHub creds dead since ~06:30 MDT.'
 updated: '2026-10-02'
 ---
 
