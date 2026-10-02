@@ -12,7 +12,7 @@ use project::{
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use settings::Settings;
-use std::{cmp, fmt::Write, path::Path, sync::Arc};
+use std::{cmp, fmt::Write, sync::Arc};
 use util::RangeExt;
 use util::markdown::{MarkdownCodeBlock, MarkdownInlineCode};
 use util::paths::PathMatcher;

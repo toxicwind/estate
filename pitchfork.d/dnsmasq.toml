@@ -1,0 +1,11 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'dnsmasq'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.dnsmasq]
+run = "exec ./stack/services/dnsmasq.sh"
+dir = "."
+mise = false
+retry = true
+ready_cmd = "ss -ltn 'sport = :53' | grep -q LISTEN"
+auto = ["start"]

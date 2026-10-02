@@ -1,0 +1,15 @@
+# standalone/ralph-dashboard — project-owned daemon manifest. Source of truth for 'ralph-dashboard'.
+# Owned by the standalone/ralph-dashboard project; the parent only composes it.
+
+
+[daemons.ralph-dashboard]
+run = "exec /home/toxic/ralph-dashboard/backend/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port ${RALPH_DASH_PORT}"
+dir = "/home/toxic/ralph-dashboard/backend"
+mise = false
+retry = true
+boot_start = true
+port = 25194
+ready_http = "http://127.0.0.1:25194/api/health"
+health_http = { url = "http://127.0.0.1:25194/api/health", interval = "30s", timeout = "5s", retries = 3 }
+env = { RALPH_DASH_PORT = "25194" }
+auto = ["start"]

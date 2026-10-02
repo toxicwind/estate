@@ -1,0 +1,13 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'prometheus'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.prometheus]
+port = 25105
+run = "exec ./stack/services/prometheus-hot.sh"
+dir = "."
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25105/-/healthy"
+health_http = { url = "http://127.0.0.1:25105/-/healthy", interval = "30s", timeout = "5s", retries = 3 }
+auto = ["start"]

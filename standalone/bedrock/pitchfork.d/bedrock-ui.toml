@@ -1,0 +1,13 @@
+# standalone/bedrock — project-owned daemon manifest. Source of truth for 'bedrock-ui'.
+# Owned by the standalone/bedrock project; the parent only composes it.
+
+
+[daemons.bedrock-ui]
+# bedrock evidence-locker web UI (:25137). Private: binds tailnet IP only, token-gated (?token= magic link).
+port = 25137
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/projects/bedrock/web/server.ts"
+dir = "/home/toxic/projects/bedrock/web"
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]

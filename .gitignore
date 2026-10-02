@@ -385,3 +385,6 @@ projects/herd/mesh/gateway/index.bleve/
 # kb-rollup.ts flock target (runtime lock, never commit)
 docs/fleet-knowledgebase.md.lock
 !bin/openfang-join
+
+# per-agent scratch checkouts (nested repos, no commits) — never tracked
+hatch/agents/ember/readme-op/work/

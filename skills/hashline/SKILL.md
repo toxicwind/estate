@@ -1,5 +1,5 @@
 ---
-name: "hashline"
+name: hashline
 description: "Hash-anchored file editing for agents — the first-class edit tool. read a file to get stable xxh32 line anchors, patch by anchor (SWAP/DEL/INS.*/BLK.*/CUT/PUT); stale reads hard-rejected before they corrupt. Binary CLI (11 subcommands) + 6-tool MCP server (newline-delimited JSON-RPC) + daemon mode. Prefer over raw str_replace/sed for every content edit."
 ---
 
@@ -148,3 +148,27 @@ HASHLINE_SOCKET=~/.hashline/daemon.sock hashline read src/file
 - MCP (newline-delimited stdio): `initialize` → server `hashline 0.9.19` + `instructions`; `tools/list` → 6 tools; `read`(`file`) → `[…#42c2]`; `patch` `SWAP 2:0e:` → `OK …#55b0 edits=2 changed=1`, file verified `MCP-EDITED-VIA-MCP`; `find_block`(`4:b3`) → enclosing `inner()` fn, `lang=JavaScript`.
 - `find-block` CLI: anchor `4:b3` → `OK file=… lang=JavaScript lines=7`, returned lines 3–5 (the enclosing function).
 - Runbook health check (`docs/runbook.md`) executed verbatim → `HEALTHY`.
+
+## Checks-before-writes doctrine (absorbed from surgical-edit, 2026-10-01)
+
+Config surgery where a wrong edit is worse than no edit. hashline's anchor
+mechanism already enforces stale-read rejection; this doctrine adds the
+pre-write discipline:
+
+1. **All checks before any write.** Count every target block's occurrences
+   first (`hashline read` + anchor inspection). If any count mismatches its
+   expectation, abort with zero bytes written.
+2. **Exact text, never fuzzy.** Anchored replacements are literal — no regex,
+   no "close enough". If the file drifted, the anchor check fails and you look,
+   not the tool.
+3. **Atomic writes.** hashline patches are atomic by construction; for
+   multi-file config surgery, stage all `--dry-run` verifications before any
+   real patch lands.
+4. **Byte-exact transit.** When the target file lives on yote and you are on
+   the cell, prefer the stdin `*** Begin Patch` heredoc form (see Agent hygiene
+   above) — never nest quote layers three deep; ship a script file and run it.
+
+Note: surgical-edit's `bin/herd-probe` (exact-token probe through the herd
+router) is router/herd tooling, not editing tooling — it relocates with the
+herd lane, not here. Do NOT use hashline for bulk refactors or generated code —
+this is a scalpel, not a bulldozer.
