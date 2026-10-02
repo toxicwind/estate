@@ -74,10 +74,10 @@ dir = "/home/toxic/estate"
 mise = false
 retry = true
 env = { BEELLAMA_PORT = "25122" }
-boot_start = true
+boot_start = false
 # NOTE 2026-09-20: literal port; pitchfork does not expand ${} in ready_http (25122 == $BEELLAMA_PORT SSOT)
 ready_http = "http://127.0.0.1:25122/health"
-auto = ["start"]
+auto = []
 
 # openfang-health — 5-min OpenFang/coyote health loop -> JSON/HTML + squawk on transitions.
 # Added 2026-09-20 (openfang recon track).
@@ -589,7 +589,7 @@ retry = 5 # 2026-09-20: was infinite; flappy daemon churned 125+ retries
 # NOTE 2026-09-20: literal port; pitchfork does not expand ${} in ready_http (25152 == $TOOLCALL_PORT SSOT)
 # NOTE 2026-09-20: literal port also in run line above; pitchfork does not expand ${} in run either (was --port stoi crash loop since 00:01)
 ready_http = "http://127.0.0.1:25152/health"
-auto = ["start"]
+auto = []
 
 # beellama-fast — exaone-4.0-1.2b-iq4xs ("fast" alias) via beellama.cpp fork
 # v0.4.6 CUDA sm_86 build. Permanent supervised OpenAI-compatible endpoint
@@ -625,8 +625,8 @@ health_http = { url = "http://127.0.0.1:25127/health", interval = "30s", timeout
 port = 25127
 # gatehouse-serve.sh self-heals: bootstraps gitignored mcp_config.json from .dist when missing,
 # injects secrets from /home/toxic/.secrets (gatehouse direct-run crash-loops without it).
-run = "exec /home/toxic/estate/projects/range/bin/gatehouse-serve.sh"
-dir = "/home/toxic/estate/projects/range/ranch/barn/gatehouse"
+run = "exec /home/toxic/estate/ranch/range/bin/gatehouse-serve.sh"
+dir = "/home/toxic/estate/ranch/barn/gatehouse"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25127/health"
@@ -998,7 +998,7 @@ auto = ["start"]
 health_http = { url = "http://127.0.0.1:25102/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25102
 run = "exec bun run src/yote.ts"
-dir = "projects/yote"
+dir = "/home/toxic/estate/ranch/yote"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25102/health"

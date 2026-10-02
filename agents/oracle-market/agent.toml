@@ -3,30 +3,55 @@ version = "2.0.0"
 description = "Persistent event-driven auctioneer/judge/settler for the Squawk bid-market. Watches the bid-market channel via inotify, validates sealed bids (HMAC + AES-GCM), clears Vickrey second-price auctions, verifies signed results and settles with stake-and-slash accountability. Control-plane messages (task_post/assign) are HMAC-authenticated; provider keys come from a rotating key-pool (bin/keypool.py)."
 author = "toxicwind"
 module = "external:daemon"
+schedule = "reactive"
+fallback_models = []
+priority = "Normal"
+skills = []
+mcp_servers = []
+tags = []
+workspace = "/home/toxic/.openfang/workspaces/oracle-market"
+state_dir = "/home/toxic/.openfang/workspaces/oracle-market"
+generate_identity_files = true
+tool_allowlist = []
+tool_blocklist = []
+cache_context = false
 
 [model]
-# Model routing doctrine (SPEC §8): FREE BEATS LOCAL.
-# Runtime model calls go through bin/keypool.py -- all candidate keys,
-# first-valid-wins per call, tier priority free cloud > paid cloud >
-# local (llama-swap/beellama) as fallback only. A down key is a routing
-# signal, never a config rewrite. This block is the preferred default;
-# do not pin this agent local-first.
 provider = "llama-swap"
-model = "openrouter-free/inclusionai/ling-3.0-flash-sante:free"
-base_url = "http://127.0.0.1:25100/v1"
+model = "meta/llama-3.2-11b-vision-instruct"
 max_tokens = 32000
 temperature = 0.2
+system_prompt = "You are a helpful AI agent."
+base_url = "http://127.0.0.1:25100/v1"
 
 [resources]
+max_memory_bytes = 268435456
+max_cpu_time_ms = 30000
+max_tool_calls_per_minute = 60
 max_llm_tokens_per_hour = 100000
-max_context_tokens = 32000
+max_network_bytes_per_hour = 104857600
+max_cost_per_hour_usd = 0.0
+max_cost_per_day_usd = 0.0
+max_cost_per_month_usd = 0.0
 
 [capabilities]
-tools = ["file_read", "file_list", "file_write", "exec"]
 network = []
+tools = [
+    "file_read",
+    "file_list",
+    "file_write",
+    "exec",
+]
+memory_read = []
+memory_write = []
 agent_spawn = false
-workflow_run = false
+agent_message = []
+shell = []
+ofp_discover = false
+ofp_connect = []
 
-[runtime]
-command = "bin/run.sh"
-restart = "always"
+[tools]
+
+[metadata]
+
+[persona]

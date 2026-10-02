@@ -5,7 +5,7 @@ Idempotent: skips entries that already exist.
 """
 from pathlib import Path
 
-TOML = Path("/home/toxic/sovereign/pitchfork.toml")
+TOML = Path("/home/toxic/estate/pitchfork.toml")
 text = TOML.read_text()
 
 SINK = '''[daemons.squawk-relay-sink]

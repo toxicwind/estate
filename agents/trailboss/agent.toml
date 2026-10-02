@@ -1,16 +1,21 @@
-# Canonical source: sovereign/agents/trailboss/agent.toml
-# Live copy: ~/.openfang/agents/trailboss/agent.toml (kernel re-seeds from disk on boot)
 name = "trailboss"
 version = "1.0.0"
 description = "Agentic owner of upstream patch relationships. Watches our renamed forks' upstreams, autonomously merges on branches, runs test suites, and reports — never pushes to main without human approval."
 author = "toxicwind"
 module = "builtin:chat"
 schedule = "reactive"
+fallback_models = []
 priority = "Normal"
 skills = []
 mcp_servers = []
-tags = ["git", "upstream", "fork-management", "ranch"]
+tags = [
+    "git",
+    "upstream",
+    "fork-management",
+    "ranch",
+]
 workspace = "/home/toxic/estate"
+state_dir = "/home/toxic/.openfang/workspaces/trailboss"
 generate_identity_files = true
 tool_allowlist = []
 tool_blocklist = []
@@ -18,8 +23,7 @@ cache_context = false
 
 [model]
 provider = "llama-swap"
-model = "openrouter-free/inclusionai/ling-3.0-flash-sante:free"
-fallback_models = [{ provider = "llama-swap", model = "gemini/gemini-3-flash-preview" }]
+model = "meta/llama-3.2-11b-vision-instruct"
 max_tokens = 131072
 temperature = 0.3
 system_prompt = """
@@ -93,7 +97,9 @@ ofp_connect = []
 
 [metadata]
 
-[persona]
-
 [autonomous]
 max_iterations = 150
+max_restarts = 10
+heartbeat_interval_secs = 30
+
+[persona]

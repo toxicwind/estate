@@ -27,6 +27,7 @@ SingletonCookie
 # tau runtime state: transcripts, vendored plugin caches, compiled natives.
 # Regenerated on demand; config/tau/agent/config.yml itself stays tracked.
 config/tau/agent/sessions/
+config/tau/sessions/
 config/tau/plugins/cache/
 config/tau/natives/
 
@@ -38,3 +39,5 @@ hatch/agents/*/squawk-root/
 .prometheus/
 grafana/data/
 
+hatch/agents/*/work/seeds/sessions/
+hatch/agents/*/squawk-relay/

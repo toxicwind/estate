@@ -19,7 +19,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-LANES_DIR = Path("/home/toxic/sovereign/hatch/agents/ember/coord/lanes")
+LANES_DIR = Path("/home/toxic/estate/hatch/agents/ember/coord/lanes")
 
 EXPECTED_INTERVAL = 180.0   # seconds: 3-minute poll crons
 ACCEPTABLE_PAUSE = EXPECTED_INTERVAL      # grace before suspicion accrues

@@ -36,8 +36,7 @@ nohup.out
 __MACOSX/
 .AppleDouble
 .LSOverride
-Icon[
-]
+Icon[]
 
 # Resource forks
 ._*
@@ -58,8 +57,7 @@ Icon[
 .file
 .disk_label*
 lost+found
-.HFS+ Private Directory Data[
-]
+.HFS+ Private Directory Data[]
 
 # Directories potentially created on remote AFP share
 .AppleDB
@@ -1211,12 +1209,6 @@ FodyWeavers.xsd
 # project monorepo — own git repo, github.com/toxicwind/ranch
 ranch/
 
-# Pre-restructure name for the project monorepo above. It was re-introduced
-# into this index by the 2026-10-02 merge of origin/main, which resurrected
-# 1231 files ranch/ already owns. The 496 with no ranch counterpart were
-# relocated to ranch/ first (ranch commit ce25d56). Do not track this
-# directory: it is a second, always-stale copy of ranch/.
-
 # third-party checkouts (Hyprland, WhiteSur, ansible, ...) — own remotes
 vendored/
 
@@ -1266,6 +1258,7 @@ SingletonCookie
 # tau runtime state: transcripts, vendored plugin caches, compiled natives.
 # Regenerated on demand; config/tau/agent/config.yml itself stays tracked.
 config/tau/agent/sessions/
+config/tau/sessions/
 config/tau/plugins/cache/
 config/tau/natives/
 
@@ -1276,6 +1269,9 @@ hatch/agents/*/squawk-root/
 # service state that changes on every scrape.
 .prometheus/
 grafana/data/
+
+hatch/agents/*/work/seeds/sessions/
+hatch/agents/*/squawk-relay/
 
 # ── Config ownership ────────────────────────────────────────────────────
 # estate/.env IS the runtime config SSOT (ports, model names, stream tuning)
@@ -1298,3 +1294,9 @@ hatch/agents/ember/readme-op/work/
 !skills/**/bin/
 !ops/bin/**
 !projects/**/bin/
+
+# Security boundaries (git-mutator)
+credentials.json
+*.key
+*.pem
+.bak.

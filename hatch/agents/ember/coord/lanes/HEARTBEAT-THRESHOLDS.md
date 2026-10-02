@@ -1,7 +1,7 @@
 # Lane Heartbeat Staleness Thresholds
 
 Read-only detection policy for lane liveness in
-`/home/toxic/sovereign/hatch/agents/ember/coord/lanes/*.json`.
+`/home/toxic/estate/hatch/agents/ember/coord/lanes/*.json`.
 
 ## Constants
 

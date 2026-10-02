@@ -28,7 +28,7 @@ Usage:
 
 Scheduling (PROPOSAL -- not installed by this script): run daily from
 pitchfork cron (or a goal-owned cron) at a low-traffic hour, e.g.
-  python3 /home/toxic/sovereign/hatch/agents/ember/coord/tools/judge-evidence-vacuum.py
+  python3 /home/toxic/estate/hatch/agents/ember/coord/tools/judge-evidence-vacuum.py
       --keep-lines 50000 --keep-days 30 >> work/judge-evidence-vacuum.log 2>&1
 Alert if the run log shows repeated race retries -- that signals write
 volume the caps cannot bound.
@@ -41,7 +41,7 @@ import tempfile
 import time
 from datetime import datetime, timezone
 
-DEFAULT_PATH = "/home/toxic/sovereign/projects/range/ranch/oracle/work/judge-failure-evidence.jsonl"
+DEFAULT_PATH = "/home/toxic/estate/projects/range/ranch/oracle/work/judge-failure-evidence.jsonl"
 MAX_RACE_RETRIES = 5
 
 

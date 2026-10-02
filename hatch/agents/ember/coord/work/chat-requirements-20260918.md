@@ -16,7 +16,7 @@ consolidation order. These issues are the portable remainder.
 
 ## Ground truth of the :25122 implementation (probed, not imagined)
 
-Source: `/home/toxic/sovereign/tools/fleet-chat/server.ts` v0.1.0 (bun,
+Source: `/home/toxic/estate/tools/fleet-chat/server.ts` v0.1.0 (bun,
 SQLite WAL at `/home/toxic/fleet-chat/fleet-chat.db`), read in full
 2026-09-18 ~17:08 MDT. Live probe: **0 listeners on :25122** — the server ran
 16:53–16:56 (DB WAL last write) and is down now; no pitchfork stanza exists

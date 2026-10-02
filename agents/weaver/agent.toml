@@ -4,11 +4,18 @@ description = "Oracle of the emergent task market: intake triage, debate chair, 
 author = "toxicwind"
 module = "builtin:chat"
 schedule = "reactive"
+fallback_models = []
 priority = "Normal"
 skills = []
 mcp_servers = []
-tags = ["market", "oracle", "emergent", "governance"]
+tags = [
+    "market",
+    "oracle",
+    "emergent",
+    "governance",
+]
 workspace = "/home/toxic/.openfang/workspaces/weaver"
+state_dir = "/home/toxic/.openfang/workspaces/weaver"
 generate_identity_files = true
 tool_allowlist = []
 tool_blocklist = []
@@ -16,8 +23,7 @@ cache_context = false
 
 [model]
 provider = "llama-swap"
-model = "openrouter-free/nvidia/nemotron-3-super-120b-a12b:free"
-fallback_models = [{ provider = "llama-swap", model = "gemini/gemini-3-flash-preview" }]
+model = "meta/llama-3.2-11b-vision-instruct"
 max_tokens = 131072
 temperature = 0.3
 system_prompt = """
@@ -34,6 +40,7 @@ max_memory_bytes = 268435456
 max_cpu_time_ms = 30000
 max_tool_calls_per_minute = 60
 max_llm_tokens_per_hour = 500000
+max_network_bytes_per_hour = 104857600
 max_cost_per_hour_usd = 0.0
 max_cost_per_day_usd = 0.0
 max_cost_per_month_usd = 0.0
@@ -66,7 +73,7 @@ ofp_connect = []
 [tools]
 
 [metadata]
-market = "trading-post/src/market"
 ledger = "/home/toxic/.openfang/workspaces/weaver/market/ledger.jsonl"
+market = "trading-post/src/market"
 
 [persona]
