@@ -14,7 +14,7 @@ providers:
   flock:
     baseUrl: http://127.0.0.1:25193/v1
     api: openai-completions
-    apiKey: "!cat /home/toxic/.tau/flock.key"
+    apiKey: FLOCK_API_KEY
     discovery:
       type: openai-models-list
   herd:
@@ -62,9 +62,24 @@ providers:
   google:
     baseUrl: http://127.0.0.1:25109/gemini-eap-interactions
     api: openai-completions
-    apiKey: GOOGLE_API_KEY
-    discovery:
-      type: openai-models-list
+    auth: none
+    models:
+      - id: models/gemini-flash-tool-retrieval
+        contextWindow: 1000000
+      - id: models/gemini-3.8-flash
+        contextWindow: 1000000
+      - id: models/gemini-3.7-flash
+        contextWindow: 1000000
+      - id: models/gemini-3.6-flash
+        contextWindow: 1000000
+      - id: models/gemini-3.5-flash
+        contextWindow: 1000000
+      - id: models/gemini-3.1-pro-preview
+        contextWindow: 1000000
+      - id: models/gemini-3-flash-preview
+        contextWindow: 1000000
+      - id: models/gemini-2.5-flash
+        contextWindow: 1000000
   mistral:
     baseUrl: https://api.mistral.ai
     api: openai-completions
