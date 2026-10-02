@@ -1,0 +1,106 @@
+{
+  "ts": "2026-10-01T22:32:07.561504+00:00",
+  "overall": "FAIL",
+  "checks": [
+    {
+      "name": "supervisor",
+      "status": "ok",
+      "detail": "active pid=1038 mem=22373048320B"
+    },
+    {
+      "name": "daemons",
+      "status": "fail",
+      "detail": "79/82 running; down: sovereign/squawk-ws-client sovereign/squawk-relay-forward sovereign/squawk-relay-sink"
+    },
+    {
+      "name": "openfang_kernel",
+      "status": "fail",
+      "detail": "openfang status rc=0 after 11ms"
+    },
+    {
+      "name": "agents",
+      "status": "fail",
+      "detail": "not Running: coyote shingle-pilot squawk-relay assistant (query took 15ms)"
+    },
+    {
+      "name": "audit_chain",
+      "status": "fail",
+      "detail": "chain integrity NOT verified"
+    },
+    {
+      "name": "llama_swap",
+      "status": "ok",
+      "detail": ":25100/v1/models ok in 23ms, 98 models"
+    },
+    {
+      "name": "kimi_auto",
+      "status": "warn",
+      "detail": "state age=952278s info=[mistral/ministral-3b-latest True 302]"
+    },
+    {
+      "name": "provider_nvidia",
+      "status": "ok",
+      "detail": "auth=unknown (live/dead only)"
+    },
+    {
+      "name": "provider_anthropic",
+      "status": "ok",
+      "detail": "auth=unknown (live/dead only)"
+    },
+    {
+      "name": "provider_groq",
+      "status": "ok",
+      "detail": "auth=unknown (live/dead only)"
+    },
+    {
+      "name": "provider_cerebras",
+      "status": "ok",
+      "detail": "auth=unknown (live/dead only)"
+    },
+    {
+      "name": "provider_deepseek",
+      "status": "ok",
+      "detail": "auth=unknown (live/dead only)"
+    },
+    {
+      "name": "provider_openrouter",
+      "status": "ok",
+      "detail": "auth=unknown (live/dead only)"
+    },
+    {
+      "name": "providers_summary",
+      "status": "ok",
+      "detail": "0 Missing, 0 NotRequired(local)"
+    },
+    {
+      "name": "yote_ep",
+      "status": "ok",
+      "detail": ":25102/health reachable (200) in 5ms"
+    },
+    {
+      "name": "meshub_ep",
+      "status": "ok",
+      "detail": ":25115 tcp open in 219ms"
+    },
+    {
+      "name": "coyote_ep",
+      "status": "ok",
+      "detail": ":25143/health reachable in 4ms"
+    },
+    {
+      "name": "memory",
+      "status": "ok",
+      "detail": "total=63893MB used=35768MB avail=28125MB"
+    },
+    {
+      "name": "gpu",
+      "status": "ok",
+      "detail": "NVIDIA GeForce RTX 3090  4 %  10497 MiB  24576 MiB"
+    }
+  ],
+  "papers": [
+    "2508.02736",
+    "2602.09345",
+    "2605.14271"
+  ]
+}

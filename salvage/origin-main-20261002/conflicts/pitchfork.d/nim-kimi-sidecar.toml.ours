@@ -1,0 +1,18 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'nim-kimi-sidecar'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.nim-kimi-sidecar]
+health_http = { url = "http://127.0.0.1:25163/health", interval = "30s", timeout = "5s", retries = 3 }
+port = 25163
+# Cold-aware NVIDIA NIM proxy for moonshotai/kimi-k3 (2026-09-21).
+# Bakes the K3 contract in: warmup on start, 300s upstream timeout
+# (serverless cold load ~120-220s is normal), top_p strip, identity
+# enforcement, 404/429 classification. Fails loud; never substitutes.
+run = "exec python3 /home/toxic/estate/bin/nim-kimi-sidecar.py"
+dir = "/home/toxic/estate"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25163/health"
+auto = ["start"]

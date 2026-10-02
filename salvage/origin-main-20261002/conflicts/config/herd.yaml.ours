@@ -1,0 +1,1037 @@
+# =============================================================================
+# LLAMA-SWAP CONFIGURATION — RTX 3090 24GB
+# =============================================================================
+# Config: /home/toxic/estate/config/herd.yaml (canonical; llama-swap.yaml symlinks here)
+# =============================================================================
+
+healthCheckTimeout: 300
+logLevel: debug
+metricsMaxInMemory: 5000
+captureBuffer: 15
+globalTTL: 600
+startPort: 25001
+includeAliasesInList: true
+sendLoadingState: true
+
+store:
+  path: /home/toxic/.local/share/llama-swap/store.db
+
+performance:
+  enable: true
+  every: 1m
+
+hooks:
+  on_startup:
+    preload: []
+  on_model_loaded:
+    exec: 'echo "[$(date)] MODEL_LOADED: $MODEL" >> /home/toxic/estate/var/data/herd-events.log'
+  on_model_unloaded:
+    exec: 'echo "[$(date)] MODEL_UNLOADED: $MODEL" >> /home/toxic/estate/var/data/herd-events.log'
+
+# RETIRED 2026-09-17: astMatrix in-process router replaced by Flock delegation.
+# Flock (:8000) is the unified multi-provider remote-API/completions subsystem.
+# DISABLED 2026-09-20 (provider-surgeon): flock :25193 cloud upstream is dead -
+# NVIDIA account returns 404/410/502 on every probed chat model; the flock daemon
+# itself runs with zero upstream env keys. Re-enable when flock upstream is healthy.
+# (flock daemon keeps running under pitchfork for the TAU flock extension.)
+# RE-ENABLED 2026-09-20 ~03:10 MDT (provider-surgeon): flock upstream completions
+# verified live via 127.0.0.1:25193 with FLOCK_API_KEY. Only the 3 model IDs
+# below returned real completions in the probe; the other 100 flock-advertised
+# IDs 404 upstream (stale) and are deliberately NOT mapped. Re-probe before adding more.
+# DISABLED 2026-09-20 ~03:20 MDT (provider-surgeon): the flock delegation advertises
+# ALL 103 upstream model IDs (discovery cannot be restricted to modelMap), and ~100
+# of them 404 upstream (stale). Use the flock-direct peer below instead, which
+# exposes only the 3 probe-verified live models.
+routing:
+  scheduler:
+    use: fifo
+    settings:
+      fifo:
+        priority:
+          beellama/exaone-4-0-1-2b-iq4xs: 35
+          beellama/exaone-4-0-1-2b-q4km: 34
+          beellama/exaone-4-0-1-2b-q5km: 33
+          beellama/exaone-4-0-1-2b-q6k: 32
+          beellama/exaone-4-0-1-2b-q80: 31
+          mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m: 30
+          mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_s: 29
+          jackrong/qwen3.5-9b-deepseek-v4-flash-da-q4km: 28
+          gemma-4-12b-unified: 24
+          gemma-4-12b-uncensored: 22
+          beellama/qwen-flash-64k: 16
+          beellama/qwen-flash-96k: 15
+          beellama/qwen-flash-128k: 14
+          beellama/qwen-flash-256k: 13
+          beellama/gemma-64k: 12
+          beellama/gemma-96k: 11
+          beellama/gemma-128k: 10
+          beellama/strange-64k: 9
+
+  router:
+    use: matrix
+    settings:
+      matrix:
+        vars:
+          exa1: beellama/exaone-4-0-1-2b-iq4xs
+          exa2: beellama/exaone-4-0-1-2b-q4km
+          df9b: mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m
+          df9bs: mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_s
+          gm4u: gemma-4-12b-unified
+          gm4un: gemma-4-12b-uncensored
+          qf64: beellama/qwen-flash-64k
+          qf96: beellama/qwen-flash-96k
+          qf128: beellama/qwen-flash-128k
+          qf256: beellama/qwen-flash-256k
+          gm64: beellama/gemma-64k
+          gm96: beellama/gemma-96k
+          gm128: beellama/gemma-128k
+          st64: beellama/strange-64k
+        evict_costs:
+          exa1: 35
+          exa2: 34
+          df9b: 30
+          df9bs: 29
+          gm4u: 24
+          gm4un: 22
+          qf256: 13
+          qf128: 14
+          qf96: 15
+          qf64: 16
+          gm128: 10
+          gm96: 11
+          gm64: 12
+          st64: 9
+        sets:
+          exclusive: >-
+            exa1 | exa2 |
+            df9b | df9bs |
+            gm4u | gm4un |
+            qf64 | qf96 | qf128 | qf256 |
+            gm64 | gm96 | gm128 |
+            st64
+
+macros:
+  MODEL_DIR: /home/toxic/models
+  BEELLAMA_BIN: /home/toxic/estate/engines/herd/beellama.cpp/build-cuda86/bin/llama-server
+  BEELLAMA_LD: /home/toxic/estate/engines/herd/beellama.cpp/build-cuda86/bin
+
+  EXAONE_1B_IQ4XS: ${MODEL_DIR}/EXAONE-4.0-1.2B-IQ4_XS.gguf
+  EXAONE_1B_Q4KM: ${MODEL_DIR}/EXAONE-4.0-1.2B-Q4_K_M.gguf
+  EXAONE_1B_Q5KM: ${MODEL_DIR}/EXAONE-4.0-1.2B-Q5_K_M.gguf
+  EXAONE_1B_Q6K: ${MODEL_DIR}/EXAONE-4.0-1.2B-Q6_K.gguf
+  EXAONE_1B_Q80: ${MODEL_DIR}/EXAONE-4.0-1.2B-Q8_0.gguf
+
+
+  GEMMA_12B_BASE_Q4KM: ${MODEL_DIR}/gemma-4-12b-it-Q4_K_M.gguf
+  GEMMA_12B_UNCENS_Q4KM: ${MODEL_DIR}/gemma-4-12B-it-uncensored-Q4_K_M.gguf
+
+
+  QWEN35_9B_FLASH_MTP: ${MODEL_DIR}/Qwen3.5-9B-DeepSeek-V4-Flash-MTP-Q4_K_M.gguf
+  QWEN35_9B_FLASH_IQ4XS: ${MODEL_DIR}/Qwen3.5-9B-DeepSeek-V4-Flash-IQ4_XS.gguf
+  QWEN35_9B_FLASH_DA_Q4KM: ${MODEL_DIR}/Q3.5-9B-DS-v4-Flash-DA-Q4_K_M.gguf
+
+  STRANGE_7B_Q4KM: ${MODEL_DIR}/StrangeMerges_19-7B-dare_ties.Q4_K_M.gguf
+
+  CUDA_ENV: CUDA_VISIBLE_DEVICES=0 GGML_CUDA=1 GGML_CUDA_GRAPHS=1 GGML_CUDA_FA_ALL_QUANTS=1
+
+  SRV_HOST: --host 127.0.0.1
+  SRV_PORT: --port ${PORT}
+  SRV_HOST_PORT: ${SRV_HOST} ${SRV_PORT}
+  SRV_GPU_LAYERS: --n-gpu-layers all
+  SRV_FA: --flash-attn on
+  SRV_GPU: ${SRV_GPU_LAYERS} ${SRV_FA}
+  SRV_PARALLEL: --parallel 1
+  SRV_METRICS: --metrics
+  SRV_MLOCK: --mlock
+  SRV_NOMMAP: --no-mmap
+  SRV_SAFETY: ${SRV_PARALLEL} ${SRV_METRICS} ${SRV_MLOCK} ${SRV_NOMMAP}
+  SRV_BASE: ${SRV_HOST_PORT} ${SRV_GPU} ${SRV_SAFETY}
+
+  FORK_BEELLAMA: --kv-unified --no-host --cache-ram 0
+
+  KV_Q8: --cache-type-k q8_0 --cache-type-v q8_0
+
+  CS_32K: "32768"
+  CS_64K: "65536"
+  CS_96K: "98304"
+  CS_128K: "131072"
+  CS_256K: "262144"
+  B_2K: "2048"
+  B_1K: "1024"
+  UB_512: "512"
+  UB_256: "256"
+  CTX_32K: --ctx-size ${CS_32K} -b ${B_2K} -ub ${UB_512}
+  CTX_64K: --ctx-size ${CS_64K} -b ${B_2K} -ub ${UB_512}
+  CTX_96K: --ctx-size ${CS_96K} -b ${B_2K} -ub ${UB_512}
+  CTX_128K: --ctx-size ${CS_128K} -b ${B_2K} -ub ${UB_512}
+  CTX_256K: --ctx-size ${CS_256K} -b ${B_1K} -ub ${UB_256}
+
+  # Reasoning/thinking. gemma-4 is a reasoning model: under the default
+  # --reasoning auto it spends the entire completion budget on
+  # reasoning_content and returns EMPTY message.content, so a classifier
+  # asking for one token gets zero tokens of answer. Off must be explicit.
+  REASONING_OFF: "--reasoning off --reasoning-budget 0"
+  REASONING_ON: "--reasoning on"
+  # Leave thoughts in message.content unparsed rather than diverting them
+  # to message.reasoning_content.
+  REASONING_INLINE: "--reasoning-format none"
+  # Speculative decoding. --spec-type already defaults to none; naming it
+  # keeps the intent explicit and survives an upstream default change.
+  SPEC_NONE: "--spec-type none"
+
+  # >>> AUTO_FLAGS (generated by ops/bin/herd-macros.ts) >>>
+  # 329 flags, union across 4 llama-server forks:
+  #   herd/beellama.cpp/build-cuda86/bin (228) — /home/toxic/estate/engines/herd/beellama.cpp/build-cuda86/bin/llama-server
+  #   herd/ik_llama.cpp/build/bin (184) — /home/toxic/estate/engines/herd/ik_llama.cpp/build/bin/llama-server
+  #   herd/llama-cpp-turboquant/build/bin (210) — /home/toxic/estate/engines/herd/llama-cpp-turboquant/build/bin/llama-server
+  #   llama.cpp-b11059 (208) — /home/toxic/estate/engines/llama.cpp-b11059/llama-b11059/llama-server
+  #
+  # Trailing forks list names only the forks that document that flag.
+  # Value-taking flags expand a ${<KEY>_VALUE} macro: define it in the
+  # macros above, or herd fails the load rather than silently consuming
+  # the next argv token.
+
+  # --- EXAMPLE-SPECIFIC (91) ---
+  ARG_ALIAS: "--alias ${ARG_ALIAS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_API_KEY: "--api-key ${ARG_API_KEY_VALUE}"
+  ARG_API_KEY_FILE: "--api-key-file ${ARG_API_KEY_FILE_VALUE}"
+  ARG_API_PREFIX: "--api-prefix ${ARG_API_PREFIX_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_CACHE_IDLE_SLOTS: "--cache-idle-slots"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_CACHE_PROMPT: "--cache-prompt"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_CACHE_REUSE: "--cache-reuse ${ARG_CACHE_REUSE_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_CHAT_TEMPLATE: "--chat-template ${ARG_CHAT_TEMPLATE_VALUE}"
+  ARG_CHAT_TEMPLATE_FILE: "--chat-template-file"
+  ARG_CHAT_TEMPLATE_KWARGS: "--chat-template-kwargs ${ARG_CHAT_TEMPLATE_KWARGS_VALUE}"
+  ARG_CONTEXT_SHIFT: "--context-shift"
+  ARG_CORS_CREDENTIALS: "--cors-credentials"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_CORS_HEADERS: "--cors-headers ${ARG_CORS_HEADERS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_CORS_METHODS: "--cors-methods ${ARG_CORS_METHODS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_CORS_ORIGINS: "--cors-origins ${ARG_CORS_ORIGINS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_DFLASH: "--dflash"  # only: herd/llama-cpp-turboquant/build/bin
+  ARG_EAGLE3: "--eagle3"  # only: herd/llama-cpp-turboquant/build/bin
+  ARG_EMBD_GEMMA_DEFAULT: "--embd-gemma-default"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_EMBD_NORMALIZE: "--embd-normalize"
+  ARG_EMBEDDING: "--embedding"
+  ARG_FIM_QWEN_1: "--fim-qwen-1"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_FIM_QWEN_14B_SPEC: "--fim-qwen-14b-spec"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_FIM_QWEN_30B_DEFAULT: "--fim-qwen-30b-default"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_FIM_QWEN_3B_DEFAULT: "--fim-qwen-3b-default"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_FIM_QWEN_7B_DEFAULT: "--fim-qwen-7b-default"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_FIM_QWEN_7B_SPEC: "--fim-qwen-7b-spec"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_GDN_REPLAY: "--gdn-replay"  # only: herd/llama-cpp-turboquant/build/bin
+  ARG_GPT_OSS_120B_DEFAULT: "--gpt-oss-120b-default"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_GPT_OSS_20B_DEFAULT: "--gpt-oss-20b-default"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_IMAGE_MAX_TOKENS: "--image-max-tokens ${ARG_IMAGE_MAX_TOKENS_VALUE}"
+  ARG_IMAGE_MIN_TOKENS: "--image-min-tokens ${ARG_IMAGE_MIN_TOKENS_VALUE}"
+  ARG_JINJA: "--jinja"
+  ARG_KV_UNIFIED_PER_SLOT: "--kv-unified-per-slot ${ARG_KV_UNIFIED_PER_SLOT_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, llama.cpp-b11059
+  ARG_LOG_PROMPTS_DIR: "--log-prompts-dir ${ARG_LOG_PROMPTS_DIR_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_LORA_INIT_WITHOUT_APPLY: "--lora-init-without-apply"
+  ARG_MCP_SERVERS_CONFIG: "--mcp-servers-config ${ARG_MCP_SERVERS_CONFIG_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_MCP_SERVERS_JSON: "--mcp-servers-json ${ARG_MCP_SERVERS_JSON_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_MEDIA_PATH: "--media-path ${ARG_MEDIA_PATH_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_METRICS: "--metrics"
+  ARG_MMPROJ_AUTO: "--mmproj-auto"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_MMPROJ_OFFLOAD: "--mmproj-offload"
+  ARG_MODELS_AUTOLOAD: "--models-autoload"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_MODELS_DIR: "--models-dir ${ARG_MODELS_DIR_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_MODELS_MAX: "--models-max ${ARG_MODELS_MAX_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_MODELS_PRESET: "--models-preset ${ARG_MODELS_PRESET_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_MTMD_BATCH_MAX_TOKENS: "--mtmd-batch-max-tokens ${ARG_MTMD_BATCH_MAX_TOKENS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_PATH: "--path ${ARG_PATH_VALUE}"
+  ARG_POOLING: "--pooling ${ARG_POOLING_VALUE}"
+  ARG_PORT: "--port ${ARG_PORT_VALUE}"
+  ARG_PREFILL_ASSISTANT: "--prefill-assistant"
+  ARG_PROPS: "--props"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_REASONING_BUDGET: "--reasoning-budget ${ARG_REASONING_BUDGET_VALUE}"
+  ARG_REASONING_BUDGET_MESSAGE: "--reasoning-budget-message"
+  ARG_REASONING_EFFORT: "--reasoning-effort ${ARG_REASONING_EFFORT_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, llama.cpp-b11059
+  ARG_REASONING_FORMAT: "--reasoning-format ${ARG_REASONING_FORMAT_VALUE}"
+  ARG_REASONING_LOOP_CHECK_INTERVAL: "--reasoning-loop-check-interval ${ARG_REASONING_LOOP_CHECK_INTERVAL_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_REASONING_LOOP_GUARD: "--reasoning-loop-guard ${ARG_REASONING_LOOP_GUARD_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_REASONING_LOOP_INTERVENTIONS: "--reasoning-loop-interventions ${ARG_REASONING_LOOP_INTERVENTIONS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_REASONING_LOOP_MAX_PERIOD: "--reasoning-loop-max-period ${ARG_REASONING_LOOP_MAX_PERIOD_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_REASONING_LOOP_MIN_COVERAGE: "--reasoning-loop-min-coverage ${ARG_REASONING_LOOP_MIN_COVERAGE_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_REASONING_LOOP_MIN_TOKENS: "--reasoning-loop-min-tokens ${ARG_REASONING_LOOP_MIN_TOKENS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_REASONING_LOOP_WINDOW: "--reasoning-loop-window ${ARG_REASONING_LOOP_WINDOW_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_REASONING_PRESERVE: "--reasoning-preserve"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_RERANK: "--rerank"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_REUSE_PORT: "--reuse-port"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_REVERSE_PROMPT: "--reverse-prompt ${ARG_REVERSE_PROMPT_VALUE}"
+  ARG_SKIP_CHAT_PARSING: "--skip-chat-parsing"
+  ARG_SLEEP_IDLE_SECONDS: "--sleep-idle-seconds ${ARG_SLEEP_IDLE_SECONDS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SLOT_CACHE_KEY_MIN_PREFIX: "--slot-cache-key-min-prefix ${ARG_SLOT_CACHE_KEY_MIN_PREFIX_VALUE}"  # only: herd/llama-cpp-turboquant/build/bin
+  ARG_SLOT_CACHE_KEY_SIMILARITY: "--slot-cache-key-similarity ${ARG_SLOT_CACHE_KEY_SIMILARITY_VALUE}"  # only: herd/llama-cpp-turboquant/build/bin
+  ARG_SLOT_SAVE_PATH: "--slot-save-path ${ARG_SLOT_SAVE_PATH_VALUE}"
+  ARG_SLOTS: "--slots"
+  ARG_SPEC_DEFAULT: "--spec-default"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPM_INFILL: "--spm-infill"
+  ARG_SSE_PING_INTERVAL: "--sse-ping-interval ${ARG_SSE_PING_INTERVAL_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SSL_CERT_FILE: "--ssl-cert-file ${ARG_SSL_CERT_FILE_VALUE}"
+  ARG_SSL_KEY_FILE: "--ssl-key-file ${ARG_SSL_KEY_FILE_VALUE}"
+  ARG_TAGS: "--tags ${ARG_TAGS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_THREADS_HTTP: "--threads-http ${ARG_THREADS_HTTP_VALUE}"
+  ARG_TOOLS: "--tools ${ARG_TOOLS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_TOOLS_RUNTIME: "--tools-runtime ${ARG_TOOLS_RUNTIME_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, llama.cpp-b11059
+  ARG_UI: "--ui"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_UI_CONFIG: "--ui-config"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_UI_CONFIG_FILE: "--ui-config-file"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_UI_MCP_PROXY: "--ui-mcp-proxy"
+  ARG_VIDEO_FFMPEG_DIR: "--video-ffmpeg-dir ${ARG_VIDEO_FFMPEG_DIR_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, llama.cpp-b11059
+  ARG_VIDEO_FPS: "--video-fps ${ARG_VIDEO_FPS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, llama.cpp-b11059
+  ARG_VIDEO_TIMESTAMP_INTERVAL: "--video-timestamp-interval ${ARG_VIDEO_TIMESTAMP_INTERVAL_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, llama.cpp-b11059
+  ARG_VISION_GEMMA_12B_DEFAULT: "--vision-gemma-12b-default"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_VISION_GEMMA_4B_DEFAULT: "--vision-gemma-4b-default"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_WARMUP: "--warmup"
+
+  # --- COMMON (60) ---
+  ARG_BATCH_SIZE: "--batch-size ${ARG_BATCH_SIZE_VALUE}"
+  ARG_CACHE_TYPE_K_SWA: "--cache-type-k-swa ${ARG_CACHE_TYPE_K_SWA_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_CACHE_TYPE_V_SWA: "--cache-type-v-swa ${ARG_CACHE_TYPE_V_SWA_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_CHECK_TENSORS: "--check-tensors"
+  ARG_COMPLETION_BASH: "--completion-bash"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_CONTROL_VECTOR: "--control-vector ${ARG_CONTROL_VECTOR_VALUE}"
+  ARG_CONTROL_VECTOR_LAYER_RANGE: "--control-vector-layer-range ${ARG_CONTROL_VECTOR_LAYER_RANGE_VALUE}"
+  ARG_CONTROL_VECTOR_SCALED: "--control-vector-scaled ${ARG_CONTROL_VECTOR_SCALED_VALUE}"
+  ARG_CPU_MASK: "--cpu-mask ${ARG_CPU_MASK_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_CPU_STRICT: "--cpu-strict"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_CPU_STRICT_BATCH: "--cpu-strict-batch"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_CTX_SIZE: "--ctx-size ${ARG_CTX_SIZE_VALUE}"
+  ARG_ESCAPE: "--escape"
+  ARG_HELP: "--help"
+  ARG_HF_REPO: "--hf-repo"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_HOST: "--host"
+  ARG_KEEP: "--keep ${ARG_KEEP_VALUE}"
+  ARG_KV_TAIL_TOKENS: "--kv-tail-tokens ${ARG_KV_TAIL_TOKENS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_KV_TAIL_TYPE: "--kv-tail-type ${ARG_KV_TAIL_TYPE_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_LIST_DEVICES: "--list-devices"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_LOG_COLORS: "--log-colors ${ARG_LOG_COLORS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_LOG_DISABLE: "--log-disable"
+  ARG_LOG_FILE: "--log-file ${ARG_LOG_FILE_VALUE}"
+  ARG_LOG_JSONL: "--log-jsonl"  # only: herd/beellama.cpp/build-cuda86/bin, llama.cpp-b11059
+  ARG_LOG_PREFIX: "--log-prefix"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_LOG_TIMESTAMPS: "--log-timestamps"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_LORA: "--lora ${ARG_LORA_VALUE}"
+  ARG_LORA_SCALED: "--lora-scaled ${ARG_LORA_SCALED_VALUE}"
+  ARG_MLOCK: "--mlock"  # only: herd/beellama.cpp/build-cuda86/bin, herd/ik_llama.cpp/build/bin, herd/llama-cpp-turboquant/build/bin
+  ARG_MMAP: "--mmap"  # only: herd/beellama.cpp/build-cuda86/bin, herd/ik_llama.cpp/build/bin, herd/llama-cpp-turboquant/build/bin
+  ARG_MMPROJ: "--mmproj"
+  ARG_MODEL: "--model ${ARG_MODEL_VALUE}"
+  ARG_MOE_CACHE: "--moe-cache ${ARG_MOE_CACHE_VALUE}"  # only: herd/llama-cpp-turboquant/build/bin
+  ARG_NUMA: "--numa ${ARG_NUMA_VALUE}"
+  ARG_OFFLINE: "--offline"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_OP_OFFLOAD: "--op-offload"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_OVERRIDE_KV: "--override-kv ${ARG_OVERRIDE_KV_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_PERF: "--perf"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_POLL: "--poll"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_POLL_BATCH: "--poll-batch"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_PREDICT: "--predict"
+  ARG_PRIO: "--prio ${ARG_PRIO_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_PRIO_BATCH: "--prio-batch ${ARG_PRIO_BATCH_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_REPACK: "--repack"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_ROPE_FREQ_BASE: "--rope-freq-base ${ARG_ROPE_FREQ_BASE_VALUE}"
+  ARG_ROPE_FREQ_SCALE: "--rope-freq-scale ${ARG_ROPE_FREQ_SCALE_VALUE}"
+  ARG_ROPE_SCALE: "--rope-scale ${ARG_ROPE_SCALE_VALUE}"
+  ARG_ROPE_SCALING: "--rope-scaling ${ARG_ROPE_SCALING_VALUE}"
+  ARG_SPEC_DRAFT_TYPE_K: "--spec-draft-type-k"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_TYPE_V: "--spec-draft-type-v"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SWA_FULL: "--swa-full"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_TENSOR_READ_LAZY: "--tensor-read-lazy ${ARG_TENSOR_READ_LAZY_VALUE}"  # only: herd/llama-cpp-turboquant/build/bin
+  ARG_THREADS: "--threads ${ARG_THREADS_VALUE}"
+  ARG_VERBOSE: "--verbose"
+  ARG_VERSION: "--version"
+  ARG_YARN_ATTN_FACTOR: "--yarn-attn-factor ${ARG_YARN_ATTN_FACTOR_VALUE}"
+  ARG_YARN_BETA_FAST: "--yarn-beta-fast ${ARG_YARN_BETA_FAST_VALUE}"
+  ARG_YARN_BETA_SLOW: "--yarn-beta-slow ${ARG_YARN_BETA_SLOW_VALUE}"
+  ARG_YARN_EXT_FACTOR: "--yarn-ext-factor ${ARG_YARN_EXT_FACTOR_VALUE}"
+  ARG_YARN_ORIG_CTX: "--yarn-orig-ctx ${ARG_YARN_ORIG_CTX_VALUE}"
+
+  # --- SPECULATIVE (55) ---
+  ARG_DFLASH_DEFER_INJECTION: "--dflash-defer-injection"  # only: herd/llama-cpp-turboquant/build/bin
+  ARG_DRAFT: "--draft"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_DRAFT_MIN: "--draft-min"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_CHAIN: "--spec-chain"  # only: herd/llama-cpp-turboquant/build/bin
+  ARG_SPEC_DM_CONTROLLER: "--spec-dm-controller ${ARG_SPEC_DM_CONTROLLER_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_SPEC_DM_PROFIT_BASELINE_INTERVAL: "--spec-dm-profit-baseline-interval ${ARG_SPEC_DM_PROFIT_BASELINE_INTERVAL_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_SPEC_DM_PROFIT_EWMA_ALPHA: "--spec-dm-profit-ewma-alpha ${ARG_SPEC_DM_PROFIT_EWMA_ALPHA_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_SPEC_DM_PROFIT_LOWER_MARGIN: "--spec-dm-profit-lower-margin ${ARG_SPEC_DM_PROFIT_LOWER_MARGIN_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_SPEC_DM_PROFIT_MIN: "--spec-dm-profit-min ${ARG_SPEC_DM_PROFIT_MIN_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_SPEC_DM_PROFIT_MIN_SAMPLES: "--spec-dm-profit-min-samples ${ARG_SPEC_DM_PROFIT_MIN_SAMPLES_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_SPEC_DM_PROFIT_RAISE_MARGIN: "--spec-dm-profit-raise-margin ${ARG_SPEC_DM_PROFIT_RAISE_MARGIN_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_SPEC_DM_PROFIT_WARMUP: "--spec-dm-profit-warmup ${ARG_SPEC_DM_PROFIT_WARMUP_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin
+  ARG_SPEC_DRAFT_BACKEND_SAMPLING: "--spec-draft-backend-sampling"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_CPU_MASK: "--spec-draft-cpu-mask"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_CPU_MASK_BATCH: "--spec-draft-cpu-mask-batch"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_CPU_MOE: "--spec-draft-cpu-moe"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_CPU_RANGE: "--spec-draft-cpu-range"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_CPU_STRICT: "--spec-draft-cpu-strict"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_CPU_STRICT_BATCH: "--spec-draft-cpu-strict-batch"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_DEVICE: "--spec-draft-device"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_HF: "--spec-draft-hf"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_MODEL: "--spec-draft-model"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_N_CPU_MOE: "--spec-draft-n-cpu-moe"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_N_MAX: "--spec-draft-n-max ${ARG_SPEC_DRAFT_N_MAX_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_N_MIN: "--spec-draft-n-min ${ARG_SPEC_DRAFT_N_MIN_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_N_MIN_ADAPTIVE: "--spec-draft-n-min-adaptive ${ARG_SPEC_DRAFT_N_MIN_ADAPTIVE_VALUE}"  # only: herd/llama-cpp-turboquant/build/bin
+  ARG_SPEC_DRAFT_NGL: "--spec-draft-ngl"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_OVERRIDE_TENSOR: "--spec-draft-override-tensor"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_P_MIN: "--spec-draft-p-min"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_P_SPLIT: "--spec-draft-p-split"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_POLL: "--spec-draft-poll"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_POLL_BATCH: "--spec-draft-poll-batch"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_PRIO: "--spec-draft-prio"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_PRIO_BATCH: "--spec-draft-prio-batch"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_THREADS: "--spec-draft-threads"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_DRAFT_THREADS_BATCH: "--spec-draft-threads-batch"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_NGRAM_: "--spec-ngram-"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_NGRAM_MAP_K4V_MIN_HITS: "--spec-ngram-map-k4v-min-hits ${ARG_SPEC_NGRAM_MAP_K4V_MIN_HITS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_NGRAM_MAP_K4V_SIZE_M: "--spec-ngram-map-k4v-size-m ${ARG_SPEC_NGRAM_MAP_K4V_SIZE_M_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_NGRAM_MAP_K4V_SIZE_N: "--spec-ngram-map-k4v-size-n ${ARG_SPEC_NGRAM_MAP_K4V_SIZE_N_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_NGRAM_MAP_K_MIN_HITS: "--spec-ngram-map-k-min-hits ${ARG_SPEC_NGRAM_MAP_K_MIN_HITS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_NGRAM_MAP_K_SIZE_M: "--spec-ngram-map-k-size-m ${ARG_SPEC_NGRAM_MAP_K_SIZE_M_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_NGRAM_MAP_K_SIZE_N: "--spec-ngram-map-k-size-n ${ARG_SPEC_NGRAM_MAP_K_SIZE_N_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_NGRAM_MIN_HITS: "--spec-ngram-min-hits ${ARG_SPEC_NGRAM_MIN_HITS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_NGRAM_MOD_N_MATCH: "--spec-ngram-mod-n-match ${ARG_SPEC_NGRAM_MOD_N_MATCH_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_NGRAM_MOD_N_MAX: "--spec-ngram-mod-n-max ${ARG_SPEC_NGRAM_MOD_N_MAX_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_NGRAM_MOD_N_MIN: "--spec-ngram-mod-n-min ${ARG_SPEC_NGRAM_MOD_N_MIN_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_NGRAM_SIMPLE_MIN_HITS: "--spec-ngram-simple-min-hits ${ARG_SPEC_NGRAM_SIMPLE_MIN_HITS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_NGRAM_SIMPLE_SIZE_M: "--spec-ngram-simple-size-m ${ARG_SPEC_NGRAM_SIMPLE_SIZE_M_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_NGRAM_SIMPLE_SIZE_N: "--spec-ngram-simple-size-n ${ARG_SPEC_NGRAM_SIMPLE_SIZE_N_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_NGRAM_SIZE_M: "--spec-ngram-size-m ${ARG_SPEC_NGRAM_SIZE_M_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_NGRAM_SIZE_N: "--spec-ngram-size-n ${ARG_SPEC_NGRAM_SIZE_N_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SPEC_SYNTH_LEN: "--spec-synth-len ${ARG_SPEC_SYNTH_LEN_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, llama.cpp-b11059
+  ARG_SPEC_SYNTH_RATES: "--spec-synth-rates ${ARG_SPEC_SYNTH_RATES_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, llama.cpp-b11059
+  ARG_SPEC_TYPE: "--spec-type"
+
+  # --- SAMPLING (47) ---
+  ARG_ADAPTIVE_DECAY: "--adaptive-decay"
+  ARG_ADAPTIVE_TARGET: "--adaptive-target"
+  ARG_ADAPTIVE_UPDT_W_CUR: "--adaptive-updt-w-cur"  # only: herd/ik_llama.cpp/build/bin
+  ARG_ALLOWLIST_KEYWORD: "--allowlist-keyword"  # only: herd/ik_llama.cpp/build/bin
+  ARG_ALLOWLIST_KEYWORD_DELAY: "--allowlist-keyword-delay"  # only: herd/ik_llama.cpp/build/bin
+  ARG_ALLOWLIST_PIECES: "--allowlist-pieces"  # only: herd/ik_llama.cpp/build/bin
+  ARG_ALLOWLIST_UNICODE_RULE: "--allowlist-unicode-rule"  # only: herd/ik_llama.cpp/build/bin
+  ARG_BANNED_N: "--banned-n"  # only: herd/ik_llama.cpp/build/bin
+  ARG_BANNED_STRING_FILE: "--banned-string-file"  # only: herd/ik_llama.cpp/build/bin
+  ARG_CFG_NEGATIVE_PROMPT: "--cfg-negative-prompt ${ARG_CFG_NEGATIVE_PROMPT_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_CFG_NEGATIVE_PROMPT_FILE: "--cfg-negative-prompt-file ${ARG_CFG_NEGATIVE_PROMPT_FILE_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_CFG_SCALE: "--cfg-scale ${ARG_CFG_SCALE_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_DRY_ALLOWED_LENGTH: "--dry-allowed-length ${ARG_DRY_ALLOWED_LENGTH_VALUE}"
+  ARG_DRY_BASE: "--dry-base ${ARG_DRY_BASE_VALUE}"
+  ARG_DRY_MULTIPLIER: "--dry-multiplier ${ARG_DRY_MULTIPLIER_VALUE}"
+  ARG_DRY_PENALTY_LAST_N: "--dry-penalty-last-n ${ARG_DRY_PENALTY_LAST_N_VALUE}"
+  ARG_DRY_SEQUENCE_BREAKER: "--dry-sequence-breaker ${ARG_DRY_SEQUENCE_BREAKER_VALUE}"
+  ARG_DYNATEMP_EXP: "--dynatemp-exp ${ARG_DYNATEMP_EXP_VALUE}"
+  ARG_DYNATEMP_RANGE: "--dynatemp-range ${ARG_DYNATEMP_RANGE_VALUE}"
+  ARG_EXPIRING_LOGIT_BIAS_FILE: "--expiring-logit-bias-file"  # only: herd/ik_llama.cpp/build/bin
+  ARG_FREQUENCY_PENALTY: "--frequency-penalty ${ARG_FREQUENCY_PENALTY_VALUE}"
+  ARG_GRAMMAR: "--grammar ${ARG_GRAMMAR_VALUE}"
+  ARG_GRAMMAR_FILE: "--grammar-file ${ARG_GRAMMAR_FILE_VALUE}"
+  ARG_IGNORE_EOS: "--ignore-eos"
+  ARG_JSON_SCHEMA: "--json-schema ${ARG_JSON_SCHEMA_VALUE}"
+  ARG_LOGIT_BIAS: "--logit-bias ${ARG_LOGIT_BIAS_VALUE}"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_MIN_P: "--min-p ${ARG_MIN_P_VALUE}"
+  ARG_MIROSTAT: "--mirostat ${ARG_MIROSTAT_VALUE}"
+  ARG_MIROSTAT_ENT: "--mirostat-ent ${ARG_MIROSTAT_ENT_VALUE}"
+  ARG_MIROSTAT_LR: "--mirostat-lr ${ARG_MIROSTAT_LR_VALUE}"
+  ARG_PENALIZE_NL: "--penalize-nl"  # only: herd/ik_llama.cpp/build/bin
+  ARG_PRESENCE_PENALTY: "--presence-penalty ${ARG_PRESENCE_PENALTY_VALUE}"
+  ARG_REPEAT_LAST_N: "--repeat-last-n ${ARG_REPEAT_LAST_N_VALUE}"
+  ARG_REPEAT_PENALTY: "--repeat-penalty ${ARG_REPEAT_PENALTY_VALUE}"
+  ARG_SAMPLER_SEQ: "--sampler-seq"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_SAMPLERS: "--samplers ${ARG_SAMPLERS_VALUE}"
+  ARG_SAMPLING_SEQ: "--sampling-seq ${ARG_SAMPLING_SEQ_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_SEED: "--seed ${ARG_SEED_VALUE}"
+  ARG_TEMP: "--temp"
+  ARG_TFS: "--tfs ${ARG_TFS_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_TOP_K: "--top-k ${ARG_TOP_K_VALUE}"
+  ARG_TOP_N_SIGMA: "--top-n-sigma"  # only: herd/ik_llama.cpp/build/bin
+  ARG_TOP_NSIGMA: "--top-nsigma"  # only: herd/beellama.cpp/build-cuda86/bin, herd/llama-cpp-turboquant/build/bin, llama.cpp-b11059
+  ARG_TOP_P: "--top-p ${ARG_TOP_P_VALUE}"
+  ARG_TYPICAL: "--typical"
+  ARG_XTC_PROBABILITY: "--xtc-probability"
+  ARG_XTC_THRESHOLD: "--xtc-threshold"
+
+  # --- GENERAL (18) ---
+  ARG_CHUNKS: "--chunks ${ARG_CHUNKS_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_DISPLAY_PROMPT: "--display-prompt"  # only: herd/ik_llama.cpp/build/bin
+  ARG_FILE: "--file ${ARG_FILE_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_IN_FILE: "--in-file ${ARG_IN_FILE_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_IN_PREFIX: "--in-prefix ${ARG_IN_PREFIX_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_IN_PREFIX_BOS: "--in-prefix-bos"  # only: herd/ik_llama.cpp/build/bin
+  ARG_IN_SUFFIX: "--in-suffix ${ARG_IN_SUFFIX_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_INFILL: "--infill"  # only: herd/ik_llama.cpp/build/bin
+  ARG_INTERACTIVE: "--interactive"  # only: herd/ik_llama.cpp/build/bin
+  ARG_MINILOG: "--minilog"  # only: herd/ik_llama.cpp/build/bin
+  ARG_PROMPT: "--prompt ${ARG_PROMPT_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_PROMPT_CACHE: "--prompt-cache ${ARG_PROMPT_CACHE_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_PROMPT_CACHE_ALL: "--prompt-cache-all"  # only: herd/ik_llama.cpp/build/bin
+  ARG_PROMPT_CACHE_RO: "--prompt-cache-ro"  # only: herd/ik_llama.cpp/build/bin
+  ARG_SPEC_REPLACE: "--spec-replace ${ARG_SPEC_REPLACE_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_SWA_COMPRESS: "--swa-compress"  # only: herd/ik_llama.cpp/build/bin
+  ARG_VERBOSE_PROMPT: "--verbose-prompt"  # only: herd/ik_llama.cpp/build/bin
+  ARG_VERBOSITY: "--verbosity ${ARG_VERBOSITY_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+
+  # --- PERPLEXITY (10) ---
+  ARG_ALL_LOGITS: "--all-logits"  # only: herd/ik_llama.cpp/build/bin
+  ARG_HELLASWAG: "--hellaswag"  # only: herd/ik_llama.cpp/build/bin
+  ARG_HELLASWAG_TASKS: "--hellaswag-tasks ${ARG_HELLASWAG_TASKS_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_KL_DIVERGENCE: "--kl-divergence"  # only: herd/ik_llama.cpp/build/bin
+  ARG_MULTIPLE_CHOICE: "--multiple-choice"  # only: herd/ik_llama.cpp/build/bin
+  ARG_MULTIPLE_CHOICE_TASKS: "--multiple-choice-tasks ${ARG_MULTIPLE_CHOICE_TASKS_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_PPL_OUTPUT_TYPE: "--ppl-output-type ${ARG_PPL_OUTPUT_TYPE_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_PPL_STRIDE: "--ppl-stride ${ARG_PPL_STRIDE_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_WINOGRANDE: "--winogrande"  # only: herd/ik_llama.cpp/build/bin
+  ARG_WINOGRANDE_TASKS: "--winogrande-tasks ${ARG_WINOGRANDE_TASKS_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+
+  # --- BACKEND (8) ---
+  ARG_DEFER_EXPERTS: "--defer-experts"  # only: herd/ik_llama.cpp/build/bin
+  ARG_DEFER_PLE: "--defer-ple"  # only: herd/ik_llama.cpp/build/bin
+  ARG_FIT: "--fit"  # only: herd/ik_llama.cpp/build/bin
+  ARG_FIT_MARGIN: "--fit-margin ${ARG_FIT_MARGIN_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_MAX_GPU: "--max-gpu"  # only: herd/ik_llama.cpp/build/bin
+  ARG_PREFETCH_EXPERTS: "--prefetch-experts"  # only: herd/ik_llama.cpp/build/bin
+  ARG_PREFETCH_EXPERTS_THREADS: "--prefetch-experts-threads ${ARG_PREFETCH_EXPERTS_THREADS_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_RPC: "--rpc ${ARG_RPC_VALUE}"  # only: herd/ik_llama.cpp/build/bin, llama.cpp-b11059
+
+  # --- IMATRIX (7) ---
+  ARG_CHUNK: "--chunk ${ARG_CHUNK_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_OUTPUT: "--output ${ARG_OUTPUT_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_OUTPUT_DRAFT: "--output-draft ${ARG_OUTPUT_DRAFT_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_OUTPUT_TENSOR_NAME: "--output-tensor-name ${ARG_OUTPUT_TENSOR_NAME_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_PPL: "--ppl"  # only: herd/ik_llama.cpp/build/bin
+  ARG_PROCESS_OUTPUT: "--process-output"  # only: herd/ik_llama.cpp/build/bin
+  ARG_SAVE_FREQUENCY: "--save-frequency ${ARG_SAVE_FREQUENCY_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+
+  # --- CVECTOR (5) ---
+  ARG_METHOD: "--method ${ARG_METHOD_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_NEGATIVE_FILE: "--negative-file ${ARG_NEGATIVE_FILE_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_PCA_BATCH: "--pca-batch ${ARG_PCA_BATCH_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_PCA_ITER: "--pca-iter ${ARG_PCA_ITER_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_POSITIVE_FILE: "--positive-file ${ARG_POSITIVE_FILE_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+
+  # --- LOGGING (5) ---
+  ARG_LOG_APPEND: "--log-append"  # only: herd/ik_llama.cpp/build/bin
+  ARG_LOG_ENABLE: "--log-enable"  # only: herd/ik_llama.cpp/build/bin
+  ARG_LOG_NEW: "--log-new"  # only: herd/ik_llama.cpp/build/bin
+  ARG_LOG_TEST: "--log-test"  # only: herd/ik_llama.cpp/build/bin
+  ARG_SIMPLE_IO: "--simple-io"  # only: herd/ik_llama.cpp/build/bin
+
+  # --- SERVER (5) ---
+  ARG_LOG_FORMAT: "--log-format ${ARG_LOG_FORMAT_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_SEND_DONE: "--send-done"  # only: herd/ik_llama.cpp/build/bin
+  ARG_SQL_SAVE_FILE: "--sql-save-file ${ARG_SQL_SAVE_FILE_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_SQLITE_ZSTD_EXT_FILE: "--sqlite-zstd-ext-file ${ARG_SQLITE_ZSTD_EXT_FILE_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_WEBUI: "--webui ${ARG_WEBUI_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+
+  # --- MODEL (4) ---
+  ARG_MODEL_DRAFT: "--model-draft"  # only: herd/ik_llama.cpp/build/bin
+  ARG_RECURRENT_CKPT_MODE: "--recurrent-ckpt-mode"  # only: herd/ik_llama.cpp/build/bin
+  ARG_SPEC_AUTOTUNE: "--spec-autotune"  # only: herd/ik_llama.cpp/build/bin
+  ARG_SPEC_CKPT_MODE: "--spec-ckpt-mode ${ARG_SPEC_CKPT_MODE_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+
+  # --- MULTI-MODALITY (4) ---
+  ARG_AUDIO: "--audio ${ARG_AUDIO_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_IMAGE: "--image ${ARG_IMAGE_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_MMPROJ_URL: "--mmproj-url ${ARG_MMPROJ_URL_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_MTMD_KQ_TYPE: "--mtmd-kq-type ${ARG_MTMD_KQ_TYPE_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+
+  # --- EMBEDDING (3) ---
+  ARG_ATTENTION: "--attention ${ARG_ATTENTION_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_EMBD_OUTPUT_FORMAT: "--embd-output-format"  # only: herd/ik_llama.cpp/build/bin
+  ARG_EMBD_SEPARATOR: "--embd-separator"  # only: herd/ik_llama.cpp/build/bin
+
+  # --- RETRIEVAL (3) ---
+  ARG_CHUNK_SEPARATOR: "--chunk-separator ${ARG_CHUNK_SEPARATOR_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_CHUNK_SIZE: "--chunk-size ${ARG_CHUNK_SIZE_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_CONTEXT_FILE: "--context-file ${ARG_CONTEXT_FILE_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+
+  # --- PASSKEY (2) ---
+  ARG_JUNK: "--junk ${ARG_JUNK_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  ARG_POS: "--pos ${ARG_POS_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+
+  # --- BENCH (1) ---
+  ARG_OUTPUT_FORMAT: "--output-format ${ARG_OUTPUT_FORMAT_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+
+  # --- TEMPLATE (1) ---
+  ARG_REASONING_TOKENS: "--reasoning-tokens ${ARG_REASONING_TOKENS_VALUE}"  # only: herd/ik_llama.cpp/build/bin
+  # <<< AUTO_FLAGS <<<
+models:
+  # --- Oracle judge panel (added 2026-09-20, oracle-hardening) ---
+  # ROUTER CONFIG OWNS MODEL SELECTION. The Oracle asks the router for
+  # these role aliases only; the concrete panel targets live ONLY in the
+  # --target/--standby flags below. To retarget the panel (new census,
+  # deprecations, cost changes): edit these flags, restart herd. No Oracle
+  # code change. Fixed-target forwarders via config/herd.d/alias-shim.py
+  # (same pattern as the Kimi short aliases below). Standbys are one-shot
+  # fail-fast (HFT discipline): on primary error (conn failure/HTTP 5xx)
+  # the shim tries the standby exactly once, then surfaces whatever comes
+  # back. 4xx surfaces verbatim so misconfiguration stays visible.
+  # 2026-09-21 modelmap: targets MUST be peer/<id> prefixed -- the shim
+  # /health gates herd readiness on the target appearing in /v1/models,
+  # which advertises peer models ONLY prefixed. Bare targets ->
+  # 'unroutable' -> herd hangs waiting for ready.
+  # oracle-judge-local: native llama-swap alias of beellama/gemma-96k (2026-09-21).
+  # Was an alias-shim.py cmd entry; REMOVED because a shim hosted INSIDE
+  # llama-swap cannot forward to another llama-swap cmd model -- the swapper
+  # cannot swap to the target while the shim holds the active slot for the
+  # in-flight outer request (re-entrant deadlock: health 200, completions
+  # hang -> 502). Native aliasing routes the swap directly, no re-entrancy.
+  # Router config still owns selection: edit the aliases list below.
+  # --- Kimi short aliases (added 2026-09-20) ---
+  # Fixed-target forwarders via config/herd.d/alias-shim.py. No fallback,
+  # no substitution: each alias IS its target. Retargeted 2026-09-20
+  # (moonshot-parked-audit) from openrouter-pool/* back to moonshot/* --
+  # the direct peer is restored; openrouter-pool Kimi is 402
+  # "Insufficient credits" until the account is topped up.
+  # 2026-09-21 modelmap: live-probed -- the `peer/<id>` prefixed form is
+  # what /v1/models advertises and it routes directly to the peer
+  # (moonshot/kimi-k2.6 -> 429, moonshot/kimi-k2.7-code -> 429). Bare IDs
+  # hit the dedup'd global map and are unreliable (kimi-k2.7-code -> 404).
+  # 2026-09-21 (ember-kimi-route): Kimi routes are NEVER defaults;
+  # their sole purpose is routing Kimi FREE models maximally.
+  # Ordered free-Kimi chain; shim advances on 5xx/conn/429/402/404;
+  # 401 never advances. Paid Kimi excluded (free only).
+  # 2026-09-21 (ember-kimi-route): Kimi routes are NEVER defaults;
+  # their sole purpose is routing Kimi FREE models maximally.
+  # Ordered free-Kimi chain; shim advances on 5xx/conn/429/402/404;
+  # 401 never advances. Paid Kimi excluded (free only).
+  # 2026-09-21 (ember-kimi-route): Kimi routes are NEVER defaults;
+  # their sole purpose is routing Kimi FREE models maximally.
+  # Ordered free-Kimi chain; shim advances on 5xx/conn/429/402/404;
+  # 401 never advances. Paid Kimi excluded (free only).
+  # kimi-k3-nim: genuine Kimi K3 via NVIDIA NIM (2026-09-21).
+  # Fixed-target alias to nim-kimi/moonshotai/kimi-k3; identity enforced by
+  # the sidecar (response model must be moonshotai/kimi-k3). Single target,
+  # no standby: failures surface loud and verbatim. NEVER repointed at
+  # another model to hide a provider failure. Cold-aware: first request
+  # after idle takes ~120-220s (serverless hot-load); SHIM_CONNECT_TIMEOUT
+  # covers the header wait.
+  beellama/exaone-4-0-1-2b-iq4xs:
+    cmd: ${BEELLAMA_BIN} --model ${EXAONE_1B_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - fast
+      - tiny
+      - exaone-iq4xs
+      - exaone-1.2b-iq4xs-32k
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "EXAONE 4.0 1.2B · 32K · IQ4_XS"
+    description: "Ultralight bilingual model."
+    metadata:
+      fork: beellama
+      context: 32768
+      quant: IQ4_XS
+      vram: ~2GB
+      code: true
+
+  beellama/exaone-4-0-1-2b-q4km:
+    cmd: ${BEELLAMA_BIN} --model ${EXAONE_1B_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - exaone-q4km
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "EXAONE 4.0 1.2B · 32K · Q4_K_M"
+    description: "Ultralight bilingual model, standard precision."
+    metadata:
+      fork: beellama
+      context: 32768
+      quant: Q4_K_M
+      vram: ~3GB
+      code: true
+
+  beellama/exaone-4-0-1-2b-q5km:
+    cmd: ${BEELLAMA_BIN} --model ${EXAONE_1B_Q5KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - exaone-q5km
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "EXAONE 4.0 1.2B · 32K · Q5_K_M"
+    description: "Ultralight bilingual model, high precision."
+    metadata:
+      fork: beellama
+      context: 32768
+      quant: Q5_K_M
+      vram: ~3.5GB
+      code: true
+
+  beellama/exaone-4-0-1-2b-q6k:
+    cmd: ${BEELLAMA_BIN} --model ${EXAONE_1B_Q6K} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - exaone-q6k
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "EXAONE 4.0 1.2B · 32K · Q6_K"
+    description: "Ultralight bilingual model, near-lossless."
+    metadata:
+      fork: beellama
+      context: 32768
+      quant: Q6_K
+      vram: ~4GB
+      code: true
+
+  beellama/exaone-4-0-1-2b-q80:
+    cmd: ${BEELLAMA_BIN} --model ${EXAONE_1B_Q80} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_32K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - exaone-q80
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "EXAONE 4.0 1.2B · 32K · Q8_0"
+    description: "Ultralight bilingual model, full precision."
+    metadata:
+      fork: beellama
+      context: 32768
+      quant: Q8_0
+      vram: ~5GB
+      code: true
+
+  mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m:
+    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_64K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - small
+      - qwen-flash-64k-i1
+      - qwen3.5-9b-i1-q4km-64k
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "QWEN 3.5 9B Flash · 64K · IQ4_XS"
+    description: "Fast utility model with DeepSeek distillation."
+    metadata:
+      fork: beellama
+      context: 65536
+      quant: IQ4_XS
+      vram: ~6GB
+      code: true
+
+  mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_s:
+    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_96K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - qwen-flash-96k-i1
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "QWEN 3.5 9B Flash · 96K · IQ4_XS"
+    description: "Fast utility model, extended context."
+    metadata:
+      fork: beellama
+      context: 98304
+      quant: IQ4_XS
+      vram: ~7GB
+      code: true
+
+  jackrong/qwen3.5-9b-deepseek-v4-flash-da-q4km:
+    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_DA_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_128K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - qwen-flash-da-128k
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "QWEN 3.5 9B Flash · 128K · DA Q4_K_M"
+    description: "Data-optimized variant, long context."
+    metadata:
+      fork: beellama
+      context: 131072
+      quant: Q4_K_M
+      vram: ~8GB
+      code: true
+
+  gemma-4-12b-unified:
+    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_BASE_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_96K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - medium
+      - code
+      - gemma-4-12b
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "Gemma 4 12B · 96K · Q4_K_M"
+    description: "Balanced coding model."
+    metadata:
+      fork: beellama
+      context: 98304
+      quant: Q4_K_M
+      vram: ~9GB
+      code: true
+
+  gemma-4-12b-uncensored:
+    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_UNCENS_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_96K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - uncensored
+      - gemma-uncensored
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "Gemma 4 12B Uncensored · 96K · Q4_K_M"
+    description: "Uncensored variant."
+    metadata:
+      fork: beellama
+      context: 98304
+      quant: Q4_K_M
+      vram: ~9GB
+      code: true
+      uncensored: true
+
+  beellama/qwen-flash-64k:
+    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_64K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - qwen-flash-64k
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "QWEN 3.5 9B Flash · 64K"
+    description: "Fast utility, 64K context."
+    metadata:
+      fork: beellama
+      context: 65536
+      quant: IQ4_XS
+      vram: ~6GB
+      code: true
+
+  beellama/qwen-flash-96k:
+    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_96K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - qwen-flash-96k
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "QWEN 3.5 9B Flash · 96K"
+    description: "Fast utility, 96K context."
+    metadata:
+      fork: beellama
+      context: 98304
+      quant: IQ4_XS
+      vram: ~7GB
+      code: true
+
+  beellama/qwen-flash-128k:
+    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_128K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - qwen-flash-128k
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "QWEN 3.5 9B Flash · 128K"
+    description: "Fast utility, 128K context."
+    metadata:
+      fork: beellama
+      context: 131072
+      quant: IQ4_XS
+      vram: ~8GB
+      code: true
+
+  beellama/qwen-flash-256k:
+    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_IQ4XS} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_256K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - long
+      - qwen-flash-256k
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "QWEN 3.5 9B Flash · 256K"
+    description: "Fast utility, 256K context."
+    metadata:
+      fork: beellama
+      context: 262144
+      quant: IQ4_XS
+      vram: ~10GB
+      code: true
+
+  beellama/qwen-flash-mtp-64k:
+    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_MTP} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_64K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - qwen-flash-mtp-64k
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "QWEN 3.5 9B Flash MTP · 64K"
+    description: "MTP variant, 64K context."
+    metadata:
+      fork: beellama
+      context: 65536
+      quant: Q4_K_M
+      vram: ~6GB
+      code: true
+      mtp: true
+
+  beellama/qwen-flash-mtp-128k:
+    cmd: ${BEELLAMA_BIN} --model ${QWEN35_9B_FLASH_MTP} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_128K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - qwen-flash-mtp-128k
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "QWEN 3.5 9B Flash MTP · 128K"
+    description: "MTP variant, 128K context."
+    metadata:
+      fork: beellama
+      context: 131072
+      quant: Q4_K_M
+      vram: ~8GB
+      code: true
+      mtp: true
+
+  beellama/gemma-64k:
+    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_BASE_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_64K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - gemma-64k
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "Gemma 4 12B · 64K"
+    description: "Balanced coding, 64K context."
+    metadata:
+      fork: beellama
+      context: 65536
+      quant: Q4_K_M
+      vram: ~8GB
+      code: true
+
+  beellama/gemma-96k:
+    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_BASE_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_96K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - gemma-96k
+      - oracle-judge-local
+      # `classify` — skill-cluster classifier. Lives HERE, not in the
+      # top-level `aliases:` block: herd's parser has no field for that
+      # block, so an entry there is silently dropped and never served
+      # (small/medium/code/long only resolve because models: re-declares
+      # them below). See the note above the dead block.
+      - classify
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "Gemma 4 12B · 96K"
+    description: "Balanced coding, 96K context."
+    metadata:
+      fork: beellama
+      context: 98304
+      quant: Q4_K_M
+      vram: ~9GB
+      code: true
+
+  beellama/gemma-128k:
+    cmd: ${BEELLAMA_BIN} --model ${GEMMA_12B_BASE_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_128K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - gemma-128k
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "Gemma 4 12B · 128K"
+    description: "Balanced coding, 128K context."
+    metadata:
+      fork: beellama
+      context: 131072
+      quant: Q4_K_M
+      vram: ~10GB
+      code: true
+
+  beellama/strange-64k:
+    cmd: ${BEELLAMA_BIN} --model ${STRANGE_7B_Q4KM} ${SRV_BASE} ${FORK_BEELLAMA} ${CTX_64K} ${KV_Q8} ${REASONING_OFF} ${SPEC_NONE}
+    aliases:
+      - strange-64k
+    env:
+      - LD_LIBRARY_PATH=${BEELLAMA_LD}
+      - ${CUDA_ENV}
+      - LLAMA_API_KEY=
+    name: "StrangeMerges 7B · 64K"
+    description: "Experimental merge model."
+    metadata:
+      fork: beellama
+      context: 65536
+      quant: Q4_K_M
+      vram: ~5GB
+      experimental: true
+
+# =============================================================================
+# ROUTING DOCTRINE (Chris, 2026-09-20): RANKING > FREE-ON-PROVIDER > PAY.
+# Default model preference, measured live 2026-09-20 ~09:00 MDT through herd
+# :25100 (tiny completion probe, first-valid-wins). Latency is the measured
+# ranking proxy until eval scores land. A 429 is a TRANSIENT routing signal --
+# the key/model stays in rotation -- never a death certificate, never a config
+# rewrite. Local models are the fallback, never the default.
+#
+# FREE, ranked (model -- probe ms):
+#                  566
+#   gemini/gemini-3-flash-preview                          577
+#   openrouter-ling/inclusionai/ling-3.0-flash-sante:free   692
+#   openrouter-ling/inclusionai/ling-3.0-flash-vl:free      749
+#   openrouter-ling/inclusionai/ling-3.0-flash-fin:free     752
+#   gemini/gemini-3.6-flash                                 865
+#   openrouter-free/nvidia/nemotron-3-super-120b-a12b:free 1133
+#   gemini/gemini-3.7-flash                                1751
+#   gemini/gemini-3.8-flash                                2052
+#   openrouter-free/nvidia/nemotron-3.5-lightning:free     3201
+#   gemini/gemini-3.5-flash                                4727
+# PAID, working (model -- probe ms):
+#   mistral/ministral-3b-latest                             300
+#   mistral/codestral-latest                                458
+#   mistral/ministral-14b-latest                            478
+#   mistral/ministral-8b-latest                             836
+#   moonshot/kimi-k2.6, kimi-k2.7-code -- 429 on 2026-09-20 ~09:00 (rate-limit,
+#     transient; key verified live via /v1/models 200). Kimi is NOT dead.
+# LOCAL (fallback only): beellama/*, toolcall-local/qwen3.5-9b-tool.
+# DEAD/HANGING (do not route): flock-direct (25s hangs, disabled above).
+# Google Antigravity is the comparison baseline for agent/model quality when usable.
+# =============================================================================
+# Local size-tier aliases (committed 2026-09-21 modelmap-r2): these were
+# worktree-only WIP and were wiped by an unrelated config rewrite at
+# ---- DEAD BLOCK, DO NOT ADD MODELS HERE -------------------------------
+# This top-level `aliases:` block is NOT read by herd. Its Config struct
+# (internal/config/config.go) has fields for models/profiles/selectors/
+# peers, but none for a top-level alias map; the only `yaml:"aliases"` tag
+# in the tree is on ModelConfig, i.e. the per-model list at
+# models.<id>.aliases. Entries added here parse as valid YAML and are
+# then discarded at load with no error.
+#
+# `small`, `medium`, `code` and `long` resolve anyway ONLY because three
+# models: entries re-declare them in their own aliases: list
+# (mradermacher/qwen3.5-9b-deepseek-v4-flash-i1-q4_k_m, gemma-4-12b-unified,
+# beellama/qwen-flash-256k). Nothing here is doing any work.
+#
+# To add an alias, put it in the owning model's aliases: list. `classify`
+# was added here first and was never served, for exactly this reason.
+# Verified with a YAML-library parse of this file plus a live /v1/models diff.
+# 2026-09-21 06:26 MDT; restored here durably. Each entry is a full cmd
+# model (distinct ctx/reasoning params per tier) -- the estate's
+# sovereign-swap fork serves cmd blocks under top-level `aliases:`.
+# Model files come from the macros: section (MODEL_DIR, QWEN35_9B_FLASH_IQ4XS,
+# GEMMA_12B_BASE_Q4KM); both gguf files verified on disk 2026-09-21.
+# Router config owns selection: retarget by editing the --model macros.
+# ---- REMOVED: top-level `aliases:` block -------------------------------
+# This block was dead config. herd's Config struct has no top-level alias
+# map; the only yaml:"aliases" tag in the tree is on ModelConfig, i.e. the
+# per-model list at models.<id>.aliases. yaml.v3 dropped the block silently
+# at every load - valid YAML, no error, nothing served.
+#
+# small/medium/code/long resolved anyway ONLY because three models: entries
+# declare them in their own aliases: list (mradermacher/qwen3.5-9b-deepseek-
+# v4-flash-i1-q4_k_m, gemma-4-12b-unified, beellama/qwen-flash-256k).
+# `classify` was added here first and never served, for the same reason; it
+# now lives on gemma-4-12b-unified.
+#
+# To add an alias, put it in the owning model's aliases: list. herd now
+# rejects unknown top-level keys at load instead of ignoring them.

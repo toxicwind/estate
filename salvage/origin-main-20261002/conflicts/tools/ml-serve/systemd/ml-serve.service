@@ -1,0 +1,16 @@
+[Unit]
+Description=ml-serve resident ML inference daemon (wallpaper intelligence)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /home/toxic/sovereign/tools/ml-serve/server.py
+Restart=on-failure
+RestartSec=5
+Environment=ML_SERVE_PORT=25180
+# Models live in the shared cache (never in git):
+#   ~/.cache/quickshell/wallpaper-ml/{model.onnx,selected_tags.csv,isnetis.onnx}
+
+[Install]
+WantedBy=default.target

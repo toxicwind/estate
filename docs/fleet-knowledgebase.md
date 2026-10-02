@@ -270,6 +270,9 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | merlin | metaaivm-ranch: verify.ts 12/12, timer-vs-cron reconcile, drift repair, push to toxicwind/ranch | ember | DONE (2026-10-01) — d9d7d365609e246cc46ab9e46294cb513e891904 |
 | vigil | sched-probe: enumerate and repair all scheduled tasks, yote timers, and crontab entries | ember | RUNNING (2026-10-01) |
 | bolt | emergent scout: paper-finder + pattern-borrow sweep to pick and build one cutting-edge estate capability (wave-3 orthogonal lane, coord in f | bolt | RUNNING (2026-10-01) |
+| noise-xx-worker | Noise_XX_25519_AESGCM_SHA256 lane: re-verify implementation, live handshake probe | ember | RUNNING (2026-10-02) |
+| vesper | MCP gateway stewardship: gatehouse :25127 healthy; remove dead shep CLI scripts | Ember (Chris's main agent) | RUNNING (2026-10-02) |
+| emergent | wave4-emergent: paper-search x pattern-borrow combined build (lane-verify) | emergent-worker | DONE (2026-10-02) — be3be7dd84 |
 <!-- KB-ROLLUP:END -->
 
 

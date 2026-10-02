@@ -1,0 +1,34 @@
+modelRoles:
+  default: openrouter/stealth/space-bunny-alpha
+  smol: openrouter/liquid/lfm-2.5-2.6b:free
+  slow: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
+  vision: openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
+  plan: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  advisor: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  judge: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  task: openrouter/nvidia/nemotron-3.5-lightning:free
+  commit: openrouter/liquid/lfm-2.5-2.6b:free
+  tiny: openrouter/liquid/lfm-2.5-2.6b:free
+  memory: openrouter/liquid/lfm-2.5-2.6b:free
+  verification: openrouter/nvidia/nemotron-3.5-lightning:free
+  fallback: openrouter/inclusionai/ling-3.0-flash-fin:free
+  web: web/exa
+defaultThinkingLevel: auto
+retry:
+  maxRetries: 3
+  maxDelayMs: 300000
+  modelFallback: true
+  fallbackChains:
+    openrouter/*:
+      - openrouter/liquid/lfm-2.5-2.6b:free
+      - openrouter/nvidia/nemotron-3-super-120b-a12b:free
+      - openrouter/inclusionai/ling-3.0-flash-fin:free
+    google-antigravity/*:
+      - openrouter/inclusionai/ling-3.0-flash-fin:free
+      - openrouter/nvidia/nemotron-3-super-120b-a12b:free
+extensions:
+  - /home/toxic/.bun/install/global/node_modules/billion-context/dist/agent/omp-native.js
+setupVersion: 2
+skills:
+  customDirectories:
+    - /home/toxic/sovereign/skills

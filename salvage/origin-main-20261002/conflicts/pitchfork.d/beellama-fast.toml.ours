@@ -1,0 +1,17 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'beellama-fast'.
+# Owned by the sovereign project; the parent only composes it.
+
+[daemons.beellama-fast]
+port = 25122
+run = "exec /home/toxic/estate/stack/services/_consolidated_herd_20260924/beellama-fast.sh"
+dir = "/home/toxic/estate"
+mise = false
+retry = true
+env = { BEELLAMA_PORT = "25122" }
+boot_start = true
+# NOTE 2026-09-20: literal port; pitchfork does not expand ${} in ready_http (25122 == $BEELLAMA_PORT SSOT)
+ready_http = "http://127.0.0.1:25122/health"
+auto = ["start"]
+
+# openfang-health — 5-min OpenFang/coyote health loop -> JSON/HTML + squawk on transitions.
+# Added 2026-09-20 (openfang recon track).

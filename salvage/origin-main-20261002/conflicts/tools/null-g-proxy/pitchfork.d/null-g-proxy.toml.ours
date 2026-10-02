@@ -1,0 +1,14 @@
+# tools/null-g-proxy — project-owned daemon manifest. Source of truth for 'null-g-proxy'.
+# Owned by the tools/null-g-proxy project; the parent only composes it.
+
+
+[daemons.null-g-proxy]
+port = 25107
+run = "exec bun run src/index.ts"
+dir = "/home/toxic/estate/tools/null-g-proxy"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25107/health"
+health_http = { url = "http://127.0.0.1:25107/health", interval = "30s", timeout = "5s", retries = 3 }
+depends = ["gatehouse"]
+auto = ["start"]

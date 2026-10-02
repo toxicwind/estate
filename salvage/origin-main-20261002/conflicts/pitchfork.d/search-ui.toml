@@ -1,0 +1,16 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'search-ui'.
+# Owned by the sovereign project; the parent only composes it.
+
+[daemons.search-ui]
+port = 25114
+run = "exec ./node_modules/.bin/next dev -p 25114"
+dir = "/home/toxic/sovereign/sovereign-github-search/apps/frontend"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25114/"
+depends = ["gatehouse"]
+auto = ["start"]
+
+# (Renamed from "axiom" 2026-09-21: the old service spawned a DUPLICATE kernel
+# on :25203 sharing the kernel SQLite DB. Now proxy-only; the kernel is
+# daemons.openfang on :25196. See src/services/openfang.ts.)

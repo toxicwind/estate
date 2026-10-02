@@ -58,16 +58,12 @@ const HTTP_SERVICES: ServiceEndpoint[] = [
     port: 25127,
   },
   { name: "qdrant", url: "http://127.0.0.1:25133/", port: 25133 },
-<<<<<<<< HEAD:skills/scripts/health-audit.ts
   { name: "coyote", url: "http://127.0.0.1:25143/health", port: 25143 },
   { name: "keypool", url: "http://127.0.0.1:25109/health", port: 25109 },
   { name: "hindsight-cp", url: "http://127.0.0.1:25118/", port: 25118 },
   { name: "flock", url: "http://127.0.0.1:25193/health", port: 25193 },
   { name: "boundless", url: "http://127.0.0.1:25197/api/health", port: 25197 },
   { name: "windmill", url: "http://127.0.0.1:25219/api/status", port: 25219 },
-========
-  { name: "hal-substrate", url: "http://127.0.0.1:25143/health", port: 25143 },
->>>>>>>> origin/main:readme-fix-sovereign-1789408144/skills/health-audit.ts
 ];
 
 const TCP_SERVICES: TcpEndpoint[] = [

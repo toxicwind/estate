@@ -1,0 +1,18 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'browserless'.
+# Owned by the sovereign project; the parent only composes it.
+
+[daemons.browserless]
+dir = "."
+run = "exec /home/toxic/estate/ranch/barn/browserless/server/run.sh"
+ready_port = 25130
+depends = ["gatehouse"]
+env = { SOVEREIGN_ROUTER_PORT = "25104" }
+auto = ["start"]
+
+# WhatsApp Cloud API MCP server + inbound webhook (2026-09-14).
+# Secrets live ONLY in /home/toxic/.config/pitchfork-secrets/whatsapp-mcp.env
+# (0600, untracked) — never in this file or the whatsapp-mcp git repo.
+# WHATSAPP_VERIFY_TOKEN is self-generated; it must ALSO be entered in the Meta
+# app dashboard (WhatsApp > Configuration > Webhook) alongside the callback URL.
+# To rotate: generate a new token into the secrets file, update the dashboard,
+# then: pitchfork restart whatsapp-mcp

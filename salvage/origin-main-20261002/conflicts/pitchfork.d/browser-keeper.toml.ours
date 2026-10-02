@@ -1,0 +1,22 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'browser-keeper'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.browser-keeper]
+port = 9223
+# The keeper launches a HEADED chromium on DISPLAY :99, so it cannot come up
+# without agent-display (Xvnc :99). Undeclared, the keeper started anyway and
+# relaunch-looped on "Missing X server or $DISPLAY" every 5s. That left the
+# browserless MCP server refusing to start ("keeper CDP not answering"), and
+# every omp startup paid for the failed connect. The dependency is real, so
+# it is declared here instead of being discovered again after a reboot.
+depends = ["agent-display"]
+run = "exec /home/toxic/estate/ranch/barn/browserless/keeper/keeper.sh"
+dir = "."
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:9223/"
+health_http = { url = "http://127.0.0.1:9223/", interval = "30s", timeout = "5s", retries = 3 }
+boot_start = true
+env = { DISPLAY = ":99", XDG_RUNTIME_DIR = "/run/user/1000" }
+auto = ["start"]

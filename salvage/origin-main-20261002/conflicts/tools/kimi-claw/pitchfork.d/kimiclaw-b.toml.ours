@@ -1,0 +1,12 @@
+# tools/kimi-claw — project-owned daemon manifest. Source of truth for 'kimiclaw-b'.
+# Owned by the tools/kimi-claw project; the parent only composes it.
+
+[daemons.kimiclaw-b]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/tools/kimi-claw/bridge.ts --daemon --instance b"
+dir = "/home/toxic/estate/tools/kimi-claw"
+mise = false
+retry = true
+auto = ["start"]
+
+# --- herd-deployer 2026-09-20: key-pool rotation sidecar for herd cloud peers.
+# Cheap health probes, first-valid-wins per call, 401/402/429 = routing signal.

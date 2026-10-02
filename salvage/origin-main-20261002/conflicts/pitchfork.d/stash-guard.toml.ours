@@ -1,0 +1,11 @@
+# sovereign — project-owned daemon manifest. Source of truth for 'stash-guard'.
+# Owned by the sovereign project; the parent only composes it.
+
+
+[daemons.stash-guard]
+run = "exec python3 /home/toxic/estate/tools/stash-guard/stash-guard.py --repo /home/toxic/estate --deep --interval 90"
+dir = "/home/toxic/estate"
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
