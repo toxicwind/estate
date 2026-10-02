@@ -7,14 +7,14 @@ credential. Four agent tools: search, contents, find-similar, answer.
 
 ## Tooling
 ```sh
-exa.py search <query> [--n N] [--type auto|neural|keyword] [--livecrawl always|fallback|never] [--chars N]
-exa.py contents <url>... [--chars N]
-exa.py find-similar <url> [--n N]
-exa.py answer <query>
+exa.mjs search <query> [--n N] [--type auto|neural|keyword] [--livecrawl always|fallback|never] [--chars N]
+exa.mjs contents <url>... [--chars N]
+exa.mjs find-similar <url> [--n N]
+exa.mjs answer <query>
 ```
 Output is JSON on stdout. Every call is appended to
 `~/.cache/shingle/exa_calls.jsonl` (endpoint, elapsed_ms, ok, cost_usd) for
-cost tracking.
+cost tracking. Exit 2 is a usage error, exit 3 a credential error.
 
 ## Auth
 The credential is already stored; nothing here collects one. Never ask the
