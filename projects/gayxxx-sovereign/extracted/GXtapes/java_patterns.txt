@@ -1,0 +1,20 @@
+                                        anonymousClass14.L$9 = kotlin.coroutines.jvm.internal.SpillingKt.nullOutSpilledVariable(m3u8Regex2);
+                            com.lagradost.api.Log.INSTANCE.e(gXtapes88z.getName(), "No m3u8 link found in decoded payload for " + url2);
+                                        com.lagradost.api.Log.INSTANCE.i(gXtapes88z2.getName(), "Found m3u8: " + link);
+                                        com.lagradost.cloudstream3.utils.ExtractorLinkType extractorLinkType = com.lagradost.cloudstream3.utils.ExtractorLinkType.M3U8;
+                    com.lagradost.cloudstream3.utils.ExtractorLinkType extractorLinkType = com.lagradost.cloudstream3.utils.ExtractorLinkType.M3U8;
+                    java.lang.String apiUrl4 = gXtapes88z.getMainUrl() + "/api/v1/info?id=" + id;
+    @kotlin.coroutines.jvm.internal.DebugMetadata(c = "com.GXtapes.GXtapes88z", f = "Extractor.kt", i = {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, l = {96, 118}, m = "getUrl", n = {"url", "referer", "subtitleCallback", "callback", "id", "apiUrl", "url", "referer", "subtitleCallback", "callback", "id", "apiUrl", "apiRes", "decodedBytes", "decodedText", "m3u8Regex", "matches", "$this$forEach$iv", "element$iv", "link", "$i$f$forEach", "$i$a$-forEach-GXtapes88z$getUrl$2"}, nl = {99, 117}, s = {"L$0", "L$1", "L$2", "L$3", "L$4", "L$5", "L$0", "L$1", "L$2", "L$3", "L$4", "L$5", "L$6", "L$7", "L$8", "L$9", "L$10", "L$11", "L$13", "L$14", "I$0", "I$1"}, v = 2)
+        kotlin.text.Regex m3u8Regex;
+        kotlin.text.Regex m3u8Regex2;
+        kotlin.text.Regex m3u8Regex3;
+                kotlin.text.Regex m3u8Regex4 = (kotlin.text.Regex) anonymousClass15.L$9;
+                        m3u8Regex2 = m3u8Regex;
+                                m3u8Regex2 = m3u8Regex3;
+                    m3u8Regex2 = m3u8Regex3;
+                            m3u8Regex3 = m3u8Regex2;
+                    m3u8Regex3 = m3u8Regex4;
+                        m3u8Regex = new kotlin.text.Regex("https?://[^\\s\"'<>]+\\.m3u8[^\\s\"'<>]*");
+                    m3u8Regex = new kotlin.text.Regex("https?://[^\\s\"'<>]+\\.m3u8[^\\s\"'<>]*");
+                        matches = kotlin.sequences.SequencesKt.toList(kotlin.sequences.SequencesKt.map(kotlin.text.Regex.findAll$default(m3u8Regex, decodedText2, 0, i, apiUrl2), new kotlin.jvm.functions.Function1() { // from class: com.GXtapes.GXtapes88z$$ExternalSyntheticLambda0
+                    matches = kotlin.sequences.SequencesKt.toList(kotlin.sequences.SequencesKt.map(kotlin.text.Regex.findAll$default(m3u8Regex, decodedText2, 0, i, apiUrl2), new kotlin.jvm.functions.Function1() { // from class: com.GXtapes.GXtapes88z$$ExternalSyntheticLambda0

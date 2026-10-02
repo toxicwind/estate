@@ -1,0 +1,110 @@
+et(tc)
+    if not binary:
+        return False, (
+            f"unknown toolchain {tc!r}; known: {sorted(TOOLCHAIN_BINS)} "
+            "(the daemon orchestrates mise toolchains, it never installs them)"
+        )
+    try:
+        r = subprocess.run(
+            ["bash", "-lc", f"command -v {binary}"],
+            capture_output=True, text=True, timeout=20,
+        )
+    except Exception as e:
+        return False, f"toolchain preflight failed to run: {e}"
+    path = (r.stdout or "").strip().splitlines()
+    if r.returncode != 0 or not path:
+        return False, (
+            f"toolchain {tc!r} not on login PATH (looked for {binary!r}); "
+            f"install/enable it via mise, then resubmit"
+        )
+    repo = Path(job.get("repo") or "")
+    if not repo.is_dir():
+        return False, f"repo dir does not exist: {repo}"
+    wd = Path(job.get("workdir") or str(repo))
+    if not wd.is_dir():
+        return False, f"workdir does not exist: {wd}"
+    if not job.get("cmd"):
+        return False, "job has no cmd"
+    return True, path[0]
+
+
+def find_cached(job):
+    """Return a succeeded job record with the same spec hash, if any."""
+    h = job_hash(job)
+    with state_lock:
+        for rec in state["jobs"].values():
+            if rec.get("job_hash") == h and rec.get("status") == "succeeded":
+                return rec
+    return None
+
+
+def copy_artifacts(job, jhash, logf):
+    dest = ARTIFACTS / jhash
+    if dest.exists():
+        shutil.rmtree(dest)
+    dest.mkdir(parents=True)
+    wd = Path(job.get("workdir") or job["repo"])
+    manifest = {"job_hash": jhash, "files": []}
+    for rel in job.get("artifacts") or []:
+        src = wd / rel
+        if not src.exists():
+            logf.write(f"[buildsrv] artifact declared but missing: {rel}\n")
+            continue
+        target = dest / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if src.is_dir():
+            shutil.copytree(src, target, symlinks=True)
+        else:
+            shutil.copy2(src, target)
+        manifest["files"].append(rel)
+        logf.write(f"[buildsrv] cached artifact: {rel}\n")
+    (dest / "manifest.json").write_text(json.dumps(manifest, indent=1))
+    return str(dest) if manifest["files"] else None
+
+
+def run_job(job, jid):
+    rec_update = {}
+    started = time.time()
+    log_path = LOGS / f"{jid}.log"
+    logf = open(log_path, "a", encoding="utf-8", errors="replace")
+    logf.write(f"\n===== buildsrv job {jid} started {now_iso()} =====\n")
+    logf.write(f"name={job.get('name')} toolchain={job.get('toolchain')} repo={job.get('repo')}\n")
+    logf.write(f"cmd: {job.get('cmd')}\n")
+    logf.flush()
+
+    ok, detail = preflight(job)
+    status, exit_code = "failed", 98
+    duration = 0.0
+    artifact_dir = None
+    jhash = job_hash(job)
+
+    if not ok:
+        logf.write(f"[buildsrv] PREFLIGHT FAILED: {detail}\n")
+        log(f"job {jid} preflight failed: {detail}")
+    else:
+        logf.write(f"[buildsrv] toolchain ok: {detail}\n")
+        env = dict(os.environ)
+        env.update(job.get("env") or {})
+        env["BUILDSRV_JOB_ID"] = jid
+        wd = job.get("workdir") or job.get("repo")
+        timeout = int(job.get("timeout_s", 1200))
+        log(f"job {jid} running (timeout {timeout}s): {job['cmd'][:100]}")
+        try:
+            proc = subprocess.Popen(
+                ["bash", "-lc", job["cmd"]],
+                cwd=wd, env=env,
+                stdout=logf, stderr=subprocess.STDOUT,
+                start_new_session=True,
+            )
+            try:
+                exit_code = proc.wait(timeout=timeout)
+            except subprocess.TimeoutExpired:
+                import signal as _sig
+                try:
+                    os.killpg(proc.pid, _sig.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                exit_code = proc.wait()
+                logf.write(f"\n[buildsrv] TIMEOUT after {timeout}s — killed\n")
+                log(f"job {jid} timed out after {timeout}s")
+            dur

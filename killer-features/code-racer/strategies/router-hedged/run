@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+"""router-hedged: single-shot codegen through sovereign-router-ts (:25104).
+
+The router does speculative hedging (hedgedChain), circuit-breaker failover,
+and latency-EMA candidate scoring. Strategy = infrastructure diversity:
+resilience engineering instead of a bigger prompt.
+Ceiling: 300s.
+"""
+import os, sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "lib"))
+from cr import *
+
+CEILING = 300
+
+def ext(lang):
+    return {"python": "py", "javascript": "js", "typescript": "ts",
+            "rust": "rs", "go": "go"}.get(lang.lower(), "txt")
+
+def main(task_dir, output_path):
+    arm_timeout(CEILING)
+    spec = read_task(task_dir)
+    lang = spec.get("language", "python")
+    log(f"router-hedged: {spec.get('id')} -> {ROUTER_MODEL}@{ROUTER_URL}")
+    text = chat(ROUTER_URL, ROUTER_MODEL, spec_prompt(spec),
+                max_tokens=4096, temperature=0.2, timeout=270)
+    code = extract_code(text, lang)
+    if not code:
+        log("empty response"); return 1
+    dest = write_solution(output_path, f"solution.{ext(lang)}", code)
+    log(f"wrote {dest} ({len(code)} chars)")
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1], sys.argv[2]))

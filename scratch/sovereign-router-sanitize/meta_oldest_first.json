@@ -1,0 +1,198 @@
+[
+ {
+  "sha": "f177fa589f462870b17ba6ffdf9697dc3d9273b2",
+  "tree": "6f3806eed2da6dd65b8a25cb898bf5177480b6da",
+  "message": "initial: sovereign-router backup from sovereign",
+  "author": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-07-29T04:17:42Z"
+  },
+  "committer": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-07-29T04:17:42Z"
+  },
+  "parents": []
+ },
+ {
+  "sha": "83b5ff324f851aba84c4ffdc583ab9cf7e72c0fa",
+  "tree": "8d9d183afb83ff0cfb1ca0a39ab59e75ee97e6eb",
+  "message": "chore(router): standardize AGENTS.md with universal hard rules and tool references",
+  "author": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T19:33:59Z"
+  },
+  "committer": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T19:33:59Z"
+  },
+  "parents": [
+   "f177fa589f462870b17ba6ffdf9697dc3d9273b2"
+  ]
+ },
+ {
+  "sha": "b8490a659e82427977e5341c2c3e193e85c34801",
+  "tree": "c99b14da061943ef65c5ffc1450ff54991c46179",
+  "message": "feat(lens): add tectonic drift detection",
+  "author": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T22:04:29Z"
+  },
+  "committer": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T22:04:29Z"
+  },
+  "parents": [
+   "83b5ff324f851aba84c4ffdc583ab9cf7e72c0fa"
+  ]
+ },
+ {
+  "sha": "d2c1390b84255f708aea47993ffe3d786ac3a1d6",
+  "tree": "76bfdb3759dc0a0b6eb372b871328ea651f2cb4c",
+  "message": "feat(lens): add cryptographic leak detection",
+  "author": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T22:04:32Z"
+  },
+  "committer": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T22:04:32Z"
+  },
+  "parents": [
+   "b8490a659e82427977e5341c2c3e193e85c34801"
+  ]
+ },
+ {
+  "sha": "c51368007a31f6a9b9d153b32035cf2092d9eadd",
+  "tree": "9907fecb56ae1324327bb376a84b6c12e791ad97",
+  "message": "feat(lens): add OSINT reconnaissance",
+  "author": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T22:04:36Z"
+  },
+  "committer": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T22:04:36Z"
+  },
+  "parents": [
+   "d2c1390b84255f708aea47993ffe3d786ac3a1d6"
+  ]
+ },
+ {
+  "sha": "17e7794ad7551f1e5effce4c3223abc72592dc4b",
+  "tree": "2d60b3a39e0e2e4078db2c9c0da129830c986fc2",
+  "message": "feat(lens): add stylometric analysis",
+  "author": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T22:04:39Z"
+  },
+  "committer": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T22:04:39Z"
+  },
+  "parents": [
+   "c51368007a31f6a9b9d153b32035cf2092d9eadd"
+  ]
+ },
+ {
+  "sha": "fe90c2073d0724565c339cc11929aa6f03b5cf98",
+  "tree": "de20b37c45de8bc47a9435faaa53f0e55248568b",
+  "message": "feat(lib): add lens orchestrator",
+  "author": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T22:04:42Z"
+  },
+  "committer": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T22:04:42Z"
+  },
+  "parents": [
+   "17e7794ad7551f1e5effce4c3223abc72592dc4b"
+  ]
+ },
+ {
+  "sha": "4ba7bdf2c9bb4b5ec59024130dd4d66fe757245e",
+  "tree": "e86a5a07a979fa689ed7b9b898b11d4601d759e8",
+  "message": "chore(env): add agentic lens configuration",
+  "author": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T22:04:46Z"
+  },
+  "committer": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T22:04:46Z"
+  },
+  "parents": [
+   "fe90c2073d0724565c339cc11929aa6f03b5cf98"
+  ]
+ },
+ {
+  "sha": "bd422c84f9c2372095d99ef246041c89fd261524",
+  "tree": "9aeb712af87bdc4524c596f27e04815ea8e05486",
+  "message": "feat(ci): add tectonic drift detection",
+  "author": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T22:04:49Z"
+  },
+  "committer": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T22:04:49Z"
+  },
+  "parents": [
+   "4ba7bdf2c9bb4b5ec59024130dd4d66fe757245e"
+  ]
+ },
+ {
+  "sha": "06afd5eaaa4baa0f47de06a3360644485497b9a2",
+  "tree": "bd8a43fca1265784275f1bb059e0575f119c0667",
+  "message": "feat(ci): add agentic lens pipeline",
+  "author": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T22:04:53Z"
+  },
+  "committer": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-03T22:04:53Z"
+  },
+  "parents": [
+   "bd422c84f9c2372095d99ef246041c89fd261524"
+  ]
+ },
+ {
+  "sha": "d8aecdbd2a21e095e30eac969b877d35d4fe0ff5",
+  "tree": "1562bafae5fa0dfbe7f7dfa757c63979afbb7333",
+  "message": "fix(ci): make agentic CI robust \u2014 conditional bun install, node fallback, error handling",
+  "author": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-04T03:20:23Z"
+  },
+  "committer": {
+   "name": "toxicwind",
+   "email": "toxicwind@gmail.com",
+   "date": "2026-09-04T03:20:23Z"
+  },
+  "parents": [
+   "06afd5eaaa4baa0f47de06a3360644485497b9a2"
+  ]
+ }
+]

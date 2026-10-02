@@ -1,0 +1,5 @@
+"7bbc1d7254613ffaa026de47d975f73968361ef3e5d7b818ce0a83a33039c6b8"
+"getCookiesAfterAgeGate"
+"getHasChromecastSupport"
+"getHasDownloadSupport"
+"hasChromecastSupport"

@@ -1,0 +1,33 @@
+{
+  "wall_time": "2026-09-15T00:20:36.388226+00:00",
+  "models": [
+    "openai/gpt-oss-20b"
+  ],
+  "stream": true,
+  "n_attempted": 12,
+  "n_ok": 2,
+  "n_failed": 10,
+  "dead_models": [],
+  "error_taxonomy": {
+    "ok": 2,
+    "URLError": 10
+  },
+  "latency_ns": {
+    "e2e_median": 6993644066.0,
+    "e2e_p95": 7704153566.0,
+    "ttfb_median": 5379707404.5,
+    "ttfb_p95": 5896402909.35,
+    "n_measured": 2
+  },
+  "latency_us": {
+    "e2e_median": 6993644.066,
+    "e2e_p95": 7704153.566,
+    "ttfb_median": 5379707.4045,
+    "ttfb_p95": 5896402.90935
+  },
+  "integrity": {
+    "all_passed": true,
+    "failed_checks": []
+  },
+  "out": "/home/hatch/workspace/skills/completions-audit/results/audit-stream-20260914.jsonl"
+}

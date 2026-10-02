@@ -1,0 +1,16 @@
+# kimi-auto herd fragment.
+# Loaded via llama-swap --config-dir (see herd.sh). Defines the `kimi-auto`
+# virtual model as a sidecar: herd starts shim.py on an allocated ${PORT}
+# and routes `model: "kimi-auto"` chat requests to it. The shim rewrites the
+# model id to the current best Kimi model (from the resolver state file)
+# and forwards back to herd, so peer credentials/routing stay in herd.
+#
+# Managed by the kimi-auto resolver package. Do not hand-edit; the resolver
+# owns the selection, this file only owns the route.
+models:
+  kimi-auto:
+    cmd: python3 /home/toxic/kimi-auto/shim.py --port ${PORT}
+    description: "kimi-auto: dynamically resolves to the best available Kimi model"
+    metadata:
+      managed_by: kimi-auto
+      repo: toxicwind/kimi-auto

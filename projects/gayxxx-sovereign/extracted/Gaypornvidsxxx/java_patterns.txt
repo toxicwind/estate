@@ -1,0 +1,6 @@
+                        com.lagradost.cloudstream3.utils.ExtractorLinkType extractorLinkType = i3 != 0 ? com.lagradost.cloudstream3.utils.ExtractorLinkType.M3U8 : com.lagradost.cloudstream3.utils.ExtractorLinkType.VIDEO;
+    @kotlin.coroutines.jvm.internal.DebugMetadata(c = "com.Gaypornvidsxxx.Base64Extractor", f = "Extractors.kt", i = {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, l = {184, 228}, m = "getUrl$suspendImpl", n = {"$this", "url", "referer", "$this", "url", "referer", "document", "script", "pattern", "matchResult", "jsonArray", "encodedString", "decodedString", "videos", "externalLinkList", "video", "quality", "format", "videoUrl", "isVHQ", "i", "isM3u8"}, nl = {189, 227}, s = {"L$0", "L$1", "L$2", "L$0", "L$1", "L$2", "L$3", "L$4", "L$5", "L$6", "L$7", "L$8", "L$9", "L$10", "L$11", "L$12", "L$13", "L$14", "L$15", "I$0", "I$1", "I$3"}, v = 2)
+    private java.lang.String mainUrl = "https://doodstream.com";
+    private java.lang.String mainUrl = "https://filemoon.to";
+    private java.lang.String mainUrl = "https://voe.sx";
+                            videoUrl2 = videoUrl2 + "&f=video.m3u8";

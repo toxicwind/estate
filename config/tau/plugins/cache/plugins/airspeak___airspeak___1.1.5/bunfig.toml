@@ -1,0 +1,5 @@
+[test]
+# Packaging smoke tests spawn the real `omp` CLI; install takes ~20s in a
+# fresh temp HOME. Bun defaults (5s test, 5s hook) kill them.
+timeout = 120000
+hookTimeout = 120000

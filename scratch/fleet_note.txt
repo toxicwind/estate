@@ -1,0 +1,4 @@
+
+## 2026-09-14 15:10 MDT — Shingle: Chris: no PRs for bruteforce repair, straight to main
+- Chris on sovereign-projects#1 (pi-vcs gix-0.73 migration): "Why pr anyways go straight to main". Standing update: bruteforce repair work pushes STRAIGHT TO main — no PR ceremony, no review gates (extends the existing no-review-gate rule).
+- Same breath: "fix leak" + earlier "fix it not monkey patch" — the 3 waved-as-known pi-vcs test failures and the 4 sourcery-flagged defects (fmt_range zero-length ranges forced to 0, missing no-newline markers, discarded Windows symlink Result, RFC3339 fallback accepting month 13/day 0) are being fixed properly in code on main by a dedicated worker. Tests must pass because behavior is correct, never by weakening assertions.

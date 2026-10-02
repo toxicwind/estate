@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Models — NIM probe</title>
+<link rel="stylesheet" href="assets/style.css"></head>
+<body>
+<header class="top"><div class="wrap">
+<div class="brand"><span class="dot"></span> nvidia-nim-model-probe <span class="dim">/ 2026-09-14</span></div>
+<nav><a href="index.html" class="">Overview</a><a href="models.html" class="on">Models</a><a href="tooluse.html" class="">Tool Use</a><a href="fuzz.html" class="">Fuzz Matrix</a><a href="cards.html" class="">Model Cards</a><a href="methodology.html" class="">Methodology</a><a href="https://github.com/toxicwind/nvidia-nim-model-probe" class="repo">GitHub ↗</a></nav>
+</div></header>
+<main class="wrap">
+
+<h1>All 82 models</h1>
+<div class="controls">
+<input id="q" type="search" placeholder="search models… (e.g. nemotron, vision)">
+<select id="fv"><option value="">all verdicts</option>
+<option value="alive-fast">alive</option><option value="timeout-fast">timeout</option><option value="streaming-noheaders">stream stall</option><option value="unavailable-503">503</option><option value="error-other">error</option><option value="dead-404-gated">gated 404</option></select>
+<select id="fc"><option value="">all categories</option>
+<option>chat</option><option>nemotron-3</option><option>legacy</option><option>embedding/retrieval</option><option>vision</option><option>guard/safety</option><option>reward</option><option>oddball</option></select>
+<span class="dim small" id="count"></span></div>
+<div class="tscroll"><table class="models" id="mtable">
+<thead><tr><th data-s="m">model ⇅</th><th data-s="c">category ⇅</th>
+<th data-s="v">verdict ⇅</th><th data-s="a" class="num">ping ms ⇅</th>
+<th data-s="t" class="num">TTFT ms ⇅</th><th></th></tr></thead>
+<tbody>
+<tr class="mrow" id="row-google__diffusiongemma-26b-a4b-it" data-v="alive-fast"
+    data-c="oddball" data-m="google/diffusiongemma-26b-a4b-it">
+<td class="mono mid"><a href="#model=google__diffusiongemma-26b-a4b-it" class="anchor">#</a> google/diffusiongemma-26b-a4b-it</td>
+<td>oddball</td><td><span class="badge" style="--c:#34d399">alive</span></td>
+<td class="num">707.2</td><td class="num">15309.9</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="google__diffusiongemma-26b-a4b-it" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-google__diffusiongemma-26b-a4b-it"></a>
+<div class="ph"><b>phase</b> status=200 lat=707.2ms ttfb=706.9ms<div class="detail mono"></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div></div><div class="ph"><b>phase</b> status=200 lat=15309.9ms ttfb=15153.7ms ttft=15309.9ms<div class="detail mono">stream-chunk-ok</div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div></div><div class="carddesc"><b>card:</b> Diffusion-based 26B parameter LLM enabling parallel token generation for real-ti<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-meta__llama-3.2-11b-vision-instruct" data-v="alive-fast"
+    data-c="vision" data-m="meta/llama-3.2-11b-vision-instruct">
+<td class="mono mid"><a href="#model=meta__llama-3.2-11b-vision-instruct" class="anchor">#</a> meta/llama-3.2-11b-vision-instruct</td>
+<td>vision</td><td><span class="badge" style="--c:#34d399">alive</span></td>
+<td class="num">504.7</td><td class="num">602.0</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="meta__llama-3.2-11b-vision-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-meta__llama-3.2-11b-vision-instruct"></a>
+<div class="ph"><b>phase</b> status=200 lat=504.7ms ttfb=504.3ms<div class="detail mono">OK</div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div></div><div class="ph"><b>phase</b> status=200 lat=602.1ms ttfb=564.3ms ttft=602.0ms<div class="detail mono">stream-chunk-ok</div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div></div><div class="carddesc"><b>card:</b> Cutting-edge vision-language model exceling in high-quality reasoning from image<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__llama-3.1-nemotron-safety-guard-8b-v3" data-v="alive-fast"
+    data-c="guard/safety" data-m="nvidia/llama-3.1-nemotron-safety-guard-8b-v3">
+<td class="mono mid"><a href="#model=nvidia__llama-3.1-nemotron-safety-guard-8b-v3" class="anchor">#</a> nvidia/llama-3.1-nemotron-safety-guard-8b-v3</td>
+<td>guard/safety</td><td><span class="badge" style="--c:#34d399">alive</span></td>
+<td class="num">549.2</td><td class="num">530.1</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__llama-3.1-nemotron-safety-guard-8b-v3" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__llama-3.1-nemotron-safety-guard-8b-v3"></a>
+<div class="ph"><b>phase</b> status=200 lat=549.2ms ttfb=549.0ms<div class="detail mono">{&quot;User Safety</div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div></div><div class="ph"><b>phase</b> status=200 lat=530.2ms ttfb=490.2ms ttft=530.1ms<div class="detail mono">stream-chunk-ok</div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__nemotron-3-ultra-550b-a55b" data-v="alive-fast"
+    data-c="nemotron-3" data-m="nvidia/nemotron-3-ultra-550b-a55b">
+<td class="mono mid"><a href="#model=nvidia__nemotron-3-ultra-550b-a55b" class="anchor">#</a> nvidia/nemotron-3-ultra-550b-a55b</td>
+<td>nemotron-3</td><td><span class="badge" style="--c:#34d399">alive</span></td>
+<td class="num">1396.2</td><td class="num">1073.0</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__nemotron-3-ultra-550b-a55b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__nemotron-3-ultra-550b-a55b"></a>
+<div class="ph"><b>phase</b> status=200 lat=1396.2ms ttfb=1395.3ms<div class="detail mono">The user wants</div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div></div><div class="ph"><b>phase</b> status=200 lat=1142.4ms ttfb=745.7ms ttft=1073.0ms<div class="detail mono">stream-chunk-ok</div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div></div><div class="carddesc"><b>card:</b> Open, efficient hybrid Mamba-Transformer MoE with 1M context, excelling in agent<br><span class=dim>card input: Text · output: Text</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__nemotron-3.5-content-safety" data-v="alive-fast"
+    data-c="nemotron-3" data-m="nvidia/nemotron-3.5-content-safety">
+<td class="mono mid"><a href="#model=nvidia__nemotron-3.5-content-safety" class="anchor">#</a> nvidia/nemotron-3.5-content-safety</td>
+<td>nemotron-3</td><td><span class="badge" style="--c:#34d399">alive</span></td>
+<td class="num">525.2</td><td class="num">567.3</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__nemotron-3.5-content-safety" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__nemotron-3.5-content-safety"></a>
+<div class="ph"><b>phase</b> status=200 lat=525.2ms ttfb=525.0ms<div class="detail mono">User Safety:</div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div></div><div class="ph"><b>phase</b> status=200 lat=567.4ms ttfb=528.4ms ttft=567.3ms<div class="detail mono">stream-chunk-ok</div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div></div><div class="carddesc"><b>card:</b> Multilingual, multimodal model for detecting unsafe and toxic content.<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__nemotron-parse-2.0" data-v="alive-fast"
+    data-c="oddball" data-m="nvidia/nemotron-parse-2.0">
+<td class="mono mid"><a href="#model=nvidia__nemotron-parse-2.0" class="anchor">#</a> nvidia/nemotron-parse-2.0</td>
+<td>oddball</td><td><span class="badge" style="--c:#34d399">alive</span></td>
+<td class="num">471.2</td><td class="num">598.4</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__nemotron-parse-2.0" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__nemotron-parse-2.0"></a>
+<div class="ph"><b>phase</b> status=200 lat=471.2ms ttfb=471.0ms<div class="detail mono"></div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div></div><div class="ph"><b>phase</b> status=200 lat=611.5ms ttfb=582.7ms ttft=598.4ms<div class="detail mono">stream-empty</div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div></div><div class="carddesc"><b>card:</b> ?<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__riva-translate-4b-instruct-v1.1" data-v="alive-fast"
+    data-c="oddball" data-m="nvidia/riva-translate-4b-instruct-v1.1">
+<td class="mono mid"><a href="#model=nvidia__riva-translate-4b-instruct-v1.1" class="anchor">#</a> nvidia/riva-translate-4b-instruct-v1.1</td>
+<td>oddball</td><td><span class="badge" style="--c:#34d399">alive</span></td>
+<td class="num">530.3</td><td class="num">495.9</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__riva-translate-4b-instruct-v1.1" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__riva-translate-4b-instruct-v1.1"></a>
+<div class="ph"><b>phase</b> status=200 lat=530.3ms ttfb=529.4ms<div class="detail mono">Reply with the</div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div></div><div class="ph"><b>phase</b> status=200 lat=495.9ms ttfb=455.2ms ttft=495.9ms<div class="detail mono">stream-chunk-ok</div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__riva-translate-4b-instruct-v2" data-v="alive-fast"
+    data-c="oddball" data-m="nvidia/riva-translate-4b-instruct-v2">
+<td class="mono mid"><a href="#model=nvidia__riva-translate-4b-instruct-v2" class="anchor">#</a> nvidia/riva-translate-4b-instruct-v2</td>
+<td>oddball</td><td><span class="badge" style="--c:#34d399">alive</span></td>
+<td class="num">602.9</td><td class="num">520.6</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__riva-translate-4b-instruct-v2" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__riva-translate-4b-instruct-v2"></a>
+<div class="ph"><b>phase</b> status=200 lat=602.9ms ttfb=600.5ms<div class="detail mono">Svar med</div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div></div><div class="ph"><b>phase</b> status=200 lat=520.7ms ttfb=473.6ms ttft=520.6ms<div class="detail mono">stream-chunk-ok</div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div></div><div class="carddesc"><b>card:</b> ?<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-openai__gpt-oss-20b" data-v="alive-fast"
+    data-c="chat" data-m="openai/gpt-oss-20b">
+<td class="mono mid"><a href="#model=openai__gpt-oss-20b" class="anchor">#</a> openai/gpt-oss-20b</td>
+<td>chat</td><td><span class="badge" style="--c:#34d399">alive</span></td>
+<td class="num">735.1</td><td class="num">949.2</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="openai__gpt-oss-20b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-openai__gpt-oss-20b"></a>
+<div class="ph"><b>phase</b> status=200 lat=735.1ms ttfb=734.9ms<div class="detail mono"></div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div></div><div class="ph"><b>phase</b> status=200 lat=1230.9ms ttfb=836.2ms ttft=949.2ms<div class="detail mono">stream-empty</div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div></div><div class="carddesc"><b>card:</b> Smaller Mixture of Experts (MoE) text-only LLM for efficient AI reasoning and ma<br><span class=dim>card input: Text &lt;br&gt; · output: Text &lt;br&gt;</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-z-ai__glm-5.3-flash" data-v="alive-fast"
+    data-c="chat" data-m="z-ai/glm-5.3-flash">
+<td class="mono mid"><a href="#model=z-ai__glm-5.3-flash" class="anchor">#</a> z-ai/glm-5.3-flash</td>
+<td>chat</td><td><span class="badge" style="--c:#34d399">alive</span></td>
+<td class="num">3510.6</td><td class="num">8601.3</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="z-ai__glm-5.3-flash" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-z-ai__glm-5.3-flash"></a>
+<div class="ph"><b>phase</b> status=200 lat=3510.6ms ttfb=3510.3ms<div class="detail mono"></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div></div><div class="ph"><b>phase</b> status=200 lat=10945.6ms ttfb=579.0ms ttft=8601.3ms<div class="detail mono">stream-empty</div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div></div>
+</div></td></tr>
+<tr class="mrow" id="row-deepseek-ai__deepseek-v4-pro-0813" data-v="timeout-fast"
+    data-c="chat" data-m="deepseek-ai/deepseek-v4-pro-0813">
+<td class="mono mid"><a href="#model=deepseek-ai__deepseek-v4-pro-0813" class="anchor">#</a> deepseek-ai/deepseek-v4-pro-0813</td>
+<td>chat</td><td><span class="badge" style="--c:#fbbf24">timeout</span></td>
+<td class="num">5352.5</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="deepseek-ai__deepseek-v4-pro-0813" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-deepseek-ai__deepseek-v4-pro-0813"></a>
+<div class="ph"><b>phase</b> status=TimeoutError lat=5352.5ms ttfb=Nonems<div class="detail mono">The read operation timed out</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-google__gemma-4-31b-it" data-v="timeout-fast"
+    data-c="chat" data-m="google/gemma-4-31b-it">
+<td class="mono mid"><a href="#model=google__gemma-4-31b-it" class="anchor">#</a> google/gemma-4-31b-it</td>
+<td>chat</td><td><span class="badge" style="--c:#fbbf24">timeout</span></td>
+<td class="num">5241.4</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="google__gemma-4-31b-it" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-google__gemma-4-31b-it"></a>
+<div class="ph"><b>phase</b> status=TimeoutError lat=5241.4ms ttfb=Nonems<div class="detail mono">The read operation timed out</div></div><div class="carddesc"><b>card:</b> Dense 31B model delivering frontier reasoning for coding, agentic workflows, and<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-meta__llama-3.2-90b-vision-instruct" data-v="timeout-fast"
+    data-c="vision" data-m="meta/llama-3.2-90b-vision-instruct">
+<td class="mono mid"><a href="#model=meta__llama-3.2-90b-vision-instruct" class="anchor">#</a> meta/llama-3.2-90b-vision-instruct</td>
+<td>vision</td><td><span class="badge" style="--c:#fbbf24">timeout</span></td>
+<td class="num">5274.9</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="meta__llama-3.2-90b-vision-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-meta__llama-3.2-90b-vision-instruct"></a>
+<div class="ph"><b>phase</b> status=TimeoutError lat=5274.9ms ttfb=Nonems<div class="detail mono">The read operation timed out</div></div><div class="carddesc"><b>card:</b> Cutting-edge vision-Language model exceling in high-quality reasoning from image<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-meta__llama-guard-4-12b" data-v="timeout-fast"
+    data-c="guard/safety" data-m="meta/llama-guard-4-12b">
+<td class="mono mid"><a href="#model=meta__llama-guard-4-12b" class="anchor">#</a> meta/llama-guard-4-12b</td>
+<td>guard/safety</td><td><span class="badge" style="--c:#fbbf24">timeout</span></td>
+<td class="num">5314.2</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="meta__llama-guard-4-12b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-meta__llama-guard-4-12b"></a>
+<div class="ph"><b>phase</b> status=TimeoutError lat=5314.2ms ttfb=Nonems<div class="detail mono">The read operation timed out</div></div><div class="carddesc"><b>card:</b> Multi-modal model to classify safety for input prompts as well output responses.<br><span class=dim>card input: Text, Image · output: Text</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-meta__muse-glimmer-30b" data-v="timeout-fast"
+    data-c="chat" data-m="meta/muse-glimmer-30b">
+<td class="mono mid"><a href="#model=meta__muse-glimmer-30b" class="anchor">#</a> meta/muse-glimmer-30b</td>
+<td>chat</td><td><span class="badge" style="--c:#fbbf24">timeout</span></td>
+<td class="num">5249.0</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="meta__muse-glimmer-30b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-meta__muse-glimmer-30b"></a>
+<div class="ph"><b>phase</b> status=TimeoutError lat=5249.0ms ttfb=Nonems<div class="detail mono">The read operation timed out</div></div><div class="carddesc"><b>card:</b> Muse Glimmer 30B is a multimodal reasoning model accepting text and images, with<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-mistralai__mistral-nemotron" data-v="timeout-fast"
+    data-c="legacy" data-m="mistralai/mistral-nemotron">
+<td class="mono mid"><a href="#model=mistralai__mistral-nemotron" class="anchor">#</a> mistralai/mistral-nemotron</td>
+<td>legacy</td><td><span class="badge" style="--c:#fbbf24">timeout</span></td>
+<td class="num">5317.2</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="mistralai__mistral-nemotron" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-mistralai__mistral-nemotron"></a>
+<div class="ph"><b>phase</b> status=TimeoutError lat=5317.2ms ttfb=Nonems<div class="detail mono">The read operation timed out</div></div><div class="carddesc"><b>card:</b> Built for agentic workflows, this model excels in coding, instruction following,<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-moonshotai__kimi-k3" data-v="timeout-fast"
+    data-c="chat" data-m="moonshotai/kimi-k3">
+<td class="mono mid"><a href="#model=moonshotai__kimi-k3" class="anchor">#</a> moonshotai/kimi-k3</td>
+<td>chat</td><td><span class="badge" style="--c:#fbbf24">timeout</span></td>
+<td class="num">5267.2</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="moonshotai__kimi-k3" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-moonshotai__kimi-k3"></a>
+<div class="ph"><b>phase</b> status=TimeoutError lat=5267.2ms ttfb=Nonems<div class="detail mono">The read operation timed out</div></div><div class="carddesc"><b>card:</b> ~2.8T hybrid KDA+MLA multimodal MoE for long-horizon coding, agentic tool use, a<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__ising-calibration-1.5-31b" data-v="timeout-fast"
+    data-c="oddball" data-m="nvidia/ising-calibration-1.5-31b">
+<td class="mono mid"><a href="#model=nvidia__ising-calibration-1.5-31b" class="anchor">#</a> nvidia/ising-calibration-1.5-31b</td>
+<td>oddball</td><td><span class="badge" style="--c:#fbbf24">timeout</span></td>
+<td class="num">5268.1</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__ising-calibration-1.5-31b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__ising-calibration-1.5-31b"></a>
+<div class="ph"><b>phase</b> status=TimeoutError lat=5268.1ms ttfb=Nonems<div class="detail mono">The read operation timed out</div></div><div class="carddesc"><b>card:</b> NVIDIA-Ising-Calibration-1.5 is a dense multimodal vision-language model built o<br><span class=dim>card input: Text, Image · output: Text</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__nemotron-3.5-lightning-30b-a3b" data-v="timeout-fast"
+    data-c="nemotron-3" data-m="nvidia/nemotron-3.5-lightning-30b-a3b">
+<td class="mono mid"><a href="#model=nvidia__nemotron-3.5-lightning-30b-a3b" class="anchor">#</a> nvidia/nemotron-3.5-lightning-30b-a3b</td>
+<td>nemotron-3</td><td><span class="badge" style="--c:#fbbf24">timeout</span></td>
+<td class="num">5239.4</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__nemotron-3.5-lightning-30b-a3b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__nemotron-3.5-lightning-30b-a3b"></a>
+<div class="ph"><b>phase</b> status=TimeoutError lat=5239.4ms ttfb=Nonems<div class="detail mono">The read operation timed out</div></div><div class="carddesc"><b>card:</b> Fastest 30B A3B MoE model with leading domain accuracy for specialized agentic t<br><span class=dim>card input: Text · output: Text</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-deepseek-ai__deepseek-v4-flash-0731" data-v="streaming-noheaders"
+    data-c="chat" data-m="deepseek-ai/deepseek-v4-flash-0731">
+<td class="mono mid"><a href="#model=deepseek-ai__deepseek-v4-flash-0731" class="anchor">#</a> deepseek-ai/deepseek-v4-flash-0731</td>
+<td>chat</td><td><span class="badge" style="--c:#fb923c">stream stall</span></td>
+<td class="num">1059.0</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="deepseek-ai__deepseek-v4-flash-0731" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-deepseek-ai__deepseek-v4-flash-0731"></a>
+<div class="ph"><b>phase</b> status=200 lat=1059.0ms ttfb=1058.8ms<div class="detail mono"></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div></div><div class="ph"><b>phase</b> status=TimeoutError lat=25240.3ms ttfb=Nonems<div class="detail mono">The read operation timed out</div></div><div class="carddesc"><b>card:</b> 284B MoE (13B active) model ideal for long-context workloads optimized for codin<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__llama-3.1-nemoguard-8b-content-safety" data-v="streaming-noheaders"
+    data-c="guard/safety" data-m="nvidia/llama-3.1-nemoguard-8b-content-safety">
+<td class="mono mid"><a href="#model=nvidia__llama-3.1-nemoguard-8b-content-safety" class="anchor">#</a> nvidia/llama-3.1-nemoguard-8b-content-safety</td>
+<td>guard/safety</td><td><span class="badge" style="--c:#fb923c">stream stall</span></td>
+<td class="num">636.6</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__llama-3.1-nemoguard-8b-content-safety" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__llama-3.1-nemoguard-8b-content-safety"></a>
+<div class="ph"><b>phase</b> status=200 lat=636.6ms ttfb=636.3ms<div class="detail mono">{&quot;User Safety</div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div><div><span class=hk>nvcf-status:</span> <span class=mono>fulfilled</span></div></div><div class="ph"><b>phase</b> status=TimeoutError lat=26433.4ms ttfb=Nonems<div class="detail mono">The read operation timed out</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__nemotron-3-nano-omni-30b-a3b-reasoning" data-v="unavailable-503"
+    data-c="nemotron-3" data-m="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning">
+<td class="mono mid"><a href="#model=nvidia__nemotron-3-nano-omni-30b-a3b-reasoning" class="anchor">#</a> nvidia/nemotron-3-nano-omni-30b-a3b-reasoning</td>
+<td>nemotron-3</td><td><span class="badge" style="--c:#fb7185">503</span></td>
+<td class="num">642.6</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__nemotron-3-nano-omni-30b-a3b-reasoning" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__nemotron-3-nano-omni-30b-a3b-reasoning"></a>
+<div class="ph"><b>phase</b> status=503 lat=642.6ms ttfb=642.6ms<div class="detail mono">{&quot;error&quot;:{&quot;message&quot;:&quot;ResourceExhausted: Worker local total request limit reached (16/16)&quot;,&quot;type&quot;:&quot;Service Unavailable&quot;,&quot;</div><div><span class=hk>nvcf-status:</span> <span class=mono>errored</span></div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div></div><div class="carddesc"><b>card:</b> Nemotron 3 Nano Omni is an omni-modal reasoning model that understands images, v<br><span class=dim>card input: Video, Audio, Image, Text &lt;br&gt; · output: Text &lt;br&gt;</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__nemotron-3-super-120b-a12b" data-v="unavailable-503"
+    data-c="nemotron-3" data-m="nvidia/nemotron-3-super-120b-a12b">
+<td class="mono mid"><a href="#model=nvidia__nemotron-3-super-120b-a12b" class="anchor">#</a> nvidia/nemotron-3-super-120b-a12b</td>
+<td>nemotron-3</td><td><span class="badge" style="--c:#fb7185">503</span></td>
+<td class="num">395.0</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__nemotron-3-super-120b-a12b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__nemotron-3-super-120b-a12b"></a>
+<div class="ph"><b>phase</b> status=503 lat=395.0ms ttfb=395.0ms<div class="detail mono">{&quot;error&quot;:{&quot;message&quot;:&quot;Service temporarily overloaded&quot;,&quot;type&quot;:&quot;Service Unavailable&quot;,&quot;code&quot;:503}}</div><div><span class=hk>nvcf-status:</span> <span class=mono>errored</span></div><div><span class=hk>deprecation:</span> <span class=mono>2026-10-03T09:00:00Z</span></div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div></div><div class="carddesc"><b>card:</b> Open, efficient hybrid Mamba-Transformer MoE with 1M context, excelling in agent<br><span class=dim>card input: Text · output: Text</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-poolside__laguna-xs-2.1" data-v="unavailable-503"
+    data-c="chat" data-m="poolside/laguna-xs-2.1">
+<td class="mono mid"><a href="#model=poolside__laguna-xs-2.1" class="anchor">#</a> poolside/laguna-xs-2.1</td>
+<td>chat</td><td><span class="badge" style="--c:#fb7185">503</span></td>
+<td class="num">415.1</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="poolside__laguna-xs-2.1" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-poolside__laguna-xs-2.1"></a>
+<div class="ph"><b>phase</b> status=503 lat=415.1ms ttfb=415.1ms<div class="detail mono">{&quot;error&quot;:{&quot;message&quot;:&quot;ResourceExhausted: Worker local total request limit reached (130/32)&quot;,&quot;type&quot;:&quot;Service Unavailable&quot;,</div><div><span class=hk>nvcf-status:</span> <span class=mono>errored</span></div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div></div><div class="carddesc"><b>card:</b> Efficient 33B MoE for local, long-horizon agentic coding and terminal tasks<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__ai-synthetic-video-detector" data-v="error-other"
+    data-c="oddball" data-m="nvidia/ai-synthetic-video-detector">
+<td class="mono mid"><a href="#model=nvidia__ai-synthetic-video-detector" class="anchor">#</a> nvidia/ai-synthetic-video-detector</td>
+<td>oddball</td><td><span class="badge" style="--c:#ef4444">error</span></td>
+<td class="num">461.3</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__ai-synthetic-video-detector" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__ai-synthetic-video-detector"></a>
+<div class="ph"><b>phase</b> status=500 lat=461.3ms ttfb=461.3ms<div class="detail mono">{&quot;type&quot;:&quot;urn:nvcf-worker-service:problem-details:internal-server-error&quot;,&quot;title&quot;:&quot;Internal Server Error&quot;,&quot;status&quot;:500,&quot;de</div><div><span class=hk>nvcf-status:</span> <span class=mono>errored</span></div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__llama-3.1-nemoguard-8b-topic-control" data-v="error-other"
+    data-c="guard/safety" data-m="nvidia/llama-3.1-nemoguard-8b-topic-control">
+<td class="mono mid"><a href="#model=nvidia__llama-3.1-nemoguard-8b-topic-control" class="anchor">#</a> nvidia/llama-3.1-nemoguard-8b-topic-control</td>
+<td>guard/safety</td><td><span class="badge" style="--c:#ef4444">error</span></td>
+<td class="num">648.3</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__llama-3.1-nemoguard-8b-topic-control" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__llama-3.1-nemoguard-8b-topic-control"></a>
+<div class="ph"><b>phase</b> status=500 lat=648.3ms ttfb=648.3ms<div class="detail mono">{&quot;error&quot;:&quot;Error during inference of request chat-526be82571b24a64bacb180451514ed5 -- Encountered an error in forwardAsyn</div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div><div><span class=hk>nvcf-status:</span> <span class=mono>errored</span></div></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__nemotron-parse" data-v="error-other"
+    data-c="oddball" data-m="nvidia/nemotron-parse">
+<td class="mono mid"><a href="#model=nvidia__nemotron-parse" class="anchor">#</a> nvidia/nemotron-parse</td>
+<td>oddball</td><td><span class="badge" style="--c:#ef4444">error</span></td>
+<td class="num">520.4</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__nemotron-parse" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__nemotron-parse"></a>
+<div class="ph"><b>phase</b> status=400 lat=520.4ms ttfb=520.4ms<div class="detail mono">{&quot;object&quot;:&quot;error&quot;,&quot;message&quot;:&quot;Content cannot be a plain string. The model does not support text input. Content cannot be </div><div><span class=hk>nvcf-reqid:</span> <span class=mono>REDACTED</span></div><div><span class=hk>nvcf-status:</span> <span class=mono>errored</span></div></div><div class="carddesc"><b>card:</b> ?<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-01-ai__yi-large" data-v="dead-404-gated"
+    data-c="legacy" data-m="01-ai/yi-large">
+<td class="mono mid"><a href="#model=01-ai__yi-large" class="anchor">#</a> 01-ai/yi-large</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">502.7</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="01-ai__yi-large" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-01-ai__yi-large"></a>
+<div class="ph"><b>phase</b> status=404 lat=502.7ms ttfb=502.7ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Powerful model trained on English and Chinese for diverse tasks including chatbo<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-adept__fuyu-8b" data-v="dead-404-gated"
+    data-c="vision" data-m="adept/fuyu-8b">
+<td class="mono mid"><a href="#model=adept__fuyu-8b" class="anchor">#</a> adept/fuyu-8b</td>
+<td>vision</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">501.4</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="adept__fuyu-8b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-adept__fuyu-8b"></a>
+<div class="ph"><b>phase</b> status=404 lat=501.4ms ttfb=501.4ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Multi-modal model for a wide range of tasks, including image understanding and l<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-ai21labs__jamba-1.5-large-instruct" data-v="dead-404-gated"
+    data-c="chat" data-m="ai21labs/jamba-1.5-large-instruct">
+<td class="mono mid"><a href="#model=ai21labs__jamba-1.5-large-instruct" class="anchor">#</a> ai21labs/jamba-1.5-large-instruct</td>
+<td>chat</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">423.2</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="ai21labs__jamba-1.5-large-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-ai21labs__jamba-1.5-large-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=423.2ms ttfb=423.2ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-aisingapore__sea-lion-7b-instruct" data-v="dead-404-gated"
+    data-c="oddball" data-m="aisingapore/sea-lion-7b-instruct">
+<td class="mono mid"><a href="#model=aisingapore__sea-lion-7b-instruct" class="anchor">#</a> aisingapore/sea-lion-7b-instruct</td>
+<td>oddball</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">411.8</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="aisingapore__sea-lion-7b-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-aisingapore__sea-lion-7b-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=411.8ms ttfb=411.8ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> LLM to represent and serve the linguistic and cultural diversity of Southeast As<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-bigcode__starcoder2-15b" data-v="dead-404-gated"
+    data-c="legacy" data-m="bigcode/starcoder2-15b">
+<td class="mono mid"><a href="#model=bigcode__starcoder2-15b" class="anchor">#</a> bigcode/starcoder2-15b</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">455.3</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="bigcode__starcoder2-15b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-bigcode__starcoder2-15b"></a>
+<div class="ph"><b>phase</b> status=404 lat=455.3ms ttfb=455.3ms<div class="detail mono">404 page not found
+</div></div><div class="carddesc"><b>card:</b> Advanced programming model for code completion, summarization, and generation<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-databricks__dbrx-instruct" data-v="dead-404-gated"
+    data-c="legacy" data-m="databricks/dbrx-instruct">
+<td class="mono mid"><a href="#model=databricks__dbrx-instruct" class="anchor">#</a> databricks/dbrx-instruct</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">341.2</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="databricks__dbrx-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-databricks__dbrx-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=341.2ms ttfb=341.2ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> A general-purpose LLM with state-of-the-art performance in language understandin<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-deepseek-ai__deepseek-coder-6.7b-instruct" data-v="dead-404-gated"
+    data-c="chat" data-m="deepseek-ai/deepseek-coder-6.7b-instruct">
+<td class="mono mid"><a href="#model=deepseek-ai__deepseek-coder-6.7b-instruct" class="anchor">#</a> deepseek-ai/deepseek-coder-6.7b-instruct</td>
+<td>chat</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">438.7</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="deepseek-ai__deepseek-coder-6.7b-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-deepseek-ai__deepseek-coder-6.7b-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=438.7ms ttfb=438.7ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-google__codegemma-1.1-7b" data-v="dead-404-gated"
+    data-c="legacy" data-m="google/codegemma-1.1-7b">
+<td class="mono mid"><a href="#model=google__codegemma-1.1-7b" class="anchor">#</a> google/codegemma-1.1-7b</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">391.8</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="google__codegemma-1.1-7b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-google__codegemma-1.1-7b"></a>
+<div class="ph"><b>phase</b> status=404 lat=391.8ms ttfb=391.8ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-google__codegemma-7b" data-v="dead-404-gated"
+    data-c="legacy" data-m="google/codegemma-7b">
+<td class="mono mid"><a href="#model=google__codegemma-7b" class="anchor">#</a> google/codegemma-7b</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">317.6</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="google__codegemma-7b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-google__codegemma-7b"></a>
+<div class="ph"><b>phase</b> status=404 lat=317.6ms ttfb=317.6ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Cutting-edge model built on Google&#x27;s Gemma-7B specialized for code generation an<br><span class=dim>card input: Text &lt;br&gt; · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-google__deplot" data-v="dead-404-gated"
+    data-c="legacy" data-m="google/deplot">
+<td class="mono mid"><a href="#model=google__deplot" class="anchor">#</a> google/deplot</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">438.7</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="google__deplot" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-google__deplot"></a>
+<div class="ph"><b>phase</b> status=404 lat=438.7ms ttfb=438.7ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-google__gemma-2b" data-v="dead-404-gated"
+    data-c="legacy" data-m="google/gemma-2b">
+<td class="mono mid"><a href="#model=google__gemma-2b" class="anchor">#</a> google/gemma-2b</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">478.8</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="google__gemma-2b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-google__gemma-2b"></a>
+<div class="ph"><b>phase</b> status=404 lat=478.8ms ttfb=478.8ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Lightweight language model deployable on laptop, desktop or the cloud for summar<br><span class=dim>card input: Text &lt;br&gt; · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-google__gemma-3-12b-it" data-v="dead-404-gated"
+    data-c="legacy" data-m="google/gemma-3-12b-it">
+<td class="mono mid"><a href="#model=google__gemma-3-12b-it" class="anchor">#</a> google/gemma-3-12b-it</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">403.3</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="google__gemma-3-12b-it" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-google__gemma-3-12b-it"></a>
+<div class="ph"><b>phase</b> status=404 lat=403.3ms ttfb=403.3ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-google__gemma-3-4b-it" data-v="dead-404-gated"
+    data-c="legacy" data-m="google/gemma-3-4b-it">
+<td class="mono mid"><a href="#model=google__gemma-3-4b-it" class="anchor">#</a> google/gemma-3-4b-it</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">483.6</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="google__gemma-3-4b-it" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-google__gemma-3-4b-it"></a>
+<div class="ph"><b>phase</b> status=404 lat=483.6ms ttfb=483.6ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-google__recurrentgemma-2b" data-v="dead-404-gated"
+    data-c="legacy" data-m="google/recurrentgemma-2b">
+<td class="mono mid"><a href="#model=google__recurrentgemma-2b" class="anchor">#</a> google/recurrentgemma-2b</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">335.7</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="google__recurrentgemma-2b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-google__recurrentgemma-2b"></a>
+<div class="ph"><b>phase</b> status=404 lat=335.7ms ttfb=335.7ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Novel recurrent architecture based language model for faster inference when gene<br><span class=dim>card input: Text &lt;br&gt; · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-ibm__granite-3.0-3b-a800m-instruct" data-v="dead-404-gated"
+    data-c="legacy" data-m="ibm/granite-3.0-3b-a800m-instruct">
+<td class="mono mid"><a href="#model=ibm__granite-3.0-3b-a800m-instruct" class="anchor">#</a> ibm/granite-3.0-3b-a800m-instruct</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">406.1</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="ibm__granite-3.0-3b-a800m-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-ibm__granite-3.0-3b-a800m-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=406.1ms ttfb=406.1ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-ibm__granite-3.0-8b-instruct" data-v="dead-404-gated"
+    data-c="legacy" data-m="ibm/granite-3.0-8b-instruct">
+<td class="mono mid"><a href="#model=ibm__granite-3.0-8b-instruct" class="anchor">#</a> ibm/granite-3.0-8b-instruct</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">314.4</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="ibm__granite-3.0-8b-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-ibm__granite-3.0-8b-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=314.4ms ttfb=314.4ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-ibm__granite-34b-code-instruct" data-v="dead-404-gated"
+    data-c="legacy" data-m="ibm/granite-34b-code-instruct">
+<td class="mono mid"><a href="#model=ibm__granite-34b-code-instruct" class="anchor">#</a> ibm/granite-34b-code-instruct</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">349.9</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="ibm__granite-34b-code-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-ibm__granite-34b-code-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=349.9ms ttfb=349.9ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Software programming LLM for code generation, completion, explanation, and multi<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-ibm__granite-8b-code-instruct" data-v="dead-404-gated"
+    data-c="legacy" data-m="ibm/granite-8b-code-instruct">
+<td class="mono mid"><a href="#model=ibm__granite-8b-code-instruct" class="anchor">#</a> ibm/granite-8b-code-instruct</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">604.0</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="ibm__granite-8b-code-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-ibm__granite-8b-code-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=604.0ms ttfb=604.0ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Software programming LLM for code generation, completion, explanation, and multi<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-meta__codellama-70b" data-v="dead-404-gated"
+    data-c="legacy" data-m="meta/codellama-70b">
+<td class="mono mid"><a href="#model=meta__codellama-70b" class="anchor">#</a> meta/codellama-70b</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">359.9</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="meta__codellama-70b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-meta__codellama-70b"></a>
+<div class="ph"><b>phase</b> status=404 lat=359.9ms ttfb=359.9ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> LLM capable of generating code from natural language and vice versa.<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-meta__llama2-70b" data-v="dead-404-gated"
+    data-c="legacy" data-m="meta/llama2-70b">
+<td class="mono mid"><a href="#model=meta__llama2-70b" class="anchor">#</a> meta/llama2-70b</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">366.8</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="meta__llama2-70b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-meta__llama2-70b"></a>
+<div class="ph"><b>phase</b> status=404 lat=366.8ms ttfb=366.8ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Cutting-edge large language AI model capable of generating text and code in resp<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-microsoft__kosmos-2" data-v="dead-404-gated"
+    data-c="legacy" data-m="microsoft/kosmos-2">
+<td class="mono mid"><a href="#model=microsoft__kosmos-2" class="anchor">#</a> microsoft/kosmos-2</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">412.7</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="microsoft__kosmos-2" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-microsoft__kosmos-2"></a>
+<div class="ph"><b>phase</b> status=404 lat=412.7ms ttfb=412.7ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-microsoft__phi-3-vision-128k-instruct" data-v="dead-404-gated"
+    data-c="vision" data-m="microsoft/phi-3-vision-128k-instruct">
+<td class="mono mid"><a href="#model=microsoft__phi-3-vision-128k-instruct" class="anchor">#</a> microsoft/phi-3-vision-128k-instruct</td>
+<td>vision</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">394.6</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="microsoft__phi-3-vision-128k-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-microsoft__phi-3-vision-128k-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=394.6ms ttfb=394.6ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Cutting-edge open multimodal model exceling in high-quality reasoning from image<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-microsoft__phi-3.5-moe-instruct" data-v="dead-404-gated"
+    data-c="legacy" data-m="microsoft/phi-3.5-moe-instruct">
+<td class="mono mid"><a href="#model=microsoft__phi-3.5-moe-instruct" class="anchor">#</a> microsoft/phi-3.5-moe-instruct</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">382.1</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="microsoft__phi-3.5-moe-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-microsoft__phi-3.5-moe-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=382.1ms ttfb=382.1ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-mistralai__codestral-22b-instruct-v0.1" data-v="dead-404-gated"
+    data-c="legacy" data-m="mistralai/codestral-22b-instruct-v0.1">
+<td class="mono mid"><a href="#model=mistralai__codestral-22b-instruct-v0.1" class="anchor">#</a> mistralai/codestral-22b-instruct-v0.1</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">368.3</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="mistralai__codestral-22b-instruct-v0.1" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-mistralai__codestral-22b-instruct-v0.1"></a>
+<div class="ph"><b>phase</b> status=404 lat=368.3ms ttfb=368.3ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-mistralai__mistral-7b-instruct-v0.3" data-v="dead-404-gated"
+    data-c="legacy" data-m="mistralai/mistral-7b-instruct-v0.3">
+<td class="mono mid"><a href="#model=mistralai__mistral-7b-instruct-v0.3" class="anchor">#</a> mistralai/mistral-7b-instruct-v0.3</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">388.4</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="mistralai__mistral-7b-instruct-v0.3" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-mistralai__mistral-7b-instruct-v0.3"></a>
+<div class="ph"><b>phase</b> status=404 lat=388.4ms ttfb=388.4ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-mistralai__mistral-large" data-v="dead-404-gated"
+    data-c="legacy" data-m="mistralai/mistral-large">
+<td class="mono mid"><a href="#model=mistralai__mistral-large" class="anchor">#</a> mistralai/mistral-large</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">413.2</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="mistralai__mistral-large" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-mistralai__mistral-large"></a>
+<div class="ph"><b>phase</b> status=404 lat=413.2ms ttfb=413.2ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-mistralai__mistral-large-2-instruct" data-v="dead-404-gated"
+    data-c="legacy" data-m="mistralai/mistral-large-2-instruct">
+<td class="mono mid"><a href="#model=mistralai__mistral-large-2-instruct" class="anchor">#</a> mistralai/mistral-large-2-instruct</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">441.0</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="mistralai__mistral-large-2-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-mistralai__mistral-large-2-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=441.0ms ttfb=441.0ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-mistralai__mixtral-8x22b-v0.1" data-v="dead-404-gated"
+    data-c="legacy" data-m="mistralai/mixtral-8x22b-v0.1">
+<td class="mono mid"><a href="#model=mistralai__mixtral-8x22b-v0.1" class="anchor">#</a> mistralai/mixtral-8x22b-v0.1</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">447.6</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="mistralai__mixtral-8x22b-v0.1" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-mistralai__mixtral-8x22b-v0.1"></a>
+<div class="ph"><b>phase</b> status=404 lat=447.6ms ttfb=447.6ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-moonshotai__kimi-k2.6" data-v="dead-404-gated"
+    data-c="chat" data-m="moonshotai/kimi-k2.6">
+<td class="mono mid"><a href="#model=moonshotai__kimi-k2.6" class="anchor">#</a> moonshotai/kimi-k2.6</td>
+<td>chat</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">374.8</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="moonshotai__kimi-k2.6" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-moonshotai__kimi-k2.6"></a>
+<div class="ph"><b>phase</b> status=404 lat=374.8ms ttfb=374.8ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-nv-mistralai__mistral-nemo-12b-instruct" data-v="dead-404-gated"
+    data-c="legacy" data-m="nv-mistralai/mistral-nemo-12b-instruct">
+<td class="mono mid"><a href="#model=nv-mistralai__mistral-nemo-12b-instruct" class="anchor">#</a> nv-mistralai/mistral-nemo-12b-instruct</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">344.5</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nv-mistralai__mistral-nemo-12b-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nv-mistralai__mistral-nemo-12b-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=344.5ms ttfb=344.5ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Most advanced language model for reasoning, code, multilingual tasks; runs on a <br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__cosmos-reason2-8b" data-v="dead-404-gated"
+    data-c="oddball" data-m="nvidia/cosmos-reason2-8b">
+<td class="mono mid"><a href="#model=nvidia__cosmos-reason2-8b" class="anchor">#</a> nvidia/cosmos-reason2-8b</td>
+<td>oddball</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">494.0</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__cosmos-reason2-8b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__cosmos-reason2-8b"></a>
+<div class="ph"><b>phase</b> status=404 lat=494.0ms ttfb=494.0ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__embed-qa-4" data-v="dead-404-gated"
+    data-c="embedding/retrieval" data-m="nvidia/embed-qa-4">
+<td class="mono mid"><a href="#model=nvidia__embed-qa-4" class="anchor">#</a> nvidia/embed-qa-4</td>
+<td>embedding/retrieval</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">298.7</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__embed-qa-4" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__embed-qa-4"></a>
+<div class="ph"><b>phase</b> status=404 lat=298.7ms ttfb=298.7ms<div class="detail mono">404 page not found
+</div></div><div class="carddesc"><b>card:</b> GPU-accelerated generation of text embeddings used for question-answering retrie<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__llama-3.1-nemotron-51b-instruct" data-v="dead-404-gated"
+    data-c="legacy" data-m="nvidia/llama-3.1-nemotron-51b-instruct">
+<td class="mono mid"><a href="#model=nvidia__llama-3.1-nemotron-51b-instruct" class="anchor">#</a> nvidia/llama-3.1-nemotron-51b-instruct</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">411.8</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__llama-3.1-nemotron-51b-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__llama-3.1-nemotron-51b-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=411.8ms ttfb=411.8ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__llama-3.1-nemotron-70b-instruct" data-v="dead-404-gated"
+    data-c="legacy" data-m="nvidia/llama-3.1-nemotron-70b-instruct">
+<td class="mono mid"><a href="#model=nvidia__llama-3.1-nemotron-70b-instruct" class="anchor">#</a> nvidia/llama-3.1-nemotron-70b-instruct</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">321.7</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__llama-3.1-nemotron-70b-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__llama-3.1-nemotron-70b-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=321.7ms ttfb=321.7ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__llama-3.1-nemotron-ultra-253b-v1" data-v="dead-404-gated"
+    data-c="legacy" data-m="nvidia/llama-3.1-nemotron-ultra-253b-v1">
+<td class="mono mid"><a href="#model=nvidia__llama-3.1-nemotron-ultra-253b-v1" class="anchor">#</a> nvidia/llama-3.1-nemotron-ultra-253b-v1</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">400.9</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__llama-3.1-nemotron-ultra-253b-v1" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__llama-3.1-nemotron-ultra-253b-v1"></a>
+<div class="ph"><b>phase</b> status=404 lat=400.9ms ttfb=400.9ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__llama-3.2-nemoretriever-1b-vlm-embed-v1" data-v="dead-404-gated"
+    data-c="embedding/retrieval" data-m="nvidia/llama-3.2-nemoretriever-1b-vlm-embed-v1">
+<td class="mono mid"><a href="#model=nvidia__llama-3.2-nemoretriever-1b-vlm-embed-v1" class="anchor">#</a> nvidia/llama-3.2-nemoretriever-1b-vlm-embed-v1</td>
+<td>embedding/retrieval</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">418.3</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__llama-3.2-nemoretriever-1b-vlm-embed-v1" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__llama-3.2-nemoretriever-1b-vlm-embed-v1"></a>
+<div class="ph"><b>phase</b> status=404 lat=418.3ms ttfb=418.3ms<div class="detail mono">404 page not found
+</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__llama-3.2-nv-embedqa-1b-v1" data-v="dead-404-gated"
+    data-c="embedding/retrieval" data-m="nvidia/llama-3.2-nv-embedqa-1b-v1">
+<td class="mono mid"><a href="#model=nvidia__llama-3.2-nv-embedqa-1b-v1" class="anchor">#</a> nvidia/llama-3.2-nv-embedqa-1b-v1</td>
+<td>embedding/retrieval</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">408.9</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__llama-3.2-nv-embedqa-1b-v1" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__llama-3.2-nv-embedqa-1b-v1"></a>
+<div class="ph"><b>phase</b> status=404 lat=408.9ms ttfb=408.9ms<div class="detail mono">404 page not found
+</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__llama-nemotron-embed-vl-1b-v2" data-v="dead-404-gated"
+    data-c="embedding/retrieval" data-m="nvidia/llama-nemotron-embed-vl-1b-v2">
+<td class="mono mid"><a href="#model=nvidia__llama-nemotron-embed-vl-1b-v2" class="anchor">#</a> nvidia/llama-nemotron-embed-vl-1b-v2</td>
+<td>embedding/retrieval</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">368.4</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__llama-nemotron-embed-vl-1b-v2" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__llama-nemotron-embed-vl-1b-v2"></a>
+<div class="ph"><b>phase</b> status=404 lat=368.4ms ttfb=368.4ms<div class="detail mono">404 page not found
+</div></div><div class="carddesc"><b>card:</b> Multimodal question-answer retrieval representing user queries as text and docum<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__llama3-chatqa-1.5-70b" data-v="dead-404-gated"
+    data-c="legacy" data-m="nvidia/llama3-chatqa-1.5-70b">
+<td class="mono mid"><a href="#model=nvidia__llama3-chatqa-1.5-70b" class="anchor">#</a> nvidia/llama3-chatqa-1.5-70b</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">444.8</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__llama3-chatqa-1.5-70b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__llama3-chatqa-1.5-70b"></a>
+<div class="ph"><b>phase</b> status=404 lat=444.8ms ttfb=444.8ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__mistral-nemo-minitron-8b-8k-instruct" data-v="dead-404-gated"
+    data-c="legacy" data-m="nvidia/mistral-nemo-minitron-8b-8k-instruct">
+<td class="mono mid"><a href="#model=nvidia__mistral-nemo-minitron-8b-8k-instruct" class="anchor">#</a> nvidia/mistral-nemo-minitron-8b-8k-instruct</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">483.4</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__mistral-nemo-minitron-8b-8k-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__mistral-nemo-minitron-8b-8k-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=483.4ms ttfb=483.4ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> State-of-the-art small language model delivering superior accuracy for chatbot, <br><span class=dim>card input: Text (Prompt) &lt;br&gt; · output: Text (Response) &lt;br&gt;</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__nemotron-3-embed-1b" data-v="dead-404-gated"
+    data-c="nemotron-3" data-m="nvidia/nemotron-3-embed-1b">
+<td class="mono mid"><a href="#model=nvidia__nemotron-3-embed-1b" class="anchor">#</a> nvidia/nemotron-3-embed-1b</td>
+<td>nemotron-3</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">307.6</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__nemotron-3-embed-1b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__nemotron-3-embed-1b"></a>
+<div class="ph"><b>phase</b> status=404 lat=307.6ms ttfb=307.6ms<div class="detail mono">404 page not found
+</div></div><div class="carddesc"><b>card:</b> 1B embedding model for semantic search, retrieval, and RAG applications.<br><span class=dim>card input: Text &lt;br&gt; · output: Floats &lt;br&gt;</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__nemotron-4-340b-instruct" data-v="dead-404-gated"
+    data-c="legacy" data-m="nvidia/nemotron-4-340b-instruct">
+<td class="mono mid"><a href="#model=nvidia__nemotron-4-340b-instruct" class="anchor">#</a> nvidia/nemotron-4-340b-instruct</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">458.9</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__nemotron-4-340b-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__nemotron-4-340b-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=458.9ms ttfb=458.9ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Creates diverse synthetic data that mimics the characteristics of real-world dat<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__nemotron-4-340b-reward" data-v="dead-404-gated"
+    data-c="reward" data-m="nvidia/nemotron-4-340b-reward">
+<td class="mono mid"><a href="#model=nvidia__nemotron-4-340b-reward" class="anchor">#</a> nvidia/nemotron-4-340b-reward</td>
+<td>reward</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">337.2</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__nemotron-4-340b-reward" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__nemotron-4-340b-reward"></a>
+<div class="ph"><b>phase</b> status=404 lat=337.2ms ttfb=337.2ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> ?<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__nemotron-nano-3-30b-a3b" data-v="dead-404-gated"
+    data-c="legacy" data-m="nvidia/nemotron-nano-3-30b-a3b">
+<td class="mono mid"><a href="#model=nvidia__nemotron-nano-3-30b-a3b" class="anchor">#</a> nvidia/nemotron-nano-3-30b-a3b</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">462.8</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__nemotron-nano-3-30b-a3b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__nemotron-nano-3-30b-a3b"></a>
+<div class="ph"><b>phase</b> status=404 lat=462.8ms ttfb=462.8ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__neva-22b" data-v="dead-404-gated"
+    data-c="vision" data-m="nvidia/neva-22b">
+<td class="mono mid"><a href="#model=nvidia__neva-22b" class="anchor">#</a> nvidia/neva-22b</td>
+<td>vision</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">501.5</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__neva-22b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__neva-22b"></a>
+<div class="ph"><b>phase</b> status=404 lat=501.5ms ttfb=501.5ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Multi-modal vision-language model that understands text/images and generates inf<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__nv-embedqa-mistral-7b-v2" data-v="dead-404-gated"
+    data-c="embedding/retrieval" data-m="nvidia/nv-embedqa-mistral-7b-v2">
+<td class="mono mid"><a href="#model=nvidia__nv-embedqa-mistral-7b-v2" class="anchor">#</a> nvidia/nv-embedqa-mistral-7b-v2</td>
+<td>embedding/retrieval</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">455.4</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__nv-embedqa-mistral-7b-v2" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__nv-embedqa-mistral-7b-v2"></a>
+<div class="ph"><b>phase</b> status=404 lat=455.4ms ttfb=455.4ms<div class="detail mono">404 page not found
+</div></div><div class="carddesc"><b>card:</b> Multilingual text question-answering retrieval, transforming textual information<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__nvclip" data-v="dead-404-gated"
+    data-c="embedding/retrieval" data-m="nvidia/nvclip">
+<td class="mono mid"><a href="#model=nvidia__nvclip" class="anchor">#</a> nvidia/nvclip</td>
+<td>embedding/retrieval</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">407.2</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__nvclip" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__nvclip"></a>
+<div class="ph"><b>phase</b> status=404 lat=407.2ms ttfb=407.2ms<div class="detail mono">404 page not found
+</div></div><div class="carddesc"><b>card:</b> NV-CLIP is a multimodal embeddings model for image and text.<br><span class=dim>card input: Images, Texts &lt;br&gt; · output: Float tensor &lt;br&gt;</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__riva-translate-4b-instruct" data-v="dead-404-gated"
+    data-c="oddball" data-m="nvidia/riva-translate-4b-instruct">
+<td class="mono mid"><a href="#model=nvidia__riva-translate-4b-instruct" class="anchor">#</a> nvidia/riva-translate-4b-instruct</td>
+<td>oddball</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">391.1</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__riva-translate-4b-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__riva-translate-4b-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=391.1ms ttfb=391.1ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Translation model in 12 languages with few-shots example prompts capability.<br><span class=dim>card input: Text &lt;br&gt; · output: Text &lt;br&gt;</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-nvidia__vila" data-v="dead-404-gated"
+    data-c="vision" data-m="nvidia/vila">
+<td class="mono mid"><a href="#model=nvidia__vila" class="anchor">#</a> nvidia/vila</td>
+<td>vision</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">335.4</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="nvidia__vila" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-nvidia__vila"></a>
+<div class="ph"><b>phase</b> status=404 lat=335.4ms ttfb=335.4ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Multi-modal vision-language model that understands text/img/video and creates in<br><span class=dim>card input: Image, Video, Text · output: Text</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-snowflake__arctic-embed-l" data-v="dead-404-gated"
+    data-c="embedding/retrieval" data-m="snowflake/arctic-embed-l">
+<td class="mono mid"><a href="#model=snowflake__arctic-embed-l" class="anchor">#</a> snowflake/arctic-embed-l</td>
+<td>embedding/retrieval</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">356.5</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="snowflake__arctic-embed-l" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-snowflake__arctic-embed-l"></a>
+<div class="ph"><b>phase</b> status=404 lat=356.5ms ttfb=356.5ms<div class="detail mono">404 page not found
+</div></div><div class="carddesc"><b>card:</b> Optimized community model for text embedding.<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-writer__palmyra-creative-122b" data-v="dead-404-gated"
+    data-c="legacy" data-m="writer/palmyra-creative-122b">
+<td class="mono mid"><a href="#model=writer__palmyra-creative-122b" class="anchor">#</a> writer/palmyra-creative-122b</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">338.4</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="writer__palmyra-creative-122b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-writer__palmyra-creative-122b"></a>
+<div class="ph"><b>phase</b> status=404 lat=338.4ms ttfb=338.4ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Powerful LLM designed for creative thinking and writing.<br><span class=dim>card input: Text &lt;br&gt; · output: Text &lt;br&gt;</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-writer__palmyra-fin-70b-32k" data-v="dead-404-gated"
+    data-c="legacy" data-m="writer/palmyra-fin-70b-32k">
+<td class="mono mid"><a href="#model=writer__palmyra-fin-70b-32k" class="anchor">#</a> writer/palmyra-fin-70b-32k</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">339.4</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="writer__palmyra-fin-70b-32k" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-writer__palmyra-fin-70b-32k"></a>
+<div class="ph"><b>phase</b> status=404 lat=339.4ms ttfb=339.4ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Specialized LLM for financial analysis, reporting, and data processing<br><span class=dim>card input: Text &lt;br&gt; · output: Text &lt;br&gt;</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-writer__palmyra-med-70b" data-v="dead-404-gated"
+    data-c="legacy" data-m="writer/palmyra-med-70b">
+<td class="mono mid"><a href="#model=writer__palmyra-med-70b" class="anchor">#</a> writer/palmyra-med-70b</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">300.0</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="writer__palmyra-med-70b" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-writer__palmyra-med-70b"></a>
+<div class="ph"><b>phase</b> status=404 lat=300.0ms ttfb=300.0ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Leading LLM for accurate, contextually relevant responses in the medical domain.<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-writer__palmyra-med-70b-32k" data-v="dead-404-gated"
+    data-c="legacy" data-m="writer/palmyra-med-70b-32k">
+<td class="mono mid"><a href="#model=writer__palmyra-med-70b-32k" class="anchor">#</a> writer/palmyra-med-70b-32k</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">378.3</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="writer__palmyra-med-70b-32k" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-writer__palmyra-med-70b-32k"></a>
+<div class="ph"><b>phase</b> status=404 lat=378.3ms ttfb=378.3ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Leading LLM for accurate, contextually relevant responses in the medical domain.<br><span class=dim>card input: ? · output: ?</span></div>
+</div></td></tr>
+<tr class="mrow" id="row-zyphra__zamba2-7b-instruct" data-v="dead-404-gated"
+    data-c="legacy" data-m="zyphra/zamba2-7b-instruct">
+<td class="mono mid"><a href="#model=zyphra__zamba2-7b-instruct" class="anchor">#</a> zyphra/zamba2-7b-instruct</td>
+<td>legacy</td><td><span class="badge" style="--c:#ef4444">gated 404</span></td>
+<td class="num">335.7</td><td class="num">—</td>
+<td class="exp">▸</td></tr>
+<tr class="detail-row" data-for="zyphra__zamba2-7b-instruct" hidden>
+<td colspan="6"><div class="deep">
+<a id="model-zyphra__zamba2-7b-instruct"></a>
+<div class="ph"><b>phase</b> status=404 lat=335.7ms ttfb=335.7ms<div class="detail mono">{&quot;status&quot;:404,&quot;title&quot;:&quot;Not Found&quot;,&quot;detail&quot;:&quot;Function &#x27;REDACTED&#x27;: Not found for account &#x27;iuh5</div></div><div class="carddesc"><b>card:</b> Efficient hybrid state-space model designed for conversational and reasoning tas<br><span class=dim>card input: Text &lt;br&gt; · output: Text &lt;br&gt;</span></div>
+</div></td></tr></tbody></table></div>
+<p class="dim small">Click a row for the deep dive: phase-A/B timing, headers
+(redacted), error detail, and the model card's own description. Deep links:
+<span class="mono">#model=&lt;org&gt;__&lt;name&gt;</span></p>
+
+</main>
+<footer class="wrap dim small">Fail-fast probe of NVIDIA NIM's hosted API · 2026-09-14 ·
+<a href="https://raw.githubusercontent.com/toxicwind/nvidia-nim-model-probe/main/data/probe_results_all_2026-09-14.json">raw sweep JSON</a> ·
+<a href="https://github.com/toxicwind/nvidia-nim-model-probe">repo</a></footer>
+<script src="assets/app.js"></script>
+</body></html>

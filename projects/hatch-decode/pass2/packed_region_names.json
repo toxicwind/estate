@@ -1,0 +1,86 @@
+[
+ {
+  "name": "JARVIS_TOOL_DISPATCH_TIMEOUT_MS",
+  "len": 31,
+  "site": "0x65ca030",
+  "after": "JARVIS_PRE_I",
+  "reader_pat": "lea|mov|mov|jmp|int3"
+ },
+ {
+  "name": "JARVIS_PRE_INFERENCE_STEP_TIMEOUT_MS",
+  "len": 36,
+  "site": "0x65ca050",
+  "after": "; timeout_ki",
+  "reader_pat": "lea|mov|mov|jmp|int3"
+ },
+ {
+  "name": "JARVIS_SUBAGENT_CONTROL_OP_TIMEOUT_MS",
+  "len": 37,
+  "site": "0x65ca070",
+  "after": "JARVIS_POST_",
+  "reader_pat": "lea|mov|mov|jmp|int3"
+ },
+ {
+  "name": "JARVIS_POST_TOOL_CONTINUATION_TIMEOUT_MS",
+  "len": 40,
+  "site": "0x65ca090",
+  "after": "JARVIS_POST_",
+  "reader_pat": "lea|mov|mov|jmp|int3"
+ },
+ {
+  "name": "JARVIS_MODEL_STREAM_FIRST_CHUNK_TIMEOUT_MS",
+  "len": 42,
+  "site": "0x65ca0d0",
+  "after": "JARVIS_CRON_",
+  "reader_pat": "lea|mov|mov|jmp|int3"
+ },
+ {
+  "name": "JARVIS_COMMENTARY_END_TURN_MERGE_TIMEOUT_MS",
+  "len": 43,
+  "site": "0x65ca0f0",
+  "after": "JARVIS_TOOL_",
+  "reader_pat": "lea|mov|mov|jmp|int3"
+ },
+ {
+  "name": "JARVIS_MESSAGE_EVENT_STREAM_IDLE_TIMEOUT_MS",
+  "len": 43,
+  "site": "0x65ca110",
+  "after": "JARVIS_MODEL",
+  "reader_pat": "lea|mov|mov|jmp|int3"
+ },
+ {
+  "name": "JARVIS_ACCEPTED_TURN_FIRST_PROGRESS_TIMEOUT_MS",
+  "len": 46,
+  "site": "0x65ca130",
+  "after": "JARVIS_SUBAG",
+  "reader_pat": "lea|mov|mov|jmp|int3"
+ },
+ {
+  "name": "JARVIS_CRON_MODEL_STREAM_FIRST_CHUNK_TIMEOUT_MS",
+  "len": 47,
+  "site": "0x65ca150",
+  "after": "JARVIS_MODEL",
+  "reader_pat": "lea|mov|mov|jmp|int3"
+ },
+ {
+  "name": "JARVIS_POST_INFERENCE_TERMINALIZATION_TIMEOUT_MS",
+  "len": 48,
+  "site": "0x65ca170",
+  "after": "JARVIS_RESUM",
+  "reader_pat": "lea|mov|mov|jmp|int3"
+ },
+ {
+  "name": "JARVIS_MODEL_STREAM_CHUNK_IDLE_TIMEOUT_MS",
+  "len": 41,
+  "site": "0x65ca190",
+  "after": "JARVIS_COMME",
+  "reader_pat": "lea|mov|mov|jmp|int3"
+ },
+ {
+  "name": "JARVIS_RESUMED_TURN_INFERENCE_READINESS_TIMEOUT_MS",
+  "len": 50,
+  "site": "0x65ca1b0",
+  "after": "JARVIS_MESSA",
+  "reader_pat": "lea|mov|mov|jmp|int3"
+ }
+]

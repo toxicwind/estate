@@ -1,0 +1,2 @@
+                    if (kotlin.text.StringsKt.contains$default(videoUrl3, "/video.mp4", false, 2, (java.lang.Object) null) && links5.add(videoUrl3)) {
+                    java.lang.String videoUrl3 = new kotlin.text.Regex("poster\\d+\\.jpg").replace((java.lang.CharSequence) poster, "video.mp4");

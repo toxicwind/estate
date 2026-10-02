@@ -1,0 +1,127 @@
+{
+ "strategies": [
+  {
+   "cmd": [
+    "python3",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/demo/solver_fast.py",
+    "{outdir}"
+   ],
+   "name": "demo-fast"
+  },
+  {
+   "cmd": [
+    "python3",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/demo/solver_slow.py",
+    "{outdir}"
+   ],
+   "name": "demo-slow"
+  },
+  {
+   "cmd": [
+    "python3",
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/demo/solver_broken.py",
+    "{outdir}"
+   ],
+   "name": "demo-broken"
+  },
+  {
+   "name": "direct-fast",
+   "cmd": [
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/direct-fast/run",
+    "{taskdir}",
+    "{outdir}"
+   ],
+   "timeout_s": 90
+  },
+  {
+   "name": "direct-tool",
+   "cmd": [
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/direct-tool/run",
+    "{taskdir}",
+    "{outdir}"
+   ],
+   "timeout_s": 180
+  },
+  {
+   "name": "kimi-auto",
+   "cmd": [
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/kimi-auto/run",
+    "{taskdir}",
+    "{outdir}"
+   ],
+   "timeout_s": 300
+  },
+  {
+   "name": "router-hedged",
+   "cmd": [
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/router-hedged/run",
+    "{taskdir}",
+    "{outdir}"
+   ],
+   "timeout_s": 300
+  },
+  {
+   "name": "plan-then-code",
+   "cmd": [
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/plan-then-code/run",
+    "{taskdir}",
+    "{outdir}"
+   ],
+   "timeout_s": 300
+  },
+  {
+   "name": "test-first",
+   "cmd": [
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/test-first/run",
+    "{taskdir}",
+    "{outdir}"
+   ],
+   "timeout_s": 480
+  },
+  {
+   "name": "oracle-consensus",
+   "cmd": [
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/oracle-consensus/run",
+    "{taskdir}",
+    "{outdir}"
+   ],
+   "timeout_s": 480
+  },
+  {
+   "name": "evolve",
+   "cmd": [
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/evolve/run",
+    "{taskdir}",
+    "{outdir}"
+   ],
+   "timeout_s": 480
+  },
+  {
+   "name": "reviewer-rank",
+   "cmd": [
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/reviewer-rank/run",
+    "{taskdir}",
+    "{outdir}"
+   ],
+   "timeout_s": 480
+  },
+  {
+   "name": "showdown",
+   "cmd": [
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/showdown/run",
+    "{taskdir}",
+    "{outdir}"
+   ],
+   "timeout_s": 480
+  },
+  {
+   "name": "efficiency-duel",
+   "cmd": [
+    "/home/toxic/sovereign/killer-features/code-racer/strategies/efficiency-duel/run",
+    "{taskdir}",
+    "{outdir}"
+   ],
+   "timeout_s": 360
+  }
+ ]
+}

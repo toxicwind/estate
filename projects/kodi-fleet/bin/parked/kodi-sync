@@ -1,0 +1,160 @@
+#!/usr/bin/env python3
+"""kodi-sync: keep two Kodi boxes in loose playback sync.
+
+Model: Chris watches ONE room at a time. The box that's playing is the
+leader; the other box is a paused follower kept at the leader's file+position.
+Walk to the other room, hit play -> it becomes leader, the abandoned room
+auto-pauses and stays synced. No re-scrape, no addon search: the leader's
+direct file URL is reused (that's the fast path).
+
+  kodi-sync once [SRC] [DST]   one-shot: sync DST to SRC's live state, paused
+  kodi-sync daemon              loop on awrawr-pc: elect leader, sync follower
+
+Boxes: 246 = upstairs CoreELEC, 225 = downstairs Android (SmartTV 4K FFM).
+"""
+import json, sys, time, os, urllib.request
+
+BOXES = {"246": "10.0.0.246", "225": "10.0.0.225"}
+RPC = "http://{ip}:8080/jsonrpc"
+TICK = 5            # daemon poll interval, seconds
+DRIFT_SEEK = 15    # re-seek follower when drift exceeds this, seconds
+STATE = os.path.expanduser("~/.local/state/kodi-sync.json")
+LOG = os.path.expanduser("~/.local/state/kodi-sync.log")
+
+def log(msg):
+    line = "%s %s" % (time.strftime("%Y-%m-%dT%H:%M:%S"), msg)
+    try:
+        with open(LOG, "a") as f: f.write(line + "\n")
+    except OSError: pass
+    if os.environ.get("KODI_SYNC_VERBOSE"): print(line, flush=True)
+
+def rpc(box, method, params=None):
+    body = json.dumps({"jsonrpc": "2.0", "method": method,
+                       "params": params or {}, "id": 1}).encode()
+    req = urllib.request.Request(RPC.format(ip=BOXES[box]), data=body,
+                                 headers={"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=6) as r:
+            return json.loads(r.read().decode()).get("result")
+    except Exception as e:
+        return {"_err": str(e)}
+
+def probe(box):
+    """Return dict: playing/paused/idle, file, pos_sec."""
+    st = {"box": box, "mode": "idle", "file": None, "pos": 0}
+    players = rpc(box, "Player.GetActivePlayers")
+    if isinstance(players, dict) and "_err" in players: st["mode"] = "unreachable"; return st
+    if not players: return st
+    pid = players[0]["playerid"]
+    item = rpc(box, "Player.GetItem", {"playerid": pid, "properties": ["file"]}) or {}
+    props = rpc(box, "Player.GetProperties", {"playerid": pid,
+                "properties": ["time", "speed"]}) or {}
+    t = (props.get("time") or {})
+    st["file"] = (item.get("item") or {}).get("file")
+    st["pos"] = t.get("hours", 0)*3600 + t.get("minutes", 0)*60 + t.get("seconds", 0)
+    st["mode"] = "playing" if props.get("speed") == 1 else "paused"
+    st["pid"] = pid
+    return st
+
+def open_paused(box, url, pos):
+    r = rpc(box, "Player.Open", {"item": {"file": url}})
+    if isinstance(r, dict) and "_err" in r: return False, "open failed: %s" % r["_err"]
+    time.sleep(1.5)
+    rpc(box, "Player.Seek", {"playerid": 1, "value": {"seconds": int(pos)}})
+    time.sleep(0.5)
+    rpc(box, "Player.SetSpeed", {"playerid": 1, "speed": 0})
+    return True, "opened+seeked+paused"
+
+def sync_follower_to(follower, leader):
+    """Make follower box mirror leader's file+position, paused."""
+    f = probe(follower); l = leader  # leader already probed
+    if not l["file"]: return False, "leader has no file"
+    if f["mode"] == "unreachable": return False, "follower unreachable"
+    if f["file"] != l["file"]:
+        ok, msg = open_paused(follower, l["file"], l["pos"])
+        log("follower %s file mismatch -> %s" % (follower, msg))
+        return ok, msg
+    if abs(f["pos"] - l["pos"]) > DRIFT_SEEK:
+        rpc(follower, "Player.Seek", {"playerid": f.get("pid", 1),
+                                      "value": {"seconds": int(l["pos"])}})
+        if f["mode"] == "playing":
+            rpc(follower, "Player.SetSpeed", {"playerid": f.get("pid", 1), "speed": 0})
+        log("follower %s drift %ds -> seek to %d" % (follower, f["pos"]-l["pos"], l["pos"]))
+        return True, "re-seeked"
+    if f["mode"] == "playing":
+        rpc(follower, "Player.SetSpeed", {"playerid": f.get("pid", 1), "speed": 0})
+        return True, "paused abandoned room"
+    return True, "already in sync"
+
+def load_state():
+    try: return json.load(open(STATE))
+    except OSError: return {"leader": None, "speeds": {}}
+
+def save_state(s):
+    try:
+        os.makedirs(os.path.dirname(STATE), exist_ok=True)
+        json.dump(s, open(STATE, "w"))
+    except OSError: pass
+
+def cmd_once(src="246", dst="225"):
+    t0 = time.monotonic()
+    s = probe(src)
+    if s["mode"] == "unreachable": return print("src %s unreachable" % src)
+    if not s["file"]: return print("src %s has no active player" % src)
+    ok, msg = sync_follower_to(dst, s)
+    dt = time.monotonic() - t0
+    print("once %s -> %s: %s (%.1fs) src_pos=%ds src_mode=%s"
+          % (src, dst, msg, dt, s["pos"], s["mode"]))
+
+def cmd_daemon():
+    st = load_state()
+    log("daemon start, last_leader=%s" % st.get("leader"))
+    while True:
+        try:
+            tick(st)
+        except Exception as e:
+            log("tick error: %s" % e)
+        save_state(st)
+        time.sleep(TICK)
+
+def tick(st):
+    a, b = probe("246"), probe("225")
+    boxes = {"246": a, "225": b}
+    prev_speeds = st.get("speeds", {})
+    # transition: paused/idle -> playing => new leader
+    new_leader = None
+    for name, s in boxes.items():
+        if s["mode"] == "playing" and prev_speeds.get(name) != "playing":
+            new_leader = name
+    if new_leader is None:
+        playing = [n for n, s in boxes.items() if s["mode"] == "playing"]
+        if len(playing) == 1:
+            new_leader = playing[0]
+        elif len(playing) == 2:
+            new_leader = st.get("leader") if st.get("leader") in playing else playing[0]
+        else:
+            new_leader = st.get("leader")  # nobody playing: hold last
+    old_leader = st.get("leader")
+    if new_leader and new_leader != old_leader:
+        log("leadership %s -> %s" % (old_leader, new_leader))
+        # pause the abandoned room (if it was playing) and sync it
+        if old_leader and boxes[old_leader]["mode"] == "playing":
+            rpc(old_leader, "Player.SetSpeed",
+                {"playerid": boxes[old_leader].get("pid", 1), "speed": 0})
+            log("paused abandoned room %s" % old_leader)
+    st["leader"] = new_leader
+    st["speeds"] = {n: s["mode"] for n, s in boxes.items()}
+    if new_leader and boxes[new_leader]["file"]:
+        follower = "225" if new_leader == "246" else "246"
+        ok, msg = sync_follower_to(follower, boxes[new_leader])
+        if msg not in ("already in sync",):
+            log("sync %s: %s" % (follower, msg))
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2 or sys.argv[1] not in ("once", "daemon"):
+        print(__doc__); sys.exit(1)
+    if sys.argv[1] == "once":
+        cmd_once(sys.argv[2] if len(sys.argv) > 2 else "246",
+                 sys.argv[3] if len(sys.argv) > 3 else "225")
+    else:
+        cmd_daemon()

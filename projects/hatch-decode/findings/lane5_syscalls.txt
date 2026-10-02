@@ -1,0 +1,20 @@
+== dynamic imports: watch/signal/ipc ==
+                 U epoll_create1@GLIBC_2.9
+                 U epoll_ctl@GLIBC_2.3.2
+                 U epoll_wait@GLIBC_2.3.2
+                 U eventfd@GLIBC_2.7
+                 U inotify_add_watch@GLIBC_2.4
+                 U inotify_init1@GLIBC_2.9
+                 U inotify_rm_watch@GLIBC_2.4
+                 U memfd_create@GLIBC_2.27
+                 U ptrace@GLIBC_2.2.5
+                 U signal@GLIBC_2.2.5
+
+== env-related imports ==
+                 U environ@GLIBC_2.2.5
+                 U getenv@GLIBC_2.2.5
+                 U setenv@GLIBC_2.2.5
+                 U unsetenv@GLIBC_2.2.5
+
+== total undefined imports ==
+656
