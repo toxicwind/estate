@@ -1279,3 +1279,6 @@ FodyWeavers.xsd
 # regenerated on every run and belong on disk, not in history.
 config/tau/agent/sessions/
 config/tau/plugins/cache/
+# Compiled tau native addons: 202MB per platform-version, rebuilt by
+# tau-binary-build. Build artifacts never belong in history.
+config/tau/natives/
