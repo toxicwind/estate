@@ -14,12 +14,12 @@ Long-running reasoning SSE streams are dropped by middleboxes (NAT, load balance
 
 A two-tier transport architecture:
 
-1. **Socket Stream Config** (`sovereign/packages/sovereign-utils/src/transport/socket-stream.ts`)
+1. **Socket Stream Config** (`estate/packages/sovereign-utils/src/transport/socket-stream.ts`)
    - `SocketStreamConfig` interface with OS-level keepalive parameters
    - `RingTokenBuffer` — append-only ring buffer preserving validated reasoning tokens across mid-flight network interrupts
    - `DirectSocketStreamClient` — connects to the Stream Broker UNIX socket or TCP port with robust keepalive
 
-2. **Stream Broker Daemon** (`sovereign/projects/range/ranch/stockyard/stream-broker/`)
+2. **Stream Broker Daemon** (`ranch/stream-broker/`)
    - UNIX socket server (`/run/user/1000/sovereign-stream-broker.sock`)
    - TCP server (port 25215)
    - Echo service with OS-level keepalive (TCP_KEEPIDLE=30s)
@@ -40,7 +40,7 @@ A two-tier transport architecture:
 ### Integration
 
 - The Stream Broker is registered in `pitchfork.toml` as `[daemons.sovereign-stream-broker]`
-- The `socket-stream.ts` module is exported from `sovereign/packages/sovereign-utils/src/index.ts`
+- The `socket-stream.ts` module is exported from `estate/packages/sovereign-utils/src/index.ts`
 - The Stream Broker listens on port 25215 (per `config/ports.env`)
 
 ## Cognitive EKG (Electrocardiogram Monitoring)
@@ -57,7 +57,7 @@ The model-guard proxy (`herd-model-guard.py`) serves as the primary health enfor
 
 2. **Fail-Open Upstream** — If the constraints file is unreadable or the upstream (herd) resets, traffic passes through untouched with the error logged.
 
-3. **Audit Trail** — Every rewrite appends a JSON line to `/home/toxic/sovereign/data/model-guard-audit.jsonl`, rotated at 10MB.
+3. **Audit Trail** — Every rewrite appends a JSON line to `/home/toxic/estate/data/model-guard-audit.jsonl`, rotated at 10MB.
 
 ### Health Endpoints
 
@@ -85,9 +85,9 @@ All daemons are supervised by Pitchfork (systemd user unit). The supervisor read
 
 ### Config Loading
 
-The `pitchfork.toml` at `/home/toxic/sovereign/pitchfork.toml` is the single source of truth for all daemon definitions. Pitchfork does NOT hot-reload — editing any `[daemons.*]` section requires `pitchfork restart sovereign/<name>`.
+The `pitchfork.toml` at `/home/toxic/estate/pitchfork.toml` is the single source of truth for all daemon definitions. Pitchfork does NOT hot-reload — editing any `[daemons.*]` section requires `pitchfork restart estate/<name>`.
 
-The symlink `/home/toxic/pitchfork.toml → /home/toxic/sovereign/pitchfork.toml` ensures the supervisor (running from `/home/toxic`) can find the config.
+The symlink `/home/toxic/pitchfork.toml → /home/toxic/estate/pitchfork.toml` ensures the supervisor (running from `/home/toxic`) can find the config.
 
 ### Version Management
 
@@ -95,7 +95,7 @@ Pitchfork is pinned to version 2.25 in `~/.config/mise/config.toml` (`pitchfork 
 
 ## Recent Fixes (2026-09-23)
 
-1. **503 Error Resolution** — The pitchfork supervisor was running from `/home/toxic` instead of `/home/toxic/sovereign`, causing it to not find `pitchfork.toml`. Fixed by creating the symlink `/home/toxic/pitchfork.toml → /home/toxic/sovereign/pitchfork.toml`.
+1. **503 Error Resolution** — The pitchfork supervisor was running from `/home/toxic` instead of `/home/toxic/estate`, causing it to not find `pitchfork.toml`. Fixed by creating the symlink `/home/toxic/pitchfork.toml → /home/toxic/estate/pitchfork.toml`.
 
 2. **Model-Guard Connection Reset** — Added `try/except (BrokenPipeError, ConnectionResetError)` around the entire `_proxy` method body in `herd-model-guard.py` to prevent server thread crashes.
 

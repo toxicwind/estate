@@ -47,7 +47,7 @@ health probe (`curl -sf http://127.0.0.1:25160/health`), no env, no secrets.
 ```sh
 systemctl --user stop sovereign-<name>.service
 systemctl --user disable sovereign-<name>.service   # keep the unit file for forensics
-cd /home/toxic/sovereign && pitchfork start <project>/<name>
+cd /home/toxic/estate && pitchfork start <project>/<name>
 # verify via the daemon's ready probe
 ```
 

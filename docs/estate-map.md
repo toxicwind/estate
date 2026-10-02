@@ -3,7 +3,7 @@
 **GENERATED FILE — do not hand-edit.** Rebuild with `bun projects/ops/bin/estate-map.ts`;
 drift-check with `bun projects/ops/bin/estate-map.ts --check`.
 
-Generated 2026-10-02T07:57:58.477Z on `awrawr-pc`. Estate root `/home/toxic/sovereign`.
+Generated 2026-10-02T12:28:06.942Z on `awrawr-pc`. Estate root `/home/toxic/estate`.
 
 > **One word, one referent.** `estate/` is the control-plane tree. `ranch/` is the inference
 > monorepo. The agent engine config lives in `~/.tau`. Every daemon runs out of the path
@@ -13,13 +13,13 @@ Generated 2026-10-02T07:57:58.477Z on `awrawr-pc`. Estate root `/home/toxic/sove
 
 | Repo | Path | Remote | Head | Committed | Dirty | Checkout kind |
 |---|---|---|---|---|---|---|
-| 🟢 **estate** | `/home/toxic/sovereign` | https://github.com/toxicwind/sovereign-projects.git | 7319b1a5f | 2026-10-01T16:13:05 | 289 | nested |
-| 🟢 **ranch** | `/home/toxic/sovereign/projects/range/ranch` | https://github.com/toxicwind/ranch | c2e2d3c | 2026-10-01T16:42:27 | 0 | nested |
-| 🟢 **ranch** | `/home/toxic/ranch` | https://github.com/toxicwind/ranch | d2a0a0e | 2026-10-01T03:15:08 | 0 | nested |
+| 🟢 **estate** | `/home/toxic/estate` | https://github.com/toxicwind/sovereign-projects.git | c27e5154a4 | 2026-10-02T06:27:37 | 78 | nested |
+| 🟢 **ranch** | `/home/toxic/estate/ranch` | https://github.com/toxicwind/ranch | 657f3b7 | 2026-10-02T06:24:07 | 328 | nested |
+| 🟢 **ranch** | `/home/toxic/ranch` | https://github.com/toxicwind/ranch | 657f3b7 | 2026-10-02T06:24:07 | 328 | nested |
 | 🟢 **tau-config** | `/home/toxic/.tau` | — | — | — | 0 | none |
 
-- **estate** (`/home/toxic/sovereign`) — control plane: pitchfork.toml, config/, bin/, bridge/, agents/, docs/, projects/
-- **ranch** (`/home/toxic/sovereign/projects/range/ranch`) — the inference estate monorepo: herd, flock, gatehouse, squawk, oracle, flicker, roost
+- **estate** (`/home/toxic/estate`) — control plane: pitchfork.toml, config/, bin/, bridge/, agents/, docs/, projects/
+- **ranch** (`/home/toxic/estate/ranch`) — the inference estate monorepo: herd, flock, gatehouse, squawk, oracle, flicker, roost
 - **ranch** (`/home/toxic/ranch`) — SECOND checkout of toxicwind/ranch — duplicate, not the daemon target
 - **tau-config** (`/home/toxic/.tau`) — coding-agent engine config (config.yml, models.yml, model-router.json, mcp.json)
 
@@ -45,14 +45,15 @@ Generated 2026-10-02T07:57:58.477Z on `awrawr-pc`. Estate root `/home/toxic/sove
 | 8222 | — | — | 🟢 | nats-server |
 | 8443 | — | — | 🟢 | — |
 | 9093 | — | — | 🟢 | — |
-| 9223 | — | browser-keeper | 🟢 | chrome |
+| 9223 | — | browser-keeper | ⚪️ | — |
 | 18384 | — | — | 🟢 | syncthing |
-| 18787 | — | — | 🟢 | MainThread |
 | 18788 | — | — | 🟢 | MainThread |
+| 18789 | — | — | 🟢 | MainThread |
 | 18924 | — | — | 🟢 | — |
 | 20128 | VANSROUTER_PORT | vansrouter | 🟢 | next-server (v1 |
 | 20128 | VANSROUTER_PORT | vansrouter | 🟢 | next-server (v1 |
 | 22000 | — | — | 🟢 | syncthing |
+| 25017 | — | — | 🟢 | llama-server |
 | 25100 | HERD_PORT | herd | 🟢 | llama-swap |
 | 25100 | HERD_PORT | herd | 🟢 | llama-swap |
 | 25101 | MODEL_GUARD_PORT | model-guard | 🟢 | python3 |
@@ -61,8 +62,7 @@ Generated 2026-10-02T07:57:58.477Z on `awrawr-pc`. Estate root `/home/toxic/sove
 | 25102 | YOTE_PORT | yote | 🟢 | bun |
 | 25103 | OPENFANG_PORT | openfang-front | 🟢 | bun |
 | 25103 | OPENFANG_PORT | openfang-front | 🟢 | bun |
-| 25104 | SOVEREIGN_ROUTER_PORT | sovereign-router | 🟢 | bun |
-| 25104 | SOVEREIGN_ROUTER_PORT | sovereign-router | 🟢 | bun |
+| 25104 | — | sovereign-router | 🟢 | bun |
 | 25105 | PROMETHEUS_PORT | prometheus | 🟢 | bun |
 | 25105 | PROMETHEUS_PORT | prometheus | 🟢 | bun |
 | 25106 | HF_DOWNLOADER_PORT | hf-downloader | 🟢 | bun |
@@ -71,8 +71,8 @@ Generated 2026-10-02T07:57:58.477Z on `awrawr-pc`. Estate root `/home/toxic/sove
 | 25107 | NULL_G_PORT | null-g-proxy | 🟢 | bun |
 | 25108 | WATCHDOG_PORT | — | 🟢 | sovereign_web |
 | 25108 | WATCHDOG_PORT | — | 🟢 | sovereign_web |
-| 25109 | KEYPOOL_PORT | keypool | 🟢 | python3 |
-| 25109 | KEYPOOL_PORT | keypool | 🟢 | python3 |
+| 25109 | KEYPOOL_PORT | keypool | 🟢 | bun |
+| 25109 | KEYPOOL_PORT | keypool | 🟢 | bun |
 | 25110 | GRAFANA_PORT | grafana | 🟢 | bun |
 | 25110 | GRAFANA_PORT | grafana | 🟢 | bun |
 | 25111 | — | tau | 🟢 | MainThread |
@@ -80,8 +80,8 @@ Generated 2026-10-02T07:57:58.477Z on `awrawr-pc`. Estate root `/home/toxic/sove
 | 25112 | GHAS_API_PORT | search-api | 🟢 | bun |
 | 25113 | GHAS_MCP_PORT | — | 🟢 | bun |
 | 25113 | GHAS_MCP_PORT | — | 🟢 | bun |
-| 25114 | GHAS_FRONTEND_PORT | search-ui | 🟢 | next-server (v1 |
-| 25114 | GHAS_FRONTEND_PORT | search-ui | 🟢 | next-server (v1 |
+| 25114 | GHAS_FRONTEND_PORT | search-ui | ⚪️ | — |
+| 25114 | GHAS_FRONTEND_PORT | search-ui | ⚪️ | — |
 | 25115 | MESH_HUB_PORT | mesh-hub | 🟢 | bun |
 | 25115 | MESH_HUB_PORT | mesh-hub | 🟢 | bun |
 | 25116 | KIMI_AUDIT_DASH_PORT | — | 🟢 | bun |
@@ -157,7 +157,7 @@ Generated 2026-10-02T07:57:58.477Z on `awrawr-pc`. Estate root `/home/toxic/sove
 | 25189 | NIM_QUEUE_PORT | — | ⚪️ | — |
 | 25190 | REASONING_ROUTER_PORT | — | ⚪️ | — |
 | 25191 | NIM_VALIDATION_PORT | — | ⚪️ | — |
-| 25192 | PI_WEB_DASHBOARD_PORT | — | ⚪️ | — |
+| 25192 | CUTTINGGATE_PORT | — | ⚪️ | — |
 | 25193 | FLOCK_PORT | flock | 🟢 | flock |
 | 25193 | FLOCK_PORT | flock | 🟢 | flock |
 | 25194 | RALPH_DASH_PORT | ralph-dashboard | 🟢 | uvicorn |
@@ -203,6 +203,7 @@ Generated 2026-10-02T07:57:58.477Z on `awrawr-pc`. Estate root `/home/toxic/sove
 | 25996 | — | — | 🟢 | bun |
 | 25997 | — | — | 🟢 | bun |
 | 33035 | — | — | 🟢 | — |
+| 33717 | — | — | 🟢 | omp |
 | 34213 | — | — | 🟢 | — |
 | 34292 | — | — | 🟢 | MainThread |
 | 34567 | — | files | 🟢 | python3 |
@@ -225,36 +226,32 @@ Config dir: `/home/toxic/.tau`
 |---|---|---|---|
 | herd | `./projects/range/ranch/stockyard/herd` | `/home/toxic/projects/range/ranch/stockyard/herd` | 🔴 DEAD |
 | flock | `./projects/range/ranch/stockyard/flock` | `/home/toxic/projects/range/ranch/stockyard/flock` | 🔴 DEAD |
-| gatehouse | `./projects/range/ranch/barn/gatehouse` | `/home/toxic/projects/range/ranch/barn/gatehouse` | 🔴 DEAD |
+| gatehouse | `./projects/range/ranch/barn/gatehouse` | `/home/toxic/projects/range/ranch/barn/gatehouse` | 🟢 |
 | router | `./projects/range/ranch/stockyard/router-legacy` | `/home/toxic/projects/range/ranch/stockyard/router-legacy` | 🔴 DEAD |
-| barn-browser | `./projects/range/ranch/barn/browserless` | `/home/toxic/projects/range/ranch/barn/browserless` | 🔴 DEAD |
-| barn-gemini | `./projects/range/ranch/barn/gemini-mcp` | `/home/toxic/projects/range/ranch/barn/gemini-mcp` | 🔴 DEAD |
-| secretsmith | `./projects/range/ranch/barn/secretsmith` | `/home/toxic/projects/range/ranch/barn/secretsmith` | 🔴 DEAD |
+| barn-browser | `./projects/range/ranch/barn/browserless` | `/home/toxic/projects/range/ranch/barn/browserless` | 🟢 |
+| barn-gemini | `./projects/range/ranch/barn/gemini-mcp` | `/home/toxic/projects/range/ranch/barn/gemini-mcp` | 🟢 |
+| secretsmith | `./projects/range/ranch/barn/secretsmith` | `/home/toxic/projects/range/ranch/barn/secretsmith` | 🟢 |
 
 | Provider key | baseUrl |
 |---|---|
 | `providers.openai-compatible` | `http://127.0.0.1:25100/v1` |
 
 - **Model-router selectors use:** `herd`, `sovereign`
-- **MCP servers:** `mesh-gateway` → http://127.0.0.1:25127/mcp · `sovereign-tools` → bun /home/toxic/sovereign/helpers/sovereign-mcp-server.ts · `browserless` → node /home/toxic/sovereign/projects/range/ranch/barn/browserless/dist/index.js
+- **MCP servers:** `mesh-gateway` → http://127.0.0.1:25127/mcp · `sovereign-tools` → bun /home/toxic/estate/helpers/sovereign-mcp-server.ts · `browserless` → node /home/toxic/estate/ranch/barn/browserless/dist/index.js
 - **Credentials present:** flock client key: yes
 
 ## Drift
 
-28 finding(s) — **9 high.** These are silent defects: each one is
+25 finding(s) — **5 high.** These are silent defects: each one is
 something that looks wired and is not.
 
 | Sev | Kind | Detail | Fix |
 |---|---|---|---|
-| high | `duplicate-checkout` | https://github.com/toxicwind/ranch checked out 2x — newest c2e2d3c @ /home/toxic/sovereign/projects/range/ranch; /home/toxic/ranch @ d2a0a0e (2026-10-01T03:15:08-06:00) | keep /home/toxic/sovereign/projects/range/ranch; delete or archive /home/toxic/ranch |
-| high | `daemon-path-dead` | pitchfork daemon 'boundless' references /home/toxic/boundless/.venv/bin/python — absent | update pitchfork.toml [daemons.boundless] |
+| high | `duplicate-checkout` | https://github.com/toxicwind/ranch checked out 2x — newest 657f3b7 @ /home/toxic/estate/ranch; /home/toxic/ranch @ 657f3b7 (2026-10-02T06:24:07-06:00) | keep /home/toxic/estate/ranch; delete or archive /home/toxic/ranch |
+| high | `daemon-path-dead` | pitchfork daemon 'nats-tail' references /home/toxic/estate/ranch/squawk/nats/run-tail.sh — absent | update pitchfork.toml [daemons.nats-tail] |
 | high | `agent-plugin-source-dead` | tau plugin 'herd' source ./projects/range/ranch/stockyard/herd → /home/toxic/projects/range/ranch/stockyard/herd does not exist | point herd.source at the live path in docs/estate-map.json repos[] |
 | high | `agent-plugin-source-dead` | tau plugin 'flock' source ./projects/range/ranch/stockyard/flock → /home/toxic/projects/range/ranch/stockyard/flock does not exist | point flock.source at the live path in docs/estate-map.json repos[] |
-| high | `agent-plugin-source-dead` | tau plugin 'gatehouse' source ./projects/range/ranch/barn/gatehouse → /home/toxic/projects/range/ranch/barn/gatehouse does not exist | point gatehouse.source at the live path in docs/estate-map.json repos[] |
 | high | `agent-plugin-source-dead` | tau plugin 'router' source ./projects/range/ranch/stockyard/router-legacy → /home/toxic/projects/range/ranch/stockyard/router-legacy does not exist | point router.source at the live path in docs/estate-map.json repos[] |
-| high | `agent-plugin-source-dead` | tau plugin 'barn-browser' source ./projects/range/ranch/barn/browserless → /home/toxic/projects/range/ranch/barn/browserless does not exist | point barn-browser.source at the live path in docs/estate-map.json repos[] |
-| high | `agent-plugin-source-dead` | tau plugin 'barn-gemini' source ./projects/range/ranch/barn/gemini-mcp → /home/toxic/projects/range/ranch/barn/gemini-mcp does not exist | point barn-gemini.source at the live path in docs/estate-map.json repos[] |
-| high | `agent-plugin-source-dead` | tau plugin 'secretsmith' source ./projects/range/ranch/barn/secretsmith → /home/toxic/projects/range/ranch/barn/secretsmith does not exist | point secretsmith.source at the live path in docs/estate-map.json repos[] |
 | medium | `port-ssot-dead` | ports.env claims 5000 (FLEET_POWER_INTERVAL) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
 | medium | `port-ssot-dead` | ports.env claims 25123 (IK_LLAMA_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
 | medium | `port-ssot-dead` | ports.env claims 25124 (TURBO_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
@@ -272,5 +269,6 @@ something that looks wired and is not.
 | medium | `port-ssot-dead` | ports.env claims 25189 (NIM_QUEUE_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
 | medium | `port-ssot-dead` | ports.env claims 25190 (REASONING_ROUTER_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
 | medium | `port-ssot-dead` | ports.env claims 25191 (NIM_VALIDATION_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
-| medium | `port-ssot-dead` | ports.env claims 25192 (PI_WEB_DASHBOARD_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `port-ssot-dead` | ports.env claims 25192 (CUTTINGGATE_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
 | medium | `port-ssot-dead` | ports.env claims 25202 (GEMINI_MCP_PORT) — no listener, no pitchfork daemon claims it | start the daemon or drop the SSOT entry |
+| medium | `selector-provider-unwired` | model-router selects 'sovereign/…' but no provider block or baseUrl in ~/.tau maps that prefix to a live port | add a 'sovereign:' provider block with a live baseUrl, or drop the selector |

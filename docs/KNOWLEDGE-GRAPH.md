@@ -32,7 +32,7 @@
 | **`#verified`** | 1 | [`mesh-tau-verified-plan.md`](plans/verified/mesh-tau-verified-plan.md) |
 | **`#2026-09-20`** | 1 | [`MCP_AUDIT.md`](audits/2026-09-20/MCP_AUDIT.md) |
 | **`#2026-09-21`** | 1 | [`polling-audit-2026-09-21.md`](audits/2026-09-21/polling-audit-2026-09-21.md) |
-| **`#knowledgebase`** | 1 | [`fleet-knowledgebase.md`](fleet/knowledgebase/fleet-knowledgebase.md) |
+| **`#knowledgebase`** | 1 | [`fleet-knowledgebase.md`](fleet-knowledgebase.md) |
 | **`#architecture`** | 1 | [`socket-stream-cognitive-ekg.md`](architecture/socket-stream-cognitive-ekg.md) |
 | **`#research`** | 1 | [`nim-oracle-research.md`](research/surveys-and-preprints/nim-oracle-research.md) |
 | **`#surveys-and-preprints`** | 1 | [`nim-oracle-research.md`](research/surveys-and-preprints/nim-oracle-research.md) |
@@ -74,7 +74,7 @@
 
 ### 📁 `fleet/`
 
-- **[Fleet Knowledgebase](fleet/knowledgebase/fleet-knowledgebase.md)** `(fleet/knowledgebase/fleet-knowledgebase.md)` ── *(1 outgoing links)*
+- **[Fleet Knowledgebase](fleet-knowledgebase.md)** `(fleet-knowledgebase.md)` ── *(1 outgoing links)*
 - **[Fleet roster](fleet/personas/INDEX.md)** `(fleet/personas/INDEX.md)`
 - **[Persona folders](fleet/personas/README.md)** `(fleet/personas/README.md)`
 - **[Cinder — operating notes](fleet/personas/cinder/AGENTS.md)** `(fleet/personas/cinder/AGENTS.md)`
