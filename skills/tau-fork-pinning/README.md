@@ -80,18 +80,3 @@ After completing the procedure:
 | `Permission denied` | Ensure both the launcher and the target binary are executable (`chmod +x`) |
 | "fork binary missing" | Re-run the build steps: `cd ~/sovereign/projects/tau && bun install && bun run build` |
 | Immutable flag prevents updates | Remove immutability temporarily: `chattr -i ~/.local/bin/tau ~/.local/bin/omp`, then reapply after updates |
-
-## Status
-
-Version: **0.1.0**
-Last updated: 2026-10-02
-
-## Related Projects
-
-- [fix-omp-launcher](fix-omp-launcher/)
-- [fix-tau-session-corruption](fix-tau-session-corruption/)
-- [gatehouse-mcp](gatehouse-mcp/)
-- [router](router/)
-- [tau-audit](tau-audit/)
-- [tau-binary-build](tau-binary-build/)
-- [zipfs-vault](zipfs-vault/)

@@ -97,7 +97,5 @@ This project is licensed under MIT.
 
 ## Security
 
-- All events are logged with tamper-evident timestamps
-- Sensitive file paths are redacted in logs
-- RBAC controls access to monitored directories
-- Regular security audits included in the CI pipeline
+Flicker receives file-change events from the watcher and serves them
+locally. It makes no outbound network calls and stores no credentials.

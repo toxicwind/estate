@@ -97,18 +97,3 @@ bash ~/sovereign/skills/scripts/frontmatter-audit.sh
 
 - **License** – See the project's LICENSE file for details.
 - **Support** – Open issues or tickets for audit failures in the main repository.
-
-## Status
-
-Version: **0.1.0**
-Last updated: 2026-10-02
-
-## Related Projects
-
-- [fix-omp-launcher](fix-omp-launcher/)
-- [fix-tau-session-corruption](fix-tau-session-corruption/)
-- [gatehouse-mcp](gatehouse-mcp/)
-- [router](router/)
-- [tau-binary-build](tau-binary-build/)
-- [tau-fork-pinning](tau-fork-pinning/)
-- [zipfs-vault](zipfs-vault/)

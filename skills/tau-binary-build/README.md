@@ -71,18 +71,3 @@ After running the build:
 | `tau: Permission denied` | Run `chmod +x ~/.local/bin/tau` and verify the binary it points to is executable |
 | "omp-pin: fork binary missing" | Verify the launcher script points to the correct `dist/tau` path |
 | Compilation fails | Check Bun version and ensure all TS dependencies are resolvable |
-
-## Status
-
-Version: **0.1.0**
-Last updated: 2026-10-02
-
-## Related Projects
-
-- [fix-omp-launcher](fix-omp-launcher/)
-- [fix-tau-session-corruption](fix-tau-session-corruption/)
-- [gatehouse-mcp](gatehouse-mcp/)
-- [router](router/)
-- [tau-audit](tau-audit/)
-- [tau-fork-pinning](tau-fork-pinning/)
-- [zipfs-vault](zipfs-vault/)

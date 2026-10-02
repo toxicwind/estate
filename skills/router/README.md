@@ -84,32 +84,14 @@ graph LR
 ## Development & Testing
 
 - **Local testing** – Use `send hatch` and `send yote` locally to verify routing.
-- **Integration tests** – End‑to‑end tests simulate cross‑box scenarios and assert correct behavior.
-- **CI** – Routing logic is tested in the main CI pipeline.
 
 ## Security & Best Practices
 
 - **Never mix boxes** – Treat Hatch and YOTE as completely separate namespaces.
 - **Least privilege** – Each box should have its own set of permissions and tools.
-- **Audit trails** – All commands are logged through the router for traceability.
 - **Secrets management** – Avoid embedding secrets in commands; use environment variables or vaults.
 
 ## License & Support
 
 - **License** – See the project's LICENSE file for details.
 - **Support** – Open issues or tickets for routing problems in the main repository.
-
-## Related Projects
-
-- [fix-omp-launcher](fix-omp-launcher/)
-- [fix-tau-session-corruption](fix-tau-session-corruption/)
-- [gatehouse-mcp](gatehouse-mcp/)
-- [tau-audit](tau-audit/)
-- [tau-binary-build](tau-binary-build/)
-- [tau-fork-pinning](tau-fork-pinning/)
-- [zipfs-vault](zipfs-vault/)
-
-## Status
-
-Version: **1.0.0**
-Last updated: 2026-10-02
