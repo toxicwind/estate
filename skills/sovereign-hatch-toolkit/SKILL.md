@@ -1,6 +1,7 @@
 ---
 name: sovereign-hatch-toolkit
-description: Noise_XX_25519_AESGCM_SHA256 handshake toolkit and atomic POSIX filesystem message bus (FSBus) for Python agent infrastructure.
+description: >
+  Noise XX handshake and atomic POSIX message bus. noise_protocol.py implements the full Noise_XX state machine with Ed25519 notary endorsements; fsbus_engine.py is a crash-safe tmp+fsync+rename bus with leases, retries and dead-letter escalation. Triggers on: "noise xx", "handshake", "fsbus", "message bus", "notary".
 ---
 
 # Sovereign Hatch Toolkit

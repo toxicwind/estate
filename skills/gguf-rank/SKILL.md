@@ -1,10 +1,7 @@
 ---
 name: gguf-rank
 description: >
-  Profiles all GGUFs in the models directory and ranks them by
-  max stable context, tokens/sec, and perplexity. Uses fleet_ranker.ts.
-  Triggers on: "rank models", "which model is fastest", "best for coding",
-  "profile GGUFs", "benchmark".
+  GGUF model profiling and ranking. Calls the rank service on port 25010 to measure each GGUF's max stable context, tokens/sec and perplexity, then reports a fast/mid/deep tier table. Triggers on: "gguf rank", "context length", "tokens per second", "model ranking".
 ---
 
 # GGUF Rank Skill

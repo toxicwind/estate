@@ -1,11 +1,7 @@
 ---
 name: fast-browser
 description: >
-  One-shot scripted browser automation — deterministic multi-step browser flows
-  (goto, click, fill, extract, screenshot, upload) executed in a single Bun
-  process with zero per-step inference, ~100x faster than agentic click-by-click
-  browsing. Triggers on: "fast browser", "scripted browser", "browsnap",
-  "browser automation", "one-shot browser", "browser flow", "scrape this page".
+  Scripted browser automation for known flows. browsnap.ts runs a whole known-page, known-selector browser session as one process and returns JSON in 0.3-2s, instead of spending one agentic model round-trip per click. Triggers on: "browsnap", "scripted browser", "browser flow", "headless browser".
 ---
 
 # fast-browser skill

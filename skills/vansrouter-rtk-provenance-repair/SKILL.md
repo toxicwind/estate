@@ -1,6 +1,7 @@
 ---
 name: vansrouter-rtk-provenance-repair
-description: Diagnose and durably repair VansRouter RTK tool-result interleaving without losing legitimate token savings.
+description: >
+  Router tool-result provenance repair. Traces RTK context compression through open-sse/rtk compressMessages so genuine shell results stay compressed while read and file results are never rewritten, with regressions proving the token savings survive. Triggers on: "rtk", "provenance", "tool result", "token savings", "vansrouter".
 ---
 
 # VansRouter RTK provenance repair

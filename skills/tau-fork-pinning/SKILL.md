@@ -1,6 +1,7 @@
 ---
 name: tau-fork-pinning
-description: "Procedure for syncing, building, and immutably pinning Tau fork binaries."
+description: >
+  Tau fork build and binary pinning. Syncs and builds tau from upstream oh-my-pi with bun, then pins the resulting binary immutably into ~/.local/bin through the omp-pin wrapper. Triggers on: "tau fork", "pin binary", "rebuild tau", "omp-pin".
 ---
 
 # Tau Fork Sync & Binary Pinning

@@ -1,6 +1,7 @@
 ---
 name: herd-subcommand-macros
-description: Generate and update herd.yaml with autonomous subcommand macros from llama-server --help output
+description: >
+  herd.yaml macro generation. Reads llama-server --help from every llama.cpp fork on the box and writes one ARG_<FLAG> macro per flag into herd.yaml, touching nothing outside its own generated block. Triggers on: "herd macros", "subcommand macros", "llama-server flags", "herd.yaml".
 ---
 
 # Herd Subcommand Macro Generation

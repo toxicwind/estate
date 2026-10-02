@@ -1,6 +1,7 @@
 ---
 name: github-mcp
-description: "Use Github Mcp when the user asks for Github Mcp or this provider's API."
+description: >
+  GitHub remote MCP server client. Drives GitHub's official MCP endpoint at api.githubcopilot.com through the custom.github-mcp OAuth credential using github-mcp-cli. Triggers on: "github mcp", "mcp tools", "github api", "copilot mcp".
 ---
 
 # Github Mcp
