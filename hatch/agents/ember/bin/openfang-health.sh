@@ -1,1 +1,0 @@
-/home/toxic/estate/ops/openfang-health/openfang-health.sh

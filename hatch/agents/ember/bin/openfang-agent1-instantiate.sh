@@ -1,1 +1,0 @@
-/home/toxic/estate/ops/openfang-agent1-instantiate.sh
