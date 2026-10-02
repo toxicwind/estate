@@ -3,6 +3,7 @@
 
 import { describe, test, expect, beforeAll, afterAll } from "bun:test";
 import { Pool, raceFirstValid, fingerprint, isFreeModel, extractModel } from "../src/pool.js";
+import { Poller, needsRevalidation } from "../src/poller.js";
 import { parseSimpleYaml, loadSecrets } from "../src/config.js";
 import { scrub } from "../src/audit.js";
 import type { PoolConfig } from "../src/types.js";
@@ -308,5 +309,125 @@ describe("audit", () => {
     expect(String((out["nested"] as Record<string, unknown>)["api_key"])).toMatch(
       /^fp:[0-9a-f]{12}$/,
     );
+  });
+});
+
+describe("poller", () => {
+  test("needsRevalidation: healthy+stale -> true, fresh/unknown/down/zero -> false", () => {
+    const base = {
+      name: "K",
+      fp: "abc123def456",
+      latencyMs: 5,
+      downUntil: 0,
+      lastProbeOk: true,
+      freeOnly: false,
+    };
+    const ttl = 300_000;
+    const now = Date.now();
+    expect(needsRevalidation({ ...base, state: "healthy", lastProbeAt: now - ttl - 1 }, ttl)).toBe(true);
+    expect(needsRevalidation({ ...base, state: "healthy", lastProbeAt: now - ttl + 10_000 }, ttl)).toBe(false);
+    expect(needsRevalidation({ ...base, state: "healthy", lastProbeAt: 0 }, ttl)).toBe(false);
+    expect(needsRevalidation({ ...base, state: "unknown", lastProbeAt: now - ttl - 1 }, ttl)).toBe(false);
+    expect(needsRevalidation({ ...base, state: "down", lastProbeAt: now - ttl - 1 }, ttl)).toBe(false);
+  });
+
+  test("probe() stamps lastProbeAt on success and failure", async () => {
+    behavior.set(`/auth|Bearer probe-secret-ok`, { status: 200, body: "ok" });
+    behavior.set(`/auth|Bearer probe-secret-bad`, { status: 401, body: "no" });
+    const secrets = new Map([
+      ["K_OK", "probe-secret-ok"],
+      ["K_BAD", "probe-secret-bad"],
+    ]);
+    const cfg: PoolConfig = {
+      upstream: `http://127.0.0.1:${mockPort}`,
+      health: { method: "GET", path: "/auth", ok: [200] },
+      keys: ["K_OK", "K_BAD"],
+    };
+    const pool = new Pool("probe-ts", cfg, secrets);
+    const before = Date.now();
+    expect(await pool.probe(pool.keys[0])).toBe(true);
+    expect(pool.keys[0].state).toBe("healthy");
+    expect(pool.keys[0].lastProbeAt).toBeGreaterThanOrEqual(before);
+    expect(await pool.probe(pool.keys[1])).toBe(false);
+    expect(pool.keys[1].state).toBe("down");
+    expect(pool.keys[1].lastProbeAt).toBeGreaterThanOrEqual(before);
+  });
+
+  test("wake() interrupts the initial sleep (event-driven, no fixed timer)", async () => {
+    let calls = 0;
+    const ks = {
+      name: "K1",
+      fp: "00".repeat(6),
+      state: "unknown" as const,
+      latencyMs: 0,
+      downUntil: 0,
+      lastProbeAt: 0,
+      lastProbeOk: false,
+      freeOnly: false,
+    };
+    const fake = {
+      name: "wake-pool",
+      keys: [ks],
+      probe: async (k: typeof ks) => {
+        calls++;
+        k.state = "healthy";
+        k.lastProbeAt = Date.now();
+        return true;
+      },
+    } as unknown as Pool;
+    const p = new Poller(() => new Map([["wake-pool", fake]]), {
+      ttlMs: 60_000,
+      log: () => {},
+    });
+    const t0 = Date.now();
+    const run = p.start();
+    await new Promise((r) => setTimeout(r, 100));
+    p.wake(); // should cut the 1500ms initial sleep short
+    while (calls === 0 && Date.now() - t0 < 1200) {
+      await new Promise((r) => setTimeout(r, 25));
+    }
+    const elapsed = Date.now() - t0;
+    p.stop();
+    await run;
+    expect(calls).toBeGreaterThanOrEqual(1);
+    expect(elapsed).toBeLessThan(1400); // well under the 1500ms initial sleep
+  });
+
+  test("healthy keys are revalidated after TTL expiry", async () => {
+    let calls = 0;
+    const ks = {
+      name: "K1",
+      fp: "00".repeat(6),
+      state: "healthy" as const,
+      latencyMs: 3,
+      downUntil: 0,
+      lastProbeAt: Date.now() - 10_000, // stale
+      lastProbeOk: true,
+      freeOnly: false,
+    };
+    const fake = {
+      name: "ttl-pool",
+      keys: [ks],
+      probe: async (k: typeof ks) => {
+        calls++;
+        k.state = "healthy";
+        k.lastProbeAt = Date.now();
+        k.lastProbeOk = true;
+        return true;
+      },
+    } as unknown as Pool;
+    const p = new Poller(() => new Map([["ttl-pool", fake]]), {
+      ttlMs: 150,
+      log: () => {},
+    });
+    const run = p.start();
+    const t0 = Date.now();
+    while (calls < 2 && Date.now() - t0 < 5000) {
+      await new Promise((r) => setTimeout(r, 25));
+    }
+    p.stop();
+    await run;
+    // first pass (stale -> probe) + at least one TTL revalidation
+    expect(calls).toBeGreaterThanOrEqual(2);
   });
 });

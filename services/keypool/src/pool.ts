@@ -73,6 +73,7 @@ export class Pool {
         state: "unknown" as const,
         latencyMs: 0,
         downUntil: 0,
+        lastProbeAt: 0,
         lastProbeOk: false,
         freeOnly: entry.free_only ?? false,
       };
@@ -91,9 +92,17 @@ export class Pool {
     const t = setTimeout(() => ctrl.abort(), this.probeTimeoutMs);
     const t0 = Date.now();
     try {
+      const secret = this.secretFor(ks.name);
+      // Protocol-aware probe auth (parity with herd-keypool.py _probe):
+      // Google AI endpoints take x-goog-api-key, OpenAI-compat takes Bearer.
+      const headers: Record<string, string> = this.upstream.endsWith("/openai")
+        ? { Authorization: `Bearer ${secret}` }
+        : this.upstream.includes("generativelanguage.googleapis.com")
+          ? { "x-goog-api-key": secret }
+          : { Authorization: `Bearer ${secret}` };
       const resp = await fetch(url, {
         method: this.healthMethod,
-        headers: { Authorization: `Bearer ${this.secretFor(ks.name)}` },
+        headers,
         signal: ctrl.signal,
       });
       const ms = Date.now() - t0;
@@ -101,12 +110,14 @@ export class Pool {
       await resp.arrayBuffer().catch(() => {});
       ks.latencyMs = ms;
       ks.lastProbeOk = ok;
+      ks.lastProbeAt = Date.now();
       ks.state = ok ? "healthy" : "down";
       if (!ok) ks.downUntil = Date.now() + this.cooldownDefault * 1000;
       return ok;
     } catch {
       ks.latencyMs = Date.now() - t0;
       ks.lastProbeOk = false;
+      ks.lastProbeAt = Date.now();
       ks.state = "down";
       ks.downUntil = Date.now() + this.cooldownDefault * 1000;
       return false;
