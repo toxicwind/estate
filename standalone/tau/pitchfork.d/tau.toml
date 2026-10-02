@@ -5,10 +5,8 @@
 # omp acp exposed as TCP daemon via chute (stdio→TCP + mcpServers normalization)
 port = 25111
 run = "exec /home/toxic/estate/ranch/barn/chute/chute.mjs --port 25111 -- /home/toxic/.local/bin/tau acp -e /home/toxic/.tau/extensions/vansrouter.ts"
-# 2026-10-01 taurun: dist/omp deleted (ranch/tau tree rm -rf 02:17 MDT); fork cannot
-# rebuild here (missing @ranch/tack monorepo sibling). Pinned launcher (upstream
-# 18.3.0, same pin as ~/.local/bin/tau) restores the daemon. Revert to dist/omp
-# when the fork builds again.
+# 2026-10-02: dist/omp rebuilt from ranch/tau fork with tack resolution fix;
+# /home/toxic/.local/bin/tau pins this compiled binary.
 dir = "/home/toxic"
 mise = false
 retry = true
@@ -30,5 +28,5 @@ depends = ["gatehouse"]
 # modelRoles/retry/extensions file. See ~/.bashrc for the full reasoning.
 # 2026-10-02 tau-logpath: PI_CONFIG_DIR is a NAME relative to $HOME (tau dirs.ts joins it under os.homedir());
 # the old absolute value doubled the config root to $HOME/$HOME/.tau.
-env = { PI_CONFIG_DIR = ".tau", PI_CODING_AGENT_DIR = "/home/toxic/.tau/agent", PI_CODING_AGENT = "true", PI_OPENAI_STREAM_IDLE_TIMEOUT_MS = "120000", VANSROUTER_API_KEY = "local-sovereign" }
+env = { PI_CONFIG_DIR = ".tau", PI_CODING_AGENT_DIR = "/home/toxic/.tau/agent", PI_CODING_AGENT = "true", PI_OPENAI_STREAM_IDLE_TIMEOUT_MS = "120000", VANSROUTER_API_KEY = "local-sovereign", PI_DISABLE_UUTILS_BUILTINS = "1" }
 auto = ["start"]

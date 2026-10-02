@@ -2,23 +2,27 @@
 # omp-pin: pinned launcher for the tau/omp/pi commands.
 # Resolves ONE fixed binary and never falls through to PATH, so a stray or
 # hostile omp on PATH can never shadow the known-good install.
-# History: previously pointed at the ~/sovereign/projects/tau fork
-# (packages/coding-agent/scripts/omp), which no longer exists on disk.
-# Now pins the bun-global @oh-my-pi/pi-coding-agent install (18.3.0).
+# Resolves the compiled binary from the estate ranch/tau fork.
 set -euo pipefail
 
-PKG_ROOT="$HOME/.bun/install/global/node_modules/@oh-my-pi/pi-coding-agent"
-REAL="$PKG_ROOT/dist/cli.js"
+# Permanently disable buggy in-process uutils builtins (pi-uu-grep, pi-uu-find, etc.)
+# so the engine always uses standard host GNU binaries (/usr/bin/grep, /usr/bin/find).
+export PI_DISABLE_UUTILS_BUILTINS=1
 
-if [ ! -x "$REAL" ]; then
-  echo "omp-pin: pinned binary missing or not executable: $REAL" >&2
-  echo "omp-pin: refusing to fall through to any other omp on PATH." >&2
+if [ -x "$HOME/estate/ranch/tau/packages/coding-agent/dist/omp" ]; then
+  FORK_ROOT="$HOME/estate/ranch/tau/packages/coding-agent"
+  REAL="$FORK_ROOT/dist/omp"
+elif [ -x "$HOME/tau/packages/coding-agent/dist/omp" ]; then
+  FORK_ROOT="$HOME/tau/packages/coding-agent"
+  REAL="$FORK_ROOT/dist/omp"
+else
+  echo "omp-pin: compiled binary missing in $HOME/estate/ranch/tau and $HOME/tau" >&2
   exit 127
 fi
 
 RESOLVED="$(realpath "$REAL")"
 case "$RESOLVED" in
-  "$PKG_ROOT"/*)
+  "$FORK_ROOT"/*)
     ;;
   *)
     echo "omp-pin: resolved binary escapes the pinned package root: $RESOLVED" >&2

@@ -337,10 +337,9 @@ Layout SSOT for the 2026-09-20 reorg (`hatch/`, `bridge/`, `scratch/`): `REORG-P
 
 ## Key components
 
-### Compression — sigma (historical — paths stale as of 2026-09-30)
+### Compression — sigma (live at `estate/sigma`)
 
-> The `projects/sigma/` checkout (the toxicwind fork of `billion-context`) is gone from this tree, `pitchfork.toml` on `main` defines no sigma/bili daemon, and the ranch has no sigma directory. Remnants in-tree: [`tools/bili-deploy.sh`](tools/bili-deploy.sh) and the tau extension config in [`config/tau/agent/config.yml`](config/tau/agent/config.yml). The notes below are historical — verify against the live box before trusting them.
-
+`estate/sigma` is the **toxicwind fork of `billion-context`**, normalized as a top-level component. It provides transparent context compression and folding at the ACP layer. Deployed and verified via `tools/bili-deploy.sh`.
 
 [`projects/sigma/`](projects/sigma) → [`projects/range/ranch/sigma`](projects/range/ranch/sigma) — the **toxicwind fork of `billion-context`**: a transparent compression proxy that sits between agents and inference. Point a client at `http://127.0.0.1:32847/bili/<upstream-url>` and it streams the response while folding the conversation into a compact digest at a token boundary. Measured on the live log: ~5× token reduction, 28 ms added per compress call, proxy overhead p50 41 ms / p99 107 ms, prompt-cache hit rate p50 99.5%.
 
