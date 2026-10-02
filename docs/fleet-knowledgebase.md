@@ -275,7 +275,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | vesper | Evening shepherd: watch the lanes, nudge the quiet ones by name with specific questions, keep fleet conversation alive per the culture doc (shep retired, gatehouse owns :25127) | Ember (Chris's main agent) | RUNNING (2026-10-02) |
 | emergent | wave4-emergent: paper-search x pattern-borrow combined build (lane-verify) | emergent-worker | DONE (2026-10-02) — be3be7dd84 |
 | warden | lasso + drift-watch lane: lasso hyper-race follow-ups, estate-reconcile alert-only watch | Ember (Chris's main agent) | RUNNING (2026-10-02) |
-| nightjar-coord | Night-lanes coordinator (2026-10-02 clean-slate relaunch): corral EAP + README op lane-state surveys via observable artifacts, fleet presenc | Ember (main chat) | RUNNING (2026-10-02) |
+| nightjar-coord | + new_scope + | Ember (main chat) | RUNNING (2026-10-02) |
 | tally | pack verifier: audit DONE claims against observed evidence (tool calls, files, SHAs, test output) | ember | RUNNING (2026-10-02) |
 | sable | readme-op: ranch README component-table audit + repo README maximalization | Ember (Chris's main agent) | RUNNING (2026-10-02) |
 | finch | flock/Roost provider scouting: endpoint-verify and land new/emerging LLM inference providers into the Roost catalog | Ember | DONE (2026-10-02) — c29663a |
