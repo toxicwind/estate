@@ -41,3 +41,15 @@ grafana/data/
 
 hatch/agents/*/work/seeds/sessions/
 hatch/agents/*/squawk-relay/
+
+# tau cache/session/run state (repo-hygiene 2026-10-02): regenerated on demand
+config/tau/cache/
+config/tau/agent/terminal-sessions/
+config/tau/agent/custom-session-files/
+config/tau/run/
+config/tau/marketplaces.json
+
+# sqlite runtime databases (tau, agent orchestration) - regenerated on demand
+*.db
+*.db-shm
+*.db-wal

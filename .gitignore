@@ -1273,12 +1273,33 @@ grafana/data/
 hatch/agents/*/work/seeds/sessions/
 hatch/agents/*/squawk-relay/
 
+# tau cache/session/run state (repo-hygiene 2026-10-02): regenerated on demand
+config/tau/cache/
+config/tau/agent/terminal-sessions/
+config/tau/agent/custom-session-files/
+config/tau/run/
+config/tau/marketplaces.json
+
+# sqlite runtime databases (tau, agent orchestration) - regenerated on demand
+*.db
+*.db-shm
+*.db-wal
+
 # ── Config ownership ────────────────────────────────────────────────────
 # estate/.env IS the runtime config SSOT (ports, model names, stream tuning)
 # and is tracked on purpose. Secrets never are.
 !.env
 .env.local
 .secrets
+
+# config/.secrets.json is a generated index of /home/toxic/.secrets and carries
+# the plaintext `value` for every entry, so it is a secret file, not config.
+# The .super-bak-* snapshots are the same content plus older keys. Both are
+# already on origin/main; see docs/gemini-key-conventions.md for rotation.
+.secrets.json
+.secrets.json.*
+.secrets.super-bak-*
+.secrets.bak-*
 
 # ~/.config is a symlink into ranch/shell/ii/dots/.config — the estate owns
 # it, but it lives in the ranch repo. Nothing extra to ignore here.
@@ -1295,7 +1316,7 @@ hatch/agents/ember/readme-op/work/
 !ops/bin/**
 !projects/**/bin/
 
-# Security boundaries (git-mutator)
+# Security boundaries (git-mutator): credential material is never committed
 credentials.json
 *.key
 *.pem

@@ -5,6 +5,15 @@
 .env.local
 .secrets
 
+# config/.secrets.json is a generated index of /home/toxic/.secrets and carries
+# the plaintext `value` for every entry, so it is a secret file, not config.
+# The .super-bak-* snapshots are the same content plus older keys. Both are
+# already on origin/main; see docs/gemini-key-conventions.md for rotation.
+.secrets.json
+.secrets.json.*
+.secrets.super-bak-*
+.secrets.bak-*
+
 # ~/.config is a symlink into ranch/shell/ii/dots/.config — the estate owns
 # it, but it lives in the ranch repo. Nothing extra to ignore here.
 
@@ -19,3 +28,9 @@ hatch/agents/ember/readme-op/work/
 !skills/**/bin/
 !ops/bin/**
 !projects/**/bin/
+
+# Security boundaries (git-mutator): credential material is never committed
+credentials.json
+*.key
+*.pem
+.bak.
