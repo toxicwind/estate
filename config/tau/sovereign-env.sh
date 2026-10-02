@@ -3,7 +3,11 @@
 # internal runtime, streaming timeout, authentication, and debug overrides.
 
 # ── Directory & Profile Isolation ────────────────────────────────────────
-export PI_CONFIG_DIR="${PI_CONFIG_DIR:-$HOME/.tau}"
+# PI_CONFIG_DIR is a NAME relative to $HOME, never an absolute path: the engine
+# does path.join(os.homedir(), PI_CONFIG_DIR) at pi-utils/src/dirs.ts:112.
+# An absolute value here yields $HOME/$HOME/.tau — the 17MB shadow config root
+# that held this box's daemon broker socket until 2026-10-02.
+export PI_CONFIG_DIR="${PI_CONFIG_DIR:-.tau}"
 export PI_CODING_AGENT_DIR="${PI_CODING_AGENT_DIR:-$HOME/.tau/agent}"
 export PI_PROFILE="${PI_PROFILE:-default}"
 

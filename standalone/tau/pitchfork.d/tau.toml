@@ -28,5 +28,8 @@ depends = ["gatehouse"]
 # decides which config.yml the engine reads (settings.ts:601), and a login
 # shell that exports the config root instead of the agent dir loses the whole
 # modelRoles/retry/extensions file. See ~/.bashrc for the full reasoning.
-env = { PI_CONFIG_DIR = "/home/toxic/.tau", PI_CODING_AGENT_DIR = "/home/toxic/.tau/agent", PI_CODING_AGENT = "true", PI_OPENAI_STREAM_IDLE_TIMEOUT_MS = "120000", VANSROUTER_API_KEY = "local-sovereign" }
+# PI_CONFIG_DIR is a NAME relative to $HOME: the engine does
+# path.join(os.homedir(), PI_CONFIG_DIR) (pi-utils/src/dirs.ts:112), so an
+# absolute value doubles the config root to $HOME/$HOME/.tau.
+env = { PI_CONFIG_DIR = ".tau", PI_CODING_AGENT_DIR = "/home/toxic/.tau/agent", PI_CODING_AGENT = "true", PI_OPENAI_STREAM_IDLE_TIMEOUT_MS = "120000", VANSROUTER_API_KEY = "local-sovereign" }
 auto = ["start"]
