@@ -23,3 +23,12 @@
 SingletonLock
 SingletonCookie
 .lock
+
+# tau runtime state: transcripts, vendored plugin caches, compiled natives.
+# Regenerated on demand; config/tau/agent/config.yml itself stays tracked.
+config/tau/agent/sessions/
+config/tau/plugins/cache/
+config/tau/natives/
+
+# Fleet message spool, written per-message by the squawk bus.
+hatch/agents/*/squawk-root/

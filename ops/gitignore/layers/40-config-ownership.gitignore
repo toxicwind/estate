@@ -10,3 +10,12 @@
 
 # nested checkouts that were never meant to be tracked
 hatch/agents/ember/readme-op/work/
+
+# Upstream template rules are unanchored and match at any depth, which
+# silently swallowed source trees. Re-include them; these directories are
+# ours, not Python/VisualStudio build output.
+#   Python.gitignore ships `lib/`, VisualStudio.gitignore ships `**/[Bb]in/*`.
+!**/lib/
+!skills/**/bin/
+!ops/bin/
+!projects/**/bin/

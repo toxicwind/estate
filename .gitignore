@@ -9,74 +9,7 @@
 # layers in ops/gitignore/layers/.
 # ─────────────────────────────────────────────────────────────────────────
 
-# ── Layout tiers ────────────────────────────────────────────────────────
-# estate/ is the control plane. Everything with its own history or its own
-# vendored upstream lives in a sibling tier and is NOT indexed here.
-# Commit project work inside ranch/, control-plane work in this repo.
-
-# project monorepo — own git repo, github.com/toxicwind/ranch
-ranch/
-
-# third-party checkouts (Hyprland, WhiteSur, ansible, ...) — own remotes
-vendored/
-
-# runtime state: archives, reconciliation snapshots, legacy, scratch
-var/
-
-# ── Root-level compat symlinks ───────────────────────────────────────────
-# These resolve into ranch/ (or $HOME). Nothing to track — they are
-# navigation, not source. Kept for backwards compatibility with configs
-# that still spell the old paths.
-
-/herd
-/qed
-/yote
-/mesh
-/openfang
-/shell
-/models
-/shingle-workspace
-
-# ── Runtime state ───────────────────────────────────────────────────────
-# Recreated on demand by daemons and audits. Never committed.
-
-/data/
-/log/
-/runs/
-/output/
-/coverage/
-/tmp/
-
-# audit + agent runtimes
-.scout-cache/
-.pytest_cache/
-.turbo/
-.qdrant-initialized/
-.state/
-.jj/
-.smithers/
-.super-ralph/
-.env.local
-
-# browser + app locks (transient)
-SingletonLock
-SingletonCookie
-.lock
-
-# ── Config ownership ────────────────────────────────────────────────────
-# estate/.env IS the runtime config SSOT (ports, model names, stream tuning)
-# and is tracked on purpose. Secrets never are.
-!.env
-.env.local
-.secrets
-
-# ~/.config is a symlink into ranch/shell/ii/dots/.config — the estate owns
-# it, but it lives in the ranch repo. Nothing extra to ignore here.
-
-# nested checkouts that were never meant to be tracked
-hatch/agents/ember/readme-op/work/
-
-# ── Global/Linux.gitignore ────────────────────────────────────────────
+# ── Linux.gitignore ───────────────────────────────────────────
 # upstream: https://github.com/github/gitignore.git @ 62f3997f1917 (CC0-1.0)
 *~
 
@@ -95,7 +28,7 @@ hatch/agents/ember/readme-op/work/
 # Log files created by default by the nohup command
 nohup.out
 
-# ── Global/macOS.gitignore ────────────────────────────────────────────
+# ── macOS.gitignore ───────────────────────────────────────────
 # upstream: https://github.com/github/gitignore.git @ 62f3997f1917 (CC0-1.0)
 # General
 .DS_Store
@@ -103,8 +36,7 @@ nohup.out
 __MACOSX/
 .AppleDouble
 .LSOverride
-Icon[
-]
+Icon[]
 
 # Resource forks
 ._*
@@ -125,8 +57,7 @@ Icon[
 .file
 .disk_label*
 lost+found
-.HFS+ Private Directory Data[
-]
+.HFS+ Private Directory Data[]
 
 # Directories potentially created on remote AFP share
 .AppleDB
@@ -157,7 +88,7 @@ Backups.backupdb
 MobileBackups.trash
 tmbootpicker.efi
 
-# ── Global/JetBrains.gitignore ────────────────────────────────────────
+# ── JetBrains.gitignore ───────────────────────────────────────
 # upstream: https://github.com/github/gitignore.git @ 62f3997f1917 (CC0-1.0)
 # Covers JetBrains IDEs: IntelliJ, GoLand, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
@@ -247,7 +178,7 @@ http-client.private.env.json
 # Github Copilot persisted session migrations, see: https://github.com/microsoft/copilot-intellij-feedback/issues/712#issuecomment-3322062215
 .idea/**/copilot.data.migration.*.xml
 
-# ── Global/VisualStudioCode.gitignore ─────────────────────────────────
+# ── VisualStudioCode.gitignore ────────────────────────────────
 # upstream: https://github.com/github/gitignore.git @ 62f3997f1917 (CC0-1.0)
 # Visual Studio Code
 .vscode/*
@@ -261,7 +192,7 @@ http-client.private.env.json
 # Built Visual Studio Code Extensions
 *.vsix
 
-# ── Node.gitignore ────────────────────────────────────────────────────
+# ── Node.gitignore ────────────────────────────────────────────
 # upstream: https://github.com/github/gitignore.git @ 62f3997f1917 (CC0-1.0)
 # Logs
 logs
@@ -413,7 +344,7 @@ vite.config.ts.timestamp-*
 # Turbo Repo
 .turbo
 
-# ── bun.gitignore ─────────────────────────────────────────────────────
+# ── bun.gitignore ─────────────────────────────────────────────
 # upstream: https://github.com/github/gitignore.git @ 62f3997f1917 (CC0-1.0)
 # Logs
 logs
@@ -529,7 +460,7 @@ dist
 # TernJS port file
 .tern-port
 
-# ── Deno.gitignore ────────────────────────────────────────────────────
+# ── Deno.gitignore ────────────────────────────────────────────
 # upstream: https://github.com/github/gitignore.git @ 62f3997f1917 (CC0-1.0)
 # Deno
 # https://deno.com/
@@ -543,7 +474,7 @@ dist
 coverage/
 *.lcov
 
-# ── Python.gitignore ──────────────────────────────────────────────────
+# ── Python.gitignore ──────────────────────────────────────────
 # upstream: https://github.com/github/gitignore.git @ 62f3997f1917 (CC0-1.0)
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -766,7 +697,7 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# ── Rust.gitignore ────────────────────────────────────────────────────
+# ── Rust.gitignore ────────────────────────────────────────────
 # upstream: https://github.com/github/gitignore.git @ 62f3997f1917 (CC0-1.0)
 # Generated by Cargo
 # will have compiled files and executables
@@ -793,7 +724,7 @@ rustc-ice-*.txt
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# ── Go.gitignore ──────────────────────────────────────────────────────
+# ── Go.gitignore ──────────────────────────────────────────────
 # upstream: https://github.com/github/gitignore.git @ 62f3997f1917 (CC0-1.0)
 # If you prefer the allow list template instead of the deny list, see community template:
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
@@ -828,14 +759,14 @@ go.work.sum
 # .idea/
 # .vscode/
 
-# ── Zig.gitignore ─────────────────────────────────────────────────────
+# ── Zig.gitignore ─────────────────────────────────────────────
 # upstream: https://github.com/github/gitignore.git @ 62f3997f1917 (CC0-1.0)
 .zig-cache/
 zig-out/
 zig-pkg/
 *.o
 
-# ── VisualStudio.gitignore ────────────────────────────────────────────
+# ── VisualStudio.gitignore ────────────────────────────────────
 # upstream: https://github.com/github/gitignore.git @ 62f3997f1917 (CC0-1.0)
 ## Ignore Visual Studio temporary files, build results, and
 ## files generated by popular Visual Studio add-ons.
@@ -886,13 +817,8 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
-
 # Build results on 'Bin' directories
 **/[Bb]in/*
-
-# Skill executables are source, not build output (skills/*/bin holds the CLIs)
-!skills/**/bin/
-!skills/**/bin/**
 # Uncomment if you have tasks that rely on *.refresh files to move binaries
 # (https://github.com/github/gitignore/pull/3736)
 #!**/[Bb]in/*.refresh
@@ -1275,10 +1201,87 @@ FodyWeavers.xsd
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
 
-# Tau runtime state: session transcripts and vendored plugin caches are
-# regenerated on every run and belong on disk, not in history.
+# ── Layout tiers ────────────────────────────────────────────────────────
+# estate/ is the control plane. Everything with its own history or its own
+# vendored upstream lives in a sibling tier and is NOT indexed here.
+# Commit project work inside ranch/, control-plane work in this repo.
+
+# project monorepo — own git repo, github.com/toxicwind/ranch
+ranch/
+
+# third-party checkouts (Hyprland, WhiteSur, ansible, ...) — own remotes
+vendored/
+
+# runtime state: archives, reconciliation snapshots, legacy, scratch
+var/
+
+# ── Root-level compat symlinks ───────────────────────────────────────────
+# These resolve into ranch/ (or $HOME). Nothing to track — they are
+# navigation, not source. Kept for backwards compatibility with configs
+# that still spell the old paths.
+
+/herd
+/qed
+/yote
+/mesh
+/openfang
+/shell
+/models
+/shingle-workspace
+
+# ── Runtime state ───────────────────────────────────────────────────────
+# Recreated on demand by daemons and audits. Never committed.
+
+/data/
+/log/
+/runs/
+/output/
+/coverage/
+/tmp/
+
+# audit + agent runtimes
+.scout-cache/
+.pytest_cache/
+.turbo/
+.qdrant-initialized/
+.state/
+.jj/
+.smithers/
+.super-ralph/
+.env.local
+
+# browser + app locks (transient)
+SingletonLock
+SingletonCookie
+.lock
+
+# tau runtime state: transcripts, vendored plugin caches, compiled natives.
+# Regenerated on demand; config/tau/agent/config.yml itself stays tracked.
 config/tau/agent/sessions/
 config/tau/plugins/cache/
-# Compiled tau native addons: 202MB per platform-version, rebuilt by
-# tau-binary-build. Build artifacts never belong in history.
 config/tau/natives/
+
+# Fleet message spool, written per-message by the squawk bus.
+hatch/agents/*/squawk-root/
+
+# ── Config ownership ────────────────────────────────────────────────────
+# estate/.env IS the runtime config SSOT (ports, model names, stream tuning)
+# and is tracked on purpose. Secrets never are.
+!.env
+.env.local
+.secrets
+
+# ~/.config is a symlink into ranch/shell/ii/dots/.config — the estate owns
+# it, but it lives in the ranch repo. Nothing extra to ignore here.
+
+# nested checkouts that were never meant to be tracked
+hatch/agents/ember/readme-op/work/
+
+# Upstream template rules are unanchored and match at any depth, which
+# silently swallowed source trees. Re-include them; these directories are
+# ours, not Python/VisualStudio build output.
+#   Python.gitignore ships `lib/`, VisualStudio.gitignore ships `**/[Bb]in/*`.
+!**/lib/
+!skills/**/bin/
+!ops/bin/
+!projects/**/bin/
