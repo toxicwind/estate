@@ -53,6 +53,8 @@ bun /home/toxic/estate/helpers/git-mutator/cli.ts scan-secrets
 - `.bak.` files are added to `.gitignore` automatically
 - `commit-push` audits first and blocks on any secret leak
 - The SOVEREIGN_PORT_SSOT (`/home/toxic/estate/config/ports.env`) is excluded from secret scanning
+- **NEVER `git reset`, in any form** — not `--soft`, not on local-only commits. A bad commit is fixed forward (`git revert`, follow-up commit). (Chris 2026-10-02.)
+- **Another lane's uncommitted work: take it over, don't let it rot.** Check `git status` before every commit on a shared tree. Lane active → coordinate (fleet / their side chat). Lane quiet or stalled → TAKE IT OVER, finish it, land it yourself with honest attribution in the commit message. Never misattribute, never reset. (Chris 2026-10-02.)
 
 ## Files
 
