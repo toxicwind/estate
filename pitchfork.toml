@@ -390,6 +390,7 @@ auto = ["start"]
 [daemons.model-guard]
 health_http = { url = "http://127.0.0.1:25101/v1/models", interval = "30s", timeout = "5s", retries = 3 }
 port = 25101
+env = { MODEL_GUARD_PORT = "25101" }
 run = "exec bash -c 'set -a; source config/ports.env; set +a; exec bun services/model-guard/src/index.ts'"
 dir = "/home/toxic/estate"
 mise = false
