@@ -390,7 +390,7 @@ auto = ["start"]
 [daemons.model-guard]
 health_http = { url = "http://127.0.0.1:25101/v1/models", interval = "30s", timeout = "5s", retries = 3 }
 port = 25101
-run = "exec bun /home/toxic/estate/services/model-guard/src/index.ts"
+run = "exec bash -c 'set -a; source config/ports.env; set +a; exec bun services/model-guard/src/index.ts'"
 dir = "/home/toxic/estate"
 mise = false
 retry = true
@@ -965,7 +965,7 @@ auto = ["start"]
 
 
 [daemons.awrawr-mcp]
-run = "exec bun /home/toxic/estate/services/awrawr-mcp/src/index.ts"
+run = "exec bash -c 'set -a; source config/ports.env; set +a; exec bun services/awrawr-mcp/src/index.ts'"
 dir = "/home/toxic"
 mise = false
 retry = true
@@ -1298,7 +1298,7 @@ retry = true
 auto = ["start"]
 
 [daemons.squawk-ws]
-run = "exec bun /home/toxic/estate/services/squawk-ws/src/index.ts"
+run = "exec bash -c 'set -a; source config/ports.env; set +a; exec bun services/squawk-ws/src/index.ts'"
 dir = "/home/toxic/estate"
 port = 25147
 retry = true
