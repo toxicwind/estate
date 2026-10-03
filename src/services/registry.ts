@@ -248,7 +248,10 @@ export const ALL_SERVICES: ServiceDef[] = [
     id: "tau",
     name: "tau",
     portKey: "PI_AGENT_PORT",
-    run: "exec bun run /home/toxic/projects/sovereign-projects/tau/packages/coding-agent/src/cli.ts",
+    // The engine moved to /home/toxic/tau (4.7 GB checkout on main). The old
+    // projects/sovereign-projects/tau path no longer exists, so this daemon
+    // could never start and the generator skipped it on the missing portKey.
+    run: "exec bun /home/toxic/tau/packages/coding-agent/src/cli.ts",
     dir: "/home/toxic",
     readyCmd: "sleep 2 && echo ready",
     group: "agents",
@@ -259,15 +262,16 @@ export const ALL_SERVICES: ServiceDef[] = [
       PI_AGENT_DIR: "/home/toxic/.tau/agent",
       PI_CODING_AGENT: "true",
       PI_REASONING_LEVEL: "high",
-      PI_SUBAGENT_MODEL: "thinkingmachines/inkling",
+      // PI_SUBAGENT_MODEL removed: 0 source files read it. Subagent routing
+      // comes from config/tau/agent/config.yml (subagents:/modelRoles:).
     },
   },
   {
     id: "kimi-code",
     name: "kimi-code-sovereign",
     portKey: "KIMI_CODE_PORT",
-    run: "exec /home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126 --no-port-walk",
-    dir: "/home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code",
+    run: "exec /home/toxic/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126 --no-port-walk",
+    dir: "/home/toxic/tau",
     readyHttp: "/health",
     group: "main",
     autoStart: true,

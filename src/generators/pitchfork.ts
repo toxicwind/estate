@@ -1,7 +1,10 @@
 import type { Generator, TemplateContext } from "../types/index.ts";
 
-function expand(str: string, ports: Record<string, number>): string {
-  return str.replace(/\$\{([A-Z0-9_]+)\}/g, (_, k) =>
+// svc.env is typed Record<string, string> but service definitions write bare
+// numbers (`env: { GHAS_API_PORT: 25112 }`). expand() called .replace on those
+// and threw, taking the whole generator down. Coerce once, here.
+function expand(value: string | number, ports: Record<string, number>): string {
+  return String(value).replace(/\$\{([A-Z0-9_]+)\}/g, (_, k) =>
     ports[k] !== undefined ? String(ports[k]) : (process.env[k] ?? `\${${k}}`),
   );
 }
@@ -9,6 +12,17 @@ export const pitchforkGenerator: Generator = {
   name: "pitchfork.toml",
   outputPath: "pitchfork.toml",
   generate(ctx: TemplateContext): string {
+    const seen = new Set<string>();
+    for (const svc of ctx.services) {
+      if (seen.has(svc.id)) {
+        throw new Error(
+          `duplicate service id: ${svc.id}. Two ServiceDefs share an id, so the`,
+          ` generated [daemons.${svc.id}] table would silently win by last write.`,
+        );
+      }
+      seen.add(svc.id);
+    }
+
     const lines = [
       "# SOVEREIGN PITCHFORK CONFIG — GENERATED from config/ports.env + service definitions",
       "# DO NOT EDIT DIRECTLY — Run: bun run scripts/generate.ts",
@@ -34,17 +48,21 @@ export const pitchforkGenerator: Generator = {
       if (svc.env && Object.keys(svc.env).length > 0) {
         lines.push(`env = {`);
         for (const [k, v] of Object.entries(svc.env))
-          lines.push(` ${k} = "${expand(v as string, ctx.ports)}",`);
+          lines.push(` ${k} = "${expand(v, ctx.ports)}",`);
         lines.push(`}`);
       }
       if (svc.autoStart) lines.push(`auto = ["start"]`);
       lines.push("");
     }
+    // core is the autoStart set: those are what `pitchfork start --group core`
+    // brings up. all is every unique id, so `restart --group all` covers the
+    // services that are deliberately not auto-started.
     const allIds = ctx.services.map((s) => `"${s.id}"`);
+    const coreIds = ctx.services.filter((s) => s.autoStart).map((s) => `"${s.id}"`);
     lines.push("[groups.core]");
-    lines.push(`daemons = [${allIds.join(", ")}]`);
+    lines.push(`daemons = [${coreIds.join(", ")}]`);
     lines.push("");
-    lines.push("[groups.sovereign]");
+    lines.push("[groups.all]");
     lines.push(`daemons = [${allIds.join(", ")}]`);
     lines.push("");
     return lines.join("\n");

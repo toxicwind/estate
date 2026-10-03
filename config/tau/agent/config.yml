@@ -1,0 +1,13 @@
+defaultThinkingLevel: auto
+modelRoles:
+  default: github-copilot/gpt-5.1-codex
+  judge: openrouter/~typesafe/jev-latest
+  tiny: local/lfm2.5-230m
+symbolPreset: unicode
+composer:
+  shape: band
+theme:
+  dark: titanium
+setupVersion: 2
+dev:
+  autoqaConsent: denied
