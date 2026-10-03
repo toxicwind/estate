@@ -12,7 +12,7 @@ export HOME=/home/toxic
 # ~/.openfang/openfang.db from ~/.openfang/backups, or refuses boot on
 # unrecoverable corruption (a green health over a 0-byte DB is silent data loss).
 /home/toxic/estate/ops/openfang-sqlite-check.sh || exit 1
-KERNEL=/home/toxic/projects/rig-work/target/debug/openfang
+KERNEL=/home/toxic/projects/rig/target/debug/openfang
 CFG=${OPENFANG_CONFIG:-/home/toxic/estate/config/openfang-25196.toml}
 CLI=/home/toxic/.local/bin/openfang
 RELAY_AGENT_ID=69ac0683-9483-42a5-a22c-7710cba8da61
