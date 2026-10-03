@@ -420,15 +420,49 @@ export function logExaCall(call: ExaCall): void {
   }
 }
 
-/** A source that fails must never kill the run — this is what guarantees that. */
+/** Failures that are the network's normal weather, not bugs: rate limits,
+ * bot-check walls serving HTML to a JSON parser, DNS/connection/timeout
+ * errors. These degrade a source quietly instead of presenting as an error —
+ * one dead route never fails the run and never looks like it did. */
+const EXPECTED_DEGRADE_PATTERNS = [
+  /HTTP 429/, // rate limited — try again later
+  /Unrecognized token '<'/, // bot wall served HTML to a JSON parser
+  /bot[-\s]?check/i,
+  /captcha/i,
+  /cloudflare/i,
+  /ENOTFOUND/,
+  /ECONNREFUSED/,
+  /ECONNRESET/,
+  /ETIMEDOUT/,
+  /EAI_AGAIN/,
+  /socket hang up/i,
+  /fetch failed/i,
+];
+
+export function isExpectedDegrade(error: string): boolean {
+  return EXPECTED_DEGRADE_PATTERNS.some((re) => re.test(error));
+}
+
+/** A source that fails must never kill the run — this is what guarantees that.
+ *
+ * Every per-route failure emits `source_degraded`, never `source_failed`:
+ * a single route's failure is degradation, not an error. The `expected`
+ * flag preserves the diagnostic classification (transient/bot-wall vs
+ * unexpected provider bug) without surfacing an error. A true error is
+ * reserved for whole-run failure.
+ */
 export async function safeCall(name: string, fn: () => Promise<SourceResult>): Promise<SourceResult | null> {
   try {
     const result = await fn();
-    if (!result.ok) emit({ event: "source_failed", source: name, error: result.error });
+    if (!result.ok) {
+      emit({ event: "source_degraded", source: name, error: result.error,
+             expected: isExpectedDegrade(result.error ?? "") });
+    }
     return result;
   } catch (e) {
     const message = String((e as Error).message);
-    emit({ event: "source_failed", source: name, error: message });
+    emit({ event: "source_degraded", source: name, error: message,
+           expected: isExpectedDegrade(message) });
     return { ok: false, items: [], cost: "free", error: message.slice(0, 160) };
   }
 }

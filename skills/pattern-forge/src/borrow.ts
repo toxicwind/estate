@@ -209,7 +209,13 @@ export function renderBorrow(result: BorrowResult, topN = 10): string {
   const ok = Object.entries(result.sources).filter(([, r]) => r?.ok);
   const failedSources = Object.entries(result.sources).filter(([, r]) => r && !r.ok);
   lines.push(`=== Borrow: "${result.query}" — ${ok.length}/${Object.keys(result.sources).length} sources ok in ${result.timingMs.toFixed(0)}ms ===`);
-  for (const [name, r] of failedSources) lines.push(`  ${name}: FAILED — ${r!.error}`);
+  for (const [name, r] of failedSources) {
+    const err = r!.error ?? "unknown";
+    // A degraded source is a note, never an alarm: the run succeeded
+    // without it. Only a genuinely unexpected failure keeps FAILED.
+    if (P.isExpectedDegrade(err)) lines.push(`  note: ${name} degraded (${err}) — skipped`);
+    else lines.push(`  ${name}: FAILED — ${err}`);
+  }
   for (const note of result.notes) lines.push(`  note: ${note}`);
   if (!result.creditsSpent) lines.push("  credits spent: 0 (exa runs only when a key resolves; none did)");
   if (result.creditsSpent) lines.push("  CREDITS SPENT (exa ran; see the exa audit log for costUsd)");

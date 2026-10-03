@@ -187,4 +187,10 @@ and pitfalls live in the `ast-audit` skill.
   ~5 s but covers fewer directories, because pruning skips `target/` and
   friends entirely.
 - DBLP and anonymous Semantic Scholar will fail from this host. That is the
-  network, not the code.
+  network, not the code. A dead source never fails the run and never looks
+  like it did: `safeCall` wraps every leg, and EVERY per-route failure —
+  expected network weather (429s, bot-wall HTML, DNS / connection errors)
+  or an unexpected provider bug — emits `source_degraded` and renders as a
+  quiet note. The `expected` flag on the event preserves the diagnostic
+  classification. A route's failure is degradation, never an error; a true
+  error is reserved for whole-run failure.
