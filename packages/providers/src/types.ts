@@ -12,7 +12,7 @@ export type AdapterId =
   | "openai" // GET {base}/models -> { data: [{ id }] }  (groq, cerebras, openrouter, nvidia, mistral-compat, google openai-compat)
   | "google-v1beta" // GET {base}/v1beta/models -> { models: [{ name: "models/..." }] }
   | "mistral" // GET {base}/v1/models -> { object:"list", data: [{ id }] } (pinned separately so a future divergence is a one-parser fix)
-  | "static" // no HTTP fetch; the definition carries the model list (llama-swap roles)
+  | "static" // no HTTP fetch; the definition carries the model list (herd roles)
   | "none"; // declared no /models endpoint (kimi-auto); success with zero models
 
 /** How the provider key reaches the /models request. */

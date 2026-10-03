@@ -77,7 +77,7 @@ misses), `quarantine` (id → {reason, since}), `lastOk`/`lastError`.
 | `openai` | `GET {base}/models`, Bearer | `{ data: [{ id }] }` |
 | `mistral` | `GET {base}/v1/models`, Bearer | `{ object:"list", data:[{id}] }` (pinned separately for future divergence) |
 | `google-v1beta` | `GET {base}/v1beta/models`, `?key=` or `x-goog-api-key` | `{ models: [{ name:"models/…" }] }`, prefix stripped |
-| `static` | no fetch | `def.staticModels` (llama-swap roles); counts as successful discovery |
+| `static` | no fetch | `def.staticModels` (herd roles); counts as successful discovery |
 | `none` | no fetch | `[]` + reason (kimi-auto); counts as successful discovery |
 
 Auth styles: `bearer` | `x-api-key` | `query-key` | `none`, plus

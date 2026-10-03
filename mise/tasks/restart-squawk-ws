@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-squawk-ws
+pitchfork restart -q squawk-ws

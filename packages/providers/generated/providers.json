@@ -1,6 +1,6 @@
 {
   "$schema": "sovereign-providers/v1",
-  "generatedAt": "2026-09-30T03:11:13.708Z",
+  "generatedAt": "2026-10-03T05:04:51.449Z",
   "generator": "@sovereign/providers codegen — DO NOT EDIT BY HAND",
   "provenance": "@sovereign/providers src/data.ts",
   "adapters": [
@@ -12,10 +12,10 @@
   ],
   "providers": [
     {
-      "name": "llama-swap",
-      "displayName": "llama-swap (local)",
+      "name": "herd",
+      "displayName": "herd (local)",
       "baseUrl": "http://127.0.0.1:25100/v1",
-      "keyEnv": "LLAMA_SWAP_API_KEY",
+      "keyEnv": "HERD_API_KEY",
       "adapter": "openai",
       "auth": "none"
     },
@@ -85,7 +85,7 @@
     }
   ],
   "seeds": {
-    "llama-swap": [
+    "herd": [
       "local-fast",
       "local-quality",
       "local-longctx"

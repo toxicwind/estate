@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-kafka
+pitchfork restart -q kafka

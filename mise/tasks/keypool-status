@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run keypool-status
+curl -s http://127.0.0.1:25109/status | jq -r '.pools | to_entries[] | "\(.key): " + ([.value.keys[] | "\(.name)=\(.state)"] | join(" "))'

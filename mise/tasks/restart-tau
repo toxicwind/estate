@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-tau
+pitchfork restart -q tau

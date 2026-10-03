@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run health-matter-server
+ss -ltn 'sport = :5580' | grep -q LISTEN

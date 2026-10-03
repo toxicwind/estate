@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run up-boundless
+pitchfork start -q boundless

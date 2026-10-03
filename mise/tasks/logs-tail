@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run logs-tail
+pitchfork logs --raw --follow

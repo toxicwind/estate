@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run ttyd
+ttyd -p 25137 bash

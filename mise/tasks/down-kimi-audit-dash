@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run down-kimi-audit-dash
+pitchfork stop kimi-audit-dash

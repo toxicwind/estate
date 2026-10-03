@@ -4,10 +4,10 @@
 import type { ServiceDef } from "../types/index.ts";
 export const CORE_SERVICES: ServiceDef[] = [
   {
-    id: "llama-swap",
-    name: "llama-swap",
+    id: "herd",
+    name: "herd",
     portKey: "LLAMA_SWAP_PORT",
-    run: "exec ./stack/services/llama-swap.sh --host 127.0.0.1 --port ${LLAMA_SWAP_PORT}",
+    run: "exec ./stack/services/herd.sh --host 127.0.0.1 --port ${LLAMA_SWAP_PORT}",
     dir: "/home/toxic/estate",
     readyHttp: "/health",
     group: "core",

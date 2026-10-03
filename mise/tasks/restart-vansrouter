@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-vansrouter
+pitchfork restart -q vansrouter

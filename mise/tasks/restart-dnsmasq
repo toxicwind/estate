@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-dnsmasq
+pitchfork restart -q dnsmasq

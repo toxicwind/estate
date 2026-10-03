@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-keypool
+pitchfork restart -q keypool
