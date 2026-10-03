@@ -7,7 +7,8 @@
  * Zero hits => NOT-FOUND (never "refuted" from a miss). A malformed or
  * unroutable claim => INCONCLUSIVE with guidance.
  *
- * Binary resolution: AST_GREP_BIN env, then `ast-grep` on PATH. Never `sg`
+ * Binary resolution: $AST_GREP_BIN, then well-known install locations
+ * ($HOME/.local/bin, yote's mise shims), then `ast-grep` on PATH. Never `sg`
  * (on Linux that's util-linux setgroups; ast-grep deprecates the alias).
  */
 
@@ -55,13 +56,23 @@ interface SgMatch {
 
 let cachedBin: string | null | undefined;
 
+/**
+ * Resolve the ast-grep binary. Order: $AST_GREP_BIN, then well-known install
+ * locations ($HOME/.local/bin on the cell, the mise shims dir on yote),
+ * then `ast-grep` on PATH. Probed with an executable check, never assumed.
+ * Never `sg` (on Linux that's util-linux setgroups; ast-grep deprecates it).
+ */
 export function resolveAstGrep(): string | null {
   if (cachedBin !== undefined) return cachedBin;
   const env = process.env["AST_GREP_BIN"];
-  if (env) {
-    const probe = Bun.spawnSync(["sh", "-c", `command -v ${JSON.stringify(env)}`], { stdout: "pipe" });
-    if (probe.exitCode === 0) {
-      cachedBin = new TextDecoder().decode(probe.stdout).trim();
+  const candidates = [
+    ...(env ? [env] : []),
+    join(homedir(), ".local", "bin", "ast-grep"),
+    "/home/toxic/.local/share/mise/shims/ast-grep",
+  ];
+  for (const c of candidates) {
+    if (isExecutable(c)) {
+      cachedBin = c;
       return cachedBin;
     }
   }
@@ -239,7 +250,19 @@ const DEF_PATTERNS: Record<string, string> = {
 
 const LANGS = ["ts", "tsx", "js", "py", "go", "rs"];
 
-import { relative } from "node:path";
+import { join, relative } from "node:path";
+import { accessSync, constants } from "node:fs";
+import { homedir } from "node:os";
+
+/** Executable-file probe — no shell, no quoting games. */
+function isExecutable(p: string): boolean {
+  try {
+    accessSync(p, constants.X_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 /** Two-pass call-edge: find X's definition range, then Y() calls inside it. */
 function auditCallEdge(bin: string, root: string, globs: string[], x: string, y: string, qlog: AuditQuery[]): Evidence[] {

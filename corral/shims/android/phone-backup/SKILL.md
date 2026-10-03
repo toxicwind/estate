@@ -85,10 +85,10 @@ On-device tar + separate pull is a different animal and wins for small files.)
 
 ```bash
 # one-shot, default source set (~20GB code/archives/repos/docs):
-/home/toxic/estate/fleet/shims/android/phone-backup/bin/fast-pull.sh /mnt/8TB/phone-archive
+/home/toxic/estate/corral/shims/android/phone-backup/bin/fast-pull.sh /mnt/8TB/phone-archive
 
 # re-run the 8-method speed shootout (small-file torture + 300MB blob):
-/home/toxic/estate/fleet/shims/android/phone-backup/bin/speed-race.sh /tmp/speed-race
+/home/toxic/estate/corral/shims/android/phone-backup/bin/speed-race.sh /tmp/speed-race
 ```
 
 Each run writes a timestamped manifest (`pull-manifest-*.txt`) with per-dir

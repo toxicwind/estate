@@ -27,7 +27,7 @@ without caring about the underlying OS.
 ## Layout
 
 ```
-fleet/shims/
+corral/shims/
 ├── README.md       # this file
 ├── kodi/           # Kodi fleet: RPC-based tooling for both boxes
 │   ├── bin/        # kodi-audit, kodi-handoff, kodi-resume
