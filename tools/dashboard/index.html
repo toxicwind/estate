@@ -2,10 +2,11 @@
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sovereign Maximal Dashboard - REAL</title>
 <style>
-:root{--bg:#080808;--card:#111;--border:#222;--muted:#888;--accent:#fff}
-*{box-sizing:border-box} body{margin:0;font-family:ui-monospace, SFMono-Regular, Menlo, monospace;background:var(--bg);color:#e5e5e5;padding:16px;line-height:1.5}
+:root{--bg:#080808;--card:#111;--border:#222;--muted:#888}
+*{box-sizing:border-box} body{margin:0 auto;max-width:1200px;font-family:ui-monospace, SFMono-Regular, Menlo, monospace;background:var(--bg);color:#e5e5e5;padding:16px;line-height:1.5}
 h1{font-size:20px;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 8px} h2{font-size:13px;text-transform:uppercase;letter-spacing:0.18em;color:var(--muted);margin:24px 0 8px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin:10px 0}
+.grid>.card{margin:0}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
 .badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:6px;border:1px solid #333}
 .ok{background:#0a2a0a;border-color:#1a5a1a;color:#7f7} .fail{background:#2a0a0a;border-color:#5a1a1a;color:#f77} .warn{background:#2a2a0a;border-color:#5a5a1a;color:#ff7}
@@ -14,7 +15,11 @@ button:disabled{opacity:0.4} input,select,textarea{width:100%;background:#000;co
 pre{white-space:pre-wrap;word-break:break-word;background:#000;border:1px solid #222;border-radius:8px;padding:10px;overflow:auto;max-height:400px;font-size:11px}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .small{font-size:11px;color:var(--muted)}
-.kbd{border:1px solid #333;border-bottom-width:2px;padding:1px 5px;border-radius:5px;background:#111;font-size:10px}
+label{display:block;font-size:11px;color:var(--muted);margin:10px 0 2px;letter-spacing:.04em}
+input[type=checkbox]{width:auto;margin:0;accent-color:#fff}
+label:has(input[type=checkbox]){display:inline-flex;align-items:center;gap:6px;margin:0;font-size:12px;color:#e5e5e5}
+button{min-height:34px}
+@media (max-width:760px){.live-grid{grid-template-columns:1fr !important}}
 </style>
 </head><body>
 <h1>Sovereign Maximal Dashboard — REAL — YOLO Approved</h1>
@@ -36,7 +41,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#000;border:1px solid 
 
 <h2>Live Completions — Real Fetch — No Verbatim Fallback</h2>
 <div class="card">
-<div class="grid" style="grid-template-columns:1fr 1fr">
+<div class="grid live-grid" style="grid-template-columns:1fr 1fr">
 <div>
 <label>Endpoint — your sovereign-router 25104 or nvidia direct</label>
 <input id="endpoint" value="http://127.0.0.1:25104/v1/chat/completions">
@@ -90,7 +95,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#000;border:1px solid 
 <h2>Files Server & Forced DNS</h2>
 <div class="card">
 <div class="grid">
-<div><div class="small">Files 34567 root /home/toxic/files</div><button onclick="checkUrl('http://127.0.0.1:34567/health')">Check files health</button></div>
+<div><div class="small">Files 34567 root /home/toxic/files</div><button onclick="checkHealthProbe('http://127.0.0.1:34567/health')">Check files health</button></div>
 <div><div class="small">Forced DNS via raw UDP to 8.8.8.8, 1.1.1.1, 9.9.9.9 — browser cannot do raw UDP, so backend must. Check via python helper.</div><button onclick="runForcedDnsCheck()">Run forced DNS check (via router)</button></div>
 <div><div class="small">Audit trail chain break seq 2328 expected 96f574... found 2b0a8e...</div><button onclick="document.getElementById('log').textContent+='\nAudit: chain break at seq 2328 — need restore from ~/.openfang/backups or delete audit db'">Show audit break</button></div>
 </div>
@@ -180,12 +185,15 @@ async function checkOne(port, health){
   return r;
 }
 async function scanAll(){
-  log('Scanning '+DAEMONS.length+' daemons...');
-  for(const d of DAEMONS){
+  log('Scanning '+DAEMONS.length+' daemons (concurrent)...');
+  const jobs=DAEMONS.map(async d=>{
     const r=await checkOne(d.port, d.health);
     log(`${d.id} ${d.port} ${r.ok?'OK':'FAIL'} ${r.status} — ${d.weird.slice(0,80)}`);
-  }
-  log('Scan done. Weird inventory: duplicate browser-keeper 9223, dnsmasq :53, redis 0.0.0.0 no protected mode, openfang 137 OOM retry 17 --yolo, buildsrv health mismatch 25197 vs 25148, kimiclaw inotify fd readiness, kimi-auto-shim 404 advance + 240s timeout, agent-display Xvnc + websockify noVNC, valkey no save, search-api --hot prod, tau chute acp extension, model-guard /v1/models as health, nats 4222 outside range, audit chain break seq 2328.');
+    return !!r.ok;
+  });
+  const results=await Promise.all(jobs);
+  const ok=results.filter(Boolean).length;
+  log(`Scan done: ${ok}/${DAEMONS.length} ok. Weird inventory: duplicate browser-keeper 9223, dnsmasq :53, redis 0.0.0.0 no protected mode, openfang 137 OOM retry 17 --yolo, buildsrv health mismatch 25197 vs 25148, kimiclaw inotify fd readiness, kimi-auto-shim 404 advance + 240s timeout, agent-display Xvnc + websockify noVNC, valkey no save, search-api --hot prod, tau chute acp extension, model-guard /v1/models as health, nats 4222 outside range, audit chain break seq 2328.`);
 }
 
 // ResilientRoute real
@@ -275,7 +283,7 @@ document.getElementById('fixCode').textContent=JSON.stringify(getFallback(),null
 
 document.getElementById('weirdList').textContent=DAEMONS.map(d=>`${d.id} :${d.port} — ${d.weird}`).join('\n') + "\n\nExtra weird:\n- kimiclaw-a readiness pgrep -f '[b]ridge.ts' + ls /proc/$p/fd grep inotify — inotify fd check not http\n- buildsrv health http points to 25197/api/health but port 25148 — mismatch\n- openfang kernel 210 models 86 available 7 local, audit trail chain break seq 2328 expected 96f57409e9c449cb79fb5f7c75bbca8c2c8f76baf68fceb90bbe9d434c1a1d92 found 2b0a8e64c58b873e421ec88ef6781ec257c0b1668c49e0759dc16ab33c49c769 — duplicate assistant names 19 skipped\n- embedding driver sends data to external mistral https://api.mistral.ai/v1\n- local provider offline llama-swap error http://localhost:25100/v1/models when herd down\n- valkey bind 0.0.0.0 protected-mode no save empty appendonly no\n- search-api bun --hot prod\n- tau stopped chute.mjs --port 25111 -- omp acp -e .tau/extensions/vansrouter.ts PI_OPENAI_STREAM_IDLE_TIMEOUT_MS 120000\n- toolcall-llm llama.cpp qwen3.5-9b-dflash-Q5_K_M.gguf -ngl 99 -c 32768\n- dnsmasq own :53 vs systemd-resolved fd00::1 — explains forced DNS REFUSED\n- two browser-keeper both 9223 — conflict\n- Xvnc :99 + websockify noVNC web folder baked";
 
-function checkUrl(url){ if(!url) return; fetch(url).then(r=>document.getElementById('extraOut').textContent=url+' '+r.status).catch(e=>document.getElementById('extraOut').textContent=url+' error '+e.message); }
+function checkHealthProbe(url){ if(!url) return; fetch(url).then(r=>document.getElementById('extraOut').textContent=url+' '+r.status).catch(e=>document.getElementById('extraOut').textContent=url+' error '+e.message); }
 function runForcedDnsCheck(){ document.getElementById('extraOut').textContent='Forced DNS must run via backend: python -c \'import socket; s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM); s.settimeout(2); s.sendto(b"\\x12\\x34\\x01\\x00\\x00\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x06github\\x03com\\x00\\x00\\x01\\x00\\x01", ("8.8.8.8",53)); data,_=s.recvfrom(512); print(data)\' — if REFUSED then local interception'; }
 </script>
 </body></html>
