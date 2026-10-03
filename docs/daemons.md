@@ -48,7 +48,7 @@ herd → flock`.
 | `herd` | 25100 | The local model router. ELO-ranks providers, enforces the circuit breaker, owns the 25xxx model path. |
 | `sovereign-router` | 25104 | The older TS router, still serving. Runs *beside* herd, not behind it. Superseded but not retired — killing it is a separate decision. |
 | `flock` | 25193 | The cloud/paid provider router. Holds the `VANSROUTER_API_KEY` namespace vansrouter used to own. |
-| `cuttinggate` | — | The guard plane in front of herd and flock: quarantine, circuit breaker, credential rotation, winner ledger. Not in `groups.*` because it fronts everything else. |
+| `cuttinggate` | 25200 | The guard plane in front of herd and flock: quarantine, circuit breaker, credential rotation, winner ledger. Its project overlay (`ranch/mesh/proxy/cuttinggate/pitchfork.d/cuttinggate.toml`) supplies `CUTTINGGATE_PORT=25200` and the readiness URL, so the top-level daemon object has no `port =` field. Not in `groups.*` because it fronts everything else. |
 | `mesh-hub` | 25115 | MCP registry. Answers "which MCPs exist". |
 | `gatehouse` | 25127 | MCP meta-tool layer — the gatehouse MCP endpoint itself. The SSOT still names this port `MCPPROXY_GO_PORT`. |
 | `null-g-proxy` | 25107 | Edge proxy that returns null for blocked traffic. |
@@ -146,7 +146,7 @@ services the estate runs for itself, they are the bidding machinery.
 
 | daemon | port | why it exists |
 |---|---|---|
-| `flicker`, `flicker-agent` | 25148 | CI build server and its agent. Was filed as `BRAND_PORT`/`brand`; the daemon was renamed, not retired. |
+| `mbx-cache` | 25148 | Mise-compatible remote task cache. A direct Rust binary built through mise from `vendored/mr-boxington-cache`; stores immutable task artifacts in `var/runtime/mbx-cache`. Replaces the flicker/woodpecker server and agent. |
 | `hashline` | — | The hash-anchored editor's socket server. |
 | `awrawr-mcp` | 25198 | The estate MCP server. |
 | `awrawr-ws-exec` | 25204 | WS exec transport. **Never claim or kill** — protected port. |
@@ -159,8 +159,9 @@ services the estate runs for itself, they are the bidding machinery.
 `ranch/` is its own git repo. These are composed into the parent config but the
 project owns the code: `gatehouse`, `cuttinggate`, `fleet-ui`, `fleet-feed`,
 `nats`, `nats-tail`, the six oracle daemons, `sovereign-stream-broker`,
-`windmill`, `task-launch`, `yote`, `flock`, `mesh-landing`, `flicker`,
-`flicker-agent`, `squawk-relay-*`, `keypool`.
+`windmill`, `task-launch`, `yote`, `flock`, `mesh-landing`,
+`squawk-relay-*`, `keypool`. `mbx-cache` is estate-owned under `ops/`, not a
+ranch project.
 
 ## 9. Dead (1)
 

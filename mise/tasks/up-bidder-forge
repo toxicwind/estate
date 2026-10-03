@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up-bidder-forge
-pitchfork start -q bidder-forge

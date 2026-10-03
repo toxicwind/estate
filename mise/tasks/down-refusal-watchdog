@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-refusal-watchdog
-pitchfork stop refusal-watchdog

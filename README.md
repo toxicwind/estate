@@ -147,12 +147,12 @@ Every row below was verified against the live box on 2026-10-02 (port open + ide
 | 📜 **squawk feed** | `25135` | Fleet message feed API (`squawk_feed.py`). |
 | 🗣️ **sovereign-chat** | `25120` | Fleet chat plane (HTTP API + rooms). `/health` reports agents, rooms, message counts. |
 | 🔮 **oracle** | `25151` | Decision corral — prediction-market work loop, dated yes/no verdicts on evidence. |
-| 🔥 **flicker** | `25148` | Fleet build-job system. Disk-backed queue, streaming logs, content-hash artifact cache. |
+| 🧰 **mbx-cache** | `25148` | Mise-compatible remote task cache. Direct Rust binary, immutable content-addressed artifacts, no container runtime. |
 | 🖥️ **fleet-ui** | `25136` | Fleet web UI, reachable over the tailnet. |
 | 📊 **Ralph dashboard** | `25194` | Ops dashboard (HTML UI). |
 | 🧠 **codebase-memory** | `25195` | Codebase graph UI — "Codebase Memory — Graph". |
 
-Full daemon inventory (all 82, with health checks and restart paths): [`pitchfork.toml`](pitchfork.toml) — port SSOT is `config/ports.env`.
+Full daemon inventory (81, with health checks and restart paths): [`pitchfork.toml`](pitchfork.toml) — port SSOT is `config/ports.env`.
 
 ## 🏕️ The ranch
 

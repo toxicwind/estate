@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-flicker-agent
-pitchfork restart -q flicker-agent

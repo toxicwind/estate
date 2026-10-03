@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-ml-serve
-pitchfork restart -q ml-serve

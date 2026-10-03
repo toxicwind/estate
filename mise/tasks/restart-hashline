@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-hashline
-pitchfork restart -q hashline

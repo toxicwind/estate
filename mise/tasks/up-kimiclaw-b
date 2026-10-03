@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up-kimiclaw-b
-pitchfork start -q kimiclaw-b

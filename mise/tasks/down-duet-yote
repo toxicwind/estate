@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-duet-yote
-pitchfork stop duet-yote

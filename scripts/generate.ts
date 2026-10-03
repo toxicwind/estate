@@ -16,11 +16,13 @@
 // caller, cron job, or muscle-memory `bun run scripts/generate.ts` still
 // silently rewrote the estate's service config. That is now a hard exit.
 //
-// Sources in src/generators/ are kept for reference only. To resurrect this,
-// delete this file deliberately — do not re-add the call.
+// src/generators/ and its tests were deleted 2026-10-03. Nothing imported them
+// except this retired entrypoint's test, so preserving them as "reference" only
+// preserved a stale second configuration system. A future generator needs a new
+// design and an explicit source of truth; it must not resurrect these sources.
 //
-// Open: fate of antigravity-cli, pi-agent, pi-web-dashboard, qed, zedra-host
-// (defined in generator, not in pitchfork, not observed running).
+// The former open set (antigravity-cli, pi-agent, pi-web-dashboard, qed,
+// zedra-host) was reconciled separately; zedra-host is an active service now.
 // ============================================================================
 
 process.stderr.write(

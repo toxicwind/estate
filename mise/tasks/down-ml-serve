@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-ml-serve
-pitchfork stop ml-serve

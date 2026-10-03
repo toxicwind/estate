@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-nginx
-pitchfork restart -q nginx

@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-market-loop
-pitchfork restart -q market-loop

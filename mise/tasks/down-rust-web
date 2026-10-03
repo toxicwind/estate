@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-rust-web
-pitchfork stop rust-web

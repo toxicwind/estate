@@ -47,7 +47,7 @@ describe("omp-mobile-autocorrect engine", () => {
   });
 
   it("strictly protects URLs, URIs, endpoints, and IP addresses", () => {
-    const input = "call http://127.0.0.1:20128/v1/models or skill://fix-omp-launcher";
+    const input = "call http://127.0.0.1:20128/v1/models or skill://tau-fork-pinning";
     const result = autocorrectText(input);
 
     expect(result.correctedText).toBe(input);

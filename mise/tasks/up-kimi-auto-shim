@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up-kimi-auto-shim
-pitchfork start -q kimi-auto-shim

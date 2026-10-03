@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-estate-reconcile-watch
-pitchfork stop estate-reconcile-watch

@@ -901,118 +901,30 @@ async function tool_pitchfork_daemon(args: Record<string, unknown>): Promise<str
 }
 
 // ---------------------------------------------------------------------------
-// flicker tools (local build daemon on 127.0.0.1:25148)
+// ---------------------------------------------------------------------------
+// mbx-cache tools (mise remote task cache on 127.0.0.1:25148)
 // ---------------------------------------------------------------------------
 
-const FLICKER_BASE = "http://127.0.0.1:25148";
-const FLICKER_JOB_RX = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/;
-const FLICKER_MAX_CMD = 4000;
-const FLICKER_OUT_CAP = 8000;
+const MBX_CACHE_BASE = "http://127.0.0.1:25148";
+const MBX_CACHE_OUT_CAP = 8000;
 
-async function flickerCall(method: string, path: string, payload: unknown = undefined, timeoutS = 90): Promise<string> {
-  const url = FLICKER_BASE + path;
+async function mbxCacheGet(path: string): Promise<string> {
   try {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), timeoutS * 1000);
-    let resp: Response;
-    try {
-      resp = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: payload !== undefined ? JSON.stringify(payload) : undefined,
-        signal: ctrl.signal,
-      });
-    } finally {
-      clearTimeout(timer);
-    }
-    if (!resp.ok) {
-      const body = await resp.text().catch(() => "");
-      return `HTTP ${resp.status}: ${body.slice(0, 500)}`;
-    }
-    const body = await resp.text();
-    if (!body) return "[empty response]";
-    return body.slice(0, FLICKER_OUT_CAP);
-  } catch (e) {
-    return `error: ${(e as Error).name}: ${e}`;
+    const response = await fetch(MBX_CACHE_BASE + path, { signal: AbortSignal.timeout(15_000) });
+    const body = await response.text();
+    if (!response.ok) return `HTTP ${response.status}: ${body.slice(0, 500)}`;
+    return body ? body.slice(0, MBX_CACHE_OUT_CAP) : "[empty response]";
+  } catch (error) {
+    return `error: ${(error as Error).name}: ${error}`;
   }
 }
 
-function flickerCheckId(jobId: string): { jid: string | null; err: string | null } {
-  const jid = String(jobId ?? "");
-  if (!FLICKER_JOB_RX.test(jid)) {
-    return { jid: null, err: "bad job_id: must match ^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$" };
-  }
-  return { jid, err: null };
+async function tool_mbx_cache_status(): Promise<string> {
+  return mbxCacheGet("/v1/status");
 }
 
-async function tool_flicker_submit(args: Record<string, unknown>): Promise<string> {
-  const name = String(args["name"] ?? "").trim();
-  const command = String(args["command"] ?? "");
-  if (!name) return "error: name required";
-  if (!command.trim()) return "error: command required";
-  if (command.length > FLICKER_MAX_CMD) {
-    return `error: command too long (${command.length} > ${FLICKER_MAX_CMD})`;
-  }
-  let timeout = parseInt(String(args["timeout"] ?? "300"), 10);
-  if (!Number.isFinite(timeout)) return "error: timeout must be an integer";
-  timeout = Math.max(10, Math.min(timeout, 7200));
-  let env: Record<string, unknown> = {};
-  const envJson = String(args["env_json"] ?? "").trim();
-  if (envJson) {
-    try {
-      env = JSON.parse(envJson);
-    } catch (e) {
-      return `error: env_json is not valid JSON: ${e}`;
-    }
-    if (typeof env !== "object" || env === null || Array.isArray(env)) {
-      return "error: env_json must decode to an object";
-    }
-  }
-  const payload = {
-    name,
-    command,
-    workdir: String(args["workdir"] ?? "").trim() || "/tmp",
-    env,
-    timeout,
-  };
-  return flickerCall("POST", "/api/jobs", payload);
-}
-
-async function tool_flicker_status(args: Record<string, unknown>): Promise<string> {
-  const { jid, err } = flickerCheckId(String(args["job_id"] ?? ""));
-  if (err) return err;
-  return flickerCall("GET", `/api/jobs/${jid}`);
-}
-
-async function tool_flicker_logs(args: Record<string, unknown>): Promise<string> {
-  const { jid, err } = flickerCheckId(String(args["job_id"] ?? ""));
-  if (err) return err;
-  const n = Math.max(1, Math.min(parseInt(String(args["tail"] ?? "50"), 10) || 50, 500));
-  const out = await flickerCall("GET", `/api/jobs/${jid}/logs`);
-  if (out.startsWith("error:") || out.startsWith("HTTP")) return out;
-  const lines = out.split("\n");
-  return lines.slice(-n).join("\n");
-}
-
-async function tool_flicker_list(args: Record<string, unknown>): Promise<string> {
-  const n = Math.max(1, Math.min(parseInt(String(args["limit"] ?? "10"), 10) || 10, 50));
-  const out = await flickerCall("GET", "/api/jobs");
-  if (out.startsWith("error:") || out.startsWith("HTTP")) return out;
-  let jobs: unknown;
-  try {
-    jobs = JSON.parse(out);
-  } catch {
-    return out.slice(0, FLICKER_OUT_CAP);
-  }
-  if (!Array.isArray(jobs)) return out.slice(0, FLICKER_OUT_CAP);
-  const rows = (jobs as Array<Record<string, unknown>>).slice(-n).map(
-    (j) => `id=${j["id"]} name=${j["name"]} status=${j["status"]}${j["cached"] ? " CACHED" : ""}`
-  );
-  return rows.length ? rows.join("\n") : "(no jobs)";
-}
-
-async function tool_flicker_health(): Promise<string> {
-  return flickerCall("GET", "/api/health");
+async function tool_mbx_cache_capabilities(): Promise<string> {
+  return mbxCacheGet("/v1/capabilities");
 }
 
 // ---------------------------------------------------------------------------
@@ -1751,55 +1663,16 @@ const TOOLS: ToolDef[] = [
     handler: tool_bg_kill,
   },
   {
-    name: "flicker_submit",
-    description: "Submit a build job to flicker (local build daemon on :25148).\n\nQueues the job and returns immediately with the job id; the build runs async in flicker-server. Poll with flicker_status / flicker_logs. Jobs run via bash login shells (mise toolchains resolve). command is capped at 4000 chars. env_json is an optional JSON object of env vars. Re-submitting an identical spec returns CACHED instead of re-running.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        name: S("string"),
-        command: S("string"),
-        workdir: S("string", { default: "" }),
-        env_json: S("string", { default: "" }),
-        timeout: S("number", { default: 300 }),
-      },
-      required: ["name", "command"],
-    },
-    handler: tool_flicker_submit,
-  },
-  {
-    name: "flicker_status",
-    description: "Show flicker job status (pending/running/success/failure/canceled).",
-    inputSchema: {
-      type: "object",
-      properties: { job_id: S("string") },
-      required: ["job_id"],
-    },
-    handler: tool_flicker_status,
-  },
-  {
-    name: "flicker_logs",
-    description: "Show the last N lines of a flicker job's log (default 50, max 500).",
-    inputSchema: {
-      type: "object",
-      properties: { job_id: S("string"), tail: S("number", { default: 50 }) },
-      required: ["job_id"],
-    },
-    handler: tool_flicker_logs,
-  },
-  {
-    name: "flicker_list",
-    description: "List recent flicker jobs (default 10, max 50): id, name, status.",
-    inputSchema: {
-      type: "object",
-      properties: { limit: S("number", { default: 10 }) },
-    },
-    handler: tool_flicker_list,
-  },
-  {
-    name: "flicker_health",
-    description: "Health probe for the flicker daemon (:25148): uptime, queue, cache.",
+    name: "mbx_cache_status",
+    description: "Show the local mise remote-cache status at :25148.",
     inputSchema: { type: "object", properties: {} },
-    handler: tool_flicker_health,
+    handler: tool_mbx_cache_status,
+  },
+  {
+    name: "mbx_cache_capabilities",
+    description: "Show the mise remote-cache protocol, action kinds, and limits.",
+    inputSchema: { type: "object", properties: {} },
+    handler: tool_mbx_cache_capabilities,
   },
   {
     name: "race",

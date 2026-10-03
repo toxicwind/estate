@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run health-tau
-/home/toxic/estate/bin/tcp-probe 25111

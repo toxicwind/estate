@@ -10,9 +10,9 @@
  * Original block text is preserved byte-for-byte (comments are incident docs).
  * KNOWN-STALE (verified 2026-09-30 against `pitchfork list` + ss + git log):
  * bidder-forge, bidder-scout are NOT migrated (stopped, oracle-market retired).
- * flicker + flicker-agent are LIVE (serve :25148 / :25240, restored deliberately
- * in 0b87ffe1eb) and migrate with ranch/flicker — they are NOT stale despite
- * the earlier race classification. buildsrv already left the live file.
+ * flicker + flicker-agent were replaced 2026-10-03 by estate/ops/mbx-cache:
+ * direct Rust mise remote-cache server at :25148. buildsrv and flicker no longer
+ * belong in the live split; historical fragments remain only in audit records.
  *
  * Ownership signal: each daemon's `dir` field (ground truth of where it runs),
  * same projectKey() the hyper-race validated. Re-run safe: overwrites outputs.

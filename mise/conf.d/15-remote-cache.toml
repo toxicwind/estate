@@ -1,0 +1,12 @@
+# Local remote task cache: direct Rust mbx-cache at :25148.
+# Loopback-only and anonymous: no credential is copied into configuration.
+[settings]
+experimental = true
+task.cache.remote_url = "http://127.0.0.1:25148"
+task.cache.remote_namespace = "estate"
+task.cache.remote_mode = "read-write"
+
+# Artifact caching is opt-in even with a remote server configured. Eligible
+# tasks need declared sources and outputs; cache failures remain normal misses.
+[task_config.cache]
+enabled = true

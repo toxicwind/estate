@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-flock
-pitchfork restart -q flock

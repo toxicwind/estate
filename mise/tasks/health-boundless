@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run health-boundless
-bash -c '</dev/tcp/127.0.0.1/25197'

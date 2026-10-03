@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-awrawr-ws-exec
-pitchfork restart -q awrawr-ws-exec

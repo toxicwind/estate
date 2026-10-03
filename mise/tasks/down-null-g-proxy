@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-null-g-proxy
-pitchfork stop null-g-proxy

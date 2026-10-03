@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up-sovereign-stream-broker
-pitchfork start -q sovereign-stream-broker

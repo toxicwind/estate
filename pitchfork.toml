@@ -35,7 +35,7 @@ daemons = []
 # daemon definition anywhere -- the squawk daemons are squawk-relay-sink,
 # squawk-relay-forward, fleet-ui and fleet-feed. pitchfork silently ignores
 # names it cannot resolve, so the stale entries just made the group a lie.
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "fleet-feed", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "fleet-ui", "flicker", "flicker-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "fleet-feed", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "fleet-ui", "mbx-cache", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
 
 # ---- project: estate (control plane) ----
 # The estate IS this repo. Everything filed here is owned by /home/toxic/estate
@@ -661,41 +661,21 @@ retry = true
 ready_http = "http://127.0.0.1:25127/health"
 auto = ["start"]
 
-# ---- project: ranch/flicker (2 daemons) ----
-# ranch/flicker — project-owned daemon manifest. Source of truth for 'flicker-agent'.
-# Owned by the ranch/flicker project; the parent only composes it.
+# ---- project: estate/ops/mbx-cache (1 daemon) ----
+# mbx-cache — estate-owned direct Rust cache server.
+# Owned by estate/ops/mbx-cache.
 
-[daemons.flicker-agent]
-run = "exec /home/toxic/estate/var/reconciliation/flicker/bin/flicker-agent"
-dir = "/home/toxic/estate/var/reconciliation/flicker"
-mise = false
-retry = true
-boot_start = true
-env = { WOODPECKER_SERVER = "127.0.0.1:25240", WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224a60416faf4f" }
-auto = ["start"]
-
-# SUPERSEDED 2026-09-30 (peregrine): brand-watchdog retired with brand.
-# Flicker has its own health_http checks; no external watchdog needed.
-
-# ranch/flicker — project-owned daemon manifest. Source of truth for 'flicker'.
-# Owned by the ranch/flicker project; the parent only composes it.
-
-[daemons.flicker]
+[daemons.mbx-cache]
+# Mise-compatible remote task cache. Direct Rust binary built from pinned
+# vendored/mr-boxington-cache source; no Docker or container runtime.
 port = 25148
-run = "exec /home/toxic/estate/var/reconciliation/flicker/bin/flicker-server"
-dir = "/home/toxic/estate/var/reconciliation/flicker"
-mise = false
+run = "exec /home/toxic/estate/ops/mbx-cache/run.sh"
+dir = "/home/toxic/estate"
+mise = true
 retry = true
-boot_start = true
-ready_http = "http://127.0.0.1:25148/api/health"
-health_http = { url = "http://127.0.0.1:25148/api/health", interval = "30s", timeout = "5s", retries = 3 }
-env = { FLICKER_ROOT = "/home/toxic/flicker", WOODPECKER_HOST = "http://127.0.0.1:25148", WOODPECKER_GRPC_ADDR = ":25240", WOODPECKER_SERVER_ADDR = ":25148", WOODPECKER_GRPC_SECRET = "66a9f7c1d6ffbac15c447f6d3d97827ab3d152286b23c0cbeb19a9372108419b", WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224a60416faf4f" }
-
-# ---- project: ranch/squawk (3 daemons) ----
-# ranch/squawk — project-owned daemon manifest. Source of truth for 'fleet-ui'.
-# Owned by the ranch/squawk project; the parent only composes it.
-# Restored 2026-10-02: fleet-ui.ts was an untracked live file that got deleted;
-# recovered from the reconciliation copy. Now a first-class supervised daemon.
+ready_http = "http://127.0.0.1:25148/v1/status"
+health_http = { url = "http://127.0.0.1:25148/v1/status", interval = "30s", timeout = "5s", retries = 3 }
+auto = ["start"]
 
 [daemons.fleet-ui]
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/squawk/fleet-ui.ts"
@@ -1026,9 +1006,9 @@ mise = false
 retry = true
 auto = ["start"]
 
-# RESTORED 2026-09-30 (peregrine): [daemons.brand] pointed at deleted
-# ranch/branding/ on :25148 (brand deprecated -> flicker per 2026-09-30 cutover).
-# Flicker is the live build daemon on :25148; blocks restored from origin/main.
+# Historical note: [daemons.brand] once pointed at deleted ranch/branding/.
+# ranch/branding/ was deleted. Brand and Flicker are retired.
+# mbx-cache is the live mise remote task cache on :25148.
 
 # ---- project: standalone/bedrock (1 daemon) ----
 # standalone/bedrock — project-owned daemon manifest. Source of truth for 'bedrock-ui'.

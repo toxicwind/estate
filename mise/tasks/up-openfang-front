@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up-openfang-front
-pitchfork start -q openfang-front

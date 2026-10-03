@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-agent-display
-pitchfork restart -q agent-display

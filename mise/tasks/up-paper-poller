@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up-paper-poller
-pitchfork start -q paper-poller

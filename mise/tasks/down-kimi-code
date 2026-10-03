@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-kimi-code
-pitchfork stop kimi-code

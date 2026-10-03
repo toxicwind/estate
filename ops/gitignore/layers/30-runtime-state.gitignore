@@ -12,6 +12,9 @@
 .scout-cache/
 .pytest_cache/
 .turbo/
+# Moon's project graph and workspace config are tracked; its task hashes,
+# reports, and outputs are machine-local runtime state.
+.moon/cache/
 .qdrant-initialized/
 .state/
 .jj/

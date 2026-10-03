@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-mesh-hub
-pitchfork stop mesh-hub

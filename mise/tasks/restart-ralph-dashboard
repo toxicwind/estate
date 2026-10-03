@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-ralph-dashboard
-pitchfork restart -q ralph-dashboard

@@ -16,7 +16,7 @@ export SCOUT_API_KEY="llama-swap"
 export NIM_QUEUE_BASE_URL="http://127.0.0.1:8000/v1"
 export LLAMA_SWAP_MODEL="beellama/qwen-flash-64k"
 
-# 2. Local Mesh & Gateway Ports (Aligned with sovereign/config/ports.env)
+# 2. Local Mesh & Gateway Ports (aligned with estate/config/ports.env)
 export LLAMA_SWAP_PORT="25100"
 export HERD_PORT="25100"
 export RUST_WEB_PORT="25201"
@@ -31,17 +31,16 @@ export GHAS_FRONTEND_PORT="25114"
 export MESH_HUB_PORT="25115"
 export HINDSIGHT_API_PORT="25117"
 export HINDSIGHT_CP_PORT="25118"
-# MCP_GATEWAY_PORT :25120 was retired with the sovereign-router merge. The
-# gatehouse meta-tool layer is what still answers, on :25127 -- the same port
-# MCPPROXY_GO_PORT carries. Both names meant one daemon; see config/ports.env.
+# MCP_GATEWAY_PORT is a compatibility alias for gatehouse :25127, the same
+# daemon MCPPROXY_GO_PORT names. :25120 belongs to SOVEREIGN_CHAT_PORT; it was
+# never this gateway. See config/ports.env.
 export MCP_GATEWAY_PORT="25127"
 export BYTE_VISION_PORT="25121"
 export BEELLAMA_PORT="25122"
 export IK_LLAMA_PORT="25123"
 export KIMI_CODE_PORT="25126"
-export MCPPROXY_GO_PORT="25127"
 export BROWSERLESS_PORT="25130"
-export ZEDRA_HOST_PORT="25146"
+export ZEDRA_HOST_PORT="25214"
 export SOV_GHAS_PORT="25131"
 export QDRANT_PORT="25133"
 export REDIS_PORT="25199"

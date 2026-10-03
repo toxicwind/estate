@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-agent-display
-pitchfork stop agent-display

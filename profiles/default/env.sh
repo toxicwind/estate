@@ -19,11 +19,10 @@ export GHAS_FRONTEND_PORT="${GHAS_FRONTEND_PORT:-25114}"
 export MESH_HUB_PORT="${MESH_HUB_PORT:-25115}"
 export HINDSIGHT_API_PORT="${HINDSIGHT_API_PORT:-25117}"
 export HINDSIGHT_CP_PORT="${HINDSIGHT_CP_PORT:-25118}"
-# MCP_GATEWAY_PORT :25120 was retired with the sovereign-router merge. The
-# gatehouse meta-tool layer is what still answers, on :25127 -- the same port
-# MCPPROXY_GO_PORT carries. Both names meant one daemon; see config/ports.env.
+# MCP_GATEWAY_PORT is a compatibility alias for gatehouse :25127, the same
+# daemon MCPPROXY_GO_PORT names. :25120 belongs to SOVEREIGN_CHAT_PORT; it was
+# never this gateway. See config/ports.env.
 export MCP_GATEWAY_PORT="${MCP_GATEWAY_PORT:-25127}"
-export MCPPROXY_GO_PORT="${MCPPROXY_GO_PORT:-25127}"
 export QDRANT_PORT="${QDRANT_PORT:-25133}"
 export REDIS_PORT="${REDIS_PORT:-25199}"
 

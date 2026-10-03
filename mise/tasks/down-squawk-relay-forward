@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-squawk-relay-forward
-pitchfork stop squawk-relay-forward

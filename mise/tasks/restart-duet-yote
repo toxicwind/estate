@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-duet-yote
-pitchfork restart -q duet-yote
