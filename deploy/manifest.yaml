@@ -30,30 +30,40 @@ version: 1
 
 binaries:
   herd:
-    path: /home/toxic/estate/projects/herd/llama-swap
+    path: /home/toxic/estate/ranch/mesh/router/herd/herd
     sha256: "e1d70dd074bf6c1218ce45be5e2cf9ebb609cf7439d279989d2429c2f08e2e4e"
-    immutable_copy: /home/toxic/estate/projects/herd/llama-swap.20260930-052800
-    source: toxicwind/sovereign-swap
-    commit: 7fc25280816fa7f98764ac46d1435d55ac9dc3c3
+    immutable_copy: /home/toxic/estate/ranch/mesh/router/herd/herd.20260930-052800
+    source: toxicwind/ranch
+    commit: 401acad54ed36ae353a8f55222a908d99b7a596e
     upstream_base: 7a14664d98f0e66bc68bba08548290ca0b469f98
-    built_at: "2026-09-21T12:40:37Z"
+    built_at: "2026-10-02T15:38:00Z"
     daemon: herd
-    note: live path is a symlink to the immutable versioned file (herd-deploy)
+    note: moved projects/herd -> ranch/mesh/router/herd 2026-10-02 (llama-swap renamed herd); sha verified e1d70dd0
   herd-keypool:
     path: /home/toxic/estate/bin/herd-keypool.py
-    sha256: "432c60f839be5fe4823461b103cb53b808d41d6d73283cc7702103506a6a92b2"
-    source: toxicwind/sovereign-projects
-    commit: 020f479aa899a5c6dc4226fdec690420540c20f9
+    sha256: "078f3aacdf0550ae75c3219f0d53b3f4f9ebd7b6ce6d3c3e88614f269d059f16"
+    source: toxicwind/estate
+    commit: e4a383cad849f80dec832251e159ac8c7839c5da
     git_path: bin/herd-keypool.py
     daemon: keypool
-    immutable_copy: /home/toxic/estate/bin/herd-keypool.py.20260929-234239
+    immutable_copy: /home/toxic/estate/bin/herd-keypool.py.20261002-184500
+    note: blessed 2026-10-02 (warden) — live matches estate HEAD; Chris: "Bless live obv wtf"
   herd-model-guard:
     path: /home/toxic/estate/bin/herd-model-guard.py
-    sha256: "2621d6524b4633292dfbe1a6bf837bc7d297372bbe74598f6556630b2f0aee9f"
-    source: toxicwind/sovereign-projects
-    commit: b135cd2e7c6f4b0e76d33c272e88f5806399f436
+    sha256: "7ff038184434e52e6a0200b7d48fea80975f1d00e5d8b2ffb1ea10a67627f829"
+    source: toxicwind/estate
+    commit: e4a383cad849f80dec832251e159ac8c7839c5da
     git_path: bin/herd-model-guard.py
     daemon: model-guard
+    immutable_copy: /home/toxic/estate/bin/herd-model-guard.py.20261002-184500
+    note: blessed 2026-10-02 (warden) — live matches estate HEAD; Chris: "Bless live"
+  progress-watchdog:
+    path: /home/toxic/estate/bin/progress-watchdog.py
+    sha256: "7dd01c2cb689dc959ff8ceefc4e1b6eddd19fd2b65b36524b6600b3d1768557c"
+    source: toxicwind/estate
+    commit: e4a383cad849f80dec832251e159ac8c7839c5da
+    git_path: bin/progress-watchdog.py
+    note: pinned 2026-10-02 (warden) — Chris: "Sure"
   openfang-kernel:
     path: /home/toxic/projects/rig-work/target/debug/openfang
     sha256: "a73df142422ebae537509c6f08890415a2bbbc170d04a307c6b6ce88194d20af"

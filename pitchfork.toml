@@ -662,6 +662,45 @@ ready_http = "http://127.0.0.1:25148/api/health"
 health_http = { url = "http://127.0.0.1:25148/api/health", interval = "30s", timeout = "5s", retries = 3 }
 env = { FLICKER_ROOT = "/home/toxic/flicker", WOODPECKER_HOST = "http://127.0.0.1:25148", WOODPECKER_GRPC_ADDR = ":25240", WOODPECKER_SERVER_ADDR = ":25148", WOODPECKER_GRPC_SECRET = "66a9f7c1d6ffbac15c447f6d3d97827ab3d152286b23c0cbeb19a9372108419b", WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224a60416faf4f" }
 
+# ---- project: ranch/squawk (3 daemons) ----
+# ranch/squawk — project-owned daemon manifest. Source of truth for 'fleet-ui'.
+# Owned by the ranch/squawk project; the parent only composes it.
+# Restored 2026-10-02: fleet-ui.ts was an untracked live file that got deleted;
+# recovered from the reconciliation copy. Now a first-class supervised daemon.
+
+[daemons.fleet-ui]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/squawk/fleet-ui.ts"
+dir = "/home/toxic/estate/ranch/squawk"
+mise = false
+retry = true
+boot_start = true
+ready_cmd = "ss -ltn 'sport = :25136' | grep -q LISTEN"
+auto = ["start"]
+
+# ranch/squawk — project-owned daemon manifest. Source of truth for 'nats-tail'.
+# Owned by the ranch/squawk project; the parent only composes it.
+
+[daemons.nats-tail]
+run = "exec /home/toxic/estate/ranch/squawk/nats/run-tail.sh"
+dir = "/home/toxic/estate/ranch/squawk/nats"
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
+
+# ranch/squawk — project-owned daemon manifest. Source of truth for 'nats'.
+# Owned by the ranch/squawk project; the parent only composes it.
+
+
+[daemons.nats]
+run = "exec /home/toxic/estate/ranch/squawk/nats/run-nats.sh"
+dir = "/home/toxic/estate/ranch/squawk/nats"
+mise = false
+retry = true
+boot_start = true
+ready_cmd = "ss -ltn 'sport = :4222' | grep -q LISTEN"
+auto = ["start"]
+
 # ---- project: ranch/oracle (6 daemons) ----
 [daemons.bidder-forge]
 run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/bidder-forge.sh"
