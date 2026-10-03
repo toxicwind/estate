@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run up-search-api
+pitchfork start -q search-api

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-prometheus
+pitchfork restart -q prometheus

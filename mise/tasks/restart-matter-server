@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-matter-server
+pitchfork restart -q matter-server

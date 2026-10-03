@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run test-gateway
+bun run test:gateway:cov

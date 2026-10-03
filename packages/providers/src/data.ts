@@ -14,7 +14,7 @@
  *   EOL 2026-08-26 → deadIds). Herd gains nemotron-3-nano-omni-30b-a3b-reasoning.
  * - groq seeds: identical in both (6); the 4 verified-dead 2026-09-30 stay
  *   in seeds but are filtered by deadIds everywhere (cold start included).
- * - llama-swap seeds: the canonical stable role names. The TS router
+ * - herd seeds: the canonical stable role names. The TS router
  *   overlays its runtime LOCAL_ROLES (best-models.json) at catalog build;
  *   herd serves these names directly.
  * - mistral: baseUrl WITHOUT the /v1 segment; the mistral adapter appends
@@ -53,10 +53,10 @@ import type { ModelAlias, ProviderDef } from "./types.ts";
 
 export const PROVIDER_DEFS: ProviderDef[] = [
   {
-    name: "llama-swap",
-    displayName: "llama-swap (local)",
+    name: "herd",
+    displayName: "herd (local)",
     baseUrl: "http://127.0.0.1:25100/v1",
-    keyEnv: "LLAMA_SWAP_API_KEY",
+    keyEnv: "HERD_API_KEY",
     auth: "none",
     adapter: "openai",
     seeds: ["local-fast", "local-quality", "local-longctx"],

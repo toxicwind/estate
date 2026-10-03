@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-search-api
+pitchfork restart -q search-api

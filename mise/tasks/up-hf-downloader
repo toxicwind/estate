@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run up-hf-downloader
+pitchfork start -q hf-downloader

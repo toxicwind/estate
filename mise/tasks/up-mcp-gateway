@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run up-mcp-gateway
+pitchfork start -q mcp-gateway

@@ -10,11 +10,11 @@ import { loadSovereignPorts, requirePort } from "./ports.ts";
 loadSovereignPorts();
 
 export type MeshServiceId =
-  | "llama-swap"
+  | "herd"
   | "rust-web"
   | "yote"
   | "openfang"
-  | "llama-swap"
+  | "sovereign-router"
   | "prometheus"
   | "hf-downloader"
   | "null-g-proxy"
@@ -86,7 +86,7 @@ export type ServiceMeta = {
 export function serviceCatalog(): ServiceMeta[] {
   return [
     {
-      id: "llama-swap",
+      id: "herd",
       portEnv: "LLAMA_SWAP_PORT",
       healthPath: "/health",
       role: "llm-front-door",
@@ -114,7 +114,7 @@ export function serviceCatalog(): ServiceMeta[] {
       ghas_borrow: "multi-provider hand swarm",
     },
     {
-      id: "llama-swap",
+      id: "sovereign-router",
       portEnv: "SOVEREIGN_ROUTER_PORT",
       healthPath: "/health",
       role: "model-router",
@@ -337,13 +337,14 @@ export async function runFeature(
     case "deps": {
       // Link graph edges used by this service
       const edges: Record<MeshServiceId, MeshServiceId[]> = {
-        "rust-web": ["llama-swap", "hf-downloader", "prometheus"],
-        yote: ["openfang", "llama-swap"],
-        openfang: ["llama-swap"],
-        "llama-swap": ["llama-swap"],
+        "herd": [],
+        "rust-web": ["herd", "hf-downloader", "prometheus"],
+        yote: ["openfang", "herd"],
+        openfang: ["herd"],
+        "sovereign-router": ["herd"],
         prometheus: [],
         "hf-downloader": [],
-        "null-g-proxy": ["llama-swap", "llama-swap"],
+        "null-g-proxy": ["herd", "sovereign-router"],
         grafana: ["prometheus"],
         "ghas-api": ["ghas-mcp"],
         "ghas-mcp": [],
@@ -423,8 +424,8 @@ export async function runFeature(
             ghas_linked: true,
             hot_reload: true,
             openai_compat: [
-              "llama-swap",
-              "llama-swap",
+              "herd",
+              "sovereign-router",
               "null-g-proxy",
               "yote",
               "openfang",

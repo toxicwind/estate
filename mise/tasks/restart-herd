@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-herd
+pitchfork restart -q herd

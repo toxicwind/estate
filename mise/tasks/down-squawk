@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# mise run down-squawk
+# Stop squawk-ws and squawk-feed
+mise run down-squawk-ws || exit $?
+mise run down-squawk-feed || exit $?

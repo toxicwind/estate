@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run keypool-logs
+pitchfork logs keypool -n 100

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run down-search-api
+pitchfork stop search-api

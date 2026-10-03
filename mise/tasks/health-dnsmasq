@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run health-dnsmasq
+ss -ltn 'sport = :53' | grep -q LISTEN

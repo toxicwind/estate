@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# mise run up-squawk
+# Start squawk-ws and squawk-feed (fleet messaging, now under mesh)
+mise run up-squawk-ws || exit $?
+mise run up-squawk-feed || exit $?

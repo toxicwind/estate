@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# mise run nv-package
+cd "/home/toxic/estate/ranch/android-fleet/nuvio/nuvio-platform"
+mise run nv-build || exit $?

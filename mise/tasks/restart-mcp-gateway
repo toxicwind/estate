@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-mcp-gateway
+pitchfork restart -q mcp-gateway

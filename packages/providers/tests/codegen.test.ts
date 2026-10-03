@@ -37,7 +37,7 @@ function sampleInput(): CodegenInput {
     defs: [
       sampleDef(),
       sampleDef({
-        name: "llama-swap",
+        name: "herd",
         baseUrl: "http://127.0.0.1:25100",
         keyEnv: "",
         adapter: "static",

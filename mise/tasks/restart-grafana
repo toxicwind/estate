@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-grafana
+pitchfork restart -q grafana

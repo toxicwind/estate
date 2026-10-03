@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-mesh-hub
+pitchfork restart -q mesh-hub

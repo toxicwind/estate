@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run down-hf-downloader
+pitchfork stop hf-downloader
