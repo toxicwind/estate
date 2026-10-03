@@ -66,8 +66,10 @@ fi
 # serving is a metadata problem (HFT: trust the live lane, not the stale view).
 supervisor_stale_ok() {
   case "$1" in
-    sovereign/toolcall-llm) timeout 3 curl -sf -o /dev/null "http://127.0.0.1:25152/health" 2>/dev/null ;;
-    sovereign/awrawr-ws-exec) [ "$(timeout 3 curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8379/exec-ws 2>/dev/null)" = "400" ] ;;
+    # Daemon names come from `pitchfork list`, which emits the estate/ namespace,
+    # so the sovereign/ form never matched and this whole branch was dead.
+    estate/toolcall-llm) timeout 3 curl -sf -o /dev/null "http://127.0.0.1:25152/health" 2>/dev/null ;;
+    estate/awrawr-ws-exec) [ "$(timeout 3 curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8379/exec-ws 2>/dev/null)" = "400" ] ;;
     *) return 1 ;;
   esac
 }

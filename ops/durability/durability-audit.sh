@@ -106,7 +106,9 @@ if [[ -f "$TOML" ]]; then
     for p in "${!PORT_OWNER[@]}"; do
         ss -ltn 2>/dev/null | grep -qE "[:.]$p([^0-9]|$)" && continue
         d="${PORT_OWNER[$p]}"
-        st="$("$PF_BIN" status --json "sovereign/$d" 2>/dev/null | \
+        # pitchfork namespaces daemons as estate/<name>, so the sovereign/<name>
+        # form never resolved and STALE-READY could never be reported.
+        st="$("$PF_BIN" status --json "estate/$d" 2>/dev/null | \
               python3 -c 'import json,sys; print(json.load(sys.stdin).get("status",""))' 2>/dev/null)"
         [[ "$st" == "running" ]] && \
             note "STALE-READY :$p (daemon $d reports running but nothing listens; re-register via bin/pitchfork-restart)"
