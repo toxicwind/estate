@@ -65,13 +65,14 @@ binaries:
     git_path: bin/progress-watchdog.py
     note: pinned 2026-10-02 (warden) — Chris: "Sure"
   openfang-kernel:
-    path: /home/toxic/projects/rig-work/target/debug/openfang
-    sha256: "a73df142422ebae537509c6f08890415a2bbbc170d04a307c6b6ce88194d20af"
+    path: /home/toxic/.local/bin/openfang
+    sha256: "8af8a1475908974717c7b5d2480abebd09418ae7b2cc58fa9185fbc500cd2695"
     source: toxicwind/rig
-    commit: 6b6742c
-    immutable_copy: /home/toxic/projects/rig-work/openfang-kernel.20260929-233553
-    daemon: openfang
-    note: blessed 2026-09-29 (furnace) — binary verified good (sha matches manifest, v0.6.9 runs); immutable copy enables warden auto-restore
+    commit: 50fda68
+    build_artifact: /home/toxic/projects/rig/target/debug/rig
+    immutable_copy: /home/toxic/.local/bin/openfang.bak-20261003
+    daemon: openfang (spawned by gatehouse as MCP backend; restart via pitchfork estate/gatehouse)
+    note: rebuilt 2026-10-03 post-rename via mbx-cache mise task (rig 0.6.9); Q1 bless superseded by fresh build; deployed, gatehouse restarted, child verified on new SHA
 
   mbx-cache:
     path: /home/toxic/estate/vendored/mr-boxington-cache/target/release/mise-cache
