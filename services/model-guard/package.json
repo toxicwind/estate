@@ -1,0 +1,21 @@
+{
+  "description": "Card-derived per-model request enforcement for herd — TypeScript/Bun reverse proxy",
+  "main": "src/index.ts",
+  "name": "@sovereign/model-guard",
+  "private": true,
+  "scripts": {
+    "build": "bun build src/index.ts --compile --outfile dist/model-guard",
+    "dev": "bun --watch src/index.ts",
+    "lint": "tsc --noEmit -p tsconfig.json",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "sovereign": {
+    "daemon": "model-guard",
+    "description": "Per-model request contract enforcement proxy (herd-model-guard.py port). Rewrites /v1/chat/completions bodies per config/model_constraints.yaml before they reach herd.",
+    "port": 25101,
+    "portEnv": "MODEL_GUARD_PORT"
+  },
+  "type": "module",
+  "version": "0.1.0"
+}
