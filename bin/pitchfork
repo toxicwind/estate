@@ -1,8 +1,49 @@
 #!/usr/bin/env bash
-# Pitchfork wrapper: defaults `pitchfork status` without arguments to `pitchfork list`
+# Pitchfork wrapper (estate-owned).
+#
+# 1. Defaults `pitchfork status` without arguments to `pitchfork list`.
+#
+# 2. GUARD (2026-10-02, daemon-death incident): refuses mutating commands that
+#    target the deprecated `sovereign/<name>` prefix when no such daemon is
+#    registered but `estate/<name>` IS. pitchfork's fuzzy name resolution
+#    silently maps `pitchfork stop sovereign/herd` onto the live
+#    `estate/herd` daemon and SIGTERMs it ("Daemon sovereign/herd not found
+#    in config or state" is logged, then the estate daemon dies anyway).
+#    Verified twice on 2026-10-02 (16:29 and 17:10): an actor sweeping
+#    `pitchfork stop sovereign/<name>` over a stale daemon list killed
+#    herd+gatehouse (plus awrawr-mcp, boundless, cuttinggate, model-guard,
+#    browser-keeper). Fail closed: refuse with the correct name.
+set -uo pipefail
 REAL_PITCHFORK="/home/toxic/.local/share/mise/installs/pitchfork/2.25.0/pitchfork"
-if [ "$1" = "status" ] && [ -z "${2:-}" ]; then
+
+if [ "${1:-}" = "status" ] && [ -z "${2:-}" ]; then
   exec "$REAL_PITCHFORK" list
-else
-  exec "$REAL_PITCHFORK" "$@"
 fi
+
+case "${1:-}" in
+  stop|restart|kill|clean|c|disable|d|enable|e|start|run|r)
+    _pf_ids=""
+    for _arg in "${@:2}"; do
+      case "$_arg" in
+        sovereign/*)
+          _short="${_arg#sovereign/}"
+          # Fetch the registered daemon id list once per invocation.
+          if [ -z "$_pf_ids" ]; then
+            _pf_ids="$("$REAL_PITCHFORK" list 2>/dev/null | awk '{print $1}')"
+          fi
+          if printf '%s\n' "$_pf_ids" | grep -qx "sovereign/${_short}"; then
+            : # genuinely registered under sovereign/ — pass through
+          elif printf '%s\n' "$_pf_ids" | grep -qx "estate/${_short}"; then
+            printf 'pitchfork: REFUSED: "%s" is not a registered daemon id.\n' "$_arg" >&2
+            printf 'pitchfork: the live daemon is "estate/%s" — sovereign/ is a deprecated prefix.\n' "$_short" >&2
+            printf 'pitchfork: re-run with the estate/ name, or "pitchfork list" to see registered ids.\n' >&2
+            exit 1
+          fi
+          # else: unknown entirely — pass through and let pitchfork report it
+          ;;
+      esac
+    done
+    ;;
+esac
+
+exec "$REAL_PITCHFORK" "$@"
