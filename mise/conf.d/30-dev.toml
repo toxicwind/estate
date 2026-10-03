@@ -56,3 +56,6 @@ run = "bun run test:best-models"
 # cell-files hot-reload explorer UI (bun --hot, WS/SSE hyper-race HMR)
 [tasks."up-cellfiles-ui"]
 run = "bun --hot /home/toxic/hatch/cell-files/cell-files/packages/cell-files/ui/server.ts"
+[tasks."sync-ui-ports"]
+description = "Regenerate ranch/range/ui/src/lib/ports.ts from config/ports.env"
+run = "bun scripts/sync-ui-ports.ts"
