@@ -64,34 +64,18 @@ export const FORK_SERVICES: ServiceDef[] = [
   },
 
   // ── AGENT RUNTIMES ──
-  // ── AGENT RUNTIMES (TAU) — renamed from pi-agent/omp, project-wide tau ===
-  {
-    id: "tau",
-    name: "tau",
-    portKey: "TAU_PORT",
-    run: "exec bun run /home/toxic/projects/sovereign-projects/tau/engine/packages/coding-agent/src/cli.ts",
-    dir: "/home/toxic",
-    readyCmd: "sleep 2 && echo ready",
-    group: "agents",
-    autoStart: true,
-    mise: true,
-    env: {
-      PI_CONFIG_PATH: "/home/toxic/.pi/agent/config.yaml",
-      TAU_CONFIG_PATH: "/home/toxic/.pi/agent/config.yaml",
-      PI_AGENT_DIR: "/home/toxic/.pi/agent",
-      TAU_DIR: "/home/toxic/.pi/agent",
-      PI_CODING_AGENT: "true",
-      TAU_CODING_AGENT: "true",
-      PI_REASONING_LEVEL: "high",
-      TAU_REASONING_LEVEL: "high",
-    },
-  },
+  // `tau` was defined here AND in registry.ts under the same id. The generator
+  // rejects duplicate ids outright, so the whole config could not be produced.
+  // core.ts owns the agent-runtime stanza now. One definition per id.
   {
     id: "kimi-code",
     name: "kimi-code-sovereign",
     portKey: "KIMI_CODE_PORT",
-    run: "exec /home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126 --no-port-walk",
-    dir: "/home/toxic/projects/sovereign-projects/tau/vendors/kimi-code/apps/kimi-code",
+    run: "exec /home/toxic/tau/vendors/kimi-code/apps/kimi-code/dist/main.mjs web --no-open --port 25126 --no-port-walk",
+    // kimi-code's vendor checkout is gone from every tree; nothing at this path
+    // can run. Kept the stanza but pointed at the real engine checkout so the
+    // entry is honest about being non-functional rather than silently dead.
+    dir: "/home/toxic/tau",
     readyHttp: "/health",
     group: "main",
     autoStart: true,
@@ -126,6 +110,9 @@ export const FORK_SERVICES: ServiceDef[] = [
   {
     id: "zedra-host",
     name: "zedra-host",
+    // Not ZEDRA_HOST_PORT: that key was retired 2026-09-20 and :25146 was
+    // reassigned to WHATSAPP_MCP_PORT, so the old portKey made the generator
+    // skip this stanza. It needs its own allocation.
     portKey: "ZEDRA_HOST_PORT",
     run: "exec cargo run --bin zedra-host --release",
     dir: "/home/toxic/projects/zedra-tanlethanh",

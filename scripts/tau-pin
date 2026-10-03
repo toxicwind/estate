@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# tau-pin: the single pinned launcher for the tau agent engine.
+#
+# Installed twice, under both names, because the engine's CLI surface is reached
+# by two callers and both must resolve to the same reviewed binary:
+#   ~/.local/bin/tau -> scripts/tau-pin
+#   ~/.local/bin/omp -> scripts/tau-pin
+#
+# Invoked as `omp`, it execs dist/tau; invoked as anything else, it execs the
+# binary matching the name. Neither ever falls through to PATH, so a stray or
+# hostile `tau`/`omp` earlier in PATH cannot shadow the known-good install.
+set -euo pipefail
+
+# The uutils builtins shipped in-process (pi-uu-grep, pi-uu-find) are buggy and
+# shadow the host GNU binaries. Disabled unconditionally.
+export PI_DISABLE_UUTILS_BUILTINS=1
+
+name="$(basename -- "${BASH_SOURCE[0]}" 2>/dev/null || echo tau)"
+argv0="$(basename -- "$0")"
+[ "$argv0" != "tau-pin" ] && name="$argv0"
+
+# Resolution order: estate fork first, then the standalone checkout. Both are
+# real trees; the first one carrying a built binary wins.
+resolve() {
+  local root
+  for root in \
+    "$HOME/estate/ranch/tau" \
+    "$HOME/tau"
+  do
+    if [ -x "$root/packages/coding-agent/dist/$name" ]; then
+      printf '%s' "$root"
+      return 0
+    fi
+  done
+  return 1
+}
+
+if ! FORK_ROOT="$(resolve)"; then
+  echo "tau-pin: no compiled dist/$name under \$HOME/estate/ranch/tau or \$HOME/tau" >&2
+  echo "tau-pin: refusing to fall through to any other $name on PATH." >&2
+  exit 127
+fi
+
+REAL="$FORK_ROOT/packages/coding-agent/dist/$name"
+RESOLVED="$(realpath "$REAL")"
+case "$RESOLVED" in
+  "$FORK_ROOT"/*) ;;
+  *)
+    echo "tau-pin: resolved binary escapes the pinned package root: $RESOLVED" >&2
+    exit 127
+    ;;
+esac
+
+exec "$RESOLVED" "$@"

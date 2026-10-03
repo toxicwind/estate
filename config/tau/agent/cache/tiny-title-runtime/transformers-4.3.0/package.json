@@ -1,0 +1,10 @@
+{
+	"private": true,
+	"type": "module",
+	"dependencies": {
+		"@huggingface/transformers": "4.3.0"
+	},
+	"trustedDependencies": [
+		"onnxruntime-node"
+	]
+}

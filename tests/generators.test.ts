@@ -3,7 +3,6 @@ import { join } from "node:path";
 import { parsePortsEnv } from "../src/utils/ports.ts";
 import { ALL_SERVICES } from "../src/services/index.ts";
 import { pitchforkGenerator } from "../src/generators/pitchfork.ts";
-import { miseGenerator } from "../src/generators/mise.ts";
 import type { TemplateContext } from "../src/types/index.ts";
 
 const ROOT = join(import.meta.dir, "..");
@@ -77,43 +76,9 @@ describe("pitchfork generator (dynamic, no hardcodes)", () => {
   });
 });
 
-describe("mise generator (dynamic, no hardcodes)", () => {
-  test("does not shadow file tasks up/down/health/status/logs", () => {
-    const out = miseGenerator.generate(ctx());
-    expect(out).not.toMatch(/^up\s*=/m);
-    expect(out).not.toMatch(/^down\s*=/m);
-    expect(out).not.toMatch(/^health\s*=/m);
-    expect(out).not.toMatch(/^status\s*=/m);
-    expect(out).not.toMatch(/^logs\s*=/m);
-  });
-
-  test("per-service tasks come from ALL_SERVICES, not a hardcoded list", () => {
-    const out = miseGenerator.generate(ctx());
-    for (const s of ALL_SERVICES) {
-      expect(out).toContain(`"up-${s.id}"`);
-      expect(out).toContain(`"down-${s.id}"`);
-      expect(out).toContain(`"restart-${s.id}"`);
-      expect(out).toContain(`"health-${s.id}"`);
-    }
-  });
-
-  test("does not emit zellij/ttyd/sshx/nuvio unless they are services", () => {
-    const ids = new Set(ALL_SERVICES.map((s) => s.id));
-    const out = miseGenerator.generate(ctx());
-    for (const ghost of ["zellij", "ttyd", "sshx", "wezterm", "nv-build"]) {
-      if (!ids.has(ghost) && ghost !== "nv-build") {
-        expect(out).not.toContain(`up-${ghost}`);
-      }
-    }
-    expect(out).not.toContain("nv-build");
-    expect(out).not.toContain("tools/nuvio-platform");
-  });
-
-  test("health-llama-swap curls ports.env path, not a guessed /health on wrong port", () => {
-    const c = ctx();
-    const out = miseGenerator.generate(c);
-    expect(out).toContain(
-      `"health-llama-swap" = "curl -sf http://127.0.0.1:${c.ports["LLAMA_SWAP_PORT"]}/health"`,
-    );
-  });
-});
+// The mise generator is retired along with scripts/generate.ts (2026-09-14):
+// generating mise.toml would overwrite the hand-edited root config and the
+// one-task-per-file mise/tasks/ tree. There is no generator left to test, so
+// these cases are gone rather than pinned to a contract nobody implements.
+// What still has to hold: pitchfork.toml and mise.toml are edited directly, and
+// every portKey a service declares must resolve in config/ports.env.

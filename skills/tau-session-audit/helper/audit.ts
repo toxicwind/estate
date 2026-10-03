@@ -33,6 +33,19 @@ function extractCwd(events: SessionEvent[]): string {
   return "";
 }
 
+function extractFirstPrompt(events: SessionEvent[]): string {
+  for (const e of events) {
+    if (e.type === "message" && e.message?.role === "user") {
+      const content = e.message.content;
+      if (Array.isArray(content)) {
+        return content.filter((c: any) => c.type === "text").map((c: any) => c.text).join(" ");
+      }
+      if (typeof content === "string") return content;
+    }
+  }
+  return "";
+}
+
 export function inferIntent(title: string, model: string, cwd: string): string {
   const t = title.toLowerCase();
   const m = model.toLowerCase();
