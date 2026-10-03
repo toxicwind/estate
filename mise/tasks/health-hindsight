@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run health-hindsight
-curl -sf --max-time 5 http://127.0.0.1:25117/health

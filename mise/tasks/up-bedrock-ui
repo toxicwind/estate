@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up-bedrock-ui
-pitchfork start -q bedrock-ui

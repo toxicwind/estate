@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-null-g-proxy
-pitchfork restart -q null-g-proxy

@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-market-watchdog
-pitchfork stop market-watchdog

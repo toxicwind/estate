@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run health-fleet-ui
-ss -ltn 'sport = :25136' | grep -q LISTEN

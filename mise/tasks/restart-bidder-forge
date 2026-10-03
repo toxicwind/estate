@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-bidder-forge
-pitchfork restart -q bidder-forge

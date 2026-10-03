@@ -115,11 +115,25 @@ injected with `_.file`, and the path must resolve regardless of CWD.
 runtime config SSOT (identity, stream tuning, model names). Secrets live in
 `.secrets` / `$HOME/.secrets`.
 
-> ⚠️ **Known conflicts.** `.env` sets `SCOUT_BASE_URL=…:25104/v1` while
-> `mise.toml` sets `:25100/v1`. `.env` §8 re-declares ports that `ports.env`
-> owns. `estate/.envrc` still exports `SOVEREIGN_HOME=/home/toxic/estate`.
-> `skills/git-mutator/types.ts` still points `SOVEREIGN_PORT_SSOT` at
-> `sovereign/config/ports.env`. All four need resolution during the mise rebuild.
+> **Resolved 2026-10-03.** All four were real; each is closed.
+> `SCOUT_BASE_URL`/`SCOUT_API_KEY`/`SCOUT_MODEL` were removed from the estate
+> config — zero consumers, and `/home/toxic/.tau/.env` defines all three with
+> different values (`:25193` + `sovereign/free`). Two contradictory copies of one
+> setting is worse than one, so the estate defers to the agent config that reads
+> them. `.env` §8 and `config/tau/.env` §8 no longer declare ports: each carried
+> six keys under names that disagreed with the SSOT, and `MCPPROXY_PORT` pointed
+> at `:25109`, which is `KEYPOOL_PORT`. `SOVEREIGN_HOME` in `.envrc` is now
+> `ESTATE_HOME` — it had no consumer outside `.envrc` itself, and that is the
+> fixed override name from Rule 2.2 which `skills/lib/estate.sh` already
+> resolves, so the two now compose instead of disagreeing.
+> `skills/git-mutator/types.ts` already pointed at
+> `/home/toxic/estate/config/ports.env`; that part of this note was stale.
+>
+> `config/ports.env` was itself gitignored — an unanchored `*.env` from the
+> dotenv template layer swallowed it at every depth — which made the port SSOT
+> unreproducible from a clone. It is tracked now: 97 assignments, all numeric;
+> every daemon port is covered. Two assignments carry trailing owner comments,
+> but their values remain numeric ports.
 
 **Rule 5.3 — direnv is a bridge, not a source of truth.** `.envrc` activates mise
 and loads `$HOME/.secrets`. It never carries config of its own.

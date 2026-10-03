@@ -3,6 +3,12 @@
 # without a Cargo.toml (a deleted crate whose dir survives `git reset --hard`
 # because an ignored file stayed behind) is a hard error that fails the whole
 # workspace, not a skipped entry.
+exclude = [
+   # Upstream projects under vendored/ own their Cargo workspaces. Without this,
+   # Cargo walks upward from vendored/<project>/Cargo.toml, captures it here,
+   # and then fails on estate-only members before the upstream build starts.
+   "vendored/mr-boxington-cache",
+]
 members = [
    "crates/pi-ast",
    "crates/pi-builtins",

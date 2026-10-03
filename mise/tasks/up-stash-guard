@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up-stash-guard
-pitchfork start -q stash-guard

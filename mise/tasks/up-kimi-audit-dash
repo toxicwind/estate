@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up-kimi-audit-dash
-pitchfork start -q kimi-audit-dash

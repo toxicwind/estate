@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-task-launch
-pitchfork stop task-launch

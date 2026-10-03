@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-browser-keeper
-pitchfork restart -q browser-keeper

@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-cuttinggate
-pitchfork restart -q cuttinggate

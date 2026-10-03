@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run health-codebase-memory
-ss -ltn 'sport = :25195' | grep -q LISTEN

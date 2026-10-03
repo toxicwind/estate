@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-sovereign-chat
-pitchfork stop sovereign-chat

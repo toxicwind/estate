@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up-vansrouter
-pitchfork start -q vansrouter

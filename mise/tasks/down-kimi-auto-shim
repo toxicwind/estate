@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-kimi-auto-shim
-pitchfork stop kimi-auto-shim

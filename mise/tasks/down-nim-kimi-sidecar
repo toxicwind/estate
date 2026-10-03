@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-nim-kimi-sidecar
-pitchfork stop nim-kimi-sidecar

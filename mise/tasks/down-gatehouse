@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-gatehouse
-pitchfork stop gatehouse

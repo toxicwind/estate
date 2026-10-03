@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up-oracle-core
-pitchfork start -q oracle-core

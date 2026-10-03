@@ -12,8 +12,8 @@
 #   mise/tasks/<name>  one executable file per task
 #   config/ports.env   the numeric port SSOT, injected from [env] below
 #
-# Do not add a large [tasks] table here. Per-daemon tasks are files, generated
-# from pitchfork's live daemon list by `mise run sync-stack-tasks`.
+# Keep mise tasks as hand-authored project workflows. Pitchfork owns daemon
+# lifecycle directly; do not mirror its start/stop/restart/health subcommands.
 # ============================================================================
 
 [env]

@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-fleet-ui
-pitchfork restart -q fleet-ui

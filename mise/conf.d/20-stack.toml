@@ -16,12 +16,6 @@ run = "pitchfork logs --raw --follow"
 [tasks."logs-json"]
 run = "pitchfork logs --json -n 100"
 
-# Per-daemon lifecycle is one task per daemon under mise/tasks/, generated from
-# pitchfork's live daemon list. Regenerate with: mise run sync-stack-tasks
-[tasks."sync-stack-tasks"]
-description = "Regenerate per-daemon tasks in mise/tasks/ from pitchfork's daemon list"
-run = "bun scripts/sync-stack-tasks.ts"
-
 # Health sweep. Reports services whose SSOT port has no pitchfork coverage
 # without counting them as failures — a clean exit 0 has to stay reachable.
 [tasks.svc-check]

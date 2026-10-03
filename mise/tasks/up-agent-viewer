@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up-agent-viewer
-pitchfork start -q agent-viewer

@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up-files
-pitchfork start -q files

@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up-matter-server
-pitchfork start -q matter-server

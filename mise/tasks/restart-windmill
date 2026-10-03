@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-windmill
-pitchfork restart -q windmill

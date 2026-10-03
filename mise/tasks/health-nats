@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run health-nats
-ss -ltn 'sport = :4222' | grep -q LISTEN

@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run health-nginx
-ss -ltn 'sport = :25208' | grep -q LISTEN

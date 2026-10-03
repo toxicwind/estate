@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run health-task-launch
-pgrep -f '[t]ask-launch/src/daemon.ts' >/dev/null

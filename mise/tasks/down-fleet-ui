@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-fleet-ui
-pitchfork stop fleet-ui

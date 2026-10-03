@@ -18,33 +18,23 @@ the convention is now. Every rule below was paid for with a real outage.
 
 ## 1. Environment
 
-`estate/.env` is the single app env. It is loaded by mise with an **absolute**
-path, so it resolves regardless of CWD:
+`config/ports.env` is the only file mise injects at estate scope:
 
 ```toml
 [env]
-_.file = { path = "/home/toxic/estate/config/ports.env" }
-_.file = { path = "/home/toxic/estate/.env" }
+_.file = "config/ports.env"
 ```
 
-`SCOUT_*` is declared **once**, in `.env`, and nowhere else. The old
-`[env] SCOUT_*` block in `mise.toml` was a second declaration with different
-values; one of them was always wrong.
+The path resolves relative to `mise.toml`, so it is independent of the calling
+CWD. App configuration remains `estate/.env`; it is not injected wholesale into
+every task. Secrets remain `/home/toxic/.secrets` and are never copied into a
+mise fragment.
 
-### 1.1 The three dead scout references
-
-Chris: *"tau consumes scout"* — so a dead `SCOUT_MODEL` breaks subagents, it is
-not a comment. Measured 2026-10-02:
-
-| Value | Where it was declared | Why it was dead |
-|---|---|---|
-| `sovereign/free` | `estate/.env` | `sovereign` was sovereign-router's provider; the daemon and repo are deleted |
-| `local-fast` | `estate/mise.toml` | the alias exists only in `config/llama-swap/config.yaml`, **which nothing reads** |
-| `nvidia/nemotron-3.5-lightning-30b-a3b` | `config/llama-swap/config.yaml` | a **cloud** NIM model with `cmd: llama-server --model /mnt/8TB/…`; `/mnt/8TB` is a media drive (`$RECYCLE.BIN`, `.rar`, `.mp4`), not a model store |
-
-`GET :25100/v1/models/local-fast` → **404**, confirmed against the live gateway.
-
-The pin is now `fast`, an alias herd actually defines, verified to return 200.
+`SCOUT_*` is declared **once**, in `/home/toxic/.tau/.env`, the configuration
+Tau actually loads. Estate's old `SCOUT_*` mise block and `.env` declarations
+were removed because they disagreed (`:25100` / `local-fast` versus `:25193` /
+`sovereign/free`). No estate source reads those values. The absence is
+intentional: a second declaration is drift, not fallback.
 
 ## 2. Tools
 

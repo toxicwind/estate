@@ -418,63 +418,33 @@ runtime_paths freely; those paths are EXEMPT from drift detection by constructio
   2026-09-20: ~/.openfang/openfang.db was 0 bytes -- the exact silent-data-loss
   case this catches.
 
-## 7. Build server = flicker (2026-10-01; was brand)
+## 7. Build cache = mbx-cache (2026-10-03)
 
-flicker IS the fleet build daemon -- a literal build server on yote, not a
-concept. Canonical source: `projects/range/ranch/flicker/` in toxicwind/ranch.
-Service: :25148 (pitchfork daemons: flicker, flicker-agent), binary
-`ranch/flicker/bin/flicker-server` (Woodpecker-based: gRPC on :25240,
-`FLICKER_ROOT=/home/toxic/flicker`). API: `POST /api/jobs`; content-hash
-caching (identical specs short-circuit as CACHED). Verified live 2026-10-01:
-`GET /` serves the flicker landing page ("The ranch build daemon").
+`mbx-cache` is the local remote cache for mise task artifacts and mr-boxington
+builds. It replaces the brand/flicker arbitrary-command queue.
 
-History: brand was the build server from 2026-09-21 (canonical source
-branding/ in toxicwind/ranch, moved 2026-09-30 from tools/buildsrv in this
-repo; pitchfork daemons brand + brand-watchdog on :25148). Replaced by
-flicker 2026-09-30 (sparrow: "flicker and flicker-agent verified live on
-:25148 and migrated with ranch/flicker"). No brand daemon in `pitchfork list`
-2026-10-01; `/home/toxic/brand` absent. The remaining §7 notes below (cache
-env, workers=2, observability) describe the build-daemon role as built for
-brand — re-verify each path against the flicker fragment before relying on it.
+| Fact | Owner |
+|---|---|
+| service | `[daemons.mbx-cache]`, loopback `:25148` |
+| port | `config/ports.env` `MBX_CACHE_PORT` |
+| launcher | `ops/mbx-cache/run.sh` |
+| source | `vendored/mr-boxington-cache`, upstream v0.1.1 |
+| data | `var/runtime/mbx-cache` |
+| client config | `mise/conf.d/15-remote-cache.toml` |
 
-Lifecycle: queue JSON -> active JSON -> results JSON under
-/home/toxic/brand/. Successful identical specs short-circuit as CACHED,
-keyed by content hash. Forward-only: brand never checks out, stashes, or
-reverts repos. Jobs run via bash -lc and inherit the daemon environment.
+The binary is built directly with `mise exec -- cargo build --release`; no
+Docker, Podman, worker, queue, or copied credential exists in this path. The
+server stores immutable content-addressed outputs. A project runs its own build
+through `mise run <task>` or its `scripts/mise-build.sh` wrapper.
 
-Access:
-- Yote CLI: /home/toxic/bin/brand (submit/status/logs/list/health)
-- Hatch proxy: hatch/bin/brand proxies safely through yote-conn exec
-  (shlex.join quoting, never raw concatenation)
-- MCP (awrawr-mcp :25198): brand_submit, brand_status, brand_logs,
-  brand_list, brand_health (argv lists only, job IDs validated,
-  submit returns immediately after queueing)
+Verification is behavioral: a task with declared `sources` and `outputs` first
+reports a cache miss, then — after its output is removed — reports `restored
+outputs from cache <digest>`. The probe passed on 2026-10-03.
 
-Cache environment (pitchfork.toml daemons.brand env):
-- RUSTC_WRAPPER=sccache, SCCACHE_DIR=/home/toxic/.cache/sccache (10 GiB)
-- CCACHE_DIR=/home/toxic/.cache/ccache (10 GiB)
-- CMAKE_C_COMPILER_LAUNCHER=ccache, CMAKE_CXX_COMPILER_LAUNCHER=ccache
-- UV_CACHE_DIR=/home/toxic/.cache/uv (NVMe)
-- CARGO_INCREMENTAL=0 -- REQUIRED: sccache refuses incremental compilation
-- Canonical home configs: projects/yote/host/home/.cargo/config.toml and
-  home/.config/ccache/ccache.conf (installed by apply.sh)
+The old brand/flicker binaries, queue JSON, HTTP job API, agent, and build
+entrypoints are retired. Do not reintroduce a queue shim; cache and execution
+are separate responsibilities.
 
-Caveats:
-- CC/CXX NOT set in daemon env: BASH_ENV rewrites them to clang for bash -lc
-  jobs. CMAKE compiler launchers are the robust ccache path.
-- Bun cache at /home/toxic/.bun/install/cache (4.4G, verified 2026-09-21).
-- Binary-only Rust crates are non-cacheable by sccache (crate-type rule).
-
-Why workers = 2: yote has 16 logical CPUs / 62 GB RAM / NVMe, but two Cargo
-builds already oversubscribe it. Keep BRAND_WORKERS=2.
-
-Observability: sovereign-exporter (:25213) exposes sovereign_brand_up,
-sovereign_brand_queue_depth, sovereign_brand_active_jobs; Grafana
-workflows.json has a brand row.
-
-New-toolchain rule: persistent config in projects/yote/host/home/, daemon
-env in pitchfork.toml, then a REAL brand compile with nonzero cache-hit
-proof. Proven 2026-09-21: 2 hits, 50 percent hit rate on a real job.
 ## 8. Gate retire + README maximalization + AST-BM25 racer (2026-09-29, Forge)
 
 ### /agent-browser tailnet-only (gate retired) — LIVE on main as 3ff44863d2

@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-sovereign-stream-broker
-pitchfork stop sovereign-stream-broker

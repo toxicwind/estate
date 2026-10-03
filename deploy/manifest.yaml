@@ -73,21 +73,13 @@ binaries:
     daemon: openfang
     note: blessed 2026-09-29 (furnace) — binary verified good (sha matches manifest, v0.6.9 runs); immutable copy enables warden auto-restore
 
-  flicker:
-    path: /home/toxic/estate/var/reconciliation/flicker/bin/flicker-server
-    sha256: 4430f1e71b84dfe6c5bb4e7aeafcc8484e2bf39c6f4cb653b2dd150009eede06
-    source: toxicwind/ranch
-    daemon: flicker
+  mbx-cache:
+    path: /home/toxic/estate/vendored/mr-boxington-cache/target/release/mise-cache
+    sha256: 9ec23c39697f7d49e2d235bd96f31e3f082e7a77ae7133c4e71797d92f3ada2b
+    source: github.com/jdx/mr-boxington-cache v0.1.1 (991a586421d1ace4165a3c53b8ef98d08934fce5)
+    daemon: mbx-cache
     port: 25148
-    immutable_copy: /home/toxic/flicker/immutable/flicker-server.20260930-080700
-    note: blessed 2026-09-30 (peregrine) — running binary sha == disk sha, :25148 healthy, POST /api/jobs 200; 2026-10-02 (warden): declared path moved ranch->var/reconciliation after estate migration, sha256 re-verified identical at new path
-  flicker-agent:
-    path: /home/toxic/estate/var/reconciliation/flicker/bin/flicker-agent
-    sha256: 7fd694a1bd161e7167547060c0cda1be8cb008ab0ba1cbfae6d0f0c17b0ca176
-    source: toxicwind/ranch
-    daemon: flicker-agent
-    immutable_copy: /home/toxic/flicker/immutable/flicker-agent.20260930-080700
-    note: blessed 2026-09-30 (peregrine) — running binary sha == disk sha; 2026-10-02 (warden): declared path moved ranch->var/reconciliation after estate migration, sha256 re-verified identical at new path
+    note: direct Rust binary, built through mise; filesystem CAS under var/runtime/mbx-cache; loopback-only.
 declared_configs:
   - config/herd.yaml
   - pitchfork.toml

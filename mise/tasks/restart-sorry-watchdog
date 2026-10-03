@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-sorry-watchdog
-pitchfork restart -q sorry-watchdog

@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-kimi-code
-pitchfork restart -q kimi-code

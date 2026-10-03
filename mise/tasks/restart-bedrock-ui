@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-bedrock-ui
-pitchfork restart -q bedrock-ui

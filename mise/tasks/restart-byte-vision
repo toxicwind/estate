@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-byte-vision
-pitchfork restart -q byte-vision

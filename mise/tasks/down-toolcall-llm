@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-toolcall-llm
-pitchfork stop toolcall-llm
