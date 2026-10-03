@@ -1,0 +1,21 @@
+{
+  "description": "squawk-ws: first-class websocket push feed for Squawk (TS/Bun port of ranch/squawk-ws/squawk_ws_server.py)",
+  "main": "src/index.ts",
+  "name": "@sovereign/squawk-ws",
+  "private": true,
+  "scripts": {
+    "build": "bun build src/index.ts --outfile dist/squawk-ws",
+    "dev": "bun --watch src/index.ts",
+    "lint": "tsc --noEmit -p tsconfig.json",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "sovereign": {
+    "daemon": "squawk-ws",
+    "description": "Fleet chat websocket push feed (:25147). TS/Bun port of the Python squawk_ws_server.py.",
+    "port": 25147,
+    "portEnv": "SQUAWK_WS_PORT"
+  },
+  "type": "module",
+  "version": "0.1.0"
+}

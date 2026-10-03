@@ -6,9 +6,10 @@
  *
  * Two rules are inherited deliberately and must not be "simplified":
  *
- *   1. EXA COSTS CREDITS and is called only when the caller passes
- *      `exaOk: true`. There is no automatic fallback to a paid provider —
- *      credits are never spent without an explicit human opt-in.
+ *   1. EXA COSTS CREDITS and is audited, not gated: the orchestrator resolves
+ *      the key (explicit flag -> EXA_API_KEY env -> $HOME/.secrets) and runs
+ *      the leg when one resolves. Every paid call is logged with its costUsd.
+ *      Crippling a good source to avoid an observable bill is the wrong trade.
  *   2. Every leg is free and keyless except GitHub, so one dead source is
  *      never fatal. `safeCall` is what makes that true; the orchestrator in
  *      borrow.ts races all of them at once.
@@ -105,13 +106,48 @@ async function fetchJson(url: string, init: RequestInit & { timeoutMs?: number }
 }
 
 /**
+ * Resolve the GitHub token. Order: the environment, then `$HOME/.secrets`
+ * (secretsmith vault). GitHub's code-search endpoint requires authentication;
+ * without a token the call 401s, so callers skip the leg instead of trying.
+ */
+export function resolveGithubToken(): { key: string; from: string } {
+  const fromEnv = process.env.GITHUB_TOKEN;
+  if (fromEnv?.trim()) return { key: fromEnv.trim(), from: "environment" };
+  try {
+    const vault = readFileSync(join(homedir(), ".secrets"), "utf8");
+    const hit = vault.match(/^\s*(?:export\s+)?GITHUB_TOKEN\s*=\s*["']?([^"'\n#]+)["']?/m);
+    if (hit?.[1]?.trim()) return { key: hit[1].trim(), from: "$HOME/.secrets (secretsmith vault)" };
+  } catch {
+    /* no vault */
+  }
+  return { key: "", from: "not found" };
+}
+
+/**
  * GitHub code search. No `sort` param on purpose: GitHub then returns
  * best-match relevance order, not star order.
+ *
+ * Authentication is mandatory for this endpoint — unauthenticated calls get
+ * HTTP 401. The token resolves from the environment or the secretsmith
+ * vault; when none resolves the leg reports a clear error instead of
+ * attempting the call, and the borrow orchestrator skips it outright.
  */
 export async function githubCodeSearch(query: string, perPage = 5): Promise<SourceResult> {
+  const token = resolveGithubToken();
+  if (!token.key) {
+    return {
+      ok: false, items: [], cost: "free",
+      error: "no GITHUB_TOKEN (checked environment and $HOME/.secrets); GitHub code search requires authentication",
+    };
+  }
   const url = `https://api.github.com/search/code?${new URLSearchParams({ q: query, per_page: String(perPage) })}`;
   const { data, ms } = await fetchJson(url, {
-    headers: { Accept: "application/vnd.github+json", "User-Agent": USER_AGENT, "X-GitHub-Api-Version": "2022-11-28" },
+    headers: {
+      Accept: "application/vnd.github+json",
+      "User-Agent": USER_AGENT,
+      "X-GitHub-Api-Version": "2022-11-28",
+      Authorization: `Bearer ${token.key}`,
+    },
     timeoutMs: 25_000,
   });
   const body = data as { total_count?: number; items?: Record<string, unknown>[] };
@@ -345,9 +381,9 @@ export async function hfPapersSearch(query: string, maxResults: number): Promise
 /**
  * Exa. COSTS CREDITS.
  *
- * There is no fallback path to this function: the orchestrator refuses to
- * construct it unless the caller passed `exaOk`. Usage is logged locally
- * because Exa exposes no usage endpoint.
+ * The orchestrator constructs this leg only when a key resolved (explicit
+ * flag, environment, or the secretsmith vault) and the caller did not skip
+ * it. Usage is logged locally because Exa exposes no usage endpoint.
  */
 export async function exaSearch(query: string, numResults: number, apiKey: string): Promise<SourceResult> {
   const t0 = performance.now();

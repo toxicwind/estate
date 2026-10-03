@@ -1,9 +1,12 @@
 /**
- * Path resolution — no hardcoded /home/toxic anywhere in this skill.
+ * Path resolution — no hardcoded host paths anywhere in this skill.
  *
- * Order: env override → discovery from this file's own location → $HOME default.
- * Every returned path is realpath()d, so a compat symlink
- * (/home/toxic/ranch → estate/ranch) never leaks into a report.
+ * Estate order: $ESTATE env override → discovery from this file's own
+ * location (a config/ports.env marker two levels above the skill dir) →
+ * the first *existing* candidate of the well-known estate locations →
+ * $HOME/estate as the last-resort fallback. Candidates are probed with
+ * existsSync, never assumed: on a host with no estate checkout the
+ * resolver reports the miss instead of blessing a stale directory.
  *
  * Mirrors the Python resolver at $SKILLS_HOME/lib/estate_paths.py and the bash
  * one at $SKILLS_HOME/lib/estate.sh. Three resolvers, one order, so a report
@@ -18,10 +21,37 @@ export const HOME = process.env.HOME ?? "/home/toxic";
 /** estate/skills/pattern-forge/src/paths.ts → estate/skills/pattern-forge */
 export const SKILL_DIR = dirname(dirname(new URL(import.meta.url).pathname));
 
+/** Well-known estate locations, probed in order. Probed, never assumed. */
+export function estateCandidates(): string[] {
+  return ["/home/toxic/estate", join(HOME, "estate")];
+}
+
+/** First existing candidate wins; the fallback is returned when none exist. */
+export function pickFirstExisting(candidates: readonly string[], fallback: string): string {
+  for (const c of candidates) {
+    try {
+      if (existsSync(c)) return c;
+    } catch {
+      /* probe next */
+    }
+  }
+  return fallback;
+}
+
 function discoverEstate(): string {
   const fromSkill = resolve(SKILL_DIR, "..", "..");
   if (existsSync(join(fromSkill, "config", "ports.env"))) return fromSkill;
-  return join(HOME, "estate");
+  return pickFirstExisting(estateCandidates(), join(HOME, "estate"));
+}
+
+/** The probe chain, for `forge paths` / doctor reporting: every candidate,
+// whether it exists, and which one the resolver selected. */
+export function probeEstate(): { candidate: string; exists: boolean; selected: boolean }[] {
+  return estateCandidates().map((candidate) => ({
+    candidate,
+    exists: existsSync(candidate),
+    selected: resolve(candidate) === ESTATE_ROOT,
+  }));
 }
 
 const ESTATE_ROOT = resolve(process.env.ESTATE ?? discoverEstate());

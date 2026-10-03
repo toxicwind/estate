@@ -263,9 +263,13 @@ function cmdPaths(_args: Args): number {
     ["PORTS_ENV", P.PORTS_ENV], ["KNOWLEDGEBASE", P.KNOWLEDGEBASE],
   ];
   const width = Math.max(...rows.map(([k]) => k.length));
-  const lines = ["=== resolved paths (env override -> discovery -> $HOME default) ==="];
+  const lines = ["=== resolved paths (env override -> skill-marker discovery -> candidate probe -> $HOME default) ==="];
   for (const [key, value] of rows) {
     lines.push(`${key.padEnd(width)}  ${value}  ${existsSync(value) ? "" : "(MISSING)"}`);
+  }
+  lines.push("--- estate candidate probe ---");
+  for (const r of P.probeEstate()) {
+    lines.push(`  ${r.candidate}  ${r.exists ? "exists" : "missing"}${r.selected ? "  [selected]" : ""}`);
   }
   process.stdout.write(`${lines.join("\n")}\n`);
   return rows.every(([, v]) => existsSync(v)) ? 0 : 1;
@@ -293,7 +297,11 @@ async function cmdDoctor(args: Args): Promise<number> {
   const searched = await mcts.search(async () => [{ actionId: "a", patch: "p" }], async () => 1);
   checks.push({ name: "mcts", ok: searched.bestPatch === "p", detail: `${searched.iterations} iters best=${searched.bestStateId}` });
 
-  checks.push({ name: "paths", ok: existsSync(P.ESTATE), detail: `ESTATE=${P.ESTATE}` });
+  checks.push({
+    name: "paths",
+    ok: existsSync(P.ESTATE),
+    detail: `ESTATE=${P.ESTATE} (probed: ${P.probeEstate().map((r) => `${r.candidate}=${r.exists ? "exists" : "missing"}${r.selected ? " [selected]" : ""}`).join(", ")})`,
+  });
 
   const sgBin = resolveAstGrep();
   checks.push({ name: "audit (ast-grep)", ok: sgBin !== null, detail: sgBin ?? "ast-grep missing from PATH (set AST_GREP_BIN)" });
