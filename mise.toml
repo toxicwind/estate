@@ -1,17 +1,22 @@
 # ============================================================================
-# ESTATE MISE CONFIG — hand-edited source of truth.
-# NOTE: scripts/generate.ts was RETIRED 2026-09-14 (do not run: it overwrites
-# pitchfork.toml and destroys native additions). Edit this file directly.
+# ESTATE MISE CONFIG — hand-edited root. NOT generated.
 #
-# Tasks are one-per-file under mise/tasks/ — run `mise tasks ls`.
+# The retired scripts/generate.ts used to overwrite this file wholesale and
+# destroy native additions (coyote env, tau path fix, dnsmasq, hand-tuned
+# readiness, every explanatory comment). It has been gone since 2026-09-14;
+# its sources under src/generators/ are deleted rather than left as a trap.
+#
+# What lives where:
+#   mise.toml          this file — the only config mise reads from the root
+#   mise/conf.d/*.toml fragments, loaded alphabetically (mise's own convention)
+#   mise/tasks/<name>  one executable file per task
+#   config/ports.env   the numeric port SSOT, injected from [env] below
+#
+# Do not add a large [tasks] table here. Per-daemon tasks are files, generated
+# from pitchfork's live daemon list by `mise run sync-stack-tasks`.
 # ============================================================================
 
-[tools]
-python = "3.12.13"
-node = "22.12.0"
-bun = "1.4.2"
-rust = "nightly"
-go = "1.23.1"
-pitchfork = "2.25.0"
 [env]
+# Ports are injected estate-wide. See mise/conf.d/10-env.toml for why nothing
+# else declares a *_PORT.
 _.file = "config/ports.env"

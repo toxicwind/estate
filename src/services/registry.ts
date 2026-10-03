@@ -133,11 +133,12 @@ export const ALL_SERVICES: ServiceDef[] = [
     healthPath: "/api/health",
   },
   {
-    id: "rust-web",
-    name: "rust-web",
+    id: "fleet-feed",
+    name: "fleet-feed",
     portKey: "RUST_WEB_BACKEND_PORT",
-    run: "exec ./stack/services/rust-web.sh",
-    dir: ".",
+    // See src/services/peripheral.ts — same service, one definition.
+    run: "exec bun /home/toxic/estate/ranch/squawk/fleet-feed.ts",
+    dir: "/home/toxic/estate/ranch/squawk",
     readyHttp: "/health",
     group: "core",
     autoStart: true,

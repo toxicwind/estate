@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run down-bench-radar
+pitchfork stop bench-radar

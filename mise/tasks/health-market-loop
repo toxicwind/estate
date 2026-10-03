@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run health-market-loop
+pgrep -f '[m]arket-loop.ts' >/dev/null

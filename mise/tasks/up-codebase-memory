@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run up-codebase-memory
+pitchfork start -q codebase-memory

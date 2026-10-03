@@ -521,15 +521,18 @@ auto = ["start"]
 # Owned by the sovereign project; the parent only composes it.
 
 
-[daemons.rust-web]
+[daemons.fleet-feed]
+# Was [daemons.rust-web]. rust_algo_web/src/agents.rs, ported to TypeScript at
+# ranch/squawk/fleet-feed.ts (2026-10-02). The Rust tree had no Cargo.toml left
+# in the repo, so stack/services/rust-web.sh could only fail. Same port: the
+# master UI's surfaces registry frames this one at :25201.
 port = 25201
-run = "exec ./stack/services/rust-web.sh"
-dir = "."
-mise = true
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/squawk/fleet-feed.ts"
+dir = "/home/toxic/estate/ranch/squawk"
+mise = false
 retry = true
 ready_http = "http://127.0.0.1:25201/health"
 health_http = { url = "http://127.0.0.1:25201/health", interval = "30s", timeout = "5s", retries = 3 }
-depends = ["gatehouse"]
 auto = ["start"]
 
 # sovereign — project-owned daemon manifest. Source of truth for 'search-api'.

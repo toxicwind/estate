@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-oracle-market
+pitchfork restart -q oracle-market

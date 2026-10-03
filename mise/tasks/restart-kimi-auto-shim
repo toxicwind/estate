@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-kimi-auto-shim
+pitchfork restart -q kimi-auto-shim

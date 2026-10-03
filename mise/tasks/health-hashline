@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run health-hashline
+ss -lx | grep -q /home/toxic/.hashline/hashline.sock

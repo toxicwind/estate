@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run up-estate-reconcile-watch
+pitchfork start -q estate-reconcile-watch

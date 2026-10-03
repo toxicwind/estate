@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-# mise run nv-dev
-cd "/home/toxic/estate/ranch/android-fleet/nuvio/nuvio-platform"
-npm run dev

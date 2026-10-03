@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run up-fleet-ui
+pitchfork start -q fleet-ui

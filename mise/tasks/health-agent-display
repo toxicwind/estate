@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run health-agent-display
+ss -tln | grep -q 127.0.0.1:5900

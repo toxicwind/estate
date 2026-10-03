@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run test-models
-bun run test:best-models

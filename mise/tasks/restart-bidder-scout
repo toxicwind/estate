@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-bidder-scout
+pitchfork restart -q bidder-scout

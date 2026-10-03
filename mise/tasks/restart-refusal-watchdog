@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-refusal-watchdog
+pitchfork restart -q refusal-watchdog

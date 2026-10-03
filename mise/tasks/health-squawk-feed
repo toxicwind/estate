@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run health-squawk-feed
-python3 -c "import socket;socket.create_connection(('127.0.0.1',25135),5).close()"

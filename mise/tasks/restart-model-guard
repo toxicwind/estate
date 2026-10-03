@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-model-guard
+pitchfork restart -q model-guard

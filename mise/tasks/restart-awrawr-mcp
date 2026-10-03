@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-awrawr-mcp
+pitchfork restart -q awrawr-mcp

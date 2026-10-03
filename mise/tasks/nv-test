@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-# mise run nv-test
-cd "/home/toxic/estate/ranch/android-fleet/nuvio/nuvio-platform"
-npm run test:coverage

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run up-browser-keeper
+pitchfork start -q browser-keeper

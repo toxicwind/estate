@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-gatehouse
+pitchfork restart -q gatehouse

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-task-launch
+pitchfork restart -q task-launch

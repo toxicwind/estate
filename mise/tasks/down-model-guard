@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run down-model-guard
+pitchfork stop model-guard

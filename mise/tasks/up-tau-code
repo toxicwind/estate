@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up-tau-code
-pitchfork start -q tau-code

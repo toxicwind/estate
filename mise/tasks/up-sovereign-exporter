@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run up-sovereign-exporter
+pitchfork start -q sovereign-exporter

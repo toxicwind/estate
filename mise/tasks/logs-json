@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run logs-json
-pitchfork logs --json -n 100

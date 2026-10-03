@@ -1,0 +1,11 @@
+# Environment for every task in this repo.
+#
+# Port numbers live in config/ports.env (the numeric SSOT), injected from
+# mise.toml's [env] _.file. Never redeclare a *_PORT here -- that is how
+# .env and config/tau/.env ended up contradicting the SSOT.
+#
+# SCOUT_* is deliberately absent: /home/toxic/.tau/.env owns those and sets
+# different values (:25193 + sovereign/free). Two contradictory copies of one
+# setting is worse than one, so the estate defers to the agent config that
+# actually reads them.
+[env]

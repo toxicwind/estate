@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run health-awrawr-mcp
+ss -ltn 'sport = :25198' | grep -q LISTEN

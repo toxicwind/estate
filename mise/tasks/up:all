@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up:all
-pitchfork start -q --group all

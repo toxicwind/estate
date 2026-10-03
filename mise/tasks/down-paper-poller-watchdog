@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run down-paper-poller-watchdog
+pitchfork stop paper-poller-watchdog

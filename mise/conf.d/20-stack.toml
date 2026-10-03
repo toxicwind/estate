@@ -1,0 +1,33 @@
+# Stack orchestration — pitchfork owns every daemon's lifecycle (durability
+# rule 1). Tasks never start a process themselves, and never kill+start in one
+# command; that is bin/pitchfork-restart's job.
+[tasks."up:all"]
+run = "pitchfork start -q --group all"
+
+[tasks.restart]
+run = "pitchfork restart -q --group core"
+
+[tasks.logs]
+run = "pitchfork logs --raw -n 100"
+
+[tasks."logs-tail"]
+run = "pitchfork logs --raw --follow"
+
+[tasks."logs-json"]
+run = "pitchfork logs --json -n 100"
+
+# Per-daemon lifecycle is one task per daemon under mise/tasks/, generated from
+# pitchfork's live daemon list. Regenerate with: mise run sync-stack-tasks
+[tasks."sync-stack-tasks"]
+description = "Regenerate per-daemon tasks in mise/tasks/ from pitchfork's daemon list"
+run = "bun scripts/sync-stack-tasks.ts"
+
+# Health sweep. Reports services whose SSOT port has no pitchfork coverage
+# without counting them as failures — a clean exit 0 has to stay reachable.
+[tasks.svc-check]
+description = "Probe every service and report uncovered/degraded ports"
+run = "bash mise/tasks/svc-check"
+
+[tasks."health-notify"]
+description = "Run svc-check, post to ntfy only if it reports a failure"
+run = "mise run svc-check || curl -s -X POST -d Stack_degraded https://ntfy.sh/estate-alerts"

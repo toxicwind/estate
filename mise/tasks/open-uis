@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run open-uis
-bun run scripts/open-web-uis.ts
