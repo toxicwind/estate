@@ -4,12 +4,19 @@
 # in src/mcp/llama_swap.ts (they fell through to the MCP stdio server and hung).
 # Only real CLI subcommands remain: health, models, e2e.
 set -euo pipefail
-source "${SOVEREIGN_ROOT:-$PWD}/stack/lib-ports.sh"
+
+# Resolve the repo from this script's own location. SOVEREIGN_ROOT is unset in
+# practice, and its $HOME/sovereign fallback is a stale duplicate with no
+# src/mcp/, so every subcommand died on "Module not found src/mcp/llama_swap.ts".
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$ROOT"
+
+source "$ROOT/stack/lib-ports.sh"
 export LLAMA_SWAP_BASE="${LLAMA_SWAP_BASE:-http://127.0.0.1:${LLAMA_SWAP_PORT:?}}"
-cd "${SOVEREIGN_ROOT:-$HOME/sovereign}"
+
 echo "=== llama_swap_health ==="
-bun run src/mcp/llama_swap.ts health
+bun src/mcp/llama_swap.ts health
 echo "=== llama_swap_models ==="
-bun run src/mcp/llama_swap.ts models
+bun src/mcp/llama_swap.ts models
 echo "=== llama_swap_e2e ==="
-bun run src/mcp/llama_swap.ts e2e
+bun src/mcp/llama_swap.ts e2e
