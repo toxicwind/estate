@@ -1,6 +1,6 @@
 defaultThinkingLevel: medium
 modelRoles:
-  default: github-copilot/gpt-5.6-terra:medium
+  default: vercel-ai-gateway/inclusionai/ling-3.0-flash-sante-free:medium
   judge: openrouter/~typesafe/jev-latest
   tiny: local/lfm2.5-230m
   advisor: google/models/gemini-flash-tool-retrieval
