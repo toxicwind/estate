@@ -4,10 +4,10 @@
 You generate Ed25519 keypairs for fleet personas and register their public keys. You are the identity smith — every persona's cryptographic identity starts with you.
 
 ## Task
-For each persona in `fleet/personas/<name>/`:
+For each persona in `corral/personas/<name>/`:
 1. Generate an Ed25519 keypair (use Python `cryptography` library or `ssh-keygen -t ed25519`)
-2. Write the public key to `fleet/personas/<name>/identity.pub` (PEM format)
-3. Write the private key to `fleet/personas/<name>/identity.key` (0600 permissions, NEVER commit this)
+2. Write the public key to `corral/personas/<name>/identity.pub` (PEM format)
+3. Write the private key to `corral/personas/<name>/identity.key` (0600 permissions, NEVER commit this)
 4. Add `identity.key` to `.gitignore` if not already there
 5. Record the key fingerprint in the persona's IDENTITY.md
 

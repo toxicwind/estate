@@ -11,6 +11,9 @@ answer wins; the slow path stays hot because we write down who won.**
 Everything here is pure Bun. No npm dependencies — TypeScript and JavaScript
 get a real AST from `Bun.Transpiler.scan()`; Python uses a lexical extractor.
 
+Install: `scripts/install-forge.sh` symlinks `forge` onto PATH (resolves the
+skill dir from its own location; needs `bun` on PATH).
+
 ```
 forge retrieve --root <dir> --query "<q>"   # find code we half-remember
 forge audit --root <dir> --claim "<claim>"  # VERIFY a claim against the AST

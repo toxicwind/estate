@@ -10,6 +10,8 @@ import { hedgeOrder, runRace, setEmitter } from "../src/concurrent";
 import type { Strategy } from "../src/concurrent";
 import { CodeRacer } from "../src/code-racer";
 import { resolveExaKey } from "../src/borrow";
+import { resolveGithubToken } from "../src/providers";
+import { pickFirstExisting } from "../src/paths";
 import { extractTracebackFrames } from "../src/subgraph";
 
 // Race telemetry is verified through its assertions, not by printing.
@@ -227,6 +229,50 @@ describe("code-racer", () => {
 describe("borrow", () => {
   test("the exa key resolves from an explicit value before anything else", () => {
     expect(resolveExaKey("sk-test").from).toBe("explicit flag");
+  });
+
+  test("a missing github token resolves empty and names where it looked", () => {
+    const saved = process.env.GITHUB_TOKEN;
+    delete process.env.GITHUB_TOKEN;
+    try {
+      // $HOME/.secrets may or may not exist on the test host; either way the
+      // resolver must return a shaped answer, never throw.
+      const got = resolveGithubToken();
+      expect(typeof got.key).toBe("string");
+      expect(typeof got.from).toBe("string");
+      if (!got.key) expect(got.from).toBe("not found");
+    } finally {
+      if (saved !== undefined) process.env.GITHUB_TOKEN = saved;
+    }
+  });
+
+  test("the github token resolves from the environment", () => {
+    const saved = process.env.GITHUB_TOKEN;
+    process.env.GITHUB_TOKEN = "ghp-test-token";
+    try {
+      const got = resolveGithubToken();
+      expect(got.key).toBe("ghp-test-token");
+      expect(got.from).toBe("environment");
+    } finally {
+      if (saved !== undefined) process.env.GITHUB_TOKEN = saved;
+      else delete process.env.GITHUB_TOKEN;
+    }
+  });
+});
+
+describe("paths", () => {
+  test("pickFirstExisting takes the first directory that exists", () => {
+    const root = mkdtempSync(join(tmpdir(), "forge-paths-"));
+    const a = join(root, "nope-a");
+    const b = join(root, "yes-b");
+    mkdirSync(b, { recursive: true });
+    expect(pickFirstExisting([a, b], join(root, "fallback"))).toBe(b);
+  });
+
+  test("pickFirstExisting falls back when nothing exists", () => {
+    const root = mkdtempSync(join(tmpdir(), "forge-paths-"));
+    const fallback = join(root, "fallback");
+    expect(pickFirstExisting([join(root, "nope-a"), join(root, "nope-b")], fallback)).toBe(fallback);
   });
 });
 

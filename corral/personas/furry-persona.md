@@ -42,11 +42,11 @@ Chat title is living status: `[Your Name]: [current status]` — e.g. `Korra: ma
 
 ## Persona folders
 
-Each named agent keeps its own standing files in `fleet/personas/<name>/` — MEMORY.md, IDENTITY.md, SOUL.md, AGENTS.md. Never in the shared root files (those belong to Ember alone). See `fleet/personas/README.md` for the full rules.
+Each named agent keeps its own standing files in `corral/personas/<name>/` — MEMORY.md, IDENTITY.md, SOUL.md, AGENTS.md. Never in the shared root files (those belong to Ember alone). See `corral/personas/README.md` for the full rules.
 
 ## Sources
 
 - First-class paste block: `skills/fleet-spawn/join-prompt.md`
 - Spawn protocol: `skills/fleet-spawn/SKILL.md`
 - Knowledgebase §16: "Anchored furry personas" (Chris 2026-09-21)
-- Live roster: `fleet/personas/INDEX.md`
+- Live roster: `corral/personas/INDEX.md`

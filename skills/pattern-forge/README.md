@@ -28,6 +28,17 @@ Retrieve, race, and borrow. One tool for finding code in our own tree (AST-BM25 
 - **subgraph** — Traceback tells where it broke; import graph tells why; marks traceback frames with `*`, walks imports to depth N, reports fan-in
 - **doctor** — Self-check every leg
 
+### Install
+
+```bash
+skills/pattern-forge/scripts/install-forge.sh        # symlinks `forge` onto PATH
+skills/pattern-forge/scripts/install-forge.sh --prefix ~/.local/bin
+```
+
+The installer resolves the skill directory from its own location — no
+hardcoded host paths — and links `<prefix>/forge` at `bin/forge.ts`
+(the package.json `bin` target). Requires `bun` on PATH.
+
 ### Quick start (3 commands max)
 
 ```bash

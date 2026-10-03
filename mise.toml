@@ -29,7 +29,6 @@ restart = "pitchfork restart -q --group core"
 logs = "pitchfork logs --raw -n 100"
 "logs-tail" = "pitchfork logs --raw --follow"
 "logs-json" = "pitchfork logs --json -n 100"
-"build-vansrouter" = "node projects/range/ranch/vansrouter/cli/scripts/build-cli.js"
 
 "up-mesh" = "pitchfork start -q mesh"
 "up-mesh-hub" = "pitchfork start -q mesh-hub"
