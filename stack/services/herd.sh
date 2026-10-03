@@ -21,11 +21,12 @@ if [[ -f /home/toxic/.secrets ]]; then
 fi
 PORT="$HERD_PORT"
 
-# The binary lives beside its source in ranch/herd, not under var/ (var/ is
+# The binary lives beside its source in ranch/mesh/router/herd, not under var/ (var/ is
 # runtime state, and a launcher that points there means the path rots the next
 # time var/ is swept). The var/llama-swap-backups copy is the last-known-good
 # restore point if the in-tree build is ever lost.
 for BIN in \
+  "$SOV/ranch/mesh/router/herd/herd" \
   "$SOV/ranch/herd/herd" \
   "$SOV/var/herd-backups/herd/herd"
 do
