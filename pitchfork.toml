@@ -663,7 +663,9 @@ health_http = { url = "http://127.0.0.1:25148/v1/status", interval = "30s", time
 auto = ["start"]
 
 [daemons.fleet-ui]
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/squawk/fleet-ui.ts"
+# 2026-10-03: fleet-ui.ts superseded by channel-aware squawk-ui.ts (serves /wait and /send
+# directly from the channel store; no longer depends on legacy :25135 feed).
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/squawk/squawk-ui.ts"
 dir = "/home/toxic/estate/ranch/squawk"
 mise = false
 retry = true
