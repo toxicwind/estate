@@ -68,7 +68,7 @@ export function resolveAstGrep(): string | null {
   const candidates = [
     ...(env ? [env] : []),
     join(homedir(), ".local", "bin", "ast-grep"),
-    "/home/toxic/.local/share/mise/shims/ast-grep",
+    join(homedir(), ".local", "share", "mise", "shims", "ast-grep"),
   ];
   for (const c of candidates) {
     if (isExecutable(c)) {
