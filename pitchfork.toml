@@ -901,7 +901,7 @@ auto = ["start"]
 
 [daemons.ml-serve]
 port = 25180
-run = "exec python3 /home/toxic/estate/tools/ml-serve/server.py"
+run = "exec /usr/bin/python3 /home/toxic/estate/tools/ml-serve/server.py"
 dir = "/home/toxic/estate/tools/ml-serve"
 mise = false
 retry = true
@@ -1234,7 +1234,7 @@ dir = "/home/toxic/.fleet-bus/squawk-relay"
 mise = false
 retry = true
 boot_start = true
-env = { SQUAWK_CODE_DIR = "/home/toxic/hatch/agents/ember/chat" }
+env = { SQUAWK_CODE_DIR = "/home/toxic/estate/ranch/squawk" }
 auto = ["start"]
 
 # standalone/squawk-relay — project-owned daemon manifest. Source of truth for 'squawk-relay-sink'.
