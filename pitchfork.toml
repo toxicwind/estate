@@ -405,7 +405,7 @@ auto = ["start"]
 [daemons.model-guard]
 health_http = { url = "http://127.0.0.1:25101/v1/models", interval = "30s", timeout = "5s", retries = 3 }
 port = 25101
-run = "exec python3 /home/toxic/estate/bin/herd-model-guard.py"
+run = "exec bun /home/toxic/estate/services/model-guard/src/index.ts"
 dir = "/home/toxic/estate"
 mise = false
 retry = true
@@ -980,7 +980,7 @@ auto = ["start"]
 
 
 [daemons.awrawr-mcp]
-run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/awrawr_mcp.py"
+run = "exec bun /home/toxic/estate/services/awrawr-mcp/src/index.ts"
 dir = "/home/toxic"
 mise = false
 retry = true
