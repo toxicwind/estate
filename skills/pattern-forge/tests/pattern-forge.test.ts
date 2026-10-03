@@ -10,7 +10,7 @@ import { hedgeOrder, runRace, setEmitter } from "../src/concurrent";
 import type { Strategy } from "../src/concurrent";
 import { CodeRacer } from "../src/code-racer";
 import { resolveExaKey } from "../src/borrow";
-import { resolveGithubToken } from "../src/providers";
+import { isExpectedDegrade, resolveGithubToken, safeCall } from "../src/providers";
 import { ESTATE, pickFirstExisting, probeEstate, tierOf } from "../src/paths";
 import { existsSync } from "node:fs";
 import { audit, resolveAstGrep } from "../src/audit";
@@ -231,6 +231,35 @@ describe("code-racer", () => {
 describe("borrow", () => {
   test("the exa key resolves from an explicit value before anything else", () => {
     expect(resolveExaKey("sk-test").from).toBe("explicit flag");
+  });
+
+  test("expected network weather degrades instead of failing", () => {
+    // 429s, bot walls, DNS/connection errors: the network's normal weather.
+    expect(isExpectedDegrade("HTTP 429")).toBe(true);
+    expect(isExpectedDegrade("JSON Parse error: Unrecognized token '<'")).toBe(true);
+    expect(isExpectedDegrade("fetch failed: ENOTFOUND")).toBe(true);
+    // A genuinely unexpected failure is NOT degraded — it stays visible.
+    expect(isExpectedDegrade("null is not an object")).toBe(false);
+  });
+
+  test("safeCall never throws and degrades every per-route failure", async () => {
+    const events: string[] = [];
+    setEmitter((line) => events.push(line));
+    // Expected weather: degraded event, shaped result, no throw.
+    const r1 = await safeCall("dblp", async () => { throw new Error("HTTP 429"); });
+    expect(r1?.ok).toBe(false);
+    expect(events.some((l) => l.includes('"event":"source_degraded"'))).toBe(true);
+    expect(events.some((l) => l.includes('"event":"source_failed"'))).toBe(false);
+    expect(events.some((l) => l.includes('"expected":true'))).toBe(true);
+    // Unexpected provider bug: STILL degraded, never a failure event.
+    // A route's failure is degradation, not an error — the `expected`
+    // flag carries the diagnostic classification instead.
+    events.length = 0;
+    const r2 = await safeCall("x", async () => { throw new Error("null is not an object"); });
+    expect(r2?.ok).toBe(false);
+    expect(events.some((l) => l.includes('"event":"source_degraded"'))).toBe(true);
+    expect(events.some((l) => l.includes('"event":"source_failed"'))).toBe(false);
+    expect(events.some((l) => l.includes('"expected":false'))).toBe(true);
   });
 
   test("a missing github token resolves empty and names where it looked", () => {
