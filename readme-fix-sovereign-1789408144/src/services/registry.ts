@@ -186,7 +186,7 @@ export const ALL_SERVICES: ServiceDef[] = [
     name: "mcp-gateway",
     portKey: "MCP_GATEWAY_PORT",
     run: "exec bun run gateway.ts",
-    dir: "/home/toxic/estate/tools/sovereign-router/sovereign-mcp-gateway",
+    dir: "/home/toxic/estate/ranch/mesh/router/sovereign-mcp-gateway",
     readyHttp: "/health",
     group: "core",
     autoStart: true,

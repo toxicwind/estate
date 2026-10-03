@@ -23,7 +23,7 @@ PORT="$HERD_PORT"
 
 # The binary lives beside its source in ranch/mesh/router/herd, not under var/ (var/ is
 # runtime state, and a launcher that points there means the path rots the next
-# time var/ is swept). The var/llama-swap-backups copy is the last-known-good
+# time var/ is swept). The var/herd-backups copy is the last-known-good
 # restore point if the in-tree build is ever lost.
 for BIN in \
   "$SOV/ranch/mesh/router/herd/herd" \
@@ -33,7 +33,7 @@ do
   [[ -x "$BIN" ]] && break
   BIN=""
 done
-[[ -n "$BIN" ]] || { echo "herd bin not found in ranch/herd or var/llama-swap-backups/herd" >&2; exit 1; }
+[[ -n "$BIN" ]] || { echo "herd bin not found in ranch/mesh/router/herd, ranch/herd, or var/herd-backups/herd" >&2; exit 1; }
 CONF="$SOV/config/herd.yaml"
 [[ -f "$CONF" ]] || CONF="$SOV/config/llama-swap.yaml"
 [[ -f "$CONF" ]] || { echo "herd config not found at $CONF" >&2; exit 1; }

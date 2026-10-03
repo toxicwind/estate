@@ -30,7 +30,7 @@ daemons = []
 
 
 [groups.all]
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "fleet-ui", "flicker", "flicker-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "squawk-ui", "flicker", "flicker-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
 
 # ---- project: sovereign (37 daemons) ----
 # sovereign — project-owned daemon manifest. Source of truth for 'agent-display'.
@@ -289,7 +289,7 @@ auto = ["start"]
 [daemons.keypool]
 health_http = { url = "http://127.0.0.1:25109/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25109
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/services/keypool/src/index.ts"
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/mesh/keypool/src/index.ts"
 # Python fallback (pre-cutover 2026-10-02): exec python3 /home/toxic/estate/bin/herd-keypool.py
 env = { KEYPOOL_PORT = "25109" }
 dir = "/home/toxic/estate"
@@ -727,8 +727,8 @@ retry = true
 env = { ORACLE_INTAKE = "1" }
 auto = ["start"]
 
-# ---- project: ranch/cuttinggate (1 daemon) ----
-# ranch/cuttinggate — project-owned daemon manifest. Source of truth for 'cuttinggate'.
+# ---- project: ranch/mesh/proxy/cuttinggate (1 daemon) ----
+# ranch/mesh/proxy/cuttinggate — project-owned daemon manifest. Source of truth for 'cuttinggate'.
 # The canonical estate router. Binds :25200 via CUTTINGGATE_PORT.
 # NOTE: the baked-in config default 25194 is held by the Ralph dashboard
 # (uvicorn); 25195 is held by codebase-memory. Do not move this daemon
@@ -736,7 +736,7 @@ auto = ["start"]
 
 [daemons.cuttinggate]
 run = "exec bun run src/server.ts"
-dir = "/home/toxic/estate/ranch/cuttinggate"
+dir = "/home/toxic/estate/ranch/mesh/proxy/cuttinggate"
 retry = true
 ready_http = "http://127.0.0.1:25200/health"
 health_http = { url = "http://127.0.0.1:25200/health", interval = "30s", timeout = "5s", retries = 3 }

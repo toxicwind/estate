@@ -40,7 +40,7 @@ which is also 401), and the two keys created on gassist-d31c8 / flashy-squirrel.
 
 Google's native endpoint takes the key in the **`x-goog-api-key` header**, not
 `Authorization: Bearer`. Sending a valid key as a bearer token 401s. This is encoded once
-in `services/keypool/src/pool.ts`:
+in `ranch/mesh/keypool/src/pool.ts`:
 
 ```ts
 export function upstreamAuthHeader(upstream: string, secret: string): [string, string]
@@ -94,7 +94,7 @@ tau/omp  ──flock :25193──▶  provider "google" (keyless, auth none)
               generativelanguage.googleapis.com/v1beta/interactions
 ```
 
-Single source of truth for the model list is `ranch/flock/roost/src/data.ts`. It
+Single source of truth for the model list is `ranch/mesh/catalog/src/data.ts`. It
 generates, in order:
 
 1. `roost/generated/providers.{json,go,rs}`
@@ -107,8 +107,8 @@ generates, in order:
 Rebuild order after touching `roost/src/data.ts`:
 
 ```bash
-cd ranch/flock/roost && bun run build            # regen + sync to tau
-cd ..                && bun scripts/sync-roost-providers.ts --write
+cd ranch/mesh/catalog && bun run build            # regen + sync to tau
+cd ../../flock && bun scripts/sync-roost-providers.ts --write
 cd proxy             && cargo build --release
 cp target/release/flock /home/toxic/.flock/flock   # daemon runs this copy
 ```
