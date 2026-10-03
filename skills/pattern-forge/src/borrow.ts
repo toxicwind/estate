@@ -134,11 +134,12 @@ export function resolveExaKey(explicit = ""): { key: string; from: string } {
 export async function borrow(query: string, opts: BorrowOptions = {}): Promise<BorrowResult> {
   const { perSource = 5, skip = new Set() } = opts;
   const exa = resolveExaKey(opts.exaApiKey ?? "");
+  const gh = P.resolveGithubToken();
   const notes: string[] = [];
   const t0 = performance.now();
 
   const legs: { name: SourceName; enabled: boolean; run: () => Promise<P.SourceResult> }[] = [
-    { name: "github", enabled: !skip.has("github"), run: () => P.githubCodeSearch(query, perSource) },
+    { name: "github", enabled: !skip.has("github") && gh.key.length > 0, run: () => P.githubCodeSearch(query, perSource) },
     { name: "arxiv", enabled: !skip.has("arxiv"), run: () => P.arxivSearch(query, perSource) },
     { name: "openalex", enabled: !skip.has("openalex"), run: () => P.openAlexSearch(query, perSource) },
     { name: "semanticscholar", enabled: !skip.has("semanticscholar"), run: () => P.s2Search(query, perSource) },
@@ -148,6 +149,10 @@ export async function borrow(query: string, opts: BorrowOptions = {}): Promise<B
   ];
 
   for (const leg of legs) if (skip.has(leg.name)) notes.push(`${leg.name} skipped by flag`);
+  if (!skip.has("github")) {
+    if (gh.key) notes.push(`github token resolved from ${gh.from}`);
+    else notes.push("github skipped: no GITHUB_TOKEN (checked environment and $HOME/.secrets); code search requires auth — degrades, does not fail the run");
+  }
   if (skip.has("exa")) notes.push("exa skipped by flag; no credits spent");
   else if (!exa.key) notes.push("exa has no api key (checked flag, environment, and $HOME/.secrets)");
   else notes.push(`exa key resolved from ${exa.from}; call logged with cost to the audit log`);
@@ -206,8 +211,8 @@ export function renderBorrow(result: BorrowResult, topN = 10): string {
   lines.push(`=== Borrow: "${result.query}" — ${ok.length}/${Object.keys(result.sources).length} sources ok in ${result.timingMs.toFixed(0)}ms ===`);
   for (const [name, r] of failedSources) lines.push(`  ${name}: FAILED — ${r!.error}`);
   for (const note of result.notes) lines.push(`  note: ${note}`);
-  if (!result.creditsSpent) lines.push("  credits spent: 0 (exa is opt-in only; it is never called automatically)");
-  if (result.creditsSpent) lines.push("  CREDITS SPENT (exa ran with explicit opt-in)");
+  if (!result.creditsSpent) lines.push("  credits spent: 0 (exa runs only when a key resolves; none did)");
+  if (result.creditsSpent) lines.push("  CREDITS SPENT (exa ran; see the exa audit log for costUsd)");
   lines.push("");
   for (const [i, row] of result.ranked.slice(0, topN).entries()) {
     const item = row.item as P.PaperItem;
