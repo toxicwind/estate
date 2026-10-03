@@ -21,7 +21,7 @@ daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "sea
 
 
 [groups.core]
-daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server"]
+daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "matter-server"]
 
 
 [groups.agents]
@@ -35,7 +35,7 @@ daemons = []
 # daemon definition anywhere -- the squawk daemons are squawk-relay-sink,
 # squawk-relay-forward, fleet-ui and fleet-feed. pitchfork silently ignores
 # names it cannot resolve, so the stale entries just made the group a lie.
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "fleet-feed", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "fleet-ui", "mbx-cache", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "fleet-feed", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "fleet-ui", "mbx-cache", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
 
 # ---- project: estate (control plane) ----
 # The estate IS this repo. Everything filed here is owned by /home/toxic/estate
@@ -208,21 +208,6 @@ retry = true
 env = { FILES_PORT = "34567", FILES_ROOT = "/home/toxic/files" }
 ready_http = "http://127.0.0.1:34567/health"
 health_http = { url = "http://127.0.0.1:34567/health", interval = "30s", timeout = "5s", retries = 3 }
-auto = ["start"]
-
-# sovereign — project-owned daemon manifest. Source of truth for 'flock'.
-# Owned by the sovereign project; the parent only composes it.
-
-
-[daemons.flock]
-health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
-port = 25193
-run = "exec /home/toxic/estate/ranch/flock/bin/flock-run.sh"
-dir = "."
-mise = false
-retry = true
-ready_http = "http://127.0.0.1:25193/health"
-env = { VANSROUTER_API_KEY = "local-sovereign", FLOCK_PORT = "25193" }
 auto = ["start"]
 
 # sovereign — project-owned daemon manifest. Source of truth for 'grafana'.
@@ -1311,3 +1296,10 @@ run = "exec /home/toxic/.local/share/mise/shims/bun /home/toxic/duet/src/yote.ts
 dir = "/home/toxic/duet"
 retry = true
 auto = ["start"]
+
+[daemons.squawk-ws]
+run = "exec bun /home/toxic/estate/services/squawk-ws/src/index.ts"
+dir = "/home/toxic/estate"
+port = 25147
+retry = true
+boot_start = true
