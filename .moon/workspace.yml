@@ -1,0 +1,16 @@
+$schema: 'https://moonrepo.dev/schemas/workspace.json'
+
+# Estate project graph. Mise owns tool versions and task entrypoints; Moon only
+# resolves dependencies between project-local moon.yml files.
+
+projects:
+  - 'ranch/**/moon.yml'
+  - 'services/**/moon.yml'
+
+vcs:
+  provider: 'github'
+  defaultBranch: 'main'
+
+pipeline:
+  cacheLifetime: '7 days'
+  installDependencies: true
