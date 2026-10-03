@@ -11,8 +11,9 @@ answer wins; the slow path stays hot because we write down who won.**
 Everything here is pure Bun. No npm dependencies — TypeScript and JavaScript
 get a real AST from `Bun.Transpiler.scan()`; Python uses a lexical extractor.
 
-Install: `scripts/install-forge.sh` symlinks `forge` onto PATH (resolves the
-skill dir from its own location; needs `bun` on PATH).
+Install: the repo-owned `scripts/forge` launcher resolves as a bare `forge`
+(no install step; it finds the skill dir from its own location). Otherwise
+`scripts/install-forge.sh` symlinks `forge` onto PATH. Both need `bun`.
 
 ```
 forge retrieve --root <dir> --query "<q>"   # find code we half-remember
