@@ -116,6 +116,6 @@ Telemetry from account status probes revealed three distinct error codes and the
 ## 8. Sovereign Estate Integration Recommendations
 
 1. **Subagents (`.tau/agent/config.yml`)**: Keep primary task and plan roles mapped to `openrouter/stealth/space-bunny-alpha` to sustain high-velocity autonomous execution without quota exhaustion.
-2. **Oracle Market (`ranch/oracle/agent.toml`)**: Configured to `stealth/space-bunny-alpha` via OpenRouter to ensure sealed-bid clearing and task assignment never stall on local GGUF swapping.
+2. **Oracle Market (`ranch/squawk/oracle/agent.toml`)**: Configured to `stealth/space-bunny-alpha` via OpenRouter to ensure sealed-bid clearing and task assignment never stall on local GGUF swapping.
 3. **Corral & Claude Shim (`ranch/corral`)**: Route away from local `:25100` (which was causing EXAONE 1.2B crash loops) and target `stealth/space-bunny-alpha` through OpenRouter directly or via Sovereign Router (`:25104`).
 4. **October 5 Milestone**: On 2026-10-05 when `space-bunny-alpha` expires, immediately swap default agent routing to `google-antigravity/gemini-3.8-flash` or the sub-$0.05/M DeepSeek Flash tier.

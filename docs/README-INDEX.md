@@ -68,7 +68,7 @@ flowchart LR
 
 ## agents
 
-- [projects/range/ranch/oracle/README.md](../projects/range/ranch/oracle/README.md)
+- [ranch/squawk/oracle/README.md](../ranch/squawk/oracle/README.md)
 
 ## bridge
 
