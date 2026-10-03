@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-agent-viewer
+pitchfork restart -q agent-viewer

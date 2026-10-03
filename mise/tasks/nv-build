@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-# mise run nv-build
-cd "/home/toxic/estate/ranch/android-fleet/nuvio/nuvio-platform"
-npm run build:webos

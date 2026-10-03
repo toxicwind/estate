@@ -18,11 +18,15 @@ export const PERIPHERAL_SERVICES: ServiceDef[] = [
     healthPath: "/api/health",
   },
   {
-    id: "rust-web",
-    name: "rust-web",
+    id: "fleet-feed",
+    name: "fleet-feed",
     portKey: "RUST_WEB_BACKEND_PORT",
-    run: "exec ./stack/services/rust-web-hot.sh",
-    dir: ".",
+    // rust-web's rust_algo_web/src/agents.rs, ported to TypeScript at
+    // ranch/squawk/fleet-feed.ts (2026-10-02). The Rust tree had no Cargo.toml
+    // left in the repo, so stack/services/rust-web.sh could only ever fall into
+    // `cargo build` and fail. Same three surfaces: roster, history, live ws.
+    run: "exec bun /home/toxic/estate/ranch/squawk/fleet-feed.ts",
+    dir: "/home/toxic/estate/ranch/squawk",
     readyHttp: "/health",
     group: "core",
     autoStart: true,

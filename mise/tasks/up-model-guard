@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run up-model-guard
+pitchfork start -q model-guard

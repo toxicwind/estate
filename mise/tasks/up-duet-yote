@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run up-duet-yote
+pitchfork start -q duet-yote

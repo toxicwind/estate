@@ -1,0 +1,58 @@
+# On-demand developer and terminal tools. Nothing here supervises a daemon.
+
+[tasks.zed]
+run = "zed ."
+
+[tasks.zellij]
+run = "zellij"
+
+[tasks.ttyd]
+run = "ttyd -p 25137 bash"
+
+[tasks.sshx]
+run = "sshx"
+
+# Web UI helpers
+[tasks."open-uis"]
+run = "bun run scripts/open-web-uis.ts"
+
+[tasks."open-uis-all"]
+run = "bun run scripts/open-web-uis.ts --all"
+
+[tasks."list-uis"]
+run = "bun run scripts/open-web-uis.ts --list"
+
+# Nuvio Platform (webOS app). Lives with the rest of Chris's screens under
+# ranch/android-fleet/. See ranch/android-fleet/nuvio/README.md.
+[tasks."nv-build"]
+run = "npm run build:webos"
+dir = "ranch/android-fleet/nuvio/nuvio-platform"
+
+[tasks."nv-dev"]
+run = "npm run dev"
+dir = "ranch/android-fleet/nuvio/nuvio-platform"
+
+[tasks."nv-test"]
+run = "npm run test:coverage"
+dir = "ranch/android-fleet/nuvio/nuvio-platform"
+
+[tasks."nv-package"]
+description = "Build then package the webOS app"
+file = "mise/tasks/nv-package"
+
+# Tests
+[tasks.test]
+run = "bun test"
+
+[tasks."test-cov"]
+run = "bun run test:cov"
+
+[tasks."test-gateway"]
+run = "bun run test:gateway:cov"
+
+[tasks."test-models"]
+run = "bun run test:best-models"
+
+# cell-files hot-reload explorer UI (bun --hot, WS/SSE hyper-race HMR)
+[tasks."up-cellfiles-ui"]
+run = "bun --hot /home/toxic/hatch/cell-files/cell-files/packages/cell-files/ui/server.ts"

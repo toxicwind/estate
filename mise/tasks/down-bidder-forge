@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run down-bidder-forge
+pitchfork stop bidder-forge

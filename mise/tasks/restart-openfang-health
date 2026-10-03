@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-openfang-health
+pitchfork restart -q openfang-health

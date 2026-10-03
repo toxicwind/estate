@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run health-kimiclaw-a
+p=$(pgrep -f '[b]ridge[.]ts --daemon --instance a' | head -1); [ -n "$p" ] && ls -l /proc/$p/fd 2>/dev/null | grep -q inotify

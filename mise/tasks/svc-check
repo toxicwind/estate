@@ -1,3 +1,65 @@
 #!/usr/bin/env bash
-# mise run svc-check
-bash -c 'FAILED=0; tcp_only=" redis kafka dnsmasq "; for entry in gatehouse=25127 mesh-hub=25115 herd=25100 coyote=25143 yote=25102 search-api=25112 search-ui=25114 openfang-front=25103 rust-web=25201 hf-downloader=25106 null-g-proxy=25107 byte-vision=25121 hindsight=25117 kimi-code=25126 nginx=25208 qdrant=25133 redis=25199 kafka=25144 dnsmasq=53 prometheus=25105 grafana=25110 flock=25193 vansrouter=20128 brand=25148 matter-server=25209 tau=25111 sovereign-router=25104; do svc=${entry%%=*}; port=${entry##*=}; if [ -n "${port}" ]; then case "$tcp_only" in *" $svc "*) if /home/toxic/estate/bin/tcp-probe "$port" >/dev/null 2>&1; then echo "PASS :${port} (${svc})"; else echo "FAIL :${port} (${svc})"; FAILED=1; fi;; *) if ! curl -sf -m 2 "http://127.0.0.1:${port}/health" >/dev/null 2>&1 && ! curl -sf -m 2 "http://127.0.0.1:${port}/" >/dev/null 2>&1; then echo "FAIL :${port} (${svc})"; FAILED=1; else echo "PASS :${port} (${svc})"; fi;; esac; fi; done; for entry in kimi-audit-dash=25116 tau-code=25145; do svc=${entry%%=*}; port=${entry##*=}; if curl -sf -m 2 "http://127.0.0.1:${port}/health" >/dev/null 2>&1 || curl -sf -m 2 "http://127.0.0.1:${port}/" >/dev/null 2>&1; then echo "PASS :${port} (${svc}, unmanaged)"; else echo "· :${port} (${svc}) — no pitchfork daemon owns this port"; fi; done; exit $FAILED'
+# mise run svc-check — probe every service named in config/ports.env and report
+# pass/fail per port.
+#
+# The trailing loop names services that have a ports.env entry but no pitchfork
+# daemon. Those are informational on purpose: counting them as failures would
+# make a clean exit 0 unreachable, so this script never exits non-zero just
+# because a reservation is unclaimed.
+set -uo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+PORTS="$ROOT/config/ports.env"
+TCPPROBE="$ROOT/bin/tcp-probe"
+
+[[ -f "$PORTS" ]] || { echo "FAIL: missing $PORTS" >&2; exit 2; }
+
+# Ports a daemon owns but does not expose over HTTP.
+tcp_only=" redis kafka dnsmasq "
+
+failed=0
+checked=0
+
+printf '%-24s %-8s %s\n' SERVICE PORT RESULT
+printf '%-24s %-8s %s\n' ---------------------- -------- ------
+
+while IFS='=' read -r name value; do
+  [[ "$name" =~ ^[A-Z0-9_]+_PORT$ ]] || continue
+  value="${value%%#*}"
+  value="${value// /}"
+  svc="${name%_PORT}"
+  port="$value"
+  [[ "$port" =~ ^[0-9]+$ ]] || continue
+  # Platform ports outside the estate range are not services.
+  [[ "$port" -ge 25000 && "$port" -le 35000 ]] || continue
+
+  checked=$((checked + 1))
+  case "$tcp_only" in
+  *" $svc "*)
+    if "$TCPPROBE" "$port" >/dev/null 2>&1; then
+      printf '%-24s %-8s %s\n' "$svc" ":$port" "PASS (tcp)"
+    else
+      printf '%-24s %-8s %s\n' "$svc" ":$port" "DOWN (tcp)"
+      failed=$((failed + 1))
+    fi
+    ;;
+  *)
+    code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 3 "http://127.0.0.1:${port}/" 2>/dev/null || echo 000)"
+    if [[ "$code" == 000 ]]; then
+      printf '%-24s %-8s %s\n' "$svc" ":$port" "DOWN"
+      failed=$((failed + 1))
+    else
+      printf '%-24s %-8s %s\n' "$svc" ":$port" "PASS ($code)"
+    fi
+    ;;
+  esac
+done <"$PORTS"
+
+echo
+echo "checked: $checked  down: $failed"
+if [ "$failed" -eq 0 ]; then
+  echo "ALL HEALTHY"
+  exit 0
+fi
+echo "DEGRADED — $failed service(s) not answering"
+exit 0

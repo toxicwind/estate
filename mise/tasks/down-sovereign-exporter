@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run down-sovereign-exporter
+pitchfork stop sovereign-exporter

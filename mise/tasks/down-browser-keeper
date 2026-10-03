@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run down-browser-keeper
+pitchfork stop browser-keeper

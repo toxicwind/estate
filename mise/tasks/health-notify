@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run health-notify
-mise run svc-check || curl -s -X POST -d Stack_degraded https://ntfy.sh/sovereign-alerts

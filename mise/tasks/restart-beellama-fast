@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-beellama-fast
+pitchfork restart -q beellama-fast

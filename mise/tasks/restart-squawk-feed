@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-squawk-feed
-pitchfork restart -q squawk-feed

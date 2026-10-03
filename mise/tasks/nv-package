@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
-# mise run nv-package
-cd "/home/toxic/estate/ranch/android-fleet/nuvio/nuvio-platform"
-mise run nv-build || exit $?
+# mise run nv-package — build, then package the webOS app.
+# `file` tasks have no `depends` field, so the ordering is explicit here.
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")/../../ranch/android-fleet/nuvio/nuvio-platform"
+npm run build:webos
+npm run package:webos

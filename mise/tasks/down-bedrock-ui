@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run down-bedrock-ui
+pitchfork stop bedrock-ui

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-market-watchdog
+pitchfork restart -q market-watchdog

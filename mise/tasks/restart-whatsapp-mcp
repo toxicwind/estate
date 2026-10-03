@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-whatsapp-mcp
+pitchfork restart -q whatsapp-mcp

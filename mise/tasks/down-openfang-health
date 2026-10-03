@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run down-openfang-health
+pitchfork stop openfang-health

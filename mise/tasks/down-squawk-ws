@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-squawk-ws
-pitchfork stop squawk-ws

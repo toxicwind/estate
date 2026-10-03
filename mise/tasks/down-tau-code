@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-tau-code
-pitchfork stop tau-code

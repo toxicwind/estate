@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-nim-kimi-sidecar
+pitchfork restart -q nim-kimi-sidecar

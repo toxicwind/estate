@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run down-node-exporter
+pitchfork stop node-exporter

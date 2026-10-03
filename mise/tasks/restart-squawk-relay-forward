@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-squawk-relay-forward
+pitchfork restart -q squawk-relay-forward

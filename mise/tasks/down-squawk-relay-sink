@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run down-squawk-relay-sink
+pitchfork stop squawk-relay-sink

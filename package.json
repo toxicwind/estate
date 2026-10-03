@@ -1,9 +1,8 @@
 {
-  "description": "Sovereign control plane — herd, mesh, llama-swap, sovereign-swap",
+  "description": "Estate control plane — the ranch monorepo and its config",
   "devDependencies": {
     "bun-types": "^1.1.0",
     "smol-toml": "1.9.0",
-    "turbo": "^2.0.0",
     "typescript": "^5.0.0"
   },
   "engines": {
@@ -11,26 +10,13 @@
     "go": ">=1.23.1",
     "node": ">=22.12.0"
   },
-  "name": "sovereign-projects",
-  "packageManager": "bun@1.4.2",
+  "name": "estate",
   "scripts": {
-    "build:all": "cd herd && go build ./... && cd ui-svelte && bun run build",
-    "dev": "cd herd && go run ./cmd/main.go",
-    "docker": "docker compose up -d",
-    "health": "curl -s http://127.0.0.1:25100/v1/models | python3 -c 'import sys,json;print(len(json.load(sys.stdin)[\"data\"]),\"models\")')",
-    "install:all": "bun install && cd herd && go mod download && cd ui-svelte && bun install",
-    "lint": "cd herd && go vet ./... && cd ui-svelte && bun run check",
-    "test": "cd herd && go test ./... && cd ui-svelte && bun run test",
-    "ws:build": "turbo run build",
-    "ws:dev": "turbo run dev",
-    "ws:lint": "turbo run lint",
-    "ws:test": "turbo run test",
-    "ws:typecheck": "turbo run typecheck"
+    "health": "curl -s http://127.0.0.1:25100/v1/models | python3 -c 'import sys,json;print(len(json.load(sys.stdin)[\"data\"]),\"models\")'",
+    "ui:check": "bun run --cwd ranch/range/ui check",
+    "ui:test": "bun run --cwd ranch/range/ui test",
+    "ui:build": "bun run --cwd ranch/range/ui build"
   },
-  "version": "18.1.14",
-  "workspaces": ["packages/*", "services/*"],
-  "dependencies": {
-    "hyparquet": "1.31.2",
-    "hyparquet-writer": "0.16.10"
-  }
+  "packageManager": "bun@1.4.2",
+  "version": "18.1.14"
 }

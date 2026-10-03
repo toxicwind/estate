@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run up-oracle-chat
+pitchfork start -q oracle-chat

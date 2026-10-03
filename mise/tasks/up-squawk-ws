@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up-squawk-ws
-pitchfork start -q squawk-ws

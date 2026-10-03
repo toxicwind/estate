@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run restart-mesh
-pitchfork restart -q mesh

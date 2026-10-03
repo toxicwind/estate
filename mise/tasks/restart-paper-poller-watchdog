@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-paper-poller-watchdog
+pitchfork restart -q paper-poller-watchdog

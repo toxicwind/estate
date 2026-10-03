@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run down-mcp-gateway
-pitchfork stop mcp-gateway

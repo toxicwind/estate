@@ -1,0 +1,8 @@
+# Toolchain versions. Hand-edited; mise installs these on demand.
+[tools]
+python = "3.12.13"
+node = "22.12.0"
+bun = "1.4.2"
+rust = "nightly"
+go = "1.23.1"
+pitchfork = "2.25.0"

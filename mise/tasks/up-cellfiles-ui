@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run up-cellfiles-ui
-bun --hot /home/toxic/hatch/cell-files/cell-files/packages/cell-files/ui/server.ts

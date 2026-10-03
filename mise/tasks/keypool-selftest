@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# mise run keypool-selftest
-python3 -m keypool --selftest

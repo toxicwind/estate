@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-nats-tail
+pitchfork restart -q nats-tail

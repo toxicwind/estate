@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run down-sovereign-router
+pitchfork stop sovereign-router

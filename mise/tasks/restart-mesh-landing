@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-mesh-landing
+pitchfork restart -q mesh-landing

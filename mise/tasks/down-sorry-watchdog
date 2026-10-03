@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run down-sorry-watchdog
+pitchfork stop sorry-watchdog

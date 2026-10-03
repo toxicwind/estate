@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run down-awrawr-ws-exec
+pitchfork stop awrawr-ws-exec

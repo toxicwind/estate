@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# mise run restart-squawk-relay-sink
+pitchfork restart -q squawk-relay-sink
