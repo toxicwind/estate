@@ -18,7 +18,7 @@
 
 ```mermaid
 flowchart TD
-    F[fleet/] --> C[crews/]
+    F[corral/] --> C[crews/]
     F --> P[personas/]
     F --> I[identity-specs/]
     F --> S[shims/]
@@ -40,7 +40,7 @@ shims abstract the platform so agents don't care if it's CoreELEC or Android TV.
 ## Structure
 
 ```
-fleet/
+corral/
 ├── README.md              # this file
 ├── crews/                 # agent crew definitions + status
 ├── personas/              # agent persona specs (species, voice, role)

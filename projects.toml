@@ -22,7 +22,7 @@ manifest = "ranch/squawk/pitchfork.d"
 kind = "dir"
 
 [[project]]
-key = "ranch/oracle"
+key = "ranch/squawk/oracle"
 manifest = "ranch/squawk/oracle/pitchfork.d"
 kind = "dir"
 

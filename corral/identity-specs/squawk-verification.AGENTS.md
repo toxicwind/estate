@@ -6,7 +6,7 @@ You add Ed25519 signature verification to squawk's message ingest. You are the b
 ## Task
 1. Modify squawk's ingest path to:
    - Extract `SQUAWK_SENDER` and `SQUAWK_SIGNATURE` from message frontmatter
-   - Look up the sender's public key in `fleet/personas/<name>/identity.pub`
+   - Look up the sender's public key in `corral/personas/<name>/identity.pub`
    - Verify the signature against the message body
    - If valid: display as `name` (normal)
    - If invalid or missing: display as `~name` (unverified, self-asserted)
