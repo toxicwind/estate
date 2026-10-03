@@ -28,22 +28,20 @@ function goStringSlice(ids: string[], elementIndent = "\t\t", closeIndent = "\t"
   return `[]string{\n${ids.map((id) => `${elementIndent}${jsonEscaped(id)},`).join("\n")}\n${closeIndent}}`;
 }
 
-function goStringMap(m: Record<string, string>): string {
-  const keys = Object.keys(m).sort();
-  if (keys.length === 0) return "map[string]string{}";
-  return `map[string]string{\n${keys.map((k) => `\t\t${jsonEscaped(k)}: ${jsonEscaped(m[k])},`).join("\n")}\n\t}`;
-}
-
 function goAliasMap(m: Record<string, ModelAlias>): string {
-  const keys = Object.keys(m).sort();
-  if (keys.length === 0) return "map[string][2]string{}";
+  // entries, not keys + index: under noUncheckedIndexedAccess `m[k]` is
+  // `ModelAlias | undefined` while Object.entries yields the tuple value.
+  // Sort comparator is Array#sort's UTF-16 code-unit order, spelled out
+  // because a[0] is the key.
+  const entries = Object.entries(m).sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0));
+  if (entries.length === 0) return "map[string][2]string{}";
   // gofmt aligns map values: colon directly after the key, padding after the
   // colon. Emit gofmt-clean so the artifact needs no post-processing.
-  const width = Math.max(...keys.map((k) => jsonEscaped(k).length));
-  return `map[string][2]string{\n${keys
+  const width = Math.max(...entries.map(([k]) => jsonEscaped(k).length));
+  return `map[string][2]string{\n${entries
     .map(
-      (k) =>
-        `\t${jsonEscaped(k)}:${" ".repeat(width - jsonEscaped(k).length + 1)}{${jsonEscaped(m[k][0])}, ${jsonEscaped(m[k][1])}},`,
+      ([k, alias]) =>
+        `\t${jsonEscaped(k)}:${" ".repeat(width - jsonEscaped(k).length + 1)}{${jsonEscaped(alias[0])}, ${jsonEscaped(alias[1])}},`,
     )
     .join("\n")}\n}`;
 }

@@ -1,0 +1,1 @@
+{"blue_port":25148,"drain_timeout_s":15,"green_port":25149,"health_path":"/health","health_timeout_s":30,"name":"squawk-ws","stable_port":25147,"start_cmd":["python3","/home/toxic/estate/ranch/squawk/relay/squawk_ws_server.py"]}
