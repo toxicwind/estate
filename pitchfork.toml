@@ -965,7 +965,7 @@ auto = ["start"]
 # ---- project: standalone/awrawr (2 daemons) ----
 # standalone/awrawr — project-owned daemon manifest. Source of truth for 'awrawr-mcp'.
 # Owned by the standalone/awrawr project; the parent only composes it.
-
+run = "exec bash -c 'set -a; source /home/toxic/estate/config/ports.env; set +a; exec bun /home/toxic/estate/services/awrawr-mcp/src/index.ts'"
 
 [daemons.awrawr-mcp]
 run = "exec bash -c 'set -a; source config/ports.env; set +a; exec bun services/awrawr-mcp/src/index.ts'"
