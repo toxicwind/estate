@@ -22,8 +22,8 @@ manifest = "ranch/squawk/oracle/pitchfork.d"
 kind = "dir"
 
 [[project]]
-key = "ranch/cuttinggate"
-manifest = "ranch/cuttinggate/pitchfork.d"
+key = "ranch/mesh/proxy/cuttinggate"
+manifest = "ranch/mesh/proxy/cuttinggate/pitchfork.d"
 kind = "dir"
 
 
@@ -71,11 +71,6 @@ kind = "dir"
 [[project]]
 key = "tools/sovereign-chat"
 manifest = "tools/sovereign-chat/pitchfork.d"
-kind = "dir"
-
-[[project]]
-key = "tools/sovereign-router"
-manifest = "tools/sovereign-router/pitchfork.d"
 kind = "dir"
 
 [[project]]

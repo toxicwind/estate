@@ -129,7 +129,7 @@ auto = ["start"]
 
 [daemons.mcp-gateway]
 run = "exec bun run gateway.ts"
-dir = "/home/toxic/estate/tools/sovereign-router/sovereign-mcp-gateway"
+dir = "/home/toxic/estate/ranch/mesh/router/sovereign-mcp-gateway"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25120/health"
@@ -313,7 +313,7 @@ auto = ["start"]
 
 [daemons.sovereign-router]
 run = "exec bun run router.ts"
-dir = "/home/toxic/estate/tools/sovereign-router/sovereign-router-ts"
+dir = "/home/toxic/estate/ranch/mesh/router/sovereign-router/sovereign-router-ts"
 mise = true
 retry = true
 ready_http = "http://127.0.0.1:25104/health"

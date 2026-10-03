@@ -77,7 +77,7 @@
   "agent-viewer": "sovereign",
   "browser-keeper": "sovereign",
   "sovereign-stream-broker": "ranch/stream-broker",
-  "sovereign-router": "tools/sovereign-router",
+  "sovereign-router": "ranch/mesh/router/sovereign-router",
   "market-loop": "sovereign",
   "hashline": "standalone/hashline"
 }

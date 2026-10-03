@@ -1,6 +1,6 @@
 plugins:
 - name: herd
-  source: ./estate/ranch/herd
+  source: ./estate/ranch/mesh/router/herd
   merged: sovereign-swap
   privileged: true
 - name: flock
@@ -11,7 +11,7 @@ plugins:
   privileged: true
   role: MCP federation gateway
 - name: router
-  source: ./estate/tools/sovereign-router
+  source: ./estate/ranch/mesh/router/sovereign-router
   merged:
   - router-legacy
   - stockyard-flock-router
