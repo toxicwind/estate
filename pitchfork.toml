@@ -1207,16 +1207,20 @@ auto = ["start"]
 # Presence, activity, rooms, WebSocket push, MCP. Binds 127.0.0.1 + tailscale.
 # Token lives ONLY in /home/toxic/.config/sovereign-chat-token (0600).
 
-# ---- project: standalone/rig-work (1 daemon) ----
-# standalone/rig-work — project-owned daemon manifest. Source of truth for 'openfang'.
-# Owned by the standalone/rig-work project; the parent only composes it.
+# ---- project: standalone/rig (1 daemon) ----
+# standalone/rig — project-owned daemon manifest. Source of truth for 'openfang'.
+# Owned by the standalone/rig project; the parent only composes it.
+# 2026-10-02: dir was standalone/rig-work, a stale ancestor checkout of the same
+# repo (pre openfang->rig rebrand). Verified 0 differing files across all 13
+# crates after rename-normalize, and its HEAD is a strict ancestor of rig.
+# Consolidated onto rig; rig-work deleted.
 
 
 [daemons.openfang]
 env = { OPENFANG_KERNEL_PORT = "25196" }
 port = 25196
 run = "exec /home/toxic/estate/ops/openfang-run.sh"
-dir = "/home/toxic/projects/rig-work"
+dir = "/home/toxic/projects/rig"
 mise = false
 retry = true
 health_http = { url = "http://127.0.0.1:25196/api/health", interval = "30s", timeout = "5s", retries = 3 }
