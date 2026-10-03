@@ -243,14 +243,25 @@ function routeClaim(claim: string): { type: string; queries: BuiltQuery[]; check
   return null;
 }
 
-const DEF_PATTERNS: Record<string, string> = {
-  ts: "function $X($$$)", tsx: "function $X($$$)", py: "def $X($$$)",
-  go: "func $X($$$)", rs: "fn $X($$$)", js: "function $X($$$)",
+/**
+ * Definition patterns per language. ast-grep 0.45.x matches structurally: a
+ * pattern must account for the function body (and the return-type annotation
+ * where the grammar keeps it as a child), so the bare `function $X($$$)`
+ * shape matches nothing. Variants are tried in order and merged; py and go
+ * are lenient, ts/js need the body wildcard, rs needs both body and return.
+ */
+const DEF_PATTERNS: Record<string, string[]> = {
+  ts: ["function $X($$$): $RT { $$$ }", "function $X($$$) { $$$ }"],
+  tsx: ["function $X($$$): $RT { $$$ }", "function $X($$$) { $$$ }"],
+  js: ["function $X($$$) { $$$ }"],
+  py: ["def $X($$$)"],
+  go: ["func $X($$$)"],
+  rs: ["fn $X($$$) -> $RT { $$$ }", "fn $X($$$) { $$$ }"],
 };
 
 const LANGS = ["ts", "tsx", "js", "py", "go", "rs"];
 
-import { join, relative } from "node:path";
+import { join, relative, resolve } from "node:path";
 import { accessSync, constants } from "node:fs";
 import { homedir } from "node:os";
 
@@ -268,17 +279,29 @@ function isExecutable(p: string): boolean {
 function auditCallEdge(bin: string, root: string, globs: string[], x: string, y: string, qlog: AuditQuery[]): Evidence[] {
   const out: Evidence[] = [];
   for (const lang of LANGS) {
-    const defPat = DEF_PATTERNS[lang];
-    if (!defPat) continue;
-    const args = ["run", "-p", defPat.replace("$X", x), "--lang", lang, "--json=compact", ...globs.flatMap((g) => ["--globs", g]), root];
-    let defs: SgMatch[];
-    try {
-      defs = runSg(bin, args, root);
-    } catch (e) {
-      qlog.push({ label: `def ${x} (${lang})`, pattern: defPat, lang, globs, hits: 0, note: String(e) });
-      continue;
+    const defPats = DEF_PATTERNS[lang];
+    if (!defPats) continue;
+    const defs: SgMatch[] = [];
+    const seen = new Set<string>();
+    for (const defPat of defPats) {
+      const pat = defPat.replace("$X", x);
+      const args = ["run", "-p", pat, "--lang", lang, "--json=compact", ...globs.flatMap((g) => ["--globs", g]), root];
+      let found: SgMatch[];
+      try {
+        found = runSg(bin, args, root);
+      } catch (e) {
+        qlog.push({ label: `def ${x} (${lang})`, pattern: pat, lang, globs, hits: 0, note: String(e) });
+        continue;
+      }
+      qlog.push({ label: `def ${x} (${lang})`, pattern: pat, lang, globs, hits: found.length });
+      for (const d of found) {
+        const key = `${d.file}:${d.range.start.line}:${d.range.start.column}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          defs.push(d);
+        }
+      }
     }
-    qlog.push({ label: `def ${x} (${lang})`, pattern: defPat.replace("$X", x), lang, globs, hits: defs.length });
     for (const d of defs) {
       // ast-grep globs match relative paths — absolute paths never match.
       const rel = relative(root, d.file) || d.file;
@@ -329,12 +352,18 @@ export function audit(opts: AuditOptions): AuditResult {
   const notes: string[] = [];
   let claimType = "direct";
 
+  // runSg uses the root as BOTH the ast-grep path argument and the spawn
+  // cwd. A relative root ("src") resolves the path arg against the cwd and
+  // points at root/root — a silent zero-hit NOT-FOUND. Absolutize once so
+  // both roles resolve the same directory.
+  const root = resolve(opts.root);
+
   const runQuery = (q: BuiltQuery): void => {
     const args = q.rule
-      ? ["scan", "--rule", q.rule!, "--json=compact", ...opts.globs.flatMap((g) => ["--globs", g]), opts.root]
-      : ["run", "-p", q.pattern!, "--lang", q.lang, "--json=compact", ...opts.globs.flatMap((g) => ["--globs", g]), opts.root];
+      ? ["scan", "--rule", q.rule!, "--json=compact", ...opts.globs.flatMap((g) => ["--globs", g]), root]
+      : ["run", "-p", q.pattern!, "--lang", q.lang, "--json=compact", ...opts.globs.flatMap((g) => ["--globs", g]), root];
     try {
-      const hits = runSg(bin, args, opts.root);
+      const hits = runSg(bin, args, root);
       qlog.push({ label: q.label, pattern: q.pattern, rule: q.rule, lang: q.lang, globs: opts.globs, hits: hits.length });
       for (const h of hits.slice(0, opts.top * 4)) evidence.push(toEvidence(h));
     } catch (e) {
@@ -358,7 +387,7 @@ export function audit(opts: AuditOptions): AuditResult {
     claimType = routed.type;
     if (routed.type.startsWith("call-edge")) {
       const m = opts.claim.match(/\b([A-Za-z_]\w*)\s+calls?\s+([A-Za-z_]\w*)\b/i)!;
-      const hits = auditCallEdge(bin, opts.root, opts.globs, m[1], m[2], qlog);
+      const hits = auditCallEdge(bin, root, opts.globs, m[1], m[2], qlog);
       for (const h of hits.slice(0, opts.top)) evidence.push(h);
       const verdict = hits.length ? "VERIFIED" as const : "NOT-FOUND" as const;
       return {

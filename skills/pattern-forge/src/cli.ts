@@ -263,9 +263,12 @@ function cmdPaths(_args: Args): number {
     ["PORTS_ENV", P.PORTS_ENV], ["KNOWLEDGEBASE", P.KNOWLEDGEBASE],
   ];
   const width = Math.max(...rows.map(([k]) => k.length));
-  const lines = ["=== resolved paths (env override -> skill-marker discovery -> candidate probe -> $HOME default) ==="];
+  const lines = ["=== resolved paths (env override -> skill-marker discovery -> candidate probe -> honest miss) ==="];
   for (const [key, value] of rows) {
-    lines.push(`${key.padEnd(width)}  ${value}  ${existsSync(value) ? "" : "(MISSING)"}`);
+    const rendered = value === ""
+      ? "(unset — no estate checkout on this host)"
+      : `${value}  ${existsSync(value) ? "" : "(MISSING)"}`;
+    lines.push(`${key.padEnd(width)}  ${rendered}`);
   }
   lines.push("--- estate candidate probe ---");
   for (const r of P.probeEstate()) {
@@ -278,38 +281,49 @@ function cmdPaths(_args: Args): number {
 async function cmdDoctor(args: Args): Promise<number> {
   const checks: { name: string; ok: boolean; detail: string }[] = [];
 
-  const files = collectFiles(P.SKILL_DIR, { extensions: [...CODE_EXTS] }).files;
-  checks.push({ name: "scan skill dir", ok: files.length > 0, detail: `${files.length} code files under ${P.SKILL_DIR}` });
+  // Doctor speaks in its own summary lines. Leg telemetry (mcts_expand,
+  // source_done, ...) would drown them — silence the emitter for the
+  // duration of the checks, then restore the default stderr writer.
+  setEmitter(() => {});
+  try {
+    const files = collectFiles(P.SKILL_DIR, { extensions: [...CODE_EXTS] }).files;
+    checks.push({ name: "scan skill dir", ok: files.length > 0, detail: `${files.length} code files under ${P.SKILL_DIR}` });
 
-  const { index, stats } = await buildIndex(P.SKILL_DIR);
-  const hits = index.hybrid("race first valid winner hedge", 3);
-  checks.push({ name: "retrieve", ok: hits.length > 0, detail: `${stats.files} indexed, top=${hits[0]?.path ?? "none"}` });
+    const { index, stats } = await buildIndex(P.SKILL_DIR);
+    const hits = index.hybrid("race first valid winner hedge", 3);
+    checks.push({ name: "retrieve", ok: hits.length > 0, detail: `${stats.files} indexed, top=${hits[0]?.path ?? "none"}` });
 
-  const racer = new CodeRacer(2, 5);
-  const raced = racer.race([{ name: "noop", impl: () => 1 }, { name: "boom", impl: (): never => { throw new Error("expected"); } }]);
-  checks.push({ name: "bench", ok: raced.winner === "noop", detail: `winner=${raced.winner} rows=${raced.rows.length}` });
+    const racer = new CodeRacer(2, 5);
+    const raced = racer.race([{ name: "noop", impl: () => 1 }, { name: "boom", impl: (): never => { throw new Error("expected"); } }]);
+    checks.push({ name: "bench", ok: raced.winner === "noop", detail: `winner=${raced.winner} rows=${raced.rows.length}` });
 
-  const py = collectFiles(P.SKILL_DIR, { extensions: [...PY_EXTS] }).files;
-  const frames = extractTracebackFrames('  File "/x/y.py", line 3, in boom\nTraceback (most recent call last):');
-  checks.push({ name: "subgraph parse", ok: frames.length === 1, detail: `frames=${frames.length} pyFiles=${py.length}` });
+    const py = collectFiles(P.SKILL_DIR, { extensions: [...PY_EXTS] }).files;
+    const frames = extractTracebackFrames('  File "/x/y.py", line 3, in boom\nTraceback (most recent call last):');
+    checks.push({ name: "subgraph parse", ok: frames.length === 1, detail: `frames=${frames.length} pyFiles=${py.length}` });
 
-  const mcts = new SWEMcts(2, 5);
-  const searched = await mcts.search(async () => [{ actionId: "a", patch: "p" }], async () => 1);
-  checks.push({ name: "mcts", ok: searched.bestPatch === "p", detail: `${searched.iterations} iters best=${searched.bestStateId}` });
+    const mcts = new SWEMcts(2, 5);
+    const searched = await mcts.search(async () => [{ actionId: "a", patch: "p" }], async () => 1);
+    checks.push({ name: "mcts", ok: searched.bestPatch === "p", detail: `${searched.iterations} iters best=${searched.bestStateId}` });
 
-  checks.push({
-    name: "paths",
-    ok: existsSync(P.ESTATE),
-    detail: `ESTATE=${P.ESTATE} (probed: ${P.probeEstate().map((r) => `${r.candidate}=${r.exists ? "exists" : "missing"}${r.selected ? " [selected]" : ""}`).join(", ")})`,
-  });
+    const estateOk = P.ESTATE === "" || existsSync(P.ESTATE);
+    checks.push({
+      name: "paths",
+      ok: estateOk,
+      detail: P.ESTATE === ""
+        ? "no estate checkout on this host — resolver reported the miss honestly (no blessed stale dir)"
+        : `ESTATE=${P.ESTATE} (probed: ${P.probeEstate().map((r) => `${r.candidate}=${r.exists ? "exists" : "missing"}${r.selected ? " [selected]" : ""}`).join(", ")})`,
+    });
 
-  const sgBin = resolveAstGrep();
-  checks.push({ name: "audit (ast-grep)", ok: sgBin !== null, detail: sgBin ?? "ast-grep missing from PATH (set AST_GREP_BIN)" });
+    const sgBin = resolveAstGrep();
+    checks.push({ name: "audit (ast-grep)", ok: sgBin !== null, detail: sgBin ?? "ast-grep missing from PATH (set AST_GREP_BIN)" });
 
-  if (args.flags.get("borrow") === true) {
-    const borrowed = await borrow("mcts planning", { perSource: 1, skip: new Set(["exa"]) });
-    const okCount = Object.values(borrowed.sources).filter((s) => s?.ok).length;
-    checks.push({ name: "borrow (network)", ok: okCount > 0, detail: `${okCount} sources ok in ${borrowed.timingMs.toFixed(0)}ms` });
+    if (args.flags.get("borrow") === true) {
+      const borrowed = await borrow("mcts planning", { perSource: 1, skip: new Set(["exa"]) });
+      const okCount = Object.values(borrowed.sources).filter((s) => s?.ok).length;
+      checks.push({ name: "borrow (network)", ok: okCount > 0, detail: `${okCount} sources ok in ${borrowed.timingMs.toFixed(0)}ms` });
+    }
+  } finally {
+    setEmitter((line) => process.stderr.write(`${line}\n`));
   }
 
   const width = Math.max(...checks.map((c) => c.name.length));

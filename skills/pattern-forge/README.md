@@ -30,14 +30,18 @@ Retrieve, race, and borrow. One tool for finding code in our own tree (AST-BM25 
 
 ### Install
 
+No install step is needed where the skill system is active: every skill's
+`scripts/` directory is on PATH, so the repo-owned `scripts/forge` launcher
+resolves as a bare `forge` from any checkout (it finds the skill dir from its
+own location — no hardcoded host paths). Elsewhere:
+
 ```bash
-skills/pattern-forge/scripts/install-forge.sh        # symlinks `forge` onto PATH
+skills/pattern-forge/scripts/install-forge.sh                 # symlinks `forge` onto PATH
 skills/pattern-forge/scripts/install-forge.sh --prefix ~/.local/bin
 ```
 
-The installer resolves the skill directory from its own location — no
-hardcoded host paths — and links `<prefix>/forge` at `bin/forge.ts`
-(the package.json `bin` target). Requires `bun` on PATH.
+The installer links `<prefix>/forge` at `bin/forge.ts` (the package.json
+`bin` target). Both need `bun` on PATH.
 
 ### Quick start (3 commands max)
 

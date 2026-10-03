@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 
 import { extract, extractPySymbols } from "../src/extract";
 import { Bm25Index, countTerms, normalizeImport, tokenize } from "../src/bm25";
@@ -11,7 +11,9 @@ import type { Strategy } from "../src/concurrent";
 import { CodeRacer } from "../src/code-racer";
 import { resolveExaKey } from "../src/borrow";
 import { resolveGithubToken } from "../src/providers";
-import { pickFirstExisting } from "../src/paths";
+import { ESTATE, pickFirstExisting, probeEstate, tierOf } from "../src/paths";
+import { existsSync } from "node:fs";
+import { audit, resolveAstGrep } from "../src/audit";
 import { extractTracebackFrames } from "../src/subgraph";
 
 // Race telemetry is verified through its assertions, not by printing.
@@ -274,6 +276,22 @@ describe("paths", () => {
     const fallback = join(root, "fallback");
     expect(pickFirstExisting([join(root, "nope-a"), join(root, "nope-b")], fallback)).toBe(fallback);
   });
+
+  test("ESTATE is either empty (honest miss) or an existing directory — never a blessed stale dir", () => {
+    expect(ESTATE === "" || existsSync(ESTATE)).toBe(true);
+  });
+
+  test("probeEstate selects nothing on an honest miss", () => {
+    if (ESTATE === "") {
+      expect(probeEstate().every((r) => !r.selected)).toBe(true);
+    }
+  });
+
+  test("tierOf classifies everything external on an honest miss", () => {
+    if (ESTATE === "") {
+      expect(tierOf("/some/path/file.ts")).toBe("external");
+    }
+  });
 });
 
 describe("subgraph", () => {
@@ -285,5 +303,41 @@ describe("subgraph", () => {
 
   test("output with no traceback yields no frames", () => {
     expect(extractTracebackFrames("all good")).toHaveLength(0);
+  });
+});
+
+describe("audit", () => {
+  // Regression: the def patterns were `function $X($$$)`, which ast-grep
+  // 0.45.x never matches (the body must be accounted for), so every TS
+  // call-edge claim came back NOT-FOUND even when the call was there.
+  test("call-edge finds calls inside typed TS function bodies", () => {
+    if (!resolveAstGrep()) return; // ast-grep not installed on this host
+    const root = mkdtempSync(join(tmpdir(), "forge-audit-"));
+    writeFileSync(
+      join(root, "a.ts"),
+      "export function discover(): string {\n  return pick();\n}\nfunction pick(): string {\n  return \"x\";\n}\n",
+    );
+    const result = audit({ root, globs: [], top: 10, claim: "discover calls pick" });
+    expect(result.verdict).toBe("VERIFIED");
+    expect(result.evidence.length).toBeGreaterThan(0);
+  });
+
+  test("a relative root audits the same tree as the absolute root", () => {
+    if (!resolveAstGrep()) return; // ast-grep not installed on this host
+    // Regression: audit() passed the root to ast-grep as both the path
+    // argument and the spawn cwd, so a relative root ("src") scanned
+    // root/root and every claim came back NOT-FOUND.
+    const root = mkdtempSync(join(tmpdir(), "forge-audit-"));
+    writeFileSync(
+      join(root, "a.ts"),
+      "export function discover(): string {\n  return pick();\n}\nfunction pick(): string {\n  return \"x\";\n}\n",
+    );
+    const rel = relative(process.cwd(), root);
+    expect(rel).not.toMatch(/^[/\\]|[A-Za-z]:\\/); // actually relative, or this test proves nothing
+    const abs = audit({ root, globs: [], top: 10, claim: "discover calls pick" });
+    const fromRel = audit({ root: rel, globs: [], top: 10, claim: "discover calls pick" });
+    expect(abs.verdict).toBe("VERIFIED");
+    expect(fromRel.verdict).toBe("VERIFIED");
+    expect(fromRel.evidence.length).toBeGreaterThan(0);
   });
 });
