@@ -16,9 +16,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
+        # NOTE: submodules intentionally NOT fetched — the tree carries engine
+        # gitlinks (engines/herd/*, sigma, skills-hub, tools/pd-mcp-standalone)
+        # with no .gitmodules URL (estate policy: declare a submodule only when
+        # the checkout is on disk with its own .git). The one pin CI needs
+        # (ops/gitignore/templates) is fetched manually at its pinned SHA below.
         uses: actions/checkout@v4
-        with:
-          submodules: true
+
+      - name: Fetch gitignore templates
+        run: |
+          rm -rf ops/gitignore/templates
+          mkdir -p ops/gitignore/templates
+          curl -sL https://github.com/github/gitignore/archive/62f3997f1917b30f6eaee0c53ac2d791426513f2.tar.gz \
+            | tar -xz -C ops/gitignore/templates --strip-components=1
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
