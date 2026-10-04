@@ -1,9 +1,12 @@
 defaultThinkingLevel: medium
 modelRoles:
-  default: vercel-ai-gateway/inclusionai/ling-3.0-flash-sante-free:medium
   judge: openrouter/~typesafe/jev-latest
   tiny: local/lfm2.5-230m
   advisor: google/models/gemini-flash-tool-retrieval
+  default: vercel-ai-gateway/poolside/laguna-s-2.1-free:medium
+  fallbacks:
+    - vercel-ai-gateway/inclusionai/ling-3.1-flash:medium
+    - vercel-ai-gateway/inclusionai/ling-3.0-flash-sante:medium
 symbolPreset: unicode
 composer:
   shape: band
@@ -85,3 +88,22 @@ tier:
 advisor:
   enabled: true
   syncBacklog: "1"
+grep:
+  enabled: true
+glob:
+  enabled: true
+find:
+  enabled: "off"
+temperature: 0.2
+textVerbosity: low
+inlineToolDescriptors: "on"
+skillful: false
+personality: pragmatic
+retry:
+  fallbackChains: {}
+  usageAwareFallback: true
+  modelFallback: true
+  maxRetries: 2
+ttsr:
+  contextMode: keep
+  judge: "on"
