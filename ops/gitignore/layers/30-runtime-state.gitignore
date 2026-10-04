@@ -56,3 +56,16 @@ config/tau/marketplaces.json
 *.db
 *.db-shm
 *.db-wal
+
+# tau agent runtime churn (repo-hygiene 2026-10-03): composer cache dirs,
+# editor backups, device ids, puppeteer tmp work, compact bookkeeping.
+# config/tau/agent/config.yml itself stays tracked.
+config/tau/agent/cache/
+config/tau/agent/*.bak-*
+config/tau/agent/kimi-device-id
+config/tau/security/tmp-*
+config/tau/snapcompact-savings.jsonl
+config/tau/agent/memories/
+config/tau/puppeteer/
+bench-results-*.json
+bench-state.json

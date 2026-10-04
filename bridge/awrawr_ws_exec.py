@@ -264,6 +264,18 @@ def _spawn_env():
     env["HOME"] = _CANON_HOME
     env["USER"] = _CANON_USER
     env["LOGNAME"] = _CANON_USER
+    # Tess 2026-10-03: exec children must not inherit stale credential env from
+    # the daemon process environment. Single source of truth: /home/toxic/.secrets.
+    try:
+        with open("/home/toxic/.secrets") as _sf:
+            for _line in _sf:
+                _line = _line.strip()
+                if _line.startswith("GH_TOKEN=") or _line.startswith("GITHUB_TOKEN="):
+                    _k, _v = _line.split("=", 1)
+                    if _v:
+                        env[_k] = _v
+    except OSError:
+        pass
     return env
 
 

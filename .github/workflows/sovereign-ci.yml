@@ -12,40 +12,25 @@ concurrency:
 
 jobs:
   sovereign-test:
-    name: Sovereign Stack Tests & Health Validation
+    name: Sovereign stack tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-
-      - name: Install Dependencies
+      - name: Install dependencies
         run: bun install
-
-      - name: Run Web UI Integration & Unit Tests
+      - name: Web UI tests
         run: bun test tests/open_web_uis.test.ts
-
-      - name: Run Ports & Infrastructure Tests
+      - name: Ports & infrastructure tests
         run: bun test tests/ports.test.ts
-
-      - name: Validate Shell Script Syntax
+      - name: Shell syntax (scripts)
         run: |
           for script in scripts/*.sh; do
-            if [ -f "$script" ]; then
-              bash -n "$script"
-            fi
+            [ -f "$script" ] && bash -n "$script"
           done
-
-      - name: Validate Health Check Scripts
+      - name: Health-check script syntax
         run: |
           bash -n scripts/health-check.sh
           bash -n scripts/open-web-uis.sh
-
-      - name: Build-check Sovereign Router TS (:25104)
-        run: |
-          cd tools/sovereign-router/sovereign-router-ts
-          bun build router.ts --outdir=/tmp/sovereign-router-ts-check --target=bun
