@@ -39,5 +39,11 @@ jobs:
         run: |
           find . -maxdepth 3 -name "*.sh" -not -path "*/node_modules/*" -not -path "*/target/*" -exec bash -n {} +
 
+      - name: Fetch gitignore templates (nested github/gitignore pin)
+        run: |
+          sha=$(git ls-files -s ops/gitignore/templates | awk '{print $2}')
+          rm -rf ops/gitignore/templates
+          git clone --quiet https://github.com/github/gitignore.git ops/gitignore/templates
+          git -C ops/gitignore/templates checkout --quiet "$sha"
       - name: gitignore manifest in sync
         run: bun ops/bin/gitignore-sync.ts --check
