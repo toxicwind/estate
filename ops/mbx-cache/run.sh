@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT="${ESTATE_HOME:-/home/toxic/estate}"
-BIN="$ROOT/vendored/mr-boxington-cache/target/release/mise-cache"
+BIN="$ROOT/vendored/mr-boxington-cache/target/release/mbx-cache"
 DATA_DIR="${MBX_CACHE_DATA_DIR:-$ROOT/var/runtime/mbx-cache}"
 PORT="${MBX_CACHE_PORT:?MBX_CACHE_PORT must come from config/ports.env}"
 
