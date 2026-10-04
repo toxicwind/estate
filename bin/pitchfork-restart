@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# pitchfork-restart — owned restart wrapper for pitchfork daemons (2026-09-20).
+# pitchfork-restart — owned restart wrapper for pitchfork daemons (2026-09-20;
+# hot-swap default 2026-10-04).
 #
 # ROOT CAUSE IT FIXES:
 #   pitchfork tracks daemons by PID. When that tracking desyncs from reality
@@ -13,21 +14,84 @@
 #   `pitchfork stop` it verifies the port is actually free, and reaps a
 #   desynced holder if one remains, before starting the new instance.
 #
+#   2026-10-04 (Chris's order): `pitchfork restart` is stop-then-start --
+#   SIGTERM first, start second. A daemon whose replacement cannot boot (bad
+#   deploy, missing dep, wedged port) leaves the service dark from the moment
+#   the old process dies; estate/tau was unreachable ~2 minutes on 2026-10-03
+#   for exactly this reason. The default mode is now verify-then-signal: a
+#   candidate running the daemon's own definition is booted on a staging
+#   port and health-checked, and the old process is signaled ONLY after the
+#   candidate proves healthy. A candidate that never becomes healthy is shut
+#   down; the old process is never touched. If the supervisor-managed start
+#   on the real port then fails, the wrapper retries the start once
+#   (rollback); if that also fails it exits loudly and leaves the staging
+#   candidate alive as an emergency fallback.
+#
+# PORT-SHARING NOTE (SO_REUSEPORT / fd handoff):
+#   Apps that set SO_REUSEPORT on their listener (or inherit the listening
+#   fd from the old process, cf. Cloudflare's "graceful upgrades in Go")
+#   can bind the REAL port while the old instance still serves; the old is
+#   signaled only after the new passes health checks, which yields literally
+#   zero failed health checks on the real port during cutover. This wrapper
+#   does NOT require port-sharing: the staging-port candidate below is the
+#   generic fallback that works for any port-bound daemon whose port can be
+#   overridden via env (or appears as a token in its run command). If a
+#   daemon ever gains SO_REUSEPORT support, the candidate phase can aim at
+#   the real port directly -- the ordering guarantee (verify before signal)
+#   is unchanged; only the staging-port selection becomes unnecessary.
+#
+# PITCHFORK PRE-START CHECK vs TIME_WAIT (2026-10-04, measured):
+#   `pitchfork start` refuses when ANY socket-table entry mentions the port
+#   -- including client-side TIME_WAITs where the port is only the peer
+#   ("already in use by process 'unknown' (PID: 0)"). It is a naive port-
+#   number scan, not a bind test. The wrapper therefore pre-drains TIME_WAIT
+#   (bounded 75s; kernel expiry is 60s) before every supervisor start and
+#   retries once on a phantom conflict. Daemons with steady traffic will
+#   always have some TIME_WAITs at cutover, so the cutover gap is bounded
+#   by the drain, not by the wrapper. True zero-gap cutover needs
+#   SO_REUSEPORT (above).
+#
+# EXIT CODES:
+#   0  new version serving (hot) / restart done (cold)
+#   3  absolute refusal (squawk, protected bridge holder without --force-bridge)
+#   4  port still held after SIGKILL (desync reap failed)
+#   5  hot: rolled back to the OLD version (daemon serving, new version failed);
+#      cold: start/verify failed
+#   6  hot: daemon DOWN after rollback -- staging candidate left ALIVE as
+#      emergency fallback (check its log, promote manually)
+#   7  (cold legacy) port bound but health not 200 -- now folded into 5
+#   8  pre-start gate (deps-verify / clean) failed
+#   9  hot: candidate never healthy -- OLD PROCESS NEVER TOUCHED
+#
 # SAFETY: will NEVER kill the 25204 bridge holder unless --force-bridge is
 #   passed explicitly (and even then it prints the safe procedure reminder).
 #
-# Usage: pitchfork-restart <daemon-id> [--reregister|--evict] [--force-bridge]
-#   e.g. pitchfork-restart sovereign/herd
+# Usage: pitchfork-restart <daemon-id> [--cold|--reregister|--evict] [--force-bridge] [--dry-run]
+#   e.g. pitchfork-restart estate/keypool
 # Modes:
-#   (default)    stop -> start. Ground-truth port verification + desync reap.
+#   (default)    hot: candidate on staging port -> health check -> SIGTERM
+#                old (exact PID) -> supervisor start on real port
+#                (readiness-gated) -> independent ss+curl verification ->
+#                rollback on failure. Falls back to --cold with a warning
+#                when the daemon has no port or no run command in toml.
+#   --cold       stop -> start. Ground-truth port verification + desync reap.
+#                (The pre-2026-10-04 default.)
 #   --reregister stop -> clean --daemon -> start. Evicts the supervisor's
 #                persisted snapshot so `pitchfork start` re-reads the CURRENT
 #                pitchfork.toml (fixes the config-vs-state split: run/dir/env
 #                edits are invisible to a running daemon until re-registration).
+#                Always cold: snapshot eviction requires a stopped daemon.
 #   --evict      stop -> clean --daemon. Deregisters without starting.
+#   --dry-run    print the full planned sequence; change nothing.
 # SAFETY: awrawr-ws-exec (live bridge, :25204) is refused without
 #   --force-bridge. Anything squawk (name match, :25147, :25135) is ALWAYS
 #   refused -- no override flag. Squawk is Chris's lane; use the fleet.
+#
+# TEST HOOKS (env):
+#   PFR_TOML               override the pitchfork.toml path (default
+#                          /home/toxic/estate/pitchfork.toml). Used by the
+#                          synthetic-daemon test suite; never set in production.
+#   PFR_CANDIDATE_TIMEOUT  seconds to wait for candidate health (default 60).
 set -euo pipefail
 
 # Resolve pitchfork: prefer the RUNNING supervisor's own binary (same source of
@@ -51,17 +115,26 @@ resolve_pf() {
   return 1
 }
 PF="$(resolve_pf)" || { echo "[pitchfork-restart] FATAL: no usable pitchfork binary" >&2; exit 5; }
-TOML="/home/toxic/estate/pitchfork.toml"
+TOML="${PFR_TOML:-/home/toxic/estate/pitchfork.toml}"
 # pitchfork resolves the project from CWD: start needs pitchfork.toml, so cd there.
 cd "$(dirname "$TOML")"
 
-DAEMON="${1:?usage: pitchfork-restart <daemon-id> [--reregister|--evict] [--force-bridge]}"
-FORCE_BRIDGE=0; MODE="restart"
+for a in "$@"; do
+  case "$a" in
+    -h|--help|help)
+      sed -n '1,/^set -euo pipefail$/p' "$0" | grep -v '^set -euo pipefail$'
+      exit 0 ;;
+  esac
+done
+DAEMON="${1:?usage: pitchfork-restart <daemon-id> [--cold|--reregister|--evict] [--force-bridge] [--dry-run]}"
+FORCE_BRIDGE=0; MODE="hot"; DRYRUN=0
 for a in "${@:2}"; do
   case "$a" in
     --force-bridge) FORCE_BRIDGE=1 ;;
+    --cold) MODE="cold" ;;
     --reregister) MODE="reregister" ;;
     --evict) MODE="evict" ;;
+    --dry-run) DRYRUN=1 ;;
     *) echo "[pitchfork-restart] unknown flag: $a" >&2; exit 2 ;;
   esac
 done
@@ -138,9 +211,64 @@ if m:
 PYEOF
 }
 
+# Resolve the daemon's run command / working dir / mise flag as JSON.
+resolve_def() {
+  python3 - "$TOML" "$SHORT" <<'PYEOF'
+import sys, re, json
+toml, name = sys.argv[1], sys.argv[2]
+blk, in_target = [], False
+for line in open(toml):
+    m = re.match(r'\[daemons\.([^\]]+)\]', line)
+    if m:
+        if in_target:
+            break
+        in_target = (m.group(1) == name)
+        continue
+    if in_target:
+        blk.append(line)
+text = "".join(blk)
+def s1(pat):
+    m = re.search(pat, text)
+    return m.group(1) if m else ""
+print(json.dumps({
+    "run": s1(r'(?m)^run\s*=\s*"(.*)"'),
+    "dir": s1(r'(?m)^dir\s*=\s*"(.*)"') or ".",
+    "mise": s1(r'(?m)^mise\s*=\s*(\w+)') == "true",
+}))
+PYEOF
+}
+
+# Stanza env as K=V lines (raw values; $refs expanded at candidate launch).
+resolve_env() {
+  python3 - "$TOML" "$SHORT" <<'PYEOF'
+import sys, re
+toml, name = sys.argv[1], sys.argv[2]
+blk, in_target = [], False
+for line in open(toml):
+    m = re.match(r'\[daemons\.([^\]]+)\]', line)
+    if m:
+        if in_target:
+            break
+        in_target = (m.group(1) == name)
+        continue
+    if in_target:
+        blk.append(line)
+text = "".join(blk)
+m = re.search(r"env\s*=\s*\{(.*?)\}", text, re.S)
+if m:
+    for k, v in re.findall(r'(\w+)\s*=\s*"([^"]*)"', m.group(1)):
+        print(f"{k}={v}")
+PYEOF
+}
+
 # PIDs (space-separated) currently holding 127.0.0.1:$port.
 port_holders() {
   ss -tlnp 2>/dev/null | grep -E "127\.0\.0\.1:${1}([^0-9]|$)" | grep -oP 'pid=\K[0-9]+' | sort -u | tr '\n' ' ' || true
+}
+
+# True when ANY local listener exists on $port (no pid needed).
+port_listening() {
+  ss -tln 2>/dev/null | grep -qE ":${1}([^0-9]|$)"
 }
 
 pid_alive() { kill -0 "$1" 2>/dev/null; }
@@ -158,15 +286,463 @@ is_protected() {
   return 1
 }
 
-# --- main (event-driven: zero sleep/poll loops) -------------------------------
-# Readiness is the SUPERVISOR's job: `pitchfork start --port/--http` blocks until
-# the daemon's own probes pass. This wrapper only orchestrates stop/start against
-# ground truth (the port, via ss) and performs ONE independent verification pass
-# (real ss + real curl) afterwards. No deadline loops, no sleeps.
+# --- hot-swap candidate machinery -------------------------------------------
+# The candidate is a real instance of the daemon's own definition (run/dir/env
+# from pitchfork.toml, plus the ports.env SSOT), launched directly — NOT via
+# the supervisor — on a staging port. It is verified healthy BEFORE the old
+# process is signaled. Kill discipline: the candidate is always shut down on
+# every exit path (EXIT trap) except the total-failure path, where it is
+# deliberately left alive as an emergency fallback and the trap is cleared.
+
+CANDIDATE_PID=""; CANDIDATE_LOG=""; CANDIDATE_PIDFILE=""
+CAND_RUN=""; STAGING_PORT=""
+
+# Pick a free staging port from 61000-62999 (above the ephemeral range, below
+# anything the estate assigns). Single ss snapshot, then a bash scan.
+pick_staging_port() {
+  local listeners p
+  listeners="$(ss -tln 2>/dev/null | grep -oP ':\K[0-9]+(?=\s)' | sort -u)"
+  for p in $(seq 61000 62999); do
+    if ! grep -qx "$p" <<<"$listeners"; then
+      echo "$p"
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Bounded readiness probes. A successful probe IS the event (not a timer):
+# curl-200 or an observed listener ends the wait immediately.
+wait_for_health() {
+  local url="$1" timeout_s="$2" cand="$3" i=0
+  while (( i < timeout_s )); do
+    if [[ -n "$cand" ]] && ! pid_alive "$cand"; then
+      echo "[pitchfork-restart] candidate pid=$cand died during boot" >&2
+      return 1
+    fi
+    if curl -sf -m 2 "$url" >/dev/null 2>&1; then return 0; fi
+    sleep 1
+    i=$((i+1))
+  done
+  return 1
+}
+
+wait_for_port() {
+  local port="$1" timeout_s="$2" cand="$3" i=0
+  while (( i < timeout_s )); do
+    if [[ -n "$cand" ]] && ! pid_alive "$cand"; then
+      echo "[pitchfork-restart] candidate pid=$cand died during boot" >&2
+      return 1
+    fi
+    if port_listening "$port"; then return 0; fi
+    sleep 1
+    i=$((i+1))
+  done
+  return 1
+}
+
+# Expand $VAR / ${VAR} references only. Deliberately NOT eval: no command
+# substitution ever runs on config values.
+expand_refs() {
+  local s="$1" ref var val
+  while [[ "$s" =~ (\$\{?[A-Za-z_][A-Za-z_0-9]*\}?) ]]; do
+    ref="${BASH_REMATCH[1]}"
+    var="${ref#\$}"; var="${var#\{}"; var="${var%\}}"
+    val="${!var:-}"
+    s="${s//$ref/$val}"
+  done
+  printf '%s' "$s"
+}
+
+# Export the stanza env into the current shell (candidate launcher context).
+apply_stanza_env() {
+  local line k v
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    k="${line%%=*}"; v="${line#*=}"
+    export "$k=$(expand_refs "$v")"
+  done <<<"$STANZA_ENV_LINES"
+}
+
+# Rewrite every exported var that points at the real port so the candidate
+# aims at the staging port instead. Exact matches are replaced wholesale;
+# values merely containing ":$PORT" (e.g. a base URL) get the substring swap.
+# NOTE: compare against a saved baseline -- the loop itself re-exports PORT,
+# so using $PORT as the baseline would corrupt later comparisons (a var named
+# PORT sorts before e.g. SYNTH_PORT and would poison the match).
+override_port_env() {
+  local var val REAL_PORT="$PORT"
+  for var in $(compgen -e); do
+    case "$var" in
+      PORT|STAGING_PORT|REAL_PORT) continue ;;  # PORT handled explicitly below
+    esac
+    val="${!var}"
+    if [[ "$val" == "$REAL_PORT" ]]; then
+      export "$var=$STAGING_PORT"
+      echo "[pitchfork-restart] hot: staging override $var=$STAGING_PORT" >&2
+    elif [[ "$val" == *":$REAL_PORT"* ]]; then
+      val="${val//:$REAL_PORT/:$STAGING_PORT}"
+      export "$var=$val"
+      echo "[pitchfork-restart] hot: staging override $var (port substring)" >&2
+    fi
+  done
+  export "PORT=$STAGING_PORT"
+}
+
+# Build the candidate command: rewrite a standalone port token in the run
+# command itself (e.g. `--port 25109`, `:25109`) when the port is spelled out
+# there. Env-carrying daemons are handled by override_port_env at launch.
+build_candidate_env() {
+  CAND_RUN="$RUN"
+  if [[ "$CAND_RUN" =~ (^|[^0-9])$PORT([^0-9]|$) ]]; then
+    CAND_RUN="$(sed -E "s/(^|[^0-9])${PORT}([^0-9]|$)/\1${STAGING_PORT}\2/g" <<<"$CAND_RUN")"
+    echo "[pitchfork-restart] hot: port token in run command rewritten to :$STAGING_PORT" >&2
+  fi
+}
+
+# Launch the candidate detached. The pidfile is written with $$ BEFORE the
+# final exec, so it always names the real app pid (exec preserves pid).
+launch_candidate() {
+  CANDIDATE_LOG="$(mktemp /tmp/pfr-candidate-XXXXXX.log)"
+  CANDIDATE_PIDFILE="$(mktemp /tmp/pfr-candidate-pid-XXXXXX)"
+  (
+    if [[ -n "$CAND_DIR" && -d "$CAND_DIR" ]]; then cd "$CAND_DIR"; fi
+    # ports.env is the estate's port SSOT; source it so $refs resolve.
+    if [[ -f "config/ports.env" ]]; then set -a; . ./config/ports.env; set +a; fi
+    apply_stanza_env
+    override_port_env
+    # NOTE: $BASHPID, not $$ -- $$ in a background subshell still names the
+    # PARENT script; signaling $$ would kill this wrapper itself.
+    echo $BASHPID > "$CANDIDATE_PIDFILE"
+    # shellcheck disable=SC2093
+    exec bash -c "$CAND_RUN" >>"$CANDIDATE_LOG" 2>&1
+  ) &
+  local i
+  for i in $(seq 1 100); do
+    [[ -s "$CANDIDATE_PIDFILE" ]] && break
+    sleep 0.1
+  done
+  CANDIDATE_PID="$(cat "$CANDIDATE_PIDFILE" 2>/dev/null || true)"
+  if [[ -z "$CANDIDATE_PID" ]]; then
+    echo "[pitchfork-restart] FATAL: candidate launcher produced no pid (log $CANDIDATE_LOG)" >&2
+    return 5
+  fi
+  if ! pid_alive "$CANDIDATE_PID"; then
+    echo "[pitchfork-restart] WARN: candidate pid=$CANDIDATE_PID died instantly; log tail:" >&2
+    tail -20 "$CANDIDATE_LOG" >&2 || true
+    # Leave CANDIDATE_PID set: wait_for_* fails fast on a dead pid.
+  fi
+  return 0
+}
+
+kill_candidate() {
+  [[ -z "${CANDIDATE_PID:-}" ]] && return 0
+  # Self-signal guard: the candidate must never be this wrapper. ($$ is the
+  # wrapper's own pid; $BASHPID is this function's subshell context.)
+  if [[ "$CANDIDATE_PID" == "$$" || "$CANDIDATE_PID" == "$BASHPID" ]]; then
+    echo "[pitchfork-restart] FATAL: candidate pid $CANDIDATE_PID == self; refusing to signal" >&2
+    CANDIDATE_PID=""
+    return 1
+  fi
+  if pid_alive "$CANDIDATE_PID"; then
+    kill -TERM "$CANDIDATE_PID" 2>/dev/null || true
+    sleep 1
+    if pid_alive "$CANDIDATE_PID"; then
+      kill -KILL "$CANDIDATE_PID" 2>/dev/null || true
+    fi
+  fi
+  CANDIDATE_PID=""
+}
+
+# --- pre-start gates + supervisor start --------------------------------------
+
+# P5 (dependency hermeticity) + P2/P4 (lint) pre-start gates. Each is guarded
+# by -x so deploy ordering with the owning crews is safe: an absent script
+# is a no-op, never a failure. In hot mode these run BEFORE the candidate
+# launches: fail fast while the old process is still untouched.
+run_prestart_gates() {
+  local REPO_BIN
+  REPO_BIN="$(dirname "$TOML")/bin"
+  if [[ -x "$REPO_BIN/daemon-deps-verify" ]]; then
+    echo "[pitchfork-restart] deps-verify pre-start gate..."
+    "$REPO_BIN/daemon-deps-verify" "$SHORT" \
+      || { echo "[pitchfork-restart] FAILED: dependency hermeticity gate" >&2; return 8; }
+  fi
+  if [[ -x "$REPO_BIN/daemon-lint" ]]; then
+    echo "[pitchfork-restart] daemon-lint pre-register gate..."
+    "$REPO_BIN/daemon-lint" "$DAEMON" \
+      || { echo "[pitchfork-restart] FAILED: daemon-lint gate" >&2; return 9; }
+  fi
+  return 0
+}
+
+# Start via the supervisor with readiness gating, then ONE independent
+# verification pass (real ss + real curl). Returns 0 on verified-healthy.
+supervisor_start_and_verify() {
+  local PFR_LOG START_RC FINAL_HOLDERS
+  PFR_LOG="$(mktemp /tmp/pfr-start-XXXXXX.log)"
+  # Pre-drain: pitchfork's pre-start port check trips on lingering TIME_WAIT
+  # ("already in use by process 'unknown' (PID: 0)") even though ss shows no
+  # LISTENING holder. Ground truth says the port is free; wait boundedly for
+  # the kernel state to catch up before asking pitchfork to bind.
+  if [[ -n "$PORT" ]]; then
+    wait_timewait_drain "$PORT" 75 || \
+      echo "[pitchfork-restart] WARN: TIME_WAITs persist on :$PORT; attempting start anyway" >&2
+  fi
+  START_RC=0
+  if [[ -n "$PORT" && -n "$HEALTH_URL" ]]; then
+    "$PF" start "$DAEMON" --port "$PORT" --http "$HEALTH_URL" >"$PFR_LOG" 2>&1 || START_RC=$?
+  elif [[ -n "$PORT" ]]; then
+    "$PF" start "$DAEMON" --port "$PORT" >"$PFR_LOG" 2>&1 || START_RC=$?
+  else
+    "$PF" start "$DAEMON" >"$PFR_LOG" 2>&1 || START_RC=$?
+  fi
+  if (( START_RC )) && [[ -n "$PORT" ]] && grep -q "already in use" "$PFR_LOG" \
+      && [[ -z "$(port_holders "$PORT")" ]]; then
+    # Phantom failure: pitchfork refused a port that ss says is free
+    # (TIME_WAIT race between the drain check and start). One more
+    # drain + retry before calling it a real failure.
+    echo "[pitchfork-restart] phantom port-conflict on :$PORT; re-draining and retrying start..." >&2
+    wait_timewait_drain "$PORT" 75
+    START_RC=0
+    if [[ -n "$HEALTH_URL" ]]; then
+      "$PF" start "$DAEMON" --port "$PORT" --http "$HEALTH_URL" >"$PFR_LOG" 2>&1 || START_RC=$?
+    else
+      "$PF" start "$DAEMON" --port "$PORT" >"$PFR_LOG" 2>&1 || START_RC=$?
+    fi
+  fi
+  if (( START_RC )); then
+    echo "[pitchfork-restart] start failed (rc=$START_RC):" >&2
+    tail -5 "$PFR_LOG" >&2 || true
+    return 1
+  fi
+  FINAL_HOLDERS="$(port_holders "$PORT")"
+  if [[ -z "${FINAL_HOLDERS// /}" ]]; then
+    echo "[pitchfork-restart] FAILED: nothing listening on :$PORT after start" >&2
+    return 1
+  fi
+  if [[ -n "$HEALTH_URL" ]]; then
+    if curl -sf -m 5 "$HEALTH_URL" >/dev/null 2>&1; then
+      echo "[pitchfork-restart] DONE: ${OLD_PID:-none} -> ${FINAL_HOLDERS// /} (:$PORT, health 200)"
+      return 0
+    fi
+    echo "[pitchfork-restart] real-port health check FAILED (:$PORT bound, no 200)" >&2
+    return 1
+  fi
+  echo "[pitchfork-restart] DONE: ${OLD_PID:-none} -> ${FINAL_HOLDERS// /} (:$PORT bound, no health URL)"
+  return 0
+}
+
+# --- TIME_WAIT drain -------------------------------------------------------
+# Pitchfork's pre-start port check spuriously fails when TIME_WAIT sockets
+# linger on the port (it reports "already in use by process 'unknown'
+# (PID: 0)"). The port is genuinely free (ss shows no LISTENING holder);
+# only kernel lingering state remains, with a fixed 60s expiry. Daemons
+# whose side closes first (HTTP/1.0-style) accumulate these; HTTP/1.1
+# keep-alive daemons whose peer closes first do not. Wait boundedly for
+# them to drain instead of failing the start.
+
+# Count TIME_WAIT sockets touching a port (either side of the 4-tuple).
+timewait_count() {
+  ss -tan 2>/dev/null | grep -cE "TIME-WAIT.*:$1([^0-9]|$)" || true
+}
+
+# Bounded wait for TIME_WAITs on $1 to drain. Succeeds instantly when none.
+wait_timewait_drain() {
+  local port="$1" deadline="${2:-75}" waited=0 n
+  n="$(timewait_count "$port")"
+  while (( n > 0 )) && (( waited < deadline )); do
+    (( waited % 5 == 0 )) && \
+      echo "[pitchfork-restart] waiting for $n TIME_WAIT on :$port to drain (${waited}s/${deadline}s)..." >&2
+    sleep 1
+    waited=$((waited + 1))
+    n="$(timewait_count "$port")"
+  done
+  (( n == 0 ))
+}
+
+# Start via the supervisor with TIME_WAIT pre-drain and phantom-failure
+# retry. Uses PORT/HEALTH_URL globals. Returns pitchfork's rc.
+# --- hot path ----------------------------------------------------------------
+# verify-then-signal: candidate on staging -> health -> SIGTERM old (exact
+# PID) -> supervisor start on real port -> verify -> rollback on failure.
+
+hot_path() {
+  local CAND_TIMEOUT STAGING_URL healthy
+  CAND_TIMEOUT="${PFR_CANDIDATE_TIMEOUT:-60}"
+
+  run_prestart_gates || return $?
+
+  STAGING_PORT="$(pick_staging_port)" || {
+    echo "[pitchfork-restart] FATAL: no free staging port" >&2; return 5
+  }
+  if [[ -n "$HEALTH_URL" ]]; then
+    STAGING_URL="${HEALTH_URL/:$PORT/:$STAGING_PORT}"
+  else
+    STAGING_URL=""
+  fi
+  echo "[pitchfork-restart] hot: staging candidate on :$STAGING_PORT"
+
+  build_candidate_env
+  launch_candidate || return $?
+  trap kill_candidate EXIT
+
+  echo "[pitchfork-restart] hot: candidate pid=$CANDIDATE_PID (log $CANDIDATE_LOG); waiting for health..."
+  healthy=0
+  if [[ -n "$STAGING_URL" ]]; then
+    wait_for_health "$STAGING_URL" "$CAND_TIMEOUT" "$CANDIDATE_PID" && healthy=1 || true
+  else
+    wait_for_port "$STAGING_PORT" "$CAND_TIMEOUT" "$CANDIDATE_PID" && healthy=1 || true
+  fi
+
+  if (( ! healthy )); then
+    echo "[pitchfork-restart] hot: candidate never became healthy; shutting it down." >&2
+    echo "[pitchfork-restart] hot: OLD PROCESS NEVER TOUCHED (still serving :$PORT)." >&2
+    kill_candidate
+    trap - EXIT
+    return 9
+  fi
+  echo "[pitchfork-restart] hot: candidate HEALTHY on :$STAGING_PORT -- retiring old process."
+
+  if retire_old_and_start; then
+    kill_candidate
+    trap - EXIT
+    return 0
+  else
+    local rc=$?
+    # rc=5: rolled back to the old version (daemon serving, but NOT the new
+    # version). rc=6: daemon down after rollback (candidate kept alive).
+    # Propagate; the caller logs the failure.
+    (( rc == 6 )) || kill_candidate  # rc=6 already cleared CANDIDATE_PID
+    trap - EXIT
+    return $rc
+  fi
+}
+
+# Signal the old process by exact PID (tracked + ground-truth holders),
+# normalize supervisor state immediately (prevents retry=true respawn races),
+# reap stragglers against ground truth, then supervisor start with rollback.
+retire_old_and_start() {
+  local holders h i REMAIN
+  holders="$(tracked_pid) $(port_holders "$PORT")"
+  holders="$(tr ' ' '\n' <<<"$holders" | grep -E '^[0-9]+$' | sort -u | tr '\n' ' ')"
+  for h in $holders; do
+    [[ "$h" == "${CANDIDATE_PID:-__none__}" ]] && continue  # never signal our candidate
+    [[ "$h" == "$$" ]] && continue  # never signal this wrapper itself
+    if is_protected "$h" "$PORT" && (( ! FORCE_BRIDGE )); then
+      echo "[pitchfork-restart] REFUSING: old holder pid=$h is protected (bridge)." >&2
+      return 3
+    fi
+    echo "[pitchfork-restart] hot: SIGTERM old pid=$h"
+    kill -TERM "$h" 2>/dev/null || true
+  done
+  # Normalize supervisor state right away: the tracked daemon is going down.
+  "$PF" stop "$DAEMON" >/dev/null 2>&1 || true
+  for h in $holders; do
+    [[ "$h" == "${CANDIDATE_PID:-__none__}" ]] && continue
+    [[ "$h" == "$$" ]] && continue  # never signal this wrapper itself
+    if pid_alive "$h"; then
+      # event-driven wait: kernel notifies via /proc when $h exits (no poll loop)
+      timeout 10 tail --pid="$h" -f /dev/null 2>/dev/null || true
+      if pid_alive "$h"; then
+        echo "[pitchfork-restart] hot: SIGKILL old pid=$h"
+        kill -KILL "$h" 2>/dev/null || true
+      fi
+    fi
+  done
+  # Ground truth: the real port must be free before the supervisor start
+  # (bounded wait; the wait itself ends the moment the port clears).
+  for i in $(seq 1 15); do
+    if [[ -z "$(port_holders "$PORT" | tr -d ' ')" ]]; then break; fi
+    sleep 1
+  done
+  REMAIN="$(port_holders "$PORT")"
+  if [[ -n "${REMAIN// /}" ]]; then
+    for h in $REMAIN; do
+      [[ "$h" == "${CANDIDATE_PID:-__none__}" ]] && continue
+      [[ "$h" == "$$" ]] && continue  # never signal this wrapper itself
+      if is_protected "$h" "$PORT" && (( ! FORCE_BRIDGE )); then
+        echo "[pitchfork-restart] FAILED: :$PORT held by protected pid=$h" >&2
+        return 4
+      fi
+      echo "[pitchfork-restart] hot: desync reap SIGKILL -> $h"
+      kill -KILL "$h" 2>/dev/null || true
+    done
+    sleep 1
+    REMAIN="$(port_holders "$PORT")"
+    if [[ -n "${REMAIN// /}" ]]; then
+      echo "[pitchfork-restart] FAILED: :$PORT still held after SIGKILL: $REMAIN" >&2
+      return 4
+    fi
+  fi
+  echo "[pitchfork-restart] hot: :$PORT clear; starting via supervisor..."
+  if supervisor_start_and_verify; then
+    return 0
+  fi
+  echo "[pitchfork-restart] hot: real-port start FAILED -- ROLLBACK: stop + start retry" >&2
+  "$PF" stop "$DAEMON" >/dev/null 2>&1 || true
+  if supervisor_start_and_verify; then
+    echo "[pitchfork-restart] hot: ROLLBACK OK: $DAEMON serving :$PORT (old version; new version failed to start)" >&2
+    return 5
+  fi
+  echo "[pitchfork-restart] FAILED: $DAEMON down on :$PORT after rollback." >&2
+  echo "[pitchfork-restart] emergency: staging candidate pid=${CANDIDATE_PID:-none} left ALIVE on :$STAGING_PORT." >&2
+  CANDIDATE_PID=""  # keep it alive: it is the only serving instance now
+  trap - EXIT
+  return 6
+}
+
+# --- dry run -----------------------------------------------------------------
+
+dry_run_hot() {
+  local sport="$1"
+  echo "[pitchfork-restart] DRY-RUN hot restart plan for $DAEMON (no state changes):"
+  echo "  port:      $PORT"
+  echo "  health:    ${HEALTH_URL:-none}"
+  echo "  old pid:   ${OLD_PID:-none} (tracked)"
+  echo "  run:       $RUN"
+  echo "  dir:       $CAND_DIR"
+  echo "  staging:   :$sport (port-carrying env vars + run-command port tokens -> staging)"
+  echo "  steps:"
+  echo "    1. pre-start gates (daemon-deps-verify, daemon-lint) -- fail fast, old untouched"
+  echo "    2. launch candidate: <run> with staging env (log /tmp/pfr-candidate-*.log)"
+  echo "    3. health-check candidate on :$sport (timeout ${PFR_CANDIDATE_TIMEOUT:-60}s)"
+  echo "    4. unhealthy -> kill candidate, exit 9, OLD PROCESS NEVER TOUCHED"
+  echo "    5. healthy -> SIGTERM old pid(s) by exact PID; pitchfork stop (state);"
+  echo "       ground-truth reap until :$PORT free"
+  echo "    6. pitchfork start (supervisor readiness-gated, TIME_WAIT pre-drain); ss+curl verify :$PORT"
+  echo "    7. start failure -> rollback (stop + start retry): rollback ok -> exit 5"
+  echo "       (old version serving); still down -> exit 6,"
+  echo "       staging candidate left ALIVE as emergency fallback"
+  echo "    8. kill staging candidate; DONE"
+}
+
+dry_run_cold() {
+  echo "[pitchfork-restart] DRY-RUN $MODE plan for $DAEMON (no state changes):"
+  echo "  port:      ${PORT:-none}"
+  echo "  health:    ${HEALTH_URL:-none}"
+  echo "  old pid:   ${OLD_PID:-none} (tracked)"
+  case "$MODE" in
+    cold)
+      echo "  steps: pitchfork stop -> ground-truth desync reap -> pre-start gates ->"
+      echo "         pitchfork start (readiness-gated) -> ss+curl verification" ;;
+    reregister)
+      echo "  steps: pitchfork stop -> desync reap -> clean --daemon (evict snapshot) ->"
+      echo "         pre-start gates -> pitchfork start -> ss+curl verification" ;;
+    evict)
+      echo "  steps: pitchfork stop -> desync reap -> clean --daemon; verify deregistered" ;;
+  esac
+}
+
+# --- main --------------------------------------------------------------------
 
 PORT="$(resolve_port)"
 HEALTH_URL="$(resolve_health_url)"
-echo "[pitchfork-restart] daemon=$DAEMON port=${PORT:-none}"
+DEF_JSON="$(resolve_def)" || DEF_JSON="{}"
+RUN="$(python3 -c 'import json,sys; print(json.load(sys.stdin).get("run",""))' <<<"$DEF_JSON")"
+CAND_DIR="$(python3 -c 'import json,sys; print(json.load(sys.stdin).get("dir","") or ".")' <<<"$DEF_JSON")"
+STANZA_ENV_LINES="$(resolve_env)"
+echo "[pitchfork-restart] daemon=$DAEMON port=${PORT:-none} mode=$MODE"
 
 OLD_PID="$(tracked_pid)"
 echo "[pitchfork-restart] tracked pid: ${OLD_PID:-none}"
@@ -193,6 +769,41 @@ if [[ -n "$PORT" ]]; then
     fi
   done
 fi
+
+# Hot mode: verify-then-signal. Falls back to cold (with a warning) when the
+# daemon has no port to stage on or no run command in pitchfork.toml --
+# portless daemons keep the legacy stop->start path.
+if [[ "$MODE" == "hot" ]]; then
+  if [[ -z "$PORT" ]]; then
+    echo "[pitchfork-restart] hot: no port for $DAEMON -- falling back to --cold" >&2
+  elif [[ -z "$RUN" ]]; then
+    echo "[pitchfork-restart] hot: no run command for $DAEMON in $TOML -- falling back to --cold" >&2
+  else
+    if (( DRYRUN )); then
+      dry_run_hot "$(pick_staging_port || echo '?')"
+      exit 0
+    fi
+    if hot_path; then
+      exit 0
+    else
+      rc=$?
+      echo "[pitchfork-restart] FAILED hot restart of $DAEMON (rc=$rc)" >&2
+      exit "$rc"
+    fi
+  fi
+fi
+
+if (( DRYRUN )); then
+  dry_run_cold
+  exit 0
+fi
+
+# --- cold path (pre-2026-10-04 behavior, preserved verbatim) -------------------
+# Event-driven: zero sleep/poll loops. Readiness is the SUPERVISOR's job:
+# `pitchfork start --port/--http` blocks until the daemon's own probes pass.
+# This wrapper only orchestrates stop/start against ground truth (the port,
+# via ss) and performs ONE independent verification pass (real ss + real
+# curl) afterwards. No deadline loops, no sleeps.
 
 echo "[pitchfork-restart] stop via pitchfork..."
 "$PF" stop "$DAEMON" >/dev/null 2>&1 || true
@@ -288,42 +899,14 @@ fi
 # Start with supervisor-side readiness gating: --port/--http make `pitchfork
 # start` block until the daemon actually binds and answers. This IS the event
 # mechanism (supervisor probes), not a wrapper poll loop.
+# supervisor_start_and_verify adds: TIME_WAIT pre-drain (pitchfork's port
+# check trips on lingering TIME_WAIT), phantom-conflict retry, and the
+# wrapper's own independent ss+curl ground-truth confirmation.
 echo "[pitchfork-restart] start via pitchfork (supervisor gates readiness)..."
-PFR_LOG="$(mktemp /tmp/pfr-start-XXXXXX.log)"
-START_RC=0
-if [[ -n "$PORT" && -n "$HEALTH_URL" ]]; then
-  "$PF" start "$DAEMON" --port "$PORT" --http "$HEALTH_URL" >"$PFR_LOG" 2>&1 || START_RC=$?
-elif [[ -n "$PORT" ]]; then
-  "$PF" start "$DAEMON" --port "$PORT" >"$PFR_LOG" 2>&1 || START_RC=$?
-else
-  "$PF" start "$DAEMON" >"$PFR_LOG" 2>&1 || START_RC=$?
-fi
-if (( START_RC )); then
-  echo "[pitchfork-restart] start failed (rc=$START_RC):" >&2
-  tail -5 "$PFR_LOG" >&2 || true
+if ! supervisor_start_and_verify; then
   exit 5
 fi
-
-# Independent verification: ONE ss read + ONE curl (real probes, not supervisor
-# self-report). The supervisor already gated readiness; this is the wrapper's
-# own ground-truth confirmation.
-if [[ -n "$PORT" ]]; then
-  FINAL_HOLDERS="$(port_holders "$PORT")"
-  if [[ -z "${FINAL_HOLDERS// /}" ]]; then
-    echo "[pitchfork-restart] FAILED: nothing listening on :$PORT after start" >&2
-    exit 6
-  fi
-  if [[ -n "$HEALTH_URL" ]]; then
-    if curl -sf -m 5 "$HEALTH_URL" >/dev/null 2>&1; then
-      echo "[pitchfork-restart] DONE: ${OLD_PID:-none} -> ${FINAL_HOLDERS// /} (:$PORT, health 200)"
-    else
-      echo "[pitchfork-restart] DONE (health not 200): ${OLD_PID:-none} -> ${FINAL_HOLDERS// /} (:$PORT bound)" >&2
-      exit 7
-    fi
-  else
-    echo "[pitchfork-restart] DONE: ${OLD_PID:-none} -> ${FINAL_HOLDERS// /} (:$PORT bound, no health URL)"
-  fi
-else
+if [[ -z "$PORT" ]]; then
   NEW_PID="$(tracked_pid)"
   echo "[pitchfork-restart] DONE: ${OLD_PID:-none} -> ${NEW_PID:-?} (no port to verify)"
 fi
