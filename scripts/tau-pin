@@ -18,6 +18,8 @@ export PI_DISABLE_UUTILS_BUILTINS=1
 name="$(basename -- "${BASH_SOURCE[0]}" 2>/dev/null || echo tau)"
 argv0="$(basename -- "$0")"
 [ "$argv0" != "tau-pin" ] && name="$argv0"
+# Compat: legacy `omp`/`pi` entry points resolve to the tau binary.
+case "$name" in omp|pi) name="tau";; esac
 
 # Resolution order: estate fork first, then the standalone checkout. Both are
 # real trees; the first one carrying a built binary wins.
