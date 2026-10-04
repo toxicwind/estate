@@ -157,3 +157,8 @@ kind = "dir"
 key = "standalone/duet"
 manifest = "standalone/duet/pitchfork.d"
 kind = "dir"
+
+[[project]]
+key = "ranch/android-fleet/phone-backup"
+manifest = "ranch/android-fleet/phone-backup/pitchfork.d"
+kind = "dir"
