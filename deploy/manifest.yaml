@@ -59,11 +59,11 @@ binaries:
     note: blessed 2026-10-02 (warden) — live matches estate HEAD; Chris: "Bless live"
   progress-watchdog:
     path: /home/toxic/estate/bin/progress-watchdog.py
-    sha256: "7dd01c2cb689dc959ff8ceefc4e1b6eddd19fd2b65b36524b6600b3d1768557c"
+    sha256: "64901196f4246de5f12a90388eda2c417d20f85db82f185d33e47c22bc8b433b"
     source: toxicwind/estate
     commit: e4a383cad849f80dec832251e159ac8c7839c5da
     git_path: bin/progress-watchdog.py
-    note: pinned 2026-10-02 (warden) — Chris: "Sure"
+    note: pinned 2026-10-02 (warden) — Chris: "Sure"; re-pinned 2026-10-04 osprey (stoat rename bless-live)
   openfang-kernel:
     path: /home/toxic/.local/bin/openfang
     sha256: "8af8a1475908974717c7b5d2480abebd09418ae7b2cc58fa9185fbc500cd2695"

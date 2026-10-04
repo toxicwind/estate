@@ -53,7 +53,7 @@ DAEMONS = {
     "beellama-fast": 25122,
     "whatsapp-mcp": 25146,
     "toolcall-llm": 25152,
-    "sovereign-router": 25104,
+    "stoat": 25104,
     # 2026-09-29: herd/model-guard/gatehouse were invisible to the watchdog;
     # herd sat stopped ~8h (gatehouse dep) with no alert. Added for coverage.
     "herd": 25100,
