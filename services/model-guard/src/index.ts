@@ -573,38 +573,44 @@ async function handleProxy(req: Request): Promise<Response> {
   const url = new URL(req.url);
   const method = req.method.toUpperCase();
 
-  let upstreamBody: Uint8Array | null = null;
+  // Hot path: only the /chat/completions rewrite path buffers the request
+  // body. Everything else streams straight through (req.body) without
+  // allocating or copying. Perf patch 2026-10-03 (Magpie-Cutting).
+  let upstreamBody: Uint8Array | ReadableStream<Uint8Array> | null = null;
   if (method === "POST" || method === "PUT" || method === "PATCH") {
-    let rawBytes: Uint8Array | null = new Uint8Array(await req.arrayBuffer());
     const ctype = req.headers.get("content-type") || "";
-
-    if (
+    const rewriteCandidate =
       method === "POST" &&
       url.pathname.replace(/\/+$/, "").endsWith("/chat/completions") &&
-      ctype.includes("json") &&
-      rawBytes.length > 0
-    ) {
-      const text = new TextDecoder().decode(rawBytes);
-      try {
-        const body: unknown = JSON.parse(text);
-        const [newBody, violations] = enforce(body);
-        if (violations.length > 0) {
-          const model =
-            typeof body === "object" && body !== null && !Array.isArray(body)
-              ? (body as Record<string, unknown>)["model"]
-              : null;
-          audit(model, violations);
-          rawBytes = new TextEncoder().encode(JSON.stringify(newBody));
+      ctype.includes("json");
+    if (rewriteCandidate) {
+      let rawBytes = new Uint8Array(await req.arrayBuffer());
+      if (rawBytes.length > 0) {
+        const text = new TextDecoder().decode(rawBytes);
+        try {
+          const body: unknown = JSON.parse(text);
+          const [newBody, violations] = enforce(body);
+          if (violations.length > 0) {
+            const model =
+              typeof body === "object" && body !== null && !Array.isArray(body)
+                ? (body as Record<string, unknown>)["model"]
+                : null;
+            audit(model, violations);
+            rawBytes = new TextEncoder().encode(JSON.stringify(newBody));
+          }
+        } catch (e) {
+          if (e instanceof ForbiddenError || e instanceof SyntaxError) {
+            // forbid-rejection, or malformed JSON -> 400 either way
+            return jsonError(400, String((e as Error).message || e));
+          }
+          console.error(`[model-guard] enforce error (fail-open): ${e}`);
         }
-      } catch (e) {
-        if (e instanceof ForbiddenError || e instanceof SyntaxError) {
-          // forbid-rejection, or malformed JSON -> 400 either way
-          return jsonError(400, String((e as Error).message || e));
-        }
-        console.error(`[model-guard] enforce error (fail-open): ${e}`);
       }
+      upstreamBody = rawBytes;
+    } else {
+      // Hot path: zero-copy straight through; undici sets framing.
+      upstreamBody = req.body;
     }
-    upstreamBody = rawBytes;
   }
 
   let upstreamResp: Response;
