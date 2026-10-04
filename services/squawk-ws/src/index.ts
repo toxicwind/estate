@@ -196,6 +196,40 @@ function saveState(): void {
   }
 }
 
+// ---------------------------------------------------------------- write-behind state persistence
+// Kestrel/E 2026-10-03: publish() used to JSON.stringify + write + rename
+// state.json on EVERY message — ~2ms at 17k gseq_map entries and growing with
+// uptime (the map never shrinks). Publishes now mark dirty; one atomic flush
+// per STATE_FLUSH_MS window. Crash-window loss is bounded to the window: boot
+// re-seeds chan_last/vault_last from disk and backfills gseq_map (the same
+// path as the documented upgrade renumber), so no message is ever lost —
+// only gseq assignment for the tail window. Clean shutdown flushes.
+const STATE_FLUSH_MS = 2000;
+let stateDirty = false;
+function markStateDirty(): void {
+  stateDirty = true;
+}
+function flushState(): void {
+  if (!stateDirty) return;
+  stateDirty = false;
+  saveState();
+}
+setInterval(flushState, STATE_FLUSH_MS);
+
+// Pre-serialized fanout frames — Kestrel/E 2026-10-03: one JSON.stringify per
+// message, cached on a WeakMap (bounded by outbox retention), reused by every
+// subscriber instead of re-serializing per send. pump() and the replay path
+// both resolve through frameOf, so behavior is identical.
+const frameCache = new WeakMap<BroadcastMsg, string>();
+function frameOf(m: BroadcastMsg): string {
+  let f = frameCache.get(m);
+  if (f === undefined) {
+    f = JSON.stringify(m);
+    frameCache.set(m, f);
+  }
+  return f;
+}
+
 // ---------------------------------------------------------------- message parsing
 
 function parseMsgFile(p: string): ParsedMsg | null {
@@ -282,7 +316,7 @@ function pump(sub: SubData): void {
     while (sub.queue.length > 0) {
       if (ws.getBufferedAmount() > SEND_BUFFERED_CAP) break; // wait for drain
       const m = sub.queue[0];
-      const n = ws.send(JSON.stringify(m));
+      const n = ws.send(frameOf(m)); // pre-serialized frame, cached per message
       if (n <= 0) break; // closed or dropped; drain/close will settle it
       sub.queue.shift();
     }
@@ -313,6 +347,7 @@ function peerOf(sub: SubData): string {
 }
 
 function fanout(msg: BroadcastMsg): void {
+  frameOf(msg); // serialize once per message; pump() reuses the cached frame
   for (const sub of [...subscribers]) {
     if (!sub.want.has(msg.channel)) continue;
     enqueue(sub, msg, peerOf(sub));
@@ -342,7 +377,7 @@ function publish(
   const buf = (outbox[channel] ??= []);
   buf.push(msg);
   if (buf.length > OUTBOX_KEEP) buf.splice(0, buf.length - OUTBOX_KEEP);
-  saveState();
+  markStateDirty(); // write-behind: flushed every STATE_FLUSH_MS / on clean shutdown
   fanout(msg);
   console.log(
     `publish seq=${gseq} file_seq=${fileSeq} ch=${channel} from=${sender} sealed=${sealed}`
@@ -801,6 +836,7 @@ function shutdown(signal: string): void {
       // ignore
     }
   }
+  flushState(); // persist any dirty state before exit
   server.stop(true);
   process.exit(0);
 }

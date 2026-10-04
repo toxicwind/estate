@@ -1,4 +1,4 @@
-name: Sovereign Projects Monorepo CI
+name: Estate CI
 
 on:
   push:
@@ -11,28 +11,20 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validate-workspace:
-    name: Validate Sovereign Monorepo Workspace & Syntax
+  validate:
+    name: Workspace validation & shell syntax
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-
-      - name: Verify Topology Structure
+      - name: Verify workspace topology
         run: |
-          for dir in qed herd mesh yote openfang shell; do
-            if [ ! -d "$dir" ]; then
-              echo "❌ Missing core workspace directory: $dir"
-              exit 1
-            fi
-            echo "✅ Workspace $dir present"
+          for dir in qed herd mesh yote shell scripts ops docs; do
+            [ -d "$dir" ] || { echo "missing: $dir"; exit 1; }
           done
-
-      - name: Validate Shell Script Syntax
-        run: |
-          find . -maxdepth 3 -name "*.sh" -not -path "*/node_modules/*" -not -path "*/target/*" -exec bash -n {} +
+      - name: Shell syntax
+        run: find scripts ops/bin -name "*.sh" -exec bash -n {} +
+      - name: gitignore manifest in sync
+        run: bun ops/bin/gitignore-sync.ts --check
