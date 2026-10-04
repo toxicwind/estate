@@ -61,7 +61,7 @@ binaries:
     path: /home/toxic/estate/bin/progress-watchdog.py
     sha256: "64901196f4246de5f12a90388eda2c417d20f85db82f185d33e47c22bc8b433b"
     source: toxicwind/estate
-    commit: e4a383cad849f80dec832251e159ac8c7839c5da
+    commit: 213218592259a0af3d403e6dc1f088358a23d79c
     git_path: bin/progress-watchdog.py
     note: pinned 2026-10-02 (warden) — Chris: "Sure"; re-pinned 2026-10-04 osprey (stoat rename bless-live)
   openfang-kernel:
