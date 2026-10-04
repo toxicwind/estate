@@ -1,46 +1,61 @@
-# mbx — the estate's default build entrypoint
+# mbx — the default build path
 
-`mbx` is a zero-dependency POSIX shell script (~7KB, ~1ms dispatch cost) that
-builds the current project through the best available tool. It lives at
-`bin/mbx` in this repo and is on `PATH` on both boxes:
+mbx ("mr-boxington") is the estate's build-cache system. **Every build on yote
+goes through it by default.** Two components, one name:
 
-- **yote:** `/home/toxic/.local/bin/mbx` → symlink to `estate/bin/mbx`
-- **hatch cell:** `/usr/local/bin/mbx` and `~/workspace/bin/mbx`
+## 1. `mbx` — Cargo compilation cache (CLI)
 
-## Why it exists
+Shared compilation cache across checkouts: `Run mbx setup once, then keep
+using Cargo normally.`
 
-Builds were invoked ad hoc (`bun run build`, `cargo build`, `make`,
-`moon run ...`, `mise run ...`) with no canonical entrypoint. `mbx` makes
-the build path the path of least resistance: one command, auto-detect,
-timed, with the exit code of the real build.
+- **Installed:** via mise — `mbx = "latest"` in `/home/toxic/.config/mise/config.toml`
+  (`[tools]`), currently 1.21.1 at
+  `/home/toxic/.local/share/mise/installs/mbx/1.21.1/mbx`.
+- **Default-path mechanism (primary):** mise command wrapper, set by
+  `mbx setup --global` — one line in the global mise config:
+  `wrappers = { cargo = { command = "mbx", env = { MBX_CARGO_SHIM_MODE = "1" } } }`.
+  Every `cargo` resolved through mise shims (interactive shells, `mise exec`,
+  yote-conn sessions) transparently runs through the mbx cache. No PATH tricks
+  needed; it survives daemon restarts and fresh shells.
+- **Fallback:** the cargo shim at `/home/toxic/.local/share/mbx/bin/cargo`
+  (installed by `mbx setup`). Interactive shells also prepend that dir to PATH
+  in `/home/toxic/.bashrc` (idempotent block) for tools that don't activate mise.
+- **Cache:** `/home/toxic/.cache/mbx` (45 GiB budget, auto-gc), managed targets
+  at `/home/toxic/.cache/mbx/targets`. `mbx stats` / `mbx cache` to inspect,
+  `mbx gc` to collect.
+- **Health:** `mbx doctor` — 0 failures, 0 warnings is the bar.
 
-## Detection order (first hit wins)
+Just run `cargo build`. That's the whole interface.
 
-Project root = nearest directory upward containing a project marker.
+## 2. `mbx-cache` — mise remote task cache (`:25148`)
 
-| # | Detector | Command run |
-|---|----------|-------------|
-| 1 | mise task named `build` | `mise run build` |
-| 2 | moon workspace (`.moon/`, `moon.yml`) | `moon run :build` |
-| 3 | `package.json` `scripts.build` | `bun run build` (`npm` fallback) |
-| 4 | `Cargo.toml` | `cargo build` |
-| 5 | `Makefile` | `make build` (fallback: `make`) |
+Cache for `mise run` task artifacts: the first run executes, later runs
+restore declared outputs instead of re-executing.
 
-## Usage
+- **Server:** estate-built Rust binary from `vendored/mr-boxington-cache`
+  (upstream `jdx/mr-boxington-cache` v0.1.1). Supervised by pitchfork as
+  `estate/mbx-cache`, loopback-only `127.0.0.1:25148`
+  (`MBX_CACHE_PORT` in `config/ports.env`). Launcher: `ops/mbx-cache/run.sh`;
+  data: `var/runtime/mbx-cache`.
+- **Client config:** `/home/toxic/.config/mise/conf.d/15-remote-cache.toml` —
+  `task.cache.remote_url = "http://127.0.0.1:25148"`, namespace `"estate"`,
+  mode `"read-write"`.
+- **Use:** declare `sources`/`outputs` on a mise task, then `mise run <task>`.
+  Deleting the outputs and re-running reports `restored outputs from cache`.
+  If the daemon is unreachable, mise treats it as a cache miss and executes
+  locally — fallback is built in, no separate path to maintain.
+- **Health:** `curl -fsS http://127.0.0.1:25148/v1/status` → `{"protocol":1,"status":"ok"}`.
 
-```sh
-mbx                  # build current project (auto-detect)
-mbx build            # same
-mbx <task> [args]    # named task: mise task first, else package.json script
-mbx --list           # show detectors and the selected command
-mbx --where          # print the selected command without running it
-mbx --help           # full help
+## Verify the default (yote)
+
+```bash
+command -v cargo        # /home/toxic/.local/share/mise/shims/cargo (wrapped → mbx)
+mbx doctor              # 0 failures, 0 warnings
+curl -fsS http://127.0.0.1:25148/v1/status
 ```
 
-Every run prints `mbx: done in Xs :: <command>` to stderr (suppress with
-`MBX_QUIET=1`). Exit status is the build's exit status.
+## Cell
 
-## For briefs / agents
-
-> Builds run through `mbx` (on PATH on hatch + yote; mise-first, timed).
-> Don't hand-roll `bun run build` / `cargo build` / `make` when `mbx` covers it.
+The hatch cell has no Rust toolchain, so the cargo cache has nothing to
+serve there — mbx is a yote default. (If a toolchain ever lands on the cell,
+run `mbx setup` there too; the mise declaration is user-global already.)
