@@ -7,3 +7,6 @@
 # which made ahead/behind counts meaningless and blocked the push.
 #
 # Re-add an entry only when the checkout is actually on disk and has its own .git.
+[submodule "ops/gitignore/templates"]
+	path = ops/gitignore/templates
+	url = https://github.com/github/gitignore.git
