@@ -762,15 +762,18 @@ try {
     async fetch(req) {
       const url = new URL(req.url);
       if (url.pathname === "/health") {
-        return Response.json({
-          ok: true,
-          service: SERVICE,
-          port: PORT,
-          upstream: UPSTREAM,
-          constraints: CONSTRAINTS_PATH,
-          entries: constraintsState.entries.length,
-          fallback: constraintsState.configBad,
-        });
+        return Response.json(
+          {
+            ok: true,
+            service: SERVICE,
+            port: PORT,
+            upstream: UPSTREAM,
+            constraints: CONSTRAINTS_PATH,
+            entries: constraintsState.entries.length,
+            fallback: constraintsState.configBad,
+          },
+          { headers: { "Access-Control-Allow-Origin": "*" } },
+        );
       }
       return handleProxy(req);
     },
