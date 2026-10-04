@@ -215,6 +215,26 @@ auto = ["start"]
 # Owned by the sovereign project; the parent only composes it.
 
 
+# estate/ranch/flock -- project-owned daemon manifest. Source of truth for the flock daemon.
+# Owned by the flock project; the parent only composes it.
+# SURGICAL RESTORE 2026-10-04: retire dc7227a21f assumed a TS consolidation that
+# does not exist -- the Rust binary on :25193 is load-bearing for cuttinggate.
+# Full recompose deferred: it would also ship other projects' pending fragment
+# drift (sovereign-router/mbx-cache/squawk-ws retirements) while those daemons
+# are still live. Recompose when those are resolved.
+
+[daemons.flock]
+health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
+port = 25193
+run = "exec /home/toxic/estate/ranch/flock/bin/flock-run.sh"
+dir = "/home/toxic/estate/ranch/flock"
+mise = false
+retry = true
+ready_http = "http://127.0.0.1:25193/health"
+env = { FLOCK_PORT = "25193" }
+auto = ["start"]
+
+
 [daemons.grafana]
 port = 25110
 run = "exec ./stack/services/grafana-mesh.sh"
