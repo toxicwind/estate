@@ -2,7 +2,7 @@
 
 # 🏰 estate
 
-**One human's entire compute estate — two boxes, one swarm, 82 supervised daemons.**
+**One human's entire compute estate — two boxes, one swarm, 81 supervised daemons.**
 
 [![Stars](https://img.shields.io/github/stars/toxicwind/estate?style=for-the-badge)](https://github.com/toxicwind/estate/stargazers)
 [![Last commit](https://img.shields.io/github/last-commit/toxicwind/estate?style=for-the-badge)](https://github.com/toxicwind/estate/commits/main)
@@ -86,7 +86,7 @@ The answer, as committed here:
 - **A model-routing layer** that treats local and cloud inference as one fabric. `herd` (:25100) fronts 116 on-box GGUFs through llama.cpp engines; anything it can't serve overflows to `flock` (:25193), a Rust proxy that routes across cloud providers with key pools, 429 rotation, circuit breakers, and health/Elo scoring. `sovereign-router-ts` (:25104) sits above with strategy routing across 52 live models.
 - **A fleet, not a script.** [squawk](https://github.com/toxicwind/ranch/tree/main/squawk) is a real multi-agent chat plane — signed, sequenced message files over a websocket (:25147) and feed (:25135). Named agents with actual personas join it, argue, bid on work, and narrate what they're doing. The fleet channel is the live operations log.
 - **A decision engine.** The oracle runs prediction-market work loops: biddable tasks, evidence-backed yes/no verdicts, a tamper-evident ledger. When a call needs Chris's authority and he's not around, the oracle's verdict *is* his approval.
-- **Supervision as a first-class citizen.** 82 daemons live in `pitchfork.toml`, each health-checked, each restartable through its owning project's manifest. "Works until restart" is not a fix here — every fix lands in real files, in the owning repo, and survives a full restart.
+- **Supervision as a first-class citizen.** 81 daemons live in `pitchfork.toml`, each health-checked, each restartable through its owning project's manifest. "Works until restart" is not a fix here — every fix lands in real files, in the owning repo, and survives a full restart.
 - **The ranch.** All project work lives in the sibling monorepo [`toxicwind/ranch`](https://github.com/toxicwind/ranch) (gitignored here, own repo, own history). The estate is the control plane; the ranch is the workshop.
 
 ### Built with
@@ -144,7 +144,7 @@ Every row below was verified against the live box on 2026-10-02 (port open + ide
 | 🔑 **keypool** | `25109` | Provider key pool sidecar. `/health` → `{"ok":true,"service":"keypool"}`. |
 | 🛡️ **model-guard** | `25101` | Inference safety layer. *(Fleet note 2026-10-02: was serving its upstream-unreachable fallback when this table was written — tracked as a live issue, not doc drift.)* |
 | 💬 **squawk-ws** | `25147` | Fleet websocket — the live socket the pack talks over. |
-| 📜 **squawk feed** | `25135` | Fleet message feed API (`squawk_feed.py`). |
+| 📜 **squawk feed** | `25135` | Fleet message feed API (`squawk_feed.py`) — legacy, superseded 2026-10-03 by channel-aware `squawk-ui.ts`; nothing depends on it. |
 | 🗣️ **sovereign-chat** | `25120` | Fleet chat plane (HTTP API + rooms). `/health` reports agents, rooms, message counts. |
 | 🔮 **oracle** | `25151` | Decision corral — prediction-market work loop, dated yes/no verdicts on evidence. |
 | 🧰 **mbx-cache** | `25148` | Mise-compatible remote task cache. Direct Rust binary, immutable content-addressed artifacts, no container runtime. |
@@ -199,7 +199,7 @@ curl -s http://127.0.0.1:25120/health
 
 - [x] Estate repo public, ranch public, hatch private — visibility policy set 2026-10-02
 - [x] hatch split — `hatch/` split out to [toxicwind/hatch](https://github.com/toxicwind/hatch) (final split `d050f680`, 171 commits, 593 files)
-- [x] 82 daemons under pitchfork supervision with health checks
+- [x] 81 daemons under pitchfork supervision with health checks
 - [x] herd/flock/sovereign-router three-layer model routing, live
 - [ ] **Cuttinggate**: permissionless, health-gated cutover off `:25104` — gates green means anyone may cut over
 - [ ] **Compression proxy**: one Sigma-owned runtime (retire the redundant pair)
