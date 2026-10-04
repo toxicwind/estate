@@ -31,14 +31,14 @@ version: 1
 binaries:
   herd:
     path: /home/toxic/estate/ranch/mesh/router/herd/herd
-    sha256: "e1d70dd074bf6c1218ce45be5e2cf9ebb609cf7439d279989d2429c2f08e2e4e"
-    immutable_copy: /home/toxic/estate/ranch/mesh/router/herd/herd.20260930-052800
+    sha256: "dddef255acb059eb00055700557b87b327c3aa911a9ae40d04139c1d1d69e543"
+    immutable_copy: /home/toxic/estate/ranch/mesh/router/herd/herd.20261003-211200
     source: toxicwind/ranch
-    commit: 401acad54ed36ae353a8f55222a908d99b7a596e
+    commit: 152e87375481671bb9d0af139830bf8fcd11db86
     upstream_base: 7a14664d98f0e66bc68bba08548290ca0b469f98
-    built_at: "2026-10-02T15:38:00Z"
+    built_at: "2026-10-04T03:35:00Z"
     daemon: herd
-    note: moved projects/herd -> ranch/mesh/router/herd 2026-10-02 (llama-swap renamed herd); sha verified e1d70dd0
+    note: warden takeover 2026-10-04 - blessed live rebuild (builder unknown, 2026-10-03 21:12 MDT, unchanged source, /health OK); sha verified dddef255acb0
   herd-keypool:
     path: /home/toxic/estate/bin/herd-keypool.py
     sha256: "078f3aacdf0550ae75c3219f0d53b3f4f9ebd7b6ce6d3c3e88614f269d059f16"
