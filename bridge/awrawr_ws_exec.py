@@ -133,6 +133,18 @@ async def read_frame(reader):
     return fin, opcode, payload
 
 
+# Backpressure isolation (2026-10-04): a slow peer must never freeze the
+# whole loop. send_frame used to await writer.drain() unbounded: when the
+# cell side could not read (tool-path saturation), drain() blocked this
+# single-threaded event loop for 24-61s (measured: yote audit gaps aligned
+# exactly with client-side stalls on trivial commands), stalling EVERY
+# concurrent command. Now the drain is bounded: a peer that cannot take
+# data within the deadline is treated as wedged and the connection fails
+# fast (the cell daemon reconnects via maintain()); in-flight commands on
+# the dead connection get errors, everyone else keeps moving.
+_DRAIN_TIMEOUT_S = 10.0
+
+
 async def send_frame(writer, opcode, payload=b""):
     hdr = bytes([0x80 | opcode])
     n = len(payload)
@@ -143,7 +155,12 @@ async def send_frame(writer, opcode, payload=b""):
     else:
         hdr += bytes([127]) + n.to_bytes(8, "big")
     writer.write(hdr + payload)
-    await writer.drain()
+    try:
+        await asyncio.wait_for(writer.drain(), timeout=_DRAIN_TIMEOUT_S)
+    except asyncio.TimeoutError:
+        raise ConnectionError(
+            "backpressure timeout: peer did not drain within %.0fs"
+            % _DRAIN_TIMEOUT_S)
 
 
 async def read_message(reader, writer, send_lock, timeout=120):
@@ -704,7 +721,9 @@ async def handle_client(reader, writer):
                 argv=argv, timeout=timeout))
             tasks.add(t)
             t.add_done_callback(tasks.discard)
-    except (ConnectionResetError, asyncio.IncompleteReadError, BrokenPipeError):
+    except (ConnectionResetError, asyncio.IncompleteReadError,
+            BrokenPipeError, ConnectionError):
+        # ConnectionError: send_frame's backpressure timeout (see above).
         pass
     finally:
         for t in list(tasks):
