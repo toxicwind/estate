@@ -1,0 +1,28 @@
+name: Estate Drift Detection
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  drift:
+    name: Detect estate drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: gitignore manifest drift
+        run: bun ops/bin/gitignore-sync.ts --check
+      - name: Shell syntax sweep
+        run: find scripts ops -name "*.sh" -not -path "*/node_modules/*" -exec bash -n {} +
+      - name: No unexpected nested gitlinks
+        run: |
+          dirty=$(git submodule --quiet foreach --recursive "echo dirty" 2>/dev/null || true)
+          [ -z "$dirty" ] || echo "::warning::nested gitlinks present: $dirty"
