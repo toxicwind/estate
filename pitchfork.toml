@@ -1306,3 +1306,21 @@ dir = "/home/toxic/estate"
 port = 25147
 retry = true
 boot_start = true
+
+# ---- project: ranch/android-fleet/phone-backup (1 daemon) ----
+# ranch/android-fleet/phone-backup — project-owned daemon manifest.
+# arrival-classifier: event-driven (inotify) classifier for Syncthing incoming/.
+# Watches /mnt/8TB/phone-archive/incoming/ with a 5s settle debounce; routes
+# arrivals to repos/, archives/, code/, docs/ under /mnt/8TB/phone-archive/.
+# Photos (DCIM/Pictures/media) and credential-shaped content are never
+# auto-routed — left in incoming/ for manual review.
+# (Hand-added 2026-10-03: source fragment at
+# ranch/android-fleet/phone-backup/pitchfork.d/arrival-classifier.toml;
+# a future recompose converges on the same stanza.)
+
+[daemons.arrival-classifier]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/android-fleet/phone-backup/arrival-classifier.ts"
+dir = "/home/toxic/estate/ranch/android-fleet/phone-backup"
+mise = false
+retry = true
+auto = ["start"]
