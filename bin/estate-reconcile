@@ -144,7 +144,26 @@ _parse_manifest() {
 }
 _field() { printf '%s' "${BIN["$1/$2"]:-}"; }
 
-_sha() { sha256sum "$1" 2>/dev/null | awk '{print $1}'; }
+_SHA_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/estate-reconcile-sha.cache"
+# _sha: content hash with mtime+size cache for large files (>100MB).
+# (2026-10-03: estate-reconcile watch re-hashed the 881MB openfang on every
+# inotify event, pinning a CPU. Large files now hash once until mtime/size change.)
+_sha() {
+  local f="$1" size mtime h key cached
+  size="$(stat -c%s "$f" 2>/dev/null || echo 0)"
+  if [ "$size" -gt 104857600 ]; then
+    mtime="$(stat -c%Y "$f" 2>/dev/null || echo 0)"
+    key="$f|$size|$mtime"
+    cached="$(grep -F "$key|" "$_SHA_CACHE" 2>/dev/null | cut -d'|' -f4 | tail -1)"
+    if [ -n "$cached" ]; then printf '%s\n' "$cached"; return 0; fi
+    h="$(sha256sum "$f" 2>/dev/null | awk '{print $1}')"
+    mkdir -p "$(dirname "$_SHA_CACHE")" 2>/dev/null
+    printf '%s|%s|%s|%s\n' "$f" "$size" "$mtime" "$h" >> "$_SHA_CACHE"
+    printf '%s\n' "$h"
+    return 0
+  fi
+  sha256sum "$1" 2>/dev/null | awk '{print $1}'
+}
 
 # Is path under one of the manifest runtime_paths? -> exempt from drift.
 _exempt() {
