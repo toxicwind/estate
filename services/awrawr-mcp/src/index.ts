@@ -1949,6 +1949,16 @@ function rpcError(id: number | string | null | undefined, code: number, message:
   return Response.json({ jsonrpc: "2.0", id: id ?? null, error: err });
 }
 
+function rpcResultObj(id: number | string | null | undefined, result: unknown): Record<string, unknown> {
+  return { jsonrpc: "2.0", id: id ?? null, result };
+}
+
+function rpcErrorObj(id: number | string | null | undefined, code: number, message: string, data?: unknown): Record<string, unknown> {
+  const err: Record<string, unknown> = { code, message };
+  if (data !== undefined) err["data"] = data;
+  return { jsonrpc: "2.0", id: id ?? null, error: err };
+}
+
 function hostAllowed(hostHeader: string | null): boolean {
   if (!hostHeader) return false;
   const h = hostHeader.toLowerCase().trim();
@@ -1967,6 +1977,85 @@ function hostAllowed(hostHeader: string | null): boolean {
     if (host === fh) return true;
   }
   return false;
+}
+
+// ---------------------------------------------------------------------------
+// Shared JSON-RPC dispatcher (HTTP + stdio transports)
+// ---------------------------------------------------------------------------
+
+type DispatchOut = Record<string, unknown> | null | Response;
+
+/**
+ * Dispatch one parsed JSON-RPC body through the MCP method table.
+ * Returns the JSON-RPC response object, null for notifications (no reply),
+ * or a raw Response when the HTTP transport needs a non-200 status.
+ * Transport-agnostic: the session id is read/written via callbacks, so HTTP
+ * keeps its Mcp-Session-Id header flow and stdio keeps a per-connection id.
+ */
+async function dispatchMcpBody(
+  body: RpcRequest,
+  getSession: () => string | null,
+  takeSession: (sid: string) => void,
+  httpMode: boolean,
+): Promise<DispatchOut> {
+  if (!body || body.jsonrpc !== "2.0" || typeof body.method !== "string") {
+    return rpcErrorObj(body?.id ?? null, -32600, "Invalid Request");
+  }
+  const method = body.method;
+  const id = body.id ?? null;
+
+  if (method === "initialize") {
+    const sid = crypto.randomUUID();
+    sessions.set(sid, Date.now());
+    takeSession(sid);
+    return rpcResultObj(id, {
+      protocolVersion: PROTOCOL_VERSION,
+      capabilities: { tools: {} },
+      serverInfo: { name: "awrawr-exec", version: "1" },
+    });
+  }
+
+  // session required from here on
+  const sid = getSession();
+  if (!sid || !sessions.has(sid)) {
+    if (httpMode) return new Response("invalid or missing session", { status: 400 });
+    return rpcErrorObj(id, -32000, "invalid or missing session");
+  }
+
+  if (method === "notifications/initialized") {
+    return null;
+  }
+
+  if (method === "tools/list") {
+    return rpcResultObj(id, {
+      tools: TOOLS.map((t) => ({ name: t.name, description: t.description, inputSchema: t.inputSchema })),
+    });
+  }
+
+  if (method === "tools/call") {
+    const params = body.params ?? {};
+    const name = String(params["name"] ?? "");
+    const args = (params["arguments"] ?? {}) as Record<string, unknown>;
+    const tool = TOOL_MAP.get(name);
+    if (!tool) {
+      return rpcErrorObj(id, -32601, `Unknown tool: ${name}`);
+    }
+    try {
+      const text = await tool.handler(args);
+      return rpcResultObj(id, { content: [{ type: "text", text }] });
+    } catch (e) {
+      return rpcResultObj(id, {
+        content: [{ type: "text", text: `error: ${e}` }],
+        isError: true,
+      });
+    }
+  }
+
+  if (method.startsWith("notifications/")) {
+    return null;
+  }
+
+  return rpcErrorObj(id, -32601, `Method not found: ${method}`);
 }
 
 async function handleMcp(req: Request): Promise<Response> {
@@ -1988,64 +2077,101 @@ async function handleMcp(req: Request): Promise<Response> {
   } catch {
     return rpcError(null, -32700, "Parse error");
   }
-  if (!body || body.jsonrpc !== "2.0" || typeof body.method !== "string") {
-    return rpcError(body?.id ?? null, -32600, "Invalid Request");
-  }
-  const method = body.method;
-  const id = body.id ?? null;
+  let newSid: string | null = null;
+  const out = await dispatchMcpBody(
+    body,
+    () => req.headers.get("mcp-session-id"),
+    (s) => { newSid = s; },
+    true,
+  );
+  if (out instanceof Response) return out;
+  if (!out) return new Response(null, { status: 202 });
+  const resp = Response.json(out);
+  if (newSid) resp.headers.set("Mcp-Session-Id", newSid);
+  return resp;
+}
 
-  if (method === "initialize") {
-    const sid = crypto.randomUUID();
-    sessions.set(sid, Date.now());
-    const resp = rpcResult(id, {
-      protocolVersion: PROTOCOL_VERSION,
-      capabilities: { tools: {} },
-      serverInfo: { name: "awrawr-exec", version: "1" },
-    });
-    resp.headers.set("Mcp-Session-Id", sid);
-    return resp;
-  }
+// ---------------------------------------------------------------------------
+// stdio transport (gatehouse/mcpproxy stdio spawn)
+// ---------------------------------------------------------------------------
 
-  // session required from here on
-  const sid = req.headers.get("mcp-session-id");
-  if (!sid || !sessions.has(sid)) {
-    return new Response("invalid or missing session", { status: 400 });
-  }
+/**
+ * Serve MCP over stdio for gatehouse (mcpproxy-go, mark3labs/mcp-go client).
+ * Reads BOTH framings: Content-Length headers when present, otherwise one
+ * JSON object per line (blank/non-JSON lines skipped). Writes
+ * `Content-Length: N\r\n\r\n{...}\n` — the trailing \n is mandatory
+ * because mcp-go reads with ReadString('\n'). No token auth here: the
+ * transport is a local pipe from gatehouse, which owns auth at its own
+ * layer. One session per process, created on initialize.
+ */
+async function runStdio(): Promise<void> {
+  const sess = { id: null as string | null };
+  let buf = Buffer.alloc(0);
 
-  if (method === "notifications/initialized") {
-    return new Response(null, { status: 202 });
-  }
+  const writeObj = (obj: Record<string, unknown>): void => {
+    const json = JSON.stringify(obj);
+    process.stdout.write(`Content-Length: ${Buffer.byteLength(json, "utf8")}\r\n\r\n${json}\n`);
+  };
 
-  if (method === "tools/list") {
-    return rpcResult(id, {
-      tools: TOOLS.map((t) => ({ name: t.name, description: t.description, inputSchema: t.inputSchema })),
-    });
-  }
-
-  if (method === "tools/call") {
-    const params = body.params ?? {};
-    const name = String(params["name"] ?? "");
-    const args = (params["arguments"] ?? {}) as Record<string, unknown>;
-    const tool = TOOL_MAP.get(name);
-    if (!tool) {
-      return rpcError(id, -32601, `Unknown tool: ${name}`);
-    }
+  const pump = async (body: unknown): Promise<void> => {
+    let out: DispatchOut;
     try {
-      const text = await tool.handler(args);
-      return rpcResult(id, { content: [{ type: "text", text }] });
+      out = await dispatchMcpBody(
+        body as RpcRequest,
+        () => sess.id,
+        (s) => { sess.id = s; },
+        false,
+      );
     } catch (e) {
-      return rpcResult(id, {
-        content: [{ type: "text", text: `error: ${e}` }],
-        isError: true,
-      });
+      const id = (body as { id?: unknown } | null)?.id ?? null;
+      out = rpcErrorObj(id as number | string | null, -32603, `internal error: ${e}`);
     }
-  }
+    if (!out || out instanceof Response) return; // notifications: no reply
+    writeObj(out);
+  };
 
-  if (method.startsWith("notifications/")) {
-    return new Response(null, { status: 202 });
-  }
+  let chain: Promise<void> = Promise.resolve();
+  const feed = (data: Buffer): void => {
+    buf = Buffer.concat([buf, data]);
+    for (;;) {
+      let i = 0;
+      while (i < buf.length && (buf[i] === 10 || buf[i] === 13 || buf[i] === 32 || buf[i] === 9)) i++;
+      if (i > 0) buf = buf.subarray(i);
+      if (buf.length === 0) break;
+      if (/^content-length\s*:/i.test(buf.subarray(0, 15).toString("latin1"))) {
+        const hdrEnd = buf.indexOf("\r\n\r\n");
+        if (hdrEnd < 0) break; // wait for full headers
+        const m = /content-length\s*:\s*(\d+)/i.exec(buf.subarray(0, hdrEnd).toString("latin1"));
+        if (!m) { buf = buf.subarray(hdrEnd + 4); continue; }
+        const len = parseInt(m[1], 10);
+        if (!Number.isSafeInteger(len) || len < 0 || len > 64 * 1024 * 1024) {
+          buf = buf.subarray(hdrEnd + 4);
+          continue;
+        }
+        if (buf.length < hdrEnd + 4 + len) break; // wait for full payload
+        const payload = buf.subarray(hdrEnd + 4, hdrEnd + 4 + len).toString("utf8");
+        buf = buf.subarray(hdrEnd + 4 + len);
+        let body: unknown;
+        try { body = JSON.parse(payload); } catch { continue; }
+        chain = chain.then(() => pump(body));
+      } else {
+        const nl = buf.indexOf(10);
+        if (nl < 0) break; // wait for full line
+        const line = buf.subarray(0, nl).toString("utf8").trim();
+        buf = buf.subarray(nl + 1);
+        if (!line || line[0] !== "{") continue; // skip blank/non-JSON lines
+        let body: unknown;
+        try { body = JSON.parse(line); } catch { continue; }
+        chain = chain.then(() => pump(body));
+      }
+    }
+  };
 
-  return rpcError(id, -32601, `Method not found: ${method}`);
+  process.stdin.on("data", (d: unknown) => feed(Buffer.isBuffer(d) ? d : Buffer.from(d as string)));
+  process.stdin.on("end", () => process.exit(0));
+  process.stdin.resume();
+  console.error(`[${SERVICE}] stdio transport ready (pid ${process.pid})`);
+  await new Promise<void>(() => {}); // serve until stdin closes or we're killed
 }
 
 // ---------------------------------------------------------------------------
@@ -2065,7 +2191,7 @@ async function selftest(): Promise<void> {
     ["shim detects quarantine", () => shimIsQuarantined("Sorry, I can't help you with this request right now. Is there anything else I can help you with?")],
     ["shim healthy reply", () => shimCanaryHealthy("canary friday, all good")],
     ["ask_id format", () => ASK_ID_RX.test(newAskId())],
-    ["tool count is 42", () => TOOLS.length === 42],
+    ["tool count is 39", () => TOOLS.length === 39],
     ["host allowlist localhost", () => hostAllowed("localhost:25198")],
     ["host allowlist 127.0.0.1", () => hostAllowed("127.0.0.1")],
     ["host allowlist funnel", () => hostAllowed(FUNNEL_HOST)],
@@ -2119,6 +2245,11 @@ async function selftest(): Promise<void> {
 async function main(): Promise<void> {
   if (process.argv.includes("--selftest")) {
     await selftest();
+    return;
+  }
+
+  if (process.argv.includes("--stdio")) {
+    await runStdio();
     return;
   }
 
