@@ -34,13 +34,15 @@ import time
 import urllib.parse
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from wsframe import WS_GUID, read_frame, send_frame, read_message  # noqa: E402
+from wsframe import (WS_GUID, read_frame, send_frame, read_message,
+                     _DrainTimeout)  # noqa: E402
 
 WS_HOST = "github-mcp-host.tailc9ac71.ts.net"
 WS_PATH = "/exec-ws"
 LOCAL_PORT = 8379
 TOKEN_FILE = os.path.expanduser("~/.awrawr_mcp_token")
 IDLE_S = 150
+PUT_DRAIN_TIMEOUT_S = 60.0  # cinder-idletime: < server XFER_IDLE_S=120
 
 
 def _surrogate():
@@ -203,7 +205,8 @@ async def _put_once(reader, writer, local, remote, size, digest,
                 blk = f.read(chunk)
                 if not blk:
                     break
-                await send_frame(writer, 0x2, blk, mask=True)
+                await send_frame(writer, 0x2, blk, mask=True,
+                                     drain_timeout=PUT_DRAIN_TIMEOUT_S)
                 sent += len(blk)
         await _send_json(writer, {"id": op_id, "op": "put-end"})
         doc = await _recv_json(reader, writer)
