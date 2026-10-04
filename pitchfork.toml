@@ -1255,6 +1255,7 @@ dir = "/home/toxic/.fleet-bus/squawk-relay"
 mise = false
 retry = true
 boot_start = true
+env = { SQUAWK_CODE_DIR = "/home/toxic/estate/ranch/squawk" }
 auto = ["start"]
 
 # ---- project: standalone/tau (1 daemon) ----
@@ -1341,6 +1342,17 @@ boot_start = true
 [daemons.arrival-classifier]
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/android-fleet/phone-backup/arrival-classifier.ts"
 dir = "/home/toxic/estate/ranch/android-fleet/phone-backup"
+mise = false
+retry = true
+auto = ["start"]
+
+# Hand-added 2026-10-04 (warden drift-watch): source fragment at
+# estate/pitchfork.d/squawk-tunnel-monitor.toml; the composed live config
+# had dropped it, leaving the daemon unstartable after the 23:27 supervisor
+# swap. Circuit breaker for the cell reverse tunnel (Browser -> Funnel -> Yote -> Cell).
+[daemons.squawk-tunnel-monitor]
+run = "exec /home/toxic/estate/bin/tunnel-monitor.sh"
+dir = "/home/toxic/estate"
 mise = false
 retry = true
 auto = ["start"]
