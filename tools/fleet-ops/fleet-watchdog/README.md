@@ -95,3 +95,19 @@ MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
 
 Read-only observer: it pages, it never restarts lanes or mutates chat
 state. No credentials in this tree.
+
+## DECOMMISSIONED 2026-10-05
+
+`sweepd.sh` / `sweep.py` were lost when the sovereign→estate path migration
+orphaned the script dir (the daemon kept referencing
+`/home/toxic/sovereign/tools/fleet-ops/fleet-watchdog/`, which no longer
+exists). The sweeper failed every 60s since Sep 29 with no ability to sweep.
+
+Disabled cleanly 2026-10-05 ~02:53 MDT:
+- `systemctl --user stop + disable fleet-watchdog-sweepd.service`
+- removed the stray unit symlink
+  `/home/toxic/.config/systemd/user/fleet-watchdog-sweepd.service`
+- `daemon-reload`; verified inactive, no respawn
+
+Do NOT re-enable this unit without restoring `sweepd.sh` + `sweep.py` first.
+Presence/rollover duties are covered by the reactive fleet-watch hook.
