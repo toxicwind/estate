@@ -1,0 +1,48 @@
+# jj colocated with git (jj owns the working copy, git stays authoritative).
+# Verbs: mise run jj-status | jj-log | jj-save "msg" | jj-push
+# Fallback: every task detects jj; without jj it runs the git equivalent.
+# Rollback: rm -rf .jj   (git history is untouched by colocation)
+[tools]
+jj = "0.45.1"
+
+[tasks."jj-status"]
+description = "working-copy status via jj (fallback: git)"
+run = """
+if command -v jj >/dev/null 2>&1 && jj root >/dev/null 2>&1; then
+  jj st --no-pager
+else
+  git status -sb
+fi
+"""
+
+[tasks."jj-log"]
+description = "recent history via jj (fallback: git)"
+run = """
+if command -v jj >/dev/null 2>&1 && jj root >/dev/null 2>&1; then
+  jj log -r '::@' --limit 20 --no-pager
+else
+  git log --oneline -20
+fi
+"""
+
+[tasks."jj-save"]
+description = "describe current change with a message (fallback: git commit)"
+usage = 'arg <msg> default="checkpoint" help="message for the change"'
+run = """
+MSG="${usage_msg:-checkpoint}"
+if command -v jj >/dev/null 2>&1 && jj root >/dev/null 2>&1; then
+  jj describe -m "$MSG" && jj st --no-pager
+else
+  git add -A && git commit -m "$MSG" && git status -sb
+fi
+"""
+
+[tasks."jj-push"]
+description = "push bookmarks via jj (fallback: git push)"
+run = """
+if command -v jj >/dev/null 2>&1 && jj root >/dev/null 2>&1; then
+  jj git push --all
+else
+  git push
+fi
+"""
