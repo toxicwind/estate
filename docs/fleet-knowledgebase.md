@@ -281,6 +281,15 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | sable | estate staleness hunter: docs audit DONE, now finding+fixing live drift (fleet-onboard, tau plugins, honest doc paths) | Sable | RUNNING (2026-10-02) — staleness hunter |
 | finch | Finch: provider scout sweep | Ember | DONE (2026-10-02) — 09ec4c0 |
 | pry | hatch-exploration: re-prove binary dispatch path, rebuild side-channel shim reshim-ready, test, commit | Ember | DONE (2026-10-02) — d17bdd54ff |
+| bramble | pseudoembedding anomaly lane, rephrased review run (wave 2 delivered clean) | cinder | RUNNING (2026-10-05) |
+| tarn | pseudoembedding anomaly lane, control review run (no trigger terminology) | cinder | RUNNING (2026-10-05) |
+| tansy | pseudoembedding anomaly lane, plain-term review run | cinder | RUNNING (2026-10-05) |
+| kess | pseudoembedding-anomaly/plain-term-review | cinder | RUNNING (2026-10-05) |
+| lark | anomaly lane, rephrased review run (wave 3 delivered clean) | cinder | RUNNING (2026-10-05) |
+| rill | pseudoembedding-anomaly/control-review | cinder | RUNNING (2026-10-05) |
+| quill | pseudoembedding-anomaly/plain-term-review (wave 4 delivered clean) | cinder | RUNNING (2026-10-05) |
+| sorrel | anomaly-lane/rephrased-review | cinder | RUNNING (2026-10-05) |
+| cinder | pseudoembedding hibug anomaly loop (subagent-control lane) | cinder | RUNNING (2026-10-05) |
 <!-- KB-ROLLUP:END -->
 
 
