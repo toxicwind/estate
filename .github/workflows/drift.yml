@@ -15,6 +15,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Fetch gitignore templates
+        # NOTE: same pinned-SHA tarball fetch as .github/workflows/ci.yml —
+        # submodules are intentionally not fetched in estate CI (see ci.yml
+        # comment), so the scheduled drift run must fetch the templates itself.
+        run: |
+          rm -rf ops/gitignore/templates
+          mkdir -p ops/gitignore/templates
+          curl -sL https://github.com/github/gitignore/archive/62f3997f1917b30f6eaee0c53ac2d791426513f2.tar.gz \
+            | tar -xz -C ops/gitignore/templates --strip-components=1
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
