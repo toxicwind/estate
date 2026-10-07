@@ -13,7 +13,8 @@ Retrieve, race, and borrow. One tool for finding code in our own tree (AST-BM25 
 | `retrieve` | `ast-bm25-racer`, `ast_indexer.py` | Hybrid AST + BM25 over the estate |
 | `race` | `hft-latency/bin/race.py` | Concurrent, hedged, first-valid-wins |
 | `bench` | `code_racer.py` (×2 copies) | Nanosecond candidate leaderboard |
-| `borrow` | `emergent-enrich/bin/route.py`, `race-borrow.ts` | 7 sources in parallel, ranked |
+| `borrow` | `emergent-enrich/bin/route.py`, `race-borrow.ts`, `paper-search` | 8 sources in parallel (incl. alphaXiv), ranked |
+| `gh-race` | `race-borrow.ts` | Multi-lane GH race × stars/forks/issues/updated ranking |
 | `mcts` | `mcts_engine.py` | Pick a patch by verifying it |
 | `subgraph` | `dynamic_subgraph_inducer.py` | Traceback → relevant files |
 | (shared) | `circuit_breaker.py` | Per-attempt deadline + rollback |
@@ -23,7 +24,9 @@ Retrieve, race, and borrow. One tool for finding code in our own tree (AST-BM25 
 - **retrieve** — Hybrid AST + BM25 over the estate; 26× faster to build, 127× faster per query than Python original; prunes at directory level, never silently truncates
 - **race** — First valid-wins racing with hedging; valid (output matches `match` AND exit 0), not merely finished; hedging launches backups at `--hedge-ms` if nobody has won; ledger tracks historical winners; no orphans — losers aborted on resolution
 - **bench** — Nanosecond comparison of candidate implementations; throws have no samples, rank last; median/p95/mean leaderboard
-- **borrow** — Seven sources in parallel (arXiv, OpenAlex, Semantic Scholar, DBLP, HuggingFace papers, GitHub, exa); wall time is slowest leg, not sum; cost/audit logged per source
+- **borrow** — Eight sources in parallel (arXiv, **alphaXiv**, OpenAlex, Semantic Scholar, DBLP, HuggingFace papers, GitHub, exa); wall time is slowest leg, not sum; cost/audit logged per source
+- **gh-race** — Multi-lane AbortController first-valid-wins GitHub ranking (stars/forks/issues/updated) from archived race-borrow
+- **doctrine** — Living doc; 7-pattern latency prose + PAPER-TASK/RESULT fleet protocol + poller/watchdog ops (supersedes archive/race + archive/paper-search)
 - **mcts** — Choose a patch by verifying candidates; passing returns +1, failing returns −1; `--real` exercises tree mechanics, without it uses toy reward
 - **subgraph** — Traceback tells where it broke; import graph tells why; marks traceback frames with `*`, walks imports to depth N, reports fan-in
 - **doctor** — Self-check every leg
@@ -58,7 +61,7 @@ forge bench --candidates '{"candidates":[{"name":"includes"},{"name":"array-inde
 
 ### Architecture
 
-Seven legs sharing one doctrine: many readers, one writer; the first valid answer wins; the slow path stays hot because we write down who won. Pure Bun. No npm dependencies — TypeScript and JavaScript get a real AST from `Bun.Transpiler.scan()`; Python uses a lexical extractor. Seven separate skills used to do this, each with its own copy of overlapping code. Merging them makes the shared doctrine legible in one place.
+Legs sharing one doctrine (living document — agents may mutate): many readers, one writer; the first valid answer wins; the slow path stays hot because we write down who won. Pure Bun. No npm dependencies — TypeScript and JavaScript get a real AST from `Bun.Transpiler.scan()`; Python uses a lexical extractor. Seven separate skills used to do this, each with its own copy of overlapping code. Merging them makes the shared doctrine legible in one place.
 
 ### Config / optional services
 
