@@ -67,5 +67,5 @@ Checks (each prints PASS/FAIL; exit 0 = all pass, 1 = any fail):
 
 It does not audit NVIDIA unlock files — those were removed when the provider
 catalog moved to `models.yml` with herd/sovereign dynamic discovery. If you
-need provider ranking evidence, see the `paper-search` skill and the ranker
-reports, not this skill.
+need provider ranking evidence, see `pattern-forge` (`forge borrow` / PAPER-TASK
+protocol; archived `skills/archive/paper-search`) and the ranker reports, not this skill.
