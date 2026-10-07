@@ -264,29 +264,36 @@ describe("borrow", () => {
 
   test("a missing github token resolves empty and names where it looked", () => {
     const saved = process.env.GITHUB_TOKEN;
+    const savedGh = process.env.GH_TOKEN;
     delete process.env.GITHUB_TOKEN;
+    delete process.env.GH_TOKEN;
     try {
-      // $HOME/.secrets may or may not exist on the test host; either way the
-      // resolver must return a shaped answer, never throw.
+      // $HOME/.secrets / `gh auth token` may or may not resolve on the test
+      // host; either way the resolver must return a shaped answer, never throw.
       const got = resolveGithubToken();
       expect(typeof got.key).toBe("string");
       expect(typeof got.from).toBe("string");
       if (!got.key) expect(got.from).toBe("not found");
     } finally {
       if (saved !== undefined) process.env.GITHUB_TOKEN = saved;
+      if (savedGh !== undefined) process.env.GH_TOKEN = savedGh;
     }
   });
 
   test("the github token resolves from the environment", () => {
     const saved = process.env.GITHUB_TOKEN;
+    const savedGh = process.env.GH_TOKEN;
     process.env.GITHUB_TOKEN = "ghp-test-token";
+    delete process.env.GH_TOKEN;
     try {
       const got = resolveGithubToken();
       expect(got.key).toBe("ghp-test-token");
-      expect(got.from).toBe("environment");
+      expect(got.from).toBe("environment (GITHUB_TOKEN)");
     } finally {
       if (saved !== undefined) process.env.GITHUB_TOKEN = saved;
       else delete process.env.GITHUB_TOKEN;
+      if (savedGh !== undefined) process.env.GH_TOKEN = savedGh;
+      else delete process.env.GH_TOKEN;
     }
   });
 });

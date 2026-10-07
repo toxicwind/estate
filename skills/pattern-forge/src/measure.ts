@@ -1,9 +1,17 @@
 /**
  * Timing helpers — the measurement half of the latency doctrine.
  *
- * Ported from hft-latency/bin/measure.py (88 lines): now_us, measure, timed,
- * main. Microsecond resolution, structured output, and a single clock
+ * Ported from hft-latency / race `bin/measure.py` (88 lines): now_us, measure,
+ * timed, distribution. Microsecond resolution, structured NDJSON-style emit
+ * on the shared emitter (stderr in CLI), and a single clock
  * (performance.now) so nothing drifts between calls.
+ *
+ * measure.py notes absorbed here:
+ *   - Library: `measure(name, tag, fn)` / `measureAsync` / `timed` wrapper.
+ *   - CLI shape (Python original): `bin/measure.py --tag fetch -- <cmd...>`
+ *     emits start/end NDJSON on stderr; command stdout stays pipeable.
+ *   - Precision: perf_counter_ns → microsecond reporting (here: performance.now * 1000).
+ *   - Latency is a correctness criterion — report the distribution, not a mean.
  */
 
 import { emit } from "./concurrent";
