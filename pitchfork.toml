@@ -325,13 +325,13 @@ health_http = { url = "http://127.0.0.1:25153/health", interval = "30s", timeout
 port = 25153
 # Router-configured alias forwarder: same routing as the herd
 # kimi-auto entry (--config-dir fragment). --target/--standby/--advance-on
-# MUST match /home/toxic/estate/config/herd.d/kimi-auto.yaml. Selection lives
+# MUST match /home/toxic/kimi-auto/herd.d/kimi-auto.yaml. Selection lives
 # in router config; this shim never selects models.
 # 2026-09-21 (ember-kimi-route): maximal free-Kimi chain per Chris doctrine
 # -- Kimi routes are never defaults; they route Kimi FREE models maximally.
 # Chain: openrouter-free kimi :free IDs -> hf-free Kimi-K3; advance on
 # 5xx/conn/429/402/404; 401 never advances. Paid Kimi excluded (free only).
-run = "exec python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
+run = "exec python3 /home/toxic/estate/config/herd.d/cuckoo.py --port ${KIMI_AUTO_SHIM_PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto"
 dir = "/home/toxic/estate/config/herd.d"
 mise = false
 retry = true

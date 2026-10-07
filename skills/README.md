@@ -52,7 +52,7 @@ Eight skills collapsed into one, each leg absorbing a prior skill:
 | `retrieve` | `ast-bm25-racer`, `ast_indexer.py` | BM25 over path + symbols, reweighted by exact hits, async density, import centrality |
 | `race` | `hft-latency` | Concurrent, hedged, first **valid** wins; losers aborted, never orphaned |
 | `bench` | `code_racer.py` ×2 copies | Nanosecond leaderboard; a throwing candidate ranks last, not first |
-| `borrow` | `emergent-enrich`, `race-borrow.ts`, `paper-search` | arXiv, alphaXiv, OpenAlex, S2, DBLP, HF, GitHub, exa — all in flight at once |
+| `borrow` | `emergent-enrich`, `race-borrow.ts` | arXiv, OpenAlex, S2, DBLP, HF, GitHub, exa — all in flight at once |
 | `mcts` | `mcts_engine.py` | Choose a patch by verifying candidates, not reasoning about them |
 | `subgraph` | `dynamic_subgraph_inducer.py` | Traceback → the import neighbourhood that caused it |
 
@@ -75,12 +75,12 @@ skills/pattern-forge/bin/forge mcts --candidates "bun test" --real
 
 - Python symbol extraction is lexical, not an AST — Bun has no built-in Python parser and tree-sitter would break the zero-dependency guarantee.
 - DBLP serves a bot-check wall to our shared egress IP, and anonymous Semantic Scholar returns 429. Those are the network, not the code; both degrade without failing the run.
-- Superseded skills live under `skills/archive/` (incl. `race`, `paper-search`, `race-borrow`, plus earlier merges). Nothing was deleted outright — `pattern-forge` supersedes them.
+- The merged sources are archived at `var/archive/skills-pre-forge/` — nothing was deleted outright.
 
 ## Everything else
 
 76 skills in this directory. Also live: `fleet-status`, `gguf-rank`, `model-switch`,
-`repo-audit`, `tau-tmux`, `surgical-edit` (also under archive), `hashline`, `git-mutator`,
+`repo-audit`, `tau-tmux`, `paper-search`, `surgical-edit`, `hashline`, `git-mutator`,
 `readme-maximal`, and `lib/estate.sh` + `lib/estate_paths.py` — the shared path
 resolvers every skill uses instead of hardcoding `/home/toxic/...`.
 
