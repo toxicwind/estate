@@ -5,19 +5,17 @@ import { HOME } from "./paths";
  * Borrow — race every free source at once, rank what comes back.
  *
  * This is the merge paying off. emergent-enrich ran the sources one after
- * another and paid each one's latency in full; race-borrow raced multi-lane
- * GitHub queries with AbortController first-valid-wins and ranked by
- * stars/forks/issues/updated. Here both properties hold across literature
- * sources too: all legs launch together (incl. alphaXiv), wall time is the
- * slowest leg rather than the sum, and the winners ledger drives ordering
- * on the next run. Multi-LLM×GitHub ranking lives in src/gh-race.ts.
+ * another and paid each one's latency in full; race-borrow ranked but raced
+ * nothing. Here both properties hold: all legs launch together, so wall time
+ * is the slowest leg rather than the sum, and the winners ledger drives
+ * ordering on the next run.
  */
 
 import { emit } from "./concurrent";
 import { measure } from "./measure";
 import * as P from "./providers";
 
-export type SourceName = "github" | "arxiv" | "alphaxiv" | "openalex" | "semanticscholar" | "dblp" | "hf_papers" | "exa";
+export type SourceName = "github" | "arxiv" | "openalex" | "semanticscholar" | "dblp" | "hf_papers" | "exa";
 
 export type BorrowOptions = {
   perSource?: number;
@@ -143,7 +141,6 @@ export async function borrow(query: string, opts: BorrowOptions = {}): Promise<B
   const legs: { name: SourceName; enabled: boolean; run: () => Promise<P.SourceResult> }[] = [
     { name: "github", enabled: !skip.has("github") && gh.key.length > 0, run: () => P.githubCodeSearch(query, perSource) },
     { name: "arxiv", enabled: !skip.has("arxiv"), run: () => P.arxivSearch(query, perSource) },
-    { name: "alphaxiv", enabled: !skip.has("alphaxiv"), run: () => P.alphaxivSearch(query, perSource) },
     { name: "openalex", enabled: !skip.has("openalex"), run: () => P.openAlexSearch(query, perSource) },
     { name: "semanticscholar", enabled: !skip.has("semanticscholar"), run: () => P.s2Search(query, perSource) },
     { name: "dblp", enabled: !skip.has("dblp"), run: () => P.dblpSearch(query, perSource) },

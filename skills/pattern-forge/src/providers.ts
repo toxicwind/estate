@@ -25,7 +25,6 @@ export const OPENALEX_BASE = "https://api.openalex.org";
 export const S2_BASE = "https://api.semanticscholar.org";
 export const DBLP_BASE = "https://dblp.org/search/publ/api";
 export const HF_PAPERS_BASE = "https://huggingface.co/api/papers/search";
-export const ALPHAXIV_BASE = "https://api.alphaxiv.org/v1/search/paper";
 export const EXA_BASE = "https://api.exa.ai/search";
 export const USER_AGENT = "pattern-forge/1.0";
 /** Polite pool: better latency, no key. */
@@ -112,26 +111,14 @@ async function fetchJson(url: string, init: RequestInit & { timeoutMs?: number }
  * without a token the call 401s, so callers skip the leg instead of trying.
  */
 export function resolveGithubToken(): { key: string; from: string } {
-  const fromGithub = process.env.GITHUB_TOKEN;
-  if (fromGithub?.trim()) return { key: fromGithub.trim(), from: "environment (GITHUB_TOKEN)" };
-  const fromGh = process.env.GH_TOKEN;
-  if (fromGh?.trim()) return { key: fromGh.trim(), from: "environment (GH_TOKEN)" };
+  const fromEnv = process.env.GITHUB_TOKEN;
+  if (fromEnv?.trim()) return { key: fromEnv.trim(), from: "environment" };
   try {
     const vault = readFileSync(join(homedir(), ".secrets"), "utf8");
-    const hit = vault.match(/^\s*(?:export\s+)?(?:GITHUB_TOKEN|GH_TOKEN)\s*=\s*["']?([^"'\n#]+)["']?/m);
+    const hit = vault.match(/^\s*(?:export\s+)?GITHUB_TOKEN\s*=\s*["']?([^"'\n#]+)["']?/m);
     if (hit?.[1]?.trim()) return { key: hit[1].trim(), from: "$HOME/.secrets (secretsmith vault)" };
   } catch {
     /* no vault */
-  }
-  // race-borrow doctrine: prefer `gh auth token` over demanding a duplicate secret.
-  try {
-    const result = Bun.spawnSync(["gh", "auth", "token"], { stdout: "pipe", stderr: "ignore" });
-    if (result.exitCode === 0) {
-      const token = new TextDecoder().decode(result.stdout).trim();
-      if (token.length > 0) return { key: token, from: "gh auth token" };
-    }
-  } catch {
-    /* gh not installed / not logged in */
   }
   return { key: "", from: "not found" };
 }
@@ -389,37 +376,6 @@ export async function hfPapersSearch(query: string, maxResults: number): Promise
       upvotes: (p.upvotes as number) ?? null,
     }));
   return { ok: true, items, cost: "free", ranking: "relevance", timingMs: ms, note: "HF paper search, AI/ML focused" };
-}
-
-/**
- * alphaXiv: public paper search (no key). Query param is `q` — `query` 400s.
- * Do not send Authorization on the public path (historical 403s on keyed
- * requests). Absorbed from paper-search / paper-poller race_papers.py.
- */
-export async function alphaxivSearch(query: string, maxResults: number): Promise<SourceResult> {
-  throttle("alphaxiv", 1000);
-  const url = `${ALPHAXIV_BASE}?${new URLSearchParams({ q: query, limit: String(Math.max(1, Math.min(25, maxResults))) })}`;
-  const { data, ms } = await fetchJson(url, { headers: { "User-Agent": USER_AGENT, Accept: "application/json" } });
-  const raw = Array.isArray(data) ? data : ((data as { papers?: unknown[]; results?: unknown[] }).papers ?? (data as { results?: unknown[] }).results ?? []);
-  const items = (raw as Record<string, unknown>[])
-    .filter((p): p is Record<string, unknown> => typeof p === "object" && p !== null)
-    .slice(0, maxResults)
-    .map((p): PaperItem => {
-      const arxivId = (p.universal_paper_id as string) ?? (p.canonical_id as string) ?? null;
-      const votes = (p.metrics as { total_votes?: number; public_total_votes?: number } | undefined);
-      const authorsRaw = (p.authors as unknown[]) ?? (p.full_authors as unknown[]) ?? [];
-      return {
-        title: (p.title as string) ?? null,
-        authors: authorsRaw.slice(0, 6).map((a) => (typeof a === "object" && a !== null ? ((a as { name?: string }).name ?? "") : String(a))).filter(Boolean),
-        published: ((p.first_publication_date as string) ?? (p.publication_date as string) ?? "").slice(0, 10) || null,
-        arxivId: arxivId ? String(arxivId).replace(/v\d+$/, "") : null,
-        url: arxivId ? `https://alphaxiv.org/abs/${String(arxivId).replace(/v\d+$/, "")}` : (p.id ? `https://alphaxiv.org/paper/${p.id}` : null),
-        pdfUrl: arxivId ? `https://arxiv.org/pdf/${String(arxivId)}` : null,
-        summary: ((p.abstract as string) ?? (p.paper_summary as string) ?? "").slice(0, 600),
-        upvotes: votes?.public_total_votes ?? votes?.total_votes ?? null,
-      };
-    });
-  return { ok: true, items, cost: "free", ranking: "relevance", timingMs: ms, note: "alphaXiv public search; no key" };
 }
 
 /**

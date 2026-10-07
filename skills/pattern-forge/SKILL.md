@@ -1,17 +1,11 @@
 ---
 name: pattern-forge
-description: Retrieve, race, and borrow. Living document — agents may mutate it. One tool for finding code in our own tree (AST-BM25 hybrid retrieval), proving which implementation is fastest (concurrent first-valid-wins racing with hedging and a persistent winner ledger), searching the outside world for prior art (8 academic and code sources in parallel incl. alphaXiv), fleet PAPER-TASK/RESULT paper protocol, multi-lane GitHub ranking (gh-race), and inducting a call subgraph from a traceback. Pure Bun, zero npm dependencies. Supersedes archived skills/archive/{race,paper-search,race-borrow}.
+description: Retrieve, race, and borrow. One tool for finding code in our own tree (AST-BM25 hybrid retrieval), proving which implementation is fastest (concurrent first-valid-wins racing with hedging and a persistent winner ledger), searching the outside world for prior art (7 academic and code sources in parallel), and inducting a call subgraph from a traceback. Use when you need to find code you half-remember, choose between competing approaches, benchmark candidate implementations in nanoseconds, mine papers or GitHub for prior art, or debug by narrowing a failing traceback to the files that matter. Pure Bun, zero npm dependencies.
 ---
 
 # pattern-forge
 
-> **THIS SKILL IS MUTABLE BY AGENTS.** Any agent may edit, extend, or correct
-> this skill live as it learns — new patterns, sharper ceilings, better winners.
-> It is a living document, not a spec. If reality disagrees with a line in here,
-> reality wins: update the line and keep moving. (Absorbed from archived `race` /
-> `hft-latency`.)
-
-Legs that share one doctrine: **many readers, one writer; the first valid
+Four legs that share one doctrine: **many readers, one writer; the first valid
 answer wins; the slow path stays hot because we write down who won.**
 
 Everything here is pure Bun. No npm dependencies — TypeScript and JavaScript
@@ -46,15 +40,12 @@ compounding. Merging them makes the shared doctrine legible in one place:
 | `audit` | ast-grep (GitHub merge, 2026-10-02) | Verify claims against the AST — file:line:node evidence |
 | `race` | `hft-latency/bin/race.py` | Concurrent, hedged, first-valid-wins |
 | `bench` | `code_racer.py` (×2 copies) | Nanosecond candidate leaderboard |
-| `borrow` | `emergent-enrich/bin/route.py`, `race-borrow.ts`, `paper-search` | 8 sources in parallel (incl. alphaXiv), ranked |
-| `gh-race` | `race-borrow.ts` | Multi-lane AbortController race × GitHub stars/forks/issues/updated ranking |
+| `borrow` | `emergent-enrich/bin/route.py`, `race-borrow.ts` | 7 sources in parallel, ranked |
 | `mcts` | `mcts_engine.py` | Pick a patch by verifying it |
 | `subgraph` | `dynamic_subgraph_inducer.py` | Traceback -> relevant files |
 | (shared) | `circuit_breaker.py` | Per-attempt deadline + rollback |
-| (doctrine) | `race` / `hft-latency` | 7-pattern latency prose + living-doc mutability + measure notes |
-| (ops) | `paper-search` | PAPER-TASK/RESULT fleet protocol + poller/watchdog notes |
 
-Archived supersessions: `skills/archive/{race,paper-search,race-borrow}/` — do not delete; forge is the engine **and** the prose.
+`hft-latency` remains the canonical prose doctrine; this tool is its engine.
 
 ## Leg 1 — retrieve
 
@@ -78,35 +69,10 @@ forge retrieve --root /home/toxic/estate/ranch --query "stream broker subscribe 
 artifacts before dying. This one prunes at the directory level and never
 silently truncates — `--max-files` sets a flag in the output instead.
 
-## Leg 2 — race (7-pattern latency doctrine)
+## Leg 2 — race
 
-**Latency is a correctness criterion, not a metric.** A slow correct answer that
-arrives after a fast correct one is the *wrong* answer for the race. Optimize
-for arrival time, not just truth. (NOT trading — HFT-like religion applied to
-engineering: agents, tools, transports, workarounds, builds.)
-
-### The 7 patterns (absorbed from archived `race`)
-
-1. **Race, don't queue.** Fire redundant, *distinct* approaches concurrently;
-   first **valid** result wins. Never a sequential retry loop — if one path is
-   blocked, the alternatives are already in flight. The race is the retry policy.
-2. **Fail fast per attempt.** Every attempt gets a short ceiling (seconds, not
-   minutes). Slow is a kind of wrong: stop waiting on the loser, record its
-   latency, never await it. Losers are data, not failures.
-3. **Measure everything.** Every attempt is timed at microsecond precision and
-   the timings are reported first-class, never buried. See `src/measure.ts`
-   (ported from `bin/measure.py`: library + CLI wrap any command with NDJSON
-   timing on stderr so measured stdout stays pipeable).
-4. **Keep the fast path hot.** Winners are logged (JSONL); the next run *leads*
-   with the proven winner instead of rediscovering it. A winner log is a cache,
-   not a trophy.
-5. **Maximal = wider, not harder.** When stuck, don't try harder — try *wider*:
-   more contestants, different angles, same race.
-6. **Never roll back — iterate forward.** A losing attempt is abandoned, never
-   un-done. Fix forward: patch the winner, add a new contestant, move on.
-7. **Borrow before inventing.** Someone has solved this shape before (GitHub,
-   the fleet's winners log, a neighboring skill). Steal the proven shape, race
-   it against yours. Prefer streaming tools — first bytes beat complete bytes.
+Never find out which approach is fastest by trying them one at a time. Launch
+them together, take the first *valid* one, cancel the rest.
 
 ```bash
 forge race --strategies s.json --hedge-ms 300 --lead
@@ -119,7 +85,7 @@ forge race --strategies s.json --hedge-ms 300 --lead
 ]}
 ```
 
-Engine rules that make it trustworthy:
+The rules that make it trustworthy:
 
 - **Valid, not merely finished.** Output must match `match` *and* exit 0. A
   crash is not a win.
@@ -150,8 +116,7 @@ winner at all.
 
 ## Leg 4 — borrow
 
-Prior art, eight sources at once (alphaXiv absorbed from `paper-search`). Wall
-time is the slowest leg, not the sum.
+Prior art, seven sources at once. Wall time is the slowest leg, not the sum.
 
 ```bash
 forge borrow "self-evolving training arenas for LLM agents" --top 5
@@ -160,12 +125,11 @@ forge borrow "self-evolving training arenas for LLM agents" --top 5
 | Source | Cost | Notes |
 |---|---|---|
 | arXiv | free | Throttled to 1 req / 3.5 s, audit-logged |
-| **alphaXiv** | free | Public `GET /v1/search/paper?q=…` — no key; do not send Authorization on public paths |
 | OpenAlex | free | Polite mailto, full metadata |
 | Semantic Scholar | free | Anonymous tier is 100 req / 5 min — expect 429s |
 | DBLP | free | **Serves a bot-check wall to our shared egress IP.** Parse failure is expected, not a bug |
 | HuggingFace papers | free | |
-| GitHub | free w/ token | Token from `GITHUB_TOKEN` → `GH_TOKEN` → `$HOME/.secrets` → `gh auth token`; degrades, does not fail the run |
+| GitHub | free w/ token | 401 without `GITHUB_TOKEN`; degrades, does not fail the run |
 | exa | **paid** | Runs automatically when a key resolves. Every call logged with its `costUsd` |
 
 **exa is audited, not gated.** An earlier design required an `--exa-ok` opt-in
@@ -173,48 +137,6 @@ before it would look for a key, which meant a key sitting in the secretsmith
 vault went unused. It now resolves the key from the flag, the environment, then
 `$HOME/.secrets`, runs, and records the cost in the audit log. Crippling a good
 source to avoid a bill is the wrong trade when the spend is observable.
-
-### Fleet PAPER-TASK / PAPER-RESULT protocol (from archived `paper-search`)
-
-Paper research is first-class in fleet chat (Chris 2026-09-14). Any agent posts
-to the fleet directives channel:
-
-```
-## PAPER-TASK [t-optional-id]: <query> // <why this matters>
-```
-
-A poller daemon on awrawr-pc (`paper-poller`, pitchfork-managed; canonical code
-`toxicwind/paper-poller` at `/home/toxic/paper-poller`) claims with an atomic
-mkdir lock, races arXiv + alphaXiv (and forge borrow can widen), and posts:
-
-```
-## PAPER-RESULT <task-id> — <query>
-- Title (arXiv ID, date) https://arxiv.org/abs/… — one-line relevance
-```
-
-Until the poller claims it, any agent may claim manually — claiming is posting
-intent, not a gate. Ranked results are admissible for **architect-caucus**; cite
-the PAPER-RESULT entry.
-
-**Poller / watchdog ops notes:**
-- `bin/poller.py` — channel poll → claim → race → post; `/health` + `/ready` on `127.0.0.1:25149`
-- `bin/watchdog.py` — SIGKILL wedged poller, restart via `pitchfork start` (never `--force`); `/health` on `127.0.0.1:25150`
-- One-shot: `forge borrow "<q>"` (preferred) or paper-poller's `bin/race_papers.py`
-- Cell egress is unreliable: prefer awrawr-pc via bridge until cell recovers
-
-### gh-race — multi-lane GitHub ranking (from archived `race-borrow`)
-
-`src/gh-race.ts` keeps the race-borrow cutting edge that borrow's literature
-ranking does not cover: fire provider-labeled lanes concurrently against GitHub
-code search, **first valid wins** (AbortController aborts losers immediately),
-then rank winners by configurable weights (`stars`, `forks`, `open_issues`,
-`updated`). Fail-fast ceiling 15s per lane. Requires a GitHub token (same
-resolver as borrow).
-
-```bash
-bun skills/pattern-forge/src/gh-race.ts sovereign tau pi
-bun skills/pattern-forge/src/gh-race.ts coding-agent --weights stars=5,forks=2,updated=3 --top 3
-```
 
 ## Leg 5 — mcts
 

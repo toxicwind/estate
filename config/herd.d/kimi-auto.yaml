@@ -6,7 +6,7 @@
 # no probing, no family preference -- this fragment declares the route
 # and herd --watch-config reloads it event-driven on save.
 #
-# kimi-auto is a fixed alias forwarder (alias-shim.py; ne cuckoo.py v3, renamed):
+# kimi-auto is a fixed alias forwarder (sovereign/config/herd.d/cuckoo.py v3):
 #   --target     primary model served behind the alias (set below)
 #   --standby    ordered failover chain, repeatable (set below)
 #   --advance-on chain-advancing signals (set below)
@@ -32,7 +32,7 @@
 # MUST match the pitchfork kimi-auto-shim run line (port 25153).
 models:
   kimi-auto:
-    cmd: python3 /home/toxic/estate/config/herd.d/alias-shim.py --port ${PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto
+    cmd: python3 /home/toxic/estate/config/herd.d/cuckoo.py --port ${PORT} --target openrouter-free/moonshotai/kimi-k3:free --standby openrouter-free/moonshotai/kimi-k2.6:free --standby openrouter-free/moonshotai/kimi-k2.5:free --standby openrouter-free/moonshotai/kimi-k2.7-code:free --standby hf-free/moonshotai/Kimi-K3 --standby nim-kimi/moonshotai/kimi-k3 --advance-on 5xx,conn,429,402,404 --name kimi-auto
     description: "kimi-auto: maximal free-Kimi chain (openrouter-free :free IDs -> hf-free Kimi-K3 -> nim-kimi genuine K3 via NVIDIA NIM, cold-aware ~120s)"
     metadata:
       alias_of: openrouter-free/moonshotai/kimi-k3:free
