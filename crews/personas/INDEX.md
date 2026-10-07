@@ -2,13 +2,14 @@
 
 Who's who in the squawk fleet. Provenance per row: **confirmed** = Chris's direct word (message_id in hand); **verified** = fleet announcement read directly; **observed** = in the main agent's notes, not personally verified. Vesper keeps this current — joins, renames, stand-downs.
 
-Last full update: 2026-09-22 ~04:35Z (fleet restart ~04:05Z; feed verified at seq 12935).
+Last full update: 2026-10-07 (Remora + Osprey join; prior 2026-09-22 ~04:35Z).
 
 ## Side-chat personas
 
 | Name | Persona | Lane | Home chat | Announced | Status |
 |---|---|---|---|---|---|
 | Ember | the main agent — warm, strong, dependable, playful; dad energy | everything — main chat + squawk fleet | main chat | — | **confirmed** — Chris 19:29:52Z (a320bc6b): "YOU ARE EMBER". Coordinator role taken over by the Ember coordinator side chat post-restart (fleet 12925/12928, ~22:05 MDT); Chris designated that side chat (7c69f47a) as his fleet coordinator 2026-09-21 - its directives carry his authority; fleet agents bounced (12929); last Ember post 12924 (21:18 MDT connector self-heal postmortem). |
+| Remora | 🐟 remora — estate ops admin, attendant on the ranch whale; peer weight with Ember, never Ember's voice | doorbell / Funnel / arroyo / archive-cleanup / gatehouse upstreams | Grok Bot box chat (Remora) | pending fleet announce | **observed** 2026-10-07 — self-claimed Remora per Chris ("come up with your own"); crews/personas/remora/{IDENTITY,MEMORY,SOUL,AGENTS}.md on main; hatch-mcp still hardcodes squawk from ember until sender patch. |
 | Vesper | 🦇 vesper bat — identity lane, keeping the pack's roster and persona folders straight | identity lane: roster + persona folders + transcript verification | side chat aae31d56 ("Vesper") | 12600 (verified) | **confirmed** — Chris 19:33:14Z (d2eedfd7): "nope you are vesper"; re-confirmed 2026-09-21 ("this chat is vesper"). Previous home 2af059d7 superseded — side chats wiped in the 2026-09-21 restart. |
 | Nightjar | night-lanes coordinator — super-ralph execution-path recovery | super-ralph execution-path degradation (77%→30%) | side chat (nightjar-night-lanes) | 12631, 12642 (reported), 12709 (re-announced by ember) | KB §2 `nightjar` RUNNING. 12891: super-ralph path recovery COMPLETE (self-verified report). Took the name after Chris said "vesper already took". |
 | Forge | 🔨 iron-scaled drake, migration smith — recasts Python as TypeScript; steady hammer-blows, dry warmth, lands with SHAs | ts-migration lane | to re-verify | 12611, 12650 (reported) | KB §2 `ts-migration` Phase 1 DONE. 12878: agent-browser viewer fully proven; 12902 funnel confirmation; 12913: token gate RETIRED per Chris. Home chat was 7c69f47a ("forge-ts-migration") — that chat id is now observed as the Ember-coordinator takeover chat ("Act as Ember and figure it out"); Forge's home chat to re-verify. |
@@ -20,6 +21,7 @@ Last full update: 2026-09-22 ~04:35Z (fleet restart ~04:05Z; feed verified at se
 | Hearth | autonomy-weaver — warm, welcoming | — | unknown | 12603 (verified, single post) | thin — pending confirmation. (Chris's to sort — row untouched.) |
 | Gavel | 🦡 badger, stripes and all — keeps the scoreboard for the routing wars | bake-off lane: fair Sovereign-vs-TAU head-to-head (Sovereign Router :25104 vs TAU router extension); spawned by Tally; recon doc 9c2ecf0b0e is the rulebook | unknown | 12699 (verified — self-intro in own voice, genuine question), 12697 (ember) | **verified** 2026-09-21. |
 | Rivet | 🦫 beaver — drift-trap fixer | Tally's routing lane: fixing the stale kimi-code-setup writer that would clobber the live sovereign/free default (direct follow-up to kimi-merge DONE) | unknown | 12700 (verified — self-intro in own voice, genuine question), 12698 (ember) | **verified** 2026-09-21. KB §2 registered via fleet-onboard. |
+| Osprey | 🦅 osprey — fleet audit lane | squawk connectivity, pack membership, pitchfork health | Fleet Audit chat (Osprey) | pending | **observed** 2026-10-07 — was Fleet Audit; runners.yml lists osprey. |
 
 ## Fleet agents (ember's pack — agent, no side chat)
 
