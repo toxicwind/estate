@@ -2,7 +2,7 @@ import { spawn } from "child_process";
 import { existsSync, readdirSync, readFileSync, statSync } from "fs";
 import { join } from "path";
 
-// hatch-mcp v1.0 — MCP server for the hatch cell (home toxic side).
+// hatch-mcp v1.0.1 — MCP server for the hatch cell (home toxic side).
 //
 // Exposes the hatch runtime cell's coordination layer to agents over
 // stdio MCP (newline-delimited JSON-RPC, NOT Content-Length framing —
@@ -15,6 +15,9 @@ import { join } from "path";
 // HFT/latency awareness: every tool reports its own wall-clock ms and
 // the cell load1 so the caller can see tool-path pressure before
 // fanning out subagents. load1 > 8 (4x the 2 vCPUs) is flagged.
+//
+// v1.0.1 resilience: ignore notifications/* (no response), stay alive
+// on bad JSON / unhandled rejections, empty resources/prompts lists.
 
 const HATCH_BIN = process.env.HATCH_BIN || "/home/toxic/hatch/bin";
 const HASHLINE_BIN = process.env.HASHLINE_BIN || "/home/toxic/.local/bin/hashline";
@@ -335,67 +338,127 @@ async function handleTool(name: string, args: any): Promise<any> {
   }
 }
 
+// ---- stay alive on unexpected faults ----
+
+process.on("uncaughtException", (err) => {
+  process.stderr.write(`[hatch-mcp] uncaughtException (staying alive): ${err?.stack || err}\n`);
+});
+process.on("unhandledRejection", (reason) => {
+  process.stderr.write(`[hatch-mcp] unhandledRejection (staying alive): ${reason}\n`);
+});
+
 // ---- JSON-RPC framing ----
 
 let buf = Buffer.alloc(0);
 function takeMessage(b: Buffer): { msg: any; rest: Buffer } | null {
   // Accept BOTH Content-Length headers and newline-delimited JSON.
-  const s = b.toString("utf8");
-  if (s.startsWith("Content-Length:")) {
-    const m = /^Content-Length:\s*(\d+)\r?\n\r?/i.exec(s);
-    if (!m) return null;
-    const len = parseInt(m[1], 10);
-    const headerEnd = m[0].length;
-    if (b.length < headerEnd + len) return null;
-    const body = b.subarray(headerEnd, headerEnd + len).toString("utf8");
-    return { msg: JSON.parse(body), rest: b.subarray(headerEnd + len) };
+  // Bad lines must NOT throw — skip and keep reading.
+  try {
+    const s = b.toString("utf8");
+    if (s.startsWith("Content-Length:")) {
+      const m = /^Content-Length:\s*(\d+)\r?\n\r?/i.exec(s);
+      if (!m) return null;
+      const len = parseInt(m[1], 10);
+      const headerEnd = m[0].length;
+      if (b.length < headerEnd + len) return null;
+      const body = b.subarray(headerEnd, headerEnd + len).toString("utf8");
+      try {
+        return { msg: JSON.parse(body), rest: b.subarray(headerEnd + len) };
+      } catch (e) {
+        process.stderr.write(`[hatch-mcp] bad Content-Length JSON, skipping: ${e}\n`);
+        return { msg: null, rest: b.subarray(headerEnd + len) };
+      }
+    }
+    const idx = s.indexOf("\n");
+    if (idx === -1) {
+      // No newline yet: if the whole buffer parses as one JSON object, take it.
+      try { return { msg: JSON.parse(s), rest: Buffer.alloc(0) }; } catch { return null; }
+    }
+    const line = s.slice(0, idx);
+    if (!line.trim()) return { msg: null, rest: b.subarray(idx + 1) };
+    try {
+      return { msg: JSON.parse(line), rest: b.subarray(idx + 1) };
+    } catch (e) {
+      process.stderr.write(`[hatch-mcp] bad JSON line, skipping: ${e}\n`);
+      return { msg: null, rest: b.subarray(idx + 1) };
+    }
+  } catch (e) {
+    process.stderr.write(`[hatch-mcp] takeMessage fault, draining one byte: ${e}\n`);
+    return { msg: null, rest: b.subarray(Math.min(1, b.length)) };
   }
-  const idx = s.indexOf("\n");
-  if (idx === -1) {
-    // No newline yet: if the whole buffer parses as one JSON object, take it.
-    try { return { msg: JSON.parse(s), rest: Buffer.alloc(0) }; } catch { return null; }
-  }
-  const line = s.slice(0, idx);
-  if (!line.trim()) return { msg: null, rest: b.subarray(idx + 1) };
-  return { msg: JSON.parse(line), rest: b.subarray(idx + 1) };
 }
 
 process.stdin.on("data", async (chunk) => {
-  buf = Buffer.concat([buf, chunk]);
-  for (;;) {
-    const taken = takeMessage(buf);
-    if (!taken) break;
-    buf = taken.rest;
-    if (!taken.msg) continue;
-    const msg = taken.msg;
-    if (msg.method === "initialize") {
-      writeRpc({
-        jsonrpc: "2.0", id: msg.id,
-        result: {
-          protocolVersion: "2024-11-05",
-          capabilities: { tools: {} },
-          serverInfo: { name: "hatch-mcp", version: "1.0.0" },
-        },
-      });
-      continue;
-    }
-    if (msg.method === "tools/list") {
-      writeRpc({ jsonrpc: "2.0", id: msg.id, result: { tools: TOOLS } });
-      continue;
-    }
-    if (msg.method === "tools/call") {
+  try {
+    buf = Buffer.concat([buf, chunk]);
+    for (;;) {
+      let taken: { msg: any; rest: Buffer } | null;
       try {
-        const result = await handleTool(msg.params?.name, msg.params?.arguments || {});
-        writeRpc({ jsonrpc: "2.0", id: msg.id, result });
-      } catch (e: any) {
-        writeRpc({ jsonrpc: "2.0", id: msg.id, result: { content: [{ type: "text", text: String(e?.message || e) }], isError: true } });
+        taken = takeMessage(buf);
+      } catch (e) {
+        process.stderr.write(`[hatch-mcp] takeMessage threw, draining: ${e}\n`);
+        buf = buf.subarray(Math.min(1, buf.length));
+        continue;
       }
-      continue;
+      if (!taken) break;
+      buf = taken.rest;
+      if (!taken.msg) continue;
+      const msg = taken.msg;
+
+      // Notifications (no id): never respond. Especially notifications/initialized.
+      if (msg.id === undefined || msg.id === null) {
+        if (typeof msg.method === "string" && (msg.method === "notifications/initialized" || msg.method.startsWith("notifications/"))) {
+          // acknowledged by silence
+          continue;
+        }
+        // Other notification-shaped messages: ignore
+        if (typeof msg.method === "string") {
+          process.stderr.write(`[hatch-mcp] ignoring notification: ${msg.method}\n`);
+          continue;
+        }
+        continue;
+      }
+
+      if (msg.method === "initialize") {
+        writeRpc({
+          jsonrpc: "2.0", id: msg.id,
+          result: {
+            protocolVersion: "2024-11-05",
+            capabilities: { tools: {} },
+            serverInfo: { name: "hatch-mcp", version: "1.0.1" },
+          },
+        });
+        continue;
+      }
+      if (msg.method === "tools/list") {
+        writeRpc({ jsonrpc: "2.0", id: msg.id, result: { tools: TOOLS } });
+        continue;
+      }
+      if (msg.method === "tools/call") {
+        try {
+          const result = await handleTool(msg.params?.name, msg.params?.arguments || {});
+          writeRpc({ jsonrpc: "2.0", id: msg.id, result });
+        } catch (e: any) {
+          writeRpc({ jsonrpc: "2.0", id: msg.id, result: { content: [{ type: "text", text: String(e?.message || e) }], isError: true } });
+        }
+        continue;
+      }
+      if (msg.method === "ping") {
+        writeRpc({ jsonrpc: "2.0", id: msg.id, result: {} });
+        continue;
+      }
+      // Optional empty lists — avoid method-not-found spam from clients that probe.
+      if (msg.method === "resources/list") {
+        writeRpc({ jsonrpc: "2.0", id: msg.id, result: { resources: [] } });
+        continue;
+      }
+      if (msg.method === "prompts/list") {
+        writeRpc({ jsonrpc: "2.0", id: msg.id, result: { prompts: [] } });
+        continue;
+      }
+      writeRpc({ jsonrpc: "2.0", id: msg.id, error: { code: -32601, message: `method not found: ${msg.method}` } });
     }
-    if (msg.method === "ping") {
-      writeRpc({ jsonrpc: "2.0", id: msg.id, result: {} });
-      continue;
-    }
-    writeRpc({ jsonrpc: "2.0", id: msg.id, error: { code: -32601, message: `method not found: ${msg.method}` } });
+  } catch (e) {
+    process.stderr.write(`[hatch-mcp] stdin loop fault (staying alive): ${e}\n`);
   }
 });
