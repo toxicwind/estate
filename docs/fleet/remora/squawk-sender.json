@@ -1,0 +1,7 @@
+{
+  "sender": "remora",
+  "channels": ["fleet", "#ops"],
+  "via": "hatch-mcp",
+  "admin": true,
+  "aliases": ["Grok Bot", "grok-bot", "remora"]
+}
