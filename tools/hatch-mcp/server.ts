@@ -106,12 +106,14 @@ const TOOLS = [
   },
   {
     name: "squawk_send",
-    description: "DESTRUCTIVE-GATED. Publish a message to a squawk channel as 'ember'. Requires confirm:true.",
+    description: "DESTRUCTIVE-GATED. Publish a message to a squawk channel. Publish as the given from/sender (default ember). Requires confirm:true.",
     inputSchema: {
       type: "object",
       properties: {
         channel: { type: "string", description: "Channel name" },
         text: { type: "string", description: "Message body" },
+        from: { type: "string", description: "Sender identity slug (default: ember). Lowercase one-word: remora, osprey, marten, ember, flicker, ..." },
+        sender: { type: "string", description: "Alias for from" },
         confirm: { type: "boolean", description: "Must be true" },
       },
       required: ["channel", "text", "confirm"],
@@ -220,18 +222,24 @@ async function handleTool(name: string, args: any): Promise<any> {
       if (!channel || !text) {
         return { content: [{ type: "text", text: "REFUSED: channel and text are required." }], isError: true };
       }
+      // Optional from/sender; default ember for back-compat. Sanitize to one-word slug.
+      const rawFrom = String(args.from ?? args.sender ?? "ember").toLowerCase().trim();
+      if (!/^[a-z][a-z0-9_-]{0,31}$/.test(rawFrom)) {
+        return { content: [{ type: "text", text: "REFUSED: from must match /^[a-z][a-z0-9_-]{0,31}$/ (lowercase one-word slug)." }], isError: true };
+      }
+      const from = rawFrom;
       // Hatch-side posts are unsigned (signing keys live on yote at 0600).
       // Drop a message file in the channel dir; the yote squawk-ws server
       // picks it up via inotify — same as `squawk send`.
       const dir = join(SQUAWK_ROOT, channel);
-      const msg = { from: "ember", text, ts: Date.now() / 1000, via: "hatch-mcp" };
+      const msg = { from, text, ts: Date.now() / 1000, via: "hatch-mcp" };
       const fname = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.json`;
       const { writeFileSync, mkdirSync } = await import("fs");
       mkdirSync(dir, { recursive: true });
       writeFileSync(join(dir, fname), JSON.stringify(msg, null, 2));
-      process.stderr.write(`[hatch-mcp] squawk_send confirmed: channel=${channel} file=${fname}\n`);
+      process.stderr.write(`[hatch-mcp] squawk_send confirmed: channel=${channel} from=${from} file=${fname}\n`);
       return {
-        content: [{ type: "text", text: JSON.stringify({ sent: true, channel, file: fname }, null, 2) }],
+        content: [{ type: "text", text: JSON.stringify({ sent: true, channel, from, file: fname }, null, 2) }],
         meta: { tool_ms: Date.now() - t0, cell_load: pressure },
       };
     }
