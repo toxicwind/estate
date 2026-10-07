@@ -442,4 +442,4 @@ process.stdin.on("error", (e) => {
   process.stderr.write(`[squawk-mcp] stdin error: ${e}\n`);
 });
 
-process.stderr.write("[squawk-mcp] v1.0.1 ready (newline JSON-RPC)\n");
+process.stderr.write("[squawk-mcp] v0.1.0 ready (newline JSON-RPC)\n");
