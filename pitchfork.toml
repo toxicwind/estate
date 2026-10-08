@@ -402,8 +402,11 @@ auto = ["start"]
 # with mbx-cache on :25148, which remains the mise task cache for bun/cargo.
 # Config: config/nativelink/nativelink.json5 (json5, json comments allowed).
 
+# ops/nativelink/run.sh creates the CAS/AC content+temp dirs first: NativeLink
+# does not create temp_path, and a missing one makes every RE route 404 while
+# still logging "Ready".
 [daemons.nativelink]
-run = "exec /home/toxic/.local/bin/nativelink /home/toxic/estate/config/nativelink/nativelink.json5"
+run = "exec ./ops/nativelink/run.sh"
 dir = "/home/toxic/estate"
 port = 25155
 auto = ["start"]
@@ -992,15 +995,15 @@ auto = ["start"]
 # silently in the 9/26 yote flaps. Owned by pitchfork now, auto-started.
 
 # ---- project: ranch/yote (1 daemon) ----
-# projects/yote — project-owned daemon manifest. Source of truth for 'yote'.
-# Owned by the projects/yote project; the parent only composes it.
+# ranch/yote — project-owned daemon manifest. Source of truth for 'yote'.
+# Owned by the ranch/yote project; the parent only composes it.
 
 
 [daemons.yote]
 health_http = { url = "http://127.0.0.1:25102/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25102
 run = "exec bun run src/yote.ts"
-dir = "projects/yote"
+dir = "ranch/yote"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25102/health"
@@ -1195,7 +1198,28 @@ health_http = { url = "http://127.0.0.1:25194/api/health", interval = "30s", tim
 env = { RALPH_DASH_PORT = "25194" }
 auto = ["start"]
 
-# standalone/refusal-hunt RETIRED 2026-10-08 (warden): project dir /home/toxic/refusal-hunt deleted upstream; daemons already stopped+disabled in pitchfork; nothing recoverable — stanzas removed.
+# ---- project: standalone/refusal-hunt (2 daemons) ----
+# standalone/refusal-hunt — project-owned daemon manifest. Source of truth for 'refusal-watchdog'.
+# Owned by the standalone/refusal-hunt project; the parent only composes it.
+
+[daemons.refusal-watchdog]
+run = "exec python3 /home/toxic/refusal-hunt/refusal-watchdog.py"
+dir = "/home/toxic/refusal-hunt"
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
+
+# standalone/refusal-hunt — project-owned daemon manifest. Source of truth for 'sorry-watchdog'.
+# Owned by the standalone/refusal-hunt project; the parent only composes it.
+
+[daemons.sorry-watchdog]
+run = "exec python3 /home/toxic/refusal-hunt/sorry-watchdog.py"
+dir = "/home/toxic/refusal-hunt"
+mise = false
+retry = true
+boot_start = true
+auto = ["start"]
 
 # forensics-srv REMOVED 2026-09-21 (envhunt): double-supervised. The live
 # process on :25160 is owned by the systemd user unit
