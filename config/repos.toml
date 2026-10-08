@@ -1,0 +1,23 @@
+# Parent record for the GitHub split. Estate owns this file.
+# ranch/ and tau are separate remotes; this does not merge their histories.
+
+[estate]
+role = "control-plane"
+path = "/home/toxic/estate"
+remote = "https://github.com/toxicwind/estate.git"
+branch = "main"
+
+[ranch]
+role = "projects"
+path = "/home/toxic/estate/ranch"
+remote = "https://github.com/toxicwind/ranch"
+branch = "main"
+ignored_by = "estate"
+
+[tau]
+role = "product"
+path = "/home/toxic/tau"
+remote = "https://github.com/toxicwind/tau.git"
+branch = "main"
+operated_by = "ranch/corral"
+note = "Job belongs to ranch. Checkout is still a home-directory clone."
