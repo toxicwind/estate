@@ -1,0 +1,11 @@
+# NativeLink — Bazel-compatible remote cache + remote execution backend.
+# Serves the RE API that Bazel (and any RE-speaking client) dials. Coexists
+# with mbx-cache on :25148, which remains the mise task cache for bun/cargo.
+# Config: config/nativelink/nativelink.json5 (json5, json comments allowed).
+
+[daemons.nativelink]
+run = "exec /home/toxic/.local/bin/nativelink /home/toxic/estate/config/nativelink/nativelink.json5"
+dir = "/home/toxic/estate"
+port = 25155
+auto = ["start"]
+restart_delay = 5
