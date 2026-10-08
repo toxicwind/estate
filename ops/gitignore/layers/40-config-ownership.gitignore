@@ -39,3 +39,6 @@ credentials.json
 *.key
 *.pem
 .bak.
+
+# non-secret flock route; secrets remain in ignored flock.env
+!config/flock-ssot/route.env
