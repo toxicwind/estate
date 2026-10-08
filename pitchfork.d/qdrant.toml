@@ -4,7 +4,7 @@
 
 [daemons.qdrant]
 port = [25133, 25134]
-run = "exec /home/toxic/.cargo/bin/qdrant-server --config-path ./qdrant-config.yaml"
+run = "exec /home/toxic/archive/home-dirs-2026/.cargo/bin/qdrant-server --config-path ./qdrant-config.yaml"
 dir = "."
 mise = false
 retry = true

@@ -5,7 +5,7 @@
 [daemons.agent-display]
 # Forge 2026-09-21: isolated virtual display for the agent browser.
 port = 5900
-run = "exec Xvnc :99 -geometry 1600x900 -depth 24 -rfbport 5900 -localhost -SecurityTypes VncAuth -rfbauth /home/toxic/.browserless/vncpasswd"
+run = "exec Xvnc :99 -geometry 1600x900 -depth 24 -rfbport 5900 -localhost -SecurityTypes VncAuth -rfbauth /home/toxic/archive/home-dirs-2026/.browserless/vncpasswd"
 dir = "."
 mise = false
 retry = true

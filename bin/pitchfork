@@ -14,7 +14,21 @@
 #    herd+gatehouse (plus awrawr-mcp, boundless, cuttinggate, model-guard,
 #    browser-keeper). Fail closed: refuse with the correct name.
 set -uo pipefail
-REAL_PITCHFORK="/home/toxic/.local/share/mise/installs/pitchfork/2.25.0/pitchfork"
+# Resolve the real pitchfork binary dynamically. /home/toxic/.local was
+# archived into archive/home-dirs-2026/.local during the 2026-10-08 home
+# reorg; prefer the live path, fall back to the archive copy (same SHA).
+_pick_pitchfork() {
+  local cand
+  for cand in \
+    "/home/toxic/.local/share/mise/installs/pitchfork/2.25.0/pitchfork" \
+    "/home/toxic/.local/bin/pitchfork-bin" \
+    "/home/toxic/archive/home-dirs-2026/.local/share/mise/installs/pitchfork/2.25.0/pitchfork" \
+    "/home/toxic/archive/home-dirs-2026/.local/bin/pitchfork-bin"; do
+    if [ -x "$cand" ]; then printf '%s\n' "$cand"; return 0; fi
+  done
+  return 1
+}
+REAL_PITCHFORK="$(_pick_pitchfork)" || { echo "pitchfork: no usable pitchfork binary found" >&2; exit 127; }
 
 if [ "${1:-}" = "status" ] && [ -z "${2:-}" ]; then
   exec "$REAL_PITCHFORK" list
