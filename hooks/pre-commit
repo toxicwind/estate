@@ -11,14 +11,14 @@ REPO="/home/toxic/estate"
 cd "$REPO"
 
 # Run scan-secrets; if any secrets found, it will exit non-zero and output details
-if ! bun /home/toxic/estate/skills/git-mutator/cli.ts scan-secrets; then
+if ! bun /home/toxic/estate/skills-hub/skills/04_code_intelligence/git-mutator/cli.ts scan-secrets; then
   echo "ERROR: Secret leaks detected. Commit blocked."
   echo "Please remove or encrypt the leaked credentials before committing."
   exit 1
 fi
 
 # Run agentic-audit; if any agent artifacts or completion UUIDs found, block
-if ! bun /home/toxic/estate/skills/git-mutator/cli.ts agentic-audit; then
+if ! bun /home/toxic/estate/skills-hub/skills/04_code_intelligence/git-mutator/cli.ts agentic-audit; then
   echo "ERROR: Agent artifacts or completion UUIDs detected. Commit blocked."
   echo "Please clean up any agent-generated files before committing."
   exit 1
