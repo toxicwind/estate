@@ -1,0 +1,75 @@
+// NativeLink — self-hosted remote cache + remote execution.
+//
+// Installed as the estate's Bazel-compatible build backend, on top of the
+// existing mbx-cache (:25148, mise task cache for bun/cargo/python). Both
+// coexist: mbx keeps serving mise tasks, NativeLink serves RE-protocol clients
+// (Bazel and anything speaking the RE API).
+//
+// Ports come from config/ports.env SSOT: NATIVELINK_FRONTEND=25155 (public
+// client API) and NATIVELINK_WORKER=25157 (backend worker_api + health).
+// Loopback only; the estate has no TLS termination for these.
+//
+// Config format: json5. Comments are preserved upstream-style so the diff to
+// the upstream examples stays readable.
+{
+  stores: [
+    {
+      name: "CAS_MAIN_STORE",
+      compression: {
+        compression_algorithm: { lz4: {} },
+        backend: {
+          filesystem: {
+            content_path: "/home/toxic/var/runtime/nativelink/cas/content",
+            temp_path: "/home/toxic/var/runtime/nativelink/cas/tmp",
+            eviction_policy: { max_bytes: 30000000000 },
+          },
+        },
+      },
+    },
+    {
+      name: "AC_MAIN_STORE",
+      filesystem: {
+        content_path: "/home/toxic/var/runtime/nativelink/ac/content",
+        temp_path: "/home/toxic/var/runtime/nativelink/ac/tmp",
+        eviction_policy: { max_bytes: 2000000000 },
+      },
+    },
+  ],
+  schedulers: [
+    {
+      name: "MAIN_SCHEDULER",
+      simple: {
+        supported_platform_properties: {
+          cpu_count: "minimum",
+          OSFamily: "priority",
+          "container-image": "priority",
+          lre: "priority",
+          ISA: "exact",
+        },
+      },
+    },
+  ],
+  servers: [
+    {
+      // Frontend: the RE API that Bazel and other clients dial.
+      listener: { http: { socket_address: "127.0.0.1:25155" } },
+      services: {
+        cas: [{ cas_store: "CAS_MAIN_STORE" }],
+        ac: [{ ac_store: "AC_MAIN_STORE" }],
+        capabilities: [{ remote_execution: { scheduler: "MAIN_SCHEDULER" } }],
+        bytestream: { cas_stores: { "": "CAS_MAIN_STORE" } },
+        fetch: {},
+        push: {},
+      },
+    },
+    {
+      // Backend: worker_api + health. Kept on a separate port so it never
+      // shares a permission set with the frontend, per upstream guidance.
+      listener: { http: { socket_address: "127.0.0.1:25157" } },
+      services: {
+        worker_api: { scheduler: "MAIN_SCHEDULER" },
+        health: {},
+      },
+    },
+  ],
+}
