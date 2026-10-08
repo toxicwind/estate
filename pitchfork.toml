@@ -650,6 +650,7 @@ auto = ["start"]
 # Mise-compatible remote task cache. Direct Rust binary built from pinned
 # vendored/mr-boxington-cache source; no Docker or container runtime.
 port = 25148
+env = { MBX_CACHE_PORT = "25148" }
 run = "exec /home/toxic/estate/ops/mbx-cache/run.sh"
 dir = "/home/toxic/estate"
 mise = true
