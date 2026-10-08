@@ -15,34 +15,27 @@ env_file = "config/ports.env"
 # while the old orphaned binary still answers /health 200 (Hearth then
 # reports pitchfork=errored, health=200 for the same daemon).
 
+
 [groups.mesh]
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "fleet-feed", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx"]
+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx"]
+
 
 [groups.core]
- daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "matter-server"]
+daemons = ["qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server"]
+
 
 [groups.agents]
 daemons = []
 
-[groups.all]
-# Group members must be real [daemons.*]. Four were not: rust-web (renamed to
-# fleet-feed this session) and squawk-feed/squawk-ws/squawk-ui, which have no
-# daemon definition anywhere -- the squawk daemons are squawk-relay-sink,
-# squawk-relay-forward, fleet-ui and fleet-feed. pitchfork silently ignores
-# names it cannot resolve, so the stale entries just made the group a lie.
-daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "fleet-feed", "squawk-feed", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "fleet-ui", "mbx-cache", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
 
-# ---- project: estate (control plane) ----
-# The estate IS this repo. Everything filed here is owned by /home/toxic/estate
-# itself, not by a project inside ranch/ or a standalone checkout. The section
-# used to be called `sovereign`; that directory was renamed to `estate` and the
-# header was never updated, which is how nginx, qdrant, grafana and the agent
-# runtime ended up filed as one 38-daemon "project".
-#
-# The section says WHO owns the directory, not what a daemon does. For the
-# by-purpose catalog (core / stores / observability / web / model engines /
-# oracle / agent ops) see docs/daemons.md.
-# Owned by the estate itself; the parent only composes the project sections below.
+
+[groups.all]
+daemons = ["gatehouse", "mesh-hub", "herd", "vansrouter", "coyote", "yote", "search-api", "search-ui", "openfang-front", "rust-web", "hf-downloader", "null-g-proxy", "byte-vision", "hindsight", "kimi-code", "nginx", "qdrant", "redis", "kafka", "dnsmasq", "prometheus", "grafana", "flock", "matter-server", "tau", "kimi-auto-shim", "squawk-relay-sink", "squawk-relay-forward", "squawk-feed", "squawk-ws", "squawk-ui", "flicker", "flicker-agent", "ml-serve", "stash-guard", "bench-radar", "files", "keypool", "boundless", "kimi-audit-dash"]
+
+# ---- project: sovereign (39 daemons) ----
+# sovereign — project-owned daemon manifest. Source of truth for 'agent-display'.
+# Owned by the sovereign project; the parent only composes it.
+
 
 [daemons.agent-display]
 # Forge 2026-09-21: isolated virtual display for the agent browser.
@@ -57,6 +50,7 @@ auto = ["start"]
 
 # sovereign — project-owned daemon manifest. Source of truth for 'agent-viewer'.
 # Owned by the sovereign project; the parent only composes it.
+
 
 [daemons.agent-viewer]
 # Forge 2026-09-21: noVNC web viewer for the agent display.
@@ -91,6 +85,7 @@ auto = ["start"]
 
 # sovereign — project-owned daemon manifest. Source of truth for 'browser-keeper'.
 # Owned by the sovereign project; the parent only composes it.
+
 
 [daemons.browser-keeper]
 port = 9223
@@ -133,6 +128,7 @@ auto = ["start"]
 # sovereign — project-owned daemon manifest. Source of truth for 'byte-vision'.
 # Owned by the sovereign project; the parent only composes it.
 
+
 [daemons.byte-vision]
 port = 25121
 run = "exec ./stack/services/byte-vision.sh"
@@ -146,6 +142,7 @@ auto = ["start"]
 
 # sovereign — project-owned daemon manifest. Source of truth for 'coyote'.
 # Owned by the sovereign project; the parent only composes it.
+
 
 [daemons.coyote]
 port = 25143
@@ -161,6 +158,7 @@ auto = ["start"]
 # sovereign — project-owned daemon manifest. Source of truth for 'dnsmasq'.
 # Owned by the sovereign project; the parent only composes it.
 
+
 [daemons.dnsmasq]
 run = "exec ./stack/services/dnsmasq.sh"
 dir = "."
@@ -168,6 +166,14 @@ mise = false
 retry = true
 ready_cmd = "ss -ltn 'sport = :53' | grep -q LISTEN"
 auto = ["start"]
+
+[daemons.doorbell-mcp]
+port = 25202
+run = "mise exec -- bun run ./src/index.ts"
+dir = "/home/toxic/estate/ranch/doorbell"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25202/health"
 
 # sovereign — project-owned daemon manifest. Source of truth for 'estate-reconcile-watch'.
 # Owned by the sovereign project; the parent only composes it.
@@ -186,6 +192,7 @@ auto = ["start"]
 # sovereign — project-owned daemon manifest. Source of truth for 'files'.
 # Owned by the sovereign project; the parent only composes it.
 
+
 [daemons.files]
 # /files backend (tailnet-only): tailscale serve maps /files -> 127.0.0.1:34567.
 # Static file share rooted at /home/toxic/files. Built 2026-09-20 (files-medic):
@@ -200,16 +207,9 @@ ready_http = "http://127.0.0.1:34567/health"
 health_http = { url = "http://127.0.0.1:34567/health", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
 
-# sovereign — project-owned daemon manifest. Source of truth for 'grafana'.
-# Owned by the sovereign project; the parent only composes it.
-
 # estate/ranch/flock -- project-owned daemon manifest. Source of truth for the flock daemon.
 # Owned by the flock project; the parent only composes it.
-# SURGICAL RESTORE 2026-10-04: retire dc7227a21f assumed a TS consolidation that
-# does not exist -- the Rust binary on :25193 is load-bearing for cuttinggate.
-# Full recompose deferred: it would also ship other projects' pending fragment
-# drift (sovereign-router/mbx-cache/squawk-ws retirements) while those daemons
-# are still live. Recompose when those are resolved.
+# Route values are non-secret. Client key is synced by bin/flock-run.sh from estate SSOT.
 
 [daemons.flock]
 health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
@@ -219,8 +219,12 @@ dir = "/home/toxic/estate/ranch/flock"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25193/health"
-env = { FLOCK_PORT = "25193" }
+env = { FLOCK_PORT = "25193", FLOCK_DATA_DIR = "/home/toxic/.flock-data", FLOCK_BASE_URL = "http://127.0.0.1:25193", FLOCK_MODEL = "nvidia/nemotron-3-ultra-550b-a55b" }
 auto = ["start"]
+
+# sovereign — project-owned daemon manifest. Source of truth for 'grafana'.
+# Owned by the sovereign project; the parent only composes it.
+
 
 [daemons.grafana]
 port = 25110
@@ -234,6 +238,7 @@ auto = ["start"]
 
 # sovereign — project-owned daemon manifest. Source of truth for 'herd'.
 # Owned by the sovereign project; the parent only composes it.
+
 
 [daemons.herd]
 health_http = { url = "http://127.0.0.1:25100/health", interval = "30s", timeout = "5s", retries = 3 }
@@ -249,6 +254,7 @@ auto = ["start"]
 # sovereign — project-owned daemon manifest. Source of truth for 'hf-downloader'.
 # Owned by the sovereign project; the parent only composes it.
 
+
 [daemons.hf-downloader]
 port = 25106
 run = "exec ./stack/services/hf-downloader-mesh.sh"
@@ -263,6 +269,7 @@ auto = ["start"]
 # sovereign — project-owned daemon manifest. Source of truth for 'hindsight'.
 # Owned by the sovereign project; the parent only composes it.
 
+
 [daemons.hindsight]
 port = 25117
 run = "exec ./stack/services/hindsight.sh"
@@ -276,6 +283,7 @@ auto = ["start"]
 
 # sovereign — project-owned daemon manifest. Source of truth for 'kafka'.
 # Owned by the sovereign project; the parent only composes it.
+
 
 [daemons.kafka]
 run = "exec ./stack/services/kafka.sh"
@@ -301,25 +309,13 @@ boot_start = true
 ready_http = "http://127.0.0.1:25109/health"
 auto = ["start"]
 
-# sovereign-router — moved 2026-10-02: tools/sovereign-router/sovereign-router-ts -> ranch/mesh/router/sovereign-router/sovereign-router-ts
-[daemons.sovereign-router]
-port = 25104
-run = "exec /home/toxic/.bun/bin/bun router.ts"
-dir = "/home/toxic/estate/ranch/mesh/router/sovereign-router/sovereign-router-ts"
-retry = true
-boot_start = true
-ready_http = "http://127.0.0.1:25104/health"
-health_http = { url = "http://127.0.0.1:25104/health", interval = "30s", timeout = "5s", retries = 3 }
-depends = ["keypool"]
-env = { SOVEREIGN_ROUTER_PORT = "25104" }
-auto = ["start"]
-
 # --- herd-deployer 2026-09-20: card-derived model request-contract enforcement.
 # Proxies 127.0.0.1:25101 -> herd :25100; rewrites chat/completions bodies per
 # config/model_constraints.yaml (K3: top_p=0.95, reasoning_effort clamp, thinking on).
 
 # sovereign — project-owned daemon manifest. Source of truth for 'kimi-auto-shim'.
 # Owned by the sovereign project; the parent only composes it.
+
 
 [daemons.kimi-auto-shim]
 health_http = { url = "http://127.0.0.1:25153/health", interval = "30s", timeout = "5s", retries = 3 }
@@ -359,6 +355,7 @@ ready_cmd = "pgrep -f '[m]arket-loop.ts' >/dev/null"
 # sovereign — project-owned daemon manifest. Source of truth for 'matter-server'.
 # Owned by the sovereign project; the parent only composes it.
 
+
 [daemons.matter-server]
 port = 25209
 run = "exec env STORAGE_PATH=/home/toxic/.matter_data BLUETOOTH_ADAPTER=0 LOG_LEVEL=info node --enable-source-maps /home/toxic/.matter-server/app/node_modules/matter-server/dist/esm/MatterServer.js --storage-path /home/toxic/.matter_data --bluetooth-adapter 0 --port ${MATTER_SERVER_PORT}"
@@ -372,6 +369,7 @@ auto = ["start"]
 
 # sovereign — project-owned daemon manifest. Source of truth for 'mesh-hub'.
 # Owned by the sovereign project; the parent only composes it.
+
 
 [daemons.mesh-hub]
 port = 25115
@@ -387,11 +385,11 @@ auto = ["start"]
 # sovereign — project-owned daemon manifest. Source of truth for 'model-guard'.
 # Owned by the sovereign project; the parent only composes it.
 
+
 [daemons.model-guard]
 health_http = { url = "http://127.0.0.1:25101/v1/models", interval = "30s", timeout = "5s", retries = 3 }
 port = 25101
-env = { MODEL_GUARD_PORT = "25101" }
-run = "exec bash -c 'set -a; source config/ports.env; set +a; exec bun services/model-guard/src/index.ts'"
+run = "exec python3 /home/toxic/estate/bin/herd-model-guard.py"
 dir = "/home/toxic/estate"
 mise = false
 retry = true
@@ -399,8 +397,21 @@ boot_start = true
 ready_http = "http://127.0.0.1:25101/v1/models"
 auto = ["start"]
 
+# NativeLink — Bazel-compatible remote cache + remote execution backend.
+# Serves the RE API that Bazel (and any RE-speaking client) dials. Coexists
+# with mbx-cache on :25148, which remains the mise task cache for bun/cargo.
+# Config: config/nativelink/nativelink.json5 (json5, json comments allowed).
+
+[daemons.nativelink]
+run = "exec /home/toxic/.local/bin/nativelink /home/toxic/estate/config/nativelink/nativelink.json5"
+dir = "/home/toxic/estate"
+port = 25155
+auto = ["start"]
+restart_delay = 5
+
 # sovereign — project-owned daemon manifest. Source of truth for 'nginx'.
 # Owned by the sovereign project; the parent only composes it.
+
 
 [daemons.nginx]
 port = 25208
@@ -414,6 +425,7 @@ auto = ["start"]
 
 # sovereign — project-owned daemon manifest. Source of truth for 'nim-kimi-sidecar'.
 # Owned by the sovereign project; the parent only composes it.
+
 
 [daemons.nim-kimi-sidecar]
 health_http = { url = "http://127.0.0.1:25163/health", interval = "30s", timeout = "5s", retries = 3 }
@@ -433,6 +445,7 @@ auto = ["start"]
 # sovereign — project-owned daemon manifest. Source of truth for 'node-exporter'.
 # Owned by the sovereign project; the parent only composes it.
 
+
 [daemons.node-exporter]
 port = 25211
 run = "exec /usr/local/bin/node_exporter --web.listen-address=127.0.0.1:25211"
@@ -446,6 +459,7 @@ auto = ["start"]
 
 # sovereign — project-owned daemon manifest. Source of truth for 'openfang-front'.
 # Owned by the sovereign project; the parent only composes it.
+
 
 [daemons.openfang-front]
 port = 25103
@@ -475,6 +489,7 @@ auto = ["start"]
 # sovereign — project-owned daemon manifest. Source of truth for 'prometheus'.
 # Owned by the sovereign project; the parent only composes it.
 
+
 [daemons.prometheus]
 port = 25105
 run = "exec ./stack/services/prometheus-hot.sh"
@@ -487,6 +502,7 @@ auto = ["start"]
 
 # sovereign — project-owned daemon manifest. Source of truth for 'qdrant'.
 # Owned by the sovereign project; the parent only composes it.
+
 
 [daemons.qdrant]
 port = [25133, 25134]
@@ -501,6 +517,7 @@ auto = ["start"]
 # sovereign — project-owned daemon manifest. Source of truth for 'redis'.
 # Owned by the sovereign project; the parent only composes it.
 
+
 [daemons.redis]
 run = "exec valkey-server --port 25199 --bind 0.0.0.0 --protected-mode no --save '' --appendonly no" # 25199 == $REDIS_PORT (SSOT); literal: ${} not expanded in run lines
 dir = "."
@@ -512,22 +529,21 @@ auto = ["start"]
 # sovereign — project-owned daemon manifest. Source of truth for 'rust-web'.
 # Owned by the sovereign project; the parent only composes it.
 
-[daemons.fleet-feed]
-# Was [daemons.rust-web]. rust_algo_web/src/agents.rs, ported to TypeScript at
-# ranch/squawk/fleet-feed.ts (2026-10-02). The Rust tree had no Cargo.toml left
-# in the repo, so stack/services/rust-web.sh could only fail. Same port: the
-# master UI's surfaces registry frames this one at :25201.
+
+[daemons.rust-web]
 port = 25201
-run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/squawk/fleet-feed.ts"
-dir = "/home/toxic/estate/ranch/squawk"
-mise = false
+run = "exec ./stack/services/rust-web.sh"
+dir = "."
+mise = true
 retry = true
 ready_http = "http://127.0.0.1:25201/health"
 health_http = { url = "http://127.0.0.1:25201/health", interval = "30s", timeout = "5s", retries = 3 }
+depends = ["gatehouse"]
 auto = ["start"]
 
 # sovereign — project-owned daemon manifest. Source of truth for 'search-api'.
 # Owned by the sovereign project; the parent only composes it.
+
 
 [daemons.search-api]
 port = 25112
@@ -560,6 +576,7 @@ auto = ["start"]
 # sovereign — project-owned daemon manifest. Source of truth for 'sovereign-exporter'.
 # Owned by the sovereign project; the parent only composes it.
 
+
 [daemons.sovereign-exporter]
 port = 25213
 run = "exec python3 ./stack/services/sovereign-exporter.py"
@@ -571,6 +588,7 @@ auto = ["start"]
 
 # sovereign — project-owned daemon manifest. Source of truth for 'stash-guard'.
 # Owned by the sovereign project; the parent only composes it.
+
 
 [daemons.stash-guard]
 run = "exec python3 /home/toxic/estate/tools/stash-guard/stash-guard.py --repo /home/toxic/estate --deep --interval 90"
@@ -605,6 +623,7 @@ auto = ["start"]
 # sovereign — project-owned daemon manifest. Source of truth for 'vansrouter'.
 # Owned by the sovereign project; the parent only composes it.
 
+
 [daemons.vansrouter]
 port = 20128
 run = "exec /home/toxic/estate/stack/services/vansrouter.sh"
@@ -615,20 +634,13 @@ ready_http = "http://127.0.0.1:20128/api/health"
 health_http = { url = "http://127.0.0.1:20128/api/health", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
 
-
-# OmniRoute — upstream image, not a systemd unit. Host :20130 so :20128 stays VansRouter.
-[daemons.omniroute]
-port = 20130
-run = "exec /home/toxic/estate/stack/services/omniroute.sh"
-dir = "/home/toxic/estate"
-mise = false
-retry = true
-ready_cmd = "ss -ltn 'sport = :20130' | grep -q LISTEN"
-auto = ["start"]
-
 # ---- project: ranch/barn/gatehouse (1 daemon) ----
 # ranch/barn/gatehouse — project-owned daemon manifest. Source of truth for 'gatehouse'.
 # Owned by the ranch/barn/gatehouse project; the parent only composes it.
+
+
+
+
 
 [daemons.gatehouse]
 health_http = { url = "http://127.0.0.1:25127/health", interval = "30s", timeout = "5s", retries = 3 }
@@ -642,42 +654,69 @@ retry = true
 ready_http = "http://127.0.0.1:25127/health"
 auto = ["start"]
 
-# ---- project: estate/ops/mbx-cache (1 daemon) ----
-# mbx-cache — estate-owned direct Rust cache server.
-# Owned by estate/ops/mbx-cache.
+# ---- project: ranch/flicker (2 daemons) ----
+# ranch/flicker — project-owned daemon manifest. Source of truth for 'flicker-agent'.
+# Owned by the ranch/flicker project; the parent only composes it.
 
-[daemons.mbx-cache]
-# Mise-compatible remote task cache. Direct Rust binary built from pinned
-# vendored/mr-boxington-cache source; no Docker or container runtime.
-port = 25148
-env = { MBX_CACHE_PORT = "25148" }
-run = "exec /home/toxic/estate/ops/mbx-cache/run.sh"
-dir = "/home/toxic/estate"
-mise = true
+[daemons.flicker-agent]
+run = "exec /home/toxic/estate/var/reconciliation/flicker/bin/flicker-agent"
+dir = "/home/toxic/estate/var/reconciliation/flicker"
+mise = false
 retry = true
-ready_http = "http://127.0.0.1:25148/v1/status"
-health_http = { url = "http://127.0.0.1:25148/v1/status", interval = "30s", timeout = "5s", retries = 3 }
+boot_start = true
+env = { WOODPECKER_SERVER = "127.0.0.1:25240", WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224a60416faf4f" }
 auto = ["start"]
 
+# SUPERSEDED 2026-09-30 (peregrine): brand-watchdog retired with brand.
+# Flicker has its own health_http checks; no external watchdog needed.
+
+# ranch/flicker — project-owned daemon manifest. Source of truth for 'flicker'.
+# Owned by the ranch/flicker project; the parent only composes it.
+
+[daemons.flicker]
+port = 25148
+run = "exec /home/toxic/estate/var/reconciliation/flicker/bin/flicker-server"
+dir = "/home/toxic/estate/var/reconciliation/flicker"
+mise = false
+retry = true
+boot_start = true
+ready_http = "http://127.0.0.1:25148/api/health"
+health_http = { url = "http://127.0.0.1:25148/api/health", interval = "30s", timeout = "5s", retries = 3 }
+env = { FLICKER_ROOT = "/home/toxic/flicker", WOODPECKER_HOST = "http://127.0.0.1:25148", WOODPECKER_GRPC_ADDR = ":25240", WOODPECKER_SERVER_ADDR = ":25148", WOODPECKER_GRPC_SECRET = "66a9f7c1d6ffbac15c447f6d3d97827ab3d152286b23c0cbeb19a9372108419b", WOODPECKER_AGENT_SECRET = "c6eee4c1bce957ae19638a330efe5fc3c561f18ea58e3468fe224a60416faf4f" }
+
+# ---- project: ranch/squawk (4 daemons) ----
+# ranch/squawk — project-owned daemon manifest. Source of truth for 'fleet-feed'.
+#
+# fleet-feed.ts is the TypeScript port of the retired rust_algo_web/src/agents.rs
+# (2026-10-02). It serves the fleet roster, per-agent history and the live ws
+# feed that the Surfaces tab host frames. The Rust tree had no Cargo.toml left,
+# so rust-web's launcher could only ever fall into `cargo build` and fail.
+
+[daemons.fleet-feed]
+run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/squawk/fleet-feed.ts"
+dir = "/home/toxic/estate/ranch/squawk"
+mise = false
+retry = true
+boot_start = true
+ready_cmd = "ss -ltn 'sport = :25201' | grep -q LISTEN"
+auto = ["start"]
+
+# ranch/squawk — project-owned daemon manifest. Source of truth for 'fleet-ui'.
+# Owned by the ranch/squawk project; the parent only composes it.
+# Restored 2026-10-02: fleet-ui.ts was an untracked live file that got deleted;
+# recovered from the reconciliation copy. Now a first-class supervised daemon.
+#
+# 2026-10-07: run squawk-ui.ts (channel-aware /wait+/send, signed relay-in send,
+# Svelte bundle hot-reload). fleet-ui.ts remains as the thin proxy ancestor;
+# do not point pitchfork back at it — /send would 404 through the feed.
+
 [daemons.fleet-ui]
-# 2026-10-03: fleet-ui.ts superseded by channel-aware squawk-ui.ts (serves /wait and /send
-# directly from the channel store; no longer depends on legacy :25135 feed).
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/squawk/squawk-ui.ts"
 dir = "/home/toxic/estate/ranch/squawk"
 mise = false
 retry = true
 boot_start = true
 ready_cmd = "ss -ltn 'sport = :25136' | grep -q LISTEN"
-auto = ["start"]
-
-[daemons.squawk-feed]
-port = 25135
-run = "exec /usr/bin/python3 /home/toxic/estate/ranch/squawk/relay/feed.py"
-dir = "/home/toxic/estate/ranch/squawk"
-mise = false
-retry = true
-boot_start = true
-ready_http = "http://127.0.0.1:25135/squawk-feed/seq"
 auto = ["start"]
 
 # ranch/squawk — project-owned daemon manifest. Source of truth for 'nats-tail'.
@@ -693,6 +732,7 @@ auto = ["start"]
 
 # ranch/squawk — project-owned daemon manifest. Source of truth for 'nats'.
 # Owned by the ranch/squawk project; the parent only composes it.
+
 
 [daemons.nats]
 run = "exec /home/toxic/estate/ranch/squawk/nats/run-nats.sh"
@@ -737,6 +777,7 @@ auto = ["start"]
 # ranch/squawk/oracle — project-owned daemon manifest. Source of truth for 'oracle-chat'.
 # Owned by the ranch/squawk/oracle project; the parent only composes it.
 
+
 [daemons.oracle-chat]
 run = "exec /home/toxic/estate/ranch/squawk/oracle/bin/oracle_chat.py"
 dir = "/home/toxic/estate/ranch/squawk/oracle"
@@ -747,6 +788,7 @@ auto = ["start"]
 
 # ranch/squawk/oracle — project-owned daemon manifest. Source of truth for 'oracle-core'.
 # Owned by the ranch/squawk/oracle project; the parent only composes it.
+
 
 [daemons.oracle-core]
 port = 25151
@@ -807,6 +849,7 @@ boot_start = true
 ready_http = "http://127.0.0.1:25219/api/status"
 auto = ["start"]
 
+
 # paper-poller — PAPER-TASK/PAPER-RESULT poller daemon (2026-09-14, lane 7):
 # watches the fleet channel for PAPER-TASK entries, claims them with an atomic
 # mkdir lock, races arXiv + alphaXiv legs (fail-fast, HFT rules), posts
@@ -829,6 +872,7 @@ ready_cmd = "pgrep -f '[t]ask-launch/src/daemon.ts' >/dev/null"
 # range — project-owned daemon manifest. Source of truth for 'mesh-landing'.
 # Owned by the range project; the parent only composes it.
 
+
 [daemons.mesh-landing]
 health_http = { url = "http://127.0.0.1:25207/health", interval = "30s", timeout = "5s", retries = 3 }
 env = { MESH_LANDING_PORT = "25207" }
@@ -843,6 +887,7 @@ auto = ["start"]
 # ---- project: tools/bench-radar (1 daemon) ----
 # tools/bench-radar — project-owned daemon manifest. Source of truth for 'bench-radar'.
 # Owned by the tools/bench-radar project; the parent only composes it.
+
 
 [daemons.bench-radar]
 port = 25181
@@ -859,6 +904,7 @@ auto = ["start"]
 # ---- project: tools/kimi-claw (2 daemons) ----
 # tools/kimi-claw — project-owned daemon manifest. Source of truth for 'kimiclaw-a'.
 # Owned by the tools/kimi-claw project; the parent only composes it.
+
 
 [daemons.kimiclaw-a]
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/tools/kimi-claw/bridge.ts --daemon --instance a"
@@ -885,9 +931,10 @@ auto = ["start"]
 # tools/ml-serve — project-owned daemon manifest. Source of truth for 'ml-serve'.
 # Owned by the tools/ml-serve project; the parent only composes it.
 
+
 [daemons.ml-serve]
 port = 25180
-run = "exec /usr/bin/python3 /home/toxic/estate/tools/ml-serve/server.py"
+run = "exec python3 /home/toxic/estate/tools/ml-serve/server.py"
 dir = "/home/toxic/estate/tools/ml-serve"
 mise = false
 retry = true
@@ -900,6 +947,7 @@ auto = ["start"]
 # ---- project: tools/null-g-proxy (1 daemon) ----
 # tools/null-g-proxy — project-owned daemon manifest. Source of truth for 'null-g-proxy'.
 # Owned by the tools/null-g-proxy project; the parent only composes it.
+
 
 [daemons.null-g-proxy]
 port = 25107
@@ -915,6 +963,7 @@ auto = ["start"]
 # ---- project: tools/sovereign-chat (1 daemon) ----
 # tools/sovereign-chat — project-owned daemon manifest. Source of truth for 'sovereign-chat'.
 # Owned by the tools/sovereign-chat project; the parent only composes it.
+
 
 [daemons.sovereign-chat]
 port = 25120
@@ -946,6 +995,7 @@ auto = ["start"]
 # projects/yote — project-owned daemon manifest. Source of truth for 'yote'.
 # Owned by the projects/yote project; the parent only composes it.
 
+
 [daemons.yote]
 health_http = { url = "http://127.0.0.1:25102/health", interval = "30s", timeout = "5s", retries = 3 }
 port = 25102
@@ -961,8 +1011,9 @@ auto = ["start"]
 # standalone/awrawr — project-owned daemon manifest. Source of truth for 'awrawr-mcp'.
 # Owned by the standalone/awrawr project; the parent only composes it.
 
+
 [daemons.awrawr-mcp]
-run = "exec bash -c 'set -a; source /home/toxic/estate/config/ports.env; set +a; exec bun /home/toxic/estate/services/awrawr-mcp/src/index.ts'"
+run = "exec /home/toxic/.awrawr-mcp-venv/bin/python /home/toxic/awrawr_mcp.py"
 dir = "/home/toxic"
 mise = false
 retry = true
@@ -976,6 +1027,7 @@ auto = ["start"]
 # standalone/awrawr — project-owned daemon manifest. Source of truth for 'awrawr-ws-exec'.
 # Owned by the standalone/awrawr project; the parent only composes it.
 
+
 [daemons.awrawr-ws-exec]
 port = 25204
 env = { WS_EXEC_PORT = "25204" }
@@ -987,13 +1039,14 @@ mise = false
 retry = true
 auto = ["start"]
 
-# Historical note: [daemons.brand] once pointed at deleted ranch/branding/.
-# ranch/branding/ was deleted. Brand and Flicker are retired.
-# mbx-cache is the live mise remote task cache on :25148.
+# RESTORED 2026-09-30 (peregrine): [daemons.brand] pointed at deleted
+# ranch/branding/ on :25148 (brand deprecated -> flicker per 2026-09-30 cutover).
+# Flicker is the live build daemon on :25148; blocks restored from origin/main.
 
 # ---- project: standalone/bedrock (1 daemon) ----
 # standalone/bedrock — project-owned daemon manifest. Source of truth for 'bedrock-ui'.
 # Owned by the standalone/bedrock project; the parent only composes it.
+
 
 [daemons.bedrock-ui]
 # bedrock evidence-locker web UI (:25137). Private: binds tailnet IP only, token-gated (?token= magic link).
@@ -1026,6 +1079,7 @@ auto = ["start"]
 # standalone/codebase-memory — project-owned daemon manifest. Source of truth for 'codebase-memory'.
 # Owned by the standalone/codebase-memory project; the parent only composes it.
 
+
 [daemons.codebase-memory]
 run = "exec /home/toxic/estate/tools/codebase-memory/run.sh"
 dir = "/home/toxic"
@@ -1041,6 +1095,7 @@ auto = ["start"]
 # standalone/hashline — project-owned daemon manifest. Source of truth for 'hashline'.
 # Owned by the standalone/hashline project; the parent only composes it.
 
+
 [daemons.hashline]
 run = "exec /home/toxic/.local/bin/hashline serve --socket /home/toxic/.hashline/hashline.sock --pid-file /home/toxic/.hashline/hashline.pid"
 dir = "/home/toxic"
@@ -1052,6 +1107,7 @@ auto = ["start"]
 # ---- project: standalone/kimi-code-npm (1 daemon) ----
 # standalone/kimi-code-npm — project-owned daemon manifest. Source of truth for 'kimi-code'.
 # Owned by the standalone/kimi-code-npm project; the parent only composes it.
+
 
 [daemons.kimi-code]
 port = 25126
@@ -1067,6 +1123,7 @@ auto = ["start"]
 # ---- project: standalone/kimi-token-audit (1 daemon) ----
 # standalone/kimi-token-audit — project-owned daemon manifest. Source of truth for 'kimi-audit-dash'.
 # Owned by the standalone/kimi-token-audit project; the parent only composes it.
+
 
 [daemons.kimi-audit-dash]
 run = "exec bun --hot run /home/toxic/kimi-token-audit/dashboard/server.ts"
@@ -1084,8 +1141,8 @@ auto = ["start"]
 
 [daemons.paper-poller-watchdog]
 port = 25150
-run = "exec /usr/bin/python3 /home/toxic/src/local/deep-paper-reader/paper-poller/bin/watchdog.py"
-dir = "/home/toxic/src/local/deep-paper-reader/paper-poller"
+run = "exec /usr/bin/python3 /home/toxic/paper-poller/bin/watchdog.py"
+dir = "/home/toxic/paper-poller"
 mise = false
 retry = true
 boot_start = true
@@ -1108,8 +1165,8 @@ auto = ["start"]
 
 [daemons.paper-poller]
 port = 25149
-run = "exec /usr/bin/python3 /home/toxic/src/local/deep-paper-reader/paper-poller/bin/poller.py"
-dir = "/home/toxic/src/local/deep-paper-reader/paper-poller"
+run = "exec /usr/bin/python3 /home/toxic/paper-poller/bin/poller.py"
+dir = "/home/toxic/paper-poller"
 mise = false
 retry = true
 boot_start = true
@@ -1125,6 +1182,7 @@ auto = ["start"]
 # standalone/ralph-dashboard — project-owned daemon manifest. Source of truth for 'ralph-dashboard'.
 # Owned by the standalone/ralph-dashboard project; the parent only composes it.
 
+
 [daemons.ralph-dashboard]
 run = "exec /home/toxic/src/github.com/toxicwind/ralph-dashboard/backend/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port ${RALPH_DASH_PORT}"
 dir = "/home/toxic/src/github.com/toxicwind/ralph-dashboard/backend"
@@ -1137,28 +1195,7 @@ health_http = { url = "http://127.0.0.1:25194/api/health", interval = "30s", tim
 env = { RALPH_DASH_PORT = "25194" }
 auto = ["start"]
 
-# ---- project: standalone/refusal-hunt (2 daemons) ----
-# standalone/refusal-hunt — project-owned daemon manifest. Source of truth for 'refusal-watchdog'.
-# Owned by the standalone/refusal-hunt project; the parent only composes it.
-
-[daemons.refusal-watchdog]
-run = "exec python3 /home/toxic/refusal-hunt/refusal-watchdog.py"
-dir = "/home/toxic/refusal-hunt"
-mise = false
-retry = true
-boot_start = true
-auto = ["start"]
-
-# standalone/refusal-hunt — project-owned daemon manifest. Source of truth for 'sorry-watchdog'.
-# Owned by the standalone/refusal-hunt project; the parent only composes it.
-
-[daemons.sorry-watchdog]
-run = "exec python3 /home/toxic/refusal-hunt/sorry-watchdog.py"
-dir = "/home/toxic/refusal-hunt"
-mise = false
-retry = true
-boot_start = true
-auto = ["start"]
+# standalone/refusal-hunt RETIRED 2026-10-08 (warden): project dir /home/toxic/refusal-hunt deleted upstream; daemons already stopped+disabled in pitchfork; nothing recoverable — stanzas removed.
 
 # forensics-srv REMOVED 2026-09-21 (envhunt): double-supervised. The live
 # process on :25160 is owned by the systemd user unit
@@ -1178,19 +1215,16 @@ auto = ["start"]
 # Presence, activity, rooms, WebSocket push, MCP. Binds 127.0.0.1 + tailscale.
 # Token lives ONLY in /home/toxic/.config/sovereign-chat-token (0600).
 
-# ---- project: standalone/rig (1 daemon) ----
-# standalone/rig — project-owned daemon manifest. Source of truth for 'openfang'.
-# Owned by the standalone/rig project; the parent only composes it.
-# 2026-10-02: dir was standalone/rig-work, a stale ancestor checkout of the same
-# repo (pre openfang->rig rebrand). Verified 0 differing files across all 13
-# crates after rename-normalize, and its HEAD is a strict ancestor of rig.
-# Consolidated onto rig; rig-work deleted.
+# ---- project: standalone/rig-work (1 daemon) ----
+# standalone/rig-work — project-owned daemon manifest. Source of truth for 'openfang'.
+# Owned by the standalone/rig-work project; the parent only composes it.
+
 
 [daemons.openfang]
 env = { OPENFANG_KERNEL_PORT = "25196" }
 port = 25196
 run = "exec /home/toxic/estate/ops/openfang-run.sh"
-dir = "/home/toxic/projects/rig"
+dir = "/home/toxic/projects/rig-work"
 mise = false
 retry = true
 health_http = { url = "http://127.0.0.1:25196/api/health", interval = "30s", timeout = "5s", retries = 3 }
@@ -1200,6 +1234,7 @@ auto = ["start"]
 # ---- project: standalone/squawk-relay (2 daemons) ----
 # standalone/squawk-relay — project-owned daemon manifest. Source of truth for 'squawk-relay-forward'.
 # Owned by the standalone/squawk-relay project; the parent only composes it.
+
 
 [daemons.squawk-relay-forward]
 run = "exec /home/toxic/.fleet-bus/squawk-relay/run-forward.sh"
@@ -1213,13 +1248,13 @@ auto = ["start"]
 # standalone/squawk-relay — project-owned daemon manifest. Source of truth for 'squawk-relay-sink'.
 # Owned by the standalone/squawk-relay project; the parent only composes it.
 
+
 [daemons.squawk-relay-sink]
 run = "exec /home/toxic/.fleet-bus/squawk-relay/run-sink.sh"
 dir = "/home/toxic/.fleet-bus/squawk-relay"
 mise = false
 retry = true
 boot_start = true
-env = { SQUAWK_CODE_DIR = "/home/toxic/estate/ranch/squawk" }
 auto = ["start"]
 
 # ---- project: standalone/tau (1 daemon) ----
@@ -1285,13 +1320,6 @@ dir = "/home/toxic/duet"
 retry = true
 auto = ["start"]
 
-[daemons.squawk-ws]
-run = "exec bash -c 'set -a; source config/ports.env; set +a; exec bun services/squawk-ws/src/index.ts'"
-dir = "/home/toxic/estate"
-port = 25147
-retry = true
-boot_start = true
-
 # ---- project: ranch/android-fleet/phone-backup (1 daemon) ----
 # ranch/android-fleet/phone-backup — project-owned daemon manifest.
 # arrival-classifier: event-driven (inotify) classifier for Syncthing incoming/.
@@ -1299,9 +1327,6 @@ boot_start = true
 # arrivals to repos/, archives/, code/, docs/ under /mnt/8TB/phone-archive/.
 # Photos (DCIM/Pictures/media) and credential-shaped content are never
 # auto-routed — left in incoming/ for manual review.
-# (Hand-added 2026-10-03: source fragment at
-# ranch/android-fleet/phone-backup/pitchfork.d/arrival-classifier.toml;
-# a future recompose converges on the same stanza.)
 
 [daemons.arrival-classifier]
 run = "exec /home/toxic/.bun/bin/bun /home/toxic/estate/ranch/android-fleet/phone-backup/arrival-classifier.ts"
@@ -1309,39 +1334,3 @@ dir = "/home/toxic/estate/ranch/android-fleet/phone-backup"
 mise = false
 retry = true
 auto = ["start"]
-
-# Hand-added 2026-10-04 (warden drift-watch): source fragment at
-# estate/pitchfork.d/squawk-tunnel-monitor.toml; the composed live config
-# had dropped it, leaving the daemon unstartable after the 23:27 supervisor
-# swap. Circuit breaker for the cell reverse tunnel (Browser -> Funnel -> Yote -> Cell).
-[daemons.squawk-tunnel-monitor]
-run = "exec /home/toxic/estate/bin/tunnel-monitor.sh"
-dir = "/home/toxic/estate"
-mise = false
-retry = true
-auto = ["start"]
-
-# Hand-added 2026-10-05 (Kite): source fragment at
-# estate/pitchfork.d/squawk-qna-watch.toml. First-class Q&A process for
-# squawk — event-driven (inotify) watcher tracking open questions, nudging
-# unanswered ones. Additive only; never touches channel messages.
-[daemons.squawk-qna-watch]
-run = "exec /usr/bin/python3 /home/toxic/kite/kite/pollers/qna_watch.py"
-dir = "/home/toxic/kite/kite/pollers"
-mise = false
-retry = true
-auto = ["start"]
-ready_cmd = "pgrep -f [q]na_watch.py >/dev/null"
-
-[daemons.doorbell-mcp]
-port = 25202
-run = "exec env -u MISE_ENV_FILE -u MISE_ENV MISE_DISABLE_TOOLS=1 /home/toxic/.bun/bin/bun run ./src/index.ts"
-dir = "/home/toxic/estate/ranch/doorbell"
-mise = false
-retry = true
-ready_http = "http://127.0.0.1:25202/health"
-health_http = { url = "http://127.0.0.1:25202/health", interval = "30s", timeout = "5s", retries = 3 }
-depends = ["gatehouse"]
-boot_start = true
-auto = ["start"]
-env = { MONAD_PORT = "25202", GATEHOUSE_URL = "http://127.0.0.1:25127/mcp", MISE_DISABLE_TOOLS = "1" }
