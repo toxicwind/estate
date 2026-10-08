@@ -36,7 +36,8 @@ nohup.out
 __MACOSX/
 .AppleDouble
 .LSOverride
-Icon[]
+Icon[
+]
 
 # Resource forks
 ._*
@@ -57,7 +58,8 @@ Icon[]
 .file
 .disk_label*
 lost+found
-.HFS+ Private Directory Data[]
+.HFS+ Private Directory Data[
+]
 
 # Directories potentially created on remote AFP share
 .AppleDB
@@ -1264,6 +1266,14 @@ config/tau/agent/sessions/
 config/tau/sessions/
 config/tau/plugins/cache/
 config/tau/natives/
+# Attached-image blob store. Regenerated per screenshot/attachment, and 118
+# of these were committed before this rule existed -- they stay tracked (a
+# tracked file is never ignored), but new blobs no longer get staged.
+config/tau/agent/blobs/
+# Launcher and service runtime state, rewritten on every start.
+config/tau/.launcher.lock
+pitchfork.d/storage/
+pitchfork.d/.qdrant-initialized
 
 # Fleet message spool, written per-message by the squawk bus.
 hatch/agents/*/squawk-root/
