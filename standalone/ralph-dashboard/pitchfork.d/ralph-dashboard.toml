@@ -3,8 +3,8 @@
 
 
 [daemons.ralph-dashboard]
-run = "exec /home/toxic/ralph-dashboard/backend/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port ${RALPH_DASH_PORT}"
-dir = "/home/toxic/ralph-dashboard/backend"
+run = "exec /home/toxic/src/github.com/toxicwind/ralph-dashboard/backend/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port ${RALPH_DASH_PORT}"
+dir = "/home/toxic/src/github.com/toxicwind/ralph-dashboard/backend"
 mise = false
 retry = true
 boot_start = true
