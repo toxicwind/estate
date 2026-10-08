@@ -7,29 +7,29 @@ Hash: SHA512
   "signedByOrg": "grafana",
   "signedByOrgName": "Grafana Labs",
   "plugin": "elasticsearch",
-  "version": "12.9.1",
-  "time": 1790598196863,
+  "version": "12.9.2",
+  "time": 1791306878586,
   "keyId": "7e4d0c6a708866e7",
   "files": {
-    "module.js": "1ada24ea5606a254f0928e0a35c4212fedc7be34e6a4c1a3bb38e5deda0f7a34",
+    "module.js": "e09abbe3851a9b4063a845b990371e8fe8c229e5f07694062e85ee6670ccf0d4",
     "go_plugin_build_manifest": "256e66bc4584b420fa9922c7a485b9329d21ce1dd0f1258b0b38499e3302856b",
     "LICENSE": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef",
     "README.md": "1879fc1ceda6be2ec8e81261ba926a7c868560905253e570febca41e8143d7f8",
-    "CHANGELOG.md": "c82c795be6efa4ad371e1c4c42e77c3b00603107a2386794ca3a6c1d87860fdf",
+    "CHANGELOG.md": "7bc546924758d871a5d9d699ba2d00506a4edb9b8c78ec5dbc04ffd36bebee81",
     "module.js.map": "3e293dd6c52519bd4960fe7d7874d15c1344ba8d1d9fcc519c823057b5a7b013",
-    "gpx_grafana_elasticsearch_datasource_linux_amd64": "78e10d1f521cf1cb57873d1359b7299bb189b45e6d53c19358790248642f005f",
-    "plugin.json": "78790f302095d1555b15eae542131f5d0734f3f6a51d00fb178d7655b0503d7e",
+    "gpx_grafana_elasticsearch_datasource_linux_amd64": "8427bcfbad62750e96045a317dbf3fad399ba38a9c82c8a7a41f2afbe71439a7",
+    "plugin.json": "eb7eebad70692dadd416c70157be87d8e457c1cecf9f0b1583fd5fc2d80e9f71",
     "img/elasticsearch.svg": "79e9c13448cdf9257d634af416277893aea5fd48376776c26470b902cf42206f",
     "query_help.md": "5a854fcc0a588ef1b502000a2dd03430d6d485998922e8f117d223466dc77254"
   }
 }
 -----BEGIN PGP SIGNATURE-----
 
-wsA+BAETCgBtBYJqulw0CRB+TQxqcIhm50UUAAAAAAAcACBzYWx0QG5vdGF0
-aW9ucy5vcGVucGdwanMub3JnD/3BzXJzaTjvMqUnDmWT949yqtWQ8r8lyG/g
-uL3I22kWIQTzOyW2kQdOhGNlcPN+TQxqcIhm5wAA52wCCQEKNifTaRTtAX40
-M47GzYED8VOQrrKmFhLEqLDrF3qqVyV4APkf/fDVOc7ZSuEBsoQWQEZtTYWu
-KB9GLBO3xei3IgIIig5CwhECXhcRNMKsLRobOo6PJx7iq+ghw0P0yZXrRD1u
-P/Nl9C+b2zW1SXrH12FRz4Jh2FFr0O96+4ZP3JrqPLI=
-=BW2y
+wsA+BAETCgBtBYJqxSx+CRB+TQxqcIhm50UUAAAAAAAcACBzYWx0QG5vdGF0
+aW9ucy5vcGVucGdwanMub3Jn9khOHBYYcRg3xoAP9yU9N3jW8iMBKmHLJDnA
+urJkhtoWIQTzOyW2kQdOhGNlcPN+TQxqcIhm5wAA3/wCBiDPyZfkFfx4WLkj
+rMqQNIWGP8hDtRSzX7Ioz5FzSkUPoxRWcQTC81iwvHvWnd+EIHgE55e1lr5X
+ZO6ja+Xcd679AgkBSf9ViposoaQ9HDQWztryh6wEPy/M07nUmgcE7EWQsPzo
+YktrY4rsf8xwMccUzewq84G+I6QRvTFKJu1VgqFKkIk=
+=L3n/
 -----END PGP SIGNATURE-----
