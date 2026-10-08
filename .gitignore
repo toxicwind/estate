@@ -1345,10 +1345,3 @@ credentials.json
 
 # non-secret flock route; secrets remain in ignored flock.env
 !config/flock-ssot/route.env
-
-# Runtime state that the tracked config points at but does not belong in the
-# repo. Each of these was showing up as an untracked path on every `git status`.
-config/tau/.launcher.lock
-config/tau/agent/blobs/
-pitchfork.d/storage/
-pitchfork.d/.qdrant-initialized
