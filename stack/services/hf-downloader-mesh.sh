@@ -11,7 +11,10 @@ fuser -k "${BACKEND}/tcp" 2>/dev/null || true
 mkdir -p "$SOV/hf-downloader/data"
 
 # Start HF downloader backend
-/home/toxic/.local/bin/hfdownloader serve \
+# 2026-10-08 warden: .local archived by home reorg; prefer live, fall back to archive.
+_HFD=/home/toxic/.local/bin/hfdownloader
+[ -x "$_HFD" ] || _HFD=/home/toxic/archive/home-dirs-2026/.local/bin/hfdownloader
+"$_HFD" serve \
   --port "${BACKEND}" \
   --addr 0.0.0.0 \
   --cache-dir "$SOV/hf-downloader/data" &
