@@ -1,9 +1,9 @@
-defaultThinkingLevel: medium
+defaultThinkingLevel: auto
 modelRoles:
   judge: openrouter/~typesafe/jev-latest
   tiny: local/lfm2.5-230m
   advisor: google/models/gemini-flash-tool-retrieval
-  default: vercel-ai-gateway/poolside/laguna-s-2.1-free:medium
+  default: vercel-ai-gateway/convaiinnovations/laya-free
   fallbacks:
     - vercel-ai-gateway/inclusionai/ling-3.1-flash:medium
     - vercel-ai-gateway/inclusionai/ling-3.0-flash-sante:medium
@@ -97,7 +97,7 @@ find:
 temperature: 0.2
 textVerbosity: low
 inlineToolDescriptors: "on"
-skillful: false
+skillful: true
 personality: pragmatic
 retry:
   fallbackChains: {}
