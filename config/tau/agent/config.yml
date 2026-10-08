@@ -2,8 +2,8 @@ defaultThinkingLevel: auto
 modelRoles:
   judge: openrouter/~typesafe/jev-latest
   tiny: local/lfm2.5-230m
-  advisor: google/models/gemini-flash-tool-retrieval
-  default: vercel-ai-gateway/convaiinnovations/laya-free
+  advisor: zen/space-bunny-free
+  default: vercel-ai-gateway/inclusionai/ling-3.1-flash:off
   fallbacks:
     - vercel-ai-gateway/inclusionai/ling-3.1-flash:medium
     - vercel-ai-gateway/inclusionai/ling-3.0-flash-sante:medium

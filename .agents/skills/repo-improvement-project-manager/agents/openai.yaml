@@ -1,4 +1,0 @@
-interface:
-  display_name: "Repo Improvement PM"
-  short_description: "Audit repo, plan tasks, review delivery"
-  default_prompt: "Use $repo-improvement-project-manager to audit this repository, propose top improvements, and wait for my selected enhancement IDs before creating tasks."
