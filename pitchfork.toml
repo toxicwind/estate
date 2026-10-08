@@ -1084,8 +1084,8 @@ auto = ["start"]
 
 [daemons.paper-poller-watchdog]
 port = 25150
-run = "exec /usr/bin/python3 /home/toxic/paper-poller/bin/watchdog.py"
-dir = "/home/toxic/paper-poller"
+run = "exec /usr/bin/python3 /home/toxic/src/local/deep-paper-reader/paper-poller/bin/watchdog.py"
+dir = "/home/toxic/src/local/deep-paper-reader/paper-poller"
 mise = false
 retry = true
 boot_start = true
@@ -1108,8 +1108,8 @@ auto = ["start"]
 
 [daemons.paper-poller]
 port = 25149
-run = "exec /usr/bin/python3 /home/toxic/paper-poller/bin/poller.py"
-dir = "/home/toxic/paper-poller"
+run = "exec /usr/bin/python3 /home/toxic/src/local/deep-paper-reader/paper-poller/bin/poller.py"
+dir = "/home/toxic/src/local/deep-paper-reader/paper-poller"
 mise = false
 retry = true
 boot_start = true
@@ -1262,8 +1262,8 @@ auto = ["start"]
 
 [daemons.whatsapp-mcp]
 port = 25146
-run = "bash -c 'set -a; source /home/toxic/.config/pitchfork-secrets/whatsapp-mcp.env; set +a; exec /home/toxic/.whatsapp-mcp-venv/bin/python /home/toxic/whatsapp-mcp/server.py'"
-dir = "/home/toxic/whatsapp-mcp"
+run = "bash -c 'set -a; source /home/toxic/.config/pitchfork-secrets/whatsapp-mcp.env; set +a; exec /home/toxic/archive/home-dirs-2026/.whatsapp-mcp-venv/bin/python /home/toxic/src/local/whatsapp-mcp/server.py'"
+dir = "/home/toxic/src/local/whatsapp-mcp"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25146/health"
