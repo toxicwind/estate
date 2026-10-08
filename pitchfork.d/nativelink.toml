@@ -3,8 +3,11 @@
 # with mbx-cache on :25148, which remains the mise task cache for bun/cargo.
 # Config: config/nativelink/nativelink.json5 (json5, json comments allowed).
 
+# ops/nativelink/run.sh creates the CAS/AC content+temp dirs first: NativeLink
+# does not create temp_path, and a missing one makes every RE route 404 while
+# still logging "Ready".
 [daemons.nativelink]
-run = "exec /home/toxic/.local/bin/nativelink /home/toxic/estate/config/nativelink/nativelink.json5"
+run = "exec ./ops/nativelink/run.sh"
 dir = "/home/toxic/estate"
 port = 25155
 auto = ["start"]
