@@ -5,6 +5,7 @@
 [daemons.agent-viewer]
 # Forge 2026-09-21: noVNC web viewer for the agent display.
 port = 6080
+env = { PYTHONPATH = "/home/toxic/archive/home-dirs-2026/.local/lib/python3.14/site-packages" }
 run = "exec /home/toxic/archive/home-dirs-2026/.local/bin/websockify --web /home/toxic/archive/home-dirs-2026/.browserless/novnc 127.0.0.1:6080 127.0.0.1:5900"
 dir = "."
 mise = false
