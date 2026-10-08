@@ -614,6 +614,17 @@ ready_http = "http://127.0.0.1:20128/api/health"
 health_http = { url = "http://127.0.0.1:20128/api/health", interval = "30s", timeout = "5s", retries = 3 }
 auto = ["start"]
 
+
+# OmniRoute — upstream image, not a systemd unit. Host :20130 so :20128 stays VansRouter.
+[daemons.omniroute]
+port = 20130
+run = "exec /home/toxic/estate/stack/services/omniroute.sh"
+dir = "/home/toxic/estate"
+mise = false
+retry = true
+ready_cmd = "ss -ltn 'sport = :20130' | grep -q LISTEN"
+auto = ["start"]
+
 # ---- project: ranch/barn/gatehouse (1 daemon) ----
 # ranch/barn/gatehouse — project-owned daemon manifest. Source of truth for 'gatehouse'.
 # Owned by the ranch/barn/gatehouse project; the parent only composes it.
