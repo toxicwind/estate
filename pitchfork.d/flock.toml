@@ -1,5 +1,6 @@
 # estate/ranch/flock -- project-owned daemon manifest. Source of truth for the flock daemon.
 # Owned by the flock project; the parent only composes it.
+# Route values are non-secret. Client key is synced by bin/flock-run.sh from estate SSOT.
 
 [daemons.flock]
 health_http = { url = "http://127.0.0.1:25193/health", interval = "30s", timeout = "5s", retries = 3 }
@@ -9,5 +10,5 @@ dir = "/home/toxic/estate/ranch/flock"
 mise = false
 retry = true
 ready_http = "http://127.0.0.1:25193/health"
-env = { FLOCK_PORT = "25193" }
+env = { FLOCK_PORT = "25193", FLOCK_DATA_DIR = "/home/toxic/.flock-data", FLOCK_BASE_URL = "http://127.0.0.1:25193", FLOCK_MODEL = "nvidia/nemotron-3-ultra-550b-a55b" }
 auto = ["start"]

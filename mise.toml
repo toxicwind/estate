@@ -1,4 +1,3 @@
-# ============================================================================
 # ESTATE MISE CONFIG — hand-edited root. NOT generated.
 #
 # The retired scripts/generate.ts used to overwrite this file wholesale and
@@ -11,6 +10,7 @@
 #   mise/conf.d/*.toml fragments, loaded alphabetically (mise's own convention)
 #   mise/tasks/<name>  one executable file per task
 #   config/ports.env   the numeric port SSOT, injected from [env] below
+#   config/flock-ssot/route.env  non-secret flock route (port, model, base URL)
 #
 # Keep mise tasks as hand-authored project workflows. Pitchfork owns daemon
 # lifecycle directly; do not mirror its start/stop/restart/health subcommands.
@@ -18,5 +18,5 @@
 
 [env]
 # Ports are injected estate-wide. See mise/conf.d/10-env.toml for why nothing
-# else declares a *_PORT.
-_.file = "config/ports.env"
+# else declares a *_PORT. route.env carries the flock model and base URL.
+_.file = ["config/ports.env", "config/flock-ssot/route.env"]
