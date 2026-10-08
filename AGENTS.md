@@ -147,13 +147,14 @@ ast-grep scan -p 'NVIDIA_MODELS' -l ts --json=stream /home/toxic/projects/pi-age
 opencode/hy3-free`. The `subagent` spawn tool is a LIVE-PI builtin (not callable from a
   plain assistant context) — fanout only works inside an interactive pi session.
 
-## 🏗️ Build Server (brand - :25148)
+## 🏗️ Build Cache (mbx-cache - :25148)
 
-- **Daemon**: Running on port `25148` managed via Pitchfork (`/home/toxic/estate/tools/brand/brandd.py`).
-- **Heavy Builds**: Use `brand submit --name <name> --repo <dir> --toolchain <bun|rust|go|python> --cmd "<cmd>"` for heavy builds rather than running long compilation in turn shell.
-- **Worker & Cache Architecture**:
-  - 2-worker concurrent queue preventing resource exhaustion.
-  - NVMe-backed shared compiler/package caches: `sccache` (Rust/C++), `ccache`, and `uv` (Python wheels/environments).
+- **Daemon**: `mbx-cache`, a fork of `jdx/mr-boxington-cache`. Source lives at `/home/toxic/estate/vendored/mr-boxington-cache`; data in `var/runtime/mbx-cache`. It is a **content-addressed cache only** — it has no scheduler, no queue, and no worker pool.
+- **Heavy Builds**: there is no remote job runner. Long compilations run locally (natively, or as an on-demand `mise` task), not via a submission command. Cache hits come from mise automatically.
+- **Cache Architecture**:
+  - Wired as mise's remote task cache in `mise/conf.d/15-remote-cache.toml` (namespace `estate`, read-write). Eligible tasks need declared sources and outputs; cache failures degrade to normal misses.
+  - Covers the real build mix on this box: bun, cargo, and python tasks.
+  - Local compiler caches still apply for their own layers: `sccache` (Rust/C++) and `uv` (Python wheels/environments).
 
 ---
 
