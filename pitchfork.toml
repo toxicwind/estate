@@ -667,6 +667,22 @@ retry = true
 ready_http = "http://127.0.0.1:25127/health"
 auto = ["start"]
 
+# ---- project: estate/ops/mbx-cache (1 daemon) ----
+# mbx-cache — estate-owned direct Rust cache server.
+# Owned by estate/ops/mbx-cache.
+
+[daemons.mbx-cache]
+# Mise-compatible remote task cache. Direct Rust binary built from pinned
+# vendored/mr-boxington-cache source; no Docker or container runtime.
+port = 25148
+env = { MBX_CACHE_PORT = "25148" }
+run = "exec /home/toxic/estate/ops/mbx-cache/run.sh"
+dir = "/home/toxic/estate"
+mise = true
+retry = true
+ready_http = "http://127.0.0.1:25148/v1/status"
+health_http = { url = "http://127.0.0.1:25148/v1/status", interval = "30s", timeout = "5s", retries = 3 }
+auto = ["start"]
 # ---- project: ranch/flicker (2 daemons) ----
 # ranch/flicker — project-owned daemon manifest. Source of truth for 'flicker-agent'.
 # Owned by the ranch/flicker project; the parent only composes it.
