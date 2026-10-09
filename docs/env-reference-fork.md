@@ -9,7 +9,7 @@ This reference documents custom, source-owned environment variables introduced s
 | Variable | Default | Description |
 | :--- | :--- | :--- |
 | `HINDRA_API_URL` | `http://127.0.0.1:25117` | Endpoint URL for the local Hindsight knowledge mesh daemon. |
-| `BRAND_PORT` | `25148` | Port for the Pitchfork-managed `brand` compilation daemon. |
+| `MBX_CACHE_PORT` | `25148` | Port for the Pitchfork-managed `mbx-cache` remote task cache (formerly `brand`; the `brand`/`brandd` naming is retired). |
 | `PAPER_POLLER_PORT` | `25149` | Port for the HFT-style arXiv/alphaXiv paper poller daemon. |
 | `ANTIGRAVITY_USER_AGENT_VERSION` | `4.3.0` | Sovereign override for Antigravity backend protocol headers. |
 

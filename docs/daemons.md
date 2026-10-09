@@ -148,6 +148,7 @@ services the estate runs for itself, they are the bidding machinery.
 |---|---|---|
 | `mbx-cache` | 25148 | Mise-compatible remote task cache. A direct Rust binary built through mise from `vendored/mr-boxington-cache`; stores immutable task artifacts in `var/runtime/mbx-cache`. Replaces the flicker/woodpecker server and agent. |
 | `hashline` | — | The hash-anchored editor's socket server. |
+| `nativelink` | 25155/25157 | High-performance Bazel/Remote Execution API (REAPI) build server and remote cache. Serves frontend on `:25155` and worker on `:25157`. Managed via pitchfork (`pitchfork.d/nativelink.toml`). Supersedes legacy `buildsrv`. |
 | `awrawr-mcp` | 25198 | The estate MCP server. |
 | `awrawr-ws-exec` | 25204 | WS exec transport. **Never claim or kill** — protected port. |
 | `codebase-memory` | 25195 | codebase-memory MCP daemon. |
@@ -180,5 +181,6 @@ ranch project.
 3. **A renamed service keeps its port.** `HERD_PORT` exists because herd is the
    rename of llama-swap and 38 files still read the old name.
 4. **Do not retire a daemon because its launcher looks wrong.** vansrouter's
-   launcher points at a deleted tree, and BRAND_PORT looked unused until the
-   daemon behind it turned out to be `flicker`, live the whole time.
+   launcher points at a deleted tree, and the daemon behind :25148 turned
+   out to be `flicker`, live the whole time (it has since been replaced by
+   `mbx-cache`, which owns :25148 today).

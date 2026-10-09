@@ -57,9 +57,21 @@
         cas: [{ cas_store: "CAS_MAIN_STORE" }],
         ac: [{ ac_store: "AC_MAIN_STORE" }],
         capabilities: [{ remote_execution: { scheduler: "MAIN_SCHEDULER" } }],
-        bytestream: { cas_stores: { "": "CAS_MAIN_STORE" } },
-        fetch: {},
-        push: {},
+        // Array form, not the deprecated map form: NativeLink parses the map
+        // form for backwards compatibility and silently yields an EMPTY
+        // service list, which makes every route 404 with no error beyond a
+        // startup WARN. Verified by uploading/downloading a CAS blob.
+        bytestream: [{ cas_store: "CAS_MAIN_STORE" }],
+        // health on the frontend too, not just the worker: /status is the only
+        // probe route this build exposes, so without it the client-facing port
+        // answers "No route for /status" and looks dead while it is healthy.
+        health: [],
+        // Unit services take an EMPTY ARRAY, not `{}`: `{}` is the deprecated
+        // map form, which backcompat parses into an empty service list and
+        // then the route silently 404s. `fetch: [{}]` is rejected outright
+        // (`WithInstanceNameBackCompat`), so the correct empty form is `[]`.
+        fetch: [],
+        push: [],
       },
     },
     {
@@ -67,8 +79,10 @@
       // shares a permission set with the frontend, per upstream guidance.
       listener: { http: { socket_address: "127.0.0.1:25157" } },
       services: {
-        worker_api: { scheduler: "MAIN_SCHEDULER" },
-        health: {},
+        // worker_api entries are bare scheduler-name strings, not objects
+        // (`invalid type: map, expected a string`).
+        worker_api: ["MAIN_SCHEDULER"],
+        health: [],
       },
     },
   ],
