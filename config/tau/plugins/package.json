@@ -9,7 +9,6 @@
     "airspeak": "1.1.5",
     "cover-plugin": "0.1.0",
     "oh-my-pi-plugin-command-code": "^0.3.0",
-    "omp-auto-approval": "npm:omp-auto-approval@^0.1.0",
     "omp-hyper-provider": "npm:omp-hyper-provider@^0.3.0",
     "omp-makora-provider": "^1.0.4",
     "pi-context-lean": "npm:pi-context-lean@^0.1.1",

@@ -1,0 +1,16 @@
+{
+  "serverUrl": "http://localhost:20128",
+  "providerName": "omni",
+  "onlyShowUsableModels": true,
+  "showGlobalRoutingModels": true,
+  "includeModels": [],
+  "excludeModels": [],
+  "syncOnStartup": true,
+  "modelCacheTtlMinutes": 60,
+  "autoSyncIntervalSeconds": 120,
+  "showGatewayTokensPerSecond": true,
+  "lastSuccessfulSyncAt": 1791588196945,
+  "onUnreachable": "none",
+  "fallbackModel": "",
+  "apiKey": "sk-d61dc924f5c08165-7f4ff0-e926e953"
+}

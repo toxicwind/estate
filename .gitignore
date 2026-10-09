@@ -1211,6 +1211,9 @@ ranch/
 
 # third-party checkouts (Hyprland, WhiteSur, ansible, ...) — own remotes
 vendored/
+# external projects with their own git remotes
+projects/*
+!projects/OmniRoute
 
 # runtime state: archives, reconciliation snapshots, legacy, scratch
 var/
@@ -1308,6 +1311,10 @@ config/tau/agent/memories/
 config/tau/puppeteer/
 bench-results-*.json
 bench-state.json
+config/tau/agent/edit-blackbox.jsonl
+config/tau/agent/models.json
+doorbell.*.crt
+doorbell.*.key
 
 # ── Config ownership ────────────────────────────────────────────────────
 # estate/.env IS the runtime config SSOT (ports, model names, stream tuning)

@@ -8,6 +8,9 @@ ranch/
 
 # third-party checkouts (Hyprland, WhiteSur, ansible, ...) — own remotes
 vendored/
+# external projects with their own git remotes
+projects/*
+!projects/OmniRoute
 
 # runtime state: archives, reconciliation snapshots, legacy, scratch
 var/

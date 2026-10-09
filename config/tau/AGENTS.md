@@ -22,13 +22,12 @@
 #   bun /home/toxic/estate/helpers/health-audit.ts
 #   mise -C /home/toxic/estate run health|status|up|down
 
-## 🏗️ Build Server (brand - :25148)
-- **Daemon**: Running on port `25148` via Pitchfork (`/home/toxic/estate/tools/brand/brandd.py`).
-- **Heavy Builds**: Use `brand submit --name <name> --repo <dir> --toolchain <bun|rust|go|python> --cmd "<cmd>"` for heavy builds rather than running long compilation in turn shell.
+## 🏗️ Build Server (NativeLink - :25155/:25157 & mbx-cache - :25148)
+- **Primary Build Server**: NativeLink running on port `25155` (frontend) and `25157` (worker) via Pitchfork (`pitchfork.d/nativelink.toml`), providing Remote Execution API (REAPI) caching and execution. Supersedes legacy `buildsrv`.
+- **Task Cache**: `mbx-cache` running on port `25148` via Pitchfork (`vendored/mr-boxington-cache`), wired as mise's remote task cache (`task.cache.remote_url`).
 - **Worker & Cache Architecture**:
-  - 2-worker concurrent queue preventing resource exhaustion.
+  - REAPI CAS and Action Cache hierarchies at `var/runtime/nativelink/`.
   - NVMe-backed shared compiler/package caches: `sccache` (Rust/C++), `ccache`, and `uv` (Python wheels/environments).
-
 ## 🛡️ Anti-Hallucination & Execution Rules
 - **Tool Execution Proof**: NEVER fake completion declarations or fire consecutive todo done calls without tool execution proof.
 - **Context Synthesis**: When user provides iterative/ADHD stream-of-consciousness, synthesize multi-turn context; do not anchor rigidly on a single token or username.
