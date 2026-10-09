@@ -290,6 +290,7 @@ Two boxes, one swarm. Run heavy work on yote; keep hatch light.
 | quill | pseudoembedding-anomaly/plain-term-review (wave 4 delivered clean) | cinder | RUNNING (2026-10-05) |
 | sorrel | anomaly-lane/rephrased-review | cinder | RUNNING (2026-10-05) |
 | cinder | pseudoembedding hibug anomaly loop (subagent-control lane) | cinder | RUNNING (2026-10-05) |
+| damon | jarvis/inference beat: secondary JARVIS model daemon with tested failover — map authoritative model-resolution path, launch secondary daemon on separate socket/config without touching the live one, prove end-to-end with runtime-verified model identity | Ember | RUNNING (2026-10-08) |
 <!-- KB-ROLLUP:END -->
 
 
