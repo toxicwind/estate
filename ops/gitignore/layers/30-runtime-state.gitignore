@@ -81,3 +81,4 @@ config/tau/agent/edit-blackbox.jsonl
 config/tau/agent/models.json
 doorbell.*.crt
 doorbell.*.key
+config/tau/agent/extensions/*/settings.json
