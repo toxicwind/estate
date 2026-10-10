@@ -2,8 +2,8 @@
 
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate#license)
+[![estate](https://img.shields.io/badge/estate-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/estate)
 
 </div>
 
@@ -95,13 +95,13 @@ Mesh: registered as `bench-radar` in `src/lib/ghas-mesh-features.ts`
 
 ## Dev / contributing
 
-Pitchfork stanza in `sovereign/pitchfork.toml` (`pitchfork start
+Pitchfork stanza in `estate/pitchfork.toml` (`pitchfork start
 bench-radar`). To extend detection: add hard rules or series metrics in the
 scan path, keeping the change-only paging contract (steady state = silence).
 
 ## License & security
 
-MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+MIT — see [LICENSE](https://github.com/toxicwind/estate#license).
 
 - Read-only over the benchmark log; the only write surface is its own
   `state/` dir and the fleet-chat alert POST.
