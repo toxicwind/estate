@@ -13,3 +13,31 @@
 [submodule "bash-style-guide"]
 	path = bash-style-guide
 	url = https://github.com/toxicwind/bash-style-guide.git
+
+[submodule "config/tau/agent/extensions/hashline-pi"]
+	path = config/tau/agent/extensions/hashline-pi
+	url = https://github.com/acoyfellow/hashline-pi.git
+[submodule "pdfshield"]
+	path = pdfshield
+	url = https://github.com/purvalsingh/pdfshield.git
+[submodule "pi-skills"]
+	path = pi-skills
+	url = https://github.com/fonnesbeck/pi-skills.git
+[submodule "projects/OmniRoute"]
+	path = projects/OmniRoute
+	url = https://github.com/diegosouzapw/OmniRoute.git
+[submodule "sigma"]
+	path = sigma
+	url = https://github.com/toxicwind/sigma.git
+[submodule "skills-hub"]
+	path = skills-hub
+	url = https://github.com/toxicwind/estate-skills-hub.git
+[submodule "skills/softpaw/guard-suite/purple-llama"]
+	path = skills/softpaw/guard-suite/purple-llama
+	url = https://github.com/meta-llama/PurpleLlama.git
+[submodule "tools/pd-mcp-standalone"]
+	path = tools/pd-mcp-standalone
+	url = https://github.com/toxicwind/pd-mcp.git
+[submodule "work/tau-extensions"]
+	path = work/tau-extensions
+	url = https://github.com/toxicwind/tau-extensions.git
