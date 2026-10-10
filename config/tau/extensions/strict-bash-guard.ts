@@ -1,4 +1,4 @@
-import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
+import type { ExtensionAPI } from "tau";
 
 export default function (pi: ExtensionAPI) {
   pi.on("tool_call", async (event) => {

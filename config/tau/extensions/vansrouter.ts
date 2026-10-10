@@ -8,7 +8,7 @@
  * Verify:  tau -e ~/.tau/extensions/vansrouter.ts models ls -v
  */
 
-import type { ExtensionAPI, ExtensionContext, ProviderConfig, ProviderModelConfig } from "@oh-my-pi/pi-coding-agent";
+import type { ExtensionAPI, ExtensionContext, ProviderConfig, ProviderModelConfig } from "tau";
 
 const VR_BASE = process.env.VANSROUTER_URL || process.env.NINEROUTER_URL || "http://127.0.0.1:20128";
 const VR_KEY_ENV = "VANSROUTER_API_KEY";
@@ -89,7 +89,7 @@ function registerVansRouter(pi: ExtensionAPI): void {
 	// `omp models`. This router serves keyless: register a placeholder and
 	// suppress the auth header unless a real key exists, so no bogus
 	// credential is ever sent. Verified against engine validation in
-	// @oh-my-pi/pi-coding-agent 18.3.0 dist/cli.js (authHeader===true &&
+	// tau 18.3.0 dist/cli.js (authHeader===true &&
 	// apiKey!==undefined gates header emission).
 	const key = process.env[VR_KEY_ENV] || VR_KEY_FALLBACK || undefined;
 	const config: ProviderConfig = {

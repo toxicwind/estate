@@ -9,7 +9,7 @@
   "modelCacheTtlMinutes": 60,
   "autoSyncIntervalSeconds": 120,
   "showGatewayTokensPerSecond": true,
-  "lastSuccessfulSyncAt": 1791592257836,
+  "lastSuccessfulSyncAt": 1791608694418,
   "onUnreachable": "none",
   "fallbackModel": "",
   "apiKey": "sk-d61dc924f5c08165-7f4ff0-e926e953"
