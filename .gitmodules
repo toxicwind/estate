@@ -10,3 +10,6 @@
 [submodule "ops/gitignore/templates"]
 	path = ops/gitignore/templates
 	url = https://github.com/github/gitignore.git
+[submodule "bash-style-guide"]
+	path = bash-style-guide
+	url = https://github.com/toxicwind/bash-style-guide.git
