@@ -59,3 +59,7 @@ run = "bun --hot /home/toxic/hatch/cell-files/cell-files/packages/cell-files/ui/
 [tasks."sync-ui-ports"]
 description = "Regenerate ranch/range/ui/src/lib/ports.ts from config/ports.env"
 run = "bun scripts/sync-ui-ports.ts"
+
+[tasks.ralph-dashboard]
+description = "Start ralph-dashboard on :25194"
+run = "cd ranch/ralph-dashboard/backend && .venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 25194"
