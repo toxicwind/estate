@@ -91,7 +91,9 @@ const { values, positionals } = parseArgs({
   options: {
     top: { type: "string" },
     perPage: { type: "string" },
+    "per-page": { type: "string" },
     weights: { type: "string" },
+    json: { type: "boolean" },
     interactive: { type: "boolean" },
     help: { type: "boolean" },
   },
@@ -100,14 +102,14 @@ const { values, positionals } = parseArgs({
 
 if (values.help) {
   console.log(
-    `Usage: bun run pattern-borrow.ts [patterns...] [--top N] [--per-page N] [--weights k=v,...] [--interactive]`,
+    `Usage: bun run pattern-borrow.ts [patterns...] [--top N] [--per-page N] [--weights k=v,...] [--json] [--interactive]`,
   );
   process.exit(0);
 }
 
 const PATTERNS = positionals.length ? positionals : DEFAULT_PATTERNS;
-const TOP = Number(values.top ?? PATTERNS.length);
-const PER_PAGE = Number(values.perPage ?? 5);
+const TOP = Number(values.top ?? (positionals.length ? positionals.length : 5));
+const PER_PAGE = Number(values.perPage ?? values["per-page"] ?? 5);
 const W: Weight = { ...DEFAULT_W };
 if (values.weights) {
   for (const kv of values.weights.split(",")) {
@@ -142,13 +144,13 @@ async function gh(path: string, params?: Record<string, string>): Promise<any> {
 
 async function repoStats(full: string): Promise<any> {
   const r = await gh(`/repos/${full}`);
-  if (!r) return { stars: 0, issues: 0, forks: 0, pushed: 0, hasTest: 0 };
+  if (!r) return { stars: 0, issues: 0, forks: 0, pushed: 0, hasTest: 0, description: "", language: "", license: "", url: `https://github.com/${full}` };
   let hasTest = 0;
   const root = await gh(`/repos/${full}/contents/`);
   if (root && Array.isArray(root)) {
-    const names = root.map((x: any) => x.name);
+    const names = root.map((x: any) => x.name?.toLowerCase());
     hasTest = names.some((n: string) =>
-      ["tests", "test", "__tests__", "spec"].includes(n),
+      ["tests", "test", "__tests__", "spec", "crates", "packages"].includes(n),
     )
       ? 1
       : 0;
@@ -159,6 +161,10 @@ async function repoStats(full: string): Promise<any> {
     forks: r.forks_count ?? 0,
     pushed: r.pushed_at ? Date.parse(r.pushed_at) / 1000 : 0,
     hasTest,
+    description: r.description ?? "",
+    language: r.language ?? "",
+    license: r.license?.spdx_id ?? r.license?.name ?? "",
+    url: r.html_url ?? `https://github.com/${full}`,
   };
 }
 
@@ -169,11 +175,16 @@ for (const term of PATTERNS) {
     per_page: String(PER_PAGE),
   });
   const repos: Record<string, any> = {};
+  const matchedFiles: Record<string, string[]> = {};
   const sizes: number[] = [];
   if (data?.items) {
     for (const it of data.items) {
       const full = it.repository?.full_name;
-      if (full && !repos[full]) repos[full] = await repoStats(full);
+      if (full) {
+        if (!matchedFiles[full]) matchedFiles[full] = [];
+        if (it.path) matchedFiles[full].push(it.path);
+        if (!repos[full]) repos[full] = await repoStats(full);
+      }
       if (typeof it.size === "number") sizes.push(it.size);
     }
   }
@@ -195,6 +206,11 @@ for (const term of PATTERNS) {
       a + (term.toLowerCase().match(new RegExp(t, "g"))?.length ?? 0),
     0,
   );
+  const repoList = Object.entries(repos).map(([fullName, st]) => ({
+    fullName,
+    ...st,
+    matchedFiles: matchedFiles[fullName] ?? [],
+  }));
   rows.push({
     term,
     nRepos,
@@ -205,6 +221,7 @@ for (const term of PATTERNS) {
     testFrac,
     avgSize,
     bugRel,
+    repos: repoList,
   });
   console.log(`  scanned '${term}': ${nRepos} repos, ${totalStars} stars`);
   await Bun.sleep(1200);
@@ -212,6 +229,10 @@ for (const term of PATTERNS) {
 
 function norm(key: string) {
   const vals = rows.map((r) => r[key]);
+  if (rows.length <= 1) {
+    for (const r of rows) r[`n_${key}`] = 1.0;
+    return;
+  }
   const mx = Math.max(...vals) || 1;
   const mn = Math.min(...vals);
   const rng = mx - mn || 1;
@@ -230,6 +251,11 @@ function rank(weights: Weight) {
 
 function printRank(weights: Weight) {
   rank(weights);
+  const topRepos = collectTopRepos(TOP);
+  if (values.json) {
+    console.log(JSON.stringify({ rankedTerms: rows.slice(0, TOP), topRepos }, null, 2));
+    return;
+  }
   console.log("\n=== RANKED PATTERNS (GitHub-wide) ===");
   console.log("score  bug  repos  stars   iss  test  term");
   for (const r of rows.slice(0, TOP)) {
@@ -238,8 +264,39 @@ function printRank(weights: Weight) {
         `${String(r.stars).padStart(7)} ${String(r.issues).padStart(5)} ${r.testFrac.toFixed(2)}  ${r.term}`,
     );
   }
-  console.log(`\nTOP ${Math.min(TOP, 3)} TO MERGE:`);
+  console.log(`\nTOP ${Math.min(TOP, 3)} TERMS TO MERGE:`);
   for (const r of rows.slice(0, Math.min(TOP, 3))) console.log(`  - ${r.term}`);
+
+  console.log(`\n=== TOP ${topRepos.length} REPOSITORIES TO BORROW / MERGE ===`);
+  for (let i = 0; i < topRepos.length; i++) {
+    const repo = topRepos[i];
+    console.log(`\n${i + 1}. \x1b[1m${repo.fullName}\x1b[0m  ★ ${repo.stars}  ⑂ ${repo.forks}  [${repo.language || "unknown"}]`);
+    console.log(`   URL:  ${repo.url}`);
+    if (repo.description) console.log(`   Desc: ${repo.description}`);
+    if (repo.matchedFiles.length) {
+      console.log(`   Files: ${repo.matchedFiles.slice(0, 3).join(", ")}${repo.matchedFiles.length > 3 ? ` (+${repo.matchedFiles.length - 3} more)` : ""}`);
+    }
+  }
+}
+
+function collectTopRepos(limit: number) {
+  const repoMap = new Map<string, any>();
+  for (const r of rows.slice(0, TOP)) {
+    for (const repo of r.repos || []) {
+      const existing = repoMap.get(repo.fullName);
+      if (!existing) {
+        repoMap.set(repo.fullName, { ...repo, terms: [r.term] });
+      } else {
+        if (!existing.terms.includes(r.term)) existing.terms.push(r.term);
+        for (const f of repo.matchedFiles) {
+          if (!existing.matchedFiles.includes(f)) existing.matchedFiles.push(f);
+        }
+      }
+    }
+  }
+  return Array.from(repoMap.values())
+    .sort((a, b) => b.stars - a.stars)
+    .slice(0, limit);
 }
 
 printRank(W);

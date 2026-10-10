@@ -3,7 +3,7 @@ modelRoles:
   judge: openrouter/~typesafe/jev-latest
   tiny: local/lfm2.5-230m
   advisor: zen/space-bunny-free
-  default: vercel-ai-gateway/inclusionai/ling-3.1-flash-free
+  default: google-antigravity/claude-opus-5-5-low
   fallbacks:
     - vercel-ai-gateway/inclusionai/ling-3.1-flash:medium
     - vercel-ai-gateway/inclusionai/ling-3.0-flash-sante:medium
@@ -95,6 +95,7 @@ snapcompact:
   systemPrompt: none
 extensions:
   - pi-omniroute-sync
+  - gwern
 providers:
   omni:
     baseUrl: http://127.0.0.1:20130/v1
@@ -150,6 +151,3 @@ browser:
   cmux: false
 disabledExtensions:
   - airspeak
-extensions:
-  - pi-omniroute-sync
-  - gwern

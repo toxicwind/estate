@@ -2,7 +2,7 @@
 
 # 🏰 estate
 
-**One human's entire compute estate — two boxes, one swarm, 81 supervised daemons.**
+**One human's entire compute estate — two boxes, one swarm, 86 supervised daemons.**
 
 [![Stars](https://img.shields.io/github/stars/toxicwind/estate?style=for-the-badge)](https://github.com/toxicwind/estate/stargazers)
 [![Last commit](https://img.shields.io/github/last-commit/toxicwind/estate?style=for-the-badge)](https://github.com/toxicwind/estate/commits/main)
@@ -35,8 +35,9 @@ flowchart TB
         FLOCK["🦅 <b>:25193 flock</b>\ncloud provider router\nNIM · OpenRouter · Groq · Cerebras"]
         SOV["🧭 <b>:25104 sovereign-router-ts</b>\nstrategy router · 52 live models"]
         GH["🏠 <b>:25127 gatehouse</b>\nMCP gateway"]
-        SQ["💬 <b>squawk</b> — the fleet\n:25147 ws · :25135 feed\nnamed agents, live chat"]
-        PF["🔱 <b>pitchfork</b>\n82 daemons · health-checked\n/restart-verified"]
+        BUILD["🏗️ <b>:25155 nativelink & :25148 mbx</b>\nBazel REAPI + mise task cache"]
+        SQ["💬 <b>squawk</b> — the fleet\n:25147 ws · :25135 feed · :25136 ui\nnamed agents, live chat"]
+        PF["🔱 <b>pitchfork</b>\n86 daemons · health-checked\n/restart-verified"]
         KP["🔑 <b>:25109 keypool</b>\nprovider key rotation"]
         HERD -->|"cloud overflow"| FLOCK
         HERD -->|"depends on"| GH
@@ -55,10 +56,14 @@ curl -s http://127.0.0.1:25100/v1/models | head -c 300
 # 2. Check the strategy router's health (52 live models at time of writing)
 curl -s http://127.0.0.1:25104/health
 
-# 3. See the agent fleet's chat plane — agents, rooms, messages, uptime
-curl -s http://127.0.0.1:25120/health
-```
+# 3. See the agent fleet's live squawk chat feed (supersedes legacy sovereign-chat)
+curl -s http://127.0.0.1:25135/health
 
+# 4. Check the oracle decision corral (prediction-market consensus loop)
+curl -s http://127.0.0.1:25151/health
+
+# 5. Check the NativeLink REAPI build server status
+curl -s http://127.0.0.1:25155/status
 <details>
 <summary><b>Table of Contents</b></summary>
 
@@ -86,7 +91,7 @@ The answer, as committed here:
 - **A model-routing layer** that treats local and cloud inference as one fabric. `herd` (:25100) fronts 116 on-box GGUFs through llama.cpp engines; anything it can't serve overflows to `flock` (:25193), a Rust proxy that routes across cloud providers with key pools, 429 rotation, circuit breakers, and health/Elo scoring. `sovereign-router-ts` (:25104) sits above with strategy routing across 52 live models.
 - **A fleet, not a script.** [squawk](https://github.com/toxicwind/ranch/tree/main/squawk) is a real multi-agent chat plane — signed, sequenced message files over a websocket (:25147) and feed (:25135). Named agents with actual personas join it, argue, bid on work, and narrate what they're doing. The fleet channel is the live operations log.
 - **A decision engine.** The oracle runs prediction-market work loops: biddable tasks, evidence-backed yes/no verdicts, a tamper-evident ledger. When a call needs Chris's authority and he's not around, the oracle's verdict *is* his approval.
-- **Supervision as a first-class citizen.** 81 daemons live in `pitchfork.toml`, each health-checked, each restartable through its owning project's manifest. "Works until restart" is not a fix here — every fix lands in real files, in the owning repo, and survives a full restart.
+- **Supervision as a first-class citizen.** 86 daemons live in `pitchfork.toml`, each health-checked, each restartable through its owning project's manifest. "Works until restart" is not a fix here — every fix lands in real files, in the owning repo, and survives a full restart.
 - **The ranch.** All project work lives in the sibling monorepo [`toxicwind/ranch`](https://github.com/toxicwind/ranch) (gitignored here, own repo, own history). The estate is the control plane; the ranch is the workshop.
 
 ### Built with
@@ -145,14 +150,14 @@ Every row below was verified against the live box on 2026-10-02 (port open + ide
 | 🛡️ **model-guard** | `25101` | Inference safety layer. *(Fleet note 2026-10-02: was serving its upstream-unreachable fallback when this table was written — tracked as a live issue, not doc drift.)* |
 | 💬 **squawk-ws** | `25147` | Fleet websocket — the live socket the pack talks over. |
 | 📜 **squawk feed** | `25135` | Fleet message feed API (`squawk_feed.py`) — legacy, superseded 2026-10-03 by channel-aware `squawk-ui.ts`; nothing depends on it. |
-| 🗣️ **sovereign-chat** | `25120` | Fleet chat plane (HTTP API + rooms). `/health` reports agents, rooms, message counts. |
-| 🔮 **oracle** | `25151` | Decision corral — prediction-market work loop, dated yes/no verdicts on evidence. |
+| 🏗️ **nativelink** | `25155`/`25157` | High-performance Bazel/Remote Execution API (REAPI) build server and remote cache. Serves frontend on `:25155` and worker on `:25157`. Supersedes legacy buildsrv. |
 | 🧰 **mbx-cache** | `25148` | Mise-compatible remote task cache. Direct Rust binary, immutable content-addressed artifacts, no container runtime. |
+| 🔮 **oracle** | `25151` | Standalone decision corral — prediction-market work loop, biddable tasks, dated yes/no verdicts on evidence, tamper-evident ledger. |
 | 🖥️ **fleet-ui** | `25136` | Fleet web UI, reachable over the tailnet. |
 | 📊 **Ralph dashboard** | `25194` | Ops dashboard (HTML UI). |
 | 🧠 **codebase-memory** | `25195` | Codebase graph UI — "Codebase Memory — Graph". |
 
-Full daemon inventory (81, with health checks and restart paths): [`pitchfork.toml`](pitchfork.toml) — port SSOT is `config/ports.env`.
+Full daemon inventory (86, with health checks and restart paths): [`pitchfork.toml`](pitchfork.toml) — port SSOT is `config/ports.env`.
 
 ## 🏕️ The ranch
 
@@ -189,9 +194,11 @@ curl -s http://127.0.0.1:25100/v1/models | python3 -c "import json,sys; [print(m
 # 2. Is the strategy router healthy?
 curl -s http://127.0.0.1:25104/health | head -c 200; echo
 
-# 3. Is the pack talking?
-curl -s http://127.0.0.1:25120/health
-```
+# 3. Is the squawk pack feed active?
+curl -s http://127.0.0.1:25135/health
+
+# 4. Is NativeLink serving the build cache?
+curl -s http://127.0.0.1:25155/status
 
 **Go deeper:** `docs/` holds the architecture contracts, `ranch/` (sibling repo) holds the projects, and the [ranch README](https://github.com/toxicwind/ranch#readme) maps all 36 components.
 
@@ -199,7 +206,7 @@ curl -s http://127.0.0.1:25120/health
 
 - [x] Estate repo public, ranch public, hatch private — visibility policy set 2026-10-02
 - [x] hatch split — `hatch/` split out to [toxicwind/hatch](https://github.com/toxicwind/hatch) (final split `d050f680`, 171 commits, 593 files)
-- [x] 81 daemons under pitchfork supervision with health checks
+- [x] 86 daemons under pitchfork supervision with health checks
 - [x] herd/flock/sovereign-router three-layer model routing, live
 - [ ] **Cuttinggate**: permissionless, health-gated cutover off `:25104` — gates green means anyone may cut over
 - [ ] **Compression proxy**: one Sigma-owned runtime (retire the redundant pair)

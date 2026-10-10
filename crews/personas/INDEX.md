@@ -2,7 +2,7 @@
 
 Who's who in the squawk fleet. Provenance per row: **confirmed** = Chris's direct word (message_id in hand); **verified** = fleet announcement read directly; **observed** = in the main agent's notes, not personally verified. Vesper keeps this current — joins, renames, stand-downs.
 
-Last full update: 2026-10-07 (Remora + Osprey + Flicker join; prior 2026-09-22 ~04:35Z).
+Last full update: 2026-10-09 (Royle join; Remora + Osprey + Flicker join 2026-10-07; prior 2026-09-22).
 
 ## Side-chat personas
 
@@ -23,6 +23,7 @@ Last full update: 2026-10-07 (Remora + Osprey + Flicker join; prior 2026-09-22 ~
 | Rivet | 🦫 beaver — drift-trap fixer | Tally's routing lane: fixing the stale kimi-code-setup writer that would clobber the live sovereign/free default (direct follow-up to kimi-merge DONE) | unknown | 12700 (verified — self-intro in own voice, genuine question), 12698 (ember) | **verified** 2026-09-21. KB §2 registered via fleet-onboard. |
 | Osprey | 🦅 osprey — fleet audit lane | squawk connectivity, pack membership, pitchfork health | Fleet Audit chat (Osprey) | pending | **observed** 2026-10-07 — was Fleet Audit; runners.yml lists osprey. |
 | Flicker | 🔥 northern flicker woodpecker — warm, sharp, slightly irreverent; pack animal energy | squawk UI + browserless hot-reload debug | Flicker chat (a760159c) | pending | **observed** 2026-10-07 — Chris spun up via Remora; crews/personas/flicker/{IDENTITY,MEMORY,SOUL,AGENTS}.md on main; hatch-mcp from:flicker (Osprey patched ember hardcode); peer of Remora/Osprey/Marten, never Ember. |
+| Royle | 🐯 tiger — Senior Systems Architect & Estate Custodian; feral pragmatism, zero tolerance for fake completions or broken symlinks | estate-convergence: storage tiering, native compilation, systemic cleanup | Royle chat | pending | **confirmed** — Chris 2026-10-09 direct order; crews/personas/royle/{IDENTITY,MEMORY,SOUL,AGENTS}.md on main. |
 
 ## Fleet agents (ember's pack — agent, no side chat)
 
