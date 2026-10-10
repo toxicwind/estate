@@ -21,6 +21,42 @@
     url = "https://registry.npmjs.org/bun-types/-/bun-types-1.4.2.tgz";
     hash = "sha512-bxV1FgK7yBIzjRe5zBozIM4Bem11ZJcCXSrjWRG3YWLt8yFDePu4cLjpebO8OvPeIE9trbyPF4fuj3Cia4Fj3w==";
   };
+  "jscpd-darwin-arm64@5.4.0" = fetchurl {
+    url = "https://registry.npmjs.org/jscpd-darwin-arm64/-/jscpd-darwin-arm64-5.4.0.tgz";
+    hash = "sha512-fNIDtNn9WE4YXoFoqf+3tkHb1+GaKKOeKzh77Wx61Gfa9iDxlCv5rO0Fjy7oWmGehUUKqslDaeXXtn/RoDprCg==";
+  };
+  "jscpd-darwin-x64@5.4.0" = fetchurl {
+    url = "https://registry.npmjs.org/jscpd-darwin-x64/-/jscpd-darwin-x64-5.4.0.tgz";
+    hash = "sha512-bxlnCVEb69SGIsas1+PaqZyFY8iYVTVjCBxfjVD74UafX115Ysw+oO9LAlsJaGsKUnK8Zsq5bhM33kBHux6bTA==";
+  };
+  "jscpd-linux-arm64-gnu@5.4.0" = fetchurl {
+    url = "https://registry.npmjs.org/jscpd-linux-arm64-gnu/-/jscpd-linux-arm64-gnu-5.4.0.tgz";
+    hash = "sha512-c4hX5QjuRyzLFJ+A+jNGHRpGlDvxcx+zzs4RJmZHpl23istuTMIkelwTOWliF4gXOm0RWXDlX/ywWKr9+Lre7w==";
+  };
+  "jscpd-linux-arm64-musl@5.4.0" = fetchurl {
+    url = "https://registry.npmjs.org/jscpd-linux-arm64-musl/-/jscpd-linux-arm64-musl-5.4.0.tgz";
+    hash = "sha512-p4FUCNyL8WPTlizdZqfjontFwJ/+jnERYM2+YX2miYvm0NxzsIi23MhfzPl/eUHxkiT5wethV0NRYEAkJr999Q==";
+  };
+  "jscpd-linux-x64-gnu@5.4.0" = fetchurl {
+    url = "https://registry.npmjs.org/jscpd-linux-x64-gnu/-/jscpd-linux-x64-gnu-5.4.0.tgz";
+    hash = "sha512-44NXS0gtYbjBCc53Gwilgj7PPwnWv9YTF/rGc0ZfnFcpzSoOKKU11yH+qHfCVie1hHte1wHyZ1f9Kjc8nGe2/g==";
+  };
+  "jscpd-linux-x64-musl@5.4.0" = fetchurl {
+    url = "https://registry.npmjs.org/jscpd-linux-x64-musl/-/jscpd-linux-x64-musl-5.4.0.tgz";
+    hash = "sha512-m9XHj14Zwia9RjWDkHDrl6VJ3W/b7m8qjFqjhcJ668Vkxoj4Ri/qeo0bo6is+fSw+bYxYexV6xxqIKRDolc8Lg==";
+  };
+  "jscpd-windows-arm64-msvc@5.4.0" = fetchurl {
+    url = "https://registry.npmjs.org/jscpd-windows-arm64-msvc/-/jscpd-windows-arm64-msvc-5.4.0.tgz";
+    hash = "sha512-AoP5RXyb9gIf8xmFwAc+Rgh4XJNyX1upcD+R1A6u4XjsDo2/oF+KKB4dtKnG2DbFQ+0fyFg/ClOcw+asQZJfPg==";
+  };
+  "jscpd-windows-x64-msvc@5.4.0" = fetchurl {
+    url = "https://registry.npmjs.org/jscpd-windows-x64-msvc/-/jscpd-windows-x64-msvc-5.4.0.tgz";
+    hash = "sha512-dYkb5mAo5i7fjrtf2Ft6z9a/I38RJMd4JirEgJiW2BIv5pAGmfMVPDy1xEXL3hJqraXzeMIfnzqJFanefCyC6g==";
+  };
+  "jscpd@5.4.0" = fetchurl {
+    url = "https://registry.npmjs.org/jscpd/-/jscpd-5.4.0.tgz";
+    hash = "sha512-6mU8OHff4rPJ3D5lIsQns82/aQhDas22gMsGurHx1wcrfXWOZDNaobi6rKhLevo+77ntWKUXOwtM6lcrkJeL7w==";
+  };
   "smol-toml@1.9.0" = fetchurl {
     url = "https://registry.npmjs.org/smol-toml/-/smol-toml-1.9.0.tgz";
     hash = "sha512-hpd+HLON7HdZXqYchMM/+LaTTbdK0AU3NngIJ4KVyWbY9bfQqdL9cD+4yf6dUoU2Ap4VsU0JkQi6FxAI1B2mXQ==";
