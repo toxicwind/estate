@@ -1,0 +1,24 @@
+# Bench Radar
+
+Reactive regression detection for the tau nightly benchmark.
+
+Bench-radar watches `/home/toxic/bench-run.log` (written by the daily 03:30 cron `tau-bench-nightly`) and pages the moment a suite degrades.
+
+## Endpoints (local)
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET | `/health` | liveness |
+| GET | `/status` | latest night, per-suite verdicts, open regressions |
+| GET | `/events` | last 50 events |
+| WS | `/live` | push on new regression |
+
+Service: `pitchfork start bench-radar` → `http://127.0.0.1:25181`
+
+## How it fits with rankings
+
+- **Rankings page** (`/benchmarks`) shows the latest estate sweep results (quality + latency).
+- **Radar** watches the separate tau nightly bench and alerts on regressions.
+- Both feed the same operational picture: which models/suites are healthy right now.
+
+State lives in `tools/bench-radar/state/` (nights.jsonl, series.jsonl, events.jsonl).

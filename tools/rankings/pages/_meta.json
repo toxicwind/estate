@@ -1,0 +1,19 @@
+{
+  "index": "Overview",
+  "benchmarks": {
+    "title": "Rankings",
+    "type": "page"
+  },
+  "radar": {
+    "title": "Radar",
+    "type": "page"
+  },
+  "docs": {
+    "title": "Estate Docs",
+    "type": "page"
+  },
+  "fork-docs": {
+    "title": "GuideLLM Fork Docs",
+    "type": "page"
+  }
+}
