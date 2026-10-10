@@ -2,7 +2,7 @@
 
 Admit a fleet (squawk) agent into OpenFang as a first-class agent. One command:
 render `agent.toml` + `system.md`, run the V1–V5 validation gate, write the
-canonical `sovereign/agents/<name>/` manifest, spawn via the OpenFang API,
+canonical `estate/agents/<name>/` manifest, spawn via the OpenFang API,
 verify Running.
 
 ```sh
@@ -15,7 +15,7 @@ openfang-join --name <name> --species <s> --personality <p> \
 ## Safety design
 
 - **Validation gate (V1–V5)** runs on every join: TOML parses, required fields,
-  name uniqueness across `sovereign/agents/` + `~/.openfang/agents/` + live API,
+  name uniqueness across `estate/agents/` + `~/.openfang/agents/` + live API,
   persona completeness, sanity. Any failure **refuses** the join.
 - **`--commit`** commits the two manifest files in the shared checkout.
 - **`--push`** never pushes from the shared checkout. It fetches fresh
