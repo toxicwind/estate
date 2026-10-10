@@ -1,0 +1,22 @@
+{
+  "name": "roundup-rankings",
+  "version": "0.1.0",
+  "description": "Roundup model ranking frontend",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "gen-benchmarks": "bun ../scripts/gen-benchmarks-json.ts"
+  },
+  "dependencies": {
+    "next": "^13.0.6",
+    "nextra": "2.13.4",
+    "nextra-theme-docs": "2.13.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "18.11.10",
+    "typescript": "^5"
+  }
+}

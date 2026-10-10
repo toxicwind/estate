@@ -1,0 +1,15 @@
+# Roundup Rankings
+
+Live model rankings for the estate.
+
+Quality descending, then p50 latency ascending. Cost is not a factor.
+
+[View Rankings](/benchmarks)
+
+## How it updates
+
+- `mise run estate-sweep` produces `results/estate/*/ranking.md` + `weights.json`
+- `mise run realworld-bench` produces the real-world task scores
+- Nightly tau bench + bench-radar watches `/home/toxic/bench-run.log`
+
+The rankings page loads the latest generated `benchmarks.json`.
