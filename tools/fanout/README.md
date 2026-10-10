@@ -2,8 +2,8 @@
 
 <div align="right">
 
-[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects#license)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](https://github.com/toxicwind/estate#license)
+[![estate](https://img.shields.io/badge/estate-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/estate)
 
 </div>
 
@@ -66,7 +66,7 @@ contends under bulk dispatch:
 
 ## Placement
 
-- Durable home: `sovereign/tools/fanout/` in `toxicwind/sovereign-projects`
+- Durable home: `sovereign/tools/fanout/` in `toxicwind/estate`
   (this repo is the source of truth).
 - Working copy on awrawr-pc: `/home/toxic/bin/fanout`.
 - Cell copy: `~/workspace/bin/fanout` (cell storage is disposable).
@@ -78,7 +78,7 @@ contract other lanes parse.
 
 ## License & security
 
-MIT — see [LICENSE](https://github.com/toxicwind/sovereign-projects#license).
+MIT — see [LICENSE](https://github.com/toxicwind/estate#license).
 
 Runs arbitrary shell commands concurrently — the same trust boundary as
 your shell. Timeouts cap runaway legs; they do not sandbox them.

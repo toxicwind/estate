@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/license-MIT%20%2B%20upstream-blue?style=for-the-badge)](./LICENSE)
 [![smithery](https://img.shields.io/badge/smithery-%40shreyaskarnik%2Fhuggingface--mcp--server-blue?style=for-the-badge)](https://smithery.ai/server/@shreyaskarnik/huggingface-mcp-server)
-[![sovereign-projects](https://img.shields.io/badge/sovereign--projects-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/sovereign-projects)
+[![estate](https://img.shields.io/badge/estate-monorepo-blue?style=for-the-badge)](https://github.com/toxicwind/estate)
 
 </div>
 
