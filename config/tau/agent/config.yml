@@ -43,16 +43,16 @@ read:
 lsp:
   diagnosticsOnEdit: true
 bash:
-  allowCompoundCommands: false
+  allowCompoundCommands: true
   direnv: "off"
 shellMinimizer:
   sourceOutlineLevel: aggressive
   enabled: false
 eval:
   autoBackground:
-    enabled: true
-  js: false
-  autoProvision: false
+    enabled: false
+  js: true
+  autoProvision: true
 python:
   kernelMode: session
 astGrep:
@@ -123,8 +123,7 @@ inlineToolDescriptors: auto
 skillful: false
 personality: pragmatic
 retry:
-  fallbackChains:
-    {}
+  fallbackChains: {}
   usageAwareFallback: true
   modelFallback: true
   maxRetries: 10
