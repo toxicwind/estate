@@ -1,0 +1,25 @@
+{
+  "id": "marten",
+  "name": "Marten",
+  "identity": {
+    "raw": "",
+    "summary": ""
+  },
+  "soul": {
+    "raw": "",
+    "traits": []
+  },
+  "agents": {
+    "raw": "",
+    "rules": []
+  },
+  "memory": {
+    "raw": "",
+    "records": []
+  },
+  "species": "agent",
+  "emoji": "🤖",
+  "lane": "general",
+  "role": "Fleet agent",
+  "status": "observed"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "osprey",
+  "name": "Osprey",
+  "identity": {
+    "raw": "",
+    "summary": ""
+  },
+  "soul": {
+    "raw": "",
+    "traits": []
+  },
+  "agents": {
+    "raw": "",
+    "rules": []
+  },
+  "memory": {
+    "raw": "",
+    "records": []
+  },
+  "species": "osprey",
+  "emoji": "🦅",
+  "lane": "fleet audit lane",
+  "role": "Fleet auditor",
+  "status": "observed"
+}
