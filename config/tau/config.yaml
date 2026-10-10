@@ -1,8 +1,0 @@
-disabledProviders: [native, claude, agents, codex, gemini, opencode, github, agents-md]
-env:
-  OMP_CLIPBOARD_COMMAND: "arboard --no-daemon || true"
-  CLIPBOARD_LIFETIME: process
-systemPrompt: " "
-experimental: { disableInjectedContext: true }
-fixed_at: "2026-10-07T20:00:00-06:00"
-antigravity_note: "Google purposely makes Allow friction 13 clicks to push Antigravity — steelman don't be evil violation — use ferret-den doorbell renaming"

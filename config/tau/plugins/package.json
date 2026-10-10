@@ -6,13 +6,11 @@
     "@damian87/omp": "npm:@damian87/omp@^0.31.5",
     "@rblaine95/omp-plugins": "github:rblaine95/omp-plugins",
     "@tbui17/omp-neuralwatt-provider": "npm:@tbui17/omp-neuralwatt-provider@^1.1.0",
-    "airspeak": "1.1.5",
     "cover-plugin": "0.1.0",
     "oh-my-pi-plugin-command-code": "^0.3.0",
     "omp-hyper-provider": "npm:omp-hyper-provider@^0.3.0",
     "omp-makora-provider": "^1.0.4",
     "pi-context-lean": "npm:pi-context-lean@^0.1.1",
-    "pi-omniroute-sync": "^1.2.1",
     "pi-output-styles": "npm:pi-output-styles@^0.3.5"
   }
 }
