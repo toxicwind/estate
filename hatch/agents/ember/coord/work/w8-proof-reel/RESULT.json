@@ -1,0 +1,20 @@
+{
+ "lane": "w8-proof-reel",
+ "ts_utc": "2026-09-16T23:10:56Z",
+ "claims": [
+  "rendered tokens.png + echo.png (echo_rate=0.728)",
+  "mp4 reel: ffmpeg missing, PNGs only"
+ ],
+ "evidence": {
+  "sha256": {
+   "tokens.png": "d594498be9634474ccaf2c801ae83912cc57544959cdb82a5ee05f11f3b1c4e8",
+   "echo.png": "6a8ce6dbf59c9ad8da3c01331771c15cf8a92c1b127b45cf783da3f385d23333"
+  },
+  "echo_rate": 0.7282
+ },
+ "proof_files": [
+  "tokens.png",
+  "echo.png",
+  "brief.py"
+ ]
+}

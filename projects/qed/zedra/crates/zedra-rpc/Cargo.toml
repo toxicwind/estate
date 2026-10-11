@@ -1,0 +1,27 @@
+[package]
+name = "zedra-rpc"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+iroh.workspace = true
+base64-url.workspace = true
+hex.workspace = true
+rand.workspace = true
+hmac.workspace = true
+sha2.workspace = true
+
+# irpc RPC framework
+irpc.workspace = true
+irpc-iroh.workspace = true
+postcard.workspace = true
+serde_bytes.workspace = true
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }

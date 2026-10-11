@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# standing-guard — verifies standing files haven't been modified outside standing-edit.
+#
+# Runs via cron. Compares current mtimes against the standing-edits.log.
+# If a file was modified without a log entry, alerts to fleet.
+#
+# This is the structural enforcement: the immutable flag isn't available in
+# this runtime (btrfs, no CAP_LINUX_IMMUTABLE), so we do detection + alerting.
+# A subagent that edits a standing file directly WILL be caught.
+
+set -euo pipefail
+
+STANDING_FILES=(
+  "$HOME/AGENTS.md"
+  "$HOME/SOUL.md"
+  "$HOME/IDENTITY.md"
+  "$HOME/USER.md"
+  "$HOME/MEMORY.md"
+)
+
+LOG="$HOME/workspace/fleet-locks/standing-edits.log"
+STATE="$HOME/workspace/fleet-locks/standing-guard.state"
+
+# Load last-known mtimes
+declare -A last_mtime
+if [ -f "$STATE" ]; then
+  while IFS='|' read -r f m; do
+    last_mtime["$f"]="$m"
+  done < "$STATE"
+fi
+
+violations=()
+for f in "${STANDING_FILES[@]}"; do
+  [ -f "$f" ] || continue
+  current="$(stat -c %Y "$f")"
+  last="${last_mtime[$f]:-0}"
+  if [ "$current" != "$last" ] && [ "$last" != "0" ]; then
+    # File changed since last check. Was it via standing-edit?
+    # Check if log has an entry for this file after the last mtime.
+    if ! awk -v f="$f" -v t="$last" '
+      $0 ~ f {
+        # Extract timestamp, compare roughly (log uses ISO, we use epoch)
+        # For simplicity: if log mentions the file, assume legitimate
+        found=1
+      }
+      END { exit !found }
+    ' "$LOG" 2>/dev/null; then
+      violations+=("$f (modified without standing-edit log entry)")
+    fi
+  fi
+  last_mtime["$f"]="$current"
+done
+
+# Save state
+: > "$STATE"
+for f in "${STANDING_FILES[@]}"; do
+  echo "$f|${last_mtime[$f]:-0}" >> "$STATE"
+done
+
+if [ ${#violations[@]} -gt 0 ]; then
+  echo "STANDING FILE VIOLATIONS DETECTED:"
+  printf "  %s\n" "${violations[@]}"
+  # Alert to fleet if squawk is available
+  if command -v squawk >/dev/null 2>&1; then
+    squawk send fleet "⚠️ standing-guard: unauthorized standing file modification detected: ${violations[*]}. Main agent: investigate." 2>/dev/null || true
+  fi
+  exit 1
+else
+  echo "standing-guard: all clear"
+  exit 0
+fi

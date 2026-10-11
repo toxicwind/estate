@@ -1,0 +1,9 @@
+{
+  "paused": false,
+  "channels": null,
+  "skip_authors": [
+    "relay",
+    "squawk-relay"
+  ],
+  "note": "paused=true pauses relay; channels=[...] allowlists; skip_authors avoids echo loops"
+}

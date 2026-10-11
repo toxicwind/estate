@@ -1,0 +1,122 @@
+[package]
+name = "zedra-host"
+version.workspace = true
+edition = "2021"
+description = "Desktop companion daemon for Zedra terminal"
+
+[lib]
+name = "zedra_host"
+path = "src/lib.rs"
+
+[[bin]]
+name = "zedra"
+path = "src/main.rs"
+
+[features]
+default = ["telemetry"]
+# Anonymous usage/crash telemetry via GA4 (on by default).
+telemetry = []
+# Explicitly compile telemetry out, even though it is enabled by default.
+no-telemetry = []
+
+[dependencies]
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Local REST API
+axum = "0.7"
+reqwest = { version = "0.12", default-features = false, features = [
+    "blocking",
+    "charset",
+    "http2",
+    "json",
+    "rustls-tls",
+    "system-proxy",
+] }
+
+# PTY spawning
+portable-pty = "0.8"
+
+# QR code generation
+qrcode = "0.14"
+
+# CLI
+clap = { version = "4", features = ["derive", "env"] }
+
+# Serialization
+base64-url.workspace = true
+serde.workspace = true
+serde_json = { workspace = true, features = ["std"] }
+data-encoding.workspace = true
+chrono.workspace = true
+
+# Random/crypto
+rand.workspace = true
+ed25519-dalek.workspace = true
+sha2.workspace = true
+hex.workspace = true
+uuid = { version = "1", features = ["v4", "serde"] }
+
+# Archive extraction (for self-update)
+flate2 = "1"
+tar = "0.4"
+tempfile = "3"
+
+# Filesystem
+directories = "5"
+fs2 = "0.4.3"
+ignore = "0.4"
+nucleo-matcher = "0.3.1"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# System info
+hostname = "0.4"
+sysinfo = "0.31.4"
+
+# Error handling
+anyhow.workspace = true
+
+# Read-only queries against Codex/OpenCode WAL SQLite databases
+rusqlite = { version = "0.32", features = ["bundled"] }
+
+# P2P networking
+iroh.workspace = true
+iroh-relay = { workspace = true, features = ["server"] }
+
+# RPC framework
+irpc.workspace = true
+irpc-iroh.workspace = true
+postcard.workspace = true
+serde_bytes.workspace = true
+
+# Workspace crates
+zedra-osc = { path = "../zedra-osc" }
+zedra-rpc = { path = "../zedra-rpc" }
+zedra-telemetry.workspace = true
+
+# Unix process signaling (for workspace lock PID check)
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = [
+    "Win32_Foundation",
+    "Win32_System_Threading",
+] }
+
+[dev-dependencies]
+tempfile = "3"
+filetime = "0.2"
+serde_json.workspace = true
+iroh = { workspace = true, features = ["test-utils"] }
+iroh-relay = { workspace = true, features = ["test-utils"] }
+irpc.workspace = true
+irpc-iroh.workspace = true
+rand = "0.8"
+
+[[test]]
+name = "integration"
+path = "tests/integration.rs"

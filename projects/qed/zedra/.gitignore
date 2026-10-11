@@ -1,0 +1,70 @@
+.DS_Store
+
+.claude/worktrees/
+.claude/settings.local.json
+.codex/hooks.json
+.opencode/plugins/zedra.js
+.zedra/agent-hooks/
+.zedra/uploads/
+
+/target
+target
+
+# Android
+.idea
+.gradle
+android/.kotlin/
+android/app/libs
+android/android/app/libs
+android/build
+local.properties
+google-services.json
+*.keystore
+!android/debug.keystore
+
+# iOS — binary build artifacts (rebuilt by scripts/build-ios.sh)
+ios/ZedraFFI.xcframework/**/*.a
+ios/build
+GoogleService-Info.plist
+
+# CocoaPods — generated artifacts, not committed (Podfile.lock IS committed)
+ios/Pods/
+ios/Zedra.xcworkspace/
+
+docs/archive
+
+.env*
+!.env.example
+
+# Credential and key files
+*.pem
+*.key
+*.p12
+*.mobileprovision
+*.cer
+credentials.json
+secrets.json
+
+# Explicit credential paths (belt-and-suspenders alongside glob rules above)
+android/.env
+ios/Zedra/GoogleService-Info.plist
+
+.private
+
+node_modules
+
+screenshots
+
+.env*
+.private
+
+worktrees
+
+data/
+
+# Generated icon assets (see AGENTS.md "Icon Assets"). Source of truth is
+# crates/zedra/assets/icons/*.svg. iOS imagesets come from scripts/generate-assets.sh;
+# Android drawables from the Gradle `generateIconDrawables` task.
+/ios/Zedra/Assets.xcassets/*.imageset/
+/ios/Zedra/Assets.xcassets/.generate-assets.stamp
+/android/app/src/generated/

@@ -1,0 +1,13 @@
+{
+ "lane": "coord-scout",
+ "agent_id": "vompl-scout-cell",
+ "task": "coord substrate standup + visibility map (ephemeral scout)",
+ "heartbeat_ts": "2026-09-16T17:40:21Z",
+ "status": "done",
+ "blockers": [],
+ "round_trip_proof": {
+  "nonce": "cell-probe-47883454",
+  "write_ms": 388,
+  "read_ms": 1
+ }
+}

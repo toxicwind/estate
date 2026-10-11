@@ -1,0 +1,687 @@
+use std::time::Duration;
+
+use gpui::{prelude::FluentBuilder as _, *};
+use tracing::*;
+use zedra_osc::OscEvent;
+use zedra_session::SessionHandle;
+use zedra_terminal::terminal::{TerminalEvent, TerminalHyperlinkTarget};
+use zedra_terminal::view::TerminalView;
+
+use crate::button::{
+    NativeFloatingButtonId, hide_native_floating_button, native_floating_button,
+    native_floating_button_id,
+};
+use crate::file_preview_view::FilePreviewView;
+use crate::image_upload::{self, ImageUploadError};
+use crate::platform_bridge::{
+    self, AlertButton, CustomSheetDetent, CustomSheetOptions, HapticFeedback, ImageAcquireSource,
+    NativeDictationPreviewOptions, NativeEditMenuItem,
+};
+use crate::settings::{ThemeStateEvent, theme_state as theme_entity};
+use crate::telemetry::view_telemetry;
+use crate::terminal_state::TerminalState;
+use crate::workspace_state::{WorkspaceState, WorkspaceStateEvent};
+
+pub const TERMINAL_PENDING_ID: &str = "___PENDING___";
+const SCROLL_TO_BOTTOM_BUTTON_THRESHOLD_LINES: usize = 10;
+const SCROLL_TO_BOTTOM_BUTTON_DISMISS_DELAY: Duration = Duration::from_millis(160);
+const NATIVE_PASTE_MENU_TAP_GAP: f32 = 28.0;
+
+fn native_paste_menu_anchor(position: Point<Pixels>) -> Point<Pixels> {
+    // Keep the edit menu visibly separated from the long-press finger.
+    point(position.x, position.y - px(NATIVE_PASTE_MENU_TAP_GAP))
+}
+
+/// What each long-press menu item does; paired 1:1 with its `NativeEditMenuItem`.
+#[derive(Clone, Copy)]
+enum PasteMenuAction {
+    PasteText,
+    PasteImage,
+    UploadImage,
+}
+
+pub struct WorkspaceTerminal {
+    terminal_id: String,
+    #[allow(dead_code)]
+    workspace_state: Entity<WorkspaceState>,
+    terminal_state: Entity<TerminalState>,
+    session_handle: SessionHandle,
+    terminal_view: Entity<TerminalView>,
+    preview: Entity<FilePreviewView>,
+    /// Tracks whether the active terminal is in alt-screen mode (vim, opencode, etc.).
+    /// Updated via AltScreenChanged event — never read via terminal_view.read(cx) in render
+    /// to avoid creating a GPUI dependency that causes re-render cascades.
+    is_alt_screen: bool,
+    /// Last keyboard inset pushed to TerminalView. Avoids re-pushing identical values and
+    /// tracks the previous value for keyboard-appear detection.
+    last_synced_keyboard_inset: Pixels,
+    scroll_to_bottom_button_id: NativeFloatingButtonId,
+    dictation_preview_id: u32,
+    scroll_to_bottom_button_visible: bool,
+    scroll_to_bottom_button_hide_pending: bool,
+    scroll_to_bottom_button_hide_generation: u64,
+    image_upload_in_progress: bool,
+    /// Non-input focus target. Moving focus here drops the terminal keyboard without
+    /// clearing focus entirely (which the terminal input would immediately re-grab).
+    container_focus: FocusHandle,
+    _subscriptions: Vec<Subscription>,
+}
+
+impl WorkspaceTerminal {
+    fn sync_terminal_theme(&mut self, cx: &mut Context<Self>) {
+        let terminal_theme = crate::theme::bundle(cx).terminal;
+        self.terminal_view.update(cx, |terminal_view, cx| {
+            terminal_view.set_terminal_theme(terminal_theme, cx);
+        });
+    }
+
+    fn keyboard_inset() -> Pixels {
+        let bridge = platform_bridge::bridge();
+        let density = bridge.density();
+        if density > 0.0 {
+            px(bridge.keyboard_height() as f32 / density)
+        } else {
+            px(0.0)
+        }
+    }
+
+    fn viewport_without_keyboard(viewport: Size<Pixels>) -> Size<Pixels> {
+        Size {
+            width: viewport.width.max(px(0.0)),
+            height: (viewport.height - Self::keyboard_inset()).max(px(0.0)),
+        }
+    }
+
+    fn scroll_button_bottom_offset() -> f32 {
+        let keyboard_inset = (Self::keyboard_inset() / px(1.0)) as f32;
+        platform_bridge::home_indicator_inset().max(keyboard_inset)
+    }
+
+    fn dictation_preview_bottom_offset() -> f32 {
+        24.0 + Self::scroll_button_bottom_offset()
+    }
+
+    fn should_show_scroll_to_bottom_button(display_offset: usize) -> bool {
+        display_offset > SCROLL_TO_BOTTOM_BUTTON_THRESHOLD_LINES
+    }
+
+    fn set_scroll_to_bottom_button_visible(
+        &mut self,
+        visible: bool,
+        force: bool,
+        cx: &mut Context<Self>,
+    ) {
+        if !force && self.scroll_to_bottom_button_visible == visible {
+            return;
+        }
+
+        self.scroll_to_bottom_button_visible = visible;
+        cx.notify();
+    }
+
+    fn refresh_scroll_to_bottom_button(&mut self, cx: &mut Context<Self>, force: bool) {
+        let display_offset = self.terminal_view.read(cx).display_offset(cx);
+        self.set_scroll_to_bottom_button_visible(
+            Self::should_show_scroll_to_bottom_button(display_offset),
+            force,
+            cx,
+        );
+    }
+
+    pub fn deactivate(&mut self, cx: &mut Context<Self>) {
+        self.scroll_to_bottom_button_hide_pending = false;
+        self.scroll_to_bottom_button_hide_generation =
+            self.scroll_to_bottom_button_hide_generation.wrapping_add(1);
+        hide_native_floating_button(self.scroll_to_bottom_button_id);
+        platform_bridge::hide_native_dictation_preview(self.dictation_preview_id);
+        self.set_scroll_to_bottom_button_visible(false, false, cx);
+    }
+
+    fn scroll_to_bottom(&mut self, cx: &mut Context<Self>) {
+        self.terminal_view.update(cx, |terminal_view, cx| {
+            terminal_view.scroll_to_bottom(cx);
+        });
+        self.schedule_scroll_to_bottom_button_hide(cx);
+    }
+
+    fn schedule_scroll_to_bottom_button_hide(&mut self, cx: &mut Context<Self>) {
+        self.scroll_to_bottom_button_hide_pending = true;
+        self.scroll_to_bottom_button_hide_generation =
+            self.scroll_to_bottom_button_hide_generation.wrapping_add(1);
+        let generation = self.scroll_to_bottom_button_hide_generation;
+
+        cx.spawn(async move |this, cx| {
+            cx.background_executor()
+                .timer(SCROLL_TO_BOTTOM_BUTTON_DISMISS_DELAY)
+                .await;
+            let _ = this.update(cx, |this, cx| {
+                if !this.scroll_to_bottom_button_hide_pending
+                    || this.scroll_to_bottom_button_hide_generation != generation
+                {
+                    return;
+                }
+
+                this.scroll_to_bottom_button_hide_pending = false;
+                this.refresh_scroll_to_bottom_button(cx, true);
+            });
+        })
+        .detach();
+    }
+
+    pub fn terminal_id(&self) -> &str {
+        &self.terminal_id
+    }
+
+    pub fn new(
+        terminal_id: String,
+        workspace_state: Entity<WorkspaceState>,
+        terminal_state: Entity<TerminalState>,
+        session_handle: SessionHandle,
+        window: &mut Window,
+        initial_viewport: Size<Pixels>,
+        cx: &mut Context<Self>,
+    ) -> Self {
+        let attach_sub = cx.subscribe(&workspace_state, |this, _ws, event, cx| match event {
+            WorkspaceStateEvent::SyncComplete => {
+                info!("received SyncComplete event, attempt to attach input/output channel");
+                Self::attach_channel_to_terminal_view(
+                    this.session_handle.clone(),
+                    this.terminal_id.clone(),
+                    this.terminal_view.clone(),
+                    cx,
+                );
+            }
+            WorkspaceStateEvent::TerminalCreated { id } => {
+                if this.terminal_id == *id {
+                    info!("received TerminalCreated event, attempt to attach input/output channel");
+                    Self::attach_channel_to_terminal_view(
+                        this.session_handle.clone(),
+                        this.terminal_id.clone(),
+                        this.terminal_view.clone(),
+                        cx,
+                    );
+                }
+            }
+            WorkspaceStateEvent::TerminalOpened { id } => {
+                if this.terminal_id == *id {
+                    this.refresh_scroll_to_bottom_button(cx, true);
+                } else {
+                    this.deactivate(cx);
+                }
+            }
+            _ => {}
+        });
+
+        let initial_viewport = Self::viewport_without_keyboard(initial_viewport);
+        let terminal_view =
+            cx.new(|cx| TerminalView::new(terminal_id.clone(), window, initial_viewport, cx));
+        let workdir = workspace_state.read(cx).workdir.clone();
+        terminal_view.update(cx, |terminal_view, _cx| {
+            terminal_view.set_workdir(Some(workdir.clone()));
+        });
+        let preview =
+            cx.new(|cx| FilePreviewView::new(session_handle.clone(), workspace_state.clone(), cx));
+        let terminal_events_sub =
+            cx.subscribe(&terminal_view, |this, _terminal, event, cx| match event {
+                TerminalEvent::RequestResize { cols, rows } => {
+                    Self::resize_remote_terminal(
+                        this.session_handle.clone(),
+                        this.terminal_id.clone(),
+                        *cols,
+                        *rows,
+                        cx,
+                    );
+                }
+                TerminalEvent::TitleChanged(title) => {
+                    let id = this.terminal_id.clone();
+                    let title = title.clone();
+                    this.terminal_state.update(cx, |ts, cx| {
+                        ts.set_title(&id, title);
+                        cx.notify();
+                    });
+                }
+                TerminalEvent::OscEvent(event) => {
+                    let id = this.terminal_id.clone();
+                    this.terminal_state.update(cx, |ts, cx| {
+                        match event {
+                            OscEvent::Title(title) => ts.set_title(&id, Some(title.clone())),
+                            OscEvent::ResetTitle => ts.set_title(&id, None),
+                            // OSC 1 (icon name) no longer drives agent identity;
+                            // the host resolves identity and pushes it.
+                            OscEvent::IconName(_) => return,
+                            OscEvent::Cwd(cwd) => ts.set_cwd(&id, cwd.clone()),
+                            OscEvent::CommandLine(cmd) => ts.set_current_command(&id, cmd.clone()),
+                            OscEvent::CommandStart => ts.set_shell_running(&id),
+                            OscEvent::CommandEnd { exit_code } => {
+                                ts.set_shell_idle(&id, Some(*exit_code))
+                            }
+                            OscEvent::PromptReady => ts.set_prompt_ready(&id),
+                            _ => return,
+                        }
+                        cx.notify();
+                    });
+                }
+                TerminalEvent::OpenHyperlink(hyperlink) => match &hyperlink.target {
+                    TerminalHyperlinkTarget::Url { url } => {
+                        if let Some(title) =
+                            crate::web_tunnel::open_url(this.session_handle.clone(), url)
+                        {
+                            this.workspace_state.update(cx, |state, cx| {
+                                state.record_web_tunnel(url, &title, cx);
+                            });
+                        }
+                    }
+                    TerminalHyperlinkTarget::File { path, .. } => {
+                        this.preview.update(cx, |preview, cx| {
+                            preview.open_hyperlink(hyperlink.clone(), cx);
+                        });
+                        view_telemetry::record(view_telemetry::custom_sheet_file(path));
+                        platform_bridge::show_custom_sheet(
+                            CustomSheetOptions {
+                                detents: vec![CustomSheetDetent::Large],
+                                initial_detent: CustomSheetDetent::Large,
+                                shows_grabber: true,
+                                expands_on_scroll_edge: true,
+                                edge_attached_in_compact_height: false,
+                                width_follows_preferred_content_size_when_edge_attached: false,
+                                corner_radius: None,
+                                modal_in_presentation: false,
+                            },
+                            this.preview.clone(),
+                        );
+                    }
+                },
+                TerminalEvent::NativePasteMenuRequested { position } => {
+                    let terminal_view = this.terminal_view.clone();
+                    let weak_this = cx.weak_entity();
+                    platform_bridge::trigger_haptic(HapticFeedback::ImpactMedium);
+
+                    let mut menu = vec![(
+                        NativeEditMenuItem::new("Paste").image("doc.on.clipboard"),
+                        PasteMenuAction::PasteText,
+                    )];
+                    if platform_bridge::bridge().clipboard_has_image() {
+                        menu.push((
+                            NativeEditMenuItem::new("Paste Image").image("photo.on.rectangle"),
+                            PasteMenuAction::PasteImage,
+                        ));
+                    }
+                    menu.push((
+                        NativeEditMenuItem::new("Upload").image("photo.badge.plus"),
+                        PasteMenuAction::UploadImage,
+                    ));
+                    let (items, actions): (Vec<_>, Vec<_>) = menu.into_iter().unzip();
+
+                    platform_bridge::show_native_edit_menu(
+                        native_paste_menu_anchor(*position),
+                        items,
+                        move |index, cx| match actions.get(index) {
+                            Some(PasteMenuAction::PasteText) => {
+                                if let Some(text) =
+                                    cx.read_from_clipboard().and_then(|item| item.text())
+                                {
+                                    let _ = terminal_view.update(cx, |terminal_view, cx| {
+                                        terminal_view.paste_text_from_native_menu(&text, cx);
+                                    });
+                                }
+                            }
+                            Some(PasteMenuAction::PasteImage) => {
+                                let _ = weak_this.update(cx, |this, cx| {
+                                    this.start_image_upload(ImageAcquireSource::Clipboard, cx);
+                                });
+                            }
+                            Some(PasteMenuAction::UploadImage) => {
+                                let _ = weak_this.update(cx, |this, cx| {
+                                    this.start_image_upload(ImageAcquireSource::PhotoLibrary, cx);
+                                });
+                            }
+                            None => {}
+                        },
+                    );
+                }
+                TerminalEvent::AltScreenChanged(is_alt) => {
+                    this.is_alt_screen = *is_alt;
+                    cx.notify();
+                }
+                TerminalEvent::DictationPreviewChanged(text) => {
+                    let active_terminal_id =
+                        this.workspace_state.read(cx).active_terminal_id.clone();
+                    let is_active =
+                        active_terminal_id.as_deref() == Some(this.terminal_id.as_str());
+                    if !is_active {
+                        return;
+                    }
+
+                    match text {
+                        Some(text) => platform_bridge::update_native_dictation_preview(
+                            this.dictation_preview_id,
+                            NativeDictationPreviewOptions {
+                                text: text.clone(),
+                                bottom_offset_pts: Self::dictation_preview_bottom_offset(),
+                            },
+                        ),
+                        None => platform_bridge::hide_native_dictation_preview(
+                            this.dictation_preview_id,
+                        ),
+                    }
+                }
+                TerminalEvent::ScrollbackPositionChanged { display_offset, .. } => {
+                    let active_terminal_id =
+                        this.workspace_state.read(cx).active_terminal_id.clone();
+                    let is_active =
+                        active_terminal_id.as_deref() == Some(this.terminal_id.as_str());
+                    if !is_active {
+                        this.deactivate(cx);
+                        return;
+                    }
+
+                    let should_show = Self::should_show_scroll_to_bottom_button(*display_offset);
+                    if should_show {
+                        this.scroll_to_bottom_button_hide_pending = false;
+                        this.scroll_to_bottom_button_hide_generation =
+                            this.scroll_to_bottom_button_hide_generation.wrapping_add(1);
+                    } else if this.scroll_to_bottom_button_hide_pending {
+                        return;
+                    }
+                    this.set_scroll_to_bottom_button_visible(should_show, false, cx);
+                }
+            });
+
+        // Reactive hook: recomputes keyboard content offset while the keyboard is visible.
+        // Do not overwrite the cached lift during scrollback: the renderable grid then
+        // represents historical rows, not the active bottom viewport used for blank-row checks.
+        let keyboard_offset_hook = cx.observe(&terminal_view, |this, tv, cx| {
+            if this.last_synced_keyboard_inset == px(0.0) {
+                return;
+            }
+            let Some(new_offset) = tv
+                .read(cx)
+                .compute_keyboard_content_offset(this.last_synced_keyboard_inset, cx)
+            else {
+                return;
+            };
+            let _ = tv.update(cx, |tv, cx| {
+                if tv.keyboard_content_offset != new_offset {
+                    tv.keyboard_content_offset = new_offset;
+                    cx.notify();
+                }
+            });
+        });
+
+        if terminal_id != TERMINAL_PENDING_ID {
+            Self::attach_channel_to_terminal_view(
+                session_handle.clone(),
+                terminal_id.clone(),
+                terminal_view.clone(),
+                cx,
+            );
+        }
+
+        let dictation_preview_id = platform_bridge::allocate_native_dictation_preview_id();
+        let terminal_view_for_preview_dismiss = terminal_view.clone();
+        platform_bridge::set_native_dictation_preview_dismiss_callback(
+            dictation_preview_id,
+            move |cx| {
+                let _ = terminal_view_for_preview_dismiss.update(cx, |terminal_view, cx| {
+                    terminal_view.dismiss_dictation_preview(cx);
+                });
+            },
+        );
+
+        let mut subscriptions = vec![attach_sub, terminal_events_sub, keyboard_offset_hook];
+        if let Some(theme_state) = theme_entity(cx) {
+            subscriptions.push(
+                cx.subscribe(&theme_state, |this, _, _: &ThemeStateEvent, cx| {
+                    this.sync_terminal_theme(cx);
+                }),
+            );
+        }
+
+        let mut this = Self {
+            terminal_id,
+            workspace_state,
+            terminal_state,
+            session_handle,
+            terminal_view,
+            preview,
+            is_alt_screen: false,
+            last_synced_keyboard_inset: px(0.0),
+            scroll_to_bottom_button_id: native_floating_button_id(),
+            dictation_preview_id,
+            scroll_to_bottom_button_visible: false,
+            scroll_to_bottom_button_hide_pending: false,
+            scroll_to_bottom_button_hide_generation: 0,
+            image_upload_in_progress: false,
+            container_focus: cx.focus_handle(),
+            _subscriptions: subscriptions,
+        };
+        this.sync_terminal_theme(cx);
+        this
+    }
+
+    pub fn input_sender(&self, cx: &App) -> Option<tokio::sync::mpsc::Sender<Vec<u8>>> {
+        self.terminal_view.read(cx).input_sender(cx)
+    }
+
+    pub fn set_terminal_id(&mut self, terminal_id: String, cx: &mut Context<Self>) {
+        self.terminal_id = terminal_id.clone();
+        self.deactivate(cx);
+        self.terminal_view.update(cx, |terminal_view, _cx| {
+            terminal_view.set_terminal_id(terminal_id);
+        });
+
+        let (cols, rows) = self.terminal_view.read(cx).remote_size(cx);
+        Self::resize_remote_terminal(
+            self.session_handle.clone(),
+            self.terminal_id.clone(),
+            cols,
+            rows,
+            cx,
+        );
+    }
+
+    fn attach_channel_to_terminal_view(
+        session_handle: SessionHandle,
+        terminal_id: String,
+        terminal_view: Entity<TerminalView>,
+        cx: &mut Context<Self>,
+    ) -> bool {
+        let Some(remote_terminal) = session_handle.terminal(&terminal_id) else {
+            warn!("no remote terminal found with id: {}", terminal_id);
+            return false;
+        };
+        match remote_terminal.take_chanel() {
+            Ok((input_tx, output_rx)) => {
+                terminal_view.update(cx, |terminal_view, cx| {
+                    terminal_view.attach_channel(input_tx, output_rx, cx);
+                    terminal_view.sync_remote_size_after_attach(cx);
+                    info!("attached channel to terminal");
+                });
+                true
+            }
+            Err(e) => {
+                warn!("failed to attach input/output channel: {}", e);
+                false
+            }
+        }
+    }
+
+    fn start_image_upload(&mut self, source: ImageAcquireSource, cx: &mut Context<Self>) {
+        if self.image_upload_in_progress {
+            return;
+        }
+        self.image_upload_in_progress = true;
+        cx.notify();
+
+        // Drop the terminal keyboard before the picker appears by moving focus to a
+        // non-input element. `active_window()` is None on iOS, so use the window handles.
+        for window in cx.windows() {
+            let container_focus = self.container_focus.clone();
+            let _ = window.update(cx, move |_, window, cx| {
+                window.hide_soft_keyboard();
+                window.focus(&container_focus, cx);
+            });
+        }
+
+        let session_handle = self.session_handle.clone();
+        let terminal_view = self.terminal_view.clone();
+        cx.spawn(async move |this, cx| {
+            // Show the progress HUD only for the upload phase — never during the
+            // picker or after a cancel.
+            let result = async {
+                let image = image_upload::acquire(source).await?;
+                let progress_id = platform_bridge::allocate_native_progress_id();
+                platform_bridge::show_native_progress(progress_id, "Uploading image…");
+                let uploaded = image_upload::upload(image, session_handle).await;
+                platform_bridge::hide_native_progress(progress_id);
+                uploaded
+            }
+            .await;
+            let _ = this.update(cx, |this, cx| {
+                this.image_upload_in_progress = false;
+                match result {
+                    Ok(rel_path) => {
+                        let _ = terminal_view.update(cx, |terminal_view, cx| {
+                            terminal_view.paste_text_from_native_menu(&format!("{rel_path} "), cx);
+                        });
+                    }
+                    Err(ImageUploadError::Cancelled) => {}
+                    Err(error) => {
+                        warn!("image upload failed: {}", error.user_message());
+                        platform_bridge::show_alert(
+                            "Image Upload Failed",
+                            &error.user_message(),
+                            vec![AlertButton {
+                                label: "OK".into(),
+                                style: platform_bridge::AlertButtonStyle::Default,
+                                image_name: None,
+                            }],
+                            |_| {},
+                        );
+                    }
+                }
+                cx.notify();
+            });
+        })
+        .detach();
+    }
+
+    fn resize_remote_terminal(
+        session_handle: SessionHandle,
+        terminal_id: String,
+        cols: u16,
+        rows: u16,
+        cx: &mut Context<Self>,
+    ) {
+        if terminal_id == TERMINAL_PENDING_ID {
+            return;
+        }
+
+        cx.spawn(async move |this, cx| {
+            match session_handle
+                .terminal_resize(&terminal_id, cols, rows)
+                .await
+            {
+                Ok(_) => {
+                    info!(terminal_id, cols, rows, "resized remote terminal");
+                    if let Err(e) = this.update(cx, |_, cx| cx.notify()) {
+                        warn!("failed to notify from terminal resize task: {}", e);
+                    }
+                }
+                Err(error) => {
+                    warn!(
+                        terminal_id,
+                        cols, rows, "failed to resize remote terminal: {}", error
+                    );
+                }
+            }
+        })
+        .detach();
+    }
+}
+
+impl Render for WorkspaceTerminal {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let terminal_owns_keyboard = self.terminal_view.read(cx).is_focused(window)
+            && window.is_soft_keyboard_visible()
+            && window.has_active_keyboard_accessory();
+        let keyboard_inset = if terminal_owns_keyboard {
+            Self::keyboard_inset()
+        } else {
+            px(0.0)
+        };
+
+        // Keyboard just appeared while user is in scrollback — scroll to bottom.
+        if self.last_synced_keyboard_inset == px(0.0) && keyboard_inset > px(0.0) {
+            let tv = self.terminal_view.clone();
+            window.defer(cx, move |_, cx| {
+                let _ = tv.update(cx, |tv, cx| {
+                    if tv.display_offset(cx) > 0 {
+                        tv.scroll_to_bottom(cx);
+                    }
+                });
+            });
+        }
+
+        // Sync keyboard inset to TerminalView. Deferred to avoid a render dependency that
+        // would cause re-render cascades on every PTY output frame.
+        if self.last_synced_keyboard_inset != keyboard_inset {
+            self.last_synced_keyboard_inset = keyboard_inset;
+            let tv = self.terminal_view.clone();
+            window.defer(cx, move |_, cx| {
+                let _ = tv.update(cx, |tv, cx| {
+                    tv.keyboard_inset = keyboard_inset;
+                    if keyboard_inset == px(0.0) {
+                        tv.keyboard_content_offset = px(0.0);
+                    }
+                    cx.notify();
+                });
+            });
+        }
+
+        let keyboard_inset_f = (keyboard_inset / px(1.0)) as f32;
+        let bottom_offset = platform_bridge::home_indicator_inset().max(keyboard_inset_f);
+        let this = cx.weak_entity();
+
+        div()
+            .id(("workspace-terminal-surface", cx.entity_id()))
+            .track_focus(&self.container_focus)
+            .relative()
+            .size_full()
+            // Alt-screen TUIs (vim, OpenCode) need the container to shrink so reconcile fires
+            // and SIGWINCH is sent. Non-alt apps (Claude, Codex) keep their grid fixed; the
+            // element shifts occupied content above the keyboard instead.
+            .when(self.is_alt_screen && keyboard_inset > px(0.0), |div| {
+                div.pb(keyboard_inset)
+            })
+            .child(self.terminal_view.clone())
+            .when(self.scroll_to_bottom_button_visible, move |container| {
+                container.child(
+                    native_floating_button(
+                        ("terminal-scroll-to-bottom-button", this.entity_id()),
+                        self.scroll_to_bottom_button_id,
+                        "arrow.down",
+                        "Scroll to bottom",
+                        move |cx| {
+                            let _ = this.update(cx, |terminal, cx| {
+                                terminal.scroll_to_bottom(cx);
+                            });
+                        },
+                    )
+                    .icon_size(if cfg!(target_os = "ios") { 16.0 } else { 22.0 })
+                    .absolute()
+                    .right(px(24.0))
+                    .bottom(px(24.0 + bottom_offset))
+                    .w(px(48.0))
+                    .h(px(48.0)),
+                )
+            })
+    }
+}
+
+impl Drop for WorkspaceTerminal {
+    fn drop(&mut self) {
+        hide_native_floating_button(self.scroll_to_bottom_button_id);
+        platform_bridge::remove_native_dictation_preview(self.dictation_preview_id);
+    }
+}

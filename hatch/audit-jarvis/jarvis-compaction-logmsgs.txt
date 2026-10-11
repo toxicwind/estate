@@ -1,0 +1,180 @@
+a context compaction is written 
+a process called compaction happens when the size of the conversation grows over a cert
+abandonedroot did not settle idle within the repair guard windowfailed to broadcast repair compacting presencefailed to broadcast restored presence after repa
+absorbedsafety quarantine removed a message from the conversationfailed to drop compaction checkpointssafety quarantine dropped absorbed compaction ch
+ach unit renders as a compact block
+action artifacteager background compaction artifact ready for background persisteager background compa
+active checkpoint changed while eager compaction was in flight
+allback chat reply when compaction succeeded but its follow
+allfailed to persist pending skill invalidationinvalidated eager background compactiondropping stale conversation write after 
+anchor if context gets compacted
+and come back as compact projections with lifecycle status
+and next action as compact labelled fields
+and return compact projections 
+appendable restart checkpointcompactioncompaction model request timed outcompaction stream timed outhost refused by the host guardfeed video te
+are live current copies and are not part of the compacted history
+ask targetcompaction
+background compaction complete
+call states and compact action summaries
+call states and compact action summaries follow
+cannot render and in compact surfaces such as quoted
+carries a compact hosts summary 
+carries the model reasoning retained across the compaction
+checker tool output execution plan resolvedinvalidated eager background compactiondropping stale conversation write after 
+checkpointcompaction
+compact and the conversation has just been compacted
+compaction stream timed out waiting for first model output chunkcompaction stream timed out waiting for next model output chunkcompact
+compactioncompaction
+compactioncompaction summary cannot be emptydelete
+compactioncompaction summary cannot be emptylink
+compactionretrying compaction on the system model fallbackreusing active compaction summary because all newer history remains in the retained t
+continuingcompaction checkpoint changed during turn
+continuingupserting context item with commentary textconversation cleared while compaction was in flightfailed to hydrate replacement
+creation status title with a compact filename subject
+creation status title with a compact filename subjectad
+creation status title with a compact filename subjecte
+ction failedinvalidated eager background compactioneager
+deletion prefix compaction failed
+details response could not be compacted
+drop constraint if exists compactions
+dropped oldest items to fit context windownative compaction prompt exceeds context window
+ead with a compact profile containing the strongest supported preferences
+eate a context checkpoint summary for yourself so you can continue this conversation after compaction
+ed attachment exclusionlegacy phone delivery requires a populated handoffstandalone manual compaction failedresumed retained terminal checkpoint successor in
+eep reasons compact
+endcompaction model resolution timed out before inferencecompaction limit for inferencecontext
+eply back with the compaction summary
+eply with the compaction summary only
+errorpersisteddiscarded eager background compaction after hidden history rewritefailed to persist eager backgro
+errorretrying blocking compaction after inference errorcompaction
+ested mappings are not allowed in compact mappings
+et the short activity subtitle and compact status
+failed to read parent compaction boundary for artifact builder
+falling back to default model idcompaction
+followed by a compact status for every called store and one clear pickup action
+function compact
+handbagcolosseumcompact
+hat reply when a requested conversation compaction has nothing to do
+hat reply when requested conversation compaction failed without changing the conversation
+hat reply when requested conversation compaction failed without changing the conversationabf
+he artifact under review is the compact prompt
+he conversation was just compacted
+he result you see is a compact summary
+he setting is authoritative over older memory and compacted context
+he title is the compact name of the 
+headerseqcompaction
+hese fields are the compact prompt
+hey are indexed here so this document can stay compact while the catalog grows
+his is a compact aggregate of 
+his is a compact summary of durable facts that commonly affect conversation
+history was rewritten after the plan snapshotcompaction pressure decisionsynchronous
+history was rewritten after the plan snapshotretrying compaction on the system model fallbackreusing active compaction summa
+hort agent status shown while conversation context is being compacteda
+hort agent status shown while conversation context is being compactedis respondingagent
+hort completed email status title with a compact recipient subject
+hort completed email status title with a compact recipient subjecta
+hort completed message status title with a compact recipient subject
+hort completed reminder status title with a compact subject
+hort completed reminder status title with a compact subjectc
+hort completed task status title with a compact task subject
+hort completed task status title with a compact task subjectb
+hort pending email status title with a compact recipient subject
+hort pending message status title with a compact recipient subject
+hort pending reminder status title with a compact subject
+hort pending task status title with a compact task subject
+hort pending task status title with a compact task subjectfafcf
+ideas for compact card context
+idfailed to start compact command runtime work
+idle timeoutcompaction quality gate rejects empty summarycompaction
+iled to persist sanitized compaction checkpoint after prompt quarantineprompt
+inherited parent conversation truncated at the compaction threshold 
+inputno latest compaction checkpoint row matched sanitized prompt quarantine updatefa
+its return as compact markdown blocks
+keeping raw historyvoice compaction inference timed outretrying voice compaction on the system model fallbackvoice aquila
+killswitchcompaction
+killswitchdiscarding prepared compaction checkpoint
+lifecyclecompaction
+make a detail worth preserving in the compact projection
+memory valuefailed to append session transcript compaction entry
+minimalist face with two compact black round dot eyes
+mit for the compact set chosen for this objective
+must stay compact
+n empty window and a projection that is already honest and compact are
+nly eligible output preceding the message after the latest compaction checkpoint participates
+nly past conversation turns were compacted
+not need to stay visible in the compact projection merely to document that it
+o not make any reference to the forgotten topic when compacting
+o not shorten a compact source merely for elegance
+odenoticeactrecompact
+older public messages omitted at the compaction threshold 
+ompaction kept the retained tail after the older prefix no longer fit in the compaction model window
+one eventcompaction returned a tool call instead of a summaryentrypointquaranti
+one eventcompaction returned a tool call instead of a summaryquarantine static 
+ontext checkpoint compaction summary
+or unresolved commitment that the compact
+othing to compact
+ou are only compacting this chunk for the later final turn
+ou author compact section bodies
+our conversation grew past its size limit and was compacted
+outcome belongs to a different requestwallet provider outcome lost its exact request fencecompactionmust be one of 
+ows come back newest action first as compact markdown
+pace cron cleanup integration is unavailablenative compaction stream ended before 
+pass only the compact fragment rendered inside the existing
+penowrapvlinknoshadedefertargetscrollingrulesscoperevmediamethodcharsetalinkcolorshapeclearcompactdeclare
+preserving the existing checkpoint and transcriptcontext window exceeded while compacting
+prior handoffs and compact objective
+probes stay on the ambient proxycould not freeze native compaction system prompt
+projectioncompaction
+quarantinefailed to persist the quarantine tombstonesafety quarantine swept compacted durable rowsfailed to sweep compacted durable rows for a 
+reducing history for a bounded retrynative compaction failed
+rendering freshcompactioncompaction model request timed outcompaction stream timed outruntime
+repack pass can compact
+resent a compact comparison with current plan first and one row per alternat
+retrying a smaller prefix while retaining the excluded tail verbatimcompaction cannot retry the output token cap safely
+retrying the original prompt on the same modelcompaction summary prefix was exhausted
+retryupserting context item with commentary textconversation cleared while compaction was in flightfailed to hydrate replacement
+rmalized before dispatchfailed to persist cancellation replay fencecould not freeze native compaction system prompt
+ropose a compact taxonomy from the content actually found
+ry because all newer history remains in the retained tailcompaction 
+s conversation context is compacted or summarized during the task
+s request to compact
+s short subtitle and compact status title
+s staging surface and deliver a compact roster of
+search status title with a compact query subject
+search status title with a compact query subjectac
+search status title with a compact query subjectf
+secret facts as compact
+sharingrealtime provider writer is closedbackground compaction model requestinteractive browser review semaphore closeddar
+show the order as compact line items followed by address
+snapshot load failedtodo snapshot after compaction failed to record
+snapshot load failedtodo snapshot after compaction failed to recordlocation
+snapshottodo snapshot after compaction skipped
+so fill it with the compact handoff that step needs
+starting background compactionvoice aquila
+stored snapshot unreadabletodo snapshot after compaction skipped
+the animal lowers into one obvious supported crouch or compact tuck
+the bird lowers into one obvious compact tuck or crouch
+the projection is already honest and compact
+therwise return only the extracted information as compact 
+thumbnailsdefaultcompactsmlgimage
+tion plan resolvedfailed to persist pending skill invalidationinvalidated eager background compactiondropping stale conversation write after 
+to write resume index renderingresume index render task failedinvalidated eager background compactiondropping stale conversation write after 
+tokensstarted eager background compactiondropping stale conversation write after 
+trimmed older prompt items before compacting to fit model context windowclient
+trimmed older prompt items before compacting to fit model context windowserving
+try againfailed to load chat command settingsfailed to persist chat command settingscompact
+two small compact black dot eyes with a barely
+unchanged by compaction
+und compaction artifactpersisted eager background compaction artifactnon
+update status title with a compact filename subject
+urlnative compaction stream ended before 
+useful details worth preserving in a compact visual summary
+ut the proposed tracks in a compact numbered list with artist
+utput exactly one compact 
+value information from a detailed assistant answer into compact
+variants expansioneager background compaction produced no checkpointdiscarded stale eager background comp
+variants expansioninvalidated eager background compactiondropping stale conversation write after 
+while it stays compact
+widgets are compact 
+wser task bootstrap cannot carry an alternate bootstrap payloadfailed to persist inherited compaction checkpoint for spawned subagentfailed to accept subagent bo
+ystem prompt composecompaction

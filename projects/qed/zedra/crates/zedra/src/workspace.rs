@@ -1,0 +1,3998 @@
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
+use std::time::{Duration, Instant};
+
+use anyhow::{Result as AnyhowResult, anyhow};
+use gpui::{prelude::FluentBuilder as _, *};
+use gpui_tokio::Tokio;
+use tokio::sync::{broadcast, mpsc};
+use tracing::*;
+use uuid::Uuid;
+use zedra_rpc::ZedraPairingTicket;
+use zedra_rpc::proto::{HostEvent, SyncSessionResult};
+use zedra_session::{
+    ConnectEvent, ConnectPhase, ConnectSnapshot, ReconnectReason, Session, SessionHandle,
+    SessionState, signer::ClientSigner,
+};
+
+use crate::agent;
+use crate::agent_detail::AgentDetail;
+use crate::agent_manage::AgentManage;
+use crate::agent_picker::AgentPicker;
+use crate::agent_sessions::AgentSessions;
+use crate::delta::{ClientDeltaInfo, DeltaState};
+use crate::editor::git_sidebar::GitFileSection;
+use crate::file_search::{FileSearchEvent, FileSearchPanel};
+use crate::pending::{SharedPendingSlot, shared_pending_slot, spawn_periodic_task};
+use crate::platform_bridge::{self, AlertButton, HapticFeedback, SoundEffect, status_bar_inset};
+use crate::telemetry::view_telemetry;
+use crate::terminal_card::strip_ps1_prefix;
+use crate::terminal_state::TerminalState;
+use crate::theme;
+use crate::transport_badge::ConnectionStatusIndicator;
+use crate::ui::{DrawerEvent, DrawerHost, DrawerSide};
+use crate::workspace_action::{self, GoHome, OpenFileSearch, OpenQuickAction, RequestDisconnect};
+use crate::workspace_action::{
+    AddSelectionToChat, CloseDrawer, CloseTerminal, CreateAgent, CreateNewTerminal, GitCommit,
+    GitShowItemActions, GitStage, GitUnstage, HideConnecting, NavigateBack, OpenAgentDetail,
+    OpenAgentManage, OpenAgentSessions, OpenDrawer, OpenFile, OpenGitDiff, OpenTerminal,
+    RestartConnection, ResumeAgentSession, RevealInFileExplorer, ShowConnecting,
+    SpawnAgentTerminal, ToggleDrawer,
+};
+use crate::workspace_connecting::WorkspaceConnecting;
+use crate::workspace_connection_banner::{BannerEvent, ConnectionBanner};
+use crate::workspace_drawer::WorkspaceDrawer;
+use crate::workspace_editor::{EditorSelection, WorkspaceEditor};
+use crate::workspace_gitdiff::{GitdiffHeaderChanged, WorkspaceGitdiff};
+use crate::workspace_start::WorkspaceStart;
+use crate::workspace_state::{WorkspaceMainView, WorkspaceState, WorkspaceStateEvent};
+use crate::workspace_terminal::{TERMINAL_PENDING_ID, WorkspaceTerminal};
+use zedra_terminal::view::TerminalView;
+
+/// Events emitted by the workspace.
+/// The receiver is mostly app/workspaces
+#[derive(Clone, Debug)]
+pub enum WorkspaceEvent {
+    GoHome,
+    OpenQuickAction,
+    Disconnected,
+}
+
+impl EventEmitter<WorkspaceEvent> for Workspace {}
+
+/// Ambient handle to the foreground workspace, kept in sync by [`Workspaces`].
+/// Surfaces that run detached from the main window — e.g. the native
+/// file-preview sheet — read this to route actions back to the active
+/// workspace instead of threading its entity through every owner.
+///
+/// [`Workspaces`]: crate::workspaces::Workspaces
+#[derive(Default)]
+pub struct ActiveWorkspace(Option<WeakEntity<Workspace>>);
+
+impl Global for ActiveWorkspace {}
+
+impl ActiveWorkspace {
+    pub fn set(workspace: Option<WeakEntity<Workspace>>, cx: &mut App) {
+        cx.set_global(ActiveWorkspace(workspace));
+    }
+
+    /// The current foreground workspace, if one is set and still alive.
+    pub fn get(cx: &App) -> Option<Entity<Workspace>> {
+        cx.try_global::<ActiveWorkspace>()
+            .and_then(|active| active.0.clone())
+            .and_then(|workspace| workspace.upgrade())
+    }
+}
+
+pub struct Workspace {
+    drawer_host: Entity<DrawerHost>,
+    #[allow(dead_code)]
+    drawer: Entity<WorkspaceDrawer>,
+    content: Entity<WorkspaceContent>,
+    workspace_state: Entity<WorkspaceState>,
+    session_state: Entity<SessionState>,
+    terminal_state: Entity<TerminalState>,
+    delta_state: Entity<DeltaState>,
+    session: Session,
+    editor: Entity<WorkspaceEditor>,
+    gitdiff: Entity<WorkspaceGitdiff>,
+    terminals: Vec<Entity<WorkspaceTerminal>>,
+    persist_workspace_state: bool,
+    connection_request: Option<ConnectionRequest>,
+    /// Becomes true once a ReconnectStarted event is seen; gates initial auto-open/create.
+    seen_reconnect: bool,
+    active_reconnect_reason: Option<ReconnectReason>,
+    latency_sampler: LatencySampler,
+    /// Listens for connect events and syncs them into SessionState/WorkspaceState.
+    _connect_listener: Option<Task<()>>,
+    /// Listens for host events/actions from the remote host.
+    _host_event_listener: Option<Task<()>>,
+    /// Listens for periodic host resource snapshots.
+    _host_info_listener: Option<Task<()>>,
+    /// Listens for foreground resume events and checks the live session phase.
+    _foreground_resume_listener: Option<Task<()>>,
+    /// Notifies the host when app foreground/background state changes.
+    _foreground_state_listener: Option<tokio::task::JoinHandle<()>>,
+    agent_picker: Entity<AgentPicker>,
+    /// Floating global file search overlay; shown above the drawer when open.
+    file_search: Entity<FileSearchPanel>,
+    file_search_open: bool,
+    /// Focus to restore when the file search overlay is dismissed, so action
+    /// dispatch keeps routing through the workspace (the search input takes
+    /// focus while open and would otherwise leave focus dangling on close).
+    file_search_prev_focus: Option<FocusHandle>,
+    pending_platform_action: SharedPendingSlot<PendingWorkspaceAction>,
+    _pending_platform_action_task: Task<()>,
+    /// Terminal to open immediately after the first sync completes (set by notification deeplink).
+    pending_terminal_after_sync: Option<String>,
+    _subscriptions: Vec<Subscription>,
+    delta_host_reconciling: bool,
+}
+
+impl Drop for Workspace {
+    fn drop(&mut self) {
+        // GPUI Task<()> fields cancel on drop, but the raw tokio JoinHandle does
+        // not — abort it so the foreground listener does not outlive the workspace.
+        if let Some(handle) = self._foreground_state_listener.take() {
+            handle.abort();
+        }
+    }
+}
+
+pub(crate) enum PendingWorkspaceAction {
+    DisconnectSession,
+    DeleteTerminal {
+        id: String,
+    },
+    AddSelectionToChat {
+        target: AddToChatTarget,
+        input: agent::AddToChat,
+    },
+    SpawnAgentTerminal {
+        launch_cmd: String,
+        initial_title: String,
+        agent_slug: String,
+    },
+}
+
+const ADD_TO_CHAT_SEND_DELAY: Duration = Duration::from_millis(250);
+const FOREGROUND_LIVENESS_TIMEOUT: Duration = Duration::from_secs(2);
+
+#[derive(Clone)]
+struct ConnectionRequest {
+    addr: iroh::EndpointAddr,
+    ticket: Option<ZedraPairingTicket>,
+    signer: Arc<dyn ClientSigner>,
+    session_id: Option<String>,
+}
+
+#[derive(Clone)]
+struct AddToChatTarget {
+    tid: String,
+    slug: String,
+    title: Option<String>,
+    cwd: Option<String>,
+    input_tx: mpsc::Sender<Vec<u8>>,
+}
+
+struct AgentTerminalTermCtx {
+    tid: String,
+    cwd: Option<PathBuf>,
+    input_tx: mpsc::Sender<Vec<u8>>,
+}
+
+impl agent::TermCtx for AgentTerminalTermCtx {
+    fn tid(&self) -> &str {
+        &self.tid
+    }
+
+    fn cwd(&self) -> Option<&Path> {
+        self.cwd.as_deref()
+    }
+
+    fn write(&mut self, bytes: Vec<u8>) -> AnyhowResult<()> {
+        self.input_tx
+            .try_send(bytes)
+            .map_err(|error| anyhow!("failed to send input to {}: {}", self.tid, error))
+    }
+
+    fn selection(&self) -> Option<&str> {
+        None
+    }
+}
+
+struct WorkspaceAgentApp;
+
+impl agent::AppCtx for WorkspaceAgentApp {
+    fn diff(&mut self, _diff: agent::Diff) -> AnyhowResult<()> {
+        Ok(())
+    }
+
+    fn open(&mut self, _loc: agent::Loc) -> AnyhowResult<()> {
+        Ok(())
+    }
+
+    fn pick(&mut self, _pick: agent::Pick) -> AnyhowResult<Option<String>> {
+        Ok(None)
+    }
+
+    fn status(&mut self, _status: agent::Status) -> AnyhowResult<()> {
+        Ok(())
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum SyncRefreshMode {
+    InitialConnect,
+    Reconnect,
+}
+
+const LATENCY_SAMPLE_INTERVAL: Duration = Duration::from_secs(60);
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+struct LatencySampleKey {
+    connection_type: &'static str,
+    network_type: &'static str,
+    relay: &'static str,
+    relay_region: &'static str,
+    nearest_relay_region: &'static str,
+}
+
+#[derive(Default)]
+struct LatencySampler {
+    last_sample_at: Option<Instant>,
+    last_key: Option<LatencySampleKey>,
+}
+
+impl LatencySampler {
+    fn next_reason(&mut self, key: LatencySampleKey, now: Instant) -> Option<&'static str> {
+        let reason = match (&self.last_sample_at, &self.last_key) {
+            (None, _) => "initial",
+            (_, Some(previous_key)) if previous_key != &key => "path_changed",
+            (Some(last_sample_at), _)
+                if now.duration_since(*last_sample_at) >= LATENCY_SAMPLE_INTERVAL =>
+            {
+                "periodic"
+            }
+            _ => return None,
+        };
+
+        self.last_sample_at = Some(now);
+        self.last_key = Some(key);
+        Some(reason)
+    }
+
+    fn reset(&mut self) {
+        self.last_sample_at = None;
+        self.last_key = None;
+    }
+}
+
+fn sync_refresh_mode_for_event(
+    event: &ConnectEvent,
+    seen_reconnect: &mut bool,
+) -> Option<SyncRefreshMode> {
+    if matches!(event, ConnectEvent::ReconnectStarted { .. }) {
+        *seen_reconnect = true;
+    }
+
+    if !matches!(event, ConnectEvent::SyncComplete { .. }) {
+        return None;
+    }
+
+    if *seen_reconnect {
+        Some(SyncRefreshMode::Reconnect)
+    } else {
+        Some(SyncRefreshMode::InitialConnect)
+    }
+}
+
+fn should_initialize_terminals_after_sync(
+    mode: SyncRefreshMode,
+    terminal_ids: &[String],
+    active_main_view: &WorkspaceMainView,
+) -> bool {
+    match mode {
+        SyncRefreshMode::InitialConnect => true,
+        SyncRefreshMode::Reconnect => {
+            // Re-open content on reconnect only when sitting on the start view, or
+            // when the host has no terminals left to anchor the current view.
+            // An open file/terminal/agent view is preserved.
+            matches!(active_main_view, WorkspaceMainView::Default) || terminal_ids.is_empty()
+        }
+    }
+}
+
+fn should_apply_connect_event(_event: &ConnectEvent, user_disconnect: bool) -> bool {
+    !user_disconnect
+}
+
+fn reconnect_reason_label(reason: &ReconnectReason) -> &'static str {
+    match reason {
+        ReconnectReason::ConnectionLost => "connection_lost",
+        ReconnectReason::AppForegrounded => "app_foregrounded",
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum ForegroundResumeAction {
+    ProbeLiveness,
+    RestartConnection,
+    Ignore,
+}
+
+fn foreground_resume_action(phase: &ConnectPhase) -> ForegroundResumeAction {
+    match phase {
+        ConnectPhase::Connected | ConnectPhase::Idle { .. } => {
+            ForegroundResumeAction::ProbeLiveness
+        }
+        ConnectPhase::Disconnected | ConnectPhase::Failed(_) => {
+            ForegroundResumeAction::RestartConnection
+        }
+        ConnectPhase::Init
+        | ConnectPhase::BindingEndpoint
+        | ConnectPhase::HolePunching
+        | ConnectPhase::Registering
+        | ConnectPhase::Authenticating
+        | ConnectPhase::Proving
+        | ConnectPhase::Sync
+        | ConnectPhase::Reconnecting { .. } => ForegroundResumeAction::Ignore,
+    }
+}
+
+/// Foreground-resume step from the UI-thread snapshot. A user disconnect is never
+/// resurrected; a phase that still reads connected but lost its transport restarts
+/// rather than probe a stale RPC client.
+fn classify_foreground_resume(
+    phase: &ConnectPhase,
+    connection_id: Option<usize>,
+    user_disconnect: bool,
+) -> ForegroundResumeAction {
+    if user_disconnect {
+        return ForegroundResumeAction::Ignore;
+    }
+    let action = foreground_resume_action(phase);
+    if matches!(action, ForegroundResumeAction::ProbeLiveness) && connection_id.is_none() {
+        return ForegroundResumeAction::RestartConnection;
+    }
+    action
+}
+
+fn path_label(snap: &ConnectSnapshot) -> &'static str {
+    if snap
+        .transport
+        .as_ref()
+        .map(|transport| transport.is_direct)
+        .unwrap_or(false)
+    {
+        "direct"
+    } else if snap.transport.is_some() || snap.relay_connected {
+        "relay"
+    } else {
+        "unknown"
+    }
+}
+
+fn network_label(snap: &ConnectSnapshot) -> &'static str {
+    snap.transport
+        .as_ref()
+        .and_then(|transport| transport.network_hint.as_ref())
+        .map(|network| network.label())
+        .unwrap_or("unknown")
+}
+
+fn relay_label(snap: &ConnectSnapshot) -> String {
+    snap.transport
+        .as_ref()
+        .and_then(|transport| transport.relay_url.clone())
+        .or_else(|| snap.relay_url.clone())
+        .unwrap_or_else(|| {
+            if snap.relay_connected {
+                "custom".to_string()
+            } else {
+                "none".to_string()
+            }
+        })
+}
+
+fn classify_ip_network(ip: std::net::IpAddr) -> &'static str {
+    match ip {
+        std::net::IpAddr::V4(v4) => {
+            let octets = v4.octets();
+            if octets[0] == 100 && octets[1] >= 64 && octets[1] <= 127 {
+                "Tailscale"
+            } else if octets[0] == 10
+                || (octets[0] == 172 && octets[1] >= 16 && octets[1] <= 31)
+                || (octets[0] == 192 && octets[1] == 168)
+            {
+                "LAN"
+            } else {
+                "Internet"
+            }
+        }
+        std::net::IpAddr::V6(v6) => {
+            let segments = v6.segments();
+            if segments[0] == 0xfe80 || segments[0] & 0xfe00 == 0xfc00 {
+                "LAN"
+            } else {
+                "Internet"
+            }
+        }
+    }
+}
+
+fn path_network_label(path: &iroh::endpoint::PathInfo) -> &'static str {
+    match path.remote_addr() {
+        iroh::TransportAddr::Ip(addr) => classify_ip_network(addr.ip()),
+        _ => "unknown",
+    }
+}
+
+fn path_relay_label(path: &iroh::endpoint::PathInfo) -> Option<String> {
+    match path.remote_addr() {
+        iroh::TransportAddr::Relay(url) => Some(url.host_str().unwrap_or(url.as_str()).to_string()),
+        _ => None,
+    }
+}
+
+fn latency_network_type(snap: &ConnectSnapshot) -> &'static str {
+    let Some(transport) = &snap.transport else {
+        return "unknown";
+    };
+    if !transport.is_direct {
+        return "relay";
+    }
+
+    match transport
+        .network_hint
+        .as_ref()
+        .map(|network| network.label())
+    {
+        Some("Internet") => "WAN",
+        Some(label) => label,
+        None => "unknown",
+    }
+}
+
+fn latency_relay_label(snap: &ConnectSnapshot) -> &'static str {
+    let relay = snap
+        .transport
+        .as_ref()
+        .and_then(|transport| transport.relay_url.as_deref())
+        .or(snap.relay_url.as_deref())
+        .unwrap_or("none");
+    zedra_telemetry::relay_id_label(relay)
+}
+
+fn latency_relay_region(snap: &ConnectSnapshot) -> &'static str {
+    let relay = snap
+        .transport
+        .as_ref()
+        .and_then(|transport| transport.relay_url.as_deref())
+        .or(snap.relay_url.as_deref())
+        .unwrap_or("none");
+    zedra_telemetry::relay_region_label(relay)
+}
+
+fn latency_nearest_relay_region(snap: &ConnectSnapshot) -> &'static str {
+    snap.preferred_relay_url
+        .as_deref()
+        .map(zedra_telemetry::relay_region_label)
+        .unwrap_or_else(|| latency_relay_region(snap))
+}
+
+fn record_latency_sample(state: &SessionState, sampler: &mut LatencySampler) {
+    if !matches!(
+        state.phase,
+        ConnectPhase::Connected | ConnectPhase::Idle { .. }
+    ) {
+        return;
+    }
+
+    let Some(transport) = &state.snapshot.transport else {
+        return;
+    };
+
+    let connection_type = if transport.is_direct { "p2p" } else { "relay" };
+    let key = LatencySampleKey {
+        connection_type,
+        network_type: latency_network_type(&state.snapshot),
+        relay: latency_relay_label(&state.snapshot),
+        relay_region: latency_relay_region(&state.snapshot),
+        nearest_relay_region: latency_nearest_relay_region(&state.snapshot),
+    };
+    let Some(sample_reason) = sampler.next_reason(key.clone(), Instant::now()) else {
+        return;
+    };
+
+    zedra_telemetry::send(zedra_telemetry::Event::ConnectionLatencySample {
+        source: "app",
+        connection_type: key.connection_type,
+        network_type: key.network_type,
+        rtt_ms: transport.rtt_ms,
+        relay: key.relay,
+        relay_region: key.relay_region,
+        nearest_relay_region: key.nearest_relay_region,
+        path_count: transport.num_paths,
+        interval_secs: LATENCY_SAMPLE_INTERVAL.as_secs(),
+        sample_reason,
+    });
+}
+
+fn record_connect_telemetry(
+    event: &ConnectEvent,
+    state: &SessionState,
+    previous_phase: &ConnectPhase,
+    is_reconnect_context: bool,
+    reconnect_reason: Option<&ReconnectReason>,
+    latency_sampler: &mut LatencySampler,
+) {
+    let snap = &state.snapshot;
+    match event {
+        ConnectEvent::Connected { total_ms } if !is_reconnect_context => {
+            zedra_telemetry::send(zedra_telemetry::Event::ConnectSuccess {
+                total_ms: *total_ms,
+                binding_ms: snap.binding_ms.unwrap_or(0),
+                hole_punch_ms: snap.hole_punch_ms.unwrap_or(0),
+                resolve_ms: snap.resolve_ms.unwrap_or(0),
+                handshake_ms: snap.handshake_ms.unwrap_or(0),
+                auth_ms: snap.auth_ms.unwrap_or(0),
+                fetch_ms: snap.sync_ms.unwrap_or(0),
+                path: path_label(snap),
+                network: network_label(snap),
+                rtt_ms: snap
+                    .transport
+                    .as_ref()
+                    .map(|transport| transport.rtt_ms)
+                    .unwrap_or(0),
+                relay: relay_label(snap),
+                relay_latency_ms: snap.relay_latency_ms.unwrap_or(0),
+                alpn: snap.alpn.clone().unwrap_or_default(),
+                has_ipv4: snap.has_ipv4,
+                has_ipv6: snap.has_ipv6,
+                symmetric_nat: snap.mapping_varies.unwrap_or(false),
+                is_first_pairing: snap.is_first_pairing,
+            });
+        }
+        ConnectEvent::Failed { error } if !is_reconnect_context => {
+            zedra_telemetry::send(zedra_telemetry::Event::ConnectFailed {
+                phase: previous_phase.label(),
+                error: error.label(),
+                elapsed_ms: state.elapsed_ms(),
+                relay: relay_label(snap),
+                alpn: snap.alpn.clone().unwrap_or_default(),
+                has_ipv4: snap.has_ipv4,
+                has_ipv6: snap.has_ipv6,
+                relay_connected: snap.relay_connected,
+            });
+            latency_sampler.reset();
+        }
+        ConnectEvent::TerminalsReattached { count, resume_ms } => {
+            zedra_telemetry::send(zedra_telemetry::Event::SessionResumed {
+                terminal_count: *count,
+                resume_ms: *resume_ms,
+            });
+        }
+        ConnectEvent::ReconnectStarted { reason } => {
+            zedra_telemetry::send(zedra_telemetry::Event::ReconnectStarted {
+                reason: reconnect_reason_label(reason),
+            });
+            latency_sampler.reset();
+        }
+        ConnectEvent::ReconnectSuccess {
+            attempt,
+            elapsed_ms,
+        } => {
+            let reason = reconnect_reason
+                .map(reconnect_reason_label)
+                .unwrap_or("connection_lost");
+            zedra_telemetry::send(zedra_telemetry::Event::ReconnectSuccess {
+                attempt: *attempt,
+                elapsed_ms: *elapsed_ms,
+                reason,
+                binding_ms: snap.binding_ms.unwrap_or(0),
+                hole_punch_ms: snap.hole_punch_ms.unwrap_or(0),
+                resolve_ms: snap.resolve_ms.unwrap_or(0),
+                handshake_ms: snap.handshake_ms.unwrap_or(0),
+                auth_ms: snap.auth_ms.unwrap_or(0),
+                fetch_ms: snap.sync_ms.unwrap_or(0),
+                path: path_label(snap),
+                network: network_label(snap),
+                rtt_ms: snap
+                    .transport
+                    .as_ref()
+                    .map(|transport| transport.rtt_ms)
+                    .unwrap_or(0),
+                relay: relay_label(snap),
+                alpn: snap.alpn.clone().unwrap_or_default(),
+                has_ipv4: snap.has_ipv4,
+                has_ipv6: snap.has_ipv6,
+            });
+        }
+        ConnectEvent::ReconnectExhausted {
+            attempts,
+            elapsed_ms,
+            error,
+        } => {
+            let reason = reconnect_reason
+                .map(reconnect_reason_label)
+                .unwrap_or("connection_lost");
+            zedra_telemetry::send(zedra_telemetry::Event::ReconnectExhausted {
+                attempts: *attempts,
+                elapsed_ms: *elapsed_ms,
+                reason,
+                fatal_error: error.is_fatal().then_some(error.label()),
+            });
+        }
+        ConnectEvent::PathUpgraded {
+            prev_path,
+            new_path,
+            upgrade_ms,
+        } => {
+            zedra_telemetry::send(zedra_telemetry::Event::PathUpgraded {
+                network: path_network_label(new_path),
+                rtt_ms: new_path.stats().rtt.as_millis() as u64,
+                from_relay: prev_path
+                    .as_ref()
+                    .and_then(path_relay_label)
+                    .unwrap_or_else(|| relay_label(snap)),
+                upgrade_ms: *upgrade_ms,
+            });
+        }
+        ConnectEvent::DirectUpgradeTimeout { elapsed_ms } => {
+            zedra_telemetry::send(zedra_telemetry::Event::DirectUpgradeTimeout {
+                elapsed_ms: *elapsed_ms,
+                relay: relay_label(snap),
+                network: network_label(snap),
+                symmetric_nat: snap.mapping_varies.unwrap_or(false),
+            });
+        }
+        ConnectEvent::PathReport { .. } => record_latency_sample(state, latency_sampler),
+        ConnectEvent::Failed { .. } | ConnectEvent::ConnectionClosed => latency_sampler.reset(),
+        _ => {}
+    }
+}
+
+fn terminal_id_in_sync(id: &str, terminal_ids: &[String]) -> bool {
+    terminal_ids.iter().any(|synced_id| synced_id == id)
+}
+
+fn should_keep_terminal_entity(id: &str, terminal_ids: &[String]) -> bool {
+    id == TERMINAL_PENDING_ID || terminal_id_in_sync(id, terminal_ids)
+}
+
+fn active_terminal_is_stale_after_sync(
+    active_terminal_id: Option<&str>,
+    terminal_ids: &[String],
+) -> bool {
+    active_terminal_id.is_some_and(|id| !terminal_id_in_sync(id, terminal_ids))
+}
+
+fn seed_host_created_terminal_meta(
+    terminal_state: &mut TerminalState,
+    terminal_id: &str,
+    workspace_workdir: &str,
+    launch_cmd: Option<&str>,
+    agent_slug: Option<&str>,
+) -> bool {
+    let mut changed = false;
+
+    if !workspace_workdir.is_empty() {
+        // Host-created launch terminals may appear before PTY metadata reaches the card.
+        terminal_state.set_cwd(terminal_id, workspace_workdir.to_owned());
+        changed = true;
+    }
+
+    if let Some(command) = launch_cmd.filter(|command| !command.is_empty()) {
+        // launch_cmd can start before shell OSC identity is emitted.
+        terminal_state.set_current_command(terminal_id, command.to_owned());
+        terminal_state.set_shell_running(terminal_id);
+        changed = true;
+    }
+
+    // Host-resolved identity for the launch command; a spawned command emits no
+    // OSC, so this is the only way the icon appears before a reconnect.
+    if let Some(slug) = agent_slug {
+        terminal_state.set_agent_slug(terminal_id, Some(slug.to_owned()));
+        changed = true;
+    }
+
+    changed
+}
+
+fn seed_pending_launch_terminal_meta(
+    terminal_state: &mut TerminalState,
+    terminal_id: &str,
+    title: String,
+    launch_cmd: Option<&str>,
+    agent_slug: Option<&str>,
+) {
+    terminal_state.set_title(terminal_id, Some(title));
+    if let Some(command) = launch_cmd.filter(|command| !command.is_empty()) {
+        terminal_state.set_current_command(terminal_id, command.to_owned());
+        terminal_state.set_shell_running(terminal_id);
+    }
+    // When the launcher knows the agent (resume flow), seed identity directly for
+    // an instant icon; otherwise it arrives via the host TerminalAgentChanged.
+    if let Some(slug) = agent_slug {
+        terminal_state.set_agent_slug(terminal_id, Some(slug.to_owned()));
+    }
+}
+
+fn terminal_ids_after_close(closed_id: &str, terminal_ids: &[String]) -> Vec<String> {
+    terminal_ids
+        .iter()
+        .filter(|terminal_id| terminal_id.as_str() != closed_id)
+        .cloned()
+        .collect()
+}
+
+fn replacement_terminal_id_after_close(closed_id: &str, terminal_ids: &[String]) -> Option<String> {
+    let closed_index = terminal_ids
+        .iter()
+        .position(|terminal_id| terminal_id == closed_id)
+        .unwrap_or(0);
+    let remaining_terminal_ids = terminal_ids_after_close(closed_id, terminal_ids);
+
+    remaining_terminal_ids
+        .get(closed_index)
+        .or_else(|| remaining_terminal_ids.last())
+        .cloned()
+}
+
+impl Workspace {
+    pub fn new(
+        workspace_state: Entity<WorkspaceState>,
+        delta_state: Entity<DeltaState>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Self {
+        let session = Session::new(Tokio::handle(cx));
+        let session_state = cx.new(|_cx| session.state().clone());
+        let terminal_state = cx.new(|_| TerminalState::new());
+
+        let editor = cx.new(|cx| WorkspaceEditor::new(session.handle().clone(), cx));
+        let gitdiff = cx.new(|cx| WorkspaceGitdiff::new(session.handle().clone(), cx));
+
+        let connection_banner = cx.new(|cx| ConnectionBanner::new(session_state.clone(), cx));
+        let content = cx.new(|cx| {
+            WorkspaceContent::new(
+                workspace_state.clone(),
+                terminal_state.clone(),
+                session_state.clone(),
+                session.handle().clone(),
+                connection_banner.clone(),
+                cx,
+            )
+        });
+        let drawer = cx.new(|cx| {
+            WorkspaceDrawer::new(
+                window,
+                cx,
+                workspace_state.clone(),
+                terminal_state.clone(),
+                session_state.clone(),
+                session.clone(),
+                session.handle().clone(),
+            )
+        });
+        let drawer_host = cx.new(|cx| {
+            DrawerHost::new(
+                content.clone().into(),
+                drawer.clone().into(),
+                DrawerSide::Left,
+                cx,
+            )
+        });
+
+        let drawer_host_subscription = cx.subscribe(
+            &drawer_host,
+            |workspace, _drawer_host, event: &DrawerEvent, cx| {
+                if matches!(event, DrawerEvent::Opened) {
+                    workspace.drawer.update(cx, |drawer, _cx| {
+                        drawer.record_current_view();
+                    });
+                }
+            },
+        );
+        let workspace_state_subscription = cx.subscribe(
+            &workspace_state,
+            |workspace, workspace_state, event: &WorkspaceStateEvent, _cx| {
+                if workspace.persist_workspace_state
+                    && matches!(event, WorkspaceStateEvent::StateChanged)
+                {
+                    WorkspaceState::upsert(workspace_state.read(_cx).clone())
+                        .map_err(|e| warn!("failed to upsert workspace state: {}", e))
+                        .ok();
+                }
+            },
+        );
+        let delta_state_subscription = cx.subscribe(
+            &delta_state,
+            |workspace, _delta_state, event: &crate::delta::DeltaStateEvent, cx| {
+                if matches!(event, crate::delta::DeltaStateEvent::DeltaStateChanged) {
+                    workspace.reconcile_delta_host_binding(cx);
+                }
+            },
+        );
+        let gitdiff_subscription = cx.subscribe(
+            &gitdiff,
+            |this, _gitdiff, event: &GitdiffHeaderChanged, cx| {
+                this.content.update(cx, |content, cx| {
+                    content.set_git_diff_subtitle(
+                        event.filename.clone(),
+                        event.added,
+                        event.removed,
+                        cx,
+                    );
+                });
+            },
+        );
+        let connection_banner_subscription =
+            cx.subscribe(&connection_banner, Self::handle_banner_event);
+
+        let mut host_event_rx = session.subscribe_host_events();
+        let host_event_listener = cx.spawn(async move |workspace, cx| {
+            loop {
+                match host_event_rx.recv().await {
+                    Ok(HostEvent::TerminalCreated {
+                        id,
+                        launch_cmd,
+                        agent_slug,
+                    }) => {
+                        let should_break = workspace
+                            .update(cx, |ws, cx| {
+                                let session_state = ws.session_state.read(cx).clone();
+                                ws.workspace_state.update(cx, |this, cx| {
+                                    this.sync_from_session(ws.session_handle(), &session_state, cx);
+                                });
+                                let workdir = ws.workspace_state.read(cx).workdir.clone();
+                                ws.terminal_state.update(cx, |state, cx| {
+                                    if seed_host_created_terminal_meta(
+                                        state,
+                                        &id,
+                                        &workdir,
+                                        launch_cmd.as_deref(),
+                                        agent_slug.as_deref(),
+                                    ) {
+                                        cx.notify();
+                                    }
+                                });
+                            })
+                            .is_err();
+                        if should_break {
+                            break;
+                        }
+                    }
+                    Ok(HostEvent::AgentHookReceived {
+                        agent_slug,
+                        event_name,
+                        ..
+                    }) => {
+                        let should_notify = agent::adapter(&agent_slug).should_notify(&event_name);
+                        let in_foreground = platform_bridge::is_app_in_foreground();
+                        tracing::info!(
+                            agent = agent_slug,
+                            event_name,
+                            should_notify,
+                            in_foreground,
+                            "app received agent hook event"
+                        );
+                        if should_notify && in_foreground {
+                            platform_bridge::play_sound(SoundEffect::AgentNotification);
+                        }
+                    }
+                    Ok(HostEvent::AgentStateChanged {
+                        terminal_id, state, ..
+                    }) => {
+                        let should_break = workspace
+                            .update(cx, |ws, cx| {
+                                ws.terminal_state.update(cx, |tstate, cx| {
+                                    tstate.set_agent_state(&terminal_id, state);
+                                    cx.notify();
+                                });
+                            })
+                            .is_err();
+                        if should_break {
+                            break;
+                        }
+                    }
+                    Ok(HostEvent::TerminalAgentChanged {
+                        terminal_id,
+                        agent_slug,
+                    }) => {
+                        let should_break = workspace
+                            .update(cx, |ws, cx| {
+                                ws.terminal_state.update(cx, |tstate, cx| {
+                                    tstate.set_agent_slug(&terminal_id, agent_slug);
+                                    cx.notify();
+                                });
+                            })
+                            .is_err();
+                        if should_break {
+                            break;
+                        }
+                    }
+                    Ok(HostEvent::WebViewRequested { url }) => {
+                        let should_break = workspace
+                            .update(cx, |ws, cx| {
+                                if let Some(title) =
+                                    crate::web_tunnel::open_url(ws.session_handle().clone(), &url)
+                                {
+                                    ws.workspace_state.update(cx, |state, cx| {
+                                        state.record_web_tunnel(&url, &title, cx);
+                                    });
+                                }
+                            })
+                            .is_err();
+                        if should_break {
+                            break;
+                        }
+                    }
+                    Ok(_) => {}
+                    Err(broadcast::error::RecvError::Lagged(skipped)) => {
+                        tracing::warn!("workspace host event listener lagged by {}", skipped);
+                    }
+                    Err(broadcast::error::RecvError::Closed) => break,
+                }
+            }
+        });
+
+        // QUIC close/idle can lag after suspension, so foreground resume probes
+        // liveness at the application level rather than trusting the phase.
+        let mut foreground_resume_rx = platform_bridge::subscribe_foreground_state();
+        let foreground_resume_listener = cx.spawn_in(window, async move |ws, cx| {
+            loop {
+                match foreground_resume_rx.recv().await {
+                    Ok(in_foreground) => {
+                        if !in_foreground {
+                            continue;
+                        }
+
+                        let (phase, handle, connection_id, user_disconnect) =
+                            match ws.update(cx, |ws, cx| {
+                                let handle = ws.session_handle().clone();
+                                (
+                                    ws.session_state.read(cx).phase(),
+                                    handle.clone(),
+                                    handle.active_connection_id(),
+                                    handle.user_disconnect(),
+                                )
+                            }) {
+                                Ok(value) => value,
+                                Err(_) => break,
+                            };
+
+                        let action =
+                            classify_foreground_resume(&phase, connection_id, user_disconnect);
+
+                        match action {
+                            ForegroundResumeAction::ProbeLiveness => {
+                                // probe_liveness uses tokio timers — must run on Tokio.
+                                let result = Tokio::spawn_result(cx, async move {
+                                    handle.probe_liveness(FOREGROUND_LIVENESS_TIMEOUT).await
+                                })
+                                .await;
+                                match result {
+                                    Ok(rtt) => {
+                                        info!(
+                                            rtt_ms = rtt.as_millis() as u64,
+                                            "foreground liveness probe succeeded"
+                                        );
+                                    }
+                                    Err(error) => {
+                                        warn!(
+                                            error = %error,
+                                            "foreground liveness probe failed; forcing reconnect"
+                                        );
+                                        ws.update(cx, |ws, cx| {
+                                            let current_phase = ws.session_state.read(cx).phase();
+                                            if !matches!(
+                                                foreground_resume_action(&current_phase),
+                                                ForegroundResumeAction::ProbeLiveness
+                                            ) {
+                                                return;
+                                            }
+
+                                            if ws.session_handle().active_connection_id()
+                                                != connection_id
+                                            {
+                                                return;
+                                            }
+
+                                            // User may have disconnected mid-probe.
+                                            if ws.session_handle().user_disconnect() {
+                                                return;
+                                            }
+
+                                            // ProbeLiveness implies a live transport (classify
+                                            // routes the no-transport case to RestartConnection).
+                                            ws.session.request_reconnect(
+                                                ReconnectReason::AppForegrounded,
+                                            );
+                                        })
+                                        .ok();
+                                    }
+                                }
+                            }
+                            ForegroundResumeAction::RestartConnection => {
+                                ws.update(cx, |ws, cx| {
+                                    // User may have disconnected before this update ran.
+                                    if ws.session_handle().user_disconnect() {
+                                        return;
+                                    }
+                                    ws.restart_connection(true, cx);
+                                })
+                                .ok();
+                            }
+                            ForegroundResumeAction::Ignore => {}
+                        }
+                    }
+                    Err(broadcast::error::RecvError::Closed) => break,
+                    Err(broadcast::error::RecvError::Lagged(_)) => {}
+                }
+            }
+        });
+
+        // Notify host on foreground changes (toggles RPC-only vs Delta push). Bare
+        // Tokio handle, not `Tokio::spawn`: the GPUI executor pauses on background,
+        // exactly when this must fire.
+        let foreground_handle = session.handle().clone();
+        let mut foreground_rx = platform_bridge::subscribe_foreground_state();
+        let foreground_state_listener = Tokio::handle(cx).spawn(async move {
+            // Seed current state so a workspace started while backgrounded
+            // isn't pinned to the default foreground=true.
+            foreground_handle
+                .notify_app_state(platform_bridge::is_app_in_foreground())
+                .await;
+            loop {
+                match foreground_rx.recv().await {
+                    Ok(in_foreground) => {
+                        info!(in_foreground, "app foreground state changed");
+                        foreground_handle.notify_app_state(in_foreground).await;
+                    }
+                    Err(broadcast::error::RecvError::Closed) => break,
+                    Err(broadcast::error::RecvError::Lagged(_)) => {}
+                }
+            }
+        });
+
+        let mut host_info_rx = session.subscribe_host_info();
+        let host_info_listener = cx.spawn(async move |workspace, cx| {
+            loop {
+                match host_info_rx.recv().await {
+                    Ok(snapshot) => {
+                        let should_break = workspace
+                            .update(cx, |ws, cx| {
+                                ws.workspace_state.update(cx, |this, cx| {
+                                    this.update_host_info(snapshot, cx);
+                                    cx.notify();
+                                });
+                            })
+                            .is_err();
+                        if should_break {
+                            break;
+                        }
+                    }
+                    Err(broadcast::error::RecvError::Lagged(skipped)) => {
+                        tracing::warn!("workspace host info listener lagged by {}", skipped);
+                    }
+                    Err(broadcast::error::RecvError::Closed) => break,
+                }
+            }
+        });
+
+        let pending_platform_action: SharedPendingSlot<PendingWorkspaceAction> =
+            shared_pending_slot();
+        let agent_picker = cx
+            .new(|_cx| AgentPicker::new(session.handle().clone(), pending_platform_action.clone()));
+        let file_search = cx.new(|cx| FileSearchPanel::new(session.handle().clone(), cx));
+        let file_search_subscription = cx.subscribe(
+            &file_search,
+            |workspace, _panel, event: &FileSearchEvent, cx| match event {
+                FileSearchEvent::Close => workspace.close_file_search(cx),
+            },
+        );
+        let platform_action_slot = pending_platform_action.clone();
+        let pending_platform_action_task =
+            spawn_periodic_task(cx, Duration::from_millis(50), move |this, cx| {
+                if let Some(action) = platform_action_slot.take() {
+                    this.process_pending_platform_action(action, cx);
+                }
+            });
+
+        Self {
+            drawer_host,
+            drawer,
+            content,
+            workspace_state,
+            session_state,
+            terminal_state,
+            delta_state,
+            session,
+            editor,
+            gitdiff,
+            // Terminals will be created after connection is established
+            terminals: vec![],
+            persist_workspace_state: true,
+            connection_request: None,
+            seen_reconnect: false,
+            active_reconnect_reason: None,
+            latency_sampler: LatencySampler::default(),
+            _connect_listener: None,
+            _host_event_listener: Some(host_event_listener),
+            _host_info_listener: Some(host_info_listener),
+            _foreground_resume_listener: Some(foreground_resume_listener),
+            _foreground_state_listener: Some(foreground_state_listener.into()),
+            agent_picker,
+            file_search,
+            file_search_open: false,
+            file_search_prev_focus: None,
+            pending_platform_action,
+            _pending_platform_action_task: pending_platform_action_task,
+            pending_terminal_after_sync: None,
+            delta_host_reconciling: false,
+            _subscriptions: vec![
+                drawer_host_subscription,
+                workspace_state_subscription,
+                delta_state_subscription,
+                gitdiff_subscription,
+                file_search_subscription,
+                connection_banner_subscription,
+            ],
+        }
+    }
+
+    /// Start connection to remote host.
+    pub fn connect(
+        &mut self,
+        addr: iroh::EndpointAddr,
+        ticket: Option<ZedraPairingTicket>,
+        signer: Arc<dyn ClientSigner>,
+        session_id: Option<String>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        // Spawn GPUI task: reads ConnectEvents → applies to SessionState entity → cx.notify()
+        if let Some(mut event_rx) = self.session.take_event_receiver() {
+            let closed_notify = self.session.closed_notify();
+            self._connect_listener = Some(cx.spawn_in(window, async move |workspace, cx| {
+                while let Some(event) = event_rx.recv().await {
+                    let is_closed = matches!(event, ConnectEvent::ConnectionClosed);
+                    if is_closed {
+                        closed_notify.notify_waiters();
+                    }
+
+                    let sync_refresh_mode = match workspace.update(cx, |ws, cx| {
+                        if !should_apply_connect_event(
+                            &event,
+                            ws.session_handle().user_disconnect(),
+                        ) {
+                            return None;
+                        }
+
+                        let sync_refresh_mode =
+                            sync_refresh_mode_for_event(&event, &mut ws.seen_reconnect);
+                        if let ConnectEvent::ReconnectStarted { reason } = &event {
+                            ws.active_reconnect_reason = Some(reason.clone());
+                        }
+                        let is_reconnect_context = ws.seen_reconnect;
+                        let reconnect_reason = ws.active_reconnect_reason.clone();
+                        let (previous_phase, telemetry_state) =
+                            ws.session_state.update(cx, |state, cx| {
+                                let previous_phase = state.phase();
+                                state.apply_event(event.clone());
+                                let telemetry_state = state.clone();
+                                cx.notify();
+                                ws.workspace_state.update(cx, |this, cx| {
+                                    this.sync_from_session(ws.session_handle(), state, cx);
+                                });
+                                (previous_phase, telemetry_state)
+                            });
+                        record_connect_telemetry(
+                            &event,
+                            &telemetry_state,
+                            &previous_phase,
+                            is_reconnect_context,
+                            reconnect_reason.as_ref(),
+                            &mut ws.latency_sampler,
+                        );
+                        if matches!(
+                            event,
+                            ConnectEvent::ReconnectSuccess { .. }
+                                | ConnectEvent::ReconnectExhausted { .. }
+                        ) {
+                            ws.active_reconnect_reason = None;
+                        }
+                        if let ConnectEvent::SyncComplete { sync, .. } = &event {
+                            ws.seed_terminal_meta_from_sync(sync, cx);
+                            ws.workspace_state.update(cx, |state, cx| {
+                                state.set_delta_host_pubkey(sync.delta_pubkey, cx);
+                            });
+                            ws.reconcile_delta_host_binding(cx);
+                        }
+                        sync_refresh_mode
+                    }) {
+                        Ok(sync_refresh_mode) => sync_refresh_mode,
+                        Err(_) => break,
+                    };
+
+                    if let Some(sync_refresh_mode) = sync_refresh_mode {
+                        let is_initial_connect =
+                            sync_refresh_mode == SyncRefreshMode::InitialConnect;
+                        let mut client_ready = false;
+                        for _ in 0..200 {
+                            client_ready = match workspace
+                                .update(cx, |ws, _cx| ws.session_handle().has_client())
+                            {
+                                Ok(ready) => ready,
+                                Err(_) => break,
+                            };
+                            if client_ready {
+                                break;
+                            }
+                            cx.background_executor()
+                                .timer(Duration::from_millis(10))
+                                .await;
+                        }
+                        if !client_ready {
+                            warn!("session handle was not ready after SyncComplete");
+                        }
+
+                        let refresh_task = match workspace.update(cx, |ws, cx| {
+                            ws.drawer
+                                .update(cx, |drawer, cx| drawer.refresh_after_sync(cx))
+                        }) {
+                            Ok(task) => task,
+                            Err(_) => break,
+                        };
+
+                        if is_initial_connect {
+                            refresh_task.await;
+                        } else {
+                            refresh_task.detach();
+                        }
+
+                        let should_initialize = match workspace.update(cx, |ws, cx| {
+                            let session_handle = ws.session.handle().clone();
+                            let session_state = ws.session_state.clone();
+                            let workspace_state = ws.workspace_state.clone();
+                            session_state.update(cx, |state, cx| {
+                                workspace_state.update(cx, |this, cx| {
+                                    this.sync_from_session(&session_handle, state, cx);
+                                });
+                            });
+                            ws.reconcile_terminals_after_sync(cx);
+                            let should_initialize = {
+                                let state = ws.workspace_state.read(cx);
+                                should_initialize_terminals_after_sync(
+                                    sync_refresh_mode,
+                                    &state.terminal_ids,
+                                    &state.active_main_view,
+                                )
+                            };
+                            ws.workspace_state.update(cx, |this, cx| {
+                                this.emit_sync_complete(cx);
+                            });
+                            ws.content.update(cx, |c, cx| c.hide_connecting_view(cx));
+                            if !should_initialize {
+                                ws.record_current_view(cx);
+                            }
+                            should_initialize
+                        }) {
+                            Ok(should_initialize) => should_initialize,
+                            Err(_) => break,
+                        };
+
+                        if !should_initialize {
+                            continue;
+                        }
+
+                        let workspace = workspace.clone();
+                        cx.on_next_frame(move |window, cx| {
+                            let _ = workspace.update(cx, |ws, cx| {
+                                ws.initialize_workspace_terminals(window, cx);
+                            });
+                        });
+                    }
+                }
+            }));
+        }
+
+        let session_id = session_id.or_else(|| ticket.as_ref().map(|t| t.session_id.clone()));
+        let request = ConnectionRequest {
+            addr,
+            ticket,
+            signer,
+            session_id,
+        };
+        self.connection_request = Some(request.clone());
+        self.seen_reconnect = false;
+        self.delta_host_reconciling = false;
+        self.active_reconnect_reason = None;
+        self.latency_sampler.reset();
+        self.start_connection(request);
+
+        self.content.update(cx, |c, cx| c.show_connecting_view(cx));
+    }
+
+    fn start_connection(&self, request: ConnectionRequest) {
+        let session_id = request.session_id.clone();
+        self.session.connect(
+            request.addr,
+            request.ticket,
+            request.signer,
+            session_id.clone(),
+            move |_handle| {
+                info!("session {:?} connected", session_id);
+            },
+        );
+    }
+
+    /// Sync the current workspace host binding to Delta and the host daemon.
+    /// The workspace persists the host pubkey/node id, while DeltaState caches
+    /// host node ids by pubkey so later reconnects or delayed sign-in can reuse
+    /// the same host node.
+    fn reconcile_delta_host_binding(&mut self, cx: &mut Context<Self>) {
+        let (host_pubkey, host_node_id) = {
+            let state = self.workspace_state.read(cx);
+            (state.delta_host_pubkey, state.delta_host_node_id)
+        };
+        let client_info_snapshot = self.client_delta_info_snapshot(cx);
+        let Some(host_pubkey) = host_pubkey else {
+            return;
+        };
+
+        let host_node = self
+            .delta_state
+            .read(cx)
+            .host_node_for_pubkey(host_pubkey)
+            .or_else(|| host_node_id.map(crate::delta::DeltaHostNode::from_host_node_id));
+        if let Some(host_node) = host_node {
+            self.apply_delta_host_binding(host_pubkey, host_node, client_info_snapshot, cx);
+            return;
+        }
+
+        if self.delta_host_reconciling {
+            return;
+        }
+
+        let client_snapshot = self.delta_state.read(cx).snapshot();
+        let Some(client_info) = client_snapshot.current_client_info() else {
+            return;
+        };
+
+        self.delta_host_reconciling = true;
+        let snapshot = self.delta_state.read(cx).snapshot();
+        let metadata = self.delta_registration_metadata(cx);
+        let delta_state = self.delta_state.clone();
+        let host_pubkey = host_pubkey;
+
+        cx.spawn(async move |workspace, cx| {
+            let result = Tokio::spawn_result(
+                cx,
+                crate::delta::register_paired_host_node(snapshot.clone(), host_pubkey, metadata),
+            )
+            .await;
+            match result {
+                Ok((Some(result), next)) => {
+                    let applied = delta_state.update(cx, |state, cx| {
+                        // Skip stale host registration results if Delta auth state changed mid-flight.
+                        state.apply_if_current(&snapshot, next, cx)
+                    });
+                    let _ = workspace.update(cx, |ws, cx| {
+                        ws.delta_host_reconciling = false;
+                        if !applied {
+                            return;
+                        }
+
+                        ws.apply_delta_host_binding(
+                            host_pubkey,
+                            result.node.clone(),
+                            Some(client_info.clone()),
+                            cx,
+                        );
+                    });
+                }
+                Ok((None, _)) => {
+                    let _ = workspace.update(cx, |ws, _cx| {
+                        ws.delta_host_reconciling = false;
+                    });
+                }
+                Err(err) => {
+                    let _ = workspace.update(cx, |ws, _cx| {
+                        ws.delta_host_reconciling = false;
+                    });
+                    tracing::warn!("Delta host node registration failed: {err:#}");
+                }
+            }
+        })
+        .detach();
+    }
+
+    fn client_delta_info_snapshot(
+        &self,
+        cx: &mut Context<Self>,
+    ) -> Option<crate::delta::ClientDeltaInfo> {
+        self.delta_state.read(cx).snapshot().current_client_info()
+    }
+
+    fn delta_registration_metadata(&self, cx: &mut Context<Self>) -> serde_json::Value {
+        let s = &self.session_state.read(cx).snapshot;
+        serde_json::json!({
+            "hostname": s.hostname,
+            "username": s.username,
+            "workdir": s.workdir,
+            "os": s.os,
+            "arch": s.arch,
+            "os_version": s.os_version,
+            "host_version": s.host_version,
+        })
+    }
+
+    fn apply_delta_host_binding(
+        &mut self,
+        host_pubkey: [u8; 32],
+        host_node: crate::delta::DeltaHostNode,
+        client_info: Option<crate::delta::ClientDeltaInfo>,
+        cx: &mut Context<Self>,
+    ) {
+        self.workspace_state.update(cx, |state, cx| {
+            state.set_delta_host_pubkey(host_pubkey, cx);
+            state.set_delta_host_node_id(host_node.host_node_id(), cx);
+        });
+        self.delta_state.update(cx, |state, cx| {
+            state.remember_host_node(host_pubkey, host_node.clone(), cx)
+        });
+
+        match client_info {
+            Some(client_info) => {
+                self.send_client_delta_info(client_info, host_node.host_node_id(), cx);
+            }
+            None => {
+                self.clear_client_delta_info(cx);
+            }
+        }
+    }
+
+    fn send_client_delta_info(
+        &self,
+        client_info: ClientDeltaInfo,
+        host_node_id: Uuid,
+        cx: &mut Context<Self>,
+    ) {
+        self.spawn_client_delta_handoff(
+            cx,
+            "Delta client info handoff to host failed",
+            move |handle| async move {
+                handle
+                    .set_client_delta_info(
+                        client_info.delta_url,
+                        client_info.stack_id,
+                        client_info.node_id,
+                        host_node_id,
+                    )
+                    .await
+            },
+        );
+    }
+
+    fn clear_client_delta_info(&self, cx: &mut Context<Self>) {
+        self.spawn_client_delta_handoff(
+            cx,
+            "Delta client info clear failed",
+            move |handle| async move { handle.clear_client_delta_info().await },
+        );
+    }
+
+    /// Spawn a detached Delta client-info handoff to the host. Skips if the
+    /// binding state has changed since this call was scheduled, then waits up
+    /// to ~2s for the session handle to attach a client before running `op`.
+    fn spawn_client_delta_handoff<F, Fut>(
+        &self,
+        cx: &mut Context<Self>,
+        error_context: &'static str,
+        op: F,
+    ) where
+        F: FnOnce(SessionHandle) -> Fut + 'static,
+        Fut: std::future::Future<Output = anyhow::Result<()>>,
+    {
+        let delta_state = self.delta_state.clone();
+        let client_snapshot = delta_state.read(cx).snapshot();
+        let handle = self.session.handle().clone();
+
+        cx.spawn(async move |_workspace, cx| {
+            if !delta_state.read_with(cx, |state, _| {
+                state.matches_client_binding_state(&client_snapshot)
+            }) {
+                return;
+            }
+            let mut ready = false;
+            for _ in 0..200 {
+                if handle.has_client() {
+                    ready = true;
+                    break;
+                }
+                cx.background_executor()
+                    .timer(Duration::from_millis(10))
+                    .await;
+            }
+            if !ready {
+                return;
+            }
+            if let Err(err) = op(handle).await {
+                tracing::warn!("{error_context}: {err:#}");
+            }
+        })
+        .detach();
+    }
+
+    /// `reveal_detail` opens the connecting screen to show reconnect progress.
+    /// The banner refresh passes `false` so it reconnects in place.
+    pub fn restart_connection(&mut self, reveal_detail: bool, cx: &mut Context<Self>) {
+        let Some(mut request) = self.connection_request.clone() else {
+            warn!("restart connection requested without a connection request");
+            return;
+        };
+
+        // Drop the one-time pairing ticket once registration has been
+        // attempted: it is consumed host-side and resending it would be
+        // rejected. `register_attempted` (not `register_ms`) is the guard so a
+        // connection that dropped before `RegisterComplete` still clears it.
+        if self.session_state.read(cx).snapshot.register_attempted {
+            request.ticket = None;
+        }
+
+        info!("restart connection requested");
+        self.seen_reconnect = false;
+        self.delta_host_reconciling = false;
+        self.active_reconnect_reason = None;
+        self.latency_sampler.reset();
+        self.start_connection(request);
+        if reveal_detail {
+            self.content.update(cx, |c, cx| c.show_connecting_view(cx));
+        }
+        self.record_current_view(cx);
+    }
+
+    /// Restart this workspace's connection with a fresh pairing ticket
+    /// (e.g. QR rescan). Aborts any in-flight attempt, clears stale auth
+    /// material on the SessionHandle, and starts a new connect with the
+    /// new ticket. The entry stays alive across the restart.
+    pub fn restart_with_ticket(
+        &mut self,
+        addr: iroh::EndpointAddr,
+        ticket: ZedraPairingTicket,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(signer) = self.connection_request.as_ref().map(|r| r.signer.clone()) else {
+            warn!("restart_with_ticket called without a prior signer");
+            return;
+        };
+
+        // Stop the current connect loop; the new spawn will await its exit
+        // before running, so no two loops race on the same handle/event_tx.
+        self.session.abort_in_flight();
+
+        // Drop stale auth material so the new ticket drives a fresh Register/Auth.
+        let handle = self.session.handle();
+        handle.set_session_token(None);
+        handle.set_session_id(Some(ticket.session_id.clone()));
+
+        let session_id = Some(ticket.session_id.clone());
+        let request = ConnectionRequest {
+            addr,
+            ticket: Some(ticket),
+            signer,
+            session_id,
+        };
+        self.connection_request = Some(request.clone());
+        self.seen_reconnect = false;
+        self.delta_host_reconciling = false;
+        self.active_reconnect_reason = None;
+        self.latency_sampler.reset();
+        self.start_connection(request);
+        self.content.update(cx, |c, cx| c.show_connecting_view(cx));
+        self.record_current_view(cx);
+        info!("restarted workspace connection with fresh ticket");
+    }
+
+    pub fn session_handle(&self) -> &SessionHandle {
+        self.session.handle()
+    }
+
+    pub fn session(&self) -> &Session {
+        &self.session
+    }
+
+    /// Read current workspace state (cheap Arc clone).
+    pub fn workspace_state(&self, cx: &App) -> WorkspaceState {
+        self.workspace_state.read(cx).clone()
+    }
+
+    pub fn record_current_view(&self, cx: &mut Context<Self>) {
+        if self.content.read(cx).is_showing_connecting() {
+            view_telemetry::record(view_telemetry::WORKSPACE_CONNECTING);
+            return;
+        }
+
+        if let Some(screen) =
+            view_telemetry::workspace_main_view(&self.workspace_state.read(cx).active_main_view)
+        {
+            view_telemetry::record(screen);
+        }
+    }
+
+    /// Used to link between Workspace and WorkspaceState
+    pub fn endpoint_addr(&self, cx: &App) -> String {
+        self.workspace_state.read(cx).endpoint_addr.clone()
+    }
+
+    pub fn terminal_state(&self) -> Entity<TerminalState> {
+        self.terminal_state.clone()
+    }
+
+    /// Programmatically disconnect this workspace.
+    pub fn disconnect(&mut self, cx: &mut Context<Self>) {
+        self.session.disconnect();
+        self.latency_sampler.reset();
+        self.workspace_state.update(cx, |state, cx| {
+            state.mark_disconnected(cx);
+        });
+        cx.emit(WorkspaceEvent::Disconnected);
+        cx.notify();
+    }
+
+    pub fn close_transport_for_lifecycle(&mut self, reason: &'static [u8]) {
+        self.session.close_transport_for_lifecycle(reason);
+        self.latency_sampler.reset();
+    }
+
+    pub fn prepare_for_saved_removal(&mut self) {
+        self.persist_workspace_state = false;
+        self.session.disconnect();
+        self.latency_sampler.reset();
+    }
+
+    /// Queue a terminal to open as soon as the next sync completes.
+    /// If the workspace is already synced and the terminal is known, navigate immediately.
+    pub fn open_terminal_after_sync(&mut self, terminal_id: String, cx: &mut Context<Self>) {
+        let terminal_ids = self.workspace_state.read(cx).terminal_ids.clone();
+        if terminal_ids.contains(&terminal_id) {
+            self.activate_existing_terminal(terminal_id, cx);
+        } else {
+            self.pending_terminal_after_sync = Some(terminal_id);
+        }
+    }
+
+    pub fn open_terminal_from_quick_action(&mut self, id: String, cx: &mut Context<Self>) {
+        self.activate_existing_terminal(id, cx);
+    }
+
+    fn activate_existing_terminal(&mut self, id: String, cx: &mut Context<Self>) {
+        self.drawer_host.update(cx, |host, cx| host.close(cx));
+        if self.terminal_by_id(&id, cx).is_some() {
+            self.navigate_to(WorkspaceMainView::Terminal { id }, cx);
+        } else {
+            warn!("requested uninitialized terminal {}", id);
+        }
+    }
+
+    pub fn create_terminal_from_quick_action(
+        &mut self,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.handle_create_new_terminal(&CreateNewTerminal, window, cx);
+    }
+
+    pub fn create_agent_from_quick_action(&mut self, cx: &mut Context<Self>) {
+        self.agent_picker
+            .update(cx, |picker, cx| picker.trigger(cx));
+    }
+
+    pub fn open_agent_sessions_from_quick_action(&mut self, cx: &mut Context<Self>) {
+        self.navigate_to(WorkspaceMainView::AgentSessions, cx);
+    }
+
+    pub fn open_agent_manage_from_quick_action(&mut self, cx: &mut Context<Self>) {
+        self.navigate_to(WorkspaceMainView::AgentManage, cx);
+    }
+
+    pub fn close_terminal_from_quick_action(&mut self, id: String, _cx: &mut Context<Self>) {
+        self.request_terminal_delete_confirmation(id);
+    }
+
+    pub fn handle_system_back(&mut self, window: &mut Window, cx: &mut Context<Self>) -> bool {
+        if self.file_search_open {
+            self.dismiss_file_search(window, cx);
+            return true;
+        }
+
+        if self.drawer_host.read(cx).is_open() {
+            self.drawer_host
+                .update(cx, |host, cx| host.close_with_window(window, cx));
+            return true;
+        }
+
+        if self.content.read(cx).is_showing_connecting() {
+            self.content.update(cx, |content, cx| {
+                content.hide_connecting_view(cx);
+            });
+            self.record_current_view(cx);
+            return true;
+        }
+
+        self.navigate_back(cx)
+    }
+
+    // ─── Action Handlers ─────────────────────────────────────────────────────
+
+    fn handle_go_home(&mut self, _action: &GoHome, _window: &mut Window, cx: &mut Context<Self>) {
+        cx.emit(WorkspaceEvent::GoHome);
+    }
+
+    fn handle_open_quick_action(
+        &mut self,
+        _action: &OpenQuickAction,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle OpenQuickAction from workspace");
+        window.hide_soft_keyboard();
+        cx.emit(WorkspaceEvent::OpenQuickAction);
+    }
+
+    fn handle_open_file_search(
+        &mut self,
+        _action: &OpenFileSearch,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle OpenFileSearch from workspace");
+        if !self.file_search_open {
+            self.file_search_prev_focus = window.focused(cx);
+        }
+        self.file_search_open = true;
+        self.file_search
+            .update(cx, |panel, cx| panel.open(window, cx));
+        cx.notify();
+    }
+
+    /// State-only close. Used when the next focus owner is already taking over
+    /// (e.g. tapping a result opens and focuses the editor).
+    fn close_file_search(&mut self, cx: &mut Context<Self>) {
+        if !self.file_search_open {
+            return;
+        }
+        self.file_search_open = false;
+        self.file_search_prev_focus = None;
+        cx.notify();
+    }
+
+    /// Close and return focus to whatever held it before the overlay opened, so
+    /// workspace action dispatch (e.g. reopening search) keeps working.
+    fn dismiss_file_search(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let prev = self.file_search_prev_focus.take();
+        window.hide_soft_keyboard();
+        self.close_file_search(cx);
+        if let Some(handle) = prev {
+            window.focus(&handle, cx);
+        }
+    }
+
+    fn handle_request_disconnect(
+        &mut self,
+        _action: &RequestDisconnect,
+        window: &mut Window,
+        _cx: &mut Context<Self>,
+    ) {
+        info!("handle RequestDisconnect from workspace");
+        window.hide_soft_keyboard();
+
+        let pending_platform_action = self.pending_platform_action.clone();
+        platform_bridge::show_alert(
+            "Disconnect this session?",
+            "",
+            vec![
+                AlertButton::destructive("Disconnect"),
+                AlertButton::cancel("Cancel"),
+            ],
+            move |button_index| {
+                if button_index == 0 {
+                    pending_platform_action.set(PendingWorkspaceAction::DisconnectSession);
+                }
+            },
+        );
+    }
+
+    fn handle_toggle_drawer(
+        &mut self,
+        _action: &ToggleDrawer,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle ToggleDrawer from workspace");
+        let is_open = self.drawer_host.read(cx).is_open();
+        self.drawer_host.update(cx, |host, cx| {
+            if is_open {
+                host.close_with_window(&mut *window, cx);
+            } else {
+                host.open_with_window(&mut *window, cx);
+            }
+        });
+    }
+
+    fn handle_open_drawer(
+        &mut self,
+        _action: &OpenDrawer,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle OpenDrawer from workspace");
+        self.drawer_host
+            .update(cx, |host, cx| host.open_with_window(window, cx));
+    }
+
+    fn handle_close_drawer(
+        &mut self,
+        _action: &CloseDrawer,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle CloseDrawer from workspace");
+        self.drawer_host
+            .update(cx, |host, cx| host.close_with_window(&mut *window, cx));
+    }
+
+    fn handle_show_connecting(
+        &mut self,
+        _action: &ShowConnecting,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle ShowConnecting from workspace");
+        self.reveal_connecting_view(window, cx);
+    }
+
+    pub(crate) fn reveal_connecting_view(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        self.drawer_host
+            .update(cx, |host, cx| host.close_with_window(window, cx));
+        self.content.update(cx, |c, cx| c.show_connecting_view(cx));
+        self.record_current_view(cx);
+    }
+
+    fn handle_hide_connecting(
+        &mut self,
+        _action: &HideConnecting,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle HideConnecting from workspace");
+        window.hide_soft_keyboard();
+        self.content.update(cx, |c, cx| c.hide_connecting_view(cx));
+        self.record_current_view(cx);
+    }
+
+    fn handle_restart_connection(
+        &mut self,
+        _action: &RestartConnection,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle RestartConnection from workspace");
+        window.hide_soft_keyboard();
+        self.restart_connection(true, cx);
+    }
+
+    /// Banner taps arrive as entity events (not dispatched actions) so they work
+    /// regardless of where focus currently sits.
+    fn handle_banner_event(
+        &mut self,
+        _banner: Entity<ConnectionBanner>,
+        event: &BannerEvent,
+        cx: &mut Context<Self>,
+    ) {
+        match event {
+            BannerEvent::OpenDetail => {
+                self.content.update(cx, |c, cx| c.show_connecting_view(cx));
+                self.record_current_view(cx);
+            }
+            BannerEvent::Refresh => self.restart_connection(false, cx),
+        }
+    }
+
+    fn handle_open_file(&mut self, action: &OpenFile, window: &mut Window, cx: &mut Context<Self>) {
+        info!("handle OpenFile from workspace");
+        window.clear_read_only_selection_cache();
+        self.drawer_host
+            .update(cx, |host, cx| host.close_with_window(&mut *window, cx));
+
+        let path = action.path.clone();
+        self.open_file_in_editor(path, cx);
+    }
+
+    fn open_file_in_editor(&mut self, path: String, cx: &mut Context<Self>) {
+        self.navigate_to(WorkspaceMainView::File { path }, cx);
+    }
+
+    fn handle_reveal_in_file_explorer(
+        &mut self,
+        action: &RevealInFileExplorer,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle RevealInFileExplorer from workspace");
+        self.drawer.update(cx, |drawer, cx| {
+            drawer.reveal_path(action.path.clone(), window, cx)
+        });
+    }
+
+    /// Forward navigation: push route onto the nav stack and apply the view.
+    fn navigate_to(&mut self, route: WorkspaceMainView, cx: &mut Context<Self>) {
+        // Guard: entity must exist before mutating state to keep stack ↔ active_main_view in sync.
+        if let WorkspaceMainView::Terminal { ref id } = route {
+            if self.terminal_by_id(id, cx).is_none() {
+                warn!(
+                    terminal_id = id,
+                    "navigate_to: terminal entity missing, skipping"
+                );
+                return;
+            }
+        }
+        let prev_terminal_id = self.workspace_state.read(cx).active_terminal_id.clone();
+        self.workspace_state.update(cx, |state, cx| {
+            state.navigate(route.clone(), cx);
+        });
+        self.apply_route(route, prev_terminal_id, cx);
+    }
+
+    fn replace_current_route(&mut self, route: WorkspaceMainView, cx: &mut Context<Self>) {
+        let prev_terminal_id = self.workspace_state.read(cx).active_terminal_id.clone();
+        self.workspace_state.update(cx, |state, cx| {
+            state.replace_current_route(route.clone(), cx);
+        });
+        self.apply_route(route, prev_terminal_id, cx);
+    }
+
+    fn remove_terminal_route(&mut self, id: &str, cx: &mut Context<Self>) {
+        self.workspace_state
+            .update(cx, |state, cx| state.remove_terminal_route(id, cx));
+    }
+
+    fn active_route_is_pending_terminal(&self, cx: &App) -> bool {
+        self.workspace_state.read(cx).active_main_view_terminal_id() == Some(TERMINAL_PENDING_ID)
+    }
+
+    /// Back navigation: pop the nav stack and apply the revealed route. Returns false if
+    /// already at the bottom of the stack.
+    fn navigate_back(&mut self, cx: &mut Context<Self>) -> bool {
+        let prev_terminal_id = self.workspace_state.read(cx).active_terminal_id.clone();
+        let Some(route) = self
+            .workspace_state
+            .update(cx, |state, cx| state.go_back(cx))
+        else {
+            return false;
+        };
+        self.apply_route(route, prev_terminal_id, cx);
+        true
+    }
+
+    /// Apply view effects for the given route. State (nav stack + active_main_view +
+    /// active_terminal_id) must already be set before calling this. `prev_terminal_id` is
+    /// the active_terminal_id captured before the state update, used to deactivate the
+    /// previous terminal when switching.
+    fn apply_route(
+        &mut self,
+        route: WorkspaceMainView,
+        prev_terminal_id: Option<String>,
+        cx: &mut Context<Self>,
+    ) {
+        match route {
+            WorkspaceMainView::Default => {
+                self.content.update(cx, |c, cx| {
+                    c.clear_subtitle(cx);
+                    c.set_workspace_start_view(cx);
+                    c.hide_connecting_view(cx);
+                });
+                view_telemetry::record(view_telemetry::WORKSPACE_START);
+            }
+            WorkspaceMainView::File { path } => {
+                self.editor.update(cx, |e, cx| {
+                    e.open_file(path.clone(), cx);
+                });
+                let editor = self.editor.clone();
+                let subtitle = path.clone();
+                self.content.update(cx, move |c, cx| {
+                    c.set_file_subtitle(subtitle.clone(), cx);
+                    c.set_main_view(editor.into(), cx);
+                    c.hide_connecting_view(cx);
+                });
+                view_telemetry::record(view_telemetry::workspace_file(&path));
+            }
+            WorkspaceMainView::GitDiff { path, section } => {
+                let git_section = section_from_u8(section);
+                self.gitdiff.update(cx, |g, cx| {
+                    g.open_diff(path, git_section, cx);
+                });
+                let gitdiff = self.gitdiff.clone();
+                self.content.update(cx, move |c, cx| {
+                    c.set_main_view(gitdiff.into(), cx);
+                    c.hide_connecting_view(cx);
+                });
+                view_telemetry::record(view_telemetry::WORKSPACE_GIT_DIFF);
+            }
+            WorkspaceMainView::Terminal { id } => {
+                if let Some(entity) = self.terminal_by_id(&id, cx) {
+                    self.switch_terminal(id, entity, prev_terminal_id, cx);
+                } else {
+                    warn!(
+                        terminal_id = id,
+                        "navigate target terminal entity missing, falling back to default"
+                    );
+                    // navigate(Default) keeps stack.active() == active_main_view. The stale
+                    // Terminal entry (if any) will be pruned by prune_stale_terminals.
+                    self.workspace_state.update(cx, |state, cx| {
+                        state.navigate(WorkspaceMainView::Default, cx);
+                    });
+                    self.apply_route(WorkspaceMainView::Default, None, cx);
+                }
+            }
+            WorkspaceMainView::AgentSessions => {
+                let view = cx.new(|cx| AgentSessions::new(self.session.handle().clone(), cx));
+                self.content.update(cx, move |content, cx| {
+                    content.clear_subtitle(cx);
+                    content.set_main_view(view.into(), cx);
+                    content.hide_connecting_view(cx);
+                });
+                view_telemetry::record(view_telemetry::WORKSPACE_AGENT_SESSIONS);
+            }
+            WorkspaceMainView::AgentManage => {
+                let view = cx.new(|cx| {
+                    AgentManage::new(self.session.handle().clone(), self.session.clone(), cx)
+                });
+                self.content.update(cx, move |content, cx| {
+                    content.clear_subtitle(cx);
+                    content.set_main_view(view.into(), cx);
+                    content.hide_connecting_view(cx);
+                });
+                view_telemetry::record(view_telemetry::WORKSPACE_AGENT_MANAGE);
+            }
+            WorkspaceMainView::AgentDetail { slug } => {
+                let view = cx.new(|cx| {
+                    AgentDetail::new(
+                        self.session.handle().clone(),
+                        self.session.clone(),
+                        slug,
+                        self.workspace_state.clone(),
+                        cx,
+                    )
+                });
+                self.content.update(cx, move |content, cx| {
+                    content.clear_subtitle(cx);
+                    content.set_main_view(view.into(), cx);
+                    content.hide_connecting_view(cx);
+                });
+                view_telemetry::record(view_telemetry::WORKSPACE_AGENT_DETAIL);
+            }
+        }
+    }
+
+    fn handle_add_selection_to_chat(
+        &mut self,
+        _action: &AddSelectionToChat,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(selection) = self
+            .editor
+            .read(cx)
+            .selected_agent_context_range(window, cx)
+        else {
+            warn!("agent: add selection to chat missing selection");
+            return;
+        };
+
+        // Selection lives in this (main) window; the sheet path clears its own.
+        window.clear_read_only_selection_cache();
+        self.present_add_to_chat(selection, cx);
+    }
+
+    /// Present the "Add to Chat" agent-target picker for an already-resolved
+    /// selection. Shared by the main editor and the file-preview sheet (via
+    /// [`FilePreviewEvent`]); each caller clears its own window's read-only
+    /// selection before delegating here so the picker machinery lives in one
+    /// place and stays window-agnostic.
+    ///
+    /// [`FilePreviewEvent`]: crate::file_preview_view::FilePreviewEvent
+    pub(crate) fn present_add_to_chat(
+        &mut self,
+        selection: EditorSelection,
+        cx: &mut Context<Self>,
+    ) {
+        let workdir = self.workspace_state.read(cx).workdir.clone();
+        let input = agent::AddToChat {
+            rel: PathBuf::from(workspace_relative_path(&selection.path, &workdir)),
+            file: PathBuf::from(&selection.path),
+            start: selection.start,
+            end: selection.end,
+            text: selection.text,
+        };
+
+        let targets = self.add_to_chat_targets(cx);
+        if targets.is_empty() {
+            platform_bridge::show_selection(
+                "Add to Chat",
+                "No AI agent detected",
+                vec![AlertButton::cancel("OK")],
+                |_| {},
+            );
+            return;
+        }
+
+        let buttons = targets
+            .iter()
+            .enumerate()
+            .map(|(index, target)| add_to_chat_target_button(index, target))
+            .chain(std::iter::once(AlertButton::cancel("Cancel")))
+            .collect();
+        let pending_platform_action = self.pending_platform_action.clone();
+
+        platform_bridge::show_selection(
+            "Add to Chat",
+            "Choose an AI-agent terminal.",
+            buttons,
+            move |selection| {
+                let Some(index) = selection else {
+                    return;
+                };
+                let Some(target) = targets.get(index).cloned() else {
+                    return;
+                };
+
+                pending_platform_action
+                    .set(PendingWorkspaceAction::AddSelectionToChat { target, input });
+            },
+        );
+    }
+
+    fn handle_open_git_diff(
+        &mut self,
+        action: &OpenGitDiff,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle OpenGitDiff from workspace");
+        self.drawer_host
+            .update(cx, |host, cx| host.close_with_window(&mut *window, cx));
+
+        // Round-trip through section_from_u8/section_to_u8 to canonicalise the section value.
+        let section = section_to_u8(section_from_u8(action.section));
+        self.navigate_to(
+            WorkspaceMainView::GitDiff {
+                path: action.path.clone(),
+                section,
+            },
+            cx,
+        );
+    }
+
+    fn handle_git_stage(
+        &mut self,
+        action: &GitStage,
+        _window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle GitStage from workspace");
+        let handle = self.session.handle().clone();
+        let path = action.path.clone();
+        cx.spawn(async move |_workspace, _cx| {
+            if let Err(e) = handle.git_stage(&[path]).await {
+                tracing::error!("git stage failed: {}", e);
+            }
+        })
+        .detach();
+    }
+
+    fn handle_git_unstage(
+        &mut self,
+        action: &GitUnstage,
+        _window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle GitUnstage from workspace");
+        let handle = self.session.handle().clone();
+        let path = action.path.clone();
+        cx.spawn(async move |_workspace, _cx| {
+            if let Err(e) = handle.git_unstage(&[path]).await {
+                tracing::error!("git unstage failed: {}", e);
+            }
+        })
+        .detach();
+    }
+
+    fn handle_git_item_long_press(
+        &mut self,
+        action: &GitShowItemActions,
+        _window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle GitItemLongPress from workspace");
+        let path = action.path.clone();
+        let section = section_from_u8(action.section);
+        let main_action_label = match section {
+            GitFileSection::Staged => "Unstage",
+            GitFileSection::Unstaged | GitFileSection::Untracked => "Stage",
+        };
+
+        let handle = self.session.handle().clone();
+        // 'static platform callback has no executor; capture the runtime handle.
+        let runtime = Tokio::handle(cx);
+        let display_path = path.clone();
+
+        platform_bridge::show_selection(
+            "",
+            &display_path,
+            vec![
+                AlertButton::default(main_action_label),
+                AlertButton::cancel("Cancel"),
+            ],
+            move |selection| match selection {
+                Some(0) => {
+                    let h = handle.clone();
+                    let p = path.clone();
+                    match section {
+                        GitFileSection::Staged => {
+                            runtime.spawn(async move {
+                                if let Err(e) = h.git_unstage(&[p]).await {
+                                    tracing::error!("git unstage failed: {}", e);
+                                }
+                            });
+                        }
+                        _ => {
+                            runtime.spawn(async move {
+                                if let Err(e) = h.git_stage(&[p]).await {
+                                    tracing::error!("git stage failed: {}", e);
+                                }
+                            });
+                        }
+                    }
+                }
+                _ => {}
+            },
+        );
+    }
+
+    fn handle_git_commit(
+        &mut self,
+        action: &GitCommit,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle GitCommit from workspace");
+        let message = action.message.trim().to_string();
+        let paths = action.paths.clone();
+        if message.is_empty() || paths.is_empty() {
+            return;
+        }
+
+        let file_label = if paths.len() == 1 {
+            "1 staged file".to_string()
+        } else {
+            format!("{} staged files", paths.len())
+        };
+        let confirm_message = format!("Commit {file_label}?\n\n{message}");
+
+        let handle = self.session.handle().clone();
+        // 'static platform callback has no executor; capture the runtime handle.
+        let runtime = Tokio::handle(cx);
+        window.hide_soft_keyboard();
+        platform_bridge::show_alert(
+            "",
+            &confirm_message,
+            vec![
+                AlertButton::default("Commit"),
+                AlertButton::cancel("Cancel"),
+            ],
+            move |button_index| {
+                if button_index == 0 {
+                    let h = handle.clone();
+                    let m = message.clone();
+                    let p = paths.clone();
+                    runtime.spawn(async move {
+                        match h.git_commit(&m, &p).await {
+                            Ok(_) => {
+                                tracing::info!("git commit succeeded");
+                            }
+                            Err(e) => {
+                                tracing::error!("git commit failed: {}", e);
+                            }
+                        }
+                    });
+                }
+            },
+        );
+    }
+
+    fn handle_create_new_terminal(
+        &mut self,
+        _action: &CreateNewTerminal,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.spawn_terminal("user_action", None, None, None, window, cx);
+    }
+
+    fn handle_create_agent(
+        &mut self,
+        _action: &CreateAgent,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle CreateAgent from workspace");
+        self.drawer_host
+            .update(cx, |host, cx| host.close_with_window(&mut *window, cx));
+        self.agent_picker
+            .update(cx, |picker, cx| picker.trigger(cx));
+    }
+
+    fn handle_spawn_agent_terminal(
+        &mut self,
+        action: &SpawnAgentTerminal,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.spawn_terminal(
+            "create_agent",
+            Some(action.launch_cmd.clone()),
+            Some(action.initial_title.clone()),
+            Some(action.agent_slug.clone()),
+            window,
+            cx,
+        );
+    }
+
+    fn spawn_terminal(
+        &mut self,
+        telemetry_source: &'static str,
+        launch_cmd: Option<String>,
+        initial_title: Option<String>,
+        agent_slug: Option<String>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!(?launch_cmd, "spawn_terminal");
+        self.drawer_host
+            .update(cx, |host, cx| host.close_with_window(&mut *window, cx));
+
+        let session_handle = self.session.handle().clone();
+        let initial_viewport = self.mainview_viewport(window, cx);
+        let initial_grid_size = TerminalView::compute_grid_size(window, initial_viewport);
+        let cols = initial_grid_size.columns;
+        let rows = initial_grid_size.rows;
+
+        let workspace_terminal =
+            self.create_terminal_entity(TERMINAL_PENDING_ID.to_string(), window, cx);
+        let pending_entity_id = workspace_terminal.entity_id();
+        if let Some(title) = initial_title.clone() {
+            self.terminal_state.update(cx, |state, cx| {
+                seed_pending_launch_terminal_meta(
+                    state,
+                    TERMINAL_PENDING_ID,
+                    title,
+                    launch_cmd.as_deref(),
+                    agent_slug.as_deref(),
+                );
+                cx.notify();
+            });
+            self.navigate_to(
+                WorkspaceMainView::Terminal {
+                    id: TERMINAL_PENDING_ID.to_string(),
+                },
+                cx,
+            );
+        }
+
+        let color_scheme = if crate::theme::bundle(cx).terminal.is_light() {
+            zedra_rpc::proto::TerminalColorScheme::Light
+        } else {
+            zedra_rpc::proto::TerminalColorScheme::Dark
+        };
+
+        cx.spawn(async move |workspace, cx| {
+            let launch_cmd_for_meta = launch_cmd.clone();
+            let terminal_id = match session_handle
+                .terminal_create_with_cmd(cols as u16, rows as u16, launch_cmd, Some(color_scheme))
+                .await
+            {
+                Ok(id) => id,
+                Err(e) => {
+                    tracing::error!("terminal_create failed: {}", e);
+                    let message = e.to_string();
+                    let _ = workspace.update(cx, |ws, cx| {
+                        ws.terminals.retain(|t| t.entity_id() != pending_entity_id);
+                        ws.terminal_state.update(cx, |state, cx| {
+                            state.remove(TERMINAL_PENDING_ID);
+                            cx.notify();
+                        });
+                        if ws.active_route_is_pending_terminal(cx) {
+                            ws.navigate_to(WorkspaceMainView::Default, cx);
+                        } else {
+                            ws.remove_terminal_route(TERMINAL_PENDING_ID, cx);
+                        }
+                        platform_bridge::show_alert(
+                            "Open Terminal",
+                            &message,
+                            vec![AlertButton::default("OK")],
+                            |_| {},
+                        );
+                    });
+                    return;
+                }
+            };
+
+            let _ = workspace.update(cx, |ws, cx| {
+                if let Some(title) = initial_title {
+                    ws.terminal_state.update(cx, |state, cx| {
+                        seed_pending_launch_terminal_meta(
+                            state,
+                            &terminal_id,
+                            title,
+                            launch_cmd_for_meta.as_deref(),
+                            agent_slug.as_deref(),
+                        );
+                        state.remove(TERMINAL_PENDING_ID);
+                        cx.notify();
+                    });
+                }
+                workspace_terminal.update(cx, |terminal, cx| {
+                    terminal.set_terminal_id(terminal_id.clone(), cx);
+                });
+
+                ws.workspace_state.update(cx, |_state, cx| {
+                    cx.emit(WorkspaceStateEvent::TerminalCreated {
+                        id: terminal_id.clone(),
+                    });
+                });
+
+                if ws.active_route_is_pending_terminal(cx) {
+                    ws.replace_current_route(WorkspaceMainView::Terminal { id: terminal_id }, cx);
+                } else {
+                    ws.remove_terminal_route(TERMINAL_PENDING_ID, cx);
+                    ws.navigate_to(WorkspaceMainView::Terminal { id: terminal_id }, cx);
+                }
+                let terminal_count = ws.workspace_state.read(cx).terminal_ids.len();
+                zedra_telemetry::send(zedra_telemetry::Event::TerminalOpened {
+                    source: telemetry_source,
+                    terminal_count,
+                });
+            });
+        })
+        .detach();
+    }
+
+    fn handle_navigate_back(
+        &mut self,
+        _action: &NavigateBack,
+        _window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.navigate_back(cx);
+    }
+
+    fn handle_open_agent_sessions(
+        &mut self,
+        _action: &OpenAgentSessions,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle OpenAgentSessions from workspace");
+        self.drawer_host
+            .update(cx, |host, cx| host.close_with_window(&mut *window, cx));
+        self.navigate_to(WorkspaceMainView::AgentSessions, cx);
+    }
+
+    fn handle_open_agent_manage(
+        &mut self,
+        _action: &OpenAgentManage,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle OpenAgentManage from workspace");
+        self.drawer_host
+            .update(cx, |host, cx| host.close_with_window(&mut *window, cx));
+        self.navigate_to(WorkspaceMainView::AgentManage, cx);
+    }
+
+    fn handle_open_agent_detail(
+        &mut self,
+        action: &OpenAgentDetail,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!(agent = action.slug, "handle OpenAgentDetail from workspace");
+        self.drawer_host
+            .update(cx, |host, cx| host.close_with_window(&mut *window, cx));
+        self.navigate_to(
+            WorkspaceMainView::AgentDetail {
+                slug: action.slug.clone(),
+            },
+            cx,
+        );
+    }
+
+    fn handle_resume_agent_session(
+        &mut self,
+        action: &ResumeAgentSession,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!(
+            agent = action.slug,
+            session_id = %action.session_id,
+            "handle ResumeAgentSession from workspace"
+        );
+        self.resume_agent_session(action.slug.clone(), action.session_id.clone(), window, cx);
+    }
+
+    fn resume_agent_session(
+        &mut self,
+        slug: String,
+        session_id: String,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let session_handle = self.session.handle().clone();
+        let initial_viewport = self.mainview_viewport(window, cx);
+        let initial_grid_size = TerminalView::compute_grid_size(window, initial_viewport);
+        let cols = initial_grid_size.columns;
+        let rows = initial_grid_size.rows;
+        let workspace_terminal =
+            self.create_terminal_entity(TERMINAL_PENDING_ID.to_string(), window, cx);
+        let pending_entity_id = workspace_terminal.entity_id();
+        let pending_title = format!("Resuming {}...", agent::name(&slug));
+        self.terminal_state.update(cx, |state, cx| {
+            seed_pending_launch_terminal_meta(
+                state,
+                TERMINAL_PENDING_ID,
+                pending_title.clone(),
+                None,
+                Some(&slug),
+            );
+            cx.notify();
+        });
+        self.navigate_to(
+            WorkspaceMainView::Terminal {
+                id: TERMINAL_PENDING_ID.to_string(),
+            },
+            cx,
+        );
+
+        cx.spawn(async move |workspace, cx| {
+            let terminal_id = match session_handle
+                .agent_resume_session(slug.clone(), session_id, cols as u16, rows as u16)
+                .await
+            {
+                Ok(id) => id,
+                Err(e) => {
+                    tracing::error!(agent = slug, "agent session resume failed: {}", e);
+                    let _ = workspace.update(cx, |ws, cx| {
+                        ws.terminals.retain(|t| t.entity_id() != pending_entity_id);
+                        ws.terminal_state.update(cx, |state, cx| {
+                            state.remove(TERMINAL_PENDING_ID);
+                            cx.notify();
+                        });
+                        if ws.active_route_is_pending_terminal(cx) {
+                            ws.navigate_to(WorkspaceMainView::Default, cx);
+                        } else {
+                            ws.remove_terminal_route(TERMINAL_PENDING_ID, cx);
+                        }
+                        platform_bridge::show_alert(
+                            "Resume Agent",
+                            "Failed to resume the agent session.",
+                            vec![AlertButton::default("OK")],
+                            |_| {},
+                        );
+                    });
+                    return;
+                }
+            };
+
+            let _ = workspace.update(cx, |ws, cx| {
+                ws.terminal_state.update(cx, |state, cx| {
+                    seed_pending_launch_terminal_meta(
+                        state,
+                        &terminal_id,
+                        pending_title,
+                        None,
+                        Some(&slug),
+                    );
+                    state.remove(TERMINAL_PENDING_ID);
+                    cx.notify();
+                });
+                workspace_terminal.update(cx, |terminal, cx| {
+                    terminal.set_terminal_id(terminal_id.clone(), cx);
+                });
+                ws.workspace_state.update(cx, |_state, cx| {
+                    cx.emit(WorkspaceStateEvent::TerminalCreated {
+                        id: terminal_id.clone(),
+                    });
+                });
+                if ws.active_route_is_pending_terminal(cx) {
+                    ws.replace_current_route(WorkspaceMainView::Terminal { id: terminal_id }, cx);
+                } else {
+                    ws.remove_terminal_route(TERMINAL_PENDING_ID, cx);
+                    ws.navigate_to(WorkspaceMainView::Terminal { id: terminal_id }, cx);
+                }
+                let terminal_count = ws.workspace_state.read(cx).terminal_ids.len();
+                zedra_telemetry::send(zedra_telemetry::Event::TerminalOpened {
+                    source: "resume_agent",
+                    terminal_count,
+                });
+            });
+        })
+        .detach();
+    }
+
+    fn handle_open_terminal(
+        &mut self,
+        action: &OpenTerminal,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        info!("handle OpenTerminal from workspace");
+        self.drawer_host
+            .update(cx, |host, cx| host.close_with_window(&mut *window, cx));
+
+        let id = &action.id;
+        if self.terminal_by_id(id, cx).is_none() {
+            info!("terminal not yet tracked locally, creating view for {}", id);
+            self.create_terminal_entity(id.clone(), window, cx);
+        }
+        self.navigate_to(WorkspaceMainView::Terminal { id: id.clone() }, cx);
+    }
+
+    fn handle_close_terminal(
+        &mut self,
+        action: &CloseTerminal,
+        window: &mut Window,
+        _cx: &mut Context<Self>,
+    ) {
+        info!("handle CloseTerminal from workspace");
+        window.hide_soft_keyboard();
+
+        self.request_terminal_delete_confirmation(action.id.clone());
+    }
+
+    /// Terminal-specific view effects: deactivate the previous terminal and swap the content
+    /// view. All state (nav stack, active_main_view, active_terminal_id, TerminalOpened event)
+    /// is owned by state.navigate / state.go_back before this is called.
+    fn switch_terminal(
+        &mut self,
+        id: String,
+        entity: Entity<WorkspaceTerminal>,
+        prev_terminal_id: Option<String>,
+        cx: &mut Context<Self>,
+    ) {
+        if prev_terminal_id.as_deref() != Some(id.as_str()) {
+            if let Some(prev) = prev_terminal_id.and_then(|pid| self.terminal_by_id(&pid, cx)) {
+                prev.update(cx, |t, cx| t.deactivate(cx));
+            }
+        }
+        self.content.update(cx, |c, cx| {
+            c.set_terminal_subtitle(id, cx);
+            c.set_main_view(entity.into(), cx);
+            c.hide_connecting_view(cx);
+        });
+        view_telemetry::record(view_telemetry::WORKSPACE_TERMINAL);
+    }
+
+    fn close_terminal_by_id(&mut self, id: String, cx: &mut Context<Self>) {
+        let terminal_ids_before_close = self.workspace_state.read(cx).terminal_ids.clone();
+        let active_terminal_id = self.workspace_state.read(cx).active_terminal_id.clone();
+        let was_active_terminal = active_terminal_id.as_deref() == Some(id.as_str());
+        let active_main_terminal_id = self
+            .workspace_state
+            .read(cx)
+            .active_main_view
+            .terminal_id()
+            .map(ToOwned::to_owned);
+        let was_active_main_terminal = active_main_terminal_id.as_deref() == Some(id.as_str());
+        let replacement_terminal_id = was_active_main_terminal
+            .then(|| replacement_terminal_id_after_close(&id, &terminal_ids_before_close))
+            .flatten();
+        let has_replacement_terminal = replacement_terminal_id.is_some();
+
+        if let Some(terminal) = self.terminal_by_id(&id, cx) {
+            terminal.update(cx, |terminal, cx| {
+                terminal.deactivate(cx);
+            });
+        }
+
+        self.terminals.retain(|t| t.read(cx).terminal_id() != id);
+        self.session.handle().remove_terminal(&id);
+
+        self.workspace_state.update(cx, |state, cx| {
+            state.terminal_ids = terminal_ids_after_close(&id, &state.terminal_ids);
+            state
+                .main_view_stack
+                .prune_stale_terminals(&state.terminal_ids);
+            if was_active_terminal || state.terminal_ids.is_empty() {
+                state.active_terminal_id = None;
+            }
+            if was_active_main_terminal && !has_replacement_terminal {
+                state.reset_to_default(cx);
+            }
+            cx.notify();
+        });
+
+        if let Some(replacement_id) = replacement_terminal_id {
+            self.navigate_to(WorkspaceMainView::Terminal { id: replacement_id }, cx);
+        } else if was_active_main_terminal {
+            self.apply_route(WorkspaceMainView::Default, None, cx);
+        }
+
+        let remaining = self.workspace_state.read(cx).terminal_ids.len();
+        zedra_telemetry::send(zedra_telemetry::Event::TerminalClosed { remaining });
+
+        let handle = self.session.handle().clone();
+        cx.spawn(async move |_workspace, _cx| {
+            if let Err(e) = handle.terminal_close(&id).await {
+                tracing::error!("terminal_close failed: {}", e);
+            }
+        })
+        .detach();
+    }
+
+    fn reconcile_terminals_after_sync(&mut self, cx: &mut Context<Self>) {
+        let terminal_ids = self.workspace_state.read(cx).terminal_ids.clone();
+        self.terminals.retain(|terminal| {
+            let id = terminal.read(cx).terminal_id().to_string();
+            should_keep_terminal_entity(&id, &terminal_ids)
+        });
+
+        let active_terminal_id = self.workspace_state.read(cx).active_terminal_id.clone();
+        let active_terminal_is_stale =
+            active_terminal_is_stale_after_sync(active_terminal_id.as_deref(), &terminal_ids);
+        let active_main_terminal_id = self
+            .workspace_state
+            .read(cx)
+            .active_main_view
+            .terminal_id()
+            .map(ToOwned::to_owned);
+        let active_main_terminal_is_stale =
+            active_terminal_is_stale_after_sync(active_main_terminal_id.as_deref(), &terminal_ids);
+
+        if active_terminal_is_stale || active_main_terminal_is_stale {
+            self.workspace_state.update(cx, |state, cx| {
+                if active_terminal_is_stale {
+                    state.active_terminal_id = None;
+                }
+                if active_main_terminal_is_stale {
+                    state
+                        .main_view_stack
+                        .prune_stale_terminals(&state.terminal_ids);
+                    state.navigate(WorkspaceMainView::Default, cx);
+                }
+                cx.notify();
+            });
+        }
+
+        if active_main_terminal_is_stale {
+            self.apply_route(WorkspaceMainView::Default, None, cx);
+        }
+    }
+
+    fn seed_terminal_meta_from_sync(&mut self, sync: &SyncSessionResult, cx: &mut Context<Self>) {
+        if sync.terminals.is_empty() {
+            return;
+        }
+
+        self.terminal_state.update(cx, |state, cx| {
+            for terminal in &sync.terminals {
+                state.seed_host_meta(terminal);
+            }
+            cx.notify();
+        });
+    }
+
+    fn process_pending_platform_action(
+        &mut self,
+        action: PendingWorkspaceAction,
+        cx: &mut Context<Self>,
+    ) {
+        match action {
+            PendingWorkspaceAction::DisconnectSession => self.disconnect(cx),
+            PendingWorkspaceAction::DeleteTerminal { id } => self.close_terminal_by_id(id, cx),
+            PendingWorkspaceAction::AddSelectionToChat { target, input } => {
+                self.activate_existing_terminal(target.tid.clone(), cx);
+                self.schedule_add_to_chat_after_activation(target, input, cx);
+                platform_bridge::dismiss_custom_sheet();
+            }
+            PendingWorkspaceAction::SpawnAgentTerminal {
+                launch_cmd,
+                initial_title,
+                agent_slug,
+            } => {
+                cx.spawn(async move |this, cx| {
+                    let _ = this.update_in(cx, |workspace, window, cx| {
+                        workspace.spawn_terminal(
+                            "create_agent",
+                            Some(launch_cmd),
+                            Some(initial_title),
+                            Some(agent_slug),
+                            window,
+                            cx,
+                        );
+                    });
+                })
+                .detach();
+            }
+        }
+    }
+
+    fn schedule_add_to_chat_after_activation(
+        &self,
+        target: AddToChatTarget,
+        input: agent::AddToChat,
+        cx: &mut Context<Self>,
+    ) {
+        cx.spawn(async move |_workspace, cx| {
+            // Let the terminal activation paint before the selected text is pasted.
+            cx.background_executor().timer(ADD_TO_CHAT_SEND_DELAY).await;
+
+            let slug = target.slug.clone();
+            let mut adapter = agent::adapter(&slug);
+            let mut term = AgentTerminalTermCtx {
+                tid: target.tid,
+                cwd: target.cwd.map(PathBuf::from),
+                input_tx: target.input_tx,
+            };
+            let mut app = WorkspaceAgentApp;
+
+            if let Err(error) = adapter.add_to_chat(input, &mut term, &mut app) {
+                warn!(agent = slug, error = %error, "agent: add selection to chat failed");
+            }
+        })
+        .detach();
+    }
+
+    fn request_terminal_delete_confirmation(&self, terminal_id: String) {
+        let pending_platform_action = self.pending_platform_action.clone();
+        platform_bridge::show_alert(
+            "Delete this terminal?",
+            "",
+            vec![
+                AlertButton::destructive("Delete"),
+                AlertButton::cancel("Cancel"),
+            ],
+            move |button_index| {
+                if button_index == 0 {
+                    pending_platform_action.set(PendingWorkspaceAction::DeleteTerminal {
+                        id: terminal_id.clone(),
+                    });
+                }
+            },
+        );
+    }
+
+    /// Create a new terminal entity and add it to the terminals vec.
+    fn create_terminal_entity(
+        &mut self,
+        id: String,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Entity<WorkspaceTerminal> {
+        let initial_viewport = self.mainview_viewport(window, cx);
+        let entity = cx.new(|cx| {
+            WorkspaceTerminal::new(
+                id,
+                self.workspace_state.clone(),
+                self.terminal_state.clone(),
+                self.session.handle().clone(),
+                window,
+                initial_viewport,
+                cx,
+            )
+        });
+        self.terminals.push(entity.clone());
+        entity
+    }
+
+    fn terminal_by_id(
+        &self,
+        id: &str,
+        cx: &mut Context<Self>,
+    ) -> Option<Entity<WorkspaceTerminal>> {
+        self.terminals
+            .iter()
+            .find(|t| t.read(cx).terminal_id() == id)
+            .cloned()
+    }
+
+    fn add_to_chat_targets(&self, cx: &mut Context<Self>) -> Vec<AddToChatTarget> {
+        self.workspace_state
+            .read(cx)
+            .terminal_ids
+            .clone()
+            .into_iter()
+            .filter(|terminal_id| terminal_id != TERMINAL_PENDING_ID)
+            .filter_map(|terminal_id| {
+                let meta = self.terminal_state.read(cx).meta(&terminal_id);
+                let slug = meta.agent_slug?;
+
+                let terminal = self.terminal_by_id(&terminal_id, cx)?;
+                let input_tx = terminal.read(cx).input_sender(cx)?;
+
+                Some(AddToChatTarget {
+                    tid: terminal_id,
+                    slug,
+                    title: meta.plain_title,
+                    cwd: meta.cwd,
+                    input_tx,
+                })
+            })
+            .collect()
+    }
+
+    fn mainview_viewport(&self, window: &mut Window, cx: &App) -> Size<Pixels> {
+        self.content
+            .read(cx)
+            .mainview_viewport()
+            .unwrap_or_else(|| WorkspaceContent::fallback_mainview_viewport(window))
+    }
+
+    /// Pre-create WorkspaceTerminal entities for all known IDs and open the initial terminal.
+    /// If `pending_terminal_after_sync` names a terminal in the synced list, open that one;
+    /// otherwise fall back to the first terminal or create a new one.
+    fn initialize_workspace_terminals(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let terminal_ids = self.workspace_state.read(cx).terminal_ids.clone();
+
+        for id in &terminal_ids {
+            if self.terminal_by_id(id, cx).is_none() {
+                self.create_terminal_entity(id.clone(), window, cx);
+            }
+        }
+
+        let target = self
+            .pending_terminal_after_sync
+            .take()
+            .filter(|id| terminal_ids.contains(id))
+            .or_else(|| terminal_ids.first().cloned());
+
+        if let Some(id) = target {
+            info!("auto-opening terminal on connect: {}", id);
+            self.handle_open_terminal(&OpenTerminal { id }, window, cx);
+        } else {
+            info!("no terminals on connect, showing workspace start");
+            self.workspace_state
+                .update(cx, |state, cx| state.reset_to_default(cx));
+            self.apply_route(WorkspaceMainView::Default, None, cx);
+        }
+    }
+}
+
+impl Render for Workspace {
+    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        div()
+            .id("workspace")
+            .key_context("workspace")
+            .on_action(cx.listener(Self::handle_go_home))
+            .on_action(cx.listener(Self::handle_open_quick_action))
+            .on_action(cx.listener(Self::handle_open_file_search))
+            .on_action(cx.listener(Self::handle_request_disconnect))
+            .on_action(cx.listener(Self::handle_toggle_drawer))
+            .on_action(cx.listener(Self::handle_open_drawer))
+            .on_action(cx.listener(Self::handle_close_drawer))
+            .on_action(cx.listener(Self::handle_show_connecting))
+            .on_action(cx.listener(Self::handle_hide_connecting))
+            .on_action(cx.listener(Self::handle_restart_connection))
+            .on_action(cx.listener(Self::handle_open_file))
+            .on_action(cx.listener(Self::handle_reveal_in_file_explorer))
+            .on_action(cx.listener(Self::handle_add_selection_to_chat))
+            .on_action(cx.listener(Self::handle_open_git_diff))
+            .on_action(cx.listener(Self::handle_git_stage))
+            .on_action(cx.listener(Self::handle_git_unstage))
+            .on_action(cx.listener(Self::handle_git_item_long_press))
+            .on_action(cx.listener(Self::handle_git_commit))
+            .on_action(cx.listener(Self::handle_create_new_terminal))
+            .on_action(cx.listener(Self::handle_create_agent))
+            .on_action(cx.listener(Self::handle_spawn_agent_terminal))
+            .on_action(cx.listener(Self::handle_navigate_back))
+            .on_action(cx.listener(Self::handle_open_agent_sessions))
+            .on_action(cx.listener(Self::handle_open_agent_manage))
+            .on_action(cx.listener(Self::handle_open_agent_detail))
+            .on_action(cx.listener(Self::handle_resume_agent_session))
+            .on_action(cx.listener(Self::handle_open_terminal))
+            .on_action(cx.listener(Self::handle_close_terminal))
+            .size_full()
+            .child(self.drawer_host.clone())
+            .when(self.file_search_open, |el| {
+                let panel = self.file_search.clone();
+                el.child(
+                    deferred(
+                        div()
+                            .id("file-search-overlay")
+                            .occlude()
+                            .absolute()
+                            .inset_0()
+                            .bg(theme::overlay_backdrop_with_opacity(
+                                theme::overlay_backdrop(cx),
+                                0.4,
+                            ))
+                            .on_pointer_down(cx.listener(|this, _event, window, cx| {
+                                this.dismiss_file_search(window, cx);
+                            }))
+                            .child(
+                                div()
+                                    .absolute()
+                                    .top(px(status_bar_inset() + 60.0))
+                                    .left(px(theme::SPACING_LG))
+                                    .right(px(theme::SPACING_LG))
+                                    .flex()
+                                    .justify_center()
+                                    .child(div().w_full().max_w(px(560.0)).child(panel)),
+                            ),
+                    )
+                    .with_priority(1000),
+                )
+            })
+    }
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+fn section_from_u8(v: u8) -> GitFileSection {
+    match v {
+        0 => GitFileSection::Staged,
+        1 => GitFileSection::Unstaged,
+        _ => GitFileSection::Untracked,
+    }
+}
+
+pub fn section_to_u8(section: GitFileSection) -> u8 {
+    match section {
+        GitFileSection::Staged => 0,
+        GitFileSection::Unstaged => 1,
+        GitFileSection::Untracked => 2,
+    }
+}
+
+fn workspace_relative_path(path: &str, workdir: &str) -> String {
+    let path = path.trim();
+    if path.is_empty() {
+        return String::new();
+    }
+
+    let file_path = Path::new(path);
+    if file_path.is_absolute() {
+        if !workdir.is_empty() {
+            if let Ok(relative) = file_path.strip_prefix(Path::new(workdir)) {
+                let relative = relative.to_string_lossy();
+                return if relative.is_empty() {
+                    ".".to_string()
+                } else {
+                    relative.into_owned()
+                };
+            }
+        }
+
+        return path.to_string();
+    }
+
+    let relative = path.trim_start_matches("./").trim_start_matches('/');
+    if relative.is_empty() {
+        ".".to_string()
+    } else {
+        relative.to_string()
+    }
+}
+
+fn add_to_chat_target_button(index: usize, target: &AddToChatTarget) -> AlertButton {
+    let title = add_to_chat_target_title(index, target.title.as_deref(), target.cwd.as_deref());
+    let presentation = agent::adapter(&target.slug).target_presentation(&title);
+    let button = AlertButton::default(presentation.label);
+    if let Some(image_name) = presentation.image_name {
+        button.image(image_name)
+    } else {
+        button
+    }
+}
+
+fn add_to_chat_target_title(index: usize, title: Option<&str>, cwd: Option<&str>) -> String {
+    title
+        .map(strip_ps1_prefix)
+        .map(str::trim)
+        .filter(|title| !title.is_empty())
+        .map(ToOwned::to_owned)
+        .or_else(|| {
+            cwd.and_then(|cwd| {
+                cwd.rsplit('/')
+                    .find(|part| !part.is_empty())
+                    .map(ToOwned::to_owned)
+            })
+        })
+        .unwrap_or_else(|| format!("Terminal {}", index + 1))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use zedra_rpc::proto::SyncSessionResult;
+    use zedra_session::ReconnectReason;
+
+    fn sync_complete_event() -> ConnectEvent {
+        ConnectEvent::SyncComplete {
+            sync: SyncSessionResult {
+                session_id: "session-1".into(),
+                session_token: [1; 32],
+                hostname: "host".into(),
+                workdir: "/workspace".into(),
+                username: "user".into(),
+                home_dir: Some("/home/user".into()),
+                os: Some("macos".into()),
+                arch: Some("aarch64".into()),
+                os_version: Some("26.0".into()),
+                host_version: Some("0.1.1".into()),
+                delta_pubkey: [7; 32],
+                terminals: Vec::new(),
+            },
+            sync_ms: 7,
+        }
+    }
+
+    #[::core::prelude::v1::test]
+    fn initial_sync_waits_for_drawer_refresh() {
+        let mut seen_reconnect = false;
+
+        let mode = sync_refresh_mode_for_event(&sync_complete_event(), &mut seen_reconnect);
+
+        assert_eq!(mode, Some(SyncRefreshMode::InitialConnect));
+        assert!(!seen_reconnect);
+    }
+
+    #[::core::prelude::v1::test]
+    fn reconnect_sync_refreshes_drawer_in_background() {
+        let mut seen_reconnect = false;
+
+        let mode = sync_refresh_mode_for_event(
+            &ConnectEvent::ReconnectStarted {
+                reason: ReconnectReason::ConnectionLost,
+            },
+            &mut seen_reconnect,
+        );
+
+        assert_eq!(mode, None);
+        assert!(seen_reconnect);
+
+        let mode = sync_refresh_mode_for_event(&sync_complete_event(), &mut seen_reconnect);
+
+        assert_eq!(mode, Some(SyncRefreshMode::Reconnect));
+    }
+
+    #[::core::prelude::v1::test]
+    fn foreground_resume_probes_only_established_connections() {
+        assert_eq!(
+            foreground_resume_action(&ConnectPhase::Connected),
+            ForegroundResumeAction::ProbeLiveness
+        );
+        assert_eq!(
+            foreground_resume_action(&ConnectPhase::Idle {
+                idle_since: Instant::now()
+            }),
+            ForegroundResumeAction::ProbeLiveness
+        );
+        assert_eq!(
+            foreground_resume_action(&ConnectPhase::Disconnected),
+            ForegroundResumeAction::RestartConnection
+        );
+        assert_eq!(
+            foreground_resume_action(&ConnectPhase::Failed(
+                zedra_session::ConnectError::ConnectionClosed
+            )),
+            ForegroundResumeAction::RestartConnection
+        );
+        assert_eq!(
+            foreground_resume_action(&ConnectPhase::Reconnecting {
+                attempt: 1,
+                reason: ReconnectReason::ConnectionLost,
+                next_retry_secs: 0,
+            }),
+            ForegroundResumeAction::Ignore
+        );
+        assert_eq!(
+            foreground_resume_action(&ConnectPhase::Sync),
+            ForegroundResumeAction::Ignore
+        );
+    }
+
+    #[::core::prelude::v1::test]
+    fn classify_foreground_resume_ignores_user_disconnect() {
+        // A user-disconnected workspace must never be resurrected by a
+        // foreground event, even if the phase still reads Connected.
+        assert_eq!(
+            classify_foreground_resume(&ConnectPhase::Connected, Some(7), true),
+            ForegroundResumeAction::Ignore
+        );
+        assert_eq!(
+            classify_foreground_resume(
+                &ConnectPhase::Idle {
+                    idle_since: Instant::now()
+                },
+                None,
+                true
+            ),
+            ForegroundResumeAction::Ignore
+        );
+        assert_eq!(
+            classify_foreground_resume(&ConnectPhase::Disconnected, None, true),
+            ForegroundResumeAction::Ignore
+        );
+    }
+
+    #[::core::prelude::v1::test]
+    fn classify_foreground_resume_skips_probe_when_no_transport() {
+        // Lifecycle close took the active connection but the phase has not
+        // advanced yet; probing the stale RPC client only delays the restart.
+        assert_eq!(
+            classify_foreground_resume(&ConnectPhase::Connected, None, false),
+            ForegroundResumeAction::RestartConnection
+        );
+        assert_eq!(
+            classify_foreground_resume(
+                &ConnectPhase::Idle {
+                    idle_since: Instant::now()
+                },
+                None,
+                false,
+            ),
+            ForegroundResumeAction::RestartConnection
+        );
+        // With a live transport, the probe path is still chosen.
+        assert_eq!(
+            classify_foreground_resume(&ConnectPhase::Connected, Some(7), false),
+            ForegroundResumeAction::ProbeLiveness
+        );
+    }
+
+    #[::core::prelude::v1::test]
+    fn classify_foreground_resume_passes_through_restart_and_ignore() {
+        assert_eq!(
+            classify_foreground_resume(&ConnectPhase::Disconnected, None, false),
+            ForegroundResumeAction::RestartConnection
+        );
+        assert_eq!(
+            classify_foreground_resume(&ConnectPhase::Sync, Some(7), false),
+            ForegroundResumeAction::Ignore
+        );
+    }
+
+    #[::core::prelude::v1::test]
+    fn initial_sync_bootstraps_terminals() {
+        let terminal_ids = vec!["terminal-1".to_string()];
+
+        assert!(should_initialize_terminals_after_sync(
+            SyncRefreshMode::InitialConnect,
+            &terminal_ids,
+            &WorkspaceMainView::File {
+                path: "src/main.rs".into(),
+            },
+        ));
+    }
+
+    #[::core::prelude::v1::test]
+    fn host_created_terminal_seeds_cwd_from_workspace() {
+        let mut terminal_state = TerminalState::new();
+
+        assert!(seed_host_created_terminal_meta(
+            &mut terminal_state,
+            "terminal-1",
+            "/repo/project",
+            None,
+            None,
+        ));
+
+        assert_eq!(
+            terminal_state.meta("terminal-1").cwd.as_deref(),
+            Some("/repo/project")
+        );
+    }
+
+    #[::core::prelude::v1::test]
+    fn host_created_terminal_ignores_empty_workspace_cwd() {
+        let mut terminal_state = TerminalState::new();
+
+        assert!(!seed_host_created_terminal_meta(
+            &mut terminal_state,
+            "terminal-1",
+            "",
+            None,
+            None,
+        ));
+        assert_eq!(terminal_state.meta("terminal-1").cwd, None);
+    }
+
+    #[::core::prelude::v1::test]
+    fn host_created_terminal_seeds_shell_state_not_identity() {
+        let mut terminal_state = TerminalState::new();
+
+        assert!(seed_host_created_terminal_meta(
+            &mut terminal_state,
+            "terminal-1",
+            "/repo/project",
+            Some("claude --resume session"),
+            None,
+        ));
+
+        let meta = terminal_state.meta("terminal-1");
+        // Identity is host-resolved: without a slug in the event, none is derived
+        // locally from the launch command (it would arrive via a later change).
+        assert_eq!(meta.agent_icon, None);
+        assert_eq!(meta.agent_slug, None);
+        assert_eq!(meta.shell_state, crate::terminal_state::ShellState::Running);
+        assert_eq!(
+            meta.current_command.as_deref(),
+            Some("claude --resume session")
+        );
+    }
+
+    #[::core::prelude::v1::test]
+    fn host_created_terminal_seeds_identity_from_agent_slug() {
+        let mut terminal_state = TerminalState::new();
+
+        assert!(seed_host_created_terminal_meta(
+            &mut terminal_state,
+            "terminal-1",
+            "/repo/project",
+            Some("codex resume 019e"),
+            Some("codex"),
+        ));
+
+        let meta = terminal_state.meta("terminal-1");
+        // Host-resolved slug from the launch command shows the icon immediately,
+        // without waiting for a reconnect or OSC identity change.
+        assert_eq!(meta.agent_slug.as_deref(), Some("codex"));
+        assert_eq!(meta.agent_icon.as_deref(), Some("icons/openai.svg"));
+    }
+
+    #[::core::prelude::v1::test]
+    fn pending_launch_terminal_seeds_identity_when_slug_known() {
+        let mut terminal_state = TerminalState::new();
+
+        seed_pending_launch_terminal_meta(
+            &mut terminal_state,
+            TERMINAL_PENDING_ID,
+            "Launching Codex...".to_string(),
+            None,
+            Some("codex"),
+        );
+
+        let meta = terminal_state.meta(TERMINAL_PENDING_ID);
+        assert_eq!(meta.title.as_deref(), Some("Launching Codex..."));
+        assert_eq!(meta.agent_icon.as_deref(), Some("icons/openai.svg"));
+        assert_eq!(meta.agent_slug.as_deref(), Some("codex"));
+    }
+
+    #[::core::prelude::v1::test]
+    fn reconnect_sync_bootstraps_after_host_restart_with_no_terminals() {
+        assert!(should_initialize_terminals_after_sync(
+            SyncRefreshMode::Reconnect,
+            &[],
+            &WorkspaceMainView::File {
+                path: "src/main.rs".into(),
+            },
+        ));
+    }
+
+    #[::core::prelude::v1::test]
+    fn reconnect_sync_bootstraps_when_main_view_was_reset() {
+        let terminal_ids = vec!["terminal-1".to_string()];
+
+        assert!(should_initialize_terminals_after_sync(
+            SyncRefreshMode::Reconnect,
+            &terminal_ids,
+            &WorkspaceMainView::Default,
+        ));
+    }
+
+    #[::core::prelude::v1::test]
+    fn reconnect_sync_preserves_file_view_when_host_has_terminals() {
+        let terminal_ids = vec!["terminal-1".to_string()];
+
+        assert!(!should_initialize_terminals_after_sync(
+            SyncRefreshMode::Reconnect,
+            &terminal_ids,
+            &WorkspaceMainView::File {
+                path: "src/main.rs".into(),
+            },
+        ));
+    }
+
+    #[::core::prelude::v1::test]
+    fn reconnect_sync_reinitializes_when_host_has_no_terminals() {
+        assert!(should_initialize_terminals_after_sync(
+            SyncRefreshMode::Reconnect,
+            &[],
+            &WorkspaceMainView::AgentSessions,
+        ));
+    }
+
+    #[::core::prelude::v1::test]
+    fn user_disconnect_ignores_late_connection_closed_event() {
+        assert!(!should_apply_connect_event(
+            &ConnectEvent::ConnectionClosed,
+            true
+        ));
+        assert!(should_apply_connect_event(
+            &ConnectEvent::ConnectionClosed,
+            false
+        ));
+        assert!(!should_apply_connect_event(
+            &ConnectEvent::Connected { total_ms: 10 },
+            true
+        ));
+    }
+
+    #[::core::prelude::v1::test]
+    fn add_to_chat_target_title_prefers_stripped_terminal_title() {
+        assert_eq!(
+            add_to_chat_target_title(
+                0,
+                Some("thomas@mac:~/projects/zedra"),
+                Some("/tmp/fallback"),
+            ),
+            "~/projects/zedra"
+        );
+    }
+
+    #[::core::prelude::v1::test]
+    fn add_to_chat_target_title_falls_back_to_cwd_leaf() {
+        assert_eq!(
+            add_to_chat_target_title(1, Some(""), Some("/Users/thomasle/projects/zedra")),
+            "zedra"
+        );
+    }
+
+    #[::core::prelude::v1::test]
+    fn add_to_chat_target_title_ignores_blank_cwd_segments() {
+        assert_eq!(
+            add_to_chat_target_title(1, None, Some("/Users/thomasle/projects/zedra/")),
+            "zedra"
+        );
+    }
+
+    #[::core::prelude::v1::test]
+    fn add_to_chat_target_title_falls_back_to_terminal_number() {
+        assert_eq!(
+            add_to_chat_target_title(2, Some("   "), Some("/")),
+            "Terminal 3"
+        );
+        assert_eq!(add_to_chat_target_title(3, None, None), "Terminal 4");
+    }
+
+    #[::core::prelude::v1::test]
+    fn add_to_chat_target_button_uses_adapter_label_without_terminal_prefix() {
+        let (input_tx, _input_rx) = mpsc::channel(1);
+        let target = AddToChatTarget {
+            tid: "terminal-1".into(),
+            slug: "opencode".into(),
+            title: Some("opencode: /repo".into()),
+            cwd: Some("/repo".into()),
+            input_tx,
+        };
+
+        let button = add_to_chat_target_button(2, &target);
+
+        assert_eq!(button.label, "opencode: /repo");
+    }
+
+    #[::core::prelude::v1::test]
+    fn add_to_chat_target_button_uses_adapter_native_icon() {
+        let (input_tx, _input_rx) = mpsc::channel(1);
+        let target = AddToChatTarget {
+            tid: "terminal-1".into(),
+            slug: "codex".into(),
+            title: Some("codex".into()),
+            cwd: None,
+            input_tx,
+        };
+
+        let button = add_to_chat_target_button(0, &target);
+
+        assert_eq!(button.label, "codex");
+        assert_eq!(button.image_name.as_deref(), Some("openai"));
+    }
+
+    #[::core::prelude::v1::test]
+    fn terminal_sync_keeps_only_pending_or_synced_terminal_views() {
+        let synced = vec!["remote-active".to_string()];
+
+        assert!(should_keep_terminal_entity("remote-active", &synced));
+        assert!(should_keep_terminal_entity(TERMINAL_PENDING_ID, &synced));
+        assert!(!should_keep_terminal_entity("stale-local", &synced));
+    }
+
+    #[::core::prelude::v1::test]
+    fn terminal_sync_treats_active_terminal_missing_from_host_as_stale() {
+        let synced = vec!["remote-active".to_string()];
+
+        assert!(!active_terminal_is_stale_after_sync(None, &synced));
+        assert!(!active_terminal_is_stale_after_sync(
+            Some("remote-active"),
+            &synced
+        ));
+        assert!(active_terminal_is_stale_after_sync(
+            Some("stale-local"),
+            &synced
+        ));
+        assert!(active_terminal_is_stale_after_sync(
+            Some("stale-local"),
+            &[]
+        ));
+    }
+
+    #[::core::prelude::v1::test]
+    fn terminal_close_replacement_prefers_next_terminal() {
+        let terminal_ids = vec![
+            "terminal-a".to_string(),
+            "terminal-b".to_string(),
+            "terminal-c".to_string(),
+        ];
+
+        assert_eq!(
+            replacement_terminal_id_after_close("terminal-b", &terminal_ids),
+            Some("terminal-c".to_string())
+        );
+    }
+
+    #[::core::prelude::v1::test]
+    fn terminal_close_replacement_falls_back_to_previous_terminal() {
+        let terminal_ids = vec![
+            "terminal-a".to_string(),
+            "terminal-b".to_string(),
+            "terminal-c".to_string(),
+        ];
+
+        assert_eq!(
+            replacement_terminal_id_after_close("terminal-c", &terminal_ids),
+            Some("terminal-b".to_string())
+        );
+    }
+
+    #[::core::prelude::v1::test]
+    fn terminal_close_replacement_is_empty_for_last_terminal() {
+        let terminal_ids = vec!["terminal-a".to_string()];
+
+        assert_eq!(
+            replacement_terminal_id_after_close("terminal-a", &terminal_ids),
+            None
+        );
+        assert!(terminal_ids_after_close("terminal-a", &terminal_ids).is_empty());
+    }
+
+    #[::core::prelude::v1::test]
+    fn terminal_close_replacement_handles_stale_active_terminal() {
+        let terminal_ids = vec!["terminal-a".to_string(), "terminal-b".to_string()];
+
+        assert_eq!(
+            replacement_terminal_id_after_close("stale-terminal", &terminal_ids),
+            Some("terminal-a".to_string())
+        );
+    }
+
+    #[::core::prelude::v1::test]
+    fn workspace_relative_path_strips_workspace_prefix() {
+        assert_eq!(
+            workspace_relative_path("/workspace/src/main.rs", "/workspace"),
+            "src/main.rs"
+        );
+        assert_eq!(
+            workspace_relative_path("./README.md", "/workspace"),
+            "README.md"
+        );
+        assert_eq!(
+            workspace_relative_path("/other/README.md", "/workspace"),
+            "/other/README.md"
+        );
+    }
+}
+
+pub struct WorkspaceContent {
+    workspace_state: Entity<WorkspaceState>,
+    terminal_state: Entity<TerminalState>,
+    #[allow(dead_code)]
+    session_handle: SessionHandle,
+    subtitle: WorkspaceSubtitle,
+    main_view: AnyView,
+    focus_handle: FocusHandle,
+    show_connecting: bool,
+    connecting_view: Entity<WorkspaceConnecting>,
+    connection_banner: Entity<ConnectionBanner>,
+    mainview_bounds: Option<Bounds<Pixels>>,
+    _subscriptions: Vec<Subscription>,
+}
+
+enum WorkspaceSubtitle {
+    Default,
+    Text {
+        text: SharedString,
+    },
+    File {
+        path: SharedString,
+    },
+    Terminal {
+        id: String,
+    },
+    GitDiff {
+        filename: SharedString,
+        added: usize,
+        removed: usize,
+    },
+}
+
+fn render_subtitle(cx: &App, text: impl IntoElement) -> AnyElement {
+    div()
+        .w_full()
+        .min_w_0()
+        .truncate()
+        .text_center()
+        .text_color(rgb(theme::text_secondary(cx)))
+        .text_size(px(theme::FONT_BODY))
+        .font_weight(FontWeight::MEDIUM)
+        .child(text)
+        .into_any_element()
+}
+
+fn render_gitdiff_subtitle(
+    cx: &App,
+    filename: SharedString,
+    added: usize,
+    removed: usize,
+) -> AnyElement {
+    div()
+        .w_full()
+        .min_w_0()
+        .px_2()
+        .flex()
+        .flex_row()
+        .items_center()
+        .justify_center()
+        .gap(px(6.0))
+        .text_size(px(theme::FONT_BODY))
+        .font_weight(FontWeight::MEDIUM)
+        .child(
+            div()
+                .min_w_0()
+                .flex_shrink()
+                .truncate()
+                .text_center()
+                .text_color(rgb(theme::text_secondary(cx)))
+                .child(filename),
+        )
+        .when(added > 0, |this| {
+            this.child(
+                div()
+                    .flex_shrink_0()
+                    .text_color(rgb(theme::git_added(cx)))
+                    .child(format!("+{}", added)),
+            )
+        })
+        .when(removed > 0, |this| {
+            this.child(
+                div()
+                    .flex_shrink_0()
+                    .text_color(rgb(theme::git_removed(cx)))
+                    .child(format!("-{}", removed)),
+            )
+        })
+        .into_any_element()
+}
+
+impl WorkspaceContent {
+    pub fn new(
+        workspace_state: Entity<WorkspaceState>,
+        terminal_state: Entity<TerminalState>,
+        session_state: Entity<SessionState>,
+        session_handle: SessionHandle,
+        connection_banner: Entity<ConnectionBanner>,
+        cx: &mut Context<Self>,
+    ) -> Self {
+        let empty_view = cx.new(|_cx| Empty);
+        let connecting = cx.new(|cx| WorkspaceConnecting::new(session_state.clone(), cx));
+
+        let terminal_state_sub = cx.observe(&terminal_state, |_, _, cx| cx.notify());
+        let workspace_state_sub = cx.observe(&workspace_state, |_, _, cx| cx.notify());
+
+        Self {
+            main_view: empty_view.into(),
+            subtitle: WorkspaceSubtitle::Default,
+            focus_handle: cx.focus_handle(),
+            session_handle,
+            workspace_state,
+            terminal_state,
+            show_connecting: false,
+            connecting_view: connecting,
+            connection_banner,
+            mainview_bounds: None,
+            _subscriptions: vec![terminal_state_sub, workspace_state_sub],
+        }
+    }
+
+    pub fn set_main_view(&mut self, view: AnyView, cx: &mut Context<Self>) {
+        self.main_view = view;
+        cx.notify();
+    }
+
+    pub fn set_workspace_start_view(&mut self, cx: &mut Context<Self>) {
+        self.subtitle = WorkspaceSubtitle::Default;
+        self.main_view = cx.new(|_cx| WorkspaceStart).into();
+        cx.notify();
+    }
+
+    pub fn clear_subtitle(&mut self, cx: &mut Context<Self>) {
+        self.subtitle = WorkspaceSubtitle::Default;
+        cx.notify();
+    }
+
+    pub fn set_text_subtitle(&mut self, text: impl Into<SharedString>, cx: &mut Context<Self>) {
+        self.subtitle = WorkspaceSubtitle::Text { text: text.into() };
+        cx.notify();
+    }
+
+    pub fn set_terminal_subtitle(&mut self, id: String, cx: &mut Context<Self>) {
+        self.subtitle = WorkspaceSubtitle::Terminal { id };
+        cx.notify();
+    }
+
+    pub fn set_file_subtitle(&mut self, path: String, cx: &mut Context<Self>) {
+        let workdir = self.workspace_state.read(cx).workdir.clone();
+        self.subtitle = WorkspaceSubtitle::File {
+            path: workspace_relative_path(&path, &workdir).into(),
+        };
+        cx.notify();
+    }
+
+    pub fn set_git_diff_subtitle(
+        &mut self,
+        filename: String,
+        added: usize,
+        removed: usize,
+        cx: &mut Context<Self>,
+    ) {
+        self.subtitle = WorkspaceSubtitle::GitDiff {
+            filename: filename.into(),
+            added,
+            removed,
+        };
+        cx.notify();
+    }
+
+    pub fn show_connecting_view(&mut self, cx: &mut Context<Self>) {
+        self.show_connecting = true;
+        cx.notify();
+    }
+
+    pub fn hide_connecting_view(&mut self, cx: &mut Context<Self>) {
+        self.show_connecting = false;
+        cx.notify();
+    }
+
+    pub fn is_showing_connecting(&self) -> bool {
+        self.show_connecting
+    }
+
+    /// Show the connection detail directly. Not via `ShowConnecting` dispatch:
+    /// that action only reaches the workspace handler when a workspace element
+    /// holds focus, so it navigated only intermittently.
+    fn open_connecting_view(&mut self, cx: &mut Context<Self>) {
+        self.show_connecting_view(cx);
+    }
+
+    fn render_subtitle(&self, default_subtitle: &str, cx: &mut Context<Self>) -> AnyElement {
+        match &self.subtitle {
+            WorkspaceSubtitle::Default => render_subtitle(cx, default_subtitle.to_owned()),
+            WorkspaceSubtitle::Text { text } => render_subtitle(cx, text.clone()),
+            WorkspaceSubtitle::File { path } => render_subtitle(cx, path.clone()),
+            WorkspaceSubtitle::Terminal { id } => {
+                let meta = self.terminal_state.read(cx).meta(id);
+                let subtitle = meta
+                    .title
+                    .as_deref()
+                    .map(strip_ps1_prefix)
+                    .filter(|title| !title.is_empty())
+                    .unwrap_or(default_subtitle)
+                    .to_owned();
+                render_subtitle(cx, subtitle)
+            }
+            WorkspaceSubtitle::GitDiff {
+                filename,
+                added,
+                removed,
+            } => render_gitdiff_subtitle(cx, filename.clone(), *added, *removed),
+        }
+    }
+
+    pub fn mainview_viewport(&self) -> Option<Size<Pixels>> {
+        self.mainview_bounds.as_ref().map(|bounds| bounds.size)
+    }
+
+    pub fn fallback_mainview_viewport(window: &mut Window) -> Size<Pixels> {
+        let viewport = window.viewport_size();
+
+        Size {
+            width: viewport.width,
+            height: (viewport.height - px(status_bar_inset() + theme::HEADER_HEIGHT)).max(px(0.0)),
+        }
+    }
+
+    fn update_mainview_bounds(&mut self, bounds: Bounds<Pixels>) {
+        if self.mainview_bounds == Some(bounds) {
+            return;
+        }
+
+        self.mainview_bounds = Some(bounds);
+    }
+}
+
+impl Focusable for WorkspaceContent {
+    fn focus_handle(&self, _cx: &App) -> FocusHandle {
+        self.focus_handle.clone()
+    }
+}
+
+impl Render for WorkspaceContent {
+    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let top_inset = status_bar_inset();
+        let this = cx.weak_entity();
+        let workspace_state = self.workspace_state.read(cx);
+        let title = workspace_state.display_name().to_string();
+        let default_subtitle = workspace_state.strip_path.to_string();
+        let connect_phase = workspace_state.connect_phase.clone();
+        let mainview_measure = canvas(
+            |bounds, _, _| bounds,
+            move |_bounds, measured_bounds, _window, cx| {
+                cx.defer(move |cx| {
+                    let _ = this.update(cx, |this, _cx| {
+                        this.update_mainview_bounds(measured_bounds);
+                    });
+                });
+            },
+        )
+        .absolute()
+        .inset_0();
+
+        div()
+            .size_full()
+            .flex()
+            .flex_col()
+            .min_h_0()
+            .bg(rgb(theme::bg_primary(cx)))
+            .child(div().h(px(top_inset)))
+            .child(
+                div()
+                    .h(px(theme::HEADER_HEIGHT))
+                    .flex()
+                    .flex_row()
+                    .items_center()
+                    .border_b_1()
+                    .border_color(rgb(theme::border_subtle(cx)))
+                    .child(
+                        div()
+                            .id("drawer-toggle-btn")
+                            .w(px(theme::HEADER_BUTTON_SIZE))
+                            .h(px(theme::HEADER_BUTTON_SIZE))
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .cursor_pointer()
+                            .hit_slop(px(20.0))
+                            .on_press(cx.listener(|_this, _event, window, cx| {
+                                platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
+                                window.dispatch_action(
+                                    workspace_action::ToggleDrawer.boxed_clone(),
+                                    cx,
+                                );
+                            }))
+                            .child(
+                                svg()
+                                    .path("icons/menu.svg")
+                                    .size(px(16.0))
+                                    .text_color(rgb(theme::text_secondary(cx))),
+                            ),
+                    )
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .flex()
+                            .flex_col()
+                            .items_center()
+                            .justify_center()
+                            .child(
+                                div()
+                                    .flex()
+                                    .flex_col()
+                                    .items_center()
+                                    .w_full()
+                                    .min_w_0()
+                                    .child(
+                                        div()
+                                            .flex()
+                                            .flex_row()
+                                            .items_center()
+                                            .gap(px(5.0))
+                                            .max_w_full()
+                                            .child(
+                                                ConnectionStatusIndicator::from_phase(
+                                                    "workspace-connect-status",
+                                                    connect_phase.as_ref(),
+                                                    &theme::palette(cx),
+                                                )
+                                                .size(6.0)
+                                                .on_press(cx.listener(
+                                                    |this, _event, _window, cx| {
+                                                        this.open_connecting_view(cx);
+                                                    },
+                                                )),
+                                            )
+                                            .child(
+                                                div()
+                                                    .min_w_0()
+                                                    .truncate()
+                                                    .text_color(rgb(theme::text_muted(cx)))
+                                                    .text_size(px(theme::FONT_DETAIL))
+                                                    .child(title),
+                                            ),
+                                    ),
+                            )
+                            .child(self.render_subtitle(&default_subtitle, cx)),
+                    )
+                    .child(
+                        div()
+                            .id("quick-action-btn")
+                            .w(px(theme::HEADER_BUTTON_SIZE))
+                            .h(px(theme::HEADER_BUTTON_SIZE))
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .cursor_pointer()
+                            .hit_slop(px(20.0))
+                            .on_press(cx.listener(|_this, _event, window, cx| {
+                                platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
+                                window.dispatch_action(
+                                    workspace_action::OpenQuickAction.boxed_clone(),
+                                    cx,
+                                );
+                            }))
+                            .child(
+                                svg()
+                                    .path("icons/package.svg")
+                                    .size(px(16.0))
+                                    .text_color(rgb(theme::text_secondary(cx))),
+                            ),
+                    ),
+            )
+            .child(
+                div()
+                    .relative()
+                    .flex_1()
+                    .min_h_0()
+                    .min_w_0()
+                    .w_full()
+                    // Clip the overlaid banner at the header edge so it tucks under
+                    // the header on slide-out instead of painting over it.
+                    .overflow_hidden()
+                    .child(mainview_measure)
+                    .when_else(
+                        self.show_connecting,
+                        |d: Div| d.child(self.connecting_view.clone()),
+                        |d: Div| d.child(self.main_view.clone()),
+                    )
+                    // Overlay the connection banner on top of the main view only —
+                    // the connecting detail already conveys full connection status.
+                    .when(!self.show_connecting, |d| {
+                        d.child(self.connection_banner.clone())
+                    }),
+            )
+    }
+}

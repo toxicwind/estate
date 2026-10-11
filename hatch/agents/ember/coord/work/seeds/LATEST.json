@@ -1,0 +1,1 @@
+{"chat_hits":27,"daemon_hits":0,"digests_seen":["b4aefd29108f232f9c0d5a4b030215c1","582bcbd080daeb3f826c45ed4a83b265"],"fix_rounds":1,"fixed_count":0,"green":false,"note":"round 1: 7 spawn anomalies redispatching via vompl; 27 chat hits observed-only","spawn_hits":7,"storm_active":true,"sweep_ts":"2026-09-16T22:57:33Z","total_hits":34,"window_start":"2026-09-16T22:54:56Z"}

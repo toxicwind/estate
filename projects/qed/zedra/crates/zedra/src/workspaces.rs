@@ -1,0 +1,630 @@
+use std::sync::Arc;
+
+use gpui::*;
+use tracing::*;
+use zedra_rpc::ZedraPairingTicket;
+use zedra_session::{ConnectPhase, signer::ClientSigner};
+
+use crate::delta::DeltaState;
+use crate::pending::PendingSlot;
+use crate::platform_bridge::{self, HapticFeedback};
+use crate::workspace::{Workspace, WorkspaceEvent};
+use crate::workspace_state::WorkspaceState;
+
+static PENDING_TICKET: PendingSlot<ZedraPairingTicket> = PendingSlot::new();
+
+// (endpoint_addr, terminal_id) from a notification deeplink tap.
+static PENDING_WORKSPACE_NAV: PendingSlot<(String, Option<String>)> = PendingSlot::new();
+
+#[derive(Clone, Debug)]
+pub enum WorkspacesEvent {
+    Connected { index: usize },
+    Disconnected { index: usize },
+    StatesChanged,
+    GoHome,
+    OpenQuickAction,
+}
+
+impl EventEmitter<WorkspacesEvent> for Workspaces {}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum OpenConnectingForState {
+    ActiveEntry,
+    StartedConnect,
+    InvalidState,
+}
+
+pub struct Workspaces {
+    /// Workspace entries, one per state.
+    /// The entry is lazily loaded from the state when first opened,
+    /// and removed on disconnect.
+    entries: Vec<Entity<Workspace>>,
+    states: Vec<Entity<WorkspaceState>>,
+    active_index: Option<usize>,
+    signer: Option<Arc<dyn ClientSigner>>,
+    delta_state: Entity<DeltaState>,
+    _subscriptions: Vec<(Entity<Workspace>, Subscription)>,
+}
+
+impl Workspaces {
+    pub fn new(delta_state: Entity<DeltaState>, cx: &mut Context<Self>) -> Self {
+        let signer = load_client_signer();
+
+        let states = WorkspaceState::load()
+            .map_err(|e| error!("Failed to load saved workspace states: {e}"))
+            .map(|states| {
+                info!("Loaded {} saved workspace(s)", states.len());
+                states
+                    .into_iter()
+                    .map(|s| cx.new(|_cx| s))
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default();
+
+        let mut this = Self {
+            entries: Vec::new(),
+            states,
+            signer,
+            delta_state,
+            active_index: None,
+            _subscriptions: Vec::new(),
+        };
+        this.emit_states_changed(cx);
+        this
+    }
+
+    pub fn active(&self) -> Option<&Entity<Workspace>> {
+        self.active_index.and_then(|i| self.entries.get(i))
+    }
+
+    pub fn active_index(&self) -> Option<usize> {
+        self.active_index
+    }
+
+    pub fn active_view(&self) -> Option<AnyView> {
+        self.active().map(|e| AnyView::from(e.clone()))
+    }
+
+    pub fn workspace_by_index(&self, index: usize) -> Option<&Entity<Workspace>> {
+        self.entries.get(index)
+    }
+
+    pub fn get(&self, index: usize) -> Option<&Entity<Workspace>> {
+        self.entries.get(index)
+    }
+
+    pub fn len(&self) -> usize {
+        self.entries.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.entries.is_empty()
+    }
+
+    pub fn states(&self) -> &[Entity<WorkspaceState>] {
+        &self.states
+    }
+
+    pub fn entry_by_endpoint_addr(
+        &self,
+        endpoint_addr: &str,
+        cx: &App,
+    ) -> Option<Entity<Workspace>> {
+        self.entries
+            .iter()
+            .find(|ws| ws.read(cx).endpoint_addr(cx) == endpoint_addr)
+            .cloned()
+    }
+
+    pub fn entry_index_by_endpoint_addr(&self, endpoint_addr: &str, cx: &App) -> Option<usize> {
+        self.entries
+            .iter()
+            .position(|ws| ws.read(cx).endpoint_addr(cx) == endpoint_addr)
+    }
+
+    pub fn switch_to(&mut self, index: usize, cx: &mut Context<Self>) {
+        if index < self.entries.len() {
+            self.active_index = Some(index);
+            self.sync_active_workspace(cx);
+            cx.notify();
+        } else {
+            warn!("Index {index} out of range. Cannot switch to workspace.");
+        }
+    }
+
+    /// Mirror the active entry into the [`crate::workspace::ActiveWorkspace`]
+    /// global so detached surfaces (e.g. the file-preview sheet) can route back
+    /// to it. Call after every `active_index` change.
+    fn sync_active_workspace(&self, cx: &mut App) {
+        crate::workspace::ActiveWorkspace::set(self.active().map(Entity::downgrade), cx);
+    }
+
+    pub fn open_connecting_for_entry(
+        &mut self,
+        entry_index: usize,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        if entry_index >= self.entries.len() {
+            warn!("Index {entry_index} out of range. Cannot open connecting view.");
+            return;
+        }
+        self.switch_to(entry_index, cx);
+        let Some(workspace) = self.entries.get(entry_index).cloned() else {
+            return;
+        };
+        workspace.update(cx, |ws, cx| ws.reveal_connecting_view(window, cx));
+    }
+
+    pub fn open_connecting_for_state(
+        &mut self,
+        state_index: usize,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> OpenConnectingForState {
+        let Some(state) = self.states.get(state_index) else {
+            warn!("Index {state_index} out of range. Cannot open connecting view.");
+            return OpenConnectingForState::InvalidState;
+        };
+
+        let endpoint_addr = state.read(cx).endpoint_addr.clone();
+        if let Some(entry_index) = self.entry_index_by_endpoint_addr(&endpoint_addr, cx) {
+            self.open_connecting_for_entry(entry_index, window, cx);
+            OpenConnectingForState::ActiveEntry
+        } else {
+            self.connect_saved(state_index, window, cx);
+            OpenConnectingForState::StartedConnect
+        }
+    }
+
+    /// Connect via QR pairing ticket (new device pairing).
+    pub fn connect_ticket(
+        &mut self,
+        ticket: ZedraPairingTicket,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let addr = iroh::EndpointAddr::from(ticket.endpoint_id);
+        // Identity string goes through the shared id-only encoder; `addr` is kept for dialing.
+        let encoded_addr = match zedra_rpc::encode_endpoint_identity(ticket.endpoint_id) {
+            Ok(s) => s,
+            Err(e) => {
+                error!("Failed to encode endpoint identity: {e}");
+                return;
+            }
+        };
+
+        // Existing entry: if healthy (Connected/Idle), just switch to it.
+        // Otherwise (Failed, Disconnected, or any in-flight phase) restart
+        // with the fresh ticket so a rescan always overrides stale auth.
+        if let Some(index) = self.entry_index_by_endpoint_addr(&encoded_addr, cx) {
+            self.open_existing_entry_with_ticket(index, addr, ticket, cx);
+            return;
+        }
+
+        // Saved/registered workspace just needs to start to connect
+        if let Some(saved) = self.saved_state_by_endpoint_addr(&encoded_addr, cx) {
+            self.connect_saved_from_ticket(addr, ticket, saved, window, cx);
+            return;
+        }
+
+        self.connect_and_intialize_workspace(addr, Some(ticket), None, None, window, cx);
+    }
+
+    /// Queue a ticket for deferred connection (when window not available).
+    pub fn connect_ticket_deferred(&mut self, ticket: ZedraPairingTicket, cx: &mut Context<Self>) {
+        PENDING_TICKET.set(ticket);
+        cx.notify();
+    }
+
+    pub fn has_pending_ticket() -> bool {
+        PENDING_TICKET.has_pending()
+    }
+
+    /// Process any pending ticket. Call this when window is available.
+    pub fn process_pending_ticket(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if let Some(ticket) = PENDING_TICKET.take() {
+            self.connect_ticket(ticket, window, cx);
+        }
+    }
+
+    /// Queue a workspace navigation from a deeplink (deferred until window is ready).
+    /// `terminal_id` is optional: `None` navigates to the workspace only.
+    pub fn navigate_workspace_deferred(
+        &mut self,
+        endpoint_addr: String,
+        terminal_id: Option<String>,
+        cx: &mut Context<Self>,
+    ) {
+        PENDING_WORKSPACE_NAV.set((endpoint_addr, terminal_id));
+        cx.notify();
+    }
+
+    pub fn has_pending_workspace_nav() -> bool {
+        PENDING_WORKSPACE_NAV.has_pending()
+    }
+
+    /// Process a pending workspace nav. Call this when window is available.
+    pub fn process_pending_workspace_nav(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some((endpoint_addr, terminal_id)) = PENDING_WORKSPACE_NAV.take() else {
+            return;
+        };
+
+        // Workspace already open for this endpoint: switch to it (connecting if stale),
+        // then open the requested terminal if one was specified.
+        if let Some(index) = self.entry_index_by_endpoint_addr(&endpoint_addr, cx) {
+            self.switch_to(index, cx);
+            platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
+            cx.emit(WorkspacesEvent::Connected { index });
+
+            let Some(entry) = self.entries.get(index).cloned() else {
+                return;
+            };
+            entry.update(cx, |ws, cx| {
+                // Only restart genuinely stale entries. In-flight connecting phases
+                // are active and will resolve on their own; restarting them would
+                // tear down a connection that is mid-handshake (AGENTS.md invariant:
+                // only Failed/Disconnected are stale reconnect candidates).
+                let phase = ws.workspace_state(cx).connect_phase.clone();
+                let stale = matches!(
+                    phase,
+                    None | Some(ConnectPhase::Disconnected) | Some(ConnectPhase::Failed(_))
+                );
+                if stale {
+                    ws.restart_connection(true, cx);
+                }
+                if let Some(terminal_id) = terminal_id {
+                    ws.open_terminal_after_sync(terminal_id, cx);
+                }
+            });
+            return;
+        }
+
+        // Saved (registered) workspace: reconnect, then queue the terminal if specified.
+        let state_index = self
+            .states
+            .iter()
+            .position(|s| s.read(cx).endpoint_addr == endpoint_addr);
+        let Some(state_index) = state_index else {
+            warn!(
+                "navigate_workspace: no workspace or saved state for endpoint {:?}",
+                endpoint_addr
+            );
+            return;
+        };
+
+        self.connect_saved(state_index, window, cx);
+
+        // connect_saved can early-return without pushing an entry (bad index, decode
+        // error), so re-resolve by endpoint instead of trusting entries.last().
+        let Some(index) = self.entry_index_by_endpoint_addr(&endpoint_addr, cx) else {
+            warn!(
+                "navigate_workspace: connect_saved did not open an entry for endpoint {:?}",
+                endpoint_addr
+            );
+            return;
+        };
+        if let Some(terminal_id) = terminal_id {
+            if let Some(entry) = self.entries.get(index).cloned() {
+                entry.update(cx, |ws, cx| {
+                    ws.open_terminal_after_sync(terminal_id, cx);
+                });
+            }
+        }
+    }
+
+    /// Reconnect to a saved workspace by state index.
+    pub fn connect_saved(
+        &mut self,
+        state_index: usize,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let state = match self.states.get(state_index) {
+            Some(s) => s.clone(),
+            None => {
+                error!("Index {state_index} out of range. Cannot reconnect to saved workspace.");
+                return;
+            }
+        };
+
+        let session_id = state.read(cx).session_id.clone();
+        let endpoint_addr = state.read(cx).endpoint_addr.clone();
+        match zedra_rpc::pairing::decode_endpoint_addr(&endpoint_addr) {
+            Ok(addr) => {
+                info!("Reconnecting to workspace: {}", addr.id.fmt_short());
+                self.connect_and_intialize_workspace(
+                    addr,
+                    None,
+                    Some(session_id),
+                    Some(state.clone()),
+                    window,
+                    cx,
+                );
+            }
+            Err(e) => {
+                error!("Failed to decode endpoint addr: {e}. Removing workspace state.");
+                WorkspaceState::remove_by_endpoint_add(&endpoint_addr)
+                    .map_err(|e| error!("Failed to remove workspace state: {e}"))
+                    .ok();
+            }
+        }
+    }
+
+    fn open_existing_entry_with_ticket(
+        &mut self,
+        index: usize,
+        addr: iroh::EndpointAddr,
+        ticket: ZedraPairingTicket,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(entry) = self.entries.get(index).cloned() else {
+            return;
+        };
+
+        let phase = entry.read(cx).workspace_state(cx).connect_phase.clone();
+        let healthy = matches!(
+            phase,
+            Some(ConnectPhase::Connected) | Some(ConnectPhase::Idle { .. })
+        );
+        if healthy {
+            info!("Workspace for this endpoint already connected; switching to it.");
+        } else {
+            info!("Restarting existing workspace for endpoint with fresh ticket.");
+            entry.update(cx, |ws, cx| ws.restart_with_ticket(addr, ticket, cx));
+        }
+
+        self.activate_entry(index, cx);
+    }
+
+    fn activate_entry(&mut self, index: usize, cx: &mut Context<Self>) {
+        self.switch_to(index, cx);
+        platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
+        cx.emit(WorkspacesEvent::Connected { index });
+    }
+
+    fn saved_state_by_endpoint_addr(
+        &self,
+        endpoint_addr: &str,
+        cx: &App,
+    ) -> Option<Entity<WorkspaceState>> {
+        self.states
+            .iter()
+            .find(|state| state.read(cx).endpoint_addr == endpoint_addr)
+            .cloned()
+    }
+
+    fn connect_saved_from_ticket(
+        &mut self,
+        addr: iroh::EndpointAddr,
+        ticket: ZedraPairingTicket,
+        saved: Entity<WorkspaceState>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let session_id = saved.read(cx).session_id.clone();
+        let (ticket, session_id) = if session_id.is_empty() {
+            (Some(ticket), None)
+        } else {
+            // Saved workspaces are already registered; QR is just an endpoint hint.
+            (None, Some(session_id))
+        };
+
+        info!("Connecting to saved workspace from ticket. sid={session_id:?}");
+        self.connect_and_intialize_workspace(addr, ticket, session_id, Some(saved), window, cx);
+    }
+
+    fn connect_and_intialize_workspace(
+        &mut self,
+        addr: iroh::EndpointAddr,
+        ticket: Option<ZedraPairingTicket>,
+        session_id: Option<String>,
+        saved: Option<Entity<WorkspaceState>>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let Some(signer) = self.signer.clone() else {
+            error!("No client signer available. Cannot connect to workspace.");
+            return;
+        };
+
+        let encoded_addr = match zedra_rpc::pairing::encode_endpoint_addr(&addr) {
+            Ok(s) => s,
+            Err(e) => {
+                error!("Failed to encode endpoint address: {e}");
+                return;
+            }
+        };
+
+        let workspace_state = saved.unwrap_or_else(|| {
+            let workspace_state = cx.new(|_cx| {
+                let mut ws = WorkspaceState::default();
+                ws.endpoint_addr = encoded_addr.clone();
+                ws
+            });
+            self.states.push(workspace_state.clone());
+            self.emit_states_changed(cx);
+            workspace_state
+        });
+
+        // Create workspace entity
+        let delta_state = self.delta_state.clone();
+        let workspace =
+            cx.new(|cx| Workspace::new(workspace_state.clone(), delta_state, window, cx));
+        let sub = self.subscribe_workspace_event(&workspace, cx);
+        self._subscriptions.push((workspace.clone(), sub));
+
+        // Start connection
+        workspace.update(cx, |ws, cx| {
+            ws.connect(addr, ticket.clone(), signer, session_id.clone(), window, cx);
+        });
+
+        self.entries.push(workspace);
+        let ws_idx = self.entries.len() - 1;
+        self.active_index = Some(ws_idx);
+        self.sync_active_workspace(cx);
+
+        // TODO: this is not connected yet, it's just a signal to navigate to the workspace.
+        cx.emit(WorkspacesEvent::Connected { index: ws_idx });
+        cx.notify();
+    }
+
+    fn subscribe_workspace_event(
+        &self,
+        workspace: &Entity<Workspace>,
+        cx: &mut Context<Self>,
+    ) -> Subscription {
+        let ws_entity = workspace.clone();
+        cx.subscribe(
+            workspace,
+            move |this, _emitter, event: &WorkspaceEvent, cx| match event {
+                WorkspaceEvent::GoHome => {
+                    cx.emit(WorkspacesEvent::GoHome);
+                }
+                WorkspaceEvent::OpenQuickAction => {
+                    cx.emit(WorkspacesEvent::OpenQuickAction);
+                }
+                WorkspaceEvent::Disconnected => {
+                    let index = this.entries.iter().position(|e| *e == ws_entity);
+                    if let Some(index) = index {
+                        // Just remove the workspace entry, keep the state.
+                        this.remove_entry(index, cx);
+                    }
+                }
+            },
+        )
+    }
+
+    /// Disconnect the workspace at the given index.
+    pub fn disconnect(&mut self, entry_index: usize, cx: &mut Context<Self>) {
+        if let Some(entry) = self.entries.get(entry_index) {
+            entry.update(cx, |ws, cx| ws.disconnect(cx));
+        }
+    }
+
+    pub fn disconnect_by_endpoint_addr(&mut self, endpoint_addr: &str, cx: &mut Context<Self>) {
+        if let Some(index) = self
+            .entries
+            .iter()
+            .position(|s| s.read(cx).endpoint_addr(cx) == endpoint_addr)
+        {
+            self.disconnect(index, cx);
+        }
+    }
+
+    pub fn close_transports_for_lifecycle(
+        &mut self,
+        reason: &'static [u8],
+        cx: &mut Context<Self>,
+    ) {
+        for entry in self.entries.clone() {
+            entry.update(cx, |ws, _cx| ws.close_transport_for_lifecycle(reason));
+        }
+    }
+
+    pub fn handle_system_back(&mut self, window: &mut Window, cx: &mut Context<Self>) -> bool {
+        self.active().cloned().is_some_and(|workspace| {
+            workspace.update(cx, |ws, cx| ws.handle_system_back(window, cx))
+        })
+    }
+
+    pub fn remove_by_endpoint_addr(&mut self, endpoint_addr: &str, cx: &mut Context<Self>) {
+        if let Some(index) = self
+            .entries
+            .iter()
+            .position(|s| s.read(cx).endpoint_addr(cx) == endpoint_addr)
+        {
+            if let Some(entry) = self.entries.get(index) {
+                entry.update(cx, |ws, _cx| ws.prepare_for_saved_removal());
+            }
+            self.remove_entry(index, cx);
+        }
+
+        self.remove_saved(endpoint_addr, cx);
+    }
+
+    pub fn rename_workspace(
+        &mut self,
+        endpoint_addr: &str,
+        custom_name: Option<String>,
+        cx: &mut Context<Self>,
+    ) {
+        if let Some(state) = self
+            .states
+            .iter()
+            .find(|s| s.read(cx).endpoint_addr == endpoint_addr)
+            .cloned()
+        {
+            state.update(cx, |s, cx| s.set_custom_name(custom_name.clone(), cx));
+            // Active workspaces auto-persist via their WorkspaceStateEvent::StateChanged
+            // subscription in workspace.rs. Only upsert directly for saved-only states.
+            let is_active = self.entry_by_endpoint_addr(endpoint_addr, cx).is_some();
+            if !is_active {
+                WorkspaceState::upsert(state.read(cx).clone())
+                    .map_err(|e| error!("Failed to persist renamed workspace: {e}"))
+                    .ok();
+            }
+        }
+    }
+
+    pub fn remove_saved(&mut self, endpoint_addr: &str, cx: &mut Context<Self>) {
+        WorkspaceState::remove_by_endpoint_add(endpoint_addr)
+            .map_err(|e| error!("Failed to remove workspace state: {e}"))
+            .ok();
+        let state_index = self
+            .states
+            .iter()
+            .position(|s| s.read(cx).endpoint_addr == endpoint_addr);
+        if let Some(index) = state_index {
+            self.states.remove(index);
+        }
+        cx.notify();
+    }
+
+    fn remove_entry(&mut self, index: usize, cx: &mut Context<Self>) {
+        let removed = self.entries.remove(index);
+        self.remove_subscription_for(&removed);
+        self.active_index = if self.entries.is_empty() {
+            None
+        } else {
+            match self.active_index {
+                Some(ai) if ai == index => Some(0),
+                Some(ai) if ai > index => Some(ai - 1),
+                other => other,
+            }
+        };
+        self.sync_active_workspace(cx);
+
+        info!("Workspace disconnected; {} remaining", self.entries.len());
+        cx.emit(WorkspacesEvent::Disconnected { index });
+    }
+
+    fn remove_subscription_for(&mut self, workspace: &Entity<Workspace>) {
+        if let Some(pos) = self
+            ._subscriptions
+            .iter()
+            .position(|(e, _)| *e == *workspace)
+        {
+            drop(self._subscriptions.remove(pos));
+        }
+    }
+
+    fn emit_states_changed(&mut self, cx: &mut Context<Self>) {
+        cx.emit(WorkspacesEvent::StatesChanged);
+    }
+}
+
+/// Load the persistent client Ed25519 signing key.
+fn load_client_signer() -> Option<Arc<dyn ClientSigner>> {
+    let data_dir = platform_bridge::bridge().data_directory()?;
+    let key_path = std::path::PathBuf::from(data_dir)
+        .join("zedra")
+        .join("client.key");
+    match zedra_session::signer::FileClientSigner::load_or_generate(&key_path) {
+        Ok(signer) => Some(Arc::new(signer)),
+        Err(e) => {
+            error!("Failed to load client signing key: {}", e);
+            None
+        }
+    }
+}

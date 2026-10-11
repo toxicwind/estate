@@ -1,0 +1,117 @@
+{
+ "lane": "w2-replay-detector",
+ "ts_utc": "2026-09-16T23:10:47Z",
+ "claims": [
+  "composite-replay detector found 17 candidate turns"
+ ],
+ "evidence": {
+  "detections": [
+   {
+    "seq": 266,
+    "quoted_from_seq": 1,
+    "turn_len": 246,
+    "session": "side"
+   },
+   {
+    "seq": 536,
+    "quoted_from_seq": 513,
+    "turn_len": 6000,
+    "session": "side"
+   },
+   {
+    "seq": 538,
+    "quoted_from_seq": 513,
+    "turn_len": 6463,
+    "session": "side"
+   },
+   {
+    "seq": 868,
+    "quoted_from_seq": 692,
+    "turn_len": 2000,
+    "session": "side"
+   },
+   {
+    "seq": 1139,
+    "quoted_from_seq": 1,
+    "turn_len": 235,
+    "session": "side"
+   },
+   {
+    "seq": 1280,
+    "quoted_from_seq": 1264,
+    "turn_len": 1007,
+    "session": "side"
+   },
+   {
+    "seq": 1740,
+    "quoted_from_seq": 1717,
+    "turn_len": 2726,
+    "session": "side"
+   },
+   {
+    "seq": 399,
+    "quoted_from_seq": 389,
+    "turn_len": 6955,
+    "session": "main"
+   },
+   {
+    "seq": 486,
+    "quoted_from_seq": 454,
+    "turn_len": 1030,
+    "session": "main"
+   },
+   {
+    "seq": 526,
+    "quoted_from_seq": 454,
+    "turn_len": 1881,
+    "session": "main"
+   },
+   {
+    "seq": 624,
+    "quoted_from_seq": 228,
+    "turn_len": 217,
+    "session": "main"
+   },
+   {
+    "seq": 641,
+    "quoted_from_seq": 228,
+    "turn_len": 235,
+    "session": "main"
+   },
+   {
+    "seq": 922,
+    "quoted_from_seq": 893,
+    "turn_len": 1007,
+    "session": "main"
+   },
+   {
+    "seq": 1983,
+    "quoted_from_seq": 1979,
+    "turn_len": 12845,
+    "session": "main"
+   },
+   {
+    "seq": 2139,
+    "quoted_from_seq": 2116,
+    "turn_len": 13203,
+    "session": "main"
+   },
+   {
+    "seq": 2153,
+    "quoted_from_seq": 228,
+    "turn_len": 281,
+    "session": "main"
+   },
+   {
+    "seq": 2452,
+    "quoted_from_seq": 2215,
+    "turn_len": 2726,
+    "session": "main"
+   }
+  ],
+  "n_user_turns_scanned": "see sessions"
+ },
+ "proof_files": [
+  "brief.py"
+ ]
+}

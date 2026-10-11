@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+FORK_ROOT="$HOME/sovereign/projects/tau"
+REAL="$FORK_ROOT/packages/coding-agent/scripts/omp"
+
+if [ ! -x "$REAL" ]; then
+  echo "omp-pin: fork binary missing or not executable: $REAL" >&2
+  echo "omp-pin: refusing to fall through to any other omp on PATH." >&2
+  exit 127
+fi
+
+RESOLVED="$(realpath "$REAL")"
+case "$RESOLVED" in
+  "$FORK_ROOT"/*) : ;;
+  *) echo "omp-pin: resolved binary escapes fork root: $RESOLVED" >&2; exit 127 ;;
+esac
+
+exec "$RESOLVED" "$@"

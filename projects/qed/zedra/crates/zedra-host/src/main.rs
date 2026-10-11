@@ -1,0 +1,3271 @@
+// zedra-host: Desktop companion daemon for Zedra
+//
+// Provides an RPC daemon that Zedra (Android/iOS) connects to for remote
+// terminal, filesystem, git, and AI operations over typed irpc.
+//
+// Auth model (Phase 1): Public-key based. Clients scan a QR that contains
+// a handshake key + session_id. After first pairing their pubkey is added to
+// the session ACL. Subsequent connections use Ed25519 challenge/response
+// (no QR needed).
+
+use anyhow::{Context, Result};
+use clap::{ArgAction, CommandFactory, Parser, Subcommand};
+
+use std::io::{IsTerminal, Write};
+use std::path::{Path, PathBuf};
+use std::process::Command as ProcessCommand;
+use std::sync::Arc;
+use zedra_host::agent::cli as agent_cli;
+use zedra_host::client as zedra_client;
+use zedra_host::ga4::Ga4;
+use zedra_host::{
+    api, delta, identity, iroh_listener, metrics, net_monitor, paths, qr, rpc_daemon,
+    session_registry, uploads, utils, version_check, workspace_lock,
+};
+use zedra_rpc::ZedraPairingTicket;
+use zedra_telemetry::Event;
+
+mod terminal_cli;
+mod webview_cli;
+
+#[derive(Parser)]
+#[command(
+    name = "zedra",
+    version,
+    disable_version_flag = true,
+    about = "Zedra CLI - Desktop daemon",
+    before_help = concat!(
+        "\x1b[1mZedra CLI - Desktop daemon\x1b[0m ",
+        "\x1b[2mv",
+        env!("CARGO_PKG_VERSION"),
+        "\x1b[0m"
+    ),
+    help_template = "{before-help}{usage-heading} {usage}\n\n{all-args}",
+    disable_help_subcommand = true,
+    arg_required_else_help = true,
+    override_usage = "zedra <COMMAND> [OPTIONS]"
+)]
+struct Cli {
+    /// Print version
+    #[arg(short = 'v', long = "version", action = ArgAction::SetTrue)]
+    print_version: bool,
+
+    /// Show tracing logs
+    #[arg(long, global = true)]
+    verbose: bool,
+
+    #[command(subcommand)]
+    command: Option<Commands>,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    /// Start the Zedra daemon for this workspace
+    Start {
+        /// Working directory to serve
+        #[arg(short, long, default_value = ".")]
+        workdir: String,
+
+        /// Output startup info as a single JSON line (for tool integration)
+        #[arg(long)]
+        json: bool,
+
+        /// Run in the background, detached from the controlling terminal.
+        /// Startup output and the pairing QR are written to daemon.log.
+        #[arg(short = 'd', long, conflicts_with = "json")]
+        detach: bool,
+
+        /// Override relay URL(s). Can be specified multiple times for multi-relay.
+        /// (e.g. --relay-url https://sg1.relay.zedra.dev --relay-url https://us1.relay.zedra.dev)
+        #[arg(long)]
+        relay_url: Vec<String>,
+
+        /// Disable anonymous telemetry (usage events sent to Google Analytics).
+        /// Can also be set via ZEDRA_TELEMETRY=0 environment variable.
+        #[arg(long)]
+        no_telemetry: bool,
+
+        /// Debug telemetry: log every event payload and GA4 validation response to
+        /// stderr. Uses the GA4 debug endpoint — events are NOT recorded in GA4.
+        #[arg(long)]
+        debug_telemetry: bool,
+
+        /// Force relay-only mode: disable P2P hole punching and direct-path
+        /// advertising. All traffic goes through the relay server. Useful when
+        /// the host is behind a firewall that blocks direct UDP.
+        #[arg(long)]
+        relay_only: bool,
+
+        /// Generate a reusable QR code that stays valid for repeated scans
+        /// while this daemon runs, instead of a fresh code per pairing
+        #[arg(long = "static-qr")]
+        static_qr: bool,
+
+        /// How often (in seconds) to re-fetch live agent usage from provider APIs.
+        /// Set to 0 to disable periodic refresh (initial fetch at startup still runs).
+        /// Default: 300 (5 minutes).
+        #[arg(long = "usage-refresh-secs", default_value = "300")]
+        usage_refresh_secs: u64,
+    },
+    /// Stop the daemon for this workspace
+    Stop {
+        /// Working directory of the daemon to stop
+        #[arg(short, long, default_value = ".")]
+        workdir: String,
+
+        /// Seconds to wait for clean exit before sending SIGKILL
+        #[arg(long, default_value = "5")]
+        grace: u64,
+    },
+
+    /// Show daemon status, sessions, and terminals
+    Status {
+        /// Working directory of the running daemon
+        #[arg(short, long, default_value = ".")]
+        workdir: String,
+    },
+
+    /// Show local usage metrics for a workspace
+    Metrics {
+        /// Working directory to inspect
+        #[arg(short, long, default_value = ".")]
+        workdir: String,
+    },
+
+    /// Connect to a daemon and measure connection latency
+    Client {
+        /// Working directory of the running daemon (must match `zedra start --workdir`)
+        #[arg(short, long, default_value = ".")]
+        workdir: String,
+
+        /// Number of pings to send (0 = run until Ctrl-C)
+        #[arg(short, long, default_value = "0")]
+        count: u32,
+
+        /// Force relay-only mode (disable P2P hole punching)
+        #[arg(long)]
+        relay_only: bool,
+    },
+
+    /// Show a QR code to pair your phone
+    Qr {
+        /// Working directory of the running daemon
+        #[arg(short, long, default_value = ".")]
+        workdir: String,
+
+        /// Output pairing info as a single JSON line
+        #[arg(long)]
+        json: bool,
+
+        /// Create a reusable QR code that stays valid for repeated scans
+        /// while this daemon runs, instead of a fresh code per pairing
+        #[arg(long = "static")]
+        static_qr: bool,
+    },
+
+    /// List active Zedra daemons across workspaces
+    List {
+        /// Also show stale workspace locks whose process is gone
+        #[arg(long, alias = "show-stale")]
+        stale: bool,
+    },
+
+    /// Show recent daemon logs
+    Logs {
+        /// Working directory of the running daemon
+        #[arg(short, long, default_value = ".")]
+        workdir: String,
+
+        /// Number of log lines to print
+        #[arg(short = 'n', long, default_value_t = 80)]
+        lines: usize,
+    },
+
+    /// Open or list terminals on the connected phone
+    Terminal(terminal_cli::TerminalArgs),
+
+    /// Open a web app / URL in the connected phone's in-app webview
+    Open(webview_cli::OpenArgs),
+
+    /// Set up Zedra for detected AI agents, or a specific one
+    Setup {
+        /// Use absolute path to this binary in hooks instead of `zedra`
+        #[arg(long)]
+        full_bin_path: bool,
+
+        /// Show hook output (skip --quiet)
+        #[arg(long)]
+        no_quiet: bool,
+
+        /// Agent to set up (registry slug, e.g. `claude`); omit to set up all
+        /// detected agents
+        agent: Option<String>,
+
+        /// Remove this agent's Zedra setup
+        #[arg(long, requires = "agent")]
+        remove: bool,
+    },
+
+    /// Inspect managed AI-agent integrations
+    Agent {
+        #[command(subcommand)]
+        command: agent_cli::AgentCommand,
+    },
+
+    /// Sign in to Zedra Delta
+    Auth {
+        #[command(subcommand)]
+        command: Option<AuthCommand>,
+    },
+
+    /// View and manage nodes in your Delta stack
+    Stack {
+        #[command(subcommand)]
+        command: Option<StackCommand>,
+    },
+
+    /// Send a notification or Live Activity to a node
+    #[command(override_usage = "zedra send <TARGET> [OPTIONS]")]
+    Send {
+        /// Target node id, name, or alias
+        target: String,
+
+        /// Send a Live Activity update instead of a push notification
+        #[arg(long = "live-activity", short = 'l', alias = "la")]
+        live_activity: bool,
+
+        /// Title (notification title, or Live Activity alert title)
+        #[arg(long, required_unless_present = "live_activity")]
+        title: Option<String>,
+
+        /// Body text
+        #[arg(long)]
+        body: Option<String>,
+
+        /// Notification category
+        #[arg(long, conflicts_with = "live_activity")]
+        category: Option<String>,
+
+        /// Deeplink to open from the notification
+        #[arg(long, conflicts_with = "live_activity")]
+        deeplink: Option<String>,
+
+        /// Stable Live Activity id registered by the mobile app
+        #[arg(long, required_if_eq("live_activity", "true"))]
+        activity_id: Option<String>,
+
+        /// JSON object for ActivityKit content-state (defaults to {})
+        #[arg(long, requires = "live_activity")]
+        state: Option<String>,
+
+        /// End the Live Activity instead of updating it
+        #[arg(long, requires = "live_activity")]
+        end: bool,
+
+        /// Working directory of the workspace (used for anonymous Delta auth)
+        #[arg(short, long, default_value = ".")]
+        workdir: String,
+    },
+
+    /// Update the Zedra CLI
+    Update {
+        /// Install a specific version (e.g. v0.2.0)
+        #[arg(long)]
+        version: Option<String>,
+
+        /// Skip confirmation prompt
+        #[arg(long, short)]
+        yes: bool,
+    },
+
+    /// Print help for zedra or a command
+    Help {
+        /// Command to show help for
+        #[arg(value_name = "COMMAND")]
+        command: Vec<String>,
+    },
+}
+
+#[derive(Subcommand)]
+enum AuthCommand {
+    /// Sign in this host with Zedra Delta
+    Login {
+        /// Delta API origin
+        #[arg(long, default_value = "https://delta.zedra.dev")]
+        delta_url: String,
+
+        /// Use local dev auth with this subject instead of browser auth
+        #[arg(long)]
+        dev_subject: Option<String>,
+    },
+
+    /// Show Delta auth status
+    Status,
+
+    /// Remove stored Delta auth config
+    Logout,
+}
+
+#[derive(Subcommand)]
+enum StackCommand {
+    /// List all nodes in delta stack
+    List,
+
+    /// List all registered node pubkey
+    Keys,
+
+    /// Show stack-level ability state aggregated across nodes
+    State,
+
+    /// Show details of a node (defaults to this host)
+    Show {
+        /// Target node id, name, or alias (defaults to the authed host node)
+        target: Option<String>,
+
+        /// Show only this ability; exits non-zero when the node does not
+        /// hold it or it is not ready
+        #[arg(long)]
+        ability: Option<String>,
+    },
+
+    /// Update a node in delta stack
+    #[command(
+        override_usage = "zedra stack update <TARGET> [OPTIONS]",
+        group = clap::ArgGroup::new("update_fields").required(true).multiple(true)
+    )]
+    Update {
+        /// Target node id, name, or alias
+        target: String,
+
+        /// New stack-scoped node alias
+        #[arg(long, group = "update_fields")]
+        alias: Option<String>,
+
+        /// New node display name
+        #[arg(long = "name", group = "update_fields")]
+        name: Option<String>,
+    },
+
+    /// Grant an ability to a node
+    Grant {
+        /// Target node id, name, or alias
+        target: String,
+
+        /// Ability name, e.g. notification.send (see `zedra stack show`)
+        ability: String,
+    },
+
+    /// Revoke an ability from a node
+    Revoke {
+        /// Target node id, name, or alias
+        target: String,
+
+        /// Ability name, e.g. notification.send (see `zedra stack show`)
+        ability: String,
+    },
+
+    /// Remove a node from delta stack
+    Remove {
+        /// Target node id, name, or alias
+        target: String,
+
+        /// Permanently remove this node identity so re-registration creates a new node id
+        #[arg(long)]
+        force: bool,
+    },
+}
+
+fn write_api_discovery_file(path: &Path, contents: &[u8]) -> std::io::Result<()> {
+    let parent = path.parent().ok_or_else(|| {
+        std::io::Error::new(std::io::ErrorKind::InvalidInput, "path has no parent")
+    })?;
+    let file_name = path.file_name().ok_or_else(|| {
+        std::io::Error::new(std::io::ErrorKind::InvalidInput, "path has no file name")
+    })?;
+    let file_name = file_name.to_string_lossy();
+
+    for _ in 0..16 {
+        let tmp_path = parent.join(format!(
+            ".{}.{}.{}.tmp",
+            file_name,
+            std::process::id(),
+            rand::random::<u64>()
+        ));
+
+        let mut options = std::fs::OpenOptions::new();
+        options.write(true).create_new(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+
+        let mut file = match options.open(&tmp_path) {
+            Ok(file) => file,
+            Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => continue,
+            Err(e) => return Err(e),
+        };
+        #[cfg(unix)]
+        std::fs::set_permissions(
+            &tmp_path,
+            std::os::unix::fs::PermissionsExt::from_mode(0o600),
+        )?;
+
+        let write_result = file.write_all(contents).and_then(|_| file.sync_all());
+        drop(file);
+        if let Err(e) = write_result {
+            let _ = std::fs::remove_file(&tmp_path);
+            return Err(e);
+        }
+
+        if let Err(e) = std::fs::rename(&tmp_path, path) {
+            let _ = std::fs::remove_file(&tmp_path);
+            return Err(e);
+        }
+        return Ok(());
+    }
+
+    Err(std::io::Error::new(
+        std::io::ErrorKind::AlreadyExists,
+        "could not create a unique temporary api discovery file",
+    ))
+}
+
+struct DetachedStartOptions {
+    workdir: PathBuf,
+    verbose: bool,
+    relay_url: Vec<String>,
+    no_telemetry: bool,
+    debug_telemetry: bool,
+    relay_only: bool,
+    static_qr: bool,
+    usage_refresh_secs: u64,
+}
+
+struct DetachedStartResult {
+    pid: u32,
+    workdir: PathBuf,
+}
+
+fn detached_start_child_args(options: &DetachedStartOptions) -> Vec<String> {
+    let mut args = Vec::new();
+    if options.verbose {
+        args.push("--verbose".to_string());
+    }
+    args.extend([
+        "start".to_string(),
+        "--workdir".to_string(),
+        options.workdir.display().to_string(),
+    ]);
+    for relay_url in &options.relay_url {
+        args.extend(["--relay-url".to_string(), relay_url.clone()]);
+    }
+    if options.no_telemetry {
+        args.push("--no-telemetry".to_string());
+    }
+    if options.debug_telemetry {
+        args.push("--debug-telemetry".to_string());
+    }
+    if options.relay_only {
+        args.push("--relay-only".to_string());
+    }
+    if options.static_qr {
+        args.push("--static-qr".to_string());
+    }
+    if options.usage_refresh_secs != 300 {
+        args.extend([
+            "--usage-refresh-secs".to_string(),
+            options.usage_refresh_secs.to_string(),
+        ]);
+    }
+    args
+}
+
+#[cfg(unix)]
+fn start_detached(options: DetachedStartOptions) -> Result<DetachedStartResult> {
+    use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
+    use std::os::unix::process::CommandExt;
+    use std::process::Stdio;
+
+    if let Some(existing) = workspace_lock::read_lock_info(&options.workdir)? {
+        if workspace_lock::is_process_alive(existing.pid) {
+            anyhow::bail!(
+                "Zedra daemon is already running for this workspace.\n\
+                 \n\
+                 \x20 PID:      {}\n\
+                 \x20 Workdir:  {}\n\
+                 \x20 Host:     {}\n\
+                 \x20 Started:  {}\n\
+                 \n\
+                 Run `zedra stop` from this workspace to stop it.\n\
+                 From another directory, add `--workdir <path>`.",
+                existing.pid,
+                existing.workdir,
+                existing.hostname,
+                existing.running_for(),
+            );
+        }
+    }
+
+    let config_dir = identity::workspace_config_dir(&options.workdir)?;
+    std::fs::create_dir_all(&config_dir)?;
+    let log_path = config_dir.join("daemon.log");
+    let mut log = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .mode(0o600)
+        .open(&log_path)?;
+    std::fs::set_permissions(&log_path, std::fs::Permissions::from_mode(0o600))?;
+    writeln!(
+        log,
+        "\n--- zedra detached start parent_pid={} workdir={} ---",
+        std::process::id(),
+        options.workdir.display()
+    )?;
+
+    let mut command = std::process::Command::new(std::env::current_exe()?);
+    command
+        .args(detached_start_child_args(&options))
+        .current_dir(&options.workdir)
+        .env("ZEDRA_DETACHED", "1")
+        .stdin(Stdio::null())
+        .stdout(Stdio::from(log.try_clone()?))
+        .stderr(Stdio::from(log));
+
+    unsafe {
+        command.pre_exec(|| {
+            // Detached hosts must leave the SSH session's process group and
+            // controlling terminal, otherwise logout can still deliver SIGHUP.
+            if libc::setsid() == -1 {
+                return Err(std::io::Error::last_os_error());
+            }
+            Ok(())
+        });
+    }
+
+    let mut child = command.spawn()?;
+    let child_pid = child.id();
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(2);
+    while std::time::Instant::now() < deadline {
+        if let Some(status) = child.try_wait()? {
+            anyhow::bail!(
+                "detached zedra-host exited early with status {}. See log: {}",
+                status,
+                log_path.display()
+            );
+        }
+        if let Some(info) = workspace_lock::read_lock_info(&options.workdir)? {
+            if info.pid == child_pid {
+                break;
+            }
+        }
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
+
+    Ok(DetachedStartResult {
+        pid: child_pid,
+        workdir: options.workdir,
+    })
+}
+
+#[cfg(windows)]
+fn start_detached(options: DetachedStartOptions) -> Result<DetachedStartResult> {
+    use std::os::windows::process::CommandExt;
+    use std::process::Stdio;
+
+    const CREATE_NEW_PROCESS_GROUP: u32 = 0x0000_0200;
+    const DETACHED_PROCESS: u32 = 0x0000_0008;
+
+    if let Some(existing) = workspace_lock::read_lock_info(&options.workdir)? {
+        if workspace_lock::is_process_alive(existing.pid) {
+            anyhow::bail!(
+                "Zedra daemon is already running for this workspace.\n\
+                 \n\
+                 \x20 PID:      {}\n\
+                 \x20 Workdir:  {}\n\
+                 \x20 Host:     {}\n\
+                 \x20 Started:  {}\n\
+                 \n\
+                 Run `zedra stop` from this workspace to stop it.\n\
+                 From another directory, add `--workdir <path>`.",
+                existing.pid,
+                existing.workdir,
+                existing.hostname,
+                existing.running_for(),
+            );
+        }
+    }
+
+    let config_dir = identity::workspace_config_dir(&options.workdir)?;
+    std::fs::create_dir_all(&config_dir)?;
+    let log_path = config_dir.join("daemon.log");
+    let mut log = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&log_path)?;
+    writeln!(
+        log,
+        "\n--- zedra detached start parent_pid={} workdir={} ---",
+        std::process::id(),
+        options.workdir.display()
+    )?;
+    let launch_shell = zedra_host::pty::detect_parent_shell();
+    if let Some(shell) = &launch_shell {
+        writeln!(log, "detected_launch_shell={shell}")?;
+    }
+
+    let mut command = std::process::Command::new(std::env::current_exe()?);
+    command
+        .args(detached_start_child_args(&options))
+        .current_dir(&options.workdir)
+        .env("ZEDRA_DETACHED", "1")
+        .creation_flags(CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS)
+        .stdin(Stdio::null())
+        .stdout(Stdio::from(log.try_clone()?))
+        .stderr(Stdio::from(log));
+    if let Some(shell) = launch_shell {
+        command.env("ZEDRA_LAUNCH_SHELL", shell);
+    }
+
+    let mut child = command.spawn()?;
+    let child_pid = child.id();
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(2);
+    while std::time::Instant::now() < deadline {
+        if let Some(status) = child.try_wait()? {
+            anyhow::bail!(
+                "detached zedra-host exited early with status {}. See log: {}",
+                status,
+                log_path.display()
+            );
+        }
+        if let Some(info) = workspace_lock::read_lock_info(&options.workdir)? {
+            if info.pid == child_pid {
+                break;
+            }
+        }
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
+
+    Ok(DetachedStartResult {
+        pid: child_pid,
+        workdir: options.workdir,
+    })
+}
+
+#[cfg(all(not(unix), not(windows)))]
+fn start_detached(_options: DetachedStartOptions) -> Result<DetachedStartResult> {
+    anyhow::bail!("`zedra start --detach` is not supported on this platform.");
+}
+
+fn telemetry_disabled(no_telemetry: bool) -> bool {
+    no_telemetry
+        || std::env::var("ZEDRA_TELEMETRY")
+            .map(|v| v == "0" || v.eq_ignore_ascii_case("false"))
+            .unwrap_or(false)
+}
+
+fn new_ga4(
+    telemetry_id_fallback_dir: &Path,
+    no_telemetry: bool,
+    debug_telemetry: bool,
+) -> Arc<Ga4> {
+    Arc::new(if telemetry_disabled(no_telemetry) {
+        Ga4::disabled()
+    } else {
+        let ga4 = Ga4::new(
+            &identity::telemetry_id_path()
+                .unwrap_or_else(|_| telemetry_id_fallback_dir.join(".zedra-telemetry-id")),
+            debug_telemetry,
+        );
+        if debug_telemetry {
+            eprintln!("[telemetry] debug mode (GA4 validation endpoint, not recorded)");
+        }
+        ga4
+    })
+}
+
+fn render_cli_version() -> String {
+    format!("{}\n", env!("CARGO_PKG_VERSION"))
+}
+
+fn resolve_workdir(workdir: impl AsRef<Path>) -> PathBuf {
+    let fallback = workdir.as_ref().to_path_buf();
+    let workdir = fallback.canonicalize().unwrap_or(fallback);
+    paths::user_path(&workdir)
+}
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    let cli = Cli::parse();
+    if cli.print_version {
+        print!("{}", render_cli_version());
+        return Ok(());
+    }
+    let command = cli.command.unwrap_or_else(|| {
+        Cli::command()
+            .error(
+                clap::error::ErrorKind::MissingSubcommand,
+                "a command is required",
+            )
+            .exit()
+    });
+
+    let verbose = cli.verbose;
+    if verbose {
+        let mut filter = tracing_subscriber::EnvFilter::try_from_default_env()
+            .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info"));
+        // `tracing` can forward span enter/exit to the `log` crate as TRACE on targets
+        // `tracing::span` / `tracing::span::active` (very noisy with iroh QUIC poll loops).
+        for directive in [
+            "tracing::span=off",
+            "tracing::span::active=off",
+            "iroh=warn",
+            "iroh_quinn=warn",
+        ] {
+            if let Ok(d) = directive.parse::<tracing_subscriber::filter::Directive>() {
+                filter = filter.add_directive(d);
+            }
+        }
+        tracing_subscriber::fmt().with_env_filter(filter).init();
+    } else {
+        tracing_subscriber::fmt()
+            .compact()
+            .without_time()
+            .with_target(false)
+            .with_env_filter(tracing_subscriber::EnvFilter::new("error"))
+            .init();
+    }
+
+    match command {
+        Commands::Auth { command } => match command {
+            Some(AuthCommand::Login {
+                delta_url,
+                dev_subject,
+            }) => {
+                let config = if let Some(dev_subject) = dev_subject {
+                    delta::dev_auth(&delta_url, &dev_subject).await?
+                } else {
+                    let session = delta::start_browser_auth(&delta_url).await?;
+                    print_delta_browser_auth_prompt(&session);
+                    // Best-effort browser open; silent on headless machines.
+                    open_browser(&session.auth_url);
+                    delta::complete_browser_auth(&session).await?
+                };
+                utils::println_success("Authenticated with Zedra Delta.");
+                println!();
+                print_delta_auth_status(&config);
+            }
+            Some(AuthCommand::Status) | None => match delta::load_config() {
+                Ok(config) => print_delta_auth_status(&config),
+                Err(_) => {
+                    utils::println_note("Not authenticated with Zedra Delta.");
+                    utils::println_note(format!(
+                        "Run `{}` to sign in this host.",
+                        utils::command_text("zedra auth login")
+                    ));
+                }
+            },
+            Some(AuthCommand::Logout) => {
+                if delta::remove_config()? {
+                    utils::println_success("Signed out of Zedra Delta.");
+                } else {
+                    utils::println_note("No Delta auth config found.");
+                }
+            }
+        },
+
+        Commands::Stack { command } => match command {
+            Some(StackCommand::List) => {
+                let nodes = delta::DeltaClient::load()?.list_nodes().await?;
+                print_delta_nodes(&nodes);
+            }
+            Some(StackCommand::Keys) => {
+                let keys = delta::DeltaClient::load()?.list_node_keys().await?;
+                print_delta_node_keys(&keys);
+            }
+            Some(StackCommand::State) => {
+                let rollup = delta::DeltaClient::load()?.stack_ability_states().await?;
+                print_delta_stack_state(&rollup);
+            }
+            Some(StackCommand::Show { target, ability }) => {
+                let config = delta::load_config()?;
+                let client = delta::DeltaClient::load()?;
+                let is_self = target.is_none();
+                let detail = client.node_detail(target).await?;
+                match ability {
+                    Some(ability_name) => {
+                        let matched: Vec<_> = detail
+                            .abilities
+                            .iter()
+                            .filter(|entry| entry.ability == ability_name)
+                            .collect();
+                        if matched.is_empty() {
+                            anyhow::bail!(
+                                "node does not hold ability `{ability_name}`; \
+                                 run `zedra stack show` to list its abilities"
+                            );
+                        }
+                        for entry in &matched {
+                            print_delta_ability_line(entry);
+                        }
+                        let ready = matched
+                            .iter()
+                            .all(|entry| entry.status.as_ref().is_none_or(|s| s.ready));
+                        if !ready {
+                            std::process::exit(1);
+                        }
+                    }
+                    None => print_delta_node_show(&detail, is_self.then_some(&config)),
+                }
+            }
+            Some(StackCommand::Update {
+                target,
+                alias,
+                name,
+            }) => {
+                let node = delta::DeltaClient::load()?
+                    .update_node(target, alias, name)
+                    .await?;
+                utils::println_success("Updated Delta node.");
+                println!();
+                utils::print_key_values(&[
+                    ("Alias", node.alias.unwrap_or_else(|| "-".to_string())),
+                    ("Name", node.display_name.unwrap_or_else(|| "-".to_string())),
+                    ("Node", node.id.to_string()),
+                    ("Kind", node.kind.as_str().to_string()),
+                ]);
+            }
+            Some(StackCommand::Grant { target, ability }) => {
+                let grant = delta::DeltaClient::load()?
+                    .grant_ability(target, ability)
+                    .await?;
+                let subject = grant
+                    .subject_alias
+                    .clone()
+                    .unwrap_or_else(|| grant.subject_id.to_string());
+                utils::println_success(&format!("Granted {} to node:{subject}.", grant.ability));
+            }
+            Some(StackCommand::Revoke { target, ability }) => {
+                let revoked = delta::DeltaClient::load()?
+                    .revoke_ability(target, ability)
+                    .await?;
+                for grant in &revoked {
+                    let subject = grant
+                        .subject_alias
+                        .clone()
+                        .unwrap_or_else(|| grant.subject_id.to_string());
+                    utils::println_success(&format!(
+                        "Revoked {} from node:{subject}.",
+                        grant.ability
+                    ));
+                }
+            }
+            Some(StackCommand::Remove { target, force }) => {
+                let response = delta::DeltaClient::load()?
+                    .delete_node(target, force)
+                    .await?;
+                utils::println_success("Removed Delta node from stack.");
+                println!();
+                utils::print_key_values(&[
+                    ("Removed", response.deleted.to_string()),
+                    ("Node", response.node_id.to_string()),
+                ]);
+            }
+            None => {
+                let config = delta::load_config()?;
+                print_delta_stack(&config);
+            }
+        },
+
+        Commands::Send {
+            target,
+            live_activity,
+            title,
+            body,
+            category,
+            deeplink,
+            activity_id,
+            state,
+            end,
+            workdir: _,
+        } => {
+            let client = delta::DeltaClient::try_load().ok_or_else(|| {
+                anyhow::anyhow!("Delta not configured. Sign in with `zedra auth login`.")
+            })?;
+            if live_activity {
+                let activity_id =
+                    activity_id.expect("clap enforces --activity-id with --live-activity");
+                let content_state = parse_json_object(state.as_deref().unwrap_or("{}"))?;
+                let response = client
+                    .update_live_activity(target, activity_id, title, body, content_state, end)
+                    .await?;
+                utils::println_success("Live Activity update accepted.");
+                print_delta_send_result(
+                    response.accepted,
+                    response.recipients,
+                    response.provider_success,
+                    response.provider_failure,
+                    &response.errors,
+                );
+            } else {
+                let title = title.expect("clap enforces --title for notifications");
+                let response = client
+                    .send_notification(target, title, body, category, deeplink)
+                    .await?;
+                utils::println_success("Notification accepted.");
+                print_delta_send_result(
+                    response.accepted,
+                    response.recipients,
+                    response.provider_success,
+                    response.provider_failure,
+                    &response.errors,
+                );
+            }
+        }
+
+        Commands::Client {
+            workdir,
+            count,
+            relay_only,
+        } => {
+            let workdir = resolve_workdir(workdir);
+            zedra_client::run(&workdir, count, relay_only).await?;
+        }
+
+        Commands::Start {
+            workdir,
+            json,
+            detach,
+            relay_url,
+            no_telemetry,
+            debug_telemetry,
+            relay_only,
+            static_qr,
+            usage_refresh_secs,
+        } => {
+            let workdir = resolve_workdir(workdir);
+            let pairing_mode = if static_qr {
+                session_registry::PairingSlotMode::Static
+            } else {
+                session_registry::PairingSlotMode::OneTime
+            };
+            if detach {
+                let detached = start_detached(DetachedStartOptions {
+                    workdir,
+                    verbose,
+                    relay_url,
+                    no_telemetry,
+                    debug_telemetry,
+                    relay_only,
+                    static_qr,
+                    usage_refresh_secs,
+                })?;
+                match wait_for_detached_pairing_qr(&detached.workdir, detached.pid, pairing_mode)
+                    .await
+                {
+                    Ok(info) => {
+                        qr::print_started_pairing_info(&info, &detached.workdir);
+                        print_pairing_notice_stdout(&info);
+                    }
+                    Err(e) => {
+                        utils::eprintln_warn(format!(
+                            "Could not print a pairing QR yet: {e}. Run `zedra qr` from the workspace, or `zedra logs` to inspect startup output."
+                        ));
+                    }
+                }
+                println!();
+                println!("{}", render_detached_followup_commands());
+                return Ok(());
+            }
+
+            let startup_start = std::time::Instant::now();
+
+            tracing::info!("Starting zedra-host (iroh transport)");
+            tracing::info!("Serving workdir: {}", workdir.display());
+
+            let _lock = workspace_lock::acquire(&workdir)?;
+            tracing::info!("Acquired workspace lock for {}", workdir.display());
+            let start_mode = if std::env::var_os("ZEDRA_DETACHED").is_some() {
+                metrics::DaemonStartMode::Detached
+            } else {
+                metrics::DaemonStartMode::Foreground
+            };
+            if let Err(e) = metrics::record_daemon_start(&workdir, start_mode) {
+                tracing::warn!("Failed to record daemon start metrics: {}", e);
+            }
+
+            let host_identity = match identity::HostIdentity::load_or_generate_for_workdir(&workdir)
+            {
+                Ok(id) => std::sync::Arc::new(id),
+                Err(e) => anyhow::bail!("Failed to load host identity: {}", e),
+            };
+
+            let sessions_path = identity::workspace_config_dir(&workdir)
+                .map(|d| d.join("sessions.json"))
+                .unwrap_or_else(|_| workdir.join(".zedra-sessions.json"));
+            let registry = std::sync::Arc::new(
+                session_registry::SessionRegistry::load_or_new(sessions_path).await,
+            );
+
+            // Create a named session for the working directory
+            let session_name = workdir
+                .file_name()
+                .and_then(|n| n.to_str())
+                .unwrap_or("default")
+                .to_string();
+            let session_was_existing = registry.get_by_name(&session_name).await.is_some();
+            let session = registry.create_named(&session_name, workdir.clone()).await;
+            let session_id = session.id.clone();
+            let session_count = registry.session_count().await;
+            if !session_was_existing {
+                if let Err(e) = metrics::record_session_created(&workdir, session_count) {
+                    tracing::warn!("Failed to record session metrics: {}", e);
+                }
+            } else if let Err(e) = metrics::record_daemon_heartbeat(&workdir, session_count, 0) {
+                tracing::warn!("Failed to record session metrics: {}", e);
+            }
+            tracing::info!(
+                "Created session '{}' (id={}) for {}",
+                session_name,
+                session_id,
+                workdir.display()
+            );
+            let endpoint_id = host_identity.endpoint_id();
+
+            // Initialize telemetry. Disabled by --no-telemetry flag or ZEDRA_TELEMETRY=0.
+            let ga4 = new_ga4(&workdir, no_telemetry, debug_telemetry);
+            let is_first_run = ga4.is_first_run;
+
+            // Register host GA4 backend as the global telemetry provider.
+            zedra_host::telemetry::init(ga4.clone());
+
+            // Install panic hook that sends host_panic event via zedra_telemetry
+            // before the process aborts. record_panic bypasses the enabled flag.
+            let prev_hook = std::panic::take_hook();
+            std::panic::set_hook(Box::new(move |info| {
+                let message = info
+                    .payload()
+                    .downcast_ref::<&str>()
+                    .copied()
+                    .or_else(|| info.payload().downcast_ref::<String>().map(|s| s.as_str()))
+                    .unwrap_or("unknown");
+                let location = info
+                    .location()
+                    .map(|l| format!("{}:{}", l.file(), l.line()))
+                    .unwrap_or_default();
+                zedra_telemetry::record_panic(message, &location);
+                prev_hook(info);
+            }));
+
+            let delta_pubkey =
+                delta::public_key().context("failed to load host Delta signing key")?;
+
+            match tokio::time::timeout(
+                std::time::Duration::from_secs(20),
+                delta::reconcile_signed_in_host_metadata(),
+            )
+            .await
+            {
+                Ok(Ok(delta::HostMetadataReconcileResult::Missing)) => {
+                    tracing::info!("Delta signed-in host node is missing; reconciliation ignored")
+                }
+                Ok(Ok(result)) => {
+                    tracing::info!(
+                        ?result,
+                        "Delta signed-in host metadata reconciliation completed"
+                    )
+                }
+                Ok(Err(error)) => {
+                    tracing::warn!("Delta signed-in host metadata reconciliation failed: {error:#}")
+                }
+                Err(_) => tracing::warn!("Delta signed-in host metadata reconciliation timed out"),
+            }
+
+            let delta_client = delta::DeltaClient::try_load();
+
+            let state = Arc::new(rpc_daemon::DaemonState::new(
+                workdir.clone(),
+                host_identity.clone(),
+                delta_pubkey,
+                delta_client,
+            ));
+            state
+                .agent_cache
+                .set_registry(Arc::downgrade(&registry))
+                .await;
+            {
+                let cache = state.agent_cache.clone();
+                let preload_workdir = workdir.clone();
+                tokio::spawn(async move {
+                    cache.preload(preload_workdir).await;
+                });
+            }
+            if usage_refresh_secs > 0 {
+                let cache = state.agent_cache.clone();
+                tokio::spawn(async move {
+                    let mut interval =
+                        tokio::time::interval(std::time::Duration::from_secs(usage_refresh_secs));
+                    interval.tick().await; // skip immediate first tick — preload covers it
+                    loop {
+                        interval.tick().await;
+                        cache.refresh_usage().await;
+                    }
+                });
+            }
+            uploads::spawn_startup_cleanup();
+
+            // 1. Bind iroh endpoint with configured relay URLs.
+            let endpoint_relay_urls: Vec<String> = if relay_url.is_empty() {
+                zedra_rpc::ZEDRA_RELAY_URLS
+                    .iter()
+                    .map(|s| s.to_string())
+                    .collect()
+            } else {
+                relay_url.clone()
+            };
+
+            let relay_type = if !relay_url.is_empty() {
+                "custom"
+            } else {
+                "default"
+            };
+            zedra_telemetry::send(Event::DaemonStart {
+                relay_type,
+                is_first_run,
+            });
+
+            let init_ms = startup_start.elapsed().as_millis() as u64;
+            let endpoint_bind_start = std::time::Instant::now();
+            let endpoint =
+                iroh_listener::create_endpoint(&host_identity, &endpoint_relay_urls, relay_only)
+                    .await?;
+            let endpoint_bind_ms = endpoint_bind_start.elapsed().as_millis() as u64;
+
+            // Pre-authorize the persistent CLI client key so `zedra client` can
+            // connect without QR pairing. The key is generated once per workspace.
+            if let Ok(config_dir) = identity::workspace_config_dir(&workdir) {
+                match zedra_client::load_or_generate_cli_key(&config_dir) {
+                    Ok(cli_key) => {
+                        let cli_pubkey: [u8; 32] = cli_key.verifying_key().to_bytes();
+                        registry
+                            .add_client_to_session(&session_id, cli_pubkey)
+                            .await;
+                        tracing::info!("Pre-authorized CLI client key for session {}", session_id);
+                    }
+                    Err(e) => tracing::warn!("Failed to load/generate CLI client key: {}", e),
+                }
+
+                // Write host-info.json for `zedra client` auto-discovery.
+                let host_info = zedra_client::HostInfo {
+                    endpoint_id: host_identity.endpoint_id().to_string(),
+                    session_id: session_id.clone(),
+                    relay_urls: endpoint_relay_urls.clone(),
+                };
+                if let Err(e) = zedra_client::write_host_info(&config_dir, &host_info) {
+                    tracing::warn!("Failed to write host-info.json: {}", e);
+                } else {
+                    tracing::info!("Wrote host-info.json to {}", config_dir.display());
+                }
+            }
+
+            // 1a. Async version check (non-blocking, silent on failure).
+            tokio::spawn(async {
+                match version_check::check_latest_version().await {
+                    Ok(Some(ref latest)) => {
+                        let update_msg = format!(
+                            "New version available: {} (current: v{}). {}",
+                            latest,
+                            env!("CARGO_PKG_VERSION"),
+                            update_instruction()
+                        );
+                        utils::eprintln_warn(update_msg);
+                        zedra_telemetry::send(Event::UpdateChecked {
+                            update_available: true,
+                            latest_version: latest.clone(),
+                            current_version: env!("CARGO_PKG_VERSION"),
+                        });
+                    }
+                    Ok(None) => {
+                        zedra_telemetry::send(Event::UpdateChecked {
+                            update_available: false,
+                            latest_version: String::new(),
+                            current_version: env!("CARGO_PKG_VERSION"),
+                        });
+                    }
+                    Err(_) => {}
+                }
+            });
+
+            // 1b. Start background network diagnostics monitor.
+            //     Watches for IP changes, relay changes, NAT changes, and logs
+            //     DNS re-registration when the endpoint address updates.
+            net_monitor::spawn_net_monitor(&endpoint);
+
+            // 2. Generate startup QR code
+            // Note: The QR encodes only endpoint_id (pubkey) — no IPs. The client
+            // resolves addresses at connect time via pkarr. STUN runs in the
+            // background and PkarrPublisher will republish once the public IP is
+            // discovered, before any user could reasonably scan and connect.
+            if let Err(e) = generate_pairing_qr(PairingQrRequest {
+                registry: &registry,
+                session_id: &session_id,
+                endpoint_id,
+                endpoint: &endpoint,
+                relay_urls: &endpoint_relay_urls,
+                json,
+                started_workdir: Some(&workdir),
+                metrics_workdir: Some(&workdir),
+                mode: pairing_mode,
+            })
+            .await
+            {
+                tracing::warn!("Failed to generate QR code: {}", e);
+            }
+
+            // Allow live QR regeneration while daemon is running.
+            #[cfg(unix)]
+            if !json && std::io::stdin().is_terminal() {
+                utils::eprintln_note("Press 'r' to regenerate pairing QR.");
+                let endpoint = endpoint.clone();
+                let registry = registry.clone();
+                let session_id = session_id.clone();
+                let relay_urls_for_listener = endpoint_relay_urls.clone();
+                let qr_workdir = workdir.clone();
+                tokio::spawn(async move {
+                    if let Err(e) = run_qr_key_listener(
+                        registry,
+                        session_id,
+                        endpoint_id,
+                        endpoint,
+                        relay_urls_for_listener,
+                        qr_workdir,
+                        pairing_mode,
+                    )
+                    .await
+                    {
+                        tracing::warn!("QR key listener stopped: {}", e);
+                    }
+                });
+            }
+            zedra_telemetry::send(Event::StartupComplete {
+                init_ms,
+                endpoint_bind_ms,
+                total_ms: startup_start.elapsed().as_millis() as u64,
+            });
+
+            // 3. Start local REST API server (127.0.0.1, OS-assigned port).
+            //    Write the bound address and bearer token to the config dir so
+            //    tools like `/zedra-start` can discover and authenticate.
+            if let Ok(config_dir) = identity::workspace_config_dir(&workdir) {
+                let token: String = {
+                    let bytes: [u8; 32] = rand::random();
+                    bytes.iter().map(|b| format!("{:02x}", b)).collect()
+                };
+                match api::start(api::ApiState {
+                    registry: registry.clone(),
+                    daemon_state: state.clone(),
+                    token: token.clone(),
+                    endpoint: endpoint.clone(),
+                    relay_urls: endpoint_relay_urls.clone(),
+                })
+                .await
+                {
+                    Ok(addr) => {
+                        let addr_string = addr.to_string();
+                        if let Err(e) = write_api_discovery_file(
+                            &config_dir.join("api-addr"),
+                            addr_string.as_bytes(),
+                        ) {
+                            tracing::warn!("Failed to write REST API address: {}", e);
+                        }
+                        if let Err(e) = write_api_discovery_file(
+                            &config_dir.join("api-token"),
+                            token.as_bytes(),
+                        ) {
+                            tracing::warn!("Failed to write REST API token: {}", e);
+                        }
+                        tracing::info!("REST API listening on http://{}", addr);
+                    }
+                    Err(e) => tracing::warn!("Failed to start REST API: {}", e),
+                }
+            }
+
+            // 4. Spawn periodic heartbeat for uptime tracking (every 10 minutes).
+            {
+                let registry = registry.clone();
+                let started_at = state.started_at;
+                let metrics_workdir = workdir.clone();
+                tokio::spawn(async move {
+                    let mut interval =
+                        tokio::time::interval(std::time::Duration::from_secs(10 * 60));
+                    interval.tick().await; // skip the immediate first tick
+                    loop {
+                        interval.tick().await;
+                        let uptime_secs = started_at.elapsed().as_secs();
+                        let sessions = registry.list_sessions().await;
+                        let session_count = sessions.len();
+                        let terminal_count: usize = sessions.iter().map(|s| s.terminal_count).sum();
+                        if let Err(e) = metrics::record_daemon_heartbeat(
+                            &metrics_workdir,
+                            session_count,
+                            terminal_count,
+                        ) {
+                            tracing::warn!("Failed to record daemon heartbeat metrics: {}", e);
+                        }
+                        zedra_telemetry::send(Event::DaemonHeartbeat {
+                            uptime_secs,
+                            session_count,
+                            terminal_count,
+                        });
+                    }
+                });
+            }
+
+            // 5. Run iroh accept loop (blocks main)
+            iroh_listener::run_accept_loop(&endpoint, registry, state).await?;
+        }
+
+        Commands::Status { workdir } => {
+            let workdir = resolve_workdir(workdir);
+            let config_dir = identity::workspace_config_dir(&workdir)?;
+            let addr = std::fs::read_to_string(config_dir.join("api-addr")).unwrap_or_default();
+            let token = std::fs::read_to_string(config_dir.join("api-token")).unwrap_or_default();
+            if addr.trim().is_empty() {
+                utils::eprintln_error(format!(
+                    "No running daemon found for: {}",
+                    workdir.display()
+                ));
+                std::process::exit(1);
+            }
+            let url = format!("http://{}/api/status", addr.trim());
+            let client = reqwest::Client::new();
+            match client.get(&url).bearer_auth(token.trim()).send().await {
+                Ok(resp) => {
+                    let status = resp.status();
+                    let body = resp.text().await.unwrap_or_default();
+                    if !status.is_success() {
+                        utils::eprintln_error(format!(
+                            "Failed to read status: HTTP {} {}",
+                            status, body
+                        ));
+                        std::process::exit(1);
+                    }
+                    let v: serde_json::Value = serde_json::from_str(&body).unwrap_or_default();
+                    println!("{}", render_status_output(&v));
+                }
+                Err(e) => {
+                    utils::eprintln_error(format!("Failed to reach daemon: {}", e));
+                    std::process::exit(1);
+                }
+            }
+        }
+
+        Commands::Metrics { workdir } => {
+            let workdir = resolve_workdir(workdir);
+            let snapshot = metrics::snapshot(&workdir)?;
+            let http = reqwest::Client::builder()
+                .timeout(std::time::Duration::from_secs(2))
+                .build()
+                .unwrap_or_default();
+            let status = fetch_instance_status(&http, &workdir).await;
+            println!(
+                "{}",
+                render_metrics_output(&workdir, &snapshot, status.as_ref())
+            );
+        }
+
+        Commands::Qr {
+            workdir,
+            json,
+            static_qr,
+        } => {
+            let workdir = resolve_workdir(workdir);
+            let pairing_mode = if static_qr {
+                session_registry::PairingSlotMode::Static
+            } else {
+                session_registry::PairingSlotMode::OneTime
+            };
+            let info = request_pairing_qr(&workdir, pairing_mode).await?;
+            if json {
+                if info.pairing_static {
+                    utils::eprintln_warn(qr::STATIC_QR_WARNING);
+                }
+                qr::print_pairing_json(&info);
+            } else {
+                qr::print_pairing_info(&info);
+                print_pairing_notice_stdout(&info);
+            }
+        }
+
+        Commands::Terminal(args) => {
+            terminal_cli::run(args).await?;
+        }
+
+        Commands::Open(args) => {
+            webview_cli::run(args).await?;
+        }
+
+        Commands::Agent { command } => {
+            agent_cli::run(command).await?;
+        }
+
+        Commands::Setup {
+            full_bin_path,
+            no_quiet,
+            agent,
+            remove,
+        } => {
+            let ctx = zedra_host::agent::SetupCliCtx {
+                full_bin_path,
+                quiet: !no_quiet,
+            };
+            match agent {
+                Some(agent) => zedra_host::agent::setup::run(&agent, remove, ctx).await?,
+                None => zedra_host::agent::setup::run_all(ctx).await?,
+            }
+        }
+
+        Commands::List { stale } => {
+            let instances = workspace_lock::scan_all_instances();
+            if instances.is_empty() {
+                utils::println_note("No Zedra instances found.");
+            } else {
+                let http = reqwest::Client::builder()
+                    .timeout(std::time::Duration::from_secs(2))
+                    .build()
+                    .unwrap_or_default();
+                let mut active_rows = Vec::new();
+                let mut stale_rows = Vec::new();
+
+                for (_config_dir, lock, alive) in instances {
+                    if alive {
+                        let status = fetch_instance_status(&http, Path::new(&lock.workdir)).await;
+                        active_rows.push(active_instance_row(&lock, status.as_ref()));
+                    } else {
+                        stale_rows.push(stale_instance_row(&lock));
+                    }
+                }
+
+                if active_rows.is_empty() {
+                    utils::println_note("No active Zedra instances.");
+                } else {
+                    utils::println_heading("Active Zedra Daemons");
+                    println!();
+                    println!(
+                        "{}",
+                        utils::render_table(
+                            &[
+                                "PID", "STATE", "VERSION", "ENDPOINT", "UPTIME", "SESS", "TERMS",
+                                "WORKDIR"
+                            ],
+                            &active_rows,
+                        )
+                    );
+                }
+
+                if stale {
+                    if !stale_rows.is_empty() {
+                        if !active_rows.is_empty() {
+                            println!();
+                        }
+                        utils::println_heading("Stale Workspace Locks");
+                        println!();
+                        println!(
+                            "{}",
+                            utils::render_table(&["PID", "AGE", "WORKDIR"], &stale_rows)
+                        );
+                    }
+                } else if !stale_rows.is_empty() {
+                    println!();
+                    utils::println_note(format!(
+                        "{} stale workspace lock{} hidden. Use `zedra list --stale` to show {}.",
+                        stale_rows.len(),
+                        if stale_rows.len() == 1 { "" } else { "s" },
+                        if stale_rows.len() == 1 { "it" } else { "them" },
+                    ));
+                }
+            }
+        }
+
+        Commands::Logs { workdir, lines } => {
+            let workdir = resolve_workdir(workdir);
+            let log_path = daemon_log_path(&workdir)?;
+            if !log_path.exists() {
+                utils::eprintln_error(format!("No daemon log found for: {}", workdir.display()));
+                utils::eprintln_note(format!("Expected: {}", log_path.display()));
+                std::process::exit(1);
+            }
+
+            let output = read_recent_log_lines(&log_path, lines)?;
+            if output.is_empty() {
+                utils::eprintln_note(format!("No log output yet: {}", log_path.display()));
+            } else {
+                print!("{output}");
+                if !output.ends_with('\n') {
+                    println!();
+                }
+            }
+        }
+
+        Commands::Update { version, yes } => {
+            let telemetry_dir = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
+            let ga4 = new_ga4(&telemetry_dir, false, false);
+            let current = env!("CARGO_PKG_VERSION");
+            utils::eprintln_heading("Zedra Update");
+            eprintln!();
+            utils::eprintln_key_values(&[("Current", format!("v{current}"))]);
+
+            // Check what's available
+            let target_tag = if let Some(ref v) = version {
+                v.clone()
+            } else {
+                eprintln!();
+                utils::eprintln_step("Checking for updates");
+                match version_check::check_latest_version().await {
+                    Ok(Some(tag)) => tag,
+                    Ok(None) => {
+                        utils::eprintln_success("Already up to date.");
+                        return Ok(());
+                    }
+                    Err(e) => {
+                        utils::eprintln_error(format!("Failed to check for updates: {e}"));
+                        std::process::exit(1);
+                    }
+                }
+            };
+
+            utils::eprintln_key_values(&[("Target", target_tag.clone())]);
+
+            // Warn about running daemons
+            let instances = workspace_lock::scan_all_instances();
+            let alive: Vec<_> = instances.iter().filter(|(_, _, alive)| *alive).collect();
+            if !alive.is_empty() {
+                eprintln!();
+                #[cfg(windows)]
+                utils::eprintln_warn(format!(
+                    "{} running daemon(s) found. They will keep using the old version until restarted:",
+                    alive.len()
+                ));
+                #[cfg(not(windows))]
+                utils::eprintln_warn(format!(
+                    "{} running daemon(s) found. Restart them after update:",
+                    alive.len()
+                ));
+                for (_, lock, _) in &alive {
+                    eprintln!("  pid {}  {}", lock.pid, lock.workdir);
+                }
+                eprintln!();
+            }
+
+            // Confirm unless --yes
+            if !yes {
+                eprint!("Proceed with update? [Y/n] ");
+                let mut input = String::new();
+                std::io::stdin().read_line(&mut input)?;
+                if !should_proceed_with_update(&input) {
+                    utils::eprintln_note("Cancelled.");
+                    return Ok(());
+                }
+            }
+
+            let update_start = std::time::Instant::now();
+            match version_check::self_update(&target_tag).await {
+                Ok(tag) => {
+                    let elapsed_ms = update_start.elapsed().as_millis() as u64;
+                    zedra_host::telemetry::send_now(
+                        &ga4,
+                        Event::SelfUpdate {
+                            success: true,
+                            target_version: tag.clone(),
+                            from_version: env!("CARGO_PKG_VERSION"),
+                            error: "",
+                            elapsed_ms,
+                        },
+                    )
+                    .await;
+                    eprintln!();
+                    utils::eprintln_success(format!("Updated to {tag}."));
+                    if !alive.is_empty() {
+                        utils::eprintln_note("Restart running daemons:");
+                        utils::eprintln_shell_command(
+                            "zedra stop -w <dir> && zedra start -w <dir>",
+                        );
+                    }
+                }
+                Err(e) => {
+                    let elapsed_ms = update_start.elapsed().as_millis() as u64;
+                    let error_label = classify_update_error(&e);
+                    zedra_host::telemetry::send_now(
+                        &ga4,
+                        Event::SelfUpdate {
+                            success: false,
+                            target_version: target_tag.clone(),
+                            from_version: env!("CARGO_PKG_VERSION"),
+                            error: error_label,
+                            elapsed_ms,
+                        },
+                    )
+                    .await;
+                    utils::eprintln_error(format!("Update failed: {e}"));
+                    std::process::exit(1);
+                }
+            }
+        }
+
+        Commands::Help { command } => {
+            print_command_help(&command)?;
+        }
+
+        Commands::Stop { workdir, grace } => {
+            let workdir = resolve_workdir(&workdir);
+
+            match workspace_lock::read_lock_info(&workdir)? {
+                None => {
+                    utils::eprintln_error(format!(
+                        "No running Zedra daemon found for: {}",
+                        workdir.display()
+                    ));
+                    std::process::exit(1);
+                }
+                Some(info) => {
+                    if !workspace_lock::is_process_alive(info.pid) {
+                        utils::eprintln_warn(format!(
+                            "Process {} is already gone (stale lock). Cleaning up.",
+                            info.pid
+                        ));
+                    } else {
+                        utils::eprintln_heading("Stopping Zedra Daemon");
+                        eprintln!();
+                        utils::eprintln_key_values(&[
+                            ("PID", info.pid.to_string()),
+                            ("Workdir", info.workdir.clone()),
+                            ("Host", info.hostname.clone()),
+                            ("Started", info.running_for()),
+                        ]);
+                        eprintln!();
+                    }
+                }
+            }
+
+            workspace_lock::kill_and_unlock(&workdir, grace)?;
+            utils::eprintln_success("Stopped.");
+        }
+    }
+
+    Ok(())
+}
+
+fn open_browser(url: &str) -> bool {
+    let mut command = if cfg!(target_os = "macos") {
+        let mut command = ProcessCommand::new("open");
+        command.arg(url);
+        command
+    } else if cfg!(target_os = "windows") {
+        let mut command = ProcessCommand::new("cmd");
+        command.args(["/C", "start", "", url]);
+        command
+    } else {
+        let mut command = ProcessCommand::new("xdg-open");
+        command.arg(url);
+        command
+    };
+
+    command
+        .status()
+        .map(|status| status.success())
+        .unwrap_or(false)
+}
+
+fn parse_json_object(input: &str) -> Result<serde_json::Value> {
+    let value: serde_json::Value = serde_json::from_str(input).context("parse --state JSON")?;
+    if value.is_object() {
+        Ok(value)
+    } else {
+        anyhow::bail!("--state must be a JSON object");
+    }
+}
+
+fn print_delta_browser_auth_prompt(session: &delta::CliAuthSession) {
+    utils::println_heading("Zedra Delta Auth");
+    println!();
+    match qr::render_url_qr(&session.auth_url) {
+        Ok(qr) => println!("{qr}"),
+        Err(e) => tracing::warn!("failed to render auth QR code: {e}"),
+    }
+    println!();
+    utils::println_note("Open URL in browser:");
+    println!("    {}", session.auth_url);
+    println!("    Expired at {}", format_node_date(&session.expires_at));
+    println!();
+    utils::println_note("Waiting...");
+}
+
+fn print_delta_auth_status(config: &delta::DeltaConfig) {
+    utils::println_heading("Zedra Delta Auth");
+    println!();
+    utils::print_key_values(&[
+        ("Delta URL", config.delta_url.clone()),
+        ("Stack", config.stack_id.to_string()),
+        ("Node", config.node_id.to_string()),
+        ("Expires", config.token_expires_at.clone()),
+    ]);
+}
+
+fn print_delta_stack(config: &delta::DeltaConfig) {
+    utils::println_heading("Zedra Delta Stack");
+    println!();
+    utils::print_key_values(&[
+        ("Delta URL", config.delta_url.clone()),
+        ("Stack", config.stack_id.to_string()),
+        ("Host Node", config.node_id.to_string()),
+    ]);
+    println!();
+    println!(
+        "Run `{}` to list stack nodes.",
+        utils::command_text("zedra stack list")
+    );
+}
+
+fn print_delta_send_result(
+    accepted: bool,
+    recipients: u32,
+    provider_ok: u32,
+    provider_fail: u32,
+    errors: &[delta::ProviderError],
+) {
+    println!();
+    utils::print_key_values(&[
+        ("Accepted", accepted.to_string()),
+        ("Recipients", recipients.to_string()),
+        ("Provider OK", provider_ok.to_string()),
+        ("Provider Fail", provider_fail.to_string()),
+    ]);
+    for err in errors {
+        println!(
+            "  [{provider}] {msg}",
+            provider = err.provider,
+            msg = err.message
+        );
+    }
+}
+
+/// Sectioned node detail view. `self_config` is set when showing the authed
+/// host node itself, adding the Stack section.
+fn print_delta_node_show(
+    detail: &delta::NodeDetailResponse,
+    self_config: Option<&delta::DeltaConfig>,
+) {
+    let node = &detail.node;
+    let label = node.alias.clone().unwrap_or_else(|| node.id.to_string());
+    let suffix = if self_config.is_some() {
+        " (this host)"
+    } else {
+        ""
+    };
+    utils::println_heading(&format!("Zedra Delta Node — {label}{suffix}"));
+
+    println!();
+    utils::println_heading("Node");
+    utils::print_key_values(&[
+        (
+            "Alias",
+            node.alias.clone().unwrap_or_else(|| "-".to_string()),
+        ),
+        (
+            "Name",
+            node.display_name.clone().unwrap_or_else(|| "-".to_string()),
+        ),
+        ("Kind", node.kind.as_str().to_string()),
+        ("ID", node.id.to_string()),
+        (
+            "Push",
+            if node.push_enabled { "yes" } else { "no" }.to_string(),
+        ),
+    ]);
+
+    if let Some(metadata) = node.metadata.as_object().filter(|map| !map.is_empty()) {
+        println!();
+        utils::println_heading("Metadata");
+        let entries = metadata
+            .iter()
+            .map(|(key, value)| {
+                let value = match value.as_str() {
+                    Some(text) => text.to_string(),
+                    None => value.to_string(),
+                };
+                (key.as_str(), value)
+            })
+            .collect::<Vec<_>>();
+        utils::print_key_values(&entries);
+    }
+
+    println!();
+    utils::println_heading("Key");
+    utils::print_key_values(&[
+        ("Fingerprint", node.public_key_fingerprint.clone()),
+        ("Public key", detail.public_key.clone()),
+    ]);
+
+    println!();
+    utils::println_heading("Abilities (what this node can do)");
+    if detail.abilities.is_empty() {
+        println!("  none");
+    }
+    for ability in &detail.abilities {
+        print_delta_ability_line(ability);
+    }
+
+    println!();
+    utils::println_heading("Grants (who can act on this node)");
+    if detail.grants.is_empty() {
+        println!("  none");
+    }
+    for grant in &detail.grants {
+        let subject = match (&grant.subject_kind[..], &grant.subject_alias) {
+            ("node", Some(alias)) => format!("node:{alias}"),
+            ("node", None) => format!("node:{}", grant.subject_id),
+            (kind, _) => kind.to_string(),
+        };
+        println!("  {:<28} ← {subject}", grant.ability);
+    }
+
+    if let Some(config) = self_config {
+        println!();
+        utils::println_heading("Stack");
+        utils::print_key_values(&[
+            ("Stack", config.stack_id.to_string()),
+            ("Delta URL", config.delta_url.clone()),
+        ]);
+    }
+}
+
+/// Stack-level ability state, one section per ability with generic
+/// key/value rendering of the rolled-up object.
+fn print_delta_stack_state(rollup: &delta::AbilityStateRollupResponse) {
+    if rollup.states.is_empty() {
+        utils::println_note("No ability state recorded in this stack.");
+        return;
+    }
+    utils::println_heading("Zedra Delta Stack State");
+    let mut abilities: Vec<_> = rollup.states.keys().collect();
+    abilities.sort();
+    for ability in abilities {
+        println!();
+        utils::println_heading(ability);
+        let Some(map) = rollup.states[ability].as_object() else {
+            println!("  {}", json_inline(&rollup.states[ability]));
+            continue;
+        };
+        for (key, value) in map {
+            if value.is_null() {
+                continue;
+            }
+            println!("  {key}: {}", json_inline(value));
+        }
+    }
+}
+
+/// One ability line plus its self-declared status, when present.
+fn print_delta_ability_line(ability: &delta::NodeAbilitySummary) {
+    let object = match (&ability.object_kind[..], &ability.object_alias) {
+        ("node", Some(alias)) => format!("node:{alias}"),
+        ("node", None) => format!("node:{}", ability.object_id),
+        (kind, _) => kind.to_string(),
+    };
+    println!("  {:<28} → {object}", ability.ability);
+    let Some(status) = &ability.status else {
+        return;
+    };
+    println!("      ready: {}", if status.ready { "yes" } else { "no" });
+    let Some(detail) = status.detail.as_object() else {
+        return;
+    };
+    for (key, value) in detail {
+        match value {
+            serde_json::Value::Null => {}
+            serde_json::Value::Array(items) if items.is_empty() => {
+                println!("      {key}: none");
+            }
+            serde_json::Value::Array(items) => {
+                for item in items {
+                    println!("      {key}: {}", json_inline(item));
+                }
+            }
+            other => println!("      {key}: {}", json_inline(other)),
+        }
+    }
+}
+
+/// Compact one-line rendering of a JSON value for status detail output.
+fn json_inline(value: &serde_json::Value) -> String {
+    match value {
+        serde_json::Value::String(text) => text.clone(),
+        serde_json::Value::Object(map) => map
+            .iter()
+            .filter(|(_, v)| !v.is_null())
+            .map(|(k, v)| format!("{k}={}", json_inline(v)))
+            .collect::<Vec<_>>()
+            .join(" "),
+        other => other.to_string(),
+    }
+}
+
+fn print_delta_nodes(nodes: &[delta::NodeSummary]) {
+    if nodes.is_empty() {
+        utils::println_note("No nodes found.");
+        return;
+    }
+    utils::println_heading("Zedra Delta Nodes");
+    println!();
+    let rows = nodes
+        .iter()
+        .map(|node| {
+            vec![
+                node.alias.clone().unwrap_or_else(|| "-".to_string()),
+                metadata_string(node, "os")
+                    .or_else(|| metadata_string(node, "platform"))
+                    .unwrap_or_else(|| "-".to_string()),
+                if node.push_enabled { "yes" } else { "no" }.to_string(),
+                node.id.to_string(),
+                node.joined_at
+                    .as_deref()
+                    .map(format_node_date)
+                    .unwrap_or_else(|| "-".to_string()),
+            ]
+        })
+        .collect::<Vec<_>>();
+    println!(
+        "{}",
+        utils::render_table(&["ALIAS", "OS", "PUSH", "ID", "DATE"], &rows)
+    );
+}
+
+fn print_delta_node_keys(keys: &[delta::NodeKeySummary]) {
+    if keys.is_empty() {
+        utils::println_note("No nodes found.");
+        return;
+    }
+    utils::println_heading("Zedra Delta Node Keys");
+    println!();
+    let rows = keys
+        .iter()
+        .map(|key| {
+            vec![
+                key.alias.clone().unwrap_or_else(|| "-".to_string()),
+                key.kind.as_str().to_string(),
+                key.node_id.to_string(),
+                key.public_key_fingerprint.clone(),
+                key.public_key.clone(),
+            ]
+        })
+        .collect::<Vec<_>>();
+    println!(
+        "{}",
+        utils::render_table(&["ALIAS", "KIND", "ID", "FINGERPRINT", "PUBLIC KEY"], &rows)
+    );
+}
+
+/// Format an RFC3339 timestamp as a local `YYYY-MM-DD HH:MM`; falls back to the
+/// raw string when it cannot be parsed.
+fn format_node_date(raw: &str) -> String {
+    chrono::DateTime::parse_from_rfc3339(raw)
+        .map(|dt| {
+            dt.with_timezone(&chrono::Local)
+                .format("%Y-%m-%d %H:%M")
+                .to_string()
+        })
+        .unwrap_or_else(|_| raw.to_string())
+}
+
+fn metadata_string(node: &delta::NodeSummary, key: &str) -> Option<String> {
+    node.metadata
+        .get(key)
+        .and_then(|value| value.as_str())
+        .filter(|value| !value.is_empty())
+        .map(ToString::to_string)
+}
+
+fn print_command_help(command_path: &[String]) -> Result<()> {
+    let mut command = Cli::command();
+    let target = find_command_help_mut(&mut command, command_path)
+        .ok_or_else(|| anyhow::anyhow!("unknown command: {}", command_path.join(" ")))?;
+    target.print_help()?;
+    println!();
+    Ok(())
+}
+
+fn find_command_help_mut<'a>(
+    command: &'a mut clap::Command,
+    command_path: &[String],
+) -> Option<&'a mut clap::Command> {
+    let Some((name, rest)) = command_path.split_first() else {
+        return Some(command);
+    };
+    let subcommand = command.find_subcommand_mut(name)?;
+    find_command_help_mut(subcommand, rest)
+}
+
+fn classify_update_error(e: &anyhow::Error) -> &'static str {
+    let msg = e.to_string();
+    if msg.contains("checksum mismatch") {
+        "checksum_mismatch"
+    } else if msg.contains("download failed") || msg.contains("error sending request") {
+        "download_failed"
+    } else if msg.contains("archive did not contain") || msg.contains("failed to extract") {
+        "extract_failed"
+    } else if msg.contains("failed to install")
+        || msg.contains("failed to rename")
+        || msg.contains("install directory is not writable")
+        || msg.contains("failed to start PowerShell")
+    {
+        "install_failed"
+    } else if msg.contains("failed to resolve latest") {
+        "version_resolve_failed"
+    } else {
+        "unknown"
+    }
+}
+
+fn update_instruction() -> &'static str {
+    "Run `zedra update`."
+}
+
+fn should_proceed_with_update(input: &str) -> bool {
+    // `[Y/n]` makes an empty response accept the update by default.
+    let input = input.trim();
+    !input.eq_ignore_ascii_case("n") && !input.eq_ignore_ascii_case("no")
+}
+
+fn daemon_log_path(workdir: &Path) -> Result<PathBuf> {
+    Ok(identity::workspace_config_dir(workdir)?.join("daemon.log"))
+}
+
+fn read_recent_log_lines(log_path: &Path, lines: usize) -> Result<String> {
+    let contents = std::fs::read_to_string(log_path)
+        .with_context(|| format!("failed to read daemon log at {}", log_path.display()))?;
+    if lines == 0 || contents.is_empty() {
+        return Ok(String::new());
+    }
+
+    let mut selected = contents.lines().rev().take(lines).collect::<Vec<_>>();
+    selected.reverse();
+    let mut output = selected.join("\n");
+    if !output.is_empty() && contents.ends_with('\n') {
+        output.push('\n');
+    }
+    Ok(output)
+}
+
+fn render_detached_followup_commands() -> String {
+    format!(
+        "Commands\n{}\n\nFrom another directory, add `--workdir <path>`.",
+        utils::render_shell_command_list(&[
+            ("zedra qr", "Create a fresh pairing QR."),
+            ("zedra status", "Check current daemon status."),
+            ("zedra stop", "Stop the daemon.")
+        ])
+    )
+}
+
+fn render_status_output(status: &serde_json::Value) -> String {
+    let version = status["version"].as_str().unwrap_or("?");
+    let workdir = status["workdir"].as_str().unwrap_or("?");
+    let endpoint_addr = status
+        .get("endpoint_addr")
+        .and_then(|value| value.as_str())
+        .or_else(|| status["endpoint_id"].as_str())
+        .unwrap_or("?");
+    let uptime = status["uptime_secs"]
+        .as_u64()
+        .map(utils::format_duration)
+        .unwrap_or_else(|| "-".to_string());
+    let sessions = status["sessions"].as_array();
+    let terminals = status["terminals"].as_array();
+    let session_count = sessions.map(|sessions| sessions.len()).unwrap_or(0);
+    let terminal_count = terminals.map(|terminals| terminals.len()).unwrap_or(0);
+    let connected_sessions = sessions
+        .map(|sessions| {
+            sessions
+                .iter()
+                .filter(|session| session["is_occupied"].as_bool().unwrap_or(false))
+                .count()
+        })
+        .unwrap_or(0);
+
+    let mut sections = vec![
+        "Zedra Daemon".to_string(),
+        String::new(),
+        utils::render_key_values(&[
+            ("Version", format!("v{version}")),
+            ("Uptime", uptime),
+            ("Workdir", workdir.to_string()),
+            ("Endpoint", endpoint_addr.to_string()),
+            ("Sessions", session_count.to_string()),
+            ("Connected", connected_sessions.to_string()),
+            ("Terminals", terminal_count.to_string()),
+        ]),
+    ];
+
+    if let Some(sessions) = sessions {
+        if !sessions.is_empty() {
+            sections.push(String::new());
+            sections.push("Sessions".to_string());
+            sections.push(utils::render_table(
+                &["ID", "NAME", "STATE", "TERMS", "UPTIME", "IDLE"],
+                &sessions.iter().map(session_status_row).collect::<Vec<_>>(),
+            ));
+        }
+    }
+
+    if let Some(terminals) = terminals {
+        if !terminals.is_empty() {
+            sections.push(String::new());
+            sections.push("Terminals".to_string());
+            sections.push(utils::render_table(
+                &["ID", "TITLE", "CREATED", "UPTIME", "SESSION"],
+                &terminals
+                    .iter()
+                    .map(terminal_status_row)
+                    .collect::<Vec<_>>(),
+            ));
+        }
+    }
+
+    sections.join("\n")
+}
+
+fn render_metrics_output(
+    workdir: &Path,
+    snapshot: &metrics::MetricsSnapshot,
+    status: Option<&serde_json::Value>,
+) -> String {
+    let metrics = &snapshot.metrics;
+    let daemon_running = status.is_some();
+    let daemon = status
+        .and_then(|status| status["uptime_secs"].as_u64())
+        .map(|uptime| format!("running ({})", utils::format_duration(uptime)))
+        .unwrap_or_else(|| "not running".to_string());
+    let current_sessions = status
+        .and_then(|status| status["sessions"].as_array())
+        .map(|sessions| sessions.len() as u64);
+    let current_terminals = status
+        .and_then(|status| status["terminals"].as_array())
+        .map(|terminals| terminals.len() as u64);
+    let active_connections = if daemon_running {
+        metrics.active_connection_count
+    } else {
+        0
+    };
+    let active_secs = display_active_secs(snapshot, daemon_running);
+
+    let mut rows = vec![
+        ("Workdir", workdir.display().to_string()),
+        ("Daemon", daemon),
+        ("Active Time", utils::format_duration(active_secs)),
+        ("Active Now", format_count(active_connections, "connection")),
+        ("Connections", metrics.successful_connections.to_string()),
+        ("Pairings", metrics.new_pairings.to_string()),
+        ("QR Codes", metrics.qr_codes_created.to_string()),
+        (
+            "Sessions",
+            render_current_and_total(
+                current_sessions,
+                metrics.sessions_created,
+                metrics.max_sessions_seen,
+                "created",
+            ),
+        ),
+        (
+            "Terminals",
+            render_current_and_total(
+                current_terminals,
+                metrics.terminals_created,
+                metrics.max_terminals_seen,
+                "created",
+            ),
+        ),
+        (
+            "Starts",
+            format!(
+                "{} total ({} detached)",
+                metrics.daemon_starts, metrics.detached_starts
+            ),
+        ),
+        (
+            "Last Start",
+            format_since_unix_secs(
+                metrics.last_started_at_unix_secs,
+                snapshot.generated_at_unix_secs,
+            ),
+        ),
+        (
+            "Last Connect",
+            format_since_unix_secs(
+                metrics.last_connected_at_unix_secs,
+                snapshot.generated_at_unix_secs,
+            ),
+        ),
+    ];
+
+    if metrics.new_pairings > 0 {
+        rows.push((
+            "Last Pairing",
+            format_since_unix_secs(
+                metrics.last_pairing_at_unix_secs,
+                snapshot.generated_at_unix_secs,
+            ),
+        ));
+    }
+
+    format!(
+        "{}\n\n{}",
+        utils::heading_text("Zedra Metrics"),
+        utils::render_key_values(&rows)
+    )
+}
+
+fn display_active_secs(snapshot: &metrics::MetricsSnapshot, daemon_running: bool) -> u64 {
+    if daemon_running {
+        return snapshot.active_secs;
+    }
+
+    let metrics = &snapshot.metrics;
+    let stale_active_secs = if metrics.active_connection_count > 0 {
+        metrics
+            .active_started_at_unix_secs
+            .zip(metrics.last_seen_at_unix_secs)
+            .map(|(started, seen)| seen.saturating_sub(started))
+            .unwrap_or_default()
+    } else {
+        0
+    };
+    metrics.total_active_secs.saturating_add(stale_active_secs)
+}
+
+fn render_current_and_total(
+    current: Option<u64>,
+    total: u64,
+    max_seen: u64,
+    total_label: &str,
+) -> String {
+    match current {
+        Some(current) if total > 0 => format!("{current} current / {total} {total_label}"),
+        Some(current) if max_seen > 0 => format!("{current} current / {max_seen} max"),
+        Some(current) => format!("{current} current"),
+        None if total > 0 && max_seen > 0 => format!("{total} {total_label} / {max_seen} max"),
+        None if total > 0 => format!("{total} {total_label}"),
+        None if max_seen > 0 => format!("{max_seen} max"),
+        None => format!("0 {total_label}"),
+    }
+}
+
+fn format_count(count: u64, singular: &str) -> String {
+    if count == 1 {
+        format!("1 {singular}")
+    } else {
+        format!("{count} {singular}s")
+    }
+}
+
+fn format_since_unix_secs(timestamp: Option<u64>, now: u64) -> String {
+    match timestamp {
+        Some(timestamp) if timestamp <= now => {
+            format!(
+                "{} ago",
+                utils::format_duration(now.saturating_sub(timestamp))
+            )
+        }
+        Some(_) => "just now".to_string(),
+        None => "-".to_string(),
+    }
+}
+
+fn session_status_row(session: &serde_json::Value) -> Vec<String> {
+    let id = session["id"]
+        .as_str()
+        .map(short_id)
+        .unwrap_or_else(|| "-".to_string());
+    let name = non_empty_str(&session["name"]).unwrap_or("-");
+    let state = if session["is_occupied"].as_bool().unwrap_or(false) {
+        "connected"
+    } else {
+        "idle"
+    };
+    let terminal_count = session["terminal_count"]
+        .as_u64()
+        .map(|count| count.to_string())
+        .or_else(|| {
+            session["terminals"]
+                .as_array()
+                .map(|terminals| terminals.len().to_string())
+        })
+        .unwrap_or_else(|| "-".to_string());
+    let uptime = session["uptime_secs"]
+        .as_u64()
+        .map(utils::format_duration)
+        .unwrap_or_else(|| "-".to_string());
+    let idle = session["idle_secs"]
+        .as_u64()
+        .map(utils::format_duration)
+        .unwrap_or_else(|| "-".to_string());
+
+    vec![
+        id,
+        name.to_string(),
+        state.to_string(),
+        terminal_count,
+        uptime,
+        idle,
+    ]
+}
+
+fn terminal_status_row(terminal: &serde_json::Value) -> Vec<String> {
+    let id = terminal["id"]
+        .as_str()
+        .map(short_id)
+        .unwrap_or_else(|| "-".to_string());
+    let title = non_empty_str(&terminal["title"]).unwrap_or("(untitled)");
+    let created = terminal["created_at_elapsed_secs"]
+        .as_u64()
+        .map(|secs| format!("{} ago", utils::format_duration(secs)))
+        .unwrap_or_else(|| "-".to_string());
+    let uptime = terminal["uptime_secs"]
+        .as_u64()
+        .map(utils::format_duration)
+        .unwrap_or_else(|| "-".to_string());
+    let session = terminal["session_name"]
+        .as_str()
+        .filter(|value| !value.is_empty())
+        .map(str::to_string)
+        .or_else(|| terminal["session_id"].as_str().map(short_id))
+        .unwrap_or_else(|| "-".to_string());
+
+    vec![id, title.to_string(), created, uptime, session]
+}
+
+fn non_empty_str(value: &serde_json::Value) -> Option<&str> {
+    value.as_str().filter(|value| !value.is_empty())
+}
+
+fn print_pairing_notice_stdout(info: &qr::StartupInfo) {
+    if info.pairing_static {
+        utils::println_warn(qr::STATIC_QR_WARNING);
+    } else {
+        utils::println_warn(qr::ONE_TIME_QR_NOTE);
+    }
+}
+
+async fn request_pairing_qr(
+    workdir: &Path,
+    mode: session_registry::PairingSlotMode,
+) -> Result<qr::StartupInfo> {
+    let config_dir = identity::workspace_config_dir(workdir)?;
+    let addr = std::fs::read_to_string(config_dir.join("api-addr")).unwrap_or_default();
+    let token = std::fs::read_to_string(config_dir.join("api-token")).unwrap_or_default();
+    if addr.trim().is_empty() {
+        anyhow::bail!("No running daemon found for: {}", workdir.display());
+    }
+
+    let path = match mode {
+        session_registry::PairingSlotMode::OneTime => "/api/qr",
+        session_registry::PairingSlotMode::Static => "/api/qr/static",
+    };
+    let url = format!("http://{}{}", addr.trim(), path);
+    let resp = reqwest::Client::new()
+        .post(&url)
+        .bearer_auth(token.trim())
+        .send()
+        .await?;
+    let status = resp.status();
+    if !status.is_success() {
+        if status == reqwest::StatusCode::NOT_FOUND {
+            if mode == session_registry::PairingSlotMode::Static {
+                anyhow::bail!(
+                    "Running daemon does not support `zedra qr --static`; restart it with the updated zedra binary."
+                );
+            } else {
+                anyhow::bail!(
+                    "Running daemon does not support `zedra qr`; restart it with the updated zedra binary."
+                );
+            }
+        }
+        let body = resp.text().await.unwrap_or_default();
+        anyhow::bail!("Failed to request pairing QR: HTTP {} {}", status, body);
+    }
+
+    resp.json::<qr::StartupInfo>().await.map_err(Into::into)
+}
+
+async fn wait_for_detached_pairing_qr(
+    workdir: &Path,
+    pid: u32,
+    mode: session_registry::PairingSlotMode,
+) -> Result<qr::StartupInfo> {
+    let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(10);
+
+    loop {
+        if !workspace_lock::is_process_alive(pid) {
+            anyhow::bail!("detached daemon exited before its pairing QR was ready");
+        }
+
+        let err = match request_pairing_qr(workdir, mode).await {
+            Ok(info) => return Ok(info),
+            Err(err) => err,
+        };
+
+        if tokio::time::Instant::now() >= deadline {
+            return Err(err).context("pairing QR was not ready before the startup timeout");
+        }
+        tokio::time::sleep(std::time::Duration::from_millis(250)).await;
+    }
+}
+
+async fn fetch_instance_status(
+    http: &reqwest::Client,
+    workdir: &Path,
+) -> Option<serde_json::Value> {
+    let config_dir = identity::workspace_config_dir(workdir).ok()?;
+    let addr = std::fs::read_to_string(config_dir.join("api-addr")).ok()?;
+    let token = std::fs::read_to_string(config_dir.join("api-token")).ok()?;
+    if addr.trim().is_empty() {
+        return None;
+    }
+
+    let url = format!("http://{}/api/status", addr.trim());
+    let resp = http.get(&url).bearer_auth(token.trim()).send().await.ok()?;
+    if !resp.status().is_success() {
+        return None;
+    }
+    resp.text()
+        .await
+        .ok()
+        .and_then(|body| serde_json::from_str::<serde_json::Value>(&body).ok())
+}
+
+fn active_instance_row(
+    lock: &workspace_lock::LockInfo,
+    status: Option<&serde_json::Value>,
+) -> Vec<String> {
+    let version = status
+        .and_then(|v| v["version"].as_str())
+        .map(|version| format!("v{version}"))
+        .unwrap_or_else(|| "-".to_string());
+    let endpoint = status
+        .and_then(|v| v["endpoint_id"].as_str())
+        .map(short_id)
+        .unwrap_or_else(|| "-".to_string());
+    let uptime = status
+        .and_then(|v| v["uptime_secs"].as_u64())
+        .unwrap_or_else(|| elapsed_since_unix_secs(lock.started_secs));
+    let workdir = status
+        .and_then(|v| v["workdir"].as_str())
+        .unwrap_or(&lock.workdir)
+        .to_string();
+
+    let sessions = status
+        .and_then(|v| v["sessions"].as_array())
+        .map(|sessions| sessions.len().to_string())
+        .unwrap_or_else(|| "-".to_string());
+    let terminals = status
+        .and_then(|v| v["terminals"].as_array())
+        .map(|terminals| terminals.len().to_string())
+        .unwrap_or_else(|| "-".to_string());
+    let state = status
+        .map(|v| {
+            let connected = v["sessions"]
+                .as_array()
+                .map(|sessions| {
+                    sessions
+                        .iter()
+                        .any(|session| session["is_occupied"].as_bool().unwrap_or(false))
+                })
+                .unwrap_or(false);
+            if connected {
+                "connected"
+            } else {
+                "ready"
+            }
+        })
+        .unwrap_or("no-api");
+
+    vec![
+        lock.pid.to_string(),
+        state.to_string(),
+        version,
+        endpoint,
+        utils::format_duration(uptime),
+        sessions,
+        terminals,
+        workdir,
+    ]
+}
+
+fn stale_instance_row(lock: &workspace_lock::LockInfo) -> Vec<String> {
+    vec![
+        lock.pid.to_string(),
+        lock.running_for(),
+        lock.workdir.clone(),
+    ]
+}
+
+fn short_id(id: &str) -> String {
+    if id.is_empty() || id == "?" {
+        "-".to_string()
+    } else {
+        id[..id.len().min(8)].to_string()
+    }
+}
+
+fn elapsed_since_unix_secs(started_secs: u64) -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|duration| duration.as_secs().saturating_sub(started_secs))
+        .unwrap_or(0)
+}
+
+struct PairingQrRequest<'a> {
+    registry: &'a Arc<session_registry::SessionRegistry>,
+    session_id: &'a str,
+    endpoint_id: iroh::PublicKey,
+    endpoint: &'a iroh::Endpoint,
+    relay_urls: &'a [String],
+    json: bool,
+    started_workdir: Option<&'a Path>,
+    metrics_workdir: Option<&'a Path>,
+    mode: session_registry::PairingSlotMode,
+}
+
+async fn generate_pairing_qr(request: PairingQrRequest<'_>) -> Result<()> {
+    let PairingQrRequest {
+        registry,
+        session_id,
+        endpoint_id,
+        endpoint,
+        relay_urls,
+        json,
+        started_workdir,
+        metrics_workdir,
+        mode,
+    } = request;
+    let ticket = ZedraPairingTicket {
+        endpoint_id,
+        handshake_secret: rand::random(),
+        session_id: session_id.to_string(),
+    };
+    let info = qr::build_pairing_info(&ticket, endpoint, relay_urls, mode)?;
+    registry
+        .add_pairing_slot_with_mode(session_id, ticket.handshake_secret, mode)
+        .await;
+    if let Some(workdir) = metrics_workdir {
+        if let Err(e) = metrics::record_qr_created(workdir) {
+            tracing::warn!("Failed to record QR metrics: {}", e);
+        }
+    }
+
+    if json {
+        if info.pairing_static {
+            utils::eprintln_warn(qr::STATIC_QR_WARNING);
+        }
+        qr::print_pairing_json(&info);
+    } else {
+        if let Some(workdir) = started_workdir {
+            qr::print_started_pairing_info(&info, workdir);
+        } else {
+            qr::print_pairing_info(&info);
+        }
+        print_pairing_notice_stdout(&info);
+    }
+    Ok(())
+}
+
+#[cfg(unix)]
+async fn run_qr_key_listener(
+    registry: Arc<session_registry::SessionRegistry>,
+    session_id: String,
+    endpoint_id: iroh::PublicKey,
+    endpoint: iroh::Endpoint,
+    relay_urls: Vec<String>,
+    workdir: PathBuf,
+    mode: session_registry::PairingSlotMode,
+) -> Result<()> {
+    use std::io::Read;
+    use std::os::fd::AsRawFd;
+    use tokio::sync::mpsc;
+
+    let (tx, mut rx) = mpsc::unbounded_channel::<u8>();
+    let mut reader_task = tokio::task::spawn_blocking(move || -> std::io::Result<()> {
+        let stdin = std::io::stdin();
+        let _raw = RawModeGuard::new(stdin.as_raw_fd())?;
+        let mut handle = stdin.lock();
+        let mut byte = [0_u8; 1];
+
+        loop {
+            handle.read_exact(&mut byte)?;
+            if tx.send(byte[0]).is_err() {
+                break;
+            }
+        }
+        Ok(())
+    });
+
+    loop {
+        tokio::select! {
+            maybe_key = rx.recv() => {
+                let Some(key) = maybe_key else {
+                    break;
+                };
+                if matches!(key, b'r' | b'R') {
+                    if let Err(e) = generate_pairing_qr(PairingQrRequest {
+                        registry: &registry,
+                        session_id: &session_id,
+                        endpoint_id,
+                        endpoint: &endpoint,
+                        relay_urls: &relay_urls,
+                        json: false,
+                        started_workdir: None,
+                        metrics_workdir: Some(&workdir),
+                        mode,
+                    }).await {
+                        tracing::warn!("Failed to regenerate QR code: {}", e);
+                    } else {
+                        utils::eprintln_success("Regenerated pairing QR. Press 'r' again to refresh.");
+                    }
+                }
+            }
+            reader_result = &mut reader_task => {
+                match reader_result {
+                    Ok(Ok(())) => {}
+                    Ok(Err(e)) => return Err(e.into()),
+                    Err(e) => return Err(anyhow::anyhow!("QR key reader task failed: {}", e)),
+                }
+                break;
+            }
+        }
+    }
+
+    Ok(())
+}
+
+#[cfg(unix)]
+struct RawModeGuard {
+    fd: std::os::fd::RawFd,
+    original: libc::termios,
+}
+
+#[cfg(unix)]
+impl RawModeGuard {
+    fn new(fd: std::os::fd::RawFd) -> std::io::Result<Self> {
+        let mut original = std::mem::MaybeUninit::<libc::termios>::uninit();
+        // SAFETY: libc validates the fd and initializes the termios struct on success.
+        let ret = unsafe { libc::tcgetattr(fd, original.as_mut_ptr()) };
+        if ret != 0 {
+            return Err(std::io::Error::last_os_error());
+        }
+
+        // SAFETY: `original` was initialized by `tcgetattr` above.
+        let original = unsafe { original.assume_init() };
+        let mut raw = original;
+        raw.c_lflag &= !(libc::ICANON | libc::ECHO);
+        raw.c_cc[libc::VMIN] = 1;
+        raw.c_cc[libc::VTIME] = 0;
+
+        // SAFETY: `raw` points to a valid termios struct for this fd.
+        let ret = unsafe { libc::tcsetattr(fd, libc::TCSANOW, &raw) };
+        if ret != 0 {
+            return Err(std::io::Error::last_os_error());
+        }
+
+        Ok(Self { fd, original })
+    }
+}
+
+#[cfg(unix)]
+impl Drop for RawModeGuard {
+    fn drop(&mut self) {
+        // SAFETY: `self.original` came from a successful `tcgetattr` on this fd.
+        let ret = unsafe { libc::tcsetattr(self.fd, libc::TCSANOW, &self.original) };
+        if ret != 0 {
+            tracing::warn!(
+                "Failed to restore terminal mode: {}",
+                std::io::Error::last_os_error()
+            );
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn cli_version_flag_prints_package_version() {
+        for flag in ["--version", "-v"] {
+            match Cli::try_parse_from(["zedra", flag]) {
+                Ok(cli) => assert!(cli.print_version, "{flag} should set the version flag"),
+                Err(err) => panic!("{err}"),
+            }
+        }
+        assert_eq!(
+            render_cli_version(),
+            format!("{}\n", env!("CARGO_PKG_VERSION"))
+        );
+    }
+
+    #[test]
+    fn help_title_includes_version() {
+        let help = Cli::command().render_help().to_string();
+
+        assert!(help.contains(&format!(
+            "Zedra CLI - Desktop daemon v{}",
+            env!("CARGO_PKG_VERSION")
+        )));
+    }
+
+    #[test]
+    fn update_confirmation_defaults_to_yes() {
+        assert!(should_proceed_with_update(""));
+        assert!(should_proceed_with_update("y"));
+        assert!(should_proceed_with_update("yes"));
+        assert!(!should_proceed_with_update("n"));
+        assert!(!should_proceed_with_update("no"));
+    }
+
+    #[test]
+    fn no_args_prints_help() {
+        match Cli::try_parse_from(["zedra"]) {
+            Ok(_) => panic!("missing command should print top-level help"),
+            Err(err) => {
+                assert_eq!(
+                    err.kind(),
+                    clap::error::ErrorKind::DisplayHelpOnMissingArgumentOrSubcommand
+                );
+                assert!(err.to_string().contains("Commands:"));
+            }
+        }
+    }
+
+    #[test]
+    fn start_detach_does_not_require_version_flag() {
+        for args in [["zedra", "start", ""], ["zedra", "start", "--detach"]] {
+            let args = args.into_iter().filter(|arg| !arg.is_empty());
+            match Cli::try_parse_from(args) {
+                Ok(cli) => {
+                    assert!(!cli.print_version, "start should not set version output");
+                    assert!(matches!(cli.command, Some(Commands::Start { .. })));
+                }
+                Err(err) => panic!("{err}"),
+            }
+        }
+    }
+
+    #[test]
+    fn static_qr_flags_parse() {
+        match Cli::try_parse_from(["zedra", "start", "--static-qr"])
+            .unwrap()
+            .command
+        {
+            Some(Commands::Start { static_qr, .. }) => assert!(static_qr),
+            other => panic!("expected start command, got {:?}", other.map(|_| "other")),
+        }
+
+        match Cli::try_parse_from(["zedra", "qr", "--static"])
+            .unwrap()
+            .command
+        {
+            Some(Commands::Qr { static_qr, .. }) => assert!(static_qr),
+            other => panic!("expected qr command, got {:?}", other.map(|_| "other")),
+        }
+    }
+
+    #[test]
+    fn stack_remove_parses_target() {
+        match Cli::try_parse_from(["zedra", "stack", "remove", "zedra-ios"])
+            .unwrap()
+            .command
+        {
+            Some(Commands::Stack {
+                command: Some(StackCommand::Remove { target, force }),
+            }) => {
+                assert_eq!(target, "zedra-ios");
+                assert!(!force);
+            }
+            other => panic!(
+                "expected stack remove command, got {:?}",
+                other.map(|_| "other")
+            ),
+        }
+
+        match Cli::try_parse_from(["zedra", "stack", "remove", "zedra-ios", "--force"])
+            .unwrap()
+            .command
+        {
+            Some(Commands::Stack {
+                command: Some(StackCommand::Remove { target, force }),
+            }) => {
+                assert_eq!(target, "zedra-ios");
+                assert!(force);
+            }
+            other => panic!(
+                "expected forced stack remove command, got {:?}",
+                other.map(|_| "other")
+            ),
+        }
+    }
+
+    #[test]
+    fn stack_update_requires_alias_or_name() {
+        // Either flag alone or both together parse.
+        match Cli::try_parse_from(["zedra", "stack", "update", "phone", "--alias", "my-phone"])
+            .unwrap()
+            .command
+        {
+            Some(Commands::Stack {
+                command: Some(StackCommand::Update { alias, name, .. }),
+            }) => {
+                assert_eq!(alias.as_deref(), Some("my-phone"));
+                assert!(name.is_none());
+            }
+            other => panic!(
+                "expected stack update command, got {:?}",
+                other.map(|_| "other")
+            ),
+        }
+        match Cli::try_parse_from([
+            "zedra",
+            "stack",
+            "update",
+            "phone",
+            "--name",
+            "Tan iPhone",
+            "--alias",
+            "my-phone",
+        ])
+        .unwrap()
+        .command
+        {
+            Some(Commands::Stack {
+                command: Some(StackCommand::Update { alias, name, .. }),
+            }) => {
+                assert_eq!(alias.as_deref(), Some("my-phone"));
+                assert_eq!(name.as_deref(), Some("Tan iPhone"));
+            }
+            other => panic!(
+                "expected stack update command, got {:?}",
+                other.map(|_| "other")
+            ),
+        }
+        // Neither flag must fail.
+        assert!(Cli::try_parse_from(["zedra", "stack", "update", "phone"]).is_err());
+    }
+
+    #[test]
+    fn send_defaults_to_notification_and_requires_title() {
+        match Cli::try_parse_from(["zedra", "send", "phone", "--title", "hi"])
+            .unwrap()
+            .command
+        {
+            Some(Commands::Send {
+                live_activity,
+                title,
+                ..
+            }) => {
+                assert!(!live_activity);
+                assert_eq!(title.as_deref(), Some("hi"));
+            }
+            other => panic!("expected send command, got {:?}", other.map(|_| "other")),
+        }
+        // Notification mode without --title must fail.
+        assert!(Cli::try_parse_from(["zedra", "send", "phone"]).is_err());
+        // Missing target must fail.
+        assert!(Cli::try_parse_from(["zedra", "send", "--title", "hi"]).is_err());
+    }
+
+    #[test]
+    fn send_live_activity_routes_with_flag() {
+        for flag in ["--live-activity", "--la", "-l"] {
+            match Cli::try_parse_from(["zedra", "send", "phone", flag, "--activity-id", "act-1"])
+                .unwrap()
+                .command
+            {
+                Some(Commands::Send {
+                    live_activity,
+                    activity_id,
+                    title,
+                    ..
+                }) => {
+                    assert!(live_activity);
+                    assert_eq!(activity_id.as_deref(), Some("act-1"));
+                    assert!(title.is_none(), "title optional in live activity mode");
+                }
+                other => panic!("expected send command, got {:?}", other.map(|_| "other")),
+            }
+        }
+        // Live activity mode requires --activity-id.
+        assert!(Cli::try_parse_from(["zedra", "send", "phone", "--live-activity"]).is_err());
+        // Notification-only flags conflict with --live-activity.
+        assert!(Cli::try_parse_from([
+            "zedra",
+            "send",
+            "phone",
+            "--live-activity",
+            "--activity-id",
+            "act-1",
+            "--category",
+            "task"
+        ])
+        .is_err());
+        // Live-activity-only flags require the flag.
+        assert!(Cli::try_parse_from(["zedra", "send", "phone", "--title", "hi", "--end"]).is_err());
+    }
+
+    #[test]
+    fn stack_list_parses() {
+        match Cli::try_parse_from(["zedra", "stack", "list"])
+            .unwrap()
+            .command
+        {
+            Some(Commands::Stack {
+                command: Some(StackCommand::List),
+            }) => {}
+            other => panic!(
+                "expected stack list command, got {:?}",
+                other.map(|_| "other")
+            ),
+        }
+    }
+
+    #[test]
+    fn stack_keys_parses() {
+        match Cli::try_parse_from(["zedra", "stack", "keys"])
+            .unwrap()
+            .command
+        {
+            Some(Commands::Stack {
+                command: Some(StackCommand::Keys),
+            }) => {}
+            other => panic!(
+                "expected stack keys command, got {:?}",
+                other.map(|_| "other")
+            ),
+        }
+    }
+
+    #[test]
+    fn stack_show_parses_optional_target() {
+        match Cli::try_parse_from(["zedra", "stack", "show"])
+            .unwrap()
+            .command
+        {
+            Some(Commands::Stack {
+                command:
+                    Some(StackCommand::Show {
+                        target: None,
+                        ability: None,
+                    }),
+            }) => {}
+            other => panic!(
+                "expected stack show command, got {:?}",
+                other.map(|_| "other")
+            ),
+        }
+        match Cli::try_parse_from(["zedra", "stack", "show", "zedra-ios"])
+            .unwrap()
+            .command
+        {
+            Some(Commands::Stack {
+                command:
+                    Some(StackCommand::Show {
+                        target: Some(target),
+                        ability: None,
+                    }),
+            }) => assert_eq!(target, "zedra-ios"),
+            other => panic!(
+                "expected stack show command, got {:?}",
+                other.map(|_| "other")
+            ),
+        }
+        match Cli::try_parse_from([
+            "zedra",
+            "stack",
+            "show",
+            "zedra-ios",
+            "--ability",
+            "notification.receive",
+        ])
+        .unwrap()
+        .command
+        {
+            Some(Commands::Stack {
+                command:
+                    Some(StackCommand::Show {
+                        target: Some(target),
+                        ability: Some(ability),
+                    }),
+            }) => {
+                assert_eq!(target, "zedra-ios");
+                assert_eq!(ability, "notification.receive");
+            }
+            other => panic!(
+                "expected stack show command, got {:?}",
+                other.map(|_| "other")
+            ),
+        }
+    }
+
+    #[test]
+    fn stack_grant_and_revoke_parse_target_and_ability() {
+        match Cli::try_parse_from(["zedra", "stack", "grant", "agent-1", "notification.send"])
+            .unwrap()
+            .command
+        {
+            Some(Commands::Stack {
+                command: Some(StackCommand::Grant { target, ability }),
+            }) => {
+                assert_eq!(target, "agent-1");
+                assert_eq!(ability, "notification.send");
+            }
+            other => panic!(
+                "expected stack grant command, got {:?}",
+                other.map(|_| "other")
+            ),
+        }
+        match Cli::try_parse_from(["zedra", "stack", "revoke", "agent-1", "notification.send"])
+            .unwrap()
+            .command
+        {
+            Some(Commands::Stack {
+                command: Some(StackCommand::Revoke { target, ability }),
+            }) => {
+                assert_eq!(target, "agent-1");
+                assert_eq!(ability, "notification.send");
+            }
+            other => panic!(
+                "expected stack revoke command, got {:?}",
+                other.map(|_| "other")
+            ),
+        }
+        assert!(Cli::try_parse_from(["zedra", "stack", "grant", "agent-1"]).is_err());
+    }
+
+    #[test]
+    fn detached_start_child_args_preserve_start_options() {
+        let args = detached_start_child_args(&DetachedStartOptions {
+            workdir: PathBuf::from("project"),
+            verbose: true,
+            relay_url: vec![
+                "https://sg1.relay.zedra.dev".to_string(),
+                "https://us1.relay.zedra.dev".to_string(),
+            ],
+            no_telemetry: true,
+            debug_telemetry: true,
+            relay_only: true,
+            static_qr: true,
+            usage_refresh_secs: 300,
+        });
+
+        assert_eq!(
+            args,
+            vec![
+                "--verbose",
+                "start",
+                "--workdir",
+                "project",
+                "--relay-url",
+                "https://sg1.relay.zedra.dev",
+                "--relay-url",
+                "https://us1.relay.zedra.dev",
+                "--no-telemetry",
+                "--debug-telemetry",
+                "--relay-only",
+                "--static-qr",
+            ]
+        );
+    }
+
+    #[test]
+    fn active_instance_row_summarizes_status() {
+        let lock = workspace_lock::LockInfo {
+            pid: 42,
+            workdir: "/fallback".to_string(),
+            hostname: "host".to_string(),
+            started_secs: 0,
+        };
+        let status = serde_json::json!({
+            "version": "0.2.0",
+            "endpoint_id": "abcdef123456",
+            "uptime_secs": 65,
+            "workdir": "/repo",
+            "sessions": [
+                { "is_occupied": true },
+                { "is_occupied": false }
+            ],
+            "terminals": [{}, {}]
+        });
+
+        assert_eq!(
+            active_instance_row(&lock, Some(&status)),
+            vec![
+                "42",
+                "connected",
+                "v0.2.0",
+                "abcdef12",
+                "1m5s",
+                "2",
+                "2",
+                "/repo",
+            ]
+        );
+    }
+
+    #[test]
+    fn detached_followup_commands_stays_short() {
+        let output = render_detached_followup_commands();
+
+        assert!(output.contains("Commands"));
+        assert!(output.contains("  $ zedra qr      Create a fresh pairing QR."));
+        assert!(output.contains("  $ zedra status  Check current daemon status."));
+        assert!(output.contains("  $ zedra stop    Stop the daemon."));
+        assert!(!output.contains("zedra logs"));
+        assert!(output.contains("From another directory, add `--workdir <path>`."));
+    }
+
+    #[test]
+    fn read_recent_log_lines_limits_output() {
+        let dir = tempfile::tempdir().unwrap();
+        let log_path = dir.path().join("daemon.log");
+        std::fs::write(&log_path, "one\ntwo\nthree\n").unwrap();
+
+        assert_eq!(read_recent_log_lines(&log_path, 2).unwrap(), "two\nthree\n");
+        assert_eq!(read_recent_log_lines(&log_path, 0).unwrap(), "");
+    }
+
+    #[test]
+    fn status_output_includes_sessions_and_terminals() {
+        let status = serde_json::json!({
+            "version": "0.2.0",
+            "workdir": "/repo",
+            "endpoint_id": "abcdef123456",
+            "endpoint_addr": "endpoint-addr-full-value",
+            "uptime_secs": 65,
+            "sessions": [
+                {
+                    "id": "session123456",
+                    "name": "repo",
+                    "terminal_count": 1,
+                    "uptime_secs": 120,
+                    "idle_secs": 5,
+                    "is_occupied": true,
+                    "workdir": "/repo"
+                }
+            ],
+            "terminals": [
+                {
+                    "id": "terminal123456",
+                    "title": "zsh",
+                    "created_at_elapsed_secs": 10,
+                    "uptime_secs": 10,
+                    "session_name": "repo"
+                }
+            ]
+        });
+
+        let output = render_status_output(&status);
+
+        assert!(output.contains("Zedra Daemon"));
+        assert!(output.contains("  Version    v0.2.0"));
+        assert!(output.contains("  Endpoint   endpoint-addr-full-value"));
+        assert!(output.contains("Sessions"));
+        assert!(output.contains("connected"));
+        assert!(output.contains("Terminals"));
+        assert!(output.contains("zsh"));
+    }
+
+    #[test]
+    fn metrics_output_includes_local_and_live_counts() {
+        let snapshot = metrics::MetricsSnapshot {
+            metrics: metrics::WorkspaceMetrics {
+                daemon_starts: 3,
+                detached_starts: 2,
+                successful_connections: 9,
+                new_pairings: 1,
+                qr_codes_created: 4,
+                sessions_created: 1,
+                terminals_created: 7,
+                active_connection_count: 1,
+                last_started_at_unix_secs: Some(90),
+                last_connected_at_unix_secs: Some(95),
+                ..metrics::WorkspaceMetrics::default()
+            },
+            generated_at_unix_secs: 100,
+            active_secs: 3605,
+        };
+        let status = serde_json::json!({
+            "uptime_secs": 120,
+            "sessions": [{ "id": "session" }],
+            "terminals": [{ "id": "terminal" }, { "id": "terminal-2" }]
+        });
+
+        let output = render_metrics_output(Path::new("/repo"), &snapshot, Some(&status));
+
+        assert!(output.contains("Zedra Metrics"));
+        assert!(output.contains("  Workdir       /repo"));
+        assert!(output.contains("  Daemon        running (2m0s)"));
+        assert!(output.contains("  Active Time   1h0m"));
+        assert!(output.contains("  Active Now    1 connection"));
+        assert!(output.contains("  Connections   9"));
+        assert!(output.contains("  Pairings      1"));
+        assert!(output.contains("  QR Codes      4"));
+        assert!(output.contains("  Sessions      1 current / 1 created"));
+        assert!(output.contains("  Terminals     2 current / 7 created"));
+        assert!(output.contains("  Starts        3 total (2 detached)"));
+        assert!(output.contains("  Last Start    10s ago"));
+        assert!(output.contains("  Last Connect  5s ago"));
+    }
+
+    #[test]
+    fn metrics_output_caps_stale_active_time_when_daemon_is_not_running() {
+        let snapshot = metrics::MetricsSnapshot {
+            metrics: metrics::WorkspaceMetrics {
+                total_active_secs: 10,
+                active_connection_count: 1,
+                active_started_at_unix_secs: Some(100),
+                last_seen_at_unix_secs: Some(130),
+                ..metrics::WorkspaceMetrics::default()
+            },
+            generated_at_unix_secs: 500,
+            active_secs: 410,
+        };
+
+        let output = render_metrics_output(Path::new("/repo"), &snapshot, None);
+
+        assert!(output.contains("  Daemon        not running"));
+        assert!(output.contains("  Active Time   40s"));
+        assert!(output.contains("  Active Now    0 connections"));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn write_api_discovery_file_uses_0600_permissions_on_unix() {
+        use std::os::unix::fs::PermissionsExt;
+
+        let dir = tempfile::tempdir().unwrap();
+        let token_path = dir.path().join("api-token");
+
+        write_api_discovery_file(&token_path, b"first-token").unwrap();
+        assert_eq!(std::fs::read_to_string(&token_path).unwrap(), "first-token");
+        assert_eq!(
+            std::fs::metadata(&token_path).unwrap().permissions().mode() & 0o777,
+            0o600
+        );
+
+        write_api_discovery_file(&token_path, b"second-token").unwrap();
+        assert_eq!(
+            std::fs::read_to_string(&token_path).unwrap(),
+            "second-token"
+        );
+        assert_eq!(
+            std::fs::metadata(&token_path).unwrap().permissions().mode() & 0o777,
+            0o600
+        );
+    }
+}

@@ -1,0 +1,584 @@
+use std::{f32::consts::TAU, time::Duration};
+
+use gpui::{prelude::FluentBuilder as _, *};
+use zedra_session::{ConnectPhase, ConnectSnapshot, SessionState, TransportSnapshot};
+
+use crate::platform_bridge::{self, AlertButton, HapticFeedback};
+use crate::theme;
+use crate::transport_badge::{format_bytes, render_transport_badge, transport_badge};
+use crate::workspace_action;
+
+pub struct WorkspaceConnecting {
+    session_state: Entity<SessionState>,
+    details_expanded: bool,
+    restart_animation_id: u64,
+    _session_state_subscription: Subscription,
+}
+
+impl WorkspaceConnecting {
+    pub fn new(session_state: Entity<SessionState>, cx: &mut Context<Self>) -> Self {
+        let session_state_subscription = cx.observe(&session_state, |_, _, cx| cx.notify());
+
+        Self {
+            session_state,
+            details_expanded: false,
+            restart_animation_id: 0,
+            _session_state_subscription: session_state_subscription,
+        }
+    }
+}
+
+impl Render for WorkspaceConnecting {
+    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let state = self.session_state.read(cx).clone();
+        let expanded = self.details_expanded;
+        div()
+            .id("connecting-view")
+            .size_full()
+            .relative()
+            .bg(rgb(theme::bg_primary(cx)))
+            .flex()
+            .flex_col()
+            .justify_start()
+            .px(px(theme::SPACING_LG))
+            .pt(px(32.0))
+            .child(
+                div()
+                    .w_full()
+                    .max_w(px(theme::CONNECT_DETAIL_WIDTH))
+                    .mx_auto()
+                    .min_w_0()
+                    .flex()
+                    .flex_col()
+                    .items_center()
+                    .child(render_phase_title(
+                        &state.phase,
+                        &state.snapshot,
+                        self.restart_animation_id,
+                        cx,
+                    ))
+                    .child(render_details_toggle(expanded, cx))
+                    .when(expanded, |d| {
+                        d.child(render_detail(cx, &state.phase, &state.snapshot))
+                    }),
+            )
+            .child(render_close_button(cx))
+    }
+}
+
+fn render_close_button(cx: &mut Context<WorkspaceConnecting>) -> Stateful<Div> {
+    div()
+        .id("connecting-close-button")
+        .absolute()
+        .top(px((theme::HEADER_BUTTON_SIZE - theme::ICON_SM) / 2.0))
+        .right(px((theme::HEADER_BUTTON_SIZE - theme::ICON_SM) / 2.0))
+        .w(px(theme::ICON_SM))
+        .h(px(theme::ICON_SM))
+        .flex()
+        .items_center()
+        .justify_center()
+        .cursor_pointer()
+        .hit_slop(px(20.0))
+        .on_press(cx.listener(|_this, _event, window, cx| {
+            window.dispatch_action(workspace_action::HideConnecting.boxed_clone(), cx);
+        }))
+        .child(
+            svg()
+                .path("icons/x.svg")
+                .size(px(16.0))
+                .text_color(rgb(theme::text_muted(cx))),
+        )
+}
+
+fn render_details_toggle(expanded: bool, cx: &mut Context<WorkspaceConnecting>) -> Stateful<Div> {
+    let label = if expanded {
+        "Hide Details"
+    } else {
+        "View Details"
+    };
+    let chevron: SharedString = if expanded {
+        "icons/chevron-up.svg".into()
+    } else {
+        "icons/chevron-down.svg".into()
+    };
+
+    div()
+        .id("details-toggle")
+        .cursor_pointer()
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(4.0))
+        .mb(px(theme::SPACING_SM))
+        .on_press(cx.listener(|this, _event, _window, cx| {
+            this.details_expanded = !this.details_expanded;
+            cx.notify();
+        }))
+        .child(
+            div()
+                .text_size(px(theme::FONT_DETAIL))
+                .text_color(rgb(theme::text_muted(cx)))
+                .child(label),
+        )
+        .child(
+            svg()
+                .path(chevron)
+                .size(px(12.0))
+                .text_color(rgb(theme::text_muted(cx))),
+        )
+}
+
+/// Elapsed in a connect stage past which we hint the connection may be stalled.
+const HOLE_PUNCH_SLOW_MS: u64 = 8_000;
+
+/// Live badge label for the hole-punch phase: which sub-stage, elapsed, and a
+/// stall hint once it runs long. Answers "hanging or still in progress?".
+fn hole_punch_status_label(snap: &ConnectSnapshot) -> String {
+    let stage = snap
+        .hole_punch_stage
+        .map(|s| s.display_name())
+        .unwrap_or("Hole punching");
+    match snap.hole_punch_elapsed_ms {
+        Some(ms) if ms >= HOLE_PUNCH_SLOW_MS => {
+            format!("{stage}\u{2026} {}s \u{00b7} slow", ms / 1000)
+        }
+        Some(ms) if ms >= 1000 => format!("{stage}\u{2026} {}s", ms / 1000),
+        _ => format!("{stage}\u{2026}"),
+    }
+}
+
+fn render_phase_title(
+    phase: &ConnectPhase,
+    snap: &ConnectSnapshot,
+    restart_animation_id: u64,
+    cx: &mut Context<WorkspaceConnecting>,
+) -> Div {
+    let (label, color) = transport_badge(&theme::palette(cx), phase, snap.transport.as_ref());
+    let label = match phase {
+        ConnectPhase::HolePunching => hole_punch_status_label(snap),
+        _ => label,
+    };
+
+    let title = match phase {
+        ConnectPhase::BindingEndpoint | ConnectPhase::HolePunching => "Connect",
+        ConnectPhase::Authenticating | ConnectPhase::Proving => "Authorize",
+        ConnectPhase::Sync => "Sync",
+        p => p.display_name(),
+    };
+
+    div()
+        .w_full()
+        .mb(px(theme::SPACING_LG))
+        .flex()
+        .flex_col()
+        .items_center()
+        .gap(px(8.0))
+        .child(
+            div()
+                .relative()
+                .max_w_full()
+                .min_w_0()
+                .h(px(28.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .justify_center()
+                .child(
+                    div()
+                        .w(px(140.0))
+                        .min_w_0()
+                        .truncate()
+                        .text_align(TextAlign::Center)
+                        .text_color(rgb(theme::text_primary(cx)))
+                        .text_size(px(theme::FONT_HEADING))
+                        .font_weight(FontWeight::MEDIUM)
+                        .child(title),
+                )
+                .child(
+                    div()
+                        .absolute()
+                        .right(px(-16.0))
+                        .top_0()
+                        .child(render_restart_button(restart_animation_id, cx)),
+                ),
+        )
+        .child(
+            render_transport_badge(label, color)
+                .w_full()
+                .text_align(TextAlign::Center)
+                .flex()
+                .flex_col()
+                .items_center(),
+        )
+}
+
+fn render_restart_button(
+    restart_animation_id: u64,
+    cx: &mut Context<WorkspaceConnecting>,
+) -> Stateful<Div> {
+    div()
+        .id("restart-connection-button")
+        .w(px(28.0))
+        .h(px(28.0))
+        .flex()
+        .items_center()
+        .justify_center()
+        .rounded(px(6.0))
+        .hit_slop(px(10.0))
+        .on_press(cx.listener(|this, _event, window, cx| {
+            this.restart_animation_id = this.restart_animation_id.wrapping_add(1);
+            platform_bridge::trigger_haptic(HapticFeedback::ImpactLight);
+            window.dispatch_action(workspace_action::RestartConnection.boxed_clone(), cx);
+            cx.notify();
+        }))
+        .child(render_restart_icon(cx, restart_animation_id))
+}
+
+fn render_restart_icon(cx: &App, restart_animation_id: u64) -> AnyElement {
+    let icon = svg()
+        .path("icons/refresh-ccw.svg")
+        .size(px(14.0))
+        .text_color(rgb(theme::text_muted(cx)));
+
+    if restart_animation_id == 0 {
+        icon.into_any_element()
+    } else {
+        icon.with_animation(
+            ElementId::NamedInteger("restart-connection-spin".into(), restart_animation_id),
+            Animation::new(Duration::from_millis(450)).with_easing(ease_out_quint()),
+            |icon, delta| icon.with_transformation(Transformation::rotate(radians(TAU * delta))),
+        )
+        .into_any_element()
+    }
+}
+
+// ─── Phase status helpers ────────────────────────────────────────────────────
+
+fn has_discovery_data(snap: &ConnectSnapshot) -> bool {
+    snap.relay_connected
+        || !snap.direct_addrs.is_empty()
+        || snap.has_ipv4
+        || snap.has_ipv6
+        || snap.relay_latency_ms.is_some()
+}
+
+fn render_discovery_rows(cx: &App, snap: &ConnectSnapshot) -> Div {
+    let mut d = div().flex().flex_col().gap(px(2.0));
+
+    let relay_status = if snap.relay_connected {
+        match snap.relay_latency_ms {
+            Some(ms) => format!("Connected ({ms}ms)"),
+            None => "Connected".into(),
+        }
+    } else {
+        "Connecting\u{2026}".into()
+    };
+    d = d.child(kv_row(cx, "Relay", &relay_status));
+
+    if !snap.direct_addrs.is_empty() {
+        let count = snap.direct_addrs.len();
+        let direct_addrs = snap.direct_addrs.clone();
+        let direct_label = format!(
+            "{count} addr{} - tap to view",
+            if count == 1 { "" } else { "s" }
+        );
+        d = d.child(
+            div()
+                .id("direct-addresses-row")
+                .flex()
+                .flex_row()
+                .gap(px(6.0))
+                .cursor_pointer()
+                .on_press(move |_, _, _| {
+                    if direct_addrs.is_empty() {
+                        return;
+                    }
+
+                    let message = direct_addrs.join("\n");
+                    platform_bridge::show_alert(
+                        "Direct addresses",
+                        &message,
+                        vec![AlertButton::default("OK")],
+                        |_| {},
+                    );
+                })
+                .child(
+                    div()
+                        .w(px(60.0))
+                        .flex_shrink_0()
+                        .text_color(rgb(theme::text_muted(cx)))
+                        .text_size(px(theme::FONT_DETAIL))
+                        .child("Direct"),
+                )
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .truncate()
+                        .text_color(rgb(theme::text_secondary(cx)))
+                        .text_size(px(theme::FONT_DETAIL))
+                        .child(direct_label),
+                ),
+        );
+    }
+
+    let ip_status = match (snap.has_ipv4, snap.has_ipv6) {
+        (true, true) => "IPv4 + IPv6",
+        (true, false) => "IPv4 only",
+        (false, true) => "IPv6 only",
+        (false, false) => "probing\u{2026}",
+    };
+    d = d.child(kv_row(cx, "UDP", ip_status));
+
+    if let Some(varies) = snap.mapping_varies {
+        let nat = if varies {
+            "Symmetric (hard NAT)"
+        } else {
+            "Cone / direct"
+        };
+        d = d.child(kv_row(cx, "NAT", nat));
+    }
+
+    if snap.captive_portal == Some(true) {
+        d = d.child(kv_row(cx, "Portal", "Captive portal detected"));
+    }
+
+    d
+}
+
+// ─── Vertical detail panel ───────────────────────────────────────────────────
+
+fn render_detail(cx: &App, phase: &ConnectPhase, snap: &ConnectSnapshot) -> Div {
+    let mut col = div()
+        .w(px(theme::CONNECT_DETAIL_WIDTH))
+        .min_w_0()
+        .flex()
+        .flex_col()
+        .gap(px(theme::SPACING_SM));
+
+    if snap.local_node_id.is_some() || snap.remote_node_id.is_some() || snap.relay_url.is_some() {
+        col = col.child(render_section(
+            cx,
+            "Endpoint",
+            render_endpoint_rows(cx, snap),
+        ));
+    }
+
+    if has_discovery_data(snap) {
+        col = col.child(render_section(
+            cx,
+            "Discovery",
+            render_discovery_rows(cx, snap),
+        ));
+    }
+
+    if let Some(t) = &snap.transport {
+        col = col.child(render_section(
+            cx,
+            "Transport",
+            render_transport_rows(cx, t),
+        ));
+    }
+
+    if snap.session_id.is_some() || snap.auth_outcome.is_some() {
+        col = col.child(render_section(cx, "Auth", render_auth_rows(cx, snap)));
+    }
+
+    if !snap.hostname.is_empty() {
+        col = col.child(render_section(cx, "Daemon", render_host_rows(cx, snap)));
+    }
+
+    let timing = build_timing_string(snap);
+    if !timing.is_empty() {
+        col = col.child(
+            div()
+                .text_color(rgb(theme::text_muted(cx)))
+                .text_size(px(theme::FONT_DETAIL))
+                .child(timing),
+        );
+    }
+
+    // Show phase-specific info
+    if let ConnectPhase::Reconnecting {
+        attempt,
+        next_retry_secs,
+        ..
+    } = phase
+    {
+        col = col.child(
+            div()
+                .text_color(rgb(theme::text_muted(cx)))
+                .text_size(px(theme::FONT_DETAIL))
+                .child(format!(
+                    "Attempt {} · retry in {}s",
+                    attempt, next_retry_secs
+                )),
+        );
+    }
+
+    col
+}
+
+fn render_section(cx: &App, title: &'static str, rows: Div) -> Div {
+    div()
+        .flex()
+        .flex_col()
+        .gap(px(2.0))
+        .child(
+            div()
+                .text_color(rgb(theme::text_muted(cx)))
+                .text_size(px(theme::FONT_DETAIL))
+                .mb(px(2.0))
+                .child(title),
+        )
+        .child(rows)
+}
+
+fn render_endpoint_rows(cx: &App, snap: &ConnectSnapshot) -> Div {
+    let mut d = div().flex().flex_col().gap(px(2.0));
+    if let Some(id) = &snap.local_node_id {
+        d = d.child(kv_row(cx, "Local", id));
+    }
+    if let Some(id) = &snap.remote_node_id {
+        d = d.child(kv_row(cx, "Remote", id));
+    }
+    if let Some(relay) = &snap.relay_url {
+        d = d.child(kv_row(cx, "Relay", relay));
+    }
+    if let Some(alpn) = &snap.alpn {
+        d = d.child(kv_row(cx, "Protocol", alpn));
+    }
+    d
+}
+
+fn render_transport_rows(cx: &App, t: &TransportSnapshot) -> Div {
+    let conn_type = if t.is_direct {
+        match &t.network_hint {
+            Some(h) => format!("P2P \u{00b7} {}", h.label()),
+            None => "P2P".into(),
+        }
+    } else {
+        "Relayed".into()
+    };
+
+    let mut d = div()
+        .flex()
+        .flex_col()
+        .gap(px(2.0))
+        .child(kv_row(cx, "Type", &conn_type))
+        .child(kv_row(
+            cx,
+            "Address",
+            &format!("{} ({})", t.remote_addr, t.num_paths),
+        ));
+
+    if let Some(relay) = &t.relay_url {
+        d = d.child(kv_row(cx, "Relay", relay));
+    }
+    let net = format!(
+        "{}ms - {} \u{2191} / {} \u{2193}",
+        t.rtt_ms,
+        format_bytes(t.bytes_sent),
+        format_bytes(t.bytes_recv)
+    );
+    d = d.child(kv_row(cx, "Net", &net));
+    d
+}
+
+fn render_auth_rows(cx: &App, snap: &ConnectSnapshot) -> Div {
+    let mut d = div().flex().flex_col().gap(px(2.0));
+    if let Some(sid) = &snap.session_id {
+        d = d.child(kv_row(cx, "Session", sid));
+    }
+    if let Some(outcome) = &snap.auth_outcome {
+        let label = match outcome {
+            zedra_session::AuthOutcome::Registered => "Registered (first pairing)",
+            zedra_session::AuthOutcome::Authenticated => "Authorized",
+        };
+        d = d.child(kv_row(cx, "Status", label));
+    }
+    d
+}
+
+fn render_host_rows(cx: &App, snap: &ConnectSnapshot) -> Div {
+    let mut d = div().flex().flex_col().gap(px(2.0));
+    if !snap.hostname.is_empty() && !snap.username.is_empty() {
+        let host_label = format!("{}@{}", snap.username, snap.hostname);
+        d = d.child(kv_row(cx, "Host", &host_label));
+    }
+    if let Some(os) = &snap.os {
+        let label = match &snap.arch {
+            Some(arch) if !arch.is_empty() => format!("{os} / {arch}"),
+            _ => os.clone(),
+        };
+        d = d.child(kv_row(cx, "OS", &label));
+    }
+    if !snap.workdir.is_empty() {
+        d = d.child(kv_row(cx, "Workdir", &snap.workdir));
+    }
+    if let Some(v) = &snap.host_version {
+        if !v.is_empty() {
+            d = d.child(kv_row(cx, "Version", v));
+        }
+    }
+    d
+}
+
+fn build_timing_string(snap: &ConnectSnapshot) -> String {
+    let mut parts: Vec<String> = Vec::new();
+    if let Some(ms) = snap.binding_ms {
+        parts.push(format!("Bind {ms}ms"));
+    }
+    if let Some(ms) = snap.hole_punch_ms {
+        match (snap.resolve_ms, snap.handshake_ms) {
+            (Some(resolve), Some(handshake)) => parts.push(format!(
+                "HolePunch {ms}ms (find {resolve} + hs {handshake})"
+            )),
+            _ => parts.push(format!("HolePunch {ms}ms")),
+        }
+    }
+    if snap.relay_only {
+        parts.push("Relay-only (no direct)".to_string());
+    } else if let Some(ms) = snap.direct_upgrade_ms {
+        parts.push(format!("Direct +{ms}ms"));
+    }
+    if let Some(ms) = snap.rpc_ms {
+        parts.push(format!("RPC {ms}ms"));
+    }
+    if let Some(ms) = snap.register_ms {
+        parts.push(format!("Reg {ms}ms"));
+    }
+    if let Some(ms) = snap.auth_ms {
+        parts.push(format!("Auth {ms}ms"));
+    }
+    match (snap.sync_ms, snap.resume_ms) {
+        (Some(fetch), Some(resume)) => parts.push(format!("Sync {}ms", fetch + resume)),
+        (Some(ms), None) | (None, Some(ms)) => parts.push(format!("Sync {ms}ms")),
+        _ => {}
+    }
+    parts.join(" \u{00b7} ")
+}
+
+fn kv_row(cx: &App, key: &'static str, value: &str) -> Div {
+    div()
+        .flex()
+        .flex_row()
+        .gap(px(6.0))
+        .child(
+            div()
+                .w(px(60.0))
+                .flex_shrink_0()
+                .text_color(rgb(theme::text_muted(cx)))
+                .text_size(px(theme::FONT_DETAIL))
+                .child(key),
+        )
+        .child(
+            div()
+                .flex_1()
+                .min_w_0()
+                .truncate()
+                .text_color(rgb(theme::text_secondary(cx)))
+                .text_size(px(theme::FONT_DETAIL))
+                .child(value.to_string()),
+        )
+}
